@@ -57,7 +57,7 @@ private:
 
 KListView::Tooltip::Tooltip (KListView* parent, QToolTipGroup* group)
   : QToolTip (parent, group),
-	mParent (parent)
+        mParent (parent)
 {
 }
 
@@ -87,7 +87,7 @@ public:
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
       mDropVisualizerWidth (4)
   {
-	connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
+        connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
   }
 
   ~KListViewPrivate ()
@@ -137,9 +137,9 @@ public:
 
 
 KListViewLineEdit::KListViewLineEdit(KListView *parent)
-	: KLineEdit(parent->viewport()), item(0), col(0), p(parent)
+        : KLineEdit(parent->viewport()), item(0), col(0), p(parent)
 {
-	hide();
+        hide();
 }
 
 KListViewLineEdit::~KListViewLineEdit()
@@ -148,41 +148,41 @@ KListViewLineEdit::~KListViewLineEdit()
 
 void KListViewLineEdit::load(QListViewItem *i, int c)
 {
-	item=i;
-	col=c;
-	
-	QRect rect(p->itemRect(i));
-	setText(item->text(c));
-	int fieldX = - p->contentsX();
-	
-	for(int i = 0;i< c;i++)
-		fieldX += p->columnWidth(i);
-	
-	setGeometry(rect.x(), rect.y(), p->columnWidth(c)+2, rect.height() + 2);
-	show();
-	setFocus();
-	grabMouse();
+        item=i;
+        col=c;
+
+        QRect rect(p->itemRect(i));
+        setText(item->text(c));
+        int fieldX = - p->contentsX();
+
+        for(int i = 0;i< c;i++)
+                fieldX += p->columnWidth(i);
+
+        setGeometry(rect.x(), rect.y(), p->columnWidth(c)+2, rect.height() + 2);
+        show();
+        setFocus();
+        grabMouse();
 
 }
 
 void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
 {
-	QLineEdit::keyPressEvent(e);
-	
-	if(e->key() == Qt::Key_Return)
-		terminate();
+        QLineEdit::keyPressEvent(e);
+
+        if(e->key() == Qt::Key_Return)
+                terminate();
 }
 
 void KListViewLineEdit::terminate()
 {
-	item->setText(col, text());
-	hide();
-	int c=col;
-	QListViewItem *i=item;
-	col=0;
-	item=0;
-	releaseMouse();
-	emit done(i,c);
+        item->setText(col, text());
+        hide();
+        int c=col;
+        QListViewItem *i=item;
+        col=0;
+        item=0;
+        releaseMouse();
+        emit done(i,c);
 }
 
 void KListViewLineEdit::focusOutEvent(QFocusEvent *)
@@ -192,39 +192,39 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *)
 
 KListView::KListView( QWidget *parent, const char *name )
   : QListView( parent, name ),
-	d (new KListViewPrivate (this))
+        d (new KListViewPrivate (this))
 {
   setDragAutoScroll(true);
 
   connect( this, SIGNAL( onViewport() ),
-		   this, SLOT( slotOnViewport() ) );
+                   this, SLOT( slotOnViewport() ) );
   connect( this, SIGNAL( onItem( QListViewItem * ) ),
-		   this, SLOT( slotOnItem( QListViewItem * ) ) );
+                   this, SLOT( slotOnItem( QListViewItem * ) ) );
 
   connect (this, SIGNAL(contentsMoving(int,int)),
-		   this, SLOT(cleanDropVisualizer()));
+                   this, SLOT(cleanDropVisualizer()));
 
   slotSettingsChanged(KApplication::SETTINGS_MOUSE);
   connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
   kapp->addKipcEventMask( KIPC::SettingsChanged );
 
   connect(&d->autoSelect, SIGNAL( timeout() ),
-		  this, SLOT( slotAutoSelect() ) );
+                  this, SLOT( slotAutoSelect() ) );
 
   // context menu handling
   if (d->showContextMenusOnPress)
-	{
-	  connect (this, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
-			   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
-	}
+        {
+          connect (this, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
+                           this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+        }
   else
-	{
-	  connect (this, SIGNAL (rightButtonClicked (QListViewItem*, const QPoint&, int)),
-			   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
-	}
+        {
+          connect (this, SIGNAL (rightButtonClicked (QListViewItem*, const QPoint&, int)),
+                           this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+        }
 
   connect (this, SIGNAL (menuShortCutPressed (KListView*, QListViewItem*)),
-		   this, SLOT (emitContextMenu (KListView*, QListViewItem*)));
+                   this, SLOT (emitContextMenu (KListView*, QListViewItem*)));
 }
 
 
@@ -283,23 +283,23 @@ void KListView::slotSettingsChanged(int category)
 
     disconnect(this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
                this, SLOT (slotMouseButtonClicked (int, QListViewItem*, const QPoint &, int)));
-	
+
     if( d->bUseSingle )
       connect (this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
                this, SLOT (slotMouseButtonClicked( int, QListViewItem*, const QPoint &, int)));
-	
+
     d->bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
     d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
-	
+
     if( !d->bUseSingle || !d->bChangeCursorOverItem )
        viewport()->setCursor( d->oldCursor );
-	
+
     break;
-	
+
   case KApplication::SETTINGS_POPUPMENU:
     d->contextMenuKey = KGlobalSettings::contextMenuKey ();
     d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
-	
+
     if (d->showContextMenusOnPress)
     {
       disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
@@ -310,7 +310,7 @@ void KListView::slotSettingsChanged(int category)
     else
     {
       disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
-		
+
       connect(this, SIGNAL (rightButtonClicked (QListViewItem*, const QPoint&, int)),
               this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
     }
@@ -324,10 +324,10 @@ void KListView::slotSettingsChanged(int category)
 void KListView::slotAutoSelect()
 {
   if (!isActiveWindow())
-	{
-	  d->autoSelect.stop();
-	  return;
-	}
+        {
+          d->autoSelect.stop();
+          return;
+        }
 
   //Give this widget the keyboard focus.
   if( !hasFocus() )
@@ -338,7 +338,7 @@ void KListView::slotAutoSelect()
   int root_x, root_y, win_x, win_y;
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-				 &root_x, &root_y, &win_x, &win_y, &keybstate );
+                                 &root_x, &root_y, &win_x, &win_y, &keybstate );
 
   QListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
@@ -351,7 +351,7 @@ void KListView::slotAutoSelect()
 
       //No Ctrl? Then clear before!
       if( !(keybstate & ControlMask) )
-		clearSelection();
+                clearSelection();
 
       bool select = !d->pCurrentItem->isSelected();
       bool update = viewport()->isUpdatesEnabled();
@@ -360,15 +360,15 @@ void KListView::slotAutoSelect()
       bool down = previousItem->itemPos() < d->pCurrentItem->itemPos();
       QListViewItemIterator lit( down ? previousItem : d->pCurrentItem );
       for ( ; lit.current(); ++lit ) {
-		if ( down && lit.current() == d->pCurrentItem ) {
-		  d->pCurrentItem->setSelected( select );
-		  break;
-		}
-		if ( !down && lit.current() == previousItem ) {
-		  previousItem->setSelected( select );
-		  break;
-		}
-		lit.current()->setSelected( select );
+                if ( down && lit.current() == d->pCurrentItem ) {
+                  d->pCurrentItem->setSelected( select );
+                  break;
+                }
+                if ( !down && lit.current() == previousItem ) {
+                  previousItem->setSelected( select );
+                  break;
+                }
+                lit.current()->setSelected( select );
       }
 
       blockSignals( block );
@@ -378,7 +378,7 @@ void KListView::slotAutoSelect()
       emit selectionChanged();
 
       if( selectionMode() == QListView::Single )
-		emit selectionChanged( d->pCurrentItem );
+                emit selectionChanged( d->pCurrentItem );
     }
     else if( (keybstate & ControlMask) )
       setSelected( d->pCurrentItem, !d->pCurrentItem->isSelected() );
@@ -387,7 +387,7 @@ void KListView::slotAutoSelect()
       blockSignals( true );
 
       if( !d->pCurrentItem->isSelected() )
-		clearSelection();
+                clearSelection();
 
       blockSignals( block );
 
@@ -552,7 +552,7 @@ void KListView::contentsDropEvent(QDropEvent* e)
 
     //    if (e->source() == viewport() && itemsMovable())
     //      movableDropEvent(parent, afterme);
-    //	else
+    //  else
     if (!itemsMovable() || e->source() != viewport())
       {
         emit dropped(e, afterme);
@@ -626,7 +626,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
     }
   }
   else
-	  event->ignore();
+          event->ignore();
 }
 
 void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
@@ -647,10 +647,10 @@ void KListView::cleanDropVisualizer()
 void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
 {
   QPoint p (contentsToViewport(pos));
-	
+
   // Get the position to put it in
   QListViewItem *atpos = itemAt(p);
-	
+
   if (!atpos) // put it at the end
     after = lastItem();
   else
@@ -684,7 +684,7 @@ QListViewItem* KListView::lastChild () const
   QListViewItem* lastchild = firstChild();
 
   if (lastchild)
-	for (; lastchild->nextSibling(); lastchild = lastchild->nextSibling());
+        for (; lastchild->nextSibling(); lastchild = lastchild->nextSibling());
 
   return lastchild;
 }
@@ -704,7 +704,7 @@ void KListView::startDrag()
   QDragObject *drag = dragObject();
 
   if (!drag)
-	return;
+        return;
 
   if (drag->drag() && drag->target() != viewport())
     emit moved();
@@ -713,7 +713,7 @@ void KListView::startDrag()
 QDragObject *KListView::dragObject() const
 {
   if (!currentItem())
-	return 0;
+        return 0;
 
   return new QStoredDrag("application/x-qlistviewitem", viewport());
 }
@@ -773,7 +773,7 @@ QList<QListViewItem> KListView::selectedItems() const
 {
   QList<QListViewItem> list;
   for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
-	if (i->isSelected()) list.append(i);
+        if (i->isSelected()) list.append(i);
   return list;
 }
 
@@ -785,24 +785,24 @@ void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewIt
   while(i)
     {
       if(i == item)
-	return;
+        return;
       i = i->parent();
     }
 
   // Basically reimplementing the QListViewItem(QListViewItem*, QListViewItem*) constructor
   // in here, without ever deleting the item.
   if (item->parent())
-	item->parent()->takeItem(item);
+        item->parent()->takeItem(item);
   else
-	takeItem(item);
+        takeItem(item);
 
   if (parent)
-	parent->insertItem(item);
+        parent->insertItem(item);
   else
-	insertItem(item);
+        insertItem(item);
 
   if (after)
-	item->moveToJustAfter(after);
+        item->moveToJustAfter(after);
 }
 
 void KListView::contentsDragEnterEvent(QDragEnterEvent *event)
@@ -822,21 +822,21 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
   QRect insertmarker;
 
   if (after)
-	{
-	  insertmarker = itemRect (after);
+        {
+          insertmarker = itemRect (after);
 
-	  insertmarker.setLeft (0);
-	  insertmarker.setRight (viewport()->width());
-	  insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
-	  insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
-	}
+          insertmarker.setLeft (0);
+          insertmarker.setRight (viewport()->width());
+          insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
+          insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
+        }
   else
-	{
-	  insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
-	}
+        {
+          insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
+        }
 
   if (p)
-	p->fillRect(insertmarker, Dense4Pattern);
+        p->fillRect(insertmarker, Dense4Pattern);
 
   return insertmarker;
 }
@@ -885,54 +885,54 @@ bool KListView::acceptDrag(QDropEvent* e) const
 
 void KListView::setCreateChildren(bool b)
 {
-	d->createChildren=b;
+        d->createChildren=b;
 }
 
 bool KListView::createChildren() const
 {
-	return d->createChildren;
+        return d->createChildren;
 }
 
 
 int KListView::tooltipColumn() const
 {
-	return d->tooltipColumn;
+        return d->tooltipColumn;
 }
 
 void KListView::setTooltipColumn(int column)
 {
-	d->tooltipColumn=column;
+        d->tooltipColumn=column;
 }
 
 void KListView::setDropHighlighter(bool b)
 {
-	d->dropHighlighter=b;
+        d->dropHighlighter=b;
 }
 
 bool KListView::dropHighlighter() const
 {
-	return d->dropHighlighter;
+        return d->dropHighlighter;
 }
 
 bool KListView::showTooltip(QListViewItem *item, const QPoint &, int column) const
 {
-	return ((tooltip(item, column).length()>0) && (column==tooltipColumn()));
+        return ((tooltip(item, column).length()>0) && (column==tooltipColumn()));
 }
 
 QString KListView::tooltip(QListViewItem *item, int column) const
 {
-	return item->text(column);
+        return item->text(column);
 }
 
 void KListView::keyPressEvent (QKeyEvent* e)
 {
   //don't we need a contextMenuModifier too ? (aleXXX)
   if (e->key() == d->contextMenuKey)
-	{
-	  emit menuShortCutPressed (this, currentItem());
-	  return;
-	}
-	
+        {
+          emit menuShortCutPressed (this, currentItem());
+          return;
+        }
+
   if (d->selectionMode != Konqueror)
     {
       if (e->key() == Key_Next && contentsHeight() <= visibleHeight())
@@ -944,210 +944,215 @@ void KListView::keyPressEvent (QKeyEvent* e)
       QListView::keyPressEvent (e);
     }
   else
-	konquerorKeyPressEvent (e);
+        konquerorKeyPressEvent (e);
 }
 
 void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 {
-  if ((e->state()==ShiftButton) && (e->key()!=Key_Shift) &&
-	  (e->key()!=Key_Control) && (e->key()!=Key_Meta) &&
-	  (e->key()!=Key_Alt) && (!d->wasShiftEvent))
-	selectAll(FALSE);
+    if ((e->state()==ShiftButton) && (e->key()!=Key_Shift) &&
+        (e->key()!=Key_Control) && (e->key()!=Key_Meta) &&
+        (e->key()!=Key_Alt) && (!d->wasShiftEvent))
+        selectAll(FALSE);
 
-  d->wasShiftEvent = e->state() == ShiftButton;
+    d->wasShiftEvent = e->state() == ShiftButton;
 
-  QListViewItem* item = currentItem();
-  if (item==0) return;
-  QListViewItem* nextItem = 0L;
-  int items = 0;
+    QListViewItem* item = currentItem();
+    if (item==0) return;
+    QListViewItem* nextItem = 0L;
+    int items = 0;
 
-  /* no longer needed due to menuShortCutPressed
-  if (((e->key() == Key_Enter)|| (e->key() == Key_Return)) && (e->state() == ControlButton))
-	{
-      QListViewItem* item = currentItem();
+    /* no longer needed due to menuShortCutPressed
+       if (((e->key() == Key_Enter)|| (e->key() == Key_Return)) && (e->state() == ControlButton))
+       {
+       QListViewItem* item = currentItem();
 
-      if ( !item->isSelected() )
-		{
-		  QListViewItemIterator it (item);
-		  for( ; it.current(); it++ )
-            if ( it.current()->isSelected() )
-			  setSelected( it.current(), false );
-		  setSelected( item, true );
-		}
+       if ( !item->isSelected() )
+       {
+       QListViewItemIterator it (item);
+       for( ; it.current(); it++ )
+       if ( it.current()->isSelected() )
+       setSelected( it.current(), false );
+       setSelected( item, true );
+       }
 
-      QPoint p (width() / 2, height() / 2 );
-      p = mapToGlobal( p );
-      //      popupMenu( p );
-      return;
-   }*/
+       QPoint p (width() / 2, height() / 2 );
+       p = mapToGlobal( p );
+       //      popupMenu( p );
+       return;
+       }*/
 
-   switch (e->key())
-	 {
-	 case Key_Escape:
-	   selectAll(FALSE);
-	   break;
+    switch (e->key())
+    {
+        case Key_Escape:
+            selectAll(FALSE);
+            break;
 
-	 case Key_Space:
-	   //toggle selection of current item
-	   item->setSelected(!item->isSelected());
-	   item->repaint();
-	   emit selectionChanged();
-	   break;
+        case Key_Space:
+            //toggle selection of current item
+            item->setSelected(!item->isSelected());
+            item->repaint();
+            emit selectionChanged();
+            break;
 
-	 case Key_Insert:
-	   //toggle selection of current item and move to the next item
-	   item->setSelected(!item->isSelected());
-	   nextItem=item->itemBelow();
-	   if (nextItem!=0)
-		 {
-		   setCurrentItem(nextItem);
-		   ensureItemVisible(nextItem);
-		 }
-	   else item->repaint();
-	   emit selectionChanged();
-	   break;
+        case Key_Insert:
+            //toggle selection of current item and move to the next item
+            item->setSelected(!item->isSelected());
+            nextItem=item->itemBelow();
+            if (nextItem!=0)
+            {
+                setCurrentItem(nextItem);
+                ensureItemVisible(nextItem);
+            }
+            else item->repaint();
+            emit selectionChanged();
+            break;
 
-	 case Key_Down:
-	   //toggle selection of current item and move to the next item
-	   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-         item->setSelected(!item->isSelected());
-	   nextItem=item->itemBelow();
-	   if (nextItem!=0)
-		 {
-		   setCurrentItem(nextItem);
-		   ensureItemVisible(nextItem);
-		 }
-	   else item->repaint();
-	   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-		 {
-		   emit selectionChanged();
-		 }
-	   break;
+        case Key_Down:
+            //toggle selection of current item and move to the next item
+            if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                item->setSelected(!item->isSelected());
+            nextItem=item->itemBelow();
+            if (nextItem!=0)
+            {
+                setCurrentItem(nextItem);
+                ensureItemVisible(nextItem);
+            }
+            else item->repaint();
+            if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+            {
+                emit selectionChanged();
+            }
+            break;
 
-	 case Key_Up:
-	   //move to the prev. item and toggle selection of this one
-	   nextItem=item->itemAbove();
-	   if (nextItem==0) break;
-	   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-         nextItem->setSelected(!nextItem->isSelected());
-	   setCurrentItem(nextItem);
-	   ensureItemVisible(nextItem);
-	   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-		 {
-		   emit selectionChanged();
-		 }
-	   break;
+        case Key_Up:
+            //move to the prev. item and toggle selection of this one
+            // => No, can't select the last item, with this. For symmetry, let's
+            // toggle selection and THEN move up, just like we do in down (David)
+            if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                item->setSelected(!item->isSelected());
+            nextItem=item->itemAbove();
+            if (nextItem!=0)
+            {
+                setCurrentItem(nextItem);
+                ensureItemVisible(nextItem);
+            }
+            else item->repaint();
+            if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+            {
+                emit selectionChanged();
+            }
+            break;
 
-	 case Key_End:
-	   //move to the last item and toggle selection of all items inbetween
-	   nextItem=item;
-	
-	   while(nextItem!=0)
-		 {
-		   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-			 nextItem->setSelected(!nextItem->isSelected());
-		   if (nextItem->itemBelow()==0)
-			 {
-			   nextItem->repaint();
-			   ensureItemVisible(nextItem);
-			   setCurrentItem(nextItem);
-			 }
-		   nextItem=nextItem->itemBelow();
-		 }
-	   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-		 {
-		   emit selectionChanged();
-		 }
-	   break;
+        case Key_End:
+            //move to the last item and toggle selection of all items inbetween
+            nextItem=item;
 
-	 case Key_Home:
-	   //move to the last item and toggle selection of all items inbetween
-	   nextItem=item;
-	
-	   while(nextItem!=0)
-		 {
-		   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-			 nextItem->setSelected(!nextItem->isSelected());
-		   if (nextItem->itemAbove()==0)
-			 {
-			   nextItem->repaint();
-			   ensureItemVisible(nextItem);
-			   setCurrentItem(nextItem);
-			 }
-		   nextItem=nextItem->itemAbove();
-		 }
-	   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-		 {
-		   emit selectionChanged();
-		 }
-	   break;
+            while(nextItem!=0)
+            {
+                if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                    nextItem->setSelected(!nextItem->isSelected());
+                if (nextItem->itemBelow()==0)
+                {
+                    nextItem->repaint();
+                    ensureItemVisible(nextItem);
+                    setCurrentItem(nextItem);
+                }
+                nextItem=nextItem->itemBelow();
+            }
+            if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+            {
+                emit selectionChanged();
+            }
+            break;
 
-	 case Key_Next:
-	   items=visibleHeight()/item->height();
-	   nextItem=item;
-	   for (int i=0; i<items; i++)
-		 {
-		   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-			 nextItem->setSelected(!nextItem->isSelected());
-		   //the end
-		   if ((i==items-1) || (nextItem->itemBelow()==0))
+        case Key_Home:
+            //move to the last item and toggle selection of all items inbetween
+            nextItem=item;
 
-			 {
-			   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-				 nextItem->setSelected(!nextItem->isSelected());
-			   nextItem->repaint();
-			   ensureItemVisible(nextItem);
-			   setCurrentItem(nextItem);
-			   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-				 {
-				   emit selectionChanged();
-				 }
-			   return;
-			 }
-		   nextItem=nextItem->itemBelow();
-		 }
-	   break;
+            while(nextItem!=0)
+            {
+                if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                    nextItem->setSelected(!nextItem->isSelected());
+                if (nextItem->itemAbove()==0)
+                {
+                    nextItem->repaint();
+                    ensureItemVisible(nextItem);
+                    setCurrentItem(nextItem);
+                }
+                nextItem=nextItem->itemAbove();
+            }
+            if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+            {
+                emit selectionChanged();
+            }
+            break;
 
-	 case Key_Prior:
-	   items=visibleHeight()/item->height();
-	   nextItem=item;
-	   for (int i=0; i<items; i++)
-		 {
-		   if ((nextItem!=item) &&((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton))))
-			 nextItem->setSelected(!nextItem->isSelected());
-		   //the end
-		   if ((i==items-1) || (nextItem->itemAbove()==0))
+        case Key_Next:
+            items=visibleHeight()/item->height();
+            nextItem=item;
+            for (int i=0; i<items; i++)
+            {
+                if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                    nextItem->setSelected(!nextItem->isSelected());
+                //the end
+                if ((i==items-1) || (nextItem->itemBelow()==0))
 
-			 {
-			   nextItem->repaint();
-			   ensureItemVisible(nextItem);
-			   setCurrentItem(nextItem);
-			   if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
-				 {
-				   emit selectionChanged();
-				 }
-			   return;
-			 }
-		   nextItem=nextItem->itemAbove();
-		 }
-	   break;
+                {
+                    if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                        nextItem->setSelected(!nextItem->isSelected());
+                    nextItem->repaint();
+                    ensureItemVisible(nextItem);
+                    setCurrentItem(nextItem);
+                    if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                    {
+                        emit selectionChanged();
+                    }
+                    return;
+                }
+                nextItem=nextItem->itemBelow();
+            }
+            break;
 
-	 case Key_Minus:
-       if ( item->isOpen() )
-		 setOpen( item, FALSE );
-       break;
-	 case Key_Plus:
-       if (  !item->isOpen() && (item->isExpandable() || item->childCount()) )
-		 setOpen( item, TRUE );
-       break;
-	 default:
+        case Key_Prior:
+            items=visibleHeight()/item->height();
+            nextItem=item;
+            for (int i=0; i<items; i++)
+            {
+                if ((nextItem!=item) &&((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton))))
+                    nextItem->setSelected(!nextItem->isSelected());
+                //the end
+                if ((i==items-1) || (nextItem->itemAbove()==0))
 
-          //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
-          setSelectionMode (QListView::Multi);
-          QListView::keyPressEvent (e);
-          setSelectionMode (QListView::Extended);
-          break;
-   }
+                {
+                    nextItem->repaint();
+                    ensureItemVisible(nextItem);
+                    setCurrentItem(nextItem);
+                    if ((e->state()==ShiftButton) || (e->state()==(ControlButton|ShiftButton)))
+                    {
+                        emit selectionChanged();
+                    }
+                    return;
+                }
+                nextItem=nextItem->itemAbove();
+            }
+            break;
+
+        case Key_Minus:
+            if ( item->isOpen() )
+                setOpen( item, FALSE );
+            break;
+        case Key_Plus:
+            if (  !item->isOpen() && (item->isExpandable() || item->childCount()) )
+                setOpen( item, TRUE );
+            break;
+        default:
+
+            //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
+            setSelectionMode (QListView::Multi);
+            QListView::keyPressEvent (e);
+            setSelectionMode (QListView::Extended);
+            break;
+    }
 }
 
 void KListView::setSelectionModeExt (SelectionModeExt mode)
@@ -1183,9 +1188,9 @@ void KListView::emitContextMenu (KListView*, QListViewItem* i)
   QPoint p;
 
   if (i)
-	p = viewport()->mapToGlobal(itemRect(i).center());
+        p = viewport()->mapToGlobal(itemRect(i).center());
   else
-	p = mapToGlobal(rect().center());
+        p = mapToGlobal(rect().center());
 
   emit contextMenu (this, i, p);
 }
@@ -1203,7 +1208,7 @@ void KListView::setAcceptDrops (bool val)
 
 int KListView::dropVisualizerWidth () const
 {
-	return d->mDropVisualizerWidth;
+        return d->mDropVisualizerWidth;
 }
 
 
