@@ -78,7 +78,7 @@ cvs-local:
 	$(AUTOCONF)
 
 cvs-dist-local:
-	cd libltdl && automake --gnits --add-missing -i &&  autoconf
+	cd libltdl && $(AUTOMAKE) --gnits --add-missing -i && $(AUTOCONF)
 
 # Rule for generating HTML documentation [you need kdoc installed]
 # Don't forget to run qt2kdoc first (qt2kdoc $QTDIR/doc/html)
