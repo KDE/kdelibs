@@ -184,8 +184,8 @@ int KToggleAction::plug( QWidget* widget )
     {
 	KToolBar *bar = (KToolBar*)container( index );
 	KToolBarButton* b = bar->getButton( menuId( index ) );
-	b->beToggle( TRUE );
-	b->on( isChecked() );
+	bar->setToggle( menuId( index ), TRUE );
+	bar->setButton( menuId( index ), isChecked() );
     }
 
     return index;
@@ -200,7 +200,7 @@ void KToggleAction::setChecked( bool checked )
 	if ( w->inherits( "KToolBar" ) ) {
 	    	QWidget* r = ( (KToolBar*)w )->getButton( menuId( i ) );
 		if ( r->inherits( "KToolBarButton" ) )
-		    ((KToolBarButton*)r)->on( checked );
+		    ( (KToolBar*)w )->setButton( menuId( i ), checked );
 	} else if ( w->inherits( "QPopupMenu" ) )
 	    ((QPopupMenu*)w)->setItemChecked( menuId( i ), checked );
 	else if ( w->inherits( "KMenuBar" ) )
