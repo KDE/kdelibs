@@ -56,7 +56,7 @@ int KNotifyDialog::configure(QWidget *parent, const char *name)
 
 KNotifyDialog::KNotifyDialog(QWidget *parent, const char *name)
 	: KDialogBase(parent, name, true, i18n("Notification Settings"),
-	              Ok | Apply | Cancel | Default)
+	              Ok | Apply | Cancel | Default, Ok, true)
 	, m_application(0)
 {
 	resize(600, 400);
@@ -65,8 +65,7 @@ KNotifyDialog::KNotifyDialog(QWidget *parent, const char *name)
 	currentItem = 0L;
 
 	QFrame *box = makeMainWidget();
-	QVBoxLayout *lay = new QVBoxLayout( box, KDialog::marginHint(),
-	                                    KDialog::spacingHint() );
+	QVBoxLayout *lay = new QVBoxLayout( box, 0, KDialog::spacingHint() );
 	lay->setAutoAdd(true);
 
 	view = new QListView( box );
@@ -86,7 +85,7 @@ KNotifyDialog::KNotifyDialog(QWidget *parent, const char *name)
 
 	playButton = new QPushButton( hbox );
 	playButton->setFixedSize( requester->button()->size() );
-	playButton->setPixmap( UserIcon("play") );
+	playButton->setPixmap( SmallIcon("player_play") );
 	QToolTip::add( playButton, i18n("Play the given sound") );
 	playButton->hide();
 
