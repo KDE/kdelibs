@@ -202,11 +202,13 @@ void KComboBox::makeCompletion( const QString& txt )
             else
                 setCompletedItems( comp->allMatches() );
         }
+/*
         else if ( mode == KGlobalSettings::CompletionShell &&
                   comp->hasMultipleMatches(true) )
         {
             setCompletedItems( comp->allMatches() );
         }
+*/
         else
         {
             // all other completion modes
