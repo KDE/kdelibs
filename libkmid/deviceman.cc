@@ -35,7 +35,7 @@
 #include "midispec.h"
 #include "../version.h"
 
-SEQ_DEFINEBUF (1024);
+SEQ_DEFINEBUF (2048);
 #define CONTROLTIMER
 
 #ifdef GENERAL_DEBUG_MESSAGES 
@@ -57,6 +57,7 @@ void DEBUGPRINTF(const char *,int ) { };
 void DEBUGPRINTF(const char *,const char * ) { };
 
 #endif
+
 DeviceManager::DeviceManager(int def)
 {
 default_dev=def;
@@ -326,10 +327,15 @@ for (int i=0;i<n_midi;i++)
 
 void DeviceManager::wait (double ticks)
 {
+unsigned long int t=(unsigned long int)(ticks/convertrate);
+if (lastwaittime==t) return;
+lastwaittime=t;
 #ifdef HANDLETIMEINDEVICES
 device[default_dev]->wait(ticks);
 #else
-SEQ_WAIT_TIME(((int)(ticks/convertrate)));
+//printf("%ld\n",t);
+SEQ_WAIT_TIME(t);
+SEQ_DUMPBUF();
 #endif
 };
 
@@ -352,6 +358,7 @@ void DeviceManager::tmrStart(void)
      SEQ_DUMPBUF();
      timerstarted=1;
      };
+  lastwaittime=0;
 #else
   SEQ_START_TIMER();
   SEQ_DUMPBUF();

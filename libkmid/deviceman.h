@@ -51,6 +51,8 @@ int n_total; // n_midi+n_synths
 int timerstarted; // Newest kernels don't want me to stop a timer that
 		// hasn't been started :-)
 
+double lastwaittime; // Last time waited for in wait(double)
+
 MidiMapper *mapper_tmp; // Keeps a pointer to the mapper so that if devices
 	// weren't initialized when first called setMidiMap
 	// then, when they get initialized, they use the proper mapper
