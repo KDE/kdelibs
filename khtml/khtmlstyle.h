@@ -193,11 +193,11 @@ public:
     int          clear;
 };
 
+class CSSProp;
+typedef QList<CSSProp> CSSPropList;
 
-class CSSProperty;
-typedef QList<CSSProperty> CSSPropList;
-class CSSSelector;
-typedef QList<CSSSelector> CSSSelecList;
+class CSSSelec;
+typedef QList<CSSSelec> CSSSelecList;
 
 
 /**
@@ -237,10 +237,10 @@ protected:
     const QChar *parseToChar(const QChar *curP, const QChar *endP,
                             QChar c, bool chkws);
     const QChar *parseAt(const QChar *curP, const QChar *endP);
-    CSSSelector *parseSelector2(const QChar *curP, const QChar *endP);
-    CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
+    CSSSelec *parseSelector2(const QChar *curP, const QChar *endP);
+    CSSSelec *parseSelector1(const QChar *curP, const QChar *endP);
     CSSSelecList *parseSelector(const QChar *curP, const QChar *endP);
-    CSSProperty *parseProperty(const QChar *curP, const QChar *endP);
+    CSSProp *parseProperty(const QChar *curP, const QChar *endP);
     CSSPropList *parseProperties(const QChar *curP, const QChar *endP);
     const QChar *parseRule(const QChar *curP, const QChar *endP);
     void parseSheet(const QChar *src, int len);

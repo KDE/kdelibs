@@ -62,11 +62,11 @@
 // (and including) CSS_PROP_TOTAL-1
 #include "kcssprop.c"
 
-class CSSProperty
+class CSSProp
 {
 public:
-    CSSProperty();
-    
+    CSSProp();
+
     int   propId;
 #if 0
     enum contentEnum { contEnum, contAbsValue, contRelValue, contPercent,
@@ -81,11 +81,11 @@ public:
     bool important;
 };
 
-class CSSSelector
+class CSSSelec
 {
 public:
-    CSSSelector(void);
-    ~CSSSelector(void);
+    CSSSelec(void);
+    ~CSSSelec(void);
     void print(void);
     // tag == -1 means apply to all elements (Selector = *)
     int          tag;
@@ -110,19 +110,19 @@ public:
     };
 
     Relation relation;
-    CSSSelector *tagHistory;
+    CSSSelec *tagHistory;
     CSSPropList *propList;
 
     int specificity();
 };
 
-CSSProperty::CSSProperty()
+CSSProp::CSSProp()
 {
     important = false;
     propId = 0;
 }
 
-CSSSelector::CSSSelector(void)
+CSSSelec::CSSSelec(void)
 : tag(0), tagHistory(0), propList(0)
 {
     attr = 0;
@@ -130,7 +130,7 @@ CSSSelector::CSSSelector(void)
     relation = Descendant;
 }
 
-CSSSelector::~CSSSelector(void)
+CSSSelec::~CSSSelec(void)
 {
     if (tagHistory)
     {
@@ -138,10 +138,10 @@ CSSSelector::~CSSSelector(void)
     }
 }
 
-int CSSSelector::specificity()
+int CSSSelec::specificity()
 {
     int s = 0;
-    CSSSelector *sel = this;
+    CSSSelec *sel = this;
     while(sel)
     {
 	if(sel->attr == ATTR_ID) s += 0x100;
@@ -152,7 +152,7 @@ int CSSSelector::specificity()
     return s;
 }
 
-void CSSSelector::print(void)
+void CSSSelec::print(void)
 {
     printf("[Selector: tag = %d, attr = \"%d\", value = \"%s\" relation = %d\n",
     	tag, attr, value.data(), (int)relation);
@@ -347,10 +347,10 @@ CSSStyleSheet::parseAt(const QChar *curP, const QChar *endP)
     return(0);
 }
 
-CSSSelector *
+CSSSelec *
 CSSStyleSheet::parseSelector2(const QChar *curP, const QChar *endP)
 {
-    CSSSelector *cs = new CSSSelector();
+    CSSSelec *cs = new CSSSelec();
     QString selecString( curP, endP - curP );
 
 printf("selectString = \"%s\"\n", selecString.ascii());
@@ -392,7 +392,7 @@ printf("selectString = \"%s\"\n", selecString.ascii());
                 tag = QString( startP, curP - startP );
                 QString tmp( curP + 1, endP - curP - 1);
 		cs->attr = ATTR_CLASS;
-		cs->match = CSSSelector::List;
+		cs->match = CSSSelec::List;
                 cs->value = tmp;
                 break;
             }
@@ -434,10 +434,10 @@ printf("selectString = \"%s\"\n", selecString.ascii());
    return(cs);
 }
 
-CSSSelector *
+CSSSelec *
 CSSStyleSheet::parseSelector1(const QChar *curP, const QChar *endP)
 {
-    CSSSelector *selecStack=0;
+    CSSSelec *selecStack=0;
 
     curP = parseSpace(curP, endP);
     if (!curP)
@@ -448,7 +448,7 @@ CSSStyleSheet::parseSelector1(const QChar *curP, const QChar *endP)
     {
         if ((curP == endP) || isspace(*curP) || *curP == '+' || *curP == '>')
         {
-            CSSSelector *cs = parseSelector2(startP, curP);
+            CSSSelec *cs = parseSelector2(startP, curP);
             if (cs)
             {
                 cs->tagHistory = selecStack;
@@ -467,13 +467,13 @@ CSSStyleSheet::parseSelector1(const QChar *curP, const QChar *endP)
 
 	    if(*curP == '+')
 	    {
-		cs->relation = CSSSelector::Sibling;
+		cs->relation = CSSSelec::Sibling;
 		curP++;
 		curP = parseSpace(curP, endP);
 	    }
 	    else if(*curP == '>')
 	    {
-		cs->relation = CSSSelector::Child;
+		cs->relation = CSSSelec::Child;
 		curP++;
 		curP = parseSpace(curP, endP);
 	    }
@@ -502,7 +502,7 @@ CSSStyleSheet::parseSelector(const QChar *curP, const QChar *endP)
         if (!curP)
             curP = endP;
 
-        CSSSelector *selector = parseSelector1(startP, curP);
+        CSSSelec *selector = parseSelector1(startP, curP);
         if (selector)
         {
             if (!slist)
@@ -522,7 +522,7 @@ CSSStyleSheet::parseSelector(const QChar *curP, const QChar *endP)
     return(slist);
 }
 
-CSSProperty *
+CSSProp *
 CSSStyleSheet::parseProperty(const QChar *curP, const QChar *endP)
 {
     bool important = false;
@@ -567,7 +567,7 @@ printf("Property-name = \"%s\"\n", propName.data());
 	endP = exclam - 1;
 	printf("important property!\n");
     }
-    
+
     // remove space after the value;
     while (endP > curP)
     {
@@ -577,7 +577,7 @@ printf("Property-name = \"%s\"\n", propName.data());
         endP--;
     }
 
-    
+
     QString propVal( curP , endP - curP );
 printf("Property-value = \"%s\"\n", propVal.data());
 
@@ -587,11 +587,11 @@ printf("Property-value = \"%s\"\n", propVal.data());
          printf("Unknown property\n");
          return (0);
     }
-    CSSProperty *prop = new CSSProperty();
+    CSSProp *prop = new CSSProp();
     prop->propId = propPtr->id;
     prop->value = propVal.data();
     prop->important = important;
-    
+
     return(prop);
 }
 
@@ -607,7 +607,7 @@ CSSStyleSheet::parseProperties(const QChar *curP, const QChar *endP)
         if (!curP)
             curP = endP;
 
-        CSSProperty *prop = parseProperty(startP, curP);
+        CSSProp *prop = parseProperty(startP, curP);
         if (prop)
         {
             if (!propList)

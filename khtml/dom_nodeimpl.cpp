@@ -202,7 +202,7 @@ void NodeWParentImpl::setParent(NodeImpl *n)
 
 bool NodeWParentImpl::deleteMe()
 {
-    if(!_parent) return true;
+    if(!_parent && _ref <= 0) return true;
     return false;
 }
 
@@ -248,7 +248,7 @@ NodeBaseImpl::~NodeBaseImpl()
     }
 }
 
-NodeListImpl *NodeBaseImpl::childNodes() // 
+NodeListImpl *NodeBaseImpl::childNodes() //
 {
     return new ChildNodeListImpl(this);
 }
@@ -280,7 +280,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 
     NodeImpl *prev = refChild->previousSibling();
 
-    if (prev) 
+    if (prev)
 	prev->setNextSibling(newChild);
     else
 	_first = newChild;
@@ -337,7 +337,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
-    
+
     return oldChild;
 }
 
@@ -587,7 +587,7 @@ NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
 
 bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    return testNode->nodeName()==tagName; 
+    return testNode->nodeName()==tagName;
 }
 
 

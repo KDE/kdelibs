@@ -1,0 +1,171 @@
+/**
+ * This file is part of the DOM implementation for KDE.
+ *
+ * (C) 1999 Lars Knoll (knoll@kde.org)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * $Id$
+ */
+#ifndef _CSS_css_parser_h_
+#define _CSS_css_parser_h_
+
+#include "dom_string.h"
+#include "dom_misc.h"
+#include <qlist.h>
+
+namespace DOM {
+
+    class StyleSheetImpl;
+    class MediaList;
+
+    class CSSSelector;
+    class CSSProperty;
+    class CSSValueImpl;
+    class CSSStyleDeclarationImpl;
+    class CSSRuleImpl;
+    class CSSStyleRuleImpl;
+    
+    // these two classes are used internally as container classes
+
+    // a style class which has a parent (almost all have)
+    class StyleBaseImpl : public DomShared
+    {
+    public:
+	StyleBaseImpl() { m_parent = 0; }
+	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; }
+	virtual ~StyleBaseImpl() {}
+
+	virtual bool deleteMe();
+
+	virtual bool isStyleSheet() { return false; }
+	virtual bool isCSSStyleSheet() { return false; }
+	virtual bool isStyleSheetList() { return false; }
+	virtual bool isMediaList() { return false; }
+	virtual bool isRuleList() { return false; }
+	virtual bool isRule() { return false; }
+	virtual bool isStyleRule() { return false; }
+	virtual bool isCharetRule() { return false; }
+	virtual bool isImportRule() { return false; }
+	virtual bool isMediaRule() { return false; }
+	virtual bool isFontFaceRule() { return false; }
+	virtual bool isPageRule() { return false; }
+	virtual bool isUnknownRule() { return false; }
+	virtual bool isStyleDeclaration() { return false; }
+	virtual bool isValue() { return false; }
+	virtual bool isPrimitiveValue() { return false; }
+	virtual bool isValueList() { return false; }
+	virtual bool isValueCustom() { return false; }
+
+	void setParent(StyleBaseImpl *parent);
+
+	const QChar *parseSpace(const QChar *curP, const QChar *endP);
+	const QChar *parseToChar(const QChar *curP, const QChar *endP,
+				 QChar c, bool chkws);
+
+	CSSSelector *parseSelector2(const QChar *curP, const QChar *endP);
+	CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
+	QList<CSSSelector> *parseSelector(const QChar *curP, const QChar *endP);
+
+	CSSProperty *parseProperty(const QChar *curP, const QChar *endP);
+	QList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
+
+	CSSValueImpl *parseValue(const QChar *curP, const QChar *endP, int propId);
+
+	CSSRuleImpl *parseAtRule(const QChar *&curP, const QChar *endP);
+	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
+	CSSRuleImpl *parseRule(const QChar *&curP, const QChar *endP);
+
+	virtual bool parseString(const DOMString &cssString) = 0;
+
+    protected:
+	StyleBaseImpl *m_parent;
+    };
+
+    // a style class which has a list of children (StyleSheets for example)
+    class StyleListImpl : public StyleBaseImpl
+    {
+    public:
+	StyleListImpl() : StyleBaseImpl() { m_lstChildren = 0; }
+	StyleListImpl(StyleBaseImpl *parent) : StyleBaseImpl(parent) { m_lstChildren = 0; }
+
+	virtual ~StyleListImpl();
+
+    protected:
+	QList<StyleBaseImpl> *m_lstChildren;
+    };
+
+    
+// this class represents a selector for a StyleRule
+class CSSSelector
+{
+public:
+    CSSSelector(void);
+    ~CSSSelector(void);
+    void print(void);
+    // tag == -1 means apply to all elements (Selector = *)
+    int          tag;
+
+    enum Match
+    {
+	Exact = 0,
+	Set,
+	List,
+	Hyphen
+    };
+
+    Match 	 match;
+    int          attr;
+    // ### change to DOMString
+    QString      value;
+
+    enum Relation
+    {
+	Descendant = 0,
+	Child,
+	Sibling
+    };
+
+    Relation relation;
+    CSSSelector *tagHistory;
+
+    int specificity();
+};
+
+// another helper class
+class CSSProperty
+{
+public:
+    CSSProperty()
+    {
+	m_id = -1;
+	m_value = 0;
+	m_bImportant = false;
+    }
+
+    ~CSSProperty();
+
+    int   m_id;
+    CSSValueImpl *m_value;
+    bool m_bImportant;
+};
+
+}; // namespace
+    
+#endif
+
+
+

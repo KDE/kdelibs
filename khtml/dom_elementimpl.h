@@ -36,10 +36,12 @@ namespace DOM {
 class ElementImpl;
 class DocumentImpl;
 
+#if 0
 // These two operators save and restore the attributes of the element.
 QDataStream &operator<<( QDataStream &, const DOM::ElementImpl & );
 QDataStream &operator>>( QDataStream &, DOM::ElementImpl & );
-
+#endif
+    
 class AttrImpl : public NodeImpl
 {
     friend class ElementImpl;
@@ -96,7 +98,7 @@ public:
     virtual bool isElementNode() { return true; }
 
     virtual bool isHTMLElement() { return false; }
-    
+
     DOMString tagName() const;
 
     DOMString getAttribute ( const DOMString &name );

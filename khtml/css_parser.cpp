@@ -1,0 +1,849 @@
+/**
+ * This file is part of the DOM implementation for KDE.
+ *
+ * (C) 1999 Lars Knoll (knoll@kde.org)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * $Id$
+ */
+#include "css_stylesheetimpl.h"
+
+#include "css_stylesheet.h"
+#include "css_rule.h"
+#include "css_ruleimpl.h"
+#include "css_valueimpl.h"
+
+#include "dom_string.h"
+#include "dom_exception.h"
+using namespace DOM;
+
+#include "khtmltokenizer.h"
+#include "khtmlattrs.h"
+#include "kcssprop.h"
+#include "kcssvalues.h"
+
+//
+// The following file defines the function
+//     const struct props *findProp(const char *word, int len)
+//
+// with 'props->id' a CSS property in the range from CSS_PROP_MIN to
+// (and including) CSS_PROP_TOTAL-1
+#include "kcssprop.c"
+#include "kcssvalues.c"
+
+bool StyleBaseImpl::deleteMe()
+{
+    if(!m_parent && _ref <= 0) return true;
+    return false;
+}
+
+void StyleBaseImpl::setParent(StyleBaseImpl *parent)
+{
+    m_parent = parent;
+}
+
+
+/*
+ * parsing functions for stylesheets
+ */
+
+bool isspace(const QChar &c)
+{
+     return (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\r');
+}
+
+const QChar *
+StyleBaseImpl::parseSpace(const QChar *curP, const QChar *endP)
+{
+  bool sc = false;     // possible start comment?
+  bool ec = false;     // possible end comment?
+  bool ic = false;     // in comment?
+
+  while (curP < endP)
+  {
+      if (ic)
+      {
+          if (ec && (*curP == '/'))
+              ic = false;
+          else if (*curP == '*')
+              ec = true;
+          else
+              ec = false;
+      }
+      else if (sc && (*curP == '*'))
+      {
+          ic = true;
+      }
+      else if (*curP == '/')
+      {
+          sc = true;
+      }
+      else if (!isspace(*curP))
+      {
+          return(curP);
+      }
+      else
+      {
+          sc = false;
+      }
+      curP++;
+  }
+
+  return(0);
+}
+
+/*
+ * ParseToChar
+ *
+ * Search for an expected character.  Deals with escaped characters,
+ * quoted strings, and pairs of braces/parens/brackets.
+ */
+const QChar *
+StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool chkws)
+{
+    bool sq = false; /* in single quote? */
+    bool dq = false; /* in double quote? */
+    bool esc = false; /* escape mode? */
+
+    while (curP < endP)
+    {
+        if (esc)
+            esc = false;
+        else if (*curP == '\\')
+            esc = true;
+        else if (dq && (*curP != '"'))
+            dq = false;
+        else if (sq && (*curP != '\''))
+            sq = false;
+        else if (*curP == '"')
+            dq = true;
+        else if (*curP == '\'')
+            sq = true;
+        else if (*curP == c)
+            return(curP);
+        else if (chkws && isspace(*curP))
+            return(curP);
+        else if (*curP == '{')
+        {
+            curP = parseToChar(curP + 1, endP, '}', false);
+            if (!curP)
+                return(0);
+        }
+        else if (*curP == '(')
+        {
+            curP = parseToChar(curP + 1, endP, ')', false);
+            if (!curP)
+                return(0);
+        }
+        else if (*curP == '[')
+        {
+            curP = parseToChar(curP + 1, endP, ']', false);
+            if (!curP)
+                return(0);
+        }
+        curP++;
+    }
+
+    return(0);
+}
+
+CSSRuleImpl *
+StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
+{
+//    const char *startP = curP;
+    while (curP < endP)
+    {
+        if (*curP == '{')
+        {
+            curP = parseToChar(curP + 1, endP, '}', false);
+            return 0;
+        }
+        else if (*curP == ';')
+        {
+            // check if [startP, curP] contains an include...
+            // if so, emit a signal
+            curP++;
+            return 0;
+        }
+        curP++;
+    }
+    curP = 0;
+
+    return 0;
+}
+
+CSSSelector *
+StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
+{
+    CSSSelector *cs = new CSSSelector();
+    QString selecString( curP, endP - curP );
+
+printf("selectString = \"%s\"\n", selecString.ascii());
+
+    if (*curP == '#')
+    {
+	cs->tag = -1;
+	cs->attr = ATTR_ID;
+	cs->value = QString( curP + 1, endP - curP -1 );
+    }
+    else if (*curP == '.')
+    {
+	cs->tag = -1;
+	cs->attr = ATTR_CLASS;
+	cs->value = QString( curP + 1, endP - curP -1 );
+    }
+    else if (*curP == ':')
+    {
+	cs->tag = -1;
+	cs->attr = ATTR_CLASS;
+	cs->value = QString( curP, endP - curP );
+    }
+    else
+    {
+        const QChar *startP = curP;
+	QString tag;
+        while (curP < endP)
+        {
+            if (*curP =='#')
+            {
+                tag = QString( startP, curP-startP );
+                QString tmp( curP + 1, endP - curP - 1);
+                cs->attr = ATTR_ID;
+		cs->value = tmp;
+                break;
+            }
+            else if (*curP == '.')
+            {
+                tag = QString( startP, curP - startP );
+                QString tmp( curP + 1, endP - curP - 1);
+		cs->attr = ATTR_CLASS;
+		cs->match = CSSSelector::List;
+                cs->value = tmp;
+                break;
+            }
+            else if (*curP == ':')
+            {
+                tag = QString( startP, curP - startP );
+                QString tmp( curP, endP - curP );
+                cs->value = tmp;
+                break;
+            }
+            else if (*curP == '[')
+            {
+		// ### FIXME
+                tag = QString( startP, curP - startP );
+                QString tmp( curP, endP - curP );
+                cs->value = tmp;
+                break;
+            }
+            else
+            {
+                curP++;
+            }
+        }
+        if (curP == endP)
+        {
+            tag = QString( startP, curP - startP );
+        }
+	if(tag == "*")
+	    cs->tag = -1;
+	else
+	    cs->tag = getTagID(tag.lower().data(), tag.length());
+	printf("found tag \"%s\"\n", tag.ascii());
+   }
+   if (cs->tag == 0)
+   {
+       delete cs;
+       return(0);
+   }
+   return(cs);
+}
+
+CSSSelector *
+StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
+{
+    CSSSelector *selecStack=0;
+
+    curP = parseSpace(curP, endP);
+    if (!curP)
+        return(0);
+
+    const QChar *startP = curP;
+    while (curP <= endP)
+    {
+        if ((curP == endP) || isspace(*curP) || *curP == '+' || *curP == '>')
+        {
+            CSSSelector *cs = parseSelector2(startP, curP);
+            if (cs)
+            {
+                cs->tagHistory = selecStack;
+                selecStack = cs;
+            }
+	    else
+	    {
+		// invalid selector, delete
+		delete selecStack;
+		return 0;
+	    }
+		
+            curP = parseSpace(curP, endP);
+            if (!curP)
+                return(selecStack);
+
+	    if(*curP == '+')
+	    {
+		cs->relation = CSSSelector::Sibling;
+		curP++;
+		curP = parseSpace(curP, endP);
+	    }
+	    else if(*curP == '>')
+	    {
+		cs->relation = CSSSelector::Child;
+		curP++;
+		curP = parseSpace(curP, endP);
+	    }
+	    if(cs)
+		cs->print();
+            startP = curP;
+        }
+        else
+        {
+            curP++;
+        }
+    }
+    return(selecStack);
+}
+
+QList<CSSSelector> *
+StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
+{
+    QList<CSSSelector> *slist  = 0;
+    const QChar *startP;
+
+    while (curP < endP)
+    {
+        startP = curP;
+        curP = parseToChar(curP, endP, ',', false);
+        if (!curP)
+            curP = endP;
+
+        CSSSelector *selector = parseSelector1(startP, curP);
+        if (selector)
+        {
+            if (!slist)
+            {
+                slist = new QList<CSSSelector>;
+		slist->setAutoDelete(true);
+            }
+            slist->append(selector);
+        }
+	else
+	{
+	    // invalid selector, delete
+	    delete slist;
+	    return 0;
+	}
+        curP++;
+    }
+    return slist;
+}
+
+CSSProperty *
+StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP)
+{
+    bool important = false;
+    const QChar *colon;
+    // Get rid of space in front of the declaration
+
+    curP = parseSpace(curP, endP);
+    if (!curP)
+        return(0);
+
+    // Search for the required colon or white space
+    colon = parseToChar(curP, endP, ':', true);
+    if (!colon)
+        return(0);
+
+    QString propName( curP, colon - curP );
+
+printf("Property-name = \"%s\"\n", propName.data());
+    // May have only reached white space before
+    if (*colon != ':')
+    {
+        // Search for the required colon
+        colon = parseToChar(curP, endP, ':', false);
+        if (!colon)
+            return(0);
+    }
+    // remove space in front of the value
+    curP = parseSpace(colon+1, endP);
+    if (!curP)
+        return(0);
+
+    // search for !important
+    const QChar *exclam = parseToChar(curP, endP, '!', false);
+    if(exclam)
+    {
+	const QChar *imp = parseSpace(exclam+1, endP);
+	QString s(imp, endP - imp);
+	s.lower();
+	if(!s.contains("important"))
+	    return 0;
+	important = true;
+	endP = exclam - 1;
+	printf("important property!\n");
+    }
+
+    // remove space after the value;
+    while (endP > curP)
+    {
+
+        if (!isspace(*(endP-1)))
+            break;
+        endP--;
+    }
+
+
+    QString propVal( curP , endP - curP );
+printf("Property-value = \"%s\"\n", propVal.data());
+
+    const struct props *propPtr = findProp(propName.lower().ascii(), propName.length());
+    if (!propPtr)
+    {
+         printf("Unknown property\n");
+         return (0);
+    }
+
+    CSSValueImpl *val = parseValue(curP, endP, propPtr->id);
+
+    CSSProperty *prop = new CSSProperty();
+    prop->m_id = propPtr->id;
+
+    // #### Parse into right CSSValue!!!!
+    //prop->value = propVal.data();
+    prop->m_bImportant = important;
+
+    return(prop);
+}
+
+QList<CSSProperty> *
+StyleBaseImpl::parseProperties(const QChar *curP, const QChar *endP)
+{
+    QList<CSSProperty> *propList=0;
+
+    while (curP < endP)
+    {
+        const QChar *startP = curP;
+        curP = parseToChar(curP, endP, ';', false);
+        if (!curP)
+            curP = endP;
+
+        CSSProperty *prop = parseProperty(startP, curP);
+        if (prop)
+        {
+            if (!propList)
+            {
+                propList = new QList<CSSProperty>;
+		propList->setAutoDelete(true);
+            }
+            propList->append(prop);
+        }
+        curP++;
+    }
+    return propList;
+}
+
+CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId)
+{
+    printf("parseValue!\n");
+    
+    switch(propId)
+    {
+    case CSS_PROP_AZIMUTH:
+	// CSS2Azimuth
+    case CSS_PROP_BACKGROUND_POSITION:
+	// CSS2BackgroundPosition
+    case CSS_PROP_BORDER_SPACING:
+	// CSS2BorderSpacing
+    case CSS_PROP_COUNTER_INCREMENT:
+	// list of CSS2CounterIncrement
+    case CSS_PROP_COUNTER_RESET:
+	// list of CSS2CounterReset
+    case CSS_PROP_CURSOR:
+	// CSS2Cursor
+    case CSS_PROP_FONT_FAMILY:
+	// list of strings and ids
+    case CSS_PROP_ORPHANS:
+	// number
+    case CSS_PROP_PADDING_TOP:
+    case CSS_PROP_PADDING_RIGHT:
+    case CSS_PROP_PADDING_BOTTOM:
+    case CSS_PROP_PADDING_LEFT:
+	// l,p
+    case CSS_PROP_PITCH_RANGE:
+	// number
+    case CSS_PROP_PLAY_DURING:
+	// CSS2PlayDuring
+    case CSS_PROP_QUOTES:
+	// list of strings or i
+    case CSS_PROP_RICHNESS:
+	// number
+    case CSS_PROP_STRESS:
+	// number
+    case CSS_PROP_TEXT_DECORATION:
+	// list of ident
+    case CSS_PROP_TEXT_INDENT:
+	// l,p
+    case CSS_PROP_TEXT_SHADOW:
+	// list of CSS2TextShadow
+    case CSS_PROP_WIDOWS:
+	// number
+	break;
+	// shorthand properties follow here:
+    case CSS_PROP_BACKGROUND:
+    case CSS_PROP_BORDER:
+    case CSS_PROP_BORDER_COLOR:
+    case CSS_PROP_BORDER_STYLE:
+    case CSS_PROP_BORDER_TOP:
+    case CSS_PROP_BORDER_RIGHT:
+    case CSS_PROP_BORDER_BOTTOM:
+    case CSS_PROP_BORDER_LEFT:
+    case CSS_PROP_BORDER_WIDTH:
+    case CSS_PROP_CUE:
+    case CSS_PROP_FONT:
+    case CSS_PROP_LIST_STYLE:
+    case CSS_PROP_MARGIN:
+    case CSS_PROP_OUTLINE:
+    case CSS_PROP_PADDING:
+    case CSS_PROP_PAUSE:
+	break;
+    default:
+    {
+	QString value(curP, endP - curP);
+	printf("parseValue: value = %s\n", value.ascii());
+	const struct css_value *val = findValue(value.lower().ascii(), value.length());
+	if (val)
+	{
+	    printf("got value %d\n", val->id);
+	    CSSPrimitiveValueImpl *v = new CSSPrimitiveValueImpl(val->id);
+	    return v;
+	    // ### FIXME: should check if the identifier makes sense with the property
+	}
+    }	    
+    }    
+
+    // we don't have an identifier.
+    
+    switch(propId)
+    {
+// ident only properties
+    case CSS_PROP_BACKGROUND_ATTACHMENT:
+    case CSS_PROP_BACKGROUND_REPEAT:
+    case CSS_PROP_BORDER_COLLAPSE:
+    case CSS_PROP_BORDER_TOP_STYLE:
+    case CSS_PROP_BORDER_RIGHT_STYLE:
+    case CSS_PROP_BORDER_BOTTOM_STYLE:
+    case CSS_PROP_BORDER_LEFT_STYLE:
+    case CSS_PROP_CAPTION_SIDE:
+    case CSS_PROP_CLEAR:
+    case CSS_PROP_DIRECTION:
+    case CSS_PROP_DISPLAY:
+    case CSS_PROP_EMPTY_CELLS:
+    case CSS_PROP_FLOAT:
+    case CSS_PROP_FONT_STRETCH:
+    case CSS_PROP_FONT_STYLE:
+    case CSS_PROP_FONT_VARIANT:
+    case CSS_PROP_FONT_WEIGHT:
+    case CSS_PROP_LIST_STYLE_POSITION:
+    case CSS_PROP_LIST_STYLE_TYPE:
+    case CSS_PROP_OUTLINE_STYLE:
+    case CSS_PROP_OVERFLOW:
+    case CSS_PROP_PAGE:
+    case CSS_PROP_PAGE_BREAK_AFTER:
+    case CSS_PROP_PAGE_BREAK_BEFORE:
+    case CSS_PROP_PAGE_BREAK_INSIDE:
+    case CSS_PROP_PAUSE_AFTER:
+    case CSS_PROP_PAUSE_BEFORE:
+    case CSS_PROP_POSITION:
+    case CSS_PROP_SPEAK:
+    case CSS_PROP_SPEAK_HEADER:
+    case CSS_PROP_SPEAK_NUMERAL:
+    case CSS_PROP_SPEAK_PUNCTUATION:
+    case CSS_PROP_TABLE_LAYOUT:
+    case CSS_PROP_TEXT_TRANSFORM:
+    case CSS_PROP_UNICODE_BIDI:
+    case CSS_PROP_VISIBILITY:
+    case CSS_PROP_WHITE_SPACE:
+	break;
+
+// special properties (css_extensions)
+    case CSS_PROP_AZIMUTH:
+	// CSS2Azimuth
+    case CSS_PROP_BACKGROUND_POSITION:
+	// CSS2BackgroundPosition
+    case CSS_PROP_BORDER_SPACING:
+	// CSS2BorderSpacing
+    case CSS_PROP_CURSOR:
+	// CSS2Cursor
+    case CSS_PROP_PLAY_DURING:
+	// CSS2PlayDuring
+    case CSS_PROP_TEXT_SHADOW:
+	// list of CSS2TextShadow
+	break;
+
+// colors || inherit
+    case CSS_PROP_BACKGROUND_COLOR:
+    case CSS_PROP_BORDER_TOP_COLOR:
+    case CSS_PROP_BORDER_RIGHT_COLOR:
+    case CSS_PROP_BORDER_BOTTOM_COLOR:
+    case CSS_PROP_BORDER_LEFT_COLOR:
+    case CSS_PROP_COLOR:
+    case CSS_PROP_OUTLINE_COLOR:
+	// ### extent the html color parser, to accept the following constructs, and use it!
+	//  EM { color: #f00 }              /* #rgb */
+	//  EM { color: #ff0000 }           /* #rrggbb */
+	//  EM { color: rgb(255,0,0) }      /* integer range 0 - 255 */
+	//  EM { color: rgb(100%, 0%, 0%) } /* float range 0.0% - 100.0% */
+  break;
+
+// uri || inherit
+    case CSS_PROP_BACKGROUND_IMAGE:
+    case CSS_PROP_CUE_AFTER:
+    case CSS_PROP_CUE_BEFORE:
+    case CSS_PROP_LIST_STYLE_IMAGE:
+	break;
+	
+// length    
+    case CSS_PROP_BORDER_TOP_WIDTH:
+    case CSS_PROP_BORDER_RIGHT_WIDTH:
+    case CSS_PROP_BORDER_BOTTOM_WIDTH:
+    case CSS_PROP_BORDER_LEFT_WIDTH:
+    case CSS_PROP_MARKER_OFFSET:
+    case CSS_PROP_LETTER_SPACING:
+    case CSS_PROP_OUTLINE_WIDTH:
+    case CSS_PROP_WORD_SPACING:
+	break;
+
+// length, percent    
+    case CSS_PROP_PADDING_TOP:
+    case CSS_PROP_PADDING_RIGHT:
+    case CSS_PROP_PADDING_BOTTOM:
+    case CSS_PROP_PADDING_LEFT:
+    case CSS_PROP_TEXT_INDENT:
+    case CSS_PROP_BOTTOM:
+    case CSS_PROP_FONT_SIZE:
+    case CSS_PROP_HEIGHT:
+    case CSS_PROP_LEFT:
+    case CSS_PROP_MARGIN_TOP:
+    case CSS_PROP_MARGIN_RIGHT:
+    case CSS_PROP_MARGIN_BOTTOM:
+    case CSS_PROP_MARGIN_LEFT:
+    case CSS_PROP_MAX_HEIGHT:
+    case CSS_PROP_MAX_WIDTH:
+    case CSS_PROP_MIN_HEIGHT:
+    case CSS_PROP_MIN_WIDTH:
+    case CSS_PROP_RIGHT:
+    case CSS_PROP_TOP:
+    case CSS_PROP_VERTICAL_ALIGN:
+    case CSS_PROP_WIDTH:
+	break;
+
+// rect    
+    case CSS_PROP_CLIP:
+	// rect, ident
+	break;
+	
+// lists    
+    case CSS_PROP_CONTENT:
+	// list of string, uri, counter, attr, i
+    case CSS_PROP_COUNTER_INCREMENT:
+	// list of CSS2CounterIncrement
+    case CSS_PROP_COUNTER_RESET:
+	// list of CSS2CounterReset
+    case CSS_PROP_FONT_FAMILY:
+	// list of strings and ids
+    case CSS_PROP_QUOTES:
+	// list of strings or i
+    case CSS_PROP_TEXT_DECORATION:
+	// list of ident
+    case CSS_PROP_VOICE_FAMILY:
+	// list of strings and i
+	break;
+	
+// angle
+    case CSS_PROP_ELEVATION:
+	// angle, i
+	break;
+	
+// number
+    case CSS_PROP_FONT_SIZE_ADJUST:
+    case CSS_PROP_ORPHANS:
+    case CSS_PROP_PITCH_RANGE:
+    case CSS_PROP_RICHNESS:
+    case CSS_PROP_SPEECH_RATE:
+    case CSS_PROP_STRESS:
+    case CSS_PROP_WIDOWS:
+    case CSS_PROP_Z_INDEX:
+	break;
+
+// length, percent, number    
+    case CSS_PROP_LINE_HEIGHT:
+	break;
+
+// number, percent
+    case CSS_PROP_VOLUME:
+	break;
+	
+// frequency
+    case CSS_PROP_PITCH:
+	break;
+
+// string
+    case CSS_PROP_TEXT_ALIGN:
+	break;
+
+// shorthand properties
+    case CSS_PROP_BACKGROUND:
+    case CSS_PROP_BORDER:
+    case CSS_PROP_BORDER_COLOR:
+    case CSS_PROP_BORDER_STYLE:
+    case CSS_PROP_BORDER_TOP:
+    case CSS_PROP_BORDER_RIGHT:
+    case CSS_PROP_BORDER_BOTTOM:
+    case CSS_PROP_BORDER_LEFT:
+    case CSS_PROP_BORDER_WIDTH:
+    case CSS_PROP_CUE:
+    case CSS_PROP_FONT:
+    case CSS_PROP_LIST_STYLE:
+    case CSS_PROP_MARGIN:
+    case CSS_PROP_OUTLINE:
+    case CSS_PROP_PADDING:
+    case CSS_PROP_PAUSE:
+	break;
+    default:
+	printf("illegal property!\n");
+    }
+
+    return 0;
+}	
+
+CSSStyleRuleImpl *
+StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
+{
+    const QChar *startP;
+    QList<CSSSelector> *slist;
+    QList<CSSProperty> *plist;
+
+    startP = curP;
+    curP = parseToChar(startP, endP, '{', false);
+    if (!curP)
+        return(0);
+
+    slist = parseSelector(startP, curP );
+
+    curP++; // need to get past the '{' from above
+
+    startP = curP;
+    curP = parseToChar(startP, endP, '}', false);
+    if (!curP)
+    {
+        delete slist;
+        return(0);
+    }
+
+    plist = parseProperties(startP, curP );
+
+    curP++; // need to get past the '}' from above
+
+    if (!plist || !slist)
+    {
+        // Useless rule
+        delete slist;
+        delete plist;
+	printf("bad style rule\n");
+        return 0;
+    }
+
+    // return the newly created rule
+    CSSStyleRuleImpl *rule = new CSSStyleRuleImpl(this);
+    CSSStyleDeclarationImpl *decl = new CSSStyleDeclarationImpl(rule, plist);
+
+    rule->setSelector(slist);
+    rule->setDeclaration(decl);
+    // ### set selector and value
+    return rule;
+}
+
+CSSRuleImpl *
+StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
+{
+    curP = parseSpace(curP, endP);
+    CSSRuleImpl *rule = 0;
+    if (*curP == '@')
+	rule = parseAtRule(curP, endP);
+    else
+	rule = parseStyleRule(curP, endP);
+
+    return rule;
+}
+
+// ------------------------------------------------------------------------------
+
+StyleListImpl::~StyleListImpl()
+{
+    StyleBaseImpl *n;
+
+    if(!m_lstChildren) return;
+
+    for( n = m_lstChildren->first(); n != 0; n = m_lstChildren->next() )
+    {
+	n->setParent(0);
+	if(n->deleteMe()) delete n;
+    }
+    delete m_lstChildren;
+}
+
+// --------------------------------------------------------------------------------
+
+CSSSelector::CSSSelector(void)
+: tag(0), tagHistory(0)
+{
+    attr = 0;
+    match = Exact;
+    relation = Descendant;
+}
+
+CSSSelector::~CSSSelector(void)
+{
+    if (tagHistory)
+    {
+        delete tagHistory;
+    }
+}
+
+void CSSSelector::print(void)
+{
+    printf("[Selector: tag = %d, attr = \"%d\", value = \"%s\" relation = %d\n",
+    	tag, attr, value.data(), (int)relation);
+}
+
+// ----------------------------------------------------------------------------
+
+CSSProperty::~CSSProperty()
+{
+    if(m_value) m_value->deref();
+}

@@ -1,0 +1,284 @@
+/**
+ * This file is part of the DOM implementation for KDE.
+ *
+ * (C) 1999 Lars Knoll (knoll@kde.org)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * $Id$
+ */
+#include "css_stylesheet.h"
+#include "css_stylesheetimpl.h"
+#include "css_rule.h"
+
+#include "dom_node.h"
+#include "dom_string.h"
+using namespace DOM;
+
+
+StyleSheet::StyleSheet()
+{
+    impl = 0;
+}
+
+StyleSheet::StyleSheet(const StyleSheet &other)
+{
+    impl = other.impl;
+    if(impl) impl->ref();
+}
+
+StyleSheet::StyleSheet(StyleSheetImpl *i)
+{
+    impl = i;
+    if(impl) impl->ref();
+}
+
+StyleSheet &StyleSheet::operator = (const StyleSheet &other)
+{
+    if(impl) impl->deref();
+    impl = other.impl;
+    if(impl) impl->ref();
+    return *this;
+}
+
+StyleSheet::~StyleSheet()
+{
+    if(impl) impl->deref();
+}
+
+DOMString StyleSheet::type() const
+{
+    if(!impl) return 0;
+    return ((StyleSheetImpl *)impl)->type();
+}
+
+bool StyleSheet::disabled() const
+{
+    if(!impl) return 0;
+    return ((StyleSheetImpl *)impl)->disabled();
+}
+
+void StyleSheet::setDisabled( bool _disabled )
+{
+    if(impl)
+        ((StyleSheetImpl *)impl)->setDisabled( _disabled );
+}
+
+DOM::Node StyleSheet::ownerNode() const
+{
+    if(!impl) return Node();
+    return ((StyleSheetImpl *)impl)->ownerNode();
+}
+
+StyleSheet StyleSheet::parentStyleSheet() const
+{
+    if(!impl) return 0;
+    return ((StyleSheetImpl *)impl)->parentStyleSheet();
+}
+
+DOMString StyleSheet::href() const
+{
+    if(!impl) return 0;
+    return ((StyleSheetImpl *)impl)->href();
+}
+
+DOMString StyleSheet::title() const
+{
+    if(!impl) return 0;
+    return ((StyleSheetImpl *)impl)->title();
+}
+
+MediaList StyleSheet::media() const
+{
+    if(!impl) return 0;
+    return ((StyleSheetImpl *)impl)->media();
+}
+
+
+
+CSSStyleSheet::CSSStyleSheet() : StyleSheet()
+{
+}
+
+CSSStyleSheet::CSSStyleSheet(const CSSStyleSheet &other) : StyleSheet(other)
+{
+}
+
+CSSStyleSheet::CSSStyleSheet(CSSStyleSheetImpl *impl) : StyleSheet(impl)
+{
+}
+
+CSSStyleSheet &CSSStyleSheet::operator = (const CSSStyleSheet &other)
+{
+    StyleSheet::operator = (other);
+    return *this;
+}
+
+CSSStyleSheet::~CSSStyleSheet()
+{
+}
+
+CSSRule CSSStyleSheet::ownerRule() const
+{
+    if(!impl) return 0;
+    return ((CSSStyleSheetImpl *)impl)->ownerRule();
+}
+
+CSSRuleList CSSStyleSheet::cssRules() const
+{
+    if(!impl) return 0;
+    return ((CSSStyleSheetImpl *)impl)->cssRules();
+}
+
+unsigned long CSSStyleSheet::insertRule( const DOMString &rule, unsigned long index )
+{
+    if(!impl) return 0;
+    return ((CSSStyleSheetImpl *)impl)->insertRule( rule, index );
+}
+
+void CSSStyleSheet::deleteRule( unsigned long index )
+{
+    if(impl)
+        ((CSSStyleSheetImpl *)impl)->deleteRule( index );
+}
+
+
+
+StyleSheetList::StyleSheetList()
+{
+    impl = 0;
+}
+
+StyleSheetList::StyleSheetList(const StyleSheetList &other)
+{
+    impl = other.impl;
+    if(impl) impl->ref();
+}
+
+StyleSheetList::StyleSheetList(StyleSheetListImpl *i)
+{
+    impl = i;
+    if(impl) impl->ref();
+}
+
+StyleSheetList &StyleSheetList::operator = (const StyleSheetList &other)
+{
+    if(impl) impl->deref();
+    impl = other.impl;
+    if(impl) impl->ref();
+    return *this;
+}
+
+StyleSheetList::~StyleSheetList()
+{
+    if(impl) impl->deref();
+}
+
+unsigned long StyleSheetList::length() const
+{
+    if(!impl) return 0;
+    return ((StyleSheetListImpl *)impl)->length();
+}
+
+StyleSheet StyleSheetList::item( unsigned long index )
+{
+    if(!impl) return StyleSheet();
+    return ((StyleSheetListImpl *)impl)->item( index );
+}
+
+
+
+MediaList::MediaList()
+{
+    impl = 0;
+}
+
+MediaList::MediaList(const MediaList &other)
+{
+    impl = other.impl;
+    if(impl) impl->ref();
+}
+
+MediaList::MediaList(MediaListImpl *i)
+{
+    impl = i;
+    if(impl) impl->ref();
+}
+
+MediaList &MediaList::operator = (const MediaList &other)
+{
+    if(impl) impl->deref();
+    impl = other.impl;
+    if(impl) impl->ref();
+    return *this;
+}
+
+MediaList::~MediaList()
+{
+    if(impl) impl->deref();
+}
+
+DOMString MediaList::cssText() const
+{
+    // ###
+    if(!impl) return 0;
+    //return ((ElementImpl *)impl)->getAttribute("cssText");
+}
+
+void MediaList::setCssText( const DOMString &value )
+{
+    // ###
+    //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);
+}
+
+CSSStyleSheet MediaList::parentStyleSheet() const
+{
+    if(!impl) return CSSStyleSheet();
+    return ((MediaListImpl *)impl)->parentStyleSheet();
+}
+
+CSSRule MediaList::parentRule() const
+{
+    if(!impl) return CSSRule();
+    return ((MediaListImpl *)impl)->parentRule();
+}
+
+unsigned long MediaList::length() const
+{
+    if(!impl) return 0;
+    return ((MediaListImpl *)impl)->length();
+}
+
+DOMString MediaList::item( unsigned long index )
+{
+    if(!impl) return 0;
+    return ((MediaListImpl *)impl)->item( index );
+}
+
+void MediaList::del( const DOMString &oldMedium )
+{
+    if(impl)
+        ((MediaListImpl *)impl)->del( oldMedium );
+}
+
+void MediaList::append( const DOMString &newMedium )
+{
+    if(impl)
+        ((MediaListImpl *)impl)->append( newMedium );
+}
+
+
+

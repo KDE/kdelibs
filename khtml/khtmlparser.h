@@ -109,7 +109,7 @@ protected:
     /*
      * Current style sheet
      */
-    CSSStyleSheet *styleSheet;
+    ::CSSStyleSheet *styleSheet;
 
     /*
      * Current style

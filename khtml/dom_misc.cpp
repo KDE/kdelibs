@@ -26,8 +26,8 @@ using namespace DOM;
 
 bool DomShared::deleteMe()
 {
-  // will only get called if refCount drops to 0...
-    return true;
+  if(_ref <= 0)  return true;
+  return false;
 }
 
 

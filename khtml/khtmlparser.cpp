@@ -27,7 +27,7 @@
 
 // #define PARSER_DEBUG
 
-#define CSS_TEST
+//#define CSS_TEST
 
 #ifdef GrayScale
 #undef GrayScale
@@ -216,7 +216,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     blockStack = 0;
 
     // Style stuff
-    styleSheet = new CSSStyleSheet(HTMLWidget->settings());
+    styleSheet = new ::CSSStyleSheet(HTMLWidget->settings());
 
 #ifdef CSS_TEST
     styleSheet->test();
@@ -285,7 +285,7 @@ void KHTMLParser::parseToken(Token *t)
 	return;
     }
 
-    
+
     // ignore spaces, if we're not inside a paragraph or other inline code
     if(t->id == ID_TEXT && !_inline)
     {

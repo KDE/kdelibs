@@ -147,7 +147,8 @@ class NamedNodeMap;
 class NodeList;
 class Document;
 class DOMString;
-
+class StyleSheet;
+    
 class NodeImpl;
 
 /**
@@ -176,7 +177,8 @@ class Node
     friend class NamedNodeMap;
     friend class NodeList;
     friend class HTMLCollection;
-
+    friend class StyleSheet;
+    
 public:
     Node();
     Node(const Node &other);
@@ -537,8 +539,8 @@ public:
     Node cloneNode ( bool deep );
 
     /**
-     * @internal 
-     * not part of the DOM. 
+     * @internal
+     * not part of the DOM.
      * @returns the element id, in case this is an element, 0 otherwise
      */
     unsigned short id() const;
@@ -554,7 +556,7 @@ public:
      *   printf("node isn't an element node\n");
      */
     bool isNull() { return (impl == 0); }
-    
+
 protected:
     NodeImpl *impl;
 

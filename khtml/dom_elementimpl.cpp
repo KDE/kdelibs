@@ -316,6 +316,7 @@ AttributeList *ElementImpl::defaultMap() const
     return 0;
 }
 
+#if 0
 QDataStream &DOM::operator<<( QDataStream &stream, const ElementImpl &e )
 {
     int l = e.attributeMap.length();
@@ -340,3 +341,4 @@ QDataStream &DOM::operator>>( QDataStream &stream, ElementImpl &e )
 	e.setAttribute(id, DOMString(v));
     }
 }
+#endif
