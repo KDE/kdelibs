@@ -2,13 +2,15 @@
 
 #include <qaccel.h>
 #include <qpopupmenu.h>
+#include <qregexp.h>
 #include <qstring.h>
 #include <qtimer.h>
+
 #include <kaccelbase.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <kshortcut.h>
 #include <klocale.h>
+#include <kshortcut.h>
 
 #include "kaccelprivate.h"
 
@@ -19,6 +21,7 @@
 KAccelPrivate::KAccelPrivate( KAccel* pParent )
 : KAccelBase( KAccelBase::QT_KEYS )
 {
+	//kdDebug(125) << "KAccelPrivate::KAccelPrivate( pParent = " << pParent << " ): this = " << this << endl;
 	m_pAccel = pParent;
 	m_bAutoUpdate = true;
 	connect( (QAccel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
@@ -32,7 +35,7 @@ void KAccelPrivate::setEnabled( bool bEnabled )
 
 bool KAccelPrivate::setEnabled( const QString& sAction, bool bEnable )
 {
-	kdDebug(125) << "KAccelPrivate::setEnabled( " << sAction << ", " << bEnable << " )" << endl;
+	kdDebug(125) << "KAccelPrivate::setEnabled( \"" << sAction << "\", " << bEnable << " ): this = " << this << endl;
 	KAccelAction* pAction = actionPtr( sAction );
 	if( !pAction )
 		return false;
@@ -51,6 +54,8 @@ bool KAccelPrivate::setEnabled( const QString& sAction, bool bEnable )
 
 bool KAccelPrivate::removeAction( const QString& sAction )
 {
+	// FIXME: I don't htink getID() contains any useful 
+	//  information.  Use mapIDToAction. --ellis, 2/May/2002
 	KAccelAction* pAction = actions().actionPtr( sAction );
 	if( pAction ) {
 		int nID = pAction->getID();
@@ -78,13 +83,16 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 	m_mapIDToAction[nID] = &action;
 	m_mapIDToKey[nID] = keyQt;
 
-	if( action.objSlotPtr() ) {
-		((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
-		if( !action.isEnabled() )
-			((QAccel*)m_pAccel)->setItemEnabled( nID, false );
+	if( action.objSlotPtr() && action.methodSlotPtr() ) {
+		if( QRegExp("\\(\\s*int\\s*\\)").search( action.methodSlotPtr() ) == -1 ) {
+			((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
+			if( !action.isEnabled() )
+				((QAccel*)m_pAccel)->setItemEnabled( nID, false );
+		}
 	}
 
 	kdDebug(125) << "KAccelPrivate::connectKey( \"" << action.name() << "\", " << key.key().toStringInternal() << " = 0x" << QString::number(keyQt,16) << " ): id = " << nID << " m_pObjSlot = " << action.objSlotPtr() << endl;
+	//kdDebug(125) << "m_pAccel = " << m_pAccel << endl;
 	return nID != 0;
 }
 
@@ -139,14 +147,43 @@ bool KAccelPrivate::disconnectKey( const KKeyServer::Key& key )
 void KAccelPrivate::slotKeyPressed( int id )
 {
 	kdDebug(125) << "KAccelPrivate::slotKeyPressed( " << id << " )" << endl;
+	if( m_mapIDToAction.contains( id ) ) {
+		KAccelAction* pAction = m_mapIDToAction[id];
+		QRegExp rxVal("\\{(.+)\\}");
+		rxVal.setMinimal( true );
+		kdDebug(125) << "pAction->name() = " << pAction->name() << endl;
+		if( rxVal.search( pAction->name() ) >= 0 ) {
+			kdDebug(125) << "pAction->methodSlotPtr() = " << pAction->methodSlotPtr() << endl;
+			if( QRegExp("\\(\\s*int\\s*\\)").search( pAction->methodSlotPtr() ) >= 0 ) {
+				int n = rxVal.cap(1).toInt();
+				kdDebug(125) << "rxVal.cap(0) = " << rxVal.cap(0) << ", rxVal.cap(1) = " << rxVal.cap(1) << ", n = " << n << endl;
+				connect( this, SIGNAL(activateInt(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+				emit activateInt( n );
+				disconnect( this, SIGNAL(activateInt(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+				return;
+			}
+		}
+	} 
 	if( m_mapIDToKey.contains( id ) ) {
+		KAccelAction* pAction = m_mapIDToAction[id];
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
 		QPopupMenu* pMenu = createPopupMenu( kapp->mainWidget(), seq );
-		connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
-		pMenu->exec();
-		disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
-		delete pMenu;
+
+		// If there was only one action mapped to this key,
+		//  and that action is not a multi-key shortcut,
+		//  then activated it without popping up the menu.
+		// This is needed for when there are multiple actions
+		//  with the same shortcut where all but one is disabled.
+		if( pMenu->count() == 1 && pAction->shortcut().contains( key ) ) {
+			int iAction = pMenu->idAt(0);
+			slotMenuActivated( iAction );
+		} else {
+			connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
+			pMenu->exec();
+			disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
+			delete pMenu;
+		}
 	}
 }
 
@@ -156,6 +193,7 @@ void KAccelPrivate::slotShowMenu()
 
 void KAccelPrivate::slotMenuActivated( int iAction )
 {
+	// TODO: take care of slot(int)
 	kdDebug(125) << "KAccelPrivate::slotMenuActivated( " << iAction << " )" << endl;
 	KAccelAction* pAction = actions().actionPtr( iAction );
 	if( pAction ) {
@@ -180,6 +218,8 @@ KAccel::KAccel( QWidget* watch, QObject* pParent, const char* psName )
 : QAccel( watch, pParent, (psName) ? psName : "KAccel-QAccel" )
 {
 	kdDebug(125) << "KAccel( watch = " << watch << ", pParent = " << pParent << ", psName = " << psName << " ): this = " << this << endl;
+	if( !watch )
+		kdDebug(125) << kdBacktrace() << endl;
 	d = new KAccelPrivate( this );
 }
 

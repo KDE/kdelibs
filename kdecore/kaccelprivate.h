@@ -31,6 +31,7 @@ class KAccelPrivate : public QObject, public KAccelBase
 
  signals:
 	void menuItemActivated();
+	void activateInt( int );
 
  private slots:
 	void slotKeyPressed( int id );
