@@ -556,6 +556,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
 #ifdef HAVE_GETMNTINFO
 
     struct statfs *mounted;
+    char    realpath_buffer[MAXPATHLEN];
 
     int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
 
@@ -569,11 +570,11 @@ bool KIO::probably_slow_mounted(const QString& filename)
             // succes, use result from realpath
             device_name = realpath_buffer;
 #ifdef __osf__
-        char * mounttype = "unknown";
+        char * mounttype = mnt_names[mounted[i].f_type];
 #else
         char * mounttype = mounted[i].f_fstypename;
 #endif
-        check_mount_point(mounted[i].f_mnttoname, mounttype, mounted[i].f_mntfromname,
+        check_mount_point(mounted[i].f_mntonname, mounttype, mounted[i].f_mntfromname,
                           realname, isauto, isslow,max);
     }
 
