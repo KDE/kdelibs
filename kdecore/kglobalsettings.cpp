@@ -30,11 +30,6 @@
 #include <kconfig.h>
 #include <kglobal.h>
 
-// kdebase/kcontrol/input/mousedefaults.h
-#define DEFAULT_SINGLECLICK true
-#define DEFAULT_AUTOSELECTDELAY -1
-#define DEFAULT_CHANGECURSOR true
-
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_templatesPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
@@ -51,21 +46,21 @@ bool KGlobalSettings::singleClick()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "KDE" );
-    return c->readBoolEntry("SingleClick", DEFAULT_SINGLECLICK);
+    return c->readBoolEntry("SingleClick", KDE_DEFAULT_SINGLECLICK);
 }
 
 bool KGlobalSettings::changeCursorOverIcon()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "KDE" );
-    return c->readBoolEntry("ChangeCursor", DEFAULT_CHANGECURSOR);
+    return c->readBoolEntry("ChangeCursor", KDE_DEFAULT_CHANGECURSOR);
 }
 
 int KGlobalSettings::autoSelectDelay()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "KDE" );
-    return c->readNumEntry("AutoSelectDelay", DEFAULT_AUTOSELECTDELAY);
+    return c->readNumEntry("AutoSelectDelay", KDE_DEFAULT_AUTOSELECTDELAY);
 }
 
 KGlobalSettings::Completion KGlobalSettings::completionMode()

@@ -21,6 +21,10 @@
 #include <qstring.h>
 class QColor;
 
+#define KDE_DEFAULT_SINGLECLICK true
+#define KDE_DEFAULT_AUTOSELECTDELAY -1
+#define KDE_DEFAULT_CHANGECURSOR true
+
 /**
  * Access the KDE global configuration.
  *
