@@ -31,14 +31,13 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
     left=files;
     files->setOperator(this);
 
-    previewBase=new QWidget((QSplitter*)this, "previewBase");
-    preview=new QWidget(previewBase, "preview");
+    preview=new QWidget((QSplitter*)this, "preview");
     QString tmp=i18n("Sorry, no preview available.");
     QLabel *l=new QLabel(tmp, preview);
     l->setMinimumSize(l->sizeHint());
     l->move(10, 5);
     preview->setMinimumWidth(l->sizeHint().width()+20);
-    setResizeMode(previewBase, QSplitter::KeepSize);
+    setResizeMode(preview, QSplitter::KeepSize);
     deleted=false;
     previewMode=false;
 }
@@ -48,8 +47,6 @@ KFilePreview::~KFilePreview() {
         delete preview;
         preview=0L;
     }
-    delete previewBase;
-    previewBase=0L;
 }
 
 void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u) {
@@ -61,20 +58,18 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u) {
     }
     else {
         previewMode=false;
-        previewBase->hide();
+        preview->hide();
         return;
     }
 
     if(preview) {
         deleted=true;
         delete preview;
-        //QApplication::sendPostedEvents(this, QEvent::ChildRemoved);
     }
     preview=const_cast<QWidget*>(w);
-    preview->recreate(previewBase, 0, QPoint(0, 0), true);
+    preview->reparent((QSplitter*)this, 0, QPoint(0, 0), true);
     preview->resize(preview->sizeHint());
     preview->show();
-    previewBase->show();
     emit showPreview(u);
 }
 

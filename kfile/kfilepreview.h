@@ -78,7 +78,6 @@ protected slots:
 private:
     bool deleted, previewMode;
     KFileView *left;
-    QWidget *previewBase;
     QWidget *preview;
 };
 #endif
