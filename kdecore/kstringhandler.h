@@ -183,7 +183,7 @@ public:
      * Patterns with two asterisks like "*.*pk" are not supported.
      */
     static bool matchFileName( const QString& filename, const QString& pattern );
-      
+
     /**
      * Split a QString into a QStringList in a similar fashion to the static
      * QStringList function in Qt, except you can specify a maximum number
@@ -235,6 +235,12 @@ public:
     static QStringList perlSplit
       (const QRegExp & sep, const QString & s, uint max = 0);
 
+    /**
+     * This method auto-detects URLs in strings, and adds HTML markup to them
+     * so that richtext or HTML-enabled widgets (such as KActiveLabel)
+     * will display the URL correctly.
+     */
+    static QString tagURLs( const QString& text );
 
 #ifdef KDE_NO_COMPAT
 private:

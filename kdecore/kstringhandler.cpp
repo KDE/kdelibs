@@ -458,7 +458,7 @@ KStringHandler::perlSplit(const QString & sep, const QString & s, uint max)
   return l;
 }
 
-  QStringList 
+  QStringList
 KStringHandler::perlSplit(const QChar & sep, const QString & s, uint max)
 {
   bool ignoreMax = 0 == max;
@@ -511,3 +511,22 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, uint max)
   return l;
 }
 
+ QString
+KStringHandler::tagURLs( const QString& text )
+{
+    /*static*/ QRegExp urlEx("(www\\.|(f|ht)tp(|s)://)[\\d\\w./,:_~\\?=&;#-]+[\\d\\w/]");
+
+    QString richText( text );
+    int urlPos = 0, urlLen;
+    while ((urlPos = urlEx.search(richText, urlPos)) >= 0)
+    {
+        urlLen = urlEx.matchedLength();
+        QString href = richText.mid( urlPos, urlLen );
+        QString anchor( "<a href=\"%1\">%2</a>" );
+        anchor = anchor.arg( href ).arg( href );
+        richText.replace( urlPos, urlLen, anchor );
+
+        urlPos += anchor.length();
+    }
+    return richText;
+}
