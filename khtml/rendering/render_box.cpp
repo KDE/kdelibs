@@ -22,9 +22,7 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-//#define DEBUG
 //#define DEBUG_LAYOUT
-//#define PAR_DEBUG
 
 #include "dom_string.h"
 
@@ -242,7 +240,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             // make sure that the pixmap is tiled correctly
             // because we clip the tiling to the visible area (for speed reasons)
             if(bg->pixmap_size().height())
-                sy = clipy % bg->pixmap_size().height();
+                sy = (clipy - _ty) % bg->pixmap_size().height();
         }
 
         switch(bgr) {

@@ -433,21 +433,31 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (r.isNull()) return r;
 
     if (bg)
-       return *bg;
+        return *bg;
 
     if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT) || newc != bgColor)
     {
-       QSize s(pixmap_size());
-       int w = ((BGMINWIDTH  / s.width())+1) * s.width();
-       int h = ((BGMINHEIGHT / s.height())+1) * s.height();
+        bool isvalid = newc.isValid();
+        QSize s(pixmap_size());
+        int w = ((BGMINWIDTH  / s.width())+1) * s.width();
+        int h = ((BGMINHEIGHT / s.height())+1) * s.height();
 
-       bg = new QPixmap(w, h);
-       QPixmap pix = pixmap();
-       QPainter p(bg);
-       p.fillRect(0, 0, w, h, newc);
-       p.drawTiledPixmap(0, 0, w, h, pix);
+        bg = new QPixmap(w, h);
+        QPixmap pix = pixmap();
+        QPainter p(bg);
+        if(isvalid) p.fillRect(0, 0, w, h, newc);
+        p.drawTiledPixmap(0, 0, w, h, pix);
+        if(!isvalid && pix.mask())
+        {
+            // unfortunately our avoid transparency trick doesn't work here
+            // we need to create a mask.
+            QBitmap newmask(w, h);
+            QPainter pm(&newmask);
+            pm.drawTiledPixmap(0, 0, w, h, *pix.mask());
+            bg->setMask(newmask);
+        }
 
-       return *bg;
+        return *bg;
     }
 
     return r;
