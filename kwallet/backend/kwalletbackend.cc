@@ -353,7 +353,7 @@ int KWalletBackend::lock(QByteArray& password) {
 
 	wholeFile.fill(0);
 
-	return -1;
+	return 0;
 }
 
 
