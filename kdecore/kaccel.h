@@ -540,7 +540,7 @@ class KAccel : public QAccel
 
 	// When bUseFourModifierKeys is on (setting: Global|Keyboard|Use Four Modifier Keys = true | false)
 	//  calls to insertItem will set the current key to aDefaultKeyCode4.
-	static bool useFourModifierKeys()		{ return bUseFourModifierKeys; }
+	static bool useFourModifierKeys();
 	static void useFourModifierKeys( bool b );
 	static bool qtSupportsMetaKey();
 
@@ -625,10 +625,6 @@ signals:
 	bool bGlobal;
 	QString aGroup;
 
-	// Indicate whether to default to the 3- or 4- modifier keyboard schemes
-	// This variable should also be moved into a class along with the
-	// X11-related key functions above.
-	static bool bUseFourModifierKeys;
  private:
         KAccelPrivate *d;
 };

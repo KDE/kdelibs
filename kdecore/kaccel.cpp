@@ -42,8 +42,6 @@
 #include <X11/keysymdef.h>
 #include <ctype.h>
 
-bool KAccel::bUseFourModifierKeys = false;
-
 KKey::KKey( const XEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventXToKeyQt( pEvent ); }
 KKey::KKey( const QKeyEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventQtToKeyQt( pEvent ); }
 KKey::KKey( const QString& keyStr )	{ m_keyCombQt = KAccel::stringToKey( keyStr ); }
@@ -553,10 +551,35 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
             (*it).menu = 0;
 }
 
+// Indicate whether to default to the 3- or 4- modifier keyboard schemes
+// This variable should also be moved into a class along with the
+// X11-related key functions below.
+static int g_bUseFourModifierKeys = -1;
+
+bool KAccel::useFourModifierKeys()
+{
+	if( g_bUseFourModifierKeys == -1 ) {
+		// Read in whether to use 4 modifier keys
+		KConfigGroupSaver cgs( KGlobal::config(), "Keyboard Layout" );
+		QString fourMods = KGlobal::config()->readEntry( "Use Four Modifier Keys", KAccel::keyboardHasMetaKey() ? "true" : "false" );
+		g_bUseFourModifierKeys = (fourMods == "true") && keyboardHasMetaKey();
+	}
+	return g_bUseFourModifierKeys == 1;
+}
+
 void KAccel::useFourModifierKeys( bool b )
 {
-	bUseFourModifierKeys = b && keyboardHasMetaKey();
-	kdDebug(125) << "bUseFourModifierKeys = " << bUseFourModifierKeys << endl;
+	if( g_bUseFourModifierKeys != (int)b ) {
+		g_bUseFourModifierKeys = b && keyboardHasMetaKey();
+		// If we're 'turning off' the meta key or, if we're turning it on,
+		//  the keyboard must actually have a meta key.
+		if( b && !keyboardHasMetaKey() )
+			kdDebug(125) << "Tried to use four modifier keys on a keyboard layout without a Meta key.\n";
+	}
+	KConfigGroupSaver cgs( KGlobal::config(), "Keyboard Layout" );
+	KGlobal::config()->writeEntry( "Use Four Modifier Keys", g_bUseFourModifierKeys ? "true" : "false", true, true );
+
+	kdDebug(125) << "bUseFourModifierKeys = " << g_bUseFourModifierKeys << endl;
 }
 
 bool KAccel::qtSupportsMetaKey()
