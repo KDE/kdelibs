@@ -2,7 +2,6 @@
 Type=G3
 Header=II
 Name=g3 fax files
-Name[af]=G3 FAKS LêERS
 Name[az]=g3 faks faylları
 Name[bg]=Факс файл g3
 Name[br]=RestroÃ¹ pelleiler g3
@@ -46,8 +45,8 @@ Name[ta]=g3 ¦¾¡¨Ä¿¸Ä¢ì §¸¡ôÒì¸û
 Name[tr]=g3 faks dosyaları
 Name[uk]=Файли факсу g3
 Name[vi]=File g3 fax 
+Name[xh]=iifayile zefax g3
 Name[zh_CN.GB2312]=g3 传真文件
-Name[zh_TW.Big5]=g3 傳真檔案
 Read=true
 Write=false
 Suffices=g3,G3,

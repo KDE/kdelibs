@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Bibliographic Data (bibtex)
-Comment[af]=BIBLIOGRAFIESE DATA (BIBTEKS)
 Comment[az]=Biblioqrafik Verilən (bibtex)
 Comment[bg]=Библиографични данни (bibtex)
 Comment[ca]=Dades bibliogràfiques (bibtex)
@@ -23,7 +22,7 @@ Comment[lt]=Bibliografiniai duomenys (bibtex)
 Comment[lv]=Bibliogrāfiski Dati (bibtex)
 Comment[mt]=Dta Bibljografika (bibtex)
 Comment[nl]=Bibliografische gegevens (bibtex)
-Comment[no]=Bibliografisk data (bibtex)
+Comment[no]=Bibliografiske data (bibtex)
 Comment[no_NY]=Bibliografisk data (bibtex)
 Comment[pl]=Dane bibliograficzne (bibtex)
 Comment[pt_BR]=Dados bibliográficos (bibtex)
@@ -37,6 +36,7 @@ Comment[ta]=¯º¡òÐ¨½ò ¾Ã×¸û (bibtex)
 Comment[tr]=Bibliografik Veri (bibtex)
 Comment[uk]=Бібліографічні дані (bibtex)
 Comment[vi]=Dữ liệu kiểu thư mục(bibtext) 
+Comment[xh]=Idata yoluhlu lweencwadi zoMbhali nawuphi na (bibtex)
 Icon=tex
 MimeType=text/x-bibtex
 Patterns=*.bib

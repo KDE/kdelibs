@@ -5,4 +5,8 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
+<!ENTITY kcontrolcenter "<application>Centro de Controlo &kde;</application>">
+<!ENTITY ie "ie">
+<!ENTITY etc "etc">
+<!ENTITY eg "eg">
 

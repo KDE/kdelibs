@@ -220,7 +220,9 @@ void KDirOperator::setPreviewWidget(const QWidget *w)
     delete myPreview;
     myPreview = w;
 
-    myActionCollection->action( "preview" )->setEnabled( w != 0L );
+    KToggleAction *preview = static_cast<KToggleAction*>(myActionCollection->action("preview"));
+    preview->setEnabled( w != 0L );
+    preview->setChecked( w != 0L );
     setView( static_cast<KFile::FileView>(viewKind) );
 }
 

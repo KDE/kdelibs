@@ -2,7 +2,6 @@
 Type=ICO
 Header=^\001\001
 Name=MSWindows Icons
-Name[af]=MSWINDOWS IKOONE
 Name[az]=MSWindows Timsalları
 Name[bg]=Икони на MSWindows
 Name[cs]=Ikony MS Windows
@@ -38,8 +37,8 @@ Name[ta]=MSWindows ÌÚõÀ¼í¸û
 Name[tr]=MSWindows Simgeleri
 Name[uk]=Піктограми MSWindows
 Name[vi]=Icon của MSWindows 
+Name[xh]=MSWindows icons
 Name[zh_CN.GB2312]=MSWindows 图标
-Name[zh_TW.Big5]=MSWindows 圖示
 Read=true
 Write=true
 Suffices=ico,ICO

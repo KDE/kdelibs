@@ -1,6 +1,5 @@
 [Misc]
 Name=Qt Platinum
-Name[af]=QT PLATINUM
 Name[az]=Qt Platin
 Name[ca]=Qt Platí
 Name[da]=Qt Platin
@@ -19,8 +18,8 @@ Name[pl]=Qt Platyna
 Name[sl]=Platinasti Qt
 Name[sr]=QT Platinum
 Name[tr]=Qt Platin
+Name[xh]=Qt Isinyithi esinzima esinexabiso esibusiliva namhlophe
 Comment=Built-in unthemed Platinum style
-Comment[af]=INGEBOUDE ONGETEMADE PLATINUM STYL
 Comment[az]=Yerləşmiş, örtüsüz Platin tərzi
 Comment[bg]=Вграден в Qt стил без тема Platinum
 Comment[br]=Giz Platinum enframmet anwisket
@@ -62,7 +61,7 @@ Comment[ta]=¯ûÇ¨Áó¾ ¯Õ¸ÕÅ¢øÄ¡ Platinum À¡ó¾õ
 Comment[tr]=Yerleşik, temasız Platin stili
 Comment[uk]=Вбудований стиль Platinum без теми
 Comment[vi]=Kiểu Platinum chưa dùng theme có sẵn 
+Comment[xh]=Yakhelwe-kuhlobo lwesinyithi esinzima esinexabiso esibusiliva namlophe esingenamxholo wakuxoxwa
 Comment[zh_CN.GB2312]=内建的无主题 Platinum 风格
-Comment[zh_TW.Big5]=內建的非主題式白金風格
 [KDE]
 widgetStyle=Platinum

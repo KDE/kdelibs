@@ -1,3 +1,34 @@
+kdelibs (4:2.2.1-1) unstable; urgency=low
+ 
+  * New upstream version
+  * Move artsc-config into -dev package (Closes: #109973)
+  * Priority set to extra for -alsa packages
+  * Do NOT build with Xinerama support due to the library being static
+    and that whole PIC/non-PIC so thing. 
+  * Fix ctrl+s (Closes: #110694)
+  * Don't need to build with gcc3 for alpha anymore, however we still
+    need to build with -O0
+  * Provide undocumented links (Closes: #94280)
+  * Fixes printing (Closes: #108301, #111388, #109930)
+  * Fix shlibs for alsa packages (Closes: #111640, #110159)
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 07 Sep 2001 12:10:00 -0700
+
+kdelibs (4:2.2.0-final-3) unstable; urgency=low
+ 
+  * Sync with upstream
+  * Fix a couple more deps/build-deps
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 22 Aug 2001 10:59:00 -0700
+
+kdelibs (4:2.2.0-final-2) unstable; urgency=low
+ 
+  * update build-depends for i386
+  * Updated translation bits
+  * sync with upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 19 Aug 2001 00:01:00 -0700
+
 kdelibs (4:2.2.0-final-1) unstable; urgency=low
  
   * New upstream version 2.2
@@ -1153,7 +1184,3 @@ kdelibs (970920-1) unstable; urgency=low
 
  -- Andreas Jellinghaus <aj@debian.org>  Sat, 20 Sep 1997 09:59:48 +0200
 
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "aj@debian.org"
-End:

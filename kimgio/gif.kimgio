@@ -2,7 +2,6 @@
 Type=GIF
 Header=
 Name=GIF-Pictures
-Name[af]=GIF-PRENTE
 Name[az]=GIF-Rəsmlər
 Name[bg]=GIF Каринки
 Name[br]=SkeudennoÃ¹ GIF
@@ -46,8 +45,8 @@ Name[ta]=GIF-À¼í¸û
 Name[tr]=GIF-Resimler
 Name[uk]=Малюнки GIF
 Name[vi]=Ảnh GIF 
+Name[xh]=Imifanekiso-GIF
 Name[zh_CN.GB2312]=GIF 图片
-Name[zh_TW.Big5]=GIF-影像
 Read=true
 Write=false
 Suffices=gif,GIF

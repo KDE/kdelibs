@@ -14,14 +14,9 @@ KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CXX=g++-3.0 CC=gcc-3.0 CFLAGS=-mieee CXXFLAGS=-mieee
+  COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
 else
   COMPILER_FLAGS=CXX=g++ CC=gcc
-endif
-ifeq ($(ARCH),hppa)
-  XINERAMA=
-else
-  XINERAMA=--with-xinerama
 endif
 ifeq ($(ARCH),i386)
   OBJPRELINK=--enable-objprelink
@@ -42,11 +37,11 @@ build-stamp:
 	if test ! -f configure; then \
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
-	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	$(COMPILER_FLAGS) \
+	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
-	--disable-cups $(XINERAMA) $(OBJPRELINK)
+	--disable-cups $(OBJPRELINK)
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
@@ -60,7 +55,7 @@ alsa-stamp:
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
-		--includedir=/usr/include/kde
+		--includedir=/usr/include/kde $(OBJPRELINK)
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
 	$(MAKE) -C kdeprint/cups 
@@ -186,9 +181,9 @@ binary-arch:  build install
 	dh_installdeb -a
 	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
 	echo -n `cat debian/libarts.substvars ` > debian/libarts-alsa.substvars
-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libarts-alsa.substvars
+	echo ", libasound1 (>= 0.5.5)" >> debian/libarts-alsa.substvars
 	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libkmid-alsa.substvars
+	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid-alsa.substvars
 	dh_gencontrol 
 	dh_md5sums 
 	dh_builddeb -a

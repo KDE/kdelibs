@@ -1,0 +1,1491 @@
+--- kdelibs-crypto-2.2.0-final.orig/Makefile.am
++++ kdelibs-crypto-2.2.0-final/Makefile.am
+@@ -18,10 +18,9 @@
+ #    Boston, MA 02111-1307, USA.
+ 
+ 
+-COMPILE_FIRST = dcop libltdl kdecore kdeui kdesu kssl kjs kio kimgio kfile kparts kdeprint libkmid kconf_update 
+-COMPILE_LAST = doc
++COMPILE_FIRST = libltdl kssl kio
+ 
+-SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS) $(COMPILE_LAST)
++SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS) 
+ 
+ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
+ 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
+--- kdelibs-crypto-2.2.0-final.orig/configure.in.in
++++ kdelibs-crypto-2.2.0-final/configure.in.in
+@@ -151,25 +151,25 @@
+ AC_SUBST(LIBRESOLV)
+ AC_SUBST(LIBICE)
+ 
+-LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la'
++LIB_KDECORE='/usr/lib/libkdecore.la'
+ AC_SUBST(LIB_KDECORE)
+-LIB_KDEUI='$(top_builddir)/kdeui/libkdeui.la'
++LIB_KDEUI='/usr/lib/libkdeui.la'
+ AC_SUBST(LIB_KDEUI)
+-LIB_KFORMULA='$(top_builddir)/kformula/libkformula.la'
++LIB_KFORMULA='/usr/lib/libkformula.la'
+ AC_SUBST(LIB_KFORMULA)
+-LIB_KIO='$(top_builddir)/kio/libkio.la'
++LIB_KIO='/usr/lib/libkio.la'
+ AC_SUBST(LIB_KIO)
+-LIB_KSYCOCA='$(top_builddir)/kio/libksycoca.la'
++LIB_KSYCOCA='/usr/lib/libksycoca.la'
+ AC_SUBST(LIB_KSYCOCA)
+-LIB_KFILE='$(top_builddir)/kfile/libkfile.la'
++LIB_KFILE='/usr/lib/libkfile.la'
+ AC_SUBST(LIB_KFILE)
+-LIB_KPARTS='$(top_builddir)/kparts/libkparts.la'
++LIB_KPARTS='/usr/lib/libkparts.la'
+ AC_SUBST(LIB_KPARTS)
+-LIB_KAB='$(top_builddir)/kab/libkab.la'
++LIB_KAB='/usr/lib/libkab.la'
+ AC_SUBST(LIB_KAB)
+-LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
++LIB_KHTML='/usr/lib/libkhtml.la'
+ AC_SUBST(LIB_KHTML)
+-LIB_DCOP='$(top_builddir)/dcop/libDCOP.la'
++LIB_DCOP='/usr/lib/libDCOP.la'
+ AC_SUBST(LIB_DCOP)
+ LIB_KSSL='$(top_builddir)/kssl/libkssl.la'
+ AC_SUBST(LIB_KSSL)
+@@ -212,8 +212,8 @@
+ AC_SUBST(ICE_SUBDIR)
+ AC_SUBST(ICE_RLIB)
+ 
+-DCOPIDL='$(top_builddir)/dcop/dcopidl/dcopidl'
+-DCOPIDL2CPP='$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp'
++DCOPIDL='/usr/bin/dcopidl'
++DCOPIDL2CPP='/usr/bin/dcopidl2cpp'
+ AC_SUBST(DCOPIDL)
+ AC_SUBST(DCOPIDL2CPP)
+ 
+--- kdelibs-crypto-2.2.0-final.orig/debian/CVS/Entries
++++ kdelibs-crypto-2.2.0-final/debian/CVS/Entries
+@@ -1,44 +1,41 @@
+ D/dh-make////
+-/.cvsignore/1.1/Tue Jun  5 18:12:46 2001//TKDE_2_2_BRANCH
+-/Packaging.txt/1.4/Fri May 11 16:01:12 2001//TKDE_2_2_BRANCH
+-/README.debian/1.16/Fri May 11 16:00:53 2001//TKDE_2_2_BRANCH
+-/changelog/1.196/Mon Aug  6 02:37:11 2001//TKDE_2_2_BRANCH
+-/control/1.173/Fri Aug  3 06:54:29 2001//TKDE_2_2_BRANCH
+-/copyright/1.5/Fri Apr 20 22:25:37 2001//TKDE_2_2_BRANCH
+-/debian.diff/1.8/Fri Aug  3 17:39:45 2001//TKDE_2_2_BRANCH
+-/kde.pamd/1.7/Mon Jul 16 22:15:14 2001//TKDE_2_2_BRANCH
+-/kdelibs-dev.dirs/1.1/Sat Jun 30 18:32:06 2001//TKDE_2_2_BRANCH
+-/kdelibs-dev.docs/1.2/Mon Apr  9 21:58:58 2001//TKDE_2_2_BRANCH
+-/kdelibs-dev.files/1.6/Wed Jul 18 05:05:39 2001//TKDE_2_2_BRANCH
+-/kdelibs-dev.postrm/1.3/Fri Aug  3 05:34:10 2001//TKDE_2_2_BRANCH
+-/kdelibs3-cups.files/1.6/Sat Jun 30 19:14:41 2001//TKDE_2_2_BRANCH
+-/kdelibs3-cups.menu/1.1/Fri Apr 13 06:39:06 2001//TKDE_2_2_BRANCH
+-/kdelibs3-cups.override/1.7/Fri Jun  8 16:59:56 2001//TKDE_2_2_BRANCH
+-/kdelibs3.dirs/1.6/Sat Jun 30 19:14:41 2001//TKDE_2_2_BRANCH
+-/kdelibs3.docs/1.1/Fri Apr 20 23:29:46 2001//TKDE_2_2_BRANCH
+-/kdelibs3.links/1.9/Fri May 11 06:05:18 2001//TKDE_2_2_BRANCH
+-/kdelibs3.postinst/1.10/Mon Jul 16 22:15:14 2001//TKDE_2_2_BRANCH
+-/kdelibs3.postrm/1.2/Thu May 31 14:52:59 2001//TKDE_2_2_BRANCH
+-/kdelibs3.preinst/1.13/Fri May 11 16:00:37 2001//TKDE_2_2_BRANCH
+-/kdelibs3.prerm/1.4/Mon Jul 16 22:15:14 2001//TKDE_2_2_BRANCH
+-/libarts-alsa.dirs/1.1/Fri Apr 13 08:30:55 2001//TKDE_2_2_BRANCH
+-/libarts-alsa.docs/1.2/Tue Apr 10 15:50:56 2001//TKDE_2_2_BRANCH
+-/libarts-alsa.files/1.2/Thu May  3 21:49:35 2001//TKDE_2_2_BRANCH
+-/libarts-alsa.shlibs/1.20/Mon Jul 30 06:12:55 2001//TKDE_2_2_BRANCH
+-/libarts-dev.files/1.7/Mon Apr 23 17:10:14 2001//TKDE_2_2_BRANCH
+-/libarts.doc/1.2/Tue Apr 10 00:33:02 2001//TKDE_2_2_BRANCH
+-/libarts.docs/1.3/Tue Apr 10 15:50:57 2001//TKDE_2_2_BRANCH
+-/libarts.files/1.16/Thu May  3 21:49:35 2001//TKDE_2_2_BRANCH
+-/libarts.shlibs/1.26/Mon Jul 30 06:12:55 2001//TKDE_2_2_BRANCH
+-/libkmid-alsa.dirs/1.1/Fri Apr 13 08:30:55 2001//TKDE_2_2_BRANCH
+-/libkmid-alsa.files/1.2/Thu May  3 21:49:35 2001//TKDE_2_2_BRANCH
+-/libkmid-alsa.shlibs/1.10/Tue May 29 04:15:58 2001//TKDE_2_2_BRANCH
+-/libkmid-dev.files/1.3/Mon Apr 23 17:10:14 2001//TKDE_2_2_BRANCH
+-/libkmid.files/1.6/Thu May  3 21:49:35 2001//TKDE_2_2_BRANCH
+-/libkmid.shlibs/1.10/Tue May 29 04:15:58 2001//TKDE_2_2_BRANCH
+-/kdelibs3.override/1.42.2.1/Tue Aug  7 07:29:00 2001//TKDE_2_2_BRANCH
+-/libarts-alsa.override/1.11.2.1/Tue Aug  7 07:29:00 2001//TKDE_2_2_BRANCH
+-/libarts.override/1.12.2.1/Tue Aug  7 07:29:00 2001//TKDE_2_2_BRANCH
+-/libkmid-alsa.override/1.10.2.1/Tue Aug  7 07:29:00 2001//TKDE_2_2_BRANCH
+-/libkmid.override/1.10.2.1/Tue Aug  7 07:29:00 2001//TKDE_2_2_BRANCH
+-/rules/1.191.2.1/Tue Aug  7 07:29:01 2001//TKDE_2_2_BRANCH
++/README.debian/1.10/Mon Apr  9 21:58:57 2001//
++/postinst/1.27/Mon Apr  9 21:58:58 2001//
++/changelog/1.131/Wed Apr 11 03:07:01 2001//
++/control/1.112/Wed Apr 11 02:56:04 2001//
++/rules/1.133/Wed Apr 11 03:06:47 2001//
++/kde.pamd/-1.5/dummy timestamp//
++/kdelibs-dev.docs/-1.2/dummy timestamp//
++/kdelibs-dev.files/-1.1/dummy timestamp//
++/kdelibs3.override/-1.23/dummy timestamp//
++/kdelibs3.shlibs/-1.19/dummy timestamp//
++/libarts-alsa.docs/-1.2/dummy timestamp//
++/libarts-alsa.override/-1.7/dummy timestamp//
++/libarts-alsa.postinst/-1.1/dummy timestamp//
++/libarts-alsa.shlibs/-1.11/dummy timestamp//
++/libarts-dev.files/-1.4/dummy timestamp//
++/libarts.doc/-1.2/dummy timestamp//
++/libarts.docs/-1.3/dummy timestamp//
++/libarts.files/-1.9/dummy timestamp//
++/libarts.override/-1.8/dummy timestamp//
++/libarts.postinst/-1.1/dummy timestamp//
++/libarts.shlibs/-1.17/dummy timestamp//
++/libkmid-alsa.override/-1.5/dummy timestamp//
++/libkmid-alsa.postinst/-1.1/dummy timestamp//
++/libkmid-alsa.shlibs/-1.6/dummy timestamp//
++/libkmid-dev.files/-1.1/dummy timestamp//
++/libkmid.files/-1.2/dummy timestamp//
++/libkmid.override/-1.5/dummy timestamp//
++/libkmid.postinst/-1.1/dummy timestamp//
++/libkmid.shlibs/-1.6/dummy timestamp//
++/docs/-1.4/dummy timestamp//
++/debian.diff/-1.2/dummy timestamp//
++/Packaging.txt/-1.2/dummy timestamp//
++/shlibs/0/dummy timestamp//
++/kdelibs3-crypto.override/0/dummy timestamp//
++/postrm/-1.4/dummy timestamp//
++/preinst/-1.18/dummy timestamp//
++/prerm/-1.6/dummy timestamp//
++/kdelibs3-crypto.postrm/0/dummy timestamp//
++/kdelibs3-crypto.preinst/0/dummy timestamp//
++/copyright/1.5/Result of merge+Tue Aug  7 07:13:41 2001//TKDE_2_2_BRANCH
+--- kdelibs-crypto-2.2.0-final.orig/debian/changelog
++++ kdelibs-crypto-2.2.0-final/debian/changelog
+@@ -1,454 +1,232 @@
+-kdelibs (4:2.2.0-final-1) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-final-1) unstable; urgency=low
+  
+   * New upstream version 2.2
+-  * Build with objprelink for i386
+-  * update build-depends
+-  * do not build with xinerama support for hppa
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 04 Aug 2001 02:30:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 30 Jul 2001 00:01:00 -0700
+ 
+-kdelibs (4:2.2.0-0.1beta1-2) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-0beta1-7) unstable; urgency=low
+  
+-  * synce with upstream
+-  * more https related fixes
+-  * Fix shlibs
+-  * Fix build issues with new libxml2-dev (Closes: #106766)
+-  * fix postrm of kdelibs-dev
++  * sync with upstream
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 27 Jul 2001 12:18:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 27 Jul 2001 16:15:00 -0700
+ 
+-kdelibs (4:2.2.0-0.1beta1-1) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-0beta1-6) unstable; urgency=low
+  
+-  * synce with upstream
+-  * Drop optimization down for cross arch building
+-  * Move libkscreensaver.so over to -dev package where it belongs
++  * grrr...fix ssl
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 25 Jul 2001 03:35:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 26 Jul 2001 17:00:00 -0700
+ 
+-kdelibs (4:2.2.0-0beta1-6) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-0beta1-5) unstable; urgency=low
+  
+-  * synce with upstream
+-  * Update debhelper templates for alpha build bits
+-  * Update/Clean/Fix various dependency issues
+- 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 08 Jul 2001 00:53:00 -0700
+-
+-kdelibs (4:2.2.0-0beta1-5) unstable; urgency=low
+- 
+-  * synce with upstream
+-  * Add -mieee for Alpha builds
+-  * Add Recommends for aspell | ispell
+- 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 07 Jul 2001 00:57:00 -0700
+-
+-kdelibs (4:2.2.0-0beta1-4) unstable; urgency=low
+- 
+-  * synce with upstream
+-  * Remove old pam bit (Closes: #103493)
+-  * Fix http proxy support
+-  * More js fixes
+-  * Update standards version
+-  * Re-establish shlibs for libarts (Closes: #103655)
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 04 Jul 2001 14:37:00 -0700
+-
+-kdelibs (4:2.2.0-0beta1-3) unstable; urgency=low
+- 
+-  * Fix description (Closes: #103206)
+   * Sync with upstream
+-  * Update build-depends
+-  * don't compress .bz2 files (Closes: #103262)
+-  * Use dpkg-divert instead of alternatives
+- 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 02 Jul 2001 13:18:00 -0700
+-
+-kdelibs (4:2.2.0-0beta1-2) unstable; urgency=low
+- 
+-  * Move over a cups file that didn't get into -cups package
+-  * Fix alsa-stamp build location
+-  * Change kdelibs3-cups depends on kdebase-libs to a recommends
+-  * More upstream fixes
+-  * Fix overwrites (Closes: #102857)
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 29 Jun 2001 13:18:00 -0700
++  * Update Build-Depends
++  * Fix postinst (Closes: #106017)
+ 
+-kdelibs (4:2.2.0-0beta1-1) unstable; urgency=low
++ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 20 Jul 2001 00:53:00 -0700
+ 
+-  * Fix mips build (Closes: #102007)
+-  * Fix postinst stuff
+-  * New upstream CVS pull (post alpha2)
+-  * 2.2 beta 1
+-  * Remove old .shlibs files
+-  * Moving to -cvs{date] format for entering into experimental
+-  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  The
+-    date listed in the version number states when the initial pull was made
+-    however updates may and most likely will have taken place since that
+-    date.  Look at it as a >= cvs{date}
+-  * More arts cleanup
+-  * Adding artsbuilder to the suggests for libarts/libarts-alsa
+-  * Includes /tmp security fix
+-  * Updated Build-Depends/Depends for docbook stuff
+-  * More cleanup in debian/rules
+-  * move artsmessage into libarts package where it belongs
+-  * Update copyright information
+-  * more build cleanup...moving to debhelper version 3
+-  * Move dh_make files into kdelibs-dev package where they were supposed to be
+-  * Move more includes from kdelibs3 to kdelibs-dev ... new stuff I missed
+-  * More more cups bits out of kdelibs3 and into kdelibs3-cups
+-  * Reseting all lintian overrides
+-  * Add flex to build-depends as well as other deps
+-  * Add Debian menu items: cupsdconf
+-  * New packages: kdelibs3-cups
+-  * Moving kdoc and qt-doc into Build-Depends-Indep
+-  * Add Provides in for libarts-alsa/libkmid-alsa
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 22 Jun 2001 06:30:00 -0700
+-
+-kdelibs (4:2.1.1-7) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-0beta1-4) unstable; urgency=low
+  
+-  * Adding in a dh-make template tree under /usr/share/doc/kdelibs-dev/dh-make
+-    It is for a single binary package.  
+-  * Update README
+-  * Remove old undocumented.in bits since it's now pointless
+- 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Apr 2001 03:00:00 -0700
+-
+-kdelibs (4:2.1.1-6) unstable; urgency=low
++  * Sync with upstream
++  * More alpha build fixes
+  
+-  * Sync with upstream.
+-    Locale updates
+-    More http fixes
+-  * Update build-depends to include real | virtual
+-  * Adding in a Packaging.txt document to kdelibs-dev the goal of which is to
+-    answer any question one might have about packaging a KDE app for Debian.
+-  * Fixing docs file for libarts
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Apr 2001 03:00:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 07 Jul 2001 04:12:00 -0700
+ 
+-kdelibs (4:2.1.1-5) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-0beta1-3) unstable; urgency=low
+  
+-  * Sync with upstream.
+-    Several more http fixes
+-  * Removing old AA bits 
++  * Sync with upstream
++  * Pre-Depends on kdelibs3 (>= 4:2.2.0-0beta1-4) so that we can use
++    dpkg-divert properly. (Closes: #103560)
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 07 Apr 2001 04:33:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 04 Jul 2001 20:06:00 -0700
+ 
+-kdelibs (4:2.1.1-4) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-0beta1-2) unstable; urgency=low
+  
+-  * Sync with upstream.
+-    Proxy Authentication fix...round 2.
+-  * Oh..and Happy Birthday to my wife Audra.  :)
++  * Even better fixes for the ssl probs
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 04 Apr 2001 18:04:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 03 Jul 2001 15:17:00 -0700
+ 
+-kdelibs (4:2.1.1-3) unstable; urgency=low
++kdelibs-crypto (4:2.2.0-0beta1-1) unstable; urgency=low
+  
+-  * Sync with upstream.  
+-    Includes several khtml fixes
+-    Memory leak fix
+-    Proxy Authentication fix
+-  * Update pam file for kde, add more documentation in it and modify defaults
++  * sync with upstream
++  * Use dpkg-divert instead of alternatives
++  * Hard code libssl.so.0.9.6 and libcrypto.so.0.9.6 instead of libssl.so and
++    libcrypto.so. (Closes: #103099)
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 03 Apr 2001 10:18:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 03 Jul 2001 01:00:00 -0700
+ 
+-kdelibs (4:2.1.1-2) unstable; urgency=low
++kdelibs-crypto (4:2.2-cvs20010622-3) unstable; urgency=low
+  
+-  * 2 birds with 1 debuild.  
+-    Rebuild against older libc6
+-    Couple upstream fixes in kjs
++  * sync with upstream
++  * fix for mips build
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 13:39:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 29 Jun 2001 20:00:00 -0700
+ 
+-kdelibs (4:2.1.1-1) unstable; urgency=low
++kdelibs-crypto (4:2.2-cvs20010622-2) unstable; urgency=low
+  
+-  * New upstream release
+-  * Dropping provides for kdelibs3-dev
+-  * don't allow POST data to dump to the debug output...
++  * sync with upstream
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 10:26:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 28 Jun 2001 17:37:00 -0700
+ 
+-kdelibs (4:2.1.0.1-5) unstable; urgency=low
++kdelibs-crypto (4:2.2-cvs20010622-1) unstable; urgency=low
+  
+-  * Several fixes moving us towards 2.1.1
+-  * Several "don't crash when..." fixes
++  * New upstream version
++  * 2.2 beta1
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 15 Mar 2001 10:26:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 25 Jun 2001 16:49:00 -0700
+ 
+-kdelibs (4:2.1.0.1-4) unstable; urgency=low
++kdelibs-crypto (4:2.1.1.0-1) unstable; urgency=low
+  
+-  * More upstream fixes
+-  * Add in a pam_env statement to kde pam file.  This *should* fix problems
+-    people have had with kde not reading in their environment settings
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 13 Mar 2001 16:24:00 -0700
+-
+-kdelibs (4:2.1.0.1-3) unstable; urgency=low
+- 
+-  * More upstream fixes
+-    location object fixes for JavaScript
++  * Fix source package
++  * build against older libc
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 11 Mar 2001 02:43:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 26 Mar 2001 16:56:00 -0700
+ 
+-kdelibs (4:2.1.0.1-2) unstable; urgency=low
++kdelibs-crypto (4:2.1.1-1) unstable; urgency=low
+  
+-  * More upstream fixes
+-    several khtml fixes especially with css
+-    more font fixes
+-    more session fixes..hopefully solving some of the reports
+-  * built with new kdoc
++  * New upstream version
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 11 Mar 2001 02:43:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 16:56:00 -0700
+ 
+-kdelibs (4:2.1.0.1-1) unstable; urgency=low
+- 
+-  * Fix proxy authentication
+-  * Several other upstream fixes
++kdelibs-crypto (4:2.1-final-2) unstable; urgency=low
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 08 Mar 2001 15:22:00 -0700
+-
+-kdelibs (4:2.1.0-3) unstable; urgency=low
++  * Fresh build with new ssl and kde libs
++  * Updating build-depends
+  
+-  * More upstream fixes
+-   Fix for URLs like "http://www.kde.org?query=bla" and "http://www.kde.org#ref"
+-   Fix for crashes opening http://www.radiocomercial.pt
+-   Fix for accessing cookies via javascript
+-   Fix for problem with filenames getting cut with umlauts
+-   Fix for problem with permission changes in properties dialog
+-   Don't unzip if the filename ends with .gz
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 07 Mar 2001 01:54:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 13 Mar 2001 16:56:00 -0700
+ 
+-kdelibs (4:2.1.0-2) unstable; urgency=low
++kdelibs-crypto (4:2.1-final-1) unstable; urgency=low
+  
+-  * Adding libbz2-dev and libsasl-dev into Build-Depends so that the ioslaves
+-    will be built on other archs.  Other archs probably didn't even notice. 
+-  * dcopserver freeze fix
+-  * Several other http fixes along with hopefully proper fixes to
+-    the url entry problems
+-  * Applying patch for Simplified Chinese support
++  * New upstream version
++  * Upping standards version
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 04 Mar 2001 09:09:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 09 Feb 2001 02:31:00 -0700
+ 
+-kdelibs (4:2.1.0-1) unstable; urgency=low
+- 
+-   * Re-pulling from CVS instead of using the official tarballs.  The
+-     official tarballs had problems which made it hard to handle patches
+-   * Version changed to 2.1.0 instead of 2.1-final as we are post 2.1-final
+-     and pre 2.1.1 which will be released in about a month.  This also allows
+-     for the source upload.
+-   * Modified ksgmltools configure.in.in to handle new location of sgml files
+-   * Updating build-depends
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 27 Feb 2001 19:00:00 -0700
+-
+-kdelibs (4:2.1-final-1) unstable; urgency=low
+- 
+-   * New upstream version
++kdelibs-crypto (4:2.1-beta2-0128-1) unstable; urgency=low
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Feb 2001 02:31:00 -0700
+-
+-kdelibs (4:2.1-beta2-0128-2) unstable; urgency=low
+-  
+-   * Adding in cleanup for kde doc link (Closes: #85653)
+-   * Moving from kdelibs3-dev to kdelibs-dev to conform to policy
++  * Minor upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 18 Feb 2001 02:31:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 28 Jan 2001 23:50:00 -0700
+ 
+-kdelibs (4:2.1-beta2-0128-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-beta2-4) unstable; urgency=low
+  
+-   * Fixing artsdsp LD_PRELOAD problem (Closes: #83592)
+-   * Adding in replaces/conflicts for *ancient* non-existant kdelibs-nossl
+-     package. (Closes: #83607)
++  * Minor upstream fixes
++  * Documentation updates
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 28 Jan 2001 01:30:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 27 Jan 2001 11:50:00 -0700
+ 
+-kdelibs (4:2.1-beta2-3) unstable; urgency=low
++kdelibs-crypto (4:2.1-beta2-3) unstable; urgency=low
+  
+-   * Lots of little fixes
+-   * Fixing -dev dependencies...(allowing for -alsa packages)
+-   * fix shlibs for libkssl
+-   * Adding in a couple more build-depends - autoconf, libtool, gettext
++  * Actually sort cyphers by their strength
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 25 Jan 2001 02:16:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 24 Jan 2001 13:39:00 -0700
+ 
+-kdelibs (4:2.1-beta2-2) unstable; urgency=low
++kdelibs-crypto (4:2.1-beta2-2) unstable; urgency=low
+  
+-   * Fixes problem with version number not showing
+-   * Cleaning up depends for -dev packages
++  * Minor upstream updates and fixes 
++  * Fix build-depends
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 23 Jan 2001 12:36:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 23 Jan 2001 17:00:00 -0700
+ 
+-kdelibs (4:2.1-beta2-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-beta2-1) unstable; urgency=low
+  
+-   * New upstream beta
+-   * Fixing shlibs
+-   * Fixing confliction problem (Closes: #83083)
++  * New upstream beta
+  
+  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 22 Jan 2001 06:00:00 -0700
+ 
+-kdelibs (4:2.1-20010118-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-20010118-1) unstable; urgency=low
+  
+-   * more upstream bug fixes
+-     fix JS and onmouseovers
+-   * mimetype fixes (Closes: #76455)
+-   * fix build order for libarts-alsa
+-   * breaking out libkmid to avoid unnessary depends (Closes: #82901, #82924)
+-   * libarts and libkmid are Recommends of kdelibs3 and not dependant now
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 18 Jan 2001 13:00:00 -0700
+-
+-kdelibs (4:2.1-20010115-1) unstable; urgency=low
+- 
+-   * more upstream bug fixes
+-   * a ton of documentation updates
+-   * move away from suidregister
+-   * Fix postinst ldconfig calls.  (Closes: #82246)
+-   * Adding a libarts-alsa package
+-   * Upstream fixes for libltdl includes (Closes: #82359)
+-   * Fixes problem with bug report email address
+-   * JavaScript/Java happy again...happy happy joy joy happy happy joy joy...
++  * More upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 15 Jan 2001 01:00:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 19 Jan 2001 23:30:00 -0700
+ 
+-kdelibs (4:2.1-20010109-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-20010115-1) unstable; urgency=low
+  
+-   * more upstream bug fixes
+-   * More dependency/build-depend fixes
+-   * This was definatly built with the same dpkg that kdelibs-crypto was so
+-     I'm assuming this just squeaked by dinstall...so just to be sure...
+-   * Java should work again
+-   * Fix kdesud security by
+-     a) Not creating the socket under /tmp
+-     b) Verifying afterwards that it was our own socket
++  * More upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 09 Jan 2001 10:00:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 15 Jan 2001 01:00:00 -0700
+ 
+-kdelibs (4:2.1-20010106-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-20010106-1) unstable; urgency=low
+  
+-   * more upstream bug fixes
+-   * Contains both the symlink/sniff attack fix for kdesu
+-   * Moving conflicts for task-* packages to kdebase
++  * More upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 06 Jan 2001 15:00:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 06 Jan 2001 18:46:00 -0700
+ 
+-kdelibs (4:2.1-20010101-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-20010101-1) unstable; urgency=low
+  
+-   * more upstream bug fixes
+-   * Applying new i18n patch
+-   * Adding in conflicts for old task- packages (Closes: #81003)
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 01 Jan 2001 03:30:00 -0700
++  * More upstream fixes
++    
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 01 Jan 2001 16:45:00 -0700
+ 
+-kdelibs (4:2.1-20001218-2) unstable; urgency=low
++kdelibs-crypto (4:2.1-20001218-1) unstable; urgency=low
+  
+-  * more upstream bug fixes
++  * More upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 20 Dec 2000 12:22:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 18 Dec 2000 23:00:00 -0700
+ 
+-kdelibs (4:2.1-20001218-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-20001216-1) unstable; urgency=low
+  
+-  * more upstream bug fixes
++  * More upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 18 Dec 2000 22:44:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 16 Dec 2000 23:00:00 -0700
+ 
+-kdelibs (4:2.1-20001216-1) unstable; urgency=low
++kdelibs-crypto (4:2.1-20001213-1) unstable; urgency=low
+  
+-  * more upstream bug fixes
++  * New beta version
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 16 Dec 2000 18:44:00 -0700
+-
+-kdelibs (4:2.1-20001214-1) unstable; urgency=low
+-
+-  * new kdelibs-doc rules thanks to Gordon Sadler w/ tweaks to allow building
+-    when kdelibs is not already installed... (Closes: #79583)
+-  * more upstream bug fixes
++ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 13 Dec 2000 18:00:00 -0700
+ 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 14 Dec 2000 13:35:00 -0700
+-
+-kdelibs (4:2.1-20001213-1) unstable; urgency=low
++kdelibs-crypto (4:2.0-final-6) unstable; urgency=low
+  
+-  * New upstream beta
+-  * Breaking out aRts pieces into their own packages so that others don't
+-    need to install kdelibs in it's entirety to use arts.
++  * More upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 13 Dec 2000 14:22:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 15 Nov 2000 05:00:00 -0700
+ 
+-kdelibs (4:2.0-final-5) unstable; urgency=low
++kdelibs-crypto (4:2.0-final-5) unstable; urgency=low
+  
+   * More upstream fixes
+-  * More dependency work
++  * more i18n patches
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 12 Nov 2000 18:15:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 12 Nov 2000 18:00:00 -0700
+ 
+-kdelibs (4:2.0-final-4) unstable; urgency=low
++kdelibs-crypto (4:2.0-final-4) unstable; urgency=low
+  
+   * More upstream fixes
+-  * Applying new i18n patch
+-  * More dependency work
+- 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 08 Nov 2000 17:30:00 -0700
+-                                                                                
+-kdelibs (4:2.0-final-3.1) unstable; urgency=low
+- 
+-  * Applying i18n patch (Closes: #75830)
+- 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 05 Nov 2000 23:00:00 -0700
++  * i18n patches applied
++
++ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 08 Nov 2000 17:00:00 -0700
+ 
+-kdelibs (4:2.0-final-3) unstable; urgency=low
++kdelibs-crypto (4:2.0-final-3) unstable; urgency=low
+  
+   * More upstream fixes
+-  * Fixing (again) suid bit on artswrapper
+-  * Changing bug reporting to point to bugs.debian.org - hopefully I don't 
+-    totally hose the bug reporting pieces...
+-  * Building against X4 libs
+- 
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 04 Nov 2000 01:30:00 -0700
+-                                                                                
+-kdelibs (4:2.0-final-2.2) unstable; urgency=low
+- 
+-  * Fixing dependency I hosed 
+-  * Fixing suid bit on artswrapper
++  * Building against new xlibs
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 03 Nov 2000 00:30:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 04 Nov 2000 22:00:00 -0700
+                                                                                 
+-kdelibs (4:2.0-final-2.1) unstable; urgency=low
++kdelibs-crypto (4:2.0-final-2) unstable; urgency=low
+  
+-  * kdelibs-doc once again contains it's kdoc output
+-  * kstyles upstream fixes
++  * More upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 02 Nov 2000 21:46:00 -0700
+-
+-kdelibs (4:2.0-final-2) unstable; urgency=low
+-
+-  * more upstream fixes
+-
+  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 02 Nov 2000 18:00:00 -0700
+-
+-kdelibs (4:2.0-final-0) unstable; urgency=low
++                                                                                
++kdelibs-crypto (4:2.0-final-0) unstable; urgency=low
+  
+   * KDE 2.0
+  
+  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Oct 2000 00:00:00 -0700
+                                                                                 
+-kdelibs (4:2.0-20001016-0) unstable; urgency=low
+-
+-  * more upstream fixes
+-
+- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 16 Oct 2000 15:00:00 -0700
+-
+-kdelibs (4:2.0-20001015-0) unstable; urgency=low
++kdelibs-crypto (4:2.0-20001016-0) unstable; urgency=low
+  
+   * more upstream fixes
+  
+- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 15 Oct 2000 20:05:00 -0700
++ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 16 Oct 2000 15:00:00 -0700
+                                                                                 
+-kdelibs (4:2.0-20001013-0) unstable; urgency=low
++kdelibs-crypto (4:2.0-20001013-0) unstable; urgency=low
+  
+   * more upstream fixes
+  
+  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 13 Oct 2000 23:45:00 -0700
+                                                                                 
+-kdelibs (4:2.0-20001011-0) unstable; urgency=low
++kdelibs-crypto (4:2.0-20001011-0) unstable; urgency=low
+  
+   * more upstream fixes
+  
+--- kdelibs-crypto-2.2.0-final.orig/debian/control
++++ kdelibs-crypto-2.2.0-final/debian/control
+@@ -1,140 +1,17 @@
+-Source: kdelibs
+-Build-Depends: debhelper (>> 3.0.0), autoconf2.13, automake, flex, bison, gettext, libqt-dev (>= 2:2.3.1-7), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev, g++-3.0 [alpha], gcc-3.0 [alpha]
+-Build-Depends-Indep: kdoc, qt-doc
+-Section: libs
++Source: kdelibs-crypto
++Build-Depends: autoconf2.13, automake, debhelper (>> 3.0.0), kdelibs-dev (>= 4:2.2.0-final-1), libssl-dev, g++-3.0 [alpha], gcc-3.0 [alpha]
++Section: non-US
+ Priority: optional
+ Maintainer: Ivan E. Moore II <rkrusty@debian.org>
+ Standards-Version: 3.5.5
+-
+-Package: kdelibs3
++ 
++Package: kdelibs3-crypto
+ Architecture: any
+-Section: libs
+-Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1)
+-Depends: ${shlibs:Depends}, python-base
+-Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
+-Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
+-Conflicts: kdelibs3-crypto (<< 4:2.2.0-0beta1-1)
+-Description: KDE core libraries (runtime files)
+- KDE core libraries.
+- You need these files to run kde applications.
+-
+-Package: kdelibs3-cups
+-Architecture: any
+-Section: libs
+-Replaces: kdelibs3 (<< 4:2.2.0-0beta1-2)
+-Depends: ${shlibs:Depends}
+-Enhances: kdebase
+-Suggests: cupsomatic-ppd
+-Description: KDE print system (CUPS support)
+- This package contains the KDE printer bits which use CUPS. 
+-
+-Package: libarts
+-Architecture: any
+-Section: libs
+-Replaces: libarts-alsa
+-Depends: ${shlibs:Depends}
+-Suggests: kdelibs3, artsbuilder
+-Enhances: kdebase
+-Conflicts: suidmanager (<< 0.50), libarts-alsa
+-Description: aRts Sound system
+- aRts is a short form for "analog realtime synthesizer". The idea of the whole
+- thing is to create/process sound using small modules which do certain tasks.
+- These may be create a waveform (oscillators), play samples, filter data, add
+- signals, perform effects like delay/flanger/chorus, or output the data to
+- the soundcard.
+- .
+- aRts is the core sound system for KDE (and other systems)
+-
+-Package: libkmid
+-Architecture: any
+-Section: libs
+-Replaces: libkmid-alsa, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
+-Depends: ${shlibs:Depends}
+-Enhances: kdebase
+-Conflicts: libkmid-alsa
+-Description: aRts Sound system (midi/kmedia support libraries)
+- aRts is a short form for "analog realtime synthesizer". The idea of the whole
+- thing is to create/process sound using small modules which do certain tasks.
+- These may be create a waveform (oscillators), play samples, filter data, add
+- signals, perform effects like delay/flanger/chorus, or output the data to
+- the soundcard.
+- .
+- This package contains the midi and kmedia support files for aRts as well as 
+- knotify
+-
+-Package: libkmid-alsa
+-Architecture: any
+-Section: libs
+-Replaces: libkmid, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
+-Depends: ${shlibs:Depends}
+-Enhances: kdebase
+-Provides: libkmid
+-Description: aRts Sound system (midi/kmedia support libraries with alsa)
+- aRts is a short form for "analog realtime synthesizer". The idea of the whole
+- thing is to create/process sound using small modules which do certain tasks.
+- These may be create a waveform (oscillators), play samples, filter data, add
+- signals, perform effects like delay/flanger/chorus, or output the data to
+- the soundcard.
+- .
+- This package contains the midi and kmdedia support files for aRts as well as 
+- knotify
+-
+-Package: libarts-alsa
+-Architecture: any
+-Section: libs
+-Replaces: libarts
+-Depends: ${shlibs:Depends}
+-Suggests: kdelibs3, artsbuilder
+-Enhances: kdebase
+-Conflicts: suidmanager (<< 0.50)
+-Provides: libarts
+-Description: aRts Sound system (built with alsa support)
+- aRts is a short form for "analog realtime synthesizer". The idea of the whole
+- thing is to create/process sound using small modules which do certain tasks.
+- These may be create a waveform (oscillators), play samples, filter data, add
+- signals, perform effects like delay/flanger/chorus, or output the data to
+- the soundcard.
+- .
+- aRts is the core sound system for KDE (and other systems)
+-
+-Package: libarts-dev
+-Architecture: any
+-Section: devel
+-Depends: libarts (= ${Source-Version}) | libarts-alsa (= ${Source-Version}), libc6-dev, libaudiofile-dev
+-Suggests: kdelibs-dev
+-Description: aRts Sound system (development files)
+- aRts sound system.
+- .
+- Header files needed to build apps that use the aRts sound daemon
+-
+-Package: libkmid-dev
+-Architecture: any
+-Section: devel
+-Depends: libkmid (= ${Source-Version}) | libkmid-alsa (= ${Source-Version}) , kdelibs-dev
+-Description: aRts Sound system (midi development files)
+- aRts sound system.
+- .
+- Header files needed to build apps that use the aRts sound daemon and the
+- midi specific portions of it.
+-
+-Package: kdelibs3-doc
+-Architecture: all
+-Section: doc
+-Replaces: kdelibs-doc
+-Suggests: kdelibs-dev, libqt-dev, kdoc
+-Provides: kdelibs-doc
+-Description: KDE core library documentation
+- These are the core documentation created by the kdoc package.  This package
+- is needed for developing KDE related packages.
+-
+-Package: kdelibs-dev
+-Architecture: any
+-Section: devel
+-Replaces: kdelibs2g-dev, kdelibs3 (<< 4:2.2.0-0.1beta1-1), kdelibs3-dev
+-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.1-7), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
+-Recommends: kdelibs3-cups (= ${Source-Version})
+-Conflicts: kdelibs2g-dev, kdelibs3-dev
+-Suggests: kdelibs3-doc, kdoc, libxml2-dev, libxslt1-dev, libasound1-dev, automake, autoconf, libtool
+-Description: KDE core libraries (development files)
+- KDE core libraries.
+- You need these files to compile kde applications.
++Section: non-US
++Depends: libssl0.9.6
++Pre-Depends: kdelibs3 (>= 4:2.2.0-final-1)
++Enhances: konqueror, kmail
++Description: KDE core libraries (Crypto Modules)
++ This package contains the portions of kdelibs that need to be
++ linked against OpenSSL (libssl).  They are only necessary if
++ you want SSL (encryption) support in KDE
+--- kdelibs-crypto-2.2.0-final.orig/debian/copyright
++++ kdelibs-crypto-2.2.0-final/debian/copyright
+@@ -1,16 +1,11 @@
+-This package was also updated by Ivan E. Moore II <rkrusty@debian.org>.
+-This package was updated by Stephan Kulow <coolo@kde.org>.
+-This package was debianized by Andreas Jellinghaus <aj@debian.org>.
+-Thanks to Brandon Mitchell <bhmit1@mail.wm.edu> for his work on the
+-libc5 version.
++This package was debianized by Ivan E. Moore II <rkrusty@debian.org>.
+ 
+ It was downloaded via cvs from cvs.kde.org
+ 
+-Copyright:
+-
+-See */AUTHORS for authors.
++(only the pieces necessary for this packager were downloaded...namely 
++kssl and kio/http)
+ 
+----
++Copyright:
+ 
+ The libraries themselves have been covered (since Saturday, June 21st, 1997)
+ by the GNU Library General Public License (LGPL).  Any other programs (such as
+--- kdelibs-crypto-2.2.0-final.orig/debian/rules
++++ kdelibs-crypto-2.2.0-final/debian/rules
+@@ -1,17 +1,11 @@
+ #!/usr/bin/make -f
+ # Made with the aid of debmake, by Christoph Lameter,
+ # based on the sample debian/rules file for GNU hello by Ian Jackson.
+-# Uncomment this to turn on verbose mode.
+ #export DH_VERBOSE=1
+  
+ # This is the debhelper compatability version to use.
+ export DH_COMPAT=3
+-
+-SHELL=/bin/sh
+-BUILDDIR = $(shell pwd)
+-QTDOCDIR  = usr/share/doc/qt-doc/doc/html
+-KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
+-export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
++tmp=debian/kdelibs3-crypto
+ ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ ifeq ($(ARCH),alpha)
+   COMPILER_FLAGS=CXX=g++-3.0 CC=gcc-3.0 CFLAGS=-mieee CXXFLAGS=-mieee
+@@ -27,10 +21,7 @@
+   OBJPRELINK=--enable-objprelink
+ endif
+ 
+-tmp = $(shell pwd)/debian/kdelibs3
+-alsa-tmp = $(shell pwd)/debian/alsa-tmp
+-
+-build: build-stamp alsa-stamp
++build: build-stamp
+ 
+ -include debian/debiandirs
+ 
+@@ -44,154 +35,59 @@
+ 	fi
+ 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
+ 	$(COMPILER_FLAGS) \
+-	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
+-	--includedir=/usr/include/kde --without-ssl --without-alsa \
+-	--disable-cups $(XINERAMA) $(OBJPRELINK)
++	./configure $(configkde) --with-distribution="$$version" \
++	--libdir=$(kde_libdir) --includedir=$(kde_includedir) \
++	--with-extra-includes=/usr/include/kde $(XINERAMA) $(OBJPRELINK)
+ 
+-	$(MAKE)
+-	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
++	make -C kssl
++	make -C kio/http
+ 
+ 	touch build-stamp
+ 
+-alsa-stamp:
+-	dh_testdir
+-	-$(MAKE) -C arts/ clean
+-	-$(MAKE) -C libkmid/ clean
+-	-$(MAKE) -C kdeprint/cups clean
+-	$(COMPILER_FLAGS) \
+-	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
+-		--includedir=/usr/include/kde $(XINERAMA) $(OBJPRELINK)
+-	$(MAKE) -C libkmid/ 
+-	$(MAKE) -C arts/ 
+-	$(MAKE) -C kdeprint/cups 
+-	touch alsa-stamp
+-
+-
+ debian-clean:
+ 	dh_testdir
+-	-rm -f build-stamp alsa-stamp indep-stamp
++	-rm -f build-stamp
+ 	dh_clean
+ 
+ clean: debian-clean
+-	-rm -rf debian/debiandirs debian/install-tmp debian/alsa-tmp
+ 	if test -d CVS; then \
+-	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
++	  make -f admin/Makefile.common cvs-clean ;\
+ 	fi
+-	-$(MAKE) distclean
++	-make distclean
+ 
+-binary-indep:	build-stamp alsa-stamp indep-stamp
+-indep-stamp:
++binary-indep:	build
+ 	dh_testdir
+-	dh_testroot
+-	dh_clean -i
+-	if test -f /usr/bin/qt2kdoc; then \
+-		(mkdir -p debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference) ; \
+-		qt2kdoc --url=/$(QTDOCDIR) \
+-		--outdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference \
+-		--compress \
+-		/$(QTDOCDIR) ; \
+-		makekdedoc --libdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference \
+-		--kdocopt='--skip-internal --compress' \
+-		--url=/$(KDEDOCDIR) \
+-		--outputdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR) ; \
+-	fi
+-	
+-	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
+-	cp doc/api/*.png `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
+-	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
+-	cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
+-	dh_installdocs -i
+-	dh_installchangelogs -pkdelibs3-doc 
+-	dh_compress -i -X.docbook -X.css -X-license -X.dcl -X.bz2
+-	dh_fixperms -i
+-	dh_installdeb -i
+-	dh_gencontrol -i
+-	dh_md5sums -i
+-	dh_builddeb -i
+-	touch indep-stamp
+ 
+-install: build
+-	dh_testdir
+-	dh_testroot
+-	dh_clean -a
+-	-rm -rf debian/kdelibs3 debian/alsa-tmp
+-	-install -d debian/kdelibs3
+-	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
+-	dh_installdirs -a
+-	$(MAKE) -C libkmid/ DESTDIR=$(alsa-tmp)/ install
+-	$(MAKE) -C arts/ DESTDIR=$(alsa-tmp)/ install
+-	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs3/ install
+-	-install -d $(alsa-tmp)/usr/share/lintian/overrides/
+-	cp debian/*alsa.override $(alsa-tmp)/usr/share/lintian/overrides/
+-	for i in `ls debian/alsa-tmp/usr/share/lintian/overrides/`; do \
+-		mv debian/alsa-tmp/usr/share/lintian/overrides/$$i debian/alsa-tmp/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
+-	done
+ 
+-binary-arch:  build install
++binary-arch:  build
+ 	dh_testdir
+ 	dh_testroot
+-	dh_installdirs -a
+-	-rm -f debian/kdelibs3/usr/share/doc/kde/HTML/default
+-	cp debian/*.override debian/kdelibs3/usr/share/lintian/overrides/
+-	for i in `ls debian/kdelibs3/usr/share/lintian/overrides/`; do \
+-	  mv debian/kdelibs3/usr/share/lintian/overrides/$$i debian/kdelibs3/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
+-	done
+-	-rm -f debian/kdelibs3/usr/share/lintian/overrides/*alsa
+-	debianrc=debian/kdelibs3/etc/kde2/system.kdeglobals ;\
+-	echo "[Directories]" > $$debianrc ;\
+-	echo "dir_config=/etc/kde2" >> $$debianrc ;\
+-	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
+-	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc ;\
+-	echo "dir_apps=/usr/share/applnk" >> $$debianrc ;\
+-	echo "dir_mime=/usr/share/mimelnk" >> $$debianrc ;\
+-	echo "dir_services=/usr/share/services" >> $$debianrc ;\
+-	echo "dir_servicetypes=/usr/share/servicetypes" >> $$debianrc ;\
+-	echo "[General]" >> $$debianrc ;\
+-	echo "TerminalApplication=x-terminal-emulator" >> $$debianrc
+-	cp debian/kde.pamd debian/kdelibs3/etc/pam.d/kde
+-	dh_installdocs -a
+-	-cp debian/dh-make/* debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
+-	-cp admin/debianrules debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
++	dh_clean 
++	dh_installdirs
++	install -d $(tmp)/usr/share/lintian/overrides
++	cp debian/kdelibs3-crypto.override $(tmp)/usr/share/lintian/overrides/kdelibs3-crypto
++	make -C kssl DESTDIR=`pwd`/$(tmp)/ install
++	make -C kio/http DESTDIR=`pwd`/$(tmp)/ install
++	-rm -f $(tmp)/usr/lib/kcook* $(tmp)/usr/lib/kde2/kio_http.* \
++		$(tmp)/usr/lib/kio_http_cache_cleaner* \
++		$(tmp)/usr/bin/* \
++		$(tmp)/usr/lib/libkssl.so $(tmp)/usr/lib/libkssl.so.2
++	-rm -rf $(tmp)/usr/share/services $(tmp)/usr/include
++	-rm -f $(tmp)/usr/share/apps/kconf_update/kcookiescfg.upd
++	dh_installdocs
++	dh_installchangelogs
+ 	dh_undocumented
+-	dh_installman -a
+-	dh_installmenu -a
+-	dh_installdebconf -a
+-	# music chairs
+-	dh_movefiles -plibarts --sourcedir=debian/kdelibs3
+-	dh_movefiles -plibarts-dev --sourcedir=debian/kdelibs3
+-	dh_movefiles -plibkmid --sourcedir=debian/kdelibs3
+-	dh_movefiles -plibkmid-dev --sourcedir=debian/kdelibs3
+-	dh_movefiles -pkdelibs-dev --sourcedir=debian/kdelibs3
+-	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
+-	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
+-	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
+-	# ssl cleanup
+-	-rm -rf debian/kdelibs3/usr/share/apps/kssl
+-	dh_installchangelogs -a 
+-	dh_strip -a
+-	for i in `find debian/ -type l -name "common"`; do \
+-		rm $$i; \
+-		ln -s ../common $$i ;\
+-	done
+-	dh_perl -a
+-	dh_link -a
+-	dh_compress -a -X.docbook -X.css -X-license -X.dcl
+-	dh_fixperms -a
+-	-chmod 644 debian/kdelibs3/etc/pam.d/kde debian/kdelibs3/usr/share/lintian/overrides/*
+-	-chmod 4755 debian/libarts/usr/bin/artswrapper
+-	-chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
+-	-chmod 755 debian/kdelibs3/usr/share/apps/kconf_update/useragent.pl \
+-		debian/kdelibs3/usr/share/apps/kconf_update/proxytype.pl
++	dh_installman
++	dh_strip
++	dh_perl
++	dh_compress 
++	dh_fixperms 
+ 	dh_makeshlibs -V
+-	dh_installdeb -a
+-	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
+-	echo -n `cat debian/libarts.substvars ` > debian/libarts-alsa.substvars
+-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libarts-alsa.substvars
+-	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
+-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libkmid-alsa.substvars
+-	dh_gencontrol 
+-	dh_md5sums 
+-	dh_builddeb -a
++	dh_installdeb
++	dh_shlibdeps 
++	dh_gencontrol
++	dh_md5sums
++	dh_builddeb -pkdelibs3-crypto
+ 
+ # Below here is fairly generic really
+ 
+--- kdelibs-crypto-2.2.0-final.orig/debian/docs
++++ kdelibs-crypto-2.2.0-final/debian/docs
+@@ -0,0 +1 @@
++kssl/README kssl/TODO kssl/SECURITY-HOLES
+--- kdelibs-crypto-2.2.0-final.orig/debian/kdelibs3-crypto.preinst
++++ kdelibs-crypto-2.2.0-final/debian/kdelibs3-crypto.preinst
+@@ -0,0 +1,35 @@
++#! /bin/sh
++# preinst script for kdelibs
++
++set -e
++
++case "$1" in
++    install|upgrade)
++  if [ -x /usr/sbin/update-alternatives ]; then
++    /usr/sbin/update-alternatives --remove kio_https.la /usr/lib/kde2/kio_https-ssl.la
++    /usr/sbin/update-alternatives --remove kio_https.so /usr/lib/kde2/kio_https-ssl.so
++    /usr/sbin/update-alternatives --remove libkssl.so.2.0.2 /usr/lib/libkssl-ssl.so.2.0.2
++    /usr/sbin/update-alternatives --remove libkssl.la /usr/lib/libkssl-ssl.la
++  fi
++  dpkg-divert --package kdelibs3-crypto --add --rename \
++    --divert /usr/lib/kde2/kio_https-nossl.la /usr/lib/kde2/kio_https.la
++  dpkg-divert --package kdelibs3-crypto --add --rename \
++    --divert /usr/lib/kde2/kio_https-nossl.so /usr/lib/kde2/kio_https.so
++  dpkg-divert --package kdelibs3-crypto --add --rename \
++    --divert /usr/lib/libkssl-nossl.so.2.0.2 /usr/lib/libkssl.so.2.0.2
++  dpkg-divert --package kdelibs3-crypto --add --rename \
++    --divert /usr/lib/libkssl-nossl.la /usr/lib/libkssl.la
++    ;;
++ 
++    abort-upgrade)
++    ;;
++ 
++    *)
++        echo "preinst called with unknown argument \`$1'" >&2
++        exit 0
++    ;;
++esac
++
++#DEBHELPER#
++
++exit 0
+--- kdelibs-crypto-2.2.0-final.orig/debian/README.debian
++++ kdelibs-crypto-2.2.0-final/debian/README.debian
+@@ -0,0 +1,5 @@
++This package just supplies the kdelibs modules that link against the
++openssl package and libssl.
++
++
++Ivan  <rkrusty@debian.org>
+--- kdelibs-crypto-2.2.0-final.orig/debian/kdelibs3-crypto.override
++++ kdelibs-crypto-2.2.0-final/debian/kdelibs3-crypto.override
+@@ -0,0 +1,4 @@
++kdelibs3-crypto: ldconfig-symlink-missing-for-shlib usr/lib/libkssl.so.2 usr/lib/libkssl.so.2.0.2 libkssl.so.2
++kdelibs3-crypto: shlib-missing-in-control-file kio_https.so usr/lib/kde2/kio_https.so
++kdelibs3-crypto: shlib-with-non-pic-code usr/lib/libkssl.so.2.0.2
++
+--- kdelibs-crypto-2.2.0-final.orig/debian/shlibs
++++ kdelibs-crypto-2.2.0-final/debian/shlibs
+@@ -0,0 +1 @@
++libkssl 2 kdelibs3 (>= 4:2.2.0-final-1)
+--- kdelibs-crypto-2.2.0-final.orig/debian/kdelibs3-crypto.postrm
++++ kdelibs-crypto-2.2.0-final/debian/kdelibs3-crypto.postrm
+@@ -0,0 +1,34 @@
++#! /bin/sh
++# postrm script for kdelibs
++#
++# see: dh_installdeb(1)
++
++set -e
++
++case "$1" in
++    upgrade)
++        ;;
++    purge|remove|failed-upgrade|abort-install|abort-upgrade|disappear)
++        dpkg-divert --package kdelibs3-crypto --remove --rename \
++           --divert /usr/lib/kde2/kio_https-nossl.la /usr/lib/kde2/kio_https.la
++        dpkg-divert --package kdelibs3-crypto --remove --rename \
++           --divert /usr/lib/kde2/kio_https-nossl.so /usr/lib/kde2/kio_https.so
++        dpkg-divert --package kdelibs3-crypto --remove --rename \
++           --divert /usr/lib/libkssl-nossl.so.2.0.2 /usr/lib/libkssl.so.2.0.2
++        dpkg-divert --package kdelibs3-crypto --remove --rename \
++           --divert /usr/lib/libkssl-nossl.la /usr/lib/libkssl.la
++        ;;
++    *)
++        echo "postrm called with unknown argument \`$1'" >&2
++        exit 0
++    ;;
++esac
++
++# dh_installdeb will replace this with shell code automatically
++# generated by other debhelper scripts.
++
++#DEBHELPER#
++
++exit 0
++
++
+--- kdelibs-crypto-2.2.0-final.orig/kio/http/Makefile.am
++++ kdelibs-crypto-2.2.0-final/kio/http/Makefile.am
+@@ -13,7 +13,7 @@
+ kde_module_LTLIBRARIES = kio_http.la
+ 
+ kio_http_la_SOURCES = http.cc
+-kio_http_la_LIBADD = ../libkio.la $(LIBZ)
++kio_http_la_LIBADD = /usr/lib/libkio.la $(LIBZ)
+ kio_http_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+ 
+ kio_http_cache_cleaner_SOURCES = dummy.cpp
+--- kdelibs-crypto-2.2.0-final.orig/kssl/kopenssl.cc
++++ kdelibs-crypto-2.2.0-final/kssl/kopenssl.cc
+@@ -143,11 +143,11 @@
+             << "";
+ 
+ // FIXME: #define here for the various OS types to optimize
+-   libnamess << "libssl.so.0"
++   libnamess << "libssl.so.0.9.6"
+              << "libssl.so"
+              << "libssl.sl";
+ 
+-   libnamesc << "libcrypto.so.0"
++   libnamesc << "libcrypto.so.0.9.6"
+              << "libcrypto.so"
+              << "libcrypto.sl";
+ 
+--- kdelibs-crypto-2.2.0-final.orig/admin/config.guess
++++ kdelibs-crypto-2.2.0-final/admin/config.guess
+@@ -3,7 +3,7 @@
+ #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ #   Free Software Foundation, Inc.
+ 
+-timestamp='2001-03-30'
++timestamp='2001-04-20'
+ 
+ # This file is free software; you can redistribute it and/or modify it
+ # under the terms of the GNU General Public License as published by
+@@ -412,6 +412,9 @@
+ 	rm -f $dummy.c $dummy
+ 	echo mips-mips-riscos${UNAME_RELEASE}
+ 	exit 0 ;;
++    Motorola:PowerMAX_OS:*:*)
++	echo powerpc-motorola-powermax
++	exit 0 ;;
+     Night_Hawk:Power_UNIX:*:*)
+ 	echo powerpc-harris-powerunix
+ 	exit 0 ;;
+@@ -459,7 +462,7 @@
+     ????????:AIX?:[12].1:2)   # AIX 2.2.1 or AIX 2.1.1 is RT/PC AIX.
+ 	echo romp-ibm-aix      # uname -m gives an 8 hex-code CPU id
+ 	exit 0 ;;              # Note that: echo "'`uname -s`'" gives 'AIX '
+-    i?86:AIX:*:*)
++    i*86:AIX:*:*)
+ 	echo i386-ibm-aix
+ 	exit 0 ;;
+     ia64:AIX:*:*)
+@@ -639,7 +642,7 @@
+     hp8??:OSF1:*:*)
+ 	echo hppa1.0-hp-osf
+ 	exit 0 ;;
+-    i?86:OSF1:*:*)
++    i*86:OSF1:*:*)
+ 	if [ -x /usr/sbin/sysversion ] ; then
+ 	    echo ${UNAME_MACHINE}-unknown-osf1mk
+ 	else
+@@ -705,7 +708,7 @@
+     hp300:OpenBSD:*:*)
+ 	echo m68k-unknown-openbsd${UNAME_RELEASE}
+ 	exit 0 ;;
+-    i?86:BSD/386:*:* | i?86:BSD/OS:*:* | *:Ascend\ Embedded/OS:*:*)
++    i*86:BSD/386:*:* | i*86:BSD/OS:*:* | *:Ascend\ Embedded/OS:*:*)
+ 	echo ${UNAME_MACHINE}-pc-bsdi${UNAME_RELEASE}
+ 	exit 0 ;;
+     sparc*:BSD/OS:*:*)
+@@ -876,7 +879,7 @@
+     x86_64:Linux:*:*)
+ 	echo x86_64-unknown-linux-gnu
+ 	exit 0 ;;
+-    i?86:Linux:*:*)
++    i*86:Linux:*:*)
+ 	# The BFD linker knows what the default object file format is, so
+ 	# first see if it will tell us. cd to the root directory to prevent
+ 	# problems with other programs or directories called `ld' in the path.
+@@ -887,14 +890,14 @@
+ 				    s/ .*//
+ 				    p'`
+         case "$ld_supported_emulations" in
+-	  i?86linux)
++	  i*86linux)
+ 		echo "${UNAME_MACHINE}-pc-linux-gnuaout"
+ 		exit 0
+ 		;;
+-	  elf_i?86)
++	  elf_i*86)
+ 		TENTATIVE="${UNAME_MACHINE}-pc-linux-gnu"
+ 		;;
+-	  i?86coff)
++	  i*86coff)
+ 		echo "${UNAME_MACHINE}-pc-linux-gnucoff"
+ 		exit 0
+ 		;;
+@@ -906,7 +909,7 @@
+ 	# that means it is gnuoldld.
+ 	test -z "$ld_supported_emulations" && echo "${UNAME_MACHINE}-pc-linux-gnuoldld" && exit 0
+ 	case "${UNAME_MACHINE}" in
+-	i?86)
++	i*86)
+ 	  VENDOR=pc;
+ 	  ;;
+ 	*)
+@@ -944,10 +947,10 @@
+ 	;;
+ # ptx 4.0 does uname -s correctly, with DYNIX/ptx in there.  earlier versions
+ # are messed up and put the nodename in both sysname and nodename.
+-    i?86:DYNIX/ptx:4*:*)
++    i*86:DYNIX/ptx:4*:*)
+ 	echo i386-sequent-sysv4
+ 	exit 0 ;;
+-    i?86:UNIX_SV:4.2MP:2.*)
++    i*86:UNIX_SV:4.2MP:2.*)
+         # Unixware is an offshoot of SVR4, but it has its own version
+         # number series starting with 2...
+         # I am not positive that other SVR4 systems won't match this,
+@@ -955,7 +958,7 @@
+         # Use sysv4.2uw... so that sysv4* matches it.
+ 	echo ${UNAME_MACHINE}-pc-sysv4.2uw${UNAME_VERSION}
+ 	exit 0 ;;
+-    i?86:*:4.*:* | i?86:SYSTEM_V:4.*:*)
++    i*86:*:4.*:* | i*86:SYSTEM_V:4.*:*)
+ 	UNAME_REL=`echo ${UNAME_RELEASE} | sed 's/\/MP$//'`
+ 	if grep Novell /usr/include/link.h >/dev/null 2>/dev/null; then
+ 		echo ${UNAME_MACHINE}-univel-sysv${UNAME_REL}
+@@ -963,7 +966,7 @@
+ 		echo ${UNAME_MACHINE}-pc-sysv${UNAME_REL}
+ 	fi
+ 	exit 0 ;;
+-    i?86:*:5:7*)
++    i*86:*:5:7*)
+         # Fixed at (any) Pentium or better
+         UNAME_MACHINE=i586
+         if [ ${UNAME_SYSTEM} = "UnixWare" ] ; then
+@@ -972,7 +975,7 @@
+ 	    echo ${UNAME_MACHINE}-pc-sysv${UNAME_RELEASE}
+ 	fi
+ 	exit 0 ;;
+-    i?86:*:3.2:*)
++    i*86:*:3.2:*)
+ 	if test -f /usr/options/cb.name; then
+ 		UNAME_REL=`sed -n 's/.*Version //p' </usr/options/cb.name`
+ 		echo ${UNAME_MACHINE}-pc-isc$UNAME_REL
+@@ -990,7 +993,7 @@
+ 		echo ${UNAME_MACHINE}-pc-sysv32
+ 	fi
+ 	exit 0 ;;
+-    i?86:*DOS:*:*)
++    i*86:*DOS:*:*)
+ 	echo ${UNAME_MACHINE}-pc-msdosdjgpp
+ 	exit 0 ;;
+     pc:*:*:*)
+@@ -1035,7 +1038,7 @@
+     mc68030:UNIX_System_V:4.*:*)
+ 	echo m68k-atari-sysv4
+ 	exit 0 ;;
+-    i?86:LynxOS:2.*:* | i?86:LynxOS:3.[01]*:* | i?86:LynxOS:4.0*:*)
++    i*86:LynxOS:2.*:* | i*86:LynxOS:3.[01]*:* | i*86:LynxOS:4.0*:*)
+ 	echo i386-unknown-lynxos${UNAME_RELEASE}
+ 	exit 0 ;;
+     TSUNAMI:LynxOS:2.*:*)
+@@ -1146,7 +1149,7 @@
+ 	fi
+ 	echo ${UNAME_MACHINE}-unknown-plan9
+ 	exit 0 ;;
+-    i?86:OS/2:*:*)
++    i*86:OS/2:*:*)
+ 	# If we were able to find `uname', then EMX Unix compatibility
+ 	# is probably installed.
+ 	echo ${UNAME_MACHINE}-pc-os2-emx
+--- kdelibs-crypto-2.2.0-final.orig/admin/config.sub
++++ kdelibs-crypto-2.2.0-final/admin/config.sub
+@@ -3,7 +3,7 @@
+ #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ #   Free Software Foundation, Inc.
+ 
+-timestamp='2001-03-30'
++timestamp='2001-04-20'
+ 
+ # This file is (in principle) common to ALL GNU software.
+ # The presence of a machine in this file suggests that SOME GNU software
+@@ -231,7 +231,8 @@
+ 		| mips64orion | mips64orionel | mipstx39 | mipstx39el \
+ 		| mips64vr4300 | mips64vr4300el | mips64vr4100 | mips64vr4100el \
+ 		| mips64vr5000 | miprs64vr5000el | mcore | s390 | s390x \
+-		| sparc | sparclet | sparclite | sparc64 | sparcv9 | v850 | c4x \
++		| sparc | sparclet | sparclite | sparc64 | sparcv9 | sparcv9b \
++		| v850 | c4x \
+ 		| thumb | d10v | d30v | fr30 | avr | openrisc | tic80 \
+ 		| pj | pjl | h8500)
+ 		basic_machine=$basic_machine-unknown
+@@ -247,7 +248,7 @@
+ 	# We use `pc' rather than `unknown'
+ 	# because (1) that's what they normally are, and
+ 	# (2) the word "unknown" tends to confuse beginning users.
+-	i[234567]86 | x86_64)
++	i*86 | x86_64)
+ 	  basic_machine=$basic_machine-pc
+ 	  ;;
+ 	# Object if more than one company name word.
+@@ -257,7 +258,7 @@
+ 		;;
+ 	# Recognize the basic CPU types with company name.
+ 	# FIXME: clean up the formatting here.
+-	vax-* | tahoe-* | i[234567]86-* | i860-* | ia64-* | m32r-* | m68k-* | m68000-* \
++	vax-* | tahoe-* | i*86-* | i860-* | ia64-* | m32r-* | m68k-* | m68000-* \
+ 	      | m88k-* | sparc-* | ns32k-* | fx80-* | arc-* | c[123]* \
+ 	      | arm-*  | armbe-* | armle-* | armv*-* | strongarm-* | xscale-* \
+ 	      | mips-* | pyramid-* | tron-* | a29k-* | romp-* | rs6000-* \
+@@ -271,7 +272,8 @@
+ 	      | we32k-* | cydra-* | ns16k-* | pn-* | np1-* | xps100-* \
+ 	      | clipper-* | orion-* \
+ 	      | sparclite-* | pdp10-* | pdp11-* | sh-* | powerpc-* | powerpcle-* \
+-	      | sparc64-* | sparcv9-* | sparc86x-* | mips16-* | mips64-* | mipsel-* \
++	      | sparc64-* | sparcv9-* | sparcv9b-* | sparc86x-* \
++	      | mips16-* | mips64-* | mipsel-* \
+ 	      | mips64el-* | mips64orion-* | mips64orionel-* \
+ 	      | mips64vr4100-* | mips64vr4100el-* | mips64vr4300-* | mips64vr4300el-* \
+ 	      | mipstx39-* | mipstx39el-* | mcore-* \
+@@ -506,19 +508,19 @@
+ 		basic_machine=i370-ibm
+ 		;;
+ # I'm not sure what "Sysv32" means.  Should this be sysv3.2?
+-	i[34567]86v32)
++	i*86v32)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-sysv32
+ 		;;
+-	i[34567]86v4*)
++	i*86v4*)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-sysv4
+ 		;;
+-	i[34567]86v)
++	i*86v)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-sysv
+ 		;;
+-	i[34567]86sol2)
++	i*86sol2)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-solaris2
+ 		;;
+@@ -935,7 +937,7 @@
+ 	sh3 | sh4)
+ 		basic_machine=sh-unknown
+ 		;;
+-	sparc | sparcv9)
++	sparc | sparcv9 | sparcv9b)
+ 		basic_machine=sparc-sun
+ 		;;
+         cydra)
+@@ -1025,7 +1027,7 @@
+ 		;;
+ 	-qnx*)
+ 		case $basic_machine in
+-		    x86-* | i[34567]86-*)
++		    x86-* | i*86-*)
+ 			;;
+ 		    *)
+ 			os=-nto$os

@@ -2,7 +2,6 @@
 Type=KRL
 Header=DUMMYKRLREGEXP
 Name=KRL-Images
-Name[af]=KRL-BEELDE
 Name[az]=KRL-Rəsmləri
 Name[bg]=KRL Картинки
 Name[br]=SkeudennoÃ¹ KRL
@@ -46,8 +45,8 @@ Name[ta]=KRL-¯Õì¸û
 Name[tr]=KRL-Resimleri
 Name[uk]=Зображення KRL
 Name[vi]=Ảnh KRL 
+Name[xh]=Imifanekiso-KRL
 Name[zh_CN.GB2312]=KRL 图像
-Name[zh_TW.Big5]=KRL-影像
 Read=true
 Write=true
 Suffices=

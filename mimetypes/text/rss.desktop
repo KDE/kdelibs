@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/rss
 Comment=RDF Site Summary
-Comment[af]=RDF TUISTE OPSOMMING
 Comment[az]=RDF Mündəricatı
 Comment[bg]=Сведения за сайта RDF
 Comment[cs]=RDF souhrn
@@ -35,8 +34,8 @@ Comment[ta]=RDF ¸Çî ÍÕì¸õ
 Comment[tr]=RDF Özeti
 Comment[uk]=Конспект сайту RDF
 Comment[vi]=Tổng kết site RDF 
+Comment[xh]=Isishwankathelo senxuwa le RDF
 Comment[zh_CN.GB2312]=RDF 站点摘要
-Comment[zh_TW.Big5]=RDF 站台摘要
 Icon=news
 Type=MimeType
 Patterns=*.rss;*.RSS;

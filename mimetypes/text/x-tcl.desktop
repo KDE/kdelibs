@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Tcl file
-Comment[af]=TCL LêER
 Comment[az]=Tcl faylı
 Comment[bg]=Програма на Tcl
 Comment[br]=Restr tcl
@@ -45,8 +44,8 @@ Comment[ta]=Tcl §¸¡ôÒ
 Comment[tr]=Tcl dosyası
 Comment[uk]=Файл Tcl
 Comment[vi]=File Tcl 
+Comment[xh]=Ifayile ye Tcl
 Comment[zh_CN.GB2312]=Tcl 文件
-Comment[zh_TW.Big5]=Tcl 檔案
 Type=MimeType
 MimeType=text/x-tcl
 Patterns=*.tcl;*.tk;

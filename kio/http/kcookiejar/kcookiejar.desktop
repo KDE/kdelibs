@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=Service
 Name=HTTP Cookie Jar
-Name[af]=HTTP KOEKIE HOUER
 Name[az]=HTTP Cookie Qutusu
 Name[br]=Bac'h toupinoÃ¹ HTTP
 Name[bs]=HTTP staklenica sa kolačićima
@@ -37,7 +36,7 @@ Name[ta]=HTTP À½¢Â¡Ãî º¡Ê
 Name[tr]=HTTP Cookie Kutusu
 Name[uk]=Глечик з куками HTTP
 Name[vi]=Hộp HTTP Cookie 
-Name[zh_TW.Big5]=HTTP Cookie 瓶裝器
+Name[xh]=HTTP Cookie jar
 Exec=kcookiejar
 X-DCOP-ServiceType=Unique
 ServiceTypes=Daemon

@@ -213,14 +213,16 @@ void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
 {
     if ( cfg && proto.find("http", 0, false) == 0 )
     {
-        cfg->setConfigData( proto, host, "Languages", d->language );
-        cfg->setConfigData( proto, host, "Charsets", d->charsets );
         cfg->setConfigData( proto, host, "Cookies",
                             d->useCookie ? "true":"false" );
 
         // These might have already been set so check first
         // to make sure that we do not trumpt settings sent
         // by apps or end-user.
+        if ( cfg->configData(proto,host)["Languages"].isEmpty() )
+            cfg->setConfigData( proto, host, "Languages", d->language );
+        if ( cfg->configData(proto,host)["Charsets"].isEmpty() )
+            cfg->setConfigData( proto, host, "Charsets", d->charsets );
         if ( cfg->configData(proto,host)["UseCache"].isEmpty() )
             cfg->setConfigData( proto, host, "UseCache",
                                 d->useCache ? "true":"false" );

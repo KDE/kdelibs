@@ -1,10 +1,8 @@
 [Misc]
 Name=Qt CDE
-Name[af]=QT CDE
 Name[de]=Qt-CDE
 Name[no_NY]=Qt-CDE
 Comment=Built-in unthemed CDE style
-Comment[af]=INGEBOUDE ONGETEMADE CDE STYL
 Comment[az]=Yerləşmiş, örtüsüz CDE tərzi
 Comment[bg]=Вграден в Qt стил без тема, приличащ на CDE
 Comment[br]=Giz CDE enframmet anwisket
@@ -47,7 +45,7 @@ Comment[ta]=¯ûÇ¨Áó¾ §ÁõÀÎò¾¢Â CDE À¡ó¾õ
 Comment[tr]=Yerleşik, temasız CDE stili
 Comment[uk]=Вбудований стиль CDE без теми
 Comment[vi]=Kiểu CDE chưa dùng theme có sẵn 
+Comment[xh]=Yakhelwe-kokungenamxholo wakuxoxwa wohlobo lwe CDE
 Comment[zh_CN.GB2312]=内建的无主题 CDE 风格
-Comment[zh_TW.Big5]=內建的非主題式 CDE 風格
 [KDE]
 widgetStyle=CDE

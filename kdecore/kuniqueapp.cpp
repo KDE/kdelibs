@@ -88,8 +88,8 @@ static int kunique_app_my_system (const char *command) {
    if (pid == -1)
       return -1;
    if (pid == 0) {
-      setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
       setgid( getgid() );
+      setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
       const char* shell = "/bin/sh";
       if (getenv("SHELL"))
          shell = getenv("SHELL");

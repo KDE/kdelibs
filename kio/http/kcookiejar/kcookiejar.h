@@ -248,12 +248,13 @@ public:
      *     - It has a cookie originating from the domain
      *     - It has a specific advice set for the domain
      */
-    const QStringList *getDomainList();
+    const QStringList& getDomainList();
 
     /**
      * Get a list of all cookies in the cookie jar originating from _domain.
      */
-    const KHttpCookieList *getCookieList(const QString &_domain);
+    const KHttpCookieList *getCookieList(const QString & _domain,
+                                         const QString& _fqdn );
 
     /**
      * Remove & delete a cookie from the jar.
@@ -296,7 +297,7 @@ public:
     /**
      * Returns a list of domains (_domainList) relevant for this host.
      */
-    static bool extractDomains(const QString &_fqdn,
+    static void extractDomains(const QString &_fqdn,
                                QStringList &_domainList);
 
     static QString adviceToStr(KCookieAdvice _advice);

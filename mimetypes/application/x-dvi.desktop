@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=TeX Device Independent file
-Comment[af]=TEX TOESTEL ONAFHANKLIKE LêER
 Comment[az]=Avadanlıqdan bağımsız TeX faylı
 Comment[bg]=Независим от устройства файл на TeX
 Comment[br]=Restr TeX dizalc'h ouzh an drobarzhell
@@ -43,8 +42,8 @@ Comment[ta]=TeX º¡¾Éïº¡Ã¡ì §¸¡ôÒ
 Comment[tr]=Aygıttan bağımsız TeX dosyası
 Comment[uk]=Файл TeX-DVI
 Comment[vi]=File thiết bềEđộc lập TeX 
+Comment[xh]=Ifayile ezimeleyo yecebo le TeX
 Comment[zh_CN.GB2312]=TeX 设备无关文件
-Comment[zh_TW.Big5]=TeX 設備獨立檔案
 Icon=dvi
 Type=MimeType
 MimeType=application/x-dvi

@@ -2,7 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=KDEDModule
 Comment=KDED Module
-Comment[af]=KDED MODULE
 Comment[az]=KDED Modulu
 Comment[bg]=KDED Модул
 Comment[cs]=KDED modul
@@ -19,9 +18,11 @@ Comment[hu]=KDED modul
 Comment[is]=KDED eining
 Comment[it]=Modulo di KDED
 Comment[ja]=KDEDモジュール
+Comment[ko]=KDED 모듈
 Comment[lt]=KDED modulis
 Comment[lv]=KDED Modulis
 Comment[mt]=Modulu KDED
+Comment[no]=KDED-modul
 Comment[no_NY]=KDED-modul
 Comment[pl]=Moduł KDED
 Comment[pt_BR]=Módulo do KDED
@@ -35,6 +36,7 @@ Comment[ta]=KDED ÜÚ
 Comment[tr]=KDED Modülü
 Comment[uk]=Модуль KDED
 Comment[vi]=Mô đun KDED 
+Comment[xh]=Umnqongo wokulinganisela we KDED
 Comment[zh_CN.GB2312]=KDED 模块
 [PropertyDef::X-KDE-Factory]
 Type=QString

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=TeX file
-Comment[af]=TEX LêER
 Comment[az]=TeX faylı
 Comment[bg]=Документ на TeX
 Comment[br]=Restr TeX
@@ -45,8 +44,8 @@ Comment[ta]=TeX §¸¡ôÒ
 Comment[tr]=TeX dosyası
 Comment[uk]=Документ TeX
 Comment[vi]=File TeX 
+Comment[xh]=Ifayile ye TeX
 Comment[zh_CN.GB2312]=TeX 文件
-Comment[zh_TW.Big5]=TeX 檔案
 Icon=tex
 Type=MimeType
 MimeType=text/x-tex

@@ -2,3 +2,6 @@ kdelibs3-cups: menu-item-contains-unknown-tag kderemove /usr/lib/menu/kdelibs3-c
 kdelibs3-cups: no-shlibs-control-file usr/lib/libcupsdconf.so
 kdelibs3-cups: no-shlibs-control-file usr/lib/kde2/libkdeprint_cups.so
 kdelibs3-cups: postinst-must-call-ldconfig usr/lib/libcupsdconf.so
+kdelibs3-cups: shlib-with-non-pic-code usr/lib/kde2/libkdeprint_cups.so
+kdelibs3-cups: shlib-with-non-pic-code usr/lib/libcupsdconf.so
+

@@ -112,7 +112,7 @@ execute <module.arts>
 */
 
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
 #include "soundserver.h"
 #include "dispatcher.h"
 #include "artsversion.h"

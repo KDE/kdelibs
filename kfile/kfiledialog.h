@@ -452,6 +452,8 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
+     *         @li a relative path or a filename determining the
+     *             directory to start in and the file to be selected.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
@@ -479,6 +481,8 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
+     *         @li a relative path or a filename determining the
+     *             directory to start in and the file to be selected.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.

@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/x-diff
 Comment=Differences between files
-Comment[af]=VERSKILLE TUSSEN LêERS
 Comment[az]=İki fayl arasındakı qısa fərqlər
 Comment[bg]=Различия между файлове
 Comment[cs]=Souhrn rozdílů mezi soubory
@@ -37,8 +36,8 @@ Comment[ta]=­ÃñÎ §¸¡ôÒ¸Ùì¸¢¨¼§Â ¯ûÇ §ÅÚÀ¡Î¸û
 Comment[tr]=İki dosya arasındaki özet farklar
 Comment[uk]=Різниця двох файлів
 Comment[vi]=Khác nhau giữa các files 
+Comment[xh]=Iyantlukwano phakathi kweefayile
 Comment[zh_CN.GB2312]=文件的差异
-Comment[zh_TW.Big5]=檔案間的差異
 Icon=txt
 Type=MimeType
 Patterns=*.diff;*.patch

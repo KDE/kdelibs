@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 220
-#define KDE_VERSION_STRING "2.2"
+#define KDE_VERSION 221
+#define KDE_VERSION_STRING "2.2.1"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 2
-#define KDE_VERSION_RELEASE 0
+#define KDE_VERSION_RELEASE 1
 
 class KConfig;
 class KCharsets;
@@ -851,6 +851,13 @@ private:
 #endif
 
 // $Log$
+// Revision 1.227.2.1  2001/08/22 18:57:52  waba
+// Preparing for KDE 2.2.1
+//
+// Revision 1.227  2001/07/29 06:03:38  waba
+// -#define KDE_VERSION_STRING "2.2beta1"
+// +#define KDE_VERSION_STRING "2.2"
+//
 // Revision 1.226  2001/07/20 22:25:10  waba
 // Add KDE 3.0 todo items.
 //

@@ -1,17 +1,19 @@
 [KDE Print Entry]
 PrintSystem=cups
 Comment=CUPS (Common Unix Print System)
-Comment[af]=CUPS (GEMEENSKAPLIKE UNIX DRUK STELSEL)
 Comment[da]=CUPS (Fælles Unix Udskrifts System)
 Comment[eo]=CUPS (Kapabla Uniks-pressistemo)
 Comment[es]=CUPS (sistema de impresión común para Unix)
 Comment[he]=(סקינויל הצופנ הספדה תכרעמ) CUPS
+Comment[ko]=CUPS (공통 유닉스 인쇄 시스템)
 Comment[lt]=CUPS (Bendra Unix Spausdinimo Sistema)
 Comment[lv]=CUPS (Kopējā Unix Drukas Sistēma)
+Comment[no]=CUPS (Common Unix Printing System)
 Comment[no_NY]=CUPS ('Common Unix Print System', utskriftssystem)
 Comment[pl]=CUPS (Wspólny System Drukowania dla Uniksa)
 Comment[sl]=CUPS (skupni tiskalniški sistem za Unix)
 Comment[tr]=CUPS (Common Unix Print System - Genel Unix Yazdırma Sistemi)
+Comment[xh]=CUPS (Indlela elula yoshicilelo lwe Unix)
 Comment[zh_CN.GB2312]=CUPS (通用 Unix 打印系统)
 DetectUris=service:/ipp,config:/cups/cupsd.conf
 DetectPrecedence=10

@@ -39,6 +39,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <assert.h>
 #include <signal.h>
@@ -132,11 +133,11 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
                             (protocol == "https") )
 {
   m_protocol = protocol;
+  m_bKeepAlive = false;
+  m_bUseCache = true;
   m_maxCacheAge = 0;
   m_fcache = 0;
-  m_bKeepAlive = false;
   m_iSize = -1;
-  m_bUseCache = true;
   m_HTTPrev = HTTP_Unknown;
 
   m_proxyConnTimeout = DEFAULT_PROXY_CONNECT_TIMEOUT;
@@ -197,6 +198,7 @@ void HTTPProtocol::resetSessionSettings()
 
   m_bCanResume = false;
   m_bUnauthorized = false;
+  m_bIsTunneled = false;
 }
 
 void HTTPProtocol::setHost( const QString& host, int port,
@@ -313,6 +315,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         {
             kdDebug(7103) << "Unset Tunneling flag!" << endl;
             setEnableSSLTunnel( false );
+            m_bIsTunneled = true;
             continue;
         }
         break;
@@ -729,12 +732,21 @@ bool HTTPProtocol::http_open()
     kdDebug(7103) << "Attempting to tunnel through a proxy..." << endl;
     header = QString("CONNECT %1:%2 HTTP/1.1"
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
+
+    // Identify who you are to the proxy server!
+    if ( config()->readBoolEntry("SendUserAgent", true) )
+    {
+      QString agent = metaData("UserAgent");
+      if( !agent.isEmpty() )
+        header += "User-Agent: " + agent + "\r\n";
+    }
+
     header += proxyAuthenticationHeader();
   }
   else
   {
     // format the URI
-    if (m_state.do_proxy)
+    if (m_state.do_proxy && !m_bIsTunneled)
     {
       KURL u;
       u.setUser( m_state.user );
@@ -763,12 +775,31 @@ bool HTTPProtocol::http_open()
         header += "User-Agent: " + agent + "\r\n";
     }
 
-    if ( config()->readBoolEntry("SendReferrer", true) )
+    bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
+    if ( sendReferrer )
     {
       QString referrer = metaData("referrer");
       if (!referrer.isEmpty())
-        header += "Referer: "+referrer+"\r\n"; //Don't try to correct spelling!
+      {
+        header += "Referer: ";
+        header += referrer;
+        header += "\r\n"; //Don't try to correct spelling!
+      }
     }
+
+/*
+    if ( !sendReferrer &&
+         config()->readBoolEntry("EnableReferrerWorkaround", true) )
+    {
+      // for privacy reasons we send the URL without the filename
+      KURL u = m_request.url;
+      u.setFileName( "" );
+      u.setRef( "" );
+      header += "Referer: ";
+      header += u.url();
+      header += "\r\n";
+    }
+*/
 
     // Adjust the offset value based on the "resume" meta-data.
     QString resumeOffset = metaData("resume");
@@ -919,8 +950,9 @@ bool HTTPProtocol::http_open()
                   << " REALM= " << m_strRealm << endl
                   << " EXTRA= " << m_strAuthorization  << endl;
     }
+
     // Do we need to authorize to the proxy server ?
-    if ( m_state.do_proxy )
+    if ( m_state.do_proxy && !m_bIsTunneled )
       header += proxyAuthenticationHeader();
   }
 
@@ -935,7 +967,7 @@ bool HTTPProtocol::http_open()
   sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
   if (!sendOk)
   {
-    kdDebug(7103) << "Connection broken! (" << m_state.hostname << ")" << endl;
+    kdDebug(7103) << "http_open: Connection broken! (" << m_state.hostname << ")" << endl;
     if (m_bKeepAlive)
     {
        // With a Keep-Alive connection this can happen.
@@ -1080,8 +1112,137 @@ bool HTTPProtocol::readHeader()
     char* buf = buffer;
     while( *buf == ' ' ) buf++;
 
+    // We got a header back !
+    if (strncasecmp(buf, "HTTP/", 5) == 0) {
+
+      if (strncmp(buffer+5, "1.0 ",4) == 0)
+      {
+         m_HTTPrev = HTTP_10;
+         m_bKeepAlive = false;
+      }
+      else // Assume everything else to be 1.1 or higher....
+      {
+         m_HTTPrev = HTTP_11;
+
+         // Connections with proxies are closed by default because
+         // some proxies like junkbuster can't handle persistent
+         // connections but don't tell us.
+         // We will still use persistent connections if the proxy
+         // sends us a "Connection: Keep-Alive" header.
+         if (m_state.do_proxy)
+         {
+            m_bKeepAlive = false;
+         }
+         else
+         {
+            if (!m_bIsSSL)
+               m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
+         }
+      }
+
+      if ( m_responseCode )
+        m_prevResponseCode = m_responseCode;
+
+      m_responseCode = atoi(buffer+9);
+
+      // server side errors
+      if (m_responseCode >= 500 && m_responseCode <= 599)
+      {
+        if (m_request.method == HTTP_HEAD) {
+           // Ignore error
+        } else {
+           if (m_bErrorPage)
+              errorPage();
+           else
+           {
+              error(ERR_INTERNAL_SERVER, m_request.url.url());
+              return false;
+           }
+        }
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      // Unauthorized access
+      else if (m_responseCode == 401 || m_responseCode == 407)
+      {
+        // Double authorization requests, i.e. a proxy auth
+        // request followed immediately by a regular auth request.
+        if ( m_prevResponseCode != m_responseCode &&
+            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
+          saveAuthorization();
+
+        m_bUnauthorized = true;
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      // Any other client errors
+      else if (m_responseCode >= 400 && m_responseCode <= 499)
+      {
+        // Tell that we will only get an error page here.
+        if (m_bErrorPage)
+           errorPage();
+        else
+        {
+           error(ERR_DOES_NOT_EXIST, m_request.url.url());
+           return false;
+        }
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      else if (m_responseCode == 307)
+      {
+        // 307 Temporary Redirect
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      else if (m_responseCode == 304)
+      {
+        // 304 Not Modified
+        // The value in our cache is still valid.
+        cacheValidated = true;
+      }
+      else if (m_responseCode >= 301 && m_responseCode<= 303)
+      {
+        // 301 Moved permanently
+        // 302 Found (temporary location)
+        // 303 See Other
+        if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
+        {
+           // NOTE: This is wrong according to RFC 2616.  However,
+           // because most other existing user agent implementations
+           // treat a 301/302 response as a 303 response and preform
+           // a GET action regardless of what the previous method was,
+           // many servers have simply adapted to this way of doing
+           // things!!  Thus, we are forced to do the same thing or we
+           // won't be able to retrieve these pages correctly!!  This
+           // implementation is therefore only correct for a 303 response
+           // according to RFC 2616 section 10.3.2/3/4/8
+           m_request.method = HTTP_GET; // Force a GET
+        }
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      else if ( m_responseCode == 204 ) // No content
+      {
+        // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
+        // Short circuit and do nothing!
+        m_bError = true;
+        return false;
+      }
+      else if ( m_responseCode == 206 )
+      {
+        if ( m_request.offset )
+          m_bCanResume = true;
+      }
+      else if (m_responseCode == 100)
+      {
+        // We got 'Continue' - ignore it
+        cont = true;
+      }
+    }
+
     // are we allowd to resume?  this will tell us
-    if (strncasecmp(buf, "Accept-Ranges:", 14) == 0) {
+    else if (strncasecmp(buf, "Accept-Ranges:", 14) == 0) {
       if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
             m_bCanResume = false;
     }
@@ -1200,136 +1361,8 @@ bool HTTPProtocol::readHeader()
       setMetaData( "http-refresh", QString::fromLatin1(trimLead(buffer+8)).stripWhiteSpace() );
     }
 
-    // We got the header
-    else if (strncasecmp(buf, "HTTP/", 5) == 0) {
-      if (strncmp(buffer+5, "1.0 ",4) == 0)
-      {
-         m_HTTPrev = HTTP_10;
-         m_bKeepAlive = false;
-      }
-      else // Assume everything else to be 1.1 or higher....
-      {
-         m_HTTPrev = HTTP_11;
-         //Authentication = AUTH_None;  Do not do this here!! it is reset before each request!!!
-         // Connections with proxies are closed by default because
-         // some proxies like junkbuster can't handle persistent
-         // connections but don't tell us.
-         // We will still use persistent connections if the proxy
-         // sends us a "Connection: Keep-Alive" header.
-         if (m_state.do_proxy)
-         {
-            m_bKeepAlive = false;
-         }
-         else
-         {
-            if (!m_bIsSSL)
-               m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
-         }
-      }
-
-      if ( m_responseCode )
-        m_prevResponseCode = m_responseCode;
-
-      m_responseCode = atoi(buffer+9);
-
-      // server side errors
-      if (m_responseCode >= 500 && m_responseCode <= 599)
-      {
-        if (m_request.method == HTTP_HEAD) {
-           // Ignore error
-        } else {
-           if (m_bErrorPage)
-              errorPage();
-           else
-           {
-              error(ERR_INTERNAL_SERVER, m_request.url.url());
-              return false;
-           }
-        }
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      // Unauthorized access
-      else if (m_responseCode == 401 || m_responseCode == 407)
-      {
-        // Double authorization requests, i.e. a proxy auth
-        // request followed immediately by a regular auth request.
-        if ( m_prevResponseCode != m_responseCode &&
-            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
-          saveAuthorization();
-
-        m_bUnauthorized = true;
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      // Any other client errors
-      else if (m_responseCode >= 400 && m_responseCode <= 499)
-      {
-        // Tell that we will only get an error page here.
-        if (m_bErrorPage)
-           errorPage();
-        else
-        {
-           error(ERR_DOES_NOT_EXIST, m_request.url.url());
-           return false;
-        }
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      else if (m_responseCode == 307)
-      {
-        // 307 Temporary Redirect
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      else if (m_responseCode == 304)
-      {
-        // 304 Not Modified
-        // The value in our cache is still valid.
-        cacheValidated = true;
-      }
-      else if (m_responseCode >= 301 && m_responseCode<= 303)
-      {
-        // 301 Moved permanently
-        // 302 Found (temporary location)
-        // 303 See Other
-        if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
-        {
-           // NOTE: This is wrong according to RFC 2616.  However,
-           // because most other existing user agent implementations
-           // treat a 301/302 response as a 303 response and preform
-           // a GET action regardless of what the previous method was,
-           // many servers have simply adapted to this way of doing
-           // things!!  Thus, we are forced to do the same thing or we
-           // won't be able to retrieve these pages correctly!!  This
-           // implementation is therefore only correct for a 303 response
-           // according to RFC 2616 section 10.3.2/3/4/8
-           m_request.method = HTTP_GET; // Force a GET
-        }
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      else if ( m_responseCode == 204 ) // No content
-      {
-        // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
-        // Short circuit and do nothing!
-        m_bError = true;
-        return false;
-      }
-      else if ( m_responseCode == 206 )
-      {
-        if ( m_request.offset )
-          m_bCanResume = true;
-      }
-      else if (m_responseCode == 100)
-      {
-        // We got 'Continue' - ignore it
-        cont = true;
-      }
-    }
-
     // In fact we should do redirection only if we got redirection code
-    else if (strncasecmp(buf, "Location:", 9) == 0 ) {
+    else if (strncasecmp(buf, "Location:", 9) == 0) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
         locationStr = QCString(trimLead(buffer+9)).stripWhiteSpace();
@@ -1475,7 +1508,6 @@ bool HTTPProtocol::readHeader()
      {
         // Give cookies to the cookiejar.
         addCookies( m_request.url.url(), cookieStr );
-
      }
      else if (m_cookieMode == CookiesManual)
      {
@@ -1543,9 +1575,15 @@ bool HTTPProtocol::readHeader()
   if (!locationStr.isEmpty())
   {
     KURL u(m_request.url, locationStr);
-    if(u.isMalformed() || u.isLocalFile() )
+    if(u.isMalformed())
     {
       error(ERR_MALFORMED_URL, u.url());
+      return false;
+    }
+    if ((u.protocol() != "http") && (u.protocol() != "https") &&
+       (u.protocol() != "ftp")) 
+    {
+      error(ERR_ACCESS_DENIED, u.url());
       return false;
     }
 
@@ -1998,7 +2036,7 @@ void HTTPProtocol::decodeGzip()
   QByteArray ar;
 
   char tmp_buf[1024], *filename=strdup("/tmp/kio_http.XXXXXX");
-  unsigned long len;
+  signed long len;
   int fd;
 
 
@@ -2014,6 +2052,7 @@ void HTTPProtocol::decodeGzip()
   // And then reads it back in with gzread so it'll
   // decompress on the fly.
   while ( (len=gzread(gzf, tmp_buf, 1024))>0){
+    if (len < 0) break; // -1 is error
     int old_len=ar.size();
     ar.resize(ar.size()+len);
     memcpy(ar.data()+old_len, tmp_buf, len);
@@ -2179,11 +2218,8 @@ bool HTTPProtocol::readBody()
      // FINALLY, we compute our final speed and let everybody know that we
      // are done
      t_last = time(0L);
-     if (t_last - t_start) {
+     if (sz && t_last - t_start)
        speed(sz / (t_last - t_start));
-     } else {
-       speed(0);
-     }
      m_bufReceive.resize( 0 );
      data( QByteArray() );
      return true;
@@ -2268,10 +2304,11 @@ bool HTTPProtocol::readBody()
 
         if ( cpMimeBuffer )
         {
+          bytesReceived = mimeTypeBuffer.size();
           m_bufReceive.resize(0);
-          m_bufReceive.resize(mimeTypeBuffer.size());
+          m_bufReceive.resize(bytesReceived);
           memcpy( m_bufReceive.data(), mimeTypeBuffer.data(),
-                  mimeTypeBuffer.size() );
+                  bytesReceived );
         }
         mimeType(m_strMimeType);
         mimeTypeBuffer.resize(0);
@@ -2418,8 +2455,6 @@ bool HTTPProtocol::readBody()
   t_last = time(0L);
   if (t_last - t_start)
     speed((sz - m_request.offset) / (t_last - t_start));
-  else
-    speed(0);
 
   data( QByteArray() );
   return true;
@@ -2435,6 +2470,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
 
 void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
 {
+   kdDebug(7103) << "(" << getpid() << "): " << cookieHeader << endl;
    long windowId = m_request.window.toLong();
    QByteArray params;
    QDataStream stream(params, IO_WriteOnly);
@@ -2833,6 +2869,7 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   const char *strAuth = p;
 
   while( *p == ' ' ) p++;
+
   if ( strncasecmp( p, "Basic", 5 ) == 0 )
   {
     f = AUTH_Basic;
@@ -2859,7 +2896,7 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   /*
      This check ensures the following:
      1.) Rejection of any unknown/unsupported authentication schemes
-     2.) Useage of the strongest possible authentication schemes if
+     2.) Usage of the strongest possible authentication schemes if
          and when multiple Proxy-Authenticate or WWW-Authenticate
          header field is sent.
   */

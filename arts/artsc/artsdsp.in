@@ -8,6 +8,7 @@ version="@ARTS_VERSION@"
 # default values for script variables
 verbose=0
 set_name=0
+single_thread=0
 
 # check for artsdsp options
 while test $# -gt 0; do
@@ -23,6 +24,7 @@ while test $# -gt 0; do
 	    echo "-h, --help                show brief help"
 	    echo "-n, --name=NAME           use name to identify player to artsd"
 	    echo "-m, --mmap                emulate memory mapping (i.e. for quake)"
+        echo "-s, --single-threaded     use the single-threaded version"
 	    echo "-v, --verbose             show parameters"
 	    echo "-V, --version             show version"
 	    exit 0
@@ -61,6 +63,11 @@ while test $# -gt 0; do
 	    shift
 	    ;;
 
+    -s|--single-threaded)
+        single_thread=1
+        shift
+        ;;
+
 	*)
 	    # no more artsdsp options, get on with life
 	    break
@@ -75,6 +82,11 @@ if test "$verbose" = 1; then
     echo "artsdsp:       $version"
     echo "name:          $ARTSDSP_NAME"
     echo "command line:  $@"
+    if test "$single_thread" = 1; then
+        echo "threaded:      no"
+    else
+        echo "threaded:      yes"
+    fi
 fi
 
 # setup artsdsp preload to hijack calls made to /dev/dsp
@@ -82,7 +94,11 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 
-LD_PRELOAD=${libdir}/libartsdsp.so.0:${libdir}/libartsc.so.0
+if test "$single_thread" = 1; then
+  LD_PRELOAD=${libdir}/libartsdsp_st.so.0
+else
+  LD_PRELOAD=${libdir}/libartsdsp.so.0:${libdir}/libartsc.so.0
+fi
 if test -f /lib/libdl.so.2; then
   LD_PRELOAD=$LD_PRELOAD:/lib/libdl.so.2
 fi

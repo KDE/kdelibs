@@ -1,6 +1,5 @@
 [Misc]
 Name=KDE Step
-Name[af]=KDE STEP
 Name[de]=KDE-Step
 Name[eo]=KDE-Step
 Name[is]=KDE-step
@@ -9,8 +8,8 @@ Name[lv]=KDE Solis
 Name[mi]=Hikoi KDE
 Name[no]=KDE Steg
 Name[no_NY]=KDE-Step
+Name[xh]=Inqwanqwa le KDE
 Comment=Unthemed Next-like style
-Comment[af]=ONGETEMADE NEXT-TIPE STYL
 Comment[bg]=Стил без тема, приличащ на Next
 Comment[br]=Giz doare NeXT anwisket
 Comment[bs]=Bez teme, u stilu Nexta
@@ -52,7 +51,7 @@ Comment[ta]=¯Õ¸ÕÅ¢øÄ¡ Next-§À¡ýÈ À¡ó¾õ
 Comment[tr]=Next benzeri temasız stil
 Comment[uk]=Стиль NeXT (без теми)
 Comment[vi]=Kiểu Next chưa dùng theme 
+Comment[xh]=Okulandelayo okungenamxholo wakuxoxwa-njengo hlobo
 Comment[zh_CN.GB2312]=没有主题的类似 Nextstep 的风格
-Comment[zh_TW.Big5]=非主題式的類 Next 風格
 [KDE]
 widgetStyle=kstepstyle.la

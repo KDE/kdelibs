@@ -89,8 +89,9 @@ public:
 };
 
 
-Kded::Kded(int pollInterval, int NFSPollInterval)
+Kded::Kded(bool checkUpdates, int pollInterval, int NFSPollInterval)
   : DCOPObject("kbuildsycoca"), DCOPObjectProxy(), 
+    b_checkUpdates(checkUpdates),
     m_PollInterval(pollInterval), 
     m_NFSPollInterval(NFSPollInterval)
 {
@@ -183,6 +184,8 @@ void Kded::slotApplicationRemoved(const QCString &appId)
 
 void Kded::build()
 {
+  if (!b_checkUpdates) return;
+
   KBuildSycoca* kbs = KBuildSycoca::createBuildSycoca();
 
   delete m_pDirWatch;
@@ -369,7 +372,6 @@ KUpdateD::KUpdateD(int pollInterval, int NFSPollInterval) :
        if (!dirWatch->contains(path))
           dirWatch->addDir(path);
     }
-    runKonfUpdate();
 }
 
 KUpdateD::~KUpdateD()
@@ -497,16 +499,24 @@ int main(int argc, char *argv[])
      int PollInterval = config->readNumEntry("PollInterval", 500);
      int NFSPollInterval = config->readNumEntry("NFSPollInterval", 5000);
      int HostnamePollInterval = config->readNumEntry("HostnamePollInterval", 5000);
+     bool bCheckSycoca = config->readBoolEntry("CheckSycoca", true);
+     bool bCheckUpdates = config->readBoolEntry("CheckUpdates", true);
+     bool bCheckHostname = config->readBoolEntry("CheckHostname", true);
 
-     Kded *kded = new Kded(PollInterval, NFSPollInterval); // Build data base
+     Kded *kded = new Kded(bCheckUpdates, PollInterval, NFSPollInterval); // Build data base
 
      kded->recreate();
 
      signal(SIGTERM, sighandler);
      KDEDApplication k;
 
-     KUpdateD updateD(PollInterval, NFSPollInterval); // Watch for updates
-     KHostnameD hostnameD(HostnamePollInterval); // Watch for hostname changes
+     if (bCheckUpdates)
+        (void) new KUpdateD(PollInterval, NFSPollInterval); // Watch for updates
+
+     runKonfUpdate(); // Run it once.
+
+     if (bCheckHostname)
+        (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
      DCOPClient *client = kapp->dcopClient();
      QObject::connect(client, SIGNAL(applicationRemoved(const QCString&)),

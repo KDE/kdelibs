@@ -53,7 +53,7 @@ protected:
    /**
     * Build the whole system cache, from .desktop files
     */
-   void build(KSycocaEntryListList *, QDict<Q_UINT32> *);
+   bool build(KSycocaEntryListList *, QDict<Q_UINT32> *);
    
    /**
     * Save the ksycoca file

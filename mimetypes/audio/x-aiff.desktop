@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=MimeType
 Comment=AIFF/Amiga audio
-Comment[af]=AIFF/AMIGA AUDIO
 Comment[az]=AIFF/Amiga səsləri
 Comment[bg]=Звуков файл на AIFF/Amiga
 Comment[br]=Klevet AIFF/Amiga
@@ -36,8 +35,8 @@ Comment[ta]=AIFF/Amiga ´Ä¢
 Comment[tr]=AIFF/Amiga sesleri
 Comment[uk]=AIFF/Amiga-аудіо
 Comment[vi]=Audio AIFF/Amiga 
+Comment[xh]=AIFF/Amiga evakalayo
 Comment[zh_CN.GB2312]=AIFF/Amiga 音频文件
-Comment[zh_TW.Big5]=AIFF/Amiga 音效
 MimeType=audio/x-aiff
 Icon=sound
 Patterns=*.aiff;*.AIFF

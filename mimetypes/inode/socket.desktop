@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Socket
-Comment[af]=SOKET
 Comment[az]=Soket
 Comment[bg]=Сокет
 Comment[br]=Lugell
@@ -31,8 +30,8 @@ Comment[tr]=Soket
 Comment[uk]=Сокет
 Comment[vi]=Socket 
 Comment[wa]=Soket
+Comment[xh]=Ibhola
 Comment[zh_CN.GB2312]=套接字
-Comment[zh_TW.Big5]=插口
 Icon=socket
 Type=MimeType
 MimeType=inode/socket

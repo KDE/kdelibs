@@ -830,7 +830,8 @@ void KDockWidget::undock()
 /*********************************************************************************************/
   }
   manager->blockSignals(false);
-  emit manager->change();
+  if (!d->blockHasUndockedSignal)
+    emit manager->change();
   manager->undockProcess = false;
 
   if (!d->blockHasUndockedSignal)

@@ -2,7 +2,6 @@
 Type=MimeType
 MimeType=audio/x-scpls
 Comment=MP3 ShoutCast Playlist
-Comment[af]=MP3 SHOUTCAST LIEDJIELYS
 Comment[az]=MP3 ShoutCast Siyahısı
 Comment[bg]=Списък със звукови файлове на mp3 ShoutCast
 Comment[br]=Rollc'hoari MP3 ShoutCast
@@ -40,13 +39,14 @@ Comment[pt]=Lista de ficheiros ShoutCast
 Comment[ru]=Список звуковых файлов mp3 ShoutCast
 Comment[sk]=MP3 ShoutCast zoznam
 Comment[sl]=Seznam za predvajanje MP3 ShoutCast
+Comment[sr]=MP3 ShoutCast plejlista
 Comment[sv]=MP3 ShoutCast spellista
 Comment[ta]=MP3 ShoutCast À¡¼üÀðÊÂø
 Comment[tr]=MP3 ShoutCast Listesi
 Comment[uk]=Список MP3-ShoutCast
 Comment[vi]=Danh sách MP3 ShoutCast 
+Comment[xh]=MP3 Uluhlu lokudlala olukhethwa ngokukhwaza
 Comment[zh_CN.GB2312]=MP3 ShoutCast 播放列表
-Comment[zh_TW.Big5]=MP3 ShoutCast 播放清單
 Patterns=*.pls;*.PLS;
 Icon=sound
 

@@ -1,8 +1,8 @@
-// This file has been automatically genrated by "generate_keys.sh" 
-// Distributed under the GNU Library General Public License 
+// This file has been automatically genrated by "generate_keys.sh"
+// Distributed under the GNU Library General Public License
 
-#include <qnamespace.h> 
-#include "kckey.h" 
+#include <qnamespace.h>
+#include "kckey.h"
 
 const KKeys KKEYS[NB_KEYS] = {
 	{ "Escape", 0x1000 }, // translated
@@ -68,17 +68,17 @@ const KKeys KKEYS[NB_KEYS] = {
 	{ "F35", 0x1052 },
 	{ "Super_L", 0x1053 },
 	{ "Super_R", 0x1054 },
-	{ "Menu", 0x1055 },
+	{ "Menu", 0x1055 }, // translated
 	{ "Hyper_L", 0x1056 },
 	{ "Hyper_R", 0x1057 },
-	{ "Help", 0x1058 },
+	{ "Help", 0x1058 }, // translated
 	{ "Space", 0x20 }, // translated
 	{ "Any", Qt::Key_Space },
-	{ "Exclam", 0x21 },
+	{ "Exclam", 0x21 }, // translated
 	{ "QuoteDbl", 0x22 },
-	{ "NumberSign", 0x23 },
-	{ "Dollar", 0x24 },
-	{ "Percent", 0x25 },
+	{ "NumberSign", 0x23 }, // translated
+	{ "Dollar", 0x24 }, // translated
+	{ "Percent", 0x25 }, // translated
 	{ "Ampersand", 0x26 }, // translated
 	{ "Apostrophe", 0x27 }, // translated
 	{ "ParenLeft", 0x28 }, // translated

@@ -1,12 +1,11 @@
 [Misc]
 Name=Qt Motif
-Name[af]=QT MOTIF
 Name[de]=Qt-Motif
 Name[eo]=Qt-Motif
 Name[ko]=Qt 모티프
 Name[no_NY]=Qt-Motif
+Name[xh]=Qt Uyilo olulawulayo
 Comment=Built-in unthemed Motif style
-Comment[af]=INGEBOUDE ONGETEMADE MOTIF STYL
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[bg]=Вграден в Qt стил без тема, приличащ на Motif 
 Comment[br]=Giz Motif enframmet anwisket
@@ -47,7 +46,7 @@ Comment[ta]=¯ûÇ¨Áó¾ §ÁõÀÎò¾¢Â Motif À¡ó¾õ
 Comment[tr]=Yerleşik, temasız Motif stili
 Comment[uk]=Вбудований стиль Motif без теми
 Comment[vi]=Kiểu Motif chưa dùng theme có sẵn 
+Comment[xh]=Yakhelwe-kuhlobo loyilo olulawulayo olungenamxholo wakuxoxwa
 Comment[zh_CN.GB2312]=内建的无主题 Motif 风格
-Comment[zh_TW.Big5]=內建的非主題式 Motif 風格
 [KDE]
 widgetStyle=Motif

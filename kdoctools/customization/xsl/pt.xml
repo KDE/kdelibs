@@ -8,10 +8,10 @@
     value for the character (e.g. \U-00F3).
  -->
 <gentext key="Default" text="Por omissão"/>
-<gentext key="Documentation.by" text="Documentation by"/>
+<gentext key="Documentation.by" text="Documentação por"/>
 <gentext key="LastUpdated" text="Última Actualização"/>
 <gentext key="Portuguese" text="Português"/>
 <gentext key="Version" text="Versão"/>
 <gentext key="home-url" text="http://www.kde.org/"/>
-<gentext key="logo-alt" text="The K Desktop Environment Logo"/>
+<gentext key="logo-alt" text="Logotipo do Ambiente de Trabalho K"/>
 </localization>

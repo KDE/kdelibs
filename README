@@ -10,7 +10,7 @@ In this file:
 
 About kdelibs
 -------------
-This is version 2.2 of the KDE libraries.
+This is version 2.2.1 of the KDE libraries.
 
 This package includes libraries that are central to the development and 
 execution of a KDE program, as well as internationalization files for these 
@@ -147,8 +147,8 @@ compiler or the distribution used. For that reason, please have a look at
 http://www.kde.org/compilationfaq.html for know issues in certain OS
 environments before reporting bugs or going mad :). 
 
-gcc 3.0 is not yet able to compile all of KDE without errors, mostly due
-to bugs in this version of the compiler. Some older version of gcc 2.96
+gcc 3.0/3.0.1 is not yet able to compile all of KDE without errors, mostly 
+due to bugs in this version of the compiler. Some older version of gcc 2.96
 also have problems compiling KDE due to compiler bugs. Even though 
 compilation may not report errors with these compiler, the usage of these
 compilers may cause crashes when using the resulting executables.

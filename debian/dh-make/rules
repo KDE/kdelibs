@@ -83,7 +83,7 @@ binary-arch: build install
 	dh_installchangelogs #CHANGELOGS#
 	dh_link
 	dh_strip
-	dh_compress -X.docbook -X.css
+	dh_compress -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms
 #	dh_makeshlibs
 	dh_installdeb

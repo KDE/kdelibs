@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-bzip2
 Comment=Bzip2 file
-Comment[af]=BZIP2 LêER
 Comment[az]=Bzip2 faylı
 Comment[bg]=Архив на bzip2
 Comment[br]=Restr bzip2
@@ -47,8 +46,8 @@ Comment[tr]=Bzip2 dosyası
 Comment[uk]=Файл Bzip
 Comment[vi]=File Bzip2 
 Comment[wa]=Fitchî bzip2-rastrindou
+Comment[xh]=Ifayile ye Bzip2
 Comment[zh_CN.GB2312]=Bzip2 文件
-Comment[zh_TW.Big5]=Bzip2 檔案
 Icon=tgz
 Type=MimeType
 Patterns=*.bz2;*.BZ2;

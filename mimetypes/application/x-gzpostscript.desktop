@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Gzipped Postscript File
-Comment[af]=GZIP GEKOMPAKTEERDE POSTSCRIPT LêER
 Comment[az]=Sıxışdırılmış Postscript Faylı
 Comment[bg]=Комресиран gzip Postscript документ
 Comment[bs]=Gzipirana PostScript datoteka
@@ -22,7 +21,7 @@ Comment[is]=gzip-þjappað Postscript skjal
 Comment[it]=File postscript compresso con gzip
 Comment[ja]=GzipされたPostscriptファイル
 Comment[ko]=Gzip으로 압축된 포스트스크립트 파일
-Comment[lt]=Suglaudinta su Gzip Postscript byla
+Comment[lt]=Suspausta su Gzip Postscript byla
 Comment[lv]=Gzippots Postscript Fails
 Comment[mk]=Gzip-увана PostScript датотека
 Comment[mt]=Fajl Postscript Gzippjat
@@ -41,8 +40,8 @@ Comment[ta]=Gzip ¦ºö¾ Postscript §¸¡ôÒ
 Comment[tr]=Sıkıştırılmış Postscript Dosyası
 Comment[uk]=Файл PostScript стиснутий gzip
 Comment[vi]=File Postscript đã được Gzip 
+Comment[xh]=Ifayile yokushicilelwe phantsi okuposwayo kwe Gzipped
 Comment[zh_CN.GB2312]=压缩的 Postscript 文件
-Comment[zh_TW.Big5]=Gzip 壓縮的 Postscript 檔案
 Hidden=false
 Icon=tgz
 MimeType=application/x-gzip

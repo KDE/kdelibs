@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Packed Font file
-Comment[af]=GEKOMPAKTEERDE SKRIF TIPE LêER
 Comment[az]=Sıxışdırılmış yazı növü faylı
 Comment[bg]=Опакован шрифт файл
 Comment[br]=Restr font gwasket
@@ -45,8 +44,8 @@ Comment[ta]=¦À¡¾¢ó¾ ±ØòÐÕì §¸¡ôÒ
 Comment[tr]=Sıkıştırılmış yazıtipi dosyası
 Comment[uk]=Упакований файл шрифту
 Comment[vi]=File phông đã nén 
+Comment[xh]=Ifayile yomgca odityanisiweyo
 Comment[zh_CN.GB2312]=压缩的字体文件
-Comment[zh_TW.Big5]=包裝的字型檔案
 Icon=pk
 Type=MimeType
 MimeType=application/x-tex-pk

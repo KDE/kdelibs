@@ -243,5 +243,11 @@ i18n("QAccel", "PgUp");
 i18n("QAccel", "PgDown");
 i18n("QAccel", "Apostrophe");
 i18n("QAccel", "Ampersand");
+i18n("QAccel", "Exclam");
+i18n("QAccel", "Dollar");
+i18n("QAccel", "Percent");
+i18n("QAccel", "Menu");
+i18n("QAccel", "Help");
+i18n("QAccel", "NumberSign");
 i18n("Main Toolbar");
 

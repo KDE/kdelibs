@@ -40,7 +40,7 @@ class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
 {
   Q_OBJECT
 public:
-   Kded(int pollInterval, int NFSPollInterval);
+   Kded(bool checkUpdates, int pollInterval, int NFSPollInterval);
    virtual ~Kded();
 
    /**
@@ -112,6 +112,7 @@ protected:
     */
    KDirWatch* m_pDirWatchNfs;
 
+   bool b_checkUpdates;
    int m_PollInterval;
    int m_NFSPollInterval;
 

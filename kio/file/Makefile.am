@@ -1,5 +1,7 @@
 ## Makefile.am of kdebase/kioslave/file
 
+AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
+
 INCLUDES = -I$(srcdir)/.. -I$(srcdir)/../.. $(all_includes)
 
 ####### Files

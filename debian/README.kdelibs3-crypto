@@ -1,0 +1,45 @@
+Building kdelibs3-crypto
+========================
+
+For the time being (may change prior to woody's release) all crypto bits must
+be seperated from the non-crypto bits and go into the non-us archive...this
+or all of it goes there.  Since this would be just a big royal pain in the
+rear we break out the crypto bits.
+
+In order to best handle this I've abused CVS to acomplish a few things:
+
+   1: cut down on the size of the source archive.
+   2: make things easier for me.
+
+The reason for #1 is simple...if we have 2 kdelibs*orig.tar.gz files in
+the archive...one in main and one in non-us...we've basically added a extra
+6.5 megs (currently) which is truely unecessary.
+
+So...to reduce the archive size I just use CVS to pull the files necessary
+to build.  I then create a new .orig.tar.gz file based on this without 
+modifying any files within the CVS tree thus preserving the upstream code.
+
+ok...blah blah blah...
+
+If you want to build kdelibs3-crypto from CVS this is what you need to do.
+
+start with checking out kdelibs (this is the easiest way to do this)
+
+then rm -rf all the subdirs within kdelibs/ except:
+
+    debian/
+    admin/
+    kssl/
+    kio/http
+    libltdl
+
+under kdelibs/kio remove all the files except configure.in.in
+under debian/ remove all the files except changelog control rules copyright
+    and debian-ssl.diff
+
+then apply the debian-ssl.diff patch
+
+and build.
+
+Ivan
+

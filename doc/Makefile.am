@@ -1,3 +1,3 @@
 
-SUBDIRS = common kspell api
+SUBDIRS = common
 

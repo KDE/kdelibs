@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Electronic Business Card
-Comment[af]=ELEKTRONIESE BESIGHEID KAART
 Comment[az]=Electronik Ticarət Kartı
 Comment[bg]=Електронна визитна картичка
 Comment[br]=Kartenn AferioÃ¹ Elektronek
@@ -44,8 +43,8 @@ Comment[ta]=Á¢ý ¦¾¡Æ¢Äð¨¼
 Comment[tr]=Electronik Ticaret Kartı
 Comment[uk]=Електронна візитна картка
 Comment[vi]=Thẻ tín dụng điện tử (EBC) 
+Comment[xh]=Ikhadi leshishini lombane
 Comment[zh_CN.GB2312]=电子商业卡片
-Comment[zh_TW.Big5]=電子商務卡
 Icon=vcard
 Type=MimeType
 MimeType=text/x-vcard

@@ -179,9 +179,9 @@ int mkstemp (char* _template); /* defined in fakes.c */
 #endif
 
 /*
- * AIX prior to 5.1 fails to provide a declaration for initgroups()
+ * AIX prior to 4.3.3ml8 fails to provide a declaration for initgroups()
  */
-#if defined(_AIX) && !defined(_AIX43) && !defined(_AIX51)
+#if defined(HAVE_INITGROUPS) && !defined(HAVE_INITGROUPS_PROTO)
 #include <grp.h>
 #ifdef __cplusplus
 extern "C"

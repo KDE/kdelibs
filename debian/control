@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: debhelper (>> 3.0.0), autoconf2.13, automake, flex, bison, gettext, libqt-dev (>= 2:2.3.1-7), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev, g++-3.0 [alpha], gcc-3.0 [alpha]
+Build-Depends: debhelper (>> 3.0.0), autoconf2.13, automake, flex, bison, gettext, libqt-dev (>= 2:2.3.1-11), objprelink [i386], libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
 Build-Depends-Indep: kdoc, qt-doc
 Section: libs
 Priority: optional
@@ -9,11 +9,10 @@ Standards-Version: 3.5.5
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1)
-Depends: ${shlibs:Depends}, python-base
+Replaces: kdelibs2g
+Depends: ${shlibs:Depends}, python-base, xbase-clients
 Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
-Conflicts: kdelibs3-crypto (<< 4:2.2.0-0beta1-1)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -21,7 +20,6 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs3-cups
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<< 4:2.2.0-0beta1-2)
 Depends: ${shlibs:Depends}
 Enhances: kdebase
 Suggests: cupsomatic-ppd
@@ -48,7 +46,7 @@ Description: aRts Sound system
 Package: libkmid
 Architecture: any
 Section: libs
-Replaces: libkmid-alsa, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
+Replaces: libkmid-alsa
 Depends: ${shlibs:Depends}
 Enhances: kdebase
 Conflicts: libkmid-alsa
@@ -65,7 +63,8 @@ Description: aRts Sound system (midi/kmedia support libraries)
 Package: libkmid-alsa
 Architecture: any
 Section: libs
-Replaces: libkmid, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
+Priority: extra
+Replaces: libkmid
 Depends: ${shlibs:Depends}
 Enhances: kdebase
 Provides: libkmid
@@ -82,6 +81,7 @@ Description: aRts Sound system (midi/kmedia support libraries with alsa)
 Package: libarts-alsa
 Architecture: any
 Section: libs
+Priority: extra
 Replaces: libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
@@ -100,6 +100,7 @@ Description: aRts Sound system (built with alsa support)
 Package: libarts-dev
 Architecture: any
 Section: devel
+Replaces: libarts (<< ${Source-Version}), libarts-alsa (<< ${Source-Version})
 Depends: libarts (= ${Source-Version}) | libarts-alsa (= ${Source-Version}), libc6-dev, libaudiofile-dev
 Suggests: kdelibs-dev
 Description: aRts Sound system (development files)
@@ -130,10 +131,10 @@ Description: KDE core library documentation
 Package: kdelibs-dev
 Architecture: any
 Section: devel
-Replaces: kdelibs2g-dev, kdelibs3 (<< 4:2.2.0-0.1beta1-1), kdelibs3-dev
+Replaces: kdelibs2g-dev
 Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.1-7), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 Recommends: kdelibs3-cups (= ${Source-Version})
-Conflicts: kdelibs2g-dev, kdelibs3-dev
+Conflicts: kdelibs2g-dev
 Suggests: kdelibs3-doc, kdoc, libxml2-dev, libxslt1-dev, libasound1-dev, automake, autoconf, libtool
 Description: KDE core libraries (development files)
  KDE core libraries.

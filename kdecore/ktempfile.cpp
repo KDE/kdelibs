@@ -90,9 +90,9 @@ bool
 KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 		  int mode)
 {
-   mTmpName = filePrefix+QString("XXXXXX")+fileExtension;
-   QCString nme = QFile::encodeName(mTmpName);
-   if((mFd = mkstemps(nme.data(), nme.length()-nme.findRev('X')-1)) < 0)
+   QCString ext = QFile::encodeName(fileExtension);
+   QCString nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
+   if((mFd = mkstemps(nme.data(), ext.length())) < 0)
    {
        mError = EACCES;
        mTmpName = QString::null;
