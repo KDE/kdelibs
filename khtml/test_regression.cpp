@@ -1,7 +1,7 @@
 /**
  * This file is part of the KDE project
  *
- * (C) 2001 Peter Kelly (pmk@post.com)
+ * (C) 2001,2003 Peter Kelly (pmk@post.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -55,8 +55,6 @@
 #include <qwidget.h>
 #include <qfileinfo.h>
 
-#include <kjs/kjs.h>
-
 #include "decoder.h"
 #include "dom/dom2_range.h"
 #include "dom/dom_exception.h"
@@ -71,6 +69,7 @@
 #include "misc/loader.h"
 #include "ecma/kjs_dom.h"
 #include "ecma/kjs_window.h"
+#include "ecma/kjs_binding.h"
 
 using namespace khtml;
 using namespace DOM;
@@ -105,115 +104,107 @@ void PageLoader::partCompleted()
 
 // -------------------------------------------------------------------------
 
-RegTestObject::RegTestObject(RegressionTest *_regTest)
+RegTestObject::RegTestObject(ExecState *exec, RegressionTest *_regTest)
 {
     m_regTest = _regTest;
-    Imp::put("reportResult", new RegTestFunction(m_regTest,RegTestFunction::ReportResult,3), DontEnum);
+    put(exec, "reportResult", Object(new RegTestFunction(exec,m_regTest,RegTestFunction::ReportResult,3)), DontEnum);
 }
 
-KJSO RegTestObject::get(const KJS::UString &p) const
-{
-    return HostImp::get(p);
-}
-
-void RegTestObject::put(const KJS::UString &p, const KJS::KJSO& v)
-{
-    HostImp::put(p,v);
-}
-
-RegTestFunction::RegTestFunction(RegressionTest *_regTest, int _id, int length)
+RegTestFunction::RegTestFunction(ExecState *exec, RegressionTest *_regTest, int _id, int length)
 {
     m_regTest = _regTest;
     id = _id;
-    put("length",Number(length));
+    put(exec,"length",Number(length));
 }
 
-Completion RegTestFunction::execute(const KJS::List &args)
+bool RegTestFunction::implementsCall() const
 {
-    KJSO result;
+    return true;
+}
 
+Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+    Value result = Undefined();
     switch (id) {
 	case ReportResult: {
-	    bool passed = args[0].toBoolean().value();
-	    QString testname = args[1].toString().value().qstring();
-	    if (args[1].isA(UndefinedType) || args[1].isA(NullType))
-		testname = "";
-	    QString description = args[2].toString().value().qstring();
-	    if (args[2].isA(UndefinedType) || args[2].isA(NullType))
-		description = "";
-	    m_regTest->reportResult(passed,testname,description);
-	    result = KJS::Undefined();
-	    }
-	    break;
+            bool passed = args[0].toBoolean(exec);
+            QString testname = args[1].toString(exec).qstring();
+            if (args[1].isA(UndefinedType) || args[1].isA(NullType))
+                testname = "";
+            QString description = args[2].toString(exec).qstring();
+            if (args[2].isA(UndefinedType) || args[2].isA(NullType))
+                description = "";
+            m_regTest->reportResult(passed,testname,description);
+            break;
+        }
 	case CheckOutput: {
-	    QByteArray dumpData = m_regTest->getPartOutput();
-	    QString filename = args[0].toString().value().qstring();
-	    result = Boolean(m_regTest->checkOutput(filename+".dump",dumpData));
-	    }
-	    break;
+            QByteArray dumpData = m_regTest->getPartOutput();
+            QString filename = args[0].toString(exec).qstring();
+            result = Boolean(m_regTest->checkOutput(filename+".dump",dumpData));
+            break;
+        }
     }
 
-    return Completion(Normal,result);
+    return result;
 }
 
 // -------------------------------------------------------------------------
 
-KHTMLPartObject::KHTMLPartObject(KHTMLPart *_part)
+KHTMLPartObject::KHTMLPartObject(ExecState *exec, KHTMLPart *_part)
 {
     m_part = _part;
-    Imp::put("openPage", new KHTMLPartFunction(m_part,KHTMLPartFunction::OpenPage,1), DontEnum);
-    Imp::put("open",     new KHTMLPartFunction(m_part,KHTMLPartFunction::OpenPage,1), DontEnum);
-    Imp::put("write",    new KHTMLPartFunction(m_part,KHTMLPartFunction::OpenPage,1), DontEnum);
-    Imp::put("close",    new KHTMLPartFunction(m_part,KHTMLPartFunction::OpenPage,0), DontEnum);
+    put(exec, "openPage", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::OpenPage,1)), DontEnum);
+    put(exec, "open",     Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Open,1)), DontEnum);
+    put(exec, "write",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Write,1)), DontEnum);
+    put(exec, "close",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Close,0)), DontEnum);
 }
 
-KJSO KHTMLPartObject::get(const UString &p) const
+Value KHTMLPartObject::get(ExecState *exec, const UString &propertyName) const
 {
-    if (p == "document")
-	return getDOMNode(m_part->document());
-    else if (p == "window")
-	return Window::retrieveWindow(m_part);
-
-    return HostImp::get(p);
+    if (propertyName == "document")
+        return getDOMNode(exec,m_part->document());
+    else if (propertyName == "window")
+        return Object(Window::retrieveWindow(m_part));
+    else
+        return ObjectImp::get(exec,propertyName);
 }
 
-void KHTMLPartObject::put(const UString &p, const KJSO& v)
-{
-    return HostImp::put(p,v);
-}
-
-KHTMLPartFunction::KHTMLPartFunction(KHTMLPart *_part, int _id, int length)
+KHTMLPartFunction::KHTMLPartFunction(ExecState *exec, KHTMLPart *_part, int _id, int length)
 {
     m_part = _part;
     id = _id;
-    put("length",Number(length));
+    put(exec,"length",Number(length));
 }
 
-Completion KHTMLPartFunction::execute(const List &args)
+bool KHTMLPartFunction::implementsCall() const
 {
-    KJSO result;
+    return true;
+}
+
+Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+    Value result = Undefined();
 
     switch (id) {
-	case OpenPage: {
-	    QString filename = args[0].toString().value().qstring();
-	    QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absFilePath();
-	    KURL url;
-	    url.setProtocol("file");
-	    url.setPath(fullFilename);
-	    PageLoader::loadPage(m_part,url);
-	    }
-	    break;
-	case Open:
-	    break;
-	case Write:
-	    break;
-	case Close:
-	    break;
+        case OpenPage: {
+            QString filename = args[0].toString(exec).qstring();
+            QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absFilePath();
+            KURL url;
+            url.setProtocol("file");
+            url.setPath(fullFilename);
+            PageLoader::loadPage(m_part,url);
+        }
+            break;
+        case Open:
+            break;
+        case Write:
+            break;
+        case Close:
+            break;
     }
 
-    return Completion(Normal,result);
+    return result;
 }
-
 
 // -------------------------------------------------------------------------
 
@@ -225,7 +216,6 @@ static KCmdLineOptions options[] = {
 
 int main(int argc, char *argv[])
 {
-
     KCmdLineArgs::init(argc, argv, "test_regression", "Regression tester for khtml", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
 
@@ -316,7 +306,6 @@ void RegressionTest::runTests(QString relDir)
     for (uint fileno = 0; fileno < sourceDir.count(); fileno++) {
 	QString filename = sourceDir[fileno];
 
-
 	QString relFilename;
 	if (relDir == "")
 	    relFilename = filename;
@@ -373,12 +362,12 @@ void RegressionTest::testJSFile(QString filename)
     // create interpreter
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions
-    KJScript *kjs = new KJScript();
-    kjs->enableDebug();
+    Object global(new ObjectImp());
+    ScriptInterpreter interp(global,m_part);
+    ExecState *exec = interp.globalExec();
 
-    KJSO global(kjs->globalObject());
-    global.put("part", new KHTMLPartObject(m_part));
-    global.put("regtest", new RegTestObject(this));
+    global.put(exec, "part", Object(new KHTMLPartObject(exec,m_part)));
+    global.put(exec, "regtest", Object(new RegTestObject(exec,this)));
 
     QString fullSourceName = m_sourceFilesDir+"/"+filename;
     QFile sourceFile(fullSourceName);
@@ -402,8 +391,7 @@ void RegressionTest::testJSFile(QString filename)
     sourceFile.close();
     QString code(fileData);
 
-
-    kjs->evaluate(code.latin1());
+    interp.evaluate(code.latin1());
 }
 
 bool RegressionTest::checkOutput(QString againstFilename, QByteArray data)

@@ -1,7 +1,7 @@
-/*
+/**
  * This file is part of the KDE project
  *
- * (C) 2001 Peter Kelly (pmk@post.com)
+ * (C) 2001,2003 Peter Kelly (pmk@post.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,9 +26,10 @@
 
 #include <khtml_part.h>
 #include <kurl.h>
-#include <kjs/object.h>
+#include <qobject.h>
 #include <kjs/ustring.h>
-#include <kjs/function.h>
+#include <kjs/object.h>
+#include <kjs/interpreter.h>
 
 class RegressionTest;
 
@@ -49,12 +50,11 @@ public slots:
 /**
  * @internal
  */
-class RegTestObject : public KJS::HostImp
+class RegTestObject : public KJS::ObjectImp
 {
 public:
-    RegTestObject(RegressionTest *_regTest);
-    KJS::KJSO get(const KJS::UString &p) const;
-    void put(const KJS::UString &p, const KJS::KJSO& v);
+    RegTestObject(KJS::ExecState *exec, RegressionTest *_regTest);
+
 private:
     RegressionTest *m_regTest;
 };
@@ -62,12 +62,16 @@ private:
 /**
  * @internal
  */
-class RegTestFunction : public KJS::InternalFunctionImp
+class RegTestFunction : public KJS::ObjectImp
 {
 public:
-    RegTestFunction(RegressionTest *_regTest, int _id, int length);
-    KJS::Completion execute(const KJS::List &);
+    RegTestFunction(KJS::ExecState *exec, RegressionTest *_regTest, int _id, int length);
+
+    bool implementsCall() const;
+    KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
+
     enum { ReportResult, CheckOutput };
+
 private:
     RegressionTest *m_regTest;
     int id;
@@ -76,12 +80,13 @@ private:
 /**
  * @internal
  */
-class KHTMLPartObject : public KJS::HostImp
+class KHTMLPartObject : public KJS::ObjectImp
 {
 public:
-    KHTMLPartObject(KHTMLPart *_part);
-    KJS::KJSO get(const KJS::UString &p) const;
-    void put(const KJS::UString &p, const KJS::KJSO& v);
+    KHTMLPartObject(KJS::ExecState *exec, KHTMLPart *_part);
+
+    virtual KJS::Value get(KJS::ExecState *exec, const KJS::UString &propertyName) const;
+
 private:
     KHTMLPart *m_part;
 };
@@ -89,11 +94,14 @@ private:
 /**
  * @internal
  */
-class KHTMLPartFunction : public KJS::InternalFunctionImp
+class KHTMLPartFunction : public KJS::ObjectImp
 {
 public:
-    KHTMLPartFunction(KHTMLPart *_part, int _id, int length);
-    KJS::Completion execute(const KJS::List &);
+    KHTMLPartFunction(KJS::ExecState *exec, KHTMLPart *_part, int _id, int length);
+
+    bool implementsCall() const;
+    KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
+
     enum { OpenPage, Open, Write, Close };
 private:
     KHTMLPart *m_part;
