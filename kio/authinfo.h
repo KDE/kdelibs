@@ -21,13 +21,12 @@
 #ifndef __KIO_AUTHINFO_H
 #define __KIO_AUTHINFO_H
 
-#include <qdatastream.h>
-#include <qstring.h>
+#include <qmap.h>
+#include <qlist.h>
 
-#include <kurl.h>
+class KURL;
 
-namespace KIO
-{
+namespace KIO {
 
 /*
  * This class is intended to make it easier to prompt for, cache
@@ -222,7 +221,61 @@ protected:
     bool modified;
 };
 
+/**
+ * This class provides an interface for parsing
+ *
+ * @short An interface to .kionetrc and the ftp .netrc files
+ * @author Dawit Alemayehu <adawit@kde.org>
+ */
+class NetRC
+{
+public:
+  enum LookUpMode
+  {
+      exactOnly = 0x0002,
+      defaultOnly = 0x0004,
+      presetOnly = 0x0008
+  };
 
+  struct AutoLogin
+  {
+    QString type;
+    QString machine;
+    QString login;
+    QString password;
+    QMap<QString, QStringList> macdef;
+  };
+
+  class LoginList : public QList<AutoLogin>
+  {
+  public:
+      LoginList() { setAutoDelete( true ); }
+  };
+  typedef QMap<QString, LoginList> LoginMap;
+
+  static NetRC* self();
+  bool lookup( const KURL&, AutoLogin&, bool userealnetrc = false,
+               QString type = QString::null,
+               int mode = (exactOnly|defaultOnly) );
+  const LoginMap& autoLoginEntries() const { return loginMap; }
+  void reload() { isDirty = true; }
+
+protected:
+  QString extract( const char*, const char*, int& );
+  int openf( const QString& );
+  void parse( int );
+
+private:
+  NetRC();
+  ~NetRC();
+
+private:
+  bool isDirty;
+  LoginMap loginMap;
+  static NetRC* instance;
+
+  class NetRCPrivate;
+  NetRCPrivate* d;
 };
-
+};
 #endif
