@@ -2897,7 +2897,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 }
 
 //
-// This executes in the active part on a click.
+// This executes in the active part on a click or other url selection action in
+// that active part.
 //
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
 {
