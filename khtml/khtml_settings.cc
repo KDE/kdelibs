@@ -17,6 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <qfontdatabase.h>
+
 #include "khtml_settings.h"
 #include "khtmldefaults.h"
 #include <kglobalsettings.h>
@@ -52,7 +54,7 @@ public:
     bool enforceCharset;
     QString m_encoding;
     QString m_userSheet;
-    
+
     QColor m_textColor;
     QColor m_linkColor;
     QColor m_vLinkColor;
@@ -526,6 +528,14 @@ QString KHTMLSettings::settingsToCSS() const
 
 QString KHTMLSettings::availableFamilies() const
 {
+#if QT_VERSION >= 300
+    if ( d->availFamilies.isEmpty() ) {
+        QFontDatabase db;
+
+        d->availFamilies = db.families().join(",");
+    }
+#endif
+
   return d->availFamilies;
 }
 
