@@ -22,7 +22,7 @@
 #ifndef KRESOURCES_CONFIGDIALOG_H
 #define KRESOURCES_CONFIGDIALOG_H
 
-#include <kdialog.h>
+#include <kdialogbase.h>
 
 class KLineEdit;
 class QCheckBox;
@@ -32,7 +32,7 @@ namespace KRES {
   class Resource;
   class ConfigWidget;
 
-class ConfigDialog : KDialog
+class ConfigDialog : public KDialogBase
 {
     Q_OBJECT
   public:
@@ -41,9 +41,6 @@ class ConfigDialog : KDialog
 	          Resource* resource, const char *name = 0);
 
     void setInEditMode( bool value );
-
-  public slots:
-    int exec();
 
   protected slots:
     void accept();
@@ -54,10 +51,8 @@ class ConfigDialog : KDialog
     ConfigWidget *mConfigWidget;
     Resource* mResource;
 
-    KButtonBox *mButtonBox;
     KLineEdit *mName;
     QCheckBox *mReadOnly;
-    QPushButton *mbuttonOk;
 };
 
 }

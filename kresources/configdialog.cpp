@@ -42,16 +42,19 @@ using namespace KRES;
 
 ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
     /*const QString& type,*/ Resource* resource, /*KConfig *config, */const char *name )
-  : KDialog( parent, name, true )/*, mConfig( config )*/, mResource( resource )
+  : KDialogBase( parent, name, true, i18n( "Resource Configuration" ),
+    Ok|Cancel, Ok, true )/*, mConfig( config )*/, mResource( resource )
 {
   Factory *factory = Factory::self( resourceFamily );
 
-  setCaption( i18n( "Resource Configuration" ) );
   resize( 250, 240 );
 
-  QVBoxLayout *mainLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
+  QFrame *main = makeMainWidget();
 
-  QGroupBox *generalGroupBox = new QGroupBox( 2, Qt::Horizontal,  this );
+  QVBoxLayout *mainLayout = new QVBoxLayout( main, 0, spacingHint() );
+
+  QGroupBox *generalGroupBox = new QGroupBox( 2, Qt::Horizontal, main );
+  generalGroupBox->layout()->setSpacing( spacingHint() );
   generalGroupBox->setTitle( i18n( "General Settings" ) );
 
   new QLabel( i18n( "Name:" ), generalGroupBox );
@@ -65,34 +68,28 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 
   mainLayout->addWidget( generalGroupBox );
 
-  QGroupBox *resourceGroupBox = new QGroupBox( 2, Qt::Horizontal,  this );
+  QGroupBox *resourceGroupBox = new QGroupBox( 2, Qt::Horizontal,  main );
+  resourceGroupBox->layout()->setSpacing( spacingHint() );
   resourceGroupBox->setTitle( i18n( "Resource Settings" ) );
 
-  mainLayout->addSpacing( 10 );
   mainLayout->addWidget( resourceGroupBox );
-  mainLayout->addSpacing( 10 );
+
+  mainLayout->addStretch();
 
   mConfigWidget = factory->configWidget( resource->type(), resourceGroupBox );
   if ( mConfigWidget ) {
     mConfigWidget->setInEditMode( false );
     mConfigWidget->loadSettings( mResource );
     mConfigWidget->show();
-    connect( mConfigWidget, SIGNAL( setReadOnly( bool ) ), SLOT( setReadOnly( bool ) ) );
+    connect( mConfigWidget, SIGNAL( setReadOnly( bool ) ), 
+        SLOT( setReadOnly( bool ) ) );
   }
 
+  connect( mName, SIGNAL( textChanged(const QString &)), 
+      SLOT( slotNameChanged(const QString &)));
 
-  KButtonBox *mButtonBox = new KButtonBox( this );
-
-  mButtonBox->addStretch();
-  mbuttonOk = mButtonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
-  mbuttonOk->setFocus();
-  mButtonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
-  mButtonBox->layout();
-  connect( mName, SIGNAL( textChanged ( const QString & )),this,
-           SLOT( slotNameChanged( const QString &)));
-  mainLayout->addWidget( mButtonBox );
-  slotNameChanged( mName->text());
-
+  slotNameChanged( mName->text() );
+  setMinimumSize( 400, 250 );
 }
 
 void ConfigDialog::setInEditMode( bool value )
@@ -103,12 +100,7 @@ void ConfigDialog::setInEditMode( bool value )
 
 void ConfigDialog::slotNameChanged( const QString &text)
 {
-  mbuttonOk->setEnabled( !text.isEmpty() );
-}
-
-int ConfigDialog::exec()
-{
-  return QDialog::exec();
+  enableButtonOK( !text.isEmpty() );
 }
 
 void ConfigDialog::setReadOnly( bool value )
@@ -132,7 +124,7 @@ void ConfigDialog::accept()
     mConfigWidget->saveSettings( mResource );
   }
 
-  QDialog::accept();
+  KDialog::accept();
 }
 
 #include "configdialog.moc"
