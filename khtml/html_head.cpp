@@ -42,6 +42,17 @@ HTMLBaseElement::HTMLBaseElement(HTMLBaseElementImpl *impl) : HTMLElement(impl)
 {
 }
 
+HTMLBaseElement &HTMLBaseElement::operator = (const Node &other)
+{
+    if(other.id() != ID_BASE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLBaseElement &HTMLBaseElement::operator = (const HTMLBaseElement &other)
 {
     HTMLElement::operator = (other);
@@ -88,6 +99,17 @@ HTMLIsIndexElement::HTMLIsIndexElement(HTMLIsIndexElementImpl *impl) : HTMLEleme
 {
 }
 
+HTMLIsIndexElement &HTMLIsIndexElement::operator = (const Node &other)
+{
+    if(other.id() != ID_ISINDEX)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLIsIndexElement &HTMLIsIndexElement::operator = (const HTMLIsIndexElement &other)
 {
     HTMLElement::operator = (other);
@@ -127,6 +149,17 @@ HTMLLinkElement::HTMLLinkElement(const HTMLLinkElement &other) : HTMLElement(oth
 
 HTMLLinkElement::HTMLLinkElement(HTMLLinkElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLLinkElement &HTMLLinkElement::operator = (const Node &other)
+{
+    if(other.id() != ID_LINK)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLLinkElement &HTMLLinkElement::operator = (const HTMLLinkElement &other)
@@ -254,6 +287,17 @@ HTMLMetaElement::HTMLMetaElement(HTMLMetaElementImpl *impl) : HTMLElement(impl)
 {
 }
 
+HTMLMetaElement &HTMLMetaElement::operator = (const Node &other)
+{
+    if(other.id() != ID_META)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLMetaElement &HTMLMetaElement::operator = (const HTMLMetaElement &other)
 {
     HTMLElement::operator = (other);
@@ -320,6 +364,17 @@ HTMLScriptElement::HTMLScriptElement(const HTMLScriptElement &other) : HTMLEleme
 
 HTMLScriptElement::HTMLScriptElement(HTMLScriptElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLScriptElement &HTMLScriptElement::operator = (const Node &other)
+{
+    if(other.id() != ID_SCRIPT)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLScriptElement &HTMLScriptElement::operator = (const HTMLScriptElement &other)
@@ -425,6 +480,17 @@ HTMLStyleElement::HTMLStyleElement(HTMLStyleElementImpl *impl) : HTMLElement(imp
 {
 }
 
+HTMLStyleElement &HTMLStyleElement::operator = (const Node &other)
+{
+    if(other.id() != ID_STYLE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLStyleElement &HTMLStyleElement::operator = (const HTMLStyleElement &other)
 {
     HTMLElement::operator = (other);
@@ -482,6 +548,17 @@ HTMLTitleElement::HTMLTitleElement(const HTMLTitleElement &other) : HTMLElement(
 
 HTMLTitleElement::HTMLTitleElement(HTMLTitleElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLTitleElement &HTMLTitleElement::operator = (const Node &other)
+{
+    if(other.id() != ID_TITLE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLTitleElement &HTMLTitleElement::operator = (const HTMLTitleElement &other)

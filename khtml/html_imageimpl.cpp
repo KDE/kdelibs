@@ -182,7 +182,7 @@ void  HTMLImageElementImpl::setPixmap( QPixmap *p )
 void  HTMLImageElementImpl::pixmapChanged( QPixmap *p )
 {
     if( p )
-	setPixmap( p );
+	setPixmap(p);
 }
 
 void HTMLImageElementImpl::print(QPainter *p, int _x, int _y,

@@ -45,6 +45,17 @@ HTMLTableCaptionElement::HTMLTableCaptionElement(HTMLTableCaptionElementImpl *im
 {
 }
 
+HTMLTableCaptionElement &HTMLTableCaptionElement::operator = (const Node &other)
+{
+    if(other.id() != ID_CAPTION)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLTableCaptionElement &HTMLTableCaptionElement::operator = (const HTMLTableCaptionElement &other)
 {
     HTMLElement::operator = (other);
@@ -78,6 +89,18 @@ HTMLTableCellElement::HTMLTableCellElement(const HTMLTableCellElement &other) : 
 
 HTMLTableCellElement::HTMLTableCellElement(HTMLTableCellElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLTableCellElement &HTMLTableCellElement::operator = (const Node &other)
+{
+    if( other.id() != ID_TD &&
+	other.id() != ID_TH )
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLTableCellElement &HTMLTableCellElement::operator = (const HTMLTableCellElement &other)
@@ -281,6 +304,18 @@ HTMLTableColElement::HTMLTableColElement(HTMLTableColElementImpl *impl) : HTMLEl
 {
 }
 
+HTMLTableColElement &HTMLTableColElement::operator = (const Node &other)
+{
+    if( other.id() != ID_COL &&
+	other.id() != ID_COLGROUP )
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLTableColElement &HTMLTableColElement::operator = (const HTMLTableColElement &other)
 {
     HTMLElement::operator = (other);
@@ -371,6 +406,17 @@ HTMLTableElement::HTMLTableElement(const HTMLTableElement &other) : HTMLElement(
 
 HTMLTableElement::HTMLTableElement(HTMLTableElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLTableElement &HTMLTableElement::operator = (const Node &other)
+{
+    if(other.id() != ID_TABLE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLTableElement &HTMLTableElement::operator = (const HTMLTableElement &other)
@@ -598,6 +644,17 @@ HTMLTableRowElement::HTMLTableRowElement(HTMLTableRowElementImpl *impl) : HTMLEl
 {
 }
 
+HTMLTableRowElement &HTMLTableRowElement::operator = (const Node &other)
+{
+    if(other.id() != ID_TR)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLTableRowElement &HTMLTableRowElement::operator = (const HTMLTableRowElement &other)
 {
     HTMLElement::operator = (other);
@@ -725,6 +782,19 @@ HTMLTableSectionElement::HTMLTableSectionElement(const HTMLTableSectionElement &
 
 HTMLTableSectionElement::HTMLTableSectionElement(HTMLTableSectionElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLTableSectionElement &HTMLTableSectionElement::operator = (const Node &other)
+{
+    if(other.id() != ID_TBODY &&
+       other.id() != ID_THEAD &&
+       other.id() != ID_TFOOT )
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLTableSectionElement &HTMLTableSectionElement::operator = (const HTMLTableSectionElement &other)

@@ -27,6 +27,7 @@
 
 #include "dom_node.h"
 #include "dom_element.h"
+#include "dom_doc.h"
 #include "dom_string.h"
 #include "dom_textimpl.h"
 #include "html_misc.h"
@@ -58,6 +59,22 @@ HTMLDocument::HTMLDocument(const HTMLDocument &other) : Document(other)
 
 HTMLDocument::HTMLDocument(HTMLDocumentImpl *impl) : Document(impl)
 {
+}
+
+HTMLDocument &HTMLDocument::operator = (const Node &other)
+{
+    if(other.nodeType() != DOCUMENT_NODE)
+    {
+	impl = 0;
+	return *this;
+    }    
+    Document d;
+    d = other;
+    if(!d.isHTMLDocument())
+	impl = 0;
+    else
+	Node::operator =(other);
+    return *this;
 }
 
 HTMLDocument &HTMLDocument::operator = (const HTMLDocument &other)

@@ -52,6 +52,7 @@ protected:
 public:
 
     HTMLDListElement & operator = (const HTMLDListElement &other);
+    HTMLDListElement & operator = (const Node &other);
 
     ~HTMLDListElement();
 
@@ -89,6 +90,7 @@ protected:
 public:
 
     HTMLDirectoryElement & operator = (const HTMLDirectoryElement &other);
+    HTMLDirectoryElement & operator = (const Node &other);
 
     ~HTMLDirectoryElement();
 
@@ -125,6 +127,7 @@ protected:
 public:
 
     HTMLLIElement & operator = (const HTMLLIElement &other);
+    HTMLLIElement & operator = (const Node &other);
 
     ~HTMLLIElement();
 
@@ -176,6 +179,7 @@ protected:
 public:
 
     HTMLMenuElement & operator = (const HTMLMenuElement &other);
+    HTMLMenuElement & operator = (const Node &other);
 
     ~HTMLMenuElement();
 
@@ -212,6 +216,7 @@ protected:
 public:
 
     HTMLOListElement & operator = (const HTMLOListElement &other);
+    HTMLOListElement & operator = (const Node &other);
 
     ~HTMLOListElement();
 
@@ -277,6 +282,7 @@ protected:
 public:
 
     HTMLUListElement & operator = (const HTMLUListElement &other);
+    HTMLUListElement & operator = (const Node &other);
 
     ~HTMLUListElement();
 

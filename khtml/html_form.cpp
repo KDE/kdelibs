@@ -42,6 +42,17 @@ HTMLButtonElement::HTMLButtonElement(HTMLButtonElementImpl *impl) : HTMLElement(
 {
 }
 
+HTMLButtonElement &HTMLButtonElement::operator = (const Node &other)
+{
+    if(other.id() != ID_BUTTON)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLButtonElement &HTMLButtonElement::operator = (const HTMLButtonElement &other)
 {
     HTMLElement::operator = (other);
@@ -145,6 +156,17 @@ HTMLFieldSetElement::HTMLFieldSetElement(HTMLFieldSetElementImpl *impl) : HTMLEl
 {
 }
 
+HTMLFieldSetElement &HTMLFieldSetElement::operator = (const Node &other)
+{
+    if(other.id() != ID_FIELDSET)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLFieldSetElement &HTMLFieldSetElement::operator = (const HTMLFieldSetElement &other)
 {
     HTMLElement::operator = (other);
@@ -173,6 +195,17 @@ HTMLFormElement::HTMLFormElement(const HTMLFormElement &other) : HTMLElement(oth
 
 HTMLFormElement::HTMLFormElement(HTMLFormElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLFormElement &HTMLFormElement::operator = (const Node &other)
+{
+    if(other.id() != ID_FORM)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLFormElement &HTMLFormElement::operator = (const HTMLFormElement &other)
@@ -287,6 +320,17 @@ HTMLInputElement::HTMLInputElement(const HTMLInputElement &other) : HTMLElement(
 
 HTMLInputElement::HTMLInputElement(HTMLInputElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLInputElement &HTMLInputElement::operator = (const Node &other)
+{
+    if(other.id() != ID_INPUT)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLInputElement &HTMLInputElement::operator = (const HTMLInputElement &other)
@@ -548,6 +592,17 @@ HTMLLabelElement::HTMLLabelElement(HTMLLabelElementImpl *impl) : HTMLElement(imp
 {
 }
 
+HTMLLabelElement &HTMLLabelElement::operator = (const Node &other)
+{
+    if(other.id() != ID_LABEL)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLLabelElement &HTMLLabelElement::operator = (const HTMLLabelElement &other)
 {
     HTMLElement::operator = (other);
@@ -598,6 +653,17 @@ HTMLLegendElement::HTMLLegendElement(const HTMLLegendElement &other) : HTMLEleme
 
 HTMLLegendElement::HTMLLegendElement(HTMLLegendElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLLegendElement &HTMLLegendElement::operator = (const Node &other)
+{
+    if(other.id() != ID_LEGEND)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLLegendElement &HTMLLegendElement::operator = (const HTMLLegendElement &other)
@@ -652,6 +718,17 @@ HTMLOptGroupElement::HTMLOptGroupElement(HTMLOptGroupElementImpl *impl) : HTMLEl
 {
 }
 
+HTMLOptGroupElement &HTMLOptGroupElement::operator = (const Node &other)
+{
+    if(other.id() != ID_OPTGROUP)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLOptGroupElement &HTMLOptGroupElement::operator = (const HTMLOptGroupElement &other)
 {
     HTMLElement::operator = (other);
@@ -702,6 +779,17 @@ HTMLSelectElement::HTMLSelectElement(const HTMLSelectElement &other) : HTMLEleme
 
 HTMLSelectElement::HTMLSelectElement(HTMLSelectElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLSelectElement &HTMLSelectElement::operator = (const Node &other)
+{
+    if(other.id() != ID_SELECT)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLSelectElement &HTMLSelectElement::operator = (const HTMLSelectElement &other)
@@ -870,6 +958,17 @@ HTMLTextAreaElement::HTMLTextAreaElement(const HTMLTextAreaElement &other) : HTM
 
 HTMLTextAreaElement::HTMLTextAreaElement(HTMLTextAreaElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLTextAreaElement &HTMLTextAreaElement::operator = (const Node &other)
+{
+    if(other.id() != ID_TEXTAREA)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLTextAreaElement &HTMLTextAreaElement::operator = (const HTMLTextAreaElement &other)
@@ -1041,6 +1140,17 @@ HTMLOptionElement::HTMLOptionElement(const HTMLOptionElement &other) : HTMLEleme
 
 HTMLOptionElement::HTMLOptionElement(HTMLOptionElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLOptionElement &HTMLOptionElement::operator = (const Node &other)
+{
+    if(other.id() != ID_OPTION)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLOptionElement &HTMLOptionElement::operator = (const HTMLOptionElement &other)

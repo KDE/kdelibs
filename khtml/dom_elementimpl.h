@@ -94,6 +94,8 @@ public:
     virtual unsigned short nodeType() const;
     virtual bool isElementNode() { return true; }
 
+    virtual bool isHTMLElement() { return false; }
+    
     DOMString tagName() const;
 
     DOMString getAttribute ( const DOMString &name );

@@ -50,6 +50,8 @@ public:
     virtual unsigned short nodeType() const;
     virtual bool isDocumentNode() { return true; }
 
+    virtual bool isHTMLDocument() { return false; }
+    
     //DocumentType doctype() const;
 
     //DOMImplementation implementation() const;

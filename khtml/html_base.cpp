@@ -29,6 +29,7 @@
 using namespace DOM;
 
 #include "khtmlattrs.h"
+#include "khtmltags.h"
 
 HTMLBodyElement::HTMLBodyElement() : HTMLElement()
 {
@@ -40,6 +41,17 @@ HTMLBodyElement::HTMLBodyElement(const HTMLBodyElement &other) : HTMLElement(oth
 
 HTMLBodyElement::HTMLBodyElement(HTMLBodyElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLBodyElement &HTMLBodyElement::operator = (const Node &other)
+{
+    if(other.id() != ID_BODY)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLBodyElement &HTMLBodyElement::operator = (const HTMLBodyElement &other)
@@ -130,6 +142,17 @@ HTMLFrameElement::HTMLFrameElement(const HTMLFrameElement &other) : HTMLElement(
 
 HTMLFrameElement::HTMLFrameElement(HTMLFrameElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLFrameElement &HTMLFrameElement::operator = (const Node &other)
+{
+    if(other.id() != ID_FRAME)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLFrameElement &HTMLFrameElement::operator = (const HTMLFrameElement &other)
@@ -250,6 +273,17 @@ HTMLFrameSetElement::HTMLFrameSetElement(HTMLFrameSetElementImpl *impl) : HTMLEl
 {
 }
 
+HTMLFrameSetElement &HTMLFrameSetElement::operator = (const Node &other)
+{
+    if(other.id() != ID_FRAMESET)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLFrameSetElement &HTMLFrameSetElement::operator = (const HTMLFrameSetElement &other)
 {
     HTMLElement::operator = (other);
@@ -296,6 +330,17 @@ HTMLHeadElement::HTMLHeadElement(HTMLHeadElementImpl *impl) : HTMLElement(impl)
 {
 }
 
+HTMLHeadElement &HTMLHeadElement::operator = (const Node &other)
+{
+    if(other.id() != ID_HEAD)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLHeadElement &HTMLHeadElement::operator = (const HTMLHeadElement &other)
 {
     HTMLElement::operator = (other);
@@ -329,6 +374,17 @@ HTMLHtmlElement::HTMLHtmlElement(const HTMLHtmlElement &other) : HTMLElement(oth
 
 HTMLHtmlElement::HTMLHtmlElement(HTMLHtmlElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLHtmlElement &HTMLHtmlElement::operator = (const Node &other)
+{
+    if(other.id() != ID_HTML)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLHtmlElement &HTMLHtmlElement::operator = (const HTMLHtmlElement &other)

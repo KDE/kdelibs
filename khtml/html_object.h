@@ -50,6 +50,7 @@ protected:
 public:
 
     HTMLAppletElement & operator = (const HTMLAppletElement &other);
+    HTMLAppletElement & operator = (const Node &other);
 
     ~HTMLAppletElement();
 
@@ -235,6 +236,7 @@ protected:
 public:
 
     HTMLObjectElement & operator = (const HTMLObjectElement &other);
+    HTMLObjectElement & operator = (const Node &other);
 
     ~HTMLObjectElement();
 
@@ -500,6 +502,7 @@ protected:
 public:
 
     HTMLParamElement & operator = (const HTMLParamElement &other);
+    HTMLParamElement & operator = (const Node &other);
 
     ~HTMLParamElement();
 

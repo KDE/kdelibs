@@ -46,6 +46,7 @@ protected:
 public:
 
     HTMLAreaElement & operator = (const HTMLAreaElement &other);
+    HTMLAreaElement & operator = (const Node &other);
 
     ~HTMLAreaElement();
 
@@ -181,6 +182,7 @@ protected:
 public:
 
     HTMLImageElement & operator = (const HTMLImageElement &other);
+    HTMLImageElement & operator = (const Node &other);
 
     ~HTMLImageElement();
 
@@ -381,6 +383,7 @@ protected:
 public:
 
     HTMLMapElement & operator = (const HTMLMapElement &other);
+    HTMLMapElement & operator = (const Node &other);
 
     ~HTMLMapElement();
 

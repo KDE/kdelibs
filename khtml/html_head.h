@@ -46,6 +46,7 @@ protected:
 public:
 
     HTMLBaseElement & operator = (const HTMLBaseElement &other);
+    HTMLBaseElement & operator = (const Node &other);
 
     ~HTMLBaseElement();
 
@@ -98,6 +99,7 @@ protected:
 public:
 
     HTMLIsIndexElement & operator = (const HTMLIsIndexElement &other);
+    HTMLIsIndexElement & operator = (const Node &other);
 
     ~HTMLIsIndexElement();
 
@@ -146,6 +148,7 @@ protected:
 public:
 
     HTMLLinkElement & operator = (const HTMLLinkElement &other);
+    HTMLLinkElement & operator = (const Node &other);
 
     ~HTMLLinkElement();
 
@@ -289,6 +292,7 @@ protected:
 public:
 
     HTMLMetaElement & operator = (const HTMLMetaElement &other);
+    HTMLMetaElement & operator = (const Node &other);
 
     ~HTMLMetaElement();
 
@@ -365,6 +369,7 @@ protected:
 public:
 
     HTMLScriptElement & operator = (const HTMLScriptElement &other);
+    HTMLScriptElement & operator = (const Node &other);
 
     ~HTMLScriptElement();
 
@@ -476,6 +481,7 @@ protected:
 public:
 
     HTMLStyleElement & operator = (const HTMLStyleElement &other);
+    HTMLStyleElement & operator = (const Node &other);
 
     ~HTMLStyleElement();
 
@@ -537,6 +543,7 @@ protected:
 public:
 
     HTMLTitleElement & operator = (const HTMLTitleElement &other);
+    HTMLTitleElement & operator = (const Node &other);
 
     ~HTMLTitleElement();
 

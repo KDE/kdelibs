@@ -45,6 +45,17 @@ HTMLAppletElement::HTMLAppletElement(HTMLAppletElementImpl *impl)
 {
 }
 
+HTMLAppletElement &HTMLAppletElement::operator = (const Node &other)
+{
+    if(other.id() != ID_APPLET)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLAppletElement &HTMLAppletElement::operator = (const HTMLAppletElement &other)
 {
     HTMLElement::operator = (other);
@@ -188,6 +199,17 @@ HTMLObjectElement::HTMLObjectElement(const HTMLObjectElement &other) : HTMLEleme
 
 HTMLObjectElement::HTMLObjectElement(HTMLObjectElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLObjectElement &HTMLObjectElement::operator = (const Node &other)
+{
+    if(other.id() != ID_OBJECT)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLObjectElement &HTMLObjectElement::operator = (const HTMLObjectElement &other)
@@ -413,6 +435,17 @@ HTMLParamElement::HTMLParamElement(const HTMLParamElement &other) : HTMLElement(
 
 HTMLParamElement::HTMLParamElement(HTMLParamElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLParamElement &HTMLParamElement::operator = (const Node &other)
+{
+    if(other.id() != ID_PARAM)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLParamElement &HTMLParamElement::operator = (const HTMLParamElement &other)

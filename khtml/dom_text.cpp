@@ -37,6 +37,19 @@ CharacterData::CharacterData(const CharacterData &other) : Node(other)
 {
 }
 
+CharacterData &CharacterData::operator = (const Node &other)
+{
+    if( other.nodeType() != CDATA_SECTION_NODE && 
+	other.nodeType() != TEXT_NODE &&
+	other.nodeType() != COMMENT_NODE )
+    {
+	impl = 0;
+	return *this;
+    }    
+    Node::operator =(other);
+    return *this;
+}
+
 CharacterData &CharacterData::operator = (const CharacterData &other)
 {
     Node::operator =(other);
@@ -102,6 +115,17 @@ Comment::Comment(const Comment &other) : CharacterData(other)
 {
 }
 
+Comment &Comment::operator = (const Node &other)
+{
+    if(other.nodeType() != COMMENT_NODE)
+    {
+	impl = 0;
+	return *this;
+    }    
+    Node::operator =(other);
+    return *this;
+}
+
 Comment &Comment::operator = (const Comment &other)
 {
     CharacterData::operator =(other);
@@ -122,9 +146,21 @@ Text::Text(const Text &other) : CharacterData(other)
 {
 }
 
+Text &Text::operator = (const Node &other)
+{
+    if(other.nodeType() != TEXT_NODE  &&
+       other.nodeType() != CDATA_SECTION_NODE)
+    {
+	impl = 0;
+	return *this;
+    }    
+    Node::operator =(other);
+    return *this;
+}
+
 Text &Text::operator = (const Text &other)
 {
-    CharacterData::operator =(other);
+    Node::operator =(other);
     return *this;
 }
 

@@ -44,6 +44,7 @@ protected:
 public:
 
     HTMLBlockquoteElement & operator = (const HTMLBlockquoteElement &other);
+    HTMLBlockquoteElement & operator = (const Node &other);
 
     ~HTMLBlockquoteElement();
 
@@ -82,6 +83,7 @@ protected:
 public:
 
     HTMLDivElement & operator = (const HTMLDivElement &other);
+    HTMLDivElement & operator = (const Node &other);
 
     ~HTMLDivElement();
 
@@ -121,6 +123,7 @@ protected:
 public:
 
     HTMLHRElement & operator = (const HTMLHRElement &other);
+    HTMLHRElement & operator = (const Node &other);
 
     ~HTMLHRElement();
 
@@ -203,6 +206,7 @@ protected:
 public:
 
     HTMLHeadingElement & operator = (const HTMLHeadingElement &other);
+    HTMLHeadingElement & operator = (const Node &other);
 
     ~HTMLHeadingElement();
 
@@ -242,6 +246,7 @@ protected:
 public:
 
     HTMLParagraphElement & operator = (const HTMLParagraphElement &other);
+    HTMLParagraphElement & operator = (const Node &other);
 
     ~HTMLParagraphElement();
 
@@ -280,6 +285,7 @@ protected:
 public:
 
     HTMLPreElement & operator = (const HTMLPreElement &other);
+    HTMLPreElement & operator = (const Node &other);
 
     ~HTMLPreElement();
 

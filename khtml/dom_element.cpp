@@ -42,6 +42,17 @@ Attr::Attr( AttrImpl *_impl )
     impl->ref();
 }
 
+Attr &Attr::operator = (const Node &other)
+{
+    if(other.nodeType() != ATTRIBUTE_NODE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator =(other);
+    return *this;
+}
+
 Attr &Attr::operator = (const Attr &other)
 {
     Node::operator =(other);
@@ -87,6 +98,17 @@ Element::Element(const Element &other) : Node(other)
 
 Element::Element(ElementImpl *impl) : Node(impl)
 {
+}
+
+Element &Element::operator = (const Node &other)
+{
+    if(other.nodeType() != ELEMENT_NODE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator =(other);
+    return *this;
 }
 
 Element &Element::operator = (const Element &other)
@@ -150,4 +172,10 @@ NodeList Element::getElementsByTagName( const DOMString &name )
 void Element::normalize()
 {
   if (impl) ((ElementImpl *)impl)->normalize();
+}
+
+bool Element::isHTMLElement()
+{
+    if(!impl) return false;
+    return ((ElementImpl *)impl)->isHTMLElement();
 }

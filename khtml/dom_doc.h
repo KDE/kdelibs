@@ -100,13 +100,14 @@ class Document : public Node
 {
 public:
     Document();
-    /** 
+    /**
      * don't create an implementation if false
      * use at own risk
      */
     Document(bool);
     Document(const Document &other);
 
+    Document & operator = (const Node &other);
     Document & operator = (const Document &other);
 
     ~Document();
@@ -270,9 +271,15 @@ public:
      */
     NodeList getElementsByTagName ( const DOMString &tagname );
 
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    bool isHTMLDocument();
+    
 protected:
     Document( DocumentImpl *i);
-    
+
     friend class Node;
 };
 
@@ -328,6 +335,7 @@ public:
     DocumentFragment();
     DocumentFragment(const DocumentFragment &other);
 
+    DocumentFragment & operator = (const Node &other);
     DocumentFragment & operator = (const DocumentFragment &other);
 
     ~DocumentFragment();
@@ -358,6 +366,7 @@ public:
     DocumentType();
     DocumentType(const DocumentType &other);
 
+    DocumentType & operator = (const Node &other);
     DocumentType & operator = (const DocumentType &other);
 
     ~DocumentType();

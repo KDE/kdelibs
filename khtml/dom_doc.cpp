@@ -39,12 +39,10 @@ DOMImplementation::DOMImplementation()
 
 DOMImplementation::DOMImplementation(const DOMImplementation &)
 {
-  // ####
 }
 
 DOMImplementation &DOMImplementation::operator = (const DOMImplementation &)
 {
-    // ###
     return *this;
 }
 
@@ -55,7 +53,7 @@ DOMImplementation::~DOMImplementation()
 bool DOMImplementation::hasFeature( const DOMString &feature, const DOMString &version )
 {
     // no valid implementation at the moment... ;-)
-    if(feature == "HTML" && version == "0.1") return true;
+    if(feature == "HTML" && version == "1") return true;
 
     return false;
 }
@@ -86,6 +84,17 @@ Document::Document(const Document &other) : Node(other)
 
 Document::Document(DocumentImpl *i) : Node(i)
 {
+}
+
+Document &Document::operator = (const Node &other)
+{
+    if(other.nodeType() != DOCUMENT_NODE)
+    {
+	impl = 0;
+	return *this;
+    }    
+    Node::operator =(other);
+    return *this;
 }
 
 Document &Document::operator = (const Document &other)
@@ -158,6 +167,11 @@ NodeList Document::getElementsByTagName( const DOMString &tagName )
     return ((DocumentImpl *)impl)->getElementsByTagName( tagName );
 }
 
+bool Document::isHTMLDocument()
+{
+    if(!impl) return false;
+    return ((DocumentImpl *)impl)->isHTMLDocument();
+}
 
 // ----------------------------------------------------------------------------
 
@@ -167,6 +181,17 @@ DocumentFragment::DocumentFragment() : Node()
 
 DocumentFragment::DocumentFragment(const DocumentFragment &other) : Node(other)
 {
+}
+
+DocumentFragment &DocumentFragment::operator = (const Node &other)
+{
+    if(other.nodeType() != DOCUMENT_FRAGMENT_NODE)
+    {
+	impl = 0;
+	return *this;
+    }    
+    Node::operator =(other);
+    return *this;
 }
 
 DocumentFragment &DocumentFragment::operator = (const DocumentFragment &other)
@@ -191,6 +216,18 @@ DocumentType::DocumentType()
 
 DocumentType::DocumentType(const DocumentType &other) : Node(other)
 {
+}
+
+DocumentType &DocumentType::operator = (const Node &other)
+{
+    if(other.nodeType() != DOCUMENT_TYPE_NODE)
+    {
+	impl = 0;
+	return *this;
+    }    
+
+    Node::operator =(other);
+    return *this;
 }
 
 DocumentType &DocumentType::operator = (const DocumentType &other)

@@ -51,6 +51,9 @@ public:
     HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c);
 
     ~HTMLDocumentImpl();
+
+    virtual bool isHTMLDocument() { return true; }
+
     DOMString referrer() const;
     DOMString domain() const;
     DOMString URL() const { return url; }
@@ -69,7 +72,7 @@ public:
 
     // internal
     NodeImpl *findElement( int id );
-    
+
     // for KHTML
     virtual DOMString requestImage(HTMLImageRequester *, DOMString );
 
@@ -106,7 +109,7 @@ protected:
 
     HTMLElementImpl *bodyElement;
     DOMString url;
-    
+
     int width;
     int height;
 };

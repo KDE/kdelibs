@@ -79,6 +79,7 @@ protected:
 public:
 
     HTMLDocument & operator = (const HTMLDocument &other);
+    HTMLDocument & operator = (const Node &other);
 
     ~HTMLDocument();
 

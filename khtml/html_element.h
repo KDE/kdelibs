@@ -72,6 +72,7 @@ protected:
 public:
 
     HTMLElement & operator = (const HTMLElement &other);
+    HTMLElement & operator = (const Node &other);
 
     ~HTMLElement();
 

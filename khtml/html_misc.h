@@ -48,6 +48,7 @@ protected:
 public:
 
     HTMLBaseFontElement & operator = (const HTMLBaseFontElement &other);
+    HTMLBaseFontElement & operator = (const Node &other);
 
     ~HTMLBaseFontElement();
 

@@ -78,7 +78,7 @@ Node NamedNodeMap::setNamedItem( const Node &arg )
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
     // ### check the attribute is not already used somewhere
-    
+
     return (NodeImpl *)((ElementImpl *)map)->setAttributeNode( (AttrImpl *)arg.impl );
 }
 
@@ -247,6 +247,12 @@ Node Node::cloneNode( bool deep )
 {
     if(impl) return impl->cloneNode( deep );
     return 0;
+}
+
+unsigned short Node::id() const
+{
+    if(!impl) return 0;
+    return impl->id();
 }
 
 //-----------------------------------------------------------------------------

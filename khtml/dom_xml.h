@@ -55,6 +55,7 @@ public:
     CDATASection();
     CDATASection(const CDATASection &other);
 
+    CDATASection & operator = (const Node &other);
     CDATASection & operator = (const CDATASection &other);
 
     ~CDATASection();
@@ -107,6 +108,7 @@ public:
     Entity();
     Entity(const Entity &other);
 
+    Entity & operator = (const Node &other);
     Entity & operator = (const Entity &other);
 
     ~Entity();
@@ -168,6 +170,7 @@ public:
     EntityReference();
     EntityReference(const EntityReference &other);
 
+    EntityReference & operator = (const Node &other);
     EntityReference & operator = (const EntityReference &other);
 
     ~EntityReference();
@@ -196,6 +199,7 @@ public:
     Notation();
     Notation(const Notation &other);
 
+    Notation & operator = (const Node &other);
     Notation & operator = (const Notation &other);
 
     ~Notation();
@@ -228,6 +232,7 @@ public:
     ProcessingInstruction();
     ProcessingInstruction(const ProcessingInstruction &other);
 
+    ProcessingInstruction & operator = (const Node &other);
     ProcessingInstruction & operator = (const ProcessingInstruction &other);
 
     ~ProcessingInstruction();

@@ -84,6 +84,7 @@ public:
 
     Attr(const Attr &other);
 
+    Attr & operator = (const Node &other);
     Attr & operator = (const Attr &other);
 
     ~Attr();
@@ -143,7 +144,7 @@ public:
     void setValue( const DOMString & );
 
 protected:
-    
+
     Attr( AttrImpl *_impl );
 };
 
@@ -190,6 +191,7 @@ public:
 
     Element(const Element &other);
 
+    Element & operator = (const Node &other);
     Element & operator = (const Element &other);
 
     ~Element();
@@ -349,6 +351,12 @@ public:
      */
     void normalize (  );
 
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    bool isHTMLElement();
+    
 protected:
 
     Element(ElementImpl *_impl);

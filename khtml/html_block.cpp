@@ -42,6 +42,17 @@ HTMLBlockquoteElement::HTMLBlockquoteElement(HTMLBlockquoteElementImpl *impl) : 
 {
 }
 
+HTMLBlockquoteElement &HTMLBlockquoteElement::operator = (const Node &other)
+{
+    if(other.id() != ID_BLOCKQUOTE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLBlockquoteElement &HTMLBlockquoteElement::operator = (const HTMLBlockquoteElement &other)
 {
     HTMLElement::operator = (other);
@@ -77,6 +88,17 @@ HTMLDivElement::HTMLDivElement(HTMLDivElementImpl *impl) : HTMLElement(impl)
 {
 }
 
+HTMLDivElement &HTMLDivElement::operator = (const Node &other)
+{
+    if(other.id() != ID_DIV)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLDivElement &HTMLDivElement::operator = (const HTMLDivElement &other)
 {
     HTMLElement::operator = (other);
@@ -110,6 +132,17 @@ HTMLHRElement::HTMLHRElement(const HTMLHRElement &other) : HTMLElement(other)
 
 HTMLHRElement::HTMLHRElement(HTMLHRElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLHRElement &HTMLHRElement::operator = (const Node &other)
+{
+    if(other.id() != ID_HR)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLHRElement &HTMLHRElement::operator = (const HTMLHRElement &other)
@@ -186,6 +219,22 @@ HTMLHeadingElement::HTMLHeadingElement(HTMLHeadingElementImpl *impl) : HTMLEleme
 {
 }
 
+HTMLHeadingElement &HTMLHeadingElement::operator = (const Node &other)
+{
+    if(other.id() != ID_H1 ||
+       other.id() != ID_H2 ||
+       other.id() != ID_H3 ||
+       other.id() != ID_H4 ||
+       other.id() != ID_H5 ||
+       other.id() != ID_H6 )
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLHeadingElement &HTMLHeadingElement::operator = (const HTMLHeadingElement &other)
 {
     HTMLElement::operator = (other);
@@ -221,6 +270,17 @@ HTMLParagraphElement::HTMLParagraphElement(HTMLParagraphElementImpl *impl) : HTM
 {
 }
 
+HTMLParagraphElement &HTMLParagraphElement::operator = (const Node &other)
+{
+    if(other.id() != ID_P)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLParagraphElement &HTMLParagraphElement::operator = (const HTMLParagraphElement &other)
 {
     HTMLElement::operator = (other);
@@ -254,6 +314,17 @@ HTMLPreElement::HTMLPreElement(const HTMLPreElement &other) : HTMLElement(other)
 
 HTMLPreElement::HTMLPreElement(HTMLPreElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLPreElement &HTMLPreElement::operator = (const Node &other)
+{
+    if(other.id() != ID_PRE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLPreElement &HTMLPreElement::operator = (const HTMLPreElement &other)

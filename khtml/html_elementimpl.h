@@ -46,6 +46,8 @@ public:
 
     virtual ~HTMLElementImpl();
 
+    virtual bool isHTMLElement() { return true; }
+
     // make it pure virtual...
     virtual ushort id() const = 0;
 
@@ -180,7 +182,7 @@ class HTMLParagraphElementImpl;
  * behaviour of text, so putting the drawing routines in the inline
  * elments is impossible.
  *
- * not that BiDi is implemented at the moment, but we want to keep the 
+ * not that BiDi is implemented at the moment, but we want to keep the
  * possibility.
  */
 class HTMLBlockElementImpl : public HTMLPositionedElementImpl

@@ -46,6 +46,7 @@ protected:
 public:
 
     HTMLBodyElement & operator = (const HTMLBodyElement &other);
+    HTMLBodyElement & operator = (const Node &other);
 
     ~HTMLBodyElement();
 
@@ -156,6 +157,7 @@ protected:
 public:
 
     HTMLFrameElement & operator = (const HTMLFrameElement &other);
+    HTMLFrameElement & operator = (const Node &other);
 
     ~HTMLFrameElement();
 
@@ -288,6 +290,7 @@ protected:
 public:
 
     HTMLFrameSetElement & operator = (const HTMLFrameSetElement &other);
+    HTMLFrameSetElement & operator = (const Node &other);
 
     ~HTMLFrameSetElement();
 
@@ -339,6 +342,7 @@ protected:
 public:
 
     HTMLHeadElement & operator = (const HTMLHeadElement &other);
+    HTMLHeadElement & operator = (const Node &other);
 
     ~HTMLHeadElement();
 
@@ -377,6 +381,7 @@ protected:
 public:
 
     HTMLHtmlElement & operator = (const HTMLHtmlElement &other);
+    HTMLHtmlElement & operator = (const Node &other);
 
     ~HTMLHtmlElement();
 

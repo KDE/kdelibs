@@ -46,6 +46,7 @@ public:
     CharacterData();
     CharacterData(const CharacterData &other);
 
+    CharacterData & operator = (const Node &other);
     CharacterData & operator = (const CharacterData &other);
 
     ~CharacterData();
@@ -213,6 +214,7 @@ public:
     Comment();
     Comment(const Comment &other);
 
+    Comment & operator = (const Node &other);
     Comment & operator = (const Comment &other);
 
     ~Comment();
@@ -252,6 +254,7 @@ public:
     Text();
     Text(const Text &other);
 
+    Text & operator = (const Node &other);
     Text & operator = (const Text &other);
 
     ~Text();

@@ -49,6 +49,7 @@ protected:
 public:
 
     HTMLButtonElement & operator = (const HTMLButtonElement &other);
+    HTMLButtonElement & operator = (const Node &other);
 
     ~HTMLButtonElement();
 
@@ -156,6 +157,7 @@ protected:
 public:
 
     HTMLFieldSetElement & operator = (const HTMLFieldSetElement &other);
+    HTMLFieldSetElement & operator = (const Node &other);
 
     ~HTMLFieldSetElement();
 
@@ -201,6 +203,7 @@ protected:
 public:
 
     HTMLFormElement & operator = (const HTMLFormElement &other);
+    HTMLFormElement & operator = (const Node &other);
 
     ~HTMLFormElement();
 
@@ -330,6 +333,7 @@ protected:
 public:
 
     HTMLInputElement & operator = (const HTMLInputElement &other);
+    HTMLInputElement & operator = (const Node &other);
 
     ~HTMLInputElement();
 
@@ -619,6 +623,7 @@ protected:
 public:
 
     HTMLLabelElement & operator = (const HTMLLabelElement &other);
+    HTMLLabelElement & operator = (const Node &other);
 
     ~HTMLLabelElement();
 
@@ -679,6 +684,7 @@ protected:
 public:
 
     HTMLLegendElement & operator = (const HTMLLegendElement &other);
+    HTMLLegendElement & operator = (const Node &other);
 
     ~HTMLLegendElement();
 
@@ -738,6 +744,7 @@ protected:
 public:
 
     HTMLOptGroupElement & operator = (const HTMLOptGroupElement &other);
+    HTMLOptGroupElement & operator = (const Node &other);
 
     ~HTMLOptGroupElement();
 
@@ -789,6 +796,7 @@ protected:
 public:
 
     HTMLSelectElement & operator = (const HTMLSelectElement &other);
+    HTMLSelectElement & operator = (const Node &other);
 
     ~HTMLSelectElement();
 
@@ -965,6 +973,7 @@ protected:
 public:
 
     HTMLTextAreaElement & operator = (const HTMLTextAreaElement &other);
+    HTMLTextAreaElement & operator = (const Node &other);
 
     ~HTMLTextAreaElement();
 
@@ -1134,6 +1143,7 @@ protected:
 public:
 
     HTMLOptionElement & operator = (const HTMLOptionElement &other);
+    HTMLOptionElement & operator = (const Node &other);
 
     ~HTMLOptionElement();
 

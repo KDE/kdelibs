@@ -35,8 +35,20 @@ CDATASection::CDATASection(const CDATASection &) : Text()
 {
 }
 
-CDATASection &CDATASection::operator = (const CDATASection &)
+CDATASection &CDATASection::operator = (const Node &other)
 {
+    if(other.nodeType() != CDATA_SECTION_NODE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator =(other);
+    return *this;
+}
+
+CDATASection &CDATASection::operator = (const CDATASection &other)
+{
+    Node::operator =(other);
     return *this;
 }
 
@@ -53,8 +65,20 @@ Entity::Entity(const Entity &) : Node()
 {
 }
 
-Entity &Entity::operator = (const Entity &)
+Entity &Entity::operator = (const Node &other)
 {
+    if(other.nodeType() != ENTITY_NODE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator =(other);
+    return *this;
+}
+
+Entity &Entity::operator = (const Entity &other)
+{
+    Node::operator =(other);
     return *this;
 }
 
@@ -86,8 +110,20 @@ EntityReference::EntityReference(const EntityReference &) : Node()
 {
 }
 
-EntityReference &EntityReference::operator = (const EntityReference &)
+EntityReference &EntityReference::operator = (const Node &other)
 {
+    if(other.nodeType() != ENTITY_REFERENCE_NODE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator =(other);
+    return *this;
+}
+
+EntityReference &EntityReference::operator = (const EntityReference &other)
+{
+    Node::operator =(other);
     return *this;
 }
 
@@ -105,8 +141,20 @@ Notation::Notation(const Notation &) : Node()
 {
 }
 
-Notation &Notation::operator = (const Notation &)
+Notation &Notation::operator = (const Node &other)
 {
+    if(other.nodeType() != NOTATION_NODE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator =(other);
+    return *this;
+}
+
+Notation &Notation::operator = (const Notation &other)
+{
+    Node::operator =(other);
     return *this;
 }
 
@@ -134,8 +182,20 @@ ProcessingInstruction::ProcessingInstruction(const ProcessingInstruction &)
 {
 }
 
-ProcessingInstruction &ProcessingInstruction::operator = (const ProcessingInstruction &)
+ProcessingInstruction &ProcessingInstruction::operator = (const Node &other)
 {
+    if(other.nodeType() != PROCESSING_INSTRUCTION_NODE)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator =(other);
+    return *this;
+}
+
+ProcessingInstruction &ProcessingInstruction::operator = (const ProcessingInstruction &other)
+{
+    Node::operator =(other);
     return *this;
 }
 

@@ -40,6 +40,17 @@ HTMLDListElement::HTMLDListElement(HTMLDListElementImpl *impl) : HTMLElement(imp
 {
 }
 
+HTMLDListElement &HTMLDListElement::operator = (const Node &other)
+{
+    if(other.id() != ID_DL)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLDListElement &HTMLDListElement::operator = (const HTMLDListElement &other)
 {
     HTMLElement::operator = (other);
@@ -81,6 +92,17 @@ HTMLDirectoryElement::HTMLDirectoryElement(HTMLDirectoryElementImpl *impl) : HTM
 {
 }
 
+HTMLDirectoryElement &HTMLDirectoryElement::operator = (const Node &other)
+{
+    if(other.id() != ID_DIR)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLDirectoryElement &HTMLDirectoryElement::operator = (const HTMLDirectoryElement &other)
 {
     HTMLElement::operator = (other);
@@ -120,6 +142,17 @@ HTMLLIElement::HTMLLIElement(const HTMLLIElement &other) : HTMLElement(other)
 
 HTMLLIElement::HTMLLIElement(HTMLLIElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLLIElement &HTMLLIElement::operator = (const Node &other)
+{
+    if(other.id() != ID_LI)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLLIElement &HTMLLIElement::operator = (const HTMLLIElement &other)
@@ -170,6 +203,17 @@ HTMLMenuElement::HTMLMenuElement(HTMLMenuElementImpl *impl) : HTMLElement(impl)
 {
 }
 
+HTMLMenuElement &HTMLMenuElement::operator = (const Node &other)
+{
+    if(other.id() != ID_MENU)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLMenuElement &HTMLMenuElement::operator = (const HTMLMenuElement &other)
 {
     HTMLElement::operator = (other);
@@ -209,6 +253,17 @@ HTMLOListElement::HTMLOListElement(const HTMLOListElement &other) : HTMLElement(
 
 HTMLOListElement::HTMLOListElement(HTMLOListElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLOListElement &HTMLOListElement::operator = (const Node &other)
+{
+    if(other.id() != ID_OL)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLOListElement &HTMLOListElement::operator = (const HTMLOListElement &other)
@@ -274,6 +329,17 @@ HTMLUListElement::HTMLUListElement(const HTMLUListElement &other) : HTMLElement(
 
 HTMLUListElement::HTMLUListElement(HTMLUListElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLUListElement &HTMLUListElement::operator = (const Node &other)
+{
+    if(other.id() != ID_UL)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLUListElement &HTMLUListElement::operator = (const HTMLUListElement &other)

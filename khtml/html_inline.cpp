@@ -41,6 +41,17 @@ HTMLAnchorElement::HTMLAnchorElement(HTMLAnchorElementImpl *impl) : HTMLElement(
 {
 }
 
+HTMLAnchorElement &HTMLAnchorElement::operator = (const Node &other)
+{
+    if(other.id() != ID_A)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLAnchorElement &HTMLAnchorElement::operator = (const HTMLAnchorElement &other)
 {
     HTMLElement::operator = (other);
@@ -211,6 +222,17 @@ HTMLBRElement::HTMLBRElement(HTMLBRElementImpl *impl) : HTMLElement(impl)
 {
 }
 
+HTMLBRElement &HTMLBRElement::operator = (const Node &other)
+{
+    if(other.id() != ID_BR)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLBRElement &HTMLBRElement::operator = (const HTMLBRElement &other)
 {
     HTMLElement::operator = (other);
@@ -244,6 +266,17 @@ HTMLFontElement::HTMLFontElement(const HTMLFontElement &other) : HTMLElement(oth
 
 HTMLFontElement::HTMLFontElement(HTMLFontElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLFontElement &HTMLFontElement::operator = (const Node &other)
+{
+    if(other.id() != ID_FONT)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLFontElement &HTMLFontElement::operator = (const HTMLFontElement &other)
@@ -301,6 +334,17 @@ HTMLIFrameElement::HTMLIFrameElement(const HTMLIFrameElement &other) : HTMLEleme
 
 HTMLIFrameElement::HTMLIFrameElement(HTMLIFrameElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLIFrameElement &HTMLIFrameElement::operator = (const Node &other)
+{
+    if(other.id() != ID_IFRAME)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLIFrameElement &HTMLIFrameElement::operator = (const HTMLIFrameElement &other)
@@ -437,6 +481,18 @@ HTMLModElement::HTMLModElement(HTMLModElementImpl *impl) : HTMLElement(impl)
 {
 }
 
+HTMLModElement &HTMLModElement::operator = (const Node &other)
+{
+    if( other.id() != ID_INS &&
+	other.id() != ID_DEL )
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
+}
+
 HTMLModElement &HTMLModElement::operator = (const HTMLModElement &other)
 {
     HTMLElement::operator = (other);
@@ -481,6 +537,17 @@ HTMLQuoteElement::HTMLQuoteElement(const HTMLQuoteElement &other) : HTMLElement(
 
 HTMLQuoteElement::HTMLQuoteElement(HTMLQuoteElementImpl *impl) : HTMLElement(impl)
 {
+}
+
+HTMLQuoteElement &HTMLQuoteElement::operator = (const Node &other)
+{
+    if(other.id() != ID_Q)
+    {
+	impl = 0;
+	return *this;
+    }
+    Node::operator = (other);
+    return *this;
 }
 
 HTMLQuoteElement &HTMLQuoteElement::operator = (const HTMLQuoteElement &other)

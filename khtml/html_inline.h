@@ -46,6 +46,7 @@ protected:
 public:
 
     HTMLAnchorElement & operator = (const HTMLAnchorElement &other);
+    HTMLAnchorElement & operator = (const Node &other);
 
     ~HTMLAnchorElement();
 
@@ -247,6 +248,7 @@ protected:
 public:
 
     HTMLBRElement & operator = (const HTMLBRElement &other);
+    HTMLBRElement & operator = (const Node &other);
 
     ~HTMLBRElement();
 
@@ -287,6 +289,7 @@ protected:
 public:
 
     HTMLFontElement & operator = (const HTMLFontElement &other);
+    HTMLFontElement & operator = (const Node &other);
 
     ~HTMLFontElement();
 
@@ -353,6 +356,7 @@ protected:
 public:
 
     HTMLIFrameElement & operator = (const HTMLIFrameElement &other);
+    HTMLIFrameElement & operator = (const Node &other);
 
     ~HTMLIFrameElement();
 
@@ -515,6 +519,7 @@ protected:
 public:
 
     HTMLModElement & operator = (const HTMLModElement &other);
+    HTMLModElement & operator = (const Node &other);
 
     ~HTMLModElement();
 
@@ -555,7 +560,7 @@ class HTMLQuoteElementImpl;
  * href="http://www.w3.org/TR/REC-html40/struct/text.html#edef-Q"> Q
  * element definition </a> in HTML 4.0.
  *
- * Note: The DOM is not quite consistent here. They also define the 
+ * Note: The DOM is not quite consistent here. They also define the
  * HTMLBlockQuoteElement interface, to represent the <code>BLOCKQUOTE</code>
  * element. To resolve ambiquities, we use this one for the <code>Q</code>
  * element only.
@@ -570,6 +575,7 @@ protected:
 public:
 
     HTMLQuoteElement & operator = (const HTMLQuoteElement &other);
+    HTMLQuoteElement & operator = (const Node &other);
 
     ~HTMLQuoteElement();
 

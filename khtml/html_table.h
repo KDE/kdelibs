@@ -49,6 +49,7 @@ protected:
 public:
 
     HTMLTableCaptionElement & operator = (const HTMLTableCaptionElement &other);
+    HTMLTableCaptionElement & operator = (const Node &other);
 
     ~HTMLTableCaptionElement();
 
@@ -90,6 +91,7 @@ protected:
 public:
 
     HTMLTableCellElement & operator = (const HTMLTableCellElement &other);
+    HTMLTableCellElement & operator = (const Node &other);
 
     ~HTMLTableCellElement();
 
@@ -315,6 +317,7 @@ protected:
 public:
 
     HTMLTableColElement & operator = (const HTMLTableColElement &other);
+    HTMLTableColElement & operator = (const Node &other);
 
     ~HTMLTableColElement();
 
@@ -429,6 +432,7 @@ protected:
 public:
 
     HTMLTableElement & operator = (const HTMLTableElement &other);
+    HTMLTableElement & operator = (const Node &other);
 
     ~HTMLTableElement();
 
@@ -700,6 +704,7 @@ protected:
 public:
 
     HTMLTableRowElement & operator = (const HTMLTableRowElement &other);
+    HTMLTableRowElement & operator = (const Node &other);
 
     ~HTMLTableRowElement();
 
@@ -850,6 +855,7 @@ protected:
 public:
 
     HTMLTableSectionElement & operator = (const HTMLTableSectionElement &other);
+    HTMLTableSectionElement & operator = (const Node &other);
 
     ~HTMLTableSectionElement();
 

@@ -536,13 +536,32 @@ public:
      */
     Node cloneNode ( bool deep );
 
+    /**
+     * @internal 
+     * not part of the DOM. 
+     * @returns the element id, in case this is an element, 0 otherwise
+     */
+    unsigned short id() const;
+
+    /**
+     * tests if this Node is 0. Useful especially, if casting to a derived class:
+     *
+     * <pre>
+     * Node n = .....;
+     * // try to convert into an Element:
+     * Element e = n;
+     * if( e.isNull() )
+     *   printf("node isn't an element node\n");
+     */
+    bool isNull() { return (impl == 0); }
+    
 protected:
     NodeImpl *impl;
 
     Node( NodeImpl *_impl);
 };
 
-class Node;
+
 class NodeListImpl;
 
 /**
