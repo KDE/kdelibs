@@ -3,6 +3,5 @@
 - KPluginSelct.. listview should only show the name and comment, the rest is
   shown in a tooltip (I don't know how to get the tooltip working in the
   listview.)
-- honor KCModule::buttons() - show/hide buttons accordingly
 
 # vim: tw=80

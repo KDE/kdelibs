@@ -365,6 +365,11 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
 
 void KPluginSelectionWidget::load()
 {
+    // FIXME: If this is called with KCMs embedded load() has to be call on all
+    // of them. Same problem as with defaults(): we only want to change the
+    // current visible KCM. New problem: load is also called to globally reset
+    // the whole dialog. So we need a way to reset the selection list and all
+    // the KCMs, too.
     kdDebug( 702 ) << k_funcinfo << endl;
 
     for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
