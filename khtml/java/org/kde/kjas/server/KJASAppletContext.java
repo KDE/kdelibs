@@ -112,18 +112,6 @@ public class KJASAppletContext implements AppletContext
             params.put( key, archives);
         }
         
-        /*
-        if( archives == null )
-        {
-            if( params.containsKey( key ) )
-                archives = (String)params.get( key );
-        }
-        else
-        {
-            if( !params.containsKey( key ) )
-                params.put( key, archives );
-        }
-        */
         key = new String( "codebase" ).toUpperCase();
         if( codeBase == null )
         {

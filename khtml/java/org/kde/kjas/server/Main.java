@@ -51,7 +51,7 @@ public class Main
         } else {
             cacheImages = true;
         }
-        
+                
         // determine system proxy
         proxyHost = System.getProperty( "http.proxyHost" );
         String proxyPortString = System.getProperty( "http.proxyPort" );
