@@ -148,7 +148,6 @@ public:
     m_linkCursor = KCursor::handCursor();
     m_loadedImages = 0;
     m_totalImageCount = 0;
-    m_userHeaders = QString::null;
     m_haveEncoding = false;
     m_activeFrame = 0L;
     keepCharset = false;
@@ -280,8 +279,6 @@ public:
 
   unsigned long m_loadedImages;
   unsigned long m_totalImageCount;
-
-  QString m_userHeaders;
 
   KHTMLFind *m_findDialog;
 
@@ -538,7 +535,7 @@ bool KHTMLPart::openURL( const KURL &url )
   if ( (args.postData.size() > 0) && (url.protocol().startsWith("http")) )
   {
       d->m_job = KIO::http_post( url, args.postData, false );
-      d->m_job->addMetaData("content-type", d->m_userHeaders );
+      d->m_job->addMetaData("content-type", args.contentType() );
   }
   else
       d->m_job = KIO::get( url, args.reload, false );
@@ -2043,14 +2040,10 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   if (!m_url.isEmpty())
     child->m_args.metaData()["referrer"] = m_url.url();
 
-  // Use a KHTMLRun if the service type is unknown, but only if this is not a POST
-  // We can't put POSTs on hold, nor rely on HTTP HEAD, so we have to assume html for POSTs (DF).
-  if ( args.serviceType.isEmpty() && args.postData.size() == 0 ) {
+  if ( args.serviceType.isEmpty() ) {
     child->m_run = new KHTMLRun( this, child, url, &(child->m_args) );
     return false;
   } else {
-    if (args.serviceType.isEmpty())
-      args.serviceType = "text/html";
     return processObjectRequest( child, url, args.serviceType );
   }
 }
@@ -2245,11 +2238,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
     // construct some user headers if necessary
     if (contentType.isNull() || contentType == "application/x-www-form-urlencoded")
-      d->m_userHeaders = "Content-Type: application/x-www-form-urlencoded";
+      args.setContentType( "Content-Type: application/x-www-form-urlencoded" );
     else // contentType must be "multipart/form-data"
-      d->m_userHeaders = "Content-Type: " + contentType + "; boundary=" + boundary;
-
-    args.setContentType( d->m_userHeaders );
+      args.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
   }
 
   // ### bail out if a submit() call from JS occured while parsing
@@ -2924,7 +2915,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
               khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
               if(r) {
                   drag = new QImageDrag( r->pixmap().convertToImage() , d->m_view->viewport() );
-//                  kdDebug(0) << " creating image drag " << endl;
                   p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
               }
           }
@@ -2935,7 +2925,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 //     else
 //       kdDebug( 6000 ) << "null pixmap" << endl;
 
-//    kdDebug(0) << "drag = " << drag;
 
     stopAutoScroll();
     if(drag)

@@ -23,6 +23,7 @@
 #include "khtml_run.h"
 #include "khtml_part.h"
 #include <kio/job.h>
+#include <kdebug.h>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, KParts::URLArgs *args )
 : KRun( url, 0, false, false /* No GUI */ )
@@ -32,11 +33,17 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
   m_args = args;
 }
 
-void KHTMLRun::foundMimeType( const QString &mimetype )
+void KHTMLRun::foundMimeType( const QString &_type )
 {
-  m_part->processObjectRequest( m_child, m_strURL, mimetype );
-  m_bFinished = true;
-  m_timer.start( 0, true );
+    QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
+    if ( !m_part->processObjectRequest( m_child, m_strURL, mimeType ) )
+    {
+        kdDebug() << "KHTMLRun::foundMimeType " << _type << " couldn't open" << endl;
+        KRun::foundMimeType( mimeType );
+        return;
+    }
+    m_bFinished = true;
+    m_timer.start( 0, true );
 }
 
 void KHTMLRun::scanFile()
@@ -49,7 +56,15 @@ void KHTMLRun::scanFile()
 
   // No check for well-known extensions, since we don't trust HTTP
 
-  KIO::TransferJob *job = KIO::get(m_strURL, false, false);
+  KIO::TransferJob *job;
+  if ( m_args->postData.size() > 0 )
+  {
+      job = KIO::http_post( m_strURL, m_args->postData, false );
+      job->addMetaData("content-type", m_args->contentType());
+  }
+  else
+      job = KIO::get(m_strURL, false, false);
+
   job->addMetaData(m_args->metaData());
 
   //job->setWindow((KMainWindow *)m_pMainWindow);
