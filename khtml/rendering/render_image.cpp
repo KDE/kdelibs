@@ -138,6 +138,10 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 //                             << " ph: " << image->pixmap_size().height() << endl;
 
             QRect scaledrect(image->valid_rect());
+            //scaling does not work if w or h is 1
+            if (scaledrect.width()==1) scaledrect.setWidth(2);
+            if (scaledrect.height()==1) scaledrect.setHeight(2);
+                        
             if (resizeCache.isNull() || image->valid_rect().size() != resizeCache.size())
             {
                 QWMatrix matrix;
