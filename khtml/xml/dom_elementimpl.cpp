@@ -414,7 +414,7 @@ NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
 
     // clone attributes
     if(namedAttrMap)
-    *(newImpl->namedAttrMap) = *namedAttrMap;
+	*(newImpl->attributes()) = *namedAttrMap;
 
     if (deep)
 	cloneChildNodes(newImpl,exceptioncode);
@@ -863,7 +863,7 @@ NamedAttrMapImpl &NamedAttrMapImpl::operator =(const NamedAttrMapImpl &other)
     // this allows parseAttribute to use getAttribute
     for (i = 0; i < len; i++) {
 	int exceptioncode; // ### propogate
-	attrs[i] = static_cast<AttrImpl*>(other.attrs[i]->cloneNode(false,exceptioncode));
+	attrs[i] = static_cast<AttrImpl*>(other.attrs[i]->cloneNode(true,exceptioncode));
 	attrs[i]->_element = element;
     }
 

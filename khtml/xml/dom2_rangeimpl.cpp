@@ -333,7 +333,7 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
     int i = 0;
     int childAOffset = -1;
     int childBOffset = -1;
-    while (childAOffset < 0 && childBOffset < 0) {
+    while (childAOffset < 0 || childBOffset < 0) {
 	if (n == childA)
 	    childAOffset = i;
 	if (n == childB)
@@ -394,8 +394,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 
 	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
 		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
-		c->deleteData(0,m_startOffset,exceptioncode);
 		c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_endOffset,exceptioncode);
+		c->deleteData(0,m_startOffset,exceptioncode);
 		fragment->appendChild(c,exceptioncode);
 	    }
 	    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
@@ -493,13 +493,10 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 	    NodeImpl *next;
 	    for (; n; n = next ) {
 		next = n->nextSibling();
-		if (action == EXTRACT_CONTENTS) {
-		    leftParent->removeChild(n,exceptioncode);
-		    leftContents->appendChild(n,exceptioncode);
-		}
-		else if (action == CLONE_CONTENTS) {
+		if (action == EXTRACT_CONTENTS)
+		    leftContents->appendChild(n,exceptioncode); // will remove n from leftParent
+		else if (action == CLONE_CONTENTS)
 		    leftContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
-		}
 		else
 		    leftParent->removeChild(n,exceptioncode);
 	    }
@@ -516,7 +513,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 	   m_endContainer->nodeType() == Node::COMMENT_NODE) {
 
 	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
+		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_endContainer->cloneNode(true,exceptioncode));
 		c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_endContainer)->length()-m_endOffset,exceptioncode);
 		rightContents = c;
 	    }
@@ -531,7 +528,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 	    rightContents = m_endContainer->parentNode()->cloneNode(false,exceptioncode);
 	    NodeImpl *n = m_endContainer->firstChild();
 	    unsigned long i;
-	    for(i = 0; i < m_endOffset-1; i++) // skip to m_endOffset
+	    for(i = 0; i+1 < m_endOffset; i++) // skip to m_endOffset
 		n = n->nextSibling();
 	    NodeImpl *prev;
 	    for (; n; n = prev ) {
@@ -555,13 +552,10 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 	    NodeImpl *prev;
 	    for (; n; n = prev ) {
 		prev = n->previousSibling();
-		if (action == EXTRACT_CONTENTS) {
-		    rightParent->removeChild(n,exceptioncode);
-		    rightContents->appendChild(n,exceptioncode);
-		}
-		else if (action == CLONE_CONTENTS) {
-		    rightContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
-		}
+		if (action == EXTRACT_CONTENTS)
+		    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
+		else if (action == CLONE_CONTENTS)
+		    rightContents->insertBefore(n->cloneNode(true,exceptioncode),rightContents->firstChild(),exceptioncode);
 		else		
 		    rightParent->removeChild(n,exceptioncode);
 		
@@ -622,6 +616,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && rightContents)
       fragment->appendChild(rightContents,exceptioncode);
 
+    // ### collapse to the proper position
     collapse(true,exceptioncode);
     return fragment;
 }
