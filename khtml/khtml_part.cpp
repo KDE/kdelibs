@@ -2511,7 +2511,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     child->m_args.metaData()["referrer"] = m_url.url();
 
   if ( args.serviceType.isEmpty() ) {
-    child->m_run = new KHTMLRun( this, child, url, child->m_args );
+    child->m_run = new KHTMLRun( this, child, url, child->m_args, 
+                                 child->m_type != khtml::ChildFrame::Frame );
     return false;
   } else {
     return processObjectRequest( child, url, args.serviceType );

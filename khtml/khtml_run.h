@@ -39,7 +39,8 @@ class KHTMLRun : public KRun
 {
   Q_OBJECT
 public:
-  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args );
+  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
+            const KParts::URLArgs &args, bool showErrorDialog );
 
   virtual void foundMimeType( const QString &mimetype );
 
@@ -56,12 +57,16 @@ protected:
 protected slots:
   void slotKHTMLScanFinished(KIO::Job *job);
   void slotKHTMLMimetype(KIO::Job *job, const QString &type);
+  void slotStatResult( KIO::Job *job );
 
 private:
+  void handleError();
+
   KHTMLPart *m_part;
   KParts::URLArgs m_args;
   khtml::ChildFrame *m_child;
   QString m_suggestedFilename;
+  bool m_showErrorDialog;
 };
 
 #endif

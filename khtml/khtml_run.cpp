@@ -30,12 +30,11 @@
 #include <klocale.h>
 #include <khtml_ext.h>
 
-KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args )
-: KRun( url, 0, false, false /* No GUI */ )
+KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
+                    const KParts::URLArgs &args, bool showErrorDialog )
+: KRun( url, 0, false, false /* No GUI */ ) , m_part( part ),
+  m_child( child ), m_args( args ), m_showErrorDialog( showErrorDialog )
 {
-  m_part = part;
-  m_child = child;
-  m_args = args;
 }
 
 void KHTMLRun::foundMimeType( const QString &_type )
@@ -138,7 +137,10 @@ void KHTMLRun::scanFile()
 
 void KHTMLRun::slotKHTMLScanFinished(KIO::Job *job)
 {
-  KRun::slotScanFinished(job);
+  if ( m_showErrorDialog && job->error() )
+      handleError();
+  else 
+      KRun::slotScanFinished(job);
 }
 
 void KHTMLRun::slotKHTMLMimetype(KIO::Job *, const QString &type)
@@ -157,5 +159,21 @@ void KHTMLRun::slotKHTMLMimetype(KIO::Job *, const QString &type)
   foundMimeType( _type );
 }
 
+void KHTMLRun::slotStatResult( KIO::Job *job )
+{
+    if ( m_showErrorDialog && job->error() )
+        handleError();
+    else
+        KRun::slotStatResult( job );
+}
+
+void KHTMLRun::handleError()
+{
+    m_job = 0;
+    m_bFault = true;
+    m_bFinished = true;
+ 
+    m_timer.start( 0, true );
+}
 
 #include "khtml_run.moc"
