@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.9  1997/07/18 05:49:13  ssk
+// Taj: All kdecore doc now in javadoc format (hopefully).
+//
 // Revision 1.8  1997/06/29 18:26:34  kalle
 // 29.06.97:	KConfig reads and writes string lists
 // 			Torben's patches to ktoolbar.*, kurl.h
@@ -386,6 +389,12 @@ public:
 	  @return if true, the key is available
    */
   bool hasKey( const QString& rKey ) const;
+
+  /// Reparse the configuration.
+  /** Reparses all configuration files. This is usefull for programms
+	  which use standalone graphical configuration tools.
+   */
+  void reparseConfiguration();
 };
 
 

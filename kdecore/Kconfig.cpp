@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.18  1997/08/04 18:30:14  ettrich
+ * Matthias: *sigh*
+ *
  * Revision 1.17  1997/08/04 18:18:24  ettrich
  * Matthias: modified my tiny modifikation to do a deep rollback. Makes more sense.
  *
@@ -238,7 +241,7 @@ void KConfig::parseConfigFiles()
     }
   
   // Parse app-specific config file if available
-  if( pData->pAppStream )
+  if( pData->pAppStream)
     parseOneConfigFile( pData->pAppStream );
 }
 
@@ -675,15 +678,15 @@ void KConfig::sync()
     // find out the file to write to (most specific writable file)
 
     // try app-specific file first
-    if( pData->pAppStream 
+    if( pData->pAppStream ){
 	// is it writable?
-	&& pData->pAppStream->device()->isWritable() )
-      {
-	writeConfigFile( *(QFile *)pData->pAppStream->device() );
-	pData->pAppStream->device()->close();
-	pData->pAppStream->device()->open( IO_ReadWrite );
-      }
-    
+      if (pData->pAppStream->device()->isWritable() )
+	{
+	  writeConfigFile( *(QFile *)pData->pAppStream->device() );
+	  pData->pAppStream->device()->close();
+	  pData->pAppStream->device()->open( IO_ReadWrite );
+	}
+    }
     else {
       // try other files
       for( int i = CONFIGFILECOUNT-1; i >= 0; i-- )
@@ -709,9 +712,7 @@ void KConfig::sync()
     }
   }
 
-  // re-parse all config files
-  // These could be modified by configuration programs
-  parseConfigFiles();
+  // no more dirty entries
   rollback();
 
 }
@@ -820,3 +821,19 @@ bool KConfig::hasKey( const QString& rKey ) const
 
 
 
+void KConfig::reparseConfiguration()
+{
+  pData->aGroupDict.clear();
+
+  // setup a group entry for the default group
+  KEntryDict* pDefGroup = new KEntryDict( 37, false );
+  pDefGroup->setAutoDelete( true );
+  pData->aGroupDict.insert( "<default>", pDefGroup );
+
+  // the next three lines are indeed important.
+  pData->pAppStream->device()->close();
+  if (!pData->pAppStream->device()->open( IO_ReadWrite ))
+    pData->pAppStream->device()->open( IO_ReadOnly );
+
+  parseConfigFiles();
+}
