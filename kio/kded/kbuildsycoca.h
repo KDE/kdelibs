@@ -18,7 +18,14 @@ class KBuildSycoca : public KSycoca
 public:
    KBuildSycoca();
    virtual ~KBuildSycoca();
-   
+
+   /**
+    * process DCOP message.  Only calls to "recreate" are supported at
+    * this time.
+    */
+   bool process(const QCString &fun, const QByteArray &data, 
+		QCString &replyType, QByteArray &replyData);
+
 public slots:
 
    /**

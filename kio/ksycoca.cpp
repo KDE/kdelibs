@@ -31,7 +31,8 @@
 #include <assert.h>
 
 // Read-only constructor
-KSycoca::KSycoca() : DCOPObject("ksycoca")
+KSycoca::KSycoca() 
+  : DCOPObject("ksycoca")
 {
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    QFile *database = new QFile(path);
@@ -61,7 +62,8 @@ KSycoca::KSycoca() : DCOPObject("ksycoca")
 }
 
 // Read-write constructor - only for KBuildSycoca
-KSycoca::KSycoca( bool /* dummy */ ) // and not really a dcop object
+KSycoca::KSycoca( bool /* dummy */ )
+  : DCOPObject("kbuildsycoca")
 {
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );

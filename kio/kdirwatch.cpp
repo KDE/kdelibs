@@ -50,7 +50,7 @@ KDirWatch::KDirWatch (int _freq)
 KDirWatch::~KDirWatch()
 {
   timer->stop();
-  delete timer;
+  //  delete timer; timer was created with 'this' as parent!
 }
 
 void KDirWatch::addDir( const QString& _path )

@@ -38,7 +38,8 @@
 #include <kstddirs.h>
 #include <unistd.h>
 
-KBuildSycoca::KBuildSycoca() : KSycoca( true )
+KBuildSycoca::KBuildSycoca() 
+  : KSycoca( true )
 {
   m_pTimer = new QTimer(this);
   connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
@@ -395,6 +396,18 @@ void KBuildSycoca::save()
      kdebug(KDEBUG_ERROR, 7020, "Can't unlink %s", to.ascii());
    if ( rename( from.ascii(), to.ascii() ) != 0 )
      kdebug(KDEBUG_ERROR, 7020, "Can't rename %s to %s", from.ascii(), to.ascii());
+}
+
+bool KBuildSycoca::process(const QCString &fun, const QByteArray &data,
+			   QCString &replyType, QByteArray &replyData)
+{
+  if (fun == "recreate()") {
+    qDebug("got a recreate signal!");
+    recreate();
+    replyType = "void";
+    return true;
+  } else
+    return KSycoca::process(fun, data, replyType, replyData);
 }
 
 #include "kbuildsycoca.moc"
