@@ -221,9 +221,10 @@ namespace KJS {
     Imp* thisValue() const { return thisVal; }
     void setThisValue(Imp *t) { thisVal = t; }
     bool hadError() const { return err; }
-    void setError(const KJSO& e) { errObj = e; err = true; }
-    void clearError() { err = false; errObj = KJSO(); }
-    KJSO error() { return errObj; }
+    void setError(const KJSO& e) { errObj = e; err = true; internErrMsg = 0;  }
+    void setError(const char *msg) { err = true; internErrMsg = msg; }
+    void clearError() { err = false; errObj = KJSO(); internErrMsg = 0; }
+    KJSO error();
     LabelStack *seenLabels() { return &ls; }
   private:
     LabelStack ls;
@@ -233,6 +234,7 @@ namespace KJS {
     List *scopeChain;
     bool err;
     KJSO errObj;
+    const char *internErrMsg;
   };
 
   class DeclaredFunctionImp : public ConstructorImp {

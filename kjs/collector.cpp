@@ -102,6 +102,12 @@ void* Collector::allocate(size_t s)
   filled++;
   block->filled++;
 
+#if KJS_MEM_LIMIT != -1
+  if (filled >= KJS_MEM_LIMIT) {
+      Context::current()->setError("Out of memory");
+  }
+#endif
+
   return m;
 }
 

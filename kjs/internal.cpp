@@ -233,7 +233,8 @@ RegExpImp::~RegExpImp()
 // ECMA 10.2
 Context::Context(CodeType type, Context *callingContext,
 		 FunctionImp *func, const List *args, Imp *thisV)
-  : err(false)
+  : err(false),
+    internErrMsg(0)
 {
   Global glob(Global::current());
 
@@ -322,6 +323,14 @@ Context *Context::current()
 void Context::setCurrent(Context *c)
 {
   KJScriptImp::current()->con = c;
+}
+
+
+KJSO Context::error()
+{
+  if (err && internErrMsg)
+    return Error::create(GeneralError, internErrMsg);
+  return errObj;
 }
 
 void Context::pushScope(const KJSO &s)

@@ -20,6 +20,14 @@
 #ifndef _KJSCOLLECTOR_H_
 #define _KJSCOLLECTOR_H_
 
+//
+// Define this > 0 if you want to limit the number of objects that can
+// be allocated. If this number is reached an "Out of memory" error
+// will be thrown. Execution is not guaranteed to stop immediately but
+// on one of the next statements.
+//
+#define KJS_MEM_LIMIT 500000
+
 #include <stdlib.h>
 
 namespace KJS {
