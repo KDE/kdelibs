@@ -59,6 +59,9 @@ QString downloadDriver(KMPrinter *p);
 KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
+	// be sure to create the CupsInfos object -> password
+	// management is handled correctly.
+	CupsInfos::self();
 	m_cupsdconf = 0;
 	m_currentprinter = 0;
 
