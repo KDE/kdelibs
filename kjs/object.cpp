@@ -349,6 +349,8 @@ ErrorType KJSO::putValue(const KJSO& v)
 void KJSO::setPrototype(const KJSO& p)
 {
   assert(rep);
+  /* TODO: the internal [[prototype]] and "prototype" prop
+     are two different things */
   rep->proto = p.imp() /*? p.imp()->ref() : 0L*/;
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
@@ -652,7 +654,10 @@ void Imp::put(const UString &p, const KJSO& v)
 void Imp::put(const UString &p, const KJSO& v, int attr)
 {
   /* TODO: check for write permissions directly w/o this call */
-  if (!canPut(p))
+  // putValue() is used for JS assignemnts. It passes no attribute.
+  // Assume that a C++ implementation knows what it is doing
+  // and let it override the canPut() check.
+  if (attr == None && !canPut(p))
     return;
 
   Property *pr;
