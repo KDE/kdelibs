@@ -1,0 +1,4 @@
+[KDE Print Filter Entry]
+Name=psbook
+Require=exec:/psbook,exec:/psnup
+Comment=Pamphlet printing (use with small side duplex printing)
