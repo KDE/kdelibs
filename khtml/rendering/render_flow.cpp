@@ -1423,9 +1423,8 @@ void RenderFlow::printTree(int indent) const
         for ( ; (r = it.current()); ++it )
         {
             QString s;
-            s.fill(indent, ' ');
-            qDebug("%s, special: %08lx (%4d -> %4d) count: %4d, width: %4d", s.latin1(),
-                   r->node, r->startY, r->endY, r->count, r->width);
+            s.fill(' ', indent);
+            kdDebug() << s << "     special -> (" << r->startY << " - " << r->endY << ")" << endl;
         }
     }
 }
