@@ -43,7 +43,7 @@ KImageIOFormat::KImageIOFormat( const QString &path)
    bRead = config.readBoolEntry("Read");
    bWrite = config.readBoolEntry("Write");
    mSuffices = config.readListEntry("Suffices");
-   mPattern = config.readEntry("Pattern");
+   mPattern = config.readEntry("Name");
    mMimetype = config.readEntry("Mimetype");
    mLib = config.readEntry("Library");
    rPaths = config.readListEntry("rPaths");
