@@ -1,5 +1,6 @@
 [Includes]
 kinstance.h
+classpreviews.h
 
 [Init]
 new KInstance("kdewidgets");
@@ -7,78 +8,134 @@ new KInstance("kdewidgets");
 [KCharSelect]
 ToolTip=Character Selection Widget (KDE)
 WhatsThis=A widget that allows selection a character out ot a table
+Group=Graphics (KDE)
 
 [KColorButton]
 ToolTip=Color Chooser Button (KDE)
 WhatsThis=A button that allows selecting a color
+Group=Graphics (KDE)
 
 [KColorCombo]
 ToolTip=Color Combo Box (KDE)
+Group=Graphics (KDE)
 
 [KComboBox]
 ToolTip=Combo Box (KDE)
+Group=Input (KDE)
 
 [KCModule]
 ToolTip=KControl Center Module (KDE)
 IsContainer=true
+Group=Container (KDE)
 
 [KDateWidget]
+ToolTip=Date preview (KDE)
+Group=Input (KDE)
+
+[KDatePicker]
+IncludeFile=kdatepik.h
+ToolTip=A date selection widget (KDE)
+WhatsThis=Provides a widget for calendar date input
+ConstructorArgs=(parent, QDate(), name)
+Group=Input (KDE)
 
 [KDialog]
 IsContainer=true
+ImplClass=KDialogPreview
+ToolTip=Class for simple Dialogs (KDE)
+Group=Container (KDE)
 
-[KDialogBase]
-IsContainer=true
+[KDualColorButton]
+IncludeFile=kdualcolorbtn.h
+ToolTip=A widget for selecting two related colors (KDE)
+Group=Graphics (KDE)
 
 [KEditListBox]
 ToolTip=Fullfeatured edit box with buttons (KDE)
+Group=Views (KDE)
 
 [KFontCombo]
+ToolTip=Font Combo Box (KDE)
+WhatsThis=A QCombo Box showing the installed system fonts (with preview)
+Group=Input (KDE)
 
 [KGradientSelector]
 IncludeFile=kselect.h
 WhatsThis=A widget that allows the user to select two colors to form a gradient
+Group=Graphics (KDE)
+
+[KHistoryCombo]
+IncludeFile=kcombobox.h
+ToolTip=A combobox for offering a history and completion (KDE)
+WhatsThis=A combobox which implements a history like a unix shell
+Group=Input (KDE)
+
+[KHSSelector]
+IncludeFile=kcolordialog.h
+ToolTip=Widget for Hue/Saturation selection (KDE)
+Group=Graphics (KDE)
 
 [KLed]
 ToolTip=LED Widget (KDE)
 WhatsThis=A widget showing a light emitter diode
+Group=Display (KDE)
 
 [KListBox]
 ToolTip=Extended List Box (KDE)
 WhatsThis=An improved version of the QListBox that follows KDE settings
+Group=Views (KDE)
 
 [KListView]
 ToolTip=Extended List View (KDE)
 WhatsThis=An improved version of the QListView that allows certain KDE extentions
+Group=Views (KDE)
 
 [KLineEdit]
+ToolTip=Line Edit (KDE)
+Group=Input (KDE)
 
 [KPasswordEdit]
 IncludeFile=kpassdlg.h
 ToolTip=Safe Password LineEdit (KDE)
 WhatsThis=A KLineEdit that is safe for prompting the user for passwords
+Group=Input (KDE)
 
 [KProgress]
 ToolTip=Progress Bar (KDE)
 WhatsThis=An improved progress bar for KDE that uses QFrame and QRangeControl
+Group=Display (KDE)
 
 [KPushButton]
 ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
+Group=Buttons (KDE)
 
 [KRestrictedLine]
 ToolTip=Line Edit for restricted input (KDE)
+Group=Input (KDE)
 
 [KRuler]
 ToolTip=Measuring Ruler Widget (KDE)
-WhatsThis=A measuring ruler widget like that seen in KWord for page widths and heights
+WhatsThis=A measuring ruler widget as seen in KWord for page widths and heights
+Group=Display (KDE)
+
+[KSqueezedTextLabel]
+ToolTip=A QLabel that squeezes its text (KDE)
+WhatsThis=If the text is too long to fit into the label it is divided into remaining left and right parts which are separated by three dots
+ConstructorArgs=("KSqueezedTextLabel", parent, name)
+Group=Display (KDE)
 
 [KTextBrowser]
 ToolTip=Improved QTextBrowser (KDE)
 WhatsThis=An improved version of the QTextBrowser with mail or system browser invoktion support
+Group=Input (KDE)
 
 [KURLLabel]
 ToolTip=URL Label (KDE)
+ConstructorArgs=("KURLLabel", QString::null, parent, name)
+Group=Display (KDE)
 
 [KURLRequester]
-
+ToolTip=URL Requester (KDE)
+WhatsThis=A widget holding a lineedit and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
+Group=Input (KDE)

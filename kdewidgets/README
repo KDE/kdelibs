@@ -8,15 +8,14 @@ Summary:
 This directory contains KDE custom widgets for designer 2 which comes with Qt 3.
 Just make sure your plugin path in qtconfig includes $KDEDIR/lib/kde3/plugins
 
-This plugin uses the QWidget plugin API of Qt 3beta6. 
+This plugin uses the QWidget plugin API of Qt >= 3.0 
 Don't expect it to work with any other versions of Qt.
 
 
 Known Bugs:
 ===========
 
-There are some problems left that cause designer to crash when creating certain widgets.
-
+Designer crashes when using widgets that use the kapp pointer.
 
 HOWTO Add Widgets:
 ==================
@@ -28,6 +27,7 @@ ToolTip=My Cool Widget
 WhatsThis=Long description of my cool widget
 ConstructorArgs=(parent, name, otherNeccessaryArg)
 IsContainer=true
+Group=MyWidgetCollection
 
 Everything but [ClassName] is optional.
 IncludeFile defaults to classname.h (all lowercase)
@@ -39,14 +39,14 @@ IsContainer defaults to false - note, any value except an empty one is
                                 interpreted as true, even if the value
                                 is "false" :) So, if the widget is not a
                                 container, just omit this line.
+Group defaults to "KDE"
 
 If you somehow need extra includes in kdewidgets.cpp, add them to the
 [Includes] section, additional code for the plugin constructor goes
-to [Init], code for the destructor to [Cleanup]
+to [Init], code for the destructor to [Destroy]
 
 Have fun!
 
 
-Daniel Molkentin
-<molkentin@kde.org>
-
+Daniel Molkentin <molkentin@kde.org>
+Malte Starostik <malte@kde.org>

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use vars qw($group $name $out @includes $init $cleanup %widgets);
+use vars qw($group $name $out @includes $init $destroy %widgets);
 
 sub usage
 {
@@ -26,8 +26,9 @@ sub warning($) { print STDERR "Warning: $_[0]\n" }
 my ($class, %defs);
 sub addwidget
 {
-	return if $class =~ /^(Includes|Init|Cleanup)$/;
+	return if $class =~ /^(Includes|Init|Destroy)$/;
 	$defs{IncludeFile} = lc "$class.h" unless exists $defs{IncludeFile};
+	$defs{ImplClass} = $class unless exists $defs{ImplClass};
 	$defs{Group} = $group unless exists $defs{Group};
 	$defs{ToolTip} = $class unless exists $defs{ToolTip};
 	$defs{WhatsThis} = $class unless exists $defs{Long};
@@ -69,8 +70,8 @@ while (<>)
 	die "Not in a widget definition" unless $class;
 	if ($class eq 'Includes') { push @includes, $_ }
 	elsif ($class eq 'Init') { $init .= "\n\t$_" }
-	elsif ($class eq 'Cleanup') { $cleanup .= "\n\t$_" }
-	elsif (/^\s*(IncludeFile|Group|ToolTip|WhatsThis|IconSet|ConstructorArgs|IsContainer)\s*=\s*(.*)\s*/)
+	elsif ($class eq 'Destroy') { $destroy .= "\n\t$_" }
+	elsif (/^\s*(IncludeFile|ImplClass|Group|ToolTip|WhatsThis|IconSet|ConstructorArgs|IsContainer)\s*=\s*(.*)\s*/)
 	{
 		$defs{$1} = $2;
 	}
@@ -94,7 +95,7 @@ print OUT <<EOT;
 
 EOT
 
-print OUT map { "#include <$_>\n" } @includes, map { $widgets{$_}->{IncludeFile} } @keys;
+print OUT map { "#include \"$_\"\n" } @includes, map { $widgets{$_}->{IncludeFile} } @keys;
 
 print OUT <<EOT;
 
@@ -162,7 +163,7 @@ $init
 }
 
 ${name}::~$name()
-{$cleanup
+{$destroy
 }
 
 QWidget *${name}::create(const QString &key, QWidget *parent, const char *name)
@@ -171,7 +172,7 @@ EOT
 
 print OUT map { <<EOT } @keys;
 	if (key == "$_")
-		return new $_$widgets{$_}->{ConstructorArgs};
+		return new $widgets{$_}->{ImplClass}$widgets{$_}->{ConstructorArgs};
 EOT
 
 print OUT <<EOT;

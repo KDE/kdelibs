@@ -24,7 +24,7 @@ INCLUDES = -I$(top_srcdir)/kfile $(all_includes)
 kde_widget_LTLIBRARIES = kdewidgets.la
 kdewidgets_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
 kdewidgets_la_LIBADD = $(LIB_KDEUI) $(LIB_KFILE)
-kdewidgets_la_SOURCES = kdewidgets.cpp
+kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp 
 
 kdewidgets.cpp: kde.widgets
 	$(srcdir)/makekdewidgets -o $@ $<
