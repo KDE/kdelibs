@@ -74,8 +74,8 @@ void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 {
   Entry* e = (dwp_self) ? dwp_self->fd_Entry.find(si->si_fd) :0;
 
-  kdDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
-		<< QString(e ? e->path:"unknown") << endl;
+//  kdDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
+//		<< QString(e ? e->path:"unknown") << endl;
 
   if(!e || e->dn_fd != si->si_fd) {
     qDebug("fatal error in KDirWatch");
@@ -397,7 +397,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 	if(fd < 0 ||
 	   fcntl(fd, F_SETSIG, SIGRTMIN) < 0 ||
 	   fcntl(fd, F_NOTIFY,
-		 DN_DELETE|DN_CREATE|DN_RENAME|DN_ATTRIB|DN_MULTISHOT) < 0) {
+		 DN_MODIFY|DN_DELETE|DN_CREATE|DN_RENAME|DN_ATTRIB|DN_MULTISHOT) < 0) {
 
 	  if(fd >= 0) {
 	    kdDebug(7001) << "Not using Linux Directory Notifications."
