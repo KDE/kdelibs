@@ -835,13 +835,36 @@ protected slots:
     */
     virtual void showAboutApplication();
 
+   /**
+    * This slot should only be called in case you reimplement closeEvent() and
+    * if you are using the "auto-save" feature. In all other cases,
+    * setSettingsDirty() should be called instead to benefit from the delayed
+    * saving.
+    *
+    * @see setAutoSaveSettings
+    * @see setSettingsDirty
+    *
+    * @since 3.2
+    *
+    * Example:
+    * \code
+    *
+    * void MyMainWindow::closeEvent( QCloseEvent *e )
+    * {
+    *   // Save settings if auto-save is enabled, and settings have changed
+    *   if ( settingsDirty() && autoSaveSettings() )
+    *     saveAutoSaveSettings();
+    *   ..
+    * }
+    * \endcode
+    */ 
+    void saveAutoSaveSettings();
+
 private slots:
    /**
     * Called when the app is shutting down.
     */
     void shuttingDown();
-
-    void saveAutoSaveSettings();
 
 private:
     KMenuBar *internalMenuBar();
