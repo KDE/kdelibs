@@ -1340,6 +1340,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         else if ( cc == '&' && !src.escaped())
         {
             ++src;
+            if ( pending )
+                addPending();
             parseEntity(src, dest, true);
         }
         else if ( cc == '<' && !src.escaped())
