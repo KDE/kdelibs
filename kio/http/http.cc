@@ -1,3 +1,5 @@
+// -*- c-basic-offset: 2 -*-
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -65,7 +67,6 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kservice.h>
-//#include <kio/slavewrapper.h>
 
 using namespace KIO;
 
@@ -351,7 +352,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_HTTPrev = HTTP_Unknown;
 
 #ifdef DO_SSL
-  if (mProtocol == "https") 
+  if (mProtocol == "https")
   {
      struct servent *sent = getservbyname("https", "tcp");
      if (sent) {
@@ -494,7 +495,7 @@ HTTPProtocol::http_isConnected()
        retval = recv(m_sock, buffer, 80, MSG_PEEK);
        kdDebug(7103) << "Recv returns with = " << retval << endl;
        return false;
-   }            
+   }
    return true;
 }
 
@@ -769,7 +770,7 @@ bool HTTPProtocol::http_open()
   }
 
   if (m_request.method == HTTP_POST) {
-    header += "Content-Type: application/x-www-form-urlencoded\r\n";
+    header += "Content-type: application/x-www-form-urlencoded\r\n";
   }
 
   // check if we need to login
@@ -917,7 +918,7 @@ bool HTTPProtocol::readHeader()
 
 
     // what type of data do we have?
-    else if (strncasecmp(buffer, "Content-Type:", 13) == 0) {
+    else if (strncasecmp(buffer, "Content-type:", 13) == 0) {
       // Jacek: We can't send mimeType signal now,
       // because there may be another Content-Type to come
       m_strMimeType = trimLead(buffer + 13);
@@ -1250,16 +1251,30 @@ bool HTTPProtocol::sendBody()
    }
 
    char c_buffer[64];
-   QString header = "Content-Length: ";
-   memset(c_buffer, 0, 64);
-   sprintf(c_buffer, "%i\r\n", length);
-   header += c_buffer;
-   header += "\r\n"; /* end header */
+   sprintf(c_buffer, "Content-length: %d\r\n\r\n", length);
+
+   bool sendOk;
+   sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
+
+   if (!sendOk)
+   {
+     kdDebug(7103) << "Connection broken (sendBody(1))! (" << m_state.hostname << ")" << endl;
+     error( ERR_CONNECTION_BROKEN, m_state.hostname );
+     return false;
+   }
 
    QByteArray *buffer;
-   while ( (buffer = bufferList.take(0)))
+   while ( !bufferList.isEmpty() )
    {
-      write(buffer->data(), buffer->size());
+     buffer = bufferList.take(0);
+
+     sendOk = (write(buffer->data(), buffer->size()) == (ssize_t) buffer->size());
+     if (!sendOk)
+     {
+       kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
+       error( ERR_CONNECTION_BROKEN, m_state.hostname );
+       return false;
+     }
    }
    return true;
 }
@@ -1353,7 +1368,7 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   m_request.hostname = host;
 
   // try to ensure that the port is something reasonable
-  if ( port == 0 ) 
+  if ( port == 0 )
      port = mDefaultPort;
 
   m_request.port = port;
