@@ -57,8 +57,11 @@ public:
     static void setNumberOfDesktops(int num);
 
     /**
-       The current virtual desktop.
-   */
+     * The current virtual desktop.
+     *
+     * @return On success a number > 0 indicating the desktop.
+     *         0 if the desktop is unknown.   
+     */
     static int currentDesktop();
 
 
