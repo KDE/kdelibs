@@ -103,11 +103,11 @@ class KGlobalAccel : public QObject
 	 * KAccelActions::useFourModifierKeys(). */
 	static bool useFourModifierKeys();
 
- private:
-	class KGlobalAccelPrivate* d;
-
 	KAccelActions& actions();
 	const KAccelActions& actions() const;
+
+ private:
+	class KGlobalAccelPrivate* d;
 
 	friend class KGlobalAccelPrivate;
 	friend class KAccelShortcutList;
