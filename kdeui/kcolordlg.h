@@ -108,6 +108,10 @@ public:
   KColor( const KColor &col);
   KColor( const QColor &col);
 
+  KColor& operator=( const KColor& col);
+
+  bool operator==( const KColor& col) const;
+
   void setHsv(int _h, int _s, int _v);
   void setRgb(int _r, int _g, int _b);
 

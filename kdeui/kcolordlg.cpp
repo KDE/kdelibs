@@ -90,6 +90,20 @@ KColor::KColor( const QColor &col)
   QColor::hsv(&h, &s, &v);
 };
 
+bool KColor::operator==(const KColor& col) const
+{
+  return (h == col.h) && (s == col.s) && (v == col.v) &&
+         (r == col.r) && (g == col.g) && (b == col.b);
+}
+
+KColor& KColor::operator=(const KColor& col) 
+{
+  *(QColor *)this = col;
+  h = col.h; s = col.s; v = col.v;
+  r = col.r; g = col.g; b = col.b;
+  return *this;
+}
+
 void 
 KColor::setHsv(int _h, int _s, int _v) 
 { 
@@ -1064,6 +1078,8 @@ void KColorDialog::slotHSChanged( int h, int s )
 {
   int _h, _s, v;
   selColor.hsv(&_h, &_s, &v);
+  if (v < 1)
+     v = 1;
   KColor col;
   col.setHsv( h, s, v );
   _setColor( col );
