@@ -869,7 +869,10 @@ KCmdLineArgs::usage(const char *id)
          {
             if (option->description)
             {
-               printQ("\n"+i18n(option->description));
+               QString tmp = "\n"+i18n(option->description);
+               if (!tmp.endsWith("\n"))
+                  tmp.append("\n");
+               printQ(tmp);
             }
             option++;
             continue;
