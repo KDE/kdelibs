@@ -1312,6 +1312,32 @@ static int initXconnection()
 }
 #endif
 
+#ifdef __KCC
+/* One of my horrible hacks.  KCC includes in each "main" function a call
+   to _main(), which is provided by the C++ runtime system.  It is
+   responsible for calling constructors for some static objects.  That must
+   be done only once, so _main() is guarded against multiple calls.
+   For unknown reasons the designers of KAI's libKCC decided it would be
+   a good idea to actually abort() when it's called multiple times, instead
+   of ignoring further calls.  This breaks our mechanism of KLM's, because
+   most KLM's have a main() function which is called from us.
+   The "solution" is to simply define our own _main(), which ignores multiple
+   calls, which is easy, and which does the same work as KAI'c _main(),
+   which is difficult.  Currently (KAI 4.0f) it only calls __call_ctors(void)
+   (a C++ function), but if that changes we need to change our's too.
+   (matz) */
+extern "C" void _main(void);
+extern "C" void __call_ctors__Fv(void);
+static int main_called = 0;
+void _main(void)
+{
+  if (main_called)
+    return;
+  main_called = 1;
+  __call_ctors__Fv ();
+}
+#endif
+
 int main(int argc, char **argv, char **envp)
 {
    int init_pipe[2];
