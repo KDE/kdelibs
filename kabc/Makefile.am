@@ -1,4 +1,4 @@
-SUBDIRS = scripts vcard vcardparser . formats plugins
+SUBDIRS = vcard vcardparser . formats plugins scripts
 
 # Make sure $(all_includes) remains last!
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
@@ -6,14 +6,15 @@ INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
            -I$(srcdir)/vcard/include/generated \
            -I$(srcdir)/vcardparser $(all_includes)
 
-
 addressee.h addressee.cpp field.cpp: \
 				$(srcdir)/scripts/makeaddressee \
 				$(srcdir)/scripts/addressee.src.cpp \
 				$(srcdir)/scripts/addressee.src.h \
 				$(srcdir)/scripts/entrylist \
 				$(srcdir)/scripts/field.src.cpp
-	( cd scripts && $(MAKE) )
+	mysrcdir=`cd $(srcdir)/scripts && pwd` ;\
+	cd scripts && $(PERL) $$mysrcdir/makeaddressee
+
 CLEANFILES = addressee.h addressee.cpp field.cpp
 
 lib_LTLIBRARIES = libkabc.la

@@ -22,7 +22,7 @@ testwrite_SOURCES = testwrite.cpp
 
 TESTFILES = vcard1.vcf vcard2.vcf vcard3.vcf vcard4.vcf vcard6.vcf
 
-check: testread
+check-local: testread
 	rm -f FAILED; \
 	for i in $(TESTFILES); \
 	  do perl $(top_srcdir)/kabc/vcardparser/checkvcard.pl \
