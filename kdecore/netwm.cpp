@@ -1603,7 +1603,7 @@ void NETRootInfo::update(unsigned long dirty) {
 		    if (type_ret == UTF8_STRING && format_ret == 8)
 			p->name = nstrdup((const char *) name_ret);
 
-		    if ( data_ret )
+		    if ( name_ret )
 			XFree(name_ret);
 		}
 	    }
