@@ -111,10 +111,8 @@ int KJS::relation(const KJSO& v1, const KJSO& v2)
   KJSO p1 = v1.toPrimitive(NumberType);
   KJSO p2 = v2.toPrimitive(NumberType);
 
-  if (p1.isA(StringType) && p2.isA(StringType)) {
-    /* TODO */
-    return -1;
-  }
+  if (p1.isA(StringType) && p2.isA(StringType))
+    return p1.toString().value() < p2.toString().value() ? 1 : 0;
 
   Number n1 = p1.toNumber();
   Number n2 = p2.toNumber();

@@ -487,6 +487,25 @@ bool KJS::operator==(const char *s1, const UString& s2)
   return operator==(s2, s1);
 }
 
+bool KJS::operator<(const UString& s1, const UString& s2)
+{
+  int l1 = s1.size();
+  int l2 = s2.size();
+  const UChar *c1 = s1.data();
+  const UChar *c2 = s2.data();
+  int l = 0;
+  int le = l1 < l2 ? l1 : l2;
+  while (l < le && *c1 == *c2) {
+    c1++;
+    c2++;
+    l++;
+  }
+  if (l != le)
+    return (c1->unicode() < c2->unicode());
+  
+  return (l1 < l2 && !(*c1 == *c2));
+}
+
 UString KJS::operator+(const UString& s1, const UString& s2)
 {
   UString tmp(s1);

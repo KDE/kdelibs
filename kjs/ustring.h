@@ -90,6 +90,7 @@ namespace KJS {
     friend UString;
     friend bool operator==(const UChar &c1, const UChar &c2);
     friend bool operator==(const UString& s1, const char *s2);
+    friend bool operator<(const UString& s1, const UString& s2);
     unsigned char hi;
     unsigned char lo;
   };
@@ -366,6 +367,7 @@ namespace KJS {
 
   bool operator==(const UChar &c1, const UChar &c2);
   bool operator==(const UString& s1, const UString& s2);
+  bool operator<(const UString& s1, const UString& s2);
   bool operator==(const UString& s1, const char *s2);
   bool operator==(const char *s1, const UString& s2);
   bool operator==(const CString& s1, const CString& s2);
