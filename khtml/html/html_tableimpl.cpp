@@ -294,7 +294,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_WIDTH:
         if (!attr->value().isEmpty())
-            addCSSLength(CSS_PROP_WIDTH, attr->value());
+            addCSSLength(CSS_PROP_WIDTH, attr->value(), false, true);
         else
             removeCSSProperty(CSS_PROP_WIDTH);
         break;
