@@ -412,7 +412,7 @@ void KSelectAction::setItems( const QStringList& lst )
 
 int KSelectAction::plug( QWidget *widget )
 {
-    if ( widget->inherits("KPopupMenu") )
+    if ( widget->inherits("QPopupMenu") )
     {
 	// Create the PopupMenu and store it in m_menu
 	(void)popupMenu();
