@@ -2287,7 +2287,7 @@ void KHTMLPart::slotSaveDocument()
   if ( srcURL.fileName(false).isEmpty() )
     srcURL.setFileName( "index.html" );
 
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm"), d->m_cacheId );
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("*.html *.htm|HTML files"), d->m_cacheId );
 }
 
 void KHTMLPart::slotSecurity()
