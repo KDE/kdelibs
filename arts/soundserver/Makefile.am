@@ -37,8 +37,10 @@ artsplay_SOURCES = artsplay.cc
 
 artswrapper_OBJS = artswrapper.o
 
+bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
+
 artswrapper.o: $(srcdir)/artswrapper.c
-	$(CC) -c $(DEFS) $(INCLUDES) -DEXECUTE='"$(bindir)/artsd"' \
+	$(CC) -c $(DEFS) $(INCLUDES) -DEXECUTE=\"$(bd)/artsd\" \
 			$(srcdir)/artswrapper.c
 
 DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
