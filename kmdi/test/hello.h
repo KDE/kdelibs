@@ -11,9 +11,12 @@
 #ifndef HELLO_H
 #define HELLO_H
 
-#include <qwidget.h>
-
+#include <qstring.h>
 #include <kmdichildview.h>
+
+class QWidget;
+class QMouseEvent;
+class QPaintEvent;
 
 class Hello : public KMdiChildView
 {

@@ -99,3 +99,6 @@ void Hello::paintEvent( QPaintEvent * )
     // 4: Copy the pixmap to the Hello widget
     bitBlt( this, pmx, pmy, &pm );
 }
+
+#include "hello.moc"
+

@@ -143,3 +143,5 @@ void RestartWidget::onStateChanged(int on)
 void RestartWidget::setWindow(MainWidget *w) {
         m_w=w;
 }
+
+#include "mainwidget.moc"

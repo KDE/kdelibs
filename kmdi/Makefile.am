@@ -1,4 +1,4 @@
-SUBDIRS = kmdi .
+SUBDIRS = kmdi . test
 
 INCLUDES = -I$(top_srcdir)/kmdi/res -I$(top_srcdir)/kutils -I$(top_srcdir) -I$(top_srcdir)/kmdi $(all_includes)
 
