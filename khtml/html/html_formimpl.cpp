@@ -507,6 +507,29 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFor
         m_form->registerFormElement(this);
 }
 
+void HTMLGenericFormElementImpl::insertedIntoDocument()
+{
+    HTMLElementImpl::insertedIntoDocument();
+
+    HTMLFormElementImpl* newform = getForm();
+
+    if (newform && newform != m_form) {
+        if (m_form) m_form->removeFormElement(this);
+        m_form = newform;
+        m_form->registerFormElement(this);
+    }
+}
+
+void HTMLGenericFormElementImpl::removedFromDocument()
+{
+    HTMLElementImpl::removedFromDocument();
+
+    if (m_form)
+        m_form->removeFormElement(this);
+
+    m_form = 0;
+}
+
 HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
 {
     if (m_form)
@@ -601,21 +624,6 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
         setChanged();
-    }
-}
-
-void HTMLGenericFormElementImpl::setParent(NodeImpl *parent)
-{
-    if (parentNode()) { // false on initial insert, we use the form given by the parser
-	if (m_form)
-	    m_form->removeFormElement(this);
-	m_form = 0;
-    }
-    HTMLElementImpl::setParent(parent);
-    if (!m_form) {
-	m_form = getForm();
-	if (m_form)
-	    m_form->registerFormElement(this);
     }
 }
 

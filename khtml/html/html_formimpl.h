@@ -128,6 +128,9 @@ public:
     virtual void attach();
     virtual void reset() {}
 
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+
     void onSelect();
     void onChange();
 
@@ -151,8 +154,6 @@ public:
      * return true for a successful control (see HTML4-17.13.2)
      */
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
-
-    virtual void setParent(NodeImpl *parent);
 
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool isEditable();
