@@ -592,18 +592,23 @@ RenderPartObject::RenderPartObject( DOM::HTMLElementImpl* element )
 void RenderPartObject::updateWidget()
 {
   QString url;
-  QString serviceType;
-  QStringList params;
   KHTMLPart *part = m_view->part();
-  HTMLObjectBaseElementImpl *objbase;
 
   setMinMaxKnown(false);
   setLayouted(false);
 
-  // ### this should be constant true - move iframe to somewhere else
-  if (element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET) {
+  if (element()->id() == ID_IFRAME) {
 
-      objbase = static_cast<HTMLObjectBaseElementImpl *>(element());
+      HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
+      url = o->url.string();
+      if( url.isEmpty()) return;
+      part->requestFrame( this, url, o->name.string(), QStringList(), true );
+  // ### this should be constant true - move iframe to somewhere else
+  } else {
+
+      QString serviceType;
+      QStringList params;
+      HTMLObjectBaseElementImpl * objbase = static_cast<HTMLObjectBaseElementImpl *>(element());
       url = objbase->url;
 
       for (NodeImpl* child = element()->firstChild(); child; child=child->nextSibling()) {
@@ -639,102 +644,74 @@ void RenderPartObject::updateWidget()
               }
           }
       }
-      if (url.isEmpty() || !objbase->getDocument()->isURLAllowed(url)) {
-          // not a valid url
-          objbase->renderAlternative();
-          return;
-      }
-  }
 
-  if(element()->id() == ID_OBJECT || element()->id() == ID_APPLET) {
+      if ( element()->id() == ID_EMBED ) {
 
-      // check for embed child object
-      HTMLEmbedElementImpl *embed = 0;
-      for (NodeImpl *child = objbase->firstChild(); child; child = child->nextSibling())
-          if ( child->id() == ID_EMBED ) {
-              embed = static_cast<HTMLEmbedElementImpl *>( child );
-              break;
-          }
-
-      params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( objbase->classId ) );
-      params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( objbase->getAttribute(ATTR_CODEBASE).string() ) );
-      if (!objbase->getAttribute(ATTR_WIDTH).isEmpty())
-          params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( objbase->getAttribute(ATTR_WIDTH).string() ) );
-      if (!objbase->getAttribute(ATTR_HEIGHT).isEmpty())
-          params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( objbase->getAttribute(ATTR_HEIGHT).string() ) );
-
-      if ( !embed )
-      {
           serviceType = objbase->serviceType;
-          if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
-              // We have a clsid, means this is activex (Niko)
-              serviceType = "application/x-activex-handler";
+      }
+      else { // if(element()->id() == ID_OBJECT || element()->id() == ID_APPLET)
 
-              if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
-                  // It is ActiveX, but the nsplugin system handling
-                  // should also work, that's why we don't override the
-                  // serviceType with application/x-activex-handler
-                  // but let the KTrader in khtmlpart::createPart() detect
-                  // the user's preference: launch with activex viewer or
-                  // with nspluginviewer (Niko)
-                  serviceType = "application/x-shockwave-flash";
+          // check for embed child object
+          HTMLEmbedElementImpl *embed = 0;
+          for (NodeImpl *child = objbase->firstChild(); child; child = child->nextSibling())
+              if ( child->id() == ID_EMBED ) {
+                  embed = static_cast<HTMLEmbedElementImpl *>( child );
+                  break;
               }
-              else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
-                  serviceType = "audio/x-pn-realaudio-plugin";
-              else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) || 
-                      objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
-                  serviceType = "application/x-java-applet";
 
-              else
-                  kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
+          params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( objbase->classId ) );
+          params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( objbase->getAttribute(ATTR_CODEBASE).string() ) );
+          if (!objbase->getAttribute(ATTR_WIDTH).isEmpty())
+              params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( objbase->getAttribute(ATTR_WIDTH).string() ) );
+          if (!objbase->getAttribute(ATTR_HEIGHT).isEmpty())
+              params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( objbase->getAttribute(ATTR_HEIGHT).string() ) );
 
-              // TODO: add more plugins here
+          if ( embed ) {
+              // render embed object
+              url = embed->url;
+              serviceType = embed->serviceType;
           }
+          else {
+              serviceType = objbase->serviceType;
+              if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
-          part->requestObject( this, url, serviceType, params );
-      }
-      else {
-          // render embed object
-          url = embed->url;
-          serviceType = embed->serviceType;
+                  // We have a clsid, means this is activex (Niko)
+                  serviceType = "application/x-activex-handler";
 
-          if ( url.isEmpty() && serviceType.isEmpty() ) {
-#ifdef DEBUG_LAYOUT
-              kdDebug(6031) << "RenderPartObject::close - empty url and serviceType" << endl;
-#endif
-              return;
+                  if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+                      // It is ActiveX, but the nsplugin system handling
+                      // should also work, that's why we don't override the
+                      // serviceType with application/x-activex-handler
+                      // but let the KTrader in khtmlpart::createPart() detect
+                      // the user's preference: launch with activex viewer or
+                      // with nspluginviewer (Niko)
+                      serviceType = "application/x-shockwave-flash";
+                  }
+                  else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
+                      serviceType = "audio/x-pn-realaudio-plugin";
+                  else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) || 
+                          objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
+                      serviceType = "application/x-java-applet";
+
+                  else
+                      kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
+
+                  // TODO: add more plugins here
+              }
           }
-          part->requestObject( this, url, serviceType, params );
       }
-      objbase->setLiveConnect(part->liveConnectExtension(this));
-  }
-  else if ( element()->id() == ID_EMBED ) {
-
-      serviceType = objbase->serviceType;
-
-      if ( url.isEmpty() && serviceType.isEmpty() ) {
-#ifdef DEBUG_LAYOUT
-          kdDebug(6031) << "RenderPartObject::close - empty url and serviceType" << endl;
-#endif
-          return;
-      }
-      part->requestObject( this, url, serviceType, params );
-      objbase->setLiveConnect(part->liveConnectExtension(this));
-  } else {
-      assert(element()->id() == ID_IFRAME);
-      HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
-      url = o->url.string();
-      if( url.isEmpty()) return;
-      KHTMLView *v = static_cast<KHTMLView *>(m_view);
-      v->part()->requestFrame( this, url, o->name.string(), QStringList(), true );
+      if (url.isEmpty() || !part->requestObject( this, url, serviceType, params ))
+          objbase->renderAlternative();
+      else
+          objbase->setLiveConnect(part->liveConnectExtension(this));
   }
 }
 
 // ugly..
 void RenderPartObject::close()
 {
-    if ( element()->id() == ID_EMBED || element()->id() == ID_OBJECT || element()->id() == ID_APPLET )
+    if ( element()->id() != ID_IFRAME )
         updateWidget();
     RenderPart::close();
 }
