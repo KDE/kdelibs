@@ -65,7 +65,7 @@ class KWalletD : public KDEDModule {
 
 		// Returns true if the wallet is open
 		virtual bool isOpen(const QString& wallet) const;
-		virtual bool isOpen(int handle) const;
+		virtual bool isOpen(int handle);
 
 		// List the users of this wallet
 		virtual QStringList users(const QString& wallet) const;

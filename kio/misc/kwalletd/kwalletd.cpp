@@ -387,8 +387,8 @@ return false;
 }
 
 
-bool KWalletD::isOpen(int handle) const {
-int rc = _wallets.find(handle);
+bool KWalletD::isOpen(int handle) {
+	KWallet::Backend *rc = _wallets.find(handle);
 
 	if (rc == 0 && ++_failed > 5) {
 		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet. An application may be misbehaving."), i18n("KDE Wallet Service"));
