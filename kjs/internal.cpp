@@ -769,10 +769,13 @@ LabelStack::~LabelStack()
 #include <stdio.h>
 void KJS::printInfo( const char *s, const KJSO &o )
 {
-    fprintf(stderr, "%s: %s : %s (%p)\n",
-	    s,
-	    o.toString().value().ascii(),
-	    o.imp()->typeInfo()->name,
-	    (void*)o.imp());
+    if ( o.isNull() )
+      fprintf(stderr, "%s: null\n", s);
+    else
+      fprintf(stderr, "%s: %s : %s (%p)\n",
+	      s,
+	      o.toString().value().ascii(),
+	      o.imp()->typeInfo()->name,
+	      (void*)o.imp());
 }
 #endif
