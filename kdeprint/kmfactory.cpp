@@ -24,6 +24,7 @@
 #include "kmjobmanager.h"
 #include "kmuimanager.h"
 #include "kmvirtualmanager.h"
+#include "kmfiltermanager.h"
 #include "kprinterimpl.h"
 
 #include <klibloader.h>
@@ -60,6 +61,7 @@ KMFactory::KMFactory()
 	m_jobmanager = 0;
 	m_uimanager = 0;
 	m_virtualmanager = 0;
+	m_filtermanager = 0;
 	m_implementation = 0;
 	m_factory = 0;
 	m_printconfig = 0;
@@ -82,6 +84,7 @@ KMFactory::~KMFactory()
 	if (m_virtualmanager) delete m_virtualmanager;
 	if (m_implementation) delete m_implementation;
 	if (m_printconfig) delete m_printconfig;
+	if (m_filtermanager) delete m_filtermanager;
 }
 
 KMManager* KMFactory::manager()
@@ -122,6 +125,14 @@ KMVirtualManager* KMFactory::virtualManager()
 		m_virtualmanager = new KMVirtualManager(0, "VirtualManager");
 	CHECK_PTR(m_virtualmanager);
 	return m_virtualmanager;
+}
+
+KMFilterManager* KMFactory::filterManager()
+{
+	if (!m_filtermanager)
+		m_filtermanager = new KMFilterManager(0, "FilterManager");
+	CHECK_PTR(m_filtermanager);
+	return m_filtermanager;
 }
 
 void KMFactory::createManager()

@@ -42,6 +42,7 @@ public:
 	virtual void broadcastOption(const QString& key, const QString& value);
 
 	bool printFiles(KPrinter*, const QStringList&, bool removeflag = false);
+	bool filterFiles(KPrinter*, QStringList&, bool removeflag = false);
 	KMPrinter* filePrinter()				{ return m_fileprinter; }
 	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }

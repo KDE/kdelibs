@@ -30,6 +30,7 @@
 #include "kmprinter.h"
 #include "kpdriverpage.h"
 #include "kpqtpage.h"
+#include "kpfilterpage.h"
 
 #include <klocale.h>
 
@@ -127,6 +128,8 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 
 			dlg->setCaption(i18n("Configuration of %1").arg(dlg->printer()->name()));
 		}
+		dlg->addPage(new KPFilterPage(dlg,"FilterPage"));
+		dlg->resize(100,100);
 	}
 }
 

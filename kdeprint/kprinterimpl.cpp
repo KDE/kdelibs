@@ -23,8 +23,10 @@
 #include "kprinter.h"
 #include "kmfactory.h"
 #include "kmmanager.h"
+#include "kmfiltermanager.h"
 #include "kmthreadjob.h"
 #include "kmprinter.h"
+#include "kprintfilter.h"
 
 #include <qfile.h>
 #include <klocale.h>
@@ -171,5 +173,60 @@ QString KPrinterImpl::tempFile()
 	// be sure the file doesn't exist
 	do f = locateLocal("tmp","kdeprint_") + KApplication::randomString(8); while (QFile::exists(f));
 	return f;
+}
+
+bool KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
+{
+	QStringList	flist = QStringList::split(',',printer->option("kde-filters"),false);
+	if (flist.count() == 0)
+		return true;
+
+	QString	filtercmd;
+	KMFilterManager	*fmgr = KMFactory::self()->filterManager();
+	for (uint i=0;i<flist.count();i++)
+	{
+		KPrintFilter	*filter = fmgr->filter(flist[i]);
+		QString		subcmd = filter->buildCommand(printer->options(),(i>0),(i<(flist.count()-1)));
+		if (!subcmd.isEmpty())
+		{
+			filtercmd.append(subcmd);
+			if (i < flist.count()-1)
+				filtercmd.append("| ");
+		}
+		else
+		{
+			printer->setErrorMessage(i18n("Error while reading filter description for <b>%1</b>. Empty command line received.").arg(filter->idName()));
+			return false;
+		}
+	}
+qDebug("command: %s",filtercmd.latin1());
+
+	QRegExp	rin("%in"), rout("%out");
+	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
+	{
+		QString	tmpfile = tempFile();
+		QString	cmd(filtercmd);
+		cmd.replace(rin,*it);
+		cmd.replace(rout,tmpfile);
+		if (system(cmd.latin1()) != 0)
+		{
+			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));
+			return false;
+		}
+		if (printer->outputToFile())
+		{
+			if (system(QString::fromLatin1("mv %1 %2").arg(tmpfile).arg(*it).latin1()) != 0)
+			{
+				printer->setErrorMessage(i18n("Unable to open output file for writing."));
+				return false;
+			}
+		}
+		else
+		{
+			if (flag) QFile::remove(*it);
+			*it = tmpfile;
+		}
+	}
+	return true;
 }
 #include "kprinterimpl.moc"

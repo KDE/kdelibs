@@ -39,6 +39,7 @@
 #include <klocale.h>
 
 void dumpOptions(const QMap<QString,QString>& opts);
+void reportError(KPrinter*);
 
 //**************************************************************************************
 // KPrinterWrapper class
@@ -177,11 +178,8 @@ bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 	value = m_wrapper->cmd(c,painter,p);
 	if (c == QPaintDevice::PdcEnd)
 	{
-		if (!outputToFile())
-		{
-			if (option("kde-preview") != "1" || KPrintPreview::preview(m_wrapper->outputFileName()))
-				value = value && printFiles(QStringList(m_wrapper->outputFileName()),true);
-		}
+		// this call should take care of everything (preview, output-to-file, filtering, ...)
+		value = value && printFiles(QStringList(m_wrapper->outputFileName()),true);
 		// reset "ready" state
 		finishPrinting();
 	}
@@ -203,21 +201,43 @@ void KPrinter::translateQtOptions()
 
 bool KPrinter::printFiles(const QStringList& l, bool flag)
 {
-	// check if printing has been prepared (it may be not prepared if the KPrinter object is not
-	// use as a QPaintDevice object)
-	preparePrinting();
+	QStringList	files(l);
+	bool		status(true);
 
-	bool	status(true);
-	if (!m_impl->printFiles(this, l, flag))
+	// First apply possible filters
+	if (!option("kde-filters").isEmpty())
 	{
-		if (!KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(errorMessage())))
-			kdDebug() << "could not send notify event" << endl;
-		status = false;
+		if (!m_impl->filterFiles(this,files,flag))
+		{
+			reportError(this);
+			status = false;
+		}
+		else
+			flag = true;
 	}
-	else
+
+	// Continue if status is OK (filtering succeeded) and no output-to-file
+	if (status && !outputToFile())
 	{
-		QString	cmd = QString("kjobviewer -d %1").arg(printerName());
-		KRun::runCommand(cmd);
+		// Show preview if needed (only possible for a single file !), and stop
+		// if the user requested it.
+		if (files.count() != 1 || option("kde-preview") != "1" || KPrintPreview::preview(files[0]))
+		{
+			// check if printing has been prepared (it may be not prepared if the KPrinter object is not
+			// use as a QPaintDevice object)
+			preparePrinting();
+
+			if (!m_impl->printFiles(this, files, flag))
+			{
+				reportError(this);
+				status = false;
+			}
+			else
+			{
+				QString	cmd = QString("kjobviewer -d %1").arg(printerName());
+				KRun::runCommand(cmd);
+			}
+		}
 	}
 	finishPrinting();
 	return status;
@@ -420,6 +440,12 @@ void KPrinter::initOptions(const QMap<QString,QString>& opts)
 //**************************************************************************************
 // Util functions
 //**************************************************************************************
+
+void reportError(KPrinter *p)
+{
+	if (!KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(p->errorMessage())))
+		kdDebug() << "could not send notify event" << endl;
+}
 
 KPrinter::PageSize pageNameToPageSize(const QString& name)
 {
