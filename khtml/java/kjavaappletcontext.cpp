@@ -7,8 +7,10 @@
 #include <qguardedptr.h>
 
 // For future expansion
-struct KJavaAppletContextPrivate
+class KJavaAppletContextPrivate
 {
+friend class KJavaAppletContext;
+private:
     QMap< int, QGuardedPtr<KJavaApplet> > applets;
 };
 

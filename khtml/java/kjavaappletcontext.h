@@ -16,6 +16,7 @@
 
 class KJavaAppletServer;
 class KJavaApplet;
+class KJavaAppletContextPrivate;
 
 class KJavaAppletContext : public QObject
 {
@@ -60,7 +61,7 @@ protected slots:
 
 private:
      int id;
-     struct KJavaAppletContextPrivate* d;
+     KJavaAppletContextPrivate* d;
 
 };
 

@@ -3,8 +3,10 @@
 
 #include <kdebug.h>
 
-struct KJavaAppletPrivate
+class KJavaAppletPrivate
 {
+friend class KJavaApplet;
+private:
    bool    reallyExists;
    QString className;
    QString appName;

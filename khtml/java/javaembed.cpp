@@ -27,8 +27,9 @@
 #include <qapplication.h>
 #include <qevent.h>
 
-struct KJavaEmbedPrivate
+class KJavaEmbedPrivate
 {
+friend class KJavaEmbed;
 };
 
 QString getQtEventName( QEvent* e )
