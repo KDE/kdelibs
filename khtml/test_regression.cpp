@@ -29,6 +29,7 @@
 #include <signal.h>
 
 #include <kapplication.h>
+#include <qimage.h>
 #include <qfile.h>
 #include "test_regression.h"
 #include <unistd.h>
