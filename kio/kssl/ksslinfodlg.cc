@@ -31,12 +31,12 @@
 #include <qfile.h>
 
 #include <kapplication.h>
-#include <kactivelabel.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kprocess.h>
 #include <kiconloader.h>
 #include <kglobalsettings.h>
+#include <ksqueezedtextlabel.h>
 #include <kurllabel.h>
 //#include <kstandarddirs.h>
 //#include <krun.h>
@@ -216,12 +216,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(new QLabel(i18n("IP address:"), this), 0, 0);
     layout->addWidget(new QLabel(ip, this), 0, 1);
     layout->addWidget(new QLabel(i18n("URL:"), this), 1, 0);
-    // truncate the label if it will be too long
-    QString urllabel;
-    if (url.length() > 80) {
-      urllabel = url.left(80) + " ...";
-    } else urllabel = url;
-    KActiveLabel *urlLabel = new KActiveLabel(urllabel, this);
+    KSqueezedTextLabel *urlLabel = new KSqueezedTextLabel(url, this);
     layout->addWidget(urlLabel, 1, 1);
     layout->addWidget(new QLabel(i18n("Certificate state:"), this), 2, 0);
 
