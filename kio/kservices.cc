@@ -11,6 +11,7 @@
 
 #include <qstring.h>
 #include <qmsgbox.h>
+#include <string>
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
@@ -34,6 +35,8 @@ void KService::initStatic()
 
 KService* KService::findByName( const char *_name )
 {
+  initStatic();
+  
   assert( s_lstServices );
 
   KService *s;
@@ -46,6 +49,8 @@ KService* KService::findByName( const char *_name )
 
 void KService::findServiceByServiceType( const char* _servicetype, list<Offer>& _result )
 {
+  initStatic();
+  
   assert( s_lstServices );
 
   KService *s;
@@ -66,6 +71,8 @@ void KService::findServiceByServiceType( const char* _servicetype, list<Offer>& 
 
 void KService::initServices( const char * _path )
 {
+  initStatic();
+  
   DIR *dp;
   struct dirent *ep;
   dp = opendir( _path );
@@ -103,6 +110,8 @@ void KService::initServices( const char * _path )
 
 KService* KService::parseService( const char *_file, KSimpleConfig &config, bool _put_in_list )
 {
+  initStatic();
+  
   config.setGroup( "KDE Desktop Entry" );
   QString exec = config.readEntry( "Exec" );
   QString name = config.readEntry( "Name" );
@@ -152,26 +161,30 @@ KService* KService::parseService( const char *_file, KSimpleConfig &config, bool
     */
 	  
   // To which mime types is the application bound ?
-  list<string> types;
+  QStrList types;
   int pos2 = 0;
   int old_pos2 = 0;
   while ( ( pos2 = mime.find( ";", pos2 ) ) != - 1 )
   {
     // 'bind' is the name of a mime type
     QString bind = mime.mid( old_pos2, pos2 - old_pos2 );
-    types.push_back( bind.data() );
+    types.append( bind );
     
     pos2++;
     old_pos2 = pos2;
   }
   
-  return new KService( name, exec, app_icon, types, comment, allowdefault, path, terminal, _put_in_list );
+  return new KService( name, exec, app_icon, types, comment, allowdefault,
+		       path, terminal, _put_in_list );
 }
 
-KService::KService( const char *_name, const char *_exec, const char *_icon, list<string>& _lstServiceTypes,
-		    const char *_comment = 0L, bool _allow_as_default = true,
-		    const char *_path = 0L, const char *_terminal = 0L, bool _put_in_list )
+KService::KService( const char *_name, const char *_exec, const char *_icon,
+		    const QStrList& _lstServiceTypes, const char *_comment = 0L,
+		    bool _allow_as_default = true, const char *_path = 0L,
+		    const char *_terminal = 0L, bool _put_in_list )
 {
+  initStatic();
+  
   assert( _name && _exec && _icon && s_lstServices );
 
   if ( _put_in_list )
@@ -203,12 +216,7 @@ KService::~KService()
 
 bool KService::hasServiceType( const char *_service )
 {
-  list<string>::iterator it = m_lstServiceTypes.begin();
-  for( ; it != m_lstServiceTypes.end(); it++ )
-    if ( *it == _service )
-      return true;
-  
-  return false;
+  return ( m_lstServiceTypes.find( _service ) != -1 );
 }
 
 bool KService::Offer::allowAsDefault()
@@ -237,3 +245,7 @@ bool KService::Offer::operator< ( KService::Offer& _o )
   return false;
 }
 
+QStrList& KService::serviceTypes()
+{
+  return m_lstServiceTypes;
+}

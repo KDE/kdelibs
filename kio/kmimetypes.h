@@ -14,8 +14,11 @@
 #include <k2url.h>
 #include <ksimpleconfig.h>
 
+class KMimeTypeFactory;
+
 class KMimeType
 {
+  friend KMimeTypeFactory;
 public:
   KMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns );
   virtual ~KMimeType();
@@ -69,10 +72,6 @@ public:
   static KMimeType* findByURL( K2URL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _fast_mode = false );
 
   /**
-   * Called by the main function
-   */
-  static void initStatic();
-  /**
    * Called by the main function after the registry parsed all mimetype
    * config files. This function makes sure that vital mime types are installed.
    */
@@ -81,6 +80,10 @@ public:
 protected:
   static void errorMissingMimeType( const char *_type );
   static void scanMimeTypes( const char* _path );
+  /**
+   * Called by the main function
+   */
+  static void initStatic();
 
   QString m_strMimeType;
   QString m_strIcon;

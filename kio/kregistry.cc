@@ -19,6 +19,7 @@
 #include <kapp.h>
 
 #include <iostream.h>
+#include <assert.h>
 
 /*******************************************************
  *
@@ -32,6 +33,9 @@ KRegistry::KRegistry()
 {
   m_pSelf = this;
 
+  m_bLoaded = false;
+  m_bModified = false;
+  
   m_lstEntries.setAutoDelete( true );
 
   m_pDirWatch = new KDirWatch;
@@ -49,16 +53,17 @@ KRegistry::~KRegistry()
 void KRegistry::addFactory( KRegFactory *_factory )
 {
   m_lstFactories.append( _factory );
-
+  
   const char *s;
   for( s = _factory->pathList().first(); s != 0L; s = _factory->pathList().next() )
   {    
     m_lstToplevelDirs.append( s );
-    readDirectory( s, m_lstEntries, true );
+    if ( m_bLoaded )
+      readDirectory( s, true );
   }
 }
 
-bool KRegistry::readDirectory( const char* _path, QList<KRegEntry>& l, bool _init )
+bool KRegistry::readDirectory( const char* _path, bool _init )
 {
   cerr << "Reading directory " << _path << endl;
   
@@ -77,7 +82,7 @@ bool KRegistry::readDirectory( const char* _path, QList<KRegEntry>& l, bool _ini
   //                           Mark
   //************************************************************************
  
-  QListIterator<KRegEntry> it( l );
+  QListIterator<KRegEntry> it( m_lstEntries );
   for( ; it.current(); ++it )
     it.current()->unmark();
    
@@ -109,28 +114,30 @@ bool KRegistry::readDirectory( const char* _path, QList<KRegEntry>& l, bool _ini
    if ( S_ISDIR( m_statbuff.st_mode ) )               // isdir?
    {
      if ( _init )                                 // first time?
-       readDirectory( file, l, _init );      // yes, dive into it.
+       readDirectory( file, _init );      // yes, dive into it.
      else if ( !m_pDirWatch->contains( file ) ) // New dir?
      {
-       readDirectory( file, l, _init );      // yes, dive into it.
+       readDirectory( file, _init );      // yes, dive into it.
        m_pDirWatch->addDir( file );         // and add it to the list
      }
    }
    else                                         // no, not a dir/no recurse...
    {
      int i2 = -1;                                    // index
-     if ( !_init )                                 // first time?
-       i2 = ( exists( file, l ) );                  // find it in list...
+     // if ( !_init )                                 // first time?
+       i2 = ( exists( file ) );                  // find it in list...
      if ( i2 != -1 )                              // got it?
      {                                         // Yeah!
-       KRegEntry *entry = l.at( i2 );
+       // cerr << "Updating " << file << endl;
+       KRegEntry *entry = m_lstEntries.at( i2 );
        entry->mark();
        KRegEntry *e = entry->update();                // update it (if needed)
        // Replace ?
        if ( e )
        {
-	 l.insert( i2, e );
-	 l.removeRef( entry );
+	 m_lstEntries.insert( i2, e );
+	 m_lstEntries.removeRef( entry );
+	 m_bModified = true;
        }
      }
      else if ( file.right(1) != "~" )         // we don't have this one..
@@ -140,9 +147,10 @@ bool KRegistry::readDirectory( const char* _path, QList<KRegEntry>& l, bool _ini
        {   
 	 // Create a new entry
 	 KRegEntry *entry = createEntry( file );
-	 l.append( entry );
+	 m_lstEntries.append( entry );
 	 if ( !_init )
 	   cerr << "KRegistry: New item " << file << endl;
+	 m_bModified = true;
        }
      }
    }                                        // that's all
@@ -163,26 +171,27 @@ bool KRegistry::readDirectory( const char* _path, QList<KRegEntry>& l, bool _ini
  //                                  Sweep
  //************************************************************************
 
- KRegEntry *a = l.first();
+ KRegEntry *a = m_lstEntries.first();
  while( a )
  {
    if ( !a->isMarked() && a->isInDirectory( path ) )
    {
      debug ("KRegistry: Deleted item %s", a->file());
-     l.remove( l.at() );
-     a = l.current();
+     m_lstEntries.remove( m_lstEntries.at() );
+     a = m_lstEntries.current();
+     m_bModified = true;
      continue;
    }
-   a = l.next();
+   a = m_lstEntries.next();
  }
 
  return true;
 }
 
-int KRegistry::exists( const char *_file, QList<KRegEntry>& _list)
+int KRegistry::exists( const char *_file )
 {
   int pos = 0;
-  QListIterator<KRegEntry> it( _list );
+  QListIterator<KRegEntry> it( m_lstEntries );
   for( ; it.current(); ++it )
   {
     if ( strcmp( it.current()->file(), _file ) == 0 )
@@ -193,28 +202,75 @@ int KRegistry::exists( const char *_file, QList<KRegEntry>& _list)
   return -1;
 }
 
-bool KRegistry::load()
+void KRegistry::load( const char *_dbfile )
 {
-  return false;
+  if ( _dbfile )
+  {    
+    QFile file( _dbfile );
+    if ( file.open( IO_ReadOnly ) )
+    {
+      QDataStream str( &file );
+      
+      while( !str.eof() )
+      {
+	QString type;
+	QString file;
+	str >> type >> file;
+      
+	// cerr << "STORE: " << file << " of type " << type << endl;
+	
+	KRegEntry *entry = createEntry( str, file, type );
+	if ( entry )
+	  m_lstEntries.append( entry );
+      }
+
+      file.close();
+    }
+  }
+  
+  const char *s;
+  for( s = m_lstToplevelDirs.first(); s != 0L; s = m_lstToplevelDirs.next() )
+  {    
+    cerr << "========== SCANNING " << s << "==============" << endl;
+    readDirectory( s, true );
+  }
+  
+  m_bLoaded = true;
 }
 
-bool KRegistry::save()
+bool KRegistry::save( const char *_dbfile )
 {
-  return false;
+  assert( _dbfile != 0L );
+  
+  QFile file( _dbfile );
+  if ( file.open( IO_WriteOnly ) )
+  {
+    QDataStream str( &file );
+    
+    KRegEntry* e;
+    for( e = m_lstEntries.first(); e != 0L; e = m_lstEntries.next() )
+    {
+      QString type = e->type();
+      QString file = e->file();
+      str << type << file;
+      e->save( str );
+    }
+  }
+  
+  file.close();
+
+  return true;
 }
 
 void KRegistry::update( const char *_path )
 {
   if ( _path )
-  {
-    cerr << "Update for " << _path << endl;
-    readDirectory( _path, m_lstEntries );
-  }
+    readDirectory( _path );
   else
   {
     const char *s;
     for( s = m_lstToplevelDirs.first(); s != 0L; s = m_lstToplevelDirs.next() )
-      readDirectory( s, m_lstEntries );
+      readDirectory( s );
   }
 }
 
@@ -234,6 +290,36 @@ void KRegistry::dirDeleted( const char *_path )
     }
     a = m_lstEntries.next();
   }
+}
+
+KRegEntry* KRegistry::createEntry( QDataStream& _str, const char *_file, const char *_type )
+{
+  // Just a backup file ?
+  if ( strcmp( _type, "Dummy" ) == 0L )
+  {    
+    KRegEntry *e = new KRegDummy( this, _file );
+    e->load( _str );
+    KRegEntry *e2 = e->update();
+    if ( e2 )
+      delete e;
+    else
+      e2 = e;
+    return e;
+  }
+    
+  KRegFactory *f;
+  for( f = m_lstFactories.first(); f != 0L; f = m_lstFactories.next() )
+  {
+    if ( strcmp( _type, f->type() ) == 0L && f->matchFile( _file ) )
+    {
+      KRegEntry *e = f->create( this, _file, _str );
+      if ( e )
+	return e;
+      break;
+    }
+  }
+  
+  return 0L;
 }
 
 KRegEntry* KRegistry::createEntry( const char *_file )
@@ -304,7 +390,7 @@ bool KRegEntry::isInDirectory( const char *_path, bool _allow_subdir )
 
 KRegEntry* KRegEntry::update()
 {
-  cerr << "Checking " << m_strFile << endl;
+  // cerr << "Checking " << m_strFile << endl;
 
   struct stat statbuff;
   if (stat( m_strFile, &statbuff) == -1)
@@ -325,11 +411,26 @@ KRegEntry* KRegEntry::update()
   if ( statbuff.st_ctime == m_ctime )
     return 0L; // nothing happened 
 
+  cerr << "OUTDATED " << m_strFile << " " << statbuff.st_ctime << " old was " << m_ctime << endl;
+  
   if ( !updateIntern() )
     return m_pRegistry->createEntry( m_strFile );
     
   // Means that we indeed updated
   return 0L;
+}
+
+void KRegEntry::load( QDataStream& _str )
+{
+  Q_INT32 t;
+  _str >> t;
+  m_ctime = (time_t)t;
+}
+
+void KRegEntry::save( QDataStream& _str )
+{
+  Q_INT32 t = (Q_INT32)m_ctime;
+  _str << t;
 }
 
 /*******************************************************

@@ -1,10 +1,10 @@
 #ifndef __kservices_h__
 #define __kservices_h__
 
-#include <string>
 #include <list>
 
 #include <qlist.h>
+#include <qstrlist.h>
 
 #include <ksimpleconfig.h>
 
@@ -23,27 +23,28 @@ public:
     ///////
     // For internal use only. These variables are needed for sorting
     ///////
-    string m_strServiceType;
+    QString m_strServiceType;
     KServiceTypeProfile *m_pServiceTypeProfile;
     
     bool operator< ( Offer& _o );
   };
   
-  KService( const char *_name, const char *_exec, const char *_icon, list<string>& _lstServiceTypes,
-	    const char *_comment = 0L, bool _allow_as_default = true,
-	    const char *_path = 0L, const char *_terminal = 0L, bool _put_in_list = true );
+  KService( const char *_name, const char *_exec, const char *_icon,
+	    const QStrList& _lstServiceTypes, const char *_comment = 0L,
+	    bool _allow_as_default = true, const char *_path = 0L,
+	    const char *_terminal = 0L, bool _put_in_list = true );
   ~KService();
   
-  const char* name() { return m_strName.c_str(); }
-  const char* exec() { return m_strExec.c_str(); }
-  const char* icon() { return m_strIcon.c_str(); }
-  const char* terminalOptions() { return m_strTerminalOptions.c_str(); }
-  const char* path() { return m_strPath.c_str(); }
-  const char* comment() { return m_strComment.c_str(); }
+  const char* name() { return m_strName; }
+  const char* exec() { return m_strExec; }
+  const char* icon() { return m_strIcon; }
+  const char* terminalOptions() { return m_strTerminalOptions; }
+  const char* path() { return m_strPath; }
+  const char* comment() { return m_strComment; }
+  QStrList& serviceTypes();
   bool hasServiceType( const char *_service );
   bool allowAsDefault() { return m_bAllowAsDefault; }
   
-  static void initStatic();
   /**
    * @param _result is filled with all matching offers. The list is sorted accrodingly
    *        to the users profile ( @ref KServiceTypeProfile ).
@@ -59,14 +60,15 @@ public:
   
 protected:
   static void initServices( const char * _path );
-  
-  string m_strName;
-  string m_strExec;
-  string m_strIcon;
-  string m_strTerminalOptions;
-  string m_strPath;
-  string m_strComment;
-  list<string> m_lstServiceTypes;
+  static void initStatic();
+
+  QString m_strName;
+  QString m_strExec;
+  QString m_strIcon;
+  QString m_strTerminalOptions;
+  QString m_strPath;
+  QString m_strComment;
+  QStrList m_lstServiceTypes;
   bool m_bAllowAsDefault;
   
   static QList<KService>* s_lstServices;

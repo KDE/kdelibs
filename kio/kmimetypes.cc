@@ -33,6 +33,7 @@ void KMimeType::initStatic()
   
   s_mapTypes = new QDict<KMimeType>;
 
+  /*
   // Read the application bindings in the local directories
   QString path = kapp->localkdedir().data();
   path += "/share/mimelnk";
@@ -40,11 +41,15 @@ void KMimeType::initStatic()
     
   // Read the application bindings in the global directories
   path = kapp->kde_mimedir().copy();
-  scanMimeTypes( path.data() );
+  scanMimeTypes( path.data() );  */
 }
 
 void KMimeType::check()
 {
+  initStatic();
+
+  cerr << "================== " << s_mapTypes->count() << " MTs ==========" << endl;
+  
   // Try to find the default type
   if ( ( s_pDefaultType = KMimeType::find( "application/octet-stream" ) ) == 0L )
     errorMissingMimeType( "application/octet-stream" );
@@ -61,38 +66,55 @@ void KMimeType::check()
   if ( s_mapTypes->count() <= 1 )
     QMessageBox::critical( 0, i18n( "KFM Error" ), i18n( "No mime types installed!" ), i18n( "Ok" ) );
 	
-  if ( !KMimeType::find( "inode/directory" ) )
+  if ( KMimeType::find( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
-  if ( !KMimeType::find( "inode/directory-locked" ) )
+  if ( KMimeType::find( "inode/directory-locked" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory-locked" );
-  if ( !KMimeType::find( "inode/blockdevice" ) )
+  if ( KMimeType::find( "inode/blockdevice" ) == s_pDefaultType )
     errorMissingMimeType( "inode/blockdevice" );
-  if ( !KMimeType::find( "inode/chardevice" ) )
+  if ( KMimeType::find( "inode/chardevice" ) == s_pDefaultType )
     errorMissingMimeType( "inode/chardevice" );
-  if ( !KMimeType::find( "inode/socket" ) )
+  if ( KMimeType::find( "inode/socket" ) == s_pDefaultType )
     errorMissingMimeType( "inode/socket" );
-  if ( !KMimeType::find( "inode/fifo" ) )
+  if ( KMimeType::find( "inode/fifo" ) == s_pDefaultType )
     errorMissingMimeType( "inode/fifo" );
-  if ( !KMimeType::find( "application/x-shellscript" ) )
+  if ( KMimeType::find( "application/x-shellscript" ) == s_pDefaultType )
     errorMissingMimeType( "application/x-shellscript" );
-  if ( !KMimeType::find( "application/x-executable" ) )
+  if ( KMimeType::find( "application/x-executable" ) == s_pDefaultType )
     errorMissingMimeType( "application/x-executable" );
-  if ( !KMimeType::find( "application/x-kdelnk" ) )
+  if ( KMimeType::find( "application/x-kdelnk" ) == s_pDefaultType )
     errorMissingMimeType( "application/x-kdelnk" );
 }
 
 void KMimeType::errorMissingMimeType( const char *_type )
 {
+  initStatic();
+
   string tmp = i18n( "Could not find mime type\n" );
   tmp += _type;
     
   QMessageBox::critical( 0, i18n( "KFM Error" ), tmp.c_str(), i18n("Ok" ) );
 
-  s_mapTypes->insert( _type, s_pDefaultType );
+  QString mime = _type;
+  QStrList dummy;
+  
+  KMimeType *e;
+  if ( mime == "inode/directory" )
+    e = new KFolderType( mime, "unknown.xpm", "", dummy );
+  else if ( mime == "application/x-kdelnk" )
+    e = new KDELnkMimeType( mime, "unknown.xpm", "", dummy );
+  else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
+    e = new KExecMimeType( mime, "unknown.xpm", "", dummy );
+  else
+    e = new KMimeType( mime, "unknown.xpm", "", dummy );
+
+  s_mapTypes->insert( _type, e );
 }
 
 void KMimeType::scanMimeTypes( const char* _path )
 {   
+  initStatic();
+
   DIR *dp;
   struct dirent *ep;
   dp = opendir( _path );
@@ -173,6 +195,8 @@ void KMimeType::scanMimeTypes( const char* _path )
 
 KMimeType* KMimeType::find( const char *_name )
 {
+  initStatic();
+
   assert( s_mapTypes );
 
   KMimeType* mime = (*s_mapTypes)[ _name ];
@@ -184,6 +208,8 @@ KMimeType* KMimeType::find( const char *_name )
 
 KMimeType* KMimeType::findByURL( K2URL& _url, mode_t _mode, bool _is_local_file, bool _fast_mode )
 {
+  initStatic();
+
   if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
     _is_local_file = true;
   
@@ -258,6 +284,8 @@ KMimeType* KMimeType::findByURL( K2URL& _url, mode_t _mode, bool _is_local_file,
 
 KMimeType::KMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns )
 {
+  initStatic();
+  
   assert( s_mapTypes );
   
   s_mapTypes->insert( _type, this );

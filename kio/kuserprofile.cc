@@ -1,27 +1,27 @@
 #include "kuserprofile.h"
 
-list<KServiceTypeProfile*>* KServiceTypeProfile::s_lstProfiles = 0L;
+QList<KServiceTypeProfile>* KServiceTypeProfile::s_lstProfiles = 0L;
 
 void KServiceTypeProfile::initStatic()
 {
   if ( !s_lstProfiles )
-    s_lstProfiles = new list<KServiceTypeProfile*>;
+    s_lstProfiles = new QList<KServiceTypeProfile>;
 }
 
 KServiceTypeProfile::KServiceTypeProfile( const char *_servicetype )
 {
-  assert( s_lstProfiles );
+  initStatic();
 
   m_strServiceType = _servicetype;
 
-  s_lstProfiles->push_back( this );
+  s_lstProfiles->append( this );
 }
   
 KServiceTypeProfile::~KServiceTypeProfile()  
 {
   assert( s_lstProfiles );
 
-  s_lstProfiles->remove( this );
+  s_lstProfiles->removeRef( this );
 }
 
 void KServiceTypeProfile::addService( const char *_service, int _preference, bool _allow_as_default )
@@ -50,12 +50,12 @@ bool KServiceTypeProfile::allowAsDefault( const char *_service )
 
 KServiceTypeProfile* KServiceTypeProfile::find( const char *_servicetype )
 {
-  assert( s_lstProfiles );
+  initStatic();
 
-  list<KServiceTypeProfile*>::iterator it = s_lstProfiles->begin();
-  for( ; it != s_lstProfiles->end(); it++ )
-    if ( strcmp( (*it)->serviceType(), _servicetype ) == 0 )
-      return *it;
+  KServiceTypeProfile* p;
+  for( p = s_lstProfiles->first(); p != 0L; p = s_lstProfiles->next() )
+    if ( strcmp( p->serviceType(), _servicetype ) == 0 )
+      return p;
   
   return 0L;
 }

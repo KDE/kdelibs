@@ -34,6 +34,12 @@ bool KMimeTypeEntry::updateIntern()
   return false;
 }
 
+void KMimeTypeEntry::save( QDataStream& _str )
+{
+  KMimeTypeFactory::save( _str, m_pMimeType );
+  KRegEntry::save( _str );
+}
+
 /**************************************************
  *
  * KMimeTypeFactory
@@ -47,9 +53,40 @@ KMimeTypeFactory::KMimeTypeFactory()
   tmp += "/share/mimelnk";
   m_lst.append( tmp );
 }
+
+void KMimeTypeFactory::save( QDataStream& _str, KMimeType *_mime )
+{
+  _str << _mime->m_strIcon << _mime->m_strComment << _mime->m_strMimeType
+       << _mime->m_lstPatterns;
+}
+
+KRegEntry* KMimeTypeFactory::create( KRegistry* _reg, const char *_file, QDataStream& _str )
+{
+  QString icon;
+  QString comment;
+  QString mime;
+  QStrList patterns;
+  _str >> icon >> comment >> mime >> patterns;
+
+  KMimeType *e;
+  
+  if ( mime == "inode/directory" )
+    e = new KFolderType( mime, icon, comment, patterns );
+  else if ( mime == "application/x-kdelnk" )
+    e = new KDELnkMimeType( mime, icon, comment, patterns );
+  else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
+    e = new KExecMimeType( mime, icon, comment, patterns );
+  else
+    e = new KMimeType( mime, icon, comment, patterns );
+  
+  KMimeTypeEntry *result = new KMimeTypeEntry( _reg, _file, e );
+  result->load( _str );
+
+  return result;
+}
  
 KRegEntry* KMimeTypeFactory::create( KRegistry* _reg, const char *_file, KSimpleConfig &_cfg )
-{
+{ 
   KMimeType *mime = createMimeType( _file, _cfg );
   if ( !mime )
     return 0L;
@@ -99,13 +136,13 @@ KMimeType* KMimeTypeFactory::createMimeType( const char *_file, KSimpleConfig &_
   KMimeType *e;
   
   if ( mime == "inode/directory" )
-    e = new KFolderType( mime.data(), icon.data(), comment.data(), patterns );
+    e = new KFolderType( mime, icon, comment, patterns );
   else if ( mime == "application/x-kdelnk" )
-    e = new KDELnkMimeType( mime.data(), icon.data(), comment.data(), patterns );
+    e = new KDELnkMimeType( mime, icon, comment, patterns );
   else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-    e = new KExecMimeType( mime.data(), icon.data(), comment.data(), patterns );
+    e = new KExecMimeType( mime, icon, comment, patterns );
   else
-    e = new KMimeType( mime.data(), icon.data(), comment.data(), patterns );
+    e = new KMimeType( mime, icon, comment, patterns );
 
   return e;
 }
@@ -147,6 +184,12 @@ bool KServiceEntry::updateIntern()
   return false;
 }
 
+void KServiceEntry::save( QDataStream& _str )
+{
+  KServiceFactory::save( _str, m_pService );
+  KRegEntry::save( _str );
+}
+
 /**************************************************
  *
  * KServiceFactory
@@ -161,6 +204,29 @@ KServiceFactory::KServiceFactory()
   m_lst.append( tmp );
 }
  
+void KServiceFactory::save( QDataStream& _str, KService *_service )
+{
+  _str << _service->name() << _service->exec() << _service->icon() 
+       << _service->comment() << _service->path() << _service->terminalOptions()
+       << _service->serviceTypes() << (Q_INT8)_service->allowAsDefault();
+}
+
+KRegEntry* KServiceFactory::create( KRegistry* _reg, const char *_file, QDataStream& _str )
+{
+  QString name, exec, icon, comment, path, terminal;
+  QStrList types;
+  Q_INT8 allow;
+  _str >> name >> exec >> icon >> comment >> path >> terminal >> types >> allow;
+  
+  KService *s = new KService( name, exec, icon, types, comment,
+			      (bool)allow, path, terminal );
+
+  KServiceEntry* e = new KServiceEntry( _reg, _file, s );
+  e->load( _str );
+  
+  return e;
+}
+
 KRegEntry* KServiceFactory::create( KRegistry* _reg, const char *_file, KSimpleConfig &_cfg )
 {
   KService *service = createService( _file, _cfg );

@@ -12,6 +12,10 @@ public:
   KMimeTypeEntry( KRegistry* _reg, const char *_file, KMimeType *_mime );
   virtual ~KMimeTypeEntry();
   
+  void save( QDataStream& _str );
+
+  const char* type() { return "MimeType"; }
+
 protected:
   virtual bool updateIntern();
   
@@ -25,7 +29,8 @@ class KMimeTypeFactory : public KRegFactory
 public:
   KMimeTypeFactory();
   virtual ~KMimeTypeFactory() { };
-  
+
+  virtual KRegEntry* create( KRegistry* _reg, const char *_file, QDataStream& _str );
   virtual KRegEntry* create( KRegistry* _reg, const char *_file, KSimpleConfig &_cfg );
   virtual const char* type();
   /**
@@ -33,6 +38,8 @@ public:
    *         Please note that the return value may not have a trailing '/'.
    */
   virtual QStrList& pathList();
+
+  static void  save( QDataStream& _str, KMimeType *_mime );
 
 protected:
   KMimeType* createMimeType( const char *_file, KSimpleConfig &_cfg );
@@ -47,7 +54,11 @@ class KServiceEntry : public KRegEntry
 public:
   KServiceEntry( KRegistry* _reg, const char *_file, KService *_service );
   virtual ~KServiceEntry();
+
+  void save( QDataStream& _str );
   
+  const char* type() { return "Application"; }
+
 protected:
   virtual bool updateIntern();
   
@@ -62,6 +73,7 @@ public:
   KServiceFactory();
   virtual ~KServiceFactory() { };
   
+  virtual KRegEntry* create( KRegistry* _reg, const char *_file, QDataStream& _str );
   virtual KRegEntry* create( KRegistry* _reg, const char *_file, KSimpleConfig &_cfg );
   virtual const char* type();
   /**
@@ -69,6 +81,8 @@ public:
    *         Please note that the return value may not have a trailing '/'.
    */
   virtual QStrList& pathList();
+
+  static void save( QDataStream& _str, KService *_service );
 
 protected:
   KService* createService( const char *_file, KSimpleConfig &_cfg );
