@@ -1498,7 +1498,7 @@ static int yyPos;
 
 int getChar()
 {
-    return ( yyPos == yyIn.length() ) ? EOS : yyIn[yyPos++];
+    return ( yyPos == yyIn.length() ) ? EOS : QChar(yyIn[yyPos++]);
 }
 
 void startTokenizer( const QString& str )
