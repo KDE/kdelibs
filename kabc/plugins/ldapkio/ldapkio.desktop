@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=LDAP KIO
+X-KDE-Library=kabc_ldapkio
+Type=Service
+ServiceTypes=KResources/Plugin
+X-KDE-ResourceFamily=contact
+X-KDE-ResourceType=ldapkio
