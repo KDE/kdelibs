@@ -229,6 +229,7 @@ AC_OUTPUT(Makefile \
 	mimetypes/video/Makefile \
 	kstyles/Makefile \
 	kstyles/basicplugin/Makefile \
+	kstyles/coldions/Makefile \
 	kstyles/stepplugin/Makefile \
 	kstyles/pillbox/Makefile \
 	kstyles/utils/Makefile \
