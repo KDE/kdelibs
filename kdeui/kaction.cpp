@@ -2064,7 +2064,7 @@ public:
   KActionMenuPrivate()
   {
     m_popup = new KPopupMenu(0L,"KActionMenu::KActionMenuPrivate");
-    m_delayed = false; // true doesn't really makes sense for a KActionMenu (main action not selectable in a menu anyway)
+    m_delayed = true;
     m_stickyMenu = true;
   }
   ~KActionMenuPrivate()

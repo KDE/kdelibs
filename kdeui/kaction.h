@@ -1318,13 +1318,17 @@ public:
     /**
        If set to true, this action will create a delayed popup menu
        when plugged in a KToolbar. Otherwise it creates a normal popup.
-       Default: NOT delayed (was a bug in KDE 2.0, that the default was delayed).
+       Default: delayed
+
+       Remember that if the "main" action (the toolbar button itself)
+       cannot be clicked, then you should call setDelayed(false).
+
+       On the opposite, if the main action can be clicked, it can only happen
+       in a toolbar: in a menu, the parent of a submenu can't be activated.
+       To get a "normal" menu item when plugged a menu (and no submenu)
+       use KToolBarPopupAction.
     */
     void setDelayed(bool _delayed);
-    // This method doesn't really make sense, in fact. If you have a KActionMenu
-    // then you can't click on the "main" action, in a menu, so it should NOT
-    // be delayed.
-    // If you want to be able to click on the main action, use KToolBarPopupAction.
 
     /**
      * Returns true if this action creates a sticky popup menu.
