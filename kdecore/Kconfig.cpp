@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.23  1997/09/01 01:51:16  kdecvs
+ * Kalle: Default-Entries work again
+ *
  * Revision 1.22  1997/08/31 15:56:10  kdecvs
  * Kalle:
  * - Internationalized Config Entries
@@ -201,6 +204,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include <kapp.h>
+#include <klocale.h>
+
 static char* aConfigFileName[] = 
 { 
   "/etc/kderc",
@@ -221,9 +227,7 @@ KConfig::KConfig( QTextStream* pStream )
   pDefGroup->setAutoDelete( true );
   pData->aGroupDict.insert( "<default>", pDefGroup );
 
-  char* pLang = getenv( "LANG" );
-  QString aGetenvString = pLang;
-  pData->aLocaleString = aGetenvString.left( 2 );
+  pData->aLocaleString = klocale->language();
 
   parseConfigFiles();
 }

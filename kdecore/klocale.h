@@ -1,8 +1,12 @@
-#ifndef _KTRANSLATER_H
-#define _KTRANSLATER_H
+#ifndef _KLOCALE_H
+#define _KLOCALE_H
 
 #include <qintdict.h>
 #include <qstring.h>
+
+#ifndef klocale
+#define klocale KApplication::getKApplication()->getLocale()
+#endif
 
 /**
   *

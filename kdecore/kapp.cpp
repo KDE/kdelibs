@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.24  1997/08/31 19:18:32  kdecvs
+// Kalle:
+// new usage of KLocale
+// default string for KConfig::readEntry to const char*
+//
 // Revision 1.23  1997/08/31 16:30:42  kdecvs
 // Kalle: KProcess 0.23
 //
@@ -232,7 +237,7 @@
   KApp = this;
 
   pIconLoader = NULL;
-  pLocale = NULL;
+  pLocale = new KLocale(aAppName);
 #include <qtstream.h>
   pConfigStream = NULL;
 

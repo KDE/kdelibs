@@ -65,9 +65,11 @@ KLocale::KLocale( const char *_catalogue )
     const char *g_lang = getenv("LANG");
 
     if (! g_lang ) {
-	KConfig config;
+	/*	KConfig config;
 	config.setGroup("Locale");
 	languages = config.readEntry("Language", "C");
+	*/
+	languages = "C";
     } else
 	languages = g_lang;
    
@@ -75,7 +77,6 @@ KLocale::KLocale( const char *_catalogue )
 	languages = "C";
     else languages += ":C";
 
-    debug("STRING1 %s",languages.data());
     QString directory = kapp->kdedir() + "/share/locale";
 
     while (1) {

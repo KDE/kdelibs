@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.17  1997/08/31 19:18:33  kdecvs
+// Kalle:
+// new usage of KLocale
+// default string for KConfig::readEntry to const char*
+//
 // Revision 1.16  1997/08/30 15:51:58  kdecvs
 // Kalle: BINARY INCOMPATIBLE!!!!!
 // KApplication provides an IconLoader
@@ -136,9 +141,9 @@
 // Save icon and mini-icon pixmap
 // Support for session management
 // make KDebug compile on HP-UX
-#ifndef _KLOCALE_H
+//
 // Revision 1.22  1997/09/26 07:01:13  kalle
-#endif
+// Here are the promised dummies for session management:
 //
 // - KApplication::saveYourself (signal)
 // - KApplication::tempFileName()
@@ -147,7 +152,6 @@
 //
 // MD: Implemented reading of the colour scheme contrast variable. This allows
 // you to choose the highlights and lowlights used to draw widgets and has been
-#define klocale kapp->getLocale()
 // part of the colour scheme specification for some time
 //
 // Sorry if this breaks anything; it is the last of the binary incompatible
