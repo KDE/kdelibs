@@ -21,7 +21,6 @@
 
 
 #include <kaboutdata.h>
-#include <klocale.h>
 #include <kstandarddirs.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -77,7 +76,7 @@ class KAboutDataPrivate
 public:
     KAboutDataPrivate()
         : translatorName("_: NAME OF TRANSLATORS\nYour names")
-        , translatorEmail("_: EMAIL OF TRANSLATORS\nYour emails") 
+        , translatorEmail("_: EMAIL OF TRANSLATORS\nYour emails")
         {};
     const char *translatorName;
     const char *translatorEmail;
@@ -105,7 +104,7 @@ KAboutData::KAboutData( const char *appName,
   mBugEmailAddress( bugsEmailAddress )
 {
    d = new KAboutDataPrivate;
-   
+
    if( appName ) {
      const char *p = strrchr(appName, '/');
      if( p )
@@ -135,7 +134,7 @@ KAboutData::addCredit( const char *name, const char *task,
   mCreditList.append(KAboutPerson(name,task,emailAddress,webAddress));
 }
 
-void 
+void
 KAboutData::setTranslator( const char *name, const char *emailAddress)
 {
   d->translatorName=name;
@@ -149,7 +148,7 @@ KAboutData::setLicenseText( const char *licenseText )
   mLicenseKey = License_Custom;
 }
 
-void 
+void
 KAboutData::setLicenseTextFile( const QString &file )
 {
   mLicenseText = qstrdup(QFile::encodeName(file));
@@ -211,11 +210,11 @@ KAboutData::credits() const
    return mCreditList;
 }
 
-const QValueList<KAboutTranslator> 
+const QValueList<KAboutTranslator>
 KAboutData::translators() const
-{    
+{
     QValueList<KAboutTranslator> personList;
-        
+
     if(d->translatorName == 0)
         return personList;
 
@@ -228,18 +227,18 @@ KAboutData::translators() const
         nameList = QStringList::split(',',names);
     }
 
-    
+
     if(d->translatorEmail)
     {
         QString emails = i18n(d->translatorEmail);
-        
+
         if(emails != QString::fromUtf8(d->translatorEmail))
         {
             emailList = QStringList::split(',',emails,true);
         }
     }
-    
-    
+
+
     QStringList::Iterator nit;
     QStringList::Iterator eit=emailList.begin();
 
@@ -253,10 +252,10 @@ KAboutData::translators() const
         }
 
         QString name=*nit;
-        
+
         personList.append(KAboutTranslator( name, email));
     }
-        
+
     return personList;
 }
 
@@ -285,39 +284,39 @@ KAboutData::license() const
 {
   QString l;
   QString f;
-  switch ( mLicenseKey ) 
+  switch ( mLicenseKey )
   {
     case License_File:
        f = QFile::decodeName(mLicenseText);
        break;
     case License_Custom:
        return( i18n(mLicenseText) );
-    case License_GPL_V2:  
+    case License_GPL_V2:
        l = "GPL v2";
        f = locate("data", "LICENSES/GPL_V2");
        break;
-    case License_LGPL_V2:  
+    case License_LGPL_V2:
        l = "LGPL v2";
-       f = locate("data", "LICENSES/LGPL_V2"); 
+       f = locate("data", "LICENSES/LGPL_V2");
        break;
-    case License_BSD:  
-       l = "BSD License"; 
+    case License_BSD:
+       l = "BSD License";
        f = locate("data", "LICENSES/BSD");
        break;
-    case License_Artistic:  
-       l = "Artistic License"; 
+    case License_Artistic:
+       l = "Artistic License";
        f = locate("data", "LICENSES/ARTISTIC");
        break;
-    case License_QPL_V1_0:  
-       l = "QPL v1.0"; 
+    case License_QPL_V1_0:
+       l = "QPL v1.0";
        f = locate("data", "LICENSES/QPL_V1.0");
        break;
-    default: 
+    default:
        return i18n("No licensing terms for this program have been specified.\n"
                    "Please check the documentation or the source for any\n"
                    "licensing terms.\n");
       }
- 
+
   QString result;
   if (!l.isEmpty())
      result = i18n("This program is distributed under the terms of the %1.").arg( l );
