@@ -45,6 +45,7 @@
 #include <kmessageboxwrapper.h>
 
 #include <dcopclient.h>
+#include <dcopref.h>
 #include <kapplication.h>
 #include <kprocess.h>
 #include <kdebug.h>
@@ -442,20 +443,10 @@ QString KMimeType::favIconForURL( const KURL& url )
          || !useFavIcons )
         return QString::null;
 
-    QByteArray data;
-    QDataStream str(data, IO_WriteOnly);
-    str << url;
-    QCString replyType;
-    QByteArray reply;
-    kapp->dcopClient()->call("kded", "favicons", "iconForURL(KURL)", data,
-                             replyType, reply);
-    if (replyType == "QString")
-    {
-        QDataStream replyStr(reply, IO_ReadOnly);
-        QString result;
-        replyStr >> result;
+    DCOPRef kded( "kded", "favicons" );
+    DCOPReply result = kded.call( "iconForURL(KURL)", url );
+    if ( result.isValid() )
         return result;
-    }
 
     return QString::null;
 }
