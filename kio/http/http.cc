@@ -967,7 +967,7 @@ bool HTTPProtocol::http_open()
   if (moreData)
      res = sendBody();
 
-  infoMessage( i18n( "%1 Contacted. Waiting for reply..." ).arg( m_request.hostname ) );
+  infoMessage( i18n( "%1 contacted. Waiting for reply..." ).arg( m_request.hostname ) );
 
   return res;
 }
