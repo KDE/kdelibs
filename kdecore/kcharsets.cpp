@@ -60,17 +60,19 @@ KCharset::KCharset(QString s){
    entry=data->charsetEntry(s);
 }
 
-KCharset::KCharset(QFont::CharSet){
+KCharset::KCharset(QFont::CharSet qtCharset){
 
   if (!data || !charsets){
       fatal("KCharset constructor called when no KCharsets object created");
       return;
    }  
-  entry=data->charsetEntry("us-ascii");
+  entry=data->charsetEntry(qtCharset);
 }
 
-const char * KCharset::name(){
-  return entry->name;
+const char * KCharset::name()const{
+  
+  if (entry) return entry->name;
+  else return "unknown";
 }
 
 bool KCharset::isDisplayable(){
@@ -94,26 +96,42 @@ bool KCharset::isDisplayable(const char *face){
     return FALSE;
   }  
   
-  kchdebug("Testing if %s is displayable\n",name());
-  if ( stricmp(name(),"any")==0 ) return TRUE;
+  kchdebug("Testing if %s is displayable in %s\n",name(),face);
+  if ( stricmp(name(),"any")==0 ){
+    kchdebug("Yes - it is any charset\n");
+    return TRUE;
+  }  
 
-  if (data->charsetOfFace(entry,face)) return TRUE;
-  
   QFont::CharSet qcharset=entry->qtCharset;
   kchdebug("qtcharset=%i\n",qcharset);
   
-  if ( qcharset==QFont::AnyCharSet ) return FALSE;
+  if ( qcharset==QFont::AnyCharSet )
+     if (data->charsetOfFace(entry,face)){
+       kchdebug("Yes: face %s is of charset: %s\n",face,entry->name);
+       return TRUE;
+     }  
+     else{
+       kchdebug("No: face %s is not of charset: %s\n",face,entry->name);
+       return FALSE;
+     }  
   else{
-    QFont f(face);
+    QFont f;
     f.setCharSet(qcharset);
+    f.setFamily(face);
     QFontInfo fi(f);
     kchdebug("fi.charset()=%i\n",fi.charSet());
-    if (fi.charSet()!=qcharset) return FALSE;
-    else return TRUE;
+    if (fi.charSet()!=qcharset || strcmp(fi.family(),face)!=0 ){
+      kchdebug("No: qtCharset is specified, but doesn't work\n");
+      return FALSE;
+    }  
+    else{
+      kchdebug("Yes: qtCharset is specified and it works\nn");
+      return TRUE;
+    }   
   }  
 }
 
-bool KCharset::isRegistered(){
+bool KCharset::isRegistered()const{
 
   if (!entry) {
     warning("KCharset: Wrong charset!\n");
@@ -123,7 +141,7 @@ bool KCharset::isRegistered(){
   else return FALSE;
 }
 
-QFont::CharSet KCharset::qtCharset(){
+QFont::CharSet KCharset::qtCharset()const{
 
   if (!entry) {
     warning("KCharset: Wrong charset!\n");
@@ -134,7 +152,7 @@ QFont::CharSet KCharset::qtCharset(){
   return QFont::AnyCharSet;
 }
 
-int KCharset::bits(){
+int KCharset::bits()const{
 
   if (!entry) {
     warning("KCharset: Wrong charset!\n");
@@ -162,10 +180,11 @@ QFont &KCharset::setQFont(QFont &fnt){
   if (faceStr){
      faceStr.replace("\\*",fnt.family());
      kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
-     fnt.setFamily(faceStr);
      fnt.setCharSet(QFont::AnyCharSet);
+     fnt.setFamily(faceStr);
   }
   else{
+    kchdebug("qtCharset: %i\n",(int)qtCharset());
     fnt.setCharSet(qtCharset());
     QString family=fnt.family();
     if (family=="roman") fnt.setFamily("courier");	//  workaround for bug	
@@ -176,12 +195,12 @@ QFont &KCharset::setQFont(QFont &fnt){
   return fnt;
 }
 
-KCharset::operator const KCharsetEntry *(){
+KCharset::operator const KCharsetEntry *()const{
  
   return entry;
 }
 
-bool KCharset::isprint(int chr){
+bool KCharset::printable(int chr){
 
   if (!entry) return FALSE;
   if (entry->toUnicode)
@@ -352,7 +371,7 @@ QStrList KCharsets::displayable(const char *face){
   QStrList w;
   int i;
   for(i=0;data->charsetEntry(i);i++)
-    if (isDisplayable(data->charsetEntry(i)->name,face))
+    if (KCharset(data->charsetEntry(i)).isDisplayable(face))
           w.append(data->charsetEntry(i)->name);
   return w;  
 }
@@ -406,6 +425,11 @@ const char * KCharsets::name(QFont::CharSet qtcharset){
   return KCharset(qtcharset);
 }
 
+KCharset KCharsets::charset(QFont::CharSet qtcharset){
+
+  return KCharset(qtcharset);
+}
+
 QFont::CharSet KCharsets::qtCharset(){
 
   return qtCharset(data->defaultCharset()->name);
@@ -422,13 +446,18 @@ QFont &KCharsets::setQFont(QFont &fnt){
   return KCharset(data->defaultCharset()).setQFont(fnt);
 }
 
-const char * KCharsets::name(const QFont& font){
+KCharset KCharsets::charset(const QFont& font){
 
-  if (font.charSet()!=QFont::AnyCharSet) return name(font.charSet());
+  kchdebug("Testing charset of font: %s, qtcharset=%i\n",font.family(),(int)font.charSet());
+  if (font.charSet()!=QFont::AnyCharSet) return charset(font.charSet());
   const KCharsetEntry * ce=data->charsetOfFace(font.family());
   kchdebug("ce=%p ce->name=%s\n",ce,ce?ce->name:0);
-  if (ce) return ce->name;
-  else return "unknown";
+  return KCharset(ce);
+}
+
+const char * KCharsets::name(const QFont& font){
+  
+  return charset(font); 
 }
 
 KCharset KCharsetConversionResult::charset()const{

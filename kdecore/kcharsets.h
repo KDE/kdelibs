@@ -33,22 +33,25 @@ class KCharsetsData;
 class KCharset{
 friend class KCharsets;
 public:
+  KCharset(){ entry=0; } 
   KCharset(const KCharsetEntry *);
   KCharset(const char *);
   KCharset(const QString);
   KCharset(QFont::CharSet);
-  const char *name();
-  operator const char *(){ return name(); }
+  const char *name()const;
+  operator const char *()const{ return name(); }
+  operator QString()const{ return name(); }
   bool isDisplayable();
   bool isDisplayable(const char *);
-  bool isAvailable(){ if (!entry) return FALSE; else return TRUE; }
-  bool ok(){ if (!entry) return FALSE; else return TRUE; }
-  bool isRegistered();
+  bool isAvailable()const{ if (!entry) return FALSE; else return TRUE; }
+  bool ok()const{ if (!entry) return FALSE; else return TRUE; }
+  bool isRegistered()const;
   QFont &setQFont(QFont& fnt);
-  QFont::CharSet qtCharset();
-  int bits();
-  operator const KCharsetEntry *();
-  bool isprint(int chr);
+  QFont::CharSet qtCharset()const;
+  int bits()const;
+  operator const KCharsetEntry *()const;
+  bool printable(int chr);
+  bool operator ==(const KCharset& kch)const{ return entry==kch.entry; }
   
 private:
    const KCharsetEntry *entry;
@@ -417,6 +420,7 @@ public:
    * @return charset name
    */
   const char * name(QFont::CharSet qtcharset);
+  KCharset charset(QFont::CharSet qtcharset);
   
   /** 
    * Returns charset name of given QFont object
@@ -425,6 +429,7 @@ public:
    * @return charset name
    */
   const char * name(const QFont& font);   
+  KCharset charset(const QFont& font);   
 
   /**
    * Unicode to displayable character conversion

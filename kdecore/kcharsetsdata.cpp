@@ -330,24 +330,17 @@ const char * KCharsetConverterData::convert(const char * str
 	 break;
        default:
          if (inAmps && str[i]=='&'){
-//           kchdebug("Amperstand found\n");
+           kchdebug("Amperstand found\n");
 	   unicode=kcharsetsData->decodeAmp(str+i,tmp);
-//           kchdebug("i=%i characters: %i code:%4x\n",i,tmp,unicode);
-	   if (tmp<0) unicode=0; // wrong amp sequence
-	   else
-	     if (unicode==0){
-	       result.cText+=QString(str+i,tmp+1);
-	       i+=tmp+1;
-	       continue;
-	     }
-	     else i+=tmp;
+           kchdebug("i=%i characters: %i code:%4x\n",i,tmp,unicode);
+	   if (tmp>0) i+=tmp;
 	 } 
 	 if (unicode==0)
            if (inBits<=8) index=(unsigned char)str[i];
-	   else if (inBits==16) index=(((unsigned char)str[i])<<8)+(unsigned char)str[i];
+	   else if (inBits==16) index=(((unsigned char)str[i++])<<8)+(unsigned char)str[i];
 	 break;
     }
-//    kchdebug("Got index: %x\n",index);
+    kchdebug("Got index: %x\n",index);
     if (index>0 || unicode>0) switch(conversionType){
        case ToUnicode:
          if (unicode>0) chr=unicode;
@@ -618,6 +611,15 @@ const KCharsetEntry * KCharsetsData::charsetEntry(int index){
   return 0;
 }
 
+const KCharsetEntry * KCharsetsData::charsetEntry(QFont::CharSet qtCharset){
+
+  int i;
+  for(i=0;charsets[i].name;i++)
+    if ( charsets[i].qtCharset==qtCharset ) return charsets+i;
+    
+  return 0;
+}
+
 bool KCharsetsData::setDefaultCharset(const KCharsetEntry *charset){
 
   if (charset){
@@ -661,6 +663,7 @@ const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
   if (!it) return 0;
   while( it->current() ){
     const char * faceStr=it->current()->aValue;
+    if (!faceStr || faceStr[0]==0) return charsetEntry(it->currentKey());
     kchdebug("testing if it is %s (%s)...",(const char *)it->currentKey(),faceStr);
     QRegExp rexp(faceStr,FALSE,TRUE);
     kchdebug("regexp: %s face: %s\n",rexp.pattern(),(const char *)face);
