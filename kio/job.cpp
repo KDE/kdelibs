@@ -1703,6 +1703,11 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
     }
 }
 
+void CopyJob::startNextJob()
+{
+  // Don't break BC.
+}
+
 void CopyJob::statNextSrc()
 {
     if ( m_currentStatSrc != m_srcList.end() )

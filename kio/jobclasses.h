@@ -750,6 +750,7 @@ namespace KIO {
         void copyingLinkDone( KIO::Job *, const KURL &from, const QString& target, const KURL& to );
 
     protected:
+        void startNextJob(); // BC only. Not used.
         void statNextSrc();
 
         // Those aren't slots but submethods for slotResult.
