@@ -584,7 +584,10 @@ void KEditToolbarWidget::slotUpButton()
                                                item->itemAbove()->itemAbove(),
                                                item->internalName());
           clone->setText(1, item->text(1));
-          clone->setPixmap(0, *item->pixmap(0));
+
+          // only set new pixmap if exists
+          if( item->pixmap(0) )
+            clone->setPixmap(0, *item->pixmap(0));
 
           // remove the old me
           m_activeList->takeItem(item);
@@ -640,7 +643,10 @@ void KEditToolbarWidget::slotDownButton()
                                                item->itemBelow(),
                                                item->internalName());
           clone->setText(1, item->text(1));
-          clone->setPixmap(0, *item->pixmap(0));
+          
+          // only set new pixmap if exists
+          if( item->pixmap(0) )
+	    clone->setPixmap(0, *item->pixmap(0));
 
           // remove the old me
           m_activeList->takeItem(item);
