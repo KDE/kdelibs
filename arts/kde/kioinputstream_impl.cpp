@@ -19,6 +19,16 @@
 
 	*/
 
+/*
+ * How does it work?
+ * -----------------
+ *
+ * First the buffer has to be filled. When it reaches a defined size the outdata
+ * stream has to start pulling packets. If the buffer reaches a size of zero the
+ * stream has to stop. If the buffer gets to big the job has to be suspended
+ * until the buffer is small enough again.
+ */
+
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kio/job.h>
@@ -50,8 +60,6 @@ KIOInputStream_impl::~KIOInputStream_impl()
 
 void KIOInputStream_impl::streamStart()
 {
-	outdata.setPull(PACKET_COUNT, m_packetSize);
-
 	if(m_job != 0)
 		m_job->kill();
 	m_job = KIO::get(m_url, false, false);
@@ -78,14 +86,6 @@ void KIOInputStream_impl::streamEnd()
 	}	
 
 	outdata.endPull();
-
-	while(!m_sendqueue.empty())
-	{
-	    DataPacket<mcopbyte> *packet = m_sendqueue.front();
-	    packet->size = 0;
-	    packet->send();
-	    m_sendqueue.pop();
-	}
 }
 
 bool KIOInputStream_impl::openURL(const std::string& url)
@@ -101,9 +101,9 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 
 	QDataStream dataStream(m_data, IO_WriteOnly | IO_Append);
 	dataStream.writeRawBytes(data.data(), data.size());
+	kdDebug() << "STREAMING: buffersize = " << m_data.size() << " bytes" << endl;
 	
-	if(!m_sendqueue.empty())
-	    processQueue();
+	processQueue();
 }
 
 void KIOInputStream_impl::slotResult(KIO::Job *job)
@@ -118,8 +118,7 @@ void KIOInputStream_impl::slotResult(KIO::Job *job)
 
 bool KIOInputStream_impl::eof()
 {
-	return (m_finished && m_data.size() == 0
-	                   && m_sendqueue.size() == PACKET_COUNT);
+	return (m_finished && m_data.size() == 0);
 }
 
 bool KIOInputStream_impl::seekOk()
@@ -141,10 +140,16 @@ void KIOInputStream_impl::processQueue()
 {
 	if(m_job != 0)
 	{
-		if(m_data.size() > ((m_sendqueue.size() + m_packetBuffer) * m_packetSize) && !m_job->isSuspended())
+		if(m_data.size() > (m_packetBuffer * m_packetSize * 2) && !m_job->isSuspended())
+		{
+			kdDebug() << "STREAMING: suspend job" << endl;
 	    	m_job->suspend();
-		else if(m_data.size() < ((m_sendqueue.size() + m_packetBuffer) * m_packetSize) && m_job->isSuspended())
+		}
+		else if(m_data.size() < (m_packetBuffer * m_packetSize) && m_job->isSuspended())
+		{
+			kdDebug() << "STREAMING: resume job" << endl;
 	    	m_job->resume();
+		}
 	}
 
 	if(m_data.size() < (m_packetBuffer * m_packetSize) && !m_firstBuffer)
@@ -152,38 +157,31 @@ void KIOInputStream_impl::processQueue()
 		kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize) - m_data.size()) << ")" << endl;
 		return;
 	}
-	else
+	else if( !m_firstBuffer )
+	{
 		m_firstBuffer = true;
-
-	if(m_data.size() <= m_packetSize && m_firstBuffer)
-	{
-		m_firstBuffer = false;
-		return;
-	}
-
-	for(unsigned int i = 0; i < m_sendqueue.size(); i++)
-	{
-	    DataPacket<mcopbyte> *packet = m_sendqueue.front();
-		
-	    packet->size = std::min(m_packetSize, m_data.size());
-	    if(packet->size == 0)
-			return;	    
-
-//		kdDebug() << "STREAMING: Filling one DataPacket with " << packet->size << " bytes of the stream!" << endl;
-
-	    m_sendqueue.pop();
-	    memcpy(packet->contents, m_data.data(), packet->size);
-	    memmove(m_data.data(), m_data.data() + packet->size, m_data.size() - packet->size);
-	    m_data.resize(m_data.size() - packet->size);
-	    packet->send();
+		outdata.setPull(PACKET_COUNT, m_packetSize);
 	}
 }
 
 void KIOInputStream_impl::request_outdata(DataPacket<mcopbyte> *packet)
 {
-//	kdDebug() << "STREAMING: aRts requests one data packet to be filled with " << packet->size << " bytes of the stream! Stream->aRts packet Queue contains " << m_sendqueue.size() << " unfilled packets!" << endl;
-	m_sendqueue.push(packet);
 	processQueue();
+	packet->size = std::min(m_packetSize, m_data.size());
+	//kdDebug() << "STREAMING: Filling one DataPacket with " << packet->size << " bytes of the stream!" << endl;
+
+	if((unsigned)packet->size < m_packetSize || ! m_firstBuffer)
+	{
+		m_firstBuffer = false;
+		packet->size = 0;
+	}
+	else
+	{
+		memcpy(packet->contents, m_data.data(), packet->size);
+		memmove(m_data.data(), m_data.data() + packet->size, m_data.size() - packet->size);
+		m_data.resize(m_data.size() - packet->size);
+	}
+	packet->send();
 }
 
 REGISTER_IMPLEMENTATION(KIOInputStream_impl);

@@ -62,7 +62,6 @@ private slots:
 private:
 	KURL m_url;
 	KIO::TransferJob *m_job;
-	std::queue<DataPacket<mcopbyte> *> m_sendqueue;
 	QByteArray m_data;
 	bool m_finished;
 	bool m_firstBuffer;
