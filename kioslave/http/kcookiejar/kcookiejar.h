@@ -125,7 +125,7 @@ public:
     /**
      * Returns whether the cookiejar has been changed
      */
-    bool changed() { return cookiesChanged || configChanged; }
+    bool changed() const { return m_cookiesChanged || m_configChanged; }
 
     /**
      * Store all the cookies in a safe(?) place
@@ -303,17 +303,36 @@ public:
     static QString adviceToStr(KCookieAdvice _advice);
     static KCookieAdvice strToAdvice(const QString &_str);
 
-    // Save this in the config file...
-    int defaultRadioButton; // 0 = This cookie, 1 = domain, 2 = all cookies
-    bool showCookieDetails; // true, false
-    bool rejectCrossDomain;
-    bool acceptTempCookies;
-
+    /** Returns the */
+    int preferredDefaultPolicy() const { return m_preferredPolicy; }
+    
+    /** Returns the */
+    bool showCookieDetails () const { return m_showCookieDetails; }
+      
+     /**
+      * Sets the user's default preference cookie policy.
+      */     
+     void setPreferredDefaultPolicy (int value) { m_preferredPolicy = value; }
+     
+     /**
+      * Sets the user's preference of level of detail displayed
+      * by the cookie dialog.
+      */     
+     void setShowCookieDetails (bool value) { m_showCookieDetails = value; }
+     
+     
 protected:
-    QDict<KHttpCookieList> cookieDomains;
-    QStringList domainList;
-    KCookieAdvice globalAdvice;
-    bool configChanged;
-    bool cookiesChanged;
+    QStringList m_domainList;
+    KCookieAdvice m_globalAdvice;
+    QDict<KHttpCookieList> m_cookieDomains;
+   
+    bool m_configChanged;
+    bool m_cookiesChanged;    
+    bool m_showCookieDetails;
+    bool m_rejectCrossDomainCookies;
+    bool m_autoAcceptSessionCookies;   
+    bool m_ignoreCookieExpirationDate;    
+    
+    int m_preferredPolicy;    
 };
 #endif
