@@ -150,7 +150,9 @@ kdepackages:
 
 dummy.cpp:
 	echo "#ifdef _AIX" >dummy.cpp
+	echo "namespace {" >> dummy.cpp
 	echo "void *not_empty_file;" >>dummy.cpp
+	echo "}" >> dummy.cpp
 	echo "#endif" >> dummy.cpp
 
 DOXYGEN_REFERENCES = kdecore kdefx dcop kio kutils
