@@ -127,7 +127,6 @@ QStringList KXMLGUIBuilder::containerTags() const
 QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
 {
   id = -1;
-
   if ( element.tagName().lower() == d->tagMainWindow )
   {
     KTMainWindow *mainwindow = 0;

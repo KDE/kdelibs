@@ -31,9 +31,8 @@
 #include <qtoolbar.h>
 #undef private
 
-#include <ktmainwindow.h>
-
 #include "ktoolbar.h"
+#include "ktmainwindow.h"
 
 #include <string.h>
 
@@ -928,7 +927,15 @@ void KToolBar::setIconText(IconText icontext, bool update)
 
     if (doUpdate)
 	emit modechange(); // tell buttons what happened
-    updateGeometry();
+
+    // ugly hack to force a QMainWindow::triggerLayout( TRUE )
+    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+	QMainWindow *mw = (QMainWindow*)parentWidget();
+	mw->setUpdatesEnabled( FALSE );
+	mw->setToolBarsMovable( !mw->toolBarsMovable() );
+	mw->setToolBarsMovable( !mw->toolBarsMovable() );
+	mw->setUpdatesEnabled( TRUE );
+    }	
 }
 
 
@@ -963,7 +970,15 @@ void KToolBar::setIconSize(int size, bool update)
 
     if (doUpdate)
 	emit modechange(); // tell buttons what happened
-    updateGeometry();
+
+    // ugly hack to force a QMainWindow::triggerLayout( TRUE )
+    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+	QMainWindow *mw = (QMainWindow*)parentWidget();
+	mw->setUpdatesEnabled( FALSE );
+	mw->setToolBarsMovable( !mw->toolBarsMovable() );
+	mw->setToolBarsMovable( !mw->toolBarsMovable() );
+	mw->setUpdatesEnabled( TRUE );
+    }	
 }
 
 
@@ -1155,7 +1170,7 @@ void KToolBar::saveState()
 	config->writeEntry( "Offset", offset );
     if ( !newLine.isEmpty() )
 	config->writeEntry( "NewLine", newLine );
-    
+
     config->sync();
 }
 
@@ -1510,7 +1525,7 @@ void KToolBar::slotReadConfig()
     int iconsize;
     QString position;
     QString index( "0" ), offset( "-1" ), nl( "false" );
-    
+
     // this is the first iteration
     QString grpToolbar(QString::fromLatin1("Toolbar style"));
     { // start block for KConfigGroupSaver
