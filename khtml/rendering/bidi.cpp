@@ -963,6 +963,12 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 // 			  << endl;
 	    } else {
 #endif
+            if ( style()->noLineBreak() ) {
+                tmpW += t->maxWidth();
+                pos = len;
+                len = 0;
+            } else {
+
 	    QFontMetrics fm = t->metrics( firstLine );
 	    // proportional font, needs a bit more work.
 	    int lastSpace = pos;
@@ -1003,10 +1009,11 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    }
             // IMPORTANT: pos is > length here!
             tmpW += t->width(lastSpace, pos - lastSpace, &fm);
+            }
         } else
             assert( false );
 
-        if( w + tmpW > width+1 ) {
+        if( w + tmpW > width+1 && !style()->noLineBreak() ) {
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
