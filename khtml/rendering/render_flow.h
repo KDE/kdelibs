@@ -67,9 +67,9 @@ public:
     // overrides RenderObject
 
     virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+                        int tx, int ty);
     virtual void printObject( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+                        int tx, int ty);
 
 
     virtual void layout( );
@@ -80,11 +80,10 @@ public:
 
     virtual void setPos( int xPos, int yPos );
     virtual void setXPos( int xPos );
-	
+
     virtual void specialHandler(RenderObject */*special*/);
 
     virtual short baselineOffset() const;
-    virtual void absolutePosition(int &xPos, int &yPos);
 
     // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;
@@ -120,7 +119,7 @@ protected:
 
     // implementation of the following functions is in bidi.cpp
     void appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
-		   BidiContext *context, QChar::Direction dir);
+                   BidiContext *context, QChar::Direction dir);
     BidiContext *bidiReorderLine(BidiStatus &, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed);
     BidiIterator findNextLineBreak(const BidiIterator &start);
 
@@ -131,36 +130,36 @@ public:
 protected:
 
     struct SpecialObject {
-	SpecialObject() {
-	    count = 0;
-	    noPaint = false;
-	    startY = 0;
-	    endY = 0;
-	}
-	enum Type {
-	    FloatLeft,
-	    FloatRight,
-	    Positioned,
-	    RelPositioned
-	};
-    	int startY;
-	int endY;
-	short left;
-	short width;
-	Type type; // left or right aligned
-	RenderObject* node;
-	bool noPaint;
-	short count;
-	bool operator==(const SpecialObject& ) const
-	{
-	    return false;
-	}
-	bool operator<(const SpecialObject& o) const
-	{
-	    if(node->style()->zIndex() == o.node->style()->zIndex())
-		return count < o.count;
-	    return node->style()->zIndex() < o.node->style()->zIndex();
-	}
+        SpecialObject() {
+            count = 0;
+            noPaint = false;
+            startY = 0;
+            endY = 0;
+        }
+        enum Type {
+            FloatLeft,
+            FloatRight,
+            Positioned,
+            RelPositioned
+        };
+        int startY;
+        int endY;
+        short left;
+        short width;
+        Type type; // left or right aligned
+        RenderObject* node;
+        bool noPaint;
+        short count;
+        bool operator==(const SpecialObject& ) const
+        {
+            return false;
+        }
+        bool operator<(const SpecialObject& o) const
+        {
+            if(node->style()->zIndex() == o.node->style()->zIndex())
+                return count < o.count;
+            return node->style()->zIndex() < o.node->style()->zIndex();
+        }
     };
 
     QSortedList<SpecialObject>* specialObjects;
@@ -170,7 +169,7 @@ private:
     bool m_childrenInline : 1;
     bool m_haveAnonymous  : 1;
     bool m_pre            : 1;
-    bool firstLine 	: 1; // used in inline layouting
+    bool firstLine      : 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 

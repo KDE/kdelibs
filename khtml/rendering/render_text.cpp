@@ -54,7 +54,7 @@ using namespace DOM;
 void TextSlave::print( QPainter *p, int _tx, int _ty)
 {
     if (!m_text || len <= 0)
-	return;
+        return;
 
 //    p->setPen(QColor("#000000"));
     QConstString s(m_text , len);
@@ -70,19 +70,19 @@ void TextSlave::printSelection(QPainter *p, int tx, int ty, int startPos, int en
     int _len = len;
     int _width = m_width;
     if(endPos > 0 && endPos < len) {
-	_len = endPos;
+        _len = endPos;
     }
     _len -= startPos;
 
     QConstString s(m_text+startPos , _len);
 
     if (_len != len)
-    	_width = p->fontMetrics().width(s.string());
+        _width = p->fontMetrics().width(s.string());
 
     int _offset = 0;
     if ( startPos > 0 ) {
-	QConstString aStr(m_text, startPos);
-	_offset = p->fontMetrics().width(aStr.string());
+        QConstString aStr(m_text, startPos);
+        _offset = p->fontMetrics().width(aStr.string());
     }
     QColor c("#001000");
     p->setPen( "#ffffff" );
@@ -105,11 +105,11 @@ void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
     if(underlineOffset == m_baseline) underlineOffset++;
 
     if(deco & UNDERLINE)
-	p->drawLine(_tx, _ty + underlineOffset, _tx + m_width, _ty + underlineOffset );
+        p->drawLine(_tx, _ty + underlineOffset, _tx + m_width, _ty + underlineOffset );
     if(deco & OVERLINE)
-	p->drawLine(_tx, _ty, _tx + m_width, _ty );
+        p->drawLine(_tx, _ty, _tx + m_width, _ty );
     if(deco & LINE_THROUGH)
-	p->drawLine(_tx, _ty + 2*m_baseline/3, _tx + m_width, _ty + 2*m_baseline/3 );
+        p->drawLine(_tx, _ty + 2*m_baseline/3, _tx + m_width, _ty + 2*m_baseline/3 );
 // ### add BLINK
 }
 
@@ -123,63 +123,63 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
 
     int width = m_width;
     if(begin)
-	_tx -= p->paddingLeft() + p->borderLeft();
+        _tx -= p->paddingLeft() + p->borderLeft();
 
     QColor c = style->backgroundColor();
     if(c.isValid())
-	pt->fillRect(_tx, _ty, width, m_height, c);
+        pt->fillRect(_tx, _ty, width, m_height, c);
     CachedImage *i = style->backgroundImage();
     if(i)
     {
-	// ### might need to add some correct offsets
-	// ### use paddingX/Y
-	pt->drawTiledPixmap(_tx + p->borderLeft(), _ty + p->borderTop(),
+        // ### might need to add some correct offsets
+        // ### use paddingX/Y
+        pt->drawTiledPixmap(_tx + p->borderLeft(), _ty + p->borderTop(),
                             m_width + p->paddingLeft() + p->paddingRight(),
                             m_height + p->paddingTop() + p->paddingBottom(), i->tiled_pixmap());
     }
 
     if(style->hasBorder())
     {
-	int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
+        int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
 
-	if(style->borderTopStyle() != BNONE)
-	{
-	    c = style->borderTopColor();
-	    if(!c.isValid()) c = style->color();
-	    p->drawBorder(pt, _tx, _ty, _tx + width, _ty, style->borderTopWidth(),
-		       RenderObject::BSTop, c, style->borderTopStyle());
-	}
-	if(style->borderBottomStyle() != BNONE)
-	{
-	    c = style->borderBottomColor();
-	    if(!c.isValid()) c = style->color();
-	    p->drawBorder(pt, _tx, _ty + h, _tx + width, _ty + h, style->borderBottomWidth(),
-		       RenderObject::BSBottom, c, style->borderBottomStyle());
-	}
-	// ### has to be changed for RTL
-	if(style->borderLeftStyle() != BNONE && (begin))
-	{
-	    c = style->borderLeftColor();
-	    if(!c.isValid()) c = style->color();
-	    p->drawBorder(pt, _tx, _ty, _tx, _ty + h, style->borderLeftWidth(),
-		       RenderObject::BSLeft, c, style->borderLeftStyle());
-	}
-	if(style->borderRightStyle() != BNONE && end)
-	{
-	    c = style->borderRightColor();
-	    if(!c.isValid()) c = style->color();
-	    p->drawBorder(pt, _tx + width, _ty, _tx + width, _ty + h, style->borderRightWidth(),
-		       RenderObject::BSRight, c, style->borderRightStyle());
-	}
+        if(style->borderTopStyle() != BNONE)
+        {
+            c = style->borderTopColor();
+            if(!c.isValid()) c = style->color();
+            p->drawBorder(pt, _tx, _ty, _tx + width, _ty, style->borderTopWidth(),
+                       RenderObject::BSTop, c, style->borderTopStyle());
+        }
+        if(style->borderBottomStyle() != BNONE)
+        {
+            c = style->borderBottomColor();
+            if(!c.isValid()) c = style->color();
+            p->drawBorder(pt, _tx, _ty + h, _tx + width, _ty + h, style->borderBottomWidth(),
+                       RenderObject::BSBottom, c, style->borderBottomStyle());
+        }
+        // ### has to be changed for RTL
+        if(style->borderLeftStyle() != BNONE && (begin))
+        {
+            c = style->borderLeftColor();
+            if(!c.isValid()) c = style->color();
+            p->drawBorder(pt, _tx, _ty, _tx, _ty + h, style->borderLeftWidth(),
+                       RenderObject::BSLeft, c, style->borderLeftStyle());
+        }
+        if(style->borderRightStyle() != BNONE && end)
+        {
+            c = style->borderRightColor();
+            if(!c.isValid()) c = style->color();
+            p->drawBorder(pt, _tx + width, _ty, _tx + width, _ty + h, style->borderRightWidth(),
+                       RenderObject::BSRight, c, style->borderRightStyle());
+        }
     }
 
 #ifdef BIDI_DEBUG
     int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
     c = QColor("#0000ff");
     p->drawBorder(pt, _tx, _ty, _tx, _ty + h, 1,
-		  RenderObject::BSLeft, c, SOLID);
+                  RenderObject::BSLeft, c, SOLID);
     p->drawBorder(pt, _tx + width, _ty, _tx + width, _ty + h, style->borderRightWidth(),
-		  RenderObject::BSRight, c, SOLID);
+                  RenderObject::BSRight, c, SOLID);
 #endif
 }
 
@@ -188,7 +188,7 @@ bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 {
     if((_ty + y > _y) || (_ty + y + m_height < _y) ||
        (_tx + x > _x) || (_tx + x + m_width < _x))
-	return false;
+        return false;
     return true;
 }
 
@@ -236,9 +236,9 @@ void RenderText::deleteSlaves()
     TextSlave *s = m_first;
     while(s)
     {
-	TextSlave *next = s->next();
-	delete s;
-	s = next;
+        TextSlave *next = s->next();
+        delete s;
+        s = next;
     }
     m_first = m_last = 0;
 }
@@ -248,29 +248,29 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
     TextSlave *s = m_first;
     while(s)
     {
-	if( s->checkPoint(_x, _y, _tx, _ty) )
-	{
+        if( s->checkPoint(_x, _y, _tx, _ty) )
+        {
             // now we need to get the exact position
-	    int delta = _x - _tx - s->x;
-	    int pos = 0;
-	    while(pos < s->len)
-	    {
-		// ### this will produce wrong results for RTL text!!!
-		int w = fm->width(*(s->m_text+pos));
-		int w2 = w/2;
-		w = w - w2;
-		delta -= w2;
-		if(delta <= 0) break;
-		pos++;
-		delta -= w;
-	    }
-	    offset = s->m_text - m_first->m_text + pos;
-	    //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
+            int delta = _x - _tx - s->x;
+            int pos = 0;
+            while(pos < s->len)
+            {
+                // ### this will produce wrong results for RTL text!!!
+                int w = fm->width(*(s->m_text+pos));
+                int w2 = w/2;
+                w = w - w2;
+                delta -= w2;
+                if(delta <= 0) break;
+                pos++;
+                delta -= w;
+            }
+            offset = s->m_text - m_first->m_text + pos;
+            //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
 
-	    return true;
-	}
-	// ### this might be wrong, if combining chars are used ( eg arabic )
-	s=s->next();
+            return true;
+        }
+        // ### this might be wrong, if combining chars are used ( eg arabic )
+        s=s->next();
     }
     return false;
 }
@@ -317,14 +317,18 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 
 void RenderText::absolutePosition(int &xPos, int &yPos)
 {
-    if(m_parent)
-	m_parent->absolutePosition(xPos, yPos);
-    else
-	xPos = yPos = -1;
+    if(m_parent) {
+        m_parent->absolutePosition(xPos, yPos);
+        if ( m_first ) {
+            xPos += m_first->x;
+            yPos += m_first->y;
+        }
+    } else
+        xPos = yPos = -1;
 }
 
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
-		      int tx, int ty)
+                      int tx, int ty)
 {
     //kdDebug( 6040 ) << "Text::printObject(long)" << endl;
 
@@ -337,16 +341,16 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     if(m_printSpecial && m_parent->isInline())
     {
 #endif
-	while(s)
-	{
-	    bool end = false;
-	    if(!s->next()) end = true;
-	    if(s->checkVerticalPoint(y, ty, h))
-		s->printBoxDecorations(p, this, tx, ty, start, end);
-	    s=s->next();
-	    start = false;
-	}
-	s = m_first;
+        while(s)
+        {
+            bool end = false;
+            if(!s->next()) end = true;
+            if(s->checkVerticalPoint(y, ty, h))
+                s->printBoxDecorations(p, this, tx, ty, start, end);
+            s=s->next();
+            start = false;
+        }
+        s = m_first;
 #ifndef BIDI_DEBUG
     }
 #endif
@@ -360,79 +364,79 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     p->setPen( m_style->color() );
     while(s)
     {
-	if(s->checkVerticalPoint(y, ty, h))
-	    s->print(p, tx, ty);
-	s=s->next();
+        if(s->checkVerticalPoint(y, ty, h))
+            s->print(p, tx, ty);
+        s=s->next();
     }
 
     int d = m_style->textDecoration();
     if(d != TDNONE)
     {
-	p->setPen( m_style->textDecorationColor() );
-	s = m_first;
-	while(s)
-	{
-	    if(s->checkVerticalPoint(y, ty, h))
-		s->printDecoration(p, tx, ty, d);
-	    s=s->next();
-	}
+        p->setPen( m_style->textDecorationColor() );
+        s = m_first;
+        while(s)
+        {
+            if(s->checkVerticalPoint(y, ty, h))
+                s->printDecoration(p, tx, ty, d);
+            s=s->next();
+        }
     }
 
 
     s = m_first;
     if (selectionState() != SelectionNone)
     {
-    	int endPos, startPos;
-	bool breakAtEnd = false;
-	if (selectionState()==SelectionInside)
-	{
-	    startPos = 0;
-	    endPos = -1;
-	}
-	else
-	{
-	    selectionStartEnd(startPos,endPos);
-	    breakAtEnd = true;
-	    if(selectionState() == SelectionStart) {
-		endPos = -1;
-		breakAtEnd = false;
-	    }
-	    else if(selectionState() == SelectionEnd)
-		startPos = 0;
-//	    kdDebug( 6040 ) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
-	}
+        int endPos, startPos;
+        bool breakAtEnd = false;
+        if (selectionState()==SelectionInside)
+        {
+            startPos = 0;
+            endPos = -1;
+        }
+        else
+        {
+            selectionStartEnd(startPos,endPos);
+            breakAtEnd = true;
+            if(selectionState() == SelectionStart) {
+                endPos = -1;
+                breakAtEnd = false;
+            }
+            else if(selectionState() == SelectionEnd)
+                startPos = 0;
+//          kdDebug( 6040 ) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
+        }
 
-	while(s && endPos)
-	{
-	    if(s->checkVerticalPoint(y, ty, h))
-	    	s->printSelection(p, tx, ty, startPos, endPos);
-	    int diff;
-	    if(s->next())
-		diff = s->next()->m_text - s->m_text;
-	    else
-		diff = s->len;
-	    endPos -= diff;
-	    startPos -= diff;
-	    if(breakAtEnd && endPos < 0) break;
-	    s=s->next();
-	}
+        while(s && endPos)
+        {
+            if(s->checkVerticalPoint(y, ty, h))
+                s->printSelection(p, tx, ty, startPos, endPos);
+            int diff;
+            if(s->next())
+                diff = s->next()->m_text - s->m_text;
+            else
+                diff = s->len;
+            endPos -= diff;
+            startPos -= diff;
+            if(breakAtEnd && endPos < 0) break;
+            s=s->next();
+        }
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
       {
-	if (hasKeyboardFocus==DOM::ActivationPassive)
-	  p->setPen(QColor("green"));
-	else
-	  p->setPen(QColor("blue"));
-	p->drawRect(tx+xPos(),ty+yPos(),width(0,length()), height());
-	p->drawRect(tx+xPos()+1,ty+yPos()+1,width(0,length())-2, height()-2);
+        if (hasKeyboardFocus==DOM::ActivationPassive)
+          p->setPen(QColor("green"));
+        else
+          p->setPen(QColor("blue"));
+        p->drawRect(tx+xPos(),ty+yPos(),width(0,length()), height());
+        p->drawRect(tx+xPos()+1,ty+yPos()+1,width(0,length())-2, height()-2);
       }
 }
 
 void RenderText::print( QPainter *p, int x, int y, int w, int h,
-		      int tx, int ty)
+                      int tx, int ty)
 {
-    if ( !m_visible ) 
-	return;
+    if ( !m_visible )
+        return;
     printObject(p, x, y, w, h, tx, ty);
 }
 
@@ -452,34 +456,34 @@ void RenderText::calcMinMaxWidth()
     int len = str->l;
     for(int i = 0; i < len; i++)
     {
-	const QChar c = *(str->s+i);
-	if( c == QChar(' '))
-	{
-	    if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-	    currMinWidth = 0;
-	    currMaxWidth += fm->width(c);
-	}
-	else if( c == QChar('-'))
-	{
-	    currMinWidth += fm->width(c);
-	    if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-	    currMinWidth = 0;
-    	    currMaxWidth += fm->width(c);
-	}
-	else if( c == QChar('\n'))
-	{
-	    if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-	    currMinWidth = 0;
-	    if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
-	    currMaxWidth = 0;
-	}
-	else
-	{
-	    //kdDebug( 6040 ) << "c = " << c.unicode() << endl;
-	    int w = fm->width(c);
-	    currMinWidth += w;
-	    currMaxWidth += w;
-	}
+        const QChar c = *(str->s+i);
+        if( c == QChar(' '))
+        {
+            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+            currMinWidth = 0;
+            currMaxWidth += fm->width(c);
+        }
+        else if( c == QChar('-'))
+        {
+            currMinWidth += fm->width(c);
+            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+            currMinWidth = 0;
+            currMaxWidth += fm->width(c);
+        }
+        else if( c == QChar('\n'))
+        {
+            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+            currMinWidth = 0;
+            if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
+            currMaxWidth = 0;
+        }
+        else
+        {
+            //kdDebug( 6040 ) << "c = " << c.unicode() << endl;
+            int w = fm->width(c);
+            currMinWidth += w;
+            currMaxWidth += w;
+        }
     }
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     currMinWidth = 0;
@@ -492,17 +496,17 @@ void RenderText::calcMinMaxWidth()
 int RenderText::xPos() const
 {
     if (m_first)
-	return m_first->x;
+        return m_first->x;
     else
-	return 0;
+        return 0;
 }
 
 int RenderText::yPos() const
 {
     if (m_first)
-	return m_first->y;
+        return m_first->y;
     else
-	return 0;
+        return 0;
 }
 
 const QFont &RenderText::font()
@@ -528,7 +532,7 @@ void RenderText::setText(DOMStringImpl *text)
 int RenderText::height() const
 {
     return m_contentHeight
-	+ m_style->borderTopWidth() + m_style->borderBottomWidth();
+        + m_style->borderTopWidth() + m_style->borderBottomWidth();
    // ### padding is relative to the _width_ of the containing block
     //+ m_style->paddingTop() + m_style->paddingBottom()
  }
@@ -557,44 +561,44 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     bool deleteChar = false;
     // Qt still uses the old BiDi code with 8859-6/8...
     if((reverse && (( !m_style->visuallyOrdered() &&
-		      font().charSet() != QFont::ISO_8859_8 &&
-		      font().charSet() != QFont::ISO_8859_6)
-		    ||
-		    ( m_style->visuallyOrdered() &&
-		      ( font().charSet() == QFont::ISO_8859_8 ||
-			font().charSet() == QFont::ISO_8859_6))
-	)))
+                      font().charSet() != QFont::ISO_8859_8 &&
+                      font().charSet() != QFont::ISO_8859_6)
+                    ||
+                    ( m_style->visuallyOrdered() &&
+                      ( font().charSet() == QFont::ISO_8859_8 ||
+                        font().charSet() == QFont::ISO_8859_6))
+        )))
     {
-	deleteChar = true;
-	// reverse String
-	QString aStr = QConstString(str->s+from, len).string();
+        deleteChar = true;
+        // reverse String
+        QString aStr = QConstString(str->s+from, len).string();
 #ifndef NO_COMPOSE
-	aStr.compose();
+        aStr.compose();
 #endif
 #ifdef DEBUG_LAYOUT
-	kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
+        kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
 #endif
-	len = aStr.length();
-	ch = new QChar[len];
-	int half =  len/2;
-	const QChar *s = aStr.unicode();
-	for(int i = 0; i <= half; i++)
-	{
-	    ch[len-1-i] = s[i];
-	    ch[i] = s[len-1-i];
-	    if(ch[i].mirrored() && !m_style->visuallyOrdered())
-		ch[i] = ch[i].mirroredChar();
-	    if(ch[len-1-i].mirrored() && !m_style->visuallyOrdered() && i != len-1-i)
-		ch[len-1-i] = ch[len-1-i].mirroredChar();
-	}
+        len = aStr.length();
+        ch = new QChar[len];
+        int half =  len/2;
+        const QChar *s = aStr.unicode();
+        for(int i = 0; i <= half; i++)
+        {
+            ch[len-1-i] = s[i];
+            ch[i] = s[len-1-i];
+            if(ch[i].mirrored() && !m_style->visuallyOrdered())
+                ch[i] = ch[i].mirroredChar();
+            if(ch[len-1-i].mirrored() && !m_style->visuallyOrdered() && i != len-1-i)
+                ch[len-1-i] = ch[len-1-i].mirroredChar();
+        }
     }
     else
-	ch = str->s+from;
+        ch = str->s+from;
 
     // ### margins and RTL
     if(from == 0 && m_parent->isInline() && m_parent->firstChild()==this)
     {
-	x += paddingLeft() + borderLeft() + marginLeft();
+        x += paddingLeft() + borderLeft() + marginLeft();
         width -= marginLeft();
     }
 
@@ -607,14 +611,14 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     //#endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
-				 bidiHeight(), baselineOffset(), width, deleteChar);
+                                 bidiHeight(), baselineOffset(), width, deleteChar);
 
     if(!m_first)
-	m_first = m_last = s;
+        m_first = m_last = s;
     else
     {
-	m_last->setNext(s);
-	m_last = s;
+        m_last->setNext(s);
+        m_last = s;
     }
 }
 
@@ -632,11 +636,11 @@ unsigned int RenderText::width( int from, int len) const
 
     if(m_parent->isInline())
     {
-	if(from == 0 && m_parent->firstChild() == static_cast<const RenderObject*>(this))
-	    w += borderLeft() + paddingLeft() + marginLeft();
-	if(from + len == int(str->l) &&
-	   m_parent->lastChild() == static_cast<const RenderObject*>(this))
-	    w += borderRight() + paddingRight() +marginRight();;
+        if(from == 0 && m_parent->firstChild() == static_cast<const RenderObject*>(this))
+            w += borderLeft() + paddingLeft() + marginLeft();
+        if(from + len == int(str->l) &&
+           m_parent->lastChild() == static_cast<const RenderObject*>(this))
+            w += borderRight() + paddingRight() +marginRight();;
     }
 
     //kdDebug( 6040 ) << "RenderText::width(" << from << ", " << len << ") = " << w << endl;
