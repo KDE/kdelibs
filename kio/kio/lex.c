@@ -28,6 +28,7 @@
 #define YY_FLEX_MINOR_VERSION 5
 
 #include <stdio.h>
+#include <unistd.h>
 
 
 /* cfront 1.2 defines "c_plusplus" instead of "__cplusplus" */
@@ -41,7 +42,6 @@
 #ifdef __cplusplus
 
 #include <stdlib.h>
-#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -753,42 +753,42 @@ YY_RULE_SETUP
 case 15:
 YY_RULE_SETUP
 #line 39 "lex.l"
-{ yylval.valb = 1; return BOOL; }
+{ yylval.valb = 1; return VAL_BOOL; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 40 "lex.l"
-{ yylval.valb = 0; return BOOL; }
+{ yylval.valb = 0; return VAL_BOOL; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 42 "lex.l"
-{ yylval.name = KTraderParse_putString( yytext ); return STRING; }
+{ yylval.name = KTraderParse_putString( yytext ); return VAL_STRING; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 44 "lex.l"
-{ yylval.vali = atoi( yytext ); return NUM; }
+{ yylval.vali = atoi( yytext ); return VAL_NUM; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 45 "lex.l"
-{ yylval.vali = atoi( yytext ); return NUM; }
+{ yylval.vali = atoi( yytext ); return VAL_NUM; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 47 "lex.l"
-{ yylval.vald = atof( yytext ); return FLOAT; }
+{ yylval.vald = atof( yytext ); return VAL_FLOAT; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 49 "lex.l"
-{ yylval.name = KTraderParse_putSymbolInBrackets( yytext ); return ID; }
+{ yylval.name = KTraderParse_putSymbolInBrackets( yytext ); return VAL_ID; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 51 "lex.l"
-{ yylval.name = KTraderParse_putSymbol( yytext ); return ID; }
+{ yylval.name = KTraderParse_putSymbol( yytext ); return VAL_ID; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
@@ -1369,11 +1369,6 @@ YY_BUFFER_STATE b;
 	}
 
 
-#ifndef YY_ALWAYS_INTERACTIVE
-#ifndef YY_NEVER_INTERACTIVE
-#include<unistd.h>
-#endif
-#endif
 
 #ifdef YY_USE_PROTOS
 void yy_init_buffer( YY_BUFFER_STATE b, FILE *file )

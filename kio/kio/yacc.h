@@ -1,4 +1,4 @@
-/* A Bison parser, made from yacc.y, by GNU bison 1.75.  */
+/* A Bison parser, made by GNU Bison 1.875.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
    Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
@@ -23,9 +23,6 @@
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef BISON_YACC_TAB_H
-# define BISON_YACC_TAB_H
-
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
@@ -45,11 +42,11 @@
      EXIST = 268,
      MAX = 269,
      MIN = 270,
-     BOOL = 271,
-     STRING = 272,
-     ID = 273,
-     NUM = 274,
-     FLOAT = 275
+     VAL_BOOL = 271,
+     VAL_STRING = 272,
+     VAL_ID = 273,
+     VAL_NUM = 274,
+     VAL_FLOAT = 275
    };
 #endif
 #define NOT 258
@@ -65,31 +62,32 @@
 #define EXIST 268
 #define MAX 269
 #define MIN 270
-#define BOOL 271
-#define STRING 272
-#define ID 273
-#define NUM 274
-#define FLOAT 275
+#define VAL_BOOL 271
+#define VAL_STRING 272
+#define VAL_ID 273
+#define VAL_NUM 274
+#define VAL_FLOAT 275
 
 
 
 
-#ifndef YYSTYPE
+#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
 #line 13 "yacc.y"
-typedef union {
+typedef union YYSTYPE {
      char valb;
      int vali;
      double vald;
      char *name;
      void *ptr;
-} yystype;
-/* Line 1281 of /usr/share/bison/yacc.c.  */
-#line 88 "yacc.tab.h"
-# define YYSTYPE yystype
+} YYSTYPE;
+/* Line 1240 of yacc.c.  */
+#line 84 "yacc.tab.h"
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE kiotraderlval;
 
 
-#endif /* not BISON_YACC_TAB_H */
 
