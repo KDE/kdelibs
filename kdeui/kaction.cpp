@@ -30,6 +30,7 @@
 #include <kconfig.h>
 #include <kurl.h>
 #include <qtl.h>
+#include <qptrdict.h>
 #include <qfontdatabase.h>
 
 #include <kiconloader.h>
@@ -216,11 +217,37 @@ KAction::~KAction()
 
 bool KAction::isPlugged() const
 {
-	  if (d->m_kaccel)
-      return true;
-    else
-      return ( containerCount() > 0 );
+  if (d->m_kaccel)
+    return true;
+  else
+    return ( containerCount() > 0 );
 }
+
+bool KAction::isPlugged( QWidget *container, int id ) const
+{
+  int i = findContainer( container );
+  
+  if ( i == -1 )
+    return false;
+  
+  if ( menuId( i ) != id )
+    return false;
+  
+  return true;
+} 
+
+bool KAction::isPlugged( QWidget *container, QWidget *_representative ) const
+{
+  int i = findContainer( container );
+  
+  if ( i == -1 )
+    return false;
+  
+  if ( representative( i ) != _representative )
+    return false;
+  
+  return true;
+} 
 
 QObject* KAction::component()
 {
@@ -327,6 +354,8 @@ QString KAction::shortText() const
 
 int KAction::plug( QWidget *w, int index )
 {
+  KActionCollection *p = parentCollection();
+ 
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = (QPopupMenu*)w;
@@ -353,6 +382,9 @@ int KAction::plug( QWidget *w, int index )
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
+    if ( p )
+      p->connectHighlight( menu, this );
+    
     return d->m_containers.count() - 1;
   }
   else if ( w->inherits( "KToolBar" ) )
@@ -376,6 +408,9 @@ int KAction::plug( QWidget *w, int index )
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+    
+    if ( p )
+      p->connectHighlight( bar, this );
 
     return containerCount() - 1;
   }
@@ -385,6 +420,7 @@ int KAction::plug( QWidget *w, int index )
 
 void KAction::unplug( QWidget *w )
 {
+  KActionCollection *p = parentCollection(); 
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = (QPopupMenu*)w;
@@ -393,6 +429,8 @@ void KAction::unplug( QWidget *w )
     {
       menu->removeItem( menuId( i ) );
       removeContainer( i );
+      if ( p )
+        p->disconnectHighlight( menu, this );
     }
   }
   else if ( w->inherits( "KToolBar" ) )
@@ -405,6 +443,8 @@ void KAction::unplug( QWidget *w )
     {
       bar->removeItem( menuId( idx ) );
       removeContainer( idx );
+      if ( p )
+        p->disconnectHighlight( bar, this );
     }
 
     return;
@@ -596,7 +636,7 @@ QWidget* KAction::container( int index )
   return d->m_containers[ index ].m_container;
 }
 
-KToolBar* KAction::toolBar( int index )
+KToolBar* KAction::toolBar( int index ) const
 {
   QWidget* w = d->m_containers[ index ].m_container;
   if ( !w || !w->inherits( "KToolBar" ) )
@@ -605,7 +645,7 @@ KToolBar* KAction::toolBar( int index )
   return (KToolBar*)w;
 }
 
-QPopupMenu* KAction::popupMenu( int index )
+QPopupMenu* KAction::popupMenu( int index ) const
 {
   QWidget* w = d->m_containers[ index ].m_container;
   if ( !w || !w->inherits( "QPopupMenu" ) )
@@ -614,12 +654,12 @@ QPopupMenu* KAction::popupMenu( int index )
   return (QPopupMenu*)w;
 }
 
-QWidget* KAction::representative( int index )
+QWidget* KAction::representative( int index ) const
 {
   return d->m_containers[ index ].m_representative;
 }
 
-int KAction::menuId( int index )
+int KAction::menuId( int index ) const
 {
   return d->m_containers[ index ].m_id;
 }
@@ -666,7 +706,7 @@ void KAction::slotDestroyed()
   } while ( i != -1 );
 }
 
-int KAction::findContainer( QWidget* widget )
+int KAction::findContainer( QWidget* widget ) const
 {
   int pos = 0;
   QValueList<KActionPrivate::Container>::Iterator it = d->m_containers.begin();
@@ -701,6 +741,19 @@ void KAction::slotKeycodeChanged()
 {
   setAccel(d->m_kaccel->currentKey(name()));
 }
+
+KActionCollection *KAction::parentCollection() const
+{
+  QObject *p = parent();
+  
+  if ( !p )
+    return 0;
+  
+  if ( !p->inherits( "KActionCollection" ) )
+    return 0;
+  
+  return static_cast<KActionCollection *>( p );
+} 
 
 class KToggleAction::KToggleActionPrivate
 {
@@ -2130,12 +2183,16 @@ class KActionCollection::KActionCollectionPrivate
 public:
   KActionCollectionPrivate()
   {
+    m_dctHighlightContainers.setAutoDelete( true );
+    m_highlight = false;
   }
   ~KActionCollectionPrivate()
   {
   }
   KInstance *m_instance;
   QList<KAction> m_actions;
+  QPtrDict< QList<KAction> > m_dctHighlightContainers;
+  bool m_highlight;
 };
 
 KActionCollection::KActionCollection( QObject *parent, const char *name,
@@ -2318,6 +2375,79 @@ KInstance *KActionCollection::instance() const
 {
   return d->m_instance;
 }
+
+void KActionCollection::connectHighlight( QWidget *container, KAction *action )
+{
+  if ( !d->m_highlight )
+    return;
+ 
+  QList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  
+  if ( !actionList )
+  {
+    actionList = new QList<KAction>;
+    
+    // ugly hack ;-(
+    if ( container->inherits( "KToolBar" ) )
+      connect( container, SIGNAL( highlighted( int, bool ) ),
+	       this, SLOT( slotHighlighted( int ) ) );
+    else
+      connect( container, SIGNAL( highlighted( int ) ),
+	       this, SLOT( slotHighlighted( int ) ) );
+    
+    connect( container, SIGNAL( destroyed() ),
+	     this, SLOT( slotDestroyed() ) );
+    
+    d->m_dctHighlightContainers.insert( container, actionList );
+  }
+  
+  actionList->append( action );
+} 
+
+void KActionCollection::disconnectHighlight( QWidget *container, KAction *action )
+{
+  if ( !d->m_highlight )
+    return;
+ 
+  QList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  
+  if ( !actionList )
+    return;
+  
+  actionList->removeRef( action );
+  
+  if ( actionList->count() == 0 )
+    d->m_dctHighlightContainers.remove( container );
+}
+
+void KActionCollection::slotHighlighted( int id )
+{
+  if ( !d->m_highlight )
+    return;
+ 
+  const QWidget *container = (const QWidget *)sender();
+  
+  QList<KAction> *actionList = d->m_dctHighlightContainers[ (void *)container  ];
+  
+  if ( !actionList )
+    return;
+
+  //  qDebug( "highlight -- id is %i", id );
+  
+  QListIterator<KAction> it( *actionList );
+  for (; it.current(); ++it )
+    if ( it.current()->isPlugged( (QWidget *)container, id ) )
+    {
+    //      qDebug( "action highlighted: %s", it.current()->name() );
+      emit actionHighlighted( it.current() );
+      return;
+    }
+}
+
+void KActionCollection::slotDestroyed()
+{
+  d->m_dctHighlightContainers.remove( (void *)sender() );
+} 
 
 #include "kaction.moc"
 

@@ -37,6 +37,7 @@ class KConfig;
 class KURL;
 class KInstance;
 class KToolBar;
+class KActionCollection;
 
 /**
  * The KAction class (and derived and super classes) provide a way to
@@ -335,13 +336,27 @@ public:
     virtual void unplug( QWidget *w );
 	
     // DOCUMENT ME!
-	virtual void unplugAccel();
+    virtual void unplugAccel();
 	
-    // DOCUMENT ME!
-	virtual bool isPlugged() const;
+    /**
+     * returns whether the action is plugged into any container widget or not.
+     */
+    virtual bool isPlugged() const;
+
+    /**
+     * returns whether the action is plugged into the given container with the given, container specific, id (often
+     * menu or toolbar id ) .
+     */
+    virtual bool isPlugged( QWidget *container, int id ) const;
+
+    /**
+     * returns whether the action is plugged into the given container with the given, container specific, representative
+     * container widget item.
+     */
+    virtual bool isPlugged( QWidget *container, QWidget *_representative ) const;
 
     QWidget* container( int index );
-    QWidget* representative( int index );
+    QWidget* representative( int index ) const;
     int containerCount() const;
 
     virtual QPixmap pixmap() const;
@@ -379,6 +394,8 @@ public:
     virtual void setIcon( const QString& icon );
     virtual QString iconName() const;
 
+    KActionCollection *parentCollection() const;
+
     /**
      * @internal
      * Generate a toolbar button id. Made public for reimplementations.
@@ -391,11 +408,11 @@ protected slots:
     virtual void slotActivated();
 	
 protected:
-    KToolBar* toolBar( int index );
-    QPopupMenu* popupMenu( int index );
-    int menuId( int index );
+    KToolBar* toolBar( int index ) const;
+    QPopupMenu* popupMenu( int index ) const;
+    int menuId( int index ) const;
     void removeContainer( int index );
-    int findContainer( QWidget* widget );
+    int findContainer( QWidget* widget ) const;
 
     void addContainer( QWidget* parent, int id );
     void addContainer( QWidget* parent, QWidget* representative );
@@ -1215,12 +1232,24 @@ public:
   void setInstance( KInstance *instance );
   KInstance *instance() const;
 
+  void setHighlightingEnabled( bool enable );
+  bool highlightingEnabled() const;
+
+  void connectHighlight( QWidget *container, KAction *action );
+  void disconnectHighlight( QWidget *container, KAction *action );
+
 signals:
-    void inserted( KAction* );
-    void removed( KAction* );
+  void inserted( KAction* );
+  void removed( KAction* );
+
+  void actionHighlighted( KAction *action );
 
 protected:
     void childEvent( QChildEvent* );
+
+private slots:
+   void slotHighlighted( int id );
+   void slotDestroyed();
 
 private:
   class KActionCollectionPrivate;
