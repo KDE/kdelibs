@@ -664,7 +664,7 @@ KAction *KStdAction::home(const QObject *recvr, const char *slot,
 KAction *KStdAction::prior(const QObject *recvr, const char *slot,
 						   QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Previous Page"), "prev",
+    return new KAction(i18n("&Previous Page"), "previous",
                        KStdAccel::key(KStdAccel::Prior), recvr, slot, parent,
                        name ? name : stdName(Prior));
 }
@@ -701,14 +701,16 @@ KAction *KStdAction::gotoLine(const QObject *recvr, const char *slot,
 KAction *KStdAction::firstPage(const QObject *recvr, const char *slot,
                                QObject *parent, const char *name )
 {
-    return new KAction(i18n("&First Page"), 0, recvr, slot, parent,
+    return new KAction(i18n("&First Page"), "top",
+                       0, recvr, slot, parent,
                        name ? name : stdName(FirstPage));
 }
 
 KAction *KStdAction::lastPage(const QObject *recvr, const char *slot,
                                QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Last Page"), 0, recvr, slot, parent,
+    return new KAction(i18n("&Last Page"), "bottom",
+                       0, recvr, slot, parent,
                        name ? name : stdName(LastPage));
 }
 
