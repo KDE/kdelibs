@@ -103,7 +103,7 @@ void KNewPanner::activate(QWidget *c0, QWidget *c1)
     pos= position;
     position=0;
 
-    setSeperatorPos(pos);
+    setSeparatorPos(pos);
 }
 
 void KNewPanner::deactivate()
@@ -205,7 +205,7 @@ void KNewPanner::setAbsSeparatorPos(int pos, bool do_resize)
 {
     pos= checkValue(pos);
 
-    if (pos != absSeperatorPos()) {
+    if (pos != absSeparatorPos()) {
       if (currentunits == Percent)
 	position= pos * 100 / (orientation == Vertical?width():height());
       else
@@ -241,28 +241,28 @@ void KNewPanner::resizeEvent(QResizeEvent*)
 {
   if (initialised) {
      if (orientation == Horizontal) {
-      child0->setGeometry(0, 0, width(), absSeperatorPos());
-      child1->setGeometry(0, absSeperatorPos()+4, width(), 
-			  height()-absSeperatorPos()-4);
-      divider->setGeometry(0, absSeperatorPos(), width(), 4);
+      child0->setGeometry(0, 0, width(), absSeparatorPos());
+      child1->setGeometry(0, absSeparatorPos()+4, width(), 
+			  height()-absSeparatorPos()-4);
+      divider->setGeometry(0, absSeparatorPos(), width(), 4);
     }
     else {
       if (showlabels) {
 	label0->move(0,0);
-	label0->resize(absSeperatorPos(), label0->height());
-	label1->move(absSeperatorPos()+4, 0);
-	label1->resize(width()-absSeperatorPos()-4, label1->height());
+	label0->resize(absSeparatorPos(), label0->height());
+	label1->move(absSeparatorPos()+4, 0);
+	label1->resize(width()-absSeparatorPos()-4, label1->height());
 	startHeight= label0->height();
       }
       else {
 	 startHeight= 0;
       }
-      child0->setGeometry(0, startHeight, absSeperatorPos(), 
+      child0->setGeometry(0, startHeight, absSepqratorPos(), 
 			  (height())-startHeight);
-      child1->setGeometry(absSeperatorPos()+4, startHeight,
-			  (width())-(absSeperatorPos()+4), 
+      child1->setGeometry(absSeparatorPos()+4, startHeight,
+			  (width())-(absSeparatorPos()+4), 
 			  (height())-startHeight);
-      divider->setGeometry(absSeperatorPos(), startHeight, 4, 
+      divider->setGeometry(absSeparatorPos(), startHeight, 4, 
 			   (height())-startHeight);
     }
   }
@@ -306,13 +306,13 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 	child0->setUpdatesEnabled(false);
 	child1->setUpdatesEnabled(false);
 	if (orientation == Horizontal) {
-	    setAbsSeperatorPos(divider->mapToParent(mev->pos()).y(), false);
-	    divider->setGeometry(0, absSeperatorPos(), width(), 4);
+	    setAbsSeparatorPos(divider->mapToParent(mev->pos()).y(), false);
+	    divider->setGeometry(0, absSeparatorPos(), width(), 4);
 	    divider->repaint(0);
 	}
 	else {
-	    setAbsSeperatorPos(divider->mapToParent(mev->pos()).x(), false);
-	    divider->setGeometry(absSeperatorPos(), 0, 4, height());
+	    setAbsSeparatorPos(divider->mapToParent(mev->pos()).x(), false);
+	    divider->setGeometry(absSeparatorPos(), 0, 4, height());
 	    divider->repaint(0);
 	}
 	handled= true;
