@@ -1,16 +1,13 @@
 INCLUDES = -I$(top_srcdir)/kabc -I$(top_builddir)/kabc $(all_includes)
 
 # these are the headers for your project
-noinst_HEADERS   = resourcenet.h resourcenetconfig.h
+noinst_HEADERS = resourcenet.h resourcenetconfig.h
 
 kde_module_LTLIBRARIES = kabc_net.la
 
 kabc_net_la_SOURCES = resourcenet.cpp resourcenetconfig.cpp
-
 kabc_net_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
-kabc_net_la_LIBADD	= ../../../kabc/libkabc.la \
-	../../../kdeui/libkdeui.la \
-	../../../kio/libkio.la
+kabc_net_la_LIBADD	= ../../../kabc/libkabc.la $(LIB_KDEUI) $(LIB_KIO)
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO

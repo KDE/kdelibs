@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
+    Copyright (c) 2003 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,26 +24,29 @@
 #include <kcombobox.h>
 #include <kurlrequester.h>
 
-#include "resourceconfigwidget.h"
+#include <kresources/configwidget.h>
 
 namespace KABC {
 
-class ResourceNetConfig : public ResourceConfigWidget
+class ResourceNetConfig : public KRES::ConfigWidget
 { 
   Q_OBJECT
 
-public:
-  ResourceNetConfig( QWidget* parent = 0, const char* name = 0 );
+  public:
+    ResourceNetConfig( QWidget* parent = 0, const char* name = 0 );
 
-public slots:
-  void loadSettings( KConfig *config );
-  void saveSettings( KConfig *config );
+    void setEditMode( bool value );
 
-private:
-  KComboBox* mFormatBox;
-  KURLRequester* mUrlEdit;
+  public slots:
+    void loadSettings( KRES::Resource *resource );
+    void saveSettings( KRES::Resource *resource );
 
-  QStringList mFormatTypes;
+  private:
+    KComboBox* mFormatBox;
+    KURLRequester* mUrlEdit;
+
+    QStringList mFormatTypes;
+    bool mInEditMode;
 };
 
 }

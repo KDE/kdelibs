@@ -1,3 +1,23 @@
+/*
+    This file is part of libkabc.
+    Copyright (c) 2003 Tobias Koenig <tokoe@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #include <qfile.h>
 
 #include <kdebug.h>
@@ -17,52 +37,52 @@ using namespace KABC;
 
 extern "C"
 {
-  ResourceConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue("kabc_net");
-    return new ResourceNetConfig( parent, "ResourceDirConfig" );
+  KRES::ConfigWidget *config_widget( QWidget *parent ) {
+    KGlobal::locale()->insertCatalogue( "kabc_net" );
+    return new ResourceNetConfig( parent, "ResourceNetConfig" );
   }
 
-  Resource *resource( AddressBook *ab, const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue("kabc_net");
-    return new ResourceNet( ab, config );
+  Resource *resource( const KConfig *config ) {
+    KGlobal::locale()->insertCatalogue( "kabc_net" );
+    return new ResourceNet( config );
   }
 }
 
-
-ResourceNet::ResourceNet( AddressBook *addressBook, const KConfig *config )
-    : Resource( addressBook )
+ResourceNet::ResourceNet( const KConfig *config )
+    : Resource( config ), mFormat( 0 )
 {
-  KURL url = config->readEntry( "NetUrl" );
-  QString type = config->readEntry( "NetFormat" );
+  KURL url;
+
+  if ( config ) {
+    url = config->readEntry( "NetUrl" );
+    mFormatName = config->readEntry( "NetFormat" );
+  } else {
+    url = "";
+    mFormatName = "vcard";
+  }
 
   FormatFactory *factory = FormatFactory::self();
-  FormatPlugin *format = factory->format( type );
+  mFormat = factory->format( mFormatName );
+  if ( !mFormat ) {
+    mFormatName = "vcard";
+    mFormat = factory->format( mFormatName );
+  }
 
-  init( url, format );
-}
-
-ResourceNet::ResourceNet( AddressBook *addressBook, const KURL &url,
-                          FormatPlugin *format ) :
-  Resource( addressBook )
-{
-  init( url, format );
+  setUrl( url );
 }
 
 ResourceNet::~ResourceNet()
 {
   delete mFormat;
+  mFormat = 0;
 }
 
-void ResourceNet::init( const KURL &url, FormatPlugin *format )
+void ResourceNet::writeConfig( KConfig *config )
 {
-  if ( !format ) {
-    FormatFactory *factory = FormatFactory::self();
-    mFormat = factory->format( "vcard" );
-  } else {
-    mFormat = format;
-  }
+  Resource::writeConfig( config );
 
-  setUrl( url );
+  config->writeEntry( "NetUrl", mUrl.url() );
+  config->writeEntry( "NetFormat", mFormatName );
 }
 
 Ticket *ResourceNet::requestSaveTicket()
@@ -72,92 +92,54 @@ Ticket *ResourceNet::requestSaveTicket()
   if ( !addressBook() )
     return 0;
 
+  if ( mTempFile.isEmpty() )
+    return 0;
+
   return createTicket( this );
 }
 
 
-bool ResourceNet::open()
+bool ResourceNet::doOpen()
 {
-  KIO::UDSEntryList entries;
-  if ( !KIO::NetAccess::listDir( mUrl, entries ) )
-    return false;
+  bool ok = KIO::NetAccess::download( mUrl, mTempFile );
 
-  return true;
+  if ( !ok )
+    qDebug( "Error: %s", KIO::NetAccess::lastErrorString().latin1() );
+
+  return ok;
 }
 
-void ResourceNet::close()
+void ResourceNet::doClose()
 {
+  KIO::NetAccess::removeTempFile( mTempFile );
 }
 
 bool ResourceNet::load()
 {
-  kdDebug(5700) << "ResourceNet::load(): '" << mUrl.url() << "'" << endl;
-
-  KIO::UDSEntryList entries;
-  if ( !KIO::NetAccess::listDir( mUrl, entries, false, false ) )
+  QFile file( mTempFile );
+  if ( !file.open( IO_ReadOnly ) ) {
+    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
     return false;
-
-  QStringList files = KIO::convertUDSEntryListToFileNames( entries );
-
-  QStringList::Iterator it;
-  bool ok = true;
-  for ( it = files.begin(); it != files.end(); ++it ) {
-    if ( (*it).endsWith( "/" ) ) // is a directory
-      continue;
-
-    QString tmpFile;
-    if ( KIO::NetAccess::download( mUrl.url() + "/" + (*it), tmpFile ) ) {
-      QFile file( tmpFile );
-      if ( !file.open( IO_ReadOnly ) ) {
-        addressBook()->error( i18n( "Unable to open file '%1' for reading" ).arg( file.name() ) );
-        ok = false;
-      } else {
-        if ( !mFormat->loadAll( addressBook(), this, &file ) )
-        ok = false;
-      }
-
-      KIO::NetAccess::removeTempFile( tmpFile );
-    } else {
-      addressBook()->error( i18n( "Unable to open URL '%1' for reading" ).arg( mUrl.url() + "/" + (*it) ) );
-      ok = false;
-    }
   }
 
-  return ok;
+  return mFormat->loadAll( addressBook(), this, &file );
 }
 
 bool ResourceNet::save( Ticket *ticket )
 {
-  kdDebug(5700) << "ResourceNet::save(): '" << mUrl.url() << "'" << endl;
+  QFile file( mTempFile );
 
-  AddressBook::Iterator it;
-  bool ok = true;
-
-  for ( it = addressBook()->begin(); it != addressBook()->end(); ++it ) {
-    if ( (*it).resource() != this || !(*it).changed() )
-      continue;
-
-    KTempFile tmpFile;
-    QFile *file = tmpFile.file();
-
-    mFormat->save( *it, file );
-
-    // mark as unchanged
-    (*it).setChanged( false );
-
-    tmpFile.close();
-
-    if ( !KIO::NetAccess::upload( tmpFile.name(), mUrl.url() + "/" + (*it).uid() ) ) {
-      addressBook()->error( i18n( "Unable to save URL '%1'" ).arg( mUrl.url() + "/" + (*it).uid() ) );
-      ok = false;
-    }
-
-    tmpFile.unlink();
+  if ( !file.open( IO_WriteOnly ) ) {
+    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
+    return false;
   }
+  
+  mFormat->saveAll( addressBook(), this, &file );
+  file.close();
 
   delete ticket;
 
-  return ok;
+  return KIO::NetAccess::upload( mTempFile, mUrl );
 }
 
 void ResourceNet::setUrl( const KURL &url )
@@ -170,14 +152,22 @@ KURL ResourceNet::url() const
   return mUrl;
 }
 
-QString ResourceNet::identifier() const
+void ResourceNet::setFormat( const QString &name )
 {
-    return url().url();
+  mFormatName = name;
+  if ( mFormat )
+    delete mFormat;
+  
+  FormatFactory *factory = FormatFactory::self();
+  mFormat = factory->format( mFormatName );
 }
 
-void ResourceNet::removeAddressee( const Addressee& addr )
+QString ResourceNet::format() const
 {
-  KIO::NetAccess::del( mUrl.url() + "/" + addr.uid() );
+  return mFormatName;
 }
 
-#include "resourcenet.moc"
+void ResourceNet::cleanUp()
+{
+  KIO::NetAccess::removeTempFile( mTempFile );
+}

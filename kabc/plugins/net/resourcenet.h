@@ -1,3 +1,23 @@
+/*
+    This file is part of libkabc.
+    Copyright (c) 2003 Tobias Koenig <tokoe@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #ifndef KABC_RESOURCENET_H
 #define KABC_RESOURCENET_H
 
@@ -16,51 +36,56 @@ class FormatPlugin;
 /**
   @internal
 */
-class ResourceNet : public QObject, public Resource
+class ResourceNet : public Resource
 {
-  Q_OBJECT
+  public:
+    ResourceNet( const KConfig* );
+    ~ResourceNet();
 
-public:
-  ResourceNet( AddressBook *, const KConfig * );
-  ResourceNet( AddressBook *, const KURL &url, FormatPlugin *format=0 );
-  ~ResourceNet();
+    virtual void writeConfig( KConfig* );
 
-  bool open();
-  void close();
+    virtual bool doOpen();
+    virtual void doClose();
   
-  Ticket *requestSaveTicket();
+    virtual Ticket *requestSaveTicket();
 
-  bool load();
-  bool save( Ticket * );
+    virtual bool load();
+    virtual bool save( Ticket* );
 
-  /**
-   * Set url of directory to be used for saving.
-   */
-  void setUrl( const KURL & );
+    /**
+      Set url of directory to be used for saving.
+     */
+    void setUrl( const KURL & );
 
-  /**
-   * Return url of directory used for loading and saving the address book.
-   */
-  KURL url() const;
+    /**
+      Return url of directory used for loading and saving the address book.
+     */
+    KURL url() const;
 
-  /**
-   * Returns a unique identifier.
-   */
-  virtual QString identifier() const;
+    /**
+      Sets a new format by name.
+     */
+    void setFormat( const QString &name );
 
-  /**
-   * Remove a addressee from its source.
-   * This method is mainly called by KABC::AddressBook.
-   */
-  void removeAddressee( const Addressee& addr );
+    /**
+      Returns the format name.
+     */
+    QString format() const;
 
-private:
-  void init( const KURL &url, FormatPlugin *format );
+    /**
+      This method is called by an error handler if the application
+      crashed
+     */
+    virtual void cleanUp();
 
-  FormatPlugin *mFormat;
+  private:
+    FormatPlugin *mFormat;
+    QString mFormatName;
 
-  KURL mUrl;
+    KURL mUrl;
+    QString mTempFile;
 };
 
 }
+
 #endif

@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
+    Copyright (c) 2003 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,18 +21,19 @@
 #include <qlabel.h>
 #include <qlayout.h>
 
+#include <kdebug.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
 
 #include "formatfactory.h"
+#include "resourcenet.h"
 #include "stdaddressbook.h"
 
 #include "resourcenetconfig.h"
 
 using namespace KABC;
 
-ResourceNetConfig::ResourceNetConfig( QWidget* parent,  const char* name )
-    : ResourceConfigWidget( parent, name )
+ResourceNetConfig::ResourceNetConfig( QWidget* parent, const char* name )
+    : ConfigWidget( parent, name ), mInEditMode( false )
 {
   resize( 245, 115 ); 
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
@@ -62,20 +63,39 @@ ResourceNetConfig::ResourceNetConfig( QWidget* parent,  const char* name )
   }
 }
 
-void ResourceNetConfig::loadSettings( KConfig *config )
+void ResourceNetConfig::setEditMode( bool value )
 {
-  QString format = config->readEntry( "NetFormat" );
-  mFormatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
-
-  mUrlEdit->setURL( config->readEntry( "NetUrl" ) );    
-  if ( mUrlEdit->url().isEmpty() )
-    mUrlEdit->setURL( KABC::StdAddressBook::directoryName() );
+  mFormatBox->setEnabled( !value );
+  mInEditMode = value;
 }
 
-void ResourceNetConfig::saveSettings( KConfig *config )
+void ResourceNetConfig::loadSettings( KRES::Resource *res )
 {
-  config->writeEntry( "NetFormat", mFormatTypes[ mFormatBox->currentItem() ] );
-  config->writeEntry( "NetUrl", mUrlEdit->url() );
+  ResourceNet *resource = dynamic_cast<ResourceNet*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceNetConfig::loadSettings(): cast failed" << endl;
+    return;
+  }
+
+  mFormatBox->setCurrentItem( mFormatTypes.findIndex( resource->format() ) );
+
+  mUrlEdit->setURL( resource->url().url() );
+}
+
+void ResourceNetConfig::saveSettings( KRES::Resource *res )
+{
+  ResourceNet *resource = dynamic_cast<ResourceNet*>( res );
+  
+  if ( !resource ) {
+    kdDebug(5700) << "ResourceNetConfig::saveSettings(): cast failed" << endl;
+    return;
+  }
+
+  if ( !mInEditMode )
+    resource->setFormat( mFormatTypes[ mFormatBox->currentItem() ] );
+
+  resource->setUrl( mUrlEdit->url() );
 }
 
 #include "resourcenetconfig.moc"
