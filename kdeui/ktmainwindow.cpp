@@ -102,17 +102,9 @@ KTMainWindow::~KTMainWindow()
   if( kapp && kapp->topWidget() == this ){
     KTMainWindow* pTemp = 0;
     if( ( pTemp = memberList->getFirst() ) )
-      kapp->setTopWidget( pTemp );
-  }
-  if(kapp && memberList->isEmpty()){
-    // if there is no mainWidget left: bad luck
-	  // Matthias:
-    //        Nope, not bad luck. We should simply
-    //        exit the application in this case.
-
-    kapp->setTopWidget( 0 );
-    // No need to quit  here; user can decide or use lastWindowClosed
-    //kapp->quit();
+	kapp->setTopWidget( pTemp );
+    else
+	kapp->setTopWidget( 0 );
   }
   debug ("KTM destructor: end");
 }
