@@ -1683,6 +1683,7 @@ void KTreeList::start_rubberband(const QPoint& where)
   }
   // RB: Don't now, if this check is necessary
   if (!viewWidth() || !viewHeight()) return; 
+  if (!totalWidth() || !totalHeight()) return;
 
   // calculate the size of the rubberband rectangle
   rubber_width = viewWidth()*viewWidth()/totalWidth();
