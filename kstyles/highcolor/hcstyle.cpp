@@ -1257,7 +1257,7 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         toolbar = static_cast<QToolBar*>(btn->parent());
 
     if(!vSmall || !toolbar)
-        p->fillRect(x, y, w, h, g.brush(QColorGroup::Midlight));
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
     else
     {
         // sync with drawKToolBar
