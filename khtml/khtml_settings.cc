@@ -196,8 +196,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnableCSS" ) )
         m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
 
-    if ( reset || config->hasKey( "UserStyleSheet" ) )
-        m_userSheet = config->readEntry( "UserStyleSheet", "" );
+    if ( config->readBoolEntry( "UserStyleSheetEnabled", false ) == true ) {
+	if ( reset || config->hasKey( "UserStyleSheet" ) )
+	    m_userSheet = config->readEntry( "UserStyleSheet", "" );
+    }
   }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) {
