@@ -63,8 +63,8 @@ int main(int argc, char **argv)
   QString a,b,c,d,e,f;
 
   a = "fred";
-  b = "Lake.class";
-  c = "file:/dos/pcplus/java/lake/";
+  b = "BBGun_Brick.class";
+  c = "file:/build/kde/kdelibs/khtml/java/BBGun_Brick.class";
 
   KJavaAppletWidget *applet = new KJavaAppletWidget();
   CHECK_PTR( applet );
@@ -76,24 +76,13 @@ int main(int argc, char **argv)
 
   app.connectToKWM();
 
-  d = "image";
-  e = "arch.jpg";
-  applet->setParameter( d, e );
+  //  d = "image";
+  //  e = "arch.jpg";
+  //  applet->setParameter( d, e );
 
   applet->show();
 
   ////
-  KJavaAppletWidget *applet2 = new KJavaAppletWidget();
-  CHECK_PTR( applet2 );
-  QString g = "barney";
-  applet2->setAppletName( g );
-  applet2->setAppletClass( b );
-  applet2->setBaseURL( c );
-
-  applet2->create();
-  f = "wolf2.jpg";
-  applet2->setParameter( d, f );
-  applet2->show();
 
   app.exec();
 }

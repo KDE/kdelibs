@@ -1,4 +1,4 @@
-#include "kjavaprocess.h"
+#include "kjavaprocess.moc"
 
 KJavaProcess::KJavaProcess()
 {

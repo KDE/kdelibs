@@ -1,4 +1,4 @@
-#include <kjavaappletcontext.h>
+#include <kjavaappletcontext.moc>
 #include <kjavaappletserver.h>
 #include <kjavaapplet.h>
 

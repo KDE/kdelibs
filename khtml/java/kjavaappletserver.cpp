@@ -1,4 +1,4 @@
-#include <kjavaappletserver.h>
+#include <kjavaappletserver.moc>
 #include <kjavaprocess.h>
 
 KJavaAppletServer::KJavaAppletServer()

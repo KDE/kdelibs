@@ -1,4 +1,4 @@
-#include "kjavaappletwidget.h"
+#include "kjavaappletwidget.moc"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <qtimer.h>

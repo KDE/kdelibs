@@ -1,4 +1,4 @@
-#include "kjavaapplet.h"
+#include "kjavaapplet.moc"
 
 KJavaApplet::KJavaApplet( KJavaAppletContext *context )
 {
