@@ -178,8 +178,8 @@ namespace KNotifyClient
 	 * @param present The error message level, defaulting to "Default"
 	 * @param file The sound file to play if selected with present
 	 */
-	bool userEvent(const QString &text=0, int present=Default, int level=Default,
-	                      const QString &sound=0, const QString &file=0);
+	bool userEvent(const QString &text=QString::null, int present=Default, int level=Default,
+	                      const QString &sound=QString::null, const QString &file=QString::null);
 	
 	/**
 	 * This is a simple substitution for QApplication::beep().
