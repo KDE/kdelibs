@@ -808,13 +808,14 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		return true;
 	    break;
 	case CSSSelector::PseudoFirstChild: {
-		// first-child matches the first child that is an element!
-		DOM::NodeImpl *n = e->parentNode()->firstChild();
-		while( n && !n->isElementNode() )
-		    n = n->nextSibling();
-		if( n == e )
-		    return true;
+	    // first-child matches the first child that is an element!
+	    DOM::NodeImpl *n = e->parentNode()->firstChild();
+	    while( n && !n->isElementNode() )
+		n = n->nextSibling();
+	    if( n == e )
+		return true;
 	}
+	    break;
 	case CSSSelector::PseudoFirstLine:
 	    if ( subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LINE;
@@ -826,41 +827,41 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		dynamicPseudo=RenderStyle::FIRST_LETTER;
 		return true;
 	    }
-
+	    break;
 	case CSSSelector::PseudoLink:
-		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( encodedurl, e );
-		if ( pseudoState == PseudoLink )
-		    return true;
-		break;
+	    if ( pseudoState == PseudoUnknown )
+		checkPseudoState( encodedurl, e );
+	    if ( pseudoState == PseudoLink )
+		return true;
+	    break;
 	case CSSSelector::PseudoVisited:
-		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( encodedurl, e );
-		if ( pseudoState == PseudoVisited )
-		    return true;
-		break;
-	case CSSSelector::PseudoHover:
-	    selectorDynamicState |= StyleSelector::Hover;
+	    if ( pseudoState == PseudoUnknown )
+		checkPseudoState( encodedurl, e );
+	    if ( pseudoState == PseudoVisited )
+		return true;
+	    break;
 	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
 	    // to the element.
+	case CSSSelector::PseudoHover:
+	    selectorDynamicState |= StyleSelector::Hover;
 	    return true;
 	case CSSSelector::PseudoFocus:
 	    selectorDynamicState |= StyleSelector::Focus;
 	    return true;
 	case CSSSelector::PseudoActive:
-		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( encodedurl, e );
-		if ( pseudoState != PseudoNone ) {
-		    selectorDynamicState |= StyleSelector::Active;
-		    return true;
-		}
-		break;
+	    if ( pseudoState == PseudoUnknown )
+		checkPseudoState( encodedurl, e );
+	    if ( pseudoState != PseudoNone ) {
+		selectorDynamicState |= StyleSelector::Active;
+		return true;
+	    }
+	    break;
 	case CSSSelector::PseudoBefore:
-		dynamicPseudo = RenderStyle::BEFORE;
-		return true;
+	    dynamicPseudo = RenderStyle::BEFORE;
+	    return true;
 	case CSSSelector::PseudoAfter:
-		dynamicPseudo = RenderStyle::AFTER;
-		return true;
+	    dynamicPseudo = RenderStyle::AFTER;
+	    return true;
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
