@@ -456,35 +456,35 @@ static int tokenize( QStringList& tokens, const QString& str,
 }
 
 QString KStandardDirs::kde_default(const char *type) {
-    if (type == "data")
+    if (!strcmp(type, "data"))
 	return "share/apps/";
-    if (type == "html")
+    if (!strcmp(type, "html"))
 	return "share/doc/HTML/";
-    if (type == "icon")
+    if (!strcmp(type, "icon"))
 	return "share/icons/";
-    if (type == "config")
+    if (!strcmp(type, "config"))
 	return "share/config/";
-    if (type == "toolbar")
+    if (!strcmp(type, "toolbar"))
 	return "share/toolbar/";
-    if (type == "apps")
+    if (!strcmp(type, "apps"))
 	return "share/applnk/";
-    if (type == "sound")
+    if (!strcmp(type, "sound"))
 	return "share/sounds/";
-    if (type == "locale")
+    if (!strcmp(type, "locale"))
 	return "share/locale/";
-    if (type == "services")
+    if (!strcmp(type, "services"))
 	return "share/services/";
-    if (type == "servicetypes")
+    if (!strcmp(type, "servicetypes"))
 	return "share/servicetypes/";
-    if (type == "mime")
+    if (!strcmp(type, "mime"))
 	return "share/mimelnk/";
-    if (type == "cgi")
+    if (!strcmp(type, "cgi"))
 	return "cgi-bin/";
-    if (type == "wallpaper")
+    if (!strcmp(type, "wallpaper"))
 	return "share/wallpapers/";
-    if (type == "exe")
+    if (!strcmp(type, "exe"))
 	return "bin/";
-    if (type == "lib")
+    if (!strcmp(type, "lib"))
 	return "lib/";
     fatal("unknown resource type %s", type);
     return QString::null;
