@@ -26,6 +26,7 @@
 #include <qstringlist.h>
 #include <qvaluelist.h>
 #include <qpixmap.h>
+#include <kicontheme.h>
 
 #include <kurl.h>
 
@@ -105,7 +106,7 @@ public:
    * @p KIcon::ActiveState or @p KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  virtual QPixmap pixmap( int _group, int _force_size = 0, int _state = 0,
+  virtual QPixmap pixmap( KIcon::Group _group, int _force_size = 0, int _state = 0,
                           QString * _path = 0L ) const;
 
   /**
@@ -121,7 +122,7 @@ public:
    * KIcon::ActiveState or KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
+  virtual QPixmap pixmap( const KURL& _url, KIcon::Group _group, int _force_size = 0,
 	    int _state = 0, QString * _path = 0L ) const;
 
   /**
@@ -136,7 +137,7 @@ public:
    * KIcon::ActiveState or KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, int _group = 0,
+  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, KIcon::Group _group = KIcon::Desktop,
                                int _force_size = 0, int _state = 0, QString * _path = 0L );
 
 
@@ -359,7 +360,7 @@ public:
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
-  virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
+  virtual QPixmap pixmap( const KURL& _url, KIcon::Group _group, int _force_size = 0,
                           int _state = 0, QString * _path = 0L ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KURL& _url, bool _is_local ) const;
@@ -403,7 +404,7 @@ public:
   static pid_t run( const KURL& _url, bool _is_local );
 
 protected:
-  virtual QPixmap pixmap(int a, int b, int c, QString *d) const
+  virtual QPixmap pixmap(KIcon::Group a, int b, int c, QString *d) const
      { return KMimeType::pixmap(a, b, c, d); }
 
   static pid_t runFSDevice( const KURL& _url, const KSimpleConfig &cfg );

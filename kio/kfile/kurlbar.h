@@ -55,7 +55,7 @@ public:
     KURLBarItem( KURLBar *parent, const KURL& url,
                  const QString& description = QString::null,
                  const QString& icon = QString::null,
-                 int group = KIcon::Panel );
+                 KIcon::Group group = KIcon::Panel );
     /**
      * Destroys the item
      */
@@ -72,7 +72,7 @@ public:
      * of the icon groups.
      * @see #icon
      */
-    void setIcon( const QString& icon, int group = KIcon::Panel );
+    void setIcon( const QString& icon, KIcon::Group group = KIcon::Panel );
     /**
      * Sets the description of this item that will be shown as item-text.
      * @see #description
@@ -117,7 +117,7 @@ public:
      * returns the icon-group of this item (determines icon-effects).
      * @see #setIcon
      */
-    int iconGroup() const                       { return m_group; }
+    KIcon::Group iconGroup() const                       { return m_group; }
     /**
      * returns the pixmap  of this item.
      */
@@ -148,7 +148,7 @@ private:
     QString m_icon;
     QString m_toolTip;
     QPixmap m_pixmap;
-    int m_group;
+    KIcon::Group m_group;
     KURLBar *m_parent;
     bool m_appLocal :1;
 
@@ -216,7 +216,7 @@ public:
                                       const QString& description,
                                       bool applicationLocal = true,
                                       const QString& icon = QString::null,
-                                      int group = KIcon::Panel );
+                                      KIcon::Group group = KIcon::Panel );
     /**
      * The items can be arranged either vertically in one column or
      * horizontally in one row.

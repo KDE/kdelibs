@@ -69,7 +69,7 @@ private:
 
 KURLBarItem::KURLBarItem( KURLBar *parent,
                           const KURL& url, const QString& description,
-                          const QString& icon, int group )
+                          const QString& icon, KIcon::Group group )
     : QListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap( 0L ),
@@ -92,7 +92,7 @@ void KURLBarItem::setURL( const KURL& url )
         setText( url.fileName() );
 }
 
-void KURLBarItem::setIcon( const QString& icon, int group )
+void KURLBarItem::setIcon( const QString& icon, KIcon::Group group )
 {
     m_icon  = icon;
     m_group = group;
@@ -234,7 +234,7 @@ KURLBar::~KURLBar()
 
 KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
                                   bool applicationLocal,
-                                  const QString& icon, int group )
+                                  const QString& icon, KIcon::Group group )
 {
     KURLBarItem *item = new KURLBarItem(this, url, description, icon, group);
     item->setApplicationLocal( applicationLocal );
@@ -425,7 +425,8 @@ void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
                 config->readEntry( QString("Description_") + number ),
                 applicationLocal,
                 config->readEntry( QString("Icon_") + number ),
-                config->readNumEntry( QString("IconGroup_") + number ) );
+                static_cast<KIcon::Group>(
+                    config->readNumEntry( QString("IconGroup_") + number )) );
 }
 
 void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )

@@ -210,7 +210,9 @@ KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent,
 
 void KIconDialog::init()
 {
-    mGroup = mContext = mType = 0;
+    mGroup = KIcon::Desktop;
+    mContext = KIcon::Any;
+    mType = 0;
     mFileList = KGlobal::dirs()->findAllResources("appicon", QString::fromLatin1("*.png"));
 
     QWidget *main = new QWidget( this );
@@ -309,7 +311,7 @@ bool KIconDialog::strictIconSize() const
     return d->m_bStrictIconSize;
 }
 
-QString KIconDialog::selectIcon(int group, int context, bool user)
+QString KIconDialog::selectIcon(KIcon::Group group, KIcon::Context context, bool user)
 {
     mGroup = group;
     mType = user ? 1 : 0;
@@ -335,7 +337,7 @@ QString KIconDialog::selectIcon(int group, int context, bool user)
     return QString::null;
 }
 
-QString KIconDialog::getIcon(int group, int context,
+QString KIconDialog::getIcon(KIcon::Group group, KIcon::Context context,
                              bool strictIconSize, bool user,
                              QWidget *parent, const QString &caption)
 {
@@ -385,7 +387,7 @@ void KIconDialog::slotButtonClicked(int id)
 
 void KIconDialog::slotContext(int id)
 {
-    mContext = id+1;
+    mContext = static_cast<KIcon::Context>(id+1);
     showIcons();
 }
 
@@ -469,7 +471,7 @@ bool KIconButton::strictIconSize() const
     return d->m_bStrictIconSize;
 }
 
-void KIconButton::setIconType(int group, int context, bool user)
+void KIconButton::setIconType(KIcon::Group group, KIcon::Context context, bool user)
 {
     mGroup = group;
     mContext = context;

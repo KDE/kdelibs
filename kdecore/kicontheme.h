@@ -39,12 +39,12 @@ public:
     bool isValid() const { return size != 0; }
 
     enum Context { Any, Action, Application, Device, FileSystem, MimeType };
-    enum Types { Fixed, Scalable, Threshold };
+    enum Type { Fixed, Scalable, Threshold };
     enum MatchType { MatchExact, MatchBest };
     // if you add a group here, make sure to change the config reading in
     // KIconLoader too
-    enum Group { NoGroup=-1, Desktop=0, Toolbar, MainToolbar, Small,
-	         Panel, LastGroup, User };
+    enum Group { NoGroup=-1, Desktop=0, FirstGroup=Desktop, Toolbar,
+        MainToolbar, Small, Panel, LastGroup, User };
     enum StdSizes { SizeSmall=16, SizeMedium=32, SizeLarge=48 };
     enum States { DefaultState, ActiveState, DisabledState, LastState };
     enum Overlays { LockOverlay=0x100, ZipOverlay=0x200, LinkOverlay=0x400,
@@ -54,10 +54,10 @@ public:
     int size;
 
     /** The context of the icon. */
-    int context;
+    Context context;
 
     /** The type of the icon: Fixed, Scalable or Threshold. */
-    int type;
+    Type type;
 
     /** The threshold in case type == Threshold */
     int threshold;
@@ -69,6 +69,8 @@ private:
     KIconPrivate *d;
 };
 
+inline KIcon::Group& operator++(KIcon::Group& group) { group = static_cast<KIcon::Group>(group+1); return group; }
+inline KIcon::Group operator++(KIcon::Group& group,int) { KIcon::Group ret = group; ++group; return ret; }
 
 /**
  * Class to use/access icon themes in KDE. This class is used by the
@@ -119,16 +121,16 @@ public:
      * @param group The icon group. See @ref #KIcon::Group.
      * @return The default size in pixels for the given icon group.
      */
-    int defaultSize(int group) const;
+    int defaultSize(KIcon::Group group) const;
 
     /** Query available sizes for a group. */
-    QValueList<int> querySizes(int group) const;
+    QValueList<int> querySizes(KIcon::Group group) const;
 
     /** Query available icons for a size and context. */
-    QStringList queryIcons(int size, int context = KIcon::Any) const;
+    QStringList queryIcons(int size, KIcon::Context context = KIcon::Any) const;
 
     /** Query available icons for a context and preferred size. */
-    QStringList queryIconsByContext(int size, int context = KIcon::Any) const;
+    QStringList queryIconsByContext(int size, KIcon::Context context = KIcon::Any) const;
 
 
     /** Lookup an icon in the theme.
@@ -140,7 +142,7 @@ public:
      * @return A KIcon class that describes the icon. If an icon is found,
      * @ref #KIcon::isValid will return true, and false otherwise.
      */
-    KIcon iconPath(const QString& name, int size, int match) const;
+    KIcon iconPath(const QString& name, int size, KIcon::MatchType match) const;
 
     /** List all icon themes installed on the system, global and local. */
     static QStringList list();

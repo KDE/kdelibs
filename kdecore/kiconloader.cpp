@@ -50,9 +50,9 @@ public:
     KIconThemeNode(KIconTheme *_theme);
     ~KIconThemeNode();
 
-    void queryIcons(QStringList *lst, int size, int context) const;
-    void queryIconsByContext(QStringList *lst, int size, int context) const;
-    KIcon findIcon(const QString& name, int size, int match) const;
+    void queryIcons(QStringList *lst, int size, KIcon::Context context) const;
+    void queryIconsByContext(QStringList *lst, int size, KIcon::Context context) const;
+    KIcon findIcon(const QString& name, int size, KIcon::MatchType match) const;
     void printTree(QString& dbgString) const;
 
     KIconTheme *theme;
@@ -86,7 +86,7 @@ void KIconThemeNode::printTree(QString& dbgString) const
 }
 
 void KIconThemeNode::queryIcons(QStringList *result,
-				int size, int context) const
+				int size, KIcon::Context context) const
 {
     // add the icons of this theme to it
     *result += theme->queryIcons(size, context);
@@ -96,7 +96,7 @@ void KIconThemeNode::queryIcons(QStringList *result,
 }
 
 void KIconThemeNode::queryIconsByContext(QStringList *result,
-				int size, int context) const
+				int size, KIcon::Context context) const
 {
     // add the icons of this theme to it
     *result += theme->queryIconsByContext(size, context);
@@ -106,7 +106,7 @@ void KIconThemeNode::queryIconsByContext(QStringList *result,
 }
 
 KIcon KIconThemeNode::findIcon(const QString& name, int size,
-			       int match) const
+			       KIcon::MatchType match) const
 {
     KIcon icon;
     icon = theme->iconPath(name, size, match);
@@ -211,7 +211,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 
     // loading config and default sizes
     d->mpGroups = new KIconGroup[(int) KIcon::LastGroup];
-    for (int i=0; i<KIcon::LastGroup; i++)
+    for (KIcon::Group i=KIcon::FirstGroup; i<KIcon::LastGroup; i++)
     {
 	if (groups[i] == 0L)
 	    break;
@@ -393,7 +393,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     return icon.path;
 }
 
-QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
+QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size,
 	int state, QString *path_store, bool canReturnNull) const
 {
     QString name = _name;
@@ -451,7 +451,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
-	group = 0;
+	group = KIcon::Desktop;
     }
 
     int overlay = (state & KIcon::OverlayMask);
@@ -459,13 +459,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     if ((state < 0) || (state >= KIcon::LastState))
     {
 	kdDebug(264) << "Illegal icon state: " << state << "\n";
-	state = 0;
+	state = KIcon::DefaultState;
     }
 
     if ((size == 0) && (group < 0))
     {
 	kdDebug(264) << "Neither size nor group specified!\n";
-	group = 0;
+	group = KIcon::Desktop;
     }
 
     static const QString &png_ext = KGlobal::staticQString(".png");
@@ -653,7 +653,7 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 
 
 
-QMovie KIconLoader::loadMovie(const QString& name, int group, int size) const
+QMovie KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size) const
 {
     QString file = moviePath( name, group, size );
     if (file.isEmpty())
@@ -661,19 +661,19 @@ QMovie KIconLoader::loadMovie(const QString& name, int group, int size) const
     return QMovie(file);
 }
 
-QString KIconLoader::moviePath(const QString& name, int group, int size) const
+QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size) const
 {
     if (!d->mpGroups) return QString::null;
 
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
-	group = 0;
+	group = KIcon::Desktop;
     }
     if ((size == 0) && (group < 0))
     {
 	kdDebug(264) << "Neither size nor group specified!\n";
-	group = 0;
+	group = KIcon::Desktop;
     }
 
     QString file = name + ".mng";
@@ -699,7 +699,7 @@ QString KIconLoader::moviePath(const QString& name, int group, int size) const
 }
 
 
-QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) const
+QStringList KIconLoader::loadAnimated(const QString& name, KIcon::Group group, int size) const
 {
     QStringList lst;
 
@@ -708,12 +708,12 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
-	group = 0;
+	group = KIcon::Desktop;
     }
     if ((size == 0) && (group < 0))
     {
 	kdDebug(264) << "Neither size nor group specified!\n";
-	group = 0;
+	group = KIcon::Desktop;
     }
 
     QString file = name + "/0001";
@@ -756,7 +756,7 @@ KIconTheme *KIconLoader::theme() const
     return 0L;
 }
 
-int KIconLoader::currentSize(int group) const
+int KIconLoader::currentSize(KIcon::Group group) const
 {
     if (!d->mpGroups) return -1;
 
@@ -769,7 +769,7 @@ int KIconLoader::currentSize(int group) const
 }
 
 QStringList KIconLoader::queryIconsByContext(int group_or_size,
-					    int context) const
+					    KIcon::Context context) const
 {
     QStringList result;
     if (group_or_size >= KIcon::LastGroup)
@@ -805,7 +805,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
 
 }
 
-QStringList KIconLoader::queryIcons(int group_or_size, int context) const
+QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) const
 {
     QStringList result;
     if (group_or_size >= KIcon::LastGroup)
@@ -845,7 +845,7 @@ KIconEffect * KIconLoader::iconEffect() const
     return &d->mpEffect;
 }
 
-bool KIconLoader::alphaBlending(int group) const
+bool KIconLoader::alphaBlending(KIcon::Group group) const
 {
     if (!d->mpGroups) return -1;
 
@@ -857,18 +857,19 @@ bool KIconLoader::alphaBlending(int group) const
     return d->mpGroups[group].alphaBlending;
 }
 
-QIconSet KIconLoader::loadIconSet(const QString& name, int group, int size)
+QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int size)
 {
     QIconSet iconset;
-    iconset.setPixmap(
-	loadIcon(name, group, size, KIcon::ActiveState) ,
-	QIconSet::Automatic, QIconSet::Active );
-    iconset.setPixmap(
-	loadIcon(name, group, size, KIcon::DisabledState) ,
-	QIconSet::Automatic, QIconSet::Disabled );
-    iconset.setPixmap(
-	loadIcon(name, group, size, KIcon::DefaultState) ,
-	QIconSet::Automatic, QIconSet::Normal );
+    QPixmap tmp = loadIcon(name, group, size, KIcon::ActiveState);
+    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Active );
+    // we don't use QIconSet's resizing anyway
+    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Active );
+    tmp = loadIcon(name, group, size, KIcon::DisabledState);
+    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Disabled );
+    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Disabled );
+    tmp = loadIcon(name, group, size, KIcon::DefaultState);
+    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Normal );
+    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Normal );
     return iconset;
 }
 
@@ -963,7 +964,7 @@ QIconSet UserIconSet(const QString& name, KInstance *instance)
     return loader->loadIconSet( name, KIcon::User );
 }
 
-int IconSize(int group, KInstance *instance)
+int IconSize(KIcon::Group group, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
     return loader->currentSize(group);

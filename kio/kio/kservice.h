@@ -23,6 +23,7 @@
 #include <qstringlist.h>
 #include <qmap.h>
 #include <qvariant.h>
+#include <kicontheme.h>
 
 #include "ksycocaentry.h"
 
@@ -105,7 +106,7 @@ public:
   /**
    * @return a pixmap for this service (finds and loads icon())
    */
-  QPixmap pixmap( int _group, int _force_size = 0, int _state = 0,
+  QPixmap pixmap( KIcon::Group _group, int _force_size = 0, int _state = 0,
                   QString * _path = 0L ) const;
   /**
    * @return true if the service is to be run in a terminal.

@@ -116,7 +116,7 @@ public:
      * @param canReturnNull Can return a null pixmap? If false, the
      * "unknown" pixmap is returned when no appropriate icon has been found.
      */
-    QPixmap loadIcon(const QString& name, int group, int size=0,
+    QPixmap loadIcon(const QString& name, KIcon::Group group, int size=0,
 		     int state=KIcon::DefaultState, QString *path_store=0L,
 		     bool canReturnNull=false) const;
 
@@ -129,7 +129,7 @@ public:
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
      */
-    QIconSet loadIconSet(const QString& name, int group, int size=0);
+    QIconSet loadIconSet(const QString& name, KIcon::Group group, int size=0);
 
     /**
      * Returns the path of an icon.
@@ -149,7 +149,7 @@ public:
      * @param size Override the default size for @p group.
      * @return A QMovie object.
      */
-    QMovie loadMovie(const QString& name, int group, int size=0) const;
+    QMovie loadMovie(const QString& name, KIcon::Group group, int size=0) const;
     
     /**
      * Returns the path to an animated icon.
@@ -159,7 +159,7 @@ public:
      * @return the full path to the movie, ready to be passed to QMovie's constructor.
      * Empty string if not found.
      */
-    QString moviePath(const QString& name, int group, int size) const;
+    QString moviePath(const QString& name, KIcon::Group group, int size=0) const;
 
     /**
      * Loads an animated icon. In the future, this will be replaced by a
@@ -170,7 +170,7 @@ public:
      * @return A QStringList containing the absolute path of all the frames
      * making up the animation.
      */
-    QStringList loadAnimated(const QString& name, int group, int size=0) const;
+    QStringList loadAnimated(const QString& name, KIcon::Group group, int size=0) const;
 
     /**
      * Queries all available icons for a specific group, having a specific
@@ -178,7 +178,7 @@ public:
      * @param group_or_size The icon group or size. See @ref #iconPath.
      * @param context The icon context.
      */
-    QStringList queryIcons(int group_or_size, int context=KIcon::Any) const;
+    QStringList queryIcons(int group_or_size, KIcon::Context context=KIcon::Any) const;
 
     /**
      * Queries all available icons for a specific context.
@@ -190,12 +190,12 @@ public:
      * available for that context
      */
     QStringList queryIconsByContext(int group_or_size,
-				    int context=KIcon::Any) const;
+				    KIcon::Context context=KIcon::Any) const;
 
     /**
      * @return the current size for an icon group.
      */
-    int currentSize(int group) const;
+    int currentSize(KIcon::Group group) const;
 
     /**
      * Returns a pointer to the current theme. Can be used to query
@@ -223,7 +223,7 @@ public:
      * Returns if the user wants to use blend the icons with the background
      *  using the alpha channel information for a given group.
      */
-    bool alphaBlending( int group ) const;
+    bool alphaBlending( KIcon::Group group ) const;
 
  private:
     /**
@@ -321,6 +321,6 @@ QIconSet UserIconSet(const QString& name,
 	KInstance *instance=KGlobal::instance());
 
 /** Returns the current icon size for a specific group.  */
-int IconSize(int group, KInstance *instance=KGlobal::instance());
+int IconSize(KIcon::Group group, KInstance *instance=KGlobal::instance());
 
 #endif // __KIconLoader_h_Included__

@@ -236,7 +236,7 @@ KService::~KService()
   //debug("KService::~KService()");
 }
 
-QPixmap KService::pixmap( int _group, int _force_size, int _state, QString * _path ) const
+QPixmap KService::pixmap( KIcon::Group _group, int _force_size, int _state, QString * _path ) const
 {
   return KGlobal::iconLoader()->loadIcon( m_strIcon, _group, _force_size, _state, _path );
 }

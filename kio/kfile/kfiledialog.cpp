@@ -1087,7 +1087,7 @@ void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu,
     {
         if ( bm->getType() == KFileBookmark::URL )
         {
-            QPixmap pix = KMimeType::pixmapForURL( bm->getURL(), 0, 0,
+            QPixmap pix = KMimeType::pixmapForURL( bm->getURL(), 0, KIcon::Desktop,
 						   KIcon::SizeSmall );
             if ( !pix.isNull() )
               menu->insertItem( pix, bm->getText(), id );

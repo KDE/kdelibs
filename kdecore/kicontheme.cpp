@@ -55,8 +55,8 @@ public:
     QStringList iconList() const;
     QString dir() const { return mDir; }
 
-    int context() const { return mContext; }
-    int type() const { return mType; }
+    KIcon::Context context() const { return mContext; }
+    KIcon::Type type() const { return mType; }
     int size() const { return mSize; }
     int minSize() const { return mMinSize; }
     int maxSize() const { return mMaxSize; }
@@ -64,8 +64,9 @@ public:
 
 private:
     bool mbValid;
-    int mType, mSize, mContext;
-    int mMinSize, mMaxSize;
+    KIcon::Type mType;
+    KIcon::Context mContext;
+    int mSize, mMinSize, mMaxSize;
     int mThreshold;
 
     QString mDir;
@@ -160,7 +161,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "MainToolbar";
     groups += "Small";
     groups += "Panel";
-    int defDefSizes[] = { 32, 22, 22, 16, 32 };
+    const int defDefSizes[] = { 32, 22, 22, 16, 32 };
     cfg.setGroup("KDE Icon Theme");
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
@@ -195,7 +196,7 @@ QString KIconTheme::linkOverlay() const { return d->linkOverlay; }
 QString KIconTheme::lockOverlay() const { return d->lockOverlay; }
 QString KIconTheme::zipOverlay() const { return d->zipOverlay; }
 
-int KIconTheme::defaultSize(int group) const
+int KIconTheme::defaultSize(KIcon::Group group) const
 {
     if ((group < 0) || (group >= KIcon::LastGroup))
     {
@@ -205,7 +206,7 @@ int KIconTheme::defaultSize(int group) const
     return mDefSize[group];
 }
 
-QValueList<int> KIconTheme::querySizes(int group) const
+QValueList<int> KIconTheme::querySizes(KIcon::Group group) const
 {
     QValueList<int> empty;
     if ((group < 0) || (group >= KIcon::LastGroup))
@@ -216,7 +217,7 @@ QValueList<int> KIconTheme::querySizes(int group) const
     return mSizes[group];
 }
 
-QStringList KIconTheme::queryIcons(int size, int context) const
+QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
 {
     int delta = 1000, dw;
 
@@ -258,7 +259,7 @@ QStringList KIconTheme::queryIcons(int size, int context) const
     return best->iconList();
 }
 
-QStringList KIconTheme::queryIconsByContext(int size, int context) const
+QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) const
 {
     QPtrListIterator<KIconThemeDir> dirs(mDirs);
     int dw;
@@ -286,7 +287,7 @@ QStringList KIconTheme::queryIconsByContext(int size, int context) const
     return iconlistResult;
 }
 
-KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
+KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match) const
 {
     KIcon icon;
     QString path;

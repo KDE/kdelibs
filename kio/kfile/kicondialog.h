@@ -113,7 +113,7 @@ public:
     /**
      * @deprecated in KDE 3.0, use the static method getIcon instead.
      */
-    QString selectIcon(int group=KIcon::Desktop, int
+    QString selectIcon(KIcon::Group group=KIcon::Desktop, KIcon::Context
 	    context=KIcon::Application, bool user=false);
 
     /**
@@ -131,7 +131,7 @@ public:
      * @return The name of the icon, suitable for loading with KIconLoader.
      * @version New in 3.0
      */
-    static QString getIcon(int group=KIcon::Desktop, int context=KIcon::Application,
+    static QString getIcon(KIcon::Group group=KIcon::Desktop, KIcon::Context context=KIcon::Application,
                            bool strictIconSize=false, bool user=false,
                            QWidget *parent=0, const QString &caption=QString::null);
 
@@ -146,7 +146,9 @@ private:
     void init();
     void showIcons();
 
-    int mGroup, mContext, mType;
+    KIcon::Group mGroup;
+    KIcon::Context mContext;
+    int mType;
 
     QStringList mFileList;
     QComboBox *mpCombo;
@@ -202,7 +204,7 @@ public:
      * Sets the icon group and context. Use KIcon::NoGroup if you want to
      * allow icons for any group in the given context.
      */
-    void setIconType(int group, int context, bool user=false);
+    void setIconType(KIcon::Group group, KIcon::Context context, bool user=false);
 
     /**
      * Sets the button's initial icon.
@@ -230,7 +232,8 @@ private slots:
 
 private:
     bool mbUser;
-    int mGroup, mContext;
+    KIcon::Group mGroup;
+    KIcon::Context mContext;
 
     QString mIcon;
     KIconDialog *mpDialog;
