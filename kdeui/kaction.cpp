@@ -122,8 +122,10 @@ KAction::KAction( const QString& text, int accel, QObject* parent,
     d = new KActionPrivate;
 
     m_parentCollection = parentCollection();
-    if ( m_parentCollection )
+    if ( m_parentCollection ) {
+        d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
+    }
 
     setAccel( accel );
     setText( text );
@@ -136,8 +138,10 @@ KAction::KAction( const QString& text, int accel, const QObject* receiver,
     d = new KActionPrivate;
 
     m_parentCollection = parentCollection();
-    if ( m_parentCollection )
+    if ( m_parentCollection ) {
+        d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
+    }    
 
     setAccel( accel );
     setText( text );
@@ -153,8 +157,10 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
     d = new KActionPrivate;
 
     m_parentCollection = parentCollection();
-    if ( m_parentCollection )
+    if ( m_parentCollection ) {
+        d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
+    }    
 
     setAccel( accel );
     setText( text );
@@ -168,8 +174,10 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
     d = new KActionPrivate;
 
     m_parentCollection = parentCollection();
-    if ( m_parentCollection )
+    if ( m_parentCollection ) {
+        d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
+    }    
 
     setText( text );
     setAccel( accel );
@@ -184,8 +192,10 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
     d = new KActionPrivate;
 
     m_parentCollection = parentCollection();
-    if ( m_parentCollection )
+    if ( m_parentCollection ) {
+        d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
+    }    
 
     setAccel( accel );
     setText( text );
@@ -203,8 +213,10 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
     d = new KActionPrivate;
 
     m_parentCollection = parentCollection();
-    if ( m_parentCollection )
+    if ( m_parentCollection ) {
+        d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
+    }    
 
     setAccel( accel );
     setText( text );
