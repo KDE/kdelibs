@@ -182,7 +182,7 @@ public:
      * \<appletname\>rc in the users local KDE directory.
      *
      * For normal applets this config object will write to a instance specific config file
-     * called \<appletname\><instanceid>rc in the users local KDE directory.
+     * called \<appletname\>\<instanceid\>rc in the users local KDE directory.
      **/
     KConfig* config() const { return _config; }
 

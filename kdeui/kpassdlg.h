@@ -110,7 +110,7 @@ private:
  *     use(password);
  * \endcode
  *
- * @sect Security notes
+ * <b>Security notes:</b>\n
  *
  * Keeping passwords in memory can be a potential security hole. You should
  * handle this situation with care.

@@ -92,7 +92,7 @@ public:
   virtual KInstance *instance() const;
 
   /**
-   * @return The parsed XML in a QDomDocument, set by 
+   * @return The parsed XML in a QDomDocument, set by
    * setXMLFile() or setXML().
    * This document describes the layout of the GUI.
    */
@@ -193,7 +193,7 @@ public:
    * is selected, then you can achieve this using ActionLists. It
    * works as follows:
    * In your xxxui.rc file ( the one that you set in setXMLFile()
-   * ), you put an <ActionList name="xxx"> tag.  E.g.
+   * ), you put an <p>\<ActionList name="xxx"\></p> tag.  E.g.
    * \verbatim
    * <kpartgui name="xxx_part" version="1">
    * <MenuBar>
@@ -279,7 +279,7 @@ protected:
    *             filename, which will then be assumed to be installed
    *             in the "data" resource, under a directory named like
    *             the instance.
-   * @param setXML Specify whether to call setXML. Default is true.
+   * @param setXMLDoc Specify whether to call setXML. Default is true.
    *               and the DOM document at once.
    **/
   virtual void setXMLFile( const QString& file, bool merge = false, bool setXMLDoc = true );
@@ -311,8 +311,8 @@ protected:
 
   /**
    * Actions can collectively be assigned a "State". To accomplish this
-   * the respective actions are tagged as <enable> or <disable> in
-   * a <State> </State> group of the XMLfile. During program execution the
+   * the respective actions are tagged as \<enable\> or \<disable\> in
+   * a \<State\> \</State\> group of the XMLfile. During program execution the
    * programmer can call stateChanged() to set actions to a defined state.
    *
    * @param newstate Name of a State in the XMLfile.

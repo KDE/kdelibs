@@ -342,9 +342,9 @@ public:
      * toolbar.  You do all enabling/disabling/manipulation directly
      * with your KAction object.
      *
-     * @param w The GUI element to display this action
+     * @param widget The GUI element to display this action
      */
-    virtual int plug( QWidget *w, int index = -1 );
+    virtual int plug( QWidget *widget, int index = -1 );
 
     /**
      * @deprecated.  Shouldn't be used.  No substitute available.

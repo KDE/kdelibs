@@ -1128,7 +1128,7 @@ public:
                           KActionCollection *parent, const char *name );
     virtual ~KToggleToolBarAction();
 
-    virtual int plug( QWidget*, int index = -1 );
+    virtual int plug( QWidget * widget, int index = -1 );
 
     KToolBar *toolBar() { return m_toolBar; }
 
@@ -1207,7 +1207,7 @@ public:
      * Plug the action. The widget passed to the constructor
      * will be reparented to w, which must inherit KToolBar.
      */
-    virtual int plug( QWidget* w, int index = -1 );
+    virtual int plug( QWidget* widget, int index = -1 );
     /**
      * Unplug the action. Ensures that the action is not
      * destroyed. It will be hidden and reparented to 0L instead.
@@ -1232,7 +1232,7 @@ public:
     KActionSeparator( QObject* parent = 0, const char* name = 0 );
     virtual ~KActionSeparator();
 
-    virtual int plug( QWidget*, int index = -1 );
+    virtual int plug( QWidget *widget, int index = -1 );
 
 protected:
     virtual void virtual_hook( int id, void* data );

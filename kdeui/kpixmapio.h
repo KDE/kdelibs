@@ -26,7 +26,7 @@ class KPixmapIOPrivate;
  * It uses the MIT-SHM shared memory extension for this. If this extension is
  * not available, it will fall back to standard Qt methods.
  *
- * @sect Typical usage
+ * <b>Typical usage:</b>\n
  *
  * You can use KPixmapIO for load/saving pixmaps.
  *
@@ -75,7 +75,7 @@ class KPixmapIOPrivate;
  * implementation of 16 bit RGB packing in Qt, while at 32 bpp we need to
  * transfer more data, and thus gain more, than at 24 bpp.
  *
- * @sect Conclusion
+ * <b>Conclusion:</b>\n
  *
  * For large pixmaps, there's a definite speed improvement when using
  * KPixmapIO. On the other hand, there's no speed improvement for small
