@@ -27,26 +27,11 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/ad
 AUTOMAKE_OPTIONS = foreign 1.4
 
 messages:
-	test -h po
-	rm -rf po.backup
-	mkdir po.backup
-	for i in `ls -1 po/*.pot | sed -e "s#po/##"`; do \
-	  grep -v "\"POT-Creation" po/$$i > po.backup/$$i ; \
-	  cp po/$$i po.backup/backup_$$i ;  \
-	done
+	make -f admin/Makefile.common package-messages
+
+messages-local:
 	$(XGETTEXT) -C -ktranslate -ki18n */*.cpp */*.cc && mv messages.po po/kdelibs.pot
 	$(XGETTEXT) -C -ktranslate -ki18n common_texts.cpp && mv messages.po po/kde.pot
-	for  i in `ls -1 po/*.pot | sed -e "s#po/##"`; do \
-	  grep -v "POT-Creation-Date:" po/$$i > temp.pot ;\
-	  if diff -q temp.pot po.backup/$$i; then \
-	     echo "I'm restoring $$i" ;\
-	     mv po.backup/backup_$$i po/$$i; \
-	   else \
-	     echo "will leave $$i"; \
-	fi ;\
-	done
-	rm -f temp.pot
-	rm -rf po.backup
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in
 
