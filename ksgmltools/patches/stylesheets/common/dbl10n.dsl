@@ -38,8 +38,8 @@
 ;; pt-BR - Portuguese (Brazil)
 ;; ro - Romanian
 ;; ru - Russian
-;; sl - Slovenian                           1.55
 ;; sk - Slovak
+;; sl - Slovenian                           1.55
 ;; sv - Swedish (previously svse)
 ;; zh-CN - Chinese (Continental)            1.55
 
@@ -151,8 +151,8 @@
     <![%l10n-pt-BR[ (("pt-br") (pt-BR-auto-xref-indirect-connector before)) ]]>
     <![%l10n-ro[ (("ro") (ro-auto-xref-indirect-connector before)) ]]>
     <![%l10n-ru[ (("ru") (ru-auto-xref-indirect-connector before)) ]]>
-    <![%l10n-sl[ (("sl") (sl-auto-xref-indirect-connector before)) ]]>
     <![%l10n-sk[ (("sk") (sk-auto-xref-indirect-connector before)) ]]>
+    <![%l10n-sl[ (("sl") (sl-auto-xref-indirect-connector before)) ]]>
     <![%l10n-sv[ (("sv") (sv-auto-xref-indirect-connector before)) ]]>
     <![%l10n-zh-CN[ (("zh-cn") (zh-CN-auto-xref-indirect-connector before)) ]]>
 
@@ -372,8 +372,8 @@
       <![%l10n-pt-BR[ (("pt-br") (pt-BR-label-number-format target)) ]]>
       <![%l10n-ro[ (("ro") (ro-label-number-format target)) ]]>
       <![%l10n-ru[ (("ru") (ru-label-number-format target)) ]]>
-      <![%l10n-sl[ (("sl") (sl-label-number-format target)) ]]>
       <![%l10n-sk[ (("sk") (sk-label-number-format target)) ]]>
+      <![%l10n-sl[ (("sl") (sl-label-number-format target)) ]]>
       <![%l10n-sv[ (("sv") (sv-label-number-format target)) ]]>
       <![%l10n-zh-CN[ (("zh-cn") (zh-CN-label-number-format target)) ]]>
 
@@ -407,8 +407,8 @@
     <![%l10n-pt-BR[ (("pt-br") ($lot-title-pt-BR$ lotgi)) ]]>
     <![%l10n-ro[ (("ro") ($lot-title-ro$ lotgi)) ]]>
     <![%l10n-ru[ (("ru") ($lot-title-ru$ lotgi)) ]]>
-    <![%l10n-sl[ (("sl") ($lot-title-sl$ lotgi)) ]]>
     <![%l10n-sk[ (("sk") ($lot-title-sk$ lotgi)) ]]>
+    <![%l10n-sl[ (("sl") ($lot-title-sl$ lotgi)) ]]>
     <![%l10n-sv[ (("sv") ($lot-title-sv$ lotgi)) ]]>
     <![%l10n-zh-CN[ (("zh-cn") ($lot-title-zh-CN$ lotgi)) ]]>
 
