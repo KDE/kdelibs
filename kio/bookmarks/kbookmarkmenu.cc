@@ -416,7 +416,6 @@ void KBookmarkMenu::fillBookmarkMenu()
     QValueList<QString>::const_iterator it;
     for ( it = keys.begin(); it != keys.end(); ++it ) 
     {
-       QString menuName = dynMenui18nMap[(*it)];
        KBookmarkManager::DynMenuInfo info;
        info = m_pManager->showDynamicBookmarks((*it));
 
@@ -429,9 +428,16 @@ void KBookmarkMenu::fillBookmarkMenu()
           haveSep = true;
        }
 
-       QString icon = info.type;
-       KActionMenu * actionMenu = 
-          new KImportedBookmarksActionMenu( menuName, icon, m_actionCollection, 0L );
+       QString visibleName = info.name;
+       if (visibleName.isEmpty()) {
+         visibleName = dynMenui18nMap[info.type];
+       }
+
+       KActionMenu * actionMenu;
+       actionMenu = new KImportedBookmarksActionMenu( 
+                              visibleName, info.type, 
+                              m_actionCollection, 0L );
+
        actionMenu->setProperty( "type", info.type );
        actionMenu->setProperty( "location", info.location );
 

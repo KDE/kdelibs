@@ -166,6 +166,7 @@ public:
        bool show;
        QString location;
        QString type;
+       QString name;
     } ;
 
     /**

@@ -394,6 +394,7 @@ void KBookmarkManager::setShowNSBookmarks( bool show )
     info.type = "netscape";
     info.location = KNSBookmarkImporter::netscapeBookmarksFile();
     info.show = show;
+    info.name = QString::null;
     setDynamicBookmarks(info.type, info);
 }
 
@@ -547,6 +548,7 @@ KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QStr
          info.show = root().internalElement().attribute("hide_nsbk") != "yes";
          info.location = KNSBookmarkImporter::netscapeBookmarksFile();
          info.type = name;
+         info.name = QString::null;
       } // else, no show
 
    } else {
@@ -555,7 +557,8 @@ KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QStr
          config.setGroup(DYNMENUCONFIGPREFIX + name);
          info.show = config.readBoolEntry("Show");
          info.location = config.readPathEntry("Location");
-         info.type = config.readPathEntry("Type");
+         info.type = config.readEntry("Type");
+         info.name = config.readEntry("Name");
       } // else, no show
    }
 
@@ -585,6 +588,7 @@ void KBookmarkManager::setDynamicBookmarks(const QString &id, const DynMenuInfo 
    config.writeEntry("Show", newMenu.show);
    config.writeEntry("Location", newMenu.location);
    config.writeEntry("Type", newMenu.type);
+   config.writeEntry("Name", newMenu.name);
 
    QStringList elist;
 
@@ -599,6 +603,7 @@ void KBookmarkManager::setDynamicBookmarks(const QString &id, const DynMenuInfo 
          config.writeEntry("Show", xbelSetting.show);
          config.writeEntry("Location", xbelSetting.location);
          config.writeEntry("Type", xbelSetting.type);
+         config.writeEntry("Name", xbelSetting.name);
       }
    } else {
       elist = config.readListEntry("DynamicMenus");
