@@ -1638,14 +1638,14 @@ void DocumentImpl::updateStyleSelector()
 {
     recalcStyleSelector();
     recalcStyle(Force);
-#if 0    
-    
+#if 0
+
     m_styleSelectorDirty = true;
     if ( renderer() ) {
 	renderer()->setLayouted( false );
 	renderer()->setMinMaxKnown( false );
     }
-#endif    
+#endif
 }
 
 void DocumentImpl::recalcStyleSelector()
@@ -1810,6 +1810,7 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
     Event ev(evt);
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id()) {
+            evt->setCurrentTarget(this);
             it.current()->listener->handleEvent(ev);
 	    return;
 	}
