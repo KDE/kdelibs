@@ -62,6 +62,7 @@ Form1::Form1( QWidget* parent,  const char* name )
     Layout1->addWidget( edit );
     Layout9->addLayout( Layout1 );
     edit->completionObject()->setItems( defaultItems() );
+    edit->completionObject()->setIgnoreCase( true );
     edit->setFocus();
     QToolTip::add( edit, "right-click to change completion mode" );
     
@@ -71,7 +72,7 @@ Form1::Form1( QWidget* parent,  const char* name )
 
     combo = new KHistoryCombo( GroupBox1, "history combo" );
     combo->setCompletionObject( edit->completionObject() );
-    combo->setMaxCount( 5 );
+    // combo->setMaxCount( 5 );
     combo->setHistoryItems( defaultItems(), true );
     connect( combo, SIGNAL( activated( const QString& )),
 	     combo, SLOT( addToHistory( const QString& )));
@@ -152,7 +153,8 @@ void Form1::slotRemove()
 void Form1::slotList()
 {
     ListBox1->clear();
-    ListBox1->insertStringList( edit->completionObject()->items() );
+    QStringList items = edit->completionObject()->items();
+    ListBox1->insertStringList( items );
 }
 
 void Form1::slotHighlighted( const QString& text )
@@ -169,8 +171,9 @@ void Form1::slotHighlighted( const QString& text )
 QStringList Form1::defaultItems() const
 {
     QStringList items;
-    items << "Super" << "Sushi" << "Samson" << "Sucks" << "Sumo" << "Slashdot";
-
+    items << "Super" << "Sushi" << "Samson" << "Sucks" << "Sumo" << "Schumi";
+    items << "Slashdot" << "sUpEr" << "SUshi" << "sUshi" << "sUShi";
+    items << "sushI" << "SushI";
     return items;
 }
 
