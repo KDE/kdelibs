@@ -123,7 +123,7 @@ class KInputDialog : public KDialogBase
      * Same as @ref getText except it provides an extra parameter to specify 
      * a QWhatsThis text for the input widget.
      *
-     * ### KDE4: Merge with or deprecate getText.
+     * ### KDE4: Merge with getText.
      *
      * @since KDE 3.3
      **/
