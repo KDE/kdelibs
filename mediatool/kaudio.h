@@ -37,9 +37,13 @@ public:
   /// Play the Wav last set via setFilename(filename) or play(filename)
   bool play();
   /// Set filename as current media name and play it
-  bool play(char *filename);
+  bool play(const char *filename);
+  /// Set filename as current media name and play it
+  bool play(QString& filename);
   /// Set the "current" Filename. This file can be played later with ::play()
-  bool setFilename(char *filename);
+  bool setFilename(const char *filename);
+  /// Set the "current" Filename. This file can be played later with ::play()
+  bool setFilename(QString& filename);
   /// If true is given, every play call is synced directly.
   void setAutosync(bool autosync);
   /** If you want to recieve a Qt signal when your media is finished, you must

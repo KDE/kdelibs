@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-char *mystrdup(char *s);
+char *mystrdup(const char *s);
 
 #endif /* TOOLS_H */
 

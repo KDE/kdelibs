@@ -36,7 +36,7 @@
  *		for portabilty.
  *
  *****************************************************************************/
-char *mystrdup(char *s)
+char *mystrdup(const char *s)
 {
   char *tmp;
 

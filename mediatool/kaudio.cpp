@@ -29,36 +29,13 @@ extern "C" {
 #include <mediatool.h>
 }
 #include "kaudio.h"
+#include "tools.h"
 #include "kaudio.moc"
 
 #ifdef HAVE_SYSENT_H
 #include <sysent.h>
 #endif
 
-
-/******************************************************************************
- *
- * Function:	mystrdup()
- *
- * Task:	Duplicate a string, using freshly allocated memory.
- *		See "man strdup" for more information
- *
- * in:		s	Adress of string.
- * 
- * out:		char*	Adress of new created/copied string.
- *
- * Comment:	This is a drop-in replacement function for strdup().
- *		As the mentioned function is not POSIX, this is necessary
- *		for portabilty.
- *
- *****************************************************************************/
-char *mystrdup(char *s)
-{
-  char *tmp = (char*)malloc(strlen(s)+1);
-  if (tmp)
-    strcpy(tmp,s);
-  return tmp;
-}
 
 KAudio::KAudio() : QObject()
 {
@@ -146,7 +123,7 @@ bool KAudio::play()
   return true;
 }
 
-bool KAudio::play(char *filename)
+bool KAudio::play(QString& filename)
 {
   if (!ServerContacted)
     return false;
@@ -156,7 +133,30 @@ bool KAudio::play(char *filename)
   return play();
 }
 
-bool KAudio::setFilename(char *filename)
+
+bool KAudio::play(const char *filename)
+{
+  if (!ServerContacted)
+    return false;
+
+  setFilename(filename);
+  FileNameSet( FnamChunk, WAVname);
+  return play();
+}
+
+bool KAudio::setFilename(QString& filename)
+{
+  if (!ServerContacted)
+    return false;
+  if (WAVname  != 0L )
+    ::free(WAVname);
+  int fnlen= filename.length();
+  WAVname = (char *)malloc(fnlen+1);
+  strcpy(WAVname, (const char*)filename);
+
+  return true;
+}
+bool KAudio::setFilename(const char *filename)
 {
   if (!ServerContacted)
     return false;
@@ -166,6 +166,7 @@ bool KAudio::setFilename(char *filename)
 
   return true;
 }
+
 
 bool KAudio::stop()
 {
