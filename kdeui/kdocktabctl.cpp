@@ -59,32 +59,6 @@ struct KDockTabBar_PrivateStruct
   QString  tooltipString;
 };
 
-static const char* b_left_xpm[] = {
-"16 16 7 1",
-" 	c None",
-".	c None",
-"+	c #000000",
-"@	c #FFFF99",
-"#	c #CC6633",
-"$	c #FFCC33",
-"%	c #868686",
-"................",
-"........+.......",
-".......++.......",
-"......+@+.......",
-".....+#@+++++++.",
-"....+#$@@@@@@@+.",
-"...+#$$$$$$$$@+.",
-"..+#$$$$$$$$$@+.",
-".%%+#$$$$$$$$@+.",
-"..%%+#$$######+.",
-"...%%+#$+++++++.",
-"....%%+#+.......",
-".....%%++.......",
-"......%%+.......",
-".......%........",
-"................"};
-
 /**
  * A helper class for @ref KDockTabBarPainter that provides a dynamic tooltip
  * for that tab widget. The string changes from tab to tab, appropriate to the
@@ -912,7 +886,12 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
 :QWidget( parent, name )
 {
   /* Set up bitmaps */
-  left_xpm = new QPixmap( b_left_xpm );
+  left_xpm = new QPixmap( 16, 16 );
+  QPainter paint;
+  paint.begin(left_xpm);
+  paint.fillRect (0,0,16,16, QBrush (backgroundColor()));
+  style().drawArrow(&paint, LeftArrow, false, 0 , 0 ,16, 16, colorGroup(), true);
+  paint.end();
 
   QWMatrix m;
   m.scale( -1, 1 );
