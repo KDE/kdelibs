@@ -1108,7 +1108,6 @@ QString KStandardDirs::saveLocation(const char *type,
 	    return fullPath;
 	}
 	if(!makeDir(fullPath, 0700)) {
-	    kdWarning() << "failed to create " << fullPath << endl;
 	    return fullPath;
 	}
         dircache.remove(type);
