@@ -191,33 +191,9 @@ void HTTPProtocol::reparseConfiguration()
 
 void HTTPProtocol::resetSessionSettings()
 {
-  m_request.window = metaData("window-id");
-  m_responseCode = 0;
-  m_prevResponseCode = 0;
-
-  m_strRealm = QString::null;
-  m_strAuthorization = QString::null;
-  Authentication = AUTH_None;
-
-  m_bCanResume = false;
-  m_bUnauthorized = false;
-  m_bIsTunneled = false;
-  setMetaData("request-id", m_request.id);
-}
-
-void HTTPProtocol::setHost( const QString& host, int port,
-                            const QString& user, const QString& pass )
-{
-  kdDebug(7113) << "Hostname is now: " << host << endl;
-
-  m_request.hostname = host;
-  m_request.port = (port == 0) ? m_iDefaultPort : port;
-  m_request.user = user;
-  m_request.passwd = pass;
-
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
-  KURL proxy = metaData("UseProxy");
+  KURL proxy = config()->readEntry("UseProxy");
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
        (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
@@ -225,57 +201,16 @@ void HTTPProtocol::setHost( const QString& host, int port,
   {
     m_proxyURL = proxy;
     m_bUseProxy = m_proxyURL.isValid();
-    kdDebug(7113) << "Proxy realm value: " << m_strRealm << endl;
-    kdDebug(7113) << "Proxy URL is now: " << m_proxyURL.url() << endl;
+
+    kdDebug(7103) << "(" << getpid() << ") Proxy realm value: " << m_strRealm << endl;
+    kdDebug(7103) << "(" << getpid() << ") Proxy URL is now: " << m_proxyURL.url() << endl;
   }
 
   m_bUseCookiejar = config()->readBoolEntry("Cookies");
   m_bUseCache = config()->readBoolEntry("UseCache");
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
-
-
-  if ( m_bUseCache ) { cleanCache(); }
-
-  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
-  {
-     QString error;
-     if ( KApplication::startServiceByDesktopName("kcookiejar", QStringList(),
-                                                  &error ) )
-     {
-        // Error starting kcookiejar.
-        kdDebug(1202) << "Error starting KCookiejar: "
-                      << error << "\n" << endl;
-     }
-  }
-
-  if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
-    setEnableSSLTunnel( true );
-
-  // Obtain the proxy and remote server timeout values
-  m_proxyConnTimeout = proxyConnectTimeout();
-  m_remoteConnTimeout = connectTimeout();
-  m_remoteRespTimeout = responseTimeout();
-}
-
-bool HTTPProtocol::checkRequestURL( const KURL& u )
-{
-  m_request.url = u;
-  if (m_request.hostname.isEmpty())
-  {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
-     return false;
-  }
-
-  if ( m_protocol != u.protocol().latin1() )
-  {
-    short unsigned int oldDefaultPort = m_iDefaultPort;
-    m_protocol = u.protocol().latin1();
-    reparseConfiguration();
-    if ( m_iDefaultPort != oldDefaultPort &&
-         m_request.port == oldDefaultPort )
-        m_request.port = m_iDefaultPort;
-  }
+  m_request.window = config()->readEntry("window-id");
 
   bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
   if ( sendReferrer )
@@ -306,15 +241,85 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
   else
      m_request.offset = 0;
 
-  m_request.disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
+  m_request.disablePassDlg = config()->readBoolEntry("DisablePassDlg", false);
   m_request.allowCompressedPage = config()->readBoolEntry("AllowCompressedPage", true);
   m_request.id = metaData("request-id");
 
   // Store user agent for this host.
   if ( config()->readBoolEntry("SendUserAgent", true) )
-     m_request.user_agent = metaData("UserAgent");
+     m_request.userAgent = metaData("UserAgent");
   else
-     m_request.user_agent = QString::null;
+     m_request.userAgent = QString::null;
+
+  // Deal with cache cleaning.
+  // TODO: Find a smarter way to deal with cleaning the
+  // cache ?
+  if ( m_bUseCache )
+    cleanCache();
+
+  // Deal with HTTP tunneling
+  if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
+  {
+    // Tell parent class about the real hostname
+    setRealHost( m_request.hostname );
+    setEnableSSLTunnel( true );
+  }
+  else
+  {
+    // Should never be needed! Being overcautious!
+    setRealHost( QString::null );
+    setEnableSSLTunnel( false );
+  }
+
+  m_responseCode = 0;
+  m_prevResponseCode = 0;
+
+  m_strRealm = QString::null;
+  m_strAuthorization = QString::null;
+  Authentication = AUTH_None;
+
+  // Obtain the proxy and remote server timeout values
+  m_proxyConnTimeout = proxyConnectTimeout();
+  m_remoteConnTimeout = connectTimeout();
+  m_remoteRespTimeout = responseTimeout();
+
+  m_bCanResume = false;
+  m_bUnauthorized = false;
+  m_bIsTunneled = false;
+  setMetaData("request-id", m_request.id);
+}
+
+void HTTPProtocol::setHost( const QString& host, int port,
+                            const QString& user, const QString& pass )
+{
+  kdDebug(7113) << "Hostname is now: " << host << endl;
+
+  m_request.hostname = host;
+  m_request.port = (port == 0) ? m_iDefaultPort : port;
+  m_request.user = user;
+  m_request.passwd = pass;
+}
+
+bool HTTPProtocol::checkRequestURL( const KURL& u )
+{
+  m_request.url = u;
+  if (m_request.hostname.isEmpty())
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return false;
+  }
+
+  if ( m_protocol != u.protocol().latin1() )
+  {
+    short unsigned int oldDefaultPort = m_iDefaultPort;
+    m_protocol = u.protocol().latin1();
+    reparseConfiguration();
+    if ( m_iDefaultPort != oldDefaultPort &&
+         m_request.port == oldDefaultPort )
+        m_request.port = m_iDefaultPort;
+  }
+
+  resetSessionSettings();
 
   return true;
 }
@@ -360,14 +365,30 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         if ( isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized
              && !m_bError )
         {
-            kdDebug(7103) << "Unset Tunneling flag!" << endl;
-            setEnableSSLTunnel( false );
-            m_bIsTunneled = true;
-            continue;
+            // Only disable tunneling if the error
+            if ( m_responseCode < 400 )
+            {
+                kdDebug(7113) << "(" << getpid() << ") Unsetting tunneling flag!" << endl;
+                setEnableSSLTunnel( false );
+                m_bIsTunneled = true;
+                continue;
+            }
+            else
+            {
+                if ( !m_bErrorPage )
+                {
+                  kdDebug(7113) << "(" << getpid() << ") Sending an error message!" << endl;
+                  error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
+                  return false;
+                }
+                kdDebug(7113) << "(" << getpid() << ") Sending an error page!"
+                              << endl;
+            }
         }
         break;
     }
   }
+
   if ( close_connection )
   {
     http_close();
@@ -421,7 +442,7 @@ void HTTPProtocol::get( const KURL& url )
 
   m_request.passwd = url.pass();
   m_request.user = url.user();
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
 
   retrieveContent();
 }
@@ -437,7 +458,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.path = url.path();
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
 
   retrieveContent();
 }
@@ -453,7 +474,7 @@ void HTTPProtocol::post( const KURL& url)
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Reload;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
 
   retrieveContent();
 }
@@ -488,7 +509,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
 
      m_request.passwd = url.pass();
      m_request.user = url.user();
-     m_request.do_proxy = m_bUseProxy;
+     m_request.doProxy = m_bUseProxy;
 
      HTTPRequest *newRequest = new HTTPRequest(m_request);
      m_requestQueue.append(newRequest);
@@ -614,11 +635,11 @@ void HTTPProtocol::http_checkConnection()
   if ( m_iSock != -1 )
   {
      bool closeDown = false;
-     if ( m_request.do_proxy && m_state.do_proxy )
+     if ( m_request.doProxy && m_state.doProxy )
      {
         // Keep the connection to the proxy.
      }
-     else if ( !m_state.do_proxy && !m_request.do_proxy )
+     else if ( !m_state.doProxy && !m_request.doProxy )
      {
         if (m_state.hostname != m_request.hostname)
         {
@@ -654,14 +675,14 @@ void HTTPProtocol::http_checkConnection()
   m_state.port = m_request.port;
   m_state.user = m_request.user;
   m_state.passwd = m_request.passwd;
-  m_state.do_proxy = m_request.do_proxy;
+  m_state.doProxy = m_request.doProxy;
 }
 
 bool HTTPProtocol::http_openConnection()
 {
   m_bKeepAlive = false;
   setBlockConnection( true );
-  if ( m_state.do_proxy )
+  if ( m_state.doProxy )
   {
     QString proxy_host = m_proxyURL.host();
     int proxy_port = m_proxyURL.port();
@@ -829,12 +850,12 @@ bool HTTPProtocol::http_open()
       break;
   case HTTP_PUT:
       header = "PUT ";
-      moreData = true;
+      moreData = !isSSLTunnelEnabled();
       m_bCachedWrite = false; // Do not put nay result in the cache
       break;
   case HTTP_POST:
       header = "POST ";
-      moreData = true;
+      moreData = !isSSLTunnelEnabled();
       m_bCachedWrite = false; // Do not put nay result in the cache
       break;
   case HTTP_HEAD:
@@ -848,20 +869,19 @@ bool HTTPProtocol::http_open()
 
   if ( isSSLTunnelEnabled() )
   {
-    kdDebug(7103) << "Attempting to tunnel through a proxy..." << endl;
     header = QString("CONNECT %1:%2 HTTP/1.1"
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
 
     // Identify who you are to the proxy server!
-    if (!m_request.user_agent.isEmpty())
-        header += "User-Agent: " + m_request.user_agent + "\r\n";
+    if (!m_request.userAgent.isEmpty())
+        header += "User-Agent: " + m_request.userAgent + "\r\n";
 
     header += proxyAuthenticationHeader();
   }
   else
   {
     // format the URI
-    if (m_state.do_proxy && !m_bIsTunneled)
+    if (m_state.doProxy && !m_bIsTunneled)
     {
       KURL u;
       u.setUser( m_state.user );
@@ -883,8 +903,8 @@ bool HTTPProtocol::http_open()
     else
       header += "Connection: Keep-Alive\r\n";
 
-    if (!m_request.user_agent.isEmpty())
-        header += "User-Agent: " + m_request.user_agent + "\r\n";
+    if (!m_request.userAgent.isEmpty())
+        header += "User-Agent: " + m_request.userAgent + "\r\n";
 
     if (!m_request.referrer.isEmpty())
     {
@@ -1033,7 +1053,7 @@ bool HTTPProtocol::http_open()
     }
 
     // Do we need to authorize to the proxy server ?
-    if ( m_state.do_proxy && !m_bIsTunneled )
+    if ( m_state.doProxy && !m_bIsTunneled )
       header += proxyAuthenticationHeader();
   }
 
@@ -1209,7 +1229,7 @@ bool HTTPProtocol::readHeader()
          // connections but don't tell us.
          // We will still use persistent connections if the proxy
          // sends us a "Connection: Keep-Alive" header.
-         if (m_state.do_proxy)
+         if (m_state.doProxy)
          {
             m_bKeepAlive = false;
          }
@@ -1481,7 +1501,48 @@ bool HTTPProtocol::readHeader()
       // we should use when we pull the resource !!!
       addEncoding(trimLead(buf + 17), m_qContentEncodings);
     }
+    // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
+    else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
+      char* dispositionBuf = trimLead(buffer + 20);
+      while ( dispositionBuf )
+      {
+        if ( strncasecmp( dispositionBuf, "filename", 8 ) == 0 )
+        {
+          dispositionBuf += 8;
+          while ( dispositionBuf && (dispositionBuf[0] == ' ' ||
+                  dispositionBuf[0] == '=') )
+            dispositionBuf++;
 
+          char* bufStart = dispositionBuf;
+          while ( dispositionBuf && dispositionBuf[0] != ';' )
+            dispositionBuf++;
+          if ( dispositionBuf > bufStart )
+          {
+            disposition = QString::fromLatin1( trimLead(bufStart),
+                                               dispositionBuf-bufStart );
+            break;
+          }
+        }
+        else
+        {
+          while ( dispositionBuf && dispositionBuf[0] != ';' )
+            dispositionBuf++;
+          while ( dispositionBuf && (dispositionBuf[0] == ';' ||
+                  dispositionBuf[0] == ' ') )
+            dispositionBuf++;
+        }
+      }
+
+      // Content-Dispostion is not allowed to dictate directory
+      // path, thus we extract the filename only.
+      if ( !disposition.isEmpty() )
+      {
+        int pos = disposition.findRev( '/' );
+        if( pos > -1 )
+          disposition = disposition.mid(pos+1);
+        kdDebug(7113) << "(" << getpid() << ") Content-Disposition: " << disposition << endl;
+      }
+    }
     // continue only if we know that we're HTTP/1.1
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
@@ -1507,49 +1568,6 @@ bool HTTPProtocol::readHeader()
       else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
         m_sContentMD5 = strdup(trimLead(buf + 12));
       }
-    }
-    // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
-    else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
-      disposition = trimLead(buf + 20);
-      kdDebug(7113) << "Content-Disposition header: " << disposition << endl;
-      int pos = disposition.find( ';' );
-      if ( pos != -1 )
-      {
-        if( disposition.find( QString::fromLatin1("attachment"), 0, false ) == 0 )
-          disposition = disposition.mid(pos+1).stripWhiteSpace();
-      }
-      pos = disposition.find( QString::fromLatin1("filename"), 0, false);
-      if ( pos >= 0 )
-      {
-        pos += 8; // skip "filename"
-        int len = disposition.length();
-        while( disposition[pos] == ' ' || disposition[pos] == '=' ||
-               disposition[pos] == '"' )
-            pos++;
-        if( pos < len )
-        {
-          int start = pos;
-          while ( pos < len &&
-                 (disposition[pos] != '"' && disposition[pos] != ';') )
-              pos++;
-          disposition = disposition.mid(start, pos-start);
-        }
-        else
-          disposition = QString::null;
-      }
-      else
-        disposition = QString::null;
-
-      // Content-Dispostion is not allowed to dictate directory
-      // path, thus we extract the filename only.
-      if ( !disposition.isEmpty() )
-      {
-        pos = disposition.findRev( '/' );
-        if( pos > -1 )
-          disposition = disposition.mid(pos+1);
-        kdDebug(7113) << "Content-Disposition: " << disposition << endl;
-      } else
-        kdDebug(7113) << "Content-Disposition header COULD NOT BE PARSED" << endl;
     }
     else if (buf[0] == '<')
     {
@@ -2006,7 +2024,7 @@ void HTTPProtocol::mimetype( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Cache;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
 
   retrieveHeader();
 
@@ -2630,7 +2648,7 @@ void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDa
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Reload;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
 
   if (no_cache)
   {
@@ -3356,7 +3374,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
   if ( info.qop == "auth-int" )
   {
     authStr += ':';
-    authStr += info.entity_body;
+    authStr += info.entityBody;
   }
 //  kdDebug(7113) << "A2 => " << authStr << endl;
   md.reset();
@@ -3413,7 +3431,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
     return QString::null;
 
-  // info.entity_body = p;   // FIXME: need to have the data to be sent for POST action!!
+  // info.entityBody = p;   // FIXME: need to have the data to be sent for POST action!!
   info.realm = "";
   info.algorithm = "MD5";
   info.nonce = "";

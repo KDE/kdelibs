@@ -309,6 +309,18 @@ protected:
      */
     void setEnableSSLTunnel( bool enable );
 
+    /**
+     * Sets up the the real hostname for an SSL connection
+     * that goes through a proxy server.
+     *
+     * This function is essential in making sure that the
+     * real hostname is used for validating certificates from
+     * SSL sites!
+     *
+     * @param realHost the actual host name we are connecting to
+     */
+    void setRealHost( const QString& realHost );
+
     // don't use me!
     void doConstructorStuff();
 

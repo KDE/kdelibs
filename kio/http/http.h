@@ -69,7 +69,7 @@ public:
     short unsigned int port;
     QString user;
     QString passwd;
-    bool  do_proxy;
+    bool  doProxy;
     QString cef; // Cache Entry File belonging to this URL.
   } HTTPState;
 
@@ -85,7 +85,7 @@ public:
     HTTP_METHOD method;
     KIO::CacheControl cache;
     unsigned long offset;
-    bool do_proxy;
+    bool doProxy;
     KURL url;
     QString window;                 // Window Id this request is related to.
     QString referrer;
@@ -93,7 +93,7 @@ public:
     QString languages;
     bool allowCompressedPage;
     bool disablePassDlg;
-    QString user_agent;
+    QString userAgent;
     QString id;
   } HTTPRequest;
 
@@ -109,7 +109,7 @@ public:
     QCString password;
     QStrList digestURI;
     QCString algorithm;
-    QCString entity_body;
+    QCString entityBody;
   } DigestAuthInfo;
 
 

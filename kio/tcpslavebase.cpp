@@ -67,16 +67,16 @@ public:
   bool usingTLS;
   KSSLCertificateCache *cc;
   QString host;
+  QString realHost;
   QString ip;
   DCOPClient *dcc;
   KSSLPKCS12 *pkcs;
 
-    int status;
-    int timeout;
-    bool block;
-    bool useSSLTunneling;
-    bool needSSLHandShake;
-
+  int status;
+  int timeout;
+  bool block;
+  bool useSSLTunneling;
+  bool needSSLHandShake;
   bool militantSSL;              // If true, we just drop a connection silently
                                  // if SSL certificate check fails in any way.
 };
@@ -94,8 +94,8 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
 {
     // We have to have two constructors, so don't add anything
     // else in here. Put it in doConstructorStuff() instead.
-        doConstructorStuff();
-        m_bIsSSL = false;
+    doConstructorStuff();
+    m_bIsSSL = false;
 }
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
@@ -110,9 +110,9 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
               m_sServiceName(protocol),
               fp(0)
 {
-        doConstructorStuff();
-        if (useSSL)
-           m_bIsSSL = InitializeSSL();
+    doConstructorStuff();
+    if (useSSL)
+        m_bIsSSL = InitializeSSL();
 }
 
 // The constructor procedures go here now.
@@ -1011,8 +1011,27 @@ void TCPSlaveBase::setEnableSSLTunnel( bool enable )
     d->useSSLTunneling = enable;
 }
 
+void TCPSlaveBase::setRealHost( const QString& realHost )
+{
+    // Check if we just transitioned from a SSL over
+    // proxy to regular SSL connection! If so tell that
+    // to the SSL module!
+    if ( !d->realHost.isEmpty() && realHost.isEmpty() )
+      d->kssl->setProxy(false, realHost);
+
+    d->realHost = realHost;
+}
+
 bool TCPSlaveBase::doSSLHandShake( bool sendError )
 {
+    kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
+
+    if ( !d->realHost.isNull() )
+    {
+      kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
+      d->kssl->setProxy(true, d->realHost);
+    }
+
     d->kssl->reInitialize();
     certificatePrompt();
     d->status = d->kssl->connect(m_iSock);
