@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 			   "the window!\n"
 			   "Press OK or Cancel when done"
 			   , w);
-    l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     QLabel *l = new QLabel("Another common dialog\n\n"\
 			   "OK and Cancel are right aligned\n"\
 			   "Try resizing the window!", w);
-    l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     QLabel *l = new QLabel("Another common dialog\n\n"\
 			   "OK and Cancel are middle aligned\n"\
 			   "Try resizing the window!", w);
-    l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
 			   "the maximum width for all buttons\n"
 			   "since it will look ugly -- "
 			   "anyway, it works", w);
-    l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
 			   "prevent this strange effect as seen\n"
 			   "the former example!"
 			   ,w);
-    l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
 			   "to make vertically aligned buttons\n"
 			   "too?"
 			   ,w);
-    l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w, KButtonBox::VERTICAL);

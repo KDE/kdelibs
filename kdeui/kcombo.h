@@ -21,7 +21,7 @@ public:
 	void setLabelFlags( int) {};
 	int labelFlags() const {return 0;};
 	void cursorAtEnd(){};
-	void setText( const char *text );
+	void setText( const QString& text );
         void setCompletion( bool){};     
 	
  private:

@@ -53,7 +53,7 @@ class KIconLoaderCanvas : public QTableView
 {
   Q_OBJECT
 public:
-  KIconLoaderCanvas (QWidget *parent=0, const char *name=0);
+  KIconLoaderCanvas (QWidget *parent=0, const QString& name=QString::null);
   ~KIconLoaderCanvas ();
 
   void loadDir(QString dirname, QString filter);
@@ -61,7 +61,7 @@ public:
   void cancelLoad();
 
 signals:
-  void nameChanged( const char * );
+  void nameChanged( const QString& );
   void doubleClicked();
   void interrupted();
 
@@ -113,14 +113,14 @@ public:
      same directory between two calls to selectIcon(). So it is a good idea to
      delete the KIconLoaderDialog when it is not needed anymore.
   */
-  KIconLoaderDialog ( QWidget *parent=0, const char *name=0 );
+  KIconLoaderDialog ( QWidget *parent=0, const QString& name=QString::null );
 
   /**
      If you want to use another KIconLoader you can create the KIconLoaderDialog
      with this constructor which accepts a pointer to a KIconLoader.
      Make sure that this pointer is valid.
   */
-  KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0, const char *name=0 );
+  KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0, const QString& name=QString::null );
 
   /// Destructor
   ~KIconLoaderDialog ();
@@ -142,7 +142,7 @@ public:
 
 protected slots:
   void filterChanged();
-  void dirChanged(const char *);
+  void dirChanged(const QString&);
   void reject();
   void needReload();
   
@@ -187,11 +187,11 @@ public:
      *
      * @param _icon is a parameter as usually passed to @ref KIconLoader.
      */
-    void setIcon( const char *_icon );
+    void setIcon( const QString& _icon );
     /**
      * @return the name of the icon without path.
      */
-    const char* icon() { return iconStr.data(); }
+    const QString icon() { return iconStr; }
     /**
      * @return a reference to the icon loader dialog used.
      */
@@ -204,7 +204,7 @@ signals:
     /**
      * Emitted if the icons has changed.
      */
-    void iconChanged( const char *icon );
+    void iconChanged( const QString& icon );
     
 protected:
     KIconLoaderDialog *loaderDialog;

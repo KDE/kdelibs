@@ -74,49 +74,49 @@ public:
 	{ pInfoCombo->setCurrentItem( n ); }
   int infoOutput() const
 	{ return pInfoCombo->currentItem(); }
-  void setInfoFile( const char* pFileName )
+  void setInfoFile( const QString& pFileName )
 	{ pInfoFile->setText( pFileName ); }
-  const char* infoFile() const
+  const QString infoFile() const
 	{ return pInfoFile->text(); }
-  void setInfoShow( const char* pShowString )
+  void setInfoShow( const QString& pShowString )
 	{ pInfoShow->setText( pShowString ); }
-  const char* infoShow() const
+  const QString infoShow() const
 	{ return pInfoShow->text(); }
   void setWarnOutput( int n )
 	{ pWarnCombo->setCurrentItem( n ); }
   int warnOutput() const
 	{ return pWarnCombo->currentItem(); }
-  void setWarnFile( const char* pFileName )
+  void setWarnFile( const QString& pFileName )
 	{ pWarnFile->setText( pFileName ); }
-  const char* warnFile() const
+  const QString warnFile() const
 	{ return pWarnFile->text(); }
-  void setWarnShow( const char* pShowString )
+  void setWarnShow( const QString& pShowString )
 	{ pWarnShow->setText( pShowString ); }
-  const char* warnShow() const
+  const QString warnShow() const
 	{ return pWarnShow->text(); }
   void setErrorOutput( int n )
 	{ pErrorCombo->setCurrentItem( n ); }
   int errorOutput() const
 	{ return pErrorCombo->currentItem(); }
-  void setErrorFile( const char* pFileName )
+  void setErrorFile( const QString& pFileName )
 	{ pErrorFile->setText( pFileName ); }
-  const char* errorFile() const
+  const QString errorFile() const
 	{ return pErrorFile->text(); }
-  void setErrorShow( const char* pShowString )
+  void setErrorShow( const QString& pShowString )
 	{ pErrorShow->setText( pShowString ); }
-  const char* errorShow() const
+  const QString errorShow() const
 	{ return pErrorShow->text(); }
   void setFatalOutput( int n )
 	{ pFatalCombo->setCurrentItem( n ); }
   int fatalOutput() const
 	{ return pFatalCombo->currentItem(); }
-  void setFatalFile( const char* pFileName )
+  void setFatalFile( const QString& pFileName )
 	{ pFatalFile->setText( pFileName ); }
-  const char* fatalFile() const
+  const QString fatalFile() const
 	{ return pFatalFile->text(); }
-  void setFatalShow( const char* pShowString )
+  void setFatalShow( const QString& pShowString )
 	{ pFatalShow->setText( pShowString ); }
-  const char* fatalShow() const
+  const QString fatalShow() const
 	{ return pFatalShow->text(); }
   void setAbortFatal( bool bAbort )
 	{ pAbortFatal->setChecked( bAbort ); }

@@ -2,8 +2,8 @@
 #define __kio_dlg_h__
 
 #include <qdialog.h>
-#include <qlined.h>
-#include <qpushbt.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 
 #include <kurlcompletion.h>
@@ -24,13 +24,14 @@ public:
    * @param _file_mode if set to TRUE, the editor widget will provide command
    *                   completion ( Ctrl-S and Ctrl-D )
    */
-  KLineEditDlg( const char *_text, const char *_value, QWidget *parent, bool _file_mode = FALSE );
+  KLineEditDlg( const QString&_text, const QString&_value, 
+		QWidget *parent, bool _file_mode = FALSE );
   ~KLineEditDlg();
 
   /**
    * @return the value the user entered
    */
-  const char * text() { return edit->text(); }
+  QString text() { return edit->text(); }
     
 public slots:
   /**

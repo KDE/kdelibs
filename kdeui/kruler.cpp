@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1999/02/19 08:52:45  habenich
+ * ID und LOG tags included
+ *
  *
  *************************************************************************/
 
@@ -281,7 +284,7 @@ KRuler::setValuePerBigMark(int value)
 }
 
 void 
-KRuler::setEndLabel(const char *label)
+KRuler::setEndLabel(const QString& label)
 {
   endlabel = label;
   update(contentsRect());

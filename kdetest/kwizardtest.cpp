@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     QString msg;
     msg.sprintf("This is page %d out of 10", i);
     QLabel *l = new QLabel(wiz);
-    l->setAlignment(AlignCenter);
+    l->setAlignment(Qt::AlignCenter);
     l->setText(msg.data());
     l->setMinimumSize(300, 200);
     QString title;

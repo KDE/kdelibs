@@ -15,8 +15,8 @@
 
 #include <qdialog.h>
 #include <qlabel.h>
-#include <qpushbt.h>
-#include <qcombo.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
 #include <qframe.h>
 
 class StringListSelectOneDialogData : public QDialog

@@ -117,7 +117,7 @@ protected:
   /// The number of month in a year, usually 12 I suppose :-).
   static const int NoOfMonth;
   /// The names of the 12 month translated to the user language.
-  const char* Month[12];
+  QString Month[12];
   int fontsize;
 signals:
   /** This signal is emmitted when the user picked a date.

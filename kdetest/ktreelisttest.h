@@ -27,12 +27,12 @@ Cambridge, MA 02139, USA.
 #define OUTLINE_H
 
 #include <kapp.h>
-#include <qchkbox.h>
-#include <qgrpbox.h>
+#include <qcheckbox.h>
+#include <qgroupbox.h>
 #include <qlabel.h>
-#include <qlined.h>
+#include <qlineedit.h>
 #include <ktreelist.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <stdio.h>
 
 class OutlineWidget : public QWidget

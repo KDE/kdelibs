@@ -34,7 +34,6 @@
 #include "kab.h"
 #include "debug.h"
 #include <kprocess.h>
-#include <drag.h>
 #include <kfm.h>
 #include "editentry.h"
 #include "functions.h"
@@ -126,13 +125,12 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   connect(card, SIGNAL(mailURLActivated()), SLOT(mail()));
   connect(card, SIGNAL(homeURLActivated()), SLOT(browse()));
   // -----
-  dropZone=new KDNDDropZone(this, DndText);
-  // -----
   searchResults=new SearchResults(this);
   connect(searchResults, SIGNAL(closed()), SLOT(searchResultsClose()));
   connect(searchResults, SIGNAL(entrySelected(const char*)),
 	  SLOT(selectEntry(const char*)));
   // -----
+  setAcceptDrops(TRUE);
   initializeGeometry(); // sets fixed size
   createConnections(); 
   createTooltips();
@@ -399,13 +397,6 @@ AddressWidget::~AddressWidget()
 	   << "this should not be a problem."
 	   << endl;
     }
-  LG(GUARD, "AddressWidget destructor: deleting dropzone.\n");
-  // ----- delete data elements
-  if(dropZone) 
-    {
-      delete dropZone;
-      dropZone=0;
-    }
   LG(GUARD, "AddressWidget destructor: done.\n");
   // ############################################################################
 }      
@@ -512,9 +503,6 @@ void AddressWidget::createConnections()
   // to handle appearance change events:
   connect(KApplication::getKApplication(), SIGNAL(appearanceChanged()), 
 	  SLOT(initializeGeometry()));
-  // to receive drop actions:
-  connect(dropZone, SIGNAL(dropAction(KDNDDropZone *)), 
-	  this, SLOT( dropAction(KDNDDropZone *)));
   // ############################################################################
 }
 
@@ -873,7 +861,7 @@ void AddressWidget::save()
       qApp->beep();
       switch(QMessageBox::information
 	     (this, i18n("kab: File error"), i18n("Could not save database."),
-	      i18n("&Retry"), i18n("&Ignore"), 0))
+	      i18n("&Retry"), i18n("&Ignore")))
 	{
 	case 1: { // cancel saving
 	    emit(setStatus(i18n("Saving cancelled.\n")));
@@ -891,11 +879,11 @@ void AddressWidget::save()
   // ############################################################################
 }
 
-void AddressWidget::dropAction(KDNDDropZone*)
+void AddressWidget::dropEvent(QDropEvent *)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "AddressWidget::dropAction: got drop event.\n");
+  LG(GUARD, "AddressWidget::dropEvent: got drop event.\n");
   // ############################################################################
 }
   
@@ -1758,7 +1746,7 @@ void AddressWidget::exportHTML()
   LG(GUARD, "AddressWidget::exportHTML: called.\n");
   // ############################################################################
   const string background=card->getBackground();;
-  const string title=i18n("KDE addressbook overview");
+  const string title=i18n("KDE addressbook overview").ascii();
   string header=
     (string)"<html>\n<head>\n"
     +(string)"<title>"+(string)title+(string)"</title>\n"
@@ -1802,7 +1790,7 @@ void AddressWidget::exportHTML()
 	}
       fields.push_back(temp.c_str());
     }
-  fields.push_front(i18n("Name-Email-Link (!!)"));
+  fields.push_front(i18n("Name-Email-Link (!!)").ascii());
   pDialog.selector()->setValues(fields);
   pDialog.setCaption(i18n("Select table columns"));
   if(pDialog.exec())
@@ -2010,9 +1998,9 @@ void AddressWidget::print()
       keys.push_back(Fields[*pos]);
     }
   // ----- now configure the printing:
-  printDialog.setHeadline(i18n("KDE addressbook overview"));
-  printDialog.setRightFooter(i18n("Page <p>"));
-  printDialog.setLeftFooter(i18n("KDE - the professionals choice."));
+  printDialog.setHeadline(i18n("KDE addressbook overview").ascii());
+  printDialog.setRightFooter(i18n("Page <p>").ascii());
+  printDialog.setLeftFooter(i18n("KDE - the professionals choice.").ascii());
   if(!printDialog.exec())
     {
       LG(GUARD, "AddressWidget::print: printing setup rejected\n");

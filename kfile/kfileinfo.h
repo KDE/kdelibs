@@ -55,7 +55,7 @@ public:
     /**
       * Constructs a "little" KFileInfo (just for local files)
       **/
-    KFileInfo(const char *dir, const char *name = "");
+    KFileInfo(const QString& dir, const QString& name = QString::null);
 
     /**
       * Destroy the KFileInfo object.

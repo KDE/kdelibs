@@ -6,7 +6,7 @@
 #include <qdict.h>
 #include <qlist.h>
 #include <qstring.h>
-#include <qdatetm.h>
+#include <qdatetime.h>
 #include <qtimer.h>
 #include <qbuffer.h>
 

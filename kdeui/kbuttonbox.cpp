@@ -70,7 +70,7 @@ KButtonBox::~KButtonBox() {
   // compile
 }
 
-QPushButton *KButtonBox::addButton(const char *text, bool noexpand) {
+QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   KButtonBoxItem *item = new KButtonBoxItem;
 
   item->button = new QPushButton(text, this);

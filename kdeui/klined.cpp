@@ -40,13 +40,13 @@ KLined::~KLined ()
 
 void KLined::cursorAtEnd ()
 {
-  QKeyEvent ev( Event_KeyPress, Key_End, 0, 0 );
+  QKeyEvent ev( QEvent::KeyPress, Key_End, 0, 0 );
   QLineEdit::keyPressEvent( &ev );
 }
 
 bool KLined::eventFilter (QObject *, QEvent *e)
 {
-  if (e->type() == Event_KeyPress)
+  if (e->type() == QEvent::KeyPress)
     {
       QKeyEvent *k = (QKeyEvent *) e;
       

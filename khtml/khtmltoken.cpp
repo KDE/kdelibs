@@ -388,7 +388,7 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	}
 
         unsigned long entityValue = 0;
-	QString res = 0;
+	QString res;
 	int bytesConverted = 0; // 0 bytes --> all converted
 
 	searchBuffer[ searchCount+1] = *src;

@@ -48,7 +48,7 @@ public:
     can be constructed this way, the text has to be non-null when the
     item is added to the tree, or it will not be inserted.
     */
-  KTreeListItem(const char *theText = 0, 
+  KTreeListItem(const QString& theText = QString::null, 
 				const QPixmap *thePixmap = 0); // text can not be null when added to the list!
 
   virtual ~KTreeListItem();
@@ -113,7 +113,7 @@ public:
   /**
 	Returns a pointer to this item's text.
 	*/
-  const char *getText() const;
+  const QString getText() const;
 
   /**
 	Indicates whether this item has any children.
@@ -169,7 +169,7 @@ public:
   /**
 	Sets the item text to the given item.
 	*/
-  void setText(const char *t);
+  void setText(const QString& t);
 
   virtual QRect textBoundingRect(const QFontMetrics& fm) const;
 
@@ -316,7 +316,7 @@ public:
 	auto) and grid snap (snap to grid vertically).
 	*/
   KTreeList(QWidget *parent = 0, 
-			const char *name = 0,
+			const QString& name = QString::null,
 			WFlags f = 0);
 
   virtual ~KTreeList();
@@ -326,14 +326,14 @@ public:
 	of the item currently at the given index. If the current item already
 	has children, the new item is appended below them.
 	*/
-  void addChildItem(const char *theText,
+  void addChildItem(const QString& theText,
 					const QPixmap *thePixmap,
 					int index);
 
   /**
 	Same as above except parent item is specified by path.
 	*/
-  void addChildItem(const char *theText,
+  void addChildItem(const QString& theText,
 					const QPixmap *thePixmap,
 					const KPath *thePath); 
 
@@ -382,7 +382,7 @@ public:
 	enabled. If changing only the text or pixmap, set the other parameter
 	to 0.
 	*/
-  void changeItem(const char *newText, 
+  void changeItem(const QString& newText, 
 				  const QPixmap *newPixmap, 
 				  int index);
 
@@ -390,7 +390,7 @@ public:
 	Same as above function, except item to change is specified by a path
 	through the tree.
 	*/
-  void changeItem(const char *newText,
+  void changeItem(const QString& newText,
 				  const QPixmap *newPixmap,
 				  const KPath *thePath);
 
@@ -470,7 +470,7 @@ public:
 	reference item. If index is -1, the item is simply appended to the
 	tree at the root level. The item text must not be null.
 	*/
-  void insertItem(const char *theText,
+  void insertItem(const QString& theText,
 				  const QPixmap *thePixmap,
 				  int index = -1,
 				  bool prefix = TRUE);
@@ -479,7 +479,7 @@ public:
 	Same as above, but uses a path through the tree to reference the
 	insert position.
 	*/
-  void insertItem(const char *theText,
+  void insertItem(const QString& theText,
 				  const QPixmap *thePixmap,
 				  const KPath *thePath,
 				  bool prefix = TRUE);
@@ -676,10 +676,10 @@ protected:
   virtual int cellHeight(int row);
   void changeItem(KTreeListItem *toChange,
 				  int itemIndex,
-				  const char *newText,
+				  const QString& newText,
 				  const QPixmap *newPixmap);
   bool checkItemPath(const KPath *path) const;
-  bool checkItemText(const char *text) const;
+  bool checkItemText(const QString& text) const;
   void collapseSubTree(KTreeListItem *subRoot);
   bool countItem(KTreeListItem *item,
 				 void *total);

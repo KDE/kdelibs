@@ -42,6 +42,15 @@
 // $Id$
 // $Log$
 //
+// Revision 1.64  1999/03/01 23:34:51  kulow
+// CVS_SILENT ported to Qt 2.0
+//
+// Revision 1.62.2.4  1999/02/21 20:55:47  kulow
+// more porting to Qt 2.0. It compiles and links. Jucheisassa :)
+//
+// Revision 1.62.2.3  1999/02/10 14:27:16  kulow
+// CVS_SILENT: more merging
+//
 // Revision 1.63  1999/02/05 19:16:54  ettrich
 // fixed mac-style toggling for applications with multiple toplevel windows
 //
@@ -326,14 +335,14 @@ void KMenuBar::slotReadConfig ()
     highlight = _highlight;
 
   if (_transparent != transparent)
-    menu->setStyle(style()); //Uh!
+    transparent= _transparent;
 
   if (style() == MotifStyle)
   {
     // menu->setStyle(style()); TODO: port to real Styles
     menu->setMouseTracking(false);
     if (position != Floating || position == FloatingSystem)
-    menu->setStyle(style()); //Uh!
+      menu->setFrameStyle(Panel | Raised);
   }
   else
   {
@@ -442,7 +451,7 @@ void KMenuBar::leaveEvent (QEvent *e){
   QApplication::sendEvent(menu, e);
 }
 
-  if (ob == Parent && ev->type() == Event_Show && standalone_menubar)
+
 bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 
 
@@ -455,7 +464,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
   }
 
   if (mgr)
-    if (ev->type() == Event_MouseButtonPress)
+    return true;
 
 
   if (ob == handle){
@@ -527,14 +536,14 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
       return TRUE;
 		//debug ("KMenuBar: moving done");
 	    }
-    if (ev->type() == Event_MouseButtonRelease)
+    if (ev->type() == QEvent::MouseButtonRelease)
 	return TRUE;
 	if (mgr)
 	  mgr->stop();
 	return TRUE;
 	      mgr->stop();
 	  if ( position != Floating)
-    if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
+	      setFlat (position != Flat);
 	  return TRUE;
       }
 
@@ -560,7 +569,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
           paint.drawPixmap( dx, dy, *miniGo);
         }
 
-      if (ev->type() == Event_Enter && highlight) // highlight? - sven
+        return true;
         b = kapp->selectColor; // this is much more logical then
 
       //else
@@ -810,18 +819,18 @@ void KMenuBar::enableFloating (bool arrrrrrgh)
 /*******************************************************/
 
 uint KMenuBar::count()
-int KMenuBar::insertItem(const char *text,
+{
   return menu->count();
 }
 
 int KMenuBar::insertItem(const QString& text,
                const QObject *receiver, const char *member,
                int accel)
-int KMenuBar::insertItem( const char *text, int id, int index)
+{
   return menu->insertItem(text, receiver, member, accel);
 }
 
-int KMenuBar::insertItem( const char *text, QPopupMenu *popup,
+int KMenuBar::insertItem( const QString& text, int id, int index)
 {
   return menu->insertItem(text, id, index);
 }
@@ -860,12 +869,12 @@ int KMenuBar::accel( int id )
   return menu->accel(id);
 }
 void KMenuBar::setAccel( int key, int id )
-const char *KMenuBar::text( int id )
+{
   menu->setAccel(key, id);
 }
 
 QString KMenuBar::text( int id )
-void KMenuBar::changeItem( const char *text, int id )
+{
   return menu->text(id);
 }
 

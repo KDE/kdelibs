@@ -225,7 +225,7 @@ void KApplicationTree::resizeEvent( QResizeEvent * )
  *
  ***************************************************************/
 
-OpenWithDlg::OpenWithDlg( const char *_text, const char* _value, QWidget *parent, bool _file_mode )
+OpenWithDlg::OpenWithDlg( const QString&_text, const QString& _value, QWidget *parent, bool _file_mode )
         : QDialog( parent, 0L, true )
 {
   m_pTree = 0L;
@@ -246,10 +246,10 @@ OpenWithDlg::OpenWithDlg( const char *_text, const char* _value, QWidget *parent
 	      completion, SLOT (make_completion()));
     connect ( edit, SIGNAL (rotation()),
 	      completion, SLOT (make_rotation()));
-    connect ( edit, SIGNAL (textChanged(const char *)),
-	      completion, SLOT (edited(const char *)));
-    connect ( completion, SIGNAL (setText (const char *)),
-	      edit, SLOT (setText (const char *)));
+    connect ( edit, SIGNAL (textChanged(const QString&)),
+	      completion, SLOT (edited(const QString&)));
+    connect ( completion, SIGNAL (setText (const QString&)),
+	      edit, SLOT (setText (const QString&)));
   }
   else
     completion = 0L;
@@ -301,9 +301,9 @@ void OpenWithDlg::slotBrowse()
   cancel->setGeometry( 280, 280, 80, 25 );
 
   m_pTree = new KApplicationTree( this );
-  connect( m_pTree, SIGNAL( selected( const char*, const char* ) ), this, SLOT( slotSelected( const char*, const char* ) ) );
+  connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ), this, SLOT( slotSelected( const QString&, const QString& ) ) );
 
-  connect( m_pTree, SIGNAL( highlighted( const char*, const char* ) ), this, SLOT( slotHighlighted( const char*, const char* ) ) );
+  connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ), this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
 
   m_pTree->setGeometry( 10, 70, 350, 200 );
   m_pTree->show();
@@ -345,7 +345,7 @@ void OpenWithDlg::resizeEvent(QResizeEvent *)
   }
 }
 
-void OpenWithDlg::slotSelected( const char* _name, const char* _exec )
+void OpenWithDlg::slotSelected( const QString& _name, const QString& _exec )
 {
   m_pService = KService::findByName( _name );
   if ( !m_pService )
@@ -356,10 +356,9 @@ void OpenWithDlg::slotSelected( const char* _name, const char* _exec )
   accept();
 }
 
-void OpenWithDlg::slotHighlighted( const char* _name, const char* )
+void OpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 {
   qName = _name;
-  qName.detach();
   haveApp = true;
 }
 

@@ -38,18 +38,18 @@
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
-char *k_dcgettext (const char *__domainname, const char *__msgid,
-		   const char *_language);
+char *k_dcgettext (const char* __domainname, const char* __msgid,
+		   const char* _language);
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
    If DOMAINNAME is "", reset to the default of "messages".  */
-char *k_textdomain (const char *__domainname);
+char *k_textdomain (const QString& __domainname);
 
 /* Specify that the DOMAINNAME message catalog will be found
    in DIRNAME rather than in the system locale data base.  */
-char *k_bindtextdomain (const char *__domainname,
-			const char *__dirname);  
+char *k_bindtextdomain (const char* __domainname,
+			const char* __dirname);  
 
 
 #include "klocale.h"
@@ -70,7 +70,7 @@ static char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
                             "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
 
 const QString KLocale::mergeLocale(const QString& lang,const QString& country,
-				   const QString &charset)
+				   const QString& charset)
 {
     if (lang.isEmpty()) 
 	return "C";
@@ -85,7 +85,7 @@ const QString KLocale::mergeLocale(const QString& lang,const QString& country,
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
 			  QString& country,
-			  QString &chset){
+			  QString& chset){
    
     QString str = aStr.copy();
 
@@ -146,15 +146,13 @@ KLocale::KLocale( const char *catalogue )
     setlocale (LC_ALL, "");
 #endif
     chset="us-ascii";
-    if ( ! catalogue )
-	catalogue = kapp->appName().data();
+    if (! catalogue)
+        catalogue = kapp->appName().data();
     
     catalogues = new QStrList(true);
-    catalogues->append(catalogue);
     
-    QString languages;
     const char *g_lang = getenv("KDE_LANG");
-    languages = g_lang;
+    QString languages(g_lang);
     
     bool set_locale_vars=false;
 
@@ -203,7 +201,7 @@ KLocale::KLocale( const char *catalogue )
     } else 
 	languages = languages + ":C";
 
-    QString directory = KApplication::kde_localedir();
+    QString directory(KApplication::kde_localedir());
     QString ln,ct,chrset;
    
     // save languages list requested by user
@@ -277,7 +275,7 @@ KLocale::KLocale( const char *catalogue )
     if (chset.isEmpty() || !KCharset(chset).ok()) chset="us-ascii";
 }
 
-void KLocale::insertCatalogue( const char *catalogue )
+void KLocale::insertCatalogue( const char* catalogue )
 {
     k_bindtextdomain ( catalogue , KApplication::kde_localedir() );
     catalogues->append(catalogue);
@@ -288,10 +286,10 @@ KLocale::~KLocale()
     delete catalogues;
 }
 
-const char *KLocale::translate(const char *msgid)
+const QString KLocale::translate(const char* msgid)
 {
     const char *text = msgid;
-    for (const char *catalogue = catalogues->first(); catalogue; 
+    for (const char* catalogue = catalogues->first(); catalogue; 
 	 catalogue = catalogues->next()) 
     {
 	text = k_dcgettext( catalogue, msgid, lang);
@@ -313,7 +311,7 @@ void KLocale::aliasLocale( const char* text, long int index)
 }
 
 // Using strings seems to be more portable (for systems without locale.h
-const char *KLocale::getLocale(QString cat){
+const QString KLocale::getLocale(const QString& cat){
 
     cat.upper();
     if (cat=="LC_NUMERIC") return lc_numeric;
@@ -348,8 +346,7 @@ QStrList KLocale::languageList()const{
 // a list to be returned
     QStrList list;
 // temporary copy of language list
-    QString str=langs;
-    str.detach();
+    QString str(langs);
     
     while(!str.isEmpty()){
       int f = str.find(':');
@@ -367,7 +364,7 @@ QStrList KLocale::languageList()const{
 
 #else /* ENABLE_NLS */
 
-KLocale::KLocale( const char *) 
+KLocale::KLocale( const QString& ) 
 {
 }
 
@@ -375,7 +372,7 @@ KLocale::~KLocale()
 {
 }
 
-const char *KLocale::translate(const char *msgid)
+const QString KLocale::translate(const char* msgid)
 {
     return msgid;
 }
@@ -385,12 +382,12 @@ QString KLocale::directory()
     return KApplication::kde_localedir();
 }
 
-void KLocale::aliasLocale(const char* text, long int index)
+void KLocale::aliasLocale(const QString& text, long int index)
 {
     aliases.insert(index, text);
 }
 
-const char *KLocale::getLocale(QString ){
+const QString KLocale::getLocale(QString ){
     return "C";
 }
 
@@ -407,7 +404,7 @@ QStrList KLocale::languageList()const{
 #endif /* ENABLE_NLS */
 
 
-const char *KLocale::getAlias(long key) const
+const QString KLocale::getAlias(long key) const
 {
     return aliases[key];
 }

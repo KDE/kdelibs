@@ -25,7 +25,6 @@ class QTimer;
 #include "addressbook.h"
 class BusinessCard;
 class SearchResults;
-#include <drag.h>
 
 class KFM;
 
@@ -81,7 +80,6 @@ protected:
   bool showSearchResults;
   SearchResults *searchResults; // zero if off
   // data elements
-  KDNDDropZone* dropZone;
   KFM* kfm;
   string tmpFile;
   bool readonlyGUI;
@@ -131,7 +129,7 @@ public slots:
   void exportTeXLabels();
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // called if data is dropped over this widget
-  void dropAction(KDNDDropZone*);
+  void dropEvent(QDropEvent *);
   void searchResultsClose();
   void selectEntry(const char*); // the key
   void setReadonlyGUI(bool state=true);

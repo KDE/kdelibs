@@ -1,5 +1,5 @@
 #include <kapp.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 
 #include "kcontainertest.h"

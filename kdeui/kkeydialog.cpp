@@ -41,7 +41,7 @@
 /*                                                                           */
 /*****************************************************************************/
 
-KSplitListItem::KSplitListItem( const char *s, int _id )
+KSplitListItem::KSplitListItem( const QString& s, int _id )
 	:  QListBoxItem()
 {
 	id = _id;
@@ -144,7 +144,7 @@ KKeyButton::~KKeyButton ()
 {
 }
 
-void KKeyButton::setText( QString text )
+void KKeyButton::setText( const QString& text )
 {
 	QPushButton::setText( text );
 	setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
@@ -1023,7 +1023,7 @@ bool KKeyChooser::isKeyPresent()
 	
 	gIt.toFirst();
 	while ( gIt.current() ) {
-		debug("current %s:%d code %d", gIt.currentKey(), *gIt.current(), pEntry->aConfigKeyCode);
+		debug("current %s:%d code %d", gIt.currentKey().ascii(), *gIt.current(), pEntry->aConfigKeyCode);
 		if ( (unsigned int)(*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
@@ -1050,7 +1050,7 @@ bool KKeyChooser::isKeyPresent()
 
 	sIt.toFirst();
 	while ( sIt.current() ) {
-		debug("current %s:%d code %d", sIt.currentKey(), *sIt.current(), pEntry->aConfigKeyCode);
+		debug("current %s:%d code %d", sIt.currentKey().ascii(), *sIt.current(), pEntry->aConfigKeyCode);
 		if ( (unsigned int)(*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
 			QString actionName( sIt.currentKey() );
 			actionName.stripWhiteSpace();

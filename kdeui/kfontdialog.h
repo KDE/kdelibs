@@ -23,6 +23,14 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.14.2.1  1999/02/14 02:39:53  granroth
+    Qt 2.0 changes. Mostly changed 'const char*' to QString where needed in
+    Qt SIGNALs and SLOTs
+
+    Revision 1.14  1998/11/30 19:31:33  lavikka
+    Now kfontdialog uses QLayout instead of hardcoded widget coordinates.
+    Command buttons are aligned correctly as well. Looks good and behaves well.
+
     Revision 1.13  1998/09/01 20:21:54  kulow
     I renamed all old qt header files to the new versions. I think, this looks
     nicer (and gives the change in configure a sense :)
@@ -154,7 +162,7 @@ class KFontDialog : public QDialog {
 
 
 public:
-    KFontDialog( QWidget *parent = 0L, const char *name = 0L,
+    KFontDialog( QWidget *parent = 0L, const QString& name = QString::null,
 			bool modal = FALSE, const QStrList* fontlist = 0L );
 
     void setFont( const QFont &font );
@@ -189,13 +197,13 @@ signals:
 
 private slots:
 
-      void 	family_chosen_slot(const char* );
-      void      size_chosen_slot(const char* );
-      void      weight_chosen_slot(const char*);
-      void      style_chosen_slot(const char*);
-      void      display_example(const QFont &font);
-      void      charset_chosen_slot(const char *);
-      void      setColors();
+	void family_chosen_slot(const QString&);
+	void size_chosen_slot(const QString&);
+	void weight_chosen_slot(const QString&);
+	void style_chosen_slot(const QString&);
+	void display_example(const QFont &font);
+	void charset_chosen_slot(const QString&);
+	void setColors();
 private:
 
     bool loadKDEInstalledFonts();

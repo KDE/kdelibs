@@ -3,15 +3,15 @@
 
 #include <qstring.h>
 
-QString& operator<<( QString&, short );
-QString& operator<<( QString&, ushort );
-QString& operator<<( QString&, int );
-QString& operator<<( QString&, uint );
-QString& operator<<( QString&, long );
-QString& operator<<( QString&, ulong );
-QString& operator<<( QString&, float );
-QString& operator<<( QString&, double );
-QString& operator<<( QString&, const char* );
+QString& operator<<( QString& , short );
+QString& operator<<( QString& , ushort );
+QString& operator<<( QString& , int );
+QString& operator<<( QString& , uint );
+QString& operator<<( QString& , long );
+QString& operator<<( QString& , ulong );
+QString& operator<<( QString& , float );
+QString& operator<<( QString& , double );
+QString& operator<<( QString& , const QString& );
 
 /* replaces QString::sprintf, where it's not sure, that 256
    bytes are enough for the resulting string.

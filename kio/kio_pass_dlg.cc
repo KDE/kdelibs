@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qaccel.h>

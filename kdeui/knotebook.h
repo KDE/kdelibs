@@ -169,7 +169,7 @@ public:
 * Adds a Cancel button to the bottom of the dialog.
 * @param text A user supplied text to write to the button.
 */
-        void setCancelButton(const char *text);
+        void setCancelButton(const QString& text);
 /**
 * Adds a Default button to the bottom of the dialog. The text will be a translated
 * version of the string '&Default' thereby giving it the shortcut key 'd'.
@@ -182,7 +182,7 @@ public:
 * Adds a Default button to the bottom of the dialog.
 * @param text A user supplied text to write to the button.
 */
-        void setDefaultButton(const char *text);
+        void setDefaultButton(const QString& text);
 /**
 * Adds a Help button to the bottom right of the dialog. The text will be a translated
 * version of the string '&Help' thereby giving it the shortcut key 'h'.
@@ -195,7 +195,7 @@ public:
 * signal @ref helpclicked where the int is the page to which the help was requested.
 * @param text A user supplied text to write to the button.
 */
-        void setHelpButton(const char *);
+        void setHelpButton(const QString& text);
 /**
 * Adds an Ok button to the bottom right of the dialog. The text will be a translated
 * version of the string '&Ok' thereby giving it the shortcut key 'o'.
@@ -208,7 +208,7 @@ public:
 * signal @ref okclicked where the int is the page to which the help was requested.
 * @param text A user supplied text to write to the button.
 */
-        void setOkButton(const char *);
+        void setOkButton(const QString&);
 /**
 * Get Ok button.
 * @return Returns the Ok buttonwidget or 0L if no button is added.

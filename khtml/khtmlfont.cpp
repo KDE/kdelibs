@@ -36,7 +36,7 @@ HTMLFont::HTMLFont( const char *_family, int _size, const int fontSizes[7],
                     int _weight, bool _italic, const char *_charset)
     : font( _family, fontSizes[ _size ], _weight, _italic )
 {
-    textCol = black;
+    textCol = Qt::black;
     fsize = _size;
     if (_charset) setCharset(_charset);
     else setCharset(klocale->charset());

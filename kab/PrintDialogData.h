@@ -15,8 +15,8 @@
 
 #include <qdialog.h>
 #include <qlabel.h>
-#include <qpushbt.h>
-#include <qlined.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
 #include <qframe.h>
 
 class PrintDialogData : public QDialog

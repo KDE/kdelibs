@@ -2109,7 +2109,7 @@ KMimeMagic::findBufferType(const char * buffer, int nbytes)
 {
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
 
-	resultBuf.resize(0);
+	resultBuf = QString::null;
 	if ( magicResult )
 	{
 	  magicResult->setMimeType( "" );
@@ -2167,7 +2167,8 @@ KMimeMagic::findBufferFileType( const char * buffer, int nbytes,
  */
 KMimeMagicResult* KMimeMagic::findFileType(const char *fn)
 {
-        resultBuf.resize(0);
+        resultBuf = QString::null;
+
         if ( magicResult )
 	{
 	  magicResult->setMimeType( "" );

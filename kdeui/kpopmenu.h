@@ -48,15 +48,15 @@ class KPopupMenu : public QPopupMenu {
     Q_OBJECT
 public:
     KPopupMenu(QWidget *parent=0, const char *name=0);
-    KPopupMenu(const char *title, QWidget *parent=0, const char *name=0);
+    KPopupMenu(const QString& title, QWidget *parent=0, const char *name=0);
     ~KPopupMenu();
     
-    void setTitle(const char *);
-    const char *title() const;
+    void setTitle(const QString& );
+    QString title() const;
     
 private:
     void paintCell(QPainter *, int, int);
-    void initialize(const char *);
+    void initialize(const QString& );
 
 };         
 

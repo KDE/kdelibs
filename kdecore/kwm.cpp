@@ -406,7 +406,7 @@ void KWM::raiseSoundEvent(const QString &event){
   ev.xclient.format = 8;
 
   int i;
-  const char* s = event.data();
+  const QString s = event.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
@@ -433,7 +433,7 @@ void KWM::registerSoundEvent(const QString &event){
   ev.xclient.format = 8;
 
   int i;
-  const char* s = event.data();
+  const QString s = event.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
@@ -640,7 +640,7 @@ void KWM::sendKWMCommand(const QString &command){
   ev.xclient.format = 8;
 
   int i;
-  const char* s = command.data();
+  const QString s = command.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
@@ -1124,7 +1124,7 @@ void KWM::doNotManage(const QString& title){
   ev.xclient.format = 8;
 
   int i;
-  const char* s = title.data();
+  const QString s = title.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 

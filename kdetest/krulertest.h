@@ -6,9 +6,9 @@
 #include <kapp.h>
 #include <ktopwidget.h>
 #include <qwidget.h>
-#include <qchkbox.h>
-#include <qradiobt.h>
-#include <qbttngrp.h>
+#include <qcheckbox.h>
+#include <qradiobutton.h>
+#include <qbuttongroup.h>
 #include <kintegerline.h>
 
 class KRuler;

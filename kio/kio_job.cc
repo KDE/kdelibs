@@ -2,7 +2,7 @@
 #include "kio_progress_dlg.h"
 #include "kio_manager.h"
 
-#include <qsocknot.h>
+#include <qsocketnotifier.h>
 #include <qdialog.h>
 #include <qpushbutton.h>
 

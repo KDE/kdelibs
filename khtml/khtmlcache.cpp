@@ -455,7 +455,7 @@ KHTMLCache::preload( const char * _url, Status s)
     if(!im)
     {
 #ifdef CACHE_DEBUG
-	printf("Cache: *** new cached image %s\n", kurl.path());
+	printf("Cache: *** new cached image %s\n", kurl.path().ascii());
 #endif
 	im = new KHTMLCachedImage();
 	im->load( kurl.path() );

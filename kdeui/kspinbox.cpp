@@ -107,7 +107,7 @@ KSpinBox::~KSpinBox()
   delete _decrTimer;
 }
 
-const char *KSpinBox::getValue()
+QString KSpinBox::getValue()
 {
   return GET_VALUE();
 }
@@ -121,7 +121,7 @@ QSize KSpinBox::sizeHint()
 }
 
 
-void KSpinBox::setValue(const char *value)
+void KSpinBox::setValue(const QString& value)
 {
   //	SET_VALUE(value);
   _edit->setText(value);
@@ -296,9 +296,9 @@ void KNumericSpinBox::setValue(int value)
 	
   if(_min <= value && value <= _max)
 	{
-	  char buf[20];
-	  sprintf(buf,"%d",value);
-	  KSpinBox::setValue(buf);
+	    QString tmp;
+	    tmp.setNum(value);
+	    KSpinBox::setValue(tmp);
 	}
   else	
 	qApp->beep();	// wrap around instead ?

@@ -7,7 +7,7 @@
 #include "version.h"
 
 KSpellDlg::KSpellDlg (QWidget *, const char *name,
-		      char *ID):
+		      QString& ID):
   QWidget (0, name, WStyle_DialogBorder)
 {
 
@@ -222,7 +222,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	standby();
 }
 
-void KSpellDlg::init (char *_word, QStrList *_sugg)
+void KSpellDlg::init (const QString& _word, QStrList *_sugg)
 {
   //  printf ("init %s\n",_word);
   sugg=_sugg;

@@ -48,7 +48,7 @@ class KSplitListItem : public QObject, public QListBoxItem
 	Q_OBJECT
 	
 public:
-    KSplitListItem( const char *s , int _id = 0);
+    KSplitListItem( const QString& s , int _id = 0);
     ~KSplitListItem (){};
     int getId(){return id;}
 
@@ -58,13 +58,13 @@ protected:
     virtual int width( const QListBox * ) const;
 
 public slots:
-	void setWidth( int newWidth );
-	
+    void setWidth( int newWidth );
+ 
 protected:
-	int halfWidth;
-	QString keyName;
-	QString actionName;
-	int id;
+    int halfWidth;
+    QString keyName;
+    QString actionName;
+    int id;
 };
 
 /**
@@ -107,7 +107,7 @@ class KKeyButton: public QPushButton
 public:
 	KKeyButton( const char* name = 0, QWidget *parent = 0);
 	~KKeyButton();
-	void setText( QString text );
+	void setText( const QString& text );
 	void setEdit( bool edit );
 	bool editing;
 

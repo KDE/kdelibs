@@ -14,7 +14,7 @@
 #define DialogBaseData_included
 
 #include <qdialog.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qframe.h>
 
 class DialogBaseData : public QDialog

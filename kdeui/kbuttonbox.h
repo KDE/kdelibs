@@ -79,7 +79,7 @@ public:
     * taken). If noexpand is TRUE, the width of this button will be
     * set to the minimum width needed for the given text).
     */
-  QPushButton *addButton(const char *text, bool noexpand = FALSE);
+  QPushButton *addButton(const QString& text, bool noexpand = FALSE);
 
   /**
     * This adds a stretch to the buttonbox. @see QBoxLayout for details.

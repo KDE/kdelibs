@@ -9,11 +9,11 @@
 #include <qtooltip.h>
 #include <kcursor.h>
 
-KURLLabel::KURLLabel(QWidget *parent, const char* name, WFlags f)
+KURLLabel::KURLLabel(QWidget *parent, const QString& name, WFlags f)
 	: QLabel(parent, name, f),
 	  m_textAlign(Bottom),
-	  m_url(0),
-	  m_tipText(0),
+	  m_url(QString::null),
+	  m_tipText(QString::null),
 	  m_float(false),
 	  m_tips(false),
 	  m_glow(true),
@@ -38,14 +38,14 @@ KURLLabel::~KURLLabel()
 {
 }
 
-const char* KURLLabel::url() const
+const QString KURLLabel::url() const
 {
 	return m_url;
 }
 
-const char* KURLLabel::text() const
+const QString KURLLabel::text() const
 {
-	return (const char*)m_text;
+	return m_text;
 }
 
 const QPixmap* KURLLabel::pixmap() const
@@ -53,7 +53,7 @@ const QPixmap* KURLLabel::pixmap() const
 	return &m_pixmap;
 }
 
-void KURLLabel::setURL(const char* url)
+void KURLLabel::setURL(const QString& url)
 {
 	/* save the input */
 	m_url = url;
@@ -102,7 +102,7 @@ void KURLLabel::setUseCursor(bool use_cursor, const QCursor* cursor)
 	}
 }
 
-void KURLLabel::setTipText(const char* tip)
+void KURLLabel::setTipText(const QString& tip)
 {
 	/* make sure there is something coming in */
 	if (!tip)
@@ -148,7 +148,7 @@ void KURLLabel::setFont(const QFont& font)
 	QLabel::setFont(new_font);
 }
 
-void KURLLabel::setText(const char* text)
+void KURLLabel::setText(const QString& text)
 {
 	/**
 	 * we set the underlining now and in setUnderline
@@ -234,7 +234,7 @@ void KURLLabel::setHighlightedColor(const QColor& high)
 	setPalette(m_nsp);
 }
 
-void KURLLabel::setHighlightedColor(const char* high)
+void KURLLabel::setHighlightedColor(const QString& high)
 {
 	/* set the new color */
 	m_hc.setNamedColor(high);
@@ -253,7 +253,7 @@ void KURLLabel::setSelectedColor(const QColor& selected)
 	m_resetPalette();
 }
 
-void KURLLabel::setSelectedColor(const char* selected)
+void KURLLabel::setSelectedColor(const QString& selected)
 {
 	/* set the new color */
 	m_sc.setNamedColor(selected);
@@ -272,7 +272,7 @@ void KURLLabel::setBackgroundColor(const QColor& back)
 	setPalette(m_nsp);
 }
 
-void KURLLabel::setBackgroundColor(const char* back)
+void KURLLabel::setBackgroundColor(const QString& back)
 {
 	/* set the new color */
 	m_bc.setNamedColor(back);
@@ -461,6 +461,8 @@ void KURLLabel::mousePressEvent(QMouseEvent *event)
 			case MidButton:
 				emit(middleClickedURL(m_url));
 				emit(middleClickedURL());
+				break;
+			default:
 				break;
 		}
 	}

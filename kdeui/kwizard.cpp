@@ -154,13 +154,11 @@ KWizard::~KWizard()
   //debug("KWizard - destructor done");
 }
 
-void KWizard::setCancelButton()
+void KWizard::setCancelButton(const QString& name)
 {
-  setCancelButton(klocale->translate("&Cancel"));
-}
+    if (name.isNull())
+	setCancelButton(i18n("&Cancel"));
 
-void KWizard::setCancelButton(const char *name)
-{
   if(!pwiz->cancel)
   {
     pwiz->cancel = new QPushButton(name, this);
@@ -177,13 +175,11 @@ QButton *KWizard::getCancelButton()
   return pwiz->cancel;
 }
 
-void KWizard::setDefaultButton()
+void KWizard::setDefaultButton(const QString& name)
 {
-  setDefaultButton(klocale->translate("&Default"));
-}
+    if (name.isNull())
+	setDefaultButton(i18n("&Default"));
 
-void KWizard::setDefaultButton(const char *name)
-{
   if(!pwiz->def)
   {
     pwiz->def = new QPushButton(name, this);
@@ -200,13 +196,11 @@ QButton *KWizard::getDefaultButton()
   return pwiz->def;
 }
 
-void KWizard::setHelpButton()
+void KWizard::setHelpButton(const QString& name)
 {
-  setHelpButton(klocale->translate("&Help"));
-}
+    if (name.isNull())
+	setHelpButton(i18n("&Help"));
 
-void KWizard::setHelpButton(const char *name)
-{
   if(!pwiz->help)
   {
     pwiz->help = new QPushButton(name, this);
@@ -223,13 +217,11 @@ QButton *KWizard::getHelpButton()
   return pwiz->help;
 }
 
-void KWizard::setOkButton()
+void KWizard::setOkButton(const QString& name)
 {
-  setOkButton(klocale->translate("&OK"));
-}
+    if (name.isNull())
+	setOkButton(i18n("&OK"));
 
-void KWizard::setOkButton(const char *name)
-{
   if(!pwiz->ok)
   {
     pwiz->ok = new QPushButton(name, this);
@@ -715,7 +707,7 @@ void KWizard::previousPage()
 // to popup menu.
 bool KWizard::eventFilter( QObject *obj, QEvent *e )
 {
-  if ( e->type() == Event_MouseButtonPress && obj == pwiz->title)
+  if ( e->type() == QEvent::MouseButtonPress && obj == pwiz->title)
   {
     QMouseEvent *m = (QMouseEvent*)e;
     if(pwiz->title->rect().contains( m->pos()) && m->button() == RightButton)
@@ -729,7 +721,7 @@ bool KWizard::eventFilter( QObject *obj, QEvent *e )
     }
   }
 
-  if ( e->type() == Event_KeyPress && obj == this)
+  if ( e->type() == QEvent::KeyPress && obj == this)
   {
     QKeyEvent *k = (QKeyEvent*)e;
     if(k->key() == Key_PageUp)

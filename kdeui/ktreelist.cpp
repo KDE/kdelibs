@@ -37,7 +37,7 @@ KTreeListItem
 */
 
 // constructor
-KTreeListItem::KTreeListItem(const char *theText,
+KTreeListItem::KTreeListItem(const QString& theText,
 				   const QPixmap* thePixmap):
   branch(0),
   indent(22), 	 // seems to be a good default value
@@ -182,7 +182,7 @@ KTreeListItem *KTreeListItem::getSibling()
 }
 
 // returns a pointer to the item text
-const char *KTreeListItem::getText() const
+const QString KTreeListItem::getText() const
 {
   return text; // implicit cast to char *!
 }
@@ -317,7 +317,7 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
       p->drawLine(parentLeaderX, cellCenterY - 2, 
 		  parentLeaderX, cellCenterY + 2);
     }
-    p->setBrush(NoBrush);
+    p->setBrush(Qt::NoBrush);
   }
   
   // now draw the item pixmap and text, if applicable
@@ -328,8 +328,8 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
 	  int textY = cellHeight - ((cellHeight - p->fontMetrics().ascent() - 
 			  p->fontMetrics().leading()) / 2);
 	  if(highlighted) {
-	     if(QApplication::style() == WindowsStyle) {
-		      p->setPen(white);
+	    if (qApp->style() == Qt::WindowsStyle) {
+		      p->setPen(Qt::white);
 		      p->setBackgroundColor(QApplication::winStyleHighlightColor());
 		  }
 		  else {
@@ -425,7 +425,7 @@ void KTreeListItem::setSibling(KTreeListItem *newSibling)
 }
 
 // sets the item text to the given string
-void KTreeListItem::setText(const char *t)
+void KTreeListItem::setText(const QString& t)
 {
   text = t;
 }
@@ -493,7 +493,7 @@ KTreeList
 
 // constructor
 KTreeList::KTreeList(QWidget *parent,
-			   const char *name,
+			   const QString& name,
 			   WFlags f):
   QTableView(parent, name, f),
   clearing(FALSE),
@@ -523,7 +523,6 @@ KTreeList::KTreeList(QWidget *parent,
       setFrameStyle(QFrame::Panel | QFrame::Plain);
       setLineWidth(1);
   }
-  setAcceptFocus(TRUE);
   treeRoot = new KTreeListItem;
   treeRoot->setBranch(-1);
   treeRoot->setExpanded(TRUE);
@@ -547,7 +546,7 @@ void KTreeList::paletteChange(const QPalette &)
 
 // appends a child to the item at the given index with the given text
 // and pixmap
-void KTreeList::addChildItem(const char *theText,
+void KTreeList::addChildItem(const QString& theText,
                                 const QPixmap *thePixmap,
                                 int index)
 {
@@ -556,7 +555,7 @@ void KTreeList::addChildItem(const char *theText,
 
 // appends a child to the item at the end of the given path with
 // the given text and pixmap
-void KTreeList::addChildItem(const char *theText,
+void KTreeList::addChildItem(const QString& theText,
                                 const QPixmap *thePixmap,
                                 const KPath *thePath)
 {
@@ -621,7 +620,7 @@ bool KTreeList::bottomScrollBar() const
 }
 
 // find item at specified index and change pixmap and/or text
-void KTreeList::changeItem(const char *newText,
+void KTreeList::changeItem(const QString& newText,
 			      const QPixmap *newPixmap,
 			      int index)
 {
@@ -631,7 +630,7 @@ void KTreeList::changeItem(const char *newText,
 }
 
 // find item at end of specified path, and change pixmap and/or text
-void KTreeList::changeItem(const char *newText,
+void KTreeList::changeItem(const QString& newText,
 			      const QPixmap *newPixmap,
 			      const KPath *thePath)
 {
@@ -794,7 +793,7 @@ int KTreeList::indentSpacing()
 // or after the item at the given index, depending on the value
 // of prefix
 // if index is negative, appends item to tree at root level
-void KTreeList::insertItem(const char *theText,
+void KTreeList::insertItem(const QString& theText,
 			      const QPixmap *thePixmap,
 			      int index,
 			      bool prefix)
@@ -805,7 +804,7 @@ void KTreeList::insertItem(const char *theText,
 // inserts a new item with the specified text and pixmap before
 // or after the item at the end of the given path, depending on the value
 // of prefix
-void KTreeList::insertItem(const char *theText,
+void KTreeList::insertItem(const QString& theText,
 			      const QPixmap *thePixmap,
 			      const KPath *thePath,
 			      bool prefix)
@@ -1214,7 +1213,7 @@ int KTreeList::cellHeight(int row)
 // changes the given item with the new text and/or pixmap
 void KTreeList::changeItem(KTreeListItem *toChange,
 			      int itemIndex,
-			      const char *newText,
+			      const QString& newText,
 			      const QPixmap *newPixmap)
 {
   int oldWidth = toChange->width(this);
@@ -1242,7 +1241,7 @@ bool KTreeList::checkItemPath(const KPath *path) const
 }
 
 // returns bool indicating valid item text
-bool KTreeList::checkItemText(const char *text) const
+bool KTreeList::checkItemText(const QString& text) const
 {
   bool isValid = TRUE;
   if(!text)

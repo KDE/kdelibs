@@ -1,6 +1,6 @@
 #include "kclipboard.h"
 
-#include <qdatetm.h>
+#include <qdatetime.h>
 #define  GC GC_QQQ
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -57,7 +57,7 @@ bool KClipboard::open( int _mode )
   return open( _mode, "application/octet-stream" );
 }
 
-bool KClipboard::open( int _mode, const char *_format )
+bool KClipboard::open( int _mode, const QString& _format )
 {
   if ( _mode != IO_ReadOnly && _mode != ( IO_WriteOnly | IO_Truncate ) && _mode != IO_WriteOnly )
   {    
@@ -109,7 +109,7 @@ bool KClipboard::open( int _mode, const char *_format )
     assert( 0 );
 }
 
-const char* KClipboard::format()
+const QString KClipboard::format()
 {
   if ( !isOwner() )
     fetchData();
@@ -269,7 +269,7 @@ void KClipboard::fetchData()
   {
     // Find non printable characters
     QByteArray ba = buffer();
-    const char *d = ba.data();
+    QString d(ba.data());
     int len = ba.size();
     for( int j = 0; j < len; j++ )
     {
@@ -288,11 +288,11 @@ void KClipboard::fetchData()
 
 bool KClipboard::event( QEvent *e )
 {
-  if ( e->type() != Event_Clipboard )
+  if ( e->type() != QEvent::Clipboard )
     return false;
 
   Display *display = qt_xdisplay();
-  XEvent *xevent = (XEvent *)Q_CUSTOM_EVENT(e)->data();
+  XEvent *xevent = static_cast<XEvent*>(static_cast<QCustomEvent*>(e)->data());
 
   switch ( xevent->type )
   {
@@ -355,7 +355,7 @@ void KClipboard::setURLList( QStrList& _urls )
 {
   open( IO_WriteOnly | IO_Truncate, "url/url" );
   
-  const char *s;
+  const char* s;
   for( s = _urls.first(); s != 0L; s = _urls.next() )
   {
     if ( s == _urls.getLast() )
@@ -405,7 +405,7 @@ bool KClipboard::urlList( QStrList& _urls)
   return true;
 }
 
-void KClipboard::setText( const char *_text )
+void KClipboard::setText( const QString& _text )
 {
   open( IO_WriteOnly | IO_Truncate, "text/plain" );  
 
@@ -414,13 +414,13 @@ void KClipboard::setText( const char *_text )
   close();
 }
 
-const char* KClipboard::text()
+const QString KClipboard::text()
 {
   if ( !isOwner() )
     fetchData();
 
  if ( m_strFormat != "text/plain" )
-    return 0L;
+    return QString::null;
 
   QByteArray ba = buffer();
   return ba.data() + m_mimeTypeLen;

@@ -4,7 +4,7 @@
 #include <qlayout.h>
 #include <kbuttonbox.h>
 #include <qlabel.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <stdlib.h>
 
 #define SIZE(w)  w->setFrameStyle(QFrame::Raised|QFrame::Panel); w->setMinimumSize(w->sizeHint());

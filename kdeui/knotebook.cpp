@@ -38,8 +38,9 @@ struct KNoteBookProtected
 };
 
 
-KNoteBook::KNoteBook(QWidget *parent, const char *name, bool modal, WFlags f)
- : KDialog(parent, name, modal, f)
+KNoteBook::KNoteBook(QWidget *parent, const char *name, 
+		     bool modal, WFlags f)
+    : KDialog(parent, name, modal, f)
 {
   initMetaObject();
   init();
@@ -178,7 +179,7 @@ void KNoteBook::setCancelButton()
   setCancelButton(klocale->translate("&Cancel"));
 }
 
-void KNoteBook::setCancelButton(const char *name)
+void KNoteBook::setCancelButton(const QString& name)
 {
   if(!pnote->cancel)
   {
@@ -201,7 +202,7 @@ void KNoteBook::setDefaultButton()
   setDefaultButton(klocale->translate("&Default"));
 }
 
-void KNoteBook::setDefaultButton(const char *name)
+void KNoteBook::setDefaultButton(const QString& name)
 {
   if(!pnote->def)
   {
@@ -224,7 +225,7 @@ void KNoteBook::setHelpButton()
   setHelpButton(klocale->translate("&Help"));
 }
 
-void KNoteBook::setHelpButton(const char *name)
+void KNoteBook::setHelpButton(const QString& name)
 {
   if(!pnote->help)
   {
@@ -247,7 +248,7 @@ void KNoteBook::setOkButton()
   setOkButton(klocale->translate("&OK"));
 }
 
-void KNoteBook::setOkButton(const char *name)
+void KNoteBook::setOkButton(const QString& name)
 {
   if(!pnote->ok)
   {

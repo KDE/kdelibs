@@ -137,7 +137,7 @@ void StringListEditWidget::getStrings(list<string>& result)
   CHECK(result.empty());
   for(count=0; (unsigned)count<lbStrings->count(); count++)
     {
-      result.push_back(lbStrings->text(count));
+      result.push_back(lbStrings->text(count).ascii());
     }
   CHECK(result.size()==lbStrings->count());
   // ############################################################################

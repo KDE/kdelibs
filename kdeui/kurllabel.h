@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4.2.1  1999/02/14 02:40:07  granroth
+ * Qt 2.0 changes. Mostly changed 'const char*' to QString where needed in
+ * Qt SIGNALs and SLOTs
+ *
+ * Revision 1.4  1998/11/28 06:32:28  granroth
+ * Got rid of built-in hand cursor and used KCursor
+ *
  * Revision 1.3  1998/11/22 20:23:15  mirko
  * I added the possibility to use KURLLabel on top of a (parent) widget that
  * uses a background pattern, like kab's main view.
@@ -70,8 +77,8 @@ typedef enum
  *     KURLLabel *address = new KURLLabel(this);
  *     address->setText("My homepage");
  *     address->setURL("http://www.home.com/~me");
- *     connect(address, SIGNAL(leftClickedURL(const char*)),
- *                      SLOT(processMyURL(const char*)));
+ *     connect(address, SIGNAL(leftClickedURL(const QString&)),
+ *                      SLOT(processMyURL(const QString&)));
  * </PRE>
  *
  * In this example, the text "My homepage" would be displayed
@@ -91,7 +98,7 @@ public:
 	/**
 	 * Constructor.  Use this exactly like you would QLabel.
 	 */
-	KURLLabel(QWidget *parent=0, const char* name=0, WFlags f=0);
+	KURLLabel(QWidget *parent=0, const QString& name=QString::null, WFlags f=0);
 
 	/**
 	 * Destructor.
@@ -104,7 +111,7 @@ public:
 	 *
 	 * @return the URL.
 	 */
-	const char* url() const;
+	const QString url() const;
 
 	/**
 	 * Returns the current text.
@@ -113,7 +120,7 @@ public:
 	 *
 	 * @return the current text.
 	 */
-	const char* text() const;
+	const QString text() const;
 
 	/**
 	 * Returns the current pixmap.
@@ -181,7 +188,7 @@ public slots:
 	 *
 	 * @see #setUseTips
 	 */
-	void setTipText(const char* tip);
+	void setTipText(const QString& tip);
 
 	/**
 	 * Set the text alignment
@@ -205,7 +212,7 @@ public slots:
 	 *
 	 * @see #setHighlightedColor
 	 */
-	void setHighlightedColor(const char* highcolor);
+	void setHighlightedColor(const QString& highcolor);
 	
 	/**
 	 * Set the selected color.  This is the color the text will change
@@ -219,7 +226,7 @@ public slots:
 	 *
 	 * @see #setSelectedColor
 	 */
-	void setSelectedColor(const char* selcolor);
+	void setSelectedColor(const QString& selcolor);
 	
 	/**
 	 * Set the background color.  By default, it is set to the
@@ -232,7 +239,7 @@ public slots:
 	 *
 	 * @see #setBackgroundColor
 	 */
-	void setBackgroundColor(const char* bgcolor);
+	void setBackgroundColor(const QString& bgcolor);
 
 	/**
 	 * Sets the font for the label.
@@ -244,7 +251,7 @@ public slots:
 	 *
 	 * @see #text
 	 */
-	void setText(const char* text);
+	void setText(const QString& text);
 
 	/**
 	 * Sets the pixmap.  Unlike QLabel, this can co-exist with 
@@ -276,7 +283,7 @@ public slots:
 	 *
 	 * @see #url
 	 */
-	void setURL(const char* url);
+	void setURL(const QString& url);
 
 signals:
 	/**
@@ -284,7 +291,7 @@ signals:
 	 *
 	 * @param url The URL for this label.
 	 */ 
-	void enteredURL(const char* url);
+	void enteredURL(const QString& url);
 
 	/**
 	 * The mouse has passed over the label.
@@ -296,7 +303,7 @@ signals:
 	 *
 	 * @param url The URL for this label.
 	 */ 
-	void leftURL(const char* url);
+	void leftURL(const QString& url);
 
 	/**
 	 * The mouse is no longer over the label.
@@ -308,7 +315,7 @@ signals:
 	 *
 	 * @param url The URL for this label.
 	 */ 
-	void leftClickedURL(const char* url);
+	void leftClickedURL(const QString& url);
 
 	/**
 	 * The user clicked the left mouse button on this label.
@@ -320,7 +327,7 @@ signals:
 	 *
 	 * @param url The URL for this label.
 	 */ 
-	void rightClickedURL(const char* url);
+	void rightClickedURL(const QString& url);
 
 	/**
 	 * The user clicked the left mouse button on this label.
@@ -332,7 +339,7 @@ signals:
 	 *
 	 * @param url The URL for this label.
 	 */ 
-	void middleClickedURL(const char* url);
+	void middleClickedURL(const QString& url);
 
 	/**
 	 * The user clicked the left mouse button on this label.
@@ -399,8 +406,8 @@ private:
 
 	TextAlignment m_textAlign;
 
-	const char* m_url;
-	const char* m_tipText;
+	QString m_url;
+	QString m_tipText;
 
 	QPixmap m_altPixmap;
 	QPixmap m_origPixmap;

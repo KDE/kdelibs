@@ -19,6 +19,13 @@
 // $Id$
 //
 // $Log$
+// Revision 1.13.2.1  1999/02/14 02:06:04  granroth
+// Converted a lot of 'const char*' to 'QString'.  This compiles... but
+// it's entirely possible that nothing will run linked to it :-P
+//
+// Revision 1.13  1999/01/18 10:56:24  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
 // Revision 1.12  1999/01/15 09:30:41  kulow
 // it's official - kdelibs builds with srcdir != builddir. For this I
 // automocifized it, the generated rules are easier to maintain than
@@ -66,7 +73,7 @@
 
 #include <qfileinfo.h>
 
-KSimpleConfig::KSimpleConfig( const char* pFile )
+KSimpleConfig::KSimpleConfig( const QString& pFile )
 {
   if( pFile )
 	{
@@ -87,7 +94,7 @@ KSimpleConfig::KSimpleConfig( const char* pFile )
 }
 
 
-KSimpleConfig::KSimpleConfig( const char* pFile, bool bReadOnly )
+KSimpleConfig::KSimpleConfig( const QString& pFile, bool bReadOnly )
 {
   if( pFile )
 	{
@@ -132,7 +139,7 @@ void KSimpleConfig::parseConfigFiles()
 }
 
 
-const QString KSimpleConfig::deleteEntry( const char* pKey, bool bLocalized )
+const QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 {
   // retrieve the current group dictionary
   KEntryDict* pCurrentGroupDict = data()->aGroupDict[ data()->aGroup.data() ];
@@ -174,7 +181,7 @@ const QString KSimpleConfig::deleteEntry( const char* pKey, bool bLocalized )
 }
 
 
-bool KSimpleConfig::deleteGroup( const char* pGroup, bool bDeep )
+bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 {
   // retrieve the group dictionary
   KEntryDict* pGroupDict = data()->aGroupDict[ pGroup ];

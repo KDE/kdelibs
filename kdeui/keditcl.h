@@ -211,7 +211,7 @@ class KEdit : public QMultiLineEdit
 public:
 
     KEdit (KApplication *a=NULL,QWidget *parent=NULL, const char *name=NULL,
-	   const char *filename=NULL);
+	   const QString& filename = QString::null);
 
     ~KEdit();
 
@@ -248,7 +248,7 @@ public:
     /// Saves the file as filename
       /** Saves the file as filename
        */
-    int 	doSave( const char *filename );
+    int 	doSave( const QString& filename );
 
     /// Allows the user to save the file under a new name
 	  /** Allows the user to save the file under a new name
@@ -285,13 +285,13 @@ public:
     /** Returns the filename of the currnet file. You can use setName() to set the
         filename of the current file
     */
-    QString 	getName();
+    QString getName();
 
     /// Sets the filename of the current file.
     /** Sets the filename of the currnet file. You can use getName() to set the
         filename of the current file
     */
-    void 	setName( const char *_name );
+    void 	setName( const QString&_name );
 
     /// Returns the currently marked text.
     /** Returns the currently marked text.
@@ -406,14 +406,14 @@ public:
     /// set the name of the file
 	  /** Sets the name of the file if a file is open.
 	    */
-    void       setFileName(char* name);
+    void       setFileName(const QString& name);
 
     /// save the current file as 'name'
 	  /** saves the current file as 'name'
 	    */
 
 
-    void       saveasfile(char* name);
+    void       saveasfile(const QString& name);
 
     /// remove tabs and whitespace on the end of lines during a justify operation
 	  /** remove tabs and whitespace on the end of lines during a justify operation
@@ -497,7 +497,7 @@ protected:
     int 	doReplace(QString s_pattern, bool case_sensitive,
 			  bool regex, bool forward,int line, int col,bool replace);
 
-    QFileDialog* getFileDialog(const char* captiontext);
+    QFileDialog* getFileDialog(const QString& captiontext);
 
 
 protected:

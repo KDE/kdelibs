@@ -50,7 +50,7 @@ public:
    *  working properly.  Pass the name of a slot -- do not pass zero!
    * Be sure to call cleanUp() when you are done with KSpell.
    */
-  KSpell(QWidget *_parent, const char *caption,
+  KSpell(QWidget *_parent, QString,
 	 QObject *obj, const char *slot, KSpellConfig *_kcs=0);
 
   /**
@@ -87,7 +87,7 @@ public:
    *  in _buffer check() reached before stopping.
    */
 
-  virtual bool check (char *_buffer);
+  virtual bool check (QString _buffer);
   inline int lastPosition(void)
     { return lastpos;}
 
@@ -126,7 +126,7 @@ public:
    *   If the dialog box is not used, or the user chooses not to change
    *   the word, then new word is just word. pos=0 always.
    */
-  virtual bool checkWord (char *_buffer,  bool usedialog=FALSE);
+  virtual bool checkWord (QString _buffer,  bool usedialog=FALSE);
 
   /**
    * You can use this to manually hide the dialog box.  You only _need_ to
@@ -167,13 +167,13 @@ public:
    *  ignore() returns FALSE if word is not a word or there was an error
    *  communicating with ispell.
    */
-  virtual bool ignore (const char *word);
+  virtual bool ignore (QString word);
 
   /**
    * Add a word to the user's personal dictionary.  Returns FALSE if word
    *  is not a word or there was an error communicating with ispell.
    */
-  virtual bool addPersonal (const char *word);
+  virtual bool addPersonal (QString word);
 
   /**
    * Returns the KSpellConfig object being used by this KSpell.
@@ -209,7 +209,7 @@ signals:
    *   calling program's GUI may be updated. (e.g. the misspelled word may
    *   be highlighted).
    */
-  void misspelling (char *originalword, QStrList *suggestions, 
+  void misspelling (QString originalword, QStrList *suggestions, 
 		    unsigned pos);
 
   /**
@@ -219,7 +219,7 @@ signals:
    * Results from the dialog may be checked with dlgResult() and replacement()
    * (see notes for check() for more information).
    */
-  void corrected (char *originalword, char *newword, unsigned pos);
+  void corrected (QString originalword, QString newword, unsigned pos);
 
   /**
    * This is emitted after KSpell has verified that ispell is running
@@ -301,15 +301,15 @@ protected:
   unsigned int lastpos, totalpos, lastline, posinline, lastlastline;
   unsigned int offset, progres, curprog;
 
-  int parseOneResponse (char *_buffer, char *word, QStrList *sugg);
-  char *funnyWord (char *word);
-  void dialog (char *word, QStrList *sugg, char *_slot);
-  inline char *replacement (void)
-    { return dlgreplacement.data(); }
+  int parseOneResponse (QString _buffer, QString word, QStrList *sugg);
+  QString funnyWord (QString word);
+  void dialog (QString word, QStrList *sugg, const char* _slot);
+  inline QString replacement (void)
+    { return dlgreplacement; }
 
   void emitProgress (void);
-  bool cleanFputs (const char *s, bool appendCR=TRUE);
-  bool cleanFputsWord (const char *s, bool appendCR=TRUE);
+  bool cleanFputs (QString s, bool appendCR=TRUE);
+  bool cleanFputsWord (QString s, bool appendCR=TRUE);
   void startIspell(void);
   bool writePersonalDictionary (void);
 };

@@ -353,10 +353,10 @@ void KSpellConfig::fillInDialog (void)
       if (!dir.exists() || !dir.isDir())
 	return;
 
-      kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillInDialog %s %s", dir.filePath(), dir.dirPath().data());
+      kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillInDialog %s %s", dir.filePath().ascii(), dir.dirPath().ascii());
 
       QDir thedir (dir.filePath(),"*.aff");
-      kdebug(KDEBUG_INFO, 750, "KSpellConfig%s\n",thedir.path());
+      kdebug(KDEBUG_INFO, 750, "KSpellConfig%s\n",thedir.path().ascii());
 
       kdebug(KDEBUG_INFO, 750, "entryList().count()=%d", thedir.entryList()->count());
 
@@ -480,7 +480,7 @@ bool KSpellConfig::runTogether(void) const
   return bruntogether;
 }
 
-char *KSpellConfig::dictionary (void) const
+const char *KSpellConfig::dictionary (void) const
 {
   return qsdict.data();
 }

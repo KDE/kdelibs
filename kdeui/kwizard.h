@@ -159,62 +159,46 @@ public:
 * @return Returns true if the page is enabled, otherwise false.
 */
         bool isPageEnabled(int page) { return pages->at(page)->enabled; };
-/**
-* Adds a Cancel button to the bottom of the dialog. The text will be a translated
-* version of the string '&Cancel' thereby giving it the shortcut key 'c'.
-* If any buttons are added a space will be created at the bottom of the dialog
-* to fit the buttons. When clicked the button will emit the @ref cancelclicked signal.
-* @see KLocale#translate
-*/
-        void setCancelButton();
+
 /**
 * Adds a Cancel button to the bottom of the dialog.
+* The text will be a translated version of the string '&Cancel' thereby
+* giving it the shortcut key 'c' if text is null.
+* If any buttons are added a space will be created at the bottom of the dialog
+* to fit the buttons. When clicked the button will emit the @ref cancelclicked signal.
 * @param text A user supplied text to write to the button.
 */
-        void setCancelButton(const char *text);
-/**
-* Adds a Default button to the bottom of the dialog. The text will be a translated
-* version of the string '&Default' thereby giving it the shortcut key 'd'.
-* If any buttons are added a space will be created at the bottom of the dialog
-* to fit the buttons. When clicked the button will emit the @ref defaultclicked signal.
-* @see KLocale#translate
-*/
-        void setDefaultButton();
+        void setCancelButton(const QString &text = QString::null);
+
 /**
 * Adds a Default button to the bottom of the dialog.
+* The text will be a translated version of the string '&Default' thereby 
+* giving it the shortcut key 'd' if text is null.
+* If any buttons are added a space will be created at the bottom of the dialog
+* to fit the buttons. When clicked the button will emit the @ref defaultclicked signal.
 * @param text A user supplied text to write to the button.
 */
-        void setDefaultButton(const char *text);
-/**
-* Adds a Help button to the bottom right of the dialog. The text will be a translated
-* version of the string '&Help' thereby giving it the shortcut key 'h'.
-* If any buttons are added a space will be created at the bottom of the dialog
-* to fit the buttons. When clicked the button will emit the @ref helpclicked signal.
-* @see #getHelpButton
-*/
-        void setHelpButton();
+        void setDefaultButton(const QString& text = QString::null);
+
 /**
 * Adds a Help button to the bottom of the dialog. This button will generate the
 * signal @ref helpclicked where the int is the page to which the help was requested.
+* if text is null, the text will be a translated
+* version of the string '&Help' thereby giving it the shortcut key 'h'.
 * @see #getHelpButton
 * @param text A user supplied text to write to the button.
 */
-        void setHelpButton(const char *);
-/**
-* Adds an Ok button to the bottom right of the dialog. The text will be a translated
-* version of the string '&Ok' thereby giving it the shortcut key 'o'.
-* If any buttons are added a space will be created at the bottom of the dialog
-* to fit the buttons. When clicked the button will emit the @ref okclicked signal.
-* @see #getOkButton
-*/
-        void setOkButton();
+        void setHelpButton(const QString& text = QString::null);
+
 /**
 * Adds an Ok button to the bottom of the dialog. This button will generate the
 * signal @ref okclicked where the int is the page to which the help was requested.
+*  The text will be a translated
+* version of the string '&Ok' thereby giving it the shortcut key 'o' if text is null.
 * @see #getOkButton
 * @param text A user supplied text to write to the button.
 */
-        void setOkButton(const char *);
+        void setOkButton(const QString& text = QString::null);
 /**
 * @see #setOkButton
 * @return Returns the Ok buttonwidget or 0L if no button is added.
@@ -305,7 +289,8 @@ public:
 * @return Returns the title of a specified page. Used by KNoteBook
 * @param page The page to retrieve the title from.
 */
-        const char * getTitle(int page) { return pages->at(page)->title.data(); };
+
+        QString getTitle(int page) { return pages->at(page)->title.data(); };
 /**
 * numPages
 * @return Returns the number of pages in the wizard.

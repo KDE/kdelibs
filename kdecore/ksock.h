@@ -21,6 +21,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.20.2.1  1999/02/14 02:06:08  granroth
+ * Converted a lot of 'const char*' to 'QString'.  This compiles... but
+ * it's entirely possible that nothing will run linked to it :-P
+ *
+ * Revision 1.20  1998/11/11 00:02:55  thufir
+ * addes ability to set a connect Time Out, breaks binary compatability
+ *
  * Revision 1.19  1998/09/01 20:21:33  kulow
  * I renamed all old qt header files to the new versions. I think, this looks
  * nicer (and gives the change in configure a sense :)
@@ -156,14 +163,14 @@ public:
      * @param _host	the remote host to which to connect.
      * @param _port	the port on the remote host.
      */
-    KSocket( const char *_host, unsigned short int _port );
-    KSocket( const char *_host, unsigned short int _port, int timeOut);
+    KSocket( const QString& _host, unsigned short int _port );
+    KSocket( const QString& _host, unsigned short int _port, int timeOut);
     
     /** 
      * Connects to a UNIX domain socket.
      * @param _path    the filename of the socket
      */
-    KSocket( const char *_path );
+    KSocket( const QString& _path );
 
     /** 
      * Destructor. Closes the socket if it is still open.
@@ -231,10 +238,10 @@ public slots:
     void slotRead( int );
     
 protected:
-    bool connect( const char *_host, unsigned short int _port );
-    bool connect( const char *_path );
+    bool connect( const QString& _host, unsigned short int _port );
+    bool connect( const QString& _path );
   
-    bool init_sockaddr( const char *hostname, unsigned short int port );
+    bool init_sockaddr( const QString& hostname, unsigned short int port );
     
     struct sockaddr_in server_name;
     struct sockaddr_un unix_addr;
@@ -286,7 +293,7 @@ public:
     /**
      * Creates a UNIX domain server socket.
      */
-    KServerSocket( const char *_path );
+    KServerSocket( const QString& _path );
   
     /** 
      * Destructor. Closes the socket if it was not already closed.
@@ -323,7 +330,7 @@ signals:
 
 protected:
     bool init( short unsigned int );
-    bool init( const char* _path );
+    bool init( const QString& _path );
   
     /** 
      * Notifies us when there is something to read on the port.

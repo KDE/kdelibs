@@ -18,12 +18,12 @@
 */
 #include <stdlib.h>
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qdialog.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
-#include <qmsgbox.h>
-#include <qdatetm.h>
+#include <qmessagebox.h>
+#include <qdatetime.h>
 
 #include "kdatepicktestdlg.h"
 #include "kdatepicktestdlg.h"

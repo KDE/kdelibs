@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 The KDE Team
+    Copyright (C) 1997, 1998, 1999 The KDE Team
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -55,11 +55,11 @@
 #include <qbitmap.h>
 #include <qdrawutil.h>
 #include <qscrollbar.h>
+#include <qdragobject.h>
 #include <kapp.h>
 
 // This is only for flushKeys().
 #include <X11/Xlib.h>
-
 
 #include <stdarg.h>
 
@@ -350,7 +350,7 @@ void KTabListBoxColumn::clearAll(bool leftbutton)
 //=============================================================================
 KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 			 WFlags _f):
-    KTabListBoxInherited(parent, name, _f), lbox(this)
+    QWidget(parent, name, _f), lbox(this)
 {
   QFontMetrics fm = fontMetrics();
   QString f;
@@ -592,10 +592,14 @@ void KTabListBox::writeConfig(void)
 {
   KConfig* conf = KApplication::getKApplication()->getConfig();
   int t;
-  char str[200]="";
+  QString str;
 
   conf->setGroup(name());
-  for(t=0;t<numCols();t++) sprintf(str,"%s%d,",str,colList[t]->defaultWidth());
+  QString tmp;
+  for(t=0;t<numCols();t++) {
+    tmp.setNum(colList[t]->defaultWidth());
+    str += tmp;
+  }
   conf->writeEntry("colwidth",str);
   conf->sync();
 }
@@ -636,7 +640,7 @@ void KTabListBox::reorderRows()
   bool change;
   // Who need more than 9 columns of priority for sorting??
   KTabListBoxColumn *pc[10];
-  int (*columnSort)(const char *, const char *);
+  int (*columnSort)(const QString&, const QString&);
   OrderMode fmode;
 
   needsSort=true;
@@ -721,12 +725,20 @@ bool KTabListBox::recursiveSort(int level,int n,
       return false;
 }
 
+static int string_compare(const QString& a, const QString& b)
+{
+  if (a < b)
+    return -1;
+  if (a > b)
+    return 1;
+  return 0;
+}
 
 //-----------------------------------------------------------------------------
-void KTabListBox::setColumn(int col, const char* aName, int aWidth,
+void KTabListBox::setColumn(int col, const QString& aName, int aWidth,
 			  ColumnType aType, OrderType aOType,
 			  OrderMode aOMode,bool verticalLine,
-			  int (*compar)(const char *, const char *))
+			  int (*compar)(const QString&, const QString&))
 {
   if (col<0 || col>=numCols()) return;
 
@@ -738,7 +750,7 @@ void KTabListBox::setColumn(int col, const char* aName, int aWidth,
   if(compar)
     colList[col]->columnSort=compar;
   else
-    colList[col]->columnSort=strcmp;
+    colList[col]->columnSort=string_compare;
   update();
 }
 
@@ -870,7 +882,7 @@ const QString& KTabListBox::text(int row, int col) const
 
 
 //-----------------------------------------------------------------------------
-void KTabListBox::insertItem(const char* aStr, int row)
+void KTabListBox::insertItem(const QString& aStr, int row)
 {
   KTabListBoxItemPtr it;
   int i, newSize;
@@ -926,25 +938,20 @@ void KTabListBox::appendStrList( QStrList const *strLst )
 }
 
 //-----------------------------------------------------------------------------
-void KTabListBox::changeItem(const char* aStr, int row)
+void KTabListBox::changeItem(const QString& aStr, int row)
 {
-  QString str;
-  char  sepStr[2];
-  char* pos;
-  int   i;
-  KTabListBoxItem* item;
-
+    char  sepStr[2];
+    
   if (row < 0 || row >= numRows()) return;
 
-  str = aStr;
-  str.detach();
+  char *str = qstrdup(aStr);
 
   sepStr[0] = sepChar;
   sepStr[1] = '\0';
 
-  item = itemList[row];
-  pos = strtok(str.data(), sepStr);
-  for (i=0; pos && *pos && i<numCols(); i++)
+  KTabListBoxItem* item = itemList[row];
+  char *pos = strtok(str, sepStr);
+  for (int i=0; pos && *pos && i<numCols(); i++)
   {
     item->setText(i, pos);
     pos = strtok(0L, sepStr);
@@ -952,11 +959,12 @@ void KTabListBox::changeItem(const char* aStr, int row)
   item->setForeground(black);
 
   if (needsUpdate(row)) lbox.repaint();
+  delete [] str;
 }
 
 
 //-----------------------------------------------------------------------------
-void KTabListBox::changeItemPart(const char* aStr, int row, int col)
+void KTabListBox::changeItemPart(const QString& aStr, int row, int col)
 {
   if (row < 0 || row >= numRows()) return;
   if (col < 0 || col >= numCols()) return;
@@ -1237,7 +1245,7 @@ void KTabListBox::resizeEvent(QResizeEvent* e)
 {
   int i, w,t;
 
-  KTabListBoxInherited::resizeEvent(e);
+  QWidget::resizeEvent(e);
 
   for (i=0, w=0; i<numCols(); i++)
   {
@@ -1281,7 +1289,7 @@ void KTabListBox::paintEvent(QPaintEvent*)
       paint.setClipRect(clipR);
       colList[colShowList[i]]->paint(&paint);
       qDrawShadeLine(&paint, w, 0, w, labelHeight,
-                     KTabListBoxInherited::colorGroup());
+                     QWidget::colorGroup());
     }
     else colList[colShowList[i]]->hideCheckButton();
     matrix.translate(w, 0);
@@ -1291,10 +1299,10 @@ void KTabListBox::paintEvent(QPaintEvent*)
   paint.setClipping (false);
   if ( style() == MotifStyle )
     qDrawShadePanel(&paint, 0, 0, width(), height(),
-                    KTabListBoxInherited::colorGroup(), false, 1);
+                    QWidget::colorGroup(), false, 1);
   else
     qDrawShadeRect (&paint, 0, 0, width(), height(),
-                    KTabListBoxInherited::colorGroup(), true, 1);
+                    QWidget::colorGroup(), true, 1);
 
   paint.end();
 }
@@ -1311,23 +1319,20 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
 
   if ((e->state() & LeftButton))
   {
-    if (!drag)
-    {
-      if(mMouseDragColumn) doMouseMoveCol(e);
-
-      if (mResizeCol && abs(mMouseStart.x() - ex) > 4)
-	doMouseResizeCol(e);
-
-      else if (!mResizeCol &&
-	       (ex < mMouseColLeft ||
-		ex > (mMouseColLeft+mMouseColWidth)))
+    if(mMouseDragColumn) doMouseMoveCol(e);
+    
+    if (mResizeCol && abs(mMouseStart.x() - ex) > 4)
+      doMouseResizeCol(e);
+    
+    else if (!mResizeCol &&
+	     (ex < mMouseColLeft ||
+	      ex > (mMouseColLeft+mMouseColWidth)))
       {
         mMouseDragColumn=true;
         doMouseMoveCol(e);
       }
-    }
-
-    KTabListBoxInherited::mouseMoveEvent(e);
+    
+    QWidget::mouseMoveEvent(e);
     return;
   }
 
@@ -1381,7 +1386,7 @@ void KTabListBox::mousePressEvent(QMouseEvent* e)
     mLastX=mMouseColLeft;
 
   }
-  KTabListBoxInherited::mousePressEvent(e);
+  QWidget::mousePressEvent(e);
 }
 
 
@@ -1428,7 +1433,7 @@ void KTabListBox::mouseReleaseEvent(QMouseEvent* e)
     mMouseCol = -1;
     mMouseAction = FALSE;
   }
-  KTabListBoxInherited::mouseReleaseEvent(e);
+  QWidget::mouseReleaseEvent(e);
 }
 
 
@@ -1503,28 +1508,13 @@ void KTabListBox::doMouseMoveCol(QMouseEvent* e)
 
 
 //-----------------------------------------------------------------------------
-bool KTabListBox::startDrag(int aCol, int aRow, const QPoint& p)
+bool KTabListBox::startDrag(int aRow, int aCol)
 {
-  int       dx = -(dndDefaultPixmap.width() >> 1);
-  int       dy = -(dndDefaultPixmap.height() >> 1);
-  KDNDIcon* icon;
-  int       size, type;
-  char*	    data;
+  QTextDrag *td = new QTextDrag(text(aRow, aCol), this);
+  td->setPixmap(dndDefaultPixmap);
 
-  if (!prepareForDrag(aCol,aRow, &data, &size, &type)) return FALSE;
-
-  icon = new KDNDIcon(dndDefaultPixmap, p.x()+dx, p.y()+dy);
-
-  KTabListBoxInherited::startDrag(icon, data, size, type, dx, dy);
+  td->dragCopy();
   return TRUE;
-}
-
-
-//-----------------------------------------------------------------------------
-bool KTabListBox::prepareForDrag(int /*aCol*/, int /*aRow*/, char** /*data*/,
-				 int* /*size*/, int* /*type*/)
-{
-  return FALSE;
 }
 
 
@@ -1555,8 +1545,6 @@ KTabListBoxTable::KTabListBoxTable(KTabListBox *parent):
   QFontMetrics fm = fontMetrics();
 
   initMetaObject();
-
-  dragging = FALSE;
 
   dragCol = -1;
   dragRow = -1;
@@ -1738,20 +1726,11 @@ void KTabListBoxTable::mouseReleaseEvent(QMouseEvent* e)
 
   if (e->button() != LeftButton) return;
 
-  if (dragging)
-  {
-    owner->mouseReleaseEvent(e);
-    dragRow = dragCol = -1;
-    dragging = FALSE;
-  }
-  else
-  {
-    idx = findRow(e->pos().y());
-    if(idx<0) return;
-    idx = owner->itemShowList[idx];
-    if (idx >= 0 && selIdx < 0)
-      doItemSelection(e, idx);
-  }
+  idx = findRow(e->pos().y());
+  if(idx<0) return;
+  idx = owner->itemShowList[idx];
+  if (idx >= 0 && selIdx < 0)
+    doItemSelection(e, idx);
 }
 
 
@@ -1760,12 +1739,6 @@ void KTabListBoxTable::mouseMoveEvent(QMouseEvent* e)
 {
   KTabListBox* owner =(KTabListBox*)parentWidget();
 
-  if (dragging)
-  {
-    owner->mouseMoveEvent(e);
-    return;
-  }
-
   if ((e->state() &(RightButton|LeftButton|MidButton)) != 0)
   {
     if (dragRow >= 0 && dragCol >= 0 &&
@@ -1773,7 +1746,8 @@ void KTabListBoxTable::mouseMoveEvent(QMouseEvent* e)
 	 abs(e->pos().y()-dragStartPos.y()) >= 5))
     {
       // we have a liftoff !
-      dragging = owner->startDrag(dragCol, dragRow, mapToGlobal(e->pos()));
+      owner->startDrag(dragRow, dragCol);
+      dragRow = dragCol = -1;
       return;
     }
   }
@@ -1825,7 +1799,7 @@ KNumCheckButton::KNumCheckButton( QWidget *_parent, const char *name )
   setFocusPolicy( NoFocus );
 }
 
-void KNumCheckButton::setText( const char *text )
+void KNumCheckButton::setText( const QString& text )
 {
   btext=text;
   repaint();

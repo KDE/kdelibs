@@ -43,7 +43,7 @@ void KRootProp::sync()
     	while ( it.current() ) {
 
 			QString *value = propDict.find( it.currentKey() );
-        	keyvalue.sprintf( "%s=%s\n", it.currentKey(), value->data() );
+        	keyvalue.sprintf( "%s=%s\n", it.currentKey().ascii(), value->ascii() );
 			propString += keyvalue;
         	++it;
 		}
@@ -114,7 +114,7 @@ void KRootProp::setProp( const QString& rProp )
 }
 
 QString KRootProp::readEntry( const QString& rKey, 
-			    const char* pDefault ) const 
+			    const QString& pDefault ) const 
 {
 	if( !propDict.isEmpty() ) {
 	
@@ -300,7 +300,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
   if( rFont.rawMode() )
 	nFontBits = nFontBits | 0x20;
 
-  aValue.sprintf( "%s,%d,%d,%d,%d,%d", rFont.family(), rFont.pointSize(),
+  aValue.sprintf( "%s,%d,%d,%d,%d,%d", (const char*)rFont.family(), rFont.pointSize(),
 				  rFont.styleHint(), rFont.charSet(), rFont.weight(),
 				  nFontBits );
 

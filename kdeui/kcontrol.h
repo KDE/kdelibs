@@ -118,7 +118,7 @@ public:
       @param argv  commandline arguments
       @param name  name of the application
    */
-  KControlApplication(int &argc, char **argv, const char *name=0);
+  KControlApplication(int &argc, char **argv, const QString& name);
 
   /// Destructor. Cleans up.
   ~KControlApplication();
@@ -131,7 +131,7 @@ public:
 
       @param title text to be shown in the dialogs titlebar
     */
-  void setTitle(const char *title);
+  void setTitle(const QString& title);
 
   /** Determines if the setup dialog has to be run.
 

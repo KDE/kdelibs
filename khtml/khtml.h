@@ -40,8 +40,8 @@
 #include <qdict.h>
 #include <qstring.h>
 #include <qbuffer.h>
+#include <qwidget.h>
 
-#include "drag.h"
 #include "kurl.h"
 
 class KCharsetConverter;
@@ -106,7 +106,7 @@ class SavedPage;
  * Note: All HTML is parsed in the background using Qt timers, so you will not
  * see any content displayed until the event loop is running.
  */
-class KHTMLWidget : public KDNDWidget
+class KHTMLWidget : public QWidget
 {
     Q_OBJECT
 	friend KHTMLParser;
@@ -890,17 +890,14 @@ protected:
     virtual void mouseDoubleClickEvent( QMouseEvent * );
 
     /**
-     * Overload this method if you dont want any drag actions.
+     * This function is called when the user moves the mouse.
      */
-    virtual void dndMouseMoveEvent( QMouseEvent * _mouse );
+    virtual void mouseMoveEvent(QMouseEvent *);
 
     /**
-     * This function emits the 'URLSelected' signal when the user
-     * pressed a &lt;a href=...&gt; tag.
+     * this function is called when the user releases a mouse button.
      */
-    virtual void dndMouseReleaseEvent( QMouseEvent * );
-
-    virtual void dragEndEvent();
+    virtual void mouseReleaseEvent(QMouseEvent *);
 
     /**
      * Called when a URL is encountered.  Overload this method to indicate

@@ -21,6 +21,16 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.29.2.2  1999/02/15 15:53:39  kulow
+   some char*s converted to QString and some QString converted to char* :)
+
+   Revision 1.29.2.1  1999/02/14 02:05:59  granroth
+   Converted a lot of 'const char*' to 'QString'.  This compiles... but
+   it's entirely possible that nothing will run linked to it :-P
+
+   Revision 1.29  1999/01/18 10:56:22  kulow
+   .moc files are back in kdelibs. Built fine here using automake 1.3
+
    Revision 1.28  1999/01/15 09:30:40  kulow
    it's official - kdelibs builds with srcdir != builddir. For this I
    automocifized it, the generated rules are easier to maintain than
@@ -142,7 +152,7 @@ KProcess::~KProcess()
 
 
 
-bool KProcess::setExecutable(const char *proc)
+bool KProcess::setExecutable(const QString& proc)
 {
   char *hlp;
 
@@ -164,7 +174,7 @@ bool KProcess::setExecutable(const char *proc)
 
 
 
-KProcess &KProcess::operator<<(const char *arg)
+KProcess &KProcess::operator<<(const QString& arg)
 {
   char *new_arg= kstrdup(arg);
 
@@ -547,7 +557,7 @@ void KProcess::commClose()
 // CC: Class KShellProcess
 ///////////////////////////
 
-KShellProcess::KShellProcess(const char *shellname):
+KShellProcess::KShellProcess(const QString& shellname):
   KProcess()
 {
   if (0 != shellname)
@@ -566,7 +576,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 {
   uint i;
   uint n = arguments.count();
-  char *arglist[4];
+  const char *arglist[4];
   QString cmd;
 
   if (runs || (0 == n)) {
@@ -677,7 +687,7 @@ char *KShellProcess::searchShell()
 
 
 
-bool KShellProcess::isExecutable(const char *fname)
+bool KShellProcess::isExecutable(const QString& fname)
 {
   struct stat fileinfo;
 

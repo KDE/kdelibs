@@ -50,7 +50,7 @@ int main(int argc, char **argv)
       msg.sprintf("This is page %d\nin a section with %d pages",
                    j, i);
       QLabel *l = new QLabel(nb);
-      l->setAlignment(AlignCenter);
+      l->setAlignment(Qt::AlignCenter);
       l->setText(msg.data());
       l->setMinimumSize(300, 200);
       KWizardPage *p = new KWizardPage;

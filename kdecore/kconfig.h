@@ -19,6 +19,16 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7.4.1  1999/02/14 02:05:41  granroth
+// Converted a lot of 'const char*' to 'QString'.  This compiles... but
+// it's entirely possible that nothing will run linked to it :-P
+//
+// Revision 1.7  1998/01/18 14:38:48  kulow
+// reverted the changes, Jacek commited.
+// Only the RCS comments were affected, but to keep them consistent, I
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.5  1997/12/12 14:46:01  denis
 // Reverting to lower case true/false
 //
@@ -83,8 +93,8 @@ public:
 	* @param pLocalAppFile Another file to parse in addition to the
 	* normally parsed files (has priority over pGlobalAppFile 
 	*/
-  KConfig( const char* pGlobalAppFile = 0L, 
-		   const char* pLocalAppFile = 0L );
+  KConfig( const QString& pGlobalAppFile = QString::null, 
+		   const QString& pLocalAppFile = QString::null );
 
   /** 
 	* Destructor. 

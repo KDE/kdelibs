@@ -1316,7 +1316,7 @@ bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
   if ( !toPrinter && bIsMarked )
   {
     QPen pen( _painter->pen() );
-    _painter->setPen( black );
+    _painter->setPen( Qt::black );
     _painter->drawRect( _tx, _ty, width, ascent + descent );
     _painter->setPen( pen );
   }
@@ -1355,7 +1355,7 @@ void HTMLCell::setMarker( QPainter *_painter, int _tx, int _ty, bool _mode )
   bIsMarked = _mode;
   
   if ( bIsMarked )
-    _painter->setPen( black );
+    _painter->setPen( Qt::black );
   else
     _painter->setPen( _painter->backgroundColor() );
 

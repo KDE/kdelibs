@@ -40,12 +40,12 @@
 #include <qdict.h>
 #include <qstring.h>
 #include <qbuffer.h>
+#include <qwidget.h>
 
 class KHTMLWidget;
 class HTMLIterator;
 struct SavedPage;
 
-#include "drag.h"
 #include "htmldata.h"
 #include "htmlobj.h"
 #include "htmlclue.h"
@@ -136,7 +136,7 @@ typedef void (KHTMLWidget::*parseFunc)(HTMLClueV *_clue, const char *str);
  * Note: All HTML is parsed in the background using Qt timers, so you will not
  * see any content displayed until the event loop is running.
  */
-class KHTMLWidget : public KDNDWidget
+class KHTMLWidget : public QWidget
 {
     Q_OBJECT
 public:
@@ -903,9 +903,10 @@ public:
     enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
 
 protected:
+    virtual void dragEnterEvent(QDragEnterEvent *);
+    virtual void dragLeaveEvent(QDragLeaveEvent *);
+    virtual void dropEvent(QDropEvent *);
     virtual void mousePressEvent( QMouseEvent * );
-
-    virtual void mouseMoveEvent( QMouseEvent * );
 
     void setBlob (QPoint pos);
 
@@ -920,15 +921,13 @@ protected:
     /**
      * Overload this method if you dont want any drag actions.
      */
-    virtual void dndMouseMoveEvent( QMouseEvent * _mouse );
+    virtual void mouseMoveEvent( QMouseEvent * _mouse );
 
     /**
      * This function emits the 'URLSelected' signal when the user
      * pressed a &lt;a href=...&gt; tag.
      */
-    virtual void dndMouseReleaseEvent( QMouseEvent * );
-
-    virtual void dragEndEvent();
+    virtual void mouseReleaseEvent( QMouseEvent * );
 
     /**
      * Called when a URL is encountered.  Overload this method to indicate
@@ -1219,7 +1218,7 @@ protected:
     bool strikeOut;
 
     /*
-     * Used for drag and drop.
+     * Used for drag and drop and text selection.
      */
     bool pressed;
     int press_x, press_y;

@@ -2,10 +2,10 @@
 #define __open_with_h__
 
 #include <qwidget.h>
-#include <qfileinf.h>
+#include <qfileinfo.h>
 #include <qdialog.h>
-#include <qlined.h>
-#include <qpushbt.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 
 #include <kapp.h>
@@ -28,13 +28,14 @@ public:
    * @param _file_mode if set to TRUE, the editor widget will provide command
    *                   completion ( Ctrl-S and Ctrl-D )
    */
-  OpenWithDlg( const char *_text, const char *_value, QWidget *parent, bool _file_mode = FALSE );
+  OpenWithDlg( const QString&_text, const QString&_value, 
+	       QWidget *parent, bool _file_mode = FALSE );
   ~OpenWithDlg();
   
   /**
    * @return the value the user entered
    */
-  const char * text() { return edit->text(); }
+  QString text() { return edit->text(); }
   KService* service() { return m_pService; }
   
 public slots:
@@ -43,8 +44,8 @@ public slots:
    */
   void slotClear();
   void slotBrowse();
-  void slotSelected( const char* _name, const char* _exec );
-  void slotHighlighted( const char* _name, const char* _exec );
+  void slotSelected( const QString&_name, const QString& _exec );
+  void slotHighlighted( const QString& _name, const QString& _exec );
   void slotOK();
 
 protected:

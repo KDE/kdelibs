@@ -1,7 +1,7 @@
 #include "kio_progress_dlg.h"
 #include "kio_job.h"
 
-#include <qpushbt.h>
+#include <qpushbutton.h>
 
 #include <kapp.h>
 #include <kwm.h>
@@ -136,14 +136,14 @@ void KIOCopyProgressDlg::processedSize( unsigned long _bytes )
   }
 
   char buffer[ 100 ];
-  sprintf( buffer, "%i %s %s %i %s", (int)_bytes / (int)div1, ext1, i18n("of"), (int)m_iTotalSize / (int)div2, ext2 );
+  sprintf( buffer, "%i %s %s %i %s", (int)_bytes / (int)div1, ext1, i18n("of").ascii(), (int)m_iTotalSize / (int)div2, ext2 );
   m_pLine4->setText( buffer );
 
   int progress = (int)( (float)_bytes / (float)m_iTotalSize * 100.0 );
   if ( m_iTotalSize )
     m_pProgressBar->setValue( progress );
 
-  sprintf( buffer, "%i %% %s %i %s", progress, i18n("of"), (int)m_iTotalSize / (int)div2, ext2 );
+  sprintf( buffer, "%i %% %s %i %s", progress, i18n("of").ascii(), (int)m_iTotalSize / (int)div2, ext2 );
   setCaption( buffer );
 }
 
@@ -224,25 +224,25 @@ void KIOCopyProgressDlg::speed( unsigned long _bytes_per_second )
 
 void KIOCopyProgressDlg::scanningDir( const char *_dir )
 {
-  string tmp = i18n( "Scanning " );
+  string tmp = (const char*)i18n( "Scanning " );
   tmp += _dir;
   m_pLine2->setText( tmp.c_str() );
 }
 
 void KIOCopyProgressDlg::copyingFile( const char *_from, const char *_to )
 {
-  string tmp = i18n("From : ");
+  string tmp = i18n("From : ").ascii();
   tmp += _from;
   m_pLine2->setText( tmp.c_str() );
 
-  tmp = i18n("To: ");
+  tmp = i18n("To: ").ascii();
   tmp += _to;
   m_pLine3->setText( tmp.c_str() );
 }
 
 void KIOCopyProgressDlg::makingDir( const char *_dir )
 {
-  string tmp = i18n( "Creating dir " );
+  string tmp = (const char*)i18n( "Creating dir " );
   tmp += _dir;
   m_pLine2->setText( tmp.c_str() );
 }

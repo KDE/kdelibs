@@ -75,15 +75,15 @@ public:
      * if the parameter is an absolute filename, it adds a file: prefix 
      * and encodes the path.
      */
-    KURL( const char* _url);
+    KURL( const QString& _url);
 
     ~KURL();
 
     /** 
      * Construct a KURL object from its components. 
      */
-    KURL( const char* _protocol, const char* _host, 
-	  const char* _path, const char* _ref);
+    KURL( const QString& _protocol, const QString& _host, 
+	  const QString _path, const QString& _ref);
     
     /**
      * Constructs a URL.
@@ -94,7 +94,7 @@ public:
      *
      * Of course the second argument may be a complete URL, too.
      */
-    KURL( KURL & _base_url, const char* _rel_url );
+    KURL( KURL & _base_url, const QString& _rel_url );
     
     /** 
      * Returns true if the URL is not a valid URL. This is only syntax-checking;
@@ -132,13 +132,13 @@ public:
     /** 
      * The function returns the protocolname up to, but not including the ":".
      */
-    const char* protocol() const;
+    const QString protocol() const;
     
     /** 
      * This function returns the host. If there is no host (i.e.
      * the URL refers to a local file) this function returns "".
      */
-    const char* host() const;
+    const QString host() const;
     
     /** 
      * This function returns the path-part of the URL.
@@ -146,7 +146,7 @@ public:
      * For example, path() on "tar://ftp.foo.org/bar/stuff.tar.gz#tex/doc.tex" 
      * returns "/bar/stuff.tar.gz".
      */
-    const char* path() const;
+    const QString path() const;
     
     /** 
      * This function returns the path-part of an URL and leaves it as is.
@@ -154,7 +154,7 @@ public:
      * For example, path() on "http://www.foo.org/bar/cgi%2Dbin?value=blue%3f" 
      * returns "/bar/cgi%2Dbin".
      */
-    const char* httpPath() const;
+    const QString httpPath() const;
     
     /**
      * If we parse for example ftp://weis@localhost then we dont have a path.
@@ -172,7 +172,7 @@ public:
      *
      * @return the search-part, or NULL if no search-part was specified.
      */
-    const char* searchPart() const;
+    const QString searchPart() const;
 
     /** 
      * This function returns the reference. 
@@ -187,20 +187,20 @@ public:
      * would return "" since there is no reference. The stuff behind
      * the '#' is a subprotocol!
      */
-    const char* reference() const;
+    const QString reference() const;
     
     /**
      * This function returns the user name or an empty string if
      * no user has been specified.
      */
-    const char* user() const;
+    const QString user() const;
     
     /**
      * The password.
      *
      * @return the password, or an empty string if no password was specified.
      */
-    const char* passwd() const;
+    const QString passwd() const;
     
     /**
      * The port number.
@@ -222,7 +222,7 @@ public:
      *
      * This function is supplied for convenience only.
      */
-    const char * directory( bool _trailing = TRUE );
+    const QString directory( bool _trailing = TRUE );
     
     /**
      * Returns the URL with the directory only.
@@ -230,7 +230,7 @@ public:
      * If for example the URL is "file:/tmp/weis/file.html", then this call
      * will return "file:/tmp/weis/". For more details look at 'directory(...)'
      */
-    const char * directoryURL( bool _trailing = TRUE );
+    const QString directoryURL( bool _trailing = TRUE );
     
     /**
      * @return TRUE if the URL has a sub protocol. For example file:/tmp/kde.tgz#tar:/kfm/main.cpp
@@ -268,33 +268,33 @@ public:
     /**
      * Parse a string.
      */
-    void parse( const char *_url );
+    void parse( const QString& _url );
     
     /** 
      * Sets the protocol to newProto. Useful for example if an app hits
      * "file:/tmp/interesting.zip", then it might do setProtocol( "zip").
      */ 
-    void setProtocol( const char* newProto) ;
+    void setProtocol( const QString& newProto) ;
 
    /** 
     * Sets the path to newPath.
     */ 
-    void setPath( const char *newPath) ;   
+    void setPath( const QString& newPath) ;   
 
    /** 
     * Sets the host
     */ 
-    void setHost( const char *host) ;   
+    void setHost( const QString& host) ;   
 
     /**
      * Set the password.
      */
-    void setPassword( const char *password );
+    void setPassword( const QString& password );
 
     /**
      * Set the user.
      */
-    void setUser( const char *user );
+    void setUser( const QString& user );
 
     /**
      * Set the port.
@@ -310,7 +310,7 @@ public:
      *
      * If NULL is specified, the search-part is cleared.
      */
-    void setSearchPart( const char *_searchPart );
+    void setSearchPart( const QString& _searchPart );
     
     /** 
      * Set reference. 
@@ -319,7 +319,7 @@ public:
      * if it could not make a reference (if there were no path to reference 
      * from) and true on succes.
      */
-    bool setReference( const char* _ref);
+    bool setReference( const QString& _ref);
 
     /** 
      * Changes directory by descending into the given directory. 
@@ -328,7 +328,7 @@ public:
      * be appended to the path.
      * If 'zapRef' is true, the reference will be deleted.
      */   
-    bool cd( const char* _dir, bool zapRef = true);
+    bool cd( const QString& _dir, bool zapRef = true);
     
     /** 
      * Go to parent dir. If zapRef is true, the reference is removed, 
@@ -343,7 +343,7 @@ public:
      * If the URL us 'tar:/home/weis/test.tgz#foo/myfile' and isReference is TRUE,
      * the function will return 'myfile'
      */
-    const char *filename();
+    const QString filename();
     
     /**
      * Makes a copy of a URL.
@@ -354,7 +354,7 @@ public:
      * Initialize the URL with the given string.
      * '_url' must be a valid URL.
      */
-    KURL &operator=( const char* _url );
+    KURL &operator=( const QString& _url );
     
     /** 
      * Compare URL's.
@@ -401,8 +401,6 @@ protected:
     QString user_part;
     QString passwd_part;
     
-private:
-    void detach();
 };
 
 #endif

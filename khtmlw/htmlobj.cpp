@@ -300,7 +300,7 @@ void HTMLHSpace::print( QPainter *_painter, int _tx, int _ty )
     	
     _painter->setFont( *font );
     
-    if ( isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    if ( isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
 	_painter->fillRect( x + _tx, y - ascent + _ty,
 		width, ascent + descent, kapp->selectColor );
@@ -535,7 +535,7 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
     _painter->setPen( font->textColor() );
     _painter->setFont( *font );
     
-    if ( isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    if ( isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
 	_painter->drawText( x + _tx, y + _ty, text, selStart );
 	int fillStart = _painter->fontMetrics().width( text, selStart );
@@ -1052,7 +1052,7 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
     _painter->setPen( font->textColor() );
     _painter->setFont( *font );
     
-    if ( owner->isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    if ( owner->isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
     	if (isSelected())
     	{
@@ -1165,8 +1165,8 @@ bool HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 {
-    QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
-	    black, white );
+    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
+	    Qt::black, Qt::white );
 
     int xp = x + _tx, yp = y + _ty;
 
@@ -1174,7 +1174,7 @@ void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 	qDrawShadeLine( _painter, xp, yp, xp + width, yp,
 		colorGrp, TRUE, 1, ascent-7 );
     else
-	_painter->fillRect( xp, yp, width, ascent-6, QBrush(black) );
+	_painter->fillRect( xp, yp, width, ascent-6, QBrush(Qt::black) );
 }
 
 //-----------------------------------------------------------------------------
@@ -2037,7 +2037,6 @@ HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
 {
     type = ClientSide;
     serverurl = _url;
-    serverurl.detach();
 }
 
 HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )

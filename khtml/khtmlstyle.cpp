@@ -91,7 +91,7 @@ public:
 };
 
 CSSSelector::CSSSelector(void)
-: tag(-1), id(0), klass(0), tagHistory(0), propList(0)
+: tag(-1), tagHistory(0), propList(0)
 {
 }
 

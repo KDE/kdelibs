@@ -9,7 +9,7 @@
 #include <k2url.h>
 #include <kapp.h>
 
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -6,8 +6,8 @@
 #include <qcombobox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qpushbt.h>
-#include <qcombo.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
 #include <qframe.h>
 #include <kapp.h>
 
@@ -127,7 +127,7 @@ bool StringListSelectOneDialog::getValues
   assert(strings.empty());
   for(index=0; index<comboStrings->count(); index++)
     {
-      strings.push_back(comboStrings->text(index));
+      strings.push_back(comboStrings->text(index).ascii());
     }
   assert(strings.size()==(unsigned)comboStrings->count());
   return true;

@@ -19,6 +19,16 @@
 // $Id$
 //
 // $Log$
+// Revision 1.6.4.1  1999/02/14 02:06:06  granroth
+// Converted a lot of 'const char*' to 'QString'.  This compiles... but
+// it's entirely possible that nothing will run linked to it :-P
+//
+// Revision 1.6  1998/01/18 14:39:02  kulow
+// reverted the changes, Jacek commited.
+// Only the RCS comments were affected, but to keep them consistent, I
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.4  1998/01/15 13:22:31  kalle
 // Read-only mode for KSimpleConfig
 //
@@ -73,7 +83,7 @@ public:
 	*
 	* @param pfile The file used for saving the config data.
 	*/
-  KSimpleConfig( const char* pFile );
+  KSimpleConfig( const QString& pFile );
 
   /**
 	* Construct a KSimpleConfig object and make it either read-write
@@ -82,7 +92,7 @@ public:
 	* @param pFile The file uses for saving the config data.
 	*        bReadOnly Whether the object should be read-only.
 	*/
-  KSimpleConfig( const char* pFile, bool bReadOnly );
+  KSimpleConfig( const QString& pFile, bool bReadOnly );
 
   /** 
 	* Destructor. 
@@ -116,7 +126,7 @@ public:
 	*                    be deleted
 	* @return The old value of that key.
 	*/
-  const QString deleteEntry( const char* pKey, bool bLocalized );
+  const QString deleteEntry( const QString& pKey, bool bLocalized );
 
   /**
 	* Delete a configuration entry group
@@ -133,7 +143,7 @@ public:
 	* @return If the group does not exist or is not empty and bDeep is
 	* false, deleteGroup returns false.
 	*/
-  bool deleteGroup( const char* pGroup, bool bDeep = true );
+  bool deleteGroup( const QString& pGroup, bool bDeep = true );
 };
   
 

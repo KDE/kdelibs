@@ -81,7 +81,7 @@ public:
 *	  was found.
 */	
   QString readEntry( const QString& rKey, 
-  	  	  	  	  	  const char* pDefault = 0 ) const ;
+  	  	  	  	  	  const QString& pDefault = QString::null ) const ;
 					  
 /**
 * Read a numerical value. 
@@ -124,7 +124,7 @@ public:
 							  
 	
 /** 
-* writeEntry() overridden to accept a const char * argument.
+* writeEntry() overridden to accept a const QString& argument.
 *
 * This is stored to the current property when destroying the
 * config object or when calling Sync().

@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.14.2.1  1999/02/21 20:55:50  kulow
+ * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
+ *
+ * Revision 1.14  1999/01/18 10:56:50  kulow
+ * .moc files are back in kdelibs. Built fine here using automake 1.3
+ *
  * Revision 1.13  1999/01/15 09:31:09  kulow
  * it's official - kdelibs builds with srcdir != builddir. For this I
  * automocifized it, the generated rules are easier to maintain than
@@ -115,10 +121,10 @@
 #include "kmsgbox.h"
 #include "kmsgbox.h"
 
-KMsgBox::KMsgBox( QWidget *parent, const char *caption,
-	const char *message, int type,
-	const char *b1text, const char *b2text,
-	const char *b3text, const char *b4text )
+KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
+	const QString&message, int type,
+	const QString&b1text, const QString&b2text,
+	const QString&b3text, const QString&b4text )
 	: QDialog ( parent, caption, TRUE, 0 ),
 	msg( 0L ), picture( 0L ),
 	b1( 0L ), b2( 0L ), b3( 0L ), b4( 0L ),
@@ -275,50 +281,40 @@ void KMsgBox::b4Pressed() { done(4); }
  * some general message boxes
  */
 
-int KMsgBox::message(QWidget *parent, const char *caption, 
-	const char *message, int type, const char *btext)
+int KMsgBox::message(QWidget *parent, const QString&caption, 
+	const QString&message, int type, const QString&btext)
 
 {
-    if (!btext)
-	btext = klocale->translate("OK");
-
-    KMsgBox *mb = new KMsgBox(parent, caption, message, type, btext);
-
-    int retcode = mb->exec();
-    delete mb;
-    return retcode;
-}
-
-
-int KMsgBox::yesNo(QWidget *parent, const char *caption, 
-	const char *message, int type, 
-	const char *yes, const char *no )
-{
-    if (!no)
-	no = klocale->translate("No");
-    if (!yes)
-	yes = klocale->translate("Yes");
-
-    KMsgBox *mb = new KMsgBox(parent, caption, message, type, yes, no);
-
-    int retcode = mb->exec();
-    delete mb;
-    return retcode;
-}
-
-int KMsgBox::yesNoCancel(QWidget *parent, const char *caption, 
-	const char *message, int type, const char *yes, 
-	const char *no, const char *cancel)
-{
-    if (!no)
-	no = klocale->translate("No");
-    if (!yes)
-	yes = klocale->translate("Yes");
-    if (!cancel)
-	cancel = klocale->translate("Cancel");
-    
     KMsgBox *mb = new KMsgBox(parent, caption, message, type, 
-    	yes, no, cancel);
+			      btext.isNull() ? i18n("OK") : btext);
+
+    int retcode = mb->exec();
+    delete mb;
+    return retcode;
+}
+
+
+int KMsgBox::yesNo(QWidget *parent, const QString&caption, 
+	const QString&message, int type, 
+	const QString&yes, const QString&no )
+{
+    KMsgBox *mb = new KMsgBox(parent, caption, message, type, 
+			      yes.isNull() ? i18n("Yes") : yes,
+			      no.isNull() ? i18n("No") : no);
+
+    int retcode = mb->exec();
+    delete mb;
+    return retcode;
+}
+
+int KMsgBox::yesNoCancel(QWidget *parent, const QString& caption, 
+			 const QString& message, int type, const QString& yes, 
+			 const QString& no, const QString& cancel)
+{
+    KMsgBox *mb = new KMsgBox(parent, caption, message, type, 
+			      yes.isNull() ? i18n("Yes") : yes,
+			      no.isNull() ? i18n("No") : no,
+			      cancel.isNull() ? i18n("Cancel") : cancel);
 
     int retcode = mb->exec();
     delete mb;

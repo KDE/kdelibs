@@ -80,7 +80,7 @@ void KControlDialog::resizeEvent(QResizeEvent *event)
 }
 
 
-KControlApplication::KControlApplication(int &argc, char **argv, const char *name)
+KControlApplication::KControlApplication(int &argc, char **argv, const QString &name)
   : KApplication(argc, argv, name)
 {
   dialog = 0;
@@ -136,7 +136,7 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
 }
 
 
-void KControlApplication::setTitle(const char *title)
+void KControlApplication::setTitle(const QString& title)
 {
   if (dialog && swallowCaption.isEmpty())
       dialog->setCaption(title);

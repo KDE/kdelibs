@@ -64,7 +64,6 @@ bool previewXVPicFile( const KFileInfo *i, const QString inFilename,
 {
     bool loaded = false;
     QString iconName(inFilename);
-    iconName.detach();
     int index = iconName.find( i->fileName() );
     iconName.insert(index,".xvpics/");
     QFile miniPic( iconName );

@@ -429,7 +429,7 @@ void KContainerLayout::resizeEvent(QResizeEvent *ev)
 
 bool KContainerLayout::eventFilter(QObject *, QEvent *ev)
 {
-    if (ev->type() == Event_Resize)
+    if (ev->type() == QEvent::Resize)
     {
 	// resize ourselves
 	resize(((QResizeEvent*)ev)->size());

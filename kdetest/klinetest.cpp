@@ -22,7 +22,6 @@ Test::Test( QWidget *parent, const char *name )
 
   createFields();
  
-  qApp->setStyle( MotifStyle );
   show();
 }
 

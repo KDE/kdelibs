@@ -78,7 +78,7 @@ protected:
   void paintCell( QPainter *p, int row, int col );
   void resizeEvent( QResizeEvent * );
   void mousePressEvent(QMouseEvent *e);
-  const char* Days[7];
+  QString Days[7];
   int fontsize;
 private:
   QDate m_date;

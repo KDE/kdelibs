@@ -58,10 +58,10 @@ public:
   ~KSpinBox();
 
   /** get the value shown the text field */
-  const char *getValue();
+  QString getValue();
 
   /** set the value which should be displayed in the text field */
-  void setValue(const char *);
+  void setValue(const QString&);
 
   /** query if the user is allowed to edit the values */
   bool isEditable();

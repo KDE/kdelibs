@@ -1,6 +1,18 @@
 // $Id$
 //
 // $Log$
+// Revision 1.11.2.2  1999/02/14 02:05:45  granroth
+// Converted a lot of 'const char*' to 'QString'.  This compiles... but
+// it's entirely possible that nothing will run linked to it :-P
+//
+// Revision 1.11.2.1  1999/01/30 20:18:58  kulow
+// start porting to Qt2.0 beta
+//
+// Revision 1.11  1998/10/07 06:49:24  kalle
+// Correctly read double dollar signs (patch by Harri Porten)
+// Dollar expansion can be turned off with setDollarExpansion( false ).
+// \sa isDollarExpansion
+//
 // Revision 1.10  1998/09/01 20:21:21  kulow
 // I renamed all old qt header files to the new versions. I think, this looks
 // nicer (and gives the change in configure a sense :)
@@ -71,8 +83,8 @@ friend class KConfig;
 friend class KConfigBase;
 friend class KSimpleConfig;
 private:
-  QString aLocalAppFile;
-  QString aGlobalAppFile;
+  QCString aLocalAppFile;
+  QCString aGlobalAppFile;
   QString aGroup;
   QString aLocaleString; // locale code
   bool bDirty; // is there any entry that has to be written back to disk?
@@ -83,35 +95,30 @@ private:
   QDict<KEntryDict> aGroupDict;
 
 #ifndef NDEBUG
-  QString aFile;
+  QCString aFile;
 #endif
   
 public:
   KConfigBaseData();
-  KConfigBaseData( const char* pGlobalAppFile, const char* pLocalAppFile );
+  KConfigBaseData( const QString& pGlobalAppFile, const QString& pLocalAppFile );
   
   KGroupIterator* groupIterator( void );
 };
 
 inline KConfigBaseData::KConfigBaseData() :
-    aLocalAppFile(0), aGlobalAppFile(0),
-    aGroup("<default>"), aLocaleString(0), bDirty(false),
+    aGroup("<default>"), bDirty(false),
     bLocaleInitialized(false), bReadOnly(false), bExpand( true ),
 	aGroupDict( 37, false )
-#ifndef NDEBUG
-  , aFile(0)
-#endif
 {
   aGroupDict.setAutoDelete( true );
 }
   
-inline KConfigBaseData::KConfigBaseData( const char* pGlobalAppFile,
-					 const char* pLocalAppFile ) :
+inline KConfigBaseData::KConfigBaseData( const QString& pGlobalAppFile,
+					 const QString& pLocalAppFile ) :
   aLocalAppFile(pLocalAppFile), aGlobalAppFile(pGlobalAppFile), 
-  aGroup("<default>"), aLocaleString(0), bDirty(false), 
+  aGroup("<default>"), bDirty(false), 
   bLocaleInitialized(false), bReadOnly(false), aGroupDict( 37, false )
 #ifndef NDEBUG
-  , aFile(0)
 #endif
 {
   aGroupDict.setAutoDelete( true );

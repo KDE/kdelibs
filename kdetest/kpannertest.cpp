@@ -4,10 +4,10 @@
 
 
 #include <kapp.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qobject.h>
 #include <qlistbox.h>
-#include <qmlined.h>
+#include <qmultilinedit.h>
 
 #include "kpanner.h"
 #include "kpannertest.h"

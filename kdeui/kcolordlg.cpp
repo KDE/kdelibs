@@ -57,23 +57,23 @@ void createStandardPalette()
 
     int i = 0;
 
-    standardPalette[i++] = red;
-    standardPalette[i++] = green;
-    standardPalette[i++] = blue;
-    standardPalette[i++] = cyan;
-    standardPalette[i++] = magenta;
-    standardPalette[i++] = yellow;
-    standardPalette[i++] = darkRed;
-    standardPalette[i++] = darkGreen;
-    standardPalette[i++] = darkBlue;
-    standardPalette[i++] = darkCyan;
-    standardPalette[i++] = darkMagenta;
-    standardPalette[i++] = darkYellow;
-    standardPalette[i++] = white;
-    standardPalette[i++] = lightGray;
-    standardPalette[i++] = gray;
-    standardPalette[i++] = darkGray;
-    standardPalette[i++] = black;
+    standardPalette[i++] = Qt::red;
+    standardPalette[i++] = Qt::green;
+    standardPalette[i++] = Qt::blue;
+    standardPalette[i++] = Qt::cyan;
+    standardPalette[i++] = Qt::magenta;
+    standardPalette[i++] = Qt::yellow;
+    standardPalette[i++] = Qt::darkRed;
+    standardPalette[i++] = Qt::darkGreen;
+    standardPalette[i++] = Qt::darkBlue;
+    standardPalette[i++] = Qt::darkCyan;
+    standardPalette[i++] = Qt::darkMagenta;
+    standardPalette[i++] = Qt::darkYellow;
+    standardPalette[i++] = Qt::white;
+    standardPalette[i++] = Qt::lightGray;
+    standardPalette[i++] = Qt::gray;
+    standardPalette[i++] = Qt::darkGray;
+    standardPalette[i++] = Qt::black;
 }
 
 KHSSelector::KHSSelector( QWidget *parent )
@@ -128,7 +128,7 @@ KValueSelector::KValueSelector( QWidget *parent )
 	: KSelector( KSelector::Vertical, parent )
 {
 	setRange( 0, 255 );
-	pixmap.optimize( TRUE );
+	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
 void KValueSelector::resizeEvent( QResizeEvent * )

@@ -11,8 +11,8 @@
 #include <kapp.h>
 #include <kcharsets.h>
 #include <qlabel.h>
-#include <qcombo.h>
-#include <qlined.h>
+#include <qcombobox.h>
+#include <qlineedit.h>
 
 #include "kcharsetstest.h"
 

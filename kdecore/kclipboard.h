@@ -1,9 +1,9 @@
 #ifndef __kclipboard_h__
 #define __kclipboard_h__
 
-#include <qclipbrd.h>
+#include <qclipboard.h>
 #include <qobject.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qbuffer.h>
 #include <qwidget.h>
 #include <qstring.h>
@@ -17,20 +17,20 @@ public:
   ~KClipboard();
    
   bool open( int _mode );
-  bool open( int _mode, const char *_format );
+  bool open( int _mode, const QString& _format );
   void close();
     
   void clear();
 
-  const char *format();
+  const QString format();
 
   /////////////////////////
   // Convenience functions
   /////////////////////////
   void setURLList( QStrList& _urls );
   bool urlList( QStrList& _urls );
-  void setText( const char *_text );
-  const char* text();
+  void setText( const QString& _text );
+  const QString text();
   QByteArray octetStream();
   void setOctetStream( QByteArray& _arr );
 

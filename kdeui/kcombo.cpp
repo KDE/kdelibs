@@ -17,7 +17,7 @@ KCombo::KCombo( bool readWrite, QWidget* parent, const char* name, WFlags ) :
     set_text_called = false;
 }
 
-void KCombo::setText( const char *text)
+void KCombo::setText( const QString& text)
 {
     setCurrentItem(0);
     if (!set_text_called) {

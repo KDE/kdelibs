@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 
 #include <kapp.h>
 #include <k2url.h>

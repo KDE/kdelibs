@@ -50,14 +50,15 @@ public:
 	  @param name     pointer to the name of this widget
 	  @param valid    pointer to set of valid characters 
   */
-  KRestrictedLine( QWidget *parent=0, const char *name=0, const char *valid=0 );
+  KRestrictedLine( QWidget *parent=0, const char *name=0, 
+		   const QString& valid = QString::null);
 
   /// Destructor
   ~KRestrictedLine();
 
   /** All characters in *valid are treated as valid characters
 	*/
-  void	setValidChars(const char *valid);
+  void	setValidChars(const QString& valid);
   //@}
   
   signals:

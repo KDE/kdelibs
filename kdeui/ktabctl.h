@@ -20,6 +20,18 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5.2.2  1999/02/21 20:56:16  kulow
+ * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
+ *
+ * Revision 1.5.2.1  1999/01/30 20:19:20  kulow
+ * start porting to Qt2.0 beta
+ *
+ * Revision 1.5  1998/07/23 08:34:10  garbanzo
+ * Repeat after me: private members are bad, private members are bad, private
+ * members are the bane of reusable code.
+ *
+ * Ronald Reagan -- America's favorite placebo.
+ *
  * Revision 1.4  1998/06/16 21:23:15  hoss
  * *** empty log message ***
  *
@@ -85,9 +97,9 @@ public:
     void setFont(const QFont & font);
     void setTabFont( const QFont &font );
 
-    void addTab(QWidget *, const char *);
-    bool isTabEnabled(const char * );
-    void setTabEnabled(const char *, bool);
+    void addTab(QWidget *, const QString&);
+    bool isTabEnabled(const QString& );
+    void setTabEnabled(const QString&, bool);
     void setBorder(bool);
     void setShape( QTabBar::Shape shape );
 
@@ -106,7 +118,7 @@ protected:
     QRect getChildRect() const;
 
     QTabBar * tabs;
-    QArrayT<QWidget *> pages;
+    QArray<QWidget *> pages;
     int bh;
     bool blBorder;
 };

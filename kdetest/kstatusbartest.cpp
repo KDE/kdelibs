@@ -1,7 +1,7 @@
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qwidget.h>
 #include <qstring.h>
-#include <qmlined.h>
+#include <qmultilinedit.h>
 #include <qkeycode.h>
 #include <qpixmap.h>
 

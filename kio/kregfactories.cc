@@ -3,7 +3,7 @@
 #include "kservices.h"
 
 #include <qstring.h>
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 
 #include <kapp.h>
 

@@ -6,7 +6,7 @@
 #include "kio_error.h"
 #include "kio_manager.h"
 
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 
 #include <k2url.h>
 #include <kapp.h>
@@ -98,7 +98,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
     K2URL url( it );
     if ( url.isMalformed() )
     {
-      string tmp = i18n( "Malformed URL" );
+      string tmp = (const char*)i18n( "Malformed URL" );
       tmp += "\n";
       tmp += it;
       QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp.c_str(), i18n( "OK" ) );

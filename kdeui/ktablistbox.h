@@ -28,7 +28,6 @@
 #include <qtableview.h>
 #include <qcolor.h>
 #include <qpixmap.h>
-#include <drag.h>
 #include <stdlib.h>
 
 #define MAX_SEP_CHARS 16
@@ -52,7 +51,7 @@ class KNumCheckButton : public QWidget
 public:
     KNumCheckButton( QWidget *_parent = 0L, const char *name = 0L );
     ~KNumCheckButton() {};
-    void setText( const char * );
+    void setText( const QString& );
      
 signals:
     void        selected();
@@ -104,13 +103,10 @@ protected:
   QPoint dragStartPos;
   int dragCol, dragRow;
   int selIdx;
-  bool dragging;
 };
 
 
 //--------------------------------------------------
-#define KTabListBoxInherited KDNDWidget
-
 /** A multi column listbox
  * Features:
  *  - User resizeable columns.
@@ -121,7 +117,7 @@ protected:
  *  - Save all setting to config file.
  *  - fix flickering into column headers.
  */
-class KTabListBox : public KDNDWidget
+class KTabListBox : public QWidget
 {
   Q_OBJECT
   friend KTabListBoxTable;
@@ -145,19 +141,19 @@ public:
   uint count (void) const { return numRows(); };
   
   /** Insert a line before given index, using the separator character to separate the fields. If no index is given the line is appended at the end. Returns index of inserted item. */
-  virtual void insertItem (const char* string, int itemIndex=-1);
+  virtual void insertItem (const QString& string, int itemIndex=-1);
 
   /** Append a QStrList */
   void appendStrList( QStrList const *strLst );
 
   /** Same as insertItem, but always appends the new item. */
-  void appendItem (const char* string) { insertItem(string); }
+  void appendItem (const QString& string) { insertItem(string); }
 
   /** Change contents of a line using the separator character to separate the fields. */
-  virtual void changeItem (const char* string, int itemIndex);
+  virtual void changeItem (const QString& string, int itemIndex);
 
   /** Change part of the contents of a line. */
-  virtual void changeItemPart (const char* string, int itemIndex, int column);
+  virtual void changeItemPart (const QString& string, int itemIndex, int column);
 
   /** Change color of line. Changes last inserted item when itemIndex==-1 */
   virtual void changeItemColor (const QColor& color, int itemIndex=-1);
@@ -265,12 +261,12 @@ public:
   virtual void reorderRows();
   
   /** Set column caption, width, type,order-type and order-mode */
-  virtual void setColumn (int col, const char* caption, 
+  virtual void setColumn (int col, const QString& caption, 
 			  int width=0, ColumnType type=TextColumn,
 			  OrderType ordt=NoOrder,
 			  OrderMode omode=Descending,
 			  bool verticalLine=false,
-			  int (*compar)(const char *, const char *)=0L);
+			  int (*compar)(const QString&, const QString&)=0L);
 
   /** Set column width. */
   virtual void setColumnWidth (int col, int width=0);
@@ -295,9 +291,6 @@ public:
   KTabListBoxDict& dict (void) { return pixDict; }
 
   void repaint (void);
-
-  /** Indicates that a drag has started with given item. Returns TRUE if we are dragging, FALSE if drag-start failed. */
-  bool startDrag(int col, int row, const QPoint& mousePos);
 
   QPixmap& dndPixmap(void) { return dndDefaultPixmap; }
 
@@ -373,16 +366,15 @@ protected:
   /** Resize item array. Per default enlarge it to double size. */
   virtual void resizeList (int newNumItems=-1);
 
-  /** Called to set drag data, size, and type. If this method returns FALSE then no drag occurs. */
-  virtual bool prepareForDrag (int col, int row, char** data, int* size, 
-			       int* type);
-
   /** Internal method that handles resizing of columns with the mouse. */
   virtual void doMouseResizeCol(QMouseEvent*);
 
   /** Internal method that handles moving of columns with the mouse. */
   virtual void doMouseMoveCol(QMouseEvent*);
-  
+
+  /** sets up a drag object and starts a drag operation. */
+  bool startDrag(int aRow, int aCol);
+
   // This array contain the list of columns as they are inserted.
   KTabListBoxColumn**	colList;
   // This array contain the column numbers as they are shown.
@@ -435,7 +427,7 @@ public:
   virtual ~KTabListBoxItem();
 
   virtual const QString& text(int column) const { return txt[column]; }
-  void setText (int column, const char *text) { txt[column] = text; }
+  void setText (int column, const QString& text) { txt[column] = text; }
   virtual void setForeground (const QColor& fg ) { fgColor = fg; }
   const QColor& foreground (void) { return fgColor; }
 
@@ -503,7 +495,7 @@ protected:
   KTabListBox* parent;
   KNumCheckButton *mbut;
 public:
-  int (*columnSort)(const char *, const char *);
+  int (*columnSort)(const QString&, const QString&);
   bool vline; // if true print a vertical line to the end of column.
 };
 

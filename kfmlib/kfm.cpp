@@ -375,7 +375,7 @@ bool KFM::isKFMRunning()
     return FALSE;
 }
 
-void KFM::slotError( int _kerror, const char *_text )
+void KFM::slotError( int _kerror, const QString&_text )
 {
   download_state = false;
   emit error( _kerror, _text );

@@ -54,8 +54,8 @@ public:
     KDir();
     KDir (const KDir &);
     
-    KDir(const char *path,
-	 const char *nameFilter= 0,
+    KDir(const QString& path,
+	 const QString& nameFilter= QString::null,
 	 QDir::SortSpec sortSpec = 
 	 static_cast<QDir::SortSpec>(QDir::Name | QDir::IgnoreCase),
 	 QDir::FilterSpec filterSpec= QDir::All);
@@ -68,12 +68,12 @@ public:
     /**
       * @param path or url.
       */
-    KDir &operator= (const char *);
+    KDir &operator= (const QString&);
     
     /**
       * Set the current path (accepts normal paths or urls)
       */
-    virtual void setPath(const char *);
+    virtual void setPath(const QString&);
     
     /**
       * Change to the parent directory
@@ -83,22 +83,22 @@ public:
     /**
       * Returns the current host.
       */
-    const char *host() const { return myLocation.host(); }
+    QString host() const { return myLocation.host(); }
     
     /**
       * Returns the current protocol.
       */
-    const char *protocol() const { return myLocation.protocol(); }
+    QString protocol() const { return myLocation.protocol(); }
 
     /**
       * Returns the current path (or the path part of the url).
       */
-    const char *path() const {  return myLocation.path(); }
+    QString path() const {  return myLocation.path(); }
     
     /**
       * Set the current url (accepts normal paths or urls).
       */
-    void setURL(const char *);
+    void setURL(const QString&);
     
     /**
       * Returns the current url.
@@ -108,12 +108,12 @@ public:
     /**
       * Returns the current name filter.
       */
-    const char *nameFilter() const { return myNameFilter; }
+    const QString& nameFilter() const { return myNameFilter; }
     
     /**
       * Set the current name filter.
       */
-    void setNameFilter(const char *);
+    void setNameFilter(const QString&);
     
     /**
       * Returns the current filter.
@@ -163,7 +163,7 @@ public:
       * provided by QDir, KDir allows you to specify more than one glob in the
       * pattern. For example the pattern '*.cpp *.h' is valid.
       */
-    static bool match(const char *filter, const char *name);
+    static bool match(const QString& filter, const QString& name);
     
     /**
       * sets, if the class should get the data via blocking I/O.
@@ -193,7 +193,7 @@ signals:
     /**
       * Emitted when the url is changed
       */
-    void urlChanged(const char *);
+    void urlChanged(const QString&);
     
     /**
       * Emitted when a directory entry that matches the filter is received.
@@ -208,7 +208,7 @@ signals:
     /**
       * Emitted if a network transfer goes wrong.
       */
-    void error(int, const char *);
+    void error(int, const QString&);
 
     /**
       * Emitted, if new files are queued
@@ -227,7 +227,7 @@ protected slots:
       */
     void slotKfmFinished();
     
-    void slotKfmError(int, const char *);
+    void slotKfmError(int, const QString&);
 
     void timerEvent();
 

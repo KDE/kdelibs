@@ -29,11 +29,11 @@
 
 
 KRestrictedLine::KRestrictedLine( QWidget *parent, 
-								  const char *name,
-								  const char *valid )
+				  const char *name,
+				  const QString& valid )
   : QLineEdit( parent, name )
 {
-  qsValidChars = valid;
+    qsValidChars = valid;
 }
 
 KRestrictedLine::~KRestrictedLine()
@@ -74,7 +74,7 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 }
 
 
-void KRestrictedLine::setValidChars( const char *valid)
+void KRestrictedLine::setValidChars( const QString& valid)
 {
   qsValidChars = valid;
 }

@@ -15,8 +15,8 @@
 
 #include <qdialog.h>
 #include <qlabel.h>
-#include <qbttngrp.h>
-#include <qpushbt.h>
+#include <qbuttongroup.h>
+#include <qpushbutton.h>
 #include <qframe.h>
 
 class AssertDialogData : public QDialog

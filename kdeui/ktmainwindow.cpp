@@ -54,7 +54,7 @@ KTMainWindow::KTMainWindow( const char *name )
 
 
     // Enable session management (Matthias)
-    setUnsavedData(False);
+    setUnsavedData(false);
     if( !kapp->topWidget() ){
       kapp->setTopWidget( this );
       kapp->enableSessionManagement();
@@ -659,9 +659,9 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     if (kstatusbar)
     {
         if (kstatusbar->isVisible())
-            config->writeEntry("StatusBar", "Enabled");
+            config->writeEntry("StatusBar", QString("Enabled"));
         else
-            config->writeEntry("StatusBar", "Disabled");
+            config->writeEntry("StatusBar", QString("Disabled"));
     }
 
     if (kmenubar)
@@ -745,7 +745,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     s.setNum(number);
     s.prepend("WindowProperties");
     config->setGroup(s);
-    if (config->hasKey("KTWGeometry") == FALSE) // No global, return False
+    if (config->hasKey("KTWGeometry") == FALSE) // No global, return false
       {
 	return FALSE;
       }
@@ -772,7 +772,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
             //debug ("KTWreadProps: bad number of kmenubar args");
             return FALSE;
         }
-	bool showmenubar = False;  //Matthias
+	bool showmenubar = false;  //Matthias
         entry = entryList.first();
         if (entry=="Enabled")
 	  showmenubar = True; //Matthias
@@ -817,10 +817,10 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
             return FALSE;
         }
 
-	bool showtoolbar = False;  //Matthias
+	bool showtoolbar = false;  //Matthias
         entry = entryList.first();
         if (entry=="Enabled")
-	  showtoolbar = True; //Matthias
+	  showtoolbar = true; //Matthias
         else
 	  toolbar->enable(KToolBar::Hide);
 
@@ -862,10 +862,10 @@ void KTMainWindow::setFrameBorderWidth(int size){
 //Matthias
 bool KTMainWindow::canBeRestored(int number){
   if (!kapp->isRestored())
-    return False;
+    return false;
   KConfig *config = kapp->getSessionConfig();
   if (!config)
-    return False;
+    return false;
   config->setGroup("Number");
   int n = config->readNumEntry("NumberOfWindows", 0);
   return (number >= 1 && number <= n);
@@ -877,7 +877,7 @@ const QString KTMainWindow::classNameOfToplevel(int number){
     return "";
   KConfig *config = kapp->getSessionConfig();
   if (!config)
-    return False;
+    return QString();
   QString s;
   s.setNum(number);
   s.prepend("WindowProperties");
@@ -893,13 +893,13 @@ const QString KTMainWindow::classNameOfToplevel(int number){
 //Matthias
 bool KTMainWindow::restore(int number){
   if (!canBeRestored(number))
-    return False;
+    return false;
   KConfig *config = kapp->getSessionConfig();
   if (readPropertiesInternal(config, number)){
     show();
-    return True;
+    return true;
   }
-  return False;
+  return false;
 }
 // Matthias
 void KTMainWindow::setUnsavedData( bool b){

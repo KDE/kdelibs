@@ -70,7 +70,7 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent, const char *_src )
 
     // Calculate amount of frames
     elements = 1;
-    char *p = "";
+    const char *p = "";
     if ( !cols.isNull() )
 	p = cols.data();
     else if ( !rows.isNull() )

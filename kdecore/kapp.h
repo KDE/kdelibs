@@ -121,7 +121,7 @@ public:
   /** 
 	* Return the logical application name as set in the constructor.
 	*/
-  const QString& appName() const { return aAppName; }
+  const QString appName() const { return aAppName; }
   
   /** 
 	* Retrieve the application config object. 
@@ -168,7 +168,7 @@ public:
 	* enabled with userdefined=True.
 	* @see #enableSessionManagement
 	*/
-  void setWmCommand(const char*);
+  void setWmCommand(const QString&);
   
 
   /**
@@ -177,7 +177,7 @@ public:
 	* @param bAboutQtMenu If true, there is a menu entry for About Qt
 	* @return a standard help menu
 	*/
-  QPopupMenu* getHelpMenu( bool bAboutQtMenu, const char* appAboutText );
+  QPopupMenu* getHelpMenu( bool bAboutQtMenu, const QString& appAboutText );
 							 
 
   /**
@@ -281,7 +281,7 @@ public:
    * The default for this directory is $KDEDIR/share/doc/HTML
    * @return the name of the directory
    */
-  static const QString& kde_htmldir();
+  static const QString kde_htmldir();
 
   /**
    * Returns the directory where KDE applications store their .kdelnk file
@@ -289,7 +289,7 @@ public:
    * The default for this directory is $KDEDIR/share/applnk
    * @return the name of the directory
    */
-  static const QString& kde_appsdir();
+  static const QString kde_appsdir();
 
   /**
    * Returns the directory where KDE icons are stored
@@ -297,7 +297,7 @@ public:
    * The default for this directory is $KDEDIR/share/icons
    * @return the name of the directory
    */
-  static const QString& kde_icondir();
+  static const QString kde_icondir();
 
   /** 	
    * Returns the directory where KDE applications store their specific data
@@ -305,7 +305,7 @@ public:
    * The default for this directory is $KDEDIR/share/apps
    * @return the name of the directory
    */
-  static const QString& kde_datadir();
+  static const QString kde_datadir();
 
   /**
    * Returns the directory where locale-specific information (like
@@ -314,7 +314,7 @@ public:
    * The default for this directory is $KDEDIR/share/locale
    * @return the name of the directory
    */
-  static const QString& kde_localedir();
+  static const QString kde_localedir();
 
   /**
    * Returns the directory where cgi scripts are stored
@@ -322,7 +322,7 @@ public:
    * The default for this directory is $KDEDIR/cgi-bin
    * @return the name of the directory
    */
-  static const QString& kde_cgidir();
+  static const QString kde_cgidir();
 
   /**
    * Returns the directory where sound data are stored.
@@ -333,7 +333,7 @@ public:
    *
    * @return the name of the directory
    */
-  static const QString& kde_sounddir();
+  static const QString kde_sounddir();
 
   /**
    * Returns the directory where toolbar icons are stored
@@ -341,7 +341,7 @@ public:
    * The default for this directory is $KDEDIR/share/toolbar
    * @return the name of the directory
    */
-  static const QString& kde_toolbardir();
+  static const QString kde_toolbardir();
 
   /**
    * Returns the directory where wallpapers are stored
@@ -349,7 +349,7 @@ public:
    * The default for this directory is $KDEDIR/share/wallpapers
    * @return the name of the directory
    */
-  static const QString& kde_wallpaperdir();
+  static const QString kde_wallpaperdir();
 
   /**
    * Returns the directory where executable programs are stored
@@ -357,7 +357,7 @@ public:
    * The default for this directory is $KDEDIR/bin
    * @return the name of the directory
    */
-  static const QString& kde_bindir();
+  static const QString kde_bindir();
 
   /**
    * Returns the directory where KParts are stored
@@ -365,7 +365,7 @@ public:
    * The default for this directory is $KDEDIR/parts
    * @return the name of the directory
    */
-  static const QString& kde_partsdir();
+  static const QString kde_partsdir();
 
   /**
    * Returns the directory where config files are stored
@@ -373,7 +373,7 @@ public:
    * The default for this directory is $KDEDIR/share/config
    * @return the name of the directory
    */
-  static const QString& kde_configdir();
+  static const QString kde_configdir();
 
     
  /**
@@ -382,7 +382,7 @@ public:
   * The default for this directory is $KDEDIR/share/mimelnk
   * @return the name of the directory
   */
-  static const QString& kde_mimedir();
+  static const QString kde_mimedir();
 
   /**
    * Get the local KDE base dir
@@ -408,7 +408,7 @@ public:
 	* include $KDEDIR, $KDEPATH, and "[KDE Setup]:Path=" entry in a config
 	* file. If file is not found, isEmpty() will return True
 	*/
-  static QString findFile( const char *file );
+  static QString findFile( const QString& file );
 
   /** 
 	* Get the KDE font list.
@@ -429,7 +429,7 @@ public:
 	* "-caption", otherwise it will be equivalent to the name of the
 	* executable.
 	*/
-  const char* getCaption() const;
+  const QString getCaption() const;
 
   /** Get a file name in order to make a temporary copy of your
 	* document.
@@ -439,7 +439,7 @@ public:
 	* @return A new filename for auto-saving. You have to free() this
 	* yourself, otherwise you have a memory leak!
 	*/
-  const char* tempSaveName( const char* pFilename );
+  const QString tempSaveName( const QString& pFilename );
 
   /** Check if there is an auto-save file for the document you want to
 	* open.
@@ -450,7 +450,7 @@ public:
 	* @return The full path of the file to open. You must free() this
 	* pointer yourself, otherwise you have a memory leak.
 	*/
-  const char* checkRecoverFile( const char* pFilename, bool& bRecover );
+  const QString checkRecoverFile( const QString& pFilename, bool& bRecover );
 
   /**
 	* Returns true if the KLocale object for this application has already 
@@ -598,7 +598,7 @@ private:
   void parseCommandLine( int&, char** ); // search for special KDE arguments
 
   void buildSearchPaths();
-  void appendSearchPath( const char *path );
+  void appendSearchPath( const QString& path );
 
   virtual void kdisplaySetPalette();
   virtual void kdisplaySetStyle();
@@ -710,11 +710,40 @@ private:
         * @param mode     The access mode, as in the access() system call.
         * @return Whether the access is allowed, true = Access allowed
         */
-  bool checkAccess(const char *pathname, int mode);
+  bool checkAccess(const QString& pathname, int mode);
 
 #endif
 
 // $Log$
+// Revision 1.60.2.8  1999/02/23 18:21:01  pbrown
+// reverted changes to kapp -- old dnd functionality should work again.
+//
+// Revision 1.60.2.6  1999/02/22 12:14:11  kulow
+// CVS_SILENT: merging 1.1 and 1.2
+//
+// Revision 1.60.2.5  1999/02/17 17:33:13  kulow
+// reverting Alex's patch.
+//
+// Revision 1.60.2.4  1999/02/17 05:36:42  garbanzo
+// i18n() seems to be returning a QString now.  This is a quick hack to get
+// around this.  i18n_r() returns the QString, i18n() returns the
+// QString.data().  Fully supporting QStrings means using QFiles
+// throughout...
+//
+// Revision 1.60.2.3  1999/02/14 02:05:35  granroth
+// Converted a lot of 'const char*' to 'QString'.  This compiles... but
+// it's entirely possible that nothing will run linked to it :-P
+//
+// Revision 1.60.2.2  1999/01/30 23:55:51  kulow
+// more porting - it actually compiles now ;)
+//
+// Revision 1.60.2.1  1999/01/30 20:18:45  kulow
+// start porting to Qt2.0 beta
+//
+// Revision 1.61  1999/02/06 16:27:11  kulow
+// make KDE "1.1" and 1 - 1 - 3 (pre1 and 2 was 1 - 1 - 1). Then again
+// 1.1.1 has to be 1 - 1 - 4. Would be strange, not? I see no other way around.
+//
 // Revision 1.60  1998/12/06 08:56:10  garbanzo
 // Typo police.
 //

@@ -31,7 +31,7 @@
 
 #include "kaccel.h"
 
-KAccel::KAccel( QWidget * parent, const char * name ):
+KAccel::KAccel( QWidget * parent, const QString& name ):
   aKeyDict(100){
 	aAvailableId = 1;
 	bEnabled = true;
@@ -51,8 +51,8 @@ void KAccel::clear()
 	aKeyDict.clear();
 }
 
-void KAccel::connectItem( const char * action,
-			  const QObject* receiver, const char* member,
+void KAccel::connectItem( const QString& action,
+			  const QObject* receiver, const QString& member,
 			  bool activate )
 {
   if (!action)
@@ -61,7 +61,7 @@ void KAccel::connectItem( const char * action,
 
 	if ( !pEntry ) {
 		QString str;
-		str.sprintf( "KAccel : Cannot connect action %s ", action );
+		str.sprintf( "KAccel : Cannot connect action %s ", (const char*)action );
 		str.append( "which is not in the object dictionary" );
 		warning(str);
 		return;
@@ -80,7 +80,7 @@ void KAccel::connectItem( const char * action,
 }
 
 void KAccel::connectItem( StdAccel accel,
-			  const QObject* receiver, const char* member,
+			  const QObject* receiver, const QString& member,
 			  bool activate ){
   if (stdAction(accel) && !aKeyDict[ stdAction(accel) ]){
     insertStdItem(accel);
@@ -93,7 +93,7 @@ uint KAccel::count() const
 	return aKeyDict.count();
 }
 
-uint KAccel::currentKey( const char * action )
+uint KAccel::currentKey( const QString& action )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -103,16 +103,16 @@ uint KAccel::currentKey( const char * action )
 		return pEntry->aCurrentKeyCode;
 }
 
-const char*  KAccel::description( const char * action ){
+const QString  KAccel::description( const QString& action ){
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
 	if ( !pEntry )
-		return 0;
+		return QString::null;
 	else
 		return pEntry->descr;
 }
 
-uint KAccel::defaultKey( const char * action )
+uint KAccel::defaultKey( const QString& action )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -122,8 +122,8 @@ uint KAccel::defaultKey( const char * action )
         return pEntry->aDefaultKeyCode;
 }
 
-void  KAccel::disconnectItem( const char * action,
-			      const QObject* receiver, const char* member )
+void  KAccel::disconnectItem( const QString& action,
+			      const QObject* receiver, const QString& member )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry )
@@ -132,7 +132,7 @@ void  KAccel::disconnectItem( const char * action,
 	pAccel->disconnectItem( pEntry->aAccelId, receiver, member  );
 }
 
-const char * KAccel::findKey( int key ) const
+const QString KAccel::findKey( int key ) const
 {
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
@@ -142,10 +142,10 @@ const char * KAccel::findKey( int key ) const
 		++aKeyIt;
 	}
 #undef pE
-	return 0;	
+	return QString::null;	
 }
 
-bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
+bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCode,
 			 bool configurable )
 {
 	return insertItem( descr, action,  keyCode,
@@ -208,7 +208,7 @@ bool KAccel::insertItem( const char * action, uint keyCode,
 
 
 void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
-	const char *action )
+	const QString& action )
 {
 	QString s = menu->text( id );
 	if ( !s ) return;
@@ -239,9 +239,9 @@ void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 }
 
 
-bool KAccel::insertStdItem( StdAccel id, const char* descr )
+bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 {
-	const char *key=0, *name = 0;
+	QString key, name;
 	switch( id ) {
 		case Open:
 			name=i18n("Open") ;
@@ -327,7 +327,7 @@ bool KAccel::isEnabled()
 	return bEnabled;
 }
 
-bool KAccel::isItemEnabled( const char *action )
+bool KAccel::isItemEnabled( const QString& action )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -377,7 +377,7 @@ void KAccel::readSettings(KConfig* config)
 #undef pE
 }
 
-void KAccel::removeItem( const char * action )
+void KAccel::removeItem( const QString& action )
 {
 
     KKeyEntry *pEntry = aKeyDict[ action ];
@@ -407,14 +407,14 @@ void KAccel::setEnabled( bool activate )
 	bEnabled = activate;
 }
 
-void KAccel::setItemEnabled( const char * action, bool activate )
+void KAccel::setItemEnabled( const QString& action, bool activate )
 {	
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
 		QString str;
 		str.sprintf(
 			"KAccel : cannont enable action %s"\
-			"which is not in the object dictionary", action );
+			"which is not in the object dictionary", (const char*)action );
 		warning( str );
 		return;
 	}
@@ -487,8 +487,8 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	return true;
 }
 
-const char * KAccel::stdAction( StdAccel id ) {
-	const char* action = 0;
+const QString KAccel::stdAction( StdAccel id ) {
+	QString action;
 	switch( id ) {
 		case Open:
 			action = "Open";
@@ -545,13 +545,13 @@ const char * KAccel::stdAction( StdAccel id ) {
 			action = "Help";
 			break;
 		default:
-			return 0;
+			return QString::null;
 			break;
 	}
 	return action;
 }
 
-void KAccel::setConfigGroup( const char *group )
+void KAccel::setConfigGroup( const QString& group )
 {
 	aGroup = group;
 }
@@ -561,7 +561,7 @@ void KAccel::setConfigGlobal( bool global )
 	bGlobal = global;
 }
 
-const char *KAccel::configGroup()
+const QString KAccel::configGroup()
 {
 	return aGroup.data();
 }
@@ -665,44 +665,44 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
 
 /*****************************************************************************/
 
-const QString keyToString( uint keyCode, bool i18_n )
+QCString keyToString( uint keyCode, bool i18_n )
 {
-	QString res;
+	QCString res;
 	
 	if ( keyCode == 0 ) {
 		res.sprintf( "" );
 		return res;
 	}
 	if (!i18_n){
-	  if ( keyCode & SHIFT ){
+	  if ( keyCode & Qt::SHIFT ){
 	    res += ("SHIFT");
 	    res += "+";
 	  }
-	  if ( keyCode & CTRL ){
+	  if ( keyCode & Qt::CTRL ){
 	    res +=("CTRL");
 	    res += "+";
 	  }
-	  if ( keyCode & ALT ){
+	  if ( keyCode & Qt::ALT ){
 	    res +=("ALT");
 	    res += "+";
 	  }
 	}
 	else {
-	  if ( keyCode & SHIFT ){
+	  if ( keyCode & Qt::SHIFT ){
 	    res = i18n("SHIFT");
 	    res += "+";
 	  }
-	  if ( keyCode & CTRL ){
+	  if ( keyCode & Qt::CTRL ){
 	    res += i18n("CTRL");
 	    res += "+";
 	  }
-	  if ( keyCode & ALT ){
+	  if ( keyCode & Qt::ALT ){
 	    res += i18n("ALT");
 	    res += "+";
 	  }
 	}
 
-	uint kCode = keyCode & ~(SHIFT | CTRL | ALT);
+	uint kCode = keyCode & ~(Qt::SHIFT | Qt::CTRL | Qt::ALT);
 
 	for (int i=0; i<NB_KEYS; i++) {
 		if ( kCode == (uint)KKeys[i].code ) {
@@ -711,10 +711,10 @@ const QString keyToString( uint keyCode, bool i18_n )
 		}
 	}
 	
-	return 0;
+	return QCString();
 }
 
-uint stringToKey(const char * key )
+uint stringToKey(const QString& key )
 {
 	char *toks[4], *next_tok;
 	uint keyCode = 0;
@@ -725,7 +725,7 @@ uint stringToKey(const char * key )
 	if ( key == 0 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");return 0; }
 	if( strcmp( key, "" ) == -1 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");return 0; }
 	
-	strncpy(sKey, (const char *)key, 200);
+	strncpy(sKey, (const char*)key, 200);
 	next_tok = strtok(sKey,"+");
 	
 	if ( next_tok== 0L ) return 0;
@@ -742,23 +742,23 @@ uint stringToKey(const char * key )
 	bool  keyFound = FALSE;
 	for (int i=0; i<nb_toks; i++) {
 		if ( strcmp(toks[i], "SHIFT")==0 )
-		  keyCode |= SHIFT;
+		  keyCode |= Qt::SHIFT;
 		else if ( strcmp(toks[i], "CTRL")==0 )
-		  keyCode |= CTRL;
+		  keyCode |= Qt::CTRL;
 		else if ( strcmp(toks[i], "ALT")==0 )
-		  keyCode |= ALT;
+		  keyCode |= Qt::ALT;
 		else if ( strcmp(toks[i], "Umschalt")==0 )
-		  keyCode |= SHIFT;
+		  keyCode |= Qt::SHIFT;
 		else if ( strcmp(toks[i], "Strg")==0 )
-		  keyCode |= CTRL;
+		  keyCode |= Qt::CTRL;
 		else if ( strcmp(toks[i], "Alt")==0 )
-		  keyCode |= ALT;
+		  keyCode |= Qt::ALT;
 		else if ( strcmp(toks[i], i18n("SHIFT"))==0 )
-		  keyCode |= SHIFT;
+		  keyCode |= Qt::SHIFT;
 		else if ( strcmp(toks[i], i18n("CTRL"))==0 )
-		  keyCode |= CTRL;
+		  keyCode |= Qt::CTRL;
 		else if ( strcmp(toks[i], i18n("ALT"))==0 )
-		  keyCode |= ALT;
+		  keyCode |= Qt::ALT;
 	    else {
 			/* key already found ? */
 			if ( keyFound ) return 0;

@@ -12,19 +12,19 @@
 
 #include<qdict.h>
 #include<qdir.h>
-#include<qfileinf.h>
+#include<qfileinfo.h>
 #include<qstring.h>
 #include<qstrlist.h>
 
 #define KDEDIR "/opt/kde"
 #define KDEDIR_LEN 6
 
-static const char *tokenize( QString& token, const char *str, 
-		const char *delim );
-static const char *selectStr( const char *env, 
-		const char *builtin );
+static const QString& tokenize( QString& token, const QString& str, 
+		const QString& delim );
+static const QString& selectStr( const QString& env, 
+		const QString& builtin );
 
-KStandardDirs::KStandardDirs( const char *appName ) :
+KStandardDirs::KStandardDirs( const QString& appName ) :
 	UserDir (	QDir::homeDirPath() ),
 	KDEDir	(	selectStr( "KDEDIR", KDEDIR ) ),
 	_appPath(	0	),
@@ -51,8 +51,8 @@ KStandardDirs::~KStandardDirs()
 	delete _appName;
 }
 
-QString KStandardDirs::findExe( const char *appname, 
-		const char *pathstr, bool ignore)
+QString KStandardDirs::findExe( const QString& appname, 
+		const QString& pathstr, bool ignore)
 {
 	if( pathstr == 0 ) {
 		pathstr = getenv( "PATH" );
@@ -61,7 +61,7 @@ QString KStandardDirs::findExe( const char *appname,
 	QString onepath;
 	QFileInfo info;
 
-	const char *p = pathstr;
+	QString p(pathstr);
 
 	// split path using : or \b as delimiters
         while( (p = tokenize( onepath, p, ":\b") ) != 0 ) {
@@ -80,13 +80,13 @@ QString KStandardDirs::findExe( const char *appname,
 	// If we reach here, the executable wasn't found.
 	// So return empty string.
 
-	onepath = (const char *)0;
+	onepath = (const char*)0;
 
 	return onepath;
 }
 
-int KStandardDirs::findAllExe( QStrList& list, const char *appname,
-			const char *pathstr=0, bool ignore )
+int KStandardDirs::findAllExe( QStrList& list, const QString& appname,
+			const QString& pathstr=QString::null, bool ignore )
 {
 	if( pathstr == 0 ) {
 		pathstr = getenv( "PATH" );
@@ -95,7 +95,7 @@ int KStandardDirs::findAllExe( QStrList& list, const char *appname,
 	QString onepath;
 	QFileInfo info;
 
-	const char *p = pathstr;
+	QString p(pathstr);
 
 	list.clear();
 
@@ -117,22 +117,22 @@ int KStandardDirs::findAllExe( QStrList& list, const char *appname,
 }
 
 
-const char *KStandardDirs::closest( DirScope method, 
-		const char *suffix ) const
+const QString KStandardDirs::closest( DirScope method, 
+		const QString& suffix ) const
 {
 	CHECK_PTR( suffix );
 	CHECK_PTR( _app );
 	CHECK_PTR( _sys );
 	CHECK_PTR( _user );
 
-	const char *sys, *sysapp, *user, *app;
+	QString sys, sysapp, user, app;
 	QString *found = _user->find( suffix );
        	
 
 	// check dict for previous full-string insertion
 	if( found == 0 ) {
 		// not already inserted, so insert them now.
-		const char *realsuffix = suffix;
+		QString realsuffix(suffix);
 		if( !strncmp( suffix, "KDEDIR", 
 				KDEDIR_LEN ) ) {
 			// remove prefix KDEDIR from path
@@ -149,7 +149,6 @@ const char *KStandardDirs::closest( DirScope method,
 
 		// system app dir
 		name = new QString( KDEDir );
-		name->detach();
 
 		*name += "/share/apps/";
 		*name += realsuffix;
@@ -161,7 +160,6 @@ const char *KStandardDirs::closest( DirScope method,
 
 		// user dir
 		name = new QString( UserDir );
-		name->detach();
 
 		*name += "/.kde";
 		*name += realsuffix;
@@ -175,7 +173,6 @@ const char *KStandardDirs::closest( DirScope method,
 
 		// app dir
 		name = new QString( UserDir );
-		name->detach();
 
 		*name += "/.kde/share/apps/";
 		*name += *_appName;
@@ -228,7 +225,7 @@ const char *KStandardDirs::closest( DirScope method,
 	return sys;		// sys
 }
 
-const char *KStandardDirs::app( KStandardDirs::DirScope s ) const
+const QString KStandardDirs::app( KStandardDirs::DirScope s ) const
 {
 	if( _appPath == 0 ) {
 		QString app( "/share/apps/" );
@@ -241,69 +238,69 @@ const char *KStandardDirs::app( KStandardDirs::DirScope s ) const
 	return _appPath;
 }
 
-const char *KStandardDirs::bin( DirScope s ) const
+const QString KStandardDirs::bin( DirScope s ) const
 {
 	return closest( s, KDE_BINDIR );
 }
 
-const char *KStandardDirs::cgi( DirScope s ) const
+const QString KStandardDirs::cgi( DirScope s ) const
 {
 
 	return closest( s, KDE_CGIDIR );
 }
 
-const char *KStandardDirs::config( DirScope s ) const
+const QString KStandardDirs::config( DirScope s ) const
 {
 	return closest( s, KDE_CONFIGDIR );
 }
 
-const char *KStandardDirs::apps( DirScope s ) const
+const QString KStandardDirs::apps( DirScope s ) const
 {
 	return closest( s, KDE_DATADIR );
 }
 
-const char *KStandardDirs::html( DirScope s ) const
+const QString KStandardDirs::html( DirScope s ) const
 {
 	return closest( s, KDE_HTMLDIR );
 }
 
-const char *KStandardDirs::icon( DirScope s ) const
+const QString KStandardDirs::icon( DirScope s ) const
 {
 	return closest( s, KDE_ICONDIR );
 }
 
-const char *KStandardDirs::locale( DirScope s ) const
+const QString KStandardDirs::locale( DirScope s ) const
 {
 	return closest( s, KDE_LOCALE );
 }
 
-const char *KStandardDirs::mime( DirScope s ) const
+const QString KStandardDirs::mime( DirScope s ) const
 {
 	return closest( s, KDE_MIMEDIR );
 }
 
-const char *KStandardDirs::parts( DirScope s ) const
+const QString KStandardDirs::parts( DirScope s ) const
 {
 	return closest( s, KDE_PARTSDIR );
 }
 
-const char *KStandardDirs::toolbar( DirScope s ) const
+const QString KStandardDirs::toolbar( DirScope s ) const
 {
 	return closest( s, KDE_TOOLBARDIR );
 }
 
-const char *KStandardDirs::wallpaper( DirScope s ) const
+const QString KStandardDirs::wallpaper( DirScope s ) const
 {
 	return closest( s, KDE_WALLPAPERDIR );
 }
 
-const char *KStandardDirs::sound( DirScope s ) const
+const QString KStandardDirs::sound( DirScope s ) const
 {
 	return closest( s, KDE_SOUNDDIR );
 }
 
-static const char *tokenize( QString& token, const char *str, 
-		const char *delim )
+static const QString& tokenize( QString& token, const QString& str, 
+		const QString& delim )
 {
         token = "";
 
@@ -329,9 +326,9 @@ static const char *tokenize( QString& token, const char *str,
         return str;
 }
 
-static const char *selectStr( const char *env, const char *builtin )
+static const QString& selectStr( const QString& env, const QString& builtin )
 {
-	const char *result = getenv( env );
+	QString result(getenv( env ));
 
 	if( result == 0 ) {
 		result = builtin;

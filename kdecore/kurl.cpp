@@ -108,33 +108,18 @@ void KURL::decodeURL( QString& _url ) {
     delete [] new_url;
 }
 
-void
-KURL::detach()
-{
-    protocol_part.detach();
-    host_part.detach();
-    path_part.detach();
-    ref_part.detach();
-    /* temporarily removed */
-    // dir_part.detach();
-    user_part.detach();
-    passwd_part.detach();
-    path_part_decoded.detach();
-    search_part.detach();
-}
-
 KURL::KURL() 
 { 
     malformed = true;
-    protocol_part = "";
-    host_part = ""; 
-    path_part = ""; 
-    ref_part = ""; 
+    protocol_part = QString::null;
+    host_part = QString::null; 
+    path_part = QString::null; 
+    ref_part = QString::null; 
     bNoPath = false;
 }
 
 
-KURL::KURL( KURL & _base_url, const char * _rel_url )
+KURL::KURL( KURL & _base_url, const QString& _rel_url )
 {
     char * pos1 = strchr( _rel_url, ':');
     char * pos2 = strchr( _rel_url, '/');
@@ -163,25 +148,24 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
         user_part = _base_url.user_part;
         passwd_part = _base_url.passwd_part;
         bNoPath = _base_url.bNoPath;
-        detach();
 
 	cd( _rel_url );
     } 
 }
 
-KURL::KURL( const char* _url)
+KURL::KURL( const QString& _url)
 {
     parse( _url );
 }
 
-void KURL::parse( const char * _url )
+void KURL::parse( const QString& _url )
 {
     QString url(_url);
     // defaults
     malformed = false;
     path_part_decoded = 0;
     search_part = 0;
-    ref_part = "";
+    ref_part = QString::null;
     bNoPath = false;
 
     // Empty or Null string ?
@@ -190,11 +174,11 @@ void KURL::parse( const char * _url )
       malformed = true;
       return;
     }
-
+ 
     if ( _url[0] == '/' )
     {
 	// Create a light weight URL with protocol
-	path_part_decoded = _url;
+	path_part_decoded = url;
 	path_part = path_part_decoded.data();
 	KURL::encodeURL( path_part );
 	protocol_part = "file";
@@ -214,7 +198,6 @@ void KURL::parse( const char * _url )
 	 protocol_part == "man" || protocol_part == "news" )
     {
 	path_part = url.mid( pos + 1, url.length() );
-	detach();
 	return;
     }
     
@@ -255,7 +238,7 @@ void KURL::parse( const char * _url )
     }
     else
     {
-	host_part = "";
+	host_part = QString::null;
 	// Go back to the '/'
 	pos2 = pos - 1;
     }
@@ -275,20 +258,20 @@ void KURL::parse( const char * _url )
 	    else
 	    {
 		user_part = host_part.left( j );
-		passwd_part = "";
+		passwd_part = QString::null;
 		host_part = host_part.mid( j + 1, host_part.length() );
 	    }
 	}
 	else
 	{
-	    passwd_part = "";
-	    user_part = "";
+	    passwd_part = QString::null;
+	    user_part = QString::null;
 	}
     }
     else
     {
-	passwd_part = "";
-	user_part = "";
+	passwd_part = QString::null;
+	user_part = QString::null;
     }
   
     // find a possible port number
@@ -332,7 +315,7 @@ void KURL::parse( const char * _url )
 	path_part = "/";
 	// indicate that we did not see a path originally
 	bNoPath = true;
-	ref_part = "";
+	ref_part = QString::null;
     } 
 
     if ((protocol_part == "http") || (protocol_part == "imap4") || (protocol_part == "pop3"))
@@ -356,11 +339,10 @@ void KURL::parse( const char * _url )
     // hostpart -> Host[:Port]
     // userpart -> User[:Pass]
 
-    detach();
 }
 
-KURL::KURL( const char* _protocol, const char* _host, 
-			const char* _path, const char* _ref)
+KURL::KURL( const QString& _protocol, const QString& _host, 
+			const QString _path, const QString& _ref)
 {
     protocol_part = _protocol;
     host_part = _host;
@@ -375,7 +357,7 @@ bool KURL::hasSubProtocol()
 	     strchr( path_part, '#' ) != 0L );
 }
 
-const char* KURL::directory( bool _trailing )
+const QString KURL::directory( bool _trailing )
 {
     // Calculate only on demand
     if ( path_part.right( 1 )[0] == '/' )
@@ -397,10 +379,10 @@ const char* KURL::directory( bool _trailing )
     return dir_part.data();
 }
 
-const char* KURL::host() const 
+const QString KURL::host() const 
 {
     if (host_part.isNull()) 
-	return "";
+	return QString::null;
     else 
 	return host_part.data();
 }
@@ -409,10 +391,10 @@ KURL::~KURL() {
 
 }
 
-const char* KURL::path() const
+const QString KURL::path() const
 { 
     if (path_part.isNull()) 
-	return "";
+	return QString::null;
     else {
         KURL *that = const_cast<KURL*>(this);
         if (that->path_part_decoded.isNull()) {
@@ -423,54 +405,54 @@ const char* KURL::path() const
     }
 }
 
-const char* KURL::httpPath() const
+const QString KURL::httpPath() const
 { 
     if (path_part.isNull()) 
-	return "";
+	return QString::null;
     else {
 	return path_part.data();
     }
 }
 
-const char* KURL::searchPart() const
+const QString KURL::searchPart() const
 { 
     if (search_part.isNull()) 
-	return 0L;
+	return QString::null;
     else {
 	return search_part.data();
     }
 }
 
-const char* KURL::protocol() const 
+const QString KURL::protocol() const 
 { 
     if (protocol_part.isNull()) 
-	return ""; 
+	return QString::null; 
     else 
 	return protocol_part.data(); 
 }
 
-void KURL::setProtocol( const char* newProto) 
+void KURL::setProtocol( const QString& newProto) 
 { 
     protocol_part = newProto; 
 }
 
-void KURL::setSearchPart( const char* _searchPart) 
+void KURL::setSearchPart( const QString& _searchPart) 
 { 
     search_part = _searchPart; 
 }
 
-const char* KURL::reference() const 
+const QString KURL::reference() const 
 { 
     if (ref_part.isNull()) 
-	return "";
+	return QString::null;
     else 
 	return ref_part.data(); 
 }
 
-const char* KURL::user() const
+const QString KURL::user() const
 { 
     if (user_part.isNull()) 
-	return "";
+	return QString::null;
     else 
 	return user_part.data(); 
 }
@@ -480,30 +462,30 @@ unsigned int KURL::port() const
     return port_number;
 }
 
-const char* KURL::passwd() const
+const QString KURL::passwd() const
 { 
     if (passwd_part.isNull()) 
-	return "";
+	return QString::null;
     else 
 	return passwd_part.data(); 
 }
 
-void KURL::setPath( const char *newPath )
+void KURL::setPath( const QString& newPath )
 {
 	path_part = newPath;
 }
 
-void KURL::setHost( const char *newHost )
+void KURL::setHost( const QString& newHost )
 {
 	host_part = newHost;
 }
 
-void KURL::setPassword( const char *password )
+void KURL::setPassword( const QString& password )
 {
     passwd_part = password;
 }
 
-void KURL::setUser( const char *newUser )
+void KURL::setUser( const QString& newUser )
 {
     user_part = newUser;
 }
@@ -516,7 +498,7 @@ void KURL::setPort( const unsigned int newPort )
 bool KURL::cdUp( bool zapRef ) 
 {
     if( zapRef) 
-	setReference("");
+	setReference(QString::null);
     return cd( "..");
 }
 
@@ -525,7 +507,7 @@ bool KURL::operator==( const KURL &_url) const
    return _url.url() == url();
 }
 
-const char* KURL::directoryURL( bool _trailing )
+const QString KURL::directoryURL( bool _trailing )
 {
     QString u = url();
     
@@ -596,13 +578,13 @@ QString KURL::url() const
     return url;
 }
 
-const char* KURL::filename()
+const QString KURL::filename()
 {
     if ( path_part.isEmpty() )
-	return "";
+	return QString::null;
     
     if ( path_part.data() == "/")
-	return "";
+	return QString::null;
     
     if (path_part_decoded.isNull()) {
 	path_part_decoded = path_part.copy();
@@ -612,7 +594,7 @@ const char* KURL::filename()
     return path_part_decoded.data() + pos + 1;
 }
     
-bool KURL::cd( const char* _dir, bool zapRef)
+bool KURL::cd( const QString& _dir, bool zapRef)
 {
     if ( !_dir )
 	return false;
@@ -640,14 +622,14 @@ bool KURL::cd( const char* _dir, bool zapRef)
     }
 
     if ( zapRef )
-	setReference( "" );
+	setReference( QString::null );
 
     cleanPath();
     
     return true;
 }
 
-bool KURL::setReference( const char* _ref)
+bool KURL::setReference( const QString& _ref)
 {
     // We cant have a referece if we have no path (other than /)
     // if( path_part.isNull() || path_part.data()[0] == 0 )
@@ -671,11 +653,10 @@ KURL& KURL::operator=( const KURL &u)
   user_part = u.user_part;
   passwd_part = u.passwd_part;
   
-  detach();
   return *this;
 }
 
-KURL& KURL::operator=( const char *_url )
+KURL& KURL::operator=( const QString& _url )
 {
     parse( _url );
     return *this;

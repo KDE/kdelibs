@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.18  1999/02/26 12:56:59  dfaure
+ * '/' after PATH_TMP for SCO
+ *
  * Revision 1.17.4.1  1999/02/26 12:24:17  dfaure
  * *** empty log message ***
  *
@@ -163,15 +166,15 @@
 #include <kapp.h>
 #include <qdialog.h>
 #include <qfile.h>
-#include <qfileinf.h>
+#include <qfileinfo.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
 
 // Standard Qt widgets
 
 #include <qlabel.h>
-#include <qlined.h>
-#include <qpushbt.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
 
 // KDE includes
 #include <kconfig.h>
@@ -259,7 +262,7 @@ KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
   connect( pQuitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
 
   // create a default KConfig object in order to be able to start right away
-  pConfig = new KConfig( 0L );
+  pConfig = new KConfig( QString::null );
 }
 
 KConfigTestView::~KConfigTestView()
@@ -307,7 +310,7 @@ void KConfigTestView::groupEditReturnPressed()
   // test program this will do
   QString aText;
   aText.sprintf( "Group set to %s", QString( pConfig->group() ).isEmpty() ?
-		 "<default>" : pConfig->group() );
+		 QString("<default>").ascii() : pConfig->group().ascii() );
   pInfoLabel2->setText( aText );
 }
 
@@ -350,7 +353,7 @@ int main( int argc, char **argv )
   a.setMainWidget( w );
   w->show();
 
-  fprintf( stderr, "Autosave name for %s is %s\n", "/home/kalle/text/mytext.txt", kapp->tempSaveName( "/home/kalle/text/mytext.txt" ) );
+  fprintf( stderr, "Autosave name for %s is %s\n", "/home/kalle/text/mytext.txt", kapp->tempSaveName( "/home/kalle/text/mytext.txt" ).ascii() );
 
   bool bRecoverFile = false;
   const char* pRecoverFile = kapp->checkRecoverFile( "/home/kalle/text/mytext.txt", bRecoverFile );

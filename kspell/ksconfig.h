@@ -85,7 +85,7 @@ public:
    */
   bool noRootAffix (void) const;
   bool runTogether(void) const;
-  char *dictionary (void) const;
+  const char *dictionary (void) const;
   bool dictFromList (void) const;
   //char *personalDict (void) const;
   int encoding (void) const;

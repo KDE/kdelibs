@@ -162,7 +162,7 @@ void KDateTable::paintCell( QPainter *p, int row, int col )
 
 void KDateTable::mousePressEvent(QMouseEvent *e)
 {
-  if (e->type() != Event_MouseButtonPress)
+  if (e->type() != QEvent::MouseButtonPress)
     return;
    
   int row, col;

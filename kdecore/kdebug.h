@@ -27,8 +27,8 @@
 #define kdebug kdebug_null
 #endif
 
-void kdebug( unsigned short level, unsigned short area, const char *fmt, ... );
-void kdebug_null (unsigned short level, unsigned short area, const char *fmt, ...);
+void kdebug( unsigned short level, unsigned short area, const char* fmt, ... );
+void kdebug_null (unsigned short level, unsigned short area, const char* fmt, ...);
 
 #ifndef NDEBUG
 #define KDEBUG( Level, Area, String ) kdebug( (Level), (Area), (String) );

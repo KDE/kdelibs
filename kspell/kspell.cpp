@@ -49,7 +49,7 @@ enum {
 		
 
 
-KSpell::KSpell (QWidget *_parent, const char *_caption,
+KSpell::KSpell (QWidget *_parent, QString _caption,
 		QObject *obj, const char *slot, KSpellConfig *_ksc)
 {
   proc=0;
@@ -203,7 +203,7 @@ void KSpell::KSpell2 (KProcIO *)
 
   NOOUTPUT (KSpell2);
 
-  ksdlg=new KSpellDlg (parent, "dialog", ispellID.data());
+  ksdlg=new KSpellDlg (parent, "dialog", ispellID);
   ksdlg->setCaption (caption.data());
   connect (ksdlg, SIGNAL (command (int)), this, 
 		SLOT (slotStopCancel (int)) );
@@ -216,7 +216,7 @@ void KSpell::KSpell2 (KProcIO *)
   emit ready(this);
 }
 
-bool KSpell::addPersonal (const char *word)
+bool KSpell::addPersonal (QString word)
 {
   QString qs (word);
 
@@ -236,7 +236,7 @@ bool KSpell::writePersonalDictionary (void)
   return proc->fputs ("#");
 }
 
-bool KSpell::ignore (const char *word)
+bool KSpell::ignore (QString word)
 {
   QString qs (word);
 
@@ -251,7 +251,7 @@ bool KSpell::ignore (const char *word)
 }
 
 bool
-KSpell::cleanFputsWord (const char *s, bool appendCR)
+KSpell::cleanFputsWord (QString s, bool appendCR)
 {
   QString qs(s);
 
@@ -263,11 +263,11 @@ KSpell::cleanFputsWord (const char *s, bool appendCR)
 	  qs.remove(i,1);
   }
   
-  return proc->fputs ((const char*) qs, appendCR);
+  return proc->fputs (qs, appendCR);
 }
 
 bool
-KSpell::cleanFputs (const char *s, bool appendCR)
+KSpell::cleanFputs (QString s, bool appendCR)
 {
   QString qs(s);
   unsigned int j=0,l=qs.length();
@@ -286,14 +286,14 @@ KSpell::cleanFputs (const char *s, bool appendCR)
       if (qs.isEmpty())
 	qs="";
       
-      return proc->fputs ((const char*) qs, appendCR);
+      return proc->fputs (qs, appendCR);
     }
   else
     return proc->fputs ("\n",appendCR);
 
 }
 
-bool KSpell::checkWord (char *buffer, bool _usedialog)
+bool KSpell::checkWord (QString buffer, bool _usedialog)
 {
   QString qs (buffer);
 
@@ -349,7 +349,7 @@ void KSpell::checkWord3 (void)
   emit corrected (cwword.data(), replacement(), 0L);
 }
 
-char * KSpell::funnyWord (char *word)
+QString KSpell::funnyWord (QString word)
 {
   QString qs;
   unsigned int i=0;
@@ -382,13 +382,11 @@ char * KSpell::funnyWord (char *word)
       else
 	qs+=word [i];
     }
-  strcpy (word, qs.data());
-
-  return word;
+  return qs;
 }
 	
   
-int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
+int KSpell::parseOneResponse (QString buffer, QString word, QStrList *sugg)
   // buffer is checked, word and sugg are filled in
   // returns
   //   GOOD    if word is fine
@@ -396,7 +394,7 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
   //   REPLACE if word is in replacelist
   //   MISTAKE if word is misspelled
 {
-  char temp [TEMPsz];
+  QString temp;
   int e;
 
   word [0]='\0';
@@ -415,10 +413,9 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
 
       
       QString qs (buffer);
-      strcpy (word,qs.mid (2,qs.find (' ',3)-2));
+      word = qs.mid (2,qs.find (' ',3)-2);
       //check() needs this
       orig=word;
-
 
       /////// Ignore-list stuff //////////
       //We don't take advantage of ispell's ignore function because
@@ -449,7 +446,7 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
 	{
 	  e++;
 	  if (replacelist.count()>(unsigned int)e)
-	    strcpy (word,replacelist.at(e));
+	    word = replacelist.at(e);
 	  return REPLACE;
 	}
 
@@ -457,13 +454,13 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
       /////// Suggestions //////
       if (buffer [0]!='#')
 	{
-	  qs=(index (buffer, ':')+2);
+	  qs = buffer.mid(buffer.find(':')+2, buffer.length());
 	  qs+=',';
 	  sugg->clear();
 	  i=j=0;
 	  while ((unsigned int)i<qs.length())
 	    {
-	      strcpy (temp,qs.mid (i,(j=qs.find (',',i))-i).data());
+	      temp = qs.mid (i,(j=qs.find (',',i))-i).data();
 	      sugg->append (funnyWord (temp));
 	      
 	      i=j+2;
@@ -473,7 +470,7 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
     }
       
       
-  kdebug(KDEBUG_ERROR, 750, "HERE?: [%s]", buffer);
+  kdebug(KDEBUG_ERROR, 750, "HERE?: [%s]", buffer.data());
   kdebug(KDEBUG_ERROR, 750, "Please report this to dsweet@physics.umd.edu");
   kdebug(KDEBUG_ERROR, 750, "Thank you!");
   emit done((bool)FALSE);
@@ -606,7 +603,7 @@ void KSpell::checkList4 ()
   emit eza();
 }
 
-bool KSpell::check (char *_buffer)
+bool KSpell::check (QString _buffer)
 {
   QString qs;
 
@@ -735,7 +732,7 @@ void KSpell::check3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
 
-  kdebug(KDEBUG_INFO, 750, "check3 %s %s %d", cwword.data(), replacement(), dlgresult);
+  kdebug(KDEBUG_INFO, 750, "check3 %s %s %d", cwword.data(), replacement().data(), dlgresult);
 
   //others should have been processed by dialog() already
   switch (dlgresult)
@@ -779,7 +776,7 @@ KSpell::slotStopCancel (int result)
 }
 
 
-void KSpell::dialog (char *word, QStrList *sugg, char *_slot)
+void KSpell::dialog (QString word, QStrList *sugg, const char *_slot)
 {
   dlgorigword=word;
 

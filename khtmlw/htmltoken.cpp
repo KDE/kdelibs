@@ -323,7 +323,7 @@ void HTMLTokenizer::write( const char *str )
 	else if (charEntity)
 	{
             unsigned long entityValue = 0;
-	    QString res = 0;
+	    QString res;
 
 	    searchBuffer[ searchCount+1] = *src;
 	    searchBuffer[ searchCount+2] = '\0';

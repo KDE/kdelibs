@@ -3,9 +3,9 @@
 
 #include <qwidget.h>
 #include <qdialog.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
-#include <qlined.h>
+#include <qlineedit.h>
 #include <qlayout.h>
 
 #include <string>

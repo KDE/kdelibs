@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 #include <qfileinfo.h>
 
 #include <kapp.h>
@@ -209,7 +209,7 @@ void KIORenameDlg::b1Pressed()
   K2URL u( m_pLineEdit->text() );
   if ( u.isMalformed() )
   {
-    string str = i18n( "Malformed URL\n" );
+    string str = (const char*)i18n( "Malformed URL\n" );
     str += m_pLineEdit->text();
     QMessageBox::critical( this, i18n( "Error" ), str.c_str(), i18n( "OK" ) );
     return;

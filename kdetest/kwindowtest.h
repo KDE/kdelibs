@@ -1,9 +1,9 @@
 #ifndef testwindow_h
 #define testwindow_h
 
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qtimer.h>
-#include <qprogbar.h>
+#include <qprogressbar.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>

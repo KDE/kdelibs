@@ -32,7 +32,7 @@ void kimgio_png_read( QImageIO *io )
 	int passes = 0;
 
 	if( fp == 0 ) {
-		debug( "Couldn't open %s for reading.", io->fileName() );
+		debug( "Couldn't open %s for reading.", io->fileName().ascii() );
 		return;
 	}
 

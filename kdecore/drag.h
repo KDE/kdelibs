@@ -19,6 +19,13 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.24.2.1  1999/02/14 02:05:26  granroth
+ * Converted a lot of 'const char*' to 'QString'.  This compiles... but
+ * it's entirely possible that nothing will run linked to it :-P
+ *
+ * Revision 1.24  1998/10/22 12:22:37  ettrich
+ * grbmll... anyways, now it should compile again.
+ *
  * Revision 1.23  1998/10/22 12:18:12  ettrich
  * sorry....
  *
@@ -307,7 +314,7 @@ public:
 *
 * @return A pointer to the dropped data.
 */
-  virtual const char* getData() { return dndData; }
+  virtual const QString getData() { return dndData; }
 
 /**
 * Get dropped data length.
@@ -443,7 +450,7 @@ public:
 /**
 * Constructor.
 */
-  KDNDWidget( QWidget *_parent=0, const char *_name=0, WFlags f=0 ) :
+  KDNDWidget( QWidget *_parent=0, const QString& _name=QString::null, WFlags f=0 ) :
       QWidget( _parent, _name, f ) , drag(false), dndData(0L),
       dndSize(0), dndType(0), dndOffsetX(0), dndOffsetY(0), dndIcon(0L),
       dndLastWindow(0)

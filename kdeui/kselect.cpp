@@ -47,7 +47,7 @@ KXYSelector::KXYSelector( QWidget *parent, const char *name )
 	minY = 0;
 	maxX = 100;
 	maxY = 100;
-	store.optimize( TRUE );
+	store.setOptimization( QPixmap::BestOptim );
 	store.resize( STORE_W2, STORE_W2 );
 }
 

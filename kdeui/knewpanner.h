@@ -102,7 +102,7 @@ public:
    * Set the label texts for the two windows, note that they are only shown
    * if you have called showLabels(true).
    */
-  void setLabels(const char *text0, const char *text1);
+  void setLabels(const QString& text0, const QString& text1);
 
   /**
    * Call this to show or hide the labels. Note that labels are only

@@ -101,7 +101,8 @@ KQuickHelpWindow *KQuickHelp::window = 0;
 
 
 // the standard colors
-QColor KQuickHelpWindow::stdColors[] = {
+QColor *KQuickHelpWindow::stdColors = 0; 
+/*
   red,
   green,
   blue,
@@ -112,7 +113,7 @@ QColor KQuickHelpWindow::stdColors[] = {
   magenta,
   cyan
 };
-
+*/
 
 KQuickHelp_Token KQuickHelpWindow::tokens[] = {
   // font attributes
@@ -190,9 +191,9 @@ KQuickHelp::KQuickHelp() : QObject(0) {
 }
 
 
-const char *KQuickHelp::add(QWidget *w, const char *s) {
-  if(!s)
-    return 0;
+const QString& KQuickHelp::add(QWidget *w, const QString& s) {
+    if (s.isNull())
+	return QString::null;
 
   if(w != 0) {
     // make sure we have  a class instance running
@@ -278,7 +279,7 @@ void KQuickHelp::widgetDestroyed() {
 
 
 bool KQuickHelp::eventFilter(QObject *o, QEvent *e) {
-  if(e->type() == Event_MouseButtonPress && ((QMouseEvent *)e)->button() == RightButton) {
+  if(e->type() == QEvent::MouseButtonPress && ((QMouseEvent *)e)->button() == RightButton) {
     for(unsigned i = 0; i < tips.count(); i++) {
       if(tips.at(i)->widget == (QWidget *)o) {
 	current = tips.at(i)->widget;
@@ -300,6 +301,21 @@ void KQuickHelp::getKQuickHelp(int) {
 
 
 KQuickHelpWindow::KQuickHelpWindow() : QFrame(0, 0, WStyle_Customize|WStyle_Tool) {
+   static QColor _stdColors[] = {
+       red,
+       green,
+       blue,
+      white,
+	 yellow,
+       black,
+     QColor(165, 42, 42),
+   magenta,
+	 cyan
+   };
+
+   if (stdColors == 0)
+     stdColors = _stdColors;
+
   setBackgroundColor(QColor(255, 255, 225));
   defaultCursor = cursor();
   linkAreas.setAutoDelete(true);

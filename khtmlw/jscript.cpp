@@ -68,7 +68,7 @@ JSCode* JSEnvironment::parse( const char *_script )
 
 int JSEnvironment::exec( JSCode *_code, JSInstanceScope *_scope )
 {
-    output.setStr( "" );
+    output = "";
     
     if ( _scope == 0L )
 	_scope = jsWindowObject->getScope();

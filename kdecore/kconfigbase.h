@@ -19,6 +19,16 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14.2.2  1999/02/14 02:05:44  granroth
+// Converted a lot of 'const char*' to 'QString'.  This compiles... but
+// it's entirely possible that nothing will run linked to it :-P
+//
+// Revision 1.14.2.1  1999/01/30 20:18:56  kulow
+// start porting to Qt2.0 beta
+//
+// Revision 1.14  1998/11/22 21:52:33  garbanzo
+// Fixed some comments that referred to sync() as Sync(), and a few other case issues.
+//
 // Revision 1.13  1998/10/20 18:58:12  ettrich
 // ugly hack to get rid of X11 includes, small fix
 //
@@ -58,7 +68,7 @@
 // kdoctoolbar removed
 //
 // Revision 1.2  1997/10/05 02:31:11  jones
-// MRJ: Changed const char *readEntry( ... ) to QString readEntry( ... )
+// MRJ: Changed const QString& readEntry( ... ) to QString readEntry( ... )
 // I had to do this - almost everything was broken.
 //
 // Revision 1.1  1997/10/04 19:51:04  kalle
@@ -197,14 +207,14 @@ public:
 	* Switch back to the default group by passing an empty string.
 	*  @param pGroup The name of the new group.
 	*/
-  void setGroup( const char* pGroup );
+  void setGroup( const QString& pGroup );
 
   /**
 	* Retrieve the group where keys are currently searched in.
 	*
 	* @return The current group
 	*/
-  const char* group() const;
+  const QString group() const;
 
   /**
 	* Retrieve the group where keys are currently searched in. Note:
@@ -212,7 +222,7 @@ public:
 	*
 	* @return The current group
 	*/
-  const char* getGroup() const { debug( "KConfigBase::getGroup() is deprecated, use KConfigBase::group() instead" );
+  const QString getGroup() const { debug( "KConfigBase::getGroup() is deprecated, use KConfigBase::group() instead" );
   return group(); }
 
   /**
@@ -223,8 +233,8 @@ public:
 	* @return The value for this key or an empty string if no value
 	*	  was found.
 	*/
-  const QString readEntry( const char* pKey,
-						 const char* pDefault = 0L ) const;
+  const QString readEntry( const QString& pKey,
+						 const QString& pDefault = QString::null ) const;
 
   /**
 	* Read a list of strings.
@@ -234,7 +244,7 @@ public:
 	* @param sep  The list separator (default ",")
 	* @return The number of entries in the list.
 	*/
-  int readListEntry( const char* pKey, QStrList &list,
+  int readListEntry( const QString& pKey, QStrList &list,
 					 char sep = ',' ) const;
 
   /**
@@ -247,7 +257,7 @@ public:
 	* @param nDefault A default value returned if the key was not found.
 	* @return The value for this key or 0 if no value was found.
 	*/
-  int readNumEntry( const char* pKey, int nDefault = 0 ) const;
+  int readNumEntry( const QString& pKey, int nDefault = 0 ) const;
 
   /**
 	* Read a numerical value.
@@ -259,7 +269,7 @@ public:
 	* @param nDefault A default value returned if the key was not found.
 	* @return The value for this key or 0 if no value was found.
 	*/
-  unsigned int readUnsignedNumEntry( const char* pKey,
+  unsigned int readUnsignedNumEntry( const QString& pKey,
 									 unsigned int nDefault = 0 ) const;
   /**
 	* Read a numerical value.
@@ -271,7 +281,7 @@ public:
 	* @param nDefault A default value returned if the key was not found.
 	* @return The value for this key or 0 if no value was found.
 	*/
-  long readLongNumEntry( const char* pKey, long nDefault = 0 ) const;
+  long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const;
 
   /**
 	* Read a numerical value.
@@ -283,7 +293,7 @@ public:
 	* @param nDefault A default value returned if the key was not found.
 	* @return The value for this key or 0 if no value was found.
 	*/
-  unsigned long readUnsignedLongNumEntry( const char* pKey,
+  unsigned long readUnsignedLongNumEntry( const QString& pKey,
 										  unsigned long nDefault = 0 ) const;
 
 
@@ -297,7 +307,7 @@ public:
 	* @param nDefault A default value returned if the key was not found.
 	* @return The value for this key or 0 if no value was found.
 	*/
-  double readDoubleNumEntry( const char* pKey, double nDefault = 0.0 ) const;
+  double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const;
 
   /**
 	* Read a QFont.
@@ -309,7 +319,7 @@ public:
 	* @param pDefault	A default value returned if the key was not found.
 	* @return The value for this key or a default font if no value was found.
 	*/
-  QFont readFontEntry( const char* pKey,
+  QFont readFontEntry( const QString& pKey,
 					   const QFont* pDefault = 0L ) const;
 
   /**
@@ -325,7 +335,7 @@ public:
    * @return The value for this key or a default value if no value was
    * found.
    */
-  bool readBoolEntry( const char* pKey, const bool bDefault = false ) const;
+  bool readBoolEntry( const QString& pKey, const bool bDefault = false ) const;
 
 
   /**
@@ -340,7 +350,7 @@ public:
    * @return The value for this key or a default rectangle if no value
    * was found.
    */
-  QRect readRectEntry( const char* pKey, const QRect* pDefault = 0L ) const;
+  QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const;
 
 
   /**
@@ -355,7 +365,7 @@ public:
    * @return The value for this key or a default point if no value
    * was found.
    */
-  QPoint readPointEntry( const char* pKey, const QPoint* pDefault = 0L ) const;
+  QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const;
 
 
   /**
@@ -370,7 +380,7 @@ public:
    * @return The value for this key or a default point if no value
    * was found.
    */
-  QSize readSizeEntry( const char* pKey, const QSize* pDefault = 0L ) const;
+  QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const;
 
 
   /**
@@ -384,7 +394,7 @@ public:
 	* @return The value for this key or a default color if no value
 	* was found.
 	*/
-  QColor readColorEntry( const char* pKey,
+  QColor readColorEntry( const QString& pKey,
 						 const QColor* pDefault = 0L ) const;
 
   /** Write the key/value pair.
@@ -404,9 +414,9 @@ public:
 	*  @return The old value for this key. If this key did not
 	*   exist, a null string is returned.	
 */
-  const char* writeEntry( const char* pKey, const char* pValue,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
+  const QString writeEntry( const QString& pKey, const QString& pValue,
+			  bool bPersistent = true, bool bGlobal = false,
+			  bool bNLS = false );
 
   /**
 	* writeEntry() overriden to accept a list of strings.
@@ -427,7 +437,7 @@ public:
 	*
 	* @see #writeEntry
 	*/
-  void writeEntry ( const char* pKey, QStrList &list, char sep = ',',
+  void writeEntry ( const QString& pKey, QStrList &list, char sep = ',',
 					bool bPersistent = true, bool bGlobal = false,
 					bool bNLS = false );
 
@@ -445,7 +455,7 @@ public:
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, int nValue,
+  const QString writeEntry( const QString& pKey, int nValue,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -463,7 +473,7 @@ public:
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, unsigned int nValue,
+  const QString writeEntry( const QString& pKey, unsigned int nValue,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -481,7 +491,7 @@ public:
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, long nValue,
+  const QString writeEntry( const QString& pKey, long nValue,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -499,7 +509,7 @@ public:
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, unsigned long nValue,
+  const QString writeEntry( const QString& pKey, unsigned long nValue,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -517,7 +527,7 @@ public:
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, double nValue,
+  const QString writeEntry( const QString& pKey, double nValue,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -535,7 +545,7 @@ public:
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, bool bValue,
+  const QString writeEntry( const QString& pKey, bool bValue,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -553,7 +563,7 @@ public:
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, const QFont& rFont,
+  const QString writeEntry( const QString& pKey, const QFont& rFont,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -571,7 +581,7 @@ public:
 	* @return The old value for this key. If this key did not
 	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QColor& rColor,
+  void writeEntry( const QString& pKey, const QColor& rColor,
 				   bool bPersistent = true, bool bGlobal = false,
 				   bool bNLS = false );
 
@@ -589,7 +599,7 @@ public:
 	* @return The old value for this key. If this key did not
 	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QRect& rColor,
+  void writeEntry( const QString& pKey, const QRect& rColor,
 				   bool bPersistent = true, bool bGlobal = false,
 				   bool bNLS = false );
 
@@ -607,7 +617,7 @@ public:
 	* @return The old value for this key. If this key did not
 	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QPoint& rColor,
+  void writeEntry( const QString& pKey, const QPoint& rColor,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -625,7 +635,7 @@ public:
 	* @return The old value for this key. If this key did not
 	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QSize& rColor,
+  void writeEntry( const QString& pKey, const QSize& rColor,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
   //}
@@ -666,7 +676,7 @@ public:
 	  @param pKey The key to search for.
 	  @return if true, the key is available
    */
-  bool hasKey( const char* pKey ) const;
+  bool hasKey( const QString& pKey ) const;
 
   /** Returns an iterator on the list of groups
 	  @return The group iterator. The caller is reponsable for
@@ -680,7 +690,7 @@ public:
 	  exist. The caller is responsible for deleting the iterator after
 	  using it.
 	  */
-  KEntryIterator* entryIterator( const char* pGroup );
+  KEntryIterator* entryIterator( const QString& pGroup );
 
   /** Reparses all configuration files. This is useful for programms
 	  which use standalone graphical configuration tools.

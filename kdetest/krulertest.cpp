@@ -4,7 +4,7 @@
 
 #include "kruler.h"
 #include <qlayout.h>
-#include <qgrpbox.h>
+#include <qgroupbox.h>
 
 /*
 void

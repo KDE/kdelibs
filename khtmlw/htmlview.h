@@ -30,7 +30,6 @@
 #include <qscrollbar.h>
 #include <qlist.h>
 #include <html.h>
-#include <drag.h>
 
 /**
  * @short Widget for displaying HTML.  Manages srcollbars and frames.
@@ -417,9 +416,18 @@ public:
      * other window. KDND would not like it :-)
      *
      * @param _url is the URL the user wants to drag around.
-     * @param _p is the mouse position in global coordinates.
      */
-    virtual bool dndHook( const char *_url, QPoint &_p );
+    virtual bool dndHook( const char *_url );
+
+    /**
+     * This fucntion is called if the user wants a DND drop action.
+     * Overload this function and return TRUE to indicate that you processed
+     * the drop event. By default it returns FALSE. This causes @ref 
+     * KHTMLWidget to process the event.
+     *
+     * @param _de is the DropEvent that will be decoded.
+     */
+    virtual bool dropHook(QDropEvent *_de) { return FALSE; }
   
     /**
      * Selects all objects in this rectangle and deselects all objects

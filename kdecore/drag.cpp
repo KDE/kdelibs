@@ -20,6 +20,12 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.24.2.1  1999/02/21 20:55:19  kulow
+ * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
+ *
+ * Revision 1.24  1999/01/18 10:56:11  kulow
+ * .moc files are back in kdelibs. Built fine here using automake 1.3
+ *
  * Revision 1.23  1999/01/15 09:30:29  kulow
  * it's official - kdelibs builds with srcdir != builddir. For this I
  * automocifized it, the generated rules are easier to maintain than
@@ -181,7 +187,6 @@ void KDNDDropZone::parseURLList()
 	return;
 
     QString s = dndData;
-    s.detach();
     int i;
     
     while ( ( i = s.find( "\n" ) ) != -1 )

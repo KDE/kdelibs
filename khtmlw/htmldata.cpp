@@ -32,15 +32,15 @@ HTMLSettings::HTMLSettings()
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     fontBaseSize  = 3;
-    fontBaseColor = black;
+    fontBaseColor = Qt::black;
     fontBaseFace  = "times";
 
     fixedFontFace = "courier";
 
-    linkColor     = blue;
-    vLinkColor    = darkMagenta;
+    linkColor     = Qt::blue;
+    vLinkColor    = Qt::darkMagenta;
 
-    bgColor       = lightGray;
+    bgColor       = Qt::lightGray;
 
     charset	  = KApplication::getKApplication()->getCharsets()->defaultCh();
 

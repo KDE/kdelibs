@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.123  1999/02/08 12:23:30  konold
+//
+// Martin K.: Corrected buglist.kde.org --> http://bugs.kde.org
+//
 // Revision 1.122  1999/01/18 10:56:12  kulow
 // .moc files are back in kdelibs. Built fine here using automake 1.3
 //
@@ -306,6 +310,14 @@
 // Matthias: BINARY INCOMPATIBLE CHANGES: extended session management support
 
 #include <qdir.h> // must be at the front
+#include <qobjcoll.h>
+#include <qstrlist.h>
+#include <qfile.h>
+#include <qmessagebox.h>
+#include <qtextstream.h>
+#include <qregexp.h>
+#include <qkeycode.h>
+#include <qwidcoll.h>
 
 #include <kapp.h>
 #include <kiconloader.h>
@@ -319,13 +331,6 @@
 #include <fcntl.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
-#include <qobjcoll.h>
-#include <qstrlist.h>
-#include <qfile.h>
-#include <qmessagebox.h>
-#include <qtextstream.h>
-#include <qregexp.h>
-#include <qkeycode.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -333,9 +338,6 @@
 #include <sys/wait.h>
 #include <stdlib.h> // getenv()
 #include <signal.h>
-
-
-#include <qwidcoll.h>
 
 #include "kprocctrl.h"
 
@@ -346,6 +348,13 @@
 #ifndef _PATH_TMP
 #define _PATH_TMP "/tmp/"
 #endif
+
+// defined by X11 headers
+#ifdef KeyPress
+#undef KeyPress
+#endif
+
+#include "qplatinumstyle.h"
 
 KCharsets* KApplication::pCharsets = 0L;
 
@@ -518,6 +527,7 @@ void KApplication::init()
   kdisplaySetPalette();
   kdisplaySetStyleAndFont();
 
+  setStyle(new QPlatinumStyle());
   // install an event filter for KDebug
   installEventFilter( this );
 
@@ -566,7 +576,7 @@ KConfig* KApplication::getSessionConfig() {
   if( bSuccess ){
     chown(aConfigFile.name(), getuid(), getgid());
     aConfigFile.close();
-    pSessionConfig = new KConfig(0L, aSessionConfigName);
+    pSessionConfig = new KConfig(QString::null, aSessionConfigName);
     aSessionName = aAppName.copy();
     aSessionName += "rc.";
     aSessionName += num;
@@ -582,7 +592,7 @@ void KApplication::enableSessionManagement(bool userdefined){
   }
 }
 
-void KApplication::setWmCommand(const char* s){
+void KApplication::setWmCommand(const QString& s){
   aWmCommand = s;
   if (topWidget() && !bSessionManagement)
     KWM::setWmCommand( topWidget()->winId(), aWmCommand);
@@ -601,7 +611,7 @@ KIconLoader* KApplication::getIconLoader()
 
 
 QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
-									   const char* aboutAppText )
+									   const QString& aboutAppText )
 {
   QPopupMenu* pMenu = new QPopupMenu();
 
@@ -673,7 +683,7 @@ KLocale* KApplication::getLocale()
 
 bool KApplication::eventFilter ( QObject*, QEvent* e )
 {
-  if ( e->type() == Event_KeyPress )
+  if ( e->type() == QEvent::KeyPress )
 	{
 	  QKeyEvent *k = (QKeyEvent*)e;
 	  if( ( k->key() == Key_F12 ) &&
@@ -743,7 +753,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 void KApplication::parseCommandLine( int& argc, char** argv )
 {
   enum parameter_code { unknown = 0, caption, icon, miniicon, restore };
-  const char *parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
+  const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
 
   aDummyString2 = " ";
   int i = 1;
@@ -819,7 +829,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
                         chown(aConfigFile.name(), getuid(), getgid());
 
 			aConfigFile.close();
-			pSessionConfig = new KConfig(0L, aSessionConfigName);
+			pSessionConfig = new KConfig(QString::null, aSessionConfigName);
 			
 			// do not write back. the application will get
 			// a new one if demanded.
@@ -1091,6 +1101,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 }
 
 void KApplication::applyGUIStyle(GUIStyle newstyle) {
+/*
   QApplication::setStyle( applicationStyle );
 
   // get list of toplevels
@@ -1117,9 +1128,11 @@ void KApplication::applyGUIStyle(GUIStyle newstyle) {
   }
 
   delete wl;
+*/
 }
 
-QString KApplication::findFile( const char *file )
+
+QString KApplication::findFile( const QString& file )
 {
   QString fullPath;
   QStrListIterator it( *pSearchPaths );
@@ -1134,13 +1147,11 @@ QString KApplication::findFile( const char *file )
 	  ++it;
     }
 
-  fullPath.resize( 0 );
-
-  return fullPath;
+  return QString::null;
 }
 
 
-const char* KApplication::getCaption() const
+const QString KApplication::getCaption() const
 {
   if( !aCaption.isNull() )
 	return aCaption;
@@ -1177,8 +1188,8 @@ void KApplication::buildSearchPaths()
     }
 
   // add paths in the KDEPATH environment variable
-  const char *kdePathEnv = getenv( "KDEPATH" );
-  if ( kdePathEnv )
+  QString kdePathEnv = getenv( "KDEPATH" );
+  if ( !kdePathEnv.isEmpty() )
     {
 	  char *start, *end, *workPath = new char [ strlen( kdePathEnv ) + 1 ];
 	  strcpy( workPath, kdePathEnv );
@@ -1197,7 +1208,7 @@ void KApplication::buildSearchPaths()
   appendSearchPath( kdedir().data() );
 }
 
-void KApplication::appendSearchPath( const char *path )
+void KApplication::appendSearchPath( const QString& path )
 {
   QStrListIterator it( *pSearchPaths );
 
@@ -1451,7 +1462,7 @@ QString KApplication::kdedir()
 
 /* maybe we could read it out of a config file, but
    this can be added later */
-const QString& KApplication::kde_htmldir()
+const QString KApplication::kde_htmldir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1462,7 +1473,7 @@ const QString& KApplication::kde_htmldir()
   return dir;
 }
 
-const QString& KApplication::kde_appsdir()
+const QString KApplication::kde_appsdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1473,7 +1484,7 @@ const QString& KApplication::kde_appsdir()
   return dir;
 }
 
-const QString& KApplication::kde_icondir()
+const QString KApplication::kde_icondir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1484,7 +1495,7 @@ const QString& KApplication::kde_icondir()
   return dir;
 }
 
-const QString& KApplication::kde_datadir()
+const QString KApplication::kde_datadir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1495,7 +1506,7 @@ const QString& KApplication::kde_datadir()
   return dir;
 }
 
-const QString& KApplication::kde_localedir()
+const QString KApplication::kde_localedir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1506,7 +1517,7 @@ const QString& KApplication::kde_localedir()
   return dir;
 }
 
-const QString& KApplication::kde_cgidir()
+const QString KApplication::kde_cgidir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1517,7 +1528,7 @@ const QString& KApplication::kde_cgidir()
   return dir;
 }
 
-const QString& KApplication::kde_sounddir()
+const QString KApplication::kde_sounddir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1528,7 +1539,7 @@ const QString& KApplication::kde_sounddir()
   return dir;
 }
 
-const QString& KApplication::kde_toolbardir()
+const QString KApplication::kde_toolbardir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1539,7 +1550,7 @@ const QString& KApplication::kde_toolbardir()
   return dir;
 }
 
-const QString& KApplication::kde_wallpaperdir()
+const QString KApplication::kde_wallpaperdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1550,7 +1561,7 @@ const QString& KApplication::kde_wallpaperdir()
   return dir;
 }
 
-const QString& KApplication::kde_bindir()
+const QString KApplication::kde_bindir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1561,7 +1572,7 @@ const QString& KApplication::kde_bindir()
   return dir;
 }
 
-const QString& KApplication::kde_partsdir()
+const QString KApplication::kde_partsdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1572,7 +1583,7 @@ const QString& KApplication::kde_partsdir()
   return dir;
 }
 
-const QString& KApplication::kde_configdir()
+const QString KApplication::kde_configdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1583,7 +1594,7 @@ const QString& KApplication::kde_configdir()
   return dir;
 }
 
-const QString& KApplication::kde_mimedir()
+const QString KApplication::kde_mimedir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1649,7 +1660,7 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
 }
 
 
-const char* KApplication::tempSaveName( const char* pFilename )
+const QString KApplication::tempSaveName( const QString& pFilename )
 {
   QString aFilename;
 
@@ -1677,7 +1688,7 @@ const char* KApplication::tempSaveName( const char* pFilename )
 }
 
 
-const char* KApplication::checkRecoverFile( const char* pFilename,
+const QString KApplication::checkRecoverFile( const QString& pFilename,
         bool& bRecover )
 {
   QString aFilename;
@@ -1715,7 +1726,7 @@ const char* KApplication::checkRecoverFile( const char* pFilename,
 }
 
 
-bool checkAccess(const char *pathname, int mode)
+bool checkAccess(const QString& pathname, int mode)
 {
   int accessOK = access( pathname, mode );
   if ( accessOK == 0 )
@@ -1734,7 +1745,7 @@ bool checkAccess(const char *pathname, int mode)
   if ( pos == -1 )
     return false;   // No path in argument. This is evil, we won't allow this
 
-  dirName.resize(pos+1); // strip everything starting from the last '/'
+  dirName.truncate(pos); // strip everything starting from the last '/'
 
   accessOK = access( dirName, W_OK );
   // -?- Can I write to the accessed diretory

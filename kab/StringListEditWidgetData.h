@@ -14,8 +14,8 @@
 #define StringListEditWidgetData_included
 
 #include <qwidget.h>
-#include <qpushbt.h>
-#include <qlined.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
 #include <qlistbox.h>
 
 class StringListEditWidgetData : public QWidget

@@ -23,6 +23,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.103  1999/03/02 15:56:40  kulow
+// CVS_SILENT replacing klocale->translate with i18n
+//
 // Revision 1.102  1999/03/01 23:35:24  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -268,7 +271,7 @@ KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
   : QButton( parentWidget , name)
 {
   resize(6,6);
-                                int item_size, const char *txt,
+  hide();
   youreSeparator();
   radio = false;
 }
@@ -328,7 +331,7 @@ void KToolBarButton::on(bool flag)
     leaveEvent((QEvent *) 0);
   }
   repaint();
-void KToolBarButton::setText( const char *text)
+}
 
 void KToolBarButton::toggle()
 {
@@ -410,7 +413,7 @@ void KToolBarButton::setRadio (bool f)
   else if (!f && radio) // if now isn't and was (man!)
     removeEventFilter(this);
   */
-  if ((KToolBarButton *)o == this && ev->type () == Event_MouseButtonDblClick)
+  radio = f;
 
 }
 
@@ -418,9 +421,9 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
 {
       
   if ((KToolBarButton *)o == this && ev->type () == QEvent::MouseButtonDblClick)
-    if ((ev->type() == Event_MouseButtonPress ||
-         ev->type() == Event_MouseButtonRelease ||
-         ev->type() == Event_MouseButtonDblClick) && radio && isOn())
+  {
+    //debug ("Doubleclick");
+    emit doubleClicked (id);
     return true;
   }
 
@@ -428,8 +431,8 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   
          ev->type() == QEvent::MouseButtonRelease ||
          ev->type() == QEvent::MouseButtonDblClick) && radio && isOn())
-    case Event_MouseButtonDblClick:
-    case Event_MouseButtonPress:
+      return true;
+
   if ((QPopupMenu *) o != myPopup)
     return false; // just in case
 
@@ -440,7 +443,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       //debug ("Got press | doubleclick");
       // If I get this, it means that popup is visible
     
-    case Event_MouseButtonRelease:
+      QRect r(geometry());
       r.moveTopLeft(parentWidget->mapToGlobal(pos()));
       if (r.contains(QCursor::pos()))   // on button
         return true; // ignore
@@ -455,11 +458,13 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
         r.moveTopLeft(parentWidget->mapToGlobal(pos()));
 
         if (r.contains(QCursor::pos()))   // but on button
-    case Event_Hide:
+        {
           myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
           return true;  // ignore release
         }
       }
+      break;
+
     case QEvent::Hide:
       //debug ("Got hide");
       on(false);
@@ -1566,7 +1571,7 @@ void KToolBar::ButtonHighlighted(int id, bool on )
  /********************\
  *                    *
  * I N T E R F A C E  *
-			    const char *_text, int index )
+ *                    *
  \********************/
 
 /***** BUTTONS *****/
@@ -1595,7 +1600,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   item->show();
   if (position == Floating)
     updateRects( true );
-                            bool enabled, const char *_text, int index)
+  else if (isVisible())
     emit (moved(position));
   return items.at();
 }
@@ -1631,7 +1636,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   else if (isVisible())
     emit (moved(position));
   return items.at();
-			    const char *_text, int index )
+}
 
 
 /// Inserts a button with connection.
@@ -1758,9 +1763,9 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
     updateRects( true );
   else if (isVisible())
     emit (moved(position));
-int KToolBar::insertLined(const char *text, int id, const char *signal,
+  return items.at();
 }
-			  bool enabled, const char *tooltiptext, int size, int index)
+
 /************** LINE EDITOR **************/
 /// Inserts a KLined. KLined is derived from QLineEdit and has another signal, tabPressed,
 //  for completions.
@@ -1791,7 +1796,7 @@ int KToolBar::insertLined(const char *text, int id, const char *signal,
     emit (moved(position));
   return items.at();
 }
-                           const char *tooltiptext,
+
 /************** COMBO BOX **************/
 /// Inserts comboBox with QStrList
 
@@ -1822,10 +1827,10 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   if (position == Floating)
     updateRects( true );
   else if (isVisible())
-int KToolBar::insertCombo (const char *text, int id, bool writable,
+    emit (moved(position));
   return items.at();
 }
-                           const char *tooltiptext, int size, int index,
+
 
 /// Inserts combo with text
 
@@ -2012,7 +2017,7 @@ bool KToolBar::isButtonOn (int id)
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
     {
-void KToolBar::setLinedText (int id, const char *text)
+      if (((KToolBarButton *) b->getItem())->isToggleButton() == true)
         return ((KToolBarButton *) b->getItem())->isOn();
     }
   return false;
@@ -2022,16 +2027,16 @@ void KToolBar::setLinedText (int id, const char *text)
 void KToolBar::setLinedText (int id, const QString& text)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
-const char *KToolBar::getLinedText (int id )
+    if (b->ID() == id )
     {
       ((KLined *) b->getItem())->setText(text);
       ((KLined *) b->getItem())->cursorAtEnd();
     }
-  return 0;
+}
 
 QString KToolBar::getLinedText (int id )
 {
-void KToolBar::insertComboItem (int id, const char *text, int index)
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
       return ((KLined *) b->getItem())->text();
   return QString::null;
@@ -2065,7 +2070,7 @@ void KToolBar::setCurrentComboItem (int id, int index)
     }
 }
 
-void KToolBar::changeComboItem  (int id, const char *text, int index)
+void KToolBar::removeComboItem (int id, int index)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
@@ -2090,7 +2095,7 @@ void KToolBar::changeComboItem  (int id, const QString& text, int index)
     }
 }
 
-const char *KToolBar::getComboItem (int id, int index)
+void KToolBar::clearCombo (int id)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
@@ -2099,7 +2104,7 @@ const char *KToolBar::getComboItem (int id, int index)
 
 QString KToolBar::getComboItem (int id, int index)
 {
-  return 0;
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
     {
       if (index == -1)

@@ -47,7 +47,7 @@ KGlobalAccel::KGlobalAccel(bool _do_not_grab)
 	do_not_grab =_do_not_grab;
 }
 
-KGlobalAccel::KGlobalAccel(QWidget * parent, const char * name, bool _do_not_grab)
+KGlobalAccel::KGlobalAccel(QWidget * parent, const QString& name, bool _do_not_grab)
     : QObject(parent, name), aKeyDict(100) {
     	aAvailableId = 1;
 	bEnabled = true;
@@ -67,8 +67,8 @@ void KGlobalAccel::clear()
 	aKeyDict.clear();
 }
 
-void KGlobalAccel::connectItem( const char * action,
-				const QObject* receiver, const char* member,
+void KGlobalAccel::connectItem( const QString& action,
+				const QObject* receiver, const QString& member,
 				bool activate )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
@@ -76,7 +76,7 @@ void KGlobalAccel::connectItem( const char * action,
 		QString str;
 		str.sprintf(
 			"KGlobalAccel : Cannot connect action %s"\
-			"which is not in the object dictionary", action );
+			"which is not in the object dictionary", (const char*)action );
 		warning( str );
 		return;
 	}
@@ -95,7 +95,7 @@ uint KGlobalAccel::count() const
 	return aKeyDict.count();
 }
 
-uint KGlobalAccel::currentKey( const char * action )
+uint KGlobalAccel::currentKey( const QString& action )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -105,7 +105,7 @@ uint KGlobalAccel::currentKey( const char * action )
 		return pEntry->aCurrentKeyCode;
 }
 
-uint KGlobalAccel::defaultKey( const char * action )
+uint KGlobalAccel::defaultKey( const QString& action )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -115,8 +115,8 @@ uint KGlobalAccel::defaultKey( const char * action )
         return pEntry->aDefaultKeyCode;
 }
 
-void KGlobalAccel::disconnectItem( const char * action,
-				   const QObject* /*receiver*/, const char* /*member*/ )
+void KGlobalAccel::disconnectItem( const QString& action,
+				   const QObject* /*receiver*/, const QString& /*member*/ )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry )
@@ -124,7 +124,7 @@ void KGlobalAccel::disconnectItem( const char * action,
 	
 }
 
-const char * KGlobalAccel::findKey( int key ) const
+const QString KGlobalAccel::findKey( int key ) const
 {
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
@@ -134,7 +134,7 @@ const char * KGlobalAccel::findKey( int key ) const
 		++aKeyIt;
 	}
 #undef pE
-	return 0;	
+	return QString::null;	
 }
 
 bool grabFailed;
@@ -200,7 +200,7 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 	return true;
 }
 
-bool KGlobalAccel::insertItem(  const char* descr, const char * action, uint keyCode,
+bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, uint keyCode,
 					   bool configurable )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
@@ -223,8 +223,8 @@ bool KGlobalAccel::insertItem(  const char* descr, const char * action, uint key
 	return TRUE;
 }
 
-bool KGlobalAccel::insertItem( const char* descr, const char * action,
-					   const char * keyCode, bool configurable )
+bool KGlobalAccel::insertItem( const QString& descr, const QString& action,
+					   const QString& keyCode, bool configurable )
 {
 	uint iKeyCode = stringToKey( keyCode );
 	return insertItem(descr, action, iKeyCode, configurable);
@@ -235,7 +235,7 @@ bool KGlobalAccel::isEnabled()
 	return bEnabled;
 }
 
-bool KGlobalAccel::isItemEnabled( const char *action )
+bool KGlobalAccel::isItemEnabled( const QString& action )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -295,7 +295,7 @@ void KGlobalAccel::readSettings()
 #undef pE
 }
 	
-void KGlobalAccel::removeItem( const char * action )
+void KGlobalAccel::removeItem( const QString& action )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -308,12 +308,12 @@ void KGlobalAccel::removeItem( const char * action )
 	aKeyDict.remove( action );
 }
 
-void KGlobalAccel::setConfigGroup( const char *group )
+void KGlobalAccel::setConfigGroup( const QString& group )
 {
 	aGroup = group;
 }
 
-const char *KGlobalAccel::configGroup()
+const QString KGlobalAccel::configGroup()
 {
 	return aGroup.data();
 }
@@ -331,7 +331,7 @@ void KGlobalAccel::setEnabled( bool activate )
 	bEnabled = activate;
 }
 
-void KGlobalAccel::setItemEnabled( const char * action, bool activate )
+void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
 {	
 
     KKeyEntry *pEntry = aKeyDict[ action ];
@@ -339,7 +339,7 @@ void KGlobalAccel::setItemEnabled( const char * action, bool activate )
 		QString str;
 		str.sprintf(
 			"KGlobalAccel : cannont enable action %s"\
-			"which is not in the object dictionary", action );
+			"which is not in the object dictionary", (const char*)action );
 		warning( str );
 		return;
 	}
@@ -479,7 +479,7 @@ void KGlobalAccel::writeSettings()
 	while ( aKeyIt.current() ) {
 	  if ( aKeyIt.current()->bConfigurable ){
 		  pConfig->writeEntry( aKeyIt.currentKey(),
-				       keyToString( aKeyIt.current()->aCurrentKeyCode),
+				       QString(keyToString( aKeyIt.current()->aCurrentKeyCode)),
 				       true, true);
 	  }
 		++aKeyIt;
@@ -534,11 +534,11 @@ uint keyToXMod( uint keyCode )
 	
 	if ( keyCode == 0 ) return mod;
 	
-	if ( keyCode & SHIFT )
+	if ( keyCode & Qt::SHIFT )
 		 mod |= ShiftMask;
-	if ( keyCode & CTRL )
+	if ( keyCode & Qt::CTRL )
 		 mod |= ControlMask;
-	if ( keyCode & ALT )
+	if ( keyCode & Qt::ALT )
 		 mod |= Mod1Mask;
 		
 	return mod;
@@ -551,9 +551,9 @@ uint keyToXSym( uint keyCode )
 	char sKey[200];
 
 	uint keysym = 0;
-	QString s = keyToString( keyCode);
+	QCString s = keyToString( keyCode);
 	
-	strncpy(sKey, (const char *)s.data(), 200);
+	strncpy(sKey, (const char*)s.data(), 200);
 	
 	if ( s.isEmpty() ) return keysym;
 	

@@ -1,4 +1,4 @@
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qpixmap.h>
 #include <qkeycode.h>
 #include <qwidget.h>
@@ -11,7 +11,7 @@
 #include <ktopwidget.h>
 #include <kmenubar.h>
 #include <kiconloader.h>
-#include <qmlined.h>
+#include <qmultilinedit.h>
 #include "kwindowtest.h"
 
 #include <kmsgbox.h>
@@ -124,8 +124,8 @@ testWindow::testWindow (QWidget *, const char *name)
     // And a combobox
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
     //            tooltiptext, size
-    toolBar->insertCombo ("one", 4, TRUE, SIGNAL(activated(const char *)), this,
-                          SLOT(slotList(const char *)), TRUE, "ComboBox", 150);
+    toolBar->insertCombo ("one", 4, TRUE, SIGNAL(activated(const QString&)), this,
+                          SLOT(slotList(const QString&)), TRUE, "ComboBox", 150);
 
 
     // Then one line editor

@@ -10,7 +10,7 @@ KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
     initialize(klocale->translate("Untitled"));
 }
 
-KPopupMenu::KPopupMenu(const char *title, QWidget *parent, const char *name)
+KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
     initialize(title);
@@ -21,18 +21,17 @@ KPopupMenu::~KPopupMenu()
 {
 }
 
-
-const char *KPopupMenu::title() const
+QString KPopupMenu::title() const
 {
     return text(0);
 }
 
-void KPopupMenu::setTitle(const char *title)
+void KPopupMenu::setTitle(const QString& title)
 {
     changeItem(title, 0);
 }
     
-void KPopupMenu::initialize(const char *title)
+void KPopupMenu::initialize(const QString& title)
 {
     insertItem(title);
     insertSeparator();

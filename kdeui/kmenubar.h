@@ -20,6 +20,12 @@
 
 //$Id$
 //$Log$
+//Revision 1.15.2.1  1999/02/21 20:55:48  kulow
+//more porting to Qt 2.0. It compiles and links. Jucheisassa :)
+//
+//Revision 1.15  1998/12/16 01:27:14  ettrich
+//fixed slightly broken macstyle removal
+//
 //Revision 1.14  1998/11/25 13:24:53  radej
 //sven: Someone changed protected things to private (was it me?).
 //
@@ -121,19 +127,19 @@ class KMenuBar : public QFrame
     * Sets position. Can be used when floating or moving is disabled.
     */
    void setMenuBarPos(menuPosition mpos);
-   void setTitle(const char *_title) {title = _title;};
+
    /**
     * Sets title for floating menu bar. Default is Main widget title.
     */
    void setTitle(const QString&_title) {title = _title;};
 
    /**
-   virtual int insertItem(const char *text,
+    * The rest is standard QMenuBar interface. See Qt docs for
     * details.
     */
    virtual uint count();
-   virtual int insertItem(const char *text, int id=-1, int index=-1 );
-   virtual int insertItem(const char *text, QPopupMenu *popup,
+   virtual int insertItem(const QString& text,
+                  const QObject *receiver, const char *member,
                   int accel=0 );
 
    virtual int insertItem(const QString& text, int id=-1, int index=-1 );
@@ -142,8 +148,8 @@ class KMenuBar : public QFrame
 
    virtual void insertSeparator(int index=-1 );
    virtual void removeItem(int id);
-   virtual const char *text(int id);
-   virtual void changeItem(const char *text, int id);
+   virtual void removeItemAt(int index);
+   virtual void clear();
    virtual int accel(int id);
    virtual void setAccel(int key, int id );
    virtual QString text(int id);
@@ -174,7 +180,7 @@ class KMenuBar : public QFrame
 
 private:
    bool moving;
-   const char *title;
+   QWidget *Parent;
    int oldX;
    int oldY;
    int oldWFlags;

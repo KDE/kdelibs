@@ -97,7 +97,7 @@ class KGlobalAccel : public QObject
 	   will be automatically destroyed in the parent's destructor,
 	   thus releaseing the keys.
 	*/
-	KGlobalAccel(QWidget * parent, const char * name = 0, bool _do_not_grab = false);
+	KGlobalAccel(QWidget * parent, const QString& name = QString::null, bool _do_not_grab = false);
 
     
 	/**
@@ -121,8 +121,8 @@ class KGlobalAccel : public QObject
 	 *  @param activate indicates whether the accelrator item should be
 	 *  enabled immediately
 	 */
-	void connectItem( const char * action,
-						  const QObject* receiver, const char* member,
+	void connectItem( const QString& action,
+						  const QObject* receiver, const QString& member,
 						  bool activate = TRUE );
 						
 	/**
@@ -135,25 +135,25 @@ class KGlobalAccel : public QObject
 	* action, or zero if either the action name cannot be found or the current
 	* key is set to no key.
 	*/
-	uint currentKey( const char * action );
+	uint currentKey( const QString& action );
 
 	/**
 	* Returns the default key code of the accelerator item with the action name
 	* action, or zero if the action name cannot be found.
 	*/
-	uint defaultKey( const char * action);
+	uint defaultKey( const QString& action);
 	
 	/**
 	 * Disconnects an accelerator item from a function in another object.
 	 */
-	void disconnectItem( const char * action,
-							const QObject* receiver, const char* member );
+	void disconnectItem( const QString& action,
+							const QObject* receiver, const QString& member );
 	
 	/**
 	 * Returns that identifier of the accelerator item with the keycode key,
 	 * or zero if the item cannot be found.
 	 */
-	const char *findKey( int key ) const;
+	const QString findKey( int key ) const;
 	
 	/**
 	 * Attempts to make a passive X server grab of the key specified by key symbol
@@ -180,7 +180,7 @@ class KGlobalAccel : public QObject
 	 * removed..
 	 * 	
 	 */
-	bool insertItem( const char* descr, const char * action, uint defaultKeyCode,
+	bool insertItem( const QString& descr, const QString& action, uint defaultKeyCode,
 				 bool configurable = TRUE );
 	
 	 /**
@@ -202,11 +202,11 @@ class KGlobalAccel : public QObject
 	 * will be removed..
 
 	 */
-	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
+	bool insertItem( const QString& descr, const QString& action, const QString& defaultKeyCode,
 				 bool configurable = TRUE );
 	
 	bool isEnabled();
-	bool isItemEnabled( const char *action );
+	bool isItemEnabled( const QString& action );
 	
 	/**
 	* Returns the dictionary of accelerator action names and KKeyEntry
@@ -224,11 +224,11 @@ class KGlobalAccel : public QObject
  	/**
 	 * Removes the accelerator item with the action name action.
 	 */
-    void removeItem( const char * action );
+    void removeItem( const QString& action );
 	
-	void setConfigGroup( const char *group );
+	void setConfigGroup( const QString& group );
 	
-	const char * configGroup();
+	const QString configGroup();
 	
 	/**
 	 * Enables the accelerator if activate is TRUE, or disables it if
@@ -247,7 +247,7 @@ class KGlobalAccel : public QObject
 	 *	@param activate specifies whether the item should be enabled or
 	 *	disabled.
 	 */
-	void setItemEnabled( const char * action, bool activate );
+	void setItemEnabled( const QString& action, bool activate );
 	
 	/**
 	* Sets the dictionary of accelerator action names and KKeyEntry

@@ -133,11 +133,11 @@ class KGradientSelector : public KSelector
   Q_OBJECT
 public:
   KGradientSelector( Orientation o, QWidget *parent = 0L,
-					 const char *name = 0L );
+		     const char *name = 0L );
 
   void setColors( const QColor &col1, const QColor &col2 )
   {	color1 = col1; color2 = col2; }
-  void setText( const char *t1, const char *t2 )
+  void setText( const QString& t1, const QString& t2 )
   {	text1 = t1; text2 = t2; }
 
 protected:

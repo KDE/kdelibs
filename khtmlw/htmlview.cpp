@@ -649,7 +649,7 @@ bool KHTMLView::mousePressedHook( const char*, const char*, QMouseEvent*, bool )
     return FALSE;
 }
 
-bool KHTMLView::dndHook( const char *, QPoint & )
+bool KHTMLView::dndHook( const char * )
 {
     return FALSE;
 }

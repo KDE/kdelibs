@@ -98,7 +98,8 @@ public:
    *
    * @short Constructor
    */
-KRuler(direction dir, QWidget *parent=0, const char *name=0, WFlags f=0, bool allowLines=TRUE);
+KRuler(direction dir, QWidget *parent=0, const char *name=0, 
+       WFlags f=0, bool allowLines=TRUE);
 
   /**
    * Constructor, requires the direction to paint to and an initial width.
@@ -116,7 +117,8 @@ KRuler(direction dir, QWidget *parent=0, const char *name=0, WFlags f=0, bool al
    *
    * @short Constructor
    */
-KRuler(direction dir, int widgetWidth, QWidget *parent=0, const char *name=0, WFlags f=0, bool allowLines=TRUE);
+KRuler(direction dir, int widgetWidth, QWidget *parent=0, 
+       const char *name=0, WFlags f=0, bool allowLines=TRUE);
 
   /**
    * Destructor.
@@ -233,7 +235,7 @@ KRuler(direction dir, int widgetWidth, QWidget *parent=0, const char *name=0, WF
 
   /** label which is drawn at the beginning of the visible part
    * of the ruler */
-  void setEndLabel(const char *);
+  void setEndLabel(const QString&);
 
   /** convenience method:
    * sets up the necessary tasks for the provided styles */

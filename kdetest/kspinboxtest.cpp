@@ -77,7 +77,7 @@ int main(int argc,char *argv[])
 	QLabel label1("Plain KSpinBox Widget",&top);
 	label1.setGeometry(20,20,260,25);
 
-	KSpinBox count1(&top,"cnt",AlignCenter);
+	KSpinBox count1(&top,"cnt", Qt::AlignCenter);
 	count1.setGeometry(300,20,75,25);
 
 	// numeric

@@ -67,7 +67,7 @@ KFileInfo::KFileInfo(const QFileInfo &e)
     myPermissions = 755;
 }
 
-KFileInfo::KFileInfo(const char *dir, const char *name)
+KFileInfo::KFileInfo(const QString& dir, const QString& name)
 {
     myName = name;
     myBaseURL = dir;
@@ -105,7 +105,7 @@ KFileInfo::KFileInfo(const char *dir, const char *name)
 	
     } else {
 	// default
-	debug("the file does not exist %s%s",dir, name);
+	debug("the file does not exist %s%s",dir.data(), name.data());
 	myName.insert(0, "?");
 	mySize = 0;
 	myIsFile = false;

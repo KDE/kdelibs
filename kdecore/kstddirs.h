@@ -40,7 +40,7 @@ public:
 	* @param appName The name of the application, which will be
 	*		used for searching the "apps" directory.
 	*/
-	KStandardDirs( const char *appName );
+	KStandardDirs( const QString& appName );
 
 	/**
 	* KStandardDirs Destructor.
@@ -62,74 +62,74 @@ public:
 	/** 
 	 * The full path to the application-specific directory.
 	 */
-	const char *app		(DirScope s = Closest) const;
+	const QString app		(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the kde binary directory.
 	 */
-	const char *bin		(DirScope s = Closest) const;
+	const QString bin		(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which KDE-specific
 	 * CGI programs are stored.
 	 */
-	const char *cgi		(DirScope s = Closest) const;
+	const QString cgi		(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which configuration
 	 * files are stored.
 	 */
-	const char *config	(DirScope s = Closest) const;
+	const QString config	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the data directory.
 	 */
-	const char *apps	(DirScope s = Closest) const;
+	const QString apps	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which HTML documentation
 	 * is saved. This does not take into account the current
 	 * locale setting.
 	 */
-	const char *html	(DirScope s = Closest) const;
+	const QString html	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which icon images are stored.
 	 */
-	const char *icon	(DirScope s = Closest) const;
+	const QString icon	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which locale information
 	 * and translation catalogues are stored.
 	 */
-	const char *locale	(DirScope s = Closest) const;
+	const QString locale	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which MIME information
 	 * is stored.
 	 */
-	const char *mime	(DirScope s = Closest) const;
+	const QString mime	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which mini icons are stored.
 	 */
-	const char *parts	(DirScope s = Closest) const;
+	const QString parts	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which toolbar icons are
 	 * stored.
 	 */
-	const char *toolbar	(DirScope s = Closest) const;
+	const QString toolbar	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which wallpapers are stored.
 	 */
-	const char *wallpaper	(DirScope s = Closest) const;
+	const QString wallpaper	(DirScope s = Closest) const;
 
 	/** 
 	 * The full path to the directory in which sound files are stored.
 	 */
-	const char *sound	(DirScope s = Closest) const;
+	const QString sound	(DirScope s = Closest) const;
 
 	/** 
 	* Finds the executable in the system path. A valid executable must
@@ -146,7 +146,7 @@ public:
 	* @return The path of the executable. If it was not found, this string 
 	*	will be null.
 	*/
-	static QString findExe( const char *appname, const char *pathstr=0,
+	static QString findExe( const QString& appname, const QString& pathstr=QString::null,
 			     bool ignoreExecBit=false );
 
 	/** 
@@ -167,21 +167,21 @@ public:
 	 *
 	 * @return The number of executables found, 0 if none were found.
 	 */
-	static int findAllExe( QStrList& list, const char *appname,
-			const char *pathstr=0, bool ignoreExecBit=false );
+	static int findAllExe( QStrList& list, const QString& appname,
+			const QString& pathstr=QString::null, bool ignoreExecBit=false );
 
 private:
 
 	/** 
 	 * Finds a directory, subject to the suffix and scope.
 	 */
-	const char *closest( DirScope scope, const char *suffix ) const;
+	const QString closest( DirScope scope, const QString& suffix ) const;
 
 
 
 	/** Application name. */
 	QString *_appName;
-	const char *_appPath;
+	const QString_appPath;
 
 	// Directory dictionaries
 
@@ -191,7 +191,7 @@ private:
 	QDict<QString> *_user;
 
 	QString UserDir;
-	const char * const KDEDir;
+	const QString const KDEDir;
 
   // Disallow assignment and copy-construction
   KStandardDirs( const KStandardDirs& ) {};

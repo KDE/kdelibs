@@ -29,7 +29,7 @@ include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h htmlform.h \
 	htmltable.h htmliter.h
 
 noinst_HEADERS = htmlchain.h
-libkhtmlw_la_LDFLAGS = -version-info 2:0
+libkhtmlw_la_LDFLAGS = -version-info 3:0
 
 data_DATA = khtmlw_dnd.xpm
 datadir = $(kde_datadir)/khtmlw/pics

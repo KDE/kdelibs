@@ -8,7 +8,7 @@
  * This code is based on Torben Weis' KFileEntry
  */
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qkeycode.h>
 #include <kurl.h>
 
@@ -20,7 +20,7 @@
 
 #include "kurlcompletion.h"
 
-KURLCompletion::KURLCompletion( const char *dir) 
+KURLCompletion::KURLCompletion( const QString& dir) 
 {
 	directory = dir;
 	possibilityList.clear();
@@ -35,7 +35,7 @@ KURLCompletion::~KURLCompletion()
 }
 
 /* public slot */
-void KURLCompletion::edited (const char *text)
+void KURLCompletion::edited (const QString& text)
 {
 	the_text = text;
 	if (!self_update)
@@ -47,8 +47,6 @@ void KURLCompletion::make_completion ()
 {
 	QString dir = the_text, match;
 	bool ambigous;
-
-	dir.detach();
 
 	// We do not complete URLs
 	if ( dir.left( 5 ) == "file:" )
@@ -91,7 +89,6 @@ void KURLCompletion::make_rotation ()
 	bool ambigous;
 	const char * item = 0L;
 
-	dir.detach();
 	if (!is_fileurl (dir, ambigous))
 		return;
 	

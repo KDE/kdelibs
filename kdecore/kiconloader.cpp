@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.26  1999/01/18 10:56:20  kulow
+   .moc files are back in kdelibs. Built fine here using automake 1.3
+	}
    Revision 1.25  1999/01/15 09:30:37  kulow
    it's official - kdelibs builds with srcdir != builddir. For this I
    automocifized it, the generated rules are easier to maintain than
@@ -76,7 +79,7 @@ KIconLoader::KIconLoader( KConfig *conf,
   config->setGroup(app_name);
   config->readListEntry( var_name, list, ':' );
 
-  for (const char *it=list.first(); it; it = list.next())
+  for (const char* it=list.first(); it; it = list.next())
     addPath(it);
 QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
   // order is important! -- Bernd
@@ -112,7 +115,7 @@ Stephan: See above
   config->setGroup("KDE Setup");
   config->readListEntry( "IconPath", list, ':' );
 
-  for (const char *it=list.first(); it; it = list.next())
+  for (const char* it=list.first(); it; it = list.next())
     addPath(it);
 
   // order is important! -- Bernd
@@ -154,7 +157,7 @@ QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h ){
        verted to a KDEBUG solution, that is more silent? Don't know.
 
   if (result.isNull())
-    warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
+    warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char*) name);
 
 */
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
@@ -173,7 +176,7 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
 
   QPixmap result;
 	int w, int h )
-  if (name.left(1)!='/'){
+  if (name.left(1).at(0) != '/'){
     result = loadInternal( "mini/" + name, w, h);
   }
 
@@ -185,7 +188,7 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
    Stephan: See above
    if (result.isNull())
     warning(klocale->translate("ERROR: couldn't find mini icon: %s"), 
-    (const char *) name);
+    (const char*) name);
 	// -- Bernd
 */
 
@@ -261,7 +264,7 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
 	++it;
       }
     }
-    new_xpm.load( full_path, 0, KPixmap::LowColor );
+    new_xpm.load( full_path, QString::null, KPixmap::LowColor );
     *pix = new_xpm;
     
     if( !(pix->isNull()) ){

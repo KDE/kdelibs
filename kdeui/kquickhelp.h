@@ -135,7 +135,7 @@ private:
   QString txt;
 
   QList<KQuickHelp_Link> linkAreas;
-  static QColor stdColors[];
+  static QColor *stdColors;
   static KQuickHelp_Token tokens[];
 };
 
@@ -145,7 +145,7 @@ class KQuickHelp : public QObject {
 public:  
   KQuickHelp();
   
-  static const char *add(QWidget *, const char *);
+  static const QString& add(QWidget *, const QString&);
   static void remove(QWidget *);
 
 private:

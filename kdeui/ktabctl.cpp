@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16.2.1  1999/02/21 20:56:15  kulow
+ * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
+ *
+ * Revision 1.16  1999/01/18 10:57:07  kulow
+ * .moc files are back in kdelibs. Built fine here using automake 1.3
+ *
  * Revision 1.15  1999/01/15 09:31:26  kulow
  * it's official - kdelibs builds with srcdir != builddir. For this I
  * automocifized it, the generated rules are easier to maintain than
@@ -181,25 +187,25 @@ void KTabCtl::show()
     QWidget::show();
 }
 
-bool KTabCtl::isTabEnabled(const char *name)
+bool KTabCtl::isTabEnabled(const QString& name)
 {
     unsigned int i;
     
     for(i = 0; i < pages.size(); i++)
-	if (!qstrcmp( pages[i]->name(), name))
+	if (pages[i]->name() == name)
 	    return tabs->isTabEnabled(i);   /* return the enabled status */
-    return FALSE;     /* tab does not exist */
+    return false;     /* tab does not exist */
 }
 
-void KTabCtl::setTabEnabled(const char * name, bool state)
+void KTabCtl::setTabEnabled(const QString& name, bool state)
 {
     unsigned i;
 
-    if((name == 0L) || (strlen(name) == 0))
+    if (name.isEmpty())
         return;
     
-    for(i = 0; i < pages.size(); i++)
-	if(!qstrcmp(pages[i]->name(), name))
+    for (i = 0; i < pages.size(); i++)
+	if (pages[i]->name() == name)
 	    tabs->setTabEnabled(i, state);
 }
 
@@ -348,7 +354,7 @@ void KTabCtl::showTab(int i)
  * other types of widgets
  */
 
-void KTabCtl::addTab(QWidget *w, const char *name)
+void KTabCtl::addTab(QWidget *w, const QString& name)
 {
     QTab *t = new QTab();
     t->label = name;

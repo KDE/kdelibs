@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
               (C) 1997 Torben Weis (weis@kde.org)
+    Qt DND implementation (C) 1999 Preston Brown/Red Hat Software, Inc.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -53,6 +54,7 @@
 #include <qprinter.h>
 #include <qdrawutil.h>
 #include <qbitmap.h>
+#include <qdragobject.h>
 
 #include <X11/Xlib.h>
 
@@ -162,7 +164,7 @@ parseFunc KHTMLWidget::parseFuncArray[26] = {
 
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
-    : KDNDWidget( parent, name, WPaintClever ), tempStrings( true ), parsedURLs( false ),
+    : QWidget( parent, name, WPaintClever ), tempStrings( true ), parsedURLs( false ),
 	parsedTargets( false )
 {
     jsEnvironment = 0;      
@@ -243,6 +245,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     registerFormats();
 
     setMouseTracking( true );    
+    setAcceptDrops(TRUE);
 
     connect( &updateTimer, SIGNAL( timeout() ), SLOT( slotUpdate() ) );
     connect( &autoScrollYTimer, SIGNAL(timeout()), SLOT( slotAutoScrollY() ) );
@@ -336,7 +339,6 @@ void KHTMLWidget::cancelAllRequests()
 void KHTMLWidget::requestBackgroundImage( const char *_url )
 {
     bgPixmapURL = _url;
-    bgPixmapURL.detach();
     emit fileRequest( _url );
 }
 
@@ -456,24 +458,37 @@ void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, cons
     emit formSubmitted( _method, _url, _data );
 }
 
-void KHTMLWidget::mouseMoveEvent( QMouseEvent *e )
+void KHTMLWidget::dragEnterEvent(QDragEnterEvent *e)
 {
-#ifdef USE_THE_BLOB_ALEX_MADE
-  if (scrollBlob) {
-    if (e->pos().y() < scrollBlob->y()) {
-      scrollBlobType = SCROLL_UP;
-      if (scrollBlobType != SCROLL_UP)
-	scrollBlobTimeout();
-    } else if (e->pos().y() > scrollBlob->y()+scrollBlob->height()) {
-      scrollBlobType=SCROLL_DOWN;
-      if (scrollBlobType != SCROLL_DOWN)
-	scrollBlobTimeout();
-    } else {
-      scrollBlobType=SCROLL_NONE;
+  if (QUrlDrag::canDecode(e))
+    e->accept();
+
+  // may want to provide some user feedback here.
+}
+
+void KHTMLWidget::dragLeaveEvent(QDragLeaveEvent *e)
+{
+  // may want to provide some visual user feedback here.
+}
+
+void KHTMLWidget::dropEvent( QDropEvent *de )
+{
+  QStrList l;
+  if (QUrlDrag::decode(de, l)) {
+    QString url = l.first();
+    if (url.right(1) == "\n")
+      url.truncate(url.length()-1);
+    if (url.right(1) == "\r")
+      url.truncate(url.length()-1);
+    KURL kurl( url );
+    if ( !kurl.isMalformed() ) {
+      if (htmlView) {
+	if (htmlView->dropHook(de))
+	  return;
+      }
+      emit URLSelected(kurl.url(), LeftButton);
     }
   }
-#endif
-  KDNDWidget::mouseMoveEvent(e);
 }
 
 void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
@@ -505,7 +520,8 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
     
     if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
     {
-    	pressed = TRUE;
+    	pressed = true;
+
 	// deselect all currently selected text
 	if ( bIsTextSelected )
 	{
@@ -538,9 +554,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 		if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
 		{
 		    pressedURL = obj->getURL();
-		    pressedURL.detach();
 		    pressedTarget = obj->getTarget();
-		    pressedTarget.detach();
 		}
 		
 		// Does the parent want to process the event now ?
@@ -584,8 +598,24 @@ void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
 		emit doubleClick( obj->getURL(), _mouse->button() );
 }
 
-void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
+void KHTMLWidget::mouseMoveEvent( QMouseEvent * _mouse )
 {
+#ifdef USE_THE_BLOB_ALEX_MADE
+  if (scrollBlob) {
+    if (e->pos().y() < scrollBlob->y()) {
+      scrollBlobType = SCROLL_UP;
+      if (scrollBlobType != SCROLL_UP)
+	scrollBlobTimeout();
+    } else if (e->pos().y() > scrollBlob->y()+scrollBlob->height()) {
+      scrollBlobType=SCROLL_DOWN;
+      if (scrollBlobType != SCROLL_DOWN)
+	scrollBlobTimeout();
+    } else {
+      scrollBlobType=SCROLL_NONE;
+    }
+  }
+#endif
+
     if ( clue == 0 )
 	return;
 
@@ -672,10 +702,6 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	}
     }
 
-    // Drags are only started with the left mouse button ...
-    // if ( _mouse->button() != LeftButton )
-    // return;
-      
     // debugT("Testing pressedURL.isEmpty()\n");
     if ( pressedURL.isEmpty() )
 	return;
@@ -686,27 +712,31 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
     // debugT("Testing Drag\n");
     
     // Did the user start a drag?
-    if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision && !drag )
+    if ( ((_mouse->state() & LeftButton) ||
+	  (_mouse->state() & MidButton)) && pressed &&
+	 (abs( x - press_x ) > 5 || abs( y - press_y ) > 5 ))
     {
-        // debugT(">>>>>>>>>>>>>>>> Starting DND <<<<<<<<<<<<<<<<<<<<<<<<\n");
-	QPoint p = mapToGlobal( _mouse->pos() );
-
-	// Does the parent want to process the event now ?
-	if ( htmlView )
-        {
-	    if ( htmlView->dndHook( pressedURL.data(), p ) )
-		return;
+      // Does the parent want to process the event now ?
+      if (htmlView)
+	if ( htmlView->dndHook( pressedURL.data() ) ) {
+	  pressed = false;
+	  return;
 	}
 
-	int dx = - dndDefaultPixmap.width() / 2;
-	int dy = - dndDefaultPixmap.height() / 2;
-
-	startDrag( new KDNDIcon( dndDefaultPixmap, p.x() + dx, p.y() + dy ),
-		pressedURL.data(), pressedURL.length(), DndURL, dx, dy );
+      QStrList urls;
+      urls.append(pressedURL.data());
+      
+      QUrlDrag *ud = new QUrlDrag(urls, this);
+      ud->setPixmap(dndDefaultPixmap, QPoint(dndDefaultPixmap.width() / 2 + 2, dndDefaultPixmap.height() / 2 + 2));
+      ud->dragCopy();
+      //      setCursor( KCursor::arrowCursor() );
+      pressed = false;
     }
 }
 
-void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
+
+
+void KHTMLWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 {
     if ( clue == 0 )
 	return;
@@ -718,7 +748,7 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 	disconnect( this, SLOT( slotUpdateSelectText(int) ) );
     }
 
-    // Used to prevent dndMouseMoveEvent from initiating a drag before
+    // Used to prevent mouseMoveEvent from initiating a drag before
     // the mouse is pressed again.
     pressed = false;
 
@@ -759,13 +789,6 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 	// required for backward compatability
 	emit URLSelected( pressedURL.data(), _mouse->button() );
     }
-}
-
-void KHTMLWidget::dragEndEvent()
-{
-    // Used to prevent dndMouseMoveEvent from initiating a new drag before
-    // the mouse is pressed again.
-    pressed = false;
 }
 
 void KHTMLWidget::setBlob( QPoint pos )
@@ -1169,7 +1192,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
                 flushKeys();
                 currentKeySeq = saved.copy() + (char) _ke->ascii();
                 cellSequenceChanged();
-            } else KDNDWidget::keyPressEvent( _ke );
+            } else QWidget::keyPressEvent( _ke );
     }
 }
 
@@ -1450,8 +1473,8 @@ void KHTMLWidget::print()
 void KHTMLWidget::setBaseURL( const char *_url)
 {
     baseURL = _url;
-    baseURL.setReference( 0 );
-    baseURL.setSearchPart( 0 );
+    baseURL.setReference( QString::null );
+    baseURL.setSearchPart( QString::null );
 
     QString p = baseURL.httpPath();
 
@@ -1518,8 +1541,8 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 
       // Set a default title
       KURL title(_url);
-      title.setReference(0);
-      title.setSearchPart(0);
+      title.setReference(QString::null);
+      title.setSearchPart(QString::null);
       emit setTitle( title.url().data() );
     }
     else
@@ -5502,13 +5525,13 @@ bool KHTMLWidget::setCharset(const char *name){
         if (currentFont()!=0){	
           HTMLFont f( *font_stack.top());
 	  debugM("Original font: face: %s qtCharset: %i\n"
-	                              ,QFont(f).family(),(int)QFont(f).charSet());
+	                              ,QFont(f).family().data(),QFont(f).charSet());
 	  f.setCharset(charset);
 	  debugM("Changed font: face: %s qtCharset: %i\n"
-	                              ,QFont(f).family(),(int)QFont(f).charSet());
+	                              ,QFont(f).family().data(),QFont(f).charSet());
           const HTMLFont *fp = pFontManager->getFont( f );
 	  debugM("Got font: %p\n",fp);
-	  debugM("Got font: face: %s qtCharset: %i\n",QFont(*fp).family(),(int)QFont(*fp).charSet());
+	  debugM("Got font: face: %s qtCharset: %i\n",QFont(*fp).family().data(),QFont(*fp).charSet());
           font_stack.push( fp );
 	  debugM("painter: %p\n",painter);
 	  debugM("Font stack top: %p\n",font_stack.top());

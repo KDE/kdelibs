@@ -58,7 +58,7 @@ class KStatusBarLabel : public QLabel {
 
 public:
 
-  KStatusBarLabel( const char *text, int ID, QWidget *parent=0L,
+  KStatusBarLabel( const QString& text, int ID, QWidget *parent=0L,
                   const char *name=0L );
   ~KStatusBarLabel () {};
   int w,h;
@@ -116,7 +116,7 @@ public:
    * inserted is always stretched to fit the window width.
    * @see #insertWidget
    */
-  int insertItem( const char *text, int ID );
+  int insertItem( const QString& text, int ID );
 
   /**
    * Insert custom widget into the status bar. The widget must have statusbar
@@ -139,7 +139,7 @@ public:
    * your custom widget it is not deleted. Note that it is rather pointless
    * to replace one label by another; use @ref #changeItem for that.
    */
-  void replaceItem(int _id, const char *new_text);
+  void replaceItem(int _id, const QString& new_text);
 
   /**
    * NOT YET IMPLEMENTED!
@@ -155,7 +155,7 @@ public:
    * Change the text in a status bar field. The field is not resized !!!
    * Usefull only for labels.
    */
-  void changeItem( const char *text, int id );
+  void changeItem( const QString& text, int id );
 
   /** 
    * If order is KStatusBar::LeftToRight the fields are inserted from left
@@ -194,7 +194,7 @@ public:
    * If time is 0 (default) message will remain untill you call @ref #clear.
    * You can remove the message by calling @ref #clear any time.
    */
-  void message (const char *text, int time=0);
+  void message (const QString& text, int time=0);
 
   /**
    * Hides all items and displays temporary custom widget in whole statusbar.

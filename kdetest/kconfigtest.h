@@ -22,15 +22,15 @@
 #include <kapp.h>
 #include <qdialog.h>
 #include <qfile.h>
-#include <qfileinf.h>
+#include <qfileinfo.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
 
 // Standard Qt widgets
 
 #include <qlabel.h>
-#include <qlined.h>
-#include <qpushbt.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
 
 #include <kconfig.h>
 

@@ -50,8 +50,8 @@ const int idStart = 1;
 
 QString *KFileBaseDialog::lastDirectory; // to set the start path
 
-KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
-			 QWidget *parent, const char *name, bool modal,
+KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
+			 QWidget *parent, const char* name, bool modal,
 			 bool acceptURLs)
     : QDialog(parent, name, modal), boxLayout(0)
 {
@@ -87,8 +87,8 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 
     connect(dir, SIGNAL(finished()),
 	    SLOT(slotFinished()));
-    connect(dir, SIGNAL(error(int, const char *)),
-	    SLOT(slotKfmError(int, const char *)));
+    connect(dir, SIGNAL(error(int, const QString& )),
+	    SLOT(slotKfmError(int, const QString& )));
 
     backStack.setAutoDelete( true );
     forwardStack.setAutoDelete( true );
@@ -203,8 +203,8 @@ void KFileBaseDialog::init()
 				  locationEdit->height());
     locationEdit->setFixedHeight(locationLabel->height());
 
-    connect(locationEdit, SIGNAL(activated(const char*)),
-	    SLOT(locationChanged(const char*)));
+    connect(locationEdit, SIGNAL(activated(const QString&)),
+	    SLOT(locationChanged(const QString&)));
 
 
     // Add the filter
@@ -275,7 +275,7 @@ void KFileBaseDialog::init()
        pathChanged();
 
     if (!filename_.isNull()) {
-	debugC("edit %s", locationEdit->text(0));
+	debugC("edit %s", locationEdit->text(0).ascii());
 	checkPath(filename_);
 	locationEdit->setText(filename_);
     }
@@ -287,7 +287,7 @@ void KFileBaseDialog::init()
     resize(w, h);
 }
 
-void KFileBaseDialog::setFilter(const char *filter)
+void KFileBaseDialog::setFilter(const QString& filter)
 {
     filterString = filter;
     if (showFilter) {
@@ -395,13 +395,13 @@ void KFileBaseDialog::setHiddenToggle(bool b) // SLOT
     pathChanged();
 }
 
-void KFileBaseDialog::locationChanged(const char *_txt)
+void KFileBaseDialog::locationChanged(const QString&_txt)
 {
-    bool highlighted = strcmp(_txt, locationEdit->text(0));
+    bool highlighted = (_txt != locationEdit->text(0));
     checkPath(_txt, highlighted);
 }
 
-void KFileBaseDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
+void KFileBaseDialog::checkPath(const QString&_txt, bool takeFiles) // SLOT
 {
     // copy the argument in a temporary string
     QString text = _txt;
@@ -424,7 +424,7 @@ void KFileBaseDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 	    selection = 0;
     }
 
-    KURL u = text.data(); // I have to take care of entered URLs
+    KURL u(text); // I have to take care of entered URLs
     bool filenameEntered = false;
 
     if (u.isLocalFile()) {
@@ -461,9 +461,9 @@ void KFileBaseDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 QString KFileBaseDialog::selectedFile()
 {
     if (filename_.isNull())
-      return 0;
+      return QString();
 
-    KURL u = filename_.data();
+    KURL u(filename_);
     QString path = u.path();
     KURL::decodeURL(path);
     return path;
@@ -474,9 +474,9 @@ QString KFileBaseDialog::dirPath()
     return dir->path();
 }
 
-void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
+void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
 {
-    debugC("setDir %s %ld", _pathstr, time(0));
+    debugC("setDir %s %ld", _pathstr.ascii(), time(0));
     filename_ = 0;
     QString pathstr = _pathstr;
 
@@ -541,15 +541,15 @@ void KFileBaseDialog::rereadDir()
     pathChanged();
 }
 
-KFileDialog::KFileDialog(const char *dirName, const char *filter,
-				 QWidget *parent, const char *name,
-				 bool modal, bool acceptURLs)
+KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
+			 QWidget *parent, const char * name,
+			 bool modal, bool acceptURLs)
     : KFileBaseDialog(dirName, filter, parent, name, modal, acceptURLs)
 {
     init();
 }
 
-QString KFileDialog::getOpenFileName(const char *dir, const char *filter,
+QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 				     QWidget *parent, const char *name)
 {
     QString filename;
@@ -565,7 +565,7 @@ QString KFileDialog::getOpenFileName(const char *dir, const char *filter,
     return filename;
 }
 
-QString KFileDialog::getSaveFileName(const char *dir, const char *filter,
+QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 				     QWidget *parent, const char *name)
 {
     KFileDialog *dlg= new KFileDialog(dir, filter, parent, name, true, false);
@@ -589,8 +589,8 @@ void KFileBaseDialog::pathChanged()
     // Not forgetting of course the path combo box
     toolbar->clearCombo(PATH_COMBO);
 
-    QString path= dir->path();
-    QString pos= strtok(path.data(), "/");
+    char *path= qstrdup(dir->path());
+    QString pos= strtok(path, "/");
     QStrList list;
 
     list.insert(0, i18n("Root Directory"));
@@ -599,6 +599,8 @@ void KFileBaseDialog::pathChanged()
 	pos= strtok(0, "/");
     }
     toolbar->getCombo(PATH_COMBO)->insertStrList(&list);
+
+    delete [] path;
 
     fileList->clear();
 
@@ -693,7 +695,7 @@ void KFileBaseDialog::slotFinished()
     finished = true;
 }
 
-void KFileBaseDialog::slotKfmError(int, const char *)
+void KFileBaseDialog::slotKfmError(int, const QString& )
 {
     debugC("slotKfmError");
     if (!finished)
@@ -855,7 +857,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
 
 void KFileBaseDialog::cdUp()
 {
-    KURL u = dir->url().data();
+    KURL u(dir->url());
     u.cd("..");
     setDir(u.url(), true);
 }
@@ -970,8 +972,8 @@ void KFileBaseDialog::toolbarPressedCallback(int i)
 	bookmarksMenu->move(p);
 
 	int choice= bookmarksMenu->exec();
-	QEvent ev(Event_Leave);
-	QMouseEvent mev (Event_MouseButtonRelease,
+	QEvent ev(QEvent::Leave);
+	QMouseEvent mev (QEvent::MouseButtonRelease,
 			 QCursor::pos(), LeftButton, LeftButton);
 	QApplication::sendEvent(btn, &ev);
 	QApplication::sendEvent(btn, &mev);
@@ -1043,7 +1045,7 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
     // remove the predefined selection
     selection = 0;
 
-    const char *highlighted = item->fileName();
+    const QString& highlighted = item->fileName();
 
     if (acceptUrls)
 	filename_ = dir->url();
@@ -1100,9 +1102,9 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 
 }
 
-void KFileBaseDialog::setSelection(const char *name)
+void KFileBaseDialog::setSelection(const QString& name)
 {
-    debugC("setSelection %s", name);
+    debugC("setSelection %s", name.ascii());
 
     if (!name) {
 	selection = 0;
@@ -1113,7 +1115,7 @@ void KFileBaseDialog::setSelection(const char *name)
     if (u.isMalformed()) // perhaps we have a relative path!?
 	u = dir->url() + name;
     if (u.isMalformed()) { // if it still is
-	warning("%s is not a correct argument for setSelection!", name);
+	warning("%s is not a correct argument for setSelection!", name.ascii());
 	return;
     }
 
@@ -1199,15 +1201,15 @@ void KFileBaseDialog::resizeEvent(QResizeEvent *)
 QString KFileBaseDialog::selectedFileURL()
 {
     if (filename_.isNull())
-	return 0;
+	return QString();
     else {
-	KURL u = filename_.data();
+	KURL u(filename_);
 	return u.url(); // let KURL check the rest
     }
 
 }
 
-QString KFileDialog::getOpenFileURL(const char *url, const char *filter,
+QString KFileDialog::getOpenFileURL(const QString& url, const QString& filter,
 				    QWidget *parent, const char *name)
 {
     QString retval;
@@ -1228,8 +1230,8 @@ QString KFileDialog::getOpenFileURL(const char *url, const char *filter,
     return retval;
 }
 
-KDirDialog::KDirDialog(const char *url, QWidget *parent, const char *name)
-    : KFileBaseDialog(url, 0, parent, name, true, false)
+KDirDialog::KDirDialog(const QString& url, QWidget *parent, const char *name)
+    : KFileBaseDialog(url, QString::null, parent, name, true, false)
 {
     init();
 }
@@ -1241,7 +1243,7 @@ KFileInfoContents *KDirDialog::initFileList( QWidget *parent )
     return new KDirListBox( useSingleClick, dir->sorting(), parent, "_dirs" );
 }
 
-QString KFileBaseDialog::getDirectory(const char *url,
+QString KFileBaseDialog::getDirectory(const QString& url,
 				  QWidget *parent, const char *name)
 {
     QString retval;
@@ -1262,7 +1264,7 @@ QString KFileBaseDialog::getDirectory(const char *url,
     return retval;
 }
 
-QString KFileDialog::getSaveFileURL(const char *url, const char *filter,
+QString KFileDialog::getSaveFileURL(const QString& url, const QString& filter,
 				    QWidget *parent, const char *name)
 {
     QString retval;
@@ -1287,15 +1289,15 @@ QStrList KFileDialog::selectedFileURLList()
   // TODO
 }
 
-QStrList KFileDialog::getOpenFileURLList(const char *,
-					 const char *,
+QStrList KFileDialog::getOpenFileURLList(const QString& ,
+					 const QString& ,
 					 QWidget *,
 					 const char *)
 {
   // TODO
 }
 
-QStrList KFileDialog::getSaveFileURLList(const char *, const char *,
+QStrList KFileDialog::getSaveFileURLList(const QString& , const QString& ,
 		       QWidget *, const char *)
 {
   // TODO
@@ -1342,7 +1344,7 @@ void KDirDialog::updateStatusLine()
 }
 
 
-KFilePreviewDialog::KFilePreviewDialog(const char *dirName, const char *filter,
+KFilePreviewDialog::KFilePreviewDialog(const QString& dirName, const QString& filter,
                                        QWidget *parent, const char *name,
                                        bool modal, bool acceptURLs )
     : KFileBaseDialog(dirName, filter, parent, name, modal, acceptURLs)
@@ -1368,7 +1370,7 @@ KFileInfoContents *KFilePreviewDialog::initFileList( QWidget *parent )
 
 }
 
-QString KFilePreviewDialog::getOpenFileName(const char *dir, const char *filter,
+QString KFilePreviewDialog::getOpenFileName(const QString& dir, const QString& filter,
 				            QWidget *parent, const char *name)
 {
     QString filename;
@@ -1384,7 +1386,7 @@ QString KFilePreviewDialog::getOpenFileName(const char *dir, const char *filter,
     return filename;
 }
 
-QString KFilePreviewDialog::getSaveFileName(const char *dir, const char *filter,
+QString KFilePreviewDialog::getSaveFileName(const QString& dir, const QString& filter,
 				            QWidget *parent, const char *name)
 {
     KFilePreviewDialog *dlg= new KFilePreviewDialog(dir, filter, parent, name, true, false);
@@ -1401,7 +1403,7 @@ QString KFilePreviewDialog::getSaveFileName(const char *dir, const char *filter,
     return filename;
 }
 
-QString KFilePreviewDialog::getOpenFileURL(const char *url, const char *filter,
+QString KFilePreviewDialog::getOpenFileURL(const QString& url, const QString& filter,
 				           QWidget *parent, const char *name)
 {
     QString retval;
@@ -1422,7 +1424,7 @@ QString KFilePreviewDialog::getOpenFileURL(const char *url, const char *filter,
     return retval;
 }
 
-QString KFilePreviewDialog::getSaveFileURL(const char *url, const char *filter,
+QString KFilePreviewDialog::getSaveFileURL(const QString& url, const QString& filter,
 				           QWidget *parent, const char *name)
 {
     QString retval;

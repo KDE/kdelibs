@@ -47,13 +47,13 @@ KDir::KDir()
     setPath(QDir::currentDirPath());
 }
 
-KDir::KDir(const char *url, const char *nameFilter,
+KDir::KDir(const QString& url, const QString& nameFilter,
 	   QDir::SortSpec sortSpec,
 	   QDir::FilterSpec filterSpec)
     : QObject(0, "KDir")
 {
     initLists();
-    myNameFilter = (nameFilter == 0) ? "*" : nameFilter;
+    myNameFilter = (nameFilter == 0) ? QString("*") : nameFilter;
     mySortSpec= sortSpec;
     myFilterSpec= filterSpec;
     myFilteredDirtyFlag= true;
@@ -115,7 +115,7 @@ KDir &KDir::operator= (const QDir &d)
     return *this;
 }
 
-KDir &KDir::operator= (const char *url)
+KDir &KDir::operator= (const QString& url)
 {
     setPath(url);
     return *this;
@@ -123,17 +123,17 @@ KDir &KDir::operator= (const char *url)
 
 void KDir::cdUp()
 {
-    KURL u = myLocation.url().data();
+    KURL u(myLocation.url());
     u.cd("..");
     setPath(u.url());
 }
 
-void KDir::setPath(const char *url)
+void KDir::setPath(const QString& url)
 {
     QString ts = url;
     if (ts.right(1) != "/")
 	ts += "/";
-    KURL tmp = ts.data();
+    KURL tmp(ts);
     isBlocking = true;
 
     if (tmp.isLocalFile()) { // we can check, if the file is there
@@ -156,7 +156,7 @@ void KDir::setPath(const char *url)
     if (!tmp.isMalformed())
 	myLocation= tmp.url();
     else
-	warning("Malformed url %s\n", url);
+	warning("Malformed url %s\n", url.ascii());
 
     root = (strcmp(myLocation.path(),"/") == 0);
     
@@ -171,12 +171,12 @@ void KDir::setPath(const char *url)
     myFilteredDirtyFlag= true;
 }
 
-void KDir::setURL(const char *url)
+void KDir::setURL(const QString& url)
 {
     setPath(url);
 }
 
-void KDir::setNameFilter(const char *nameFilter)
+void KDir::setNameFilter(const QString& nameFilter)
 {
     myFilteredDirtyFlag |= (myNameFilter != nameFilter);
     myNameFilter= nameFilter;
@@ -309,11 +309,11 @@ const KFileInfoList *KDir::entryInfoList(int filterSpec,
     return &myFilteredEntries;
 }
 
-bool KDir::match(const char *filter, const char *name)
+bool KDir::match(const QString& filter, const QString& name)
 {
     // Split on white space
-    QString s = filter;
-    char *g = strtok(s.data(), " ");
+    char *s = qstrdup(filter);
+    char *g = strtok(s, " ");
     
     bool matched = false;
     while (g) {
@@ -324,6 +324,7 @@ bool KDir::match(const char *filter, const char *name)
 	g = strtok(0, " ");
     }
     
+    delete [] s;
     return matched;
 }
 
@@ -368,8 +369,8 @@ bool KDir::startLoading()
 	} else {	// If all is well
 	
 	    connect(myKfm, SIGNAL(finished()), SLOT(slotKfmFinished()));
-	    connect(myKfm, SIGNAL(error(int, const char *)),
-		    SLOT(slotKfmError(int, const char *)));
+	    connect(myKfm, SIGNAL(error(int, const QString&)),
+		    SLOT(slotKfmError(int, const QString&)));
 	    connect(myKfm, SIGNAL(dirEntry(KDirEntry&)),
 		    SLOT(slotDirEntry(KDirEntry&)));
 	    myKfm->list(myLocation.url());
@@ -413,7 +414,7 @@ void KDir::slotKfmFinished() // SLOT
     emit finished();
 }
 
-void KDir::slotKfmError(int kerror, const char *text) // SLOT
+void KDir::slotKfmError(int kerror, const QString& text) // SLOT
 {
     delete myKfm;
     myKfm= 0;

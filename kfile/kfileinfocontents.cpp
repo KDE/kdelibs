@@ -406,7 +406,7 @@ QString KFileInfoContents::findCompletion( const char *base,
 	delete [] nameArray;
     }
 
-    if ( strlen(base) == 0 ) return 0;
+    if ( strlen(base) == 0 ) return QString();
 
     QString remainder = base;
     const char *name;
@@ -484,7 +484,7 @@ QString KFileInfoContents::findCompletion( const char *base,
 	return body; 
     } else {
 	debugC("no completion for %s", base);
-	return 0;
+	return QString();
     }
     
 }

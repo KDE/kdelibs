@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9.2.1  1999/01/30 20:19:17  kulow
+ * start porting to Qt2.0 beta
+ *
+ * Revision 1.9  1999/01/18 10:56:54  kulow
+ * .moc files are back in kdelibs. Built fine here using automake 1.3
+ *
  * Revision 1.8  1999/01/15 09:31:13  kulow
  * it's official - kdelibs builds with srcdir != builddir. For this I
  * automocifized it, the generated rules are easier to maintain than
@@ -162,14 +168,14 @@ bool KPanner::eventFilter(QObject *obj, QEvent *ev)
      * initiate divider drag action. record current position
      */
     
-    if(ev->type() == Event_MouseButtonPress) {
+    if(ev->type() == QEvent::MouseButtonPress) {
         if((u_flags & P_ORIENTATION) == O_HORIZONTAL)
             old_coord = divider->y();
         else // O_VERTICAL
             old_coord = divider->x();
     }
     
-    if(ev->type() == Event_MouseMove) {
+    if(ev->type() == QEvent::MouseMove) {
 
         if(obj == (QObject *)divider) {
             QMouseEvent *mev = (QMouseEvent *)ev;
@@ -197,7 +203,7 @@ bool KPanner::eventFilter(QObject *obj, QEvent *ev)
         }
     }
 
-    if(ev->type() == Event_MouseButtonRelease) {
+    if(ev->type() == QEvent::MouseButtonRelease) {
         int max_value = getMaxValue();
     
         if((u_flags & P_UNITS) == U_PERCENT)

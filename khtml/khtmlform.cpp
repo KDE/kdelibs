@@ -37,6 +37,7 @@
 #include <qmultilinedit.h>
 #include <qfontmetrics.h>
 #include <qstrlist.h>
+#include <qapplication.h>
 
 #include "khtmlform.h"
 

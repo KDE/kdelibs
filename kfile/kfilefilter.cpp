@@ -25,12 +25,13 @@ void KFileFilter::setFilter(const char *filter)
     delete filters;
     filters = new QStrList( true );
     if (filter) {
-	QString tmp = filter; // deep copy
-	char *g = strtok(tmp.data(), "\n");
+	char *tmp = qstrdup(filter); // deep copy
+	char *g = strtok(tmp, "\n");
 	while (g) {
 	    filters->append(g);
 	    g = strtok(0, "\n");
 	}
+	delete [] tmp;
     } else
 	filters->append(i18n("*|All Files"));
 

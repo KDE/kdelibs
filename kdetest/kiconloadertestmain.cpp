@@ -1,6 +1,6 @@
 
-#include <qpushbt.h>
-#include <qlined.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
 
 #include <kapp.h>
 #include <kiconloader.h>

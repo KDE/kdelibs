@@ -349,7 +349,7 @@ void HTMLHSpace::print( QPainter *_painter, int _tx, int _ty )
     	
     _painter->setFont( *font );
     
-    if ( isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    if ( isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
 	_painter->fillRect( x + _tx, y - ascent + _ty,
 		width, ascent + descent, kapp->selectColor );
@@ -567,7 +567,7 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
     _painter->setPen( font->textColor() );
     _painter->setFont( *font );
     
-    if ( isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    if ( isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
 	_painter->drawText( x + _tx, y + _ty, text, selStart );
 	int fillStart = _painter->fontMetrics().width( text, selStart );
@@ -602,7 +602,7 @@ HTMLText::printDebug( bool, int indent, bool printObjects )
     str += " (\"";
     if(aStr.length() > 20)
     {
-	aStr.resize(20);
+	aStr.truncate(19);
 	str += aStr + "...";
     } else
 	str += aStr;
@@ -1109,7 +1109,7 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
     _painter->setPen( font->textColor() );
     _painter->setFont( *font );
     
-    if ( owner->isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    if ( owner->isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
     	if (isSelected())
     	{
@@ -1236,7 +1236,7 @@ bool HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 {
-    QColorGroup colorGrp( black, black, lightGray, black, gray, black, black );
+    QColorGroup colorGrp( Qt::black, Qt::black, Qt::lightGray, Qt::black, Qt::gray, Qt::black, Qt::black );
 
     int size = ascent - 6;
     int xp = x + _tx;
@@ -1247,7 +1247,7 @@ void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 	qDrawShadePanel( _painter, xp, yp-size, width, size,
 		colorGrp, false, lw, 0 );
     else
-	_painter->fillRect( xp, yp-size, width, size, black );
+	_painter->fillRect( xp, yp-size, width, size, Qt::black );
 }
 
 //-----------------------------------------------------------------------------
@@ -1547,8 +1547,8 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
     {
 	if ( !predefinedWidth || !predefinedHeight )
 	{
-	    QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
-		    black, white );
+	    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
+		    Qt::black, Qt::white );
 	    qDrawShadePanel( _painter, x + _tx, y - ascent + _ty, width, ascent,
 		    colorGrp, true, 1 );
 	}
@@ -1562,7 +1562,7 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	    QPainter p( &pm );
 //	    p.setRasterOp( NotEraseROP );
 //	    p.fillRect( 0, 0, pm.width(), pm.height(), blue );
-	    QBrush b( kapp->selectColor, Dense4Pattern );
+	    QBrush b( kapp->selectColor, Qt::Dense4Pattern );
 	    p.fillRect( 0, 0, pm.width(), pm.height(), b );
 	}
 
@@ -1635,7 +1635,7 @@ HTMLImage::printDebug( bool, int indent, bool printObjects )
     QString aStr = imageURL;
     if(aStr.length() > 20)
     {
-	aStr.resize(20);
+	aStr.truncate(19);
 	str = aStr + "...";
     } else
 	str = aStr;
@@ -1855,7 +1855,6 @@ HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
 {
     type = ClientSide;
     serverurl = _url;
-    serverurl.detach();
 }
 
 HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )

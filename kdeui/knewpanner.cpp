@@ -112,7 +112,7 @@ void KNewPanner::deactivate()
   initialised= false;
 }
 
-void KNewPanner::setLabels(const char *text0, const char *text1)
+void KNewPanner::setLabels(const QString& text0, const QString& text1)
 {
    if (label0 == 0) {
       label0= new QLabel(this, "label0");
@@ -301,7 +301,7 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
     bool handled= false;
 
     switch (e->type()) {
-    case Event_MouseMove:
+    case QEvent::MouseMove:
 	mev= (QMouseEvent *)e;
 	child0->setUpdatesEnabled(false);
 	child1->setUpdatesEnabled(false);
@@ -317,7 +317,7 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 	}
 	handled= true;
 	break;
-    case Event_MouseButtonRelease:
+    case QEvent::MouseButtonRelease:
 	mev= (QMouseEvent *)e;
 
 	child0->setUpdatesEnabled(true);
@@ -337,6 +337,8 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 	}
 	handled= true;
 	break;
+    default:
+        return false;
     }
 
     return handled;

@@ -36,7 +36,7 @@
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------
 //----------------------------------------------------------------------
-KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
+KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const QString& name )
   :QTableView( parent, name )
 {
   max_width = 0;
@@ -103,7 +103,7 @@ void KIconLoaderCanvas::process()
   for( int i = 0; i < 10 && current != 0; i++, curr_indx++ )
     {
       new_xpm = new KPixmap;
-      new_xpm->load( dir_name + '/' + current, 0, KPixmap::LowColor );
+      new_xpm->load( dir_name + '/' + current, QString::null, KPixmap::LowColor );
       if( new_xpm->isNull() )
         {
           delete new_xpm;
@@ -200,7 +200,7 @@ void KIconLoaderCanvas::mouseMoveEvent( QMouseEvent *e)
       return;
     }
   QString name = name_list.at(item_nr);
-  emit nameChanged( (const char *) name );
+  emit nameChanged( name );
 }
 
 void KIconLoaderCanvas::mousePressEvent( QMouseEvent *e)
@@ -267,24 +267,24 @@ void KIconLoaderDialog::init()
   cancel->setGeometry(325, 200, 80, 30);
   connect( ok, SIGNAL(clicked()), this, SLOT(accept()) );
   connect( cancel, SIGNAL(clicked()), this, SLOT(reject()) );
-  connect( canvas, SIGNAL(nameChanged(const char *)), l_name, SLOT(setText(const char *)) );
+  connect( canvas, SIGNAL(nameChanged(const QString&)), l_name, SLOT(setText(const QString&)) );
   connect( canvas, SIGNAL(doubleClicked()), this, SLOT(accept()) );
   connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
-  connect( cb_dirs, SIGNAL(activated(const char *)), this, SLOT(dirChanged(const char*)) );
+  connect( cb_dirs, SIGNAL(activated(const QString&)), this, SLOT(dirChanged(const QString&)) );
   setDir(icon_loader->getDirList());
   resize( 470, 350 );
   setMinimumSize( 470, 250 );
 }
 
-KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
+KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const QString& name )
   : QDialog( parent, name, TRUE )
 {
   icon_loader = KApplication::getKApplication()->getIconLoader();
   init();
 }
 
-KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent, const char *name )
+KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent, const QString& name )
   : QDialog( parent, name, TRUE )
 {
   icon_loader = loader;
@@ -340,7 +340,7 @@ void KIconLoaderDialog::filterChanged()
   canvas->loadDir( cb_dirs->currentText(), i_filter->text() );
 }
 
-void KIconLoaderDialog::dirChanged(const char * dir)
+void KIconLoaderDialog::dirChanged(const QString& dir)
 {
   canvas->loadDir( dir, i_filter->text() );
 }
@@ -389,7 +389,7 @@ void KIconLoaderButton::slotChangeIcon()
     }    
 }
 
-void KIconLoaderButton::setIcon( const char *_icon )
+void KIconLoaderButton::setIcon(const QString& _icon)
 {
     iconStr = _icon;
 

@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11.2.1  1999/02/21 20:55:52  kulow
+ * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
+ *
+ * Revision 1.11  1998/10/31 15:25:01  porten
+ * Harri: fixed documented return value of yesNo()
+ *
  * Revision 1.10  1998/09/14 20:44:07  kulow
  * I know, Ok is ok too, but OK is more OK some GUI guides say :)
  *
@@ -149,10 +155,13 @@ public:
      *
      * @see ::DefaultButton ::IconStyle
      */
-    KMsgBox ( QWidget *parent = 0, const char *caption = 0, 
-		    const char *message = 0, int type = INFORMATION,
-		    const char *b1text = 0, const char *b2text = 0, 
-		    const char *b3text = 0, const char *b4text = 0);
+    KMsgBox ( QWidget *parent = 0, const QString& caption = QString::null, 
+	      const QString& message = QString::null, 
+	      int type = INFORMATION,
+	      const QString& b1text = QString::null , 
+	      const QString& b2text = QString::null, 
+	      const QString& b3text = QString::null, 
+	      const QString& b4text = QString::null);
 
     /**
     * Destructor.
@@ -179,9 +188,12 @@ public:
      *
      * @return 1 if yes is clicked, 2 otherwise.
      */
-    static int yesNo( QWidget *parent = 0, const char *caption = 0, 
-		    const char *message = 0, int type = 0,
-		    const char *yes = 0, const char *no = 0);
+    static int yesNo( QWidget *parent = 0, 
+		      const QString& caption = QString::null, 
+		      const QString& message = QString::null, 
+		      int type = 0,
+		      const QString& yes = QString::null, 
+		      const QString& no = QString::null);
 
     /** 
      * Displays a modal yes/no/cancel message box.
@@ -193,7 +205,7 @@ public:
      *			to be asked)
      * @param type	Selects message box options. This value is 
      *			a constant from @ref ::DefaultButton and/or
-     *			a constant from @ref ::IconStyle or-ed together.
+    *			a constant from @ref ::IconStyle or-ed together.
      * @param yes	the text for the "Yes" button. defaults to "Yes", or
      *			its translation in the current user's locale if
      *			available.
@@ -207,9 +219,12 @@ public:
      * @return 1, 2 or 3 if yes, no or cancel are clicked respectively.
      */
     static int yesNoCancel( QWidget *parent = 0, 
-    		const char *caption = 0, const char *message = 0, 
-		int type = 0, const char *yes = 0, const char *no = 0, 
-		const char *cancel = 0);
+			    const QString& caption = QString::null,
+			    const QString& message = QString::null, 
+			    int type = 0, 
+			    const QString& yes = QString::null, 
+			    const QString& no = QString::null, 
+			    const QString& cancel = QString::null);
 
     /** 
      * Displays a modal message box with one button. An "Information"
@@ -227,9 +242,11 @@ public:
      *			available.
      * @return		1 if the Ok button is clicked
      */
-    static int message( QWidget *parent = 0, const char *caption = 0, 
-		    const char *message = 0, int type = 0,
-		    const char *btext = 0);
+    static int message( QWidget *parent = 0, 
+			const QString& caption = QString::null, 
+			const QString& message = QString::null, 
+			int type = 0,
+			const QString& btext = QString::null);
 
 private:
 

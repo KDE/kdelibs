@@ -19,7 +19,7 @@ QCursor KCursor::handCursor()
 
 	if (hand_cursor == 0)
 	{
-		if (KApplication::style() == WindowsStyle)
+		if (kapp->style() == Qt::WindowsStyle)
 		{
 			unsigned char HAND_BITS[] = {
 				0x80, 0x01, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02,
@@ -65,66 +65,66 @@ QCursor KCursor::handCursor()
  */
 QCursor KCursor::arrowCursor()
 {
-	return ::arrowCursor;
+    return Qt::arrowCursor;
 }
 
 
 QCursor KCursor::upArrowCursor()
 {
-	return ::upArrowCursor;
+	return Qt::upArrowCursor;
 }
 
 
 QCursor KCursor::crossCursor()
 {
-	return ::crossCursor;
+	return Qt::crossCursor;
 }
 
 
 QCursor KCursor::waitCursor()
 {
-	return ::waitCursor;
+	return Qt::waitCursor;
 }
 
 
 QCursor KCursor::ibeamCursor()
 {
-	return ::ibeamCursor;
+	return Qt::ibeamCursor;
 }
 
 
 QCursor KCursor::sizeVerCursor()
 {
-	return ::sizeVerCursor;
+	return Qt::sizeVerCursor;
 }
 
 
 QCursor KCursor::sizeHorCursor()
 {
-	return ::sizeHorCursor;
+	return Qt::sizeHorCursor;
 }
 
 
 QCursor KCursor::sizeBDiagCursor()
 {
-	return ::sizeBDiagCursor;
+	return Qt::sizeBDiagCursor;
 }
 
 
 QCursor KCursor::sizeFDiagCursor()
 {
-	return ::sizeFDiagCursor;
+	return Qt::sizeFDiagCursor;
 }
 
 
 QCursor KCursor::sizeAllCursor()
 {
-	return ::sizeAllCursor;
+	return Qt::sizeAllCursor;
 }
 
 
 QCursor KCursor::blankCursor()
 {
-	return ::blankCursor;
+	return Qt::blankCursor;
 }
 

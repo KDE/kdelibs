@@ -15,7 +15,7 @@
 
 #include <qwidget.h>
 #include <qlabel.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlistbox.h>
 
 class StringListSelectAndReorderSetData : public QWidget

@@ -2,6 +2,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4.2.1  1999/02/22 21:14:09  kulow
+ * extreme QStringing
+ *
+ * Revision 1.4  1999/01/19 13:36:24  kulow
+ * removed explicit settings of DISTCLEANFILES, where the only sense was
+ * to remove the MOC files
+ *
  * Revision 1.3  1999/01/15 08:59:28  kulow
  * use seperate moc.cpp files - did you know that most header files herein are
  * complete hacks? ;)
@@ -33,22 +40,22 @@
  */
 
 #include <kapp.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 #include <qobject.h>
 #include <qlistbox.h>
-#include <qgrpbox.h>
+#include <qgroupbox.h>
 #include <qevent.h>
-#include <qcombo.h>
-#include <qlined.h>
-#include <qradiobt.h>
-#include <qchkbox.h>
-#include <qtabdlg.h>
+#include <qcombobox.h>
+#include <qlineedit.h>
+#include <qradiobutton.h>
+#include <qcheckbox.h>
+#include <qtabdialog.h>
 #include <qtooltip.h>
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 #include <qtabbar.h>
 #include <qpalette.h>
-#include <qmlined.h>
+#include <qmultilinedit.h>
 
 #include <stdio.h>
 #include <stdlib.h>

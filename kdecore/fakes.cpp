@@ -29,7 +29,7 @@ int setenv(const char *name, const char *value, int overwrite) {
     return putenv(a);
 }
 
-int unsetenv(const char *name) {
+int unsetenv(const char * name) {
     int i;
     char * a;
 
@@ -130,3 +130,4 @@ void srandom(unsigned int seed)
     srand48(seed);
 }
 #endif
+

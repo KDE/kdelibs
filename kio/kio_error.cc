@@ -1,7 +1,7 @@
 #include "kio_error.h"
 #include "kio_interface.h"
 
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 
 #include <kstring.h>
 #include <kapp.h>

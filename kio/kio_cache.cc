@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#include <qdatetm.h>
+#include <qdatetime.h>
 #include <qtextstream.h>
 #include <qfile.h>
 
@@ -181,7 +181,7 @@ void KIOCache::readConfig( KConfig &config )
     QString path = kapp->localkdedir().data();
     path += "/share/apps/kio/cache/";
     cachePath = config.readEntry( "CachePath", path );
-    if ( cachePath.right(1) != '/')
+    if ( cachePath.right(1).at(1) != '/')
 	cachePath += "/";
     cacheEnabled = config.readBoolEntry("UseCache", true );
     maxURLLength = config.readNumEntry("maxURLLength", 80 );
@@ -310,7 +310,7 @@ QString KIOCache::storeIndex()
   
   kdebug( KDEBUG_INFO, 7002, "WRITING INDEX 2" );
 
-  if ( index_file.writeBlock( html.data(), html.size() ) != (int)html.size() )
+  if ( index_file.writeBlock( html.ascii(), html.length() + 1 ) != (int)html.length() + 1 )
   {
     index_file.close();
     return QString();

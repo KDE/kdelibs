@@ -8,8 +8,9 @@
 #include <kapp.h>
 #include <klined.h>
 
-KLineEditDlg::KLineEditDlg( const char *_text, const char* _value, QWidget *parent, bool _file_mode )
-        : QDialog( parent, 0L, true )
+KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value, 
+			    QWidget *parent, bool _file_mode )
+    : QDialog( parent, 0L, true )
 {
 //   setGeometry( x(), y(), 350, 100 );
   resize( 350, 100 );
@@ -26,10 +27,10 @@ KLineEditDlg::KLineEditDlg( const char *_text, const char* _value, QWidget *pare
 	      completion, SLOT (make_completion()));
     connect ( edit, SIGNAL (rotation()),
 	      completion, SLOT (make_rotation()));
-    connect ( edit, SIGNAL (textChanged(const char *)),
-	      completion, SLOT (edited(const char *)));
-    connect ( completion, SIGNAL (setText (const char *)),
-	      edit, SLOT (setText (const char *)));
+    connect ( edit, SIGNAL (textChanged(const QString&)),
+	      completion, SLOT (edited(const QString&)));
+    connect ( completion, SIGNAL (setText (const QString&)),
+	      edit, SLOT (setText (const QString&)));
   }
   else
     completion = 0L;

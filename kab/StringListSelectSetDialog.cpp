@@ -124,7 +124,7 @@ bool StringListSelectSetDialog::getSelection(list<string>& s)
     {
       if(lbStrings->isSelected(index))
 	{
-	  s.push_back(lbStrings->text(index));
+	  s.push_back(lbStrings->text(index).ascii());
 	}
     }
   if(s.size()==0)

@@ -192,7 +192,7 @@ QFont &KCharset::setQFont(QFont &fnt){
   /* If Qt doesn't support this charset we must use the hack */
   if (qtCharset()==QFont::AnyCharSet && faceStr){
      kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
-     faceStr.replace("\\*",fnt.family());
+     faceStr.replace(QRegExp("\\*"),fnt.family());
      kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
      fnt.setCharSet(QFont::AnyCharSet);
      fnt.setFamily(faceStr);
@@ -226,7 +226,7 @@ QFont &KCharset::setQFont(QFont &fnt){
       }	  
       else if (faceStr){ /* nothing else works - we must use the hack */
          kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
-         faceStr.replace("\\*",fnt.family());
+         faceStr.replace(QRegExp("\\*"),fnt.family());
          kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
          fnt.setCharSet(QFont::AnyCharSet);
          fnt.setFamily(faceStr);
@@ -256,7 +256,7 @@ bool KCharset::printable(int chr){
 
 QString KCharset::xCharset(){
 
-  if (!entry) return 0;
+  if (!entry) return QString();
   QString xch=data->toX(entry->name);
   if ( !xch.isEmpty() ) return xch; 
   if (strnicmp(entry->name,"iso-",4)==0){
@@ -307,14 +307,12 @@ KCharsetConversionResult::KCharsetConversionResult(
                                         const KCharsetConversionResult& kccr){
   cCharset=kccr.cCharset;
   cText=kccr.cText;
-  cText.detach();
 }
 
 KCharsetConversionResult& KCharsetConversionResult::operator =(
                            const KCharsetConversionResult& kccr){
   cCharset=kccr.cCharset;
   cText=kccr.cText;
-  cText.detach();
   return *this;
 }
 
@@ -492,7 +490,7 @@ QFont &KCharsets::setQFont(QFont &fnt){
 
 KCharset KCharsets::charset(const QFont& font){
 
-  kchdebug("Testing charset of font: %s, qtcharset=%i\n",font.family(),(int)font.charSet());
+  kchdebug("Testing charset of font: %s, qtcharset=%i\n",font.family().ascii(), font.charSet());
   if (font.charSet()!=QFont::AnyCharSet) return charset(font.charSet());
   const KCharsetEntry * ce=data->charsetOfFace(font.family());
   kchdebug("ce=%p ce->name=%s\n",ce,ce?ce->name:0);

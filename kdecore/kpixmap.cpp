@@ -311,7 +311,7 @@ void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
     }
 }
 
-bool KPixmap::load( const char *fileName, const char *format,
+bool KPixmap::load( const QString& fileName, const QString& format,
 		    int conversion_flags )
 {
 	QImageIO io( fileName, format );
@@ -325,7 +325,7 @@ bool KPixmap::load( const char *fileName, const char *format,
     return result;
 }
 
-bool KPixmap::load( const char *fileName, const char *format,
+bool KPixmap::load( const QString& fileName, const QString& format,
 		    ColorMode mode )
 {
     int conversion_flags = 0;

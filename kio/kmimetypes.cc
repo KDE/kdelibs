@@ -12,7 +12,7 @@
 #include <errno.h>
 
 #include <qstring.h>
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
@@ -562,7 +562,7 @@ bool KDELnkMimeType::runFSDevice( const char *_url, KSimpleConfig &cfg )
     QString readonly = cfg.readEntry( "ReadOnly" );
     bool ro = FALSE;
     if ( !readonly.isNull() )
-      if ( readonly == '1' )
+      if ( readonly == "1" )
 	ro = true;
 		    
     (void) new KAutoMount( ro, 0L, dev, 0L );
@@ -731,9 +731,9 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
       }
       
       QString readonly = cfg.readEntry( "ReadOnly" );
-      bool ro = FALSE;
+      bool ro = false;
       if ( !readonly.isNull() )
-	if ( readonly == '1' )
+	if ( readonly == "1" )
 	  ro = true;
 
       (void)new KAutoMount( ro, 0L, dev, 0L, false );

@@ -23,8 +23,8 @@
 
 #include <stdlib.h>
 
-#include <qapp.h>
-#include <qpushbt.h>
+#include <qapplication.h>
+#include <qpushbutton.h>
 
 #include <kapp.h>
 #include <drag.h>

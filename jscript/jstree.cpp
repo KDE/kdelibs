@@ -437,7 +437,6 @@ int JSAssignment::rightValue( JSScopeStack *_scopes, JSValue * )
 JSIdentifier::JSIdentifier( const char *_name )
 {
     name = _name;
-    name.detach();
 }
 
 int JSIdentifier::rightValue( JSScopeStack *_scopes, JSValue *_rv )

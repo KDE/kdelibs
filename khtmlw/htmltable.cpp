@@ -1723,8 +1723,8 @@ bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 	int capOffset = 0;
 	if ( caption && capAlign == HTMLClue::Top )
 	    capOffset = caption->getHeight();
-	QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
-	    black, white );
+	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
+	    Qt::black, Qt::white );
 	qDrawShadePanel( _painter, _tx, _ty + capOffset, width,
 	    rowHeights[totalRows] + border, colorGrp, false, border );
 

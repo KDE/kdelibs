@@ -104,6 +104,7 @@ KCombiView::~KCombiView()
 {
     KConfig *c = kapp->getConfig();
     QString oldgroup = c->group();
+    c->setGroup("KFileDialog Settings");
     c->writeEntry("PannerPosition", separatorPos(), true, true);
     c->setGroup(oldgroup);
 }

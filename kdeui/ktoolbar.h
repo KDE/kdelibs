@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.48  1999/02/10 19:51:23  koss
+// *** empty log message ***
+//
 // Revision 1.46  1998/11/25 13:22:00  radej
 // sven: Someone made some private things protected (was it me?).
 //
@@ -93,7 +96,7 @@
 class KToolBar;
 class KToolBoxManager;
 
-#define Item QWidget
+typedef QWidget Item;
 
 enum itemType {
     ITEM_LINED = 0,
@@ -150,14 +153,14 @@ class KToolBarButton : public QButton
 
  public:
    KToolBarButton(const QPixmap& pixmap, int id, QWidget *parent,
-                  const char *name=0L, int item_size = 26, const char *txt=0,
+                  const char *name=0L, int item_size = 26, const QString &txt=QString::null,
                   bool _mb = false);
    KToolBarButton(QWidget *parent=0L, const char *name=0L);
    ~KToolBarButton() {};
    void setEnabled(bool enable);
    
    virtual void setPixmap( const QPixmap & );
-   virtual void setText ( const char *text);
+   virtual void setText ( const QString& text);
    void on(bool flag);
    void toggle();
    void beToggle(bool);
@@ -285,7 +288,7 @@ public:
    * @return Returns item index
    */
   int insertButton(const QPixmap& pixmap, int ID, bool enabled = true,
-                   const char *ToolTipText = 0L, int index=-1 );
+                   const QString& ToolTipText = QString::null, int index=-1 );
   /**
    * This is the same as above, but with specified signals and
    * slots to which this button will be connected. Button emits
@@ -297,7 +300,8 @@ public:
   int insertButton(const QPixmap& pixmap, int ID, const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
-                   const char *tooltiptext = 0L, int index=-1 );
+                   const QString& tooltiptext = QString::null, 
+		   int index=-1 );
 
   /**
    * This inserts a button with popupmenu. Button will have small
@@ -308,7 +312,7 @@ public:
    * with tables, drawings etc. Just don't fiddle with events there.
    */
   int insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
-                   bool enabled, const char *_text, int index=-1);
+                   bool enabled, const QString&_text, int index=-1);
   
   /**
    * Inserts a KLined. You have to specify signals and slots to
@@ -322,11 +326,12 @@ public:
    * @see KLined
    * @return Returns item index
    */
-  int insertLined (const char *text, int ID,
+  int insertLined (const QString& text, int ID,
                    const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
-                   const char *toolTipText = 0L, int size = 70, int index =-1);
+                   const QString& toolTipText = QString::null, 
+		   int size = 70, int index =-1);
 
   /**
    * Inserts KComboBox with list. Can be writable, but cannot contain pixmaps. By
@@ -341,7 +346,7 @@ public:
   int insertCombo (QStrList *list, int id, bool writable,
                    const char *signal, QObject *recevier,
                    const char *slot, bool enabled=true,
-                   const char *tooltiptext=0L,
+                   const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
                    KCombo::Policy policy = KCombo::AtBottom);
 
@@ -351,10 +356,10 @@ public:
    * @see KCombo
    * @return Returns item index
    */
-  int insertCombo (const char *text, int id, bool writable,
+  int insertCombo (const QString& text, int id, bool writable,
                    const char *signal, QObject *recevier,
                    const char *slot, bool enabled=true,
-                   const char *tooltiptext=0L,
+                   const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
                    KCombo::Policy policy = KCombo::AtBottom);
   /**
@@ -471,18 +476,18 @@ public:
    * Sets text in Lined.
    * Cursor is set at end of text.
    */
-  void setLinedText (int id, const char *text);
+  void setLinedText (int id, const QString& text);
 
   /**
    * Returns Lined text.
    * If you want to store this text, you have to deep-copy it somwhere.
    */
-  const char *getLinedText (int id);
+  QString getLinedText (int id);
 
   /**
    * Inserts text in combo id with at position index.
    */
-  void insertComboItem (int id, const char *text, int index);
+  void insertComboItem (int id, const QString& text, int index);
 
   /**
    * Inserts list in combo id at position index
@@ -503,7 +508,7 @@ public:
    * Changes item index in Combo id to text.
    * index = -1 means current item (one displayed in the button).
    */
-  void changeComboItem  (int id, const char *text, int index=-1);
+  void changeComboItem  (int id, const QString& text, int index=-1);
 
   /**
    * Clears combo id.
@@ -516,7 +521,7 @@ public:
    * index = -1 means current item
    */
 
-  const char *getComboItem (int id, int index=-1);
+  QString getComboItem (int id, int index=-1);
 
   /**
    * This returns pointer to Combo. Example:
@@ -671,7 +676,7 @@ public:
    * Sets title for toolbar when it floats. Titles are however not (yet)
    * visible. You can't change toolbar's title while it's floating.
    */
-  void setTitle (const char *_title) {title = _title;};
+  void setTitle (const QString& _title) {title = _title;}
 
   /**
    * Enables or disables floating.
@@ -805,7 +810,7 @@ private:
     
   QList<KToolBarItem> items;
 
-  const char *title;
+  QString title;
   bool fullWidth;
   BarPosition position;
   bool moving;

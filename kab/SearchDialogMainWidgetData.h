@@ -15,8 +15,8 @@
 
 #include <qwidget.h>
 #include <qlabel.h>
-#include <qlined.h>
-#include <qcombo.h>
+#include <qlineedit.h>
+#include <qcombobox.h>
 
 class SearchDialogMainWidgetData : public QWidget
 {

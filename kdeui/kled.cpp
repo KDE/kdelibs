@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  1999/02/19 08:52:42  habenich
+ * ID und LOG tags included
+ *
  *
  *************************************************************************/
 
@@ -28,7 +31,7 @@
 #undef PAINT_BENCH
 
 #ifdef PAINT_BENCH
-#include <qdatetm.h>
+#include <qdatetime.h>
 #include <stdio.h>
 #endif
 

@@ -22,13 +22,13 @@ class KURLCompletion : public QObject
 public slots:
     void make_completion ();
     void make_rotation ();
-    void edited (const char *);
+    void edited (const QString&);
     
 signals:
-    void setText (const char *);
+    void setText (const QString&);
 	
 public:
-    KURLCompletion( const char *dir = "");
+    KURLCompletion( const QString& dir = QString::null);
     ~KURLCompletion();
 
 private:

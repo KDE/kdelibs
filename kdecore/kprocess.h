@@ -164,7 +164,7 @@ public:
 	 case the executable remains unchanged.) 
 
   */
-  bool setExecutable(const char *proc);
+  bool setExecutable(const QString& proc);
 
 
   /** Sets the executable and the command line argument list for this process 
@@ -177,7 +177,7 @@ public:
       </pre>
 
    */
-  KProcess &operator<<(const char *arg);
+  KProcess &operator<<(const QString& arg);
 
   /** Clears a command line argument list that has been set by using the "operator&lt;&lt;".
   */
@@ -531,7 +531,7 @@ public:
       the mechanism for finding a valid shell as described in the detailed
       description of this class.
   */
-  KShellProcess(const char *shellname=NULL);
+  KShellProcess(const QString& shellname=QString::null);
   ~KShellProcess();
 
   /** 
@@ -552,7 +552,7 @@ private:
   /** used by "searchShell" in order to find out whether the shell found is actually
       executable at all.
   */
-  bool isExecutable(const char *fname);
+  bool isExecutable(const QString& fname);
 
 
   char *shell;

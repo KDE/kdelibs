@@ -123,12 +123,12 @@ public:
     
 signals:    
     void finished();
-    void error( int _kerror, const char *_text );
+    void error( int _kerror, const QString& _text );
     void dirEntry( KDirEntry& _entry );
 
 public slots:
     void slotFinished();
-    void slotError( int _kerror, const char *_text );
+    void slotError( int _kerror, const QString& _text );
     void slotDirEntry(const char* _name, const char* _access, const char* _owner,
 		      const char* _group, const char* _date, int _size);
     

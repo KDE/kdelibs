@@ -1,4 +1,4 @@
-#include <qapp.h>
+#include <qapplication.h>
 #include <qwidget.h>
 #include "kpopmenu.h"
 

@@ -65,6 +65,7 @@
 #include <qkeycode.h>
 #include <qprinter.h>
 #include <qdrawutil.h>
+#include <qdragobject.h>
 
 #include <kurl.h>
 #include <kapp.h>
@@ -96,7 +97,7 @@ HTMLPendingFile::HTMLPendingFile( const char *_url, HTMLObject *_obj )
 ///////////////////////////
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
-    : KDNDWidget( parent, name, WPaintClever )
+    : QWidget( parent, name, WPaintClever )
 {
     jsEnvironment = 0;      
     leftBorder    = LEFT_BORDER;
@@ -264,7 +265,6 @@ void KHTMLWidget::cancelAllRequests()
 void KHTMLWidget::requestBackgroundImage( const char *_url )
 {
     bgPixmapURL = _url;
-    bgPixmapURL.detach();
     emit fileRequest( _url );
 }
 
@@ -401,9 +401,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 		if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
 		{
 		    pressedURL = obj->getURL();
-		    pressedURL.detach();
 		    pressedTarget = obj->getTarget();
-		    pressedTarget.detach();
 		}
 		
 		// Does the parent want to process the event now ?
@@ -447,7 +445,7 @@ void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
 		emit doubleClick( obj->getURL(), _mouse->button() );
 }
 
-void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
+void KHTMLWidget::mouseMoveEvent( QMouseEvent * _mouse )
 {
     if ( clue == 0 )
 	return;
@@ -549,27 +547,25 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
     // debugT("Testing Drag\n");
     
     // Did the user start a drag?
-    if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision && !drag )
+    if ( abs( x - press_x ) > 5 || abs( y - press_y ) > 5 )
     {
-        // debugT(">>>>>>>>>>>>>>>> Starting DND <<<<<<<<<<<<<<<<<<<<<<<<\n");
-	QPoint p = mapToGlobal( _mouse->pos() );
-
 	// Does the parent want to process the event now ?
 	if ( htmlView )
         {
-	    if ( htmlView->dndHook( pressedURL.data(), p ) )
+	    if ( htmlView->dndHook( pressedURL.data() ) )
 		return;
 	}
+	
+	QStrList urls;
+	urls.append(pressedURL.data());
 
-	int dx = - dndDefaultPixmap.width() / 2;
-	int dy = - dndDefaultPixmap.height() / 2;
-
-	startDrag( new KDNDIcon( dndDefaultPixmap, p.x() + dx, p.y() + dy ),
-		pressedURL.data(), pressedURL.length(), DndURL, dx, dy );
+	QUrlDrag *ud = new QUrlDrag(urls, this);
+	ud->setPixmap(dndDefaultPixmap);
+	ud->dragCopy();
     }
 }
 
-void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
+void KHTMLWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 {
     if ( clue == 0 )
 	return;
@@ -581,7 +577,7 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 	disconnect( this, SLOT( slotUpdateSelectText(int) ) );
     }
 
-    // Used to prevent dndMouseMoveEvent from initiating a drag before
+    // Used to prevent mouseMoveEvent from initiating a drag before
     // the mouse is pressed again.
     pressed = false;
 
@@ -623,14 +619,6 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 	emit URLSelected( pressedURL.data(), _mouse->button() );
     }
 }
-
-void KHTMLWidget::dragEndEvent()
-{
-    // Used to prevent dndMouseMoveEvent from initiating a new drag before
-    // the mouse is pressed again.
-    pressed = false;
-}
-
 
 //
 // Selection
@@ -953,7 +941,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	    break;
 
 	default:
-	    KDNDWidget::keyPressEvent( _ke );
+	    QWidget::keyPressEvent( _ke );
     }
 }
 
@@ -1287,8 +1275,8 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 
         // Set a default title
         KURL title(_url);
-        title.setReference(0);
-        title.setSearchPart(0);
+        title.setReference(QString::null);
+        title.setSearchPart(QString::null);
         emit setTitle( title.url().data() );
     }
     else
@@ -2548,8 +2536,8 @@ bool KHTMLWidget::URLVisited( const char *_url )
 void KHTMLWidget::setBaseURL( const char *_url)
 {
     baseURL = _url;
-    baseURL.setReference( 0 );
-    baseURL.setSearchPart( 0 );
+    baseURL.setReference( QString::null );
+    baseURL.setSearchPart( QString::null );
             
     QString p = baseURL.httpPath();
                

@@ -24,10 +24,10 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <qdir.h>
-#include <qfiledlg.h> 
+#include <qfiledialog.h> 
 
 #include "kfiledialog.h"
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 #include <kconfig.h>
 #include <kapp.h>
 #include <kurl.h>
@@ -79,10 +79,10 @@ int main(int argc, char **argv)
 
     switch (mode) {
     case Dirs:
-	name1 = KFileDialog::getDirectory(0);
+	name1 = KFileDialog::getDirectory(QString::null);
 	break;
     case Filter:
-	name1 = KFileDialog::getOpenFileURL(0, 
+	name1 = KFileDialog::getOpenFileURL(QString::null, 
 					   "*.cpp|C++-Files (*.cpp)\n"
 					   "*.h|Header-Files (*.h)\n"
 					   "*.o *.a *.lo *.la|Object-Files");
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         name1 = KFileDialog::getOpenFileURL("/etc/inetd/inetd.conf");
 	break;
     case Normal: {
-	KFileDialog dlg(0, 0, 0, 0, true);
+	KFileDialog dlg(QString::null, QString::null, 0, 0, true);
 	dlg.setSelection("../hello");
 	dlg.setFilter("*|All files");
 	dlg.exec();
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
         // this is how you activate the new preview module
         // 
         // KFilePreviewDialog::registerPreviewModule( "TEST", previewTestFile, PreviewPixmap );
-        KFilePreviewDialog::getOpenFileURL(0,"*.cpp|C++-Files (*.cpp)\n""*|All Files");
+        KFilePreviewDialog::getOpenFileURL(QString::null,"*.cpp|C++-Files (*.cpp)\n""*|All Files");
         break;
     }
     

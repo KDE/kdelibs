@@ -1,3 +1,7 @@
+1999-02-13  Kurt Granroth <granroth@kde.org>
+
+	* whole-lotta 'const char*' to QString conversions
+
 1998-12-07  Alex Zepeda  <garbanzo@hooked.net>
 
 	* kdebug.cpp: fix warnings.  Thanks gis.

@@ -19,6 +19,16 @@
 // $Id$
 //
 // $Log$
+// Revision 1.21.2.2  1999/02/14 02:05:39  granroth
+// Converted a lot of 'const char*' to 'QString'.  This compiles... but
+// it's entirely possible that nothing will run linked to it :-P
+//
+// Revision 1.21.2.1  1999/01/30 20:18:53  kulow
+// start porting to Qt2.0 beta
+//
+// Revision 1.21  1999/01/18 10:56:15  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
 // Revision 1.20  1999/01/15 09:30:33  kulow
 // it's official - kdelibs builds with srcdir != builddir. For this I
 // automocifized it, the generated rules are easier to maintain than
@@ -147,7 +157,7 @@ static QString stringToPrintable(const QString& s){
 }
 
 
-KConfig::KConfig( const char* pGlobalAppFile, const char* pLocalAppFile )
+KConfig::KConfig( const QString& pGlobalAppFile, const QString& pLocalAppFile )
 {
   if( pGlobalAppFile )
 	{
@@ -272,7 +282,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   QDictIterator<KEntryDict> aIt( data()->aGroupDict );
 
   // loop over all the groups
-  const char* pCurrentGroup;
+  QString pCurrentGroup;
   while( (pCurrentGroup = aIt.currentKey()) )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
@@ -344,7 +354,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 			  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
 			// not yet localized, but should be
 			*pStream << aWriteInnerIt.currentKey() << '[' 
-					 << data()->aLocaleString << ']' << "=" 
+					 << data()->aLocaleString.data() << ']' << "=" 
 					 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
 		  else
 			// need not be localized or already is

@@ -2,7 +2,7 @@
 #define test_kstatusbar_h
 
 #include <kmenubar.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <kstatusbar.h>
 #include <ktopwidget.h>
 

@@ -50,7 +50,7 @@ public:
       * be used.
       * @param catalogue the name of the language file
       */
-    KLocale( const char *catalogue = 0L );
+    KLocale( const char* catalogue = 0 );
 
     /**
       * Destructor.
@@ -69,7 +69,7 @@ public:
       * some phrases for your needs.
       * @param index the lookup text and default text, if not found
       */
-    const char *translate( const char *index );
+    const QString translate( const char *index );
     
     /**
       * Creates an alias for the string text. It will be translated
@@ -86,21 +86,21 @@ public:
       * Returns an alias, that you have set before or 0, if not
       * set. This method uses @ref QIntDict.
       */
-    const char* getAlias( long key ) const;
+    const QString getAlias( long key ) const;
 
     /**
       * Returns the language used by this object. The domain AND the
       * library translation must be available in this language. 
       * 'C' is default, if no other available.
       */
-    const QString& language() const { return lang; }
+    const QString language() const { return lang; }
 
     /**
       * Returns the languages selected by user.
       *
       * @return String containing locale codes separated by colons
       */
-    const QString& languages() const { return langs; }
+    const QString languages() const { return langs; }
 
     /**
       * Returns the languages selected by user.
@@ -114,7 +114,7 @@ public:
       * Special file with charset name must be available
       * "us-ascii" is default 
       */
-    const QString& charset() const { return chset; }
+    const QString charset() const { return chset; }
     
     /**
       * Returns the base directory, where you can find the language
@@ -147,20 +147,20 @@ public:
        LC_TIME         Changes the behavior of the strftime() function.
        LC_ALL          Changes all of the above.
     **/
-    const char *getLocale(QString CATEGORY);
+    const QString getLocale(const QString& CATEGORY);
 
     /** 
      * returns the parts of the parameter str understood as language setting
      * the format is language_country.charset
      */ 
-    static void splitLocale(const QString& str,QString& language,QString& country,
+    static void splitLocale(const QString& str,QString& language, QString& country,
                      QString &charset);
 
     /** 
      * does the same as the above, just reverse
      */
     static const QString mergeLocale(const QString& lang, const QString& country,
-			      const QString &charset);
+			      const QString& charset);
 
     /**
      * if the application can handle localized numeric values, it should

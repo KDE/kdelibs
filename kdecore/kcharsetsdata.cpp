@@ -442,13 +442,14 @@ const char * KCharsetConverterData::convert(const char * str
 }
 
 
-const KCharsetConversionResult & KCharsetConverterData::convert(unsigned code){
-unsigned chr;
-const unsigned *ptr;
+const KCharsetConversionResult & KCharsetConverterData::convert(unsigned code)
+{
+  unsigned chr;
+  const unsigned *ptr;
+  
+  kchdebug("KCCS:convert(code) ");
 
-   kchdebug("KCCS:convert(code) ");
-
-   if (convFromUniDict){
+  if (convFromUniDict){
      ptr=(*convFromUniDict)[code];
      if (!ptr) chr=0;
      else chr=*ptr;
@@ -466,7 +467,7 @@ const unsigned *ptr;
 	else tempResult->cText+="?";
       }  
       else tempResult->cText+="?";
-   else tempResult->cText=chr;
+   else tempResult->cText.setNum(chr);
    
    return *tempResult;
 }
@@ -718,7 +719,7 @@ const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
     if (!faceStr || faceStr[0]==0) return charsetEntry(it->currentKey());
     kchdebug("testing if it is %s (%s)...",(const char *)it->currentKey(),faceStr);
     QRegExp rexp(faceStr,FALSE,TRUE);
-    kchdebug("regexp: %s face: %s\n",rexp.pattern(),(const char *)face);
+    kchdebug("regexp: %s face: %s\n",rexp.pattern().ascii(), face.ascii());
     if (face.contains(rexp)){
       kchdebug("Yes, it is\n");
       return charsetEntry(it->currentKey());

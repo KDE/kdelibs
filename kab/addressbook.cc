@@ -1052,111 +1052,111 @@ bool AddressBook::nameOfField(const string& field, string& name)
       names=new map<string, string, less<string> >;
       if(!names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("name", i18n("Name"))).second
+	  ("name", i18n("Name").data())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("firstname", i18n("First name"))).second
+	  ("firstname", i18n("First name").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("additionalName", i18n("Additional name"))).second
+	  ("additionalName", i18n("Additional name").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("namePrefix", i18n("Name prefix"))).second
+	  ("namePrefix", i18n("Name prefix").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("fn", i18n("Formatted name"))).second
+	  ("fn", i18n("Formatted name").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("comment", i18n("Comment"))).second
+	  ("comment", i18n("Comment").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("org", i18n("Organization"))).second
+	  ("org", i18n("Organization").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("orgUnit", i18n("Unit"))).second
+	  ("orgUnit", i18n("Unit").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("orgSubUnit", i18n("Subunit"))).second
+	  ("orgSubUnit", i18n("Subunit").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("title", i18n("Title"))).second
+	  ("title", i18n("Title").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("role", i18n("Role"))).second
+	  ("role", i18n("Role").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("birthday", i18n("Birthday"))).second
+	  ("birthday", i18n("Birthday").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("talk", i18n("Talk addresses"))).second
+	  ("talk", i18n("Talk addresses").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("deliveryLabel", i18n("Delivery label"))).second
+	  ("deliveryLabel", i18n("Delivery label").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("email", i18n("Email address"))).second
+	  ("email", i18n("Email address").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("email2", i18n("Second email address"))).second
+	  ("email2", i18n("Second email address").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("email3", i18n("Third email address"))).second
+	  ("email3", i18n("Third email address").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("emails", i18n("Email addresses"))).second
+	  ("emails", i18n("Email addresses").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("address", i18n("Address"))).second
+	  ("address", i18n("Address").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("town", i18n("City/Town"))).second
+	  ("town", i18n("City/Town").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("telephone", i18n("Telephone"))).second
+	  ("telephone", i18n("Telephone").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("fax", i18n("Fax number"))).second
+	  ("fax", i18n("Fax number").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("modem", i18n("Modem number"))).second
+	  ("modem", i18n("Modem number").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("URL", i18n("Homepage URL"))).second
+	  ("URL", i18n("Homepage URL").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("zip", i18n("Zip/postal code"))).second
+	  ("zip", i18n("Zip/postal code").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("state", i18n("State/province"))).second
+	  ("state", i18n("State/province").ascii())).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("country", i18n("Country"))).second
+	  ("country", i18n("Country").ascii())).second
 	 )
 	{ // ----- all errors here are typos:
 	  CHECK(false);

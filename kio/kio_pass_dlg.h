@@ -6,7 +6,7 @@
 bool open_PassDlg( const char *_head, string& _user, string& _pass );
 
 #include <qdialog.h>
-#include <qlined.h>
+#include <qlineedit.h>
 
 class KIOPassDlg : public QDialog
 {
