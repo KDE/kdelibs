@@ -165,6 +165,10 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 
 void KConfig::reparseConfiguration()
 {
+  // do this right away to avoid infinite loops inside parseConfigFiles()
+  // if it chooses to call putData or lookupData or something which will
+  // call cacheCheck() --> reparseConfiguration() --> you get it
+  isCached = true;
   aEntryMap.clear();
 
   // add the "default group" marker to the map
@@ -172,7 +176,6 @@ void KConfig::reparseConfiguration()
   aEntryMap.insert(groupKey, KEntry());
 
   parseConfigFiles();
-  isCached = true;
 }
 
 KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
