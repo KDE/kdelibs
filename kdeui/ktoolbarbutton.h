@@ -254,6 +254,10 @@ public:
 
 signals:
   void clicked(int);
+  /**
+   * @since 3.4
+   */
+  void buttonClicked(int, Qt::ButtonState);
   void doubleClicked(int);
   void pressed(int);
   void released(int);
@@ -275,6 +279,10 @@ protected:
   void enterEvent(QEvent *e);
   void drawButton(QPainter *p);
   bool eventFilter (QObject *o, QEvent *e);
+  /// @since 3.4
+  void mousePressEvent( QMouseEvent * );
+  /// @since 3.4
+  void mouseReleaseEvent( QMouseEvent * );
   void showMenu();
   QSize sizeHint() const;
   QSize minimumSizeHint() const;

@@ -227,7 +227,7 @@ void KToggleAction::updateChecked( int id )
 void KToggleAction::slotActivated()
 {
   setChecked( !isChecked() );
-  emit activated();
+  KAction::slotActivated();
   emit toggled( isChecked() );
 }
 

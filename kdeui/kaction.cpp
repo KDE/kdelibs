@@ -90,7 +90,6 @@ public:
 
   KShortcut m_cut;
   KShortcut m_cutDefault;
-  KAction::ActivationReason m_activationReason;
 
   bool m_configurable;
 
@@ -222,9 +221,9 @@ KAction::~KAction()
     if ( m_parentCollection ) {
         m_parentCollection->take( this );
 
-	const QValueList<KAccel*> & accelList = d->m_kaccelList;
-	QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
-	const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
+        const QValueList<KAccel*> & accelList = d->m_kaccelList;
+        QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
+        const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
 
         const char * const namePtr = name();
         for (; itr != itrEnd; ++itr )
@@ -246,7 +245,6 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
                   const QObject* receiver, const char* slot )
 {
     d->m_cutDefault = cut;
-    d->m_activationReason = KAction::UnknownActivation;
 
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
     kdDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
@@ -652,12 +650,12 @@ int KAction::plug( QWidget *w, int index )
         else
           instance = KGlobal::instance();
         id = menu->insertItem( d->iconSet( KIcon::Small, 0, instance ), d->text(), this,//dsweet
-                                 SLOT( slotActivated() ), keyQt,
+                                 SLOT( slotPopupActivated() ), keyQt,
                                  -1, index );
     }
     else
         id = menu->insertItem( d->text(), this,
-                               SLOT( slotActivated() ),  //dsweet
+                               SLOT( slotPopupActivated() ),
                                keyQt, -1, index );
 
     // If the shortcut is already in a KAccel object, then
@@ -707,7 +705,11 @@ int KAction::plug( QWidget *w, int index )
                            SLOT( slotActivated() ),
                            d->isEnabled(), d->plainText(), index, instance );
     }
-    bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
+
+    KToolBarButton* ktb = bar->getButton(id_);
+    connect( ktb, SIGNAL( buttonClicked(int, Qt::ButtonState) ),
+             this, SLOT( slotButtonClicked(int, Qt::ButtonState) ) );
+    ktb->setName( QCString("toolbutton_")+name() );
 
     if ( !d->whatsThis().isEmpty() )
         QWhatsThis::add( bar->getButton(id_), whatsThisWithIcon() );
@@ -1081,7 +1083,7 @@ void KAction::addContainer( QWidget* c, QWidget* w )
 
 void KAction::activate()
 {
-  d->m_activationReason = KAction::EmulatedActivation;
+  emit activated( KAction::EmulatedActivation, Qt::NoButton );
   slotActivated();
 }
 
@@ -1091,21 +1093,60 @@ void KAction::slotActivated()
   if ( senderObj )
   {
     if ( ::qt_cast<KAccelPrivate *>( senderObj ) )
-      d->m_activationReason = KAction::AccelActivation;
-    else if ( ::qt_cast<QSignal *>( senderObj ) )
-      d->m_activationReason = KAction::PopupMenuActivation;
+        emit activated( KAction::AccelActivation, Qt::NoButton );
     else if ( ::qt_cast<KToolBarButton *>( senderObj ) )
-      d->m_activationReason = KAction::ToolBarActivation;
-    else
-      d->m_activationReason = KAction::UnknownActivation;
+        emit activated( KAction::ToolBarActivation, Qt::NoButton );
   }
   emit activated();
 }
 
-KAction::ActivationReason KAction::activationReason() const
+// This catches signals emitted by KActions inserted into QPopupMenu
+// We do crude things inside it, because we need to know which
+// QPopupMenu emitted the signal. We need to be sure that it is
+// only called by QPopupMenus, we plugged us in.
+void KAction::slotPopupActivated()
 {
-  return d->m_activationReason;
+  if( ::qt_cast<QSignal *>(sender()))
+  {
+    int id = dynamic_cast<const QSignal *>(sender())->value().toInt();
+    int pos = findContainer(id);
+    if(pos != -1)
+    {
+      QPopupMenu* qpm = dynamic_cast<QPopupMenu *>( container(pos) );
+      if(qpm)
+      {
+        KPopupMenu* kpm = dynamic_cast<KPopupMenu *>( qpm );
+        Qt::ButtonState state;
+        if ( kpm ) // KPopupMenu? Nice, it stores the state.
+            state = kpm->state();
+        else { // just a QPopupMenu? We'll ask for the state now then (small race condition?)
+            kdDebug(129) << "KAction::slotPopupActivated not a KPopupMenu -> using keyboardMouseState()" << endl;
+            state = KApplication::keyboardMouseState();
+        }
+        emit activated( KAction::PopupMenuActivation, state );
+        slotActivated();
+        return;
+      }
+    }
+  }
+
+  kdWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QPopupMenus which are in containers. Use slotActivated instead."<<endl;
+  emit activated( KAction::PopupMenuActivation, Qt::NoButton );
+  slotActivated();
 }
+
+void KAction::slotButtonClicked( int, Qt::ButtonState state )
+{
+  kdDebug(129) << "slotButtonClicked() state=" << state << endl;
+  emit activated( KAction::ToolBarActivation, state );
+
+  // LeftButton is still connected to slotActivated directly,
+  // and RightButton isn't really an activation
+  if ( state & Qt::MidButton ) {
+      slotActivated();
+  }
+}
+
 
 void KAction::slotDestroyed()
 {
@@ -1154,6 +1195,26 @@ int KAction::findContainer( const QWidget* widget ) const
   while( it != itEnd )
   {
     if ( (*it).m_representative == widget || (*it).m_container == widget )
+      return pos;
+    ++it;
+    ++pos;
+  }
+
+  return -1;
+}
+
+int KAction::findContainer( const int id ) const
+{
+  int pos = 0;
+
+  const QValueList<KActionPrivate::Container> & containers = d->m_containers;
+
+  QValueList<KActionPrivate::Container>::ConstIterator it = containers.constBegin();
+  const QValueList<KActionPrivate::Container>::ConstIterator itEnd = containers.constEnd();
+
+  while( it != itEnd )
+  {
+    if ( (*it).m_id == id )
       return pos;
     ++it;
     ++pos;

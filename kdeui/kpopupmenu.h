@@ -229,6 +229,18 @@ public:
      */
     static int contextMenuFocusItem();
 
+    /**
+     * Reimplemented for internal purposes
+     * @since 3.4
+     */
+    virtual void activateItemAt(int index);
+    /**
+     * Return the state of the mouse button and keyboard modifiers
+     * when the last menuitem was activated.
+     * @since 3.4
+     */
+    Qt::ButtonState state() const;
+
 signals:
     /**
      * connect to this signal to be notified when a context menu is about to be shown
@@ -242,6 +254,8 @@ signals:
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent* e);
+    /// @since 3.4
+    virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual bool focusNextPrevChild( bool next );
     virtual void contextMenuEvent(QContextMenuEvent *e);

@@ -483,18 +483,12 @@ public:
 
 
     void unplugAll();
-    
+
     /**
     * @since 3.4
     */
     enum ActivationReason { UnknownActivation, EmulatedActivation, AccelActivation, PopupMenuActivation, ToolBarActivation };
 
-    /**
-    * Returns what triggered the last activated() signal.
-    * @since 3.4
-    */
-    ActivationReason activationReason() const;
-    
 public slots:
     /**
      * Sets the text associated with this action. The text is used for menu
@@ -555,12 +549,17 @@ protected slots:
     virtual void slotDestroyed();
     virtual void slotKeycodeChanged();
     virtual void slotActivated();
+    /// @since 3.4
+    void slotPopupActivated(); // KDE4: make virtual
+    /// @since 3.4
+    void slotButtonClicked( int, Qt::ButtonState state ); // KDE4: make virtual
 
 protected:
     KToolBar* toolBar( int index ) const;
     QPopupMenu* popupMenu( int index ) const;
     void removeContainer( int index );
     int findContainer( const QWidget* widget ) const;
+    int findContainer( int id ) const;
     void plugMainWindowAccel( QWidget *w );
 
     void addContainer( QWidget* parent, int id );
@@ -585,7 +584,25 @@ protected:
     const KGuiItem& guiItem() const;
 
 signals:
+    /**
+     * Emitted when this action is activated
+     */
     void activated();
+    /**
+     * This signal allows to know the reason why an action was activated:
+     * whether it was due to a toolbar button, popupmenu, keyboard accel, or programmatically.
+     * In the first two cases, it also allows to know which mouse button was
+     * used (Left or Middle), and whether keyboard modifiers were pressed (e.g. CTRL).
+     *
+     * Note that this signal is emitted before the normal activated() signal.
+     * Yes, BOTH signals are always emitted, so that connecting to activated() still works.
+     * Applications which care about reason and state can either ignore the activated()
+     * signal for a given action and react to this one instead, or store the
+     * reason and state until the activated() signal is emitted.
+     *
+     * @since 3.4
+     */
+    void activated( KAction::ActivationReason reason, Qt::ButtonState state );
     void enabled( bool );
 
 private:

@@ -87,7 +87,7 @@ public:
   KToolBar::IconText m_iconText;
   int m_iconSize;
   QSize size;
-  
+
   QPoint m_mousePressPos;
 
   KInstance  *m_instance;
@@ -426,9 +426,10 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
       }
     }
 
-    if ((ev->type() == QEvent::MouseButtonPress ||
+    if (d->m_isRadio &&
+	(ev->type() == QEvent::MouseButtonPress ||
          ev->type() == QEvent::MouseButtonRelease ||
-         ev->type() == QEvent::MouseButtonDblClick) && d->m_isRadio && isOn())
+         ev->type() == QEvent::MouseButtonDblClick) && isOn())
       return true;
 
     // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
@@ -440,6 +441,31 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
   }
 
   return QToolButton::eventFilter(o, ev);
+}
+
+void KToolBarButton::mousePressEvent( QMouseEvent * e )
+{
+  if ( e->button() == MidButton )
+  {
+    // Get QToolButton to show the button being down while pressed
+    QMouseEvent ev( QEvent::MouseButtonPress, e->pos(), e->globalPos(), LeftButton, e->state() );
+    QToolButton::mousePressEvent(&ev);
+    return;
+  }
+  QToolButton::mousePressEvent(e);
+}
+
+void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
+{
+  Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & KeyButtonMask));
+  emit buttonClicked( d->m_id, state );
+  if ( e->button() == MidButton )
+  {
+    QMouseEvent ev( QEvent::MouseButtonRelease, e->pos(), e->globalPos(), LeftButton, e->state() );
+    QToolButton::mouseReleaseEvent(&ev);
+    return;
+  }
+  QToolButton::mouseReleaseEvent(e);
 }
 
 void KToolBarButton::drawButton( QPainter *_painter )

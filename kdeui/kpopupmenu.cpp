@@ -126,6 +126,7 @@ public:
         , shortcuts(false)
         , autoExec(false)
         , lastHitIndex(-1)
+        , state(Qt::NoButton)
         , m_ctxMenu(0)
     {}
 
@@ -147,6 +148,7 @@ public:
     QString originalText;
 
     int lastHitIndex;
+    Qt::ButtonState state;
 
     // support for RMB menus on menus
     QPopupMenu* m_ctxMenu;
@@ -174,7 +176,7 @@ KPopupMenu::~KPopupMenu()
         KPopupMenuPrivate::s_contextedMenu = 0;
         KPopupMenuPrivate::s_highlightedItem = -1;
     }
-    
+
     delete d;
 }
 
@@ -272,11 +274,24 @@ void KPopupMenu::closeEvent(QCloseEvent*e)
     QPopupMenu::closeEvent(e);
 }
 
+void KPopupMenu::activateItemAt(int index)
+{
+    d->state = Qt::NoButton;
+    QPopupMenu::activateItemAt(index);
+}
+
+Qt::ButtonState KPopupMenu::state() const
+{
+    return d->state;
+}
+
 void KPopupMenu::keyPressEvent(QKeyEvent* e)
 {
+    d->state = Qt::NoButton;
     if (!d->shortcuts) {
         // continue event processing by Qpopup
         //e->ignore();
+        d->state = e->state();
         QPopupMenu::keyPressEvent(e);
         return;
     }
@@ -294,6 +309,7 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
         resetKeyboardVars();
         // continue event processing by Qpopup
         //e->ignore();
+        d->state = e->state();
         QPopupMenu::keyPressEvent(e);
         return;
     } else if ( key == Key_Shift || key == Key_Control || key == Key_Alt || key == Key_Meta )
@@ -486,6 +502,13 @@ void KPopupMenu::mousePressEvent(QMouseEvent* e)
     QPopupMenu::mousePressEvent(e);
 }
 
+void KPopupMenu::mouseReleaseEvent(QMouseEvent* e)
+{
+    // Save the button, and the modifiers from state()
+    d->state = Qt::ButtonState(e->button() | (e->state() & KeyButtonMask));
+    QPopupMenu::mouseReleaseEvent(e);
+}
+
 QPopupMenu* KPopupMenu::contextMenu()
 {
     if (!d->m_ctxMenu)
@@ -609,10 +632,10 @@ void KPopupMenu::contextMenuEvent(QContextMenuEvent* e)
             showCtxMenu(e->pos());
         }
         else if (actItem != -1)
-        {   
+        {
             showCtxMenu(itemGeometry(actItem).center());
         }
-    
+
         e->accept();
         return;
     }
