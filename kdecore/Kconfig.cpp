@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.33  1997/09/24 19:27:23  kalle
+ * Whitespace in config entries is a little less critical now (by Jan Kneschke)
+ *
  * Revision 1.32  1997/09/24 18:58:53  kalle
  * Iterators
  *
@@ -633,8 +636,13 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 	  pCurrentGroupDict = pNewDict;
 	}
 
+  // if this is localized entry, add the locale
+  QString aLocalizedKey = rKey.copy();
+  if( bNLS )
+	aLocalizedKey = aLocalizedKey + '[' + pData->aLocaleString + ']';
+
   // try to retrieve the current entry for this key
-  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ rKey.data() ];
+  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey.data() ];
   if( pEntryData )
 	{
 	  // there already is such a key
@@ -656,7 +664,7 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 		pEntry->bDirty = TRUE;
 
 	  // insert the new entry into group dictionary
-	  pCurrentGroupDict->insert( rKey.data(), pEntry );
+	  pCurrentGroupDict->insert( aLocalizedKey, pEntry );
 	}
 
 
