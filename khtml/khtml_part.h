@@ -742,6 +742,8 @@ public:
    */
   virtual QString selectedText() const;
 
+  QString selectedTextAsHTML() const;
+  QString selectedTextAsKWordText() const;
   /**
    * Returns the selected part of the HTML.
    */

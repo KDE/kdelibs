@@ -465,6 +465,20 @@ DOMString TextImpl::toString() const
     return escapeHTML( nodeValue() );
 }
 
+DOMString TextImpl::toString(long long startOffset, long long endOffset) const
+{
+    // FIXME: substitute entity references as needed!
+
+    DOMString str = nodeValue();
+    if(endOffset >=0 || startOffset >0)
+	str = str.copy(); //we are going to modify this, so make a copy.  I hope I'm doing this right.
+    if(endOffset >= 0)
+        str.truncate(endOffset); 
+    if(startOffset > 0)    //note the order of these 2 'if' statements so that it works right when n==m_startContainer==m_endContainer
+        str.remove(0, startOffset);
+    return escapeHTML( str );
+}
+
 // ---------------------------------------------------------------------------
 
 DOMString CDATASectionImpl::nodeName() const

@@ -30,6 +30,7 @@
 #include "dom_textimpl.h"
 #include "dom_xmlimpl.h"
 #include "html/html_elementimpl.h"
+#include "misc/htmltags.h"
 
 using namespace DOM;
 
@@ -845,10 +846,191 @@ DOMString RangeImpl::toString( int &exceptioncode )
     return text;
 }
 
-DOMString RangeImpl::toHTML(  )
+DOMString RangeImpl::toHTML( int &exceptioncode )
 {
-    // ### implement me!!!!
-    return DOMString();
+    bool hasHtmlTag = false;
+    bool hasBodyTag = false;
+    //FIXME:  What is this section of code below exactly?  Do I want it here?
+    if (m_detached) {
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return DOMString();
+    }
+    DOMString text = "";
+    NodeImpl *n = m_startContainer;
+    int num_tables=0;
+    int depth_difference = 0;
+    int lowest_depth_difference = 0; 
+    while(n) {
+        /* First, we could have an tag <tagname key=value>otherstuff</tagname> */
+	if(n->nodeType() == DOM::Node::ELEMENT_NODE) {
+	    int elementId = static_cast<ElementImpl *>(n)->id();
+            if(elementId == ID_TABLE) num_tables++;
+	    if(elementId == ID_BODY) hasBodyTag = true;
+	    if(elementId == ID_HTML) hasHtmlTag = true;
+	    if(num_tables==0 && ( elementId == ID_TD || elementId == ID_TR || elementId == ID_TH || elementId == ID_TBODY || elementId == ID_TFOOT || elementId == ID_THEAD)) num_tables++;
+	    if(!( !n->hasChildNodes() && (elementId == ID_H1 || elementId == ID_H2 || elementId == ID_H3 || elementId == ID_H4 || elementId ==ID_H5))) {  //Don't add <h1/>  etc.  Just skip these nodes just to make the output html a bit nicer.
+	       text += static_cast<ElementImpl *>(n)->openTagStartToString(true /*safely expand img urls*/); // adds "<tagname key=value"
+	       if(n->hasChildNodes()) {
+	            depth_difference++;
+   	            text += ">";
+                } else {
+          	    text += "/>";
+	        }
+	    }
+	} else 
+        if(n->nodeType() == DOM::Node::TEXT_NODE ||
+           n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
+            if(n->nodeType() == DOM::Node::CDATA_SECTION_NODE) text += "<![CDATA[ ";
+	    long long startOffset = (n == m_startContainer)?(long long)m_startOffset:-1;
+	    long long endOffset = (n == m_endContainer)?(long long) m_endOffset:-1;
+            text += static_cast<TextImpl *>(n)->toString(startOffset, endOffset); //Note this should always work since CDataImpl inherits TextImpl
+	    if(n->nodeType() == DOM::Node::CDATA_SECTION_NODE) text += " ]]>";
+	    if(n == m_endContainer) {
+		    break;
+	    }
+        }   
+        if (n->parentNode() == m_endContainer && !n->nextSibling()) {
+            break;
+        }
+        //if (n == m_endContainer) break;
+        NodeImpl *next = n->firstChild();
+        if (!next) next = n->nextSibling();
+
+        while( !next && n->parentNode() ) {
+            n = n->parentNode();
+  	    if(n->nodeType() == DOM::Node::ELEMENT_NODE) {
+  		text += "</";
+	        text += static_cast<ElementImpl *>(n)->tagName();
+	        int elementId = static_cast<ElementImpl *>(n)->id();
+                if(elementId == ID_TABLE) num_tables--;
+	        depth_difference--;
+		if(lowest_depth_difference > depth_difference) lowest_depth_difference=depth_difference;
+	        if(num_tables==0 && ( elementId == ID_TD || elementId == ID_TR || elementId == ID_TH || elementId == ID_TBODY || elementId == ID_TFOOT || elementId == ID_THEAD)) num_tables--;
+ 	        text += ">";
+	    }
+            next = n->nextSibling();
+        }
+        n = next;
+    }
+
+    //We have the html in the selection.  But now we need to properly add the opening and closing tags.
+    //For example say we have:   "Hello <b>Mr. John</b> How are you?"  and we select "John" or even
+    //"John</b> How"  and copy.  We want to return "<b>John</b>" and "<b>John</b> How" respectively
+
+    //To do this, we need to go up the tree from the start, and prepend those tags.
+    //Imagine our selection was this:
+    //
+    //  hello</b></p><p>there
+    //
+    //  The difference in depths between the start and end is -1, and the lowest depth
+    //  difference from the starting point is -2
+    //  
+    //  So from the start of the selection, we want to go down to the lowest_depth_difference
+    //  and prepend those tags.  (<p><b>)
+    //
+    //  From the end of the selection, we want to also go down to the lowest_depth_difference.
+    //  We know the depth of the end of the selection - i.e. depth_difference.
+    //
+    //  
+    n = m_startContainer;
+    int startdepth = 0; //by definition - we are counting from zero.
+    while((n = n->parentNode()) && startdepth>lowest_depth_difference) {
+      if(n->nodeType() == DOM::Node::ELEMENT_NODE) { //This should always be true.. right? 
+	  switch (static_cast<ElementImpl *>(n)->id()) {
+	      case ID_TABLE:
+		 num_tables--;
+		 break;
+	      case ID_BODY:
+	         hasBodyTag = true;
+		 break;
+	      case ID_HTML: 
+	         hasHtmlTag = true;
+		 break;
+	  }
+          text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text; // prepends "<tagname key=value>"
+      }
+      startdepth--;
+    }
+    n = m_endContainer;
+    while( depth_difference>lowest_depth_difference && (n = n->parentNode())) {
+      if(n->nodeType() == DOM::Node::ELEMENT_NODE) { //This should always be true.. right?
+	  switch (static_cast<ElementImpl *>(n)->id()) {
+	      case ID_TABLE:
+		num_tables++;
+	      default:
+	         text += "</";
+	         text += static_cast<ElementImpl *>(n)->tagName();
+ 	         text += ">";
+	  }
+      }
+      depth_difference--;
+    }
+
+    // Now our text string is the same depth on both sides, with nothing lower (in other words all the
+    // tags in it match up.)  This also means that the end value for n in the first loop is a sibling of the
+    // end value for n in the second loop.
+    // 
+    // We now need to go down the tree, and for certain tags, add them in on both ends of the text.
+    // For example, if have:  "<b>hello</b>"  and we select "ll", then we want to go down the tree and 
+    // add "<b>" and "</b>" to it, to produce "<b>ll</b>".
+    //
+    // I just guessed at which tags you'd want to keep (bold, italic etc) and which you wouldn't (tables etc).
+    // It's just wild guessing.  feel free to change.
+    //
+    // Note we can carry on with the value of n
+    if(n) {
+      while((n = n->parentNode())) {
+          if(n->nodeType() == DOM::Node::ELEMENT_NODE) { //This should always be true.. right?
+	      int elementId = static_cast<ElementImpl *>(n)->id();
+	      switch (elementId) {
+ 	        case ID_TABLE:
+		case ID_TD:
+		case ID_TR:
+		case ID_TH:
+		case ID_TBODY:
+		case ID_TFOOT:
+		case ID_THEAD:
+		    if(num_tables>0) {
+		        if(elementId == ID_TABLE) num_tables--;
+			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+			text += "</";
+			text += static_cast<ElementImpl *>(n)->tagName();
+			text += ">";
+
+		    }
+		    break;
+		case ID_B:
+		case ID_I:
+		case ID_UL:
+		case ID_FONT:
+		case ID_S:
+		case ID_STRONG:
+		case ID_STRIKE:
+		case ID_DEL:
+		case ID_A:
+		case ID_H1:
+		case ID_H2:
+		case ID_H3:
+		case ID_H4:
+		case ID_H5:
+		    //should small, etc be here?   so hard to decide.  this is such a hack :(
+		    //There's probably tons of others you'd want here.
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+		    text += "</";
+		    text += static_cast<ElementImpl *>(n)->tagName();
+		    text += ">";
+                    break;
+	      }	    
+	  }
+      }
+    }
+
+
+    if(!hasBodyTag) text = DOMString("<html><body>") + text + "</body></html>";
+    else if(!hasHtmlTag) text = DOMString("<html>") + text + "</html>";
+    
+    return text;
+
 }
 
 DocumentFragment RangeImpl::createContextualFragment ( const DOMString &html, int &exceptioncode )

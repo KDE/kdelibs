@@ -20,6 +20,7 @@
  <Separator weakSeparator="1" />
  <Action name="saveimageas" />
  <Action name="sendimage" />
+ <Action name="copyimage" />
  <Action name="copyimagelocation" />
  <Action name="viewimage" />
  <Separator weakSeparator="1" />

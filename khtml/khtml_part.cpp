@@ -3192,6 +3192,11 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   }
 }
 
+QString KHTMLPart::selectedTextAsHTML() const
+{
+  return selection().toHTML().string();
+}
+
 QString KHTMLPart::selectedText() const
 {
   bool hasNewLine = true;

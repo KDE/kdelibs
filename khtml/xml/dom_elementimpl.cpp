@@ -25,6 +25,7 @@
 //#define EVENT_DEBUG
 #include "dom/dom_exception.h"
 #include "dom/dom_node.h"
+#include "dom/html_image.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
@@ -32,6 +33,7 @@
 
 #include "html/dtd.h"
 #include "html/htmlparser.h"
+#include "html/html_imageimpl.h"
 
 #include "rendering/render_canvas.h"
 #include "misc/htmlhashes.h"
@@ -634,7 +636,7 @@ void ElementImpl::createDecl( )
     m_styleDecls->setStrictParsing( !getDocument()->inCompatMode() );
 }
 
-void ElementImpl::dispatchAttrRemovalEvent(NodeImpl::Id /*id*/, DOMStringImpl */*value*/)
+void ElementImpl::dispatchAttrRemovalEvent(NodeImpl::Id /*id*/, DOMStringImpl * /*value*/)
 {
     // ### enable this stuff again
     if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
@@ -644,7 +646,7 @@ void ElementImpl::dispatchAttrRemovalEvent(NodeImpl::Id /*id*/, DOMStringImpl */
     //attr->value(), getDocument()->attrName(attr->id()),MutationEvent::REMOVAL),exceptioncode);
 }
 
-void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl */*value*/)
+void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl * /*value*/)
 {
     // ### enable this stuff again
     if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
@@ -654,7 +656,7 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl *
    //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
 }
 
-DOMString ElementImpl::openTagStartToString() const
+DOMString ElementImpl::openTagStartToString(bool expandurls) const
 {
     DOMString result = DOMString("<") + tagName();
 
@@ -675,11 +677,48 @@ DOMString ElementImpl::openTagStartToString() const
 		if (!attribute->value().isNull()) {
 		    result += "=\"";
 		    // FIXME: substitute entities for any instances of " or '
-		    result += attribute->value();
+		    // Expand out all urls, i.e. the src and href attributes
+		    if(expandurls && ( attribute->id() == ATTR_SRC || attribute->id() == ATTR_HREF))
+			if(getDocument()) {
+                            //We need to sanitize the urls - strip out the passwords.
+			    //FIXME:   are src=  and href=  the only places that might have a password and need to be sanitized?
+                            KURL safeURL(getDocument()->completeURL(attribute->value().string()));
+                            safeURL.setPass(QString::null);
+			    result += safeURL.url();
+			}
+		        else {
+		 	    kdWarning() << "getDocument() returned false";
+			    result += attribute->value();
+			}
+		    else
+		        result += attribute->value();
 		    result += "\"";
 		}
 	    }
 	}
+    }
+
+    return result;
+}
+DOMString ElementImpl::toString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const
+{
+    DOMString result = openTagStartToString();
+
+    if (hasChildNodes()) {
+	result += ">";
+
+	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
+	    result += child->toString(selectionStart, selectionEnd, startOffset, endOffset, found); // this might set found to true
+	    if(child == selectionEnd) 
+	        found = true;
+	    if(found) break;
+	}
+
+	result += "</";
+	result += tagName();
+	result += ">";
+    } else {
+	result += " />";
     }
 
     return result;

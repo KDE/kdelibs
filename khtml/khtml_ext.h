@@ -132,6 +132,7 @@ private slots:
   void slotSendImage();
   void slotStopAnimations();
   void slotCopyImageLocation();
+  void slotCopyImage();
   void slotViewImage();
   void slotReloadFrame();
   void slotFrameInWindow();

@@ -57,7 +57,8 @@ public:
     DOMString altText() const;
 
     DOMString imageMap() const { return usemap; }
-
+    /** See if the image has been completely downloaded. 
+     * @return True if and only if the image is completely downloaded yet*/
     bool complete() const;
 protected:
     DOMString usemap;

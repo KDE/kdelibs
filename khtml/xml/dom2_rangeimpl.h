@@ -61,7 +61,22 @@ public:
     DocumentFragmentImpl *cloneContents ( int &exceptioncode );
     void insertNode( NodeImpl *newNode, int &exceptioncode );
     DOMString toString ( int &exceptioncode );
-    DOMString toHTML (  );
+    /** Converts the selection  to HTML.  The returned string will have matching
+     *  tags, and all td, tr, etc tags will be inside a table tag.  CSS is not
+     *  used at this stage - This needs to be fixed.
+     *
+     *  This is guaranteed to produce an xml valid snippet, no matter how crappy the input
+     *  html page is.  It will have html and body tags.
+     *  
+     *  Any urls in images or links will be expanded to full urls.
+     *
+     *  Note: Originally this function didn't have the exceptioncode argument.  I added it
+     *  since all the other functions do.  If this is correct, please remove this comment.
+     *
+     *  @param exceptioncode This will be set if m_detached is true.
+     *  @return A string with html tags for this range.
+     */
+    DOMString toHTML ( int &exceptioncode );
 
     DocumentFragment createContextualFragment ( const DOMString &html, int &exceptioncode );
 

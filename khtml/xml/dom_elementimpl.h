@@ -203,10 +203,25 @@ public:
     void dispatchAttrAdditionEvent(NodeImpl::Id id, DOMStringImpl *value);
 
     virtual DOMString toString() const;
-
+    virtual DOMString toString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const;
+	    
     virtual bool contentEditable() const;
     void setContentEditable(bool enabled);
 
+    /** Returns the opening tag and properties.
+     *  Examples:  '<b', '<img alt="hello" src="image.png"
+     *
+     *  For security reasons, passwords are stripped out of all src= and
+     *  href=  tags if expandurls is turned on.
+     *
+     *  @param expandurls If this is set then in the above example, it would give
+     *                    src="http://website.com/image.png".  Note that the password
+     *                    is stripped out of the url.
+     *
+     *  DOM::RangeImpl uses this which is why it is public.
+     */
+    DOMString openTagStartToString(bool expandurls = false) const;
+    
     bool restyleLate() { return m_restyleLate; };
     void setRestyleLate(bool b=true) { m_restyleLate = b; };
     void setRestyleSelfLate() { m_restyleLate = true; };
@@ -215,7 +230,6 @@ public:
 protected:
     void createAttributeMap() const;
     void createDecl();
-    DOMString openTagStartToString() const;
     void finishCloneNode( ElementImpl *clone, bool deep );
 
 private:

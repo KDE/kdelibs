@@ -130,7 +130,12 @@ public:
     virtual bool childTypeAllowed( unsigned short type );
 
     virtual DOMString toString() const;
-
+    /** Return the text for the node, with < replaced with &lt; and so on.
+     *  @param startOffset The number of characters counted from the left, zero indexed, counting "<" as one character, to start from.  Use -1 to start from 0.
+     *  @param endOffset The number of characters counted from the left, zero indexed, counting "<" as one character, to end on.  Use -1 to end at the end of the string.
+     *  @return An html escaped version of the substring.
+     */
+    DOMString toString(long long startOffset, long long endOffset) const;
 protected:
     virtual TextImpl *createNew(DOMStringImpl *_str);
 };

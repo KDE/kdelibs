@@ -385,7 +385,18 @@ public:
     virtual void childrenChanged();
 
     virtual DOMString toString() const = 0;
-
+    /**
+     * Sometimes we need to get the string between two points on the DOM graph.  Use this function to do this.
+     * For example, when the user copies some selected text to the clipboard as html.
+     * @param selectionStart Where to start the selection.  If selectionStart != this, it is assumed we are after the start point
+     * @param selectionEnd   Where to end the selection.  If selectionEnd != this, it is assumed we are before the end point (unless found is true)
+     * @param startOffset    Number of characters into the text in selectionStart that the start of the selection is.
+     * @param endOffset      Number of characters into the text in selectionEnd that the end of the selection is.
+     * @param found          When this is set to true, don't print anymore but closing tags.
+     * @return An html formatted string for this node and its children between the selectionStart and selectionEnd.
+     */
+    virtual DOMString toString(NodeImpl * /*selectionStart*/, NodeImpl * /*selectionEnd*/, int /*startOffset*/, int /*endOffset*/, bool &/*found*/) const { return toString(); }
+    
 private: // members
     DocumentPtr *document;
     NodeImpl *m_previous;

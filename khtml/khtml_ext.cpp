@@ -40,6 +40,7 @@
 #include <qpopupmenu.h>
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
+#include <qdragobject.h> 
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -58,7 +59,7 @@
 #include <kurifilter.h>
 #include <kiconloader.h>
 #include <kdesktopfile.h>
-
+#include <kmultipledrag.h>
 
 #include "dom/dom_element.h"
 #include "misc/htmltags.h"
@@ -212,11 +213,28 @@ void KHTMLPartBrowserExtension::copy()
     if ( !m_editableFormWidget )
     {
         // get selected text and paste to the clipboard
-        QString text = m_part->selectedText();
+        QString text= m_part->selectedText();
 	text.replace( QChar( 0xa0 ), ' ' );
+
+
         QClipboard *cb = QApplication::clipboard();
         disconnect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
-        cb->setText(text);
+#ifndef QT_NO_MIMECLIPBOARD  /** Do I need to do this? I copied this #ifndef from elsewhere.*/
+	QString htmltext = m_part->selectedTextAsHTML();
+	
+	htmltext.replace( QChar( 0xa0 ), ' ' );
+	QTextDrag *htmltextdrag = new QTextDrag(htmltext, 0L);
+	htmltextdrag->setSubtype("html");
+	QTextDrag *textdrag = new QTextDrag(text, 0L);
+	KMultipleDrag *drag = new KMultipleDrag( m_editableFormWidget );
+	drag->addDragObject( textdrag );
+	drag->addDragObject( htmltextdrag );
+        kdDebug() << htmltext << endl;
+        cb->setData(drag);
+#else
+	cb->setText(text);
+#endif
+
         connect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
     }
     else
@@ -345,6 +363,7 @@ public:
   KHTMLPart *m_khtml;
   KURL m_url;
   KURL m_imageURL;
+  QImage m_image;
   QString m_suggestedFilename;
 };
 
@@ -467,7 +486,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewFrameInfo" );
       // This one isn't in khtml_popupmenu.rc anymore, because Print isn't either,
       // and because print frame is already in the toolbar and the menu.
-      // But leave this here, so that it's easy to readd it.
+      // But leave this here, so that it's easy to read it.
       new KAction( i18n( "Print Frame..." ), "frameprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
       new KAction( i18n( "Save &Frame As..." ), 0, d->m_khtml, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
 
@@ -486,8 +505,17 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   if (isImage)
   {
-    if ( e.elementId() == ID_IMG )
+    if ( e.elementId() == ID_IMG ) {
       d->m_imageURL = KURL( static_cast<DOM::HTMLImageElement>( e ).src().string() );
+      DOM::HTMLImageElementImpl *imageimpl = static_cast<DOM::HTMLImageElementImpl *>( e.handle() );
+      Q_ASSERT(imageimpl);
+      if(imageimpl) // should be true always.  right?
+      {
+        if(imageimpl->complete()) {
+	  d->m_image = imageimpl->currentImage();
+	}
+      }
+    }
     else
       d->m_imageURL = KURL( static_cast<DOM::HTMLInputElement>( e ).src().string() );
     new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
@@ -496,8 +524,16 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                  actionCollection(), "sendimage" );
 
 
-    new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
-                 actionCollection(), "copyimagelocation" );
+#ifndef QT_NO_MIMECLIPBOARD
+    (new KAction( i18n( "Copy Image" ), 0, this, SLOT( slotCopyImage() ),   
+                 actionCollection(), "copyimage" ))->setEnabled(!d->m_image.isNull());
+#endif
+    
+    if(d->m_image.isNull()) {    //fallback to image location if still loading the image.
+      new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
+                   actionCollection(), "copyimagelocation" );
+    }
+
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
     new KAction( i18n( "View Image (%1)" ).arg(d->m_suggestedFilename.isEmpty() ? name.replace("&", "&&") : d->m_suggestedFilename.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
                  actionCollection(), "viewimage" );
@@ -552,10 +588,8 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
   // Set it in both the mouse selection and in the clipboard
   KURL::List lst;
   lst.append( safeURL );
-  QApplication::clipboard()->setSelectionMode(true);
-  QApplication::clipboard()->setData( new KURLDrag( lst ) );
-  QApplication::clipboard()->setSelectionMode(false);
-  QApplication::clipboard()->setData( new KURLDrag( lst ) );
+  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Clipboard );
+  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Selection );
 #else
   QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
@@ -566,6 +600,27 @@ void KHTMLPopupGUIClient::slotStopAnimations()
   d->m_khtml->stopAnimations();
 }
 
+void KHTMLPopupGUIClient::slotCopyImage()
+{
+#ifndef QT_NO_MIMECLIPBOARD
+  KURL safeURL(d->m_imageURL);
+  safeURL.setPass(QString::null);
+
+  KURL::List lst;
+  lst.append( safeURL );
+  KMultipleDrag *drag = new KMultipleDrag(d->m_khtml->view(), "Image");
+
+  drag->addDragObject( new QImageDrag(d->m_image) );
+  drag->addDragObject( new KURLDrag(lst, d->m_khtml->view(), "Image URL") );
+
+  // Set it in both the mouse selection and in the clipboard
+  QApplication::clipboard()->setData( drag, QClipboard::Clipboard );
+  QApplication::clipboard()->setData( new KURLDrag(lst), QClipboard::Selection );
+#else
+  kdDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible." << endl;
+#endif
+}
+
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
   KURL safeURL(d->m_imageURL);
@@ -574,10 +629,8 @@ void KHTMLPopupGUIClient::slotCopyImageLocation()
   // Set it in both the mouse selection and in the clipboard
   KURL::List lst;
   lst.append( safeURL );
-  QApplication::clipboard()->setSelectionMode(true);
-  QApplication::clipboard()->setData( new KURLDrag( lst ) );
-  QApplication::clipboard()->setSelectionMode(false);
-  QApplication::clipboard()->setData( new KURLDrag( lst ) );
+  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Clipboard );
+  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Selection );
 #else
   QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
