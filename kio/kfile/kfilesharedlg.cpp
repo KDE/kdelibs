@@ -172,6 +172,9 @@ void KFileSharePropsPlugin::init()
         vbox->addStretch( 10 ); // align items on top
         break;
     }
+    case KFileShare::NotInitialized:
+        kdWarning() << "KFileShare Authorization still NotInitialized after calling authorization() - impossible" << endl;
+        break;
     }
 }
 
