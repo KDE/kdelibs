@@ -138,7 +138,7 @@ void KMJobViewer::removeFromManager()
 		for (; it.current(); ++it)
 			m_manager->removePrinter(it.current()->printerName(), (KMJobManager::JobType)m_type);
 	}
-	else
+	else if (!m_prname.isEmpty())
 	{
 		m_manager->removePrinter(m_prname, (KMJobManager::JobType)m_type);
 	}
