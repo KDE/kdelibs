@@ -75,10 +75,19 @@ public:
    KService::Ptr s;
 };
 
+class KCustomMenuEditor::KCustomMenuEditorPrivate
+{
+public:
+    QPushButton * pbRemove;
+    QPushButton * pbMoveUp;
+    QPushButton * pbMoveDown;
+};
+
 KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
   : KDialogBase(parent, "custommenueditor", true, i18n("Menu Editor"), Ok|Cancel, Ok, true),
     m_listView(0)
 {
+    d = new KCustomMenuEditorPrivate;
    QHBox *page = makeHBoxMainWidget();
    m_listView = new KListView(page);
    m_listView->addColumn(i18n("Menu"));
@@ -86,10 +95,28 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
    m_listView->setSorting(-1);
    KButtonBox *buttonBox = new KButtonBox(page, Vertical);
    buttonBox->addButton(i18n("New..."), this, SLOT(slotNewItem()));
-   buttonBox->addButton(i18n("Remove"), this, SLOT(slotRemoveItem()));
-   buttonBox->addButton(i18n("Move Up"), this, SLOT(slotMoveUp()));
-   buttonBox->addButton(i18n("Move Down"), this, SLOT(slotMoveDown()));
+   d->pbRemove=buttonBox->addButton(i18n("Remove"), this, SLOT(slotRemoveItem()));
+   d->pbMoveUp=buttonBox->addButton(i18n("Move Up"), this, SLOT(slotMoveUp()));
+   d->pbMoveDown=buttonBox->addButton(i18n("Move Down"), this, SLOT(slotMoveDown()));
    buttonBox->layout();
+   connect( m_listView, SIGNAL( selectionChanged () ), this, SLOT( refreshButton() ) );
+   refreshButton();
+}
+
+KCustomMenuEditor::~KCustomMenuEditor()
+{
+    delete d;
+    d=0;
+}
+
+void KCustomMenuEditor::refreshButton()
+{
+    QListViewItem *item = m_listView->currentItem();
+    bool selected = ( item!= 0 );
+    int pos = m_listView->itemPos( item );
+    d->pbRemove->setEnabled( selected );
+    d->pbMoveUp->setEnabled( selected && pos>0);
+    d->pbMoveDown->setEnabled( selected && pos < ( m_listView->childCount() ));
 }
 
 void
@@ -162,6 +189,7 @@ KCustomMenuEditor::slotNewItem()
          Item *newItem = new Item(m_listView, s);
          newItem->moveItem(item);
       }
+      refreshButton();
    }
 }
 
@@ -173,6 +201,7 @@ KCustomMenuEditor::slotRemoveItem()
       return;
 
    delete item;
+   refreshButton();
 }
 
 void
@@ -193,6 +222,7 @@ KCustomMenuEditor::slotMoveUp()
       }
       searchItem = next;
    }
+   refreshButton();
 }
 
 void
@@ -207,6 +237,7 @@ KCustomMenuEditor::slotMoveDown()
       return;
 
    item->moveItem( after );
+   refreshButton();
 }
 
 #include "kcustommenueditor.moc"

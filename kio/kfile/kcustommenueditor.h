@@ -3,7 +3,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; version 2 
+    License as published by the Free Software Foundation; version 2
     of the License.
 
     This library is distributed in the hope that it will be useful,
@@ -24,7 +24,7 @@
 class KListView;
 class KConfigBase;
 
- /* 
+ /*
   * Dialog for editing custom menus.
   *
   * @author Waldo Bastian (bastian@kde.org)
@@ -39,7 +39,7 @@ public:
      * Create a dialog for editing a custom menu
      */
     KCustomMenuEditor(QWidget *parent);
-
+    ~KCustomMenuEditor();
     /**
      * load the custom menu
      */
@@ -55,11 +55,12 @@ public slots:
     void slotRemoveItem();
     void slotMoveUp();
     void slotMoveDown();
+    void refreshButton();
 
 protected:
     class Item;
     KListView *m_listView;
-    
+
     class KCustomMenuEditorPrivate;
     KCustomMenuEditorPrivate *d;
 };
