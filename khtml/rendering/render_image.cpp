@@ -186,7 +186,7 @@ void RenderImage::calcMinMaxWidth()
     calcWidth();
 
     if (oldwidth != m_width)
-        resizeCache.resize(0,0);
+        resizeCache = QPixmap();
 
     m_maxWidth = m_minWidth = m_width;
     setMinMaxKnown();

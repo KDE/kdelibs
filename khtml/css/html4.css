@@ -39,6 +39,10 @@ style {
 	display: none;
 }
 
+script {
+	display: none;
+}
+
 /*
  * generic block level elements
  */

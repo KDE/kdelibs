@@ -492,6 +492,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                     if(tagPriority[id] != 0)
                     {
                         pushBlock(id, tagPriority[id]);
+			current = n;
                     }
                     n->attach(HTMLWidget);
                     if(tagPriority[id] == 0 && n->renderer())
