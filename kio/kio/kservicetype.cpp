@@ -143,6 +143,22 @@ QString KServiceType::parentServiceType() const
   return v.toString();
 }
 
+bool KServiceType::inherits( const QString& servTypeName ) const
+{
+  if ( name() == servTypeName )
+      return true;
+  QString st = parentServiceType();
+  while ( !st.isEmpty() )
+  {
+      KServiceType::Ptr ptr = KServiceType::serviceType( st );
+      if (!ptr) return false; //error
+      if ( ptr->name() == servTypeName )
+          return true;
+      st = ptr->parentServiceType();
+  }
+  return false;
+}
+
 QVariant
 KServiceType::property( const QString& _name ) const
 {

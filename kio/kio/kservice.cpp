@@ -62,7 +62,7 @@ KService::KService( const QString & _name, const QString &_exec, const QString &
   m_bValid = true;
   m_bDeleted = false;
   m_strType = "Application";
-  m_strName = _name;  
+  m_strName = _name;
   m_strExec = _exec;
   m_strIcon = _icon;
   m_bTerminal = false;
@@ -102,10 +102,10 @@ KService::init( KDesktopFile *config )
     return;
   }
   QMap<QString, QString> entryMap = config->entryMap(config->group());
-  
+
   entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
   entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
-  
+
   m_bDeleted = config->readBoolEntry( "Hidden", false );
   entryMap.remove("Hidden");
   if (m_bDeleted)
@@ -334,16 +334,8 @@ bool KService::hasServiceType( const QString& _servicetype ) const
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
       //kdDebug(7012) << "    has " << (*it) << endl;
-      QString servicetype( *it );
-      bool found = true; // we are optimistic to start with :)
-      while ( servicetype != _servicetype )
-      {
-          KServiceType::Ptr ptr = KServiceType::serviceType( servicetype );
-          if (!ptr || !ptr->isDerived() ) { found = false; break; }
-          servicetype = ptr->parentServiceType();
-          //kdDebug(7012) << "up to " << servicetype << endl;
-      }
-      if (found)
+      KServiceType::Ptr ptr = KServiceType::serviceType( *it );
+      if ( ptr && ptr->inherits( _servicetype ) )
           return true;
   }
   return false;

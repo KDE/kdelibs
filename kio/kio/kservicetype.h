@@ -111,6 +111,12 @@ public:
    */
   QString parentServiceType() const;
 
+  /**
+   * @return true if this servicetype is or inherits from @p servTypeName
+   * @since 3.1
+   */
+  bool inherits( const QString& servTypeName ) const;
+
   virtual QVariant property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
 
