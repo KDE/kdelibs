@@ -29,7 +29,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include "klibloader.h"
-#include "kstaticdeleter.h"
 #include <kconfig.h>
 #include <kapplication.h>
 
@@ -192,7 +191,6 @@ KDanteSocksTable::~KDanteSocksTable() {
 
 KSocks *KSocks::_me = 0;
 bool KSocks::_disabled = false;
-static KStaticDeleter<KSocks> med;
 
 void KSocks::disable() 
 { 
@@ -201,13 +199,14 @@ void KSocks::disable()
 }
 
 KSocks *KSocks::self() {
+  // Note that we don't use a static deleter here. It makes no sense and tends to cause crashes.
   if (!_me) {
      if (kapp) {
         KConfigGroup cfg(kapp->config(), "Socks");
-        _me = med.setObject(new KSocks(&cfg));
+        _me = new KSocks(&cfg);
      } else {
         _disabled = true;
-        _me = med.setObject(new KSocks(0));
+        _me = new KSocks(0);
      }
   }
   return _me;
@@ -223,7 +222,7 @@ void KSocks::setConfig(KConfigBase *config)
      _disabled = false;
   }
   if (!_me)
-    _me = med.setObject(new KSocks(config));
+    _me = new KSocks(config);
 }
 
 bool KSocks::activated() { return (_me != 0L); }
@@ -403,13 +402,13 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
 
 KSocks::~KSocks() {
    stopSocks();
-   _me = med.setObject(0L);
+   _me = 0;
 }
 
 
 void KSocks::die() {
    if (_me == this) {
-      _me = med.setObject(0L);
+      _me = 0;
       delete this;
    }
 }
