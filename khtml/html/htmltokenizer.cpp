@@ -409,11 +409,13 @@ void HTMLTokenizer::scriptHandler()
     }
     processListing(DOMStringIt(scriptCode, scriptCodeSize));
     QString exScript( buffer, dest-buffer );
+
     processToken();
     currToken.id = ID_SCRIPT + ID_CLOSE_TAG;
     processToken();
 
     QString prependingSrc;
+
     if ( !parser->skipMode() ) {
         if (cs) {
              //kdDebug( 6036 ) << "cachedscript extern!" << endl;
@@ -445,17 +447,15 @@ void HTMLTokenizer::scriptHandler()
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
 
-    if ( !parser->skipMode() ) {
-        if ( !m_executingScript && !loadingExtScript ) {
-            // kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
-            QString newStr = QString(src.current(), src.length());
-            newStr += pendingSrc;
-            setSrc(newStr);
-            pendingSrc = "";
-        }
-        else if ( !prependingSrc.isEmpty() )
-            write( prependingSrc, false );
+    if ( !m_executingScript && !loadingExtScript ) {
+        // kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
+        QString newStr = QString(src.current(), src.length());
+        newStr += pendingSrc;
+        setSrc(newStr);
+        pendingSrc = "";
     }
+    else if ( !prependingSrc.isEmpty() )
+        write( prependingSrc, false );
 }
 
 void HTMLTokenizer::scriptExecution( const QString& str, QString scriptURL,
