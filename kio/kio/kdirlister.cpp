@@ -937,10 +937,25 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
     // we duplicate the check for dotdot here, to avoid iterating over
     // all items again and checking in matchesFilter() that way.
-    // TODO: no need to update the root item??
-    if ( name.isEmpty() || name == dot || name == dotdot )
+    if ( name.isEmpty() || name == dotdot )
       continue;
 
+    if ( name == dot )
+    {
+      // if the update was started before finishing the original listing
+      // there is no root item yet
+      if ( !dir->rootItem )
+      {
+        dir->rootItem = new KFileItem( *it, url, delayedMimeTypes, true  );
+
+        for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+          if ( !kdl->d->rootFileItem && kdl->d->url == url )
+            kdl->d->rootFileItem = dir->rootItem;
+      }
+
+      continue;
+    }
+    
     // Form the complete url
     KURL u( url );
     u.addPath( name );
