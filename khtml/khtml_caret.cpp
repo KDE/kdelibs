@@ -412,6 +412,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 {
   if (node->nodeType() == Node::TEXT_NODE) {
     outside = false;
+    outsideEnd = false;
     r = node->renderer();
     r_ofs = offset;
   } else if (node->nodeType() == Node::ELEMENT_NODE || node->nodeType() == Node::DOCUMENT_NODE) {
@@ -456,6 +457,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
     } else {
       // Element has no children, treat offset to be inside the node.
       outside = false;
+      outsideEnd = false;
       r = node->renderer();
       r_ofs = 0;	// only offset 0 possible
     }
