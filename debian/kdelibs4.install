@@ -38,6 +38,8 @@ debian/tmp/usr/lib/kde3/kimg_ico.la
 debian/tmp/usr/lib/kde3/kimg_ico.so
 debian/tmp/usr/lib/kde3/kimg_krl.la
 debian/tmp/usr/lib/kde3/kimg_krl.so
+debian/tmp/usr/lib/kde3/kimg_pcx.la
+debian/tmp/usr/lib/kde3/kimg_pcx.so 
 debian/tmp/usr/lib/kde3/kimg_tiff.la
 debian/tmp/usr/lib/kde3/kimg_tiff.so
 debian/tmp/usr/lib/kde3/kimg_xview.la
