@@ -110,6 +110,20 @@ public final class KJASAppletStub
         
     }
 
+    /**
+     * Helper function for ending the runThread and appletThread
+     **/
+    private void tryToStopThread(Thread thread) {
+        try {
+            thread.interrupt();
+        } catch (SecurityException se) {}
+        if (thread.isAlive()) {
+            try {
+                thread.join(5000);
+            } catch (InterruptedException ie) {}
+        }
+    }
+
     private void stateChange(int newState) {
         if (failed)
             return;
@@ -122,7 +136,9 @@ public final class KJASAppletStub
     
     private void setFailed(String why) {
         failed = true;
+        loader.removeStatusListener(panel);
         panel.stopAnimation();
+        panel.showFailed();
         Main.protocol.sendAppletFailed(context.getID(), appletID, why); 
     }
     
@@ -164,7 +180,6 @@ public final class KJASAppletStub
                     } catch (Exception e) {
                         Main.kjas_err("Class could not be loaded: " + className, e);
                         setFailed(e.toString());
-                        panel.showFailed();
                         return;
                     }
                     if (Thread.interrupted())
@@ -177,13 +192,11 @@ public final class KJASAppletStub
                     }
                     catch( InstantiationException e ) {
                         Main.kjas_err( "Could not instantiate applet", e );
-                        panel.showFailed();
                         setFailed(e.toString());
                         return;
                     }
                     catch( IllegalAccessException e ) {
                         Main.kjas_err( "Could not instantiate applet", e );
-                        panel.showFailed();
                         setFailed(e.toString());
                         return;
                     }
@@ -245,20 +258,22 @@ public final class KJASAppletStub
     {
         if( app != null && state == INITIALIZED) {
             active = true;                    
-            if (appletThread != null) {
+            if (appletThread == null) {
                 appletThread = new Thread("KJAS-Applet-" + appletID + "-" + appletName) {
                     public void run() {
+                        frame.validate();
                         app.start();
                         context.showStatus("Applet " + appletName + " started.");
                         app.repaint();
+                        appletThread = null;
                     }
                 };
                 appletThread.start();
-            } else {
+            } /*else {
                 frame.validate();
                 app.start();
                 app.repaint();
-            }
+            }*/
             stateChange(STARTED);
        }
     }
@@ -273,6 +288,11 @@ public final class KJASAppletStub
     void stopApplet()
     {
         if( app != null ) {
+            if( appletThread != null && appletThread.isAlive() ) {
+                Main.debug( "appletThread is active when stop is called" );
+                tryToStopThread(appletThread);
+            }
+            appletThread = null;
             active = false;
             app.stop();
             stateChange(STOPPED);
@@ -300,26 +320,26 @@ public final class KJASAppletStub
     {
         if( runThread != null && runThread.isAlive() ) {
             Main.debug( "runThread is active when stub is dying" );
-            try {
-                runThread.interrupt();
-            } catch (SecurityException se) {}
-            if (runThread.isAlive()) {
-                try {
-                    runThread.join(5000);
-                } catch (InterruptedException ie) {}
-            }
+            tryToStopThread(runThread);
             panel.stopAnimation();
+            loader.removeStatusListener(panel);
         }
         if( app != null ) {
             synchronized (app) {
                 if (active) {
-                    stopApplet();
+                    try {
+                        stopApplet();
+                    } catch (Exception e) {
+                    }
                 }
                 app.destroy();
             }
             stateChange(DESTROYED);
         }
 
+        loader = null;
+        context = null;
+        app = null;
         frame.dispose();
     }
 
