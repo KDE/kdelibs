@@ -798,9 +798,6 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
 void KHTMLPart::autoloadImages( bool enable )
 {
-  if ( enable == khtml::Cache::autoloadImages() )
-    return;
-
   khtml::Cache::autoloadImages( enable );
 
   unplugActionList( "loadImages" );
@@ -2697,7 +2694,8 @@ void KHTMLPart::reparseConfiguration()
   // Keep original charset setting.
   settings->setCharset(d->m_settings->charset());
 
-  autoloadImages( settings->autoLoadImages() );
+  if ( settings->autoLoadImages() != khtml::Cache::autoloadImages() )
+    autoloadImages( settings->autoLoadImages() );
 
   // PENDING(lars) Pass hostname to the following two methods.
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled();
