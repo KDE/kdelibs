@@ -8,6 +8,7 @@ Area codes for KDebug system
 101-110 KApplication
 111-120 KConfig
 151-200 widgets
+151-160 KTopLevelWidget
 201-300 khtmlw
 301-400 jscript
 401-500 libmediatool

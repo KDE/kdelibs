@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.33  1997/10/17 13:30:18  ettrich
+// Matthias: registerTopWidget/unregisterTopWidget are obsolete and empty now.
+//           Introduced new registration model
+//
+// Revision 1.32  1997/10/16 11:14:28  torben
 // Kalle: Copyright headers
 // kdoctoolbar removed
 //
@@ -275,6 +280,25 @@ class KApplication : public QApplication
   /** 
 	* Set the WmCommand for the session manager.
 	*
+	* @ This has an effekt if either session management is disabled (then it
+	* @ is used for pseudo session managemt) or ith session management is
+	* @ enabled with userdefined=True.
+	*/
+  void setWmCommand(const char*);
+  
+
+  /**
+	* Return a standard help menu
+	*
+	* @param bAboutQtMenu If true, there is a menu entry for About Qt
+  
+    * @return a pointer to the Iconloader of the application
+    * @see KIconLoader
+    */
+  KIconLoader* getIconLoader();
+
+  /**
+	* @see QPixmap
 	*/
   QPixmap getIcon() const
 	{ return aIconPixmap; }
@@ -484,6 +508,7 @@ private slots:
   Atom KDEChangePalette;
   bool bUnsavedData; // there is data to be saved before the app should exit
 
+ private slots:
  void appHelpActivated();
   void aboutKDE();
   void aboutApp();
