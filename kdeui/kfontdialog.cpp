@@ -179,7 +179,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	   SLOT(size_chosen_slot(const QString&)) );
 
   row ++;
-  QLabel *charsetLabel = new QLabel( page, "charsetLabel");
+  charsetLabel = new QLabel( page, "charsetLabel");
   charsetLabel->setText(i18n("Character set:"));
   gridLayout->addWidget(charsetLabel, 3, 0, AlignRight);
   charsetsCombo = new QComboBox(true, page, "charsetsCombo");
@@ -252,6 +252,11 @@ void KFontChooser::enableColumn( int column, bool state )
   {
     sizeLabel->setEnabled(state);
     sizeListBox->setEnabled(state);
+  }
+  if( column & CharsetList )
+  {
+    charsetLabel->setEnabled(state);
+    charsetsCombo->setEnabled(state);
   }
 }
 
@@ -548,6 +553,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.60  2001/03/10 15:38:54  faure
+* Don't call kdeFonts(), return all fonts.
+*
 * Revision 1.59  2001/01/31 19:15:20  porten
 * commented out unused variables. a bit ugly but a hint to potential maintainers
 *

@@ -58,7 +58,8 @@ public:
    *  @li @p StyleList -  Identifies the style (center) list.
    *  @li @p SizeList -   Identifies the size (rightmost) list.
    */
-  enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04 };
+  enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04,
+    CharsetList=0x08 };
 
   /**
    * Constructs a font picker widget.
@@ -202,6 +203,7 @@ private:
   QLabel       *familyLabel;
   QLabel       *styleLabel;
   QLabel       *sizeLabel;
+  QLabel       *charsetLabel;
   KListBox     *familyListBox;
   KListBox     *styleListBox;
   KListBox     *sizeListBox;
