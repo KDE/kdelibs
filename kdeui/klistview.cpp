@@ -618,6 +618,7 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
        newPos.y() < d->startDragPos.y()-d->dragDelay))
     //(d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
     {
+      QListView::contentsMouseReleaseEvent( 0 );
       startDrag();
       d->startDragPos = QPoint();
       d->validDrag = false;
