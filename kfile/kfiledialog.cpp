@@ -470,7 +470,8 @@ void KFileDialog::accept()
     saveRecentFiles( KGlobal::config() );
     delete c;
 
-    KDialogBase::slotOk();
+    KDialogBase::accept();
+    emit okClicked();
 }
 
 
@@ -584,12 +585,12 @@ void KFileDialog::initGUI()
 
     d->boxLayout->addSpacing(3);
 
-        setTabOrder(ops,  locationEdit);
-        setTabOrder(locationEdit, filterWidget);
-        setTabOrder(filterWidget, d->okButton);
-        setTabOrder(d->okButton, d->cancelButton);
-        setTabOrder(d->cancelButton, d->pathCombo);
-
+    setTabOrder(ops,  locationEdit);
+    setTabOrder(locationEdit, filterWidget);
+    setTabOrder(filterWidget, d->okButton);
+    setTabOrder(d->okButton, d->cancelButton);
+    setTabOrder(d->cancelButton, d->pathCombo);
+    setTabOrder(d->pathCombo, ops);
 }
 
 KFileDialog::~KFileDialog()
