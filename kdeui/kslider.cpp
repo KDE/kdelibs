@@ -27,6 +27,8 @@
 // 1.3 Reworked drawArrow(). For avoiding paint problems with some servers, I
 //     am now painting the arrow with "precise" lines.
 // 2.0 Now KSlider is a derivation of QSlider
+// 2.1 Cleanups. Replacing eraseRect() by fillRect(). I would have thought,
+//     eraseRect() would use BackgroundColor, but it doesn't.
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -43,16 +45,16 @@
 KSlider::KSlider( QWidget *parent, const char *name )
   : QSlider( parent, name )
 {
-  setBackgroundMode(PaletteBackground);
   QSlider::setTickmarks(Below);
+  isFocussed = false;
   update();
 }
 
 KSlider::KSlider( Orientation o, QWidget *parent, const char *name )
   : QSlider( (QSlider::Orientation)o, parent, name )
 {
-  setBackgroundMode(PaletteBackground);
   QSlider::setTickmarks(Below);
+  isFocussed = false;
   update();
 }
 
@@ -61,12 +63,12 @@ KSlider::KSlider( int _minValue, int _maxValue, int _Step, int _value,
   : QSlider( _minValue, _maxValue, _Step, _value, (QSlider::Orientation)o,
              parent, name )
 {
-  setBackgroundMode(PaletteBackground);
   // We always have TickMarks
   if ( orientation() == Vertical)
     QSlider::setTickmarks(Right);
   else
     QSlider::setTickmarks(Below);
+  isFocussed = false;
   update();
 }
 
@@ -81,9 +83,22 @@ void KSlider::drawShadeLine( QPainter *painter )
 }
 
 
-void KSlider::paintSlider(QPainter *painter, const QRect & )
+void KSlider::drawFocusBar(QPainter *painter, const QRect & )
+{
+   if ( isFocussed )
+     painter->setPen(colorGroup().dark() );
+   else
+     painter->setPen(colorGroup().background() );
+
+   painter->drawRect(0,0,width()-1,height()-1);
+}
+
+
+void KSlider::paintSlider(QPainter *painter, const QRect &re )
 {
   QPoint pos;
+
+  drawFocusBar(painter, re);
 
   pos = calcArrowPos( prevValue() );
   drawArrow( painter, false, pos );
@@ -119,12 +134,11 @@ void KSlider::drawArrow( QPainter *painter, bool show, const QPoint &pos )
   if ( show )
     arrowPen = QPen( colorGroup().light() );
   else
-    arrowPen = QPen( backgroundColor() );
+    arrowPen = QPen( colorGroup().background() );
 
   arrowPen.setWidth(1);		// Yup, we REALLY want width 1, not 0 here !!
   painter->setPen(arrowPen);
-  painter->setBrush( backgroundColor() );
-  // painter->setRasterOp ( CopyROP );
+  painter->setBrush( colorGroup().background() );
 
   painter->drawPolygon( array );
 
@@ -215,10 +229,14 @@ void KSlider::drawTickMarks(QPainter *painter)
   }
 }
 
-// This function is obsolete: I will delete it after Beta-3
 void KSlider::drawTicks ( QPainter * p, int , int , int )
 {
   drawTickMarks(p);
+}
+
+void KSlider::drawWinGroove (QPainter *, QCOORD)
+{
+  // Do nothing
 }
 
 void KSlider::paintEvent( QPaintEvent *qpe )
@@ -228,8 +246,11 @@ void KSlider::paintEvent( QPaintEvent *qpe )
   painter.begin( this );
   // build a rect for the paint event
   QRect rect(x(),y(),width(),height());
-  // Clear widget area, because there may be "pixel dirt" around
-  erase(qpe->rect().x(),qpe->rect().y(),qpe->rect().width(),qpe->rect().height());
+  // Clear widget area, because there might be "pixel dirt" around.
+  // Especially then, when rangeChange(), resizes, such things happen.
+
+  painter.fillRect(qpe->rect().x(),qpe->rect().y(),qpe->rect().width(),qpe->rect().height(), colorGroup().background() );
+  // painter.eraseRect(qpe->rect().x(),qpe->rect().y(),qpe->rect().width(),qpe->rect().height());
   paintSlider(&painter, rect);
 
   if ( orientation() == Vertical ) {
@@ -273,4 +294,34 @@ int KSlider::checkWidth()
     // If (max - min) has no "secure" value, set it to lineStep().
     diff=lineStep();
   return diff;
+}
+
+void KSlider::paletteChange(const QPalette &)
+{
+  update();
+}
+
+void KSlider::backgroundColorChange(const QPalette &)
+{
+  update();
+}
+
+void KSlider::focusInEvent( QFocusEvent * )
+{
+  QPainter painter;
+  QRect rect(x(),y(),width(),height());
+  painter.begin( this );
+  isFocussed = true;
+  paintSlider(&painter,rect);
+  painter.end();
+}
+
+void KSlider::focusOutEvent( QFocusEvent * )
+{
+  QPainter painter;
+  QRect rect(x(),y(),width(),height());
+  painter.begin( this );
+  isFocussed = false;
+  paintSlider(&painter,rect);
+  painter.end();
 }

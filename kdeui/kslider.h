@@ -73,9 +73,14 @@ signals:
   void sliderReleased();
 
 protected:
-  //  virtual void valueChange();
+  virtual void valueChange();
   virtual void rangeChange();
+  virtual void paletteChange(const QPalette &);
   virtual void paintSlider(QPainter *painter, const QRect &rect );
+  virtual void backgroundColorChange(const QPalette &);
+  virtual void focusInEvent( QFocusEvent * );
+  virtual void focusOutEvent( QFocusEvent * );
+
 private:
   QPoint calcArrowPos( int val );
   void moveArrow( const QPoint &pos );
@@ -83,11 +88,12 @@ private:
   void drawShadeLine( QPainter *painter );
   void drawTickMarks( QPainter *painter );
   void drawTicks( QPainter * p, int d, int w, int i=1 );
-
+  void drawWinGroove(class QPainter *, short int);
+  void drawFocusBar(QPainter *painter, const QRect & );
   virtual void paintEvent( QPaintEvent * );
 
   int checkWidth();
-  void valueChange();
+  bool isFocussed;
 };
 
 //-----------------------------------------------------------------------------
