@@ -438,6 +438,7 @@ class KJanusWidget : public QWidget
      * entries cannot be closed again, though.
      *
      * @param persist If true the tree always stays unfolded.
+     * @since 3.2
      */
     /*virtual*/ void unfoldTreeList( bool persist = false ); //### KDE4 BIC add virtual
 

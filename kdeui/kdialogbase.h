@@ -943,6 +943,7 @@ class KDialogBase : public KDialog
      * entries cannot be closed again, though.
      *
      * @param persist If true the tree always stays unfolded.
+     * @since 3.2
      */
     void unfoldTreeList( bool persist = false );
 
