@@ -70,7 +70,10 @@ class QImage;
  *
  * You can supply a comma-separated list of mimetypes to the MimeTypes entry,
  * naming all mimetypes your ThumbCreator supports. You can also use simple
- * wildcards, like text/* or image/*.
+ * wildcards, like 
+ */
+ //              text/* or image/*.
+/*
  *
  * If your plugin is rather inexpensive (e.g. like the text preview ThumbCreator),
  * you can set CacheThumbnail=false to prevent your thumbnails from being cached
