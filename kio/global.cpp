@@ -62,6 +62,39 @@ QString KIO::convertSize( unsigned long size )
     return s;
 }
 
+QString KIO::encodeFileName( const QString & _str )
+{
+  QString str( _str );
+ 
+  int i = 0;
+  while ( ( i = str.find( "%", i ) ) != -1 )
+  {
+    str.replace( i, 1, "%%");
+    i += 2;
+  }
+  while ( ( i = str.find( "/" ) ) != -1 )
+      str.replace( i, 1, "%2f");
+  return str;
+}
+ 
+QString KIO::decodeFileName( const QString & _str )
+{
+  QString str( _str );
+ 
+  int i = 0;
+  while ( ( i = str.find( "%%", i ) ) != -1 )
+  {
+    str.replace( i, 2, "%");
+    i++;
+  }
+
+  while ( ( i = str.find( "%2f" ) ) != -1 )
+      str.replace( i, 3, "/");
+  while ( ( i = str.find( "%2F" ) ) != -1 )
+      str.replace( i, 3, "/");
+  return str;
+}
+
 QString Job::errorString()
 {
   QString result;

@@ -22,6 +22,18 @@ namespace KIO
   QString convertSize( unsigned long size );
 
   /**
+   * Encode (from the text displayed to the real filename)
+   * This translates % into %% and / into %2f
+   * Used by KIO::link, for instance.
+   */
+  QString encodeFileName( const QString & str );
+  /**
+   * Decode (from the filename to the text displayed)
+   * This translates %2[fF] into / and %% into %
+   */
+  QString decodeFileName( const QString & str );
+
+  /**
    * Error codes that can be emitted by KIO.
    */
   enum Error {

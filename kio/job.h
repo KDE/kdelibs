@@ -425,6 +425,15 @@ namespace KIO {
      */
     SimpleJob *file_delete( const KURL& src);
 
+    /**
+     * Create a link
+     * This not yet a job, and will become only if at least one other
+     * protocol than file has support for it :)
+     * @param src local files will result in symlinks,
+     *            remote files will result in Type=Link .desktop files
+     * @param dest destination, has to be a local file currently.
+     */
+    void link( const KURL::List& src, const KURL& dest );
 
     class ListJob : public SimpleJob {
 	Q_OBJECT
