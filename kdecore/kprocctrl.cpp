@@ -40,7 +40,7 @@
 
 template QList<KProcess>;
 
-KProcessController *theKProcessController = 0;
+KProcessController *KProcessController::theKProcessController = 0;
 
 KProcessController::KProcessController()
 {

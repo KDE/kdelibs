@@ -214,8 +214,8 @@ void KApplication::init()
   // by creating the KProcController instance (if its not already existing)
   // This is handled be KProcess (stefh)
   /*
-  if ( theKProcessController == 0L)
-    theKProcessController = new KProcessController();
+  if ( KProcessController::theKProcessController == 0L)
+    KProcessController::theKProcessController = new KProcessController();
   */
   KApp = this;
 
@@ -664,8 +664,8 @@ KApplication::~KApplication()
   // at which child process are being killed). So we first mark
   // the controller deleted (so that the SIGCHLD handler thinks it
   // is already gone) before we actually delete it.
-  KProcessController* ctrl = theKProcessController;
-  theKProcessController = 0;
+  KProcessController* ctrl = KProcessController::theKProcessController;
+  KProcessController::theKProcessController = 0;
   delete ctrl; // Stephan: "there can be only one" ;)
 
   delete pAppData;

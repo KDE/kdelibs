@@ -73,9 +73,9 @@ KProcess::KProcess()
 {
   arguments.setAutoDelete(true);
 
-  if (0 == theKProcessController) {
-	theKProcessController= new KProcessController();
-	CHECK_PTR(theKProcessController);
+  if (0 == KProcessController::theKProcessController) {
+	KProcessController::theKProcessController= new KProcessController();
+	CHECK_PTR(KProcessController::theKProcessController);
   }
 
   run_mode = NotifyOnExit;
@@ -88,7 +88,7 @@ KProcess::KProcess()
   input_sent = 0;
   input_total = 0;
 
-  theKProcessController->processList->append(this);
+  KProcessController::theKProcessController->processList->append(this);
 }
 
 
@@ -100,7 +100,7 @@ KProcess::~KProcess()
   // list of valid processes (if the process is not started as
   // "DontCare")
 
-  theKProcessController->processList->remove(this);
+  KProcessController::theKProcessController->processList->remove(this);
   // this must happen before we kill the child
   // TODO: block the signal while removing the current process from the process list
 
