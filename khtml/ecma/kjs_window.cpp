@@ -1407,15 +1407,24 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   }
   case Window::SetTimeout:
   case Window::SetInterval: {
-    bool singleShot = (id == Window::SetTimeout);
-    if (args.size() >= 2 && v.isA(StringType)) {
-      int i = args[1].toInt32(exec);
+    bool singleShot;
+    int i; // timeout interval
+    if (args.size() == 0)
+      return Undefined();
+    if (args.size() > 1) {
+      singleShot = (id == Window::SetTimeout);
+      i = args[1].toInt32(exec);
+    } else {
+      // second parameter is missing. Emulate Mozilla behavior.
+      singleShot = true;
+      i = 4;
+    }
+    if (v.isA(StringType)) {
       int r = (const_cast<Window*>(window))->winq->installTimeout(Identifier(s), i, singleShot );
       return Number(r);
     }
-    else if (args.size() >= 2 && v.isA(ObjectType) && Object::dynamicCast(v).implementsCall()) {
+    else if (v.isA(ObjectType) && Object::dynamicCast(v).implementsCall()) {
       Object func = Object::dynamicCast(v);
-      int i = args[1].toInt32(exec);
       List funcArgs;
       ListIterator it = args.begin();
       int argno = 0;
@@ -1424,6 +1433,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 	if (argno++ >= 2)
 	    funcArgs.append(arg);
       }
+      if (args.size() < 2)
+	funcArgs.append(Number(i));
       int r = (const_cast<Window*>(window))->winq->installTimeout(func, funcArgs, i, singleShot );
       return Number(r);
     }
