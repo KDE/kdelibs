@@ -17,11 +17,6 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-#KDE_CXXFLAGS = $(USE_EXCEPTIONS)
-#-Woverloaded-virtual
-
-AM_CPPFLAGS = -DQT_NO_CAST_ASCII -DQT_NO_ASCII_CAST
-
 noinst_LTLIBRARIES = libkhtmlrender.la
 libkhtmlrender_la_SOURCES = \
 	bidi.cpp break_lines.cpp \
@@ -33,8 +28,6 @@ libkhtmlrender_la_SOURCES = \
 	render_html.cpp render_body.cpp
 
 libkhtmlrender_la_METASOURCES = AUTO
-
-#include_HEADERS =
 
 noinst_HEADERS = \
 	bidi.h break_lines.h \
