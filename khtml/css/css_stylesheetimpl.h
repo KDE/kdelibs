@@ -124,13 +124,13 @@ public:
     StyleSheetListImpl();
     virtual ~StyleSheetListImpl();
 
+    // the following two ignore implicit stylesheets
     unsigned long length() const;
     StyleSheetImpl *item ( unsigned long index );
 
-    void add(StyleSheetImpl *sheet);
-    void remove(StyleSheetImpl *sheet);
+    void add(StyleSheetImpl* s);
+    void remove(StyleSheetImpl* s);
 
-public:
     QList<StyleSheetImpl> styleSheets;
 };
 

@@ -310,6 +310,22 @@ StyleSheetListImpl::StyleSheetListImpl()
 
 StyleSheetListImpl::~StyleSheetListImpl()
 {
+    for ( QListIterator<StyleSheetImpl> it ( styleSheets ); it.current(); ++it )
+        it.current()->deref();
+}
+
+void StyleSheetListImpl::add( StyleSheetImpl* s )
+{
+    if ( !styleSheets.containsRef( s ) ) {
+        s->ref();
+        styleSheets.append( s );
+    }
+}
+
+void StyleSheetListImpl::remove( StyleSheetImpl* s )
+{
+    if ( styleSheets.removeRef( s ) )
+        s->deref();
 }
 
 unsigned long StyleSheetListImpl::length() const
@@ -337,18 +353,6 @@ StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
     }
     return 0;
 }
-
-void StyleSheetListImpl::add(StyleSheetImpl *sheet)
-{
-    if (!styleSheets.containsRef(sheet))
-	styleSheets.append(sheet);
-}
-
-void StyleSheetListImpl::remove(StyleSheetImpl *sheet)
-{
-    styleSheets.removeRef(sheet);
-}
-
 
 // --------------------------------------------------------------------------------------------
 
