@@ -224,9 +224,6 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     m_allApps.setAutoDelete( true );
 
-    layout()->setMargin( 0 );
-    layout()->setSpacing( KDialogBase::spacingHint() );
-
     if ( !handleAllApps )
     {
         m_affectAllApps->hide();
@@ -265,7 +262,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     d->toolTip = new KNotifyToolTip( header );
 
-    m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
+    m_playButton->setPixmap( SmallIcon( "player_play" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
     connect( m_listview, SIGNAL( currentChanged( QListViewItem * ) ),
@@ -349,7 +346,6 @@ void KNotifyWidget::showAdvanced( bool show )
         m_passivePopup->show();
         m_stderr->show();
         m_taskbar->show();
-        m_controlsBox->show();
 
         m_actionsBoxLayout->setSpacing( KDialog::spacingHint() );
     }
@@ -366,7 +362,6 @@ void KNotifyWidget::showAdvanced( bool show )
         m_passivePopup->hide();
         m_stderr->hide();
         m_taskbar->hide();
-        m_controlsBox->hide();
 
         m_actionsBoxLayout->setSpacing( 0 );
     }

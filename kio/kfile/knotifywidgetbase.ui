@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>KNotifyWidgetBase</class>
 <widget class="QWidget">
     <property name="name">
@@ -8,13 +8,19 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>618</width>
-            <height>557</height>
+            <width>487</width>
+            <height>531</height>
         </rect>
+    </property>
+    <property name="caption">
+        <string>KNotifyWidgetBase</string>
     </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>0</number>
         </property>
         <widget class="KListView">
             <column>
@@ -108,271 +114,16 @@
         </widget>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>m_actionsBox</cstring>
-            </property>
-            <property name="title">
-                <string>Actions</string>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>Layout26</cstring>
-                    </property>
-                    <grid>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="KURLRequester" row="1" column="1">
-                            <property name="name">
-                                <cstring>m_logfilePath</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>5</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>1</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                        </widget>
-                        <widget class="KURLRequester" row="0" column="1">
-                            <property name="name">
-                                <cstring>m_soundPath</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>5</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>1</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                        </widget>
-                        <widget class="QCheckBox" row="1" column="0">
-                            <property name="name">
-                                <cstring>m_logToFile</cstring>
-                            </property>
-                            <property name="text">
-                                <string>&amp;Log to a file:</string>
-                            </property>
-                            <property name="accel">
-                                <string>Alt+L</string>
-                            </property>
-                        </widget>
-                        <widget class="KURLRequester" row="2" column="1">
-                            <property name="name">
-                                <cstring>m_executePath</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>5</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>1</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                        </widget>
-                        <widget class="QLayoutWidget" row="0" column="0">
-                            <property name="name">
-                                <cstring>Layout25</cstring>
-                            </property>
-                            <hbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <widget class="QCheckBox">
-                                    <property name="name">
-                                        <cstring>m_playSound</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Play a &amp;sound:</string>
-                                    </property>
-                                </widget>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>m_playButton</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string></string>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Test the Sound</string>
-                                    </property>
-                                </widget>
-                            </hbox>
-                        </widget>
-                        <widget class="QCheckBox" row="2" column="0">
-                            <property name="name">
-                                <cstring>m_execute</cstring>
-                            </property>
-                            <property name="text">
-                                <string>E&amp;xecute a program:</string>
-                            </property>
-                        </widget>
-                    </grid>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>Layout27</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>m_messageBox</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Show a &amp;message in a pop-up window</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>Spacer4</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>Layout28</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <spacer>
-                            <property name="name">
-                                <cstring>Spacer3</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Fixed</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>30</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>m_passivePopup</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>&amp;Use a passive window that does not interrupt other work</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>Spacer1</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>Layout29</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>m_stderr</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Print a message to standard &amp;error output</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>Spacer5</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </hbox>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>m_taskbar</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Mark &amp;taskbar entry</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+T</string>
-                    </property>
-                </widget>
-            </vbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
                 <cstring>m_controlsBox</cstring>
             </property>
             <property name="title">
                 <string>Quick Controls</string>
             </property>
-            <vbox>
+            <grid>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox">
+                <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="4">
                     <property name="name">
                         <cstring>m_affectAllApps</cstring>
                     </property>
@@ -383,93 +134,255 @@
                         <string>Alt+A</string>
                     </property>
                 </widget>
-                <widget class="QLayoutWidget">
+                <spacer row="1" column="0" rowspan="2" colspan="1">
                     <property name="name">
-                        <cstring>Layout12</cstring>
+                        <cstring>Spacer3_2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Fixed</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>30</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <spacer row="2" column="3">
+                    <property name="name">
+                        <cstring>Spacer17</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>318</width>
+                            <height>16</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton" row="2" column="1">
+                    <property name="name">
+                        <cstring>m_buttonDisable</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Turn O&amp;ff All</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+F</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Allows you to change the behavior for all events at once</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton" row="1" column="1">
+                    <property name="name">
+                        <cstring>m_buttonEnable</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Turn O&amp;n All</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+N</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Allows you to change the behavior for all events at once</string>
+                    </property>
+                </widget>
+                <widget class="KComboBox" row="1" column="2">
+                    <property name="name">
+                        <cstring>m_comboEnable</cstring>
+                    </property>
+                </widget>
+                <widget class="KComboBox" row="2" column="2">
+                    <property name="name">
+                        <cstring>m_comboDisable</cstring>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>m_actionsBox</cstring>
+            </property>
+            <property name="title">
+                <string>Actions</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox" row="5" column="0" rowspan="1" colspan="3">
+                    <property name="name">
+                        <cstring>m_stderr</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Print a message to standard &amp;error output</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+E</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="3" column="0" rowspan="1" colspan="3">
+                    <property name="name">
+                        <cstring>m_messageBox</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Show a &amp;message in a pop-up window</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+M</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="2" column="0" rowspan="1" colspan="2">
+                    <property name="name">
+                        <cstring>m_execute</cstring>
+                    </property>
+                    <property name="text">
+                        <string>E&amp;xecute a program:</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+X</string>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget" row="0" column="0" rowspan="1" colspan="2">
+                    <property name="name">
+                        <cstring>Layout25</cstring>
                     </property>
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <spacer>
+                        <widget class="QCheckBox">
                             <property name="name">
-                                <cstring>Spacer3_2</cstring>
+                                <cstring>m_playSound</cstring>
                             </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
+                            <property name="text">
+                                <string>Play a &amp;sound:</string>
                             </property>
-                            <property name="sizeType">
-                                <enum>Fixed</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>30</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>Layout4</cstring>
-                            </property>
-                            <grid>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <widget class="QPushButton" row="1" column="0">
-                                    <property name="name">
-                                        <cstring>m_buttonDisable</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Turn O&amp;ff All</string>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Allows you to change the behavior for all events at once</string>
-                                    </property>
-                                </widget>
-                                <widget class="QPushButton" row="0" column="0">
-                                    <property name="name">
-                                        <cstring>m_buttonEnable</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Turn O&amp;n All</string>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Allows you to change the behavior for all events at once</string>
-                                    </property>
-                                </widget>
-                                <widget class="KComboBox" row="0" column="1">
-                                    <property name="name">
-                                        <cstring>m_comboEnable</cstring>
-                                    </property>
-                                </widget>
-                                <widget class="KComboBox" row="1" column="1">
-                                    <property name="name">
-                                        <cstring>m_comboDisable</cstring>
-                                    </property>
-                                </widget>
-                            </grid>
                         </widget>
-                        <spacer>
+                        <widget class="QPushButton">
                             <property name="name">
-                                <cstring>Spacer17</cstring>
+                                <cstring>m_playButton</cstring>
                             </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
+                            <property name="text">
+                                <string></string>
                             </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
+                            <property name="toolTip" stdset="0">
+                                <string>Test the Sound</string>
                             </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                        </spacer>
+                        </widget>
                     </hbox>
                 </widget>
-            </vbox>
+                <widget class="QCheckBox" row="6" column="0" rowspan="1" colspan="3">
+                    <property name="name">
+                        <cstring>m_taskbar</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Mark &amp;taskbar entry</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+T</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="1" column="0" rowspan="1" colspan="2">
+                    <property name="name">
+                        <cstring>m_logToFile</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Log to a file:</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+L</string>
+                    </property>
+                </widget>
+                <spacer row="4" column="0">
+                    <property name="name">
+                        <cstring>Spacer3</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Fixed</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>30</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="KURLRequester" row="2" column="2">
+                    <property name="name">
+                        <cstring>m_executePath</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>1</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>1</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                </widget>
+                <widget class="KURLRequester" row="1" column="2">
+                    <property name="name">
+                        <cstring>m_logfilePath</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>1</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>1</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                </widget>
+                <widget class="KURLRequester" row="0" column="2">
+                    <property name="name">
+                        <cstring>m_soundPath</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>1</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="4" column="1" rowspan="1" colspan="2">
+                    <property name="name">
+                        <cstring>m_passivePopup</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Use a passive window that does not interrupt other work</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+U</string>
+                    </property>
+                </widget>
+            </grid>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -535,6 +448,12 @@
         <slot>setEnabled(bool)</slot>
     </connection>
     <connection>
+        <sender>m_execute</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>m_executePath</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
         <sender>m_playSound</sender>
         <signal>toggled(bool)</signal>
         <receiver>m_soundPath</receiver>
@@ -544,12 +463,6 @@
         <sender>m_logToFile</sender>
         <signal>toggled(bool)</signal>
         <receiver>m_logfilePath</receiver>
-        <slot>setEnabled(bool)</slot>
-    </connection>
-    <connection>
-        <sender>m_execute</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>m_executePath</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
@@ -583,11 +496,4 @@
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 <layoutfunctions spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
-<includehints>
-    <includehint>klistview.h</includehint>
-    <includehint>kurlrequester.h</includehint>
-    <includehint>klineedit.h</includehint>
-    <includehint>kpushbutton.h</includehint>
-    <includehint>kcombobox.h</includehint>
-</includehints>
 </UI>
