@@ -762,7 +762,11 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 			{
 				int	p = line.find(':',8);
 				keyword = line.mid(8,p-8);
-				DrBase	*bopt = driver->findOption((keyword == "PageRegion" ? QString::fromLatin1("PageSize") : keyword));
+				DrBase *bopt = 0;
+				if ( keyword == "PageRegion" || keyword == "ImageableArea" || keyword == "PaperDimension" )
+					bopt = driver->findOption( QString::fromLatin1( "PageSize" ) );
+				else
+					bopt = driver->findOption( keyword );
 				if (bopt)
 					switch (bopt->type())
 					{
