@@ -561,25 +561,25 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		QString data;
 		bool done = false;
 
-		char *buffer = new char[1024];
+		QCString buffer(1024);
+		int length = 0;
 
 		while(!done)
 		{
-			memset(buffer, 0, 1024);
-
-			int ret = gzread(svgz, buffer, 1024);
+			int ret = gzread(svgz, buffer.data() + length, 1024);
 			if(ret == 0)
 				done = true;
 			else if(ret == -1)
 				return false;
-
-			data += QString::fromUtf8(buffer);
+			else {
+				buffer.resize(buffer.size()+1024);
+				length += ret;
+			}
 		}
 
-		delete []buffer; 
 		gzclose(svgz);
 
-		svgDocument.setContent(data);
+		svgDocument.setContent(buffer);
 	}
 
 	if(svgDocument.isNull())
