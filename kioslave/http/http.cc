@@ -361,6 +361,15 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
      return false;
   }
+  
+  if (u.path().isEmpty())
+  {
+     KURL newUrl(u);
+     newUrl.setPath("/");
+     redirection(newUrl);
+     finished();
+     return false;
+  }
 
   if ( m_protocol != u.protocol().latin1() )
   {
