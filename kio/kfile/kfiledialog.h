@@ -634,7 +634,7 @@ public:
     /**
      * @deprecated use setMode( unsigned int ) instead
      */
-    void setMode( KFile::Mode m ) KDE_DEPRECATED;
+    void setMode( KFile::Mode m );
 
     /**
      * Sets the mode of the dialog.
