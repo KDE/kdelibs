@@ -355,10 +355,10 @@ Completion DateProtoFunc::execute(const List &args)
     result = Undefined();
     break;
   case GetTimezoneOffset:
-#ifndef BSD
-    result = Number(timezone / 3600);
+#if defined BSD && !defined(__APPLE__)
+    result = Number(-t->tm_gmtoff);
 #else
-    result = Number(-localtime(&tv)->tm_gmtoff);
+    result = Number(timezone / 3600);
 #endif
     break;
   case SetTime:

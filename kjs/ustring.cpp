@@ -118,7 +118,11 @@ UString UString::null;
 static char *statBuffer = 0L;
 
 UChar::UChar(const UCharReference &c)
+#ifdef KJS_SWAPPED_CHAR
+  : lo(c.low()), hi(c.high())
+#else
   : hi(c.high()), lo(c.low())
+#endif
 {
 }
 

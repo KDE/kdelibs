@@ -21,6 +21,10 @@
 #ifndef _KJS_STRING_H_
 #define _KJS_STRING_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /**
  * @internal
  */
@@ -52,19 +56,19 @@ namespace KJS {
   struct UChar {
     /**
      * Construct a character with value 0.
-     */ 
-    UChar() : hi(0), lo(0) { }
+     */
+    UChar();
     /**
      * Construct a character with the value denoted by the arguments.
      * @param h higher byte
      * @param l lower byte
-     */ 
-    UChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
+     */
+    UChar(unsigned char h , unsigned char l);
     /**
      * Construct a character with the given value.
      * @param u 16 bit Unicode value
-     */ 
-    UChar(unsigned short u) : hi(u >> 8), lo(u & 0x00ff) { }
+     */
+    UChar(unsigned short u);
     UChar(const UCharReference &c);
     /**
      * @return The higher byte of the character.
@@ -97,7 +101,7 @@ namespace KJS {
     friend bool operator==(const UChar &c1, const UChar &c2);
     friend bool operator==(const UString& s1, const char *s2);
     friend bool operator<(const UString& s1, const UString& s2);
-#ifdef WIN32
+#ifdef KJS_SWAPPED_CHAR
     unsigned char lo;
     unsigned char hi;
 #else
@@ -105,6 +109,17 @@ namespace KJS {
     unsigned char lo;
 #endif
   } KJS_PACKED;
+
+
+#ifdef KJS_SWAPPED_CHAR // to avoid reorder warnings
+  inline UChar::UChar() : lo(0), hi(0) { }
+  inline UChar::UChar(unsigned char h , unsigned char l) : lo(l), hi(h) { }
+  inline UChar::UChar(unsigned short u) : lo(u & 0x00ff), hi(u >> 8) { }
+#else
+  inline UChar::UChar() : hi(0), lo(0) { }
+  inline UChar::UChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
+  inline UChar::UChar(unsigned short u) : hi(u >> 8), lo(u & 0x00ff) { }
+#endif
 
   /**
    * @short Dynamic reference to a string character.

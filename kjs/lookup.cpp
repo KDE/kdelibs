@@ -22,6 +22,10 @@
 
 #include "lookup.h"
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 using namespace KJS;
 
 int Lookup::find(const struct HashTable *table,
@@ -42,7 +46,7 @@ int Lookup::find(const struct HashTable *table,
 
   do {
     // compare strings
-#ifdef WIN32
+#ifdef KJS_SWAPPED_CHAR
     /* TODO: not exactly as optimized as the other version ... */
     if (len == e->len) {
 	const UChar *u = (const UChar*)e->c;
