@@ -63,20 +63,76 @@ ArrayPrototype::ArrayPrototype(const Object& proto)
   // The constructor will be added later in ArrayObject's constructor
 
   put("length", 0u);
-
-  /* TODO: put() properties */
 }
 
-#if 0
-ArrayProtoFunc::ArrayProtoFunc(int i, const Global& global)
-  : id(i)
+KJSO ArrayPrototype::get(const UString &p) const
 {
-  setPrototype(global->funcProto);
+  int id; 
+  if(p == "toString")
+    id = ArrayProtoFunc::ToString;
+  else if(p == "toLocaleString")
+    id = ArrayProtoFunc::ToLocaleString;
+  else if(p == "concat")
+    id = ArrayProtoFunc::Concat;
+  else if (p == "join")
+    id = ArrayProtoFunc::Join;
+  else if(p == "pop")
+    id = ArrayProtoFunc::Pop;
+  else if(p == "push")
+    id = ArrayProtoFunc::Push;
+  else if(p == "reverse")
+    id = ArrayProtoFunc::Reverse;
+  else if(p == "shift")
+    id = ArrayProtoFunc::Shift;
+  else if(p == "slice")
+    id = ArrayProtoFunc::Slice;
+  else if(p == "sort")
+    id = ArrayProtoFunc::Sort;
+  else if(p == "splice")
+    id = ArrayProtoFunc::Splice;
+  else if(p == "unshift")
+    id = ArrayProtoFunc::UnShift;
+  else 
+    return Imp::get(p);
+
+  return Function(new ArrayProtoFunc(id));
 }
 
 // ECMA 15.4.4
 Completion ArrayProtoFunc::execute(const List &args)
 {
-  /* TODO */
+  KJSO result, obj;
+  Object thisObj = Object::dynamicCast(thisValue());
+  unsigned int length = thisObj.get("length").toUInt32();
+  UString str = "";
+  UString seperator = ",";
+
+  switch (id) {
+  case ToLocaleString:
+    /* TODO */
+    // fall trough
+  case ToString:
+    if (!thisObj.getClass() == ArrayClass) {
+      result = Error::create(TypeError);
+      break;
+    }
+    // fall trough
+  case Join:
+    if (!args[0].isA(UndefinedType))
+      seperator = args[0].toString().value();
+    for (unsigned int k = 0; k < length; k++) {
+      if (k >= 1)
+	str += seperator;
+      obj = thisObj.get(UString::from(k));
+      if (!obj.isA(UndefinedType) && !obj.isA(NullType))
+	str += obj.toString().value();
+    }
+    result = String(str);
+    break;
+    /* TODO */
+  default:
+    result = Undefined();
+  }
+
+  return Completion(Normal,result);
 }
-#endif

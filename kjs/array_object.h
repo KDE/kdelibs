@@ -35,12 +35,15 @@ namespace KJS {
   class ArrayPrototype : public ObjectImp {
   public:
     ArrayPrototype(const Object& proto);
+    virtual KJSO get(const UString &p) const;
   };
 
   class ArrayProtoFunc : public InternalFunctionImp {
   public:
-    ArrayProtoFunc(int i, const Global& global);
+    ArrayProtoFunc(int i) : id(i) { }
     Completion execute(const List &);
+    enum { ToString, ToLocaleString, Concat, Join, Pop, Push,
+	   Reverse, Shift, Slice, Sort, Splice, UnShift };
   private:
     int id;
   };
