@@ -10,6 +10,7 @@ Name[ko]=CGI 그림 (RGB)
 Name[pt_BR]=Imagem SGI (RGB)
 Name[sv]=SGI-bild (RGB)
 Name[th]=แฟ้มภาพ SGI (RGB)
+Name[xx]=xxSGI Image (RGB)xx
 Read=true
 Write=true
 Suffices=rgb,RGB,rgba,RGBA,bw,BW,sgi,SGI
