@@ -68,7 +68,6 @@ KProtocolManagerPrivate::~KProtocolManagerPrivate()
 {
    delete config;
    delete http_config;
-   kpmpksd.setObject(0);
 }
 
 static KProtocolManagerPrivate* d = 0;
