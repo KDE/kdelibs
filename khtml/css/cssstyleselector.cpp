@@ -1031,7 +1031,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             case CSSSelector::PseudoOnlyChild: {
                 // If both first-child and last-child apply, then only-child applies.
-                if (e->parentNode()) {
+                if (e->parentNode() && e->parentNode()->isElementNode()) {
                     DOM::NodeImpl* n = e->previousSibling();
                     while ( n && !n->isElementNode() )
                         n = n->previousSibling();
