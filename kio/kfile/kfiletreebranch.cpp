@@ -40,10 +40,10 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 				  KFileTreeViewItem *branchRoot )
 
     : KDirLister( false ),
+      m_root( branchRoot ),
       m_startURL( url ),
       m_name ( name ),
       m_rootIcon( pix ),
-      m_root( branchRoot ),
       m_openRootIcon( pix ),
       m_recurseChildren(true)
 {
