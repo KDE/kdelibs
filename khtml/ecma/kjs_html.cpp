@@ -184,6 +184,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     if (result.isA(UndefinedType)) {
       DOM::HTMLCollection coll = doc.images(); /* TODO: all() */
       DOM::HTMLElement element = coll.namedItem(p.string());
+      if (element.isNull())
+	element = doc.forms().namedItem(p.string());
       result = new HTMLElement(element);
     }
   }
@@ -291,6 +293,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       // methods
       else if (p == "submit")          return new HTMLElementFunction(element,HTMLElementFunction::Submit);
       else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
+      else return new HTMLElement(form.elements().namedItem(p.string()));
     }
     break;
     case ID_SELECT: {
