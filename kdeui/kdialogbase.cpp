@@ -23,9 +23,12 @@
 #include <iostream.h>
 #include <stdlib.h>
 
+#include <qgrid.h>
+#include <qhbox.h>
 #include <qlayout.h> 
 #include <qlist.h> 
 #include <qtooltip.h>
+#include <qvbox.h>
 #include <qwhatsthis.h>
 
 #include <kapp.h>
@@ -847,6 +850,76 @@ QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir,
 }
 
 
+QFrame *KDialogBase::makeMainWidget( void )
+{
+  if( mJanus != 0 || mMainWidget != 0 )
+  {
+    printMakeMainWidgetError();
+    return( 0 );
+  }
+  
+  QFrame *mainWidget = new QFrame( this );
+  setMainWidget( mainWidget );
+  return( mainWidget );
+}
+
+
+QVBox *KDialogBase::makeVBoxMainWidget( void )
+{
+  if( mJanus != 0 || mMainWidget != 0 )
+  {
+    printMakeMainWidgetError();
+    return( 0 );
+  }
+
+  QVBox *mainWidget = new QVBox( this );
+  mainWidget->setSpacing( spacingHint() );
+  setMainWidget( mainWidget );
+  return( mainWidget );
+}
+
+
+QHBox *KDialogBase::makeHBoxMainWidget( void )
+{
+  if( mJanus != 0 || mMainWidget != 0 )
+  {
+    printMakeMainWidgetError();
+    return( 0 );
+  }
+
+  QHBox *mainWidget = new QHBox( this );
+  mainWidget->setSpacing( spacingHint() );
+  setMainWidget( mainWidget );
+  return( mainWidget );
+}
+
+
+QGrid *KDialogBase::makeGridMainWidget( int n, QGrid::Direction dir )
+{
+  if( mJanus != 0 || mMainWidget != 0 )
+  {
+    printMakeMainWidgetError();
+    return( 0 );
+  }
+
+  QGrid *mainWidget = new QGrid( n, dir, this );
+  mainWidget->setSpacing( spacingHint() );
+  setMainWidget( mainWidget );
+  return( mainWidget );
+}  
+
+
+void KDialogBase::printMakeMainWidgetError( void )
+{
+  if( mJanus != 0 )
+  {
+    qDebug("makeMainWidget: Illegal mode (wrong constructor)");
+  }
+  else if( mMainWidget != 0 )
+  {
+    qDebug("makeMainWidget: Main widget already defined");
+  }
+}
 
 
 void KDialogBase::setMainWidget( QWidget *widget )
@@ -865,7 +938,6 @@ void KDialogBase::setMainWidget( QWidget *widget )
     {
       setupLayout();
     }
-
   }
 }
 

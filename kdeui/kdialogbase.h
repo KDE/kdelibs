@@ -150,7 +150,9 @@ class KDialogBaseTile : public QObject
  * The example below (from kedit) shows how you use the top level widget
  * and its layout. The second argument (the border) to <tt>QVBoxLayout</tt> 
  * is 0. This situation is valid for @ref addPage , @ref addVBoxPage ,
- * @ref addHBoxPage , and @ref addGridPage as well.
+ * @ref addHBoxPage , @ref addGridPage , @ref makeMainWidget, 
+ * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget and 
+ * @ref makeGridMainWidget as well.
  * 
  * <pre>
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption, 
@@ -169,6 +171,22 @@ class KDialogBaseTile : public QObject
  *   topLayout->addWidget( lineedit );
  *
  *   topLayout->addStretch(10); 
+ * }
+ * </pre>
+ *
+ * If you use @ref makeVBoxMainWidget , then the dialog above can be made
+ * simpler but you loose the ability to add a stretchable area.
+ *
+ * <pre>
+ * UrlDlg::UrlDlg( QWidget *parent, const QString& caption, 
+ *		const QString& urltext)
+ * : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
+ * {
+ *   QVBox *page = makeVBoxMainWidget();
+ *   QLabel *label = new QLabel( caption, page, "caption" );
+ *   
+ *   lineedit = new QLineEdit( urltext, page, "lineedit" );
+ *   lineedit->setMinimumWidth(fontMetrics().maxWidth()*20);
  * }
  * </pre>
  *
@@ -469,9 +487,8 @@ class KDialogBase : public KDialog
     /**
      * Retrieve the index of the active page.
      *
-     *  This method will only 
-     * work when the dialog is using the predefined shape of TreeList or
-     * Tabbed.
+     * This method will only work when the dialog is using the 
+     * predefined shape of TreeList or Tabbed.
      *
      * @return The page index or -1 if there is no active page.
      */
@@ -480,10 +497,10 @@ class KDialogBase : public KDialog
     /**
      * Set the main user definable widget.
      *
-     *  If the dialog is using the 
-     * predefined Swallow mode, the widget will be reparented to the internal
-     * swallow control widget. If the dialog is being used in the standard
-     * mode then the @p widget must have the dialog as parent.
+     * If the dialog is using the predefined Swallow mode, the widget will 
+     * be reparented to the internal swallow control widget. If the dialog 
+     * is being used in the standard mode then the @p widget must have the 
+     * dialog as parent.
      *
      * @param widget The widget to be displayed as main widget. If it
      * is 0, then the dialog will show an empty space of 100x100 pixels
@@ -922,6 +939,62 @@ class KDialogBase : public KDialog
 			const QString &header=QString::null );
 
     /**
+     * Makes a main widget. The function will make a @ref QFrame widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList).
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QFrame *makeMainWidget( void );
+
+    /**
+     * Makes a main widget. The function will make a @ref QVBox widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList).
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QVBox *makeVBoxMainWidget( void );
+
+    /**
+     * Makes a main widget. The function will make a @ref QHBox widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList).
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QHBox *makeHBoxMainWidget( void );
+
+    /**
+     * Makes a main widget. The function will make a @ref QGrid widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList).
+     *
+     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
+     *          or the number of rows if 'dir' is QGrid::Vertical.
+     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QGrid *makeGridMainWidget( int n, QGrid::Direction dir );
+
+    /**
      * Maps some keys to the actions buttons. F1 is mapped to the Help
      * button if present and Escape to the Cancel or Close if present. The
      * button action event is animated.
@@ -1067,6 +1140,13 @@ class KDialogBase : public KDialog
      * @param isFocus If true, give the button focus.
      */
     void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
+
+    /**
+     * Prints an error message using qDebug if @ref makeMainWidget , 
+     * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget or 
+     * @ref makeGridMainWidget failed.
+     */
+    void printMakeMainWidgetError( void );
 
   private slots:
     /**
