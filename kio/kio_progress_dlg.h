@@ -27,6 +27,8 @@ public:
   void makingDir( const char *_dir );
   // Get Command
   void gettingFile( const char *_url );
+  // Delete Command
+  void deletingFile( const char *_url );
   
 protected:
   QVBoxLayout *m_pLayout;

@@ -253,4 +253,10 @@ void KIOCopyProgressDlg::gettingFile( const char *_url )
   m_pLine2->setText( _url );
 }
 
+void KIOCopyProgressDlg::deletingFile( const char *_url )
+{
+  m_pLine1->setText( i18n("Deleting file") );
+  m_pLine2->setText( _url );
+}
+
 #include "kio_progress_dlg.moc"
