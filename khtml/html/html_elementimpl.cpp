@@ -107,7 +107,6 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset))
 	{
 	    inside = true;
-	    break;
 	}
 	child = child->nextSibling();
     }
