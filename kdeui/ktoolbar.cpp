@@ -1061,28 +1061,28 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
       config->writeEntry("Position", position);
     else
       config->deleteEntry("Position");
-    
+
     if(icontext != d->IconTextDefault)
       config->writeEntry("IconText", icontext);
     else
       config->deleteEntry("IconText");
-    
+
     if(iconSize() != d->IconSizeDefault)
       config->writeEntry("IconSize", iconSize());
     else config->deleteEntry("IconSize");
-    
+
     if(isHidden() != d->HiddenDefault)
       config->writeEntry("Hidden", isHidden());
     else config->deleteEntry("Hidden");
-    
+
     if ( !index.isEmpty() && index != d->IndexDefault )
         config->writeEntry( "Index", index );
     else config->deleteEntry("Index");
-    
+
     if ( !offset.isEmpty() && offset != d->OffsetDefault )
         config->writeEntry( "Offset", offset );
     else config->deleteEntry("Offset");
-    
+
     if ( !newLine.isEmpty() && newLine != d->NewLineDefault )
         config->writeEntry( "NewLine", newLine );
     else config->deleteEntry("NewLine");
@@ -1438,14 +1438,17 @@ KToolBar::IconText KToolBar::iconTextSetting()
 void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal)
 {
     QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
-    //kdDebug(220) << "KToolBar::applyAppearanceSettings " << configGroup << endl;
+    //kdDebug(220) << "KToolBar::applyAppearanceSettings: configGroup=" << configGroup << endl;
     // We have application-specific settings in the XML file,
     // and nothing in the application's config file
     // -> don't apply the global defaults, the XML ones are preferred
     // See applySettings for a full explanation
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() &&
            !config->hasGroup(configGroup) )
+    {
+        //kdDebug(220) << "skipping global defaults, using XML ones instead" << endl;
         return;
+    }
 
     KConfig *gconfig = KGlobal::config();
 
@@ -1511,7 +1514,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
     // check if the icon/text has changed
     if (icon_text != d->m_iconText) {
-        //kdDebug(220) << "KToolBar::applyAppearanceSettings setIconText" << icontext << endl;
+        //kdDebug(220) << "KToolBar::applyAppearanceSettings setIconText " << icon_text << endl;
         setIconText(icon_text, false);
         doUpdate = true;
     }
@@ -1622,11 +1625,6 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         }
         if (isVisible ())
             updateGeometry();
-
-	// Store default values.
-	getAttributes(d->PositionDefault, d->IconTextDefault, d->IndexDefault,
-		   d->OffsetDefault,  d->NewLineDefault);
-	d->HiddenDefault = hidden;
     }
 }
 
