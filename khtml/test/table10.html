@@ -1,0 +1,37 @@
+<html><head><title>Table testcase (www.hotbot.com)</title></head>
+<body>
+<p>
+This page is a testcase for a line breaking problem as
+seen on <a href="http://www.hotbot.com">www.hotbot.com</a>
+where the label for the language combo is not correctly
+positioned.
+<form>
+<table>
+  <tr>
+    <td width="200" bgcolor="blue">
+      <table>
+        <tr>
+          <td>
+          Okay:<br>
+          <select>
+          <option>Get some width here</option>
+          </select>Problematic:<br>
+          <select>
+          <option>This doesn't matter</option>
+          </select>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td>
+    Here is the main text of the page.
+    The text &quot;Problematic:&quot; to the left
+    runs out of its table cell because there is no
+    whitespace between &lt;/select&gt; and the text.
+    </td>
+  </tr>
+</table>
+</form>
+<p>
+</body>
+</html>
