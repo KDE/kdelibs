@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.15.4.2  1999/03/09 15:46:29  dfaure
+   Doc update (the path order was changed)
+
    Revision 1.15.4.1  1999/03/09 15:22:52  dfaure
    Moved path-list initialisation to a private initPath().
    Merged with Antonio's getIconPath(...) new method. (fixed missing .detach())
@@ -192,7 +195,7 @@ public:
       pixmap is your wishes cannot be satisfied (Be aware, that if unknown.xpm
       is not found you will receive a null string)
   */
-  QString KIconLoader::getIconPath( const QString &name, bool always_valid=false);
+  QString getIconPath( const QString &name, bool always_valid=false);
 
 
   /// Flush cache
