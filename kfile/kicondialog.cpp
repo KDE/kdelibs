@@ -324,9 +324,9 @@ QString KIconDialog::selectIcon(int group, int context, bool user)
     return QString::null;
 }
 
-QString KIconDialog::getIcon(int group=KIcon::Desktop, int context=KIcon::Application,
-                             bool strictIconSize=false, bool user=false,
-                             QWidget *parent=0, const QString &caption=QString::null)
+QString KIconDialog::getIcon(int group=KIcon::Desktop, int context,
+                             bool strictIconSize, bool user,
+                             QWidget *parent, const QString &caption)
 {
     KIconDialog dlg(parent, "icon dialog");
     dlg.setStrictIconSize(strictIconSize);
