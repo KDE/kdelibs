@@ -118,15 +118,7 @@ void KTabWidget::setTabColor( QWidget *w, const QColor& color )
 {
     QTab * t = m_pTabBar->tabAt( indexOf( w ) );
 
-    setTabColor( t->identifier(), color );
-}
-
-void KTabWidget::setTabColor( int id, const QColor& color )
-{
-    if ( id < 0 || ! m_pTabBar->tab( id ) )
-        return;
-
-    m_pTabBar->setTabColor( id, color );
+    m_pTabBar->setTabColor( t->identifier(), color );
 }
 
 QColor KTabWidget::tabColor( QWidget * w ) const
