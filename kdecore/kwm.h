@@ -220,7 +220,7 @@ public:
    *    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
    *
    * Last not least, you can tell the window manager to keep the window
-   * always on top of other windows by combing a decoration with the 
+   * always on top of other windows by combing a decoration with the
    * KWM::staysOnTop flag, for example
    *    KWM::setDecoration(winId(), KWM::normalDecoration | KWM::staysOnTop);
    *
@@ -654,8 +654,8 @@ public:
 
   /**
     * doNotManage(...) allows to define the first 20 character of a
-      window title (or a regular expression) that should not be
-      managed by the windowmanager. This is useful
+    * window title (or a regular expression) that should not be
+    * managed by the windowmanager. This is useful
     * to avoid flickering when a panel swallows legacy applications.
     * doNotManage(...) applies only for the first window which meets the
     * criteria.
@@ -663,6 +663,17 @@ public:
     * Note: May have no effect with other windowmanagers.
     */
   static void doNotManage(const QString&);
+
+    
+    /**
+     * Tell the window manager that you like to have this window on
+     *  top of all other windows.  The last window to call keepOnTop()
+     * has the highest priority. KDE's desktop panel and taskbar are
+     * two example windows that make use of this functionality.
+     *
+     * Note: May have no effect with other windowmanagers.
+     */
+  static void keepOnTop(Window w);
 
 
   /**

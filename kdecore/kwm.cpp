@@ -149,7 +149,7 @@ static bool getQStringProperty (Window w, Atom a, QString& str)
 	kwm_error = TRUE;
 	return FALSE;
     }
-    if (tp.encoding == XA_STRING) { 
+    if (tp.encoding == XA_STRING) {
 	str = (const char*) tp.value;
     }
     else {
@@ -160,7 +160,7 @@ static bool getQStringProperty (Window w, Atom a, QString& str)
 	    }
 	    XFreeStringList (text);
 	}
-    } 
+    }
     /* Free the data returned by XGetTextProperty */
     XFree (tp.value);	
     return TRUE;
@@ -1244,4 +1244,34 @@ int KWM::getWindowState(Window w){
   return (int) result;
 }
 
+
+void KWM::keepOnTop(Window w) {
+    static Atom a = 0;
+    if (!a)
+	a = XInternAtom(qt_xdisplay(), "KWM_KEEP_ON_TOP", False);
+    sendClientMessage(qt_xrootwin(), a, (long) w);
+
+    
+    
+    //     If you have to use this function in KDE <= 1.1, you can cut&paste the 
+    //    following code into your application. w is the winId() of your widget.
+    /*    
+    {
+	XEvent ev;
+	long mask;
+	
+	memset(&ev, 0, sizeof(ev));
+	ev.xclient.type = ClientMessage;
+	ev.xclient.window = qt_xrootwin();
+	ev.xclient.message_type = XInternAtom(qt_xdisplay(), "KWM_KEEP_ON_TOP", False);
+	ev.xclient.format = 32;
+	ev.xclient.data.l[0] = (long)w;
+	ev.xclient.data.l[1] = CurrentTime;
+	mask = SubstructureRedirectMask;
+	XSendEvent(qt_xdisplay(), qt_xrootwin(), False, mask, &ev);
+	ev.xclient.data.l[0] = (long)winId();
+	XSendEvent(qt_xdisplay(), qt_xrootwin(), False, mask, &ev);
+    }
+    */
+}
 
