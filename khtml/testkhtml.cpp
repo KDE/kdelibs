@@ -34,14 +34,19 @@
 #include <css/cssstyleselector.h>
 #include <html/html_imageimpl.h>
 #include <rendering/render_style.h>
+#include <kmainwindow.h>
 
 int main(int argc, char *argv[])
 {
     KHTMLFactory *fac = new KHTMLFactory();
     KApplication a(argc, argv, "testkhtml");
 
-    KHTMLPart *doc = new KHTMLPart;
+    KMainWindow *toplevel = new KMainWindow;
+    KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
     doc->widget()->resize(800,500);
+    toplevel->setCentralWidget( doc->widget() );
+
+    toplevel->guiFactory()->addClient( doc );
 
     doc->enableJScript(true);
     doc->enableJava(true);
@@ -58,6 +63,7 @@ int main(int argc, char *argv[])
 		     doc->widget(), SLOT(setCaption(const QString &)));
     doc->widget()->show();
 
+    toplevel->show();
     ((QScrollView *)doc->widget())->viewport()->show();
 
     Dummy *dummy = new Dummy( doc );
