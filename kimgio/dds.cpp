@@ -44,6 +44,41 @@ namespace {	// Private.
 #define VERTICAL 2
 #define CUBE_LAYOUT	HORIZONTAL
 
+	struct Color8888
+	{
+		uchar r, g, b, a;
+	};
+
+	union Color565
+	{
+		struct {
+			ushort b : 5;
+			ushort g : 6;
+			ushort r : 5;
+		} c;
+		ushort u;
+	};
+
+	union Color1555 {
+		struct {
+			ushort b : 5;
+			ushort g : 5;
+			ushort r : 5;
+			ushort a : 1;
+		} c;
+		ushort u;
+	};
+
+	union Color4444 {
+		struct {
+			ushort b : 4;
+			ushort g : 4;
+			ushort r : 4;
+			ushort a : 4;
+		} c;
+		ushort u;
+	};
+
 
 	const uint FOURCC_DDS = MAKEFOURCC('D', 'D', 'S', ' ');
 	const uint FOURCC_DXT1 = MAKEFOURCC('D', 'X', 'T', '1');
@@ -51,6 +86,7 @@ namespace {	// Private.
 	const uint FOURCC_DXT3 = MAKEFOURCC('D', 'X', 'T', '3');
 	const uint FOURCC_DXT4 = MAKEFOURCC('D', 'X', 'T', '4');
 	const uint FOURCC_DXT5 = MAKEFOURCC('D', 'X', 'T', '5');
+	const uint FOURCC_RXGB = MAKEFOURCC('R', 'X', 'G', 'B');
 
 	const uint DDSD_CAPS = 0x00000001l;
 	const uint DDSD_PIXELFORMAT = 0x00001000l;
@@ -84,6 +120,7 @@ namespace {	// Private.
 		DDS_DXT3 = 7,
 		DDS_DXT4 = 8,
 		DDS_DXT5 = 9,
+		DDS_RXGB = 10,
 		DDS_UNKNOWN
 	};
 
@@ -212,6 +249,8 @@ namespace {	// Private.
 					return DDS_DXT4;
 				case FOURCC_DXT5:
 					return DDS_DXT5;
+				case FOURCC_RXGB:
+					return DDS_RXGB;
 			}
 		}
 		return DDS_UNKNOWN;
@@ -285,13 +324,12 @@ namespace {	// Private.
 		for( uint y = 0; y < h; y++ ) {
 			QRgb * scanline = (QRgb *) img.scanLine( y );
 			for( uint x = 0; x < w; x++ ) {
-				ushort u;
-				s >> u;
-				uchar r, g, b, a;
-				a = (u & header.pf.amask) != 0 ? 0xFF : 0;
-				r = ((u & header.pf.rmask) >> 10) << 3;
-				g = ((u & header.pf.gmask) >> 5) << 3;
-				b = (u & header.pf.bmask) << 3;
+				Color1555 color;
+				s >> color.u;
+				uchar a = (color.c.a != 0) ? 0xFF : 0;
+				uchar r = (color.c.r << 3) | (color.c.r >> 2);
+				uchar g = (color.c.g << 3) | (color.c.g >> 2);
+				uchar b = (color.c.b << 3) | (color.c.b >> 2);
 				scanline[x] = qRgba(r, g, b, a);
 			}
 		}
@@ -307,13 +345,12 @@ namespace {	// Private.
 		for( uint y = 0; y < h; y++ ) {
 			QRgb * scanline = (QRgb *) img.scanLine( y );
 			for( uint x = 0; x < w; x++ ) {
-				unsigned short u;
-				s >> u;
-				uchar r, g, b, a;
-				a = ((u & header.pf.amask) >> 12) << 4;
-				r = ((u & header.pf.rmask) >> 8) << 4;
-				g = ((u & header.pf.gmask) >> 4) << 4;
-				b = (u & header.pf.bmask) << 4;
+				Color4444 color;
+				s >> color.u;
+				uchar a = (color.c.a << 4) | color.c.a;
+				uchar r = (color.c.r << 4) | color.c.r;
+				uchar g = (color.c.g << 4) | color.c.g;
+				uchar b = (color.c.b << 4) | color.c.b;
 				scanline[x] = qRgba(r, g, b, a);
 			}
 		}
@@ -329,33 +366,17 @@ namespace {	// Private.
 		for( uint y = 0; y < h; y++ ) {
 			QRgb * scanline = (QRgb *) img.scanLine( y );
 			for( uint x = 0; x < w; x++ ) {
-				unsigned short u;
-				s >> u;
-				uchar r, g, b;
-				r = ((u & header.pf.rmask) >> 11) << 3;
-				g = ((u & header.pf.gmask) >> 5) << 2;
-				b = (u & header.pf.bmask) << 3;
+				Color565 color;
+				s >> color.u;
+				uchar r = (color.c.r << 3) | (color.c.r >> 2);
+				uchar g = (color.c.g << 2) | (color.c.g >> 4);
+				uchar b = (color.c.b << 3) | (color.c.b >> 2);
 				scanline[x] = qRgb(r, g, b);
 			}
 		}
 
 		return true;
 	}
-
-	struct Color8888
-	{
-		uchar r, g, b, a;
-	};
-
-	union Color565
-	{
-		struct {
-			ushort b : 5;
-			ushort g : 6;
-			ushort r : 5;
-		} c;
-		ushort u;
-	};
 
 	QDataStream & operator>> ( QDataStream & s, Color565 & c )
 	{
@@ -631,6 +652,54 @@ namespace {	// Private.
 		return true;
 	}
 	
+	bool LoadRXGB( QDataStream & s, const DDSHeader & header, QImage img )
+	{
+		const uint w = header.width;
+		const uint h = header.height;
+
+		BlockDXT block;
+		BlockDXTAlphaLinear alpha;
+		QRgb * scanline[4];
+
+		for( uint y = 0; y < h; y += 4 ) {
+			for( uint j = 0; j < 4; j++ ) {
+				scanline[j] = (QRgb *) img.scanLine( y + j );
+			}
+			for( uint x = 0; x < w; x += 4 ) {
+
+				// Read 128bit color block.
+				s >> alpha;
+				s >> block;
+
+				// Decode color block.
+				Color8888 color_array[4];
+				block.GetColors(color_array);
+
+				uchar alpha_array[8];
+				alpha.GetAlphas(alpha_array);
+
+				uchar bit_array[16];
+				alpha.GetBits(bit_array);
+
+				// bit masks = 00000011, 00001100, 00110000, 11000000
+				const uint masks[4] = { 3, 3<<2, 3<<4, 3<<6 };
+				const int shift[4] = { 0, 2, 4, 6 };
+
+				// Write color block.
+				for( uint j = 0; j < 4; j++ ) {
+					for( uint i = 0; i < 4; i++ ) {
+						if( img.valid( x+i, y+j ) ) {
+							uint idx = (block.row[j] & masks[i]) >> shift[i];
+							color_array[idx].a = alpha_array[bit_array[j*4+i]];
+							scanline[j][x+i] = qRgb(color_array[idx].a, color_array[idx].g, color_array[idx].b);
+						}
+					}
+				}
+			}
+		}
+
+		return true;
+	}
 	bool LoadDXT4( QDataStream & s, const DDSHeader & header, QImage img )
 	{
 		if( !LoadDXT5(s, header, img) ) return false;
@@ -664,6 +733,8 @@ namespace {	// Private.
 				return LoadDXT4;
 			case DDS_DXT5:
 				return LoadDXT5;
+			case DDS_RXGB:
+				return LoadRXGB;
 			default:
 				return NULL;
 		};
