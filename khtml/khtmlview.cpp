@@ -918,6 +918,9 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     //  Qt:      Press      | Release(autorepeat) Press(autorepeat) etc. |   Release
     //  DOM:   Down + Press |      (nothing)           Press             |     Up
 
+    // It's also possible to get only Releases. E.g. the release of alt-tab,
+    // or when the keypresses get captured by an accel.
+
     if( _ke == d->postponed_autorepeat ) // replayed event
     {
         return false;
@@ -944,13 +947,18 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     }
     else // QEvent::KeyRelease
     {
+        // Discard postponed "autorepeat key-release" events that didn't see
+        // a keypress after them (e.g. due to QAccel)
+        if ( d->postponed_autorepeat ) {
+            delete d->postponed_autorepeat;
+            d->postponed_autorepeat = 0;
+        }
+
         if( !_ke->isAutoRepeat()) {
-            Q_ASSERT( d->postponed_autorepeat == NULL );
             return dispatchKeyEventHelper( _ke, false ); // keyup
         }
         else
         {
-            Q_ASSERT( d->postponed_autorepeat == NULL );
             d->postponed_autorepeat = new QKeyEvent( _ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
                 _ke->text(), _ke->isAutoRepeat(), _ke->count());
             if( _ke->isAccepted())
