@@ -148,12 +148,10 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 		if (dlg->parent() && dlg->parent()->isA("KPrintDialog"))
 			prt = static_cast<KPrintDialog*>(dlg->parent())->printer();
 
-#ifdef KDEPRINT_USE_MARGINS
 		// add margin page
 		if ( ( prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog )
 					|| prt->applicationType() < 0 )
 			dlg->addPage(new KPMarginPage(prt, driver, dlg, "MarginPage"));
-#endif
 
 		// add driver page
 		if (driver)

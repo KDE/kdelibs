@@ -94,18 +94,12 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 		QPaintDeviceMetrics	metrics(&prt);
 		w = metrics.width();
 		h = metrics.height();
-#ifdef KDEPRINT_USE_MARGINS
 		unsigned int it, il, ib, ir;
 		prt.margins( &it, &il, &ib, &ir );
 		mt = it;
 		ml = il;
 		mb = ib;
 		mr = ir;
-#else
-		QSize mg = prt.margins();
-		mt = mb = mg.height();
-		ml = mr = mg.width();
-#endif
 	}
 	m_margin->setPageSize(w, h);
 	m_margin->setOrientation(landscape ? KPrinter::Landscape : KPrinter::Portrait);

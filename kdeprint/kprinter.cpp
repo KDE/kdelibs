@@ -309,7 +309,6 @@ void KPrinter::translateQtOptions()
 	d->m_wrapper->setOutputToFile(true);
 	d->m_wrapper->setOutputFileName(d->m_tmpbuffer);
 	d->m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
-#ifdef KDEPRINT_USE_MARGINS
 	if (!option("kde-margin-top").isEmpty())
 	{
 		/**
@@ -340,7 +339,6 @@ void KPrinter::translateQtOptions()
 		int res = d->m_wrapper->resolution();
 		d->m_wrapper->setMargins( res/3, res/2, res/3, res/2 );
 	}*/
-#endif
 	// for special printers, copies are handled by Qt
 	if (option("kde-isspecial") == "1")
 		d->m_wrapper->setNumCopies(numCopies());
@@ -552,13 +550,7 @@ QSize KPrinter::margins() const
 
 void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 {
-#ifdef KDEPRINT_USE_MARGINS
 	d->m_wrapper->margins( top, left, bottom, right );
-#else
-	QSize mg = d->m_wrapper->margins();
-	*top = *bottom = mg.height();
-	*left = *right = mg.width();
-#endif
 }
 
 int KPrinter::metric(int m) const
