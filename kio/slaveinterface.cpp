@@ -315,7 +315,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
         caption = QString::fromUtf8(kapp->dcopClient()->appId()); // hack, see uiserver.cpp
 
     emit needProgressId();
-    kdDebug() << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
+    kdDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
     int result = Observer::self()->messageBox( m_progressId, type, text, caption, buttonYes, buttonNo );
     if ( m_pConnection ) // Don't do anything if deleted meanwhile
     {
@@ -327,7 +327,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
 void SlaveInterface::sigpipe_handler(int)
 {
-    kdDebug() << "*** SIGPIPE ***" << endl;
+    kdDebug(7007) << "*** SIGPIPE ***" << endl;
     // Do nothing.
     // dispatch will return false and that will trigger ERR_SLAVE_DIED in slave.cpp
 }
