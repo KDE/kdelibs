@@ -83,7 +83,7 @@ public:
     int     protocolVersion(void) { return mProtocolVersion; }
 
     bool    isExpired(time_t currentDate);
-    bool    match(const QString &domain, const QString &fqdn,
+    bool    match(const QStringList &domainList, const QString &fqdn,
                   const QString &path);
 
     KHttpCookiePtr next() { return nextCookie; }
@@ -263,13 +263,17 @@ public:
     void eatAllCookies();
 
     /**
-     * Parses _url and returns the FQDN (_fqdn)
-     * as well as the domain name without the hostname (_domain).
+     * Parses _url and returns the FQDN (_fqdn) and path (_path).
      */
-    static bool extractDomain(const QString &_url,
-                              QString &_fqdn,
-                              QString &_domain,
-                              QString &_path);
+    static bool parseURL(const QString &_url,
+                         QString &_fqdn,
+                         QString &_path);
+
+    /**
+     * Returns a list of domains (_domainList) relevant for this host.
+     */
+    static bool extractDomains(const QString &_fqdn,
+                               QStringList &_domainList);
  
     // Save this in the config file...
     int defaultRadioButton; // 0 = This cookie, 1 = domain, 2 = all cookies

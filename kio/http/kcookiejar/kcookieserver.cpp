@@ -173,16 +173,20 @@ bool
 KCookieServer::cookiesPending( const QString &url )
 {
   QString fqdn;
-  QString domain;
+  QStringList domains;
   QString path;
   // Check whether 'url' has cookies on the pending list
-  if (!KCookieJar::extractDomain( url, fqdn, domain, path))
+  if (mPendingCookies->isEmpty())
+     return false;
+  if (!KCookieJar::parseURL(url, fqdn, path))
+     return false;
+  if (!KCookieJar::extractDomains( fqdn, domains))
      return false;
   for( KHttpCookie *cookie = mPendingCookies->first();
        cookie;
        cookie = mPendingCookies->next())
   {
-       if (cookie->match( domain, fqdn, path))
+       if (cookie->match( domains, fqdn, path))
           return true;
   }
   return false;

@@ -938,7 +938,7 @@ bool HTTPProtocol::http_open()
   QString cookieStr = findCookies( m_request.url.url());
   if (!cookieStr.isEmpty())
   {
-    header += cookieStr;
+    header += cookieStr + "\r\n";
   }
 
   if (m_request.method == HTTP_POST) {
