@@ -1985,8 +1985,9 @@ void KDirLister::handleError( KIO::Job *job )
 void KDirLister::addNewItem( const KFileItem *item )
 {
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
-  if (isNameFilterMatch)
-     return; // No reason to continue... bailing out here prevents a mimetype scan.
+
+  if ( isNameFilterMatch )
+    return; // No reason to continue... bailing out here prevents a mimetype scan.
 
   bool isMimeFilterMatch = !matchesMimeFilter( item );
 
@@ -1997,7 +1998,7 @@ void KDirLister::addNewItem( const KFileItem *item )
 
     d->lstNewItems->append( item );            // items not filtered
   }
-  else if ( !isNameFilterMatch )
+  else
   {
     if ( !d->lstMimeFilteredItems )
       d->lstMimeFilteredItems = new KFileItemList;
