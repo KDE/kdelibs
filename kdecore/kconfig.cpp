@@ -143,14 +143,13 @@ void KConfig::parseConfigFiles()
   
   // Parse app-specific config files if available
   if( !data()->aGlobalAppFile.isEmpty() )
- 	  if(aConfigFile.open( IO_ReadOnly)==0) {
+	{
 	  QFile aConfigFile( data()->aGlobalAppFile );
 	  // we can already be sure that this file exists
 	  aConfigFile.open( IO_ReadOnly );
 	  parseOneConfigFile( aConfigFile, 0L, false );
 	  aConfigFile.close();
 	}
-	  aConfigFile.open( IO_ReadOnly );
   if( !data()->aLocalAppFile.isEmpty() )
 	{
 	  QFile aConfigFile( data()->aLocalAppFile );

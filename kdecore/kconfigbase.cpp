@@ -107,6 +107,9 @@ KConfigBase::KConfigBase()
 
 
 KConfigBase::~KConfigBase()
+{
+  delete pData;
+}
 
 
 void KConfigBase::setLocale()
@@ -123,7 +126,7 @@ void KConfigBase::setLocale()
 
 void KConfigBase::parseOneConfigFile( QFile& rFile, 
 				      KGroupDict* pWriteBackDict,
-  while( rFile.isOpen() && !aStream.eof() )
+				      bool bGlobal )
 {
     if (!rFile.isOpen()) // come back, if you have real work for us ;->
       return;
