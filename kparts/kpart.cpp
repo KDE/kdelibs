@@ -181,10 +181,6 @@ ReadOnlyPart::~ReadOnlyPart()
   delete d;
 }
 
-void ReadOnlyPart::init()
-{
-}
-
 bool ReadOnlyPart::openURL( const KURL &url )
 {
   if ( url.isMalformed() )

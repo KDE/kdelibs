@@ -167,8 +167,6 @@ public:
   ReadOnlyPart( QObject *parent = 0, const char *name = 0 );
   virtual ~ReadOnlyPart();
 
-  virtual void init();
-
   /**
    * Only reimplement openURL if you don't want synchronous network transparency
    * Otherwise, reimplement @ref openFile() only .
@@ -238,7 +236,10 @@ private:
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one).
  *
- * The part acts read-only by default. Use @ref setReadWrite.
+ * The part acts read-only by default. Use @ref setReadWrite to
+ * enable its read-write mode.
+ *
+ * Part writers :
  * Any part inheriting ReadWritePart should check @ref isReadWrite
  * before allowing any action that modifies the part.
  * The part probably wants to reimplement @ref setReadWrite, disable those
