@@ -150,6 +150,60 @@ int KGlobalSettings::contrast()
     return c->readNumEntry( "contrast", 7 );
 }
 
+// IMPORTANT:
+//  This function should be get in sync with 
+//   KApplication::kdisplaySetPalette()
+QColor KGlobalSettings::baseColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    return c->readColorEntry( "windowBackground", &Qt::white );
+}
+
+// IMPORTANT:
+//  This function should be get in sync with 
+//   KApplication::kdisplaySetPalette()
+QColor KGlobalSettings::textColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    return c->readColorEntry( "windowForeground", &Qt::black );
+}
+
+// IMPORTANT:
+//  This function should be get in sync with 
+//   KApplication::kdisplaySetPalette()
+QColor KGlobalSettings::highlightedTextColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    return c->readColorEntry( "selectForeground", &Qt::white );
+}
+
+// IMPORTANT:
+//  This function should be get in sync with 
+//   KApplication::kdisplaySetPalette()
+QColor KGlobalSettings::highlightColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    return c->readColorEntry( "selectBackground", &Qt::darkBlue );
+}
+
+QColor KGlobalSettings::linkColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    return c->readColorEntry( "linkColor", &Qt::blue );
+}
+
+QColor KGlobalSettings::visitedLinkColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    return c->readColorEntry( "visitedLinkColor", &Qt::magenta );
+}
+
 QFont KGlobalSettings::generalFont()
 {
     if (_generalFont)

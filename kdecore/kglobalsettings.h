@@ -177,6 +177,17 @@ class KGlobalSettings
     static QColor activeTitleColor();
     static QColor activeTextColor();
     static int contrast();
+  
+    /**
+     * The default colors to use for text and links.
+     */
+    static QColor baseColor(); // Similair to QColorGroup::base()
+    static QColor textColor(); // Similair to QColorGroup::text()
+    static QColor linkColor();
+    static QColor visitedLinkColor();
+    static QColor highlightedTextColor(); // Similair to QColorGroup::hightlightedText()
+    static QColor highlightColor(); // Similair to QColorGroup::highlight()
+
 
     static QFont generalFont();
     static QFont fixedFont();
