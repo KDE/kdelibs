@@ -17,6 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#ifndef _BLOWFISH_H
+#define _BLOWFISH_H
 
 #include "blockcipher.h"
 
@@ -53,4 +55,6 @@ class BlowFish : public BlockCipher {
      void decipher(unsigned long *xl, unsigned long *xr);
 
 };
+
+#endif
 
