@@ -44,11 +44,11 @@ namespace KIO {
  * @author Leo Savernik
  */
 #if defined(DATAKIOSLAVE)
-class KIO_EXPORT DataProtocol : public KIO::SlaveBase {
+class DataProtocol : public KIO::SlaveBase {
 #elif defined(TESTKIO)
-class KIO_EXPORT DataProtocol : public TestSlave {
+class DataProtocol : public TestSlave {
 #else
-class KIO_EXPORT DataProtocol : public DataSlave {
+class DataProtocol : public DataSlave {
 #endif
 
 public:
