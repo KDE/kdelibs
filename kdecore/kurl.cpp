@@ -219,7 +219,7 @@ void KURL::parse( const QString& _url )
       m_strUser = "";
       QString tmp( buf + start, pos - start );
       char *endptr;
-      m_iPort = strtol(tmp.ascii(), &endptr, 10);
+      m_iPort = (unsigned short int)strtol(tmp.ascii(), &endptr, 10);
       if ((pos == len) && (strlen(endptr) == 0))
 	goto NodeOk;
       // there is more after the digits
@@ -264,7 +264,7 @@ void KURL::parse( const QString& _url )
   // Node 8b: Accept any amount of digits
   while( isdigit( buf[pos] ) && pos < len ) pos++;
   port = QString( buf + start, pos - start );
-  m_iPort = atoi( port.ascii() );
+  m_iPort = port.toUShort();
   if ( pos == len )
     goto NodeOk;
   start = pos++;
@@ -563,8 +563,7 @@ QString KURL::url( int _trailing ) const
       u += "@";
     }
     u += m_strHost;
-    if ( m_iPort != 0 )
-    {
+    if ( m_iPort != 0 ) {
       char buffer[ 100 ];
       sprintf( buffer, ":%u", m_iPort );
       u += buffer;
