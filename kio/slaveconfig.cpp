@@ -25,6 +25,7 @@
 #include <qdict.h>
 
 #include <kconfig.h>
+#include <kstaticdeleter.h>
 
 #include "slaveconfig.h"
 
@@ -117,11 +118,12 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &_protocol, SlaveC
 
 
 SlaveConfig *SlaveConfig::_self = 0;
+KStaticDeleter<SlaveConfig> slaveconfigsd;
 
 SlaveConfig *SlaveConfig::self()
 {
    if (!_self)
-      _self = new SlaveConfig;
+      _self = slaveconfigsd.setObject(new SlaveConfig);
    return _self;
 }
 
