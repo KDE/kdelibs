@@ -38,19 +38,19 @@ using namespace DOM;
 
 // -------------------------------------------------------------------------
 
-JSEventListener::JSEventListener(Object _listener, const Object &_win, bool _html)
-  : listener( _listener ), html( _html ), win( _win )
+JSEventListener::JSEventListener(Object _listener, ObjectImp *_compareListenerImp, const Object &_win, bool _html)
+  : listener( _listener ), compareListenerImp( _compareListenerImp ), html( _html ), win( _win )
 {
     //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
-  if (_listener.imp()) {
-    static_cast<Window*>(win.imp())->jsEventListeners.insert(_listener.imp(), this);
+  if (compareListenerImp) {
+    static_cast<Window*>(win.imp())->jsEventListeners.insert(compareListenerImp, this);
   }
 }
 
 JSEventListener::~JSEventListener()
 {
-  if (listener.imp()) {
-    static_cast<Window*>(win.imp())->jsEventListeners.remove(listener.imp());
+  if (compareListenerImp) {
+    static_cast<Window*>(win.imp())->jsEventListeners.remove(compareListenerImp);
   }
   //fprintf(stderr,"JSEventListener::~JSEventListener this=%p listener=%p\n",this,listener.imp());
 }
@@ -139,7 +139,7 @@ Object JSEventListener::listenerObj() const
 }
 
 JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_name, const Object &_win, bool _html)
-  : JSEventListener(Object(), _win, _html),
+  : JSEventListener(Object(), 0, _win, _html),
     code(_code), name(_name),
     parsed(false)
 {
@@ -198,7 +198,7 @@ void JSLazyEventListener::parseCode() const
     // no more need to keep the unparsed code around
     code = QString();
 
-    if (!listener.isNull()) {
+    if (!listener.isNull() && listener.imp()) {
       static_cast<Window*>(win.imp())->jsEventListeners.insert(listener.imp(),
                                                                (KJS::JSEventListener *)(this));
     }

@@ -1032,14 +1032,33 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
   // This function is so hot that it's worth coding it directly with imps.
   if (val.type() != ObjectType)
     return 0;
-  ObjectImp *listenerObject = static_cast<ObjectImp *>(val.imp());
 
-  JSEventListener *existingListener = jsEventListeners[listenerObject];
+  // It's ObjectType, so it must be valid.
+  Object listenerObject = Object::dynamicCast(val);
+  ObjectImp *listenerObjectImp = listenerObject.imp();
+
+  // 'listener' is not a simple ecma function. (Always use sanity checks: Better safe than sorry!)
+  if (!listenerObject.implementsCall() && m_part && m_part->jScript() && m_part->jScript()->interpreter())
+  {
+    Interpreter *interpreter = m_part->jScript()->interpreter();
+    
+    // 'listener' probably is an EventListener object containing a 'handleEvent' function.
+    Value handleEventValue = listenerObject.get(interpreter->globalExec(), Identifier("handleEvent"));
+    Object handleEventObject = Object::dynamicCast(handleEventValue);
+
+    if(handleEventObject.isValid() && handleEventObject.implementsCall())
+    {
+      listenerObject = handleEventObject;
+      listenerObjectImp = handleEventObject.imp();
+    }
+  }
+  
+  JSEventListener *existingListener = jsEventListeners[listenerObjectImp];
   if (existingListener)
     return existingListener;
 
   // Note that the JSEventListener constructor adds it to our jsEventListeners list
-  return new JSEventListener(Object(listenerObject), Object(this), html);
+  return new JSEventListener(listenerObject, listenerObjectImp, Object(this), html);
 }
 
 JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const QString& name, bool html)

@@ -37,7 +37,7 @@ namespace KJS {
      * @param _win Window object, for memory management and caching.
      * Never create a JSEventListener directly, use Window::getJSEventListener.
      */
-    JSEventListener(Object _listener, const Object &_win, bool _html = false);
+    JSEventListener(Object _listener, ObjectImp *_compareListenerImp, const Object &_win, bool _html = false);
     virtual ~JSEventListener();
     void hackSetThisObj( Object& thisObj ) { m_hackThisObj = thisObj; }
     void hackUnsetThisObj() { m_hackThisObj = Object(0L); }
@@ -53,6 +53,17 @@ namespace KJS {
 
   protected:
     mutable Object listener;
+	// Storing a different ObjectImp ptr is needed to support addEventListener(.. [Object] ..) calls
+	// In the real-life case (where a 'function' is passed to addEventListener) we can directly call
+	// the 'listener' object and can cache the 'listener.imp()'. If the event listener should be removed
+	// the implementation will call removeEventListener(.. [Function] ..), and we can lookup the event
+	// listener by the passed function's imp() ptr.
+	// In the only dom-approved way (passing an Object to add/removeEventListener), the 'listener'
+	// variable stores the function object 'passedListener.handleEvent'. But we need to cache
+	// the imp() ptr of the 'passedListener' function _object_, as the implementation will
+	// call removeEventListener(.. [Object ..] on removal, and now we can successfully lookup
+	// the correct event listener, as well as the 'listener.handleEvent' function, we need to call.
+    mutable ObjectImp *compareListenerImp;
     bool html;
     Object win, m_hackThisObj;
   };
