@@ -340,6 +340,10 @@ bool KHTMLPart::openURL( const KURL &url )
   // khtmlpart so that it can display the error.
   if ( url.protocol() == "error" && url.hasSubURL() ) {
     closeURL();
+
+    if(  d->m_bJScriptEnabled )
+      d->m_statusBarText[BarOverrideText] = d->m_statusBarText[BarDefaultText] = QString::null;
+
     /**
      * The format of the error url is that two variables are passed in the query:
      * error = int kio error code, errText = QString error text from kio
