@@ -17,9 +17,15 @@
     Boston, MA 02111-1307, USA.
 */
 /*
- * $Id$
  *
  * $Log$
+ * Revision 1.21  1999/09/18 20:30:00  espensa
+ * Added QSize(4,4) to the returned value of sizeHint(). Seems that the 
+ * border size has been forgotten.
+ *
+ * Revision 1.20  1999/06/23 23:30:57  knoll
+ * removed some hardcoded fonts
+ *
  * Revision 1.19  1999/06/16 07:47:46  kulow
  * fixing some misc warnings
  * in trader.cc I had to change getFirst() -> first(). Don't know why
@@ -320,7 +326,11 @@ KTabCtl::sizeHint(void) const
 		/* heights must just be added */
 		hint.setHeight(hint.height() + pageHint.height());
 		
-		return (hint);
+		/* 1999-09-18: Espen Sand
+		   I cannot get the size to be correct unless the total 
+		   border size is included: ie 2*2 pixels.
+		*/
+		return (hint + QSize(4,4));
 	}
 	
 	/*
