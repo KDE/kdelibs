@@ -679,6 +679,26 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     return containerCount() - 1;
   }
+  else if ( widget->inherits("QMenuBar") )
+  {
+    // Create the PopupMenu and store it in m_menu
+    (void)popupMenu();
+
+    QMenuBar* menu = static_cast<QMenuBar*>( widget );
+    int id = menu->insertItem( text(), d->m_menu, -1, index );
+
+    if ( !isEnabled() )
+        menu->setItemEnabled( id, false );
+
+    QString wth = whatsThis();
+    if ( !wth.isEmpty() )
+        menu->setWhatsThis( id, wth );
+
+    addContainer( menu, id );
+    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return containerCount() - 1;
+  }
 
   kdWarning() << "Can not plug KAction in " << widget->className() << endl;
   return -1;
