@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -647,6 +647,15 @@ public:
    */
   virtual KSocketAddress peerAddress() const = 0;
 
+  // FIXME KDE 4.0:
+  // enable this function
+#if 0
+  /**
+   * Returns this socket's externally-visible address, if known.
+   */
+  virtual KSocketAddress externalAddress() const = 0;
+#endif
+
 protected:
   /**
    * Sets the socket's error code and the I/O Device's status.
@@ -739,7 +748,7 @@ public:
   virtual KSocketAddress localAddress() const = 0;
 
   /**
-   * Returns this socket's externally-visible address if know.
+   * Returns this socket's externally-visible address if known.
    */
   virtual KSocketAddress externalAddress() const = 0;
 

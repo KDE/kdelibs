@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -277,44 +277,97 @@ void KClientSocketBase::close()
   emit closed();
 }
 
+// This function is unlike all the others because it is const
 Q_LONG KClientSocketBase::bytesAvailable() const
 {
   return socketDevice()->bytesAvailable();
 }
 
+// All the functions below look really alike
+// Should I use a macro to define them?
+
 Q_LONG KClientSocketBase::waitForMore(int msecs, bool *timeout)
 {
-  return socketDevice()->waitForMore(msecs, timeout);
+  resetError();
+  Q_LONG retval = socketDevice()->waitForMore(msecs, timeout);
+  if (retval == -1)
+    {
+      copyError();
+      emit gotError(error());
+    }
+  return retval;
 }
 
 Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
 {
-  return socketDevice()->readBlock(data, maxlen);
+  resetError();
+  Q_LONG retval = socketDevice()->readBlock(data, maxlen);
+  if (retval == -1)
+    {
+      copyError();
+      emit gotError(error());
+    }
+  return retval;
 }
 
 Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
 {
-  return socketDevice()->readBlock(data, maxlen, from);
+  resetError();
+  Q_LONG retval = socketDevice()->readBlock(data, maxlen, from);
+  if (retval == -1)
+    {
+      copyError();
+      emit gotError(error());
+    }
+  return retval;
 }
 
 Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen)
 {
-  return socketDevice()->peekBlock(data, maxlen);
+  resetError();
+  Q_LONG retval = socketDevice()->peekBlock(data, maxlen);
+  if (retval == -1)
+    {
+      copyError();
+      emit gotError(error());
+    }
+  return retval;
 }
 
 Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
 {
-  return socketDevice()->peekBlock(data, maxlen, from);
+  resetError();
+  Q_LONG retval = socketDevice()->peekBlock(data, maxlen, from);
+  if (retval == -1)
+    {
+      copyError();
+      emit gotError(error());
+    }
+  return retval;
 }
 
 Q_LONG KClientSocketBase::writeBlock(const char *data, Q_ULONG len)
 {
-  return socketDevice()->writeBlock(data, len);
+  resetError();
+  Q_LONG retval = socketDevice()->writeBlock(data, len);
+  if (retval == -1)
+    {
+      copyError();
+      emit gotError(error());
+    }
+  return retval;
 }
 
 Q_LONG KClientSocketBase::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
 {
-  return socketDevice()->writeBlock(data, len, to);
+  resetError();
+  Q_LONG retval = socketDevice()->writeBlock(data, len, to);
+  if (retval == -1)
+    {
+      copyError();
+      emit gotError(error());
+    }
+  return retval;
 }
 
 KSocketAddress KClientSocketBase::localAddress() const
