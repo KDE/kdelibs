@@ -778,7 +778,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
     if ( change == Force ) {
 	RenderStyle *oldStyle = m_style;
 	if ( oldStyle ) oldStyle->ref();
-    
+
 	//QTime qt;
 	//qt.start();
 	if( !m_render ) return;
@@ -1409,21 +1409,30 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 
 NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
 {
+    if (!name) return NodeImpl::IdIllegal;
     // Each document maintains a mapping of tag name -> id for every tag name encountered
     // in the document.
-    // For tag names without a prefix (no qualified element name) and without / matching
-    // namespace, the value defined in misc/htmltags.h is used.
     NodeImpl::Id id = 0;
 
     // First see if it's a HTML element name
-    if (!_namespaceURI &&
-        (id = khtml::getTagID(DOMString(_name).string().ascii(), _name->l) ) )
-        return id;
+    QConstString n(_name->s, _name->l);
+    if (!_namespaceURI || !strcasecmp(_namespaceURI, XHTML_NAMESPACE)) {
+        // we're in HTML namespace if we know the tag.
+        // xhtml is lower case - case sensitive, easy to implement
+        if ( htmlMode() == XHtml && (id = khtml::getTagID(n.string().ascii(), _name->l)) )
+            return id;
+        // compatibility: upper case - case insensitive
+        if ( htmlMode() != XHtml && (id = khtml::getTagID(n.string().lower().ascii(), _name->l )) )
+            return id;
+
+        // ok, the fast path didn't work out, we need the full check
+    }
 
     // now lets find out the namespace
     if (_namespaceURI) {
         DOMString nsU(_namespaceURI);
         bool found = false;
+        // ### yeah, this is lame. use a dictionary / map instead
         for (unsigned short ns = 0; ns < m_namespaceURICount; ++ns)
             if (nsU == DOMString(m_namespaceURIs[ns])) {
                 id |= ns << 16;
@@ -1448,12 +1457,13 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
     }
 
     // Look in the m_elementNames array for the name
+    // ### yeah, this is lame. use a dictionary / map instead
     for (id = 0; id < m_elementNameCount; id++)
         if (DOMString(m_elementNames[id]) == DOMString(_name))
             return ID_LAST_TAG+id;
 
     if (readonly)
-        return 0xFFFFFFFF; // invalid / unknown
+        return IdIllegal; // invalid / unknown
 
     // Name not found in m_elementNames, so let's add it
     if (m_elementNameCount+1 > m_elementNameAlloc) {

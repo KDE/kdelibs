@@ -137,6 +137,7 @@ public:
     typedef Q_UINT32 Id;
     static const Q_UINT32 IdNSMask    = 0xffff0000;
     static const Q_UINT32 IdLocalMask = 0x0000ffff;
+    static const Q_UINT32 IdIllegal        = 0xffffffff;
     // id() is used to easily and exactly identify a node. It
     // is optimized for quick comparison and low memory consumption.
     // its value depends on the ownerDocument() of the node and is
@@ -256,14 +257,14 @@ public:
     enum StyleChange { NoChange, NoInherit, Inherit, Force };
     virtual void recalcStyle( StyleChange = NoChange ) {}
     StyleChange diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const;
-    
+
     virtual unsigned long nodeIndex() const;
 
     /**
      * Returns the document that this node is associated with. This is guaranteed to always be non-null, as opposed to
      * ownerDocument() which is null for Document nodes (and sometimes DocumentType nodes). Also, since this is an
      * inline function, it gives a small performance improvement so should generally be used instead of ownerDocument().
-     * 
+     *
      * @return This node's document
      */
     DocumentImpl* getDocument() const { return document->document(); }
@@ -302,19 +303,19 @@ public:
     /**
      * Does a pre-order traversal of the tree to find the node next node after this one. This uses the same order that
      * the tags appear in the source file.
-     * 
+     *
      * @param stayWithin If not null, the traversal will stop once the specified node is reached. This can be used to
      * restrict traversal to a particular sub-tree.
-     * 
+     *
      * @return The next node, in document order
-     * 
+     *
      * see @ref traversePreviousNode()
      */
     NodeImpl *traverseNextNode(NodeImpl *stayWithin = 0) const;
 
     /**
      * Does a reverse pre-order traversal to find the node that comes before the current one in document order
-     * 
+     *
      * see @ref traverseNextNode()
      */
     NodeImpl *traversePreviousNode() const;
@@ -408,7 +409,7 @@ public:
      * when a node is added through the DOM methods insertBefore(), appendChild() or replaceChild(). Note that this only
      * happens when the node becomes part of the document tree, i.e. only when the document is actually an ancestor of
      * the node.
-     * 
+     *
      * This is similar to the DOMNodeInsertedIntoDocument DOM event, but does not require the overhead of event
      * dispatching.
      */
