@@ -44,7 +44,8 @@ public:
 				     DesktopNames |
 				     ActiveWindow |
 				     WorkArea |
-				     KDEDockingWindows
+				     KDEDockingWindows,
+				     -1, false
 				     )
     {
 	kwin_net_create_atoms();

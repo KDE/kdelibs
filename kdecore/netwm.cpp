@@ -333,7 +333,7 @@ template class RArray<NETRect>;
 // Construct a new NETRootInfo object.
 
 NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
-			 unsigned long pr, int sc)
+			 unsigned long pr, int sc, bool doActivate)
 {
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::NETRootInfo: using window manager constructor\n");
@@ -363,15 +363,14 @@ NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
     role = WindowManager;
 
     if (! netwm_atoms_created) create_atoms(p->display);
-    
-    // DO NOT CALL UPDATE HERE, BUT USE ACTIVATE() INSTEAD FROM
-    // OUTSIDE.  Calling update() in the constructor will break all
-    // the virtual functions. It's C++, i.e. we lack a
-    // post-constructor.
+
+    if ( doActivate )
+	activate();
+
 }
 
 
-NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s) {
+NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s, bool doActivate ) {
     p = new NETRootInfoPrivate;
     p->ref = 1;
 
@@ -401,6 +400,8 @@ NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s) {
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
+    if ( doActivate )
+	activate();
 }
 
 
@@ -1678,7 +1679,8 @@ void NETWinInfo::update(unsigned long dirty) {
 	    if (data_ret) {
 		if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		    nitems_ret == 1) {
-		    p->desktop = *((Q_UINT32 *) data_ret) + 1;
+		    p->desktop = *((Q_UINT32 *) data_ret);
+		    p->desktop++;
 		    if ( p->desktop == 0 )
 			p->desktop = OnAllDesktops;
 		}
@@ -1806,7 +1808,7 @@ void NETWinInfo::update(unsigned long dirty) {
 	}
 
     if (dirty & WMPid) {
-	p->desktop = 0;
+	p->pid = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_pid, 0l, 1l,
 			       False, XA_CARDINAL, &type_ret,
 			       &format_ret, &nitems_ret,

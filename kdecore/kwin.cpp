@@ -328,7 +328,6 @@ void KWin::setOnAllDesktops( WId win, bool b )
 	info.setDesktop( NETWinInfo::OnAllDesktops );
     else if ( info.desktop()  == NETWinInfo::OnAllDesktops ) {
 	NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
-        rinfo.activate();
 	info.setDesktop( rinfo.currentDesktop() );
     }
 }
