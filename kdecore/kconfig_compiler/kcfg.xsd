@@ -84,7 +84,7 @@
                                                                 <xsd:element minOccurs="0" name="label" type="xsd:string"/>
                                                                 <xsd:element minOccurs="0" name="whatsthis" type="xsd:string"/>
                                                             </xsd:all>
-                                                            <xsd:attribute name="name" type="xsd:string"/>
+                                                            <xsd:attribute name="name" use="required" type="xsd:string"/>
                                                         </xsd:complexType>
                                                     </xsd:element>
                                                 </xsd:sequence>
@@ -132,14 +132,14 @@
                                 </xsd:complexType>
                             </xsd:element>
                         </xsd:sequence>
-                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="name" use="required" type="xsd:string"/>
                     </xsd:complexType>
                 </xsd:element>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
     <xsd:attributeGroup name="datatype">
-        <xsd:attribute name="type">
+        <xsd:attribute use="required" name="type">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="String"/>
@@ -169,7 +169,7 @@
         <xsd:sequence>
             <xsd:element minOccurs="0" maxOccurs="unbounded" name="values"/>
         </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="name" use="required" type="xsd:string"/>
         <xsd:attributeGroup ref="kcfg:datatype"/>
         <xsd:attribute name="max" type="xsd:positiveInteger"/>
     </xsd:complexType>
