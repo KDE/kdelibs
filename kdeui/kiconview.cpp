@@ -32,8 +32,10 @@ class KIconView::KIconViewPrivate
 public:
     KIconViewPrivate() {
 	mode = KIconView::Execute;
+	doAutoSelect = TRUE;
     }
     KIconView::Mode mode;
+    bool doAutoSelect;
 };
 
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
@@ -154,7 +156,7 @@ void KIconView::slotSettingsChanged(int category)
 void KIconView::slotAutoSelect()
 {
   // check that the item still exists
-  if( itemIndex( m_pCurrentItem ) == -1 )
+  if( itemIndex( m_pCurrentItem ) == -1 || !d->doAutoSelect )
     return;
 
   //Give this widget the keyboard focus.
@@ -276,6 +278,7 @@ void KIconView::leaveEvent( QEvent *e )
 
 void KIconView::contentsMousePressEvent( QMouseEvent *e )
 {
+  QIconView::contentsMousePressEvent( e );
   if( (selectionMode() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {
     bool block = signalsBlocked();
     blockSignals( true );
@@ -290,8 +293,8 @@ void KIconView::contentsMousePressEvent( QMouseEvent *e )
       setCurrentItem( firstItem() );
   }
   // end QIconView bug workaround
-  
-  QIconView::contentsMousePressEvent( e );
+
+  d->doAutoSelect = FALSE;
 }
 
 void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
@@ -313,6 +316,12 @@ void KIconView::slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoi
   //kdDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
   if( (btn == LeftButton) && item )
     emitExecute( item, pos );
+}
+
+void KIconView::contentsMouseReleaseEvent( QMouseEvent *e )
+{
+    d->doAutoSelect = TRUE;
+    QIconView::contentsMouseReleaseEvent( e );
 }
 
 #include "kiconview.moc"

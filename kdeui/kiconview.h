@@ -58,11 +58,11 @@ public:
    * Default is Execute mode.
    */
   enum Mode { Execute, Select };
-    
+
   /**
-   * Sets the mode to Execute or Select. 
+   * Sets the mode to Execute or Select.
    * @li In Execute mode, the signal executed()
-   * will be emitted when the user clicks/double-clicks an item. 
+   * will be emitted when the user clicks/double-clicks an item.
    * @li Select mode is
    * the normal QIconView mode.
    *
@@ -85,39 +85,39 @@ public:
 signals:
 
   /**
-   * This signal is emitted whenever the user executes an iconview item. 
-   * That means depending on the KDE wide Single Click/Double Click 
+   * This signal is emitted whenever the user executes an iconview item.
+   * That means depending on the KDE wide Single Click/Double Click
    * setting the user clicked or double clicked on that item.
-   * @param item is the pointer to the executed iconview item. 
+   * @param item is the pointer to the executed iconview item.
    *
-   * Note that you may not delete any @ref QIconViewItem objects in slots 
+   * Note that you may not delete any @ref QIconViewItem objects in slots
    * connected to this signal.
    */
   void executed( QIconViewItem *item );
 
   /**
-   * This signal is emitted whenever the user executes an iconview item. 
-   * That means depending on the KDE wide Single Click/Double Click 
+   * This signal is emitted whenever the user executes an iconview item.
+   * That means depending on the KDE wide Single Click/Double Click
    * setting the user clicked or double clicked on that item.
-   * @param item is the pointer to the executed iconview item. 
+   * @param item is the pointer to the executed iconview item.
    * @param pos is the position where the user has clicked
    *
-   * Note that you may not delete any @ref QIconViewItem objects in slots 
+   * Note that you may not delete any @ref QIconViewItem objects in slots
    * connected to this signal.
    */
   void executed( QIconViewItem *item, const QPoint &pos );
 
   /**
-   * This signal gets emitted whenever the user double clicks into the 
-   * iconview. 
-   * @param item is the pointer to the clicked iconview item. 
-   * @param pos is the position where the user has clicked, and 
+   * This signal gets emitted whenever the user double clicks into the
+   * iconview.
+   * @param item is the pointer to the clicked iconview item.
+   * @param pos is the position where the user has clicked, and
    *
-   * Note that you may not delete any @ref QIconViewItem objects in slots 
+   * Note that you may not delete any @ref QIconViewItem objects in slots
    * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
-   * You should normally not need to use this. In most cases it´s better 
+   * You should normally not need to use this. In most cases it´s better
    * to use @ref #executed() instead.
    */
   void doubleClicked( QIconViewItem *item, const QPoint &pos );
@@ -140,7 +140,8 @@ protected:
   virtual void leaveEvent( QEvent *e );
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
-
+  virtual void contentsMouseReleaseEvent( QMouseEvent *e );
+    
   QCursor oldCursor;
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;
