@@ -786,17 +786,24 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 
 int main( int argc, char* argv[] )
 {
-    
+
   // check if we are already running
   QCString fName(::getenv("HOME"));
   fName += "/.DCOPserver";
   if (::access(fName.data(), R_OK) == 0) {
-    // lock file present, die silently.
+      qWarning( "---------------------------------\n"
+		"It looks like dcopserver is already running. If you are sure\n"
+		"that it is not already running, remove %s\n"
+		"and start dcopserver again\n"
+		"---------------------------------\n",
+		fName.data() );
+
+      // lock file present, die silently.
     exit(0);
   }
 
   QApplication a( argc, argv );
-  
+
   InstallIOErrorHandler();
   DCOPServer server;
 
