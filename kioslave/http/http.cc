@@ -4069,6 +4069,11 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
             m_bMustRevalidate = true;
          m_expireDate = date;
       }
+      else if (m_request.cache == CC_Refresh)
+      {
+         m_bMustRevalidate = true;
+         m_expireDate = currentDate;
+      }
    }
 
    // ETag
