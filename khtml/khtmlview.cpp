@@ -72,6 +72,7 @@
 #include <qptrdict.h>
 
 #define DEBUG_CARETMODE 0
+//#define DEBUG_NO_PAINT_BUFFER
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -630,6 +631,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     if (cr.isEmpty())
 	return;
 
+#ifndef DEBUG_NO_PAINT_BUFFER
     p->setClipRegion(cr);
 
     if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
@@ -666,6 +668,16 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             py += PAINT_BUFFER_HEIGHT;
         }
     }
+#else // !DEBUG_NO_PAINT_BUFFER
+static int cnt=0;
+	ex = contentsX(); ey = contentsY();
+	ew = visibleWidth(); eh = visibleHeight();
+	kdDebug() << "[" << ++cnt << "]" << " clip region: " << QRect(ex,ey,ew,eh) << endl;
+//	p->setClipRegion(QRect(0,0,ew,eh));
+//        p->translate(-ex, -ey);
+        p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
+        m_part->xmlDocImpl()->renderer()->layer()->paint(p, ex, ey, ew, eh, 0, 0);
+#endif // DEBUG_NO_PAINT_BUFFER
 
 #ifndef KHTML_NO_CARET
     if (d->m_caretViewContext && d->m_caretViewContext->visible) {
@@ -674,7 +686,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         if (pos.intersects(QRect(ex, ey, ew, eh))) {
             p->setRasterOp(XorROP);
 	    p->setPen(white);
-	    if (pos.height() == 1)
+	    if (pos.width() == 1)
               p->drawLine(pos.topLeft(), pos.bottomRight());
 	    else {
 	      p->fillRect(pos, white);
@@ -2218,6 +2230,24 @@ void KHTMLView::scheduleRelayout(bool dorepaint)
     d->layoutTimerId = startTimer( m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()
                              ? 1000 : 0 );
     d->repaintLayout = dorepaint;
+}
+
+void KHTMLView::unscheduleRelayout()
+{
+    if (!d->layoutTimerId)
+        return;
+
+    killTimer(d->layoutTimerId);
+    d->layoutTimerId = 0;
+}
+
+void KHTMLView::unscheduleRepaint()
+{
+    if (!d->repaintTimerId)
+        return;
+
+    killTimer(d->repaintTimerId);
+    d->repaintTimerId = 0;
 }
 
 void KHTMLView::scheduleRepaint(int x, int y, int w, int h)

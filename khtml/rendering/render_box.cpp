@@ -429,18 +429,18 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
     //m_width = width;
 }
 
-void RenderBox::repaint()
+void RenderBox::repaint(bool immediate)
 {
     if ( isInline() && !isReplaced() ) {
-	parent()->repaint();
+	parent()->repaint(immediate);
     } else {
 	// kdDebug( 6040 ) << this << " repaint! inline=" << isInline() << endl;
 	int ow = style() ? style()->outlineWidth() : 0;
-	repaintRectangle(-ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2);
+	repaintRectangle(-ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2, immediate);
     }
 }
 
-void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
+void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
     x += m_x;
     y += m_y;
@@ -456,7 +456,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
 
     // kdDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
-    if( o ) o->repaintRectangle(x, y, w, h, f);
+    if( o ) o->repaintRectangle(x, y, w, h, immediate, f);
 }
 
 void RenderBox::calcWidth()

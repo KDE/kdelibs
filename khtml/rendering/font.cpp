@@ -36,6 +36,59 @@
 
 using namespace khtml;
 
+/** closes the current word and returns its width in pixels
+ * @param fm metrics of font to be used
+ * @param str string
+ * @param pos zero-indexed position within @p str upon which all other
+ *	indices are based
+ * @param wordStart relative index pointing to the position where the word started
+ * @param wordEnd relative index pointing one position after the word ended
+ * @return the width in pixels. May be 0 if @p wordStart and @p wordEnd were
+ *	equal.
+ */
+inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int pos,
+	int wordStart, int wordEnd)
+{
+    if (wordEnd <= wordStart) return 0;
+
+    QConstString s(str + pos + wordStart, wordEnd - wordStart);
+    return fm.width(s.string());
+}
+
+/** closes the current word and draws it
+ * @param p painter
+ * @param d text direction
+ * @param x current x position, will be inc-/decremented correctly according
+ *	to text direction
+ * @param y baseline of text
+ * @param widths list of widths; width of word is expected at position
+ *		wordStart
+ * @param str string
+ * @param pos zero-indexed position within @p str upon which all other
+ *	indices are based
+ * @param wordStart relative index pointing to the position where the word started,
+ *	will be set to wordEnd after function
+ * @param wordEnd relative index pointing one position after the word ended
+ */
+inline void closeAndDrawWord(QPainter *p, QPainter::TextDirection d,
+	int &x, int y, const short widths[], const QChar *str, int pos,
+	int &wordStart, int wordEnd)
+{
+    if (wordEnd <= wordStart) return;
+
+    int width = widths[wordStart];
+    if (d == QPainter::RTL)
+      x -= width;
+
+    QConstString s(str + pos + wordStart, wordEnd - wordStart);
+    p->drawText(x, y, s.string(), -1, d);
+
+    if (d != QPainter::RTL)
+      x += width;
+
+    wordStart = wordEnd;
+}
+
 void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
         int toAdd, QPainter::TextDirection d, int from, int to, QColor bg ) const
 {
@@ -56,6 +109,9 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	// simply draw it
 	p->drawText( x, y, qstr, pos, len, d );
     } else {
+	if (from < 0) from = 0;
+	if (to < 0) to = len;
+
 	int numSpaces = 0;
 	if ( toAdd ) {
 	    for( int i = 0; i < len; i++ )
@@ -63,8 +119,9 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		    numSpaces++;
 	}
 
+	int totWidth = width( str, slen, pos, len );
 	if ( d == QPainter::RTL ) {
-	    x += width( str, slen, pos, len ) + toAdd;
+	    x += totWidth + toAdd;
 	}
 	QString upper = qstr;
 	QFontMetrics sc_fm = fm;
@@ -73,12 +130,85 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    upper = qstr.upper();
 	    sc_fm = QFontMetrics( *scFont );
 	}
-	for( int i = 0; i < len; i++ ) {
-	    bool lowercase = (str[pos+i].category() == QChar::Letter_Lowercase);
-	    int chw = lowercase ? sc_fm.charWidth( upper, pos+i ) : fm.charWidth( qstr, pos+i );
+        
+	// ### sc could be optimized by only painting uppercase letters extra,
+	// and treat the rest WordWise, but I think it's not worth it.
+	// Somebody else may volunteer, and implement this ;-) (LS)
+
+	// The mode determines whether the text is displayed character by
+	// character, word by word, or as a whole
+	enum { CharacterWise, WordWise, Whole }
+	mode = Whole;
+	if (!letterSpacing && !scFont && (wordSpacing || toAdd > 0))
+	  mode = WordWise;
+	else if (letterSpacing || scFont)
+	  mode = CharacterWise;
+	                                   
+	int leading = fm.leading();
+	int upperHalfLeading = leading / 2;
+
+	if (mode == Whole) {	// most likely variant is treated extra
+
+	    if (to < 0) to = len;
+	    QConstString cstr(str + pos, len);
+	    QConstString segStr(str + pos + from, to - from);
+	    int preSegmentWidth = fm.width(cstr.string(), from);
+	    int segmentWidth = fm.width(segStr.string());
+	    int eff_x = d == QPainter::RTL ? x - preSegmentWidth - segmentWidth
+					: x + preSegmentWidth;
+
+	    // draw whole string segment, with optional background
+	    if ( bg.isValid() )
+		p->fillRect( eff_x, y-fm.ascent()-upperHalfLeading, segmentWidth,
+		fm.height()+leading, bg );
+	    p->drawText(eff_x, y, segStr.string(), -1, d);
+	    return;
+	}/*end if*/
+
+	// We are using two passes. In the first pass, the widths are collected,
+	// and stored. In the second, the actual characters are drawn.
+
+	// For each letter in the text box, save the width of the character.
+	// When word-wise, only the first letter contains the width, but of the
+	// whole word.
+        short *widthList = (short *)alloca(to*sizeof(short));
+
+	// First pass: gather widths
+	int preSegmentWidth = 0;
+	int segmentWidth = 0;
+        int lastWordBegin = 0;
+	bool onSegment = from == 0;
+	for( int i = 0; i < to; i++ ) {
+	    if (i == from) {
+                // Also close words on visibility boundary
+	        if (mode == WordWise) {
+	            int width = closeWordAndGetWidth(fm, str, pos, lastWordBegin, i);
+
+		    if (lastWordBegin < i) {
+		        widthList[lastWordBegin] = (short)width;
+		        lastWordBegin = i;
+		        preSegmentWidth += width;
+		    }
+		}
+		onSegment = true;
+	    }
+
+	    QChar ch = str[pos+i];
+	    bool lowercase = (ch.category() == QChar::Letter_Lowercase);
+	    bool is_space = (ch.isSpace());
+	    int chw = 0;
 	    if ( letterSpacing )
 		chw += letterSpacing;
-	    if ( (wordSpacing || toAdd) && str[i+pos].isSpace() ) {
+	    if ( (wordSpacing || toAdd) && is_space ) {
+	        if (mode == WordWise) {
+		    int width = closeWordAndGetWidth(fm, str, pos, lastWordBegin, i);
+		    if (lastWordBegin < i) {
+		        widthList[lastWordBegin] = (short)width;
+			lastWordBegin = i;
+		        (onSegment ? segmentWidth : preSegmentWidth) += width;
+		    }
+		    lastWordBegin++;		// ignore this space
+		}
 		chw += wordSpacing;
 		if ( numSpaces ) {
 		    int a = toAdd/numSpaces;
@@ -87,20 +217,62 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		    numSpaces--;
 		}
 	    }
-	    if ( d == QPainter::RTL )
-		x -= chw;
-	    if ( to==-1 || (i>=from && i<to) )
-	    {
-		if ( bg.isValid() )
-		    p->fillRect( x, y-fm.ascent(), chw, fm.height(), bg );
+	    if (is_space || mode == CharacterWise) {
+	        chw += lowercase ? sc_fm.charWidth( upper, pos+i ) : fm.charWidth( qstr, pos+i );
+		widthList[i] = (short)chw;
+
+		(onSegment ? segmentWidth : preSegmentWidth) += chw;
+	    }
+
+	}/*next i*/
+
+	// close last word
+	Q_ASSERT(onSegment);
+	if (mode == WordWise) {
+	   segmentWidth += closeWordAndGetWidth(fm, str, pos, lastWordBegin, to);
+	}
+
+        if (d == QPainter::RTL) x -= preSegmentWidth;
+	else x += preSegmentWidth;
+
+	// optionally draw background
+	if ( bg.isValid() )
+	    p->fillRect( d == QPainter::RTL ? x-segmentWidth : x,
+	    		y-fm.ascent()-upperHalfLeading, segmentWidth,
+			fm.height()+leading, bg );
+
+	// second pass: do the actual drawing
+        lastWordBegin = from;
+	for( int i = from; i < to; i++ ) {
+	    QChar ch = str[pos+i];
+	    bool lowercase = (ch.category() == QChar::Letter_Lowercase);
+	    bool is_space = ch.isSpace();
+	    if ( is_space ) {
+	        if (mode == WordWise) {
+		    closeAndDrawWord(p, d, x, y, widthList, str, pos, lastWordBegin, i);
+		    lastWordBegin++;	// jump over space
+		}
+	    }
+	    if (is_space || mode == CharacterWise) {
+	        int chw = widthList[i];
+	        if (d == QPainter::RTL)
+		    x -= chw;
 
 		if ( scFont )
 		    p->setFont( lowercase ? *scFont : f );
 		p->drawText( x, y, (lowercase ? upper : qstr), pos+i, 1, d );
+
+	        if (d != QPainter::RTL)
+		    x += chw;
 	    }
-	    if ( d != QPainter::RTL )
-		x += chw;
+
+	}/*next i*/
+
+	// don't forget to draw last word
+	if (mode == WordWise) {
+	    closeAndDrawWord(p, d, x, y, widthList, str, pos, lastWordBegin, to);
 	}
+
 	if ( scFont )
 	    p->setFont( f );
     }

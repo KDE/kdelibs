@@ -482,8 +482,8 @@ public:
                     int adjbw1, int adjbw2, bool invalidisInvert = false);
 
     // force a complete repaint
-    virtual void repaint() { if(m_parent) m_parent->repaint(); }
-    virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
+    virtual void repaint(bool immediate = false) { if(m_parent) m_parent->repaint(immediate); }
+    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate = false, bool f=false);
 
     virtual unsigned int length() const { return 1; }
 

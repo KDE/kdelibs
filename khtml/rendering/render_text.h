@@ -232,7 +232,7 @@ public:
 
     virtual int rightmostPosition() const;
 
-    virtual void repaint();
+    virtual void repaint(bool immediate=false);
 
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     const QFontMetrics &metrics(bool firstLine) const;

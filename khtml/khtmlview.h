@@ -205,7 +205,11 @@ private slots:
 
 private:
     void scheduleRelayout(bool repaint);
+    void unscheduleRelayout();
+
     void scheduleRepaint(int x, int y, int w, int h);
+    void unscheduleRepaint();
+    
     void closeChildDialogs();
     bool dialogsAllowed();
 

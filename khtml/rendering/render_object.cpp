@@ -799,9 +799,9 @@ void RenderObject::paint( QPainter *p, int x, int y, int w, int h, int tx, int t
     paintObject(p, x, y, w, h, tx, ty, paintPhase);
 }
 
-void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
+void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
-    if(parent()) parent()->repaintRectangle(x, y, w, h, f);
+    if(parent()) parent()->repaintRectangle(x, y, w, h, immediate, f);
 }
 
 #ifndef NDEBUG

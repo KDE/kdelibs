@@ -26,6 +26,10 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "rendering/render_text.h"
 #include "rendering/render_canvas.h"
 #include "rendering/break_lines.h"
@@ -38,6 +42,14 @@
 #include <kdebug.h>
 #include <assert.h>
 #include <limits.h>
+
+#ifdef HAVE_ALLOCA_H
+// explicitly included for systems that don't provide it in stdlib.h
+#include <alloca.h>
+#else
+#include <stdlib.h>
+#endif
+
 using namespace khtml;
 using namespace DOM;
 
@@ -72,20 +84,75 @@ void InlineTextBox::operator delete(void* ptr, size_t sz)
     *(size_t *)ptr = sz;
 }
 
+/** checks whether the given colors have enough contrast
+ * @returns @p true if contrast is ok.
+ */
+inline bool hasSufficientContrast(const QColor &c1, const QColor &c2)
+{
+// ### arbitrary value, to be adapted if necessary (LS)
+#define CONTRAST_DISTANCE 5
+
+  if (QABS(c1.red() - c2.red()) > CONTRAST_DISTANCE) return true;
+  if (QABS(c1.green() - c2.green()) > CONTRAST_DISTANCE) return true;
+  if (QABS(c1.blue() - c2.blue()) > CONTRAST_DISTANCE) return true;
+
+  return false;
+
+#undef CONTRAST_DISTANCE
+}
+
+/** finds out the background color of an element
+ * @param obj render object
+ * @return the background color. It is guaranteed that a valid color is returned.
+ */
+inline QColor retrieveBackgroundColor(const RenderObject *obj)
+{
+  QColor result;
+  while (!obj->isCanvas()) {
+    result = obj->style()->backgroundColor();
+    if (result.isValid()) return result;
+
+    obj = obj->containingBlock();
+  }/*wend*/
+
+  // everything transparent? Use base then.
+  return obj->style()->palette().active().base();
+}
 
 void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
 
+#if 0
     QColor c = style->color();
     p->setPen(QColor(0xff-c.red(),0xff-c.green(),0xff-c.blue()));
+#else
+    QColor hc;
+    QColor hbg;
+    // ### support ::selection as in WebCore, too
+    {
+        const QColorGroup &grp = style->palette().active();
+        hc = grp.highlightedText();
+        hbg = grp.highlight();
+	// ### should be at most retrieved once per render text
+	QColor bg = retrieveBackgroundColor(text);
+	// It may happen that the contrast is -- well -- virtually non existent.
+	// In this case, simply invert the colors
+	if (!hasSufficientContrast(hbg, bg)) {
+	    hc = QColor(0xff-hc.red(),0xff-hc.green(),0xff-hc.blue());
+	    hbg = QColor(0xff-hbg.red(),0xff-hbg.green(),0xff-hbg.blue());
+	}/*end if*/
+    }
+
+    p->setPen(hc);
+#endif
 
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string() << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len,
-		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
+		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, hbg);
 }
 
 void InlineTextBox::paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)
@@ -723,8 +790,10 @@ int RenderText::rightmostPosition() const
 }
 
 void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
-                      int tx, int ty, PaintAction)
+                      int tx, int ty, PaintAction paintAction)
 {
+//kdDebug(6040) << "RenderText::paintObject: phase: " << paintAction << endl;
+    Q_UNUSED(paintAction);
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
     int d = style()->textDecoration();
@@ -768,6 +837,8 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
 	const Font *font = &style()->htmlFont();
 
+        bool haveSelection = startPos != endPos && !isPrinting && selectionState() != SelectionNone;
+
         // run until we find one that is outside the range, then we
         // know we can stop
         do {
@@ -808,10 +879,48 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
 
-	    if (s->m_len > 0)
-	        //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
-		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
-			       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+	    if (s->m_len > 0) {
+	        if (!haveSelection) {
+	            //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
+		    font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
+				   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+	        }
+		else {
+                    int offset = s->m_start;
+                    int sPos = QMAX( startPos - offset, 0 );
+                    int ePos = QMIN( endPos - offset, s->m_len );
+// selected text is always separate in konqueror
+#ifdef APPLE_CHANGES
+                    if (paintSelectedTextSeparately) {
+#endif
+                        if (sPos >= ePos)
+                            font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline,
+                                           str->s, str->l, s->m_start, s->m_len,
+                                           s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+                        else {
+                            if (sPos-1 >= 0)
+                                font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                                            str->l, s->m_start, s->m_len,
+                                            s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, 0, sPos);
+                            if (ePos < s->m_len)
+                                font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                                            str->l, s->m_start, s->m_len,
+                                            s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, ePos, s->m_len);
+                        }
+#ifdef APPLE_CHANGES
+                    }
+
+                    if ( sPos < ePos ) {
+                        if (selectionColor != p->pen().color())
+                            p->setPen(selectionColor);
+
+                        font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                                       str->l, s->m_start, s->m_len,
+                                       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, sPos, ePos);
+                    }
+#endif
+                }
+	    }
 
             if(d != TDNONE)
             {
@@ -819,7 +928,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 s->paintDecoration(p, this, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
             }
 
-            if (!isPrinting && (selectionState() != SelectionNone)) {
+            if (haveSelection) {
 		int offset = s->m_start;
 		int sPos = QMAX( startPos - offset, 0 );
 		int ePos = QMIN( endPos - offset, s->m_len );
@@ -1174,11 +1283,11 @@ short RenderText::width() const
     return w;
 }
 
-void RenderText::repaint()
+void RenderText::repaint(bool immediate)
 {
     RenderObject *cb = containingBlock();
     if(cb != this)
-        cb->repaint();
+        cb->repaint(immediate);
 }
 
 bool RenderText::isFixedWidthFont() const

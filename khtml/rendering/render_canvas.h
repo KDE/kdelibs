@@ -51,15 +51,15 @@ public:
 
     KHTMLView *view() const { return m_view; }
 
-    virtual void repaint();
-    virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
+    virtual void repaint(bool immediate=false);
+    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
     virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty,
 			PaintAction paintPhase);
     void paintObject(QPainter *p, int _x, int _y,
                      int _w, int _h, int _tx, int _ty, PaintAction paintPhase);
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
-    virtual void clearSelection();
+    virtual void clearSelection(bool doRepaint=true);
     virtual RenderObject *selectionStart() const { return m_selectionStart; }
     virtual RenderObject *selectionEnd() const { return m_selectionEnd; }
 
@@ -75,6 +75,8 @@ public:
 
     int viewportWidth() const { return m_viewportWidth; }
     int viewportHeight() const { return m_viewportHeight; }
+
+    QRect selectionRect() const;
 
 protected:
 

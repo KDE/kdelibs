@@ -299,7 +299,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
 	// don't touch it unless you know what you're doing
     	p->setBrushOrigin(_tx, _ty - _y);
         p->fillRect(_tx, _ty, width(), height(),
-		QBrush(KGlobalSettings::highlightColor(), Qt::Dense4Pattern));
+		QBrush(style()->palette().active().highlight(), Qt::Dense4Pattern));
     }
     if(style()->outlineWidth())
         paintOutline(p, _tx, _ty, width(), height(), style());

@@ -105,11 +105,11 @@ void RenderHtml::paintBoxDecorations(QPainter *p,int, int _y,
 	paintBorder( p, _tx, _ty, w, h, style() );
 }
 
-void RenderHtml::repaint()
+void RenderHtml::repaint(bool immediate)
 {
     RenderObject *cb = containingBlock();
     if(cb != this)
-	cb->repaint();
+	cb->repaint(immediate);
 }
 
 void RenderHtml::layout()

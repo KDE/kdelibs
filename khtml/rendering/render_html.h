@@ -45,7 +45,7 @@ public:
     virtual void setStyle(RenderStyle *style);
     virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty,
 			PaintAction paintPhase);
-    virtual void repaint();
+    virtual void repaint(bool immediate=false);
     virtual void layout();
     virtual short containingBlockWidth() const;
 protected:
