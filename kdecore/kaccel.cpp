@@ -25,7 +25,9 @@
 #include <qapplication.h>
 #include <qdrawutil.h>
 #include <qmessagebox.h>
+
 #include <kapp.h>
+#include <kdebug.h>
 
 #include "kaccel.h"
 
@@ -404,7 +406,7 @@ void KAccel::setItemEnabled( const char * action, bool activate )
 bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 {
 
-	debug("Disconenct and remove");
+	kdebug(KDEBUG_INFO, 125, "Disconenct and remove");
 	// Disconnect and remove all items in pAccel
 	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
 	aKeyIt->toFirst();
@@ -420,12 +422,12 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	}
 #undef pE
 	
-	debug("Clear the dictionary");
+	kdebug(KDEBUG_INFO, 125, "Clear the dictionary");
 	
 	// Clear the dictionary
 	aKeyDict.clear();
 	
-	debug("Insert new items");
+	kdebug(KDEBUG_INFO, 125, "Insert new items");
 	
 	// Insert the new items into the dictionary and reconnect if neccessary
 	// Note also swap config and current key codes !!!!!!
@@ -625,8 +627,8 @@ uint stringToKey(const char * key )
 	char sKey[200];
 	
 	//printf("string to key %s\n", key);
-	if ( key == 0 ) { debug("stringToKey::Null key");return 0; }
-	if( strcmp( key, "" ) == -1 ) { debug("stringToKey::Empty key");return 0; }
+	if ( key == 0 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");return 0; }
+	if( strcmp( key, "" ) == -1 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");return 0; }
 	
 	strncpy(sKey, (const char *)key, 200);
 	next_tok = strtok(sKey,"+");
