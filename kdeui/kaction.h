@@ -77,9 +77,14 @@ public:
     void setItems( const QStringList& lst );
     void clear();
 
+protected slots:
+    void slotActivated( const QString &text );
+
 signals:
     void activate();
     
+private:
+    bool m_lock;    
 };
 
 class KFontAction : public KSelectAction

@@ -349,6 +349,7 @@ KSelectAction::KSelectAction( const QString& text, int accel,
 			      QObject* parent, const char* name )
     : QSelectAction( text, accel, parent, name )
 {
+    m_lock = false;
 }
 
 KSelectAction::KSelectAction( const QString& text, int accel,
@@ -356,6 +357,7 @@ KSelectAction::KSelectAction( const QString& text, int accel,
 			      const char* name )
     : QSelectAction( text, accel, parent, name )
 {
+    m_lock = false;
     connect( this, SIGNAL( activate() ), receiver, slot );
 }
 
@@ -363,6 +365,7 @@ KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int acce
 			      QObject* parent, const char* name )
     : QSelectAction( text, pix, accel, parent, name )
 {
+    m_lock = false;
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
@@ -371,11 +374,13 @@ KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int acce
     : QSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     connect( this, SIGNAL( activate() ), receiver, slot );
+    m_lock = false;
 }
 
 KSelectAction::KSelectAction( QObject* parent, const char* name )
     : QSelectAction( parent, name )
 {
+    m_lock = false;
 }
 
 void KSelectAction::setCurrentItem( int id )
@@ -412,8 +417,9 @@ void KSelectAction::setItems( const QStringList& lst )
 	    if ( r->inherits( "QComboBox" ) ) {
 		QComboBox *b = (QComboBox*)r;
 		b->clear();
-		QStringList::ConstIterator it = items().begin();
-		for( ; it != items().end(); ++it )
+		QStringList _lst = items();
+		QStringList::ConstIterator it = _lst.begin();
+		for( ; it != _lst.end(); ++it )
 		    b->insertItem( *it );
 	    }
 	}
@@ -462,8 +468,8 @@ int KSelectAction::plug( QWidget *widget )
     {
 	KToolBar* bar = (KToolBar*)widget;
 	int id_ = get_toolbutton_id();
-	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( int ) ),
-			  this, SLOT( slotActivated( int ) ) );
+	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( const QString & ) ),
+			  this, SLOT( slotActivated( const QString & ) ) );
 	QComboBox *cb = bar->getCombo( id_ );
 	if ( cb ) {
 	    cb->setMinimumWidth( cb->sizeHint().width() );
@@ -498,6 +504,23 @@ void KSelectAction::clear()
 	else if ( w->inherits( "QActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
+}
+
+void KSelectAction::slotActivated( const QString &text )
+{
+  if ( m_lock )
+    return;
+    
+  m_lock = true;
+  if ( isEditable() )
+  {
+    QStringList lst = items();
+    lst.append( text );
+    setItems( lst );
+  }
+
+  setCurrentItem( items().findIndex( text ) );
+  m_lock = false;
 }
 
 KFontAction::KFontAction( const QString& text, int accel, QObject* parent, const char* name )
