@@ -1,9 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-MimeType=image/x-portable-bitmap
+MimeType=image/x-portable-pixmap
 Icon=image
-Patterns=*.ppm;
+Patterns=*.ppm;*.pnm;
 Comment=Portable Pixmap File Format
 Comment[af]=draagbaar bispatroon lêer formaat
 Comment[ar]=نسق لمف Portable Pixmap

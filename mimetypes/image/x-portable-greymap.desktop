@@ -1,10 +1,11 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-MimeType=image/x-portable-bitmap
+MimeType=image/x-portable-greymap
 Icon=image
 Patterns=*.pgm;
 Comment=Portable Graymap File Format
+Comment[af]=draagbaar graymap lêer formaat
 Comment[ar]=نسق لمف Portable Graymap
 Comment[bg]=Портативен файлов формат за Graymap
 Comment[bs]=Portable Greymap File format
