@@ -1,8 +1,10 @@
 [Misc]
 Name=Qt CDE
+Name[af]=qt cde
 Name[de]=Qt-CDE
 Name[no_NY]=Qt-CDE
 Comment=Built-in unthemed CDE style
+Comment[af]=gebou-in ongetemade cde styl
 Comment[az]=Yerləşmiş, örtüsüz CDE tərzi
 Comment[bg]=Вграден в Qt стил без тема, приличащ на CDE
 Comment[br]=Giz CDE enframmet anwisket

@@ -1,10 +1,12 @@
 [Misc]
 Name=Qt Motif
+Name[af]=qt motif
 Name[de]=Qt-Motif
 Name[eo]=Qt-Motif
 Name[ko]=Qt 모티프
 Name[no_NY]=Qt-Motif
 Comment=Built-in unthemed Motif style
+Comment[af]=gebou-in ongetemade motif styl
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[bg]=Вграден в Qt стил без тема, приличащ на Motif 
 Comment[br]=Giz Motif enframmet anwisket

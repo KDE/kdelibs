@@ -1,5 +1,6 @@
 [Misc]
 Name=Web style
+Name[af]=web styl
 Name[az]=Veb tərzi
 Name[bg]=WWW-стил
 Name[cs]=Webový styl
@@ -33,6 +34,7 @@ Name[uk]=Стиль 'а ля Web'
 Name[vi]=Kiểu Web 
 Name[zh_CN.GB2312]=网站风格
 Comment=Web widget style
+Comment[af]=web gui-element styl
 Comment[az]=Veb pəncərəcik tərzi
 Comment[bg]=Стил на Web графични обекти
 Comment[cs]=Styl prvků webu

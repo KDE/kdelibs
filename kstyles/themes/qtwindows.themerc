@@ -1,5 +1,6 @@
 [Misc]
 Name=Qt Windows
+Name[af]=qt vensters
 Name[bs]=Qt prozori
 Name[de]=Qt-Windows
 Name[eo]=Qt Vindozo
@@ -10,6 +11,7 @@ Name[no]=Qt-Windows
 Name[no_NY]=Qt-Windows
 Name[sk]=Qt Okná
 Comment=Built-in unthemed Windows 9x style
+Comment[af]=gebou-in ongetemade windows 9x styl
 Comment[az]=Yerləşmiş, örtüsüz Windows 98 tərzi
 Comment[bg]=Вграден в Qt стил без тема, приличащ на Windows 9x
 Comment[br]=Giz Windows enframmet anwisket

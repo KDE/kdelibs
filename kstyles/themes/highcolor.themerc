@@ -1,5 +1,6 @@
 [Misc]
 Name=HighColor Default
+Name[af]=hoë-kleur verstek
 Name[az]=Əsas Yüksək Rəngli
 Name[bg]=HiColor по подразбиране
 Name[br]=LivioÃ¹ uhel dre ziouer
@@ -44,6 +45,7 @@ Name[uk]=Типовий (64K кольорів)
 Name[vi]=Mặc định Màu sáng 
 Name[zh_CN.GB2312]=默认的高色彩
 Comment=Highcolor version of the default style
+Comment[af]=hoë-kleur weergawe van die verstek styl
 Comment[az]=Əsas tərzin yüksək rəngli buraxılışı
 Comment[bg]=Стил по подразбиране с много цветове
 Comment[br]=Stumm livioÃ¹ uhel ar c'hiz dre ziouer

@@ -1,5 +1,6 @@
 [Misc]
 Name=Qt Platinum
+Name[af]=qt platinum
 Name[az]=Qt Platin
 Name[ca]=Qt Platí
 Name[da]=Qt Platin
@@ -19,6 +20,7 @@ Name[sl]=Platinasti Qt
 Name[sr]=QT Platinum
 Name[tr]=Qt Platin
 Comment=Built-in unthemed Platinum style
+Comment[af]=gebou-in ongetemade platinum styl
 Comment[az]=Yerləşmiş, örtüsüz Platin tərzi
 Comment[bg]=Вграден в Qt стил без тема Platinum
 Comment[br]=Giz Platinum enframmet anwisket
