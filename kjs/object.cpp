@@ -521,7 +521,7 @@ Object Object::create(Class c, const KJSO& val, const Object& p)
 Object Object::dynamicCast(const KJSO &obj)
 {
   // return null object on type mismatch
-  if (!obj.isObject())
+  if (!obj.isA(ObjectType))
     return Object(0L);
 
   return Object(obj.imp());
@@ -909,7 +909,7 @@ void ObjectImp::mark(Imp*)
 
 HostImp::HostImp()
 {
-    setPrototype(Global::current().get("[[Object.prototype]]"));
+    setPrototype(Global::current().objectPrototype());
     //printf("HostImp::HostImp() %p\n",this);
 }
 
