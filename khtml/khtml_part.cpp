@@ -875,10 +875,8 @@ QVariant KHTMLPart::executeScript( const QString &script )
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
-  //kdDebug(6050) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
+  //kdDebug(6070) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
   KJSProxy *proxy = jScript();
-
-  //kdDebug(6070) << "executeScript: " << script.latin1() << endl;
 
   if (!proxy || proxy->paused())
     return QVariant();
@@ -891,7 +889,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   if ( d->m_doc )
     d->m_doc->updateRendering();
 
-  //kdDebug(6050) << "KHTMLPart::executeScript - done" << endl;
+  //kdDebug(6070) << "KHTMLPart::executeScript - done" << endl;
   return ret;
 }
 
@@ -1339,7 +1337,24 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
 
 void KHTMLPart::showError( KIO::Job* job )
 {
-    job->showErrorDialog( /*d->m_view*/ ); // TODO show the error text in this part, instead.
+  kdDebug() << "KHTMLPart::showError d->m_bParsing=" << d->m_bParsing << " d->m_bComplete=" << d->m_bComplete
+            << " d->m_bCleared=" << d->m_bCleared << endl;
+  if ( d->m_bParsing || d->m_workingURL.isEmpty() ) // if we got any data already
+    job->showErrorDialog( /*d->m_view*/ );
+  else
+  {
+    begin();
+    QString url = d->m_workingURL.prettyURL();
+    QString errText = QString::fromLatin1( "<HTML><HEAD><TITLE>" );
+    errText += i18n( "Error while loading %1" ).arg( url );
+    errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
+    errText += i18n( "An error occured while loading <B>%1</B>:" ).arg( url );
+    errText += QString::fromLatin1( "</P><P>" );
+    errText += job->errorString();
+    errText += QString::fromLatin1( "</P></BODY></HTML>" );
+    write(errText);
+    end();
+  }
 }
 
 void KHTMLPart::slotFinished( KIO::Job * job )
@@ -1759,6 +1774,7 @@ KURL KHTMLPart::completeURL( const QString &url )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
+    //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
        d->m_delayRedirect = delay;
@@ -4334,6 +4350,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
 
 QVariant KHTMLPart::executeScript(QString filename, int baseLine, const DOM::Node &n, const QString &script)
 {
+  //kdDebug(6070) << "executeScript: filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
   KJSProxy *proxy = jScript();
 
   if (!proxy || proxy->paused())
