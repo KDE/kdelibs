@@ -14,7 +14,7 @@ public:
     QLabel* tmplabel;
 };
 
-KJavaAppletWidget::appletCount = 0;
+int KJavaAppletWidget::appletCount = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
                                       QWidget* parent, const char* name )
