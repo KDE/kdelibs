@@ -76,8 +76,8 @@ KSelectAction * ScriptLoader::getScripts()
 			{
 				m_scripts.append(tmpIface);			
 				m_scripts.current()->setScript(desktop.readURL());
-				if(m_parent != 0)
-					m_scripts.current()->setParent(m_parent);
+				//if(m_parent != 0)
+					//m_scripts.current()->setParent(m_parent);
 				pluginList.append(desktop.readName());
 			}
 			else

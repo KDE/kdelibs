@@ -17,58 +17,96 @@
    Boston, MA 02111-1307, USA.
 */
 
+/**
+*	@libdoc Generic interface for building scripting engines
+*
+*	This interface will create a generic API for implementing script engines.
+*	These engines can then be accessed from any application that supports this interface.
+*
+*	Example:
+**/
 #ifndef __scriptinterface_h__
 #define __scriptinterface_h__
 #include <qobject.h>
 #include <kparts/plugin.h>
+#include <qvariant.h>
 
 class QString;
-
+/**
+*	This class is the base for all script engines.
+*	@author Ian Reinhart Geiser <geiseri@kde.org>
+*
+**/
 class KScriptInterface :  public KParts::Plugin
 {
 	Q_OBJECT
 public:
 
+	enum Result { ResultSuccess, ResultFailure, ResultContinue, ResultBreak };
+
 	/**
-		Return the current script code data
-		@returns QString containing the currenly runable code
+	*	Return the current script code data
+	*	@returns QString containing the currenly runable code
 	**/
-	virtual QString Script() const = 0;
+	virtual QString script() const = 0;
 	/**
-		Sets the parent object of the script to the passed in
-		QObject.  This is used to access public data members of
-		the main application.  This is handy if your script runner
-		contains an object twin.  
+	*	Sets the parent object of the script to the passed in
+	*	QObject.  This is used to access public data members of
+	*	the main application.  This is handy if your script runner
+	*	contains an object twin.
 	**/
-	virtual void setParent( QObject *parent) = 0;
+	virtual void setScript( const QString &scriptFile ) = 0;
 	/**
-		Sets the path to the actual script that we are going to embed.
+	*	Sets the path to the script library that we are going to embed.
+	*	The second argument is the function from the script library that
+	*	we wish to call.
 	**/
-	virtual void setScript( QString PathToCode ) = 0;
+	virtual void setScript( const QString &scriptLibFile, const QString &method ) = 0;
 
 public slots:
-	/** 
-		Run the actual script code 
-	**/
-	virtual void runScript() = 0;
 	/**
-		Abort the scripts run
+	*	Run the actual script code
+	*	This can both take a context object that will be shared between the
+	*	main application and a variant that will contain the arguments.
 	**/
-	virtual void stopScript() =0;
+	virtual void run(QObject *context = 0, const QVariant &arg = 0) = 0;
 	/**
-		Check to see if the script is still running
+	*	Abort the scripts run
 	**/
-	virtual bool status() =0;
+	virtual void stop() =0;
+	/**
+	*	Check to see if the script is still running
+	**/
+	virtual bool isRunning() =0;
 
 signals:
-	/**
-		Emit a signal that contains the current error message from 
-		a script output.
-	**/
-	virtual void errors(QString messages);
-	virtual void output(QString messages);
-	virtual void done(int errorcode);
-	virtual void progress( int progress);
+	/*
+	*	This signal is emitted to notify the main application of any errors
+	*	that have occured during processing of the script.
+	*/
+	void error( const QString &msg );
+	/*
+	*	This signal is emitted to notify the main application of any warnings
+	*	that have occured during the processing of the script.
+	*/
+	void warning( const QString &msg );
+	/*
+	*	This signal is emmitted to notify the main application of any normal
+	*	output that has occured during the processing of the script.
+	*/
+	void output( const QString &msg );
+	/*
+	*	This signal is emitted to allow feedback to any progress bars in the main
+	*	application as to how far along the script is.  This is very useful when
+	*	a script is processing files or doing some long operation that is of a
+	*	known duration.
+	*/
+	void progress( int percent );
+	/*
+	*	This signal is emmited on completion of the script.  It turns the result
+	*	as a @ref KScriptInteface::Result, and a return value as a @ref QVariant
+	*/
+	void done( KScriptInterface::Result result, const QVariant &returned );
 };
 
 #endif

@@ -34,26 +34,21 @@ ShellScript::~ShellScript()
 
 }
 
-QString ShellScript::Script() const
+QString ShellScript::script() const
 {
 
 }
 
-void ShellScript::setParent( QObject *parent)
+void ShellScript::setScript( const QString &scriptFile  )
 {
-
+	*m_script << scriptFile;
 }
 
-void ShellScript::setScript( QString PathToCode )
-{
-	*m_script << PathToCode;
-}
-
-void ShellScript::runScript()
+void ShellScript::run(QObject *context, const QVariant &arg)
 {
 	 m_script->start();
 }
-void ShellScript::stopScript()
+void ShellScript::stop()
 {
 	if (!m_script->kill())		// Kill the process
 		m_script->kill(9);	// Kill it harder
@@ -61,7 +56,7 @@ void ShellScript::stopScript()
 
 void ShellScript::goodExit(KProcess *proc)
 {
-	emit done(proc->exitStatus());
+//	emit done(proc->exitStatus());
 }
 
 #include "shellscript.moc"
