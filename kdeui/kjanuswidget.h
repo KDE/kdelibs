@@ -462,6 +462,21 @@ class KJanusWidget : public QWidget
      * @param pixmap The icon used.
      **/
     virtual void setFolderIcon(const QStringList &path, const QPixmap &pixmap);
+    /**
+     * Returns the title string associated with a page index in TreeList or IconList mode.
+     * @param index The index of the page or null if there is no such page.
+     * @see @ref #pageIndex()
+     * @since 3.2
+     */
+    /*virtual*/ QString pageTitle(int index);
+    /**
+     * Returns the page widget associated with a page index or null if there is
+     * no such page.
+     * @param index The index of the page.
+     * @see @ref #pageIndex()
+     * @since 3.2
+     */
+    /*virtual*/ QWidget *pageWidget(int index);
 
   signals:
     void aboutToShowPage(QWidget *page);
@@ -506,6 +521,7 @@ class KJanusWidget : public QWidget
   private:
     bool mValid;
 
+    // Obsolete members. Remove in KDE 4.
     QPtrList<QWidget> *mPageList;
     QStringList *mTitleList;
 
