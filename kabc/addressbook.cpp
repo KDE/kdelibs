@@ -157,6 +157,12 @@ const Addressee &AddressBook::ConstIterator::operator*() const
 {
   return *(d->mIt);
 }
+
+const Addressee* AddressBook::ConstIterator::operator->() const
+{
+  return &(*(d->mIt));
+}
+
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator++()
 {
   (d->mIt)++;

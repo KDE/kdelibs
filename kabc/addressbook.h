@@ -70,7 +70,7 @@ class AddressBook : public QObject
         bool operator!=( const Iterator &it );
 
       	struct IteratorData;
-	IteratorData *d;
+        IteratorData *d;
     };
 
     /**
@@ -87,6 +87,7 @@ class AddressBook : public QObject
       
       	ConstIterator &operator=( const ConstIterator & );
         const Addressee &operator*() const;
+        const Addressee* operator->() const;
         ConstIterator &operator++();
         ConstIterator &operator++(int);
         ConstIterator &operator--();
@@ -95,7 +96,7 @@ class AddressBook : public QObject
         bool operator!=( const ConstIterator &it );
 
       	struct ConstIteratorData;
-	ConstIteratorData *d;
+        ConstIteratorData *d;
     };
     
     /**
