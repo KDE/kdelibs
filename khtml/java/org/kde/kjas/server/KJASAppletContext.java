@@ -12,6 +12,10 @@ import java.awt.event.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  2000/01/27 23:41:57  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
  * Revision 1.3  1999/11/12 02:58:05  rich
  * Updated KJAS server
  *
@@ -52,15 +56,20 @@ public class KJASAppletContext implements AppletContext
       return (KJASAppletStub) stubList.elementAt( appletId );
    }
 
-   public KJASAppletStub createApplet( URL codeBase, URL docBase, String name ) {
+   public KJASAppletStub createApplet( String className, URL codeBase,
+                                       URL docBase, String jars, 
+                                       String name, Dimension size ) {
       Applet app;
 
       try {
          KJASAppletClassLoader loader = new KJASAppletClassLoader( codeBase );
-         Class appletClass = loader.loadClass( codeBase.toString() );
+         if(jars != null)
+             loader.loadJars(jars);
+         Class appletClass = loader.loadClass( className );
 
          // Load and instantiate applet
 	 app = (Applet) appletClass.newInstance();
+         app.setSize(size);
 
          KJASAppletStub stub = new KJASAppletStub( this, app, codeBase, docBase, name );
 
@@ -96,7 +105,15 @@ public class KJASAppletContext implements AppletContext
       if ( applets.contains( app ) ) {
          final Frame f = new Frame( title );
          f.add( app, "Center" );
-         f.setSize( 400, 400 );
+
+         Dimension s = app.getSize();
+         
+         // HACK: the real size seems to be off by these constants
+         // We adjust the size to get the correct one
+         s.width += 10;
+         s.height += 30;
+         
+         f.setSize( s );
 
          f.addWindowListener( new WindowAdapter() {
             public void windowClosing( WindowEvent e ) {

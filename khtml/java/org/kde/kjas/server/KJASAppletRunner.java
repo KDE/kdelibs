@@ -10,6 +10,10 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  2000/01/27 23:41:57  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:08  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -66,9 +70,9 @@ public class KJASAppletRunner
                              int appletId,
                              String name,
                              String className,
-                             String base,
+                             String docBase,
                              String codeBase,
-                             String archive,
+                             String jars,
                              Dimension size)
       throws IllegalArgumentException
    {
@@ -78,11 +82,18 @@ public class KJASAppletRunner
 
       try {
          KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
-
-         URL baseURL = new URL( base );
-         URL classURL = new URL( baseURL, className );
-
-         context.createApplet( classURL, baseURL, name );
+         URL docBaseURL = new URL( docBase );
+         URL codeBaseURL;
+         if(codeBase != null) {
+             if(!codeBase.endsWith("/"))
+                 codeBase = codeBase + "/";
+             codeBaseURL = new URL( docBaseURL, codeBase );
+         }
+         else
+             codeBaseURL = new URL( docBase );
+         
+         context.createApplet( className, codeBaseURL, docBaseURL, 
+                               jars, name, size );
       }
       catch ( MalformedURLException mue )
          {

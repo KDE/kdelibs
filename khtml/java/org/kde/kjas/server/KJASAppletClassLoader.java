@@ -3,19 +3,21 @@ package org.kde.kjas.server;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.zip.*;
 
 /**
  * ClassLoader used to download and instantiate Applets.
  * <P>
  * <FONT COLOR="red">Warning: No security implemented - do not use unless
- * you *really* know what you're doing.</FONT> In addition to the total
- * lack of security there are also other problems (like the fact the cache
- * of loaded classes is never emptied). It should work ok with both Java 1.1
- * and Java 2.
+ * you *really* know what you're doing.</FONT> 
+ * It should work ok with both Java 1.1 and Java 2.
  *
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  1999/12/14 19:57:00  rich
+ * Many fixes, see changelog
+ *
  * Revision 1.3  1999/11/12 02:58:04  rich
  * Updated KJAS server
  *
@@ -37,124 +39,191 @@ public class KJASAppletClassLoader
    //* The base URL from which code will be loaded.
    URL codeBase;
 
-   //* Cache the classes to prevent excessive network use.
-   Hashtable classCache;
+   //* Raw class data parsed from Jars. Contains all other resources as well.
+   Hashtable rawData;
 
    public KJASAppletClassLoader( URL codeBase )
    {
       this.codeBase = codeBase;
-      this.classCache = new Hashtable();
+      this.rawData = new Hashtable();
+   }
+   /**
+    * Loads Jar and Zip archives from the server
+    */
+   public void loadJars( String jars ) 
+   {
+      StringTokenizer parser = new StringTokenizer(jars, ",", false);
+      while(parser.hasMoreTokens()) {
+	 String jar = parser.nextToken().trim();
+         ZipInputStream zip = null;
+         try {
+            zip = new ZipInputStream((new URL( codeBase, jar )).openStream());
+            
+            // For every zip entry put it data to the hash table
+	    ZipEntry entry;
+            while((entry = zip.getNextEntry()) != null) {
+              
+               // Skip directories
+	       if(entry.isDirectory())
+		  continue; 
+	       
+               // If we know the total length of the entry in advance 
+               // allocate the exact array. Otherwise do it bu chunks
+               // and reallocated if needed
+	       int n, total = 0;
+	       int len = (int)entry.getSize();
+	       byte data[] = new byte[(len == -1) ? 2024 : len];
+	       while((n = zip.read(data, total, data.length - total)) >= 0) {
+		  if((total += n) == data.length) {
+		     if(len < 0) {
+			byte newdata[] = new byte[total + 2024];
+			System.arraycopy(data, 0, newdata, 0, total);
+			data = newdata;
+		     }
+		     else
+			break;
+		  }
+	       }
+	       // Store the raw data
+	       rawData.put(entry.getName(), data);
+	    }
+	 }
+	 catch(Exception e) {
+	    System.out.println("Can not load archive " + e);
+	 }
+         finally {
+            try {
+               if(zip != null) zip.close();
+            }
+            catch(Exception e) {}
+         }
+      }
    }
 
-    /**
-     * This is used by Java 2.
-     */
-   public Class findClass( String name )
+   public synchronized Class loadClass(String name, boolean resolve)
+      throws ClassNotFoundException
    {
-      try {
-         byte[] b = loadClassData(name);
-         return defineClass(name, b, 0, b.length);
-      }
-      catch ( IOException e ) {
-         System.err.println( "Error: " + e );
-      }
+      Class c = findClass(name);
+      if ( c == null ) 
+         throw new ClassNotFoundException(name);
+      
+      if ( resolve )
+         resolveClass( c );
+      
+      return c;
+   }
+
+   public InputStream getResourceAsStream(String name) 
+   {
+      InputStream inputstream = ClassLoader.getSystemResourceAsStream(name);
+      if(inputstream != null)
+         return inputstream;
+      
+      byte data[] = (byte[]) rawData.get(name);
+      if(data != null)
+         return new ByteArrayInputStream(data);
+      
       return null;
    }
-
-    public synchronized Class loadClass(String name,
-					boolean resolve)
-    {
-       try {
-          Class c = (Class) classCache.get( name );
-
-          if ( c == null ) {
-             try {
-                c = findSystemClass( name );
-             }
-             catch ( ClassNotFoundException cnfe ) {
-                // Do nothing
-             }
-             catch ( NoClassDefFoundError ncdfe ) {
-                // Do nothing
-             }
-          }
-          
-          if ( c == null ) {
-             byte data[] = loadClassData( name );
-             c = defineClass( data, 0, data.length );
-             classCache.put( name, c );
-          }
-	  else {
-	      try {
-		  // TODO: Remove the shit hack
-		  Thread.sleep( 1000 );
-	      }
-	      catch ( InterruptedException ie ) {
-		  // Do nothing
-	      }
-	  }
-
-          if ( resolve )
-             resolveClass( c );
-
-          return c;
-       }
-       catch ( IOException ioe ) {
-          System.err.println( "Error: " + ioe );
-       }
-       return null;
-    }
-
-
-   private byte[] loadClassData( String name )
-      throws IOException
+   
+   /**
+    *  General class load function
+    */
+   Class findClass(String name) 
    {
-       if ( !name.endsWith( ".class" ) )
-	   name += ".class";
-      URL classURL = new URL( codeBase, name );
-
-      System.err.println( "class data URL = " + classURL );
-
-      InputStream dataStream;
+      Class c;
+      
+      // 1. Try loaded classes
+      c = findLoadedClass(name);
+      if(c != null)
+         return c;
+      
+      // 2. Try system (CLASSPATH) classes
       try {
-	  dataStream = classURL.openStream();
+         c = findSystemClass( name );
+         if(c != null)
+            return c;
       }
-      catch( FileNotFoundException fnfe ) {
-	  System.err.println( "Caught FileNotFoundException: " + fnfe );
-	  String baseTmp = codeBase.toString();
-	  baseTmp += "/";
-	  URL baseURL = new URL( baseTmp );
-	  classURL = new URL( baseURL, name );
+      catch (ClassNotFoundException e) {}
 
-	  System.err.println( "Retrying with " + classURL );
+      // 3. Try classes from archives
+      c = findJarClass( name );
+      if(c != null)
+         return c;
 
-	  dataStream = classURL.openStream();
+      // 4. Try classes from Web server
+      c = findURLClass(name);
+      if(c != null)
+         return c;
+      
+      // Opps!
+      return null;
+   }  
+
+   /**
+    *  Load class from jar table
+    */
+   Class findJarClass( String name )
+   {
+      if(rawData.isEmpty())
+         return null;
+
+      // Convert name and see if we have such a beast
+      String cname = name.replace('.', '/') + ".class";
+      byte data[] = (byte[]) rawData.get(cname);
+      
+      if(data != null) {
+         // If we found one remove it from the table to save some space
+         // and load it into JVM
+         rawData.remove(cname);
+         return defineClass(name, data, 0, data.length);
       }
+      
+      return null;
+   }
+   
+   /** 
+    *  Load class from Web 
+    */ 
+   Class findURLClass( String name )
+   {
+      String cname = name;
+      
+      if ( !cname.endsWith( ".class" ) )
+         cname = cname + ".class";
+      
+      InputStream in = null;
+      
+      try {
+         URL classURL = new URL( codeBase, cname );
+         URLConnection connection = classURL.openConnection();
+         int len = connection.getContentLength();
+         int n, total = 0;
+         byte data[] = new byte[len != -1 ? len : 2048];
+         in = connection.getInputStream();
 
-      byte[] dataBytes = new byte[ 128 * 1024 ]; // Hard coded max of 128K classfile
-      int count = 0;
-
-      boolean done = false;
-      while ( !done ) {
-         int dataByte = dataStream.read();
-         
-         // If there was some data
-         if ( dataByte != -1 ) {
-            dataBytes[ count ] = (byte) dataByte;
-            count++;
+         while((n = in.read(data, total, data.length - total)) >= 0) {
+            if((total += n) == data.length) {
+               if(len < 0) {
+                  byte new_data[] = new byte[total + 2024];
+                  System.arraycopy(data, 0, new_data, 0, total);
+                  data = new_data;
+               }
+               else
+                  break;
+            }
          }
-         else {
-            done = true;
-         }
+         return defineClass(name, data, 0, total);
       }
-
-      byte[] classBytes = new byte[ count ];
-      System.arraycopy( dataBytes, 0,
-                        classBytes, 0, count );
-
-      dataBytes = null; // Help the GC
-
-      return classBytes;
+      catch(Exception e) 
+         { }
+      finally {
+         try {
+            if(in != null) in.close();
+         } 
+         catch(Exception e) {}
+      }
+      
+      return null;
    }
 }
-
