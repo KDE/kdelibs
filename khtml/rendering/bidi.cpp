@@ -189,7 +189,7 @@ inline void BidiIterator::operator ++ ()
     if(!obj) return;
     if(obj->isText()) {
         pos++;
-        if(pos >= obj->length()) {
+        if(pos >= static_cast<RenderText *>(obj)->stringLength()) {
             obj = Bidinext( par, obj );
             pos = 0;
         }
@@ -205,18 +205,20 @@ inline bool BidiIterator::atEnd() const
     return false;
 }
 
-const QChar &BidiIterator::current() const
+static const QChar nbsp = QChar(0xA0);
+
+inline const QChar &BidiIterator::current() const
 {
-    static const QChar nbsp = QChar(0xA0);
     if( !obj || !obj->isText()) return nbsp; // non breaking space
     return static_cast<RenderText *>(obj)->text()[pos];
 }
 
-QChar::Direction BidiIterator::direction() const
+inline QChar::Direction BidiIterator::direction() const
 {
-    if(!obj || !obj->isText() || obj->length() <= 0) return QChar::DirON;
+    if(!obj || !obj->isText() ) return QChar::DirON;
+    
     RenderText *renderTxt = static_cast<RenderText *>( obj );
-    if ( pos >= renderTxt->length() )
+    if ( pos >= renderTxt->stringLength() )
         return QChar::DirON;
     return renderTxt->text()[pos].direction();
 }
@@ -1093,7 +1095,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
             tmpW += o->width()+o->marginLeft()+o->marginRight();
         } else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);
-	    int strlen = t->length();
+	    int strlen = t->stringLength();
 	    int len = strlen - pos;
 	    QChar *str = t->text();
 #if 0
