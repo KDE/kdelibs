@@ -169,7 +169,10 @@ Value Navigator::get(ExecState *exec, const Identifier &propertyName) const
 Value Navigator::getValueProperty(ExecState *exec, int token) const
 {
   KURL url = m_part->url();
-  QString userAgent = KProtocolManager::userAgentForHost(url.host());
+  QString userAgent = url.host();
+  if (userAgent.isEmpty())
+     userAgent = "localhost";
+  userAgent = KProtocolManager::userAgentForHost(userAgent);
   switch (token) {
   case AppCodeName:
     return String("Mozilla");
