@@ -56,7 +56,7 @@
  * obtained from 
  * <a href="http://www.cstr.ed.ac.uk/projects/festival/">http://www.cstr.ed.ac.uk/projects/festival/</a>.
  * Festival is distributed with most Linux distros.  Check your distro CDs.  Also works
- * with Festival Lite (flite), Hadifax (mbrola and txt2pho), FreeTTS, Epos, or any
+ * with Festival Lite (flite), Hadifix (mbrola and txt2pho), FreeTTS, Epos, or any
  * command that can speak text.  Additional plugins are being developed.
  *
  * @section goals Design Goals
@@ -487,7 +487,7 @@
   1   en  Festival Lite    male      Kal    medium  medium
   2   en  Festival Lite    female    Us1    soft    medium
   3   en  Festival Int     male      Kal    medium  slow
-  4   de  Hadifax          male      de1    medium  medium
+  4   de  Hadifix          male      de1    medium  medium
   @endverbatim
  *
  * In this example, the user has specified that his default language code is en,
@@ -634,7 +634,7 @@
  *   - Java %Speech Markup Language (JSML): Festival (partial)
  *   - %Speech Synthesis Markup language (SSML): none at this time
  *
- * TODO: Issue: Do Hadifax and FreeTTS support markup?
+ * TODO: Issue: Do Hadifix and FreeTTS support markup?
  *
  * Before including markup in the text sent to kttsd, the application should
  * query whether the currently-configured plugin 
@@ -730,12 +730,12 @@
  * If flite is not in the path, specify the path to the
  * flite executable.  Click the Test button to test.
  *
- * @section hadifax Using with Hadifax (mbrola and txt2pho)
+ * @section hadifix Using with Hadifix (mbrola and txt2pho)
  *
- * Hadifax consists of the mbrola diphone to speech synthesizer and txt2pho,
+ * Hadifix consists of the mbrola diphone to speech synthesizer and txt2pho,
  * a utility for converting german text to diphones.
  *
- * If you do not already have Hadifax installed, do this:
+ * If you do not already have Hadifix installed, do this:
  *
  * - Download mbrola binary from
  *   <a href="http://tcts.fpms.ac.be/synthesis/mbrola.html">http://tcts.fpms.ac.be/synthesis/mbrola.html</a>.
@@ -749,7 +749,7 @@
  * - Edit txt2phorc file, putting correct data paths in.
  * - Either copy txt2phorc to ~/.txt2phorc or to /etc/txt2pho.  
  *   Note that you drop the "rc" in latter's file name.
- * - In kttsmgr, choose the German language (de), and add Hadifax.  On the Properties
+ * - In kttsmgr, choose the German language (de), and add Hadifix.  On the Properties
  *   page configure a voice and the paths to mbrola and txt2pho.  Click the Test button
  *   to test.
  *
