@@ -31,6 +31,7 @@
 <!ENTITY Jonas.Drieghe      '<othercredit role="translator"><firstname>Jonas</firstname><surname>Drieghe</surname><affiliation><address><email>jonas_drieghe@skynet.be</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Pieter.Hoekstra    '<othercredit role="translator"><firstname>Pieter</firstname><surname>Hoekstra</surname><affiliation><address><email>pieterhoekstra@tiscali.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Niels.Luten        '<othercredit role="translator"><firstname>Niels</firstname><surname>Luten</surname><affiliation><address><email>mail@niels1.tmfweb.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Rik.van.Achterberg '<othercredit role="translator"><firstname>Rik</firstname><surname>van Achterberg</surname><affiliation><address><email>rikratva@xs4all.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -60,6 +61,8 @@
 <!ENTITY vertaling.jonas   "<para>Dit document is vertaald in het Nederlands door &Jonas.Drieghe;.</para>">
 <!ENTITY vertaling.pieter  "<para>Dit document is vertaald in het Nederlands door &Pieter.Hoekstra;.</para>">
 <!ENTITY vertaling.niels.luten	"<para>Dit document is vertaald in het Nederlands door &Niels.Luten;.</para>">
+<!ENTITY vertaling.rik	   "<para>Dit document is vertaald in het Nederlands door &Rik.van.Achterberg;.</para>">
+
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
 <!ENTITY xxx '<othercredit role="translator"><firstname>xx</firstname><surname>xxx</surname><affiliation><address><email>xxx@xxx.xxx</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
