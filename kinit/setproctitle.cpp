@@ -30,7 +30,7 @@
 # define _PATH_KMEM	"/dev/kmem"
 #endif
 
-#define newstr(s)	strcpy(malloc(strlen(s) + 1), s)
+#define newstr(s)	strcpy((char*)malloc(strlen(s) + 1), s)
 #define SPACELEFT(buf, ptr)	(sizeof buf - ((ptr) - buf))
 
 

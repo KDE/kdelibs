@@ -19,7 +19,10 @@
   Boston, MA 02111-1307, USA.
 */
 
+#include "config.h"
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -648,7 +651,7 @@ int main(int argc, char **argv, char **envp)
    d.argv = (char **) malloc( sizeof(char *) * argc);
    for(i = 0; i < argc; i++) 
    {
-      d.argv[i] = strcpy(malloc(strlen(argv[i])+1), argv[i]);
+      d.argv[i] = strcpy((char*)malloc(strlen(argv[i])+1), argv[i]);
       if (strcmp(d.argv[i], "--no-dcop") == 0)
          launch_dcop = 0;
       if (strcmp(d.argv[i], "--no-klauncher") == 0)

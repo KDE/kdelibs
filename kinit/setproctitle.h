@@ -148,3 +148,4 @@ extern void kinit_initsetproctitle(int, char **, char **);
 extern void kinit_setproctitle(const char *, ...);
 
 #endif
+
