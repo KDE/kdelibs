@@ -677,6 +677,15 @@ bool KService::noDisplay() const {
      if (!aList.contains("KDE"))
         return true;
   }
+
+  it = m_mapProps.find( "NotShowIn" );
+  if ( (it != m_mapProps.end()) && (it.data().isValid()))
+  {
+     QString aValue = it.data().toString();
+     QStringList aList = QStringList::split(';', aValue);
+     if (aList.contains("KDE"))
+        return true;
+  }
   return false;
 }
 
