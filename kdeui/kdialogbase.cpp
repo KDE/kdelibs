@@ -131,6 +131,9 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
 
   mJanus = new KJanusWidget( this, "janus", dialogFace );
+  connect(mJanus, SIGNAL(aboutToShowPage(QWidget *)),
+          this, SIGNAL(aboutToShowPage(QWidget *)));
+
   if( mJanus == 0 || mJanus->isValid() == false ) { return; }
 
   enableButtonSeparator( separator );

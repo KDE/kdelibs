@@ -1233,6 +1233,11 @@ class KDialogBase : public KDialog
      * to call setDetailsWidget if you haven't done so yet.
      */
     void aboutToShowDetails();
+    
+    /**
+     * A page is about to be shown.
+     */
+    void aboutToShowPage(QWidget *page);
 
   protected:
     /**
