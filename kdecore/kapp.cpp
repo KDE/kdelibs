@@ -43,15 +43,15 @@
 #include <klocale.h>
 #include <kiconloader.h>
 
-#include "ltdl.h"
-
-#include "kwm.h"
-
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #include <sys/wait.h>
+
+#include "ltdl.h"
+
+#include "kwm.h"
 
 #include <fcntl.h>
 #include <stdlib.h> // getenv()

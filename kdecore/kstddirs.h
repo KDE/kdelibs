@@ -125,19 +125,30 @@ public:
 	 * @li all PREFIX/<relativename> paths (most recent first)
 	 */
 	QString findResource( const QString& type, 
-			      const QString& filename );
+			      const QString& filename ) const;
 
 	/**
 	 * Tries to find the directory the file is in.
 	 * It works the same as findResource, but it doesn't
-	 * return the filename, but the name of the directory.
+	 * return the filename but the name of the directory.
 	 * This way the application can access a couple of files
-	 * that have been installed into the same directory.
+	 * that have been installed into the same directory without
+	 * having to look for each file.
 	 */
 	QString findResourceDir( const QString& type,
-				 const QString& filename);
+				 const QString& filename) const;
 
-	
+
+	/**
+	 * Tries to find all resources with the specified type.
+	 * The function will look into all specified directories
+	 * and returns all filenames in these directories.
+	 *
+	 * @param recursive specifies if the function should follow
+	 * subdirs
+	 */
+	QStringList findAllResources( const QString& type, bool recursive = false) const;
+
 	/** 
 	 * Finds the executable in the system path. A valid executable must
 	 * be a file and have its executable bit set.
@@ -195,7 +206,7 @@ private:
 	QDict<QStringList> absolutes;
 	QDict<QStringList> relatives;
 	
-	QDict<QStringList> dircache;
+	mutable QDict<QStringList> dircache;
 
 	// Disallow assignment and copy-construction
 	KStandardDirs( const KStandardDirs& );

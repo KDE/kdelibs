@@ -8,14 +8,14 @@
 #include"kstddirs.h"
 #include"config.h"
 
-#include<stdlib.h>
+#include <stdlib.h>
 
-#include<qdict.h>
-#include<qdir.h>
-#include<qfileinfo.h>
-#include<qstring.h>
-#include<qstringlist.h>
-
+#include <qdict.h>
+#include <qdir.h>
+#include <qfileinfo.h>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <assert.h>
 static int tokenize( QStringList& token, const QString& str, 
 		const QString& delim );
 
@@ -78,7 +78,7 @@ bool KStandardDirs::addResourceDir( const QString& type,
 }
 
 QString KStandardDirs::findResource( const QString& type, 
-		      const QString& filename )
+		      const QString& filename ) const
 {
     QString dir = findResourceDir(type, filename);
     if (dir.isNull())
@@ -87,7 +87,7 @@ QString KStandardDirs::findResource( const QString& type,
 }
 
 QString KStandardDirs::findResourceDir( const QString& type,
-					const QString& filename)
+					const QString& filename) const
 {
     QStringList *candidates = dircache.find(type);
     if (!candidates) { // filling cache
@@ -128,6 +128,15 @@ QString KStandardDirs::findResourceDir( const QString& type,
 	    return *it;
     }
     return QString::null;
+}
+
+QStringList KStandardDirs::findAllResources( const QString&, bool recursive) const
+{
+    assert(!recursive);
+
+    QStringList list;
+    debug("findAllResources not yet implemented. Forgive me");
+    return list;
 }
 
 QString KStandardDirs::findExe( const QString& appname, 
