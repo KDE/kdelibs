@@ -1,6 +1,6 @@
 // programm to test the new khtml implementation
 
-
+#include <stdlib.h>
 #include "decoder.h"
 #include "kapp.h"
 #include <qfile.h>
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     if ( args->count() == 0 ) {
 	KCmdLineArgs::usage();
-	exit( 1 );
+	::exit( 1 );
     }
 
     KHTMLFactory *fac = new KHTMLFactory();
