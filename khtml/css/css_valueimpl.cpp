@@ -353,7 +353,7 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitT
 CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveValue::UnitTypes type)
 {
     m_value.string = str.implementation();
-    m_value.string->ref();
+    if(m_value.string) m_value.string->ref();
     m_type = type;
 }
 

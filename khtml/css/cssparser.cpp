@@ -1435,8 +1435,10 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	if ( !fp.matchFontFamily( &families ) )
 	    return false;
 	for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it ) {
-	    list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
-	    //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl; 
+	    if( *it != QString::null ) {
+	       list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
+	       //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl; 
+	    }
 	}
         //kdDebug( 6080 ) << "got " << list->length() << " faces" << endl;
         if(list->length())
