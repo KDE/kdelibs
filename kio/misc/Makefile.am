@@ -34,6 +34,8 @@ kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub \
 kio_uiserver_la_LIBADD = $(LIB_KIO)
 kio_uiserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
+observer_DIR = $(top_srcdir)/kio/kio
+
 METASOURCES = AUTO
 
 kde_services_DATA = kio_uiserver.desktop
