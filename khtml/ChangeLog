@@ -1,7 +1,16 @@
+2003-10-09  Leo Savernik  <l.savernik@aon.at>
+
+	* fixed text-decoration issues by merging RenderObject::getTextDecorationColor
+	from Safari, changed CSSStyleSelector appropriately
+
+	* fixed drawing of text decoration within selected text
+
+	* fixed overspilling of selection with unusual line-height configurations
+
 2003-10-07 Germain Garand <germain@ebooksfrance.org>
 
 	* khtmlview.cpp (viewportMouseReleaseEvent/viewportMouseMoveEvent): forward
-	meaningful peripheral mouse events to focused widget to restore correct 
+	meaningful peripheral mouse events to focused widget to restore correct
 	mouse handling in proxied widgets. #65216 (selection part)
 
 	* rendering/render_replaced.cpp (handleEvent):
@@ -17,7 +26,7 @@
 
 2003-10-06  David Faure  <faure@kde.org>
 
-	* ecma/kjs_html.cpp: Fixed crash due to onload=null in the onload event 
+	* ecma/kjs_html.cpp: Fixed crash due to onload=null in the onload event
 	handler (#57195).
 
 2003-10-06  Dirk Mueller  <mueller@kde.org>
@@ -39,12 +48,12 @@
 	memory leak.
 
 	* dom/css_value.cpp/h (class CSSStyleDeclaration): make accessors const. Add
-	binary compatibility wrappers. 
+	binary compatibility wrappers.
 
 2003-10-04 Germain Garand <germain@ebooksfrance.org>
 
 	* rendering/render_replaced.cpp (baselinePosition): use setPos to adjust
-	layer position if needed. Fix relatively positioned widgets not being painted. 
+	layer position if needed. Fix relatively positioned widgets not being painted.
 
 2003-10-04  Dirk Mueller  <mueller@kde.org>
 
