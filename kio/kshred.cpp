@@ -140,7 +140,7 @@ bool
 KShred::shred(QString fileName)
 {
 
-  kdError() << "KShred: shredding '" << fileName.local8Bit().data() << "'\n" << endl;
+  kdDebug() << "KShred: shredding '" << fileName.local8Bit() << endl;
   if (fileName.isEmpty())
     return false;
 
