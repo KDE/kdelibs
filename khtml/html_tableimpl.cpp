@@ -1687,12 +1687,7 @@ void HTMLTableElementImpl::close()
     calcMinMaxWidth();
     setLayouted(false);
     if(!availableWidth) return;
-    if(availableWidth < minWidth)
-	_parent->updateSize();
-    setAvailableWidth(); // update child width
-    layout(true);
-    if(layouted())
-	static_cast<HTMLDocumentImpl *>(document)->print(this, true);
+    updateSize();
 }
 
 void HTMLTableElementImpl::updateSize()
@@ -1700,9 +1695,11 @@ void HTMLTableElementImpl::updateSize()
     if (parsing())
     {
 	if (!updateTimer.isNull() && updateTimer.elapsed()<200)
+	{
 	    return;
+	}
 	else
-	    updateTimer.start();	    	
+	    updateTimer.start();	 
     }
     
     HTMLPositionedElementImpl::updateSize();
