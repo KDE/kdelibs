@@ -233,6 +233,7 @@ void PreviewJob::removeItem( const KFileItem *item )
 
 void PreviewJob::determineNextFile()
 {
+    kdDebug() << k_funcinfo << endl;
     KURL oldURL;
     if (d->currentItem.item)
     {
@@ -271,6 +272,7 @@ void PreviewJob::determineNextFile()
                     d->sizeName + "/");
             }
         }
+        kdDebug() << k_funcinfo << " stating "  << d->currentItem.item->url().prettyURL() << endl;
         KIO::Job *job = KIO::stat( d->currentItem.item->url(), false );
         addSubjob(job);
     }
@@ -375,6 +377,7 @@ bool PreviewJob::statResultThumbnail()
 
 void PreviewJob::getOrCreateThumbnail()
 {
+    kdDebug() << k_funcinfo << endl;
     // We still need to load the orig file ! (This is getting tedious) :)
     KURL currentURL = d->currentItem.item->url();
     if ( currentURL.isLocalFile() )
@@ -434,6 +437,7 @@ void PreviewJob::createThumbnail( QString pixPath )
 void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 {
     bool save = d->bSave && d->currentItem.plugin->property("CacheThumbnail").toBool();
+    kdDebug() << k_funcinfo << "save=" << save << endl;
     QPixmap pix;
     if (d->shmaddr)
     {
@@ -445,12 +449,7 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
         img.setAlphaBuffer(alpha);
         pix.convertFromImage(img);
         if (save)
-        {
-            QByteArray saveData;
-            QDataStream saveStr(saveData, IO_WriteOnly);
-            saveStr << img;
-            saveThumbnail(saveData);
-        }
+            img.save( d->thumbPath + d->currentItem.item->url().fileName(), "PNG" );
     }
     else
     {
@@ -464,11 +463,13 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 
 void PreviewJob::emitPreview(const QPixmap &pix)
 {
+    kdDebug() << k_funcinfo << endl;
     emit gotPreview(d->currentItem.item, pix);
 }
 
 void PreviewJob::emitFailed(const KFileItem *item)
 {
+    kdDebug() << k_funcinfo << endl;
     if (!item)
         item = d->currentItem.item;
     emit failed(item);
