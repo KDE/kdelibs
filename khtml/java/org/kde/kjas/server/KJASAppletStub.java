@@ -185,10 +185,12 @@ public final class KJASAppletStub
                     }
                     if (Thread.interrupted())
                         return;
-                    stateChange(CLASS_LOADED);                
+                    stateChange(CLASS_LOADED);
+                    Object object = null;
                     try {
                         synchronized (appletClass) {
-                           app = (Applet) appletClass.newInstance();
+                           object = appletClass.newInstance();
+                           app = (Applet) object;
                         }
                     }
                     catch( InstantiationException e ) {
@@ -200,6 +202,16 @@ public final class KJASAppletStub
                         Main.kjas_err( "Could not instantiate applet", e );
                         setFailed(e.toString());
                         return;
+                    }
+                    catch ( ClassCastException e ) {
+                        if ( object != null && object instanceof java.awt.Component) {
+                            app = new Applet();
+                            app.setLayout(new BorderLayout());
+                            app.add( (Component) object, BorderLayout.CENTER);
+                        } else {
+                            setFailed(e.toString());
+                            return;
+                        }
                     }
                 //} // synchronized
                 if (Thread.interrupted())
