@@ -283,6 +283,9 @@ QRect NodeImpl::getRect() const
 
 void NodeImpl::setChanged(bool b)
 {
+    if (!attached()) // changed compared to what?
+        return;
+
     if (b && !changed() && ownerDocument())
         ownerDocument()->changedNodes.append(this);
     else if (!b && changed() && ownerDocument())
