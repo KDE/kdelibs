@@ -107,8 +107,9 @@ void KMVirtualManager::create(KMPrinter *p, const QString& name)
 	printer->setName(instname);
 	printer->setPrinterName(p->printerName());
 	printer->setInstanceName(name);
-	printer->setType(p->type()|KMPrinter::Virtual);
-        m_manager->addPrinter(printer);
+	if (!name.isEmpty())
+		printer->setType(p->type()|KMPrinter::Virtual);
+	m_manager->addPrinter(printer);
 	triggerSave();
 }
 
@@ -192,7 +193,8 @@ void KMVirtualManager::checkPrinter(KMPrinter *p)
 	}
 	else
 	{
-		p->setType(realprinter->type()|KMPrinter::Virtual);
+		if (!p->instanceName().isEmpty())
+			p->setType(realprinter->type()|KMPrinter::Virtual);
 		p->setState(realprinter->state());
 	}
 }
@@ -244,8 +246,10 @@ void KMVirtualManager::loadFile(const QString& filename)
 				printer->setName(words[1]);
 				printer->setPrinterName(pair[0]);
 				if (pair.count() > 1)
+				{
 					printer->setInstanceName(pair[1]);
-				printer->addType(KMPrinter::Virtual);
+					printer->addType(KMPrinter::Virtual);
+				}
 				// parse options
 				for (uint i=2; i<words.count(); i++)
 				{
