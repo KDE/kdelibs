@@ -166,7 +166,7 @@ static QString lazy_encode( const QString& segment )
   return result;
 }
 
-static void decode( const QString& segment, QString &decoded, QString &encoded, int encoding_hint=0 )
+static void decode( const QString& segment, QString &decoded, QString &encoded, int encoding_hint=0, bool updateDecoded = true )
 {
   decoded = QString::null;
   encoded = segment;
@@ -214,7 +214,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
       {
          // Valid %xx sequence
          character = a * 16 + b; // Replace with value of %dd
-         if (!character)
+         if (!character && updateDecoded)
             break; // Stop at %00
 
          new_usegment [ new_length2++ ] = (unsigned char) csegment[i++];
@@ -242,14 +242,17 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   encoded = QString( new_usegment, new_length2);
 
   // Encoding specified
-  QByteArray array;
-  array.setRawData(new_segment, new_length);
-  decoded = textCodec->toUnicode( array, new_length );
-  array.resetRawData(new_segment, new_length);
-  QCString validate = textCodec->fromUnicode(decoded);
-  if (strcmp(validate.data(), new_segment) != 0)
+  if (updateDecoded)
   {
-      decoded = QString::fromLocal8Bit(new_segment, new_length);
+     QByteArray array;
+     array.setRawData(new_segment, new_length);
+     decoded = textCodec->toUnicode( array, new_length );
+     array.resetRawData(new_segment, new_length);
+     QCString validate = textCodec->fromUnicode(decoded);
+     if (strcmp(validate.data(), new_segment) != 0)
+     {
+        decoded = QString::fromLocal8Bit(new_segment, new_length);
+     }
   }
 
   delete [] new_segment;
@@ -1662,7 +1665,7 @@ void KURL::setQuery( const QString &_txt, int encoding_hint)
       {
          QString tmp = m_strQuery_encoded.mid(s, i-s);
          QString newTmp;
-         decode( tmp, newTmp, tmp, encoding_hint );
+         decode( tmp, newTmp, tmp, encoding_hint, false );
          result += tmp;
       }
       if (i < l)
