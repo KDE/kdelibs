@@ -50,6 +50,7 @@ HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _percent,
 	cspan = cs;
 	padding = pad;
 	width = _max_width;
+	if(percent == 0) setFixedWidth(true);
 }
 
 void HTMLTableCell::setMaxWidth( int _max_width )
@@ -68,6 +69,18 @@ void HTMLTableCell::setMaxWidth( int _max_width )
 
     for ( obj = head; obj != 0; obj = obj->next() )
 	obj->setMaxWidth( max_width );
+}
+
+void HTMLTableCell::setWidth(int _width)
+{
+    HTMLObject *obj;
+
+    width = _width;
+    if(!isFixedWidth())
+	max_width = width;
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+	obj->setMaxWidth( width );
 }
 
 int HTMLTableCell::calcMinWidth()
@@ -408,15 +421,23 @@ void HTMLTable::calcSize( HTMLClue * )
     // recalculate min/max widths
     calcColumnWidths();
 
+    printf("calcColumnWidth: ");
     // If it doesn't fit... MAKE IT FIT!
     for ( c = 0; c < totalCols; c++ )
     {
         if (columnPos[c+1] > max_width-border)
              columnPos[c+1] = max_width-border;
+	printf("%d ",columnPos[c+1]);
     }
+    printf("\n");
 
     // Attempt to get sensible cell widths
     optimiseCellWidth();
+
+    printf("optimiseCellWidth: ");
+    for ( c = 0; c < totalCols; c++ )
+	printf("%d ",columnPos[c+1]);
+    printf("\n");
 
     // set cell widths and then calculate cell sizes
     for ( r = 0; r < totalRows; r++ )
@@ -433,7 +454,7 @@ void HTMLTable::calcSize( HTMLClue * )
 	    if ( ( indx = c-cell->colSpan()+1 ) < 0 )
 		indx = 0;
 
-	    cell->setMaxWidth( columnOpt[c+1] - columnOpt[ indx ] - spacing -
+	    cell->setWidth( columnOpt[c+1] - columnOpt[ indx ] - spacing -
 		 padding - padding );
 	    cell->calcSize();
 	}

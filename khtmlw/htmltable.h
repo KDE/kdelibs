@@ -69,6 +69,7 @@ public:
 
     virtual void setMaxWidth( int );
     virtual int  calcMinWidth();
+    void setWidth(int _width);
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *_painter, HTMLChain *_chain, int _x,

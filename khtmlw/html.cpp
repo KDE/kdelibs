@@ -4359,6 +4359,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    int rowSpan = 1, colSpan = 1;
 		    int width = _clue->getMaxWidth();
 		    int percent = -1;
+		    bool fixedWidth = false;
 		    QColor bgcolor = rowColor;
 		    HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
 					    HTMLClue::VCenter : rowvalign);
@@ -4414,6 +4415,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			    {
 				width = atoi( token + 6 );
 				percent = 0;
+				fixedWidth = true;
 			    }
 			}
 			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
@@ -4435,6 +4437,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    if ( bgcolor.isValid() )
 			cell->setBGColor( bgcolor );
 		    cell->setVAlign( valign );
+		    if(fixedWidth) cell->setFixedWidth(true);
 		    table->addCell( cell );
 		    has_cell = 1;
 		    flow = 0;
