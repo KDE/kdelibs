@@ -122,6 +122,16 @@ protected:
 
   /**
    * Load the Plugins honoring the PluginLoadingMode.
+   *
+   * If you call this method in an already constructed GUI (like when the user
+   * has changed which plugins are enabled) you need to add the new plugins to
+   * the KXMLGUIFactory:
+   * \code
+   * QPtrList<KParts::Plugin> plugins = KParts::Plugin::pluginObjects( this );
+   * KParts::Plugin * plugin;
+   * for( plugin = plugins.first(); plugin; plugin = plugins.next() )
+   *   factory()->addClient(  plugin );
+   * \endcode
    */
   void loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance );
 

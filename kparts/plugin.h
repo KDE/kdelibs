@@ -116,6 +116,16 @@ public:
      * factory and deleted.
      *
      * This method is automatically called by KParts::Plugin and by KParts::MainWindow.
+     *
+     * If you call this method in an already constructed GUI (like when the user
+     * has changed which plugins are enabled) you need to add the new plugins to
+     * the KXMLGUIFactory:
+     * \code
+     * QPtrList<KParts::Plugin> plugins = KParts::Plugin::pluginObjects( this );
+     * KParts::Plugin * plugin;
+     * for( plugin = plugins.first(); plugin; plugin = plugins.next() )
+     *   factory()->addClient(  plugin );
+     * \endcode
      */
     static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true );
 
