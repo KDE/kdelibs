@@ -63,6 +63,7 @@
 #define KDE_sendfile	::sendfile64
 #define KDE_struct_stat 	struct stat64
 #define KDE_struct_dirent	struct dirent64
+#define KDE_rename              ::rename
 /* TODO: define for win32 */
 
 #else /* !_LFS64_LARGEFILE */
