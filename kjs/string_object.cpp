@@ -243,9 +243,27 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       do {
         UString mstr = reg->match(u, lastIndex, &pos, ovector);
         len = mstr.size();
-        lastIndex = pos + u3.size();
+        UString rstr(u3);
+        bool ok;
+        // check if u3 matches $1 or $2 etc
+        for (int i = 0; (i = rstr.find(UString("$"), i)) != -1; i++) {
+          if (i+1<rstr.size() && rstr[i+1] == '$') {  // "$$" -> "$"
+            rstr = rstr.substr(0,i) + "$" + rstr.substr(i+2);
+            continue;
+          }
+          // Assume number part is one char exactly
+          unsigned long pos = rstr.substr(i+1,1).toULong(&ok);
+          if (ok && pos <= (unsigned)reg->subPatterns()) {
+            rstr = rstr.substr(0,i)
+                      + u.substr((*ovector)[2*pos],
+                                     (*ovector)[2*pos+1]-(*ovector)[2*pos])
+                      + rstr.substr(i+2);
+            i += (*ovector)[2*pos+1]-(*ovector)[2*pos] - 1; // -1 offsets i++
+          }
+        }
+        lastIndex = pos + rstr.size();
         if ( pos != -1 )
-          u = u.substr(0, pos) + u3 + u.substr(pos + len);
+          u = u.substr(0, pos) + rstr + u.substr(pos + len);
         //fprintf(stderr,"pos=%d,len=%d,lastIndex=%d,u=%s\n",pos,len,lastIndex,u.ascii());
       } while ( global && pos != -1 );
 
