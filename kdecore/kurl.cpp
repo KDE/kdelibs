@@ -265,11 +265,9 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
 static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
 {
   if (path.isEmpty()) return QString::null;
-  // Did we have a trailing '/'
   int len = path.length();
-  bool slash = false;
-  if ( len > 0 && path.right(1)[0] == '/' )
-    slash = true;
+  bool slash = (len && path[len-1] == '/') ||
+               (len > 1 && path[len-2] == '/' && path[len-1] == '.');
 
   // The following code cleans up directory path much like
   // QDir::cleanDirPath() except it can be made to ignore multiple
@@ -289,12 +287,13 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
       cdUp++;
     else
     {
-      // Ignore any occurances of '.' This includes entries
-      // that simply do not make sense like /..../
-      if ( (len!=0 || !cleanDirSeparator) && (len != 1 || path[pos+1] != '.') )
+      // Ignore any occurances of '.'
+      // This includes entries that simply do not make sense like /..../
+      if ( (len || !cleanDirSeparator) &&
+           (len != 1 || path[pos+1] != '.' ) )
       {
         if ( !cdUp )
-          result = path.mid(pos, len+1) + result;
+              result.prepend(path.mid(pos, len+1));
         else
           cdUp--;
       }
@@ -304,11 +303,9 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
 
   if ( result.isEmpty() )
     result = "/";
+  else if ( slash && result[result.length()-1] != '/' )
+       result.append('/');
 
-  // Restore the trailing '/'
-  len = result.length();
-  if ( len > 0 && result.right(1)[0] != '/' && slash )
-    result += "/";
   return result;
 }
 
