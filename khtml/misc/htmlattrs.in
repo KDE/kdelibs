@@ -91,6 +91,7 @@ onmouseout
 onmouseover
 onmouseup
 onreset
+onresize
 onselect
 onsubmit
 onunload

@@ -102,6 +102,7 @@ onmouseout, ATTR_ONMOUSEOUT
 onmouseover, ATTR_ONMOUSEOVER
 onmouseup, ATTR_ONMOUSEUP
 onreset, ATTR_ONRESET
+onresize, ATTR_ONRESIZE
 onselect, ATTR_ONSELECT
 onsubmit, ATTR_ONSUBMIT
 onunload, ATTR_ONUNLOAD
