@@ -27,6 +27,14 @@
 
 class QTimer;
 
+// don't forget to sync DISPATCH_IMPL in dataslave.h
+#define DISPATCH_DECL(type) \
+	void dispatch_##type();
+
+// don't forget to sync DISPATCH_IMPL1 in dataslave.h
+#define DISPATCH_DECL1(type, paramtype, param) \
+	void dispatch_##type(paramtype param);
+
 namespace KIO {
 
     /**
@@ -74,8 +82,8 @@ namespace KIO {
 
 	// queueing methods
 	/** identifiers of functions to be queued */
-	enum QueueType { QueueMimeType = 1, QueueTotalSize, QueueSendMetaData,
-		QueueData, QueueFinished };
+	enum QueueType { Queue_mimeType = 1, Queue_totalSize,
+		Queue_sendMetaData, Queue_data, Queue_finished };
 	/** structure for queueing. It is very primitive, it doesn't
 	 * even try to conserve memory.
 	 */
@@ -91,42 +99,11 @@ namespace KIO {
         typedef QValueList<QueueStruct> DispatchQueue;
 	DispatchQueue dispatchQueue;
 
-	void dispatch_mimeType(const QString &s) {
-	  if (_suspended) {
-	    QueueStruct q(QueueMimeType);
-	    q.s = s;
-	    dispatchQueue.push_back(q);
-	  } else
-	    mimeType(s);
-	}
-	void dispatch_totalSize(KIO::filesize_t size) {
-	  if (_suspended) {
-	    QueueStruct q(QueueTotalSize);
-	    q.size = size;
-	    dispatchQueue.push_back(q);
-	  } else
-	    totalSize(size);
-	}
-	void dispatch_sendMetaData() {
-	  if (_suspended) {
-	    QueueStruct q(QueueSendMetaData);
-	    dispatchQueue.push_back(q);
-	  } else
-	    sendMetaData();
-	}
-	void dispatch_data(const QByteArray &ba) {
-	  if (_suspended) {
-	    QueueStruct q(QueueData);
-	    q.ba = ba;
-	    dispatchQueue.push_back(q);
-	  } else
-	    data(ba);
-	}
-	void dispatch_finished() {
-	  // Allways queue, since it will delete us
-          QueueStruct q(QueueFinished);
-          dispatchQueue.push_back(q);
-	}
+	DISPATCH_DECL1(mimeType, const QString &, s)
+	DISPATCH_DECL1(totalSize, KIO::filesize_t, size)
+	DISPATCH_DECL(sendMetaData)
+	DISPATCH_DECL1(data, const QByteArray &, ba)
+	DISPATCH_DECL(finished)
 
     protected slots:
 	/** dispatches next queued method. Does nothing if there are no
@@ -142,5 +119,8 @@ namespace KIO {
     };
 
 }
+
+#undef DISPATCH_DECL
+#undef DISPATCH_DECL1
 
 #endif /*__KIO_DATASLAVE_H__*/
