@@ -104,7 +104,7 @@ bool KAccelPrivate::disconnectKey( KAccelAction& action, const KKeyServer::Key& 
 	int keyQt = key.keyCodeQt();
 	QMap<int, int>::iterator it = m_mapIDToKey.begin();
 	for( ; it != m_mapIDToKey.end(); ++it ) {
-		kdDebug(125) << "m_mapIDToKey[" << it.key() << "] = " << QString::number(*it,16) << " == " << QString::number(keyQt,16) << endl;
+		//kdDebug(125) << "m_mapIDToKey[" << it.key() << "] = " << QString::number(*it,16) << " == " << QString::number(keyQt,16) << endl;
 		if( *it == keyQt ) {
 			int nID = it.key();
 			kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.name() << "\", 0x" << QString::number(keyQt,16) << " ) : id = " << nID << " m_pObjSlot = " << action.objSlotPtr() << endl;
