@@ -746,17 +746,25 @@ bool Lexer::scanRegExp()
 {
   pos16 = 0;
   bool lastWasEscape = false;
+  bool inBrackets = false;
 
   while (1) {
     if (isLineTerminator() || current == 0)
       return false;
-    else if (current != '/' || lastWasEscape == true)
+    else if (current != '/' || lastWasEscape == true || inBrackets == true)
     {
+        // keep track of '[' and ']'
+        if ( !lastWasEscape ) {
+          if ( current == '[' && !inBrackets )
+            inBrackets = true;
+          if ( current == ']' && inBrackets )
+            inBrackets = false;
+        }
         record16(current);
         lastWasEscape =
             !lastWasEscape && (current == '\\');
     }
-    else {
+    else { // end of regexp
       pattern = UString(buffer16, pos16);
       pos16 = 0;
       shift(1);

@@ -320,7 +320,7 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
   // and let it override the canPut() check.
   if ((attr == None || attr == DontDelete) && !canPut(exec,propertyName)) {
 #ifdef KJS_VERBOSE
-    fprintf( stderr, "canPut %s said NO\n", propertyName.ascii() );
+    fprintf( stderr, "WARNING: canPut %s said NO\n", propertyName.ascii() );
 #endif
     return;
   }
