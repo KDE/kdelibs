@@ -110,6 +110,8 @@ QString kioErrorString( int _errid, const char *_errortext )
     case  ERR_COULD_NOT_LOGIN:
       result = i18n( "Could not login into %1" ).arg ( _errortext );
       break;
+    case  ERR_COULD_NOT_AUTHENTICATE:
+      result = i18n( " Athorization failed, %1 authentication not supported" ).arg( _errortext );
     default:
       result = i18n( "Unknown error code %1\n%2\n\nPlease send a full bugreport at http://bugs.kde.org" ).arg(_errid ).arg(_errortext);
       break;
