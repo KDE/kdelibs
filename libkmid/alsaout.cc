@@ -452,15 +452,15 @@ void AlsaOut::tmrStart(int tpcn)
   int  ret;
 
   memset(&queuetempo, 0, sizeof(queuetempo));
-  queuetempo.queue = queue;
+  queuetempo.queue = di->queue;
   queuetempo.ppq = tpcn;
   di->tPCN=tpcn;
   queuetempo.tempo = 60*1000000/120;
 
-  ret = snd_seq_set_queue_tempo(di->handle, queue, &queuetempo);
+  ret = snd_seq_set_queue_tempo(di->handle, di->queue, &queuetempo);
 
   timerEventSend(SND_SEQ_EVENT_START);
-  snd_seq_start_queue(di->handle,queue,NULL);
+  snd_seq_start_queue(di->handle,di->queue,NULL);
 #endif
 }
 
