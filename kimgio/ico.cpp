@@ -8,8 +8,9 @@
  *
  */   
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
+#include <valarray>
 
 #include <qimage.h>
 #include <qbitmap.h>
@@ -18,194 +19,234 @@
 
 #include "ico.h"
 
-// Global header
-struct IcoHeader
+namespace
 {
-    Q_UINT16 reserved;
-    Q_UINT16 type;
-    Q_UINT16 count;
-};
+    // Global header
+    struct IcoHeader
+    {
+        enum Type { Icon = 1, Cursor };
+        Q_UINT16 reserved;
+        Q_UINT16 type;
+        Q_UINT16 count;
+    };
 
-enum IcoType
-{
-    Icon = 1,
-    Cursor = 2
-};
+    inline QDataStream& operator >>( QDataStream& s, IcoHeader& h )
+    {
+        return s >> h.reserved >> h.type >> h.count;
+    }
 
-// HACK HACK HACK from qt/src/kernel/qimage.cpp (malte)
-// ******** The following block is copied from Qt (qimage.cpp)
-// copyright (c) TrollTech AS
-extern bool qt_read_dib(QDataStream &, QImage &);
-extern bool qt_write_dib(QDataStream &, QImage);
-
-const int BMP_OLD  = 12;            // old Windows/OS2 BMP size
-const int BMP_WIN  = 40;            // new Windows BMP size
-const int BMP_OS2  = 64;            // new OS/2 BMP size 
-
-const int BMP_RGB  = 0;             // no compression 
-
-struct BMP_INFOHDR {                // BMP information header
-    Q_INT32  biSize;                // size of this struct
-    Q_INT32  biWidth;               // pixmap width
-    Q_INT32  biHeight;              // pixmap height
-    Q_INT16  biPlanes;              // should be 1
-    Q_INT16  biBitCount;            // number of bits per pixel
-    Q_INT32  biCompression;         // compression method
-    Q_INT32  biSizeImage;               // size of image
-    Q_INT32  biXPelsPerMeter;           // horizontal resolution
-    Q_INT32  biYPelsPerMeter;           // vertical resolution
-    Q_INT32  biClrUsed;             // number of colors used
-    Q_INT32  biClrImportant;            // number of important colors
-};
+    // Based on qt_read_dib et al. from qimage.cpp
+    // (c) 1992-2002 Trolltech AS.
+    struct BMP_INFOHDR
+    {
+        static const Q_UINT32 Size = 40;
+        Q_UINT32  biSize;                // size of this struct
+        Q_UINT32  biWidth;               // pixmap width
+        Q_UINT32  biHeight;              // pixmap height
+        Q_UINT16  biPlanes;              // should be 1
+        Q_UINT16  biBitCount;            // number of bits per pixel
+        enum Compression { RGB = 0 };
+        Q_UINT32  biCompression;         // compression method
+        Q_UINT32  biSizeImage;           // size of image
+        Q_UINT32  biXPelsPerMeter;       // horizontal resolution
+        Q_UINT32  biYPelsPerMeter;       // vertical resolution
+        Q_UINT32  biClrUsed;             // number of colors used
+        Q_UINT32  biClrImportant;        // number of important colors
+    };
+    const Q_UINT32 BMP_INFOHDR::Size;
   
-QDataStream &operator>>( QDataStream &s, BMP_INFOHDR &bi )
-{
-    s >> bi.biSize;
-    if ( bi.biSize == BMP_WIN || bi.biSize == BMP_OS2 ) {
-    s >> bi.biWidth >> bi.biHeight >> bi.biPlanes >> bi.biBitCount;
-    s >> bi.biCompression >> bi.biSizeImage;
-    s >> bi.biXPelsPerMeter >> bi.biYPelsPerMeter;
-    s >> bi.biClrUsed >> bi.biClrImportant;
+    QDataStream& operator >>( QDataStream &s, BMP_INFOHDR &bi )
+    {
+        s >> bi.biSize;
+        if ( bi.biSize == BMP_INFOHDR::Size )
+        {
+            s >> bi.biWidth >> bi.biHeight >> bi.biPlanes >> bi.biBitCount;
+            s >> bi.biCompression >> bi.biSizeImage;
+            s >> bi.biXPelsPerMeter >> bi.biYPelsPerMeter;
+            s >> bi.biClrUsed >> bi.biClrImportant;
+        }
+        return s;
     }
-    else {                  // probably old Windows format
-    Q_INT16 w, h;
-    s >> w >> h >> bi.biPlanes >> bi.biBitCount;
-    bi.biWidth  = w;
-    bi.biHeight = h;
-    bi.biCompression = BMP_RGB;     // no compression
-    bi.biSizeImage = 0;
-    bi.biXPelsPerMeter = bi.biYPelsPerMeter = 0;
-    bi.biClrUsed = bi.biClrImportant = 0;
-    }
-    return s;
-} 
 
-QDataStream &operator<<( QDataStream &s, const BMP_INFOHDR &bi )
-{
-    s << bi.biSize;
-    s << bi.biWidth << bi.biHeight;
-    s << bi.biPlanes;
-    s << bi.biBitCount;
-    s << bi.biCompression;
-    s << bi.biSizeImage;
-    s << bi.biXPelsPerMeter << bi.biYPelsPerMeter;
-    s << bi.biClrUsed << bi.biClrImportant;
-    return s;                                                                   
+#if 0
+    QDataStream &operator<<( QDataStream &s, const BMP_INFOHDR &bi )
+    {
+        s << bi.biSize;
+        s << bi.biWidth << bi.biHeight;
+        s << bi.biPlanes;
+        s << bi.biBitCount;
+        s << bi.biCompression;
+        s << bi.biSizeImage;
+        s << bi.biXPelsPerMeter << bi.biYPelsPerMeter;
+        s << bi.biClrUsed << bi.biClrImportant;
+        return s;
+    }
+#endif
+
+    // Header for every icon in the file
+    struct IconRec
+    {
+        unsigned char width;
+        unsigned char height;
+        Q_UINT16 colors;
+        Q_UINT16 hotspotX;
+        Q_UINT16 hotspotY;
+        Q_UINT32 dibSize;
+        Q_UINT32 dibOffset;
+    };
+
+    inline QDataStream& operator >>( QDataStream& s, IconRec& r )
+    {
+        return s >> r.width >> r.height >> r.colors
+                 >> r.hotspotX >> r.hotspotY
+                 >> r.dibSize >> r.dibOffset;
+    }
 }
-// ********* END Qt copyrighted block *********
 
-// Header for every icon in the file
-struct IconRec
+extern "C" void kimgio_ico_read( QImageIO* io )
 {
-    uchar width;
-    uchar height;
-    Q_UINT16 colors;
-    Q_UINT16 hotspotX;
-    Q_UINT16 hotspotY;
-    Q_UINT32 dibSize;
-    Q_UINT32 dibOffset;
-};
-
-void kimgio_ico_read(QImageIO *io)
-{
-    QDataStream ico(io->ioDevice());
-    ico.setByteOrder(QDataStream::LittleEndian);
-    IcoHeader hdr;
-    ico >> hdr.reserved >> hdr.type >> hdr.count;
-    if ((hdr.type != Icon && hdr.type != Cursor) || !hdr.count)
+    QDataStream stream( io->ioDevice() );
+    stream.setByteOrder( QDataStream::LittleEndian );
+    IcoHeader header;
+    stream >> header;
+    if ( !header.count ||
+         ( header.type != IcoHeader::Icon && header.type != IcoHeader::Cursor) )
         return;
 
-    QPaintDeviceMetrics metrics(QApplication::desktop());
-    uchar prefSize = 32;
-    uint prefDepth = metrics.depth() > 8 ? 0 : 16;
-    if (io->parameters())
+    QPaintDeviceMetrics metrics( QApplication::desktop() );
+    unsigned preferredSize = 32;
+    unsigned preferredDepth = metrics.depth() > 8 ? 0 : 16;
+    if ( io->parameters() )
     {
-        QStringList params = QStringList::split(':', io->parameters());
-        if (params.count())
-            prefSize = params[0].toInt();
-        if (params.count() >= 2)
-            prefDepth = params[1].toInt();
+        QStringList params = QStringList::split( ':', io->parameters() );
+        if ( params.count() ) preferredSize = params[ 0 ].toUInt();
+        if ( params.count() >= 2 ) preferredDepth = params[ 1 ].toInt();
     }
-    QValueList<IconRec> iconList;
-    uint preferred = 0;
-    for (uint i = 0; i < hdr.count; ++i)
+
+    QValueList< IconRec > icons;
+    unsigned best = 0;
+    for ( unsigned i = 0; i < header.count; ++i )
     {
-        if (ico.atEnd())
-                   return;
-        IconRec rec;
-        ico >> rec.width >> rec.height >> rec.colors
-            >> rec.hotspotX >> rec.hotspotY >> rec.dibSize >> rec.dibOffset;
-        iconList.append(rec);
-        if (abs(rec.width - prefSize) > abs(iconList[preferred].width - prefSize))
+        if ( stream.atEnd() ) return;
+        IconRec current;
+        stream >> current;
+        icons.append( current );
+        unsigned d1 = std::abs( int( current.width - preferredSize ) );
+        unsigned d2 = std::abs( int( icons[ best ].width - preferredSize ) );
+        if ( d2 < d1 ) continue;
+        else if ( d1 < d2 ) best = i;
+
+        if ( preferredDepth == 0 && ( icons[ best ].colors == 0 ||
+                                      icons[ best ].colors > current.colors ) )
             continue;
-        if (abs(rec.width - prefSize) < abs(iconList[preferred].width - prefSize))
-            preferred = i;
-        if (prefDepth == 0 && (iconList[preferred].colors == 0 || iconList[preferred].colors > rec.colors))
-            continue;
-        if (abs(int(rec.colors - prefDepth)) < abs(int(iconList[preferred].colors - prefDepth)))
-            preferred = i;
+
+        if ( std::abs( int( current.colors - preferredDepth ) ) <
+             std::abs( int( icons[ best ].colors - preferredDepth ) ) ) best = i;
     }
-    IconRec header = iconList[preferred];
+    IconRec ico = icons[ best ];
 
-    if (ico.device()->size() < header.dibOffset + BMP_WIN)
-       return;
+    if ( io->ioDevice()->size() < ico.dibOffset + BMP_INFOHDR::Size ) return;
 
-    ico.device()->at(header.dibOffset);
+    io->ioDevice()->at( ico.dibOffset );
     BMP_INFOHDR dibHeader;
-    ico >> dibHeader;
-    if ((dibHeader.biSize != BMP_WIN) &&
-        (dibHeader.biSize != BMP_OLD) &&
-        (dibHeader.biSize != BMP_OS2))
-       return;
-    int dibDataSize = header.dibSize - dibHeader.biSize;
-    if ((dibDataSize < 0) || 
-        (ico.device()->size() < header.dibOffset + dibHeader.biSize + dibDataSize))
-       return;
-    ico.device()->at(header.dibOffset + dibHeader.biSize);
+    stream >> dibHeader;
+    if ( dibHeader.biSize != BMP_INFOHDR::Size ||
+         dibHeader.biCompression != BMP_INFOHDR::RGB ||
+         ( dibHeader.biBitCount != 1 && dibHeader.biBitCount != 4 &&
+           dibHeader.biBitCount != 8 && dibHeader.biBitCount != 24 &&
+           dibHeader.biBitCount != 32 ) ||
+         io->ioDevice()->size() < ico.dibOffset + ico.dibSize ||
+         ico.dibSize < dibHeader.biSize ) return;
 
-    QByteArray dibData(dibDataSize + BMP_WIN);
-    QDataStream dib(dibData, IO_ReadWrite);
-    dib.setByteOrder(QDataStream::LittleEndian);
-    dibHeader.biSize = BMP_WIN;
-    dibHeader.biHeight = header.height;
-    dib << dibHeader;
-    ico.device()->readBlock(dibData.data() + BMP_WIN, dibDataSize);
-    dib.device()->at(0);
-    
-    QImage icon;
-    if (!qt_read_dib(dib, icon))
-        return;
-    if (icon.width() != header.width || icon.height() != header.height)
-        return;
+    unsigned colors = dibHeader.biBitCount >= 24 ?
+                      0 : dibHeader.biClrUsed ?
+                      dibHeader.biClrUsed : 1 << dibHeader.biBitCount;
+    // Always create a 32-bit image to get the mask right
+    QImage icon( ico.width, ico.height, 32 );
+    if ( icon.isNull() ) return;
+    icon.setAlphaBuffer( true );
 
-    QPixmap p;
-    p.convertFromImage(icon);
-    dibHeader.biBitCount = 1;
-    dibHeader.biClrUsed = 2;
-    dibHeader.biClrImportant = 2;
-    int maskPos = dib.device()->at();
-    dib.device()->at(0);
-    dib << dibHeader;
-    dib << (Q_UINT32)0;
-    dib << (Q_UINT32)0xffffff;
-    memcpy(dibData.data() + BMP_WIN + 8, dibData.data() + maskPos, dibData.size() - maskPos);
-    dib.device()->at(0);
-    if (!qt_read_dib(dib, icon))
-        return;
-    if (icon.width() != header.width || icon.height() != header.height)
-        return;
+    std::valarray< QRgb > colorTable( QRgb( 0 ), 1 << dibHeader.biBitCount );
+    for ( unsigned i = 0; i < colors; ++i )
+    {
+        unsigned char rgb[ 4 ];
+        stream.readRawBytes( reinterpret_cast< char* >( &rgb ), sizeof( rgb ) );
+        colorTable[ i ] = qRgb( rgb[ 2 ], rgb[ 1 ], rgb[ 0 ] );
+    }
 
-    QBitmap mask;
-    mask.convertFromImage(icon);
-    p.setMask(mask);
+    unsigned bpl;
+    switch ( dibHeader.biBitCount )
+    {
+        // 8-bit aligned
+        case 1: bpl = ( ico.width + 7 ) >> 3; break;
+        case 4: bpl = ( ico.width + 1 ) >> 1; break;
+        case 8: bpl = ico.width; break;
+        // 32-bit aligned
+        case 24: bpl = ( ( ico.width * 3 + 3 ) >> 2 ) << 2; break;
+        case 32: bpl = ico.width << 2; break;
+    }
+    unsigned char* buf = new unsigned char[ bpl ];
+    unsigned char** lines = icon.jumpTable();
+    for ( unsigned y = ico.height; y--; )
+    {
+        stream.readRawBytes( reinterpret_cast< char* >( buf ), bpl );
+        unsigned char* pixel = buf;
+        QRgb* p = reinterpret_cast< QRgb* >( lines[ y ] );
+        switch ( dibHeader.biBitCount )
+        {
+            case 1:
+                for ( unsigned x = 0; x < ico.width; ++x )
+                    *p++ = colorTable[ ( pixel[ x >> 3 ] >>
+                                         ( 7 - ( x & 0x07 ) ) ) & 1 ];
+                break;
+            case 4:
+                for ( unsigned x = 0; x < ico.width; ++x )
+                    if ( x & 1 ) *p++ = colorTable[ pixel[ x >> 1 ] >> 4 ];
+                    else *p++ = colorTable[ pixel[ x >> 1 ] & 0x0f ];
+                break;
+            case 8:
+                for ( unsigned x = 0; x < ico.width; ++x )
+                    *p++ = colorTable[ pixel[ x ] ];
+                break;
+            case 24:
+                for ( unsigned x = 0; x < ico.width; ++x )
+                    *p++ = qRgb( pixel[ 3 * x + 2 ],
+                                 pixel[ 3 * x + 1 ],
+                                 pixel[ 3 * x ] );
+                break;
+            case 32:
+                std::memcpy( p, pixel, bpl );
+                break;
+        }
+    }
+    delete[] buf;
 
-    icon = p.convertToImage();
-    icon.setText( "X-HotspotX", 0, QString::number( header.hotspotX ) );
-    icon.setText( "X-HotspotY", 0, QString::number( header.hotspotY ) );
+    if ( dibHeader.biBitCount < 32 )
+    {
+        // Traditional 1-bit mask
+        bpl = ( ico.width + 7 ) >> 3;
+        buf = new unsigned char[ bpl ];
+        for ( unsigned y = ico.height; y--; )
+        {
+            stream.readRawBytes( reinterpret_cast< char* >( buf ), bpl );
+            QRgb* p = reinterpret_cast< QRgb* >( lines[ y ] );
+            for ( unsigned x = 0; x < ico.width; ++x, ++p )
+                if ( ( ( buf[ x >> 3 ] >> ( 7 - ( x & 0x07 ) ) ) & 1 ) )
+                    *p &= RGB_MASK;
+        }
+        delete[] buf;
+    }
+
+    if ( header.type == IcoHeader::Cursor )
+    {
+        icon.setText( "X-HotspotX", 0, QString::number( ico.hotspotX ) );
+        icon.setText( "X-HotspotY", 0, QString::number( ico.hotspotY ) );
+    }
     io->setImage(icon);
     io->setStatus(0);
 }
 
+#if 0
 void kimgio_ico_write(QImageIO *io)
 {
     if (io->image().isNull())
@@ -269,4 +310,4 @@ void kimgio_ico_write(QImageIO *io)
     ico.writeRawBytes(dibData.data(), dibData.size());
     io->setStatus(0);
 }
-
+#endif

@@ -28,7 +28,7 @@ class QImageIO;
 extern "C"
 {
     void kimgio_ico_read(QImageIO *);
-    void kimgio_ico_write(QImageIO *);
+//    void kimgio_ico_write(QImageIO *);
 }
 
 #endif
