@@ -91,6 +91,26 @@ public:
     virtual void setView( const QString &caption, const QString &text, const QPixmap &icon );
 
     /**
+     * Returns a widget that is used as standard view if one of the 
+     * setView() methods taking the QString arguments is used.
+     * You can use the returned widget to customize the passivepopup while 
+     * keeping the look similar to the "standard" passivepopups.
+     *
+     * After customizing the widget, pass it to @ref setView( QWidget* )
+     *
+     * @param parent The parent widget used for the returned QVBox. If left 0L,
+     * then "this", i.e. the passive popup object will be used.
+     *
+     * @return a QVBox containing the given arguments, looking like the
+     * standard passivepopups.
+     * @see setView( QWidget * )
+     * @see setView( const QString&, const QString& )
+     * @see setView( const QString&, const QString&, const QPixmap& )
+     */
+    QVBox * standardView( const QString& caption, const QString& text,
+                          const QPixmap& icon, QWidget *parent = 0L );
+    
+    /**
      * Returns the main view.
      */
     QWidget *view() const { return msgView; }
@@ -203,11 +223,11 @@ protected:
      * available, use this rectangle (pass it to @ref moveNear()).
      * Basically KWinModule::workArea() with width and height set to 0
      * so that moveNear uses the upper-left position.
-     * @return The QRect to be passed to @ref moveNear() ifno other is 
+     * @return The QRect to be passed to @ref moveNear() ifno other is
      * available.
      */
     QRect defaultArea() const;
-    
+
 private:
     void init();
 

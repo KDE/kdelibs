@@ -68,29 +68,43 @@ void KPassivePopup::setView( const QString &caption, const QString &text,
                              const QPixmap &icon )
 {
     // kdDebug() << "KPassivePopup::setView " << caption << ", " << text << endl;
-    QVBox *vb = new QVBox( this );
+    setView( standardView( caption, text, icon, this ) );
+}
+
+QVBox * KPassivePopup::standardView( const QString& caption,
+                                     const QString& text,
+                                     const QPixmap& icon,
+                                     QWidget *parent )
+{
+    QVBox *vb = new QVBox( parent ? parent : this );
     vb->setSpacing( KDialog::spacingHint() );
 
     QHBox *hb=0;
     if ( !icon.isNull() ) {
 	hb = new QHBox( vb );
-	hb->setMargin( KDialog::marginHint() );
+	hb->setMargin( 0 );
 	hb->setSpacing( KDialog::spacingHint() );
 	ttlIcon = new QLabel( hb, "title_icon" );
 	ttlIcon->setPixmap( icon );
+        ttlIcon->setAlignment( AlignLeft );
     }
 
-    if ( !caption.isNull() ) {
+    if ( !caption.isEmpty() ) {
 	ttl = new QLabel( caption, hb ? hb : vb, "title_label" );
 	QFont fnt = ttl->font();
 	fnt.setBold( true );
 	ttl->setFont( fnt );
 	ttl->setAlignment( Qt::AlignHCenter );
+        if ( hb )
+            hb->setStretchFactor( ttl, 10 ); // enforce centering
     }
 
-    msg = new QLabel( text, vb, "msg_label" );
+    if ( !text.isEmpty() ) {
+        msg = new QLabel( text, vb, "msg_label" );
+        msg->setAlignment( AlignLeft );
+    }
 
-    setView( vb );
+    return vb;
 }
 
 void KPassivePopup::setView( const QString &caption, const QString &text )
@@ -101,8 +115,8 @@ void KPassivePopup::setView( const QString &caption, const QString &text )
 void KPassivePopup::setTimeout( int delay )
 {
     hideDelay = delay;
-	if( hideTimer->isActive() )
-		hideTimer->changeInterval( delay );
+    if( hideTimer->isActive() )
+        hideTimer->changeInterval( delay );
 }
 
 void KPassivePopup::setAutoDelete( bool autoDelete )
@@ -165,7 +179,7 @@ void KPassivePopup::positionSelf()
     if ( window == 0L ) {
 	target = defaultArea();
     }
-    
+
     else {
         NETWinInfo ni( qt_xdisplay(), window, qt_xrootwin(),
                        NET::WMIconGeometry | NET::WMKDESystemTrayWinFor );
@@ -175,7 +189,7 @@ void KPassivePopup::positionSelf()
         if ( ni.kdeSystemTrayWinFor() ) {
             NETRect frame, win;
             ni.kdeGeometry( frame, win );
-            target.setRect( win.pos.x, win.pos.y, 
+            target.setRect( win.pos.x, win.pos.y,
                             win.size.width, win.size.height );
         }
         else if ( ni.state() & NET::SkipTaskbar ) {
