@@ -156,7 +156,7 @@ void SlaveBase::disconnectSlave()
 
 void SlaveBase::setMetaData(const QString &key, const QString &value)
 {
-   mOutgoingMetaData.replace(key, value); 
+   mOutgoingMetaData.replace(key, value);
 }
 
 QString SlaveBase::metaData(const QString &key)
@@ -383,6 +383,8 @@ void SlaveBase::mimetype(KURL const &url)
 { get(url); }
 void SlaveBase::rename(KURL const &, KURL const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "rename" ); }
+void SlaveBase::symlink(QString const &, KURL const &, bool)
+{ error(  ERR_UNSUPPORTED_ACTION, "symlink" ); }
 void SlaveBase::copy(KURL const &, KURL const &, int, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "copy" ); }
 void SlaveBase::del(KURL const &, bool)
@@ -481,8 +483,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         reparseConfiguration();
 	break;
     case CMD_GET: {
-        Q_INT8 iReload;
-
         stream >> url;
 	get( url );
     }
@@ -521,6 +521,14 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         stream >> url >> url2 >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
         rename( url, url2, overwrite );
+    }
+    break;
+    case CMD_SYMLINK: {
+	Q_INT8 iOverwrite;
+        QString target;
+        stream >> target >> url >> iOverwrite;
+        bool overwrite = (iOverwrite != 0);
+        symlink( target, url, overwrite );
     }
     break;
     case CMD_COPY: {

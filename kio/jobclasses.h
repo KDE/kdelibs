@@ -374,17 +374,17 @@ namespace KIO {
          * Flow control. Resume data processing from the slave.
          */
         void resume();
-        
+
         /**
          * Set meta data to be sent to the slave.
          */
         void setMetaData( const KIO::MetaData &);
-        
+
         /**
          * Add key/value pair to the meta data that is sent to the slave
          */
         void addMetaData(const QString &key, const QString &value);
-        
+
         /**
          * Get meta data received from the slave.
          * (Valid when first data is received and/or slave is finished)
@@ -578,7 +578,8 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMethod, bool showProgressInfo );
+        enum CopyMode{ Copy, Move, Link };
+        CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo );
 
         KURL::List srcURLs() const { return m_srcList; }
         KURL destURL() const { return m_dest; }
@@ -596,6 +597,10 @@ namespace KIO {
          */
         void copying( KIO::Job *, const KURL& from, const KURL& to );
         /**
+         * The job is creating a symbolic link
+         */
+        void linking( KIO::Job *, const QString& target, const KURL& to );
+        /**
          * The job is moving a file or directory
          */
         void moving( KIO::Job *, const KURL& from, const KURL& to );
@@ -603,10 +608,6 @@ namespace KIO {
          * The job is creating the directory @dir
          */
         void creatingDir( KIO::Job *, const KURL& dir );
-        /**
-         * The _user_ renamed a file using the rename dialog
-         */
-        void renamed( KIO::Job *, const KURL& old_name, const KURL& new_name );
 
         // ?
         void canResume( KIO::Job *, bool can_resume );
@@ -616,9 +617,16 @@ namespace KIO {
 	 * @param src the source URL
 	 * @param dst the destination URL
 	 * @param direction indicates whether a file or directory was successfully copied/moved
-	 * @param renamed indicates that the destination URL was created using a rename operation.
+	 * @param renamed indicates that the destination URL was created using a
+         * rename operation (i.e. fast directory moving).
+         * This signal is mainly for the Undo feature.
 	 */
         void copyingDone( KIO::Job *, const KURL &from, const KURL &to, bool directory, bool renamed );
+        /**
+         * The job is copying or moving a symbolic link, that points to target.
+         * The new link is created in @p to. The existing one is/was in @p from.
+         */
+        void copyingLinkDone( KIO::Job *, const KURL &from, const QString& target, const KURL& to );
 
     protected:
         void startNextJob();
@@ -644,7 +652,7 @@ namespace KIO {
         void slotProcessedSize( KIO::Job*, unsigned long data_size );
 
     private:
-        bool m_move;
+        CopyMode m_mode;
         bool m_asMethod;
         enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
         enum { STATE_STATING, STATE_RENAMING, STATE_LISTING, STATE_CREATING_DIRS,
@@ -656,9 +664,10 @@ namespace KIO {
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
-        KURL::List m_srcList; // is emptied while deleting
+        KURL::List m_srcList; // is emptied while copying
         KURL::List m_srcListCopy;
         bool m_bCurrentSrcIsDir;
+        bool m_bCurrentOperationIsLink;
         KURL m_dest;
         KURL m_currentDest;
         //

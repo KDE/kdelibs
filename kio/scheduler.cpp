@@ -298,15 +298,17 @@ void Scheduler::startStep()
     }
 }
 
-void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QString &host, bool connected) {
 #if 0
+void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QString &host, bool connected) {
     Slave *slave = (Slave*)sender();
     kdDebug(7006) << "Slave = " << slave << " (PID = " << pid
                   << ") protocol = " << protocol.data() << " host = "
                   << ( host.ascii() ? host.ascii() : "[None]" ) << " "
                   << ( connected ? "Connected" : "Not connected" ) << endl;
-#endif
 }
+#else
+void Scheduler::slotSlaveStatus(pid_t, const QCString &, const QString &, bool) {}
+#endif
 
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {

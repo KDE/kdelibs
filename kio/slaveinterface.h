@@ -58,7 +58,8 @@ class Connection;
    CMD_SPECIAL = 'M',
    CMD_USERPASS = 'N',
    CMD_REPARSECONFIGURATION = 'O',
-   CMD_META_DATA = 'P'
+   CMD_META_DATA = 'P',
+   CMD_SYMLINK = 'Q'
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };

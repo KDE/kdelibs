@@ -354,8 +354,7 @@ SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 {
     kdDebug(7007) << "mkdir " << url.url() << endl;
     KIO_ARGS << url << permissions;
-    SimpleJob * job = new SimpleJob(url, CMD_MKDIR, packedArgs, false);
-    return job;
+    return new SimpleJob(url, CMD_MKDIR, packedArgs, false);
 }
 
 SimpleJob *KIO::rmdir( const KURL& url )
@@ -369,15 +368,27 @@ SimpleJob *KIO::chmod( const KURL& url, int permissions )
 {
     kdDebug(7007) << "chmod " << url.url() << endl;
     KIO_ARGS << url << permissions;
-    SimpleJob * job = new SimpleJob(url, CMD_CHMOD, packedArgs, false);
-    return job;
+    return new SimpleJob(url, CMD_CHMOD, packedArgs, false);
+}
+
+SimpleJob *KIO::rename( const KURL& src, const KURL & dest, bool overwrite )
+{
+    kdDebug(7007) << "rename " << src.url() << " " << dest.url() << endl;
+    KIO_ARGS << src << dest << (Q_INT8) overwrite;
+    return new SimpleJob(src, CMD_RENAME, packedArgs, false);
+}
+
+SimpleJob *KIO::symlink( const QString& target, const KURL & dest, bool overwrite, bool showProgressInfo )
+{
+    kdDebug(7007) << "symlink target=" << target << " " << dest.url() << endl;
+    KIO_ARGS << target << dest << (Q_INT8) overwrite;
+    return new SimpleJob(dest, CMD_SYMLINK, packedArgs, showProgressInfo);
 }
 
 SimpleJob *KIO::special(const KURL& url, const QByteArray & data, bool showProgressInfo)
 {
     kdDebug(7007) << "special " << url.url() << endl;
-    SimpleJob * job = new SimpleJob(url, CMD_SPECIAL, data, showProgressInfo);
-    return job;
+    return new SimpleJob(url, CMD_SPECIAL, data, showProgressInfo);
 }
 
 SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo )
@@ -744,8 +755,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     {
        if (m_move)
        {
-          KIO_ARGS << src << dest << (Q_INT8) m_overwrite;
-          m_moveJob = new SimpleJob(src, CMD_RENAME, packedArgs, false);
+          m_moveJob = KIO::rename( src, dest, m_overwrite );
           addSubjob( m_moveJob );
           connectSubjob( m_moveJob );
        }
@@ -950,167 +960,6 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 //////////
 
-bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteExistingFiles,
-                bool & overwriteAll, bool & autoSkip, bool & cancelAll )
-{
-    kdDebug(7007) << "linking " << destUrl.path() << " -> " << linkDest << endl;
-    if ( !destUrl.isLocalFile() )
-    {
-        KMessageBox::error( 0L, i18n( "Can't create a remote symlink!" ) );
-        return false;
-    }
-    if ( symlink( linkDest.local8Bit(), destUrl.path().local8Bit() ) == -1 )
-    {
-        // An error occured
-        if ( autoSkip )
-            return true; // eat error
-        // Does the destination already exist ?
-        if ( errno == EEXIST )
-        {
-            if ( !overwriteExistingFiles && !overwriteAll )
-            {
-                // Ask the user what to do
-                // Let's check if it's a directory
-                struct stat sbuff;
-                RenameDlg_Mode mode = (RenameDlg_Mode) M_OVERWRITE;
-                if ( lstat( QFile::encodeName(destUrl.path()), &sbuff ) == 0
-                     && S_ISDIR( sbuff.st_mode ) )
-                  // It's a dir ! Can't overwrite.
-                  mode = (RenameDlg_Mode) 0;
-
-                // TODO if ( files.count() > 0 ) // Not last one
-                mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
-                // else
-                //  mode = (RenameDlg_Mode) ( mode | M_SINGLE );
-                QString newPath;
-                RenameDlg_Result res = Observer::self()->open_RenameDlg( 0, i18n("File already exists"),
-                                                                         linkDest, destUrl.prettyURL(), mode, newPath );
-                switch ( res ) {
-                    case R_CANCEL:
-                        cancelAll = true;
-                        return false;
-                    case R_RENAME:
-                        // Try again, with new name for the link
-                        return link( linkDest, newPath, overwriteExistingFiles, overwriteAll, autoSkip, cancelAll );
-                    case R_AUTO_SKIP:
-                        autoSkip = true;
-                        // fall through
-                    case R_SKIP:
-                        // Move on to next file
-                        return true;
-                    case R_OVERWRITE_ALL:
-                        overwriteAll = true;
-                        break;
-                    case R_OVERWRITE:
-                        overwriteExistingFiles = true;
-                        break;
-                    default:
-                        assert( 0 );
-                }
-            }
-            // Are we allowed to overwrite the files ?
-            if ( overwriteExistingFiles || overwriteAll )
-            {
-                // Try to delete the destination
-                if ( unlink( destUrl.path().local8Bit() ) != 0 )
-                {
-                    KMessageBox::sorry( 0L, i18n( "Could not overwrite\n%1").arg(destUrl.path()) );
-                    return false;
-                }
-                // Try again - this won't loop forever since unlink succeeded
-                return link( linkDest, destUrl, overwriteExistingFiles, overwriteAll, autoSkip, cancelAll );
-            }
-            else
-                return false;
-        }
-        else
-        {
-            // Some error occured while we tried to symlink
-            KMessageBox::sorry( 0L, i18n( "Failed to make symlink from \n%1\nto\n%2\n" ).
-                                arg(linkDest).arg(destUrl.prettyURL()) );
-            return false;
-        }
-    }
-    return true;
-}
-
-bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
-{
-    kdDebug(1202) << "destDir = " << destDir.url() << endl;
-    bool overwriteAll = false;
-    bool autoSkip = false;
-    if ( destDir.isMalformed() )
-    {
-	KMessageBox::sorry( 0L, i18n( "Malformed URL\n%1" ).arg( destDir.url() ) );
-	return false;
-    }
-    if ( !destDir.isLocalFile() )
-    {
-	// I can only make links on the local file system.
-	KMessageBox::sorry( 0L, i18n( "Can only make links on local file system" ) );
-	return false;
-    }
-    KURL::List::ConstIterator it = srcUrls.begin();
-    for ( ; it != srcUrls.end() ; ++it )
-    {
-	KURL srcUrl( *it );
-	if ( srcUrl.isMalformed() )
-	{
-	    KMessageBox::sorry( 0L, i18n( "Malformed URL\n%1" ).arg( (*it).url() ) );
-	    return false;
-	}
-
-	// The destination URL is the destination dir + the filename
-	KURL destUrl( destDir.url(1) + srcUrl.fileName() );
-	kdDebug(1202) << "destUrl = " << destUrl.url() << endl;
-
-	// Do we link a file on the local disk?
-	if ( srcUrl.isLocalFile() )
-	{
-            bool cancelAll= false;
-	    // Make a symlink
-            (void)KIO::link( srcUrl.path(), destUrl, false, overwriteAll, autoSkip, cancelAll );
-            if (cancelAll)
-                return false;
-	}
-	// Make a link from a file in a tar archive, ftp, http or what ever
-	else
-	{
-	    // Encode slashes and so on
-	    QString destPath = destDir.path(1) + KIO::encodeFileName( srcUrl.url() );
-	    QFile f( destPath );
-	    if ( f.open( IO_ReadWrite ) )
-	    {
-		f.close(); // kalle
-		KSimpleConfig config( destPath ); // kalle
-		config.setDesktopGroup();
-		config.writeEntry( "URL", srcUrl.url() );
-		config.writeEntry( "Type", "Link" );
-		QString protocol = srcUrl.protocol();
-		if ( protocol == "ftp" )
-		    config.writeEntry( "Icon", "ftp" );
-		else if ( protocol == "http" )
-		    config.writeEntry( "Icon", "www" );
-		else if ( protocol == "info" )
-		    config.writeEntry( "Icon", "info" );
-		else if ( protocol == "mailto" )   // sven:
-		    config.writeEntry( "Icon", "kmail" ); // added mailto: support
-		else
-		    config.writeEntry( "Icon", "unknown" );
-		config.sync();
-	    }
-	    else
-	    {
-		KMessageBox::sorry( 0L, i18n( "Could not write to\n%1").arg(destPath) );
-		return false;
-	    }
-	}
-    }
-    return true;
-}
-
-//////////
-
 ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix) :
     SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
     recursive(_recursive), prefix(_prefix), m_processedEntries(0)
@@ -1241,12 +1090,12 @@ void ListJob::start(Slave *slave)
 }
 
 
-CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMethod, bool showProgressInfo )
-  : Job(showProgressInfo), m_move(move), m_asMethod(asMethod),
+CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
+  : Job(showProgressInfo), m_mode(mode), m_asMethod(asMethod),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
     m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0),
-    m_srcList(src), m_srcListCopy(src), m_dest(dest),
-    m_bAutoSkip( false ), m_bOverwriteAll( false )
+    m_srcList(src), m_srcListCopy(src), m_bCurrentOperationIsLink(false),
+    m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false )
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
@@ -1318,10 +1167,10 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 info.uDest.addPath( relName );
-            if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) ) // Dir
+            if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) && m_mode != Link ) // Dir
             {
                 dirs.append( info ); // Directories
-                if (m_move)
+                if (m_mode == Move)
                     dirsToRemove.append( info.uSource );
             }
             else
@@ -1343,7 +1192,7 @@ void CopyJob::startNextJob()
         state = STATE_STATING;
         addSubjob(job);
         if ( m_progressId ) // Did we get an ID from the observer ?
-          Observer::self()->slotCopying( this, *it, m_dest ); // show asap
+            Observer::self()->slotCopying( this, *it, m_dest ); // show asap
         // keep src url in the list, just in case we need it later
     } else
     {
@@ -1352,12 +1201,12 @@ void CopyJob::startNextJob()
         KURL url( m_dest );
         // If copyAs, the destination is a file. Otherwise it's a dir.
         if ( m_asMethod )
-          url.setPath( url.directory() );
+            url.setPath( url.directory() );
         kdDebug(7007) << "KDirNotify'ing with m_dest=" << url.url() << endl;
         allDirNotify.FilesAdded( url );
 
-        if ( m_move )
-          allDirNotify.FilesRemoved( m_srcListCopy );
+        if ( m_mode == Move )
+            allDirNotify.FilesRemoved( m_srcListCopy );
 
         emit result(this);
         delete this;
@@ -1426,7 +1275,9 @@ void CopyJob::slotResultStating( Job *job )
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
 
-    if ( bDir && !bLink ) // treat symlinks as files here (no recursion)
+    if ( bDir
+         && !bLink // treat symlinks as files (no recursion)
+         && m_mode != Link ) // No recursion in Link mode either.
     {
         kdDebug(7007) << " Source is a directory " << endl;
 
@@ -1450,8 +1301,8 @@ void CopyJob::slotResultStating( Job *job )
         }
 
         // If moving,
-        // Before going for the full list+copy[+del] thing, try to rename
-        if ( m_move )
+        // Before going for the full list+copy+del thing, try to rename
+        if ( m_mode == Move )
         {
             if ((srcurl.protocol() == m_currentDest.protocol()) &&
                 (srcurl.host() == m_currentDest.host()) &&
@@ -1460,9 +1311,8 @@ void CopyJob::slotResultStating( Job *job )
                 (srcurl.pass() == m_currentDest.pass()))
             {
                 kdDebug(7007) << "This seems to be a suitable case for trying to rename the dir before copy+del" << endl;
-                KIO_ARGS << srcurl << m_currentDest << (Q_INT8) false /*m_overwrite*/;
                 state = STATE_RENAMING;
-                Job * newJob = new SimpleJob(srcurl, CMD_RENAME, packedArgs, false);
+                Job * newJob = KIO::rename( srcurl, m_currentDest, false /*no overwrite */);
                 addSubjob( newJob );
                 return;
             }
@@ -1472,7 +1322,7 @@ void CopyJob::slotResultStating( Job *job )
     }
     else
     {
-        kdDebug(7007) << " Source is a file (or a symlink) " << endl;
+        kdDebug(7007) << " Source is a file (or a symlink), or we are linking -> no recursive listing " << endl;
 
 	kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << endl;
 	// emit all signals for total numbers
@@ -1601,7 +1451,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             QString oldPath = (*it).uDest.path( 1 );
             KURL newUrl( (*it).uDest );
             newUrl.setPath( newPath );
-            emit renamed( this, (*it).uDest, newUrl );
+            //emit renamed( this, (*it).uDest, newUrl );
 
             // Change the current one and strip the trailing '/'
             (*it).uDest = newUrl.path( -1 );
@@ -1667,14 +1517,6 @@ void CopyJob::createNextDir()
             if ( *sit == dir.left( (*sit).length() ) )
                 bCreateDir = false; // skip this dir
 
-        /* Don't look on the overwrite list. If a/ exists, we must still create a/b/
-           (David)
-        sit = m_overwriteList.begin();
-        for( ; sit != m_overwriteList.end() && bCreateDir; sit++ )
-            if ( strncmp( *sit, dir, (*sit).length() ) == 0 )
-                bCreateDir = false; // overwrite -> it exists
-        */
-
         if ( !bCreateDir ) {
             dirs.remove( it );
             it = dirs.begin();
@@ -1685,7 +1527,7 @@ void CopyJob::createNextDir()
         // Create the directory - with default permissions so that we can put files into it
         // TODO : change permissions once all is finished
         KIO::Job * newjob = KIO::mkdir( (*it).uDest, -1 );
-	emit creatingDir( this, (*it).uDest);
+	emit creatingDir( this, (*it).uDest );
         addSubjob(newjob);
         return;
     }
@@ -1705,7 +1547,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         m_conflictError = job->error(); // save for later
         // Existing dest ?
         if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
-          || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
+             || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
         {
             // Should we skip automatically ?
             if ( m_bAutoSkip )
@@ -1725,13 +1567,41 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         }
         else
         {
-            // Go directly to the conflict resolution, there is nothing to stat
-            slotResultConflictCopyingFiles( job );
-            return;
+            if ( m_bCurrentOperationIsLink && job->inherits( "KIO::DeleteJob" ) )
+            {
+                // Very special case, see a few lines below
+                // We are deleting the source of a symlink we successfully moved... ignore error
+                files.remove( it );
+            } else {
+                // Go directly to the conflict resolution, there is nothing to stat
+                slotResultConflictCopyingFiles( job );
+                return;
+            }
         }
-    } else // no error : remove from list, to move on to next file
+    } else // no error
     {
-        emit copyingDone( this, (*it).uSource, (*it).uDest, false, false );
+        // Special case for moving links. That operation needs two jobs, unlike others.
+        if ( m_bCurrentOperationIsLink && m_mode == Move
+             && !job->inherits( "KIO::DeleteJob" ) // Deleting source not already done
+             )
+        {
+            subjobs.remove( job );
+            assert ( subjobs.isEmpty() );
+            // The only problem with this trick is that the error handling for this del operation
+            // is not going to be right... see 'Very special case' above.
+            KIO::Job * newjob = KIO::del( (*it).uSource, false /*don't shred*/, false /*no GUI*/ );
+            addSubjob( newjob );
+            return; // Don't move to next file yet !
+        }
+
+        if ( m_bCurrentOperationIsLink )
+        {
+            QString target = ( m_mode == Link ? (*it).uSource.path() : (*it).linkDest );
+            emit copyingLinkDone( this, (*it).uSource, target, (*it).uDest );
+        }
+        else
+            emit copyingDone( this, (*it).uSource, (*it).uDest, false, false );
+        // remove from list, to move on to next file
         files.remove( it );
     }
 
@@ -1810,7 +1680,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         {
             KURL newUrl( (*it).uDest );
             newUrl.setPath( newPath );
-            emit renamed( this, (*it).uDest, newUrl );
+            //emit renamed( this, (*it).uDest, newUrl );
             (*it).uDest = newUrl;
         }
         break;
@@ -1874,45 +1744,80 @@ void CopyJob::copyNextFile()
             if ( *sit == destFile.left( (*sit).length() ) )
                 bOverwrite = true;
 
+        m_bCurrentOperationIsLink = false;
         KIO::Job * newjob;
-        if ( !(*it).linkDest.isEmpty() &&
-             ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
-             ((*it).uSource.host() == (*it).uDest.host()) &&
-             ((*it).uSource.port() == (*it).uDest.port()) &&
-             ((*it).uSource.user() == (*it).uDest.user()) &&
-             ((*it).uSource.pass() == (*it).uDest.pass()))
-          // Copying a symlink - only on the same protocol/host/etc. (#5601)
+        if ( m_mode == Link )
         {
-            bool bCancelAll = false;
-            // The "source" is in fact what the existing link points to
-            if ( KIO::link( (*it).linkDest, (*it).uDest, bOverwrite, m_bOverwriteAll, m_bAutoSkip, bCancelAll ) )
+            if (
+                ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
+                ((*it).uSource.host() == (*it).uDest.host()) &&
+                ((*it).uSource.port() == (*it).uDest.port()) &&
+                ((*it).uSource.user() == (*it).uDest.user()) &&
+                ((*it).uSource.pass() == (*it).uDest.pass()) )
             {
-                if (m_move)
+                // This is the case of creating a real symlink
+                newjob = KIO::symlink( (*it).uSource.path(), (*it).uDest, bOverwrite, false /*no GUI*/ );
+                kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).uSource.path() << " link=" << (*it).uDest.url() << endl;
+                emit linking( this, (*it).uSource.path(), (*it).uDest );
+                m_bCurrentOperationIsLink = true;
+                Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
+            } else {
+                if ( (*it).uDest.isLocalFile() )
                 {
-                    newjob = KIO::del( (*it).uSource, false /*shred*/, false /*no GUI*/ );
-                }
-                else
-                {
-                    // Done with this one
-                    files.remove( it );
-                    copyNextFile();
-                    return;
-                }
-            } else
-            {
-                if ( bCancelAll )
-                {
-                    m_error = ERR_USER_CANCELED;
+                    QFile f( (*it).uDest.path() );
+                    if ( f.open( IO_ReadWrite ) )
+                    {
+                        f.close();
+                        KSimpleConfig config( (*it).uDest.path() );
+                        config.setDesktopGroup();
+                        config.writeEntry( QString::fromLatin1("URL"), (*it).uSource.url() );
+                        config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
+                        QString protocol = (*it).uSource.protocol();
+                        if ( protocol == QString::fromLatin1("ftp") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("ftp") );
+                        else if ( protocol == QString::fromLatin1("http") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("www") );
+                        else if ( protocol == QString::fromLatin1("info") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("info") );
+                        else if ( protocol == QString::fromLatin1("mailto") )   // sven:
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("kmail") ); // added mailto: support
+                        else
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
+                        config.sync();
+                    }
+                    else
+                    {
+                        m_error = ERR_CANNOT_OPEN_FOR_WRITING;
+                        m_errorText = (*it).uDest.path();
+                        emit result(this);
+                        delete this;
+                        return;
+                    }
+                } else {
+                    // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
+                    m_error = ERR_CANNOT_SYMLINK;
+                    m_errorText = (*it).uDest.url();
                     emit result(this);
                     delete this;
                     return;
                 }
-                // Error - move to next file
-                files.remove( it );
-                copyNextFile();
-                return;
             }
-        } else if (m_move) // Moving a file
+        }
+        else if ( !(*it).linkDest.isEmpty() &&
+                  ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
+                  ((*it).uSource.host() == (*it).uDest.host()) &&
+                  ((*it).uSource.port() == (*it).uDest.port()) &&
+                  ((*it).uSource.user() == (*it).uDest.user()) &&
+                  ((*it).uSource.pass() == (*it).uDest.pass()))
+            // Copying a symlink - only on the same protocol/host/etc. (#5601, downloading an FTP file through its link),
+        {
+            newjob = KIO::symlink( (*it).linkDest, (*it).uDest, bOverwrite, false /*no GUI*/ );
+            kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest.url() << endl;
+            emit linking( this, (*it).linkDest, (*it).uDest );
+            Observer::self()->slotCopying( this, (*it).linkDest, (*it).uDest ); // should be slotLinking perhaps
+            m_bCurrentOperationIsLink = true;
+            // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
+        } else if (m_mode == Move) // Moving a file
         {
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
@@ -1925,15 +1830,15 @@ void CopyJob::copyNextFile()
             kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit copying( this, (*it).uSource, (*it).uDest );
             if ( m_progressId ) // Did we get an ID from the observer ?
-              Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
-         }
+                Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
+        }
         addSubjob(newjob);
 	connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
 		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     }
     else
     {
-        if ( m_move ) // moving ? We need to delete dirs
+        if ( m_mode == Move ) // moving ? We need to delete dirs
         {
             kdDebug(7007) << "copyNextFile finished, deleting dirs" << endl;
             state = STATE_DELETING_DIRS;
@@ -2066,45 +1971,60 @@ CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
     KURL::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob( srcList, dest, false, false, showProgressInfo );
-    return job;
+    return new CopyJob( srcList, dest, CopyJob::Copy, false, showProgressInfo );
 }
 
 CopyJob *KIO::copyAs(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
     KURL::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob( srcList, dest, false, true, showProgressInfo );
-    return job;
+    return new CopyJob( srcList, dest, CopyJob::Copy, true, showProgressInfo );
 }
 
 CopyJob *KIO::copy( const KURL::List& src, const KURL& dest, bool showProgressInfo )
 {
-    CopyJob *job = new CopyJob( src, dest, false, false, showProgressInfo );
-    return job;
+    return new CopyJob( src, dest, CopyJob::Copy, false, showProgressInfo );
 }
 
 CopyJob *KIO::move(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
-  KURL::List srcList;
-  srcList.append( src );
-  CopyJob *job = new CopyJob( srcList, dest, true, false, showProgressInfo );
-  return job;
+    KURL::List srcList;
+    srcList.append( src );
+    return new CopyJob( srcList, dest, CopyJob::Move, false, showProgressInfo );
 }
 
 CopyJob *KIO::moveAs(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
-  KURL::List srcList;
-  srcList.append( src );
-  CopyJob *job = new CopyJob( srcList, dest, true, true, showProgressInfo );
-  return job;
+    KURL::List srcList;
+    srcList.append( src );
+    return new CopyJob( srcList, dest, CopyJob::Move, true, showProgressInfo );
 }
 
 CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressInfo )
 {
-  CopyJob *job = new CopyJob( src, dest, true, false, showProgressInfo );
-  return job;
+    return new CopyJob( src, dest, CopyJob::Move, false, showProgressInfo );
 }
+
+CopyJob *KIO::link(const KURL& src, const KURL& destDir, bool showProgressInfo )
+{
+    KURL::List srcList;
+    srcList.append( src );
+    return new CopyJob( srcList, destDir, CopyJob::Link, false, showProgressInfo );
+}
+
+CopyJob *KIO::link(const KURL::List& srcList, const KURL& destDir, bool showProgressInfo )
+{
+    return new CopyJob( srcList, destDir, CopyJob::Link, false, showProgressInfo );
+}
+
+CopyJob *KIO::linkAs(const KURL& src, const KURL& destDir, bool showProgressInfo )
+{
+    KURL::List srcList;
+    srcList.append( src );
+    return new CopyJob( srcList, destDir, CopyJob::Link, false, showProgressInfo );
+}
+
+//////////
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
     : Job(showProgressInfo), m_totalSize(0), m_processedSize(0),

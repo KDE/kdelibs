@@ -32,6 +32,7 @@
 #include <kurl.h>
 #include <kprotocolmanager.h>
 #include <kinstance.h>
+#include <ksimpleconfig.h>
 #include <ktempfile.h>
 #include <klocale.h>
 #include <qfile.h>
@@ -527,6 +528,45 @@ void FileProtocol::rename( const KURL &src, const KURL &dest,
     finished();
 }
 
+void FileProtocol::symlink( const QString &target, const KURL &dest, bool overwrite )
+{
+    // Assume dest is local too (wouldn't be here otherwise)
+    if ( ::symlink( QFile::encodeName( target ), QFile::encodeName( dest.path() ) ) == -1 )
+    {
+        // Does the destination already exist ?
+        if ( errno == EEXIST )
+        {
+            if ( overwrite )
+            {
+                // Try to delete the destination
+                if ( unlink( QFile::encodeName( dest.path() ) ) != 0 )
+                {
+                    error( KIO::ERR_CANNOT_DELETE, dest.path() );
+                    return;
+                }
+                // Try again - this won't loop forever since unlink succeeded
+                symlink( target, dest, overwrite );
+            }
+            else
+            {
+                struct stat buff_dest;
+                ::lstat( QFile::encodeName( dest.path() ), &buff_dest );
+                if (S_ISDIR(buff_dest.st_mode))
+                    error( KIO::ERR_DIR_ALREADY_EXIST, dest.path() );
+                else
+                    error( KIO::ERR_FILE_ALREADY_EXIST, dest.path() );
+                return;
+            }
+        }
+        else
+        {
+            // Some error occured while we tried to symlink
+            error( KIO::ERR_CANNOT_SYMLINK, dest.path() );
+            return;
+        }
+    }
+    finished();
+}
 
 void FileProtocol::del( const KURL& url, bool isfile)
 {

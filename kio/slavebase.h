@@ -193,7 +193,7 @@ public:
      * Queries for meta-data send by the application to the slave.
      */
     QString metaData(const QString &key);
-     
+
     ///////////
     // Commands sent by the job, the slave has to override what it wants to implement
     ///////////
@@ -281,11 +281,20 @@ public:
      * Rename @p oldname into @p newname.
      * If the slave returns an error ERR_UNSUPPORTED_ACTION, the job will
      * ask for copy + del instead.
-     * @param src where to move the file from (decoded)
-     * @param dest where to move the file to (decoded)
+     * @param src where to move the file from
+     * @param dest where to move the file to
      * @param overwrite if true, any existing file will be overwritten
      */
     virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
+
+    /**
+     * Creates a symbolic link named @p dest, pointing to @p target, which
+     * may be a relative or an absolute path.
+     * @param target The string that will become the "target" of the link (can be relative)
+     * @param dest The symlink to create.
+     * @param overwrite whether to automatically overwrite if the dest exists
+     */
+    virtual void symlink( const QString& target, const KURL& dest, bool overwrite );
 
     /**
      * Change permissions on @p path
@@ -404,13 +413,13 @@ protected:
     QCString mProtocol;
 
     Connection * m_pConnection;
-    
+
 private:
     /**
      * Internal function to transmit meta data to the application.
      */
-    void sendMetaData();    
-    
+    void sendMetaData();
+
 private:
     UDSEntryList pendingListEntries;
     uint listEntryCurrentSize;

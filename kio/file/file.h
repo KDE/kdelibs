@@ -28,6 +28,8 @@ public:
                      int mode, bool overwrite );
   virtual void rename( const KURL &src, const KURL &dest,
                        bool overwrite );
+  virtual void symlink( const QString &target, const KURL &dest,
+                        bool overwrite );
 
   virtual void stat( const KURL& url );
   virtual void listDir( const KURL& url );

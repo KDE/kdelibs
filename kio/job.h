@@ -62,6 +62,31 @@ namespace KIO {
     SimpleJob * chmod( const KURL& url, int permissions );
 
     /**
+     * Rename a file or directory.
+     * Warning: this operation fails if a direct renaming is not
+     * possible (like with files or dirs on separate partitions)
+     * Use move or file_move in this case.
+     *
+     * @param src The original URL
+     * @param dest The final URL
+     * @param overwrite whether to automatically overwrite if the dest exists
+     * @return The job handling the operation.
+     */
+    SimpleJob * rename( const KURL& src, const KURL & dest, bool overwrite );
+
+    /**
+     * Create or move a symlink.
+     * This is the lowlevel operation, similar to file_copy and file_move.
+     * It doesn't do any check (other than those the slave does)
+     * and it doesn't show rename and skip dialogs - use KIO::link for that.
+     * @param target The string that will become the "target" of the link (can be relative)
+     * @param dest The symlink to create.
+     * @param overwrite whether to automatically overwrite if the dest exists
+     * @return The job handling the operation.
+     */
+    SimpleJob * symlink( const QString & target, const KURL& dest, bool overwrite, bool showProgressInfo = true );
+
+    /**
      * Execute any command that is specific to one slave (protocol).
      *
      * Examples are : HTTP POST, mount and unmount (kio_file)
@@ -128,7 +153,7 @@ namespace KIO {
 
     /**
      * HTTP POST (for form data) with arbitrary header additions.
-     * (e.g., special content types, etc). 
+     * (e.g., special content types, etc).
      *
      * This should replace the
      * other http_post, eventually.
@@ -185,33 +210,6 @@ namespace KIO {
     SimpleJob *file_delete( const KURL& src, bool showProgressInfo = true);
 
     /**
-     * @internal
-     * Create a local symlink
-     * Mostly a wrapper around symlink(2).
-     * @param linkDest the existing file, destination of the link to be created
-     * @param destUrl name of the link to be created
-     * @param overwriteExistingFiles set to true to enforce overwriting if dest exists
-     * @param overwriteAll matches the corresponding button in RenameDlg, passed from one call to the next one
-     * @param autoSkip matches the corresponding button in RenameDlg, passed from one call to the next one
-     * @param cancelAll matches the corresponding button in RenameDlg, passed from one call to the next one
-     */
-    bool link( const QString & linkDest, const KURL & destUrl, bool overwriteExistingFiles,
-               bool & overwriteAll, bool & autoSkip, bool & cancelAll );
-
-    /**
-     * Create one or more links.
-     *
-     * This not yet a job, and will become one only if at least one other
-     * protocol than file has support for it :)
-     *
-     * @param src Local files will result in symlinks,
-     *            remote files will result in Type=Link .desktop files
-     * @param dest Destination, has to be a local dir currently.
-     * @return true On success, false on failure.
-     */
-    bool link( const KURL::List& src, const KURL& destDir );
-
-    /**
      * List the contents of @p url, which is assumed to be a directory.
      *
      * "." and ".." are returned, filter them out if you don't want them.
@@ -261,6 +259,26 @@ namespace KIO {
      * @see copy
      */
     CopyJob *move( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
+
+    /**
+     * Create a link.
+     *
+     * @param src The existing file or directory, 'target' of the link.
+     * @param destDir Destination directory where the link will be created.
+     * If the protocols and hosts are the same, a Unix symlink will be created.
+     * Otherwise, a .desktop file of Type Link and pointing to the src URL will be created.
+     */
+    CopyJob *link( const KURL& src, const KURL& destDir, bool showProgressInfo = true );
+
+    /**
+     * @see link
+     */
+    CopyJob *link( const KURL::List& src, const KURL& destDir, bool showProgressInfo = true );
+
+    /**
+     * @see link and copyAs
+     */
+    CopyJob *linkAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
      * Delete a file or directory.
