@@ -268,12 +268,6 @@ bool DOMString::isEmpty() const
     return (impl->l == 0);
 }
 
-const QChar *DOMString::stringPtr() const
-{
-    if (impl) return impl->s;
-    return 0;
-}
-
 //-----------------------------------------------------------------------------
 
 bool DOM::operator==( const DOMString &a, const DOMString &b )
@@ -305,7 +299,7 @@ bool DOM::operator==( const DOMString &a, const char *b )
     if ( a.isNull() ) return (blen == 0);
     if(a.length() != blen) return false;
 
-    const QChar* aptr = a.stringPtr();
+    const QChar* aptr = a.impl->s;
     while( blen-- ) {
         if((*aptr++).latin1() != *b++)
             return false;

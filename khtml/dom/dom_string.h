@@ -41,7 +41,7 @@ class DOMStringImpl;
 class DOMString
 {
     friend class CharacterDataImpl;
-
+    friend bool DOM::operator==( const DOMString &a, const char *b );
 public:
     /** default constructor. Gives an empty DOMString */
     DOMString();
@@ -110,12 +110,6 @@ public:
      * Use at own risk!!!
      */
     DOMStringImpl *implementation() const { return impl; }
-
-    /**
-     * @internal get a pointer to start of the string
-     * Needed by kBackpage
-     */
-    const QChar *stringPtr() const;
 
 protected:
     DOMStringImpl *impl;
