@@ -1,0 +1,48 @@
+<!--
+    KDE general entities for DocBook as used in the KDE documentation
+    
+    Copyright (C) 2002 Frederik Fouvry
+     
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+     
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+    
+    Send suggestions, comments, etc. to the KDE docbook list 
+    <kde-docbook@kde.org>.
+
+    USAGE
+
+    Refer to this file as
+
+      "-//KDE//ENTITIES DocBook XML General Entity Declarations (Persons) V1.0//EN"
+
+    This file contains what dbgenent.mod should contain and is read
+    after all other files just like dbgenent.mod should be.
+
+-->
+
+<!-- ============================================================= -->
+<!--		    Extensions to the DocBook DTD		   -->
+<!-- ============================================================= -->
+<!-- This is meant for entities that define person names and 
+     their contact mail addresses.
+     Note that these definitions will override language-specific ones
+     if there are any.  Translators should use the 
+     contributor.entities file for their language.
+     Please keep the list sorted on the family name                
+                                                                   -->
+
+<!ENTITY Martin.R.Jones '<personname><firstname>Martin</firstname><othername>R.</othername><surname>Jones</surname></personname>'>
+<!ENTITY Martin.R.Jones.mail '<email>mjones@kde.org</email>'>
+<!ENTITY Philip.Rodrigues '<personname><firstname>Philip</firstname><surname>Rodrigues</surname></personname>'>
+<!ENTITY Philip.Rodrigues.mail '<email>phil.rod@ntlworld.com</email>'>
