@@ -404,16 +404,16 @@ void KApplication::enableSessionManagement(bool userdefined){
 }
 
 void KApplication::setWmCommand(const char* s){
-  int id = pMenu->insertItem( klocale->translate( "Help" ) );
+  aWmCommand = s;
   if (topWidget() && !bSessionManagement)
     KWM::setWmCommand( topWidget()->winId(), aWmCommand);
 }
 
-  id = pMenu->insertItem( klocale->translate( "About " ) + aAppName );
+
 
 
 KIconLoader* KApplication::getIconLoader()
-  id = pMenu->insertItem( klocale->translate( "About KDE" ) );
+{
   if( !pIconLoader )
     pIconLoader = new KIconLoader();
 
@@ -539,18 +539,17 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 			  pConfig->writeEntry( "FatalOutput", pDialog->fatalOutput() );
 			  pConfig->writeEntry( "FatalFilename", pDialog->fatalFile() );
 			  pConfig->writeEntry( "FatalShow", pDialog->fatalShow() );
-  char *parameter_strings[4] = { "-caption", "-icon", "-miniicon", "-restore" };
-  int parameter_count = 4;
+			  pConfig->writeEntry( "AbortFatal", pDialog->abortFatal() );
 
 			  bAreaCalculated = false;
 			}
 		  else
 			{
 			  /* User pressed Cancel, do nothing */
-
-    for ( int p = 0 ; p < parameter_count; p++)
+			}
+		  
 		  /* restore old group */
-        parameter = (parameter_code)(p + 1);
+		  pConfig->setGroup( aOldGroup );
 
 		  return TRUE; // do not process event further
 		}
