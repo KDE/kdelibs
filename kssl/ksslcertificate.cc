@@ -156,6 +156,7 @@ QString rc = "unimplemented";
      unsigned char *ptr;
      int cnt = d->kossl->i2d_PublicKey(pkey, &ptr);
      if (cnt > 0) {
+        // FIXME: finish me!
      }
      d->kossl->OPENSSL_free(ptr);
      d->kossl->OPENSSL_free(pkey);
@@ -507,6 +508,9 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
   case KSSLCertificate::SignatureFailed:
   case KSSLCertificate::Rejected:
   case KSSLCertificate::InvalidPurpose:
+  break;
+  case KSSLCertificate::PrivateKeyFailed:
+     return i18n("Private key test failed.");
   break;
   }
 

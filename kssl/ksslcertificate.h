@@ -75,7 +75,7 @@ public:
                         PathLengthExceeded, InvalidCA, Expired,
                         SelfSigned, ErrorReadingRoot, NoSSL,
                         Revoked, Untrusted, SignatureFailed,
-                        Rejected };
+                        Rejected, PrivateKeyFailed };
 
   QString toString();
 

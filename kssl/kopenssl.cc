@@ -102,6 +102,7 @@ static char * (*K_i2s_ASN1_INTEGER) (X509V3_EXT_METHOD *, ASN1_INTEGER *) =NULL;
 static ASN1_INTEGER * (*K_X509_get_serialNumber) (X509 *) = NULL;
 static EVP_PKEY *(*K_X509_get_pubkey)(X509 *) = NULL;
 static int (*K_i2d_PublicKey)(EVP_PKEY *, unsigned char **) = NULL;
+static int (*K_X509_check_private_key)(X509 *, EVP_PKEY *) = NULL;
 #endif    
 };
 
@@ -217,6 +218,7 @@ KConfig *cfg;
       K_X509_get_serialNumber = (ASN1_INTEGER * (*) (X509 *)) _cryptoLib->symbol("X509_get_serialNumber");
       K_X509_get_pubkey = (EVP_PKEY *(*)(X509 *)) _cryptoLib->symbol("X509_get_pubkey");
       K_i2d_PublicKey = (int (*)(EVP_PKEY *, unsigned char **)) _cryptoLib->symbol("i2d_PublicKey");
+      K_X509_check_private_key = (int (*)(X509 *, EVP_PKEY *)) _cryptoLib->symbol("X509_check_private_key");
 #endif
    }
 
@@ -734,6 +736,13 @@ int KOpenSSLProxy::i2d_PublicKey(EVP_PKEY *a, unsigned char **pp) {
    if (K_i2d_PublicKey) return (K_i2d_PublicKey)(a,pp);
    else return 0;
 }
+
+
+int KOpenSSLProxy::X509_check_private_key(X509 *x, EVP_PKEY *p) {
+   if (K_X509_check_private_key) return (K_X509_check_private_key)(x,p);
+   return -1;
+}
+
 
 #endif
 

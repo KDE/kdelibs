@@ -488,6 +488,12 @@ public:
     */
    int i2d_PublicKey(EVP_PKEY *a, unsigned char **pp); 
 
+
+   /*
+    *  Check the private key of a PKCS bundle against the X509
+    */
+   int X509_check_private_key(X509 *x, EVP_PKEY *p);
+
 #endif
 
 private:

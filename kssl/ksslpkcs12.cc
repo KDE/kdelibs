@@ -34,6 +34,15 @@
 
 #include <assert.h>
 
+#ifdef HAVE_SSL
+#define sk_new kossl->sk_new
+#define sk_push kossl->sk_push
+#define sk_free kossl->sk_free
+#define sk_value kossl->sk_value
+#define sk_num kossl->sk_num
+#define sk_dup kossl->sk_dup
+#endif
+
 
 KSSLPKCS12::KSSLPKCS12() {
    _pkcs = NULL;
@@ -48,9 +57,8 @@ KSSLPKCS12::KSSLPKCS12() {
 KSSLPKCS12::~KSSLPKCS12() {
 #ifdef HAVE_SSL
    if (_pkcs) kossl->PKCS12_free(_pkcs);
-   // FIXME: cleanup the stack and the private key!
    if (_pkey) kossl->EVP_PKEY_free(_pkey);
-   //if (_caStack) 
+   if (_caStack) sk_X509_free(_caStack);
 #endif
    if (_cert) delete _cert;
 }
@@ -200,9 +208,14 @@ return false;
 }
 
 
-// FIXME: check the private key and do the caching of the private key results
 KSSLCertificate::KSSLValidation KSSLPKCS12::validate() {
-   return _cert->validate();
+KSSLCertificate::KSSLValidation xx = _cert->validate();
+
+   if (1 != kossl->X509_check_private_key(_cert->getCert(), _pkey)) {
+      xx = KSSLCertificate::PrivateKeyFailed;
+   }
+
+return xx;
 }
 
 
@@ -220,4 +233,13 @@ QString KSSLPKCS12::name() {
    return _cert->getSubject();
 }
 
+ 
+#ifdef HAVE_SSL
+#undef sk_new
+#undef sk_push
+#undef sk_free
+#undef sk_value
+#undef sk_num
+#undef sk_dup
+#endif
 
