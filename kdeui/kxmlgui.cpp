@@ -366,6 +366,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     return false;
   }
 
+#warning REMOVE THIS AS SOON AS POSSIBLE!
   #if QT_VERSION == 220
   // ### Workaround for evil bug in QXML!
   // QXML doesn't correctly parse the DOCTTYPE (leaves out the value!) and therefore
