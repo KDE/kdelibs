@@ -591,7 +591,8 @@ bool HTTPProtocol::http_openConnection()
   int on = 1;
   (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on,
                      sizeof(on) );
-  kdDebug(7103) << time(0L) << " Sending connected" << endl;
+  kdDebug(7103) << "(" << getpid() << ") Sending connected @ "
+                << time(0L) << endl;
   connected();
   return true;
 }
@@ -726,7 +727,8 @@ bool HTTPProtocol::http_open()
   if ( isSSLTunnelEnabled() )
   {
     kdDebug(7103) << "Attempting to tunnel through a proxy..." << endl;
-    header = QString("CONNECT %1:%2 HTTP/1.1\r\n").arg( m_request.hostname).arg(m_request.port);
+    header = QString("CONNECT %1:%2 HTTP/1.1"
+                     "\r\n").arg( m_request.hostname).arg(m_request.port);
     header += proxyAuthenticationHeader();
   }
   else
@@ -2278,11 +2280,14 @@ bool HTTPProtocol::readBody()
       // check on the encoding.  can we get away with it as is?
       if ( !decode )
       {
+        // Important: truncate the buffer to the actual size received!
+        // Otherwise garbage will be passed to the app
+        m_bufReceive.truncate( bytesReceived );
+
+        // Update the message digest engine...
         if (useMD5)
           context.update( m_bufReceive );
-
         // Let the world know that we have some data
-        m_bufReceive.resize( bytesReceived );
         data( m_bufReceive );
 
         if (m_bCachedWrite && m_fcache)
