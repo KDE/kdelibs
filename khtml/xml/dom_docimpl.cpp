@@ -511,7 +511,7 @@ void DocumentImpl::setTitle(DOMString _title)
     m_title = _title;
 
     QString titleStr = m_title.string();
-    for (int i = 0; i < titleStr.length(); ++i)
+    for (unsigned i = 0; i < titleStr.length(); ++i)
         if (titleStr[i] < ' ')
             titleStr[i] = ' ';
     titleStr = titleStr.stripWhiteSpace();
@@ -1398,9 +1398,11 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url() );
         } else {
             int delay = 0;
+            int fract = pos;
             bool ok = false;
-
-	    DOMStringImpl* s = content.implementation()->substring(0, pos);
+            if ( (fract = str.find('.') ) < 0 || fract > pos)
+                fract = pos;
+	    DOMStringImpl* s = content.implementation()->substring(0, fract);
 	    delay = s->toInt(&ok);
 	    delete s;
 
@@ -1414,7 +1416,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
                   (str[str.length()-1] == ';' || str[str.length()-1] == ','))
                 str.setLength(str.length()-1);
             str = parseURL( DOMString(str) ).string();
-            if ( ok )
+            if ( ok  || !fract)
                 v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
         }
     }
