@@ -27,7 +27,7 @@ static const int POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt
 
 KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
     : QFrame( 0, name, f | POPUP_FLAGS ),
-      window( parent->winId() ), msgView( 0 ), layout( 0 ),
+      window( parent ? parent->winId() : 0L ), msgView( 0 ), layout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
     init();
