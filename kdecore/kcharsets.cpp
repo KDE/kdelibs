@@ -36,12 +36,7 @@
 
 template class QList<QFont::CharSet>;
 
-// This will be enabled when we start using Qt v2.2.x
-#ifdef USE_TSCII
 #define CHARSETS_COUNT 29
-#else
-#define CHARSETS_COUNT 28
-#endif
 static const char * const charsetsStr[CHARSETS_COUNT] = {
     "unicode",
     "iso-8859-1",
@@ -67,9 +62,7 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "set-zh",
     "set-zh-tw",
     "set-big5",
-#ifdef USE_TSCII
     "tscii",
-#endif
     "utf-8",
     "utf-16",
 	"iso-8859-11"
@@ -103,9 +96,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "unknown",
     "unknown",
     "big5-0",
-#ifdef USE_TSCII
     "tscii-0",
-#endif
     "utf8",
     "utf16",
 	"tis620-*",
@@ -137,9 +128,7 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Set_Zh,
     QFont::Set_Zh_TW,
     QFont::Set_Big5,
-#ifdef USE_TSCII
     QFont::TSCII,
-#endif
     QFont::Unicode,
     QFont::Unicode,
 	QFont::ISO_8859_11,
@@ -531,10 +520,8 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
         return "ksc5601.1987-0";
     case QFont::Set_Ja:
         return "jisx0208.1983-0";
-#ifdef USE_TSCII
     case QFont::TSCII:
         return "tscii-0";
-#endif
     case QFont::Set_Th_TH:
 	case QFont::Set_GBK:
 	    return "set-gbk";
