@@ -1129,7 +1129,7 @@ void KToggleAction::updateChecked( int id )
   else if ( w->inherits( "KToolBar" ) )
   {
     QWidget* r = static_cast<KToolBar*>( w )->getButton( itemId( id ) );
-    if ( r->inherits( "KToolBarButton" ) )
+    if ( r && r->inherits( "KToolBarButton" ) )
       static_cast<KToolBar*>( w )->setButton( itemId( id ), d->m_checked );
   }
 }
