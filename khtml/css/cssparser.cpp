@@ -1957,10 +1957,19 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     kdDebug( 6080 ) << "parse rule: current = " << curP->latin1() << endl;
 #endif
 
-    if (*curP == '@')
-        rule = parseAtRule(curP, endP);
+    if (*curP == '@' )
+    {
+        // Do not allow @import statements after explicit inline
+        // declarations.  They should simply be ignored per CSS-1
+        // specification section 3.0.
+        if(!hasInlinedDecl)
+            rule = parseAtRule(curP, endP);
+    }
     else
+    {
         rule = parseStyleRule(curP, endP);
+        hasInlinedDecl = true;
+    }
 
     if(curP) curP++;
     return rule;

@@ -88,7 +88,7 @@ public:
     {
     public:
 	StyleBaseImpl() { m_parent = 0; }
-	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; }
+	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; }
 	virtual ~StyleBaseImpl() {}
 
 	virtual bool deleteMe();
@@ -168,6 +168,8 @@ public:
 	
     protected:
 	StyleBaseImpl *m_parent;
+    private:
+        bool hasInlinedDecl;       
     };
 
     // a style class which has a list of children (StyleSheets for example)
