@@ -28,8 +28,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#ifndef __FreeBSD__
-// Note: getopt_long seems not to be defined on FreeBSD systems
+#if !defined(__FreeBSD__) && !defined(_UNIXWARE)
+// Note: getopt_long seems not to be defined on FreeBSD and UnixWare systems
 #include <getopt.h>
 #endif
 #include <limits.h>
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
         strcpy(map_path,DEFAULT_MAP);
     };
     int c;
-#ifndef __FreeBSD__
+#if !defined(__FreeBSD__) && !defined(_UNIXWARE)
     struct option long_options[]=
     {
         {"device",1,NULL,'d'},
@@ -172,7 +172,7 @@ int main(int argc, char **argv)
             error=1;
             break;
         }
-#ifndef __FreeBSD__
+#if !defined(__FreeBSD__) && !defined(_UNIXWARE)
         c=getopt_long( argc, argv, "d:lm:v:f:3iqh" , long_options, &option_index);
 #else
         c=getopt( argc, argv, "d:lm:v:f:3iqh");
