@@ -31,11 +31,11 @@
 KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 : KMConfigPage(parent,"ConfigCupsDir")
 {
-	setPageName(i18n("Directory"));
-	setPageHeader(i18n("CUPS Directory Settings"));
+	setPageName(i18n("Folder"));
+	setPageHeader(i18n("CUPS Folder Settings"));
 	setPagePixmap("folder");
 
-	QGroupBox *m_dirbox = new QGroupBox(0, Qt::Vertical, i18n("Installation Directory"), this);
+	QGroupBox *m_dirbox = new QGroupBox(0, Qt::Vertical, i18n("Installation Folder"), this);
 	m_installdir = new KURLRequester(m_dirbox);
 	m_installdir->setMode((KFile::Mode)(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly));
 	m_stddir = new QCheckBox(i18n("Standard installation (/)"), m_dirbox);

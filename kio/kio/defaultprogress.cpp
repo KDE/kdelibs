@@ -205,7 +205,7 @@ void DefaultProgress::showTotals()
     QString tmps;
     if ( m_iTotalDirs > 1 )
       // that we have a singular to translate looks weired but is only logical
-      tmps = i18n("%n directory", "%n directories", m_iTotalDirs) + "   ";
+      tmps = i18n("%n folder", "%n folders", m_iTotalDirs) + "   ";
     tmps += i18n("%n file", "%n files", m_iTotalFiles);    
     progressLabel->setText( tmps );
   }
@@ -256,7 +256,7 @@ void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
   m_iProcessedDirs = dirs;
 
   QString tmps;
-  tmps = i18n("%1 / %n directory", "%1 / %n directories", m_iTotalDirs).arg( m_iProcessedDirs );
+  tmps = i18n("%1 / %n folder", "%1 / %n folders", m_iTotalDirs).arg( m_iProcessedDirs );
   tmps += "   ";
   tmps += i18n("%1 / %n file", "%1 / %n files", m_iTotalFiles).arg( m_iProcessedFiles );
   progressLabel->setText( tmps );
@@ -269,7 +269,7 @@ void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 
   QString tmps;
   if ( m_iTotalDirs > 1 ) {
-    tmps = i18n("%1 / %n directory", "%1 / %n directories", m_iTotalDirs).arg( m_iProcessedDirs );
+    tmps = i18n("%1 / %n folder", "%1 / %n folders", m_iTotalDirs).arg( m_iProcessedDirs );
     tmps += "   ";
   }
   tmps += i18n("%1 / %n file", "%1 / %n files", m_iTotalFiles).arg( m_iProcessedFiles );
@@ -323,7 +323,7 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Creating Directory"));
+    setCaption(i18n("Creating Folder"));
     d->noCaptionYet = false;
   }
   mode = Create;

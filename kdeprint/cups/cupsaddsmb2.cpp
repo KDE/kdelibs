@@ -263,7 +263,7 @@ void CupsAddSmb::doNextAction()
 		{
 			m_state = MkDir;
 			//m_text->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
-			m_textinfo->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
+			m_textinfo->setText(i18n("Creating folder %1").arg(m_actions[m_actionindex]));
 			s.append(" ").append(m_actions[m_actionindex].latin1());
 			m_actionindex++;
 		}

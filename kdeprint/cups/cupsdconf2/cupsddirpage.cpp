@@ -31,8 +31,8 @@
 CupsdDirPage::CupsdDirPage(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
-	setPageLabel(i18n("Directories"));
-	setHeader(i18n("Directories Settings"));
+	setPageLabel(i18n("Folders"));
+	setHeader(i18n("Folders Settings"));
 	setPixmap("folder");
 
 	datadir_ = new QDirLineEdit(false, this);
@@ -43,10 +43,10 @@ CupsdDirPage::CupsdDirPage(QWidget *parent, const char *name)
 	serverfiles_ = new QDirLineEdit(false, this);
 	tmpfiles_ = new QDirLineEdit(false, this);
 
-	QLabel *l1 = new QLabel(i18n("Data directory:"), this);
-	QLabel *l2 = new QLabel(i18n("Document directory:"), this);
+	QLabel *l1 = new QLabel(i18n("Data Folder:"), this);
+	QLabel *l2 = new QLabel(i18n("Document Folder:"), this);
 	QLabel *l3 = new QLabel(i18n("Font path:"), this);
-	QLabel *l4 = new QLabel(i18n("Request directory:"), this);
+	QLabel *l4 = new QLabel(i18n("Request Folder:"), this);
 	QLabel *l5 = new QLabel(i18n("Server binaries:"), this);
 	QLabel *l6 = new QLabel(i18n("Server files:"), this);
 	QLabel *l7 = new QLabel(i18n("Temporary files:"), this);

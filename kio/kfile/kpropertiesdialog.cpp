@@ -1468,13 +1468,13 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   if (!isLink) {
     l = d->extraCheckbox = new QCheckBox(hasDir ?
-					 i18n("Only own&er can rename and delete directory content") :
+					 i18n("Only own&er can rename and delete folder content") :
 					 i18n("Is &executable"),
 					 gb );
     connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
     gl->addWidget(l, 4, 1);
-    QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the directory's owner to "
-				     "delete or rename the contained files and directories. Other "
+    QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the folder's owner to "
+				     "delete or rename the contained files and folders. Other "
 				     "users can only add new files, which requires the 'Modify "
 				     "Content' permission.")
 		    : i18n("Enable this option to mark the file as executable. This only makes "
@@ -1628,7 +1628,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   // "Apply recursive" checkbox
   if ( hasDir && !isLink && !isIntoTrash )
   {
-      d->cbRecursive = new QCheckBox( i18n("Apply changes to all subdirectories and their contents"), d->m_frame );
+      d->cbRecursive = new QCheckBox( i18n("Apply changes to all subfolders and their contents"), d->m_frame );
       connect( d->cbRecursive, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
       box->addWidget( d->cbRecursive );
   }
@@ -1671,7 +1671,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addWidget (l, 1, 1);
   QString readWhatsThis;
   if (isDir)
-    readWhatsThis = i18n("This flag allows viewing the content of the directory.");
+    readWhatsThis = i18n("This flag allows viewing the content of the folder.");
   else
     readWhatsThis = i18n("The Read flag allows viewing the content of the file.");
   QWhatsThis::add(l, readWhatsThis);
@@ -1691,8 +1691,8 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   QString execWhatsThis;
   if (isDir) {
-    l = new QLabel( i18n("Enter directory", "Enter"), gb );
-    execWhatsThis = i18n("Enable this flag to allow entering the directory.");
+    l = new QLabel( i18n("Enter folder", "Enter"), gb );
+    execWhatsThis = i18n("Enable this flag to allow entering the folder.");
   }
   else {
     l = new QLabel( i18n("Exec"), gb );
@@ -1709,7 +1709,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addMultiCellWidget(l, 1, 1, 4, 5);
   QString specialWhatsThis;
   if (isDir)
-    specialWhatsThis = i18n("Special flag. Valid for the whole directory, the exact "
+    specialWhatsThis = i18n("Special flag. Valid for the whole folder, the exact "
 			    "meaning of the flag can be seen in the right hand column.");
   else
     specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen "
@@ -1729,7 +1729,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addWidget(l, 2, 5);
   QString setUidWhatsThis;
   if (isDir)
-    setUidWhatsThis = i18n("If this flag is set, the owner of this directory will be "
+    setUidWhatsThis = i18n("If this flag is set, the owner of this folder will be "
 			   "the owner of all new files.");
   else
     setUidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
@@ -1740,7 +1740,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addWidget(l, 3, 5);
   QString setGidWhatsThis;
   if (isDir)
-    setGidWhatsThis = i18n("If this flag is set, the group of this directory will be "
+    setGidWhatsThis = i18n("If this flag is set, the group of this folder will be "
 			   "set for all new files.");
   else
     setGidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
@@ -1751,7 +1751,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addWidget(l, 4, 5);
   QString stickyWhatsThis;
   if (isDir)
-    stickyWhatsThis = i18n("If the Sticky flag is set on a directory, only the owner "
+    stickyWhatsThis = i18n("If the Sticky flag is set on a folder, only the owner "
 			   "and root can delete or rename files. Otherwise everybody "
 			   "with write permissions can do this.");
   else
@@ -2020,8 +2020,8 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     enableAccessControls(d->canChangePermissions && !d->isIrregular);
     if (d->canChangePermissions)
       d->explanationLabel->setText(d->isIrregular ?
-				   i18n("This directory uses advanced permissions.",
-				      "These directories use advanced permissions.",
+				   i18n("This folder uses advanced permissions.",
+				      "These folders use advanced permissions.",
 				      properties->items().count()) : "");
     if (d->partialPermissions & S_ISVTX) {
       d->extraCheckbox->setTristate();
@@ -3175,8 +3175,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
     "%F - a list of files; use for applications that can open several local files at once\n"
     "%u - a single URL\n"
     "%U - a list of URLs\n"
-    "%d - the directory of the file to open\n"
-    "%D - a list of directories\n"
+    "%d - the folder of the file to open\n"
+    "%D - a list of folders\n"
     "%i - the icon\n"
     "%m - the mini-icon\n"
     "%c - the caption"));

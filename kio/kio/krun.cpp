@@ -733,7 +733,7 @@ void KRun::init()
       if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
-        KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or directory <b>%1</b> does not exist.</qt>" ).arg( m_strURL.htmlURL() ) );
+        KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ).arg( m_strURL.htmlURL() ) );
         d->m_showingError = false;
         m_bFault = true;
         m_bFinished = true;

@@ -2323,7 +2323,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     QString newPath;
     if (m_reportTimer)
         m_reportTimer->stop();
-    RenameDlg_Result r = Observer::self()->open_RenameDlg( this, i18n("Directory Already Exists"),
+    RenameDlg_Result r = Observer::self()->open_RenameDlg( this, i18n("Folder Already Exists"),
                                          (*it).uSource.prettyURL(0, KURL::StripFileProtocol),
                                          (*it).uDest.prettyURL(0, KURL::StripFileProtocol),
                                          mode, newPath,
@@ -2575,7 +2575,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         else
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
-                                i18n("File Already Exists") : i18n("Already Exists as Directory"),
+                                i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                 (*it).uSource.prettyURL(0, KURL::StripFileProtocol),
                                 (*it).uDest.prettyURL(0, KURL::StripFileProtocol),
                                 mode, newPath,

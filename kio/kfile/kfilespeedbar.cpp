@@ -52,7 +52,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
         }
 
         u.setPath( QDir::homeDirPath() );
-        insertItem( u, i18n("Home Directory"), false,
+        insertItem( u, i18n("Home Folder"), false,
                                "folder_home" );
 
         u = "floppy:/";

@@ -382,9 +382,9 @@ void KDirOperator::mkdir()
 {
     bool ok;
     QString where = url().isLocalFile() ? url().path(+1) : url().prettyURL();
-    QString dir = KInputDialog::getText( i18n( "New Directory" ),
-                                         i18n( "Create new directory in:\n%1" ).arg( where ),
-                                         i18n("New Directory"), &ok, this);
+    QString dir = KInputDialog::getText( i18n( "New Folder" ),
+                                         i18n( "Create new folder in:\n%1" ).arg( where ),
+                                         i18n("New Folder"), &ok, this);
     if (ok)
       mkdir( dir, true );
 }
@@ -412,12 +412,12 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
     if ( exists ) // url was already existant
     {
         QString which = url.isLocalFile() ? url.path() : url.prettyURL();
-        KMessageBox::sorry(viewWidget(), i18n("A file or directory named %1 already exists.").arg(which));
+        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.").arg(which));
         enterDirectory = false;
     }
     else if ( !writeOk ) {
         KMessageBox::sorry(viewWidget(), i18n("You don't have permission to "
-                                              "create that directory." ));
+                                              "create that folder." ));
     }
     else if ( enterDirectory ) {
         setURL( url, true );
@@ -580,7 +580,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
         if ( !isReadable( newurl ) ) {
             resetCursor();
             KMessageBox::error(viewWidget(),
-                               i18n("The specified directory does not exist "
+                               i18n("The specified folder does not exist "
                                     "or was not readable."));
             return;
         }
@@ -638,7 +638,7 @@ void KDirOperator::pathChanged()
 
     if ( !isReadable( currUrl )) {
         KMessageBox::error(viewWidget(),
-                           i18n("The specified directory does not exist "
+                           i18n("The specified folder does not exist "
                                 "or was not readable."));
         if (backStack.isEmpty())
             home();
@@ -1169,16 +1169,16 @@ void KDirOperator::setupActions()
     myActionCollection = new KActionCollection( this, "KDirOperator::myActionCollection" );
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
     upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
-    upAction->setText( i18n("Parent Directory") );
+    upAction->setText( i18n("Parent Folder") );
     backAction = KStdAction::back( this, SLOT( back() ), myActionCollection, "back" );
     forwardAction = KStdAction::forward( this, SLOT(forward()), myActionCollection, "forward" );
     homeAction = KStdAction::home( this, SLOT( home() ), myActionCollection, "home" );
-    homeAction->setText(i18n("Home Directory"));
+    homeAction->setText(i18n("Home Folder"));
     reloadAction = KStdAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
     actionSeparator = new KActionSeparator( myActionCollection, "separator" );
     d->viewActionSeparator = new KActionSeparator( myActionCollection,
                                                    "viewActionSeparator" );
-    mkdirAction = new KAction( i18n("New Directory..."), 0,
+    mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
     new KAction( i18n( "Delete" ), "editdelete", Key_Delete, this,
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
@@ -1208,7 +1208,7 @@ void KDirOperator::setupActions()
     bySizeAction->setExclusiveGroup( sortGroup );
 
 
-    dirsFirstAction = new KToggleAction( i18n("Directories First"), 0,
+    dirsFirstAction = new KToggleAction( i18n("Folders First"), 0,
                                          myActionCollection, "dirs first");
     caseInsensitiveAction = new KToggleAction(i18n("Case Insensitive"), 0,
                                               myActionCollection, "case insensitive" );
@@ -1232,7 +1232,7 @@ void KDirOperator::setupActions()
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), KShortcut(),
                                           myActionCollection, "show hidden" );
-    separateDirsAction = new KToggleAction( i18n("Separate Directories"), KShortcut(),
+    separateDirsAction = new KToggleAction( i18n("Separate Folders"), KShortcut(),
                                             this,
                                             SLOT(slotSeparateDirs()),
                                             myActionCollection, "separate dirs" );

@@ -1393,31 +1393,31 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       action = i18n( "set property values" );
       break;
     case DAV_MKCOL:
-      action = i18n( "create the requested directory" );
+      action = i18n( "create the requested folder" );
       break;
     case DAV_COPY:
-      action = i18n( "copy the specified file or directory" );
+      action = i18n( "copy the specified file or folder" );
       break;
     case DAV_MOVE:
-      action = i18n( "move the specified file or directory" );
+      action = i18n( "move the specified file or folder" );
       break;
     case DAV_SEARCH:
-      action = i18n( "search in the specified directory" );
+      action = i18n( "search in the specified folder" );
       break;
     case DAV_LOCK:
-      action = i18n( "lock the specified file or directory" );
+      action = i18n( "lock the specified file or folder" );
       break;
     case DAV_UNLOCK:
-      action = i18n( "unlock the specified file or directory" );
+      action = i18n( "unlock the specified file or folder" );
       break;
     case HTTP_DELETE:
-      action = i18n( "delete the specified file or directory" );
+      action = i18n( "delete the specified file or folder" );
       break;
     case HTTP_OPTIONS:
       action = i18n( "query the server's capabilities" );
       break;
     case HTTP_GET:
-      action = i18n( "retrieve the contents of the specified file or directory" );
+      action = i18n( "retrieve the contents of the specified file or folder" );
       break;
     case HTTP_PUT:
     case HTTP_POST:
@@ -1497,14 +1497,14 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       if ( m_request.method == DAV_MKCOL )
       {
         kError = ERR_DIR_ALREADY_EXIST;
-        errorString = i18n("The specified directory already exists.");
+        errorString = i18n("The specified folder already exists.");
       }
       break;
     case 409:
       // 409 Conflict
       kError = ERR_ACCESS_DENIED;
       errorString = i18n("A resource cannot be created at the destination "
-                  "until one or more intermediate collections (directories) "
+                  "until one or more intermediate collections (folders) "
                   "have been created.");
       break;
     case 412:
@@ -1545,7 +1545,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       {
         kError = ERR_WRITE_ACCESS_DENIED;
         errorString = i18n("Unable to %1 because the destination server refuses "
-                           "to accept the file or directory.").arg( action );
+                           "to accept the file or folder.").arg( action );
       }
       break;
     case 507:
@@ -1599,7 +1599,7 @@ void HTTPProtocol::httpError()
       // 409 Conflict
       kError = ERR_ACCESS_DENIED;
       errorString = i18n("A resource cannot be created at the destination "
-                  "until one or more intermediate collections (directories) "
+                  "until one or more intermediate collections (folders) "
                   "have been created.");
       break;
     case 423:
@@ -1611,7 +1611,7 @@ void HTTPProtocol::httpError()
       // 502 Bad Gateway
       kError = ERR_WRITE_ACCESS_DENIED;
       errorString = i18n("Unable to %1 because the destination server refuses "
-                         "to accept the file or directory.").arg( action );
+                         "to accept the file or folder.").arg( action );
       break;
     case 507:
       // 507 Insufficient Storage

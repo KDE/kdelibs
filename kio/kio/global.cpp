@@ -123,7 +123,7 @@ QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize
         text += i18n("(%1 Total)").arg(KIO::convertSize( size ) );
     }
     text += " - ";
-    text += i18n("One Directory", "%n Directories", dirs);
+    text += i18n("One Folder", "%n Folders", dirs);
     return text;
 }
 
@@ -207,19 +207,19 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
 //       result = i18n( "Unsupported action %1" ).arg( errorText );
       break;
     case  KIO::ERR_IS_DIRECTORY:
-      result = i18n( "%1 is a directory, but a file was expected." ).arg( errorText );
+      result = i18n( "%1 is a folder, but a file was expected." ).arg( errorText );
       break;
     case  KIO::ERR_IS_FILE:
-      result = i18n( "%1 is a file, but a directory was expected." ).arg( errorText );
+      result = i18n( "%1 is a file, but a folder was expected." ).arg( errorText );
       break;
     case  KIO::ERR_DOES_NOT_EXIST:
-      result = i18n( "The file or directory %1 does not exist." ).arg( errorText );
+      result = i18n( "The file or folder %1 does not exist." ).arg( errorText );
       break;
     case  KIO::ERR_FILE_ALREADY_EXIST:
       result = i18n( "A file named %1 already exists." ).arg( errorText );
       break;
     case  KIO::ERR_DIR_ALREADY_EXIST:
-      result = i18n( "A directory named %1 already exists." ).arg( errorText );
+      result = i18n( "A folder named %1 already exists." ).arg( errorText );
       break;
     case  KIO::ERR_UNKNOWN_HOST:
       result = errorText.isEmpty() ? i18n( "No hostname specified." ) : i18n( "Unknown host %1" ).arg( errorText );
@@ -231,10 +231,10 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
       result = i18n( "Access denied\nCould not write to %1" ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_ENTER_DIRECTORY:
-      result = i18n( "Could not enter directory %1" ).arg( errorText );
+      result = i18n( "Could not enter folder %1" ).arg( errorText );
       break;
     case  KIO::ERR_PROTOCOL_IS_NOT_A_FILESYSTEM:
-      result = i18n( "The protocol %1 does not implement a directory service." ).arg( errorText );
+      result = i18n( "The protocol %1 does not implement a folder service." ).arg( errorText );
       break;
     case  KIO::ERR_CYCLIC_LINK:
       result = i18n( "Found a cyclic link in %1" ).arg( errorText );
@@ -288,10 +288,10 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
       result = i18n( "Could not terminate listing %1" ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_MKDIR:
-      result = i18n( "Could not make directory %1" ).arg( errorText );
+      result = i18n( "Could not make folder %1" ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_RMDIR:
-      result = i18n( "Could not remove directory %1" ).arg( errorText );
+      result = i18n( "Could not remove folder %1" ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_RESUME:
       result = i18n( "Could not resume file %1" ).arg( errorText );
@@ -393,7 +393,7 @@ QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
     case CMD_SPECIAL:
       return i18n("There are no special actions available for protocol %1").arg(protocol);
     case CMD_LISTDIR:
-      return i18n("Listing directories is not supported for protocol %1").arg(protocol);
+      return i18n("Listing folders is not supported for protocol %1").arg(protocol);
     case CMD_GET:
       return i18n("Retrieving data from %1 is not supported").arg(protocol);
     case CMD_MIMETYPE:
@@ -407,7 +407,7 @@ QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
     case CMD_DEL:
       return i18n("Deleting files from %1 is not supported").arg(protocol);
     case CMD_MKDIR:
-      return i18n("Creating directories is not supported with protocol %1").arg(protocol);
+      return i18n("Creating folders is not supported with protocol %1").arg(protocol);
     case CMD_CHMOD:
       return i18n("Changing the attributes of files is not supported with protocol %1").arg(protocol);
     case CMD_SUBURL:
@@ -576,10 +576,10 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_CANNOT_OPEN_FOR_READING:
       errorName = i18n( "Cannot Open Resource For Reading" );
       description = i18n( "This means that the contents of the requested file "
-        "or directory <strong>%1</strong> could not be retrieved, as read "
+        "or folder <strong>%1</strong> could not be retrieved, as read "
         "access could not be obtained." ).arg( dir );
       causes << i18n( "You may not have permissions to read the file or open "
-        "the directory.") << cLocked << cHardware;
+        "the folder.") << cLocked << cHardware;
       solutions << sAccess << sQuerylock << sSysadmin;
       break;
 
@@ -619,7 +619,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
         "<strong>L</strong>ocator (URL) that you entered was not properly "
         "formatted. The format of a URL is generally as follows:"
-        "<blockquote><strong>protocol://user:password@www.example.org:port/directory/"
+        "<blockquote><strong>protocol://user:password@www.example.org:port/folder/"
         "filename.extension?query=value</strong></blockquote>" );
       solutions << sTypo;
       break;
@@ -668,22 +668,22 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_IS_DIRECTORY:
       errorName = i18n( "File Expected" );
       description = i18n( "The request expected a file, however the "
-        "directory <strong>%1</strong> was found instead." ).arg( dir );
+        "folder <strong>%1</strong> was found instead." ).arg( dir );
       causes << i18n( "This may be an error on the server side." ) << cBug;
       solutions << sUpdate << sSysadmin;
       break;
 
     case  KIO::ERR_IS_FILE:
-      errorName = i18n( "Directory Expected" );
-      description = i18n( "The request expected a directory, however "
+      errorName = i18n( "Folder Expected" );
+      description = i18n( "The request expected a folder, however "
         "the file <strong>%1</strong> was found instead." ).arg( filename );
       causes << cBug;
       solutions << sUpdate << sSysadmin;
       break;
 
     case  KIO::ERR_DOES_NOT_EXIST:
-      errorName = i18n( "File or Directory Does Not Exist" );
-      description = i18n( "The specified file or directory <strong>%1</strong> "
+      errorName = i18n( "File or Folder Does Not Exist" );
+      description = i18n( "The specified file or folder <strong>%1</strong> "
         "does not exist." ).arg( dir );
       causes << cBug;
       solutions << sUpdate << sSysadmin;
@@ -700,13 +700,13 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_DIR_ALREADY_EXIST:
-      errorName = i18n( "Directory Already Exists" );
-      description = i18n( "The requested directory could not be created because "
-        "a directory with the same name already exists." );
-      solutions << i18n( "Try moving the current directory out of the way first, "
+      errorName = i18n( "Folder Already Exists" );
+      description = i18n( "The requested folder could not be created because "
+        "a folder with the same name already exists." );
+      solutions << i18n( "Try moving the current folder out of the way first, "
         "and then try again." )
-        << i18n( "Delete the current directory and try again." )
-        << i18n( "Choose an alternate name for the new directory." );
+        << i18n( "Delete the current folder and try again." )
+        << i18n( "Choose an alternate name for the new folder." );
       break;
 
     case  KIO::ERR_UNKNOWN_HOST:
@@ -742,19 +742,19 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_CANNOT_ENTER_DIRECTORY:
-      errorName = i18n( "Unable to Enter Directory" );
+      errorName = i18n( "Unable to Enter Folder" );
       description = i18n( "This means that an attempt to enter (in other words, "
-        "to open) the requested directory <strong>%1</strong> was rejected." )
+        "to open) the requested folder <strong>%1</strong> was rejected." )
         .arg( dir );
       causes << cAccess << cLocked;
       solutions << sAccess << sQuerylock << sSysadmin;
       break;
 
     case  KIO::ERR_PROTOCOL_IS_NOT_A_FILESYSTEM:
-      errorName = i18n( "Directory Listing Unavailable" );
+      errorName = i18n( "Folder Listing Unavailable" );
       techName = i18n( "Protocol %1 is not a Filesystem" ).arg( protocol );
       description = i18n( "This means that a request was made which requires "
-        "determining the contents of the directory, and the KDE program supporting "
+        "determining the contents of the folder, and the KDE program supporting "
         "this protocol is unable to do so." );
       causes << cBug;
       solutions << sUpdate << sBugreport;
@@ -763,7 +763,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_CYCLIC_LINK:
       errorName = i18n( "Cyclic Link Detected" );
       description = i18n( "UNIX environments are commonly able to link a file or "
-        "directory to a separate name and/or location. KDE detected a link or "
+        "folder to a separate name and/or location. KDE detected a link or "
         "series of links that results in an infinite loop - i.e. the file was "
         "(perhaps in a roundabout way) linked to itself." );
       solutions << i18n( "Delete one part of the loop in order that it does not "
@@ -784,7 +784,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_CYCLIC_COPY:
       errorName = i18n( "Cyclic Link Detected During Copy" );
       description = i18n( "UNIX environments are commonly able to link a file or "
-        "directory to a separate name and/or location. During the requested copy "
+        "folder to a separate name and/or location. During the requested copy "
         "operation, KDE detected a link or series of links that results in an "
         "infinite loop - i.e. the file was (perhaps in a roundabout way) linked "
         "to itself." );
@@ -967,23 +967,23 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_COULD_NOT_MKDIR:
-      errorName = i18n( "Could Not Create Directory" );
-      description = i18n( "An attempt to create the requested directory failed." );
-      causes << cAccess << i18n( "The location where the directory was to be created "
+      errorName = i18n( "Could Not Create Folder" );
+      description = i18n( "An attempt to create the requested folder failed." );
+      causes << cAccess << i18n( "The location where the folder was to be created "
         "may not exist." );
       if ( !isSlaveNetwork ) causes << cProtocol;
       solutions << i18n( "Retry the request." ) << sAccess;
       break;
 
     case  KIO::ERR_COULD_NOT_RMDIR:
-      errorName = i18n( "Could Not Remove Directory" );
-      description = i18n( "An attempt to remove the specified directory, "
+      errorName = i18n( "Could Not Remove Folder" );
+      description = i18n( "An attempt to remove the specified folder, "
         "<strong>%1</strong>, failed." ).arg( dir );
-      causes << i18n( "The specified directory may not exist." )
-        << i18n( "The specified directory may not be empty." )
+      causes << i18n( "The specified folder may not exist." )
+        << i18n( "The specified folder may not be empty." )
         << cAccess;
       if ( !isSlaveNetwork ) causes << cProtocol;
-      solutions << i18n( "Ensure that the directory exists and is empty, and try "
+      solutions << i18n( "Ensure that the folder exists and is empty, and try "
         "again." ) << sAccess;
       break;
 
@@ -1085,7 +1085,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       solutions << i18n( "Contact the administrator of the server "
         "to advise them of the problem." )
         << i18n( "If you know who the authors of the server software are, "
-        "submit the bug report directly to them." );
+        "submit the bug report folder to them." );
       break;
 
     case  KIO::ERR_SERVER_TIMEOUT:

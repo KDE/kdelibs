@@ -826,20 +826,20 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
-    QToolTip::add( d->pathCombo, i18n("Often used directories") );
+    QToolTip::add( d->pathCombo, i18n("Often used folders") );
     QWhatsThis::add( d->pathCombo, "<qt>" + i18n("Commonly used locations are listed here. "
-                                                 "This includes standard locations, such as your home directory, as well as "
+                                                 "This includes standard locations, such as your home folder, as well as "
                                                  "locations that have been visited recently.") + autocompletionWhatsThisText);
 
     KURL u;
     u.setPath( QDir::rootDirPath() );
-    QString text = i18n("Root Directory: %1").arg( u.path() );
+    QString text = i18n("Root Folder: %1").arg( u.path() );
     d->pathCombo->addDefaultURL( u,
                                  KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                  text );
 
     u.setPath( QDir::homeDirPath() );
-    text = i18n("Home Directory: %1").arg( u.path( +1 ) );
+    text = i18n("Home Folder: %1").arg( u.path( +1 ) );
     d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                  text );
 
@@ -896,7 +896,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     // plug nav items into the toolbar
     coll->action( "up" )->plug( toolbar );
-    coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent directory.<p>"
+    coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<p>"
                                             "For instance, if the current location is file:/home/%1 clicking this "
                                             "button will take you to file:/home.</qt>").arg(getlogin()));
     coll->action( "back" )->plug( toolbar );
@@ -907,7 +907,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
     coll->action( "mkdir" )->setShortcut(Key_F10);
     coll->action( "mkdir" )->plug( toolbar );
-    coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new directory."));
+    coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     d->bookmarkHandler = new KFileBookmarkHandler( this );
     toolbar->insertButton(QString::fromLatin1("bookmark"),
@@ -937,7 +937,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                             "<li>showing of hidden files</li>"
                             "<li>the Quick Access navigation panel</li>"
                             "<li>file previews</li>"
-                            "<li>separating directories from files</li></ul></qt>"));
+                            "<li>separating folders from files</li></ul></qt>"));
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
     coll->action( "short view" )->setShortcut(Key_F6);
@@ -1588,7 +1588,7 @@ void KFileDialog::setMode( KFile::Mode m )
 {
     ops->setMode(m);
     if ( ops->dirOnlyMode() ) {
-        filterWidget->setDefaultFilter( i18n("*|All Directories") );
+        filterWidget->setDefaultFilter( i18n("*|All Folders") );
     }
     else {
         filterWidget->setDefaultFilter( i18n("*|All Files") );
