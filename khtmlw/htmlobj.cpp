@@ -660,15 +660,16 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     border = bdr;
     percent = _percent;
     max_width = _max_width;
-    ascent = _height;
-    descent = 0;
+    ascent = _height + border;
+    descent = border;
     if ( percent > 0 )
     {
 	width = (int)max_width * (int)percent / 100;
+	width += border * 2;
     }
     else
     {
-        width = _width;
+        width = _width + border * 2;
     }
 
     absX = -1;
@@ -706,7 +707,6 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	}
 	else 
 	{
-	    debugM( "Requesting image" );
 	    imageURL = _filename;
 	    imageURL.detach();
 	    synchron = TRUE;
@@ -758,8 +758,10 @@ void HTMLImage::init()
 	    ascent = pixmap->height() * width / pixmap->width();
     }
 
-    width += border*2;
-    ascent += border*2;
+    if ( !predefinedWidth )
+	width += border*2;
+    if ( !predefinedHeight )
+	ascent += border;
 }
 
 void HTMLImage::setOverlay( const char *_ol )
@@ -862,7 +864,7 @@ void HTMLImage::setMaxWidth( int _max_width )
     {
 	width = (int)max_width * (int)percent / 100;
 	if ( !predefinedHeight )
-	    ascent = pixmap->height() * width / pixmap->width() + border * 2;
+	    ascent = pixmap->height() * width / pixmap->width() + border;
 	width += border * 2;
     }
 }
@@ -889,7 +891,7 @@ bool HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _t
 void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 {
     const QPixmap *pixptr = pixmap;
-    QRect rect( 0, 0, width - border*2, ascent - border*2 );
+    QRect rect( 0, 0, width - border*2, ascent - border );
 
 #ifdef USE_QMOVIE
     if ( movie && pixmap )
@@ -932,21 +934,21 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	}
 
 	if ( (width - border*2 != pixptr->width() ||
-	    ascent - border*2 != pixptr->height() ) &&
+	    ascent - border != pixptr->height() ) &&
 	    pixptr->width() != 0 && pixptr->height() != 0 )
 	{
 	    QWMatrix matrix;
 	    matrix.scale( (float)(width-border*2)/pixptr->width(),
-		    (float)(ascent-border*2)/pixptr->height() );
+		    (float)(ascent-border)/pixptr->height() );
 	    QPixmap tp = pm.xForm( matrix );
 	    rect.setRight( rect.width() * (width-border*2)/pixptr->width() );
-	    rect.setBottom( rect.height() * (ascent-border*2)/pixptr->height());
+	    rect.setBottom( rect.height() * (ascent-border)/pixptr->height());
 	    _painter->drawPixmap( QPoint( x + _tx + border,
 		    y - ascent + _ty + border ), tp, rect );
 	}
 	else
 	    _painter->drawPixmap( QPoint( x + _tx + border,
-		    y - ascent + _ty + border ), pm, rect );
+		    y - ascent + _ty + border), pm, rect );
 	
 	if ( overlay )
 	    _painter->drawPixmap( QPoint( x + _tx + border,
@@ -959,9 +961,9 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	_painter->setPen( pen );
 	QBrush brush;
 	_painter->setBrush( brush );	// null brush
-	for ( int i = 0; i < border; i++ )
-	    _painter->drawRect( x + _tx + i, y - ascent + _ty + i,
-		width - i*2, ascent - i*2 );
+	for ( int i = 1; i <= border; i++ )
+	    _painter->drawRect( x+_tx+border-i, y - ascent + border + _ty - i,
+		(width - border*2) + i*2, ascent - border + i*2 );
     }
 }
 
