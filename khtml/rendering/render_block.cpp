@@ -1079,7 +1079,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         if (child->isRenderBlock())
             prevFlow = static_cast<RenderBlock*>(child);
 
-        if (child->hasOverhangingFloats() && !child->hasOverflowClip()) {
+        if (child->hasOverhangingFloats() && !child->flowAroundFloats()) {
             // need to add the child's floats to our floating objects list, but not in the case where
             // overflow is auto/scroll
             addOverHangingFloats( static_cast<RenderBlock *>(child), -child->xPos(), -child->yPos(), true );
