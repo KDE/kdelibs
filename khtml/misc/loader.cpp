@@ -965,8 +965,8 @@ void Cache::clear()
 {
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "Cache: CLEAR!" << endl;
-#endif
     statistics();
+#endif
     cache->setAutoDelete( true );
     delete cache; cache = 0;
     delete lru;   lru = 0;
