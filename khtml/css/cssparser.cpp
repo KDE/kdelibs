@@ -2482,6 +2482,13 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     int count = 0;
 
     curP = parseSpace( curP, endP );
+
+    if (!strictParsing) {
+	// allow ; between rules (not part of spec)
+	while (curP && (curP->isSpace() || *curP == ';'))
+	    curP++;
+    }
+
     startP = curP;
 
     // The code below ignores any occurances of
