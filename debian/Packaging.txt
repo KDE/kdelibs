@@ -1,0 +1,157 @@
+Debian KDE Packaging
+=-=-=-=-=-=-=-=-=-=-
+
+
+This document is meant as a aid for Debian Developers who are packaging
+up KDE based applications.    
+
+                              - Ivan
+
+------------------------------------------------------------------------
+
+=======
+dh-make
+=======
+
+You can now find a dh-make template for a single binary package under
+
+    /usr/share/doc/kdelibs-dev/dh-make/
+
+Refer to the dh-make man package for information on how to use these templates.
+These templates include the bits mentioned in this file.
+
+
+======================
+Debian/KDE Menu System
+======================
+
+When building your package you will most likely end up with a debian/menu
+file for creation of menu entries with the Debian menu system.  There are
+2 customizations  you need to do for KDE specific packages.  The first is
+the use of hints.  If you are unfamiliar with hints you should read up on
+menu and it's features.  For all KDE based apps there needs to be a menu
+tag of hints="KDE".   
+
+   The other customization that is required is simple but it's necessity
+is a bit more complex.  The tag "kderemove" needs to be used to make sure
+there is no duplication in menu entries.  "What for?" you ask...well here's
+why.  For every KDE app there is a corresponding .desktop file under the
+/usr/share/applnk directory tree.  This is either provided by the package 
+itself or created by the maintainer when one doesn't exist.  This file is used
+by the KDE menu system to list the application within the KDE menu.  This
+is how KDE handles it's menus...there must be a .desktop (or .kdelnk) file 
+under /usr/share/applnk in order for it to show up on the KDE menu.  Well
+by default this will only show KDE applications and not any of the other 
+non-KDE apps you have installed on your computer.   So we use the Debian 
+menu package to pull in all of the non-KDE applications.  The kdebase package
+provides it's own menu-method which processes each of the menu items under
+/usr/lib/menu and creates .desktop files under /var/lib/kde/menu.  There
+is a symlink under /usr/share/applnk pointing to /var/lib/kde/menu so that
+all of the .desktop files that are dynamically created by the menu program
+and placed under /var/lib/kde/menu show up under a submenu of the KDE menu.
+So now with every Debian package (including all the KDE packages) a .desktop
+file is created.  In the case of all the KDE packages there is now 2 different
+.desktop files representing the app...one which is part of the actual package
+and one created by the Debian menu system.  One of these entries is in the
+main KDE menu and the other is under the Debian submenu.  You would think this
+isn't a real big problem..however KDE uses these .desktop files to handle
+much more than menu entries.  So we need to make sure we don't have this
+duplication.  The kderemove tag was created for this.  Basically if a menu
+entry has kderemove="1" in it it will not create a .desktop file for that
+application.  
+
+With that said a typical menu file would look like this:
+
+   ?package(konqueror):\
+        needs=x11\
+        section=Apps/Net\
+        hints="KDE,Web browsers"\
+        kderemove="y"\
+        title="Konqueror"\
+        command="kfmclient openProfile webbrowsing"
+
+
+=============
+Build-Depends
+=============
+
+Build-Depends are very important in the Debian world.  Most of the package
+building on non-i386 ports are done with the aid of buildd's.  Buildd's are
+automated building systems that basically build packages that are not already
+built for the arch they are building on.  In order to do this and actually
+be successful things like Build-Depends have to be accurate.  A typical 
+Build-Depends line for a KDE based application will look something like this:
+
+  Build-Depends: debhelper (>> 2.0.0), automake, autoconf, libtool, kdelibs-dev (>= 4:2.1.1-0)
+
+Your app may need alot more than that to actually build however first take a
+look at the Dependencies for kdelibs-dev:
+
+   Depends: kdelibs3 (= 4:2.1.1-5), libarts-dev (= 4:2.1.1-5), libkmid-dev (= 4:2.1.1-5), libqt-dev (>= 2:2.3.0), libaudiofile-dev, gettext, libtiff3g-dev, jade, sgml-base, docbook, docbook-stylesheets, libpcre3-dev
+
+and the Dependencies for libqt-dev:
+
+   Depends: libc6 (>= 2.2.2-2), libqt2 (>= 2:2.3.0-final-1) | libqt2-gl (>= 2:2.3.0-final-1), libstdc++2.10-glibc2.2, xlibs (>= 4.0.1-11), perl, libqutil1 (= 2:2.3.0-final-2), uic, xlibs-dev, libmng-dev, libpng2-dev, libjpeg62-dev, libz-dev, libfreetype6-dev, libc6-dev
+
+
+so between the 2 of them you have Build-Depends that equate to:
+
+  kdelibs-dev, libarts-dev, libkmid-dev, libqt-dev, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, jade, sgml-base, docbook, docbook-stylesheets, libpcre3-dev, xlibs-dev, libmng-dev, libpng2-dev, libjpeg62-dev, libz-dev, libfreetype6-dev
+
+99% of the time that will more than cover a KDE app.  There will of course
+be specific stuff you'll need to add....for example knetfilter requires iptables
+to be installed in order for it to build...kdemultimedia requires ncurses, 
+slang and other things to build.  Either way you should make sure you get them
+all.
+
+===========
+debianrules
+===========
+
+   If your KDE based app uses the kde-common stuff you'll have a admin/ 
+subdir which if it's recent will contain a debianrules perl script.  The
+current version of it (sitting in /usr/share/doc/kdelibs-dev/dh-make) does very
+little. The biggest job it has is to make sure that all the KDE variables are 
+set properly for build...this includes a configure line.  
+
+   If you place the debianrules script into your debian/ directory (if it 
+doesn't already exist in admin/ or that one is a older version) you can modify
+your debian/rules script to make use of it like so:
+
+
+
+  configure: configure-stamp
+ 
+  -include debian/debiandirs
+ 
+  debian/debiandirs: debian/debianrules
+          perl -w debian/debianrules echodirs > debian/debiandirs
+ 
+  configure-stamp:
+          dh_testdir
+
+          ./configure $(configkde)
+
+
+With this you can see we create a file called debian/debiandirs which contains
+all the variables like kde_htmldir set to the proper Debian settings.  It
+also sets up the configkde variable which currently looks like this:
+
+    configkde=--disable-debug --disable-rpath --prefix=$(kde_prefix) --libexecdir=$(kde_bindir) --with-qt-includes=/usr/include/qt --mandir=$(mandir) --infodir=$(infodir)
+
+
+You can add your custom configure bits after the $(configkde).  However 9 times
+out of 10 you won't have to do a thing.
+
+
+==================
+Missing something?
+==================
+
+If there's something I'm missing from this document (and I'm sure there is)
+please send mail off to debian-kde@lists.debian.org and I'll get it added
+for future releases.  I'd like it if this could answer 99% of the questions
+one might have about packaging up a KDE based app for Debian.
+
+Ivan
+
