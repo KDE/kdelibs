@@ -52,7 +52,7 @@ class DockMainWindow : public KDockMainWindow, virtual public PartBase
   /**
    * Constructor, same signature as @ref KDockMainWindow.
    */
-  DockMainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
+  DockMainWindow( QWidget* parent = 0L, const char *name = 0L, WFlags f = WDestructiveClose );
   /**
    * Destructor.
    */

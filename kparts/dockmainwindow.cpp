@@ -53,8 +53,8 @@ public:
 };
 };
 
-DockMainWindow::DockMainWindow( const char *name, WFlags /*f*/ )
-  : KDockMainWindow( name )
+DockMainWindow::DockMainWindow( QWidget* parent, const char *name, WFlags f )
+  : KDockMainWindow( parent, name, f )
 {
   d = new DockMainWindowPrivate();
   PartBase::setPartObject( this );
