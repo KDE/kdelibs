@@ -342,7 +342,7 @@ NodeList::~NodeList()
     if(impl) impl->deref();
 }
 
-Node NodeList::item( unsigned long index )
+Node NodeList::item( unsigned long index ) const
 {
     if(!impl) return 0;
     return impl->item(index);

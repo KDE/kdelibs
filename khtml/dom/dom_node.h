@@ -646,7 +646,7 @@ public:
      * a valid index.
      *
      */
-    Node item ( unsigned long index );
+    Node item ( unsigned long index ) const;
 
     /**
      * @internal
