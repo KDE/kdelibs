@@ -89,6 +89,7 @@ void KNewPanner::activate(QWidget *c0, QWidget *c1)
     divider= new QFrame(this, "pannerdivider");
     divider->setFrameStyle(QFrame::Panel | QFrame::Raised);
     divider->setLineWidth(1);
+    divider->raise();
 
     if (orientation == Horizontal)
         divider->setCursor(QCursor(sizeVerCursor));
