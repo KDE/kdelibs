@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::htmlRef()", url1.htmlRef(), "QObject::connect");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
-  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html");
+  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html");
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   url1 = u1;
