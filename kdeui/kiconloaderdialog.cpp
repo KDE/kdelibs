@@ -61,6 +61,7 @@ KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
     connect( this, SIGNAL( currentChanged( QIconViewItem * ) ),
 	     this, SLOT( slotCurrentChanged( QIconViewItem * ) ) );
     setWordWrapIconText( FALSE );
+    setShowToolTips( TRUE );
 }
 
 KIconLoaderCanvas::~KIconLoaderCanvas()
