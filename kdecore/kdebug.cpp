@@ -278,7 +278,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
 
   // check if we should abort
   if( ( nLevel == KDEBUG_FATAL ) && pConfig &&
-          ( pConfig->readNumEntry( "AbortFatal", 0 ) ) )
+          ( pConfig->readNumEntry( "AbortFatal", 1 ) ) )
         abort();
 
 #ifdef NDEBUG
