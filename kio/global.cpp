@@ -398,7 +398,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     while (GETMNTENT(mtab, me))
     {
       //unsigned int length = strlen(FSNAME(me));
-      kdDebug( 7007 ) << "read " << FSNAME(me) << endl;
+      //kdDebug( 7007 ) << "read " << FSNAME(me) << endl;
 
       /*
       if (!strncmp(FSNAME(me), realname.data(), length)   // mountpoint included in real path
@@ -415,7 +415,6 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       if ( realname == FSNAME(me) )
       {
           result = MOUNTPOINT(me);
-          kdDebug( 7007 ) << "result " << result << endl;
           break;
       }
     }
