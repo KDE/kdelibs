@@ -319,9 +319,8 @@ s_buildHashNames (std::vector<std::string> & names, const char * dict)
 	names.clear ();
 
 	while ( (tmp = ispell_dirs[i++]) ) {
-		QString maybeFile = QString( "%1/%2" ).arg( tmp ).arg( dict );
-		//FIXME: wrong encoding
-		names.push_back( maybeFile.latin1() );
+		QCString maybeFile = QCString( tmp ) + '/' + QCString( dict );
+		names.push_back( maybeFile.data() );
 	}
 }
 
