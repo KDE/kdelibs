@@ -82,7 +82,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
     head = 0;
     foot = 0;
     firstBody = 0;
-    
+
     valign=VNone;
 
     width = -1;
@@ -553,10 +553,10 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
     }
     else
     {
-    
-// This stuff does not work! We get much better results 
+
+// This stuff does not work! We get much better results
 // without it, until rewrite -antti
-#if 0  
+#if 0
 	int fixedCount = 0;
 	int percentCount = 0;
 	int relCount = 0;
@@ -1067,10 +1067,10 @@ void HTMLTableElementImpl::calcColWidthII(void)
 
 // 7. spread remaining widths across variable columns
 
-    
+
     int tooAdd = tableWidth - actWidth;      // what we can add
     int pref=-minRel-minVar; //= maxRel + maxVar - minRel - minVar; // what we would like to add
-    
+
     for(i = 0; i < totalCols; i++)
     {
 	switch(colType[i])
@@ -1084,7 +1084,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    pref += colMaxWidth[i] < tableWidth ? colMaxWidth[i] : tableWidth;
 	}
     }
-    
+
     int tooOld = tooAdd;	
 #ifdef TABLE_DEBUG
     printf("adding another %d pixels! pref=%d\n", tooAdd, pref);
@@ -1100,7 +1100,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	case Relative:
 	    // ###
 	case Variable:
-	    int cPref 
+	    int cPref
 	    	= (colMaxWidth[i] < tableWidth ? colMaxWidth[i] : tableWidth)
 		- colMinWidth[i];
 #ifdef TABLE_DEBUG
@@ -1291,7 +1291,7 @@ void HTMLTableElementImpl::calcRowHeights()
 	    // find out the baseline
 	    if (cell->vAlign()==Baseline)
 	    {
-		NodeImpl* firstElem = cell->firstChild();	    	    
+		NodeImpl* firstElem = cell->firstChild();	    	
 		if (firstElem)
 		{
 		    int b=firstElem->getAscent();
@@ -1319,7 +1319,7 @@ void HTMLTableElementImpl::calcRowHeights()
 
 	if ( rowHeights[r+1] < rowHeights[r] )
 	    rowHeights[r+1] = rowHeights[r];
-	    
+	
 	// if rowheight changed, recalculate valigns later
 	if (oldheight != rowHeights[r+1] - rowHeights[r])
 	{
@@ -1443,7 +1443,7 @@ void HTMLTableElementImpl::layout(bool deep)
     if(frame & Below) descent += border;
 
     setLayouted();
-    
+
 }
 
 void HTMLTableElementImpl::setAvailableWidth(int w)
@@ -1493,7 +1493,7 @@ void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
 
     if((_ty > _y + _h) || (_ty + descent < _y)) return;
     if(!layouted()) return;
-    
+
     if ( tCaption )
     {
 	tCaption->print( p, _x, _y, _w, _h, _tx, _ty );
@@ -1506,7 +1506,7 @@ void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
         cell->print( p, _x, _y, _w, _h, _tx, _ty);
     }
     END_FOR_EACH
-    
+
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 
 
@@ -1689,7 +1689,7 @@ void HTMLTableElementImpl::updateSize()
     	calcColWidthII();
     setLayouted(false);
     if(_parent) _parent->updateSize();*/
-    
+
     HTMLPositionedElementImpl::updateSize();
 }
 
@@ -2105,19 +2105,6 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
     int padding = table->cellPadding();
     int pad = padding/2;
 
-    QPixmap *pix = background;
-    if(!pix || pix->isNull())
-	pix = static_cast<HTMLTableRowElementImpl *>(parentNode())->bgPixmap();
-    if(!pix || pix->isNull())
-	pix = table->bgPixmap();
-
-    if(pix && !pix->isNull())
-    {
-	p->drawTiledPixmap( _tx - pad , _ty - pad, width + padding, rowHeight, 
-			   *pix);
-	return;
-    }
-
     QColor back = bg;
     if(!back.isValid())
 	back = static_cast<HTMLTableRowElementImpl *>(parentNode())->bgColor();
@@ -2132,9 +2119,22 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
     }
 
 
+    QPixmap *pix = background;
+    if(!pix || pix->isNull())
+	pix = static_cast<HTMLTableRowElementImpl *>(parentNode())->bgPixmap();
+    if(!pix || pix->isNull())
+	pix = table->bgPixmap();
+
+    if(pix && !pix->isNull())
+    {
+	p->drawTiledPixmap( _tx - pad , _ty - pad, width + padding, rowHeight,
+			   *pix);
+	return;
+    }
+
 }
 
-void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline) 
+void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 {
     // reposition everything within the cell according to valign.
     // called after the cell has been layouted and rowheight is known.
@@ -2150,14 +2150,14 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 //    printf("hh=%d, d=%d\n",hh,descent+ascent);
 
     NodeImpl *current = firstChild();
-    
+
     if (!current || valign==Top)
     {
     	setLayouted();
     	return;
     }
     int vdelta=0;
-    
+
     VAlign va = vAlign();
     switch (va)
     {
@@ -2170,17 +2170,17 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 	break;
     case Bottom:
     	vdelta=(hh-descent)-(current->getYPos()-current->getAscent());
-	break;            
+	break;
     }
-    
+
     if (!vdelta)
     {
     	setLayouted();
-	return;    
+	return;
     }
-    
+
     QStack<NodeImpl> nodeStack;
-  
+
     while(1)
     {
 	if(!current)
@@ -2201,7 +2201,7 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 	}
 	else
 	    current->setYPos(current->getYPos()+vdelta);
-	    
+	
 	if (current->id()==ID_TABLE)
 	{
 	    current = current->nextSibling();
@@ -2210,7 +2210,7 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 	
 	NodeImpl *child = current->firstChild();	
 	if(child)
-	{	    
+	{	
 	    nodeStack.push(current);
 	    current = child;
 	}
@@ -2219,7 +2219,7 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 	    current = current->nextSibling();
 	}
     }
-    
+
     setLayouted();
 
 }
@@ -2239,7 +2239,7 @@ VAlign HTMLTableCellElementImpl::vAlign()
     	va = rowimpl->vAlign();
     if (table && va==VNone)
     	va = table->vAlign();
-    return va;    
+    return va;
 }
 
 // -------------------------------------------------------------------------
@@ -2288,7 +2288,7 @@ void HTMLTableColElementImpl::parseAttribute(Attribute *attr)
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
-    
+
 }
 
 // -------------------------------------------------------------------------
