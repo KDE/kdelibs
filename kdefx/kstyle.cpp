@@ -673,14 +673,14 @@ void KStyle::drawControl( ControlElement element,
 			QRect cr = subRect(SR_ProgressBarContents, widget);
 			double progress = pb->progress();
 			bool reverse = QApplication::reverseLayout();
+			int steps = pb->totalSteps();
 
 			if (!cr.isValid())
 				return;
 
 			// Draw progress bar
-			if (progress > 0) {
-				int steps = pb->totalSteps();
-				double pg = progress / steps;
+			if (progress > 0 || steps == 0) {
+				double pg = (steps == 0) ? 1.0 : progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
 	
 				// Do fancy gradient for highcolor displays
@@ -712,6 +712,7 @@ void KStyle::drawControl( ControlElement element,
 			QRect cr = subRect(SR_ProgressBarContents, widget);
 			double progress = pb->progress();
 			bool reverse = QApplication::reverseLayout();
+			int steps = pb->totalSteps();
 
 			if (!cr.isValid())
 				return;
@@ -721,9 +722,8 @@ void KStyle::drawControl( ControlElement element,
 			p->setFont(font);
 
 			// Draw label
-			if (progress > 0) {
-				int steps = pb->totalSteps();
-				double pg = progress / steps;
+			if (progress > 0 || steps == 0) {
+				double pg = (steps == 0) ? 1.0 : progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
 				QRect crect;
 				if (reverse)
