@@ -379,7 +379,6 @@ void TCPSlaveBase::closeDescriptor()
     }
     d->ip = "";
     d->host = "";
-    d->realHost = "";
 }
 
 bool TCPSlaveBase::initializeSSL()
@@ -1143,12 +1142,6 @@ void TCPSlaveBase::setEnableSSLTunnel( bool enable )
 
 void TCPSlaveBase::setRealHost( const QString& realHost )
 {
-    // Check if we just transitioned from a SSL over
-    // proxy to regular SSL connection! If so tell that
-    // to the SSL module!
-    if ( !d->realHost.isEmpty() && realHost.isEmpty() )
-      d->kssl->setPeerHost(realHost);
-
     d->realHost = realHost;
 }
 
