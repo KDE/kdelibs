@@ -68,8 +68,6 @@ TCPServer::~TCPServer()
 	}
 }
 
-string xserverurl;
-
 static int TCPServerPort = 0;
 
 void TCPServer::setPort(int port)
