@@ -310,8 +310,8 @@ static QRect enclosingPositionedRect (RenderObject *n)
         enclosingParent->absolutePosition(ox, oy);
         rect.setX(ox);
         rect.setY(oy);
-        rect.setWidth (enclosingParent->width());
-        rect.setHeight (enclosingParent->height());
+        rect.setWidth (enclosingParent->effectiveWidth());
+        rect.setHeight (enclosingParent->effectiveHeight());
     }
     return rect;
 }
