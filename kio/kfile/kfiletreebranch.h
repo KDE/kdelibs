@@ -32,7 +32,6 @@
 #include <kfiletreeviewitem.h>
 
 class KURL;
-class KURL::List;
 class KFileTreeView;
 
 
