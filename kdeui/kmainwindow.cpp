@@ -153,7 +153,7 @@ static bool beeing_first = true;
 KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
-    initKMainWindow(true,name);
+    initKMainWindow(false,name);
 }
 
 KMainWindow::KMainWindow( QWidget* parent, const char *name,WFlags f, bool createToolbarAction)
