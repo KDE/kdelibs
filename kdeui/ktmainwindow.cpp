@@ -51,15 +51,15 @@ public:
     }
     bool saveState( QSessionManager& )
     {
+	KConfig* config = KApplication::kApplication()->sessionConfig();
 	if ( KTMainWindow::memberList->first() ){
 	    // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
 	    // hook is usefull for better document orientation
-	    KTMainWindow::memberList->first()->saveGlobalProperties(kapp->sessionConfig());
+	    KTMainWindow::memberList->first()->saveGlobalProperties(config);
 	}
 
 	QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
 	int n = 0;
-	KConfig* config = KApplication::kApplication()->sessionConfig();
 	config->setGroup(QString::fromLatin1("Number"));
 	config->writeEntry(QString::fromLatin1("NumberOfWindows"), KTMainWindow::memberList->count());
 	for (it.toFirst(); it.current(); ++it){
@@ -397,6 +397,11 @@ void KTMainWindow::updateRects()
 	layoutMgr->addStatusBar(kstatusbar);
 
     layoutMgr->activate();
+
+    /* show the toolbars */
+    for (toolbars.first(); toolbars.current(); toolbars.next())
+	if (toolbars.current()->isVisibleTo(this))
+	    toolbars.current()->show();
 }
 
 void KTMainWindow::saveGlobalProperties(KConfig*)

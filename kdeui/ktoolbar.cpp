@@ -1391,6 +1391,17 @@ void KToolBar::closeEvent (QCloseEvent *e)
   e->accept();
 }
 
+void KToolBar::show()
+{
+   if (parentWidget() && !parentWidget()->isUpdatesEnabled())
+   {
+      clearWState( WState_ForceHide);
+   }
+   else
+   {
+      QFrame::show();
+   }
+}
 
 void KToolBar::ButtonClicked( int id )
 {

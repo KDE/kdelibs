@@ -881,6 +881,8 @@ public:
    */
   void setXML(const QString& xmlfile, const QDomDocument& xml);
 
+  void show();
+
 signals:
     /**
      * Emitted when button @p id is clicked.
