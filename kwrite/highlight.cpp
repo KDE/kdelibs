@@ -1951,8 +1951,9 @@ int HlManager::mimeFind(const QString &contents, const QString &fname) {
   KMimeMagicResult *result;
 
   // detect the mime type
-  data.assign(contents.ascii(), contents.length());
+  data.setRawData(contents.latin1(), contents.length());
   result = KMimeMagic::self()->findBufferFileType(data, fname);
+  data.resetRawData(contents.latin1(), contents.length());
 
   Highlight *highlight;
   int p1, p2;

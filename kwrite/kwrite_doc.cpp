@@ -594,6 +594,10 @@ void KWriteDoc::findHighlight(const QString &filename) {
 }
 
 void KWriteDoc::setHighlight(int n) {
+debug("highlight: %i", n);
+  if (n < 0)
+    return;
+
   Highlight *h;
 
 //  hlNumber = n;
@@ -2167,7 +2171,7 @@ void KWriteDoc::setFileName(const QString &s) {
   if (pos >= (int) m_fName.length())
     return; //no filename
 
-  findHighlight(m_fName.right(pos));
+  findHighlight(m_fName.right(m_fName.length() - pos));
 
   updateViews();
 }
