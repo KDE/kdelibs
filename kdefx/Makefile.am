@@ -30,11 +30,11 @@ libkdefx_la_NMCHECKWEAK = $(srcdir)/libkdefx_weak.nmcheck $(top_srcdir)/kdecore/
 	$(top_srcdir)/kdecore/standard_weak.nmcheck
 
 include_HEADERS = kpixmap.h kpixmapsplitter.h \
-	kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h kshadowsettings.h kshadowengine.h
+	kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h
 
 libkdefx_la_SOURCES = kpixmap.cpp kpixmapsplitter.cpp \
 		kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp kstyle.cpp \
-		kcpuinfo.cpp kshadowsettings.cpp kshadowengine.cpp
+		kcpuinfo.cpp
 
 METASOURCES = AUTO
 
