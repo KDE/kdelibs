@@ -2113,6 +2113,7 @@ void HTMLTextAreaElementImpl::attach()
     assert(parentNode());
 
     addCSSProperty(CSS_PROP_COLOR, "text");
+    addCSSProperty( CSS_PROP_FONT_FAMILY, "monospace" );
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
