@@ -5,9 +5,14 @@ int main( int argc, char **argv )
 {
     KApplication app( argc, argv, "kicondialogtest" );
 
-    KIconDialog::getIcon(); 
+//    KIconDialog::getIcon(); 
 
-    return 0;
+    KIconButton button;
+    app.setMainWidget( &button );
+    button.show();
+ 
+
+    return app.exec();
 }
 
 /* vim: et sw=4
