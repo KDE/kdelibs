@@ -321,6 +321,13 @@ public:
     bool use12Clock() const;
 
     /**
+     * Use this to determine if the user wants the week to start on monday.
+     *
+     * @return true if the week starts on monday
+     */
+    bool weekStartsMonday() const { return true; }
+
+    /**
      * Return a string containing the name of the month name.
      *
      * @param i the month number of the year starting at 1/January.
