@@ -769,7 +769,7 @@ private:
  *  Action for selecting one of several items.
  *
  *  This action shows up a submenu with a list of items.
- *  One of them can be checked. If The user clicks on an item
+ *  One of them can be checked. If the user clicks on an item
  *  this item will automatically be checked,
  *  the formerly checked item becomes unchecked.
  *  There can be only one item checked at a time.
@@ -878,8 +878,16 @@ public:
      */
     virtual int plug( QWidget* widget, int index = -1 );
 
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * @return true if the combo editable.
+     */
     virtual bool isEditable() const;
 
+    /**
+     * @return the items that can be selected with this action.
+     * Use setItems to set them.
+     */
     virtual QStringList items() const;
 
     virtual void changeItem( int index, const QString& text );
@@ -888,6 +896,10 @@ public:
 
     virtual int currentItem() const;
 
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * This returns the maximum width set by setComboWidth
+     */
     virtual int comboWidth() const;
 
     QPopupMenu* popupMenu();
@@ -900,12 +912,28 @@ public slots:
      */
     virtual void setCurrentItem( int index );
 
+    /**
+     * Sets the items to be displayed in this action
+     * You need to call this.
+     */
     virtual void setItems( const QStringList &lst );
 
+    /**
+     * Clears up all the items in this action
+     */
     virtual void clear();
 
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * This makes the combo editable or read-only.
+     */
     virtual void setEditable( bool );
 
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * This gives a _maximum_ size to the combobox.
+     * The minimum size is automatically given by the contents (the items).
+     */
     virtual void setComboWidth( int width );
 
 protected:

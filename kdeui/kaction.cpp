@@ -1106,7 +1106,7 @@ public:
     m_edit = false;
     m_menu = 0;
     m_current = -1;
-    m_comboWidth = 70;
+    m_comboWidth = -1;
   }
   bool m_edit;
   QPopupMenu *m_menu;
@@ -1341,8 +1341,8 @@ void KSelectAction::setComboWidth( int id, int width )
   if ( w->inherits( "KToolBar" ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
-      QComboBox *b = static_cast<QComboBox*>( r );
-      b->resize( width, b->height() );
+      QComboBox *cb = static_cast<QComboBox*>( r );
+      cb->setMaximumWidth( width );
     }
   }
 }
@@ -1353,12 +1353,16 @@ void KSelectAction::setItems( int id, const QStringList& lst )
   if ( w->inherits( "KToolBar" ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
-      QComboBox *b = static_cast<QComboBox*>( r );
-      b->clear();
+      QComboBox *cb = static_cast<QComboBox*>( r );
+      cb->clear();
       QStringList::ConstIterator it = lst.begin();
       for( ; it != lst.end(); ++it )
-        b->insertItem( *it );
-      }
+        cb->insertItem( *it );
+      // Ok, this currently doesn't work due to a bug in QComboBox
+      // (the sizehint is cached for ever and never recalculated)
+      // Bug reported (against Qt 2.3.1).
+      cb->setMinimumWidth( cb->sizeHint().width() );
+    }
    }
 }
 
@@ -1402,12 +1406,14 @@ int KSelectAction::plug( QWidget *widget, int index )
     bar->insertCombo( items(), id_, isEditable(),
                       SIGNAL( activated( const QString & ) ), this,
                       SLOT( slotActivated( const QString & ) ), isEnabled(),
-                      QString::null, d->m_comboWidth, index );
+                      QString::null, -1, index );
 
     QComboBox *cb = bar->getCombo( id_ );
     if ( cb )
     {
       cb->setMinimumWidth( cb->sizeHint().width() );
+      if ( d->m_comboWidth > 0 )
+        cb->setMaximumWidth( d->m_comboWidth );
       cb->setInsertionPolicy( QComboBox::NoInsertion );
     }
 
