@@ -27,6 +27,7 @@ protected slots:
   void slotObjectDestroyed();
   
 private:
+  KPart * findPartFromWidget( QWidget * widget );
   KPart *m_activePart;
   QList<KPart> m_parts;
 };

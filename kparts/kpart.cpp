@@ -1,4 +1,5 @@
 #include "kpart.h"
+#include "kplugin.h"
 
 #include <qfile.h>
 #include <qpoint.h>
@@ -11,8 +12,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-KPart::KPart( QWidget* parent, const char* name )
-    : QWidget( parent, name ), m_collection( this )
+KPart::KPart( const char* name )
+    : QObject( 0L, name ), m_collection( this )
 {
 }
 
@@ -88,8 +89,8 @@ KPlugin* KPart::plugin( const char* libname )
 
 //////////////////////////////////////////////////
 
-KReadOnlyPart::KReadOnlyPart( QWidget *parent, const char *name )
- : KPart( parent, name ), m_bTemp( false )
+KReadOnlyPart::KReadOnlyPart( const char *name )
+ : KPart( name ), m_bTemp( false )
 {
 }
 
@@ -152,8 +153,8 @@ void KReadOnlyPart::slotJobError( int, int, const char * text )
 
 //////////////////////////////////////////////////
 
-KReadWritePart::KReadWritePart( QWidget *parent, const char *name )
- : KReadOnlyPart( parent, name )
+KReadWritePart::KReadWritePart( const char *name )
+ : KReadOnlyPart( name )
 {
 }
 

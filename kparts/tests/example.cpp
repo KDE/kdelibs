@@ -44,8 +44,8 @@ Shell::Shell()
 
   m_splitter->show();
   
-  m_part1->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
-  m_part2->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
+  m_part1->widget()->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
+  m_part2->widget()->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
 
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );
@@ -83,12 +83,12 @@ void Shell::resizeEvent( QResizeEvent * )
 }
 
 Part1::Part1()
- : KReadOnlyPart( 0, "Part1" )
+ : KReadOnlyPart( "Part1" )
 {
   //  m_box = new QVBox;
-  QBoxLayout *box = new QBoxLayout( this, QBoxLayout::TopToBottom );
-  m_edit = new QMultiLineEdit( this );
-  box->addWidget( m_edit );
+  //QBoxLayout *box = new QBoxLayout( this, QBoxLayout::TopToBottom );
+  m_edit = new QMultiLineEdit( 0L );
+  //box->addWidget( m_edit );
 
   (void)new KAction( i18n( "Blah" ), 0, actionCollection(), "p1_blah" );
 }
@@ -96,12 +96,12 @@ Part1::Part1()
 Part1::~Part1()
 {
 }
-/*
+
 QWidget *Part1::widget()
 {
-  return m_box;
+  return m_edit;
 }
-*/
+
 bool Part1::openFile()
 {
   debug("Part1: opening %s", m_file.ascii());
@@ -120,6 +120,17 @@ bool Part1::openFile()
 
   // HA! That's exactly what I meant in the two kde-core-devel discussions ;-)
   // We need support for caption stuff in KInstance, in order to make libkparts support it.
+
+  // I really don't see the relation with KInstance... I think of it
+  // differently :
+  // our architecture must give the parts a way to change the caption of the
+  // 'shell'. What about a signal emitted from KPart and that the developer has
+  // to connect to its KTMainWindow class ?
+
+  // KInstance would mean that the caption is fixed for a given
+  // instance/part/... That may not be what we want (think of kedit wanting to
+  // print the currently opened file name in the caption, this can change over
+  // time. Or even some progress information :) )
   return true;
 }
 
@@ -130,21 +141,21 @@ QString Part1::configFile() const
 }
 
 Part2::Part2()
- : KPart( 0, "Part2" )
+ : KPart( "Part2" )
 {
-  //  m_widget = new QWidget;
+  m_widget = new QWidget;
 
 }
 
 Part2::~Part2()
 {
 }
-/*
+
 QWidget *Part2::widget()
 {
   return m_widget;
 }
-*/
+
 QString Part2::configFile() const
 {
   return QString::null;

@@ -1,22 +1,22 @@
 #ifndef _KPART_H
 #define _KPART_H
 
-#include <qaction.h>
-#include <qwidget.h>
-#include <qlist.h>
 #include <qstring.h>
 #include <qdom.h>
 #include <kurl.h>
 
-#include "kplugin.h"
 #include "kxmlgui.h"
 
-class KPart : public QWidget
+class KPlugin;
+class QWidget;
+class QAction;
+class QActionCollection;
+
+class KPart : public QObject
 {
-    Q_OBJECT
 public:
-    KPart( QWidget *parent = 0, const char* name = 0 );
-    ~KPart();
+    KPart( const char* name = 0 );
+    virtual ~KPart();
 
     QString config();
 
@@ -26,12 +26,12 @@ public:
     virtual KPlugin* plugin( const char* libname );
 
     /**
-     * Note that you have to recreate the returned widget in order to insert it into your widget hierarchy.
-     * Also note that the KPart is still the holder of the QWidget, meaning that if you delete the KPart,
-     * then the widget gets destroyed aswell.
+     * Note that you have to recreate the returned widget in order to insert it 
+	 * into your widget hierarchy. Also note that the KPart is still the holder 
+	 * of the QWidget, meaning that if you delete the KPart,
+     * then the widget gets destroyed as well, and vice-versa.
      */
-    // TODO: need to fix KPartManager to obey widget()
-    //    virtual QWidget *widget() = 0;
+    virtual QWidget *widget() = 0;
 
 protected:
     virtual QString configFile() const = 0;
@@ -46,7 +46,7 @@ class KReadOnlyPart : public KPart
 {
   Q_OBJECT
 public:
-  KReadOnlyPart( QWidget *parent = 0, const char *name = 0 );
+  KReadOnlyPart( const char *name = 0 );
   virtual ~KReadOnlyPart();
 
   virtual void init();
@@ -82,7 +82,7 @@ class KReadWritePart : public KReadOnlyPart
 {
   Q_OBJECT
 public:
-  KReadWritePart( QWidget *parent = 0, const char *name = 0 );
+  KReadWritePart( const char *name = 0 );
   virtual ~KReadWritePart();
 
   virtual bool isModified() const = 0;

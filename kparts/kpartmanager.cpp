@@ -31,7 +31,7 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
       if ( o->inherits("KPart") )
       {
         KPart *part = (KPart *)o;
-	if ( m_parts.findRef( part ) == -1 )
+	if ( m_parts.findRef( part ) == -1 ) // TODO : port to findWidget
 	  return FALSE;
 		    
         KPart *oldActivePart = m_activePart;
@@ -59,13 +59,14 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
        w->testWFlags( WType_Popup ) )
     return false;
 
+  KPart * part;
   while ( w )
   {
-    if ( w->inherits( "KPart" ) && m_parts.findRef( (KPart *)w ) != -1 &&
-         (KPart *)w != m_activePart )
+    part = findPartFromWidget( w );
+    if ( part && part != m_activePart )
     {
       KPart *oldActivePart = m_activePart;
-      m_activePart = (KPart *)w;
+      m_activePart = part;
       emit activePartChanged( m_activePart, oldActivePart );
     }
 
@@ -78,6 +79,17 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
   }
 
   return false;
+}
+
+KPart * KPartManager::findPartFromWidget( QWidget * widget )
+{
+  QListIterator<KPart> it ( m_parts );
+  for ( ; it.current() ; ++it )
+  {
+    if ( it.current()->widget() == widget )
+      return it.current();
+  }
+  return 0L;
 }
 
 void KPartManager::addPart( KPart *part )
