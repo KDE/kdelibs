@@ -249,15 +249,19 @@ Completion StringProtoFunc::execute(const List &args)
   case Split:
     result = Object::create(ArrayClass);
     u = s.value();
-    u2 = a0.toString().value();
     i = p0 = 0;
-    /* TODO: regexps with backtracking, special cases */
-    while ((pos = u.find(u2, p0)) >= 0) {
-      result.put(UString::from(i), String(u.substr(p0, pos-p0)));
-      p0 = pos + u2.size();
-      i++;
+    d = a1.isA(UndefinedType) ? -1 : a1.toInteger().intValue(); // optionnal max number
+    if(!a0.isA(UndefinedType))
+    {
+        u2 = a0.toString().value();
+        /* TODO: regexps with backtracking, special cases */
+        while (i!=d && (pos = u.find(u2, p0)) >= 0) {
+            result.put(UString::from(i), String(u.substr(p0, pos-p0)));
+            p0 = pos + u2.size();
+            i++;
+        }
     }
-    if (p0 < len)
+    if (i!=d && (p0 < len || i==0 /*don't ever return an empty array*/))
       result.put(UString::from(i++), String(u.substr(p0)));
     result.put("length", i);
     break;
