@@ -23,6 +23,7 @@
 #include "kmwizard.h"
 #include "kmprinter.h"
 #include "kmdriverdbwidget.h"
+#include "kmdriverdb.h"
 
 #include <qlayout.h>
 #include <klocale.h>
@@ -44,7 +45,26 @@ void KMWDriver::initPrinter(KMPrinter *p)
 {
 	m_widget->init();
 	if (p)
+	{
+		QString autoDetect = p->option( "kde-autodetect" );
+		if ( !autoDetect.isEmpty() )
+		{
+			// use auto-detection info instead: split the string
+			// into make/model pair at the first space character
+			int p = autoDetect.find( ' ' );
+			if ( p != -1 )
+			{
+				QString manu = autoDetect.left( p ), model = autoDetect.mid( p+1 );
+				KMDBEntryList *l = KMDriverDB::self()->findPnpEntry( manu, model );
+				if ( l && l->count() > 0 )
+				{
+					m_widget->setDriver( l->getFirst()->manufacturer, l->getFirst()->model );
+					return;
+				}
+			}
+		}
 		m_widget->setDriver(p->manufacturer(),p->model());
+	}
 }
 
 void KMWDriver::updatePrinter(KMPrinter *p)
