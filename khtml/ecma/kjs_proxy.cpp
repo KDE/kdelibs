@@ -127,6 +127,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 #endif
 
   m_script->setInlineCode(inlineCode);
+  Window* window = Window::retrieveWindow( m_part );
   KJS::Value thisNode = n.isNull() ? Window::retrieve( m_part ) : getDOMNode(m_script->globalExec(),n);
 
   UString code( str );
@@ -136,6 +137,8 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 #ifdef KJS_DEBUGGER
     //    KJSDebugWin::instance()->setCode(QString::null);
 #endif
+
+  window->afterScriptExecution();
 
   // let's try to convert the return value
   if (success && !comp.value().isNull())
