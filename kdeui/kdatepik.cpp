@@ -158,6 +158,7 @@ void
 KDatePicker::dateChangedSlot(QDate date)
 {
     kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
+    line->setText(KGlobal::locale()->formatDate(date, true));
     emit(dateChanged(date));
 }
 
