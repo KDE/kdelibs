@@ -10,6 +10,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kgenericfactory.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
@@ -28,10 +29,12 @@ using namespace KABC;
 extern "C"
 {
   ResourceConfigWidget *config_widget( QWidget *parent ) {
+    KGlobal::locale()->insertCatalogue("kabc_dir");
     return new ResourceDirConfig( parent, "ResourceDirConfig" );
   }
 
   Resource *resource( AddressBook *ab, const KConfig *config ) {
+    KGlobal::locale()->insertCatalogue("kabc_dir");
     return new ResourceDir( ab, config );
   }
 }

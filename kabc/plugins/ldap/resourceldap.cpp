@@ -19,6 +19,7 @@
 */
 
 #include <kdebug.h>
+#include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
 
@@ -33,10 +34,12 @@ using namespace KABC;
 extern "C"
 {
   ResourceConfigWidget *config_widget( QWidget *parent ) {
+    KGlobal::locale()->insertCatalogue("kabc_ldap");
     return new ResourceLDAPConfig( parent, "ResourceLDAPConfig" );
   }
 
   Resource *resource( AddressBook *ab, const KConfig *config ) {
+    KGlobal::locale()->insertCatalogue("kabc_ldap");
     return new ResourceLDAP( ab, config );
   }
 }
