@@ -107,6 +107,13 @@ int rc = 0;
     else 
       kdDebug(7029) << "KSSL: PRNG was seeded with " << rc 
                 << " bytes from the EGD." << endl;
+  } else if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
+	  rc = d->kossl->RAND_load_file(m_cfg->getEGDPath().latin1(), -1);
+    if (rc < 0) 
+      kdDebug(7029) << "KSSL: Error seeding PRNG with the entropy file." << endl;
+    else 
+      kdDebug(7029) << "KSSL: PRNG was seeded with " << rc 
+                << " bytes from the entropy file." << endl;
   }
   #endif
   return rc;
@@ -205,6 +212,9 @@ void KSSL::close() {
      d->m_ssl = NULL;
   }
   d->kossl->SSL_CTX_free(d->m_ctx);
+  if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
+	  d->kossl->RAND_write_file(m_cfg->getEGDPath().latin1());
+  }
   m_bInit = false;
 #endif
 }
