@@ -78,9 +78,9 @@ namespace KABC {
     /**
      * Splits a control specification (without the "control:" directive)
      * @param line is the control directive
-     * @oid will contain the OID
-     * @critical will contain the criticality of control
-     * @value is the control value
+     * @param oid will contain the OID
+     * @param critical will contain the criticality of control
+     * @param value is the control value
      */
     static bool splitControl( const QCString &line, QString &oid, bool &critical,
       QByteArray &value );
