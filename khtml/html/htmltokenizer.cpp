@@ -850,8 +850,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             while(ll--) {
                 curchar = *src;
-                if(curchar <= '>' || !ll) {
-                    if(curchar <= ' ' || curchar == '=' || curchar == '>' || !ll) {
+                if(curchar <= '>') {
+                    if(curchar <= ' ' || curchar == '=' || curchar == '>') {
                         unsigned int a;
                         cBuffer[cBufferPos] = '\0';
                         a = khtml::getAttrID(cBuffer, cBufferPos);
@@ -872,6 +872,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
                 cBuffer[cBufferPos++] = (char) curchar | 0x20;
                 ++src;
+            }
+            if ( cBufferPos == CBUFLEN ) {
+                cBuffer[cBufferPos] = '\0';
+                attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
+                dest = buffer;
+                *dest++ = 0;
+                tag = SearchEqual;
             }
             break;
         }
