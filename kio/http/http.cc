@@ -1490,14 +1490,14 @@ void HTTPProtocol::http_closeConnection()
 }
 
 // Returns only the file size, that's all kio_http can guess.
-void HTTPProtocol::stat(const QString& path, const QString& /*query*/)
+void HTTPProtocol::stat(const QString& path, const QString& query)
 {
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "stat: No host specified!");
 
   m_request.method = HTTP_HEAD;
   m_request.path = path;
-  m_request.query = ""; // Do we need to add query to the arguments /
+  m_request.query = query;
   m_request.reload = false; // Use the cache
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
@@ -1675,7 +1675,7 @@ void HTTPProtocol::post( const QString& path, const QString& query)
   finished();
 }
 
-void HTTPProtocol::mimetype( const QString& path, const QString& /*query*/ )
+void HTTPProtocol::mimetype( const QString& path, const QString& query )
 {
   kdDebug(7103) << "http: mimetype(" << path << ")" << endl;
   if (m_request.hostname.isEmpty())
@@ -1684,7 +1684,7 @@ void HTTPProtocol::mimetype( const QString& path, const QString& /*query*/ )
 
   m_request.method = HTTP_HEAD;
   m_request.path = path;
-  m_request.query = QString::null;
+  m_request.query = query;
   m_request.reload = false;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
