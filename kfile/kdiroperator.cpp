@@ -892,6 +892,7 @@ void KDirOperator::setupActions()
     backAction = KStdAction::back( this, SLOT( back() ), this, "back" );
     forwardAction = KStdAction::forward(this, SLOT(forward()), this,"forward");
     homeAction = KStdAction::home( this, SLOT( home() ), this, "home" );
+	homeAction->setToolTip(i18n("Home directory"));
     reloadAction =KStdAction::redisplay(this,SLOT(rereadDir()),this, "reload");
     actionSeparator = new KActionSeparator( this, "separator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
