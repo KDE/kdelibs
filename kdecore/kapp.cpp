@@ -174,12 +174,12 @@ public:
 	}
 	return false;
     }
-    
+
     struct AccelInfo {
 	QString item;
 	QString string;
     };
-    
+
     typedef QValueList<AccelInfo> AccelInfoList;
 
     void findAccel( const QString& item, const QString &txt, QMap<QChar, AccelInfoList > &accels ) {
@@ -205,54 +205,49 @@ public:
     }
 
     
-    QString checkMenuData( int& count, const QString& prefix, QMenuData* m, QMap<QChar, AccelInfoList > accels  ) {
-	QString s;
+    void checkMenuData( const QString& prefix, QMenuData* m, QMap<QChar, AccelInfoList > accels  ) {
 	QMenuItem* mi;
 	int i;
+	QString s;
 	for ( i = 0; i < (int) m->count(); i++ ) {
 	    mi = m->findItem( m->idAt( i ) );
 	    s = mi->text();
 	    if ( s.contains( '\t' ) )
-		s = s.left( s.find( s.find( '\t' ) ) );
+		s = s.left( s.find( '\t' ) );
 	    findAccel( prefix + s, s, accels );
 	}
 	
 	for ( QMap<QChar,AccelInfoList>::Iterator it = accels.begin(); it != accels.end(); ++it  ) {
+	    QChar c = it.key();
 	    AccelInfoList list = it.data();
   	    if ( list.count() <= 1 )
   		continue;
-	    count++;
-	    AccelInfoList::Iterator ait;
-	    ait = list.begin();
-	    s += "<tr><td rowspan=" + QString::number( list.count() ) + "><large><b>" + it.key() + "</b></large></td>";
-	    s += "<td>";
-	    s += (*ait).item;
-	    s += "</td></tr>";
-	    for ( ait++; ait != list.end(); ++ait ) {
-		s += "<tr><td>";
-		s += (*ait).item;
-		s += "</td></tr>";
+	    QMap<QChar, AccelInfoList>::Iterator menuIt = menuAccels.find( c );
+	    if ( menuIt == menuAccels.end() ) {
+		menuAccels.insert( c, list );
+	    } else {
+		AccelInfoList &olist = menuIt.data();
+		for ( AccelInfoList::Iterator ait = list.begin(); ait != list.end(); ++ait )
+		    olist.append( *ait );
 	    }
 	}
 	
 	for ( i = 0; i < (int) m->count(); i++ ) {
 	    mi = m->findItem( m->idAt( i ) );
 	    if ( mi->popup() ) {
-		QString sub = mi->text();
-		if ( sub.contains( '\t' ) )
-		    sub = sub.left( s.find( s.find( '\t' ) ) );
-		s += checkMenuData( count, prefix + mi->text() + "/", mi->popup(), accels );
+		s = mi->text();
+		if ( s.contains( '\t' ) )
+		    s = s.left( s.find( '\t' ) );
+		checkMenuData( prefix + s + "/", mi->popup(), accels );
 	    }
 	}
-	
-	return s;
     }
-    
-    QString checkMenuData( int& count, QMenuData* m ) {
+
+    void checkMenuData( QMenuData* m ) {
 	QMap<QChar, AccelInfoList > accels;
-	return checkMenuData( count, "", m, accels );
+	checkMenuData( "", m, accels );
     }
-    
+
     void checkAccelerators() {
 	QWidget* actWin = qApp->activeWindow();
 	if ( !actWin )
@@ -290,19 +285,19 @@ public:
 	    AccelInfoList list = it.data();
   	    if ( list.count() <= 1 )
   		continue;
+	    
 	    if ( ++num_clashes == 1 ) {
 		s += "<table border>";
 		s += "<tr><th>Accel</th><th>String</th><th>Widget</th></tr>";
 	    }
-	    AccelInfoList::Iterator ait;
-	    ait = list.begin();
+	    AccelInfoList::Iterator ait = list.begin();
 	    s += "<tr><td rowspan=" + QString::number( list.count() ) + "><large><b>" + it.key() + "</b></large></td>";
 	    s += "<td>";
 	    s += (*ait).string;
 	    s += "</td><td>";
 	    s += (*ait).item;
 	    s += "</td></tr>";
-	    
+	
 	    for ( ait++; ait != list.end(); ++ait ) {
 		s += "<tr><td>";
 		s += (*ait).string;
@@ -322,20 +317,53 @@ public:
 	}
 	
 	if ( mbar ) {
+	    QString m;
 	    num_clashes = 0;
-	    QString m = checkMenuData( num_clashes, mbar );
-	    if ( !num_clashes )
-		m == "<h3>No clashes detected</h3>";
-	    else {
-		m.prepend( "<table border><tr><th>Accel</th><th>Menu Item</th>" );
+	    checkMenuData( mbar );
+	    for ( QMap<QChar,AccelInfoList>::Iterator it = menuAccels.begin(); it != menuAccels.end(); ++it  ) {
+		AccelInfoList list = it.data();
+		AccelInfoList::Iterator ait;
+		QStringList unique;
+		for ( ait = list.begin(); ait != list.end(); ++ait ) {
+		    if ( !unique.contains( (*ait).item ) )
+			unique += (*ait).item;
+		}
+		if ( unique.count() <= 1 )
+		    continue;
+
+		if ( ++num_clashes == 1 ) {
+		    m += "<table border>";
+		    m += "<tr><th>Accel</th><th>Menu Item</th></tr>";
+		}
+		ait = list.begin();
+		m += "<tr><td rowspan=" + QString::number( unique.count() ) + "><large><b>" + it.key() + "</b></large></td>";
+		unique.clear();
+		m += "<td>";
+		m += (*ait).item;
+		unique += (*ait).item;
+		m += "</td></tr>";
+	
+		for ( ait++; ait != list.end(); ++ait ) {
+		    if ( unique.contains( (*ait).item ) )
+			continue;
+		    m += "<tr><td>";
+		    m += (*ait).item;
+		    unique += (*ait).item;
+		    m += "</td></tr>";
+		}
+	    }
+	    if ( num_clashes  ) {
 		m += "</table>";
 		if ( num_clashes == 1 )
 		    m.prepend( "<h3>One clash detected</h3>" );
 		else
 		    m.prepend(  QString("<h3>" ) + QString::number( num_clashes ) + " clashes detected</h3>" );
+	    } else {
+		m += "<h3>No clashes detected</h3>";
 	    }
+	    
 	    m.prepend( "<h2>Menubar</h2>" );
-	    m += "<h2>Other control elements</h2>"; 
+	    m += "<h2>Other control elements</h2>";
 	    s.prepend( m );
 	}
 	
@@ -353,10 +381,12 @@ public:
 	view->setFocus();
 	dlg->exec();
     }
-    
+
 private:
     int key;
     bool block;
+    QMap<QChar, AccelInfoList > menuAccels;
+    
 };
 
 /*
