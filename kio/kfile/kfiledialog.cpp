@@ -1795,6 +1795,7 @@ void KFileDialog::slotCancel()
     KConfig *config = KGlobal::config();
     config->setForceGlobal( true );
     writeConfig( config, ConfigGroup );
+    config->setForceGlobal( false );
 }
 
 void KFileDialog::setKeepLocation( bool keep )
