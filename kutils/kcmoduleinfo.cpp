@@ -112,7 +112,7 @@ KCModuleInfo::loadAll()
   setIsHiddenByDefault(desktop.readBoolEntry("X-KDE-IsHiddenByDefault", false));
 
   // get the documentation path
-  setDocPath(desktop.readEntry("DocPath"));
+  setDocPath(desktop.readPathEntry("DocPath"));
 }
 
 QCString 

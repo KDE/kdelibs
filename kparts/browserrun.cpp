@@ -305,7 +305,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
     // the empty key  means no integration
     KConfig cfg("konquerorrc", false, false);
     cfg.setGroup("HTML Settings");
-    QString downloadManger = cfg.readEntry("DownloadManager");
+    QString downloadManger = cfg.readPathEntry("DownloadManager");
     if (!downloadManger.isEmpty())
     {
         // then find the download manager location
@@ -316,7 +316,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
             QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
             QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
             KMessageBox::detailedSorry(0,errMsg,errMsgEx);
-            cfg.writeEntry("DownloadManager",QString::null);
+            cfg.writePathEntry("DownloadManager",QString::null);
             cfg.sync ();
         }
         else

@@ -130,7 +130,7 @@ void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 	p->m_pConfig->setGroup(QString("PROFILE_")+p->m_sCurrentProfile);
 	switch (s) {
 		case ClientProgram: {
-			p->m_pConfig->writeEntry("EmailClient", v);
+			p->m_pConfig->writePathEntry("EmailClient", v);
 			break;
 		}
 		case ClientTerminal: {

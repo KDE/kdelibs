@@ -123,7 +123,7 @@ void importKMailAddressBook( KABC::AddressBook *ab )
   if ( !kmailConfigName.isEmpty() ) {
     KConfig cfg( kmailConfigName );
     cfg.setGroup( "Addressbook" );
-    fileName = cfg.readEntry( "default", fileName );
+    fileName = cfg.readPathEntry( "default", fileName );
   }
   if ( !KStandardDirs::exists( fileName ) ) {
     kdDebug(5700) << "Couldn't find KMail addressbook." << endl;

@@ -145,9 +145,9 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 	switch (present)
 	{
 	case (Sound):
-		return eventsfile.readEntry("soundfile");
+		return eventsfile.readPathEntry("soundfile");
 	case (Logfile):
-		return eventsfile.readEntry("logfile");
+		return eventsfile.readPathEntry("logfile");
 	}
 
 	return QString::null;
@@ -176,9 +176,9 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 	switch (present)
 	{
 	case (Sound):
-		return eventsfile.readEntry("default_sound");
+		return eventsfile.readPathEntry("default_sound");
 	case (Logfile):
-		return eventsfile.readEntry("default_logfile");
+		return eventsfile.readPathEntry("default_logfile");
 	}
 
 	return QString::null;

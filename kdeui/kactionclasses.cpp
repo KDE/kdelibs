@@ -1096,7 +1096,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
     for( unsigned int i = 1 ; i <= d->m_maxItems ; i++ )
     {
         key = QString( "File%1" ).arg( i );
-        value = config->readPathEntry( key, QString::null );
+        value = config->readPathEntry( key );
 
         if (!value.isNull())
             lst.append( value );

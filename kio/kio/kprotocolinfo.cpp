@@ -48,7 +48,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   config.setGroup( "Protocol" );
 
   m_name = config.readEntry( "protocol" );
-  m_exec = config.readEntry( "exec" );
+  m_exec = config.readPathEntry( "exec" );
   m_isSourceProtocol = config.readBoolEntry( "source", true );
   m_isHelperProtocol = config.readBoolEntry( "helper", false );
   m_supportsReading = config.readBoolEntry( "reading", false );
@@ -86,7 +86,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   else
     m_outputType = KProtocolInfo::T_NONE;
     
-  d->docPath = config.readEntry( "DocPath" );
+  d->docPath = config.readPathEntry( "DocPath" );
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :

@@ -84,7 +84,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   KConfig* config = kapp->config();
   config->setGroup( QString::fromLatin1("SFileDialogData:") + name );
   if ( initially.isNull() ){
-    initially = config->readEntry( "InitiallyDir", QDir::currentDirPath() );
+    initially = config->readPathEntry( "InitiallyDir", QDir::currentDirPath() );
   }
 
   QStringList bookmark;
@@ -190,7 +190,7 @@ void SFileDialog::changeDir( const QString& f )
   if ( !f.isEmpty() ){
     KConfig* config = kapp->config();
     config->setGroup( QString("SFileDialogData:") + name() );
-    config->writeEntry( "InitiallyDir", f );
+    config->writePathEntry( "InitiallyDir", f );
   }
 }
 

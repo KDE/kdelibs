@@ -180,7 +180,7 @@ KSpellConfig::readGlobalSettings ()
 
   setNoRootAffix   (kc->readNumEntry ("KSpell_NoRootAffix", 0));
   setRunTogether   (kc->readNumEntry ("KSpell_RunTogether", 0));
-  setDictionary    (kc->readEntry ("KSpell_Dictionary", ""));
+  setDictionary    (kc->readEntry ("KSpell_Dictionary"));
   setDictFromList  (kc->readNumEntry ("KSpell_DictFromList", FALSE));
   setEncoding (kc->readNumEntry ("KSpell_Encoding", KS_E_ASCII));
   setClient (kc->readNumEntry ("KSpell_Client", KS_CLIENT_ISPELL));

@@ -51,7 +51,7 @@ ResourceNet::ResourceNet( const KConfig *config )
   KURL url;
 
   if ( config ) {
-    url = config->readEntry( "NetUrl" );
+    url = config->readPathEntry( "NetUrl" );
     mFormatName = config->readEntry( "NetFormat" );
   } else {
     url = "";
@@ -81,7 +81,7 @@ void ResourceNet::writeConfig( KConfig *config )
 {
   Resource::writeConfig( config );
 
-  config->writeEntry( "NetUrl", mUrl.url() );
+  config->writePathEntry( "NetUrl", mUrl.url() );
   config->writeEntry( "NetFormat", mFormatName );
 }
 

@@ -237,7 +237,7 @@ void KNotify::loadConfig() {
     KConfig *kc = KGlobal::config();
     kc->setGroup("Misc");
     d->useExternal = kc->readBoolEntry( "Use external player", false );
-    d->externalPlayer = kc->readEntry("External player");
+    d->externalPlayer = kc->readPathEntry("External player");
 
     // try to locate a suitable player if none is configured
     if ( d->externalPlayer.isEmpty() ) {
@@ -327,16 +327,16 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get sound file name
         if( present & KNotifyClient::Sound ) {
-            sound = configFile->readEntry( "soundfile" );
+            sound = configFile->readPathEntry( "soundfile" );
             if ( sound.length()==0 )
-                sound = eventsFile->readEntry( "default_sound" );
+                sound = eventsFile->readPathEntry( "default_sound" );
         }
 
         // get log file name
         if( present & KNotifyClient::Logfile ) {
-            file = configFile->readEntry( "logfile" );
+            file = configFile->readPathEntry( "logfile" );
             if ( file.length()==0 )
-                file = eventsFile->readEntry( "default_logfile" );
+                file = eventsFile->readPathEntry( "default_logfile" );
         }
 
         // get default event level
@@ -345,9 +345,9 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get command line
         if (present & KNotifyClient::Execute ) {
-            commandline = configFile->readEntry( "commandline" );
+            commandline = configFile->readPathEntry( "commandline" );
             if ( commandline.length()==0 )
-                commandline = eventsFile->readEntry( "default_commandline" );
+                commandline = eventsFile->readPathEntry( "default_commandline" );
         }
     }
 

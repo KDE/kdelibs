@@ -173,7 +173,7 @@ KService::init( KDesktopFile *config )
   if (pos != -1)
      name = name.left(pos);
 
-  m_strExec = config->readEntry( "Exec" );
+  m_strExec = config->readPathEntry( "Exec" );
   entryMap.remove("Exec");
   m_strName = config->readEntry( "Name" );
   //kdDebug() << "parsing " << entryPath() << " Name=" << m_strName << endl;
@@ -190,7 +190,7 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Terminal");
   m_strTerminalOptions = config->readEntry( "TerminalOptions" ); // should be a property IMHO
   entryMap.remove("TerminalOptions");
-  m_strPath = config->readEntry( "Path" );
+  m_strPath = config->readPathEntry( "Path" );
   entryMap.remove("Path");
   m_strComment = config->readEntry( "Comment" );
   entryMap.remove("Comment");

@@ -180,7 +180,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     QString jvm_path = "java";
 
-    QString jPath = config.readEntry( "JavaPath" );
+    QString jPath = config.readPathEntry( "JavaPath" );
     if ( !jPath.isEmpty() && jPath != "java" )
     {
         // Cut off trailing slash if any
@@ -230,7 +230,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     p->setClasspath( classes );
 
     // Fix all the extra arguments
-    QString extraArgs = config.readEntry( "JavaArgs", "" );
+    QString extraArgs = config.readEntry( "JavaArgs" );
     p->setExtraArgs( extraArgs );
 
     if( config.readBoolEntry( "ShowJavaConsole", false) )

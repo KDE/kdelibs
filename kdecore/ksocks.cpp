@@ -276,7 +276,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
           */
 
    if (_meth == 4) {         // try to load^H^H^H^Hguess at a custom library
-      _socksLib = ll->library(config->readEntry("SOCKS_lib", "").latin1());
+      _socksLib = ll->library(config->readPathEntry("SOCKS_lib").latin1());
       if (_socksLib && _socksLib->symbol("Rconnect")) {  // Dante compatible?
          _st = new KDanteSocksTable;       
          _useSocks = true;

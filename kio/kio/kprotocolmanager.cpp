@@ -191,7 +191,7 @@ KIO::CacheControl KProtocolManager::cacheControl()
 QString KProtocolManager::cacheDir()
 {
   KConfig *cfg = http_config();
-  return cfg->readEntry("CacheDir", KGlobal::dirs()->saveLocation("cache","http"));
+  return cfg->readPathEntry("CacheDir", KGlobal::dirs()->saveLocation("cache","http"));
 }
 
 int KProtocolManager::maxCacheAge()
@@ -496,5 +496,5 @@ QString KProtocolManager::proxyConfigScript()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( "Proxy Config Script" );
+  return cfg->readPathEntry( "Proxy Config Script" );
 }

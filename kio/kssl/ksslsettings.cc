@@ -261,7 +261,7 @@ void KSSLSettings::load() {
   m_cfg->setGroup("EGD");
   d->m_bUseEGD = m_cfg->readBoolEntry("UseEGD", false);
   d->m_bUseEFile = m_cfg->readBoolEntry("UseEFile", false);
-  d->m_EGDPath = m_cfg->readEntry("EGDPath");
+  d->m_EGDPath = m_cfg->readPathEntry("EGDPath");
 
   m_cfg->setGroup("Auth");
   d->m_bSendX509 = ("send" == m_cfg->readEntry("AuthMethod", ""));
@@ -316,7 +316,7 @@ void KSSLSettings::save() {
   m_cfg->setGroup("EGD");
   m_cfg->writeEntry("UseEGD", d->m_bUseEGD);
   m_cfg->writeEntry("UseEFile", d->m_bUseEFile);
-  m_cfg->writeEntry("EGDPath", d->m_EGDPath);
+  m_cfg->writePathEntry("EGDPath", d->m_EGDPath);
 
   // FIXME - ciphers
 #if 0

@@ -160,7 +160,7 @@ QString KDesktopFile::readGenericName() const
 
 QString KDesktopFile::readPath() const
 {
-  return readEntry("Path");
+  return readPathEntry("Path");
 }
 
 QString KDesktopFile::readDevice() const
@@ -186,7 +186,7 @@ QString KDesktopFile::readURL() const
         }
         return QString::null;
     } else {
-	QString url = readEntry("URL");
+	QString url = readPathEntry("URL");
         if ( !url.isEmpty() && url[0] == '/' )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
@@ -237,7 +237,7 @@ bool KDesktopFile::hasDeviceType() const
 bool KDesktopFile::tryExec() const
 {
   // Test for TryExec and "X-KDE-AuthorizeAction" 
-  QString te = readEntry("TryExec");
+  QString te = readPathEntry("TryExec");
 
   if (!te.isEmpty()) {
     if (te[0] == '/') {
