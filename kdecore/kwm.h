@@ -576,11 +576,6 @@ public:
      */
   static void doMaximize(Window w, bool value);
   /**
-   * Set the maximize mode, either normalMaximize, horizontalMaximize
-   * or verticalMaximize
-   */
-  static void setMaximizeMode(Window w, int value);
-  /**
    * Iconify/UnIconify a window according to value
    */
   static void setIconify(Window w, bool value);
