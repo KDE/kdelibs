@@ -671,15 +671,16 @@ Completion WindowFunc::tryExecute(const List &args)
         KParts::ReadOnlyPart *newPart = 0L;
         emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
         if (newPart && newPart->inherits("KHTMLPart")) {
-	    Window *win = Window::retrieveWindow(static_cast<KHTMLPart*>(newPart));
+	  KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
+	  Window *win = Window::retrieveWindow(khtmlpart);
 	    //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
 	    win->opener = part;
 	    win->openedByJS = true;
 	    uargs.serviceType = QString::null;
 	    if (uargs.frameName == "_blank")
               uargs.frameName = QString::null;
-	    emit static_cast<KHTMLPart*>(newPart)->browserExtension()->openURLRequest(url,uargs);
-	    result = win;
+	    emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
+	    result = Window::retrieve(khtmlpart); // global object
         } else
             result = Undefined();
      }

@@ -29,6 +29,7 @@
 #include <rendering/render_style.h>
 #include <kjs/types.h>
 #include <css/cssproperties.h>
+#include <css/cssparser.h>
 #include "kjs_binding.h"
 
 using namespace KJS;
@@ -71,6 +72,26 @@ DOMCSSStyleDeclaration::~DOMCSSStyleDeclaration()
 
 const TypeInfo DOMCSSStyleDeclaration::info = { "CSSStyleDeclaration", HostType, 0, 0, 0 };
 
+
+bool DOMCSSStyleDeclaration::hasProperty(const UString &p,
+					 bool recursive) const
+{
+  if (p == "cssText" ||
+      p == "getPropertyValue" ||
+      p == "getPropertyCSSValue" ||
+      p == "removeProperty" ||
+      p == "getPropertyPriority" ||
+      p == "setProperty" ||
+      p == "length" ||
+      p == "item")
+      return true;
+  
+  DOM::DOMString cssprop = jsNameToProp(p);
+  if (DOM::getPropertyID(cssprop.string().ascii(), cssprop.length()))
+      return true;
+  
+  return (recursive && HostImp::hasProperty(p, true));
+}
 
 KJSO DOMCSSStyleDeclaration::tryGet(const UString &p) const
 {
