@@ -116,8 +116,6 @@ QString toRoman( int number, bool upper )
 
 //----------------------------------------------------------------------------
 
-HTMLFontManager* pFontManager = 0;
-
 // Array of mark parser functions, e.g:
 // <img ...  is processed by KHTMLParser::parseI()
 // </ul>     is processed by KHTMLParser::parseU()
@@ -185,7 +183,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 
     charsetConverter = 0;
     
-    HTMLFont f( settings->fontBaseFace, settings->fontBaseSize );
+    HTMLFont f( settings->fontBaseFace, settings->fontBaseSize, settings->fontSizes );
     f.setCharset(settings->charset);
     f.setTextColor( settings->fontBaseColor );
 
@@ -248,8 +246,8 @@ void KHTMLParser::selectFont( const char *_fontfamily, int _fontsize, int _weigh
     else if ( _fontsize >= MAXFONTSIZES )
 	_fontsize = MAXFONTSIZES - 1;
 
-    HTMLFont f( _fontfamily, _fontsize, _weight, _italic,
-            settings->charset);
+    HTMLFont f( _fontfamily, _fontsize, settings->fontSizes, 
+                _weight, _italic, settings->charset );
     f.setTextColor( *(colorStack.top()) );
     const HTMLFont *fp = pFontManager->getFont( f );
 
@@ -272,8 +270,8 @@ void KHTMLParser::selectFont( int _relative_font_size )
     else if ( fontsize >= MAXFONTSIZES )
 	fontsize = MAXFONTSIZES - 1;
 
-    HTMLFont f( font_stack.top()->family(), fontsize, weight,
-	italic,  font_stack.top()->charset() );
+    HTMLFont f( font_stack.top()->family(), fontsize, settings->fontSizes,
+        weight, italic, font_stack.top()->charset() );
 
     f.setUnderline( underline );
     f.setStrikeOut( strikeOut );
@@ -298,8 +296,8 @@ void KHTMLParser::selectFont()
 	assert(0);
     }
 
-    HTMLFont f( font_stack.top()->family(), fontsize, weight,
-	italic,  font_stack.top()->charset() );
+    HTMLFont f( font_stack.top()->family(), fontsize, settings->fontSizes,
+                weight, italic,  font_stack.top()->charset() );
 
     f.setUnderline( underline );
     f.setStrikeOut( strikeOut );
@@ -316,7 +314,8 @@ void KHTMLParser::popFont()
     font_stack.pop();
     if ( font_stack.isEmpty() )
     {
-	HTMLFont f( settings->fontBaseFace, settings->fontBaseSize );
+	HTMLFont f( settings->fontBaseFace, settings->fontBaseSize, 
+		    settings->fontSizes );
 	f.setCharset(settings->charset);
 	const HTMLFont *fp = pFontManager->getFont( f );
 	font_stack.push( fp );
@@ -490,7 +489,7 @@ bool KHTMLParser::insertVSpace( HTMLClue *_clue, bool _vspace_inserted )
     {
 	HTMLClueFlow *f = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
 	_clue->append( f );
-	HTMLVSpace *t = new HTMLVSpace( HTMLFont::pointSize( settings->fontBaseSize ) );
+	HTMLVSpace *t = new HTMLVSpace( settings->fontSizes[settings->fontBaseSize] );
 	f->append( t );
 	flow = 0;
     }
@@ -1179,7 +1178,7 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
 	{
 		// Start of line, add vertical space based on current font.
 		flow->append( new HTMLVSpace( 
-				HTMLFont::pointSize( currentFont()->size() ),
+				currentFont()->pointSize(),
 				clear ));
 	}
 	else
