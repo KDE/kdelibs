@@ -160,7 +160,20 @@ void HTMLElementImpl::addCSSProperty(int id, int value)
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
 {
     if(!m_styleDecls) createDecl();
-    m_styleDecls->setLengthProperty(id, stripAttributeGarbage( value ), false, true);
+
+    // strip attribute garbage..
+    DOMStringImpl* v = value.implementation();
+    if ( v ) {
+        unsigned int l = v->l;
+        for ( ; l && !v->s[l-1].isDigit(); l-- )
+            ;
+        if ( l != v->l ) {
+            m_styleDecls->setLengthProperty( id, DOMString( v->s, l ), false, true );
+            return;
+        }
+    }
+
+    m_styleDecls->setLengthProperty(id, value, false, true);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
@@ -302,18 +315,6 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
     return false;
 }
 
-DOMString HTMLElementImpl::stripAttributeGarbage( const DOMString &value )
-{
-    unsigned int realLength = value.length();
-    unsigned int l = DOMStringImpl::stripAttributeGarbage( value.unicode(), realLength );
-
-    if ( l == realLength )
-        return value;
-
-    DOMString res( value );
-    return res.split( l );
-}
-
 void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
 {
     //qDebug("alignment is %s", alignment.string().latin1() );
@@ -338,7 +339,7 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
     } else if ( strcasecmp ( alignment, "texttop") == 0 ) {
 	propver = CSS_VAL_TEXT_TOP;
     }
-    
+
     if ( propfloat != -1 )
 	addCSSProperty( CSS_PROP_FLOAT, propfloat );
     if ( propver != -1 )

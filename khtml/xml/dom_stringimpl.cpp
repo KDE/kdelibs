@@ -171,8 +171,6 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
 
 static Length parseLength(QChar *s, unsigned int l)
 {
-    l = DOMStringImpl::stripAttributeGarbage( s, l );
-
     const QChar* last = s+l-1;
 
     if ( *last == QChar('%')) {
@@ -220,9 +218,15 @@ QList<Length> *DOMStringImpl::toLengthList() const
     int pos2;
 
     // web authors are so stupid. This is a workaround
-    // to fix lists like "1,2  3 ,4"
+    // to fix lists like "1,2px 3 ,4"
+    // make sure not to break percentage or relative widths
+    // ### what about "auto" ?
     QChar space(' ');
-    for(unsigned int i=0; i < l; i++) if(str[i].latin1() == ',') str[i] = space;
+    for(unsigned int i=0; i < l; i++) {
+        char cc = str[i].latin1();
+        if ( cc > '9' || ( cc < '0' && cc != '*' && cc != '%' ) )
+            str[i] = space;
+    }
     str = str.simplifyWhiteSpace();
 
     QList<Length> *list = new QList<Length>;
@@ -290,23 +294,6 @@ DOMStringImpl *DOMStringImpl::capitalize()
 	c->s[i] = s[i-1].isLetterOrNumber() ? s[i].lower() : s[i].upper();
 
     return c;
-}
-
-unsigned int DOMStringImpl::stripAttributeGarbage( QChar *s, unsigned int l )
-{
-    QChar *ch = s;
-    QChar *endP = ch + l;
-    for ( ; ch != endP; ++ch )
-    {
-        if ( ( *ch < '0' || *ch > '9' ) &&
-             *ch != '.' &&
-             *ch != '%' &&
-             *ch != ' ' &&
-             *ch != '*' )
-            return ch - s;
-    }
-
-    return l;
 }
 
 

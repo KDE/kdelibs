@@ -62,10 +62,6 @@ public:
 protected:
     // for IMG, OBJECT and APPLET
     void addHTMLAlignment( DOMString alignment );
-    
-private:
-    // strips anything after [0-9.%*]
-    static DOMString stripAttributeGarbage( const DOMString &value );
 };
 
 class HTMLGenericElementImpl : public HTMLElementImpl
