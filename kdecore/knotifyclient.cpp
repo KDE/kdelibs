@@ -23,6 +23,7 @@
 #include <qdatastream.h>
 #include <qptrstack.h>
 
+#include <kapplication.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -32,49 +33,57 @@
 
 static const char daemonName[] = "knotify";
 
-static bool sendNotifyEvent(const QString &message, const QString &text,
+static int sendNotifyEvent(const QString &message, const QString &text,
                             int present, int level, const QString &sound,
                             const QString &file, int winId )
 {
-  if (!kapp) return false;
+  if (!kapp) return 0;
 
   DCOPClient *client=kapp->dcopClient();
   if (!client->isAttached())
   {
     client->attach();
     if (!client->isAttached())
-      return false;
+      return 0;
   }
 
+  int uniqueId = kMax( 1, kapp->random() ); // must not be 0 -- means failure!
+  
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
   QString appname = KNotifyClient::instance()->instanceName();
-  ds << message << appname << text << sound << file << present << level << winId;
+ ds << message << appname << text << sound << file << present << level
+    << winId << uniqueId;
 
   if ( !KNotifyClient::startDaemon() )
-      return false;
+      return 0;
 
-  return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int,int)", data);
+  if ( client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int,int,int)", data) )
+  {
+      return uniqueId;
+  }
+  
+  return 0;
 }
 
-bool KNotifyClient::event( StandardEvent type, const QString& text )
+int KNotifyClient::event( StandardEvent type, const QString& text )
 {
     return event( 0, type, text );
 }
 
-bool KNotifyClient::event(const QString &message, const QString &text)
+int KNotifyClient::event(const QString &message, const QString &text)
 {
     return event(0, message, text);
 }
 
-bool KNotifyClient::userEvent(const QString &text, int present, int level,
+int KNotifyClient::userEvent(const QString &text, int present, int level,
                               const QString &sound, const QString &file)
 {
     return userEvent( 0, text, present, level, sound, file );
 }
 
 
-bool KNotifyClient::event( int winId, StandardEvent type, const QString& text )
+int KNotifyClient::event( int winId, StandardEvent type, const QString& text )
 {
     QString message;
     switch ( type ) {
@@ -100,13 +109,13 @@ bool KNotifyClient::event( int winId, StandardEvent type, const QString& text )
 			    QString::null, QString::null, winId );
 }
 
-bool KNotifyClient::event(int winId, const QString &message, 
+int KNotifyClient::event(int winId, const QString &message,
                           const QString &text)
 {
   return sendNotifyEvent(message, text, Default, Default, QString::null, QString::null, winId);
 }
 
-bool KNotifyClient::userEvent(int winId, const QString &text, int present, 
+int KNotifyClient::userEvent(int winId, const QString &text, int present,
                               int level,
                               const QString &sound, const QString &file)
 {
