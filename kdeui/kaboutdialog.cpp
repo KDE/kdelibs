@@ -24,7 +24,7 @@
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qtextedit.h>
+#include <ktextedit.h>
 #include <qobjectlist.h>
 #include <qpainter.h>
 #include <qrect.h>
@@ -479,7 +479,7 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
   }
   else
   {
-    QTextEdit *textEdit = new QTextEdit( page, "text" );
+    KTextEdit *textEdit = new KTextEdit( page, "text" );
     textEdit->setReadOnly( true );
     textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
     textEdit->setWordWrap( QTextEdit::NoWrap );
@@ -498,7 +498,7 @@ QFrame *KAboutContainerBase::addLicensePage( const QString &title,
 
   QVBoxLayout *vbox = new QVBoxLayout( page, KDialog::spacingHint() );
 
-  QTextEdit *textEdit = new QTextEdit( page, "license" );
+  KTextEdit *textEdit = new KTextEdit( page, "license" );
   textEdit->setFont( KGlobalSettings::fixedFont() );
   textEdit->setReadOnly( true );
   textEdit->setWordWrap( QTextEdit::NoWrap );

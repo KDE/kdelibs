@@ -23,7 +23,7 @@
 #include <kdialogbase.h>
 
 class IppRequest;
-class QTextEdit;
+class KTextEdit;
 
 class IppReportDlg : public KDialogBase
 {
@@ -36,7 +36,7 @@ protected slots:
 	void slotUser1();
 	
 private:
-	QTextEdit	*m_edit;
+	KTextEdit	*m_edit;
 };
 
 #endif
