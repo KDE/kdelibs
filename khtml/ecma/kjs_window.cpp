@@ -1219,6 +1219,9 @@ KJSO Location::get(const UString &p) const
     str = url.host();
     if (url.port())
       str += ":" + QString::number((int)url.port());
+    // Note: this is the IE spec. The NS spec swaps the two, it says
+    // "The hostname property is the concatenation of the host and port properties, separated by a colon."
+    // Bleh.
   } else if (p == "hostname")
     str = url.host();
   else if (p == "href"){
