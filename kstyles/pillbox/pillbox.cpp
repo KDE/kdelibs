@@ -25,18 +25,6 @@ static unsigned char checkoutline_bits[] = {
     0x80, 0x03, 0x40, 0x02, 0x40, 0x01, 0x20, 0x01, 0xa1, 0x00, 0x93, 0x00,
     0x55, 0x00, 0x49, 0x00, 0x22, 0x00, 0x24, 0x00, 0x18, 0x00, 0x10, 0x00};
 
-static unsigned char up_bits[] = {
-    0x00, 0x18, 0x3c, 0x7e, 0xff, 0xff, 0x00, 0x00};
-
-static unsigned char down_bits[] = {
-    0x00, 0x00, 0xff, 0xff, 0x7e, 0x3c, 0x18, 0x00};
-
-static unsigned char left_bits[] = {
-    0x30, 0x38, 0x3c, 0x3e, 0x3e, 0x3c, 0x38, 0x30};
-
-static unsigned char right_bits[] = {
-    0x0c, 0x1c, 0x3c, 0x7c, 0x7c, 0x3c, 0x1c, 0x0c};
-    
 PillBoxStyle::PillBoxStyle()
     :KStyle()
 {
@@ -606,46 +594,41 @@ void PillBoxStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
     }
 }
 
+#define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 void PillBoxStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
-                            bool enabled, const QBrush *fill)
+                            bool enabled, const QBrush *)
 {
-    static QBitmap up(8, 8, up_bits, true);
-    static QBitmap down(8, 8, down_bits, true);
-    static QBitmap left(8, 8, left_bits, true);
-    static QBitmap right(8, 8, right_bits, true);
-
-    if(!up.mask()){
-        up.setMask(up);
-        down.setMask(down);
-        left.setMask(left);
-        right.setMask(right);
-    }
+    static QCOORD u_arrow[]={3,1, 4,1, 2,2, 5,2, 1,3, 6,3, 0,4, 7,4, 0,5, 7,5};
+    static QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
+    static QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
+    static QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
     
     p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
-    if(w < 12 || h < 12){
-        KStyle::drawArrow(p, type, on, x, y, w, h, g, enabled, fill);
-        return;
-    }
     if(w > 8){
         x = x + (w-8)/2;
         y = y + (h-8)/2;
     }
 
+    QPointArray a;
     switch(type){
     case Qt::UpArrow:
-        p->drawPixmap(x, y, up);
+        a.setPoints(QCOORDARRLEN(u_arrow), u_arrow);
         break;
     case Qt::DownArrow:
-        p->drawPixmap(x, y, down);
+        a.setPoints(QCOORDARRLEN(d_arrow), d_arrow);
         break;
     case Qt::LeftArrow:
-        p->drawPixmap(x, y, left);
+        a.setPoints(QCOORDARRLEN(l_arrow), l_arrow);
         break;
     default:
-        p->drawPixmap(x, y, right);
+        a.setPoints(QCOORDARRLEN(r_arrow), r_arrow);
         break;
     }
+
+    a.translate(x, y);
+    p->drawLineSegments(a);
+
 }
 
 void PillBoxStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
