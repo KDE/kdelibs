@@ -67,14 +67,14 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 # with --enable-final since they use X defines that get undefined
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = \
-		qxembed.cpp ksharedpixmap.cpp \
+		qxembed.cpp ksharedpixmap.cpp kpixmapio.cpp \
 		kpopupmenu.cpp kaction.cpp kstdaction.cpp \
 		kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
 		kcolordialog.cpp kselect.cpp kdatepicker.cpp \
 		kdatetbl.cpp kfontdialog.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp \
-		kmenubar.cpp kpixmapio.cpp keditlistbox.cpp \
+		kmenubar.cpp keditlistbox.cpp \
 		kseparator.cpp krestrictedline.cpp  \
 		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp \
