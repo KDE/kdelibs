@@ -38,7 +38,7 @@ public:
 	KCardStatus(long _ctx, QString reader, unsigned long oldState = SCARD_STATE_UNAWARE);
 	~KCardStatus();
 
-	bool update(unsigned long timeout = 1);
+	bool update(unsigned long timeout = 3);
 	bool isPresent();
 	KCardATR getATR();
 

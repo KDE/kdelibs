@@ -37,15 +37,14 @@ class QStringList;
 // later.
 typedef  enum {KCardGSMType, KCardProcessorType} KCardType;
 
+
 class KCardFactory {
 
  public:
 
   static KCardImplementation * getCard ( KCardReader *, KCardType, KCardATR );
-
   static KCardFactory *self();
-
-
+  QStringList & getImplentationList() const ;
  
  private:
 
@@ -60,9 +59,12 @@ class KCardFactory {
  typedef QMap< QString, QMap< QString, QMap< QString,void*> > > _modulesMap;
   
  _modulesMap _modules;
-
-  class KCardFactoryPrivate;
-  KCardFactoryPrivate *d;
+ 
+ static QStringList _implementationList ;
+ 
+ 
+ class KCardFactoryPrivate;
+ KCardFactoryPrivate *d;
 
 };
 

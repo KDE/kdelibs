@@ -74,23 +74,29 @@ KCardStatus::~KCardStatus() {
 bool KCardStatus::update(unsigned long timeout) {
 unsigned long rc;
 
+//kdDebug() << "KCardStatus: Updating  " << _name << endl;
+
 	if (_ctx == -1 || !_c_name) return false;
 	rc = SCardGetStatusChange(_ctx, timeout, &_state, 1);
 
 	_state.dwCurrentState = _state.dwEventState;
 
+	
 #if 0
 	kdDebug(912) << "kardsvc: update() -- " << _state.szReader << " "
-		  << "state changed: " << (_state.dwEventState & SCARD_STATE_CHANGED)
+		  << "state changed: " << (_state.dwEventState )
 		  << " timed out: " << (rc == SCARD_E_TIMEOUT)
-		  << " present: " << (_state.dwEventState & SCARD_STATE_PRESENT)
+		  << " present: " << (_state.dwEventState)
+		     << "ATR:" 
 		  << endl;
 #endif
+
 #if 0
 
 	if (rc == SCARD_E_TIMEOUT)
 		return false;
 #endif
+
 
 	if (!(_state.dwEventState & SCARD_STATE_CHANGED))
 		return false;
@@ -104,7 +110,9 @@ unsigned long rc;
 	if (_state.cbAtr > 0) {
 		_atr.resize(_state.cbAtr);
 		for (unsigned int i = 0; i < _state.cbAtr; i++) {
+
 			_atr[i] = _state.rgbAtr[i];
+		       
 		}
 	}
 	

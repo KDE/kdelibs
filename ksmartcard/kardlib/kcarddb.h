@@ -22,9 +22,10 @@
 #ifndef _KCARDDB_H
 #define _KCARDDB_H
 
+#include <qstring.h>
 
 class KConfig;
-class QString;
+
 
 
 class KCardDB {
@@ -63,7 +64,7 @@ public:
 	 *   prompts the user to select the proper module to
 	 *   handle the card he has inserted.
 	 */
-	static int launchSelector(const QString slot, const QString ATR);
+	static int launchSelector(const QString slot, const QString ATR=QString::null);
 
 	/*
 	 *   Tries to make an educated guess of a handler to

@@ -29,31 +29,42 @@
 #include <qstringlist.h> 
 #include <klibloader.h> 
 #include <kservicetype.h> 
+#include <klocale.h>
  
 #include <kdebug.h> 
  
 KCardFactory::KCardFactory() { 
 
-  //QMap< QString, QMap< QString, QMap< QString,void*> > > _modules;  
 
   loadModules();
   
-//   _modulesMap::Iterator i;
-  
-  
-//   for ( i=_modules.begin();i!=_modules.end();++i){
 
-//     _modules[i.key().latin1()]::Iterator j;
-//     for (  j=_modules[i.key().latin1()].begin();
-// 	   j!=_modules[i.key().latin1()].end();
-// 	   ++j){
-      
-//       kdDebug() << i.key().latin1() << endl;
-      
-//     }
+
+  
+  
+for (_modulesMap::Iterator x=_modules.begin(); x!=_modules.end();++x) {
+
+  
+  for (QMap< QString,QMap< QString,void*> >::Iterator y = x.data().begin();
+       y!=x.data().end();
+       ++y){
+
     
-//   }
-  //  kdDebug() << _type << _subType << _subSubType.join("-") << endl;
+    for(QMap< QString,void*> ::Iterator z=y.data().begin();
+	z!=y.data().end();
+	++z){
+      
+      //      kdDebug()<<"MAIN-> " << "_type " << x.key() << "  _subType:"<< y.key() << "  _subSubType" << z.key() << endl;
+      
+	   
+    }
+    
+    
+  }
+}
+ 
+
+
 
 } 
  
@@ -63,7 +74,7 @@ KCardFactory::~KCardFactory() {
  
  
 KCardFactory *KCardFactory::_self = NULL; 
- 
+QStringList  KCardFactory::_implementationList = QStringList();
  
 KCardFactory *KCardFactory::self() { 
 	if (!_self) 
@@ -96,7 +107,11 @@ KCardImplementation * KCardFactory::getCard (KCardReader * /*selReader*/,
 return NULL; 
 } 
  
- 
+QStringList & KCardFactory::getImplentationList()const{
+
+     return _implementationList;
+
+} 
 void *KCardFactory::loadModule(KService::Ptr svc) { 
 
 
@@ -133,6 +148,9 @@ void *KCardFactory::loadModule(KService::Ptr svc) {
  
  
 int KCardFactory::loadModules() { 
+  
+  _implementationList.clear();
+  
 	KService::List kards = KServiceType::offers("KDESmartcard"); 
 	for (KService::List::ConstIterator it = kards.begin();  
 					    it != kards.end();  
@@ -141,7 +159,8 @@ int KCardFactory::loadModules() {
 		QString _type = service->property("X-KDE-Smartcard-Type").toString(); 
 		QString _subType = service->property("X-KDE-Smartcard-SubType").toString(); 
 		QStringList _subSubType = service->property("X-KDE-Smartcard-SubSubType").toStringList(); 
- 
+
+
 		if (_type == QString::null) 
 			continue; 
  
@@ -155,14 +174,23 @@ int KCardFactory::loadModules() {
 		// a list though. 
  
 		void *f = loadModule(service); 
- 
+		
 		
 		for (QStringList::Iterator j = _subSubType.begin(); 
 					    j != _subSubType.end(); 
 								++j) { 
-			_modules[_type][_subType][*j] = f; 
+		  _modules[_type][_subType][*j] = f;
+		  QString tp= _type +",";
+		  tp+=_subType + ",";
+		  tp+=_subSubType.join("-");
+		  _implementationList.append(tp);
+	
 		} 
-	} 
+
+
+	}
+
+
 	
 	return 0; 
 } 
