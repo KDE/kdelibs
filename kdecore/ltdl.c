@@ -32,6 +32,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #include <config.h>
 #endif
 
+#if defined(hpux) && !(HAVE_SHL_LOAD)
+#warning FIXME: HP/UX needs "HAVE_SHL_LOAD=1", fix libtool ! (deller@gmx.de)
+#undef HAVE_SHL_LOAD
+#define HAVE_SHL_LOAD 1 
+#endif
+
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
