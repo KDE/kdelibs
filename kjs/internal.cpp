@@ -237,21 +237,21 @@ Value Reference2::getValue(ExecState *exec) const
   if (!isValid())
     return base();
 
-  if (!bs || bs->type() == NullType) {
+  if (bs.isNull() || bs.type() == NullType) {
     UString m = I18N_NOOP("Can't find variable: ") + propertyName();
     Object err = Error::create(exec, ReferenceError, m.ascii());
     exec->setException(err);
     return err;
   }
 
-  if (bs->type() != ObjectType) {
+  if (bs.type() != ObjectType) {
     UString m = I18N_NOOP("Base is not an object");
     Object err = Error::create(exec, ReferenceError, m.ascii());
     exec->setException(err);
     return err;
   }
 
-  return static_cast<ObjectImp*>(bs)->get(exec, propertyName());
+  return static_cast<ObjectImp*>(bs.imp())->get(exec, propertyName());
 }
 
 void Reference2::putValue(ExecState *exec, const Value& w)
@@ -260,10 +260,10 @@ void Reference2::putValue(ExecState *exec, const Value& w)
   printInfo(exec, (UString("setting property ")+
 		   propertyName()).cstring().c_str(), w);
 #endif
-  if (bs->type() == NullType)
+  if (bs.type() == NullType)
     exec->interpreter()->globalObject().put(exec, propertyName(), w);
   else
-    static_cast<ObjectImp*>(bs)->put(exec, propertyName(), w);
+    static_cast<ObjectImp*>(bs.imp())->put(exec, propertyName(), w);
 }
 
 // ------------------------------ ReferenceImp ---------------------------------

@@ -196,17 +196,17 @@ namespace KJS {
     /**
      * Constructs an invalid reference
      */
-    Reference2() : bs(0L) { }
+    Reference2() { }
     /**
      * Constructs an invalid reference containing a value instead.
      */
-    Reference2(const Value& v) : bs(v.imp()) { }
+    Reference2(const Value& v) : bs(v) { }
     /**
      * Constructs an reference with the specified base and property.
      */
-    Reference2(const Value& v, const UString& p) : bs(v.imp()), prop(p) { }
+    Reference2(const Value& v, const UString& p) : bs(v), prop(p) { }
 
-    bool isValid() const { return bs && !prop.isNull(); }
+    bool isValid() const { return !bs.isNull() && !prop.isNull(); }
 
 
     // ECMA 8.7.1
@@ -219,7 +219,7 @@ namespace KJS {
     void putValue(ExecState *exec, const Value& w);
 
   private:
-    ValueImp *bs;
+    Value bs;
     UString prop;
   };
 
