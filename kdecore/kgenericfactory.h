@@ -225,7 +225,7 @@ protected:
  *         ...
  *     };
  *
- *     typedef K_TYPELIST_2( MyPlugin MyDialogComponent ) Products;
+ *     typedef K_TYPELIST_2( MyPlugin, MyDialogComponent ) Products;
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; );
  * </pre>
  */
@@ -312,7 +312,7 @@ protected:
  *         ...
  *     };
  *
- *     typedef K_TYPELIST_2( MyPlugin MyDialogComponent ) Products;
+ *     typedef K_TYPELIST_2( MyPlugin, MyDialogComponent ) Products;
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; );
  * </pre>
  */
