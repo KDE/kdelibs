@@ -4,6 +4,7 @@ Header=
 Name=MNG Image
 Name[br]=Skeudenn MNG
 Name[da]=MNG-billede
+Name[fr]=Image MNG
 Name[sv]=MNG-bild
 Read=true
 Write=true
