@@ -598,9 +598,13 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     kdDebug(200) << "KMainWindow::saveMainWindowSettings " << configGroup << endl;
     QString entry;
     QStrList entryList;
+    QString oldGroup;
 
     if (!configGroup.isEmpty())
+    {
+       oldGroup = config->group();
        config->setGroup(configGroup);
+    }
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
@@ -644,6 +648,8 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
         toolbar->saveSettings(config, group);
         n++;
     }
+    if (!configGroup.isEmpty())
+       config->setGroup(oldGroup);
 }
 
 void KMainWindow::setStandardToolBarMenuEnabled( bool enable )
