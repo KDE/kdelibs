@@ -130,8 +130,7 @@ KCrash::defaultCrashHandler (int sig)
   for (int i = 0; i < (int)rlp.rlim_cur; i++)
     close(i);
 
-  bool shuttingDown = QApplication::closingDown() ||
-                      (kapp && kapp->sessionSaving());
+  bool shuttingDown = false;
 
   // don't load drkonqi during shutdown
   if ( !shuttingDown )
