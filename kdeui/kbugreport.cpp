@@ -68,6 +68,9 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->setColStretch( 1, 10 );
   glay->setColStretch( 2, 10 );
 
+  setButtonOKText(i18n("&Send"), 
+                  i18n("Send bugreport."),
+                  i18n("Send this bugreport to the KDE buglist."));
 
   // From
   tmpLabel = new QLabel( i18n("From :"), parent );
@@ -102,7 +105,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
 
   // Severity
-  m_bgSeverity = new QHButtonGroup( i18n("Severity"), parent );
+  m_bgSeverity = new QHButtonGroup( i18n("Se&verity"), parent );
   const char * sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
   const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("Normal"), i18n("Wishlist"), i18n("Translation") };
 
@@ -117,16 +120,17 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   // Subject
   QHBoxLayout * hlay = new QHBoxLayout( lay );
-  tmpLabel = new QLabel( i18n("Subject : "), parent );
+  tmpLabel = new QLabel( i18n("S&ubject : "), parent );
   hlay->addWidget( tmpLabel );
   m_subject = new QLineEdit( parent );
   m_subject->setFocus();
+  tmpLabel->setBuddy(m_subject);
   hlay->addWidget( m_subject );
 
   QString text = i18n(""
     "Enter the text (in English if possible) that you wish to submit for the "
     "bug report.\n"
-    "If you press \"OK\", a mail message will be sent to the maintainer of "
+    "If you press \"Send\", a mail message will be sent to the maintainer of "
     "this program \n"
     "and to the KDE buglist.");
   QLabel * label = new QLabel( parent, "label" );
@@ -138,7 +142,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   QString text = i18n(""
     "Enter the text (in English if possible) that you wish to submit for the "
-    "bug report. If you press \"OK\", a mail message will be sent to the "
+    "bug report. If you press \"Send\", a mail message will be sent to the "
     "maintainer of this program and to the KDE buglist.");
   QLabel * label = new QLabel( parent, "label" );
   label->setTextFormat( RichText );
