@@ -88,15 +88,12 @@ DOMString NodeImpl::nodeValue() const
   return DOMString();
 }
 
-void NodeImpl::setNodeValue( const DOMString &/*_nodeValue*/, int &exceptioncode )
+void NodeImpl::setNodeValue( const DOMString &/*_nodeValue*/, int &/*exceptioncode*/ )
 {
-    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
-    if (isReadOnly()) {
-        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-        return;
-    }
-
-    // be default nodeValue is null, so setting it has no effect
+    // by default nodeValue is null, so setting it has no effect
+    // don't throw NO_MODIFICATION_ALLOWED_ERR from here, DOMTS-Core-Level1's hc_nodevalue03
+    // (createEntityReference().setNodeValue())) says it would be wrong.
+    // This must be done by subclasses instead.
 }
 
 DOMString NodeImpl::nodeName() const
