@@ -629,7 +629,9 @@ public:
      *
      * @return true if the completion object
      */
-    bool isCompletionObjectAutoDeleted() const { return m_bAutoDelCompObj; }
+    bool isCompletionObjectAutoDeleted() const { 
+        return m_delegate ? m_delegate->isCompletionObjectAutoDeleted() : m_bAutoDelCompObj; 
+    }
 
     /**
      * Sets the completion object when this widget's destructor
@@ -641,7 +643,10 @@ public:
      * @param autoDelete if true, delete completion object on destruction.
     */
     void setAutoDeleteCompletionObject( bool autoDelete ) {
-        m_bAutoDelCompObj = autoDelete;
+        if ( m_delegate )
+            m_delegate->setAutoDeleteCompletionObject( autoDelete );
+        else
+            m_bAutoDelCompObj = autoDelete;
     }
 
     /**
@@ -664,21 +669,26 @@ public:
      *
      * @param enable if false, disables the emittion of completion & rotation signals.
      */
-    void setEnableSignals( bool enable ) { m_bEmitSignals = enable; }
+    void setEnableSignals( bool enable ) { 
+        if ( m_delegate )
+            m_delegate->setEnableSignals( enable );
+        else
+            m_bEmitSignals = enable; 
+    }
 
     /**
      * Returns true if the object handles the signals
      *
      * @return true if this signals are handled internally.
      */
-    bool handleSignals() const { return m_bHandleSignals; }
+    bool handleSignals() const { return m_delegate ? m_delegate->handleSignals() : m_bHandleSignals; }
 
     /**
      * Returns true if the object emits the signals
      *
      * @return true if signals are emitted
      */
-    bool emitSignals() const { return m_bEmitSignals; }
+    bool emitSignals() const { return m_delegate ? m_delegate->emitSignals() : m_bEmitSignals; }
 
     /**
      * Sets the type of completion to be used.
@@ -711,7 +721,7 @@ public:
      * @return the completion mode.
      */
     KGlobalSettings::Completion completionMode() const {
-        return m_iCompletionMode;
+        return m_delegate ? m_delegate->completionMode() : m_iCompletionMode;
     }
 
     /**
@@ -760,7 +770,9 @@ public:
      * @return the key-binding used for the feature given by @p item.
      * @see #setKeyBinding
      */
-    int getKeyBinding( KeyBindingType item ) const { return m_keyMap[ item ]; }
+    int getKeyBinding( KeyBindingType item ) const { 
+        return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ]; 
+    }
 
     /**
      * Sets this object to use global values for key-bindings.
@@ -809,19 +821,22 @@ public:
      *	
      * @returns the completion object or NULL if one does not exist.
      */
-    KCompletion* compObj() const { return m_pCompObj; }
+    KCompletion* compObj() const { return m_delegate ? m_delegate->compObj() : (KCompletion*) m_pCompObj; }
 
 protected:
     /**
-     * Returns a key-binding maps
+     * Returns a key-binding map
      *
      * This method is the same as @ref getKeyBinding() except it
      * returns the whole keymap containing the key-bindings.
      *
      * @return the key-binding used for the feature given by @p item.
      */
-    KeyBindingMap getKeyBindings() const { return m_keyMap; }	
+    KeyBindingMap getKeyBindings() const { return m_delegate ? m_delegate->getKeyBindings() : m_keyMap; }
 
+    void setDelegate( KCompletionBase *delegate );
+    KCompletionBase *delegate() const { return m_delegate; }
+    
 private:
     // This method simply sets the autodelete boolean for
     // the completion object, the emit signals and handle
@@ -842,6 +857,8 @@ private:
     QGuardedPtr<KCompletion> m_pCompObj;
     // Keybindings
     KeyBindingMap m_keyMap;
+    // we may act as a proxy to another KCompletionBase object
+    KCompletionBase *m_delegate;
 	
     // BCI
     KCompletionBasePrivate *d;	

@@ -18,15 +18,15 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qobject.h>
-#include <qpopupmenu.h>
+#include <assert.h>
 
-#include <kstdaccel.h>
+#include <qobject.h>
+
 #include <kcompletion.h>
-#include <klocale.h>
 
 KCompletionBase::KCompletionBase()
 {
+    m_delegate = 0L;
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobalSettings::completionMode();
 
@@ -48,8 +48,23 @@ KCompletionBase::~KCompletionBase()
     }
 }
 
+void KCompletionBase::setDelegate( KCompletionBase *delegate )
+{
+    assert( delegate );
+    
+    m_delegate = delegate;
+    m_delegate->m_bAutoDelCompObj = m_bAutoDelCompObj;
+    m_delegate->m_bHandleSignals  = m_bHandleSignals;
+    m_delegate->m_bEmitSignals    = m_bEmitSignals;
+    m_delegate->m_iCompletionMode = m_iCompletionMode;
+    m_delegate->m_keyMap          = m_keyMap;
+}
+
 KCompletion* KCompletionBase::completionObject( bool hsig )
 {
+    if ( m_delegate )
+        return m_delegate->completionObject( hsig );
+    
     if ( !m_pCompObj )
     {
         setCompletionObject( new KCompletion(), hsig );
@@ -60,6 +75,11 @@ KCompletion* KCompletionBase::completionObject( bool hsig )
 
 void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
 {
+    if ( m_delegate ) {
+        m_delegate->setCompletionObject( compObj, hsig );
+        return;
+    }
+    
     if ( m_bAutoDelCompObj && compObj != m_pCompObj )
         delete m_pCompObj;
 
@@ -73,23 +93,32 @@ void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
 // BC: Inline this function and possibly rename it to setHandleEvents??? (DA)
 void KCompletionBase::setHandleSignals( bool handle )
 {
-    m_bHandleSignals = handle;
+    if ( m_delegate )
+        m_delegate->setHandleSignals( handle );
+    else
+        m_bHandleSignals = handle;
 }
 
 void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
 {
+    if ( m_delegate ) {
+        m_delegate->setCompletionMode( mode );
+        return;
+    }
+    
     m_iCompletionMode = mode;
     // Always sync up KCompletion mode with ours as long as we
     // are performing completions.
-    if( m_pCompObj &&
-        m_iCompletionMode != KGlobalSettings::CompletionNone )
-    {
+    if( m_pCompObj && m_iCompletionMode != KGlobalSettings::CompletionNone )
         m_pCompObj->setCompletionMode( m_iCompletionMode );
-    }
 }
 
 bool KCompletionBase::setKeyBinding( KeyBindingType item, int key )
 {
+    if ( m_delegate )
+        return m_delegate->setKeyBinding( item, key );
+        
+    
     if( key >= 0 )
     {
         if( key > 0 )
@@ -105,6 +134,11 @@ bool KCompletionBase::setKeyBinding( KeyBindingType item, int key )
 
 void KCompletionBase::useGlobalKeyBindings()
 {
+    if ( m_delegate ) {
+        m_delegate->useGlobalKeyBindings();
+        return;
+    }
+    
     m_keyMap.clear();
     m_keyMap.insert( TextCompletion, 0 );
     m_keyMap.insert( PrevCompletionMatch, 0 );
@@ -114,6 +148,11 @@ void KCompletionBase::useGlobalKeyBindings()
 
 void KCompletionBase::setup( bool autodel, bool hsig, bool esig )
 {
+    if ( m_delegate ) {
+        m_delegate->setup( autodel, hsig, esig );
+        return;
+    }
+    
     m_bAutoDelCompObj = autodel;
     m_bHandleSignals = hsig;
     m_bEmitSignals = esig;
