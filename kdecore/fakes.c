@@ -244,7 +244,7 @@ int revoke(const char *tty)
 #ifndef HAVE_STRLCPY
 unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
 {
-    size_t len, ret = strlen(s);
+    unsigned long len, ret = strlen(s);
 
     if (ret >= bufsize) {
         if (bufsize) {
@@ -263,9 +263,7 @@ unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
 unsigned long strlcat(char* d, const char* s, unsigned long bufsize)
 {
     char *cp;
-    unsigned int len1;
-    unsigned int len2 = strlen(s);
-    unsigned int ret;
+    unsigned long ret, len1, len2 = strlen(s);
 
     cp = memchr (d, '\0', bufsize);
     if (!cp)
