@@ -109,6 +109,7 @@ class KDialog : public QDialog
      * For @p screen, see @ref centerOnScreen
      * @return true on success (widget doesn't cover area anymore, or never did),
      * false on failure (not enough space found)
+     * @since 3.2
      */
     static bool avoidArea( QWidget *widget, const QRect& area, int screen = -1 );
 
