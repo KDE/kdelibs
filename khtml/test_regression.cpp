@@ -870,7 +870,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
-        outputPixmap().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 100);
+        outputPixmap().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 60);
     } else {
         // compare with output file
         if ( m_known_failures & DomFailure)
@@ -885,7 +885,7 @@ void RegressionTest::testStaticFile(const QString & filename)
         baseline.load( m_baseDir + "/baseline/" + filename + "-dump.png", "PNG");
         QPixmap output = outputPixmap();
         if ( !pixmapsSame( baseline, output ) ) {
-            output.save(m_baseDir + "/output/" + filename + "-dump.png", "PNG", 100);
+            output.save(m_baseDir + "/output/" + filename + "-dump.png", "PNG", 60);
         }
 #endif
     }
