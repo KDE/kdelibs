@@ -541,7 +541,7 @@ void SimpleJob::slotWarning( const QString & errorText )
     if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
     {
         msgBoxDisplayed++;
-        KMessageBox::information( 0L, errorText );
+        KMessageBox::warning( 0L, errorText );
         msgBoxDisplayed--;
     }
     // otherwise just discard it.
