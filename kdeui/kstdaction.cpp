@@ -782,7 +782,7 @@ KToggleAction *KStdAction::showStatusbar(const QObject *recvr, const char *slot,
 KAction *KStdAction::saveOptions(const QObject *recvr, const char *slot,
                                  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Save Options"), 0, recvr, slot,
+    return new KAction(i18n("&Save Settings"), 0, recvr, slot,
                        parent, name ? name : stdName(SaveOptions));
 }
 
@@ -796,7 +796,10 @@ KAction *KStdAction::keyBindings(const QObject *recvr, const char *slot,
 KAction *KStdAction::preferences(const QObject *recvr, const char *slot,
                                  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Preferences..."), "configure",
+    const KAboutData *aboutData = KGlobal::instance()->aboutData();
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
+
+    return new KAction(i18n("&Configure %1...").arg(appName), "configure",
                        0, recvr, slot, parent,
                        name ? name : stdName(Preferences));
 }
