@@ -107,7 +107,7 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
-	-rm -rf debian/alsa-tmp debian/kdelibs4
+	-rm -rf debian/alsa-tmp debian/kdelibs4 debian/build-tmp
 	-install -d debian/kdelibs4
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
