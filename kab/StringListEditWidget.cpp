@@ -10,6 +10,7 @@
 #include "debug.h"
 #include <kapp.h>
 #include <klocale.h>
+#include <kglobal.h>
 
 // the bitmaps
 #include "arrow_up.xbm"
@@ -28,7 +29,7 @@ StringListEditWidget::StringListEditWidget(QWidget* parent, const char* name)
   buttonUp->setPixmap(up);
   buttonDown->setPixmap(down);
   buttonDelete->setPixmap(erase);
-  buttonNew->setPixmap(kapp->getIconLoader()->loadMiniIcon("x.xpm"));
+  buttonNew->setPixmap(KGlobal::iconLoader()->loadMiniIcon("x.xpm"));
   QToolTip::add(buttonNew, i18n("Add a new string"));
   QToolTip::add(buttonUp, i18n("Move this string up"));
   QToolTip::add(buttonDown, i18n("Move this string down"));

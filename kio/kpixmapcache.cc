@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 
 #include "kpixmapcache.h"
+#include <kstddirs.h>
+#include <kglobal.h>
 
 QPixmap* KPixmapCache::pixmapForURL( KURL& _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
@@ -94,9 +96,7 @@ QPixmap* KPixmapCache::wallpaperPixmap( const char *_wallpaper )
   if ( pix )
     return pix;
 
-  QString file = kapp->localkdedir().data();
-  file += "/share/wallpapers/";
-  file += _wallpaper;
+  QString file = locate("wallpaper", _wallpaper);
   
   QPixmap p1;
   p1.load( file );
@@ -106,18 +106,7 @@ QPixmap* KPixmapCache::wallpaperPixmap( const char *_wallpaper )
     return QPixmapCache::find( key );
   }
 
-  file = kapp->kde_wallpaperdir().data();
-  file += "/";
-  file += _wallpaper;
-
-  p1.load( file );
-  if ( !p1.isNull() )
-  {
-    QPixmapCache::insert( key, p1 );
-    return QPixmapCache::find( key );
-  }
-  
-  return 0L;
+  return 0;
 }
 
 QPixmap* KPixmapCache::pixmap( const char *_pixmap, bool _mini )

@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "kio_openwith.h"
+#include <kglobal.h>
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
@@ -122,16 +123,16 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KTreeList *tree, KAppTre
     text_name         = kconfig.readEntry("Name", text_name);
 
     if( !mini_pixmap_name.isEmpty() )
-      pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon(mini_pixmap_name.ascii(), 16, 16);
+      pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon(mini_pixmap_name.ascii(), 16, 16);
     if( pixmap.isNull() && !big_pixmap_name.isEmpty() )
-      pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon(big_pixmap_name.ascii(), 16, 16);
+      pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon(big_pixmap_name.ascii(), 16, 16);
     if( pixmap.isNull() )
-      pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16);	
+      pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16);	
   }
   else
   {
      command_name = text_name;
-     pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16); 
+     pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16); 
   }
 
   it2 = new KAppTreeListItem( text_name.data(), &pixmap, false, false, fi->isDir(), fi->absFilePath(), command_name );	

@@ -5,6 +5,7 @@
 #include <klocale.h>
 #include <kwm.h>
 #include <kiconloader.h>
+#include <kglobal.h>
 
 #include "kio_listprogress_dlg.h"
 

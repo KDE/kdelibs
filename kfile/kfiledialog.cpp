@@ -42,6 +42,7 @@
 #include <klocale.h>
 #include <kio_job.h>
 #include <kconfig.h>
+#include <kglobal.h>
 
 enum Buttons { BACK_BUTTON= 1000, FORWARD_BUTTON, PARENT_BUTTON,
 	       HOME_BUTTON, RELOAD_BUTTON, HOTLIST_BUTTON,
@@ -120,19 +121,19 @@ void KFileBaseDialog::init()
     toolbar= new KToolBar(wrapper, "fileDialogToolbar");
 
     // Build the toolbar
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("back.xpm"),
+    toolbar->insertButton(Icon("back.xpm"),
 			  BACK_BUTTON, false,
 			  i18n("Back"));
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("forward.xpm"),
+    toolbar->insertButton(Icon("forward.xpm"),
 			  FORWARD_BUTTON, false,
 			  i18n("Forward"));
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("up.xpm"),
+    toolbar->insertButton(Icon("up.xpm"),
 			  PARENT_BUTTON, true,
 			  i18n("Up to parent"));
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("home.xpm"),
+    toolbar->insertButton(Icon("home.xpm"),
 			  HOME_BUTTON, true,
 			  i18n("Home"));
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("reload.xpm"),
+    toolbar->insertButton(Icon("reload.xpm"),
 			  RELOAD_BUTTON, true,
 			  i18n("Reload"));
 
@@ -154,17 +155,17 @@ void KFileBaseDialog::init()
 
     bookmarks->read(bmFile);
 
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("flag.xpm"),
+    toolbar->insertButton(Icon("flag.xpm"),
 			  HOTLIST_BUTTON, true,
 			  i18n("Bookmarks"), -1);
 
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("idea.xpm"),
+    toolbar->insertButton(Icon("idea.xpm"),
 			  MKDIR_BUTTON, true,
 			  i18n("Create new folder"));
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("search.xpm"),
+    toolbar->insertButton(Icon("search.xpm"),
 			  FIND_BUTTON, true,
 			  i18n("Search for a file"));
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("configure.xpm"),
+    toolbar->insertButton(Icon("configure.xpm"),
 			  CONFIGURE_BUTTON, true,
 			  i18n("Configure this dialog [development only]"));
 
