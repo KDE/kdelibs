@@ -21,7 +21,34 @@
    work. If you think, that a phrase belongs here, contact me
 */
 
-i18n( "Error" );
+i18n( "Align");
+i18n( "Distribute");
+i18n( "Format");
+i18n( "Page");
+i18n( "Border");
+i18n( "Orientation");
+i18n( "Width");
+i18n( "&Width");
+i18n( "Height");
+i18n( "&Height");
+i18n( "Spacing");
+i18n( "Horizontal");
+i18n( "Vertical");
+i18n( "Right");
+i18n( "Left");
+i18n( "Center");
+i18n( "Top");
+i18n( "Bottom");
+i18n( "&Bottom");
+i18n( "Move");
+i18n( "Select all");
+i18n( "Delete all");
+i18n( "Clear all");
+i18n( "Export");
+i18n( "Import");
+i18n( "Zoom");
+i18n( "&Zoom");
+i18n( "Error");
 i18n( "Malformed URL");
 i18n( "Charset:");
 i18n( "Yes");
@@ -30,6 +57,7 @@ i18n( "Warning");
 i18n( "Save a file");
 i18n( "Contents");
 i18n( "About");
+i18n( "&About");
 i18n( "A&bout...");
 i18n( "Untitled");
 i18n( "OK");
