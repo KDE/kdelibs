@@ -210,7 +210,7 @@ QString whatstr;
   // The fifth is other SSL certificate related
   // The sixth is CA related
   // The seventh is misc. settings related   (unimplemented)
-  // The eigth is peer [email] certificate related (unimplemented)
+  // The eighth is peer [email] certificate related (unimplemented)
   ///////////////////////////////////////////////////////////////////////////
 
   tabs = new QTabWidget(this);
@@ -693,6 +693,9 @@ QString whatstr;
   connect(caEmail, SIGNAL(clicked()), SLOT(slotCAChecked()));
   grid->addMultiCellWidget(caCode, 17, 17, 0, 4);
   connect(caCode, SIGNAL(clicked()), SLOT(slotCAChecked()));
+  caSite->setEnabled(false);
+  caEmail->setEnabled(false);
+  caCode->setEnabled(false);
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
@@ -1698,8 +1701,14 @@ void KCryptoConfig::slotCAItemChanged() {
 CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
     caSSLRemove->setEnabled(true);   
+    caSite->setEnabled(true);
+    caEmail->setEnabled(true);
+    caCode->setEnabled(true);
  } else {
     caSSLRemove->setEnabled(false);
+    caSite->setEnabled(false);
+    caEmail->setEnabled(false);
+    caCode->setEnabled(false);
  }
 }
 
