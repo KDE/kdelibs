@@ -444,7 +444,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
   {
      if (bMenuTest)
      {
-        if (!menu->isDeleted)
+        if (!menu->isDeleted && !it.current()->noDisplay())
           printf("%s\t%s\t%s\n", caption.local8Bit().data(), it.current()->menuId().local8Bit().data(), locate("apps", it.current()->desktopEntryPath()).local8Bit().data());
      }
      else
