@@ -46,9 +46,11 @@ RegExp::RegExp(const UString &p, int f)
   pcregex = pcre_compile(p.ascii(), pcreflags,
 			 &perrormsg, &errorOffset, NULL);
 
+#ifdef PCRE_INFO_CAPTURECOUNT
   // Get number of subpatterns that will be returned
   int rc = pcre_fullinfo( pcregex, NULL, PCRE_INFO_CAPTURECOUNT, &nrSubPatterns);
   if (rc != 0)
+#endif
     nrSubPatterns = 0; // fallback. We always need the first pair of offsets.
 
 #else /* HAVE_PCREPOSIX */
