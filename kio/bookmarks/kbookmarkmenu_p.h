@@ -141,8 +141,6 @@ public:
   QString finalTitle() const;
   QString finalAddress() const;
 
-  void setAddress( const QString & );
-
 protected slots:
   void slotOk();
   void slotCancel();
