@@ -1,4 +1,4 @@
-## Makefile.am of kdebase/kfm
+## Makefile.am of kdebase/kioslave/ftp
 
 INCLUDES=	$(all_includes)
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)
