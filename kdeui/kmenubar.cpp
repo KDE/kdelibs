@@ -108,8 +108,11 @@ bool KMenuBar::isTopLevelMenu() const
 
 void KMenuBar::show()
 {
-    if ( !isVisible() )
-	QMenuBar::show();
+    // work around a Qt bug
+    // why is this still needed? (Simon)
+    if ( isVisible() && d->topLevel )
+	return;
+    return QMenuBar::show();
 }
 
 void KMenuBar::slotReadConfig()
