@@ -981,6 +981,7 @@ void KDockWidget::undock()
 //  		  kdDebug()<<"undocked from dockcontainer"<<endl;
   		  undockedFromContainer=true;
 		  static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"))->undockWidget(this);
+		  formerBrotherDockWidget=static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"))->parentDockWidget();
 		  applyToWidget( 0L );
   }
    if (!undockedFromContainer) {
