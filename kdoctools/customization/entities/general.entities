@@ -171,6 +171,7 @@
 <!ENTITY kbattleship 	"<application>KBattleship</application>">
 <!ENTITY kbiff	"<application>KBiff</application>">
 <!ENTITY kblackbox	"<application>KBlackbox</application>">
+<!ENTITY kbounce	"<application>KBounce</application>">
 <!ENTITY kcalc  "<application>KCalc</application>">
 <!ENTITY kcharselect	"<application>kcharselect</application>">
 <!ENTITY kchart "<application>KChart</application>">
@@ -212,7 +213,6 @@
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
-<!ENTITY kjezzball "<application>KJezzball</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
 <!ENTITY klaptopdaemon	"<application>klaptopdaemon</application>">
@@ -364,7 +364,8 @@
 <!ENTITY kabalone	"<application>Kenolaba</application>">
 <!ENTITY kfm	"<application>KFM</application>">
 <!ENTITY killustrator "<application>Kontour</application>">
-<!ENTITY kjezz  "<application>KJezzball</application>">
+<!ENTITY kjezz  "<application>KBounce</application>">
+<!ENTITY kjezzball "<application>KBounce</application>">
 <!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY kvt	"<application>KVT</application>">
 <!ENTITY kwm	"<application>kwm</application>">
