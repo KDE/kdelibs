@@ -34,6 +34,7 @@
 
 #include <kstyle.h>
 
+#include "pixmaploader.h"
 
 class KeramikStyle : public KStyle
 {
@@ -117,8 +118,14 @@ public:
 					const QStyleOption& = QStyleOption::Default ) const;*/
 
 protected:
+	mutable bool maskMode; //Ugly round trip flag to permit masking wiht little code;
 	bool eventFilter( QObject* object, QEvent* event );
 	void renderGradient( QPainter* p, const QRect& r, QColor clr, bool horizontal, int px=0, int py=0, int pwidth=-1, int pheight=-1, bool reverse = false ) const;
+	
+	Keramik::TilePainter::PaintMode pmode() const
+	{
+		return maskMode?Keramik::TilePainter::PaintMask : Keramik::TilePainter::PaintNormal;
+	}
 	
 private:
 	QRect subRect(SubRect r, const QWidget *widget) const;
