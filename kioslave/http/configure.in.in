@@ -132,7 +132,7 @@ if test "x$with_ntlm" = "xCHECK" ; then
     with_ntlm=FOUND
   fi
   if test $with_ntlm = FOUND ; then
-    $with_ntlm=NOTFOUND
+    with_ntlm=NOTFOUND
     for ext in la so sl a dylib ; do
       AC_FIND_FILE(libntlm.$ext, $kde_libraries /usr/lib /usr/local/lib,
         ntlm_libdir)
