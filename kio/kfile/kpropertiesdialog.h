@@ -31,6 +31,7 @@
 #include <qstring.h>
 #include <qptrlist.h>
 
+#include <kdemacros.h>
 #include <kurl.h>
 #include <kfileitem.h>
 #include <kdialogbase.h>
@@ -712,8 +713,10 @@ private:
  *
  * Such files are used to represent a program in kicker and konqueror.
  * @internal
+ * @deprecated replaced with KDesktopPropsPlugin
  */
-class KExecPropsPlugin : public KPropsDlgPlugin
+ /// Remove in KDE4
+class KDE_DEPRECATED KExecPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
@@ -766,8 +769,10 @@ private:
  *
  * Such files are used to represent a program in kicker and konqueror.
  * @internal
+ * @deprecated replaced with KDesktopPropsPlugin
  */
-class KApplicationPropsPlugin : public KPropsDlgPlugin
+ /// Remove in KDE4
+class KDE_DEPRECATED KApplicationPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
