@@ -1283,7 +1283,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	{
 	  if (cssval) {
             int id = cssval->id;
-            if ((id >= CSS_VAL_CIRCLE && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
+            if ((id >= CSS_VAL_DISC && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
 	      parsedValue = new CSSPrimitiveValueImpl(id);
             }
 	  }
