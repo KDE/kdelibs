@@ -91,7 +91,7 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
         m_undo = undo;
         m_undoPopup = undo->popupMenu();
 
-        KToolBarPopupAction * redo = new KToolBarPopupAction( i18n("Re&do"), "redo",
+        KToolBarPopupAction * redo = new KToolBarPopupAction( i18n("&Redo"), "redo",
                                           KStdAccel::key(KStdAccel::Redo), this, SLOT( redo() ),
                                           actionCollection, KStdAction::stdName( KStdAction::Redo ) );
         connect( redo->popupMenu(), SIGNAL( aboutToShow() ), this, SLOT( slotRedoAboutToShow() ) );
@@ -117,11 +117,11 @@ KCommandHistory::~KCommandHistory() {
 void KCommandHistory::clear() {
     if (m_undo != 0) {
         m_undo->setEnabled(false);
-        m_undo->setText(i18n("Nothing to Undo"));
+        m_undo->setText(i18n("&Undo"));
     }
     if (m_redo != 0) {
         m_redo->setEnabled(false);
-        m_redo->setText(i18n("Nothing to Redo"));
+        m_redo->setText(i18n("&Redo"));
     }
     d->m_present = 0L;
     d->m_savedAt=-42;
@@ -148,11 +148,11 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
         m_first=false;
         if (m_undo != 0) {
             m_undo->setEnabled(true);
-            m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+            m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
         }
         if((m_redo != 0) && m_redo->isEnabled()) {
             m_redo->setEnabled(false);
-            m_redo->setText(i18n("Nothing to Redo"));
+            m_redo->setText(i18n("&Redo"));
         }
         clipCommands();
     }
@@ -163,11 +163,11 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
         d->m_present=command;
         if (m_undo != 0) {
             m_undo->setEnabled(true);
-            m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+            m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
         }
         if (m_redo != 0) {
             m_redo->setEnabled(false);
-            m_redo->setText(i18n("Nothing to Redo"));
+            m_redo->setText(i18n("&Redo"));
         }
         m_first=false;    // Michael B: yes, that *is* correct :-)
     }
@@ -187,14 +187,14 @@ void KCommandHistory::undo() {
     emit commandExecuted();
     if (m_redo != 0) {
         m_redo->setEnabled(true);
-        m_redo->setText(i18n("Re&do: %1").arg(d->m_present->name()));
+        m_redo->setText(i18n("&Redo: %1").arg(d->m_present->name()));
     }
     int index;
     if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.prev()!=0) {
         d->m_present=m_commands.current();
         if (m_undo != 0) {
             m_undo->setEnabled(true);
-            m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+            m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
         }
         --index;
         if(index==d->m_savedAt)
@@ -203,7 +203,7 @@ void KCommandHistory::undo() {
     else {
         if (m_undo != 0) {
             m_undo->setEnabled(false);
-            m_undo->setText(i18n("Nothing to Undo"));
+            m_undo->setText(i18n("&Undo"));
         }
         if(d->m_savedAt==-42)
             emit documentRestored();
@@ -234,19 +234,19 @@ void KCommandHistory::redo() {
 
     if (m_undo != 0) {
         m_undo->setEnabled(true);
-        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+        m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
     }
 
     if(m_commands.next()!=0) {
         if (m_redo != 0) {
             m_redo->setEnabled(true);
-            m_redo->setText(i18n("Re&do: %1").arg(m_commands.current()->name()));
+            m_redo->setText(i18n("&Redo: %1").arg(m_commands.current()->name()));
         }
     }
     else {
         if((m_redo != 0) && m_redo->isEnabled()) {
             m_redo->setEnabled(false);
-            m_redo->setText(i18n("Nothing to Redo"));
+            m_redo->setText(i18n("&Redo"));
         }
     }
 }
