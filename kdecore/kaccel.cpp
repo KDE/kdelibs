@@ -37,7 +37,8 @@
 // For the X11-related static functions
 #define XK_MISCELLANY
 #define XK_XKB_KEYS
-#include <qt_x11.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
 #include <X11/keysymdef.h>
 #include <ctype.h>
 
