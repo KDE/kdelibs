@@ -7,6 +7,7 @@ set -e
 
 case "$1" in
     install|upgrade)
+      rm -f /etc/kderc
     ;;
 
     abort-upgrade)
