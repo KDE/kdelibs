@@ -252,3 +252,13 @@ i18n("QAccel", "Help");
 i18n("QAccel", "NumberSign");
 i18n("Main Toolbar");
 
+//some font styles
+i18n("font style", "Demibold");
+i18n("font style", "Light");
+i18n("font style", "Light Italic");
+i18n("font style", "Demibold Italic");
+i18n("font style", "Demi bold");
+i18n("font style", "Demi bold Italic");
+i18n("font style", "Oblique");
+i18n("font style", "Book");
+i18n("font style", "Book Oblique");
