@@ -1,3 +1,8 @@
+Get rid of SourceElementsNode by integrating its functionality into
+StatementNode.
+
+==========================================================================
+
 The hash value of a string could be calculated at creation time and be
 stored in the UString instance for later use by the lookup functions.
 

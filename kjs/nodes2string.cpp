@@ -569,11 +569,6 @@ void ParameterNode::streamTo(SourceStream &s) const
     s << ", " << next;
 }
 
-void FunctionBodyNode::streamTo(SourceStream &s) const {
-  s << SourceStream::Endl << "{" << SourceStream::Indent
-    << source << SourceStream::Unindent << SourceStream::Endl << "}";
-}
-
 void FuncDeclNode::streamTo(SourceStream &s) const {
   s << "function " << ident << "(";
   if (param)
@@ -586,14 +581,6 @@ void FuncExprNode::streamTo(SourceStream &s) const
   s << "function " << "("
     << param
     << ")" << body;
-}
-
-void SourceElementNode::streamTo(SourceStream &s) const
-{
-  if (statement)
-    s << statement;
-  else
-    s << function;
 }
 
 void SourceElementsNode::streamTo(SourceStream &s) const

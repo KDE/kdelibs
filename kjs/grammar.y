@@ -58,7 +58,6 @@ using namespace KJS;
   FuncDeclNode        *func;
   ProgramNode         *prog;
   AssignExprNode      *init;
-  SourceElementNode   *src;
   SourceElementsNode  *srcs;
   StatListNode        *slist;
   ArgumentsNode       *args;
@@ -131,13 +130,13 @@ using namespace KJS;
 %type <stat>  BreakStatement ReturnStatement WithStatement
 %type <stat>  SwitchStatement LabelledStatement
 %type <stat>  ThrowStatement TryStatement
+%type <stat>  SourceElement
 
 %type <slist> StatementList
 %type <init>  Initializer
 %type <func>  FunctionDeclarationInternal
 %type <func>  FunctionDeclaration
 %type <body>  FunctionBody
-%type <src>   SourceElement
 %type <srcs>  SourceElements
 %type <param> FormalParameterList
 %type <op>    AssignmentOperator
@@ -626,8 +625,8 @@ SourceElements:
 ;
 
 SourceElement:
-    Statement                      { $$ = new SourceElementNode($1); }
-  | FunctionDeclaration            { $$ = new SourceElementNode($1); }
+    Statement                      { $$ = $1; }
+  | FunctionDeclaration            { $$ = $1; }
 ;
 
 %%

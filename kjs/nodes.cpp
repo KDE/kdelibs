@@ -189,6 +189,10 @@ bool StatementNode::abortStatement(ExecState *exec)
     return false;
 }
 
+void StatementNode::processFuncDecl(ExecState *)
+{
+}
+
 // ----------------------------- NullNode -------------------------------------
 
 Value NullNode::evaluate(ExecState *) const
@@ -1812,6 +1816,18 @@ void VarStatementNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- BlockNode ------------------------------------
 
+void BlockNode::reverseList()
+{
+  SourceElementsNode *head = 0;
+  SourceElementsNode *next;
+  for (SourceElementsNode *n = source; n; n = next) {
+    next = n->elements;
+    n->elements = head;
+    head = n;
+  }
+  source = head;
+}
+
 void BlockNode::ref()
 {
   Node::ref();
@@ -2777,50 +2793,16 @@ Value ParameterNode::evaluate(ExecState */*exec*/) const
 
 
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
-  : source(s)
+  : BlockNode(s)
 {
   setLoc(-1, -1, -1);
   //fprintf(stderr,"FunctionBodyNode::FunctionBodyNode %p\n",this);
-}
-
-void FunctionBodyNode::ref()
-{
-  Node::ref();
-  if ( source )
-    source->ref();
-  //fprintf( stderr, "FunctionBodyNode::ref() %p. Refcount now %d\n", (void*)this, refcount);
-}
-
-bool FunctionBodyNode::deref()
-{
-  if ( source && source->deref() )
-    delete source;
-  //fprintf( stderr, "FunctionBodyNode::deref() %p. Refcount now %d\n", (void*)this, refcount-1);
-  return Node::deref();
-}
-
-// ECMA 13 + 14 for ProgramNode
-Completion FunctionBodyNode::execute(ExecState *exec)
-{
-  /* TODO: workaround for empty body which I don't see covered by the spec */
-  if (!source)
-    return Completion(Normal);
-
-  source->processFuncDecl(exec);
-
-  return source->execute(exec);
 }
 
 void FunctionBodyNode::processFuncDecl(ExecState *exec)
 {
   if (source)
     source->processFuncDecl(exec);
-}
-
-void FunctionBodyNode::processVarDecls(ExecState *exec)
-{
-  if (source)
-    source->processVarDecls(exec);
 }
 
 // ----------------------------- FuncDeclNode ---------------------------------
@@ -2917,48 +2899,6 @@ Value FuncExprNode::evaluate(ExecState *exec) const
   return ret;
 }
 
-// ----------------------------- SourceElementNode ----------------------------
-
-void SourceElementNode::ref()
-{
-  Node::ref();
-  if ( statement )
-    statement->ref();
-  if ( function )
-    function->ref();
-}
-
-bool SourceElementNode::deref()
-{
-  if ( statement && statement->deref() )
-    delete statement;
-  if ( function && function->deref() )
-    delete function;
-  return Node::deref();
-}
-
-// ECMA 14
-Completion SourceElementNode::execute(ExecState *exec)
-{
-  if (statement)
-    return statement->execute(exec);
-
-  return Completion(Normal);
-}
-
-// ECMA 14
-void SourceElementNode::processFuncDecl(ExecState *exec)
-{
-  if (function)
-    function->processFuncDecl(exec);
-}
-
-void SourceElementNode::processVarDecls(ExecState *exec)
-{
-  if (statement)
-    statement->processVarDecls(exec);
-}
-
 // ----------------------------- SourceElementsNode ---------------------------
 
 void SourceElementsNode::ref()
@@ -2984,40 +2924,37 @@ Completion SourceElementsNode::execute(ExecState *exec)
 {
   KJS_CHECKEXCEPTION
 
-  if (!elements)
-    return element->execute(exec);
-
-  Completion c1 = elements->execute(exec);
-  KJS_CHECKEXCEPTION
+  Completion c1 = element->execute(exec);
+  KJS_CHECKEXCEPTION;
   if (c1.complType() != Normal)
     return c1;
 
-  Completion c2 = element->execute(exec);
-  KJS_CHECKEXCEPTION
+  for (SourceElementsNode *node = elements; node; node = node->elements) {
+    Completion c2 = node->element->execute(exec);
+    if (c2.complType() != Normal)
+      return c2;
+    // The spec says to return c2 here, but it seems that mozilla returns c1 if
+    // c2 doesn't have a value
+    if (c2.value().isValid())
+      c1 = c2;
+  }
 
-  // The spec says to return c2 here, but it seems that mozilla returns c1 if
-  // c2 doesn't have a value
-  if (c2.complType() == Normal && !c2.value().isValid())
-    return c1;
-  else
-    return c2;
+  return c1;
 }
 
 // ECMA 14
 void SourceElementsNode::processFuncDecl(ExecState *exec)
 {
-  if (elements)
-    elements->processFuncDecl(exec);
-
-  element->processFuncDecl(exec);
+  for (SourceElementsNode *node = this; node; node = node->elements) {
+    node->element->processFuncDecl(exec);
+  }
 }
 
 void SourceElementsNode::processVarDecls(ExecState *exec)
 {
-  if (elements)
-    elements->processVarDecls(exec);
-
-  element->processVarDecls(exec);
+  for (SourceElementsNode *node = this; node; node = node->elements) {
+    node->element->processVarDecls(exec);
+  }
 }
 
 ProgramNode::ProgramNode(SourceElementsNode *s): FunctionBodyNode(s) {
