@@ -1168,7 +1168,19 @@ static const int windowsRightBorder     = 12;       // right border on windowsst
                                (w, p->window().height(), MenuItem),
                                x, y);
         }
-
+        
+        if( checkable && mi->isChecked() )
+	{
+	    // draw 'pressed' border around checkable items
+            // This is extremely important for items that have an iconset
+            // because the checkmark isn't drawn in that case
+            // An alternative would be superimposing the checkmark over
+            // the iconset instead or not drawing the iconset at all.
+            int mw = checkcol + motifItemFrame;
+            drawShade(p, x, y, mw, h, g, true, false,
+                      highlightWidth(MenuItemDown),
+                      borderWidth(MenuItemDown), shade());
+	}
     }
     if ( !mi )
 	return;
