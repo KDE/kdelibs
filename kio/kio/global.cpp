@@ -576,7 +576,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_MALFORMED_URL:
-      errorName = i18n( "Inproperly Formatted URL" );
+      errorName = i18n( "Improperly Formatted URL" );
       description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
         "<strong>L</strong>ocator (URL) that you entered was not properly "
         "formatted. The format of a URL is generally as follows:"

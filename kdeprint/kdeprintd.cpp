@@ -165,7 +165,7 @@ void KDEPrintd::slotProcessExited(KProcess *proc)
 
 		delete pproc;
 		if (!msg.isEmpty())
-			KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(msg));
+			KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(msg));
 	}
 }
 

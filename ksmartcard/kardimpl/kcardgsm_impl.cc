@@ -860,7 +860,7 @@ case (0x6700):
  if (shortStatus &0x00FF !=0x0000)
 resultString=QString("Incorrect parameter P3, right value should be %1").arg(shortStatus &0x00FF);
 else
-resultString=QString("Incorrect parameter P3, no aditional information");
+resultString=QString("Incorrect parameter P3, no additional information");
 break;
 
 case (0x6B00):
