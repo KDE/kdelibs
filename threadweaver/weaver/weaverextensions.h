@@ -23,7 +23,7 @@ namespace ThreadWeaver {
 
     class Weaver;
     class Thread;
- 
+
     /** A WeaverExtension can be attached to an existing Weaver object and
 	will then receive signals on actions the Weaver takes, like starting
 	to process a specific job, assigning a job to a thread or suspending a
@@ -41,7 +41,8 @@ namespace ThreadWeaver {
 	    void attach (Weaver *);
 	    virtual ~WeaverExtension() = 0;
         public slots:
-            // these methods are implemented, but do nothing in the default configuration
+            // these methods are implemented, but do nothing in the default
+            // configuration
             // a thread is created:
             virtual void threadCreated (Thread *);
 	    // a thread is destroyed:
