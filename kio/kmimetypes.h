@@ -74,7 +74,7 @@ public:
   static void initStatic();
   /**
    * Called by the main function after the registry parsed all mimetype
-   * config files. This function makes shure that vital mime types are installed.
+   * config files. This function makes sure that vital mime types are installed.
    */
   static void check();
   

@@ -69,10 +69,9 @@ KMimeType* KMimeTypeFactory::createMimeType( const char *_file, KSimpleConfig &_
 
   if ( mime.isEmpty() )
   {
-    string tmp = i18n( "The mime type _cfg file " );
-    tmp += _file;
-    tmp += i18n("does not conatain a MimeType=... entry" );
-    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp.c_str(), i18n( "Ok" ) );
+    QString tmp;
+    tmp.sprintf( i18n( "The mime type config file\n%s\ndoes not contain a MimeType=... entry"), _file );
+    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "Ok" ) );
     return 0L;
   }
       

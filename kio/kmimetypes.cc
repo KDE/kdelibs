@@ -20,7 +20,7 @@
 #include <k2url.h>
 #include <kstring.h>
 
-// This function is implemeneted in kfmgui.cc and in kfmlib
+// This function is implemented in kfmgui.cc and in kfmlib
 extern void openFileManagerWindow( const char *_url );
 
 QDict<KMimeType>* KMimeType::s_mapTypes = 0L;
@@ -129,10 +129,9 @@ void KMimeType::scanMimeTypes( const char* _path )
 
 	if ( mime.isEmpty() )
 	{
-	  string tmp = i18n( "The mime type config file " );
-	  tmp += file;
-	  tmp += i18n("does not conatain a MimeType=... entry" );
-	  QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp.c_str(), i18n( "Ok" ) );
+          QString tmp;
+          tmp.sprintf( i18n( "The mime type config file\n%s\ndoes not contain a MimeType=... entry"), file.c_str() );
+	  QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "Ok" ) );
 	  continue;
 	}
       
