@@ -336,8 +336,34 @@ QString RenderPushButton::defaultLabel()
 LineEditWidget::LineEditWidget(QWidget *parent)
         : KLineEdit(parent)
 {
+    m_spell = 0L;
     setMouseTracking(true);
 }
+
+LineEditWidget::~LineEditWidget()
+{
+    delete m_spell;
+    m_spell=0L;
+}
+
+void LineEditWidget::slotCheckSpelling()
+{
+    delete m_spell;
+    m_spell=new KSpell( this, i18n( "Check Spelling" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true );
+}
+
+void LineEditWidget::slotSpellCheckReady( KSpell *s )
+{
+    s->check( text() );
+    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
+}
+
+void LineEditWidget::slotSpellCheckDone( const QString &s )
+{
+    if( s != text() )
+	setText( s );
+}
+
 
 QPopupMenu *LineEditWidget::createPopupMenu()
 {
@@ -349,6 +375,13 @@ QPopupMenu *LineEditWidget::createPopupMenu()
 
     popup->insertSeparator();
     popup->insertItem( i18n("Clear &History"), ClearHistory );
+
+    popup->insertSeparator();
+
+    int id = popup->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
+
+    if( text().isEmpty() )
+	popup->setItemEnabled( id, false );
     return popup;
 }
 

@@ -241,7 +241,7 @@ class LineEditWidget : public KLineEdit
     Q_OBJECT
 public:
     LineEditWidget(QWidget *parent);
-
+    ~LineEditWidget();
 protected:
     virtual bool event( QEvent *e );
     void clearMenuHistory();
@@ -252,10 +252,16 @@ signals:
     void clearCompletionHistory();
 private slots:
     void extendedMenuActivated( int id);
+    void slotCheckSpelling();
+    void slotSpellCheckReady( KSpell *s );
+    void slotSpellCheckDone( const QString &s );
+
+
 private:
     enum LineEditMenuID {
         ClearHistory
     };
+    KSpell *m_spell;
 };
 
 // -------------------------------------------------------------------------
