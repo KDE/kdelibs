@@ -48,7 +48,7 @@ protected:
 	KListView	*m_ports;
 	QLineEdit	*m_localuri;
 	QStringList	m_uris;
-	QListViewItem	*m_parents[3];
+	QListViewItem	*m_parents[4];
 	bool		m_initialized;
 };
 

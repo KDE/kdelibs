@@ -55,7 +55,8 @@ KMWLocal::KMWLocal(QWidget *parent, const char *name)
 	m_parents[0] = new QListViewItem(root, i18n("Parallel"));
 	m_parents[1] = new QListViewItem(root, m_parents[0], i18n("Serial"));
 	m_parents[2] = new QListViewItem(root, m_parents[1], i18n("USB"));
-	for (int i=0;i<3;i++)
+	m_parents[3] = new QListViewItem(root, m_parents[2], i18n("Others"));
+	for (int i=0;i<4;i++)
 		m_parents[i]->setPixmap(0, SmallIcon("input_devices_settings"));
 	QLabel	*l2 = new QLabel(i18n("<p>Select a valid detected port, or enter directly the corresponding URI in the bottom edit field.</p>"), this);
 
@@ -119,10 +120,10 @@ void KMWLocal::initialize()
 		KMessageBox::error(this, i18n("Unable to detect local ports."));
 		return;
 	}
-	QListViewItem	*last[3] = {0, 0, 0};
+	QListViewItem	*last[4] = {0, 0, 0, 0};
 	for (QStringList::Iterator it=list.begin(); it!=list.end(); ++it)
 	{
-		// skip class
+		QString cl = *it;
 		++it;
 
 		KURL	uri = *it;
@@ -139,6 +140,8 @@ void KMWLocal::initialize()
 			index = 1;
 		else if (prot == "usb")
 			index = 2;
+		else if (cl == "direct")
+			index = 3;
 		else
 			continue;
 		last[index] = new QListViewItem(m_parents[index], last[index], desc, uri.url());
