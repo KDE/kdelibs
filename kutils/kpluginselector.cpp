@@ -583,13 +583,15 @@ static QValueList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
 void KPluginSelector::addPlugins( const QString & instanceName,
         const QString & catname, const QString & category, KConfig * config )
 {
+    const QValueList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
+    if ( plugininfos.isEmpty() )
+        return;
     checkNeedForTabWidget();
     Q_ASSERT( config ); // please set config, or use addPlugins( instance, ... ) which takes care of it
     if ( !config ) // KDE4: ensure that config is always set; make it second in the arg list?
         config = new KSimpleConfig(  instanceName ); // memleak!
     KConfigGroup * cfgGroup = new KConfigGroup( config, "KParts Plugins" );
     kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
-    const QValueList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
     addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
