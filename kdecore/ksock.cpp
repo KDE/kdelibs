@@ -19,6 +19,10 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.24.4.2  1999/04/01 20:43:44  pbrown
+ * socket patch from Dirk A. Mueller <dmuell@gmx.net>, forwarded to kde-devel
+ * by Torben, applied.
+ *
  * Revision 1.24.4.1  1999/02/24 12:49:17  dfaure
  * getdtablesize() -> getrlimit(). Fixes #447 and removes a #ifdef HPUX.
  *
@@ -358,8 +362,19 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
 
       ret = select(rlp.rlim_cur, (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
                    (struct timeval *)&timeout);
-      if(ret)
-          return(true);
+      // if(ret)
+      //    return(true);
+
+      switch (ret)
+      {
+	  case 0: break; // Timeout
+	  case 1: return(true); // Success
+	  default: // Error
+	      ::close(sock);
+	      sock = -1;
+	      return false;
+      }
+
       qApp->processEvents();
       qApp->flushX();
   }
