@@ -41,22 +41,84 @@ KJSO NumberObject::get(const UString &p) const
 }
 
 // ECMA 15.7.1
-Completion NumberObject::execute(const List & /*context*/)
+Completion NumberObject::execute(const List &args)
 {
-  /* TODO */
-  return Completion(Normal, Undefined());
+  Number n;
+  if (args.isEmpty())
+    n = Number(0);
+  else
+    n = args[0].toNumber();
+
+  return Completion(Normal, n);
 }
 
 // ECMA 15.7.2
-Object NumberObject::construct(const List & /*args*/)
+Object NumberObject::construct(const List &args)
 {
-  /* TODO */
-  return Object::create(NumberClass, Undefined());
+  Number n;
+  if (args.isEmpty())
+    n = Number(0);
+  else
+    n = args[0].toNumber();
+
+  return Object::create(NumberClass, n);
+}
+
+class NumberProtoFunc : public InternalFunctionImp {
+public:
+  NumberProtoFunc(int i) : id (i) { }
+  Completion execute(const List &);
+  enum { ToString, ToLocaleString, ValueOf };
+private:
+  int id;
+};
+
+// ECMA 15.7.4.2 - 15.7.4.7
+Completion NumberProtoFunc::execute(const List &)
+{
+  KJSO result;
+
+  Object thisObj = Object::dynamicCast(thisValue());
+
+  // no generic function. "this" has to be a Number object
+  if (thisObj.isNull() || thisObj.getClass() != NumberClass) {
+    result = Error::create(TypeError);
+    return Completion(ReturnValue, result);
+  }
+
+  // execute "toString()" or "valueOf()", respectively
+  KJSO v = thisObj.internalValue();
+  switch (id) {
+  case ToString:
+  case ToLocaleString: /* TODO */
+    result = v.toString();
+    break;
+  case ValueOf:
+    result = v.toNumber();
+    break;
+  }
+
+  return Completion(Normal, result);
 }
 
 // ECMA 15.7.4
 NumberPrototype::NumberPrototype(const Object& proto)
   : ObjectImp(NumberClass, Number(0), proto)
 {
-  // The constructor will be added later in BooleanObject's constructor
+  // The constructor will be added later in NumberObject's constructor
+}
+
+KJSO NumberPrototype::get(const UString &p) const
+{
+  int t;
+  if (p == "toString")
+    t = NumberProtoFunc::ToString;
+  else if (p == "toLocaleString")
+    t = NumberProtoFunc::ToLocaleString;
+  else if (p == "valueOf")
+    t = NumberProtoFunc::ValueOf;
+  else
+    return Imp::get(p);
+
+  return Function(new NumberProtoFunc(t));
 }

@@ -36,6 +36,7 @@ namespace KJS {
   class NumberPrototype : public ObjectImp {
   public:
     NumberPrototype(const Object& proto);
+    virtual KJSO get(const UString &p) const;
   };
 
 }; // namespace
