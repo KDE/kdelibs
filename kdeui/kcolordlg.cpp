@@ -241,6 +241,8 @@ KColorPatch::KColorPatch( QWidget *parent ) : QFrame( parent )
 
 KColorPatch::~KColorPatch()
 {
+  if ( colContext )
+    QColor::destroyAllocContext( colContext );
 }
 
 void KColorPatch::setColor( const QColor &col )
