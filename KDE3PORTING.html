@@ -25,6 +25,7 @@ or <a href="http://doc.trolltech.com/3.0/porting.html">this page online</a>.<P>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
 <LI><A HREF="#kfile">Changes in kfile</A></LI>
 <LI><A HREF="#kcontrol">KDE Control Center</A></LI>
+<LI><A HREF="#kicker">Panel Applets and Extensions</A></LI>
 </UL>
 
 <H3><A NAME="gettingstarted">Getting started</A></H3>
@@ -626,6 +627,29 @@ For more details please consult the HOWTO file in the kcontrol directory.
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 <p>
 
+<H3><A NAME="kicker">Panel Applets and Extensions</A></H3>
+
+<p>The API for Kicker panel applets and extensions has changed. Panels can now be
+left/top, center, or right/bottom aligned, and applets and extensions may receive
+notification about a change in alignment.
+
+<H4>KPanelApplet</H4>
+
+<p>The virtual methods orientationChange() and popupDirectionChange() are deprecated.
+Instead you should reimplement positionChange() and alignmentChange() to be
+notified of changes in the position and alignment of the panel on which your applet
+resides. In addition, the popupDirection() method and the Direction enum are
+deprecated. Instead you should use the position() method and Position enum. Applets that use
+the deprecated methods will still work with KDE 3, but may not compile or work with
+a future version.
+
+<H4>KPanelExtension</H4>
+
+<p>There is a new method alignmentChange() that your extension should reimplement if
+it needs to know about changes in alignment.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<p>
 
 Dirk Mueller <A HREF="mailto:mueller@kde.org">mueller@kde.org</A>
 </BODY>
