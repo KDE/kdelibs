@@ -817,8 +817,8 @@ namespace KIO {
         KURL uSource;
         KURL uDest;
         QString linkDest; // for symlinks only
-        mode_t permissions;
-        mode_t type;
+        int permissions;
+        //mode_t type;
         time_t ctime;
         time_t mtime;
         off_t size; // 0 for dirs

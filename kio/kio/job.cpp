@@ -1829,15 +1829,17 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
     for (; it != end; ++it) {
         UDSEntry::ConstIterator it2 = (*it).begin();
         struct CopyInfo info;
-        info.permissions = (mode_t) -1;
+        info.permissions = -1;
         info.mtime = (time_t) -1;
         info.ctime = (time_t) -1;
         info.size = (off_t)-1;
         QString relName;
+        bool isDir = false;
         for( ; it2 != (*it).end(); it2++ ) {
             switch ((*it2).m_uds) {
                 case UDS_FILE_TYPE:
-                    info.type = (mode_t)((*it2).m_long);
+                    //info.type = (mode_t)((*it2).m_long);
+                    isDir = S_ISDIR( (mode_t)((*it2).m_long) );
                     break;
                 case UDS_NAME:
                     relName = (*it2).m_str;
@@ -1846,7 +1848,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     info.linkDest = (*it2).m_str;
                     break;
                 case UDS_ACCESS:
-                    info.permissions = (mode_t)((*it2).m_long);
+                    info.permissions = ((*it2).m_long);
                     break;
                 case UDS_SIZE:
                     info.size = (off_t)((*it2).m_long);
@@ -1873,7 +1875,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 info.uDest.addPath( relName );
             //kdDebug(7007) << "uDest(2)=" << info.uDest.prettyURL() << endl;
-            if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) && m_mode != Link ) // Dir
+            if ( info.linkDest.isEmpty() && (isDir /*S_ISDIR(info.type)*/) && m_mode != Link ) // Dir
             {
                 dirs.append( info ); // Directories
                 if (m_mode == Move)
@@ -1894,7 +1896,7 @@ void CopyJob::statNextSrc()
             // Skip the "stating the source" stage, we don't need it for linking
             m_currentDest = m_dest;
             struct CopyInfo info;
-            info.permissions = (mode_t) -1;
+            info.permissions = -1;
             info.mtime = (time_t) -1;
             info.ctime = (time_t) -1;
             info.size = (off_t)-1;
@@ -2509,7 +2511,7 @@ void CopyJob::copyNextFile()
             // But for files coming from TAR, we want to preserve permissions -> we use default perms only if from remote
             // The real fix would be KProtocolInfo::inputType(protocol) == T_FILESYSTEM, but we can't access ksycoca from here !
             bool remoteSource = !(*it).uSource.isLocalFile() && ((*it).uSource.protocol() != "tar"); // HACK
-            mode_t permissions = ( remoteSource && (*it).uDest.isLocalFile() ) ? (mode_t)-1 : (*it).permissions;
+            int permissions = ( remoteSource && (*it).uDest.isLocalFile() ) ? -1 : (*it).permissions;
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setSourceSize( (*it).size );
             newjob = copyJob;
