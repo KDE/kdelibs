@@ -154,7 +154,7 @@ signals:
 
 /**
  * A simple text editor for the KDE project.
- * @deprecated. Use KTextEditor::Editor instead.
+ * @deprecated. Use KTextEditor::Editor or QTextEdit instead.
  *
  * @author Bernd Johannes Wuebben <wuebben@math.cornell.edu>, Waldo Bastian <bastian@kde.org>
  **/
