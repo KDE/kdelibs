@@ -2330,7 +2330,10 @@ void CopyJob::copyNextFile()
         {
             // If source isn't local and target is local, we ignore the original permissions
             // Otherwise, files downloaded from HTTP end up with -r--r--r--
-            mode_t permissions = ( !(*it).uSource.isLocalFile() && (*it).uDest.isLocalFile() ) ? (mode_t)-1 : (*it).permissions;
+            // But for files coming from TAR, we want to preserve permissions -> we use default perms only if from remote
+            // The real fix would be KProtocolInfo::inputType(protocol) == T_FILESYSTEM, but we can't access ksycoca from here !
+            bool remoteSource = !(*it).uSource.isLocalFile() && ((*it).uSource.protocol() != "tar"); // HACK
+            mode_t permissions = ( remoteSource && (*it).uDest.isLocalFile() ) ? (mode_t)-1 : (*it).permissions;
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setSourceSize( (*it).size );
             newjob = copyJob;
