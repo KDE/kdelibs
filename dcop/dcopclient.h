@@ -189,7 +189,8 @@ class DCOPClient : public QObject
    * @param remObj The name of the remote object.
    * @param remFun The remote function in the specified object to call.
    * @param data The data to provide to the remote function.
-   * @param fast Tf set to @p true, a "fast" form of IPC will be used.
+   * @param fast (KDE 3.0: remove this) 
+   *        Tf set to @p true, a "fast" form of IPC will be used.
    *        Fast connections are not guaranteed to be implemented, but
    *        if they are they work only on the local machine, not across
    *        the network.  "fast" is only a hint not an order.
