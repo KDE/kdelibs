@@ -270,3 +270,15 @@ IncludeFile=kabc/ldapconfigwidget.h
 ToolTip=A widget which allows the user to set up LDAP connection parameters
 Group=Input (KDE)
 ConstructorArgs=(KABC::LdapConfigWidget::W_ALL, parent, name)
+
+[KArrowButton]
+IncludeFile=karrowbutton.h
+ToolTip=Draws a button which shows an arrow pointing into a certain direction.
+Group=Buttons (KDE)
+ConstructorArgs=(parent,Qt::UpArrow,name)
+
+[KAnimWidget]
+IncludeFile=kanimwidget.h
+ToolTip=This is a widget used to display animation using multiple individual pixmaps.
+Group=Display (KDE)
+ConstructorArgs=("kde",0,parent,name)
