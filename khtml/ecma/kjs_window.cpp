@@ -359,7 +359,8 @@ void WindowQObject::clearTimeout(int /* timerId */)
 
 void WindowQObject::timeout()
 {
-  parent->part->executeScript(timeoutHandler.qstring());
+  if (!parent->part.isNull())
+    parent->part->executeScript(timeoutHandler.qstring());
 }
 
 KJSO FrameArray::get(const UString &p) const
