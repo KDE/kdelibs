@@ -232,6 +232,9 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
         py += PAINT_BUFFER_HEIGHT;
     }
+
+    khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
+    QApplication::sendEvent( m_part, &event );
 }
 
 void KHTMLView::layout(bool)
