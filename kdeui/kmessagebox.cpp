@@ -20,6 +20,16 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  1999/11/27 22:20:41  antlarr
+ * Added a new questionYesNo which displays a "question" dialog with a listbox
+ * to show information to the user (see the docs for more info)
+ *
+ * Revision 1.10  1999/11/14 19:34:22  espensa
+ * Changed default title from "Question" to "Warning" so that
+ * we get what the docs say we should get for the following boxes:
+ * KMessageBox::warningContinueCancel(...)
+ * KMessageBox::warningYesNo(...)
+ *
  * Revision 1.9  1999/11/11 15:03:41  waba
  * WABA:
  * * Uses KDialogBase for implementation
@@ -65,6 +75,8 @@
 #include <qvbox.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
+#include <qstringlist.h>
+#include <qlistbox.h>
 
 #include "kapp.h"
 #include "kconfig.h"
@@ -118,6 +130,54 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
          break;
     }
 
+    return Yes; // Default
+}
+
+int
+KMessageBox::questionYesNo(QWidget *parent, const QString &text,
+                           const QStringList &strlist,
+                           const QString &caption,
+                           const QString &buttonYes,
+                           const QString &buttonNo)
+{
+    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
+                       KDialogBase::Yes | KDialogBase::No,
+                       KDialogBase::Yes, KDialogBase::Yes,
+                       parent, "questionYesNo", true, true,
+                       buttonYes, buttonNo);
+ 
+    QVBox *topcontents = new QVBox (&dialog);
+    QHBox *contents = new QHBox(topcontents);
+    topcontents->setSpacing(KDialog::spacingHint()*2);
+    topcontents->setMargin(KDialog::marginHint()*2);
+ 
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
+    new QLabel(text, contents);
+ 
+    if (!strlist.isEmpty())
+    {
+      QListBox *listbox=new QListBox( topcontents);
+      listbox->insertStringList(strlist);
+    }
+ 
+    dialog.setMainWidget(topcontents);
+    dialog.enableButtonSeparator(false);
+ 
+    int result = dialog.exec();
+ 
+    switch( result )
+    {
+      case KDialogBase::Yes:
+         return Yes;
+ 
+      case KDialogBase::No:
+         return No;  
+ 
+      default: // Huh?
+         break;
+    }
+ 
     return Yes; // Default
 }
 

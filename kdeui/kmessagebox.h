@@ -20,6 +20,15 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1999/11/27 22:20:41  antlarr
+ * Added a new questionYesNo which displays a "question" dialog with a listbox 
+ * to show information to the user (see the docs for more info)
+ *
+ * Revision 1.7  1999/11/11 15:03:41  waba
+ * WABA:
+ * * Uses KDialogBase for implementation
+ * * Some additions according to the KDE Style Guide
+ *
  * Revision 1.6  1999/09/12 13:35:04  espensa
  * I have had problems getting the action button to be properly underlined.
  * The changes should fix this once and for all. There were errors in the
@@ -52,6 +61,7 @@
 #include <qstring.h>
 
 class QWidget;
+class QStringList;
 
  /** 
   * Easy MessageBox Dialog. 
@@ -92,7 +102,38 @@ public:
                           const QString &caption = QString::null,
                           const QString &buttonYes = QString::null,  
                           const QString &buttonNo = QString::null);
-
+ /**
+  * Displays a "question" dialog with a listbox to show information to the user 
+  *
+  * @param parent  If parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string. May contain newlines.
+  * @param strlist List of strings to be written in the listbox. If the list is
+  *                empty, it doesn't show any listbox, working as questionYesNo.
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Question").
+  * @param buttonYes The text for the first button. 
+  *                  The default is i18n("&Yes").
+  * @param buttonNo  The text for the second button. 
+  *                  The default is i18n("&No").
+  *
+  * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
+  *          if the No-button is pressed.
+  * 
+  * To be used for questions like "Do you really want to delete these files?"
+  * And show the user exactly which files are going to be deleted in case
+  * he presses "Yes"
+  *
+  * The default button is "Yes". Pressing "Esc" selects "No".
+  */
+ 
+ static int questionYesNo(QWidget *parent,
+                          const QString &text,
+                          const QStringList &strlist,
+                          const QString &caption = QString::null,
+                          const QString &buttonYes = QString::null,
+                          const QString &buttonNo = QString::null);
  /**
   * Displays a "warning" dialog. 
   *
