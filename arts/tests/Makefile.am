@@ -15,7 +15,7 @@ testanyref_SOURCES = testanyref.cc
 testwrapper_LDFLAGS = $(FLOWLIBS)
 testwrapper_SOURCES = wrapper.cc testwrapper.cc
 
-wrapper.h: $(top_srcdir)/arts/examples/wrapper.idl $(MCOPIDL)
-	$(MCOPIDL) $(top_srcdir)/arts/examples/wrapper.idl
+wrapper.h: $(top_srcdir)/arts/tests/wrapper.idl $(MCOPIDL)
+	$(MCOPIDL) $(top_srcdir)/arts/tests/wrapper.idl
 
 wrapper.cc: wrapper.h
