@@ -15,12 +15,12 @@ public:
     Data( const QString& _key, const QString& _translatedKey, const QVariant& _value, 
           const QString& _prefix, const QString& _suffix, const bool _editable)
         : QShared(),
-          dirty( false ),
           key( _key ),
           translatedKey( _translatedKey ),
           prefix( _prefix ),
           suffix( _suffix ),
           value( _value ),
+          dirty( false ),
           editable( _editable )
     
     {}
