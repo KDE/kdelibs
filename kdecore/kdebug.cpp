@@ -127,13 +127,31 @@ void kdebug_null( ushort nLevel, ushort nArea,
 	return;
 }
 
+int getNum (const char *key, int _default)
+{
+  if (kapp)
+    return kapp->getConfig()->readNumEntry(key, _default);
+  else
+    return _default;
+}
+
+char * getString (const char *key, char * _default)
+{
+  if (kapp)
+    return kapp->getConfig()->readEntry(key, _default);
+  else
+    return _default;
+}
+
 void kdebug( ushort nLevel, ushort nArea, 
                          const char* pFormat, ... )
 {
-  // Save old group
-  QString aOldGroup = kapp->getConfig()->group();
-  kapp->getConfig()->setGroup( "KDebug" );
-  
+  // Save old grou
+  QString aOldGroup;
+  if (kapp) {
+    aOldGroup = kapp->getConfig()->group();
+    kapp->getConfig()->setGroup( "KDebug" );
+  }
   /* The QBitArrays should rather be application-static, but since
          some stupid platforms do not support that... */
   va_list arguments; /* Handle variable arguments */
@@ -144,29 +162,32 @@ void kdebug( ushort nLevel, ushort nArea,
   QString aCaption;
   QString aAppName = getDescrFromNum(nArea).copy();
   if (aAppName.isEmpty() || aAppName.isNull()) {
-    aAppName=kapp->appName().copy();
+    if (kapp)
+      aAppName=kapp->appName().copy();
+    else
+      aAppName=strdup("unknown");
   }
   switch( nLevel )
         {
         case KDEBUG_INFO:
-          nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 2 );
+          nOutput = getNum( "InfoOutput", 2 );
           aCaption = "Info (" + aAppName.copy() + ")";
           nPriority = LOG_INFO;
           break;
         case KDEBUG_WARN:
-          nOutput = kapp->getConfig()->readNumEntry( "WarnOutput", 2 );
+          nOutput = getNum( "WarnOutput", 2 );
           aCaption = "Warning (" + aAppName.copy() + ")";
           nPriority = LOG_WARNING;
           break;
         case KDEBUG_FATAL:
-          nOutput = kapp->getConfig()->readNumEntry( "FatalOutput", 2 );
+          nOutput = getNum( "FatalOutput", 2 );
           aCaption = "Fatal Error (" + aAppName.copy() + ")";
           nPriority = LOG_CRIT;
           break;
         case KDEBUG_ERROR:
         default:
           /* Programmer error, use "Error" as default */
-          nOutput = kapp->getConfig()->readNumEntry( "ErrorOutput", 2 );
+          nOutput = getNum( "ErrorOutput", 2 );
           aCaption = "Error (" + aAppName.copy() + ")";
           nPriority = LOG_ERR;
           break;
@@ -181,21 +202,17 @@ void kdebug( ushort nLevel, ushort nArea,
                 switch( nLevel )
                   {
                   case KDEBUG_INFO:
-                        aOutputFileName = kapp->getConfig()->readEntry( "InfoFilename",
-                                                                                                                        "kdebug.dbg" );
+                        aOutputFileName = getString( "InfoFilename", "kdebug.dbg" );
                         break;
                   case KDEBUG_WARN:
-                        aOutputFileName = kapp->getConfig()->readEntry( "WarnFilename",
-                                                                                                                        "kdebug.dbg" );
+                        aOutputFileName = getString( "WarnFilename", "kdebug.dbg" );
                         break;
                   case KDEBUG_FATAL:
-                        aOutputFileName = kapp->getConfig()->readEntry( "FatalFilename",
-                                                                                                                        "kdebug.dbg" );
+                        aOutputFileName = getString( "FatalFilename", "kdebug.dbg" );
                         break;
                   case KDEBUG_ERROR:
                   default:
-                        aOutputFileName = kapp->getConfig()->readEntry( "ErrorFilename",
-                                                                                                                        "kdebug.dbg" );
+                        aOutputFileName = getString( "ErrorFilename", "kdebug.dbg" );
                         break;
                   };
                 char buf[4096];
@@ -259,7 +276,7 @@ void kdebug( ushort nLevel, ushort nArea,
 
   // check if we should abort
   if( ( nLevel == KDEBUG_FATAL ) &&
-          ( kapp->getConfig()->readNumEntry( "AbortFatal", 0 ) ) )
+          ( getNum( "AbortFatal", 0 ) ) )
         abort();
 
   // restore old group
@@ -435,7 +452,8 @@ KDebugDialog::~KDebugDialog()
 
 void KDebugDialog::showHelp()
 {
-  kapp->invokeHTMLHelp( "kdelib/kdebug.html", "" );
+  if (kapp)
+    kapp->invokeHTMLHelp( "kdelib/kdebug.html", "" );
 }
 
 #include "kdebugdialog.moc"
