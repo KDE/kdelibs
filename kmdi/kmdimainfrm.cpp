@@ -1649,9 +1649,18 @@ void KMdiMainFrm::setToolviewStyle(int flag)
       toolviewExists = true;
     }
   }
-  if (toolviewExists) {
-    writeDockConfig();
-    readDockConfig();
+  if (toolviewExists)
+  {
+    //workaround for the above FIXME to make switching to TextOnly mode work in IDEAl as well. Be sure that this version of switch* is called.
+    if (m_mdiMode == KMdi::IDEAlMode && flag == KMdi::TextOnly)
+    {
+      KMdiMainFrm::switchToTabPageMode();
+      KMdiMainFrm::switchToIDEAlMode();
+    } else
+    {
+      writeDockConfig();
+      readDockConfig();
+    }
   }
 }
 

@@ -35,7 +35,16 @@
 #include <kconfig.h>
 #include <klocale.h>
 
-extern const char* const not_close_xpm[]; //defined in kdeui/kdockwidget.cpp
+//TODO: Well, this is already defined in kdeui/kdockwidget.cpp
+static const char* const kmdi_not_close_xpm[]={
+"5 5 2 1",
+"# c black",
+". c None",
+"#####",
+"#...#",
+"#...#",
+"#...#",
+"#####"};
 
 KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position, int flags)
 : QWidget(parent),KDockContainer()
@@ -176,7 +185,7 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
       QToolTip::add( btn, i18n("Switch between overlap and side by side mode", "Overlap") );
 
       btn->setToggleButton( true );
-      btn->setPixmap( const_cast< const char** >(not_close_xpm) );
+      btn->setPixmap( const_cast< const char** >(kmdi_not_close_xpm) );
       hdr->addButton(btn);
       m_overlapButtons.insert(w,btn);
       btn->setOn(!isOverlapMode());
