@@ -623,7 +623,9 @@ void KAccelAction::decConnections()
 	{ if( d->m_nConnections > 0 ) d->m_nConnections--; }
 
 // Indicate whether to default to the 3- or 4- modifier keyboard schemes
+#ifndef KDE_USE_FINAL // We get this from kkeysquence.cpp in --enable-final
 static int g_bUseFourModifierKeys = -1;
+#endif
 
 bool KAccelAction::useFourModifierKeys()
 {

@@ -47,6 +47,15 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
+#if defined(KDE_USE_FINAL) && KDE_USE_FINAL
+// Hack: Make sure qtranslator.h is included the way kapplication.cpp
+// wants it before it's included through any other qt header
+#undef QT_NO_TRANSLATION
+#include <qtranslator.h>
+#define QT_NO_TRANSLATION
+#undef QT_NO_TRANSLATION
+#endif
+
 #include <config.h>
 
 #include <qglobal.h>

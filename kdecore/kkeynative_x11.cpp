@@ -63,7 +63,7 @@ ModInfo g_rgModInfo[KKey::MOD_FLAG_COUNT] =
 	{ KKey::WIN,   0,         Mod4Mask }
 };
 
-static KKeyNative* g_pkey = 0;
+static KKeyNative* gx_pkey = 0;
 
 //---------------------------------------------------------------------
 static bool modSpecToModX( int modSpec, int& modX );
@@ -137,11 +137,11 @@ int KKeyNative::compare( const KKeyNative& key ) const
 
 KKeyNative& KKeyNative::null()
 {
-	if( !g_pkey )
-		g_pkey = new KKeyNative;
-	if( !g_pkey->isNull() )
-		g_pkey->clear();
-	return *g_pkey;
+	if( !gx_pkey )
+		gx_pkey = new KKeyNative;
+	if( !gx_pkey->isNull() )
+		gx_pkey->clear();
+	return *gx_pkey;
 }
 
 bool KKeyNative::keyQtToSym( int keyQt, int& sym )
