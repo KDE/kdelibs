@@ -2924,6 +2924,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    * other places.
    */
 
+// this is disabled for now, until a proper implementation is found
+#if 0
   if (!u.protocol().startsWith("https") && !(d->m_bParsing || d->m_runningScripts) )  {
         if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		QString msg = i18n("Your data submission is redirected to\n"
@@ -2950,6 +2952,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   // End form security checks
   //
+#endif
 
 
   QString urlstring = u.url();
