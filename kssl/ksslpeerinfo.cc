@@ -63,18 +63,24 @@ bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
   KSSLX509Map certinfo(m_cert.getSubject());
   int err;
-  QList<KAddressInfo> cns = KExtendedSocket::lookup(certinfo.getValue("CN").latin1(), 0, 0, &err);
-  cns.setAutoDelete(true);
+  QString cn = certinfo.getValue("CN");
+  if (cn.startsWith("*")) {   // stupid wildcard cn
+     QRegExp cnre(cn, false, true);
+     if (cnre.match(d->host->nodeName())) return true;
+  } else {
+     QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
+     cns.setAutoDelete(true);
 
-  kdDebug(7029) << "The original ones were: " << d->host->nodeName()
-            << " and: " << certinfo.getValue("CN").latin1()
-            << endl;
+     /*
+     kdDebug(7029) << "The original ones were: " << d->host->nodeName()
+                   << " and: " << certinfo.getValue("CN").latin1()
+                   << endl;
+     */
 
-  for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
-     kdDebug(7029) << "Testing address: " << (*x).address()->pretty() << endl;
-     if ((*x).address()->isEqual(d->host)) {
-        kdDebug(7029) << "+++ Found address: " << (*x).address()->pretty() << endl;
-        return true;
+     for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
+        if ((*x).address()->isEqual(d->host)) {
+           return true;
+        }
      }
   }
 
