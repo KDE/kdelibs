@@ -296,7 +296,7 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
         if ( s->m_reversed )
             return 0L; // Abort if RTL (TODO)
         // ### only for visuallyOrdered !
-        off = s->m_text - m_lines[0]->m_text + s->m_len;
+        off = s->m_text - str->s + s->m_len;
     }
     // we are now in the correct text slave
     pos = (offset > off ? s->m_len : s->m_len - (off - offset) );
@@ -332,7 +332,7 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
             if ( s->m_reversed )
                 return false; // Abort if RTL (TODO)
             // ### only for visuallyOrdered !
-            offset = s->m_text - m_lines[0]->m_text + pos;
+            offset = s->m_text - str->s + pos;
             //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
 
             return true;
@@ -451,19 +451,17 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             //kdDebug(6040) << this << " Selection from " << startPos << " to " << endPos << endl;
 
             // Eat the lines we don't print (startPos and endPos are from line 0!)
-            if ( si > 0 )
+            // Note that we do this even if si==0, because we may have \n as the first char,
+            // and this takes care of it too (David)
+            if ( m_lines[si]->m_reversed )
+                endPos = -1; // No selection if RTL (TODO)
+            else
             {
-                if ( m_lines[si]->m_reversed )
-                     endPos = -1; // No selection if RTL (TODO)
-                else
-                {
-                    // ## Only valid for visuallyOrdered
-                    int len = m_lines[si]->m_text - m_lines[0]->m_text;
-                    //kdDebug(6040) << this << " RenderText::printObject adjustement si=" << si << " len=" << len << endl;
-                    ASSERT( len > 0 );
-                    startPos -= len;
-                    endPos -= len;
-                }
+                // ## Only valid for visuallyOrdered
+                int len = m_lines[si]->m_text - str->s;
+                //kdDebug(6040) << this << " RenderText::printObject adjustement si=" << si << " len=" << len << endl;
+                startPos -= len;
+                endPos -= len;
             }
         }
 
@@ -547,12 +545,12 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 {
     if ( !isVisible() )
         return;
-    
+
     int s = m_lines.count() - 1;
     if ( s < 0 ) return;
     if ( ty + m_lines[0]->m_y > y + h ) return;
     if ( ty + m_lines[s]->m_y + m_lines[s]->m_height < y ) return;
-    
+
     printObject(p, x, y, w, h, tx, ty);
 }
 
