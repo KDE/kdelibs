@@ -410,6 +410,14 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
   kdDebug() << "KPropertiesDialog::updateUrl " << _newUrl.url() << endl;
   m_singleUrl = _newUrl;
   assert(!m_singleUrl.isEmpty());
+  // If we have an Exec page, set it dirty, so that a full file is saved locally
+  for ( QListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
+   if ( it.current()->isA("KExecPropsPlugin") )
+   {
+     kdDebug(250) << "Setting exec page dirty" << endl;
+     it.current()->setDirty();
+     break;
+   }
 }
 
 void KPropertiesDialog::rename( const QString& _name )
@@ -910,15 +918,17 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
   // Save the file where we can -> usually in ~/.kde/...
   if (KBindingPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
   {
-    QString path = locateLocal("mime", m_sRelativePath);
-    properties->updateUrl( KURL( path ) );
+    KURL newURL;
+    newURL.setPath( locateLocal("mime", m_sRelativePath) );
+    properties->updateUrl( newURL );
   }
   else if (KExecPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
   {
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished " << m_sRelativePath << endl;
-    QString path = locateLocal("apps", m_sRelativePath);
-    kdDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << path << endl;
-    properties->updateUrl( KURL( path ) );
+    KURL newURL;
+    newURL.setPath( locateLocal("apps", m_sRelativePath) );
+    kdDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL.path() << endl;
+    properties->updateUrl( newURL );
   }
 
   // handle icon changes - only local files for now
