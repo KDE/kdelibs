@@ -71,6 +71,9 @@ public:
       * @param type This can either be
       *		@li Opening (open dialog, the default setting)
       *		@li Saving 
+      * @param parent The parent widget of this dialog
+      * @param name The name of this object
+      * @param modal Whether to create a modal dialog or not
       *
       * @since 3.2
       */

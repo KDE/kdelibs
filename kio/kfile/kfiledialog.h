@@ -109,7 +109,10 @@ public:
       *             same keyword.
       *
       * @param filter A shell glob or a mime-type-filter that specifies
-                      which files to display.
+      *               which files to display.
+      * @param parent The parent widget of this dialog
+      * @param name The name of this object
+      * @param modal Whether to create a modal dialog or not
       * See setFilter() for details on how to use this argument.
       *
       */
@@ -143,14 +146,14 @@ public:
       *               which files to display.
       * See setFilter() for details on how to use this argument.
       *
-      * @param acceptURLs If set to @p false, the dialog will
-      * just accept files on the local filesystem.
-      *
       * @param widget A widget, or a widget of widgets, for displaying custom
       *               data in the dialog. This can be used, for example, to
       *               display a check box with the caption "Open as read-only".
       *               When creating this widget, you don't need to specify a parent,
       *               since the widget's parent will be set automatically by KFileDialog.
+      * @param parent The parent widget of this dialog
+      * @param name The name of this object
+      * @param modal Whether to create a modal dialog or not
       * @since 3.1
       */
     KFileDialog(const QString& startDir, const QString& filter,

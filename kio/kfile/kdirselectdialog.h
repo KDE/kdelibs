@@ -73,6 +73,8 @@ public:
      * @param startDir the directory, initially shown
      * The tree will display this directory and subdirectories of it.
      * @param localOnly unused. You can only select paths below the startDir
+     * @param parent the parent widget to use for the dialog, or NULL to create a parent-less dialog
+     * @param caption the caption to use for the dialog, or QString::null for the default caption
      * @return The URL selected, or an empty URL if the user canceled
      * or no URL was selected.
      */

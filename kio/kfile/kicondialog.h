@@ -195,6 +195,8 @@ public:
      * @param iconSize the size of the icons -- the default of the icongroup
      *        if set to 0
      * @param user Begin with the "user icons" instead of "system icons".
+     * @param parent The parent widget of the dialog.
+     * @param caption The caption to use for the dialog.
      * @return The name of the icon, suitable for loading with KIconLoader.
      * @version New in 3.0
      */
