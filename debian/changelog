@@ -1,6 +1,7 @@
 kdelibs (4:2.2-cvs20010622-1) unstable; urgency=low
 
   * New upstream CVS pull (post alpha2)
+  * 2.2 beta 1
   * Remove old .shlibs files
   * Moving to -cvs{date] format for entering into experimental
   * This is a post alpha1 snapshot taken from the HEAD cvs branch.  The

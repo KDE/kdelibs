@@ -121,3 +121,6 @@ kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sv/entitie
 kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/zh-TW/entities/underArtisticLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/zh-TW/entities/underBSDLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/zh-TW/entities/underX11License.docbook
+kdelibs3: shlib-missing-in-control-file webstyle.so usr/lib/webstyle.so
+
+
