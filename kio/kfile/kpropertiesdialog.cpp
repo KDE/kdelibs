@@ -1342,7 +1342,7 @@ void KFilePropsPlugin::applyIconChanges()
 {
   // handle icon changes - only local files for now
   // TODO: Use KTempFile and KIO::file_copy with overwrite = true
-  if (!iconArea->isA("QLabel") && properties->kurl().isLocalFile() && d->bIconChanged) {
+  if (iconArea->isA("KIconButton") && properties->kurl().isLocalFile()) {
     KIconButton *iconButton = (KIconButton *) iconArea;
     QString path;
 
