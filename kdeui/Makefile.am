@@ -38,8 +38,8 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdbtn.h knotebook.h ktabbar.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
-		kthemestyle.h kcharselect.h kcolordrag.h kaction.h \
-		kuiactions.h kintlineedit.h kactmenubuilder.h qxembed.h
+		kthemestyle.h kcharselect.h kcolordrag.h \
+		kintlineedit.h qxembed.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
 		kselect.cpp kdatepik.cpp kdatetbl.cpp kfontdialog.cpp \
@@ -55,8 +55,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
 		kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
 		kthemebase.cpp kthemestyle.cpp kcharselect.cpp \
-		kcolordrag.cpp kaction.cpp kuiactions.cpp \
-		kactmenubuilder.cpp kintlineedit.cpp qxembed.cpp
+		kcolordrag.cpp kintlineedit.cpp qxembed.cpp
 
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
@@ -70,8 +69,8 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	ktablistbox.moc ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
 	ktopwidget.moc ktreelist.moc kurllabel.moc kwizard.moc kwmmapp.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
-	kthemestyle.moc kcharselect.moc kcolordrag.moc kaction.moc \
-	kuiactions.moc kintlineedit.moc qxembed.moc
+	kthemestyle.moc kcharselect.moc kcolordrag.moc \
+	kintlineedit.moc qxembed.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
