@@ -86,7 +86,7 @@ KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
 
         KFileMimeTypeInfo::ItemInfo* info = new KFileMimeTypeInfo::ItemInfo();
         null = new Data(info, QString::null, QVariant());
-        sd_KFileMetaInfoItemData.setObject( null );
+        sd_KFileMetaInfoItemData.setObject( null, null );
     }
     return null;
 }
@@ -210,6 +210,11 @@ QString KFileMetaInfoItem::suffix() const
 uint KFileMetaInfoItem::hint() const
 {
     return d->mimeTypeInfo->hint();
+}
+
+uint KFileMetaInfoItem::unit() const
+{
+    return d->mimeTypeInfo->unit();
 }
 
 uint KFileMetaInfoItem::attributes() const
@@ -734,7 +739,7 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(QString::null, 0) );
+	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(QString::null, 0), null );
     return null;
 }
 
@@ -887,7 +892,7 @@ KFileMetaInfoProvider::KFileMetaInfoProvider()
 
 KFileMetaInfoProvider::~KFileMetaInfoProvider()
 {
-    sd.setObject( 0 );
+    sd.setObject( s_self, static_cast<KFileMetaInfoProvider*>( 0 ) );
 }
 
 KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType)
@@ -1323,7 +1328,7 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
         // where the d-pointer is compared against null.
         null = new Data(QString::null);
         null->mimeTypeInfo = new KFileMimeTypeInfo();
-        sd_KFileMetaInfoGroupData.setObject( null );
+        sd_KFileMetaInfoGroupData.setObject( null, null );
     }
     return null;
 }

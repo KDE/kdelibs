@@ -620,6 +620,12 @@ public:
     uint hint() const;
 
     /**
+     * Returns the unit for this item. See KFileMimeTypeInfo::Unit.
+     * @return the unit
+     **/
+    uint unit() const;
+
+    /**
      * Returns the atttributes for this item. See
      * KFileMimeTypeInfo::Attributes.
      * @return the attributes
