@@ -461,6 +461,14 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgr
 void KRun::init()
 {
   kdDebug(7010) << "INIT called" << endl;
+  if ( m_strURL.isMalformed() )
+  {
+    KMessageBoxWrapper::error( 0L, i18n( "Malformed URL\n%1" ).arg( m_strURL.url() ) );
+    m_bFault = true;
+    m_bFinished = true;
+    m_timer.start( 0, true );
+    return;
+  }
 
   if ( !m_bIsLocalFile && m_strURL.isLocalFile() )
 
