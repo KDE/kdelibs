@@ -3,7 +3,7 @@
 <term>
 <menuchoice>
 <guimenu>Aide</guimenu>
-<guimenuitem>Manuel de &kappname</guimenuitem>
+<guimenuitem>Manuel de &kappname;</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Invoque le système d'aide de KDE</action>
