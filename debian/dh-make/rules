@@ -45,12 +45,9 @@ configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
-	# make build directory
-	mkdir $(objdir)
 
  	# run configure with build tree $(objdir)
-	cd $(objdir) && \
-	../configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(configkde) \
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(configkde) 
 
 	touch configure-stamp
 
@@ -59,7 +56,6 @@ build-stamp: configure-stamp
 	dh_testdir
 
 	# Add here commands to compile the package.
-	cd $(objdir) && \
 	$(MAKE)
 
 	# generate manpages
@@ -72,12 +68,12 @@ build-stamp: configure-stamp
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp debian/debiandirs
+	rm -f build-stamp configure-stamp 
 
 	# Add here commands to clean up after the build process.
 	-#CLEAN#
 
-	dh_clean
+	dh_clean 
 
 install: build
 	dh_testdir
@@ -85,9 +81,8 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/tmp
-	cd $(objdir) && \
-        $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+	# Add here commands to install the package into debian/#PACKAGE#
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/#PACKAGE#
 
 
 # Build architecture-independent files here.
@@ -98,7 +93,6 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_movefiles
 
 #	dh_installdebconf	
 	dh_installdocs
@@ -112,7 +106,7 @@ binary-arch: build install
 	dh_installcron
 	dh_installman
 	dh_installinfo
-#	dh_undocumented
+	dh_undocumented #PACKAGE#.1
 	dh_installchangelogs #CHANGELOGS#
 	dh_link
 	dh_strip
