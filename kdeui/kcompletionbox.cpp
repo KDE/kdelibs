@@ -22,6 +22,7 @@
 
 
 #include <qapplication.h>
+#include <qcombobox.h>
 #include <qevent.h>
 #include <qstyle.h>
 
@@ -208,10 +209,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                       type == QEvent::Move ) {
                 hide();
             }
-            else if ( type == QEvent::Move )
-                move( d->m_parent->mapToGlobal(QPoint(0, d->m_parent->height())));
-            else if ( type == QEvent::Resize )
-                resize( sizeHint() );
         }
     }
 
@@ -246,14 +243,15 @@ void KCompletionBox::popup()
 
 void KCompletionBox::show()
 {
-    resize( sizeHint() );
+    QRect geom = calculateGeometry();
+    resize( geom.size() );
 
     if ( d->m_parent ) {
         QRect screenSize = KGlobalSettings::desktopGeometry(d->m_parent);
 
         QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
-        int x = orig.x();
-        int y = orig.y();
+        int x = orig.x() + geom.x();
+        int y = orig.y() + geom.y();
 
         if ( x + width() > screenSize.right() )
             x = screenSize.right() - width();
@@ -279,15 +277,54 @@ void KCompletionBox::hide()
     KListBox::hide();
 }
 
-QSize KCompletionBox::sizeHint() const
+QRect KCompletionBox::calculateGeometry() const
 {
+    int x = 0, y = 0;
     int ih = itemHeight();
     int h = QMIN( 15 * ih, (int) count() * ih ) +1;
     h = QMAX( h, KListBox::minimumSizeHint().height() );
 
     int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
     w = QMAX( KListBox::minimumSizeHint().width(), w );
-    return QSize( w, h );
+
+    //If we're inside a combox, Qt by default makes the dropdown
+    // as wide as the combo, and gives the style a chance
+    // to adjust it. Do that here as well, for consistency
+    const QObject* combo;
+    if ( d->m_parent && (combo = d->m_parent->parent() ) &&
+        combo->inherits("QComboBox") )
+    {
+        const QComboBox* cb = static_cast<const QComboBox*>(combo);
+
+        //Expand to the combo width
+        w = QMAX( w, cb->width() );
+
+        QPoint parentCorner = d->m_parent->mapToGlobal(QPoint(0, 0));
+        QPoint comboCorner  = cb->mapToGlobal(QPoint(0, 0));
+
+        //We need to adjust our horizontal position to also be WRT to the combo
+        x += comboCorner.x() -  parentCorner.x();
+
+        //The same with vertical one
+        y += cb->height() - d->m_parent->height() +
+             comboCorner.y() - parentCorner.y();
+
+        //Ask the style to refine this a bit
+        QRect styleAdj = style().querySubControlMetrics(QStyle::CC_ComboBox,
+                                    cb, QStyle::SC_ComboBoxListBoxPopup,
+                                    QStyleOption(x, y, w, h));
+        //QCommonStyle returns QRect() by default, so this is what we get if the
+        //style doesn't implement this
+        if (!styleAdj.isNull())
+            return styleAdj;
+
+    }
+    return QRect(x, y, w, h);
+}
+
+QSize KCompletionBox::sizeHint() const
+{
+    return calculateGeometry().size();
 }
 
 void KCompletionBox::down()

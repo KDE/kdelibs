@@ -189,6 +189,13 @@ signals:
 
 protected:
     /**
+     * This calculates the size of the dropdown and the relative position of the top
+     * left corner with respect to the parent widget. This matches the geometry and position
+     * normally used by K/QComboBox when used with one.
+     */
+    QRect calculateGeometry() const;
+
+    /**
      * Reimplemented from KListBox to get events from the viewport (to hide
      * this widget on mouse-click, Escape-presses, etc.
      */
@@ -209,7 +216,7 @@ private slots:
 
 protected:
     virtual void virtual_hook( int id, void* data );
-    
+
 private:
     class KCompletionBoxPrivate;
     KCompletionBoxPrivate* d;
