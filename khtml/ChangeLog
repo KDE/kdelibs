@@ -1,4 +1,13 @@
+2004-12-08  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge :target pseudo-class from WebCore
+
+        * css/cssstyleselector.cpp: Uncomment :target handling
+        * xml/dom_docimpl.{h,cpp}: Add (set)cssTarget.
+        * khtml_part.cpp: Call setCssTarget on anchors
+
 2004-12-07  Allan Sandfeld Jensen <kde@carewolf.com>
+
         Implement/merge CSS2-3 text-shadow property
 
         * css/*: Merge values and parsing from WebCore

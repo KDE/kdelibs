@@ -286,6 +286,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_docLoading = false;
     m_inSyncLoad = false;
     m_loadingXMLDoc = 0;
+    m_cssTarget = 0;
 }
 
 DocumentImpl::~DocumentImpl()
@@ -2023,6 +2024,15 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 
         updateRendering();
     }
+}
+
+void DocumentImpl::setCSSTarget(NodeImpl* n)
+{
+    if (m_cssTarget)
+        m_cssTarget->setChanged();
+    m_cssTarget = n;
+    if (n)
+        n->setChanged();
 }
 
 void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)

@@ -2420,6 +2420,8 @@ bool KHTMLPart::gotoAnchor( const QString &name )
       n = d->m_doc->getElementById( name );
   }
 
+  d->m_doc->setCSSTarget(n); // Setting to null will clear the current target.
+
   // Implement the rule that "" and "top" both mean top of page as in other browsers.
   bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.lower() == "top");
 

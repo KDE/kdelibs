@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -340,6 +340,9 @@ public:
     void setHoverNode(NodeImpl *newHoverNode);
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
+    // Updates for :target (CSS3 selector).
+    void setCSSTarget(NodeImpl* n);
+    NodeImpl* getCSSTarget() { return m_cssTarget; }
 
     bool isDocumentChanged()	{ return m_docChanged; }
     virtual void setDocumentChanged(bool = true);
@@ -484,6 +487,7 @@ protected:
     QColor m_textColor;
     NodeImpl *m_hoverNode;
     NodeImpl *m_focusNode;
+    NodeImpl *m_cssTarget;
 
     unsigned int m_domtree_version;
 
