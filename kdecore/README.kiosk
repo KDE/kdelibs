@@ -219,6 +219,12 @@ execute arbitrary commands. This raises the question whether such features
 should be disabled as part of the "shell access" action or whether it should 
 get its own action definition, e.g. "custom .desktop files".
 
+Other defined actions:
+
+shell_access - defines whether a shell suitable for entering random commands may be started.
+custom_config - defines whether the --config command line option should be honored. The
+--config command line option can be used to circumvent locked-down configuration files.
+
 Another interesting question is what the exact scope of a certain action should
 be. Looking at the "custom .desktop files" action there are two ways to prevent
 the user from executing "custom .desktop files". The first way would be to
