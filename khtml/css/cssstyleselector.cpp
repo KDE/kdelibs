@@ -1847,6 +1847,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 align = LEFT; break;
             case CSS_VAL_RIGHT:
                 align = RIGHT; break;
+            case CSS_VAL_MIDDLE:  // not part of the standard
             case CSS_VAL_CENTER:
                 align = CENTER; break;
             case CSS_VAL_JUSTIFY:
