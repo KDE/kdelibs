@@ -22,6 +22,7 @@
 #include <qdom.h>
 #include <qlist.h>
 #include <qmap.h>
+#include <qstringlist.h>
 
 class KAction;
 class KActionCollection;

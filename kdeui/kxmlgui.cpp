@@ -28,6 +28,7 @@
 #include <qtextstream.h>
 #include <qwidget.h>
 #include <qdatetime.h>
+#include <qvariant.h>
 
 #include <kaction.h>
 #include <kdebug.h>

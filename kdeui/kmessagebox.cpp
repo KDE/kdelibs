@@ -66,7 +66,11 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 
     lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
+#if QT_VERSION < 300
     label1->setPixmap(QMessageBox::standardIcon(icon, kapp->style().guiStyle()));
+#else
+    label1->setPixmap(QMessageBox::standardIcon(icon));
+#endif
     lay->add( label1 );
     QLabel *label2 = new QLabel( text, contents);
     label2->setMinimumSize(label2->sizeHint());

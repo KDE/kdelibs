@@ -24,6 +24,7 @@
 #include <qmultilineedit.h>
 #include <qradiobutton.h>
 #include <qwhatsthis.h>
+#include <qregexp.h>
 
 #include <kapp.h>
 #include <kaboutdata.h>

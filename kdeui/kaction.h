@@ -27,6 +27,7 @@
 #include <qobject.h>
 #include <qmap.h>
 #include <kaccel.h>
+#include <qvaluelist.h>
 
 class QMenuBar;
 class QPopupMenu;

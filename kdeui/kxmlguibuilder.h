@@ -21,6 +21,7 @@
 #define __kxmlguibuilder_h__
 
 #include <qdom.h>
+#include <qstringlist.h>
 
 class KXMLGUIBuilderPrivate;
 class QWidget;
