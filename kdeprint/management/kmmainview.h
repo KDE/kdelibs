@@ -108,6 +108,7 @@ protected:
 	void removePluginActions();
 	void createMessageWindow( const QString&, int delay = 500 );
 	void destroyMessageWindow();
+	void reset( const QString& msg = QString::null, bool useDelay = true, bool holdTimer = true );
 
 private:
 	KMPrinterView	*m_printerview;
