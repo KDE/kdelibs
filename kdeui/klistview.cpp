@@ -2069,7 +2069,7 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
         p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
   }
   else if (isAlternate())
-       if (listView()->viewport()->backgroundMode()==Qt::TransparentMode)
+       if (listView()->viewport()->backgroundMode()==Qt::FixedColor)
             _cg.setColor(QColorGroup::Background, static_cast< KListView* >(listView())->alternateBackground());
        else
         _cg.setColor(QColorGroup::Base, static_cast< KListView* >(listView())->alternateBackground());
