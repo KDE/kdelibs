@@ -47,6 +47,7 @@ AC_CHECK_HEADERS(sys/param.h sys/mman.h sys/time.h sysent.h strings.h sys/stat.h
 
 DCOPIDL2CPP="compiled"
 DCOPIDL="compiled"
+DCOPIDLNG="compiled"
 MEINPROC="compiled"
 KDECONFIG="compiled"
 KCONFIG_COMPILER="compiled"
