@@ -121,7 +121,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           daystr = KGlobal::locale()->weekDayName(col+firstWeekDay, true);
       else
           daystr = KGlobal::locale()->weekDayName(col+firstWeekDay-7, true);
-      if ( daystr==i18n("Sun") || daystr==i18n("Sat") )
+      if ( daystr==i18n("Sunday", "Sun") || daystr==i18n("Saturday", "Sat") )
           normalday=false;
 
       if (!normalday)
