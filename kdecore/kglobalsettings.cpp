@@ -79,7 +79,7 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
     if ((completion < (int) CompletionNone) ||
 	(completion > (int) CompletionShell))
       {
-	completion = (int) CompletionShell; // Default
+	completion = (int) CompletionAuto; // Default
       }
   return (Completion) completion;
 }
