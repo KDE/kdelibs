@@ -193,13 +193,35 @@ QString NodeImpl::toHTML() const
     return "";
 }
 
+static QString escapeHTML( const QString& in )
+{
+    QString s;
+    for ( unsigned int i = 0; i < in.length(); ++i ) {
+        switch( in[i].latin1() ) {
+        case '&':
+            s += "&amp;";
+            break;
+        case '<':
+            s += "&lt;";
+            break;
+        case '>':
+            s += "&gt;";
+            break;
+        default:
+            s += in[i];
+        }
+    }
+
+    return s;
+}
+
 QString NodeImpl::recursive_toHTML(bool start) const
 {
     QString me = "";
 
     // Copy who I am into the htmlText string
     if ( nodeType() == Node::TEXT_NODE )
-        me = nodeValue().string();
+        me = escapeHTML( nodeValue().string() );
     else
     {
         // If I am an element, not a text
@@ -225,7 +247,7 @@ QString NodeImpl::recursive_toHTML(bool start) const
             for( unsigned int j=0; j<lmap; j++ )
             {
                 attr = static_cast<AttrImpl*>(attrs->item(j,exceptioncode));
-                me += " " + attr->name().string() + "=\"" + attr->value().string() + "\"";
+                me += " " + attr->name().string() + "=\"" + escapeHTML( attr->value().string() ) + "\"";
                 }
             }
         }
