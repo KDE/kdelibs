@@ -253,10 +253,11 @@ int KToggleAction::plug( QWidget* widget, int index )
     }
 
     int _index = -1;
+    int id_ = -1;
     if ( widget->inherits( "KToolBar" ) ) {
         KToolBar *bar = (KToolBar *)widget;
 
-        int id_ = get_toolbutton_id();
+        id_ = get_toolbutton_id();
         bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
                            isEnabled(), plainText(), index );
 
@@ -281,7 +282,7 @@ int KToggleAction::plug( QWidget* widget, int index )
     }
     else if ( widget->inherits("KToolBar") )
     {
-        KToolBar *bar = (KToolBar*)container( index );
+        KToolBar *bar = (KToolBar*)container( _index );
         bar->setToggle( menuId( _index ), TRUE );
         bar->setButton( menuId( _index ), isChecked() );
     }
@@ -730,14 +731,14 @@ int KActionMenu::plug( QWidget* widget, int index )
   else if ( widget->inherits( "KMenuBar" ) )
   {
     KMenuBar *bar = (KMenuBar *)widget;
-    
+
     int id;
-    
+
     id = bar->insertItem( text(), popupMenu(), -1, index );
-    
+
     addContainer( bar, id );
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-    
+
     return containerCount() - 1;
   }
 
@@ -769,7 +770,7 @@ void KActionMenu::unplug( QWidget* widget )
       bar->removeItem( menuId( i ) );
       removeContainer( i );
     }
-    
+
     return;
   }
 
