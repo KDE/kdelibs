@@ -24,6 +24,7 @@
 
 #include <qglobal.h>
 #include <qdict.h>
+#include <qlist.h>
 #include "kglobal.h"
 
 #include <kapp.h>
@@ -141,6 +142,27 @@ KGlobal::staticQString(const QString &str)
    return *result;
 }
 
+class KStaticDeleterList: public QList<KStaticDeleterBase>
+{
+public:
+   KStaticDeleterList() { };
+};
+
+void 
+KGlobal::registerStaticDeleter(KStaticDeleterBase *obj)
+{
+   if (!_staticDeleters)
+      kglobal_init();
+   if (_staticDeleters->find(obj) == -1)
+      _staticDeleters->append(obj);
+}
+
+void 
+KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
+{
+   if (_staticDeleters)
+      _staticDeleters->removeRef(obj);
+}
 	
 // The Variables
 
@@ -149,6 +171,7 @@ KInstance       *KGlobal::_instance     = 0;
 KInstance       *KGlobal::_activeInstance = 0;
 KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
+KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
 static void kglobal_freeAll()
 {	
@@ -158,6 +181,14 @@ static void kglobal_freeAll()
     KGlobal::_charsets = 0;
     delete KGlobal::_stringDict;
     KGlobal::_stringDict = 0;
+    for(KStaticDeleterBase *ptr = KGlobal::_staticDeleters->first();
+	ptr;
+	ptr = KGlobal::_staticDeleters->next())
+    {
+        ptr->destructObject();
+    }
+    delete KGlobal::_staticDeleters;
+    KGlobal::_staticDeleters = 0;
 }
 
 static bool addedFreeAll = false;
@@ -168,6 +199,7 @@ static void kglobal_init()
         return;
 
     addedFreeAll = true;
+    KGlobal::_staticDeleters = new KStaticDeleterList;
 
     qAddPostRoutine( kglobal_freeAll );
 }

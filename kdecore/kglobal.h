@@ -28,6 +28,9 @@ class KCharsets;
 class QFont;
 class KInstance;
 class KStringDict;
+class KStaticDeleterBase;
+class KStaticDeleterList;
+
 
 /**
  * Access the KDE global objects.
@@ -90,11 +93,15 @@ public:
      */
     static const QString        &staticQString(const QString &);
 
+    static void registerStaticDeleter(KStaticDeleterBase *);
+    static void unregisterStaticDeleter(KStaticDeleterBase *);
+
     //private:
     static  KStringDict         *_stringDict;
     static  KInstance           *_instance;
     static  KLocale             *_locale;
     static  KCharsets	        *_charsets;
+    static  KStaticDeleterList  *_staticDeleters;
 
     /**
      * The instance currently active (useful in a multi-instance
@@ -126,14 +133,31 @@ public:
  * static KStaticDeleter<MyClass> sd;
  *
  * MyClass::self() {
- *   if (!_self) { _self = new MyClass(); sd.deleteit = _self; }
+ *   if (!_self) { _self = sd.setObject(new MyClass()); }
  * }
  */
-template<class type> class KStaticDeleter {
+class KStaticDeleterBase {
 public:
-    type *deleteit;
+    virtual void destructObject() = 0;
+};
+
+template<class type> class KStaticDeleter : public KStaticDeleterBase {
+public:
     KStaticDeleter() { deleteit = 0; }
-    ~KStaticDeleter() { delete deleteit; }
+    type *setObject( type *obj) { 
+        deleteit = obj; 
+        KGlobal::registerStaticDeleter(this);
+        return obj;
+    }
+    virtual void destructObject() { 
+    	delete deleteit; deleteit = 0; 
+    }
+    virtual ~KStaticDeleter() { 
+    	KGlobal::unregisterStaticDeleter(this);
+    	delete deleteit; deleteit = 0;
+    }
+private:
+    type *deleteit;
 };
 
 #endif // _KGLOBAL_H
