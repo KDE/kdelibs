@@ -33,6 +33,17 @@ public:
     KIconEffect();
     ~KIconEffect();
 
+    /**
+     * This is the enumeration of all possible icon effects.
+     * Note that 'LastEffect' is no valid icon effect but only
+     * used internally to check for invalid icon effects.
+     *
+     * @li NoEffect: Don't apply any icon effect
+     * @li ToGray: Tints the icon gray
+     * @li Colorize: Tints the icon with an other color
+     * @li ToGamma: Change the gamma value if the icon
+     * @li DeSaturate: Reduce the saturation of the icon
+     */
     enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate, LastEffect };
 
     /**
@@ -93,15 +104,68 @@ public:
      *
      * Not strictly an 'icon effect', but in practice that's what it looks
      * like.
+     *
+     * This method does nothing if the global 'Visual feedback on activation'
+     * option is not activated (See kcontrol/Peripherals/Mouse).
+     *
+     * @param widget The widget on which the effect should be painted
+     * @param rect This rectangle defines the effect's borders 
      */
-    static void visualActivate(QWidget *, QRect);
+    static void visualActivate(QWidget *widget, QRect rect);
 
+    /**
+     * Tints an image gray.
+     *
+     * @param image The image
+     * @param value Strength of the effect. 0 <= @p value <= 1
+     */
     static void toGray(QImage &image, float value);
+
+    /**
+     * Colorizes an image with a specific color.
+     *
+     * @param image The image
+     * @param col The color with which the @p image is tinted
+     * @param value Strength of the effect. 0 <= @p value <= 1
+     */
     static void colorize(QImage &image, const QColor &col, float value);
+
+    /**
+     * Desaturates an image.
+     *
+     * @param image The image
+     * @param value Strength of the effect. 0 <= @p value <= 1
+     */
     static void deSaturate(QImage &image, float value);
+
+    /**
+     * Changes the gamma value of an image.
+     *
+     * @param image The image
+     * @param value Strength of the effect. 0 <= @p value <= 1
+     */
     static void toGamma(QImage &image, float value);
+
+    /**
+     * Renders an image semi-transparent.
+     *
+     * @param image The image
+     */
     static void semiTransparent(QImage &image);
+
+    /**
+     * Renders a pixmap semi-transparent.
+     *
+     * @param image The pixmap
+     */
     static void semiTransparent(QPixmap &pixmap);
+
+    /**
+     * Overlays an image with an other image.
+     *
+     * @param src The image
+     * @param overlay The image to overlay @p src with
+     */
     static void overlay(QImage &src, QImage &overlay);
 
 private:
