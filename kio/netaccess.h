@@ -169,13 +169,13 @@ public:
      */
     static QString mimetype( const KURL & url );
 
-protected:
+private:
     /** Private constructor */
     NetAccess() {}
     /** Private destructor */
     ~NetAccess() {}
     /** Internal methods */
-    bool copyInternal(const KURL& src, const KURL& target);
+    bool copyInternal(const KURL& src, const KURL& target, bool overwrite);
     bool statInternal(const KURL & url);
     UDSEntry m_entry;
     bool delInternal(const KURL & url);
@@ -187,7 +187,7 @@ protected:
     /** Whether the download succeeded or not */
     bool bJobOK;
 
-protected slots:
+private slots:
     void slotResult( KIO::Job * job );
     void slotMimetype( KIO::Job * job, const QString & type );
 };

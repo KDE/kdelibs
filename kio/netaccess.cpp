@@ -56,7 +56,7 @@ bool NetAccess::download(const KURL& u, QString & target)
   NetAccess kioNet;
   KURL dest;
   dest.setPath( target );
-  return kioNet.copyInternal( u, dest );
+  return kioNet.copyInternal( u, dest, true /*overwrite*/);
 }
 
 bool NetAccess::upload(const QString& src, const KURL& target)
@@ -64,18 +64,19 @@ bool NetAccess::upload(const QString& src, const KURL& target)
   if (target.isEmpty())
     return false;
 
-  // TODO : What do we do if target.isLocalFile() ? Copy ? Nothing ?
+  // If target is local... well, just copy. This can be useful
+  // when the client code uses a temp file no matter what.
 
   NetAccess kioNet;
   KURL s;
   s.setPath(src);
-  return kioNet.copyInternal( s, target );
+  return kioNet.copyInternal( s, target, false /*not overwrite*/ );
 }
 
 bool NetAccess::copy( const KURL & src, const KURL & target )
 {
   NetAccess kioNet;
-  return kioNet.copyInternal( src, target );
+  return kioNet.copyInternal( src, target, false /*not overwrite*/ );
 }
 
 bool NetAccess::exists( const KURL & url )
@@ -118,11 +119,11 @@ void NetAccess::removeTempFile(const QString& name)
   }
 }
 
-bool NetAccess::copyInternal(const KURL& src, const KURL& target)
+bool NetAccess::copyInternal(const KURL& src, const KURL& target, bool overwrite)
 {
   bJobOK = true; // success unless further error occurs
 
-  KIO::Job * job = KIO::file_copy( src, target );
+  KIO::Job * job = KIO::file_copy( src, target, -1, overwrite );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
@@ -163,7 +164,7 @@ bool NetAccess::mkdirInternal( const KURL & url, int permissions )
 QString NetAccess::mimetypeInternal( const KURL & url )
 {
   bJobOK = true; // success unless further error occurs
-  m_mimetype = "unknown";
+  m_mimetype = QString::fromLatin1("unknown");
   KIO::Job * job = KIO::mimetype( url );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
