@@ -70,16 +70,11 @@ QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::
 class ToolbarFilter : public KXBELBookmarkImporterImpl {
 public:
     ToolbarFilter() : m_visible(false) { ; }
-    void filterInto( const KBookmarkGroup &grp ) { traverse(grp); }
+    void filter( const KBookmarkGroup &grp ) { traverse(grp); }
 private:
     virtual void visit( const KBookmark & );
     virtual void visitEnter( const KBookmarkGroup & );
     virtual void visitLeave( const KBookmarkGroup & );
-signals:
-    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-    void newFolder( const QString & text, bool open, const QString & additionalInfo );
-    void newSeparator();
-    void endFolder();
 private:
     bool m_visible;
     KBookmarkGroup m_visibleStart;
@@ -116,12 +111,11 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     {
         QString fname = mgr->path() + ".ftbcache";
         dptr()->m_filteredMgr = KBookmarkManager::managerForFile( fname, false );
-        dptr()->m_filteredMgr->save();
         ToolbarFilter filter;
         KBookmarkDomBuilder builder( dptr()->m_filteredMgr->root(), 
                                      dptr()->m_filteredMgr );
         builder.connectImporter( &filter );
-        filter.filterInto( mgr->root() );
+        filter.filter( mgr->root() );
     }
 
     dptr()->m_readOnly = !!dptr()->m_filteredMgr;
