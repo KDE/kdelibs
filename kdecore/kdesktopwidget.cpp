@@ -30,10 +30,7 @@
 #include <X11/Xlib.h>
 #endif
 #ifdef HAVE_XINERAMA
-#ifndef Bool
-/* happens only in --enable-final mode */
 #define Bool X11Bool
-#endif
 extern "C" {
   #include <X11/extensions/Xinerama.h>
 }

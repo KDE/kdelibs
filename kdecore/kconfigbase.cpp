@@ -354,7 +354,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           break;
   }
 
-  ASSERT( 0 );
+  Q_ASSERT( 0 );
   return QVariant();
 }
 
@@ -1095,7 +1095,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         break;
     }
 
-  ASSERT( 0 );
+  Q_ASSERT( 0 );
 }
 
 void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,

@@ -49,7 +49,7 @@ KProcessController::KProcessController()
 
   // initialize theKProcessList
   processList = new QList<KProcess>();
-  CHECK_PTR(processList);
+  Q_CHECK_PTR(processList);
 
   if (0 > pipe(fd))
 	printf(strerror(errno));

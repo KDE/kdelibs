@@ -1086,7 +1086,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
     return m_strProtocol;
   }
 
-  QString u = m_strProtocol.copy();
+  QString u = m_strProtocol;
   if ( hasHost() )
   {
     u += "://";
@@ -1135,7 +1135,7 @@ QString KURL::prettyURL( int _trailing ) const
     return m_strProtocol;
   }
 
-  QString u = m_strProtocol.copy();
+  QString u = m_strProtocol;
   if ( hasHost() )
   {
     u += "://";
@@ -1355,7 +1355,7 @@ bool KURL::cd( const QString& _dir )
   if ( ( _dir[0] == '~' ) && ( m_strProtocol == "file" ))
   {
     m_strPath_encoded = QString::null;
-    m_strPath = QDir::homeDirPath().copy();
+    m_strPath = QDir::homeDirPath();
     m_strPath += "/";
     m_strPath += _dir.right(m_strPath.length() - 1);
     setHTMLRef( QString::null );

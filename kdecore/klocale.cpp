@@ -68,7 +68,7 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
   KConfig *cfg = d->config;
   if (!cfg) cfg = KGlobal::instance()->config();
 
-  ASSERT( cfg );
+  Q_ASSERT( cfg );
 
   initCharset(cfg);  // #### HPB: Remove in KDE 3 after porting to Qt 3
   initEncoding(cfg);
@@ -222,7 +222,7 @@ void KLocale::initFormat()
 {
   KConfig *config = d->config;
   if (!config) config = KGlobal::instance()->config();
-  ASSERT( config );
+  Q_ASSERT( config );
 
   kdDebug(173) << "KLocale::initFormat" << endl;
 
@@ -1584,7 +1584,7 @@ void KLocale::initEncoding(KConfig *config)
       // intelligent
     }
 
-  ASSERT( d->codecForEncoding );
+  Q_ASSERT( d->codecForEncoding );
 }
 
 void KLocale::initCatalogue( KCatalogue & catalogue )

@@ -52,7 +52,7 @@ KInstance::KInstance( const QCString& name)
     _iconLoader (0L),
     _name( name ), _aboutData( new KAboutData( name, "", 0 ) )
 {
-    ASSERT(!name.isEmpty());
+    Q_ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
     {
       KGlobal::_instance = this;
@@ -69,7 +69,7 @@ KInstance::KInstance( const KAboutData * aboutData )
     _iconLoader (0L),
     _name( aboutData->appName() ), _aboutData( aboutData )
 {
-    ASSERT(!_name.isEmpty());
+    Q_ASSERT(!_name.isEmpty());
 
     if (!KGlobal::_instance)
     {

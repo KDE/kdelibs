@@ -29,12 +29,9 @@ DEALINGS IN THE SOFTWARE.
 #define KSTARTUPINFO_ALL_DEBUG
 #endif
 
-#ifndef QT_CLEAN_NAMESPACE
-#define QT_CLEAN_NAMESPACE
-#endif
-
-#include <qglobal.h>
+#include <qwidget.h>
 #ifdef Q_WS_X11 // FIXME(E): Re-implement in a less X11 specific way
+#include <qglobal.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

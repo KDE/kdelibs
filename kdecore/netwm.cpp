@@ -24,12 +24,7 @@
 
 // #define NETWMDEBUG
 
-#ifndef QT_CLEAN_NAMESPACE
-#define QT_CLEAN_NAMESPACE
-#endif
-
-#include <qglobal.h>
-
+#include <qwidget.h>
 #ifdef Q_WS_X11 //FIXME
 
 #include "netwm.h"

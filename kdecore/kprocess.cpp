@@ -93,7 +93,7 @@ KProcess::KProcess()
 {
   if (0 == KProcessController::theKProcessController) {
         KProcessController::theKProcessController= new KProcessController();
-        CHECK_PTR(KProcessController::theKProcessController);
+        Q_CHECK_PTR(KProcessController::theKProcessController);
   }
 
   KProcessController::theKProcessController->processList->append(this);
@@ -185,7 +185,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   status = 0;
 
   arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
-  CHECK_PTR(arglist);
+  Q_CHECK_PTR(arglist);
   for (i=0; i < n; i++)
     arglist[i] = arguments.at(i);
   arglist[n]= 0;
@@ -568,7 +568,7 @@ int KProcess::commSetupDoneP()
         if (communication & Stdin) {
 //        ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
           innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
-          CHECK_PTR(innot);
+          Q_CHECK_PTR(innot);
           innot->setEnabled(false); // will be enabled when data has to be sent
           QObject::connect(innot, SIGNAL(activated(int)),
                                            this, SLOT(slotSendData(int)));
@@ -577,7 +577,7 @@ int KProcess::commSetupDoneP()
         if (communication & Stdout) {
 //        ok &= (-1 != fcntl(out[0], F_SETFL, O_NONBLOCK));
           outnot = new QSocketNotifier(out[0], QSocketNotifier::Read, this);
-          CHECK_PTR(outnot);
+          Q_CHECK_PTR(outnot);
           QObject::connect(outnot, SIGNAL(activated(int)),
                                            this, SLOT(slotChildOutput(int)));
           if (communication & NoRead)
@@ -587,7 +587,7 @@ int KProcess::commSetupDoneP()
         if (communication & Stderr) {
 //        ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
           errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );
-          CHECK_PTR(errnot);
+          Q_CHECK_PTR(errnot);
           QObject::connect(errnot, SIGNAL(activated(int)),
                                            this, SLOT(slotChildError(int)));
         }

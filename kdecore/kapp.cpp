@@ -590,7 +590,7 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
-    ASSERT (!rAppName.isEmpty());
+    Q_ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
@@ -629,7 +629,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
        allowStyles = false;
     useStyles = allowStyles;
 
-    ASSERT (!rAppName.isEmpty());
+    Q_ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
