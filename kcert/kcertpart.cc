@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001,2002 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -782,6 +782,7 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
 		if (!x5i) {
 			return;
 		}
+		x5i->cert->revalidate();
 		_blankFrame->hide();
 		_pkcsFrame->hide();
 		_x509Frame->show();
@@ -794,6 +795,7 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
 		if (!x5i) {
 			return;
 		}
+		x5i->cert->revalidate();
 		_blankFrame->hide();
 		_pkcsFrame->hide();
 		_x509Frame->show();
@@ -806,6 +808,7 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
 		if (!p12i) {
 			return;
 		}
+		p12i->cert->revalidate();
 		_blankFrame->hide();
 		_x509Frame->hide();
 		_pkcsFrame->show();
