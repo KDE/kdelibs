@@ -414,9 +414,14 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			}
 		}
 
+		delete kpd;
 		if (!emptyPass && (!p || !b->isOpen())) {
 			delete b;
-			delete kpd;
+			return -1;
+		}
+
+		if (emptyPass && _openPrompt && !isAuthorizedApp(appid, wallet, w)) {
+			delete b;
 			return -1;
 		}
 
@@ -433,7 +438,6 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		if (_closeIdle && _timeouts) {
 			_timeouts->addTimer(rc, _idleTime);
 		}
-		delete kpd;
 		QByteArray data;
 		QDataStream ds(data, IO_WriteOnly);
 		ds << wallet;
@@ -445,54 +449,62 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			KApplication::startServiceByDesktopName("kwalletmanager-kwalletd");
 		}
 	} else {
-		int response = 0;
-
-		if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
-			KBetterThanKDialogBase *dialog = new KBetterThanKDialogBase;
-			if (appid.isEmpty()) {
-				dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
-			} else {
-				dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)));
-			}
-			XSetTransientForHint(qt_xdisplay(), dialog->winId(), w);
-			KWin::setState(dialog->winId(), NET::KeepAbove);
-			KWin::setOnAllDesktops(dialog->winId(), true);
-
-			response = dialog->exec();
-			delete dialog;
-		}
-
-		if (response == 0 || response == 1) {
-			_handles[appid].append(rc);
-			_wallets.find(rc)->ref();
-			if (response == 1) {
-				KConfig cfg("kwalletrc");
-				cfg.setGroup("Auto Allow");
-				QStringList apps = cfg.readListEntry(wallet);
-				if (!apps.contains(appid)) {
-					apps += appid;
-					_implicitAllowMap[wallet] += appid;
-					cfg.writeEntry(wallet, apps);
-					cfg.sync();
-				}
-			}
-		} else if (response == 3) {
-			KConfig cfg("kwalletrc");
-			cfg.setGroup("Auto Deny");
-			QStringList apps = cfg.readListEntry(wallet);
-			if (!apps.contains(appid)) {
-				apps += appid;
-				_implicitDenyMap[wallet] += appid;
-				cfg.writeEntry(wallet, apps);
-				cfg.sync();
-			}
-			return -1;
-		} else {
+		if (!_handles[appid].contains(rc) && _openPrompt && !isAuthorizedApp(appid, wallet, w)) {
 			return -1;
 		}
+		_handles[appid].append(rc);
+		_wallets.find(rc)->ref();
 	}
 
 	return rc;
+}
+
+
+bool KWalletD::isAuthorizedApp(const QCString& appid, const QString& wallet, WId w) {
+	int response = 0;
+
+	if (!implicitAllow(wallet, appid)) {
+		KBetterThanKDialogBase *dialog = new KBetterThanKDialogBase;
+		if (appid.isEmpty()) {
+			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
+		} else {
+			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)));
+		}
+		XSetTransientForHint(qt_xdisplay(), dialog->winId(), w);
+		KWin::setState(dialog->winId(), NET::KeepAbove);
+		KWin::setOnAllDesktops(dialog->winId(), true);
+
+		response = dialog->exec();
+		delete dialog;
+	}
+
+	if (response == 0 || response == 1) {
+		if (response == 1) {
+			KConfig cfg("kwalletrc");
+			cfg.setGroup("Auto Allow");
+			QStringList apps = cfg.readListEntry(wallet);
+			if (!apps.contains(appid)) {
+				apps += appid;
+				_implicitAllowMap[wallet] += appid;
+				cfg.writeEntry(wallet, apps);
+				cfg.sync();
+			}
+		}
+	} else if (response == 3) {
+		KConfig cfg("kwalletrc");
+		cfg.setGroup("Auto Deny");
+		QStringList apps = cfg.readListEntry(wallet);
+		if (!apps.contains(appid)) {
+			apps += appid;
+			_implicitDenyMap[wallet] += appid;
+			cfg.writeEntry(wallet, apps);
+			cfg.sync();
+		}
+		return false;
+	} else {
+		return false;
+	}
+	return true;
 }
 
 

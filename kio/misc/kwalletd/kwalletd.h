@@ -151,6 +151,7 @@ class KWalletD : public KDEDModule {
 
 	private:
 		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0);
+		bool isAuthorizedApp(const QCString& appid, const QString& wallet, WId w);
 		// This also validates the handle.  May return NULL.
 		KWallet::Backend* getWallet(const QCString& appid, int handle);
 		// Generate a new unique handle.
