@@ -52,6 +52,6 @@ namespace KJS {
   private:
   };
 
-}; // namespace
+} // namespace
 
 #endif
