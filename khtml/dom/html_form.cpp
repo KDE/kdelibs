@@ -451,12 +451,12 @@ void HTMLInputElement::setMaxLength( long _maxLength )
 DOMString HTMLInputElement::name() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
+    return static_cast<HTMLInputElementImpl* const>(impl)->name();
 }
 
 void HTMLInputElement::setName( const DOMString &value )
 {
-    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<HTMLInputElementImpl*>(impl)->setName(value);
 }
 
 bool HTMLInputElement::readOnly() const
@@ -860,12 +860,12 @@ void HTMLSelectElement::setMultiple( bool _multiple )
 DOMString HTMLSelectElement::name() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
+    return static_cast<HTMLSelectElementImpl* const>(impl)->name();
 }
 
 void HTMLSelectElement::setName( const DOMString &value )
 {
-    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->setName(value);
 }
 
 long HTMLSelectElement::size() const
@@ -1009,12 +1009,12 @@ void HTMLTextAreaElement::setDisabled( bool _disabled )
 DOMString HTMLTextAreaElement::name() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
+    return static_cast<HTMLTextAreaElementImpl* const>(impl)->name();
 }
 
 void HTMLTextAreaElement::setName( const DOMString &value )
 {
-    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<HTMLTextAreaElementImpl*>(impl)->setName(value);
 }
 
 bool HTMLTextAreaElement::readOnly() const
@@ -1200,7 +1200,7 @@ DOMString HTMLOptionElement::value() const
 
 void HTMLOptionElement::setValue( const DOMString &value )
 {
-    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_VALUE, value);
+    if(impl) static_cast<HTMLOptionElementImpl*>(impl)->setValue(value.implementation());
 }
 
 // -----------------------------------------------------------------------------

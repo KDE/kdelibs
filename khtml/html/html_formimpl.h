@@ -152,8 +152,10 @@ public:
     bool readOnly() const { return m_readOnly; }
     void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
 
-    const DOMString &name() const { return _name; }
     void setForm(HTMLFormElementImpl *f) { m_form = f; }
+
+    DOMString name() const;
+    void setName(const DOMString& name);
 
     /*
      * override in derived classes to get the encoded name=value pair
@@ -167,10 +169,13 @@ public:
 
     virtual void defaultEventHandler(EventImpl *evt);
 
+private:
+    void init();
+
 protected:
     HTMLFormElementImpl *getForm() const;
 
-    DOMString _name;
+    DOMStringImpl* m_name;
     HTMLFormElementImpl *m_form;
     KHTMLView *view;
     bool m_disabled, m_readOnly;
@@ -451,6 +456,7 @@ public:
     void setIndex( long );
     virtual void parseAttribute(AttrImpl *attr);
     DOMString value() const;
+    void setValue(DOMStringImpl* value);
 
     bool selected() const { return m_selected; }
     void setSelected(bool _selected);

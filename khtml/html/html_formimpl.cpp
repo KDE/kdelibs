@@ -479,24 +479,28 @@ void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLElementImpl(doc)
 {
+    init();
+
     m_form = f;
     if (m_form)
         m_form->registerFormElement(this);
-
-    view = 0;
-    m_disabled = m_readOnly = false;
-
 }
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
+    init();
+
     m_form = getForm();
     if (m_form)
         m_form->registerFormElement(this);
+}
 
+void HTMLGenericFormElementImpl::init()
+{
     view = 0;
     m_disabled = m_readOnly = false;
+    m_name = 0;
 }
 
 HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
@@ -510,7 +514,6 @@ void HTMLGenericFormElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_NAME:
-        _name = attr->value();
         break;
     case ATTR_DISABLED:
         m_disabled = attr->val() != 0;
@@ -538,6 +541,23 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
     return 0;
 }
 
+DOMString HTMLGenericFormElementImpl::name() const
+{
+    if (m_name) return m_name;
+
+    DOMString n = getAttribute(ATTR_NAME);
+    if (n.isNull())
+        return new DOMStringImpl("");
+
+    return n;
+}
+
+void HTMLGenericFormElementImpl::setName(const DOMString& name)
+{
+    if (m_name) m_name->deref();
+    m_name = name.implementation();
+    if (m_name) m_name->ref();
+}
 
 void HTMLGenericFormElementImpl::attach()
 {
@@ -731,10 +751,10 @@ void HTMLButtonElementImpl::attach()
 
 bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool /*multipart*/)
 {
-    if (m_type != SUBMIT || _name.isEmpty() || !m_activeSubmit)
+    if (m_type != SUBMIT || name().isEmpty() || !m_activeSubmit)
         return false;
 
-    encoding += fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
+    encoding += fixUpfromUnicode(codec, name().string());
     QString enc_str = m_currValue.isNull() ? QString("") : m_currValue;
     encoding += fixUpfromUnicode(codec, enc_str);
 
@@ -1109,24 +1129,25 @@ void HTMLInputElementImpl::applyChanges(bool top, bool force)
 
 bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool multipart)
 {
+    QString nme = name().string();
+
     // image generates its own name's
-    if (_name.isEmpty() && m_type != IMAGE) return false;
+    if (nme.isEmpty() && m_type != IMAGE) return false;
 
     // IMAGE needs special handling later
-    if(m_type != IMAGE) encoding += fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
+    if(m_type != IMAGE) encoding += fixUpfromUnicode(codec, nme);
 
     switch (m_type) {
         case HIDDEN:
         case TEXT:
         case PASSWORD:
             // always successful
-            encoding += fixUpfromUnicode(codec, m_value.string());
+            encoding += fixUpfromUnicode(codec, value().string());
             return true;
         case CHECKBOX:
 
-            if( checked() )
-            {
-                encoding += ( m_value.isNull() ? QCString("on") : fixUpfromUnicode(codec, m_value.string()));
+            if( checked() ) {
+                encoding += fixUpfromUnicode(codec, value().string());
                 return true;
             }
             break;
@@ -1134,7 +1155,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
         case RADIO:
 
             if( checked() ) {
-                encoding += fixUpfromUnicode(codec, m_value.string());
+                encoding += fixUpfromUnicode(codec, value().string());
                 return true;
             }
             break;
@@ -1149,12 +1170,12 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             if(m_clicked && clickX() != -1)
             {
                 m_clicked = false;
-                QString astr(_name.isEmpty() ? QString::fromLatin1("x") : _name.string().stripWhiteSpace() + ".x");
+                QString astr(nme.isEmpty() ? QString::fromLatin1("x") : nme + ".x");
 
                 encoding += fixUpfromUnicode(codec, astr);
                 astr.setNum(clickX());
                 encoding += fixUpfromUnicode(codec, astr);
-                astr = _name.isEmpty() ? QString::fromLatin1("y") : _name.string().stripWhiteSpace() + ".y";
+                astr = nme.isEmpty() ? QString::fromLatin1("y") : nme + ".y";
                 encoding += fixUpfromUnicode(codec, astr);
                 astr.setNum(clickY());
                 encoding += fixUpfromUnicode(codec, astr);
@@ -1253,9 +1274,15 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
-    m_checked = _checked;
-    if (m_type == RADIO && m_form && m_checked)
+    if (m_type == RADIO && m_form && _checked && !name().isEmpty()) {
+        m_checked = _checked;
         m_form->radioClicked(this);
+    }
+
+    if (m_checked == _checked) return;
+
+    m_checked = _checked;
+
     setChanged(true);
 }
 
@@ -1265,6 +1292,11 @@ DOMString HTMLInputElementImpl::value() const
     // Readonly support for type=file
     if ( m_type == FILE )
         return m_filename;
+
+    if (m_type == CHECKBOX || m_type == RADIO) {
+        if (m_value.isNull() && m_checked)
+            return DOMString("on");
+    }
 
     if(m_value.isNull())
         return DOMString(""); // some JS sites obviously need this
@@ -1643,7 +1675,7 @@ void HTMLSelectElementImpl::attach()
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
 {
     bool successful = false;
-    QCString enc_name = fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
+    QCString enc_name = fixUpfromUnicode(codec, name().string());
 
     uint i;
     for (i = 0; i < m_listItems.size(); i++) {
@@ -1937,6 +1969,11 @@ DOMString HTMLOptionElementImpl::value() const
     return text().string().stripWhiteSpace();
 }
 
+void HTMLOptionElementImpl::setValue(DOMStringImpl* value)
+{
+    setAttribute(ATTR_VALUE, value);
+}
+
 void HTMLOptionElementImpl::setSelected(bool _selected)
 {
     if(m_selected == _selected)
@@ -2088,9 +2125,9 @@ void HTMLTextAreaElementImpl::attach()
 
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)
 {
-    if (_name.isEmpty() || !m_render) return false;
+    if (name().isEmpty() || !m_render) return false;
 
-    encoding += fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
+    encoding += fixUpfromUnicode(codec, name().string());
     encoding += fixUpfromUnicode(codec, value().string());
 
     return true;
@@ -2197,7 +2234,8 @@ void HTMLIsIndexElementImpl::parseAttribute(AttrImpl* attr)
 void HTMLIsIndexElementImpl::attach()
 {
     HTMLInputElementImpl::attach();
-    _name = "isindex";
+
+    setName("isindex");
     // ### fix this, this is just a crude hack
     setValue(m_prompt);
 }
