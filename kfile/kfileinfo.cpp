@@ -249,7 +249,7 @@ QString KFileInfo::dateTime(time_t _time) {
 	sTime.sprintf("%02d:%02d", t.time().hour(), t.time().minute());
 
     QString text;
-    text.sprintf("% 3s %s %s", months[t.date().month() - 1], number.data(),
+    text.sprintf("%3s %s %s", months[t.date().month() - 1], number.data(),
 		 sTime.data());
 
     return text;
