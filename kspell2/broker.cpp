@@ -58,20 +58,27 @@ QPtrDict<Broker> *Broker::s_brokers = 0;
 
 Broker *Broker::openBroker( KSharedConfig *config )
 {
+    KSharedConfig::Ptr preventDeletion;
     if ( !config ) {
-        config = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
-    }
+        preventDeletion = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
+    } else
+        preventDeletion = config;
 
     if ( s_brokers ) {
-        Broker *broker = s_brokers->find( config );
+        Broker *broker = s_brokers->find( preventDeletion );
         if ( broker )
             return broker;
     }
-    return new Broker( config );
+
+    Broker *broker = new Broker( preventDeletion );
+    return broker;
 }
 
 Broker::Broker( KSharedConfig *config )
 {
+    KSharedConfig::Ptr preventDeletion( config );
+    Q_UNUSED( preventDeletion );
+
     if ( !s_brokers )
         s_brokers = new QPtrDict<Broker>;
     s_brokers->insert( config, this );
