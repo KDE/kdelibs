@@ -70,6 +70,14 @@ public:
    */
   void init();
   /**
+   * Returns a pointer to the Global object.
+   */
+  KJS::Imp *globalObject() const;
+  /**
+   * Don't use. May disappear.
+   */
+  static KJScript *current();
+  /**
    * Asks the interpreter to evaluate a piece of code. If called more than
    * once the state (global variables, functions etc.) will be preserved
    * between each call.

@@ -270,7 +270,7 @@ namespace KJS {
     friend class Global;
     friend class Collector;
   public:
-    KJScriptImp();
+    KJScriptImp(KJScript *s);
     ~KJScriptImp();
     void mark();
     static KJScriptImp *current() { return curr; }
@@ -279,6 +279,9 @@ namespace KJS {
     static bool hadException();
     static KJSO exception();
     static void clearException();
+
+    Context *context() const { return con; }
+    void setContext(Context *c) { con = c; }
 
 #ifdef KJS_DEBUGGER
     /**
@@ -303,6 +306,7 @@ namespace KJS {
     ProgramNode *progNode;
     Node *firstNode;
     KJScriptImp *next, *prev;
+    KJScript *scr;
   private:
     static KJScriptImp *curr, *hook;
     static int running;	// total number running

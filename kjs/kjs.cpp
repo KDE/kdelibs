@@ -30,7 +30,7 @@ using namespace KJS;
 
 KJScript::KJScript()
 {
-  rep = new KJScriptImp();
+  rep = new KJScriptImp(this);
   rep->init();
 }
 
@@ -47,6 +47,16 @@ KJScript::~KJScript()
 void KJScript::init()
 {
   rep->init();
+}
+
+Imp *KJScript::globalObject() const
+{
+  return rep->glob.imp();
+}
+
+KJScript *KJScript::current()
+{
+  return KJScriptImp::current() ? KJScriptImp::current()->scr : 0L;
 }
 
 bool KJScript::evaluate(const char *code)

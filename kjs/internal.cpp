@@ -278,7 +278,7 @@ Context::Context(CodeType type, Context *callingContext,
       if (thisV->type() >= ObjectType)
 	thisVal = thisV;
       else
-	thisVal = glob.imp();
+	thisVal = glob;
       variable = activation; /* TODO: DontDelete (ECMA 10.2.4) */
       scopeChain = new List();
       scopeChain->append(activation);
@@ -434,8 +434,9 @@ KJScriptImp* KJScriptImp::curr = 0L;
 KJScriptImp* KJScriptImp::hook = 0L;
 int          KJScriptImp::running = 0;
 
-KJScriptImp::KJScriptImp()
-  : initialized(false),
+KJScriptImp::KJScriptImp(KJScript *s)
+  : scr(s),
+    initialized(false),
     glob(0L),
 #ifdef KJS_DEBUGGER
     dbg(0L),
@@ -574,15 +575,14 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   if (onlyCheckSyntax)
       return true;
 
-  Context *context = Context::current();
   clearException();
 
   KJSO oldVar;
   if (thisV) {
-    context->setThisValue(thisV);
-    context->pushScope(thisV);
-    oldVar = context->variableObject();
-    context->setVariableObject(thisV);
+    context()->setThisValue(thisV);
+    context()->pushScope(thisV);
+    oldVar = context()->variableObject();
+    context()->setVariableObject(thisV);
   }
 
   running++;
@@ -615,8 +615,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   }
 
   if (thisV) {
-    context->popScope();
-    context->setVariableObject(oldVar);
+    context()->popScope();
+    context()->setVariableObject(oldVar);
   }
 
   if (progNode)

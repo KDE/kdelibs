@@ -131,10 +131,11 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
     dummyList = true;
   }
 
-  Context *save = Context::current();
+  KJScriptImp *curr = KJScriptImp::current();
+  Context *save = curr->context();
 
   Context *ctx = new Context(codeType(), save, this, args, thisV);
-  Context::setCurrent(ctx);
+  curr->setContext(ctx);
 
   // assign user supplied arguments to parameters
   processParameters(args);
@@ -145,7 +146,7 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
     delete args;
 
   delete ctx;
-  Context::setCurrent(save);
+  curr->setContext(save);
 
 #ifdef KJS_VERBOSE
   if (comp.complType() == Throw)
