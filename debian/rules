@@ -72,7 +72,9 @@ binary-arch:  build
 	install -d debian/tmp/usr/share/applnk
 	install -d debian/tmp/etc/pam.d
 	install -d debian/tmp/etc/kde2
+	install -d debian/tmp/usr/share/lintian/overrides
 	make DESTDIR=`pwd`/debian/tmp/ install
+	cp debian/kdelibs3.override debian/tmp/usr/share/lintian/overrides/kdelibs3
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
