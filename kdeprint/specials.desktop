@@ -3,7 +3,7 @@ Number=4
 
 [Printer 0]
 Name=Print To File (PostScript)
-Name[af]=druk aan lêer (postscript)
+Name[af]=druk na lêer (postscript)
 Name[ar]=الطبع الى ملف (بوست سكريبت)
 Name[az]=Fayla Çap (PostScript)
 Name[be]=Друкаваць у файл (PostScript)
@@ -157,7 +157,7 @@ Extension=ps
 
 [Printer 1]
 Name=Print To File (PDF/Acrobat)
-Name[af]=druk aan lêer (pdf/acrobat)
+Name[af]=druk na lêer (pdf/acrobat)
 Name[ar]=طبع الى ملف (PDF/أكروبات)
 Name[az]=Fayla Çap (PDF/Acrobat)
 Name[be]=Друкаваць у файл (PDF/Acrobat)
@@ -312,7 +312,7 @@ Require=exec:/ps2pdf
 
 [Printer 2]
 Name=Send To Fax
-Name[af]=stuur aan faks
+Name[af]=stuur na faks
 Name[ar]=ارسال الى الفاكس
 Name[az]=Faksa Yolla
 Name[bg]=Изпраща на Факс
@@ -360,7 +360,7 @@ Name[zh_CN]=发送至传真
 Name[zh_TW]=發送至傳真
 Name[zu]=Thumela kwifax
 Description=Send to external fax system
-Description[af]=stuur aan eksterne faks stelsel
+Description[af]=stuur na eksterne faks stelsel
 Description[ar]=ارسال الى جهاز الفاكس الخارجي
 Description[az]=Xarici faks sisteminə yolla
 Description[bg]=Изпращане към външна факс система
