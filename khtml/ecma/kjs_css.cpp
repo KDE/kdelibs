@@ -108,7 +108,7 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
     case Length:
       return Number(styleDecl.length());
     case ParentRule:
-      return Undefined(); // ###
+      return getDOMCSSRule(exec,styleDecl.parentRule());
     default:
       break;
     }

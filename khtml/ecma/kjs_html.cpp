@@ -292,629 +292,1347 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
 
 // -------------------------------------------------------------------------
 
-const ClassInfo KJS::HTMLElement::info = { "HTMLElement",
-					  &DOMElement::info, 0, 0 };
+const ClassInfo KJS::HTMLElement::info = { "HTMLElement", &DOMElement::info, &HTMLElementTable, 0 };
+const ClassInfo KJS::HTMLElement::html_info = { "HTMLHtmlElement", &KJS::HTMLElement::info, &HTMLHtmlElementTable, 0 };
+const ClassInfo KJS::HTMLElement::head_info = { "HTMLHeadElement", &KJS::HTMLElement::info, &HTMLHeadElementTable, 0 };
+const ClassInfo KJS::HTMLElement::link_info = { "HTMLLinkElement", &KJS::HTMLElement::info, &HTMLLinkElementTable, 0 };
+const ClassInfo KJS::HTMLElement::title_info = { "HTMLTitleElement", &KJS::HTMLElement::info, &HTMLTitleElementTable, 0 };
+const ClassInfo KJS::HTMLElement::meta_info = { "HTMLMetaElement", &KJS::HTMLElement::info, &HTMLMetaElementTable, 0 };
+const ClassInfo KJS::HTMLElement::base_info = { "HTMLBaseElement", &KJS::HTMLElement::info, &HTMLBaseElementTable, 0 };
+const ClassInfo KJS::HTMLElement::isIndex_info = { "HTMLIsIndexElement", &KJS::HTMLElement::info, &HTMLIsIndexElementTable, 0 };
+const ClassInfo KJS::HTMLElement::style_info = { "HTMLStyleElement", &KJS::HTMLElement::info, &HTMLStyleElementTable, 0 };
+const ClassInfo KJS::HTMLElement::body_info = { "HTMLBodyElement", &KJS::HTMLElement::info, &HTMLBodyElementTable, 0 };
+const ClassInfo KJS::HTMLElement::form_info = { "HTMLFormElement", &KJS::HTMLElement::info, &HTMLFormElementTable, 0 };
+const ClassInfo KJS::HTMLElement::select_info = { "HTMLSelectElement", &KJS::HTMLElement::info, &HTMLSelectElementTable, 0 };
+const ClassInfo KJS::HTMLElement::optGroup_info = { "HTMLOptGroupElement", &KJS::HTMLElement::info, &HTMLOptGroupElementTable, 0 };
+const ClassInfo KJS::HTMLElement::option_info = { "HTMLOptionElement", &KJS::HTMLElement::info, &HTMLOptionElementTable, 0 };
+const ClassInfo KJS::HTMLElement::input_info = { "HTMLInputElement", &KJS::HTMLElement::info, &HTMLInputElementTable, 0 };
+const ClassInfo KJS::HTMLElement::textArea_info = { "HTMLTextAreaElement", &KJS::HTMLElement::info, &HTMLTextAreaElementTable, 0 };
+const ClassInfo KJS::HTMLElement::button_info = { "HTMLButtonElement", &KJS::HTMLElement::info, &HTMLButtonElementTable, 0 };
+const ClassInfo KJS::HTMLElement::label_info = { "HTMLLabelElement", &KJS::HTMLElement::info, &HTMLLabelElementTable, 0 };
+const ClassInfo KJS::HTMLElement::fieldSet_info = { "HTMLFieldSetElement", &KJS::HTMLElement::info, &HTMLFieldSetElementTable, 0 };
+const ClassInfo KJS::HTMLElement::legend_info = { "HTMLLegendElement", &KJS::HTMLElement::info, &HTMLLegendElementTable, 0 };
+const ClassInfo KJS::HTMLElement::ul_info = { "HTMLUListElement", &KJS::HTMLElement::info, &HTMLUListElementTable, 0 };
+const ClassInfo KJS::HTMLElement::ol_info = { "HTMLOListElement", &KJS::HTMLElement::info, &HTMLOListElementTable, 0 };
+const ClassInfo KJS::HTMLElement::dl_info = { "HTMLDListElement", &KJS::HTMLElement::info, &HTMLDListElementTable, 0 };
+const ClassInfo KJS::HTMLElement::dir_info = { "HTMLDirectoryElement", &KJS::HTMLElement::info, &HTMLDirectoryElementTable, 0 };
+const ClassInfo KJS::HTMLElement::menu_info = { "HTMLMenuElement", &KJS::HTMLElement::info, &HTMLMenuElementTable, 0 };
+const ClassInfo KJS::HTMLElement::li_info = { "HTMLLIElement", &KJS::HTMLElement::info, &HTMLLIElementTable, 0 };
+const ClassInfo KJS::HTMLElement::div_info = { "HTMLDivElement", &KJS::HTMLElement::info, &HTMLDivElementTable, 0 };
+const ClassInfo KJS::HTMLElement::p_info = { "HTMLParagraphElement", &KJS::HTMLElement::info, &HTMLParagraphElementTable, 0 };
+const ClassInfo KJS::HTMLElement::heading_info = { "HTMLHeadingElement", &KJS::HTMLElement::info, &HTMLHeadingElementTable, 0 };
+const ClassInfo KJS::HTMLElement::blockQuote_info = { "HTMLBlockQuoteElement", &KJS::HTMLElement::info, &HTMLBlockQuoteElementTable, 0 };
+const ClassInfo KJS::HTMLElement::q_info = { "HTMLQuoteElement", &KJS::HTMLElement::info, &HTMLQuoteElementTable, 0 };
+const ClassInfo KJS::HTMLElement::pre_info = { "HTMLPreElement", &KJS::HTMLElement::info, &HTMLPreElementTable, 0 };
+const ClassInfo KJS::HTMLElement::br_info = { "HTMLBRElement", &KJS::HTMLElement::info, &HTMLBRElementTable, 0 };
+const ClassInfo KJS::HTMLElement::baseFont_info = { "HTMLBaseFontElement", &KJS::HTMLElement::info, &HTMLBaseFontElementTable, 0 };
+const ClassInfo KJS::HTMLElement::font_info = { "HTMLFontElement", &KJS::HTMLElement::info, &HTMLFontElementTable, 0 };
+const ClassInfo KJS::HTMLElement::hr_info = { "HTMLHRElement", &KJS::HTMLElement::info, &HTMLHRElementTable, 0 };
+const ClassInfo KJS::HTMLElement::mod_info = { "HTMLModElement", &KJS::HTMLElement::info, &HTMLModElementTable, 0 };
+const ClassInfo KJS::HTMLElement::a_info = { "HTMLAnchorElement", &KJS::HTMLElement::info, &HTMLAnchorElementTable, 0 };
+const ClassInfo KJS::HTMLElement::img_info = { "HTMLImageElement", &KJS::HTMLElement::info, &HTMLImageElementTable, 0 };
+const ClassInfo KJS::HTMLElement::object_info = { "HTMLObjectElement", &KJS::HTMLElement::info, &HTMLObjectElementTable, 0 };
+const ClassInfo KJS::HTMLElement::param_info = { "HTMLParamElement", &KJS::HTMLElement::info, &HTMLParamElementTable, 0 };
+const ClassInfo KJS::HTMLElement::applet_info = { "HTMLAppletElement", &KJS::HTMLElement::info, &HTMLAppletElementTable, 0 };
+const ClassInfo KJS::HTMLElement::map_info = { "HTMLMapElement", &KJS::HTMLElement::info, &HTMLMapElementTable, 0 };
+const ClassInfo KJS::HTMLElement::area_info = { "HTMLAreaElement", &KJS::HTMLElement::info, &HTMLAreaElementTable, 0 };
+const ClassInfo KJS::HTMLElement::script_info = { "HTMLScriptElement", &KJS::HTMLElement::info, &HTMLScriptElementTable, 0 };
+const ClassInfo KJS::HTMLElement::table_info = { "HTMLTableElement", &KJS::HTMLElement::info, &HTMLTableElementTable, 0 };
+const ClassInfo KJS::HTMLElement::caption_info = { "HTMLTableCaptionElement", &KJS::HTMLElement::info, &HTMLTableCaptionElementTable, 0 };
+const ClassInfo KJS::HTMLElement::col_info = { "HTMLTableColElement", &KJS::HTMLElement::info, &HTMLTableColElementTable, 0 };
+const ClassInfo KJS::HTMLElement::tablesection_info = { "HTMLTableSectionElement", &KJS::HTMLElement::info, &HTMLTableSectionElementTable, 0 };
+const ClassInfo KJS::HTMLElement::tr_info = { "HTMLTableRowElement", &KJS::HTMLElement::info, &HTMLTableRowElementTable, 0 };
+const ClassInfo KJS::HTMLElement::tablecell_info = { "HTMLTableCellElement", &KJS::HTMLElement::info, &HTMLTableCellElementTable, 0 };
+const ClassInfo KJS::HTMLElement::frameSet_info = { "HTMLFrameSetElement", &KJS::HTMLElement::info, &HTMLFrameSetElementTable, 0 };
+const ClassInfo KJS::HTMLElement::frame_info = { "HTMLFrameElement", &KJS::HTMLElement::info, &HTMLFrameElementTable, 0 };
+const ClassInfo KJS::HTMLElement::iFrame_info = { "HTMLIFrameElement", &KJS::HTMLElement::info, &HTMLIFrameElementTable, 0 };
 
-Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
+const ClassInfo* KJS::HTMLElement::classInfo() const
+{
+  DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  switch (element.elementId()) {
+  case ID_HTML:
+    return &html_info;
+  case ID_HEAD:
+    return &head_info;
+  case ID_LINK:
+    return &link_info;
+  case ID_TITLE:
+    return &title_info;
+  case ID_META:
+    return &meta_info;
+  case ID_BASE:
+    return &base_info;
+  case ID_ISINDEX:
+    return &isIndex_info;
+  case ID_STYLE:
+    return &style_info;
+  case ID_BODY:
+    return &body_info;
+  case ID_FORM:
+    return &form_info;
+  case ID_SELECT:
+    return &select_info;
+  case ID_OPTGROUP:
+    return &optGroup_info;
+  case ID_OPTION:
+    return &option_info;
+  case ID_INPUT:
+    return &input_info;
+  case ID_TEXTAREA:
+    return &textArea_info;
+  case ID_BUTTON:
+    return &button_info;
+  case ID_LABEL:
+    return &label_info;
+  case ID_FIELDSET:
+    return &fieldSet_info;
+  case ID_LEGEND:
+    return &legend_info;
+  case ID_UL:
+    return &ul_info;
+  case ID_OL:
+    return &ol_info;
+  case ID_DL:
+    return &dl_info;
+  case ID_DIR:
+    return &dir_info;
+  case ID_MENU:
+    return &menu_info;
+  case ID_LI:
+    return &li_info;
+  case ID_DIV:
+    return &div_info;
+  case ID_P:
+    return &p_info;
+  case ID_H1:
+  case ID_H2:
+  case ID_H3:
+  case ID_H4:
+  case ID_H5:
+  case ID_H6:
+    return &heading_info;
+  case ID_BLOCKQUOTE:
+    return &blockQuote_info;
+  case ID_Q:
+    return &q_info;
+  case ID_PRE:
+    return &pre_info;
+  case ID_BR:
+    return &br_info;
+  case ID_BASEFONT:
+    return &baseFont_info;
+  case ID_FONT:
+    return &font_info;
+  case ID_HR:
+    return &hr_info;
+  case ID_INS:
+  case ID_DEL:
+    return &mod_info;
+  case ID_A:
+    return &a_info;
+  case ID_IMG:
+    return &img_info;
+  case ID_OBJECT:
+    return &object_info;
+  case ID_PARAM:
+    return &param_info;
+  case ID_APPLET:
+    return &applet_info;
+  case ID_MAP:
+    return &map_info;
+  case ID_AREA:
+    return &area_info;
+  case ID_SCRIPT:
+    return &script_info;
+  case ID_TABLE:
+    return &table_info;
+  case ID_CAPTION:
+    return &caption_info;
+  case ID_COL:
+    return &col_info;
+  case ID_THEAD:
+    return &tablesection_info;
+  case ID_TBODY:
+    return &tablesection_info;
+  case ID_TFOOT:
+    return &tablesection_info;
+  case ID_TR:
+    return &tr_info;
+  case ID_TH:
+    return &tablecell_info;
+  case ID_TD:
+    return &tablecell_info;
+  case ID_FRAMESET:
+    return &frameSet_info;
+  case ID_FRAME:
+    return &frame_info;
+  case ID_IFRAME:
+    return &iFrame_info;
+  default:
+    return &info;
+  }
+}
+/*
+@begin HTMLElementTable 8
+  id		KJS::HTMLElement::ElementId	DontDelete
+  title		KJS::HTMLElement::ElementTitle	DontDelete
+  lang		KJS::HTMLElement::ElementLang	DontDelete
+  dir		KJS::HTMLElement::ElementDir	DontDelete
+### isn't this "class" in the HTML spec?
+  className	KJS::HTMLElement::ElementClassName DontDelete
+  innerHTML	KJS::HTMLElement::ElementInnerHTML DontDelete
+  innerText	KJS::HTMLElement::ElementInnerText DontDelete
+  document	KJS::HTMLElement::ElementDocument  DontDelete|ReadOnly
+@end
+@begin HTMLHtmlElementTable 1
+  version	KJS::HTMLElement::HtmlVersion	DontDelete
+@end
+@begin HTMLHeadElementTable 1
+  profile	KJS::HTMLElement::HeadProfile	DontDelete
+@end
+@begin HTMLLinkElementTable 11
+  disabled	KJS::HTMLElement::LinkDisabled	DontDelete
+  charset	KJS::HTMLElement::LinkCharset	DontDelete
+  href		KJS::HTMLElement::LinkHref	DontDelete
+  hreflang	KJS::HTMLElement::LinkHrefLang	DontDelete
+  media		KJS::HTMLElement::LinkMedia	DontDelete
+  rel		KJS::HTMLElement::LinkRel      	DontDelete
+  rev		KJS::HTMLElement::LinkRev	DontDelete
+  target	KJS::HTMLElement::LinkTarget	DontDelete
+  type		KJS::HTMLElement::LinkType	DontDelete
+  sheet		KJS::HTMLElement::LinkSheet	DontDelete|ReadOnly
+@end
+@begin HTMLTitleElementTable 1
+  text		KJS::HTMLElement::TitleText	DontDelete
+@end
+@begin HTMLMetaElementTable 4
+  content	KJS::HTMLElement::MetaContent	DontDelete
+  httpEquiv	KJS::HTMLElement::MetaHttpEquiv	DontDelete
+  name		KJS::HTMLElement::MetaName	DontDelete
+  scheme	KJS::HTMLElement::MetaScheme	DontDelete
+@end
+@begin HTMLBaseElementTable 2
+  href		KJS::HTMLElement::BaseHref	DontDelete
+  target	KJS::HTMLElement::BaseTarget	DontDelete
+@end
+@begin HTMLIsIndexElementTable 2
+  form		KJS::HTMLElement::IsIndexForm	DontDelete|ReadOnly
+  prompt	KJS::HTMLElement::IsIndexPrompt	DontDelete
+@end
+@begin HTMLStyleElementTable 4
+  disabled	KJS::HTMLElement::StyleDisabled	DontDelete
+  media		KJS::HTMLElement::StyleMedia	DontDelete
+  type		KJS::HTMLElement::StyleType	DontDelete
+  sheet		KJS::HTMLElement::StyleSheet	DontDelete|ReadOnly
+@end
+@begin HTMLBodyElementTable 8
+  aLink		KJS::HTMLElement::BodyALink	DontDelete
+  background	KJS::HTMLElement::BodyBackground	DontDelete
+  bgColor	KJS::HTMLElement::BodyBgColor	DontDelete
+  link		KJS::HTMLElement::BodyLink	DontDelete
+  text		KJS::HTMLElement::BodyText	DontDelete
+  vLink		KJS::HTMLElement::BodyVLink	DontDelete
+  scrollHeight	KJS::HTMLElement::BodyScrollHeight	DontDelete|ReadOnly
+  scrollWidth	KJS::HTMLElement::BodyScrollWidth	DontDelete|ReadOnly
+@end
+@begin HTMLFormElementTable 11
+# Also supported, by name/index
+  elements	KJS::HTMLElement::FormElements	DontDelete|ReadOnly
+  length	KJS::HTMLElement::FormLength	DontDelete|ReadOnly
+  name		KJS::HTMLElement::FormName	DontDelete
+  acceptCharset	KJS::HTMLElement::FormAcceptCharset	DontDelete
+  action	KJS::HTMLElement::FormAction	DontDelete
+  enctype	KJS::HTMLElement::FormEncType	DontDelete
+  method	KJS::HTMLElement::FormMethod	DontDelete
+  target	KJS::HTMLElement::FormTarget	DontDelete
+  submit	KJS::HTMLElement::FormSubmit	DontDelete|Function 0
+  reset		KJS::HTMLElement::FormReset	DontDelete|Function 0
+@end
+@begin HTMLSelectElementTable 11
+# Also supported, by index
+  type		KJS::HTMLElement::SelectType	DontDelete|ReadOnly
+  selectedIndex	KJS::HTMLElement::SelectSelectedIndex	DontDelete
+  value		KJS::HTMLElement::SelectValue	DontDelete
+  length	KJS::HTMLElement::SelectLength	DontDelete
+  form		KJS::HTMLElement::SelectForm	DontDelete|ReadOnly
+  options	KJS::HTMLElement::SelectOptions	DontDelete|ReadOnly
+  disabled	KJS::HTMLElement::SelectDisabled	DontDelete
+  multiple	KJS::HTMLElement::SelectMultiple	DontDelete
+  name		KJS::HTMLElement::SelectName	DontDelete
+  size		KJS::HTMLElement::SelectSize	DontDelete
+  tabIndex	KJS::HTMLElement::SelectTabIndex	DontDelete
+  add		KJS::HTMLElement::SelectAdd	DontDelete|Function 2
+  remove	KJS::HTMLElement::SelectRemove	DontDelete|Function 1
+  blur		KJS::HTMLElement::SelectBlur	DontDelete|Function 0
+  focus		KJS::HTMLElement::SelectFocus	DontDelete|Function 0
+@end
+@begin HTMLOptGroupElementTable 2
+  disabled	KJS::HTMLElement::OptGroupDisabled	DontDelete
+  label		KJS::HTMLElement::OptGroupLabel		DontDelete
+@end
+@begin HTMLOptionElementTable 8
+  form		KJS::HTMLElement::OptionForm		DontDelete|ReadOnly
+  defaultSelected KJS::HTMLElement::OptionDefaultSelected	DontDelete
+  text		KJS::HTMLElement::OptionText		DontDelete
+  index		KJS::HTMLElement::OptionIndex		DontDelete|ReadOnly
+  disabled	KJS::HTMLElement::OptionDisabled	DontDelete
+  label		KJS::HTMLElement::OptionLabel		DontDelete
+  selected	KJS::HTMLElement::OptionSelected	DontDelete
+  value		KJS::HTMLElement::OptionValue		DontDelete
+@end
+@begin HTMLInputElementTable 23
+  defaultValue	KJS::HTMLElement::InputDefaultValue	DontDelete
+  defaultChecked KJS::HTMLElement::InputDefaultChecked	DontDelete
+  form		KJS::HTMLElement::InputForm		DontDelete|ReadOnly
+  accept	KJS::HTMLElement::InputAccept		DontDelete
+  accessKey	KJS::HTMLElement::InputAccessKey	DontDelete
+  align		KJS::HTMLElement::InputAlign		DontDelete
+  alt		KJS::HTMLElement::InputAlt		DontDelete
+  checked	KJS::HTMLElement::InputChecked		DontDelete
+  disabled	KJS::HTMLElement::InputDisabled		DontDelete
+  maxLength	KJS::HTMLElement::InputMaxLength	DontDelete
+  name		KJS::HTMLElement::InputName		DontDelete
+  readOnly	KJS::HTMLElement::InputReadOnly		DontDelete
+  size		KJS::HTMLElement::InputSize		DontDelete
+  src		KJS::HTMLElement::InputSrc		DontDelete
+  tabIndex	KJS::HTMLElement::InputTabIndex		DontDelete
+  type		KJS::HTMLElement::InputType		DontDelete|ReadOnly
+  useMap	KJS::HTMLElement::InputUseMap		DontDelete
+  value		KJS::HTMLElement::InputValue		DontDelete
+  blur		KJS::HTMLElement::InputBlur		DontDelete|Function 0
+  focus		KJS::HTMLElement::InputFocus		DontDelete|Function 0
+  select	KJS::HTMLElement::InputSelect		DontDelete|Function 0
+  click		KJS::HTMLElement::InputClick		DontDelete|Function 0
+@end
+@begin HTMLTextAreaElementTable 13
+  defaultValue	KJS::HTMLElement::TextAreaDefaultValue	DontDelete
+  form		KJS::HTMLElement::TextAreaForm		DontDelete|ReadOnly
+  accessKey	KJS::HTMLElement::TextAreaAccessKey	DontDelete
+  cols		KJS::HTMLElement::TextAreaCols		DontDelete
+  disabled	KJS::HTMLElement::TextAreaDisabled	DontDelete
+  name		KJS::HTMLElement::TextAreaName		DontDelete
+  readOnly	KJS::HTMLElement::TextAreaReadOnly	DontDelete
+  rows		KJS::HTMLElement::TextAreaRows		DontDelete
+  tabIndex	KJS::HTMLElement::TextAreaTabIndex	DontDelete
+  type		KJS::HTMLElement::TextAreaType		DontDelete|ReadOnly
+  value		KJS::HTMLElement::TextAreaValue		DontDelete
+  blur		KJS::HTMLElement::TextAreaBlur		DontDelete|Function 0
+  focus		KJS::HTMLElement::TextAreaFocus		DontDelete|Function 0
+  select	KJS::HTMLElement::TextAreaSelect	DontDelete|Function 0
+@end
+@begin HTMLButtonElementTable 7
+  form		KJS::HTMLElement::ButtonForm		DontDelete|ReadOnly
+  accessKey	KJS::HTMLElement::ButtonAccessKey	DontDelete
+  disabled	KJS::HTMLElement::ButtonDisabled	DontDelete
+  name		KJS::HTMLElement::ButtonName		DontDelete
+  tabIndex	KJS::HTMLElement::ButtonTabIndex	DontDelete
+  type		KJS::HTMLElement::ButtonType		DontDelete|ReadOnly
+  value		KJS::HTMLElement::ButtonValue		DontDelete
+@end
+@begin HTMLLabelElementTable 3
+  form		KJS::HTMLElement::LabelForm		DontDelete|ReadOnly
+  accessKey	KJS::HTMLElement::LabelAccessKey	DontDelete
+  htmlFor	KJS::HTMLElement::LabelHtmlFor		DontDelete
+@end
+@begin HTMLFieldSetElementTable 1
+  form		KJS::HTMLElement::FieldSetForm		DontDelete|ReadOnly
+@end
+@begin HTMLLegendElementTable 3
+  form		KJS::HTMLElement::LegendForm		DontDelete|ReadOnly
+  accessKey	KJS::HTMLElement::LegendAccessKey	DontDelete
+  align		KJS::HTMLElement::LegendAlign		DontDelete
+@end
+@begin HTMLUListElementTable 2
+  compact	KJS::HTMLElement::UListCompact		DontDelete
+  type		KJS::HTMLElement::UListType		DontDelete
+@end
+@begin HTMLOListElementTable 3
+  compact	KJS::HTMLElement::OListCompact		DontDelete
+  start		KJS::HTMLElement::OListStart		DontDelete
+  type		KJS::HTMLElement::OListType		DontDelete
+@end
+@begin HTMLDListElementTable 1
+  compact	KJS::HTMLElement::DListCompact		DontDelete
+@end
+@begin HTMLDirectoryElementTable 1
+  compact	KJS::HTMLElement::DirectoryCompact	DontDelete
+@end
+@begin HTMLMenuElementTable 1
+  compact	KJS::HTMLElement::MenuCompact		DontDelete
+@end
+@begin HTMLLIElementTable 2
+  type		KJS::HTMLElement::LIType		DontDelete
+  value		KJS::HTMLElement::LIValue		DontDelete
+@end
+@begin HTMLDivElementTable 1
+  align		KJS::HTMLElement::DivAlign		DontDelete
+@end
+@begin HTMLParagraphElementTable 1
+  align		KJS::HTMLElement::ParagraphAlign	DontDelete
+@end
+@begin HTMLHeadingElementTable 1
+  align		KJS::HTMLElement::HeadingAlign		DontDelete
+@end
+@begin HTMLBlockQuoteElementTable 1
+  cite		KJS::HTMLElement::BlockQuoteCite	DontDelete
+@end
+@begin HTMLQuoteElementTable 1
+  cite		KJS::HTMLElement::QuoteCite		DontDelete
+@end
+@begin HTMLPreElementTable 1
+  width		KJS::HTMLElement::PreWidth		DontDelete
+@end
+@begin HTMLBRElementTable 1
+  clear		KJS::HTMLElement::BRClear		DontDelete
+@end
+@begin HTMLBaseFontElementTable 3
+  color		KJS::HTMLElement::BaseFontColor		DontDelete
+  face		KJS::HTMLElement::BaseFontFace		DontDelete
+  size		KJS::HTMLElement::BaseFontSize		DontDelete
+@end
+@begin HTMLFontElementTable 3
+  color		KJS::HTMLElement::FontColor		DontDelete
+  face		KJS::HTMLElement::FontFace		DontDelete
+  size		KJS::HTMLElement::FontSize		DontDelete
+@end
+@begin HTMLHRElementTable 4
+  align		KJS::HTMLElement::HRAlign		DontDelete
+  noShade	KJS::HTMLElement::HRNoShade		DontDelete
+  size		KJS::HTMLElement::HRSize		DontDelete
+  width		KJS::HTMLElement::HRWidth		DontDelete
+@end
+@begin HTMLModElementTable 2
+  cite		KJS::HTMLElement::ModCite		DontDelete
+  dateTime	KJS::HTMLElement::ModDateTime		DontDelete
+@end
+@begin HTMLAnchorElementTable 23
+  accessKey	KJS::HTMLElement::AnchorAccessKey	DontDelete
+  charset	KJS::HTMLElement::AnchorCharset		DontDelete
+  coords	KJS::HTMLElement::AnchorCoords		DontDelete
+  href		KJS::HTMLElement::AnchorHref		DontDelete
+  hreflang	KJS::HTMLElement::AnchorHrefLang	DontDelete
+  hash		KJS::HTMLElement::AnchorHash		DontDelete|ReadOnly
+  host		KJS::HTMLElement::AnchorHost		DontDelete|ReadOnly
+  hostname	KJS::HTMLElement::AnchorHostname	DontDelete|ReadOnly
+  name		KJS::HTMLElement::AnchorName		DontDelete
+  pathname	KJS::HTMLElement::AnchorPathName	DontDelete|ReadOnly
+  port		KJS::HTMLElement::AnchorPort		DontDelete|ReadOnly
+  protocol	KJS::HTMLElement::AnchorProtocol	DontDelete|ReadOnly
+  rel		KJS::HTMLElement::AnchorRel		DontDelete
+  rev		KJS::HTMLElement::AnchorRev		DontDelete
+  search	KJS::HTMLElement::AnchorSearch		DontDelete|ReadOnly
+  shape		KJS::HTMLElement::AnchorShape		DontDelete
+  tabIndex	KJS::HTMLElement::AnchorTabIndex	DontDelete
+  target	KJS::HTMLElement::AnchorTarget		DontDelete
+  text		KJS::HTMLElement::AnchorText		DontDelete|ReadOnly
+  type		KJS::HTMLElement::AnchorType		DontDelete
+  blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
+  focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
+@end
+@begin HTMLImageElementTable 13
+  lowSrc	KJS::HTMLElement::ImageLowSrc		DontDelete
+  name		KJS::HTMLElement::ImageName		DontDelete
+  align		KJS::HTMLElement::ImageAlign		DontDelete
+  alt		KJS::HTMLElement::ImageAlt		DontDelete
+  border	KJS::HTMLElement::ImageBorder		DontDelete
+  height	KJS::HTMLElement::ImageHeight		DontDelete
+  hspace	KJS::HTMLElement::ImageHspace		DontDelete
+  isMap		KJS::HTMLElement::ImageIsMap		DontDelete
+  longDesc	KJS::HTMLElement::ImageLongDesc		DontDelete
+  src		KJS::HTMLElement::ImageSrc		DontDelete
+  useMap	KJS::HTMLElement::ImageUseMap		DontDelete
+  vspace	KJS::HTMLElement::ImageVspace		DontDelete
+  width		KJS::HTMLElement::ImageWidth		DontDelete
+@end
+@begin HTMLObjectElementTable 19
+  form		KJS::HTMLElement::ObjectForm		DontDelete|ReadOnly
+  code		KJS::HTMLElement::ObjectCode		DontDelete
+  align		KJS::HTMLElement::ObjectAlign		DontDelete
+  archive	KJS::HTMLElement::ObjectArchive		DontDelete
+  border	KJS::HTMLElement::ObjectBorder		DontDelete
+  codeBase	KJS::HTMLElement::ObjectCodeBase	DontDelete
+  codeType	KJS::HTMLElement::ObjectCodeType	DontDelete
+  data		KJS::HTMLElement::ObjectData		DontDelete
+  declare	KJS::HTMLElement::ObjectDeclare		DontDelete
+  height	KJS::HTMLElement::ObjectHeight		DontDelete
+  hspace	KJS::HTMLElement::ObjectHspace		DontDelete
+  name		KJS::HTMLElement::ObjectName		DontDelete
+  standby	KJS::HTMLElement::ObjectStandby		DontDelete
+  tabIndex	KJS::HTMLElement::ObjectTabIndex	DontDelete
+  type		KJS::HTMLElement::ObjectType		DontDelete
+  useMap	KJS::HTMLElement::ObjectUseMap		DontDelete
+  vspace	KJS::HTMLElement::ObjectVspace		DontDelete
+  width		KJS::HTMLElement::ObjectWidth		DontDelete
+@end
+@begin HTMLParamElementTable 4
+  name		KJS::HTMLElement::ParamName		DontDelete
+  type		KJS::HTMLElement::ParamType		DontDelete
+  value		KJS::HTMLElement::ParamValue		DontDelete
+  valueType	KJS::HTMLElement::ParamValueType	DontDelete
+@end
+@begin HTMLAppletElementTable 11
+  align		KJS::HTMLElement::AppletAlign		DontDelete
+  alt		KJS::HTMLElement::AppletAlt		DontDelete
+  archive	KJS::HTMLElement::AppletArchive		DontDelete
+  code		KJS::HTMLElement::AppletCode		DontDelete
+  codeBase	KJS::HTMLElement::AppletCodeBase	DontDelete
+  height	KJS::HTMLElement::AppletHeight		DontDelete
+  hspace	KJS::HTMLElement::AppletHspace		DontDelete
+  name		KJS::HTMLElement::AppletName		DontDelete
+  object	KJS::HTMLElement::AppletObject		DontDelete
+  vspace	KJS::HTMLElement::AppletVspace		DontDelete
+  width		KJS::HTMLElement::AppletWidth		DontDelete
+@end
+@begin HTMLMapElementTable 2
+  areas		KJS::HTMLElement::MapAreas		DontDelete|ReadOnly
+  name		KJS::HTMLElement::MapName		DontDelete
+@end
+@begin HTMLAreaElementTable 15
+  accessKey	KJS::HTMLElement::AreaAccessKey		DontDelete
+  alt		KJS::HTMLElement::AreaAlt		DontDelete
+  coords	KJS::HTMLElement::AreaCoords		DontDelete
+  href		KJS::HTMLElement::AreaHref		DontDelete
+  hash		KJS::HTMLElement::AreaHash		DontDelete|ReadOnly
+  host		KJS::HTMLElement::AreaHost		DontDelete|ReadOnly
+  hostname	KJS::HTMLElement::AreaHostName		DontDelete|ReadOnly
+  pathname	KJS::HTMLElement::AreaPathName		DontDelete|ReadOnly
+  port		KJS::HTMLElement::AreaPort		DontDelete|ReadOnly
+  protocol	KJS::HTMLElement::AreaProtocol		DontDelete|ReadOnly
+  search	KJS::HTMLElement::AreaSearch		DontDelete|ReadOnly
+  noHref	KJS::HTMLElement::AreaNoHref		DontDelete
+  shape		KJS::HTMLElement::AreaShape		DontDelete
+  tabIndex	KJS::HTMLElement::AreaTabIndex		DontDelete
+  target	KJS::HTMLElement::AreaTarget		DontDelete
+@end
+@begin HTMLScriptElementTable 7
+  text		KJS::HTMLElement::ScriptText		DontDelete
+  htmlFor	KJS::HTMLElement::ScriptHtmlFor		DontDelete
+  event		KJS::HTMLElement::ScriptEvent		DontDelete
+  charset	KJS::HTMLElement::ScriptCharset		DontDelete
+  defer		KJS::HTMLElement::ScriptDefer		DontDelete
+  src		KJS::HTMLElement::ScriptSrc		DontDelete
+  type		KJS::HTMLElement::ScriptType		DontDelete
+@end
+@begin HTMLTableElementTable 23
+  caption	KJS::HTMLElement::TableCaption		DontDelete
+  tHead		KJS::HTMLElement::TableTHead		DontDelete
+  tFoot		KJS::HTMLElement::TableTFoot		DontDelete
+  rows		KJS::HTMLElement::TableRows		DontDelete|ReadOnly
+  tBodies	KJS::HTMLElement::TableTBodies		DontDelete|ReadOnly
+  align		KJS::HTMLElement::TableAlign		DontDelete
+  bgColor	KJS::HTMLElement::TableBgColor		DontDelete
+  border	KJS::HTMLElement::TableBorder		DontDelete
+  cellPadding	KJS::HTMLElement::TableCellPadding	DontDelete
+  cellSpacing	KJS::HTMLElement::TableCellSpacing	DontDelete
+  frame		KJS::HTMLElement::TableFrame		DontDelete
+  rules		KJS::HTMLElement::TableRules		DontDelete
+  summary	KJS::HTMLElement::TableSummary		DontDelete
+  width		KJS::HTMLElement::TableWidth		DontDelete
+  createTHead	KJS::HTMLElement::TableCreateTHead	DontDelete|Function 0
+  deleteTHead	KJS::HTMLElement::TableDeleteTHead	DontDelete|Function 0
+  createTFoot	KJS::HTMLElement::TableCreateTFoot	DontDelete|Function 0
+  deleteTFoot	KJS::HTMLElement::TableDeleteTFoot	DontDelete|Function 0
+  createCaption	KJS::HTMLElement::TableCreateCaption	DontDelete|Function 0
+  deleteCaption	KJS::HTMLElement::TableDeleteCaption	DontDelete|Function 0
+  insertRow	KJS::HTMLElement::TableInsertRow	DontDelete|Function 1
+  deleteRow	KJS::HTMLElement::TableDeleteRow	DontDelete|Function 1
+@end
+@begin HTMLTableCaptionElementTable 1
+  align		KJS::HTMLElement::TableCaptionAlign	DontDelete
+@end
+@begin HTMLTableColElementTable 7
+  align		KJS::HTMLElement::TableColAlign		DontDelete
+  ch		KJS::HTMLElement::TableColCh		DontDelete
+  chOff		KJS::HTMLElement::TableColChOff		DontDelete
+  span		KJS::HTMLElement::TableColSpan		DontDelete
+  vAlign	KJS::HTMLElement::TableColVAlign	DontDelete
+  width		KJS::HTMLElement::TableColWidth		DontDelete
+@end
+@begin HTMLTableSectionElementTable 7
+  align		KJS::HTMLElement::TableSectionAlign		DontDelete
+  ch		KJS::HTMLElement::TableSectionCh		DontDelete
+  chOff		KJS::HTMLElement::TableSectionChOff		DontDelete
+  vAlign	KJS::HTMLElement::TableSectionVAlign		DontDelete
+  rows		KJS::HTMLElement::TableSectionRows		DontDelete|ReadOnly
+  insertRow	KJS::HTMLElement::TableSectionInsertRow		DontDelete|Function 1
+  deleteRow	KJS::HTMLElement::TableSectionDeleteRow		DontDelete|Function 1
+@end
+@begin HTMLTableRowElementTable 11
+  rowIndex	KJS::HTMLElement::TableRowRowIndex		DontDelete|ReadOnly
+  sectionRowIndex KJS::HTMLElement::TableRowSectionRowIndex	DontDelete|ReadOnly
+  cells		KJS::HTMLElement::TableRowCells			DontDelete|ReadOnly
+  align		KJS::HTMLElement::TableRowAlign			DontDelete
+  bgColor	KJS::HTMLElement::TableRowBgColor		DontDelete
+  ch		KJS::HTMLElement::TableRowCh			DontDelete
+  chOff		KJS::HTMLElement::TableRowChOff			DontDelete
+  vAlign	KJS::HTMLElement::TableRowVAlign		DontDelete
+  insertCell	KJS::HTMLElement::TableRowInsertCell		DontDelete|Function 1
+  deleteCell	KJS::HTMLElement::TableRowDeleteCell		DontDelete|Function 1
+@end
+@begin HTMLTableCellElementTable 15
+  cellIndex	KJS::HTMLElement::TableCellCellIndex		DontDelete|ReadOnly
+  abbr		KJS::HTMLElement::TableCellAbbr			DontDelete
+  align		KJS::HTMLElement::TableCellAlign		DontDelete
+  axis		KJS::HTMLElement::TableCellAxis			DontDelete
+  bgColor	KJS::HTMLElement::TableCellBgColor		DontDelete
+  ch		KJS::HTMLElement::TableCellCh			DontDelete
+  chOff		KJS::HTMLElement::TableCellChOff		DontDelete
+  colSpan	KJS::HTMLElement::TableCellColSpan		DontDelete
+  headers	KJS::HTMLElement::TableCellHeaders		DontDelete
+  height	KJS::HTMLElement::TableCellHeight		DontDelete
+  noWrap	KJS::HTMLElement::TableCellNoWrap		DontDelete
+  rowSpan	KJS::HTMLElement::TableCellRowSpan		DontDelete
+  scope		KJS::HTMLElement::TableCellScope		DontDelete
+  vAlign	KJS::HTMLElement::TableCellVAlign		DontDelete
+  width		KJS::HTMLElement::TableCellWidth		DontDelete
+@end
+@begin HTMLFrameSetElementTable 2
+  cols		KJS::HTMLElement::FrameSetCols			DontDelete
+  rows		KJS::HTMLElement::FrameSetRows			DontDelete
+@end
+@begin HTMLFrameElementTable 8
+###document?
+  frameBorder	KJS::HTMLElement::FrameFrameBorder		DontDelete
+  longDesc	KJS::HTMLElement::FrameLongDesc			DontDelete
+  marginHeight	KJS::HTMLElement::FrameMarginHeight		DontDelete
+  marginWidth	KJS::HTMLElement::FrameMarginWidth		DontDelete
+  name		KJS::HTMLElement::FrameName			DontDelete
+  noResize	KJS::HTMLElement::FrameNoResize			DontDelete
+  scrolling	KJS::HTMLElement::FrameScrolling		DontDelete
+  src		KJS::HTMLElement::FrameSrc			DontDelete
+### new in DOM2: contentDocument
+@end
+@begin HTMLIFrameElementTable 11
+  align		KJS::HTMLElement::IFrameAlign			DontDelete
+  document	KJS::HTMLElement::IFrameDocument		DontDelete|ReadOnly
+  frameBorder	KJS::HTMLElement::IFrameFrameBorder		DontDelete
+  height	KJS::HTMLElement::IFrameHeight			DontDelete
+  longDesc	KJS::HTMLElement::IFrameLongDesc		DontDelete
+  marginHeight	KJS::HTMLElement::IFrameMarginHeight		DontDelete
+  marginWidth	KJS::HTMLElement::IFrameMarginWidth		DontDelete
+  name		KJS::HTMLElement::IFrameName			DontDelete
+  scrolling	KJS::HTMLElement::IFrameScrolling		DontDelete
+  src		KJS::HTMLElement::IFrameSrc			DontDelete
+  width		KJS::HTMLElement::IFrameWidth			DontDelete
+### new in DOM2: contentDocument
+@end
+*/
+
+Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLElement::tryGet " << p.qstring() << " thisTag=" << element.tagName().string() << endl;
+  kdDebug(6070) << "KJS::HTMLElement::tryGet " << propertyName.qstring() << " thisTag=" << element.tagName().string() << endl;
 #endif
-
+  // First look at dynamic properties
   switch (element.elementId()) {
-    case ID_HTML: {
-      DOM::HTMLHtmlElement html = element;
-      if      (p == "version")         return getString(html.version());
-    }
-    break;
-    case ID_HEAD: {
-      DOM::HTMLHeadElement head = element;
-      if      (p == "profile")         return getString(head.profile());
-    }
-    break;
-    case ID_LINK: {
-      DOM::HTMLLinkElement link = element;
-      if      (p == "disabled")        return Boolean(link.disabled());
-      else if (p == "charset")         return getString(link.charset());
-      else if (p == "href")            return getString(link.href());
-      else if (p == "hreflang")        return getString(link.hreflang());
-      else if (p == "media")           return getString(link.media());
-      else if (p == "rel")             return getString(link.rel());
-      else if (p == "rev")             return getString(link.rev());
-      else if (p == "target")          return getString(link.target());
-      else if (p == "type")            return getString(link.type());
-      else if (p == "sheet")           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
-    }
-    break;
-    case ID_TITLE: {
-      DOM::HTMLTitleElement title = element;
-      if (p == "text")                 return getString(title.text());
-    }
-    break;
-    case ID_META: {
-      DOM::HTMLMetaElement meta = element;
-      if      (p == "content")         return getString(meta.content());
-      else if (p == "httpEquiv")       return getString(meta.httpEquiv());
-      else if (p == "name")            return getString(meta.name());
-      else if (p == "scheme")          return getString(meta.scheme());
-    }
-    break;
-    case ID_BASE: {
-      DOM::HTMLBaseElement base = element;
-      if      (p == "href")            return getString(base.href());
-      else if (p == "target")          return getString(base.target());
-    }
-    break;
-    case ID_ISINDEX: {
-      DOM::HTMLIsIndexElement isindex = element;
-      if      (p == "form")            return getDOMNode(exec,isindex.form()); // type HTMLFormElement
-      else if (p == "prompt")          return getString(isindex.prompt());
-    }
-    break;
-    case ID_STYLE: {
-      DOM::HTMLStyleElement style = element;
-      if      (p == "disabled")        return Boolean(style.disabled());
-      else if (p == "media")           return getString(style.media());
-      else if (p == "type")            return getString(style.type());
-      else if (p == "sheet")           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
-    }
-    break;
-    case ID_BODY: {
-      DOM::HTMLBodyElement body = element;
-      if      (p == "aLink")           return getString(body.aLink());
-      else if (p == "background")      return getString(body.background());
-      else if (p == "bgColor")         return getString(body.bgColor());
-      else if (p == "link")            return getString(body.link());
-      else if (p == "text")            return getString(body.text());
-      else if (p == "vLink")           return getString(body.vLink());
-      else if (p == "scrollHeight" )   return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsHeight() : 0);
-      else if (p == "scrollWidth" )    return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsWidth() : 0);
-    }
-    break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
-      // First check if we're retrieving an element (by index or by name)
+      // Check if we're retrieving an element (by index or by name)
       bool ok;
-      uint u = p.toULong(&ok);
+      uint u = propertyName.toULong(&ok);
       if (ok)
         return getDOMNode(exec,form.elements().item(u));
       KJS::HTMLCollection coll(exec,form.elements());
-      Value namedItems = coll.getNamedItems(exec, p);
+      Value namedItems = coll.getNamedItems(exec, propertyName);
       if (namedItems.type() != UndefinedType)
         return namedItems;
-
-      else if (p == "elements")        return getHTMLCollection(exec,form.elements());
-      else if (p == "length")          return Number(form.length());
-      else if (p == "name")            return getString(form.name());
-      else if (p == "acceptCharset")   return getString(form.acceptCharset());
-      else if (p == "action")          return getString(form.action());
-      else if (p == "enctype")         return getString(form.enctype());
-      else if (p == "method")          return getString(form.method());
-      else if (p == "target")          return getString(form.target());
-      // methods
-      else if (p == "submit")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Submit,0,DontDelete|Function);
-      else if (p == "reset")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Reset,0,DontDelete|Function);
-      else
-        return DOMElement::tryGet(exec, p);
     }
-    break;
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
-      if      (p == "type")            return getString(select.type());
-      else if (p == "selectedIndex")   return Number(select.selectedIndex());
-      else if (p == "value")           return getString(select.value());
-      else if (p == "length")          return Number(select.length());
-      else if (p == "form")            return getDOMNode(exec,select.form()); // type HTMLFormElement
-      else if (p == "options")         return getSelectHTMLCollection(exec, select.options(), select); // type HTMLCollection
-      else if (p == "disabled")        return Boolean(select.disabled());
-      else if (p == "multiple")        return Boolean(select.multiple());
-      else if (p == "name")            return getString(select.name());
-      else if (p == "size")            return Number(select.size());
-      else if (p == "tabIndex")        return Number(select.tabIndex());
-      // methods
-      else if (p == "add")             return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Add,2,DontDelete|Function);
-      else if (p == "remove")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Remove,1,DontDelete|Function);
-      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
-      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
-      else {
-	bool ok;
-	uint u = p.toULong(&ok);
-	if (ok)
-	  return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
-      }
+      bool ok;
+      uint u = propertyName.toULong(&ok);
+      if (ok)
+        return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
-    break;
-    case ID_OPTGROUP: {
-      DOM::HTMLOptGroupElement optgroup = element;
-      if      (p == "disabled")        return Boolean(optgroup.disabled());
-      else if (p == "label")           return getString(optgroup.label());
-    }
-    break;
-    case ID_OPTION: {
-      DOM::HTMLOptionElement option = element;
-      if      (p == "form")            return getDOMNode(exec,option.form()); // type HTMLFormElement
-      else if (p == "defaultSelected") return Boolean(option.defaultSelected());
-      else if (p == "text")            return getString(option.text());
-      else if (p == "index")           return Number(option.index());
-      else if (p == "disabled")        return Boolean(option.disabled());
-      else if (p == "label")           return getString(option.label());
-      else if (p == "selected")        return Boolean(option.selected());
-      else if (p == "value")           return getString(option.value());
-    }
-    break;
-    case ID_INPUT: {
-      DOM::HTMLInputElement input = element;
-      if      (p == "defaultValue")    return getString(input.defaultValue());
-      else if (p == "defaultChecked")  return Boolean(input.defaultChecked());
-      else if (p == "form")            return getDOMNode(exec,input.form()); // type HTMLFormElement
-      else if (p == "accept")          return getString(input.accept());
-      else if (p == "accessKey")       return getString(input.accessKey());
-      else if (p == "align")           return getString(input.align());
-      else if (p == "alt")             return getString(input.alt());
-      else if (p == "checked")         return Boolean(input.checked());
-      else if (p == "disabled")        return Boolean(input.disabled());
-      else if (p == "maxLength")       return Number(input.maxLength());
-      else if (p == "name")            return getString(input.name());
-      else if (p == "readOnly")        return Boolean(input.readOnly());
-      else if (p == "size")            return getString(input.size());
-      else if (p == "src")             return getString(input.src());
-      else if (p == "tabIndex")        return Number(input.tabIndex());
-      else if (p == "type")            return getString(input.type());
-      else if (p == "useMap")          return getString(input.useMap());
-      else if (p == "value")           return getString(input.value());
-      // methods
-      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
-      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
-      else if (p == "select")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Select,0,DontDelete|Function);
-      else if (p == "click")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Click,0,DontDelete|Function);
-    }
-    break;
-    case ID_TEXTAREA: {
-      DOM::HTMLTextAreaElement textarea = element;
-      if      (p == "defaultValue")    return getString(textarea.defaultValue());
-      else if (p == "form")            return getDOMNode(exec,textarea.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return getString(textarea.accessKey());
-      else if (p == "cols")            return Number(textarea.cols());
-      else if (p == "disabled")        return Boolean(textarea.disabled());
-      else if (p == "name")            return getString(textarea.name());
-      else if (p == "readOnly")        return Boolean(textarea.readOnly());
-      else if (p == "rows")            return Number(textarea.rows());
-      else if (p == "tabIndex")        return Number(textarea.tabIndex());
-      else if (p == "type")            return getString(textarea.type());
-      else if (p == "value")           return getString(textarea.value());
-      // methods
-      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
-      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
-      else if (p == "select")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Select,0,DontDelete|Function);
-    }
-    break;
-    case ID_BUTTON: {
-      DOM::HTMLButtonElement button = element;
-      if      (p == "form")            return getDOMNode(exec,button.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return getString(button.accessKey());
-      else if (p == "disabled")        return Boolean(button.disabled());
-      else if (p == "name")            return getString(button.name());
-      else if (p == "tabIndex")        return Number(button.tabIndex());
-      else if (p == "type")            return getString(button.type());
-      else if (p == "value")           return getString(button.value());
-    }
-    break;
-    case ID_LABEL: {
-      DOM::HTMLLabelElement label = element;
-      if      (p == "form")            return getDOMNode(exec,label.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return getString(label.accessKey());
-      else if (p == "htmlFor")         return getString(label.htmlFor());
-    }
-    break;
-    case ID_FIELDSET: {
-      DOM::HTMLFieldSetElement fieldSet = element;
-      if      (p == "form")            return getDOMNode(exec,fieldSet.form()); // type HTMLFormElement
-    }
-    break;
-    case ID_LEGEND: {
-      DOM::HTMLLegendElement legend = element;
-      if      (p == "form")            return getDOMNode(exec,legend.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return getString(legend.accessKey());
-      else if (p == "align")           return getString(legend.align());
-    }
-    break;
-    case ID_UL: {
-      DOM::HTMLUListElement uList = element;
-      if      (p == "compact")         return Boolean(uList.compact());
-      else if (p == "type")            return getString(uList.type());
-    }
-    break;
-    case ID_OL: {
-      DOM::HTMLOListElement oList = element;
-      if      (p == "compact")         return Boolean(oList.compact());
-      else if (p == "start")           return Number(oList.start());
-      else if (p == "type")            return getString(oList.type());
-    }
-    break;
-    case ID_DL: {
-      DOM::HTMLDListElement dList = element;
-      if      (p == "compact")         return Boolean(dList.compact());
-    }
-    break;
-    case ID_DIR: {
-      DOM::HTMLDirectoryElement directory = element;
-      if      (p == "compact")         return Boolean(directory.compact());
-    }
-    break;
-    case ID_MENU: {
-      DOM::HTMLMenuElement menu = element;
-      if      (p == "compact")         return Boolean(menu.compact());
-    }
-    break;
-    case ID_LI: {
-      DOM::HTMLLIElement li = element;
-      if      (p == "type")            return getString(li.type());
-      else if (p == "value")           return Number(li.value());
-    }
-    break;
-    case ID_DIV: {
-      DOM::HTMLDivElement div = element;
-      if      (p == "align")           return getString(div.align());
-    }
-    break;
-    case ID_P: {
-      DOM::HTMLParagraphElement paragraph = element;
-      if      (p == "align")           return getString(paragraph.align());
-    }
-    break;
-    case ID_H1: { // ### H2, H3 ,H4 ,H5 ,H6
-      DOM::HTMLHeadingElement heading = element;
-      if      (p == "align")           return getString(heading.align());
-    }
-    break;
-    case ID_BLOCKQUOTE: {
-      DOM::HTMLBlockquoteElement blockquote = element;
-      if      (p == "cite")            return getString(blockquote.cite());
-    }
-    case ID_Q: {
-      DOM::HTMLQuoteElement quote = element;
-      if      (p == "cite")            return getString(quote.cite());
-    }
-    case ID_PRE: {
-      DOM::HTMLPreElement pre = element;
-      if      (p == "width")           return Number(pre.width());
-    }
-    break;
-    case ID_BR: {
-      DOM::HTMLBRElement br = element;
-      if      (p == "clear")           return getString(br.clear());
-    }
-    break;
-    case ID_BASEFONT: {
-      DOM::HTMLBaseFontElement baseFont = element;
-      if      (p == "color")           return getString(baseFont.color());
-      else if (p == "face")            return getString(baseFont.face());
-      else if (p == "size")            return getString(baseFont.size());
-    }
-    break;
-    case ID_FONT: {
-      DOM::HTMLFontElement font = element;
-      if      (p == "color")           return getString(font.color());
-      else if (p == "face")            return getString(font.face());
-      else if (p == "size")            return getString(font.size());
-    }
-    break;
-    case ID_HR: {
-      DOM::HTMLHRElement hr = element;
-      if      (p == "align")           return getString(hr.align());
-      else if (p == "noShade")         return Boolean(hr.noShade());
-      else if (p == "size")            return getString(hr.size());
-      else if (p == "width")           return getString(hr.width());
-    }
-    break;
-    case ID_INS:
-    case ID_DEL: {
-      DOM::HTMLModElement mod = element;
-      if      (p == "cite")            return getString(mod.cite());
-      else if (p == "dateTime")        return getString(mod.dateTime());
-    }
-    break;
-    case ID_A: {
-      DOM::HTMLAnchorElement anchor = element;
-      if      (p == "accessKey")       return getString(anchor.accessKey());
-      else if (p == "charset")         return getString(anchor.charset());
-      else if (p == "coords")          return getString(anchor.coords());
-      else if (p == "href")            return getString(anchor.href());
-      else if (p == "hreflang")        return getString(anchor.hreflang());
-      else if (p == "hash")            return getString('#'+KURL(anchor.href().string()).ref());
-      else if (p == "host")            return getString(KURL(anchor.href().string()).host());
-      else if (p == "hostname") {
-        KURL url(anchor.href().string());
-        kdDebug(6070) << "anchor::hostname uses:" <<url.url()<<endl;
-        if (url.port()==0)
-          return getString(url.host());
-        else
-          return getString(url.host() + ":" + QString::number(url.port()));
-      }
-      else if (p == "pathname")        return getString(KURL(anchor.href().string()).path());
-      else if (p == "port")            return getString(QString::number(KURL(anchor.href().string()).port()));
-      else if (p == "protocol")        return getString(KURL(anchor.href().string()).protocol()+":");
-      else if (p == "search")          return getString(KURL(anchor.href().string()).query());
-      else if (p == "name")            return getString(anchor.name());
-      else if (p == "rel")             return getString(anchor.rel());
-      else if (p == "rev")             return getString(anchor.rev());
-      else if (p == "shape")           return getString(anchor.shape());
-      else if (p == "tabIndex")        return Number(anchor.tabIndex());
-      else if (p == "target")          return getString(anchor.target());
-      else if (p == "text")            return getString(anchor.innerHTML());
-      else if (p == "type")            return getString(anchor.type());
-      // methods
-      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
-      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
-    }
-    break;
-    case ID_IMG: {
-      DOM::HTMLImageElement image = element;
-      if      (p == "lowSrc")          return getString(image.lowSrc());
-      else if (p == "name")            return getString(image.name());
-      else if (p == "align")           return getString(image.align());
-      else if (p == "alt")             return getString(image.alt());
-      else if (p == "border")          return getString(image.border());
-      else if (p == "height")          return getString(image.height());
-      else if (p == "hspace")          return getString(image.hspace());
-      else if (p == "isMap")           return Boolean(image.isMap());
-      else if (p == "longDesc")        return getString(image.longDesc());
-      else if (p == "src")             return getString(image.src());
-      else if (p == "useMap")          return getString(image.useMap());
-      else if (p == "vspace")          return getString(image.vspace());
-      else if (p == "width")           return getString(image.width());
-    }
-    break;
-    case ID_OBJECT: {
-      DOM::HTMLObjectElement object = element;
-      if      (p == "form")            return getDOMNode(exec,object.form()); // type HTMLFormElement
-      else if (p == "code")            return getString(object.code());
-      else if (p == "align")           return getString(object.align());
-      else if (p == "archive")         return getString(object.archive());
-      else if (p == "border")          return getString(object.border());
-      else if (p == "codeBase")        return getString(object.codeBase());
-      else if (p == "codeType")        return getString(object.codeType());
-      else if (p == "data")            return getString(object.data());
-      else if (p == "declare")         return Boolean(object.declare());
-      else if (p == "height")          return getString(object.height());
-      else if (p == "hspace")          return getString(object.hspace());
-      else if (p == "name")            return getString(object.name());
-      else if (p == "standby")         return getString(object.standby());
-      else if (p == "tabIndex")        return Number(object.tabIndex());
-      else if (p == "type")            return getString(object.type());
-      else if (p == "useMap")          return getString(object.useMap());
-      else if (p == "vspace")          return getString(object.vspace());
-      else if (p == "width")           return getString(object.width());
-//      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(exec,object.contentDocument()); // type Document
-    }
-    break;
-    case ID_PARAM: {
-      DOM::HTMLParamElement param = element;
-      if      (p == "name")            return getString(param.name());
-      else if (p == "type")            return getString(param.type());
-      else if (p == "value")           return getString(param.value());
-      else if (p == "valueType")       return getString(param.valueType());
-    }
-    break;
-    case ID_APPLET: {
-      DOM::HTMLAppletElement applet = element;
-      if      (p == "align")           return getString(applet.align());
-      else if (p == "alt")             return getString(applet.alt());
-      else if (p == "archive")         return getString(applet.archive());
-      else if (p == "code")            return getString(applet.code());
-      else if (p == "codeBase")        return getString(applet.codeBase());
-      else if (p == "height")          return getString(applet.height());
-      else if (p == "hspace")          return getString(applet.hspace());
-      else if (p == "name")            return getString(applet.name());
-      else if (p == "object")          return getString(applet.object());
-      else if (p == "vspace")          return getString(applet.vspace());
-      else if (p == "width")           return getString(applet.width());
-    }
-    break;
-    case ID_MAP: {
-      DOM::HTMLMapElement map = element;
-      if      (p == "areas")           return getHTMLCollection(exec, map.areas()); // type HTMLCollection
-      else if (p == "name")            return getString(map.name());
-    }
-    break;
-    case ID_AREA: {
-      DOM::HTMLAreaElement area = element;
-      if      (p == "accessKey")       return getString(area.accessKey());
-      else if (p == "alt")             return getString(area.alt());
-      else if (p == "coords")          return getString(area.coords());
-      else if (p == "href")            return getString(area.href());
-      else if (p == "hash")            return getString('#'+KURL(area.href().string()).ref());
-      else if (p == "host")            return getString(KURL(area.href().string()).host());
-      else if (p == "hostname") {
-        KURL url(area.href().string());
-        kdDebug(6070) << "link::hostname uses:" <<url.url()<<endl;
-        if (url.port()==0)
-          return getString(url.host());
-        else
-          return getString(url.host() + ":" + QString::number(url.port()));
-      }
-      else if (p == "pathname")        return getString(KURL(area.href().string()).path());
-      else if (p == "port")            return getString(QString::number(KURL(area.href().string()).port()));
-      else if (p == "protocol")        return getString(KURL(area.href().string()).protocol()+":");
-      else if (p == "search")          return getString(KURL(area.href().string()).query());
+    default:
+      break;
+  }
 
-      else if (p == "noHref")          return Boolean(area.noHref());
-      else if (p == "shape")           return getString(area.shape());
-      else if (p == "tabIndex")        return Number(area.tabIndex());
-      else if (p == "target")          return getString(area.target());
-    }
-    break;
-    case ID_SCRIPT: {
-      DOM::HTMLScriptElement script = element;
-      if      (p == "text")            return getString(script.text());
-      else if (p == "htmlFor")         return getString(script.htmlFor());
-      else if (p == "event")           return getString(script.event());
-      else if (p == "charset")         return getString(script.charset());
-      else if (p == "defer")           return Boolean(script.defer());
-      else if (p == "src")             return getString(script.src());
-      else if (p == "type")            return getString(script.type());
-    }
-    break;
-    case ID_TABLE: {
-      DOM::HTMLTableElement table = element;
-      if      (p == "caption")         return getDOMNode(exec,table.caption()); // type HTMLTableCaptionElement
-      else if (p == "tHead")           return getDOMNode(exec,table.tHead()); // type HTMLTableSectionElement
-      else if (p == "tFoot")           return getDOMNode(exec,table.tFoot()); // type HTMLTableSectionElement
-      else if (p == "rows")            return getHTMLCollection(exec,table.rows()); // type HTMLCollection
-      else if (p == "tBodies")         return getHTMLCollection(exec,table.tBodies()); // type HTMLCollection
-      else if (p == "align")           return getString(table.align());
-      else if (p == "bgColor")         return getString(table.bgColor());
-      else if (p == "border")          return getString(table.border());
-      else if (p == "cellPadding")     return getString(table.cellPadding());
-      else if (p == "cellSpacing")     return getString(table.cellSpacing());
-      else if (p == "frame")           return getString(table.frame());
-      else if (p == "rules")           return getString(table.rules());
-      else if (p == "summary")         return getString(table.summary());
-      else if (p == "width")           return getString(table.width());
-      // methods
-      else if (p == "createTHead")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::CreateTHead,0,DontDelete|Function);
-      else if (p == "deleteTHead")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteTHead,0,DontDelete|Function);
-      else if (p == "createTFoot")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::CreateTFoot,0,DontDelete|Function);
-      else if (p == "deleteTFoot")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteTFoot,0,DontDelete|Function);
-      else if (p == "createCaption")   return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::CreateCaption,0,DontDelete|Function);
-      else if (p == "deleteCaption")   return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteCaption,0,DontDelete|Function);
-      else if (p == "insertRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::InsertRow,1,DontDelete|Function);
-      else if (p == "deleteRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteRow,1,DontDelete|Function);
-    }
-    break;
-    case ID_CAPTION: {
-      DOM::HTMLTableCaptionElement tableCaption;
-      if      (p == "align")           return getString(tableCaption.align());
-    }
-    break;
-    case ID_COL: {
-      DOM::HTMLTableColElement tableCol = element;
-      if      (p == "align")           return getString(tableCol.align());
-      else if (p == "ch")              return getString(tableCol.ch());
-      else if (p == "chOff")           return getString(tableCol.chOff());
-      else if (p == "span")            return Number(tableCol.span());
-      else if (p == "vAlign")          return getString(tableCol.vAlign());
-      else if (p == "width")           return getString(tableCol.width());
-    }
-    break;
-    case ID_THEAD:
-    case ID_TBODY:
-    case ID_TFOOT: {
-      DOM::HTMLTableSectionElement tableSection = element;
-      if      (p == "align")           return getString(tableSection.align());
-      else if (p == "ch")              return getString(tableSection.ch());
-      else if (p == "chOff")           return getString(tableSection.chOff());
-      else if (p == "vAlign")          return getString(tableSection.vAlign());
-      else if (p == "rows")            return getHTMLCollection(exec,tableSection.rows()); // type HTMLCollection
-      // methods
-      else if (p == "insertRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::InsertRow,1,DontDelete|Function);
-      else if (p == "deleteRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteRow,1,DontDelete|Function);
-    }
-    break;
-    case ID_TR: {
-      DOM::HTMLTableRowElement tableRow = element;
-      if      (p == "rowIndex")        return Number(tableRow.rowIndex());
-      else if (p == "sectionRowIndex") return Number(tableRow.sectionRowIndex());
-      else if (p == "cells")           return getHTMLCollection(exec,tableRow.cells()); // type HTMLCollection
-      else if (p == "align")           return getString(tableRow.align());
-      else if (p == "bgColor")         return getString(tableRow.bgColor());
-      else if (p == "ch")              return getString(tableRow.ch());
-      else if (p == "chOff")           return getString(tableRow.chOff());
-      else if (p == "vAlign")          return getString(tableRow.vAlign());
-      // methods
-      else if (p == "insertCell")      return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::InsertCell,1,DontDelete|Function);
-      else if (p == "deleteCell")      return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteCell,1,DontDelete|Function);
-    }
-    break;
-    case ID_TH:
-    case ID_TD: {
-      DOM::HTMLTableCellElement tableCell = element;
-      if      (p == "cellIndex")       return Number(tableCell.cellIndex());
-      else if (p == "abbr")            return getString(tableCell.abbr());
-      else if (p == "align")           return getString(tableCell.align());
-      else if (p == "axis")            return getString(tableCell.axis());
-      else if (p == "bgColor")         return getString(tableCell.bgColor());
-      else if (p == "ch")              return getString(tableCell.ch());
-      else if (p == "chOff")           return getString(tableCell.chOff());
-      else if (p == "colSpan")         return Number(tableCell.colSpan());
-      else if (p == "headers")         return getString(tableCell.headers());
-      else if (p == "height")          return getString(tableCell.height());
-      else if (p == "noWrap")          return Boolean(tableCell.noWrap());
-      else if (p == "rowSpan")         return Number(tableCell.rowSpan());
-      else if (p == "scope")           return getString(tableCell.scope());
-      else if (p == "vAlign")          return getString(tableCell.vAlign());
-      else if (p == "width")           return getString(tableCell.width());
-    }
-    break;
-    case ID_FRAMESET: {
-      DOM::HTMLFrameSetElement frameSet = element;
-      if      (p == "cols")            return getString(frameSet.cols());
-      else if (p == "rows")            return getString(frameSet.rows());
-    }
-    break;
-    case ID_FRAME: {
-      DOM::HTMLFrameElement frameElement = element;
+  const HashTable* table = classInfo()->propHashTable; // get the right hashtable
+  const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  if (entry) {
+    if (entry->attr & Function)
+      return lookupOrCreateFunction<KJS::HTMLElementFunction>(exec, propertyName, this, entry->value, entry->params, entry->attr);
+    return getValue(exec, entry->value);
+  }
 
-      // p == "document" ?
-      if (p == "frameBorder")          return getString(frameElement.frameBorder());
-      else if (p == "longDesc")        return getString(frameElement.longDesc());
-      else if (p == "marginHeight")    return getString(frameElement.marginHeight());
-      else if (p == "marginWidth")     return getString(frameElement.marginWidth());
-      else if (p == "name")            return getString(frameElement.name());
-      else if (p == "noResize")        return Boolean(frameElement.noResize());
-      else if (p == "scrolling")       return getString(frameElement.scrolling());
-      else if (p == "src")             return getString(frameElement.src());
-//      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(exec,frameElement.contentDocument()); // type Document
+  // Base HTMLElement stuff or parent class forward, as usual
+  return DOMObjectLookupGet<KJS::HTMLElementFunction, KJS::HTMLElement, DOMObject>(exec, propertyName, &KJS::HTMLElementTable, this);
+}
+
+Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
+{
+  DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  switch (element.elementId()) {
+  case ID_HTML: {
+    DOM::HTMLHtmlElement html = element;
+    if      (token == HtmlVersion)         return getString(html.version());
+  }
+  break;
+  case ID_HEAD: {
+    DOM::HTMLHeadElement head = element;
+    if      (token == HeadProfile)         return getString(head.profile());
+  }
+  break;
+  case ID_LINK: {
+    DOM::HTMLLinkElement link = element;
+    switch (token) {
+    case LinkDisabled:        return Boolean(link.disabled());
+    case LinkCharset:         return getString(link.charset());
+    case LinkHref:            return getString(link.href());
+    case LinkHrefLang:        return getString(link.hreflang());
+    case LinkMedia:           return getString(link.media());
+    case LinkRel:             return getString(link.rel());
+    case LinkRev:             return getString(link.rev());
+    case LinkTarget:          return getString(link.target());
+    case LinkType:            return getString(link.type());
+    case LinkSheet:           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
     }
-    break;
-    case ID_IFRAME: {
-      DOM::HTMLIFrameElement iFrame = element;
-      if (p == "align")                return getString(iFrame.align());
+  }
+  break;
+  case ID_TITLE: {
+    DOM::HTMLTitleElement title = element;
+    switch (token) {
+    case TitleText:                 return getString(title.text());
+    }
+  }
+  break;
+  case ID_META: {
+    DOM::HTMLMetaElement meta = element;
+    switch (token) {
+    case MetaContent:         return getString(meta.content());
+    case MetaHttpEquiv:       return getString(meta.httpEquiv());
+    case MetaName:            return getString(meta.name());
+    case MetaScheme:          return getString(meta.scheme());
+    }
+  }
+  break;
+  case ID_BASE: {
+    DOM::HTMLBaseElement base = element;
+    switch (token) {
+    case BaseHref:            return getString(base.href());
+    case BaseTarget:          return getString(base.target());
+    }
+  }
+  break;
+  case ID_ISINDEX: {
+    DOM::HTMLIsIndexElement isindex = element;
+    switch (token) {
+    case IsIndexForm:            return getDOMNode(exec,isindex.form()); // type HTMLFormElement
+    case IsIndexPrompt:          return getString(isindex.prompt());
+    }
+  }
+  break;
+  case ID_STYLE: {
+    DOM::HTMLStyleElement style = element;
+    switch (token) {
+    case StyleDisabled:        return Boolean(style.disabled());
+    case StyleMedia:           return getString(style.media());
+    case StyleType:            return getString(style.type());
+    case StyleSheet:           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
+    }
+  }
+  break;
+  case ID_BODY: {
+    DOM::HTMLBodyElement body = element;
+    switch (token) {
+    case BodyALink:           return getString(body.aLink());
+    case BodyBackground:      return getString(body.background());
+    case BodyBgColor:         return getString(body.bgColor());
+    case BodyLink:            return getString(body.link());
+    case BodyText:            return getString(body.text());
+    case BodyVLink:           return getString(body.vLink());
+    case BodyScrollHeight:   return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsHeight() : 0);
+    case BodyScrollWidth:    return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsWidth() : 0);
+    }
+  }
+  break;
+
+  case ID_FORM: {
+    DOM::HTMLFormElement form = element;
+    switch (token) {
+    case FormElements:        return getHTMLCollection(exec,form.elements());
+    case FormLength:          return Number(form.length());
+    case FormName:            return getString(form.name());
+    case FormAcceptCharset:   return getString(form.acceptCharset());
+    case FormAction:          return getString(form.action());
+    case FormEncType:         return getString(form.enctype());
+    case FormMethod:          return getString(form.method());
+    case FormTarget:          return getString(form.target());
+    }
+  }
+  break;
+  case ID_SELECT: {
+    DOM::HTMLSelectElement select = element;
+    switch (token) {
+    case SelectType:            return getString(select.type());
+    case SelectSelectedIndex:   return Number(select.selectedIndex());
+    case SelectValue:           return getString(select.value());
+    case SelectLength:          return Number(select.length());
+    case SelectForm:            return getDOMNode(exec,select.form()); // type HTMLFormElement
+    case SelectOptions:         return getSelectHTMLCollection(exec, select.options(), select); // type HTMLCollection
+    case SelectDisabled:        return Boolean(select.disabled());
+    case SelectMultiple:        return Boolean(select.multiple());
+    case SelectName:            return getString(select.name());
+    case SelectSize:            return Number(select.size());
+    case SelectTabIndex:        return Number(select.tabIndex());
+    }
+  }
+  break;
+  case ID_OPTGROUP: {
+    DOM::HTMLOptGroupElement optgroup = element;
+    switch (token) {
+    case OptGroupDisabled:        return Boolean(optgroup.disabled());
+    case OptGroupLabel:           return getString(optgroup.label());
+    }
+  }
+  break;
+  case ID_OPTION: {
+    DOM::HTMLOptionElement option = element;
+    switch (token) {
+    case OptionForm:            return getDOMNode(exec,option.form()); // type HTMLFormElement
+    case OptionDefaultSelected: return Boolean(option.defaultSelected());
+    case OptionText:            return getString(option.text());
+    case OptionIndex:           return Number(option.index());
+    case OptionDisabled:        return Boolean(option.disabled());
+    case OptionLabel:           return getString(option.label());
+    case OptionSelected:        return Boolean(option.selected());
+    case OptionValue:           return getString(option.value());
+    }
+  }
+  break;
+  case ID_INPUT: {
+    DOM::HTMLInputElement input = element;
+    switch (token) {
+    case InputDefaultValue:    return getString(input.defaultValue());
+    case InputDefaultChecked:  return Boolean(input.defaultChecked());
+    case InputForm:            return getDOMNode(exec,input.form()); // type HTMLFormElement
+    case InputAccept:          return getString(input.accept());
+    case InputAccessKey:       return getString(input.accessKey());
+    case InputAlign:           return getString(input.align());
+    case InputAlt:             return getString(input.alt());
+    case InputChecked:         return Boolean(input.checked());
+    case InputDisabled:        return Boolean(input.disabled());
+    case InputMaxLength:       return Number(input.maxLength());
+    case InputName:            return getString(input.name());
+    case InputReadOnly:        return Boolean(input.readOnly());
+    case InputSize:            return getString(input.size());
+    case InputSrc:             return getString(input.src());
+    case InputTabIndex:        return Number(input.tabIndex());
+    case InputType:            return getString(input.type());
+    case InputUseMap:          return getString(input.useMap());
+    case InputValue:           return getString(input.value());
+    }
+  }
+  break;
+  case ID_TEXTAREA: {
+    DOM::HTMLTextAreaElement textarea = element;
+    switch (token) {
+    case TextAreaDefaultValue:    return getString(textarea.defaultValue());
+    case TextAreaForm:            return getDOMNode(exec,textarea.form()); // type HTMLFormElement
+    case TextAreaAccessKey:       return getString(textarea.accessKey());
+    case TextAreaCols:            return Number(textarea.cols());
+    case TextAreaDisabled:        return Boolean(textarea.disabled());
+    case TextAreaName:            return getString(textarea.name());
+    case TextAreaReadOnly:        return Boolean(textarea.readOnly());
+    case TextAreaRows:            return Number(textarea.rows());
+    case TextAreaTabIndex:        return Number(textarea.tabIndex());
+    case TextAreaType:            return getString(textarea.type());
+    case TextAreaValue:           return getString(textarea.value());
+    }
+  }
+  break;
+  case ID_BUTTON: {
+    DOM::HTMLButtonElement button = element;
+    switch (token) {
+    case ButtonForm:            return getDOMNode(exec,button.form()); // type HTMLFormElement
+    case ButtonAccessKey:       return getString(button.accessKey());
+    case ButtonDisabled:        return Boolean(button.disabled());
+    case ButtonName:            return getString(button.name());
+    case ButtonTabIndex:        return Number(button.tabIndex());
+    case ButtonType:            return getString(button.type());
+    case ButtonValue:           return getString(button.value());
+    }
+  }
+  break;
+  case ID_LABEL: {
+    DOM::HTMLLabelElement label = element;
+    switch (token) {
+    case LabelForm:            return getDOMNode(exec,label.form()); // type HTMLFormElement
+    case LabelAccessKey:       return getString(label.accessKey());
+    case LabelHtmlFor:         return getString(label.htmlFor());
+    }
+  }
+  break;
+  case ID_FIELDSET: {
+    DOM::HTMLFieldSetElement fieldSet = element;
+    switch (token) {
+    case FieldSetForm:            return getDOMNode(exec,fieldSet.form()); // type HTMLFormElement
+    }
+  }
+  break;
+  case ID_LEGEND: {
+    DOM::HTMLLegendElement legend = element;
+    switch (token) {
+    case LegendForm:            return getDOMNode(exec,legend.form()); // type HTMLFormElement
+    case LegendAccessKey:       return getString(legend.accessKey());
+    case LegendAlign:           return getString(legend.align());
+    }
+  }
+  break;
+  case ID_UL: {
+    DOM::HTMLUListElement uList = element;
+    switch (token) {
+    case UListCompact:         return Boolean(uList.compact());
+    case UListType:            return getString(uList.type());
+    }
+  }
+  break;
+  case ID_OL: {
+    DOM::HTMLOListElement oList = element;
+    switch (token) {
+    case OListCompact:         return Boolean(oList.compact());
+    case OListStart:           return Number(oList.start());
+    case OListType:            return getString(oList.type());
+    }
+  }
+  break;
+  case ID_DL: {
+    DOM::HTMLDListElement dList = element;
+    switch (token) {
+    case DListCompact:         return Boolean(dList.compact());
+    }
+  }
+  break;
+  case ID_DIR: {
+    DOM::HTMLDirectoryElement directory = element;
+    switch (token) {
+    case DirectoryCompact:         return Boolean(directory.compact());
+    }
+  }
+  break;
+  case ID_MENU: {
+    DOM::HTMLMenuElement menu = element;
+    switch (token) {
+    case MenuCompact:         return Boolean(menu.compact());
+    }
+  }
+  break;
+  case ID_LI: {
+    DOM::HTMLLIElement li = element;
+    switch (token) {
+    case LIType:            return getString(li.type());
+    case LIValue:           return Number(li.value());
+    }
+  }
+  break;
+  case ID_DIV: {
+    DOM::HTMLDivElement div = element;
+    switch (token) {
+    case DivAlign:           return getString(div.align());
+    }
+  }
+  break;
+  case ID_P: {
+    DOM::HTMLParagraphElement paragraph = element;
+    switch (token) {
+    case ParagraphAlign:           return getString(paragraph.align());
+    }
+  }
+  break;
+  case ID_H1:
+  case ID_H2:
+  case ID_H3:
+  case ID_H4:
+  case ID_H5:
+  case ID_H6: {
+    DOM::HTMLHeadingElement heading = element;
+    switch (token) {
+    case HeadingAlign:           return getString(heading.align());
+    }
+  }
+  break;
+  case ID_BLOCKQUOTE: {
+    DOM::HTMLBlockquoteElement blockquote = element;
+    switch (token) {
+    case BlockQuoteCite:            return getString(blockquote.cite());
+    }
+  }
+  case ID_Q: {
+    DOM::HTMLQuoteElement quote = element;
+    switch (token) {
+    case QuoteCite:            return getString(quote.cite());
+    }
+  }
+  case ID_PRE: {
+    DOM::HTMLPreElement pre = element;
+    switch (token) {
+    case PreWidth:           return Number(pre.width());
+    }
+  }
+  break;
+  case ID_BR: {
+    DOM::HTMLBRElement br = element;
+    switch (token) {
+    case BRClear:           return getString(br.clear());
+    }
+  }
+  break;
+  case ID_BASEFONT: {
+    DOM::HTMLBaseFontElement baseFont = element;
+    switch (token) {
+    case BaseFontColor:           return getString(baseFont.color());
+    case BaseFontFace:            return getString(baseFont.face());
+    case BaseFontSize:            return getString(baseFont.size());
+    }
+  }
+  break;
+  case ID_FONT: {
+    DOM::HTMLFontElement font = element;
+    switch (token) {
+    case FontColor:           return getString(font.color());
+    case FontFace:            return getString(font.face());
+    case FontSize:            return getString(font.size());
+    }
+  }
+  break;
+  case ID_HR: {
+    DOM::HTMLHRElement hr = element;
+    switch (token) {
+    case HRAlign:           return getString(hr.align());
+    case HRNoShade:         return Boolean(hr.noShade());
+    case HRSize:            return getString(hr.size());
+    case HRWidth:           return getString(hr.width());
+    }
+  }
+  break;
+  case ID_INS:
+  case ID_DEL: {
+    DOM::HTMLModElement mod = element;
+    switch (token) {
+    case ModCite:            return getString(mod.cite());
+    case ModDateTime:        return getString(mod.dateTime());
+    }
+  }
+  break;
+  case ID_A: {
+    DOM::HTMLAnchorElement anchor = element;
+    switch (token) {
+    case AnchorAccessKey:       return getString(anchor.accessKey());
+    case AnchorCharset:         return getString(anchor.charset());
+    case AnchorCoords:          return getString(anchor.coords());
+    case AnchorHref:            return getString(anchor.href());
+    case AnchorHrefLang:        return getString(anchor.hreflang());
+    case AnchorHash:            return getString('#'+KURL(anchor.href().string()).ref());
+    case AnchorHost:            return getString(KURL(anchor.href().string()).host());
+    case AnchorHostname: {
+      KURL url(anchor.href().string());
+      kdDebug(6070) << "anchor::hostname uses:" <<url.url()<<endl;
+      if (url.port()==0)
+        return getString(url.host());
+      else
+        return getString(url.host() + ":" + QString::number(url.port()));
+    }
+    case AnchorPathName:        return getString(KURL(anchor.href().string()).path());
+    case AnchorPort:            return getString(QString::number(KURL(anchor.href().string()).port()));
+    case AnchorProtocol:        return getString(KURL(anchor.href().string()).protocol()+":");
+    case AnchorSearch:          return getString(KURL(anchor.href().string()).query());
+    case AnchorName:            return getString(anchor.name());
+    case AnchorRel:             return getString(anchor.rel());
+    case AnchorRev:             return getString(anchor.rev());
+    case AnchorShape:           return getString(anchor.shape());
+    case AnchorTabIndex:        return Number(anchor.tabIndex());
+    case AnchorTarget:          return getString(anchor.target());
+    case AnchorText:            return getString(anchor.innerHTML());
+    case AnchorType:            return getString(anchor.type());
+    }
+  }
+  break;
+  case ID_IMG: {
+    DOM::HTMLImageElement image = element;
+    switch (token) {
+    case ImageLowSrc:          return getString(image.lowSrc());
+    case ImageName:            return getString(image.name());
+    case ImageAlign:           return getString(image.align());
+    case ImageAlt:             return getString(image.alt());
+    case ImageBorder:          return getString(image.border());
+    case ImageHeight:          return getString(image.height());
+    case ImageHspace:          return getString(image.hspace());
+    case ImageIsMap:           return Boolean(image.isMap());
+    case ImageLongDesc:        return getString(image.longDesc());
+    case ImageSrc:             return getString(image.src());
+    case ImageUseMap:          return getString(image.useMap());
+    case ImageVspace:          return getString(image.vspace());
+    case ImageWidth:           return getString(image.width());
+    }
+  }
+  break;
+  case ID_OBJECT: {
+    DOM::HTMLObjectElement object = element;
+    switch (token) {
+    case ObjectForm:            return getDOMNode(exec,object.form()); // type HTMLFormElement
+    case ObjectCode:            return getString(object.code());
+    case ObjectAlign:           return getString(object.align());
+    case ObjectArchive:         return getString(object.archive());
+    case ObjectBorder:          return getString(object.border());
+    case ObjectCodeBase:        return getString(object.codeBase());
+    case ObjectCodeType:        return getString(object.codeType());
+    case ObjectData:            return getString(object.data());
+    case ObjectDeclare:         return Boolean(object.declare());
+    case ObjectHeight:          return getString(object.height());
+    case ObjectHspace:          return getString(object.hspace());
+    case ObjectName:            return getString(object.name());
+    case ObjectStandby:         return getString(object.standby());
+    case ObjectTabIndex:        return Number(object.tabIndex());
+    case ObjectType:            return getString(object.type());
+    case ObjectUseMap:          return getString(object.useMap());
+    case ObjectVspace:          return getString(object.vspace());
+    case ObjectWidth:           return getString(object.width());
+      //case ObjectContentDocument: // new for DOM2 - not yet in khtml
+      //return getDOMNode(exec,object.contentDocument()); // type Document
+    }
+  }
+  break;
+  case ID_PARAM: {
+    DOM::HTMLParamElement param = element;
+    switch (token) {
+    case ParamName:            return getString(param.name());
+    case ParamType:            return getString(param.type());
+    case ParamValue:           return getString(param.value());
+    case ParamValueType:       return getString(param.valueType());
+    }
+  }
+  break;
+  case ID_APPLET: {
+    DOM::HTMLAppletElement applet = element;
+    switch (token) {
+    case AppletAlign:           return getString(applet.align());
+    case AppletAlt:             return getString(applet.alt());
+    case AppletArchive:         return getString(applet.archive());
+    case AppletCode:            return getString(applet.code());
+    case AppletCodeBase:        return getString(applet.codeBase());
+    case AppletHeight:          return getString(applet.height());
+    case AppletHspace:          return getString(applet.hspace());
+    case AppletName:            return getString(applet.name());
+    case AppletObject:          return getString(applet.object());
+    case AppletVspace:          return getString(applet.vspace());
+    case AppletWidth:           return getString(applet.width());
+    }
+  }
+  break;
+  case ID_MAP: {
+    DOM::HTMLMapElement map = element;
+    switch (token) {
+    case MapAreas:           return getHTMLCollection(exec, map.areas()); // type HTMLCollection
+    case MapName:            return getString(map.name());
+    }
+  }
+  break;
+  case ID_AREA: {
+    DOM::HTMLAreaElement area = element;
+    switch (token) {
+    case AreaAccessKey:       return getString(area.accessKey());
+    case AreaAlt:             return getString(area.alt());
+    case AreaCoords:          return getString(area.coords());
+    case AreaHref:            return getString(area.href());
+    case AreaHash:            return getString('#'+KURL(area.href().string()).ref());
+    case AreaHost:            return getString(KURL(area.href().string()).host());
+    case AreaHostName: {
+      KURL url(area.href().string());
+      kdDebug(6070) << "link::hostname uses:" <<url.url()<<endl;
+      if (url.port()==0)
+        return getString(url.host());
+      else
+        return getString(url.host() + ":" + QString::number(url.port()));
+    }
+    case AreaPathName:        return getString(KURL(area.href().string()).path());
+    case AreaPort:            return getString(QString::number(KURL(area.href().string()).port()));
+    case AreaProtocol:        return getString(KURL(area.href().string()).protocol()+":");
+    case AreaSearch:          return getString(KURL(area.href().string()).query());
+    case AreaNoHref:          return Boolean(area.noHref());
+    case AreaShape:           return getString(area.shape());
+    case AreaTabIndex:        return Number(area.tabIndex());
+    case AreaTarget:          return getString(area.target());
+    }
+  }
+  break;
+  case ID_SCRIPT: {
+    DOM::HTMLScriptElement script = element;
+    switch (token) {
+    case ScriptText:            return getString(script.text());
+    case ScriptHtmlFor:         return getString(script.htmlFor());
+    case ScriptEvent:           return getString(script.event());
+    case ScriptCharset:         return getString(script.charset());
+    case ScriptDefer:           return Boolean(script.defer());
+    case ScriptSrc:             return getString(script.src());
+    case ScriptType:            return getString(script.type());
+    }
+  }
+  break;
+  case ID_TABLE: {
+    DOM::HTMLTableElement table = element;
+    switch (token) {
+    case TableCaption:         return getDOMNode(exec,table.caption()); // type HTMLTableCaptionElement
+    case TableTHead:           return getDOMNode(exec,table.tHead()); // type HTMLTableSectionElement
+    case TableTFoot:           return getDOMNode(exec,table.tFoot()); // type HTMLTableSectionElement
+    case TableRows:            return getHTMLCollection(exec,table.rows()); // type HTMLCollection
+    case TableTBodies:         return getHTMLCollection(exec,table.tBodies()); // type HTMLCollection
+    case TableAlign:           return getString(table.align());
+    case TableBgColor:         return getString(table.bgColor());
+    case TableBorder:          return getString(table.border());
+    case TableCellPadding:     return getString(table.cellPadding());
+    case TableCellSpacing:     return getString(table.cellSpacing());
+    case TableFrame:           return getString(table.frame());
+    case TableRules:           return getString(table.rules());
+    case TableSummary:         return getString(table.summary());
+    case TableWidth:           return getString(table.width());
+    }
+  }
+  break;
+  case ID_CAPTION: {
+    DOM::HTMLTableCaptionElement tableCaption;
+    switch (token) {
+    case TableCaptionAlign:       return getString(tableCaption.align());
+    }
+  }
+  break;
+  case ID_COL: {
+    DOM::HTMLTableColElement tableCol = element;
+    switch (token) {
+    case TableColAlign:           return getString(tableCol.align());
+    case TableColCh:              return getString(tableCol.ch());
+    case TableColChOff:           return getString(tableCol.chOff());
+    case TableColSpan:            return Number(tableCol.span());
+    case TableColVAlign:          return getString(tableCol.vAlign());
+    case TableColWidth:           return getString(tableCol.width());
+    }
+  }
+  break;
+  case ID_THEAD:
+  case ID_TBODY:
+  case ID_TFOOT: {
+    DOM::HTMLTableSectionElement tableSection = element;
+    switch (token) {
+    case TableSectionAlign:           return getString(tableSection.align());
+    case TableSectionCh:              return getString(tableSection.ch());
+    case TableSectionChOff:           return getString(tableSection.chOff());
+    case TableSectionVAlign:          return getString(tableSection.vAlign());
+    case TableSectionRows:            return getHTMLCollection(exec,tableSection.rows()); // type HTMLCollection
+    }
+  }
+  break;
+  case ID_TR: {
+   DOM::HTMLTableRowElement tableRow = element;
+   switch (token) {
+   case TableRowRowIndex:        return Number(tableRow.rowIndex());
+   case TableRowSectionRowIndex: return Number(tableRow.sectionRowIndex());
+   case TableRowCells:           return getHTMLCollection(exec,tableRow.cells()); // type HTMLCollection
+   case TableRowAlign:           return getString(tableRow.align());
+   case TableRowBgColor:         return getString(tableRow.bgColor());
+   case TableRowCh:              return getString(tableRow.ch());
+   case TableRowChOff:           return getString(tableRow.chOff());
+   case TableRowVAlign:          return getString(tableRow.vAlign());
+   }
+  }
+  break;
+  case ID_TH:
+  case ID_TD: {
+    DOM::HTMLTableCellElement tableCell = element;
+    switch (token) {
+    case TableCellCellIndex:       return Number(tableCell.cellIndex());
+    case TableCellAbbr:            return getString(tableCell.abbr());
+    case TableCellAlign:           return getString(tableCell.align());
+    case TableCellAxis:            return getString(tableCell.axis());
+    case TableCellBgColor:         return getString(tableCell.bgColor());
+    case TableCellCh:              return getString(tableCell.ch());
+    case TableCellChOff:           return getString(tableCell.chOff());
+    case TableCellColSpan:         return Number(tableCell.colSpan());
+    case TableCellHeaders:         return getString(tableCell.headers());
+    case TableCellHeight:          return getString(tableCell.height());
+    case TableCellNoWrap:          return Boolean(tableCell.noWrap());
+    case TableCellRowSpan:         return Number(tableCell.rowSpan());
+    case TableCellScope:           return getString(tableCell.scope());
+    case TableCellVAlign:          return getString(tableCell.vAlign());
+    case TableCellWidth:           return getString(tableCell.width());
+    }
+  }
+  break;
+  case ID_FRAMESET: {
+    DOM::HTMLFrameSetElement frameSet = element;
+    switch (token) {
+    case FrameSetCols:            return getString(frameSet.cols());
+    case FrameSetRows:            return getString(frameSet.rows());
+    }
+  }
+  break;
+  case ID_FRAME: {
+    DOM::HTMLFrameElement frameElement = element;
+    switch (token) {
+    // case FrameDocument ?
+    case FrameFrameBorder:     return getString(frameElement.frameBorder());
+    case FrameLongDesc:        return getString(frameElement.longDesc());
+    case FrameMarginHeight:    return getString(frameElement.marginHeight());
+    case FrameMarginWidth:     return getString(frameElement.marginWidth());
+    case FrameName:            return getString(frameElement.name());
+    case FrameNoResize:        return Boolean(frameElement.noResize());
+    case FrameScrolling:       return getString(frameElement.scrolling());
+    case FrameSrc:             return getString(frameElement.src());
+     //case FrameContentDocument: // new for DOM2 - not yet in khtml
+     //return getDOMNode(exec,frameElement.contentDocument()); // type Document
+    }
+  }
+  break;
+  case ID_IFRAME: {
+    DOM::HTMLIFrameElement iFrame = element;
+    switch (token) {
+    case IFrameAlign:                return getString(iFrame.align());
       // ### security check ?
-      else if (p == "document") {
-        if ( !iFrame.isNull() )
-          return getDOMNode(exec, static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument() );
+    case IFrameDocument: {
+      if ( !iFrame.isNull() )
+        return getDOMNode(exec, static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument() );
 
-        return Undefined();
-      }
-      else if (p == "frameBorder")     return getString(iFrame.frameBorder());
-      else if (p == "height")          return getString(iFrame.height());
-      else if (p == "longDesc")        return getString(iFrame.longDesc());
-      else if (p == "marginHeight")    return getString(iFrame.marginHeight());
-      else if (p == "marginWidth")     return getString(iFrame.marginWidth());
-      else if (p == "name")            return getString(iFrame.name());
-      else if (p == "scrolling")       return getString(iFrame.scrolling());
-      else if (p == "src")             return getString(iFrame.src());
-      else if (p == "width")           return getString(iFrame.width());
-//      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(exec,iFrame.contentDocument); // type Document
+      return Undefined();
+    }
+    case IFrameFrameBorder:     return getString(iFrame.frameBorder());
+    case IFrameHeight:          return getString(iFrame.height());
+    case IFrameLongDesc:        return getString(iFrame.longDesc());
+    case IFrameMarginHeight:    return getString(iFrame.marginHeight());
+    case IFrameMarginWidth:     return getString(iFrame.marginWidth());
+    case IFrameName:            return getString(iFrame.name());
+    case IFrameScrolling:       return getString(iFrame.scrolling());
+    case IFrameSrc:             return getString(iFrame.src());
+    case IFrameWidth:           return getString(iFrame.width());
+    //case IFrameContentDocument: // new for DOM2 - not yet in khtml
+    //return getDOMNode(exec,iFrame.contentDocument); // type Document
     }
     break;
   }
+  } // xemacs (or arnt) could be a bit smarter when it comes to indenting switch()es ;)
 
   // generic properties
-  if (p == "id")
+  switch (token) {
+  case ElementId:
     return getString(element.id());
-  else if (p == "title")
+  case ElementTitle:
     return getString(element.title());
-  else if (p == "lang")
+  case ElementLang:
     return getString(element.lang());
-  else if (p == "dir")
+  case ElementDir:
     return getString(element.dir());
-  else if (p == "className") // ### isn't this "class" in the HTML spec?
+  case ElementClassName:
     return getString(element.className());
-  else if ( p == "innerHTML")
-      return getString(element.innerHTML());
-  else if ( p == "innerText")
-      return getString(element.innerText());
-  else if ( p == "document")
-      return getDOMNode(exec,element.ownerDocument());
+  case ElementInnerHTML:
+    return getString(element.innerHTML());
+  case ElementInnerText:
+    return getString(element.innerText());
+  case ElementDocument:
+    return getDOMNode(exec,element.ownerDocument());
   // ### what about style? or is this used instead for DOM2 stylesheets?
-  else
-    return DOMElement::tryGet(exec, p);
+  }
+  kdWarning() << "HTMLElement::getValue unhandled token " << token << endl;
+  return Undefined();
 }
 
 bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
@@ -922,11 +1640,13 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName,
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "HTMLElement::hasProperty " << propertyName.qstring() << endl;
 #endif
-    Value tmp = tryGet(exec, propertyName);
+  // Shouldn't be necessary anymore since we have the hashtables.
+  // ### TODO: test whether we need to handle the dynamic cases, (see tryGet, e.g. form.<name>) here.
+  /*Value tmp = tryGet(exec, propertyName);
     if (!tmp.isA(UndefinedType)) {
       return true;
-    }
-    return DOMElement::hasProperty(exec, propertyName, recursive);
+    }*/
+  return DOMElement::hasProperty(exec, propertyName, recursive);
 }
 
 UString KJS::HTMLElement::toString(ExecState *exec) const
@@ -965,115 +1685,115 @@ HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
 
 Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  kdDebug() << "KJS::HTMLElementFunction::tryCall " << endl;
   DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj.imp())->toElement();
-  Value result;
 
   switch (element.elementId()) {
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
-      if (id == Submit) {
+      if (id == KJS::HTMLElement::FormSubmit) {
         form.submit();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Reset) {
+      else if (id == KJS::HTMLElement::FormReset) {
         form.reset();
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
-      if (id == Add) {
+      if (id == KJS::HTMLElement::SelectAdd) {
         select.add(KJS::toNode(args[0]),KJS::toNode(args[1]));
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Remove) {
+      else if (id == KJS::HTMLElement::SelectRemove) {
         select.remove(int(args[0].toNumber(exec)));
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Blur) {
+      else if (id == KJS::HTMLElement::SelectBlur) {
         select.blur();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Focus) {
+      else if (id == KJS::HTMLElement::SelectFocus) {
         select.focus();
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
     case ID_INPUT: {
       DOM::HTMLInputElement input = element;
-      if (id == Blur) {
+      if (id == KJS::HTMLElement::InputBlur) {
         input.blur();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Focus) {
+      else if (id == KJS::HTMLElement::InputFocus) {
         input.focus();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Select) {
+      else if (id == KJS::HTMLElement::InputSelect) {
         input.select();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Click) {
+      else if (id == KJS::HTMLElement::InputClick) {
         input.click();
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
     case ID_TEXTAREA: {
       DOM::HTMLTextAreaElement textarea = element;
-      if (id == Blur) {
+      if (id == KJS::HTMLElement::TextAreaBlur) {
         textarea.blur();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Focus) {
+      else if (id == KJS::HTMLElement::TextAreaFocus) {
         textarea.focus();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Select) {
+      else if (id == KJS::HTMLElement::TextAreaSelect) {
         textarea.select();
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
     case ID_A: {
       DOM::HTMLAnchorElement anchor = element;
-      if (id == Blur) {
+      if (id == KJS::HTMLElement::AnchorBlur) {
         anchor.blur();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == Focus) {
+      else if (id == KJS::HTMLElement::AnchorFocus) {
         anchor.focus();
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
     case ID_TABLE: {
       DOM::HTMLTableElement table = element;
-      if (id == CreateTHead)
-        result = getDOMNode(exec,table.createTHead());
-      else if (id == DeleteTHead) {
+      if (id == KJS::HTMLElement::TableCreateTHead)
+        return getDOMNode(exec,table.createTHead());
+      else if (id == KJS::HTMLElement::TableDeleteTHead) {
         table.deleteTHead();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == CreateTFoot)
-        result = getDOMNode(exec,table.createTFoot());
-      else if (id == DeleteTFoot) {
+      else if (id == KJS::HTMLElement::TableCreateTFoot)
+        return getDOMNode(exec,table.createTFoot());
+      else if (id == KJS::HTMLElement::TableDeleteTFoot) {
         table.deleteTFoot();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == CreateCaption)
-        result = getDOMNode(exec,table.createCaption());
-      else if (id == DeleteCaption) {
+      else if (id == KJS::HTMLElement::TableCreateCaption)
+        return getDOMNode(exec,table.createCaption());
+      else if (id == KJS::HTMLElement::TableDeleteCaption) {
         table.deleteCaption();
-        result = Undefined();
+        return Undefined();
       }
-      else if (id == InsertRow)
-        result = getDOMNode(exec,table.insertRow(args[0].toInteger(exec)));
-      else if (id == DeleteRow) {
+      else if (id == KJS::HTMLElement::TableInsertRow)
+        return getDOMNode(exec,table.insertRow(args[0].toInteger(exec)));
+      else if (id == KJS::HTMLElement::TableDeleteRow) {
         table.deleteRow(args[0].toInteger(exec));
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
@@ -1081,27 +1801,27 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
     case ID_TBODY:
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
-      if (id == InsertRow)
-        result = getDOMNode(exec,tableSection.insertRow(args[0].toInteger(exec)));
-      else if (id == DeleteRow) {
+      if (id == KJS::HTMLElement::TableSectionInsertRow)
+        return getDOMNode(exec,tableSection.insertRow(args[0].toInteger(exec)));
+      else if (id == KJS::HTMLElement::TableSectionDeleteRow) {
         tableSection.deleteRow(args[0].toInteger(exec));
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
-      if (id == InsertCell)
-        result = getDOMNode(exec,tableRow.insertCell(args[0].toInteger(exec)));
-      else if (id == DeleteCell) {
+      if (id == KJS::HTMLElement::TableRowInsertCell)
+        return getDOMNode(exec,tableRow.insertCell(args[0].toInteger(exec)));
+      else if (id == KJS::HTMLElement::TableRowDeleteCell) {
         tableRow.deleteCell(args[0].toInteger(exec));
-        result = Undefined();
+        return Undefined();
       }
     }
     break;
   }
 
-  return result;
+  return Undefined();
 }
 
 void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v, int attr)
@@ -1185,10 +1905,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       // read-only: length
       if (p == "name")                 { form.setName(str); return; }
       else if (p == "acceptCharset")   { form.setAcceptCharset(str); return; }
-      else if (p == "action") {
-        form.setAction(str.string());
-        return;
-      }
+      else if (p == "action")          { form.setAction(str.string()); return; }
       else if (p == "enctype")         { form.setEnctype(str); return; }
       else if (p == "method")          { form.setMethod(str); return; }
       else if (p == "target")          { form.setTarget(str); return; }
@@ -1655,7 +2372,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
 }
 
 // -------------------------------------------------------------------------
-/* Source for HMTLCollectionProtoTable. Use "make hashtables" to regenerate.
+/* Source for HTMLCollectionProtoTable. Use "make hashtables" to regenerate.
 @begin HTMLCollectionProtoTable 3
   item		HTMLCollection::Item		DontDelete|Function 1
   namedItem	HTMLCollection::NamedItem	DontDelete|Function 1
