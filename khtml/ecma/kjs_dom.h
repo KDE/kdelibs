@@ -59,7 +59,7 @@ namespace KJS {
            Attributes, NamespaceURI, Prefix, LocalName, OwnerDocument, InsertBefore,
            ReplaceChild, RemoveChild, AppendChild, HasAttributes, HasChildNodes,
            CloneNode, Normalize, IsSupported, AddEventListener, RemoveEventListener,
-           DispatchEvent, Contains,
+           DispatchEvent, Contains, InsertAdjacentHTML,
            OnAbort, OnBlur, OnChange, OnClick, OnDblClick, OnDragDrop, OnError,
            OnFocus, OnKeyDown, OnKeyPress, OnKeyUp, OnLoad, OnMouseDown,
            OnMouseMove, OnMouseOut, OnMouseOver, OnMouseUp, OnMove, OnReset,

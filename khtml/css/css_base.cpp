@@ -335,6 +335,8 @@ DOMString CSSSelector::selectorText() const
         DOMString tagHistoryText = cs->tagHistory->selectorText();
         if ( cs->relation == Sibling )
             str = tagHistoryText + " + " + str;
+        else if ( cs->relation == Cousin )
+            str = tagHistoryText + " ~ " + str;
         else if ( cs->relation == Child )
             str = tagHistoryText + " > " + str;
         else if ( cs->relation == SubSelector )

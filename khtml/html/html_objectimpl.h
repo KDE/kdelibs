@@ -26,7 +26,7 @@
 
 #include "html_elementimpl.h"
 #include "xml/dom_stringimpl.h"
-#include <kparts/browserextension.h>
+#include <qobject.h>
 #include <qstringlist.h>
 
 class KHTMLView;
@@ -51,12 +51,6 @@ public:
 
     void renderAlternative();
 
-    bool get(const unsigned long, const QString &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
-    bool put(const unsigned long, const QString &, const QString &);
-    bool call(const unsigned long, const QString &, const QStringList &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
-    void unregister(const unsigned long);
-
-    void setLiveConnect(KParts::LiveConnectExtension * lc);
     void setServiceType(const QString &);
 
     QString url;
@@ -66,11 +60,8 @@ public:
     bool m_renderAlternative;
 
 protected slots:
-    void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
     void slotRenderAlternative();
 
-private:
-    KParts::LiveConnectExtension *liveconnect;
 };
 
 // -------------------------------------------------------------------------

@@ -124,3 +124,6 @@ testregression_LDADD = libkhtml.la
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
 DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test
 include ../admin/Doxyfile.am
+
+.PHONY: parser
+

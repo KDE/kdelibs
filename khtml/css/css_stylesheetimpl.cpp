@@ -279,7 +279,7 @@ unsigned long StyleSheetListImpl::length() const
     QPtrListIterator<StyleSheetImpl> it(styleSheets);
     for (; it.current(); ++it) {
         if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit())
-            l++;
+            ++l;
     }
     return l;
 }
@@ -292,7 +292,7 @@ StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
         if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit()) {
             if (l == index)
                 return it.current();
-            l++;
+            ++l;
         }
     }
     return 0;
@@ -315,7 +315,7 @@ MediaListImpl::MediaListImpl( CSSRuleImpl *parentRule, const DOMString &media )
 
 bool MediaListImpl::contains( const DOMString &medium ) const
 {
-    return m_lstMedia.count() == 0 || m_lstMedia.contains( medium ) ||
+    return m_lstMedia.empty() || m_lstMedia.contains( medium ) ||
             m_lstMedia.contains( "all" );
 }
 
@@ -333,7 +333,9 @@ CSSRuleImpl *MediaListImpl::parentRule() const
 
 void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 {
-    for ( QValueList<DOMString>::Iterator it = m_lstMedia.begin(); it != m_lstMedia.end(); ++it ) {
+    const QValueList<DOMString>::Iterator itEnd = m_lstMedia.end();
+
+    for ( QValueList<DOMString>::Iterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
         if( (*it) == oldMedium ) {
             m_lstMedia.remove( it );
             return;
@@ -344,7 +346,9 @@ void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 DOM::DOMString MediaListImpl::mediaText() const
 {
     DOMString text;
-    for ( QValueList<DOMString>::ConstIterator it = m_lstMedia.begin(); it != m_lstMedia.end(); ++it ) {
+    const QValueList<DOMString>::ConstIterator itEnd = m_lstMedia.end();
+
+    for ( QValueList<DOMString>::ConstIterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
         text += *it;
         text += ", ";
     }
@@ -354,11 +358,14 @@ DOM::DOMString MediaListImpl::mediaText() const
 void MediaListImpl::setMediaText(const DOM::DOMString &value)
 {
     m_lstMedia.clear();
-    QString val = value.string();
-    QStringList list = QStringList::split( ',', value.string() );
-    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+    const QString val = value.string();
+    const QStringList list = QStringList::split( ',', val );
+
+    const QStringList::ConstIterator itEnd = list.end();
+
+    for ( QStringList::ConstIterator it = list.begin(); it != itEnd; ++it )
     {
-        DOMString medium = (*it).stripWhiteSpace();
+        const DOMString medium = (*it).stripWhiteSpace();
         if( !medium.isEmpty() )
             m_lstMedia.append( medium );
     }

@@ -45,6 +45,12 @@ public:
 
     virtual void addChildToFlow(RenderObject* newChild, RenderObject* beforeChild);
 
+    void splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock, RenderBlock* middleBlock,
+                      RenderObject* beforeChild, RenderFlow* oldCont);
+
+    void splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
+                   RenderObject* newChild, RenderFlow* oldCont);
+
     virtual void setStyle(RenderStyle* _style);
 
     virtual void layout() {} // Do nothing for layout()
@@ -78,14 +84,8 @@ public:
 
 protected:
     static RenderInline* cloneInline(RenderFlow* src);
-    void paintOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
+    void paintOutlinePath(QPainter *p, int tx, int ty, const QPoint *begin, const QPoint *end, BorderSide startingBS, int initialDirection, BorderSide endingBS);
     void paintOutlines(QPainter *p, int tx, int ty);
-
-private:
-    void splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock, RenderBlock* middleBlock,
-                      RenderObject* beforeChild, RenderFlow* oldCont);
-    void splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
-                   RenderObject* newChild, RenderFlow* oldCont);
 
 private:
     bool m_isContinuation : 1; // Whether or not we're a continuation of an inline.

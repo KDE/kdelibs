@@ -124,8 +124,10 @@ void RenderCanvas::layout()
     if (m_printingMode)
        m_minWidth = m_width;
 
+    setChildNeedsLayout(true);
+    setMinMaxKnown(false);
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
-        c->setLayouted(false);
+        c->setChildNeedsLayout(true);
 
 #ifdef SPEED_DEBUG
     QTime qt;
@@ -201,7 +203,8 @@ void RenderCanvas::layout()
 #endif
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
-    setLayouted();
+
+    setNeedsLayout(false);
 }
 
 bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
@@ -287,7 +290,7 @@ void RenderCanvas::repaint(bool immediate)
         if (immediate) {
             //m_view->resizeContents(docWidth(), docHeight());
             m_view->unscheduleRepaint();
-            if (!layouted()) {
+            if (needsLayout()) {
                 m_view->scheduleRelayout();
                 return;
             }
@@ -647,4 +650,29 @@ int RenderCanvas::docWidth() const
     w = kMax( w, layer->xPos() + layer->width() );
 // kdDebug(6040) << "w " << w << " layer(" << layer->renderer()->renderName() << ")->width " << layer->width() << " rm " << (layer->xPos() + layer->width()) << " width() " << layer->renderer()->width() << " rw " << layer->renderer()->effectiveWidth() << endl;
     return w;
+}
+
+// The idea here is to take into account what object is moving the pagination point, and
+// thus choose the best place to chop it.
+void RenderCanvas::setBestTruncatedAt(int y, RenderObject *forRenderer, bool forcedBreak)
+{
+    // Nobody else can set a page break once we have a forced break.
+    if (m_forcedPageBreak) return;
+
+    kdDebug(6040) << "RenderCanvas::setBestTruncatedAt for " << forRenderer->renderName()
+                  << " at " << y << ((forcedBreak) ? " (forced)" : "") << endl;
+
+    // Forced breaks always win over unforced breaks.
+    if (forcedBreak) {
+        m_forcedPageBreak = true;
+        m_bestTruncatedAt = y;
+        return;
+    }
+
+    // prefer the widest object who tries to move the pagination point
+    int width = forRenderer->width();
+    if (width > m_truncatorWidth) {
+        m_truncatorWidth = width;
+        m_bestTruncatedAt = y;
+    }
 }

@@ -376,7 +376,52 @@ static bool validUnit( Value *value, int unitflags, bool strict )
     return b;
 }
 
-bool CSSParser::parseValue( int propId, bool important )
+CSSPrimitiveValueImpl *CSSParser::parseBackgroundPositionXY( int propId, bool forward, bool &ok )
+{
+    if ( forward )
+        valueList->next();
+
+    Value *value = valueList->current();
+
+    ok = true;
+
+    if ( !value )
+        return 0;
+
+    int id = value->id;
+
+    switch ( id ) {
+    case 0:
+        if ( !validUnit( value, FPercent|FLength, strict&(!nonCSSHint) ) )
+            ok = false;
+        break;
+
+    case CSS_VAL_LEFT:
+    case CSS_VAL_RIGHT:
+        if ( propId == CSS_PROP_BACKGROUND_POSITION_Y ) {
+            ok = false;
+            break;
+        }
+    case CSS_VAL_TOP:
+    case CSS_VAL_BOTTOM:
+        if ( propId == CSS_PROP_BACKGROUND_POSITION_X && ( id == CSS_VAL_BOTTOM || id == CSS_VAL_TOP ) ) {
+            ok = false;
+            break;
+        }
+    case CSS_VAL_CENTER:
+        return new CSSPrimitiveValueImpl( id );
+        break;
+    default:
+        ok = false;
+    }
+    if ( !ok )
+        return 0;
+    return new CSSPrimitiveValueImpl( value->fValue,
+                                      (CSSPrimitiveValue::UnitTypes) value->unit );
+}
+
+
+bool CSSParser::parseValue( int propId, bool important, int expected )
 {
     if ( !valueList ) return false;
 
@@ -385,13 +430,12 @@ bool CSSParser::parseValue( int propId, bool important )
     if ( !value )
         return false;
 
-    int id = 0;
-    id = value->id;
+    int id = value->id;
 
-    if ( id == CSS_VAL_INHERIT ) {
+    if ( id == CSS_VAL_INHERIT && expected == 1 ) {
         addProperty( propId, new CSSInheritedValueImpl(), important );
         return true;
-    } else if (id == CSS_VAL_INITIAL) {
+    } else if (id == CSS_VAL_INITIAL && expected == 1 ) {
         addProperty(propId, new CSSInitialValueImpl(), important);
         return true;
     }
@@ -541,7 +585,7 @@ bool CSSParser::parseValue( int propId, bool important )
         break;
 
     case CSS_PROP_TEXT_ALIGN:
-            // left | right | center | justify | -khtml_center | <string> | inherit
+        // left | right | center | justify | khtml_left | khtml_right | khtml_center | <string> | inherit
         if ( ( id >= CSS_VAL__KHTML_AUTO && id <= CSS_VAL__KHTML_CENTER ) ||
              value->unit == CSSPrimitiveValue::CSS_STRING )
             valid_primitive = true;
@@ -584,97 +628,163 @@ bool CSSParser::parseValue( int propId, bool important )
         break;
 
     case CSS_PROP_BACKGROUND_POSITION:
-        if ( id ) {
-            /* Problem: center is ambigous
-             * In case of 'center' center defines X and Y coords
-             * In case of 'center top', center defines the Y coord
-             * in case of 'center left', center defines the X coord
-             */
-            int pos[2];
-            pos[0] = -1;
-            pos[1] = -1;
-            bool invalid = false;
-            switch( id ) {
-            case CSS_VAL_TOP:
-                pos[1] = 0;
-                break;
-            case CSS_VAL_BOTTOM:
-                pos[1] = 100;
-                break;
-            case CSS_VAL_LEFT:
+    {
+        CSSPrimitiveValueImpl *pos[2];
+        pos[0] = 0;
+        pos[1] = 0;
+        bool pos_ok[2];
+        pos_ok[0] = true;
+        pos_ok[1] = true;
+
+        // if we loop beyond our values, do not call ->next twice
+        bool skip_next = true;
+
+        /* Problem: center is ambigous
+         * In case of 'center' center defines X and Y coords
+         * In case of 'center top', center defines the Y coord
+         * in case of 'center left', center defines the X coord
+         * in case of 'center 30%' center defines the X coord
+         * in case of '30% center' center defines the Y coord
+         */
+        bool invalid = false;
+        switch( id ) {
+        case CSS_VAL_TOP:
+            pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, true, pos_ok[0] );
+            if ( pos[0] && pos_ok[0] && pos[0]->primitiveType() != CSSPrimitiveValue::CSS_IDENT )
+                pos_ok[0] = false; // after top only key words are allowed
+            pos[1] = new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
+            break;
+        case CSS_VAL_BOTTOM:
+            pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, true, pos_ok[0] );
+            if ( pos[0] && pos_ok[0] && pos[0]->primitiveType() != CSSPrimitiveValue::CSS_IDENT )
+                pos_ok[0] = false; // after bottom only key words are allowed
+            pos[1] = new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
+            break;
+        case CSS_VAL_LEFT:
+            pos[0] = new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
+            pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
+            // after left everything is allowed
+            break;
+        case CSS_VAL_RIGHT:
+            pos[0] = new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
+            pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
+            // after right everything is allowed
+            break;
+        case CSS_VAL_CENTER:
+            value = valueList->next();
+            if ( !value ) {
+                // only one 'center'
                 pos[0] = 0;
+                pos[1] = 0;
+            } else {
+                bool ok = true;
+                CSSPrimitiveValueImpl *possibly_x = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, false, ok );
+                if ( !ok ) {
+                    assert( !possibly_x );
+                    pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, false, pos_ok[0] );
+                    if ( !pos_ok[0] && expected != 1 ) {
+                        pos_ok[0] = true;
+                        pos[0] = 0;
+                        skip_next = false;
+                    }
+                    pos[1] = 0;
+                } else {
+                    pos[0] = 0;
+                    pos[1] = possibly_x;
+                }
+            }
+            break;
+        case 0: // units
+            pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, false, pos_ok[0] );
+            if ( pos[0] ) {
+                pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
+
+                if ( pos_ok[1] && pos[1] && pos[1]->primitiveType() == CSSPrimitiveValue::CSS_IDENT ) {
+                    // as the first hit the horizontal value as unit, the second value can only
+                    // be either a unit or center, top or bottom
+                    switch ( pos[1]->getIdent() )
+                    {
+                    case CSS_VAL_RIGHT:
+                    case CSS_VAL_LEFT:
+                        pos_ok[1] = false;
+                        break;
+                    }
+                }
+            }
+            break;
+        default:
+            invalid = true;
+        }
+        if ( invalid )
+            break;
+
+        if ( !pos_ok[0] || !pos_ok[1] ) {
+            delete pos[0];
+            delete pos[1];
+            return false; // invalid
+        }
+
+
+        if ( !pos[0] )
+            pos[0] = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
+        else if ( pos[0]->primitiveType() == CSSPrimitiveValue::CSS_IDENT )
+        {
+            // map the values to percentages
+            id = pos[0]->getIdent();
+            delete pos[0];
+            switch ( id ) {
+            case CSS_VAL_LEFT:
+                pos[0] =  new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
+                break;
+            case CSS_VAL_CENTER:
+                pos[0] =  new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
                 break;
             case CSS_VAL_RIGHT:
-                pos[0] = 100;
-                break;
-            case  CSS_VAL_CENTER:
+                pos[0] =  new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
                 break;
             default:
-                invalid = true;
-            }
-            if ( invalid )
+                pos[0] = 0;
+                assert( false );
                 break;
-            value = valueList->next();
-            if ( value ) {
-                id = value->id;
-                switch( id ) {
-                case CSS_VAL_TOP:
-                    if ( pos[1] != -1 )
-                        invalid = true;
-                    pos[1] = 0;
-                    break;
-                case CSS_VAL_BOTTOM:
-                    if ( pos[1] != -1 )
-                        invalid = true;
-                    pos[1] = 100;
-                    break;
-                case CSS_VAL_LEFT:
-                    if ( pos[0] != -1 )
-                        invalid = true;
-                    pos[0] = 0;
-                    break;
-                case CSS_VAL_RIGHT:
-                    if ( pos[0] != -1 )
-                        invalid = true;
-                    pos[0] = 100;
-                    break;
-                case  CSS_VAL_CENTER:
-                    break;
-                default:
-                    invalid = true;
-                }
-                if ( !invalid )
-                    value = valueList->next();
             }
-            if ( pos[0] == -1 )
-                pos[0] = 50;
-            if ( pos[1] == -1 )
-                pos[1] = 50;
-            addProperty( CSS_PROP_BACKGROUND_POSITION_X,
-                         new CSSPrimitiveValueImpl( pos[0], CSSPrimitiveValue::CSS_PERCENTAGE ),
-                         important );
-            addProperty( CSS_PROP_BACKGROUND_POSITION_Y,
-                         new CSSPrimitiveValueImpl( pos[1], CSSPrimitiveValue::CSS_PERCENTAGE ),
-                         important );
-        } else {
-            bool ok = parseValue( CSS_PROP_BACKGROUND_POSITION_X, important );
-            if ( !ok )
-                break;
-            value = valueList->current();
-            if ( value )
-                ok = parseValue( CSS_PROP_BACKGROUND_POSITION_Y, important );
-            if ( !ok )
-                addProperty( CSS_PROP_BACKGROUND_POSITION_Y,
-                             new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE ),
-                             important );
         }
+        if ( !pos[1] )
+            pos[1] = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
+        else if ( pos[1]->primitiveType() == CSSPrimitiveValue::CSS_IDENT )
+        {
+            // map the values to percentages
+            id = pos[1]->getIdent();
+            delete pos[1];
+            switch ( id ) {
+            case CSS_VAL_TOP:
+                pos[1] =  new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
+                break;
+            case CSS_VAL_CENTER:
+                pos[1] =  new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
+                break;
+            case CSS_VAL_BOTTOM:
+                pos[1] =  new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
+                break;
+            default:
+                pos[1] = 0;
+                assert( false );
+                break;
+            }
+        }
+        --expected; // we only expect one as this is always done in one run
+        if ( skip_next )
+            valueList->next();
+        if ( valueList->current() && expected == 0)
+            return false;
+
+        addProperty( CSS_PROP_BACKGROUND_POSITION_X,
+                     pos[0],
+                     important );
+        addProperty( CSS_PROP_BACKGROUND_POSITION_Y,
+                     pos[1],
+                     important );
         return true;
-
-    case CSS_PROP_BACKGROUND_POSITION_X:
-    case CSS_PROP_BACKGROUND_POSITION_Y:
-        valid_primitive = validUnit( value, FPercent|FLength, strict&(!nonCSSHint) );
-        break;
-
+    }
     case CSS_PROP_BORDER_SPACING:
     {
         const int properties[2] = { CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING,
@@ -687,8 +797,8 @@ bool CSSParser::parseValue( int propId, bool important )
             return true;
         }
         else if (num == 2) {
-            if (!parseValue(properties[0], important)) return false;
-            if (!parseValue(properties[1], important)) return false;
+            if (!parseValue(properties[0], important, 2)) return false;
+            if (!parseValue(properties[1], important, 1)) return false;
             return true;
         }
         return false;
@@ -969,6 +1079,10 @@ bool CSSParser::parseValue( int propId, bool important )
         break;
 
     /* CSS3 properties */
+    case CSS_PROP_BOX_SIZING:        // border-box | content-box | inherit
+        if ( id == CSS_VAL_BORDER_BOX || id == CSS_VAL_CONTENT_BOX )
+            valid_primitive = true;
+        break;
     case CSS_PROP__KHTML_USER_INPUT:        // none | enabled | disabled | inherit
         if ( id == CSS_VAL_NONE || id == CSS_VAL_ENABLED || id == CSS_VAL_DISABLED )
             valid_primitive = true;
@@ -1016,6 +1130,11 @@ bool CSSParser::parseValue( int propId, bool important )
             // ['background-color' || 'background-image' ||'background-repeat' ||
         // 'background-attachment' || 'background-position'] | inherit
     {
+        /* FIXME: in case the property is invalid, but parsed a position-x and -y, the
+           invalid catcher will add another _POSITION property, which doesn't really overwrite
+           the X and Y values. But this case is pretty stupid anyway.
+           testcase: "background-position: bottom right; background: center nonsense;" should
+           appear top left (initial values) */
         const int properties[5] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
                                     CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,
                                     CSS_PROP_BACKGROUND_COLOR };
@@ -1120,6 +1239,7 @@ bool CSSParser::parseValue( int propId, bool important )
     }
 
     if ( valid_primitive ) {
+
         if ( id != 0 ) {
             // qDebug(" new value: id=%d", id );
             parsedValue = new CSSPrimitiveValueImpl( id );
@@ -1135,7 +1255,13 @@ bool CSSParser::parseValue( int propId, bool important )
             // qDebug(" new quirks value: value=%.2f, unit=%d", value->fValue, value->unit );
             parsedValue = new CSSQuirkPrimitiveValueImpl( value->fValue, CSSPrimitiveValue::CSS_EMS );
         }
+        --expected;
         valueList->next();
+        if ( valueList->current() && expected == 0)
+        {
+            delete parsedValue;
+            parsedValue = 0;
+        }
     }
     if ( parsedValue ) {
         addProperty( propId, parsedValue, important );
@@ -1153,6 +1279,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
     inParseShortHand = true;
 
     bool found = false;
+    bool oldPropIndex = numParsedProperties;
     bool fnd[6]; //Trust me ;)
     for( int i = 0; i < numProperties; i++ )
             fnd[i] = false;
@@ -1169,7 +1296,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
 #ifdef CSS_DEBUG
                 kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
 #endif
-                if ( parseValue( properties[propIndex], important ) ) {
+                if ( parseValue( properties[propIndex], important, numProperties ) ) {
                     fnd[propIndex] = found = true;
 #ifdef CSS_DEBUG
                     kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << endl;
@@ -1183,6 +1310,12 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
 #ifdef CSS_DEBUG
             qDebug("didn't find anything" );
 #endif
+
+            // need to nuke the already added values
+            for ( int i = oldPropIndex; i < numParsedProperties; ++i )
+                delete parsedProperties[i];
+
+            numParsedProperties = oldPropIndex;
             inParseShortHand = false;
             return false;
         }
@@ -1212,12 +1345,12 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
      */
 
     int num = inParseShortHand ? 1 : valueList->numValues;
-    // qDebug("parse4Values: num=%d", num );
+    //qDebug("parse4Values: num=%d %d", num,  valueList->numValues );
 
     // the order is top, right, bottom, left
     switch( num ) {
     case 1: {
-        if( !parseValue( properties[0], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
         CSSValueImpl *value = parsedProperties[numParsedProperties-1]->value();
         addProperty( properties[1], value, important );
         addProperty( properties[2], value, important );
@@ -1226,8 +1359,8 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
     }
     case 2: {
 
-        if( !parseValue( properties[0], important ) ) return false;
-        if( !parseValue( properties[1], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[1], important, valueList->numValues) ) return false;
         CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
         addProperty( properties[2], value, important );
         value = parsedProperties[numParsedProperties-2]->value();
@@ -1235,18 +1368,18 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
         return true;
     }
     case 3: {
-        if( !parseValue( properties[0], important ) ) return false;
-        if( !parseValue( properties[1], important ) ) return false;
-        if( !parseValue( properties[2], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[1], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[2], important, valueList->numValues ) ) return false;
         CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
         addProperty( properties[3], value, important );
         return true;
     }
     case 4: {
-        if( !parseValue( properties[0], important ) ) return false;
-        if( !parseValue( properties[1], important ) ) return false;
-        if( !parseValue( properties[2], important ) ) return false;
-        if( !parseValue( properties[3], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[1], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[2], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[3], important, valueList->numValues ) ) return false;
         return true;
     }
     default:
@@ -1577,7 +1710,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 }
 
 
-static bool parseColor(const QString &name, QRgb& rgb)
+static bool parseColor(int unit, const QString &name, QRgb& rgb)
 {
     int len = name.length();
 
@@ -1605,12 +1738,14 @@ static bool parseColor(const QString &name, QRgb& rgb)
         }
     }
 
-    // try a little harder
-    QColor tc;
-    tc.setNamedColor(name.lower());
-    if ( tc.isValid() ) {
-        rgb = tc.rgb();
-        return true;
+    if ( unit == CSSPrimitiveValue::CSS_IDENT ) {
+        // try a little harder
+        QColor tc;
+        tc.setNamedColor(name.lower());
+        if ( tc.isValid() ) {
+            rgb = tc.rgb();
+            return true;
+        }
     }
 
     return false;
@@ -1625,12 +1760,12 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
               value->fValue >= 0. && value->fValue < 1000000. ) {
         QString str;
         str.sprintf( "%06d", (int)(value->fValue+.5) );
-        if ( !::parseColor( str, c ) )
+        if ( !::parseColor( value->unit, str, c ) )
             return 0;
     } else if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
               value->unit == CSSPrimitiveValue::CSS_IDENT ||
               (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION) ) {
-        if ( !::parseColor( qString( value->string ), c) )
+        if ( !::parseColor( value->unit, qString( value->string ), c) )
             return 0;
     }
     else if ( value->unit == Value::Function &&

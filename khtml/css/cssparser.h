@@ -84,6 +84,7 @@ namespace DOM {
 	void addValue( const Value &val );
 	Value *current() { return currentValue < numValues ? values + currentValue : 0; }
 	Value *next() { ++currentValue; return current(); }
+        bool isLast() const { return currentValue+1 >= numValues; }
 	Value *values;
 	int numValues;
 	int maxValues;
@@ -113,12 +114,17 @@ namespace DOM {
 	CSSStyleDeclarationImpl *createStyleDeclaration( CSSStyleRuleImpl *rule );
 	void clearProperties();
 
-	bool parseValue( int propId, bool important );
+	bool parseValue( int propId, bool important, int expected=1 );
 	bool parseShortHand( const int *properties, int numProperties, bool important );
 	bool parse4Values( const int *properties, bool important );
 	bool parseContent( int propId, bool important );
 	bool parseShape( int propId, bool important );
 	bool parseFont(bool important);
+
+        // returns the found property
+        // 0 if nothing found (or ok == false)
+        // @param forward if true, it parses the next in the list
+        CSSPrimitiveValueImpl *parseBackgroundPositionXY( int propId, bool forward, bool &ok );
 	CSSValueListImpl *parseFontFamily();
 	CSSPrimitiveValueImpl *parseColor();
 

@@ -149,6 +149,9 @@ public:
     RenderText(DOM::NodeImpl* node, DOM::DOMStringImpl *_str);
     virtual ~RenderText();
 
+    virtual bool isTextFragment() const;
+    virtual DOM::DOMStringImpl* originalString() const;
+
     virtual const char *renderName() const { return "RenderText"; }
 
     virtual void setStyle(RenderStyle *style);
@@ -295,5 +298,31 @@ inline const RenderText* InlineTextBox::renderText() const
 inline RenderText* InlineTextBox::renderText()
 { return static_cast<RenderText*>( object() ); }
 
-}
+// Used to represent a text substring of an element, e.g., for text runs that are split because of
+// first letter and that must therefore have different styles (and positions in the render tree).
+// We cache offsets so that text transformations can be applied in such a way that we can recover
+// the original unaltered string from our corresponding DOM node.
+class RenderTextFragment : public RenderText
+{
+public:
+    RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str,
+                       int startOffset, int endOffset);
+    RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str);
+    ~RenderTextFragment();
+    
+    virtual bool isTextFragment() const;
+    virtual const char *renderName() const { return "RenderTextFragment"; }
+    
+    uint start() const { return m_start; }
+    uint end() const { return m_end; }
+    
+    DOM::DOMStringImpl* contentString() const { return m_generatedContentStr; }
+    virtual DOM::DOMStringImpl* originalString() const;
+    
+private:
+    uint m_start;
+    uint m_end;
+    DOM::DOMStringImpl* m_generatedContentStr;
+};
+} // end namespace
 #endif

@@ -97,6 +97,8 @@ public:
 
     virtual void calcWidth();
 
+    virtual bool isListMarker() const { return true; }
+
     RenderListItem* listItem() const { return m_listItem; }
     void setListItem(RenderListItem* listItem) { m_listItem = listItem; }
 

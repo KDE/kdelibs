@@ -179,7 +179,6 @@ namespace KWallet
  *
  * @short HTML Browser Widget
  * @author Lars Knoll (knoll@kde.org)
- * @version $Id$
  *
  */
 class KHTMLPart : public KParts::ReadOnlyPart
@@ -225,7 +224,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
   Q_PROPERTY( QCString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
-  
+
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
@@ -867,7 +866,7 @@ public:
   KHTMLPart *findFrame( const QString &f );
 
   /**
-   * Recursively finds the part containing the frame with name @p f 
+   * Recursively finds the part containing the frame with name @p f
    * and checks if it is accessible by @p callingPart
    * Returns 0L if no suitable frame can't be found.
    * Returns parent part if a suitable frame was found and
@@ -891,7 +890,15 @@ public:
    */
   bool frameExists( const QString &frameName );
 
+  /**
+   * Returns child frame framePart its script interpreter
+   */
+  KJSProxy *framejScript(KParts::ReadOnlyPart *framePart);
 
+  /**
+   * Finds a frame by name. Returns 0L if frame can't be found.
+   */
+  KParts::ReadOnlyPart *findFramePart( const QString &f );
   /**
    * Called by KJS.
    * Sets the StatusBarText assigned
@@ -980,7 +987,7 @@ public:
   /**
    * Checks whether the page contains unsubmitted form changes.
    *
-   * @return true if form changes exist 
+   * @return true if form changes exist
    * @since 3.3
    */
   bool isModified() const;
@@ -1451,6 +1458,8 @@ private slots:
    */
   void restoreScrollPosition();
 
+  void walletOpened(KWallet::Wallet*);
+
 private:
 
   KJSErrorDlg *jsErrorExtension();
@@ -1470,6 +1479,10 @@ private:
   bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
   KWallet::Wallet* wallet();
+
+  void openWallet(DOM::HTMLFormElementImpl*);
+  void saveToWallet(const QString& key, const QMap<QString,QString>& data);
+  void dequeueWallet(DOM::HTMLFormElementImpl*);
 
   /**
    * @internal

@@ -6,6 +6,7 @@
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -475,18 +476,19 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         int c;
         c = attr->val()->toInt();
         addColumns(c-totalCols);
-        break;
 #endif
+        break;
+
     }
     case ATTR_ALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_FLOAT, attr->value());
+            addCSSProperty(CSS_PROP_FLOAT, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_FLOAT);
         break;
     case ATTR_VALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
@@ -549,15 +551,22 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ALIGN:
     {
         DOMString v = attr->value();
-        if ( strcasecmp( attr->value(), "center" ) == 0 )
-            v = "\\2d khtml-center";
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
+        if ( strcasecmp( attr->value(), "middle" ) == 0 || strcasecmp( attr->value(), "center" ) == 0 )
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER);
+        else if (strcasecmp(attr->value(), "absmiddle") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL_CENTER);
+        else if (strcasecmp(attr->value(), "left") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_LEFT);
+        else if (strcasecmp(attr->value(), "right") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_RIGHT);
+        else
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }
     case ATTR_VALIGN:
     {
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
@@ -772,7 +781,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
                 strcasecmp(attr->value(), "center" ) == 0 )
                 addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER );
             else
-                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value().lower());
         }
         else
             removeCSSProperty(CSS_PROP_TEXT_ALIGN);
@@ -821,7 +830,7 @@ void HTMLTableCellElementImpl::attach()
     if(p) {
         HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
         if (table->m_noBorder) {
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0");
+            removeCSSProperty(CSS_PROP_BORDER_WIDTH);
         }
         else {
             addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");
@@ -869,7 +878,7 @@ void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_VALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
@@ -893,7 +902,7 @@ void HTMLTableCaptionElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value());
+            addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_CAPTION_SIDE);
         break;

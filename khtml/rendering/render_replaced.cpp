@@ -3,6 +3,8 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,6 +37,7 @@
 #include <qlineedit.h>
 #include <kglobalsettings.h>
 #include <qobjectlist.h>
+#include <qvaluevector.h>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
@@ -191,14 +194,15 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->name(), "__khtml"))
+            if ( !strcmp(m_widget->name(), "__khtml") && !::qt_cast<QFrame*>(m_widget))
                 m_widget->setBackgroundMode( QWidget::NoBackground );
 
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
                 m_widget->setFocusPolicy(QWidget::StrongFocus);
-            // if we're already layouted, apply the calculated space to the
-            // widget immediately
-            if (layouted()) {
+            // if we've already received a layout, apply the calculated space to the
+            // widget immediately, but we have to have really been full constructed (with a non-null
+            // style pointer).
+            if (!needsLayout() && style()) {
                 // ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
                 resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                               m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
@@ -215,13 +219,13 @@ void RenderWidget::setQWidget(QWidget *widget)
 
 void RenderWidget::layout( )
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
     if ( m_widget )
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
 
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderWidget::updateFromElement()
@@ -240,7 +244,7 @@ void RenderWidget::updateFromElement()
             if (backgroundColor.isValid()) {
                 if (strcmp(widget()->name(), "__khtml"))
                     widget()->setEraseColor(backgroundColor );
-                for ( int i = 0; i < QPalette::NColorGroups; i++ ) {
+                for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Dark, backgroundColor.dark(lowlightVal) );
@@ -309,6 +313,8 @@ void RenderWidget::setStyle(RenderStyle *_style)
     {
         m_widget->setFont(style()->font());
         if (style()->visibility() != VISIBLE) {
+            if (m_view)
+                m_view->setWidgetVisible(this, false);
             m_widget->hide();
         }
     }
@@ -329,8 +335,10 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     _tx += m_x;
     _ty += m_y;
 
-    if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top())) return;
-
+    if ( (_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top()) ||
+         (_tx + m_width <= paintInfo.r.left()) || (_tx > paintInfo.r.right()) )
+        return;
+    
     // add offset for relative positioning
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
@@ -338,6 +346,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
 
+    bool khtmlw = !strcmp(m_widget->name(), "__khtml");
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {
@@ -374,83 +383,168 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
-    paintWidget(paintInfo, m_widget, _tx, _ty);
+    if (khtmlw)
+        paintWidget(paintInfo, m_widget, _tx, _ty);
 }
 
 #include <private/qinternal_p.h>
 
-static QPixmap copyWidget(int tx, int ty, QPainter *p, QWidget *widget)
-{
-    QPixmap pm = QPixmap(widget->width(), widget->height());
-    if ( p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget) ) {
-	// even hackier!
-	pm.fill(widget->colorGroup().base());
-    } else {
-	QPoint pt(tx, ty);
-	pt = p->xForm(pt);
-	bitBlt(&pm, 0, 0, p->device(), pt.x(), pt.y());
+// The PaintBuffer class provides a shared buffer for widget painting.
+// 
+// It will grow to encompass the biggest widget encountered, in order to avoid 
+// constantly resizing.
+// When it grows over maxPixelBuffering, it periodically checks if such a size 
+// is still needed.  If not, it shrinks down to the biggest size < maxPixelBuffering 
+// that was requested during the overflow lapse.
+
+class PaintBuffer: public QObject
+{    
+public:
+    static const int maxPixelBuffering = 320*200;
+    static const int leaseTime = 20*1000;
+  
+    static QPixmap *grab( QSize s = QSize() ) {
+        if (!m_inst) 
+            m_inst = new PaintBuffer;
+        return m_inst->getBuf( s );
     }
-    QPainter::redirect(widget, &pm);
-    QPaintEvent e( widget->rect(), false );
+    static void release() { m_inst->m_grabbed = false; }
+protected:
+    PaintBuffer(): m_overflow(false), m_grabbed(false), 
+                   m_timer(0), m_resetWidth(0), m_resetHeight(0) {};
+    void timerEvent(QTimerEvent* e) { 
+        assert( m_timer == e->timerId() ); 
+        if (m_grabbed) 
+            return;
+        m_buf.resize(m_resetWidth, m_resetHeight);
+        m_resetWidth = m_resetHeight = 0;
+        killTimer( m_timer ); 
+        m_timer = 0;  
+    }
+
+    QPixmap *getBuf( QSize s ) {
+        assert( !m_grabbed );
+        m_grabbed = true;
+        bool cur_overflow = false;
+        if (!s.isEmpty()) {
+            int nw = kMax(m_buf.width(), s.width());
+            int nh = kMax(m_buf.height(), s.height());
+                        
+            if (!m_overflow && (nw*nh > maxPixelBuffering))
+                cur_overflow = true;
+            
+            if (nw != m_buf.width() || nh != m_buf.height())
+                m_buf.resize(nw, nh);
+        }
+        if (cur_overflow) {
+            m_overflow = true;    
+            m_timer = startTimer( leaseTime );
+        } else if (m_overflow) {
+            if( s.width()*s.height() > maxPixelBuffering ) {
+                killTimer( m_timer );
+                m_timer = startTimer( leaseTime );
+            } else {
+                if (s.width() > m_resetWidth)
+                    m_resetWidth = s.width();
+                if (s.height() > m_resetHeight)
+                    m_resetHeight = s.height();
+            }
+        }   
+        return &m_buf;
+    }
+private:    
+    static PaintBuffer* m_inst;
+    QPixmap m_buf; 
+    bool m_overflow;
+    bool m_grabbed;
+    int m_timer;
+    int m_resetWidth;
+    int m_resetHeight;
+};
+
+PaintBuffer *PaintBuffer::m_inst = 0;
+
+static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty)
+{
+    if (r.isNull() || r.isEmpty() )
+        return;
+    QRegion blit(r);
+    QValueVector<QWidget*> cw;
+    QValueVector<QRect> cr;
+      
+    if (widget->children()) {
+        // build region
+        QObjectListIterator it = *widget->children();
+        for (; it.current(); ++it) {
+            QWidget* const w = ::qt_cast<QWidget *>(it.current());
+	    if ( w && !w->isTopLevel() && !w->isHidden()) {
+	        QRect r2 = w->geometry();
+	        blit.subtract( r2 );
+	        r2 = r2.intersect( r );
+	        r2.moveBy(-w->x(), -w->y());
+	        cr.append(r2);
+	        cw.append(w);
+            }
+        }
+    }
+    QMemArray<QRect> br = blit.rects();
+
+    const int cnt = br.size();
+    const bool external = p->device()->isExtDev();    
+    QPixmap* const pm = PaintBuffer::grab( widget->size() );
+    
+    // fill background
+    if ( external ) {
+	// even hackier!
+        QPainter pt( pm );
+        const QColor c = widget->colorGroup().base();
+        for (int i = 0; i < cnt; ++i)
+            pt.fillRect( br[i], c );
+    } else {
+        QRect dr;
+        for (int i = 0; i < cnt; ++i ) {
+            dr = br[i];
+	    dr.moveBy( tx, ty );
+	    dr = p->xForm( dr );
+	    bitBlt(pm, br[i].topLeft(), p->device(), dr);
+        }
+    }
+    
+    // send paint event
+    QPainter::redirect(widget, pm);
+    QPaintEvent e( r, false );
     QApplication::sendEvent( widget, &e );
     QPainter::redirect(widget, 0);
-    if (widget->children()) {
-	QObjectListIterator it(*widget->children());
-	for (; it.current(); ++it) {
-	    QWidget *w = ::qt_cast<QWidget *>(it.current());
-	    if (w && !w->isTopLevel()) {
-		QPixmap cp = copyWidget(tx + w->x(), ty + w->y(), p, w);
-		bitBlt(&pm, w->x(), w->y(), &cp, 0, 0);
-	    }
-	}
-    }
-    return pm;
-}
+    
+    // transfer result
+    if ( external )
+        for ( int i = 0; i < cnt; ++i )
+            p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
+    else
+        for ( int i = 0; i < cnt; ++i )
+            bitBlt(p->device(), p->xForm( QPoint(tx, ty) + br[i].topLeft() ), pm, br[i]);        
 
+    // cleanup and recurse     
+    PaintBuffer::release();
+    QValueVector<QWidget*>::iterator cwit = cw.begin();
+    QValueVector<QWidget*>::iterator cwitEnd = cw.end();
+    QValueVector<QRect>::const_iterator crit = cr.begin();
+    for (; cwit != cwitEnd; ++cwit, ++crit)
+        copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y());
+}
 
 void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
 {
-    QPainter* p = pI.p;
-    // We have some problems here, as we can't redirect some of the widgets.
+    QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    if (!strcmp(widget->name(), "__khtml")) {
-        bool dsbld = QSharedDoubleBuffer::isDisabled();
-        QSharedDoubleBuffer::setDisabled(true);
-	QPixmap pm = copyWidget(tx, ty, p, widget);
-        QSharedDoubleBuffer::setDisabled(dsbld);
-        p->drawPixmap(tx, ty, pm);
-    } else {
-        // QScrollview is difficult and I currently know of no way to get
-        // the stuff on screen without flicker.
-        //
-        // This still doesn't work nicely for textareas. Probably need
-        // to fix qtextedit for that.
-        // KHTMLView::eventFilter()
-        if (pI.p->device()->isExtDev())
-        {
-           QScrollView *sv = dynamic_cast<QScrollView *>(widget);
-           if (sv && sv->viewport())
-           {
-              QWidget *w = sv->viewport();
-              bool dsbld = QSharedDoubleBuffer::isDisabled();
-              QSharedDoubleBuffer::setDisabled(true);
-              QPixmap pm = copyWidget(tx, ty, p, w);
-              QSharedDoubleBuffer::setDisabled(dsbld);
-              p->drawPixmap(tx, ty, pm);
-              p->setPen(Qt::black);
-              p->setBrush(Qt::NoBrush);
-              p->drawRect(tx, ty, pm.width(), pm.height());
-           }
-        }
-#if 0
-        QPaintEvent e( widget->rect(), false );
-        QApplication::sendEvent( widget, &e );
-        QScrollView *sv = static_cast<QScrollView *>(widget);
-        sv->repaint(true);
-        pm = QPixmap::grabWindow(widget->winId());
-#endif
-    }
+    const bool dsbld = QSharedDoubleBuffer::isDisabled();
+    QSharedDoubleBuffer::setDisabled(true);
+    QRect rr = pI.r;
+    rr.moveBy(-tx, -ty);
+    const QRect r = widget->rect().intersect( rr );
+    copyWidget(r, p, widget, tx, ty);
+    QSharedDoubleBuffer::setDisabled(dsbld);
 
     allowWidgetPaintEvents = false;
 }
@@ -550,14 +644,14 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::MOUSEUP_EVENT:
     case EventImpl::MOUSEMOVE_EVENT: {
         const MouseEventImpl &me = static_cast<const MouseEventImpl &>(ev);
-        QMouseEvent *qme = me.qEvent();
+        QMouseEvent* const qme = me.qEvent();
 
         int absx = 0;
         int absy = 0;
 
         absolutePosition(absx, absy);
 
-        QPoint p(me.clientX() - absx + m_view->contentsX(),
+        const QPoint p(me.clientX() - absx + m_view->contentsX(),
                  me.clientY() - absy + m_view->contentsY());
         QMouseEvent::Type type;
         int button = 0;
@@ -612,7 +706,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     }
     case EventImpl::KEYDOWN_EVENT:
     case EventImpl::KEYUP_EVENT: {
-        QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
         break;
@@ -629,7 +723,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         //  DOM:   Down     Press   |       Press                             |     Up
         //  Qt:    Press  (nothing) | Release(autorepeat) + Press(autorepeat) |   Release
 
-        QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke && ke->isAutoRepeat()) {
             QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
                                ke->text(), ke->isAutoRepeat(), ke->count() );

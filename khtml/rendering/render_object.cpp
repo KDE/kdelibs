@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -157,8 +157,9 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_previous( 0 ),
       m_next( 0 ),
       m_verticalPosition( PositionUndefined ),
-      m_layouted( false ),
-      m_unused( false ),
+      m_needsLayout( false ),
+      m_normalChildNeedsLayout( false ),
+      m_posChildNeedsLayout( false ),
       m_minMaxKnown( false ),
       m_floating( false ),
 
@@ -247,7 +248,7 @@ RenderObject* RenderObject::removeChildNode(RenderObject* )
 
 void RenderObject::removeChild(RenderObject *o )
 {
-    setLayouted(false);
+    setNeedsLayout(true);
     removeChildNode( o );
 }
 
@@ -465,33 +466,54 @@ void RenderObject::setPixmap(const QPixmap&, const QRect& /*r*/, CachedImage* im
     }
 }
 
-void RenderObject::setLayouted(bool b)
+void RenderObject::setNeedsLayout(bool b, bool markParents)
 {
-    m_layouted = b;
-    if (!b) {
-        RenderObject *o = container();
-        RenderObject *root = this;
+    m_needsLayout = b;
+    if (b) {
+        if (markParents)
+            markContainingBlocksForLayout();
+    }
+    else {
+        m_posChildNeedsLayout = false;
+        m_normalChildNeedsLayout = false;
+    }
+}
 
-        // If an attempt is made to setLayouted(false) an object
-        // inside a clipped (overflow:hidden) object, we have to make
-        // sure to repaint only the clipped rectangle.  We do this by
-        // passing an argument to scheduleRelayout.  This hint really
-        // shouldn't be needed, and it's unfortunate that it is
-        // necessary.  -dwh
+void RenderObject::setChildNeedsLayout(bool b, bool markParents)
+{
+    m_normalChildNeedsLayout = b;
+    if (b) {
+        if (markParents)
+            markContainingBlocksForLayout();
+    }
+    else {
+        m_posChildNeedsLayout = false;
+        m_normalChildNeedsLayout = false;
+    }
+}
 
-        RenderObject* clippedObj =
-            (style()->hidesOverflow() && !isText()) ? this : 0;
+void RenderObject::markContainingBlocksForLayout()
+{
+    RenderObject *o = container();
+    RenderObject *last = this;
 
-        while( o ) {
-            root = o;
-            o->m_layouted = false;
-            if (o->style()->hidesOverflow() && !clippedObj)
-                clippedObj = o;
-            o = o->container();
+    while (o) {
+        if (!last->isText() && (last->style()->position() == FIXED || last->style()->position() == ABSOLUTE)) {
+            if (o->m_posChildNeedsLayout)
+                return;
+            o->m_posChildNeedsLayout = true;
+        }
+        else {
+            if (o->m_normalChildNeedsLayout)
+                return;
+            o->m_normalChildNeedsLayout = true;
         }
 
-        root->scheduleRelayout(clippedObj);
+        last = o;
+        o = o->container();
     }
+
+    last->scheduleRelayout();
 }
 
 RenderBlock *RenderObject::containingBlock() const
@@ -1004,7 +1026,7 @@ QString RenderObject::information() const
     if (isPositioned()) ts << "ps ";
     if (isReplaced()) ts << "rp ";
     if (overhangingContents()) ts << "oc ";
-    if (layouted()) ts << "lt ";
+    if (needsLayout()) ts << "nl ";
     if (minMaxKnown()) ts << "mmk ";
     if (m_recalcMinMax) ts << "rmm ";
     if (mouseInside()) ts << "mi ";
@@ -1122,7 +1144,7 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (isInline()) { ts << " inline"; }
     if (isReplaced()) { ts << " replaced"; }
     if (shouldPaintBackgroundOrBorder()) { ts << " paintBackground"; }
-    if (layouted()) { ts << " layouted"; }
+    if (needsLayout()) { ts << " needsLayout"; }
     if (minMaxKnown()) { ts << " minMaxKnown"; }
     if (overhangingContents()) { ts << " overhangingContents"; }
     if (hasFirstLine()) { ts << " hasFirstLine"; }
@@ -1203,14 +1225,10 @@ void RenderObject::setStyle(RenderStyle *style)
                                         m_style->hasBorder() || nb );
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
-    if ( d >= RenderStyle::Position && m_parent ) {
-        //qDebug("triggering relayout");
-        setMinMaxKnown(false);
-        setLayouted(false);
-    } else if ( m_parent ) {
-        //qDebug("triggering repaint");
+    if ( d >= RenderStyle::Position && m_parent )
+        setNeedsLayoutAndMinMaxRecalc();
+    else if (!isText() && m_parent && d == RenderStyle::Visible)
         repaint();
-    }
 }
 
 void RenderObject::setOverhangingContents(bool p)
@@ -1327,6 +1345,15 @@ int RenderObject::paddingRight() const
 
 RenderObject *RenderObject::container() const
 {
+    // This method is extremely similar to containingBlock(), but with a few notable
+    // exceptions.
+    // (1) It can be used on orphaned subtrees, i.e., it can be called safely even when
+    // the object is not part of the primary document subtree yet.
+    // (2) For normal flow elements, it just returns the parent.
+    // (3) For absolute positioned elements, it will return a relative positioned inline.
+    // containingBlock() simply skips relpositioned inlines and lets an enclosing block handle
+    // the layout of the positioned object.  This does mean that calcAbsoluteHorizontal and
+    // calcAbsoluteVertical have to use container().
     EPosition pos = m_style->position();
     RenderObject *o = 0;
     if( pos == FIXED ) {
@@ -1397,6 +1424,7 @@ RenderArena* RenderObject::renderArena() const
 
 void RenderObject::detach()
 {
+
     deleteInlineBoxes();
     remove();
 
@@ -1532,8 +1560,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
         (( !isRenderBlock() ||
            !static_cast<RenderBlock*>( this )->isPointInScrollbar( _x, _y, _tx, _ty )) &&
         (overhangingContents() || inOverflowRect || isInline() || isRoot() || isCanvas() ||
-        isTableRow() || isTableSection() || inside || mouseInside() ||
-        (childrenInline() && firstChild() && firstChild()->style()->display() == COMPACT )))) {
+        isTableRow() || isTableSection() || inside || mouseInside() ))) {
         if ( hitTestAction == HitTestChildrenOnly )
             inside = false;
         if ( style()->hidesOverflow() && layer() )
@@ -1586,7 +1613,7 @@ short RenderObject::verticalPositionHint( bool firstLine ) const
 
 }
 
-short RenderObject::getVerticalPosition( bool firstLine ) const
+short RenderObject::getVerticalPosition( bool firstLine, RenderObject* ref ) const
 {
     // vertical align for table cells has a different meaning
     int vpos = 0;
@@ -1599,14 +1626,15 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
         } else if ( va == LENGTH ) {
             vpos = -style()->verticalAlignLength().width( lineHeight( firstLine ) );
         } else {
-            bool checkParent = parent()->isInline() && !parent()->isReplacedBlock();
-            vpos = checkParent ? parent()->verticalPositionHint( firstLine ) : 0;
+            if (!ref) ref = parent();
+            bool checkParent = ref->isInline() && !ref->isReplacedBlock();
+            vpos = checkParent ? ref->verticalPositionHint( firstLine ) : 0;
             // don't allow elements nested inside text-top to have a different valignment.
             if ( va == BASELINE )
                 return vpos;
 
-            const QFont &f = parent()->font( firstLine );
-            int fontheight = parent()->lineHeight( firstLine );
+            const QFont &f = ref->font( firstLine );
+            int fontheight = ref->lineHeight( firstLine );
             int fontsize = f.pixelSize();
             int halfleading = ( fontheight - fontsize ) / 2;
 
@@ -1617,10 +1645,10 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
             else if ( va == TEXT_TOP ) {
 //                 qDebug( "got TEXT_TOP vertical pos hint" );
 //                 qDebug( "parent:" );
-//                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", fontheight, fontsize, parent()->baselinePosition( firstLine ) );
+//                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", fontheight, fontsize, ref->baselinePosition( firstLine ) );
 //                 qDebug( "this:" );
 //                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", lineHeight( firstLine ), style()->font().pixelSize(), baselinePosition( firstLine ) );
-                vpos += ( baselinePosition( firstLine ) - parent()->baselinePosition( firstLine ) +
+                vpos += ( baselinePosition( firstLine ) - ref->baselinePosition( firstLine ) +
                         halfleading );
             } else if ( va == MIDDLE ) {
                 QRect b = QFontMetrics(f).boundingRect('x');
@@ -1643,7 +1671,7 @@ short RenderObject::lineHeight( bool firstLine ) const
     // box, then the fact that we're an inline-block is irrelevant, and we behave
     // just like a block.
 
-    if (isReplaced() && (!isInlineBlockOrInlineTable() || layouted()))
+    if (isReplaced() && (!isInlineBlockOrInlineTable() || !needsLayout()))
         return height()+marginTop()+marginBottom();
 
     Length lh;
@@ -1673,7 +1701,7 @@ short RenderObject::baselinePosition( bool firstLine ) const
     // box, then the fact that we're an inline-block is irrelevant, and we behave
     // just like a block.
 
-    if (isReplaced() && (!isInlineBlockOrInlineTable() || layouted()))
+    if (isReplaced() && (!isInlineBlockOrInlineTable() || !needsLayout()))
         return height()+marginTop()+marginBottom();
 
     const QFontMetrics &fm = fontMetrics( firstLine );
@@ -1809,6 +1837,16 @@ void RenderObject::collectBorders(QValueList<CollapsedBorderValue>& borderStyles
 {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
         curr->collectBorders(borderStyles);
+}
+
+bool RenderObject::usesLineWidth() const
+{
+    // 1. All auto-width objects that avoid floats should always use lineWidth
+    // 2. For objects with a specified width, we match WinIE's behavior:
+    // (a) tables use contentWidth
+    // (b) <hr>s use lineWidth
+    // (c) all other objects use lineWidth in quirks mode and contentWidth in strict mode.
+    return (style()->flowAroundFloats() && (style()->width().isVariable() ||/* isHR() ||*/ (style()->htmlHacks() && !isTable())));
 }
 
 #undef RED_LUMINOSITY

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,6 +30,9 @@
 namespace khtml {
 
 enum WidthType { Width, MinWidth, MaxWidth };
+enum HeightType { Height, MinHeight, MaxHeight };
+
+class RenderBlock;
 
 class RenderBox : public RenderContainer
 {
@@ -52,7 +55,7 @@ public:
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
     virtual void deleteInlineBoxes(RenderArena* arena=0);
-    
+
     virtual void detach();
 
     virtual short minWidth() const { return m_minWidth; }
@@ -109,10 +112,18 @@ public:
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
+    RenderBlock* createAnonymousBlock();
 
 private:
+    int calcBoxWidth(int w) const;
+    int calcBoxHeight(int h) const;
 
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
+    int calcHeightUsing(const Length& height);
+    int calcReplacedWidthUsing(WidthType widthType) const;
+    int calcReplacedHeightUsing(HeightType heightType) const;
+    int calcPercentageHeight(const Length& height);
+    int availableHeightUsing(const Length& h) const;
 
 protected:
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
@@ -133,6 +144,8 @@ protected:
 
     QRect getOverflowClipRect(int tx, int ty);
     QRect getClipRect(int tx, int ty);
+
+    void restructureParentFlow();
 
 
     // the actual height of the contents + borders + padding
@@ -169,7 +182,7 @@ protected:
      * when its inner content isn't contextually relevant
      * (e.g replaced or positioned elements)
      */
-    InlineBox *m_placeHolderBox; 
+    InlineBox *m_placeHolderBox;
 };
 
 

@@ -2,6 +2,7 @@
  * This file is part of the html renderer for KDE.
  *
  * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef BIDI_H
 #define BIDI_H
@@ -26,9 +26,9 @@
 #include <qstring.h>
 
 namespace khtml {
-    class RenderFlow;
-    class RenderObject;
     class RenderArena;
+    class RenderBlock;
+    class RenderObject;
     class InlineBox;
 
     class BidiContext {
@@ -53,8 +53,7 @@ namespace khtml {
 
     struct BidiRun {
 	BidiRun(int _start, int _stop, RenderObject *_obj, BidiContext *context, QChar::Direction dir)
-	    :  vertical( 0 ),
-	       start( _start ), stop( _stop ), obj( _obj ), box(0)
+	    :  start( _start ), stop( _stop ), obj( _obj ), box(0), nextRun(0)
 	{
 	    if(dir == QChar::DirON) dir = context->dir;
 
@@ -62,77 +61,46 @@ namespace khtml {
 
 	    // add level of run (cases I1 & I2)
 	    if( level % 2 ) {
-		if(dir == QChar::DirL || dir == QChar::DirAN || dir == QChar::DirEN )
+		if(dir == QChar::DirL || dir == QChar::DirAN || dir == QChar::DirEN)
 		    level++;
 	    } else {
 		if( dir == QChar::DirR )
 		    level++;
-		else if( dir == QChar::DirAN || dir == QChar::DirEN )
+		else if( dir == QChar::DirAN || dir == QChar::DirEN)
 		    level += 2;
 	    }
 	}
 
-	int vertical;
+        void detach(RenderArena* renderArena);
 
+        // Overloaded new operator.
+        void* operator new(size_t sz, RenderArena* renderArena) throw();
+
+        // Overridden to prevent the normal delete from being called.
+        void operator delete(void* ptr, size_t sz);
+
+private:
+        // The normal operator new is disallowed.
+        void* operator new(size_t sz) throw();
+
+public:
 	int start;
 	int stop;
-	RenderObject *obj;
+
+        RenderObject *obj;
         InlineBox* box;
 
 	// explicit + implicit levels here
 	uchar level;
+
+        bool compact : 1;
+
+        BidiRun* nextRun;
     };
 
-    // an iterator which goes through a BidiParagraph
-    class BidiIterator
-    {
-    public:
-	BidiIterator();
-	BidiIterator(RenderFlow *par);
-	BidiIterator(RenderFlow *par, RenderObject *_obj, int _pos = 0);
+    struct BidiIterator;
+    struct BidiState;
 
-	BidiIterator(const BidiIterator &it);
-	BidiIterator &operator = (const BidiIterator &it);
-        void operator= (RenderObject* _obj) {
-            obj = _obj; pos = 0;
-            // ### isText ?
-        }
-
-	void operator ++ ();
-
-	bool atEnd() const;
-
-	const QChar &current() const;
-	QChar::Direction direction() const;
-
-	void detach(khtml::RenderArena* renderArena);
-
-	void* operator new(size_t sz, khtml::RenderArena* renderArena) throw();
-	void operator delete(void* ptr, size_t sz);
-
-    private:
-	// The normal operator new is disallowed.
-	void* operator new(size_t sz) throw();
-
-    public:
-
-	RenderFlow *par;
-	RenderObject *obj;
-	bool isText : 1;
-	unsigned int pos : 30;
-    };
-
-    struct BidiStatus {
-	BidiStatus() {
-	    eor = QChar::DirON;
-	    lastStrong = QChar::DirON;
-	    last = QChar:: DirON;
-	}
-	QChar::Direction eor 		: 5;
-	QChar::Direction lastStrong 	: 5;
-	QChar::Direction last		: 5;
-    };
-
-}
+};
 
 #endif

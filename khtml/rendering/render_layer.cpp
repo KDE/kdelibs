@@ -568,7 +568,7 @@ void RenderLayer::checkScrollbarsAfterLayout()
         showScrollbar(Qt::Horizontal, needHorizontalBar);
         showScrollbar(Qt::Vertical, needVerticalBar);
 
-        m_object->setLayouted(false);
+        m_object->setNeedsLayout(true);
 	if (m_object->isRenderBlock())
             static_cast<RenderBlock*>(m_object)->layoutBlock(true);
         else
@@ -1299,7 +1299,7 @@ void RenderLayer::suspendMarquees()
 // Marquee implementation
 
 Marquee::Marquee(RenderLayer* l)
-:m_layer(l), m_currentLoop(0), m_timerId(0), m_start(0), m_end(0), m_speed(0), m_unfurlPos(0), m_reset(false),
+:m_layer(l), m_currentLoop(0), m_totalLoops(0), m_timerId(0), m_start(0), m_end(0), m_speed(0), m_unfurlPos(0), m_reset(false),
  m_suspended(false), m_stopped(false), m_whiteSpace(NORMAL), m_direction(MAUTO)
 {
 }
@@ -1404,9 +1404,7 @@ void Marquee::start()
             bool forward = direction() == MDOWN || direction() == MRIGHT;
             bool isReversed = (forward && m_currentLoop % 2) || (!forward && !(m_currentLoop % 2));
             m_unfurlPos = isReversed ? m_end : m_start;
-//             m_layer->renderer()->setChildNeedsLayout(true);
-            // ### hack
-            m_layer->renderer()->setLayouted(false);
+            m_layer->renderer()->setChildNeedsLayout(true);
         }
         else {
             if (isHorizontal())
@@ -1449,15 +1447,11 @@ void Marquee::updateMarqueePosition()
         if (isUnfurlMarquee()) {
             if (m_unfurlPos < m_start) {
                 m_unfurlPos = m_start;
-//                 m_layer->renderer()->setChildNeedsLayout(true);
-                // ### hack
-                m_layer->renderer()->setLayouted(false);
+                m_layer->renderer()->setChildNeedsLayout(true);
             }
             else if (m_unfurlPos > m_end) {
                 m_unfurlPos = m_end;
-//                 m_layer->renderer()->setChildNeedsLayout(true);
-                // ### hack
-                m_layer->renderer()->setLayouted(false);
+                m_layer->renderer()->setChildNeedsLayout(true);
             }
         }
         else {
@@ -1509,7 +1503,7 @@ void Marquee::updateMarqueeStyle()
     // Check the loop count to see if we should now stop.
     bool activate = (m_totalLoops <= 0 || m_currentLoop < m_totalLoops);
     if (activate && !m_timerId)
-        m_layer->renderer()->setLayouted(false);
+        m_layer->renderer()->setNeedsLayout(true);
     else if (!activate && m_timerId) {
         // Destroy the timer.
         killTimer(m_timerId);
@@ -1519,7 +1513,7 @@ void Marquee::updateMarqueeStyle()
 
 void Marquee::timerEvent(QTimerEvent* /*evt*/)
 {
-    if (!m_layer->renderer()->layouted())
+    if (m_layer->renderer()->needsLayout())
         return;
 
     if (m_reset) {
@@ -1577,9 +1571,7 @@ void Marquee::timerEvent(QTimerEvent* /*evt*/)
 
     if (isUnfurlMarquee()) {
         m_unfurlPos = newPos;
-//         m_layer->renderer()->setChildNeedsLayout(true);
-        // ### hack
-        m_layer->renderer()->setLayouted(false);
+        m_layer->renderer()->setChildNeedsLayout(true);
     }
     else {
         if (isHorizontal())

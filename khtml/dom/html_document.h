@@ -171,6 +171,12 @@ public:
     HTMLCollection forms() const;
 
     /**
+     * A collection of all the layers of a document.
+     *
+     */
+    HTMLCollection layers() const;
+
+    /**
      * A collection of all the anchor ( \c A ) elements in
      * a document with a value for the \c name attribute.
      * Note. For reasons of backwards compatibility, the returned set

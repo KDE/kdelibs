@@ -65,8 +65,6 @@ public:
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
 
-    RenderBlock* createAnonymousBlock();
-
     void paintLineBoxBackgroundBorder(PaintInfo& pI, int _tx, int _ty);
     void paintLineBoxDecorations(PaintInfo& p, int _tx, int _ty);
 

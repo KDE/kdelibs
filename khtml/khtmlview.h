@@ -220,7 +220,7 @@ private:
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);
     void unscheduleRelayout();
 
-    void scheduleRepaint(int x, int y, int w, int h);
+    void scheduleRepaint(int x, int y, int w, int h, bool asap=false);
     void unscheduleRepaint();
 
     void closeChildDialogs();
@@ -280,7 +280,7 @@ private:
     bool dispatchKeyEvent( QKeyEvent *_ke );
     bool dispatchKeyEventHelper( QKeyEvent *_ke, bool generate_keypress );
 
-    void complete();
+    void complete( bool pendingAction );
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     void findAhead(bool increase);

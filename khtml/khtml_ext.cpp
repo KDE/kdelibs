@@ -30,6 +30,9 @@
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
 #include "rendering/render_form.h"
+#include "rendering/render_image.h"
+#include "html/html_imageimpl.h"
+#include "misc/loader.h"
 #include "dom/html_form.h"
 #include "dom/html_image.h"
 #include <qclipboard.h>
@@ -85,13 +88,13 @@ int KHTMLPartBrowserExtension::yOffset()
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "saveState!" << endl;
+  //kdDebug( 6050 ) << "saveState!" << endl;
   m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "restoreState!" << endl;
+  //kdDebug( 6050 ) << "restoreState!" << endl;
   m_part->restoreState( stream );
 }
 
@@ -342,6 +345,7 @@ public:
   KHTMLPart *m_khtml;
   KURL m_url;
   KURL m_imageURL;
+  QString m_suggestedFilename;
 };
 
 
@@ -361,6 +365,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   if ( !e.isNull() && (e.elementId() == ID_IMG ||
                        (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
   {
+    if (e.elementId() == ID_IMG) {
+      DOM::HTMLImageElementImpl *ie = static_cast<DOM::HTMLImageElementImpl*>(e.handle());
+      khtml::RenderImage *ri = dynamic_cast<khtml::RenderImage*>(ie->renderer());
+      if (ri && ri->contentObject()) {
+        d->m_suggestedFilename = static_cast<khtml::CachedImage*>(ri->contentObject())->suggestedFilename();
+      }
+    }
     isImage=true;
   }
 
@@ -376,7 +387,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       KConfig config("kuriikwsfilterrc");
       config.setGroup("General");
       QString engine = config.readEntry("DefaultSearchEngine");
-        
+
       // search text
       QString selectedText = khtml->selectedText();
       if ( selectedText.length()>18 ) {
@@ -487,7 +498,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                  actionCollection(), "copyimagelocation" );
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
-    new KAction( i18n( "View Image (%1)" ).arg(name.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
+    new KAction( i18n( "View Image (%1)" ).arg(d->m_suggestedFilename.isEmpty() ? name.replace("&", "&&") : d->m_suggestedFilename.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
                  actionCollection(), "viewimage" );
   }
 
@@ -529,21 +540,23 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 {
   KIO::MetaData metaData;
   metaData["referrer"] = d->m_khtml->referrer();
-  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData );
+  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData, QString::null, 0, d->m_suggestedFilename );
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
+  KURL safeURL(d->m_url);
+  safeURL.setPass(QString::null);
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   KURL::List lst;
-  lst.append( d->m_url );
+  lst.append( safeURL );
   QApplication::clipboard()->setSelectionMode(true);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
 #else
-  QApplication::clipboard()->setText( d->m_url.url() ); //FIXME(E): Handle multiple entries
+  QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
 }
 
@@ -554,16 +567,18 @@ void KHTMLPopupGUIClient::slotStopAnimations()
 
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
+  KURL safeURL(d->m_imageURL);
+  safeURL.setPass(QString::null);
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   KURL::List lst;
-  lst.append( d->m_imageURL);
+  lst.append( safeURL );
   QApplication::clipboard()->setSelectionMode(true);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
 #else
-  QApplication::clipboard()->setText(d->m_imageURL.url()); //FIXME(E): Handle multiple entries
+  QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
 }
 
@@ -630,7 +645,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
         if( info.exists() ) {
           // TODO: use KIO::RenameDlg (shows more information)
           query = KMessageBox::warningYesNo( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ).arg( info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ), KStdGuiItem::cancel() );
-       }
+        }
        }
    } while ( query == KMessageBox::No );
 
@@ -747,7 +762,7 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
 }
 
 void KHTMLPartBrowserHostExtension::virtual_hook( int id, void *data )
-{ 
+{
   if (id == VIRTUAL_FIND_FRAME_PARENT)
   {
     FindFrameParentParams *param = static_cast<FindFrameParentParams*>(data);

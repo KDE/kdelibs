@@ -51,9 +51,10 @@ class HTMLCollectionImpl : public khtml::Shared<HTMLCollectionImpl>
 public:
     enum Type {
         // from HTMLDocument
-        DOC_IMAGES,    // all IMG elements in the document
+        DOC_IMAGES = 0, // all IMG elements in the document
         DOC_APPLETS,   // all OBJECT and APPLET elements
         DOC_FORMS,     // all FORMS
+        DOC_LAYERS,    // all LAYERS
         DOC_LINKS,     // all A _and_ AREA elements with a value for href
         DOC_ANCHORS,      // all A elements with a value for name
         // from HTMLTable, HTMLTableSection, HTMLTableRow
@@ -66,15 +67,17 @@ public:
         // from HTMLMap
         MAP_AREAS,
         DOC_ALL,        // "all" elements (IE)
-        NODE_CHILDREN   // first-level children (IE)
+        NODE_CHILDREN,   // first-level children (IE)
+        LAST_TYPE
     };
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);
 
     virtual ~HTMLCollectionImpl();
     unsigned long length() const;
-    // This method is o(n), so you should't use it to iterate over all items. Use firstItem/nextItem instead.
+    // Only when iterating forward, it will use caching, ie. making it O(1).
     NodeImpl *item ( unsigned long index ) const;
+    // obsolete and not domtree changes save, virtual too.
     virtual NodeImpl *firstItem() const;
     virtual NodeImpl *nextItem() const;
 
@@ -82,15 +85,25 @@ public:
     // In case of multiple items named the same way
     NodeImpl *nextNamedItem( const DOMString &name ) const;
 
+    struct CollectionInfo {
+        CollectionInfo() : version(~0) {}
+        unsigned int version;
+        NodeImpl *current;
+        unsigned int position;
+        unsigned int length;
+        bool haslength;
+    };
 protected:
     virtual unsigned long calcLength(NodeImpl *current) const;
     virtual NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
     virtual NodeImpl *getNamedItem(NodeImpl *current, int attr_id, const DOMString &name) const;
     virtual NodeImpl *nextNamedItemInternal( const DOMString &name ) const;
+    void updateCollectionInfo() const;
     // the base node, the collection refers to
     NodeImpl *base;
     // The collection list the following elements
     int type;
+    mutable CollectionInfo *info;
 
     // ### add optimization, so that a linear loop through the
     // Collection [using item(i)] is O(n) and not O(n^2)!
@@ -98,8 +111,6 @@ protected:
     //NodeImpl *current;
     //int currentPos;
 
-    // For firstItem()/nextItem()
-    mutable NodeImpl *currentItem;
     // For nextNamedItem()
     mutable bool idsDone;
 };

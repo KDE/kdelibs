@@ -248,17 +248,11 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
             }
             if (curr->object()->isInlineFlow()) {
                 InlineFlowBox* flow = static_cast<InlineFlowBox*>(curr);
-                if (curr->object()->style()->display() == COMPACT) {
-                    int ignoredX = x;
-                    flow->placeBoxesHorizontally(ignoredX);
-                }
-                else {
-                    x += flow->marginLeft();
-                    x = flow->placeBoxesHorizontally(x);
-                    x += flow->marginRight();
-                }
+                x += flow->marginLeft();
+                x = flow->placeBoxesHorizontally(x);
+                x += flow->marginRight();
             }
-            else if (curr->object()->style()->display() != COMPACT ) {
+            else {
                 x += curr->object()->marginLeft();
                 curr->setXPos(x);
                 x += curr->width() + curr->object()->marginRight();

@@ -49,7 +49,7 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc), liveconnect(0L)
+    : HTMLElementImpl(doc)
 {
     needWidgetUpdate = false;
     m_renderAlternative = false;
@@ -58,9 +58,6 @@ HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
 void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
     serviceType = val.lower();
     int pos = serviceType.find( ";" );
-    if ( pos!=-1 )
-        serviceType.truncate( pos );
-    pos = serviceType.find( "-plugin" );
     if ( pos!=-1 )
         serviceType.truncate( pos );
 }
@@ -119,63 +116,6 @@ void HTMLObjectBaseElementImpl::slotRenderAlternative()
     attach();
 }
 
-bool HTMLObjectBaseElementImpl::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
-    if (!liveconnect)
-        return false;
-    return liveconnect->get(objid, field, type, retobjid, value);
-}
-
-bool HTMLObjectBaseElementImpl::put(const unsigned long objid, const QString & field, const QString & value) {
-    if (!liveconnect)
-        return false;
-    return liveconnect->put(objid, field, value);
-}
-
-bool HTMLObjectBaseElementImpl::call(const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
-    if (!liveconnect)
-        return false;
-    return liveconnect->call(objid, func, args, type, retobjid, value);
-}
-
-void HTMLObjectBaseElementImpl::unregister(const unsigned long objid) {
-    if (!liveconnect)
-        return;
-    liveconnect->unregister(objid);
-}
-
-void HTMLObjectBaseElementImpl::setLiveConnect(KParts::LiveConnectExtension * lc) {
-    liveconnect = lc;
-    if (lc)
-        connect(lc, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), static_cast<HTMLObjectBaseElementImpl*>(this), SLOT(liveConnectEvent( const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
-}
-
-void HTMLObjectBaseElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
-{
-    if (!liveconnect)
-        // not attached
-        return;
-
-    QString script;
-    script.sprintf("%s(", event.latin1());
-    KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
-    for ( ; i != args.end(); i++) {
-        if (i != args.begin())
-            script += ",";
-        if ((*i).first == KParts::LiveConnectExtension::TypeString) {
-            script += "\"";
-            script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
-            script += "\"";
-        } else
-            script += (*i).second;
-    }
-    script += ")";
-
-    kdDebug(6036) << "HTMLObjectBaseElementImpl::liveConnectEvent " << script << endl;
-    KHTMLView* w = getDocument()->view();
-    if (w)
-	w->part()->executeScript(this, script);
-}
-
 void HTMLObjectBaseElementImpl::attach() {
     assert(!attached());
     assert(!m_render);
@@ -199,7 +139,7 @@ void HTMLObjectBaseElementImpl::attach() {
     {
         needWidgetUpdate = false;
         bool imagelike = serviceType.startsWith("image/") &&
-                         (KImageIO::typeForMime(serviceType) != QString::null);
+                         !KImageIO::typeForMime(serviceType).isNull();
         if (imagelike) {
             m_render = new (getDocument()->renderArena()) RenderImage(this);
             // make sure we don't attach the inner contents
@@ -222,7 +162,6 @@ void HTMLObjectBaseElementImpl::attach() {
 }
 
 void HTMLObjectBaseElementImpl::detach() {
-    setLiveConnect(0L);
 
     if (attached())
         // ### do this when we are actualy removed from document instead
@@ -333,7 +272,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 	addHTMLAlignment( attr->value() );
 	break;
      case ATTR_VALIGN:
-        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower() );
         break;
      case ATTR_PLUGINPAGE:
      case ATTR_PLUGINSPAGE: {
@@ -341,7 +280,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
         break;
       }
      case ATTR_HIDDEN:
-        if (attr->value().lower()=="yes" || attr->value().lower()=="true")
+        if (strcasecmp( attr->value(), "yes" ) == 0 || strcasecmp( attr->value() , "true") == 0 )
            hidden = true;
         else
            hidden = false;

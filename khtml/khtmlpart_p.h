@@ -32,9 +32,15 @@
 #include <kaction.h>
 #include <kparts/partmanager.h>
 #include <kparts/statusbarextension.h>
+#include <kparts/browserextension.h>
 #include <kwallet.h>
-#include <qtimer.h>
 
+#include <qguardedptr.h>
+#include <qmap.h>
+#include <qtimer.h>
+#include <qvaluelist.h>
+
+#include "html/html_formimpl.h"
 #include "khtml_run.h"
 #include "khtml_factory.h"
 #include "khtml_events.h"
@@ -64,16 +70,25 @@ namespace KParts
 
 namespace khtml
 {
-  struct ChildFrame
+  class ChildFrame : public QObject
   {
+      Q_OBJECT
+  public:
       enum Type { Frame, IFrame, Object };
 
-      ChildFrame() {
+      ChildFrame() : QObject (0L, "khtml_child_frame") {
+          m_jscript = 0L;
+          m_kjs_lib = 0;
           m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false;
           m_bPendingRedirection = false;
       }
 
-      ~ChildFrame() { if (m_run) m_run->abort(); }
+      ~ChildFrame() {
+          if (m_run) m_run->abort();
+          delete m_jscript;
+          if ( m_kjs_lib)
+              m_kjs_lib->unload();
+      }
 
     QGuardedPtr<khtml::RenderPart> m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -81,6 +96,8 @@ namespace khtml
     QGuardedPtr<KParts::LiveConnectExtension> m_liveconnect;
     QString m_serviceName;
     QString m_serviceType;
+    KJSProxy *m_jscript;
+    KLibrary *m_kjs_lib;
     bool m_bCompleted;
     QString m_name;
     KParts::URLArgs m_args;
@@ -91,11 +108,13 @@ namespace khtml
     QStringList m_params;
     bool m_bNotify;
     bool m_bPendingRedirection;
+  protected slots:
+    void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
   };
 
 }
 
-struct KHTMLFrameList : public QValueList<khtml::ChildFrame>
+struct KHTMLFrameList : public QValueList<khtml::ChildFrame*>
 {
     Iterator find( const QString &name ) KDE_NO_EXPORT;
 };
@@ -105,18 +124,67 @@ typedef KHTMLFrameList::Iterator FrameIt;
 
 static int khtml_part_dcop_counter = 0;
 
+
+class KHTMLWalletQueue : public QObject
+{
+  Q_OBJECT
+  public:
+    KHTMLWalletQueue(QObject *parent) : QObject(parent) {
+      wallet = 0L;
+    }
+
+    virtual ~KHTMLWalletQueue() {
+      delete wallet;
+      wallet = 0L;
+    }
+
+    KWallet::Wallet *wallet;
+    typedef QPair<DOM::HTMLFormElementImpl*, QGuardedPtr<DOM::DocumentImpl> > Caller;
+    typedef QValueList<Caller> CallerList;
+    CallerList callers;
+    QValueList<QPair<QString, QMap<QString, QString> > > savers;
+
+  signals:
+    void walletOpened(KWallet::Wallet*);
+
+  public slots:
+    void walletOpened(bool success) {
+      if (!success) {
+        delete wallet;
+        wallet = 0L;
+      }
+      emit walletOpened(wallet);
+      if (wallet) {
+        if (!wallet->hasFolder(KWallet::Wallet::FormDataFolder())) {
+          wallet->createFolder(KWallet::Wallet::FormDataFolder());
+        }
+        for (CallerList::Iterator i = callers.begin(); i != callers.end(); ++i) {
+          if ((*i).first && (*i).second) {
+            (*i).first->walletOpened(wallet);
+          }
+        }
+        wallet->setFolder(KWallet::Wallet::FormDataFolder());
+        for (QValueList<QPair<QString, QMap<QString, QString> > >::Iterator i = savers.begin(); i != savers.end(); ++i) {
+          wallet->writeMap((*i).first, (*i).second);
+        }
+      }
+      callers.clear();
+      savers.clear();
+      wallet = 0L; // gave it away
+    }
+};
+
 class KHTMLPartPrivate
 {
+  KHTMLPartPrivate(const KHTMLPartPrivate & other);
 public:
   KHTMLPartPrivate(QObject* parent)
   {
     m_doc = 0L;
     m_decoder = 0L;
-    m_jscript = 0L;
     m_wallet = 0L;
     m_bWalletOpened = false;
     m_runningScripts = 0;
-    m_kjs_lib = 0;
     m_job = 0L;
     m_bComplete = true;
     m_bLoadEventEmitted = true;
@@ -205,8 +273,10 @@ public:
     m_jobspeed = 0;
     m_dcop_counter = ++khtml_part_dcop_counter;
     m_statusBarWalletLabel = 0L;
+    m_statusBarUALabel = 0L;
     m_statusBarJSErrorLabel = 0L;
     m_userStyleSheetLastModified = 0;
+    m_wq = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -214,17 +284,15 @@ public:
     delete m_statusBarExtension;
     delete m_extension;
     delete m_settings;
-    delete m_jscript;
     delete m_wallet;
-    if ( m_kjs_lib)
-       m_kjs_lib->unload();
 #ifndef Q_WS_QWS
     //delete m_javaContext;
 #endif
   }
 
+  QGuardedPtr<khtml::ChildFrame> m_frame;
   KHTMLFrameList m_frames;
-  QValueList<khtml::ChildFrame> m_objects;
+  KHTMLFrameList m_objects;
 
   QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
@@ -232,6 +300,7 @@ public:
   KHTMLPartBrowserHostExtension *m_hostExtension;
   KURLLabel* m_statusBarIconLabel;
   KURLLabel* m_statusBarWalletLabel;
+  KURLLabel* m_statusBarUALabel;
   KURLLabel* m_statusBarJSErrorLabel;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
@@ -241,9 +310,7 @@ public:
   QString scheduledScript;
   DOM::Node scheduledScriptNode;
 
-  KJSProxy *m_jscript;
   KWallet::Wallet* m_wallet;
-  KLibrary *m_kjs_lib;
   int m_runningScripts;
   bool m_bOpenMiddleClick :1;
   bool m_bBackRightClick :1;
@@ -471,6 +538,8 @@ public:
   }
 
   time_t m_userStyleSheetLastModified;
+
+  KHTMLWalletQueue *m_wq;
 };
 
 #endif

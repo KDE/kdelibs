@@ -115,6 +115,7 @@ border-right
 border-bottom
 border-left
 border-width
+box-sizing
 font
 list-style
 margin

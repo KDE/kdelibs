@@ -65,7 +65,7 @@ hash_prop (register const char *str, register unsigned int len)
       408, 408, 408, 408, 408, 408, 408, 408, 408, 408,
       408, 408, 408, 408, 408, 408, 408,   0,   0,   0,
         0,   5, 105,  20,  20,   0, 408,  50,   0,   0,
-        0,   0,   0,   0,   0,  15,   0, 150,  35,  55,
+        0,   0,   0,   0,   0,  15,   0, 150, 100,  55,
        95,  25,  40, 408, 408, 408, 408, 408, 408, 408,
       408, 408, 408, 408, 408, 408, 408, 408, 408, 408,
       408, 408, 408, 408, 408, 408, 408, 408, 408, 408,
@@ -193,7 +193,7 @@ findProp (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 117,
+      TOTAL_KEYWORDS = 118,
       MIN_WORD_LENGTH = 3,
       MAX_WORD_LENGTH = 32,
       MIN_HASH_VALUE = 3,
@@ -230,9 +230,9 @@ findProp (register const char *str, register unsigned int len)
       {"position", CSS_PROP_POSITION},
 #line 27 "cssproperties.gperf"
       {"border-bottom-color", CSS_PROP_BORDER_BOTTOM_COLOR},
-#line 117 "cssproperties.gperf"
+#line 118 "cssproperties.gperf"
       {"margin", CSS_PROP_MARGIN},
-#line 119 "cssproperties.gperf"
+#line 120 "cssproperties.gperf"
       {"padding", CSS_PROP_PADDING},
 #line 62 "cssproperties.gperf"
       {"margin-top", CSS_PROP_MARGIN_TOP},
@@ -254,7 +254,7 @@ findProp (register const char *str, register unsigned int len)
       {"display", CSS_PROP_DISPLAY},
 #line 22 "cssproperties.gperf"
       {"border-spacing", CSS_PROP_BORDER_SPACING},
-#line 120 "cssproperties.gperf"
+#line 121 "cssproperties.gperf"
       {"scrollbar-base-color", CSS_PROP_SCROLLBAR_BASE_COLOR},
 #line 111 "cssproperties.gperf"
       {"border-right", CSS_PROP_BORDER_RIGHT},
@@ -272,7 +272,7 @@ findProp (register const char *str, register unsigned int len)
       {"border-top-style", CSS_PROP_BORDER_TOP_STYLE},
 #line 31 "cssproperties.gperf"
       {"border-bottom-style", CSS_PROP_BORDER_BOTTOM_STYLE},
-#line 116 "cssproperties.gperf"
+#line 117 "cssproperties.gperf"
       {"list-style", CSS_PROP_LIST_STYLE},
 #line 55 "cssproperties.gperf"
       {"height", CSS_PROP_HEIGHT},
@@ -280,11 +280,9 @@ findProp (register const char *str, register unsigned int len)
       {"margin-right", CSS_PROP_MARGIN_RIGHT},
 #line 82 "cssproperties.gperf"
       {"padding-right", CSS_PROP_PADDING_RIGHT},
-#line 99 "cssproperties.gperf"
-      {"vertical-align", CSS_PROP_VERTICAL_ALIGN},
 #line 74 "cssproperties.gperf"
       {"min-height", CSS_PROP_MIN_HEIGHT},
-#line 124 "cssproperties.gperf"
+#line 125 "cssproperties.gperf"
       {"scrollbar-3dlight-color", CSS_PROP_SCROLLBAR_3DLIGHT_COLOR},
 #line 103 "cssproperties.gperf"
       {"width", CSS_PROP_WIDTH},
@@ -292,11 +290,9 @@ findProp (register const char *str, register unsigned int len)
       {"line-height", CSS_PROP_LINE_HEIGHT},
 #line 75 "cssproperties.gperf"
       {"min-width", CSS_PROP_MIN_WIDTH},
-#line 100 "cssproperties.gperf"
-      {"visibility", CSS_PROP_VISIBILITY},
-#line 126 "cssproperties.gperf"
-      {"scrollbar-track-color", CSS_PROP_SCROLLBAR_TRACK_COLOR},
 #line 127 "cssproperties.gperf"
+      {"scrollbar-track-color", CSS_PROP_SCROLLBAR_TRACK_COLOR},
+#line 128 "cssproperties.gperf"
       {"scrollbar-arrow-color", CSS_PROP_SCROLLBAR_ARROW_COLOR},
 #line 114 "cssproperties.gperf"
       {"border-width", CSS_PROP_BORDER_WIDTH},
@@ -314,7 +310,7 @@ findProp (register const char *str, register unsigned int len)
       {"list-style-type", CSS_PROP_LIST_STYLE_TYPE},
 #line 30 "cssproperties.gperf"
       {"border-right-style", CSS_PROP_BORDER_RIGHT_STYLE},
-#line 115 "cssproperties.gperf"
+#line 116 "cssproperties.gperf"
       {"font", CSS_PROP_FONT},
 #line 49 "cssproperties.gperf"
       {"float", CSS_PROP_FLOAT},
@@ -330,7 +326,7 @@ findProp (register const char *str, register unsigned int len)
       {"text-decoration", CSS_PROP_TEXT_DECORATION},
 #line 113 "cssproperties.gperf"
       {"border-left", CSS_PROP_BORDER_LEFT},
-#line 122 "cssproperties.gperf"
+#line 123 "cssproperties.gperf"
       {"scrollbar-shadow-color", CSS_PROP_SCROLLBAR_SHADOW_COLOR},
 #line 93 "cssproperties.gperf"
       {"text-align", CSS_PROP_TEXT_ALIGN},
@@ -340,21 +336,23 @@ findProp (register const char *str, register unsigned int len)
       {"border-left-color", CSS_PROP_BORDER_LEFT_COLOR},
 #line 34 "cssproperties.gperf"
       {"border-right-width", CSS_PROP_BORDER_RIGHT_WIDTH},
-#line 123 "cssproperties.gperf"
+#line 99 "cssproperties.gperf"
+      {"vertical-align", CSS_PROP_VERTICAL_ALIGN},
+#line 124 "cssproperties.gperf"
       {"scrollbar-highlight-color", CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR},
 #line 65 "cssproperties.gperf"
       {"margin-left", CSS_PROP_MARGIN_LEFT},
 #line 84 "cssproperties.gperf"
       {"padding-left", CSS_PROP_PADDING_LEFT},
-#line 121 "cssproperties.gperf"
+#line 122 "cssproperties.gperf"
       {"scrollbar-face-color", CSS_PROP_SCROLLBAR_FACE_COLOR},
 #line 105 "cssproperties.gperf"
       {"z-index", CSS_PROP_Z_INDEX},
-#line 53 "cssproperties.gperf"
-      {"font-variant", CSS_PROP_FONT_VARIANT},
+#line 100 "cssproperties.gperf"
+      {"visibility", CSS_PROP_VISIBILITY},
 #line 52 "cssproperties.gperf"
       {"font-style", CSS_PROP_FONT_STYLE},
-#line 118 "cssproperties.gperf"
+#line 119 "cssproperties.gperf"
       {"outline", CSS_PROP_OUTLINE},
 #line 98 "cssproperties.gperf"
       {"unicode-bidi", CSS_PROP_UNICODE_BIDI},
@@ -372,9 +370,9 @@ findProp (register const char *str, register unsigned int len)
       {"border-left-style", CSS_PROP_BORDER_LEFT_STYLE},
 #line 73 "cssproperties.gperf"
       {"max-width", CSS_PROP_MAX_WIDTH},
-#line 24 "cssproperties.gperf"
-      {"-khtml-border-vertical-spacing", CSS_PROP__KHTML_BORDER_VERTICAL_SPACING},
-#line 125 "cssproperties.gperf"
+#line 115 "cssproperties.gperf"
+      {"box-sizing", CSS_PROP_BOX_SIZING},
+#line 126 "cssproperties.gperf"
       {"scrollbar-darkshadow-color", CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR},
 #line 43 "cssproperties.gperf"
       {"counter-increment", CSS_PROP_COUNTER_INCREMENT},
@@ -384,20 +382,20 @@ findProp (register const char *str, register unsigned int len)
       {"counter-reset", CSS_PROP_COUNTER_RESET},
 #line 23 "cssproperties.gperf"
       {"-khtml-border-horizontal-spacing", CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING},
-#line 130 "cssproperties.gperf"
+#line 131 "cssproperties.gperf"
       {"-khtml-text-decoration-color", CSS_PROP__KHTML_TEXT_DECORATION_COLOR},
 #line 85 "cssproperties.gperf"
       {"page-break-after", CSS_PROP_PAGE_BREAK_AFTER},
 #line 36 "cssproperties.gperf"
       {"border-left-width", CSS_PROP_BORDER_LEFT_WIDTH},
-#line 80 "cssproperties.gperf"
-      {"overflow", CSS_PROP_OVERFLOW},
 #line 86 "cssproperties.gperf"
       {"page-break-before", CSS_PROP_PAGE_BREAK_BEFORE},
 #line 78 "cssproperties.gperf"
       {"outline-style", CSS_PROP_OUTLINE_STYLE},
 #line 54 "cssproperties.gperf"
       {"font-weight", CSS_PROP_FONT_WEIGHT},
+#line 53 "cssproperties.gperf"
+      {"font-variant", CSS_PROP_FONT_VARIANT},
 #line 106 "cssproperties.gperf"
       {"background", CSS_PROP_BACKGROUND},
 #line 96 "cssproperties.gperf"
@@ -408,11 +406,13 @@ findProp (register const char *str, register unsigned int len)
       {"outline-width", CSS_PROP_OUTLINE_WIDTH},
 #line 66 "cssproperties.gperf"
       {"-khtml-marquee", CSS_PROP__KHTML_MARQUEE},
+#line 24 "cssproperties.gperf"
+      {"-khtml-border-vertical-spacing", CSS_PROP__KHTML_BORDER_VERTICAL_SPACING},
 #line 50 "cssproperties.gperf"
       {"font-family", CSS_PROP_FONT_FAMILY},
 #line 16 "cssproperties.gperf"
       {"background-repeat", CSS_PROP_BACKGROUND_REPEAT},
-#line 128 "cssproperties.gperf"
+#line 129 "cssproperties.gperf"
       {"-khtml-flow-mode", CSS_PROP__KHTML_FLOW_MODE},
 #line 18 "cssproperties.gperf"
       {"background-position", CSS_PROP_BACKGROUND_POSITION},
@@ -426,6 +426,8 @@ findProp (register const char *str, register unsigned int len)
       {"-khtml-marquee-repetition", CSS_PROP__KHTML_MARQUEE_REPETITION},
 #line 17 "cssproperties.gperf"
       {"background-attachment", CSS_PROP_BACKGROUND_ATTACHMENT},
+#line 80 "cssproperties.gperf"
+      {"overflow", CSS_PROP_OVERFLOW},
 #line 70 "cssproperties.gperf"
       {"-khtml-marquee-speed", CSS_PROP__KHTML_MARQUEE_SPEED},
 #line 20 "cssproperties.gperf"
@@ -434,7 +436,7 @@ findProp (register const char *str, register unsigned int len)
       {"-khtml-marquee-style", CSS_PROP__KHTML_MARQUEE_STYLE},
 #line 19 "cssproperties.gperf"
       {"background-position-x", CSS_PROP_BACKGROUND_POSITION_X},
-#line 129 "cssproperties.gperf"
+#line 130 "cssproperties.gperf"
       {"-khtml-user-input", CSS_PROP__KHTML_USER_INPUT}
     };
 
@@ -447,40 +449,40 @@ findProp (register const char *str, register unsigned int len)
        21,  -1,  22,  -1,  -1,  23,  -1,  24,  -1,  -1,
        -1,  -1,  -1,  -1,  25,  26,  -1,  27,  -1,  28,
        -1,  29,  30,  31,  32,  -1,  33,  -1,  -1,  34,
-       35,  36,  37,  38,  39,  40,  -1,  -1,  41,  -1,
-       42,  43,  -1,  -1,  44,  45,  46,  -1,  -1,  -1,
-       -1,  47,  48,  -1,  49,  -1,  50,  -1,  -1,  51,
-       -1,  52,  53,  -1,  -1,  54,  -1,  -1,  55,  56,
-       57,  58,  -1,  -1,  59,  -1,  60,  61,  -1,  -1,
-       62,  -1,  -1,  -1,  -1,  -1,  63,  64,  -1,  -1,
-       65,  66,  67,  -1,  -1,  -1,  -1,  -1,  68,  -1,
-       69,  70,  71,  -1,  -1,  72,  -1,  73,  -1,  -1,
-       -1,  -1,  74,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       75,  -1,  76,  -1,  -1,  -1,  -1,  77,  78,  -1,
-       79,  80,  -1,  -1,  81,  -1,  82,  83,  -1,  84,
-       85,  86,  87,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  88,  89,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  90,  91,  -1,  -1,  92,  93,  94,  -1,
-       -1,  -1,  95,  96,  -1,  -1,  97,  -1,  -1,  -1,
+       35,  36,  37,  38,  -1,  39,  -1,  -1,  40,  -1,
+       41,  42,  -1,  -1,  43,  -1,  44,  -1,  -1,  -1,
+       -1,  45,  46,  -1,  47,  -1,  48,  -1,  -1,  49,
+       -1,  50,  51,  -1,  -1,  52,  -1,  -1,  53,  54,
+       55,  56,  -1,  -1,  57,  -1,  58,  59,  -1,  -1,
+       60,  -1,  -1,  -1,  -1,  -1,  61,  62,  -1,  -1,
+       63,  64,  65,  -1,  -1,  -1,  -1,  -1,  66,  67,
+       68,  69,  70,  -1,  -1,  71,  -1,  72,  -1,  -1,
+       73,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       74,  -1,  75,  -1,  -1,  -1,  -1,  76,  77,  -1,
+       78,  79,  -1,  -1,  80,  -1,  81,  82,  -1,  83,
+       84,  85,  86,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  87,  88,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  89,  90,  -1,  -1,  91,  92,  -1,  -1,
+       -1,  -1,  93,  94,  -1,  -1,  95,  96,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       98,  -1,  -1,  -1,  99,  -1, 100,  -1,  -1,  -1,
-       -1,  -1,  -1, 101, 102,  -1, 103, 104,  -1,  -1,
+       97,  -1,  -1,  -1,  98,  -1,  99,  -1,  -1,  -1,
+       -1,  -1,  -1, 100, 101, 102, 103, 104,  -1,  -1,
        -1, 105,  -1,  -1, 106,  -1,  -1,  -1,  -1, 107,
        -1, 108,  -1,  -1, 109, 110, 111,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 112,  -1,  -1,  -1,  -1,
-       -1, 113,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 114,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 112,  -1, 113,  -1,  -1,  -1,  -1,
+       -1, 114,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 115,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1, 115,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1, 116,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1, 116
+       -1,  -1,  -1,  -1,  -1,  -1,  -1, 117
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -502,7 +504,7 @@ findProp (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 131 "cssproperties.gperf"
+#line 132 "cssproperties.gperf"
 
 static const char * const propertyList[] = {
 "",
@@ -607,6 +609,7 @@ static const char * const propertyList[] = {
 "border-bottom", 
 "border-left", 
 "border-width", 
+"box-sizing", 
 "font", 
 "list-style", 
 "margin", 

@@ -412,6 +412,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 {
   if (node->nodeType() == Node::TEXT_NODE) {
     outside = false;
+    outsideEnd = false;
     r = node->renderer();
     r_ofs = offset;
   } else if (node->nodeType() == Node::ELEMENT_NODE || node->nodeType() == Node::DOCUMENT_NODE) {
@@ -445,7 +446,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 	  r = child->renderer();
 	}
       }/*end if*/
-      
+
       // BRs cause troubles. Returns the previous render object instead,
       // giving it the attributes outside, outside end.
       if (r && r->isBR()) {
@@ -456,6 +457,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
     } else {
       // Element has no children, treat offset to be inside the node.
       outside = false;
+      outsideEnd = false;
       r = node->renderer();
       r_ofs = 0;	// only offset 0 possible
     }
@@ -881,13 +883,15 @@ CaretBoxLine *CaretBoxLine::constructCaretBoxLine(CaretBoxLineDeleter *deleter,
     // ### regard direction
     switch (s->textAlign()) {
       case LEFT:
+      case KHTML_LEFT:
       case TAAUTO:	// ### find out what this does
       case JUSTIFY:
         break;
       case CENTER:
-      case KONQ_CENTER:
+      case KHTML_CENTER:
         _x += cb->contentWidth() / 2;
         break;
+      case KHTML_RIGHT:
       case RIGHT:
         _x += cb->contentWidth();
         break;
@@ -1671,7 +1675,7 @@ bool EditableCaretBoxIterator::isEditable(const CaretBoxIterator &boxit, bool fr
     eff_r = node->renderer();
     Q_ASSERT(eff_r);	// this is a hard requirement
   }
-  
+
   bool result = globallyNavigable || eff_r->style()->userInput() == UI_ENABLED;
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << result << endl;
@@ -1937,11 +1941,8 @@ kdDebug(6200) << "box " << box << " b " << box->inlineBox() << " isText " << box
       }/*end if*/
     }/*end if*/
 
-#if 0
-    bool adjacent = ebit.isAdjacent();
-#endif
-
 #if DEBUG_CARETMODE > 0
+    bool adjacent = ebit.isAdjacent();
     kdDebug(6200) << "adjacent " << adjacent << " _peekNext " << _peekNext << " _peekNext->isInlineTextBox: " << (_peekNext ? _peekNext->isInlineTextBox() : false) << " !((*ebit)->isInlineTextBox): " << (*ebit ? !(*ebit)->isInlineTextBox() : true) << endl;
 #endif
 #if 0

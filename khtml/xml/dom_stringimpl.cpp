@@ -28,6 +28,7 @@
 #include <kdebug.h>
 
 #include <string.h>
+#include <qstringlist.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -155,7 +156,7 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
   return new DOMStringImpl(s + pos, len);
 }
 
-static Length parseLength(QChar *s, unsigned int l)
+static Length parseLength(const QChar *s, unsigned int l)
 {
     const QChar* last = s+l-1;
     if (l && *last == QChar('%')) {
@@ -176,6 +177,9 @@ static Length parseLength(QChar *s, unsigned int l)
         last--;
         l--;
     }
+
+    if (l == 0)
+        return Length(0, Variable);
 
     if ( *last == '*') {
         if(last == s)

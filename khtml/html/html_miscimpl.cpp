@@ -24,6 +24,7 @@
 // -------------------------------------------------------------------------
 #include "html/html_miscimpl.h"
 #include "html/html_formimpl.h"
+#include "html/html_documentimpl.h"
 
 #include "misc/htmlhashes.h"
 #include "dom/dom_node.h"
@@ -53,13 +54,24 @@ HTMLCollectionImpl::HTMLCollectionImpl(NodeImpl *_base, int _type)
     base = _base;
     base->ref();
     type = _type;
-    currentItem = 0L;
     idsDone = false;
+    info = base->isDocumentNode() ? static_cast<HTMLDocumentImpl*>(base->getDocument())->collectionInfo(type) : new CollectionInfo;
 }
 
 HTMLCollectionImpl::~HTMLCollectionImpl()
 {
+    if (!base->isDocumentNode())
+        delete info;
     base->deref();
+}
+
+void HTMLCollectionImpl::updateCollectionInfo() const
+{
+    unsigned int docversion = static_cast<HTMLDocumentImpl*>(base->getDocument())->domTreeVersion();
+    if (info->version != docversion) {
+        memset( info, 0, sizeof( CollectionInfo ));
+        info->version = docversion;
+    }
 }
 
 unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
@@ -79,6 +91,10 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
                 break;
             case DOC_FORMS:
                 if(e->id() == ID_FORM)
+                    len++;
+                break;
+            case DOC_LAYERS:
+                if(e->id() == ID_LAYER || e->id() == ID_ILAYER)
                     len++;
                 break;
             case TABLE_TBODIES:
@@ -145,7 +161,12 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
 // calculation every time...
 unsigned long HTMLCollectionImpl::length() const
 {
-    return calcLength(base->firstChild());
+    updateCollectionInfo();
+    if (!info->haslength) {
+        info->length = calcLength(base->firstChild());
+        info->haslength = true;
+    }
+    return info->length;
 }
 
 NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) const
@@ -164,6 +185,10 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
                 break;
             case DOC_FORMS:
                 if(e->id() == ID_FORM)
+                    len++;
+                break;
+            case DOC_LAYERS:
+                if(e->id() == ID_LAYER || e->id() == ID_ILAYER)
                     len++;
                 break;
             case TABLE_TBODIES:
@@ -231,41 +256,64 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
 
 NodeImpl *HTMLCollectionImpl::item( unsigned long index ) const
 {
-    int pos = 0;
-    return getItem(base->firstChild(), index, pos);
+    updateCollectionInfo();
+    if (info->current && info->position == index) {
+        return info->current;
+    }
+    if (info->haslength && info->length <= index) {
+        return 0L;
+    }
+    if (!info->current || info->position > index) {
+        info->current = base->firstChild();
+        info->position = 0;
+        if (!info->current)
+            return 0L;
+    }
+    int pos = (int) info->position;
+    NodeImpl *node = getItem(info->current, index, pos);
+    while (!node && info->current->parentNode() && info->current->parentNode() != base) {
+        info->current = info->current->parentNode();
+        if (info->current->nextSibling())
+            node = getItem(info->current->nextSibling(), index, pos);
+    }
+    info->current = node;
+    info->position = index;
+    return info->current;
 }
 
 NodeImpl *HTMLCollectionImpl::firstItem() const
 {
-    int pos = 0;
-    currentItem = getItem(base->firstChild(), 0, pos);
-    return currentItem;
+    return item(0);
 }
 
 NodeImpl *HTMLCollectionImpl::nextItem() const
 {
+    updateCollectionInfo();
     int pos = 0;
+
+    info->position = ~0;  // no position
     // Look for the 'second' item. The first one is currentItem, already given back.
-    NodeImpl *retval = getItem(currentItem, 1, pos);
+    NodeImpl *retval = getItem(info->current, 1, pos);
     if (retval)
     {
-        currentItem = retval;
+        info->current = retval;
         return retval;
     }
     // retval was 0, means we have to go up
-    while( !retval && currentItem->parentNode()
-           && currentItem->parentNode() != base )
+    while( !retval && info->current->parentNode()
+           && info->current->parentNode() != base )
     {
-        currentItem = currentItem->parentNode();
-        if (currentItem->nextSibling())
+        info->current = info->current->parentNode();
+        if (info->current->nextSibling())
         {
             // ... and to take the first one from there
             pos = 0;
-            retval = getItem(currentItem->nextSibling(), 0, pos);
+            retval = getItem(info->current->nextSibling(), 0, pos);
         }
-    }
-    currentItem = retval;
-    return currentItem;
+     }
+    info->current = retval;
+    return info->current;
+
 }
 
 NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
@@ -289,6 +337,10 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                 break;
             case DOC_FORMS:
                 if(e->id() == ID_FORM)
+                    check = true;
+                break;
+            case DOC_LAYERS:
+                if(e->id() == ID_LAYER || e->id() == ID_ILAYER)
                     check = true;
                 break;
             case TABLE_TBODIES:
@@ -347,7 +399,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                           e->id() == ID_IMG ||
                           e->id() == ID_INPUT ||
                           e->id() == ID_MAP ||
-			  e->id() == ID_META || 
+			  e->id() == ID_META ||
                           e->id() == ID_OBJECT ||
                           e->id() == ID_SELECT ||
                           e->id() == ID_TEXTAREA
@@ -388,13 +440,15 @@ NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
     // attribute. If a match is not found, the method then searches for an
     // object with a matching name attribute, but only on those elements
     // that are allowed a name attribute.
+    updateCollectionInfo();
+    info->position = ~0;  // no position
     idsDone = false;
-    currentItem = getNamedItem(base->firstChild(), ATTR_ID, name);
-    if(currentItem)
-        return currentItem;
+    info->current = getNamedItem(base->firstChild(), ATTR_ID, name);
+    if(info->current)
+        return info->current;
     idsDone = true;
-    currentItem = getNamedItem(base->firstChild(), ATTR_NAME, name);
-    return currentItem;
+    info->current = getNamedItem(base->firstChild(), ATTR_NAME, name);
+    return info->current;
 }
 
 NodeImpl *HTMLCollectionImpl::nextNamedItem( const DOMString &name ) const
@@ -422,38 +476,39 @@ NodeImpl *HTMLCollectionImpl::nextNamedItem( const DOMString &name ) const
 
 NodeImpl *HTMLCollectionImpl::nextNamedItemInternal( const DOMString &name ) const
 {
-    //kdDebug() << "\nHTMLCollectionImpl::nextNamedItem starting at " << currentItem << endl;
+    updateCollectionInfo();
+    //kdDebug() << "\nHTMLCollectionImpl::nextNamedItem starting at " << info->current << endl;
     // Go to next item first (to avoid returning the same)
-    currentItem = nextItem();
-    //kdDebug() << "*HTMLCollectionImpl::nextNamedItem next item is " << currentItem << endl;
+    nextItem(); // sets info->current and invalidates info->postion
+    //kdDebug() << "*HTMLCollectionImpl::nextNamedItem next item is " << info->current << endl;
 
-    if ( currentItem )
+    if ( info->current )
     {
         // Then look for next matching named item
-        NodeImpl *retval = getNamedItem(currentItem, idsDone ? ATTR_NAME : ATTR_ID, name);
+        NodeImpl *retval = getNamedItem(info->current, idsDone ? ATTR_NAME : ATTR_ID, name);
         if ( retval )
         {
             //kdDebug() << "*HTMLCollectionImpl::nextNamedItem found " << retval << endl;
-            currentItem = retval;
+            info->current = retval;
             return retval;
         }
 
         // retval was 0, means we have to go up
-        while( !retval && currentItem->parentNode()
-               && currentItem->parentNode() != base )
+        while( !retval && info->current->parentNode()
+               && info->current->parentNode() != base )
         {
-            currentItem = currentItem->parentNode();
-            if (currentItem->nextSibling())
+            info->current = info->current->parentNode();
+            if (info->current->nextSibling())
             {
                 // ... and to take the first one from there
-                retval = getNamedItem(currentItem->nextSibling(), idsDone ? ATTR_NAME : ATTR_ID, name);
+                retval = getNamedItem(info->current->nextSibling(), idsDone ? ATTR_NAME : ATTR_ID, name);
             }
         }
         if ( retval )
         {
             //kdDebug() << "*HTMLCollectionImpl::nextNamedItem found after going up " << retval << endl;
-            currentItem = retval;
-            return currentItem;
+            info->current = retval;
+            return info->current;
         }
     }
 
@@ -462,8 +517,8 @@ NodeImpl *HTMLCollectionImpl::nextNamedItemInternal( const DOMString &name ) con
     // After doing all ATTR_ID, do ATTR_NAME
     //kdDebug() << "*HTMLCollectionImpl::nextNamedItem going to ATTR_NAME now" << endl;
     idsDone = true;
-    currentItem = getNamedItem(base->firstChild(), ATTR_NAME, name);
-    return currentItem;
+    info->current = getNamedItem(base->firstChild(), ATTR_NAME, name);
+    return info->current;
 
 }
 

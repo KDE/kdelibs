@@ -26,6 +26,7 @@
 #define HTML_DOCUMENTIMPL_H
 
 #include "xml/dom_docimpl.h"
+#include "html/html_miscimpl.h"
 
 #include <qmap.h>
 
@@ -72,6 +73,9 @@ public:
     virtual void close();
 
     void setAutoFill() { m_doAutoFill = true; }
+    void setHTMLRequested( bool html ) { m_htmlRequested = html; }
+
+    HTMLCollectionImpl::CollectionInfo *collectionInfo(int type) { return m_collection_info+type; }
 
 protected:
     HTMLElementImpl *htmlElement;
@@ -79,12 +83,15 @@ protected:
     friend class HTMLImageElementImpl;
     QMap<QString,HTMLMapElementImpl*> mapMap;
     bool m_doAutoFill;
+    bool m_htmlRequested;
 
 protected slots:
     /**
      * Repaints, so that all links get the proper color
      */
     void slotHistoryChanged();
+private:
+    HTMLCollectionImpl::CollectionInfo m_collection_info[HTMLCollectionImpl::LAST_TYPE];
 };
 
 } //namespace

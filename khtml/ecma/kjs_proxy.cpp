@@ -25,6 +25,8 @@
 #include "kjs_window.h"
 #include "kjs_events.h"
 #include "kjs_debugwin.h"
+#include "xml/dom_nodeimpl.h"
+#include "khtmlpart_p.h"
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
@@ -39,14 +41,14 @@
 using namespace KJS;
 
 extern "C" {
-  KJSProxy *kjs_html_init(KHTMLPart *khtmlpart);
+  KJSProxy *kjs_html_init(khtml::ChildFrame *childframe);
 }
 
 namespace KJS {
 
 class KJSProxyImpl : public KJSProxy {
 public:
-  KJSProxyImpl(KHTMLPart *part);
+  KJSProxyImpl(khtml::ChildFrame *frame);
   virtual ~KJSProxyImpl();
   virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
 			    Completion *completion = 0);
@@ -77,10 +79,10 @@ private:
 int KJSProxyImpl::s_count = 0;
 #endif
 
-KJSProxyImpl::KJSProxyImpl(KHTMLPart *part)
+KJSProxyImpl::KJSProxyImpl(khtml::ChildFrame *frame)
 {
   m_script = 0;
-  m_part = part;
+  m_frame = frame;
   m_debugEnabled = false;
 #ifndef NDEBUG
   s_count++;
@@ -142,8 +144,8 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 #endif
 
   m_script->setInlineCode(inlineCode);
-  Window* window = Window::retrieveWindow( m_part );
-  KJS::Value thisNode = n.isNull() ? Window::retrieve( m_part ) : getDOMNode(m_script->globalExec(),n);
+  Window* window = Window::retrieveWindow( m_frame->m_part );
+  KJS::Value thisNode = n.isNull() ? Window::retrieve( m_frame->m_part ) : getDOMNode(m_script->globalExec(),n);
 
   UString code( str );
 
@@ -214,7 +216,7 @@ void KJSProxyImpl::clear() {
       // re-add "debug", clear() removed it
       m_script->globalObject().put(m_script->globalExec(),
                                    "debug", Value(new TestFunctionImp()), Internal);
-      if ( !win->part().isNull() )
+      if ( win->part() )
         applyUserAgent();
     }
 
@@ -238,7 +240,7 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
   Q_UNUSED(sourceUrl);
 #endif
 
-  return KJS::Window::retrieveWindow(m_part)->getJSLazyEventListener(code,name,true);
+  return KJS::Window::retrieveWindow(m_frame->m_part)->getJSLazyEventListener(code,name,true);
 }
 
 void KJSProxyImpl::finishedWithEvent(const DOM::Event &event)
@@ -300,8 +302,8 @@ bool KJSProxyImpl::paused() const
 void KJSProxyImpl::dataReceived()
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::debugWindow())
-    KJSDebugWin::debugWindow()->sourceChanged(m_script,m_part->url().url());
+  if (KJSDebugWin::debugWindow() && m_frame->m_part)
+    KJSDebugWin::debugWindow()->sourceChanged(m_script,m_frame->m_part->url().url());
 #endif
 }
 
@@ -311,10 +313,10 @@ void KJSProxyImpl::initScript()
     return;
 
   // Build the global object - which is a Window instance
-  Object globalObject( new Window(m_part) );
+  Object globalObject( new Window(m_frame) );
 
   // Create a KJS interpreter for this part
-  m_script = new KJS::ScriptInterpreter(globalObject, m_part);
+  m_script = new KJS::ScriptInterpreter(globalObject, m_frame);
   static_cast<ObjectImp*>(globalObject.imp())->setPrototype(m_script->builtinObjectPrototype());
 
 #ifdef KJS_DEBUGGER
@@ -329,7 +331,7 @@ void KJSProxyImpl::initScript()
 void KJSProxyImpl::applyUserAgent()
 {
   assert( m_script );
-  QString host = m_part->url().isLocalFile() ? "localhost" : m_part->url().host();
+  QString host = m_frame->m_part->url().isLocalFile() ? "localhost" : m_frame->m_part->url().host();
   QString userAgent = KProtocolManager::userAgentForHost(host);
   if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
       userAgent.find(QString::fromLatin1("MSIE")) >= 0)
@@ -352,9 +354,9 @@ void KJSProxyImpl::applyUserAgent()
 }
 
 // initialize HTML module
-KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
+KJSProxy *kjs_html_init(khtml::ChildFrame *childframe)
 {
-  return new KJSProxyImpl(khtmlpart);
+  return new KJSProxyImpl(childframe);
 }
 
 void KJSCPUGuard::start(unsigned int ms, unsigned int i_ms)

@@ -4,7 +4,7 @@
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -216,6 +216,7 @@ public:
     virtual bool isRenderReplaced() const { return false; }
 
     virtual bool isListItem() const { return false; }
+    virtual bool isListMarker() const { return false; }
     virtual bool isCanvas() const { return false; }
     virtual bool isBR() const { return false; }
     virtual bool isTableCell() const { return false; }
@@ -244,7 +245,10 @@ public:
     bool isReplaced() const { return m_replaced; }
     bool isReplacedBlock() const { return isInline() && isReplaced() && isRenderBlock(); }
     bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }
-    bool layouted() const   { return m_layouted; }
+    bool needsLayout() const   { return m_needsLayout || m_normalChildNeedsLayout || m_posChildNeedsLayout; }
+    bool selfNeedsLayout() const { return m_needsLayout; }
+    bool posChildNeedsLayout() const { return m_posChildNeedsLayout; }
+    bool normalChildNeedsLayout() const { return m_normalChildNeedsLayout; }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool overhangingContents() const { return m_overhangingContents; }
     bool hasFirstLine() const { return m_hasFirstLine; }
@@ -255,6 +259,7 @@ public:
     // don't even think about making this method virtual!
     DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
+    DOM::NodeImpl* node() const { return m_node; }
 
    /**
      * returns the object containing this one. can be different from parent for
@@ -263,10 +268,9 @@ public:
     RenderObject *container() const;
 
     void setOverhangingContents(bool p=true);
-    void setLayouted(bool b = true);
-    void setLayoutedLocal(bool b) {
-	m_layouted = b;
-    }
+    void markContainingBlocksForLayout();
+    void setNeedsLayout(bool b, bool markParents = true);
+    void setChildNeedsLayout(bool b, bool markParents = true);
     void setMinMaxKnown(bool b=true) {
 	m_minMaxKnown = b;
 	if ( !b ) {
@@ -278,6 +282,10 @@ public:
 		o = o->m_parent;
 	    }
 	}
+    }
+    void setNeedsLayoutAndMinMaxRecalc() {
+        setMinMaxKnown(false);
+        setNeedsLayout(true);
     }
     void setPositioned(bool b=true)  { m_positioned = b;  }
     void setRelPositioned(bool b=true) { m_relPositioned = b; }
@@ -296,6 +304,7 @@ public:
     virtual short lineHeight( bool firstLine ) const;
     virtual short verticalPositionHint( bool firstLine ) const;
     virtual short baselinePosition( bool firstLine ) const;
+    short getVerticalPosition( bool firstLine, RenderObject* ref=0 ) const;
 
     /*
      * Print the object and its children, clipped by (x|y|w|h).
@@ -350,13 +359,16 @@ public:
      * This function should cause the Element to calculate its
      * width and height and the layout of its content
      *
-     * when the Element calls setLayouted(true), layout() is no
+     * when the Element calls setNeedsLayout(false), layout() is no
      * longer called during relayouts, as long as there is no
-     * style sheet change. When that occurs, isLayouted will be
-     * set to false and the Element receives layout() calls
+     * style sheet change. When that occurs, m_needsLayout will be
+     * set to true and the Element receives layout() calls
      * again.
      */
     virtual void layout() = 0;
+
+    /* This function performs a layout only if one is needed. */
+    void layoutIfNeeded() { if (needsLayout()) layout(); }
 
     // used for element state updates that can not be fixed with a
     // repaint and do not need a relayout
@@ -566,6 +578,8 @@ public:
     virtual bool containsFloat(RenderObject* /*o*/) const { return false; }
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* /*floatToRemove*/ = 0) {}
 
+    bool usesLineWidth() const;
+
     // positioning of inline children (bidi)
     virtual void position(InlineBox*, int, int, bool) {}
 //    virtual void position(int, int, int, int, int, bool, bool, int) {}
@@ -652,7 +666,7 @@ protected:
     virtual QRect viewRect() const;
     void remove();
     void invalidateVerticalPositions();
-    short getVerticalPosition( bool firstLine ) const;
+
 
     virtual void removeLeftoverAnonymousBoxes();
 
@@ -667,13 +681,14 @@ private:
 
     short m_verticalPosition;
 
-    bool m_layouted                  : 1;
-    bool m_unused                    : 1;
+    bool m_needsLayout               : 1;
+    bool m_normalChildNeedsLayout    : 1;
+    bool m_posChildNeedsLayout       : 1;
     bool m_minMaxKnown               : 1;
     bool m_floating                  : 1;
 
     bool m_positioned                : 1;
-    bool m_overhangingContents : 1;
+    bool m_overhangingContents       : 1;
     bool m_relPositioned             : 1;
     bool m_paintBackground           : 1; // if the box has something to paint in the
                                           // background painting phase (background, border, etc)
@@ -684,9 +699,9 @@ private:
     bool m_inline                    : 1;
 
     bool m_replaced                  : 1;
-    bool m_mouseInside : 1;
+    bool m_mouseInside               : 1;
     bool m_hasFirstLine              : 1;
-    bool m_isSelectionBorder          : 1;
+    bool m_isSelectionBorder         : 1;
     // note: do not add unnecessary bitflags, we have 32 bit already!
 
 

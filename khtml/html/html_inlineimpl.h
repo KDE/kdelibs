@@ -37,7 +37,7 @@ public:
     HTMLAnchorElementImpl(DocumentPtr *doc)
         : HTMLElementImpl(doc), m_hasTarget(false) {}
 
-    virtual bool isSelectable() const { return m_hasAnchor; }
+    virtual bool isFocusable() const { return m_hasAnchor; }
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);
