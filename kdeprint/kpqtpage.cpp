@@ -22,6 +22,7 @@
 #include "kpqtpage.h"
 #include "kprinter.h"
 #include "kxmlcommand.h"
+#include "driver.h"
 
 #include <qcombobox.h>
 #include <qbuttongroup.h>
@@ -95,6 +96,21 @@ int findIndex(int ID)
 KPQtPage::KPQtPage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
 {
+	init();
+}
+
+KPQtPage::KPQtPage(DrMain *driver, QWidget *parent, const char *name)
+: KPrintDialogPage(0, (driver && driver->findOption("PageSize") ? driver : 0), parent, name)
+{
+	init();
+}
+
+KPQtPage::~KPQtPage()
+{
+}
+
+void KPQtPage::init()
+{
 	setTitle(i18n("Print Format"));
 
 	// widget creation
@@ -154,22 +170,40 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	slotColorModeChanged(0);
 	m_nup1->setChecked(true);
 	slotNupChanged(0);
-	for (int i=0; i<KPrinter::NPageSize-1; i++)
-		m_pagesize->insertItem(i18n(page_sizes[i].text));
-	// default page size to locale settings
-	m_pagesize->setCurrentItem(findIndex((KPrinter::PageSize)(KGlobal::locale()->pageSize())));
 
 	if (!KXmlCommandManager::self()->checkCommand("psnup"))
 		m_nupbox->setEnabled(false);
+	if (KPrinter::applicationType() != KPrinter::Dialog)
+	{
+		m_orientbox->setEnabled(false);
+		m_colorbox->setEnabled(false);
+		m_pagesize->setEnabled(driver());
+		m_pagesizelabel->setEnabled(driver());
+	}
+
+	if (!driver())
+	{
+		for (int i=0; i<KPrinter::NPageSize-1; i++)
+			m_pagesize->insertItem(i18n(page_sizes[i].text));
+		// default page size to locale settings
+		m_pagesize->setCurrentItem(findIndex((KPrinter::PageSize)(KGlobal::locale()->pageSize())));
+	}
+	else
+	{
+		DrListOption	*lopt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
+		QPtrListIterator<DrBase>	it(*(lopt->choices()));
+		for (; it.current(); ++it)
+		{
+			m_pagesize->insertItem(it.current()->get("text"));
+			if (it.current() == lopt->currentChoice())
+				m_pagesize->setCurrentItem(m_pagesize->count()-1);
+		}
+	}
 
 	// connections
 	connect(m_orientbox,SIGNAL(clicked(int)),SLOT(slotOrientationChanged(int)));
 	connect(m_colorbox,SIGNAL(clicked(int)),SLOT(slotColorModeChanged(int)));
 	connect(m_nupbox,SIGNAL(clicked(int)),SLOT(slotNupChanged(int)));
-}
-
-KPQtPage::~KPQtPage()
-{
 }
 
 void KPQtPage::slotOrientationChanged(int ID)
@@ -203,7 +237,18 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 	ID = (opts["kde-colormode"] == "GrayScale" ? COLORMODE_GRAYSCALE_ID : COLORMODE_COLOR_ID);
 	m_colorbox->setButton(ID);
 	slotColorModeChanged(ID);
-	if (!opts["kde-pagesize"].isEmpty())
+	if (driver())
+	{
+		QString	val = opts["PageSize"];
+		if (!val.isEmpty())
+		{
+			DrListOption	*opt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
+			DrBase	*ch = opt->findChoice(val);
+			if (ch)
+				m_pagesize->setCurrentItem(opt->choices()->findRef(ch));
+		}
+	}
+	else if (!opts["kde-pagesize"].isEmpty())
 		m_pagesize->setCurrentItem(findIndex(opts["kde-pagesize"].toInt()));
 	ID = NUP_1;
 	if (opts["_kde-filters"].find("psnup") != -1)
@@ -223,11 +268,22 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 	slotNupChanged(ID);
 }
 
-void KPQtPage::getOptions(QMap<QString,QString>& opts, bool)
+void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
 	opts["kde-orientation"] = (m_orientbox->id(m_orientbox->selected()) == ORIENT_LANDSCAPE_ID ? "Landscape" : "Portrait");
 	opts["kde-colormode"] = (m_colorbox->id(m_colorbox->selected()) == COLORMODE_GRAYSCALE_ID ? "GrayScale" : "Color");
-	opts["kde-pagesize"] = QString::number(page_sizes[m_pagesize->currentItem()].ID);
+	if (driver())
+	{
+		DrListOption	*opt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
+		if (opt)
+		{
+			DrBase	*ch = opt->choices()->at(m_pagesize->currentItem());
+			if (ch && (incldef || ch->name() != opt->get("default")))
+				opts["PageSize"] = ch->name();
+		}
+	}
+	else
+		opts["kde-pagesize"] = QString::number(page_sizes[m_pagesize->currentItem()].ID);
 	int	ID = m_nupbox->id(m_nupbox->selected());
 	QString	s = opts["_kde-filters"];
 	if (ID == NUP_1)
