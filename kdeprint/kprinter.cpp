@@ -215,6 +215,9 @@ void KPrinter::saveSettings()
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
+	if (!kapp->authorize("print/dialog"))
+		return true; // Just print it
+		
 	if (parent)
 		d->m_parentId = parent->winId();
 
