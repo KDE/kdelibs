@@ -357,7 +357,7 @@ int main (int argc, char *argv[])
 	       else if ( isUUDecode )
 		 UUDecode( args->arg( i ), false );
 	       else
-		 MD5_string( args->arg( i ), args->isSet("r") );
+		 MD5_string( args->arg( i ), 0, args->isSet("r") );
              }
         }
         else
