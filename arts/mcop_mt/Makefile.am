@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
+INCLUDES = -I$(top_srcdir)/arts/mcop $(all_includes)
 
 lib_LTLIBRARIES = libmcop_mt.la
 

@@ -1,6 +1,6 @@
 
 SUBDIRS = mcopclass
-INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
+INCLUDES = -I$(top_srcdir)/arts/mcop $(all_includes)
 CLOSURE = $(libartsflow_la_OBJECTS) $(libartsflow_idl_la_OBJECTS)
 
 ####### Files

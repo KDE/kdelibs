@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libqtmcop.la
 
-INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
+INCLUDES = -I$(top_srcdir)/arts/mcop $(all_includes)
 KDE_OPTIONS = qtonly
 
 libqtmcop_la_SOURCES = qiomanager.cc

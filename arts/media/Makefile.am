@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_builddir)/arts/flow -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow
+INCLUDES = -I$(top_builddir)/arts/flow -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow $(all_includes)
 LDFLAGS  = $(top_builddir)/arts/mcop/libmcop.la $(top_builddir)/arts/flow/libartsflow.la
 CLOSURE = $(libartsmedia_la_OBJECTS) $(libartsmedia_idl_la_OBJECTS)
 

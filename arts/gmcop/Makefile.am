@@ -2,7 +2,7 @@ lib_LTLIBRARIES = libgmcop.la
 
 GLIB_PREFIX = /usr/local
 
-INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop $(GLIB_CFLAGS)
+INCLUDES = -I$(top_srcdir)/arts/mcop $(GLIB_CFLAGS) $(all_includes)
 
 # $(GLIB_DEPLIBS) ?
 libgmcop_la_SOURCES = giomanager.cc

@@ -1,6 +1,6 @@
 # $Id$
 
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libktexteditor.la
 

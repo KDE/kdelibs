@@ -1,5 +1,5 @@
 CXXFLAGS = $(NOOPT_CXXFLAGS) $(USE_RTTI)
-INCLUDES = $(all_includes) -I$(srcdir)/../mcop
+INCLUDES = -I$(srcdir)/../mcop $(all_includes)
 LDFLAGS   = $(all_libraries)
 LDADD = $(USE_THREADS) ../mcop/libmcop.la
 

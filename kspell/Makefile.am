@@ -21,7 +21,7 @@
 
 AM_CPPFLAGS = -DQT_NO_COMPAT
 
-INCLUDES=  $(all_includes) -I$(top_srcdir)/dcop
+INCLUDES= -I$(top_srcdir)/dcop $(all_includes)
 
 lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = -version-info 3:0 -no-undefined
