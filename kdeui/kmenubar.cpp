@@ -177,13 +177,12 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   setFixedWidth(r.width());
 
   QString title(d->m_parent->caption());
-  title.append(" [kde-internalmenu]");
+  title.append(" [menu]");
   setCaption( title );
 
   setFrameStyle( NoFrame );
 
   show();
-  KWin::setActiveWindow(d->m_parent->winId());
   return false;
 }
 #include "kmenubar.moc"
