@@ -32,14 +32,15 @@ namespace khtml {
     public:
 	RenderHtml();
 	virtual ~RenderHtml();
-	
+
 	virtual const char *renderName() const { return "RenderHtml"; }
 
 	virtual bool isHtml() const { return true; }
-	virtual void setStyle(RenderStyle *style);	
+	virtual void setStyle(RenderStyle *style);
 	virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
 	virtual void repaint();
 	virtual void layout();
+        virtual int lowestPosition() const;
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);
