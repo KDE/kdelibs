@@ -548,16 +548,16 @@ void KRun::init()
   }
 
   // Let's see whether it is a directory
+
   if ( !KProtocolManager::self().supportsListing( m_strURL.protocol() ) )
   {
-    kdDebug(7010) << "##### NO SUPPORT FOR LISTING" << endl;
-    // No support for listing => we can scan the file
+    //kdDebug(7010) << "Protocol has no support for listing" << endl;
+    // No support for listing => it can't be a directory (example: http)
     scanFile();
     return;
   }
 
-  // Let's see whether it is a directory
-  kdDebug(7010) << "##### TESTING DIRECTORY (STATING)" << endl;
+  kdDebug(7010) << "Testing directory (stating)" << endl;
 
   // It may be a directory or a file, let's stat
   KIO::StatJob *job = KIO::stat( m_strURL );
@@ -602,7 +602,7 @@ void KRun::scanFile()
     m_timer.start( 0, true );
     return;
   }
-  kdDebug(7010) << "###### Scanning file " << m_strURL.url() << endl;
+  kdDebug(7010) << "Scanning file " << m_strURL.url() << endl;
 
   KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
   connect(job, SIGNAL( result( KIO::Job *)),
@@ -663,7 +663,7 @@ void KRun::slotStatResult( KIO::Job * job )
 
   } else {
 
-    kdDebug(7010) << "####### FINISHED" << endl;
+    kdDebug(7010) << "Finished" << endl;
 
     KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it = entry.begin();
