@@ -95,6 +95,3 @@ contributes for the Dockwidget class set
 Holger Freyther <freyther@yahoo.com>
 KDialogBase, KGuiItem, KStdGuiItem, KAction,
 added KMessageBox::questionYesNoCancel( )
-
-Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
-KAutoConfigDialog
