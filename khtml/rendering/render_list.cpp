@@ -399,21 +399,18 @@ void RenderListMarker::calcMinMaxWidth()
         return;
     }
 
+    QFontMetrics fm = fontMetrics(style()->font());
+    m_height = fm.ascent();
+
     switch(style()->listStyleType())
     {
     case DISC:
     case CIRCLE:
     case SQUARE:
-    {
-        QFontMetrics fm = fontMetrics(style()->font());
         if(style()->listStylePosition() == INSIDE) {
-            m_width = fm.ascent();
+            m_width = m_height; //fm.ascent();
         }
-        else
-            m_width = 0;
-        m_height = fm.ascent();
-    }
-    goto end;
+    	goto end;
     case ARMENIAN:
     case GEORGIAN:
     case CJK_IDEOGRAPHIC:
@@ -461,15 +458,10 @@ void RenderListMarker::calcMinMaxWidth()
     }
     m_item += QString::fromLatin1(". ");
 
-    {
-        QFontMetrics fm = fontMetrics(style()->font());
-        if(style()->listStylePosition() != INSIDE)
-            m_width = 0;
-        else
-            m_width = fm.width(m_item);
-        m_height = fm.ascent();
-    }
- end:
+    if(style()->listStylePosition() == INSIDE)
+	m_width = fm.width(m_item);
+ 
+end:
 
     m_minWidth = m_width;
     m_maxWidth = m_width;
