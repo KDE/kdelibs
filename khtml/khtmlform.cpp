@@ -373,12 +373,18 @@ void HTMLSelect::setText( QString t )
 		QListBox *lb = (QListBox *)widget();
 		lb->changeItem( t, lb->count() - 1 );
 		item = lb->count() - 1;
+		width = lb->maxItemWidth()+20;
+		widget()->resize( width, widget()->height() );
 	}
 	else
 	{
 		QComboBox *cb = (QComboBox *)widget();
 		cb->changeItem( t, cb->count() - 1 );
 		item = cb->count() - 1;
+		QSize size = widget()->sizeHint();
+		widget()->resize( size );
+		ascent = size.height() - descent;
+		width = size.width();
 	}
 
         if ( value( item ).isNull() )
