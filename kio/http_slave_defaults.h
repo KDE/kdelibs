@@ -25,16 +25,23 @@
 #define DEFAULT_CACHE_EXPIRE            10              // 10 SECS
 #define DEFAULT_CLEAN_CACHE_INTERVAL    30*60           // 30 MINS
 #define DEFAULT_CACHE_CONTROL           KIO::CC_Verify  // Verify with remote
-#define MAX_CACHE_SIZE                  1048576         //  1 GB
 #define CACHE_REVISION                  "7\n"           // Cache version
 
-// USER AGENT
+// DEFAULT USER AGENT KEY - ENABLES OS NAME
 #define DEFAULT_USER_AGENT_KEYS         "o"             // Show OS
 
-// IPC_SIZE
+// MAXIMUM AMOUNT OF DATA THAT CAN BE SAFELY SENT OVER IPC
 #define MAX_IPC_SIZE                    1024*8
 
+// AMOUNT OF DATA TO OBTAIN FROM THE SERVER BY DEFAULT
+#define DEFAULT_BUF_SIZE                1024*4
+
+// SOME DEFAULT HEADER VALUES
+#define DEFAULT_LANGUAGE_HEADER         "en"
 #define DEFAULT_MIME_TYPE               "text/html"
+#define DEFAULT_FULL_CHARSET_HEADER     "iso-8859-1, utf-8, *"
+#define DEFAULT_PARIAL_CHARSET_HEADER   ", utf-8, *"
+
 #define DEFAULT_ACCEPT_HEADER           "text/*, image/jpeg, image/png, image/*, */*"
 
 #endif
