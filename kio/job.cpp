@@ -468,6 +468,7 @@ TransferJob::TransferJob( const KURL& url, int command,
     : SimpleJob(url, command, packedArgs, showProgressInfo), staticData( _staticData)
 {
     m_suspended = false;
+    m_subJob = 0L;
 }
 
 // Slave sends data
