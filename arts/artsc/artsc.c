@@ -24,21 +24,31 @@
 #include "ltdl.h"
 #include <assert.h>
 
+typedef int (*backend_init_ptr)();
+typedef void (*backend_free_ptr)();
+typedef arts_stream_t (*backend_play_stream_ptr)(int,int,int,const char*);
+typedef arts_stream_t (*backend_record_stream_ptr)(int,int,int,const char*);
+typedef void (*backend_close_stream_ptr)(arts_stream_t);
+typedef int (*backend_read_ptr)(arts_stream_t,void*,int);
+typedef int (*backend_write_ptr)(arts_stream_t,const void*,int);
+typedef int (*backend_stream_set_ptr)(arts_stream_t, arts_parameter_t, int);
+typedef int (*backend_stream_get_ptr)(arts_stream_t, arts_parameter_t);
+
 static struct arts_backend {
 	int available;
 	int refcnt;
 	lt_dlhandle handle;
 
-	int (*init)();
-	void (*free)();
-	arts_stream_t (*play_stream)(int,int,int,const char*);
-	arts_stream_t (*record_stream)(int,int,int,const char*);
-	void (*close_stream)(arts_stream_t);
-	int (*read)(arts_stream_t,void*,int);
-	int (*write)(arts_stream_t,void *,int);
-	int (*stream_set)(arts_stream_t, arts_parameter_t, int);
-	int (*stream_get)(arts_stream_t, arts_parameter_t);
-} backend = { 0,0,0,0,0,0,0,0,0,0,0 };
+	backend_init_ptr init;
+	backend_free_ptr free;
+	backend_play_stream_ptr play_stream;
+	backend_record_stream_ptr record_stream;
+	backend_close_stream_ptr close_stream;
+	backend_read_ptr read;
+	backend_write_ptr write;
+	backend_stream_set_ptr stream_set;
+	backend_stream_get_ptr stream_get;
+} backend = { 0,0,0,0,0,0,0,0,0,0,0,0 };
 
 static void arts_backend_ref()
 {
@@ -49,23 +59,23 @@ static void arts_backend_ref()
 
 		if(backend.handle)
 		{
-			backend.init =
+			backend.init = (backend_init_ptr)
 				lt_dlsym(backend.handle, "arts_backend_init");
-			backend.free =
+			backend.free = (backend_free_ptr)
 				lt_dlsym(backend.handle, "arts_backend_free");
-			backend.play_stream =
+			backend.play_stream = (backend_play_stream_ptr)
 				lt_dlsym(backend.handle, "arts_backend_play_stream");
-			backend.record_stream =
+			backend.record_stream = (backend_record_stream_ptr)
 				lt_dlsym(backend.handle, "arts_backend_record_stream");
-			backend.close_stream =
+			backend.close_stream = (backend_close_stream_ptr)
 				lt_dlsym(backend.handle, "arts_backend_close_stream");
-			backend.write =
+			backend.write = (backend_write_ptr)
 				lt_dlsym(backend.handle, "arts_backend_write");
-			backend.read =
+			backend.read = (backend_read_ptr)
 				lt_dlsym(backend.handle, "arts_backend_read");
-			backend.stream_set =
+			backend.stream_set = (backend_stream_set_ptr)
 				lt_dlsym(backend.handle, "arts_backend_stream_set");
-			backend.stream_get =
+			backend.stream_get = (backend_stream_get_ptr)
 				lt_dlsym(backend.handle, "arts_backend_stream_get");
 		}
 

@@ -126,7 +126,7 @@ static double Index_to_frequency ( unsigned NumSamples, unsigned Index )
 
 #define CHECKPOINTER(p)  CheckPointer(p,#p)
 
-static void CheckPointer ( void *p, char *name )
+static void CheckPointer ( const void *p, const char *name )
 {
     if ( p == NULL )
     {
@@ -195,7 +195,6 @@ void fft_float (
         double cm1 = cos ( -delta_angle );
         double w = 2 * cm1;
         double ar[3], ai[3];
-        double temp;
 
         for ( i=0; i < NumSamples; i += BlockSize )
         {

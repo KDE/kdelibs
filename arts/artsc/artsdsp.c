@@ -41,26 +41,6 @@
 
 
 /*
- * original C library functions
- */
-static int (*orig_open)(const char *pathname, int flags, ...);
-static int (*orig_close)(int fd);
-static int (*orig_ioctl)(int fd, unsigned long request, ...);
-static ssize_t (*orig_write)(int fd, const void *buf, size_t count);
-static int orig_init = 0;
-
-#define CHECK_INIT()                            \
-  {                                             \
-	if(!orig_init) {                            \
-	  orig_init = 1;                            \
-	  orig_open = dlsym(RTLD_NEXT,"open");      \
-	  orig_close = dlsym(RTLD_NEXT,"close");    \
-	  orig_write = dlsym(RTLD_NEXT,"write");    \
-	  orig_ioctl = dlsym(RTLD_NEXT,"ioctl");    \
-    }                                           \
-  }
-
-/*
  * NOTE:
  *
  * To truely support non-blocking I/O, there is some stuff missing. Namely,
@@ -85,16 +65,53 @@ static int sndfd = -1;
 static int settings;
 static arts_stream_t stream = 0;
 
+/*
+ * original C library functions
+ */
+typedef int (*orig_open_ptr)(const char *pathname, int flags, ...);
+typedef int (*orig_close_ptr)(int fd);
+typedef int (*orig_ioctl_ptr)(int fd, unsigned long request, ...);
+typedef ssize_t (*orig_write_ptr)(int fd, const void *buf, size_t count);
+
+static orig_open_ptr orig_open;
+static orig_close_ptr orig_close;
+static orig_ioctl_ptr orig_ioctl;
+static orig_write_ptr orig_write;
+
+static int artsdsp_debug = 0;
+static int artsdsp_init = 0;
+
+#define CHECK_INIT() if(!artsdsp_init) artsdsp_doinit();
+
+/*
+ * Initialization - maybe this should be either be a startup only called
+ * routine, or use pthread locks to prevent strange effects in multithreaded
+ * use (however it seems highly unlikely that an application would create
+ * multiple threads before even using one of redirected the system functions
+ * once).
+ */ 
+
+static void artsdsp_doinit()
+{
+	const char *verbose;
+	artsdsp_init = 1;
+
+	/* debugging? */
+	verbose = getenv("ARTSDSP_VERBOSE");
+	artsdsp_debug = verbose && !strcmp(verbose,"1");
+
+	/* resolve original symbols */
+	orig_open = (orig_open_ptr)dlsym(RTLD_NEXT,"open");
+	orig_close = (orig_close_ptr)dlsym(RTLD_NEXT,"close");
+	orig_write = (orig_write_ptr)dlsym(RTLD_NEXT,"write");
+	orig_ioctl = (orig_ioctl_ptr)dlsym(RTLD_NEXT,"ioctl");
+}
+
 static void artsdspdebug(const char *fmt,...)
 {
-	int iartsdspdebug = -1;
+	CHECK_INIT();
 
-	if(iartsdspdebug < 0)
-	{
-		const char *verbose = getenv("ARTSDSP_VERBOSE");
-		iartsdspdebug=verbose && !strcmp(verbose,"1");
-	}
-	if(iartsdspdebug)
+	if(artsdsp_debug)
 	{
     	va_list ap;
     	va_start(ap, fmt);

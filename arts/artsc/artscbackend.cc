@@ -280,7 +280,7 @@ public:
 		bsWrapper = ByteSoundProducer::null();
 	}
 
-	int write(mcopbyte *data, int size)
+	int write(const mcopbyte *data, int size)
 	{
 		attach();
 
@@ -374,7 +374,7 @@ public:
 		sender->close();
 	}
 
-	int write(arts_stream_t stream, void *data, int size)
+	int write(arts_stream_t stream, const void *data, int size)
 	{
 		if(server.isNull())
 			return ARTS_E_NOSERVER;
@@ -383,7 +383,7 @@ public:
 			return ARTS_E_NOSTREAM;
 
 		Sender *sender = (Sender *)stream;
-		return sender->write((mcopbyte *)data,size);
+		return sender->write((const mcopbyte *)data,size);
 	}
 
 	int stream_set(arts_stream_t stream, arts_parameter_t param, int value)
@@ -491,7 +491,8 @@ extern "C"int arts_backend_read(arts_stream_t, void *, int)
 	return ARTS_E_NOIMPL;
 }
 
-extern "C" int arts_backend_write(arts_stream_t stream, void *buffer, int count)
+extern "C" int arts_backend_write(arts_stream_t stream, const void *buffer,
+						int count)
 {
 	if(!ArtsCApi::the()) return ARTS_E_NOINIT;
 
