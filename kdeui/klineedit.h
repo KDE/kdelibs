@@ -51,6 +51,10 @@
  * user in filling out the remaining text.  The two rotation signals are
  * intended to be used to iterate through a list of predefined text entries.
  *
+ * By default both the completion and rotation signals are handled by this
+ * widget.  If you do not want this widget to automatically handle these
+ * signals, simply use the appropriate mutator methods to shut them off.
+ * See @ref setHandleCompletion and @ref setHandleRotation for details.
  *
  * The default key-bindings for completion and rotation are determined
  * from the global settings in @ref KStdAccel.  However, these values can
@@ -64,35 +68,37 @@
  * key being set to 0. This will then force the key-event filter to use the
  * global value.
  *
- * @sect A small example:
+ * @sect Examples:
  *
- * To enable the basic completion & rotation features :
+ * Basic completion & rotation features enabled:
  *
  * <pre>
- * KLineEdit* myEdit = new KLineEdit( this,"mywidget" );
- * myEdit->setHandleCompletion();
- * myEdit->setHandleRotation();
+ * // Make sure the boolean paramter is set to true.  Otherwise,
+ * // you have to turn on each feature manually. See below.
+ * KLineEdit *edit = new KLineEdit( this, "mywidget", true );
  * // Insert the enteries on RETURN pressed into the completion object's list
  * connect( edit, SIGNAL( returnPressed(const QString& ) ), edit->completionObject(), SLOT( addItem( const QString& ) ) );
  * </pre>
  *
- * To use a customized completion object such as KURLCompletion
- * use setCompletionObject(...) instead :
+ * To use a customized completion object setCompletionObject:
  *
  * <pre>
- * KLineEdit* myEdit = new KLineEdit( this,"mywidget" );
+ * KLineEdit *edit = new KLineEdit( this, "mywidget", true );
  * KURLCompletion *comp = new KURLCompletion();
- * myEdit->setCompletionObject( comp, false );  // KLineEdit will delete the completion object.
- * myEdit->setHandleCompletion();
- * myEdit->setHandleRotation();
+ * edit->setCompletionObject( comp, false );  //KLineEdit will NOT delete the completion object.
  * // Insert the enteries on RETURN pressed into the completion object's list
- * connect( edit, SIGNAL( returnPressed( const QString& ) ), edit->completionObject(), SLOT( addItem( const QString& ) ) );
+ * connect( edit, SIGNAL( returnPressed( const QString& ) ), comp, SLOT( addItem( const QString& ) ) );
  * </pre>
  *
- * Of course setCompletionObject can also be used to assign the base KCompletion
- * class as the comepltion object.  This is specailly important when you share a
- * single completion object across multiple widgets.
+ * To enable one feature only or any of them as needed:
  *
+ * <pre>
+ * KLineEdit *edit = new KLineEdit( this, "mywidget" );
+ * edit->setHandleCompletion( true );
+ * edit->setHandleRotation( true );
+ * // Insert the enteries on RETURN pressed into the completion object's list
+ * connect( edit, SIGNAL( returnPressed( const QString& ) ), edit->CompletionObject(), SLOT( addItem( const QString& ) ) );
+ * </pre>
  *
  * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@earthlink.net>
@@ -105,23 +111,24 @@ public:
 
     /**
     * Constructs a KLineEdit object with a default text, a parent,
-    * a name and a context menu.
+    * and a name.
     *
     * @param @p string text to be shown in the edit widget
     * @param @p parent the parent object of this widget
     * @param @p name the name of this widget
+    * @param @p hsig determines if this widget automatically handles both signals internally.
     */
-    KLineEdit( const QString &string, QWidget *parent, const char *name = 0 );
+    KLineEdit( const QString &string, QWidget *parent, const char *name = 0, bool hsig = false );
 
     /**
-    * Constructs a KLineEdit object with a parent, a name and a
-    * a context menu.
+    * Constructs a KLineEdit object with a parent and a name.
     *
     * @param @p string text to be shown in the edit widget
     * @param @p parent the parent object of this widget
     * @param @p name the name of this widget
+    * @param @p hsig determines if this widget automatically handles both signals internally.
     */
-    KLineEdit ( QWidget *parent=0, const char *name=0 );
+    KLineEdit ( QWidget *parent=0, const char *name=0, bool hsig = false );
 
     /**
     *  Destructor.
@@ -141,22 +148,21 @@ public:
     /**
     * Sets the @ref KCompletion object this widget will use.
     *
-    * This function allows you to enable the completion feature by supplying
-    * your own KCompletion object.  It also enables you to control how this
-    * completion object will be handled by this widget (see below).
+    * This function allows you to set the completion object to be used by
+    * this widget.  It also enables you to control how this completion object
+    * will be handled by this widget (see below).
     *
     * The completion object assigned using method is by default NOT deleted when
-    * this widget is destroyed.  If you want KLineEdit to delete this object in
-    * its destructor, be sure to set the boolean parameter, autoDelete, to "true".
-    * This is especially usefully if you want to share the same completion object
-    * across mulitple widgets.  You can also use the member functions
-    * @ref setDeleteCompletionOnExit and @ref deleteCompletionOnExit to change the
-    * status of whether the completion object gets deleted in KLineEdit's destructor.
-    * You can also reset this widget's reference to a completion object by either
-    * deleting the object manually yourself or calling this function with the first
-    * argument set to null - setCompletionObject( 0 ). Be aware however that doing so
-    * will stop this widget from handling completion and rotation signals internally
-    * even if you have explicitly called the setHandleXXXX methods.
+    * this widget is destroyed.  If you want KLineEdit to delete this object when
+    * its destructor is called, be sure to set the boolean parameter, autoDelete,
+    * to "true".  This is especially usefully if you want to share one completion
+    * object across mulitple widgets.  You can also use the member functions
+    * @ref setDeleteCompletionOnExit and @ref deleteCompletionOnExit to change this
+    * value.  This widget's reference to a completion object by either deleting the
+    * object manually yourself or calling this function with the first argument set
+    * to null - setCompletionObject( 0 ). Be aware, however, that doing so will stop
+    * this widget from automatically handling completion and rotation signals even if
+    * you have explicitly called the setHandleXXXX methods.
     *
     * @param a @ref KCompletion or a derived child object.
     * @param @p autoDelete if true, the completion object is deleted in the destructor.
@@ -167,9 +173,8 @@ public:
     * Returns true if the completion object is deleted upon this widget's
     * destruction.
     *
-    * See @ref setCompeltionObject, @ref setHandleCompletion,
-    * @ref deleteCompletionOnExit and @ref setDeleteCompletionOnExit
-    * for more details.
+    * See also @ref setCompeltionObject, @ref setHandleCompletion,
+    * @ref deleteCompletionOnExit and @ref setDeleteCompletionOnExit.
     *
     * @return true if the completion object is deleted
     */
@@ -179,11 +184,12 @@ public:
     * Sets the completion object for deletion upon this widget's destruction.
     *
     * If the argument is set to true, the completion object is deleted when
-    * this widget's destructor is called.
+    * this widget's destructor is called.  Be careful not to set this to true
+    * if you want to re-use the completion objects in your own code.
     *
     * @param @p autoDelete if set to true the completion object is deleted on exit.
     */
-    void setDeleteCompletion( bool autoDelete = false ) { m_bAutoDelCompObj = autoDelete; }
+    void setDeleteCompletion( bool autoDelete ) { m_bAutoDelCompObj = autoDelete; }
 
     /**
     * Returns a pointer to the current completion object.
@@ -220,48 +226,46 @@ public:
     /**
     * Sets this widget to handle the completion signals internally.
     *
-    * When this function is invoked with the default argument or the
-    * argument set to "true", KLineEdit will automatically handle completion
-    * signals.  By default, this method enables completion and also creates
-    * a base completion object if one is not already present.  To stop this
-    * widget from handling the completion signal internally simply call it
-    * with its argument set to "false".
+    * When this function is invoked with the argument set to "true", KComboBox
+    * will automatically handle rotation signals.  To stop KLineEdit from
+    * handling the comepltion signal internally simply invoke this function with
+    * with the argument set to "false".
     *
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the completion signals externally.
     *
     * @param @p complete when true enables this widget to handle completion.
     */
-    void setHandleCompletion( bool complete = true );
+    void setHandleCompletion( bool complete );
 
     /**
     * Sets this widget to handle rotation signals internally.
     *
-    * When this function is invoked with a default argument or the argument
-    * set to "true", KLineEdit will automatically handle rotation signals.
-    * To stop KLineEdit from handling the rotation signals internally simply
-    * invoke this function with the argument set to "false".
+    * When this function is invoked with the argument set to "true", KComboBox
+    * will automatically handle rotation signals.  To stop KLineEdit from
+    * handling the rotation signal internally simply invoke this function with
+    * with the argument set to "false".
     *
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the rotation signals externally.
     *
     * @param @p autoHandle when true handle rotation signals internally.
     */
-    void setHandleRotation( bool rotate = true );
+    void setHandleRotation( bool rotate );
 
     /**
     * Returns true if this widget handles completion signal internally.
     *
     * @return true when this widget handles completion signal.
     */
-    bool handlesCompletion() { return m_bEmitCompletion; }
+    bool handlesCompletion() const { return m_bHandleCompletion; }
 
     /**
     * Returns true if this widget handles rotation signal internally.
     *
     * @return true when this widget handles rotation signal.
     */
-    bool handlesRotation() { return m_bEmitRotation; }
+    bool handlesRotation() const { return m_bHandleRotation; }
 
     /**
     * Set the type of completion to be used.
@@ -407,7 +411,7 @@ public:
     *
     * @param @p showMenu if true, shows the context menu.
     */
-    virtual void setEnableContextMenu( bool showMenu = false );
+    virtual void setEnableContextMenu( bool showMenu = true );
 
     /**
     * Enables/disables the completion mode changer item in the context menu.
@@ -425,7 +429,7 @@ public:
     *
     * @return @p true if context menu is enabled.
     */
-    bool isContextMenuEnabled() const { return m_bShowContextMenu; }
+    bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
     /**
     * Returns true if the mode changer item is visible in
@@ -433,7 +437,7 @@ public:
     *
     * @return @p true if the mode changer is visible in context menu.
     */
-    bool isModeChangerEnabled() const { return m_bShowModeChanger; }
+    bool isModeChangerVisible() const { return m_bShowModeChanger; }
 
 signals:
 
@@ -572,7 +576,7 @@ protected:
     /**
     * Initializes variables.  Called from the constructors.
     */
-    virtual void initialize();
+    virtual void init( bool );
 
     /*
     * Re-implemented from QLineEdit to filter key-events.
@@ -611,25 +615,23 @@ private :
 
     // Indicates whether the context menu is enabled
     // or disabled
-    bool m_bShowContextMenu;
+    bool m_bEnableMenu;
     // Indicates whether the mode switcher item will be
     // available in the context (popup) menu.
     bool m_bShowModeChanger;
     // Determines whether the completion object should be
     // deleted when this widget is destroyed.
     bool m_bAutoDelCompObj;
-    // Determines whether this widget handles rotation signals
-    // internally or not
-    bool m_bHandleRotationSignal;
-    // Determines whether this widget handles completion signals
-    // internally or not
-    bool m_bHandleCompletionSignal;
-    // Determines whether this widget fires rotation signals
-    bool m_bEmitRotation;
-    // Determines whether this widget fires completion signals
+    // Determines whether this widget handles rotation.
+    bool m_bHandleRotation;
+    // Determines whether this widget handles completions.
+    bool m_bHandleCompletion;
+    // This widget emits completion if true
     bool m_bEmitCompletion;
+    // This widget emits rotation if true
+    bool m_bEmitRotation;
 
-    // Stores the completion mode locally.
+    // Stores the comepltion mode locally.
     KGlobal::Completion m_iCompletionMode;
 };
 
