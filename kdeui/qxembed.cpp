@@ -162,8 +162,6 @@ static QXEmbedAppFilter* filter = 0;
 static QPtrDict<QGuardedPtr<QWidget> > *focusMap = 0;
 // L0203: See L0660, L1400, L1450
 static XKeyEvent last_key_event;
-// L0204: See L0620, L1531 
-static bool tabForward = true;
 
 // L0300: This class gives access protected members of class QWidget.
 //        Function focusData() is useful to reimplement tab focus management
@@ -358,6 +356,7 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
             QWidget *w = qApp->focusWidget();
             // L0621: The following tests are copied from QWidget::event().
             bool res = false;
+            bool tabForward = true;
             if ( !(k->state() & ControlButton || k->state() & AltButton) ) {
                 if ( k->key() == Key_Backtab || (k->key() == Key_Tab && (k->state() & ShiftButton)) ) {
                     QFocusEvent::setReason( QFocusEvent::Backtab );
@@ -493,7 +492,7 @@ static int qxembed_x11_event_filter( XEvent* e)
                     case XEMBED_FOCUS_LAST:
                         {
                             // L0686: Search last widget in tab chain
-                            QFocusEvent::setReason( QFocusEvent::Tab );
+                            QFocusEvent::setReason( QFocusEvent::Backtab );
                             w->topLevelWidget()->setFocus();
                             ((QPublicWidget*)w->topLevelWidget())->focusNextPrev(false);
                             QFocusEvent::resetReason();
@@ -860,7 +859,9 @@ void QXEmbed::focusInEvent( QFocusEvent * e ){
         //        the client must select the first (or last) widget of
         //        its own tab chain.
         if ( e->reason() == QFocusEvent::Tab )
-            detail = tabForward ? XEMBED_FOCUS_FIRST : XEMBED_FOCUS_LAST;
+            detail = XEMBED_FOCUS_FIRST;
+        else if ( e->reason() == QFocusEvent::Backtab )
+            detail = XEMBED_FOCUS_LAST;
         sendXEmbedMessage( window, XEMBED_FOCUS_IN, detail);
     }
 }
