@@ -1313,8 +1313,17 @@ void KeramikStyle::drawControlMask( ControlElement element,
 								    const QRect &r,
 								    const QStyleOption& opt ) const
 {
-	QColorGroup cg( color1, color1, color1, color1, color1, color1, color1, color1, color0 );
-	drawControl( element, p, widget, r, cg, Style_Default, opt );
+	//Calling drawControl on a depth-1 pixmap causes problems when blitting colored pixmaps..
+	//This is inefficient, but safe. The proper fix would be to implement all the relevant controls,
+	//And have the painter layer accept a "mask mode" flag.
+	QPixmap buf(r.width(), r.height());
+	
+	QPainter p2(&buf);
+	p2.fillRect(0,0,r.width(), r.height(), QColor(255, 0, 255));
+	drawControl( element, &p2, widget, r, widget->colorGroup(), Style_Default, opt );
+	p2.end();
+	p->setPen(color1);
+	p->drawPixmap(r.x(), r.y(),buf.createHeuristicMask());
 }
 
 void KeramikStyle::drawComplexControl( ComplexControl control,
@@ -1550,8 +1559,9 @@ void KeramikStyle::drawComplexControlMask( ComplexControl control,
                                          const QRect &r,
                                          const QStyleOption& opt ) const
 {
-	QColorGroup cg( color1, color1, color1, color1, color1, color1, color1, color1, color0 );
-	drawComplexControl( control, p, widget, r, cg, Style_Default, SC_All, SC_None, opt );
+	//Calling drawControl on a depth-1 pixmap causes problems when blitting colored pixmaps..
+	//Since attempts to do proper masking here didn't produce much, might as well do it the quick way
+	p->fillRect(r, color1);
 }
 
 int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
