@@ -63,32 +63,32 @@ bool KDesktopFile::isDesktopFile(const QString& path)
 
 QString KDesktopFile::readType() const
 {
-  return readEntry(QString::fromLatin1("Type"));
+  return readEntry("Type");
 }
 
 QString KDesktopFile::readIcon() const
 {
-  return readEntry(QString::fromLatin1("Icon"));
+  return readEntry("Icon");
 }
 
 QString KDesktopFile::readName() const
 {
-  return readEntry(QString::fromLatin1("Name"));
+  return readEntry("Name");
 }
 
 QString KDesktopFile::readComment() const
 {
-  return readEntry(QString::fromLatin1("Comment"));
+  return readEntry("Comment");
 }
 
 QString KDesktopFile::readPath() const
 {
-  return readEntry(QString::fromLatin1("Path"));
+  return readEntry("Path");
 }
 
 QString KDesktopFile::readDevice() const
 {
-  return readEntry(QString::fromLatin1("Dev"));
+  return readEntry("Dev");
 }
 
 QString KDesktopFile::readURL() const
@@ -128,13 +128,13 @@ QString KDesktopFile::readURL() const
 	return devURL;
 
     } else {
-	return readEntry(QString::fromLatin1("URL"));
+	return readEntry("URL");
     }
 }
 
 QStringList KDesktopFile::readActions() const
 {
-    return readListEntry(QString::fromLatin1("Actions"), ';');
+    return readListEntry("Actions", ';');
 }
 
 void KDesktopFile::setActionGroup(const QString &group)
@@ -149,29 +149,29 @@ bool KDesktopFile::hasActionGroup(const QString &group) const
 
 bool KDesktopFile::hasLinkType() const
 {
-  return readEntry(QString::fromLatin1("Type")) == QString::fromLatin1("Link");
+  return readEntry("Type") == QString::fromLatin1("Link");
 }
 
 bool KDesktopFile::hasApplicationType() const
 {
-  return readEntry(QString::fromLatin1("Type")) == QString::fromLatin1("Application");
+  return readEntry("Type") == QString::fromLatin1("Application");
 }
 
 bool KDesktopFile::hasMimeTypeType() const
 {
-  return readEntry(QString::fromLatin1("Type")) == QString::fromLatin1("MimeType");
+  return readEntry("Type") == QString::fromLatin1("MimeType");
 }
 
 bool KDesktopFile::hasDeviceType() const
 {
-  return readEntry(QString::fromLatin1("Type")) == QString::fromLatin1("FSDev") ||
-         readEntry(QString::fromLatin1("Type")) == QString::fromLatin1("FSDevice");
+  return readEntry("Type") == QString::fromLatin1("FSDev") ||
+         readEntry("Type") == QString::fromLatin1("FSDevice");
 }
 
 bool KDesktopFile::tryExec() const
 {
   // if there is no TryExec field, just return OK.
-  QString te = readEntry(QString::fromLatin1("TryExec"));
+  QString te = readEntry("TryExec");
   if (te.isNull())
     return true;
 
@@ -211,6 +211,6 @@ KDesktopFile::resource() const { return backEnd->resource(); }
 QStringList
 KDesktopFile::sortOrder() const
 {
-  return readListEntry(QString::fromLatin1("SortOrder"));
+  return readListEntry("SortOrder");
 }
 

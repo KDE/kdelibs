@@ -61,22 +61,20 @@ KSimpleConfig::~KSimpleConfig()
 
 QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 {
-  QString aLocalizedKey = pKey;
+  return deleteEntry(pKey.utf8().data(), bLocalized);
+}
 
-  // localize the key, if requested
-  if (bLocalized) {
-      aLocalizedKey += QString::fromLatin1("[");
-      aLocalizedKey += locale();
-      aLocalizedKey += QString::fromLatin1("]");
-  }
-
+QString KSimpleConfig::deleteEntry( const char *pKey, bool bLocalized )
+{
   // retrieve the current entry map for the group specified by pKey
-  KEntryKey entryKey(group(), aLocalizedKey);
+  KEntryKey entryKey(mGroup, 0);
+  entryKey.c_key = pKey;
+  entryKey.bLocal = bLocalized;
   KEntryMapIterator aIt;
 
   aIt = aEntryMap.find(entryKey);
   if (aIt != aEntryMap.end()) {
-    QString retValue = (*aIt).aValue;
+    QString retValue = QString::fromUtf8((*aIt).mValue.data(), (*aIt).mValue.length());
     // we found the key, get rid of it
     aEntryMap.remove(aIt);
     setDirty(true);
@@ -88,9 +86,9 @@ QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 
 bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 {
-
+  QCString pGroup_utf = pGroup.utf8();
   KEntryMapIterator aIt;
-  KEntryKey groupKey(pGroup, QString::fromLatin1(""));
+  KEntryKey groupKey(pGroup_utf, 0);
 
   aIt = aEntryMap.find(groupKey);
   if (aIt != aEntryMap.end()) {
@@ -106,7 +104,7 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
       // the iterator gets confused.
       QValueList<KEntryKey> keyList;
       // we want to remove the group and all entries in the group
-      for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
+      for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
 	keyList.append(aIt.key());
 
       QValueList<KEntryKey>::Iterator kIt(keyList.begin());

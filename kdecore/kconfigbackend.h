@@ -122,6 +122,8 @@ public:
    * @return the resource type as passed to the constructor.
    */
   const char * resource() const { return resType; }
+  
+  void setLocaleString(const QCString &_localeString) { localeString = _localeString; }
 
 protected:
   KConfigBase *pConfig;
@@ -129,6 +131,7 @@ protected:
   QString fileName;
   QCString resType;
   bool useKDEGlobals;
+  QCString localeString;
 
   KConfigBackEndPrivate *d;
 };

@@ -74,6 +74,7 @@ public:
    * @return The old value of that key.
    */
   QString deleteEntry( const QString& pKey, bool bLocalized );
+  QString deleteEntry( const char *pKey, bool bLocalized );
 
   /**
    * Delete a configuration entry group

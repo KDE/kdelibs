@@ -31,14 +31,11 @@
 struct KEntry
 {
   KEntry()
-    : aValue(QString::null), bDirty(false), bNLS(false), bGlobal(false) {}
-  QString aValue;
-  bool    bDirty;  // must the entry be written back to disk?
-  bool    bNLS;    // entry should be written with locale tag
-  bool    bGlobal; // entry should be written to the global config file
-
-  struct KEntryPrivate;
-  KEntryPrivate *d;
+    : mValue(0), bDirty(false), bNLS(false), bGlobal(false) {}
+  QCString mValue;
+  bool    bDirty :1;  // must the entry be written back to disk?
+  bool    bNLS   :1;  // entry should be written with locale tag
+  bool    bGlobal:1;  // entry should be written to the global config file
 };
 
 /**
@@ -48,14 +45,13 @@ struct KEntry
  */
 struct KEntryKey
 {
-  KEntryKey(const QString& _group = QString::null,
-	    const QString _key = QString::null)
-      : group(_group), key(_key) {}
-  QString group; // the "group" to which this EntryKey belongs
-  QString key;   // the _actual_ key of the entry in question
-
-  struct KEntryKeyPrivate;
-  KEntryKeyPrivate *d;
+  KEntryKey(const QCString& _group = 0,
+	    const QCString& _key = 0)
+      : mGroup(_group), mKey(_key), bLocal(false), c_key(_key.data()) {}
+  QCString mGroup; // the "group" to which this EntryKey belongs
+  QCString mKey;   // the _actual_ key of the entry in question
+  bool bLocal;
+  const char *c_key;
 };
 
 /**
@@ -64,9 +60,11 @@ struct KEntryKey
  */
 inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 {
-  if (k1.group != k2.group)
-    return k1.group < k2.group;
-  return k1.key < k2.key;
+  if (k1.mGroup != k2.mGroup)
+    return k1.mGroup < k2.mGroup;
+  if (k1.bLocal != k2.bLocal)
+    return k2.bLocal;
+  return (strcmp(k1.c_key, k2.c_key) < 0);
 }
 
 /**

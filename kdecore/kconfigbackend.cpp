@@ -22,6 +22,9 @@
 #include <config.h>
 
 #include <unistd.h>
+#ifdef HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif
 
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -38,53 +41,90 @@
 #include <kurl.h>
 
 /* translate escaped escape sequences to their actual values. */
-static QString printableToString(const QString& s)
+static QCString printableToString(const char *str, int l)
 {
-  if (!s.contains('\\'))
-    return s;
-  QString result;
-  unsigned int i = 0;
-  if (s.length()>1){ // remember: s.length() is unsigned....
-    for (i=0;i<s.length()-1;i++){
-      if (s[i] == '\\'){
-        i++;
-        if (s[i] == '\\')
-          result.insert(result.length(), s[i]);
-        else if (s[i] == 'n')
-          result.append(QString::fromLatin1("\n"));
-        else if (s[i] == 't')
-          result.append(QString::fromLatin1("\t"));
-        else if (s[i] == 'r')
-          result.append(QString::fromLatin1("\r"));
-        else {
-          result.append(QString::fromLatin1("\\"));
-          result.insert(result.length(), s[i]);
-        }
-      }
-      else
-        result.insert(result.length(), s[i]);
-    }
+  // Strip leading white-space.
+  while((l>0) &&
+        ((*str == ' ') || (*str == '\t') || (*str == '\r')))
+  {
+     str++; l--;
   }
-  if (i<s.length())
-    result.insert(result.length(), s[i]);
+
+  // Strip trailing white-space.
+  while((l>0) &&
+        ((str[l-1] == ' ') || (str[l-1] == '\t') || (str[l-1] == '\r')))
+  {
+     l--;
+  }
+
+  QCString result(l);
+  char *r = (char *) result.data();
+
+  for(int i = 0; i < l;i++, str++)
+  {
+     if (*str == '\\')
+     {
+        i++, str++;
+        if (i >= l) // End of line. (Line ends with single slash)
+        {
+           *r++ = '\\';
+           break;
+        }
+        switch(*str)
+        {
+           case 't': 
+              *r++ = '\t';
+              break;
+           case 'n': 
+              *r++ = '\n';
+              break;
+           case 'r':
+              *r++ = '\r';
+              break;
+           default:
+              *r++ = '\\';
+              *r++ = *str;
+        }
+     }
+     else 
+     { 
+        *r++ = *str;
+     }
+  }
+  result.truncate(r-result.data());
   return result;
 }
 
-static QString stringToPrintable(const QString& s){
-  QString result;
-  unsigned int i;
-  for (i=0;i<s.length();i++){
-    if (s[i] == '\n')
-      result.append(QString::fromLatin1("\\n"));
-    else if (s[i] == '\t')
-      result.append(QString::fromLatin1("\\t"));
-    else if (s[i] == '\r')
-      result.append(QString::fromLatin1("\\r"));
-    else if (s[i] == '\\')
-      result.append(QString::fromLatin1("\\\\"));
+static QCString stringToPrintable(const QCString& str){
+  QCString result(str.length()*2); // Maximum 2x as long as source string
+  register char *r = (char *) result.data();
+  register char *s = (char *) str.data();
+  
+  while(*s)
+  {
+    if (*s == '\n')
+    {
+      *r++ = '\\'; *r++ = 'n'; 
+    }
+    else if (*s == '\t')
+    {
+      *r++ = '\\'; *r++ = 't'; 
+    }
+    else if (*s == '\r')
+    {
+      *r++ = '\\'; *r++ = 'r'; 
+    }
+    else if (*s == '\\')
+    {
+      *r++ = '\\'; *r++ = '\\'; 
+    }
     else
-      result.insert(result.length(), s[i]);
+    {
+      *r++ = *s;
+    }
+    s++;
   }
+  result.truncate(r - result.data());
   return result;
 }
 
@@ -126,10 +166,6 @@ bool KConfigINIBackEnd::parseConfigFiles()
   }
 
   if (!fileName.isEmpty()) {
-
-// WABA: Why recursive?
-//    QStringList list = KGlobal::dirs()->
-//      findAllResources(resType, fileName, true);
     QStringList list = KGlobal::dirs()->
       findAllResources(resType, fileName);
 
@@ -175,57 +211,89 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   if (!rFile.isOpen()) // come back, if you have real work for us ;->
     return;
 
-  QString aCurrentGroup(QString::fromLatin1("<default>"));
+  QCString aCurrentGroup("<default>");
 
-  rFile.at(0);
-  QByteArray data(rFile.readAll());
-
-  // might miss the end if the file doesn't end with an EOL
-  QString contents = QString::fromUtf8(data, data.size()) + "\n";
-
-  unsigned int startLine = 0, endLine;
-  for(endLine = 0; endLine < contents.length(); endLine++)
+  const char *map = 0;
+#ifdef HAVE_MMAP
+  map = (const char *) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE, rFile.handle(), 0);
+#endif
+  const char *s;
+  const char *eof;
+  QByteArray data;
+  if (map)
   {
-    if(contents[endLine].latin1() == '\n')
-    {
-      QString aCurrentLine = contents.mid(startLine,endLine-startLine);
-      startLine = endLine + 1;
-
-      // check for a group
-      if(aCurrentLine[0].latin1() == '[')
-      {
-        int nRightBracket = aCurrentLine.find( ']', 1 );
-        if( nRightBracket != -1 ) {
-          // group found; get the group name by taking everything in
-          // between the brackets
-          aCurrentGroup = aCurrentLine.mid( 1, nRightBracket-1 );
-
-          if (pWriteBackMap) {
+     s = map;
+     eof = s+rFile.size(); 
+  }
+  else
+  {
+     rFile.at(0);
+     data = rFile.readAll();
+     s = data.data();
+     eof = s+data.size();
+  }
+  for(;s < eof;s++)
+  {
+     const char *startLine = s;
+     while ((*s != '\n') && (s < eof)) s++; // Search till end of line / end of file
+     if (*startLine == '[')
+     {
+        if (*(s-1) != ']')
+        {
+           fprintf(stderr, "Garbage in group-header: '%-20.20s' file = %s\n", startLine, fileName.latin1());
+           continue;
+        }
+        // group found; get the group name by taking everything in
+        // between the brackets
+        aCurrentGroup = QCString(startLine+1, s - startLine - 1);
+        if (pWriteBackMap) {
 	    // add the special group key indicator
-	    KEntryKey groupKey(aCurrentGroup, QString::fromLatin1(""));
+	    KEntryKey groupKey(aCurrentGroup, 0);
 	    pWriteBackMap->insert(groupKey, KEntry());
-          }
-          continue;
-        };
-      }
-
-      if( aCurrentLine[0].latin1() == '#' )
-        // comment character in the first column, skip the line
+        }
         continue;
+     }
+     if ((*startLine == '#') || (*startLine == '\n'))
+        continue; // Empty or comment.
 
-      int nEqualsPos = aCurrentLine.find( '=' );
-      if( nEqualsPos == -1 )
-        // no equals sign: incorrect or empty line, skip it
-        continue;
+     const char *equal = startLine;
+     const char *locale = 0;
+     while ((*equal != '=') && (equal != s)) 
+     {
+        if (*equal == '[') locale = equal;
+        equal++;
+     }
+     if (*equal != '=') 
+        continue; // Missing equal sign, skip.
+
+     int keyLength = equal-startLine;
+     if (locale)
+     {
+        if (((int) localeString.length() != (equal - locale - 2)) ||
+            (strncmp(locale+1, localeString.data(), localeString.length())!=0))
+        {
+           // We can ignore this one
+           if (!pWriteBackMap)
+              continue; // We just ignore it
+           // We just store it as is to be able to write it back later.
+           locale = 0;
+        }
+        else
+        {
+           // We don't store the localized part.
+           keyLength = locale-startLine;
+        }
+     }
 
       // insert the key/value line
-      QString key = aCurrentLine.left(nEqualsPos).stripWhiteSpace();
-      QString val = printableToString(aCurrentLine.right(aCurrentLine.length() - nEqualsPos - 1)).stripWhiteSpace();
-
+      QCString key(startLine, keyLength+1); // TODO: strip whitespace
+      QCString val = printableToString(equal+1, s-equal-1);
       KEntryKey aEntryKey(aCurrentGroup, key);
+      aEntryKey.bLocal = (locale != 0);
       KEntry aEntry;
-      aEntry.aValue = val;
+      aEntry.mValue = val;
       aEntry.bGlobal = bGlobal;
+      aEntry.bNLS = (locale != 0);
 
       if (pWriteBackMap) {
         // don't insert into the config object but into the temporary
@@ -237,8 +305,11 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         // retrieved was localized already, no need to localize it again.
         pConfig->putData(aEntryKey, aEntry);
       }
-    }
   }
+#ifdef HAVE_MMAP
+  if (map)
+     munmap((void *)map,rFile.size());
+#endif
 }
 
 void KConfigINIBackEnd::sync(bool bMerge)
@@ -345,7 +416,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 	else
         {
 	  // add special group key and then the entry
-	  KEntryKey groupKey(entryKey.group, QString::fromLatin1(""));
+	  KEntryKey groupKey(entryKey.mGroup, 0);
 	  if (!aTempMap.contains(groupKey))
 	    aTempMap.insert(groupKey, KEntry());
 
@@ -374,53 +445,58 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   if (rConfigFile.status() != 0)
      return bEntriesLeft;
 
-  QTextStream *pStream = rConfigFile.textStream();
-  pStream->setCodec(QTextCodec::codecForName("utf-8"));
+  FILE *pStream = rConfigFile.fstream();
 
   // write back -- start with the default group
   KEntryMapConstIterator aWriteIt;
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
 
-      if ( aWriteIt.key().group == QString::fromLatin1("<default>") && !aWriteIt.key().key.isEmpty() ) {
-	  if ( (*aWriteIt).bNLS &&
-	       aWriteIt.key().key.right(1) != QString::fromLatin1("]"))
-	      // not yet localized, but should be
-	      (*pStream) << aWriteIt.key().key << '['
-		       << pConfig->locale() << ']' << "="
-		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
+      if ( aWriteIt.key().mGroup == "<default>" && !aWriteIt.key().mKey.isEmpty() ) {
+	  if ( (*aWriteIt).bNLS )
+          {
+              fprintf(pStream, "%s[%s]=%s\n", 
+                    aWriteIt.key().mKey.data(), localeString.data(),
+                    stringToPrintable((*aWriteIt).mValue).data());
+          }
 	  else
-	      // need not be localized or already is
-	      (*pStream) << aWriteIt.key().key << "="
-		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
+          {
+              // not localized
+              fprintf(pStream, "%s=%s\n", 
+                    aWriteIt.key().mKey.data(), 
+                    stringToPrintable((*aWriteIt).mValue).data());
+          }
       }
   } // for loop
 
   // now write out all other groups.
-  QString currentGroup;
+  QCString currentGroup;
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
     // check if it's not the default group (which has already been written)
-    if (aWriteIt.key().group == QString::fromLatin1("<default>"))
+    if (aWriteIt.key().mGroup == "<default>")
       continue;
 
-    if ( currentGroup != aWriteIt.key().group ) {
-	currentGroup = aWriteIt.key().group;
-	(*pStream) << '[' << aWriteIt.key().group << ']' << '\n';
+    if ( currentGroup != aWriteIt.key().mGroup ) {
+	currentGroup = aWriteIt.key().mGroup;
+        fprintf(pStream, "[%s]\n", aWriteIt.key().mGroup.data());
     }
 
-    if (aWriteIt.key().key.isEmpty()) {
+    if (aWriteIt.key().mKey.isEmpty()) {
       // we found a special group key, ignore it
     } else {
       // it is data for a group
-      if ( (*aWriteIt).bNLS &&
-	  aWriteIt.key().key.right(1) != QString::fromLatin1("]"))
-	// not yet localized, but should be
-	(*pStream) << aWriteIt.key().key << '['
-		 << pConfig->locale() << ']' << "="
-		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
+      if ( (*aWriteIt).bNLS )
+      {
+          fprintf(pStream, "%s[%s]=%s\n", 
+                   aWriteIt.key().mKey.data(), localeString.data(),
+                   stringToPrintable((*aWriteIt).mValue).data());
+      }
       else
-	// need not be localized or already is
-	(*pStream) << aWriteIt.key().key << "="
-		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
+      {
+          // not localized
+          fprintf(pStream, "%s=%s\n", 
+                    aWriteIt.key().mKey.data(), 
+                    stringToPrintable((*aWriteIt).mValue).data());
+      }
     }
   } // for loop
 

@@ -181,6 +181,14 @@ protected:
    */
   KEntryMap aEntryMap;
 
+public:
+  /**
+   * Overloaded public functions.
+   */
+  virtual bool hasGroup(const QCString &_pGroup) const;
+  virtual bool hasGroup(const char *_pGroup) const;
+  virtual bool hasKey(const char *pKey) const;
+  
 private:
   /**
    * indicates whether the internal data cache is full or empty.
@@ -241,11 +249,5 @@ private:
   KConfigPrivate *d;
 };
 
-inline bool KConfig::hasGroup(const QString &_pGroup) const
-{
-    //  cacheCheck();
-    KEntryKey groupKey( _pGroup, QString::fromLatin1(""));
-    return aEntryMap.contains(groupKey);
-}
 
 #endif

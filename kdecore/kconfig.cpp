@@ -112,54 +112,53 @@ QStringList KConfig::groupList() const
 
   KEntryMapConstIterator aIt;
   for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
-    if (aIt.key().key == QString::fromLatin1(""))
-      retList.append(aIt.key().group);
+    if (aIt.key().mKey.isEmpty())
+      retList.append(QString::fromUtf8(aIt.key().mGroup));
 
   return retList;
 }
 
 bool KConfig::hasKey(const QString &pKey) const
 {
-  KEntryKey aEntryKey;
+   return KConfig::hasKey(pKey.utf8().data());
+}
+
+bool KConfig::hasKey(const char *pKey) const
+{
+  KEntryKey aEntryKey(mGroup, 0);
+  aEntryKey.c_key = pKey;
+
   KEntryMapConstIterator aIt;
 
   //  cacheCheck();
 
   if (!locale().isNull()) {
     // try the localized key first
-    QString aKey = pKey;
-    aKey += '[';
-    aKey += locale();
-    aKey += ']';
-
-    aEntryKey.group = group();
-    aEntryKey.key = aKey;
-
+    aEntryKey.bLocal = true;
     aIt = aEntryMap.find(aEntryKey);
-    if (aIt != aEntryMap.end() && !(*aIt).aValue.isNull())
+    if (aIt != aEntryMap.end() && !(*aIt).mValue.isNull())
       return true;
+    aEntryKey.bLocal = false;
   }
 
   // try the non-localized version
-  aEntryKey.group = group();
-  aEntryKey.key = pKey;
-
   aIt = aEntryMap.find(aEntryKey);
-  return  (aIt != aEntryMap.end() && !(*aIt).aValue.isNull());
+  return  (aIt != aEntryMap.end() && !(*aIt).mValue.isNull());
 }
 
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
+  QCString pGroup_utf = pGroup.utf8();
   QMap<QString, QString> tmpMap;
   KEntryMapConstIterator aIt;
   KEntry aEntry;
-  KEntryKey groupKey( pGroup, QString::fromLatin1("") );
+  KEntryKey groupKey( pGroup_utf, 0 );
   //  cacheCheck();
 
   aIt = aEntryMap.find(groupKey);
   ++aIt; // advance past special group entry marker
-  for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
-    tmpMap.insert(aIt.key().key, (*aIt).aValue);
+  for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
+    tmpMap.insert(QString::fromUtf8(aIt.key().mKey), QString::fromUtf8((*aIt).mValue.data(), (*aIt).mValue.length()));
 
   return tmpMap;
 }
@@ -173,7 +172,7 @@ void KConfig::reparseConfiguration()
   aEntryMap.clear();
 
   // add the "default group" marker to the map
-  KEntryKey groupKey(QString::fromLatin1("<default>"), QString::fromLatin1(""));
+  KEntryKey groupKey("<default>", 0);
   aEntryMap.insert(groupKey, KEntry());
 
   parseConfigFiles();
@@ -181,9 +180,10 @@ void KConfig::reparseConfiguration()
 
 KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 {
+  QCString pGroup_utf = pGroup.utf8();
   KEntry aEntry;
   KEntryMapConstIterator aIt;
-  KEntryKey aKey(pGroup, QString::fromLatin1(""));
+  KEntryKey aKey(pGroup_utf, 0);
   KEntryMap tmpEntryMap;
 
   //  cacheCheck();
@@ -196,7 +196,7 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
     return tmpEntryMap;
   }
   // we now have a pointer to the nodes we want to copy.
-  for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
+  for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
     tmpEntryMap.insert(aIt.key(), *aIt);
 
   return tmpEntryMap;
@@ -208,8 +208,8 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
 
   // check to see if the special group key is present,
   // and if not, put it in.
-  if (!hasGroup(_key.group)) {
-    KEntryKey groupKey( _key.group, QString::fromLatin1(""));
+  if (!hasGroup(_key.mGroup)) {
+    KEntryKey groupKey( _key.mGroup, 0);
     aEntryMap.insert(groupKey, KEntry());
   }
 
@@ -261,7 +261,7 @@ void KConfig::flushCache()
     // no I/O within the timeout period.  Flush the cache.
     isCached = false;
     aEntryMap.clear();
-    KEntryKey groupKey(QString::fromLatin1("<default>"), QString::fromLatin1(""));
+    KEntryKey groupKey("<default>", 0);
     aEntryMap.insert(groupKey, KEntry());
     // reset the interval to 30 second checks
     flushInterval = 30;
@@ -269,5 +269,22 @@ void KConfig::flushCache()
 
   cacheTimer->changeInterval(flushInterval * 1000);
 }
+
+bool KConfig::hasGroup(const QString &_pGroup) const
+{
+  return KConfig::hasGroup( _pGroup.utf8());
+}
+
+bool KConfig::hasGroup(const char *_pGroup) const
+{
+  return KConfig::hasGroup( QCString(_pGroup));
+}
+
+bool KConfig::hasGroup(const QCString &_pGroup) const
+{
+  KEntryKey groupKey( _pGroup, 0);
+  return aEntryMap.contains(groupKey);
+}
+
 
 #include "kconfig.moc"
