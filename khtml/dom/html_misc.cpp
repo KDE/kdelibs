@@ -135,13 +135,13 @@ unsigned long HTMLCollection::length() const
     return ((HTMLCollectionImpl *)impl)->length();
 }
 
-Node HTMLCollection::item( unsigned long index )
+Node HTMLCollection::item( unsigned long index ) const
 {
     if(!impl) return 0;
     return ((HTMLCollectionImpl *)impl)->item( index );
 }
 
-Node HTMLCollection::namedItem( const DOMString &name )
+Node HTMLCollection::namedItem( const DOMString &name ) const
 {
     if(!impl) return 0;
     return ((HTMLCollectionImpl *)impl)->namedItem( name );

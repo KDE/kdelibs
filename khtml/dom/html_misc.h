@@ -144,7 +144,7 @@ public:
      * index is out of range.
      *
      */
-    Node item ( unsigned long index );
+    Node item ( unsigned long index ) const;
 
     /**
      * This method retrieves a <code> Node </code> using a name. It
@@ -162,7 +162,7 @@ public:
      * exists), returns <code> null </code> .
      *
      */
-    Node namedItem ( const DOMString &name );
+    Node namedItem ( const DOMString &name ) const;
 
 protected:
     HTMLCollectionImpl *impl;

@@ -76,14 +76,14 @@ public:
 
     ~HTMLCollectionImpl();
     unsigned long length() const;
-    NodeImpl *item ( unsigned long index );
-    NodeImpl *namedItem ( const DOMString &name );
+    NodeImpl *item ( unsigned long index ) const;
+    NodeImpl *namedItem ( const DOMString &name ) const;
 
 protected:
     unsigned long calcLength(NodeImpl *current) const;
-    NodeImpl *getItem(NodeImpl *current, int index, int &pos);
+    NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
     NodeImpl *getNamedItem( NodeImpl *current, int attr_id, 
-			    const DOMString &name );
+			    const DOMString &name ) const;
    // the base node, the collection refers to
     NodeImpl *base;
     // The collection list the following elements

@@ -158,7 +158,7 @@ unsigned long HTMLCollectionImpl::length() const
     return calcLength(base->firstChild());
 }
 
-NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len)
+NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) const
 {
     while(current)
     {
@@ -246,14 +246,14 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len)
     return 0;
 }
 
-NodeImpl *HTMLCollectionImpl::item( unsigned long index )
+NodeImpl *HTMLCollectionImpl::item( unsigned long index ) const
 {
     int pos = 0;
     return getItem(base->firstChild(), index, pos);
 }
 
 NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
-					    const DOMString &name )
+					    const DOMString &name ) const
 {
 
 
@@ -352,7 +352,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
     return 0;
 }
 
-NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name )
+NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 {
     NodeImpl *n;
     n = getNamedItem(base->firstChild(), ATTR_ID, name);
