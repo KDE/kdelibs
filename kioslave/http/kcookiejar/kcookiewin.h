@@ -32,7 +32,7 @@
 #include <kdialog.h>
 #include "kcookiejar.h"
 
-class QLineEdit;
+class KLineEdit;
 class QPushButton;
 class QVButtonGroup;
 class KURLLabel;
@@ -47,12 +47,12 @@ public :
     ~KCookieDetail();
 
 private :
-    QLineEdit*   m_name;
-    QLineEdit*   m_value;
-    QLineEdit*   m_expires;
-    QLineEdit*   m_domain;
-    QLineEdit*   m_path;
-    QLineEdit*   m_secure;
+    KLineEdit*   m_name;
+    KLineEdit*   m_value;
+    KLineEdit*   m_expires;
+    KLineEdit*   m_domain;
+    KLineEdit*   m_path;
+    KLineEdit*   m_secure;
 
     KHttpCookie* m_cookie;
     KHttpCookie* m_cookie_orig;

@@ -41,13 +41,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qlabel.h>
 #include <qwidget.h>
 #include <qlayout.h>
-#ifndef QT_NO_TOOLTIP
-#include <qtooltip.h>
-#endif
-#ifndef QT_NO_WHATSTHIS
-#include <qwhatsthis.h>
-#endif
-#include <qlineedit.h>
 #include <qgroupbox.h>
 #include <qdatetime.h>
 #include <qmessagebox.h>
@@ -55,12 +48,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qradiobutton.h>
 #include <qvbuttongroup.h>
 
-#include <kapplication.h>
+#ifndef QT_NO_TOOLTIP
+#include <qtooltip.h>
+#endif
+
+#ifndef QT_NO_WHATSTHIS
+#include <qwhatsthis.h>
+#endif
+
 #include <kwin.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kurllabel.h>
+#include <klineedit.h>
 #include <kiconloader.h>
+#include <kapplication.h>
 
 #include "kcookiejar.h"
 #include "kcookiewin.h"
@@ -240,9 +242,8 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
 
     QLabel* label = new QLabel( i18n("Name:"), this );
     grid->addWidget( label, 1, 0 );
-    m_name = new QLineEdit( this );
+    m_name = new KLineEdit( this );
     m_name->setReadOnly( true );
-    m_name->setFrame (false);
     m_name->setText( cookie->name() );
     m_name->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_name, 1 ,1 );
@@ -250,18 +251,16 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     //Add the value
     label = new QLabel( i18n("Value:"), this );
     grid->addWidget( label, 2, 0 );
-    m_value = new QLineEdit( this );
+    m_value = new KLineEdit( this );
     m_value->setReadOnly( true );
-    m_value->setFrame (false);
     m_value->setText( cookie->value() );
     m_value->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_value, 2, 1);
 
     label = new QLabel( i18n("Expires:"), this );
     grid->addWidget( label, 3, 0 );
-    m_expires = new QLineEdit( this );
+    m_expires = new KLineEdit( this );
     m_expires->setReadOnly( true );
-    m_expires->setFrame (false);
     QDateTime cookiedate;
     cookiedate.setTime_t( cookie->expireDate() );
     if ( cookie->expireDate() )
@@ -273,28 +272,25 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
 
     label = new QLabel( i18n("Path:"), this );
     grid->addWidget( label, 4, 0 );
-    m_path = new QLineEdit( this );
+    m_path = new KLineEdit( this );
     m_path->setReadOnly( true );
-    m_path->setFrame (false);
     m_path->setText( cookie->path() );
     m_path->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_path, 4, 1);
 
     label = new QLabel( i18n("Domain:"), this );
     grid->addWidget( label, 5, 0 );
-    m_domain = new QLineEdit( this );
+    m_domain = new KLineEdit( this );
     m_domain->setReadOnly( true );
     QString val = cookie->domain();
     m_domain->setText( val.isEmpty()?i18n("Not specified"):val );
-    m_domain->setFrame (false);
     m_domain->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_domain, 5, 1);
 
     label = new QLabel( i18n("Is Secure:"), this );
     grid->addWidget( label, 6, 0 );
-    m_secure = new QLineEdit( this );
+    m_secure = new KLineEdit( this );
     m_secure->setReadOnly( true );
-    m_secure->setFrame (false);    
     m_secure->setText( cookie->isSecure() ? i18n("True"):i18n("False") );
     m_secure->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_secure, 6, 1 );
