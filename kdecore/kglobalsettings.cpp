@@ -684,3 +684,11 @@ bool KGlobalSettings::showFilePreview(const KURL &url)
     QString protocolClass = KProtocolInfo::protocolClass(protocol);
     return g.readBoolEntry(protocol, (protocolClass == ":local") );
 }
+
+bool KGlobalSettings::opaqueResize()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return c->readBoolEntry("OpaqueResize",
+        KDE_DEFAULT_OPAQUE_RESIZE);
+}

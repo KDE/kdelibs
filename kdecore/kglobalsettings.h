@@ -31,6 +31,7 @@
 #define KDE_DEFAULT_VISUAL_ACTIVATE_SPEED 50
 #define KDE_DEFAULT_WHEEL_ZOOM false
 #define KDE_DEFAULT_ICON_ON_PUSHBUTTON false
+#define KDE_DEFAULT_OPAQUE_RESIZE true
 
 class KURL;
 
@@ -466,6 +467,16 @@ class KGlobalSettings
      * @since 3.2
      */
     static bool showFilePreview(const KURL &);
+
+    /**
+     * Whether the user wishes to use opaque resizing. Primarily
+     * intended for QSplitter::setOpaqueResize()
+     * 
+     * @return Returns true if user wants to use opaque resizing.
+     *
+     * @since 3.2
+     */
+    static bool opaqueResize();
 
 private:
     /**
