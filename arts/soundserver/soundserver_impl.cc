@@ -42,7 +42,7 @@ using namespace Arts;
 RealtimeStatus SoundServer_impl::realtimeStatus() {
 	int sched = sched_getscheduler(0);
 	if (sched == SCHED_FIFO || sched == SCHED_RR) return rtRealtime;
-	if (!getenv("STARTED_TROUGH_ARTSWRAPPER")) return rtNoWrapper;
+	if (!getenv("STARTED_THROUGH_ARTSWRAPPER")) return rtNoWrapper;
 	return rtNoRealtime;
 }
 #else

@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 	if(argc == 0)
 		return 1;
 
-	putenv("STARTED_TROUGH_ARTSWRAPPER=1");
+	putenv("STARTED_THROUGH_ARTSWRAPPER=1");
 
 	argv[0] = EXECUTE;
 	execv(EXECUTE,argv);
