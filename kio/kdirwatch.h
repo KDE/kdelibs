@@ -113,13 +113,13 @@ class KDirWatch : public QObject
  signals:
 
    /**
-    * This signal is emmited when directory is changed. The new ctime is set
+    * This signal is emited when directory is changed. The new ctime is set
     * before the signal is emited.
     */
    void dirty (const QString& dir);
    
    /**
-    * This signal is emmited when KDirWatch learns that the file
+    * This signal is emited when KDirWatch learns that the file
     * _file has changed. This happens for instance when a .desktop file 
     * gets a new icon - but this isn't automatic, one has to call 
     * setFileDirty() for this signal to be emitted.
@@ -127,7 +127,7 @@ class KDirWatch : public QObject
    void fileDirty (const QString& _file);
 
    /**
-    * This signal is emmited when directory is deleted. When you receive
+    * This signal is emited when directory is deleted. When you receive
     * this signal, directory is not yet deleted from the list. You will
     * receive this signal only once, because one directory cannot be
     * deleted more than once. Please, forget the last^H^H^H^Hprevious
