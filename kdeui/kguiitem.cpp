@@ -200,7 +200,9 @@ void KGuiItem::setText( const QString &text ) {
 void KGuiItem::setIconSet( const QIconSet &iconset )
 {
     d->m_iconSet = iconset;
-    d->m_iconName = QString::null;
+// Why reset the icon name here? It breaks Konqueror's toolbar icons
+// (see KAction::setIcon and its call to setIconSet) (Simon)
+//    d->m_iconName = QString::null;
     d->m_hasIcon = !iconset.isNull();
     d->m_iconLoaded = true;
 }
