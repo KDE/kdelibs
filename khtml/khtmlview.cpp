@@ -94,6 +94,8 @@ public:
         : underMouse( 0 )
     {
         reset();
+        tp=0;
+        paintBuffer=0;
         vertPaintBuffer=0;
         formCompletions=0;
         prevScrollbarVisible = true;
