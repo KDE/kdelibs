@@ -674,6 +674,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
     char *mountedfrom;
     char *mountedto;
     int fsname_len, num;
+    char    realpath_buffer[MAXPATHLEN];
     
     num = mntctl(MCTL_QUERY, sizeof(mntctl_buffer), mntctl_buffer);
     
