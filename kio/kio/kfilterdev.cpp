@@ -24,15 +24,19 @@
 #include <assert.h>
 #include <qfile.h>
 
+#define BUFFER_SIZE 8*1024
+
 class KFilterDev::KFilterDevPrivate
 {
 public:
     KFilterDevPrivate() : bNeedHeader(true), bSkipHeaders(false),
-                          autoDeleteFilterBase(false), bOpenedUnderlyingDevice(false) {}
+                          autoDeleteFilterBase(false), bOpenedUnderlyingDevice(false),
+                          bIgnoreData(false){}
     bool bNeedHeader;
     bool bSkipHeaders;
     bool autoDeleteFilterBase;
     bool bOpenedUnderlyingDevice;
+    bool bIgnoreData;
     QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
     QCString ungetchBuffer;
     QCString origFileName;
@@ -122,7 +126,7 @@ bool KFilterDev::open( int mode )
     }
     else
     {
-        d->buffer.resize( 8*1024 );
+        d->buffer.resize( BUFFER_SIZE );
         filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
     }
     d->bNeedHeader = !d->bSkipHeaders;
@@ -213,41 +217,76 @@ bool KFilterDev::at( QIODevice::Offset pos )
     }
 
     //kdDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
-    // #### Slow, and allocate a huge block of memory (potentially)
-    // Maybe we could have a flag in the class to know we don't care about the
-    // actual data
-    QByteArray dummy( pos );
-    return ( (QIODevice::Offset)readBlock( dummy.data(), pos ) == pos ) ;
+    QByteArray dummy( QMIN( pos, 3*BUFFER_SIZE ) );
+    d->bIgnoreData = true;
+    bool result = ( (QIODevice::Offset)readBlock( dummy.data(), pos ) == pos );
+    d->bIgnoreData = false;
+    return result;
 }
 
 bool KFilterDev::atEnd() const
 {
-    return filter->device()->atEnd() && (d->result == KFilterBase::END);
+    return filter->device()->atEnd() && (d->result == KFilterBase::END)
+                                     && d->ungetchBuffer.isEmpty();
 }
 
 Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
 {
     Q_ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
-    // If we came to the end of the stream, return 0.
+
+    uint dataReceived = 0;
+    if ( !d->ungetchBuffer.isEmpty() )
+    {
+        Q_ULONG len = d->ungetchBuffer.length();
+        if ( !d->bIgnoreData )
+        {
+            while ( ( dataReceived < len ) && ( dataReceived < maxlen ) )
+            {
+                *data = d->ungetchBuffer[ len - dataReceived - 1 ];
+                data++;
+                dataReceived++;
+            }
+        }
+        else
+        {
+            dataReceived = QMIN( len, maxlen );
+        }
+        d->ungetchBuffer.truncate( len - dataReceived );
+        ioIndex += dataReceived;
+    }
+
+    // If we came to the end of the stream
+    // return what we got from the ungetchBuffer.
     if ( d->result == KFilterBase::END )
-        return 0;
+        return dataReceived;
+
     // If we had an error, return -1.
     if ( d->result != KFilterBase::OK )
         return -1;
 
-    filter->setOutBuffer( data, maxlen );
+
+    Q_ULONG outBufferSize;
+    if ( d->bIgnoreData )
+    {
+        outBufferSize = QMIN( maxlen, 3*BUFFER_SIZE );
+    }
+    else
+    {
+        outBufferSize = maxlen;
+    }
+    outBufferSize -= dataReceived;
+    Q_ULONG availOut = outBufferSize;
+    filter->setOutBuffer( data, outBufferSize );
 
     bool decompressedAll = false;
-    uint dataReceived = 0;
-    uint availOut = maxlen;
     while ( dataReceived < maxlen )
     {
         if (filter->inBufferEmpty())
         {
             // Not sure about the best size to set there.
             // For sure, it should be bigger than the header size (see comment in readHeader)
-            d->buffer.resize( 8*1024 );
+            d->buffer.resize( BUFFER_SIZE );
             // Request data from underlying device
             int size = filter->device()->readBlock( d->buffer.data(),
                                                     d->buffer.size() );
@@ -284,9 +323,16 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
         if( availOut < (uint)filter->outBufferAvailable() )
             kdWarning(7005) << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !" << endl;
 
-        // Move on in the output buffer
-        data += outReceived;
         dataReceived += outReceived;
+        if ( !d->bIgnoreData )  // Move on in the output buffer
+        {
+            data += outReceived;
+            availOut = maxlen - dataReceived;
+        }
+        else if ( maxlen - dataReceived < outBufferSize )
+        {
+            availOut = maxlen - dataReceived;
+        }
         ioIndex += outReceived;
         if (d->result == KFilterBase::END)
         {
@@ -297,7 +343,6 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
         {
             decompressedAll = true;
         }
-        availOut = maxlen - dataReceived;
         filter->setOutBuffer( data, availOut );
     }
 
@@ -390,6 +435,7 @@ int KFilterDev::getch()
         int len = d->ungetchBuffer.length();
         int ch = d->ungetchBuffer[ len-1 ];
         d->ungetchBuffer.truncate( len - 1 );
+        ioIndex++;
         //kdDebug(7005) << "KFilterDev::getch from ungetch: " << QString(QChar(ch)) << endl;
         return ch;
     }
@@ -415,6 +461,7 @@ int KFilterDev::ungetch( int ch )
 
     // pipe or similar => we cannot ungetch, so do it manually
     d->ungetchBuffer +=ch;
+    ioIndex--;
     return ch;
 }
 
