@@ -634,8 +634,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "the server may be incompatible." ).arg( protocol );
       solutions << i18n( "You may perform a search on the Internet for a KDE "
         "program (called a kioslave or ioslave) which supports this protocol. "
-        "Places to search include <a href=\"http://apps.kde.com/\">"
-        "http://apps.kde.com/</a> and <a href=\"http://freshmeat.net/\">"
+        "Places to search include <a href=\"http://kde-apps.org/\">"
+        "http://kde-apps.org/</a> and <a href=\"http://freshmeat.net/\">"
         "http://freshmeat.net/</a>." )
         << sUpdate << sSysadmin;
       break;
