@@ -25,6 +25,16 @@
         </choice>
         <choice name="askDestination">
         </choice>
+        <choice name="argl1">
+          <label>Argl1 Label</label>
+        </choice>
+        <choice name="argl2">
+          <whatsthis>Argl2 Whatsthis</whatsthis>
+        </choice>
+        <choice name="argl3">
+          <label>Argl3 Label</label>
+          <whatsthis>Argl3 Whatsthis</whatsthis>
+        </choice>
       </choices>
       <default>standardDestination</default>
     </entry>

@@ -1146,8 +1146,10 @@ int main( int argc, char **argv )
         cpp << "    KConfigSkeleton::ItemEnum::Choice choice;" << endl;
         cpp << "    choice.name = \"" << (*it).name << "\";" << endl;
         if ( setUserTexts ) {
-          cpp << "    choice.label = \"" << (*it).label << "\";" << endl;
-          cpp << "    choice.whatsThis = \"" << (*it).whatsThis << "\";" << endl;
+          if ( !(*it).label.isEmpty() )
+            cpp << "    choice.label = i18n(\"" << (*it).label << "\");" << endl;
+          if ( !(*it).whatsThis.isEmpty() )
+            cpp << "    choice.whatsThis = i18n(\"" << (*it).whatsThis << "\");" << endl;
         }
         cpp << "    values" << e->name() << ".append( choice );" << endl;
         cpp << "  }" << endl;

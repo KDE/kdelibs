@@ -27,15 +27,30 @@ Test2::Test2(  )
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = "standardDestination";
-    choice.label = "";
-    choice.whatsThis = "";
     valuesDestination.append( choice );
   }
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = "askDestination";
-    choice.label = "";
-    choice.whatsThis = "";
+    valuesDestination.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "argl1";
+    choice.label = i18n("Argl1 Label");
+    valuesDestination.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "argl2";
+    choice.whatsThis = i18n("Argl2 Whatsthis");
+    valuesDestination.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "argl3";
+    choice.label = i18n("Argl3 Label");
+    choice.whatsThis = i18n("Argl3 Whatsthis");
     valuesDestination.append( choice );
   }
   mDestinationItem = new KConfigSkeleton::ItemEnum( currentGroup(), "Destination", mDestination, valuesDestination, standardDestination );
