@@ -101,7 +101,7 @@ class KDECORE_EXPORT KGlobalSettings
     static bool singleClick();
 
     /**
-     * This enum describes the return type for insertTearOffHandle() wether to insert
+     * This enum describes the return type for insertTearOffHandle() whether to insert
      * a handle or not. Applications who independently want to use handles in their popup menus
      * should test for Application level before calling the appropriate function in KPopupMenu.
      * @since 3,1
