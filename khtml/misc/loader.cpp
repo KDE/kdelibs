@@ -891,6 +891,7 @@ DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 
 DocLoader::~DocLoader()
 {
+    Cache::loader()->cancelRequests( this );
     Cache::docloader->remove( this );
 }
 
