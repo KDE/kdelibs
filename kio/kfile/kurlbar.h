@@ -33,7 +33,7 @@ class KURLBar;
 
 /**
  * An item to be used in KURLBar / KURLBarListBox. All the properties
- * (url, icon, descroption, tooltip) can be changed dynamically.
+ * (url, icon, description, tooltip) can be changed dynamically.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @see KURLBar
@@ -100,7 +100,7 @@ public:
     void setDescription( const QString& desc );
     /**
      * Sets a tooltip to be used for this item.
-     * @see tooolTip
+     * @see toolTip
      */
     void setToolTip( const QString& tip );
 
@@ -120,7 +120,7 @@ public:
     virtual int height( const QListBox * ) const;
 
     /**
-     * returns the url  of this item.
+     * returns the url of this item.
      * @see setURL
      */
     const KURL& url() const                     { return m_url; }
@@ -205,7 +205,7 @@ class KURLBarListBox;
 /**
  * KURLBar is a widget that displays icons together with a description. They
  * can be arranged either horizontally or vertically. Clicking on an item
- * will make the activated() signal being emitted. The user can edit
+ * will cause the activated() signal to be emitted. The user can edit
  * existing items by choosing "Edit entry" in the contextmenu. He can also
  * remove or add new entries (via drag&drop or the context menu).
  *
@@ -313,7 +313,7 @@ public:
     virtual void clear();
 
     /**
-     * @returns a proper sizehint, depending on the orientation and number
+     * @returns a proper sizehint, depending on the orientation and the number
      * of items available.
      */
     virtual QSize sizeHint() const;
@@ -392,7 +392,7 @@ public slots:
 
 signals:
     /**
-     * This signal is emitted when the user activated an item, e.g by
+     * This signal is emitted when the user activated an item, e.g., by
      * clicking on it.
      */
     void activated( const KURL& url );
@@ -563,7 +563,7 @@ class KURLBarItemDialog : public KDialogBase
 
 public:
     /**
-     * A convenience method to show up the dialog and retrieve all the
+     * A convenience method to show the dialog and retrieve all the
      * properties via the given parameters. The parameters are used to
      * initialize the dialog and then return the user-configured values.
      *
@@ -584,7 +584,7 @@ public:
      * @p description a short, translated description of the item
      * @p icon an icon for the item
      * @p appLocal tells whether the item should be local for this application
-     *             or available globalle
+     *             or be available globally
      * @p iconSize determines the size of the icon that is shown/selectable
      * @p parent the parent-widget for the dialog
      *
@@ -618,7 +618,7 @@ public:
 
     /**
      * @returns whether the item should be local to the application or global.
-     * if allowGlobal was set to false in the constructor, this will always
+     * If allowGlobal was set to false in the constructor, this will always
      * return true.
      */
     bool applicationLocal() const;
