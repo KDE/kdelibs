@@ -678,6 +678,11 @@ bool HTTPProtocol::readHeader()
       // Jacek: We can't send mimeType signal now,
       // because there may be another Content-Type to come
       m_strMimeType = trimLead(buffer + 13);
+      
+      //HACK to get the right mimetype of returns like "text/html; charset foo-blah"
+      int semicolonPos = m_strMimeType.find( ';' );
+      if ( semicolonPos != -1 )
+        m_strMimeType = m_strMimeType.left( semicolonPos );
     }
 		
     // whoops.. we received a warning
