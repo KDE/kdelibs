@@ -20,7 +20,7 @@
    </Menu>
   </Menu>
 </MenuBar>
-<ToolBar>
+<ToolBar name="mainToolBar">
  <Action name="shell_quit"/>
 </ToolBar>
 </kpartgui>
