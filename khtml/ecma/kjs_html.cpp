@@ -1274,7 +1274,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case FormElements:        return getHTMLCollection(exec,form.elements());
     case FormLength:          return Number(form.length());
-    case FormName:            return String(form.name()); // NOT String (IE gives empty string)
+    case FormName:            return String(form.name()); // NOT getString (IE gives empty string)
     case FormAcceptCharset:   return String(form.acceptCharset());
     case FormAction:          return String(form.action());
     case FormEncType:         return String(form.enctype());
@@ -1335,7 +1335,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputChecked:         return Boolean(input.checked());
     case InputDisabled:        return Boolean(input.disabled());
     case InputMaxLength:       return Number(input.maxLength());
-    case InputName:            return String(input.name()); // NOT String (IE gives empty string)
+    case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputReadOnly:        return Boolean(input.readOnly());
     case InputSize:            return Number(input.getSize());
     case InputSrc:             return String(input.src());
@@ -1574,7 +1574,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_IMG: {
     DOM::HTMLImageElement image = element;
     switch (token) {
-    case ImageName:            return String(image.name()); // NOT String (IE gives empty string)
+    case ImageName:            return String(image.name()); // NOT getString (IE gives empty string)
     case ImageAlign:           return String(image.align());
     case ImageAlt:             return String(image.alt());
     case ImageBorder:          return String(image.getBorder());
