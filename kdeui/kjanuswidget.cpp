@@ -156,8 +156,8 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     if( mPageList == 0 ) { return; }
 
     mTabControl = new QTabWidget( this );
-    mTabControl->setMargin (KDialog::marginHint());
     if( mTabControl == 0 ) { return; }
+    mTabControl->setMargin (KDialog::marginHint());  
     topLayout->addWidget( mTabControl, 10 );
   }
   else if( mFace == Swallow )
