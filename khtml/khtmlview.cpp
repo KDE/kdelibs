@@ -609,7 +609,11 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
         scrollBy(deltax, deltay);
         d->currentNode = n;
 	d->newNode = 0;
-	HTMLAnchorElementImpl *anchor = dynamic_cast<HTMLAnchorElementImpl *>(d->currentNode);
+	HTMLAnchorElementImpl *anchor = 0;
+
+        if ( d->currentNode && d->currentNode->id() == ID_A )
+            anchor = static_cast<HTMLAnchorElementImpl *>( d->currentNode );
+
 	if (anchor) m_part->overURL(anchor->areaHref().string(), 0);
 	else m_part->overURL(QString(), 0);
         return true;
@@ -641,7 +645,11 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     {
         d->currentNode = n;
 	d->newNode = 0;
-	HTMLAnchorElementImpl *anchor = dynamic_cast<HTMLAnchorElementImpl *>(d->currentNode);
+	HTMLAnchorElementImpl *anchor = 0;
+
+        if ( d->currentNode && d->currentNode->id() == ID_A )
+            anchor = static_cast<HTMLAnchorElementImpl *>( d->currentNode );
+
 	if (anchor) m_part->overURL(anchor->areaHref().string(), 0);
 	else m_part->overURL(QString(), 0);
     }
