@@ -239,7 +239,11 @@ KConfig *cfg;
          _cryptoLib = ll->globalLibrary(libname.latin1());
    }
 #else
-   libpaths << "/lib/"
+   libpaths 
+            #ifdef _AIX
+            << "/opt/freeware/lib"
+	    #endif
+            << "/lib/"
 	    << "/usr/lib/"
 	    << "/usr/ssl/lib/"
             << "/usr/local/lib/"
@@ -252,6 +256,8 @@ KConfig *cfg;
    libnamess 
 	     #ifdef hpux
              << "libssl.sl"
+             #elif defined(_AIX)
+             << "libssl.a(libssl.so.0)"
              #else
              << "libssl.so"
 	     << "libssl.so.0"
@@ -264,6 +270,8 @@ KConfig *cfg;
    libnamesc 
              #ifdef hpux
              << "libcrypto.sl"
+             #elif defined(_AIX)
+             << "libcrypto.a(libcrypto.so.0)"
 	     #else
              << "libcrypto.so"
 	     << "libcrypto.so.0"
