@@ -270,8 +270,6 @@ void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
 //============ ~KMdiMainFrm ============//
 KMdiMainFrm::~KMdiMainFrm()
 {
-  delete d;
-  d=0;
   //save the children first to a list, as removing invalidates our iterator
   QValueList<KMdiChildView *> children;
   for(KMdiChildView *w = m_pDocumentViews->first();w;w= m_pDocumentViews->next()){
@@ -304,6 +302,8 @@ KMdiMainFrm::~KMdiMainFrm()
   delete m_pWindowMenu;
   delete m_mdiGUIClient;
   m_mdiGUIClient=0;
+  delete d;
+  d=0;
 }
 
 //============ applyOptions ============//
