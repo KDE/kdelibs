@@ -115,7 +115,7 @@ inline void KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
 inline void KPixmapEffect::blend(KPixmap &pixmap, 
 					float initial_intensity,
 					const QColor &bgnd, GradientType eff, 
-					bool anti_dir, int ncols)
+					bool anti_dir, int )
 {
   QImage image = pixmap.convertToImage();
   blend(image, initial_intensity, bgnd, eff, anti_dir);

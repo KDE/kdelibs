@@ -776,10 +776,10 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
 
       var /= (eff == VerticalGradient?yf-yi:xf-xi);
 
-      for (y = yi; y < yf; y++) {
+      for (y = yi; y < (int)yf; y++) {
 	intensity = eff == VerticalGradient? intensity + var : 
 	                                     initial_intensity;
-	for (x = xi; x < xf ; x++) {
+	for (x = xi; x < (int)xf ; x++) {
 	  if (eff == HorizontalGradient) intensity += var;
 	  ind = x + image.width()  * y ;
 	  r = qRed  (data[ind]) + (int)(intensity * 
