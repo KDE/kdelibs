@@ -41,7 +41,7 @@ ResourceNet::ResourceNet( const KConfig *config )
     mLocalTempFile( 0 ), mUseLocalTempFile( false )
 {
   if ( config ) {
-    init( config->readPathEntry( "NetUrl" ), config->readEntry( "NetFormat" ) );
+    init( KURL( config->readPathEntry( "NetUrl" ) ), config->readEntry( "NetFormat" ) );
   } else {
     init( KURL(), "vcard" );
   }
@@ -164,7 +164,7 @@ bool ResourceNet::save( Ticket* )
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
     return false;
   }
-  
+
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
@@ -179,7 +179,7 @@ bool ResourceNet::asyncSave( Ticket* )
     emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return false;
   }
-  
+
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
@@ -209,7 +209,7 @@ void ResourceNet::setFormat( const QString &name )
   mFormatName = name;
   if ( mFormat )
     delete mFormat;
-  
+
   FormatFactory *factory = FormatFactory::self();
   mFormat = factory->format( mFormatName );
 }

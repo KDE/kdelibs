@@ -73,7 +73,7 @@ void ResourceNetConfig::setEditMode( bool value )
 void ResourceNetConfig::loadSettings( KRES::Resource *res )
 {
   ResourceNet *resource = dynamic_cast<ResourceNet*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceNetConfig::loadSettings(): cast failed" << endl;
     return;
@@ -87,7 +87,7 @@ void ResourceNetConfig::loadSettings( KRES::Resource *res )
 void ResourceNetConfig::saveSettings( KRES::Resource *res )
 {
   ResourceNet *resource = dynamic_cast<ResourceNet*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceNetConfig::saveSettings(): cast failed" << endl;
     return;
@@ -96,7 +96,7 @@ void ResourceNetConfig::saveSettings( KRES::Resource *res )
   if ( !mInEditMode )
     resource->setFormat( mFormatTypes[ mFormatBox->currentItem() ] );
 
-  resource->setUrl( mUrlEdit->url() );
+  resource->setUrl( KURL( mUrlEdit->url() ) );
 }
 
 #include "resourcenetconfig.moc"

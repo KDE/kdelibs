@@ -130,7 +130,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     if ( version == VCard::v3_0 ) {
       card.addLine( createSecrecy( (*addrIt).secrecy() ) );
     }
-    
+
     // EMAIL
     QStringList emails = (*addrIt).emails();
     bool pref = true;
@@ -490,7 +490,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // URL
         if ( identifier == "url" )
-          addr.setUrl( (*lineIt).value().asString() );
+          addr.setUrl( KURL( (*lineIt).value().asString() ) );
 
         // X-
         if ( identifier.startsWith( "x-" ) ) {
@@ -775,7 +775,7 @@ QStringList VCardTool::splitString( const QChar &sep, const QString &str )
       if ( pos != 0 ) {
         value.replace( pos - 1, 2, sep );
         pos = value.find( sep, pos );
-      } else    
+      } else
         pos = value.find( sep, pos + 1 );
     }
   }

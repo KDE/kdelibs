@@ -112,7 +112,7 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
     a.setNote( comment );
 
     ab->insertAddressee( a );
-    
+
     kdDebug() << "--INSERTED: " << a.realName() << endl;
   }
 }
@@ -183,7 +183,7 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
   Address homeAddress( Address::Home );
   Address businessAddress( Address::Work );
   Address otherAddress;
-  
+
   QStringList::ConstIterator it;
   for( it = entries.begin(); it != entries.end(); ++it ) {
     int pos = (*it).find("\n");
@@ -310,9 +310,9 @@ void importKab( KABC::AddressBook *ab, bool override )
   ::AddressBook::Entry entry;
 
   int num = kab.addressbook()->noOfEntries();
-  
+
   kdDebug(5700) << "kab Addressbook has " << num << " entries." << endl;
-  
+
   for (int i = 0; i < num; ++i) {
     if (::AddressBook::NoError != kab.addressbook()->getKey(i,key)) {
       kdDebug(5700) << "Error getting key for index " << i << " from kab." << endl;
@@ -351,7 +351,7 @@ void importKab( KABC::AddressBook *ab, bool override )
         kdDebug(5700) << "Wrote back to kab uid " << a.uid() << endl;
       }
     }
- 
+
     a.setTitle( entry.title );
     a.setFormattedName( entry.fn );
     a.setPrefix( entry.nameprefix );
@@ -379,7 +379,7 @@ void importKab( KABC::AddressBook *ab, bool override )
     }
 
     if ( entry.URLs.count() > 0 ) {
-      a.setUrl( entry.URLs.first() );
+      a.setUrl( KURL( entry.URLs.first() ) );
       if ( entry.URLs.count() > 1 ) {
         kdWarning() << "More than one URL. Ignoring all but the first." << endl;
       }
@@ -389,9 +389,9 @@ void importKab( KABC::AddressBook *ab, bool override )
     for( int j = 0; j < noAdr; ++j ) {
       ::AddressBook::Entry::Address kabAddress;
       entry.getAddress( j, kabAddress );
-      
+
       Address adr;
-      
+
       adr.setStreet( kabAddress.address );
       adr.setPostalCode( kabAddress.zip );
       adr.setLocality( kabAddress.town );
@@ -406,28 +406,28 @@ void importKab( KABC::AddressBook *ab, bool override )
       if ( !kabAddress.orgSubUnit.isEmpty() ) label += kabAddress.orgSubUnit + "\n";
       if ( !kabAddress.deliveryLabel.isEmpty() ) label += kabAddress.deliveryLabel + "\n";
       adr.setLabel( label );
-      
+
       a.insertAddress( adr );
     }
 
     QString note = entry.comment;
-    
+
     if ( !entry.user1.isEmpty() ) note += "\nUser1: " + entry.user1;
     if ( !entry.user2.isEmpty() ) note += "\nUser2: " + entry.user2;
     if ( !entry.user3.isEmpty() ) note += "\nUser3: " + entry.user3;
     if ( !entry.user4.isEmpty() ) note += "\nUser4: " + entry.user4;
-    
+
     if ( !entry.keywords.count() == 0 ) note += "\nKeywords: " + entry.keywords.join( ", " );
-    
+
     QStringList::ConstIterator talkIt;
     for( talkIt = entry.talk.begin(); talkIt != entry.talk.end(); ++talkIt ) {
       note += "\nTalk: " + (*talkIt);
     }
-    
+
     a.setNote( note );
 
     a.setPrefix( entry.rank + a.prefix() );  // Add rank to prefix
-    
+
     a.setCategories( entry.categories );
 
     kdDebug(5700) << "Addressee: " << a.familyName() << endl;
@@ -473,6 +473,6 @@ int main(int argc,char **argv)
   importKab( kabcBook, override );
 
   StdAddressBook::save();
-  
+
   kdDebug(5700) << "Saved kabc addressbook to '" << kabcBook->identifier() << "'" << endl;
 }

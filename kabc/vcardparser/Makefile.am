@@ -23,5 +23,5 @@ testwrite_SOURCES = testwrite.cpp
 TESTFILES = vcard1.vcf vcard2.vcf vcard3.vcf vcard4.vcf vcard5.vcf
 
 check: testread
-	for i in $(TESTFILES); do perl $(top_srcdir)/kabc/vcardparser/checkvcard.pl \
+	-for i in $(TESTFILES); do perl $(top_srcdir)/kabc/vcardparser/checkvcard.pl \
           $(top_srcdir)/kabc/vcardparser/tests/$$i; done

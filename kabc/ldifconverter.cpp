@@ -310,7 +310,7 @@ addComment:
   if ( fieldname == QString::fromLatin1( "homeurl" ) ||
        fieldname == QString::fromLatin1( "workurl" ) ) {
     if (a.url().isEmpty()) {
-      a.setUrl( value );
+      a.setUrl( KURL( value ) );
       return true;
     }
     if ( a.url().prettyURL() == KURL(value).prettyURL() )
