@@ -415,13 +415,13 @@ bool KInetSocketAddress::setHost(const QString& addr, int family)
    */
   if (family == AF_INET)
     {
-      inet_pton(family, addr.local8Bit(), (void*)&d->sin);
+      int result = inet_pton(family, addr.latin1(), (void*)&(d->sin.sin_addr));
       fromV4();
     }
 #ifdef AF_INET6
   else
     {
-      inet_pton(family, addr.local8Bit(), (void*)&d->sin6);
+      int result = inet_pton(family, addr.latin1(), (void*)&(d->sin6.sin6_addr));
       fromV6();
     }
 #endif
