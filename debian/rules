@@ -32,7 +32,7 @@ $(BUILDDIR)/build:
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	$$pwd/configure --prefix=/usr --enable-debug \
-	--disable-rpath \
+	--disable-rpath --with-qt-dir=/usr/lib/qt2beta \
 	--includedir=/usr/include/kde \
 	--libdir=/usr/X11R6/lib  && make
 
