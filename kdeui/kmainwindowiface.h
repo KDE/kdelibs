@@ -32,8 +32,8 @@ class KDCOPPropertyProxy;
 class KMainWindow;
 
 /**
-This is the main interface to the KMainWindow.  This will provide a consistant
-dcop interface to all KDE applications that use it.
+This is the main interface to the KMainWindow.  This will provide a consistent
+DCOP interface to all KDE applications that use it.
 @short DCOP interface to KMainWindow.
 @author Ian Reinhart Geiser <geiseri@yahoo.com>
 */
@@ -68,46 +68,46 @@ k_dcop:
 	/**
 	Activates the requested action.
 	@param action The name of the action to activate.  The names of valid
-	can actions can be found by calling actions().
+	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
 	bool activateAction( QCString action);
 
 	/**
 	Disables the requested action.
-	@param action The name of the action to activate.  The names of valid
-	can actions can be found by calling actions().
+	@param action The name of the action to disable.  The names of valid
+	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
 	bool disableAction( QCString action);
 
 	/**
 	Enables the requested action.
-	@param action The name of the action to activate.  The names of valid
-	can actions can be found by calling actions().
+	@param action The name of the action to enable.  The names of valid
+	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
 	bool enableAction( QCString action);
 
 	/**
 	Returns the status of the requested action.
-	@param action The name of the action to activate.  The names of valid
-	can actions can be found by calling actions().
-	@returns The state of the current Actions, true - enabled, false - disabled.
+	@param action The name of the action.  The names of valid
+	actions can be found by calling actions().
+	@returns The state of the action, true - enabled, false - disabled.
 	*/
 	bool actionIsEnabled( QCString action);
 
 	/**
 	Returns the tool tip text of the requested action.
 	@param action The name of the action to activate.  The names of valid
-	can actions can be found by calling actions().
-	@return A QCString containing the text of the actions tool tip.
+	actions can be found by calling actions().
+	@return A QCString containing the text of the action's tool tip.
 	*/
 	QCString actionToolTip( QCString action);
 
 	/**
 	Returns a dcop reference to the selected KAction
-	@param name The name of the action to activate, The names of valid
+	@param name The name of the action.  The names of valid
 	actions can be found by calling actions().
 	@return A DCOPRef for the kaction.
 	**/
