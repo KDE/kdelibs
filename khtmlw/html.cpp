@@ -3201,6 +3201,7 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 	      html->setFrameBorder( frameborder );
 	      html->setMarginWidth( marginwidth );
 	      html->setMarginHeight( marginheight );
+	      html->setOverrideCharset( overrideCharset );
 	      if( initialx || initialy )
 		  html->restorePosition(initialx, initialy );
 	      if ( src.isEmpty() )
@@ -5471,7 +5472,8 @@ bool KHTMLWidget::setCharset(const char *name){
 	    charset=charsets->defaultCharset();
 	else
 	    charset=KCharset(name);
-	//printf("setting charset to %s.\n", charset.name());
+	debugM("got charset %s qtCharset=%d\n", charset.name(), 
+	       (int)charset.qtCharset());
 	if (!charset.isDisplayable()){
 		if (charsetConverter) delete charsetConverter;
 	        charsetConverter=0;
@@ -5518,7 +5520,18 @@ bool KHTMLWidget::setCharset(const char *name){
 void 
 KHTMLWidget::setOverrideCharset(const char *name)
 {
+    QWidget *w;
+
     overrideCharset = name;
+
+    // set charset for frames...
+    if(isFrameSet() && !parsing && frameSet)
+        for( (w = frameSet->widgetList.first()); w != 0;
+	     (w = frameSet->widgetList.next()) )
+	{
+	    if ( w->inherits( "KHTMLView" ) )
+	        ((KHTMLView *)w)->setOverrideCharset(name);
+	}
 }
 
 
