@@ -624,10 +624,6 @@ void RenderListMarker::calcMinMaxWidth()
     case ARMENIAN:
     case GEORGIAN:
     case CJK_IDEOGRAPHIC:
-    case HIRAGANA:
-    case KATAKANA:
-    case HIRAGANA_IROHA:
-    case KATAKANA_IROHA:
         // ### unsupported, we use decimal instead
     case LDECIMAL:
         m_item.setNum ( m_value );
