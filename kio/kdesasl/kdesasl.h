@@ -54,7 +54,7 @@ public:
   /*
    * You need to have a virtual destructor!
    */
-  ~KDESasl();
+  virtual ~KDESasl();
   /**
    * @returns the most secure method from the given methods and use it for
    * further operations.
