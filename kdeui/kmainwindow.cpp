@@ -184,7 +184,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d->settingsDirty = false;
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
-    d->kaccel = actionCollection()->accel();
+    d->kaccel = actionCollection()->kaccel();
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
