@@ -29,6 +29,8 @@ extern "C" {
 #include <mediatool.h>
 }
 #include "kaudio.h"
+#include "kaudio.moc"
+
 #ifdef HAVE_SYSENT_H
 #include <sysent.h>
 #endif
@@ -58,7 +60,7 @@ char *mystrdup(char *s)
   return tmp;
 }
 
-KAudio::KAudio()
+KAudio::KAudio() : QObject()
 {
   char		ServerId[256];
   char		KMServerCidFile[256];
@@ -69,6 +71,8 @@ KAudio::KAudio()
   ServerContacted = false;
   WAVname         = 0L;
   autosync        = false;
+  finishTimer     = 0;
+
 
   /*********************************************************************************
    * Read in audio player id (This is NOT a pid, but a communication connection id)
@@ -186,4 +190,38 @@ void KAudio::sync()
 int KAudio::serverStatus()
 {
   return !ServerContacted;
+}
+
+void KAudio::setSignals(bool sigs)
+{
+  if (sigs) {
+    if (!finishTimer) {
+      finishTimer = new QTimer(this);
+      connect   ( finishTimer, SIGNAL(timeout()), this , SLOT(checkFinished()) );
+      finishTimer->start(100);
+      currentId = KeysChunk->sync_id;
+    }
+  }
+  else {
+    if (finishTimer) {
+      disconnect( finishTimer );
+      finishTimer->stop();
+      delete finishTimer;
+      finishTimer = 0;
+    }
+  }
+}
+
+void KAudio::checkFinished()
+{
+  if ( StatChunk->sync_id == currentId ) {
+    // There is no point in emitting a signal now.
+    // Either we played no sound after setSignals(true) or we signalled already
+    return;
+  }
+  if ( StatChunk->sync_id == KeysChunk->sync_id ) {
+    emit playFinished();
+    // Copy the sync_id, so we see, that we have signalled the id already
+    currentId = KeysChunk->sync_id;
+  }
 }

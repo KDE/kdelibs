@@ -18,12 +18,19 @@
     Boston, MA 02111-1307, USA.
 */
 
+#ifndef KAUDIO_H
+#define KAUDIO_H
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-class KAudio
+#include <qobject.h>
+#include <qtimer.h>
+
+class KAudio : public QObject
 {
+  Q_OBJECT
 public:
   /// Create an Audio player
   KAudio();
@@ -35,6 +42,9 @@ public:
   bool setFilename(char *filename);
   /// If true is given, every play call is synced directly.
   void setAutosync(bool autosync);
+  /** If you want to recieve a Qt signal when your media is finished, you must
+      call setSignals(true) before you play your media. */
+  void setSignals(bool sigs=true);
   /// Stop current media
   bool stop();
   /** Sync media. This effectively blocks the calling process until the
@@ -44,6 +54,14 @@ public:
       creating a KAudio object */
   int  serverStatus();
 
+
+signals:
+  /** Signal gets emitted after current media has been finished.
+      This signal only gets emitted, if setSignals(true) was called before.
+      Do not forget to include this signal in your own derived class if you
+      want signals. */
+  void playFinished();
+
 private:
   bool		ServerContacted;
   bool		autosync;
@@ -52,4 +70,14 @@ private:
   MdCh_KEYS*	KeysChunk;
   MdCh_IHDR*	IhdrChunk;
   MdCh_STAT*	StatChunk;
+
+  QTimer        *finishTimer;
+  uint8		currentId;
+
+private slots:
+  /// Internal check for "finished play media", called upon finishTimer
+  void checkFinished();
 };
+
+#endif
+  

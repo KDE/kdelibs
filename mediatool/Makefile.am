@@ -22,11 +22,16 @@ lib_LTLIBRARIES = libmediatool.la
 # Programs to compile, Manpages to install and Versions
 #
 MEDIATOOLVERSION=	0.0
-MEDIATOOLPATCH	 =	6
-INCLUDES = -I../kdecore
+MEDIATOOLPATCH	 =	7
+INCLUDES = $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
 libmediatool_la_SOURCES = chunk.c eventcounter.c mediatypes.c tools.c \
 			connect.c filename.c playlist.c kaudio.cpp
 
 include_HEADERS= 	mediatool.h kaudio.h
 
-libmediatool_la_LDFLAGS = -version-info 0:6 
+libmediatool_la_LDFLAGS = -version-info 0:7
+
+kaudio.cpp: kaudio.moc
+
+kaudio.moc: kaudio.h
+	$(MOC) -o kaudio.moc kaudio.h
