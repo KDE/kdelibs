@@ -24,6 +24,7 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qdom.h>
+#include <qxml.h>
 
 #include <kinstance.h>
 #include <kstddirs.h>
@@ -145,7 +146,9 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
   QString file = _file;
   if ( file[0] != '/' )
   {
-    file = locate( "data", QString(instance()->instanceName())+"/"+file );
+  //    file = locate( "data", QString(instance()->instanceName())+"/"+file );
+    QString doc;
+    file = findMostRecentXMLFile( _file, doc );
     if ( file.isEmpty() )
     {
       // maybe the user hasn't installed the rc file or is just
@@ -159,6 +162,11 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
         setXML( QString::null, true );
         return;
       }
+    }
+    else if ( !doc.isEmpty() )
+    {
+      setXML( doc, merge );
+      return;
     }
   }
 
@@ -557,4 +565,162 @@ void KXMLGUIClient::unplugActionList( const QString &name )
     return;
 
   d->m_factory->unplugActionList( this, name );
+}
+
+class InternalXMLConsumer : public QXMLConsumer
+{
+public:
+  InternalXMLConsumer() 
+  {
+  }
+  virtual ~InternalXMLConsumer() {}
+
+  virtual bool tagStart( const QString& name )
+  {
+    static QString tagKPartGUI = QString::fromLatin1( "kpartgui" );
+    if ( name.lower() != tagKPartGUI )
+      return false;
+    return true;
+  } 
+  virtual bool tagEnd( const QString& )
+  {
+    // we are only interested in the very first tag
+    return false;
+  }
+  virtual bool attrib( const QString& name, const QString& value )
+  {
+    static QString attrVersion = QString::fromLatin1( "version" );
+    if ( name.lower() == attrVersion )
+    {
+      version = value;
+      return false; //ABORT ASAP
+    }
+    return true;
+  }
+  virtual bool text( const QString& )
+  {
+    return false;
+  }
+  virtual bool cdata( const QString& )
+  {
+    return false;
+  }
+  virtual bool entityRef( const QString& )
+  {
+    return true; // one never knows
+  }
+  virtual bool processingInstruction( const QString&, const QString& )
+  {
+    return true;
+  }
+  virtual bool doctype( const QString& )
+  {
+    return true; // ### we might check for kpartgui...
+  }
+  virtual bool doctypeExtern( const QString&, const QString& )
+  {
+    return true;
+  }
+  // virtual bool parameterEntityRef( const QString& name ) = 0;
+  virtual bool element( const QString& )
+  {
+    return true;
+  }
+  virtual bool attlist( const QString& )
+  {
+    return true;
+  }
+  virtual bool parameterEntity( const QString&, const QString&, const QString& )
+  {
+    return true;
+  }
+  virtual bool parameterEntity( const QString&, const QString& )
+  {
+    return true;
+  }
+  virtual bool entity( const QString&, const QString&, const QString&, const QString& )
+  {
+    return true;
+  }
+  virtual bool entity( const QString&, const QString& )
+  {
+    return true;
+  }
+  virtual bool notation( const QString&, const QString&, const QString& )
+  {
+    return true;
+  }
+  virtual void parseError( int, int, int )
+  {
+    // error? ;-)
+  }
+  virtual bool finished()
+  {
+    return false; // never reached, but one never knows ;-)
+  }
+
+  QString version;
+};
+
+QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &doc )
+{
+  QString filter  = QString::fromLatin1( QCString( instance()->instanceName() ) + "/" ) + fileName;
+  
+  QStringList allFiles = instance()->dirs()->findAllResources( "data", filter );
+  
+  QMap<QString,QString> allDocuments;
+  
+  QStringList::ConstIterator it = allFiles.begin();
+  QStringList::ConstIterator end = allFiles.end();
+  for (; it != end; ++it )
+  {
+    QString data = KXMLGUIFactory::readConfigFile( *it ); 
+    allDocuments.insert( *it, data );
+  }
+  
+  QMap<QString,QString>::ConstIterator best = allDocuments.end();
+  uint bestVersion = 0;
+  
+  QMap<QString,QString>::ConstIterator docIt = allDocuments.begin();
+  QMap<QString,QString>::ConstIterator docEnd = allDocuments.end();
+  for (; docIt != docEnd; ++docIt )
+  {
+    InternalXMLConsumer consumer;
+    QXMLSimpleParser parser;
+    parser.parse( docIt.data(), &consumer );
+    QString versionStr = consumer.version;
+    if ( versionStr.isEmpty() )
+      continue;
+
+    bool ok = false;
+    uint version = versionStr.toUInt( &ok );
+    if ( !ok )
+      continue;
+    
+    if ( version > bestVersion )
+    {
+      best = docIt;
+      bestVersion = version;
+    }
+  }
+  
+  if ( best != docEnd )
+  {
+    if ( best != allDocuments.begin() )
+    {
+      QString f = allDocuments.begin().key();
+      QString backup = f + ".backup";
+      QDir dir;
+      dir.rename( f, backup );
+    }
+    doc = best.data();
+    return best.key();
+  }
+  else if ( allFiles.count() > 0 )
+  {
+    doc = QString::null;
+    return ( *allFiles.begin() );
+  }
+    
+  return QString::null;
 }

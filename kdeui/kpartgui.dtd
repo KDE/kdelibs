@@ -14,6 +14,7 @@
 <!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | DefineGroup | MainWindow | StatusBar | Menu)*)>
 <!ATTLIST kpartgui
   name CDATA #REQUIRED
+  version CDATA #REQUIRED
   library CDATA #IMPLIED
 >
 

@@ -242,6 +242,8 @@ private:
   QDomElement findMatchingElement( const QDomElement &base,
                                    const QDomElement &additive );
 
+  QString findMostRecentXMLFile( const QString &fileName, QString &doc );
+
   KXMLGUIClientPrivate *d;
 };
 
