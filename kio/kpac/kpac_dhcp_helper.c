@@ -152,7 +152,7 @@ void get_reply(int sock, uint32_t xid)
 		switch (*offs++)
 		{
 			case DHCP_OPT_END:
-				break;
+				exit(1);
 			case DHCP_OPT_MSGTYPE:
 				if (*offs != 1 || (offs >= end - 1) || *(offs + 1) != DHCP_ACK)
 					exit(1);
