@@ -3,9 +3,11 @@
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ * with minor additions and based on ideas from
+ * Torsten Rahn <torsten@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
@@ -53,25 +55,33 @@ void KIconEffect::init()
 	// Default effects
 	mEffect[i][0] = NoEffect;
 	mEffect[i][1] = NoEffect;
-	mEffect[i][2] = SemiTransparent;
+	mEffect[i][2] = NoEffect;        
+	mTrans[i][0] = false;
+	mTrans[i][1] = false;
+	mTrans[i][2] = true;        
+        mValue[i][0] = 1.0;          
+        mValue[i][1] = 1.0;          
+        mValue[i][2] = 1.0;          
+
 	config->setGroup(*it + "Icons");
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
 	{
 	    QString tmp = config->readEntry(*it2 + "Effect");
 	    if (tmp == "togray")
 		effect = ToGray;
+	    else if (tmp == "colorize")
+		effect = Colorize;
 	    else if (tmp == "desaturate")
 		effect = DeSaturate;
-	    else if (tmp == "semitransparent")
-		effect = SemiTransparent;
-	    else if (tmp == "semigray")
-		effect = SemiGray;
-	    else if (tmp == "none")
+            else if (tmp == "none")
 		effect = NoEffect;
 	    else
 		continue;
 	    mEffect[i][j] = effect;
 	    mValue[i][j] = config->readDoubleNumEntry(*it2 + "Value");
+	    mColor[i][j] = config->readColorEntry(*it2 + "Color");
+	    mTrans[i][j] = config->readBoolEntry(*it2 + "SemiTransparent");
+
 	}
     }
 }
@@ -88,10 +98,11 @@ QImage KIconEffect::apply(QImage image, int group, int state)
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	return image;
     }
-    return apply(image, mEffect[group][state], mValue[group][state]);
+    return apply(image, mEffect[group][state], 
+    mValue[group][state],mColor[group][state], mTrans[group][state]);
 }
 
-QImage KIconEffect::apply(QImage image, int effect, float value)
+QImage KIconEffect::apply(QImage image, int effect, float value, QColor col, bool trans)
 {
     if (effect >= LastEffect )
     {
@@ -105,19 +116,19 @@ QImage KIconEffect::apply(QImage image, int effect, float value)
     switch (effect)
     {
     case ToGray:
-	toGray(image);
+	toGray(image, value);
 	break;
     case DeSaturate:
 	deSaturate(image, value);
 	break;
-    case SemiTransparent:
-	semiTransparent(image);
-	break;
-    case SemiGray:
-        toGray(image);                                                          
-	semiTransparent(image);
-	break;
+    case Colorize:
+        colorize(image, col, value);
+        break;
     }
+    if (trans == true) 
+    {
+    semiTransparent(image);  
+    } 
     return image;
 }
 
@@ -133,10 +144,10 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	return pixmap;
     }
-    return apply(pixmap, mEffect[group][state], mValue[group][state]);
+    return apply(pixmap, mEffect[group][state], mValue[group][state], mColor[group][state], mTrans[group][state]);
 }
-    
-QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value)
+
+QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value, const QColor col, bool trans)
 {
     QPixmap result;
     QImage tmpImg;
@@ -146,17 +157,16 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value)
 	kdDebug(264) << "Illegal icon effect: " << effect << "\n";
 	return result;
     }
-    switch (effect)
+    if (effect != NoEffect)  
     {
-    case SemiTransparent:
+	tmpImg = pixmap.convertToImage();
+	tmpImg = apply(tmpImg, effect, value, col, trans);
+	result.convertFromImage(tmpImg);
+    }
+    else if (trans == true) 
+    {
 	result = pixmap;
 	semiTransparent(result);
-	break;
-    default:
-	tmpImg = pixmap.convertToImage();
-	tmpImg = apply(tmpImg, effect, value);
-	result.convertFromImage(tmpImg);
-	break;
     }
     return result;
 }
@@ -164,19 +174,64 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value)
 // Taken from KImageEffect. We don't want to link kdecore to kdeui! As long
 // as this code is not too big, it doesn't seem much of a problem to me.
 
-void KIconEffect::toGray(QImage &img)
+void KIconEffect::toGray(QImage &img, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height() 
+    int pixels = (img.depth() > 8) ? img.width()*img.height()
 	    : img.numColors();
-    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits() 
+    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
 	    : (unsigned int *) img.colorTable();
-    int val, alpha, i;
+    int rval, gval, bval, val, alpha, i;
     for(i=0; i<pixels; i++)
     {
 	val = qGray(data[i]);
 	alpha = qAlpha(data[i]);
-	data[i] = qRgba(val, val, val, alpha);
-    }             
+	if (value < 1.0) 
+	{ 
+        rval = static_cast<int>(value*val+(1.0-value)*qRed(data[i]));
+        gval = static_cast<int>(value*val+(1.0-value)*qGreen(data[i]));
+        bval = static_cast<int>(value*val+(1.0-value)*qBlue(data[i]));
+	data[i] = qRgba(rval, gval, bval, alpha);
+	}
+        else data[i] = qRgba(val, val, val, alpha);
+    }
+}
+
+ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
+{
+    int pixels = (img.depth() > 8) ? img.width()*img.height()
+	    : img.numColors();
+    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
+	    : (unsigned int *) img.colorTable();
+    int rval, gval, bval, val, alpha, i;
+    float rcol, gcol, bcol;
+    for(i=0; i<pixels; i++)
+    {
+        rcol = col.red()+1;
+        gcol = col.green()+1;
+        bcol = col.blue()+1;
+        val = qGray(data[i])+1;
+        if (val <= 128)
+        {
+             rval = static_cast<int>(rcol/128*val-1);
+             gval = static_cast<int>(gcol/128*val-1);
+             bval = static_cast<int>(bcol/128*val-1);
+        }
+        else if (val > 128)
+        {
+             rval = static_cast<int>((val-128)*(2-rcol/128)+rcol-1);
+             gval = static_cast<int>((val-128)*(2-gcol/128)+gcol-1);
+             bval = static_cast<int>((val-128)*(2-bcol/128)+bcol-1);
+        }
+	if (value < 1.0) 
+	{ 
+        rval = static_cast<int>(value*rval+(1.0 - value)*qRed(data[i]));
+        gval = static_cast<int>(value*gval+(1.0 - value)*qGreen(data[i]));
+        bval = static_cast<int>(value*bval+(1.0 - value)*qBlue(data[i]));
+	}
+
+	alpha = qAlpha(data[i]);
+	data[i] = qRgba(rval, gval, bval, alpha);
+    }
 }
 
 void KIconEffect::deSaturate(QImage &img, float value)
@@ -293,7 +348,7 @@ QImage KIconEffect::doublePixels(QImage src)
 	    memcpy(dst.scanLine(y*2+1), l2, dst.bytesPerLine());
 	}
     } else
-    {	
+    {
 	for (x=0; x<src.numColors(); x++)
 	    dst.setColor(x, src.color(x));
 
