@@ -1149,7 +1149,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( mi->isSeparator() )
 			{
 				p->setPen( cg.shadow() );
-				p->drawLine( main.x() + 1, main.y(), main.width() - 1, main.y() );
+				p->drawLine( main.x() + 1, main.y() + 1, main.width() - 1, main.y() + 1 );
 				break;
 			}
 
@@ -1671,7 +1671,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			else if ( mi->widget() ) {
 			} else if ( mi->isSeparator() ) {
 				w = 10; // Arbitrary
-				h = 2;
+				h = 3;
 			}
 			else {
 				if ( mi->pixmap() )
