@@ -29,7 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qptrlist.h>
 #include <qvaluelist.h>
 #include <kdatastream.h> // needed for proper bool marshalling
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class DCOPClient;
 typedef QValueList<QCString> QCStringList;

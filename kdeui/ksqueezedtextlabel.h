@@ -21,7 +21,7 @@
 
 #include <qlabel.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * A label class that squeezes its text into the label

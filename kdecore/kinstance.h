@@ -29,7 +29,7 @@ class KMimeSourceFactory;
 class KSharedConfig;
 
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 
 /**

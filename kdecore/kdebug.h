@@ -23,7 +23,7 @@
 #define _KDEBUG_H_
 
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class QWidget;
 class QDateTime;

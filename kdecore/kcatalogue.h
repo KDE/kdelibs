@@ -21,7 +21,7 @@
 #define KCATALOGUE_H
 
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 struct kde_loaded_l10nfile;
 

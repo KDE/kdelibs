@@ -22,7 +22,7 @@ class QBitmap;
 #include <qbrush.h>
 #include <qwidget.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * KDualColorButton allows the user to select two cascaded colors (usually a

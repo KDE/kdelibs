@@ -21,7 +21,7 @@
 
 #include <qtextbrowser.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 // ### inherit KTextBrowser in KDE4
 

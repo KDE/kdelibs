@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 #include <qstring.h>
 #include <qmap.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  * Abstract base class for the worker classes behind the KMacroExpander namespace

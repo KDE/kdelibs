@@ -28,7 +28,7 @@
 #define KALLOCATOR_H
 
 #include <qvaluelist.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KZoneAllocatorPrivate;
 

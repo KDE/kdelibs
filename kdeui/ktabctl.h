@@ -27,7 +27,7 @@
 #include <qtabbar.h>
 #include <qmemarray.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Tabbed dialog with extended features.

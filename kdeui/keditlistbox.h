@@ -23,7 +23,7 @@
 #include <qgroupbox.h>
 #include <qlistbox.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class KLineEdit;
 class KComboBox;

@@ -35,7 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qcstring.h>
 #include <qstring.h>
 #include <qvaluelist.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KStartupInfoId;
 class KStartupInfoData;

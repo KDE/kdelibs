@@ -18,7 +18,7 @@
 #ifndef K_RANDOM_SEQUENCE_H
 #define K_RANDOM_SEQUENCE_H
 
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KRandomSequencePrivate;
 class QGList;

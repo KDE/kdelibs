@@ -21,7 +21,7 @@
 #include <qstring.h>
 #include <qcolor.h>
 #include <qfont.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 #define KDE_DEFAULT_SINGLECLICK true
 #define KDE_DEFAULT_INSERTTEAROFFHANDLES 0

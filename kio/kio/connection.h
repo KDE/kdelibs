@@ -22,7 +22,7 @@
 #ifndef __connection_h__
 #define __connection_h__
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 #include <sys/types.h>
 

@@ -23,7 +23,7 @@
 
 #include <qdatetime.h>
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KLocale;
 

@@ -26,7 +26,7 @@
 #include <qdatetime.h>
 #include <qcolor.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class KPopupMenu;
 

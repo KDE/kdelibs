@@ -26,7 +26,7 @@
 #include <qdom.h>
 #include <qvaluelist.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class KAction;
 class KXMLGUIFactoryPrivate;

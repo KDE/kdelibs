@@ -28,7 +28,7 @@ class KContextMenuManagerPrivate;
 #include <qptrdict.h>
 #include <qkeysequence.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
 @short Convenience class to mangage context menus

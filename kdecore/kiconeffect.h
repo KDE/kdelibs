@@ -19,7 +19,7 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qrect.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class QWidget;
 

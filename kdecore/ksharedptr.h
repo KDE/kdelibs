@@ -18,7 +18,7 @@
 #ifndef KSharedPTR_H
 #define KSharedPTR_H
 
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  * Reference counting for shared objects.  If you derive your object

@@ -23,7 +23,7 @@
 #include <qobject.h>
 #include <qcstring.h>
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /*
  * This file defines a class that envelopes most, if not all, socket addresses

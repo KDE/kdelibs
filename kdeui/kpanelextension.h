@@ -29,7 +29,7 @@ class KPanelExtensionPrivate;
 
 #include <qframe.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Implements a panel extension.

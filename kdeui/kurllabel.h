@@ -22,7 +22,7 @@
 
 #include <qlabel.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class QColor;
 class QCursor;

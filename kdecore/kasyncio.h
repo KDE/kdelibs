@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <qiodevice.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KAsyncIOPrivate;
 /**

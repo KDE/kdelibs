@@ -19,7 +19,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 #include <config.h>
 
 #ifndef HAVE_SETENV

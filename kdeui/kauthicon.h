@@ -23,7 +23,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class QHBoxLayout;
 class QLabel;

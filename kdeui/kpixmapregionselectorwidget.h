@@ -24,7 +24,7 @@
 #include <qrect.h>
 #include <qlabel.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * KPixmapRegionSelectorWidget is a widget that shows a picture and provides the

@@ -21,7 +21,7 @@
 #include <qcursor.h>
 #include <qiconview.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * This Widget extends the functionality of QIconView to honor the system

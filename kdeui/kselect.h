@@ -27,7 +27,7 @@
 #include <qrangecontrol.h>
 #include <qpixmap.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * KXYSelector is the base class for other widgets which

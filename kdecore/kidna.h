@@ -22,7 +22,7 @@
 #define _KIDNA_H
 
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 namespace KIDNA {
     /**

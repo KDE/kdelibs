@@ -22,7 +22,7 @@
 
 #include <qframe.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Standard horizontal or vertical separator.

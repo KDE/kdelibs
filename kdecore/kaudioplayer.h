@@ -24,7 +24,7 @@
 #define __KAUDIOPLAYER_H__
 
 #include <qobject.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KAudioPlayerPrivate;
 /**

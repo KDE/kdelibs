@@ -25,7 +25,7 @@
 
 #include <qwizard.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
 * General-purpose multi-page dialog.

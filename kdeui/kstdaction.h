@@ -30,7 +30,7 @@ class KToggleFullScreenAction;
 
 #include <qstringlist.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Convenience methods to access all standard KDE actions.

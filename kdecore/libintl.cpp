@@ -47,7 +47,7 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02111-1307, USA.  */
 
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 #include <config.h>
 
 #include <qglobal.h>

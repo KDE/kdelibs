@@ -18,7 +18,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KConfig;
 class KIconThemeDir;

@@ -22,7 +22,7 @@
 #ifndef _KDE_VERSION_H_
 #define _KDE_VERSION_H_
 
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 #define KDE_VERSION_STRING "3.3.89 (CVS >= 20040820)"
 #define KDE_VERSION_MAJOR 3

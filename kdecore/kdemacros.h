@@ -186,6 +186,6 @@
     virtual void reservedVirtual10() {} \
     RESERVE_VIRTUAL_9
 
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 #endif // _KDE_MACROS_H_

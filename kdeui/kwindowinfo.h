@@ -13,7 +13,7 @@
 #include <qpixmap.h>
 #include <qstring.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Displays messages in the window icon and title. The message is usually

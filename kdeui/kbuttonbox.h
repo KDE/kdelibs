@@ -20,7 +20,7 @@
 #ifndef __KBUTTONBOX__H__
 #define __KBUTTONBOX__H__
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 #include <qwidget.h>
 class QPushButton;

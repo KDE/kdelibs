@@ -23,7 +23,7 @@
 #define __KCRASH_H
 
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  * This class handles segmentation-faults.

@@ -24,7 +24,7 @@
 #define _KCURSOR_H
 
 #include <qcursor.h>
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class QWidget;
 

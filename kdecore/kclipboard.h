@@ -23,7 +23,7 @@
 #include <qmime.h>
 #include <qobject.h>
 #include <qstrlist.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  * This class is only for internal use.

@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KDELIBS_H
-#define _KDELIBS_H
+#ifndef _KDELIBS_EXPORT_H
+#define _KDELIBS_EXPORT_H
 
 /* needed, because e.g. Q_OS_UNIX is so frequently used */
 #include <qglobal.h>

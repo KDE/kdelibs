@@ -28,7 +28,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class QRegExp;
 class KFileItem;

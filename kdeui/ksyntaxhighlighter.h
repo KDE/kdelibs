@@ -29,7 +29,7 @@
 #include <qcolor.h>
 #include <qstringlist.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class QAccel;
 class QTimer;

@@ -25,7 +25,7 @@
 #include <qvalidator.h>
 #include <qstringlist.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /** 
  * This validator allows you to accept only certain or to accept all

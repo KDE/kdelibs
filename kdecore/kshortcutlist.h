@@ -22,7 +22,7 @@
 
 #include <qglobal.h>	// For uint
 #include <qstring.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class QVariant;
 class KConfigBase;

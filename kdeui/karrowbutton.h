@@ -21,7 +21,7 @@
 
 #include <qpushbutton.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class KArrowButtonPrivate;
 /**

@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 #include <time.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  * The KRFCDate class contains functions related to the parsing of dates.

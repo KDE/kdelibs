@@ -39,7 +39,7 @@
 #include <qglobal.h>
 #include <qstring.h>
 #include <qiodevice.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  * A wrapper class for the most commonly used encoding and

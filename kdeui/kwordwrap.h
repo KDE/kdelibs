@@ -24,7 +24,7 @@
 #include <qrect.h>
 #include <qstring.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Word-wrap algorithm that takes into account beautifulness ;)

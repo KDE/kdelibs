@@ -22,7 +22,7 @@
 
 #include <qtextbrowser.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * An extended QTextBrowser.

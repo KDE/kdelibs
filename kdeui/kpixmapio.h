@@ -11,7 +11,7 @@
 #ifndef __KPixmapIO_h_Included__
 #define __KPixmapIO_h_Included__
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class QPixmap;
 class QImage;

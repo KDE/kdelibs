@@ -20,7 +20,7 @@
 
 #include <qlistbox.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Extends the functionality of QListBox to honor the system

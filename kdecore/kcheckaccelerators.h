@@ -33,7 +33,7 @@
 class QMenuData;
 class QTextView;
 
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  @internal

@@ -23,7 +23,7 @@
 #include <qfont.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KGlobal;
 class KCharsetsPrivate;

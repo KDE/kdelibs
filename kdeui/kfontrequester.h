@@ -24,7 +24,7 @@
 #include <qfont.h>
 #include <qstring.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 class QLabel;
 class QPushButton;

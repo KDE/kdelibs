@@ -25,7 +25,7 @@ class QLayoutItem;
 
 #include <qdialog.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * Dialog with extended nonmodal support and methods for KDE standard

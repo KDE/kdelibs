@@ -22,7 +22,7 @@
 #include <qwidget.h>
 #include <qdatetime.h>
 
-#include <kdelibs.h>
+#include <kdelibs_export.h>
 
 /**
  * This widget can be used to display or allow user selection of date and time.

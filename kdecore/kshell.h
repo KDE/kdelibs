@@ -23,7 +23,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 /**
  * \namespace KShell

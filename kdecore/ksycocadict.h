@@ -22,7 +22,7 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qdatastream.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class KSycocaEntry;
 class KSycocaDictStringList;

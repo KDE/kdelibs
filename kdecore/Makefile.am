@@ -55,7 +55,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdemacros.h \
-	kdelibs.h
+	kdelibs_export.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2

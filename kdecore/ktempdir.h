@@ -23,7 +23,7 @@
 #include <qstring.h>
 #include <stdio.h>
 #include <errno.h>
-#include "kdelibs.h"
+#include "kdelibs_export.h"
 
 class QDir;
 class KTempDirPrivate;
