@@ -3,11 +3,11 @@
 #
 # see: dh_installdeb(1)
 
+set -e
+
 case "$1" in
        purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-       if [ -e /usr/share/doc/kde/HTML/default ]; then
          rm -f /usr/share/doc/kde/HTML/default
-       fi
         ;;
 
     *)

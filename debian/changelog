@@ -1,3 +1,10 @@
+kdelibs (4:2.1.2-5) unstable; urgency=low
+ 
+  * removing the if's before so that we rm the link even if it's a 
+    dangling link (Closes: #98910)
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 30 May 2001 02:06:00 -0700
+
 kdelibs (4:2.1.2-3) unstable; urgency=low
  
   * Hopefully fix libtool problems with arm/m68k by adding those to the
