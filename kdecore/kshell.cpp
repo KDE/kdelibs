@@ -38,7 +38,7 @@ static int fromHex( QChar c )
     return -1;
 }
 
-inline bool isQuoteMeta( uint c )
+inline static bool isQuoteMeta( uint c )
 {
 #if 0 // it's not worth it, especially after seeing gcc's asm output ...
     static const uchar iqm[] = {
@@ -52,7 +52,7 @@ inline bool isQuoteMeta( uint c )
 #endif
 }
 
-inline bool isMeta( uint c )
+inline static bool isMeta( uint c )
 {
     static const uchar iqm[] = {
         0x00, 0x00, 0x00, 0x00, 0xdc, 0x07, 0x00, 0xd8,
