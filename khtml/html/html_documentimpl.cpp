@@ -420,6 +420,7 @@ int HTMLDocumentImpl::findHighestTabIndex()
 	  if (tmpval>retval)
 	    retval=tmpval;
 	}
+
       //iterate to next element.
       if (n->firstChild())
 	n=n->firstChild();
@@ -427,11 +428,15 @@ int HTMLDocumentImpl::findHighestTabIndex()
 	n=n->nextSibling();
       else
 	{
+	  next=0;
 	  while(!next)
 	    {
 	      n=n->parentNode();
 	      if (!n)
-		return retval;
+		{
+		  kdDebug(6000) << "highest tabindex:" << retval << "\n";
+		  return retval;
+		}
 	      next=n->nextSibling();
 	    }
 	  n=next;
@@ -439,4 +444,3 @@ int HTMLDocumentImpl::findHighestTabIndex()
     }
   return retval;
 }
-

@@ -319,6 +319,7 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
     href = 0;
     target = 0;
     shape = Unknown;
+    has_tabindex=false;
 
      DOMString indexstring=((HTMLElementImpl*)this)->getAttribute(ATTR_TABINDEX);
      if (indexstring.length()) {
@@ -364,6 +365,7 @@ void HTMLAreaElementImpl::setTabIndex( long _tabindex )
 
 void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
 {
+    DOMString indexstring;
     switch (attr->attrId)
     {
     case ATTR_SHAPE:
@@ -392,6 +394,15 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ALT:
 	break;
     case ATTR_TABINDEX:
+        indexstring=((HTMLElementImpl*)this)->getAttribute(ATTR_TABINDEX);
+        if (indexstring.length()) {
+	  has_tabindex=true;
+	  tabindex=atoi(indexstring.string().latin1());
+	} else {
+	  has_tabindex=false;
+	  tabindex=0;
+	}
+	has_tabindex=true;
 	break;	
     case ATTR_ACCESSKEY:
 	break;	
