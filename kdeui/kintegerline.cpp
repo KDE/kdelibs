@@ -49,7 +49,7 @@ KIntegerLine::KIntegerLine( QWidget *parent,
       break;
     }
 
-  connect( this, SIGNAL( textChanged( const char* ) ),
+  connect( this, SIGNAL( textChanged( const QString & ) ),
 		   this, SLOT( internalValueChanged() ) );
 }
 
