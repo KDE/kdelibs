@@ -69,6 +69,9 @@ QCursor KCursor::handCursor()
                         QBitmap hand_bitmap(22, 22, HAND_BITS, true);
                         QBitmap hand_mask(22, 22, HAND_MASK_BITS, true);
                         hand_cursor = new QCursor(hand_bitmap, hand_mask, 7, 0);
+                        // Hack to force QCursor to call XCreatePixmapCursor() immediately
+                        // so the bitmaps don't get pushed out of the Xcursor LRU cache.
+                        hand_cursor->handle();
                 }
                 else
                         hand_cursor = new QCursor(PointingHandCursor);
@@ -126,6 +129,9 @@ QCursor KCursor::workingCursor()
         {
             QPixmap pm( const_cast< const char** >( working_cursor_xpm ));
             working_cursor = new QCursor( pm, 1, 1 );
+            // Hack to force QCursor to call XCreatePixmapCursor() immediately
+            // so the bitmaps don't get pushed out of the Xcursor LRU cache.
+            working_cursor->handle();
         }
 
         Q_CHECK_PTR(working_cursor);
