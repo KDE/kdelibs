@@ -2578,7 +2578,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 			d->m_caretViewContext->height);
 	}/*end if*/
 //	if (d->m_caretViewContext->visible) cout << "|" << flush;
-//	else cout << "°" << flush;
+//	else cout << "" << flush;
 	return;
     }
 #endif
@@ -3179,6 +3179,11 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   long r_ofs;
   CaretBoxIterator cbit;
   CaretBoxLine *cbl = findCaretBoxLine(node, offset, &cblDeleter, base, r_ofs, cbit);
+  if(!cbl) {
+      kdWarning() << "KHTMLView::moveCaretTo - findCaretBoxLine() returns NULL" << endl;
+      return false;
+  }
+
 #if DEBUG_CARETMODE > 3
   if (cbl) kdDebug(6200) << cbl->information() << endl;
 #endif
