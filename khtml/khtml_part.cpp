@@ -1853,17 +1853,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
 
   m_url = url;
-  KURL baseurl;
-
-  if ( !m_url.isEmpty() )
-  {
-    KURL title( baseurl );
-    title.setRef( QString::null );
-    title.setQuery( QString::null );
-    emit setWindowCaption( title.prettyURL() );
-  }
-  else
-    emit setWindowCaption( i18n( "[Untitled]" ) );
 
   bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
   bool servedAsXML = KMimeType::mimeType(args.serviceType)->is( "text/xml" );
@@ -1883,9 +1872,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->setURL( m_url.url() );
   if (!d->m_doc->attached())
     d->m_doc->attach( );
-  // We prefer m_baseURL over m_url because m_url changes when we are
-  // about to load a new page.
-  d->m_doc->setBaseURL( baseurl );
+  d->m_doc->setBaseURL( KURL() );
   d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
   emit docCreated();
 
