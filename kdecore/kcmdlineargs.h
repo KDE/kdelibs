@@ -634,6 +634,7 @@ private:
   static bool parsed; // Whether we have parsed the arguments since calling init
   static bool ignoreUnknown; // Ignore unknown options and arguments
   static char *mCwd; // Current working directory. Important for KUnqiueApp!
+  static bool parseArgs;
 
   KCmdLineArgsPrivate *d;
 };

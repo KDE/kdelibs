@@ -113,6 +113,7 @@ static KStaticDeleter <char> mCwdd;
 const KAboutData *KCmdLineArgs::about = 0;
 bool KCmdLineArgs::parsed = false;
 bool KCmdLineArgs::ignoreUnknown = false;
+bool KCmdLineArgs::parseArgs = true;
 
 //
 // Static functions
@@ -160,8 +161,9 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
    assert( about == 0 );	// Don't call init twice.
    argc = _argc;
    argv = _argv;
+   parseArgs = !noKApp;
 
-   if (!argv)
+   if (!argv && parseArgs)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
       fprintf(stderr, "Passing null-pointer to 'argv' is not allowed.\n\n");
@@ -298,6 +300,9 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
 KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
 {
+   if (!parseArgs)
+	   return 0;
+
    KCmdLineArgs *args = argsList ? argsList->first() : 0;
    while(args)
    {
@@ -647,6 +652,9 @@ KCmdLineArgs::parseAllArgs()
 int *
 KCmdLineArgs::qt_argc()
 {
+   if (!parseArgs)
+	   return &argc;
+
    if (!argsList)
       KApplication::addCmdLineOptions(); // Lazy bastards!
 
@@ -675,6 +683,9 @@ KCmdLineArgs::qt_argc()
 char ***
 KCmdLineArgs::qt_argv()
 {
+   if (!parseArgs)
+	   return &argv;
+
    if (!argsList)
       KApplication::addCmdLineOptions(); // Lazy bastards!
 
@@ -1098,6 +1109,9 @@ KCmdLineArgs::getOptionList(const char *_opt) const
 bool
 KCmdLineArgs::isSet(const char *_opt) const
 {
+   if (!parseArgs)
+	   return false;
+
    // Look up the default.
    const char *opt_name;
    const char *def;
