@@ -201,7 +201,7 @@ AC_SUBST(EXTRA_SUBDIRS)
 
 AC_MSG_CHECKING(if sendfile() is wanted)
 AC_ARG_ENABLE(sendfile,
-[  --enable-sendfile       enable the use of sendfile() (Linux only)],
+AC_HELP_STRING([--enable-sendfile],[enable the use of sendfile() (Linux only)]),
 [if test "$enableval" = yes; then
   AC_MSG_RESULT(yes)
   want_sendfile="yes"
@@ -216,7 +216,7 @@ fi
 
 AC_MSG_CHECKING(if MIT-SHM support is wanted)
 AC_ARG_ENABLE(mitshm,
-[  --enable-mitshm         use MIT-SHM for pixmap loading/saving],
+AC_HELP_STRING([--enable-mitshm],[use MIT-SHM for pixmap loading/saving]),
 [if test "$enableval" = yes; then
   AC_MSG_RESULT(yes)
   want_mitshm="yes"
@@ -233,7 +233,7 @@ dnl begin check for --enable-qtonly
 AC_MSG_CHECKING(if K_WS_QTONLY is wanted)
 
 AC_ARG_ENABLE(qtonly,
-[  --enable-qtonly         use only qt-dependent functions even under X11],
+AC_HELP_STRING([--enable-qtonly],[use only qt-dependent functions even under X11]),
 [if test "$enableval" = yes; then
   AC_MSG_RESULT(yes)
   AC_DEFINE(K_WS_QTONLY,1,[Define if you want qt-only stuff under X11])
@@ -323,7 +323,7 @@ AC_MSG_RESULT($uname_string)
 
 AC_MSG_CHECKING([for distribution channel])
 AC_ARG_WITH(distribution,
-[  --with-distribution     indicate the distribution in bug reports],
+AC_HELP_STRING([--with-distribution],[indicate the distribution in bug reports]),
 [kde_distribution_text="$withval"
 ], [kde_distribution_text='compiled sources'])
 AC_DEFINE_UNQUOTED(KDE_DISTRIBUTION_TEXT, "$kde_distribution_text", [Distribution Text to append to OS])
