@@ -20,7 +20,9 @@ INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl $(all_includes)
 
 SUBDIRS = . klauncher kded file http ftp tests
 
-lib_LTLIBRARIES = libkio.la libksycoca.la #libkioslave.la
+lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la
+bin_PROGRAMS = kio_uiserver
+
 #libkioslave_la_LDFLAGS = -version-info 3:0
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la
 #libkioslave_la_SOURCES = slavebase.cpp connection.cpp passdlg.cpp
@@ -66,10 +68,14 @@ libkio_la_SOURCES = \
 
 #listprogressdlg.cpp
 
-bin_PROGRAMS = kio_uiserver
-kio_uiserver_SOURCES = uiserver.cpp uiserver.skel
-kio_uiserver_LDADD = libkio.la
-kio_uiserver_LDFLAGS = $(all_libraries)
+
+kio_uiserver_SOURCES = dummy.cc
+kio_uiserver_LDADD = kio_uiserver.la
+kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+
+kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel
+kio_uiserver_la_LIBADD = libkio.la
+kio_uiserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
 METASOURCES = AUTO
 
@@ -96,6 +102,9 @@ kde_services_DATA = kio_uiserver.desktop
 parserfiles = yacc.y lex.l
 
 EXTRA_DIST = $(kde_mime_DATA) $(parserfiles)
+
+dummy.cc:
+	echo > dummy.cc
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\
