@@ -37,6 +37,7 @@ class KStdAccel //: public KKeyConfig
 {
 public:
   KStdAccel(KConfig* cfg = 0);
+  ~KStdAccel();
 
   /** Open file. Default: Ctrl-o */
   uint open(void) const;

@@ -27,12 +27,17 @@ KStdAccel::KStdAccel(KConfig* /* cfg */) //: KKeyConfig(cfg)
   config->setGroup("Keys");
 }
 
+KStdAccel::~KStdAccel()
+{
+    delete config;
+}
+
 uint KStdAccel::readKey(KAccel::StdAccel accel, uint defaultKey) const
 {
   QString s = config->readEntry(KAccel::stdAction(accel));
   int v = stringToKey(s.data());
   return v?v:defaultKey;
-  
+
 }
 
 uint KStdAccel::open(void) const
