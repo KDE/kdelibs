@@ -94,6 +94,10 @@ class KDialog : public QDialog
      * Centers @p widget on the desktop, taking multi-head setups into 
      * account. If @p screen is -1, @p widget will be centered on its
      * current screen (if it was shown already) or on the primary screen.
+     * If @p screen is -3, @p widget will be centered on the screen that
+     * currently contains the mouse pointer.
+     * @p screen will be ignored if a merged display (like Xinerama) is not
+     * in use, or merged display placement is not enabled in kdeglobals.
      * @since 3.1
      */
     static void centerOnScreen( QWidget *widget, int screen = -1 );

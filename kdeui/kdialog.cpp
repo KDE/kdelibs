@@ -18,18 +18,20 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include <kconfig.h>
+#include <kapplication.h>
+#include <kdialog.h>
+#include <kdebug.h>
+#include <kstaticdeleter.h>
+
 #include <qlayout.h>
 #include <qobjectlist.h>
 #include <qguardedptr.h>
 #include <qlineedit.h>
 #include <qvaluelist.h>
 #include <qtimer.h>
+#include <qcursor.h>
 #include <netwm.h>
-
-#include <kapplication.h>
-#include <kdialog.h>
-#include <kdebug.h>
-#include <kstaticdeleter.h>
 
 int KDialog::mMarginSize = 11;
 int KDialog::mSpacingSize = 6;
@@ -173,14 +175,26 @@ void KDialog::centerOnScreen( QWidget *w, int screen )
     return;
 
   QDesktopWidget *desktop = QApplication::desktop();
-  if ( screen < 0 || screen < desktop->numScreens() )
-  {
-    screen = desktop->screenNumber( w );
-    if ( screen == -1 )
-      screen = desktop->primaryScreen();
+  QRect r;
+  KConfig gc("kdeglobals", false, false);
+  gc.setGroup("Windows");
+  if (desktop->isVirtualDesktop() &&
+      gc.readBoolEntry("XineramaEnabled", true) &&
+      gc.readBoolEntry("XineramaPlacementEnabled", true)) {
+    if ( screen < 0 || screen >= desktop->numScreens() ) {
+      if ( screen == -1 ) {
+        screen = desktop->primaryScreen();
+      } else if ( screen == -3 ) {
+        screen = desktop->screenNumber( QCursor::pos() );
+      } else {
+        screen = desktop->screenNumber( w );
+      }
+    }
+    r = desktop->screenGeometry(screen);
+  } else {
+    r = desktop->geometry();
   }
 
-  QRect r = desktop->screenGeometry( screen );
   w->move( r.center().x() - w->width()/2,
            r.center().y() - w->height()/2 );
 }
