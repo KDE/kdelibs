@@ -563,6 +563,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
         }
         co = widgetlist->next();
       }
+      delete widgetlist;
     }
 #else
     // FIXME(E): Implement in Qt Embedded
