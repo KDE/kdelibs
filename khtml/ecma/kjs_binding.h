@@ -23,6 +23,8 @@
 #define _KJS_BINDING_H_
 
 #include <kjs/interpreter.h>
+#include <kjs/function_object.h> /// for FunctionPrototypeImp
+
 #include <dom/dom_node.h>
 #include <qvariant.h>
 #include <qptrdict.h>
@@ -59,9 +61,11 @@ namespace KJS {
    * tryGet() and tryCall() respectively, and catch exceptions if they
    * occur.
    */
-  class DOMFunction : public ObjectImp {
+  class DOMFunction : public InternalFunctionImp {
   public:
-    DOMFunction() : ObjectImp( /* proto? */ ) {}
+    DOMFunction(ExecState* exec) : InternalFunctionImp(
+      static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+      ) {}
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const
       { return ObjectImp::get(exec, propertyName); }
@@ -72,8 +76,6 @@ namespace KJS {
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args)
       { return ObjectImp::call(exec, thisObj, args); }
     virtual bool toBoolean(ExecState *) const { return true; }
-    virtual Value toPrimitive(ExecState *exec, Type) const { return String(toString(exec)); }
-    virtual UString toString(ExecState *) const { return UString("[function]"); }
   };
 
   /**
@@ -176,8 +178,9 @@ namespace KJS {
     if (!entry) // not found, forward to parent
       return thisObj->ParentImp::tryGet(exec, propertyName);
 
-    if (entry->attr & Function)
+    if (entry->attr & Function) {
       return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
+    }
     return thisObj->getValueProperty(exec, entry->value);
   }
 
@@ -230,7 +233,7 @@ namespace KJS {
   class ClassFunc : public DOMFunction { \
   public: \
     ClassFunc(ExecState *exec, int i, int len) \
-       : DOMFunction( /*proto? */ ), id(i) { \
+       : DOMFunction( exec ), id(i) { \
        Value protect(this); \
        put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
     } \

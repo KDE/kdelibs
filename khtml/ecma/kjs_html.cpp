@@ -2105,7 +2105,7 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
 }
 
 HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
-  : DOMFunction(), id(i)
+  : DOMFunction(exec), id(i)
 {
   Value protect(this);
   put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
