@@ -325,14 +325,10 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
             break;
         }
 
-        s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
+        s = si < (int) m_lines.count()-1 ? m_lines[++si] : 0;
     }
 
-    bool oldinside = mouseInside();
     setMouseInside(inside);
-// don't need this, no DOM Element associated with us
-//     if (mouseInside() != oldinside && element())
-//         element()->setChanged();
 
     return inside;
 }

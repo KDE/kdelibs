@@ -1,7 +1,9 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Antti Koivisto (koivisto@kde.org)
+ * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ *           (C) 2000 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -142,7 +144,7 @@ struct LengthBox
     LengthBox()
     {
     }
-    LengthBox( LengthType t ) 
+    LengthBox( LengthType t )
 	: left( t ), right ( t ), top( t ), bottom( t ) {}
 
     Length left;
@@ -358,7 +360,7 @@ public:
     StyleBackgroundData(const StyleBackgroundData& o );
 
     bool operator==(const StyleBackgroundData& o) const;
-    bool operator!=(const StyleBackgroundData &o) const { 
+    bool operator!=(const StyleBackgroundData &o) const {
 	return !(*this == o);
     }
 
@@ -408,8 +410,8 @@ public:
     StyleInheritedData(const StyleInheritedData& o );
 
     bool operator==(const StyleInheritedData& o) const;
-    bool operator != ( const StyleInheritedData &o ) const { 
-	return !(*this == o); 
+    bool operator != ( const StyleInheritedData &o ) const {
+	return !(*this == o);
     }
 
     Length indent;
@@ -467,7 +469,7 @@ enum ContentType {
 struct ContentData {
     ~ContentData();
     void clearContent();
-    
+
     ContentType _contentType;
 
     union {
@@ -616,7 +618,7 @@ protected:
 	noninherited_flags._jsClipMode = false;
 	noninherited_flags._unicodeBidi = UBNormal;
     }
-    
+
 public:
 
     RenderStyle();
