@@ -1357,12 +1357,13 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
 {
 #ifndef NDEBUG
     char errstr[256];
+    // kdeinit almost doesn't use X, and therefore there shouldn't be any X error
     XGetErrorText( dpy, err->error_code, errstr, 256 );
-    if ( err->error_code != BadWindow )
-    {
-        fprintf(stderr, "kdeinit: KDE detected X Error: %s %d\n", errstr, err->error_code );
-        fprintf(stderr, "  Major opcode:  %d\n", err->request_code);
-    }
+    fprintf(stderr, "kdeinit: KDE detected X Error: %s %d\n"
+                    "         Major opcode: %d\n"
+                    "         Minor opcode: %d\n"
+                    "         Resource id:  0x%lx\n",
+            errstr, err->error_code, err->request_code, err->minor_code, err->resourceid );
 #else
     Q_UNUSED(dpy);
     Q_UNUSED(err);
@@ -1372,14 +1373,19 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
 
 
 #ifdef Q_WS_X11
+// needs to be done sooner than initXconnection() because of also opening
+// another X connection for startup notification purposes
+static void setupX()
+{
+    XSetIOErrorHandler(kdeinit_xio_errhandler);
+    XSetErrorHandler(kdeinit_x_errhandler);
+}
+
 // Borrowed from kdebase/kaudio/kaudioserver.cpp
 static int initXconnection()
 {
   X11display = XOpenDisplay(NULL);
   if ( X11display != 0 ) {
-    XSetIOErrorHandler(kdeinit_xio_errhandler);
-    XSetErrorHandler(kdeinit_x_errhandler);
-     
     XCreateSimpleWindow(X11display, DefaultRootWindow(X11display), 0,0,1,1, \
         0,
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
@@ -1513,6 +1519,7 @@ int main(int argc, char **argv, char **envp)
    d.lt_dlopen_flag = lt_dlopen_flag;
    lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
+   setupX();
 
    if (keep_running)
    {
