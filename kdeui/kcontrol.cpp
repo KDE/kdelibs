@@ -111,7 +111,8 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
 
 void KControlApplication::setTitle(const char *title)
 {
-    dialog->setCaption(title);
+    if (dialog)
+	dialog->setCaption(title);
 }
 
 KControlApplication::~KControlApplication()
