@@ -276,7 +276,7 @@ KMdiMainFrm::~KMdiMainFrm()
     {
        closeWindow(*childIt, false); // without re-layout taskbar!
     }
-   
+
    emit lastChildViewClosed();
    delete m_pDocumentViews;
    delete m_pToolViews;
@@ -416,7 +416,6 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags, int index)
    QObject::connect( pWnd, SIGNAL(clickedInDockMenu(int)), this, SLOT(dockMenuItemActivated(int)) );
    connect(pWnd,SIGNAL(activated(KMdiChildView*)),this,SIGNAL(viewActivated(KMdiChildView*)));
    connect(pWnd,SIGNAL(deactivated(KMdiChildView*)),this,SIGNAL(viewDeactivated(KMdiChildView*)));
-   m_pDocumentViews->append(pWnd);
    if (m_pTaskBar) {
       KMdiTaskBarButton* but = m_pTaskBar->addWinButton(pWnd);
       QObject::connect( pWnd, SIGNAL(tabCaptionChanged(const QString&)), but, SLOT(setNewText(const QString&)) );
@@ -445,7 +444,7 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags, int index)
     //      const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
 
     m_documentTabWidget->insertTab(pWnd, pWnd->icon() ? *(pWnd->icon()) : QPixmap(),pWnd->tabCaption(), index);
-    
+
     /*
        connect(pWnd,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
        m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
@@ -798,6 +797,7 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
 {
    if (!pWnd) return;
    //Closes a child window. sends no close event : simply deletes it
+   // very inefficient for big lists
    m_pDocumentViews->removeRef(pWnd);
    if (m_pDocumentViews->count() == 0)
       m_pCurrentWindow = 0L;
@@ -853,7 +853,6 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
   } else if (pWnd->isAttached()) {
     m_pMdi->destroyChild(pWnd->mdiParent());
   } else {
-    delete pWnd;
     // is not attached
     if (m_pMdi->getVisibleChildCount() > 0) {
       setActiveWindow();
@@ -874,6 +873,7 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
     }
   }
 
+    delete pWnd;
    if (!m_pCurrentWindow)
       emit lastChildViewClosed();
 }
@@ -1119,8 +1119,8 @@ void KMdiMainFrm::closeAllViews()
   QValueListIterator<KMdiChildView *> childIt;
   for (childIt = children.begin(); childIt != children.end(); ++childIt)
   {
-     (*childIt)->close(); 
-  } 
+     (*childIt)->close();
+  }
 }
 
 
@@ -1610,7 +1610,7 @@ void KMdiMainFrm::setIDEAlModeStyle(int flags)
 void KMdiMainFrm::setToolviewStyle(int flag)
 {
   if (m_mdiMode != KMdi::ChildframeMode && m_mdiMode != KMdi::TabPageMode)
-    return;    
+    return;
   kdDebug(24000) << flag << endl;
   d->m_toolviewStyle = flag;
   QMap<QWidget*,KMdiToolViewAccessor*>::Iterator it;
@@ -1620,19 +1620,19 @@ void KMdiMainFrm::setToolviewStyle(int flag)
       if (flag == KMdi::IconOnly)
       {
         dockWidget->setTabPageLabel(" ");
-        dockWidget->setPixmap(*(it.data()->wrappedWidget()->icon()));   
+        dockWidget->setPixmap(*(it.data()->wrappedWidget()->icon()));
       } else
       if (flag == KMdi::TextOnly)
       {
-        dockWidget->setPixmap();   
+        dockWidget->setPixmap();
         dockWidget->setTabPageLabel(it.data()->wrappedWidget()->caption());
       }	else
       if (flag == KMdi::TextAndIcon)
       {
-        dockWidget->setPixmap(*(it.data()->wrappedWidget()->icon()));   
+        dockWidget->setPixmap(*(it.data()->wrappedWidget()->icon()));
         dockWidget->setTabPageLabel(it.data()->wrappedWidget()->caption());
-      }	
-    }	
+      }
+    }
   }
   writeDockConfig();
   readDockConfig();
@@ -2598,14 +2598,14 @@ void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
       d->activeDockPriority[3]=0;
       break;
     }
-  }    
-/*    
+  }
+/*
     if (d->activeDockPriority[0]==0) {
         if (d->focusList) d->focusList->restore();
         delete d->focusList;
         d->focusList=0;
     }
-*/    
+*/
 }
 
 void KMdiMainFrm::prevToolViewInDock() {
