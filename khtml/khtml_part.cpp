@@ -744,6 +744,8 @@ bool KHTMLPart::closeURL()
 
     if ( hdoc->body() && d->m_bLoadEventEmitted ) {
       hdoc->body()->dispatchWindowEvent( EventImpl::UNLOAD_EVENT, false, false );
+      if ( d->m_doc )
+        d->m_doc->updateRendering();
       d->m_bLoadEventEmitted = false;
     }
   }
@@ -872,7 +874,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   //kdDebug(6050) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
   KJSProxy *proxy = jScript();
 
-  kdDebug(6070) << "executeScript: " << script.latin1() << endl;
+  //kdDebug(6070) << "executeScript: " << script.latin1() << endl;
 
   if (!proxy)
     return QVariant();
@@ -1705,8 +1707,11 @@ void KHTMLPart::emitLoadEvent()
   if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
     HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
 
-    if ( hdoc->body() )
-        hdoc->body()->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
+    if ( hdoc->body() ) {
+      hdoc->body()->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
+      if ( d->m_doc )
+        d->m_doc->updateRendering();
+    }
   }
 }
 
