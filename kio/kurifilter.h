@@ -45,17 +45,17 @@ class KCModule;
 *   KURIFilterData d = text;
 *   bool filtered = KURIFilter::self()->filter( d );
 *   if( filtered )
-*     print ( "URI : %s\n"Filtered URI : %s\n URI Type : %i\n"Was Filtered :%i"
+*     print ( "URI : %s\n"Filtered URI : %s\n URI Type : %i\n"Was Filtered : %i"
 *             text.latin1(), d.uri().url().latin1(), d.uriType(), d.hasBeenFiltered() );
 * </pre>
 *
-* The above code should give the following result:
+* The above code would yield the following output:
 *
 * <pre>
-*   kde.org
-*   http://kde.org
-*   0 <== which would be NET_PROTOCOL
-*   1 <== which means the url has been filtered
+*   URI : kde.org
+*   Filtered URI : http://kde.org
+*   URI Type : 0            <== means NET_PROTOCOL
+*   Was Filtered : 1        <== means the url has been filtered
 * </pre>
 *
 * @short A message object for exchanging filtering URI info.
@@ -423,7 +423,7 @@ private:
  * </pre>
  *
  * KURIFilter also allows richer data exchange through a simple
- * object called @p KURIFilterData.  Using this message object
+ * meta-object called @p KURIFilterData.  Using this meta-object
  * you can find out more information about the URL you want to
  * filter.  See @ref KURIFilterData for examples and details.
  *
