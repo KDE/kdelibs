@@ -68,7 +68,7 @@ typedef struct
 } MdPlaylist;
 
 MdPlaylist* PlaylistNew(void);
-struct MdPlayItem* PlaylistAdd( MdPlaylist* Playlist, char *fileURL, int32 pos );
+struct MdPlayItem* PlaylistAdd( MdPlaylist* Playlist, const char *fileURL, int32 pos );
 void PlaylistShow( MdPlaylist* Playlist );
 
 

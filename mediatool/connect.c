@@ -27,7 +27,6 @@
 #include <sys/ipc.h>
 #include "mediatool.h"
 #include "chunk.h"
-#include "tools.h"
 
 #define MAX_CONN 100 /* Lets be safe in the development phase */
 
@@ -174,7 +173,7 @@ void MdConnectNew(MediaCon *mcon)
 {
   char	        *tmpadr, *StartAdr;
   struct stat	finfo;
-  int		ret, ref, num, newRefnum;
+  int		ret, ref, newRefnum;
   FILE		*fid;
   MdCh_IHDR	HeadChunk;
   MdCh_KEYS	KeysChunk;
@@ -288,7 +287,7 @@ void MdConnectNew(MediaCon *mcon)
    */
 
 
-  num=MediatypesInit();
+/*  num=MediatypesInit(); */
 /*  fprintf(stderr,"There are %i known media types.\n", num); */
 
   /* Only if everything went well, I will fill out the MediaCon structure */
@@ -397,7 +396,7 @@ void GetShmAdrByRef(int shm_talkid, char **shm_adr)
   *shm_adr = shmat ( shm_talkid , NULL, 0 );
   if ( (*shm_adr) == (char*)-1 )
     {
-      LogError("Could not attach shm.\n");
+      LogError("Warning: Could not attach SHM.\n");
       	*shm_adr=NULL;
       return;
     }

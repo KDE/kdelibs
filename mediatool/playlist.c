@@ -21,7 +21,6 @@
 #include <string.h>
 
 #include "mediatool.h"
-#include "tools.h"
 
 
 /* Define the "empty" item. Item, Prev and Next are NULL. */
@@ -91,10 +90,11 @@ MdPlaylist* PlaylistNew(void)
  * out:		Pointer to the item created, or NULL if it could not be created.
  *
  *****************************************************************************/
-struct MdPlayItem* PlaylistAdd( MdPlaylist* Playlist, char *fileURL, int32 pos )
+struct MdPlayItem* PlaylistAdd( MdPlaylist* Playlist, const char *fileURL, int32 pos )
 {
   struct MdPlayItem	*tmpItem, *newItem;
   int32			tmp_pos;
+  char* myCopy;
 
   /* Check for existance of playlist */
   if ( !Playlist ) return NULL;
@@ -109,7 +109,9 @@ struct MdPlayItem* PlaylistAdd( MdPlaylist* Playlist, char *fileURL, int32 pos )
       /* Special case: Empty playlist */
       newItem->Next       = NULL;
       newItem->Prev       = NULL;    
-      newItem->Item       = mystrdup(fileURL);
+      myCopy = malloc(strlen(fileURL)+1);
+      strcpy(myCopy,fileURL);
+      newItem->Item       = myCopy;
       Playlist->First = Playlist->Last = newItem;
     }
   else
@@ -136,8 +138,10 @@ struct MdPlayItem* PlaylistAdd( MdPlaylist* Playlist, char *fileURL, int32 pos )
       /* tmpItem now holds a pointer for inserting the item. */
       /* Fill in the entrys, and update the pointers of the neighbour items */
       newItem->Next       = tmpItem->Next;
-      newItem->Prev       = tmpItem;    
-      newItem->Item       = mystrdup(fileURL);
+      newItem->Prev       = tmpItem;
+      myCopy = malloc(strlen(fileURL)+1);
+      strcpy(myCopy,fileURL);
+      newItem->Item       = myCopy;
       if (tmpItem->Next)
 	/* Only, if not at end of the list. */
 	tmpItem->Next->Prev = newItem;

@@ -29,7 +29,6 @@ extern "C" {
 #include <mediatool.h>
 }
 #include "kaudio.h"
-#include "tools.h"
 #include "kaudio.moc"
 
 #ifdef HAVE_SYSENT_H
@@ -162,7 +161,11 @@ bool KAudio::setFilename(const char *filename)
     return false;
   if (WAVname  != 0L )
     free(WAVname);
-  WAVname = mystrdup(filename);
+
+  char *myCopy;
+  myCopy = malloc(strlen(filename)+1);
+  strcpy(myCopy,filename);
+  WAVname = myCopy;
 
   return true;
 }
