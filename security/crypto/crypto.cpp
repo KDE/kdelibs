@@ -63,6 +63,7 @@
 #include <kmdcodec.h>
 #include <kgenericfactory.h>
 #include <kurlrequester.h>
+#include <kpushbutton.h>
 
 #include <qframe.h>
 
@@ -319,7 +320,7 @@ QString whatstr;
   QComboBox *cwcb = new QComboBox(cwbg);
   grid->addMultiCellWidget(cwbg, 3, 3, 0, 1);
   QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: <ul>");
- 
+
   cwcb->insertItem(QString::null);
   cwcb->insertItem(i18n("Most Compatible"));
   whatStr += i18n("<li><b>Most Compatible:</b> Select the settings found to be most compatible.</li>");
@@ -329,9 +330,9 @@ QString whatstr;
   whatStr += i18n("<li><b>Export Ciphers Only:</b> Select only the weak ciphers (&lt;= 56 bit).</li>");
   cwcb->insertItem(i18n("Enable All"));
   whatStr += i18n("<li><b>Enable All:</b> Select all SSL ciphers and methods.</li></ul>");
- 
+
   QWhatsThis::add(cwcb, whatStr);
-  
+
   connect(cwcb, SIGNAL(activated(int)), SLOT(slotSelectCipher(int)));
 
 
@@ -796,7 +797,7 @@ QString whatstr;
   //connect(macRemove, SIGNAL(), SLOT());
   grid->addWidget(macRemove, 5, 3);
 
-  macClear = new QPushButton(i18n("&Clear"), tabSSLCOpts);
+  macClear = new KPushButton(KGuiItem::clear(), tabSSLCOpts);
   //connect(macAdd, SIGNAL(), SLOT());
   grid->addWidget(macClear, 6, 3);
 

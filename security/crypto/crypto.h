@@ -46,7 +46,7 @@ class KSSLCertBox;
 class QVButtonGroup;
 class KComboBox;
 class KSSLSigners;
-
+class KPushButton;
 
 class CipherItem : public QCheckListItem
 {
@@ -306,7 +306,8 @@ private:
   QCheckBox *mWarnOnUnencrypted, *mWarnOnMixed;
   QListView *yourSSLBox, *otherSSLBox, *caList;
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
-  QPushButton *macAdd, *macRemove, *macClear;
+  QPushButton *macAdd, *macRemove;
+  KPushButton *macClear;
   QListBox *macBox;
   QPushButton *otherSSLExport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
   QPushButton *yourSSLImport, *yourSSLPass, *yourSSLRemove, *yourSSLExport,
