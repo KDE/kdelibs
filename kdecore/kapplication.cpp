@@ -770,7 +770,18 @@ void KApplication::init(bool GUIenabled)
     propagateSettings(SETTINGS_QT);
 
     // Set default mime-source factory
-    QMimeSourceFactory::defaultFactory()->addFactory( mimeSourceFactory() );
+    // XXX: This is a hack. Make our factory the default factory, but add the
+    // previous default factory to the list of factories. Why? When the default
+    // factory can't resolve something, it iterates in the list of factories.
+    // But it QWhatsThis only uses the default factory. So if there was already
+    // a default factory (which happens when using an image library using uic),
+    // we prefer KDE's factory and so we put that old default factory in the
+    // list and use KDE as the default. This may speed up things as well.
+    QMimeSourceFactory* oldDefaultFactory = QMimeSourceFactory::takeDefaultFactory();
+    QMimeSourceFactory::setDefaultFactory( mimeSourceFactory() );
+    if ( oldDefaultFactory ) {
+        QMimeSourceFactory::addFactory( oldDefaultFactory );
+    }
 
     KConfigGroupSaver saver( config, "Development" );
     if( config->hasKey( "CheckAccelerators" ) || config->hasKey( "AutoCheckAccelerators" ))
