@@ -25,12 +25,11 @@ void KServiceTypeProfile::initStatic()
   KConfig config( kapp->kde_configdir() + "/profilerc",
 		  kapp->localconfigdir() + "/profilerc" );
 
-//   QSmartPtr<KGroupIterator> g( config.groupIterator() );
-  QValueListIterator<QString> g = config.groupList().begin();
-  for( ; g != config.groupList().end(); ++g )
-  {
-    config.setGroup( *g );
-
+  QStringList tmpList = config.groupList();
+  for (QStringList::Iterator aIt = tmpList.begin(); 
+       aIt != tmpList.end(); ++aIt) {
+    config.setGroup( *aIt );
+    
     QString type = config.readEntry( "ServiceType" );
     int pref = config.readNumEntry( "Preference" );
     bool allow = config.readBoolEntry( "AllowAsDefault" );

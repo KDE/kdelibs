@@ -29,26 +29,27 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
   m_strIcon = _cfg.readEntry( "Icon" );
   // TODO: Properties
 
-  //QSmartPtr<KGroupIterator> git = _cfg.groupIterator();
-  QValueListIterator<QString> git = _cfg.groupList().begin();
-  for( ; git != _cfg.groupList().end(); ++git )
+  QStringList tmpList = _cfg.groupList();
+  QStringList::Iterator gIt = tmpList.begin();
+
+  for( ; gIt != tmpList.end(); ++gIt ) 
   {
-    if( (*git).find( "Property::" ) == 0 )
+    if ( gIt->find( "Property::" ) == 0 )
     {
-      _cfg.setGroup( *git );
-      m_mapProps.insert( (*git).mid( 10 ),
+      _cfg.setGroup( *gIt );
+      m_mapProps.insert( gIt->mid( 10 ),
 			 _cfg.readPropertyEntry( "Value",
 						 QProperty::nameToType( _cfg.readEntry( "Type" ) ) ) );
     }
   }
-
-  git = _cfg.groupList().begin();
-  for( ; git != _cfg.groupList().end(); ++git )
+  
+  gIt = tmpList.begin();
+  for( ; gIt != tmpList.end(); ++gIt )
   {
-    if( (*git).find( "PropertyDef::" ) == 0 )
+    if( gIt->find( "PropertyDef::" ) == 0 )
     {
-      _cfg.setGroup( *git );
-      m_mapPropDefs.insert( (*git).mid( 13 ),
+      _cfg.setGroup( *gIt );
+      m_mapPropDefs.insert( gIt->mid( 13 ),
 			    QProperty::nameToType( _cfg.readEntry( "Type" ) ) );
     }
   }

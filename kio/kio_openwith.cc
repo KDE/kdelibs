@@ -11,6 +11,7 @@
 #include <kiconloader.h>
 #include <kservices.h>
 #include <kmimemagic.h>
+#include <kdebug.h>
 
 #include <string.h>
 #include <stdio.h>

@@ -14,6 +14,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
+#include <kdebug.h>
 
 #include <stdlib.h>
 #include <unistd.h>
