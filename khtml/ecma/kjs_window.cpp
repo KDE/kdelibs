@@ -221,6 +221,10 @@ KJSO Window::get(const UString &p) const
   if (v.isDefined())
       return v;
 
+  KHTMLPart *kp = part->findFrame( p.qstring() );
+  if (kp)
+    return KJSO(newWindow(kp));
+
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (part->document().isHTMLDocument()) { // might be XML
     DOM::HTMLCollection coll = part->htmlDocument().all();
@@ -229,10 +233,6 @@ KJSO Window::get(const UString &p) const
         return getDOMNode(element);
     }
   }
-
-  KHTMLPart *kp = part->findFrame( p.qstring() );
-  if (kp)
-    return KJSO(newWindow(kp));
 
   return Undefined();
 }
