@@ -154,7 +154,7 @@ public:
      * if @p mangle is true, the string will already contain prefix and
      * suffix
      */
-    const QString string( bool mangle ) const;
+    QString string( bool mangle = true ) const;
 
     /**
      * changes the value of the item
@@ -223,12 +223,6 @@ public:
 
     friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& );
     friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
-
-
-#ifdef GNUC_    
-#warning ###TODO for 3.1: add a factory to create widgets for the items
-#endif
-//    QWidget* createWidget(const QWidget* parent, const char* name);
 
 protected:
     void ref();

@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kdatastream.h> // needed for serialization of bool
+#include <klocale.h>
 
 #include "kfilemetainfo.h"
 
@@ -183,6 +184,66 @@ const QString& KFileMetaInfoItem::translatedKey() const
 const QVariant& KFileMetaInfoItem::value() const
 {
     return d->value;
+}
+
+QString KFileMetaInfoItem::string( bool mangle ) const
+{
+    QString s;
+    
+    switch (d->value.type())
+    {
+        case QVariant::Invalid :
+            return "---";
+
+        case QVariant::Bool :
+            s = d->value.toBool() ? i18n("Yes") : i18n("No");
+            break;
+
+        case QVariant::Int :
+            s = KGlobal::locale()->formatNumber( d->value.toInt() , 0);
+            break;
+            
+        case QVariant::UInt :
+            s = KGlobal::locale()->formatNumber( d->value.toUInt() , 0);
+            break;
+
+        case QVariant::Double :
+            s = KGlobal::locale()->formatNumber( d->value.toDouble(), 3);
+            break;
+
+        case QVariant::Date :
+            s = KGlobal::locale()->formatDate( d->value.toDate(), true );
+            break;
+
+        case QVariant::Time :
+            s = KGlobal::locale()->formatTime( d->value.toTime(), true );
+            break;
+            
+        case QVariant::DateTime :
+            s = KGlobal::locale()->formatDateTime( d->value.toDate(),
+                                                   true, true );
+            break;
+
+        case QVariant::Size :
+            s = QString("%1x%2").arg(d->value.toSize().width())
+                                .arg(d->value.toSize().height());
+            break;
+
+        case QVariant::Point :
+            s = QString("%1/%2").arg(d->value.toSize().width())
+                                .arg(d->value.toSize().height());
+            break;
+
+        default:
+            s = d->value.toString();
+    }
+    
+    if (mangle && !s.isNull())
+    {
+        s.prepend(prefix());
+        s.append(suffix());
+    }
+    return s;
 }
 
 QVariant::Type KFileMetaInfoItem::type() const
