@@ -249,6 +249,7 @@ bool Collector::collect()
 }
 
 #ifndef NDEBUG
+#ifndef QWS
 void Collector::finalCheck()
 {
   CollectorBlock *block = root;
@@ -267,4 +268,5 @@ void Collector::finalCheck()
     block = block->next;
   }
 }
+#endif
 #endif

@@ -82,6 +82,7 @@ Node::~Node()
 }
 
 #ifndef NDEBUG
+#ifndef QWS
 void Node::finalCheck()
 {
   fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes.size() );
@@ -89,6 +90,7 @@ void Node::finalCheck()
   for ( uint i = 0; it != s_nodes.end() ; ++it, ++i )
     fprintf( stderr, "[%d] Still having node %p (%s) (refcount %d)\n", i, (void*)*it, typeid( **it ).name(), (*it)->refcount );
 }
+#endif
 #endif
 
 Value Node::throwError(ExecState *exec, ErrorType e, const char *msg)
