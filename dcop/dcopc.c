@@ -13,7 +13,7 @@
 
 /* sometimes __STDC__ is defined, but to 0. The hateful X headers
    ask for '#if __STDC__', so they become confused. */
-#ifdef __STDC__
+#if defined(__STDC__)
 #if !__STDC__
 #undef __STDC__
 #define __STDC__ 1
@@ -415,7 +415,7 @@ dcop_call(
   int     temp              = 0; 
   Bool    success           = False;
   Bool    readyRet          = False;
-  unsigned long replyStatus = -1;
+  unsigned long replyStatus = (unsigned long)-1;
 
   fprintf(stderr, "dcop_call() ...\n");
 
