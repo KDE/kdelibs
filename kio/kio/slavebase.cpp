@@ -243,8 +243,9 @@ DCOPClient *SlaveBase::dcopClient()
 {
     if (!d->dcopClient)
     {
-       d->dcopClient = new DCOPClient();
-       d->dcopClient->attach();
+       d->dcopClient = KApplication::dcopClient();
+       if (!d->dcopClient->isAttached())
+          d->dcopClient->attach();
     }
     return d->dcopClient;
 }
