@@ -777,10 +777,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // form elements
     case ID_FORM:
-        // close all open forms...
-        popBlock(ID_FORM);
-        form = new HTMLFormElementImpl(document);
-        n = form;
+        // thou shall not nest <form> - NS/IE quirk
+        if (form) break;
+        n = form = new HTMLFormElementImpl(document);
         break;
     case ID_BUTTON:
         n = new HTMLButtonElementImpl(document, form);
