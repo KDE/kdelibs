@@ -60,8 +60,9 @@ The basic DocBook tools are available under different formats:
   compile them yourself as well. Please consider sending us packages for
   non RedHat-like systems, like Debian files.
 
-Since the KDE customization are available under source code format,
-the RPM or DEB files might not be available online yet.
+Warning: if you are not installing the pre-built RPMs, but try to compile
+yourself the tools, then you might experience a whole range of problems
+that we can't (and don't want to) describe in detail in these instructions.
 
 
 3 - Which packages?
@@ -96,7 +97,7 @@ B - Installing
 1 - Clean up first !
 --------------------
 
-Some Linux distributions may come with RPM's for Jade and most of the
+Some Linux distributions may come with RPMs for Jade and most of the
 packages that are needed for DocBook operation are not KDE-specific. Your
 distribution's packages are most likely out of date and will not include
 the right version of the DocBook DTD or the latest version of the style
@@ -110,10 +111,7 @@ by using a graphical package manager or with the following command lines:
 
 	rpm -qa | grep jade
 	rpm -qa | grep docbook
-	rpm -qa | grep stylesheet
-	rpm -qa | grep sgml-tools
-        rpm -q sp
-        rpm -q sp_libs
+	rpm -qa | grep sgml
 
 and you may then remove them using the instruction:
 
@@ -149,9 +147,12 @@ techniques:
 	rpm -i <filename>.src.rpm
 	tar xzvf <filename>.tgz
 
+Uncompressing isn't enough: you might also need to apply the provided patches.
+
 In all cases, install the packages in the following order:
 
-	a) sgml-common b) jade c) docbook-dtd31 d) docbook-stylesheets
+	a) sgml-common        b) jade                c) jadetex
+	d) docbook-dtd31-sgml d) docbook-style-dsssl e) docbook-utils
 
 If you have downloaded source packages or tarballs, you will then need to
 compile Jade. Fortunately, Cees De Groot has added autoconf support. Just go to
@@ -161,7 +162,8 @@ Jade's newly created directory and type:
 	make
 	make install
 
-Beware: it won't work if you haven't libc.so.6 installed.
+Beware: it won't work if you haven't libc.so.6 installed. There might also be
+templates problems or other compilation problems.
 
 Now the basic tools are installed, you must add the KDE specific stuff.
 
