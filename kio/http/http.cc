@@ -174,6 +174,7 @@ void HTTPProtocol::reparseConfiguration()
   m_strProxyRealm = QString::null;
   m_strProxyAuthorization = QString::null;
   ProxyAuthentication = AUTH_None;
+  m_bUseProxy = false;
 
   struct servent *sent = getservbyname(m_protocol, "tcp");
   if (!sent)
@@ -205,6 +206,7 @@ void HTTPProtocol::resetSessionSettings()
     m_proxyURL = proxy;
     m_bUseProxy = m_proxyURL.isValid();
 
+    kdDebug(7113) << "(" << m_pid << ") Using proxy: " << m_bUseProxy << endl;
     kdDebug(7113) << "(" << m_pid << ") Proxy realm value: " << m_strRealm
                   << endl;
     kdDebug(7113) << "(" << m_pid << ") Proxy URL is now: "
@@ -1234,6 +1236,7 @@ bool HTTPProtocol::readHeader()
            // Some web-servers fail to respond properly to a HEAD request.
            // We compensate for their failure to properly implement the HTTP standard
            // by assuming that they will be sending html.
+           kdDebug(7103) << "readHeader(): HEAD -> returning " << DEFAULT_MIME_TYPE << endl;
            mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
            return true;
         }
@@ -1461,6 +1464,7 @@ bool HTTPProtocol::readHeader()
          }
          m_strMimeType.truncate( semicolonPos );
        }
+       kdDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType << endl;
     }
 
     // Date
@@ -2028,6 +2032,7 @@ bool HTTPProtocol::sendBody()
   }
 
   // Send the data...
+  //kdDebug() << "POST DATA: " << QCString(m_bufPOST) << endl;
   sendOk = (write(m_bufPOST.data(), m_bufPOST.size()) == (ssize_t) m_bufPOST.size());
   if (!sendOk)
   {
