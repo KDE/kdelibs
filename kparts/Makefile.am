@@ -8,11 +8,11 @@ libkparts2_la_LIBADD  = $(LIB_KDEUI)
 
 lib_LTLIBRARIES = libkparts2.la
 
-libkparts2_la_SOURCES = kpart.cpp plugin.cpp kembedmanager.cpp
+libkparts2_la_SOURCES = kpart.cpp plugin.cpp kembedmanager.cpp kguimgr.cpp
 
-include_HEADERS = kpart.h plugin.h kembedmanager.h
+include_HEADERS = kpart.h plugin.h kembedmanager.h kguimgr.h
 
-libkparts2_la_METASOURCES = kpart.moc plugin.moc kembedmanager.moc
+libkparts2_la_METASOURCES = kpart.moc plugin.moc kembedmanager.moc kguimgr.moc
 
 servicetype_DATA = kpart.desktop
 servicetypedir = $(kde_servicetypesdir)
