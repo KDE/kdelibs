@@ -1058,12 +1058,13 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     QCString point = QFile::encodeName( KProcess::quote(_point) );
     QCString fstype = KProcess::quote(_fstype).latin1(); // good guess
     QCString readonly = _ro ? "-r" : "";
-    QString path = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/sbin");
+    QString epath = QString::fromLatin1(getenv("PATH"));
+    QString path = QString::fromLatin1("/sbin:/bin");
+    if(!epath.isEmpty())
+        path += QString::fromLatin1(":") + epath;
     QString mountProg = KGlobal::dirs()->findExe("mount", path);
-
-    if (mountProg.isEmpty()) {
+    if (mountProg.isEmpty()) 
         mountProg = "mount";
-    }
 
     // Two steps, in case mount doesn't like it when we pass all options
     for ( int step = 0 ; step <= 1 ; step++ )
@@ -1207,7 +1208,7 @@ void FileProtocol::unmount( const QString& _point )
 		 */
 		ptr = strrchr( devname, '/' );
 		*ptr = '\0';
-                QString qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(QCString(devname)))).data());
+                QCString qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(QCString(devname)))).data());
 		buffer.sprintf( "/usr/bin/eject %s 2>%s", qdevname.data(), tmp );
 		kdDebug(7101) << "VOLMGT: eject " << qdevname << endl;
 
@@ -1238,13 +1239,14 @@ void FileProtocol::unmount( const QString& _point )
 		return;
 	}
 #else
-    QString path = getenv("PATH");
-    path.append(":/usr/sbin:/sbin");
+    QString epath = getenv("PATH");
+    QString path = QString::fromLatin1("/sbin:/bin");
+    if (!epath.isEmpty())
+       path += ":" + epath;
     QString umountProg = KGlobal::dirs()->findExe("umount", path);
 
-    if (umountProg.isEmpty()) {
+    if (umountProg.isEmpty()) 
         umountProg = "umount";
-    }
     buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(KProcess::quote(_point)).data(), tmp );
     system( buffer.data() );
 #endif /* HAVE_VOLMGT */
