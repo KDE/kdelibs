@@ -72,7 +72,7 @@ class KFindNextDialog;
  *              m_find->setData( <current text fragment> );
  *
  *          // Let KFind inspect the text fragment, and display a dialog if a match is found
- *          KFind::Result res = m_find->find();
+ *          res = m_find->find();
  *
  *          if ( res == KFind::NoMatch ) {
  *              <Move to the next non-empty text fragment, honouring the FindBackwards setting for the direction>
@@ -81,7 +81,7 @@ class KFindNextDialog;
  *
  *      if ( res == KFind::NoMatch ) // i.e. at end
  *          <Call either  m_find->displayFinalDialog()
- *           or           if ( m_find->shouldRestart() ) { reinit and call findNext(); }>
+ *           or           if ( m_find->shouldRestart() ) { reinit and call slotFindNext(); }>
  *  }
  * </pre>
  *
