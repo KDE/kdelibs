@@ -26,6 +26,7 @@
 
 #include <kconfig.h>
 #include <kstaticdeleter.h>
+#include <kprotocolinfo.h>
 
 #include "slaveconfig.h"
 
@@ -78,7 +79,7 @@ SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_prot
    SlaveConfigProtocol *scp = protocol.find(_protocol);
    if (!scp)
    {
-      QString filename = QString("kio_%1rc").arg(_protocol);
+      QString filename = KProtocolInfo::config(_protocol);
       scp = new SlaveConfigProtocol;
       scp->configFile = new KConfig(filename, true, false);
       protocol.insert(_protocol, scp);

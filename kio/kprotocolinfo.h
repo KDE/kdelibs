@@ -140,6 +140,12 @@ public:
    */
   static QString icon( const QString& protocol );
 
+  /**
+   * @returns the name of the config file associated with the 
+   * specified protocol
+   */
+  static QString config( const QString& protocol );
+
 
   static bool determineMimetypeFromExtension( const QString &protocol );
 
@@ -169,6 +175,7 @@ protected:
   QString m_icon;
   bool m_canCopyFromFile;
   bool m_canCopyToFile;
+  QString m_config;
 };
 
 #endif
