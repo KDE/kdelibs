@@ -415,7 +415,7 @@ NodeImpl::Id TextImpl::id() const
 
 void TextImpl::recalcStyle( StyleChange change )
 {
-//     qDebug("textImpl::recalcStyle");
+//      qDebug("textImpl::recalcStyle");
     if (change != NoChange && parentNode()) {
 // 	qDebug("DomText::recalcStyle");
 	if(m_render)

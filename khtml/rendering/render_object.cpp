@@ -588,7 +588,8 @@ void RenderObject::setStyle(RenderStyle *style)
     if (m_style == style)
 	return;
 
-//     qDebug("new style!");
+    RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
+//     qDebug("new style, diff=%d", d);
     // reset style flags
     m_floating = false;
     m_positioned = false;
@@ -630,9 +631,11 @@ void RenderObject::setStyle(RenderStyle *style)
 	m_visible = false;
 
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
-
-    setMinMaxKnown(false);
-    setLayouted(false);
+    
+    if ( d >= RenderStyle::Position ) {
+	setMinMaxKnown(false);
+	setLayouted(false);
+    }
 }
 
 void RenderObject::setContainsPositioned(bool p)

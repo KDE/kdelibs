@@ -337,6 +337,138 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
 	    );
 }
 
+/*
+  compares two styles. The result gives an idea of the action that
+  needs to be taken when replacing the old style with a new one.
+
+  CbLayout: The containing block of the object needs a relayout.
+  Layout: the RenderObject needs a relayout after the style change
+  Visible: The change is visible, but no relayout is needed
+  NonVisible: The object does need neither repaint nor relayout after
+       the change.
+       
+  ### TODO:
+  A lot can be optimised here based on the display type, lots of 
+  optimisations are unimplemented, and currently result in the
+  worst case result causing a relayout of the containing block.
+*/
+RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
+{
+    Diff d = Equal;
+
+    // we anyway assume they are the same
+// 	EDisplay _display : 5;
+
+    // NonVisible:
+// 	ECursor _cursor_style : 4;
+
+// ### this needs work to know more exactly if we need a relayout
+//     or just a repaint
+    
+// non-inherited attributes
+//     DataRef<StyleBoxData> box;
+//     DataRef<StyleVisualData> visual;
+//     DataRef<StyleSurroundData> surround;
+
+// inherited attributes
+//     DataRef<StyleInheritedData> inherited;
+
+    if ( *box.get() != *other->box.get() ||
+	 *visual.get() != *other->visual.get() ||
+	 *surround.get() != *other->surround.get() ||
+	 *inherited.get() != *other->inherited.get()
+	)
+	d = CbLayout;
+
+    if ( d == CbLayout )
+	return d;
+    
+    // changes causing Layout changes:
+	    
+// only for tables:
+// 	_border_collapse
+// 	EEmptyCell _empty_cells : 2 ;
+// 	ECaptionSide _caption_side : 2;
+//     ETableLayout _table_layout : 1;
+//     EPosition _position : 2;
+//     EFloat _floating : 2;
+    if ( ((int)_display) >= TABLE ) {
+	// Stupid gcc gives a compile error on
+	// a != other->b if a and b are bitflags. Using
+	// !(a== other->b) instead.
+	if ( !(inherited_flags._border_collapse == other->inherited_flags._border_collapse) ||
+	     !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
+	     !(inherited_flags._caption_side == other->inherited_flags._caption_side) ||
+	     !(_table_layout == other->_table_layout) ||
+	     !(_position == other->_position) ||
+	     !(_floating == other->_floating) )
+
+	    d = CbLayout;
+    }
+    
+// only for lists:    
+// 	EListStyleType _list_style_type : 5 ;
+// 	EListStylePosition _list_style_position :1;
+    if ( _display == LIST_ITEM ) {
+	if ( !(inherited_flags._list_style_type == other->inherited_flags._list_style_type) ||
+	     !(inherited_flags._list_style_position == other->inherited_flags._list_style_position) )
+	    d = Layout;
+    }
+
+    if ( d == Layout )
+	return d;
+
+// ### These could be better optimised    
+// 	ETextAlign _text_align : 3;
+// 	ETextTransform _text_transform : 4;
+// 	EDirection _direction : 1;
+// 	EWhiteSpace _white_space : 2;
+// 	EFontVariant _font_variant : 1;
+//     EClear _clear : 2;
+    if ( !(inherited_flags._text_align == other->inherited_flags._text_align) ||
+	 !(inherited_flags._text_transform == other->inherited_flags._text_transform) ||
+	 !(inherited_flags._direction == other->inherited_flags._direction) ||
+	 !(inherited_flags._white_space == other->inherited_flags._white_space) ||
+	 !(inherited_flags._font_variant == other->inherited_flags._font_variant) ||
+	 !(_clear == other->_clear)
+	)
+	d = Layout;
+    
+// only for inline:
+//     EVerticalAlign _vertical_align : 4;
+
+//     bool _noLineBreak : 1;
+    if ( !(_display == INLINE) ) {
+	if ( !(_vertical_align == other->_vertical_align) ||
+	     !(_noLineBreak == other->_noLineBreak) )
+	    d = Layout;
+    }
+    
+    if ( d == Layout )
+	return d;
+
+    
+    // Visible: 
+// 	EVisiblity _visiblity : 2;
+//     EOverflow _overflow : 4 ;
+//     EBackgroundRepeat _bg_repeat : 2;
+//     bool _bg_attachment : 1;
+// 	int _text_decoration : 4;
+//     DataRef<StyleBackgroundData> background;
+    if ( !(inherited_flags._visiblity == other->inherited_flags._visiblity) ||
+	 !(_overflow == other->_overflow) ||
+	 !(_bg_repeat == other->_bg_repeat) ||
+	 !(_bg_attachment == other->_bg_attachment) ||
+	 !(inherited_flags._text_decoration == other->inherited_flags._text_decoration) ||
+	 *background.get() != *other->background.get()
+	)
+	d = Visible;
+    
+    // Position:
+
+    return d;
+}
+
 
 RenderStyle* RenderStyle::_default = 0;
 //int RenderStyle::counter = 0;

@@ -795,7 +795,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     if ( m_style ) {
 	// ### should go away and be done in renderobject
 	bool needsUpdate = false;
-// 	qDebug("recalcStyle(%p: %s)", this, tagName().string().latin1());
+//  	qDebug("recalcStyle(%p: %s)", this, tagName().string().latin1());
 	if ( change >= Inherit || changed() ) {
 	    EDisplay oldDisplay = m_style ? m_style->display() : INLINE;
 	
@@ -820,7 +820,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 		    needsUpdate = true;
 		}
 		if( m_render && m_style ) {
-// 		    qDebug("--> setting style on render element bgcolor=%s", m_style->backgroundColor().name().latin1());
+//  		    qDebug("--> setting style on render element bgcolor=%s", m_style->backgroundColor().name().latin1());
 		    m_render->setStyle(m_style);
 		    needsUpdate = true;
 		}
@@ -839,11 +839,13 @@ void ElementImpl::recalcStyle( StyleChange change )
 
 	// ### should go away and be done by the renderobjects in
 	// a more intelligent way
-	if ( m_render && needsUpdate && !parentNode()->changed() ) {
+	if ( needsUpdate && m_render && !parentNode()->changed() ) {
 	    RenderObject *r = m_render;
-	    if ( m_render->isInline() )
-		r = m_render->containingBlock();
-	    r->updateSize();
+	    if ( !m_render->layouted() ) {
+		if ( m_render->isInline() )
+		    r = m_render->containingBlock();
+		r->updateSize();
+	    }
 	    r->repaint();
 	}
     }    

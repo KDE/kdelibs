@@ -84,6 +84,8 @@ void RenderFlow::setStyle(RenderStyle *_style)
     if(style()->whiteSpace() == PRE)
         m_pre = true;
 
+    // ### we could save this call when the change only affected
+    // non inherited properties
     RenderObject *child = firstChild();
     while(child != 0)
     {

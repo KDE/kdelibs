@@ -375,6 +375,11 @@ public:
 	    y_position == o.y_position;
     }
 
+    bool operator!=(const StyleBackgroundData &o) const
+    {
+	return !(operator==(o));
+    }
+    
     QColor color;
     CachedImage *image;
 
@@ -550,7 +555,7 @@ protected:
 	}
 	
 	bool _border_collapse : 1 ;
-	EEmptyCell _empty_cells : 2 ;
+	EEmptyCell _empty_cells : 2 ; // ### 1 should be enough
 	ECaptionSide _caption_side : 2;
 	EListStyleType _list_style_type : 5 ;
 	EListStylePosition _list_style_position :1;
@@ -893,6 +898,9 @@ public:
     virtual CachedObject* contentObject() { return 0; }
 
     bool inheritedNotEqual( RenderStyle *other ) const;
+
+    enum Diff { Equal, NonVisible = Equal, Visible, Position, Layout, CbLayout };
+    Diff diff( const RenderStyle *other ) const;
 };
 
 
