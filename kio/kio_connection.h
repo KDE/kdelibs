@@ -44,7 +44,8 @@ protected:
   static size_t defaultBufferSize();
 
 protected:
-  int m_in, m_out;
+  int m_in;
+  int m_out;
   FILE *m_fin;
   FILE *m_fout;
 
