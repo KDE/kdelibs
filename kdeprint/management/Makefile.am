@@ -2,7 +2,9 @@ AM_CPPFLAGS = -D_KDEPRINT_COMPILE
 
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdeprint -I$(top_builddir)/kdeprint -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
 
-lib_LTLIBRARIES = libkdeprint_management.la kaddprinterwizard.la
+lib_LTLIBRARIES = libkdeprint_management.la
+kdeinit_LTLIBRARIES = kaddprinterwizard.la
+bin_PROGRAMS = 
 
 kaddprinterwizard_la_SOURCES = kaddprinterwizard.cpp
 kaddprinterwizard_la_LIBADD = libkdeprint_management.la
