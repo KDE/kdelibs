@@ -145,7 +145,8 @@ Completion GlobalFunc::execute(const List &args)
       String s = x.toString();
       Lexer::curr()->setCode(s.value().data(), s.value().size());
       if (kjsyyparse()) {
-	KJS::Node::deleteAllNodes();
+	// TODO: stop this from growing (will be deleted at end of global eval)
+	//	KJS::Node::deleteAllNodes();
 	return Completion(Normal, Error::create(SyntaxError));
       }
 
