@@ -80,10 +80,9 @@ KToolBarFrame::KToolBarFrame (int ID, QWidget *parent,
  }
 
 KToolBarCombo::KToolBarCombo(bool rw, int ID,
-                             QWidget *parent, const char *name) : KCombo (rw, parent, name)
+                             QWidget *parent, const char *name) : KCombo (rw, parent, name),
+     id(ID), right(false), autoSized(false)
 { 
-  id = ID;
-  right = false;
 }
 
 KToolBarLined::KToolBarLined(const char *text, int ID,
