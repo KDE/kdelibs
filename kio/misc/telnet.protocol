@@ -1,0 +1,11 @@
+[Protocol]
+exec=ktelnetservice %u
+protocol=telnet
+input=none
+output=none
+helper=true
+listing=false
+reading=false
+writing=false
+makedir=false
+deleting=false

@@ -1,0 +1,11 @@
+[Protocol]
+exec=kmailservice %u
+protocol=mailto
+input=none
+output=none
+helper=true
+listing=false
+reading=false
+writing=false
+makedir=false
+deleting=false
