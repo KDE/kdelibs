@@ -496,20 +496,13 @@ KStandardDirs::findAllResources( const char *type,
     if (filterFile.isEmpty())
 	filterFile = "*";
 
-    if (filterFile.find('*') || filterPath.find('*')) {
-	QRegExp regExp(filterFile, true, true);
+    QRegExp regExp(filterFile, true, true);
 
-	for (QStringList::ConstIterator it = candidates.begin();
-	     it != candidates.end(); it++)
-	    lookupPrefix(*it, filterPath, "", regExp, list,
-			 relList, recursive, uniq);
-    } else  {
-	for (QStringList::ConstIterator it = candidates.begin();
-	     it != candidates.end(); it++) {
-	    QString fullpath = *it + filter;
-	    if (exists(fullpath))
-		list.append(fullpath);
-	}
+    for (QStringList::ConstIterator it = candidates.begin();
+         it != candidates.end(); it++)
+    {
+        lookupPrefix(*it, filterPath, "", regExp, list,
+                     relList, recursive, uniq);
     }
 
     return list;
