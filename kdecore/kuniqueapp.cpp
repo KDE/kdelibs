@@ -39,12 +39,14 @@
 #include <kaboutdata.h>
 #include <kwin.h>
 #include <kstartupinfo.h>
+#include <kconfig.h>
 #include "kdebug.h"
 #include "kuniqueapp.h"
 #include <X11/Xlib.h>
 
 DCOPClient *KUniqueApplication::s_DCOPClient = 0;
 bool KUniqueApplication::s_nofork = false;
+bool KUniqueApplication::s_multipleInstances = false;
 
 static KCmdLineOptions kunique_options[] =
 {
@@ -116,7 +118,7 @@ KUniqueApplication::start()
   if (s_nofork)
   {
      s_DCOPClient = new DCOPClient();
-     s_DCOPClient->registerAs(appName, false);
+     s_DCOPClient->registerAs(appName, s_multipleInstances );
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
   }
@@ -138,7 +140,7 @@ KUniqueApplication::start()
      ::close(fd[0]);
      dc = new DCOPClient();
      {
-        QCString regName = dc->registerAs(appName, false);
+        QCString regName = dc->registerAs(appName, s_multipleInstances);
         if (regName.isEmpty())
         {
            // Check DISPLAY
@@ -158,7 +160,7 @@ KUniqueApplication::start()
            if (!srv.isEmpty())
            {
               kunique_app_my_system(QFile::encodeName(srv)+" --suicide");
-              regName = dc->registerAs(appName, false);
+              regName = dc->registerAs(appName, s_multipleInstances);
            }
            if (regName.isEmpty())
            {
@@ -169,7 +171,7 @@ KUniqueApplication::start()
               ::exit(255);
            }
         }
-        if (regName != appName)
+        if (!s_multipleInstances && (regName != appName))
         {
            // Already running. Ok.
            result = 0;
@@ -281,6 +283,36 @@ KUniqueApplication::start()
 }
 
 
+KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool configUnique)
+  : KApplication(allowStyles, GUIenabled),
+    DCOPObject(KCmdLineArgs::about->appName())
+{
+  if (configUnique)
+  {
+    KConfig* cfg = config();
+    KConfigGroupSaver saver( cfg, "KDE" );
+    s_multipleInstances = cfg->readBoolEntry("MultipleInstances", false);
+  }
+
+  if (!s_DCOPClient)
+  {
+     if (!start())
+     {
+         // Already running
+         ::exit(0);
+     }
+  }
+  s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
+  d = new KUniqueApplicationPrivate;
+  d->processingRequest = false;
+  d->firstInstance = true;
+
+  if (s_nofork)
+    // Can't call newInstance directly from the constructor since it's virtual...
+    QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
+}
+
+// KDE 3.0: remove me
 KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
   : KApplication(allowStyles, GUIenabled),
     DCOPObject(KCmdLineArgs::about->appName())

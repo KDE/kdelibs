@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+    Copyright (c) 2000-2001 Waldo Bastian <bastian@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -44,7 +45,15 @@ public:
   /**
    * Constructor. Takes command line arguments from KCmdLineArgs
    * Parameters : See @ref KApplication constructor.
+   * @p configUnique If true, the uniqueness of the application will
+   *                 depend on the value of the "MultipleInstances"
+   *                 key in the "KDE" group of the application config file.
+   *                 
    */
+  KUniqueApplication( bool allowStyles, 
+		      bool GUIenabled,
+		      bool configUnique);
+  // KDE 3.0: Remove me
   KUniqueApplication( bool allowStyles=true, 
 		      bool GUIenabled=true);
 
@@ -154,6 +163,7 @@ private slots:
 private:
   static DCOPClient *s_DCOPClient;
   static bool s_nofork;
+  static bool s_multipleInstances;
 
   KUniqueApplicationPrivate *d;
 };
