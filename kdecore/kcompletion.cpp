@@ -33,6 +33,7 @@ KCompletion::KCompletion()
     mySorting    = false;
     myBeep       = true;
     myIgnoreCase = false;
+    myHasMultipleMatches = false;
     myRotationIndex = 0;
 }
 
