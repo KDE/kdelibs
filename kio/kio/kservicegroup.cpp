@@ -620,7 +620,7 @@ void KServiceGroup::parseAttribute( const QString &item ,  bool &showEmptyMenu, 
         inlineValue =  _inlineValue;
     }
     else
-        kdDebug()<<" not supported !!!!!!!\n";
+        kdDebug()<<" This attribute is not supported :"<<item<<endl;
 }
 
 void KServiceGroup::setLayoutInfo(const QStringList &layout)

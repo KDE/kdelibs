@@ -165,17 +165,20 @@ public:
   void setShowInlineHeader(bool _b);
 
   /**
+   * @return true to show an inline alias item into menu
    * @since 3.5
    */
   bool inlineAlias() const;
   void setInlineAlias(bool _b);
   /**
+   * @return true if we allow to inline menu.
    * @since 3.5
    */
   bool allowInline() const;
   void setAllowInline(bool _b);
 
   /**
+   * @return inline limite value
    * @since 3.5
    */
   int inlineValue() const;
@@ -284,6 +287,7 @@ public:
   static Ptr childGroup(const QString &parent);
 
   /**
+   * This function parse attributes into menu
    * @since 3.5
    */
     void parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias ,int &inlineValue );
