@@ -60,7 +60,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     config.setGroup( "Protocol" );
 
     Protocol p;
-    p.library = config.readEntry( "lib" );
+    p.exec = config.readEntry( "exec" );
     p.isSourceProtocol = config.readBoolEntry( "source", true );
     p.supportsReading = config.readBoolEntry( "reading", false );
     p.supportsWriting = config.readBoolEntry( "writing", false );
@@ -245,6 +245,7 @@ QStringList KProtocolManager::protocols() const
   return res;
 }
 
+/*
 QString KProtocolManager::library( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
@@ -255,6 +256,19 @@ QString KProtocolManager::library( const QString& _protocol ) const
   }
 
   return it.data().library;
+}
+*/
+
+QString KProtocolManager::exec( const QString& _protocol ) const
+{
+  ConstIterator it = m_protocols.find( _protocol );
+  if ( it == m_protocols.end() )
+  {
+    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    return QString::null;
+  }
+
+  return it.data().exec;
 }
 
 KProtocolManager::Type KProtocolManager::inputType( const QString& _protocol ) const

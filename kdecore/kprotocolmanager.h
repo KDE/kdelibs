@@ -48,10 +48,11 @@ public:
   enum Type { T_STREAM, T_FILESYSTEM, T_NONE, T_ERROR };
 
   /**
-   * @return the library to open for the protocol @p protocol
-   * Example : "kio_ftp.la"
+   * @return the library / executable to open for the protocol @p protocol
+   * Example : "kio_ftp", meaning either the executable "kio_ftp" or
+   * the library "kio_ftp.la" (recommended), whichever is available.
    */
-  QString library( const QString& protocol ) const;
+  QString exec( const QString& protocol ) const;
 
   Type inputType( const QString& protocol ) const;
   Type outputType( const QString& protocol ) const;
@@ -77,6 +78,9 @@ public:
    */
   bool mimetypeFastMode( const QString& protocol ) const;
 
+  /**
+   * @return list of all known protocols
+   */
   QStringList protocols() const;
 
   static int readTimeout();
@@ -96,7 +100,7 @@ public:
   static int maxCacheSize(); // Maximum cache size in Kb.
 
   /**
-   * Sets timeout for read operations. 
+   * Sets timeout for read operations.
    * This applies to FTP and HTTP connections.
    * If after a time @p timeout, the read operation doesn't finish
    * reading a packet, the read operation is
@@ -204,7 +208,7 @@ private:
 
   struct Protocol
   {
-    QString library;
+    QString exec;
     Type inputType;
     Type outputType;
     QStringList listing;
