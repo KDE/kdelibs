@@ -551,7 +551,8 @@ void SlaveBase::sigpipe_handler (int)
     // 1) Communication error with application.
     // 2) Communication error with network.
     kdDebug(7019) << "SIGPIPE" << endl;
-    signal(SIGPIPE,&sigpipe_handler);
+    exit(0);
+    // signal(SIGPIPE,&sigpipe_handler);
 }
 
 void SlaveBase::setHost(QString const &, int, QString const &, QString const &)
