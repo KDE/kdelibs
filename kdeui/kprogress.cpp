@@ -82,7 +82,7 @@ void KProgress::setValue(int progress)
     setProgress(progress); 
 }
 
-void KProgress::setRange(int min, int max)
+void KProgress::setRange(int /*min*/, int max)
 {
     setTotalSteps(max);
 }
