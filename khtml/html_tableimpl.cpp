@@ -351,7 +351,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	    frame = Box, rules = All;
 	break;
     case ATTR_BGCOLOR:
-	setNamedColor( bg, attr->value().string() );
+	khtml::setNamedColor( bg, attr->value().string() );
 	break;
     case ATTR_BACKGROUND:
         bgURL = attr->value();
@@ -1727,7 +1727,7 @@ void HTMLTablePartElementImpl::parseAttribute(Attribute *attr)
     switch(attr->id)
     {
     case ATTR_BGCOLOR:
-	setNamedColor( bg, attr->value().string() );
+	khtml::setNamedColor( bg, attr->value().string() );
 	break;
     case ATTR_BACKGROUND:
         bgURL = attr->value();

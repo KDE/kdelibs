@@ -96,22 +96,22 @@ void HTMLBodyElementImpl::setStyle(CSSStyle *currentStyle)
   DOMString s = attributeMap.valueForId(ATTR_TEXT);
     if(!s.isEmpty())
     {
-	setNamedColor( currentStyle->font.color, s.string() );
+	khtml::setNamedColor( currentStyle->font.color, s.string() );
     }
     s = attributeMap.valueForId(ATTR_LINK);
     if(!s.isEmpty())
     {
-	setNamedColor( pSettings->linkColor, s.string() );
+	khtml::setNamedColor( pSettings->linkColor, s.string() );
     }
     s = attributeMap.valueForId(ATTR_VLINK);
     if(!s.isEmpty())
     {
-	setNamedColor( pSettings->vLinkColor, s.string() );
+	khtml::setNamedColor( pSettings->vLinkColor, s.string() );
     }
     s = attributeMap.valueForId(ATTR_BGCOLOR);
     if(!s.isEmpty())
     {
-	setNamedColor( currentStyle->bgcolor, s.string() );
+	khtml::setNamedColor( currentStyle->bgcolor, s.string() );
     }
 
 

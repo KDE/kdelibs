@@ -291,7 +291,7 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
     s = attributeMap.valueForId(ATTR_COLOR);
     if(!s.isEmpty())
     {
-	setNamedColor( currentStyle->font.color, s.string() );
+	khtml::setNamedColor( currentStyle->font.color, s.string() );
     }
     s = attributeMap.valueForId(ATTR_FACE);
     if(!s.isEmpty())

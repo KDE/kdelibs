@@ -55,7 +55,12 @@ class CSSStyleBox;
 class CSSStyleList;
 
 const HTMLFont *getFont(CSSStyle *currentStyle);
-void setNamedColor(QColor &color, const QString name);
+
+namespace khtml
+{
+  void setNamedColor(QColor &color, const QString name);
+};
+
 
 typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 

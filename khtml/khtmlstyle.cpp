@@ -770,7 +770,7 @@ struct HTMLColors {
     };
 } htmlColors;
 
-void setNamedColor(QColor &color, const QString name)
+void khtml::setNamedColor(QColor &color, const QString name)
 {
     // also recognize "color=ffffff"
     if (name[0] != QChar('#') && name.length() == 6)
