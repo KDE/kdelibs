@@ -102,10 +102,8 @@ bool BlowFish::init() {
 
 
 BlowFish::~BlowFish() {
-	if (_key) {
-		delete[] (unsigned char *)_key;
-		_key = 0L;
-	}
+	delete[] (unsigned char *)_key;
+	_key = 0L;
 }
 
 
@@ -129,9 +127,7 @@ bool BlowFish::setKey(void *key, int bitlength) {
 		return false;
 	}
 
-	if (_key) {
-		delete[] (unsigned char *)_key;
-	}
+	delete[] (unsigned char *)_key;
 
 	_key = new unsigned char[bitlength / 8];
 	memcpy(_key, key, bitlength / 8);

@@ -100,14 +100,14 @@ bool KAr::openArchive( int mode )
 
         if ( dev->readBlock (ar_header.data(), 60) != 60 ) { // Read ar header
             kdWarning(7042) << "Couldn't read header" << endl;
-            if (ar_longnames) delete[] ar_longnames;
+            delete[] ar_longnames;
             //return false;
             return true; // Probably EOF / trailing junk
         }
 
         if (ar_header.right(2) != "`\n") { // Check header magic
             kdWarning(7042) << "Invalid magic" << endl;
-            if (ar_longnames) delete[] ar_longnames;
+            delete[] ar_longnames;
             return false;
         }
 
@@ -121,7 +121,7 @@ bool KAr::openArchive( int mode )
         bool skip_entry = false; // Deal with special entries
         if (name.mid(0, 1) == "/") {
             if (name.mid(1, 1) == "/") { // Longfilename table entry
-                if (ar_longnames) delete[] ar_longnames;
+                delete[] ar_longnames;
                 ar_longnames = new char[size + 1];
                 ar_longnames[size] = '\0';
                 dev->readBlock (ar_longnames, size);
@@ -153,7 +153,7 @@ bool KAr::openArchive( int mode )
 
         dev->at( dev->at() + size ); // Skip contents
     }
-    if (ar_longnames) delete[] ar_longnames;
+    delete[] ar_longnames;
 
     return true;
 }

@@ -277,8 +277,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
    QCString qCwd;
    ds >> qCwd;
-   if (mCwd)
-      delete [] mCwd;
+   delete [] mCwd;
 
    mCwd = mCwdd.setObject(mCwd, new char[qCwd.length()+1], true);
    strncpy(mCwd, qCwd.data(), qCwd.length()+1);

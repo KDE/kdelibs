@@ -180,15 +180,15 @@ static void refdec_nri(NETRootInfoPrivate *p) {
 	fprintf(stderr, "NET: \tno more references, deleting\n");
 #endif
 
-	if (p->name) delete [] p->name;
-	if (p->stacking) delete [] p->stacking;
-	if (p->clients) delete [] p->clients;
-	if (p->virtual_roots) delete [] p->virtual_roots;
-        if (p->kde_system_tray_windows) delete [] p->kde_system_tray_windows;
+	delete [] p->name;
+	delete [] p->stacking;
+	delete [] p->clients;
+	delete [] p->virtual_roots;
+	delete [] p->kde_system_tray_windows;
 
 	int i;
 	for (i = 0; i < p->desktop_names.size(); i++)
-	    if (p->desktop_names[i]) delete [] p->desktop_names[i];
+	    delete [] p->desktop_names[i];
     }
 }
 
@@ -205,15 +205,15 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 	fprintf(stderr, "NET: \tno more references, deleting\n");
 #endif
 
-	if (p->name) delete [] p->name;
-	if (p->visible_name) delete [] p->visible_name;
-        if (p->icon_name) delete [] p->icon_name;
-        if (p->visible_icon_name) delete [] p->visible_icon_name;
-        if (p->startup_id) delete[] p->startup_id;
+	delete [] p->name;
+	delete [] p->visible_name;
+	delete [] p->icon_name;
+	delete [] p->visible_icon_name;
+	delete [] p->startup_id;
 
 	int i;
 	for (i = 0; i < p->icons.size(); i++)
-	    if (p->icons[i].data) delete [] p->icons[i].data;
+	    delete [] p->icons[i].data;
     }
 }
 
@@ -486,7 +486,7 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 	    break;
 	}
 
-	if (p->icons[j].data) delete [] p->icons[j].data;
+	delete [] p->icons[j].data;
 	data32 = new CARD32[sz];
 	p->icons[j].data = (unsigned char *) data32;
 	for (k = 0; k < sz; k++, i += sizeof(long)) {
@@ -807,7 +807,7 @@ void NETRootInfo::setClientList(Window *windows, unsigned int count) {
 
     p->clients_count = count;
 
-    if (p->clients) delete [] p->clients;
+    delete [] p->clients;
     p->clients = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
@@ -825,7 +825,7 @@ void NETRootInfo::setClientListStacking(Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
     p->stacking_count = count;
-    if (p->stacking) delete [] p->stacking;
+    delete [] p->stacking;
     p->stacking = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
@@ -844,7 +844,7 @@ void NETRootInfo::setKDESystemTrayWindows(Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
     p->kde_system_tray_windows_count = count;
-    if (p->kde_system_tray_windows) delete [] p->kde_system_tray_windows;
+    delete [] p->kde_system_tray_windows;
     p->kde_system_tray_windows = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
@@ -928,7 +928,7 @@ void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
     // allow setting desktop names even for non-existant desktops, see the spec, sect.3.7.
     if (desktop < 1) return;
 
-    if (p->desktop_names[desktop - 1]) delete [] p->desktop_names[desktop - 1];
+    delete [] p->desktop_names[desktop - 1];
     p->desktop_names[desktop - 1] = nstrdup(desktopName);
 
     unsigned int i, proplen,
@@ -2049,8 +2049,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 		}
 
 		p->kde_system_tray_windows_count = nitems_ret;
-		if (p->kde_system_tray_windows)
-		    delete [] p->kde_system_tray_windows;
+		delete [] p->kde_system_tray_windows;
 		p->kde_system_tray_windows =
 		    nwindup(wins, p->kde_system_tray_windows_count);
                 read_ok = true;
@@ -2203,8 +2202,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 
 		for (s = 0, n = 0, index = 0; n < nitems_ret; n++) {
 		    if (d[n] == '\0') {
-			if (p->desktop_names[index])
-			    delete [] p->desktop_names[index];
+			delete [] p->desktop_names[index];
 			p->desktop_names[index++] = nstrndup((d + s), n - s + 1);
 			s = n + 1;
 		    }
@@ -2637,7 +2635,7 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
     if (replace) {
 
 	for (i = 0; i < p->icons.size(); i++) {
-	    if (p->icons[i].data) delete [] p->icons[i].data;
+	    delete [] p->icons[i].data;
 	    p->icons[i].data = 0;
 	    p->icons[i].size.width = 0;
 	    p->icons[i].size.height = 0;
@@ -2991,7 +2989,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 void NETWinInfo::setName(const char *name) {
     if (role != Client) return;
 
-    if (p->name) delete [] p->name;
+    delete [] p->name;
     p->name = nstrdup(name);
     if( p->name[ 0 ] != '\0' )
         XChangeProperty(p->display, p->window, net_wm_name, UTF8_STRING, 8,
@@ -3005,7 +3003,7 @@ void NETWinInfo::setName(const char *name) {
 void NETWinInfo::setVisibleName(const char *visibleName) {
     if (role != WindowManager) return;
 
-    if (p->visible_name) delete [] p->visible_name;
+    delete [] p->visible_name;
     p->visible_name = nstrdup(visibleName);
     if( p->visible_name[ 0 ] != '\0' )
         XChangeProperty(p->display, p->window, net_wm_visible_name, UTF8_STRING, 8,
@@ -3019,7 +3017,7 @@ void NETWinInfo::setVisibleName(const char *visibleName) {
 void NETWinInfo::setIconName(const char *iconName) {
     if (role != Client) return;
 
-    if (p->icon_name) delete [] p->icon_name;
+    delete [] p->icon_name;
     p->icon_name = nstrdup(iconName);
     if( p->icon_name[ 0 ] != '\0' )
         XChangeProperty(p->display, p->window, net_wm_icon_name, UTF8_STRING, 8,
@@ -3033,7 +3031,7 @@ void NETWinInfo::setIconName(const char *iconName) {
 void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
     if (role != WindowManager) return;
 
-    if (p->visible_icon_name) delete [] p->visible_icon_name;
+    delete [] p->visible_icon_name;
     p->visible_icon_name = nstrdup(visibleIconName);
     if( p->visible_icon_name[ 0 ] != '\0' )
         XChangeProperty(p->display, p->window, net_wm_visible_icon_name, UTF8_STRING, 8,
@@ -3110,7 +3108,7 @@ void NETWinInfo::setHandledIcons(Bool handled) {
 void NETWinInfo::setStartupId(const char* id) {
     if (role != Client) return;
 
-    if(p->startup_id) delete[] p->startup_id;
+    delete[] p->startup_id;
     p->startup_id = nstrdup(id);
     XChangeProperty(p->display, p->window, net_startup_id, UTF8_STRING, 8,
         PropModeReplace, reinterpret_cast< unsigned char* >( p->startup_id ),

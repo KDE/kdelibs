@@ -428,10 +428,8 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
-    if (m_rows)
-        delete [] m_rows;
-    if (m_cols)
-        delete [] m_cols;
+    delete [] m_rows;
+    delete [] m_cols;
 }
 
 NodeImpl::Id HTMLFrameSetElementImpl::id() const
@@ -445,7 +443,7 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ROWS:
         if (!attr->val()) break;
-        if (m_rows) delete [] m_rows;
+        delete [] m_rows;
         m_rows = attr->val()->toLengthArray(m_totalRows);
         setChanged();
     break;

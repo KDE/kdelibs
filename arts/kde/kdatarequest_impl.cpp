@@ -34,8 +34,7 @@ KDataRequest_impl::KDataRequest_impl()
 
 KDataRequest_impl::~KDataRequest_impl()
 {
-	if(m_outBlock)
-		delete []m_outBlock;
+	delete []m_outBlock;
 }
 
 void KDataRequest_impl::streamInit()

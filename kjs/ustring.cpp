@@ -93,8 +93,7 @@ CString &CString::append(const CString &t)
 
 CString &CString::operator=(const char *c)
 {
-  if (data)
-    delete [] data;
+  delete [] data;
   length = strlen(c);
   data = new char[length+1];
   memcpy(data, c, length + 1);
@@ -107,8 +106,7 @@ CString &CString::operator=(const CString &str)
   if (this == &str)
     return *this;
 
-  if (data)
-    delete [] data;
+  delete [] data;
   length = str.length;
   data = new char[length + 1];
   memcpy(data, str.data, length + 1);

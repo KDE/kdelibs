@@ -327,7 +327,7 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentPtr *doc)
 
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
 {
-    if (m_coords) delete [] m_coords;
+    delete [] m_coords;
 }
 
 NodeImpl::Id HTMLAreaElementImpl::id() const
@@ -350,7 +350,7 @@ void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
             shape = Rect;
         break;
     case ATTR_COORDS:
-        if (m_coords) delete [] m_coords;
+        delete [] m_coords;
         m_coords = attr->val()->toLengthArray(m_coordsLen);
         break;
     case ATTR_NOHREF:

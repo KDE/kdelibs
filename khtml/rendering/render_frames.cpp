@@ -76,8 +76,8 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet)
 RenderFrameSet::~RenderFrameSet()
 {
     for (int k = 0; k < 2; ++k) {
-        if (m_gridLayout[k]) delete [] m_gridLayout[k];
-        if (m_gridDelta[k]) delete [] m_gridDelta[k];
+        delete [] m_gridLayout[k];
+        delete [] m_gridDelta[k];
     }
     delete [] m_hSplitVar;
     delete [] m_vSplitVar;
@@ -128,9 +128,9 @@ void RenderFrameSet::layout( )
         m_gridLen[0] = element()->totalRows();
         m_gridLen[1] = element()->totalCols();
         for (int k = 0; k < 2; ++k) {
-            if (m_gridDelta[k]) delete [] m_gridDelta[k];
+            delete [] m_gridDelta[k];
             m_gridDelta[k] = new int[m_gridLen[k]];
-            if (m_gridLayout[k]) delete [] m_gridLayout[k];
+            delete [] m_gridLayout[k];
             m_gridLayout[k] = new int[m_gridLen[k]];
             for (int i = 0; i < m_gridLen[k]; ++i)
                 m_gridDelta[k][i] = 0;

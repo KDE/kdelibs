@@ -1109,11 +1109,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
 void CSSStyleSelector::clearLists()
 {
-    if ( selectors ) delete [] selectors;
+    delete [] selectors;
     if ( selectorCache ) {
         for ( unsigned int i = 0; i < selectors_size; i++ )
-            if ( selectorCache[i].props )
-                delete [] selectorCache[i].props;
+            delete [] selectorCache[i].props;
 
         delete [] selectorCache;
     }
