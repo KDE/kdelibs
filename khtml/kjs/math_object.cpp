@@ -19,7 +19,12 @@
 
 #include <math.h>
 
+#include "kjs.h"
+#include "operations.h"
 #include "math_object.h"
+
+#define KJSARG(x) KJSWorld::context->activation->get((x))
+#define KJSRETURN(x) return new KJSCompletion(Normal,(x))
 
 using namespace KJS;
 
@@ -35,9 +40,14 @@ KJSMath::KJSMath()
   put("sin", new KJSInternalFunction(&sin));
 }
 
+double KJSMath::darg(const char *a)
+{
+  return toNumber(KJSARG(a))->dVal();
+}
+
 KJSO* KJSMath::sin()
 {
-  double d = ::sin(2.0); /* TODO */
-  return new KJSCompletion(Normal, new KJSNumber(d));
+  double d = ::sin(darg("0"));
+  KJSRETURN(new KJSNumber(d));
 }
 

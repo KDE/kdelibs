@@ -29,6 +29,8 @@ namespace KJS {
     KJSMath();
 
     static KJSO* sin();
+  private:
+    static double darg(const char *a);
   };
 }; // namespace
 

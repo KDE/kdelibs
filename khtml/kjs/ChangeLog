@@ -3,6 +3,9 @@
 	* KJSContext: "argument" property works now (adopted model
 	proposed in the	latest spec draft from April 98)
 
+	* kjsmath.cpp: some generic macros for an easy handling of arguments
+	and return values in internal functions.
+
 1999-10-20  Harri Porten  <porten@kde.org>
 
 	* math_object.cpp: seperated Math object and put in sample E and
