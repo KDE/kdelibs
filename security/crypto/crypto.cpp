@@ -478,12 +478,18 @@ QString whatstr;
   hostAuthList = new QListView(tabAuth);
   grid->addMultiCellWidget(hostAuthList, 6, 13, 0, 5);
   grid->addWidget(new QLabel(i18n("Host:"), tabAuth), 14, 0);
-  grid->addWidget(new QLabel(i18n("Certificate:"), tabAuth), 15, 0);
+  grid->addWidget(new QLabel(i18n("Policy:"), tabAuth), 15, 0);
+  grid->addWidget(new QLabel(i18n("Certificate:"), tabAuth), 16, 0);
 
   authAdd = new QPushButton(i18n("Ne&w"), tabAuth);
   authRemove = new QPushButton(i18n("Remo&ve"), tabAuth);
-  grid->addWidget(authAdd, 16, 4);
+  grid->addWidget(authAdd, 17, 4);
   grid->addWidget(authRemove, 16, 5);
+
+  QString strNone = i18n("None");
+  strNone = i18n("Host");
+  strNone = i18n("Certificate");
+  strNone = i18n("Policy");
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
