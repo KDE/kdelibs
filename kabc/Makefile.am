@@ -87,7 +87,7 @@ kcm_kabc_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 kcm_kabc_la_LIBADD = $(LIB_KIO) libkabc.la
 
 data_DATA = kabc.desktop
-datadir = $(kde_appsdir)/Settings/Personalization
+datadir = $(kde_appsdir)/Settings/Components
 
 EXTRA_DIST = $(data_DATA)
 
