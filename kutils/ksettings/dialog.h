@@ -34,6 +34,8 @@ namespace KSettings
 /**
  * @short Generic configuration dialog that even works over component boundaries
  *
+ * For more information see \ref KSettings.
+ *
  * This class aims to standardize the use of configuration dialogs in KDE
  * applications. Especially when using KParts and/or Plugins you face problems
  * creating a consistent config dialog.
@@ -60,6 +62,8 @@ namespace KSettings
  *
  * If you need to be informed when the config was changed and applied in the
  * dialog you might want to take a look at Dispatcher.
+ *
+ * For more information see \ref KSettings.
  *
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
