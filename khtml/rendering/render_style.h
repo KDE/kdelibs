@@ -570,6 +570,8 @@ protected:
 
 public:
     RenderStyle();
+    // used to create the default style.
+    RenderStyle(bool _default);
     RenderStyle(const RenderStyle&);
     RenderStyle(const RenderStyle* inheritParent);
     ~RenderStyle();

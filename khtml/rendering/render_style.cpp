@@ -52,7 +52,7 @@ RenderStyle::setBitDefaults()
 
     _visuallyOrdered = false;
     _direction = LTR;
-    
+
     _htmlHacks=false;
     _flowAroundFloats=false;
 }
@@ -63,33 +63,31 @@ RenderStyle::RenderStyle()
 {
     counter++;
     if (!_default)
-    {
-    	box.createData();
-    	box.set()->setDefaultValues();    	
-    	visual.createData();
-     	background.createData();
-    	surround.createData();		
+	_default = new RenderStyle(true);
 
-    	inherited.createData();
-    	inherited.set()->setDefaultValues();		
-		
-	_default = this;
-    }
-    else
-    {
-    	box = _default->box;    	
-    	visual = _default->visual;
-    	background = _default->background;
-    	surround = _default->surround;
-	
-	inherited = _default->inherited;
-    }
+    box = _default->box;    	
+    visual = _default->visual;
+    background = _default->background;
+    surround = _default->surround;
+
+    inherited = _default->inherited;
 
     setBitDefaults();
 
     _display = INLINE;
 }
 
+RenderStyle::RenderStyle(bool)
+{
+    box.createData();
+    box.set()->setDefaultValues();    	
+    visual.createData();
+    background.createData();
+    surround.createData();		
+
+    inherited.createData();
+    inherited.set()->setDefaultValues();		
+}
 
 RenderStyle::RenderStyle(const RenderStyle& other)
 {
