@@ -41,8 +41,8 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 {
 	m_cmd = new QComboBox(this);
 	connect(m_cmd, SIGNAL(activated(int)), SLOT(slotCommandSelected(int)));
-	QPushButton	*m_add = new QPushButton(this);
-	QPushButton	*m_edit = new QPushButton(this);
+	QPushButton	*m_add = new KPushButton(this);
+	QPushButton	*m_edit = new KPushButton(this);
 	m_add->setPixmap(SmallIcon("filenew"));
 	m_edit->setPixmap(SmallIcon("configure"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddCommand()));
