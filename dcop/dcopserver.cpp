@@ -417,7 +417,7 @@ void DCOPServer::removeConnection( void* data )
   clients.remove(conn->ice_conn );
   appIds.remove( conn->appId );
   if ( conn->appId.data() )
-      qDebug("remove connection '%s' (count%d)", conn->appId.data(), clients.count() );
+      qDebug("remove connection '%s' (count=%d)", conn->appId.data(), clients.count() );
   else
       qDebug("remove unregistered connection (count=%d)", clients.count() );
   delete conn;
