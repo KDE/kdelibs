@@ -34,12 +34,4 @@ void ConfigWidget::setInEditMode( bool )
 {
 }
 
-void ConfigWidget::loadSettings( Resource * )
-{
-}
-
-void ConfigWidget::saveSettings( Resource * )
-{
-}
-
 #include "configwidget.moc"

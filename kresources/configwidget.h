@@ -22,37 +22,36 @@
 #ifndef KRESOURCES_CONFIGWIDGET_H
 #define KRESOURCES_CONFIGWIDGET_H
 
-#include <qwidget.h>
+#include "resource.h"
 
 #include <kconfig.h>
 
-#include "resource.h"
+#include <qwidget.h>
 
 namespace KRES {
 
 class ConfigWidget : public QWidget
 {
-  Q_OBJECT
+    Q_OBJECT
+  public:
+    ConfigWidget( QWidget *parent = 0, const char *name = 0 );
 
-public:
-  ConfigWidget( QWidget *parent = 0, const char *name = 0 );
+    /**
+      Sets the widget to 'edit' mode. Reimplement this method if you are
+      interested in the mode change (to disable some GUI element for
+      example). By default the widget is in 'create new' mode.
+    */
+    virtual void setInEditMode( bool value );
 
-  /**
-    Sets the widget to 'edit' mode. Reimplement this method if you are
-    interested in the mode change (to disable some GUI element for
-    example). By default the widget is in 'create new' mode.
-   */
-  virtual void setInEditMode( bool value );
+  public slots:
+    virtual void loadSettings( Resource *resource ) = 0;
+    virtual void saveSettings( Resource *resource ) = 0;
 
-public slots:
-  virtual void loadSettings( Resource *resource );
-  virtual void saveSettings( Resource *resource );
+  signals:
+    void setReadOnly( bool value );
 
-signals:
-  void setReadOnly( bool value );
-
-protected:
-  Resource* mResource;
+  protected:
+    Resource *mResource;
 };
 
 }

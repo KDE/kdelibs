@@ -227,7 +227,7 @@ link_DATA= resourceexample.desktop
  * A subclass should reimplement at least the constructor and the
  * writeConfig method.
  *
-   */
+ */
 class Resource : public QObject
 {
   Q_OBJECT
@@ -238,9 +238,9 @@ class Resource : public QObject
     /**
      * Constructor. Construct resource from config.
      * @param config Configuration to read persistence information from.
-     *               If config==0, create object using default settings.
+     *               If config is 0, create object using default settings.
      */
-    Resource( const KConfig* config );
+    Resource( const KConfig *config );
 
     /**
      * Destructor.
@@ -253,7 +253,7 @@ class Resource : public QObject
      * or Terrible Things(TM) will happen.
      * @param config Configuration to write persistence information to.
      */
-    virtual void writeConfig( KConfig* config );
+    virtual void writeConfig( KConfig *config );
 
     /**
      * Open this resource, if it not already open. Increase the open
@@ -304,7 +304,7 @@ class Resource : public QObject
     virtual bool readOnly() const;
 
     /**
-     * Set the name of resource.You can override this method,
+     * Set the name of resource. You can override this method,
      * but also remember to call Resource::setResourceName().
      */
     virtual void setResourceName( const QString &name );
@@ -366,7 +366,7 @@ class PluginFactoryBase : public KLibFactory
     virtual ConfigWidget *configWidget( QWidget *parent ) = 0;
 
   protected:
-    virtual QObject* createObject( QObject*, const char*, const char*,
+    virtual QObject* createObject( QObject *, const char *, const char *,
                                    const QStringList & )
     {
       return 0;

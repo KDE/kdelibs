@@ -43,7 +43,7 @@ using namespace KRES;
 ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
     /*const QString& type,*/ Resource* resource, /*KConfig *config, */const char *name )
   : KDialogBase( parent, name, true, i18n( "Resource Configuration" ),
-    Ok|Cancel, Ok, true )/*, mConfig( config )*/, mResource( resource )
+    Ok|Cancel, Ok, false )/*, mConfig( config )*/, mResource( resource )
 {
   Factory *factory = Factory::self( resourceFamily );
 
