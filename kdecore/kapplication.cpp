@@ -1381,8 +1381,7 @@ void KApplication::applyGUIStyle()
 {
     if ( !useStyles ) return;
 
-    KConfig pConfig( QString::null, true );
-    pConfig.setGroup("General");
+    KConfigGroup pConfig (KGlobal::config(), "General");
     QString defaultStyle = (QPixmap::defaultDepth() > 8 ? "HighColor" : "Default");
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
