@@ -97,7 +97,7 @@ static char translate_char( const char *s )
 Digits                  [0-9]+
 Oct_Digit               [0-7]
 Hex_Digit               [a-fA-F0-9]
-Int_Literal		[1-9][0-9]*
+Int_Literal		[1-9][0-9]*L?
 Oct_Literal		0{Oct_Digit}*
 Hex_Literal		(0x|0X){Hex_Digit}*
 Esc_Sequence1           "\\"[ntvbrfa\\\?\'\"]
@@ -160,11 +160,15 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 "="			return T_EQUAL;
 "."			return T_ACCESS;
 "->"			return T_ACCESS;
+(">="|"<="|"!="|"==")	return T_MISCOPERATOR;
+
 
 const			return T_CONST;
 enum			return T_ENUM;
+namespace		return T_NAMESPACE;
 class			return T_CLASS;
 struct			return T_STRUCT;
+operator		return T_FUNOPERATOR;
 virtual			return T_VIRTUAL;
 public			return T_PUBLIC;
 static			return T_STATIC;
@@ -172,7 +176,7 @@ signed			return T_SIGNED;
 unsigned		return T_UNSIGNED;
 protected		return T_PROTECTED;
 private			return T_PRIVATE;
-signal			return T_SIGNAL;
+signals			return T_SIGNAL;
 return			return T_RETURN;
 slots			return T_SLOT;
 true			return T_TRUE;
@@ -183,7 +187,7 @@ FALSE			return T_FALSE;
 typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
 Q_OBJECT		;
-"0"			return T_NULL;
+("0"|"0L")		return T_NULL;
 
 {Kidl_Identifier}	{
 			  yylval._str = new QString( yytext );
