@@ -1331,11 +1331,22 @@ bool HTTPProtocol::readHeader()
   // Web-servers really shouldn't do this: They let Content-Size refer
   // to the size of the tgz file, not to the size of the tar file,
   // while the Content-Type refers to "tar" instead of "tgz".
-  if ((m_qContentEncodings.last() == "gzip") &&
-      (m_strMimeType == "application/x-tar"))
+  if (m_qContentEncodings.last() == "gzip")
   {
-     m_qContentEncodings.remove(m_qContentEncodings.fromLast());
-     m_strMimeType = QString::fromLatin1("application/x-tgz");
+     if (m_strMimeType == "application/x-tar")
+     {
+        m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+        m_strMimeType = QString::fromLatin1("application/x-tgz");
+     }
+     else if (m_strMimeType == "text/html")
+     {
+        // Unzip!
+     }
+     else
+     {
+        m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+        m_strMimeType = QString::fromLatin1("application/gzip");
+     }
   }
 
   if (!m_qContentEncodings.isEmpty())
