@@ -761,6 +761,12 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.74  2001/12/14 19:02:50  khz
+* (a) changed "lypanov"s patch (to prevent from breaking compatibility)
+* (b) added sizeIsRelative checkbox under size listbox to enable
+*     specification of relative font sizes (being adjusted automatically when
+*     environment dimension change, e.g. size of the parent widget)
+*
 * Revision 1.73  2001/12/14 13:59:38  binner
 * Use QFontDataBase::isFixedPitch() introduced in Qt 2.3.
 *
