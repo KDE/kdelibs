@@ -44,7 +44,7 @@ MainWindow::MainWindow( const char *name, WFlags f )
   : KTMainWindow( name, f )
 {
   d = new MainWindowPrivate();
-  m_factory = new XMLGUIFactory( this );
+  m_factory = new KXMLGUIFactory( this );
   setInstance( KGlobal::instance() );
 }
 
