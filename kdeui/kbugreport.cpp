@@ -352,8 +352,17 @@ void KBugReport::slotSetFrom()
   delete m_process;
   m_process = 0;
   m_configureEmail->setEnabled(true);
+ 
+  // ### KDE3: why oh why is KEmailSettings in kio?
   KConfig emailConf( QString::fromLatin1("emaildefaults") );
-  emailConf.setGroup( QString::fromLatin1("PROFILE_Default") );
+
+  // find out the default profile
+  emailConf.setGroup( QString::fromLatin1("Defaults") );
+  QString profile = QString::fromLatin1("PROFILE_");
+  profile += emailConf.readEntry( QString::fromLatin1("Profile"),
+                                  QString::fromLatin1("Default") );
+
+  emailConf.setGroup( profile );
   QString fromaddr = emailConf.readEntry( QString::fromLatin1("EmailAddress") );
   if (fromaddr.isEmpty()) {
      struct passwd *p;
