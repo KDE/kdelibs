@@ -43,11 +43,8 @@ KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
   m_part = part;
   m_found = false;
 
-  QDialog *w = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
-  if ( w )
-  {
-      delete w;
-      // Add regep search to the dialog
+  if (!KTrader::self()->query("KRegExpEditor/KRegExpEditor").isEmpty())
+  {	
       QHBox* row = new QHBox( group );
       m_asRegExp = new QCheckBox( i18n("As &Regular Expression"), row, "asRegexp" );
       m_editRegExp = new QPushButton( i18n("Edit"), row, "editRegExp" );
