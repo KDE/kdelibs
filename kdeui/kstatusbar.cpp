@@ -24,6 +24,10 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// Revision 1.16  1998/10/05 10:14:25  radej
+// sven: Bugfix: SEGV when 10000 messages come in the same time
+//
+// Revision 1.15  1998/09/23 14:40:22  radej
 // sven: connected timeout to clear. Thanks to Taj for hint, and no-thanks to
 //       me - alzheimer for forgeting it
 //
@@ -271,7 +275,10 @@ void KStatusBar::message(const char *text, int time)
 void KStatusBar::message(const QString& text, int time)
 {
   if (tmpTimer->isActive())
+    tmpTimer->stop();
   
+  if (tempMessage)
+  {
     delete tempMessage;
     tempMessage = 0;
   }
@@ -296,7 +303,10 @@ void KStatusBar::message(const QString& text, int time)
 void KStatusBar::message(QWidget *widget, int time)
 {
   if (tmpTimer->isActive())
+    tmpTimer->stop();
   
+  if (tempMessage)
+  {
     delete tempMessage;
     tempMessage = 0;
   }
