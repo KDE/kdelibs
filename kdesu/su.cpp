@@ -129,8 +129,8 @@ int SuProcess::exec(const char *password, int check)
     }
 	
     // Notify the taskbar that an app has been started. 
-    QString suffix = i18n("(as %1)").arg(m_User);
-    notifyTaskbar(suffix);
+    //QString suffix = i18n("(as %1)").arg(m_User);
+    //notifyTaskbar(suffix);
     ret = waitForChild();
     return ret;
 }
