@@ -343,6 +343,51 @@ bool KSSLD::cacheRemoveByCertificate(KSSLCertificate cert) {
 }
 
 
+bool KSSLD::cacheModifyByCN(QString cn,
+                            KSSLCertificateCache::KSSLCertificatePolicy policy,
+                            bool permanent,
+                            QDateTime expires) {
+  KSSLCNode *node;
+
+  for (node = certList.first(); node; node = certList.next()) {
+    if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
+      node->permanent = permanent;
+      node->expires = expires;
+      node->policy = policy;
+      certList.remove(node);
+      certList.prepend(node);
+      cacheSaveToDisk();
+      return true;
+    }
+  }
+  return false;
+}
+
+
+bool KSSLD::cacheModifyByCertificate(KSSLCertificate cert,
+                             KSSLCertificateCache::KSSLCertificatePolicy policy,
+                                     bool permanent,
+                                     QDateTime expires) {
+  KSSLCNode *node;
+
+  for (node = certList.first(); node; node = certList.next()) {
+    if (cert == *(node->cert)) {
+      node->permanent = permanent;
+      node->expires = expires;
+      node->policy = policy;
+      certList.remove(node);
+      certList.prepend(node);
+      cacheSaveToDisk();
+      return true;
+    }
+  }
+  return false;
+}
+
+
+
+
+
 
 #include "kssld.moc"
 

@@ -26,6 +26,7 @@
 #include <ksslcertificate.h>
 #include <ksslcertificatecache.h>
 #include <qstring.h>
+#include <qdatetime.h>
 
 
 class KSimpleConfig;
@@ -63,6 +64,16 @@ k_dcop:
   bool cacheIsPermanent(KSSLCertificate cert);
 
   void cacheReload();
+
+  bool cacheModifyByCN(QString cn, 
+                       KSSLCertificateCache::KSSLCertificatePolicy policy,
+                       bool permanent,
+                       QDateTime expires);
+
+  bool cacheModifyByCertificate(KSSLCertificate cert,
+                           KSSLCertificateCache::KSSLCertificatePolicy policy,
+                                bool permanent,
+                                QDateTime expires);
 
   //
   //  Certificate Home methods
