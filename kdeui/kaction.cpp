@@ -1184,7 +1184,7 @@ KSelectAction::~KSelectAction()
 void KSelectAction::setCurrentItem( int id )
 {
     if ( id >= (int)d->m_list.count() ) {
-        ASSERT(id < (int)d->m_list.count());
+        Q_ASSERT(id < (int)d->m_list.count());
         return;
     }
 

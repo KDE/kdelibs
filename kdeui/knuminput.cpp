@@ -789,7 +789,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     if(m_upper < m_value)  m_value = m_upper;
 
     // make m_value a multiple of step
-    m_value = floor(m_value / m_step) * m_step;
+    m_value = floor(( m_value+.5*m_step ) / m_step) * m_step;
 
     if(slider) {
                 int slmax = QMIN(INT_MAX, (int)((m_upper - m_lower)/m_step));

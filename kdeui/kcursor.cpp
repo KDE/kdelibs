@@ -72,7 +72,7 @@ QCursor KCursor::handCursor()
                         hand_cursor = new QCursor(PointingHandCursor);
         }
 
-        CHECK_PTR(hand_cursor);
+        Q_CHECK_PTR(hand_cursor);
         return *hand_cursor;
 }
 
