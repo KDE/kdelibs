@@ -30,11 +30,37 @@
 #include <qdir.h>
 #include <qstringlist.h>
 
+#include <qtextcodec.h>
+#include <kcharsets.h>
+
+static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
+{
+    // Get the charset name from encoding_hint - but KCharsets doesn't
+    // know about "unicode"
+    QString charsetName =
+        (encoding_hint == QFont::Unicode) ? "utf8" :
+        KGlobal::charsets()->name( (QFont::CharSet) encoding_hint );
+
+    bool ok;
+    QTextCodec * textCodec = KGlobal::charsets()->codecForName( charsetName, ok );
+    return ok ? textCodec : 0L;
+}
+
 static
-QString encode( const QString& segment, bool encode_slash )
+QString encode( const QString& segment, bool encode_slash, int encoding_hint )
 {
   char encode_extra = encode_slash ? '/' : 0;
-  QCString local = segment.local8Bit();
+  QCString local;
+  if (encoding_hint==0)
+    local = segment.local8Bit();
+  else
+  {
+      QTextCodec * textCodec = codecForHint( encoding_hint );
+      if (!textCodec)
+          local = segment.local8Bit();
+      else
+          local = textCodec->fromUnicode( segment );
+  }
 
   int old_length = local.length();
 
@@ -142,9 +168,9 @@ static QString lazy_encode( const QString& segment )
 }
 
 
-static QString decode( const QString& segment, bool *keepEncoded=0 )
+static QString decode( const QString& segment, bool *keepEncoded=0, int encoding_hint=0 )
 {
-  bool isUnicode = false;
+  bool isUnicode = false; // This detects utf-16, not utf-8
   bool isLocal = false;
   bool isAscii = true;
   int old_length = segment.length();
@@ -186,8 +212,24 @@ static QString decode( const QString& segment, bool *keepEncoded=0 )
   }
   new_segment [ new_length ] = 0;
   QString result;
-  // Guess the encoding
-  if ((!isAscii && !isUnicode) || isLocal)
+  // Encoding specified
+  if ( encoding_hint )
+  {
+      QTextCodec * textCodec = codecForHint( encoding_hint );
+      if (textCodec)
+      {
+          QByteArray array;
+          array.setRawData(new_segment, new_length);
+          result = textCodec->toUnicode( array, new_length );
+          array.resetRawData(new_segment, new_length);
+      }
+      else
+          result = QString::fromLocal8Bit(new_segment, new_length);
+
+      // No idea about keepEncoded... Hmm, it's unused anyway (!)
+  }
+  // Guess the encoding, if not specified
+  else if ((!isAscii && !isUnicode) || isLocal)
   {
      result = QString::fromLocal8Bit(new_segment, new_length);
      if (keepEncoded)
@@ -251,6 +293,11 @@ KURL::List::List(const QStringList &list)
     {
       append( KURL(*it) );
     }
+}
+
+KURL::List::List(const KURL &url)
+{
+    append( url );
 }
 
 QStringList KURL::List::toStringList() const
@@ -356,7 +403,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   if ( rUrl[0] == '#' )
   {
     *this = _u;
-    setHTMLRef( decode(rUrl.mid(1)) );
+    setHTMLRef( decode(rUrl.mid(1), 0, encoding_hint) );
   }
   else if ( isRelativeURL( rUrl) )
   {
@@ -411,7 +458,7 @@ bool KURL::isEmpty() const
   return (m_strPath.isEmpty() && m_strProtocol.isEmpty());
 }
 
-void KURL::parse( const QString& _url, int /* encoding_hint */ )
+void KURL::parse( const QString& _url, int encoding_hint )
 {
   // Return immediately whenever the given url
   // is empty or null.
@@ -486,31 +533,31 @@ void KURL::parse( const QString& _url, int /* encoding_hint */ )
   while( buf[pos] != ':' && buf[pos] != '@' && buf[pos] != '/' && pos < len ) pos++;
   if ( pos == len )
     {
-      m_strHost = decode(QString( buf + start, pos - start ));
+      m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       goto NodeOk;
     }
   x = buf[pos];
   if ( x == '@' )
     {
-      m_strUser = decode(QString( buf + start, pos - start ));
+      m_strUser = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       pos++;
       goto Node7;
     }
   /* else if ( x == ':' )
      {
-     m_strHost = decode(QString( buf + start, pos - start ));
+     m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
      pos++;
      goto Node8a;
      } */
   else if ( x == '/' )
     {
-      m_strHost = decode(QString( buf + start, pos - start ));
+      m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       start = pos++;
       goto Node9;
     }
   else if ( x != ':' )
     goto NodeErr;
-  m_strUser = decode(QString( buf + start, pos - start ));
+  m_strUser = decode(QString( buf + start, pos - start ), 0, encoding_hint);
   pos++;
 
   // Node 5: We need at least one character
@@ -535,7 +582,7 @@ void KURL::parse( const QString& _url, int /* encoding_hint */ )
       start = pos++;
       goto Node9;
     }
-  m_strPass = decode(QString( buf + start, pos - start));
+  m_strPass = decode(QString( buf + start, pos - start), 0, encoding_hint);
   pos++;
 
   // Node 7: We need at least one character
@@ -548,11 +595,11 @@ void KURL::parse( const QString& _url, int /* encoding_hint */ )
   while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
   if ( pos == len )
     {
-      m_strHost = decode(QString( buf + start, pos - start ));
+      m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       goto NodeOk;
     }
   x = buf[pos];
-  m_strHost = decode(QString( buf + start, pos - start ));
+  m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
   if ( x == '/' )
     {
       start = pos++;
@@ -583,13 +630,13 @@ void KURL::parse( const QString& _url, int /* encoding_hint */ )
   if ( pos == len )
     {
       QString tmp( buf + start, len - start );
-      setEncodedPathAndQuery( tmp );
+      setEncodedPathAndQuery( tmp, encoding_hint );
       // setEncodedPathAndQuery( QString( buf + start, pos - start ) );
       goto NodeOk;
     }
   else if ( buf[pos] != '#' )
     goto NodeErr;
-  setEncodedPathAndQuery( QString( buf + start, pos - start ) );
+  setEncodedPathAndQuery( QString( buf + start, pos - start ), encoding_hint );
   pos++;
 
   // Node 10: Accept all the rest
@@ -604,7 +651,7 @@ void KURL::parse( const QString& _url, int /* encoding_hint */ )
                  // Just for the record an opaque URL such as "mailto:" is always required
                  // to have at least one more character other than a '/' following the colon.
   // Node 12: Accept the res
-  setEncodedPathAndQuery( QString( buf + start, len - start ) );
+  setEncodedPathAndQuery( QString( buf + start, len - start ), encoding_hint );
   goto NodeOk;
 
  NodeOk:
@@ -861,26 +908,27 @@ static QString trailingSlash( int _trailing, const QString &path )
 }
 
 
-QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int ) const
+QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encoding_hint ) const
 {
   QString tmp;
-  if (!m_strPath_encoded.isEmpty())
+  if (!m_strPath_encoded.isEmpty() && encoding_hint == 0)
   {
-     tmp = trailingSlash( _trailing, m_strPath_encoded);
+     tmp = trailingSlash( _trailing, m_strPath_encoded );
   }
   else
   {
      tmp = path( _trailing );
      if ( _no_empty_path && tmp.isEmpty() )
         tmp = "/";
-     tmp = encode( tmp, false );
+     tmp = encode( tmp, false, encoding_hint );
   }
 
+  // TODO apply encoding_hint to the query
   tmp += m_strQuery_encoded;
   return tmp;
 }
 
-void KURL::setEncodedPathAndQuery( const QString& _txt, int )
+void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
 {
   int pos = _txt.find( '?' );
   if ( pos == -1 )
@@ -894,7 +942,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt, int )
     m_strQuery_encoded = _txt.right(_txt.length() - pos);
   }
   bool keepEncoded;
-  m_strPath = decode( m_strPath_encoded, &keepEncoded );
+  m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
 // WABA: Always keep the original encoding. There are a lot of
 // braindead web-servers out there you know.
 //  if (!keepEncoded)
@@ -923,7 +971,13 @@ bool KURL::hasSubURL() const
   return true;
 }
 
+// BCI: Should be removed, and the other one should have '= 0' for both args.
 QString KURL::url( int _trailing ) const
+{
+    return url( _trailing, 0 );
+}
+
+QString KURL::url( int _trailing, int encoding_hint ) const
 {
   if( m_bIsMalformed )
   {
@@ -939,15 +993,15 @@ QString KURL::url( int _trailing ) const
     u += "://";
     if ( hasUser() )
     {
-      u += encode(m_strUser, true);
+      u += encode(m_strUser, true, encoding_hint);
       if ( hasPass() )
       {
         u += ":";
-        u += encode(m_strPass, true);
+        u += encode(m_strPass, true, encoding_hint);
       }
       u += "@";
     }
-    u += encode(m_strHost, true);
+    u += encode(m_strHost, true, encoding_hint);
     if ( m_iPort != 0 ) {
       QString buffer;
       buffer.sprintf( ":%u", m_iPort );
@@ -957,7 +1011,7 @@ QString KURL::url( int _trailing ) const
   else
     u += ":";
 
-  u += encodedPathAndQuery( _trailing );
+  u += encodedPathAndQuery( _trailing, false, encoding_hint );
 
   if ( hasRef() )
   {
@@ -1252,13 +1306,13 @@ void KURL::setHTMLRef( const QString& _ref )
 {
   if ( !hasSubURL() )
   {
-    m_strRef_encoded = encode( _ref, true );
+    m_strRef_encoded = encode( _ref, true, 0 /*?*/);
     return;
   }
 
   List lst = split( *this );
 
-  (*lst.begin()).setRef( encode( _ref, true) );
+  (*lst.begin()).setRef( encode( _ref, true, 0 /*?*/) );
 
   *this = join( lst );
 }
@@ -1323,19 +1377,19 @@ void KURL::setQuery( const QString &_txt, int )
       m_strQuery_encoded = _txt;
 }
 
-QString KURL::decode_string(const QString &str, int)
+QString KURL::decode_string(const QString &str, int encoding_hint)
 {
-   return decode(str);
+   return decode(str, 0, encoding_hint);
 }
 
-QString KURL::encode_string(const QString &str, int)
+QString KURL::encode_string(const QString &str, int encoding_hint)
 {
-   return encode(str, false);
+   return encode(str, false, encoding_hint);
 }
 
-QString KURL::encode_string_no_slash(const QString &str, int)
+QString KURL::encode_string_no_slash(const QString &str, int encoding_hint)
 {
-   return encode(str, true);
+   return encode(str, true, encoding_hint);
 }
 
 bool urlcmp( const QString& _url1, const QString& _url2 )

@@ -21,26 +21,36 @@
 #define __KURLDRAG_H
 
 #include <qstringlist.h>
+#include <qdragobject.h>
 #include <kurl.h>
 class QMimeSource;
 
+/**
+ * This class is to be used instead of QUriDrag when using KURL.
+ * The reason is : QUriDrag (and the XDND/W3C standards) expect URLs to
+ * be encoded in UTF-8 (unicode), but KURL uses the current locale
+ * by default.
+ *
+ * To create a drag object, use KURLDrag::newDrag with a list of KURLs.
+ * To decode a drop, use KURLDrag::decode or QUriDrag::decodeLocalFiles.
+ */
 class KURLDrag
 {
 public:
-  
+
+  /**
+   * Constructs an object to drag the list of URLs in urls.
+   * The dragSource and name arguments are passed on to QUriDrag,
+   * and the list of urls is converted to UTF-8 before being passed
+   * to QUriDrag.
+   */
+  static QUriDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 );
+
   /**
    * Convenience method that decodes the contents of @p e
    * into a list of KURLs.
-   * Do not use QUriDrag::decodeToUnicodeUris (see below why).
    */
-  static bool decode( const QMimeSource *e, KURL::List &uris );
-
-  /**
-   * QUriDrag assumes that URLs contain paths encoded in UTF-8.
-   * This is just not true (they contain paths in locale-8-bit), so please
-   * use KURLDrag::decodeLocalFiles instead of QUriDrag::decodeLocalFiles.
-   */
-  static bool decodeLocalFiles( const QMimeSource* e, QStringList& l );
+  static bool decode( const QMimeSource *e, KURL::List &urls );
 
 };
 

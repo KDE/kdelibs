@@ -57,6 +57,7 @@ public:
   public:
       List() { }
       List(const QStringList &);
+      List(const KURL &);
       QStringList toStringList() const;
   };
   /**
@@ -380,6 +381,19 @@ public:
    *                  path unchanged.
    */
   QString url( int _trailing = 0 ) const;
+
+  /**
+   * @return The complete URL, with all escape sequences intact, encoded
+   * in a given charset.
+   * This is used in particular for encoding URLs in UTF-8 before using them
+   * in a drag and drop operation.
+   *
+   * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
+   *                  a trailing '/' if there is none yet and 0 returns the
+   *                  path unchanged.
+   * @param encoding_hint The charset to use for encoding (see QFont::Charset).
+   */
+  QString url( int _trailing, int encoding_hint ) const;
 
   /**
    * @return A human readable URL, with no non-necessary encodings/escaped

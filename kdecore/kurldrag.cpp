@@ -20,29 +20,25 @@
 #include "kurldrag.h"
 #include <qstrlist.h>
 #include <qdragobject.h>
+#include <qfont.h>
+
+QUriDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
+{
+    QStrList uris;
+    KURL::List::ConstIterator uit = urls.begin();
+    KURL::List::ConstIterator uEnd = urls.end();
+    // Get each URL encoded in utf8 - and since we get it in escaped
+    // form on top of that, .latin1() is fine.
+    for ( ; uit != uEnd ; ++uit )
+        uris.append( (*uit).url(0, QFont::Unicode).latin1() );
+    return new QUriDrag( uris, dragSource, name );
+}
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
 {
     QStrList lst;
     bool ret = QUriDrag::decode( e, lst );
     for (QStrListIterator it(lst); *it; ++it)
-      uris.append(KURL(*it)); // *it is encoded already
+      uris.append(KURL(*it, QFont::Unicode));
     return ret;
 }
-
-bool KURLDrag::decodeLocalFiles( const QMimeSource* e, QStringList& l )
-{
-  QStrList uris;
-  if ( QUriDrag::decode( e, uris ) )
-  {
-    for (QStrListIterator it(uris); *it; ++it)
-    {
-      KURL u = *it;
-      if (u.isLocalFile())
-        l.append(u.path());
-    }
-    return true;
-  }
-  return false;
-}
-
