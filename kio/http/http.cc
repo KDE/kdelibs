@@ -1750,12 +1750,16 @@ bool HTTPProtocol::readHeader()
      if (m_request.url.path().right(4) == ".bz2")
         m_strMimeType = QString::fromLatin1("application/x-bzip2");
   }
-
+#if 0
+  // Even if we can't rely on content-length, it seems that we should
+  // never get more data than content-length. Maybe less, if the
+  // content-length refers to the unzipped data.
   if (!m_qContentEncodings.isEmpty())
   {
      // If we still have content encoding we can't rely on the Content-Length.
      m_iSize = -1;
   }
+#endif
 
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
@@ -2480,7 +2484,7 @@ int HTTPProtocol::readChunked()
         return -1;
      }
 
-     kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
+     // kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
 
      if (m_iBytesLeft == 0)
      {
@@ -2700,7 +2704,7 @@ bool HTTPProtocol::readBody( )
       else
       {
         // nope.  slap this all onto the end of a big buffer for later use
-        kdDebug( 7113 ) << "Further decoding needed..." << endl;
+        // kdDebug( 7113 ) << "Further decoding needed..." << endl;
         unsigned int old_len = 0;
         old_len = big_buffer.size();
         big_buffer.resize(old_len + bytesReceived);
