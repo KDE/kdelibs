@@ -41,6 +41,10 @@
 #include <termios.h>
 #include <signal.h>
 
+#ifdef HAVE_INITGROUPS
+#include <grp.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
