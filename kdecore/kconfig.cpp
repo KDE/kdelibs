@@ -321,7 +321,7 @@ void KConfig::virtual_hook( int id, void* data )
 
 QValueList<KSharedConfig*> *KSharedConfig::s_list = 0;
 
-KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable)
+KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, bool useKDEGlobals )
 {
   if (s_list)
   {
@@ -332,11 +332,11 @@ KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immut
            return (*it);
      }
   }
-  return new KSharedConfig(fileName, immutable);
+  return new KSharedConfig(fileName, immutable, useKDEGlobals);
 }
 
-KSharedConfig::KSharedConfig( const QString& fileName, bool immutable )
- : KConfig(fileName, immutable)
+KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekdeglobals)
+ : KConfig(fileName, readonly, usekdeglobals)
 {
   if (!s_list)
      s_list = new QValueList<KSharedConfig*>;

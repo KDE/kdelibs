@@ -48,6 +48,7 @@ class KConfig : public KConfigBase
   Q_OBJECT
 
 public:
+
   /**
    * Constructs a KConfig object.
    *
@@ -262,11 +263,13 @@ public:
   /**
    * Returns a ref-counted pointer to a shared read-write config object.
    * @param immutable, if true, force the config object to be read-only.
+   * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    */
-  static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false);
+  static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false,
+    bool bUseKDEGlobals = true);
 
 private:
-  KSharedConfig( const QString& fileName, bool immutable );
+  KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals );
   ~KSharedConfig();
 
   static QValueList<KSharedConfig*> *s_list;
