@@ -1013,7 +1013,7 @@ bool HTTPProtocol::http_open()
   if (!moreData)
      header += "\r\n";  /* end header */
 
-  kdDebug(7103) << "Sending header: \n===\n" << header << "\n===" << endl;
+  kdDebug(7103) << "(" << getpid() << ") Sending header: \n===\n" << header << "\n===" << endl;
   // now that we have our formatted header, let's send it!
   bool sendOk;
   sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
@@ -1222,8 +1222,10 @@ bool HTTPProtocol::readHeader()
     }
 
     // Cache management (HTTP 1.0)
-    else if (strncasecmp(buffer, "Pragma: no-cache", 16) == 0) {
-      m_bCachedWrite = false; // Don't put in cache
+    else if (strncasecmp(buffer, "Pragma:", 7) == 0) {
+      QCString pragma = QCString(trimLead(buffer+7)).lower();
+      if (pragma == "no-cache")
+         m_bCachedWrite = false; // Don't put in cache
     }
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
