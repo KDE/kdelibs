@@ -1,3 +1,16 @@
+2004-10-07  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_block.cpp 
+        (updateFirstLetter): move update of first-letter from addChildToFlow to 
+        setStyle/close. Better drilling logic. Use RenderTextFragment to
+        correctly handle text-transform on first-letter(#76078).
+        (addChildToFlow): ditto. fix display: block on pseudo-elements (#90917)
+        (layoutBlockChildren): only clear if floats actually changed our
+        height.
+        * rendering/render_object.h (node): accessor to m_node
+        * rendering/render_text.{cpp,h}: merge RenderTextFragment class
+        * xml/dom_nodeimpl.h (setRenderer): accessor
+
 2004-10-07  Allan Sandfeld Jensen <kde@carewolf.com>
         * rendering/render_style.h:
         WebCore merge of paged media attributes (#68930).

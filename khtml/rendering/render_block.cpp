@@ -92,6 +92,82 @@ void RenderBlock::setStyle(RenderStyle* _style)
     // Update pseudos for :before and :after now.
     updatePseudoChild(RenderStyle::BEFORE, firstChild());
     updatePseudoChild(RenderStyle::AFTER, lastChild());
+
+    // handled by close() during parsing
+    if (!document()->parsing())
+        updateFirstLetter();
+}
+
+void RenderBlock::updateFirstLetter()
+{
+    // FIXME: We need to destroy the first-letter object if it is no longer the first child.  Need to find
+    // an efficient way to check for that situation though before implementing anything.
+    
+    RenderStyle * pseudoStyle;
+    if ( isTable() || !(pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LETTER)) )
+        return;
+    
+    // Drill into inlines looking for our first text child.
+    RenderObject* currChild = firstChild();
+    while (currChild && !currChild->layouted() && !currChild->isReplaced() && !currChild->isText())
+        currChild = currChild->firstChild();
+   
+   if (currChild && currChild->isText() && !currChild->isBR()) {
+
+        bool update = (currChild->parent()->style()->styleType() == RenderStyle::FIRST_LETTER);
+        RenderObject* firstLetterContainer = update ? currChild->parent()->parent() : currChild->parent();
+        RenderText* textObj = static_cast<RenderText*>(currChild);
+
+        // Force inline display (except for floating first-letters)
+        pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
+        pseudoStyle->setPosition( STATIC ); // CSS2 says first-letter can't be positioned.
+        
+        if (update) {
+            firstLetterContainer->firstChild()->setStyle( pseudoStyle );
+            RenderStyle* newStyle = new RenderStyle();
+            newStyle->inheritFrom( pseudoStyle );
+            currChild->setStyle( newStyle );
+            return;
+        }
+
+        RenderObject* firstLetter = RenderFlow::createFlow(document() /* anonymous*/, pseudoStyle, renderArena() );
+        firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
+
+        // The original string is going to be either a generated content string or a DOM node's
+        // string.  We want the original string before it got transformed in case first-letter has
+        // no text-transform or a different text-transform applied to it.
+        DOMStringImpl* oldText = textObj->originalString();
+        if (!oldText)
+            oldText = textObj->string();
+
+        if(oldText->l >= 1) {
+            oldText->ref();
+            unsigned int length = 0;
+            while ( length < oldText->l &&
+                    ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
+                length++;
+            if (!( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
+                length++;
+            RenderTextFragment* remainingText =
+                new (renderArena()) RenderTextFragment(textObj->node(), oldText, length, oldText->l-length);
+            remainingText->setStyle(textObj->style());
+            if (remainingText->element())
+                remainingText->element()->setRenderer(remainingText);
+
+            RenderObject* nextObj = textObj->nextSibling();
+            firstLetterContainer->removeChild(textObj);
+            firstLetterContainer->addChild(remainingText, nextObj);
+
+            RenderTextFragment* letter = 
+                new (renderArena()) RenderTextFragment(remainingText->node(), oldText, 0, length);
+            RenderStyle* newStyle = new RenderStyle();
+            newStyle->inheritFrom(pseudoStyle);
+            letter->setStyle(newStyle);
+            firstLetter->addChild(letter);
+            oldText->deref();
+        }
+        firstLetter->close();
+    }
 }
 
 void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChild)
@@ -103,54 +179,6 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
     setLayouted(false);
 
     bool madeBoxesNonInline = FALSE;
-
-    RenderStyle* pseudoStyle=0;
-    if ((!firstChild() || firstChild() == beforeChild) &&
-         (newChild->isInline() || newChild->isText()) &&
-         (pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER)))
-    {
-        // Drill into inlines looking for our first text child.
-        RenderObject* textChild = newChild;
-        while (textChild && !( textChild->isText() && !textChild->isBR()) )
-            textChild = textChild->firstChild();
-
-        if (textChild) {
-            RenderObject* firstLetterContainer = textChild->parent();
-            if (!firstLetterContainer)
-                firstLetterContainer = this;
-
-            RenderText* newTextChild = static_cast<RenderText*>(textChild);
-
-            // Force inline display (except for floating first-letters)
-            pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
-            pseudoStyle->setPosition( STATIC ); // CSS2 says first-letter can't be positioned.
-
-            RenderObject* firstLetter = RenderFlow::createFlow(document() /* anonymous*/, pseudoStyle, renderArena() );
-            firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
-
-            DOMStringImpl* oldText = newTextChild->string();
-
-            if(oldText->l >= 1) {
-                oldText->ref();
-                unsigned int length = 0;
-                while ( length < oldText->l &&
-                        ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
-                    length++;
-                length++;
-                kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
-                newTextChild->setText( oldText->l > length ?
-                                       oldText->substring(length,oldText->l-length) : new DOMStringImpl(""));
-                NodeImpl* letterElement = newTextChild->element() ? (NodeImpl*) newTextChild->element() : (NodeImpl*) document();
-                RenderText* letter = new (renderArena()) RenderText(letterElement, oldText->substring(0,length));
-                RenderStyle* newStyle = new RenderStyle();
-                newStyle->inheritFrom(pseudoStyle);
-                letter->setStyle(newStyle);
-                firstLetter->addChild(letter);
-                oldText->deref();
-            }
-            firstLetter->close();
-        }
-    }
 
     // If the requested beforeChild is not one of our children, then this is most likely because
     // there is an anonymous block box within this object that contains the beforeChild. So
@@ -202,7 +230,8 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
         // a new one is created and inserted into our list of children in the appropriate position.
         if (newChild->isInline()) {
             if (beforeChild) {
-                if (beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymous()) {
+                if ( beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymous() && 
+                     beforeChild->previousSibling()->style()->styleType() == RenderStyle::NOPSEUDO ) {
                     beforeChild->previousSibling()->addChild(newChild);
                     newChild->setLayouted( false );
                     newChild->setMinMaxKnown( false );
@@ -210,7 +239,8 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                 }
             }
             else {
-                if (m_last && m_last->isAnonymous()) {
+                if ( m_last && m_last->isAnonymous() &&
+                     m_last->style()->styleType() == RenderStyle::NOPSEUDO ) {
                     m_last->addChild(newChild);
                     newChild->setLayouted( false );
                     newChild->setMinMaxKnown( false );
@@ -788,16 +818,19 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // Note this occurs after the test for positioning and floating above, since
         // we want to ensure that we don't artificially increase our height because of
         // a positioned or floating child.
-        if ( (child->style()->hidesOverflow() || child->style()->flowAroundFloats())
-             && !child->isFloating() &&
+        int fb = floatBottom();        
+        if ( (child->style()->hidesOverflow() || child->style()->flowAroundFloats()) &&
              style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
-            m_height = kMax( m_height, floatBottom() );
-            shouldCollapseChild = false;
-            clearOccurred = true;
+            if (fb > m_height) {
+                m_height = fb;
+                shouldCollapseChild = false;
+                clearOccurred = true;
+                prevFlow = 0;
+            }
         }
 
         // take care in case we inherited floats
-        if (floatBottom() > m_height)
+        if (fb > m_height)
             child->setLayouted(false);
 
         child->calcVerticalMargins();
@@ -2433,7 +2466,7 @@ void RenderBlock::close()
 {
     if (lastChild() && lastChild()->isAnonymous())
         lastChild()->close();
-
+    updateFirstLetter();
     RenderFlow::close();
 }
 

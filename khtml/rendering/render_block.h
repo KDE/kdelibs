@@ -89,6 +89,7 @@ public:
     virtual void removeChild(RenderObject *oldChild);
 
     virtual void setStyle(RenderStyle* _style);
+    void updateFirstLetter();
 
     virtual void layout();
     void layoutBlock( bool relayoutChildren );

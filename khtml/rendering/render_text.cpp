@@ -525,8 +525,11 @@ void RenderText::setStyle(RenderStyle *_style)
         RenderObject::setStyle( _style );
         m_lineHeight = RenderObject::lineHeight(false);
 
-        if (changedText && element() && element()->string())
-            setText(element()->string(), changedText);
+        if (changedText) {
+            DOM::DOMStringImpl* textToTransform = originalString();
+            if (textToTransform)
+                setText(textToTransform, true);
+        }
     }
 }
 
@@ -555,6 +558,16 @@ void RenderText::deleteInlineBoxes(RenderArena* arena)
     }
 
     KHTMLAssert(m_lines.count() == 0);
+}
+
+bool RenderText::isTextFragment() const
+{
+    return false;
+}
+
+DOM::DOMStringImpl* RenderText::originalString() const
+{
+    return element() ? element()->string() : 0;
 }
 
 InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkFirstLetter )
@@ -1436,6 +1449,47 @@ void RenderText::dump(QTextStream &stream, const QString &ind) const
     }
 }
 #endif
+
+RenderTextFragment::RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str,
+                                       int startOffset, int endOffset)
+:RenderText(_node, _str->substring(startOffset, endOffset)), 
+m_start(startOffset), m_end(endOffset), m_generatedContentStr(0)
+{}
+
+RenderTextFragment::RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str)
+:RenderText(_node, _str), m_start(0)
+{
+    m_generatedContentStr = _str;
+    if (_str) {
+        _str->ref();
+        m_end = _str->l;
+    }
+    else
+        m_end = 0;
+}
+    
+RenderTextFragment::~RenderTextFragment()
+{
+    if (m_generatedContentStr)
+        m_generatedContentStr->deref();
+}
+
+bool RenderTextFragment::isTextFragment() const
+{
+    return true;
+}
+
+DOM::DOMStringImpl* RenderTextFragment::originalString() const
+{
+    DOM::DOMStringImpl* result = 0;
+    if (element())
+        result = element()->string();
+    else
+        result = contentString();
+    if (result && (start() > 0 || start() < result->l))
+        result = result->substring(start(), end());
+    return result;
+}
 
 #undef BIDI_DEBUG
 #undef DEBUG_LAYOUT

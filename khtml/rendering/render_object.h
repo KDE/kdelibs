@@ -255,6 +255,7 @@ public:
     // don't even think about making this method virtual!
     DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
+    DOM::NodeImpl* node() const { return m_node; }
 
    /**
      * returns the object containing this one. can be different from parent for
