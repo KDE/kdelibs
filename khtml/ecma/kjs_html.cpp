@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 
+#include <qptrdict.h>
+
 #include <khtml_part.h>
 #include <dom/html_base.h>
 #include <dom/html_block.h>
@@ -46,6 +48,8 @@
 #include <htmltags.h>
 
 using namespace KJS;
+
+QPtrDict<KJS::HTMLCollection> htmlCollections;
 
 KJSO KJS::HTMLDocFunction::tryGet(const UString &p) const
 {
@@ -146,87 +150,84 @@ const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
 
 KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
-  KJSO result;
+  DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
   if (p == "title")
-    result = getString(doc.title());
+    return getString(doc.title());
   else if (p == "referrer")
-    result = getString(doc.referrer());
+    return getString(doc.referrer());
   else if (p == "domain")
-    result = getString(doc.domain());
+    return getString(doc.domain());
   else if (p == "URL")
-    result = getString(doc.URL());
+    return getString(doc.URL());
   else if (p == "body")
-    result = getDOMNode(doc.body());
+    return getDOMNode(doc.body());
   else if (p == "location")
-    #warning "HACK HACK HACK HACK"
-    result = new Location( static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part() );
+    #warning "HACK HACK HACK HACK" // ###
+    return new Location( static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part() );
   else if (p == "images")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Images);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Images);
   else if (p == "applets")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Applets);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Applets);
   else if (p == "links")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Links);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Links);
   else if (p == "forms")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Forms);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Forms);
   else if (p == "anchors")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
   else if (p == "cookie")
-    result = getString(doc.cookie());
+    return getString(doc.cookie());
   else if (p == "open")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Open);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Open);
   else if (p == "close")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Close);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Close);
   else if (p == "write")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Write);
+    return new HTMLDocFunction(doc, HTMLDocFunction::Write);
   else if (p == "writeln")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::WriteLn);
+    return new HTMLDocFunction(doc, HTMLDocFunction::WriteLn);
   else if (p == "getElementById")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::GetElementById);
+    return new HTMLDocFunction(doc, HTMLDocFunction::GetElementById);
   else if (p == "getElementsByName")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
+    return new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
   else {
     // look in base class (Document)
-    KJSO tmp(new DOMDocument(doc));
-    result = tmp.get(p);
+    KJSO result;
+    result = DOMDocument::tryGet(p);
 
     if (result.isA(UndefinedType)) {
-      DOM::HTMLCollection coll = doc.images(); /* TODO: all() */
+      DOM::HTMLCollection coll = doc.images(); /* ### TODO: all() */
       DOM::HTMLElement element = coll.namedItem(p.string());
       if (element.isNull())
 	element = doc.forms().namedItem(p.string());
       result = getDOMNode(element);
     }
+    return result;
   }
 
-  return result;
 }
 
 void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
 {
+  DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
+
   if (p == "title")
     doc.setTitle(v.toString().value().string());
   else if (p == "body")
     doc.setBody((new DOMNode(KJS::toNode(v)))->toNode());
   else if (p == "cookie")
     doc.setCookie(v.toString().value().string());
-  else {
-    KJSO tmp(new DOMDocument(doc));
-    tmp.put(p,v);
-  }
+  else
+    DOMDocument::tryPut(p,v);
 }
 
-DOM::Node HTMLDocument::toNode() const
-{
-  return doc;
-}
+// -------------------------------------------------------------------------
 
 const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,
 					  &DOMElement::info, 0, 0 };
 
 KJSO KJS::HTMLElement::tryGet(const UString &p) const
 {
-  DOM::DOMString str;
+  DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 
   switch (element.elementId()) {
     case ID_HTML: {
@@ -764,21 +765,18 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
 
   // generic properties
   if (p == "id")
-    str = element.id();
+    return getString(element.id());
   else if (p == "title")
-    str = element.title();
+    return getString(element.title());
   else if (p == "lang")
-    str = element.lang();
+    return getString(element.lang());
   else if (p == "dir")
-    str = element.dir();
-  else if (p == "className")
-    str = element.className();
-  else {
-    KJSO tmp(new DOMElement(element));
-    return tmp.get(p);
-  }
-
-  return getString(str);
+    return getString(element.dir());
+  else if (p == "className") // ### isn't this "class" in the HTML spec?
+    return getString(element.className());
+  // ### what about style? or is this used instead for DOM2 stylesheets?
+  else
+    return DOMElement::tryGet(p);
 }
 
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)
@@ -925,6 +923,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
 {
   DOM::DOMString str = v.toString().value().string();
   DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
+  DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 
   switch (element.elementId()) {
     case ID_HTML: {
@@ -1441,10 +1440,15 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     element.setDir(str);
   else if (p == "className")
     element.setClassName(str);
-  else {
-    KJSO tmp(new DOMElement(element));
-    tmp.put(p,v);
-  }
+  else
+    DOMElement::tryPut(p,v);
+}
+
+// -------------------------------------------------------------------------
+
+HTMLCollection::~HTMLCollection()
+{
+  htmlCollections.remove(collection.handle());
 }
 
 KJSO KJS::HTMLCollection::tryGet(const UString &p) const
@@ -1543,5 +1547,20 @@ void Image::tryPut(const UString &p, const KJSO& v)
   if (p == "src") {
     String str = v.toString();
     src = str.value();
+  }
+}
+
+
+KJSO KJS::getHTMLCollection(DOM::HTMLCollection c)
+{
+  HTMLCollection *ret;
+  if (c.isNull())
+    return Null();
+  else if ((ret = htmlCollections[c.handle()]))
+    return ret;
+  else {
+    ret = new HTMLCollection(c);
+    htmlCollections.insert(c.handle(),ret);
+    return ret;
   }
 }

@@ -33,6 +33,7 @@ const TypeInfo DOMCharacterData::info = { "CharacterImp", HostType,
 
 KJSO DOMCharacterData::tryGet(const UString &p) const
 {
+  DOM::CharacterData data = static_cast<DOM::CharacterData>(node);
   if (p == "data")
     return getString(data.data());
   else if (p == "length")
@@ -47,20 +48,16 @@ KJSO DOMCharacterData::tryGet(const UString &p) const
     return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::DeleteData);
   else if (p == "replaceData")
     return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::ReplaceData);
-  else {
-    KJSO tmp(new DOMNode(data));
-    return tmp.get(p);
-  }
+  else
+    return DOMNode::tryGet(p);
 }
 
 void DOMCharacterData::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "data")
-    data.setData(v.toString().value().string());
-  else {
-    KJSO tmp(new DOMNode(data));
-    tmp.put(p, v);
-  }
+    static_cast<DOM::CharacterData>(node).setData(v.toString().value().string());
+  else
+    DOMNode::tryPut(p,v);
 }
 
 DOMCharacterDataFunction::DOMCharacterDataFunction(DOM::CharacterData d, int i)
@@ -99,6 +96,7 @@ Completion DOMCharacterDataFunction::tryExecute(const List &args)
   return Completion(Normal, result);
 }
 
+// -------------------------------------------------------------------------
 
 const TypeInfo DOMText::info = { "Text", HostType,
 				 &DOMCharacterData::info, 0, 0 };
@@ -106,21 +104,11 @@ const TypeInfo DOMText::info = { "Text", HostType,
 KJSO DOMText::tryGet(const UString &p) const
 {
   if (p == "")
-    return Undefined(); // TODO
+    return Undefined(); // ### TODO
   else if (p == "splitText")
-    return new DOMTextFunction(text, DOMTextFunction::SplitText);
-  else {
-    DOM::Node n = text;
-    KJSO tmp(new DOMCharacterData(n));
-    return tmp.get(p);
-  }
-}
-
-void DOMText::tryPut(const UString &p, const KJSO& v)
-{
-  DOM::Node n = text;
-  KJSO tmp(new DOMCharacterData(n));
-  tmp.put(p,v);
+    return new DOMTextFunction(static_cast<DOM::Text>(node), DOMTextFunction::SplitText);
+  else
+    return DOMCharacterData::tryGet(p);
 }
 
 DOMTextFunction::DOMTextFunction(DOM::Text t, int i)

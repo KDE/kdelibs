@@ -60,7 +60,7 @@ extern "C" {
     KJS::Global global(Global::current());
 
     KJSO window(new KJS::Window(khtml->view()));
-    KJSO document(new KJS::HTMLDocument(khtml->htmlDocument()));
+    KJSO document = getDOMNode(khtml->htmlDocument());
 
     window.put("document", document);
     global.put("window", window);
@@ -79,7 +79,7 @@ extern "C" {
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
   {
-    //    script->clear();
+    script->clear();
     delete script;
   }
   // process an event

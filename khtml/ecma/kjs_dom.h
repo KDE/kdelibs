@@ -32,15 +32,19 @@
 
 namespace KJS {
 
-  class DOMNode : public NodeObject {
+  class DOMNode : public DOMObject {
   public:
     DOMNode(DOM::Node n) : node(n) { }
+    ~DOMNode();
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return node; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
+
+    virtual KJSO toPrimitive(Type preferred = UndefinedType) const;
+
+  protected:
     DOM::Node node;
   };
 
@@ -59,6 +63,7 @@ namespace KJS {
   class DOMNodeList : public DOMObject {
   public:
     DOMNodeList(DOM::NodeList l) : list(l) { }
+    ~DOMNodeList();
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual const TypeInfo* typeInfo() const { return &info; }
@@ -78,15 +83,12 @@ namespace KJS {
     int id;
   };
 
-  class DOMDocument : public NodeObject {
+  class DOMDocument : public DOMNode {
   public:
-    DOMDocument(DOM::Document d) : doc(d) { }
+    DOMDocument(DOM::Document d) : DOMNode(d) { }
     virtual KJSO tryGet(const UString &p) const;
-    virtual DOM::Node toNode() const { return doc; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::Document doc;
   };
 
   class DOMDocFunction : public DOMFunction {
@@ -102,28 +104,22 @@ namespace KJS {
     int id;
   };
 
-  class DOMAttr : public NodeObject {
+  class DOMAttr : public DOMNode {
   public:
-    DOMAttr(DOM::Attr a) : attr(a) { }
+    DOMAttr(DOM::Attr a) : DOMNode(a) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    virtual DOM::Node toNode() const { return attr; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::Attr attr;
   };
 
-  class DOMElement : public NodeObject {
+  class DOMElement : public DOMNode {
   public:
-    DOMElement(DOM::Element e) : element(e) { }
+    DOMElement(DOM::Element e) : DOMNode(e) { }
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
-    virtual DOM::Node toNode() const { return element; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::Element element;
   };
 
   class DOMElementFunction : public DOMFunction {
@@ -143,6 +139,7 @@ namespace KJS {
   class DOMDOMImplementation : public DOMObject {
   public:
     DOMDOMImplementation(DOM::DOMImplementation i) : implementation(i) { }
+    ~DOMDOMImplementation();
     virtual KJSO tryGet(const UString &p) const;
     // no put - all functions
     virtual const TypeInfo* typeInfo() const { return &info; }
@@ -161,21 +158,19 @@ namespace KJS {
     int id;
   };
 
-  class DOMDocumentType : public NodeObject {
+  class DOMDocumentType : public DOMNode {
   public:
-    DOMDocumentType(DOM::DocumentType dt) : type(dt) { }
+    DOMDocumentType(DOM::DocumentType dt) : DOMNode(dt) { }
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
-    virtual DOM::Node toNode() const { return type; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::DocumentType type;
   };
 
   class DOMNamedNodeMap : public DOMObject {
   public:
     DOMNamedNodeMap(DOM::NamedNodeMap m) : map(m) { }
+    ~DOMNamedNodeMap();
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual const TypeInfo* typeInfo() const { return &info; }
@@ -195,41 +190,37 @@ namespace KJS {
     int id;
   };
 
-  class DOMProcessingInstruction : public NodeObject {
+  class DOMProcessingInstruction : public DOMNode {
   public:
-    DOMProcessingInstruction(DOM::ProcessingInstruction pi) : instruction(pi) { }
+    DOMProcessingInstruction(DOM::ProcessingInstruction pi) : DOMNode(pi) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    virtual DOM::Node toNode() const { return instruction; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::ProcessingInstruction instruction;
   };
 
-  class DOMNotation : public NodeObject {
+  class DOMNotation : public DOMNode {
   public:
-    DOMNotation(DOM::Notation n) : notation(n) { }
+    DOMNotation(DOM::Notation n) : DOMNode(n) { }
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
-    virtual DOM::Node toNode() const { return notation; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::Notation notation;
   };
 
-  class DOMEntity : public NodeObject {
+  class DOMEntity : public DOMNode {
   public:
-    DOMEntity(DOM::Entity e) : entity(e) { }
+    DOMEntity(DOM::Entity e) : DOMNode(e) { }
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
-    virtual DOM::Node toNode() const { return entity; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::Entity entity;
   };
+
+  KJSO getDOMNode(DOM::Node n);
+  KJSO getDOMNamedNodeMap(DOM::NamedNodeMap m);
+  KJSO getDOMNodeList(DOM::NodeList l);
+  KJSO getDOMDOMImplementation(DOM::DOMImplementation i);
 
 }; // namespace
 

@@ -287,8 +287,6 @@ public:
 
     virtual ~NodeBaseImpl();
 
-    virtual NodeListImpl *childNodes();
-
     virtual NodeImpl *firstChild() const;
 
     virtual NodeImpl *lastChild() const;

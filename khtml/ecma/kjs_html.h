@@ -28,10 +28,10 @@
 #include <kjs/function.h>
 
 #include "kjs_binding.h"
+#include "kjs_dom.h"
 
 class KHTMLPart;
 class HTMLElement;
-class HTMLCollection;
 
 namespace KJS {
 
@@ -47,28 +47,22 @@ namespace KJS {
     int id;
   };
 
-  class HTMLDocument : public NodeObject {
+  class HTMLDocument : public DOMDocument {
   public:
-    HTMLDocument(const DOM::HTMLDocument &d) : doc(d) { }
+    HTMLDocument(DOM::HTMLDocument d) : DOMDocument(d) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    virtual DOM::Node toNode() const;
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::HTMLDocument doc;
   };
 
-  class HTMLElement : public NodeObject {
+  class HTMLElement : public DOMElement {
   public:
-    HTMLElement(DOM::HTMLElement e) : element(e) { }
+    HTMLElement(DOM::HTMLElement e) : DOMElement(e) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    virtual DOM::Node toNode() const { return element; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::HTMLElement element;
   };
 
 
@@ -88,6 +82,7 @@ namespace KJS {
   class HTMLCollection : public DOMObject {
   public:
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
+    ~HTMLCollection();
     virtual KJSO tryGet(const UString &p) const;
   private:
     DOM::HTMLCollection collection;
@@ -128,6 +123,10 @@ namespace KJS {
   private:
     UString src;
   };
+
+  KJSO getHTMLCollection(DOM::HTMLCollection c);
+
+
 }; // namespace
 
 #endif

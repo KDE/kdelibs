@@ -33,8 +33,6 @@
 #include "misc/htmlhashes.h"
 #include "rendering/render_text.h"
 
-#include <iostream.h>
-
 using namespace DOM;
 using namespace khtml;
 
@@ -63,7 +61,6 @@ DOMString CharacterDataImpl::data() const
 
 void CharacterDataImpl::setData( const DOMString &newStr )
 {
-    cerr << "CharacterDataImpl::setData(): newStr = \"" << newStr.string() << "\"\n";
     if(str == newStr.impl) return;
     if(str) str->deref();
     str = newStr.impl;

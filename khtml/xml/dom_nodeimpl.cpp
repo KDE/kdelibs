@@ -35,7 +35,6 @@
 #include "rendering/render_object.h"
 #include <qstring.h>
 #include <qrect.h>
-#include <iostream.h>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
@@ -89,7 +88,6 @@ NodeImpl *NodeImpl::parentNode() const
 
 NodeListImpl *NodeImpl::childNodes()
 {
-  cerr << "NodeImpl::childNodes()\n";
   return new ChildNodeListImpl(this);
 }
 
@@ -411,11 +409,6 @@ NodeBaseImpl::~NodeBaseImpl()
 	n->setParent(0);
 	if(n->deleteMe()) delete n;
     }
-}
-
-NodeListImpl *NodeBaseImpl::childNodes() //
-{
-    return NodeImpl::childNodes();
 }
 
 NodeImpl *NodeBaseImpl::firstChild() const

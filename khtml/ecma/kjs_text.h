@@ -26,19 +26,17 @@
 #include <kjs/function.h>
 
 #include "kjs_binding.h"
+#include "kjs_dom.h"
 
 namespace KJS {
 
-  class DOMCharacterData : public NodeObject {
+  class DOMCharacterData : public DOMNode {
   public:
-    DOMCharacterData(DOM::CharacterData d) : data(d) { }
+    DOMCharacterData(DOM::CharacterData d) : DOMNode(d) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    virtual DOM::Node toNode() const { return data; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::CharacterData data;
   };
 
 
@@ -53,16 +51,12 @@ namespace KJS {
   };
 
 
-  class DOMText : public NodeObject {
+  class DOMText : public DOMCharacterData {
   public:
-    DOMText(DOM::Text t) : text(t) { }
+    DOMText(DOM::Text t) : DOMCharacterData(t) { }
     virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual DOM::Node toNode() const { return text; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    DOM::Text text;
   };
 
   class DOMTextFunction : public DOMFunction {

@@ -50,33 +50,14 @@ namespace KJS {
   };
 
   /**
-   * Abstract base class for DOM objects that derive from Node.
-   * Derived classes must implement the toNode() method to allow
-   * dynamic type casting.
-   */
-  class NodeObject : public DOMObject {
-  public:
-    virtual KJSO toPrimitive(Type preferred = UndefinedType) const;
-    virtual DOM::Node toNode() const = 0;
-    virtual bool equals(const KJSO& other) const;
-  };
-
-  /**
    * Convert an object to a Node. Returns a null Node if not possible.
    */
   DOM::Node toNode(const KJSO&);
   /**
-   *  Get a KJSO Node object of the correct type
-   */
-  KJSO getDOMNode(DOM::Node n);
-  KJSO getDOMNamedNodeMap(DOM::NamedNodeMap m);
-  KJSO getDOMNodeList(DOM::NodeList l);
-  KJSO getHTMLCollection(DOM::HTMLCollection c);
-  KJSO getDOMDOMImplementation(DOM::DOMImplementation i);
-  /**
    *  Get a String object, or Null() if s is null
    */
   KJSO getString(DOM::DOMString s);
+
 
 }; // namespace
 
