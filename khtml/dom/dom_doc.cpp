@@ -272,20 +272,17 @@ Range Document::createRange()
   return TreeWalker();
 }*/
 
-NodeIterator Document::createNodeIterator(Node /*root*/, unsigned long /*whatToShow*/,
-                                    NodeFilter /*filter*/, bool /*entityReferenceExpansion*/)
+NodeIterator Document::createNodeIterator(Node root, unsigned long whatToShow,
+                                    NodeFilter filter, bool entityReferenceExpansion)
 {
-// ###
-//    if (impl) return ((DocumentImpl *)impl)->createNodeIterator(root.impl,whatToShow,filter.handle(),entityReferenceExpansion);
+    if (impl) return ((DocumentImpl *)impl)->createNodeIterator(root.handle(),whatToShow,filter.handle(),entityReferenceExpansion);
     return 0;
 }
 
-TreeWalker Document::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter /*filter*/,
-                                bool /*entityReferenceExpansion*/)
+TreeWalker Document::createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
+                                bool entityReferenceExpansion)
 {
-// ###
-//    if (impl) return ((DocumentImpl *)impl)->createTreeWalker(root,whatToShow,filter,entityReferenceExpansion);
-//    return 0;
+    if (impl) return ((DocumentImpl *)impl)->createTreeWalker(root,whatToShow,filter,entityReferenceExpansion);
     return 0;
 }
 
