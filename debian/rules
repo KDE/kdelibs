@@ -143,8 +143,6 @@ binary-arch:  build
 	dh_installdeb -a
 	dh_shlibdeps -a
 	#to get rid of self-dependency
-	cat debian/libarts.substvars | sed -e 's#Depends=kdelibs3 (>= 4:2.1-20010115-0), #Depends=#' > debian/libarts.substvars.new
-	mv debian/libarts.substvars.new debian/libarts.substvars
 	echo -n `cat debian/libarts.substvars` > debian/libarts-alsa.substvars
 	echo ", libasound1 (>= 0.5.5)" >> debian/libarts-alsa.substvars
 	dh_gencontrol 
