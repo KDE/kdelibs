@@ -626,9 +626,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         case ID_DD:
         case ID_DT:
             e = new HTMLDListElementImpl(document);
-            insertNode(e);
-            insertNode(n);
-            return true;
+            if ( insertNode(e) ) {
+                insertNode(n);
+                return true;
+            }
             break;
         case ID_AREA:
         {
