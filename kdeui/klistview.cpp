@@ -1126,8 +1126,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     if ((e_state==ShiftButton) && (e->key()!=Key_Shift) &&
         (e->key()!=Key_Control) && (e->key()!=Key_Meta) &&
         (e->key()!=Key_Alt) && (!d->wasShiftEvent))
+    {
         selectAll(FALSE);
-
+        d->selectedBySimpleMove=false;
+    }
 
     //kdDebug()<<"state: "<<e->state()<<" key: "<<e->key()<<endl;
     d->wasShiftEvent = e_state == ShiftButton;
@@ -1173,6 +1175,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     {
     case Key_Escape:
        selectAll(FALSE);
+       d->selectedBySimpleMove=false;
        emitSelectionChanged=TRUE;
        break;
 
