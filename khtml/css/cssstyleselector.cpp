@@ -194,21 +194,30 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     ::encodedurl = &encodedurl;
     ::pseudoState = PseudoUnknown;
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
+    propsToApply->setAutoDelete( true );
+
     CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
 #if 1
     // try to sort out most style rules as early as possible.
     int id = e->id();
+    int smatch = 0;
+    int schecked = 0;
+
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
 	int tag = selectors[i]->tag;
 	if ( id == tag || tag == -1 ) {
+            ++schecked;
+
             checkSelector( i, e );
 
 	    if ( selectorCache[i].state == Applies ) {
+                ++smatch;
+
 		//qDebug("adding property" );
                 for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
                     for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j )
-                        static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
+                        static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( new CSSOrderedProperty(*properties[selectorCache[i].props[p]+j] ) );
 	    } else if ( selectorCache[i].state == AppliesPseudo ) {
                 for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
                     for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j )
@@ -217,7 +226,12 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
         }
 	else
 	    selectorCache[i].state = Invalid;
+
     }
+//     qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
+//     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
+//             selectors_size, schecked, smatch, propsToApply->count(), properties_size );
+
 #else
     // try to sort out most style rules as early as possible.
     int id = e->id();
@@ -242,7 +256,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
             selstate = selectorCache[selIndex].state;
 	    if ( selstate == Applies ) {
 		//qDebug("adding property" );
-		static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( *prop );
+		static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( new CSSOrderedProperty( **prop ) );
 	    } else if ( selstate == AppliesPseudo )
 		static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append( *prop );
 	}
@@ -417,10 +431,7 @@ static void checkPseudoState( DOM::ElementImpl *e )
 	cleanpath( u );
     }
     //completeURL( attr.string() );
-    if ( KHTMLFactory::vLinks()->contains( u ) )
-	pseudoState = PseudoVisited;
-    else
-	pseudoState = PseudoLink;
+    pseudoState = KHTMLFactory::vLinks()->contains( u ) ? PseudoVisited : PseudoLink;
 }
 
 bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
@@ -503,9 +514,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	} else if ( sel->value == ":visited" ) {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
-	    if ( pseudoState == PseudoVisited ) {
+	    if ( pseudoState == PseudoVisited )
 		return true;
-	    }
 	} else if ( sel->value == ":hover" ) {
 	    selectorDynamicState |= StyleSelector::Hover;
 	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
@@ -589,6 +599,7 @@ void CSSStyleSelector::buildLists()
 
     // This algorithm sucks badly. but hey, its performance shouldn't matter much ( Dirk )
     for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
+
         prop = properties;
         int len = 0;
         int offset = 0;
@@ -615,6 +626,36 @@ void CSSStyleSelector::buildLists()
             ++len;
         }
     }
+
+#if 0
+    // and now the same for the selector map
+    for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
+        qDebug( "trying for sel: %d", sel );
+        int len = 0;
+        int offset = 0;
+        bool matches = false;
+        for ( unsigned int i = 0; i < selectors_size; i++ ) {
+            int tag = selectors[i]->tag;
+            if ( sel != tag && tag != -1 )
+                selectorCache[i].state = Invalid;
+            else
+                selectorCache[i].state = Unknown;
+
+            if ( matches != ( selectorCache[i].state == Unknown ) ) {
+                if ( matches ) {
+                    qDebug( "new: offs: %d,  len: %d", offset, len );
+                    matches = false;
+                }
+                else {
+                    matches = true;
+//                    offset = p-selectors;
+                    len = 0;
+                }
+            }
+            ++len;
+        }
+    }
+#endif
 }
 
 
@@ -731,7 +772,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         case CSS_PROP_FONT_SIZE:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
-		case CSS_PROP_BACKGROUND_IMAGE:
+        case CSS_PROP_BACKGROUND_IMAGE:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
 	    first = true;
