@@ -2664,7 +2664,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
         if ((mask & DemandsAttention) &&
 	    ((p->state & DemandsAttention) != (state & DemandsAttention))) {
-            e.xclient.data.l[0] = (state & Hidden) ? 1 : 0;
+            e.xclient.data.l[0] = (state & DemandsAttention) ? 1 : 0;
             e.xclient.data.l[1] = net_wm_state_demands_attention;
             e.xclient.data.l[2] = 0l;
 
