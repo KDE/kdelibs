@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "../../kdecore/kdatastream.h"
 #include "../../kdecore/kdatastream.cpp"
 #include "../dcopclient.h"
+#include "../dcopref.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -51,7 +52,7 @@ void queryObjects( const char* app )
 	    fprintf( stdout, "%s\n", (*it).data() );
     }
     if ( !ok )
-	qFatal( "application not accessible" );
+	qFatal( "application '%s' not accessible", app );
 }
 
 void queryFunctions( const char* app, const char* obj )
@@ -62,7 +63,7 @@ void queryFunctions( const char* app, const char* obj )
 	fprintf( stdout, "%s\n", (*it).data() );
     }
     if ( !ok )
-	qFatal( "object not accessible" );
+	qFatal( "object '%s' in application '%s' not accessible", obj, app );
 }
 
 
@@ -138,7 +139,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	left = f.find( '(' );
 	right = f.find( ')' );
     }
-    
+
  doit:
     if ( left < 0 )
 	f += "()";
@@ -156,7 +157,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	fc += '(';
 	bool first = TRUE;
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-	    if ( !first ) 
+	    if ( !first )
 		fc +=",";
 	    first = FALSE;
 	    fc += *it;
@@ -200,7 +201,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 		arg << QVariant( mkSize( s ) );
 	    else if ( s.left( 6 ) == "QRect(" )
 		arg << QVariant( mkRect( s ) );
-	    else 
+	    else
 		arg << QVariant( s );
 	} else
 	    qFatal( "cannot handle datatype '%s'", type.latin1() );
@@ -255,7 +256,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	} else if (replyType == "QVariant") {
 	    QVariant v;
 	    reply >> v;
-	    if ( v.type() == QVariant::Bool ) 
+	    if ( v.type() == QVariant::Bool )
 		fprintf( stdout, "%s\n", v.toBool() ? "true" : "false" );
 	    else if ( v.type() == QVariant::Rect ) {
 		QRect r = v.toRect();
@@ -266,12 +267,18 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    } else if ( v.type() == QVariant::Size ) {
 		QSize s = v.toSize();
 		fprintf( stdout, "QSize(%d,%d)\n", s.width(), s.height() );
-	    } else if ( v.canCast( QVariant::Int ) ) 
+	    } else if ( v.canCast( QVariant::Int ) )
 		fprintf( stdout, "%d\n", v.toInt() );
 	    else if ( !v.toString().isNull() )
 		fprintf( stdout, "%s\n", v.toString().latin1() );
 	    else
 		fprintf( stdout, "<%s>\n", QVariant::typeToName( v.type() ) );
+	} else if ( replyType == "DCOPRef" ) {
+	    DCOPRef r;
+	    reply >> r;
+	    fprintf( stdout, "DCOPRef(%s,%s)\n", r.app().data(), r.object().data() );
+	} else if ( !replyType.isEmpty() && replyType != "void" && replyType != "ASYNC" ) {
+	    fprintf( stdout, "<%s>\n",  replyType.data() );
 	}
     }
 }
