@@ -176,7 +176,7 @@ KLocale::KLocale( const QString& _catalogue )
     /* "" instructs setlocale to use the default locale
        which is selected from the environment variable LANG.
     */
-    setlocale (LC_ALL, "");
+    setlocale (LC_MESSAGES, "");
 #endif
     QString catalogue;
 

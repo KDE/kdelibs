@@ -348,21 +348,6 @@ public:
 			      const QString& charset);
 
     /**
-     * if the application can handle localized numeric and monetary
-     * values, it should call this function.
-     * 
-     * By default, this is disabled.
-     */
-    void enableNumericLocale(bool on = true);
-
-    /**
-     * @return True if the application has instructed KLocale that it can
-     * handle localized numeric and monetary values, if POSIX only (the
-     * default), false.
-     */
-    bool numericLocaleEnabled() const;
-
-    /**
      * Makes {format,read}*() methods ready for use.
      */
     void initFormat(KConfig *config);
@@ -392,10 +377,6 @@ private:
     QString time;
     QString chset;
     QTextCodec *codec;
-    QString lc_numeric;
-    QString lc_monetary;
-    QString lc_time;
-    bool numeric_enabled;
     QString langs;
     
     // Numbers and money
