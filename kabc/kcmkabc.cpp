@@ -100,7 +100,7 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
   mEditButton->setEnabled( false );
   mConvertButton = buttonBox->addButton( i18n( "&Convert..." ), this, SLOT(slotConvert()) );
   mConvertButton->setEnabled( false );
-  mStandardButton = buttonBox->addButton( i18n( "&Use as Standard..." ), this, SLOT(slotStandard()) );
+  mStandardButton = buttonBox->addButton( i18n( "&Use as Standard" ), this, SLOT(slotStandard()) );
   mStandardButton->setEnabled( false );
   buttonBox->layout();
 
