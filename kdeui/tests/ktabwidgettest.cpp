@@ -369,4 +369,4 @@ void Test::toggleLabels(bool state)
   mWidget->show();
 }
 
-#include "tab.moc"
+#include "ktabwidgettest.moc"
