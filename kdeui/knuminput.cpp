@@ -261,11 +261,11 @@ KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget* parent,
 
 void KIntNumInput::init(int val, int _base)
 {
-    m_value = val;
-
-    m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, m_value, _base, this, "KIntNumInput::KIntSpinBox");
+    m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, _base, this, "KIntNumInput::KIntSpinBox");
     m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
     connect(m_spin, SIGNAL(valueChanged(int)), SIGNAL(valueChanged(int)));
+
+    setFocusProxy(m_spin);
 }
 
 
@@ -337,6 +337,8 @@ void KIntNumInput::setEditFocus(bool mark)
 
 QSize KIntNumInput::minimumSizeHint() const
 {
+    constPolish();
+
     int w = 0;
     int h = 0;
 
@@ -384,7 +386,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
     if(m_label && (m_alignment & AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeSpin.height());
 
-    m_spin->setGeometry(w, h, m_slider ? m_colw2 : e->size().width() - w, m_sizeSpin.height());
+    m_spin->setGeometry(w, h, m_slider ? m_colw2 : QMAX(m_colw2, e->size().width() - w), m_sizeSpin.height());
     w += m_colw2 + 8;
 
     if(m_slider)
@@ -419,7 +421,7 @@ void KIntNumInput::setValue(int val)
 
 int  KIntNumInput::value()
 {
-    return m_value;
+    return m_spin->value();
 }
 
 
@@ -492,6 +494,8 @@ void KDoubleNumInput::init(double value)
     edit->setAlignment(AlignRight);
     edit->setValidator(new KFloatValidator(this, "KDoubleNumInput::KFloatValidator"));
 
+    setFocusProxy(edit);
+
     m_slider = 0;
     m_suffix = m_prefix = "";
 
@@ -514,6 +518,8 @@ void KDoubleNumInput::sliderMoved(int val)
 
 QSize KDoubleNumInput::minimumSizeHint() const
 {
+    constPolish();
+
     int w = 0;
     int h = 0;
 

@@ -203,7 +203,7 @@ public:
      * @param upper  upper bound on range
      * @param step   step size for the QSlider
      */
-    void setRange(int lower, int upper, int step, bool slider=true);
+    void setRange(int lower, int upper, int step=1, bool slider=true);
 
     /**
      * Sets the special value text. If set, the SpinBox will display
@@ -259,8 +259,6 @@ protected:
     KIntSpinBox* m_spin;
     QSlider*     m_slider;
     QSize        m_sizeSpin;
-
-    int m_value;
 };
 
 
@@ -331,7 +329,7 @@ public:
      * @param upper  upper bound on range
      * @param step   step size for the QSlider
      */
-    void setRange(double lower, double upper, double step, bool slider=true);
+    void setRange(double lower, double upper, double step=1, bool slider=true);
 
     /**
      * the Format string that should be used to display the double value.
