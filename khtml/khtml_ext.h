@@ -157,6 +157,8 @@ private slots:
 protected slots:
     void slotActivated() { KAction::slotActivated(); }
 private:
+    void init(KHTMLPart *part, bool direction);
+private:
     QPopupMenu *m_popup;
     bool m_direction;
     KHTMLPart *m_part;

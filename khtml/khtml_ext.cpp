@@ -728,48 +728,42 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
   return m_part->openURLInFrame( url, urlArgs );
 }
 
+// defined in khtml_part.cpp
+extern const int KDE_NO_EXPORT fastZoomSizes[];
+extern const int KDE_NO_EXPORT fastZoomSizeCount;
+
 // BCI: remove in KDE 4
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
     : KAction( text, icon, 0, receiver, slot, parent, name )
 {
-    m_direction = direction;
-    m_part = part;
-
-    m_popup = new QPopupMenu;
-    m_popup->insertItem( i18n( "Default Font Size" ) );
-
-    int m = m_direction ? 1 : -1;
-
-    for ( int i = 1; i < 5; ++i )
-    {
-        int num = i * m;
-        QString numStr = QString::number( num );
-        if ( num > 0 ) numStr.prepend( '+' );
-
-        m_popup->insertItem( i18n( "Font Size %1" ).arg( numStr ) );
-    }
-
-    connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
+    init(part, direction);
 }
 
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const KShortcut &cut, const QObject *receiver, const char *slot, QObject *parent, const char *name )
     : KAction( text, icon, cut, receiver, slot, parent, name )
 {
+    init(part, direction);
+}
+
+void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
+{
     m_direction = direction;
     m_part = part;
 
     m_popup = new QPopupMenu;
-    m_popup->insertItem( i18n( "Default Font Size" ) );
+    m_popup->insertItem( i18n( "Default Font Size (100%)" ) );
 
     int m = m_direction ? 1 : -1;
+    int ofs = fastZoomSizeCount / 2;       // take index of 100%
 
-    for ( int i = 1; i < 5; ++i )
+    // this only works if there is an odd number of elements in fastZoomSizes[]
+    for ( int i = m; i != m*(ofs+1); i += m )
     {
         int num = i * m;
         QString numStr = QString::number( num );
         if ( num > 0 ) numStr.prepend( '+' );
 
-        m_popup->insertItem( i18n( "Font Size %1" ).arg( numStr ) );
+        m_popup->insertItem( i18n( "%1%" ).arg( fastZoomSizes[ofs + i] ) );
     }
 
     connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
@@ -801,7 +795,7 @@ void KHTMLZoomFactorAction::slotActivated( int id )
     if (idx == 0)
         m_part->setZoomFactor(100);
     else
-        m_part->setZoomFactor(m_part->zoomFactor() + (m_direction ? 10 : -10) * idx);
+        m_part->setZoomFactor(fastZoomSizes[fastZoomSizeCount/2 + (m_direction ? 1 : -1)*idx]);
 }
 
 #include "khtml_ext.moc"
