@@ -47,7 +47,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{AccelNone,            "Group:File", I18N_NOOP("File"), 0, 0, 0, 0, KShortcut(), false },
 	{ Open,                I18N_NOOP("Open"), 0,     Qt::CTRL+Qt::Key_O, 0, 0, 0, KShortcut(), false },
 	{ New,                 I18N_NOOP("New"), 0,      Qt::CTRL+Qt::Key_N, 0, 0, 0, KShortcut(), false },
-	{ Close,               I18N_NOOP("Close"), 0,    Qt::CTRL+Qt::Key_W, Qt::CTRL+Qt::Key_Escape, 0, 0, KShortcut(), false },
+	{ Close,               I18N_NOOP("Close"), 0,    Qt::CTRL+Qt::Key_W, Qt::CTRL+Qt::Key_Escape, 0, Qt::CTRL+Qt::Key_W, KShortcut(), false },
 	{ Save,                I18N_NOOP("Save"), 0,     Qt::CTRL+Qt::Key_S, 0, 0, 0, KShortcut(), false },
 	{ Print,               I18N_NOOP("Print"), 0,    Qt::CTRL+Qt::Key_P, 0, 0, 0, KShortcut(), false },
 	{ Quit,                I18N_NOOP("Quit"), 0,     Qt::CTRL+Qt::Key_Q, 0, 0, 0, KShortcut(), false },
