@@ -44,7 +44,7 @@ RenderApplet::RenderApplet(QScrollView *view,
     m_applet = applet;
 
     KJavaAppletContext *context = 0;
-    KHTMLView *_view = dynamic_cast<KHTMLView*>(view);
+    KHTMLView *_view = static_cast<KHTMLView*>(view);
     if ( _view ) {
         KHTMLPart *part = _view->part();
         context = part->createJavaContext();
