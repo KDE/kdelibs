@@ -91,6 +91,7 @@ public:
     virtual const char * objectName() const { return "HTMLTableCell"; };
 
 protected:
+    int percent;
     int rspan;
     int cspan;
     int padding;
@@ -176,7 +177,7 @@ protected:
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
     void calcColInfo(int pass);
     int  addColInfo(int _startCol, int _colSpan, int _minSize,
-                    int _prefSize, int _maxSize, ColType _colType);
+                    int _prefSize, ColType _colType);
     void addRowInfo(int _row, int _colInfoIndex);
     void optimiseCellWidth();
     void scaleColumns(unsigned int c_start, unsigned int c_end, int tooAdd);
@@ -210,7 +211,6 @@ protected:
        int     colSpan;
        int     minSize;
        int     prefSize;
-       int     maxSize;
        ColType colType;
     } ColInfo_t;
     /*
@@ -247,10 +247,6 @@ protected:
     int         fixed_width;
     int         min_width;
     int         pref_width;
-    int         max_width;
-
-//    int          _minWidth;
-//    int          _prefWidth;
 
     QArray<int> columnPos;
     QArray<int> columnPrefPos;

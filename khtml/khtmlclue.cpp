@@ -41,20 +41,26 @@
 #include <qimage.h>
 #include <qdrawutil.h>
 
-#define CLUE_DEBUG
+//#define CLUE_DEBUG
 //#define DEBUG_ALIGN
+//#define DEBUG_LAYOUT
+
+
+// -- Do not edit --
+#ifdef DEBUG_LAYOUT
+#define DEBUGL(x)   x
+#else
+#define DEBUGL(x)
+#endif
+// --- Thank you ---
 
 //-----------------------------------------------------------------------------
 
-HTMLClue::HTMLClue( int _percent, int _width )
+HTMLClue::HTMLClue()
 	 : HTMLObject()
 {
     x = y = 0;
-    percent = _percent;
-    if (percent == 0)
-        fixed_width = _width;
-    else
-	fixed_width = UNDEFINED;
+    fixed_width = UNDEFINED;
 	
     valign = Bottom;
     halign = Left;
@@ -316,6 +322,11 @@ void HTMLClue::calcSize( HTMLClue * )
     // This is a empty virtual function
 }
 
+void HTMLClue::setFixedWidth( int _width)
+{
+    fixed_width = _width;
+}
+
 void HTMLClue::recalcBaseSize( QPainter *_painter )
 {
     HTMLObject *obj;
@@ -347,7 +358,7 @@ int HTMLClue::calcMinWidth()
 
 int HTMLClue::calcPreferredWidth()
 {
-    if ( percent == 0 )
+    if ( fixed_width != UNDEFINED )
 	return fixed_width;
 
     HTMLObject *obj;
@@ -367,17 +378,29 @@ int HTMLClue::calcPreferredWidth()
 
 void HTMLClue::setMaxWidth( int _max_width)
 {
-    max_width = _max_width;
-    if ( percent == 0)
+    if (fixed_width == UNDEFINED)
     {
-        if (max_width > fixed_width)
-            max_width = fixed_width;
-
-        if (max_width < min_width)
-	    max_width = min_width;
+        // Variable width
+        width = _max_width;
+        if (_max_width < min_width)
+        {
+            printf("Layout error in HTMLClue::setMaxWidth(this = %p): _max_width (%d) smaller than minimum width(%d)!\n", 
+            this, _max_width, min_width);
+        }
     }
-    // @@WABA: max_width should be set to percent*_max_width / 100
-    // Taking into account min_width
+    else 
+    {
+    	// Fixed with
+        width = fixed_width;
+        if (_max_width < width)
+        {
+            printf("Layout error in HTMLClue::setMaxWidth(this = %p): _max_width (%d) smaller than fixed width (%d)!\n", 
+            this, _max_width, fixed_width);
+        }
+    }	
+
+    if (width < min_width)
+	width = min_width;
 }
 
 void HTMLClue::setMaxAscent( int _a )
@@ -571,8 +594,8 @@ HTMLClue::printDebug( bool propagate, int indent, bool printObjects )
 
 //-----------------------------------------------------------------------------
 
-HTMLClueV::HTMLClueV( int _percent, int _width )
-    : HTMLClue( _percent, _width )
+HTMLClueV::HTMLClueV()
+    : HTMLClue()
 {
     alignLeftList  = 0;
     alignRightList = 0;
@@ -646,6 +669,7 @@ HTMLObject* HTMLClueV::mouseEvent( int _x, int _y, int button, int state )
 
 void HTMLClueV::calcSize( HTMLClue *parent )
 {
+DEBUGL(printf("Start HTMLClueV::CalcSize( this = %p )\n", this));
     int lmargin = parent ? parent->getLeftMargin( getYPos() ) : 0;
 
 #if 0
@@ -672,35 +696,18 @@ void HTMLClueV::calcSize( HTMLClue *parent )
         curr = head;
     }
 
-    if ( percent == -1 )
-        // Whatever width we get
-    	width = 0;
-    else 
-    {
-        if (percent == 0)
-            // Fixed width
-            width = fixed_width;
-        else 
-            // Percentage width
-            width = (max_width * percent) / 100;
-
-        if (min_width > width)
-            width = min_width;
-    }
-    
     while ( curr != 0 )
     {
         // Set an initial ypos so that the alignment stuff knows where
         // the top of this object is
-        if (percent == -1)
-            curr->setMaxWidth( max_width );
-        else
-            curr->setMaxWidth( width );
-
+        curr->setMaxWidth( width );
         curr->setYPos( ascent );
         curr->calcSize( this );
         if ( curr->getWidth() > width )
- 	    width = curr->getWidth();
+        {
+            printf("Layout error in HTMLClueV::calcSize(this = %p): HTMLClueV not wide enough (width = %d)!\n", 
+            	this, width);
+ 	}
         ascent += curr->getHeight();
         curr->setPos( lmargin, ascent - curr->getDescent() );
         curr = curr->next();
@@ -738,6 +745,7 @@ void HTMLClueV::calcSize( HTMLClue *parent )
              ascent = clue->getYPos() + clue->parent()->getYPos() -
                          clue->parent()->getAscent();
     }
+DEBUGL(printf("End HTMLClueV::CalcSize( this = %p )\n", this));
 }
 
 void HTMLClueV::print( QPainter *_painter, int _tx, int _ty )
@@ -822,7 +830,7 @@ void HTMLClueV::findFreeArea( int _y, int _width, int _height, int _indent,
     {
     	// try position try_y
     	lmargin = _indent;
-	rmargin = max_width;
+	rmargin = width;
         next_y = 0;
     
 	// Calculate left margin
@@ -867,7 +875,7 @@ void HTMLClueV::findFreeArea( int _y, int _width, int _height, int _indent,
         }
         
         /* no margins here.. just put it in */
-        if ((lmargin == _indent) && (rmargin == max_width))
+        if ((lmargin == _indent) && (rmargin == width))
             break;
 
         /* object fits within current margins */
@@ -1122,7 +1130,7 @@ int HTMLClueV::getLeftMargin( int _y )
 
 int HTMLClueV::getRightMargin( int _y )
 {
-    int margin = max_width;
+    int margin = width;
     HTMLClueAligned *clue;
 
     for ( clue = alignRightList; clue != 0; clue = clue->nextClue() )
@@ -1208,8 +1216,8 @@ HTMLClueV::printDebug( bool propagate, int indent, bool printObjects )
 
 //-----------------------------------------------------------------------------
 
-HTMLCell::HTMLCell( int _percent, int _width, const char *_url, const char *_target ) :
-  HTMLClueV( _percent, _width )
+HTMLCell::HTMLCell( const char *_url, const char *_target ) :
+  HTMLClueV()
 {
   url = _url;
   target = _target;
@@ -1365,16 +1373,23 @@ bool HTMLClueH::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
 void HTMLClueH::calcSize( HTMLClue *parent )
 {
     HTMLObject *obj;
-    int lmargin = 0;
+    int x_pos = 0;
     int remainingWidth;
     
-    // FIXME need absloute ypos here...
-    // @@@WABA: Space management needs to be used more extensively!
-    if ( parent )
-	lmargin = parent->getLeftMargin( getYPos() );
+DEBUGL(printf("Start HTMLClueH::CalcSize( this = %p )\n", this));
 
-    remainingWidth = max_width - (lmargin + indent);
-    width = lmargin + indent;
+    // FIXME need absloute ypos here...
+    // The minimum width of children is not in all circumstance guaranteed
+    // this is not important _YET_ because the current code seems to work
+    // for the situations in which we use it.
+    // @@@WABA: Space management needs to be used more extensively!
+   
+    if ( parent )
+	x_pos = parent->getLeftMargin( getYPos() );
+
+    x_pos += indent;
+    
+    remainingWidth = width - x_pos;
     descent = 0;
     ascent = 0;
 
@@ -1386,14 +1401,15 @@ void HTMLClueH::calcSize( HTMLClue *parent )
         obj->setMaxWidth( remainingWidth );
 	obj->calcSize( this );
     	obj->fitLine( (obj == head), true, -1);
-	obj->setXPos( width );
+	obj->setXPos( x_pos );
 	w = obj->getWidth();
-	width += w;
-	remainingWidth -= w;
+	x_pos += w;
+	remainingWidth -= x_pos;
 	if (remainingWidth < 0)
 	{
 	     remainingWidth = 1;
-	     printf("Layout error: HTMLClueH not wide enough\n");
+	     printf("Layout error: HTMLClueH::CalcSize(this = %p) not wide enough (width = %d, x_pos = %d)!\n",
+	     	this, width, x_pos);
              // This might be because of lmargin: in that case
              // a larger free area should be searched!
 	}
@@ -1421,11 +1437,7 @@ void HTMLClueH::calcSize( HTMLClue *parent )
 	    for ( obj = head; obj != 0; obj = obj->next() )
 		obj->setYPos( ascent - d );
     }
-    if ( fixed_width != UNDEFINED)
-    {
-        if (fixed_width > width)
-            width = fixed_width;
-    }
+DEBUGL(printf("End HTMLClueH::CalcSize( this = %p )\n", this));
 }
 
 int HTMLClueH::calcMinWidth()
@@ -1453,11 +1465,8 @@ int HTMLClueH::calcPreferredWidth()
     for ( obj = head; obj != 0; obj = obj->next() )
 	prefWidth += obj->calcPreferredWidth();
 	
-    if ( fixed_width != UNDEFINED)
-    {
-        if (fixed_width > prefWidth)
-            prefWidth = fixed_width;
-    }
+    if (min_width > prefWidth)
+        prefWidth = min_width;
 
     return prefWidth;
 }
@@ -1542,25 +1551,16 @@ void HTMLClueFlow::getSelectedText( QString &_str )
 // 
 void HTMLClueFlow::calcSize( HTMLClue *parent )
 {
-//    HTMLClue::calcSize( parent );
+DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 
     HTMLObject *obj = head;
     HTMLObject *line = head;
     HTMLVSpace::Clear clear = HTMLVSpace::CNone;;
     int lmargin, rmargin;
-    int remainingWidth = max_width - indent;
+    int remainingWidth = width - indent;
 
     ascent = 0;
     descent = 0;
-    width = 0;
-
-    // @@WABA: Perhaps width should always be equal to max_width
-    // At least if we align the data to right or center, 
-    // we assume the actual width is max_width
-    if (halign != Left)
-    {
-        width = max_width;
-    }
     
     lmargin = parent->getLeftMargin( getYPos() );
     if ( indent > lmargin )
@@ -1783,9 +1783,6 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 		    extra = 0;
 	    }
 
-	    if ( w > width )
-		width = w;
-
 	    while ( line != obj )
 	    {
 		if ( !line->isAligned() )
@@ -1807,7 +1804,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    {
 	    	int new_lmargin, new_rmargin;
 
-		parent->findFreeArea(oldy, max_width,
+		parent->findFreeArea(oldy, width,
 			1, 0, &y, &new_lmargin, &new_rmargin);
 	    }
 	    else if ( clear == HTMLVSpace::Left)
@@ -1834,12 +1831,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    clear = HTMLVSpace::CNone;
 	}
     }
-
-    if ( fixed_width != UNDEFINED)
-    {
-        if (fixed_width > width)
-            width = fixed_width;
-    }
+DEBUGL(printf("End HTMLClueFlow::CalcSize( this = %p )\n", this));
 }
 
 int HTMLClueFlow::findPageBreak( int _y )
@@ -1880,7 +1872,7 @@ int HTMLClueFlow::calcMinWidth()
 
 #if 1
     HTMLObject *obj;
-    int min_width = 0;
+    min_width = 0;
 
     for ( obj = head; obj != 0; obj = obj->next() )
     {
@@ -1920,9 +1912,9 @@ int HTMLClueFlow::calcMinWidth()
 	{
 	    ow = obj->calcMinWidth();
 
-	    // we try not to grow larger than max_width by breaking at
+	    // we try not to grow larger than width by breaking at
 	    // object boundaries if necessary.
-	    if ( runWidth + ow > max_width )
+	    if ( runWidth + ow > width )
 		runWidth = 0;
 
 	    runWidth += ow;
@@ -1980,49 +1972,37 @@ int HTMLClueFlow::calcPreferredWidth()
 //-----------------------------------------------------------------------------
 
 // HTMLClueAligned behaves like a HTMLClueV
-// The difference is that HTMLClueV takes aligned flows into account.
+//
+// One difference is that HTMLClueV takes aligned flows into account.
 // We don't.
+//
+// A second difference is that the size of a HTMLClueAligned is always
+// equal to its actual contents. 
 //
 void HTMLClueAligned::calcSize( HTMLClue *parent )
 {
     HTMLObject *obj;
-
-    width = 0;
+    int new_width = 0;
     ascent = 0;
     descent = 0;
 
-    if ( percent == -1 )
-        // Whatever width we get
-    	width = 0;
-    else 
-    {
-        if (percent == 0)
-            // Fixed width
-            width = fixed_width;
-        else 
-            // Percentage width
-            width = (max_width * percent) / 100;
-
-        if (min_width > width)
-            width = min_width;
-    }
-    
     for ( obj = head; obj != 0; obj = obj->next() )
     {
         // Set an initial ypos so that the alignment stuff knows where
         // the top of this object is
-        if (percent == -1)
-            obj->setMaxWidth( max_width );
-        else
-            obj->setMaxWidth( width );
+        obj->setMaxWidth( width );
 
         obj->setYPos( ascent );
         obj->calcSize( this );
-        if ( obj->getWidth() > width )
- 	    width = obj->getWidth();
+        int w = obj->getWidth();
+        if ( w > new_width )
+        {
+            new_width = w; 
+ 	}
         ascent += obj->getHeight();
         obj->setPos( 0, ascent - obj->getDescent() );
     }
+    width = new_width;
 }
 
 //-----------------------------------------------------------------------------

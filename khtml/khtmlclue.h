@@ -73,15 +73,11 @@ class HTMLAnchor;
 class HTMLClue : public HTMLObject
 {
 public:
-    /************************************************************
+    /*
      * This class is abstract. Do not instantiate it. 
      *
-     * if:
-     *     _percent == -1      width = best fit
-     *     _percent == 0       width = _width (fixed)
-     *     _percent == +ve     width = _percent * 100 / max_width
      */
-    HTMLClue( int _percent = -1, int _width = 0);
+    HTMLClue( );
     virtual ~HTMLClue();
 
     virtual int  findPageBreak( int _y );
@@ -102,6 +98,8 @@ public:
      */
     virtual void calcSize( HTMLClue *parent = 0L );
     virtual void recalcBaseSize( QPainter * );
+
+    void setFixedWidth( int _width);
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
@@ -153,7 +151,7 @@ public:
 	
     virtual void findFreeArea( int _y, int, int, int,
                                int *_y_pos, int *_lmargin, int *_rmargin)
-        { *_y_pos = _y; *_lmargin = 0; *_rmargin = max_width; }
+        { *_y_pos = _y; *_lmargin = 0; *_rmargin = width; }
     // This method tries to find a free rectangular area of _width x _height
     // from position _y on. The start of this area is written in *y_pos.
     // The actual left and right margins of the area are returned in
@@ -165,7 +163,7 @@ public:
     virtual int  getLeftMargin( int )
         { return 0; }
     virtual int  getRightMargin( int )
-	{ return max_width; }
+	{ return width; }
     virtual int  getLeftClear( int _y )
 	{ return _y; }
     virtual int  getRightClear( int _y )
@@ -192,10 +190,8 @@ public:
 			     bool printObjects = false );
   
 protected:
-    int percent;
     int fixed_width;
     int min_width;
-    int max_width;
     
     HTMLObject *head;
     HTMLObject *tail;
@@ -208,10 +204,12 @@ protected:
 //-----------------------------------------------------------------------------
 // Align objects vertically
 //
+// Sizes supported: Variable, Fixed
+// Sizes unsupported: Percentage
 class HTMLClueV : public HTMLClue
 {
 public:
-    HTMLClueV( int _percent = -1, int _width = 0);
+    HTMLClueV();
     virtual ~HTMLClueV() { }
 
     virtual void reset();
@@ -258,11 +256,13 @@ protected:
 //-----------------------------------------------------------------------------
 // Used for aligning images etc. to the left or right of the page.
 //
+// Sizes supported: Variable
+// Sizes unsupported: Fixed, Percentage
 class HTMLClueAligned : public HTMLClueV
 {
 public:
-    HTMLClueAligned( HTMLClue *_parent, int _percent = -1, int _width = 0 )
-	: HTMLClueV( _percent, _width )
+    HTMLClueAligned( HTMLClue *_parent )
+	: HTMLClueV()
     { prnt = _parent; nextAligned = 0; setAligned( true ); }
     virtual ~HTMLClueAligned() { }
     
@@ -286,11 +286,13 @@ private:
 //-----------------------------------------------------------------------------
 // Align objects across the page, wrapping at the end of a line
 //
+// Sizes supported: Variable
+// Sizes unsupported: Fixed, Percentage
 class HTMLClueFlow : public HTMLClue
 {
 public:
-    HTMLClueFlow( int _percent=-1, int _width = 0)
-		: HTMLClue( _percent, _width) { indent = 0; }
+    HTMLClueFlow()
+		: HTMLClue() { indent = 0; }
     virtual ~HTMLClueFlow() { }
     
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
@@ -311,13 +313,15 @@ protected:
 };
 
 
-/**
- * Used for KFMs HTML extension
- */
+//-----------------------------------------------------------------------------
+// Used for KFMs HTML extension
+//
+// Sizes supported: Variable, Fixed
+// Sizes unsupported: Percentage
 class HTMLCell : public HTMLClueV
 {
 public:
-  HTMLCell( int _percent = -1, int _width = 0, const char *_url = 0L, const char *_target = 0L );
+  HTMLCell( const char *_url = 0L, const char *_target = 0L );
   virtual ~HTMLCell() { }
   
   virtual const char* getURL() const { return url; }
@@ -344,14 +348,16 @@ protected:
 //-----------------------------------------------------------------------------
 // Align objects across the page, without wrapping.
 // This clue is required for lists, etc. so that tables can dynamically
-// change max_width and have the contents' max_widths changed appropriately.
+// change width and have the contents' widths changed appropriately.
 // Also used by <pre> lines
 //
+// Sizes supported: Variable
+// Sizes unsupported: Fixed, Percentage
 class HTMLClueH : public HTMLClue
 {
 public:
-    HTMLClueH( int _percent = -1, int _width = 0 )
-	    : HTMLClue( _percent, _width ) { indent = 0; }
+    HTMLClueH()
+	    : HTMLClue() { indent = 0; }
     virtual ~HTMLClueH() { }
 	
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,

@@ -1801,7 +1801,7 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 		}
                 else
 	    	{
-		    HTMLClueH *valigned = new HTMLClueH ();
+		    HTMLClueH *valigned = new HTMLClueH();
 		    valigned->setVAlign( valign );
 		    valigned->append( image );
 		    flow->append( valigned );
@@ -1810,7 +1810,7 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 	    // we need to put the image in a HTMLClueAligned
 	    else
 	    {
-		HTMLClueAligned *aligned = new HTMLClueAligned (flow);
+		HTMLClueAligned *aligned = new HTMLClueAligned( flow );
 		aligned->setHAlign( align );
 		aligned->append( image );
 		flow->append( aligned );
@@ -1895,8 +1895,8 @@ void KHTMLParser::parseL( HTMLClue *_clue, const char *str )
 //@@WABA: This should be handled differently
 
 	// fixed width spacer
-//	HTMLClueV *vc = new HTMLClueV( 0, 0, indentSize, 0 );
-	HTMLClueV *vc = new HTMLClueV( 0, indentSize); // Fixed width clue
+	HTMLClueV *vc = new HTMLClueV();
+	vc->setFixedWidth( indentSize ); // Fixed width clue
 	vc->setVAlign( HTMLClue::Top );
 	c->append( vc );
 
@@ -2516,11 +2516,12 @@ const char* KHTMLParser::parseCell( HTMLClue *_clue, const char *str )
     HTMLClue::VAlign valign = HTMLClue::Top;
     HTMLClue::HAlign halign = gridHAlign;
     
-    HTMLClueV *vc = new HTMLCell( 0, cell_width, url, target ); // fixed width
-    
+    HTMLClueV *vc = new HTMLCell( url, target );     
     _clue->append( vc );
+    vc->setFixedWidth( cell_width ); // fixed width
     vc->setVAlign( valign );
     vc->setHAlign( halign );
+
     flow = 0;
     indent = 0;
     divAlign = HTMLClue::Left;
@@ -2529,8 +2530,9 @@ const char* KHTMLParser::parseCell( HTMLClue *_clue, const char *str )
     str = parseBody( vc, end );
     popBlock( ID_CELL, vc );
 
-    vc = new HTMLClueV( 0, 0 ); // fixed width
-    _clue->append( vc );
+// @@WABA What does this do?
+//    vc = new HTMLClueV( 0, 0 ); // fixed width
+//    _clue->append( vc );
 
     indent = oldindent;
     divAlign = olddivalign;
@@ -2646,7 +2648,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 				capAlign = HTMLClue::Top;
 			}
 		    }
-		    caption = new HTMLClueV( 0, 0 );
+		    caption = new HTMLClueV();
 		    divAlign = HTMLClue::HCenter;
 		    flow = 0;
 		    pushBlock(ID_CAPTION, 3 );
@@ -2943,7 +2945,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 	}
 	else
 	{
-	    HTMLClueAligned *aligned = new HTMLClueAligned (_clue);
+	    HTMLClueAligned *aligned = new HTMLClueAligned( _clue );
 	    aligned->setHAlign( align );
 	    aligned->append( table );
 	    _clue->append( aligned );

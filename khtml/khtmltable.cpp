@@ -48,11 +48,17 @@
 //-----------------------------------------------------------------------------
 
 HTMLTableCell::HTMLTableCell( int _percent, int _width, int rs, int cs, int pad )
-	 : HTMLClueV( _percent, _width )
+	 : HTMLClueV()
 {
-	rspan = rs;
-	cspan = cs;
-	padding = pad;
+    rspan = rs;
+    cspan = cs;
+    padding = pad;
+
+    percent = _percent;
+    if (percent == 0)
+        fixed_width = _width;
+    else
+        fixed_width = UNDEFINED;
 }
 
 bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
@@ -72,7 +78,7 @@ bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 
  		QBrush brush( bg );
 		_painter->fillRect( _tx + x - padding, _ty + y - ascent + top,
-			max_width + padding * 2, bottom - top, brush );
+			width + padding * 2, bottom - top, brush );
 	}
 
 	return HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
@@ -110,17 +116,12 @@ void HTMLTableCell::setMaxWidth( int _max_width)
     // HTMLTableCells don't do their own width-calculation.
     // It is done by HTMLTable instead.
     // We just do whatever the HTMLTable wants.
-    max_width = _max_width;
+    width = _max_width;
 }
                                                         
 void HTMLTableCell::calcSize( HTMLClue *parent )
 {
     HTMLClueV::calcSize(parent);
-
-    // HTMLTableCells don't do their own width-calculation.
-    // It is done by HTMLTable instead.
-    // We just do whatever the HTMLTable wants.
-    width = max_width;
 }
 //-----------------------------------------------------------------------------
 
@@ -372,16 +373,16 @@ void HTMLTable::calcSize( HTMLClue * )
     // recalculate min/max widths
 //    calcColumnWidths();
 
-    // Do the final layout based on max_width
+    // Do the final layout based on width
     calcColInfo(2);
 
     // If it doesn't fit... MAKE IT FIT!
     for ( c = 0; c < totalCols; c++ )
     {
-        if (columnPos[c+1] > max_width-border)
+        if (columnPos[c+1] > width-border)
         {
              printf("WARNING: Column too small!\n");
-             columnPos[c+1] = max_width-border;
+             columnPos[c+1] = width-border;
 	}
     }
 
@@ -469,27 +470,8 @@ void HTMLTable::calcSize( HTMLClue * )
 // the optimum cell widths.
 void HTMLTable::optimiseCellWidth()
 {
-    int tableWidth;
+    int tableWidth = width-border;
     int addSize = 0;
-	
-    if (percent == UNDEFINED)
-    {
-        tableWidth = max_width;
-    }
-    else if (percent == 0)
-    {
-    	// Fixed with
-        tableWidth = fixed_width;
-    }	
-    else
-    {
-        tableWidth = (percent * max_width) / 100;
-    }	
-
-    if (tableWidth < min_width)
-        tableWidth = min_width;
-
-    tableWidth -= border;
 	
     columnOpt = columnPos.copy();
 
@@ -866,7 +848,7 @@ void HTMLTable::addRowInfo(int _row, int _colInfoIndex)
 // New table layout function
 int HTMLTable::addColInfo(int _startCol, int _colSpan, 
                           int _minSize, int _prefSize, 
-                          int _maxSize, ColType _colType)
+                          ColType _colType)
 {
     unsigned int indx;
 
@@ -892,7 +874,6 @@ int HTMLTable::addColInfo(int _startCol, int _colSpan,
        colInfo[indx].colSpan = _colSpan;
        colInfo[indx].minSize = _minSize;
        colInfo[indx].prefSize = _prefSize;
-       colInfo[indx].maxSize = _maxSize;
        colInfo[indx].colType = _colType;
     }
     else
@@ -957,7 +938,7 @@ void HTMLTable::calcColInfo( int pass )
 	    // calculate preferred pos
 	    if ( (pass == 2) && (cellPercent > 0) )
 	    {
-		pref_size = ( max_width * cell->getPercent() / 100 ) + 
+		pref_size = ( width * cell->getPercent() / 100 ) + 
 		           padding + padding + spacing + borderExtra;
 		col_type = Percent;
 	    }
@@ -973,9 +954,8 @@ void HTMLTable::calcColInfo( int pass )
 		            padding + padding + spacing + borderExtra;
 		col_type = Variable;
 	    }
-
 	    colInfoIndex = addColInfo(c, cell->colSpan(), min_size, 
-	                              pref_size, max_width, col_type);
+	                              pref_size, col_type);
 	    addRowInfo(r, colInfoIndex);
 	}
     }
@@ -1203,11 +1183,11 @@ printf("Colspan = %d Spread %d pixels about all non-fixed columns\n", col_span, 
     printf("---- %d ----\n", totalColInfos);
     for(i = 0; i < totalColInfos; i++)
     {
-        printf("col #%d: %d - %d, min: %3d pref: %3d max: %3d type: %d\n",
+        printf("col #%d: %d - %d, min: %3d pref: %3d type: %d\n",
                  i,
                  colInfo[i].startCol, colInfo[i].colSpan,
                  colInfo[i].minSize, colInfo[i].prefSize,
-                 colInfo[i].maxSize, (int) colInfo[i].colType);
+                 (int) colInfo[i].colType);
     }
     for(i = 0; i < totalRowInfos; i++)
     {
@@ -1279,7 +1259,39 @@ int HTMLTable::calcPreferredWidth()
 
 void HTMLTable::setMaxWidth( int _max_width )
 {
-    max_width = _max_width;
+    if (percent == UNDEFINED)
+    {
+        // Variable width
+        width = _max_width;
+        if (width > pref_width)
+        {
+            width = pref_width;
+        }
+
+        if (_max_width < min_width)
+        {
+            printf("Layout error in HTMLClue::setMaxWidth(this = %p): _max_width (%d) smaller than minimum width(%d)!\n", 
+            this, _max_width, min_width);
+        }
+    }
+    else if (percent == 0)
+    {
+    	// Fixed with
+        width = fixed_width;
+        if (_max_width < width)
+        {
+            printf("Layout error in HTMLClue::setMaxWidth(this = %p): _max_width (%d) smaller than fixed width (%d)!\n", 
+            this, _max_width, fixed_width);
+        }
+    }	
+    else
+    {
+        // Percentage width
+        width = (percent * _max_width) / 100;
+    }        
+
+    if (width < min_width)
+	width = min_width;
 }
 
 void HTMLTable::setMaxAscent( int _a )
