@@ -43,7 +43,7 @@ class KDebugEntry;
 template class QList<KDebugEntry>;
 
 class KDebugEntry
-{ 
+{
 public:
   KDebugEntry (int n, QString d) {number=n; descr=d.copy();}
   KDebugEntry (QString d, int n) {number=n; descr=d.copy();}
@@ -59,7 +59,7 @@ static QString getDescrFromNum(unsigned short _num)
   if (!KDebugCache)
       KDebugCache = new QList<KDebugEntry>;
 
-  for ( KDebugEntry *ent = KDebugCache->first(); 
+  for ( KDebugEntry *ent = KDebugCache->first();
 		  ent != 0; ent = KDebugCache->next()) {
 	  if (ent->number == _num) {
 		  return ent->descr.copy();
@@ -74,51 +74,39 @@ static QString getDescrFromNum(unsigned short _num)
     return "";
   }
 
-  unsigned long number, space;
+  unsigned long number;
   bool longOK;
 
   QTextStream *ts = new QTextStream(&file);
   while (!ts->eof()) {
-    data=ts->readLine().stripWhiteSpace().copy();
+    data = ts->readLine().simplifyWhiteSpace();
 
-    if (data.at(0) == '#')
-      continue; // It's a comment
+    int pos = data.find("#");
+    if ( pos != -1 )
+      data.truncate( pos );
 
-    if (data.find("#") != -1) {
-      data.remove(data.find("#"), data.length());
-      data=data.stripWhiteSpace();
-    }
-
-    if (data.isEmpty() || data.isNull())
+    if (data.isEmpty())
       continue;
 
-    if ( (data.find(" ") == -1) && (data.find("	") == -1) )
-      continue; // It only has one "part", need two
+    int space = data.find(" ");
+    if (space == -1)
+      continue;
 
-    if (data.find(" ") == -1)
-      space=data.find("	");
-    else if (data.find("	") == -1)
-      space=data.find(" ");
-    else if (data.find(" ") < data.find("	"))
-      space=data.find(" ");
-    else
-      space=data.find("	");
-
-    number=data.left(space).toULong(&longOK);
+    number = data.left(space).toULong(&longOK);
     if (!longOK)
       continue; // The first part wasn't a number
 
     if (number != _num)
       continue; // Not the number we're looking for
 
-    data.remove(0, space); data=data.stripWhiteSpace();
+    data.remove(0, space+1);
 
     if (KDebugCache->count() >= MAX_CACHE)
       KDebugCache->removeFirst();
-    KDebugCache->append(new KDebugEntry(number,data.copy()));
+    KDebugCache->append(new KDebugEntry(number,data));
     delete ts;
     file.close();
-    return data.copy();
+    return data;
   }
 
   delete ts;
@@ -146,7 +134,7 @@ enum DebugLevels {
         KDEBUG_FATAL=   3
 }; */
 
-void kDebugBackend( unsigned short nLevel, unsigned short nArea, 
+void kDebugBackend( unsigned short nLevel, unsigned short nArea,
                     const char * pFormat, va_list arguments )
 {
   // Save old group
@@ -231,7 +219,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
         case 1: // Message Box
           {
                 // Since we are in kdecore here, we cannot use KMsgBox and use
-                // QMessageBox instead 
+                // QMessageBox instead
                 char buf[4096]; // constants are evil, but this is evil code anyway
                 int nSize = vsprintf( buf, pFormat, arguments );
                 if( nSize > 4094 ) nSize = 4094;
@@ -258,7 +246,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
                 syslog( nPriority, buf );
-          }       
+          }
         case 4: // nothing
           {
           }

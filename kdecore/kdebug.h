@@ -24,9 +24,9 @@
 
 /**
   * kDebug provides and advanced mechanism for displaying debugging
-  * information to the user.  kDebug works like printf does but takes one 
+  * information to the user.  kDebug works like printf does but takes one
   * or two extra arguments.  If your program is compiled with NDEBUG defined,
-  * the calls are rendered useless and your debugging statements 
+  * the calls are rendered useless and your debugging statements
   * hidden from the end-user's view. This doesn't apply to kDebugWarning,
   * kDebugError and kDebugFatal, since those should always been shown to the
   * user.
@@ -35,14 +35,14 @@
   * There are two families of functions. The first one allows variable
   * arguments, much like printf or the previous kdebug, and has the notion of
   * level (see below). The second one does not allow variable arguments
-  * and only applies to debug info, but adds the filename and line number 
+  * and only applies to debug info, but adds the filename and line number
   * before the message printed.
   * You can't have both at the same time, for technical reasons
   * (first faimly is functions, second one is macros, which can't have variable
   * arguments since we support non-gcc compilers)
   *
-  * 
-  * A kDebug level determines how important the message being displayed is. 
+  *
+  * A kDebug level determines how important the message being displayed is.
   * The first family of functions define four functions, one for each level :
   *     kDebugInfo
   *       for debug output
@@ -53,7 +53,7 @@
   *     kDebugFatal
   *       for when a horrific error has happened and the program must stop.
   *
-  * The first (and optional) argument is a debug "area".  This "area" tells 
+  * The first (and optional) argument is a debug "area".  This "area" tells
   * kDebug where the call to kDebug came from.  The "area" is an unsigned number
   * specified in kdebug.areas ($KDEDIR/share/config/kdebug.areas).  If
   * this number is zero or unspecified, the instance (e.g. application) name
@@ -109,7 +109,7 @@ extern "C" {
 }
 enum DebugLevels { KDEBUG_INFO= 0, KDEBUG_WARN= 1, KDEBUG_ERROR= 2, KDEBUG_FATAL= 3 };
 inline const char* debugString(const QString& a) { if (a.isNull()) return "<null>"; else return a.ascii(); }
-#define KASSERT( Cond, Level, Area, String ) { if( !Cond ) kdebug( (Level), (Area), (String) ); }
+#define KASSERT( Cond, Level, Area, String ) { if( !(Cond) ) kdebug( (Level), (Area), (String) ); }
 // -----
 
 #endif
