@@ -72,7 +72,7 @@ public:
     QCString appId;
     QCString plainAppId;
     IceConn iceConn;
-    bool notifyRegister;
+    int notifyRegister;
     /**
      * When client A has called client B then for the duration of the call:
      * A->waitingOnReply contains B 

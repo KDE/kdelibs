@@ -396,7 +396,7 @@ DCOPConnection::DCOPConnection( IceConn conn )
 			   QSocketNotifier::Read, 0, 0 )
 {
     iceConn = conn;
-    notifyRegister = false;
+    notifyRegister = 0;
     _signalConnectionList = 0;
     daemon = false;
     outputBlocked = false;
@@ -1481,8 +1481,12 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 	    Q_INT8 notifyActive;
 	    args >> notifyActive;
 	    DCOPConnection* conn = clients.find( iceConn );
-	    if ( conn )
-		conn->notifyRegister = (notifyActive != 0);
+	    if ( conn ) {
+		if ( notifyActive )
+		    conn->notifyRegister++;
+		else if ( conn->notifyRegister > 0 )
+		    conn->notifyRegister--;
+	    }
 	    replyType = "void";
 	    return TRUE;
 	}

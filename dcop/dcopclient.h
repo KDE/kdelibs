@@ -475,6 +475,10 @@ class DCOPClient : public QObject
   /**
    * Enable / disable the @ref applicationRegistered() /
    * @ref applicationRemoved() signals.
+   * Note that a counter is maintained about how often this method
+   * was called. If this method is called twice with @p enabled set to
+   * true, notifications will be enabled until it was called with
+   * @p enabled set to false as often.
    *
    * They are disabled by default.  */
   void setNotifications( bool enabled );
