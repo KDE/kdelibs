@@ -472,7 +472,9 @@ KFileDialog::~KFileDialog()
 {
     delete bookmarks;
     delete visitedDirs;
-    delete ops;
+    // we get strange segfaults since the new qlayout.cpp after Qt 2.1beta2
+    // so let ops be auto-deleted by deleting its parent (d->mainWidget)
+    // delete ops;
     delete d;
 }
 
@@ -683,7 +685,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	
 	    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
 						 false);
-	    
+	
 	    delete d->boxLayout; // this removes all child layouts too
 	    d->boxLayout = 0;
 	
