@@ -63,7 +63,7 @@ public:
       * be used.
       * @param catalogue the name of the language file
       */
-    KLocale( QString catalogue = QString::null );
+    KLocale( const QString& catalogue = QString::null );
 
     /**
       * Destructor.
@@ -236,7 +236,7 @@ public:
       * library translation must be available in this language. 
       * 'C' is default, if no other available.
       */
-    QString language() const { return lang; }
+    QString language() const;
 
     /**
       * Returns the languages selected by user.
@@ -311,10 +311,26 @@ public:
      * default), false.
      */
     bool numericLocaleEnabled() const;
-     
+
+    /**
+     * Init the instance with the given config object. It should
+     * be valid and contain the global entries.
+     **/
+    void initLanguage(KConfig *config, const QString& catalogue);
+
+    /**
+     * @return True if the KLocale instance is initialized already. You can't
+     * translate before it is.
+     * The constructor will initialize the instance, but under some
+     * circumstances - when the circumstances do not fit for initialization
+     * - it will just delay the initialization til you call initLanguage
+     */
+    bool inited() const { return _inited; }
+
 private:
     QStrList *catalogues;
     QIntDict<QString> aliases;
+    bool _inited;
     QString lang;
     QString chset;
     QString lc_numeric;
