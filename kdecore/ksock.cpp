@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.21  1998/11/11 00:02:54  thufir
+ * addes ability to set a connect Time Out, breaks binary compatability
+ *
  * Revision 1.20  1998/08/02 14:49:31  kalle
  * ANother try at the socket problem. Hope that this works on _all_ platforms now.
  *
@@ -337,11 +340,11 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
       ret = select(getdtablesize(), (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
                    (struct timeval *)&timeout);
 #endif
+      if(ret)
+          return(true);
       qApp->processEvents();
       qApp->flushX();
   }
-  if(ret)
-      return(true);
   warning("Timeout connecting socket...\n");
   ::close( sock );
   sock = -1;
