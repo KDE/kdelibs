@@ -1381,7 +1381,7 @@ void CopyJob::slotResultStating( Job *job )
     {
         kdDebug(7007) << " Source is a file (or a symlink) " << endl;
 
-	kdDebug() << "totalSize: " << (unsigned int) m_totalSize << endl;
+	kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << endl;
 	// emit all signals for total numbers
 	emit totalSize( this, m_totalSize );
 	emit totalFiles( this, 1 );
@@ -1447,7 +1447,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
     }
     else // no error : remove from list, to move on to next dir
     {
-        emit copyingDone( this, (*it).uSource, (*it).uDest, true );
+        emit copyingDone( this, (*it).uSource, (*it).uDest, true, false );
         dirs.remove( it );
     }
 
@@ -1638,11 +1638,11 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         }
     } else // no error : remove from list, to move on to next file
     {
-        emit copyingDone( this, (*it).uSource, (*it).uDest, false );
+        emit copyingDone( this, (*it).uSource, (*it).uDest, false, false );
         files.remove( it );
     }
 
-    kdDebug() << "" << files.count() << " files remaining" << endl;
+    kdDebug(7007) << "" << files.count() << " files remaining" << endl;
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
     copyNextFile();
@@ -1816,14 +1816,14 @@ void CopyJob::copyNextFile()
         } else if (m_move) // Moving a file
         {
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
-            kdDebug() << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
+            kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit moving( this, (*it).uSource, (*it).uDest );
             Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
-            kdDebug() << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
+            kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit copying( this, (*it).uSource, (*it).uDest );
             Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
          }
@@ -1891,7 +1891,7 @@ void CopyJob::slotResultDeletingDirs( Job * job )
 
 void CopyJob::slotResult( Job *job )
 {
-    kdDebug() << "CopyJob::slotResult() state=" << (int) state << endl;
+    kdDebug(7007) << "CopyJob::slotResult() state=" << (int) state << endl;
     // In each case, what we have to do is :
     // 1 - check for errors and treat them
     // 2 - subjobs.remove(job);
@@ -1914,14 +1914,14 @@ void CopyJob::slotResult( Job *job )
             else
             {
                 kdDebug(7007) << "Renaming succeeded, move on" << endl;
-		emit copyingDone( this, m_srcList.first(), m_currentDest, true );
+		emit copyingDone( this, m_srcList.first(), m_currentDest, true, true );
                 m_srcList.remove(m_srcList.begin()); // done with this url
                 startNextJob(); // done
             }
         }
         break;
         case STATE_LISTING: // recursive listing finished
-	    kdDebug() << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
+	    kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
             // Was there an error ?
             if (job->error())
             {

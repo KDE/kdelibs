@@ -583,7 +583,14 @@ namespace KIO {
         // ?
         void canResume( KIO::Job *, bool can_resume );
 
-        void copyingDone( KIO::Job *, const KURL &from, const KURL &to, bool directory );
+        /**
+	 * The job emits this signal when copying or moving a file or directory successfully finished.
+	 * @param src the source URL
+	 * @param dst the destination URL
+	 * @param direction indicates whether a file or directory was successfully copied/moved
+	 * @param renamed indicates that the destination URL was created using a rename operation.
+	 */
+        void copyingDone( KIO::Job *, const KURL &from, const KURL &to, bool directory, bool renamed );
 
     protected:
         void startNextJob();
