@@ -56,10 +56,14 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     return;
 #endif
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();
-  if (part && listener.implementsCall()) {
+  KJSProxy *proxy = 0L;
+  if (part)
+      proxy = KJSProxy::proxy( part );
+
+  if (proxy && listener.implementsCall()) {
     ref();
 
-    KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(KJSProxy::proxy( part )->interpreter());
+    KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
     ExecState *exec = interpreter->globalExec();
 
     List args;
