@@ -534,7 +534,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
             case Variable: tt=Relative; break;
             case Relative: tt=Percent; break;
             case Percent: tt=Fixed; break;
-            case Fixed: out=true; break;
+            default: out=true; break;
             }
         }
 
@@ -551,7 +551,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
             case Variable: tt=Relative; break;
             case Relative: tt=Percent; break;
             case Percent: tt=Fixed; break;
-            case Fixed: out=true; break;
+            default: out=true; break;
             }
         }
 
@@ -567,7 +567,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
             case Variable: tt=Relative; break;
             case Relative: tt=Percent; break;
             case Percent: tt=Fixed; break;
-            case Fixed: out=true; break;
+            default: out=true; break;
             }
         }
 
@@ -913,6 +913,7 @@ void RenderTable::calcColMinMax()
             break;
         case Undefined:
         case Variable:
+        default:
             hasVar=true;
             minVar += colMinWidth[i] + spacing;
         }
@@ -1116,6 +1117,7 @@ void RenderTable::calcColWidth(void)
             break;
         case Undefined:
         case Variable:
+        default:
             minVar += colMinWidth[i];
             maxVar += colMaxWidth[i];
             numVar++;
