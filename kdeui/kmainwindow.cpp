@@ -36,6 +36,7 @@
 
 #include <klocale.h>
 #include <kstddirs.h>
+#include <kstaticdeleter.h>
 #include <netwm.h>
 
 #include <stdlib.h>
@@ -54,6 +55,7 @@ public:
 QList<KMainWindow>* KMainWindow::memberList = 0L;
 static bool no_query_exit = false;
 static KMWSessionManaged* ksm = 0;
+static KStaticDeleter<KMWSessionManaged> ksmd;
 
 class KMWSessionManaged : public KSessionManaged
 {
@@ -124,7 +126,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
         memberList = new QList<KMainWindow>;
 
     if ( !ksm )
-        ksm = new KMWSessionManaged();
+        ksm = ksmd.setObject(new KMWSessionManaged());
     memberList->append( this );
     if ( !name ) {
         // set a unique object name. Required by session management.
