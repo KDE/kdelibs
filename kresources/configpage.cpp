@@ -45,6 +45,19 @@
 
 namespace KRES {
 
+ResourcePageInfo::ResourcePageInfo() : KShared() {
+  mManager = 0L;
+  mConfig = 0L;
+}
+
+ResourcePageInfo::~ResourcePageInfo() {
+  //delete mManager;
+  mManager = 0L;
+  //delete mConfig;
+  mConfig = 0L;
+}
+
+
 class ConfigViewItem : public QCheckListItem
 {
   public:
@@ -139,11 +152,9 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
 
 ConfigPage::~ConfigPage()
 {
-  QValueList<ResourcePageInfo>::Iterator it;
+  QValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
   for ( it = mInfoMap.begin(); it != mInfoMap.end(); ++it ) {
-    (*it).mManager->removeObserver( this );
-    delete (*it).mManager;
-    delete (*it).mConfig;
+    (*it)->mManager->removeObserver( this );
   }
 
   mConfig->writeEntry( "CurrentFamily", mFamilyCombo->currentItem() );
@@ -169,12 +180,12 @@ void ConfigPage::load()
           mFamilyMap.append( family );
           mCurrentManager->addObserver( this );
 
-          ResourcePageInfo info;
-          info.mManager = mCurrentManager;
-          info.mConfig = new KConfig( KRES::ManagerImpl::defaultConfigFile( family ) );
-          info.mManager->readConfig( info.mConfig );
+          ResourcePageInfo *info = new ResourcePageInfo;
+          info->mManager = mCurrentManager;
+          info->mConfig = new KConfig( KRES::ManagerImpl::defaultConfigFile( family ) );
+          info->mManager->readConfig( info->mConfig );
 
-          mInfoMap.append( info );
+          mInfoMap.append( KSharedPtr<ResourcePageInfo>(info) );
         }
       }
     }
@@ -193,9 +204,9 @@ void ConfigPage::save()
 {
   saveResourceSettings();
 
-  QValueList<ResourcePageInfo>::Iterator it;
+  QValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
   for ( it = mInfoMap.begin(); it != mInfoMap.end(); ++it )
-    (*it).mManager->writeConfig( (*it).mConfig );
+    (*it)->mManager->writeConfig( (*it)->mConfig );
 
   emit changed( false );
 }
@@ -213,8 +224,8 @@ void ConfigPage::slotFamilyChanged( int pos )
 
   mFamily = mFamilyMap[ pos ];
 
-  mCurrentManager = mInfoMap[ pos ].mManager;
-  mCurrentConfig = mInfoMap[ pos ].mConfig;
+  mCurrentManager = mInfoMap[ pos ]->mManager;
+  mCurrentConfig = mInfoMap[ pos ]->mConfig;
 
   if ( !mCurrentManager )
     kdDebug(5650) << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;

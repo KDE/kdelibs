@@ -23,6 +23,7 @@
 #ifndef KRESOURCES_CONFIGPAGE_H
 #define KRESOURCES_CONFIGPAGE_H
 
+#include <ksharedptr.h>
 #include <qstringlist.h>
 #include <qwidget.h>
 
@@ -36,9 +37,11 @@ class QPushButton;
 
 namespace KRES {
 
-class ResourcePageInfo
+class ResourcePageInfo : public KShared
 {
   public:
+    ResourcePageInfo();
+    ~ResourcePageInfo();
     Manager<Resource> *mManager;
     KConfig *mConfig;
 };
@@ -89,7 +92,7 @@ class ConfigPage : public QWidget, public ManagerObserver<Resource>
     KConfig* mConfig;
     QString mFamily;
     QStringList mFamilyMap;
-    QValueList<ResourcePageInfo> mInfoMap;
+    QValueList<KSharedPtr<ResourcePageInfo> > mInfoMap;
 
     KComboBox* mFamilyCombo;
     KListView* mListView;

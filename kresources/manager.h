@@ -211,7 +211,7 @@ class Manager : private ManagerNotifier
       // The managerimpl will use the same Factory object as the manager
       // because of the Factory::self() pattern
       mImpl = new ManagerImpl( this, family );
-      mObservers.setAutoDelete( true );
+      mObservers.setAutoDelete( false );
     }
 
     virtual ~Manager()
@@ -341,7 +341,7 @@ class Manager : private ManagerNotifier
 
     /**
       Add observer for resource changes to manager. See ManagerObserver. The
-      Manager takes ownership of the Observer object.
+      Manager does not take ownership of the Observer object.
     */
     void addObserver( ManagerObserver<T> *observer )
     {
@@ -350,7 +350,7 @@ class Manager : private ManagerNotifier
 
     /**
       Remove Observer for resource changes from manager. See ManagerObserver.
-      The Observer is deleted by the Manager after being removed.
+      The Observer is not deleted by the Manager after being removed.
     */
     void removeObserver( ManagerObserver<T> *observer )
     {
