@@ -4,7 +4,7 @@ INCLUDES = -I$(top_builddir)/arts/kde \
 lib_LTLIBRARIES = libartskde.la
 libartskde_la_SOURCES = artskde.cc kioinputstream_impl.cpp kplayobject.cc \
                         kplayobjectfactory.cc kartsfloatwatch.cpp kartsdispatcher.cc \
-                        kaudiorecordstream.cpp \
+                        kaudiorecordstream.cpp kaudioplaystream.cpp \
                         kartsserver.cpp kdatarequest_impl.cpp kaudioconverter.cc \
                         kvideowidget.cpp kplayobjectcreator.cc \
                         kaudiomanagerplay.cpp
@@ -23,7 +23,7 @@ artskde.mcoptype: artskde.h
 artskde.mcopclass: artskde.h
 MCOPINC = -I$(srcdir)
 artskde.cc artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
-	     $(MCOPIDL) -I$(includedir)/arts -I$(includedir)/arts -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
+	     $(MCOPIDL) -I$(includedir)/arts -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
 
 DISTCLEANFILES = artskde.cc artskde.h artskde.mcoptype artskde.mcopclass
 
