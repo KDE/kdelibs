@@ -425,6 +425,9 @@ int HTTPProtocol::openStream() {
                   << "| Strength: " << m_ssl.connectionInfo().getCipherUsedBits()
                   << " of " << m_ssl.connectionInfo().getCipherBits()
                   << " bits used." << endl
+                  << "| PEER:" << endl
+                  << "| Subject: " << m_ssl.peerInfo().getPeerCertificate().getSubject() << endl
+                  << "| Issuer: " << m_ssl.peerInfo().getPeerCertificate().getIssuer() << endl
                   << "+-----------------------------------------------"
                   << endl;
     return true;
