@@ -328,17 +328,17 @@ int KWalletBackend::lock(QByteArray& password) {
 		wholeFile[i] = randBlock[i];
 
 	for (int i = 0; i < 4; i++)
-		wholeFile[i+blksz] = (decrypted.size() >> 8*(3-i))&0xff;
+		wholeFile[(int)(i+blksz)] = (decrypted.size() >> 8*(3-i))&0xff;
 
 	for (unsigned int i = 0; i < decrypted.size(); i++)
-		wholeFile[i+blksz+4] = decrypted[i];
+		wholeFile[(int)(i+blksz+4)] = decrypted[i];
 
 	for (int i = 0; i < delta; i++)
-		wholeFile[i+blksz+4+decrypted.size()] = randBlock[i+blksz];
+		wholeFile[(int)(i+blksz+4+decrypted.size())] = randBlock[(int)(i+blksz)];
 
 	const char *hash = (const char *)sha.getHash();
 	for (int i = 0; i < 20; i++)
-		wholeFile[newsize-20+i] = hash[i];
+		wholeFile[(int)(newsize-20+i)] = hash[i];
 
 	sha.reset();
 	decrypted.fill(0);
