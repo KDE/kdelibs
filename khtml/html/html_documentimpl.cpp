@@ -299,8 +299,11 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     // ### make the font stuff _really_ work!!!!
     const QString *families = w->part()->settings()->families();
     QValueList<int> fs = w->part()->settings()->fontSizes();
-    QFont f(families[0], fs[3]);
-    m_style->setFont(families[0]);
+    QFont f = KGlobal::generalFont();
+    f.setFamily(families[0]);
+    f.setPointSize(fs[3]);
+    f.setCharSet(w->part()->settings()->charset);
+    m_style->setFont(f);
 
     m_style->setHtmlHacks(true); // enable html specific rendering tricks
 

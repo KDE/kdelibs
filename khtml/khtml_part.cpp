@@ -526,7 +526,8 @@ void KHTMLPart::write( const char *str, int len )
   QString decoded = d->m_decoder->decode( str, len );
   if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
   const QTextCodec *c = d->m_decoder->codec();
-  setCharset(c->name());
+  if(!d->m_settings->charset == QFont::Unicode)
+      setCharset(c->name());
   d->m_doc->write( decoded );
 }
 
@@ -674,7 +675,10 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
     printf("setting the encoding to %s\n",name.latin1());
     d->m_encoding = name;
-    d->m_settings->charset = KGlobal::charsets()->nameToID(name);
+    
+    // ### hack!!!!
+    if(!d->m_settings->charset == QFont::Unicode)
+	d->m_settings->charset = KGlobal::charsets()->nameToID(name);
 
     // reload document
     closeURL();
