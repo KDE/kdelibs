@@ -1,0 +1,91 @@
+DCOP: Desktop COmmunications Protocol
+
+Motivation and Background:
+
+The motivation behind building a protocol like DCOP was simple.  For the past
+year, we have been attempting to enable interprocess communication between KDE
+applications. KDE already has an extremely simple IPC mechanism called KWMcom,
+which is used for communicating between the panel and the window manager for
+instance.  It is about as simple as it gets, passing messages via X Atoms.
+For this reason it is limited in the size and complexity of the data that can
+be passed (X atoms must be small to remain efficient) and it also makes it so
+that X is required.  CORBA was thought to be a more effective IPC/RPC
+solution.  However, after a year of attempting to make heavy use of CORBA in
+KDE, we have realized that it is a bit slow and memory intensive for simple
+use.  It also has no authentication available.
+
+What we really needed was an extremely simple protocol with basic
+authorization, along the lines of MIT-MAGIC-COOKIE, as used by X.  It would
+not be able to do NEARLY was CORBA was able to do, but for the simple tasks
+required it would be sufficient. Some examples of such tasks might be an
+application sending a message to the panel saying, "I have started, stop
+displaying the 'application starting' wait state," or having a new application
+that starts query to see if any other applications of the same name are
+running.  If they are, simply call a function on the remote application to
+create a new window, rather than starting a new process.
+
+Implementation:
+
+DCOP is a simple IPC/RPC mechanism built to operate over sockets.  Either unix
+domain sockets or tcp/ip sockets are supported. DCOP is built on top of the
+Inter Client Exchange (ICE) protocol, which comes standard as a part of X11R6
+and later. It also depends on Qt, but beyond that it does not require any
+other libraries. Because of this, it is extremely lightweight, enabling it to
+be linked into all KDE applications with low overhead.
+
+Model:
+
+The model is simple.  Each application using DCOP is a client.  They
+communicate to each other through a DCOP server, which functions like a
+traffic director, dispatching messages/calls to the proper destinations.  All
+clients are peers of each other.
+
+Two types of actions are possible with DCOP: "send and forget" messages, which
+do not block, and "calls," which block waiting for some data to be returned.
+
+Any data that will be sent is serialized (marshalled, for you CORBA types)
+with the built in QDataStream operators available in all of the Qt classes.
+This is fast and easy.  Currently, there is no type-checking or parameter
+checking available for RPC, but this may be provided at some time in the
+future in the form of a simple IDL-like compiler.  Until that is available,
+you will have to code some things by hand that normally the compiler or CORBA
+take care of automatically, but it is not a lot of work.
+
+Usage:
+
+KApplication has gained a method called "KApplication::dcopClient()" which
+returns a pointer to a DCOPClient instance.  The first time this method is
+called, the client class will be created.  DCOPClients have unique (hopefully)
+identifiers attached to them which are exactly the same as
+KApplication::name() returns.  If you never call the
+KApplication::dcopClient() method in your application, the client will not be
+created, and thus if you aren't interested in IPC/RPC, you will not see any
+memory overhead.  Even if you do instantiate the client, the overhead is
+extremely small, on the order of approximately 160k of data.
+
+To actually enable DCOP communication to begin, you must use
+DCOPClient::attach().  This will attempt to attach to the DCOP server.  If no
+server is found or there is any other type of error, attach() will return
+false.  Also note that until you are attached, other applications wishing to
+communicate with you will not see that you exist.  Most applications which are
+DCOP-enabled should probably do something like this at startup time:
+
+client = kApp->dcopClient();
+if (!client->attach()) {
+  QMessageBox::error(this, i18n("Error connecting to DCOP server"),
+                     i18n("There was an error connecting to the Desktop\n"
+                          "communications server.  Please make sure that\n"
+                          "the 'dcopserver' process has been started, and\n"
+                          "then try again.\n"));
+  exit(1);
+}
+
+You may also detach and deregister an application from the DCOP server by
+simply calling DCOPClient::detach().
+
+To actually communicate, you have one of two choices.  You may either call
+the "send" or the "call" method.  Both methods require three
+parameters: an application identifier, a remote object, a remote
+function, Sending is asynchronous (i.e. it returns immediately) and may or may
+not result in your own application being sent a message at some point in the
+future.
