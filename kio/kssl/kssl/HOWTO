@@ -8,16 +8,17 @@ maintainer (currently staikos@kde.org) with full details.
 3) cd 'certtmp'
 4) Run ../cert_extract /path/to/netscape/cert7.db
    This will create many files and an index
-5) Merge these files into a bundle with:
+5) Remove the TrustCenter level 0 certificate.
+6) Merge these files into a bundle with:
    ../cert_bundle /path/to/netscape/cert7.db cert.index ../caroot/ca-bundle.crt
-6) Merge these files into a KDE config file with:
+7) Merge these files into a KDE config file with:
    ../certkde
-7) mv ksslcalist ../
-8) Merge in the local certs that we added ourselves with:
+8) mv ksslcalist ../
+9) Merge in the local certs that we added ourselves with:
    cd ..
    ./mergelocal
-9) *Do your diffs*!  Make *sure* you commit what you think you are committing.
-10) cvs commit
+10) *Do your diffs*!  Make *sure* you commit what you think you are committing.
+11) cvs commit
 
 
 
