@@ -4,6 +4,7 @@ Header=^\001\001
 Name=MSWindows Icons
 Name[da]=MSWindows Ikoner
 Name[he]=Windows ילמס
+Name[nl]=MSWindows-pictogrammen
 Read=true
 Write=false
 Suffices=ico,ICO
