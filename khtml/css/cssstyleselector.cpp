@@ -124,6 +124,7 @@ CSSStyleSelector::CSSStyleSelector(StyleSheetImpl *sheet)
 
 CSSStyleSelector::~CSSStyleSelector()
 {
+    clearLists();
     delete authorStyle;
 }
 
@@ -541,6 +542,8 @@ void CSSStyleSelector::clearLists()
         for ( unsigned int i = 0; i < selectors_size; i++ )
             if ( selectorCache[i].props )
                 delete [] selectorCache[i].props;
+
+        delete [] selectorCache;
     }
     if ( properties ) {
 	CSSOrderedProperty **prop = properties;
@@ -548,6 +551,7 @@ void CSSStyleSelector::clearLists()
 	    delete (*prop);
 	    prop++;
 	}
+        delete [] properties;
     }
     selectors = 0;
     properties = 0;
@@ -1778,7 +1782,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
 	    style->setVerticalAlign( LENGTH );
 	    style->setVerticalAlignLength( l );
-	}    
+	}
         break;
 
     case CSS_PROP_FONT_SIZE:
@@ -2101,7 +2105,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         break;
     }
-    
+
     case CSS_PROP__KONQ_FLOW_MODE:
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {
