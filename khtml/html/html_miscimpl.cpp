@@ -336,24 +336,26 @@ NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 
 unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl*) const
 {
-    if(base->nodeType() == Node::ELEMENT_NODE)
-    {
-        HTMLElementImpl* e = static_cast<HTMLElementImpl*>(base);
-        if(e->id() == ID_FORM)
-            return static_cast<HTMLFormElementImpl*>(e)->formElements.count();
-    }
+    QList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
 
-    return 0;
+    int len = 0;
+    for ( unsigned i = 0; i < l.count(); i++ )
+        if ( l.at( i )->isEnumeratable() )
+            ++len;
+
+    return len;
 }
 
 NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *, int index, int&) const
 {
-    if(base->nodeType() == Node::ELEMENT_NODE)
-    {
-        HTMLElementImpl* e = static_cast<HTMLElementImpl*>(base);
-        if(e->id() == ID_FORM)
-            return static_cast<HTMLFormElementImpl*>(e)->formElements.at(index);
+    QList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
 
+    for ( unsigned i = 0; i < l.count(); i++ ) {
+        if ( !index )
+            return l.at( i );
+
+        if( l.at( i )->isEnumeratable() )
+            --index;
     }
 
     return 0;
@@ -370,7 +372,7 @@ NodeImpl* HTMLFormCollectionImpl::getNamedItem(NodeImpl*, int attr_id, const DOM
             HTMLFormElementImpl* f = static_cast<HTMLFormElementImpl*>(e);
 
             for(element = f->formElements.first(); element; element = f->formElements.next())
-                if(element->getAttribute(attr_id) == name)
+                if(element->isEnumeratable() && element->getAttribute(attr_id) == name)
                     return element;
         }
     }
