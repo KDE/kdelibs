@@ -24,7 +24,7 @@
 #include <qstring.h>
 #include <qpixmap.h>
 
-typedef Q_UINT32 CARD32; // play X11
+typedef unsigned long CARD32; // play X11
 #include "netwm_def.h"
 
 /**
