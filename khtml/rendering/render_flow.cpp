@@ -140,7 +140,6 @@ void RenderFlow::deleteInlineBoxes(RenderArena* arena)
         m_firstLineBox = 0;
         m_lastLineBox = 0;  
     }
-    RenderBox::deleteInlineBoxes(arena);
 }
 
 InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox, bool isRootLineBox)
