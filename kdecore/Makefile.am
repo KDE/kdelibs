@@ -21,6 +21,8 @@ INCLUDES = $(all_includes)
 
 CXXFLAGS += @NOREPO@
 
+SUBDIRS = qk
+
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
