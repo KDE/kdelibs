@@ -240,7 +240,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
     lname="no"; hname=i18n("Norwegian");
   }
   else if (fname=="polish") {
-    lname="pl"; hname=i18n("Polsih");
+    lname="pl"; hname=i18n("Polish");
   }
   else if (fname=="russian") {
     lname="ru"; hname=i18n("Russian");
@@ -280,9 +280,6 @@ KSpellConfig::fillInDialog ()
   encodingcombo->setCurrentItem (encoding());
   clientcombo->setCurrentItem (client());
 
-  //  kle1->setText (dictionary());
-  //  kle2->setText (personalDict());
-
   if (langfnames.count()==0) //will only happen once
     {
       
@@ -318,14 +315,14 @@ KSpellConfig::fillInDialog ()
 	      langfnames.prepend ( fname );
 
 	      hname=i18n("default spelling dictionary"
-						  ,"Default - %1 (%2)").arg(hname).arg(fname);
+		    ,"Default - %1 [%2]").arg(hname).arg(fname);
 	      
 	      dictcombo->changeItem (hname,0);
 	    }
 	  else
 	    {
 	      langfnames.append (fname);
-	      hname=hname+" ("+fname+")";
+	      hname=hname+" ["+fname+"]";
 	      
 	      dictcombo->insertItem (hname);
 	    }
@@ -355,9 +352,6 @@ KSpellConfig::fillInDialog ()
   else
     setDictFromList (FALSE);
 
-    
-  //dictlistbutton->setChecked(dictFromList());
-  //  dicteditbutton->setChecked(!dictFromList());
   sDictionary (dictFromList());
   sPathDictionary (!dictFromList());
 
