@@ -208,7 +208,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     vlayout->addWidget( m_value );
 
     val = cookie->domain();
-    m_domain = new QLabel( i18n("Domain: %1").arg(val.isEmpty()?"Unspecified":val), this );
+    m_domain = new QLabel( i18n("Domain: %1").arg(val.isEmpty()?i18n("unspecified domain", "Unspecified"):val), this );
     vlayout->addWidget( m_domain );
 
     m_path = new QLabel( i18n("Path: %1").arg(cookie->path()), this );
@@ -217,14 +217,14 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     QDateTime cookiedate;
     cookiedate.setTime_t( cookie->expireDate() );
     QString sdate = i18n("Expires On: %1").arg( cookie->expireDate() ?
-                   KGlobal::locale()->formatDateTime(cookiedate):"Unspecified" );
+                   KGlobal::locale()->formatDateTime(cookiedate):i18n("unspecified expiration", "Unspecified") );
     m_expires = new QLabel( sdate, this );
     vlayout->addWidget( m_expires );
 
     m_protocol = new QLabel( i18n("Protocol Version: %1").arg(cookie->protocolVersion()), this );
     vlayout->addWidget( m_protocol );
 
-    m_secure = new QLabel( i18n("Is Secure: %1").arg(cookie->isSecure() ? "True":"False"), this );
+    m_secure = new QLabel( i18n("Is Secure: %1").arg(cookie->isSecure() ? i18n("True"):i18n("False")), this );
     vlayout->addWidget( m_secure );
 
     if ( cookieCount > 1 )
@@ -260,16 +260,16 @@ void KCookieDetail::slotNextCookie()
         m_value->setText( i18n("Value: %1").arg( m_cookie->value() ) );
 
         val = m_cookie->domain();
-        m_domain->setText( i18n("Domain: %1").arg( val.isEmpty() ? "Unspecified":val ) );
+        m_domain->setText( i18n("Domain: %1").arg( val.isEmpty() ? i18n("unspecified domain", "Unspecified"):val ) );
         m_path->setText( i18n("Path: %1").arg(m_cookie->path()) );
         QDateTime cookiedate;
         cookiedate.setTime_t( m_cookie->expireDate() );
         QString sdate = i18n("Expires On: %1").arg( m_cookie->expireDate() ?
-                        KGlobal::locale()->formatDateTime(cookiedate):"Unspecified" );
+                        KGlobal::locale()->formatDateTime(cookiedate): i18n("unspecified expiration","Unspecified") );
 
         m_expires->setText( sdate );
         m_protocol->setText( i18n("Protocol Version: %1").arg(m_cookie->protocolVersion()) );
-        m_secure->setText( i18n("Is Secure: %1").arg(m_cookie->isSecure() ? "True":"False") );
+        m_secure->setText( i18n("Is Secure: %1").arg(m_cookie->isSecure() ? i18n("True"):i18n("False")) );
     }
 }
 
