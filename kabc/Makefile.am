@@ -15,7 +15,8 @@ libkabc_la_SOURCES = \
   resourcefactory.cpp resourcefile.cpp resourcefileconfig.cpp \
   resourceselectdialog.cpp secrecy.cpp sound.cpp stdaddressbook.cpp \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
-  vcardformatimpl.cpp vcardformatplugin.cpp addresslineedit.cpp ldapclient.cpp
+  vcardformatimpl.cpp vcardformatplugin.cpp addresslineedit.cpp ldapclient.cpp \
+  addresseelist.cpp
 
 
 kabcincludedir = $(includedir)/kabc
@@ -25,7 +26,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   phonenumber.h picture.h plugin.h resource.h resourcefile.h \
   resourceselectdialog.h secrecy.h sound.h stdaddressbook.h timezone.h \
   vcardconverter.h vcardformat.h vcardformatplugin.h addresslineedit.h \
-  ldapclient.h
+  ldapclient.h addresseelist.h
 
 METASOURCES = AUTO
 
@@ -36,7 +37,7 @@ kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
 
 EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
-  testaddressee kabcargl
+  testaddressee testaddresseelist kabcargl
 
 testkabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabc_LDADD = libkabc.la
@@ -45,6 +46,10 @@ testkabc_SOURCES = testkabc.cpp
 testaddressee_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testaddressee_LDADD = libkabc.la
 testaddressee_SOURCES = testaddressee.cpp
+
+testaddresseelist_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+testaddresseelist_LDADD = libkabc.la
+testaddresseelist_SOURCES = testaddresseelist.cpp
 
 testkabcdlg_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabcdlg_LDADD = libkabc.la
