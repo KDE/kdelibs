@@ -21,35 +21,30 @@
     <fouvry@coli.uni-sb.de>.
 
 
-    Like kde-genent.entities it defines a set of general entities.
-    The difference with kde-genent.entities is that these texts vary
-    with the *application name* (and with *nothing* else).  To that
-    effect, they use an entity &kappname;.  Completely invariant texts
-    go in general.entities.  Please send requests to the
-    kde-docbook list.
+    This file sets up the mechanism to load the language-specific
+    entities.  These entities are loaded once for every document, so
+    when a document changes its language halfway through, the entities
+    will keep the first language.  Should this ever be necessary, just
+    split the documents into parts of only one language, and it will
+    all work just great again.
 
-    The entities available for modification are the following (do NOT
-    change any others!):
+    Every language for which there is documentation must be added
+    here.  (English is the default.)  Please send requests for
+    additions to kde-docbook@kde.org.
 
-    . kappname
-    . FDLIS (% - if "INCLUDE", set also FDLISTitles)
-    . FDLFCT (% - if "INCLUDE", set also FDLFCTTitles)
-    . FDLBCT (% - if "INCLUDE", set also FDLBCTTitles)
-    . addindex (%)
+    Refer to this file as
 
-    Their value should be "INCLUDE" if set.  The ones that begin with
-    `FDL' should be set according to the guidelines in the GNU Free
-    Documentation License.  %addindex; set to INCLUDE will trigger the
-    inclusion of the index file, which should only be done when the file
-    is present (ideally with `-i addindex').  If there are too many
-    problems with it, I will enforce this ;-)
+      -//KDE//ENTITIES DocBook XML Localisation Entity Declarations V1.0//EN
 -->
 
 <!-- ============================================================= -->
 <!--                Extensions to the DocBook DTD                  -->
 <!-- ============================================================= -->
 
-<!-- All supported languages -->
+<!-- All supported languages
+     The name of the parameter entity is the English name of the language
+     as listed in ISO 639-2.
+ -->
 
 <!ENTITY % Afrikaans "IGNORE">
 <![%Afrikaans;[

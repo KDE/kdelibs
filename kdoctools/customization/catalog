@@ -48,7 +48,7 @@ PUBLIC "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V1.0//EN"
 
 		     -- Various external files --
 
--- only DocBook SGML files are in entities, the others are in
+-- only DocBook XML files are in entities, the others are in
    kdelibs/doc/common or in kdelibs/licenses --
 
 PUBLIC "-//GNU//DOCUMENT GNU General Public License V2//EN"

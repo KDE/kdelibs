@@ -33,8 +33,6 @@
       <!ENTITY % rdbhier2 PUBLIC
        "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN">
 
-    It is recommended to use kde.cat as the catalogue file.
-
     Set to IGNORE:                      to revert from KDE customisation for:
     kde.remove.unused.elements          some elements unlikely to be used
     kde.book.meta.info                  extra requirements for bookinfo element

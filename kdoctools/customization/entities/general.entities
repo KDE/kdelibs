@@ -28,7 +28,7 @@
       "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
 
     This file contains what dbgenent.mod should contain and is read
-    after all other files just like dbgenent.mod.
+    after all other files just like dbgenent.mod should be.
 
 -->
 
@@ -335,13 +335,7 @@
 <!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
 
 <!-- to be localised -->
-<!-- DO NOT REMOVE THESE WITHOUT A VERSION NUMBER CHANGE IN THE FPI!
-     Languages that want to keep the English versions should put in
-     their user.entities file a _commented out_ entitiy declaration.
-     (see the English user.entities for examples).  The reason is that 
-     entities must only be defined once.  If you use an entity with a 
-     different name (e.g. Maj for Shift in French) don't comment it out.
-  -->
+<!-- do NOT remove these without a version number change in the fpi! -->
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
