@@ -292,6 +292,7 @@ void HelpProtocol::emitFile( const KURL& url )
                       QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg(  QTextCodec::codecForLocale()->name() ) );
 
     data( QTextCodec::codecForLocale()->fromUnicode( filedata ) );
+    data( QByteArray() );
 }
 
 void HelpProtocol::mimetype( const KURL &)
