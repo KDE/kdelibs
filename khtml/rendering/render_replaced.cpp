@@ -208,7 +208,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     setSpecialObjects(false);
 }
 
-void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty)
+void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty)
 {
     if (!m_widget || !m_view)
 	return;
