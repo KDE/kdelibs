@@ -431,7 +431,7 @@ public:
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::<keyword>' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
