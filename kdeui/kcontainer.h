@@ -24,53 +24,10 @@
 #include <qlist.h>
 
 /**
- * KContainerLayoutItem is a internal class used by KConatinerLayout 
- * @see KContainerLayout
- * This class represents one widget inside the one KContainerLayout
- * 
- * @short KContainerLayoutItem
- * @internal
- * @author Jorge Monteiro <jomo@casema.net>
- * @version 0.1
- */
-class KContainerLayoutItem
-{
-public:
-    /**
-     * Creates one KContIem
-     *
-     * @param w The widget associated with this KContainerLayoutItem
-     * @param e Expand will make the widget to use all space alocated to it
-     * @param f Fill will make the widget be sized to ocupy all the space allocated to it. Only makes sense with expand = TRUE
-     * @param p Padding is the size the widget will use as borders on both sides of the space allocated to it.
-     */
-    KContainerLayoutItem(QWidget *w,bool e=FALSE,bool f=FALSE,int p=0)
-    {
-	_widget = w;
-	_expand = e;
-	_fill = f;
-	_padding = p;
-    }
-    void setExpand(bool b)		{ _expand = b; }
-    void setFill(bool b)		{ _fill = b; }
-    void setPadding(int i)		{ _padding = i; }
-    QWidget *widget()			{ return _widget; }
-    const bool expand() const		{ return _expand; }
-    const bool fill() const		{ return _fill; }
-    const int padding() const		{ return _padding; }
-protected:
-    QWidget *_widget;
-    bool _expand;
-    bool _fill;
-    int _padding;
-};
-
-/**
- * KContainerLayout is a class that will manage layout of it's child widgets.
+ * Alternative Layout manager widget.
  * Here is an example of using this class:
  *
  * 
- * @short KContainerLayout is a class that will manage layout of it's child widgets.
  * @author Jorge Monteiro <jomo@casema.net>
  * @version 0.1
  */
@@ -84,11 +41,14 @@ enum { Horizontal = 0, Vertical };
      * 
      * @param parent The parent widget of the KContainerLayout
      * @param name The name of the widget
-     * @param orientation The orientation of the container, either KContainerLayout::Horizontal or KContainer::Vertical
-     * @param homogeneous If the container should split available size by all KContainerLayoutItem in equal parts
-     * @param spacing The space to add between each widget and between the first/last and the borders
-     * @param f Flags @see QFrame#QFrame
-     * @param allowLines Flags @see QFrame#QFrame
+     * @param orientation The orientation of the container, either
+     * KContainerLayout::Horizontal or KContainer::Vertical
+     * @param homogeneous If the container should split available size
+     * by all KContainerLayoutItem in equal parts
+     * @param spacing The space to add between each widget and between
+     * the first/last and the borders
+     * @param f Flags (see @ref QFrame#QFrame)
+     * @param allowLines Flags (see @ref QFrame#QFrame)
      */
     KContainerLayout(QWidget * parent=0, const char * name=0, 
     		int orientation = KContainerLayout::Horizontal,
@@ -164,6 +124,49 @@ enum { Horizontal = 0, Vertical };
      */
     void sizeToFit();
 protected:
+
+    /**
+     * This class represents one widget inside the one KContainerLayout.
+     * 
+     * @internal
+     * @author Jorge Monteiro <jomo@casema.net>
+     * @version 0.1
+     * @see KContainerLayout
+     */
+    class KContainerLayoutItem
+    {
+    public:
+	    /**
+	     * Creates one KContIem
+	     *
+	     * @param w The widget associated with this KContainerLayoutItem
+	     * @param e Expand will make the widget to use all space alocated to it
+	     * @param f Fill will make the widget be sized to ocupy all the
+	     * space allocated to it. Only makes sense with expand = TRUE
+	     * @param p Padding is the size the widget will use as borders on
+	     * both sides of the space allocated to it.
+	     */
+	    KContainerLayoutItem(QWidget *w,bool e=FALSE,bool f=FALSE,int p=0)
+	    {
+		    _widget = w;
+		    _expand = e;
+		    _fill = f;
+		    _padding = p;
+	    }
+	    void setExpand(bool b)		{ _expand = b; }
+	    void setFill(bool b)		{ _fill = b; }
+	    void setPadding(int i)		{ _padding = i; }
+	    QWidget *widget()			{ return _widget; }
+	    const bool expand() const		{ return _expand; }
+	    const bool fill() const		{ return _fill; }
+	    const int padding() const		{ return _padding; }
+    protected:
+	    QWidget *_widget;
+	    bool _expand;
+	    bool _fill;
+	    int _padding;
+    };
+
     /**
      * Calculates the size necessary to display all widgets
      */

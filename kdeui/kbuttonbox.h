@@ -16,15 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/* 
- * KButtonBox class
- *
- * A container widget for buttons. Uses Qt layout control to place the
- * buttons, can handle both vertical and horizontal button placement.
- * The default border is now 0 (easier to deal with layouts). The space
- * between buttons is now more Motif compliant
- */
-
 #ifndef __KBUTTONBOX__H__
 #define __KBUTTONBOX__H__
 
@@ -33,18 +24,18 @@
 #include <qlist.h>
 
 /**
-  * This class is used internally.
-  */
-class KButtonBoxItem {
-public:
-  QPushButton *button;
-  bool noexpand;
-  int stretch;
-  int actual_size;
-};
-
-
+ * Container widget for buttons. 
+ * 
+ * Uses Qt layout control to place the buttons, can handle both vertical
+ * and horizontal button placement.  The default border is now 0 (easier
+ * to deal with layouts). The space between buttons is now more Motif
+ * compliant.
+ *
+ * @author Mario Weilguni <mweilguni@sime.com>
+ * @version $Id$
+ */
 class KButtonBox : public QWidget {
+
   Q_OBJECT
 public:
   enum { VERTICAL = 1, HORIZONTAL = 2 };
@@ -65,24 +56,25 @@ public:
   ~KButtonBox();
 
   /**
-    * @return the minimum size needed to fit all buttons. This size is
-    * calculated by the with/height of all buttons plus border/autoborder
+    * @return The minimum size needed to fit all buttons. This size is
+    * calculated by the width/height of all buttons plus border/autoborder.
     */
   virtual QSize sizeHint() const;
 
   virtual void resizeEvent(QResizeEvent *);
 
   /**
-    * adds a new @see QPushButton and @return a pointer to the newly 
-    * created button. If noexpand is FALSE, the width of the button is
-    * adjusted to fit the other buttons (the maximum of all buttons is
-    * taken). If noexpand is TRUE, the width of this button will be
-    * set to the minimum width needed for the given text).
+    * Adds a new @ref QPushButton.  If noexpand is FALSE, the width
+    * of the button is adjusted to fit the other buttons (the maximum
+    * of all buttons is taken). If noexpand is TRUE, the width of this
+    * button will be set to the minimum width needed for the given text).
+    *
+    * @return a pointer to the new button.
     */
   QPushButton *addButton(const QString& text, bool noexpand = FALSE);
 
   /**
-    * This adds a stretch to the buttonbox. @see QBoxLayout for details.
+    * This adds a stretch to the buttonbox. @ref QBoxLayout for details.
     * Can be used to separate buttons (i.e. if you add the buttons "OK",
     * "Cancel", add a stretch and then add the button "Help", "OK" and
     * "Cancel" will be left-aligned (or top-aligned for vertical) while
@@ -97,6 +89,15 @@ public:
   void layout();
 
 protected:
+
+  class KButtonBoxItem {
+  public:
+	  QPushButton *button;
+	  bool noexpand;
+	  int stretch;
+	  int actual_size;
+  };
+
   /**
     * @return the best size for a button. Checks all buttons and takes
     * the maximum width/height.
