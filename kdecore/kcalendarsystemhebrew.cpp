@@ -19,9 +19,6 @@
 
 // Derived hebrew kde calendar class
 
-#include <qdatetime.h>
-#include <qstring.h>
-
 #include <klocale.h>
 #include <kdebug.h>
 
@@ -29,7 +26,7 @@
 
 static int jflg = 0; // ### HPB Remove this!?!?
 
-static int dysiz(int y);
+static int hebrewDaysInYear(int y);
 
 class h_date
 {
@@ -50,9 +47,9 @@ static class h_date * hebrewToGregorian(int y, int m, int d)
   int s;
 
   y -= 3744;
-  s = dysiz(y);
+  s = hebrewDaysInYear(y);
   d += s;
-  s = dysiz(y + 1) - s;    /* length of year */
+  s = hebrewDaysInYear(y + 1) - s;    /* length of year */
   d += (59 * (m - 1) + 1) / 2;  /* regular months */
   /* special cases */
   if (s % 10 > 4 && m > 2)  /* long Heshvan */
@@ -108,12 +105,12 @@ static class h_date * gregorianToHebrew(int y, int m, int d)
 
   /* compute the year */
   y += 16;
-  s = dysiz(y);
-  m = dysiz(y + 1);
+  s = hebrewDaysInYear(y);
+  m = hebrewDaysInYear(y + 1);
   while(d >= m) {  /* computed year was underestimated */
     s = m;
     y++;
-    m = dysiz(y + 1);
+    m = hebrewDaysInYear(y + 1);
   }
   d -= s;
   s = m-s;  /* size of current year */
@@ -153,7 +150,7 @@ static class h_date * gregorianToHebrew(int y, int m, int d)
  * @internal
  * no. of days in y years
  */
-static int dysiz(int y)
+static int hebrewDaysInYear(int y)
 {
   int m, nm, dw, s, l;
 
@@ -183,7 +180,7 @@ static int dysiz(int y)
  */
 static int long_cheshvan(int year)
 {
-  return ((dysiz(year) % 10) == 5);
+  return ((hebrewDaysInYear(year) % 10) == 5);
 }
 
 /**
@@ -192,7 +189,7 @@ static int long_cheshvan(int year)
  */
 static int short_kislev(int year)
 {
-  return ((dysiz(year) % 10) == 3);
+  return ((hebrewDaysInYear(year) % 10) == 3);
 }
 
 static bool is_leap_year(int year)
