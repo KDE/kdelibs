@@ -377,7 +377,11 @@ public:
 
 /*************************************************************************/
 KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, WFlags f)
+#ifdef BORDERLESS_WINDOWS
+: QWidget( parent, name, f | WType_Dialog | WStyle_Customize | WStyle_NoBorder )
+#else
 : QWidget( parent, name, f )
+#endif
   ,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
@@ -546,6 +550,7 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 
 #ifdef BORDERLESS_WINDOWS
     KWin::setType( winId(), NET::Override); //d->windowType );
+//      setWFlags(WStyle_Customize | WStyle_NoBorder | WStyle_Tool);
 #else
     KWin::setType( winId(), d->windowType );
 #endif
@@ -1336,7 +1341,11 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
     switch ( event->type() ){
       case QEvent::MouseButtonDblClick:
         if (curdw->currentDockPos == KDockWidget::DockDesktop)  curdw->dockBack();
-        else curdw->manualDock (0, KDockWidget::DockDesktop);
+        else
+	{
+		curdw->toDesktop();
+		// curdw->manualDock (0, KDockWidget::DockDesktop);
+	}
         break;
     
       case QEvent::MouseButtonPress:
@@ -1389,16 +1398,27 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
         break;
       case QEvent::MouseMove:
         if ( draging ) {	  
-	  pDockWdgAtCursor = findDockWidgetAt( QCursor::pos() );
-          KDockWidget* oldMoveWidget = currentMoveWidget;
+
 #ifdef BORDERLESS_WINDOWS
 //BEGIN TEST       
+	  KDockWidget *oldMoveWidget;
 	  if (curdw->parent()==0)
 	  {
 	  	curdw->move(QCursor::pos()-d->dragOffset);
+   	        pDockWdgAtCursor = findDockWidgetAt( QCursor::pos()-QPoint(0,d->dragOffset.y()+3) );
+                oldMoveWidget = currentMoveWidget;
+	  }
+	  else
+	  {
+	        pDockWdgAtCursor = findDockWidgetAt( QCursor::pos() );
+                oldMoveWidget = currentMoveWidget;
 	  }
 //END TEST
+#else
+	  pDockWdgAtCursor = findDockWidgetAt( QCursor::pos() );
+          KDockWidget* oldMoveWidget = currentMoveWidget;
 #endif
+
 	  if ( currentMoveWidget  && pDockWdgAtCursor == currentMoveWidget ) { //move
             dragMove( currentMoveWidget, currentMoveWidget->mapFromGlobal( QCursor::pos() ) );	    
             break;
