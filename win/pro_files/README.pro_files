@@ -1,0 +1,14 @@
+kdelibs/win32 .pro files
+
+(c) 2003-2005, Jaroslaw Staniek
+
+Add this directory to your PATH.
+Cygwin or (other bash replacement) required.
+
+Please copy .pro files to destination kdelibs/ 
+subdirectores using update_kdelibs_pro_files scipt.
+
+.pro files were copied here from kdelibs/ directory 
+using collect_kdelibs_pro_files scipt.
+
+Scripts are available in win/tools/.
