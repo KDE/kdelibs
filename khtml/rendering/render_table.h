@@ -167,14 +167,14 @@ public:
 	    widthCell=0;
         }
 
-        int     span;
-        int     start;
-        int     min;
-        int     max;
+        ushort     span;
+        ushort     start;
+        ushort     min;
+        ushort     max;
+        int     value : 29;
+        khtml::LengthType       type : 3;
         RenderTableCell* minCell;
         RenderTableCell* maxCell;
-        khtml::LengthType       type;
-        int     value;
 	RenderTableCell* widthCell;
     };
 
@@ -223,6 +223,7 @@ protected:
 
     int maxColSpan;
 
+
     QMemArray<int> columnPos;
     QMemArray<int> colMaxWidth;
     QMemArray<int> colMinWidth;
@@ -268,8 +269,6 @@ public:
 
     virtual const char *renderName() const { return "RenderTableSection"; }
 
-    int numRows() { return nrows; }
-
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual bool isTableSection() const { return true; }
@@ -285,7 +284,6 @@ public:
 
 protected:
     RenderTable *table;
-    int nrows;
 };
 
 // -------------------------------------------------------------------------
@@ -300,9 +298,6 @@ public:
 
     long rowIndex() const;
     void setRowIndex( long );
-
-    long sectionRowIndex() const { return rIndex; }
-    void setSectionRowIndex( long i ) { rIndex = i; }
 
     virtual bool isTableRow() const { return true; }
 
@@ -327,9 +322,6 @@ public:
 protected:
     RenderTable *table;
 
-    // relative to the current section!
-    int rIndex;
-    int ncols;
 };
 
 // -------------------------------------------------------------------------
@@ -406,25 +398,23 @@ public:
     }
 
 protected:
-    RenderTable *m_table;
-
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
                                      int _w, int _h, int _tx, int _ty);
+    virtual int borderTopExtra() { return _topExtra; }
+    virtual int borderBottomExtra() { return _bottomExtra; }
+
+
+    RenderTable *m_table;
 
     short _row;
     short _col;
     short rSpan;
     short cSpan;
-    int _id;
-    int rowHeight;
-    int _topExtra;
-    int _bottomExtra;
+    short _topExtra;
+    short _bottomExtra;
     bool nWrap : 1;
     bool m_widthChanged : 1;
-
-    virtual int borderTopExtra() { return _topExtra; }
-    virtual int borderBottomExtra() { return _bottomExtra; }
-
+    int rowHeight : 30;
 
     RenderTableRow *rowimpl;
 };
@@ -462,14 +452,9 @@ public:
 
 protected:
     RenderTable *table;
-    int _span;
-    int _currentCol;
-    int _startCol;
-
-    // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
-    // this, but since both elements work quite similar, we use one
-    // DOMElement for them...
-    ushort _id;
+    short _span;
+    short _currentCol;
+    short _startCol;
 };
 
 // -------------------------------------------------------------------------
