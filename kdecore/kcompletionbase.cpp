@@ -25,7 +25,7 @@
 KCompletionBase::KCompletionBase()
 {
     // Assign the default completion type to use.
-    m_iCompletionMode = KGlobal::completionMode();
+    m_iCompletionMode = KGlobalSettings::completionMode();
 
     // Initialize the pointer to the completion object.
     m_pCompObj = 0;
@@ -78,12 +78,12 @@ void KCompletionBase::setHandleSignals( bool handle )
     m_bHandleSignals = handle;
 }
 
-void KCompletionBase::setCompletionMode( KGlobal::Completion mode )
+void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
 {
     m_iCompletionMode = mode;
     // Always sync up KCompletion mode with ours as long as we
     // are performing completions.
-    if( m_pCompObj != 0 && m_iCompletionMode != KGlobal::CompletionNone )
+    if( m_pCompObj != 0 && m_iCompletionMode != KGlobalSettings::CompletionNone )
         m_pCompObj->setCompletionMode( m_iCompletionMode );
 }
 

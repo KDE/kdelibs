@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-#include <kglobal.h>
+#include <kglobalsettings.h>
 
 #include "kcompletion_private.h"
 
@@ -62,7 +62,7 @@ class KCompletionPrivate;
  *     of manual and auto-completion is therefore only visible in UI classes,
  *     KCompletion needs to know about whether to deliver partial matches
  *     (shell completion) or whole matches (auto/manual completion), therefore
- *     @ref KGLobal::CompletionMan and @ref KGlobal::CompletionAuto have the
+ *     @ref KGlobalSettings::CompletionMan and @ref KGlobalSettings::CompletionAuto have the
  *     exact same effect in KCompletion.
  *
  * @li shell completion works like how shells complete filenames.
@@ -74,7 +74,7 @@ class KCompletionPrivate;
  * You don't have to worry much about that though, KCompletion handles
  * that for you, according to the setting @ref setCompletionMode().
  * The default setting is globally configured by the user and read
- * from @ref KGlobal::completionMode.
+ * from @ref KGlobalSettings::completionMode.
  *
  * A short example:
  * <pre>
@@ -188,20 +188,20 @@ public:
      * Sets the completion mode to Auto/Manual (@ref KCompletion documentation),
      * Shell or None.
      * If you don't set the mode explicitly, the global default value
-     * KGlobal::completionMode() is used. @ref KGlobal::CompletionNone disables
+     * KGlobalSettings::completionMode() is used. @ref KGlobalSettings::CompletionNone disables
      * completion.
      * @see #completionMode
-     * @see #KGlobal::completionMode
+     * @see #KGlobalSettings::completionMode
      */
-    void setCompletionMode( KGlobal::Completion mode );
+    void setCompletionMode( KGlobalSettings::Completion mode );
 
     /**
      * @returns the current completion mode.
-     * May be different from @ref KGlobal::completionMode(), if you explicitly
+     * May be different from @ref KGlobalSettings::completionMode(), if you explicitly
      * called @ref setCompletionMode().
      * @see #setCompletionMode
      */
-    KGlobal::Completion completionMode() const { return myCompletionMode; }
+    KGlobalSettings::Completion completionMode() const { return myCompletionMode; }
 
     /**
      * Setting this to true makes us go into sorted mode (doh).
@@ -396,7 +396,7 @@ private:
     void 		doBeep();
 
     QStringList         myMatches;
-    KGlobal::Completion myCompletionMode;
+    KGlobalSettings::Completion myCompletionMode;
 
     QString             myLastString;
     QString 		myLastMatch;
@@ -561,7 +561,7 @@ public:
     * Sets the type of completion to be used.
     *
     * The completion modes supported are those defined in
-    * @ref KGlobal.  See below.
+    * @ref KGlobalSettings.  See below.
     *
     * @param mode Completion type:
     *   @li CompletionNone:  Disables completion feature.
@@ -575,17 +575,17 @@ public:
     *                        found in typcial *nix shell
     *                        enviornments.
     */
-    virtual void setCompletionMode( KGlobal::Completion mode );
+    virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
     /**
     * Retrieves the current completion mode.
     *
-    * The return values are of type @ref KGlobal::Completion.
+    * The return values are of type @ref KGlobalSettings::Completion.
     * See @ref setCompletionMode for details.
     *
     * @return the completion mode.
     */
-    KGlobal::Completion completionMode() const { return m_iCompletionMode; }
+    KGlobalSettings::Completion completionMode() const { return m_iCompletionMode; }
 
     /**
     * Sets the key-binding(s) to be used for rotating through
@@ -689,7 +689,7 @@ public:
     *
     * This method changes the values of the key bindings for
     * rotation and completion features to the default values
-    * provided in KGlobal.
+    * provided in KGlobalSettings.
     *
     * By default this object uses the global key-bindings.
     * There is no need to call this method unless you have
@@ -728,7 +728,7 @@ protected:
     bool m_bEmitSignals;
 
     // Stores the completion mode locally.
-    KGlobal::Completion m_iCompletionMode;
+    KGlobalSettings::Completion m_iCompletionMode;
     // Pointer to Completion object.
     KCompletion* m_pCompObj;
 

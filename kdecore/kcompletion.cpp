@@ -25,7 +25,7 @@
 
 KCompletion::KCompletion()
 {
-    myCompletionMode = KGlobal::completionMode();
+    myCompletionMode = KGlobalSettings::completionMode();
     myTreeRoot = new KCompTreeNode;
     mySorting    = true; // don't sort the items by default (FIXME, -> false)
     myBeep       = true;
@@ -107,7 +107,7 @@ void KCompletion::clear()
 
 QString KCompletion::makeCompletion( const QString& string )
 {
-    if ( myCompletionMode == KGlobal::CompletionNone )
+    if ( myCompletionMode == KGlobalSettings::CompletionNone )
         return QString::null;
 
     kDebugInfo(250, "KCompletion: completing: %s", debugString( string ));
@@ -118,7 +118,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
-    if ( myCompletionMode == KGlobal::CompletionShell &&
+    if ( myCompletionMode == KGlobalSettings::CompletionShell &&
 	 string == myLastString ) {
         myMatches = findAllCompletions( string );
 	postProcessMatches( &myMatches );
@@ -145,7 +145,7 @@ QString KCompletion::makeCompletion( const QString& string )
 }
 
 
-void KCompletion::setCompletionMode( KGlobal::Completion mode )
+void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 {
     myCompletionMode = mode;
 }
@@ -242,8 +242,8 @@ QString KCompletion::findCompletion( const QString& string )
     if ( node && node->childrenCount() > 1 ) {
 	myHasMultipleMatches = true;
 	
-	if ( myCompletionMode == KGlobal::CompletionAuto ||
-	     myCompletionMode == KGlobal::CompletionMan ) {
+	if ( myCompletionMode == KGlobalSettings::CompletionAuto ||
+	     myCompletionMode == KGlobalSettings::CompletionMan ) {
 
 	    myRotationIndex = 1;
 	    while ( (node = node->firstChild()) ) {
@@ -353,8 +353,8 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 void KCompletion::doBeep()
 {
     if ( myBeep &&
-	 (myCompletionMode == KGlobal::CompletionShell ||
-	  myCompletionMode == KGlobal::CompletionMan) )
+	 (myCompletionMode == KGlobalSettings::CompletionShell ||
+	  myCompletionMode == KGlobalSettings::CompletionMan) )
         kapp->beep();
 }
 

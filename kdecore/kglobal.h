@@ -28,7 +28,7 @@ class KInstance;
 
 /**
  * Access the KDE global objects.
- * 
+ *
  * @author Sirtaj Singh Kang (taj@kde.org)
  * @version $Id$
  */
@@ -38,7 +38,7 @@ public:
 
     /**
      * Retrieve the global instance.  There is always at least
-     * one instance of a component in one application (in most 
+     * one instance of a component in one application (in most
      * cases the application itself).
      */
     static KInstance            *instance();
@@ -47,101 +47,29 @@ public:
      *  Retrieve the application standard dirs object.
      */
     static KStandardDirs	*dirs();
-    
+
     /**
      *  Retrieve the general config object.
      */
     static KConfig		*config();
-    
+
     /**
      *  Retrieve an iconloader object.
      */
     static KIconLoader	        *iconLoader();
-    
+
     static KLocale             *locale();
     static KCharsets	        *charsets();
-    
+
     static QFont                generalFont();
     static QFont                fixedFont();
     static QFont                toolBarFont();
     static QFont                menuFont();
 
-    /**
-     * Returns a treshold in pixels for drag & drop operations.
-     * As long as the mouse movement has not exceeded this number
-     * of pixels in either X or Y direction no drag operation may
-     * be started. This prevents spurious drags when the user intended
-     * to click on something but moved the mouse a bit while doing so.
-     *
-     * For this to work you must save the position of the mouse (@p oldPos)
-     * in the @ref QWidget::mousePressEvent(). 
-     * When the position of the mouse (@p newPos) 
-     * in a  @ref QWidget::mouseMoveEvent() exceeds this treshold
-     * you may start a drag 
-     * which should originate from @ref oldPos. 
-     * 
-     * Example code:
-     * <pre>
-     * void KColorCells::mousePressEvent( QMouseEvent *e )
-     * {
-     *    mOldPos = e->pos();
-     * }
-     *
-     * void KColorCells::mouseMoveEvent( QMouseEvent *e )
-     * {
-     *    if( !(e->state() && LeftButton)) return;
-     *
-     *    int delay = KGlobal::dndEventDelay();
-     *    QPoint newPos = e->pos();
-     *    if(newPos->x() > mOldPos.x()+delay || newPos->x() < mOldPos.x()-delay ||
-     *       newPos->y() > mOldPos.y()+delay || newPos->y() < mOldPos.y()-delay)
-     *    {
-     *       // Drag color object
-     *       int cell = posToCell(mOldPos); // Find color at mOldPos
-     *       if ((cell != -1) && colors[cell].isValid())
-     *       {
-     *          KColorDrag *d = KColorDrag::makeDrag( colors[cell], this);
-     *          d->dragCopy();
-     *       }
-     *    }
-     * }
-     * </pre>
-     *
-     */
-
-    static  int                 dndEventDelay();
-
-    /**
-     * Returns whether KDE runs in single (default) or double click
-     * mode.
-     *
-     * @return @ false if single click mode, or @p true if double click mode.
-     *
-     * see @ref http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
-     **/
-    static bool useDoubleClicks();
-  
-    /**
-     * Retrieve the configured completion mode.
-     *
-     * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
-     *
-     * @return CompletionNone:  Completion should be disabled
-     *         CompletionAuto:  Automatic completion
-     *         CompletionMan:   Like automatic completion except the user initiates
-     *                          the completion using the completion key as in CompletionEOL
-     *         CompletionShell: Attempts to mimic the completion feature found in
-     *                          typical *nix shell enviornments.
-     **/
-
-    enum Completion { CompletionNone=1, CompletionAuto, CompletionMan, CompletionShell };
-
-    static Completion completionMode();
-  
     static  KInstance           *_instance;
     static  KLocale             *_locale;
     static  KCharsets	        *_charsets;
-    
+
     static  QFont               *_generalFont;
     static  QFont               *_fixedFont;
     static  QFont               *_toolBarFont;
