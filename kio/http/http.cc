@@ -1183,6 +1183,7 @@ bool HTTPProtocol::readHeader()
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
   QString disposition; // Incase we get a Content-Disposition
+  QString httpRefresh; // Incase we get a http-refresh request
 
   m_strCharset = QString::null;
 
@@ -1349,7 +1350,7 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
       kdDebug(7113) << buffer << endl;
       mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-      setMetaData( "http-refresh", (QString::fromLatin1(trimLead(buffer+8))).stripWhiteSpace() );
+      httpRefresh = QString::fromLatin1(trimLead(buffer+8)).stripWhiteSpace();
     }
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
@@ -1812,6 +1813,10 @@ bool HTTPProtocol::readHeader()
      mimeType( m_strMimeType );
   }
 
+  // Set up the http-refresh signal if necessary
+  if ( !httpRefresh.isEmpty() )
+    setMetaData( "http-refresh", httpRefresh );
+
   if (m_request.method == HTTP_HEAD)
      return true;
 
@@ -1981,7 +1986,7 @@ bool HTTPProtocol::sendBody()
       result = readData( buffer );
       if ( result > 0 )
       {
-        // kdDebug(7113) << "POST data read: " << QString::fromLatin1(buffer.data(), buffer.size()) << endl;
+        kdDebug(7113) << "POST data read: " << QString(buffer) << endl;
         length += result;
         old_size = m_bufPOST.size();
         m_bufPOST.resize( old_size+result );
@@ -2002,7 +2007,7 @@ bool HTTPProtocol::sendBody()
   kdDebug( 7113 ) << c_buffer << endl;
 
   // Debugging code...
-  // kdDebug( 7113 ) << "POST'ing Data: " << QString::fromLatin1(m_bufPOST.data(), m_bufPOST.size()) << endl;
+  kdDebug( 7113 ) << "POST'ing Data: " << QString(m_bufPOST ) << endl;
 
   // Send the content length...
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
@@ -2757,15 +2762,16 @@ bool HTTPProtocol::readBody( )
     HASH digest;
     context.finalize();
     context.rawDigest(digest);
-    QCString enc_digest = KCodecs::base64Encode( QCString(digest) );
-    if ( m_sContentMD5 == enc_digest.data() )
+    QByteArray out, in;
+    in.setRawData( digest, sizeof(digest) );
+    KCodecs::base64Encode( in, out );
+    if ( m_sContentMD5 == QString(out) )
       kdDebug(7103) << "MD5 checksum present and is match!!" << endl;
     else
       kdDebug(7103) << "MD5 checksum mismatch: got " << m_sContentMD5
-                    << ", calculated " << enc_digest << endl;
+                    << ", calculated " << QString(out) << endl;
+    in.resetRawData( digest, sizeof(digest) );
   }
-  else
-    kdDebug(7103) << "No MD5 checksum found.  Too bad..." << endl;
 
   // Close cache entry
   if (m_iBytesLeft == 0)
