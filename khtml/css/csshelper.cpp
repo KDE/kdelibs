@@ -97,7 +97,7 @@ float khtml::computeLengthFloat(DOM::CSSPrimitiveValueImpl *val, RenderStyle *st
 DOMString khtml::parseURL(const DOMString &url)
 {
     DOMStringImpl* i = url.implementation();
-    if(!i) return 0;
+    if(!i) return DOMString();
 
     int o = 0;
     int l = i->l;
@@ -130,7 +130,9 @@ DOMString khtml::parseURL(const DOMString &url)
 
     int nl = 0;
     for(int k = o; k < o+l; k++)
-        if(i->s[k].unicode() > '\r')
+        if(i->s[k] == '\\')
+            j->s[nl++] = '/';
+        else if(i->s[k].unicode() > '\r')
             j->s[nl++] = i->s[k];
 
     j->l = nl;
@@ -139,7 +141,7 @@ DOMString khtml::parseURL(const DOMString &url)
 }
 
 
-void khtml::setFontSize(  QFont &f,  int  pixelsize, const KHTMLSettings *s, QPaintDeviceMetrics *devMetrics )
+void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPaintDeviceMetrics *devMetrics )
 {
     QFontDatabase db;
 
