@@ -330,6 +330,8 @@ public:
    */
   virtual bool saveAs( const KURL &url );
 
+  virtual void setModified( bool modified );
+
 public slots:
   /**
    * Call @ref setModified() whenever the contents get modified.

@@ -77,9 +77,9 @@ Part *Part::hitTest( QWidget *widget, const QPoint & )
 {
   if ( (QWidget *)m_widget != widget )
     return 0L;
-    
+
   return this;
-} 
+}
 
 void Part::setWidget( QWidget *widget )
 {
@@ -317,6 +317,11 @@ void ReadWritePart::setReadWrite( bool readwrite )
   m_bReadWrite = readwrite;
 }
 
+void ReadWritePart::setModified( bool modified )
+{
+  m_bModified = modified; 
+} 
+
 void ReadWritePart::setModified()
 {
   if ( !m_bReadWrite )
@@ -324,7 +329,7 @@ void ReadWritePart::setModified()
       kDebugError( 1000, "Can't set a read-only document to 'modified' !" );
       return;
   }
-  m_bModified = true;
+  setModified( true );
 }
 
 bool ReadWritePart::closeURL()
