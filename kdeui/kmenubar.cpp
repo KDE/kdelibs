@@ -87,29 +87,13 @@ void KMenuBar::setTopLevelMenu(bool top_level)
   setTopLevelMenuInternal( top_level );
 }
 
-#if QT_VERSION < 0x030100
-namespace
-{
-class QWidgetHack
-    : public QWidget
-    {
-    public:
-        bool isFullScreen() { return isTopLevel() && topData()->fullscreen; }
-    };
-}
-#endif
-
 void KMenuBar::setTopLevelMenuInternal(bool top_level)
 {
   if (d->forcedTopLevel)
     top_level = true;
 
   if( parentWidget()
-#if QT_VERSION >= 0x030100
       && parentWidget()->topLevelWidget()->isFullScreen()) {
-#else
-      && static_cast<QWidgetHack*>(parentWidget()->topLevelWidget())->isFullScreen()) {
-#endif
     d->wasTopLevel = top_level;
     top_level = false;
   }
