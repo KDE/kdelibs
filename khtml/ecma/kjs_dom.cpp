@@ -114,19 +114,19 @@ KJSO DOMNode::tryGet(const UString &p) const
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
   // no DOM standard, found in IE only
   else if (p == "offsetLeft")
-    result = rend ? KJSO(Number(rend->xPos())) : KJSO(Undefined());
+    result = rend ? static_cast<KJSO>(Number(rend->xPos())) : KJSO(Undefined());
   else if (p == "offsetTop")
-    result = rend ? KJSO(Number(rend->yPos())) : KJSO(Undefined());
+    result = rend ? static_cast<KJSO>(Number(rend->yPos())) : KJSO(Undefined());
   else if (p == "offsetParent")
     result = getDOMNode(node.parentNode()); // not necessarily correct
   else if (p == "clientWidth")
-      result = rend ? KJSO(Number(rend->contentWidth())) : KJSO(Undefined());
+      result = rend ? static_cast<KJSO>(Number(rend->contentWidth())) : KJSO(Undefined());
   else if (p == "clientHeight")
-      result = rend ? KJSO(Number(rend->contentHeight())) : KJSO(Undefined());
+      result = rend ? static_cast<KJSO>(Number(rend->contentHeight())) : KJSO(Undefined());
   else if (p == "scrollLeft")
-      result = rend ? KJSO(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : KJSO(Undefined());
+      result = rend ? static_cast<KJSO>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : KJSO(Undefined());
   else if (p == "scrollTop")
-      result = rend ? KJSO(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : KJSO(Undefined());
+      result = rend ? static_cast<KJSO>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : KJSO(Undefined());
   else
     result = Imp::get(p);
 
