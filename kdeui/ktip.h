@@ -1,7 +1,8 @@
 /*****************************************************************
 
-Copyright (c) 2000, 2001 Matthias Hoelzer-Kluepfel
-                         Tobias Koenig <tokoe82@yahoo.de>
+Copyright (c) 2000-2003 Matthias Hoelzer-Kluepfel <mhk@kde.org>
+                        Tobias Koenig <tokoe@kde.org>
+                        Daniel Molkentin <molkentin@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,21 +49,27 @@ class KTextBrowser;
  * if you want to allow the user to enable/disable the tipdialog in the
  * application's configuration dialog.
  *
- * @author Matthias Hoelzer-Kluepfel <mhk@caldera.de>
+ * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  *
  */
 class KTipDatabase
 {
 public:
     /**
-     * The constructor.
+     * This constructor reads in the tips from a file with the given name. If
+     * no name is given, a file called 'application-name/tips' will be loaded.
      *
-     * This reads in the tips from a file with the given name. If no name is
-     * given, a file called 'application-name/tips' will be loaded.
-     *
-     * @param tipFile The name of the tips file.
+     * @param tipFile The absolute path to the tips file.
      */
     KTipDatabase(const QString &tipFile = QString::null);
+
+    /**
+     * This constructor takes a list of files that will be merged. This constructor
+     * essentially behaves like the one above. It returns when tipFiles is empty.
+     *
+     * @param tipFiles A list of absolute paths to the tips file
+     */ 
+    KTipDatabase(const QStringList &tipFiles);
 
     /**
      * Returns the current tip.
@@ -82,9 +89,11 @@ public:
 private:
     void loadTips(const QString &tipFile);
 
-    QStringList tips;
+    void addTips(const QString &tipFile);
 
-    int current;
+    QStringList mTips;
+
+    int mCurrent;
     class KTipDatabasePrivate;
     KTipDatabasePrivate *d;
 };
@@ -154,17 +163,17 @@ private slots:
     void showOnStart(bool);
 
 private:
-    KTipDatabase *_database;
+    KTipDatabase *mDatabase;
 
-    QCheckBox *_tipOnStart;
-    KTextBrowser *_tipText;
+    QCheckBox *mTipOnStart;
+    KTextBrowser *mTipText;
 
     class KTipDialogPrivate;
     KTipDialogPrivate *d;
 
-    static KTipDialog *_instance;
+    static KTipDialog *mInstance;
 
-	QColor _baseColor, _blendedColor, _textColor;
+	QColor mBaseColor, mBlendedColor, mTextColor;
 };
 
 #endif
