@@ -46,6 +46,8 @@
 #include <string.h>
 #include "arena.h"
 
+namespace khtml {
+
 //#define DEBUG_ARENA_MALLOC
 #ifdef DEBUG_ARENA_MALLOC
 static int i = 0;
@@ -80,7 +82,7 @@ int CeilingLog2(unsigned int i) {
     return log2;
 }
 
-void InitArenaPool(ArenaPool *pool, const char* /*name*/, 
+void InitArenaPool(ArenaPool *pool, const char* /*name*/,
                    unsigned int size, unsigned int align)
 {
      if (align == 0)
@@ -90,15 +92,15 @@ void InitArenaPool(ArenaPool *pool, const char* /*name*/,
      pool->first.base = pool->first.avail = pool->first.limit =
          (uword)ARENA_ALIGN(pool, &pool->first + 1);
      pool->current = &pool->first;
-     pool->arenasize = size;                                  
+     pool->arenasize = size;
 }
 
 
 /*
  ** ArenaAllocate() -- allocate space from an arena pool
- ** 
+ **
  ** Description: ArenaAllocate() allocates space from an arena
- ** pool. 
+ ** pool.
  **
  ** First try to satisfy the request from arenas starting at
  ** pool->current.
@@ -106,16 +108,16 @@ void InitArenaPool(ArenaPool *pool, const char* /*name*/,
  ** If there is not enough space in the arena pool->current, try
  ** to claim an arena, on a first fit basis, from the global
  ** freelist (arena_freelist).
- ** 
+ **
  ** If no arena in arena_freelist is suitable, then try to
  ** allocate a new arena from the heap.
  **
  ** Returns: pointer to allocated space or NULL
- ** 
+ **
  */
 void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
 {
-    Arena *a;   
+    Arena *a;
     char *rp;     /* returned pointer */
 
 #ifdef DEBUG_ARENA_MALLOC
@@ -150,7 +152,7 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
                 a->avail = a->base;
                 rp = (char *)a->avail;
                 a->avail += nb;
-                /* the newly allocated arena is linked after pool->current 
+                /* the newly allocated arena is linked after pool->current
                  *  and becomes pool->current */
                 a->next = pool->current->next;
                 pool->current->next = a;
@@ -163,8 +165,8 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
         }
     }
 
-    /* attempt to allocate from the heap */ 
-    {  
+    /* attempt to allocate from the heap */
+    {
         unsigned int sz = pool->arenasize > nb ? pool->arenasize : nb;
         sz += sizeof *a + pool->mask;  /* header and alignment slop */
 #ifdef DEBUG_ARENA_MALLOC
@@ -177,7 +179,7 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
             a->base = a->avail = (uword)ARENA_ALIGN(pool, a + 1);
             rp = (char *)a->avail;
             a->avail += nb;
-            /* the newly allocated arena is linked after pool->current 
+            /* the newly allocated arena is linked after pool->current
             *  and becomes pool->current */
             a->next = pool->current->next;
             pool->current->next = a;
@@ -195,7 +197,7 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
 void* ArenaGrow(ArenaPool *pool, void *p, unsigned int size, unsigned int incr)
 {
     void *newp;
- 
+
     ARENA_ALLOCATE(newp, pool, size + incr);
     if (newp)
         memcpy(newp, p, size);
@@ -226,7 +228,7 @@ static void FreeArenaList(ArenaPool *pool, Arena *head, bool reallyFree)
 
     if (freelist_count >= FREELIST_MAX)
         reallyFree = true;
-        
+
     if (reallyFree) {
         do {
             *ap = a->next;
@@ -285,3 +287,5 @@ void ArenaFinish(void)
     }
     arena_freelist = NULL;
 }
+
+} // namespace

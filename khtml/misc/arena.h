@@ -43,6 +43,8 @@
 
 typedef unsigned long uword;
 
+namespace khtml {
+
 struct Arena {
     Arena* next; 	// next arena
     uword base;		// aligned base address
@@ -57,7 +59,7 @@ struct ArenaPool {
     uword mask; 	// Mask (power-of-2 - 1)
 };
 
-void InitArenaPool(ArenaPool *pool, const char *name, 
+void InitArenaPool(ArenaPool *pool, const char *name,
                    unsigned int size, unsigned int align);
 void FinishArenaPool(ArenaPool *pool);
 void FreeArenaPool(ArenaPool *pool);
@@ -91,7 +93,7 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb);
         }
 
 #define ARENA_MARK(pool) ((void *) (pool)->current->avail)
-#define UPTRDIFF(p,q) ((uword)(p) - (uword)(q))     
+#define UPTRDIFF(p,q) ((uword)(p) - (uword)(q))
 
 #ifdef DEBUG
 #define FREE_PATTERN 0xDA
@@ -123,3 +125,5 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb);
          (a) = 0;
 
 #endif
+
+} // namespace
