@@ -30,7 +30,7 @@ KConvertTest::KConvertTest()
 
 void KConvertTest::slotRawStreamStart()
 {
-	cout << "[START]\n\n" << endl;
+//	cout << "[START]\n\n" << endl;
 }
 
 void KConvertTest::slotNewBlockSize(long blockSize)
@@ -50,7 +50,7 @@ void KConvertTest::slotNewData()
 
 void KConvertTest::slotRawStreamFinished()
 {
-	cout << "\n\n[END]" << endl;
+//	cout << "\n\n[END]" << endl;
 }
 
 int main(int argc, char **argv)
