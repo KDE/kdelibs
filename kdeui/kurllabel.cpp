@@ -156,11 +156,14 @@ void KURLLabel::setText(const QString& text)
 	 * this allows the user to invoke these functions
 	 * in either order.
 	 */
+#if 0
+    // This seems to be causing an infinite loop...
 	QFont tmp_font = font();
 	if ( !tmp_font.underline() ) {
 	    tmp_font.setUnderline(m_underline);
 	    setFont(tmp_font);
 	}
+#endif
 	
 	/* set the palette to normal (at first)*/
 	setPalette(m_nsp);
@@ -221,9 +224,7 @@ void KURLLabel::setUnderline(bool underline)
 	m_underline = underline;
 
 	/* turn on or off the underlining */
-	QFont tmp_font = font();
-	tmp_font.setUnderline(m_underline);
-	setFont(tmp_font);
+	setFont(font());
 }
 
 void KURLLabel::setHighlightedColor(const QColor& high)
@@ -364,9 +365,7 @@ void KURLLabel::m_enterEvent()
 	if (m_float)
 	{
 		/* turn on underlining */
-		QFont tmp_font = font();
-		tmp_font.setUnderline(true);
-		QLabel::setFont(tmp_font);
+		QLabel::setFont(font());
 
 		/* and "glow" this */
 		setPalette(m_sp);
@@ -408,9 +407,7 @@ void KURLLabel::m_leaveEvent()
 	if (m_float)
 	{
 		/* switch underlining back to original state */
-		QFont tmp_font = font();
-		tmp_font.setUnderline(m_underline);
-		QLabel::setFont(tmp_font);
+		QLabel::setFont(font());
 
 		/* set palette back to normal*/
 		setPalette(m_nsp);
