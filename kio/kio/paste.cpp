@@ -47,7 +47,7 @@ static KURL getNewFileName(const KURL &u)
   KURL myurl(u);
   myurl.addPath( file );
 
-  if (KIO::NetAccess::exists(myurl, false))
+  if (KIO::NetAccess::exists(myurl, false, 0))
   {
       kdDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
       KIO::RenameDlg_Result res = KIO::R_OVERWRITE;
