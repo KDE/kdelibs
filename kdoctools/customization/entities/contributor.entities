@@ -131,6 +131,8 @@
 
 <!ENTITY Karl.Garrison '<personname><firstname>Karl</firstname><surname>Garrison</surname></personname>'>
 <!ENTITY Karl.Garrison.mail '<email>karl@indy.rr.com</email>'>
+<!ENTITY Ferdinand.Gassauer '<personname><firstname>Ferdinand</firstname><surname>Gassauer</surname></personname>'>
+<!ENTITY Ferdinand.Gassauer.mail '<email>f.gassauer@aon.at</email>'>
 <!ENTITY Christian.Gebauer '<personname><firstname>Christian</firstname><surname>Gebauer</surname></personname>'>
 <!ENTITY Christian.Gebauer.mail '<email>gebauer@kde.org</email>'>
 <!ENTITY Bernd.Gehrmann '<personname><firstname>Bernd</firstname><surname>Gehrmann</surname></personname>'>
