@@ -296,8 +296,15 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             current = newNode;
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget ) {
+                // ### get rid of init. it has no reason for existance.
+                // those that do not support multiple attach() have to block it
+                // (it only happens upon display: change on those elments, and those
+                // are so special it won't be supported anyway. (think of <select> changed
+                // into a <input> element. not possible.
                 n->init();
-                n->attach();
+                //
+                if (!n->attached())
+                    n->attach();
                 if (n->renderer())
                     n->renderer()->setBlockBidi();
             }
@@ -309,7 +316,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget) {
                 n->init();
-                n->attach();
+                if (!n->attached())
+                    n->attach();
             }
             if(n->renderer()) {
                 if (n->maintainsState()) {
@@ -356,7 +364,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #if SPEED_DEBUG < 2
 		if(!n->attached() && HTMLWidget) {
                     n->init();
-                    n->attach();
+                    if (!n->attached())
+                        n->attach();
 		}
 #endif
                 return true;
@@ -378,7 +387,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #if SPEED_DEBUG < 2
 		    if(!n->attached() && HTMLWidget) {
                         n->init();
-                        n->attach();
+                        if (!n->attached())
+                            n->attach();
 		    }
 #endif
                 } else {
@@ -454,6 +464,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 map->addChild(n);
 #if SPEED_DEBUG < 2
                 if(!n->attached() && HTMLWidget) {
+                    if (!n->attached())
 		    n->init();
 		    n->attach();
 		}
@@ -590,6 +601,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     }
                     if ( !container->attached() && HTMLWidget ) {
 			container->init();
+                        if (!container->attached())
 			container->attach();
 		    }
                     pushBlock( ID__KONQBLOCK, tagPriority[ID__KONQBLOCK] );
