@@ -87,6 +87,7 @@ extern "C" {
 #include <kio/chmodjob.h>
 #include <kio/renamedlg.h>
 #include <kio/netaccess.h>
+#include <kio/kservicetypefactory.h>
 #include <kfiledialog.h>
 #include <kmimetype.h>
 #include <kmountpoint.h>
@@ -864,9 +865,16 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->m_lined->setFocus();
 
     // Enhanced rename: Don't highlight the file extension.
-    int firstDot = filename.find('.');
-    if (firstDot > 0)
-      d->m_lined->setSelection(0, firstDot);
+    QString pattern;
+    KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
+    if (!pattern.isEmpty() && pattern.at(0)=='*' && pattern.find('*',1)==-1)
+      d->m_lined->setSelection(0, filename.length()-pattern.stripWhiteSpace().length()+1);
+    else
+    {
+      int lastDot = filename.findRev('.');
+      if (lastDot > 0)
+        d->m_lined->setSelection(0, lastDot);
+    }
 
     connect( d->m_lined, SIGNAL( textChanged( const QString & ) ),
              this, SLOT( nameFileChanged(const QString & ) ) );
