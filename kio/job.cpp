@@ -2260,7 +2260,10 @@ void CopyJob::copyNextFile()
         }
         else // Copying a file
         {
-            newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
+            // If source isn't local and target is local, we ignore the original permissions
+            // Otherwise, files downloaded from HTTP end up with -r--r--r--
+            int permissions = ( !(*it).uSource.isLocalFile() && (*it).uDest.isLocalFile() ) ? -1 : (*it).permissions;
+            newjob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
             //emit copying( this, (*it).uSource, (*it).uDest );
             if (m_observer!=0)
