@@ -184,6 +184,23 @@ void KDirOperator::resetCursor()
 
 void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
 {
+    // If we have a new view actionCollection(), insert its actions
+    //  into viewActionMenu.
+    if( fileView && viewActionCollection != fileView->actionCollection() ) {
+        viewActionCollection = fileView->actionCollection();
+
+        if ( !viewActionCollection->isEmpty() ) {
+            viewActionMenu->insert( d->viewActionSeparator );
+            for ( uint i = 0; i < viewActionCollection->count(); i++ )
+                viewActionMenu->insert( viewActionCollection->action( i ));
+        }
+
+        connect( viewActionCollection, SIGNAL( inserted( KAction * )),
+                 SLOT( slotViewActionAdded( KAction * )));
+        connect( viewActionCollection, SIGNAL( removed( KAction * )),
+                 SLOT( slotViewActionRemoved( KAction * )));
+    }
+
     updateSelectionDependentActions();
 
     actionMenu->popup( pos );
@@ -842,6 +859,7 @@ void KDirOperator::connectView(KFileView *view)
     }
 
     fileView = view;
+    viewActionCollection = 0;
     KFileViewSignaler *sig = view->signaler();
 
     connect(sig, SIGNAL( activatedMenu(const KFileItem *, const QPoint& ) ),
@@ -854,18 +872,6 @@ void KDirOperator::connectView(KFileView *view)
             this, SLOT( highlightFile(const KFileItem*) ));
     connect(sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
             this, SLOT( slotViewSortingChanged( QDir::SortSpec )));
-
-    KActionCollection *coll = fileView->actionCollection();
-    if ( !coll->isEmpty() ) {
- 	viewActionMenu->insert( d->viewActionSeparator );
- 	for ( uint i = 0; i < coll->count(); i++ )
- 	    viewActionMenu->insert( coll->action( i ));
-    }
-
-    connect( coll, SIGNAL( inserted( KAction * )),
- 	     SLOT( slotViewActionAdded( KAction * )));
-    connect( coll, SIGNAL( removed( KAction * )),
- 	     SLOT( slotViewActionRemoved( KAction * )));
 
     if ( reverseAction->isChecked() != fileView->isReversed() )
         slotSortReversed();
@@ -1056,8 +1062,6 @@ void KDirOperator::slotCompletionMatch(const QString& match)
 
 void KDirOperator::setupActions()
 {
-    kdDebug(125) << "KDirOperator::setupActions()" << endl; // --ellis
-
     myActionCollection = new KActionCollection( this, "KDirOperator::myActionCollection" );
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
 

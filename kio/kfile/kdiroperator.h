@@ -761,6 +761,7 @@ private:
     KToggleAction *separateDirsAction;
 
     KActionCollection *myActionCollection;
+    KActionCollection *viewActionCollection;
 
 private slots:
     /**
