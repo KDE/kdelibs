@@ -240,6 +240,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
   d->m_statusBarExtension = new KParts::StatusBarExtension( this );
   d->m_statusBarIconLabel = 0L;
+  d->m_statusBarPopupLabel = 0L;
 
   d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
@@ -457,6 +458,7 @@ KHTMLPart::~KHTMLPart()
   slotWalletClosed();
   if (!parentPart()) { // only delete it if the top khtml_part closes
     removeJSErrorExtension();
+    delete d->m_statusBarPopupLabel;
   }
 
   d->m_find = 0; // deleted by its parent, the view.
@@ -1824,6 +1826,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   if (!parentPart()) {
     removeJSErrorExtension();
   }
+
+  setSuppressedPopupIndicator( false );
 
   // ###
   //stopParser();
@@ -7048,6 +7052,24 @@ void KHTMLPart::setDebugScript( bool enable )
     plugActionList( "debugScriptList", lst );
   }
   d->m_bJScriptDebugEnabled = enable;
+}
+
+void KHTMLPart::setSuppressedPopupIndicator( bool enable )
+{
+    if ( enable && !d->m_statusBarPopupLabel && !parentPart() ) {
+        d->m_statusBarPopupLabel = new KURLLabel( d->m_statusBarExtension->statusBar() );
+        d->m_statusBarPopupLabel->setFixedHeight( instance()->iconLoader()->currentSize( KIcon::Small) );
+        d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
+        d->m_statusBarPopupLabel->setUseCursor( false );
+        d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
+        d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed", instance() ) );
+        QToolTip::add( d->m_statusBarPopupLabel, i18n("Konqueror prevented this site from opening a popup window." ) );
+    } else if ( !enable && d->m_statusBarPopupLabel ) {
+        QToolTip::remove( d->m_statusBarPopupLabel );
+        d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarPopupLabel );
+        delete d->m_statusBarPopupLabel;
+        d->m_statusBarPopupLabel = 0L;
+    }
 }
 
 using namespace KParts;

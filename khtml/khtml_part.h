@@ -1008,6 +1008,12 @@ public:
    */
   bool isModified() const;
 
+  /**
+   * Shows or hides the suppressed popup indicator
+   * @since 3.4
+   */
+  void setSuppressedPopupIndicator( bool enable );
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

@@ -303,6 +303,7 @@ public:
   KURLLabel* m_statusBarWalletLabel;
   KURLLabel* m_statusBarUALabel;
   KURLLabel* m_statusBarJSErrorLabel;
+  KURLLabel* m_statusBarPopupLabel;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;

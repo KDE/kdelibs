@@ -1302,6 +1302,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
       policy = KHTMLSettings::KJSWindowOpenAllow;
   }
   if ( policy != KHTMLSettings::KJSWindowOpenAllow ) {
+    part->setSuppressedPopupIndicator(true);
     return Undefined();
   } else {
     KParts::WindowArgs winargs;
