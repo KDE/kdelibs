@@ -748,7 +748,7 @@ public:
    *
    * @param host	the hostname to look up
    * @param port	the port/service to look up
-   * @param flags	flags to be used when looking up
+   * @param flags	flags to be used when looking up, @see Flags
    * @param error	pointer to a variable holding the error code
    */
   static QList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
@@ -785,8 +785,9 @@ private:
   inline KAddressInfo() : ai(0), addr(0)
   { }
 
-  KAddressInfo(KAddressInfo&);
-  KAddressInfo& operator=(KAddressInfo&);
+  KAddressInfo(addrinfo *ai);
+  KAddressInfo(KAddressInfo&) { }
+  KAddressInfo& operator=(KAddressInfo&) { return *this; }
 
 public:
   ~KAddressInfo();
