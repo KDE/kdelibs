@@ -7,6 +7,7 @@ MimeType=application/x-core
 Comment=Core dump
 Comment[es]=Core dump
 Comment[de]=Speicherauszug
+Comment[no]=Minnedump
 Comment[nl]=Coredump  
 Comment[pl]=Core dump
 Comment[fi]=Core dump tiedosto

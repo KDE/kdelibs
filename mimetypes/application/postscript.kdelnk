@@ -8,6 +8,7 @@ DefaultApp=kghostview
 Comment=PostScript Document
 Comment[es]=Documento Postscript
 Comment[de]=Postscript Dokument
+Comment[no]=Postscript-dokument
 Comment[nl]=Postscript document
 Comment[pl]=Dokument PostScript
 Comment[fi]=Postscript dokumentti

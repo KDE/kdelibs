@@ -4,6 +4,7 @@ MimeType=text/plain
 Comment=Plain Text
 Comment[es]=Fichero de sólo texto
 Comment[de]=einfacher Text   
+Comment[no]=Enkel tekst
 Comment[nl]=Platte tekst 
 Comment[pl]=Czysty tekst
 Comment[fi]=Puhdas teksti

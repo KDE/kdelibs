@@ -7,6 +7,7 @@ Patterns=*.wav;*.WAV;
 Comment=Wav file
 Comment[es]=Fichero de sonido WAV
 Comment[de]=WAV Dokument
+Comment[no]=WAV-fil
 Comment[nl]=Wav bestand
 Comment[pl]=Plik d¼wiêkowy WAV
 Comment[fi]=WAV tiedosto

@@ -7,6 +7,7 @@ Patterns=*.mid;*.MID;
 Comment=Midi file
 Comment[es]=Fichero de sonido MIDI
 Comment[de]=Midi Dokument
+Comment[no]=Midi-fil
 Comment[nl]=Midi bestand
 Comment[pl]=Plik d¼wiêkowy midi
 Comment[fi]=Midi tiedosto

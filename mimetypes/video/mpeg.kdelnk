@@ -6,6 +6,7 @@ Icon=video.xpm
 Patterns=*.mpeg;*.mpg;
 Comment=Mpeg files
 Comment[de]=MPEG-Datei
+Comment[no]=MPEG-filer
 Comment[nl]=Mpeg bestand
 Comment[pl]=Video Mpeg
 Comment[fi]=Mpeg video

@@ -7,6 +7,7 @@ Patterns=*.o;
 Comment=Object Code
 Comment[es]=Código objeto
 Comment[de]=Objektcode
+Comment[no]=Objektkode
 Comment[nl]=Objectcode
 Comment[pl]=Kod objektowy
 Comment[fi]=Objektikoodi

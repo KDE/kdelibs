@@ -7,6 +7,7 @@ Patterns=*.zip;*.ZIP;
 Comment=Zip archive
 Comment[es]=Archivo ZIP
 Comment[de]=Zip Archiv
+Comment[no]=Zip-arkiv
 Comment[nl]=Zip archief
 Comment[pl]=Archiwum Zip
 Comment[fi]=Zip pakkaus

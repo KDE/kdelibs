@@ -7,6 +7,7 @@ Patterns=*.gif;*.GIF;
 Comment=Gif images
 Comment[es]=Imágen GIF
 Comment[de]=GIF Bild
+Comment[no]=GIF-bilde
 Comment[nl]=Gif afbeelding
 Comment[pl]=Obraz GIF
 Comment[fi]=GIF kuva

@@ -7,6 +7,7 @@ Patterns=*.mod;*.MOD;*.s3m;*.S3M;*.stm;*.STM;*.ult;*.ULT;*.UNI;*.uni;*.xm;*.XM;*
 Comment=Mod file
 Comemnt[es]=Fichero de sonido MOD
 Comment[de]=Mod Dokument
+Comment[no]=Mod-fil
 Comment[nl]=Mod bestand
 Comment[pl]=Plik d¼wiêkowy modu³
 Comment[fi]=Mod musiikkitiedosto

@@ -7,6 +7,7 @@ Patterns=*.pfa;*.PFB;*.pfb;*.gsf;*.pcf.Z;
 Comment=Fonts
 Comment[es]=Fuente
 Comment[de]=Fonts
+Comment[no]=Skrifttyper
 Comment[nl]=Lettertype
 Comment[pl]=Czcionki
 Comment[fi]=Kirjasimet

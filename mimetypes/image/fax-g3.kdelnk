@@ -6,6 +6,7 @@ Icon=image.xpm
 Patterns=*.g3;*.G3;
 Comment=CCITT g3 fax
 Comment[de]=CCITT G3-Fax
+Comment[no]=CCITT G3-Fax
 Comment[nl]=CCITT g3 fax
 Comment[pl]=CCITT g3 fax
 Comment[fi]=CCITT g3 faksi

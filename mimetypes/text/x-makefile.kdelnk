@@ -2,8 +2,9 @@
 [KDE Desktop Entry]
 MimeType=text/x-makefile
 Comment=Makefile
-Comment[es]=Makefile  
-Comment[de]=Makefile  
+Comment[es]=Makefile
+Comment[de]=Makefile
+Comment[no]=Makefile
 Comment[nl]=Makefile
 Comment[pl]=Makefile
 Comment[fi]=Makefile

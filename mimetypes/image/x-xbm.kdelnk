@@ -7,6 +7,7 @@ Patterns=*.xbm;*.XBM;
 Comment=X bitmap
 Comment[es]=Imágen XBM
 Comment[de]=X Bitmap
+Comment[no]=X-bitmap
 Comment[nl]=X-Bitmap afbeelding
 Comment[pl]=X bitmapa
 Comment[fi]=X kuvakartta

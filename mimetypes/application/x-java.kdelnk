@@ -7,6 +7,7 @@ Patterns=*.class;
 Comment=Java Class
 Comment[es]=Clase Java
 Comment[de]=Java Klasse
+Comment[no]=Java-klasse
 Comment[nl]=Java class bestand
 Comment[pl]=Klasa Javy
 Comment[fi]=Java luokka
