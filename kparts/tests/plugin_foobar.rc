@@ -1,5 +1,5 @@
 <!DOCTYPE kpartplugin>
-<kpartplugin>
+<kpartplugin library="libfoobar">
 <MenuBar>
  <Menu name="File">
   <Action name="searchreplace"/>

@@ -1,5 +1,5 @@
 <!DOCTYPE kpartplugin>
-<kpartplugin>
+<kpartplugin library="libspellcheck">
 <MenuBar>
  <Menu name="Edit">
   <Action name="spellcheck" plugin="libspellcheckplugin"/>

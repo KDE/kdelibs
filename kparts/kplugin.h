@@ -31,37 +31,24 @@ public:
     QAction* action( const char* name );
     QActionCollection* actionCollection();
 
+    virtual QAction *action( const QDomElement &element );
+
+    virtual void setDocument( QDomDocument doc );
+    virtual QDomDocument document() const;
+
+    static void loadPlugins( QObject *parent, const QValueList<QDomDocument> pluginDocuments );
+
     /**
      * @internal
      * @return the plugin created from the library @libname
      */
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
+    static QValueList<XMLGUIServant *> pluginServants( QObject *parent );
+
 private:
     QActionCollection m_collection;
-};
-
-/**
- * @internal
- * The @ref XMLGUIServant for a @ref Plugin, providing actions
- * and XML for their layout to the merging engine.
- *
- * This is not merged with Plugin, because the Plugin is loaded
- * only when one of its actions is activated.
- */
-class PluginGUIServant : public QObject, public XMLGUIServant
-{
-  Q_OBJECT
- public:
-  PluginGUIServant( Part *part, const QDomDocument &document );
-
-  virtual QAction *action( const QDomElement &element );
-
-  virtual QDomDocument document() const;
-
- private:
-  Part *m_part;
-  QDomDocument m_doc;
+    QDomDocument m_doc;
 };
 
 };

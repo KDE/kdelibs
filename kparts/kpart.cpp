@@ -28,16 +28,11 @@ class PartPrivate
 public:
   PartPrivate()
   {
-    m_bPluginsDirty = true;
-    m_pluginServants.setAutoDelete( true );
   }
   ~PartPrivate()
   {
   }
 
-  bool m_bPluginsDirty;
-  QValueList<QDomDocument> m_plugins;
-  QList<XMLGUIServant> m_pluginServants;
   QDomDocument m_doc;
 };
 };
@@ -68,11 +63,6 @@ void Part::embed( QWidget * parentWidget )
   m_widget->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
 }
 
-void Part::updatePlugins()
-{
-  d->m_bPluginsDirty = true;
-}
-
 QStringList Part::plugins()
 {
   if ( !instance() )
@@ -81,15 +71,13 @@ QStringList Part::plugins()
   return instance()->dirs()->findAllResources( "data", instance()->instanceName()+"/kpartplugins/*", true, false );
 }
 
-QValueList<QDomDocument> Part::pluginDocuments()
+const QValueList<QDomDocument> Part::pluginDocuments()
 {
-  if ( d->m_bPluginsDirty )
-  {
-    d->m_plugins.clear();
-
-    QStringList pluginDocs = plugins();
-    QStringList::ConstIterator pIt = pluginDocs.begin();
-    QStringList::ConstIterator pEnd = pluginDocs.end();
+  QValueList<QDomDocument> docs;
+ 
+  QStringList pluginDocs = plugins();
+  QStringList::ConstIterator pIt = pluginDocs.begin();
+  QStringList::ConstIterator pEnd = pluginDocs.end();
     for (; pIt != pEnd; ++pIt )
     {
       kDebugInfo( 1000, "Plugin : %s", (*pIt).ascii() );
@@ -99,34 +87,11 @@ QValueList<QDomDocument> Part::pluginDocuments()
         QDomDocument doc;
         doc.setContent( xml );
         if ( !doc.documentElement().isNull() )
-          d->m_plugins.append( doc );
+          docs.append( doc );
       }
     }
 
-  }
-
-  return d->m_plugins;
-}
-
-const QList<XMLGUIServant> *Part::pluginServants()
-{
-  if ( d->m_bPluginsDirty )
-  {
-    d->m_pluginServants.clear();
-
-    QValueList<QDomDocument> pluginDocs = pluginDocuments();
-    QValueList<QDomDocument>::ConstIterator pIt = pluginDocs.begin();
-    QValueList<QDomDocument>::ConstIterator pEnd = pluginDocs.end();
-    for (; pIt != pEnd; ++pIt )
-    {
-      PluginGUIServant *pluginServant = new PluginGUIServant( this, *pIt );
-      d->m_pluginServants.append( pluginServant );
-    }
-
-    d->m_bPluginsDirty = false;
-  }
-
-  return &d->m_pluginServants;
+  return docs;
 }
 
 QDomDocument Part::document() const

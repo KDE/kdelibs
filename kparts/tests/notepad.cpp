@@ -3,6 +3,7 @@
 #include <kpartmanager.h>
 #include <kpartsmainwindow.h>
 #include <kxmlgui.h>
+#include <kplugin.h>
 
 #include <qsplitter.h>
 #include <qfile.h>
@@ -29,6 +30,8 @@ NotepadPart::NotepadPart( QWidget * parentWidget )
   setXMLFile( "notepadpart.rc" );
   (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
   // TODO connect m_edit->changed to setModified()
+  
+  KParts::Plugin::loadPlugins( this, pluginDocuments() );
 }
 
 NotepadPart::~NotepadPart()
@@ -78,14 +81,12 @@ bool NotepadPart::save()
 
 void NotepadPart::slotSearchReplace()
 {
-  KParts::XMLGUIFactory *factory = servant()->factory();
+  QValueList<KParts::XMLGUIServant *> plugins = KParts::Plugin::pluginServants( this );
+  QValueList<KParts::XMLGUIServant *>::ConstIterator it = plugins.begin();
+  QValueList<KParts::XMLGUIServant *>::ConstIterator end = plugins.end();
+  for (; it != end; ++it )
+    factory()->removeServant( *it );
 
-  if ( !factory )
-    return;
-
-  QListIterator<KParts::XMLGUIServant> it( *pluginServants() );
-  for (; it.current(); ++it )
-    factory->removeServant( it.current() );
 }
 
 #include "notepad.moc"

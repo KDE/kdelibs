@@ -54,6 +54,17 @@ MainWindow::~MainWindow()
 {
   if ( d->m_bShellGUIActivated )
     createGUI( 0L );
+
+  QValueList<XMLGUIServant *> plugins = Plugin::pluginServants( this );
+  QValueList<XMLGUIServant *>::ConstIterator pIt = plugins.fromLast();
+  QValueList<XMLGUIServant *>::ConstIterator pBegin = plugins.begin();
+  
+  for (; pIt != pBegin; --pIt )
+    m_factory->removeServant( *pIt );
+  
+  if ( pIt != plugins.end() )
+    m_factory->removeServant( *pIt );
+  
   m_factory->removeServant( this );
 
   delete d;
@@ -254,30 +265,49 @@ void MainWindow::createGUI( Part * part )
 
   setUpdatesEnabled( false );
 
+  QValueList<XMLGUIServant *> plugins;
+  QValueList<XMLGUIServant *>::ConstIterator pIt, pBegin, pEnd;
+  
   if ( d->m_activePart )
   {
     kDebugStringArea( 1000, QString("deactivating GUI for %1").arg(d->m_activePart->name()) );
-    QListIterator<XMLGUIServant> pIt( *d->m_activePart->pluginServants() );
-    pIt.toLast();
-    for (; pIt.current(); --pIt )
-      m_factory->removeServant( pIt.current() );
+    
+    plugins = Plugin::pluginServants( d->m_activePart );
+    pIt = plugins.fromLast();
+    pBegin = plugins.begin();
+    
+    for (; pIt != pBegin ; --pIt )
+      m_factory->removeServant( *pIt );
 
-    m_factory->removeServant( d->m_activePart->servant() );
+    if ( pIt != plugins.end() )
+      m_factory->removeServant( *pIt );
+    
+    m_factory->removeServant( d->m_activePart );
   }
 
   if ( !d->m_bShellGUIActivated )
   {
     m_factory->addServant( this );
+    
+    plugins = Plugin::pluginServants( this );
+    pIt = plugins.begin();
+    pEnd = plugins.end();
+    for (; pIt != pEnd; ++pIt )
+      m_factory->addServant( *pIt );
+    
     d->m_bShellGUIActivated = true;
   }
 
   if ( part )
   {
-    m_factory->addServant( part->servant() );
+    m_factory->addServant( part );
 
-    QListIterator<XMLGUIServant> pIt( *part->pluginServants() );
-    for (; pIt.current(); ++pIt )
-      m_factory->addServant( pIt.current() );
+    plugins = Plugin::pluginServants( part );
+    pIt = plugins.begin();
+    pEnd = plugins.end();
+    
+    for (; pIt != pEnd; ++pIt )
+      m_factory->addServant( *pIt );
   }
 
   setUpdatesEnabled( true );

@@ -21,13 +21,13 @@ class Plugin;
 class PartPrivate;
 
 /**
- * A "part" is a GUI component, featuring 
- * - a widget embeddedable in any application 
- * - GUI elements that will be merged in the "host" user interface 
+ * A "part" is a GUI component, featuring
+ * - a widget embeddedable in any application
+ * - GUI elements that will be merged in the "host" user interface
  * (menubars, toolbars... )
  *
- * About the widget : 
- * Note that KParts::Part does not inherit QWidget. 
+ * About the widget :
+ * Note that KParts::Part does not inherit QWidget.
  * This is due to the fact that the "visual representation"
  * will probably not be a mere QWidget, but an elaborate one.
  * That's why when implementing your KParts::Part (or derived)
@@ -84,8 +84,6 @@ public:
      */
     virtual KInstance *instance() = 0;
 
-    virtual void updatePlugins();
-
     /**
      * @return a list of filenames containing plugin xml documents
      */
@@ -94,19 +92,7 @@ public:
     /**
      * @return a list of QDomDocuments, containing the parsed xml documents returned by @ref plugins
      */
-    virtual QValueList<QDomDocument> pluginDocuments();
-
-    /**
-     * @return a (cached) list of @ref XMLGUIServants, serving the plugin documents returned by
-               @ref pluginDocuments()
-     */
-    virtual const QList<XMLGUIServant> *pluginServants();
-
-    /**
-     * @return a (cached) @ref XMLGUIServant for the part.
-     * Implementation note : it's the part itself.
-     */
-    virtual XMLGUIServant *servant() { return this; }
+    virtual const QValueList<QDomDocument> pluginDocuments();
 
     // Only called by PartManager - should be protected and using friend ?
     void setManager( PartManager * manager ) { m_manager = manager; }
