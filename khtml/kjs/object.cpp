@@ -25,7 +25,7 @@
 #include "object.h"
 #include "nodes.h"
 #include "math_object.h"
-
+#include "html_object.h"
 
 namespace KJS {
   const double NaN = 0.0/0.;
@@ -252,12 +252,13 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 }
 #endif
 
-KJSGlobal::KJSGlobal()
+KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 {
   put("NaN", zeroRef(new KJSNumber(NaN)));
   put("Infinity", zeroRef(new KJSNumber(Inf)));
 
   put("Math", zeroRef(new KJSMath()), DontEnum);
+  put("document", new HTMLDocument(htmlw), DontEnum, true);
 
   // TODO: add function properties
   //  put("eval", new KJSInternalFunction(&eval));

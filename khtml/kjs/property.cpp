@@ -51,10 +51,14 @@ KJSO *KJSO::get(const CString &p) const
 }
 
 // ECMA 8.6.2.2
-void KJSO::put(const CString &p, KJSO *v, int attr)
+void KJSO::put(const CString &p, KJSO *v, int attr, bool z)
 {
   if (!canPut(p))
     return;
+
+  // use this to set the ref count of new'ed KJSO objects to 0 (from 1)
+  if (z)
+    zeroRef(v);
 
   KJSProperty *pr;
 

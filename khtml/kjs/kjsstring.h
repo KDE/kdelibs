@@ -23,6 +23,10 @@
 
 #include "global.h"
 
+namespace DOM {
+  class DOMString;
+};
+
 namespace KJS {
 
   class CString {
@@ -53,10 +57,13 @@ namespace KJS {
     UString(const UnicodeChar *c, int length);
     UString(const UString &);
     UString(const UString *);
+    UString(const DOM::DOMString &);
 
     ~UString();
 
     void append(const UString &);
+
+    DOM::DOMString string() const;
 
     UString &operator=(const char *c);
     UString &operator=(const UString &);

@@ -1,3 +1,10 @@
+1999-11-11  Harri Porten  <porten@kde.org>
+
+	* implemented sample HTMLDocument properties
+ 	
+	* switched KJSInternalFunction from static member functions to a
+	more flexible execute()
+
 1999-11-07  Harri Porten  <porten@kde.org>
 
 	* return a KJSError object on runtime errors. Until we add some

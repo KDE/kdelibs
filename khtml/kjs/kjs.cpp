@@ -71,7 +71,7 @@ bool KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
     return false;
   }
 
-  global = new KJSGlobal();
+  global = new KJSGlobal(htmlw);
 
   context = new KJSContext();
 

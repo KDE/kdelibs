@@ -24,14 +24,21 @@
 
 namespace KJS {
 
+  enum { IDSin, IDCos };
+
   class KJSMath : public KJSObject {
   public:
     KJSMath();
-
-    static KJSO* sin();
-  private:
-    static double darg(const char *a);
   };
+
+  class KJSMathFunc : public KJSInternalFunction {
+  public:
+    KJSMathFunc(int i) : id(i) { }
+    KJSO *execute();
+  private:
+    int id;
+  };
+
 }; // namespace
 
 #endif

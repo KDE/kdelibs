@@ -37,19 +37,27 @@ KJSMath::KJSMath()
   put("E", zeroRef(new KJSNumber(::exp(1))), attr);
 #endif
 
-  put("sin", zeroRef(new KJSInternalFunction(&sin)));
+  put("sin", new KJSMathFunc(IDSin), attr, true);
+  put("cos", new KJSMathFunc(IDCos), attr, true);
 }
 
-double KJSMath::darg(const char *a)
+KJSO* KJSMathFunc::execute()
 {
-  Ptr v = KJSARG(a);
+  Ptr v = KJSARG("0");
   Ptr n = toNumber(v);
-  return n->dVal();
-}
+  double arg = n->dVal();
+  double result;
 
-KJSO* KJSMath::sin()
-{
-  double d = ::sin(darg("0"));
-  KJSRETURN(zeroRef(new KJSNumber(d)));
-}
+  switch (id) {
+  case IDSin:
+    result = ::sin(arg);
+    break;
+  case IDCos:
+    result = ::cos(arg);
+    break;
+  default:
+    assert((result = 0));
+  }
 
+  KJSRETURN(zeroRef(new KJSNumber(result)));
+}

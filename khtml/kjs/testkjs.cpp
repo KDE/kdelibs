@@ -21,6 +21,8 @@
 #include <stdio.h>
 
 #include <qapplication.h>
+#include <khtml.h>
+#include <html_document.h>
 
 #include "kjs.h"
 
@@ -56,3 +58,23 @@ int main(int argc, char **argv)
 
   fprintf(stderr, "OK.\n");
 }
+
+// dummy implemenations to let us compile a standalone
+// version of testkjs without linking to libkhtml
+using namespace DOM;
+DOMString::DOMString() { }
+DOMString::DOMString(int) { }
+DOMString::DOMString(QChar *, unsigned int, bool) { }
+DOMString::~DOMString() { }
+uint DOMString::length() const { return 0; }
+QChar *DOMString::unicode() const { return 0; }
+Node::Node() { }
+Node::~Node() { }
+Document::Document() { }
+Document::~Document() { }
+HTMLDocument::HTMLDocument() { }
+HTMLDocument::~HTMLDocument() { }
+HTMLDocument::HTMLDocument(HTMLDocumentImpl *) { }
+DOMString HTMLDocument::title() const { return 0; }
+DOMString HTMLDocument::URL() const { return 0; }
+void HTMLDocument::write(const DOM::DOMString &) { }

@@ -26,6 +26,8 @@
 #include "global.h"
 #include "kjsstring.h"
 
+class KHTMLWidget;
+
 namespace KJS {
 
 union Value {
@@ -65,7 +67,7 @@ public:
   Class getClass() const { return cl; }
   KJSO *get(const CString &p) const;
   bool hasProperty(const CString &p) const;
-  void put(const CString &p, KJSO *v, int attr = None);
+  void put(const CString &p, KJSO *v, int attr = None, bool z = false);
   bool canPut(const CString &p) const;
   void deleteProperty(const CString &p);
   KJSO *defaultValue(Hint hint = NoneHint);
@@ -191,8 +193,6 @@ public:
   Type type() const { return Boolean; }
 };
 
-typedef KJSO* (*fPtr)();
-
 class KJSFunction : public KJSO {
 public:
   KJSFunction() { attr = ImplicitNone; }
@@ -207,12 +207,10 @@ protected:
 
 class KJSInternalFunction : public KJSFunction {
 public:
-  KJSInternalFunction(KJSO* (*f)()) { param = 0L; func = f; }
+  KJSInternalFunction() { param = 0L; }
   Type type() const { return InternalFunction; }
-  KJSO* execute() { return (*func)(); }
+  KJSO* execute() = 0;
   CodeType codeType() { return HostCode; }
-private:
-  KJSO* (*func)();
 };
 
 class KJSDeclaredFunction : public KJSFunction {
@@ -245,7 +243,6 @@ class KJSObject : public KJSO {
 public:
   KJSObject() {}
   Type type() const { return Object; }
-    //virtual SubType subType() const = 0;
 };
 
 class KJSScope : public KJSO {
@@ -293,7 +290,7 @@ private:
 
 class KJSGlobal : public KJSO {
 public:
-  KJSGlobal();
+  KJSGlobal(KHTMLWidget *htmlw = 0L);
   Type type() const { return Object; }
 private:
   static KJSO* eval();
