@@ -1,5 +1,5 @@
 #include <sys/stat.h>
-#include <sys/types.h>       
+#include <sys/types.h>
 #include <zlib.h>
 
 #include <qdatetime.h>
@@ -11,46 +11,38 @@ class KTarDirectory;
 class KTarFile;
 
 /**
- * @short A class for reading/writing gzipped tar balls.
- * @author Torben Weis <weis@kde.org>
+ * @short generic class for reading/writing tar archives
+ * Common functionality for KTarGz and KTarData
+ * @author David Faure <faure@kde.org>
  */
-class KTar
+class KTarBase
 {
+protected:
+  KTarBase();
+  virtual ~KTarBase();
+
 public:
   /**
-   * Creates an instance that operates on the given filename.
-   *
-   * @param filename has the format "/home/weis/myfile.tgz" or something
-   *        like that.
-   *
-   * @see #open
-   */
-  KTar( const QString& filename );
-  /**
-   * If the tar ball is still opened, then it will be
-   * closed automatically by the destructor.
-   */
-  ~KTar();
-
-  /**
-   * Opens the tar file for reading or writing.
+   * Opens the tar file/data for reading or writing.
    *
    * @param mode may be IO_ReadOnly or IO_WriteOnly
    *
    * @see #close
    */
-  bool open( int mode );
+  virtual bool open( int mode );
+
   /**
-   * Closes the tar file.
+   * Closes the tar file/data.
    *
    * @see #open
    */
-  void close();
+  virtual void close();
 
   /**
    * @return true if the file is opened
    */
   bool isOpened() const { return m_open; }
+
 
   /**
    * If a tar file is opened for writing then you can add new directories
@@ -71,40 +63,166 @@ public:
    */
   const KTarDirectory* directory() const;
 
-private:
+protected:
+  /**
+   * Read @p len data into @p buffer - reimplemented
+   * @return length read
+   */
+  virtual int read( char * buffer, int len ) = 0;
+
+  /**
+   * Write @p len data from @p buffer - reimplemented
+   */
+  virtual void write( const char * buffer, int len ) = 0;
+
+  /**
+   * @return the current position - reimplemented
+   */
+  virtual int position() = 0;
+
   /** @internal
    * Ensure path exists, create otherwise.
    * This handles tar files missing directory entries, like mico-2.3.0.tar.gz :)
    */
   KTarDirectory * findOrCreate( const QString & path );
-  
+
   /** @internal
-   * Fills the buffer as required by the tar format
+   * Fills @p buffer for writing a file as required by the tar format
    * Has to be called LAST, since it does the checksum
    * (normally, only the name has to be filled in before)
    * @param mode is expected to be 6 chars long, [uname and gname 31].
    */
   void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
-  
-  gzFile m_f;
-  bool m_open;
-  char m_mode;
+
   KTarDirectory* m_dir;
-  QString m_filename;
+  bool m_open;
   QStringList m_dirList;
+  char m_mode;
+};
+
+/**
+ * @short A class for reading/writing gzipped tar balls.
+ * @author Torben Weis <weis@kde.org>
+ */
+class KTarGz : public KTarBase
+{
+public:
+  /**
+   * Creates an instance that operates on the given filename.
+   *
+   * @param filename has the format "/home/weis/myfile.tgz" or something
+   *        like that.
+   *
+   * @see #open
+   */
+  KTarGz( const QString& filename );
+
+  /**
+   * If the tar ball is still opened, then it will be
+   * closed automatically by the destructor.
+   */
+  virtual ~KTarGz();
+
+  /**
+   * Opens the tar file for reading or writing.
+   *
+   * @param mode may be IO_ReadOnly or IO_WriteOnly
+   *
+   * @see #close
+   */
+  virtual bool open( int mode );
+
+  /**
+   * Closes the tar file.
+   *
+   * @see #open
+   */
+  virtual void close();
+
+private:
+  /**
+   * Read @p len data into @p buffer
+   * @return length read
+   */
+  virtual int read( char * buffer, int len );
+
+  /**
+   * Write @p len data from @p buffer
+   */
+  virtual void write( const char * buffer, int len );
+
+  /**
+   * @return the current position
+   */
+  virtual int position();
+
+  gzFile m_f;
+  QString m_filename;
+};
+
+/**
+ * For compatibility with old naming
+ * @deprecated
+ */
+#define KTar KTarGz;
+
+/**
+ * This class operates on a QDataStream, which is assumed to
+ * be a normal tar archive (not gzipped). This is mainly for use in kio_tar,
+ * where the encoding/decoding can be done by any filtering protocol (gzip,
+ * bzip2,...) and the data being given by any protocol (file, ftp, http, ...)
+ * Using a data stream allows to process a memory buffer (QByteArray) or a file.
+ */
+class KTarData : public KTarBase
+{
+public:
+  /**
+   * Constructor, probably
+   */
+  KTarData( QDataStream * str );
+
+  virtual ~KTarData();
+
+  /**
+   * Opens the tar data for reading or writing.
+   * @param mode may be IO_ReadOnly or IO_WriteOnly
+   */
+  virtual bool open( int mode );
+
+  /**
+   * For symmetry
+   */
+  virtual void close() {}
+
+private:
+  /**
+   * Read @p len data into @p buffer
+   * @return length read
+   */
+  virtual int read( char * buffer, int len );
+
+  /**
+   * Write @p len data from @p buffer
+   */
+  virtual void write( const char * buffer, int len );
+
+  /**
+   * @return the current position
+   */
+  virtual int position();
+  QDataStream * m_str;
 };
 
 /**
  * @short Base class for the tar-file's directory structure.
  *
- * @see KTar
  * @see KTarFile
  * @see KTarDirectory
  */
 class KTarEntry
 {
 public:
-  KTarEntry( KTar*, const QString& name, int access, int date,
+  KTarEntry( KTarBase* tar, const QString& name, int access, int date,
 	     const QString& user, const QString& group );
 
   virtual ~KTarEntry() { }
@@ -143,7 +261,7 @@ public:
   virtual bool isDirectory() const { return false; }
 
 protected:
-  KTar* tar() { return m_tar; }
+  KTarBase* tar() { return m_tar; }
 
 private:
   QString m_name;
@@ -151,7 +269,7 @@ private:
   mode_t m_access;
   QString m_user;
   QString m_group;
-  KTar* m_tar;
+  KTarBase* m_tar;
 };
 
 /**
@@ -163,7 +281,7 @@ private:
 class KTarFile : public KTarEntry
 {
 public:
-  KTarFile( KTar*, const QString& name, int access, int date,
+  KTarFile( KTarBase* tar, const QString& name, int access, int date,
 	    const QString& user, const QString& group,
 	    int pos, int size, const QByteArray& data );
 
@@ -203,7 +321,7 @@ private:
 class KTarDirectory : public KTarEntry
 {
 public:
-  KTarDirectory( KTar*, const QString& name, int access, int date,
+  KTarDirectory( KTarBase* tar, const QString& name, int access, int date,
 		 const QString& user, const QString& group );
 
   virtual ~KTarDirectory() { }

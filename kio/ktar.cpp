@@ -13,46 +13,42 @@
 
 template class QDict<KTarEntry>;
 
-KTar::KTar( const QString& filename )
+KTarBase::KTarBase()
 {
-  m_filename = filename;
   m_open = false;
   m_dir = 0;
 }
 
-KTar::~KTar()
+KTarBase::~KTarBase()
 {
   if ( m_open )
     close();
-  if ( m_dir )
-    delete m_dir;
+  delete m_dir;
 }
 
-bool KTar::open( int mode )
+KTarGz::KTarGz( const QString& filename )
+{
+  m_filename = filename;
+}
+
+KTarGz::~KTarGz()
+{
+}
+
+bool KTarBase::open( int mode )
 {
   if ( m_open )
     close();
 
+  m_mode = mode;
+  m_open = true;
   m_dirList.clear();
 
-  const char* m;
-  if ( mode == IO_ReadOnly )
-    m = "rb";
-  else if ( mode == IO_WriteOnly )
-    m = "wb";
-  else
-  {
-    qWarning("KTar::open: You can only pass IO_ReadOnly or IO_WriteOnly as mode\n");
-    return false;
-  }
-  m_mode = mode;
-
-  m_f = gzopen( m_filename, m );
-  if ( !m_f )
-    return false;
-
   if ( mode == IO_ReadOnly )
   {
+/* What is this good for ? (David)
+   Isn't m_dir internal anyway ?
+
     // Find infos about the tar file itself
     struct stat buf;
     stat( m_filename, &buf );
@@ -61,6 +57,8 @@ bool KTar::open( int mode )
     struct group* grp = getgrgid( buf.st_gid );
 
     m_dir = new KTarDirectory( this, "/", (int)buf.st_mode, (int)buf.st_mtime, pw->pw_name , grp->gr_name );
+*/
+    m_dir = new KTarDirectory( this, "/", 0, 0, "", "" );
 
     // read dir infos
     char buffer[ 0x200 ];
@@ -68,7 +66,7 @@ bool KTar::open( int mode )
     do
     {
       // Read header
-      int n = gzread( m_f, buffer, 0x200 );
+      int n = read( buffer, 0x200 );
       if ( n == 0x200 && buffer[0] != 0 )
       {
 	QString name( buffer );
@@ -78,12 +76,12 @@ bool KTar::open( int mode )
         {
           // in this case, here's what happens (according to od -cx !)
           // 1) the filename is stored in the next 512b buffer
-          n = gzread( m_f, buffer, 0x200 );
+          n = read( buffer, 0x200 );
           if ( n == 0x200 && buffer[0] != 0 )
           {
             name = buffer;
             // 2) read yet another 512b buffer, for permissions, time, size ...
-            n = gzread( m_f, buffer, 0x200 );
+            n = read( buffer, 0x200 );
             if (!( n == 0x200 && buffer[0] != 0 ))
               break;
           }
@@ -135,24 +133,28 @@ bool KTar::open( int mode )
 	  while( *p == ' ' ) ++p;
 	  int size = (int)strtol( p, &dummy, 8 );
 
-	  // Skip data
 	  int rest = size % 0x200;
-	  /* if ( rest )
-	    gzseek( m_f, ( size / 0x200 + 1 ) * 0x200, SEEK_CUR );
-	  else
-	  gzseek( m_f, size, SEEK_CUR ); */
 
 	  // Read content
 	  QByteArray arr( size );
-	  int n = gzread( m_f, arr.data(), size );
-	  if ( n != size )
-	    arr.resize( n );
+          if ( size )
+          {
+            assert( arr.data() );
+            int n = read( arr.data(), size );
+            if ( n != size )
+              arr.resize( n );
 
-	  // Skip align bytes
-	  if ( rest )
-	    gzseek( m_f, 0x200 - rest, SEEK_CUR );
+            // Skip align bytes
+            if ( rest )
+            {
+              //gzseek( m_f, 0x200 - rest, SEEK_CUR );
+              QByteArray dummy( 0x200 - rest );
+              assert( dummy.data() );
+              read( dummy.data(), 0x200 - rest );
+            }
+          }
 
-	  e = new KTarFile( this, nm, access, time, user, group, (int)gztell( m_f ), size, arr );
+	  e = new KTarFile( this, nm, access, time, user, group, position(), size, arr );
 	}
 
 	if ( pos == -1 )
@@ -171,15 +173,80 @@ bool KTar::open( int mode )
     } while( !ende );
   }
 
-  m_open = true;
   return true;
 }
 
-KTarDirectory * KTar::findOrCreate( const QString & path )
+
+bool KTarGz::open( int mode )
+{
+  const char* m;
+  if ( mode == IO_ReadOnly )
+    m = "rb";
+  else if ( mode == IO_WriteOnly )
+    m = "wb";
+  else
+  {
+    qWarning("KTarBase::open: You can only pass IO_ReadOnly or IO_WriteOnly as mode\n");
+    return false;
+  }
+
+  m_f = gzopen( m_filename, m );
+  if ( !m_f )
+    return false;
+
+  return KTarBase::open( mode );
+}
+
+int KTarGz::read( char * buffer, int len )
+{
+  return gzread( m_f, buffer, len );
+}
+
+void KTarGz::write( const char * buffer, int len )
+{
+  gzwrite( m_f, (char *)buffer, len );
+}
+
+int KTarGz::position()
+{
+  return (int)gztell( m_f );
+}
+
+KTarData::KTarData( QDataStream * str )
+{
+  m_str = str;
+}
+
+KTarData::~KTarData()
+{
+}
+
+bool KTarData::open( int mode )
+{
+  return KTarBase::open( mode );
+}
+
+int KTarData::read( char * buffer, int len )
+{
+  return m_str->device()->readBlock( buffer, len );
+}
+
+void KTarData::write( const char * buffer, int len )
+{
+  m_str->device()->writeBlock( buffer, len );
+}
+
+int KTarData::position()
+{
+  return m_str->device()->at();
+}
+
+
+KTarDirectory * KTarBase::findOrCreate( const QString & path )
 {
   if ( path == "" || path == "/" ) // root dir => found
     return m_dir;
-  // Important note : for tar.gz files containing absolute paths
+  // Important note : for tar files containing absolute paths
   // (i.e. beginning with "/"), this means the leading "/" will
   // be removed (no KDirectory for it), which is exactly the way
   // the "tar" program works (though it displays a warning about it)
@@ -213,62 +280,44 @@ KTarDirectory * KTar::findOrCreate( const QString & path )
   return e; // now a directory to <path> exists
 }
 
-/* QByteArray KTar::data( int pos, int size ) const
-{
-  // gzseek( m_f, pos, SEEK_SET );
-  gzrewind( m_f );
-  gzseek( m_f, pos, SEEK_CUR );
-
-  QByteArray arr( size + 1 );
-  
-  int n = gzread( m_f, arr.data(), size );
-  if ( n < 0 )
-    n = 0;
-  if ( n != size )
-    arr.resize( n );
-  arr[n] = 0;
-  printf("Read %i bytes\n%s\n",n,arr.data()+1);
-  return arr;
-  } */
-
-void KTar::close()
+void KTarBase::close()
 {
   if ( !m_open )
     return;
 
   m_dirList.clear();
 
-  gzclose( m_f );
-
-  if ( m_dir )
-  {
-    delete m_dir;
-    m_dir = 0;
-  }
-
+  delete m_dir;
+  m_dir = 0;
   m_open = false;
 }
 
-const KTarDirectory* KTar::directory() const
+void KTarGz::close()
+{
+  KTarBase::close();
+  gzclose( m_f );
+}
+
+const KTarDirectory* KTarBase::directory() const
 {
   if ( !isOpened() )
-    qWarning( "KTar::directory: You must open the tar file before reading it\n");
+    qWarning( "KTarBase::directory: You must open the tar file before reading it\n");
 
   return m_dir;
 }
 
 
-void KTar::writeDir( const QString& name, const QString& user, const QString& group )
+void KTarBase::writeDir( const QString& name, const QString& user, const QString& group )
 {
   if ( !isOpened() )
   {
-    qWarning( "KTar::writeDir: You must open the tar file before writing to it\n");
+    qWarning( "KTarBase::writeDir: You must open the tar file before writing to it\n");
     return;
   }
 
   if ( m_mode != IO_WriteOnly )
   {
-    qWarning( "KTar::writeDir: You must open the tar file for writing\n");
+    qWarning( "KTarBase::writeDir: You must open the tar file for writing\n");
     return;
   }
 
@@ -287,36 +336,36 @@ void KTar::writeDir( const QString& name, const QString& user, const QString& gr
   {
     strcpy( buffer, "././@LongLink" );
     fillBuffer( buffer, "     0", dirName.length()+1, 'L', user, group );
-    gzwrite( m_f, buffer, 0x200 );
+    write( buffer, 0x200 );
     memset( buffer, 0, 0x200 );
     strcpy( buffer, dirName );
     // write long name
-    gzwrite( m_f, buffer, 0x200 );
+    write( buffer, 0x200 );
     // not even needed to reclear the buffer, tar doesn't do it
   }
   else
     // Write name
     strcpy( buffer, dirName );
-  
+
   fillBuffer( buffer, " 40755", 0, 0x35, user, group);
 
   // Write header
-  gzwrite( m_f, buffer, 0x200 );
+  write( buffer, 0x200 );
 
   m_dirList.append( dirName ); // contains trailing slash
 }
 
-void KTar::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
+void KTarBase::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
   if ( !isOpened() )
   {
-    qWarning( "KTar::writeFile: You must open the tar file before writing to it\n");
+    qWarning( "KTarBase::writeFile: You must open the tar file before writing to it\n");
     return;
   }
 
   if ( m_mode != IO_WriteOnly )
   {
-    qWarning( "KTar::writeFile: You must open the tar file for writing\n");
+    qWarning( "KTarBase::writeFile: You must open the tar file for writing\n");
     return;
   }
 
@@ -327,7 +376,7 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
   // Create toplevel dirs
   // Commented out by David since it's not necessary, and if anybody thinks it is,
   // he needs to implement a findOrCreate equivalent in writeDir.
-  // But as KTar and the "tar" program both handle tar.gz files without
+  // But as KTar and the "tar" program both handle tar files without
   // dir entries, there's really no need for that
   QString tmp ( fileName );
   int i = tmp.findRev( '/' );
@@ -350,12 +399,12 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
   {
     strcpy( buffer, "././@LongLink" );
     fillBuffer( buffer, "     0", fileName.length()+1, 'L', user, group );
-    gzwrite( m_f, buffer, 0x200 );
+    write( buffer, 0x200 );
 
     memset( buffer, 0, 0x200 );
     strcpy( buffer, fileName );
     // write long name
-    gzwrite( m_f, buffer, 0x200 );
+    write( buffer, 0x200 );
     // not even needed to reclear the buffer, tar doesn't do it
   }
   else
@@ -365,10 +414,10 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
   fillBuffer( buffer, "100644", size, 0x30, user, group );
 
   // Write header
-  gzwrite( m_f, buffer, 0x200 );
+  write( buffer, 0x200 );
 
   // Write data
-  gzwrite( m_f, (void*)data, size );
+  write( data, size );
 
   // Write alignment
   int rest = size % 0x200;
@@ -376,7 +425,7 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
   {
     for( uint i = 0; i < 0x200; ++i )
       buffer[i] = 0;
-    gzwrite( m_f, buffer, 0x200 - rest );
+    write( buffer, 0x200 - rest );
   }
 }
 
@@ -403,7 +452,7 @@ struct posix_header
 };
 */
 
-void KTar::fillBuffer( char * buffer, 
+void KTarBase::fillBuffer( char * buffer,
     const char * mode, int size, char typeflag, const char * uname, const char * gname )
 {
   // mode (as in stat())
@@ -469,7 +518,7 @@ void KTar::fillBuffer( char * buffer,
 
 //////////////////////////////////////////////////////////////////////////////
 
-KTarEntry::KTarEntry( KTar* t, const QString& name, int access, int date,
+KTarEntry::KTarEntry( KTarBase* t, const QString& name, int access, int date,
 		      const QString& user, const QString& group )
 {
   m_name = name;
@@ -489,7 +538,7 @@ QDateTime KTarEntry::datetime() const
 
 ///////////////////////////////////////////////////////////////////////////////
 
-KTarFile::KTarFile( KTar* t, const QString& name, int access, int date,
+KTarFile::KTarFile( KTarBase* t, const QString& name, int access, int date,
 		    const QString& user, const QString& group,
 		    int pos, int size, const QByteArray& data )
   : KTarEntry( t, name, access, date, user, group ), m_data( data )
@@ -514,7 +563,7 @@ QByteArray KTarFile::data() const
   return m_data;
 }
 
-KTarDirectory::KTarDirectory( KTar* t, const QString& name, int access, int date,
+KTarDirectory::KTarDirectory( KTarBase* t, const QString& name, int access, int date,
 			      const QString& user, const QString& group )
   : KTarEntry( t, name, access, date, user, group )
 {
@@ -532,12 +581,12 @@ QStringList KTarDirectory::entries() const
   return l;
 }
 
-KTarEntry* KTarDirectory::entry( QString name ) 
+KTarEntry* KTarDirectory::entry( QString name )
   // not "const QString & name" since we want a local copy
   // (to remove leading slash if any)
 {
   int pos = name.find( '/' );
-  if ( pos == 0 ) // ouch absolute path (see also KTar::findOrCreate)
+  if ( pos == 0 ) // ouch absolute path (see also KTarBase::findOrCreate)
   {
     name = name.mid( 1 ); // remove leading slash
     pos = name.find( '/' ); // look again
@@ -546,7 +595,7 @@ KTarEntry* KTarDirectory::entry( QString name )
   {
     QString left = name.left( pos );
     QString right = name.mid( pos + 1 );
-    
+
     KTarEntry* e = m_entries[ left ];
     if ( !e || !e->isDirectory() )
       return 0;
