@@ -193,7 +193,7 @@ if eval "test \"`echo `$ac_cv_artsdsp_stdio_emu\" = yes"; then
 	[Define if you want to use glibc facilities to emulate stdio accesses in artsdsp])
 fi
 ])
-                                                                      
+
 dnl call the tests
 AC_CHECK_LIBAUDIOIO
 AC_CHECK_LIBAUDIOFILE
@@ -252,6 +252,10 @@ AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_DEPLIBS)
 AC_SUBST(ARTS_BUILD_GMCOP)
  
+dnl OpenBSD requires an -lossaudio and soundcard.h to provide OSS audio I/O
+AC_CHECK_HEADERS(soundcard.h)
+AC_CHECK_LIB(ossaudio, _oss_ioctl, [LIBOSSAUDIO="-lossaudio"])
+AC_SUBST(LIBOSSAUDIO)
 
 dnl Don't remove !
 dnl AC_OUTPUT(arts/artsc/artsc-config)

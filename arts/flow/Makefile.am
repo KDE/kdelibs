@@ -11,7 +11,7 @@ lib_LTLIBRARIES = libartsflow_idl.la libartsflow.la
 libartsflow_idl_la_SOURCES = artsflow.cc
 libartsflow_idl_la_LDFLAGS = -no-undefined
 
-libartsflow_la_LIBADD = libartsflow_idl.la $(LIBAUDIOFILE) $(LIBASOUND) $(LIBAUDIOIO) -lm
+libartsflow_la_LIBADD = libartsflow_idl.la $(LIBAUDIOFILE) $(LIBASOUND) $(LIBAUDIOIO) $(LIBOSSAUDIO) -lm
 libartsflow_la_LDFLAGS = -no-undefined
 libartsflow_la_SOURCES =  synth_play_impl.cc \
   synthschedule.cc audiosubsys.cc \

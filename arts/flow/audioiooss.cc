@@ -24,12 +24,20 @@
 #include <config.h>
 #endif
 
-/**
- * only compile 'oss' AudioIO class if sys/soundcard.h is present
- */
 #ifdef HAVE_SYS_SOUNDCARD_H
-
 #include <sys/soundcard.h>
+#define COMPILE_AUDIOIO_OSS 1
+#endif
+
+#ifdef HAVE_SOUNDCARD_H
+#include <soundcard.h>
+#define COMPILE_AUDIOIO_OSS 1
+#endif
+
+/**
+ * only compile 'oss' AudioIO class if sys/soundcard.h or soundcard.h is present
+ */
+#ifdef COMPILE_AUDIOIO_OSS
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
@@ -59,6 +67,8 @@ protected:
 	int requestedFragmentSize;
 	int requestedFragmentCount;
 
+	std::string findDefaultDevice();
+
 public:
 	AudioIOOSS();
 
@@ -77,16 +87,32 @@ REGISTER_AUDIO_IO(AudioIOOSS,"oss","Open Sound System");
 using namespace std;
 using namespace Arts;
 
+/*
+ * Tries to figure out which is the OSS device we should write to
+ */
+string AudioIOOSS::findDefaultDevice()
+{
+	static const char *device[] = {
+		"/dev/dsp",						/* Linux (and lots of others) */
+		"/dev/sound/dsp0",				/* Linux with devfs-only installation */
+		"/dev/audio",					/* OpenBSD */
+		0
+	};
+
+	for(int i = 0; device[i]; i++)
+		if(access(device[i],F_OK) == 0)
+			return device[i];
+
+	return device[0];
+}
+
 AudioIOOSS::AudioIOOSS()
 {
 	/*
 	 * default parameters
 	 */
 	param(samplingRate) = 44100;
-	paramStr(deviceName) = "/dev/dsp";
-	/* check for devfs-only installation: */
-	if(access("/dev/dsp",F_OK) != 0 && access("/dev/sound/dsp0",F_OK) == 0)
-		paramStr(deviceName) = "/dev/sound/dsp0";
+	paramStr(deviceName) = findDefaultDevice();
 	requestedFragmentSize = param(fragmentSize) = 1024;
 	requestedFragmentCount = param(fragmentCount) = 7;
 	param(channels) = 2;
@@ -319,10 +345,15 @@ bool AudioIOOSS::open()
 	if(_format == 8)
 		for(int zpos = 0; zpos < _fragmentSize; zpos++)
 			zbuffer[zpos] |= 0x80;
+	
 	for(int fill = 0; fill < _fragmentCount; fill++)
 	{
 		int len = ::write(audio_fd,zbuffer,_fragmentSize);
-		assert(len == _fragmentSize);
+		if(len != _fragmentSize)
+		{
+			arts_debug("AudioIOOSS: failed prefilling audio buffer (might cause synchronization problems in conjunction with full duplex)");
+			fill = _fragmentCount+1;
+		}
 	}
 	free(zbuffer);
 
