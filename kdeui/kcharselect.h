@@ -37,7 +37,7 @@ class KCharSelectTablePrivate;
 class KCharSelectPrivate;
 
 /**
- * A table widget which displayes the characters of a font. Internally
+ * A table widget which displays the characters of a font. Internally
  * used by KCharSelect. See the KCharSelect documentation for further
  * details.
  * @short Character-Selection Table
@@ -109,18 +109,18 @@ private:
  * A Widget which allows the user to select a character of a
  * specified font in a table
  *
- * You can specify the font whoes characters should be displayed via
+ * You can specify the font whose characters should be displayed via
  * @ref setFont(). Using @ref enableFontCombo() you can allow the
  * user to choose the font from a combob-box. As only 256 characters
  * are displayed at once in the table, using the spinbox on the top
- * the user can choose starting from which chracater the table
- * displayes them. This spinbox also can be enabled or disabled using
+ * the user can choose starting from which character the table
+ * displays them. This spinbox also can be enabled or disabled using
  * @ref enableTableSpinBox().
  *
  * KCharSelect supports keyboard and mouse navigation. Click+Move
- * selects always the character below the mouse cursor. Using the
- * arrow keys the focus mark is moved around and with pressing RETURN
- * or SPACE the cell which contains the focus mark gets selected.
+ * always selects the character below the mouse cursor. Using the
+ * arrow keys moves the focus mark around and pressing RETURN
+ * or SPACE selects the cell which contains the focus mark.
  *
  * To get the current selected character, use the @ref chr()
  * method. You can set the character which should be displayed with
