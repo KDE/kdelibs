@@ -72,6 +72,10 @@ public:
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
    void recreate(bool async);
+   /**
+    * Loads / unloads modules according to config.
+    */
+   void initModules();
 
 public slots:
 
@@ -127,6 +131,7 @@ protected:
     * Scans dir for new files and new subdirectories.
     */
    void readDirectory(const QString& dir );
+   
 
    static void crashHandler(int);
 

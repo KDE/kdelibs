@@ -138,6 +138,35 @@ bool Kded::process(const QCString &obj, const QCString &fun,
   return module->process(fun, data, replyType, replyData);
 }
 
+void Kded::initModules()
+{
+     m_dontLoad.clear();
+     KConfig *config = kapp->config();
+
+     // Preload kded modules.
+     KService::List kdedModules = KServiceType::offers("KDEDModule");
+     for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
+     {
+         KService::Ptr service = *it;
+         bool autoload = service->property("X-KDE-Kded-autoload").toBool();
+         config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
+         autoload = config->readBoolEntry("autoload", autoload);
+         if (autoload)
+            loadModule(service, false);
+
+         bool dontLoad = false;
+         QVariant p = service->property("X-KDE-Kded-load-on-demand");
+         if (p.isValid() && (p.toBool() == false))
+            dontLoad = true;
+         if (dontLoad)
+            noDemandLoad(service->desktopEntryName());
+            
+         if (dontLoad && !autoload)
+            unloadModule(service->desktopEntryName().latin1());
+     }
+}
+
+
 void Kded::noDemandLoad(const QString &obj)
 {
   m_dontLoad.insert(obj.latin1(), this);
@@ -157,6 +186,11 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
   KDEDModule *module = 0;
   if (s && !s->library().isEmpty())
   {
+    QCString obj = s->desktopEntryName().latin1();
+    KDEDModule *oldModule = m_modules.find(obj);
+    if (oldModule)
+       return oldModule;
+
     if (onDemand)
     {
       QVariant p = s->property("X-KDE-Kded-load-on-demand");
@@ -166,7 +200,6 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
          return 0;
       }
     }
-    QCString obj = s->desktopEntryName().latin1();
     // get the library loader instance
 
     KLibLoader *loader = KLibLoader::self();
@@ -641,6 +674,7 @@ public:
        res += "void registerWindowId(long int)";
        res += "void unregisterWindowId(long int)";
        res += "QCStringList loadedModules()";
+       res += "void reconfigure()";
        res += "void quit()";
        return res;
     }
@@ -690,6 +724,12 @@ public:
       replyType = "QCStringList";
       QDataStream _replyStream(replyData, IO_WriteOnly);
       _replyStream << Kded::self()->loadedModules();
+      return true;
+    }
+    else if (fun == "reconfigure()") {
+      config()->reparseConfiguration();
+      Kded::self()->initModules();
+      replyType = "void";
       return true;
     }
     else if (fun == "quit()") {
@@ -787,27 +827,8 @@ extern "C" int kdemain(int argc, char *argv[])
      client->setNotifications(true);
      client->setDaemonMode( true );
 
-     // Preload kded modules.
-     KService::List kdedModules = KServiceType::offers("KDEDModule");
-     for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
-     {
-         KService::Ptr service = *it;
-	     if (!service->property( "X-KDE-Kded-nostart").toBool())
-         {
-            bool autoload = service->property("X-KDE-Kded-autoload").toBool();
-            config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
-            autoload = config->readBoolEntry("autoload", autoload);
-            if (autoload)
-               kded->loadModule(service, false);
+     kded->initModules();
 
-            bool dontLoad = false;
-            QVariant p = service->property("X-KDE-Kded-load-on-demand");
-            if (p.isValid() && (p.toBool() == false))
-               dontLoad = true;
-            if (dontLoad)
-               kded->noDemandLoad(service->desktopEntryName());
-         }
-     }
 
      // During startup kdesktop waits for KDED to finish.
      // Send a notifyDatabaseChanged signal even if the database hasn't
