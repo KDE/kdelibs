@@ -2924,7 +2924,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    * other places.
    */
 
-  if (u.protocol().left(5) != "https") {
+  if (!u.protocol().startsWith("https") && !(d->m_bParsing || d->m_runningScripts) )  {
         if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		QString msg = i18n("Your data submission is redirected to\n"
                         "an insecure site. The data is sent unencrypted.\n\n"
