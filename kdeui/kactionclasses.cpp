@@ -1209,13 +1209,15 @@ void KRecentFilesAction::slotClicked()
   KAction::slotActivated();
 }
 
-void KRecentFilesAction::slotActivated(const QString&)
+void KRecentFilesAction::slotActivated(const QString& text)
 {
+  KListAction::slotActivated(text);
 }
 
 
-void KRecentFilesAction::slotActivated(int)
+void KRecentFilesAction::slotActivated(int id)
 {
+  KListAction::slotActivated(id);
 }
 
 
