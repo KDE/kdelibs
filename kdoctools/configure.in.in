@@ -56,5 +56,5 @@ AC_CHECK_FUNC(fabs, , AC_CHECK_LIB(m, fabs,
 
 AC_SUBST(M_LIBS)
 
-dnl AC_OUTPUT(kioslave/help/libxslt/xsltconfig.h)
+dnl AC_OUTPUT(kdoctools/libxslt/xsltconfig.h)
 
