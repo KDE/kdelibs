@@ -36,6 +36,7 @@
 #include <qfile.h>
 #include <qregexp.h>
 
+#include <kapplication.h>
 #include <kaction.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -158,6 +159,9 @@ void KBookmarkMenu::refill()
 
 void KBookmarkMenu::addAddBookmark()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+
   KAction * paAddBookmarks = new KAction( i18n( "&Add Bookmark" ),
                                           "bookmark_add",
                                           m_bIsRoot ? KStdAccel::addBookmark() : KShortcut(),
@@ -173,6 +177,9 @@ void KBookmarkMenu::addAddBookmark()
 
 void KBookmarkMenu::addEditBookmarks()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+
   KAction * m_paEditBookmarks = KStdAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
                                                              m_actionCollection, "edit_bookmarks" );
   m_paEditBookmarks->plug( m_parentMenu );
@@ -182,6 +189,9 @@ void KBookmarkMenu::addEditBookmarks()
 
 void KBookmarkMenu::addNewFolder()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+
   KAction * paNewFolder = new KAction( i18n( "&New Folder..." ),
                                        "folder_new", //"folder",
                                        0,
@@ -197,6 +207,9 @@ void KBookmarkMenu::addNewFolder()
 
 void KBookmarkMenu::fillBookmarkMenu()
 {
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+
   if ( m_bIsRoot )
   {
     if ( m_bAddBookmark )
