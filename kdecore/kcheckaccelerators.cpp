@@ -88,7 +88,7 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
         key = int(cuts.seq(0).qt());
     }
     alwaysShow = KGlobal::config()->readBoolEntry( "AlwaysShowCheckAccelerators", false );
-    autoCheck = KGlobal::config()->readBoolEntry( "AutoCheckAccelerators", true );
+    autoCheck = KGlobal::config()->readBoolEntry( "AutoCheckAccelerators", false );
     connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
 }
 
