@@ -349,13 +349,25 @@ public:
 
     /**
      * Return a string formated to the current locale's conventions
-     * regarding both date and time.
+     * regarding both date and time. Defaults to short date format.
      *
      * @param pDateTime The date and time to be formated.
      *
      * @return The date and time as a string
      */
     QString formatDateTime(const QDateTime &pDateTime) const;
+
+    /**
+     * Return a string formated to the current locale's conventions
+     * regarding both date and time.
+     *
+     * @param pDateTime The date and time to be formated.
+     * @param shortfmt using the short date format.
+     * @param includeSeconds using the short date format.
+     *
+     * @return The date and time as a string
+     */
+    QString formatDateTime(const QDateTime &pDateTime, bool shortfmt, bool includeSecs = false) const;
 
     /**
      * Converts a localized monetary string to a double.

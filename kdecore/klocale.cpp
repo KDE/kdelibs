@@ -963,11 +963,17 @@ QStringList KLocale::languageList() const
   return QStringList::split(':', languages());
 }
 
-QString KLocale::formatDateTime(const QDateTime &pDateTime) const
+QString KLocale::formatDateTime(const QDateTime &pDateTime, bool shortfmt, bool includeSeconds) const
 {
   return translate("concatenation of dates and time", "%1 %2")
-    .arg( formatDate( pDateTime.date() ) )
-    .arg( formatTime( pDateTime.time() ) );
+    .arg( formatDate( pDateTime.date(), shortfmt ) )
+    .arg( formatTime( pDateTime.time(), includeSeconds ) );
+}
+
+// #### HPB: This will be merged with the method about in KDE 3
+QString KLocale::formatDateTime(const QDateTime &pDateTime) const
+{
+  return formatDateTime(pDateTime, true);
 }
 
 QString i18n(const char* text)
