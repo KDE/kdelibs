@@ -68,7 +68,7 @@ int SuProcess::checkNeedPassword()
  * Execute a command with su(1).
  */
 
-int SuProcess::exec(const char *password, checkMode check)
+int SuProcess::exec(const char *password, int check)
 {
     if (check)
 	setTerminal(true);
@@ -96,7 +96,7 @@ int SuProcess::exec(const char *password, checkMode check)
     }
     kdDebug(900) << k_lineinfo << "Done StubProcess::exec()" << endl;
     
-    SuErrors ret = ConverseSU(password);
+    SuErrors ret = (SuErrors) ConverseSU(password);
     kdDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
 
     if (ret == error) 
@@ -112,8 +112,7 @@ int SuProcess::exec(const char *password, checkMode check)
 	    if (kill(m_Pid, SIGTERM) < 0) ret=error;
 	    else 
 	    {
-		waitForChild();
-		int iret = checkPidExited(m_Pid) ;
+		int iret = waitForChild();
 		if (iret < 0) ret=error;
 		else /* nothing */ {} ;
 	    }
@@ -163,7 +162,7 @@ int SuProcess::exec(const char *password, checkMode check)
  * Return values: -1 = error, 0 = ok, 1 = kill me, 2 not authorized
  */
 
-SuProcess::SuErrors SuProcess::ConverseSU(const char *password)
+int SuProcess::ConverseSU(const char *password)
 {	
     enum { WaitForPrompt, CheckStar, HandleStub } state = WaitForPrompt;
     int colon;

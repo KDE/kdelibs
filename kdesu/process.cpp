@@ -40,7 +40,6 @@
 #include <sys/stream.h>
 #endif
 
-
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>                // Needed on some systems.
 #endif
@@ -103,6 +102,7 @@ int PtyProcess::checkPidExited(pid_t pid)
 	{
 		if (WIFEXITED(state))
 			return WEXITSTATUS(state);
+		return Killed;
 	}
 
 	return NotExited;
@@ -449,13 +449,18 @@ int PtyProcess::waitForChild()
         }
 
 	ret = checkPidExited(m_Pid);
-	if (ret == -1)
+	if (ret == Error)
 	{
 		if (errno == ECHILD) retval = 0;
 		else retval = 1;
 		break;
 	}
-	else if (ret == -2)
+	else if (ret == Killed)
+	{
+		retval = 0;
+		break;
+	}
+	else if (ret == NotExited)
 	{
 		// keep checking
 	}

@@ -33,7 +33,7 @@ public:
      * Executes the command. This will wait for the command to finish.
      */
     enum checkMode { NoCheck=0, Install=1, NeedPassword=2 } ;
-    int exec(const char *password, checkMode check=NoCheck);
+    int exec(const char *password, int check=NoCheck);
 
     /** 
      * Checks if the stub is installed and the password is correct.
@@ -48,7 +48,7 @@ public:
 
 private:
     enum SuErrors { error=-1, ok=0, killme=1, notauthorized=2 } ;
-    SuErrors ConverseSU(const char *password);
+    int ConverseSU(const char *password);
 
 protected:
     virtual void virtual_hook( int id, void* data );
