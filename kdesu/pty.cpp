@@ -59,6 +59,11 @@ extern "C" char * ptsname(int fd);
 extern "C" int unlockpt(int fd);
 #endif
 
+#ifdef HAVE_OPENPTY
+	#warning hack.. use proper autoconf tests
+	#include <termios.h>
+	#include <libutil.h>
+#endif
 
 PTY::PTY()
 {
@@ -76,6 +81,18 @@ PTY::~PTY()
 
 int PTY::getpt()
 {
+#ifdef HAVE_OPENPTY
+    char name[10];
+    int master_fd, slave_fd;
+    if (openpty(&master_fd, &slave_fd, name, 0, 0) != -1) {
+      ttyname=name;
+      name[5]='p';
+      ptyname=name;
+      ptyfd=master_fd;
+      return master_fd;
+    }
+#endif
+
 #if defined(HAVE_GETPT) && defined(HAVE_PTSNAME)
 
     ptyfd = ::getpt();
@@ -136,7 +153,6 @@ linux_out:
 
 
     // Other systems ??
-
     ptyfd = -1;
     kdDebug(900) << k_lineinfo << "Unknown system or all methods failed.\n";
     return -1;
