@@ -558,8 +558,10 @@ void ElementImpl::applyChanges(bool top, bool force)
 	    if (m_style)
 		ow = QMAX(ow, m_style->outlineWidth());
 	    RenderObject *cb = m_render->containingBlock();
-	    if (cb)
+	    if (cb && cb!=m_render)
 		cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
+	    else
+		m_render->repaint();
 	}
     }
     setChanged(false);
