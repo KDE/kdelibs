@@ -50,21 +50,23 @@ public:
    * and the list of urls is converted to UTF-8 before being passed
    * to QUriDrag.
    * @param urls the list of URLs
-   * @param dragSource the parent of the QObject
+   * @param dragSource the parent of the QObject. Should be set when doing drag-n-drop,
+   * but should be 0 when copying to the clipboard
    * @param name the name of the QObject
    */
-  KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name );
+  KURLDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 );
   /**
    * Constructs an object to drag the list of URLs in @p urls.
    * This version also includes metadata.
    * @param urls the list of URLs
    * @param metaData a map containing meta data
-   * @param dragSource the parent of the QObject
+   * @param dragSource the parent of the QObject. Should be set when doing drag-n-drop,
+   * but should be 0 when copying to the clipboard
    * @param name the name of the QObject
    * @see metaData()
    */
   KURLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
-            QWidget* dragSource, const char * name );
+            QWidget* dragSource = 0, const char * name = 0 );
 
   virtual ~KURLDrag();
 
