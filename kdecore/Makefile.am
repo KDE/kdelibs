@@ -75,7 +75,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp kappdcopiface.skel
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
-libkdecore_la_LIBADD = ../libltdl/libltdlc.la $(LIB_XEXT) $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV) $(LIBXINERAMA)
+libkdecore_la_LIBADD = $(LIB_DCOP) ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC)
 
 libkdecore_la_METASOURCES = AUTO
 
@@ -109,6 +109,8 @@ uninstall-local:
 EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors \
 	Royal.colors 40.colors DESIGN.COLOR KCONFIG_DESIGN eventsrc \
 	kentities.c kentities.gperf makeentities kmdcodec_compat.h
+
+kcharsets.cpp: kentities.c
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c

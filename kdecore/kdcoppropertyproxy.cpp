@@ -103,8 +103,10 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
   QStrListIterator it( properties );
   for (; it.current(); ++it )
   {
+#ifdef __GNUC__
 #warning FIXME: after switch change this loop to iterate over the slot
 #warning indices instead of using the slot findProperty()
+#endif
     const QMetaProperty *metaProp = metaObj->property( metaObj->findProperty( it.current(), true ), true );
 
     assert( metaProp );
