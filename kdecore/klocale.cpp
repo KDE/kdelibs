@@ -316,15 +316,11 @@ void KLocale::initFormat()
   readConfigNumEntry("NegativeMonetarySignPosition", (int)ParensAround,
 		     m_negativeMonetarySignPosition, SignPosition);
 
-  //Grammatical
-  readConfigBoolEntry("NounDeclension", false, d->nounDeclension);
 
   // Date and time
   readConfigEntry("TimeFormat", "%H:%M:%S", m_timeFormat);
   readConfigEntry("DateFormat", "%A %d %B %Y", m_dateFormat);
   readConfigEntry("DateFormatShort", "%Y-%m-%d", m_dateFormatShort);
-  readConfigBoolEntry("DateMonthNamePossessive", false,
-		      d->dateMonthNamePossessive);
   readConfigNumEntry("WeekStartDay", 1, d->weekStartDay, int);
 
   // other
@@ -334,6 +330,21 @@ void KLocale::initFormat()
   readConfigEntry("CalendarSystem", "gregorian", d->calendarType);
   delete d->calendar;
   d->calendar = 0; // ### HPB Is this the correct place?
+
+  //Grammatical
+  //Precedence here is l10n / i18n / config file
+  KSimpleConfig language(locate("locale",
+			        QString::fromLatin1("%1/entry.desktop")
+                                .arg(m_language)), true);
+  language.setGroup("KCM Locale");
+#define read3ConfigBoolEntry(key, default, save) \
+  save = entry.readBoolEntry(key, default); \
+  save = language.readBoolEntry(key, save); \
+  save = config->readBoolEntry(key, save);
+
+  read3ConfigBoolEntry("NounDeclension", false, d->nounDeclension);
+  read3ConfigBoolEntry("DateMonthNamePossessive", false,
+		       d->dateMonthNamePossessive);
 
   // end of hack
   KGlobal::_locale = lsave;
