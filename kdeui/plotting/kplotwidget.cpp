@@ -48,6 +48,12 @@ KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *p
 	ObjectList.setAutoDelete( TRUE );
 }
 
+KPlotWidget::~KPlotWidget()
+{
+  if (buffer)
+   delete (buffer);
+}
+
 void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 	double XA1, XA2, YA1, YA2;
 	if (x2<x1) { XA1=x2; XA2=x1; }

@@ -52,7 +52,7 @@ public:
 
 	/**Destructor (empty)
 		*/
-	virtual ~KPlotWidget() {}
+	virtual ~KPlotWidget();
 
 	/**@short Determine the placement of major and minor tickmarks,
 		*based on the current Limit settings
