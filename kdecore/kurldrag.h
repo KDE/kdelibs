@@ -48,12 +48,12 @@ public:
    * and the list of urls is converted to UTF-8 before being passed
    * to QUriDrag.
    */
-   KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name );
+   KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name );
   /**
    * Constructs an object to drag the list of URLs in @p urls.
    * This version also includes metadata.
    */
-   KURLDrag::KURLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+   KURLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
                        QWidget* dragSource, const char * name );
   /**
    * @deprecated Is equivalent with "new KURLDrag(urls, dragSource, name)".
