@@ -39,7 +39,7 @@ KSpellDlg::KSpellDlg(
   bool _modal
 )
   : KDialogBase(
-      parent, name, _modal, i18n("Check spelling"), Help|Close, Close, true
+      parent, name, _modal, i18n("Check spelling"), Help|Cancel, Cancel, true
     ),
     progressbar(_progressbar)
 {
