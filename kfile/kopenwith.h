@@ -105,6 +105,7 @@ public slots:
     void slotClear();
     void slotSelected( const QString&_name, const QString& _exec );
     void slotHighlighted( const QString& _name, const QString& _exec );
+    void slotDbClick();
     void slotOK();
 
 protected slots:
@@ -198,6 +199,7 @@ public:
                       bool parse, bool dir, QString p, QString c );
     KAppTreeListItem( QListViewItem* parent, const QString & name, const QPixmap& pixmap,
                       bool parse, bool dir, QString p, QString c );
+    bool isDirectory();
 
 protected:
     virtual void activate();
@@ -223,9 +225,11 @@ public:
     void addDesktopGroup( QString relPath, KAppTreeListItem *item = 0 );
 
     KAppTreeListItem *it;
+    bool isDirSel();
 
 protected:
     void resizeEvent( QResizeEvent *_ev );
+    KAppTreeListItem* currentitem;
 
 public slots:
     void slotItemHighlighted(QListViewItem* i);

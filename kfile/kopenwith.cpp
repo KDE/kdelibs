@@ -121,6 +121,11 @@ void KAppTreeListItem::setOpen( bool o )
     QListViewItem::setOpen( o );
 }
 
+bool KAppTreeListItem::isDirectory()
+{
+    return directory;
+}
+
 // ----------------------------------------------------------------------
 
 KApplicationTree::KApplicationTree( QWidget *parent )
@@ -133,6 +138,14 @@ KApplicationTree::KApplicationTree( QWidget *parent )
 
     connect( this, SIGNAL( currentChanged(QListViewItem*) ), SLOT( slotItemHighlighted(QListViewItem*) ) );
     connect( this, SIGNAL( selectionChanged(QListViewItem*) ), SLOT( slotSelectionChanged(QListViewItem*) ) );
+}
+
+// ----------------------------------------------------------------------
+
+bool KApplicationTree::isDirSel()
+{
+    if (!currentitem) return false; // if currentitem isn't set
+    return currentitem->isDirectory();
 }
 
 // ----------------------------------------------------------------------
@@ -199,6 +212,8 @@ void KApplicationTree::slotItemHighlighted(QListViewItem* i)
 
     KAppTreeListItem *item = (KAppTreeListItem *) i;
 
+    currentitem = item;
+
     if( (!item->directory ) && (!item->exec.isEmpty()) )
         emit highlighted( item->text(0), item->exec );
 }
@@ -213,6 +228,8 @@ void KApplicationTree::slotSelectionChanged(QListViewItem* i)
         return;
 
     KAppTreeListItem *item = (KAppTreeListItem *) i;
+
+    currentitem = item;
 
     if( ( !item->directory ) && (!item->exec.isEmpty() ) )
         emit selected( item->text(0), item->exec );
@@ -329,7 +346,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ),
            this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
   connect( m_pTree, SIGNAL( doubleClicked(QListViewItem*) ),
-           this, SLOT( slotOK() ) );
+           this, SLOT( slotDbClick() ) );
 
   terminal = new QCheckBox( i18n("Run in terminal"), this );
   topLayout->addWidget(terminal);
@@ -399,6 +416,12 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 
 // ----------------------------------------------------------------------
+
+void KOpenWithDlg::slotDbClick()
+{
+   if (m_pTree->isDirSel() ) return; // check if a directory is selected
+   slotOK();
+}
 
 void KOpenWithDlg::slotOK()
 {
