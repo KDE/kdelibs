@@ -85,6 +85,24 @@ class KConfigureDialog : public QObject
         /**
          * Construct a new Preferences Dialog for the application. It uses all
          * KCMs with X-KDE-ParentApp set to KGlobal::instance()->instanceName().
+         *
+         * @param parent       The parent is only used for the QObject tree
+         *                     (this way the KConfigureDialog object is deleted
+         *                     when the parent is deleted).
+         * @param name         name
+         */
+        KConfigureDialog( QObject * parent = 0, const char * name = 0 );
+
+        /**
+         * Construct a new Preferences Dialog for the application. It uses all
+         * KCMs with X-KDE-ParentApp set to KGlobal::instance()->instanceName().
+         *
+         * @param content      Select whether you want a static or configurable
+         *                     config dialog.
+         * @param parent       The parent is only used for the QObject tree
+         *                     (this way the KConfigureDialog object is deleted
+         *                     when the parent is deleted).
+         * @param name         name
          */
         KConfigureDialog( ContentInListView content = Static, QObject * parent = 0,
                 const char * name = 0 );
@@ -94,9 +112,34 @@ class KConfigureDialog : public QObject
          * instance names. For example if you want to have the configuration
          * pages for the kviewviewer KPart you would pass a
          * QStringList consisting of only the name of the part "kviewviewer".
+         *
+         * @param components   A list of the names of the components that your
+         *                     config dialog should merge the config pages in.
+         * @param parent       The parent is only used for the QObject tree
+         *                     (this way the KConfigureDialog object is deleted
+         *                     when the parent is deleted).
+         * @param name         name
          */
-        KConfigureDialog( const QStringList & kcdparents, ContentInListView
-                content = Static, QObject * parent = 0, const char * name = 0 );
+        KConfigureDialog( const QStringList & components, QObject * parent = 0,
+                const char * name = 0 );
+
+        /**
+         * Construct a new Preferences Dialog with the pages for the selected
+         * instance names. For example if you want to have the configuration
+         * pages for the kviewviewer KPart you would pass a
+         * QStringList consisting of only the name of the part "kviewviewer".
+         *
+         * @param components   A list of the names of the components that your
+         *                     config dialog should merge the config pages in.
+         * @param content      Select whether you want a static or configurable
+         *                     config dialog.
+         * @param parent       The parent is only used for the QObject tree
+         *                     (this way the KConfigureDialog object is deleted
+         *                     when the parent is deleted).
+         * @param name         name
+         */
+        KConfigureDialog( const QStringList & components, ContentInListView
+                content, QObject * parent = 0, const char * name = 0 );
 
         ~KConfigureDialog();
 
@@ -108,15 +151,15 @@ class KConfigureDialog : public QObject
 
         KCMultiDialog * dialog();
 
-        public slots:
-            /**
-             * Show the config dialog. The slot immediatly returns since the dialog
-             * is non-modal.
-             */
-            void show();
+    public slots:
+        /**
+         * Show the config dialog. The slot immediatly returns since the dialog
+         * is non-modal.
+         */
+        void show();
 
-        protected slots:
-            void configureTree();
+    protected slots:
+        void configureTree();
         void updateTreeList();
 
     private:

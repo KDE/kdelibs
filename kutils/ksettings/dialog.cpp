@@ -76,7 +76,16 @@ class KConfigureDialog::KConfigureDialogPrivate
 		QMap<QString, KPluginInfo*> plugininfomap;
 };
 
-	KConfigureDialog::KConfigureDialog( ContentInListView content, QObject * parent, const char * name )
+KConfigureDialog::KConfigureDialog( QObject * parent, const char * name )
+	: QObject( parent, name )
+, d( new KConfigureDialogPrivate )
+{
+	d->staticlistview = true;
+	d->services = instanceServices();
+}
+
+KConfigureDialog::KConfigureDialog( ContentInListView content,
+		QObject * parent, const char * name )
 	: QObject( parent, name )
 , d( new KConfigureDialogPrivate )
 {
@@ -84,12 +93,22 @@ class KConfigureDialog::KConfigureDialogPrivate
 	d->services = instanceServices();
 }
 
-	KConfigureDialog::KConfigureDialog( const QStringList & kcdparents, ContentInListView content, QObject * parent, const char * name )
+KConfigureDialog::KConfigureDialog( const QStringList & components,
+		QObject * parent, const char * name )
+	: QObject( parent, name )
+, d( new KConfigureDialogPrivate )
+{
+	d->staticlistview = true;
+	d->services = instanceServices() + parentComponentsServices( components );
+}
+
+KConfigureDialog::KConfigureDialog( const QStringList & components,
+		ContentInListView content, QObject * parent, const char * name )
 	: QObject( parent, name )
 , d( new KConfigureDialogPrivate )
 {
 	d->staticlistview = ( content == Static );
-	d->services = instanceServices() + parentComponentsServices( kcdparents );
+	d->services = instanceServices() + parentComponentsServices( components );
 }
 
 KConfigureDialog::~KConfigureDialog()
@@ -248,6 +267,7 @@ void KConfigureDialog::configureTree()
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
 	KSelectEntriesDialog * subdlg = new KSelectEntriesDialog( d->dlg );
+	subdlg->setPluginInfos( d->plugininfomap );
 	subdlg->show();
 	connect( subdlg, SIGNAL( okClicked() ), this, SLOT( updateTreeList() ) );
 	connect( subdlg, SIGNAL( applyClicked() ), this, SLOT( updateTreeList() ) );

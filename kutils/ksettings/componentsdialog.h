@@ -22,6 +22,9 @@
 
 #include <kdialogbase.h>
 
+class QString;
+class KPluginInfo;
+
 class KSelectEntriesDialog : public KDialogBase
 {
     Q_OBJECT
@@ -29,7 +32,23 @@ class KSelectEntriesDialog : public KDialogBase
         KSelectEntriesDialog( QWidget * parent = 0, const char * name = 0 );
         ~KSelectEntriesDialog();
 
+        void setPluginInfos( const QMap<QString, KPluginInfo*> & plugininfos );
+
+        /**
+         * @reimplemented
+         */
+        void show();
+
+    protected slots:
+        void slotOk();
+        void slotApply();
+
+    private slots:
+        void executed( QListViewItem * );
+
     private:
+        void savePluginInfos();
+
         class KSelectEntriesDialogPrivate;
         KSelectEntriesDialogPrivate * d;
 };
