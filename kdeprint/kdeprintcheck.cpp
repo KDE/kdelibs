@@ -102,7 +102,7 @@ bool KdeprintChecker::checkConfig(const KURL& url)
 		while (*p)
 		{
 			// kdDebug( 500 ) << "checkConfig() with " << QString::fromLatin1( *p ) + f << endl;
-			if ( ::access( QFile::encodeName( QString::fromLatin1( *p ) + f ), F_OK ) == 0 )
+			if ( QFile::exists( QString::fromLatin1( *p ) + f ) )
 			{
 				state = true;
 				break;
