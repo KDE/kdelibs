@@ -205,6 +205,18 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   return it.data().supportsMoving;
 }
 
+QStringList KProtocolManager::protocols() const
+{
+  QStringList res;
+  
+  ConstIterator it = m_protocols.begin();
+  ConstIterator end = m_protocols.end();
+  for (; it != end; ++it )
+    res.append( it.key() );
+    
+  return res;
+}
+
 QString KProtocolManager::executable( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
