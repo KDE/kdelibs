@@ -89,7 +89,7 @@ void HTMLURLRequestJob::run( const QString &_url, const QString &_simple_url, bo
 
   kdebug(0,1202,"$$$$$$$$$ BrowserJob for %s", _url.latin1());
 
-  CachedKIOJob* job = new CachedKIOJob;
+  KIOCachedJob* job = new KIOCachedJob;
   job->setGUImode( KIOJob::NONE );
 
   connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );

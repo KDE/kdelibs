@@ -340,7 +340,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 
   m_bReload = _reload;
 
-  CachedKIOJob* job = new CachedKIOJob;
+  KIOCachedJob* job = new KIOCachedJob;
 
   job->setGUImode( KIOJob::NONE );
 
