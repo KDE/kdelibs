@@ -41,7 +41,6 @@ public:
 	
 	static KIconLoader	*iconLoader();
 
-	static bool		localeConstructed();
 	static KLocale		*locale();
 	static KCharsets	*charsets();
 		

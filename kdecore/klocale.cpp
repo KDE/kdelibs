@@ -30,6 +30,8 @@
 #include <stdlib.h>
 
 #include <qdir.h>
+#include "kglobal.h"
+
 /**
   * Stephan: I don't want to put this in an extra header file, since
   * this would let people think, they can use it within C files, but
@@ -424,15 +426,14 @@ const QString KLocale::getAlias(long key) const
 
 QString i18n(const char* text) {
 #ifdef ENABLE_NLS
-  static KLocale *instance = 0;
-  if (!instance) {
-    KApplication *app = KApplication::getKApplication();
-    if (app)
-      instance = app->getLocale();
-    else
-      return text;
+  if (!KGlobal::_locale) {
+      KApplication *app = KApplication::getKApplication();
+      if (app)
+	  KGlobal::_locale = new KLocale(app->appName());
+      else
+	  return text;
   }
-  return instance->translate(text); 
+  return KGlobal::_locale->translate(text); 
 #else
   return text;
 #endif

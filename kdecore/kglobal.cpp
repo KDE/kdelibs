@@ -66,11 +66,6 @@ KIconLoader *KGlobal::iconLoader()
 	return _iconLoader;
 }
 
-bool KGlobal::localeConstructed()
-{
-	return (_locale != 0 );
-}
-
 KLocale	*KGlobal::locale()
 {	
 	if( _locale == 0 ) {

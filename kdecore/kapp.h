@@ -34,7 +34,6 @@
 class KConfig;
 class KIconLoader;
 class KCharsets;
-class KLocale;
 class KStyle;
 
 typedef unsigned long Atom; 
@@ -183,14 +182,6 @@ public:
     * @see KIconLoader
     */
   KIconLoader* getIconLoader();
-
-  /**
-    * Get a KLocale object for the application. If it does not yet exist,
-    * create one.
-    * @return a pointer to the KLocale object of the application
-    * @see KLocale
-    */
-  KLocale* getLocale();
 
   /**
     * Get character set information.
@@ -458,14 +449,6 @@ public:
   QString checkRecoverFile( const QString& pFilename, bool& bRecover );
 
   /**
-	* Returns true if the KLocale object for this application has already
-	* been constructed
-	*
-	* @return whether the KLocale object has already been constructed
-	*/
-  bool localeConstructed() const { return bLocaleConstructed; }
-	
-  /**
 	* An X11 atom used for IPC
 	*/
   Atom getDndSelectionAtom() { return DndSelection; }
@@ -583,7 +566,6 @@ private:
   ConfigState eConfigState;
   static QStrList* pSearchPaths;
   KIconLoader* pIconLoader; // the application's own icon loader
-  KLocale* pLocale;
   static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compatibility
   void* dummy2; // do not use these without asking kalle@kde.org
   void* dummy3;
@@ -592,7 +574,6 @@ private:
   QString aDummyString2; // do not touch
   QString aDummyString3; // do not touch
   QString aDummyString4; // do not touch
-  bool bLocaleConstructed; // has the KLocale object already been constructed
   bool bIsRestored; // is the application restored from the session manager?
   bool bSessionManagement;
   bool bSessionManagementUserDefined;
@@ -727,6 +708,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.74  1999/05/19 18:47:01  kulow
+// const QString is pointless
+//
 // Revision 1.73  1999/05/18 00:40:23  steffen
 // Implemented lazy getIcon/getMiniIcon. Otherwise the code to defer creation of the iconloader is worthless. We now have 46 less system calls (mainly access() and other filesystem stuff) at startup ;-)
 //

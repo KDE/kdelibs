@@ -35,6 +35,7 @@
 #include "kapp.h"
 #include "kcharsets.h"
 #include "klocale.h"
+#include "kglobal.h"
 
 static QString printableToString(const QString& s){
   if (!s.contains('\\'))
@@ -88,12 +89,10 @@ void KConfigBase::setLocale()
 {
   data()->bLocaleInitialized = true;
 
-  KApplication *app = KApplication::getKApplication();
-  
-  if (app)
-    pData->aLocaleString = app->getLocale()->language();
+  if (KGlobal::locale())
+      pData->aLocaleString = KGlobal::locale()->language();
   else
-    pData->aLocaleString = "C";
+      pData->aLocaleString = "C";
 }
 
 void KConfigBase::parseOneConfigFile( QFile& rFile, 
@@ -209,7 +208,7 @@ QString KConfigBase::group() const
 QString KConfigBase::readEntry( const QString& pKey, 
 				const QString& pDefault ) const
 {
-  if( !data()->bLocaleInitialized && kapp && kapp->localeConstructed() ) 
+  if( !data()->bLocaleInitialized && KGlobal::locale() ) 
   {
     KConfigBase *that = const_cast<KConfigBase*>(this);
     that->setLocale();
@@ -574,8 +573,8 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
 	   aRetFont.setCharSet( chId );
 	 else if (kapp){
            if (chStr=="default")
-              if( kapp->localeConstructed() ) 
-	          chStr=klocale->charset();
+              if( KGlobal::locale() ) 
+	          chStr=KGlobal::locale()->charset();
 	      else chStr="iso-8859-1"; 
 	   kapp->getCharsets()->setQFont(aRetFont,chStr);   
 	 }
@@ -761,7 +760,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
 				 bool bGlobal,
 				 bool bNLS )
 {
-  if( !data()->bLocaleInitialized && kapp && kapp->localeConstructed() )
+  if( !data()->bLocaleInitialized && KGlobal::locale() )
     {
 	  KConfigBase *that = (KConfigBase*)this;
 	  that->setLocale();

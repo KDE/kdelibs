@@ -25,9 +25,11 @@
 
 class QStrList;
 
-#ifndef klocale
-#define klocale KApplication::getKApplication()->getLocale()
-#endif
+/*
+  #ifndef klocale
+  #define klocale KApplication::getKApplication()->getLocale()
+  #endif
+*/
 
 /**
   *

@@ -145,7 +145,6 @@ void KApplication::init()
     theKProcessController = new KProcessController();
   */
   KApp = this;
-  bLocaleConstructed = false; // no work around mutual dependencies
 
   pIconLoader = 0L;
   styleHandle = 0;
@@ -226,9 +225,6 @@ void KApplication::init()
 	}
 
   pCharsets = new KCharsets();
-
-  pLocale = new KLocale(aAppName);
-  bLocaleConstructed = true;
 
   // Drag 'n drop stuff taken from kfm
   display = desktop()->x11Display();
@@ -396,15 +392,6 @@ void KApplication::aboutApp()
 void KApplication::aboutQt()
 {
   //  QMessageBox::aboutQt( NULL, getCaption() );
-}
-
-
-KLocale* KApplication::getLocale()
-{
-  if( !pLocale )
-    pLocale = new KLocale();
-
-  return pLocale;
 }
 
 
@@ -608,9 +595,6 @@ KApplication::~KApplication()
 
   if( pIconLoader )
     delete pIconLoader;
-
-  if( pLocale )
-    delete pLocale;
 
   delete pCharsets;
 
@@ -1057,7 +1041,7 @@ void KApplication::readSettings()
   //  Read the font specification from config.
   //  Initialize fonts to default first or it won't work !!
 		
-  pCharsets->setDefault(klocale->charset());
+  pCharsets->setDefault(KGlobal::locale()->charset());
   generalFont_ = QFont("helvetica", 12, QFont::Normal);
   pCharsets->setQFont(generalFont_);
   fixedFont_ = QFont("fixed", 12, QFont::Normal);
@@ -1217,7 +1201,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	 QString path = KApplication::kde_htmldir().copy() + "/";
 
          // first try the locale setting
-         QString file = path + klocale->language() + '/' + filename;
+         QString file = path + KGlobal::locale()->language() + '/' + filename;
          if( !QFileInfo( file ).exists() )
                // not found: use the default
                file = path + "default/" + filename;
