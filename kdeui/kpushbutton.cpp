@@ -101,7 +101,7 @@ void KPushButton::init( const KGuiItem &item )
 
 bool KPushButton::needIcons()
 {
-    return s_useIcons && d->item.hasIconSet();;
+    return s_useIcons && d->item.hasIconSet();
 }
 
 void KPushButton::readSettings()
