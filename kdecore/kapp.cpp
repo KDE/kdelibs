@@ -1236,9 +1236,11 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
    if( filename.isEmpty() )
       filename = QString(name()) + "/index.html";
 
-   QString url = "help:" + filename;
+   QString url;
    if (!topic.isEmpty())
-     url += "#" + topic;
+     url = QString("help:/%1#%2").arg(filename).arg(topic);
+   else
+     url = QString("help:/%1").arg(filename);
 
    QCString dcopService;
    QString error;
