@@ -62,6 +62,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"audio options:\n");
 	fprintf(stderr,"-a <audioiomethod>  select audio i/o method (oss, alsa, ...)\n");
 	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
+	fprintf(stderr,"-b <bits>           set number of bits (8 or 16)\n");
 	fprintf(stderr,"-d                  enable full duplex operation\n");
 	fprintf(stderr,"-D <devicename>     audio device (usually /dev/dsp)\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
@@ -92,6 +93,7 @@ static void exitListAudioIO()
 
 static Dispatcher::StartServer	cfgServers		= Dispatcher::startUnixServer;
 static int  					cfgSamplingRate	= 0;
+static int  					cfgBits			= 0;
 static int  					cfgFragmentCount= 0;
 static int  					cfgFragmentSize	= 0;
 static int  					cfgPort			= 0;
@@ -105,7 +107,7 @@ static bool						cmdListAudioIO  = false;
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:A")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:")) > 0)
 	{
 		switch(optch)
 		{
@@ -115,6 +117,8 @@ static void handleArgs(int argc, char **argv)
 			case 'a': cfgAudioIO = optarg;
 				break;
 			case 'r': cfgSamplingRate = atoi(optarg);
+				break;
+			case 'b': cfgBits = atoi(optarg);
 				break;
 			case 'F': cfgFragmentCount = atoi(optarg);
 				break;
@@ -219,6 +223,8 @@ int main(int argc, char **argv)
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 	if(cfgFullDuplex)	 AudioSubSystem::the()->fullDuplex(cfgFullDuplex);
 	if(cfgDeviceName)	 AudioSubSystem::the()->deviceName(cfgDeviceName);
+	if(cfgBits && cfgBits != 16)
+		arts_warning("configuring bits != 16 not yet supported");
 
 	if(!AudioSubSystem::the()->check())
 	{
