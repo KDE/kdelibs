@@ -117,11 +117,32 @@ KGuiItem::~KGuiItem() {
 QString KGuiItem::text() const {
     return d->m_text;
 }
-QString KGuiItem::plainText() const {
-  QString stripped( d->m_text );
-  stripped.replace( QRegExp( "&(?!&)" ), QString::null );
 
-  return stripped;
+
+QString KGuiItem::plainText() const {
+    int len = d->m_text.length();
+
+    if (len == 0)
+        return d->m_text;
+
+    //Can assume len >= 1 from now on.
+    QString stripped;
+
+    int resultLength = 0;
+    stripped.setLength(len);
+
+    const QChar* data    = d->m_text.unicode();
+    for (int pos = 1; pos < len; pos++)
+    {
+        //We pass through any non-ampersand character,
+        //and any ampersand that's preceeded by an ampersand
+        if (data[pos] != '&' || data[pos-1] == '&')
+            stripped[resultLength++] = data[pos];
+    }
+
+    stripped.truncate(resultLength);
+
+    return stripped;
 }
 
 QIconSet KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) const
