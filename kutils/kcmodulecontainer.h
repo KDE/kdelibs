@@ -124,6 +124,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		void finalize();
 
 		typedef QValueList<KCModuleProxy*> ModuleList;
+
 		/**
 		 * A list containing KCModuleProxy objects which 
 		 * have changed and must be saved.
@@ -133,7 +134,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		/**
 		 * A list of all modules which are encapsulated.
 		 */
-		ModuleList allModules;
+		ModuleList allModules; // KDE 4 put in the Private class and abstract with getter
 		
 	private slots:
 

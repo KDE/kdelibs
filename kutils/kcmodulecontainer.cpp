@@ -56,7 +56,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 		QStringList modules;
 		QTabWidget *tabWidget;
 		int buttons;
-		bool hasRootKCM;
+		bool hasRootKCM: 1;
 		KPushButton *btnRootMode;
 		QHBoxLayout *btnLayout;
 		QVBoxLayout *topLayout;
@@ -140,7 +140,8 @@ void KCModuleContainer::addModule( const QString& module )
 	KCModuleProxy* proxy = new KCModuleProxy( module, false, d->tabWidget, module.latin1());
 	allModules.append( proxy );
 
-	d->tabWidget->addTab( proxy, QIconSet(KGlobal::iconLoader()->loadIcon( proxy->moduleInfo().icon(), KIcon::Desktop)),
+	d->tabWidget->addTab( proxy, QIconSet(KGlobal::iconLoader()->loadIcon(
+					proxy->moduleInfo().icon(), KIcon::Desktop)),
 			/* QT eats ampersands for dinner. But not this time. */
 			proxy->moduleInfo().moduleName().replace( "&", "&&" ));
 
@@ -221,7 +222,6 @@ void KCModuleContainer::load()
 	}
 
 	emit changed( false );
-
 }
 
 void KCModuleContainer::defaults()
