@@ -447,6 +447,15 @@ void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 	    emit colorSelected( cell );
 }
 
+void KColorCells::mouseDoubleClickEvent( QMouseEvent *e )
+{
+  int cell = posToCell(mPos);
+
+  if (cell != -1)
+    emit colorDoubleClicked( cell );
+}
+
+
 //-----------------------------------------------------------------------------
 
 KColorPatch::KColorPatch( QWidget *parent ) : QFrame( parent )
@@ -767,6 +776,8 @@ KPaletteTable::setPalette( const QString &_paletteName )
       }
       connect( cells, SIGNAL( colorSelected( int ) ),
 	       SLOT( slotColorCellSelected( int ) ) );
+      connect( cells, SIGNAL( colorDoubleClicked( int ) ),
+	       SLOT( slotColorCellDoubleClicked( int ) ) );
       sv->addChild( cells );
       cells->show();
       sv->updateScrollBars();
@@ -783,6 +794,15 @@ KPaletteTable::slotColorCellSelected( int col )
      return;
   emit colorSelected( mPalette->color(col), mPalette->colorName(col) );
 }
+
+void
+KPaletteTable::slotColorCellDoubleClicked( int col )
+{
+  if (!mPalette || (col >= mPalette->nrColors()))
+     return;
+  emit colorDoubleClicked( mPalette->color(col), mPalette->colorName(col) );
+}
+
 
 void
 KPaletteTable::slotColorTextSelected( const QString &colorText )
@@ -1004,6 +1024,12 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 
   connect( d->table, SIGNAL( colorSelected( const QColor &, const QString & ) ),
 	   SLOT( slotColorSelected( const QColor &, const QString & ) ) );
+
+  connect(
+    d->table,
+    SIGNAL( colorDoubleClicked( const QColor &, const QString & ) ),
+    SLOT( slotColorDoubleClicked( const QColor &, const QString & ) )
+  );
 
   //
   // a little space between
@@ -1308,6 +1334,16 @@ void KColorDialog::slotAddToCustomColors( )
 void KColorDialog::slotColorSelected( const QColor &color, const QString &name )
 {
   _setColor( color, name);
+}
+
+void KColorDialog::slotColorDoubleClicked
+(
+  const QColor  & color,
+  const QString & name
+)
+{
+  _setColor(color, name);
+  accept();
 }
 
 void KColorDialog::_setColor(const KColor &color, const QString &name)

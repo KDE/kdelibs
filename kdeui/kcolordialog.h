@@ -195,9 +195,11 @@ public slots:
   void setPalette(const QString &paletteName);
 signals:
   void colorSelected( const QColor &, const QString & );
+  void colorDoubleClicked( const QColor &, const QString & );
 
 protected slots:
   void slotColorCellSelected( int );
+  void slotColorCellDoubleClicked( int );
   void slotColorTextSelected( const QString &colorText );
   void slotSetPalette( const QString &_paletteName );
   void slotShowNamedColorReadError( void );
@@ -252,6 +254,7 @@ public:
 
   signals:
   void colorSelected( int col );
+  void colorDoubleClicked( int col );
 
 protected:
   /**
@@ -282,6 +285,11 @@ protected:
    * @reimplemented
    */
   virtual void dropEvent( QDropEvent *);
+
+  /**
+   * @reimplemented
+   */
+  virtual void mouseDoubleClickEvent( QMouseEvent * );
 
   int posToCell(const QPoint &pos, bool ignoreBorders=false);
 
@@ -465,6 +473,7 @@ class KColorDialog : public KDialogBase
     void slotVChanged( int );
     void slotColorSelected( const QColor &col );
     void slotColorSelected( const QColor &col, const QString &name );
+    void slotColorDoubleClicked( const QColor &col, const QString &name );
     void slotColorPicker();
     void slotAddToCustomColors();
     void slotDefaultColorClicked();
