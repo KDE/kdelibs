@@ -366,7 +366,9 @@ KSSLCertificate *KSSLCertificate::replicate() {
   // The new certificate doesn't have the cached value.  It's probably
   // better this way.  We can't anticipate every reason for doing this.
   KSSLCertificate *newOne = new KSSLCertificate();
+  #ifdef HAVE_SSL
   newOne->setCert(X509_dup(getCert()));
+  #endif
   return newOne;
 }
 
