@@ -85,6 +85,9 @@
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark    "<application>Ark</application>">
+<!ENTITY arts	"<application>aRts</application>">
+<!ENTITY artsbuilder "<application>aRts-builder</application>">
+<!ENTITY artsd	"<application>artsd</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY CD	"<acronym>CD</acronym>">
