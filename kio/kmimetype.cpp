@@ -40,6 +40,7 @@
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
+#include <kstddirs.h>
 #include <klocale.h>
 #include <kurl.h>
 #include <kdebug.h>
@@ -54,13 +55,16 @@ void KMimeType::check()
 
   s_bChecked = true; // must be done before building mimetypes
 
-  // Set up very-default mimetype first.
-  s_pDefaultType = new KMimeType( "", "application/octet-stream", "unknown.png", "", QStringList() );
-
   // Try to find the default type
-  KMimeType *defaultType = KMimeType::mimeType( "application/octet-stream" );
-  if (defaultType == s_pDefaultType)  
+  KMimeType::Ptr defaultType = KMimeType::mimeType( "application/octet-stream" );
+  if (defaultType == 0L)  
+  {
      errorMissingMimeType( "application/octet-stream" );
+     KStandardDirs stdDirs;
+     QString sDefaultMimeType = stdDirs.resourceDirs("mime").first()+"application/octet-stream.desktop";
+     s_pDefaultType = new KMimeType( sDefaultMimeType, "application/octet-stream", 
+                                     "unknown", "mime", QStringList() );
+  }
   else
       s_pDefaultType = defaultType;
 
@@ -118,6 +122,8 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
+    if ( _name == "application/octet-stream" )
+      return 0L;
     assert(s_pDefaultType);
     return s_pDefaultType;
   }
