@@ -436,7 +436,12 @@ KMessageBox::warningYesNoList(QWidget *parent, const QString &text,
                               const KGuiItem &buttonNo,
                               const QString &dontAskAgainName,
                               int options)
-{
+{ 
+    // warningYesNo and warningYesNoList are always "dangerous"
+    // ### Remove this line for KDE 4, when the 'options' default parameter
+    // takes effects.
+    options |= Dangerous;
+
     ButtonCode res;
     if ( !shouldBeShownYesNo(dontAskAgainName, res) )
         return res;

@@ -221,7 +221,7 @@ public:
                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
                          const KGuiItem &buttonNo = KStdGuiItem::no(),
                          const QString &dontAskAgainName = QString::null,
-                         int options = Notify);
+                         int options = Notify | Dangerous);
 
  /**
   * Display a "warning" dialog with a listbox to show information to the user
@@ -261,7 +261,7 @@ public:
                             const KGuiItem &buttonYes = KStdGuiItem::yes(),
                             const KGuiItem &buttonNo = KStdGuiItem::no(),
                             const QString &dontAskAgainName = QString::null,
-                            int options = Notify);
+                            int options = Notify | Dangerous);
  /**
   * Display a "warning" dialog.
   *
