@@ -1277,7 +1277,8 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
     // ### this case should not happen. make sure that we select the first option
     // in any case. otherwise we have no consistency with the DOM interface. FIXME!
     // we return the first one if it was a combobox select
-    if (!successful && !m_multiple && m_size <= 1 && (m_listItems[0]->id() == ID_OPTION) ) {
+    if (!successful && !m_multiple && m_size <= 1 && m_listItems.size() &&
+        (m_listItems[0]->id() == ID_OPTION) ) {
         HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[0]);
         if (option->value().isNull() || option->value() == "")
             encoded_values += option->text().string().stripWhiteSpace().local8Bit();
