@@ -101,7 +101,7 @@ class KXMLGUIFactory
   /**
    * Use this method to free all memory allocated by the KXMLGUIFactory. This deletes the internal node
    * tree and therefore resets the internal state of the class. Please note that the actual GUI is
-   * NOT touched at all, meaning no containers are being deleted nor any actions unplugged. That is 
+   * NOT touched at all, meaning no containers are being deleted nor any actions unplugged. That is
    * something you have to do on your own. So use this method only if you know what you are doing :-)
    *
    * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all inserted clients)
@@ -117,8 +117,6 @@ class KXMLGUIFactory
 
   bool calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QMap<QString,int>::Iterator &it );
   void adjustMergingIndices( KXMLGUIContainerNode *node, int idx, int val, const QMap<QString,int>::Iterator &it );
-
-  void pruneContainers( KXMLGUIContainerNode *node );
 
   KXMLGUIContainerNode *findContainer( KXMLGUIContainerNode *node, const QDomElement &element, const QList<QWidget> *excludeList );
 

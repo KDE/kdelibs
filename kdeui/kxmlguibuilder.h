@@ -40,6 +40,8 @@ class KXMLGUIBuilder
   KXMLGUIBuilder( QWidget *widget );
   virtual ~KXMLGUIBuilder();
 
+  virtual QStringList containerTags() const;
+
   /**
    * Create a container (menubar/menu/toolbar/statusbar/separator/...)
    * from an element in the XML file
@@ -72,8 +74,11 @@ class KXMLGUIBuilder
   virtual QByteArray removeContainer( QWidget *container, QWidget *parent,
           int id );
 
-  virtual int insertSeparator( QWidget *parent, int index );
-  virtual void removeSeparator( QWidget *parent, int id );
+  virtual QStringList customTags() const;
+
+  virtual int createCustomElement( QWidget *parent, int index, const QDomElement &element );
+
+  virtual void removeCustomElement( QWidget *parent, int id );
 
 private:
   KXMLGUIBuilderPrivate *d;

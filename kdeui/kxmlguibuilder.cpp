@@ -36,12 +36,30 @@ public:
   }
 
   QWidget *m_widget;
+
+  QString tagMainWindow;
+  QString tagMenuBar;
+  QString tagMenu;
+  QString tagToolBar;
+  QString tagStatusBar;
+
+  QString tagSeparator;
+  QString tagTearOffHandle;
 };
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
 {
   d = new KXMLGUIBuilderPrivate;
   d->m_widget = widget;
+  
+  d->tagMainWindow = QString::fromLatin1( "mainwindow" );
+  d->tagMenuBar = QString::fromLatin1( "menubar" );
+  d->tagMenu = QString::fromLatin1( "menu" );
+  d->tagToolBar = QString::fromLatin1( "toolbar" );
+  d->tagStatusBar = QString::fromLatin1( "statusbar" );
+  
+  d->tagSeparator = QString::fromLatin1( "separator" );
+  d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
 }
 
 KXMLGUIBuilder::~KXMLGUIBuilder()
@@ -49,11 +67,18 @@ KXMLGUIBuilder::~KXMLGUIBuilder()
   delete d;
 }
 
+QStringList KXMLGUIBuilder::containerTags() const
+{
+  QStringList res;
+  res << d->tagMainWindow << d->tagMenuBar << d->tagMenu << d->tagToolBar << d->tagStatusBar;
+  return res;
+}
+
 QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
 {
   id = -1;
 
-  if ( element.tagName().lower() == "mainwindow" )
+  if ( element.tagName().lower() == d->tagMainWindow )
   {
     KTMainWindow *mainwindow = 0;
     if ( d->m_widget->inherits( "KTMainWindow" ) )
@@ -62,7 +87,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return mainwindow;
   }
 
-  if ( element.tagName().lower() == "menubar" )
+  if ( element.tagName().lower() == d->tagMenuBar )
   {
     KMenuBar *bar;
 
@@ -76,7 +101,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return bar;
   }
 
-  if ( element.tagName().lower() == "menu" )
+  if ( element.tagName().lower() == d->tagMenu )
   {
     QPopupMenu *popup = new QPopupMenu( d->m_widget, element.attribute( "name" ).utf8());
     popup->setFont(KGlobal::menuFont());
@@ -88,14 +113,14 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       text = i18n("No text!");
 
     if ( parent && parent->inherits( "KMenuBar" ) )
-      id = ((KMenuBar *)parent)->insertItem( text, popup, -1, index );
+      id = static_cast<KMenuBar *>(parent)->insertItem( text, popup, -1, index );
     else if ( parent && parent->inherits( "QPopupMenu" ) )
-      id = ((QPopupMenu *)parent)->insertItem( text, popup, -1, index );
+      id = static_cast<QPopupMenu *>(parent)->insertItem( text, popup, -1, index );
 
     return popup;
   }
 
-  if ( element.tagName().lower() == "toolbar" )
+  if ( element.tagName().lower() == d->tagToolBar )
   {
     bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
     KToolBar *bar = new KToolBar( d->m_widget, element.attribute( "name" ).utf8(), honor);
@@ -162,7 +187,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return bar;
   }
 
-  if ( element.tagName().lower() == "statusbar" )
+  if ( element.tagName().lower() == d->tagStatusBar )
   {
     if ( d->m_widget->inherits( "KTMainWindow" ) )
     {
@@ -185,9 +210,9 @@ QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent,
   if ( container->inherits( "QPopupMenu" ) )
   {
     if ( parent->inherits( "KMenuBar" ) )
-      ((KMenuBar *)parent)->removeItem( id );
+      static_cast<KMenuBar *>(parent)->removeItem( id );
     else if ( parent->inherits( "QPopupMenu" ) )
-      ((QPopupMenu *)parent)->removeItem( id );
+      static_cast<QPopupMenu *>(parent)->removeItem( id );
 
     delete container;
   }
@@ -202,30 +227,44 @@ QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent,
     if ( d->m_widget->inherits( "KTMainWindow" ) )
       static_cast<KTMainWindow *>(d->m_widget)->enableStatusBar( KStatusBar::Hide );
     else
-      delete (KStatusBar *)container;
+      delete static_cast<KStatusBar *>(container);
   }
 
   return stateBuff;
 }
 
-int KXMLGUIBuilder::insertSeparator( QWidget *parent, int index )
+QStringList KXMLGUIBuilder::customTags() const
 {
-  if ( parent->inherits( "QPopupMenu" ) )
-    return ((QPopupMenu *)parent)->insertSeparator( index );
-  else if ( parent->inherits( "QMenuBar" ) )
-    return ((QMenuBar *)parent)->insertSeparator( index );
-  else if ( parent->inherits( "KToolBar" ) )
-    return ((KToolBar *)parent)->insertSeparator( index );
+  QStringList res;
+  res << d->tagSeparator << d->tagTearOffHandle;
+  return res;
+}
 
+int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomElement &element )
+{
+  if ( element.tagName().lower() == d->tagSeparator )
+  {
+    if ( parent->inherits( "QPopupMenu" ) )
+      return static_cast<QPopupMenu *>(parent)->insertSeparator( index );
+    else if ( parent->inherits( "QMenuBar" ) )
+       return static_cast<QMenuBar *>(parent)->insertSeparator( index );
+    else if ( parent->inherits( "KToolBar" ) )
+      return static_cast<KToolBar *>(parent)->insertSeparator( index );
+  }
+  else if ( element.tagName().lower() == d->tagTearOffHandle )
+  {
+    if ( parent->inherits( "QPopupMenu" ) )
+      return static_cast<QPopupMenu *>(parent)->insertTearOffHandle( -1, index );
+  }
   return 0;
 }
 
-void KXMLGUIBuilder::removeSeparator( QWidget *parent, int id )
+void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
 {
   if ( parent->inherits( "QPopupMenu" ) )
-    ((QPopupMenu *)parent)->removeItem( id );
+    static_cast<QPopupMenu *>(parent)->removeItem( id );
   else if ( parent->inherits( "QMenuBar" ) )
-    ((QMenuBar *)parent)->removeItem( id );
+    static_cast<QMenuBar *>(parent)->removeItem( id );
   else if ( parent->inherits( "KToolBar" ) )
-    ((KToolBar *)parent)->removeItem( id );
+    static_cast<KToolBar *>(parent)->removeItem( id );
 }

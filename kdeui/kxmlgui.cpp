@@ -42,7 +42,7 @@ struct KXMLGUIContainerClient
   KXMLGUIClient *m_client;
   QList<KAction> m_actions;
   bool m_mergedClient;
-  QValueList<int> m_separators;
+  QValueList<int> m_customElements;
   QString m_groupName; //is empty if no group client
 };
 
@@ -173,6 +173,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
   ts << doc;
 
   file.close();
+  return true;
 }
 
 QString KXMLGUIFactory::documentToXML( const QDomDocument& doc )
@@ -329,8 +330,8 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
 void KXMLGUIFactory::reset()
 {
   resetInternal( d->m_rootNode );
-  
-  d->m_rootNode->children.clear();    
+
+  d->m_rootNode->children.clear();
 }
 
 void KXMLGUIFactory::resetInternal( KXMLGUIContainerNode *node )
@@ -338,20 +339,27 @@ void KXMLGUIFactory::resetInternal( KXMLGUIContainerNode *node )
   QListIterator<KXMLGUIContainerNode> childIt( node->children );
   for (; childIt.current(); ++childIt )
     resetInternal( childIt.current() );
-  
+
   if ( node->client )
     node->client->setFactory( 0L );
-} 
+}
 
 void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode )
 {
   static QString tagAction = QString::fromLatin1( "action" );
   static QString tagMerge = QString::fromLatin1( "merge" );
-  static QString tagSeparator = QString::fromLatin1( "separator" );
   static QString tagDefineGroup = QString::fromLatin1( "definegroup" );
   static QString attrName = QString::fromLatin1( "name" );
   static QString attrGroup = QString::fromLatin1( "group" );
 
+  QStringList customTags;
+  if ( parentNode->builder )
+    customTags = parentNode->builder->customTags();
+
+  QStringList containerTags = m_builder->containerTags();
+  if ( parentNode->builder && parentNode->builder != m_builder )
+    containerTags += parentNode->builder->containerTags();
+  
   /*
    * This list contains references to all the containers we created on the current level.
    * We use it as "exclude" list, in order to avoid container matches of already created containers having
@@ -408,7 +416,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
       ignoreMergingIndex = true;
     }
-    else if ( tag == tagAction || tag == tagSeparator )
+    else if ( tag == tagAction || customTags.contains( tag ) )
     {
       if ( !parentNode->container )
         continue;
@@ -455,13 +463,15 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
       else
       {
         assert( parentNode->builder );
-        int id = parentNode->builder->insertSeparator( parentNode->container, idx );
-	containerClient->m_separators.append( id );
+	
+	int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
+	if ( id != 0 )
+  	  containerClient->m_customElements.append( id );
       }
 
       adjustMergingIndices( parentNode, idx, 1, it );
     }
-    else
+    else if ( containerTags.contains( tag ) )
     {
       /*
        * No Action or Merge tag? That most likely means that we want to create a new container.
@@ -550,10 +560,10 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
       {
         assert( node->builder );
 	
-        QValueList<int>::ConstIterator sepIt = clientIt.current()->m_separators.begin();
-	QValueList<int>::ConstIterator sepEnd = clientIt.current()->m_separators.end();
-	for (; sepIt != sepEnd; ++sepIt )
-	  node->builder->removeSeparator( node->container, *sepIt );
+        QValueList<int>::ConstIterator custIt = clientIt.current()->m_customElements.begin();
+	QValueList<int>::ConstIterator custEnd = clientIt.current()->m_customElements.end();
+	for (; custIt != custEnd; ++custIt )
+	  node->builder->removeCustomElement( node->container, *custIt );
 
         QListIterator<KAction> actionIt( clientIt.current()->m_actions );
         for (; actionIt.current(); ++actionIt )
@@ -571,7 +581,8 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
 	else
 	  mergingIt = node->mergingIndices.end();
 	
-	adjustMergingIndices( node, idx, - ( clientIt.current()->m_actions.count() + clientIt.current()->m_separators.count() ), mergingIt );
+	adjustMergingIndices( node, idx, - ( clientIt.current()->m_actions.count() 
+					     + clientIt.current()->m_customElements.count() ), mergingIt );
 	
 	node->clients.removeRef( clientIt.current() );
       }
@@ -775,3 +786,4 @@ KXMLGUIContainerClient *KXMLGUIFactory::findClient( KXMLGUIContainerNode *node, 
 
   return client;
 }
+
