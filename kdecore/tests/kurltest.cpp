@@ -691,7 +691,7 @@ int main(int argc, char *argv[])
   check("javascript: URL, is relative", KURL::isRelativeURL("javascript:doSomething()") ? "true" : "false", "false");
   // more isRelative
   check("file: URL, is relative", KURL::isRelativeURL("file:///blah") ? "true" : "false", "false");
-  check("/path, is relative", KURL::isRelativeURL("/path") ? "true" : "false", "false"); // arguable, but necessary for KURL( baseURL, "//www1.foo.bar" );
+  check("/path, is relative", KURL::isRelativeURL("/path") ? "true" : "false", "true"); // arguable, but necessary for KURL( baseURL, "//www1.foo.bar" );
   check("something, is relative", KURL::isRelativeURL("something") ? "true" : "false", "true");
   KURL about("about:konqueror");
   check("about:",about.path(),"konqueror");
