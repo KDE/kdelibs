@@ -78,7 +78,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
   {
      return serv;
   } else {
-     if (!serv->isValid())
+     if (!serv->isDeleted())
         kdWarning(7012) << "Invalid Service : " << file << endl;
      delete serv;
      return 0L;
