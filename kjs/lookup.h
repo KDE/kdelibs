@@ -27,6 +27,7 @@
 #include "value.h"
 #include "object.h"
 #include "interpreter.h"
+#include "internal.h"
 #include <stdio.h>
 
 namespace KJS {
