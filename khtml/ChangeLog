@@ -1,3 +1,10 @@
+2004-06-02  Zack Rusin  <zack@kde.org>
+
+        * xml/xml_tokenizer.{h,cpp}: Added pushNode(), popNode() and
+        currenNode() methods. Removed m_currentNode memeber and switched
+        node construction to a stack based ones. Try to attach to the 
+        parent of the tag which encloses us if it can't handle children.
+
 2004-05-28  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_object.cpp: (drawBorder) Make use of Mozilla's

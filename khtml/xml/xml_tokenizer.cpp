@@ -96,15 +96,28 @@ XMLHandler::XMLHandler(DocumentPtr *_doc, KHTMLView *_view)
     m_doc = _doc;
     if ( m_doc ) m_doc->ref();
     m_view = _view;
-    m_currentNode = _doc->document();
+    pushNode( _doc->document() );
 }
-
 
 XMLHandler::~XMLHandler()
 {
     if ( m_doc ) m_doc->deref();
 }
 
+void XMLHandler::pushNode( NodeImpl *node )
+{
+    m_nodes.push( node );
+}
+
+NodeImpl *XMLHandler::popNode()
+{
+    return m_nodes.pop();
+}
+
+NodeImpl *XMLHandler::currentNode() const
+{
+    return m_nodes.current();
+}
 
 QString XMLHandler::errorProtocol()
 {
@@ -124,7 +137,7 @@ bool XMLHandler::startDocument()
 
 bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*localName*/, const QString& qName, const QXmlAttributes& atts )
 {
-    if (m_currentNode->nodeType() == Node::TEXT_NODE)
+    if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
 
     ElementImpl *newElement;
@@ -140,10 +153,21 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         if (exceptioncode) // exception setting attributes
             return false;
     }
-    if (m_currentNode->addChild(newElement)) {
+
+    //this is tricky. in general the node doesn't have to attach to the one it's in. as far
+    //as standards go this is wrong, but there's literally thousands of documents where
+    //we see <p><ul>...</ul></p>. the following code is there for those cases.
+    //when we can't attach to the currently holding us node we try to attach to its parent
+    bool attached = false;
+    for ( NodeImpl *current = currentNode(); current; current = current->parent() ) {
+        attached = current->addChild( newElement );
+        if ( attached )
+            break;
+    }
+    if (attached) {
         if (m_view && !newElement->attached())
             newElement->attach();
-        m_currentNode = newElement;
+        pushNode( newElement );
         return true;
     }
     else {
@@ -159,11 +183,12 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
 
 bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*localName*/, const QString& /*qName*/ )
 {
-    if (m_currentNode->nodeType() == Node::TEXT_NODE)
+    if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
-    if (m_currentNode->parentNode() != 0) {
-        m_currentNode->closeRenderer();
-        m_currentNode = m_currentNode->parentNode();
+
+    NodeImpl *node = popNode();
+    if ( node ) {
+        node->closeRenderer();
     }
 // ###  else error
 
@@ -173,14 +198,14 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
 
 bool XMLHandler::startCDATA()
 {
-    if (m_currentNode->nodeType() == Node::TEXT_NODE)
+    if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
 
     NodeImpl *newNode = m_doc->document()->createCDATASection(new DOMStringImpl(""));
-    if (m_currentNode->addChild(newNode)) {
+    if (currentNode()->addChild(newNode)) {
         if (m_view && !newNode->attached())
             newNode->attach();
-        m_currentNode = newNode;
+        pushNode( newNode );
         return true;
     }
     else {
@@ -192,9 +217,9 @@ bool XMLHandler::startCDATA()
 
 bool XMLHandler::endCDATA()
 {
-    if (m_currentNode->parentNode() != 0)
-        m_currentNode = m_currentNode->parentNode();
-    return true;
+    popNode();
+    Q_ASSERT( currentNode() );
+    return currentNode();
 }
 
 bool XMLHandler::characters( const QString& ch )
@@ -204,18 +229,18 @@ bool XMLHandler::characters( const QString& ch )
         return true;
 #endif
 
-    if (m_currentNode->nodeType() == Node::TEXT_NODE ||
-        m_currentNode->nodeType() == Node::CDATA_SECTION_NODE ||
+    if (currentNode()->nodeType() == Node::TEXT_NODE ||
+        currentNode()->nodeType() == Node::CDATA_SECTION_NODE ||
         enterText()) {
 
 #if 1 // SAFARI_MERGE
-        NodeImpl::Id parentId = m_currentNode->parentNode() ? m_currentNode->parentNode()->id() : 0;
+        NodeImpl::Id parentId = currentNode()->parentNode() ? currentNode()->parentNode()->id() : 0;
         if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
             // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
             // way of doing this?
 #endif
             int exceptioncode = 0;
-            static_cast<TextImpl*>(m_currentNode)->appendData(ch,exceptioncode);
+            static_cast<TextImpl*>(currentNode())->appendData(ch,exceptioncode);
             if (exceptioncode)
                 return false;
 #if 1 // SAFARI_MERGE
@@ -223,7 +248,7 @@ bool XMLHandler::characters( const QString& ch )
         else {
             // for all others, simplify the whitespace
             int exceptioncode = 0;
-            static_cast<TextImpl*>(m_currentNode)->appendData(ch.simplifyWhiteSpace(),exceptioncode);
+            static_cast<TextImpl*>(currentNode())->appendData(ch.simplifyWhiteSpace(),exceptioncode);
             if (exceptioncode)
                 return false;
         }
@@ -236,21 +261,21 @@ bool XMLHandler::characters( const QString& ch )
 
 bool XMLHandler::comment(const QString & ch)
 {
-    if (m_currentNode->nodeType() == Node::TEXT_NODE)
+    if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
     // ### handle exceptions
-    m_currentNode->addChild(m_doc->document()->createComment(new DOMStringImpl(ch.unicode(), ch.length())));
+    currentNode()->addChild(m_doc->document()->createComment(new DOMStringImpl(ch.unicode(), ch.length())));
     return true;
 }
 
 bool XMLHandler::processingInstruction(const QString &target, const QString &data)
 {
-    if (m_currentNode->nodeType() == Node::TEXT_NODE)
+    if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
     // ### handle exceptions
     ProcessingInstructionImpl *pi =
         m_doc->document()->createProcessingInstruction(target, new DOMStringImpl(data.unicode(), data.length()));
-    m_currentNode->addChild(pi);
+    currentNode()->addChild(pi);
     pi->checkStyleSheet();
     return true;
 }
@@ -278,10 +303,10 @@ bool XMLHandler::fatalError( const QXmlParseException& exception )
 bool XMLHandler::enterText()
 {
     NodeImpl *newNode = m_doc->document()->createTextNode("");
-    if (m_currentNode->addChild(newNode)) {
+    if (currentNode()->addChild(newNode)) {
         if (m_view && !newNode->attached())
             newNode->attach();
-        m_currentNode = newNode;
+        pushNode( newNode );
         return true;
     }
     else {
@@ -292,9 +317,7 @@ bool XMLHandler::enterText()
 
 void XMLHandler::exitText()
 {
-    NodeImpl* par = m_currentNode->parentNode();
-    if (par != 0)
-        m_currentNode = par;
+    popNode();
 }
 
 bool XMLHandler::attributeDecl(const QString &/*eName*/, const QString &/*aName*/, const QString &/*type*/,

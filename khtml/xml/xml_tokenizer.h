@@ -26,6 +26,7 @@
 
 #include <qxml.h>
 #include <qptrlist.h>
+#include <qptrstack.h>
 #include <qobject.h>
 #include "misc/loader_client.h"
 
@@ -86,10 +87,14 @@ public:
     unsigned long errorCol;
 
 private:
+    void pushNode( DOM::NodeImpl *node );
+    DOM::NodeImpl *popNode();
+    DOM::NodeImpl *currentNode() const;
+private:
     QString errorProt;
     DOM::DocumentPtr *m_doc;
     KHTMLView *m_view;
-    DOM::NodeImpl *m_currentNode;
+    QPtrStack<DOM::NodeImpl> m_nodes;
     DOM::NodeImpl *m_rootNode;
 
     enum State {
