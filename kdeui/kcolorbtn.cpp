@@ -137,7 +137,8 @@ void KColorButton::mouseReleaseEvent( QMouseEvent *e )
         repaint( false );
         emit changed( col );
     }
-    dragged = false; // no idea why this is needed...
+    else
+        dragged = false; // no idea why this is needed...
 }
 
 #include "kcolorbtn.moc"
