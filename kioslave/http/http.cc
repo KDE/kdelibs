@@ -50,6 +50,7 @@
 #include <ksock.h>
 #include <kurl.h>
 #include <kinstance.h>
+#include <kdebug.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
@@ -67,20 +68,24 @@ extern "C" {
 int main( int, char ** )
 {
   signal(SIGCHLD, KIOProtocol::sigchld_handler);
-//  signal(SIGSEGV, IOProtocol::sigsegv_handler);
+  //  signal(SIGSEGV, IOProtocol::sigsegv_handler);
 
   KInstance instance( "kio_http" );
+
+  kdebug( KDEBUG_INFO, 7103, "Starting");
 
   KIOConnection parent( 0, 1 );
 
   HTTPProtocol http( &parent );
   http.dispatchLoop();
+
+  kdebug( KDEBUG_INFO, 7103, "Done" );
 }
 
 char * trimLead (char *orig_string) {
   static unsigned int i=0; // I don't increment the string
-                           // so that this can be called over
-                           // and over
+  // so that this can be called over
+  // and over
   while ( (*(orig_string+i) == ' ') || (*(orig_string+i) == ' ') )
     i++;
   return orig_string+i;
@@ -124,12 +129,12 @@ const char *create_digest_auth (const char *header, const char *user, const char
       p += 7;
       while( p[i] != '"' ) i++;
       realm.assign( p, i );
-      fprintf(stderr, "Realm is :%s:\n", realm.c_str());
+      kdebug( KDEBUG_INFO, 7103, "Realm is :%s:", realm.c_str());
     } else if (strncasecmp(p, "algorith=\"", 10)==0) {
       p+=10;
       while (p[i] != '"' ) i++;
       algorithm.assign(p, i);
-      fprintf(stderr, "Algorithm is :%s:\n", algorithm.c_str());
+      kdebug( KDEBUG_INFO, 7103, "Algorithm is :%s:", algorithm.c_str());
     } else if (strncasecmp(p, "algorithm=\"", 11)==0) {
       p+=11;
       while (p[i] != '"') i++;
@@ -237,27 +242,27 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
    
 bool revmatch(const char *host, const char *nplist)
 {
-    const char *hptr = host + strlen( host ) - 1;
-    const char *nptr = nplist + strlen( nplist ) - 1;
-    const char *shptr = hptr;
+  const char *hptr = host + strlen( host ) - 1;
+  const char *nptr = nplist + strlen( nplist ) - 1;
+  const char *shptr = hptr;
     
-    while( nptr >= nplist ) {
-        if ( *hptr != *nptr ) {
-            hptr = shptr;
-            // Try to find another domain or host in the list
-            while ( --nptr>=nplist && *nptr!=',' && *nptr!=' ')
-                ;
-            while ( --nptr>=nplist && (*nptr==',' || *nptr==' '))
-                ;
-        } else {
-            if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ') {
-                return true;
-            }
-            hptr-=2;
-        }
+  while( nptr >= nplist ) {
+    if ( *hptr != *nptr ) {
+      hptr = shptr;
+      // Try to find another domain or host in the list
+      while ( --nptr>=nplist && *nptr!=',' && *nptr!=' ')
+	;
+      while ( --nptr>=nplist && (*nptr==',' || *nptr==' '))
+	;
+    } else {
+      if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ') {
+	return true;
+      }
+      hptr-=2;
     }
+  }
 
-    return false;
+  return false;
 }
 
 #ifdef DO_SSL
@@ -270,6 +275,7 @@ int verify_callback (int, X509_STORE_CTX *)
   return 1;
 }
 #endif
+
 
 /*****************************************************************************/
 
@@ -312,6 +318,7 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
   m_HTTPrev = HTTP_Unknown;
 }
 
+
 #ifdef DO_SSL
 void HTTPProtocol::initSSL() {
   m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
@@ -326,13 +333,14 @@ void HTTPProtocol::initSSL() {
   SSLeay_add_ssl_algorithms();
   ctx=SSL_CTX_new(meth);
   if (ctx == NULL) {
-    fprintf(stderr, "We've got a problem!\n");
+    kdebug( KDEBUG_INFO, 7103, "We've got a problem!");
     fflush(stderr);
   }
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
   hand=SSL_new(ctx);
 }
 #endif
+
 
 int HTTPProtocol::openStream() {
 #ifdef DO_SSL
@@ -351,21 +359,23 @@ int HTTPProtocol::openStream() {
   return true;
 }
 
+
 ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
 #ifdef DO_SSL
-	if (m_bUseSSL)
-		return SSL_write(hand, (char *)buf, nbytes);
+  if (m_bUseSSL)
+    return SSL_write(hand, (char *)buf, nbytes);
 #endif
-	int n;
-keeptrying:
-	if ((n = ::write(m_sock, buf, nbytes)) != (int)nbytes)
-	{
-		if (n == -1 && errno == EINTR)
-			goto keeptrying;
-	}
-	return n;
+  int n;
+ keeptrying:
+  if ((n = ::write(m_sock, buf, nbytes)) != (int)nbytes)
+    {
+      if (n == -1 && errno == EINTR)
+	goto keeptrying;
+    }
+  return n;
 }
+
 
 char *HTTPProtocol::gets (char *s, int size)
 {
@@ -382,6 +392,7 @@ char *HTTPProtocol::gets (char *s, int size)
   return s;
 }
 
+
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
   ssize_t ret;
@@ -397,10 +408,12 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   return ret;
 }
 
+
 bool HTTPProtocol::eof()
 {
   return m_bEOF;
 }
+
 
 /**
  * This function is responsible for opening up the connection to the remote
@@ -451,12 +464,12 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 #endif
       if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") ) {
         struct servent *sent = getservbyname("http", "tcp");
-if (sent) {
+	if (sent) {
 	  port = ntohs(sent->s_port);
 	} else
 	  port = DEFAULT_HTTP_PORT;
       } else {
-	fprintf(stderr, "Got a weird protocol (%s), assuming port is 80\n", _url.protocol().ascii()); fflush(stderr);
+	kdebug( KDEBUG_INFO, 7103, "Got a weird protocol (%s), assuming port is 80", _url.protocol().ascii()); fflush(stderr);
 	port = 80;
       }
   }
@@ -488,7 +501,7 @@ if (sent) {
   
   // do we still want a proxy after all that?
   if( do_proxy ) {
-    qDebug( "http_open 0");
+    kdebug( KDEBUG_INFO, 7103, "http_open 0");
     // yep... open up a connection to the proxy instead of our host
     if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
       error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
@@ -550,7 +563,7 @@ if (sent) {
   if ( _offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
     header += c_buffer;
-    qDebug( "kio_http : Range = %s", c_buffer);
+    kdebug( KDEBUG_INFO, 7103, "kio_http : Range = %s", c_buffer);
   }
 
   if ( _reload ) { /* No caching for reload */
@@ -600,7 +613,7 @@ if (sent) {
 
   // the proxy might need authorization of it's own. do that now
   if( do_proxy ) {
-    qDebug( "http_open 3");
+    kdebug( KDEBUG_INFO, 7103, "http_open 3");
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
       if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
 	header += create_basic_auth("Proxy-authorization", m_strProxyUser, m_strProxyPass);
@@ -624,6 +637,7 @@ if (sent) {
 
   return true;
 }
+
 
 /**
  * This function will read in the return header from the server.  It will
@@ -707,7 +721,7 @@ bool HTTPProtocol::readHeader()
 
       // Unauthorized access
       if ((strncmp(buffer + 9, "401", 3) == 0) || (strncmp(buffer + 9, "407", 3) == 0)) {
-	  unauthorized = true;
+	unauthorized = true;
       }
       else if (buffer[9] == '4' || buffer[9] == '5') {
 	// Tell that we will only get an error page here.
@@ -813,6 +827,7 @@ bool HTTPProtocol::readHeader()
   return true;
 }
 
+
 void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
 {
   // Identity is the same as no encoding
@@ -828,7 +843,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
     if ( m_cmd != CMD_COPY )
       m_iSize = 0;
   } else {
-    fprintf(stderr, "Unknown encoding encountered.  Please write code.\n");
+    kdebug( KDEBUG_INFO, 7103, "Unknown encoding encountered.  Please write code.");
     fflush(stderr);
     abort();
   }
@@ -871,8 +886,8 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     f = AUTH_Digest;
     strAuth = strdup(p);
   } else {
-    fprintf(stderr, "Invalid Authorization type requested\n");
-    fprintf(stderr, "buffer: %s\n", p);
+    kdebug( KDEBUG_INFO, 7103, "Invalid Authorization type requested");
+    kdebug( KDEBUG_INFO, 7103, "buffer: %s", p);
     fflush(stderr);
     abort();
   }
@@ -901,6 +916,7 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     m_strAuthString = strAuth;
   }
 }
+
 
 void HTTPProtocol::http_close()
 {
@@ -958,6 +974,7 @@ const char *HTTPProtocol::getUserAgentString ()
   return strdup(user_agent.ascii());
 }
 
+
 /**
  * This is one of the "big" functions in an ioslave -- slotGet() is
  * responsible for "getting" data from the remote server.  In the case
@@ -1008,6 +1025,7 @@ void HTTPProtocol::slotGet( const char *_url )
 
   m_cmd = CMD_NONE;
 }
+
 
 /**
  * This is one of the other "big" functions in an ioslave -- slotPut()
@@ -1064,6 +1082,7 @@ void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
       }
   }
 }
+
 
 void HTTPProtocol::decodeChunked()
 {
@@ -1128,6 +1147,7 @@ void HTTPProtocol::decodeChunked()
   big_buffer.detach();
 }
 
+
 void HTTPProtocol::decodeGzip()
 {
 #ifdef DO_GZIP
@@ -1171,6 +1191,7 @@ void HTTPProtocol::decodeGzip()
 #endif
 }
 
+
 size_t HTTPProtocol::sendData( HTTPIOJob *job )
 {
   // This was rendered necesary b/c
@@ -1196,6 +1217,7 @@ size_t HTTPProtocol::sendData( HTTPIOJob *job )
   return sz;
 }
 
+
 void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
   QStringList lst;
@@ -1203,6 +1225,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   
   slotCopy( lst, _dest);
 }
+
 
 void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 {
@@ -1218,11 +1241,11 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
   }
 
   if ( KURL::split( _dest ).count() != 1 )
-  {
-    error( ERR_NOT_FILTER_PROTOCOL, "http" );
-    m_cmd = CMD_NONE;
-    return;
-  }
+    {
+      error( ERR_NOT_FILTER_PROTOCOL, "http" );
+      m_cmd = CMD_NONE;
+      return;
+    }
   
   QString exec = KProtocolManager::self().executable( udest.protocol() );
 
@@ -1302,12 +1325,12 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
       if ( !http_open( u1, 0, false, offset ) ) {
 	m_bIgnoreErrors = false;
 	/* if ( !m_bGUI )
-	{
-          http_close();
-	  releaseError();
-	  m_cmd = CMD_NONE;
-	  return;
-	} */
+	   {
+	   http_close();
+	   releaseError();
+	   m_cmd = CMD_NONE;
+	   return;
+	   } */
 	
 	QString tmp = "Could not read\n";
 	tmp += *fit;
@@ -1358,7 +1381,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	  if ( job.hasError() ) {
 	    int currentError = job.errorId();
 	    
-	    qDebug( "kio_http : ################# COULD NOT PUT %d",currentError);
+	    kdebug( KDEBUG_INFO, 7103, "kio_http : ################# COULD NOT PUT %d",currentError);
 	    if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED ) {
 	      // Should we skip automatically ?
 	      if ( auto_skip ) {
@@ -1499,6 +1522,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
   m_cmd = CMD_NONE;
 }
 
+
 /**
  * This function is called in response to a client KIOJob::data(..)
  * request.  In practice, this is during a client "put" event.  The
@@ -1515,24 +1539,28 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
  */
 void HTTPProtocol::slotData(void *_p, int _len)
 {
-	// this *should* be for a PUT method.  make sure
-	if (m_cmd != CMD_PUT) {
-		abort();
-		return;
-	}
+  // this *should* be for a PUT method.  make sure
 
-	// good.  now send our data to the remote server
-	if (write(_p, _len) == -1) {
-		error(ERR_CONNECTION_BROKEN, m_state.url.host());
-		return;
-	}
+  if (m_cmd != CMD_PUT) {
+    abort();
+    return;
+  }
+  
+  // good.  now send our data to the remote server
+  if (write(_p, _len) == -1) {
+    error(ERR_CONNECTION_BROKEN, m_state.url.host());
+    return;
+  }
 
-	if ( readHeader() )
-	  slotDataEnd();
-        http_close();
-        finished();
-	m_cmd = CMD_NONE;
+  if ( readHeader() ) {
+    slotDataEnd();
+  }
+
+  http_close();
+  finished();
+  m_cmd = CMD_NONE;
 }
+
 
 /**
  * This function is our "receive" function.  It is responsible for
@@ -1543,149 +1571,153 @@ void HTTPProtocol::slotData(void *_p, int _len)
  */
 void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 {
-        KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
+  KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
 
-	// Check if we need to decode the data.
-	// If we are in copy mode the use only transfer decoding.
-	bool decode = !m_qTransferEncodings.isEmpty() ||
-	              ( !m_qContentEncodings.isEmpty() &&
-                        m_cmd != CMD_COPY );
+  // Check if we need to decode the data.
+  // If we are in copy mode the use only transfer decoding.
+  bool decode = !m_qTransferEncodings.isEmpty() ||
+    ( !m_qContentEncodings.isEmpty() &&
+      m_cmd != CMD_COPY );
 
-	bool useMD5 = !m_sContentMD5.isEmpty();
+  bool useMD5 = !m_sContentMD5.isEmpty();
 
-	// we are getting the following URL
-	gettingFile(m_state.url.url());
+  // we are getting the following URL
+  gettingFile(m_state.url.url());
 
-	totalSize( m_iSize );
-	// get the starting time.  this is used later to compute the transfer
-	// speed.
-	time_t t_start = time(0L);
-	time_t t_last = t_start;
+  totalSize( m_iSize );
+  // get the starting time.  this is used later to compute the transfer
+  // speed.
+  time_t t_start = time(0L);
+  time_t t_last = t_start;
 
-	long nbytes = 0, sz = 0;
-	char buffer[2048];
+  long nbytes = 0, sz = 0;
+  char buffer[2048];
 #ifdef DO_MD5
-	MD5_CTX context;
-	MD5_Init(&context);
+  MD5_CTX context;
+  MD5_Init(&context);
 #endif
-	// this is the main incoming loop.  gather everything while we can...
-	while (!eof()) {
-		// 2048 bytes seems to be a nice number of bytes to receive
-		// at a time
-		nbytes = read(buffer, 2048);
+  // this is the main incoming loop.  gather everything while we can...
+  while (!eof()) {
+    // 2048 bytes seems to be a nice number of bytes to receive
+    // at a time
+    nbytes = read(buffer, 2048);
 
-		// make sure that this wasn't an error, first
-		if (nbytes == -1) {
-			// erg.  oh well, log an error and bug out
-			error(ERR_CONNECTION_BROKEN, m_state.url.host());
-			m_cmd = CMD_NONE;
-			break;
-		}
+    // make sure that this wasn't an error, first
+    if (nbytes == -1) {
+      // erg.  oh well, log an error and bug out
+      error(ERR_CONNECTION_BROKEN, m_state.url.host());
+      m_cmd = CMD_NONE;
+      break;
+    }
 
-		// i guess that nbytes == 0 isn't an error.. but we certainly
-		// won't work with it!
-		if (nbytes == 0)
-			continue;
+    // i guess that nbytes == 0 isn't an error.. but we certainly
+    // won't work with it!
+    if (nbytes == 0) {
+      continue;
+    }
 
-		// check on the encoding.  can we get away with it as is?
-		if ( !decode ) {
+    // check on the encoding.  can we get away with it as is?
+    if ( !decode ) {
 #ifdef DO_MD5
-			if (useMD5)
-				MD5_Update(&context, (const unsigned char*)buffer, nbytes);
+      if (useMD5) {
+	MD5_Update(&context, (const unsigned char*)buffer, nbytes);
+      }
 #endif
-			// yep, let the world know that we have some data
-			ioJob->data(buffer, nbytes);
-			sz += nbytes;
-			processedSize( sz );
-			time_t t = time( 0L );
-			if ( t - t_last >= 1 )
-			{
-			  speed( sz / ( t - t_start ) );
-			  t_last = t;
-			}
-		} else {
-			// nope.  slap this all onto the end of a big buffer
-			// for later use
-			unsigned int old_len = 0;
-			old_len = big_buffer.size();
-			big_buffer.resize(old_len + nbytes);
-			memcpy(big_buffer.data() + old_len, buffer, nbytes);
-		}
-	}
+      // yep, let the world know that we have some data
+      ioJob->data(buffer, nbytes);
+      sz += nbytes;
+      processedSize( sz );
+      time_t t = time( 0L );
+      if ( t - t_last >= 1 ) {
+	speed( sz / ( t - t_start ) );
+	t_last = t;
+      }
+    } else {
+      // nope.  slap this all onto the end of a big buffer
+      // for later use
+      unsigned int old_len = 0;
+      old_len = big_buffer.size();
+      big_buffer.resize(old_len + nbytes);
+      memcpy(big_buffer.data() + old_len, buffer, nbytes);
+    }
+  }
 
-	// if we have something in big_buffer, then we know that we have
-	// encoded data.  of course, we need to do something about this
-	if (!big_buffer.isNull()) {
-		char *enc;
-		// decode all of the transfer encodings
-		while (!m_qTransferEncodings.isEmpty())	{
-			enc = m_qTransferEncodings.pop();
-			if (!enc)
-				break;
-			if ( strstr(enc, "gzip") )
-				decodeGzip();
-			else if (strncasecmp(enc, "chunked", 7)==0) {
-				decodeChunked();
-			}
-		}
+  // if we have something in big_buffer, then we know that we have
+  // encoded data.  of course, we need to do something about this
+  if (!big_buffer.isNull()) {
+    char *enc;
+    // decode all of the transfer encodings
+    while (!m_qTransferEncodings.isEmpty()) {
+      enc = m_qTransferEncodings.pop();
+      if (!enc)
+	break;
+      if ( strstr(enc, "gzip") ) {
+	decodeGzip();
+      } else if (strncasecmp(enc, "chunked", 7)==0) {
+	decodeChunked();
+      }
+    }
 
-		// From HTTP 1.1 Draft 6:
-		// The MD5 digest is computed based on the content of the entity-body,
-		// including any content-coding that has been applied, but not including
-		// any transfer-encoding applied to the message-body. If the message is
-		// received with a transfer-encoding, that encoding MUST be removed
-		// prior to checking the Content-MD5 value against the received entity.
+    // From HTTP 1.1 Draft 6:
+    // The MD5 digest is computed based on the content of the entity-body,
+    // including any content-coding that has been applied, but not including
+    // any transfer-encoding applied to the message-body. If the message is
+    // received with a transfer-encoding, that encoding MUST be removed
+    // prior to checking the Content-MD5 value against the received entity.
 #ifdef DO_MD5
-		MD5_Update(&context, (const unsigned char*)big_buffer.data(),
-		          big_buffer.size());
+    MD5_Update(&context, (const unsigned char*)big_buffer.data(),
+	       big_buffer.size());
 #endif
 		
-		// now decode all of the content encodings
-		while (!m_qContentEncodings.isEmpty()) {
-			enc = m_qContentEncodings.pop();
-			if (!enc)
-				break;
-			if ( strstr(enc, "gzip") )
-				decodeGzip();
-			else if (strncasecmp(enc, "chunked", 7)==0) {
-				decodeChunked();
-			}
-		}
-		sz = sendData(job);
-	}
+    // now decode all of the content encodings
+    while (!m_qContentEncodings.isEmpty()) {
+      enc = m_qContentEncodings.pop();
+      if (!enc)
+	break;
+      if ( strstr(enc, "gzip") ) {
+	decodeGzip();
+      } else if (strncasecmp(enc, "chunked", 7)==0) {
+	decodeChunked();
+      }
+    }
+    sz = sendData(job);
+  }
 
-	// this block is all final MD5 stuff
+  // this block is all final MD5 stuff
 #ifdef DO_MD5
-	char buf[16], *enc_digest;
-	MD5_Final((unsigned char*)buf, &context); // Wrap everything up
-	enc_digest = base64_encode_string(buf, 16);
-	if ( useMD5 ) {
-		int f;
-		if ((f = m_sContentMD5.find("=")) <= 0)
-			f = m_sContentMD5.length();
+  char buf[16], *enc_digest;
+  MD5_Final((unsigned char*)buf, &context); // Wrap everything up
+  enc_digest = base64_encode_string(buf, 16);
+  if ( useMD5 ) {
+    int f;
+    if ((f = m_sContentMD5.find("=")) <= 0) {
+      f = m_sContentMD5.length();
+    }
 
-		if (m_sContentMD5.left(f) != enc_digest) {
-			fprintf(stderr, "MD5 checksum mismatch : got %s , calculated %s\n",m_sContentMD5.left(f).data(),enc_digest);
-			error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
-		} else {
-			fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
-		}
-	} else 
-		fprintf(stderr, "No MD5 checksum found.  Too Bad.\n");
+    if (m_sContentMD5.left(f) != enc_digest) {
+      kdebug( KDEBUG_INFO, 7103, "MD5 checksum mismatch : got %s , calculated %s",m_sContentMD5.left(f).data(),enc_digest);
+      error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
+    } else {
+      kdebug( KDEBUG_INFO, 7103, "MD5 checksum present, and hey it matched what I calculated.");
+    }
+  } else {
+    kdebug( KDEBUG_INFO, 7103, "No MD5 checksum found.  Too Bad.");
+  }
 
-	fflush(stderr);
-	free(enc_digest);
+  fflush(stderr);
+  free(enc_digest);
 #endif
 
-	// FINALLY, we compute our final speed and let everybody know that we
-	// are done
-	t_last = time(0L);
-	if (t_last - t_start)
-	  speed(sz / (t_last - t_start));
-	else;
-	  speed(0);
+  // FINALLY, we compute our final speed and let everybody know that we
+  // are done
+  t_last = time(0L);
+  if (t_last - t_start) {
+    speed(sz / (t_last - t_start));
+  } else {
+    speed(0);
+  }
 
-	m_cmd = CMD_NONE;
+  m_cmd = CMD_NONE;
 }
 
 void HTTPProtocol::jobError( int _errid, const char *_txt )
