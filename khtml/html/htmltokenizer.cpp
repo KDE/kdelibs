@@ -1069,6 +1069,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     lang = lang.lower();
                     if( !lang.contains("javascript") &&
                         !lang.contains("ecmascript") &&
+                        !lang.contains("livescript") &&
                         !lang.contains("jscript") )
                         javascript = false;
                 } else {
@@ -1079,6 +1080,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         lang = lang.lower();
                         if( !lang.contains("javascript") &&
                             !lang.contains("ecmascript") &&
+                            !lang.contains("livescript") &&
                             !lang.contains("jscript") )
                             javascript = false;
                     }
