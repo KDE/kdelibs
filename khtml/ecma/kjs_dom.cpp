@@ -64,6 +64,8 @@ using namespace KJS;
   dispatchEvent		DOMNode::DispatchEvent	DontDelete|Function 1
 # IE extensions
   contains	DOMNode::Contains		DontDelete|Function 1
+# "DOM level 0" (from Gecko DOM reference; also in WinIE)
+  item          DOMNode::Item           DontDelete|Function 1
 @end
 */
 DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
@@ -515,7 +517,10 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 	    bool retval = other.handle()->isAncestor(impl);
 	    return Boolean(retval);
 	}
+        return Undefined();
     }
+    case DOMNode::Item:
+      return getDOMNode(exec, node.childNodes().item(static_cast<unsigned long>(args[0].toNumber(exec))));
   }
 
   return Undefined();

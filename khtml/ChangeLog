@@ -1,3 +1,7 @@
+2003-10-29  David Faure  <faure@kde.org>
+
+	* ecma/kjs_dom.cpp: Patch from Darin Adler to implement Node.item.
+
 2003-10-29  Leo Savernik <l.savernik@aon.at>
 
 	* khtml_part.cpp (khtmlMousePressEvent): Fixed occasional selection
