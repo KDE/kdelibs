@@ -234,5 +234,18 @@ scripts that have already been run on this config file. Just remove your
 file's entry, 'make install', and kconf_update will happily run your script
 again, without you having to increase the version number.
 
+If you want to know what kconf_update has been up to lately, have a look
+at $KDEHOME/share/apps/kconf_update/update.log
+
+
+Common Problems
+===============
+
+* kconf_update refuses to update an entry
+If you change the value of an entry without changing the key or file,
+make sure to tell kconf_update that it should overwrite the old entry
+by adding "Options=overwrite". 
+
+
 Have fun,
 Waldo
