@@ -10,21 +10,20 @@ int main( int argc, char** argv )
 
     QByteArray data;
 
-/*
-debug("sending configure to object KonquerorIface in konqueror");
+debug("sending reparseConfiguration to object KonquerorIface in konqueror");
        QByteArray snd;
        QByteArray rcv;
        QCString _type_;
-       kapp->dcopClient()->call( "konqueror", "KonquerorIface", "configure()", snd, _type_, rcv );
+       kapp->dcopClient()->call( "konqueror", "KonquerorIface", "reparseConfiguration()", snd, _type_, rcv );
        debug(_type_);
        if( _type_ != "void" ) debug("void expected, %s returned",_type_.data());
 
+/*
 debug("sending configure to object KonquerorIface in konqueror");
     if (kapp->dcopClient()->send( "konqueror", "KonquerorIface", "configure()", data ))
       debug("ok");
     else
       debug("ko");
-*/
 
 /// BROADCAST
 debug("sending databaseChanged to object ksycoca in all apps");
@@ -32,4 +31,5 @@ debug("sending databaseChanged to object ksycoca in all apps");
       debug("ok");
     else
       debug("ko");
+*/
 }
