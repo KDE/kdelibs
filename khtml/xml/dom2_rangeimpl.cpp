@@ -820,14 +820,17 @@ DOMString RangeImpl::toString( int &exceptioncode )
            n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
 
             DOMString str;
-            if (static_cast<TextImpl *>(n)->string())
-               str = static_cast<TextImpl *>(n)->string()->copy();
+            str = static_cast<TextImpl *>(n)->string();
+	    if( n == m_endContainer || n == m_startContainer)	    
+	        str = str.copy();  //copy if we are going to modify.
+
             if (n == m_endContainer)
                 str.truncate(m_endOffset);
             if (n == m_startContainer)
                 str.remove(0,m_startOffset);
-            text += str;
-            if (n == m_endContainer)
+	    text += str;
+
+	    if (n == m_endContainer)
                 break;
         }
         else if (n->parentNode() == m_endContainer && !n->nextSibling()) {

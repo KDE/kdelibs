@@ -742,8 +742,14 @@ public:
    */
   virtual QString selectedText() const;
 
-  QString selectedTextAsHTML() const;
-  QString selectedTextAsKWordText() const;
+  /**
+   * Return the text the user has marked.  This is guaranteed to be valid xml,
+   * and to contain the <html> and <body> tags.
+   *
+   * @since 3.4
+   */
+  virtual QString selectedTextAsHTML() const;
+
   /**
    * Returns the selected part of the HTML.
    */

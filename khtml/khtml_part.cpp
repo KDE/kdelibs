@@ -3200,20 +3200,27 @@ QString KHTMLPart::selectedTextAsHTML() const
 QString KHTMLPart::selectedText() const
 {
   bool hasNewLine = true;
+  bool seenTDTag = false;
   QString text;
   DOM::Node n = d->m_selectionStart;
   while(!n.isNull()) {
       if(n.nodeType() == DOM::Node::TEXT_NODE && n.handle()->renderer()) {
-        QString str = n.nodeValue().string();
-        hasNewLine = false;
-        if(n == d->m_selectionStart && n == d->m_selectionEnd)
-          text = str.mid(d->m_startOffset, d->m_endOffset - d->m_startOffset);
-        else if(n == d->m_selectionStart)
-          text = str.mid(d->m_startOffset);
-        else if(n == d->m_selectionEnd)
-          text += str.left(d->m_endOffset);
-        else
-          text += str;
+        QString str = n.nodeValue().string().stripWhiteSpace();
+	if(!str.isEmpty()) {
+          if(seenTDTag) {
+	    text += "  ";
+	    seenTDTag = false;
+	  }
+          hasNewLine = false;
+          if(n == d->m_selectionStart && n == d->m_selectionEnd)
+            text = str.mid(d->m_startOffset, d->m_endOffset - d->m_startOffset);
+          else if(n == d->m_selectionStart)
+            text = str.mid(d->m_startOffset);
+          else if(n == d->m_selectionEnd)
+            text += str.left(d->m_endOffset);
+          else
+            text += str;
+	}
       }
       else {
         // This is our simple HTML -> ASCII transformation:
@@ -3225,6 +3232,7 @@ QString KHTMLPart::selectedText() const
             break;
 
           case ID_TD:
+	    break;
           case ID_TH:
           case ID_HR:
           case ID_OL:
@@ -3250,7 +3258,7 @@ QString KHTMLPart::selectedText() const
           case ID_H6:
             if (!hasNewLine)
                text += "\n";
-            text += "\n";
+//            text += "\n";
             hasNewLine = true;
             break;
         }
@@ -3264,6 +3272,8 @@ QString KHTMLPart::selectedText() const
         unsigned short id = n.elementId();
         switch(id) {
           case ID_TD:
+	    seenTDTag = true; //Add two spaces after a td if then followed by text.
+	    break;
           case ID_TH:
           case ID_HR:
           case ID_OL:
@@ -3275,6 +3285,7 @@ QString KHTMLPart::selectedText() const
           case ID_PRE:
           case ID_BLOCKQUOTE:
           case ID_DIV:
+	    seenTDTag = false;
             if (!hasNewLine)
                text += "\n";
             hasNewLine = true;
@@ -3289,7 +3300,7 @@ QString KHTMLPart::selectedText() const
           case ID_H6:
             if (!hasNewLine)
                text += "\n";
-            text += "\n";
+//            text += "\n";
             hasNewLine = true;
             break;
         }
