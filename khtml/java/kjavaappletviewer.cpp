@@ -21,8 +21,8 @@
 
 #ifdef KDE_USE_FINAL
 #undef Always
-#include <qdir.h>
 #endif
+#include <qdir.h>
 #include <qtable.h>
 #include <qpair.h>
 #include <qguardedptr.h>
@@ -262,7 +262,13 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     }
     if (codebase.isEmpty ())
         codebase = khtml_codebase;
-
+    if (baseurl.isEmpty ()) {
+        // not embeded in khtml
+        QString pwd = QDir().absPath ();
+        if (!pwd.endsWith (QChar (QDir::separator ())))
+            pwd += QDir::separator ();
+        baseurl = KURL (KURL (pwd), codebase).url ();
+    }
     if (width > 0 && height > 0) {
         m_view->resize (width, height);
         applet->setSize( QSize( width, height ) );
