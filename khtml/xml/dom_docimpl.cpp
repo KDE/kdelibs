@@ -101,14 +101,14 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
         return false;
 }
 
-DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &/*qualifiedName*/, const DOMString &/*publicId*/, 
+DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &/*qualifiedName*/, const DOMString &/*publicId*/,
                                                              const DOMString &/*systemId*/, int &/*exceptioncode*/ )
 {
     // ## implement
     return 0;
 }
 
-DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &/*namespaceURI*/, const DOMString &/*qualifiedName*/, 
+DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &/*namespaceURI*/, const DOMString &/*qualifiedName*/,
                                                      const DOMString &/*doctype*/, int &/*exceptioncode*/ )
 {
     // ## implement
@@ -841,6 +841,7 @@ void DocumentImpl::close(  )
 {
     for ( RenderObject* o = m_render; o; o = o->lastChild() )
         o->setParsing( false );
+
     if ( m_render )
         m_render->close();
 
@@ -859,7 +860,7 @@ void DocumentImpl::write( const QString &text )
         if(m_tokenizer)
             m_tokenizer->write(text, false);
 
-        if (m_view->part()->jScript())
+        if (m_view && m_view->part()->jScript())
             m_view->part()->jScript()->appendSourceFile(m_url,text);
     }
     else {
