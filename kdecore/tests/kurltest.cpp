@@ -91,6 +91,9 @@ int main(int argc, char *argv[])
   KURL url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
   check("KURL::prettyURL()", url15581.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
   check("KURL::url()", url15581.url(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html");
+  KURL url15582("http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
+  check("KURL::prettyURL()", url15582.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
+  check("KURL::url()", url15582.url(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
 
   KURL carsten;
   carsten.setPath("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
@@ -174,7 +177,7 @@ int main(int argc, char *argv[])
   // WABA: The following tests are to test the handling of relative URLs as
   //       found on web-pages.
 
-  KURL waba1( "http://www.website.com/directory/" );
+  KURL waba1( "http://www.website.com/directory/?hello#ref" );
   {
      KURL waba2( waba1, "relative.html");
      check("http: Relative URL, single file", waba2.url(), "http://www.website.com/directory/relative.html");
