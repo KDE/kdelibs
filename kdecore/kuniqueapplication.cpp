@@ -106,7 +106,7 @@ KUniqueApplication::start()
   }
   DCOPClient *dc;
   int fd[2];
-  char result;
+  signed char result;
   if (0 > pipe(fd))
   {
      kdError() << "KUniqueApplication: pipe() failed!" << endl;
