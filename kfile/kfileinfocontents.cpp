@@ -73,6 +73,7 @@ KFileInfoContents::~KFileInfoContents()
 {
     delete [] sortedArray;
     delete nameList;
+    delete sig;
 }
 
 
