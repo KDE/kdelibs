@@ -232,7 +232,6 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             scroll = firstChild()->style()->backgroundAttachment();
 	}
 
-
 	int cx = _tx;
 	int cy = clipy;
 	int cw = w;
@@ -259,9 +258,10 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         if( !scroll ) {
             QRect r = viewRect();
             //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
+            cy += r.y();
+            cx += r.x();
             sx = cx - r.x();
             sy = cy - r.y();
-
         }
 	p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
     }
@@ -271,12 +271,9 @@ void RenderBox::printBorder(QPainter *p, int _tx, int _ty, int w, int h)
 {
     int bottom = _ty + h;
     int right = _tx + w;
-    if(m_style->borderRightWidth() %2 )
-	right -= 1;
-    if(m_style->borderBottomWidth() %2 )
-	bottom -= 1;
-    
-    
+    right -= (m_style->borderRightWidth() & 1);
+    bottom -= (m_style->borderBottomWidth() & 1);
+
     QColor c;
     if(m_style->borderTopStyle() != BNONE) {
         c = m_style->borderTopColor();
