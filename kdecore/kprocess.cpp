@@ -670,14 +670,14 @@ void KProcess::commClose()
           while (b_out || b_err) {
             // * If the process is still running we block until we
             // receive data. (p_timeout = 0, no timeout)
-            // * If the process has already exited, we only check 
-            // the available data, we don't wait for more. 
+            // * If the process has already exited, we only check
+            // the available data, we don't wait for more.
             // (p_timeout = &timeout, timeout immediately)
             struct timeval timeout;
             timeout.tv_sec = 0;
-            timeout.tv_usec = 0; 
+            timeout.tv_usec = 0;
             struct timeval *p_timeout = runs ? 0 : &timeout;
-            
+
             FD_ZERO(&rfds);
             if (b_out)
               FD_SET(out[0], &rfds);
@@ -691,14 +691,14 @@ void KProcess::commClose()
             if (b_out && FD_ISSET(out[0], &rfds)) {
               int ret = 1;
               while (ret > 0) ret = childOutput(out[0]);
-              if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+              if ((ret == -1 && errno != EAGAIN) || ret == 0)
                  b_out = false;
             }
 
             if (b_err && FD_ISSET(err[0], &rfds)) {
               int ret = 1;
               while (ret > 0) ret = childError(err[0]);
-              if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+              if ((ret == -1 && errno != EAGAIN) || ret == 0)
                  b_err = false;
             }
           }
@@ -857,7 +857,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 QString KShellProcess::quote(const QString &arg)
 {
     QString res = arg;
-    res.replace(QRegExp(QChar('\'')),
+    res.replace(QRegExp(QString::fromLatin1("\'")),
                 QString::fromLatin1("'\"'\"'"));
     res.prepend('\'');
     res.append('\'');
