@@ -1,26 +1,30 @@
-#include "main.h"
+// $Id$
 
-#include <kio_rename_dlg.h>
-#include <kio_skip_dlg.h>
-
-#include <signal.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <errno.h>
+#include <signal.h>
+
+#include <kio_rename_dlg.h>
+#include <kio_skip_dlg.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
 
+#include "main.h"
+
+#define string FBAUC
+
 int check( Connection *_con );
 
-void sig_handler( int );
-void sig_handler2( int );
-
+extern "C" {
+	void sigalrm_handler(int);
+}
 
 int main( int, char ** )
 {
-  signal(SIGCHLD,sig_handler);
-  signal(SIGSEGV,sig_handler2);
+  signal(SIGCHLD, IOProtocol::sigchld_handler);
+  signal(SIGSEGV, IOProtocol::sigsegv_handler);
 
   //  KProtocolManager manager;
 
@@ -34,39 +38,12 @@ int main( int, char ** )
   debug( "kio_ftp : Done" );
 }
 
-
-void sig_handler2( int )
-{
-  debug( "kio_ftp : ###############SEG FTP#############" );
-  exit(1);
-}
-
-void sig_handler( int )
-{
-  int pid;
-  int status;
-    
-  while( 1 )
-  {
-    pid = waitpid( -1, &status, WNOHANG );
-    if ( pid <= 0 )
-    {
-      // Reinstall signal handler, since Linux resets to default after
-      // the signal occured ( BSD handles it different, but it should do
-      // no harm ).
-      signal( SIGCHLD, sig_handler );
-      return;
-    }
-  }
-}
-
-
 /*
  * We'll use an alarm that will set this flag when transfer has timed out
  */
 char sigbreak = 0;
 
-void sig_alarm(int )
+void sigalrm_handler(int)
 {
   sigbreak = 1;
 }            
@@ -75,7 +52,7 @@ void setup_alarm(unsigned int timeout)
 {
   sigbreak = 0;
   alarm(timeout);
-  signal(SIGALRM, sig_alarm);
+  signal(SIGALRM, sigalrm_handler);
 }
 
 
@@ -254,8 +231,8 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
     b_user = true;
 
   // Get a list of all source files and directories
-  list<Copy> files;
-  list<CopyDir> dirs;
+  QValueList<Copy> files;
+  QValueList<CopyDir> dirs;
   int size = 0;
   debug( "kio_ftp : Iterating" );
 
@@ -299,9 +276,9 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
   
     if ( !b_error ) {
       // Iterate over all subdirectories
-      list<CopyDir>::iterator it = dirs.begin();
+      QValueList<CopyDir>::iterator it = dirs.begin();
       for( ; it != dirs.end() && !b_error; it++ )
-	if ( buff2.st_ino == it->m_ino )
+	if ( buff2.st_ino == (*it).m_ino )
 	  b_error = true;
     }
 
@@ -334,8 +311,8 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
-  totalFiles( files.size() );
-  totalDirs( dirs.size() );
+  totalFiles( files.count() );
+  totalDirs( dirs.count() );
   
   int processed_files = 0;
   int processed_dirs = 0;
@@ -347,26 +324,26 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
   // Strip '/'
   QString tmp1_stripped = udest.path( -1 );
 
-  list<CopyDir>::iterator dit = dirs.begin();
+  QValueList<CopyDir>::Iterator dit = dirs.begin();
   for( ; dit != dirs.end(); dit++ ) {
-    QString tmp2 = dit->m_strRelDest.c_str();
+    QString tmp2 = (*dit).m_strRelDest;
     if ( _rename )
-      dit->m_strRelDest = tmp1_stripped;
+      (*dit).m_strRelDest = tmp1_stripped;
     else
-      dit->m_strRelDest = tmp1;
-    dit->m_strRelDest += tmp2;
+      (*dit).m_strRelDest = tmp1;
+    (*dit).m_strRelDest += tmp2;
   }
-  list<Copy>::iterator fit = files.begin();
+  QValueList<Copy>::Iterator fit = files.begin();
   for( ; fit != files.end(); fit++ ) {
-    string tmp2 = fit->m_strRelDest;
-    if ( _rename ) // !!! && fit->m_strRelDest == "" )
-      fit->m_strRelDest = tmp1_stripped;
+    QString tmp2 = (*fit).m_strRelDest;
+    if ( _rename ) // !!! && (*fit).m_strRelDest == "" )
+      (*fit).m_strRelDest = tmp1_stripped;
     else
-      fit->m_strRelDest = tmp1;
-    fit->m_strRelDest += tmp2;
+      (*fit).m_strRelDest = tmp1;
+    (*fit).m_strRelDest += tmp2;
   }
   
-  debug( "kio_ftp : Destinations ok %s", dest.data() );
+  qDebug( "kio_ftp : Destinations ok %s", dest.data() );
 
   /*****
    * Make directories
@@ -386,7 +363,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       job.clearError();
 
       KURL ud( udest );
-      ud.setPath( dit->m_strRelDest.c_str() );
+      ud.setPath( (*dit).m_strRelDest);
       QString d = ud.url();
 
       // Is this URL on the skip list ?
@@ -415,7 +392,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       
       // debug( "kio_ftp : Making remote dir %s", d );
       // Create the directory
-      job.mkdir( d.data(), dit->m_access );
+      job.mkdir( d.data(), (*dit).m_access );
       while( !job.hasFinished() )
 	job.dispatch();
 
@@ -437,11 +414,11 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	  }
 
 	  /* RenameDlg_Mode m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE );
-	  if ( dirs.size() > 1 )
+	  if ( dirs.count() > 1 )
 	    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE ); */
 	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
 	  QString tmp2 = udest.url(), n;
-	  RenameDlg_Result r = open_RenameDlg( dit->m_strAbsSource.c_str(), tmp2, m, n );
+	  RenameDlg_Result r = open_RenameDlg( (*dit).m_strAbsSource, tmp2, m, n );
 	  if ( r == R_CANCEL ) {
 	    ftp.ftpDisconnect();
 	    error( ERR_USER_CANCELED, "" );
@@ -457,19 +434,19 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	    ///////
 	    // Replace old path with tmp3 
 	    ///////
-	    list<CopyDir>::iterator dit2 = dit;
+	    QValueList<CopyDir>::Iterator dit2 = dit;
 	    // Change the current one and strip the trailing '/'
-	    dit2->m_strRelDest = u.path( -1 );
+	    (*dit2).m_strRelDest = u.path( -1 );
 	    // Change the name of all subdirectories
 	    dit2++;
 	    for( ; dit2 != dirs.end(); dit2++ )
-	      if ( strncmp(dit2->m_strRelDest.c_str(), old_path, old_path.length())==0 )
-		dit2->m_strRelDest.replace( 0, old_path.length(), tmp3 );
+	      if ( strncmp((*dit2).m_strRelDest, old_path, old_path.length())==0 )
+		(*dit2).m_strRelDest.replace( 0, old_path.length(), tmp3 );
 	    // Change all filenames
-	    list<Copy>::iterator fit2 = files.begin();
+	    QValueList<Copy>::Iterator fit2 = files.begin();
 	    for( ; fit2 != files.end(); fit2++ )
-	      if ( strncmp( fit2->m_strRelDest.c_str(), old_path, old_path.length() ) == 0 )
-		fit2->m_strRelDest.replace( 0, old_path.length(), tmp3 );
+	      if ( strncmp( (*fit2).m_strRelDest, old_path, old_path.length() ) == 0 )
+		(*fit2).m_strRelDest.replace( 0, old_path.length(), tmp3 );
 	    // Dont clear error => we will repeat the current command
 	  } else if ( r == R_SKIP ) {
 	    // Skip all files and directories that start with 'old_url'
@@ -539,7 +516,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       job.clearError();
 
       KURL ud( dest );
-      ud.setPath( fit->m_strRelDest.c_str() );
+      ud.setPath( (*fit).m_strRelDest);
       QString d = ud.url();
 
       // Is this URL on the skip list ?
@@ -556,11 +533,11 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       // emit sigCanResume( m_bCanResume )
       canResume( m_bCanResume );
 
-      string realpath = "ftp:"; realpath += fit->m_strAbsSource;
-      copyingFile( realpath.c_str(), d.data() );
-    
+      QString realpath = "ftp:"; realpath += (*fit).m_strAbsSource;
+      copyingFile( realpath.ascii(), d.ascii() );
+
       // debug( "kio_ftp : Writing to %s", d );
-       
+
       // Is this URL on the overwrite list ?
       QStringList::Iterator oit = overwrite_list.begin();
       for( ; oit != overwrite_list.end() && !overwrite; oit++ )
@@ -571,10 +548,10 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       int md = -1;
       // but when it's not anonymous ftp, set permissions as in original source
       if ( b_user )
-	md = fit->m_access;
+	md = (*fit).m_access;
 
       job.put( d, md, overwrite_all || overwrite,
-               resume_all || resume, fit->m_size );
+               resume_all || resume, (*fit).m_size );
 
       while( !job.isReady() && !job.hasFinished() )
 	job.dispatch();
@@ -596,7 +573,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	  }
 	  QString tmp2 = ud.url();
 	  SkipDlg_Result r;
-	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
+	  r = open_SkipDlg( tmp2, ( files.count() > 1 ) );
 	  if ( r == S_CANCEL ) {
 	    error( ERR_USER_CANCELED, "" );
 	    ftp.ftpDisconnect();
@@ -636,7 +613,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 
 	    // ask for resume only if transfer can be resumed and if it is not
 	    // already fully downloaded
-	    if ( files.size() > 1 ){
+	    if ( files.count() > 1 ){
 	      if ( m_bCanResume && currentError != ERR_DOES_ALREADY_EXIST_FULL )
 		m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE | M_RESUME);
 	      else
@@ -649,7 +626,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	    }
 
 	    QString tmp2 = ud.url();
-	    r = open_RenameDlg( fit->m_strAbsSource.c_str(), tmp2, m, n );
+	    r = open_RenameDlg( (*fit).m_strAbsSource, tmp2, m, n );
 	  }
 
 	  if ( r == R_CANCEL ) {
@@ -663,7 +640,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	    if ( u.isMalformed() )
 	      assert( 0 );
 	    // Change the destination name of the current file
-	    fit->m_strRelDest = u.path( -1 );
+	    (*fit).m_strRelDest = u.path( -1 );
 	    // Dont clear error => we will repeat the current command
 	  } else if ( r == R_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
@@ -710,9 +687,9 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
     }
 
     KURL tmpurl( "ftp:/" );
-    tmpurl.setPath( fit->m_strAbsSource.c_str() );
+    tmpurl.setPath( (*fit).m_strAbsSource );
 
-    qDebug( "kio_ftp : Opening %s", fit->m_strAbsSource.c_str() );
+    qDebug( "kio_ftp : Opening %s", (*fit).m_strAbsSource.ascii() );
    
     if ( !ftp.ftpOpen( tmpurl, Ftp::READ, offset ) ) {
       error( ftp.error(), ftp.errorText() );
@@ -903,8 +880,8 @@ void FtpProtocol::slotGetSize( const char* _url ) {
   }
   
   // Get a list of all source files and directories
-  list<Copy> files;
-  list<CopyDir> dirs;
+  QValueList<Copy> files;
+  QValueList<CopyDir> dirs;
 
   debug( "kio_ftp : Executing %s", _url );
   // Did an error occur ?
@@ -1023,7 +1000,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   {
     debug("Write Access denied for '%s' %d",udest.path(), errno );
     
-    error( ERR_WRITE_ACCESS_DENIED, url.c_str() );
+    error( ERR_WRITE_ACCESS_DENIED, url );
     m_cmd = CMD_NONE;
     finished();
     return;
@@ -1125,8 +1102,8 @@ void FtpProtocol::slotDel( QStringList& _source )
   qDebug( "kio_ftp : All URLs ok" );
 
   // Get a list of all source files and directories
-  list<Copy> fs;
-  list<CopyDir> ds;
+  QValueList<Copy> fs;
+  QValueList<CopyDir> ds;
   int size = 0;
   qDebug( "kio_ftp : Iterating" );
 
@@ -1152,31 +1129,31 @@ void FtpProtocol::slotDel( QStringList& _source )
 
   qDebug( "kio_ftp : Recursive ok" );
 
-  if ( fs.size() == 1 )
+  if ( fs.count() == 1 )
     m_cmd = CMD_DEL;
   else
     m_cmd = CMD_MDEL;
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
-  totalFiles( fs.size() );
-  totalDirs( ds.size() );
+  totalFiles( fs.count() );
+  totalDirs( ds.count() );
 
   /*****
    * Delete files
    *****/
 
-  list<Copy>::iterator fit = fs.begin();
+  QValueList<Copy>::Iterator fit = fs.begin();
   for( ; fit != fs.end(); fit++ ) { 
 
-    string filename = fit->m_strAbsSource;
-    debug( "kio_ftp : Deleting file %s", filename.c_str() );
+    QString filename = (*fit).m_strAbsSource;
+    qDebug( "kio_ftp : Deleting file %s", filename.ascii() );
 
-    deletingFile( filename.c_str() );
+    deletingFile( filename );
 
-    if ( !ftp.ftpDelete( filename.c_str() ) ) // !!! use unlink ?
+    if ( !ftp.ftpDelete( filename ) ) // !!! use unlink ?
       {
-	error( ERR_CANNOT_DELETE, filename.c_str() );
+	error( ERR_CANNOT_DELETE, filename );
 	ftp.ftpDisconnect();
 	m_cmd = CMD_NONE;
 	return;
@@ -1187,50 +1164,49 @@ void FtpProtocol::slotDel( QStringList& _source )
    * Delete empty directories
    *****/
 
-  list<CopyDir>::iterator dit = ds.begin();
+  QValueList<CopyDir>::Iterator dit = ds.begin();
   for( ; dit != ds.end(); dit++ ) { 
 
-    string dirname = dit->m_strAbsSource;
-    debug( "kio_ftp : Deleting directory %s", dirname.c_str() );
+    QString dirname = (*dit).m_strAbsSource;
+    qDebug( "kio_ftp : Deleting directory %s", dirname.ascii() );
 
-    deletingFile( dirname.c_str() );
+    deletingFile( dirname );
 
-    if ( !ftp.ftpRmdir( dirname.c_str() ) ) {
-      error( ERR_COULD_NOT_RMDIR, dirname.c_str() );
+    if ( !ftp.ftpRmdir( dirname ) ) {
+      error( ERR_COULD_NOT_RMDIR, dirname );
       ftp.ftpDisconnect();
       m_cmd = CMD_NONE;
       return;
     }
   }
-  
+
   finished();
-  
+
   m_cmd = CMD_NONE;
 }
 
 
 void FtpProtocol::slotData( void *_p, int _len )
 {
-  switch( m_cmd )
-    {
+  switch( m_cmd ) {
     case CMD_PUT:
       ftp.write( _p, _len );
       break;
-    }
+  }
 }
 
 
 void FtpProtocol::slotDataEnd()
 {
-  switch( m_cmd )
-    {
+  switch( m_cmd ) {
     case CMD_PUT:
       m_cmd = CMD_NONE;
-    }
+  }
 }
 
 
-long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<CopyDir>& _dirs, bool _rename )
+long FtpProtocol::listRecursive( const char *_path, QValueList<Copy>&
+				_files, QValueList<CopyDir>& _dirs, bool _rename )
 {
   m_bAutoSkip = false;
   
@@ -1238,8 +1214,7 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
   int len = strlen( _path );
   while( len >= 1 && _path[ len - 1 ] == '/' )
     len--;
-  if ( len == 0 )
-  {
+  if ( len == 0 ) {
     CopyDir c;
     c.m_strAbsSource = _path;
     if ( _rename )
@@ -1248,9 +1223,9 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
       c.m_strRelDest = "";
     c.m_access = S_IRWXU | S_IRWXO | S_IRWXG;
     c.m_type = S_IFDIR;
-    _dirs.push_back( c );
+    _dirs.append( c );
     
-    return listRecursive2( "/", c.m_strRelDest.c_str(), _files, _dirs );
+    return listRecursive2( "/", c.m_strRelDest, _files, _dirs );
   }
   
   QString p=_path;
@@ -1288,7 +1263,7 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
     c.m_access = e->access;
     c.m_type = e->type;
     c.m_size = e->size;
-    _files.push_back( c );
+    _files.append( c );
     return e->size;
   }
 
@@ -1310,15 +1285,15 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
   c.m_strRelDest = tmp2;
   c.m_access = e->access;
   c.m_type = e->type;
-  _dirs.push_back( c );
-  debug( "kio_ftp : ########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
+  _dirs.append( c );
+  qDebug( "kio_ftp : ########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
 
   return listRecursive2( tmp1, tmp2, _files, _dirs );
 }
 
 
 long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
-				  list<Copy>& _files, list<CopyDir>& _dirs )
+				  QValueList<Copy>& _files, QValueList<CopyDir>& _dirs )
 {
   long size = 0;
   
@@ -1370,7 +1345,7 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_access = e->access;
       c.m_type = e->type;
       c.m_size = e->size;
-      _files.push_back( c );
+      _files.append( c );
       size += e->size;
     } else {
       CopyDir c;
@@ -1378,14 +1353,14 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_strRelDest = tmp;
       c.m_access = e->access;
       c.m_type = e->type;
-      _dirs.push_back( c );
+      _dirs.append( c );
 
       recursion.append( tmp );
     }
   }
 
   if ( !ftp.ftpCloseDir() ) {
-    // error( ERR_COULD_NOT_CLOSEDIR, p.c_str() );
+    // error( ERR_COULD_NOT_CLOSEDIR, p );
     return -1;
   }
   
@@ -1420,16 +1395,14 @@ void FtpProtocol::slotListDir( const char *_url )
 
   /*
   struct stat buff;
-  if ( stat( usrc.path(), &buff ) == -1 )
-  {
-    error( ERR_DOES_NOT_EXIST, url.c_str() );
+  if ( stat( usrc.path(), &buff ) == -1 ) {
+    error( ERR_DOES_NOT_EXIST, url);
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( !S_ISDIR( buff.st_mode ) )
-  {
-    error( ERR_IS_FILE, url.c_str() );
+  if ( !S_ISDIR( buff.st_mode ) ) {
+    error( ERR_IS_FILE, url );
     m_cmd = CMD_NONE;
     return;
   } */
@@ -1454,35 +1427,43 @@ void FtpProtocol::slotListDir( const char *_url )
     UDSAtom atom;
     atom.m_uds = UDS_NAME;
     atom.m_str = e->name;
-    entry.push_back( atom );
+    entry.append( atom );
       
     atom.m_uds = UDS_FILE_TYPE;
     atom.m_long = e->type;
-    entry.push_back( atom );
+    entry.append( atom );
+
     atom.m_uds = UDS_SIZE;
     atom.m_long = e->size;
-    entry.push_back( atom );
+    entry.append( atom );
+
     /* atom.m_uds = UDS_MODIFICATION_TIME;
     atom.m_long = buff.st_mtime;
-    entry.push_back( atom ); */
+    entry.append( atom ); */
+
     atom.m_uds = UDS_ACCESS;
     atom.m_long = e->access;
-    entry.push_back( atom );
+    entry.append( atom );
+
     atom.m_uds = UDS_USER;
     atom.m_str = e->owner;
-    entry.push_back( atom );
+    entry.append( atom );
+
     atom.m_uds = UDS_GROUP;
     atom.m_str = e->group;
-    entry.push_back( atom );
+    entry.append( atom );
+
     atom.m_uds = UDS_LINK_DEST;
     atom.m_str = e->link;
-    entry.push_back( atom );
+    entry.append( atom );
+
     /* atom.m_uds = UDS_ACCESS_TIME;
     atom.m_long = buff.st_atime;
-    entry.push_back( atom );    
+    entry.append( atom );    
+
     atom.m_uds = UDS_CREATION_TIME;
     atom.m_long = buff.st_ctime;
-    entry.push_back( atom ); */
+    entry.append( atom ); */
 
     listEntry( entry );
   }

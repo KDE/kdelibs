@@ -11,7 +11,7 @@
 class FtpProtocol : public IOProtocol
 {
 public:
-  FtpProtocol( Connection* _conn );
+  FtpProtocol( Connection *_conn );
   virtual ~FtpProtocol() { }
 
   virtual void slotGet( const char *_url );
@@ -22,7 +22,7 @@ public:
 
   virtual void slotMkdir( const char *_url, int _mode );
 
-  virtual void slotCopy( const char* _source, const char *_dest );
+  virtual void slotCopy( const char *_source, const char *_dest );
   virtual void slotCopy( QStringList& _source, const char *_dest );
 
   virtual void slotMove( const char *_source, const char *_dest );
@@ -36,15 +36,15 @@ public:
   virtual void slotData( void *_p, int _len );
   virtual void slotDataEnd();
 
-  Connection* connection() { return ConnectionSignals::m_pConnection; }
+  Connection *connection() { return ConnectionSignals::m_pConnection; }
   
   void jobError( int _errid, const char *_txt );
 
 protected:
   struct Copy
   {
-    string m_strAbsSource;
-    string m_strRelDest;
+    QString m_strAbsSource;
+    QString m_strRelDest;
     mode_t m_access;
     mode_t m_type;
     off_t m_size;
@@ -52,27 +52,22 @@ protected:
   
   struct CopyDir
   {
-    string m_strAbsSource;
-    string m_strRelDest;
+    QString m_strAbsSource;
+    QString m_strRelDest;
     mode_t m_access;
     mode_t m_type;
   };
 
   void doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move = false );
 
-  long listRecursive( const char *_path, list<Copy>& _files,
-		      list<CopyDir>& _dirs, bool _rename );
+  long listRecursive( const char *_path, QValueList<Copy>& _files,
+		      QValueList<CopyDir>& _dirs, bool _rename );
   long listRecursive2( const char *_abs_path, const char *_rel_path,
-		       list<Copy>& _files, list<CopyDir>& _dirs );
+		       QValueList<Copy>& _files, QValueList<CopyDir>& _dirs );
 
-  bool m_bAutoSkip;
+  bool m_bAutoSkip, m_bIgnoreJobErrors, m_bCanResume;
   int m_cmd;
-  bool m_bIgnoreJobErrors;
-
   Ftp ftp;
-
-  bool m_bCanResume;
-
 };
 
 class FtpIOJob : public IOJob
@@ -83,7 +78,7 @@ public:
   virtual void slotError( int _errid, const char *_txt );
 
 protected:
-  FtpProtocol* m_pFtp;
+  FtpProtocol *m_pFtp;
 };
 
 #endif
