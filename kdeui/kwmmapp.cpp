@@ -12,6 +12,11 @@ KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[])
     module = new QWidget;
 }
 
+KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[], const QString& rAppName)
+  :KApplication(argc, argv, rAppName){
+    module = new QWidget;
+}
+
 
 void KWMModuleApplication::connectToKWM(){
   KWM::setKWMModule(module->winId());

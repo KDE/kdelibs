@@ -11,21 +11,17 @@ public:
     KButton( QWidget *_parent = 0L, const char *name = 0L );
     ~KButton();
 
-public slots:
-    void slotPressed();
-    void slotReleased();
-    
 protected:
     virtual void leaveEvent( QEvent *_ev );
     virtual void enterEvent( QEvent *_ev );
-	void setOn( bool enable );
         
     virtual void drawButton( QPainter *_painter );
     virtual void drawButtonLabel( QPainter *_painter );
 
     void paint( QPainter *_painter );
-    
-    int raised;    
+
+ private:    
+    bool raised;    
 };
 
 #endif

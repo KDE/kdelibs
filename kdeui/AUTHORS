@@ -49,6 +49,9 @@ KSpinBox
 Michael Wiedmann <mw@miwie.in-berlin.de>
 KRestrictedLine, KIntegerLine
 
+Matthias Ettrich <ettrich@kde.org> 
+KWMModuleApplication, tearing/docking of ktoolbar and kmenubar, heavy
+modifications to kbutton
 
 
 
