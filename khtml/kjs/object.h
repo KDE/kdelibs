@@ -171,7 +171,7 @@ protected:
 
 class KJSInternalFunction : public KJSFunction {
 public:
-  KJSInternalFunction(KJSO* (*f)()) { func = f; }
+  KJSInternalFunction(KJSO* (*f)()) { param = 0L; func = f; }
   Type type() const { return InternalFunction; }
   KJSO* execute() { return (*func)(); }
   CodeType codeType() { return HostCode; }
