@@ -1189,21 +1189,21 @@ Value Window::openWindow(ExecState *exec, const List& args)
           QRect screen = KGlobalSettings::desktopGeometry(widget->topLevelWidget());
 
           if (key == "left" || key == "screenx") {
-            winargs.x = val.toInt() + screen.x();
+            winargs.x = (int)val.toFloat() + screen.x();
             if (winargs.x < screen.x() || winargs.x > screen.right())
               winargs.x = screen.x(); // only safe choice until size is determined
           } else if (key == "top" || key == "screeny") {
-            winargs.y = val.toInt() + screen.y();
+            winargs.y = (int)val.toFloat() + screen.y();
             if (winargs.y < screen.y() || winargs.y > screen.bottom())
               winargs.y = screen.y(); // only safe choice until size is determined
           } else if (key == "height") {
-            winargs.height = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
+            winargs.height = (int)val.toFloat() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
             if (winargs.height > screen.height())  // should actually check workspace
               winargs.height = screen.height();
             if (winargs.height < 100)
               winargs.height = 100;
           } else if (key == "width") {
-            winargs.width = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
+            winargs.width = (int)val.toFloat() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
             if (winargs.width > screen.width())    // should actually check workspace
               winargs.width = screen.width();
             if (winargs.width < 100)

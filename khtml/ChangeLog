@@ -1,3 +1,8 @@
+2003-10-29  David Faure  <faure@kde.org>
+
+	* ecma/kjs_window.cpp (Window::openWindow): patch from Maciej to allow
+	floats in window.open properties (e.g. small window at saabusa.com)
+
 2003-10-28  David Faure  <faure@kde.org>
 
 	* khtmlview.cpp (viewportMouseDoubleClickEvent): Set bool in MouseEventImpl
