@@ -1255,6 +1255,12 @@ static QStringList lookupProfiles(const QString &mapFile)
 {
     QStringList profiles;
 
+    if (mapFile.isEmpty() || !QFile::exists(mapFile))
+    {
+       profiles << "default";
+       return profiles;
+    }
+
     struct passwd *pw = getpwuid(geteuid());
     if (!pw)
     {
@@ -1263,50 +1269,36 @@ static QStringList lookupProfiles(const QString &mapFile)
     }
 
     QCString user = pw->pw_name;
-    QCString file = "/var/run/kde-user-profile/"+user;
-    FILE *fs = fopen(file, "r");
-    if (fs)
+
+    KSimpleConfig mapCfg(mapFile, true);
+    mapCfg.setGroup("Users");
+    if (mapCfg.hasKey(user.data()))
     {
-        QTextStream ts(fs, IO_ReadOnly);
-        ts.setEncoding(QTextStream::UnicodeUTF8);
-        while(!ts.atEnd())
-        {
-            QString profile = ts.readLine();
-            if (!profile.isEmpty())
-                profiles << profile;
-        }
-        fclose(fs);
-        return profiles;
+        profiles = mapCfg.readListEntry(user.data());
+        return profiles; 
     }
-
-    if (!mapFile.isEmpty() && QFile::exists(mapFile))
-    {
-        KSimpleConfig mapCfg(mapFile, true);
-        mapCfg.setGroup("Users");
-        if (mapCfg.hasKey(user.data()))
-        {
-            profiles = mapCfg.readListEntry(user.data(), ':');
-            return profiles; 
-        }
         
-        QMap<QString, QString> groups = mapCfg.entryMap("Groups");
-        QMap<QString, QString>::Iterator it;
-        for ( it = groups.begin(); it != groups.end(); ++it )
-        {
-            QCString grp = it.key().utf8();
-            // Check if user is in this group
-            struct group *grp_ent = getgrnam(grp);
-            if (!grp_ent) continue;
+    mapCfg.setGroup("General");
+    QStringList groups = mapCfg.readListEntry("groups");
 
-            char ** members = grp_ent->gr_mem;
-            for(char * member; (member = *members); ++members)
+    mapCfg.setGroup("Groups");
+
+    for( QStringList::ConstIterator it = groups.begin();
+         it != groups.end(); ++it )
+    {
+        QCString grp = (*it).utf8();
+        // Check if user is in this group
+        struct group *grp_ent = getgrnam(grp);
+        if (!grp_ent) continue;
+
+        char ** members = grp_ent->gr_mem;
+        for(char * member; (member = *members); ++members)
+        {
+            if (user == member)
             {
-                if (user == member)
-                {
-                    // User is in this group --> add profiles
-                    profiles += QStringList::split(":", it.data());
-                    break;
-                }
+                // User is in this group --> add profiles
+                profiles += mapCfg.readListEntry(*it);
+                break;
             }
         }
     }
