@@ -101,6 +101,15 @@ public:
      */
     void updateAccessMetadata( const QString &url, bool emitSignal = true );
 
+    /*
+     * Update favicon url for a given url.
+     * @param url the viewed url
+     * @param faviconurl the favicion url
+     * @emitSignal iff true emit KBookmarkNotifier signal
+     * @since 3.2
+     */
+    void updateFavicon( const QString &url, const QString &faviconurl, bool emitSignal = true );
+
     /**
      * This will return the path that this manager is using to read
      * the bookmarks.

@@ -440,8 +440,6 @@ KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) {
 
 void KBookmarkMap::update()
 {
-    //kdDebug(7043) << "KBookmarkMap::update() - started ..." << endl;
-
     m_bk_map.clear();
 
     // non-recursive bookmark iterator
@@ -473,7 +471,6 @@ void KBookmarkMap::update()
         {
             if (stack.isEmpty()) 
             {
-                //kdDebug(7043) << "KBookmarkMap::update() - ... all done" << endl;
                 // an empty stack and no next 
                 // indicates the end of the road
                 return;
@@ -488,20 +485,15 @@ void KBookmarkMap::update()
 
 QValueList<KBookmark> KBookmarkMap::find( const KURL &url ) const
 {
-    //kdDebug(7043) << " KBookmarkMap::find(" << url.url() << ")"
-    //              << " size( " << m_bk_map.count() << ")" << endl;
-
     return m_bk_map.contains(url.url()) 
          ? m_bk_map[url.url()] : QValueList<KBookmark>();
 }
 
 void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
-    //kdDebug(7043) << "KBookmarkManager::updateBookmarkMetadata for url " << url << endl;
-   
     if (!s_bk_map) 
         s_bk_map = new KBookmarkMap(this);
-    s_bk_map->update();
+    s_bk_map->update(); // TODO - should make update only when dirty
     
     QValueList<KBookmark> list = s_bk_map->find(url);
     for ( QValueList<KBookmark>::iterator it = list.begin(); 
@@ -510,6 +502,30 @@ void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
    
     if (emitSignal)
         emit notifier().updatedAccessMetadata( path(), url );
+}
+
+void KBookmarkManager::updateFavicon( const QString &url, const QString &faviconurl, bool emitSignal )
+{
+    Q_UNUSED(faviconurl);
+
+    if (!s_bk_map) 
+        s_bk_map = new KBookmarkMap(this);
+    s_bk_map->update(); // TODO - should make update only when dirty
+    
+    QValueList<KBookmark> list = s_bk_map->find(url);
+    for ( QValueList<KBookmark>::iterator it = list.begin(); 
+          it != list.end(); ++it )
+    {
+        // TODO - update favicon data based on faviconurl
+        //        but only when the previously used icon
+        //        isn't a manually set one.
+    }
+   
+    if (emitSignal)
+    {
+        // TODO
+        // emit notifier().updatedFavicon( path(), url, faviconurl );
+    }
 }
 
 QPair<bool, QString> KBookmarkManager::showDynamicBookmarks( const QString &type ) const {
