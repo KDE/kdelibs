@@ -636,7 +636,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   if( d->mButton.mask & Try )
   {
     KPushButton *pb = d->mButton.append( Try,
-                          KGuiItem( i18n( "&Try" ), "try" ) );
+                           i18n( "&Try" ) );
     connect( pb, SIGNAL(clicked()), SLOT(slotTry()) );
   }
   if( d->mButton.mask & Cancel )
@@ -1755,7 +1755,7 @@ QSize KDialogBase::configDialogSize( KConfig& config,
    int w, h;
    int scnum = QApplication::desktop()->screenNumber(parentWidget());
    QRect desk = QApplication::desktop()->screenGeometry(scnum);
-   
+
    w = sizeHint().width();
    h = sizeHint().height();
 
