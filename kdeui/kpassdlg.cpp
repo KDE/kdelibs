@@ -66,6 +66,13 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
 	m_EchoMode = OneStar;
 }
 
+KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name, int echoMode)
+    : QLineEdit(parent, name), m_EchoMode(echoMode)
+{
+    m_Password = new char[PassLen];
+    m_Password[0] = '\000';
+    m_Length = 0;
+}
 
 KPasswordEdit::~KPasswordEdit()
 {
@@ -92,13 +99,15 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
 	e->ignore();
 	break;
     case Key_Backspace:
+    case Key_Delete:
+    case 0x7f: // Delete
 	if (m_Length) {
 	    m_Password[--m_Length] = '\000';
 	    showPass();
 	}
 	break;
     default:
-	if ((m_Length < PassLen) && e->ascii()) {
+	if ((m_Length < PassLen) && (e->ascii() >= 32)) {
 	    m_Password[m_Length] = (char) e->ascii();
 	    m_Password[++m_Length] = '\000';
 	    showPass();

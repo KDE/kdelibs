@@ -43,7 +43,16 @@ class KPasswordEdit
     Q_OBJECT
 
 public:
+    /**
+     * Create a widget using the user's global "echo mode" setting.
+     */
     KPasswordEdit(QWidget *parent=0, const char *name=0);
+
+    /**
+     * Create a widget using echoMode as "echo mode".
+     */
+    KPasswordEdit(QWidget *parent, const char *name, int echoMode);
+     
     ~KPasswordEdit();
 
     /** 
