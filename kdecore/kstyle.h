@@ -39,25 +39,24 @@ class KStyle : public QPlatinumStyle
     Q_OBJECT
 public:
     enum KToolButtonType{Icon=0, IconTextRight, Text, IconTextBottom};
+    enum KToolBarPos{Top=0, Left, Right, Bottom, Floating, Flat};
     KStyle() : QPlatinumStyle(){;}
     /**
      * Draw a toolbar (without buttons, etc.)
      *
      * @p x, @y, @w, and @h tell in which rectangle to draw the toolbar.
-     * @param floating @true of this is a floating toolbar, @false if it
-     *  is part of the application window.
      **/
     virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, bool floating = false);
+                              const QColorGroup &g, KToolBarPos type,
+                              QBrush *fill=NULL);
     /**
-     * Draw a menubar/toolbar handle.
+     * Draw a toolbar handle. 
      *
-     * @param horizontal If @true, the menubar/toolbar is oriented horizontally.
      * @param fill The @ref QBrush to fill the handle with.
      **/
     virtual void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, bool horizontal=false,
-                                QBrush *fill=NULL);
+                                const QColorGroup &g,
+                                KToolBarPos type, QBrush *fill=NULL);
     /**
      * Draw a toolbar button.
      **/
@@ -75,7 +74,8 @@ public:
      * @param fill The @ref QBrush to fill the menubar with.
      **/
     virtual void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, QBrush *fill=NULL);
+                              const QColorGroup &g, bool macMode,
+                              QBrush *fill=NULL);
     /**
      * Draw a menu item (ex, "&File").
      **/
@@ -100,8 +100,7 @@ public:
      * @internal
      */
     virtual void drawOPToolBar(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, QBrush *fill=NULL);
-
+                               const QColorGroup &g, QBrush *fill=NULL);
 private:
     KStylePrivate *d;
 };
