@@ -176,8 +176,21 @@ KSSLCertificate *KSSLPKCS12::getCertificate() {
 QString KSSLPKCS12::toString() {
 QString base64;
 #ifdef HAVE_SSL
-KTempFile ktf;
+unsigned char *p;
+int len;
 
+#if 1
+   len = kossl->i2d_PKCS12(_pkcs, NULL);
+   char *buf = new char[len];
+   p = (unsigned char *)buf;
+   kossl->i2d_PKCS12(_pkcs, &p);
+   QByteArray qba;
+   qba.setRawData(buf, len);
+   base64 = KCodecs::base64Encode(qba);
+   qba.resetRawData(buf, len);
+   delete[] buf;
+#else
+   KTempFile ktf;
    kossl->i2d_PKCS12_fp(ktf.fstream(), _pkcs);
    ktf.close();
    QFile qf(ktf.name());
@@ -191,7 +204,7 @@ KTempFile ktf;
    delete[] buf;
    qf.close();
    ktf.unlink();
-
+#endif
 #endif
 return base64;
 }

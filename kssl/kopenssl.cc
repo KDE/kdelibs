@@ -79,6 +79,7 @@ static ASN1_METHOD* (*K_X509_asn1_meth) (void) = NULL;
 static int (*K_ASN1_i2d_fp)(int (*)(),FILE *,unsigned char *) = NULL;
 static int (*K_i2d_ASN1_HEADER)(ASN1_HEADER *, unsigned char **) = NULL;
 static int (*K_X509_print_fp)  (FILE *, X509*) = NULL;
+static int (*K_i2d_PKCS12)  (PKCS12*, unsigned char**) = NULL;
 static int (*K_i2d_PKCS12_fp)  (FILE *, PKCS12*) = NULL;
 static int (*K_PKCS12_newpass) (PKCS12*, char*, char*) = NULL;
 static PKCS12* (*K_d2i_PKCS12_fp) (FILE*, PKCS12**) = NULL;
@@ -258,6 +259,7 @@ KConfig *cfg;
       K_ASN1_i2d_fp = (int (*)(int (*)(), FILE*, unsigned char *)) _cryptoLib->symbol("ASN1_i2d_fp");
       K_i2d_ASN1_HEADER = (int (*)(ASN1_HEADER *, unsigned char **)) _cryptoLib->symbol("i2d_ASN1_HEADER");
       K_X509_print_fp = (int (*)(FILE*, X509*)) _cryptoLib->symbol("X509_print_fp");
+      K_i2d_PKCS12 = (int (*)(PKCS12*, unsigned char**)) _cryptoLib->symbol("i2d_PKCS12");
       K_i2d_PKCS12_fp = (int (*)(FILE *, PKCS12*)) _cryptoLib->symbol("i2d_PKCS12_fp");
       K_PKCS12_newpass = (int (*)(PKCS12*, char*, char*)) _cryptoLib->symbol("PKCS12_newpass");
       K_d2i_PKCS12_fp = (PKCS12* (*)(FILE*, PKCS12**)) _cryptoLib->symbol("d2i_PKCS12_fp");
@@ -694,6 +696,12 @@ int KOpenSSLProxy::PKCS12_newpass(PKCS12 *p12, char *oldpass, char *newpass) {
 }
 
  
+int KOpenSSLProxy::i2d_PKCS12(PKCS12 *p12, unsigned char **p) {
+   if (K_i2d_PKCS12) return (K_i2d_PKCS12)(p12, p);
+   else return -1;
+}
+
+
 int KOpenSSLProxy::i2d_PKCS12_fp(FILE *fp, PKCS12 *p12) {
    if (K_i2d_PKCS12_fp) return (K_i2d_PKCS12_fp)(fp, p12);
    else return -1;

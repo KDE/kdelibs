@@ -400,6 +400,12 @@ public:
 
 
    /*
+    *   Write a PKCS#12 to mem
+    */
+   int i2d_PKCS12(PKCS12 *p12, unsigned char **p);
+
+
+   /*
     *   Write a PKCS#12 to FILE*
     */
    int i2d_PKCS12_fp(FILE *fp, PKCS12 *p12);
