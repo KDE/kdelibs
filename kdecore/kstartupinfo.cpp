@@ -87,7 +87,7 @@ class KStartupInfo::Data
             : KStartupInfoData( txt_P ), age( 0 ) {};
         unsigned int age;
     };
-        
+
 struct KStartupInfoPrivate
     {
     public:
@@ -98,9 +98,9 @@ struct KStartupInfoPrivate
 	QTimer* cleanup;
        KStartupInfoPrivate() : msgs( KDE_STARTUP_INFO ), msgs_2( KDE_STARTUP_INFO_2 ) {}
     };
-    
+
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const char* name_P )
-    : QObject( parent_P, name_P ), 
+    : QObject( parent_P, name_P ),
         clean_on_cantdetect( clean_on_cantdetect_P ), timeout( 60 ), d(0L)
     {
     if (!KApplication::kApplication()) return;
@@ -154,7 +154,7 @@ void KStartupInfo::slot_window_added( WId w_P )
     {
     kapp->postEvent( this, new DelayedWindowEvent( w_P ));
     }
-    
+
 void KStartupInfo::customEvent( QCustomEvent* e_P )
     {
     if( e_P->type() == QEvent::User + 15 )
@@ -162,7 +162,7 @@ void KStartupInfo::customEvent( QCustomEvent* e_P )
     else
 	QObject::customEvent( e_P );
     }
-    
+
 void KStartupInfo::window_added( WId w_P )
     {
     KStartupInfoId id;
@@ -181,7 +181,7 @@ void KStartupInfo::window_added( WId w_P )
           break;
         }
     }
-        
+
 void KStartupInfo::got_startup_info( const QString& msg_P, bool update_only_P )
     {
     KStartupInfoId id( msg_P );
@@ -412,7 +412,7 @@ KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P )
     {
     return check_startup_internal( w_P, NULL, NULL, true );
     }
-    
+
 KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O, bool remove_P )
     {
@@ -425,6 +425,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     if( info.windowType() != NET::Normal
         && info.windowType() != NET::Override
         && info.windowType() != NET::Unknown
+        && info.windowType() != NET::Dialog
         && info.windowType() != NET::Dock )
 	return NoMatch;
     // lets see if this is a transient
@@ -491,8 +492,8 @@ bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
         }
     return false;
     }
-    
-bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P, 
+
+bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P,
     KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove_P )
     {
     if (!d) return false;
@@ -607,19 +608,19 @@ QCString KStartupInfo::get_window_hostname( WId w_P )
     // no hostname
     return QCString();
     }
-    
+
 void KStartupInfo::setTimeout( unsigned int secs_P )
     {
     timeout = secs_P;
- // schedule removing entries that are older than the new timeout    
+ // schedule removing entries that are older than the new timeout
     QTimer::singleShot( 0, this, SLOT( startups_cleanup_no_age()));
     }
-    
+
 void KStartupInfo::startups_cleanup_no_age()
     {
     startups_cleanup_internal( false );
     }
-    
+
 void KStartupInfo::startups_cleanup()
     {
     if (!d) return;
@@ -630,7 +631,7 @@ void KStartupInfo::startups_cleanup()
         }
     startups_cleanup_internal( true );
     }
-    
+
 void KStartupInfo::startups_cleanup_internal( bool age_P )
     {
     if (!d) return;
@@ -651,7 +652,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
             ++it;
         }
     }
-    
+
 void KStartupInfo::clean_all_noncompliant()
     {
     if (!d) return;
@@ -670,7 +671,7 @@ void KStartupInfo::clean_all_noncompliant()
         remove_startup_info_internal( key );
         }
     }
-    
+
 struct KStartupInfoIdPrivate
     {
     KStartupInfoIdPrivate() : id( "" ) {};
@@ -681,7 +682,7 @@ const QCString& KStartupInfoId::id() const
     {
     return d->id;
     }
-    
+
 
 QString KStartupInfoId::to_text() const
     {
@@ -756,12 +757,12 @@ KStartupInfoId KStartupInfo::currentStartupIdEnv()
         id.d->id = "0";
     return id;
     }
-    
+
 void KStartupInfo::resetStartupEnv()
     {
     unsetenv( KDE_STARTUP_ENV );
     }
-        
+
 KStartupInfoId::KStartupInfoId()
     {
     d = new KStartupInfoIdPrivate;
@@ -776,7 +777,7 @@ KStartupInfoId::KStartupInfoId( const KStartupInfoId& id_P )
     {
     d = new KStartupInfoIdPrivate( *id_P.d );
     }
-    
+
 KStartupInfoId& KStartupInfoId::operator=( const KStartupInfoId& id_P )
     {
     if( &id_P == this )
@@ -801,12 +802,12 @@ bool KStartupInfoId::operator<( const KStartupInfoId& id_P ) const
     {
     return id() < id_P.id();
     }
-    
+
 bool KStartupInfoId::none() const
     {
     return d->id.isEmpty() || d->id == "0";
     }
-    
+
 struct KStartupInfoDataPrivate
     {
     KStartupInfoDataPrivate() : desktop( 0 ), wmclass( "" ), hostname( "" ) {};
@@ -818,7 +819,7 @@ struct KStartupInfoDataPrivate
     QCString wmclass;
     QCString hostname;
     };
-    
+
 QString KStartupInfoData::to_text() const
     {
     QString ret = "";
@@ -872,7 +873,7 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
             addPid( get_num( *it ));
         }
     }
-    
+
 KStartupInfoData::KStartupInfoData( const KStartupInfoData& data )
 {
     d = new KStartupInfoDataPrivate( *data.d );
@@ -921,7 +922,7 @@ void KStartupInfoData::setBin( const QString& bin_P )
     {
     d->bin = bin_P;
     }
-    
+
 const QString& KStartupInfoData::bin() const
     {
     return d->bin;
@@ -931,7 +932,7 @@ void KStartupInfoData::setName( const QString& name_P )
     {
     d->name = name_P;
     }
-    
+
 const QString& KStartupInfoData::findName() const
     {
     if( !name().isEmpty())
@@ -948,7 +949,7 @@ void KStartupInfoData::setIcon( const QString& icon_P )
     {
     d->icon = icon_P;
     }
-    
+
 const QString& KStartupInfoData::findIcon() const
     {
     if( !icon().isEmpty())
@@ -970,7 +971,7 @@ int KStartupInfoData::desktop() const
     {
     return d->desktop;
     }
-    
+
 void KStartupInfoData::setWMClass( const QCString& wmclass_P )
     {
     d->wmclass = wmclass_P;
@@ -982,12 +983,12 @@ const QCString KStartupInfoData::findWMClass() const
         return WMClass();
     return bin().latin1(); // CHECKME
     }
-    
+
 const QCString& KStartupInfoData::WMClass() const
     {
     return d->wmclass;
     }
-    
+
 void KStartupInfoData::setHostname( const QCString& hostname_P )
     {
     if( !hostname_P.isNull())
@@ -1005,7 +1006,7 @@ const QCString& KStartupInfoData::hostname() const
     {
     return d->hostname;
     }
-    
+
 void KStartupInfoData::addPid( pid_t pid_P )
     {
     if( !d->pids.contains( pid_P ))
@@ -1016,7 +1017,7 @@ void KStartupInfoData::remove_pid( pid_t pid_P )
     {
     d->pids.remove( pid_P );
     }
-        
+
 const QValueList< pid_t >& KStartupInfoData::pids() const
     {
     return d->pids;
@@ -1045,7 +1046,7 @@ QString get_str( const QString& item_P )
             return QString::null;                      // 01234
         return item_P.mid( pos + 2, pos2 - 2 - pos );  // A="C"
         }
-    return item_P.mid( pos + 1 );  
+    return item_P.mid( pos + 1 );
     }
 
 static
@@ -1053,7 +1054,7 @@ QCString get_cstr( const QString& item_P )
     {
     return get_str( item_P ).latin1(); // CHECKME
     }
-    
+
 static
 QStringList get_fields( const QString& txt_P )
     {
