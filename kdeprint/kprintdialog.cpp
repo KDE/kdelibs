@@ -81,7 +81,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_printerlabel->setBuddy(m_printers);
 	m_properties = new QPushButton(i18n("P&roperties..."), m_pbox);
 	m_options = new QPushButton(i18n("System Op&tions..."), this);
-	m_default = new QPushButton(i18n("Set as &default"), m_pbox);
+	m_default = new QPushButton(i18n("Set as &Default"), m_pbox);
 	m_wizard = new QPushButton(m_pbox);
 	m_wizard->setPixmap(SmallIcon("wizard"));
 	m_wizard->setMinimumSize(QSize(m_printers->minimumHeight(),m_printers->minimumHeight()));

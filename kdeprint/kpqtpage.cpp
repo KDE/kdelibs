@@ -95,7 +95,7 @@ int findIndex(int ID)
 KPQtPage::KPQtPage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
 {
-	setTitle(i18n("Print format"));
+	setTitle(i18n("Print Format"));
 
 	// widget creation
 	m_pagesize = new QComboBox(this);

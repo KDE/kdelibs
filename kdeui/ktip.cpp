@@ -142,7 +142,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 {
   _database = db;
 
-  setCaption(i18n("Tip of the day"));
+  setCaption(i18n("Tip of the Day"));
   setIcon(KGlobal::iconLoader()->loadIcon("ktip", KIcon::Small));
 
   QVBoxLayout *vbox = new QVBoxLayout(this, marginHint(), spacingHint());
@@ -168,7 +168,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
   hbox = new QHBoxLayout(vbox);
 
-  _tipOnStart = new QCheckBox(i18n("Show on start"), this);
+  _tipOnStart = new QCheckBox(i18n("&Show on start"), this);
   hbox->addWidget(_tipOnStart);
   hbox->addStretch();
 
