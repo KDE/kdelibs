@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.44  1997/10/05 19:01:37  kalle
+// Default color scheme is now KDE Default
+//
 // Revision 1.43  1997/10/05 16:40:09  mark
 // MD:
 // 1) Bug fix for unregisterMainWidget method; IDs and separators are removed
@@ -1200,7 +1203,12 @@ void KApplication::registerMainWidget()
 	
     int ID=0;
     QString IDstr;
+
+    // set the specified icons
+    KWM::setIcon(mainWidget()->winId(), getIcon());
+    KWM::setMiniIcon(mainWidget()->winId(), getMiniIcon());
 	
+
     ID = (int) mainWidget()->winId();
     IDstr.sprintf("0x%x", ID);
 	
