@@ -1,2 +1,3 @@
 Language=C++
 Library=libx11globalcomm.la
+Interface=Arts::Object,Arts::GlobalComm,Arts::X11GlobalComm
