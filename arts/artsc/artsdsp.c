@@ -203,6 +203,7 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
       switch (request)
         {
+		struct audio_buf_info *audiop;
         case SNDCTL_DSP_SETFMT:
           bits = (*arg & 0x30) ? 16 : 8;
           settings |= 1;
@@ -221,6 +222,18 @@ int ioctl (int fd, ioctl_request_t request, ...)
         case SNDCTL_DSP_GETBLKSIZE:
           *arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
           break;
+
+        case SNDCTL_DSP_GETISPACE:
+        case SNDCTL_DSP_GETOSPACE:
+		  audiop = argp;
+		  audiop->fragstotal =
+			stream?arts_stream_get(stream, ARTS_P_PACKET_COUNT):10;
+          audiop->fragsize =
+			stream?arts_stream_get(stream, ARTS_P_PACKET_SIZE):16384;
+		  audiop->bytes =
+			stream?arts_stream_get(stream, ARTS_P_BUFFER_SPACE):16384;
+		  audiop->fragments = audiop->bytes / audiop->fragsize;
+		  break;
 
         case SNDCTL_DSP_GETFMTS:
           *arg = 0x38;
