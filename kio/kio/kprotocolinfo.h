@@ -32,7 +32,7 @@
  * KDE supports. In addition you can find out lots of information
  * about a certain protocol. A KProtocolInfo instance represents a 
  * single protocol. Most of the functionality is provided by the static 
- m that scan the *.protocol files of all installed kioslaves to get 
+ * methods that scan the *.protocol files of all installed kioslaves to get 
  * this information.
  *
  * *.protocol files are installed in the "services" resource.
