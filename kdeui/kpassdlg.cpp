@@ -55,7 +55,7 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     m_Length = 0;
 
     KConfig *cfg = KGlobal::config();
-    KConfigGroupSaver(cfg, "Passwords");
+    KConfigGroupSaver saver(cfg, "Passwords");
 
     QString val = cfg->readEntry("EchoMode", "OneStar");
     if (val == "ThreeStars")
