@@ -61,7 +61,9 @@ RenderBox::RenderBox(RenderStyle* style)
 {
     m_minWidth = -1;
     m_maxWidth = -1;
-    m_x = m_y = m_width = m_height = 0;
+    m_width = m_height = 0;
+    m_x = 0;
+    m_y = 0;
 
     CachedImage *i = style->backgroundImage();
     if(i)
@@ -277,7 +279,7 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-//    printf("%s(RenderBox)::updateSize()\n", renderName());
+//    printf("%s(RenderBox) %x ::updateSize()\n", renderName(), this);
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
@@ -289,14 +291,36 @@ void RenderBox::updateSize()
 	setLayouted(false);
 	if(containingBlock() != this) containingBlock()->updateSize();
     }
-    else if(!isInline() || isReplaced())
+    else 
+    	updateHeight();
+}
+
+#include <stdlib.h>
+
+void RenderBox::updateHeight()
+{
+//    printf("%s(RenderBox) %x ::updateHeight()\n", renderName(), this);
+    
+    if (parsing())
+    {
+    	setLayouted(false);
+    	containingBlock()->updateHeight();		
+	return;
+    }
+    
+    if(!isInline() || isReplaced())
     {
 	int oldHeight = m_height;
 	setLayouted(false);
-   	layout(true);	
+	layout(true);
+/*	if (m_height > 500)
+	{
+	    if(rand()%10)
+	    	return;
+	}   		*/
 	if(m_height != oldHeight)
 	{
-	    if(containingBlock() != this) containingBlock()->updateSize();
+	    if(containingBlock() != this) containingBlock()->updateHeight();
 	} else {
 	    repaint();
 	}

@@ -35,6 +35,7 @@ RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
     setParsing();
+    m_view->setUpdatesEnabled(false);
 }
 
 
@@ -79,25 +80,44 @@ void RenderRoot::repaintObject(RenderObject *o, int x, int y)
 
 void RenderRoot::updateSize()
 {
+    calcMinMaxWidth();
+
+    updateHeight();
+}
+
+
+void RenderRoot::updateHeight()
+{
 //    printf("%s(RenderRoot)::updateSize()\n", renderName());
     //int oldMin = m_minWidth;
     setLayouted(false);
-    calcMinMaxWidth();
+    
+    if (parsing())
+    {
+	if (!updateTimer.isNull() && updateTimer.elapsed()<300)
+	{
+	    return;
+	}
+	else
+	    updateTimer.start();	
+    }
+
 
     int oldHeight = m_height;
     layout(true);	
     if(m_height != oldHeight)
     {
-    	printf("resizing %d,%d\n",m_width,m_height);
+//    	printf("resizing %d,%d\n",m_width,m_height);
     	m_view->resizeContents(m_width,m_height);
-//	repaint();
+    	m_view->repaintContents(0,0,m_width,m_height);	//sync repaint!
     }
 }
 
 void RenderRoot::close()
 {
-    setParsing(false);
+    setParsing(false);    
     updateSize();
     repaint();
+//    m_view->setUpdatesEnabled(true);
 //    printTree();
 }

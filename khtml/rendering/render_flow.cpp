@@ -114,6 +114,11 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 
     if(!isInline())
     {
+/*    	if (!layouted())
+	{
+	    printf ("!layouted %x\n",this);
+	    return;
+	}*/
 	_tx += m_x;
 	_ty += m_y;
     }
@@ -199,13 +204,20 @@ void RenderFlow::setXPos( int xPos )
 
 void RenderFlow::layout( bool deep )
 {
+//    printf("%s %x::layout() start\n", renderName(),this);
+    
     assert(!isInline());
 
     int oldWidth = m_width;
     calcWidth();
     // ### does not give correct results for fixed width paragraphs with
     // floats for some reason
-    if(oldWidth == m_width && layouted()) return;
+    
+    if (specialObjects==0)
+    	if (oldWidth == m_width && layouted()) return;
+    else
+    	if (nextSibling())
+	    nextSibling()->setLayouted(false);
 
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::layout(%d) width=%d, layouted=%d\n", renderName(), deep, m_width, layouted());
@@ -890,8 +902,7 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
-    //printf("renderFlow::close()\n");
-    setParsing(false);
+    //printf("renderFlow::close()\n");    
     if(haveAnonymousBox())
     {
 	m_last->close();
@@ -904,18 +915,15 @@ void RenderFlow::close()
     }
     else
     {
-	//if(m_last)
-	//    m_height += m_last->height() + m_last->marginBottom();
-	if(m_style->hasBorder())
-	    m_height += borderBottom();
-	if(m_style->hasPadding())
-	    m_height += paddingBottom();
 	calcMinMaxWidth();
     }
-//    if(containingBlockWidth() < m_minWidth && m_parent)
-    if (!isAnonymousBox())
+    if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();
+    else
+    	containingBlock()->updateHeight();
 
+    setParsing(false);
+    
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::close() total height =%d\n", renderName(), m_height);
 #endif
@@ -928,30 +936,6 @@ void RenderFlow::addChild(RenderObject *newChild)
     printf("current height = %d\n", m_height);
 #endif
 
-    if(m_height == 0)
-    {
-	// to position the first element, we need the top
-        if(m_style->hasBorder())
-	    m_height += borderTop();
-	if(m_style->hasPadding())
-	    m_height += paddingTop();
-    }
-
-    int xPos = 0;
-    if(m_style->hasBorder())
-	xPos += borderLeft();
-    if(m_style->hasPadding())
-	xPos += paddingLeft();
-
-    int margin = 0;
-
-    if(m_last && !m_last->isInline() && !m_last->isFloating())
-    {
-    	if (!layouted())
-	    m_height += m_last->height();
-	margin = m_last->marginBottom();
-//	printf("last's margin = %d, last's height = %d\n", margin, m_last->height());
-    }
 
     if(m_childrenInline && !newChild->isInline() && !newChild->isFloating())
     {
@@ -974,12 +958,10 @@ void RenderFlow::addChild(RenderObject *newChild)
 		o->setParent(newBox);
 		o = o->nextSibling();
 	    }
-	    newBox->setPos(xPos, m_height);
 	    newBox->setParent(this);
 	    m_first = m_last = newBox;
 	    newBox->close();	    
 	    newBox->layout();
-	    m_height += newBox->height();
 	}
 	m_childrenInline = false;
     }
@@ -995,9 +977,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 		newStyle->setDisplay(BLOCK);
 		RenderFlow *newBox = new RenderFlow(newStyle);
 		newBox->setIsAnonymousBox(true);
-		newBox->setPos(xPos, m_height);
 		RenderObject::addChild(newBox);
-		newBox->calcWidth();
 		newBox->addChild(newChild);
 		setHaveAnonymousBox();
 		return;
@@ -1012,7 +992,6 @@ void RenderFlow::addChild(RenderObject *newChild)
 	{
 	    m_last->close();
 	    m_last->layout();
-	    m_height += m_last->height();
 	    setHaveAnonymousBox(false);
 //	    printf("closing anonymous box\n");
 	}
@@ -1023,22 +1002,11 @@ void RenderFlow::addChild(RenderObject *newChild)
     if(!newChild->isInline() && !newChild->isFloating())
     {
 	newChild->setParent(this);
-	//printf("new child's margin = %d\n", newChild->marginTop());
-	// ### FIXME
-	//margin = collapseMargins(margin, newChild->marginTop());
-	//### see comment in layoutBlockChildren
-	if(checkClear(newChild)) margin = 0;
-	margin = MAX(margin, newChild->marginTop());
-	//printf("margin = %d\n", margin);
-	m_height += margin;
-//	printf("positioning new block child at (%d/%d)\n", xPos, m_height);
-	newChild->calcWidth();
-	newChild->setPos(xPos + getIndent(newChild), m_height);
     }
 
     if(newChild->isFloating())
     {
-    	insertFloat(newChild);
+    	//insertFloat(newChild);
     }
 
     setLayouted(false);

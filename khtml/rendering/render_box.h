@@ -58,6 +58,7 @@ public:
 		       int _tx, int _ty);
 
     virtual void updateSize();
+    virtual void updateHeight();
     virtual void close();
 
     virtual QSize contentSize() const;

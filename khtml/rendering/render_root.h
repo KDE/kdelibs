@@ -25,6 +25,8 @@
 
 #include "render_flow.h"
 
+#include <qdatetime.h>
+
 class KHTMLView;
 class QScrollView;
 
@@ -45,6 +47,7 @@ public:
     virtual void calcWidth();
     virtual void absolutePosition(int &xPos, int&yPos);
     virtual void updateSize();
+    virtual void updateHeight();
     virtual void close();
 
     QScrollView *view();
@@ -55,6 +58,8 @@ public:
 
 protected:
     KHTMLView *m_view;
+    
+    QTime updateTimer;
 };
 
 };

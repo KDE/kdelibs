@@ -182,6 +182,9 @@ void KHTMLView::resizeEvent ( QResizeEvent * event )
 void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 {
     QRect r = pe->rect();
+    
+//    printf("viewportPaintEvent r x=%d,y=%d,w=%d,h=%d\n",
+//    	r.x(),r.y(),r.width(),r.height());
 
     NodeImpl *body = 0;
 
@@ -197,6 +200,11 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     int ey = r.y() + viewport()->y() + contentsY();
     int ew = r.width();
     int eh = r.height();
+    
+    if (ew<0)	    	// events generated with repaint() are bit weird...
+    	ew = pe->rect().width();
+    if (eh<0)
+    	eh = pe->rect().height();
 
     if(!body)
     {
@@ -205,7 +213,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
 	return;
     }
-    //printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
+//    printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
 
     if ( paintBuffer->width() < width() )
     {
