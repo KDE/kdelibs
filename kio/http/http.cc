@@ -435,10 +435,14 @@ int HTTPProtocol::openStream() {
     setMetaData("ssl_peer_cert_issuer", m_ssl.peerInfo().getPeerCertificate().getIssuer());
     // do we already have this info?
     // FIXME setMetaData("ssl_peer_ip", );
-    // FIXME setMetaData("ssl_peer_url", );
     setMetaData("ssl_cipher", m_ssl.connectionInfo().getCipher());
     setMetaData("ssl_cipher_desc", m_ssl.connectionInfo().getCipherDescription());
     setMetaData("ssl_cipher_version", m_ssl.connectionInfo().getCipherVersion());
+    QString tci;
+    tci.sprintf("%d", m_ssl.connectionInfo().getCipherUsedBits());
+    setMetaData("ssl_cipher_used_bits", tci);
+    tci.sprintf("%d", m_ssl.connectionInfo().getCipherBits());
+    setMetaData("ssl_cipher_bits", tci);
     return true;
   }
 #endif
