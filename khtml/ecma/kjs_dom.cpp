@@ -252,13 +252,27 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     case OffsetParent:
       return getDOMNode(exec,node.parentNode()); // not necessarily correct
     case ClientWidth:
-      return rend ? static_cast<Value>(Number(rend->contentWidth())) : Value(Undefined());
+      if (!rend)
+        return Undefined();
+      else
+        // "Width of the object including padding, but not including margin, border, or scroll bar."
+        return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
     case ClientHeight:
-      return rend ? static_cast<Value>(Number(rend->contentHeight())) : Value(Undefined());
+      if (!rend)
+        return Undefined();
+      else
+        // "Width of the object including padding, but not including margin, border, or scroll bar."
+        return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
     case ScrollLeft:
-      return rend ? static_cast<Value>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : Value(Undefined());
+      if (!rend)
+        return Undefined();
+      else
+        return Number(-rend->xPos() + node.ownerDocument().view()->contentsX());
     case ScrollTop:
-      return rend ? static_cast<Value>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : Value(Undefined());
+      if (!rend)
+        return Undefined();
+      else
+        return Number(-rend->yPos() + node.ownerDocument().view()->contentsY());
     default:
       kdWarning() << "Unhandled token in DOMNode::getValueProperty : " << token << endl;
       break;
