@@ -49,7 +49,7 @@ I chose the below paths - following Andreas's settings.
 /usr			prefix
 /usr/bin		kde binaries (was KDE/bin)
 /usr/lib/kde3		kde shared libraries (was KDE/lib)
-/usr/include/kde3	kde include files (was KDE/include)
+/usr/include/kde	kde include files (was KDE/include)
 /usr/lib/cgi-bin	kde cgi binaries (was KDE/cgi-bin)
 /usr/share/doc/kde/HTML kde online documentation (was KDE/share/doc)
 /etc/kde3		kde config files (was KDE/share/config)
