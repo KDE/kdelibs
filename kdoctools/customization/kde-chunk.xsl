@@ -29,4 +29,20 @@
   </FILENAME>
 </xsl:template>
 
+<xsl:param name="use.id.as.filename">1</xsl:param>
+<xsl:param name="generate.section.toc">1</xsl:param>
+
+<xsl:template name="dbhtml-filename">
+<xsl:choose>
+     <xsl:when test=". != /*">
+      <xsl:value-of select="@id"/>
+      <xsl:value-of select="$html.ext"/>
+     </xsl:when>
+     <xsl:otherwise>
+	<xsl:text>index.html</xsl:text>
+      </xsl:otherwise>
+</xsl:choose>
+</xsl:template>
+
+
 </xsl:stylesheet>
