@@ -556,12 +556,16 @@ QSize StringListSelectAndReorderSet::sizeHint() const
   // ########################################################
 }
 
+
+// ----- definition of the dialog class:
+
 StringListSAndRSetDialog::StringListSAndRSetDialog
 (QWidget* par, const char* text, bool modal)
   : QDialog(par, text, modal),
     sar(new StringListSelectAndReorderSet(this)),
     buttonOK(new QPushButton(this)),
-    buttonCancel(new QPushButton(this))
+    buttonCancel(new QPushButton(this)),
+    sizeIsFixed(false)
 {
   // ########################################################
   // ----- manage subwidgets:
@@ -569,6 +573,7 @@ StringListSAndRSetDialog::StringListSAndRSetDialog
   buttonCancel->setText(i18n("Cancel"));
   // ----- set up geometry:
   initializeGeometry();
+  resize(minimumSize());
   // ----- create connections:
   connect(buttonOK, SIGNAL(clicked()), SLOT(accept()));
   connect(buttonCancel, SIGNAL(clicked()), SLOT(reject()));
@@ -586,17 +591,51 @@ void StringListSAndRSetDialog::initializeGeometry()
     ButtonWidth=QMAX(buttonOK->sizeHint().width(),
 		     buttonCancel->sizeHint().width());
   int cx, cy;
-  // -----
+  // ----- calculate the needed size:
   cx=QMAX(sarSize.width(),
 	  3*Grid+2*ButtonWidth); 
-  cy=sarSize.height();
-  sar->setGeometry(0, 0, cx, cy);
-  cy+=Grid;
-  buttonOK->setGeometry(Grid, cy, ButtonWidth, ButtonHeight);
-  buttonCancel->setGeometry
-    (cx-ButtonWidth-Grid, cy, ButtonWidth, ButtonHeight);
-  cy+=ButtonHeight+Grid;
-  setFixedSize(cx, cy);
+  cy=sarSize.height()+Grid+ButtonHeight;
+  // ----- set either minimum or fixed size:
+  if(sizeIsFixed)
+    {
+      setFixedSize(cx, cy);
+    } else {
+      setMinimumSize(cx, cy);
+    }
+  // ########################################################
+}
+
+void StringListSAndRSetDialog::resizeEvent(QResizeEvent*)
+{
+  // ########################################################
+  // CONSTS:
+  const int Grid=5,
+    ButtonHeight=buttonOK->sizeHint().height(),
+    ButtonWidth=QMAX(buttonOK->sizeHint().width(),
+		     buttonCancel->sizeHint().width()),
+    SARHeight=height()-ButtonHeight-Grid,
+    ButtonY=SARHeight+Grid;
+  // CODE:
+  sar->setGeometry(0, 0, width(), SARHeight);
+  buttonOK->setGeometry
+    (0, ButtonY, ButtonWidth, ButtonHeight);
+  buttonCancel->setGeometry(width()-ButtonWidth, ButtonY, 
+			    ButtonWidth, ButtonHeight);
+  // ########################################################
+}
+
+void StringListSAndRSetDialog::fixSize(bool state)
+{
+  // ########################################################
+  sizeIsFixed=state;
+  initializeGeometry();
+  // ########################################################
+}
+
+bool StringListSAndRSetDialog::isSizeFixed()
+{
+  // ########################################################
+  return sizeIsFixed;
   // ########################################################
 }
 

@@ -1,9 +1,9 @@
 /* -*- C++ -*-
- * This dialog allows the user to select a  set of strings out of a string
- * list, again providing interfaces for STL and Qt string lists.  The list
- * is displayed in a listbox using  multiple selection,  and it does allow
+ * This  dialog allows the user to select a  set of strings out of a string
+ * list,  again providing interfaces for STL and Qt string lists.  The list
+ * is displayed in a  listbox using  multiple selection,  and it does allow
  * reordering of the selected strings.
- * For convenience and consistency,  the methods provided for querying the 
+ * For convenience and  consistency,  the methods provided for querying the 
  * users selection remain the same as in 
  *   StringListSelectSetDialog.
  * Thus you can query the selected strings or their indizes in the original
@@ -84,15 +84,29 @@ class StringListSAndRSetDialog
 public:
   StringListSAndRSetDialog
   (QWidget* par=0, const char* text=0, bool modal=true);
-  // this returns the "core" selector widget:
+  // this method returns the "core" selector widget:
   // (use its methods)
   StringListSelectAndReorderSet* selector();
+  /** You may allow the user to resize the dialog by calling
+    * fixSize(false);
+    * By default the dialog has a fixed size computed at startup.
+    * With variable sizes, the dialog sets a minimum size that 
+    * the window manager hopefully respects (kwm does).
+    */
+  // ----- method for switching "fixed size" state of the dialog:
+  void fixSize(bool state); 
+  // ----- method for querying "fixed size" state of the dialog:
+  bool isSizeFixed();
 protected slots:
   void initializeGeometry();
 protected:
   StringListSelectAndReorderSet* sar;
+  // events:
+  void resizeEvent(QResizeEvent*);
   // the buttons:
   QPushButton *buttonOK, *buttonCancel;
+  // others: 
+  bool sizeIsFixed; 
 };
 
 #endif // StringListSelectAndReorderSet_included

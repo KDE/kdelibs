@@ -52,11 +52,19 @@ public:
   void editable(bool state);
   // ----- method for querying "editable" state of the dialog:
   bool isEditable();
+  // ----- method for switching "fixed size" state of the dialog:
+  void fixSize(bool state); 
+  // ----- method for querying "fixed size" state of the dialog:
+  bool isSizeFixed();
 protected slots:
   void initializeGeometry();
 signals:
   void stringAdded(string); // not implemented!
   // void stringAdded(int); // not implemented!
+protected:
+  bool sizeIsFixed;
+  // ----- events:
+  void resizeEvent(QResizeEvent*);
 };
 
 #endif // StringListSelectOneDialog_included

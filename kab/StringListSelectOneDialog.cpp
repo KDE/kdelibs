@@ -15,12 +15,14 @@ extern "C" {
 StringListSelectOneDialog::StringListSelectOneDialog
 (QWidget* parent,
  const char* name)
-  : Inherited( parent, name )
+  : Inherited( parent, name ),
+    sizeIsFixed(false)
 {
   // ########################################################
   buttonOK->setDefault(true);
   buttonOK->setFocus();
   initializeGeometry();
+  resize(minimumSize());
   buttonOK->setText(i18n("OK"));
   buttonCancel->setText(i18n("Cancel"));
   // -----
@@ -34,6 +36,58 @@ StringListSelectOneDialog::~StringListSelectOneDialog()
 {
   // ########################################################  
   // ########################################################  
+}
+
+void StringListSelectOneDialog::fixSize(bool state)
+{
+  // ########################################################
+  sizeIsFixed=state;
+  initializeGeometry();
+  // ########################################################
+}
+
+bool StringListSelectOneDialog::isSizeFixed()
+{
+  // ########################################################
+  return sizeIsFixed;
+  // ########################################################
+}
+
+void StringListSelectOneDialog::resizeEvent(QResizeEvent*)
+{
+  // ########################################################
+  // CONSTS:
+  const int Grid=5;
+  const int ComboWidth=comboStrings->sizeHint().width(),
+    ComboHeight=comboStrings->sizeHint().height(), 
+    ButtonHeight=buttonOK->sizeHint().height(),
+    ButtonWidth=QMAX(buttonOK->sizeHint().width(),
+		     buttonCancel->sizeHint().width()),
+    InnerFrameHeight=height()-2*Grid-ButtonHeight,
+    InnerFrameWidth=width()-2*Grid;
+  // VARIABLES: 
+  int temp, tempy, x, y, cx, cy;
+  // CODE:
+  frameBase->setGeometry(0, 0, width(), height());
+  temp=frameBase->frameWidth()+Grid;
+  x=frameBase->contentsRect().width()-2*Grid;
+  y=frameBase->contentsRect().height()-ButtonHeight-3*Grid;
+  frameInner->setGeometry(temp, temp, x, y);
+  temp=frameInner->x()+frameInner->contentsRect().x();
+  y=frameInner->contentsRect().height()-2*Grid-ComboHeight;
+  labelHeadline->setGeometry
+    (temp, temp+Grid, frameInner->contentsRect().width(), y);
+  temp+=Grid;
+  tempy=labelHeadline->y()+labelHeadline->height();
+  x=frameInner->contentsRect().width()-2*Grid;
+  comboStrings->setGeometry(temp, tempy, x, ComboHeight);
+  tempy=frameInner->y()+frameInner->height()+Grid;
+  buttonOK->setGeometry
+    (frameInner->x(), tempy,  ButtonWidth, ButtonHeight);
+  buttonCancel->setGeometry
+    (frameInner->x()+frameInner->width()-ButtonWidth, tempy,
+     ButtonWidth, ButtonHeight);     
+  // ########################################################
 }
 
 void StringListSelectOneDialog::initializeGeometry()
@@ -52,42 +106,19 @@ void StringListSelectOneDialog::initializeGeometry()
   // ----- determine combo and label width and height:
   tempx=QMAX(ComboWidth, HLWidth);
   tempy=ComboHeight+Grid+HLHeight;
-  x=tempx;
   // ----- determine inner frame width and height:
   tempx=tempx+2*frameInner->frameWidth()+2*Grid;
-  if(tempx<2*buttonWidth)
-    { //       enlarge inner frame:
-      tempx=2*buttonWidth;
-    } else { 
-      //       enlarge buttons:
-      buttonWidth=tempx/2;
-    }
   tempy=tempy+2*frameInner->frameWidth()+2*Grid;
   // ----- determine best dialog size:
   cx=2*Grid+2*frameBase->frameWidth()+tempx;
-  cy=3*Grid+2*frameInner->frameWidth()+tempy+ButtonHeight;
+  cy=3*Grid+2*frameBase->frameWidth()+tempy+ButtonHeight;
   // ----- now set the geometry of the dialog:
-  setFixedSize(cx, cy);
-  frameBase->setGeometry(0, 0, cx, cy);
-  frameInner->setGeometry
-    (frameBase->frameWidth()+Grid, 
-     frameBase->frameWidth()+Grid,
-     tempx, tempy);
-  labelHeadline->setGeometry
-    (frameInner->x()+Grid+frameInner->frameWidth(), 
-     frameInner->y()+Grid+frameInner->frameWidth(), 
-     x, HLHeight);
-  comboStrings->setGeometry
-    (labelHeadline->x(), labelHeadline->y()+HLHeight+Grid,
-     x, ComboHeight);
-  buttonOK->setGeometry
-    (frameInner->x(), 
-     frameInner->y()+frameInner->height()+Grid,
-     buttonWidth, ButtonHeight);
-  buttonCancel->setGeometry
-    (frameInner->x()+buttonWidth, 
-     frameInner->y()+frameInner->height()+Grid,
-     buttonWidth, ButtonHeight);     
+  if(sizeIsFixed)
+    {
+      setFixedSize(cx, cy);
+    } else {
+      setMinimumSize(cx, cy);
+    }
   // ########################################################  
 }
 

@@ -79,7 +79,7 @@ ComboBox {
 }
 Label {
 		Text {Select one of the strings:}
-		Alignment {292}
+		Alignment {268}
 		AutoResize {FALSE}
 		Margin {-1}
 		Rect {15 15 190 20}

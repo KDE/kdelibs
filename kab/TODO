@@ -4,6 +4,8 @@ If you want kab to be extended, please send a mail to me. Also
 contact me if you want to comment some of the features mentioned 
 below. Send the mail to mirko@kde.org
 Thanks.
+PS: I am still looking for volunteers who try writing the import filters. 
+    Most often I do not have the different other addressbook programs myselfes.
 --------------------------------------------------------------------------------
 ° [done] change mail addresses to an unlimited list with selection before
          sending an email
@@ -16,6 +18,8 @@ Thanks.
   - Microsoft outlook
   - bbdb
   - Pine
+  - Corel 8 - Suite address book 
+  - Time & Chaos
   - what else?
 ° enhance the telephone numbers section, using home/work/..., 
   fixed/mobile, and so on
