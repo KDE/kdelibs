@@ -33,6 +33,7 @@ class QTimer;
 namespace KABC {
 
 class FormatPlugin;
+class Lock;
 
 /**
   @internal
@@ -96,8 +97,6 @@ class ResourceDir : public Resource
 
   protected:
     void init( const QString &path, const QString &format );
-    bool lock( const QString &path );
-    void unlock( const QString &path );
 
   private:
     FormatPlugin *mFormat;
@@ -106,7 +105,8 @@ class ResourceDir : public Resource
 
     QString mPath;
     QString mFormatName;
-    QString mLockUniqueName;
+
+    Lock *mLock;
 
     bool mAsynchronous;
 

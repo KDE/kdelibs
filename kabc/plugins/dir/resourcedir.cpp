@@ -38,11 +38,10 @@
 #include <kurlrequester.h>
 
 #include "addressbook.h"
-
 #include "formatfactory.h"
-
 #include "resourcedirconfig.h"
 #include "stdaddressbook.h"
+#include "lock.h"
 
 #include "resourcedir.h"
 
@@ -85,6 +84,8 @@ void ResourceDir::init( const QString &path, const QString &format )
     mFormat = factory->format( mFormatName );
   }
 
+  mLock = 0;
+
   connect( &mDirWatch, SIGNAL( dirty(const QString&) ), SLOT( pathChanged() ) );
   connect( &mDirWatch, SIGNAL( created(const QString&) ), SLOT( pathChanged() ) );
   connect( &mDirWatch, SIGNAL( deleted(const QString&) ), SLOT( pathChanged() ) );
@@ -110,18 +111,29 @@ Ticket *ResourceDir::requestSaveTicket()
 {
   kdDebug(5700) << "ResourceDir::requestSaveTicket()" << endl;
 
-  if ( !lock( mPath ) ) {
-    kdDebug(5700) << "ResourceDir::requestSaveTicket(): Unable to lock path '"
-                  << mPath << "'" << endl;
+  if ( !addressBook() ) return 0;
+
+  delete mLock;
+  mLock = new Lock( mPath );
+
+  if ( mLock->lock() ) {
+    addressBook()->emitAddressBookLocked();
+  } else {
+    addressBook()->error( mLock->error() );
+    kdDebug(5700) << "ResourceFile::requestSaveTicket(): Unable to lock path '"
+                  << mPath << "': " << mLock->error() << endl;
     return 0;
   }
+
   return createTicket( this );
 }
 
 void ResourceDir::releaseSaveTicket( Ticket *ticket )
 {
   delete ticket;
-  unlock( mPath );
+  
+  delete mLock;
+  mLock = 0;
 }
 
 bool ResourceDir::doOpen()
@@ -194,7 +206,7 @@ bool ResourceDir::asyncLoad()
   return ok;
 }
 
-bool ResourceDir::save( Ticket* )
+bool ResourceDir::save( Ticket * )
 {
   kdDebug(5700) << "ResourceDir::save(): '" << mPath << "'" << endl;
 
@@ -232,75 +244,6 @@ bool ResourceDir::asyncSave( Ticket *ticket )
     emit savingFinished( this );
 
   return ok;
-}
-
-bool ResourceDir::lock( const QString &path )
-{
-  kdDebug(5700) << "ResourceDir::lock()" << endl;
-
-  QString p = path;
-  p.replace( "/", "_" );
-
-  QString lockName = locateLocal( "data", "kabc/lock/" + p + ".lock" );
-  kdDebug(5700) << "-- lock name: " << lockName << endl;
-
-  if ( QFile::exists( lockName ) ) {  // check if it is a stale lock file
-    QFile file( lockName );
-    if ( !file.open( IO_ReadOnly ) )
-      return false;
-
-    QDataStream t( &file );
-
-    QString app; int pid;
-    t >> pid >> app;
-
-    int retval = ::kill( pid, 0 );
-    if ( retval == -1 && errno == ESRCH ) { // process doesn't exists anymore
-      QFile::remove( lockName );
-      kdError() << "dedect stale lock file from process '" << app << "'" << endl;
-      file.close();
-    } else {
-      addressBook()->error( i18n( "The resource '%1' is locked by application '%2'." )
-                            .arg( resourceName() ).arg( app )  );
-      return false;
-    }
-  }
-
-  QString lockUniqueName;
-  lockUniqueName = p + kapp->randomString( 8 );
-  mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
-  kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
-
-  // Create unique file
-  QFile file( mLockUniqueName );
-  file.open( IO_WriteOnly );
-  QDataStream t( &file );
-  t << ::getpid() << QString( KGlobal::instance()->instanceName() );
-  file.close();
-
-  // Create lock file
-  int result = ::link( QFile::encodeName( mLockUniqueName ),
-                       QFile::encodeName( lockName ) );
-
-  if ( result == 0 ) {
-    addressBook()->emitAddressBookLocked();
-    return true;
-  }
-
-  // TODO: check stat
-
-  return false;
-}
-
-void ResourceDir::unlock( const QString &path )
-{
-  QString p = path;
-  p.replace( "/" , "_" );
-
-  QString lockName = locate( "data", "kabc/lock/" + p + ".lock" );
-  ::unlink( QFile::encodeName( lockName ) );
-  QFile::remove( mLockUniqueName );
-  addressBook()->emitAddressBookUnlocked();
 }
 
 void ResourceDir::setPath( const QString &path )
@@ -357,7 +300,8 @@ void ResourceDir::removeAddressee( const Addressee& addr )
 
 void ResourceDir::cleanUp()
 {
-  unlock( mPath );
+  delete mLock;
+  mLock = 0;
 }
 
 #include "resourcedir.moc"

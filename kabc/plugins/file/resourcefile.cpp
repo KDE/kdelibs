@@ -312,6 +312,7 @@ void ResourceFile::removeAddressee( const Addressee &addr )
 void ResourceFile::cleanUp()
 {
   delete mLock;
+  mLock = 0;
 }
 
 void ResourceFile::downloadFinished( KIO::Job* )
