@@ -1,13 +1,16 @@
 [Misc]
 Name=KDE-Sgi
+Name[de]=KDE-SGI
 Name[eo]=KDE-SGI
 Name[et]=KDE-SGI
 Name[it]=KDE Sgi
 Name[ru]=KDE-SGI
 Comment=Sgi-like style
 Comment[ca]=Estil del tipus Sgi
+Comment[de]=SGI-ähnlicher Stil
 Comment[eo]=SGI-simila stilo
 Comment[et]=SGI laadne stiil
+Comment[hu]=Sgi szerű kinézet
 Comment[it]=Stile Sgi
 Comment[nl]=Sgi-achtige stijl
 Comment[no]=Sgi-lignende stil
