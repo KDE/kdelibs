@@ -8,12 +8,25 @@
 #include "kkeyserver_x11.h"
 #include "kshortcut.h"
 
+/**
+ * @internal
+ * Represents a key code and modifier combination.
+ */
 class CodeMod
 {
  public:
+  /**
+   * The key code of the CodeMod.
+   */
 	uchar code;
+  /**
+   * The modifier flags of the CodeMod.
+   */
 	uint mod;
 
+	/**
+	 * Compares two CodeMods. 
+	 */
 	bool operator < ( const CodeMod& b ) const
 	{
 		if( code < b.code ) return true;
