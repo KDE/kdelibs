@@ -52,6 +52,12 @@
 #include <kcmdlineargs.h>
 #include <kcrash.h>
 
+#undef ANNOYING_POPUP
+
+#ifdef ANNOYING_POPUP
+#include <kmessagebox.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
@@ -78,7 +84,8 @@ static VFolderMenu *g_vfolder = 0;
 
 static const char *cSycocaPath = 0;
 
-static bool bGlobalDatabase = 0;
+static bool bGlobalDatabase = false;
+static bool bMenuTest = false;
 
 void crashHandler(int)
 {
@@ -356,7 +363,7 @@ bool KBuildSycoca::build()
 
   bool result = !uptodate || !g_ctimeDict->isEmpty();
   
-  if (result)
+  if (result || bMenuTest)
   {
      g_resource = "apps";
      g_factory = g_bsf;
@@ -384,6 +391,8 @@ bool KBuildSycoca::build()
         uptodate = false;
         g_changeList->append(g_resource);
      }
+     if (bMenuTest)
+        return false;
   }
   
   return result;
@@ -426,7 +435,14 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
      name = "/";
   for(QDictIterator<KService> it(menu->items); it.current(); ++it)
   {
-     g_bsgf->addNewEntryTo(name, it.current());
+     if (bMenuTest)
+     {
+        printf("%s\t%s\n", name.latin1(), locate("apps", it.current()->desktopEntryPath()).latin1());
+     }
+     else
+     {
+        g_bsgf->addNewEntryTo(name, it.current());
+     }
   }
 }
 
@@ -473,6 +489,8 @@ void KBuildSycoca::recreate()
   {
     m_str = 0L;
     database.abort();
+    if (bMenuTest)
+       return;
     kdDebug(7021) << "Database is up to date" << endl;
   }
 
@@ -661,11 +679,12 @@ static KCmdLineOptions options[] = {
    { "noincremental", I18N_NOOP("Disable incremental update, re-read everything."), 0 },
    { "checkstamps", I18N_NOOP("Check file timestamps."), 0 },
    { "global", I18N_NOOP("Create global database."), 0 },
+   { "menutest", I18N_NOOP("Perform menu generation test run only."), 0 },
    KCmdLineLastOption
 };
 
 static const char *appName = "kbuildsycoca";
-static const char *appVersion = "1.0";
+static const char *appVersion = "1.1";
 
 class WaitForSignal : public QObject
 {
@@ -686,6 +705,7 @@ extern "C" int kdemain(int argc, char **argv)
    KCmdLineArgs::addCmdLineOptions(options);
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    bGlobalDatabase = args->isSet("global");
+   bMenuTest = args->isSet("menutest");
 
    if (bGlobalDatabase)
    {
@@ -694,7 +714,11 @@ extern "C" int kdemain(int argc, char **argv)
    }
 
    KApplication::disableAutoDcopRegistration();
+#ifdef ANNOYING_POPUP
+   KApplication k;
+#else
    KApplication k(false, false);
+#endif
    k.disableSessionManagement();
 
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
@@ -836,6 +860,9 @@ qWarning("Reusing existing ksycoca");
      stream << *g_changeList;
      dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged(QStringList)", data );
    }
+#ifdef ANNOYING_POPUP
+   KMessageBox::information(0, i18n("System Configuration Cache (ksycoca) successfully updated."));
+#endif
    return 0;
 }
 
