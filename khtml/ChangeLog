@@ -1,3 +1,7 @@
+2004-02-29  Dirk Mueller  <mueller@kde.org>
+
+	* misc/loader_jpeg.cpp: fix incredibly rare lockup in jpeg decoder.
+
 2004-02-28  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_block.cpp (layoutBlockChildren):
