@@ -12,8 +12,8 @@ Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdelibs3, kdepim-libs (<< 3.0-0.alpha1-1), koffice-libs, kdebase-libs (<< 4:2.2.1-2)
 Depends: ${shlibs:Depends}, kdelibs4-common | kdelibs-common, python, xbase-clients
-Recommends: libarts1, libarts-bin, libkmid0, libkmid-bin, kdelibs4-cups, aspell | ispell, libssl0.9.6
-Suggests: anti-aliasing-howto, gdb
+Recommends: libarts1, libarts-bin, libkmid0, libkmid-bin, aspell | ispell, libssl0.9.6
+Suggests: anti-aliasing-howto, gdb, kdelibs4-cups
 Provides: kdelibs
 Description: KDE core libraries (runtime files)
  KDE core libraries.
