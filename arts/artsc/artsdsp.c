@@ -112,6 +112,9 @@ static orig_access_ptr orig_access;
 static int artsdsp_debug = 0;
 static int artsdsp_init = 0;
 
+void *mmap(void  *start,  size_t length, int prot, int flags,
+                     int fd, off_t offset);
+int munmap(void *start, size_t length);
 #define CHECK_INIT() if(!artsdsp_init) artsdsp_doinit();
 
 /*

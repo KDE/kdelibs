@@ -50,7 +50,7 @@ static struct arts_backend {
 	backend_write_ptr write;
 	backend_stream_set_ptr stream_set;
 	backend_stream_get_ptr stream_get;
-} backend = { 0,0,0,0,0,0,0,0,0,0,0,0 };
+} backend = { 0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 static void arts_backend_ref()
 {
