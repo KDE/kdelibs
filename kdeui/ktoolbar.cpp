@@ -186,7 +186,7 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 
 KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool readConfig )
     : QToolBar( QString::fromLatin1( name ),
-      parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0,
+      parent && parent->inherits( "QMainWindow" ) ? static_cast<QMainWindow*>(parent) : 0,
       parent, FALSE,
       name ? name : "mainToolBar")
 {
@@ -1292,19 +1292,19 @@ QSizePolicy KToolBar::sizePolicy() const
 QSize KToolBar::sizeHint() const
 {
     QSize minSize(0,0);
-    KToolBar *this_too = (KToolBar *)this;
+    KToolBar *ncThis = const_cast<KToolBar *>(this);
 
-    this_too->polish();
+    ncThis->polish();
 
-    int margin = ((QWidget *)this)->layout()->margin();
+    int margin = static_cast<QWidget*>(ncThis)->layout()->margin();
     switch( barPos() )
     {
      case KToolBar::Top:
      case KToolBar::Bottom:
-       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() )
+       for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
        {
           if ( w->inherits( "KToolBarSeparator" ) &&
-             !( (KToolBarSeparator*)w )->showLine() )
+             !( static_cast<KToolBarSeparator*>(w)->showLine() ) )
           {
              minSize += QSize(6, 0);
           }
@@ -1323,10 +1323,10 @@ QSize KToolBar::sizeHint() const
 
      case KToolBar::Left:
      case KToolBar::Right:
-       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() )
+       for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
        {
           if ( w->inherits( "KToolBarSeparator" ) &&
-             !( (KToolBarSeparator*)w )->showLine() )
+             !( static_cast<KToolBarSeparator*>(w)->showLine() ) )
           {
              minSize += QSize(0, 6);
           }
