@@ -37,6 +37,8 @@ public class KJASAppletRunner
 
         KJASAppletContext context = new KJASAppletContext( contextId );
         contexts.put( contextId, context );
+
+        Main.showConsole();
     }
 
     public void destroyContext( String contextId )
@@ -49,6 +51,10 @@ public class KJASAppletRunner
 
         context.destroy();
         contexts.remove( contextId );
+
+        if( contexts.size() == 0 )
+            Main.hideConsole();
+
     }
 
     public void createApplet( String contextId,

@@ -132,15 +132,21 @@ public class KJASProtocolHandler
             for( int i = 0; i < num_params; i++ )
             {
                 String name  = getArg( command );
-                String value = getArg( command );
+                if( name == null )
+                    name = new String();
 
+                String value = getArg( command );
+                if( value == null )
+                    value = new String();
+
+                Main.kjas_debug( "put parameter, name = " + name + ", value = " + value );
                 params.put( name, value );
             }
 
             Main.kjas_debug( "createApplet, context = " + contextID + ", applet = " + appletID );
             Main.kjas_debug( "              name = " + appletName + ", classname = " + className );
             Main.kjas_debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
-            Main.kjas_debug( "              archives = " + archives );
+            Main.kjas_debug( "              archives = " + archives + ", width = " + width + ", height = " + height );
 
             runner.createApplet( contextID, appletID, appletName, className,
                                  baseURL, codeBase, archives,

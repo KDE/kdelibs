@@ -19,6 +19,7 @@ public class Main
 
     public static KJASProtocolHandler protocol;
     public static KJASConsole console;
+    private static boolean show_console;
 
     static
     {
@@ -48,6 +49,24 @@ public class Main
         t.printStackTrace();
     }
 
+    public static void showConsole()
+    {
+        if( show_console )
+            console.setVisible( true );
+    }
+
+    public static void hideConsole()
+    {
+        if( show_console );
+            console.setVisible( false );
+    }
+
+    private static boolean checkForJavaVersion()
+    {
+        String version  = System.getProperty("java.version");;
+        return version.startsWith("1.1");	
+    }
+
     public static void main( String[] args )
     {
         // Check for Java version. We do not support Java 1.1
@@ -58,8 +77,8 @@ public class Main
 	
         if( bad_jdk )
         {
-            System.err.println("\nERROR: This version of Java is not supported for security reasons."
-            System.err.println(  "       Please use Java version 1.2 or higher.");
+            System.err.println( "ERROR: This version of Java is not supported for security reasons." );
+            System.err.println( "       Please use Java version 1.2 or higher." );
             return;
         }
 
@@ -84,9 +103,5 @@ public class Main
         }
     }
 
-    private static boolean checkForJavaVersion()
-    {
-        String version  = System.getProperty("java.version");;
-        return version.startsWith("1.1");	
-    }
+
 }

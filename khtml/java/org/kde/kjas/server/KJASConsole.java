@@ -20,9 +20,11 @@ public class KJASConsole
         Panel btns = new Panel(new BorderLayout());
 
         Button clear = new Button("Clear");
+        Button save  = new Button("Save");
         Button close = new Button("Close");
         
         btns.add(clear, "West");
+        btns.add(save, "Center");
         btns.add(close, "East");
 
         main.add(txt, "Center");
@@ -35,6 +37,25 @@ public class KJASConsole
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     txt.setText("");
+                }
+            }
+        );
+
+        save.addActionListener
+        (
+            new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    try
+                    {
+                        //dump the console's contents to a file
+                        String all_text = txt.getText();
+                        FileOutputStream output = new FileOutputStream( "/tmp/kjas.log", false );
+                        output.write( all_text.getBytes() );
+                    }
+                    catch( IOException ex )
+                    {
+                        Main.kjas_debug( "could not save output stream" );
+                    }
                 }
             }
         );
