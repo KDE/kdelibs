@@ -983,7 +983,7 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 	italic = TRUE;
 	weight = QFont::Normal;
 	selectFont();
-	pushBlock(ID_ADDRESS, 2, &blockEndFont, true);
+	pushBlock(ID_ADDRESS, 2, &KHTMLParser::blockEndFont, true);
     }
     else if ( strncmp( str, "/address", 8) == 0 )
     {
@@ -1088,7 +1088,7 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
     else if ( strncmp(str, "big", 3 ) == 0 )
     {
 	selectFont( +2 );
-	pushBlock(ID_BIG, 1, &blockEndFont);
+	pushBlock(ID_BIG, 1, &KHTMLParser::blockEndFont);
     }
     else if ( strncmp(str, "/big", 4 ) == 0 )
     {
@@ -1096,7 +1096,7 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
     }
     else if ( strncmp(str, "blockquote", 10 ) == 0 )
     {
-	pushBlock(ID_BLOCKQUOTE, 2, &blockEndIndent, indent);
+	pushBlock(ID_BLOCKQUOTE, 2, &KHTMLParser::blockEndIndent, indent);
 	indent += INDENT_SIZE;
 	flow = 0; 
     }
@@ -1195,7 +1195,7 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
 	{
 	    weight = QFont::Bold;
 	    selectFont();
-	    pushBlock(ID_B, 1, &blockEndFont);
+	    pushBlock(ID_B, 1, &KHTMLParser::blockEndFont);
 	}
     }
     else if ( strncmp(str, "/b", 2 ) == 0 )
@@ -1236,7 +1236,7 @@ void KHTMLParser::parseC( HTMLClue *_clue, const char *str )
 		italic = TRUE;
 		weight = QFont::Normal;
 		selectFont();
-		pushBlock(ID_CITE, 1, &blockEndFont);
+		pushBlock(ID_CITE, 1, &KHTMLParser::blockEndFont);
 	}
 	else if (strncmp( str, "/cite", 5) == 0)
 	{
@@ -1246,7 +1246,7 @@ void KHTMLParser::parseC( HTMLClue *_clue, const char *str )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
-		pushBlock(ID_CODE, 1, &blockEndFont);
+		pushBlock(ID_CODE, 1, &KHTMLParser::blockEndFont);
 	}
 	else if (strncmp(str, "/code", 5 ) == 0 )
 	{
@@ -1263,7 +1263,7 @@ void KHTMLParser::parseD( HTMLClue *_clue, const char *str )
     if ( strncmp( str, "dir", 3 ) == 0 )
     {
 	closeAnchor();
-	pushBlock(ID_DIR, 2, &blockEndList, indent, false);
+	pushBlock(ID_DIR, 2, &KHTMLParser::blockEndList, indent, false);
 	listStack.push( new HTMLList( Dir ) );
 	indent += INDENT_SIZE;
     }
@@ -1363,7 +1363,7 @@ void KHTMLParser::parseE( HTMLClue * _clue, const char *str )
 	{
 		italic = TRUE;
 		selectFont();
-		pushBlock(ID_EM, 1, &blockEndFont);
+		pushBlock(ID_EM, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp( str, "/em", 3 ) == 0 )
 	{
@@ -1430,7 +1430,7 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 		    currentFont()->weight(), currentFont()->italic() );
 	    else
 		selectFont( newSize );
-	    pushBlock(ID_FONT, 1, &blockEndColorFont);
+	    pushBlock(ID_FONT, 1, &KHTMLParser::blockEndColorFont);
 	}
 	else if ( strncmp( str, "/font", 5 ) == 0 )
 	{
@@ -1455,7 +1455,7 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 	       oldFrameSet->append(frameSet);
 	    }
 	    HTMLWidget->addFrameSet( frameSet);
-	    pushBlock( ID_FRAMESET, 4, &blockEndFrameSet, (int) oldFrameSet );
+	    pushBlock( ID_FRAMESET, 4, &KHTMLParser::blockEndFrameSet, (int) oldFrameSet );
 	}
 	else if ( strncmp( str, "/frameset", 9 ) == 0 )
         {
@@ -1544,7 +1544,7 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 	    HTMLWidget->addForm( form);
 
             vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	    pushBlock( ID_FORM, 2, &blockEndForm);
+	    pushBlock( ID_FORM, 2, &KHTMLParser::blockEndForm);
 	}
 	else if ( strncmp( str, "/form", 5 ) == 0 )
 	{
@@ -1626,7 +1626,7 @@ void KHTMLParser::parseH( HTMLClue *_clue, const char *str )
 		}
 		// Insert a vertical space and restore the old font at the 
 		// closing tag
-		pushBlock(ID_HEADER, 2, &blockEndFont, true );
+		pushBlock(ID_HEADER, 2, &KHTMLParser::blockEndFont, true );
 	}
 	else if ( *str=='/' && *(str+1)=='h' &&
 	    ( *(str+2)=='1' || *(str+2)=='2' || *(str+2)=='3' ||
@@ -1834,7 +1834,7 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 	{
 	    italic = TRUE;
 	    selectFont();
-	    pushBlock(ID_I, 1, &blockEndFont);
+	    pushBlock(ID_I, 1, &KHTMLParser::blockEndFont);
 	}
     }
     else if ( strncmp( str, "/i", 2 ) == 0 )
@@ -1854,7 +1854,7 @@ void KHTMLParser::parseK( HTMLClue * _clue, const char *str )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
-		pushBlock(ID_KBD, 1, &blockEndFont);
+		pushBlock(ID_KBD, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp(str, "/kbd", 4 ) == 0 )
 	{
@@ -1966,7 +1966,7 @@ void KHTMLParser::parseM( HTMLClue *_clue, const char *str )
 	{
 		closeAnchor();
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		pushBlock( ID_MENU, 2, &blockEndList, indent, false);
+		pushBlock( ID_MENU, 2, &KHTMLParser::blockEndList, indent, false);
 		listStack.push( new HTMLList( Menu ) );
 		indent += INDENT_SIZE;
 	}
@@ -2059,11 +2059,11 @@ void KHTMLParser::parseO( HTMLClue *_clue, const char *str )
 	if ( listStack.isEmpty() )
 	{
 	    vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	    pushBlock( ID_OL, 2, &blockEndList, indent, true);
+	    pushBlock( ID_OL, 2, &KHTMLParser::blockEndList, indent, true);
 	}
 	else
 	{
-	    pushBlock( ID_OL, 2, &blockEndList, indent, false);
+	    pushBlock( ID_OL, 2, &KHTMLParser::blockEndList, indent, false);
 	}
 
 	ListNumType listNumType = Numeric;
@@ -2152,7 +2152,7 @@ void KHTMLParser::parseP( HTMLClue *_clue, const char *str )
 		    QFont::Normal, FALSE );
 		flow = 0;
 		inPre = true;
-		pushBlock(ID_PRE, 2, &blockEndPre);
+		pushBlock(ID_PRE, 2, &KHTMLParser::blockEndPre);
 	}	
 	else if ( strncmp( str, "/pre", 4 ) == 0 )
 	{
@@ -2214,7 +2214,7 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
-		pushBlock(ID_SAMP, 1, &blockEndFont);
+		pushBlock(ID_SAMP, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp(str, "/samp", 5 ) == 0)
 	{
@@ -2269,7 +2269,7 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	else if ( strncmp(str, "small", 5 ) == 0 )
 	{
 		selectFont( -1 );
-		pushBlock(ID_SMALL, 1, &blockEndFont);
+		pushBlock(ID_SMALL, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp(str, "/small", 6 ) == 0 )
 	{
@@ -2279,7 +2279,7 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	{
 		weight = QFont::Bold;
 		selectFont();
-		pushBlock(ID_STRONG, 1, &blockEndFont);
+		pushBlock(ID_STRONG, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp(str, "/strong", 7 ) == 0 )
 	{
@@ -2289,7 +2289,7 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	{
 	    strikeOut = TRUE;
 	    selectFont();
-	    pushBlock(ID_STRIKE, 1, &blockEndFont);
+	    pushBlock(ID_STRIKE, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp(str, "s", 1 ) == 0 )
 	{
@@ -2297,7 +2297,7 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	    {
 		strikeOut = TRUE;
 		selectFont();
-		pushBlock(ID_S, 1, &blockEndFont);
+		pushBlock(ID_S, 1, &KHTMLParser::blockEndFont);
 	    }
 	}
 	else if ( strncmp(str, "/s", 2 ) == 0 )
@@ -2333,7 +2333,7 @@ void KHTMLParser::parseT( HTMLClue *_clue, const char *str )
 	{
 		title = "";
 		inTitle = true;
-		pushBlock(ID_TITLE, 3, &blockEndTitle);
+		pushBlock(ID_TITLE, 3, &KHTMLParser::blockEndTitle);
 	}
 	else if ( strncmp( str, "/title", 6 ) == 0 )
 	{
@@ -2397,7 +2397,7 @@ void KHTMLParser::parseT( HTMLClue *_clue, const char *str )
 	{
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
-		pushBlock(ID_TT, 1, &blockEndFont);
+		pushBlock(ID_TT, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp( str, "/tt", 3 ) == 0 )
 	{
@@ -2415,11 +2415,11 @@ void KHTMLParser::parseU( HTMLClue *_clue, const char *str )
 	    if ( listStack.isEmpty() )
 	    {
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		pushBlock( ID_UL, 2, &blockEndList, indent, true);
+		pushBlock( ID_UL, 2, &KHTMLParser::blockEndList, indent, true);
 	    }
 	    else
 	    {
-		pushBlock( ID_UL, 2, &blockEndList, indent, false);
+		pushBlock( ID_UL, 2, &KHTMLParser::blockEndList, indent, false);
 	    }
 
 	    ListType type = Unordered;
@@ -2446,7 +2446,7 @@ void KHTMLParser::parseU( HTMLClue *_clue, const char *str )
 	{
 	    underline = TRUE;
 	    selectFont();
-	    pushBlock(ID_U, 1, &blockEndFont);
+	    pushBlock(ID_U, 1, &KHTMLParser::blockEndFont);
 	}
     }
     else if ( strncmp( str, "/u", 2 ) == 0 )
@@ -2462,7 +2462,7 @@ void KHTMLParser::parseV( HTMLClue * _clue, const char *str )
 	{
 		italic = TRUE;
 		selectFont();
-	   	pushBlock(ID_VAR, 1, &blockEndFont);
+	   	pushBlock(ID_VAR, 1, &KHTMLParser::blockEndFont);
 	}
 	else if ( strncmp( str, "/var", 4 ) == 0)
 	{
@@ -2830,7 +2830,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 		    {
 			weight = QFont::Bold;
 			selectFont();
-			pushBlock( ID_TH, 3, &blockEndFont);
+			pushBlock( ID_TH, 3, &KHTMLParser::blockEndFont);
 		        str = parseBody( cell, endthtd );
                         popBlock( ID_TH, cell );
 		    }
