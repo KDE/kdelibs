@@ -997,6 +997,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         setVScrollBarMode( Auto );
     }
     KCursor::setAutoHideCursor(this, true);
+    setTextFormat(QTextEdit::PlainText);
     setAutoMask(true);
     setMouseTracking(true);
 }
