@@ -23,8 +23,8 @@ libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la \
 libkabc_la_SOURCES = \
   address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \
   distributionlist.cpp distributionlistdialog.cpp distributionlisteditor.cpp \
-  errorhandler.cpp field.cpp formatfactory.cpp geo.cpp key.cpp phonenumber.cpp \
-  picture.cpp plugin.cpp resource.cpp \
+  errorhandler.cpp field.cpp formatfactory.cpp geo.cpp messaging.cpp key.cpp \
+  phonenumber.cpp picture.cpp plugin.cpp resource.cpp \
   secrecy.cpp sound.cpp stdaddressbook.cpp \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
   vcardformatimpl.cpp vcardformatplugin.cpp \
@@ -34,7 +34,7 @@ libkabc_la_SOURCES = \
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   agent.h distributionlist.h distributionlistdialog.h distributionlisteditor.h \
-  errorhandler.h field.h formatfactory.h formatplugin.h geo.h key.h \
+  errorhandler.h field.h formatfactory.h formatplugin.h geo.h messaging.h key.h \
   phonenumber.h picture.h plugin.h resource.h \
   secrecy.h sound.h stdaddressbook.h timezone.h \
   vcardconverter.h vcardformat.h vcardformatplugin.h \

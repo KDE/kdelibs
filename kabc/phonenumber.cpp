@@ -43,7 +43,7 @@ PhoneNumber::~PhoneNumber()
 
 void PhoneNumber::init()
 {
-  mId = KApplication::randomString(8);
+  mId = KApplication::randomString( 8 );
 }
 
 bool PhoneNumber::operator==( const PhoneNumber &p ) const

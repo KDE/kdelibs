@@ -33,6 +33,7 @@
 #include "agent.h"
 #include "geo.h"
 #include "key.h"
+#include "messaging.h"
 #include "phonenumber.h"
 #include "picture.h"
 #include "secrecy.h"
@@ -168,7 +169,7 @@ class Addressee
     void setEmails( const QStringList& list);
 
     /**
-      Insert a phone number. If a phoen number with the same id already exists
+      Insert a phone number. If a phone number with the same id already exists
       in this addressee it is not duplicated.
      */
     void insertPhoneNumber( const PhoneNumber &phoneNumber );
@@ -242,6 +243,38 @@ class Addressee
       Return key with the given id.
      */
     Key findKey( const QString &id ) const;
+
+    /**
+      Insert an IM record. If a im with the same id already exists
+      in this addressee it is not duplicated.
+     */
+    void insertMessaging( const Messaging &im );
+
+    /**
+      Removes IM record. If no IM record with the given id exists for this
+      addresse nothing happens.
+     */
+    void removeMessaging( const Messaging &im );
+
+    /**
+      Returns IM, which matches the given service type.
+     */
+    Messaging messaging( const QString &serviceType ) const;
+
+    /**
+      Returns list of all IM records.
+     */
+    Messaging::List messagings() const;
+
+    /**
+      Return list of IM records with a special service type.
+     */
+    Messaging::List messagings( const QString &serviceType ) const;
+
+    /**
+      Returns IM record with the given id.
+     */
+    Messaging findMessaging( const QString &id ) const;
 
     /**
       Insert an address. If an address with the same id already exists
