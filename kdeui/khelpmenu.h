@@ -1,6 +1,6 @@
 /*
  * This file is part of the KDE Libraries
- * Copyright (C) 1999 Espen Sand (espen@kde.org)
+ * Copyright (C) 1999-2000 Espen Sand (espen@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,14 +25,17 @@
 #include <qobject.h>
 #include <qstring.h>
 
+class QActionCollection;
 class QMessageBox;
 class QPopupMenu;
 class QWidget;
+
+class KAboutData;
 class KAboutDialog;
 class KBugReport;
-class KAboutData;
+class KDialogBase;
 class KHelpMenuPrivate;
-class QActionCollection;
+
 
 /**
  * This class provides the standard KDE help menu with the default "about"
@@ -61,7 +64,7 @@ class QActionCollection;
  * The KHelpMenu object will be deleted when its parent is destroyed but you
  * can delete it yourself if you want. The code below will always work.
  *
- * MyClass::~MyClass( void )
+ * MyClass::~MyClass()
  * {
  *   delete mHelpMenu;
  * }
@@ -79,7 +82,7 @@ class QActionCollection;
  * Example 1 Using @ref showAboutApplication signal (preferred)
  * <pre>
  *
- * void MyClass::myFunc( void )
+ * void MyClass::myFunc()
  * {
  *   ..
  *   KHelpMenu *helpMenu = new KHelpMenu( this );
@@ -88,7 +91,7 @@ class QActionCollection;
  *   ..
  * }
  *
- * void MyClass::myDialogSlot( void )
+ * void MyClass::myDialogSlot()
  * {
  *   <activate your custom dialog>
  * }
@@ -98,14 +101,14 @@ class QActionCollection;
  * Example 2 Old style - connecting directly to the menu entry.
  * <pre>
  *
- * void MyClass::myFunc( void )
+ * void MyClass::myFunc()
  * {
  *   KHelpMenu *helpMenu = new KHelpMenu( this );
  *   QPopupMenu *help = mHelpMenu->menu();
  *   help->connectItem( KHelpMenu::menuAboutApp, this, SLOT(myDialogSlot()) );
  * }
  *
- * void MyClass::myDialogSlot( void )
+ * void MyClass::myDialogSlot()
  * {
  *   <activate your custom dialog>
  * }
@@ -164,7 +167,7 @@ class KHelpMenu : public QObject
      *
      * Destroys dialogs and the menu pointer retuned by @ref menu
      */
-    ~KHelpMenu( void );
+    ~KHelpMenu();
 
     /**
      * Returns a popup menu you can use in the menu bar or where you
@@ -173,7 +176,7 @@ class KHelpMenu : public QObject
      * Note: This method will only create one instance of the menu. If
      * you call this method twice or more the same pointer is returned
      */
-    QPopupMenu *menu( void );
+    QPopupMenu *menu();
 
   public slots:
     /**
@@ -181,29 +184,29 @@ class KHelpMenu : public QObject
      * used as a key to determine what to display and the system will attempt
      * to open <appName>/index.html.
      */
-    void appHelpActivated( void );
+    void appHelpActivated();
 
     /**
      * Activates What's This help for the application.
      */
-    void contextHelpActivated( void );
+    void contextHelpActivated();
 
     /**
      * Opens an application specific dialog box. The dialog box will display
      * the string that was defined in the constructor. If that string was 
      * empty the @ref showAboutApplication is emitted instead.
      */
-    void aboutApplication( void );
+    void aboutApplication();
 
     /**
      * Opens the standard "About KDE" dialog box.
      */
-    void aboutKDE( void );
+    void aboutKDE();
 
     /**
      * Opens the standard "Report Bugs" dialog box.
      */
-    void reportBug( void );
+    void reportBug();
     
   private slots:
     /**
@@ -211,20 +214,20 @@ class KHelpMenu : public QObject
      * operation on the pointer. You should not delete the pointer in your
      * code yourself. Let the KHelpMenu destructor do the job.
      */
-    void menuDestroyed( void );
+    void menuDestroyed();
     
     /**
      * Connected to the dialogs (about kde and bug report) to detect 
      * when they are closed (becomes hidden).
      */
-    void dialogHidden( void );
+    void dialogHidden();
 
     /**
      * This slot will delete a dialog (about kde or bug report) if the
      * dialog pointer is not zero and the the dialog is not visible. This
      * slot is activated by a one shot timer started in @ref dialogHidden
      */
-    void timerExpired( void );
+    void timerExpired();
 
   signals:
     /**
@@ -233,11 +236,11 @@ class KHelpMenu : public QObject
      * application specific dialog box that is normally activated in 
      * @ref aboutApp will not be displayed when this signal is emitted.
      */
-    void showAboutApplication( void );
+    void showAboutApplication();
 
   private:
     QPopupMenu   *mMenu;
-    QMessageBox  *mAboutApp;
+    KDialogBase  *mAboutApp;
     KAboutDialog *mAboutKDE;
     KBugReport   *mBugReport;
 

@@ -19,29 +19,28 @@
  *
  */
 
-
+// I (espen) prefer that header files are included alphabetically
+#include <qhbox.h>
 #include <qmessagebox.h>
 #include <qpopupmenu.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
-#include <qwidget.h>
 #include <qwhatsthis.h>
+#include <qwidget.h>
 
-
+#include <kaboutdata.h>
 #include <kaboutdialog.h>
+#include <kaction.h>
 #include <kapp.h>
 #include <kbugreport.h>
+#include <kdialogbase.h>
 #include <khelpmenu.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstdaccel.h>
-#include <kstddirs.h>
-
-#include <kaboutdata.h>
-
-#include <kaction.h>
 #include <kstdaction.h>
+#include <kstddirs.h>
 
 class KHelpMenuPrivate
 {
@@ -108,7 +107,7 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
     }
 }
 
-KHelpMenu::~KHelpMenu( void )
+KHelpMenu::~KHelpMenu()
 {
   delete mMenu;
   delete mAboutApp;
@@ -118,7 +117,7 @@ KHelpMenu::~KHelpMenu( void )
 }
 
 
-QPopupMenu* KHelpMenu::menu( void )
+QPopupMenu* KHelpMenu::menu()
 {
   if( mMenu == 0 )
   {
@@ -165,13 +164,15 @@ QPopupMenu* KHelpMenu::menu( void )
 
 
 
-void KHelpMenu::appHelpActivated( void )
+void KHelpMenu::appHelpActivated()
 {
-  kapp->invokeHTMLHelp( QString::fromLatin1(kapp->name()) + QString::fromLatin1("/index.html"), QString::fromLatin1("") );
+  kapp->invokeHTMLHelp( QString::fromLatin1(kapp->name()) + 
+			QString::fromLatin1("/index.html"), 
+			QString::fromLatin1("") );
 }
 
 
-void KHelpMenu::aboutApplication( void )
+void KHelpMenu::aboutApplication()
 {
   if( mAboutAppText.isNull() == true || mAboutAppText.isEmpty() == true )
   {
@@ -179,38 +180,40 @@ void KHelpMenu::aboutApplication( void )
   }
   else
   {
-    //
-    // 1999-11-16 Espen Sand: I will improve (*) this later + some other stuff
-    // after the freeze have been removed. (mid December)
-    // (*) Make the dialog destroy itself on close as propsed by M Ettrich.
-    // 1999-12-02-Espen Sand: I have commented out WDestructiveClose because
-    // it it not activated when the "OK" button is clicked.
-    //
     if( mAboutApp == 0 )
     {
-      QString caption = i18n("About %1").arg(kapp->caption());
-      mAboutApp = new QMessageBox( caption, mAboutAppText,
-        QMessageBox::Information,
-        QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-        0, 0, mParent, "about", false, WStyle_DialogBorder
-				   /*|WDestructiveClose*/ );
+      mAboutApp = new KDialogBase( QString::null, // Caption is defined below
+				   KDialogBase::Yes, KDialogBase::Yes,
+				   KDialogBase::Yes, mParent, "about",
+				   false, true, i18n("&OK") );
+      connect( mAboutApp, SIGNAL(hidden()), this, SLOT( dialogHidden()) );
+      
+      QHBox *hbox = new QHBox( mAboutApp );
+      mAboutApp->setMainWidget( hbox );
+      hbox->setSpacing(KDialog::spacingHint()*3);
+      hbox->setMargin(KDialog::marginHint()*1);
 
-      mAboutApp->setButtonText(QMessageBox::Ok, i18n("&OK"));
-      mAboutApp->setIconPixmap(kapp->icon());
+      QLabel *label1 = new QLabel(hbox);
+      label1->setPixmap( kapp->icon() );
+      QLabel *label2 = new QLabel(hbox);
+      label2->setText( mAboutAppText );
+
+      mAboutApp->setPlainCaption( i18n("About %1").arg(kapp->caption()) );
+      mAboutApp->disableResize();
     }
 
     mAboutApp->show();
-    //mAboutApp = 0; // mAboutApp will destruct itself (destructive close!)
   }
 }
 
 
 
-void KHelpMenu::aboutKDE( void )
+void KHelpMenu::aboutKDE()
 {
   if( mAboutKDE == 0 )
   {
-    mAboutKDE = new KAboutDialog( KAboutDialog::AbtKDEStandard, QString::fromLatin1("KDE"),
+    mAboutKDE = new KAboutDialog( KAboutDialog::AbtKDEStandard, 
+      QString::fromLatin1("KDE"),
       KDialogBase::Help|KDialogBase::Close, KDialogBase::Close, mParent,
       "aboutkde", false );
     connect( mAboutKDE, SIGNAL(hidden()), this, SLOT( dialogHidden()) );
@@ -249,13 +252,15 @@ void KHelpMenu::aboutKDE( void )
       "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org/</A> "
       "will provide with what you need.");
 
-    mAboutKDE->setHelp( QString::fromLatin1("khelpcenter/main.html"), QString::null );
+    mAboutKDE->setHelp( QString::fromLatin1("khelpcenter/main.html"), 
+			QString::null );
     mAboutKDE->setTitle(i18n("K Desktop Environment. Release %1").
 			arg(QString::fromLatin1(KDE_VERSION_STRING)) );
     mAboutKDE->addTextPage( i18n("&About"), text1, true );
     mAboutKDE->addTextPage( i18n("&Report bugs or wishes"), text2, true );
     mAboutKDE->addTextPage( i18n("&Join the KDE team"), text3, true );
-    mAboutKDE->setImage( locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
+    mAboutKDE->setImage( 
+      locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
     mAboutKDE->setImageBackgroundColor( white );
   }
 
@@ -263,7 +268,7 @@ void KHelpMenu::aboutKDE( void )
 }
 
 
-void KHelpMenu::reportBug( void )
+void KHelpMenu::reportBug()
 {
   if( mBugReport == 0 )
   {
@@ -274,13 +279,13 @@ void KHelpMenu::reportBug( void )
 }
 
 
-void KHelpMenu::dialogHidden( void )
+void KHelpMenu::dialogHidden()
 {
   QTimer::singleShot( 0, this, SLOT(timerExpired()) );
 }
 
 
-void KHelpMenu::timerExpired( void )
+void KHelpMenu::timerExpired()
 {
   if( mAboutKDE != 0 && mAboutKDE->isVisible() == false )
   {
@@ -291,16 +296,21 @@ void KHelpMenu::timerExpired( void )
   {
     delete mBugReport; mBugReport = 0;
   }
+
+  if( mAboutApp != 0 && mAboutApp->isVisible() == false )
+  {
+    delete mAboutApp; mAboutApp = 0;
+  }
 }
 
 
-void KHelpMenu::menuDestroyed( void )
+void KHelpMenu::menuDestroyed()
 {
   mMenu = 0;
 }
 
 
-void KHelpMenu::contextHelpActivated( void )
+void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
 }
