@@ -293,7 +293,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
-    if(document->parseMode() != DocumentImpl::Strict && t->id > ID_CLOSE_TAG && !tagPriority[t->id - ID_CLOSE_TAG])
+    if(document->parseMode() != DocumentImpl::Strict && t->id > ID_CLOSE_TAG && !tagPriority[t->id - ID_CLOSE_TAG] && t->id!=ID_CLOSE_TAG+ID_EMBED)
         t->id -= ID_CLOSE_TAG;
 
     if(t->id > ID_CLOSE_TAG)
@@ -1024,7 +1024,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
-	case ID_LISTING:
+        case ID_LISTING:
         n = new HTMLGenericElementImpl(document, t->id);
         break;
 // inline
