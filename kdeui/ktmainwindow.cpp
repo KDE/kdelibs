@@ -847,6 +847,19 @@ QPopupMenu* KTMainWindow::helpMenu( const QString &aboutAppText,
 
 
 
+QPopupMenu* KTMainWindow::customHelpMenu( bool showWhatsThis=true )
+{
+    if( mHelpMenu == 0 ) {
+        mHelpMenu = new KHelpMenu( this, QString::null, showWhatsThis );
+	connect( mHelpMenu, SIGNAL(showAboutApplication()),
+		 this, SLOT(showAboutApplication()));
+    }
+
+    return( mHelpMenu->menu() );
+}
+
+
+
 void KTMainWindow::appHelpActivated( void )
 {
     if( mHelpMenu == 0 ) {

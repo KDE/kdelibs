@@ -322,8 +322,9 @@ public:
      * </pre>
      *
      * @param aboutAppText The string that is used in the application
-     *        specific dialog box. If you don't specify a string the
-     *        KAboutData of the application is used.
+     *        specific dialog box. If you leave this string empty the 
+     *        information in the global @ref KAboutData of the 
+     *        application will be used to make a standard dialog box.
      *
      * @param showWhatsThis Set this to false if you do not want to include
      *        the "What's This" menu entry.
@@ -333,6 +334,29 @@ public:
     QPopupMenu* helpMenu( const QString &aboutAppText=QString::null,
 			  bool showWhatsThis=true );
 
+
+    /**
+     * Retrieve the standard help menu which contains entires for the
+     * help system (activated by F1), an optional "What's This?" entry
+     * (activated by Shift F1), an application specific dialog box,
+     * and an "About KDE" dialog box. You must create the application 
+     * specific dialog box yourself. When the "About application" 
+     * menu entry is activated, a signal will trigger the @ref 
+     * showAboutApplication slot. See @ref showAboutApplication for more
+     * information.
+     *
+     * Example (adding a help menu to your application):
+     * <pre>
+     * menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
+     * </pre>
+     * 
+     * @param showWhatsThis Set this to false if you do not want to include
+     *        the "What's This" menu entry.
+     *
+     * @return A standard help menu.
+     */
+    QPopupMenu* customHelpMenu( bool showWhatsThis=true );
+    
 
     /**
      * @sect Session Management
@@ -633,8 +657,7 @@ protected slots:
     * This slot does nothing. It must be reimplemented if you want
     * to use a custom About Application dialog box. This slot is
     * connected to the "About Application" entry in the menu returned
-    * by @ref helpMenu if and only if the text argument to @ref helpMenu
-    * is empty (QString::null).
+    * by @ref customHelpMenu.
     *
     * Example:
     * <pre>
@@ -642,8 +665,7 @@ protected slots:
     * void MyTopLevel::setupInterface()
     * {
     *   ..
-    *   QPopupMenu *help = helpMenu();
-    *   menuBar()->insertItem( i18n("&Help"), help );
+    *   menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
     *   ..
     * }
     *
