@@ -84,8 +84,10 @@ enum Buttons { HOTLIST_BUTTON,
 
 template class QPtrList<KIO::StatJob>;
 
-static void silenceQToolBar(QtMsgType, const char *)
-{
+namespace {
+    static void silenceQToolBar(QtMsgType, const char *)
+    {
+    }
 }
 
 struct KFileDialogPrivate
@@ -774,37 +776,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
         lastDirectory = ldd.setObject(new KURL());
     }
 
-    bool defaultStartDir = startDir.isEmpty();
-    if ( !defaultStartDir )
-        if (startDir[0] == ':')
-        {
-            d->fileClass = startDir;
-            d->url = KRecentDirs::dir(d->fileClass);
-        }
-        else
-        {
-            d->url = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
-            // If we won't be able to list it (e.g. http), then use default
-            if ( !KProtocolInfo::supportsListing( d->url.protocol() ) )
-                defaultStartDir = true;
-        }
-
-    if ( defaultStartDir )
-    {
-        if (lastDirectory->isEmpty()) {
-            *lastDirectory = KGlobalSettings::documentPath();
-            KURL home;
-            home.setPath( QDir::homeDirPath() );
-            // if there is no docpath set (== home dir), we prefer the current
-            // directory over it. We also prefer the homedir when our CWD is
-            // different from our homedirectory
-            if ( lastDirectory->path(+1) == home.path(+1) ||
-                 QDir::currentDirPath() != QDir::homeDirPath() )
-                *lastDirectory = QDir::currentDirPath();
-        }
-        d->url = *lastDirectory;
-    }
-
+    d->url = getStartURL( startDir, d->fileClass );
     d->selection = d->url.url();
 
     // If local, check it exists. If not, go up until it exists.
@@ -1901,6 +1873,49 @@ void KFileDialog::toggleSpeedbar( bool show )
 int KFileDialog::pathComboIndex()
 {
     return d->m_pathComboIndex;
+}
+
+// static
+KURL KFileDialog::getStartURL( const QString& startDir,
+                               QString& recentDirClass )
+{
+    recentDirClass = QString::null;
+    KURL ret;
+
+    bool useDefaultStartDir = startDir.isEmpty();
+    if ( !useDefaultStartDir )
+    {
+        if (startDir[0] == ':')
+        {
+            recentDirClass = startDir;
+            ret = KURL::fromPathOrURL( KRecentDirs::dir(recentDirClass) );
+        }
+        else
+        {
+            ret = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
+            // If we won't be able to list it (e.g. http), then use default
+            if ( !KProtocolInfo::supportsListing( ret.protocol() ) )
+                useDefaultStartDir = true;
+        }
+    }
+
+    if ( useDefaultStartDir )
+    {
+        if (lastDirectory->isEmpty()) {
+            *lastDirectory = KGlobalSettings::documentPath();
+            KURL home;
+            home.setPath( QDir::homeDirPath() );
+            // if there is no docpath set (== home dir), we prefer the current
+            // directory over it. We also prefer the homedir when our CWD is
+            // different from our homedirectory
+            if ( lastDirectory->path(+1) == home.path(+1) ||
+                 QDir::currentDirPath() != QDir::homeDirPath() )
+                *lastDirectory = QDir::currentDirPath();
+        }
+        ret = *lastDirectory;
+    }
+
+    return ret;
 }
 
 void KFileDialog::virtual_hook( int id, void* data )
