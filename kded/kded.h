@@ -24,6 +24,7 @@
 #include <qstring.h>
 #include <qtimer.h>
 #include <qasciidict.h>
+#include <qintdict.h>
 
 #include <dcopclient.h>
 #include <dcopobject.h>
@@ -44,6 +45,7 @@ public:
    Kded(bool checkUpdates);
    virtual ~Kded();
 
+   static Kded *self() { return _self;}
    /**
     * Catch calls to unknown objects.
     */
@@ -65,6 +67,9 @@ public:
    KDEDModule *loadModule(const QCString &obj, bool onDemand);
    KDEDModule *loadModule(const KService *service, bool onDemand);
    bool unloadModule(const QCString &obj);
+   bool isWindowRegistered(long windowId);
+   void registerWindowId(long windowId);
+   void unregisterWindowId(long windowId);
 
 public slots:
 
@@ -137,6 +142,10 @@ protected:
    QAsciiDict<KDEDModule> m_modules;
    QAsciiDict<KLibrary> m_libs;
    QAsciiDict<QObject> m_dontLoad;
+   QAsciiDict<QValueList<long> > m_windowIdList;
+   QIntDict<long> m_globalWindowIdList;
+     
+   static Kded *_self;
 };
 
 class KUpdateD : public QObject

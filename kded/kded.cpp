@@ -50,6 +50,8 @@
 #include <kio/global.h>
 #include <kservicetype.h>
 
+Kded *Kded::_self = 0;
+
 static bool checkStamps = true;
 
 static void runBuildSycoca()
@@ -100,6 +102,7 @@ Kded::Kded(bool checkUpdates)
   : DCOPObject("kbuildsycoca"), DCOPObjectProxy(), 
     b_checkUpdates(checkUpdates)
 {
+  _self = this;
   QCString cPath;
   QCString ksycoca_env = getenv("KDESYCOCA");
   if (ksycoca_env.isEmpty())
@@ -112,14 +115,13 @@ Kded::Kded(bool checkUpdates)
   QTimer::singleShot(100, this, SLOT(installCrashHandler()));
 
   m_pDirWatch = 0;
-
-//  connect(kapp->dcopClient(), SIGNAL(applicationRemoved(const QCString&)),
-//          this, SLOT(slotApplicationRemoved(const QCString&)));
-//  kapp->dcopClient()->setNotifications(true);
+  
+  m_windowIdList.setAutoDelete(true);
 }
 
 Kded::~Kded()
 {
+  _self = 0;
   m_pTimer->stop();
   delete m_pTimer;
   delete m_pDirWatch;
@@ -247,6 +249,22 @@ void Kded::slotApplicationRemoved(const QCString &appId)
   for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
   {
      it.current()->removeAll(appId);
+  }
+
+  QValueList<long> *windowIds = m_windowIdList.find(appId);
+  if (windowIds)
+  {
+     for( QValueList<long>::ConstIterator it = windowIds->begin();
+          it != windowIds->end(); ++it)
+     {
+        long windowId = *it;
+        m_globalWindowIdList.remove(windowId);
+        for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+        {
+            emit it.current()->windowUnregistered(windowId);
+        }
+     }
+     m_windowIdList.remove(appId);
   }
 }
 
@@ -416,6 +434,52 @@ void Kded::readDirectory( const QString& _path )
   }
 }
 
+bool Kded::isWindowRegistered(long windowId)
+{
+  return m_globalWindowIdList.find(windowId) != 0;
+
+}
+
+// DCOP
+void Kded::registerWindowId(long windowId)
+{
+  m_globalWindowIdList.replace(windowId, &windowId);
+  QCString sender = callingDcopClient()->senderId();
+  QValueList<long> *windowIds = m_windowIdList.find(sender);
+  if (!windowIds)
+  {
+    windowIds = new QValueList<long>;
+    m_windowIdList.insert(sender, windowIds);
+  }
+  windowIds->append(windowId);
+
+
+  for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  {
+     emit it.current()->windowRegistered(windowId);
+  }
+}
+
+// DCOP
+void Kded::unregisterWindowId(long windowId)
+{
+  m_globalWindowIdList.remove(windowId);
+  QCString sender = callingDcopClient()->senderId();
+  QValueList<long> *windowIds = m_windowIdList.find(sender);
+  if (windowIds)
+  {
+     windowIds->remove(windowId);
+     if (windowIds->isEmpty())
+        m_windowIdList.remove(sender);
+  }
+
+  for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  {
+    emit it.current()->windowUnregistered(windowId);
+  }
+}
+
+
 static void sighandler(int /*sig*/)
 {
     if (kapp)
@@ -503,7 +567,7 @@ static KCmdLineOptions options[] =
 class KDEDApplication : public KUniqueApplication
 {
 public:
-  KDEDApplication(Kded *kded) : KUniqueApplication( ), m_kded(kded)
+  KDEDApplication() : KUniqueApplication( )
     { startup = true; }
 
   int newInstance()
@@ -520,6 +584,8 @@ public:
        QCStringList res = KUniqueApplication::functions();
        res += "bool loadModule(QCString)";
        res += "bool unloadModule(QCString)";
+       res += "void registerWindowId(long int)";
+       res += "void unregisterWindowId(long int)";
        return res;
     }
 
@@ -530,7 +596,7 @@ public:
       QCString module;
       QDataStream arg( data, IO_ReadOnly );
       arg >> module;
-      bool result = (m_kded->loadModule(module, false) != 0);
+      bool result = (Kded::self()->loadModule(module, false) != 0);
       replyType = "bool";
       QDataStream _replyStream( replyData, IO_WriteOnly );
       _replyStream << result;
@@ -540,16 +606,29 @@ public:
       QCString module;
       QDataStream arg( data, IO_ReadOnly );
       arg >> module;
-      bool result = m_kded->unloadModule(module);
+      bool result = Kded::self()->unloadModule(module);
       replyType = "bool";
       QDataStream _replyStream( replyData, IO_WriteOnly );
       _replyStream << result;
       return true;
     }
+    else if (fun == "registerWindowId(long int)") {
+      long windowId;
+      QDataStream arg( data, IO_ReadOnly );
+      arg >> windowId;
+      Kded::self()->registerWindowId(windowId);
+      return true;
+    }
+    else if (fun == "unregisterWindowId(long int)") {
+      long windowId;
+      QDataStream arg( data, IO_ReadOnly );
+      arg >> windowId;
+      Kded::self()->unregisterWindowId(windowId);
+      return true;
+    }
     return KUniqueApplication::process(fun, data, replyType, replyData);
   }
 
-  Kded *m_kded;
   bool startup;
 };
 
@@ -616,7 +695,7 @@ int main(int argc, char *argv[])
 
      signal(SIGTERM, sighandler);
      signal(SIGHUP, sighandler);
-     KDEDApplication k(kded);
+     KDEDApplication k;
 
      if (bCheckUpdates)
         (void) new KUpdateD; // Watch for updates

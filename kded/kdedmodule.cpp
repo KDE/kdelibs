@@ -22,6 +22,7 @@
 
 #include <qtimer.h>
 
+#include "kded.h"
 #include "kdedmodule.h"
 #include "kconfigdata.h"
 
@@ -121,4 +122,8 @@ void KDEDModule::removeAll(const QCString &app)
    resetIdle();
 }
 
+bool KDEDModule::isWindowRegistered(long windowId)
+{
+   return Kded::self()->isWindowRegistered(windowId);
+}
 #include "kdedmodule.moc"

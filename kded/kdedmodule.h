@@ -27,6 +27,7 @@
 #include <ksharedptr.h>
 
 class KDEDModulePrivate;
+class Kded;
 
 /**
  * The base class for KDED modules.
@@ -54,7 +55,7 @@ class KDEDModulePrivate;
 class KDEDModule : public QObject, public DCOPObject
 {
   Q_OBJECT
-
+  friend class Kded;
 public:
   
   /**
@@ -106,6 +107,11 @@ public:
    */
   void removeAll(const QCString &app);
 
+  /**
+   * Returns whether a certain mainwindow has registered itself with KDED
+   */
+  bool isWindowRegistered(long windowId);
+  
 public slots:
   /**
    * Called whenever the last referenced object gets dereferenced.
@@ -117,7 +123,20 @@ public slots:
   virtual void idle() { };
 
 signals:
+  /**
+   * Emitted when the module is being deleted.
+   */
   void moduleDeleted(KDEDModule *);
+
+  /**
+   * Emitted when a mainwindow registers itself.
+   */
+  void windowRegistered(long windowId);
+
+  /**
+   * Emitted when a mainwindow unregisters itself.
+   */
+  void windowUnregistered(long windowId);
 
 private:
   KDEDModulePrivate *d;
