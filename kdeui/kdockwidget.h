@@ -999,13 +999,15 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-#ifndef NO_KDE2
- #define QMainWindow KMainWindow
+#ifdef NO_KDE2
+ #define KMainWindow QMainWindow
 #endif
-class KDockMainWindow : public QMainWindow
+class KDockMainWindow : public KMainWindow
 {
   Q_OBJECT
-#undef QMainWindow
+#ifdef NO_KDE2
+ #undef KMainWindow
+#endif
 
 public:
 
