@@ -1,5 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2000 Espen Sand (espensa@online.no)
+ *  Copyright (C) 2003 Ravikiran Rajagopal (ravi@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -60,9 +61,6 @@ class KJanusWidget::IconListItem : public QListBoxItem
     int mMinimumWidth;
 };
 
-// Added to make sure that the indices returned by KJanusWidget::pageIndex()
-// remain constant and safe to store.
-// Ravi <ravi@ee.eng.ohio-state.edu> Sun Feb 23 2003
 class KJanusWidget::KJanusWidgetPrivate
 {
 public:
@@ -442,13 +440,6 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
     {
       QString itemName = items.last();
       IconListItem *item = new IconListItem( mIconList, pixmap, itemName );
-      //
-      // 2000-06-01 Espen Sand: If I do this with Qt 2.1.1 all sorts of
-      // strange things happen. With Qt <= 2.1 it worked but now I must
-      // either specify the listbox in the constructor on the item
-      // or as below, not both.
-      // mIconList->insertItem( item );
-      //
       mIconListToPageStack.insert(item, page);
       mIconList->invalidateHeight();
       mIconList->invalidateWidth();
@@ -1054,10 +1045,8 @@ int KJanusWidget::IconListItem::width( const QListBox *lb ) const
 void KJanusWidget::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-// Just remove the page from our stack of widgets. Do not modify the given widget in
-// any way. No memory leak occurs as parent is not changed.
-// Make this virtual in KDE 4.0.
-// Ravikiran Rajagopal <ravi@ee.eng.ohio-state.edu>
+// TODO: In TreeList, if the last child of a node is removed, and there is no corrsponding widget for that node, allow the caller to
+// delete the node.
 void KJanusWidget::removePage( QWidget *page )
 {
   if (!d || !d->mPageToInt.contains(page))
@@ -1077,7 +1066,7 @@ void KJanusWidget::removePage( QWidget *page )
         d->mIntToTitle.remove(index);
         d->mPageToInt.remove(page);
         d->mIntToPage.remove(index);
-                break;
+        break;
       }
   }
   else if ( mFace == IconList )
@@ -1092,7 +1081,7 @@ void KJanusWidget::removePage( QWidget *page )
         d->mIntToTitle.remove(index);
         d->mPageToInt.remove(page);
         d->mIntToPage.remove(index);
-                break;
+        break;
       }
   }
   else // Tabbed
