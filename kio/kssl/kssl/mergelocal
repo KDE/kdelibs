@@ -1,0 +1,65 @@
+:
+eval 'exec perl -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+    
+##
+##   Merge the local certificates
+##
+
+$date = `date`;
+$date =~ s|\n$||;
+open(BDL, ">>ksslcalist") || die;
+open(CDL, ">>caroot/ca-bundle.crt") || die;
+open(IDX, "<localcerts") || die;
+
+while (<IDX>) {
+    $filename = $_;
+    chomp($filename);
+
+    stat($filename);
+    next if ! -r _;
+
+    print STDERR "Bundling: $filename\n";
+    $pem = `cat $filename`;
+    print CDL "\n$pem\n";
+    $pem =~ s|[\n\r]||g;
+    $pem =~ s|-----BEGIN CERTIFICATE-----||;
+    $pem =~ s|-----END CERTIFICATE-----||;
+    $subj = `openssl x509 -in $filename -inform PEM -noout -subject`;
+    $_ = $subj;
+    if ( /[Oo]bject/ || /[Cc]ode/ ) {
+        $codeSubj = 1;
+    } else {
+        $codeSubj = 0;
+    }
+    $subj =~ s|\n$||;
+    $subj =~ s/^subject= //;
+    $purpose = `openssl x509 -in $filename -inform PEM -noout -purpose`;
+    print BDL "\n";
+    print BDL "[$subj]\n";
+    print BDL "x509=$pem\n";
+    #
+    $_ = $purpose;
+    if ( /server CA : Yes\n/ || /client CA : Yes\n/ || (/Any Purpose CA : Yes\n/ && (/client : Yes\n/ || /server : Yes\n/ ))) {
+       print BDL "site=true\n";
+    } else {
+       print BDL "site=false\n";
+    }
+    #
+    if ( /MIME signing CA : Yes\n/ || /MIME encryption CA : Yes\n/ ) {
+       print BDL "email=true\n";
+    } else {
+       print BDL "email=false\n";
+    }
+    #
+    if ( /Any Purpose CA : Yes\n/ && $codeSubj == 1) {
+       print BDL "code=true\n";
+    } else {
+       print BDL "code=false\n";
+    }
+
+}
+close(BDL);
+close(CDL);
+close(IDX);
+

@@ -1,0 +1,24 @@
+1) Build cert_extract
+2) Make a directory 'certtmp'
+3) cd 'certtmp'
+4) Run ../cert_extract /path/to/netscape/cert7.db
+   This will create many files and an index
+5) Merge these files into a bundle with:
+   ../cert_bundle /path/to/netscape/cert7.db cert.index ../caroot/ca-bundle.crt
+6) Merge these files into a KDE config file with:
+   ../certkde
+7) mv ksslcalist ../
+8) Merge in the local certs that we added ourselves with:
+   cd ..
+   ./mergelocal
+9) Do your diffs!  Make sure you commit what you think you are committing.
+10) cvs commit
+
+
+
+
+To add local files:
+1) Create the .pem file and check it into cvs in kdelibs/kio/kssl/kssl.
+2) List the pem file name as a single line in 'localcerts'.
+
+
