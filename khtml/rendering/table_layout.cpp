@@ -815,7 +815,7 @@ void AutoTableLayout::layout()
             break;
         case Fixed:
             numFixed++;
-            totalFixed += width.value;
+            totalFixed += layoutStruct[i].effMaxWidth;
             break;
         case Variable:
         case Static:
@@ -909,34 +909,22 @@ void AutoTableLayout::layout()
     qDebug("variable satisfied: available is %d",  available );
 #endif
 
-#if 0
-    if ( available > 0 ) {
-        qDebug("distributing %dpx equally to %d variable columns.",  available,  numVariable );
-        // still have some width to spread
-        for ( int i = 0; i < nEffCols; i++ ) {
-            Length &width = layoutStruct[i].effWidth;
-            if ( width.type == Variable ) {
-                int w = available/numVariable;
-                available -= w;
-                numVariable--;
-                layoutStruct[i].calcWidth += w;
-            }
-        }
-    }
-#endif
-
     // spread over fixed colums
     if ( available > 0 && numFixed) {
 	// still have some width to spread, distribute to fixed columns
 	for ( int i = 0; i < nEffCols; i++ ) {
             Length &width = layoutStruct[i].effWidth;
             if ( width.isFixed() ) {
-                int w = available * width.value / totalFixed;
+		int w = QMAX( layoutStruct[i].calcWidth, available * layoutStruct[i].effMaxWidth / totalFixed );
                 available -= w;
                 layoutStruct[i].calcWidth += w;
+		totalFixed -= layoutStruct[i].effMaxWidth;
             }
 	}
     }
+#ifdef DEBUG_LAYOUT
+    qDebug("after fixed distribution: available=%d",  available );
+#endif
 
     // spread over the rest
     if ( available > 0 ) {
@@ -950,6 +938,9 @@ void AutoTableLayout::layout()
         }
     }
 
+#ifdef DEBUG_LAYOUT
+    qDebug("after equal distribution: available=%d",  available );
+#endif
     // if we have overallocated, reduce every cell according to the difference between desired width and minwidth
     // this seems to produce to the pixel exaxt results with IE. Wonder is some of this also holds for width distributing.
     if ( available < 0 ) {
