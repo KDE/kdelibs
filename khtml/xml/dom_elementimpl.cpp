@@ -280,7 +280,7 @@ DOMString ElementImpl::tagName() const
     return nodeName();
 }
 
-DOMString ElementImpl::getAttribute( const DOMString &name )
+DOMString ElementImpl::getAttribute( const DOMString &name ) const
 {
   // search in already set attributes first
     AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name));
@@ -308,12 +308,12 @@ DOMString ElementImpl::getAttribute( int id )
     return 0;
 }
 
-AttrImpl *ElementImpl::getAttributeNode ( int index )
+AttrImpl *ElementImpl::getAttributeNode ( int index ) const
 {
     return namedAttrMap->getIdItem(index);
 }
 
-int ElementImpl::getAttributeCount()
+int ElementImpl::getAttributeCount() const
 {
     return namedAttrMap->length();
 }

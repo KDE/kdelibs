@@ -956,12 +956,12 @@ HTMLTextAreaElement::~HTMLTextAreaElement()
 DOMString HTMLTextAreaElement::defaultValue() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
+    return ((HTMLTextAreaElementImpl *)impl)->defaultValue();
 }
 
 void HTMLTextAreaElement::setDefaultValue( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUE, value);
+    ((HTMLTextAreaElementImpl *)impl)->setDefaultValue(value);
 }
 
 HTMLFormElement HTMLTextAreaElement::form() const
@@ -1158,7 +1158,7 @@ long HTMLOptionElement::index() const
     return ((HTMLOptionElementImpl *)impl)->index();
 }
 
-void HTMLOptionElement::setIndex( long _index )
+void HTMLOptionElement::setIndex( long /*_index*/ )
 {
     throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }

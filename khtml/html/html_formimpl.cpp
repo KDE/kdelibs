@@ -31,6 +31,7 @@
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "xml/dom_textimpl.h"
 
 #include "rendering/render_form.h"
 
@@ -306,9 +307,6 @@ void HTMLFormElementImpl::detach()
 
 void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
 {
-    // ### make this work for form elements that don't have renders
-    if(!view) return;
-
     HTMLGenericFormElementImpl *current;
     for (current = formElements.first(); current; current = formElements.next())
     {
@@ -520,8 +518,7 @@ void HTMLButtonElementImpl::setTabIndex( long  )
 
 DOMString HTMLButtonElementImpl::type() const
 {
-    // ###
-    return DOMString();
+    return getAttribute(ATTR_TYPE);
 }
 
 void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
@@ -596,6 +593,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
     _size = 20;
     _clicked = false;
     m_filename = "";
+    m_haveType = false;
 
     view = 0;
 }
@@ -609,6 +607,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
     _size = 20;
     _clicked = false;
     m_filename = "";
+    m_haveType = false;
 
     view = 0;
 }
@@ -726,27 +725,40 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     // ### also check that input defaults to something - text perhaps?
     switch(attr->attrId)
     {
-    case ATTR_TYPE:
-        if ( strcasecmp( attr->value(), "text" ) == 0 )
-            _type = TEXT;
-        else if ( strcasecmp( attr->value(), "password" ) == 0 )
-            _type = PASSWORD;
-        else if ( strcasecmp( attr->value(), "checkbox" ) == 0 )
-            _type = CHECKBOX;
-        else if ( strcasecmp( attr->value(), "radio" ) == 0 )
-            _type = RADIO;
-        else if ( strcasecmp( attr->value(), "submit" ) == 0 )
-            _type = SUBMIT;
-        else if ( strcasecmp( attr->value(), "reset" ) == 0 )
-            _type = RESET;
-        else if ( strcasecmp( attr->value(), "file" ) == 0 )
-            _type = FILE;
-        else if ( strcasecmp( attr->value(), "hidden" ) == 0 )
-            _type = HIDDEN;
-        else if ( strcasecmp( attr->value(), "image" ) == 0 )
-            _type = IMAGE;
-        else if ( strcasecmp( attr->value(), "button" ) == 0 )
-            _type = BUTTON;
+    case ATTR_TYPE: {
+	    typeEnum newType;
+
+	    if ( strcasecmp( attr->value(), "text" ) == 0 )
+		newType = TEXT;
+	    else if ( strcasecmp( attr->value(), "password" ) == 0 )
+		newType = PASSWORD;
+	    else if ( strcasecmp( attr->value(), "checkbox" ) == 0 )
+		newType = CHECKBOX;
+	    else if ( strcasecmp( attr->value(), "radio" ) == 0 )
+		newType = RADIO;
+	    else if ( strcasecmp( attr->value(), "submit" ) == 0 )
+		newType = SUBMIT;
+	    else if ( strcasecmp( attr->value(), "reset" ) == 0 )
+		newType = RESET;
+	    else if ( strcasecmp( attr->value(), "file" ) == 0 )
+		newType = FILE;
+	    else if ( strcasecmp( attr->value(), "hidden" ) == 0 )
+		newType = HIDDEN;
+	    else if ( strcasecmp( attr->value(), "image" ) == 0 )
+		newType = IMAGE;
+	    else if ( strcasecmp( attr->value(), "button" ) == 0 )
+		newType = BUTTON;
+	    else
+		newType = TEXT;
+
+	    if (!m_haveType) {
+		_type = newType;
+		m_haveType = true;
+	    }
+	    else if (_type != newType) {
+		setAttribute(ATTR_TYPE,type());
+	    }
+	}
         break;
     case ATTR_VALUE:
         m_value = attr->value();
@@ -871,14 +883,9 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
 
         case TEXT:
         case PASSWORD:
-
-            if(!m_value.isEmpty())
-            {
-                encoding += m_value.string().local8Bit();
-                return true;
-            }
+	    encoding += m_value.string().local8Bit();
+	    return true;
             break;
-
         case CHECKBOX:
 
             if( checked() )
@@ -971,16 +978,10 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
     return false;
 }
 
-void HTMLInputElementImpl::saveDefaults()
-{
-    _defaultValue = getAttribute(ATTR_VALUE);
-    _defaultChecked = (getAttribute(ATTR_CHECKED) != 0);
-}
-
 void HTMLInputElementImpl::reset()
 {
-    setAttribute(ATTR_VALUE,_defaultValue);
-    setAttribute(ATTR_CHECKED,_defaultChecked);
+    setValue(getAttribute(ATTR_VALUE));
+    setChecked(getAttribute(ATTR_CHECKED) != 0);
     if ((_type == SUBMIT || _type == RESET || _type == BUTTON || _type == IMAGE) && m_render)
         static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
 }
@@ -988,7 +989,7 @@ void HTMLInputElementImpl::reset()
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
     m_checked = _checked;
-    if (_type == RADIO && _form && m_render && m_checked)
+    if (_type == RADIO && _form && m_checked)
         _form->radioClicked(this);
     setChanged(true);
 }
@@ -998,7 +999,7 @@ void HTMLInputElementImpl::setValue(DOMString val)
     switch (_type) {
     case TEXT:
     case PASSWORD:
-        m_value = val;
+        m_value = (val.isNull() ? "" : val);
         setChanged(true);
         break;
     case FILE:
@@ -1523,6 +1524,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
     m_rows = 3;
     m_cols = 60;
     m_wrap = ta_Virtual;
+    m_value = 0;
 }
 
 
@@ -1533,6 +1535,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElem
     m_rows = 3;
     m_cols = 60;
     m_wrap = ta_Virtual;
+    m_value = 0;
 }
 
 ushort HTMLTextAreaElementImpl::id() const
@@ -1549,7 +1552,7 @@ DOMString HTMLTextAreaElementImpl::type() const
 QString HTMLTextAreaElementImpl::state( )
 {
     // Make sure the string is not empty!
-    return m_value.string()+'.';
+    return value().string()+'.';
 }
 
 void HTMLTextAreaElementImpl::restoreState(const QString &state)
@@ -1630,15 +1633,21 @@ bool HTMLTextAreaElementImpl::encoding(khtml::encodingList& encoding)
     if (_name.isEmpty() || !m_render) return false;
 
     // ### make this work independent of render
-    encoding += static_cast<RenderTextArea*>(m_render)->text().local8Bit();
+    encoding += value().string().local8Bit();
 
     return true;
 }
 
 void HTMLTextAreaElementImpl::reset()
 {
-    // ### check that this uses default value as specified in HTML file
-    setValue(m_value);
+    setValue(defaultValue());
+}
+
+DOMString HTMLTextAreaElementImpl::value()
+{
+    if (m_value.isNull())
+	m_value = defaultValue();
+    return m_value;
 }
 
 void HTMLTextAreaElementImpl::setValue(DOMString _value)
@@ -1648,18 +1657,32 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
 }
 
 
-void HTMLTextAreaElementImpl::saveDefaults()
+DOMString HTMLTextAreaElementImpl::defaultValue()
 {
-    _defaultValue = getAttribute(m_value);
+    DOMString val = "";
+    // there may be comments - just grab the text nodes
+    NodeImpl *n;
+    for (n = firstChild(); n; n = n->nextSibling())
+	if (n->isTextNode())
+	    val += static_cast<TextImpl*>(n)->data();
+    return val;
 }
 
-
-
-
-
-
-
-
+void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
+{
+    // there may be comments - remove all the text nodes and replace them with one
+    QList<NodeImpl> toRemove;
+    NodeImpl *n;
+    for (n = firstChild(); n; n = n->nextSibling())
+	if (n->isTextNode())
+	    toRemove.append(n);
+    QListIterator<NodeImpl> it(toRemove);
+    for (; it.current(); ++it) {
+	removeChild(it.current());
+    }
+    insertBefore(document->createTextNode(_defaultValue),firstChild());
+    setValue(_defaultValue);
+}
 
 // -------------------------------------------------------------------------
 

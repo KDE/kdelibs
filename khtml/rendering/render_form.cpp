@@ -360,7 +360,7 @@ void RenderLineEdit::layout()
 
 void RenderLineEdit::slotTextChanged(const QString &string)
 {
-    static_cast<HTMLInputElementImpl*>(m_element)->setAttribute(ATTR_VALUE,DOMString(string));
+    static_cast<HTMLInputElementImpl*>(m_element)->setValue(DOMString(string));
 }
 
 void RenderLineEdit::select()
@@ -947,10 +947,8 @@ void RenderTextArea::close( )
 {
     HTMLTextAreaElementImpl *f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    if(f->firstChild() && f->firstChild()->id() == ID_TEXT) {
+    if(f->firstChild() && f->firstChild()->id() == ID_TEXT)
         f->setValue(static_cast<TextImpl*>(f->firstChild())->string());
-        f->saveDefaults();
-    }
 
     layout();
 

@@ -109,7 +109,7 @@ public:
 
     DOMString tagName() const;
 
-    DOMString getAttribute ( const DOMString &name );
+    DOMString getAttribute ( const DOMString &name ) const;
 
     void setAttribute ( const DOMString &name, const DOMString &value );
 
@@ -144,8 +144,8 @@ public:
     // not part of the DOM
 
     DOMString getAttribute ( int id );
-    AttrImpl *getAttributeNode ( int index );
-    int getAttributeCount();
+    AttrImpl *getAttributeNode ( int index ) const;
+    int getAttributeCount() const;
     void setAttribute ( int id, const DOMString &value );
     void setAttribute ( khtml::AttributeList list );
 
@@ -155,7 +155,6 @@ public:
     virtual void attach(KHTMLView *w);
     virtual void detach();
     virtual void recalcStyle();
-    virtual void saveDefaults() {}
 
 protected: // member variables
 

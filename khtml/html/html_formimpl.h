@@ -277,7 +277,6 @@ public:
 
     virtual bool encoding(khtml::encodingList&);
     typeEnum inputType() { return _type; }
-    virtual void saveDefaults();
     virtual void reset();
 
     // for images
@@ -287,6 +286,7 @@ public:
 
 protected:
     typeEnum _type;
+    bool m_haveType;
     DOMString m_value;
     bool m_checked;
     int _maxLen;
@@ -485,18 +485,17 @@ public:
     virtual void attach(KHTMLView *w);
     virtual bool encoding(khtml::encodingList&);
     virtual void reset();
-    DOMString value() { return m_value; }
+    DOMString value();
     void setValue(DOMString _value);
-    virtual void saveDefaults();
+    DOMString defaultValue();
+    void setDefaultValue(DOMString _defaultValue);
 
 
 protected:
     int m_rows;
     int m_cols;
     WrapMethod m_wrap;
-    // DOM Specs seem to indicate that this is not kept in sync with our child text nodes
     DOMString m_value;
-    DOMString _defaultValue;
 
     friend khtml::RenderTextArea;
 };
