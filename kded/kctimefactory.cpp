@@ -91,7 +91,8 @@ KCTimeInfo::fillCTimeDict(QDict<Q_UINT32> &dict)
     Q_UINT32 ctime;
     while(true)
     {
-      (*m_str) >> path >> ctime;
+      KSycocaEntry::read(*m_str, path);
+      (*m_str) >> ctime;
       if (path.isEmpty()) break;
       dict.replace(path, new Q_UINT32(ctime));
     }
