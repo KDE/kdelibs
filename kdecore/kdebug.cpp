@@ -129,7 +129,7 @@ static QString getDescrFromNum(unsigned short _num)
 
   delete ts;
   file.close();
-  return "";
+  return QString::null;
 }
 
 enum DebugLevels {
