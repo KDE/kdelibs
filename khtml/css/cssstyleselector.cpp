@@ -1574,7 +1574,13 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 //     case CSS_PROP_SPEAK_NUMERAL:
 //     case CSS_PROP_SPEAK_PUNCTUATION:
     case CSS_PROP_TABLE_LAYOUT: {
-	if ( !primitiveValue->getIdent() )
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
+            if(parentNode)
+		style->setTableLayout(parentStyle->tableLayout());
+            return;
+        }
+
+	if ( !primitiveValue )
 	    return;
 
 	ETableLayout l = TAUTO;
