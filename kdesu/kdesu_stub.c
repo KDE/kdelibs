@@ -5,9 +5,9 @@
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  * 
- * kdesu_stub.c: KDE su executes this stub, which in turn executes the
- *	         target program. Before that, startup parameters are sent
- *	         through stdin.
+ * kdesu_stub.c: KDE su executes this stub through su or ssh. This stub in turn 
+ *               executes the target program. Before that, startup parameters 
+ *               are sent through stdin.
  * 
  *
  * Available parameters:   

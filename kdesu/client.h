@@ -79,7 +79,13 @@ public:
      * Set a persistent variable.
      * @param key The name of the variable.
      * @param value Its value.
+     * @param timeout The timeout in seconds for this key. Zero means 
+     * no timeout.
+     * @return zero on success, -1 on failure.
      */
+    int setVar(QCString key, QCString value, int timeout);
+
+    /** BCI: remove me. */
     int setVar(QCString key, QCString value);
 
     /**
@@ -88,6 +94,13 @@ public:
      * @return Its value.
      */
     QCString getVar(QCString key);
+
+    /**
+     * Delete a persistent variable.
+     * @param key The name of the variable.
+     * @return zero on success, -1 on failure.
+     */
+    int delVar(QCString key);
 
     /**
      * Ping kdesud. This can be used for diagnostics.

@@ -48,7 +48,8 @@ KDEsuClient::KDEsuClient()
 {
     sockfd = -1;
     char *dpy = getenv("DISPLAY");
-    if (dpy == 0L) {
+    if (dpy == 0L) 
+    {
 	kDebugWarning("%s: $DISPLAY is not set", ID);
 	return;
     }
@@ -121,9 +122,10 @@ int KDEsuClient::command(QCString cmd, QCString *result)
     if (send(sockfd, cmd, cmd.length(), 0) != (int) cmd.length())
 	return -1;
     
-    char buf[200];
-    int nbytes = recv(sockfd, buf, 199, 0);
-    if (nbytes <= 0) {
+    char buf[1024];
+    int nbytes = recv(sockfd, buf, 1023, 0);
+    if (nbytes <= 0) 
+    {
 	kDebugWarning("%s: no reply from daemon", ID);
 	return -1;
     }
@@ -134,7 +136,7 @@ int KDEsuClient::command(QCString cmd, QCString *result)
 	return -1;
 
     if (result)
-	*result = reply.mid(2).stripWhiteSpace();
+	*result = reply.mid(3, reply.length()-4);
     return 0;
 }
 
@@ -202,17 +204,22 @@ int KDEsuClient::delCommand(QCString key)
     return command(cmd);
 }
 
-
 int KDEsuClient::setVar(QCString key, QCString value)
+{
+    setVar(key, value, 0);
+}
+
+int KDEsuClient::setVar(QCString key, QCString value, int timeout)
 {
     QCString cmd = "SET ";
     cmd += escape(key);
     cmd += " ";
     cmd += escape(value);
+    cmd += " ";
+    cmd += QCString().setNum(timeout);
     cmd += "\n";
     return command(cmd);
 }
-
 
 QCString KDEsuClient::getVar(QCString key)
 {
@@ -224,6 +231,13 @@ QCString KDEsuClient::getVar(QCString key)
     return reply;
 }
 
+int KDEsuClient::delVar(QCString key)
+{
+    QCString cmd = "DELV ";
+    cmd += escape(key);
+    cmd += "\n";
+    return command(cmd);
+}
 
 int KDEsuClient::ping()
 {
@@ -252,5 +266,7 @@ int KDEsuClient::startServer()
 	return -1;
     }
 
-    return system("kdesud");
+    int ret = system("kdesud");
+    connect();
+    return ret;
 }
