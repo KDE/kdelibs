@@ -255,10 +255,7 @@ KNotifyClient::Instance::~Instance()
 KNotifyClient::InstanceStack *KNotifyClient::Instance::instances()
 {
 	if (!s_instances)
-	{
-		s_instances = new InstanceStack;
-		instancesDeleter.setObject(s_instances);
-	}
+		instancesDeleter.setObject(s_instances, new InstanceStack);
 	return s_instances;
 }
 
