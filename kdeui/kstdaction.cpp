@@ -69,9 +69,9 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ Replace,       KStdAccel::Replace, "edit_replace", I18N_NOOP("&Replace..."), 0, 0 },
 
 	{ ActualSize,    KStdAccel::AccelNone, "view_actual_size", I18N_NOOP("&Actual Size"), 0, 0 },
-	{ FitToPage,     KStdAccel::AccelNone, "view_fit_to_page", I18N_NOOP("&Fit To Page"), 0, 0 },
-	{ FitToWidth,    KStdAccel::AccelNone, "view_fit_to_width", I18N_NOOP("Fit To Page &Width"), 0, 0 },
-	{ FitToHeight,   KStdAccel::AccelNone, "view_fit_to_height", I18N_NOOP("Fit To Page &Height"), 0, 0 },
+	{ FitToPage,     KStdAccel::AccelNone, "view_fit_to_page", I18N_NOOP("&Fit to Page"), 0, 0 },
+	{ FitToWidth,    KStdAccel::AccelNone, "view_fit_to_width", I18N_NOOP("Fit to Page &Width"), 0, 0 },
+	{ FitToHeight,   KStdAccel::AccelNone, "view_fit_to_height", I18N_NOOP("Fit to Page &Height"), 0, 0 },
 	{ ZoomIn,        KStdAccel::ZoomIn, "view_zoom_in", I18N_NOOP("Zoom &In"), 0, "viewmag+" },
 	{ ZoomOut,       KStdAccel::ZoomOut, "view_zoom_out", I18N_NOOP("Zoom &Out"), 0, "viewmag-" },
 	{ Zoom,          KStdAccel::AccelNone, "view_zoom", I18N_NOOP("&Zoom..."), 0, "viewmag" },
@@ -723,21 +723,21 @@ KAction *actualSize(const QObject *recvr, const char *slot,
 KAction *fitToPage(const QObject *recvr, const char *slot,
                                QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Fit To Page"), 0, recvr, slot, parent,
+    return new KAction(i18n("&Fit to Page"), 0, recvr, slot, parent,
                        name ? name : stdName(FitToPage));
 }
 
 KAction *fitToWidth(const QObject *recvr, const char *slot,
                                 QObject *parent, const char *name )
 {
-    return new KAction(i18n("Fit To Page &Width"), 0, recvr, slot, parent,
+    return new KAction(i18n("Fit to Page &Width"), 0, recvr, slot, parent,
                        name ? name : stdName(FitToWidth));
 }
 
 KAction *fitToHeight(const QObject *recvr, const char *slot,
                                  QObject *parent, const char *name )
 {
-    return new KAction(i18n("Fit To Page &Height"), 0, recvr, slot, parent,
+    return new KAction(i18n("Fit to Page &Height"), 0, recvr, slot, parent,
                        name ? name : stdName(FitToHeight));
 }
 
