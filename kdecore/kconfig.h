@@ -86,6 +86,7 @@ public:
 
   /**
    * Returns a list of groups that are known.
+   * @return a list of of groups
    */
   virtual QStringList groupList() const;
 
@@ -111,6 +112,7 @@ public:
   /**
    * Set the file mode for newly created files.
    *
+   * @param mode the mode for new files as described in chmod(2)
    * @see man:chmod(2) for a description of @p mode
    */
   void setFileWriteMode(int mode);
@@ -118,12 +120,14 @@ public:
   /**
    * Forces all following write-operations being performed on kdeglobals,
    * independent of the bGlobal flag in writeEntry().
+   * @param force true to force writing in kdeglobals
    * @see #forceGlobal
    */
   void setForceGlobal( bool force ) { bForceGlobal = force; }
 
   /**
    * Returns true if all entries are being written into kdeglobals.
+   * @return true if all entries are being written into kdeglobals
    * @see #setForceGlobal
    */
   bool forceGlobal() const { return bForceGlobal; }
@@ -138,6 +142,8 @@ public:
    * update has indeed been performed to catch the case where
    * a user restores an old config file from backup that has
    * not been updated yet.
+   * @param id the update to check
+   * @param updateFile the file containing the update
    */
   void checkUpdate(const QString &id, const QString &updateFile);
     
