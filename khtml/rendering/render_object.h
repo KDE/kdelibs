@@ -55,7 +55,7 @@ namespace khtml {
 
     class RenderTable;
     class CachedObject;
-    
+
 class RenderObject : public DOM::DomShared, public BiDiObject, public CachedObjectClient
 {
 public:
@@ -105,10 +105,12 @@ public:
     virtual bool isRoot() const { return false; }
     virtual bool isBR() const { return false; }
     virtual bool isTableCell() const { return false; }
+    virtual bool isTableRow() const { return false; }
+    virtual bool isTableSection() const { return false; }
     virtual bool isTable() const { return false; }
 
-    virtual bool isAnonymousBox() const { return false; }
-    virtual void setIsAnonymousBox(bool) { }
+    bool isAnonymousBox() const { return m_isAnonymous; }
+    void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
 
     bool isFloating() const { return m_floating; }
     bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
@@ -344,7 +346,7 @@ public:
 
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
     virtual void resetContainingBlock();
-    
+
     virtual int lowestPosition() {return 0;}
 
 protected:
@@ -364,7 +366,8 @@ protected:
     bool m_containsPositioned     : 1;
     bool m_relPositioned  : 1;
     bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
-
+    bool m_isAnonymous    : 1;
+    
     RenderObject *m_containingBlock;
     RenderStyle *m_style;
     RenderObject *m_parent;

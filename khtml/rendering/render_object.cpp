@@ -152,6 +152,63 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
     newChild->setParsing();
 
+    bool needsTable = false;
+
+    if(!newChild->isText()) {
+	switch(newChild->style()->display()) {
+	case INLINE:
+	case BLOCK:
+	case LIST_ITEM:
+	case RUN_IN:
+	case COMPACT:
+	case MARKER:
+	case TABLE:
+	case INLINE_TABLE:
+	    break;
+	case TABLE_COLUMN_GROUP:
+	case TABLE_COLUMN:
+	case TABLE_CAPTION:
+	case TABLE_ROW_GROUP:
+	case TABLE_HEADER_GROUP:
+	case TABLE_FOOTER_GROUP:
+	    //kdDebug( 6040 ) << "adding section" << endl;
+	    if ( !isTable() )
+		needsTable = true;
+	    break;
+	case TABLE_ROW:
+	    //kdDebug( 6040 ) << "adding row" << endl;
+	    if ( !isTableSection() )
+		needsTable = true;
+	    break;
+	case TABLE_CELL:
+	    //kdDebug( 6040 ) << "adding cell" << endl;
+	    if ( !isTableRow() )
+		needsTable = true;
+	    break;
+	case NONE:
+	    kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
+	}
+    }
+    
+    if ( needsTable ) {
+	RenderTable *table;
+	if( !beforeChild )
+	    beforeChild = lastChild();
+	if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
+	    table = static_cast<RenderTable *>(beforeChild);
+	else {
+	    kdDebug( 6040 ) << "creating anonymous table" << endl;
+	    table = new RenderTable();
+	    RenderStyle *newStyle = new RenderStyle(m_style);
+	    newStyle->setDisplay(TABLE);
+	    table->setStyle(newStyle);
+	    table->setIsAnonymousBox(true);
+	    addChild(table, beforeChild);
+	}
+	table->addChild(newChild);
+	return;
+    }
+
     // just add it...
     newChild->setParent(this);
 

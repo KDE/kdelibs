@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 
 #include "htmlparser.h"
 
@@ -465,9 +465,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		node = node->parentNode();
 	    if(node->id() == ID_THEAD)
 		node = node->parentNode();
-	    if(node->id() == ID_TBODY)
+	    else if(node->id() == ID_TBODY)
 		node = node->parentNode();
-	    if(node->id() == ID_TFOOT)
+	    else if(node->id() == ID_TFOOT)
 		node = node->parentNode();
 	
 	    if(node->id() == ID_TABLE)

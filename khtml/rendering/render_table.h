@@ -78,7 +78,7 @@ public:
     virtual const char *renderName() const { return "RenderTable"; }
 
     virtual void setStyle(RenderStyle *style);
-    
+
     virtual bool isInline() const;
     virtual bool isRendered() const { return true; }
     virtual bool isTable() const { return true; }
@@ -271,6 +271,7 @@ public:
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
+    virtual bool isTableSection() const { return true; }
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
@@ -302,6 +303,8 @@ public:
 
     long sectionRowIndex() const { return rIndex; }
     void setSectionRowIndex( long i ) { rIndex = i; }
+
+    virtual bool isTableRow() const { return true; }
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);

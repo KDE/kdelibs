@@ -165,6 +165,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
                        beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
+    RenderObject *o = child;
 
     switch(child->style()->display())
     {
@@ -201,8 +202,23 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 	if(incremental && !columnPos[totalCols]);// calcColWidth();
 	if(!firstBody)
 	    firstBody = static_cast<RenderTableSection *>(child);
-    default:	
 	break;
+    default:
+	if ( !beforeChild )
+	    beforeChild = lastChild();
+	if ( beforeChild && beforeChild->isAnonymousBox() )
+	    o = beforeChild;
+	else {
+	    kdDebug( 6040 ) << "creating anonymous table section" << endl;
+	    o = new RenderTableSection();
+	    RenderStyle *newStyle = new RenderStyle(m_style);
+	    newStyle->setDisplay(TABLE_ROW_GROUP);
+	    o->setStyle(newStyle);
+	    o->setIsAnonymousBox(true);
+	    addChild(o, beforeChild);
+	}
+	o->addChild(child);
+	return;
     }
     RenderObject::addChild(child,beforeChild);
     child->setTable(this);
@@ -809,7 +825,7 @@ void RenderTable::calcColMinMax()
     	for(int i = 0; i < (int)totalCols; i++)
 	    m_maxWidth += colMaxWidth[i] + spacing;
     }
-    
+
     m_minWidth += borderLeft() + borderRight();
     m_maxWidth += borderLeft() + borderRight();
     m_width += borderLeft() + borderRight();
@@ -982,7 +998,7 @@ int RenderTable::distributeWidth(int distrib, LengthType type, int typeCols )
     }
     return tdis;
 }
- 
+
 
 int RenderTable::distributeRest(int distrib, LengthType type, int divider )
 {
@@ -1442,6 +1458,25 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
     kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", " <<
                        beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
+    RenderObject *row = child;
+    if( !beforeChild )
+	beforeChild = lastChild();
+
+    if ( !child->isTableRow() ) {
+	if( beforeChild && beforeChild->isAnonymousBox() )
+	    row = beforeChild;
+	else {
+	    kdDebug( 6040 ) << "creating anonymous table row" << endl;
+	    row = new RenderTableRow();
+	    RenderStyle *newStyle = new RenderStyle(m_style);
+	    newStyle->setDisplay(TABLE_ROW);
+	    row->setStyle(newStyle);
+	    row->setIsAnonymousBox(true);
+	    addChild(row, beforeChild);
+	}
+	row->addChild(child);
+	return;
+    }
 
     table->startRow();
     child->setTable(table);
@@ -1478,14 +1513,33 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
                        beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
+    RenderTableCell *cell;
 
-    RenderTableCell *cell =
-	static_cast<RenderTableCell *>(child);
+    if ( !child->isTableCell() ) {
+	if ( !beforeChild )
+	    beforeChild = lastChild();
+	RenderTableCell *cell;
+	if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTableCell() )
+	    cell = static_cast<RenderTableCell *>(beforeChild);
+	else {
+	    kdDebug( 6040 ) << "creating anonymous table cell" << endl;
+	    cell = new RenderTableCell();
+	    RenderStyle *newStyle = new RenderStyle(m_style);
+	    newStyle->setDisplay(TABLE_CELL);
+	    cell->setStyle(newStyle);
+	    cell->setIsAnonymousBox(true);
+	    addChild(cell, beforeChild);
+	}
+	cell->addChild(child);
+	return;
+    } else
+	cell = static_cast<RenderTableCell *>(child);
+
     cell->setTable(table);
     cell->setRowImpl(this);
     table->addCell(cell);  // ### may not work for beforeChild != 0
 
-    RenderObject::addChild(child,beforeChild);
+    RenderObject::addChild(cell,beforeChild);
 }
 
 // -------------------------------------------------------------------------
@@ -1636,8 +1690,8 @@ RenderTableCol::~RenderTableCol()
 void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )" <<  << ", " <<
-                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
+    //kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )"  << ", " <<
+    //                   beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
 
     if (child->style()->display() == TABLE_COLUMN)

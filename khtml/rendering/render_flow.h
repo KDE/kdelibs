@@ -54,13 +54,11 @@ public:
     virtual const char *renderName() const { return "RenderFlow"; }
 
     virtual void setStyle(RenderStyle *style);
-    
+
     virtual bool isInline() const { return m_inline; }
     virtual bool isFlow() const { return true; }
     virtual bool childrenInline() const { return m_childrenInline; }
     virtual bool isRendered() const { return true; }
-    virtual bool isAnonymousBox() const { return m_isAnonymous; }
-    virtual void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
 
     bool haveAnonymousBox() const { return m_haveAnonymous; }
     void setHaveAnonymousBox(bool b = true) { m_haveAnonymous = b; }
@@ -93,7 +91,7 @@ public:
 
     // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;
-    
+
     virtual int lowestPosition();
 
 protected:
@@ -154,7 +152,6 @@ private:
     bool m_inline         : 1;
     bool m_childrenInline : 1;
     bool m_haveAnonymous  : 1;
-    bool m_isAnonymous    : 1;
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 
