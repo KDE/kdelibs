@@ -47,7 +47,7 @@ namespace KParts
                 return KParts::Factory::virtual_hook( id, data );
 
             QueryInstanceParams *params = reinterpret_cast<QueryInstanceParams *>( data );
-            params->instance = createInstance();
+            params->instance = instance();
         }
 
     private:
