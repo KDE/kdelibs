@@ -35,7 +35,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kpopuptest kprogresstest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
-	itemcontainertest kpanelmenutest
+	itemcontainertest kpanelmenutest kedittest
 
 noinst_HEADERS = \
 		ktabctltest.h kwindowtest.h kstatusbartest.h \
@@ -63,6 +63,7 @@ kcontainertest_SOURCES = kcontainertest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp
 kdialogbasetest_SOURCES = kdialogbasetest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp
+kedittest_SOURCES = kedittest.cpp
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kgradienttest_SOURCES = kgradienttest.cpp
 khashtest_SOURCES = khashtest.cpp
