@@ -552,7 +552,7 @@ bool KExtendedSocket::setAddress(const QString& host, const QString& serv)
 
 /*
  * Sets the bind hostname
- * This is only valid in the 'nothing' state and if this is a
+ * This is only valid in the 'nothing' state and if this is not a
  * passiveSocket socket
  */
 bool KExtendedSocket::setBindHost(const QString& host)
