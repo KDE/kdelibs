@@ -392,9 +392,9 @@ QVariant KService::property( const QString& _name ) const
   }
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
-  if ( (it == m_mapProps.end()) || (it.data().isValid()))
+  if ( (it == m_mapProps.end()) || (!it.data().isValid()))
   {
-//     kdDebug(7012) << "Property not found.\n";
+     //kdDebug(7012) << "Property not found " << _name << endl;
      return QVariant(); // No property set.
   }  
 
