@@ -1337,7 +1337,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 {
     killTimers();
     layout();
-    repaintContents( 0, 0, visibleWidth(), visibleHeight(), FALSE );
+    repaintContents( contentsX(), contentsY(), visibleWidth(), visibleHeight(), FALSE );
     d->timerId = 0;
 }
 
