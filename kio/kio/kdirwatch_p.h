@@ -19,6 +19,7 @@ class KDirWatchPrivate : public QObject
   Q_OBJECT
 
   enum entryStatus { Normal = 0, NonExistent };
+  enum entryMode { UnknownMode = 0, StatMode, DNotifyMode, FAMMode };
   enum { NoChange=0, Changed=1, Created=2, Deleted=4 };
 
 public:
@@ -37,12 +38,15 @@ public:
     // the last observed modification time
     QDateTime m_ctime;
     entryStatus m_status;
+    entryMode m_mode;
     bool isDir;
     // instances interested in events
     QPtrList<Client> m_clients;
     // nonexistent entries of this directory
     QPtrList<Entry> m_entries;
     QString path;
+
+    int msecLeft, freq;
 
     void addClient(KDirWatch*);
     void removeClient(KDirWatch*);
@@ -61,10 +65,11 @@ public:
 
   typedef QMap<QString,Entry> EntryMap;
 
-  KDirWatchPrivate(int);
+  KDirWatchPrivate();
   ~KDirWatchPrivate();
 
-  void resetList (KDirWatch*,bool);  
+  void resetList (KDirWatch*,bool);
+  void useFreq(Entry* e, int newFreq);
   void addEntry(KDirWatch*,const QString&, Entry*, bool);
   void removeEntry(KDirWatch*,const QString&, Entry*);
   bool stopEntryScan(KDirWatch*, Entry*);
@@ -90,6 +95,9 @@ public:
 
 private:
   int freq;
+  int statEntries;
+  int m_nfsPollInterval, m_PollInterval;
+  bool useStat(Entry*);
 
 #ifdef HAVE_FAM
   QSocketNotifier *sn;
@@ -98,6 +106,7 @@ private:
   QIntDict<Entry> fr_Entry;
 
   void checkFAMEvent(FAMEvent*);
+  bool useFAM(Entry*);
 #endif
 
 #ifdef HAVE_DNOTIFY
@@ -108,6 +117,7 @@ private:
   QIntDict<Entry> fd_Entry;
 
   static void dnotify_handler(int, siginfo_t *si, void *);
+  bool useDNotify(Entry*);
 #endif
 };
 

@@ -50,7 +50,8 @@ class KDirWatchPrivate;
   * The implementation uses the FAM service when available;
   * if FAM is not available, the DNOTIFY functionality is used on LINUX.
   * As a last resort, a regular polling for change of modification times
-  * is done; note that this is a bad solution when watching NFS mounted
+  * is done; the polling interval is a global config option:
+  * DirWatch/PollInterval and DirWatch/NFSPollInterval for NFS mounted
   * directories.
   *
   * @short Class for watching directory and file changes.
@@ -66,9 +67,8 @@ class KDirWatch : public QObject
     *
     * Scanning begins immediatly when a dir/file watch
     * is added.
-    * The default scan frequency is 500 ms.
     */
-   KDirWatch ( int freq = 500 );
+   KDirWatch (QObject* parent = 0, const char* name = 0);
 
    /**
     * Destructor.
@@ -78,22 +78,19 @@ class KDirWatch : public QObject
    ~KDirWatch();
 
    /**
-    * Set the name of this KDirWatch instance
-    * Used in output of @ref statistics()
-    */
-   void setName(const QString& name) { _name = name; }
-
-   /**
-    * Get the name of this KDirWatch instance
-    * Used in output of @ref statistics()
-    */
-   const QString& name() { return _name; }
-
-   /**
     * Adds a directory to be watched.
     *
+    * The directory does not have to exist. When @param watchFiles is
+    * false (the default), the signals dirty(), created(), deleted()
+    * can be emitted, all for the watched directory.
+    * When @param watchFiles is true, all files in the watched directory
+    * are looked for changes, too. Thus, the signals fileDirty(),
+    * fileCreated(), fileDeleted() can be emitted.
+    *
+    * When @param recursive is true, also all sub directories are watched.
     */
-   void addDir(const QString& path);
+   void addDir(const QString& path, 
+	       bool watchFiles = false, bool recursive = false);
 
    /**
     * Adds a file to be watched.
@@ -170,7 +167,7 @@ class KDirWatch : public QObject
 
    /**
     * Is scanning stopped?
-    * After creation of KDirWatch, this is true.
+    * After creation of a KDirWatch instance, this is false.
     */
    bool isStopped() { return _isStopped; }
 
@@ -209,7 +206,7 @@ class KDirWatch : public QObject
 
    /**
     * Emitted when a watched directory is changed, i.e. files
-    * therein are created, deleted or changed.
+    * therein are created or deleted.
     *
     * The new ctime is set
     * before the signal is emitted.
@@ -255,7 +252,6 @@ class KDirWatch : public QObject
 
  private:
    bool _isStopped;
-   QString _name;
    
    KDirWatchPrivate *d;
    static KDirWatch* s_pSelf;
