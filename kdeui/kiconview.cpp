@@ -381,7 +381,18 @@ void KIconView::slotDragHoldTimeout()
     emit held( tmp );
 }
 
-
+void KIconView::wheelEvent( QWheelEvent *e )
+{
+    if (horizontalScrollBar() && (arrangement() == QIconView::TopToBottom)) {
+        QWheelEvent ce(e->pos(), e->delta(), e->state(), Qt::Horizontal);
+        QApplication::sendEvent( horizontalScrollBar(), &ce);
+	if (ce.isAccepted()) {
+            e->accept();
+	    return;
+	}
+    }
+    QIconView::wheelEvent(e);
+}
 
 void KIconView::setFont( const QFont &font )
 {
