@@ -1,4 +1,26 @@
 %{
+/*****************************************************************
+Copyright (c) 1999 Torben Weis <weis@kde.org>
+Copyright (c) 2000 Matthias Ettrich <ettrich@kde.org>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+******************************************************************/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -127,7 +149,7 @@ main
 includes
 	: T_INCLUDE includes
           {
-		printf("<INCLUDE file=\"%s\"/>\n", $1->latin1() );
+		printf("<INCLUDE>%s</INCLUDE>\n", $1->latin1() );
 	  }
 	| T_EXTERN T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET
 	  {
@@ -145,7 +167,7 @@ declaration
 	: T_CLASS Identifier class_header dcoptag body T_SEMICOLON
 	  {
 	 	if ($4)
-		  printf("<CLASS name=\"%s\">\n%s%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
+			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
 	  }
 	| T_CLASS Identifier T_SEMICOLON
 	  {
@@ -218,7 +240,7 @@ Identifier
 super_class_name
 	: Identifier
 	  {
-		QString* tmp = new QString( "<SUPER name=\"%1\"/>\n" );
+		QString* tmp = new QString( "    <SUPER>%1</SUPER>\n" );
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
 	  }
@@ -405,13 +427,13 @@ type
 	  }
 	| T_CONST type_name T_AMPERSAND {
 	     if (dcop_area) {
-	  	QString* tmp = new QString(" type=\"%1\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
+	  	QString* tmp = new QString("<TYPE  qleft=\"const\" qright=\"" AMP_ENTITY "\">%1</TYPE>");
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;
 	     }
 	  }
 	| T_CONST type_name {
-		QString* tmp = new QString(" type=\"%1\"/>");
+		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;
 	}
@@ -421,7 +443,7 @@ type
 	  }
 
 	| type_name {
-		QString* tmp = new QString(" type=\"%1\"/>");
+		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
 	}
@@ -446,7 +468,8 @@ param
 	: type Identifier default
 	  {
 		if (dcop_area) {
-		   QString* tmp = new QString("<ARG name=\"%1\"" + *($1));
+		   QString* tmp = new QString("\n        <ARG>%1<NAME>%2</NAME></ARG>");
+  		   *tmp = tmp->arg( *($1) );
   		   *tmp = tmp->arg( *($2) );
 		   $$ = tmp;		
 		} else $$ = new QString();
@@ -496,11 +519,24 @@ function_header
 	: type Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier
 	  {
 	     if (dcop_area) {
-		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\"><RET%2%3</FUNC>\n");
+		QString* tmp = 0;
+		if ( $6 )
+			tmp = new QString(
+				"    <FUNC qual=\"const\">\n"
+				"        %2\n"
+				"        <NAME>%1</NAME>"
+				"%3\n"
+				"     </FUNC>\n");
+		else
+			tmp = new QString(
+				"    <FUNC>\n"
+				"        %2\n"
+				"        <NAME>%1</NAME>"
+				"%3\n"
+				"     </FUNC>\n");
 		*tmp = tmp->arg( *($2) );
 		*tmp = tmp->arg( *($1) );
 		*tmp = tmp->arg( *($4) );
-		*tmp = tmp->arg($6 ? "const" : "");
 		$$ = tmp;
    	     } else
 	        $$ = new QString("");
@@ -595,8 +631,6 @@ member
 
 void dcopidlParse( const char *_code )
 {
-    printf("<!DOCTYPE DCOP-IDL><DCOP-IDL>\n");
     dcopidlInitFlex( _code );
     yyparse();
-    printf("</DCOP-IDL>\n");
 }

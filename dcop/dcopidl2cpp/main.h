@@ -20,50 +20,20 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
+#include <qdom.h>
 #include <qstring.h>
-#include <qfile.h>
-#include <qcstring.h>
-#include <stdlib.h>
 
-void dcopidlParse( const char *_code );
+/**
+ * Writes the skeleton
+ */
+void generateSkel( const QString& idl, const QString& filename, QDomElement de );
 
-int idl_line_no;
+/**
+ * Writes the stubs header
+ */
+void generateStub( const QString& idl, const QString& filename, QDomElement de );
 
-#ifdef YYDEBUG
-extern int yydebug;
-#endif
-
-int main( int argc, char** argv )
-{
-    if (argc != 2)
-    {
-        fprintf(stderr, "Usage : dcopidl input_file\n");
-        return -1;
-    }
-    QFile file( argv[1] );
-    if ( !file.open( IO_ReadOnly ) )
-    {
-        fprintf(stderr, "Can't open input file\n");
-        return -1;
-    }
-
-    QByteArray arr = file.readAll();
-    int len = arr.size();
-    arr.resize( len + 1 );
-    arr[ len ] = 0;
-
-#ifdef YYDEBUG
-    char *debug = getenv("DEBUG");
-    if (debug)
-	yydebug = 1;
-#endif
-    idl_line_no = 1;
-
-    printf("<!DOCTYPE DCOP-IDL><DCOP-IDL>\n");
-    printf("<SOURCE>%s</SOURCE>\n", argv[1] );
-    dcopidlParse( arr.data() );
-    printf("</DCOP-IDL>\n");
-
-    file.close();
-    return 0;
-}
+/**
+ * Writes the stub implementation
+ */
+void generateStubImpl( const QString& idl, const QString& header, const QString& filename, QDomElement de );

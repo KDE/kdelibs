@@ -1,8 +1,10 @@
 		DCOP: Desktop COmmunications Protocol
 
 		    Preston Brown <pbrown@kde.org>
-
 			   October 14, 1999
+
+	 Revised and extended by Matthias Ettrich <ettrich@kde.org>
+			   Mar 29, 2000, 
 
 
 Motivation and Background:
@@ -56,14 +58,15 @@ messages, which do not block, and "calls," which block waiting for
 some data to be returned.
 
 Any data that will be sent is serialized (marshalled, for you CORBA
-types) using the built-in QDataStream operators available in all of the
-Qt classes.  This is fast and easy.  Currently, there is no
-type checking or parameter checking available for RPC, but this may be
-provided at some time in the future in the form of a simple IDL-like
-compiler (NOTE: 5 days later the IDL compiler is already started;
-look in dcopidl/).  Until that is available, you will have to code
-some things by hand that normally the compiler or CORBA take care of
-automatically, but it is not a lot of work.
+types) using the built-in QDataStream operators available in all of
+the Qt classes.  This is fast and easy.  In fact it's so little work
+that you can easily write the marshalling code by hand. In addition,
+there's a simple IDL-like compiler available (dcopidl and dcopidl2cpp)
+that generates stubs and skeletons for you. Using the dcopidl compiler
+has the additional benefit of type safety.
+
+This HOWTO describes the manual method first and covers the dcopidl
+compiler later.
 
 Establishing the Connection:
 ----------------------------
@@ -141,11 +144,11 @@ called function, but you will not hang while the RPC is processed either.
 The return value of send() indicates whether DCOP communication succeeded
 or not.
 
-QByteArray params;
-QDataStream stream(params, IO_WriteOnly);
-stream << 5;
+QByteArray data;
+QDataStream arg(data, IO_WriteOnly);
+arg << 5;
 if (!client->send("someAppId", "fooObject/barObject", "doIt(int)",
-	          params))
+	          data))
   qDebug("there was some error using DCOP.");
 
 OK, now let's say we wanted to get the data back from the remotely
@@ -154,18 +157,18 @@ The returned value will then be available in the data parameter "reply".
 The actual return value of call() is still whether or not DCOP
 communication was successful.
 
-QByteArray params, reply;
+QByteArray data, replyData;
 QCString replyType;
-QDataStream stream(params, IO_WriteOnly);
-stream << 5;
+QDataStream arg(data, IO_WriteOnly);
+arg << 5;
 if (!client->call("someAppId", "fooObject/barObject", "doIt(int)",
-                  params, replyType, reply))
+                  data, replyType, replyData))
   qDebug("there was some error using DCOP.");
 else {
-  QDataStream stream2(reply, IO_ReadOnly);
+  QDataStream reply(replyData, IO_ReadOnly);
   if (replyType == "QString") {
     QString result;
-    stream2 >> result;
+    reply >> result;
     print("the result is: %s",result.latin1());
   } else
     qDebug("doIt returned an unexpected type of reply!");
@@ -194,13 +197,12 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &replyType, QByteArray &replyData)
 {
   if (fun == "doIt(int)") {
-    QDataStream stream(data, IO_ReadOnly);
-    int arg;
-    QString res;
-    stream >> arg;
-    res = self->doIt(arg);
-    QDataStream stream2(replyData, IO_WriteOnly);
-    stream2 << res;
+    QDataStream arg(data, IO_ReadOnly);
+    int i; // parameter
+    arg >> i;
+    QString result = self->doIt (i);
+    QDataStream reply(replyData, IO_WriteOnly);
+    reply << result;
     replyType = "QString";
     return true;
   } else {
@@ -229,18 +231,17 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &, QByteArray &)
 {
   if (fun == "doIt(int)") {
-    QDataStream stream(data, IO_ReadOnly);
-    int arg;
-    QString res;
-    stream >> arg;
-    res = self->doIt(arg);
+    QDataStream arg(data, IO_ReadOnly);
+    int i; // parameter
+    arg >> i;
+    QString result = self->doIt(i);
     
     DCOPClientTransaction *myTransaction;
     myTransaction = kapp->dcopClient()->beginTransaction();
 
     // start processing...
     // Calls slotProcessingDone when finished.
-    startProcessing( myTransaction, arg);
+    startProcessing( myTransaction, i);
 
     return true;
   } else {
@@ -249,22 +250,27 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
   }
 }
 
-slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &res)
+slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 {
     QCString replyType = "QString";
     QByteArray replyData;  
-    QDataStream stream(replyData, IO_WriteOnly);
-    stream << res;
+    QDataStream reply(replyData, IO_WriteOnly);
+    reply << result;
     kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
 }
 
+Using the dcopidl compiler
+---------------------
+
+TODO
 
 Conclusion:
 -----------
 
 Hopefully this document will get you well on your way into the world
 of inter-process communication with KDE!  Please direct all comments
-and/or suggestions to Preston Brown <pbrown@kde.org>.
+and/or suggestions to Preston Brown <pbrown@kde.org> and Matthias
+Ettrich <ettrich@kde.org>.
 
 
 Inter-user communication
