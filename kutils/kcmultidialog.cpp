@@ -77,7 +77,7 @@ KCMultiDialog::KCMultiDialog( int dialogFace, const KGuiItem &user2,
         const KGuiItem &user3, int buttonMask, const QString &caption,
         QWidget *parent, const char *name, bool modal )
     : KDialogBase( dialogFace, caption, buttonMask | Help | Default | Cancel |
-            Apply | Ok | User1 | User2 | User3, Ok, parent, name, modal, true,
+            Apply | Ok | User1, Ok, parent, name, modal, true,
             KStdGuiItem::reset(), user2, user3 )
     , dialogface( dialogFace ), d( new KCMultiDialogPrivate )
 {
@@ -88,8 +88,6 @@ KCMultiDialog::KCMultiDialog( int dialogFace, const KGuiItem &user2,
 inline void KCMultiDialog::init()
 {
     connect( this, SIGNAL( finished()), SLOT( dialogClosed()));
-    showButton( User1, false );
-    showButton( User2, false );
     enableButton(Apply, false);
     connect(this, SIGNAL(aboutToShowPage(QWidget *)), this, SLOT(slotAboutToShow(QWidget *)));
     setInitialSize(QSize(640,480));
@@ -368,16 +366,17 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
 
     disconnect( this, SIGNAL(user2Clicked()), 0, 0 );
 
-    if (d->currentModule->moduleInfo().needsRootPrivileges() &&
-            !d->currentModule->rootMode() )
-    { /* Enable the Admin Mode button */
-        enableButton( User2, true );
-        connect( this, SIGNAL(user2Clicked()), d->currentModule, SLOT( runAsRoot() ));
-        connect( this, SIGNAL(user2Clicked()), SLOT( disableRModeButton() ));
+    if (d->currentModule->moduleInfo().needsRootPrivileges())
+    {
+        if ( !d->currentModule->rootMode() )
+            { /* Enable the Admin Mode button */
+            enableButton( User2, true );
+            connect( this, SIGNAL(user2Clicked()), d->currentModule, SLOT( runAsRoot() ));
+            connect( this, SIGNAL(user2Clicked()), SLOT( disableRModeButton() ));
+        }
+        else
+            enableButton( User2, false);
     }
-    else
-        enableButton( User2, false);
-
 }
 
 void KCMultiDialog::rootExit()
