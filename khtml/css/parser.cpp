@@ -2093,6 +2093,8 @@ yyreduce:
   case 101:
     {
 	yyval.ok = yyvsp[-2].ok;
+	if ( yyvsp[-1].ok )
+	    yyval.ok = yyvsp[-1].ok;
     }
     break;
 
