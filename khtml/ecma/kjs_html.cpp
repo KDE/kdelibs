@@ -755,7 +755,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   selected	KJS::HTMLElement::OptionSelected	DontDelete
   value		KJS::HTMLElement::OptionValue		DontDelete
 @end
-@begin HTMLInputElementTable 23
+@begin HTMLInputElementTable 24
   defaultValue	KJS::HTMLElement::InputDefaultValue	DontDelete
   defaultChecked KJS::HTMLElement::InputDefaultChecked	DontDelete
   form		KJS::HTMLElement::InputForm		DontDelete|ReadOnly
@@ -764,6 +764,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   align		KJS::HTMLElement::InputAlign		DontDelete
   alt		KJS::HTMLElement::InputAlt		DontDelete
   checked	KJS::HTMLElement::InputChecked		DontDelete
+  status	KJS::HTMLElement::InputChecked		DontDelete
   disabled	KJS::HTMLElement::InputDisabled		DontDelete
   maxLength	KJS::HTMLElement::InputMaxLength	DontDelete
   name		KJS::HTMLElement::InputName		DontDelete

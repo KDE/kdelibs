@@ -311,40 +311,42 @@ using namespace KJS;
 namespace KJS {
 
 static const struct HashEntry HTMLInputElementTableEntries[] = {
-   { "blur", KJS::HTMLElement::InputBlur, DontDelete|Function, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "readOnly", KJS::HTMLElement::InputReadOnly, DontDelete, 0, 0 },
-   { "accept", KJS::HTMLElement::InputAccept, DontDelete, 0, &HTMLInputElementTableEntries[23] },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "size", KJS::HTMLElement::InputSize, DontDelete, 0, &HTMLInputElementTableEntries[27] },
+   { "accept", KJS::HTMLElement::InputAccept, DontDelete, 0, &HTMLInputElementTableEntries[26] },
    { 0, 0, 0, 0, 0 },
    { "defaultValue", KJS::HTMLElement::InputDefaultValue, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "tabIndex", KJS::HTMLElement::InputTabIndex, DontDelete, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "value", KJS::HTMLElement::InputValue, DontDelete, 0, &HTMLInputElementTableEntries[30] },
-   { "type", KJS::HTMLElement::InputType, DontDelete, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "focus", KJS::HTMLElement::InputFocus, DontDelete|Function, 0, 0 },
-   { "maxLength", KJS::HTMLElement::InputMaxLength, DontDelete, 0, 0 },
    { "defaultChecked", KJS::HTMLElement::InputDefaultChecked, DontDelete, 0, &HTMLInputElementTableEntries[24] },
+   { "blur", KJS::HTMLElement::InputBlur, DontDelete|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "disabled", KJS::HTMLElement::InputDisabled, DontDelete, 0, &HTMLInputElementTableEntries[29] },
    { 0, 0, 0, 0, 0 },
-   { "checked", KJS::HTMLElement::InputChecked, DontDelete, 0, &HTMLInputElementTableEntries[28] },
+   { "disabled", KJS::HTMLElement::InputDisabled, DontDelete, 0, 0 },
+   { "alt", KJS::HTMLElement::InputAlt, DontDelete, 0, &HTMLInputElementTableEntries[27] },
+   { 0, 0, 0, 0, 0 },
+   { "accessKey", KJS::HTMLElement::InputAccessKey, DontDelete, 0, &HTMLInputElementTableEntries[28] },
+   { 0, 0, 0, 0, 0 },
+   { "value", KJS::HTMLElement::InputValue, DontDelete, 0, 0 },
+   { "readOnly", KJS::HTMLElement::InputReadOnly, DontDelete, 0, &HTMLInputElementTableEntries[32] },
+   { "checked", KJS::HTMLElement::InputChecked, DontDelete, 0, 0 },
+   { "src", KJS::HTMLElement::InputSrc, DontDelete, 0, &HTMLInputElementTableEntries[30] },
+   { 0, 0, 0, 0, 0 },
+   { "type", KJS::HTMLElement::InputType, DontDelete, 0, 0 },
+   { "align", KJS::HTMLElement::InputAlign, DontDelete, 0, &HTMLInputElementTableEntries[29] },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "tabIndex", KJS::HTMLElement::InputTabIndex, DontDelete, 0, 0 },
    { "form", KJS::HTMLElement::InputForm, DontDelete|ReadOnly, 0, &HTMLInputElementTableEntries[25] },
-   { "accessKey", KJS::HTMLElement::InputAccessKey, DontDelete, 0, &HTMLInputElementTableEntries[26] },
-   { "align", KJS::HTMLElement::InputAlign, DontDelete, 0, 0 },
-   { "alt", KJS::HTMLElement::InputAlt, DontDelete, 0, 0 },
+   { "status", KJS::HTMLElement::InputChecked, DontDelete, 0, 0 },
+   { "maxLength", KJS::HTMLElement::InputMaxLength, DontDelete, 0, 0 },
    { "name", KJS::HTMLElement::InputName, DontDelete, 0, 0 },
-   { "src", KJS::HTMLElement::InputSrc, DontDelete, 0, 0 },
+   { "size", KJS::HTMLElement::InputSize, DontDelete, 0, 0 },
    { "useMap", KJS::HTMLElement::InputUseMap, DontDelete, 0, 0 },
+   { "focus", KJS::HTMLElement::InputFocus, DontDelete|Function, 0, &HTMLInputElementTableEntries[31] },
    { "select", KJS::HTMLElement::InputSelect, DontDelete|Function, 0, 0 },
    { "click", KJS::HTMLElement::InputClick, DontDelete|Function, 0, 0 }
 };
 
-static const struct HashTable HTMLInputElementTable = { 2, 31, HTMLInputElementTableEntries, 23 };
+static const struct HashTable HTMLInputElementTable = { 2, 33, HTMLInputElementTableEntries, 24 };
 
 } // namespace
 
