@@ -143,14 +143,13 @@ protected:
     void parseServer(khtml::DOMStringIt &str);
     void parseText(khtml::DOMStringIt &str);
     void parseListing(khtml::DOMStringIt &str);
-    void parseSpecial(khtml::DOMStringIt &str, bool begin);
+    void parseSpecial(khtml::DOMStringIt &str);
     void parseTag(khtml::DOMStringIt &str);
     void parseEntity(khtml::DOMStringIt &str, QChar *&dest, bool start = false);
     void parseProcessingInstruction(khtml::DOMStringIt &str);
     void scriptHandler();
     void scriptExecution(const QString& script, QString scriptURL = QString(),
                          int baseLine = 0);
-    void addPendingSource();
     void setSrc(QString source);
 
     // check if we have enough space in the buffer.
@@ -260,6 +259,9 @@ protected:
 
     // Are we in a <xmp> ... </xmp> block
     bool xmp;
+
+    // Are we in a <title> ... </title> block
+    bool title;
 
     // Are we in plain textmode ?
     bool plaintext;
