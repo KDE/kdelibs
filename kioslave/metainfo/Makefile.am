@@ -19,6 +19,6 @@ kdelnkdir = $(kde_servicesdir)
 #servicetypes_DATA = thumbcreator.desktop
 #servicetypesdir = $(kde_servicetypesdir)
 
-#services_DATA = imagethumbnail.desktop textthumbnail.desktop \
+#services_DATA = imagethumbnail.desktop textthumbnail.desktop 
 #                htmlthumbnail.desktop gsthumbnail.desktop
 #servicesdir = $(kde_servicesdir)
