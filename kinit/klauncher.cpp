@@ -788,9 +788,11 @@ KLauncher::requestStart(KLaunchRequest *request)
       length += (*it).length() + 1; // Envs...
    }
    length += sizeof( long ); // avoid_loops
+#ifdef Q_WS_X11
    bool startup_notify = !request->startup_id.isNull() && request->startup_id != "0";
    if( startup_notify )
        length += request->startup_id.length() + 1;
+#endif
    if (!request->cwd.isEmpty())
        length += request->cwd.length() + 1;
 
@@ -822,17 +824,23 @@ KLauncher::requestStart(KLaunchRequest *request)
    l = 0; // avoid_loops, always false here
    memcpy(p, &l, sizeof(long));
    p += sizeof(long);
+#ifdef Q_WS_X11
    if( startup_notify )
    {
       strcpy(p, request->startup_id.data());
       p += strlen( p ) + 1;
    }
+#endif
    if (!request->cwd.isEmpty())
    {
       strcpy(p, request->cwd.data());
       p += strlen( p ) + 1;
    }
+#ifdef Q_WS_X11
    request_header.cmd = startup_notify ? LAUNCHER_EXT_EXEC : LAUNCHER_EXEC_NEW;
+#else
+   request_header.cmd = LAUNCHER_EXEC_NEW;
+#endif
    request_header.arg_length = length;
    write(kdeinitSocket, &request_header, sizeof(request_header));
    write(kdeinitSocket, requestData.data(), request_header.arg_length);
@@ -1132,7 +1140,9 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
       request->dcop_service_type = KService::DCOP_None;
    request->dcop_name = 0;
    request->pid = 0;
+#ifdef Q_WS_X11
    request->startup_id = startup_id;
+#endif
    request->envs = envs;
    request->transaction = dcopClient()->beginTransaction();
    queueRequest(request);
@@ -1279,7 +1289,9 @@ KLauncher::requestSlave(const QString &protocol,
     request->dcop_name = 0;
     request->dcop_service_type = KService::DCOP_None;
     request->pid = 0;
+#ifdef Q_WS_X11
     request->startup_id = "0";
+#endif
     request->status = KLaunchRequest::Launching;
     request->transaction = 0; // No confirmation is send
     requestStart(request);

@@ -25,7 +25,7 @@
 #include <qnamespace.h>
 #include <qwindowdefs.h>
 
-#if defined(Q_WS_X11) || defined(Q_WS_WIN) // Only compile this module if we're compiling for X11 or win32
+#if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
 
 #include "kkeyserver_x11.h"
 #include "kkeynative.h"
@@ -412,7 +412,7 @@ bool Sym::initQt( int keyQt )
 #ifdef Q_WS_WIN
 	m_sym = symQt;
 	return true;
-#else
+#elif defined(Q_WS_X11)
 	for( uint i = 0; i < sizeof(g_rgQtToSymX)/sizeof(TransKey); i++ ) {
 		if( g_rgQtToSymX[i].keySymQt == symQt ) {
 			m_sym = g_rgQtToSymX[i].keySymX;
@@ -425,6 +425,9 @@ bool Sym::initQt( int keyQt )
 	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
 		kdDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
+#elif defined(Q_WS_MACX)
+        m_sym = symQt;
+        return true;
 #endif
 }
 
@@ -453,7 +456,7 @@ bool Sym::init( const QString& s )
 		}
 	}
 	m_sym = 0;
-#else
+#elif defined(Q_WS_X11)
 	// search X list: 's' as is, all lower, first letter in caps
 	m_sym = XStringToKeysym( s.latin1() );
 	if( !m_sym ) {
@@ -478,7 +481,7 @@ int Sym::qt() const
 #ifdef Q_WS_WIN
 	if( m_sym < 0x3000 )
 		return m_sym;
-#else
+#elif defined(Q_WS_X11)
 	if( m_sym < 0x3000 )
 		return m_sym | Qt::UNICODE_ACCEL;
 
@@ -517,7 +520,7 @@ QString Sym::toString( bool bUserSpace ) const
 	QString s;
 #ifdef Q_WS_WIN
 	s = QKeySequence( m_sym );
-#else
+#elif defined(Q_WS_X11)
 	// Get X-name
 	s = XKeysymToString( m_sym );
 #endif
@@ -680,7 +683,23 @@ bool keyboardHasWinKey() {
   return true;
 }
 
-#else //!Q_WS_WIN
+#elif defined(Q_WS_MACX)
+
+bool modXToModQt(uint modX, int& modQt)
+{
+    return modToModQt( modX, modQt );
+}
+
+bool keyboardHasWinKey() {
+//! TODO - A win key on the Mac...?
+  return false;
+}
+
+bool modXToMod( uint , uint& )
+{
+    return false;
+}
+#elif defined(Q_WS_X11)
 
 bool modToModX( uint mod, uint& modX )
 {
@@ -903,7 +922,7 @@ KKey Key::key() const
 	if( m_code == CODE_FOR_QT )
 		return KKey( keyCodeQt() );
 	else {
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) || defined(Q_WS_MACX)
 		return KKey();
 #else
 		uint mod;

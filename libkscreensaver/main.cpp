@@ -87,7 +87,7 @@ protected:
 
 
 //----------------------------------------------------------------------------
-#ifdef Q_WS_QWS
+#if defined(Q_WS_QWS) || defined(Q_WS_MACX)
 typedef WId Window;
 #endif
 

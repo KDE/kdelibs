@@ -50,7 +50,9 @@
 
 #include <assert.h>
 
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#endif
 
 extern "C" {
    KDE_EXPORT KDEDModule *create_kwalletd(const QCString &name) {
@@ -286,9 +288,11 @@ int KWalletD::open(const QString& wallet, uint wId) {
 
 int KWalletD::doTransactionOpen(const QCString& appid, const QString& wallet, uint wId) {
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
-	       	// First use wizard
+		// First use wizard
 		KWalletWizard *wiz = new KWalletWizard(0);
+#ifdef Q_WS_X11
 		XSetTransientForHint(qt_xdisplay(), wiz->winId(), wId);
+#endif
 		int rc = wiz->exec();
 		if (rc == QDialog::Accepted) {
 			KConfig cfg("kwalletrc");
@@ -412,7 +416,9 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 
 		const char *p = 0L;
 		while (!b->isOpen()) {
+#ifdef Q_WS_X11
 			XSetTransientForHint(qt_xdisplay(), kpd->winId(), w);
+#endif
 			KWin::setState( kpd->winId(), NET::KeepAbove );
 			KWin::setOnAllDesktops(kpd->winId(), true);
 			if (kpd->exec() == KDialog::Accepted) {
@@ -497,7 +503,9 @@ bool KWalletD::isAuthorizedApp(const QCString& appid, const QString& wallet, WId
 		} else {
 			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)));
 		}
+#ifdef Q_WS_X11
 		XSetTransientForHint(qt_xdisplay(), dialog->winId(), w);
+#endif
 		KWin::setState(dialog->winId(), NET::KeepAbove);
 		KWin::setOnAllDesktops(dialog->winId(), true);
 
@@ -602,7 +610,9 @@ void KWalletD::doTransactionChangePassword(const QCString& appid, const QString&
 	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
 	kpd->setCaption(i18n("KDE Wallet Service"));
 	kpd->setAllowEmptyPasswords(true);
+#ifdef Q_WS_X11
 	XSetTransientForHint(qt_xdisplay(), kpd->winId(), wId);
+#endif
 	if (kpd->exec() == KDialog::Accepted) {
 		const char *p = kpd->password();
 		if (p) {

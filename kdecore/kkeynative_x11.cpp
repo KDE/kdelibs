@@ -23,7 +23,7 @@
 #include <qnamespace.h>
 #include <qwindowdefs.h>
 
-#if defined(Q_WS_X11) || defined(Q_WS_WIN) // Only compile this module if we're compiling for X11 or win32
+#if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
 
 #include "kkeynative.h"
 #include "kkeyserver_x11.h"
@@ -92,7 +92,7 @@ bool KKeyNative::init( const KKey& key )
 	m_sym = key.sym();
 	m_code = m_sym; //key.keyCodeQt();
 	m_mod = key.m_mod;
-#else
+#elif defined(Q_WS_WIN)
 	// Get any extra mods required by the sym.
 	//  E.g., XK_Plus requires SHIFT on the en layout.
 	m_sym = key.sym();

@@ -122,6 +122,8 @@ static char sock_file_old[MAX_SOCK_FILE];
 #define DISPLAY "DISPLAY"
 #elif defined(Q_WS_QWS)
 #define DISPLAY "QWS_DISPLAY"
+#elif defined(Q_WS_MACX)
+#define DISPLAY "MAC_DISPLAY"
 #elif defined(K_WS_QTONLY)
 #define DISPLAY "QT_DISPLAY"
 #else
@@ -1243,7 +1245,9 @@ static void handle_launcher_request(int sock = -1)
 #ifndef NDEBUG
        fprintf(stderr,"kdeinit: terminate KDE.\n");
 #endif
+#ifdef Q_WS_X11
        kdeinit_xio_errhandler( 0L );
+#endif
    }
    else if (request_header.cmd == LAUNCHER_TERMINATE_KDEINIT)
    {
@@ -1534,6 +1538,7 @@ int kdeinit_xio_errhandler( Display *disp )
     return 0;
 }
 
+#ifdef Q_WS_X11
 int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
 {
 #ifndef NDEBUG
@@ -1551,7 +1556,7 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
 #endif
     return 0;
 }
-
+#endif
 
 //#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
@@ -1710,7 +1715,9 @@ int main(int argc, char **argv, char **envp)
    d.lt_dlopen_flag = lt_dlopen_flag;
    lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
+#ifdef Q_WS_X11
    setupX();
+#endif
 
    if (keep_running)
    {
@@ -1788,12 +1795,14 @@ int main(int argc, char **argv, char **envp)
       QFont::initialize();
       setlocale (LC_ALL, "");
       setlocale (LC_NUMERIC, "C");
+#ifdef Q_WS_X11
       if (XSupportsLocale ())
       {
          // Similar to QApplication::create_xim()
 	 // but we need to use our own display
 	 XOpenIM (X11display, 0, 0, 0);
       }
+#endif
    }
 
    for(i = 1; i < argc; i++)

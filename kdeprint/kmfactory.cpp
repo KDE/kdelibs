@@ -49,7 +49,9 @@
 
 #define	UNLOAD_OBJECT(x) if (x != 0) { delete x; x = 0; }
 
+#ifdef Q_WS_X11
 extern void qt_generate_epsf( bool b );
+#endif
 
 KMFactory* KMFactory::m_self = 0;
 static KStaticDeleter<KMFactory> s_kmfactorysd;
@@ -99,7 +101,9 @@ KMFactory::KMFactory()
 	// This is fixed in Qt 3.0, but for Qt 2.x we need to disable it explicitly.
 	// If this is a problem for anyone, we can add a public method to set this flag.
 	// (David Faure, doing as advised by Lars Knoll)
+#ifdef Q_WS_X11
 	qt_generate_epsf( false );
+#endif
 #endif
 
 	// By default, embed PS fonts

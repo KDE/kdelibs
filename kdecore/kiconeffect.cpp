@@ -32,7 +32,7 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) || defined(Q_WS_MACX)
 static bool qt_use_xrender=true;
 static bool qt_has_xft=true;
 #else

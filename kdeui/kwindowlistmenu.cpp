@@ -22,6 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <qglobal.h>
+
+#ifdef Q_WS_X11
+
 #include "config.h"
 #include <qpainter.h>
 #include <qvaluelist.h>
@@ -238,4 +242,6 @@ void KWindowListMenu::slotCascadeWindows()
 
 void KWindowListMenu::virtual_hook( int id, void* data )
 { KPopupMenu::virtual_hook( id, data ); }
+
+#endif // Q_WS_X11
 

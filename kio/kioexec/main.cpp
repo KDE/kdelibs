@@ -194,16 +194,20 @@ void KIOExec::slotRunApp()
 
     kdDebug() << "EXEC " << KShell::joinArgs( params ) << endl;
 
+#ifdef Q_WS_X11
     // propagate the startup indentification to the started process
     KStartupInfoId id;
     id.initId( kapp->startupId());
     id.setupStartupEnv();
+#endif
 
     KProcess proc;
     proc << params;
     proc.start( KProcess::Block );
 
+#ifdef Q_WS_X11
     KStartupInfo::resetStartupEnv();
+#endif
 
     kdDebug() << "EXEC done" << endl;
 
