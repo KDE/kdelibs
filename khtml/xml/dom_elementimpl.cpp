@@ -130,7 +130,7 @@ DOMString AttrImpl::name() const
     DOMString n = getDocument()->getName(AttributeId, m_attrId);
 
     // compat mode always return attribute names in lowercase.
-    // that's not formally in the specification, but common 
+    // that's not formally in the specification, but common
     // practice - a w3c erratum to DOM L2 is pending.
     if (m_htmlCompat)
         n = n.lower();
@@ -870,7 +870,6 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMString
 {
     assert( !(qName && nsAware) );
     if (!id) return;
-
     // Passing in a null value here causes the attribute to be removed. This is a khtml extension
     // (the spec does not specify what to do in this situation).
     int exceptioncode = 0;

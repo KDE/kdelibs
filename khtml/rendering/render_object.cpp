@@ -1647,4 +1647,3 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
 				: st->color();
     }
 }
-

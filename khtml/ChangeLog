@@ -1,3 +1,13 @@
+2004-02-15  Zack Rusin  <zack@kde.org>
+
+	*  xml/dom2_viewsimpl.cpp (getComputedStyle): implementing 
+	26311
+	* css/css_renderstyledeclarationimpl : implementing
+	CSSStyleDeclarationImpl which maps the properties
+	to the rendering tree
+	* css/css_valueimpl.h: changing some methods to virtual
+	in order to overload them in RenderStyleDeclarationImpl
+
 2004-02-15  Dirk Mueller  <mueller@kde.org>
 
 	* css/css_base.cpp (specificity): fix detection of the *

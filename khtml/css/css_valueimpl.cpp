@@ -91,7 +91,6 @@ CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
 {
     if(!m_lstValues) return DOMString();
-
     CSSValueImpl* value = getPropertyCSSValue( propertyID );
     if ( value )
         return value->cssText();
@@ -408,8 +407,8 @@ DOM::DOMString CSSInheritedValueImpl::cssText() const
 }
 
 unsigned short CSSInitialValueImpl::cssValueType() const
-{ 
-    return CSSValue::CSS_INITIAL; 
+{
+    return CSSValue::CSS_INITIAL;
 }
 
 DOM::DOMString CSSInitialValueImpl::cssText() const
