@@ -79,8 +79,6 @@ public:
     bool linkPressed;
     bool useSlowRepaints;
     short tabIndex;
-
-    QTimer resizeTimer;
 };
 
 
@@ -108,8 +106,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     setHScrollBarMode(Auto);
 
     d = new KHTMLViewPrivate;
-
-    connect(&d->resizeTimer, SIGNAL(timeout()), this, SLOT(triggerResize()));
 }
 
 KHTMLView::~KHTMLView()
@@ -170,24 +166,20 @@ void KHTMLView::clear()
 
     delete d;
     d = new KHTMLViewPrivate();
-    connect(&d->resizeTimer, SIGNAL(timeout()), this, SLOT(triggerResize()));
 }
 
-void KHTMLView::resizeEvent ( QResizeEvent * event )
+void KHTMLView::resizeEvent (QResizeEvent* e)
 {
     //kdDebug() << "KHTMLView::resizeEvent" << endl;
 
-    QScrollView::resizeEvent(event);
+    QScrollView::resizeEvent(e);
 
-    int w = visibleWidth();
-    int h = visibleHeight();
-
-    layout();
-
-    if(visibleHeight() != h || visibleWidth() != w)
+    if((d->useSlowRepaints && visibleHeight() != _height) ||
+       (visibleWidth() - _width) > 4 || (visibleWidth() - _width) < 0)
+    {
         layout();
-
-    KApplication::sendPostedEvents(viewport(), QEvent::Paint);
+        KApplication::sendPostedEvents(viewport(), QEvent::Paint);
+    }
 }
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
