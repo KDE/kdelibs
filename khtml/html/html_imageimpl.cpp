@@ -147,7 +147,9 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	    addCSSProperty(CSS_PROP_FLOAT, attr->value());
 	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top");
 	}
-	else
+	else if( strcasecmp( attr->value(), "center") == 0)
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "middle");
+        else
 	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
 	break;
     case ATTR_VALIGN:
