@@ -525,6 +525,22 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
        (*it).m_entries.append(sub_entry);
        kdDebug(7001) << "Added already watched Entry " << path
 		     << " (for " << sub_entry->path << ")" << endl;
+#ifdef HAVE_DNOTIFY
+       Entry* e = &(*it);
+       if( e->dn_fd > 0 ) {
+         int mask = DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT;
+         // if dependant is a file watch, we check for MODIFY & ATTRIB too
+         for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next())
+     	   if (!dep->isDir) { mask |= DN_MODIFY|DN_ATTRIB; break; }
+	 if( fcntl(e->dn_fd, F_NOTIFY, mask) < 0) { // shouldn't happen
+	   ::close(e->dn_fd);
+	   e->m_mode = UnknownMode;
+  	   fd_Entry.remove(e->dn_fd);
+           e->dn_fd = 0;
+           useStat( e );
+         }
+       }
+#endif
     }
     else {
        (*it).addClient(instance);
