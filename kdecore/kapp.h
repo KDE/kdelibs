@@ -43,6 +43,7 @@ typedef unsigned long Atom;
 #include <qpixmap.h>
 #include <kinstance.h>
 
+struct _IceConn;
 class QPopupMenu;
 class QStrList;
 class KSessionManaged;
@@ -66,8 +67,8 @@ class KApplicationPrivate;
 * avoid zombie children. If you want to catch this signal yourself or
 * don't want it to be caught at all, you have set a new signal handler
 * (or SIG_IGN) after KApplication's constructor has run.
-* @li	Provides a debugging system for all KDE GUI apps. This can be
-*	invoked via the key combo Ctrl-Shift-F12 in any KDE application.
+* @li   Provides a debugging system for all KDE GUI apps. This can be
+*       invoked via the key combo Ctrl-Shift-F12 in any KDE application.
 *
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
@@ -168,7 +169,7 @@ public:
    * Retrieve the application session config object.
    *
    * @return A pointer to the application's instance specific
-   * 	@ref KConfig object.
+   *    @ref KConfig object.
    * @see KConfig
    */
   KConfig* sessionConfig();
@@ -177,8 +178,8 @@ public:
    * Is the application restored from the session manager?
    *
    * @return If @p true, this application was restored by the session manager.
-   *	Note that this may mean the config object returned by
-   *	@ref sessionConfig() contains data saved by a session closedown.
+   *    Note that this may mean the config object returned by
+   *    @ref sessionConfig() contains data saved by a session closedown.
    * @see sessionConfig()
    */
   bool isRestored() const { return QApplication::isSessionRestored(); }
@@ -244,7 +245,7 @@ public:
    * Get the mini-icon for the application.
    * @return a @ref QPixmap with the icon.
    * @see QPixmap
-	*/
+        */
   QPixmap miniIcon() const;
 
   /**
@@ -263,15 +264,15 @@ public:
   /**
    * Invoke the KHelpCenter HTML help viewer from docbook sources.
    *
-   * @param anchor	This has to be a defined anchor in your
+   * @param anchor      This has to be a defined anchor in your
    *                    docbook sources. If empty the main index
    *                    is loaded
-   * @param appname	This allows you to show the help of another
+   * @param appname     This allows you to show the help of another
    *                    application. If empty the current name() is
    *                    used
    */
   void invokeHelp( const QString& anchor = QString::null,
-		   const QString& appname = QString::null ) const;
+                   const QString& appname = QString::null ) const;
 
   /**
    * Invoke the khelpcenter HTML help viewer from HTML sources.
@@ -345,9 +346,9 @@ public:
    *         that occured.
    */
   static int startServiceByName( const QString& _name, const QString &URL,
-		QString *error=0, QCString *dcopService=0, int *pid=0 );
+                QString *error=0, QCString *dcopService=0, int *pid=0 );
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-		QString *error=0, QCString *dcopService=0, int *pid=0 );
+                QString *error=0, QCString *dcopService=0, int *pid=0 );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -363,9 +364,9 @@ public:
    *         that occured.
    */
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
-		QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0 );
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
-		QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -382,9 +383,9 @@ public:
    *         that occured.
    */
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
-		QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0 );
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
-  		QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
    * Retrieve the current KDE style object if a plugin is in use,
@@ -431,7 +432,7 @@ public:
    * modified, i.e., it contains data that has not been saved.
    */
   QString makeStdCaption( const QString &userCaption,
-			  bool withAppName=true, bool modified=false ) const;
+                          bool withAppName=true, bool modified=false ) const;
 
   /**
    * Get a file name in order to make a temporary copy of your document.
@@ -466,11 +467,11 @@ public:
    *  @p allowStyles set to @p false.
    */
   void enableStyles();
-  
+
   /**
    * Disable style plugins.
    *
-   * Current style plugins do not get unloaded. 
+   * Current style plugins do not get unloaded.
    *
    * This is only usefull when used in combination with @ref enableStyles.
    */
@@ -573,6 +574,11 @@ public:
       @internal
     */
   int xioErrhandler();
+
+  /**
+   * @internal
+   */
+  void iceIOErrorHandler( _IceConn *conn );
 
   /**
    * @internal
@@ -762,6 +768,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.177  2000/07/21 18:26:10  waba
+// WABA: Added disablesStyles() for completeness
+//
 // Revision 1.176  2000/07/20 20:07:36  hoelzer
 // Inced version number.
 //

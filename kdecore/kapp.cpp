@@ -95,6 +95,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/SM/SMlib.h>
+#include <X11/ICE/ICElib.h>
 
 // defined by X11 headers
 const int XKeyPress = KeyPress;
@@ -125,6 +126,12 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
         qWarning( "KDE detected X Error: %s %d\n  Major opcode:  %d", errstr, err->error_code, err->request_code );
     return 0;
 }
+
+static void kde_ice_ioerrorhandler( IceConn conn )
+{
+    kapp->iceIOErrorHandler( conn );
+}
+
 }
 
 /*
@@ -136,6 +143,7 @@ public:
   KApplicationPrivate()
   {
     refCount = 1;
+    oldIceIOErrorHandler = 0;
   }
 
   ~KApplicationPrivate()
@@ -148,6 +156,8 @@ public:
    * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
    */
   int refCount;
+
+  IceIOErrorHandler oldIceIOErrorHandler;
 };
 
 
@@ -256,6 +266,16 @@ int KApplication::xioErrhandler()
   return 0;
 }
 
+void KApplication::iceIOErrorHandler( _IceConn *conn )
+{
+    emit shutDown();
+
+    if ( d->oldIceIOErrorHandler != NULL )
+      (*d->oldIceIOErrorHandler)( conn );
+
+    exit( 1 );
+}
+
 class KDETranslator : public QTranslator
 {
 public:
@@ -325,6 +345,8 @@ void KApplication::init(bool GUIenabled)
     XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
                                         PropModeReplace, (unsigned char *)&data, 1);
   }
+
+  d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
 }
 
 static int my_system (const char *command) {
@@ -753,25 +775,25 @@ void KApplication::parseCommandLine( )
 
         KCrash::setApplicationName(QString(args->appName()));
     }
-    
+
     if ( args->isSet( "waitforwm" ) ) {
-	Atom a = XInternAtom( qt_xdisplay(), "_NET_SUPPORTED", FALSE  );
-	Atom type;
-	(void) desktop(); // trigger desktop creation, we need PropertyNotify events for the root window
-	int format;
-	unsigned long length, after;
-	unsigned char *data;
-	while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), a, 0, 1, FALSE, AnyPropertyType, &type, &format,
-				    &length, &after, &data ) != Success || !length ) {
-	    if ( data )
-		XFree( data );
-	    XEvent event;
-	    XWindowEvent( qt_xdisplay(), qt_xrootwin(), PropertyChangeMask, &event );
-	}
-	if ( data )
-	    XFree( data );
+        Atom a = XInternAtom( qt_xdisplay(), "_NET_SUPPORTED", FALSE  );
+        Atom type;
+        (void) desktop(); // trigger desktop creation, we need PropertyNotify events for the root window
+        int format;
+        unsigned long length, after;
+        unsigned char *data;
+        while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), a, 0, 1, FALSE, AnyPropertyType, &type, &format,
+                                    &length, &after, &data ) != Success || !length ) {
+            if ( data )
+                XFree( data );
+            XEvent event;
+            XWindowEvent( qt_xdisplay(), qt_xrootwin(), PropertyChangeMask, &event );
+        }
+        if ( data )
+            XFree( data );
     }
-    
+
 
     delete args; // Throw away
 }
@@ -812,6 +834,9 @@ KApplication::~KApplication()
   KProcessController* ctrl = KProcessController::theKProcessController;
   KProcessController::theKProcessController = 0;
   delete ctrl; // Stephan: "there can be only one" ;)
+
+  if ( d->oldIceIOErrorHandler != NULL )
+      IceSetIOErrorHandler( d->oldIceIOErrorHandler );
 
   delete d;
   KApp = 0;
