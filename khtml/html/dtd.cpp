@@ -68,6 +68,8 @@ static const ushort tag_list_0[] = {
     ID_TEXTAREA,
     ID_LABEL,
     ID_BUTTON,
+    ID_INS,
+    ID_DEL,
     ID_COMMENT,
     0
 };
@@ -142,12 +144,12 @@ static const ushort tag_list_1[] = {
     ID_LI,
     ID_LISTING,
     ID__KONQBLOCK,
+    ID_INS,
+    ID_DEL,
     0
 };
 
 static const ushort tag_list_2[] = {
-    ID_INS,
-    ID_DEL,
     ID_COMMENT,
     0
 };
