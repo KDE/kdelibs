@@ -15,7 +15,7 @@ libartsmedia_la_LDFLAGS = -no-undefined
 libartsmedia_la_SOURCES = mediaframe.cc
 
 artsincludedir = $(includedir)/arts
-artsinclude_HEADERS = mediaframe.h artsmedia.h artsmedia.idl 
+artsinclude_HEADERS = mediaframe.h artsmedia.h artsmedia.idl format.h
 
 DISTCLEANFILES = artsmedia.cc artsmedia.h
 
