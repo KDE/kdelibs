@@ -1624,12 +1624,25 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor )
     return;
   }
 
+  // remove trailing spaces when leaving a line
+  if (m_doc->configFlags() & KateDocument::cfRemoveSpaces && cursor.line != newCursor.line) {
+    TextLine::Ptr textLine = m_doc->kateTextLine(cursor.line);
+    if (textLine) {
+      int newLen = textLine->lastChar();
+      if (newLen == -1) {
+        textLine->truncate(0);
+      } else if (newLen != (int)textLine->length()) {
+        textLine->truncate(newLen + 1);
+      }
+    }
+  }
+
   KateTextCursor oldDisplayCursor = displayCursor;
   
   cursor = newCursor;
   displayCursor.line = m_doc->getVirtualLine(cursor.line);
   displayCursor.col = cursor.col;
-  
+
   //kdDebug(13030) << "updateCursor():" << endl;
   //kdDebug(13030) << "Virtual: " << displayCursor.line << endl;
   //kdDebug(13030) << "Real: " << cursor.line << endl;
