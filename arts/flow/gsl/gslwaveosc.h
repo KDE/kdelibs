@@ -50,7 +50,7 @@ typedef struct
   gfloat	    last_sync_level, last_freq_level, last_mod_level;
   GslWaveChunkBlock block;
   gfloat           *x;                  /* pointer into block */
-  guint             cur_pos, istep;	// FIX
+  guint             cur_pos, istep;	/* FIX */
   gdouble           a[GSL_WAVE_OSC_FILTER_ORDER + 1];       /* order */
   gdouble           b[GSL_WAVE_OSC_FILTER_ORDER + 1];       /* reversed order */
   gdouble           y[GSL_WAVE_OSC_FILTER_ORDER + 1];
