@@ -1,5 +1,5 @@
 [Protocol]
-exec=kio_https
+exec=kio_http
 protocol=https
 input=none
 output=filesystem

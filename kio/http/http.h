@@ -1,35 +1,40 @@
-// $Id$
+/*
+   Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
+   Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
 
-#ifndef __http_h__
-#define __http_h__
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
+
+#ifndef HTTP_H_
+#define HTTP_H_
+
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
 #include <string.h>
-
-#include <errno.h>
 #include <stdio.h>
+#include <time.h>
 
-#ifdef DO_SSL
-#include <kssl.h>
-#include <ksslcertificatecache.h>
-#endif
-
-#include <unistd.h>
-#include <netdb.h>
-
-#include <qstringlist.h>
 #include <qstrlist.h>
+#include <qstringlist.h>
 
-#include <ksock.h>
 #include <kurl.h>
-#include <kio/slavebase.h>
 #include <kmdcodec.h>
+#include "kio/tcpslavebase.h"
 
 class DCOPClient;
 
@@ -37,17 +42,26 @@ namespace KIO {
     class AuthInfo;
 }
 
-class HTTPProtocol : public KIO::SlaveBase
+class HTTPProtocol : public KIO::TCPSlaveBase
 {
 public:
-  HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app );
+  HTTPProtocol( const QCString &protocol, const QCString &pool,
+                const QCString &app );
   virtual ~HTTPProtocol();
 
+  /** HTTP version **/
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
+
+  /** Authorization method used **/
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
+
+  /** Current protocol mode used **/
   enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
+
+  /** HTTP method **/
   enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE};
 
+  /** State of the current Connection **/
   typedef struct
   {
     QString hostname;
@@ -58,6 +72,7 @@ public:
     QString cef; // Cache Entry File belonging to this URL.
   } HTTPState;
 
+  /** The request for the current connection **/
   typedef struct
   {
     QString hostname;
@@ -89,28 +104,18 @@ public:
     QCString entity_body;
   } DigestAuthInfo;
 
-  /**
-   * Fills in m_request.url from the rest of the request data.
-   */
+
+//---------------------- Re-implemented methods ----------------
   void buildURL();
 
-  /**
-   * Sets the host
-   * @param host
-   * @param port
-   * @param user
-   * @param pass
-   * Called directly by createSlave, this is why there is no equivalent in
-   * SlaveInterface, unlike the other methods.
-   */
-  virtual void setHost(const QString& host, int port, const QString& user, const QString& pass);
+  virtual void setHost(const QString& host, int port, const QString& user,
+                       const QString& pass);
 
   virtual void slave_status();
 
   virtual void get( const KURL& url );
-  virtual void put( const KURL& url, int _mode, bool _overwrite, bool _resume );
-  void post( const KURL& url );
-  void cache_update( const KURL &url, bool no_cache, time_t expireDate);
+  virtual void put( const KURL& url, int _mode, bool _overwrite,
+                    bool _resume );
 
   /**
    * Special commands supported by this slave :
@@ -128,7 +133,9 @@ public:
 
   virtual void closeConnection(); // Forced close of connection
 
+  void post( const KURL& url );
   bool checkRequestURL( const KURL& );
+  void cache_update( const KURL &url, bool no_cache, time_t expireDate);
 
 protected:
 
@@ -140,8 +147,6 @@ protected:
 
   void decodeGzip();    //decodes data compressed with gzip algorithm
   void decodeDeflate(); //decodes data compressed with deflate algorithm
-
-  int openStream();
 
   /**
     * A "smart" wrapper around write that will use SSL_write or
@@ -161,11 +166,6 @@ protected:
   char *gets (char *str, int size);
 
   /**
-    * An SSLified feof().
-    */
-  bool eof ();
-
-  /**
     * Add an encoding on to the appropiate stack this
     * is nececesary because transfer encodings and
     * content encodings must be handled separately.
@@ -173,13 +173,7 @@ protected:
   void addEncoding(QString, QStringList &);
 
   void configAuth( const char *, bool );
-#ifdef DO_SSL
-  void initSSL();
-  void closeSSL();
-  void resetSSL();
-#endif
 
-  size_t sendData();
 
   bool http_open();             // Open transfer
   void http_close();            // Close transfer
@@ -192,7 +186,7 @@ protected:
   bool readHeader();
   bool sendBody();
   bool readBody();
-  bool checkSSL();
+  size_t sendData();
 
   /**
    * Send a cookie to the cookiejar
@@ -249,7 +243,7 @@ protected:
   /**
    * Performs a GET HTTP request.
    */
-  void retrieveContent(bool check_ssl = false);
+  void retrieveContent();
 
   /**
    * Performs a HEAD HTTP request.
@@ -260,6 +254,12 @@ protected:
    * Resets any per session settings.
    */
   void resetSessionSettings();
+
+  /**
+   * Returns any pre-cached authentication info
+   * in HTTP header format.
+   */
+  QString proxyAuthenticationHeader();
 
   /**
    * Retrieves authorization info from cache or user.
@@ -301,7 +301,7 @@ protected:
   HTTPRequest m_request;
 
   bool m_bEOF;
-  int m_sock;
+
   HTTP_REV m_HTTPrev;
   HTTP_PROTO m_proto;
 
@@ -347,7 +347,6 @@ protected:
   KURL m_proxyURL;
   QString m_strProxyRealm;
 
-  ksockaddr_in m_proxySockaddr;
   QCString m_protocol;
 
   // Authentication
@@ -380,9 +379,9 @@ protected:
   // Flag that indicates application prefers errorPage() instead over error.
   bool m_bErrorPage;
 
-  DCOPClient *m_dcopClient;
+  bool m_bNeedSSLTunnel;
 
-  short unsigned int m_DefaultPort;
+  DCOPClient *m_dcopClient;
 
   // Previous and current response codes
   unsigned int m_responseCode;
@@ -392,13 +391,6 @@ protected:
   int m_proxyConnTimeout;
   int m_remoteConnTimeout;
   int m_remoteRespTimeout;
-
-#ifdef DO_SSL
-  bool m_bUseSSL;
-  KSSL m_ssl;
-  QString m_ssl_ip;
-  KSSLCertificateCache m_sslcc;
-#endif
 
 };
 #endif

@@ -1,8 +1,25 @@
-// -*- c-basic-offset: 2 -*-
-//
-//  Portions Copyright 2000 George Staikos <staikos@kde.org>
-//  (mostly SSL related)
-//
+/*
+   Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
+   Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
+   Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License (LGPL) as published by the Free Software Foundation;
+   either version 2 of the License, or (at your option) any later
+   version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 
 #include <config.h>
 
@@ -10,37 +27,26 @@
 #define DO_GZIP
 #endif
 
-#ifdef HTTPS
-#ifndef HAVE_SSL
-#define NOT_IMPLEMENTED
-#endif
-#else
-#undef HAVE_SSL
-#undef DO_SSL
-#endif
-
-#ifdef HAVE_SSL
-#define DO_SSL
-#endif
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
 #include <netinet/tcp.h>
+
+#include <assert.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <utime.h>
+#include <errno.h>
+#include <netdb.h>
+
+
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>         // Needed on some systems.
 #endif
 
-#include <assert.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <utime.h>
-#include <fcntl.h>
 #ifdef DO_GZIP
 #include <zlib.h>
 #endif
@@ -48,29 +54,26 @@
 #include <qregexp.h>
 
 #include <kapp.h>
-#include <klocale.h>
-#include <kcharsets.h>
-#include <kprotocolmanager.h>
-#include <kdatastream.h>
-#include <kextsock.h>
-#include <ksocks.h>
 #include <kurl.h>
-#include <kinstance.h>
-#include <kglobal.h>
-#include <kstddirs.h>
+#include <ksocks.h>
 #include <kdebug.h>
-#include <dcopclient.h>
+#include <kconfig.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kextsock.h>
+#include <kstddirs.h>
 #include <kservice.h>
 #include <krfcdate.h>
-#include <kmessagebox.h>
-#include <kconfig.h>
+#include <kinstance.h>
+#include <kcharsets.h>
 #include <kmimemagic.h>
-#ifdef DO_SSL
-#include <kssl.h>
-#endif
-
-#include <kio/http_slave_defaults.h>
+#include <dcopclient.h>
+#include <kmessagebox.h>
+#include <kdatastream.h>
+#include <kprotocolmanager.h>
 #include <kio/ioslave_defaults.h>
+#include <kio/http_slave_defaults.h>
+
 
 #include "http.h"
 
@@ -129,16 +132,23 @@ static char * trimLead (char *orig_string)
 
 /************************************** HTTPProtocol **********************************************/
 
-HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
-             :SlaveBase( protocol , pool, app )
+HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
+                            const QCString &app )
+             :TCPSlaveBase( 0, protocol , pool, app,
+                            (protocol == "https") )
 {
   m_protocol = protocol;
-  kdDebug(7113) << "HTTPProtocol: mProtocol=" << mProtocol << " m_protocol=" << m_protocol << endl;
   m_maxCacheAge = 0;
-  m_sock = 0;
   m_fcache = 0;
   m_bKeepAlive = false;
   m_iSize = -1;
+  m_bUseCache = true;
+  m_HTTPrev = HTTP_Unknown;
+
+  m_proxyConnTimeout = DEFAULT_PROXY_CONNECT_TIMEOUT;
+  m_remoteConnTimeout = DEFAULT_CONNECT_TIMEOUT;
+  m_remoteRespTimeout = DEFAULT_RESPONSE_TIMEOUT;
+  m_maxCacheAge = DEFAULT_MAX_CACHE_AGE;
 
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
@@ -146,131 +156,308 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
      kdDebug(7103) << "Can't connect with DCOP server." << endl;
   }
 
-  // Make sure to set some values here... just to be on the safe side.
-  m_proxyConnTimeout = DEFAULT_PROXY_CONNECT_TIMEOUT;
-  m_remoteConnTimeout = DEFAULT_CONNECT_TIMEOUT;
-  m_remoteRespTimeout = DEFAULT_RESPONSE_TIMEOUT;
-  m_maxCacheAge = DEFAULT_MAX_CACHE_AGE;
-  m_bUseCache = true;
-
   reparseConfiguration();
   setMultipleAuthCaching( true );
-
-#ifdef DO_SSL
-  m_bUseSSL=true;
-#endif
-
-  m_sContentMD5 = "";
-  ProxyAuthentication = AUTH_None;
-  Authentication = AUTH_None;
-  m_HTTPrev = HTTP_Unknown;
-
   cleanCache();
 }
 
 HTTPProtocol::~HTTPProtocol()
 {
+  delete m_dcopClient;
   m_bKeepAlive = false;
   http_close();
 }
 
-#ifdef DO_SSL
-void HTTPProtocol::initSSL() {
-  m_ssl.initialize();
-  kdDebug(7103) << "SSL was initialised." << endl;
-}
+void HTTPProtocol::reparseConfiguration()
+{
+  kdDebug(7103) << "(" << getpid() << ") Reparse Configuration!" << endl;
 
-void HTTPProtocol::closeSSL() {
-  m_ssl.close();
-  kdDebug(7103) << "SSL was deinitialised." << endl;
-}
+  m_strProxyRealm = QString::null;
+  m_strProxyAuthorization = QString::null;
+  ProxyAuthentication = AUTH_None;
 
-void HTTPProtocol::resetSSL() {
-  m_ssl.reInitialize();
-}
-#endif
-
-int HTTPProtocol::openStream() {
-#ifdef DO_SSL
-  if (m_bUseSSL) {
-    initSSL();     // incase it's not initialised somehow - it's wrapped though
-    kdDebug(7103) << "SSL about to connect." << endl;
-    if (m_ssl.connect(m_sock) == -1) {
-      kdDebug(7103) << "SSL connection failed." << endl;
-      return false;
-    }
-    KSSLCertificate::KSSLValidation ksv =
-                               m_ssl.peerInfo().getPeerCertificate().validate();
-    bool matchingCN = m_ssl.peerInfo().certMatchesAddress();
-    kdDebug(7103) << "SSL connection established." << endl;
-    kdDebug(7103) << "SSL connection information follows:" << endl
-                  << "+-----------------------------------------------" << endl
-                  << "| Cipher: " << m_ssl.connectionInfo().getCipher() << endl
-                  << "| Description: " << m_ssl.connectionInfo().getCipherDescription()
-                  << "| Version: " << m_ssl.connectionInfo().getCipherVersion() << endl
-                  << "| Strength: " << m_ssl.connectionInfo().getCipherUsedBits()
-                  << " of " << m_ssl.connectionInfo().getCipherBits()
-                  << " bits used." << endl
-                  << "| PEER:" << endl
-                  << "| Subject: " << m_ssl.peerInfo().getPeerCertificate().getSubject() << endl
-                  << "| Issuer: " << m_ssl.peerInfo().getPeerCertificate().getIssuer() << endl
-                  << "| Validation: " << (int)ksv << endl
-                  << "| Certificate matches CN: " << matchingCN << endl
-                  << "+-----------------------------------------------"
-                  << endl;
-
-      if (!matchingCN && false) {    // FIXME: remove the "&& false" once the
-                                     // certificate cache has been enabled
-                                     // and make a config option to enable this
-                                     // prompt in kcmcrypto.
-        int result = messageBox( WarningYesNo,
-                               i18n("This site presented an SSL certificate"
-                                    " for an address which is not the same as"
-                                    " the site's address.\nIt could mean that the"
-                                    " certificate has been compromised.  Are"
-                                    " you sure you wish to continue?"),
-                               i18n("Bad Address"));
-        if ( result == KMessageBox::No )
-        {
-          m_ssl.close();
-          return false;
-        }
-      }
-
-    setMetaData("ssl_in_use", "TRUE");
-    setMetaData("ssl_peer_cert_subject", m_ssl.peerInfo().getPeerCertificate().getSubject());
-    setMetaData("ssl_peer_cert_issuer", m_ssl.peerInfo().getPeerCertificate().getIssuer());
-    setMetaData("ssl_cipher", m_ssl.connectionInfo().getCipher());
-    setMetaData("ssl_cipher_desc", m_ssl.connectionInfo().getCipherDescription());
-    setMetaData("ssl_cipher_version", m_ssl.connectionInfo().getCipherVersion());
-    setMetaData("ssl_cipher_used_bits", QString::number(m_ssl.connectionInfo().getCipherUsedBits()) );
-    setMetaData("ssl_cipher_bits", QString::number(m_ssl.connectionInfo().getCipherBits()) );
-    setMetaData("ssl_peer_ip", m_ssl_ip);
-    setMetaData("ssl_cert_state", QString::number(ksv) );
-    setMetaData("ssl_good_from", m_ssl.peerInfo().getPeerCertificate().getNotBefore());
-    setMetaData("ssl_good_until", m_ssl.peerInfo().getPeerCertificate().getNotAfter());
-
-    return true;
+  // Define language and charset settings from KLocale (David)
+  // Get rid of duplicate language entries!!
+  QString tmp;
+  QStringList languageList = KGlobal::locale()->languageList();
+  QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
+  kdDebug(7103) << "Languages: " << KGlobal::locale()->languages() << endl;
+  if ( it != languageList.end() )
+  {
+    if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
+        languageList.remove( it );
+    else
+        (*it) = QString::fromLatin1("en");
   }
-#endif
-  setMetaData("ssl_in_use", "FALSE");
+
+  // Use commas not spaces.
+  m_strLanguages = languageList.join( ", " );
+  kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
+  // Ugly conversion. kdeglobals has the xName (e.g. iso8859-1 instead of iso-8859-1)
+  m_strCharsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
+  m_strCharsets += QString::fromLatin1(", utf-8, *");
+
+  // Launch the cookiejar if not already running
+  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
+  cookieConfig->setGroup("Cookie Policy");
+  m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
+  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
+  {
+     QString error;
+     if ( KApplication::startServiceByDesktopName("kcookiejar", QStringList(),
+                                                  &error ) )
+     {
+        // Error starting kcookiejar.
+        kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
+     }
+  }
+  delete cookieConfig;
+
+  struct servent *sent = getservbyname(m_protocol, "tcp");
+  if (!sent)
+  {
+    if (m_protocol == "https")
+      m_iDefaultPort = DEFAULT_HTTPS_PORT;
+    else if (m_protocol == "ftp")
+      m_iDefaultPort = DEFAULT_FTP_PORT;
+    else
+      m_iDefaultPort = DEFAULT_HTTP_PORT;
+  }
+  else
+  {
+    m_iDefaultPort = ntohs(sent->s_port);
+  }
+}
+
+void HTTPProtocol::resetSessionSettings()
+{
+  m_request.window = metaData("window-id");
+  m_responseCode = 0;
+  m_prevResponseCode = 0;
+
+  m_strRealm = QString::null;
+  m_strAuthorization = QString::null;
+  Authentication = AUTH_None;
+
+  m_bCanResume = false;
+  m_bUnauthorized = false;
+}
+
+void HTTPProtocol::setHost( const QString& host, int port,
+                            const QString& user, const QString& pass )
+{
+  kdDebug(7113) << "Hostname is now: " << host << endl;
+
+  m_request.hostname = host;
+  m_request.port = (port == 0) ? m_iDefaultPort : port;
+  m_request.user = user;
+  m_request.passwd = pass;
+
+  // Do not reset the URL on redirection if the proxy
+  // URL, username or password has not changed!
+  KURL proxy = metaData("UseProxy");
+  if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
+       m_proxyURL.host() != proxy.host() ||
+       (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
+       (!proxy.pass().isNull() && proxy.pass() != m_proxyURL.pass()) )
+  {
+    m_proxyURL = proxy;
+    m_bUseProxy = m_proxyURL.isValid();
+    kdDebug(7113) << "Proxy realm value: " << m_strRealm << endl;
+    kdDebug(7113) << "Proxy URL is now: " << m_proxyURL.url() << endl;
+  }
+
+
+  m_bUseCache = config()->readBoolEntry("UseCache", true);
+  m_strCacheDir = config()->readEntry("CacheDir");
+  if (m_strCacheDir.isEmpty())
+    m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
+  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
+
+  kdDebug(7103) << "UseCache: " << metaData("UseCache") << endl;
+  kdDebug(7103) << "CacheDir: " << metaData("CacheDir") << endl;
+  kdDebug(7103) << "MaxCacheAge: " << metaData("MaxCacheAge") << endl;
+
+  if ( m_bIsSSL )
+    setEnableSSLTunnel( m_bIsSSL && m_bUseProxy );
+
+  // Obtain the proxy and remote server timeout values
+  m_proxyConnTimeout = proxyConnectTimeout();
+  m_remoteConnTimeout = connectTimeout();
+  m_remoteRespTimeout = responseTimeout();
+
+  kdDebug(7103) << "Timeout proxy = " << m_proxyConnTimeout <<
+                   " connection = " << m_remoteConnTimeout <<
+                   " response = " << m_remoteRespTimeout << endl;
+}
+
+bool HTTPProtocol::checkRequestURL( const KURL& u )
+{
+  if (m_request.hostname.isEmpty())
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return false;
+  }
+
+  if ( m_protocol != u.protocol().latin1() )
+  {
+    short unsigned int oldDefaultPort = m_iDefaultPort;
+    m_protocol = u.protocol().latin1();
+    reparseConfiguration();
+    if ( m_iDefaultPort != oldDefaultPort &&
+         m_request.port == oldDefaultPort )
+        m_request.port = m_iDefaultPort;
+  }
   return true;
 }
 
+void HTTPProtocol::retrieveContent()
+{
+  if ( retrieveHeader(false) )
+    (void) readBody();
+
+  http_close();
+  finished();
+}
+
+bool HTTPProtocol::retrieveHeader( bool close_connection )
+{
+  resetSessionSettings();
+  while ( 1 )
+  {
+    if (!http_open())
+        return false;
+
+    if (!readHeader())
+    {
+        if ( m_bError )
+            return false;
+    }
+    else
+    {
+        // Do not save authorization if the current response code is
+        // 4xx (client error) or 5xx (server error).
+        kdDebug(7113) << "Previous Response: " << m_prevResponseCode << endl
+                      << "Current Response: " << m_responseCode << endl;
+        if ( m_responseCode < 400 &&
+            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
+            saveAuthorization();
+
+        if ( isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized
+             && !m_bError )
+        {
+            kdDebug(7103) << "Unset Tunneling flag!" << endl;
+            setEnableSSLTunnel( false );
+            continue;
+        }
+        break;
+    }
+  }
+  if ( close_connection )
+  {
+    http_close();
+    finished();
+  }
+  return true;
+}
+
+void HTTPProtocol::stat(const KURL& url)
+{
+  if ( !checkRequestURL( url ) )
+    return;
+
+  kdDebug(7113) << "HTTPProtocol::stat " << url.prettyURL() << endl;
+
+  UDSEntry entry;
+  UDSAtom atom;
+  atom.m_uds = KIO::UDS_NAME;
+  atom.m_str = url.fileName();
+  entry.append( atom );
+
+  atom.m_uds = KIO::UDS_FILE_TYPE;
+  atom.m_long = S_IFREG; // a file
+  entry.append( atom );
+
+  atom.m_uds = KIO::UDS_ACCESS;
+  atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
+  entry.append( atom );
+
+  statEntry( entry );
+
+  finished();
+}
+
+
+void HTTPProtocol::get( const KURL& url )
+{
+  if ( !checkRequestURL( url ) )
+    return;
+
+  kdDebug(7113) << "HTTPProtocol::get " << url.url() << endl;
+
+  m_request.method = HTTP_GET;
+  m_request.path = url.path();
+  m_request.query = url.query();
+  QString tmp = metaData("cache");
+  if (!tmp.isEmpty())
+    m_request.cache = parseCacheControl(tmp);
+  else
+    m_request.cache = DEFAULT_CACHE_CONTROL;
+
+  m_request.offset = 0;
+  m_request.url = url;
+  m_request.passwd = url.pass();
+  m_request.user = url.user();
+  m_request.do_proxy = m_bUseProxy;
+
+  retrieveContent();
+}
+
+void HTTPProtocol::put( const KURL &url, int, bool, bool)
+{
+  if ( !checkRequestURL( url ) )
+    return;
+
+  kdDebug(7113) << "HTTPProtocol::put " << url.prettyURL() << endl;
+
+  m_request.method = HTTP_PUT;
+  m_request.path = url.path();
+  m_request.query = QString::null;
+  m_request.cache = CC_Reload;
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  m_request.url = url;
+
+  retrieveContent();
+}
+
+void HTTPProtocol::post( const KURL& url)
+{
+  if ( !checkRequestURL( url ) )
+    return;
+
+  kdDebug(7113) << "HTTPProtocol::post " << url.prettyURL() << endl;
+
+  m_request.method = HTTP_POST;
+  m_request.path = url.path();
+  m_request.query = url.query();
+  m_request.cache = CC_Reload;
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  m_request.url = url;
+
+  retrieveContent();
+}
 
 ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
-#ifdef DO_SSL
-  if (m_bUseSSL)
-    return m_ssl.write((char *)buf, nbytes);
-#endif
   int n;
- keeptrying:
-  if ((n = ::write(m_sock, buf, nbytes)) != (int)nbytes)
-    {
-      if (n == -1 && errno == EINTR)
-        goto keeptrying;
-    }
+keeptrying:
+  if ( (n = Write(buf, nbytes)) != static_cast<int>(nbytes) )
+  {
+    if (n == -1 && ((errno == EINTR) || (errno == EAGAIN)))
+      goto keeptrying;
+  }
   return n;
 }
 
@@ -279,7 +466,8 @@ char *HTTPProtocol::gets (char *s, int size)
   int len=0;
   char *buf=s;
   char mybuf[2]={0,0};
-  while (len < size) {
+  while (len < size) 
+  {
     read(mybuf, 1);
     if (*mybuf == '\r') // Ignore!
       continue;
@@ -311,16 +499,8 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
         return ret;
      return read(b, 1); // Read from buffer
   }
-#ifdef DO_SSL
-  if (m_bUseSSL) {
-    m_bEOF=false;
-    ret=m_ssl.read((char *)b, nbytes);
-    if (ret==0) m_bEOF=true;
-    return ret;
-  }
-#endif
   do {
-     ret = KSocks::self()->read(m_sock, b, nbytes);
+     ret = Read( b, nbytes);
      if (ret == 0) m_bEOF = true;
   }
   while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
@@ -328,42 +508,10 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   return ret;
 }
 
-bool HTTPProtocol::eof()
-{
-  return m_bEOF;
-}
-
-bool HTTPProtocol::http_isConnected()
-{
-    if (!m_sock)
-      return false;
-
-    fd_set rdfs;
-    FD_ZERO(&rdfs);
-    FD_SET(m_sock , &rdfs);
-
-    struct timeval tv;
-    tv.tv_usec = 0;
-    tv.tv_sec = 0;
-    int retval = select(m_sock+1, &rdfs, NULL, NULL, &tv);
-    // retval ==  0 ==> Connection Idle
-    // retval >=  1 ==> Connection Active
-    if ( retval == -1 )
-        return false;       // should really never happen, but just in-case...
-    else if ( retval > 0 )
-    {
-      char buffer[100];
-      retval = recv(m_sock, buffer, 80, MSG_PEEK);
-      // retval ==  0 ==> Connection clased
-      if ( retval == 0 )
-        return false;
-    }
-    return true;
-}
 
 void HTTPProtocol::http_checkConnection()
 {
-  if (m_sock)
+  if ( m_iSock != -1 )
   {
      bool closeDown = false;
      if ( m_request.do_proxy && m_state.do_proxy )
@@ -394,7 +542,7 @@ void HTTPProtocol::http_checkConnection()
         closeDown = true;
      }
 
-     if (!closeDown && !http_isConnected())
+     if (!closeDown && !isConnectionValid())
         closeDown = true;
 
      if (closeDown)
@@ -409,235 +557,63 @@ void HTTPProtocol::http_checkConnection()
   m_state.do_proxy = m_request.do_proxy;
 }
 
-static bool waitForHeader( int sock, int maxTimeout )
+bool HTTPProtocol::http_openConnection()
 {
-  fd_set rd, wr;
-  struct timeval timeout;
+  m_bKeepAlive = false;
+  setBlockConnection( true );
+  if ( m_state.do_proxy )
+  {
+    QString proxy_host = m_proxyURL.host();
+    int proxy_port = m_proxyURL.port();
+    kdDebug(7113) << "http_openConnection " << proxy_host << " "
+                  << proxy_port << endl;
 
-  int n = maxTimeout; // Timeout in seconds
-  while(n--){
-      FD_ZERO(&rd);
-      FD_ZERO(&wr);
-      FD_SET(sock, &rd);
-
-      timeout.tv_usec = 0;
-      timeout.tv_sec = 1; // 1 second
-
-      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
-
-      if (FD_ISSET(sock, &rd))
-      {
-         return true;
-      }
-  }
-  return false; // Timeout
-}
-
-bool
-HTTPProtocol::http_openConnection()
-{
-    m_bKeepAlive = false;
-    KExtendedSocket ks;
-    if ( m_state.do_proxy )
+    infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
+    setConnectTimeout( m_proxyConnTimeout );
+    if ( !ConnectToHost( proxy_host, proxy_port, false ) )
     {
-        QString proxy_host = m_proxyURL.host();
-        int proxy_port = m_proxyURL.port();
-        kdDebug(7113) << "http_openConnection " << proxy_host << " " << proxy_port << endl;
-        // yep... open up a connection to the proxy instead of our host
-        ks.setAddress(proxy_host, proxy_port);
-        ks.setTimeout(m_proxyConnTimeout);
-        infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
-        if (ks.connect() < 0)
-        {
-            if (ks.status() == IO_LookupError)
-                error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
-            else
-                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-            return false;
-        }
-        m_sock = ks.fd();
-
-        int on = 1;
-        (void) setsockopt( m_sock, IPPROTO_TCP, TCP_NODELAY,
-                           (char*)&on, sizeof( on ) );
-
-        // SSL proxying requires setting up a tunnel through the proxy server
-        // with the CONNECT directive.
-#ifdef DO_SSL
-        if (m_bUseSSL)
-        {
-            // we might have DO_SSL but not m_bUseSSL someday
-            kdDebug(7113) << "http proxy for SSL - setting up" << endl;
-            // Set socket blocking.
-            fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
-            QString proxyconheader = QString("CONNECT %1:%2 HTTP/1.1\r\n\r\n").arg(m_request.hostname).arg(m_request.port);
-            // WARNING: ugly hack alert!  We don't want to use the SSL routines
-            //          for this code so we have to disabled it temporarily.
-            kdDebug(7113) << "Sending connect header: " << proxyconheader << endl;
-            bool useSSLSaved = m_bUseSSL;
-            m_bUseSSL = false;
-            bool sendOk = (write(proxyconheader.latin1(), proxyconheader.length())
-                           == (ssize_t) proxyconheader.length());
-            char buffer[513];
-            if (!sendOk)
-            {
-                // FIXME: do we have to close() the connection here?
-                //        also the error code should be changed
-                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-                m_bUseSSL = useSSLSaved;
-                return false;
-            }
-            if (!waitForHeader(m_sock, m_remoteRespTimeout) )
-            {
-                // FIXME: a good workaround would be to fallback to non-proxy mode
-                //        here if we can.
-                // FIXME: do we have to close() the connection here?
-                //        also the error code should be changed
-                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-                m_bUseSSL = useSSLSaved;
-                return false;
-            }
-
-            // In SSL mode we normally don't use this.  Does it cause a resource
-            // leak that I'm not cleaning this up here if we're in SSL mode?
-            int rhrc = KSocks::self()->read(m_sock, buffer, sizeof(buffer)-1);
-            buffer[sizeof(buffer)-1] = 0;  // just in case so we don't run away!
-            if (rhrc == -1 || strncmp(buffer, "HTTP/1.0 200", 12))
-            {
-                // FIXME: a good workaround would be to fallback to non-proxy mode
-                // here if we can.
-                // FIXME: do we have to close() the connection here? also the error
-                // code should be changed
-                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-                m_bUseSSL = useSSLSaved;
-                return false;
-            }
-            m_bUseSSL = useSSLSaved;
-        }  // if m_bUseSSL
-        // m_ssl_ip = i18n("Proxied by %1.").arg(inet_ntoa(m_proxySockaddr.sin_addr));
-        const KSocketAddress *sa = ks.peerAddress();
-        m_ssl_ip = i18n("Proxied by %1.").arg(sa->pretty());
-#endif // DO_SSL
-        ks.release();
-    }
-    else
-    {
-      // apparently we don't want a proxy.  let's just connect directly
-        ks.setAddress(m_state.hostname, m_state.port);
-        ks.setTimeout(m_remoteConnTimeout);
-        if (ks.connect() < 0)
-        {
-            if (ks.status() == IO_LookupError)
-                error(ERR_UNKNOWN_HOST, m_state.hostname);
-            else
-            {
-                if (m_state.port != m_DefaultPort)
-                    error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
-                else
-                    error(ERR_COULD_NOT_CONNECT, m_state.hostname );
-            }
-            return false;
-         }
-         m_sock = ks.fd();
-
-#ifdef DO_SSL
-        // m_ssl_ip = inet_ntoa(server_name.sin_addr);
-        const KSocketAddress *sa = ks.peerAddress();
-	m_ssl_ip = sa->nodeName();
-#endif
-        ks.release();
-    }
-
-    // Set socket blocking.
-    ks.setBlockingMode(true);
-
-    // Placeholder
-    if (!openStream())
-    {
-      error( ERR_COULD_NOT_CONNECT, m_state.hostname );
+      int result = connectResult();
+      if ( result == IO_LookupError)
+        error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
+      else if ( result == IO_TimeOutError )
+        error(ERR_SERVER_TIMEOUT, i18n("Timed out while waiting to "
+                                       "connect to %1").arg(proxy_host));
+      else
+        error(ERR_COULD_NOT_CONNECT,
+              i18n("Proxy %1 at port %2").arg(proxy_host).arg(proxy_port) );
       return false;
     }
-    kdDebug(7103) << time(0L) << " Sending connected" << endl;
-    // Tell the application that we are connected, and that the metadata (e.g. ssl) is ready
-    connected();
-    return true;
-}
-
-bool HTTPProtocol::checkSSL()
-{
-  // Check if we need to pop up a dialog box to the user
-  if ( metaData( "ssl_activate_warnings" ) == "TRUE" )
-  {
-    kdDebug(7103) << "SSL warnings activated" << endl;
-    bool ssl_was_in_use = metaData( "ssl_was_in_use" ) == "TRUE";
-    kdDebug(7103) << "ssl_was_in_use: " << ssl_was_in_use << endl;
-
-#ifdef DO_SSL
-    kdDebug(7103) << "m_bUseSSL: " << m_bUseSSL << endl;
-    kdDebug(7103) << "warnOnEnter: " << m_ssl.settings()->warnOnEnter() << endl;
-    kdDebug(7103) << "warnOnUnencrypted: " << m_ssl.settings()->warnOnUnencrypted() << endl;
-    kdDebug(7103) << "warnOnLeave: " << m_ssl.settings()->warnOnLeave() << endl;
-    kdDebug(7103) << "warnOnMixed: " << m_ssl.settings()->warnOnMixed() << endl;
-
-    if ( !ssl_was_in_use && m_bUseSSL && m_ssl.settings()->warnOnEnter() )
-    {
-      kdDebug(7103) << "ENTERING SSL" << endl;
-      int result = messageBox( WarningYesNo,
-                               i18n("You are about to enter secure mode."
-                                    " All transmissions will be encrypted unless"
-                                    " otherwise noted.\nThis means that no third"
-                                    " party will be able to easily observe your"
-                                    " data in transfer."),
-                               i18n("Security information"),
-                               i18n("Display SSL Information"),
-                               i18n("Continue") );
-      if ( result == KMessageBox::Yes )
-      {
-         // Force sending of the metadata
-         sendMetaData();
-         messageBox( SSLMessageBox, m_request.url.prettyURL() );
-      }
-    }
-#else
-
-    if ( ssl_was_in_use )
-    {
-      kdDebug(7103) << "LEAVING SSL" << endl;
-      // We come from the SSL world. Check if we should popup a warning.
-      KConfig cfg("cryptodefaults");
-      cfg.setGroup("Warnings");
-      if ( cfg.readBoolEntry("OnLeave", true ) )
-      {
-        int result = messageBox(WarningContinueCancel,
-                                i18n("You are about to leave secure mode. "
-                                     "Transmissions will no longer be "
-                                     "encrypted.\nThis means that a "
-                                     "third party could observe your data "
-                                     "in transfer."),
-                                i18n("Security information"),
-                                i18n("Continue Loading"));
-        if ( result == KMessageBox::Cancel )
-        {
-          kdDebug(7103) << "Cancelling the loading" << endl;
-          if (m_bErrorPage)
-             errorPage();
-          else
-             error( ERR_USER_CANCELED, "ssl" );
-          return false;
-        }
-
-      }
-    }
-#endif
-/*
-  if ( doing a post :/ && !m_bUseSSL && m_ssl.settings()->warnOnUnencrypted() )
-  {
-  kdDebug() << "UNENCRYPTED" << endl;
-  // TODO
   }
-*/
-
+  else
+  {
+    // apparently we don't want a proxy.  let's just connect directly
+    setConnectTimeout(m_remoteConnTimeout);
+    if ( !ConnectToHost(m_state.hostname, m_state.port, false ) )
+    {
+      int result = connectResult();
+      if ( result == IO_LookupError)
+        error(ERR_UNKNOWN_HOST, m_state.hostname);
+      else if ( result == IO_TimeOutError )
+        error(ERR_SERVER_TIMEOUT, i18n("Timed out while waiting to "
+                                       "connect to %1").arg(m_state.hostname));
+      else
+      {
+        if (m_state.port != m_iDefaultPort)
+          error(ERR_COULD_NOT_CONNECT,
+                i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
+        else
+          error( ERR_COULD_NOT_CONNECT, m_state.hostname );
+      }
+      return false;
+    }
   }
+
+  // Set our special socket option!!
+  int on = 1;
+  (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on,
+                     sizeof(on) );
+  kdDebug(7103) << time(0L) << " Sending connected" << endl;
+  connected();
   return true;
 }
 
@@ -665,10 +641,17 @@ bool HTTPProtocol::checkSSL()
  */
 bool HTTPProtocol::http_open()
 {
-#ifdef NOT_IMPLEMENTED
-  error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
-  return false;
-#else
+  // Cannot have an https request without the
+  // m_bIsSSL being set!  This can only happen
+  // if InitializeSSL() call failed which in
+  // turn means that SSL is not supported by
+  // current installation !!
+  if ( m_protocol == "https" && !m_bIsSSL )
+  {
+    error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
+    return false;
+  }
+
   http_checkConnection();
 
   m_fcache = 0;
@@ -680,11 +663,8 @@ bool HTTPProtocol::http_open()
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( );
-#ifdef DO_SSL
-     if ((m_request.cache == CC_Reload) || m_bUseSSL)
-#else
-     if ((m_request.cache == CC_Reload) && m_fcache)
-#endif
+
+     if ((m_request.cache == CC_Reload && m_fcache) || m_bIsSSL )
      {
         if (m_fcache)
           fclose(m_fcache);
@@ -729,7 +709,7 @@ bool HTTPProtocol::http_open()
   m_iSize = -1;
 
   // Let's try to open up our socket if we don't have one already.
-  if (!m_sock)
+  if ( m_iSock == -1)
   {
     if (!http_openConnection())
        return false;
@@ -764,259 +744,196 @@ bool HTTPProtocol::http_open()
       break;
   }
 
-  // format the URI
-  if (m_state.do_proxy)
+  if ( isSSLTunnelEnabled() )
   {
-    KURL u;
-    u.setUser( m_state.user );
-    u.setProtocol( m_protocol );
-    u.setHost( m_state.hostname );
-    u.setPort( m_state.port );
-    u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(0,true) );
-    header += u.url();
+    kdDebug(7103) << "Attempting to tunnel through a proxy..." << endl;
+    header = QString("CONNECT %1:%2 HTTP/1.1\r\n").arg( m_request.hostname).arg(m_request.port);
+    header += proxyAuthenticationHeader();
   }
   else
-    header += m_request.url.encodedPathAndQuery(0, true);
-
-  header += " HTTP/1.1\r\n"; /* start header */
-
-#ifdef DO_SSL
-  // With SSL we don't keep the connection.
-  if (m_bUseSSL)
-    header += "Connection: Close\r\n";
-  else
-    header += "Connection: Keep-Alive\r\n";
-#else
-  header += "Connection: Keep-Alive\r\n";
-#endif
-
-  if ( config()->readBoolEntry("SendUserAgent", true) )
   {
-    QString agent = metaData("UserAgent");
+    // format the URI
+    if (m_state.do_proxy)
+    {
+      KURL u;
+      u.setUser( m_state.user );
+      u.setProtocol( m_protocol );
+      u.setHost( m_state.hostname );
+      u.setPort( m_state.port );
+      u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(0,true) );
+      header += u.url();
+    }
+    else
+    {
+      header += m_request.url.encodedPathAndQuery(0, true);
+    }
 
-    if( agent.isEmpty() )
-      agent = KProtocolManager::defaultUserAgent(
-      		config()->readEntry("UserAgentKeys", DEFAULT_USER_AGENT_KEYS));
+    header += " HTTP/1.1\r\n"; /* start header */
+    // With SSL we don't keep the connection.
+    if (m_bIsSSL)
+      header += "Connection: Close\r\n";
+    else
+      header += "Connection: Keep-Alive\r\n";
 
-    if( !agent.isEmpty() )
-      header += "User-Agent: " + agent + "\r\n";
-  }
+    if ( config()->readBoolEntry("SendUserAgent", true) )
+    {
+      QString agent = metaData("UserAgent");
+      if( agent.isEmpty() )
+        agent = KProtocolManager::defaultUserAgent( config()->readEntry("User"
+                                                    "AgentKeys",
+                                                    DEFAULT_USER_AGENT_KEYS) );
+      if( !agent.isEmpty() )
+        header += "User-Agent: " + agent + "\r\n";
+    }
 
-  QString referrer = metaData("referrer");
-  if (!referrer.isEmpty())
-  {
-     // HTTP uses "Referer" although the correct
-     // spelling is "referrer"
-     header += "Referer: "+referrer+"\r\n";
-  }
+    QString referrer = metaData("referrer");
+    if (!referrer.isEmpty())
+      header += "Referer: "+referrer+"\r\n"; //Don't try to correct spelling!
 
-  // Adjust the offset value based on the "resume"
-  // meta-data.
-  QString resumeOffset = metaData("resume");
-  if ( !resumeOffset.isEmpty() )
+    // Adjust the offset value based on the "resume" meta-data.
+    QString resumeOffset = metaData("resume");
+    if ( !resumeOffset.isEmpty() )
       m_request.offset = resumeOffset.toInt();
 
-  if ( m_request.offset > 0 )
-  {
-    header += QString("Range: bytes=%1-\r\n").arg(m_request.offset);
-    kdDebug(7103) << "kio_http : Range = " << m_request.offset << endl;
-  }
+    if ( m_request.offset > 0 )
+    {
+      header += QString("Range: bytes=%1-\r\n").arg(m_request.offset);
+      kdDebug(7103) << "kio_http : Range = " << m_request.offset << endl;
+    }
 
+    if ( m_request.cache == CC_Reload )
+    {
+      /* No caching for reload */
+      header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
+      header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
+    }
 
-  if ( m_request.cache == CC_Reload ) { /* No caching for reload */
-    header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
-    header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
-  }
+    if (m_bMustRevalidate)
+    {
+      /* conditional get */
+      if (!m_etag.isEmpty())
+        header += "If-None-Match: "+m_etag+"\r\n";
+      if (!m_lastModified.isEmpty())
+        header += "If-Modified-Since: "+m_lastModified+"\r\n";
+    }
 
-  if (m_bMustRevalidate) { /* conditional get */
-    if (!m_etag.isEmpty())
-       header += "If-None-Match: "+m_etag+"\r\n";
-    if (!m_lastModified.isEmpty())
-       header += "If-Modified-Since: "+m_lastModified+"\r\n";
-  }
-
-  header += "Accept: ";
-  QString acceptHeader = metaData("accept");
-  if (!acceptHeader.isEmpty())
-     header += acceptHeader;
-  else
-     header += DEFAULT_ACCEPT_HEADER;
-  header += "\r\n";
+    header += "Accept: ";
+    QString acceptHeader = metaData("accept");
+    if (!acceptHeader.isEmpty())
+      header += acceptHeader;
+    else
+      header += DEFAULT_ACCEPT_HEADER;
+    header += "\r\n";
 
 #ifdef DO_GZIP
-  // Content negotiation
-  // header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
+    // Content negotiation
+    // header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
     header += "Accept-Encoding: x-gzip, gzip, identity\r\n";
 #endif
 
-  // Charset negotiation:
-  if ( !m_strCharsets.isEmpty() )
-    header += "Accept-Charset: " + m_strCharsets + "\r\n";
+    // Charset negotiation:
+    if ( !m_strCharsets.isEmpty() )
+      header += "Accept-Charset: " + m_strCharsets + "\r\n";
 
-  // Language negotiation:
-  if ( !m_strLanguages.isEmpty() )
-    header += "Accept-Language: " + m_strLanguages + "\r\n";
+    // Language negotiation:
+    if ( !m_strLanguages.isEmpty() )
+      header += "Accept-Language: " + m_strLanguages + "\r\n";
 
-  header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
-  if (m_state.hostname.find(':') != -1)
+    /* support for virtual hosts and required by HTTP 1.1 */
+    header += "Host: ";
+    if (m_state.hostname.find(':') != -1)
     {
       // This is an IPv6 (not hostname)
       header += '[';
       header += m_state.hostname;
       header += ']';
     }
-  else
-    header += m_state.hostname;
-  if (m_state.port != m_DefaultPort)
-  {
-    header += QString(":%1").arg(m_state.port);
-  }
-  header += "\r\n";
+    else
+    {
+      header += m_state.hostname;
+    }
 
-  QString cookieStr;
-  QString cookieMode = metaData("cookies").lower();
-  if (cookieMode == "manual")
-  {
-     m_cookieMode = CookiesManual;
-     cookieStr = metaData("setcookies");
-  }
-  else if (cookieMode == "none")
-  {
-     m_cookieMode = CookiesNone;
-  }
-  else
-  {
-     m_cookieMode = CookiesAuto;
-     if (m_bUseCookiejar)
+    if (m_state.port != m_iDefaultPort)
+      header += QString(":%1").arg(m_state.port);
+    header += "\r\n";
+
+    QString cookieStr;
+    QString cookieMode = metaData("cookies").lower();
+    if (cookieMode == "none")
+    {
+      m_cookieMode = CookiesNone;
+    }
+    else if (cookieMode == "manual")
+    {
+      m_cookieMode = CookiesManual;
+      cookieStr = metaData("setcookies");
+    }
+    else
+    {
+      m_cookieMode = CookiesAuto;
+      if (m_bUseCookiejar)
         cookieStr = findCookies( m_request.url.url());
-  }
+    }
 
-  if (!cookieStr.isEmpty())
-    header += cookieStr + "\r\n";
+    if (!cookieStr.isEmpty())
+      header += cookieStr + "\r\n";
 
-  if (m_request.method == HTTP_POST)
-  {
+    if (m_request.method == HTTP_POST)
+    {
       header += metaData("content-type");
       header += "\r\n";
-  }
-
-  // Only check for a cached copy if the previous
-  // response was NOT a 401 or 407.
-  if ( m_responseCode != 401 && m_responseCode != 407 )
-  {
-    AuthInfo info;
-    info.url = m_request.url;
-    info.verifyPath = true;
-    if ( !m_request.user.isEmpty() )
-      info.username = m_request.user;
-    if ( checkCachedAuthentication( info ) )
-    {
-      Authentication = info.digestInfo.isEmpty() ? AUTH_Basic : AUTH_Digest ;
-      m_state.user   = info.username;
-      m_state.passwd = info.password;
-      m_strRealm = info.realmValue;
-      if ( Authentication == AUTH_Digest )
-        m_strAuthorization = info.digestInfo;
     }
-  }
 
-  switch ( Authentication )
-  {
-    case AUTH_Basic:
-        header += createBasicAuth();
-        header+="\r\n";
-        break;
-    case AUTH_Digest:
-        header += createDigestAuth();
-        header+="\r\n";
-        break;
-    case AUTH_None:
-    default:
-        break;
+    // Only check for a cached copy if the previous
+    // response was NOT a 401 or 407.
+    if ( m_responseCode != 401 && m_responseCode != 407 )
+    {
+      AuthInfo info;
+      info.url = m_request.url;
+      info.verifyPath = true;
+      if ( !m_request.user.isEmpty() )
+        info.username = m_request.user;
+      if ( checkCachedAuthentication( info ) )
+      {
+        Authentication = info.digestInfo.isEmpty() ? AUTH_Basic : AUTH_Digest ;
+        m_state.user   = info.username;
+        m_state.passwd = info.password;
+        m_strRealm = info.realmValue;
+        if ( Authentication == AUTH_Digest )
+          m_strAuthorization = info.digestInfo;
+      }
+    }
 
-  }
+    switch ( Authentication )
+    {
+      case AUTH_Basic:
+          header += createBasicAuth();
+          header+="\r\n";
+          break;
+      case AUTH_Digest:
+          header += createDigestAuth();
+          header+="\r\n";
+          break;
+      case AUTH_None:
+      default:
+          break;
+    }
 
-  /********* Only for debugging purpose... *********/
-  if ( Authentication != AUTH_None )
-  {
-    kdDebug(7113) << "(" << getpid() << ") Using Authentication: " << endl
+    /********* Only for debugging purpose *********/
+    if ( Authentication != AUTH_None )
+    {
+      kdDebug(7113) << "(" << getpid() << ") Using Authentication: "
+                    << endl
                   << " HOST= " << m_state.hostname << endl
                   << " PORT= " << m_state.port << endl
                   << " USER= " << m_state.user << endl
                   << " PASSWORD= [protected]" << endl
                   << " REALM= " << m_strRealm << endl
                   << " EXTRA= " << m_strAuthorization  << endl;
-  }
-
-  // Do we need to authorize to the proxy server ?
-  if ( m_state.do_proxy )
-  {
-    // We keep proxy authentication locally until they are
-    // changed.  Thus, no need to check with kdesud on every
-    // connection!!
-    if ( m_strProxyRealm.isEmpty() )
-    {
-      AuthInfo info;
-      info.url = m_proxyURL;
-      info.username = m_proxyURL.user();
-      info.password = m_proxyURL.pass();
-      info.verifyPath = true;
-
-      // If the proxy URL already contains username
-      // and password simply attempt to retrieve it
-      // without prompting the user...
-      if ( !info.username.isEmpty() && !info.password.isEmpty() )
-      {
-        ProxyAuthentication = AUTH_Basic;
-      }
-      else
-      {
-        if ( checkCachedAuthentication(info) )
-        {
-          m_proxyURL.setUser( info.username );
-          m_proxyURL.setPass( info.password );
-          m_strProxyRealm = info.realmValue;
-          if ( info.digestInfo.isEmpty() )
-            ProxyAuthentication = AUTH_Basic;
-          else
-          {
-            ProxyAuthentication = AUTH_Digest;
-            m_strProxyAuthorization = info.digestInfo;
-          }
-        }
-        else
-        {
-          ProxyAuthentication = AUTH_None;
-        }
-      }
     }
-
-    /********* Only for debugging purpose... *********/
-    if ( ProxyAuthentication != AUTH_None )
-    {
-        kdDebug(7113) << "(" << getpid() << ") Using Proxy Authentication: " << endl
-                      << " HOST= " << m_proxyURL.host() << endl
-                      << " PORT= " << m_proxyURL.port() << endl
-                      << " USER= " << m_proxyURL.user() << endl
-                      << " PASSWORD= [protected]" << endl
-                      << " REALM= " << m_strProxyRealm << endl
-                      << " EXTRA= " << m_strProxyAuthorization  << endl;
-    }
-
-    switch ( ProxyAuthentication )
-    {
-        case AUTH_Basic:
-            header+= createBasicAuth( true );
-            header+="\r\n";
-            break;
-        case AUTH_Digest:
-            header+= createDigestAuth( true );
-            header+="\r\n";
-            break;
-        case AUTH_None:
-        default:
-            break;
-    }
+    // Do we need to authorize to the proxy server ?
+    if ( m_state.do_proxy )
+      header += proxyAuthenticationHeader();
   }
 
   if ( !moreData )
@@ -1028,7 +945,8 @@ bool HTTPProtocol::http_open()
   // now that we have our formatted header, let's send it!
   bool sendOk;
   sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
-  if (!sendOk) {
+  if (!sendOk)
+  {
     kdDebug(7103) << "Connection broken! (" << m_state.hostname << ")" << endl;
     if (m_bKeepAlive)
     {
@@ -1041,21 +959,18 @@ bool HTTPProtocol::http_open()
     }
     if (!sendOk)
     {
-       kdDebug(7103) << "http_open: sendOk==false. Connnection broken ! " << endl;
+       kdDebug(7103) << "http_open: sendOk==false. Connnection broken ! "
+                     << endl;
        error( ERR_CONNECTION_BROKEN, m_state.hostname );
        return false;
     }
   }
 
-  bool res = true;
+  bool res = moreData ? sendBody() : true;
 
-  if (moreData)
-     res = sendBody();
-
-  infoMessage( i18n( "<b>%1</b> contacted. Waiting for reply..." ).arg( m_request.hostname ) );
-
+  infoMessage( i18n( "<b>%1</b> contacted.  "
+                     "Waiting for reply..." ).arg( m_request.hostname ) );
   return res;
-#endif
 }
 
 
@@ -1115,7 +1030,7 @@ bool HTTPProtocol::readHeader()
   bool mayCache = true;
   bool hasCacheDirective = false;
 
-  if (!waitForHeader(m_sock, m_remoteRespTimeout))
+  if (!waitForResponse(m_remoteRespTimeout))
   {
      // No response error
      error( ERR_SERVER_TIMEOUT , m_state.hostname );
@@ -1123,7 +1038,7 @@ bool HTTPProtocol::readHeader()
   }
 
   gets(buffer, sizeof(buffer)-1);
-  if (eof())
+  if (m_bEOF)
   {
      kdDebug(7103) << "readHeader: EOF while waiting for header start." << endl;
      if (m_bKeepAlive) // Try to reestablish connection.
@@ -1131,7 +1046,7 @@ bool HTTPProtocol::readHeader()
         http_closeConnection();
         if ( !http_open() )
            return false;
-        if (!waitForHeader(m_sock, m_remoteRespTimeout))
+        if (!waitForResponse(m_remoteRespTimeout))
         {
            // No response error
            error( ERR_SERVER_TIMEOUT, m_state.hostname );
@@ -1139,7 +1054,7 @@ bool HTTPProtocol::readHeader()
         }
         gets(buffer, sizeof(buffer)-1);
      }
-     if (eof())
+     if (m_bEOF)
      {
         if (m_request.method == HTTP_HEAD)
         {
@@ -1170,20 +1085,23 @@ bool HTTPProtocol::readHeader()
       continue;
     }
 
-    kdDebug(7113) << "Got header (" << getpid() << "): \"" << buffer << "\"" << endl;
+    kdDebug(7113) << "Got header (" << getpid() << "): \"" << buffer
+                  << "\"" << endl;
 
+    // Save broken servers from damnation!!
     char* buf = buffer;
-    while (*buf == ' ') // Skip leading spaces
-        buf++;
+    while( *buf == ' ' ) buf++;
 
     // are we allowd to resume?  this will tell us
     if (strncasecmp(buf, "Accept-Ranges:", 14) == 0) {
-      if (strncasecmp(trimLead(buf + 14), "none", 4) == 0)
+      if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
             m_bCanResume = false;
     }
+    
+    // Cache control
     else if (strncasecmp(buf, "Cache-Control:", 14) == 0) {
       QStringList cacheControls = QStringList::split(',',
-                                     QString::fromLatin1(trimLead(buf+14)));
+                                     QString::fromLatin1(trimLead(buffer+14)));
       for(QStringList::ConstIterator it = cacheControls.begin();
           it != cacheControls.end();
           it++)
@@ -1206,15 +1124,15 @@ bool HTTPProtocol::readHeader()
       }
       hasCacheDirective = true;
     }
-
+    
     // get the size of our data
     else if (strncasecmp(buf, "Content-length:", 15) == 0) {
-      m_iSize = atol(trimLead(buf + 15));
+      m_iSize = atol(trimLead(buffer + 15));
     }
 
     // what type of data do we have?
     else if (strncasecmp(buf, "Content-type:", 13) == 0) {
-       m_strMimeType = QString::fromLatin1(trimLead(buf + 13)).stripWhiteSpace().lower();
+       m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).stripWhiteSpace().lower();
        int semicolonPos = m_strMimeType.find( ';' );
        if ( semicolonPos != -1 )
        {
@@ -1231,38 +1149,39 @@ bool HTTPProtocol::readHeader()
        }
        //kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
     }
-    //
+
+    // Date
     else if (strncasecmp(buf, "Date:", 5) == 0) {
-      dateHeader = KRFCDate::parseDate(trimLead(buf+5));
+      dateHeader = KRFCDate::parseDate(trimLead(buffer+5));
     }
 
     // Cache management
     else if (strncasecmp(buf, "ETag:", 5) == 0) {
-      m_etag = trimLead(buf+5);
+      m_etag = trimLead(buffer+5);
     }
 
     // Cache management
     else if (strncasecmp(buf, "Expires:", 8) == 0) {
-      expireDate = KRFCDate::parseDate(trimLead(buf+8));
+      expireDate = KRFCDate::parseDate(trimLead(buffer+8));
       if (!expireDate)
         expireDate = 1; // Already expired
     }
 
     // Cache management
     else if (strncasecmp(buf, "Last-Modified:", 14) == 0) {
-      m_lastModified = (QString::fromLatin1(trimLead(buf+14))).stripWhiteSpace();
+      m_lastModified = (QString::fromLatin1(trimLead(buffer+14))).stripWhiteSpace();
     }
 
     // whoops.. we received a warning
     else if (strncasecmp(buf, "Warning:", 8) == 0) {
       //Don't use warning() here, no need to bother the user.
       //Those warnings are mostly about caches.
-      infoMessage(trimLead(buf + 8));
+      infoMessage(trimLead(buffer + 8));
     }
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buf, "Pragma:", 7) == 0) {
-      QCString pragma = QCString(trimLead(buf+7)).stripWhiteSpace().lower();
+      QCString pragma = QCString(trimLead(buffer+7)).stripWhiteSpace().lower();
       if (pragma == "no-cache")
       {
          m_bCachedWrite = false; // Don't put in cache
@@ -1270,15 +1189,17 @@ bool HTTPProtocol::readHeader()
       }
       hasCacheDirective = true;
     }
+
     // The deprecated Refresh Response
     else if (strncasecmp(buf,"Refresh:", 8) == 0) {
-      kdDebug(7113) << buf << endl;
+      kdDebug(7113) << buffer << endl;
       mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-      setMetaData( "http-refresh", QString::fromLatin1(trimLead(buf+8)).stripWhiteSpace() );
+      setMetaData( "http-refresh", QString::fromLatin1(trimLead(buffer+8)).stripWhiteSpace() );
     }
+
     // We got the header
     else if (strncasecmp(buf, "HTTP/", 5) == 0) {
-      if (strncmp(buf+5, "1.0 ",4) == 0)
+      if (strncmp(buffer+5, "1.0 ",4) == 0)
       {
          m_HTTPrev = HTTP_10;
          m_bKeepAlive = false;
@@ -1298,23 +1219,19 @@ bool HTTPProtocol::readHeader()
          }
          else
          {
-#ifdef DO_SSL
-            // Don't do persistant connections with SSL.
-            if (!m_bUseSSL)
+            if (!m_bIsSSL)
                m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
-#else
-               m_bKeepAlive = true; // HTTP 1.1 has persistant connections by default.
-#endif
          }
       }
 
       if ( m_responseCode )
         m_prevResponseCode = m_responseCode;
 
-      m_responseCode = atoi(buf+9);
+      m_responseCode = atoi(buffer+9);
 
       // server side errors
-      if (m_responseCode >= 500 && m_responseCode <= 599) {
+      if (m_responseCode >= 500 && m_responseCode <= 599) 
+      {
         if (m_request.method == HTTP_HEAD) {
            // Ignore error
         } else {
@@ -1330,7 +1247,8 @@ bool HTTPProtocol::readHeader()
         mayCache = false;
       }
       // Unauthorized access
-      else if (m_responseCode == 401 || m_responseCode == 407) {
+      else if (m_responseCode == 401 || m_responseCode == 407) 
+      {
         // Double authorization requests, i.e. a proxy auth
         // request followed immediately by a regular auth request.
         if ( m_prevResponseCode != m_responseCode &&
@@ -1342,7 +1260,8 @@ bool HTTPProtocol::readHeader()
         mayCache = false;
       }
       // Any other client errors
-      else if (m_responseCode >= 400 && m_responseCode <= 499) {
+      else if (m_responseCode >= 400 && m_responseCode <= 499) 
+      {
         // Tell that we will only get an error page here.
         if (m_bErrorPage)
            errorPage();
@@ -1403,27 +1322,28 @@ bool HTTPProtocol::readHeader()
         cont = true;
       }
     }
+
     // In fact we should do redirection only if we got redirection code
     else if (strncasecmp(buf, "Location:", 9) == 0 ) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
-        locationStr = QCString(trimLead(buf+9)).stripWhiteSpace();
+        locationStr = QCString(trimLead(buffer+9)).stripWhiteSpace();
     }
 
     // Check for cookies
     else if (strncasecmp(buf, "Set-Cookie", 10) == 0) {
-      cookieStr += buf;
+      cookieStr += buffer;
       cookieStr += '\n';
     }
 
     // check for direct authentication
     else if (strncasecmp(buf, "WWW-Authenticate:", 17) == 0) {
-      configAuth(trimLead(buf + 17), false);
+      configAuth(trimLead(buffer + 17), false);
     }
 
     // check for proxy-based authentication
     else if (strncasecmp(buf, "Proxy-Authenticate:", 19) == 0) {
-        configAuth(trimLead(buf + 19), true);
+        configAuth(trimLead(buffer + 19), true);
     }
 
     // content?
@@ -1441,23 +1361,19 @@ bool HTTPProtocol::readHeader()
       // a document to be compressed without loosing the identity of its underlying
       // media type.  Simply put if it is specified, this is the actual mime-type
       // we should use when we pull the resource !!!
-      addEncoding(trimLead(buf + 17), m_qContentEncodings);
+      addEncoding(trimLead(buffer + 17), m_qContentEncodings);
     }
 
     // continue only if we know that we're HTTP/1.1
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
       if (strncasecmp(buf, "Connection:", 11) == 0) {
-        if (strncasecmp(trimLead(buf + 11), "Close", 5) == 0) {
+        if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0) {
           m_bKeepAlive = false;
-        } else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0) {
-#ifdef DO_SSL
+        } else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0) {
           // Don't do persistant connections with SSL.
-          if (!m_bUseSSL)
+          if (!m_bIsSSL)
              m_bKeepAlive = true;
-#else
-          m_bKeepAlive = true;
-#endif
         }
 
       }
@@ -1467,16 +1383,16 @@ bool HTTPProtocol::readHeader()
         // If multiple encodings have been applied to an entity, the
         // transfer-codings MUST be listed in the order in which they
         // were applied.
-        addEncoding(trimLead(buf + 18), m_qTransferEncodings);
+        addEncoding(trimLead(buffer + 18), m_qTransferEncodings);
       }
 
       // md5 signature
       else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
-        m_sContentMD5 = strdup(trimLead(buf + 12));
+        m_sContentMD5 = strdup(trimLead(buffer + 12));
       }
       // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
       else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
-        disposition = trimLead(buf + 20);
+        disposition = trimLead(buffer + 20);
         int pos = disposition.find( ';' );
         if ( pos != -1 )
         {
@@ -1736,7 +1652,8 @@ bool HTTPProtocol::readHeader()
 
   if( !disposition.isEmpty() )
   {
-     kdDebug(7103) << "Setting Content-Disposition metadata to: " << disposition << endl;
+     kdDebug(7103) << "Setting Content-Disposition metadata to: "
+                   << disposition << endl;
      setMetaData("content-disposition", disposition);
   }
 
@@ -1800,90 +1717,9 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   } else if ((encoding == "x-deflate") || (encoding == "deflate")) {
     encs.append(QString::fromLatin1("deflate"));
   } else {
-    kdWarning(7103) << "Unknown encoding encountered.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
-  }
-}
-
-void HTTPProtocol::configAuth( const char *p, bool b )
-{
-  HTTP_AUTH f = AUTH_None;
-  const char *strAuth = p;
-
-  while( *p == ' ' ) p++;
-  if ( strncasecmp( p, "Basic", 5 ) == 0 )
-  {
-    f = AUTH_Basic;
-    p += 5;
-  }
-  else if (strncasecmp (p, "Digest", 6) ==0 )
-  {
-    f = AUTH_Digest;
-    p += 6;
-    strAuth = p;
-  }
-  else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0)
-  {
-    // Found on http://www.webscription.net/baen/default.asp
-    f = AUTH_Basic;
-    p += 14;
-  }
-  else
-  {
-    kdWarning(7103) << "Unsupported or invalid authorization type requested" << endl;
-    kdWarning(7103) << "Request Authorization: " << p << endl;
-  }
-
-  /*
-     This check ensures the following:
-     1.) Rejection of any unknown/unsupported authentication schemes
-     2.) Useage of the strongest possible authentication schemes if
-         and when multiple Proxy-Authenticate or WWW-Authenticate
-         header field is sent.
-  */
-  if ( f == AUTH_None ||
-       (b && m_iProxyAuthCount > 0 && f < ProxyAuthentication) ||
-       (!b && m_iWWWAuthCount > 0 && f < Authentication) )
-  {
-    // Since I purposefully made the Proxy-Authentication settings
-    // persistent to reduce the number of round-trips to kdesud we
-    // have to take special care when an unknown/unsupported auth-
-    // scheme is received. This check accomplishes just that...
-    if ( b )
-    {
-      if ( !m_iProxyAuthCount )
-        ProxyAuthentication = f;
-      m_iProxyAuthCount++;
-    }
-    else
-      m_iWWWAuthCount++;
-    return;
-  }
-
-  while (*p)
-  {
-    int i = 0;
-    while( (*p == ' ') || (*p == ',') || (*p == '\t') ) { p++; }
-    if ( strncasecmp( p, "realm=\"", 7 ) == 0 )
-    {
-      p += 7;
-      while( p[i] != '"' ) i++;
-      if( b )
-        m_strProxyRealm = QString::fromLatin1( p, i );
-      else
-        m_strRealm = QString::fromLatin1( p, i );
-    }
-    p+=(i+1);
-  }
-
-  if( b )
-  {
-    ProxyAuthentication = f;
-    m_strProxyAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
-  }
-  else
-  {
-    Authentication = f;
-    m_strAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
+    kdWarning(7103) << "Unknown encoding encountered.  Please write code. "
+                       "pid = (" << getpid() << ") Encoding = \"" << encoding
+                    << "\"" << endl;
   }
 }
 
@@ -1942,7 +1778,8 @@ bool HTTPProtocol::sendBody()
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
   if (!sendOk)
   {
-    kdDebug(7103) << "Connection broken (sendBody(1))! (" << m_state.hostname << ")" << endl;
+    kdDebug(7103) << "Connection broken when sending content length: ("
+                  << m_state.hostname << ")" << endl;
     error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
@@ -1951,7 +1788,8 @@ bool HTTPProtocol::sendBody()
   sendOk = (write(m_bufPOST.data(), m_bufPOST.size()) == (ssize_t) m_bufPOST.size());
   if (!sendOk)
   {
-    kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
+    kdDebug(7103) << "Connection broken when sending message body: ("
+                  << m_state.hostname << ")" << endl;
     error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
@@ -1983,67 +1821,16 @@ void HTTPProtocol::closeConnection()
 
 void HTTPProtocol::http_closeConnection()
 {
-  kdDebug(7113) << "http_closeConnection: closing (" << getpid() << ")" << endl;
+  kdDebug(7113) << "http_closeConnection: closing (" << getpid()
+                << ")" << endl;
   m_bKeepAlive = false; // Just in case.
-  if ( m_sock )
-    ::close( m_sock );
-  m_sock = 0;
-#ifdef DO_SSL
-  closeSSL();
-#endif
-}
-
-void HTTPProtocol::setHost(const QString& host, int port, const QString& user, const QString& pass)
-{
-  kdDebug(7113) << "Hostname is now: " << host << endl;
-  m_request.hostname = host;
-
-  // try to ensure that the port is something reasonable
-  if ( port == 0 )
-     port = m_DefaultPort;
-
-  // Do not reset the URL on redirection if the proxy
-  // URL, username or password has not changed!
-  KURL proxy = metaData("UseProxy");
-  if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
-       m_proxyURL.host() != proxy.host() ||
-       (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
-       (!proxy.pass().isNull() && proxy.pass() != m_proxyURL.pass()) )
-  {
-    m_proxyURL = proxy;
-    m_bUseProxy = m_proxyURL.isValid();
-    kdDebug(7113) << "Proxy URL is now: " << m_proxyURL.url() << endl;
-  }
-
-  m_request.port = port;
-  m_request.user = user;
-  m_request.passwd = pass;
-  m_request.do_proxy = m_bUseProxy;
-
-  m_bUseCache = config()->readBoolEntry("UseCache", true);
-  m_strCacheDir = config()->readEntry("CacheDir");
-  if (m_strCacheDir.isEmpty())
-     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
-
-  kdDebug(7103) << "UseCache: " << metaData("UseCache") << endl;
-  kdDebug(7103) << "CacheDir: " << metaData("CacheDir") << endl;
-  kdDebug(7103) << "MaxCacheAge: " << metaData("MaxCacheAge") << endl;
-
-  // Obtain the proxy and remote server timeout values
-  m_proxyConnTimeout = proxyConnectTimeout();
-  m_remoteConnTimeout = connectTimeout();
-  m_remoteRespTimeout = responseTimeout();
-
-  kdDebug(7103) << "Timeout proxy = " << m_proxyConnTimeout <<
-                   " connection = " << m_remoteConnTimeout <<
-                   " response = " << m_remoteRespTimeout << endl;
+  CloseDescriptor();
 }
 
 void HTTPProtocol::slave_status()
 {
-  bool connected = http_isConnected();
-  if ( m_sock && !connected )
+  bool connected = isConnectionValid();
+  if ( !connected && m_iSock != -1 )
      http_closeConnection();
   slaveStatus( m_state.hostname, connected );
 }
@@ -2058,126 +1845,6 @@ void HTTPProtocol::buildURL()
   m_request.url.setPath( m_request.path );
   if (m_request.query.length())
     m_request.url.setQuery( m_request.query );
-}
-
-// We just return 'FILE' here.
-void HTTPProtocol::stat(const KURL& url)
-{
-  if (m_request.hostname.isEmpty())
-  {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
-     return;
-  }
-
-  kdDebug(7113) << "HTTPProtocol::stat " << url.prettyURL() << endl;
-
-  UDSEntry entry;
-  UDSAtom atom;
-  atom.m_uds = KIO::UDS_NAME;
-  atom.m_str = url.fileName();
-  entry.append( atom );
-
-  atom.m_uds = KIO::UDS_FILE_TYPE;
-  atom.m_long = S_IFREG; // a file
-  entry.append( atom );
-
-  atom.m_uds = KIO::UDS_ACCESS;
-  atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
-  entry.append( atom );
-
-  statEntry( entry );
-
-  finished();
-}
-
-void HTTPProtocol::get( const KURL& url )
-{
-  if ( !checkRequestURL( url ) )
-    return;
-
-  kdDebug(7113) << "HTTPProtocol::get " << url.url() << endl;
-
-  m_request.method = HTTP_GET;
-  m_request.path = url.path();
-  m_request.query = url.query();
-  QString tmp = metaData("cache");
-  if (!tmp.isEmpty())
-    m_request.cache = parseCacheControl(tmp);
-  else
-    m_request.cache = DEFAULT_CACHE_CONTROL;
-
-  m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
-  m_request.passwd = url.pass();
-  m_request.user = url.user();
-
-  retrieveContent( true /* SSL checks */ );
-}
-
-void HTTPProtocol::put( const KURL &url, int, bool, bool)
-{
-  if ( !checkRequestURL( url ) )
-    return;
-
-  kdDebug(7113) << "HTTPProtocol::put " << url.prettyURL() << endl;
-
-  m_request.method = HTTP_PUT;
-  m_request.path = url.path();
-  m_request.query = QString::null;
-  m_request.cache = CC_Reload;
-  m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
-
-  retrieveContent();
-
-}
-
-void HTTPProtocol::post( const KURL& url)
-{
-  if ( !checkRequestURL( url ) )
-    return;
-
-  kdDebug(7113) << "HTTPProtocol::post " << url.prettyURL() << endl;
-
-  m_request.method = HTTP_POST;
-  m_request.path = url.path();
-  m_request.query = url.query();
-  m_request.cache = CC_Reload;
-  m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
-
-  retrieveContent();
-
-}
-
-void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDate)
-{
-  m_request.path = url.path();
-  m_request.query = url.query();
-  m_request.cache = CC_Reload;
-  m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
-
-  if (no_cache)
-  {
-     m_fcache = checkCacheEntry( );
-     if (m_fcache)
-     {
-       fclose(m_fcache);
-       m_fcache = 0;
-       ::unlink(m_state.cef.latin1());
-     }
-  }
-  else
-  {
-     updateExpireDate( expireDate );
-  }
-
-  finished();
 }
 
 void HTTPProtocol::mimetype( const KURL& url )
@@ -2229,28 +1896,6 @@ void HTTPProtocol::special( const QByteArray &data)
   }
 
 }
-
-bool HTTPProtocol::checkRequestURL( const KURL& u )
-{
-  if (m_request.hostname.isEmpty())
-  {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
-     return false;
-  }
-
-  if ( m_protocol != u.protocol().latin1() )
-  {
-    short unsigned int oldDefaultPort = m_DefaultPort;
-    m_protocol = u.protocol().latin1();
-    reparseConfiguration();
-    if ( m_DefaultPort != oldDefaultPort &&
-         m_request.port == oldDefaultPort )
-      m_request.port = m_DefaultPort;
-  }
-
-  return true;
-}
-
 
 void HTTPProtocol::decodeDeflate()
 {
@@ -2392,7 +2037,8 @@ size_t HTTPProtocol::sendData( )
   processedSize(sz);
   totalSize(sz);
   QByteArray array;
-  while (sent+bufferSize < sz) {
+  while (sent+bufferSize < sz) 
+  {
     array.setRawData( big_buffer.data()+sent, bufferSize);
     data( array );
     array.resetRawData( big_buffer.data()+sent, bufferSize);
@@ -2439,7 +2085,7 @@ int HTTPProtocol::readChunked()
            return -1;
         }
      }
-     if (eof())
+     if (m_bEOF)
      {
         kdDebug(7103) << "EOF on Chunk header" << endl;
         return -1;
@@ -2520,11 +2166,10 @@ int HTTPProtocol::readUnlimited()
  */
 bool HTTPProtocol::readBody( )
 {
-  QByteArray array;
-
   // Check if we need to decode the data.
   // If we are in copy mode, then use only transfer decoding.
-  bool decode = !m_qTransferEncodings.isEmpty() || !m_qContentEncodings.isEmpty();
+  bool decode = ( !m_qTransferEncodings.isEmpty() ||
+                  !m_qContentEncodings.isEmpty() );
   bool useMD5 = !m_sContentMD5.isEmpty();
 
   // Get the starting time.  This is used
@@ -2538,7 +2183,8 @@ bool HTTPProtocol::readBody( )
   if ( sz ) { m_iSize += sz; }
 
   totalSize( (m_iSize > -1) ? m_iSize : 0 );
-  infoMessage( i18n( "Retrieving data from <b>%1</b>" ).arg( m_request.hostname ) );
+  infoMessage( i18n( "Retrieving data from "
+                     "<b>%1</b>" ).arg( m_request.hostname ) );
 
   if (m_bCachedRead)
   {
@@ -2551,9 +2197,9 @@ bool HTTPProtocol::readBody( )
         int nbytes = fread( buffer, 1, MAX_IPC_SIZE, m_fcache);
         if (nbytes > 0)
         {
-          array.setRawData( buffer, nbytes);
-          data( array );
-          array.resetRawData( buffer, nbytes );
+          m_bufReceive.setRawData( buffer, nbytes);
+          data( m_bufReceive );
+          m_bufReceive.resetRawData( buffer, nbytes );
           sz += nbytes;
         }
      }
@@ -2566,6 +2212,7 @@ bool HTTPProtocol::readBody( )
      } else {
        speed(0);
      }
+     m_bufReceive.resize( 0 );
      data( QByteArray() );
      return true;
   }
@@ -2583,7 +2230,8 @@ bool HTTPProtocol::readBody( )
   bool cpMimeBuffer = false;
   QByteArray mimeTypeBuffer;
   big_buffer.resize(0);
-  while (!eof())
+
+  while (!m_bEOF)
   {
     int bytesReceived;
     if (m_bChunked)
@@ -2609,19 +2257,22 @@ bool HTTPProtocol::readBody( )
       // If a broken server does not send the mime-type,
       // we try to id it from the content before dealing
       // with the content itself.
-      if ( m_strMimeType.isEmpty() && !( m_responseCode >= 300 && m_responseCode <=399) )
+      if ( m_strMimeType.isEmpty() && !( m_responseCode >= 300 &&
+                                         m_responseCode <=399) )
       {
-        kdDebug(7113) << "Attempting to determine mime-type from content..." << endl;
+        kdDebug(7113) << "Determining mime-type from content..." << endl;
         int old_size = mimeTypeBuffer.size();
         mimeTypeBuffer.resize( old_size + bytesReceived );
-        memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(), bytesReceived );
+        memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(),
+                bytesReceived );
         if ( m_iBytesLeft > 0 && mimeTypeBuffer.size() < 1024 )
         {
           cpMimeBuffer = true;
           continue;   // Do not send up the data since we do not yet know its mimetype!
         }
 
-	kdDebug(7113) << "Mimetype buffer size: " << mimeTypeBuffer.size() << endl;
+        kdDebug(7113) << "Mimetype buffer size: " << mimeTypeBuffer.size()
+                      << endl;
         KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer, m_request.url.fileName() );
         if( result )
         {
@@ -2631,8 +2282,9 @@ bool HTTPProtocol::readBody( )
 
         if ( m_strMimeType.isEmpty() )
         {
-          m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );  // if all else fails...
-          kdDebug(7113) << "Using default mimetype:  " <<  m_strMimeType << endl;
+          m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
+          kdDebug(7113) << "Using default mimetype: " <<  m_strMimeType
+                        << endl;
         }
 
         if ( m_bCachedWrite )
@@ -2646,7 +2298,8 @@ bool HTTPProtocol::readBody( )
         {
           m_bufReceive.resize(0);
           m_bufReceive.resize(mimeTypeBuffer.size());
-          memcpy( m_bufReceive.data(), mimeTypeBuffer.data(), mimeTypeBuffer.size() );
+          memcpy( m_bufReceive.data(), mimeTypeBuffer.data(),
+                  mimeTypeBuffer.size() );
         }
         mimeType(m_strMimeType);
         mimeTypeBuffer.resize(0);
@@ -2658,10 +2311,9 @@ bool HTTPProtocol::readBody( )
         if (useMD5)
           context.update( m_bufReceive );
 
-        // yep, let the world know that we have some data
-        array.setRawData( m_bufReceive.data(), bytesReceived );
-        data( array );
-        array.resetRawData( m_bufReceive.data(), bytesReceived );
+        // Let the world know that we have some data
+        m_bufReceive.resize( bytesReceived );
+        data( m_bufReceive );
 
         if (m_bCachedWrite && m_fcache)
            writeCacheEntry(m_bufReceive.data(), bytesReceived);
@@ -2677,18 +2329,18 @@ bool HTTPProtocol::readBody( )
       else
       {
         // nope.  slap this all onto the end of a big buffer for later use
-        // kdDebug( 7113 ) << "Further decoding needed..." << endl;
         unsigned int old_len = 0;
         old_len = big_buffer.size();
         big_buffer.resize(old_len + bytesReceived);
-        memcpy(big_buffer.data() + old_len, m_bufReceive.data(), bytesReceived);
+        memcpy( big_buffer.data() + old_len, m_bufReceive.data(),
+                bytesReceived );
       }
     }
+    m_bufReceive.resize(0); // res
     if (m_iBytesLeft == 0)
       break;
   }
 
-  m_bufReceive.resize(0);
   // if we have something in big_buffer, then we know that we have
   // encoded data.  of course, we need to do something about this
   if (!big_buffer.isNull())
@@ -2739,15 +2391,12 @@ bool HTTPProtocol::readBody( )
     HASH digest;
     context.finalize();
     context.rawDigest(digest);
-    QByteArray out, in;
-    in.setRawData( digest, sizeof(digest) );
-    KCodecs::base64Encode( in, out );
-    if ( m_sContentMD5 == QString(out) )
+    QString calculatedMD5 = KCodecs::base64Encode( QCString(digest) );
+    if ( m_sContentMD5 == calculatedMD5 )
       kdDebug(7103) << "MD5 checksum present and is match!!" << endl;
     else
-      kdDebug(7103) << "MD5 checksum mismatch: got " << m_sContentMD5
-                    << ", calculated " << QString(out) << endl;
-    in.resetRawData( digest, sizeof(digest) );
+      kdDebug(7103) << "MD5 checksum mismatch! Expected: " << calculatedMD5
+                    << ", Got: " << m_sContentMD5 << endl;
   }
 
   // Close cache entry
@@ -2816,11 +2465,40 @@ QString HTTPProtocol::findCookies( const QString &url)
    return result;
 }
 
+
+
+/******************************* CACHING CODE ****************************/
+
+
+void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDate)
+{
+  m_request.path = url.path();
+  m_request.query = url.query();
+  m_request.cache = CC_Reload;
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  m_request.url = url;
+
+  if (no_cache)
+  {
+     m_fcache = checkCacheEntry( );
+     if (m_fcache)
+     {
+       fclose(m_fcache);
+       m_fcache = 0;
+       ::unlink(m_state.cef.latin1());
+     }
+  }
+  else
+  {
+     updateExpireDate( expireDate );
+  }
+  finished();
+}
+
 // !START SYNC!
 // The following code should be kept in sync
 // with the code in http_cache_cleaner.cpp
-
-#define CACHE_REVISION "7\n"
 
 FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 {
@@ -3137,48 +2815,94 @@ void HTTPProtocol::cleanCache()
    }
 }
 
-void HTTPProtocol::retrieveContent( bool check_ssl )
-{
-  if ( retrieveHeader(false) )
-    if ( !check_ssl || checkSSL() )
-      (void) readBody();
 
-  http_close();
-  finished();
-}
 
-bool HTTPProtocol::retrieveHeader( bool close_connection )
+//**************************  AUTHENTICATION CODE ********************/
+
+
+void HTTPProtocol::configAuth( const char *p, bool b )
 {
-  resetSessionSettings();
-  while ( 1 )
+  HTTP_AUTH f = AUTH_None;
+  const char *strAuth = p;
+
+  while( *p == ' ' ) p++;
+  if ( strncasecmp( p, "Basic", 5 ) == 0 )
   {
-    if (!http_open())
-        return false;
+    f = AUTH_Basic;
+    p += 5;
+  }
+  else if (strncasecmp (p, "Digest", 6) ==0 )
+  {
+    f = AUTH_Digest;
+    p += 6;
+    strAuth = p;
+  }
+  else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0)
+  {
+    // Found on http://www.webscription.net/baen/default.asp
+    f = AUTH_Basic;
+    p += 14;
+  }
+  else
+  {
+    kdWarning(7103) << "Unsupported or invalid authorization type requested" << endl;
+    kdWarning(7103) << "Request Authorization: " << p << endl;
+  }
 
-    if (!readHeader())
+  /*
+     This check ensures the following:
+     1.) Rejection of any unknown/unsupported authentication schemes
+     2.) Useage of the strongest possible authentication schemes if
+         and when multiple Proxy-Authenticate or WWW-Authenticate
+         header field is sent.
+  */
+  if ( f == AUTH_None ||
+       (b && m_iProxyAuthCount > 0 && f < ProxyAuthentication) ||
+       (!b && m_iWWWAuthCount > 0 && f < Authentication) )
+  {
+    // Since I purposefully made the Proxy-Authentication settings
+    // persistent to reduce the number of round-trips to kdesud we
+    // have to take special care when an unknown/unsupported auth-
+    // scheme is received. This check accomplishes just that...
+    if ( b )
     {
-        if ( m_bError )
-            return false;
+      if ( !m_iProxyAuthCount )
+        ProxyAuthentication = f;
+      m_iProxyAuthCount++;
     }
     else
-    {
-        // Do not save authorization if the current response code is
-        // 4xx (client error) or 5xx (server error).
-        kdDebug(7113) << "Previous Response: " << m_prevResponseCode << endl
-                      << "Current Response: " << m_responseCode << endl;
-        if ( m_responseCode < 400 &&
-            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
-            saveAuthorization();
-        break;
-    }
+      m_iWWWAuthCount++;
+    return;
   }
-  if ( close_connection )
+
+  while (*p)
   {
-    http_close();
-    finished();
+    int i = 0;
+    while( (*p == ' ') || (*p == ',') || (*p == '\t') ) { p++; }
+    if ( strncasecmp( p, "realm=\"", 7 ) == 0 )
+    {
+      p += 7;
+      while( p[i] != '"' ) i++;
+      if( b )
+        m_strProxyRealm = QString::fromLatin1( p, i );
+      else
+        m_strRealm = QString::fromLatin1( p, i );
+    }
+    p+=(i+1);
   }
-  return true;
+
+  if( b )
+  {
+    ProxyAuthentication = f;
+    m_strProxyAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
+  }
+  else
+  {
+    Authentication = f;
+    m_strAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
+  }
 }
+
 
 bool HTTPProtocol::retryPrompt()
 {
@@ -3434,7 +3158,8 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   if ( passwd.isEmpty() )
     passwd = "";
 
-  user += ':' + passwd;
+  user += ':';
+  user += passwd;
   auth += KCodecs::base64Encode( user );
   return auth;
 }
@@ -3443,16 +3168,23 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
 {
   KMD5 md;
   HASHHEX HA1, HA2;
-  QCString authStr;
 
   // Calculate H(A1)
-  authStr = info.username + ':' + info.realm + ':' + info.password;
+  QCString authStr = info.username;
+  authStr += ':';
+  authStr += info.realm;
+  authStr += ':';
+  authStr += info.password;
+
   md.update( authStr );
   md.finalize();
   if ( info.algorithm == "md5-sess" )
   {
     authStr = md.hexDigest();
-    authStr += ':' + info.nonce + ':' + info.cnonce;
+    authStr += ':';
+    authStr += info.nonce;
+    authStr += ':';
+    authStr += info.cnonce;
     md.reset();
     md.update( authStr );
     md.finalize();
@@ -3461,9 +3193,14 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
   md.hexDigest( HA1 );
 
   // Calcualte H(A2)
-  authStr = info.method + ':' + info.digestURI.at( 0 );
+  authStr = info.method;
+  authStr += ':';
+  authStr += info.digestURI.at( 0 );
   if ( info.qop == "auth-int" )
-    authStr += ':' + info.entity_body;
+  {
+    authStr += ':';
+    authStr += info.entity_body;
+  }
 //  kdDebug(7113) << "A2 => " << authStr << endl;
   md.reset();
   md.update( authStr );
@@ -3472,9 +3209,18 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
 
   // Calcualte the response.
   authStr = HA1;
-  authStr += ':' + info.nonce + ':';
+  authStr += ':';
+  authStr += info.nonce;
+  authStr += ':';
   if ( !info.qop.isEmpty() )
-    authStr += info.nc + ':' + info.cnonce + ':' + info.qop + ':';
+  {
+    authStr += info.nc;
+    authStr += ':';
+    authStr += info.cnonce;
+    authStr += ':';
+    authStr += info.qop;
+    authStr += ':';
+  }
   authStr += HA2;
 
 //  kdDebug(7113) << "response:" << authStr << endl;
@@ -3505,7 +3251,6 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     info.username = m_state.user.latin1();
     info.password = m_state.passwd.latin1();
     p = m_strAuthorization.latin1();
-
   }
 
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
@@ -3669,94 +3414,74 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   return auth;
 }
 
-void HTTPProtocol::reparseConfiguration()
+QString HTTPProtocol::proxyAuthenticationHeader()
 {
-  kdDebug(7103) << "(" << getpid() << ") Reparse Configuration!" << endl;
-  m_strProxyRealm = QString::null;
-  m_strProxyAuthorization = QString::null;
-
-  ProxyAuthentication = AUTH_None;
-
-  // Define language and charset settings from KLocale (David)
-  // Get rid of duplicate language entries!!
-  QString tmp;
-  QStringList languageList = KGlobal::locale()->languageList();
-  QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
-  kdDebug(7103) << "Languages: " << KGlobal::locale()->languages() << endl;
-  if ( it != languageList.end() )
+  // We keep proxy authentication locally until they are
+  // changed.  Thus, no need to check with kdesud on every
+  // connection!!
+  if ( m_strProxyRealm.isEmpty() )
   {
-    if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
-        languageList.remove( it );
+    AuthInfo info;
+    info.url = m_proxyURL;
+    info.username = m_proxyURL.user();
+    info.password = m_proxyURL.pass();
+    info.verifyPath = true;
+
+    // If the proxy URL already contains username
+    // and password simply attempt to retrieve it
+    // without prompting the user...
+    if ( !info.username.isNull() && !info.password.isNull() )
+      ProxyAuthentication = (m_strProxyAuthorization.isEmpty() ?
+                            AUTH_Basic:AUTH_Digest);
     else
-        (*it) = QString::fromLatin1("en");
+    {
+      if ( checkCachedAuthentication(info) )
+      {
+        m_proxyURL.setUser( info.username );
+        m_proxyURL.setPass( info.password );
+        m_strProxyRealm = info.realmValue;
+        if ( info.digestInfo.isEmpty() )
+          ProxyAuthentication = AUTH_Basic;
+        else
+        {
+          ProxyAuthentication = AUTH_Digest;
+          m_strProxyAuthorization = info.digestInfo;
+        }
+      }
+      else
+      {
+        ProxyAuthentication = AUTH_None;
+      }
+    }
   }
 
-  // Use commas not spaces.
-  m_strLanguages = languageList.join( ", " );
-  kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  // Ugly conversion. kdeglobals has the xName (e.g. iso8859-1 instead of iso-8859-1)
-  m_strCharsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
-  m_strCharsets += QString::fromLatin1(", utf-8, *");
+  /********* Only for debugging purpose... *********/
+  if ( ProxyAuthentication != AUTH_None )
+  {
+    kdDebug(7113) << "(" << getpid() << ") Using Proxy Authentication: "
+                  << endl
+                  << " HOST= " << m_proxyURL.host() << endl
+                  << " PORT= " << m_proxyURL.port() << endl
+                  << " USER= " << m_proxyURL.user() << endl
+                  << " PASSWORD= [protected]" << endl
+                  << " REALM= " << m_strProxyRealm << endl
+                  << " EXTRA= " << m_strProxyAuthorization  << endl;
+  }
 
-  // Launch the cookiejar if not already running
-  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
-  cookieConfig->setGroup("Cookie Policy");
-  m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
-  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
+  QString header;
+  switch ( ProxyAuthentication )
   {
-     QString error;
-     if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
-     {
-        // Error starting kcookiejar.
-        kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
-     }
+    case AUTH_Basic:
+      header += createBasicAuth( true );
+      header += "\r\n";
+      break;
+    case AUTH_Digest:
+      header += createDigestAuth( true );
+      header += "\r\n";
+      break;
+    case AUTH_None:
+    default:
+      break;
   }
-  delete cookieConfig;
-
-#ifdef DO_SSL
-  if (m_protocol == "https")
-  {
-     struct servent *sent = getservbyname("https", "tcp");
-     if (sent) {
-        m_DefaultPort = ntohs(sent->s_port);
-     } else {
-        m_DefaultPort = DEFAULT_HTTPS_PORT;
-     }
-  }
-  else
-#endif
-  if (m_protocol == "ftp")
-  {
-     struct servent *sent = getservbyname("ftp", "tcp");
-     if (sent) {
-        m_DefaultPort = ntohs(sent->s_port);
-     } else {
-        m_DefaultPort = DEFAULT_FTP_PORT;
-     }
-  }
-  else
-  {
-     struct servent *sent = getservbyname("http", "tcp");
-     if (sent) {
-        m_DefaultPort = ntohs(sent->s_port);
-     } else {
-        m_DefaultPort = DEFAULT_HTTP_PORT;
-     }
-  }
+  return header;
 }
-
-void HTTPProtocol::resetSessionSettings()
-{
-  m_request.window = metaData("window-id");
-  m_responseCode = 0;
-  m_prevResponseCode = 0;
-
-  m_strRealm = QString::null;
-  m_strAuthorization = QString::null;
-  Authentication = AUTH_None;
-
-  m_bCanResume = false;
-  m_bUnauthorized = false;
-}
-
-

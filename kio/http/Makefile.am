@@ -10,11 +10,7 @@ LDFLAGS =       $(all_libraries)
 
 bin_PROGRAMS = kio_http_cache_cleaner
 lib_LTLIBRARIES = kio_http_cache_cleaner.la
-kde_module_LTLIBRARIES = kio_http.la kio_https.la
-
-kio_https_la_SOURCES = https.cc
-kio_https_la_LIBADD = ../libkio.la $(LIB_KSSL) $(LIBZ)
-kio_https_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+kde_module_LTLIBRARIES = kio_http.la
 
 kio_http_la_SOURCES = http.cc
 kio_http_la_LIBADD = ../libkio.la $(LIBZ)
@@ -35,7 +31,3 @@ kdelnk_DATA = http_cache_cleaner.desktop http.protocol https.protocol
 
 dummy.cpp:
 	echo > dummy.cpp
-
-https.cc:	$(srcdir)/http.cc
-	echo "#define HTTPS" > https.cc
-	cat $(srcdir)/http.cc >> https.cc
