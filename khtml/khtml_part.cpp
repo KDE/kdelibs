@@ -3463,10 +3463,8 @@ void KHTMLPart::slotChildDocCreated()
     {
       DOMString domain = static_cast<HTMLDocumentImpl*>(d->m_doc)->domain();
       if (htmlFrame->d->m_doc && htmlFrame->d->m_doc->isHTMLDocument() )
-      {
-        //kdDebug(6050) << "KHTMLPart::slotChildDocCreated setting frame domain to " << domain.string() << endl;
-        static_cast<HTMLDocumentImpl*>(htmlFrame->d->m_doc)->setDomain( domain, true );
-      }
+        //kdDebug(6050) << "KHTMLPart::slotChildDocCreated: url: " << htmlFrame->m_url.url() << endl;
+        static_cast<HTMLDocumentImpl*>(htmlFrame->d->m_doc)->setDomain( domain );
     }
   }
   // So it only happens once
