@@ -1,4 +1,4 @@
-grant codeBase "file:@kde_datadir@/kjava/-"
+grant codeBase "file:@KJAVA_POLICYPATH@"
 {
     permission java.security.AllPermission;
 };
