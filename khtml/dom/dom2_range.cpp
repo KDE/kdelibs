@@ -33,7 +33,17 @@
 #include <qstring.h>
 #include <stdio.h>               // for printf
 
+/* Functions not yet implemented:
+   deleteContents
+   extractContents
+   cloneContents
+   insertNode
+   surroundContents
+   toHTML
 
+   Functions not working correctly:
+   toString
+ */
 
 //using namespace CSS;       // leff
 using namespace DOM;
@@ -216,13 +226,16 @@ void Range::setStart( const Node &refNode, long offset )
 
     if( endContainer != 0 )
     {
-        Node oldCommonAncestorContainer = commonAncestorContainer;
-        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
-            collapse( true );
+        if( commonAncestorContainer != 0 )
+        {
+            Node oldCommonAncestorContainer = commonAncestorContainer;
+            if( oldCommonAncestorContainer != getCommonAncestorContainer() )
+                collapse( true );
+            if( !boundaryPointsValid() )
+                collapse( true );
+        }
+        else  getCommonAncestorContainer();
     }
-    
-    if( !boundaryPointsValid() )
-        collapse( true );
 }
 
 void Range::setEnd( const Node &refNode, long offset )
@@ -248,14 +261,14 @@ void Range::setEnd( const Node &refNode, long offset )
     if( refNode.nodeType() != Node::TEXT_NODE )
     {
 	if( (unsigned)offset > refNode.childNodes().length() )
-	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+            throw DOMException( DOMException::INDEX_SIZE_ERR );
     }
     else
     {
 	Text t;
 	t = refNode;
-	if( t.isNull() || (unsigned)offset > t.length() )
-	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+        if( t.isNull() || (unsigned)offset > t.length() )
+            throw DOMException( DOMException::INDEX_SIZE_ERR );
     }
 
     if( isDetached() )
@@ -266,13 +279,16 @@ void Range::setEnd( const Node &refNode, long offset )
 
     if( startContainer != 0 )
     {
-        Node oldCommonAncestorContainer = commonAncestorContainer;
-        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
-            collapse( false );
+        if( commonAncestorContainer != 0 )
+        {
+            Node oldCommonAncestorContainer = commonAncestorContainer;
+            if( oldCommonAncestorContainer != getCommonAncestorContainer() )
+                collapse( true );
+            if( !boundaryPointsValid() )
+                collapse( true );
+        }
+        else  getCommonAncestorContainer();
     }
-    
-    if( !boundaryPointsValid() )
-        collapse( false );
 }
 
 void Range::setStartBefore( const Node &refNode )
@@ -721,7 +737,7 @@ DOMString Range::toString(  )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
     NodeIterator iterator( getStartContainer().childNodes().item( getStartOffset() ) );
-    
+//    NodeIterator iterator( getCommonAncestorContainer() );
     DOMString _string;
     Node _node = iterator.nextNode();
     
