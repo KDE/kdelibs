@@ -622,7 +622,7 @@ QString KStandardDirs::findExe( const QString& appname,
 	info.setFile( p );
 
 	if( info.exists() && ( ignore || info.isExecutable() )
-	    && info.isFile() ) {
+           && ( info.isFile() || info.isSymLink() )  ) {
 	    return p;
 	}
     }
