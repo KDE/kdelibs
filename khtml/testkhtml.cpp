@@ -51,10 +51,10 @@ int main(int argc, char *argv[])
     fontSizes[7] = 44;
     doc->setFontSizes(fontSizes);
 #endif
-    
+
     doc->enableJScript(true);
     doc->enableJava(true);
-    doc->setCharset("unicode");
+//    doc->setCharset("unicode");
 
     //doc->setFollowsLinks(false);
 

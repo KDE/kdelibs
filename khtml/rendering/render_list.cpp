@@ -25,6 +25,7 @@
 
 #include <qpainter.h>
 #include <qcolor.h>
+#include <qfontmetrics.h>
 #include <qnamespace.h>
 
 #include "rendering/render_style.h"
@@ -159,14 +160,18 @@ void RenderListMarker::printObject(QPainter *p, int _x, int _y,
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
+    p->setFont(m_style->font());
+    p->setPen(m_style->color());
+    QFontMetrics fm = p->fontMetrics();
+    int offset = fm.ascent()*2/3;
+    
     int xoff = 0;
-    int yoff = 5;
+    int yoff = fm.ascent() - offset/2;
 
     if(m_style->listStylePosition() != INSIDE) {
-	if(m_style->direction() == LTR)
-	    xoff = -13;
-	else
-	    xoff = 13 + m_parent->width();
+	    xoff = -7 - offset;
+	if(m_style->direction() == RTL)
+	    xoff = -xoff + m_parent->width();
     }
 
     QColor color( style()->color() );
@@ -175,34 +180,35 @@ void RenderListMarker::printObject(QPainter *p, int _x, int _y,
     switch(m_style->listStyleType()) {
     case DISC:
 	p->setBrush( QBrush( color ) );
-	p->drawEllipse( _tx + xoff, _ty + yoff, 7, 7 );
+	p->drawEllipse( _tx + xoff, _ty + yoff, offset, offset );
 	return;
     case CIRCLE:
 	p->setBrush( QBrush( color ) );
-	p->drawArc( _tx - xoff, _ty + yoff, 7, 7, 0, 16*360 );
+	p->drawArc( _tx + xoff, _ty + yoff, offset, offset, 0, 16*360 );
 	return;
     case SQUARE:
     {
 	int xp = _tx + xoff;
-	int yp = _ty - yoff;
+	int yp = _ty + yoff;
 	p->setBrush( QBrush( color ) );
-	QCOORD points[] = { xp,yp, xp+7,yp, xp+7,yp+7, xp,yp+7, xp,yp };
+	QCOORD points[] = { xp,yp, xp+offset,yp, xp+offset,yp+offset, xp,yp+offset, xp,yp };
 	QPointArray a( 5, points );
 	p->drawPolyline( a );
 	return;
     }
     default:
 	if(item != QString::null) {
+	    _ty += fm.ascent() - fm.height()/2;
 	    if(m_style->listStylePosition() == INSIDE) {
 		if(m_style->direction() == LTR)
-		    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
+		    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
 		else
 		    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
 	    } else {
 		if(m_style->direction() == LTR)
-		    p->drawText(_tx-5, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
+		    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
 		else
-		    p->drawText(_tx+5 + m_parent->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
+		    p->drawText(_tx+offset/2 + m_parent->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
 	    }
 	}
     }
@@ -225,8 +231,10 @@ void RenderListMarker::calcMinMaxWidth()
     case DISC:
     case CIRCLE:
     case SQUARE:
-	if(m_style->listStylePosition() == INSIDE)
-	    m_width = 10;
+	if(m_style->listStylePosition() == INSIDE) {
+	    QFontMetrics fm(m_style->font());
+	    m_width = fm.ascent();
+	} 
 	else
 	    m_width = 0;
 	goto end;
