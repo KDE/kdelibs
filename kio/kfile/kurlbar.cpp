@@ -386,10 +386,12 @@ void KURLBar::slotSelected( int button, QListBoxItem *item )
 
 void KURLBar::slotSelected( QListBoxItem *item )
 {
-    if ( item && item != m_activeItem ) {
-        KURLBarItem *it = static_cast<KURLBarItem*>( item );
-        m_activeItem = it;
-        emit activated( it->url() );
+    if ( item && item != m_activeItem )
+        m_activeItem = static_cast<KURLBarItem*>( item );
+    
+    if ( m_activeItem ) {
+        m_listBox->setCurrentItem( m_activeItem );
+        emit activated( m_activeItem->url() );
     }
 }
 
@@ -404,7 +406,9 @@ void KURLBar::setCurrentItem( const KURL& url )
     QListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
         if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
+            m_activeItem = static_cast<KURLBarItem*>( item );
             m_listBox->setCurrentItem( item );
+            m_listBox->setSelected( item, true );
             hasURL = true;
             break;
         }
@@ -412,8 +416,8 @@ void KURLBar::setCurrentItem( const KURL& url )
     }
 
     if ( !hasURL ) {
-        m_listBox->clearSelection();
         m_activeItem = 0L;
+        m_listBox->clearSelection();
     }
 }
 
