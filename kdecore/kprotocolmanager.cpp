@@ -268,6 +268,13 @@ QString KProtocolManager::exec( const QString& _protocol ) const
     return QString::null;
   }
 
+  // This is where we insert a small hack for FTP-Proxy.
+  // If we want to use FTP-Proxy, then it's kio_http we want.
+  // Something more flexible would require the possibility of having
+  // a proxy for any protocol, but we probably don't need that (David).
+  if ( _protocol == QString::fromLatin1("ftp") && useProxy() && !ftpProxy().isEmpty() )
+    return "kio_http";
+
   return it.data().exec;
 }
 
