@@ -97,7 +97,7 @@ QPopupMenu* KHelpMenu::menu( void )
 
     mMenu->insertSeparator();
 
-    mMenu->insertItem( i18n( "&Report Bug" ), menuReportBug );
+    mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
     mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
   }
 
