@@ -287,7 +287,7 @@ signals:
    *  on the contents of buffer for the life of the slot which was signaled
    *  by @ref done().
    */
-  void done (const char *buffer);
+  void done (const QString &buffer);
 
   /**
    * Emitted when @ref checkList() is done.
@@ -337,7 +337,7 @@ private slots:
  /**
    * Used for @ref modalCheck().
    */
-  void slotModalDone( const char* );
+  void slotModalDone( const QString & );
     
 signals:
   void dialog3 ();

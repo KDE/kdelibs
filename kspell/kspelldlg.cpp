@@ -20,12 +20,12 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
   else
     layout = new QGridLayout (this, 7, 4, 10, 1);
 
-  //The dialog box layout (not all here yet)
+  // The dialog box layout (not all here yet)
   const unsigned int
     rprogbar = 9, cprogbara = 0, cprogbarb = 3;
 
 
-  //Dlgedit
+  // Dlgedit
   
   KLineEdit* tmpKLineEdit;
   tmpKLineEdit = new KLineEdit( this, "LineEdit_1" );
@@ -170,18 +170,17 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
       progbar = new KProgress (0, 100, 0, KProgress::Horizontal, this);
       progbar->setBarStyle (KProgress::Blocked);
       progbar->setMinimumHeight (progbar->sizeHint().height());
-      //      progbar->setMaximumHeight (progbar->sizeHint().height());
+      // progbar->setMaximumHeight (progbar->sizeHint().height());
       layout->addMultiCellWidget (progbar, rprogbar, rprogbar,
 				  cprogbara, cprogbarb);
     }
 
   layout->freeze();
-  //  resize(478, 222);
 
   
-   //end Dlgedit
+  // end Dlgedit
 
-  //done once per session
+  // done once per session
   wordlabel->setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
   
   qpbrep=tmpQPushButtonR;
@@ -190,17 +189,14 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
   listbox=tmpQListBox;
   
   
-  
   connect (editbox,SIGNAL (textChanged (const QString &)),
 	   this, SLOT (textChanged (const QString &)));
   connect (editbox,SIGNAL (returnPressed ()),
 	   this, SLOT (replace ()));
   
-  listbox->setAutoScrollBar (TRUE);
   connect (listbox,SIGNAL (selected(int)),this, SLOT (selected (int)));
   connect (listbox,SIGNAL (highlighted(int)),
 	   this, SLOT (highlighted (int)));
-  
   
   
   layout->activate();
@@ -210,7 +206,7 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
 void
 KSpellDlg::init (const QString& _word, QStringList *_sugg)
 {
-  //  printf ("init %s\n", (const char *)_word);
+  // printf ("init %s\n", (const char *)_word);
   sugg=_sugg;
   word=_word;
   listbox->clear();
@@ -229,13 +225,13 @@ KSpellDlg::init (const QString& _word, QStringList *_sugg)
   if (sugg->count()!=0)
     {
       editbox->setText ((*sugg)[0]);
-      //      printf ("ENABLE\n");
+      // printf ("ENABLE\n");
       qpbrep->setEnabled (TRUE);
       qpbrepa->setEnabled (TRUE);
     }
   else
     {
-      //      printf ("DISABLE\n");
+      // printf ("DISABLE\n");
       qpbrep->setEnabled (FALSE);
       qpbrepa->setEnabled (FALSE);
       editbox->setText (_word);
@@ -249,7 +245,7 @@ void
 KSpellDlg::standby ()
 {
   QWidget *widget;
-  //  printf ("STANDBY\n");
+  // printf ("STANDBY\n");
 
   widget=children->first();
   do {
@@ -359,7 +355,6 @@ KSpellDlg::replaceAll()
 void
 KSpellDlg::help()
 {
-  //give some help
-  QString file ("kspell/ksdialog.html"), label ("");
-  kapp->invokeHTMLHelp (file, label);
+  // give some help
+  kapp->invokeHTMLHelp ("kspell/ksdialog.html", "");
 }

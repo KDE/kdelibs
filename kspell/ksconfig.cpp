@@ -312,7 +312,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
       fname.remove (fname.length()-4,4);
 
 
-    kDebugInfo( 750, "KSpellConfig::interpret [%s]", (const char *)fname);
+    kDebugInfo( 750, "KSpellConfig::interpret [%s]", fname.ascii());
 
   //These are mostly the ispell-langpack defaults
   if (fname=="english")
@@ -347,8 +347,8 @@ KSpellConfig::interpret (QString &fname, QString &lname,
     }
 
   //We have explicitly chosen English as the default here.
-  if ( (KGlobal::locale()->language()=="C" && 
-	lname=="en") ||
+  if ( (KGlobal::locale()->language()==QString::fromLatin1("C") && 
+	lname==QString::fromLatin1("en")) ||
        KGlobal::locale()->language()==lname)
     return TRUE;
     
@@ -414,7 +414,7 @@ KSpellConfig::fillInDialog ()
 	      langfnames.append (fname);
 	      hname=hname+" ("+fname+")";
 	      
-	      dictcombo->insertItem (hname.data());
+	      dictcombo->insertItem (hname);
 	    }
 	}
 

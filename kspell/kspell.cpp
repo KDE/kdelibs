@@ -434,7 +434,7 @@ QString KSpell::funnyWord (QString word)
 	    shorty+=word [j];
 	  i=j-1;
 
-	  if ((k=qs.findRev (shorty.data()))==0
+	  if ((k=qs.findRev (shorty))==0
 	//	 || k==(signed)(qs.length()-shorty.length())
 		|| k!=-1)
 	    qs.remove (k,shorty.length());
@@ -496,8 +496,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
       else
 	qs2=qs;
 
-      posinline = atoi (qs2.right (qs2.length()-
-				   qs2.findRev (' ')).data());
+      posinline = qs2.right( qs2.length()-qs2.findRev(' ') ).toInt();
 
       ///// Replace-list stuff ////
       QStringList::Iterator it = replacelist.begin();
@@ -534,11 +533,11 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
     }
       
       
-  kDebugError( 750, "HERE?: [%s]", buffer.data());
+  kDebugError( 750, "HERE?: [%s]", buffer.ascii());
   kDebugError( 750, "Please report this to dsweet@kde.org");
   kDebugError( 750, "Thank you!");
   emit done((bool)FALSE);
-  emit done (KSpell::origbuffer.data());
+  emit done (KSpell::origbuffer);
   return MISTAKE;
 }
 
@@ -612,7 +611,7 @@ void KSpell::checkList3 ()
 		dlgresult=-1;
 
 		//orig is set by parseOneResponse()
-		//		lastpos=newbuffer.find (orig.data(),lastpos,TRUE);
+		//		lastpos=newbuffer.find (orig,lastpos,TRUE);
 
 		if (e==REPLACE)
 		  {
@@ -677,7 +676,7 @@ bool KSpell::check( const QString &_buffer )
   origbuffer = _buffer;
   if ( ( totalpos = origbuffer.length() ) == 0 )
     {
-      emit done(origbuffer.data());
+      emit done(origbuffer);
       return FALSE;
     }
 
@@ -791,7 +790,7 @@ void KSpell::check2 (KProcIO *)
       //      kdebug (KDEBUG_INFO, 750, "check2() done");
       newbuffer.truncate (newbuffer.length()-2);
       emitProgress();
-      emit done (newbuffer.data());
+      emit done (newbuffer);
     }
 
 }
@@ -800,7 +799,7 @@ void KSpell::check3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
 
-  kDebugInfo( 750, "check3 [%s] [%s] %d", (const char *)cwword, 	 (const char *)replacement(), dlgresult);
+  kDebugInfo( 750, "check3 [%s] [%s] %d", cwword.ascii(), replacement().ascii(), dlgresult);
 
   //others should have been processed by dialog() already
   switch (dlgresult)
@@ -814,13 +813,13 @@ void KSpell::check3 ()
     case KS_CANCEL:
     //      kdebug (KDEBUG_INFO, 750, "cancelled\n");
       ksdlg->hide();
-      emit done (origbuffer.data());
+      emit done (origbuffer.ascii());
       return;
     case KS_STOP:
       ksdlg->hide();
-      //buffer=newbuffer.data();
+      //buffer=newbuffer);
       emitProgress();
-      emit done (newbuffer.data());
+      emit done (newbuffer);
       return;
     };
 
@@ -839,7 +838,7 @@ KSpell::slotStopCancel (int result)
     if (!dialog3slot.isEmpty())
       {
 	dlgresult=result;
-	connect (this, SIGNAL (dialog3()), this, dialog3slot.data());
+	connect (this, SIGNAL (dialog3()), this, dialog3slot.ascii());
 	emit dialog3();
       }
 }
@@ -886,7 +885,7 @@ void KSpell::dialog2 (int result)
     }
 
   emit corrected (dlgorigword, replacement(), lastpos);
-  connect (this, SIGNAL (dialog3()), this, dialog3slot.data());
+  connect (this, SIGNAL (dialog3()), this, dialog3slot.ascii());
   emit dialog3();
 }
 
@@ -1014,11 +1013,11 @@ void KSpell::slotModalReady()
 {
     // qDebug("MODAL READY");
     ASSERT( m_status == Running );
-    connect( this, SIGNAL( done( const char* ) ), this, SLOT( slotModalDone( const char* ) ) );
+    connect( this, SIGNAL( done( const QString & ) ), this, SLOT( slotModalDone( const char* ) ) );
     check( modaltext );
 }
 
-void KSpell::slotModalDone( const char *_buffer )
+void KSpell::slotModalDone( const QString &_buffer )
 {
     // qDebug("MODAL DONE %s", _buffer );
     modaltext = _buffer;
