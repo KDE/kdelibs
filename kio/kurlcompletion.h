@@ -132,6 +132,13 @@ public:
 	 */
 	virtual void setReplaceHome( bool replace ) { m_replace_home = replace; };
 
+	/**
+	 * Replaces username and/or environment variables, depending on the
+	 * current settings and returns the filtered url. Only works with
+	 * local files.
+	 */
+	QString replacedPath( const QString& text );
+
 protected:
 	// Called by KCompletion, adds '/' to directories
 	void postProcessMatch( QString *match );
@@ -156,14 +163,14 @@ private:
     bool manCompletion(const MyURL &url, QString *match);
 
 	// List a directory using readdir()
-	void listDir( const QString& dir, 
+	void listDir( const QString& dir,
 	              QStringList *matches,
 	              const QString& filter,
-	              bool only_exe, 
+	              bool only_exe,
 	              bool no_hidden );
 
 	// List the next dir in m_dirs
-	QString listDirectories(const QStringList &, 
+	QString listDirectories(const QStringList &,
 	                        const QString &,
 	                        bool only_exe = false,
 	                        bool no_hidden = false,
@@ -182,13 +189,13 @@ private:
 	void setListedURL(int compl_type /* enum ComplType */,
 	                  QString dir = QString::null,
 	                  QString filter = QString::null,
-	                  bool no_hidden = false ); 
+	                  bool no_hidden = false );
 
 	bool isListedURL( int compl_type /* enum ComplType */,
 	                  QString dir = QString::null,
 	                  QString filter = QString::null,
-	                  bool no_hidden = false ); 
- 
+	                  bool no_hidden = false );
+
 	QString m_last_path_listed;
 	QString m_last_file_listed;
 	int m_last_compl_type;
