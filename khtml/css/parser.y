@@ -560,11 +560,13 @@ simple_selector:
     }
     | ns_element specifier_list maybe_space {
 	$$ = $2;
-	$$->tag = $1;
+        if ( $$ )
+	    $$->tag = $1;
     }
     | specifier_list maybe_space {
 	$$ = $1;
-	$$->tag = 0xffffffff;
+        if ( $$ )
+	    $$->tag = 0xffffffff;
     }
   ;
 
