@@ -396,6 +396,7 @@ namespace KIO {
         virtual void removeSubjob( Job *job );
         /**
          * Overloaded version of removeSubjob
+         * @param job the subjob to remove
          * @param mergeMetaData if set, the metadata received by the subjob is
          *                      merged into this job.
          * @param emitResultIfLast if this was the last subjob, emit result,
