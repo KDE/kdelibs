@@ -248,6 +248,13 @@ QSize KButtonBox::sizeHint() const {
   }
 }
 
+QSizePolicy KButtonBox::sizePolicy() const
+{
+    return data->orientation == HORIZONTAL?
+        QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) :
+        QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum );
+}
+
 /*
  * Returns the best size for a button. If a button is less than
  * minButtonWidth pixels wide, return minButtonWidth pixels

@@ -36,7 +36,6 @@
 
 
 
-#include <kbuttonbox.h>
 #include <kckey.h>
 #include <kconfig.h>
 #include <kglobal.h>

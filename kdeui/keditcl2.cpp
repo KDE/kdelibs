@@ -30,7 +30,6 @@
 
 #include <kapp.h>
 #include <knuminput.h>
-#include <kbuttonbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kdebug.h>
