@@ -36,6 +36,8 @@ public:
 	KNotify();
 	~KNotify();
 
+	static void crashHandler(int);
+
 protected:
 k_dcop:
 	void notify(const QString &event, const QString &fromApp,

@@ -19,8 +19,10 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <unistd.h>
-#include <signal.h>
+#include <kcrash.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <kdebug.h>
 #include <kmessagebox.h>
@@ -62,6 +64,7 @@ public:
  */
 
 Arts::SimpleSoundServer g_soundServer;
+bool enableAudio;
 
 
 bool connectSoundServer()
@@ -100,6 +103,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::init( argc, argv, &aboutdata );
     KUniqueApplication::addCmdLineOptions();
 
+
     // initialize application
     if ( !KUniqueApplication::start() ) {
         kdDebug() << "Running knotify found" << endl;
@@ -109,10 +113,23 @@ int main(int argc, char **argv)
     KUniqueApplication app;
     app.disableSessionManagement();
 
-    // setup mcop communication
-    Arts::QIOManager qiomanager;
-    Arts::Dispatcher dispatcher(&qiomanager);
-    g_soundServer = Arts::SimpleSoundServer::null();
+	KCrash::setCrashHandler(KNotify::crashHandler);
+	{ // check if we should shouldn't allow sound events..
+		char file[512];
+		sprintf(file, "%s/.knotify-noaudio", getenv("HOME"));	
+		int fd=open(file, O_RDONLY);
+		enableAudio=(fd==-1);
+		if (fd!=-1)
+			close(fd);
+	}
+
+	// setup mcop communication
+	if (enableAudio)
+	{
+    	Arts::QIOManager qiomanager;
+    	Arts::Dispatcher dispatcher(&qiomanager);
+    	g_soundServer = Arts::SimpleSoundServer::null();
+	}
 
     // start notify service
     KNotify notify;
@@ -239,12 +256,15 @@ bool KNotify::notifyBySound( const QString &sound )
 	soundFile = locate( "sound", sound );
 
     // Oh dear! we seem to have lost our connection to artsd!
-    if( !external && (g_soundServer.isNull() || g_soundServer.error()) )
+    if( enableAudio && !external && (g_soundServer.isNull() || g_soundServer.error()) )
         connectSoundServer();
 
     kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
     
     if (!external && !g_soundServer.isNull() && !g_soundServer.error()) {
+		if (!enableAudio)
+			return false;
+				
         // play sound finally
         g_soundServer.play( QFile::encodeName(soundFile).data() );
 
@@ -318,3 +338,16 @@ bool KNotify::isGlobal(const QString &eventname)
 {
     return d->globalEvents->hasGroup( eventname );
 }
+
+void KNotify::crashHandler(int)
+{
+	// try to save the fact knotify likes to crash...
+	char file[512];
+	sprintf(file, "%s/.knotify-noaudio", getenv("HOME"));
+	int fd=creat(file, O_RDWR);
+	close(fd);
+		
+	_exit(255);
+}
+
+
