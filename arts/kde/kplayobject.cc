@@ -109,9 +109,9 @@ PlayObject KPlayObject::object()
 
 bool KPlayObject::isNull()
 {
-	if (!this)
+	if(!this)
 		return true;
-	if (object().isNull())
+	if(object().isNull())
 		return true;
 	return false;
 }

@@ -33,29 +33,80 @@ public:
 	KPlayObject(Arts::PlayObject playobject, bool isStream);
 	~KPlayObject();
 
+	/**
+	  * Sets the internal Arts::PlayObject
+	  * to @playObject
+	  */
 	void setObject(Arts::PlayObject playObject);
+	
+	/**
+	  * Returns the internal Arts::PlayObject
+	  */
 	Arts::PlayObject object();
 
 	/**
-	 * return true if both this!=0, and object.isNull()
+	 * return true if both this != 0, and object.isNull()
 	 *
 	 * in essence, ((KPlayObject*)0)->isNull() will not 
 	 * crash
 	 **/
 	bool isNull();
 
-	bool stream();
+	/**
+	 * returns true if the internally playobject
+	 * is used to play a stream
+	 */
+    	bool stream();
 
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	void play();
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	void seek(Arts::poTime newTime);
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	void pause();
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
+	 
 	void halt();
 	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	QString description();
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	Arts::poTime currentTime();
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	Arts::poTime overallTime();
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	Arts::poCapabilities capabilities();
-	QString mediaName();
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
+	QString mediaName() const;
+	
+	/**
+	 * Reimplemented (Arts::PlayObject Wrapper)
+	 */
 	Arts::poState state();
 
 private:
