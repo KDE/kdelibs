@@ -6,7 +6,7 @@
 verbose=0
 set_name=0
 
-# check for esddsp options
+# check for artsdsp options
 while test $# -gt 0; do
 
     case "$1" in
@@ -18,7 +18,7 @@ while test $# -gt 0; do
 	    echo " "
 	    echo "options:"
 	    echo "-h, --help                show brief help"
-	    echo "-n, --name=NAME           use name to identify player to esd"
+	    echo "-n, --name=NAME           use name to identify player to artsd"
 	    echo "-v, --verbose             show parameters"
 	    exit 0
 	    ;;
@@ -47,7 +47,7 @@ while test $# -gt 0; do
 	    ;;
 
 	*)
-	    # no more esddsp options, get on with life
+	    # no more artsdsp options, get on with life
 	    break
 	    ;;
     esac
@@ -61,7 +61,7 @@ if test "$verbose" = 1; then
     echo "command line:  $@"
 fi
 
-# setup esd to hijack calls made to /dev/dsp
+# setup artsdsp preload to hijack calls made to /dev/dsp
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
