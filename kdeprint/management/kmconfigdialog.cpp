@@ -27,6 +27,7 @@
 #include "kmconfigcommand.h"
 #include "kmconfigfilter.h"
 #include "kmconfigfonts.h"
+#include "kmconfigjobs.h"
 
 #include <qlayout.h>
 #include <klocale.h>
@@ -42,6 +43,7 @@ KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 	addConfigPage(new KMConfigFonts(this));
 	addConfigPage(new KMConfigCommand(this));
 	addConfigPage(new KMConfigFilter(this));
+	addConfigPage(new KMConfigJobs(this));
 	KMFactory::self()->uiManager()->setupConfigDialog(this);
 
 	// initialize pages

@@ -33,7 +33,7 @@ KMLprJobManager::KMLprJobManager(QObject *parent, const char *name)
 	m_lpqhelper = new LpqHelper(this, "LpqHelper");
 }
 
-bool KMLprJobManager::listJobs(const QString& prname, JobType)
+bool KMLprJobManager::listJobs(const QString& prname, JobType, int)
 {
 	QPtrList<KMJob>	jobList;
 	jobList.setAutoDelete(false);

@@ -73,6 +73,7 @@ protected slots:
 	void slotShowPrinterMenu();
 	void slotUserOnly(bool);
 	void slotUserChanged();
+	void slotConfigure();
 
 protected:
 	void init();
@@ -92,6 +93,7 @@ protected:
 	void removeFromManager();
 	void buildPrinterMenu(QPopupMenu *menu, bool use_all = false);
 	void updateCaption();
+	void updateStatusBar();
 
 private:
 	KListView		*m_view;

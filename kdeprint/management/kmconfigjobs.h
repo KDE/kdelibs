@@ -17,28 +17,24 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMLPRJOBMANAGER_H
-#define KMLPRJOBMANAGER_H
+#ifndef KMCONFIGJOBS_H
+#define KMCONFIGJOBS_H
 
-#include "kmjobmanager.h"
+#include "kmconfigpage.h"
 
-class LpqHelper;
-class LpcHelper;
+class KIntNumInput;
 
-class KMLprJobManager : public KMJobManager
+class KMConfigJobs : public KMConfigPage
 {
+	Q_OBJECT
 public:
-	KMLprJobManager(QObject *parent = 0, const char *name = 0);
-	
-	int actions();
+	KMConfigJobs(QWidget *parent = 0, const char *name = 0);
 
-protected:
-	bool listJobs(const QString&, JobType, int = 0);
-	LpcHelper* lpcHelper();
-	bool sendCommandSystemJob(const QPtrList<KMJob>&, int, const QString& = QString::null);
+	void loadConfig(KConfig*);
+	void saveConfig(KConfig*);
 
 private:
-	LpqHelper	*m_lpqhelper;
+	KIntNumInput	*m_limit;
 };
 
 #endif

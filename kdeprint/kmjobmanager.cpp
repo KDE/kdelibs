@@ -26,6 +26,7 @@
 
 #include <kaction.h>
 #include <kdebug.h>
+#include <kconfig.h>
 
 KMJobManager::KMJobManager(QObject *parent, const char *name)
 : QObject(parent,name)
@@ -162,7 +163,7 @@ bool KMJobManager::sendCommandThreadJob(const QPtrList<KMJob>& jobs, int action,
 	return result;
 }
 
-bool KMJobManager::listJobs(const QString&, KMJobManager::JobType)
+bool KMJobManager::listJobs(const QString&, KMJobManager::JobType, int)
 {
 	return true;
 }
@@ -173,12 +174,13 @@ const QPtrList<KMJob>& KMJobManager::jobList(bool reload)
 	{
 		discardAllJobs();
 		QDictIterator<JobFilter>	it(m_filter);
+		int	joblimit = limit();
 		for (; it.current(); ++it)
 		{
 			if (it.current()->m_type[ActiveJobs] > 0)
-				listJobs(it.currentKey(), ActiveJobs);
+				listJobs(it.currentKey(), ActiveJobs, joblimit);
 			if (it.current()->m_type[CompletedJobs] > 0)
-				listJobs(it.currentKey(), CompletedJobs);
+				listJobs(it.currentKey(), CompletedJobs, joblimit);
 		}
 		m_threadjob->updateManager(this);
 		removeDiscardedJobs();
@@ -225,6 +227,20 @@ void KMJobManager::removePrinter(const QString& pr, KMJobManager::JobType type)
 bool KMJobManager::doPluginAction(int, const QPtrList<KMJob>&)
 {
 	return true;
+}
+
+void KMJobManager::setLimit(int val)
+{
+	KConfig *conf = KMFactory::self()->printConfig();
+	conf->setGroup("Jobs");
+	conf->writeEntry("Limit", val);
+}
+
+int KMJobManager::limit()
+{
+	KConfig	*conf = KMFactory::self()->printConfig();
+	conf->setGroup("Jobs");
+	return conf->readNumEntry("Limit", 0);
 }
 
 #include "kmjobmanager.moc"

@@ -106,7 +106,7 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 	return value;
 }
 
-bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType type)
+bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType type, int limit)
 {
 	IppRequest	req;
 	QString		uri("ipp://%1:%2/%3/%4");
@@ -147,6 +147,8 @@ bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType typ
 	req.addKeyword(IPP_TAG_OPERATION, "requested-attributes", keys);
 	if (type == KMJobManager::CompletedJobs)
 		req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QString::fromLatin1("completed"));
+	if (limit > 0)
+		req.addInteger(IPP_TAG_OPERATION,"limit",limit);
 
 	// send request
 	if (req.doRequest("/"))

@@ -53,6 +53,8 @@ public:
 	void removePrinter(const QString& pr, JobType type = ActiveJobs);
 	void clearFilter();
 	QDict<JobFilter>* filter();
+	int limit();
+	void setLimit(int val);
 
 	//KMJob* findJob(int ID);
 	KMJob* findJob(const QString& uri);
@@ -73,7 +75,7 @@ protected:
 	void removeDiscardedJobs();
 
 protected:
-	virtual bool listJobs(const QString& prname, JobType type);
+	virtual bool listJobs(const QString& prname, JobType type, int limit = 0);
 	virtual bool sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 	bool sendCommandThreadJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 

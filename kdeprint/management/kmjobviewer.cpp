@@ -28,8 +28,11 @@
 #include "kmuimanager.h"
 #include "jobitem.h"
 #include "kmtimer.h"
+#include "kmconfigjobs.h"
+#include "kmconfigpage.h"
 
 #include <klistview.h>
+#include <kstatusbar.h>
 #include <qpopupmenu.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -46,6 +49,7 @@
 #include <qlayout.h>
 #include <stdlib.h>
 #include <qlineedit.h>
+#include <kdialogbase.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -117,6 +121,18 @@ void KMJobViewer::updateCaption()
 	KWin::setIcons(winId(), DesktopIcon(pixname), SmallIcon(pixname));
 }
 
+void KMJobViewer::updateStatusBar()
+{
+	if (parentWidget())
+		return;
+
+	int	limit = m_manager->limit();
+	if (limit == 0)
+		statusBar()->changeItem(i18n("Max.: %1").arg(i18n("Unlimited")), 0);
+	else
+		statusBar()->changeItem(i18n("Max.: %1").arg(limit), 0);
+}
+
 void KMJobViewer::addToManager()
 {
 	if (m_prname == i18n("All Printers"))
@@ -162,6 +178,8 @@ void KMJobViewer::refresh(bool reload)
 
 	// update the caption and icon (doesn't do anything if it has a parent widget)
 	updateCaption();
+
+	updateStatusBar();
 
 	// do it last as this signal can cause this view to be destroyed. No
 	// code can be executed safely after that
@@ -263,9 +281,16 @@ void KMJobViewer::initActions()
 	{// stand-alone application
 		KStdAction::quit(kapp,SLOT(quit()),actionCollection());
 		KStdAction::close(this,SLOT(slotClose()),actionCollection());
+		KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection());
 
 		// refresh action
 		new KAction(i18n("Refresh"),"reload",0,this,SLOT(slotRefresh()),actionCollection(),"refresh");
+
+		// create status bar
+		KStatusBar	*statusbar = statusBar();
+		statusbar->insertItem(" " + i18n("Max.: %1").arg(i18n("Unlimited"))+ " ", 0, 0, true);
+		statusbar->setItemFixed(0);
+		updateStatusBar();
 
 		createGUI();
 	}
@@ -615,6 +640,26 @@ void KMJobViewer::slotUserChanged()
 		m_username = m_userfield->text();
 		refresh(false);
 	}
+}
+
+void KMJobViewer::slotConfigure()
+{
+	KMTimer::self()->hold();
+
+	KDialogBase	dlg(this, 0, true, i18n("Print jobs settings"), KDialogBase::Ok|KDialogBase::Cancel);
+	KMConfigJobs	*w = new KMConfigJobs(&dlg);
+	dlg.setMainWidget(w);
+	dlg.resize(300, 10);
+	KConfig	*conf = KMFactory::self()->printConfig();
+	w->loadConfig(conf);
+	if (dlg.exec())
+	{
+		w->saveConfig(conf);
+		updateStatusBar();
+		refresh(true);
+	}
+
+	KMTimer::self()->release();
 }
 
 #include "kmjobviewer.moc"

@@ -572,3 +572,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	  with LPRng. This should make printers created with KDEPrint
 	  work with gpr (from GNUlpr)
 	. added support for "bool" directives in Foomatic drivers
+
+23/05/2002 Michael Goffioul <goffioul@imec.be>
+  * job manager: added the possibility to control the username for jobs
+    filtering, and the possibility to limit the number of jobs shown.
