@@ -544,12 +544,15 @@ bool KShortcut::contains( const KKey& key ) const
 	return contains( KKeySequence(key) );
 }
 
-bool KShortcut::contains( const KKeyNative& key ) const
+bool KShortcut::contains( const KKeyNative& keyNative ) const
 {
+	KKey key = keyNative.key();
+	key.simplify();
+	
 	for( uint i = 0; i < count(); i++ ) {
 		if( !m_rgseq[i].isNull()
 		    && m_rgseq[i].count() == 1
-		    && KKeyNative(m_rgseq[i].key(0)) == key )
+		    && m_rgseq[i].key(0) == key )
 			return true;
 	}
 	return false;
