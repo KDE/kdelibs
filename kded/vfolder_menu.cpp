@@ -299,7 +299,7 @@ VFolderMenu::insertService(SubMenu *parentMenu, const QString &name, KService *n
 }
 
 
-VFolderMenu::VFolderMenu() : m_usedAppsDict(797)
+VFolderMenu::VFolderMenu() : m_usedAppsDict(797), m_track(false)
 {
    m_rootMenu = 0;
    initDirs();
