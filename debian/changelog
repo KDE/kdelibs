@@ -1,3 +1,16 @@
+kdelibs (4:3.1.2-2) unstable; urgency=low
+
+  * Add xlibs-pic to kdelibs-dev Depends. (Closes: #193863)
+  * Add libssl-dev to kdelibs-dev Depends. (Closes: #180542)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Mon, 19 May 2003 12:00:00 -0500
+
+kdelibs (4:3.1.2-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #185697, #192616, #192931)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Sun, 18 May 2003 01:00:00 -0500
+
 kdelibs (4:3.1.1-1) unstable; urgency=low
 
   * New upstream release. (Closes: #181547, #181870)

@@ -1,0 +1,21 @@
+diff -Nru kdelibs.old/admin/acinclude.m4.in kdelibs.new/admin/acinclude.m4.in
+--- kdelibs.old/admin/acinclude.m4.in	2003-05-16 20:25:06.000000000 -0500
++++ kdelibs.new/admin/acinclude.m4.in	2003-05-18 01:39:22.000000000 -0500
+@@ -975,7 +975,7 @@
+ kde_save_LIBS="$LIBS"
+ LDFLAGS="$LDFLAGS $X_LDFLAGS $USER_LDFLAGS"
+ CFLAGS="$CFLAGS -I$x_includes"
+-LIBS="-lXinerama -lXext"
++LIBS="-lXinerama_pic -lXext"
+ 
+ if test "x$no_xinerama" = "xno"; then
+ 
+@@ -997,7 +997,7 @@
+ 
+ if test "$ac_cv_have_xinerama" = "yes"; then
+   AC_DEFINE(HAVE_XINERAMA, 1, [Define if you want Xinerama support])
+-  LIBXINERAMA="-lXinerama"
++  LIBXINERAMA="-lXinerama_pic"
+ fi
+ 
+ AC_SUBST(LIBXINERAMA)
