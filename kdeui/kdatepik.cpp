@@ -48,9 +48,25 @@
 
 #include "kdatetbl.h"
 
+// Mirko, Feb 25 1998:
+extern "C" {
+#include "arrow_left.xbm"
+#include "arrow_right.xbm"
+	   }
+#include <qbitmap.h>
+// ^^^^^^^^^^^^^^^^^^^
+
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
        :QFrame(parent,name)
 {
+  // Mirko: added Feb 25 1998
+  QBitmap left // a left arrow, 32 Bytes
+    (arrow_left_width, arrow_left_height, 
+     (const unsigned char*)arrow_left_bits, true);
+  QBitmap right // a right arrow, 32 Bytes
+    (arrow_right_width, arrow_right_height, 
+     (const unsigned char*)arrow_right_bits, true);
+  // ^^^^^^^^^^^^^^^^^^^^^^^^
    initMetaObject();
    
    QDate dNow = QDate::currentDate();
@@ -62,8 +78,12 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
    
    m_tbl = new KDateTable(this, dt);
    m_footer = new QLabel((const char*)sNow, this);
-   m_back = new QPushButton("<-", this);
-   m_forward = new QPushButton("->", this);
+   // Mirko: changed Feb 25 1998
+   m_back = new QPushButton(this);
+   m_back->setPixmap(left);
+   m_forward = new QPushButton(this);
+   m_forward->setPixmap(right);
+   // ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
    switch(style()) {
     case WindowsStyle:
@@ -125,16 +145,36 @@ void KDatePicker::sizeElements()
 		      rec.y()+2*th,
 		      rec.width(),
 		      rec.height()-3*th);
-   
-   m_back->setGeometry(rec.x()+5,
-		       rec.y()+10,
-		       20,
-		       15);
-   
-   m_forward->setGeometry(rec.right()-5-20+1,
-			  rec.y()+10,
-			  20,
-			  15);
+   /* Mirko: changed Feb 25 1998
+    * - assumes that both bitmaps have equal height
+    *   buttons are set to a max height and width of 22, 
+    *   that is the height of the arrow 
+    *   plus 3 pixels in x and y direction
+    * - the consts should be optimized out by the 
+    *   compiler
+    */
+   const int PreferredButtonSize=22;
+   const int MinimumFrameAroundButtons=2;
+   int buttonSize;
+   int spacing;
+   const int roomLeft=2*th-2*MinimumFrameAroundButtons;
+   if(roomLeft>PreferredButtonSize)
+     {
+       spacing=(2*th-PreferredButtonSize)/2;
+       buttonSize=PreferredButtonSize;
+     } else { // the widget is smaller
+       spacing=2; 
+       buttonSize=2*th-2*MinimumFrameAroundButtons;
+     }
+   m_back->setGeometry(rec.x()+spacing,
+		       rec.y()+spacing,
+		       buttonSize,
+		       buttonSize);
+   m_forward->setGeometry(rec.right()-spacing-buttonSize,
+			  rec.y()+spacing,
+			  buttonSize,
+			  buttonSize);
+   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 }
 
 void KDatePicker::updateHeader(QDate dt)
