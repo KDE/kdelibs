@@ -1329,8 +1329,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    else
 			viewportMouseDoubleClickEvent(&me2);
 		    //block = me2.isAccepted();
-                    block = true;
-		}
+                }
+                block = true;
 		break;
 	    }
 	    default:
