@@ -1463,7 +1463,9 @@ bool HTTPProtocol::readHeader()
     }
     // In fact we should do redirection only if we got redirection code
     else if (strncasecmp(buffer, "Location:", 9) == 0 ) {
-      locationStr = trimLead(buffer+9);
+      // Redirect only for 3xx status code, will ya! Thanks, pal!
+      if ( m_responseCode > 299 && m_responseCode < 400 )
+        locationStr = trimLead(buffer+9);
     }
 
     // Check for cookies
