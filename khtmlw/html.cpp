@@ -3004,9 +3004,8 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    {
 		if ( *(token + 7 ) == '#' )
 		{
-		    KURL u( actualURL );
-		    u.setReference( token + 8 );
-                    usemap = u.url();
+		    // Local map. Format: "#name"
+                    usemap = token + 7;
 		}
 		else
 		{
