@@ -61,6 +61,8 @@ extern "C" {
 
 #include "kio/observer.h"
 
+#include "kssl/ksslcsessioncache.h"
+
 #include <kdirnotify_stub.h>
 #include <ktempfile.h>
 #include <dcopclient.h>
@@ -473,6 +475,10 @@ void SimpleJob::start(Slave *slave)
        addMetaData("window-id", id.setNum(m_window->winId()));
     }
 
+    QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);
+    if (sslSession != QString::null)
+	addMetaData("ssl_session_id", sslSession);
+
     if (!m_outgoingMetaData.isEmpty())
     {
        KIO_ARGS << m_outgoingMetaData;
@@ -590,6 +596,15 @@ void SimpleJob::slotSpeed( unsigned long bytes_per_second )
 void SimpleJob::slotMetaData( const KIO::MetaData &_metaData)
 {
     m_incomingMetaData += _metaData;
+}
+
+void SimpleJob::storeSSLSessionFromJob(const KURL &m_redirectionURL) {
+    QString sslSession = queryMetaData("ssl_session_id");
+
+    if (sslSession != QString::null) {
+	const KURL &queryURL = m_redirectionURL.isEmpty()?m_url:m_redirectionURL;
+	KSSLCSessionCache::putSessionForURL(queryURL, sslSession);
+    }
 }
 
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
@@ -718,6 +733,11 @@ void StatJob::slotFinished()
         slaveDone();
         Scheduler::doJob(this);
     }
+}
+
+void StatJob::slotMetaData( const KIO::MetaData &_metaData) {
+    SimpleJob::slotMetaData(_metaData);
+    storeSSLSessionFromJob(m_redirectionURL);
 }
 
 StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
@@ -1015,6 +1035,11 @@ void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
     staticData = data;
     m_subJob->suspend(); // Put job on hold until we have delivered the data.
     resume(); // Activate ourselves again.
+}
+
+void TransferJob::slotMetaData( const KIO::MetaData &_metaData) {
+    SimpleJob::slotMetaData(_metaData);
+    storeSSLSessionFromJob(m_redirectionURL);
 }
 
 void TransferJob::slotErrorPage()
@@ -1802,6 +1827,11 @@ void ListJob::slotFinished()
         slaveDone();
         Scheduler::doJob(this);
     }
+}
+
+void ListJob::slotMetaData( const KIO::MetaData &_metaData) {
+    SimpleJob::slotMetaData(_metaData);
+    storeSSLSessionFromJob(m_redirectionURL);
 }
 
 ListJob *KIO::listDir( const KURL& url, bool showProgressInfo, bool includeHidden )

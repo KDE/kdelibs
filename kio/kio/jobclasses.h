@@ -601,6 +601,14 @@ namespace KIO {
         KIO::filesize_t m_totalSize;
     protected:
 	virtual void virtual_hook( int id, void* data );
+	/*
+	 * Allow jobs that inherit SimpleJob and are aware
+	 * of redirections to store the SSL session used.
+	 * Retrieval is handled by SimpleJob::start
+	 * @param m_redirectionURL Reference to redirection URL,
+	 * used instead of m_url if not empty
+	 */
+	void storeSSLSessionFromJob(const KURL &m_redirectionURL);
     private:
 	class SimpleJobPrivate* d;
     };
@@ -682,6 +690,7 @@ namespace KIO {
         void slotStatEntry( const KIO::UDSEntry & entry );
         void slotRedirection( const KURL &url);
         virtual void slotFinished();
+        virtual void slotMetaData( const KIO::MetaData &_metaData);
 
     protected:
         UDSEntry m_statResult;
@@ -862,6 +871,7 @@ namespace KIO {
         virtual void slotMimetype( const QString &mimetype );
         virtual void slotNeedSubURLData();
         virtual void slotSubURLData(KIO::Job*, const QByteArray &);
+        virtual void slotMetaData( const KIO::MetaData &_metaData);
         void slotErrorPage();
         void slotCanResume( KIO::filesize_t offset );
         void slotPostRedirection();
@@ -1190,6 +1200,7 @@ namespace KIO {
 
     protected slots:
         virtual void slotFinished( );
+        virtual void slotMetaData( const KIO::MetaData &_metaData);
         virtual void slotResult( KIO::Job *job );
         void slotListEntries( const KIO::UDSEntryList& list );
         void slotRedirection( const KURL &url );
