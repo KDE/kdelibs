@@ -199,7 +199,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo> & plugininfos,
 			item->setText( 1, ( *it ).comment() );
 			item->setText( 2, ( *it ).author()  );
 			item->setText( 3, ( *it ).version() );
-			item->setText( 3, ( *it ).license() );
+			item->setText( 4, ( *it ).license() );
 			item->setOn( ( *it ).pluginEnabled() );
 			d->pluginInfoMap.insert( item, *it );
 		}
