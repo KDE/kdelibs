@@ -500,6 +500,7 @@ KCmdLineArgs::parseAllArgs()
             exit(0);
          } else if ( (strcmp(option, "license") == 0) )
          {
+            enable_i18n();
             printQ( about->license() );
             printQ( "\n" );
             exit(0);
