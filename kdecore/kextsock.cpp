@@ -108,6 +108,7 @@ public:
   QSocketNotifier *qsnIn, *qsnOut;
   int inMaxSize, outMaxSize;
   bool emitRead, emitWrite;
+  bool addressReusable;
 
   KExtendedSocketLookup *dns, *dnsLocal;
 
@@ -116,7 +117,7 @@ public:
     host(QString::null), service(QString::null), localhost(QString::null), localservice(QString::null),
     resolution(0), bindres(0), current(0), local(0), peer(0),
     qsnIn(0), qsnOut(0), inMaxSize(-1), outMaxSize(-1), emitRead(false), emitWrite(false),
-    dns(0), dnsLocal(0)
+    addressReusable(false), dns(0), dnsLocal(0)
   {
     timeout.tv_sec = timeout.tv_usec = 0;
   }
@@ -724,19 +725,30 @@ bool KExtendedSocket::blockingMode()
 bool KExtendedSocket::setAddressReusable(bool enable)
 {
   cleanError();
+  d->addressReusable = enable;
   if (d->status < created)
-    return false;
+    return true;
 
   if (sockfd == -1)
-    return false;		// error!
+    return true;
 
-  int on = (int)enable;		// just to be on the safe side
-
-  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) == -1)
+  if (!setAddressReusable(sockfd, enable))
     {
       setError(IO_UnspecifiedError, errno);
       return false;
     }
+  return true;
+}
+
+bool KExtendedSocket::setAddressReusable(int fd, bool enable)
+{
+  if (fd == -1)
+    return false;
+
+  int on = (int)enable;		// just to be on the safe side
+
+  if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) == -1)
+    return false;
   return true;
 }
 
@@ -747,10 +759,10 @@ bool KExtendedSocket::addressReusable()
 {
   cleanError();
   if (d->status < created)
-    return false;
+    return d->addressReusable;
 
   if (sockfd == -1)
-    return false;
+    return d->addressReusable;
 
   int on;
   socklen_t onsiz = sizeof(on);
@@ -1067,6 +1079,8 @@ int KExtendedSocket::listen(int N)
 	  continue;
 	}
 
+      if (d->addressReusable)
+	setAddressReusable(sockfd, true);
       if (KSocks::self()->bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	{
 	  kdDebug(170) << "Failed to bind: " << perror << endl;
@@ -1243,6 +1257,8 @@ int KExtendedSocket::connect()
 	  setError(IO_ConnectError, errno);
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
 	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
 	      kdDebug(170) << "Bind failed: " << perror << endl;
@@ -2039,6 +2055,8 @@ void KExtendedSocket::connectionEvent()
 	  errcode = errno;
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
 	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
 	      ::close(sockfd);
