@@ -702,19 +702,29 @@ void RenderPartObject::layout( )
 
 void RenderPartObject::slotViewCleared()
 {
-  if(m_widget->inherits("QScrollView") && m_obj->id() == ID_IFRAME) {
+  if(m_widget->inherits("QScrollView") ) {
       kdDebug(6031) << "iframe is a scrollview!" << endl;
       QScrollView *view = static_cast<QScrollView *>(m_widget);
-      HTMLIFrameElementImpl *m_frame = static_cast<HTMLIFrameElementImpl *>(m_obj);
-      if(!m_frame->frameBorder)
-          view->setFrameStyle(QFrame::NoFrame);
-      view->setVScrollBarMode(m_frame->scrolling);
-      view->setHScrollBarMode(m_frame->scrolling);
+      int frameStyle = QFrame::NoFrame;
+      QScrollView::ScrollBarMode scroll = QScrollView::Auto;
+      int marginw = 0;
+      int marginh = 0;
+      if ( m_obj->id() == ID_IFRAME) {
+	  HTMLIFrameElementImpl *m_frame = static_cast<HTMLIFrameElementImpl *>(m_obj);
+	  if(m_frame->frameBorder)
+	      frameStyle = QFrame::Box;
+	  scroll = m_frame->scrolling;
+	  marginw = m_frame->marginWidth;
+	  marginh = m_frame->marginHeight;
+      }
+      view->setFrameStyle(QFrame::NoFrame);
+      view->setVScrollBarMode(scroll);
+      view->setHScrollBarMode(scroll);
       if(view->inherits("KHTMLView")) {
           kdDebug(6031) << "frame is a KHTMLview!" << endl;
           KHTMLView *htmlView = static_cast<KHTMLView *>(view);
-          if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
-          if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
+          if(marginw != -1) htmlView->setMarginWidth(marginw);
+          if(marginh != -1) htmlView->setMarginHeight(marginh);
         }
   }
 }
