@@ -52,6 +52,7 @@ public:
 
 private slots:
 	void slotData(KIO::Job *, const QByteArray &);
+	void slotResult(KIO::Job *);
 
 private:
 	KURL m_url;

@@ -27,6 +27,7 @@ using namespace Arts;
 
 KIOInputStream_impl::KIOInputStream_impl()
 {
+	m_job = 0;
 	m_finished = false;
 }
 
@@ -36,13 +37,20 @@ KIOInputStream_impl::~KIOInputStream_impl()
 
 void KIOInputStream_impl::streamStart()
 {
+	if(m_job != 0)
+		m_job->kill();
 	m_job = KIO::get(m_url, false, true);
 	QObject::connect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
-	                this, SLOT(slotData(KIO::Job *, const QByteArray &)));		     
+				  this, SLOT(slotData(KIO::Job *, const QByteArray &)));		     
+	QObject::connect(m_job, SIGNAL(result(KIO::Job *)),
+				  this, SLOT(slotResult(KIO::Job *)));		     
+	
 }
 
 void KIOInputStream_impl::streamEnd()
 {
+	if(m_job == 0)
+		return;
 	QObject::disconnect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
 	                   this, SLOT(slotData(KIO::Job *, const QByteArray &)));
 	
@@ -62,6 +70,11 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 	m_sendqueue.push(packet);
 
 	processQueue();
+}
+
+void KIOInputStream_impl::slotResult(KIO::Job *)
+{
+	m_job = 0;
 }
 
 bool KIOInputStream_impl::eof()
