@@ -28,6 +28,7 @@
 
 #include <qpaintdevicemetrics.h>
 #include <qfile.h>
+#include <qtl.h>
 #include <kapp.h>
 #include <kstddirs.h>
 #include <kglobal.h>
@@ -247,6 +248,82 @@ dumpOptions(m_options);
 void KPrinter::finishPrinting()
 {
 	m_ready = false;
+}
+
+QValueList<int> KPrinter::pageList() const
+{
+	QValueList<int>	list;
+	int	mp(minPage()), MP(maxPage());
+	if (mp > 0 && MP > 0 && MP >= mp)
+	{ // do something only if bounds specified
+		if (option("kde-current") == "1")
+		{ // print only current page
+			int	pp = currentPage();
+			if (pp >= mp && pp <= MP) list.append(pp);
+		}
+		else
+		{
+			// process range specification
+			if (!option("kde-range").isEmpty())
+			{
+				QStringList	ranges = QStringList::split(',',option("kde-range"),false);
+				// use a temporary map to insure uniqueness of pages.
+				QMap<int,int>	pages;
+				for (QStringList::ConstIterator it=ranges.begin();it!=ranges.end();++it)
+				{
+					int	p = (*it).find('-');
+					bool	ok;
+					if (p == -1)
+					{
+						int	pp = (*it).toInt(&ok);
+						if (ok && pp >= mp && pp <= MP)
+							pages[pp] = 1;
+					}
+					else
+					{
+						int	p1(0), p2(0);
+						p1 = (*it).left(p).toInt(&ok);
+						if (ok) p2 = (*it).right((*it).length()-p-1).toInt(&ok);
+						if (ok && p1 <= p2)
+						{
+							// clip to min/max
+							p1 = QMAX(mp,p1);
+							p2 = QMIN(MP,p2);
+							for (int i=p1;i<=p2;i++)
+								pages[i] = 1;
+						}
+					}
+				}
+				// translate the map into the list
+				for (QMap<int,int>::ConstIterator it=pages.begin();it!=pages.end();++it)
+					list.append(it.key());
+				// sort the list
+				qHeapSort(list);
+			}
+			else
+			{ // add all pages between min and max
+				for (int i=mp;i<=MP;i++) list.append(i);
+			}
+
+			// revert the list if needed
+			if (pageOrder() == LastPageFirst)
+			{
+				for (uint i=0;i<(list.count()/2);i++)
+					qSwap(list[i],list[list.count()-1-i]);
+			}
+
+			// select page set if needed
+			if (pageSet() != AllPages)
+			{
+				bool	keepEven = (pageSet() == EvenPages);
+				for (QValueList<int>::Iterator it=list.begin();it!=list.end();)
+					if ((((*it) % 2) != 0 && keepEven) ||
+					    (((*it) % 2) == 0 && !keepEven)) it = list.remove(it);
+					else ++it;
+			}
+		}
+	}
+	return list;
 }
 
 //**************************************************************************************
@@ -517,8 +594,11 @@ KPrinter::PageSize KPrinter::pageSize() const
 KPrinter::PageSetType KPrinter::pageSet() const
 { return (option("kde-pageset").isEmpty() ? AllPages : (PageSetType)(option("kde-pageset").toInt())); }
 
-bool KPrinter::currentPage() const
-{ return (option("kde-current") == "1"); }
+int KPrinter::currentPage() const
+{ return (option("kde-currentpage").isEmpty() ? 0 : option("kde-currentpage").toInt()); }
+
+void KPrinter::setCurrentPage(int p)
+{ setOption("kde-currentpage",QString::number(p)); }
 
 QString KPrinter::printerName() const
 { return m_printername; }

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -43,6 +43,7 @@ public:
 	void setFlags(int f);
 	void setDialogPages(QList<KPrintDialogPage> *pages);
 	void initialize(KPrinter*);
+	KPrinter* printer() const;
 
 	static bool printerSetup(KPrinter*, QWidget*);
 
@@ -68,5 +69,8 @@ protected:
 	QList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;
 };
+
+inline KPrinter* KPrintDialog::printer() const
+{ return m_printer; }
 
 #endif

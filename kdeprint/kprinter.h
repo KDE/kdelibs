@@ -27,6 +27,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qvaluelist.h>
 
 //**************************************************************************************
 // KPrinterWrapper class
@@ -146,13 +147,15 @@ public:
 	void setPrintProgram(const QString&);
 	QString printerSelectionOption() const;
 	void setPrinterSelectionOption(const QString&);
-	bool currentPage() const;
+	int currentPage() const;
+	void setCurrentPage(int p = 0);
 	PageSetType pageSet() const;
 	bool setup(QWidget *parent = 0);
 	QSize margins() const;
 	void setMargins(QSize m);
 	QSize realPageSize() const;
 	void setRealPageSize(QSize p);
+	QValueList<int> pageList() const;
 
 	KPrinterImpl* implementation() const;
 	bool printFiles(const QStringList&);

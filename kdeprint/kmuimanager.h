@@ -72,7 +72,7 @@ public:
 	int pageSelection() const 				{ return m_pageselection; }
 	void setApplicationType(KPrinter::ApplicationType t);
 	int applicationType() const 				{ return m_applicationtype; }
-	int copyFlags()						{ return (m_pageselection == KPrinter::SystemSide ? m_copyflags : KMUiManager::CopyAll); }
+	int copyFlags(KPrinter *pr = 0);
 	void setupPrintDialog(KPrintDialog*);
 
 	// printer property dialog

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -127,6 +127,10 @@ void KPCopiesPage::setFlags(int f)
 	m_collate->setEnabled((f & KMUiManager::Collate));
 	m_order->setEnabled((f & KMUiManager::Order));
 	m_pageset->setEnabled((f & KMUiManager::PageSet));
+
+	// by default, if collate disabled, set it to true
+	m_collate->setChecked(!m_collate->isEnabled());
+	slotCollateClicked();
 }
 
 void KPCopiesPage::setOptions(const QMap<QString,QString>& options)

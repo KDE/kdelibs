@@ -65,6 +65,23 @@ void KMUiManager::setApplicationType(KPrinter::ApplicationType t)
 	m_applicationtype = t;
 }
 
+int KMUiManager::copyFlags(KPrinter *pr)
+{
+	int	fl(0);
+	if (m_pageselection == KPrinter::ApplicationSide)
+	{
+		if (pr)
+		{
+			if (pr->currentPage() > 0) fl |= Current;
+			if (pr->minPage() > 0 && pr->maxPage() > 0)
+				fl |= (Range|PageSet|Order);
+		}
+		else fl = CopyAll;
+	}
+	else fl = m_copyflags;
+	return fl;
+}
+
 void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 {
 	// dialog flags
@@ -77,7 +94,7 @@ void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 	if (m_printdialogstd & KPrinter::CopiesPage)
 	{
 		KPCopiesPage	*cp = new KPCopiesPage(0,"CopiesPage");
-		cp->setFlags(copyFlags());
+		cp->setFlags(copyFlags(dlg->printer()));
 		m_printdialogpages.insert(0,cp);
 	}
 	dlg->setDialogPages(&m_printdialogpages);
