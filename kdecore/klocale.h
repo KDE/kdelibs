@@ -939,7 +939,7 @@ private:
   /**
    * @deprecated
    *
-   * Returns a string containing the name of the month name.
+   * Returns a string containing the name of the month name used in the Gregorian calendar.
    *
    * @param i the month number of the year starting at 1/January.
    * @param shortName we will return the short version of the string.
@@ -951,7 +951,7 @@ private:
   /**
    * @deprecated
    *
-   * Returns a string containing the possessive form of the month name.
+   * Returns a string containing the possessive form of the month name used in the Gregorian calendar.
    * ("of January", "of February", etc.)
    * It's needed in long format dates in some languages.
    *
@@ -966,7 +966,7 @@ private:
   /**
    * @deprecated
    *
-   * Returns a string containing the name of the week day.
+   * Returns a string containing the name of the week day used in the Gregorian calendar.
    *
    * @param i the day number of the week starting at 1/Monday.
    * @param shortName we will return the short version of the string.
