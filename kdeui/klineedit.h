@@ -271,6 +271,10 @@ public:
      */
     virtual void setCompletionObject( KCompletion *, bool hsig = true );
 
+    /**
+     * Reimplemented for internal reasons, the API is not affected.
+     */
+    virtual void copy() const;
 
 signals:
 
@@ -370,6 +374,12 @@ public slots:
      * (changing the clipboard to the text we just had in the lineedit)
      */
     virtual void clear();
+    
+    /**
+     * Squeezes @p text into the line edit. 
+     * This can only be used with read-only line-edits.
+     */
+    void setSqueezedText( const QString &text);
 
 protected slots:
 
@@ -390,6 +400,13 @@ protected slots:
     void slotCancelled() {}
 
 protected:
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See @ref QLineEdit::resizeEvent().
+    */
+    virtual void resizeEvent( QResizeEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.

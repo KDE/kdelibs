@@ -27,7 +27,7 @@
 
 #include <qclipboard.h>
 #include <qtimer.h>
-
+#include <qtooltip.h>
 #include <kcursor.h>
 #include <klocale.h>
 #include <kstdaccel.h>
@@ -59,6 +59,9 @@ public:
     bool grabReturnKeyEvents;
     bool handleURLDrops;
     KCompletionBox *completionBox;
+    QString squeezedText;
+    int squeezedStart;
+    int squeezedEnd;
 };
 
 
@@ -183,10 +186,128 @@ void KLineEdit::setReadOnly(bool readOnly)
         QColor color = p.color(QPalette::Normal, QColorGroup::Base);
         p.setColor(QColorGroup::Base, color);
         p.setColor(QColorGroup::Background, color);
+        if (!d->squeezedText.isEmpty())
+        {
+           setText(d->squeezedText);
+           d->squeezedText = QString::null;
+        }
     }
     setPalette(p);
 
     QLineEdit::setReadOnly (readOnly);
+}
+
+void KLineEdit::setSqueezedText( const QString &text)
+{
+    if (isReadOnly())
+    {
+        d->squeezedText = text;
+        d->squeezedStart = 0;
+        d->squeezedEnd = 0;
+        if (isVisible())
+        {
+            QResizeEvent ev(size(), size());
+            resizeEvent(&ev);
+        }
+    }
+    else
+    {
+        setText(text);
+    }
+}
+
+void KLineEdit::copy() const
+{
+   if (!d->squeezedText.isEmpty() && d->squeezedStart)
+   {
+      int start, end;
+      KLineEdit *that = const_cast<KLineEdit *>(this);
+      if (!that->getSelection(&start, &end))
+         return;
+      if (start >= d->squeezedStart+3)
+         start = start - 3 - d->squeezedStart + d->squeezedEnd;
+      else if (start > d->squeezedStart)
+         start = d->squeezedStart;
+      if (end >= d->squeezedStart+3)
+         end = end - 3 - d->squeezedStart + d->squeezedEnd;
+      else if (end > d->squeezedStart)
+         end = d->squeezedEnd;
+      if (start == end) 
+         return;
+      QString t = d->squeezedText;
+      t = t.mid(start, end - start);
+      disconnect( QApplication::clipboard(), SIGNAL(selectionChanged()), this, 0);
+      QApplication::clipboard()->setText( t );
+      connect( QApplication::clipboard(), SIGNAL(selectionChanged()),
+	 this, SLOT(clipboardChanged()) );
+   }
+   else
+   {
+      QLineEdit::copy();
+   }
+}
+
+void KLineEdit::resizeEvent( QResizeEvent * ev )
+{
+    if (!d->squeezedText.isEmpty())
+    {
+       d->squeezedStart = 0;
+       d->squeezedEnd = 0;
+       QString fullText = d->squeezedText;
+       QFontMetrics fm(fontMetrics());
+       int labelWidth = size().width() - 2*frameWidth() - 2;
+       int textWidth = fm.width(fullText);
+       if (textWidth > labelWidth) {
+          // start with the dots only
+          QString squeezedText = "...";
+          int squeezedWidth = fm.width(squeezedText);
+
+          // estimate how many letters we can add to the dots on both sides
+          int letters = fullText.length() * (labelWidth - squeezedWidth) / textWidth / 2;
+          squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+          squeezedWidth = fm.width(squeezedText);
+
+          if (squeezedWidth < labelWidth) {
+             // we estimated too short
+             // add letters while text < label
+             do {
+                letters++;
+                squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+                squeezedWidth = fm.width(squeezedText);
+             } while (squeezedWidth < labelWidth);
+             letters--;
+             squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+          } else if (squeezedWidth > labelWidth) {
+             // we estimated too long
+             // remove letters while text > label
+             do {
+               letters--;
+                squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+                squeezedWidth = fm.width(squeezedText);
+             } while (squeezedWidth > labelWidth);
+          }
+
+          if (letters < 5) {
+             // too few letters added -> we give up squeezing
+             setText(fullText);
+          } else {
+             setText(squeezedText);
+             d->squeezedStart = letters;
+             d->squeezedEnd = fullText.length() - letters;
+          }
+
+          QToolTip::remove( this );
+          QToolTip::add( this, fullText );
+
+       } else {
+          setText(fullText);
+
+          QToolTip::remove( this );
+          QToolTip::hide();
+       }
+       setCursorPosition(0);
+    }
+    QLineEdit::resizeEvent(ev);
 }
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
