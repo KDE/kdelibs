@@ -27,12 +27,12 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS) -UQT_NO_COMPAT
 kde_module_LTLIBRARIES = kjs_html.la
 
 noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
-	kjs_text.h kjs_binding.h kjs_proxy.h kjs_css.h kjs_range.h \
+	kjs_binding.h kjs_proxy.h kjs_css.h kjs_range.h \
 	kjs_traversal.h kjs_events.h kjs_views.h kjs_debugwin.h
 
 # HTML module
 kjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
-	kjs_navigator.cpp kjs_text.cpp kjs_proxy.cpp \
+	kjs_navigator.cpp kjs_proxy.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
 	kjs_views.cpp kjs_debugwin.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
@@ -47,7 +47,6 @@ hashtables:
 	../../kjs/create_hash_table kjs_events.cpp > kjs_events.lut.h; \
 	../../kjs/create_hash_table kjs_navigator.cpp > kjs_navigator.lut.h; \
 	../../kjs/create_hash_table kjs_range.cpp > kjs_range.lut.h; \
-	../../kjs/create_hash_table kjs_text.cpp > kjs_text.lut.h; \
 	../../kjs/create_hash_table kjs_traversal.cpp > kjs_traversal.lut.h; \
 	../../kjs/create_hash_table kjs_views.cpp > kjs_views.lut.h; \
 	../../kjs/create_hash_table kjs_window.cpp > kjs_window.lut.h
