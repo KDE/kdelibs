@@ -170,7 +170,6 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   if (!rFile.isOpen()) // come back, if you have real work for us ;->
     return;
 
-  debug("parse file %s", rFile.name().ascii());
   QString aCurrentLine;
   QString aCurrentGroup;
 
@@ -285,7 +284,6 @@ void KConfigINIBackEnd::sync(bool bMerge)
 bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 					bool bMerge)
 {
-  debug("writeConfig %s", rConfigFile.name().ascii());
   KEntryMap aTempMap;
   bool bEntriesLeft = false;
 
