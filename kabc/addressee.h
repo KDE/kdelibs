@@ -772,14 +772,14 @@ class Addressee
     Resource *resource() const;
   
     /**
-      Mark addressee as changed.
-     */
+	    Mark addressee as changed.
+	   */
     void setChanged( bool value );
 
-    /**
-      Return whether the addressee is changed.
-     */
-    bool changed() const;
+  	/**
+	    Return whether the addressee is changed.
+	   */
+	  bool changed() const;
 
   private:
     Addressee copy();

@@ -250,7 +250,7 @@ class Addressee
     Address findAddress( const QString &id ) const;
 
     /**
-      Insert category. If the category already exists it is not dulicated.
+      Insert category. If the category already exists it is not duplicated.
      */
     void insertCategory( const QString & );
 
@@ -277,7 +277,7 @@ class Addressee
     /**
       Insert custom entry. The entry is identified by the name of the inserting
       application and a unique name. If an entry with the given app and name
-      already exists its value is replaced with the ne given value.
+      already exists its value is replaced with the new given value.
      */
     void insertCustom( const QString &app, const QString &name,
                        const QString &value );
