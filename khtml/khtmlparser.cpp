@@ -107,6 +107,20 @@ QString toRoman( int number, bool upper )
     return roman;
 }
 
+void setNamedColor(QColor &color, const char *name)
+{
+    if ((*name != '#') && (strlen(name) == 6))
+    {
+        QString col("#");
+        col += name;
+        color.setNamedColor(col.data());
+    }
+    else
+    {
+        color.setNamedColor(name);
+    }
+}
+
 //----------------------------------------------------------------------------
 
 //
@@ -1215,17 +1229,8 @@ void KHTMLParser::parseTagBody(void)
     {
 	if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
 	{
-            QColor bgColor;
-	    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-	    {
-	        QString col = "#";
-	        col += token+8;
-	        bgColor.setNamedColor( col );
-	    }
-	    else
-	    {
-	        bgColor.setNamedColor( token+8 );
-	    }
+	    QColor bgColor;
+	    setNamedColor( bgColor, token+8 );
 	    HTMLWidget->setBGColor( bgColor );
 	}
 	else if ( strncasecmp( token, "background=", 11 ) == 0 )
@@ -1234,17 +1239,17 @@ void KHTMLParser::parseTagBody(void)
         }
 	else if ( strncasecmp( token, "text=", 5 ) == 0 )
 	{
-	    settings->fontBaseColor.setNamedColor( token+5 );
+	    setNamedColor( settings->fontBaseColor, token+5 );
 	    currentStyle->font.color = settings->fontBaseColor;
 	    setFont();
 	}
 	else if ( strncasecmp( token, "link=", 5 ) == 0 )
 	{
-	    settings->linkColor.setNamedColor( token+5 );
+	    setNamedColor( settings->linkColor, token+5 );
 	}
 	else if ( strncasecmp( token, "vlink=", 6 ) == 0 )
 	{
-	    settings->vLinkColor.setNamedColor( token+6 );
+	    setNamedColor( settings->vLinkColor, token+6 );
 	}
     }
 }
@@ -1507,16 +1512,7 @@ void KHTMLParser::parseTagFont(void)
 	}
 	else if ( strncasecmp( token, "color=", 6 ) == 0 )
 	{
-	    if ( *(token+6) != '#' && strlen( token+6 ) == 6 )
-	    {
-                QString col = "#";
-		col += token+6;
-		currentStyle->font.color.setNamedColor( col );
-	    }
-	    else
-	    {
-   	        currentStyle->font.color.setNamedColor( token+6 );
-   	    }
+            setNamedColor( currentStyle->font.color, token+6 );
 	}
 	else if ( strncasecmp( token, "face=", 5 ) == 0 )
 	{
@@ -2750,14 +2746,7 @@ void KHTMLParser::parseTagTable(void)
 	}
 	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
 	{
-	    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-	    {
-		QString col = "#";
-		col += token+8;
-		tableColor.setNamedColor( col );
-	    }
-	    else
-		tableColor.setNamedColor( token+8 );
+	    setNamedColor( tableColor, token+8 );
 	    rowColor = tableColor;
 	}
     }
@@ -2864,14 +2853,7 @@ void KHTMLParser::parseTagTable(void)
 			}
 			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
 			{
-			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-			    {
-				QString col = "#";
-				col += token+8;
-				rowColor.setNamedColor( col );
-			    }
-			    else
-				rowColor.setNamedColor( token+8 );
+			    setNamedColor( rowColor, token+8 );
 			}
 		    }
 		    break; // Get next token from 'ht'
@@ -2966,14 +2948,7 @@ void KHTMLParser::parseTagTable(void)
 			}
 			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
 			{
-			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-			    {
-				QString col = "#";
-				col += token+8;
-				bgcolor.setNamedColor( col );
-			    }
-			    else
-				bgcolor.setNamedColor( token+8 );
+			    setNamedColor( bgcolor, token+8 );
 			}
 		      } // while (ht->nextOption)
 		    } // if(tableEntry)
