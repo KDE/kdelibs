@@ -51,6 +51,7 @@
 #include "kinstance.h"
 #include "kshell.h"
 #include "ksimpleconfig.h"
+#include "kuser.h"
 #include <sys/param.h>
 #include <unistd.h>
 
@@ -1308,6 +1309,8 @@ static QStringList lookupProfiles(const QString &mapFile)
     return profiles;
 }
 
+extern bool kde_kiosk_admin;
+
 bool KStandardDirs::addCustomized(KConfig *config)
 {
     if (addedCustoms) // there are already customized entries
@@ -1324,12 +1327,40 @@ bool KStandardDirs::addCustomized(KConfig *config)
     QString oldGroup = config->group();
     QString group = QString::fromLatin1("Directories");
     config->setGroup(group);
+    
+    QString kioskAdmin = config->readEntry("kioskAdmin");
+    if (!kioskAdmin.isEmpty() && !kde_kiosk_admin)
+    {
+        int i = kioskAdmin.find(':');
+        QString user = kioskAdmin.left(i);
+        QString host = kioskAdmin.mid(i+1);
+
+        KUser thisUser;
+        char hostname[ 256 ];
+        hostname[ 0 ] = '\0';
+        if (!gethostname( hostname, 255 ))
+            hostname[sizeof(hostname)-1] = '\0';
+                       
+        if ((user == thisUser.loginName()) &&
+            (host.isEmpty() || (host == hostname)))
+        {
+            kde_kiosk_admin = true;
+        }
+    }
+    
+    bool readProfiles = true;
+    
+    if (kde_kiosk_admin && !QCString(getenv("KDE_KIOSK_NO_PROFILES")).isEmpty())
+        readProfiles = false;
+
     QString userMapFile = config->readEntry("userProfileMapFile");
     QString profileDirsPrefix = config->readEntry("profileDirsPrefix");
     if (!profileDirsPrefix.isEmpty() && !profileDirsPrefix.endsWith("/"))
-       profileDirsPrefix.append('/');
+        profileDirsPrefix.append('/');
 
-    QStringList profiles = lookupProfiles(userMapFile);
+    QStringList profiles;
+    if (readProfiles)
+        profiles = lookupProfiles(userMapFile);
     QString profile;
     
     bool priority = false;
@@ -1378,17 +1409,20 @@ bool KStandardDirs::addCustomized(KConfig *config)
     }
 
     // Process KIOSK restrictions.
-    config->setGroup("KDE Resource Restrictions");
-    QMap<QString, QString> entries = config->entryMap("KDE Resource Restrictions");
-    for (QMap<QString, QString>::ConstIterator it2 = entries.begin(); 
-         it2 != entries.end(); it2++)
+    if (!kde_kiosk_admin || QCString(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
     {
-	QString key = it2.key();
-        if (!config->readBoolEntry(key, true))
+        config->setGroup("KDE Resource Restrictions");
+        QMap<QString, QString> entries = config->entryMap("KDE Resource Restrictions");
+        for (QMap<QString, QString>::ConstIterator it2 = entries.begin(); 
+            it2 != entries.end(); it2++)
         {
-           d->restrictionsActive = true;
-           d->restrictions.insert(key.latin1(), &d->restrictionsActive); // Anything will do
-           dircache.remove(key.latin1());
+            QString key = it2.key();
+            if (!config->readBoolEntry(key, true))
+            {
+                d->restrictionsActive = true;
+                d->restrictions.insert(key.latin1(), &d->restrictionsActive); // Anything will do
+                dircache.remove(key.latin1());
+            }
         }
     }
 

@@ -133,6 +133,7 @@
 
 bool kde_have_kipc = true; // magic hook to disable kipc in kdm
 bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
+bool kde_kiosk_admin = false;
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;

@@ -17,6 +17,7 @@
 */
 #include "kinstance.h"
 
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "kconfig.h"
@@ -25,7 +26,6 @@
 #include "kiconloader.h"
 #include "kaboutdata.h"
 #include "kstandarddirs.h"
-#include "kuser.h"
 #include "kdebug.h"
 #include "kglobal.h"
 #include "kmimesourcefactory.h"
@@ -170,6 +170,7 @@ KStandardDirs *KInstance::dirs() const
 }
 
 extern bool kde_kiosk_exception;
+extern bool kde_kiosk_admin;
 
 KConfig	*KInstance::config() const
 {
@@ -200,28 +201,13 @@ KConfig	*KInstance::config() const
 	    else
 	        d->sharedConfig = KSharedConfig::openConfig( QString::null );
 	}
-        d->sharedConfig->setGroup( "KDE Action Restrictions" );
-        QString kioskException = d->sharedConfig->readEntry("kiosk_exception");
-        d->sharedConfig->setGroup( QString::null );
-        if (!kioskException.isEmpty() && !kde_kiosk_exception)
-        {
-            int i = kioskException.find(':');
-            QString user = kioskException.left(i);
-            QString host = kioskException.mid(i+1);
-
-            KUser thisUser;
-            char hostname[ 256 ];
-            hostname[ 0 ] = '\0';
-            if (!gethostname( hostname, 255 ))
-                hostname[sizeof(hostname)-1] = '\0';
-                       
-            if ((user == thisUser.loginName()) &&
-                (host.isEmpty() || (host == hostname)))
-            {
-                kde_kiosk_exception = true;
-                d->sharedConfig = 0;
-                return config(); // Reread...
-            }
+	
+	// Check if we are excempt from kiosk restrictions
+	if (kde_kiosk_admin && !kde_kiosk_exception && !QCString(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
+	{
+            kde_kiosk_exception = true;
+            d->sharedConfig = 0;
+            return config(); // Reread...
         }
 	
 	_config = d->sharedConfig;
