@@ -27,6 +27,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qwidget.h>
+#include <qdatetime.h>
 
 #include <kaction.h>
 #include <kdebug.h>
@@ -453,6 +454,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     static const QString &tagAction = KGlobal::staticQString( "action" );
     static const QString &attrAccel = KGlobal::staticQString( "accel" );
 
+//    QTime dt; dt.start();
+
     m_client = client;
 
     if ( client->factory() && client->factory() != this )
@@ -563,6 +566,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
         for (; childIt.current(); ++childIt )
             addClient( childIt.current() );
     }
+
+//    kdDebug() << "addClient took " << dt.elapsed() << endl;
 }
 
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
@@ -727,7 +732,8 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
         bool isActionTag = false;
 
-        if ( ( isActionTag = ( tag == tagAction ) ) || customTags.contains( tag ) )
+        if ( ( isActionTag = ( tag == tagAction ) ) || 
+             customTags.findIndex( tag ) != -1 )
         {
             if ( !parentNode->container )
                 continue;
@@ -841,7 +847,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
             calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt,
                               ignoreDefaultMergingIndex );
         }
-        else if ( containerTags.contains( tag ) )
+        else if ( containerTags.findIndex( tag ) != -1 )
         {
             /*
              * No Action or Merge tag? That most likely means that we want to create a new container.

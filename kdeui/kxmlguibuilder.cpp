@@ -109,7 +109,7 @@ KXMLGUIBuilder::~KXMLGUIBuilder()
 QStringList KXMLGUIBuilder::containerTags() const
 {
   QStringList res;
-  res << d->tagMainWindow << d->tagMenuBar << d->tagMenu << d->tagToolBar << d->tagStatusBar;
+  res << d->tagMenu << d->tagToolBar << d->tagMainWindow << d->tagMenuBar << d->tagStatusBar;
   return res;
 }
 
