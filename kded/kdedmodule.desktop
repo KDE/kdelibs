@@ -9,6 +9,7 @@ Comment[az]=KDED Modulu
 Comment[be]=Модуль KDED
 Comment[bg]=Модул KDED
 Comment[bn]=KDED মডিইল
+Comment[br]=Mollad KDED
 Comment[bs]=KDED modul
 Comment[ca]=Mòdul per a KDED
 Comment[cs]=KDED modul
@@ -70,7 +71,7 @@ Comment[xx]=xxKDED Modulexx
 Comment[zh_CN]=KDED 模块
 Comment[zh_TW]=KDED 模組
 Comment[zu]=Ingxenye ye-KDED
-[PropertyDef::X-KDE-Factory]
+[PropertyDef::X-KDE-FactoryName]
 Type=QString
 [PropertyDef::X-KDE-Kded-autoload]
 Type=bool
