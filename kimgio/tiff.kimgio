@@ -22,6 +22,7 @@ Name[sr]=TIFF slika
 Name[sv]=Tiff-bild
 Name[tr]=TIFF Resim Dosyası
 Name[wa]=Imådje TIFF
+Name[zh_CN]=TIFF 图像
 Read=true
 Write=false
 Suffices=tiff,TIFF,tif,TIF 

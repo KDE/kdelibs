@@ -22,6 +22,7 @@ Name[sr]=X PixMap slika
 Name[sv]=X pixmapp-bild
 Name[tr]=X Resim Dosyası
 Name[wa]=Imådje XPM
+Name[zh_CN]=X 像素图图像
 Read=true
 Write=true
 Suffices=xpm,XPM

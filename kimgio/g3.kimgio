@@ -19,6 +19,7 @@ Name[sr]=CCITT G3 fax
 Name[sv]=CCITT grupp 3-fax
 Name[tr]=CCITT G3 Faks
 Name[wa]=Facs CCITT G3
+Name[zh_CN]=CCITT G3 传真
 Read=true
 Write=false
 Suffices=g3,G3,

@@ -23,6 +23,7 @@ Name[sr]=GIF slika
 Name[sv]=Gif-bild
 Name[tr]=GIF Resim Dosyası
 Name[wa]=Imådje GIF
+Name[zh_CN]=GIF 图像
 Read=true
 Write=false
 Suffices=gif,GIF

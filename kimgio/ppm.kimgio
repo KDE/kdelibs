@@ -21,6 +21,7 @@ Name[sr]=Portabl pikselmapirana slika
 Name[sv]=Flyttbart pixmappfilformat
 Name[tr]=Taşınabilir Bit Eşlem Resim Dosyası
 Name[wa]=Imådje PPM
+Name[zh_CN]=便携像素图图像
 Read=true
 Write=true
 Suffices=ppm,PPM,pnm,PNM,ppmraw,PPMRAW

@@ -22,6 +22,7 @@ Name[sr]=Portabl crno bela slika
 Name[sv]=Flyttbart gråskalefilformat
 Name[tr]=Taşınabilir Gri Resim Dosyası
 Name[wa]=Imådje PGM
+Name[zh_CN]=便携灰度图像
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW

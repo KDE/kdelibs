@@ -22,6 +22,7 @@ Name[sr]=MS-Windows ikone
 Name[sv]=Windows-ikon
 Name[tr]=Windows Simgesi
 Name[wa]=Imådjete MS-Windows
+Name[zh_CN]=Windows 图标
 Read=true
 Write=false
 Suffices=ico,ICO

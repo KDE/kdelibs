@@ -22,6 +22,7 @@ Name[sr]=PNG slika
 Name[sv]=Png-bild
 Name[tr]=PNG Resim Dosyası
 Name[wa]=Imådje PNG
+Name[zh_CN]=PNG 图像
 Read=true
 Write=true
 Suffices=png,PNG

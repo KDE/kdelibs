@@ -20,6 +20,7 @@ Comment[sr]=Automatsko podešavanje proxy-ja
 Comment[sv]=Automatisk proxyinställning
 Comment[tr]=Otomatik Vekil Sunucu Yapılandırması
 Comment[wa]=Apontiaedje otomatike do procsi
+Comment[zh_CN]=自动代理配置
 
 [script-error]
 Name=Invalid proxy script
@@ -40,6 +41,7 @@ Name[sk]=Zlý proxy skript
 Name[sr]=Progršna proxy skripta
 Name[sv]=Ogiltigt proxy-skript
 Name[tr]=Geçersiz vekil sunucu betiği
+Name[zh_CN]=无效的代理脚本
 Comment=The downloaded proxy configuration script is invalid
 Comment[ca]=L'script de configuració del servidor intermedi descarregat no és vàlid
 Comment[cs]=Stažený konfigurační skript pro proxy je neplatný
@@ -59,6 +61,7 @@ Comment[sk]=Stiahnutý konfiguračný skript proxy nieje správny
 Comment[sr]=Preuzeta skripta za podešavanje proxy-ja je neispravna
 Comment[sv]=Det nerladdade proxyinställningsskriptet är ogiltigt
 Comment[tr]=Vekil sunucu yapılandırma dosyası geçersiz
+Comment[zh_CN]=下载的代理配置脚本是无效的
 default_presentation=16
 
 [download-error]
@@ -80,6 +83,7 @@ Name[sk]=Chyba počas sťahovania skriptu
 Name[sr]=Greška prilikom preuzimanja skripte
 Name[sv]=Nerladdningsfel för skript
 Name[tr]=Betik indirme hatası
+Name[zh_CN]=脚本下载错误
 Comment=The proxy configuration script could not be downloaded
 Comment[ca]=L'script de configuració del servidor intermedi no es pot descarregar
 Comment[cs]=Nelze stáhnout konfigurační skript pro proxy
@@ -99,6 +103,7 @@ Comment[sk]=Nebolo možné stiahnúť konfiguračný skript pre proxy
 Comment[sr]=Konfiguraciona skripta za podešavanje proxy-ja ne može biti preuzeta
 Comment[sv]=Proxyinställningsskriptet kunde inte laddas ner
 Comment[tr]=Vekil sunucu yapılandırma dosyası indirilemedi
+Comment[zh_CN]=代理配置脚本无法下载
 default_presentation=16
 
 [evaluation-error]
@@ -120,6 +125,7 @@ Name[sk]=Chyba kontroly skriptu
 Name[sr]=Greška prilikom izračunavanja u skripti
 Name[sv]=Utvärderingsfel för skript
 Name[tr]=Betik çalıştırma hatası
+Name[zh_CN]=脚本求值错误
 Comment=There was an error executing the proxy configuration script
 Comment[bg]=Сериозна грешка, предизвикваща излизане от програмата
 Comment[ca]=Hi ha hagut un error executant l'script de configuració del servidor intermedi
@@ -139,4 +145,5 @@ Comment[sk]=Vyskytla sa chyba počas spustenia konfiguračného skriptu proxy
 Comment[sr]=Desila se greška prilikom izvršavanja skripte za podešavanje proxy-ja
 Comment[sv]=Ett fel uppstod vid körning av proxyinställningsskriptet
 Comment[tr]=Vekil sunucu yapılandırma dosyası çalıştırılamadı
+Comment[zh_CN]=执行代理配置脚本出现错误
 default_presentation=0

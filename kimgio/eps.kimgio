@@ -23,6 +23,7 @@ Name[sr]=Učaurene PostScript slika
 Name[sv]=Inkapslad Postscript-bild
 Name[tr]=Encapsulated PostScript Görüntüsü
 Name[wa]=Imådje PostScript ecapsulêye
+Name[zh_CN]=封装后的 Postscript 图像
 Read=true
 Write=true
 Suffices=eps,EPS,epsi,EPSI,epsf,EPSF

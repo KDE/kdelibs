@@ -22,6 +22,7 @@ Name[sr]=PCX slika
 Name[sv]=PCX-bild
 Name[tr]=PCX Resim Dosyası
 Name[wa]=Imådje PCX
+Name[zh_CN]=PCX 图像
 Read=true
 Write=true
 Suffices=pcx,PCX

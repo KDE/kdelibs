@@ -22,6 +22,7 @@ Name[sr]=X BitMap slika
 Name[sv]=X bitmapp-bild
 Name[tr]=X BitMap Resim Dosyası
 Name[wa]=Imådje XBM
+Name[zh_CN]=X 位图图像
 Read=true
 Write=true
 Suffices=xbm,XBM

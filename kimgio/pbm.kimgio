@@ -20,6 +20,7 @@ Name[sr]=Portabl bitmapirana slika
 Name[sv]=Flyttbart bitmappsformat
 Name[tr]=Taşınabilir Bit Eşlem Resim Dosyası
 Name[wa]=Imådje PBM
+Name[zh_CN]=便携位图图像
 Read=true
 Write=true
 Suffices=pbm,PBM,pbmraw,PBMRAW

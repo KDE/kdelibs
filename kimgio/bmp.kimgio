@@ -21,6 +21,7 @@ Name[sr]=BMP slika
 Name[sv]=Bmp-bild
 Name[tr]=BMP Resim Dosyası
 Name[wa]=Imådje BMP
+Name[zh_CN]=BMP 图像
 Read=true
 Write=true
 Suffices=bmp,BMP

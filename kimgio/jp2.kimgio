@@ -22,6 +22,7 @@ Name[sr]=JPEG 2000 slika
 Name[sv]=Jpeg 2000-bild
 Name[tr]=JPEG 2000 Resim Dosyası
 Name[wa]=Imådje JPEG 2000
+Name[zh_CN]=JPEG 2000 图像
 Read=true
 Write=true
 Suffices=jp2,JP2

@@ -22,6 +22,7 @@ Name[sr]=JPEG slika
 Name[sv]=Jpeg-bild
 Name[tr]=JPEG Resim Dosyası
 Name[wa]=Imådje JPEG
+Name[zh_CN]=JPEG 图像
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 
