@@ -218,8 +218,14 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	input_data = 0;
 
 	if (run_mode == Block) {
-	  waitpid(pid, &status, 0);
-	  processHasExited(status);
+	  commClose();
+
+	  // Its possible that the child's exit was caught by the SIGCHLD handler
+	  // which will have set status for us.
+	  if (waitpid(pid, &status, 0) != -1) this->status = status;
+
+	  runs = FALSE;
+	  emit processExited(this);
 	}
   }
   free(arglist);
@@ -390,7 +396,7 @@ int KProcess::childError(int fdno)
 
   len = ::read(fdno, buffer, 1024);
 
-  if ( 0 != len)
+  if ( 0 < len)
 	emit receivedStderr(this, buffer, len);
   return len;
 }
@@ -429,6 +435,10 @@ int KProcess::commSetupDoneP()
 	  close(out[1]);
 	if (communication & Stderr)
 	  close(err[1]);
+
+	// Don't create socket notifiers and set the sockets non-blocking if
+	// blocking is requested.
+	if (run_mode == Block) return ok;
 
 	if (communication & Stdin) {
 	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
@@ -496,17 +506,58 @@ void KProcess::commClose()
 	if (communication & Stdin)
 		delete innot;
 
+	if ((communication & Stdout) && (communication & Stderr)) {
+	  // If both channels are being read we need to make sure that one socket buffer
+	  // doesn't fill up whilst we are waiting for data on the other (causing a deadlock).
+	  // Hence we need to use select.
+
+	  // Once one or other of the channels has reached EOF (or given an error) go back
+	  // to the usual mechanism.
+
+	  int fds_ready = 1;
+	  fd_set rfds;
+
+	  fcntl(out[0], F_SETFL, O_NONBLOCK);
+	  fcntl(err[0], F_SETFL, O_NONBLOCK);
+
+	  while (1) {
+	    FD_ZERO(&rfds);
+	    FD_SET(out[0], &rfds);
+	    FD_SET(err[0], &rfds);
+
+	    fds_ready = select(QMAX(out[0], err[0]), &rfds, 0, 0, 0);
+	    if (fds_ready <= 0) break;
+
+	    if (FD_ISSET(out[0], &rfds)) {
+	      int ret = 0;
+	      while (ret > 0) ret = childOutput(out[0]);
+	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+	    }
+                               
+	    if (FD_ISSET(err[0], &rfds)) {
+	      int ret = 0;
+	      while (ret > 0) ret = childError(err[0]);
+	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+	    }
+	  }
+
+
+	  fcntl(out[0], F_SETFL, 0);
+	  fcntl(err[0], F_SETFL, 0);
+	}
+
 	if (communication & Stdout) {
 		delete outnot;
-	  while(childOutput(out[0])> 0 )
-		;
+		while(childOutput(out[0])> 0 )
+		  ;
 	}
 
 	if (communication & Stderr) {
 		delete errnot;
-	  while(childError(err[0]) > 0)
+		while(childError(err[0]) > 0)
 		;
 	}
+
 	if (communication & Stdin)
 	    close(in[1]);
 	if (communication & Stdout)
@@ -624,8 +675,14 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	input_data = 0;
 
 	if (run_mode == Block) {
-	  waitpid(pid, &status, 0);
-	  processHasExited(status);
+	  commClose();
+
+	  // Its possible that the child's exit was caught by the SIGCHLD handler
+	  // which will have set status for us.
+	  if (waitpid(pid, &status, 0) != -1) this->status = status;
+
+	  runs = FALSE;
+	  emit processExited(this);
 	}
   }
   //  free(arglist);

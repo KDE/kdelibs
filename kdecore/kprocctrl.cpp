@@ -128,7 +128,14 @@ void KProcessController::slotDoHousekeeping(int )
   while (0L != proc) {
 	if (proc->pid == pid) {
 	  // process has exited, so do emit the respective events
-	  proc->processHasExited(status);
+	  if (proc->run_mode == KProcess::Block) {
+	    // If the reads are done blocking then set the status in proc
+	    // but do nothing else because KProcess will perform the other
+	    // actions of processHasExited.
+	    proc->status = status;
+	  } else {
+	    proc->processHasExited(status);
+	  }
 	}
 	proc = processList->next();
   }
