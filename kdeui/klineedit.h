@@ -364,7 +364,8 @@ private:
         NoCompletion,
         AutoCompletion,
         ShellCompletion,
-        SemiAutoCompletion	
+        PopupCompletion,
+        SemiAutoCompletion
     };
 
     /**
