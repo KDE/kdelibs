@@ -36,7 +36,8 @@ class KGlobalAccel : public QObject
 	KGlobalAccel( QObject* pParent, const char* psName = 0 );
 	virtual ~KGlobalAccel();
 
-	//void clearActions();
+	// Needed by KHotKeys
+	void clear();
 
 	KAccelActions& actions();
 	const KAccelActions& actions() const;
@@ -100,6 +101,10 @@ class KGlobalAccel : public QObject
 	 * configuration file.
 	 */
 	void writeSettings( KConfigBase* pConfig = 0 ) const;
+
+	/** @internal -- this a wrapper function to
+	 * KAccelActions::useFourModifierKeys(). */
+	static bool useFourModifierKeys();
 
  private:
 	class KGlobalAccelPrivate* d;

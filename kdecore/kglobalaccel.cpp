@@ -26,8 +26,8 @@ KGlobalAccel::~KGlobalAccel()
 	delete d;
 }
 
-//void KGlobalAccel::clearActions()
-//	{ d->clearActions(); }
+void KGlobalAccel::clear()
+	{ d->clearActions(); }
 
 KAccelActions& KGlobalAccel::actions()
 	{ return d->actions(); }
@@ -72,5 +72,8 @@ void KGlobalAccel::readSettings( KConfigBase* pConfig )
 	{ d->readSettings( pConfig ); }
 void KGlobalAccel::writeSettings( KConfigBase* pConfig ) const
 	{ d->writeSettings( pConfig ); }
+
+bool KGlobalAccel::useFourModifierKeys()
+	{ return KAccelAction::useFourModifierKeys(); }
 
 #include <kglobalaccel.moc>
