@@ -2,6 +2,7 @@
 Type=RGB
 Header=^\x01\xda[\x00|\x01][\x01|\x02]
 Name=SGI Image (RGB)
+Name[da]=SGI-billede (RGB)
 Read=true
 Write=true
 Suffices=rgb,RGB,rgba,RGBA,bw,BW,sgi,SGI
