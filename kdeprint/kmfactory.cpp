@@ -322,10 +322,6 @@ KMFactory::PluginInfo KMFactory::pluginInfo(const QString& name)
 	if (info.mimeTypes.isEmpty())
 		info.mimeTypes << "application/postscript";
 	info.primaryMimeType = conf.readEntry("PrimaryMimeType", info.mimeTypes[0]);
-	/* append application/x-zerosize by default to all plugins (empty files),
-	 * this avoid to popup garbage dialogs if the application sent an empty
-	 * file to the print system ( no conversion needed )*/
-	info.mimeTypes << "application/x-zerosize";
 
 	return info;
 }
