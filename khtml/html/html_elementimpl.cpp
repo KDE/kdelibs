@@ -44,6 +44,15 @@
 using namespace DOM;
 using namespace khtml;
 
+/* HP-UX defines these in sys/sysmacros.h (included by gcc's sys/param.h,
+   included by sys/types.h */
+#ifdef MAX
+#undef MAX
+#endif
+#ifdef MIN
+#undef MIN
+#endif
+
 static inline int MAX(int a, int b)
 {
     return a > b ? a : b;
