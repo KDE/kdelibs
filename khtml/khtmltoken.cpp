@@ -1043,6 +1043,10 @@ void HTMLTokenizer::write( const char *str)
 	    {
 		// <!-- comment -->
 	    }
+	    else if ( src[0] == QChar('?'))
+	    {
+		// <?meta stuff?>
+	    }
 	    else
 	    {
 		// Invalid tag
