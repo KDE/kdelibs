@@ -27,6 +27,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <netdb.h>
 #include <errno.h>
 #include <config.h>
 #include <ctype.h>
@@ -86,26 +87,16 @@ string MCOPUtils::getFullHostname()
 {
 	char buffer[1024];
 	string result;
+	struct hostent *hp;
 
 	if(gethostname(buffer,1024) == 0)
 		result = buffer; 
 	else
 		return "localhost";
 
-	if(getdomainname(buffer,1024) == 0)
-	{
-		/*
-		 * I don't know why, but on my linux machine, the domainname
-		 * always ends up being (none), which is certainly no valid
-		 * domainname
-		 */
-		if(strcmp(buffer,"(none)") != 0 && strcmp(buffer,"") != 0)
-		{
-			result += ".";
-			result += buffer; 
-		}
-	}
-
+	if((hp = gethostbyname(buffer)) != 0)
+		result = hp->h_name;
+	
 	return result;
 }
 
