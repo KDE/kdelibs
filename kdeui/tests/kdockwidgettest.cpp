@@ -83,7 +83,7 @@ DockApplication::DockApplication( const char* name )
   dock2->setCaption("Yellow");
 
   /* test set new header widget...*/
-  dock2->setHeader( new KDockWidgetHeader(dock2) );
+//  dock2->setHeader( new KDockWidgetHeader(dock2) );
 
   QWidget* l2 = new QWidget(dock2);
   l2->setBackgroundColor(yellow);
