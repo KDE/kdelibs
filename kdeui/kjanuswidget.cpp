@@ -377,10 +377,17 @@ void KJanusWidget::addPageWidget( QFrame *page, const QString &itemName,
     }
     else
     {
+      
       IconListItem *item = new IconListItem( mIconList, pixmap, itemName );
-      mIconNodeList->append( item );
-      mIconList->insertItem( item );
+      //
+      // 2000-06-01 Espen Sand: If I do this with Qt 2.1.1 all sorts of
+      // strange things happen. With Qt <= 2.1 it worked but now I must
+      // either specify the listbox in the constructor on the item 
+      // or as below, not both.
+      // mIconList->insertItem( item );
+      //
       mIconList->invalidateHeight();
+      mIconNodeList->append( item );
 
       //
       // Make sure all list items have stored the same minimum width. The
