@@ -137,7 +137,6 @@ for (chn=0;chn<16;chn++)
     chnController(chn, 0x4a, 127);
     };
 
-
 if (opl==3) ioctl(seqfd, SNDCTL_FM_4OP_ENABLE, &device);
 for (int i = 0; i < nvoices; i++)
      {
@@ -156,7 +155,7 @@ char tmp[60];
 int i,j;
 for (i=0;i<256;i++)
     patchloaded[i] = 0;
-
+int stereoeffect=rand()%3;
 FILE *fh;
 int datasize;
 
@@ -181,6 +180,9 @@ for (i=0;i<128;i++)
    datasize = (strncmp(tmp, "4OP", 3) == 0)? 22 : 11;
    instr.device=device;
    instr.channel = i;
+// Let's get some stereo effect ...
+   tmp[46] = (tmp[46] & 0xcf) | ((++stereoeffect)<<4);
+   stereoeffect=stereoeffect%3;
    for (j=0; j<22; j++)
        instr.operators[j] = tmp[j+36];
    SEQ_WRPATCH(&instr,sizeof(instr));
@@ -207,6 +209,9 @@ for (i=128;i<175;i++)
    datasize = (strncmp(tmp, "4OP", 3) == 0)? 22 : 11;
    instr.device=device;
    instr.channel = i;
+// Let's get some stereo effect ...
+   tmp[46] = (tmp[46] & 0xcf) | ((++stereoeffect)<<4);
+   stereoeffect=stereoeffect%3;
    for (j=0; j<22; j++)
        instr.operators[j] = tmp[j+36];
    SEQ_WRPATCH(&instr,sizeof(instr));
@@ -315,6 +320,7 @@ vm->initSearch();
 while ((i=vm->Search(chn))!=-1)
 //   SEQ_PITCHBEND(device, i, chn_bender[chn]);
    SEQ_BENDER(device, i, chn_bender[chn]);
+
 /*
 int i=0;
 while (i<nvoices)
