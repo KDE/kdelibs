@@ -759,9 +759,10 @@ bool KZip::closeArchive()
 	extfield[8] = char(time >> 24);
 
         crc = crc32(crc, (Bytef *)buffer, bufferSize );
-        if ( device()->writeBlock( buffer, bufferSize ) != bufferSize )
-            return false;
+        bool ok = ( device()->writeBlock( buffer, bufferSize ) != bufferSize );
         delete[] buffer;
+        if ( !ok )
+            return false;
     }
     Q_LONG centraldirendoffset = device()->at();
     //kdDebug(7040) << "closearchive: centraldirendoffset: " << centraldirendoffset << endl;
