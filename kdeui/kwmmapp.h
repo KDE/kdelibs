@@ -114,6 +114,12 @@ signals:
    */
   void windowActivate(Window);
 
+  /**
+    * A command kwm did not understand. Maybe it is for 
+    * your module. 
+    */
+  void commandRecieved(QString);
+
 private:
   QWidget* module;
 

@@ -1,3 +1,10 @@
+/*
+ * kwmmapp.cpp. Part of the KDE project.
+ *
+ * Copyright (C) 1997 Matthias Ettrich
+ *
+ */
+
 #include "kwmmapp.moc"
 
 KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[])
@@ -20,6 +27,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
   static Atom module_win_raise;
   static Atom module_win_lower;
   static Atom module_win_activate;
+  static Atom kwm_command;
 
   Atom a;
   Window w;
@@ -48,6 +56,8 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       module_win_lower = XInternAtom(qt_xdisplay(), "KWM_MODULE_WIN_LOWER", False);
       module_win_activate = XInternAtom(qt_xdisplay(), 
 					"KWM_MODULE_WIN_ACTIVATE", False);
+      kwm_command = XInternAtom(qt_xdisplay(), 
+				"KWM_COMMAND", False);
     }
     a = ev->xclient.message_type;
     w = (Window) (ev->xclient.data.l[0]);
@@ -102,6 +112,10 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     }
     if (a == module_win_activate){
       emit windowActivate(w);
+    }
+    if (a == kwm_command){
+      QString com = ev->xclient.data.b;
+      emit commandRecieved(com);
     }
 
     return TRUE;
