@@ -396,9 +396,15 @@ public:
     virtual QString text() const;
 
     /**
-     * Get the keyboard accelerator associated with this action.
+     * Get the keyboard shortcut associated with this action.
      */
     virtual const KShortcut& shortcut() const;
+    /**
+     * Get the default shortcut for this action.
+     */
+    // BCI: make this virtual
+    const KShortcut& shortcutDefault() const;
+
     // These two methods are for Q_PROPERTY
     QString shortcutText() const;
     void setShortcutText( const QString& );

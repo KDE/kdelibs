@@ -108,6 +108,7 @@ public:
   QString m_group;
 
   KShortcut m_cut;
+  KShortcut m_cutDefault;
 
   struct Container
   {
@@ -147,7 +148,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_cut = cut;      // default key binding
+        d->m_cut = d->m_cutDefault = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
@@ -167,7 +168,7 @@ KAction::KAction( const QString& text, const QIconSet& pix,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_cut = cut;      // default key binding
+        d->m_cut = d->m_cutDefault = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
@@ -185,7 +186,7 @@ KAction::KAction( const QString& text, const QString& pix,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_cut = cut;      // default key binding
+        d->m_cut = d->m_cutDefault = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
@@ -205,7 +206,7 @@ KAction::KAction( const QString& text, const QIconSet& pix,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_cut = cut;      // default key binding
+        ;      // default key binding
         m_parentCollection->insert( this );
     }
 
@@ -338,12 +339,33 @@ void KAction::setAccel( int keyQt )
 void KAction::setShortcut( int i, const KShortcut& cut )
 {
   int a = cut.keyCodeQt();
-  QWidget* w = container( i );
-  if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->setAccel( a, itemId( i ) );
-  else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->setAccel( a, itemId( i ) );
+  int id = itemId( i );
 
+  QWidget* w = container( i );
+  if ( w->inherits( "QPopupMenu" ) ) {
+    QPopupMenu* menu = static_cast<QPopupMenu*>(w);
+
+    if( a || cut.seq(0).isNull() )
+      menu->setAccel( a, id );
+    else {
+      QString s = menu->text( id );
+      int i = s.find( '\t' );
+      if ( i >= 0 )
+        s.replace( i+1, s.length()-i, cut.toString() );
+      else
+        s += "\t" + cut.toString();
+
+      QPixmap *pp = menu->pixmap( id );
+      if( pp && !pp->isNull() )
+        menu->changeItem( *pp, s, id );
+      else
+        menu->changeItem( s, id );
+    }
+  }
+  else if ( w->inherits( "QMenuBar" ) )
+    static_cast<QMenuBar*>(w)->setAccel( a, id );
+
+  // Does this ever happen anymore?  I don't think so... --ellis 12/31/01
   if ( !d->m_kaccel && a ) {// this case happens after configuring key bindings
       plugMainWindowAccel( w );
   }
@@ -354,6 +376,11 @@ const KShortcut& KAction::shortcut() const
   return d->m_cut;
 }
 
+const KShortcut& KAction::shortcutDefault() const
+{
+  return d->m_cutDefault;
+}
+
 QString KAction::shortcutText() const
 {
   return d->m_cut.toStringInternal();
@@ -361,7 +388,7 @@ QString KAction::shortcutText() const
 
 void KAction::setShortcutText( const QString& s )
 {
-  d->m_cut.init(s);
+  d->m_cut.init( s );
 }
 
 int KAction::accel() const
@@ -417,7 +444,7 @@ QString KAction::toolTip() const
 
 int KAction::plug( QWidget *w, int index )
 {
-	kdDebug(125) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
+  kdDebug(125) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
   if (w == 0) {
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
@@ -431,7 +458,8 @@ int KAction::plug( QWidget *w, int index )
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
-    int keyQt = d->m_cut.keyCodeQt();
+    //int keyQt = d->m_cut.keyCodeQt();
+    int keyQt = 0;
     int id;
 
     if ( d->hasIconSet() )
@@ -442,6 +470,25 @@ int KAction::plug( QWidget *w, int index )
         id = menu->insertItem( d->text(), this,
                                SLOT( slotActivated() ),  //dsweet
                                keyQt, -1, index );
+
+    // This is copied from setShortcut( int, ... ) below.
+    // TODO: place this in its own function, like setShortcut( menu, id, cut ); --ellis, 12/31/01
+    //if( keyQt == 0 && !d->m_cut.isNull() ) {
+    {
+      const KShortcut& cut = d->m_cut;
+      QString s = menu->text( id );
+      int i = s.find( '\t' );
+      if ( i >= 0 )
+        s.replace( i+1, s.length()-i, cut.toString() );
+      else
+        s += "\t" + cut.toString();
+
+      QPixmap *pp = menu->pixmap( id );
+      if( pp && !pp->isNull() )
+        menu->changeItem( *pp, s, id );
+      else
+        menu->changeItem( s, id );
+    }
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
@@ -898,7 +945,7 @@ void KAction::slotKeycodeChanged()
   kdDebug(125) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
   KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
   if( pAction )
-    setAccel(pAction->shortcut().keyPrimaryQt());
+    setShortcut(pAction->shortcut());
 }
 
 KActionCollection *KAction::parentCollection() const
@@ -2765,9 +2812,13 @@ void KActionCollection::createKeyMap( KAccelActions& map )
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it ) {
     KAction* action = it.current();
-    KShortcut cut( action->accel() );
     map.insertAction( action->name(), action->plainText(), QString::null,
-      cut, cut );
+      action->shortcutDefault(), action->shortcutDefault() );
+    if( action->shortcut() != action->shortcutDefault() ) {
+      KAccelAction* pAccelAction = map.actionPtr( action->name() );
+      if( pAccelAction )
+        pAccelAction->setShortcut( action->shortcut() );
+    }
   }
 }
 
@@ -2778,7 +2829,7 @@ void KActionCollection::setKeyMap( const KAccelActions& map )
   {
     const KAccelAction* aa = map.actionPtr( i );
     KAction* act = action( aa->name().latin1() );
-    act->setAccel( aa->shortcut().keyPrimaryQt() );
+    act->setShortcut( aa->shortcut() );
   }
 }
 
