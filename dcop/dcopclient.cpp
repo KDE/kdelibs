@@ -688,6 +688,10 @@ void DCOPClient::resume()
 
 bool DCOPClient::isSuspended() const
 {
+#ifdef Q_WS_WIN //TODO: REMOVE
+    if (!d->notifier)
+        return false;
+#endif
     return !d->notifier->isEnabled();
 }
 

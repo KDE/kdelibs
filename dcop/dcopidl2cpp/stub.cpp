@@ -90,13 +90,20 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	QDomElement n = e.firstChild().toElement();
 	Q_ASSERT( n.tagName() == "NAME" );
 	QString className = n.firstChild().toText().data() + ( "_stub" );
-    
+
+	//add link scope, if available
+	n = n.nextSibling().toElement();
+	QString linkScope;
+	if (n.tagName()=="LINK_SCOPE") {
+		linkScope = n.firstChild().toText().data() + " ";
+		n = n.nextSibling().toElement();
+	}
+
 	// find dcop parent ( rightmost super class )
 	QString DCOPParent;
-	QDomElement s = n.nextSibling().toElement();
-	for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-	    if ( s.tagName() == "SUPER" )
-		DCOPParent = s.firstChild().toText().data();
+	for( ; !n.isNull(); n = n.nextSibling().toElement() ) {
+	    if ( n.tagName() == "SUPER" )
+		DCOPParent = n.firstChild().toText().data();
 	}
 
 	if( DCOPParent != "DCOPObject" ) { // we need to include the .h file for the base stub
@@ -134,7 +141,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	str << endl;
 
 	// Stub class definition
-	str << "class " << className;
+	str << "class " << linkScope << className;
 
 	// Parent : inherited interface stub or dcopstub
 	if ( !DCOPParent.isEmpty() && DCOPParent != "DCOPObject" ) {
@@ -153,11 +160,11 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	str << "    " << className << "( DCOPClient* client, const QCString& app, const QCString& id );" << endl;
 	str << "    explicit " << className << "( const DCOPRef& ref );" << endl;
 
-	s = e.firstChild().toElement();
-	for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-	    if (s.tagName() != "FUNC")
+	n = e.firstChild().toElement();
+	for( ; !n.isNull(); n = n.nextSibling().toElement() ) {
+	    if (n.tagName() != "FUNC")
 		continue;
-	    QDomElement r = s.firstChild().toElement();
+	    QDomElement r = n.firstChild().toElement();
 	    str << "    virtual "; // KDE4 - I really don't think these need to be virtual
 	    writeType( str, r );
 
@@ -185,8 +192,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	    str << ")";
 
 	    //const methods stubs can't compile, they need to call setStatus().
-	    //if ( s.hasAttribute("qual") )
-	    //  str << " " << s.attribute("qual");
+	    //if ( n.hasAttribute("qual") )
+	    //  str << " " << n.attribute("qual");
 	    str << ";" << endl;
 	}
 

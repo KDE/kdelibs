@@ -8,7 +8,7 @@
 // stub:
 //    - includes to super relationship, a bit much to test, needs multiple files?
 
-class DefaultTest : public QObject, virtual public DCOPObject
+class KDEUI_EXPORT DefaultTest : public QObject, virtual public DCOPObject
 {
    Q_OBJECT
    K_DCOP

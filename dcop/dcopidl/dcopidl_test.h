@@ -22,7 +22,7 @@ class Test3;
  * geiseri at some point in the near future.
  * blah di blah
  **/
-class Test : public MyNamespace::MyParentClass, virtual public DCOPObject,
+class KDEUI_EXPORT Test : public MyNamespace::MyParentClass, virtual public DCOPObject,
              public QValueList<QString>
 {
     K_DCOP
