@@ -7,7 +7,7 @@ int main(int argc, char **argv)
     KApplication a(argc, argv, "kdebugtest");
     kdDebug(150) << 17 << endl;
     kdDebug() << 18 << endl;
-    kdDebug(2 == 2) << "this is right" << endl;
+    kdDebug(2 == 2) << "this is right " << perror << endl;
     kdDebug() << "Before instance creation" << endl;
     kDebugInfo(1202,"Before instance creation");
     KInstance i("kdebugtest");

@@ -3,11 +3,6 @@
 #include <kdebug.h>
 #include <stdio.h>
 
-enum DebugLevels { KDEBUG_INFO= 0, KDEBUG_WARN= 1, KDEBUG_ERROR= 2, KDEBUG_FATAL= 3 };
-
-extern void kDebugBackend( unsigned short nLevel, unsigned short nArea,
-			   const char * pFormat, va_list arguments );
-
 class kdbgstream;
 class kndbgstream;
 typedef kdbgstream & (*KDBGFUNC)(kdbgstream &); // manipulator function
@@ -27,13 +22,7 @@ class kdbgstream {
 	QString tmp; tmp.setNum(i); output += tmp;
 	return *this;
     }
-    void flush() {
-	if (output.isEmpty() || !print)
-	    return;
-	output.truncate(output.length() - 1);
-	kDebugBackend( level, area, "%s", output.utf8().data());
-	output = QString::null;
-    }
+    void flush();
     kdbgstream &operator<<(const QString& string) {
 	if (!print) return *this;
 	output += string;
@@ -79,10 +68,10 @@ kndbgstream &flush( kndbgstream & s) { return s; }
 kndbgstream &perror( kndbgstream & s) { return s; }
 
 #ifndef NDEBUG
-kdbgstream kdDebug(int area = 0) { return kdbgstream(area, KDEBUG_INFO); }
-kdbgstream kdDebug(bool cond, int area = 0) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
+kdbgstream kdDebug(int area = 0);
+kdbgstream kdDebug(bool cond, int area = 0);
 #else
 kndbgstream kdDebug(int = 0) { return kndbgstream(); }
-kdbgstream kdDebug(bool , int  = 0) { return kndbgstream(); }
+kndbgstream kdDebug(bool , int  = 0) { return kndbgstream(); }
 #endif
-kdbgstream kdError(int area = 0) { return kdbgstream(area, KDEBUG_ERROR); }
+kdbgstream kdError(int area = 0);

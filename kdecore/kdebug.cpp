@@ -87,7 +87,7 @@ static QString getDescrFromNum(unsigned short _num)
   QString data, filename(locate("config","kdebug.areas"));
   QFile file(filename);
   if (!file.open(IO_ReadOnly)) {
-    warning("Couldn't open %s", filename.local8Bit());
+    warning("Couldn't open %s", filename.local8Bit().data());
     file.close();
     return "";
   }
@@ -132,14 +132,12 @@ static QString getDescrFromNum(unsigned short _num)
   return "";
 }
 
-// Private
-/* still public for now
 enum DebugLevels {
-        KDEBUG_INFO=    0,
-        KDEBUG_WARN=    1,
-        KDEBUG_ERROR=   2,
-        KDEBUG_FATAL=   3
-}; */
+    KDEBUG_INFO=    0,
+    KDEBUG_WARN=    1,
+    KDEBUG_ERROR=   2,
+    KDEBUG_FATAL=   3
+};
 
 void kDebugBackend( unsigned short nLevel, unsigned short nArea,
                     const char * pFormat, va_list arguments )
@@ -414,4 +412,19 @@ void kDebugPError( unsigned short area, const char* fmt, ... )
     kDebugError( area, "%s: %s", buf, strerror(errno) );
 }
 
-kdbgstream &perror( kdbgstream &s) { s << " " << strerror(errno) << endl; return s; }
+kdbgstream &perror( kdbgstream &s) { return s << " " << strerror(errno) << endl; }
+
+kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
+kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
+
+kdbgstream kdError(int area) { return kdbgstream(area, KDEBUG_ERROR); }
+
+void kdbgstream::flush() {
+    if (output.isEmpty() || !print)
+	return;
+    output.truncate(output.length() - 1);
+    va_list arguments;
+    kDebugBackend( level, area, output.local8Bit().data(), arguments );
+    va_end( arguments );
+    output = QString::null;
+}
