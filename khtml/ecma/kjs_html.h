@@ -85,10 +85,19 @@ namespace KJS {
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
     ~HTMLCollection();
     virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
     virtual Boolean toBoolean() const { return Boolean(true); }
-  private:
+  protected:
     DOM::HTMLCollection collection;
+  };
+
+  class HTMLSelectCollection : public HTMLCollection {
+  public:
+    HTMLSelectCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+      : HTMLCollection(c), element(e) { }
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
+  private:
+      DOM::HTMLSelectElement element;
   };
 
   class HTMLCollectionFunc : public DOMFunction {
@@ -145,6 +154,7 @@ namespace KJS {
   };
 
   KJSO getHTMLCollection(DOM::HTMLCollection c);
+  KJSO getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e);
 
 
 }; // namespace
