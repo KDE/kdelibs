@@ -3,7 +3,7 @@ kdelibs (4:3.0.0-1) unstable; urgency=low
   * New upstream.
   * rebuilt debian dir.
 
- -- Christopher L Cheney <ccheney@debian.org>  Thu,  4 Apr 2002 23:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Tue, 16 Apr 2002 22:00:00 -0500
 
 kdelibs (4:2.2.2-13) unstable; urgency=high
 

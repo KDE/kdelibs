@@ -24,7 +24,7 @@ Description: KDE core libraries
 Package: kdelibs4-bin
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, kdelibs4-data (= ${Source-Version})
+Depends: ${shlibs:Depends}, kdelibs4-data (= ${Source-Version}), python
 Provides: kdelibs-bin
 Replaces: kdelibs-bin
 Description: KDE core binaries
