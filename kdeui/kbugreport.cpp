@@ -19,11 +19,11 @@
 // $Id$
 
 
-#include <qmultilineedit.h>
-#include <qlineedit.h>
+#include <qhbuttongroup.h> 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qbuttongroup.h>
+#include <qlineedit.h>
+#include <qmultilineedit.h>
 #include <qradiobutton.h>
 
 #include <kapp.h>
@@ -42,14 +42,14 @@
 #include <pwd.h>
 #include <unistd.h>
 
-KBugReport::KBugReport( QWidget * parentw )
+KBugReport::KBugReport( QWidget * parentw, bool modal )
   : KDialogBase( Plain,
                  i18n("Submit a KDE bug report"),
                  Ok | Cancel,
                  Ok,
                  parentw,
                  "KBugReport",
-                 true, // modal
+                 modal, // modal
                  true // separator
                  )
 {
@@ -60,6 +60,8 @@ KBugReport::KBugReport( QWidget * parentw )
 
   QGridLayout *glay = new QGridLayout( lay, 3, 3 );
   glay->setColStretch( 1, 10 );
+  glay->setColStretch( 2, 10 );
+  
 
   // From
   tmpLabel = new QLabel( i18n("From :"), parent );
@@ -82,31 +84,28 @@ KBugReport::KBugReport( QWidget * parentw )
    else m_strVersion = "no version set (programmer error!)";
   m_strVersion += " (KDE " KDE_VERSION_STRING ")";
   m_version = new QLabel( m_strVersion, parent );
-  glay->addWidget( m_version, 2, 1 );
+  //glay->addWidget( m_version, 2, 1 );
+  glay->addMultiCellWidget( m_version, 2, 2, 1, 2 );
 
   // Configure email button
   QPushButton * configureEmail = new QPushButton( i18n("Configure E-Mail"),
 						  parent );
   connect( configureEmail, SIGNAL( clicked() ), this,
 	   SLOT( slotConfigureEmail() ) );
-  glay->addMultiCellWidget( configureEmail, 0, 2, 2, 2, AlignTop );
+  glay->addMultiCellWidget( configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
 
   // Severity
-  m_bgSeverity = new QButtonGroup( i18n("Severity"), parent );
-  QGridLayout *bgLay = new QGridLayout(m_bgSeverity,2,4,10,5);
-  bgLay->addRowSpacing(0,10);
-  bgLay->setRowStretch(0,0);
-  bgLay->setRowStretch(1,1);
-  m_bgSeverity->setExclusive( TRUE );
+  m_bgSeverity = new QHButtonGroup( i18n("Severity"), parent );
   const char * sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
   const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("Normal"), i18n("Wishlist"), i18n("Translation") };
+
   for (int i = 0 ; i < 5 ; i++ )
   {
     // Store the severity string as the name
-    QRadioButton * rb = new QRadioButton( sevTexts[i], m_bgSeverity, sevNames[i] );
-    bgLay->addWidget(rb,1,i);
+    QRadioButton *rb = new QRadioButton( sevTexts[i], m_bgSeverity, sevNames[i] );
     if (i==2) rb->setChecked(true); // default : "normal"
   }
+
   lay->addWidget( m_bgSeverity );
 
   // Subject
@@ -124,6 +123,20 @@ KBugReport::KBugReport( QWidget * parentw )
     "this program \n"
     "and to the KDE buglist.");
   QLabel * label = new QLabel( parent, "label" );
+
+  /*
+    2000-01-15 Espen
+    Does not work (yet). The label has no well defined height so the 
+    dialog can be resized so that the action buttons become obscured 
+
+  QString text = i18n(""
+    "Enter the text (in English if possible) that you wish to submit for the "
+    "bug report. If you press \"OK\", a mail message will be sent to the "
+    "maintainer of this program and to the KDE buglist.");
+  QLabel * label = new QLabel( parent, "label" );
+  label->setTextFormat( RichText );
+  */
+
   label->setText( text );
   lay->addWidget( label );
 
@@ -138,6 +151,7 @@ KBugReport::KBugReport( QWidget * parentw )
   text = i18n("You can access previously reported bugs and wishes at ");
   label = new QLabel( text, parent, "label");
   hlay->addWidget( label, 0, AlignBottom );
+  hlay->addSpacing(1); // Looks better :)
 
   text = "http://bugs.kde.org/";
   KURLLabel *url = new KURLLabel( parent );
@@ -188,24 +202,33 @@ void KBugReport::slotUrlClicked(const QString &urlText)
 }
 
 
-
-int KBugReport::exec()
+void KBugReport::slotOk( void )
 {
-  int result = KDialogBase::exec();
+  if( m_lineedit->text().isEmpty() == true || 
+      m_subject->text().isEmpty() == true )
+  {
+    QString msg = i18n(""
+      "You must specify both a subject and a description\n"
+      "before the report can be sent.");
+    KMessageBox::error(this,msg);
+    return;
+  }
 
-  if ( result == QDialog::Accepted )
+  if( !sendBugReport() )
   {
-    if ( !sendBugReport() )
-      KMessageBox::error(this, i18n("Couldn't send the bug report.\nHmmm, submit a bug report manually, sorry...\n"));
-    else
-      KMessageBox::information(this, i18n("Bug report sent, thanks for your input."));
+    QString msg = i18n(""
+      "Couldn't send the bug report.\n"
+      "Hmmm, submit a bug report manually, sorry...");
+    KMessageBox::error(this, msg );
+    return;
   }
-  else
-  {
-    debug("cancelled");
-  }
-  return result;
+  
+   KMessageBox::information(this, 
+			    i18n("Bug report sent, thanks for your input."));
+   accept();
 }
+
+
 
 QString KBugReport::text()
 {

@@ -24,22 +24,21 @@
 
 class QMultiLineEdit;
 class QLineEdit;
-class QButtonGroup;
+class QHButtonGroup;
 class KProcess;
 
 class KBugReport : public KDialogBase
 {
   Q_OBJECT
 public:
-  KBugReport( QWidget * parent = 0L );
+  KBugReport( QWidget * parent = 0L, bool modal=true );
   virtual ~KBugReport();
-
-  virtual int exec();
 
 protected slots:
   virtual void slotConfigureEmail();
   virtual void slotSetFrom();
   virtual void slotUrlClicked(const QString &);
+  virtual void slotOk( void );
 
 protected:
   QString text();
@@ -52,7 +51,8 @@ protected:
   QLabel * m_from;
   QLabel * m_version;
   QString m_strVersion;
-  QButtonGroup * m_bgSeverity;
+  QHButtonGroup * m_bgSeverity;
 };
 
 #endif
+
