@@ -218,6 +218,7 @@
 7122        kio_sieve
 7123        kio_kamera
 7124        kio_cgi
+7125        kio_ldap
 
 # kdesdk
 8100        kompare
