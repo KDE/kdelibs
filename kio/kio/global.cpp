@@ -629,16 +629,16 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
 
     case  KIO::ERR_IS_DIRECTORY:
       errorName = i18n( "File Expected" );
-      description = i18n( "The request expected to return a file, however the "
-        "directory <strong>%1</strong> was returned instead." ).arg( dir );
+      description = i18n( "The request expected a file, however the "
+        "directory <strong>%1</strong> was found instead." ).arg( dir );
       causes << i18n( "This may be an error on the server side." ) << cBug;
       solutions << sUpdate << sSysadmin;
       break;
 
     case  KIO::ERR_IS_FILE:
       errorName = i18n( "Directory Expected" );
-      description = i18n( "The request expected to return a directory, however "
-        "the file <strong>%1</strong> was returned instead." ).arg( filename );
+      description = i18n( "The request expected a directory, however "
+        "the file <strong>%1</strong> was found instead." ).arg( filename );
       causes << cBug;
       solutions << sUpdate << sSysadmin;
       break;
