@@ -87,6 +87,7 @@
 # MPEG Layer 3 sound files
 # Modified the 11/20/97 at 15:59:04 by Christophe Prud'homme <christophe.prudhomme@asci.fr>
 0       belong          0xfffb          audio/x-mp3
+0       string          ID3             audio/x-mp3
 
 # OGG files
 # Detects Ogg Vorbis compressed audio files.
