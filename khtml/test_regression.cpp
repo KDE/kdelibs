@@ -113,6 +113,8 @@ RegTestObject::RegTestObject(ExecState *exec, RegressionTest *_regTest)
     putDirect("print",new RegTestFunction(exec,m_regTest,RegTestFunction::Print,1), DontEnum);
     putDirect("reportResult",new RegTestFunction(exec,m_regTest,RegTestFunction::ReportResult,3), DontEnum);
     putDirect("checkOutput",new RegTestFunction(exec,m_regTest,RegTestFunction::CheckOutput,1), DontEnum);
+    // add "quit" for compatibility with the mozilla js shell
+    putDirect("quit", new RegTestFunction(exec,m_regTest,RegTestFunction::Quit,1), DontEnum );
 }
 
 RegTestFunction::RegTestFunction(ExecState */*exec*/, RegressionTest *_regTest, int _id, int length)
@@ -130,12 +132,15 @@ bool RegTestFunction::implementsCall() const
 Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
     Value result = Undefined();
+    if ( m_regTest->ignore_errors )
+        return result;
+
     switch (id) {
 	case Print: {
 	    UString str = args[0].toString(exec);
             if ( str.qstring().lower().find( "failed!" ) >= 0 )
                 m_regTest->saw_failure = true;
-	    fprintf(stderr, "%s\n",str.ascii());
+	    fprintf(stderr, "%s\n",str.qstring().latin1());
 	    break;
 	}
 	case ReportResult: {
@@ -153,6 +158,12 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 				    "Output match for script-generated " + filename);
             break;
         }
+        case Quit:
+            m_regTest->reportResult(true,
+				    "Called quit" );
+            if ( !m_regTest->saw_failure )
+                m_regTest->ignore_errors = true;
+            break;
     }
 
     return result;
@@ -612,7 +623,7 @@ void RegressionTest::testStaticFile(const QString & filename)
 
 void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename, bool report_result )
 {
-qDebug("eval %s", filename.latin1());
+    qDebug("eval %s", filename.latin1());
     QString fullSourceName = filename;
     QFile sourceFile(fullSourceName);
 
@@ -626,9 +637,11 @@ qDebug("eval %s", filename.latin1());
     QString code = stream.read();
     sourceFile.close();
 
+    saw_failure = false;
+    ignore_errors = false;
     Completion c = interp.evaluate(UString( code ) );
 
-    if ( report_result ) {
+    if ( report_result && !ignore_errors) {
         if (c.complType() == Throw) {
             QString errmsg = c.value().toString(interp.globalExec()).qstring();
             if ( !filename.endsWith( "-n.js" ) ) {
@@ -638,12 +651,11 @@ qDebug("eval %s", filename.latin1());
                 reportResult( true, QString( "Expected Failure: %1" ).arg( errmsg ) );
             }
         } else if ( saw_failure ) {
-            reportResult( false, "failed" );
+            reportResult( false, "saw 'FAILED!'" );
         } else {
             reportResult( true, "passed" );
         }
     }
-
 }
 
 class GlobalImp : public ObjectImp {
@@ -653,8 +665,6 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename)
 {
-    saw_failure = false;
-
     // create interpreter
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions

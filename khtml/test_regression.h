@@ -72,7 +72,7 @@ public:
     bool implementsCall() const;
     KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
 
-    enum { Print, ReportResult, CheckOutput };
+    enum { Print, ReportResult, CheckOutput, Quit };
 
 private:
     RegressionTest *m_regTest;
@@ -149,6 +149,7 @@ public:
     int m_failures;
     int m_errors;
     bool saw_failure;
+    bool ignore_errors;
 
     static RegressionTest *curr;
 
