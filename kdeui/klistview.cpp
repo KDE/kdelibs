@@ -155,6 +155,8 @@ public:
   QListViewItem *parentItemDrop;
 
   QColor alternateBackground;
+  QColorGroup cgNormal; // saves a few thousand malloc()s to cache this
+  QColorGroup cgAlternate;
 };
 
 
@@ -917,6 +919,24 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
   // set as sibling
   after = above;
   parent = after ? after->parent() : 0L ;
+}
+
+void KListView::drawContentsOffset(QPainter *p, int offsetx, int offsety, int clipx, int clipy, int clipw, int cliph)
+{
+  d->cgNormal = d->cgAlternate = viewport()->colorGroup();
+
+  const QPixmap *pm = viewport()->backgroundPixmap();
+  if (pm && !pm->isNull())
+  {
+        d->cgNormal.setBrush(QColorGroup::Base, QBrush(d->cgNormal.base(), *pm));
+        if (d->alternateBackground.isValid())
+          d->cgAlternate.setBrush(QColorGroup::Base, QBrush(d->alternateBackground, *pm));
+        else d->cgAlternate.setBrush(QColorGroup::Base, d->cgNormal.brush(QColorGroup::Base));
+  }
+  else if (d->alternateBackground.isValid())
+        d->cgAlternate.setColor(QColorGroup::Base, d->alternateBackground);
+
+  QListView::drawContentsOffset(p, offsetx, offsety, clipx, clipy, clipw, cliph);
 }
 
 QListViewItem* KListView::lastChild () const
@@ -1863,7 +1883,14 @@ void KListViewItem::init()
 
 const QColor &KListViewItem::backgroundColor()
 {
-  KListView *lv = dynamic_cast<KListView *>(listView());
+  if (isAlternate())
+    return static_cast< KListView* >(listView())->alternateBackground();
+  return listView()->viewport()->colorGroup().base();
+}
+
+bool KListViewItem::isAlternate()
+{
+  KListView *lv = static_cast<KListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
     KListViewItem *above = 0;
@@ -1896,25 +1923,21 @@ const QColor &KListViewItem::backgroundColor()
           item = dynamic_cast<KListViewItem *>(item->nextSibling());
        }
     }
-    if (m_odd)
-      return lv->alternateBackground();
+    return m_odd;
   }
-  return listView()->viewport()->colorGroup().base();
+  return false;
 }
 
 void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int alignment)
 {
-  QColorGroup _cg = cg;
-  const QPixmap *pm = listView()->viewport()->backgroundPixmap();
-  if (pm && !pm->isNull())
+  if (cg == listView()->viewport()->colorGroup())
   {
-        _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
-        p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
+    if (isAlternate())
+      QListViewItem::paintCell(p, static_cast<KListView *>(listView())->d->cgAlternate, column, width, alignment);
+    else
+      QListViewItem::paintCell(p, static_cast<KListView *>(listView())->d->cgAlternate, column, width, alignment);
   }
-  else
-        _cg.setColor(QColorGroup::Base, backgroundColor());
-
-  QListViewItem::paintCell(p, _cg, column, width, alignment);
+  else QListViewItem::paintCell(p, cg, column, width, alignment);
 }
 
 #include "klistview.moc"
