@@ -136,7 +136,7 @@ bool ResourceNet::load()
 bool ResourceNet::asyncLoad()
 {
   if ( mLocalTempFile ) {
-    kdDebug(5700) << "stale temp file dedected " << mLocalTempFile->name() << endl;
+    kdDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
     mLocalTempFile->setAutoDelete( true );
     delete mLocalTempFile;
   }

@@ -190,7 +190,7 @@ bool ResourceFile::asyncLoad()
   mAsynchronous = true;
 
   if ( mLocalTempFile ) {
-    kdDebug(5700) << "stale temp file dedected " << mLocalTempFile->name() << endl;
+    kdDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
     delete mLocalTempFile;
   }
 
