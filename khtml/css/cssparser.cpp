@@ -1624,21 +1624,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	}
 #endif
       case CSS_PROP_CURSOR:
-    	// [ [<uri> ,]* [ auto | crosshair | default | pointer | move | e-resize | ne-resize |
-	// nw-resize | // n-resize | se-resize | sw-resize | s-resize | w-resize | text |
-	// wait | help ] ] | inherit
-	{
-	  if (cssval) {
-            int id = cssval->id;
-            if (id >= CSS_VAL_AUTO && id <= CSS_VAL_HELP) {
-	      parsedValue = new CSSPrimitiveValueImpl(id);
+          //  [ auto | crosshair | default | pointer | progress | move | e-resize | ne-resize |
+          // nw-resize | // n-resize | se-resize | sw-resize | s-resize | w-resize | text |
+          // wait | help ] ] | inherit
+          if (cssval && cssval->id >= CSS_VAL_AUTO && cssval->id <= CSS_VAL_HELP) {
+	      parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	      break;
-	    }
-	  } else {
-	    // Break is explictly missing, looking for <uri>
-	    // ### Only supports parsing the first uri
-	  }
-	}
+          }
+          break;
       case CSS_PROP_LIST_STYLE_IMAGE:     // <uri> | none | inherit
 	{
 	  if (cssval && cssval->id == CSS_VAL_NONE)

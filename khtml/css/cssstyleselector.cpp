@@ -1694,16 +1694,9 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!parentNode) return;
             style->setCursor(parentStyle->cursor());
-            style->setCursorImage(parentStyle->cursorImage());
             return;
         } else if(primitiveValue) {
-	    if(primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_URI) {
-            	CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
-            	//kdDebug( 6080 ) << "setting cursor image to " << image->cssText().string() << endl;
-            	style->setCursorImage(image->image());
-            } else {
-		style->setCursor( (ECursor) (primitiveValue->getIdent() - CSS_VAL_AUTO) );
-	    }
+	    style->setCursor( (ECursor) (primitiveValue->getIdent() - CSS_VAL_AUTO) );
         }
         break;
 //    case CSS_PROP_PLAY_DURING:
