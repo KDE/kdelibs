@@ -1,5 +1,6 @@
 debian/system.kdeglobals	etc/kde3/
 debian/tmp/etc/kde3
+debian/tmp/usr/share/applications
 debian/tmp/usr/share/applnk
 debian/tmp/usr/share/apps
 debian/tmp/usr/share/autostart

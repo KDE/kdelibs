@@ -3,6 +3,11 @@ debian/tmp/usr/lib/libartskde.so.*
 debian/tmp/usr/lib/libcupsdconf.la
 debian/tmp/usr/lib/libcupsdconf.so
 debian/tmp/usr/lib/libkabc.so.*
+debian/tmp/usr/lib/libkabc_dir.so.*
+debian/tmp/usr/lib/libkabc_file.so.*
+debian/tmp/usr/lib/libkabc_ldap.so.*
+debian/tmp/usr/lib/libkabc_ldapkio.so.*
+debian/tmp/usr/lib/libkabc_net.so.*
 debian/tmp/usr/lib/libkatepartinterfaces.so.*
 debian/tmp/usr/lib/libkdecore.so.*
 debian/tmp/usr/lib/libkdefakes.so.*
@@ -61,6 +66,7 @@ debian/tmp/usr/lib/kde3/dcopserver.*
 debian/tmp/usr/lib/kde3/kabc_dir.*
 debian/tmp/usr/lib/kde3/kabc_file.*
 debian/tmp/usr/lib/kde3/kabc_ldap.*
+debian/tmp/usr/lib/kde3/kabc_ldapkio.*
 debian/tmp/usr/lib/kde3/kabc_net.*
 debian/tmp/usr/lib/kde3/kabcformat_binary.*
 debian/tmp/usr/lib/kde3/kabcformat_vcard2.*
@@ -85,6 +91,7 @@ debian/tmp/usr/lib/kde3/kdeprint_tool_escputil.*
 debian/tmp/usr/lib/kde3/kfileaudiopreview.*
 debian/tmp/usr/lib/kde3/kgzipfilter.*
 debian/tmp/usr/lib/kde3/khtmlimagepart.*
+debian/tmp/usr/lib/kde3/libkhtmlpart.*
 debian/tmp/usr/lib/kde3/kimg_eps.*
 debian/tmp/usr/lib/kde3/kimg_ico.*
 debian/tmp/usr/lib/kde3/kimg_krl.*

@@ -12,6 +12,16 @@ debian/tmp/usr/lib/libartskde.la
 debian/tmp/usr/lib/libartskde.so
 debian/tmp/usr/lib/libkabc.la
 debian/tmp/usr/lib/libkabc.so
+debian/tmp/usr/lib/libkabc_file.so
+debian/tmp/usr/lib/libkabc_file.la
+debian/tmp/usr/lib/libkabc_dir.so
+debian/tmp/usr/lib/libkabc_dir.la
+debian/tmp/usr/lib/libkabc_ldap.so
+debian/tmp/usr/lib/libkabc_ldap.la
+debian/tmp/usr/lib/libkabc_net.so
+debian/tmp/usr/lib/libkabc_net.la
+debian/tmp/usr/lib/libkabc_ldapkio.so
+debian/tmp/usr/lib/libkabc_ldapkio.la
 debian/tmp/usr/lib/libkatepartinterfaces.la
 debian/tmp/usr/lib/libkatepartinterfaces.so
 debian/tmp/usr/lib/libkdecore.la
