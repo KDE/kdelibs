@@ -170,7 +170,6 @@ public:
     // for repainting toolbuttons when the toolbar is resized
     bool eventFilter(QObject *obj, QEvent *ev);
 protected:
-    void makeWallpaper(QPixmap &dest, const QColor &base);
     void drawVGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
                        int h);
     void drawHGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
@@ -181,8 +180,9 @@ protected:
                       bool down=false, bool fast = true);
 private:
     QColorGroup radioOnGrp;
-    KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge;
+    KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge, *vDark;
     QWidget *highlightWidget;
+    QBrush wallpaper;
 };
 
 #endif

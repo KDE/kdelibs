@@ -51,7 +51,6 @@
 #include <ktoolbar.h>
 #include <qdrawutil.h>
 #include <unistd.h>
-#include "paperbits.h"
 
 #include "bitmaps.h"
 
@@ -189,6 +188,8 @@ HCStyle::HCStyle()
         hMed->resize(34, 18);
         hLarge = new KPixmap;
         hLarge->resize(52, 18);
+        vDark = new KPixmap;
+        vDark->resize(18, 32);
     }
     else{
         vSmall = vMed = vLarge = NULL;
@@ -204,6 +205,7 @@ HCStyle::~HCStyle()
         delete vLarge;
         delete hMed;
         delete hLarge;
+        delete vDark;
     }
 }
 
@@ -248,25 +250,9 @@ void HCStyle::polish(QPalette &)
                                 KPixmapEffect::HorizontalGradient);
         KPixmapEffect::gradient(*hLarge, high, low,
                                 KPixmapEffect::HorizontalGradient);
-    }
-    QString tmpStr = config->readEntry("CustomWallpaper", "");
-    if(!tmpStr.isEmpty()){
-        QPixmap wallPaper(tmpStr);
-        if(!wallPaper.isNull())
-            pal.setBrush(QColorGroup::Background,
-                 QBrush(pal.color(QPalette::Active, QColorGroup::Background),
-                        wallPaper));
-        else
-            qWarning("Highcolor B2: Unable to load wallpaper %s",
-                    tmpStr.latin1());
-    }
-    else if(config->readBoolEntry("UseWallpaper", true)){
-        QPixmap wallPaper;
-        makeWallpaper(wallPaper,pal.color(QPalette::Active,
-                                          QColorGroup::Background));
-        pal.setBrush(QColorGroup::Background,
-                     QBrush(pal.color(QPalette::Active, QColorGroup::Background),
-                            wallPaper));
+        KPixmapEffect::gradient(*vDark, g.mid(), g.dark(),
+                                KPixmapEffect::VerticalGradient);
+
     }
     config->setGroup(oldGrp);
 }
@@ -293,8 +279,8 @@ void HCStyle::polish(QWidget *w)
     }
     if(w->inherits("QLabel") || w->inherits("QButton") ||
        w->inherits("QComboBox")){
-        if(w->parent() && !w->parent()->inherits("KToolBar") &&
-           !w->parent()->inherits("KHTMLView"))
+        if((w->parent() && !w->parent()->inherits("KToolBar") &&
+            !w->parent()->inherits("KHTMLView")))
             w->setBackgroundOrigin(QWidget::ParentOrigin);
         else
             w->setAutoMask(true);
@@ -311,6 +297,7 @@ void HCStyle::unPolish(QWidget *w)
 {
     if (w->isTopLevel())
         return;
+    w->setBackgroundMode(QWidget::PaletteBackground);
 
     if(w->inherits("QPushButton")){
         w->removeEventFilter(this);
@@ -371,7 +358,7 @@ bool HCStyle::eventFilter(QObject *obj, QEvent *ev)
 
 void HCStyle::drawButton(QPainter *p, int x, int y, int w, int h,
                          const QColorGroup &g, bool sunken,
-                         const QBrush *fill)
+                         const QBrush *)
 {
     kDrawBeButton(p, x, y, w, h, g, sunken, &g.brush(QColorGroup::Midlight));
 #if 0
@@ -1447,12 +1434,24 @@ void HCStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
       p->setFont( KGlobalSettings::menuFont() );
 
     if(active){
-        qDrawShadePanel(p, x, y, w, h, g, true, 1,
-                        &g.brush(QColorGroup::Midlight));
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+        if(vDark){
+            p->setPen(g.mid());
+            p->drawLine(x, y, x2, y);
+            p->drawLine(x, y, x, y2);
+            p->setPen(g.dark());
+            p->drawLine(x, y2, x2, y2);
+            p->drawLine(x2, y, x2, y2);
+            p->drawTiledPixmap(x+1, y+1, w-2, h-2, *vDark);
+        }
+        else
+            qDrawShadePanel(p, x, y, w, h, g, false, 1,
+                            &g.brush(QColorGroup::Mid));
         QApplication::style().drawItem(p, x, y, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                                       -1, &g.text());
+                                       -1, &Qt::white);
     }
     else
         QApplication::style().drawItem(p, x, y, w, h,
@@ -1482,8 +1481,20 @@ static const int windowsRightBorder     = 12;
 
         int checkcol = maxpmw;
 
-        qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
-                        &itemg.brush(QColorGroup::Midlight));
+        if(vDark){
+            int x2 = x+w-1;
+            int y2 = y+h-1;
+            p->setPen(itemg.mid());
+            p->drawLine(x, y, x2, y);
+            p->drawLine(x, y, x, y2);
+            p->setPen(itemg.dark());
+            p->drawLine(x, y2, x2, y2);
+            p->drawLine(x2, y, x2, y2);
+            p->drawTiledPixmap(x+1, y+1, w-2, h-2, *vDark);
+        }
+        else
+            qDrawShadePanel(p, x, y, w, h, itemg, false, 1,
+                            &itemg.brush(QColorGroup::Mid));
 
         if ( mi->iconSet() ) {
             QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
@@ -1507,10 +1518,10 @@ static const int windowsRightBorder     = 12;
                                y+motifItemFrame, mw, mh, itemg, act, dis );
             }
         }
-        p->setPen(itemg.text());
+        p->setPen(Qt::white);
         QColor discol;
         if (dis) {
-            discol = itemg.text();
+            discol = itemg.midlight();
             p->setPen(discol);
         }
         int xm = motifItemFrame + checkcol + motifItemHMargin;
@@ -1634,11 +1645,10 @@ void HCStyle::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
         p->drawLine(r.x()+3, r.y()+3, r.right()-1, r.y()+3);
 
         p->fillRect(r.x()+2, r.y()+4, r.width()-3, r.height()-6,
-        g.brush(QColorGroup::Mid));
+                    g.brush(QColorGroup::Mid));
 
         p->setPen(g.light());
         p->drawLine(r.x(), r.bottom()-1, r.right(), r.bottom()-1);
-        p->setPen(g.midlight());
 
     }
     else{
@@ -1660,7 +1670,8 @@ void HCStyle::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
 }
 
 void HCStyle::drawTabMask(QPainter *p, const QTabBar*, QTab *tab,
-                          bool )
+                          bool)
+
 
 {
     p->fillRect(tab->rect(), Qt::color1);
@@ -1851,35 +1862,6 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
                     AlignLeft|AlignVCenter, s2);
     }
 }
-
-
-
-void HCStyle::makeWallpaper(QPixmap &dest, const QColor &base)
-{
-    static QBitmap paper1(45, 45, paper_1_bits, true);
-    static QBitmap paper2(45, 45, paper_2_bits, true);
-    static QBitmap paper3(45, 45, paper_3_bits, true);
-
-    if(!paper1.mask()){
-        paper1.setMask(paper1);
-        paper2.setMask(paper2);
-        paper3.setMask(paper3);
-    }
-    dest.resize(45, 45);
-    dest.fill(base);
-    QPainter p;
-    p.begin(&dest);
-    p.setPen(base.dark(104));
-    p.drawPixmap(0, 0, paper1);
-    p.setPen(base.light(104));
-    p.drawPixmap(0, 0, paper2);
-    p.setPen(base.light(106));
-    p.drawPixmap(0, 0, paper3);
-    p.end();
-}
-
-
-
 
 
 #include "hcstyle.moc"
