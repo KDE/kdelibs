@@ -52,16 +52,44 @@ QString KPixmapCache::pixmapFileForMimeType( const char *_mime_type, bool _mini 
   return pixmapFile( KMimeType::mimeType( _mime_type )->icon( QString::null, false ).ascii(), _mini );
 }
 
+QString hackLocate( const QString &type, const QString &filename )
+{
+  QString file = locate( type, filename );
+  if ( file.isNull() && filename.right( 4 ) == ".xpm" )
+  {
+    file = filename;
+    file.truncate( file.length() - 4 );
+    file.append( ".png" );
+    file = locate( type, file );
+  }
+  return file;
+}
+
+QPixmap *hackCacheFind( const QString &key )
+{
+  QPixmap *pix = QPixmapCache::find( key );
+  
+  if ( !pix && key.right( 4 ) == ".xpm" )
+  {
+    QString key2 = key;
+    key2.truncate( key2.length() - 4 );
+    key2.append( ".png" );
+    pix = QPixmapCache::find( key2 );
+  }
+  
+  return pix;
+}
+
 QPixmap* KPixmapCache::toolbarPixmap( const char *_pixmap )
 {
   QString key = "toolbar/";
   key += _pixmap;
 
-  QPixmap* pix = QPixmapCache::find( key );
+  QPixmap* pix = hackCacheFind( key );
   if ( pix )
     return pix;
 
-  QString file = locate("toolbar", _pixmap);
+  QString file = hackLocate("toolbar", _pixmap);
 
   QPixmap p1;
   p1.load( file );
@@ -79,11 +107,11 @@ QPixmap* KPixmapCache::wallpaperPixmap( const char *_wallpaper )
   QString key = "wallpapers/";
   key += _wallpaper;
 
-  QPixmap* pix = QPixmapCache::find( key );
+  QPixmap* pix = hackCacheFind( key );
   if ( pix )
     return pix;
 
-  QString file = locate("wallpaper", _wallpaper);
+  QString file = hackLocate("wallpaper", _wallpaper);
   
   QPixmap p1;
   p1.load( file );
@@ -100,7 +128,7 @@ QPixmap* KPixmapCache::pixmap( const char *_pixmap, bool _mini )
 {
   QString file = pixmapFile(_pixmap, _mini);
 
-  QPixmap* pix = QPixmapCache::find( file );
+  QPixmap* pix = hackCacheFind( file );
   if ( pix )
     return pix;
   
@@ -117,9 +145,9 @@ QPixmap* KPixmapCache::pixmap( const char *_pixmap, bool _mini )
 QString KPixmapCache::pixmapFile( const char *_pixmap, bool _mini )
 {
   QString key = _mini ? "mini" : "icon";
-  QString file = locate(key, _pixmap);
+  QString file = hackLocate(key, _pixmap);
   if (file.isNull())
-    return locate(key, "unknown.xpm");
+    return hackLocate(key, "unknown.xpm");
   
   return file;
 }
