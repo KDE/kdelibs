@@ -232,7 +232,7 @@ void KHTMLParser::parseToken(Token *t)
         return;
 
     // set attributes
-    if(n->isElementNode())
+    if(n->isElementNode() && t->id != ID_ISINDEX)
     {
         ElementImpl *e = static_cast<ElementImpl *>(n);
         e->setAttributeMap(t->attrs);
@@ -1235,7 +1235,7 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     AttributeImpl* a = t->attrs ? t->attrs->getAttributeItem(ATTR_PROMPT) : 0;
     DOMString text = i18n("This is a searchable index. Enter search keywords: ");
     if (a)
-        text = a->value() + " ";
+        text = a->value();
     child = new TextImpl(document, text);
     n->addChild( child );
     child = new HTMLIsIndexElementImpl(document, myform);
