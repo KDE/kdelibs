@@ -591,6 +591,8 @@ void KKeyChooser::toChange( QListViewItem *item )
 		
 		QString str = KAccel::keyToString( kSCode );
 		d->bChange->setText(str);
+
+                item->setText(1, KAccel::keyToString( kCode ));
 		
 	} else {
 		d->lNotConfig->setEnabled( false );
@@ -610,7 +612,8 @@ void KKeyChooser::toChange( QListViewItem *item )
 		QString str = KAccel::keyToString( kSCode );
 		d->bChange->setText(str); //eKey->setText(str);
 		//d->bChange->setEnabled( true ); //bDefault->setEnabled( true );
-		
+		item->setText(1, KAccel::keyToString( kCode ));
+
 		if ( isKeyPresent(kCode, false) ) {
 			d->lInfo->setText(i18n("Attention : key already used") );
 		}
@@ -679,6 +682,7 @@ void KKeyChooser::keyMode( int m )
 
 void KKeyChooser::noKey()
 {
+    kdDebug(125) << "no Key" << d->wList->currentItem()->text(0) << endl;
     (*d->actionMap[d->wList->currentItem()]).aConfigKeyCode = 0;
 	
     /* update the list and the change area */
