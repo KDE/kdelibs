@@ -24,6 +24,10 @@
 #include <stdlib.h>
 #include <kapplication.h>
 #include <qfile.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <sys/resource.h>
+#include <unistd.h>
 // to be able to delete a static protected member pointer in kbrowser...
 // just for memory debugging
 #define protected public
@@ -85,6 +89,8 @@ using namespace DOM;
 using namespace KJS;
 
 bool visual = false;
+
+static sigjmp_buf *cur_label = 0;
 
 // -------------------------------------------------------------------------
 
@@ -329,6 +335,24 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 
     return result;
 }
+        
+// signal handler
+static void sighandler(int sig) {
+    signal(SIGSEGV, sighandler);
+    signal(SIGILL, sighandler);
+    signal(SIGFPE, sighandler);
+    if (cur_label) {
+	signal(SIGABRT, sighandler);
+        siglongjmp(*cur_label, sig);
+    }
+
+    signal(SIGABRT, SIG_DFL);
+    const char msg[]="Signal %d occurred. Aborting\n";
+    fflush(stdout); fflush(stderr);
+    printf(msg, sig);
+    fprintf(stderr, msg, sig);
+    abort();
+}
 
 // -------------------------------------------------------------------------
 
@@ -415,6 +439,15 @@ int main(int argc, char *argv[])
     a.setMainWidget( toplevel );
     if ( visual )
         toplevel->show();
+
+    signal(SIGSEGV, sighandler);
+    signal(SIGABRT, sighandler);
+    signal(SIGILL, sighandler);
+    signal(SIGFPE, sighandler);
+    
+    // set ulimits
+    static rlimit vmem_limit = { 0, 128*1024 };	// 128Mb Memory should suffice
+    setrlimit(RLIMIT_AS, &vmem_limit);
 
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
@@ -563,6 +596,18 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	}
     }
     else if (info.isFile()) {
+        sigjmp_buf recover_label;
+	int signum = sigsetjmp(recover_label, true);
+	if (signum) {
+	    cur_label = 0;
+	    reportResult(false, QString("Signal %1 caught").arg(signum), true);
+	    fprintf(stderr, "!!! SIGNAL %d caught while processing %s !!!\n",
+	    	signum, info.fileName().latin1());
+	    return false;
+	}
+
+	cur_label = &recover_label;
+
         khtml::Cache::init();
 
 	QString relativeDir = QFileInfo(relPath).dirPath();
@@ -579,8 +624,11 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	}
 	else if (mustExist) {
 	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",relPath.latin1());
+	    cur_label = 0;
 	    return false;
 	}
+
+	cur_label = 0;
     } else if (mustExist) {
         fprintf(stderr,"%s: Not a regular file\n",relPath.latin1());
         return false;
@@ -923,12 +971,15 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     return result;
 }
 
-bool RegressionTest::reportResult(bool passed, const QString & description)
+bool RegressionTest::reportResult(bool passed, const QString & description, bool error)
 {
     if (m_genOutput)
 	return true;
 
-    if (passed) {
+    if (error) {
+        printf("ERROR: ");
+	m_errors++;
+    } else if (passed) {
         if ( m_known_failures & AllFailure ) {
             printf("PASS (unexpected!): ");
             m_passes_fail++;
@@ -959,7 +1010,8 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
     }
 
     printf("\n");
-    return passed;
+    fflush(stdout);
+    return passed && !error;
 }
 
 void RegressionTest::createMissingDirs(QString path)

@@ -135,7 +135,7 @@ public:
     bool checkOutput(const QString& againstFilename);
     enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4};
     bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
-    bool reportResult( bool passed, const QString & description = QString::null );
+    bool reportResult( bool passed, const QString & description = QString::null, bool error = false );
     void createMissingDirs(QString path);
 
     KHTMLPart *m_part;
