@@ -362,6 +362,11 @@ void KSSL::setPeerInfo(int sock) {
 }
 
 
+bool KSSL::pending() {
+
+}
+
+
 KSSLConnectionInfo& KSSL::connectionInfo() {
   return m_ci;
 }
