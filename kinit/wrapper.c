@@ -354,7 +354,7 @@ int main(int argc, char **argv)
    }
    if( wrapper )
    {
-      size += sizeof(long); // empty envs
+      size += sizeof(long); /* empty envs */
    }
    if (ext_wrapper || kwrapper)
    {
@@ -417,7 +417,7 @@ int main(int argc, char **argv)
    if( wrapper )
    {
       long dummy = 0;
-      memcpy(p, &dummy, sizeof(dummy)); // empty envc
+      memcpy(p, &dummy, sizeof(dummy)); /* empty envc */
       p+= sizeof( dummy );
    }
    if (ext_wrapper || kwrapper)
