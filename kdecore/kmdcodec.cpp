@@ -1021,11 +1021,11 @@ bool KMD5::isDigestMatch( const char * msg_digest, DigestType type )
     switch (type)
     {
         case HEX:
-            if ( strcmp( hexDigest(), msg_digest ) == 0 )
+            if ( ::qstrcmp( hexDigest(), msg_digest ) == 0 )
                 result = true;
             break;
         case BIN:
-            if ( strcmp( reinterpret_cast<char *>(rawDigest()), msg_digest ) == 0 )
+            if ( ::qstrcmp( reinterpret_cast<char *>(rawDigest()), msg_digest ) == 0 )
                 result = true;
             break;
         default:
