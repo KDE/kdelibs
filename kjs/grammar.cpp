@@ -112,7 +112,7 @@
 #define YYDEBUG 0
 #define YYMAXDEPTH 0
 #define YYERROR_VERBOSE
-#define DBG(l, s, e) { l->setLoc(s.first_line, e.last_line, Parser::sid); } // location
+#define DBG(l, s, e) { l->setLoc(s.first_line, e.last_line, Parser::source); } // location
 
 extern int yylex();
 static int yyerror (const char *);

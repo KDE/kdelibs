@@ -761,12 +761,24 @@ bool ContextImp::inTryCatch() const
   return (c && c->tryCatch);
 }
 
+// ---------------------------- SourceCode -------------------------------------
+
+void SourceCode::cleanup()
+{
+  if (interpreter && interpreter->debugger())
+    interpreter->debugger()->sourceUnused(interpreter->globalExec(),sid);
+  if (interpreter)
+    interpreter->removeSourceCode(this);
+  delete this;
+}
+
 // ------------------------------ Parser ---------------------------------------
 
 ProgramNode *Parser::progNode = 0;
 int Parser::sid = 0;
+SourceCode *Parser::source = 0;
 
-ProgramNode *Parser::parse(const UChar *code, unsigned int length, int *sourceId,
+ProgramNode *Parser::parse(const UChar *code, unsigned int length, SourceCode **src,
 			   int *errLine, UString *errMsg)
 {
   if (errLine)
@@ -777,8 +789,11 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, int *sourceId
   Lexer::curr()->setCode(code, length);
   progNode = 0;
   sid++;
-  if (sourceId)
-    *sourceId = sid;
+
+  source = new SourceCode(sid);
+  source->ref();
+  *src = source;
+
   // Enable this (and the #define YYDEBUG in grammar.y) to debug a parse error
   //extern int kjsyydebug;
   //kjsyydebug=1;
@@ -786,6 +801,7 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, int *sourceId
   ProgramNode *prog = progNode;
   progNode = 0;
   //sid = -1;
+  source = 0;
 
   if (parseError) {
     int eline = Lexer::curr()->lineNo();
@@ -847,7 +863,8 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
     global(glob),
     dbg(0),
     m_compatMode(Interpreter::NativeMode),
-    recursion(0)
+    recursion(0),
+    sources(0)
 {
   // add this interpreter to the global chain
   // as a root set for garbage collection
@@ -991,6 +1008,8 @@ InterpreterImp::~InterpreterImp()
 {
   if (dbg)
     dbg->detach(m_interpreter);
+  for (SourceCode *s = sources; s; s = s->next)
+    s->interpreter = 0;
   delete globExec;
   globExec = 0L;
   clear();
@@ -1037,7 +1056,9 @@ void InterpreterImp::mark()
 bool InterpreterImp::checkSyntax(const UString &code)
 {
   // Parser::parse() returns 0 in a syntax error occurs, so we just check for that
-  ProgramNode *progNode = Parser::parse(code.data(),code.size(),0,0,0);
+  SourceCode *source;
+  ProgramNode *progNode = Parser::parse(code.data(),code.size(),&source,0,0);
+  source->deref();
   bool ok = (progNode != 0);
   delete progNode;
   return ok;
@@ -1051,26 +1072,35 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   }
 
   // parse the source code
-  int sid;
   int errLine;
   UString errMsg;
-  ProgramNode *progNode = Parser::parse(code.data(),code.size(),&sid,&errLine,&errMsg);
+  SourceCode *source;
+  ProgramNode *progNode = Parser::parse(code.data(),code.size(),&source,&errLine,&errMsg);
+
 
   // notify debugger that source has been parsed
   if (dbg) {
-    bool cont = dbg->sourceParsed(globExec,sid,code,errLine);
-    if (!cont)
+    bool cont = dbg->sourceParsed(globExec,source->sid,code,errLine);
+    if (!cont) {
+      source->deref();
+      if (progNode)
+	delete progNode;
       return Completion(Break);
+    }
   }
+
+  addSourceCode(source);
 
   // no program node means a syntax error occurred
   if (!progNode) {
     Object err = Error::create(globExec,SyntaxError,errMsg.ascii(),errLine);
-    err.put(globExec,"sid",Number(sid));
+    err.put(globExec,"sid",Number(source->sid));
     globExec->setException(err); // required to notify the debugger
     globExec->clearException();
+    source->deref();
     return Completion(Throw,err);
   }
+  source->deref();
 
   globExec->clearException();
 
@@ -1098,7 +1128,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   else {
     // execute the code
     ExecState *exec1 = 0;
-    ContextImp ctx(globalObj, exec1, thisObj, sid);
+    ContextImp ctx(globalObj, exec1, thisObj, source->sid);
     ExecState newExec(m_interpreter,&ctx);
 
     // create variables (initialized to undefined until var statements
@@ -1147,6 +1177,36 @@ void InterpreterImp::setDebugger(Debugger *d)
   dbg = d;
   if ( old )
     old->detach(m_interpreter);
+}
+
+void InterpreterImp::addSourceCode(SourceCode *code)
+{
+  assert(!code->next);
+  assert(!code->interpreter);
+  code->next = sources;
+  code->interpreter = this;
+  sources = code;
+}
+
+void InterpreterImp::removeSourceCode(SourceCode *code)
+{
+  assert(code);
+  assert(sources);
+
+  if (code == sources) {
+    sources = sources->next;
+    return;
+  }
+
+  SourceCode *prev = sources;
+  SourceCode *cur = sources->next;
+  while (cur != code) {
+    assert(cur);
+    prev = cur;
+    cur = cur->next;
+  }
+
+  prev->next = cur->next;
 }
 
 // ------------------------------ InternalFunctionImp --------------------------

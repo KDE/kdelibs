@@ -158,21 +158,34 @@ Value Node::throwError(ExecState *exec, ErrorType e, const char *msg) const
 }
 
 // ----------------------------- StatementNode --------------------------------
-StatementNode::StatementNode() : l0(-1), l1(-1), sid(-1), breakPoint(false)
+StatementNode::StatementNode() : l0(-1), l1(-1), sourceCode(0), breakPoint(false)
 {
 }
 
-void StatementNode::setLoc(int line0, int line1, int sourceId)
+StatementNode::~StatementNode()
 {
-    l0 = line0;
-    l1 = line1;
-    sid = sourceId;
+  if (sourceCode)
+    sourceCode->deref();
+}
+
+void StatementNode::setLoc(int line0, int line1, SourceCode *src)
+{
+  // ### require these to be passed to the constructor
+  l0 = line0;
+  l1 = line1;
+  if (sourceCode != src) {
+    if (sourceCode)
+      sourceCode->deref();
+    sourceCode = src;
+    sourceCode->ref();
+  }
 }
 
 // return true if the debugger wants us to stop at this point
 bool StatementNode::hitStatement(ExecState *exec)
 {
-  assert(exec->imp()->context->sourceId == sid);
+  assert(sourceCode);
+  assert(exec->imp()->context->sourceId == sourceCode->sid);
   exec->imp()->context->setLines(l0,l1);
   Debugger *dbg = exec->interpreter()->imp()->debugger();
   if (dbg)
@@ -1613,17 +1626,17 @@ Value CommaNode::evaluate(ExecState *exec) const
 
 StatListNode::StatListNode(StatementNode *s) : statement(s), list(0L)
 {
-  setLoc(s->firstLine(),s->lastLine(),s->sourceId());
+  setLoc(s->firstLine(),s->lastLine(),s->code());
 }
 
 StatListNode::StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l)
 {
-  setLoc(l->firstLine(),s->lastLine(),l->sourceId());
+  setLoc(l->firstLine(),s->lastLine(),l->code());
 }
 
 void StatListNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement )
     statement->ref();
   if ( list )
@@ -1636,7 +1649,7 @@ bool StatListNode::deref()
     delete statement;
   if ( list && list->deref() )
     delete list;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.1
@@ -1802,7 +1815,7 @@ void VarDeclListNode::processVarDecls(ExecState *exec)
 
 void VarStatementNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( list )
     list->ref();
 }
@@ -1811,7 +1824,7 @@ bool VarStatementNode::deref()
 {
   if ( list && list->deref() )
     delete list;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.2
@@ -1835,7 +1848,7 @@ void VarStatementNode::processVarDecls(ExecState *exec)
 BlockNode::BlockNode(SourceElementsNode *s) : source(s)
 {
   if (s)
-    setLoc(s->firstLine(), s->lastLine(), s->sourceId());
+    setLoc(s->firstLine(), s->lastLine(), s->code());
   reverseList();
 }
 
@@ -1853,7 +1866,7 @@ void BlockNode::reverseList()
 
 void BlockNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( source )
     source->ref();
 }
@@ -1862,7 +1875,7 @@ bool BlockNode::deref()
 {
   if ( source && source->deref() )
     delete source;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.1
@@ -1894,7 +1907,7 @@ Completion EmptyStatementNode::execute(ExecState */*exec*/)
 
 void ExprStatementNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( expr )
     expr->ref();
 }
@@ -1903,7 +1916,7 @@ bool ExprStatementNode::deref()
 {
   if ( expr && expr->deref() )
     delete expr;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.4
@@ -1921,7 +1934,7 @@ Completion ExprStatementNode::execute(ExecState *exec)
 
 void IfNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement1 )
     statement1->ref();
   if ( statement2 )
@@ -1938,7 +1951,7 @@ bool IfNode::deref()
     delete statement2;
   if ( expr && expr->deref() )
     delete expr;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.5
@@ -1973,7 +1986,7 @@ void IfNode::processVarDecls(ExecState *exec)
 
 void DoWhileNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement )
     statement->ref();
   if ( expr )
@@ -1986,7 +1999,7 @@ bool DoWhileNode::deref()
     delete statement;
   if ( expr && expr->deref() )
     delete expr;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.6.1
@@ -2025,7 +2038,7 @@ void DoWhileNode::processVarDecls(ExecState *exec)
 
 void WhileNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement )
     statement->ref();
   if ( expr )
@@ -2038,7 +2051,7 @@ bool WhileNode::deref()
     delete statement;
   if ( expr && expr->deref() )
     delete expr;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.6.2
@@ -2081,7 +2094,7 @@ void WhileNode::processVarDecls(ExecState *exec)
 
 void ForNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement )
     statement->ref();
   if ( expr1 )
@@ -2102,7 +2115,7 @@ bool ForNode::deref()
     delete expr2;
   if ( expr3 && expr3->deref() )
     delete expr3;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.6.3
@@ -2165,7 +2178,7 @@ ForInNode::ForInNode(const UString &i, AssignExprNode *in, Node *e, StatementNod
 
 void ForInNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement )
     statement->ref();
   if ( expr )
@@ -2190,7 +2203,7 @@ bool ForInNode::deref()
     delete init;
   if ( varDecl && varDecl->deref() )
     delete varDecl;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.6.4
@@ -2279,7 +2292,7 @@ Completion BreakNode::execute(ExecState *exec)
 
 void ReturnNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( value )
     value->ref();
 }
@@ -2288,7 +2301,7 @@ bool ReturnNode::deref()
 {
   if ( value && value->deref() )
     delete value;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.9
@@ -2309,7 +2322,7 @@ Completion ReturnNode::execute(ExecState *exec)
 
 void WithNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement )
     statement->ref();
   if ( expr )
@@ -2322,7 +2335,7 @@ bool WithNode::deref()
     delete statement;
   if ( expr && expr->deref() )
     delete expr;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.10
@@ -2543,7 +2556,7 @@ void CaseBlockNode::processVarDecls(ExecState *exec)
 
 void SwitchNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( expr )
     expr->ref();
   if ( block )
@@ -2556,7 +2569,7 @@ bool SwitchNode::deref()
     delete expr;
   if ( block && block->deref() )
     delete block;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.11
@@ -2583,7 +2596,7 @@ void SwitchNode::processVarDecls(ExecState *exec)
 
 void LabelNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( statement )
     statement->ref();
 }
@@ -2592,7 +2605,7 @@ bool LabelNode::deref()
 {
   if ( statement && statement->deref() )
     delete statement;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.12
@@ -2622,7 +2635,7 @@ void LabelNode::processVarDecls(ExecState *exec)
 
 void ThrowNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( expr )
     expr->ref();
 }
@@ -2631,7 +2644,7 @@ bool ThrowNode::deref()
 {
   if ( expr && expr->deref() )
     delete expr;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.13
@@ -2656,7 +2669,7 @@ Completion ThrowNode::execute(ExecState *exec)
 
 void CatchNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( block )
     block->ref();
 }
@@ -2665,7 +2678,7 @@ bool CatchNode::deref()
 {
   if ( block && block->deref() )
     delete block;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 Completion CatchNode::execute(ExecState */*exec*/)
@@ -2700,7 +2713,7 @@ void CatchNode::processVarDecls(ExecState *exec)
 
 void FinallyNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( block )
     block->ref();
 }
@@ -2709,7 +2722,7 @@ bool FinallyNode::deref()
 {
   if ( block && block->deref() )
     delete block;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.14
@@ -2727,7 +2740,7 @@ void FinallyNode::processVarDecls(ExecState *exec)
 
 void TryNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( block )
     block->ref();
   if ( _final )
@@ -2744,7 +2757,7 @@ bool TryNode::deref()
     delete _final;
   if ( _catch && _catch->deref() )
     delete _catch;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 12.14
@@ -2839,7 +2852,7 @@ void FunctionBodyNode::processFuncDecl(ExecState *exec)
 
 void FuncDeclNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( param )
     param->ref();
   if ( body )
@@ -2852,7 +2865,7 @@ bool FuncDeclNode::deref()
     delete param;
   if ( body && body->deref() )
     delete body;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 13
@@ -2935,19 +2948,19 @@ SourceElementsNode::SourceElementsNode(StatementNode *s1)
 {
   element = s1;
   elements = 0L;
-  setLoc(s1->firstLine(),s1->lastLine(),s1->sourceId());
+  setLoc(s1->firstLine(),s1->lastLine(),s1->code());
 }
 
 SourceElementsNode::SourceElementsNode(SourceElementsNode *s1, StatementNode *s2)
 {
   elements = s1;
   element = s2;
-  setLoc(s1->firstLine(),s2->lastLine(),s1->sourceId());
+  setLoc(s1->firstLine(),s2->lastLine(),s1->code());
 }
 
 void SourceElementsNode::ref()
 {
-  Node::ref();
+  StatementNode::ref();
   if ( element )
     element->ref();
   if ( elements )
@@ -2960,7 +2973,7 @@ bool SourceElementsNode::deref()
     delete element;
   if ( elements && elements->deref() )
     delete elements;
-  return Node::deref();
+  return StatementNode::deref();
 }
 
 // ECMA 14

@@ -207,20 +207,25 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
   }
 
   // parse the source code
-  int sid;
+  SourceCode *source;
   int errLine;
   UString errMsg;
-  ProgramNode *progNode = Parser::parse(body.data(),body.size(),&sid,&errLine,&errMsg);
+  ProgramNode *progNode = Parser::parse(body.data(),body.size(),&source,&errLine,&errMsg);
 
   // notify debugger that source has been parsed
   Debugger *dbg = exec->interpreter()->imp()->debugger();
   if (dbg) {
-    bool cont = dbg->sourceParsed(exec,sid,body,errLine);
+    bool cont = dbg->sourceParsed(exec,source->sid,body,errLine);
     if (!cont) {
+      source->deref();
       dbg->imp()->abort();
+      if (progNode)
+	delete progNode;
       return Object(new ObjectImp());
     }
   }
+
+  exec->interpreter()->imp()->addSourceCode(source);
 
   // no program node == syntax error - throw a syntax error
   if (!progNode) {
@@ -228,8 +233,10 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
     // we can't return a Completion(Throw) here, so just set the exception
     // and return it
     exec->setException(err);
+    source->deref();
     return err;
   }
+  source->deref();
 
   List scopeChain;
   scopeChain.append(exec->interpreter()->globalObject());

@@ -373,6 +373,21 @@ namespace KJS {
     List args;
   };
 
+  class SourceCode {
+  public:
+    SourceCode(int _sid)
+      : sid(_sid), interpreter(0), refcount(0), next(0) {}
+
+    void ref() { refcount++; }
+    void deref() { if (!--refcount) cleanup(); }
+    void cleanup();
+
+    int sid;
+    InterpreterImp *interpreter;
+    int refcount;
+    SourceCode *next;
+  };
+
   /**
    * @internal
    *
@@ -382,11 +397,13 @@ namespace KJS {
    */
   class Parser {
   public:
-    static ProgramNode *parse(const UChar *code, unsigned int length, int *sourceId = 0,
+    static ProgramNode *parse(const UChar *code, unsigned int length, SourceCode **src,
 			      int *errLine = 0, UString *errMsg = 0);
 
     static ProgramNode *progNode;
+    static SourceCode *source;
     static int sid;
+  private:
   };
 
   class InterpreterImp {
@@ -453,6 +470,9 @@ namespace KJS {
     InterpreterImp *nextInterpreter() const { return next; }
     InterpreterImp *prevInterpreter() const { return prev; }
 
+    void addSourceCode(SourceCode *code);
+    void removeSourceCode(SourceCode *code);
+
   private:
     void clear();
     Interpreter *m_interpreter;
@@ -505,6 +525,7 @@ namespace KJS {
     InterpreterImp *next, *prev;
 
     int recursion;
+    SourceCode *sources;
   };
 
   class ExecStateImp {

@@ -127,10 +127,12 @@ namespace KJS {
   class StatementNode : public Node {
   public:
     StatementNode();
-    void setLoc(int line0, int line1, int sourceId);
+    virtual ~StatementNode();
+    void setLoc(int line0, int line1, SourceCode *src);
     int firstLine() const { return l0; }
     int lastLine() const { return l1; }
-    int sourceId() const { return sid; }
+    int sourceId() const { return sourceCode->sid; }
+    SourceCode *code() const { return sourceCode; }
     bool hitStatement(ExecState *exec);
     bool abortStatement(ExecState *exec);
     virtual Completion execute(ExecState *exec) = 0;
@@ -141,7 +143,7 @@ namespace KJS {
   private:
     Reference2 evaluateReference(ExecState* /*exec*/) const { return Reference2(); }
     int l0, l1;
-    int sid;
+    SourceCode *sourceCode;
     bool breakPoint;
   };
 

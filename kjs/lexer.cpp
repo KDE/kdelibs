@@ -284,6 +284,8 @@ int Lexer::lex()
       else if (current == 'u')
         state = InUnicodeEscape;
       else {
+	if (isLineTerminator)
+	  nextLine();
         record16(singleEscape(current));
         state = InString;
       }

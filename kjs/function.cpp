@@ -381,37 +381,44 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     else {
       UString s = x.toString(exec);
 
-      int sid;
       int errLine;
       UString errMsg;
 #ifdef KJS_VERBOSE
       fprintf(stderr, "eval(): %s\n", s.ascii());
 #endif
-      ProgramNode *progNode = Parser::parse(s.data(),s.size(),&sid,&errLine,&errMsg);
+      SourceCode *source;
+      ProgramNode *progNode = Parser::parse(s.data(),s.size(),&source,&errLine,&errMsg);
 
       // notify debugger that source has been parsed
       Debugger *dbg = exec->interpreter()->imp()->debugger();
       if (dbg) {
-	bool cont = dbg->sourceParsed(exec,sid,s,errLine);
+	bool cont = dbg->sourceParsed(exec,source->sid,s,errLine);
 	if (!cont) {
+	  source->deref();
 	  dbg->imp()->abort();
+	  if (progNode)
+	    delete progNode;
 	  return Undefined();
 	}
       }
 
+      exec->interpreter()->imp()->addSourceCode(source);
+
       // no program node means a syntax occurred
       if (!progNode) {
 	Object err = Error::create(exec,SyntaxError,errMsg.ascii(),errLine);
-        err.put(exec,"sid",Number(sid));
+        err.put(exec,"sid",Number(source->sid));
         exec->setException(err);
+	source->deref();
         return err;
       }
 
+      source->deref();
       progNode->ref();
 
       // enter a new execution context
       Object glob(exec->interpreter()->globalObject());
-      ContextImp ctx(glob, exec, thisObj, sid, EvalCode, exec->context().imp());
+      ContextImp ctx(glob, exec, thisObj, source->sid, EvalCode, exec->context().imp());
       ExecState newExec(exec->interpreter(), &ctx);
       newExec.setException(exec->exception()); // could be null
 
@@ -430,32 +437,23 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       // execute the code
       Completion c = progNode->execute(&newExec);
 
-      int lastLine = progNode->lastLine();
+      res = Undefined();
+
+      ctx.setLines(progNode->lastLine(),progNode->lastLine());
+      if (dbg && !dbg->exitContext(&newExec,c))
+	// debugger requested we stop execution
+	dbg->imp()->abort();
+      else if (newExec.hadException()) // propagate back to parent context
+	exec->rep->exception = newExec.exception(); 
+      else if (c.complType() == Throw)
+	exec->setException(c.value());
+      else if (c.isValueCompletion())
+	res = c.value();
+
       if (progNode->deref())
 	delete progNode;
 
-      ctx.setLines(lastLine,lastLine);
-      if (dbg && !dbg->exitContext(&newExec,c)) {
-	// debugger requested we stop execution
-	dbg->imp()->abort();
-	return Undefined();
-      }
-
-      // if an exception occured, propogate it back to the previous execution object
-      if (newExec.hadException()) {
-	exec->rep->exception = newExec.exception();
-	return Undefined();
-      }
-      if (c.complType() == Throw) {
-	exec->setException(c.value());
-	return Undefined();
-      }
-      else if (c.isValueCompletion()) {
-	return c.value();
-      }
-      else {
-	return Undefined();
-      }
+      return res;
     }
     break;
   }
