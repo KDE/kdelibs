@@ -53,6 +53,7 @@ public:
 	Object_skel *skel;
 	string interfaceName, interfaceNameParent;
 	map<string, InterfaceType> interfaceMap;
+	map<string, void**> attrs;
 };
 };
 
@@ -60,17 +61,31 @@ DynamicSkeletonBase::DynamicSkeletonBase(Object_skel *skel,
 	const std::string& interfaceName, const std::string& interfaceNameParent)
 {
 	d = new DynamicSkeletonData(this,skel,interfaceName,interfaceNameParent);
-/* - initialize attributes
-		for(ai = d.attributes.begin(); ai != d.attributes.end(); ai++)
+	d->buildInterfaces();
+
+	/* TODO: optimize me! */
+	map<string, DynamicSkeletonData::InterfaceType>::iterator ii;
+	for(ii = d->interfaceMap.begin(); ii != d->interfaceMap.end(); ii++)
+	{
+		if(ii->second == DynamicSkeletonData::itDynamic)
 		{
-			AttributeDef& ad = *ai;
-			if((ad.flags & attributeStream) == attributeStream)
+			InterfaceDef id;
+			id = Dispatcher::the()->interfaceRepo().queryInterface(ii->first);
+
+			vector<AttributeDef>::iterator ai;
+			for(ai = id.attributes.begin(); ai != id.attributes.end(); ai++)
 			{
-				fprintf(source,"\t_initStream(\"%s\",&%s,%d);\n",
-							ad.name.c_str(),ad.name.c_str(),ad.flags);
+				AttributeDef& ad = *ai;
+				if((ad.flags & attributeStream) == attributeStream)
+				{
+					void**& data = d->attrs[ad.name.c_str()];
+					arts_assert(data == 0);
+					data = new (void*);
+					d->skel->_initStream(ad.name.c_str(),data,ad.flags);
+				}
 			}
 		}
-*/
+	}
 }
 
 DynamicSkeletonBase::~DynamicSkeletonBase()
