@@ -85,13 +85,13 @@ Addressee &Addressee::operator=( const Addressee &a )
 Addressee Addressee::copy()
 {
   Addressee a;
-  a.mData = new AddresseeData;
   *(a.mData) = *mData;
   return a;
 }
 
 void Addressee::detach()
 {
+  if ( mData.count() == 1 ) return;
   *this = copy();
 }
 
