@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
+ *  Copyright (c) 2000 Daniel Molkentin (molkentin@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -30,12 +31,17 @@
 #include "kjs_navigator.h"
 #include "khtml_part.h"
 
+#include <kstddirs.h>
+#include <kglobal.h>
+#include <kconfig.h>
+
 using namespace KJS;
 
 namespace KJS {
 
   class Plugins : public HostImp {
   public:
+    //  KConfig *nsplugConf;
     Plugins() { }
     virtual KJSO get(const UString &p) const;
   };
@@ -92,8 +98,14 @@ KJSO Navigator::get(const UString &p) const
 
 KJSO Plugins::get(const UString &p) const
 {
+
+  KConfig *nspluginConf = new KConfig(KGlobal::dirs()->saveLocation("data","nsplugins")+"/pluginsinfo");
+  
   if (p == "refresh")
     return Function(new PluginsFunc());
+  if (p == "length"){
+    return Number(nspluginConf->readNumEntry("number"));
+  }
 
   return Undefined();
 }
