@@ -34,6 +34,9 @@
 #include "sys/stat.h"
 #include <config.h>
 
+#include <kprocess.h>
+#include <qfile.h>
+
 int fsearch(FILE *fh,const char *text,long *ptr);
 
 /* This function gives the metronome tempo, from a tempo data as found in
@@ -51,26 +54,23 @@ double metronomeTempoToTempo(ulong x)
 int uncompressFile(const char *gzname, char *tmpname)
   // Returns 0 if OK, 1 if error (tmpname not set)
 {
-  char *cmd=new char[20+strlen(gzname)];
-  sprintf(cmd, "gzip -dc '%s'",gzname);
-  FILE *infile = popen( cmd, "r");
-  if (infile==NULL)
-  {
-    fprintf(stderr,"ERROR : popen failed : %s\n",cmd);
+  QString cmd("gzip -dc " + KProcess::quote(gzname));
+  FILE *infile = popen( QFile::encodeName(cmd).data(), "r");
+  if (infile==NULL) {
+    fprintf(stderr,"ERROR : popen failed : %s\n",QFile::encodeName(cmd).data());
+    return 1;
   }
   strcpy(tmpname, "/tmp/KMid.XXXXXXXXXX");
   int fd = mkstemp(tmpname);
   if (fd == -1)
   {
     pclose(infile);
-    delete cmd;
     return 1;
   }
   FILE *outfile= fdopen(fd,"wb");
   if (outfile==NULL)
   {
     pclose(infile);
-    delete cmd;
     return 1;
   }
   int n=getc(infile);
@@ -79,7 +79,6 @@ int uncompressFile(const char *gzname, char *tmpname)
     pclose(infile);
     fclose(outfile);
     unlink(tmpname);
-    delete cmd;
     return 1;
   }
   fputc(n,outfile);
@@ -97,7 +96,6 @@ int uncompressFile(const char *gzname, char *tmpname)
   // Is it right for pclose to always fail ?
 
   fclose(outfile);
-  delete cmd;
   return 0;
 }
 
