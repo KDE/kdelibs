@@ -24,6 +24,9 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// Revision 1.11  1998/05/05 10:04:40  radej
+// Not sunken in windows style
+//
 // Revision 1.10  1998/04/21 20:37:48  radej
 // Added insertWidget and some reorganisation - BINARY INCOMPATIBLE
 
@@ -44,7 +47,8 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   QFontMetrics fm = fontMetrics();
   w = fm.width( text )+8;
   h = fm.height() + FONT_Y_DELTA;
-  setFrameStyle( QFrame::Panel | QFrame::Sunken );
+  resize( w, h );
+    setFrameStyle( QFrame::Panel | QFrame::Sunken );
   setText( text );
   if ( style() == MotifStyle )
       setFrameStyle( QFrame::Panel | QFrame::Sunken );
