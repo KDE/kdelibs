@@ -582,11 +582,10 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
 	forbiddenTags[ID_IMG]--;
 	forbiddenTags[ID_OBJECT]--;
 	forbiddenTags[ID_APPLET]--;
-	forbiddenTags[ID_BIG]--;
-	forbiddenTags[ID_SMALL]--;
-	forbiddenTags[ID_SUB]--;
-	forbiddenTags[ID_SUP]--;
-	forbiddenTags[ID_FONT]--;
+	//forbiddenTags[ID_BIG]--;
+	//forbiddenTags[ID_SMALL]--;
+	//forbiddenTags[ID_SUB]--;
+	//forbiddenTags[ID_SUP]--;
 	forbiddenTags[ID_BASEFONT]--;
 	break;
     case ID_DIR:

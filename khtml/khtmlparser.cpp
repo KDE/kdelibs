@@ -900,7 +900,10 @@ void KHTMLParser::popOneBlock()
 {
     HTMLStackElem *Elem = blockStack;		
 
-#ifdef PARSER_DEBUG
+    // we should never get here, but some bad html might cause it.
+#ifndef PARSER_DEBUG
+    if(!Elem) return;
+#else
     printf("popping block: %d\n", Elem->id);
 #endif
 

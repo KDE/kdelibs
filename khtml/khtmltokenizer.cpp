@@ -746,11 +746,13 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 	    {
 		if( tquote )
 		{
+		  // additional quote. discard it, and define as end of 
+		  // attribute
 		    printf("bad HTML in parseTag: Value\n");
 		    ++src;
-		    break;
+		    tquote = NoQuote;
 		}
-		else if ( pending || curChar == '>' )
+		if ( pending || curChar == '>' )
 		{
 		    // no quotes. Every space means end of value
 		    Attribute a;
