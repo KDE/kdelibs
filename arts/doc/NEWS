@@ -1,3 +1,6 @@
+aRts-0.7.0:
+- new interface for video embedding (Arts::VideoPlayObject) via X11 embedding
+
 aRts-0.6.0:
 - new interfaces (Arts::InputStream, Arts::StreamPlayObject) for decoding
   streams of data with PlayObjects (rather than just files)

@@ -41,10 +41,6 @@
 - make it possible for artsd to cascade audio input/output to another artsd
 - ARTS_COOKIE, OSS_DEVICE
 
-## KMedia2
-
-- x11 embedding
-
 ## C API / artsdsp
 
 - recording
