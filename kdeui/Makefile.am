@@ -30,7 +30,7 @@ libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
 
-include_HEADERS = qttableview.h kprogress.h kcolordlg.h kcolordialog.h kselect.h \
+include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopupmenu.h \
 		ktabctl.h kstatusbar.h kimageeffect.h \
 		kmainwindow.h ktmainwindow.h ktoolbar.h kmenubar.h \
