@@ -95,6 +95,7 @@ typedef ssize_t (*orig_write_ptr)(int fd, const void *buf, size_t count);
 typedef caddr_t (*orig_mmap_ptr)(void *start, size_t length, int prot,
                                  int flags, int fd, off_t offset);
 typedef int (*orig_munmap_ptr)(void *start, size_t length);
+typedef FILE* (*orig_fopen_ptr)(const char *path, const char *mode);
 
 static orig_open_ptr orig_open;
 static orig_close_ptr orig_close;
@@ -102,6 +103,7 @@ static orig_ioctl_ptr orig_ioctl;
 static orig_write_ptr orig_write;
 static orig_mmap_ptr orig_mmap;
 static orig_munmap_ptr orig_munmap;
+static orig_fopen_ptr orig_fopen;
 
 static int artsdsp_debug = 0;
 static int artsdsp_init = 0;
@@ -136,6 +138,7 @@ static void artsdsp_doinit()
 	orig_ioctl = (orig_ioctl_ptr)dlsym(RTLD_NEXT,"ioctl");
 	orig_mmap = (orig_mmap_ptr)dlsym(RTLD_NEXT,"mmap");
 	orig_munmap = (orig_munmap_ptr)dlsym(RTLD_NEXT,"munmap");
+	orig_fopen = (orig_fopen_ptr)dlsym(RTLD_NEXT,"fopen");
 }
 
 static void artsdspdebug(const char *fmt,...)
@@ -532,5 +535,30 @@ int munmap(void *start, size_t length)
 	free(start);
   }
 }
+
+#ifdef HAVE_ARTSDSP_STDIO_EMU
+
+/*
+ * use #include rather than linking, because we want to keep everything
+ * static inside artsdsp to be sure that we don't override application symbols
+ */
+#include "stdioemu.c"
+
+FILE* fopen(const char *path, const char *mode)
+{
+  const char *mptr;
+  int open_mode = 0, sndfd = -1;
+  FILE *result = 0;
+
+  CHECK_INIT();
+
+  if (strcmp(path,"/dev/dsp"))    /* original open for anything but sound */
+    return orig_fopen (path, mode);
+
+  artsdspdebug ("aRts: hijacking /dev/dsp fopen...\n");
+
+  return fake_fopen(path, mode);
+}
+#endif
 
 #endif
