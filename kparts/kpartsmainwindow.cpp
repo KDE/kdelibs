@@ -51,7 +51,8 @@ MainWindow::MainWindow( const char *name, WFlags f )
 
 MainWindow::~MainWindow()
 {
-  createGUI( 0L );
+  if ( d->m_bShellGUIActivated )
+    createGUI( 0L );
   m_factory->removeServant( this );
 
   delete d;
