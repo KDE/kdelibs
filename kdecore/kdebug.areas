@@ -108,7 +108,7 @@
 7011	kio (KSycoca)
 7012	kio (KService*)
 7013	kio (KPing)
-7014	kio (KFind)
+7014	kio (KTrader)
 7015	kio (KAutoMount)
 7016	kio (KLauncher)
 7017	kio (KIOConnection)
