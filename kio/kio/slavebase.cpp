@@ -505,7 +505,7 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  kdDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'" << endl;
+  // kdDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'" << endl;
   int cmd;
   do
   {
@@ -730,7 +730,7 @@ bool SlaveBase::dispatch()
     QByteArray data;
     if ( m_pConnection->read( &cmd, data ) == -1 )
     {
-    kdDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
+        kdDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
         return false;
     }
 
@@ -832,7 +832,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         result = m_pConnection->read( &cmd, data );
         if ( result == -1 )
         {
-    kdDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
+            kdDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
             return -1;
         }
         if ( cmd == expected1 || cmd == expected2 )
@@ -1090,7 +1090,6 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     }
     if (!authResult.isModified())
     {
-       kdWarning(7019) << "SlaveBase::checkCachedAuthInfo returns false" << endl; 
        return false;
     }       
     kdWarning(7019) << "SlaveBase::checkCachedAuthInfo url = " << authResult.url.url() << endl; 
