@@ -23,7 +23,7 @@
 #include <kdirwatch.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
-#include <kconfig.h>
+#include <ksimpleconfig.h>
 
 #include "ksambashare.h"
 
@@ -34,6 +34,7 @@ public:
   
   bool readSmbConf();
   bool findSmbConf();
+  bool load();
   
   QDict<bool> sharedPaths;
   QString smbConf;
@@ -41,9 +42,18 @@ public:
 
 KSambaSharePrivate::KSambaSharePrivate() 
 {
-  if (findSmbConf())
-      readSmbConf();
+    load();
 }  
+
+
+#define FILESHARECONF "/etc/security/fileshare.conf"
+
+bool KSambaSharePrivate::load() {
+  if (!findSmbConf())
+      return false;
+      
+  return readSmbConf();
+}
 
 /**
  * Try to find the samba config file path
@@ -52,9 +62,8 @@ KSambaSharePrivate::KSambaSharePrivate()
  * @return wether a smb.conf was found.
  **/
 bool KSambaSharePrivate::findSmbConf() {
-  KConfig config("ksambashare");
-  config.setGroup("General");
-  smbConf = config.readPathEntry("smb.conf");
+  KSimpleConfig config(QString::fromLatin1(FILESHARECONF),true);
+  smbConf = config.readEntry("SMBCONF");
 
   if ( QFile::exists(smbConf) )
     return true;
@@ -81,7 +90,6 @@ bool KSambaSharePrivate::findSmbConf() {
     return false;
   }
       
-  config.writeEntry("smb.conf",smbConf);
   return true;
 }
 
@@ -172,6 +180,7 @@ KSambaShare::KSambaShare() {
   d = new KSambaSharePrivate();
   if (QFile::exists(d->smbConf)) {
     KDirWatch::self()->addFile(d->smbConf);
+    KDirWatch::self()->addFile(FILESHARECONF);
     connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
    	        SLOT(slotFileChange(const QString&)));
   } 
@@ -205,7 +214,10 @@ QStringList KSambaShare::sharedDirectories() const {
 void KSambaShare::slotFileChange( const QString & path ) {
   if (path == d->smbConf)
      d->readSmbConf();
-     
+  else
+  if (path == FILESHARECONF)
+     d->load();
+              
   emit changed();     
 }
 
