@@ -9,10 +9,10 @@ PS: I am still looking for volunteers who try writing the import filters.
 --------------------------------------------------------------------------------
 ° [done] change mail addresses to an unlimited list with selection before
          sending an email
-° allow user to add custom fields
-° a searchable keyword field
+° [currently not planned] allow user to add custom fields
+° [partly implemented] a searchable keyword field
 ° automatic menus for kmail and ktalk
-° add export methods
+° [done for HTML] add export methods
 ° add import methods:
   - Netscape messenger
   - Microsoft outlook
@@ -33,6 +33,10 @@ PS: I am still looking for volunteers who try writing the import filters.
   using the modem, the user can pick up his telephone after the connection 
   is created
   HELP WANTED: Does anybody know how to do that?
+° send mail to a bunch of people at once using the keywords and the search 
+  functionality. 
+° IMPORTANT: Possibility to use different files and, most important, common 
+  addressbooks for different people.
 --------------------------------------------------------------------------------
                                                     Mirko Sucker, September 1998.
 
