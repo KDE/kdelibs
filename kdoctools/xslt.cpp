@@ -279,8 +279,8 @@ QString lookForCache( const QString &filename )
     if ( readCache( filename, cache + "cache.bz2", output) )
         return output;
     if ( readCache( filename,
-                    locateLocal( "data",
-                                 "kio_help/cache" + cache +
+                    locateLocal( "cache",
+                                 "kio_help" + cache +
                                  "cache.bz2" ), output ) )
         return output;
 

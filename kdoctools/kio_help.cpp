@@ -234,8 +234,8 @@ void HelpProtocol::get( const KURL& url )
             if ( !mParsed.isEmpty() ) {
                 infoMessage( i18n( "Saving to cache" ) );
                 QString cache = file.left( file.length() - 7 );
-                saveToCache( mParsed, locateLocal( "data",
-                                                        "kio_help/cache" + cache +
+                saveToCache( mParsed, locateLocal( "cache",
+                                                        "kio_help" + cache +
                                                         "cache.bz2" ) );
             }
         } else infoMessage( i18n( "Using cached version" ) );
