@@ -33,7 +33,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
 		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h \
-		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h
+		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp kdatepik.cpp kdatetbl.cpp \
@@ -44,7 +44,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kintegerline.cpp kspinbox.cpp kcontrol.cpp \
 		kcolorbtn.cpp kiconloaderdialog.cpp kwmmapp.cpp	\
 		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp \
-		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp
+		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
@@ -55,11 +55,15 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kspinbox.moc kcolorbtn.moc \
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
 		ktablistbox.moc knewpanner.moc kcontrol.moc keditcl.moc \
-	  	ktoolboxmgr.moc
+	  	ktoolboxmgr.moc kled.moc
 
 kledlamp.cpp:kledlamp.moc
 kledlamp.moc: kledlamp.h
 	$(MOC) kledlamp.h -o kledlamp.moc
+
+kled.cpp:kled.moc
+kled.moc: kled.h
+	$(MOC) kled.h -o kled.moc
 
 kcontrol.cpp:kcontrol.moc
 kcontrol.moc: kcontrol.h

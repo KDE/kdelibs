@@ -57,3 +57,6 @@ Stephan Kulow <coolo@kde.org>
 first versions of KTopLevelWidget and KToolBar, heavy modifications to
 automake and autoconf
 
+Joerg Habenicht <j.habenicht@europemail.com>
+KLed class
+
