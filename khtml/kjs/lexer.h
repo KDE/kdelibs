@@ -105,8 +105,8 @@ namespace KJS {
     UnicodeChar current, next1, next2, next3;
 
     struct keyword {
-      char  *name;
-      int   token;
+      const char *name;
+      int token;
     };
 
     static struct keyword keytable[];
