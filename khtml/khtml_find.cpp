@@ -48,7 +48,7 @@ KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
 
   if (!KTrader::self()->query("KRegExpEditor/KRegExpEditor").isEmpty())
   {
-      m_editRegExp = new QPushButton( i18n("&Edit"), row, "editRegExp" );
+      m_editRegExp = new QPushButton( i18n("&Edit..."), row, "editRegExp" );
 
       connect( m_asRegExp, SIGNAL( toggled(bool) ), m_editRegExp, SLOT( setEnabled(bool) ) );
       connect( m_editRegExp, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );

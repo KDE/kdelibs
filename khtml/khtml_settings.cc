@@ -92,7 +92,7 @@ const char* KHTMLSettings::adviceToStr(KJavaScriptAdvice _advice)
 
 
 void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
-                                                                          KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
+                                      KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
 {
     QString tmp(configStr);
     int splitIndex = tmp.find(':');
@@ -100,23 +100,23 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
     {
         domain = configStr.lower();
         javaAdvice = KJavaScriptDunno;
-                javaScriptAdvice = KJavaScriptDunno;
+        javaScriptAdvice = KJavaScriptDunno;
     }
     else
     {
         domain = tmp.left(splitIndex).lower();
-                QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
-                int splitIndex2 = adviceString.find( ':' );
-                if( splitIndex2 == -1 ) {
-                  // Java advice only
-                  javaAdvice = strToAdvice( adviceString );
-                  javaScriptAdvice = KJavaScriptDunno;
-                } else {
-                  // Java and JavaScript advice
-                  javaAdvice = strToAdvice( adviceString.left( splitIndex2 ) );
-                  javaScriptAdvice = strToAdvice( adviceString.mid( splitIndex2+1,
-                                                                                                                        adviceString.length() ) );
-                }
+        QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
+        int splitIndex2 = adviceString.find( ':' );
+        if( splitIndex2 == -1 ) {
+            // Java advice only
+            javaAdvice = strToAdvice( adviceString );
+            javaScriptAdvice = KJavaScriptDunno;
+        } else {
+            // Java and JavaScript advice
+            javaAdvice = strToAdvice( adviceString.left( splitIndex2 ) );
+            javaScriptAdvice = strToAdvice( adviceString.mid( splitIndex2+1,
+                                                              adviceString.length() ) );
+        }
     }
 }
 
@@ -462,7 +462,7 @@ QString KHTMLSettings::settingsToCSS() const
 const QString &KHTMLSettings::availableFamilies()
 {
     if ( !avFamilies ) {
-	avFamilies = new QString;
+        avFamilies = new QString;
         QFontDatabase db;
         QStringList families = db.families();
         QStringList s;
