@@ -270,7 +270,7 @@ void KClipboard::fetchData()
   {
     // Find non printable characters
     QByteArray ba = buffer();
-    QString d(ba.data());
+    QString d(ba);
     int len = ba.size();
     for( int j = 0; j < len; j++ )
     {
