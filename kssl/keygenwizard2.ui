@@ -1,14 +1,11 @@
-<!DOCTYPE UI><UI>
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>KGWizardPage2</class>
 <author>George Staikos &lt;staikos@kde.org&gt;</author>
-<widget>
-    <class>QWidget</class>
-    <property stdset="1">
-        <name>name</name>
+<widget class="QWidget">
+    <property name="name">
         <cstring>KGWizardPage2</cstring>
     </property>
-    <property stdset="1">
-        <name>geometry</name>
+    <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
@@ -16,89 +13,71 @@
             <height>155</height>
         </rect>
     </property>
-    <property stdset="1">
-        <name>caption</name>
+    <property name="caption">
         <string>Form3</string>
     </property>
     <grid>
-        <property stdset="1">
-            <name>margin</name>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
             <number>11</number>
         </property>
-        <property stdset="1">
-            <name>spacing</name>
+        <property name="spacing">
             <number>6</number>
         </property>
-        <widget row="0"  column="0"  rowspan="1"  colspan="2" >
-            <class>QLabel</class>
-            <property stdset="1">
-                <name>name</name>
+        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
+            <property name="name">
                 <cstring>TextLabel4</cstring>
             </property>
-            <property stdset="1">
-                <name>text</name>
+            <property name="text">
                 <string>You must now provide a password for the certificate request.  Please choose a very secure password as this will be used to encrypt your private key.</string>
             </property>
-            <property stdset="1">
-                <name>alignment</name>
+            <property name="alignment">
                 <set>WordBreak|AlignVCenter|AlignLeft</set>
             </property>
-            <property>
-                <name>wordwrap</name>
+            <property name="wordwrap" stdset="0">
             </property>
         </widget>
-        <widget row="2"  column="0" >
-            <class>QLabel</class>
-            <property stdset="1">
-                <name>name</name>
+        <widget class="QLabel" row="2" column="0">
+            <property name="name">
                 <cstring>TextLabel6</cstring>
             </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>Password again:</string>
+            <property name="text">
+                <string>&amp;Repeat Password:</string>
             </property>
-            <property>
-                <name>buddy</name>
+            <property name="buddy" stdset="0">
                 <cstring>_password2</cstring>
             </property>
         </widget>
-        <widget row="1"  column="0" >
-            <class>QLabel</class>
-            <property stdset="1">
-                <name>name</name>
+        <widget class="QLabel" row="1" column="0">
+            <property name="name">
                 <cstring>TextLabel5</cstring>
             </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>Password:</string>
+            <property name="text">
+                <string>&amp;Choose Password:</string>
             </property>
-            <property>
-                <name>buddy</name>
-                <cstring>_password</cstring>
-            </property>
-        </widget>
-        <widget row="1"  column="1" >
-            <class>QLineEdit</class>
-            <property stdset="1">
-                <name>name</name>
+            <property name="buddy" stdset="0">
                 <cstring>_password1</cstring>
             </property>
-            <property stdset="1">
-                <name>echoMode</name>
+        </widget>
+        <widget class="QLineEdit" row="1" column="1">
+            <property name="name">
+                <cstring>_password1</cstring>
+            </property>
+            <property name="echoMode">
                 <enum>Password</enum>
             </property>
         </widget>
-        <widget row="2"  column="1" >
-            <class>QLineEdit</class>
-            <property stdset="1">
-                <name>name</name>
+        <widget class="QLineEdit" row="2" column="1">
+            <property name="name">
                 <cstring>_password2</cstring>
             </property>
-            <property stdset="1">
-                <name>echoMode</name>
+            <property name="echoMode">
                 <enum>Password</enum>
             </property>
         </widget>
     </grid>
 </widget>
+<layoutdefaults spacing="6" margin="11"/>
 </UI>
