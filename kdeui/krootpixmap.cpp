@@ -50,12 +50,8 @@ void KRootPixmap::init()
     m_bCustomPaint = false;
 
     connect(kapp, SIGNAL(backgroundChanged(int)), SLOT(slotBackgroundChanged(int)));
-    connect(kapp, SIGNAL(backgroundChanged(int)), SLOT(slotBackgroundChanged(int)));
     connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
     connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
-
-    KWinModule *kwin = new KWinModule( this );
-    connect( kwin, SIGNAL(currentDesktopChanged(int)), SLOT(desktopChanged(int)));
 
     QObject *obj = m_pWidget;
     while (obj->parent())
@@ -171,7 +167,7 @@ void KRootPixmap::repaint(bool force)
 	return;
     }
     m_Rect = QRect(p1, p2);
-//    m_Desk = currentDesktop();
+    m_Desk = currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
     m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect);
@@ -238,15 +234,6 @@ void KRootPixmap::slotBackgroundChanged(int desk)
 
     if (desk == m_Desk)
 	repaint(true);
-}
-
-void KRootPixmap::desktopChanged(int desk)
-{
-    if (!m_bInit || !m_bActive)
-	return;
-
-    m_Desk = desk;
-    repaint(true);
 }
 
 #include "krootpixmap.moc"

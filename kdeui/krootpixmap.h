@@ -166,8 +166,6 @@ protected:
      */
     virtual bool eventFilter(QObject *, QEvent *);
 
-    void desktopChanged(int desk);
-
     /**
      * Called when the pixmap has been updated. The default implementation
      * applies the fade effect, then sets the target's background, or emits
