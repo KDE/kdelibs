@@ -168,7 +168,7 @@ KLibrary* KLibLoader::library( const char* name )
     QCString libname( name );
     libname += ".la";
 
-    KLibrary* lib = m_libs[ libname ];
+    KLibrary* lib = m_libs[ name ];
     if ( lib )
 	return lib;
 
