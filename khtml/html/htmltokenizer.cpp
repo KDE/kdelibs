@@ -203,7 +203,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
 
 void HTMLTokenizer::parseListing( DOMStringIt &src)
 {
-    // Wee are instide a <script>, <style> or comment. Look for the end tag
+    // Wee are inside a <script>, <style> or comment. Look for the end tag
     // which is either </script>, </style> or -->
     // otherwise print out every received character
 
@@ -279,6 +279,16 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             script = style = listing = comment = false;
 	    if (cachedScript)
 		cachedScript->ref(this);
+	    
+	    if ( !scriptOutput.isEmpty() ) {
+		kdDebug( 6036 ) << "adding scriptOutput to parsed string " << endl;
+		QString newStr = scriptOutput;
+		newStr += QString(src.current(), src.length());
+		_src = newStr;
+		src = DOMStringIt(_src);
+		scriptOutput = "";
+	    }	
+    
 	    return; // Finished parsing script/style/comment/listing
         }
         // Find out wether we see an end tag without looking at
@@ -1088,19 +1098,15 @@ void HTMLTokenizer::write( const QString &str )
     if ( str.isEmpty() || buffer == 0L )
 	return;
 
-    if(!_src.isEmpty())
-    {
-	// reentrant...
-	// we just insert the code at the tokenizers current position. Parsing will continue once
-	// we return from the script stuff
-	// (this won't happen if we're in the middle of loading an external script)
-	QString newStr = str;
-	newStr += QString(src.current(), src.length());
-
-	_src = newStr;
-	src = DOMStringIt(_src);
+    // reentrant...
+    // we just insert the code at the tokenizers current position. Parsing will continue once
+    // we return from the script stuff
+    // (this won't happen if we're in the middle of loading an external script)
+    if(script) {
+	kdDebug( 6036 ) << "adding to scriptOutput: " << str << endl;
+	scriptOutput += str;
 	return;
-    }	
+    } 
 
     if (loadingExtScript) {
 	// don't parse; we will do this later
@@ -1416,22 +1422,3 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
     }
 }
 
-//-----------------------------------------------------------------------------
-#if 0
-int ustrlen( const QChar *c )
-{
-    int l = 0;
-    while( *c++ != QChar::null ) l++;
-    return l;
-}
-
-QChar *ustrchr( const QChar *c, const QChar s )
-{
-    while( *c != QChar::null )
-    {
-	if( *c == s ) return (QChar *)c;
-	c++;
-    }
-    return 0L;
-}
-#endif

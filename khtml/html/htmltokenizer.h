@@ -205,7 +205,7 @@ protected:
 
     // Are we in a <textarea> ... </textarea> block
     bool textarea;
-
+    
     // Used to store the code of a srcipting sequence
     QChar *scriptCode;
     // Size of the script sequenze stored in @ref #scriptCode
@@ -231,6 +231,8 @@ protected:
     QString pendingSrc;
     khtml::CachedScript *cachedScript;
 
+    QString scriptOutput;
+    
     QChar entityBuffer[10];
     uint entityPos;
 
