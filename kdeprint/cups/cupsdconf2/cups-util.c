@@ -89,7 +89,7 @@ cupsGetConf()
 
     if (status == HTTP_UNAUTHORIZED)
     {
-      fprintf(stderr,"cupsGetConf: unauthorized...");
+      fprintf(stderr,"cupsGetConf: unauthorized...\n");
 
      /*
       * Flush any error message...
