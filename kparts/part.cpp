@@ -235,7 +235,7 @@ ReadOnlyPart::ReadOnlyPart( QObject *parent, const char *name )
 
 ReadOnlyPart::~ReadOnlyPart()
 {
-  closeURL();
+  ReadOnlyPart::closeURL();
   delete d;
 }
 
