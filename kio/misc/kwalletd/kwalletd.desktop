@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+ServiceTypes=KDEDModule
+X-KDE-ModuleType=Library
+X-KDE-Library=kwalletd
+X-KDE-FactoryName=kwalletd
+X-KDE-Kded-autoload=false
+X-KDE-Kded-load-on-demand=true
+Name=KWallet Daemon Module
+Comment=KWallet Daemon Module for KDED
