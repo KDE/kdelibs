@@ -3,8 +3,8 @@
 
 SUBDIRS = kcookiejar
 
-INCLUDES=	$(all_includes)
-LDFLAGS =       $(all_libraries)
+INCLUDES= -I$(top_srcdir)/interfaces $(all_includes)
+LDFLAGS = $(all_libraries)
 
 ####### Files
 
