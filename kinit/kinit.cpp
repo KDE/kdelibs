@@ -1460,7 +1460,7 @@ int main(int argc, char **argv, char **envp)
       }
    }
 
-   if (!suicide)
+   if (!suicide && !getenv("KDE_IS_PRELINKED"))
    {
       QString konq = locate("lib", "libkonq.la", s_instance);
       if (!konq.isEmpty())
