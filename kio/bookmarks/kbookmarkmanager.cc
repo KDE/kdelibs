@@ -545,7 +545,7 @@ QStringList KBookmarkManager::dynamicBookmarksList() const
    config.setGroup("Bookmarks");
 
    QStringList mlist;
-   if (!config.hasKey("DynamicMenus"))
+   if (config.hasKey("DynamicMenus"))
       mlist = config.readListEntry("DynamicMenus");
    else 
       mlist << "netscape";
@@ -578,6 +578,7 @@ void KBookmarkManager::setDynamicBookmarks(const QString &id, const DynMenuInfo 
          config.writeEntry("Location", xbelSetting.location);
          config.writeEntry("Type", xbelSetting.type);
          config.writeEntry("Name", xbelSetting.name);
+         // maybe could reuse code?
       }
    } else {
       elist = config.readListEntry("DynamicMenus");
