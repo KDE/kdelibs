@@ -513,7 +513,10 @@ bool KDEDesktopMimeType::run( const KURL& u, bool _is_local )
   else if ( type == "Application" )
     return runApplication( u, u.path() );
   else if ( type == "Link" )
+  {
+    cfg.setDollarExpansion( true ); // for URL=file:$HOME (Simon)
     return runLink( u, cfg );
+  }
   else if ( type == "MimeType" )
     return runMimeType( u, cfg );
 
