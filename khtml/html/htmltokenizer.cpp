@@ -899,13 +899,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
 		bool beginTag = (tagID < ID_CLOSE_TAG);
-		if(beginTag & !pre)
-		{
+		if( beginTag && tagID != ID_IMG && tagID != ID_INPUT ) {
 		    // Ignore Space/LF's after a start tag
 		    discard = AllDiscard;
-		}
-		else
-		{
+		} else {
 		    // Don't ignore CR/LF's after a close tag
 		    discard = NoneDiscard;
 		    tagID -= ID_CLOSE_TAG;
@@ -922,7 +919,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    // we have to take care to close the pre block in
 		    // case we encounter an unallowed element....
-		    if(DOM::checkChild(ID_PRE, tagID)) {
+		    if(!DOM::checkChild(ID_PRE, tagID)) {
 			//kdDebug(0) << " not allowed in <pre>" << tagID << endl;
 			pre = false;
 		    }
