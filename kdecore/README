@@ -1,6 +1,5 @@
-This is the second, still unofficial and probably still horribly buggy
-and lousily written release of the kde core library, yet containing
-nothing more but the KConfig class.
+This is the KDE "core" library.  The kdecore library provides basic non user
+interface functionality.
 
 CHANGES
 =======
@@ -10,28 +9,28 @@ see ../CHANGES
 
 How to use the KConfig class
 ============================
-These thoughts are by no means complete or decided on forever, feel free to
-discuss them on the list.
+These thoughts are by no means complete or decided on forever, more accurate
+and up to date information can be found on http://developer.kde.org
 
-- Create a KConfig object. If your application needs an
-application-specific config file, pass a QTextStream* for this file.
-- Read values with ReadEntry. The keys are searched in the following
-files (sorted from least to highest priority):
-	/etc/kderc
-	/usr/lib/KDE/system.kderc
-	/usr/local/lib/KDE/system.kderc
-	~/.kderc
-	application-specific config file if it exists
+- Retreive the KConfig object from KApplication.  The correct way to do this is
+  to use the KApplication::getConfig() method.
+- Read values with readFOOEntry. Where FOO is the type of entry you wish to
+  read (see the documentation on developer.kde.org for more info on this).
+  The keys are searched for in the following files (sorted from least to
+  highest priority):
+	$KDEDIR/share/config/apprc    (global configuration dir)
+	$HOME/.kde/share/config/apprc (local configuration dir)
+  $KDEDIR is by default /usr/local/kde/, or in precompiled packages
+  /opt/kde/. 
 - Only keys that are in the current group will be found. After
-constructing a KConfig object, the current group is "" aka "the
-default group". You can set the group with SetGroup(). A group is
-specified in a config file with the group name in brackets, the
-left bracket must be in column 0.
-- Write values with WriteEntry. WriteEntry only writes to memory; the
-data is written to disk when you call Sync() explicitly or when you
-destroy the KConfig object. The entries are always written to the most
-specific writeable config file.
-
+  constructing a KConfig object, the current group is "" aka "the
+  default group". You can set the group with setGroup(). A group is
+  specified in a config file with the group name in brackets, the
+  left bracket must be in column 0.
+- Write values with writeEntry. writeEntry only writes to memory; the
+  data is written to disk when you call sync() explicitly or when you
+  destroy the KConfig object. The entries are always written to the most
+  specific writeable config file.
 
 How to use the kconfigtest test program
 =======================================
@@ -52,24 +51,3 @@ changes may have on the key search.
 - To write an entry, enter the value in the value field right to the
 "=" and press the write button.
 - To quit the application, press the quit button (now, this was easy!)
-
-
-Some proposals on where configuration entries should go
-=======================================================
-- Default, KDE-wide key bindings, colors, etc: This should not go in
-any config file but be hard-coded, probably in the KApplication class.
-- Site-wide configuration, e.g. mail server: one of the files KConfig
-searches which are not below the user's home directory.
-- User-defined values which are not application-specific: in ~/.kderc.
-- User-defined, application-specific values: in some file specified by
-the application. The exact name should be set by KApplication and
-somehow be computed from argv[0] (or a value explicitly set by the
-application programmer???).
-
-
-Further questions
-=================
-Should "the default group" be what the name says (a group in which to
-search for a key if it was not found in the specified group) or what
-it is now (a group like all the others which just happens to have no
-name)?
