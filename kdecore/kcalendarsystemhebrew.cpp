@@ -234,7 +234,7 @@ int KCalendarSystemHebrew::monthsInYear( const QDate & date ) const
     return 12;
 }
 
-// ### CFM check
+// Ok
 int KCalendarSystemHebrew::weeksInYear(int year) const
 {
   QDate temp;
@@ -357,10 +357,15 @@ QString KCalendarSystemHebrew::monthNamePossessive(int month,
 
 bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
 {
-  // range checks
-  // ### Fixme
 
   class h_date * gd = hebrewToGregorian( y, m, d );
+
+  if( y < minValidYear() || y > maxValidYear() )
+    return false;
+  if( m < 1 || m > (is_leap_year(y) ? 13 : 12) )
+    return false;
+  if( d < 1 || d > hndays(m,y) )
+    return false;
 
   return date.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 }
@@ -410,7 +415,7 @@ int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
   return hndays(sd->hd_mon, sd->hd_year);
 }
 
-// ### CFM check. Fix Adar1 and Adar
+// Ok
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
   if( mon == 8 /*IYYAR*/ || mon == 10 /*TAMUZ*/ ||
