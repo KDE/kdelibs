@@ -1381,7 +1381,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   else
       hasTarget = true;
 
-  if ( url.left(11) == QString::fromLatin1("javascript:") )
+  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     executeScript( url.right( url.length() - 11) );
     return;
