@@ -18,7 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <signal.h>
+#include <stdlib.h>
 
 #include <kapplication.h>
 #include <kcrash.h>
@@ -40,9 +40,21 @@ extern "C" {
 // Crash recovery signal handler
 static void crashHandler( int sigId )
 {
-  fprintf( stderr, "*** libkabc got signal %d (Crashing)\n", sigId );
+  /**
+    To avoid all such 'KAddressBook crashes' mails I comment it out now.
+    There seems to be a problem with KCrash, since this crashHandler is
+    called, even if you close KAddressBook the normal way. Nevertheless
+    if you comment out KCrash::setEmergencySaveFunction in init(), no
+    crash happens at closing the app :/
+   */
+//  fprintf( stderr, "*** libkabc got signal %d (Crashing)\n", sigId );
+
   // try to cleanup all lock files
-  StdAddressBook::self()->cleanUp();
+  AddressBook *ab = StdAddressBook::self();
+  if ( ab )
+    ab->cleanUp();
+
+  ::exit( 0 );
   // Return to DrKonqi.
 }
 

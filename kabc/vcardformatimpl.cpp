@@ -814,7 +814,6 @@ Agent VCardFormatImpl::readAgentValue( VCARD::ContentLine *cl )
     vstr.replace( QRegExp("\\\\:"), ":" );
     vstr.replace( QRegExp("\\\\,"), "," );
     vstr.replace( QRegExp("\\\\;"), ";" );
-    kdDebug() << "oldAgent=" << vstr << endl;
     Addressee *addr = new Addressee;
     readFromString( vstr, *addr );
     agent.setAddressee( addr );

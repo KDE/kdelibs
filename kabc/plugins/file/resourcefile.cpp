@@ -118,8 +118,6 @@ bool ResourceFile::load()
 {
   kdDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
 
-
-
   QFile file( mFileName );
   if ( !file.open( IO_ReadOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );

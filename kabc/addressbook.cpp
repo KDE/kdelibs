@@ -316,6 +316,7 @@ void AddressBook::insertAddressee( const Addressee &a )
         (*it).setRevision( QDateTime::currentDateTime() );
         (*it).setChanged( true ); 
       }
+
       return;
     }
   }
@@ -323,6 +324,7 @@ void AddressBook::insertAddressee( const Addressee &a )
   Addressee& addr = d->mAddressees.last();
   if ( addr.resource() == 0 )
     addr.setResource( standardResource() );
+
   addr.setChanged( true );
 }
 
@@ -510,7 +512,7 @@ bool AddressBook::removeResource( Resource *resource )
   if ( resource == standardResource() )
     setStandardResource( 0 );
 
-//  resource->setAddressBook( 0 );
+  resource->setAddressBook( 0 );
 
   return d->mResources.remove( resource );
 }
