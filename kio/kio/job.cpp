@@ -648,7 +648,7 @@ void MkdirJob::slotFinished()
         int permissions;
         QDataStream istream( m_packedArgs, IO_ReadOnly );
         istream >> dummyUrl >> permissions;
-        
+
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
@@ -1627,7 +1627,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         {
             RenameDlg_Result res = R_RESUME;
 
-            if (!KProtocolManager::autoResume())
+            if (!KProtocolManager::autoResume() && !m_overwrite)
             {
                 QString newPath;
                 KIO::Job* job = ( !m_progressId && parentJob() ) ? parentJob() : this;
@@ -1640,7 +1640,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                       d->m_sourceSize, offset );
             }
 
-            if ( res == R_OVERWRITE )
+            if ( res == R_OVERWRITE || m_overwrite )
               offset = 0;
             else if ( res == R_CANCEL )
             {
