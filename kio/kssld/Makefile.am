@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
+INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(SSL_INCLUDES) $(all_includes)
 
 lib_LTLIBRARIES = libkded_kssld.la
 
