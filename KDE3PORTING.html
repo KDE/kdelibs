@@ -142,6 +142,10 @@ setEncoding(int) instead.
 <li>formatMoney(const QString &amp;) has been removed.
 <li>formatNumber(const QString &amp;) has been removed.
 <li>languages() has been removed. Use languageList() instead.
+<li>All references to monthName(), monthNamePossessive(), and weekDayName()
+should be replaced with methods from KLocale::calendar().
+<li>Hard coded date handling or date handling with QDate should in most
+cases be replaced by methods in KLocale::calendar().
 
 <H4>Accelerators Keys</H4>
 <h5>KAccel</h5>
