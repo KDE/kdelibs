@@ -1,11 +1,12 @@
 
-INCLUDES= $(all_includes)
+INCLUDES= $(all_includes) -I$(kde_includes)/arts
 
 ####### Files
 
 bin_PROGRAMS	= knotify knotifyclient
 knotify_SOURCES	= knotify.cpp
-knotify_LDADD	= $(LIB_KDEUI) $(LIB_KDECORE)
+knotify_LDADD	= $(kde_libraries)/libsoundserver_idl.la \
+                  $(kde_libraries)/libqtmcop.la $(LIB_KDEUI) $(LIB_KDECORE)
 knotify_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
 METASOURCES = knotify.moc
 

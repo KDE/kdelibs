@@ -1,26 +1,4 @@
-=====> How can I compile knotify to use arts to get sound notifications?
-
-Currently, knotify.cpp contains a hack to support talking to the soundserver
-when compiled with HAVE_ARTS defined. It seriously lacks makefile integration,
-and other cleanups, but I compiled it using
-
-make CXX="g++ -DHAVE_ARTS -I../../kdemultimedia/arts/mcop -I../../kdemultimedia/arts/qtmcop -I../../kdemultimedia/arts/examples ../../kdemultimedia/arts/mcop/libmcop.la ../../kdemultimedia/arts/qtmcop/libqtmcop.la ../../kdemultimedia/arts/examples/soundserver.o"
-
-which is - well - a hack (which may not work due to various reasons).
-
-Basically, what it needs to work (and what the make line above should do), is
-
-- it must be linked to libmcop (to support talking MCOP)
-- it must be linked to libqtmcop (to support the combination of MCOP+Qt)
-- it must be linked to an version of soundserver.idl (run it through mcopidl)
-- it should at least find the includes from
-   * kdemultimedia/arts/mcop
-   * kdemultimedia/arts/qtmcop
-   * those from soundserver.idl, here as kdemultimedia/arts/examples
-- HAVE_ARTS must be defined (to enable the alternate code in knotify to be
-  compiled)
-
-=====>  How do I use it if it compiled
+=====>  How do I use knotify with arts sound output (if it's installed)
 
 Start artsd:
 
