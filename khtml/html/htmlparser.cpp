@@ -261,7 +261,6 @@ void KHTMLParser::reset()
     memset(forbiddenTag, 0, (ID_CLOSE_TAG+1)*sizeof(ushort));
 
     inBody = false;
-    explicitBody = false;
     haveFrameSet = false;
     _inline = false;
 
@@ -424,14 +423,13 @@ void KHTMLParser::insertNode(NodeImpl *n)
             if(inBody) throw exception;
             break;
         case ID_BODY:
-            if(inBody && document->body() && explicitBody) {
+            if(inBody && document->body()) {
                 // we have another <BODY> element.... apply attributes to existing one
                 NamedNodeMapImpl *map = n->attributes();
                 unsigned long attrNo;
                 for (attrNo = 0; attrNo < map->length(); attrNo++)
                     document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
                 document->body()->applyChanges(true,false);
-                explicitBody = false;
             }
             throw exception;
             break;
@@ -763,7 +761,6 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
         inBody = true;
-        explicitBody = true;
         break;
 
 // head elements
