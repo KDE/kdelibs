@@ -7,6 +7,7 @@
 #include <kwm.h>
 #include <kiconloader.h>
 #include <kglobal.h>
+#include <ktoolbarbutton.h>
 
 #include "kio_listprogress_dlg.h"
 
