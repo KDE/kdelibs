@@ -396,7 +396,8 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
 void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int width, int height, int deco) const
 {
     Q_UNUSED(height);
-    int thickness = fm.lineWidth();
+    // thick lines on small fonts look ugly
+    int thickness = fm.height() > 20 ? fm.lineWidth() : 1;
     QBrush brush = pt->pen().color();
     if (deco & UNDERLINE) {
         int underlineOffset = ( fm.height() + baseline ) / 2;

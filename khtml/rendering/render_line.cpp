@@ -597,7 +597,8 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
         if ( !w )
             return;
         const QFontMetrics &fm = object()->fontMetrics( m_firstLine );
-        int thickness = fm.lineWidth();
+        // thick lines on small fonts look ugly
+        int thickness = fm.height() > 20 ? fm.lineWidth() : 1;
         QColor underline, overline, linethrough;
         underline = overline = linethrough = styleToUse->color();
         if (!parent())
