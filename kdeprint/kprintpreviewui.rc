@@ -4,6 +4,7 @@
 <Menu name="file" noMerge="1"><text>&amp;File</text>
   <Action name="continue_print"/>
   <Action name="stop_print"/>
+  <Action name="close_print"/>
   <Separator />
   <Merge/>
 </Menu>
@@ -19,6 +20,7 @@
 <ToolBar name="Preview-Toolbar" position="top" iconText="icontextright">
   <Action name="continue_print"/>
   <Action name="stop_print"/>
+  <Action name="close_print"/>
 </ToolBar>
 <ToolBar name="mainToolBar" position="left">
 </ToolBar>

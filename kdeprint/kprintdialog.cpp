@@ -244,8 +244,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 		m_file->setText(m_printer->outputFileName());
 
 	// update with KPrinter options
-	if (m_printer->option("kde-preview") == "1")
+	if (m_printer->option("kde-preview") == "1" || m_printer->previewOnly())
 		m_preview->setChecked(true);
+	m_preview->setEnabled(!m_printer->previewOnly());
 	m_cmd->setText(m_printer->option("kde-printcommand"));
 	QListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)

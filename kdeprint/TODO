@@ -5,8 +5,22 @@
   as standard print file before and/or after the actual file. This
   would allow for KDE-specific banners and translated banners.
 
-- Implement a check mechanism for filters, plugins and special
-  printers.
+- Add icon for view selection in the toolbar
 
-- dynamic print plugin switching from the print dialog. This implies
-  reloading everything, but seems possible.
+- Implement a generic page selection mechanism around the psselect
+  utility if available
+
+- Pamphlet printing:
+    * psbook to reorder the pages
+    * psnup to put 2 pages on 1 sheet
+    * psselect to separate in even and odd pages
+    * print successively odd then even pages (asking user to put
+      printed pages again in slot)
+  OR
+    * use 2 different filters to print: one for even pages, the other
+      for odd pages (no code change needed then)
+
+- Use another tool for preview (maybe difficult to know if we want to
+  continue or not)
+
+- Possibility to specify a different input slot for first page???

@@ -59,6 +59,7 @@ private:
 
 class KPrinterImpl;
 class KPrintDialogPage;
+class KPrinterPrivate;
 
 /**
  * This class is the main interface to access the KDE print framework. It allows KDE
@@ -219,10 +220,17 @@ public:
 
 	// constructors / destructor
 	/**
-	 * Contructor. This also restores the state from a previous KPrinter object created within
+	 * Contructor. This also restores/saves the state from a previous KPrinter object created within
 	 * the same application run.
 	 */
 	KPrinter();
+	/**
+	 * Contructor. This also restores/saves the state from a previous KPrinter object created within
+	 * the same application run, if @p restore is true. Setting @p restore to false may
+	 * be useful if you want an independant/clean KPrinter object.
+	 * @param restore if true, options will be restored/saved between successive KPrinter objects
+	 */
+	KPrinter(bool restore);	// BIC: merge with previous contructor
 	/**
 	 * Destructor. This also saves the current KPrinter state for future printing
 	 */
@@ -461,6 +469,32 @@ public:
 	 * @see setCurrentPage()
 	 */
 	QValueList<int> pageList() const;
+	/**
+	 * Set the KPrinter object to preview mode if @p on is true. In this mode, nothing will be
+	 * printed but only a preview dialog will be popped up with the single "Close" action. Using
+	 * this mode, any application can easily implement a preview action:
+	 * <pre>
+	 * void MyClass:doPreview()
+	 * {
+	 *   // use a "clean" KPrinter object (independant from previous print jobs),
+	 *   // this is not necessary, it depends on the application
+	 *   KPrinter prt( false );
+	 *   prt.setPreviewOnly( true );
+	 *
+	 *   QPainter painter( &prt );
+	 *   doPrint( &painter );
+	 * }
+	 * </pre>
+	 * @param on the preview-only state
+	 * @see previewOnly()
+	 */
+	void setPreviewOnly(bool on);
+	/**
+	 * Get the preview-only state for this KPrinter object.
+	 * @returns the preview-only state
+	 * @see setPreviewOnly()
+	 */
+	bool previewOnly() const;
 
 	/**
 	 * For internal use only.
@@ -627,9 +661,10 @@ protected:
 	void preparePrinting();
 	void finishPrinting();
 	void reload();
+	void init(bool restore = true);
 
 protected:
-	KPrinterImpl		*m_impl;
+	KPrinterPrivate		*d;		// BIC: move other options to private class
 	KPrinterWrapper		*m_wrapper;
 	QMap<QString,QString>	m_options;
 	QString			m_tmpbuffer;

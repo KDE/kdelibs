@@ -30,15 +30,20 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 
-KPrintPreview::KPrintPreview(QWidget *parent)
+KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 : KParts::MainWindow(parent,"KPrintPreview",WType_Modal|WType_TopLevel|WStyle_Dialog)
 {
 	kdDebug() << "kdeprint: creating preview dialog" << endl;
 	setXMLFile(locate("config","ui/kprintpreviewui.rc"));
 	setHelpMenuEnabled(false);
 
-	new KAction(i18n("Print"),"fileprint",Qt::Key_Return,this,SLOT(accept()),actionCollection(),"continue_print");
-	new KAction(i18n("Cancel"),"stop",Qt::Key_Escape,this,SLOT(reject()),actionCollection(),"stop_print");
+	if (previewOnly)
+		new KAction(i18n("Close"),"fileclose",Qt::Key_Return,this,SLOT(reject()),actionCollection(),"close_print");
+	else
+	{
+		new KAction(i18n("Print"),"fileprint",Qt::Key_Return,this,SLOT(accept()),actionCollection(),"continue_print");
+		new KAction(i18n("Cancel"),"stop",Qt::Key_Escape,this,SLOT(reject()),actionCollection(),"stop_print");
+	}
 
 	gvpart_ = 0;
 	status_ = false;
@@ -126,9 +131,9 @@ void KPrintPreview::closeEvent(QCloseEvent *e)
 	reject();
 }
 
-bool KPrintPreview::preview(const QString& file)
+bool KPrintPreview::preview(const QString& file, bool previewOnly)
 {
-	KPrintPreview	dlg(0);
+	KPrintPreview	dlg(0, previewOnly);
 	dlg.exec(file);
 	return dlg.status();
 }

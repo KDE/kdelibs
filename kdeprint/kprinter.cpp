@@ -73,22 +73,31 @@ int KPrinterWrapper::qprinterMetric(int m) const
 }
 
 //**************************************************************************************
+// KPrinterPrivate class
+//**************************************************************************************
+
+class KPrinterPrivate
+{
+public:
+	KPrinterImpl	*m_impl;
+	bool		m_restore;
+	bool		m_previewonly;
+};
+
+//**************************************************************************************
 // KPrinter class
 //**************************************************************************************
 
 KPrinter::KPrinter()
 : QPaintDevice(QInternal::Printer|QInternal::ExternalDevice)
 {
-	// initialize QPrinter wrapper
-	m_wrapper = new KPrinterWrapper(this);
+	init(true);
+}
 
-	// other initialization
-	m_impl = KMFactory::self()->printerImplementation();
-	m_tmpbuffer = m_impl->tempFile();
-	m_ready = false;
-
-	// reload options from implementation (static object)
-	loadSettings();
+KPrinter::KPrinter(bool restore)
+: QPaintDevice(QInternal::Printer|QInternal::ExternalDevice)
+{
+	init(restore);
 }
 
 KPrinter::~KPrinter()
@@ -97,12 +106,36 @@ KPrinter::~KPrinter()
 	delete m_wrapper;
 
 	// save current options
-	saveSettings();
+	if (d->m_restore)
+		saveSettings();
+
+	// delete private data
+	delete d;
+}
+
+void KPrinter::init(bool restore)
+{
+	// initialize QPrinter wrapper
+	m_wrapper = new KPrinterWrapper(this);
+
+	// Private data initialization
+	d = new KPrinterPrivate;
+	d->m_impl = KMFactory::self()->printerImplementation();
+	d->m_restore = restore;
+	d->m_previewonly = false;
+
+	// other initialization
+	m_tmpbuffer = d->m_impl->tempFile();
+	m_ready = false;
+
+	// reload options from implementation (static object)
+	if (d->m_restore)
+		loadSettings();
 }
 
 void KPrinter::loadSettings()
 {
-	if (m_impl) m_options = m_impl->loadOptions();
+	m_options = d->m_impl->loadOptions();
 
 	// load latest used printer from config file
 	KConfig	*conf = KGlobal::config();
@@ -114,7 +147,7 @@ void KPrinter::loadSettings()
 
 void KPrinter::saveSettings()
 {
-	if (m_impl) m_impl->saveOptions(m_options);
+	d->m_impl->saveOptions(m_options);
 
 	// save latest used printer to config file
 	KConfig	*conf = KGlobal::config();
@@ -126,13 +159,8 @@ void KPrinter::saveSettings()
 
 bool KPrinter::setup(QWidget *parent)
 {
-	if (m_impl)
-	{
-		bool	state = KPrintDialog::printerSetup(this, parent);
-		return state;
-	}
-	qWarning("No implementation defined !!!");
-	return false;
+	bool	state = KPrintDialog::printerSetup(this, parent);
+	return state;
 }
 
 void KPrinter::addStandardPage(int p)
@@ -207,7 +235,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 	// First apply possible filters
 	if (!option("_kde-filters").isEmpty())
 	{
-		if (!m_impl->filterFiles(this,files,flag))
+		if (!d->m_impl->filterFiles(this,files,flag))
 		{
 			reportError(this);
 			status = false;
@@ -220,14 +248,15 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 	if (status)
 	{
 		// Show preview if needed (only possible for a single file !), and stop
-		// if the user requested it.
-		if (files.count() != 1 || option("kde-preview") != "1" || KPrintPreview::preview(files[0]))
+		// if the user requested it. Force preview if preview-only mode has been set: it
+		// then use by default the first file in the list.
+		if (((files.count() != 1 || option("kde-preview") != "1") && !d->m_previewonly) || KPrintPreview::preview(files[0], d->m_previewonly))
 		{
 			// check if printing has been prepared (it may be not prepared if the KPrinter object is not
 			// use as a QPaintDevice object)
 			preparePrinting();
 
-			if (!m_impl->printFiles(this, files, flag))
+			if (!d->m_impl->printFiles(this, files, flag))
 			{
 				reportError(this);
 				status = false;
@@ -242,6 +271,12 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 					kapp->kdeinitExec("kjobviewer", args);
 				}
 			}
+		}
+		else if (flag)
+		// situation: only one file, it has been previewed and printing has been cancelled, then
+		//            we should remove the file ourself
+		{
+			QFile::remove(files[0]);
 		}
 	}
 	finishPrinting();
@@ -261,8 +296,8 @@ void KPrinter::preparePrinting()
 	setRealPageSize(QSize(-1,-1));
 
 	// print-system-specific setup, only if not printing to file
-	if (m_impl && option("kde-isspecial") != "1")
-		m_impl->preparePrinting(this);
+	if (option("kde-isspecial") != "1")
+		d->m_impl->preparePrinting(this);
 
 	// standard Qt settings
 	translateQtOptions();
@@ -408,14 +443,14 @@ void KPrinter::setOrientation(Orientation o)
 {
 	KMFactory::self()->settings()->orientation = o;
 	setOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
-	if (m_impl) m_impl->broadcastOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
+	d->m_impl->broadcastOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
 }
 
 void KPrinter::setPageSize(PageSize s)
 {
 	KMFactory::self()->settings()->pageSize = s;
 	setOption("kde-pagesize",QString::number((int)s));
-	if (m_impl) m_impl->broadcastOption("kde-pagesize",option("kde-pagesize"));
+	d->m_impl->broadcastOption("kde-pagesize",option("kde-pagesize"));
 }
 
 void KPrinter::setOptions(const QMap<QString,QString>& opts)
@@ -439,15 +474,14 @@ void KPrinter::initOptions(const QMap<QString,QString>& opts)
   // creation to set some options. Non global options will be propagated to
   // all listed printers (non-global => start with "kde-...")
 	m_options = opts;
-	if (!m_impl) return;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 		if (it.key().left(4) != "kde-")
-			m_impl->broadcastOption(it.key(),it.data());
+			d->m_impl->broadcastOption(it.key(),it.data());
 }
 
 void KPrinter::reload()
 {
-	m_impl = KMFactory::self()->printerImplementation();
+	d->m_impl = KMFactory::self()->printerImplementation();
 	int	global = KMFactory::self()->settings()->orientation;
 	if (global != -1) setOrientation((KPrinter::Orientation)global);
 	global = KMFactory::self()->settings()->pageSize;
@@ -565,7 +599,7 @@ void dumpOptions(const QMap<QString,QString>& opts)
 }
 
 KPrinterImpl* KPrinter::implementation() const
-{ return m_impl; }
+{ return d->m_impl; }
 
 const QString& KPrinter::option(const QString& key) const
 { return m_options[key]; }
@@ -714,3 +748,13 @@ QString KPrinter::errorMessage() const
 
 void KPrinter::setErrorMessage(const QString& msg)
 { m_errormsg = msg; }
+
+/* we're using a builtin member to store this state because we don't
+ * want to keep it from object to object. So there's no need to use
+ * the QMap structure to store this
+ */
+void KPrinter::setPreviewOnly(bool on)
+{ d->m_previewonly = on; }
+
+bool KPrinter::previewOnly() const
+{ return d->m_previewonly; }

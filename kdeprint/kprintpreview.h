@@ -30,7 +30,7 @@ class KPrintPreview : public KParts::MainWindow
 {
 	Q_OBJECT
 public:
-	KPrintPreview(QWidget *parent = 0);
+	KPrintPreview(QWidget *parent = 0, bool previewOnly = false);
 	~KPrintPreview();
 
 	void openFile(const QString& file);
@@ -38,7 +38,7 @@ public:
 	void exec(const QString& file = QString::null);
 	bool isValid() const;
 
-	static bool preview(const QString& file);
+	static bool preview(const QString& file, bool previewOnly = false);
 
 protected slots:
 	void accept();
