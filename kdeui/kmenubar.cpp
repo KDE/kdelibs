@@ -49,6 +49,13 @@
 
 // $Id$
 // $Log$
+// Revision 1.79  1999/07/24 21:35:46  mosfet
+// Added kmenubar to kstyle since qmenubar didn't get in qstyle. I can easily
+// switch if that eventually happens.
+//
+// Things are beginning to look *really* nice now. To see the *bars in a small
+// screenshot go to: http://www.jorsm.com/~mosfet/menubars.gif
+//
 // Revision 1.78  1999/06/20 10:49:35  mario
 // Mario: the menu bar was not correctly drawn. This hack fixes that
 //
@@ -280,6 +287,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   init();
 }
 
+#if 0
 void KMenuBar::show() {
 #warning <mweilguni@kde.org> Test if this hack is really necessary in the next version (Qt-2 beta4)
 #warning If it works without the menu->show() call, remove the whole method
@@ -290,6 +298,7 @@ void KMenuBar::show() {
   QFrame::show();
   menu->show();
 }
+#endif
 
 int KMenuBar::idAt( int index )
 {

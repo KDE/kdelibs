@@ -173,7 +173,7 @@ void KStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
 
 void KStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool active, QMenuItem *mi,
-                           QBrush *fill)
+                           QBrush *)
 {
     QColor btext = g.buttonText();
     if(active)

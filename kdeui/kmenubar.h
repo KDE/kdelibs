@@ -20,6 +20,13 @@
 
 //$Id$
 //$Log$
+//Revision 1.23  1999/07/24 21:35:46  mosfet
+//Added kmenubar to kstyle since qmenubar didn't get in qstyle. I can easily
+//switch if that eventually happens.
+//
+//Things are beginning to look *really* nice now. To see the *bars in a small
+//screenshot go to: http://www.jorsm.com/~mosfet/menubars.gif
+//
 //Revision 1.22  1999/06/20 10:49:35  mario
 //Mario: the menu bar was not correctly drawn. This hack fixes that
 //
@@ -136,10 +143,10 @@ class KMenuBar : public QFrame
     * or hide, but if you do that the signal @ref #moved won't be emitted.
     */
    bool enable( BarStatus stat );
-
+#if 0
    /** Hack: this is needed for Qt-2 */
    void show();
-
+#endif
    /**
 	* Reimplemented to return some useful measures.
 	*/

@@ -1071,18 +1071,18 @@ void KThemeStyle::drawFocusRect(QPainter *p, const QRect &r,
 }
 
 void KThemeStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, QBrush *fill)
+                               const QColorGroup &g, QBrush *)
 {
-    QColorGroup *cg = colorGroup(g, MenuBar);
+    const QColorGroup *cg = colorGroup(g, MenuBar);
     drawBaseButton(p, x, y, w, h, *cg, false, false, MenuBar);
 
 }
 
 void KThemeStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool active,
-                                QMenuItem *mi, QBrush *fill)
+                                QMenuItem *mi, QBrush *)
 {
-    QColorGroup *cg = colorGroup(g, MenuBar);
+    const QColorGroup *cg = colorGroup(g, MenuBar);
     QColor btext = cg->buttonText();
     if(active)
         qDrawShadePanel(p, x, y, w, h, *cg, false, 1);
