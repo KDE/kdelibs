@@ -122,7 +122,7 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
 	constructDialog();
 
 	setButtonText(User1, i18n("Short help..."));
-        setCaption(i18n("CUPS server configuration"));
+        setCaption(i18n("CUPS Server Configuration"));
 
         //resize(500, 400);
 }

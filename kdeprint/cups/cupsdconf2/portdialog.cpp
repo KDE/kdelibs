@@ -66,7 +66,7 @@ PortDialog::PortDialog(QWidget *parent, const char *name)
 	m3->addWidget(ok);
 	m3->addWidget(cancel);
 
-	setCaption(i18n("Listen to"));
+	setCaption(i18n("Listen To"));
 	resize(250, 100);
 }
 

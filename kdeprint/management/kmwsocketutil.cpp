@@ -115,7 +115,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	lay1->addWidget(mm,0);
 
 	resize(250,130);
-	setCaption(i18n("Scan configuration"));
+	setCaption(i18n("Scan Configuration"));
 }
 
 SocketConfig::~SocketConfig()

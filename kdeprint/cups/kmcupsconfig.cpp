@@ -29,7 +29,7 @@
 KMCupsConfig::KMCupsConfig(QWidget *parent, const char *name)
 : KDialog(parent,name,true)
 {
-	setCaption(i18n("CUPS settings"));
+	setCaption(i18n("CUPS Settings"));
 
 	// widget creation
 	m_widget = new KMCupsConfigWidget(this);

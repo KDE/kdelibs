@@ -45,7 +45,7 @@ KMProxyDialog::KMProxyDialog(QWidget *parent, const char *name)
 	lay1->addWidget(m_cancel);
 
 	resize(300,100);
-	setCaption(i18n("RLPR settings"));
+	setCaption(i18n("RLPR Settings"));
 }
 
 bool KMProxyDialog::configure(QWidget *parent)

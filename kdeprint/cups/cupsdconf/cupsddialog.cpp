@@ -98,7 +98,7 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
 	conf_ = 0;
 	constructDialog();
 
-        setCaption(i18n("CUPS server configuration"));
+        setCaption(i18n("CUPS Server Configuration"));
 
         resize(500, 400);
 }

@@ -42,7 +42,7 @@
 KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 : KDialog(parent,name,true)
 {
-	setCaption(i18n("Add special printer"));
+	setCaption(i18n("Add Special Printer"));
 
 	// widget creation
 	m_name = new QLineEdit(this);

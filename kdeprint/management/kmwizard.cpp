@@ -125,7 +125,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	KMFactory::self()->uiManager()->setupWizard(this);
 
 	setCurrentPage(m_start,false);
-	setCaption(i18n("Add printer wizard"));
+	setCaption(i18n("Add Printer Wizard"));
 	resize(400,350);
 }
 
@@ -160,7 +160,7 @@ void KMWizard::configure(int start, int end, bool inclusive)
 
 	// disable class if not starting from beginning
 	m_backend->enableBackend(KMWizard::Class,(m_start == KMWizard::Start));
-	setCaption((m_start == KMWizard::Start ? i18n("Add printer wizard") : i18n("Modify printer")));
+	setCaption((m_start == KMWizard::Start ? i18n("Add Printer Wizard") : i18n("Modify printer")));
 
 	if (m_side)
 	{
