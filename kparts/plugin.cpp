@@ -104,7 +104,7 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
   for (; pIt != pEnd; ++pIt )
   {
       QFileInfo fInfo( *pIt );
-      if ( fInfo.extension() == QString::fromLatin1( ".desktop" ) )
+      if ( fInfo.extension() == QString::fromLatin1( "desktop" ) )
           continue;
 
       QMap<QString,QStringList>::Iterator mapIt = sortedPlugins.find( fInfo.fileName() );
