@@ -521,16 +521,6 @@ ushort HTMLButtonElementImpl::id() const
     return ID_BUTTON;
 }
 
-long HTMLButtonElementImpl::tabIndex() const
-{
-    // ###
-    return 0;
-}
-
-void HTMLButtonElementImpl::setTabIndex( long  )
-{
-}
-
 DOMString HTMLButtonElementImpl::type() const
 {
     return getAttribute(ATTR_TYPE);
@@ -552,7 +542,6 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
         _value = attr->value();
         currValue = _value.string();
         break;
-    case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
     case ATTR_ONFOCUS:
     case ATTR_ONBLUR:
@@ -639,12 +628,6 @@ const DOMString HTMLInputElementImpl::nodeName() const
 ushort HTMLInputElementImpl::id() const
 {
     return ID_INPUT;
-}
-
-long HTMLInputElementImpl::tabIndex() const
-{
-    // ###
-    return 0;
 }
 
 DOMString HTMLInputElementImpl::type() const
@@ -793,7 +776,6 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ALT:
     case ATTR_USEMAP:
-    case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
         break;
@@ -1225,7 +1207,6 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_MULTIPLE:
         m_multiple = (attr->val() != 0);
         break;
-    case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
         break;
@@ -1605,7 +1586,6 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
         else if(strcasecmp( attr->value(), "off") == 0)
             m_wrap = ta_NoWrap;
         break;
-    case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
         // ignore for the moment
         break;

@@ -39,6 +39,8 @@
 #include "css_stylesheetimpl.h"
 #include "css/cssproperties.h"
 
+#include <stdlib.h> // using atoi
+
 #include <kdebug.h>
 
 using namespace DOM;
@@ -47,6 +49,16 @@ using namespace khtml;
 HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 {
     m_styleDecls = 0;
+    has_tabindex=false;
+
+    DOMString indexstring = getAttribute(ATTR_TABINDEX);
+    if (indexstring.length()) {
+	has_tabindex=true;
+	tabindex=atoi(indexstring.string().latin1());
+    } else {
+	has_tabindex=false;
+	tabindex=0;
+    }
 }
 
 HTMLElementImpl::~HTMLElementImpl()
@@ -185,6 +197,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 
 void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 {
+  DOMString indexstring;
     switch( attr->attrId )
     {
 // the core attributes...
@@ -206,6 +219,17 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_TITLE:
 	// additional title for the element, may be displayed as tooltip
 	setHasTooltip();
+	break;
+    case ATTR_TABINDEX:
+        indexstring=getAttribute(ATTR_TABINDEX);
+        if (indexstring.length()) {
+	  has_tabindex=true;
+	  tabindex=atoi(indexstring.string().latin1());
+	} else {
+	  has_tabindex=false;
+	  tabindex=0;
+	}
+	has_tabindex=true;
 	break;
 // i18n attributes
     case ATTR_LANG:
@@ -265,6 +289,20 @@ void HTMLElementImpl::removeCSSProperty(int id)
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->removeProperty(id);
+}
+
+short HTMLElementImpl::tabIndex() const
+{
+  if (has_tabindex)
+    return tabindex;
+  else
+    return -1;
+}
+
+void HTMLElementImpl::setTabIndex( short _tabindex )
+{
+  has_tabindex=true;
+  tabindex=_tabindex;
 }
 
 // -------------------------------------------------------------------------

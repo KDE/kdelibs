@@ -56,8 +56,16 @@ public:
     void addCSSProperty(int id, const DOMString &value, bool important, bool nonCSSHint = true);
     void addCSSProperty(const DOMString &property);
     void removeCSSProperty(int id);
+
+    virtual short tabIndex() const;
+    virtual void setTabIndex( short );
+
 protected:
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
+
+ private:
+    bool has_tabindex;
+    short tabindex;
 };
 
 class HTMLGenericElementImpl : public HTMLElementImpl

@@ -186,9 +186,6 @@ public:
     virtual tagStatus startTag() { return BUTTONStartTag; }
     virtual tagStatus endTag() { return BUTTONEndTag; }
 
-    long tabIndex() const;
-    void setTabIndex( long );
-
     DOMString type() const;
 
     void parseAttribute(AttrImpl *attr);
@@ -254,7 +251,6 @@ public:
     void setChecked(bool _checked);
     long maxLength() const { return _maxLen; }
     int size() const { return _size; }
-    long tabIndex() const;
     DOMString type() const;
 
     DOMString value() const { return m_value; }

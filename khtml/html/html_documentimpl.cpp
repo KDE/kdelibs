@@ -569,7 +569,7 @@ NodeImpl *HTMLDocumentImpl::findLink(NodeImpl *n, bool forward, int tabIndexHint
 	    // this is alright even for non-tabindex-searches,
 	    // because DOM::NodeImpl::tabIndex() defaults to -1.
 
-	} while (n && (((HTMLAreaElementImpl *)n)->tabIndex()!=tabIndexHint));
+	} while (n && (((HTMLElementImpl *)n)->tabIndex()!=tabIndexHint));
 	if (n)
 	    break;
 	if (tabIndexHint!=-1)

@@ -39,8 +39,6 @@
 #include <qstack.h>
 #include <qmap.h>
 
-#include <stdlib.h>
-
 using namespace DOM;
 using namespace khtml;
 
@@ -325,17 +323,7 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
     href = 0;
     target = 0;
     shape = Unknown;
-    has_tabindex=false;
     lasth = lastw = -1;
-
-     DOMString indexstring=((HTMLElementImpl*)this)->getAttribute(ATTR_TABINDEX);
-     if (indexstring.length()) {
-         has_tabindex=true;
-         tabindex=atoi(indexstring.string().latin1());
-     } else {
-         has_tabindex=false;
-         tabindex=0;
-     }
 }
 
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
@@ -354,20 +342,6 @@ const DOMString HTMLAreaElementImpl::nodeName() const
 ushort HTMLAreaElementImpl::id() const
 {
     return ID_AREA;
-}
-
-long HTMLAreaElementImpl::tabIndex() const
-{
-  if (has_tabindex)
-    return tabindex;
-  else
-    return -1;
-}
-
-void HTMLAreaElementImpl::setTabIndex( long _tabindex )
-{
-  has_tabindex=true;
-  tabindex=_tabindex;
 }
 
 void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
@@ -400,17 +374,6 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
 	break;	
     case ATTR_ALT:
 	break;
-    case ATTR_TABINDEX:
-        indexstring=((HTMLElementImpl*)this)->getAttribute(ATTR_TABINDEX);
-        if (indexstring.length()) {
-	  has_tabindex=true;
-	  tabindex=atoi(indexstring.string().latin1());
-	} else {
-	  has_tabindex=false;
-	  tabindex=0;
-	}
-	has_tabindex=true;
-	break;	
     case ATTR_ACCESSKEY:
 	break;	
     default:

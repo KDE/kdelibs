@@ -104,9 +104,6 @@ public:
     virtual tagStatus startTag() { return AREAStartTag; }
     virtual tagStatus endTag() { return AREAEndTag; }
 
-    virtual long tabIndex() const;
-    virtual void setTabIndex( long );
-
     void parseAttribute(AttrImpl *attr);
 
     bool isDefault() { return shape==Default; }
@@ -126,9 +123,6 @@ protected:
     QRegion region;
 
     int lastw, lasth;
-
-    bool has_tabindex;
-    long tabindex;
 };
 
 
