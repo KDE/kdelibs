@@ -236,8 +236,7 @@ namespace
         {
             if ( args.size() != 2 ) return Undefined();
             QRegExp pattern( args[ 1 ].toString( exec ).qstring(), true, true );
-            return Boolean( pattern.search(
-                args[ 0 ].toString( exec ).qstring() ) != -1 );
+            return Boolean( pattern.exactMatch(args[ 0 ].toString( exec ).qstring()) );
         }
     };
 

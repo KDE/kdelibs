@@ -84,6 +84,9 @@ function FindProxyForURL( url, host )
     // shexp5
     if ( shExpMatch( "FoObAr", "*x*" ) )
         result += "/shexp5=failed";
+    // shexp6
+    if ( shExpMatch( "www.kde.org", "*.kde" ) )
+        result += "/shexp6=failed";
 
     var now = new Date;
     var days = new Array( "sun", "mon", "tue", "wed", "thu", "fri", "sat" );
