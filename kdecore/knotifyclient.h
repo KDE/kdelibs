@@ -231,7 +231,7 @@ namespace KNotifyClient
 	 * pass the origin-widget's winId() here so that a PassivePopup can be
 	 * placed appropriately.
 	 * @param winId The winId() of the widget where the event originates
-	 * @param message The name of the event
+	 * @param event The event you want to raise
 	 * @param text The text to put in a dialog box.  This won't be shown if
 	 *             the user connected the event to sound, only. Can be QString::null.
 	 * @return a value > 0, unique for this event if successful, 0 otherwise

@@ -169,7 +169,7 @@ install-exec-hook:
 
 DISTCLEANFILES = kde-config.cpp
 
-DOXYGEN_REFERENCES = dcop kdeui kparts
+DOXYGEN_REFERENCES = dcop kdeui kparts kio
 DOXYGEN_EXCLUDE = malloc/*
 
 include ../admin/Doxyfile.am

@@ -397,7 +397,7 @@ namespace KKeyServer
 	 * converts it to a symbol.
 	 * @param codeX the X11 key code
 	 * @param modX the mask of ORed X11 modifiers
-	 * @param sym if successful, the X11 symbol will be written here
+	 * @param symX if successful, the X11 symbol will be written here
 	 * @return true if successful, false otherwise
 	 * @see Qt::Key
 	 * @see Sym

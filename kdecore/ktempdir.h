@@ -53,9 +53,9 @@ class KTempDir
 public:
    /**
     * Creates a temporary directory with the name:
-    *  <directoryPrefix><six letters>
+    *  \p \<directoryPrefix\>\<six letters\>
     *
-    * The default @p directoryPrefix is "$KDEHOME/tmp-$HOST/appname"
+    * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname"
     * @param directoryPrefix the prefix of the file name, or QString::null
     *        for the default value
     **/
@@ -110,11 +110,13 @@ public:
     * @return true if a temporary directory has successfully been created and not been unlinked yet
     */
    bool existing() const;
+
 protected:
 
    bool create(const QString &directoryPrefix,  int mode);
 
    void setError(int error) { mError = error; }
+
 private:
    int mError;
    QString mTmpName;
