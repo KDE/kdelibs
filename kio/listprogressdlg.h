@@ -3,7 +3,7 @@
 #ifndef __kio_listprogress_dlg_h__
 #define __kio_listprogress_dlg_h__
 
-#include <qlistview.h>
+#include <klistview.h>
 
 #include <ktmainwindow.h>
 
@@ -71,7 +71,7 @@ signals:
 * List view in the @ref #KIOListProgressDlg.
 * @internal
 */
-class KIOListView : public QListView {
+class KIOListView : public KListView {
 
   Q_OBJECT
 

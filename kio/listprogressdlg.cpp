@@ -225,7 +225,7 @@ void KIOListViewItem::showSmallGUI() {
 //-----------------------------------------------------------------------------
 
 KIOListView::KIOListView (QWidget *parent, const char *name)
-  : QListView (parent, name) {
+  : KListView (parent, name) {
 
   // enable selection of more than one item
   setMultiSelection( true );
@@ -307,7 +307,7 @@ KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" ) {
 
   connect( myListView, SIGNAL( selectionChanged() ),
 	   SLOT( slotSelection() ) );
-  connect( myListView, SIGNAL( doubleClicked( QListViewItem* ) ),
+  connect( myListView, SIGNAL( executed( QListViewItem* ) ),
 	   SLOT( slotOpenSimple( QListViewItem* ) ) );
 
   // setup animation timer

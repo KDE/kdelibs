@@ -28,7 +28,6 @@
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qlistview.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
 
@@ -44,6 +43,7 @@
 #include <kstddirs.h>
 #include <dcopclient.h>
 #include <kmimetype.h>
+#include <klistview.h>
 
 #include "kopenwith.h"
 #include "krun.h"
@@ -55,7 +55,7 @@ template class QList<QString>;
 
 // ----------------------------------------------------------------------
 
-KAppTreeListItem::KAppTreeListItem( QListView* parent, const char *name,
+KAppTreeListItem::KAppTreeListItem( KListView* parent, const char *name,
                                     const QPixmap& pixmap, bool parse, bool dir, QString p, QString c )
     : QListViewItem( parent, name )
 {
@@ -116,7 +116,7 @@ void KAppTreeListItem::setOpen( bool o )
 // ----------------------------------------------------------------------
 
 KApplicationTree::KApplicationTree( QWidget *parent )
-    : QListView( parent )
+    : KListView( parent )
 {
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
@@ -310,7 +310,7 @@ void KApplicationTree::slotSelectionChanged(QListViewItem* i)
 void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
     setColumnWidth(0, width()-QApplication::style().scrollBarExtent().width());
-    QListView::resizeEvent(e);
+    KListView::resizeEvent(e);
 }
 
 

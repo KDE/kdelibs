@@ -5,13 +5,14 @@
 
 #include <qwidget.h>
 #include <qfileinfo.h>
-#include <qlistview.h>
 #include <qdialog.h>
 
 #include <kapp.h>
 #include <klineedit.h>
 #include <kurl.h>
 #include <kurlcompletion.h>
+#include <klistview.h>
+
 #include "kservice.h"
 
 class KApplicationTree;
@@ -91,7 +92,7 @@ protected:
     void init(const QPixmap& pixmap, bool parse, bool dir, QString _path, QString exec);
 
 public:
-    KAppTreeListItem( QListView* parent, const char *name, const QPixmap& pixmap,
+    KAppTreeListItem( KListView* parent, const char *name, const QPixmap& pixmap,
                       bool parse, bool dir, QString p, QString c );
     KAppTreeListItem( QListViewItem* parent, const char *name, const QPixmap& pixmap,
                       bool parse, bool dir, QString p, QString c );
@@ -105,7 +106,7 @@ protected:
 
 /* ------------------------------------------------------------------------- */
 
-class KApplicationTree : public QListView
+class KApplicationTree : public KListView
 {
     Q_OBJECT
 public:
