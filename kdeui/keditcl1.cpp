@@ -422,7 +422,6 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
     QMultiLineEdit::keyPressEvent(e);
     setModified(true);
-    e->accept();
     return;
   }
   else if ( keyQt == CTRL+Key_Y ){
@@ -440,61 +439,49 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
     killing = false;
     setModified(true);
-    e->accept();
     return;
   }
 
   killing = false;
 
-  if ( KStdAccel::copy().contains( key ) ) {
+  if ( KStdAccel::copy().contains( key ) )
     copy();
-    e->accept();
-  }
-  if ( isReadOnly() )
+  else if ( isReadOnly() )
     QMultiLineEdit::keyPressEvent( e );
-  // If this is an unmodified printable key, send it directly to QLineEdit.
+  // If this is an unmodified printable key, send it directly to QMultiLineEdit.
   else if ( (key.keyCodeQt() & (CTRL | ALT)) == 0 && !e->text().isNull() && e->text().unicode()->isPrint() )
-  {
     QMultiLineEdit::keyPressEvent( e );
-  }
   else if ( KStdAccel::paste().contains( key ) ) {
     paste();
     setModified(true);
-    e->accept();
   }
   else if ( KStdAccel::cut().contains( key ) ) {
     cut();
     setModified(true);
-    e->accept();
   }
   else if ( KStdAccel::undo().contains( key ) ) {
     undo();
     setModified(true);
-    e->accept();
   }
   else if ( KStdAccel::redo().contains( key ) ) {
     redo();
     setModified(true);
-    e->accept();
   }
   else if ( KStdAccel::deleteWordBack().contains( key ) ) {
     moveCursor(MoveWordBackward, true);
     if (hasSelectedText())
       del();
     setModified(true);
-    e->accept();
   }
   else if ( KStdAccel::deleteWordForward().contains( key ) ) {
     moveCursor(MoveWordForward, true);
     if (hasSelectedText())
       del();
     setModified(true);
-    e->accept();
   }
   else if ( d->overwriteEnabled && key == Key_Insert ) {
     this->setOverwriteMode(!this->isOverwriteMode());
     emit toggle_overwrite_signal();
-    e->accept();
   }
   else
     QMultiLineEdit::keyPressEvent(e);
