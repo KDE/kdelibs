@@ -240,8 +240,11 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
           exec->setException(err);
           return err;
       }
+      RegExpImp *rimp = static_cast<RegExpImp*>(Object::dynamicCast(a0).imp());
+      p = rimp->regExp()->pattern();
+    } else {
+      p = a0.toString(exec);
     }
-    p = a0.toString(exec);
   }
 
   RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->interpreter()->builtinRegExpPrototype().imp());

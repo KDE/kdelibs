@@ -44,13 +44,14 @@ namespace KJS {
     RegExp(const UString &p, int f = None);
     ~RegExp();
     int flags() const { return flgs; }
+    UString pattern() const { return pat; }
     UString match(const UString &s, int i, int *pos = 0, int **ovector = 0);
     // test is unused. The JS spec says that RegExp.test should use
     // RegExp.exec, so it has to store $1 etc.
     // bool test(const UString &s, int i = -1);
     unsigned int subPatterns() const { return nrSubPatterns; }
   private:
-    const UString &pattern;
+    const UString pat;
     int flgs;
     bool m_notEmpty;
 
