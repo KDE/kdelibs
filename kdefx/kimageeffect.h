@@ -240,7 +240,7 @@ public:
 
     /** @since 3.2
      * Compute the destination rectangle where to draw the upper image on top
-     * of another image using the givem disposition. For tiled
+     * of another image using the given disposition. For tiled
      * disposition, the rectangle should be duplicated on the whole area to
      * obtained the wanted effect.
      *
