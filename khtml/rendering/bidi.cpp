@@ -370,7 +370,8 @@ static void appendRun()
 #if BIDI_DEBUG > 1
         kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
 #endif
-        sruns->append( new BidiRun(start, eor.pos + 1, obj, context, dir) );
+	//for text DOM::Nodes, if length() == 0, set the end of the bidiRun at 0. Needed for Quanta's VPL.
+	sruns->append( new BidiRun(start, (obj->length() ? eor.pos+1 : 0), obj, context, dir) );
     }
 
     ++eor;
