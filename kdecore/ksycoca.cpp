@@ -203,7 +203,7 @@ void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
     // everything that's needed.
     closeDatabase();
     // same for KUserProfile
-    KServiceTypeProfile::clear();
+//    KServiceTypeProfile::clear(); FIXME!
 
     // Now notify applications
     emit databaseChanged();
