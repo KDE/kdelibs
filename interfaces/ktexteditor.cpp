@@ -116,4 +116,7 @@ void Document::slotViewDestroyed()
   m_views.removeRef( view );
 }
 
+using namespace KParts;
+
 #include "ktexteditor.moc"
+
