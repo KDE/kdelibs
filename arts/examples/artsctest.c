@@ -53,7 +53,7 @@ int main()
 		return 1;
 	}
 
-	stream = arts_play_stream(44100,2,16,"artsctest");
+	stream = arts_play_stream(44100,16,2,"artsctest");
 
 	while((bytes = fread(buffer,1,8192,stdin)) > 0)
 	{
