@@ -1231,7 +1231,7 @@ void KDirLister::setDirOnlyMode( bool _dirsOnly )
   d->changes |= DIR_ONLY_MODE;
 }
 
-bool KDirLister::autoErrorHandlingEnabled()
+bool KDirLister::autoErrorHandlingEnabled() const
 {
   return d->autoErrorHandling;
 }
