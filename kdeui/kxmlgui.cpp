@@ -85,6 +85,8 @@ struct KXMLGUIContainerNode
   KXMLGUIContainerNode *parent;
   KXMLGUIClient *client;
   KXMLGUIBuilder *builder;
+  QStringList builderCustomTags;
+  QStringList builderContainerTags;
   QWidget *container;
   int containerId;
 
@@ -141,6 +143,8 @@ public:
   QString attrName;
 
   QValueList<MergingIndex>::Iterator m_currentDefaultMergingIt;
+    
+  QStringList m_builderContainerTags;
 };
 
 KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, KXMLGUIClient *_client, KXMLGUIBuilder *_builder, int id, const QString &_mergingName, const QString &_groupName )
@@ -158,6 +162,12 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
   index = 0;
   mergingName = _mergingName;
 
+  if ( builder )
+  {
+    builderCustomTags = builder->customTags();
+    builderContainerTags = builder->containerTags();
+  }
+  
   if ( parent )
     parent->children.append( this );
 }
@@ -283,6 +293,8 @@ KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent, const 
   d = new KXMLGUIFactoryPrivate;
   m_builder = builder;
   m_client = 0L;
+  if ( m_builder )
+      d->m_builderContainerTags = m_builder->containerTags();
 }
 
 KXMLGUIFactory::~KXMLGUIFactory()
@@ -486,13 +498,11 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
   static QString tagDefineGroup = QString::fromLatin1( "definegroup" );
   static QString attrGroup = QString::fromLatin1( "group" );
 
-  QStringList customTags;
-  if ( parentNode->builder )
-    customTags = parentNode->builder->customTags();
+  QStringList customTags = parentNode->builderCustomTags;
 
-  QStringList containerTags = m_builder->containerTags();
-  if ( parentNode->builder && parentNode->builder != m_builder )
-    containerTags += parentNode->builder->containerTags();
+  QStringList containerTags = d->m_builderContainerTags;
+  if ( parentNode->builder != m_builder )
+    containerTags += parentNode->builderContainerTags;
 
   /*
    * This list contains references to all the containers we created on the current level.
