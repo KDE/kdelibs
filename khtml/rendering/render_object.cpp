@@ -987,8 +987,8 @@ void RenderObject::setOverhangingContents(bool p)
     if (p)
     {
         m_overhangingContents = true;
-        KHTMLAssert( cb != this );
-        if (cb)
+        KHTMLAssert( cb != this || isCanvas());
+        if (cb && cb != this)
             cb->setOverhangingContents();
     }
     else
@@ -1008,7 +1008,7 @@ void RenderObject::setOverhangingContents(bool p)
         {
             m_overhangingContents = false;
             KHTMLAssert( cb != this );
-            if (cb)
+            if (cb && cb != this)
                 cb->setOverhangingContents(false);
         }
     }

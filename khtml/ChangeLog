@@ -1,5 +1,8 @@
 2003-10-21  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_object.cpp (setOverhangingContents): refine assert to avoid
+	crash on bananalotto.com. Adjust to changed containingBlock() behavior.
+
 	* html/html_listimpl.cpp (attach): fix thinko. Revert Safari merge which
 	broke <ul><p><li>. Thanks to Maksim for noticing.
 	
