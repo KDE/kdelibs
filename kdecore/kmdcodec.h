@@ -352,11 +352,11 @@ private:
   KCodecs();
 
 private:
-  static char UUEncMap[64];
-  static char UUDecMap[128];
-  static char Base64EncMap[64];
-  static char Base64DecMap[128];
-  static char hexChars[16];
+  static const char UUEncMap[64];
+  static const char UUDecMap[128];
+  static const char Base64EncMap[64];
+  static const char Base64DecMap[128];
+  static const char hexChars[16];
   static const unsigned int maxQPLineLength;
 };
 

@@ -286,11 +286,11 @@ int KRFCDate::localUTCOffset()
 }
 
 
-static const char *day_names[] = {
+static const char * const day_names[] = {
     "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 };
 
-static const char *month_names[] = {
+static const char * const month_names[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };

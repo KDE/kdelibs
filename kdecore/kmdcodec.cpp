@@ -56,7 +56,7 @@
 #define KMD5_S44 21
 
 // static constants for base64
-char KCodecs::Base64EncMap[64] = {
+const char KCodecs::Base64EncMap[64] = {
                                    0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
                                    0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,
                                    0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
@@ -67,7 +67,7 @@ char KCodecs::Base64EncMap[64] = {
                                    0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2B, 0x2F
                                  };
 
-char KCodecs::Base64DecMap[128] = {
+const char KCodecs::Base64DecMap[128] = {
                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -87,7 +87,7 @@ char KCodecs::Base64DecMap[128] = {
                                   };
 
 // static constants for uuencode
-char KCodecs::UUEncMap[64] = {
+const char KCodecs::UUEncMap[64] = {
                                0x60, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
                                0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
                                0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
@@ -98,7 +98,7 @@ char KCodecs::UUEncMap[64] = {
                                0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F
                              };
 
-char KCodecs::UUDecMap[128] = {
+const char KCodecs::UUDecMap[128] = {
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -118,7 +118,7 @@ char KCodecs::UUDecMap[128] = {
                               };
 
 // static constants for quoted-printable
-char KCodecs::hexChars[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+const char KCodecs::hexChars[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
                                '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 const unsigned int KCodecs::maxQPLineLength = 70;

@@ -860,7 +860,7 @@ void freeaddrinfo(struct addrinfo *p)
 
 char *gai_strerror(int errorcode)
 {
-  static const char *messages[] =
+  static const char * const messages[] =
   {
     I18N_NOOP("no error"),	// 0
     I18N_NOOP("address family for nodename not supported"), // EAI_ADDRFAMILY

@@ -106,7 +106,7 @@ static Atom net_wm_state_stays_on_top = 0;
 static Atom xa_wm_state = 0;
 
 static Bool netwm_atoms_created      = False;
-static unsigned long netwm_sendevent_mask = (SubstructureRedirectMask|
+const unsigned long netwm_sendevent_mask = (SubstructureRedirectMask|
 					     SubstructureNotifyMask);
 
 
@@ -192,7 +192,7 @@ static int wcmp(const void *a, const void *b) {
 
 static const int netAtomCount = 47;
 static void create_atoms(Display *d) {
-    static const char *names[netAtomCount] =
+    static const char * const names[netAtomCount] =
     {
 	"UTF8_STRING",
 	    "_NET_SUPPORTED",

@@ -52,7 +52,7 @@
 
 template class QDict<QStringList>;
 
-static const char* types[] = {"html", "icon", "apps", "sound",
+static const char* const types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
 			      "wallpaper", "lib", "pixmap", "templates", "module", "qtplugins", 0 };
@@ -469,7 +469,7 @@ KStandardDirs::findAllResources( const char *type,
 
 static QString realPath(const QString &dirname)
 {
-    static char realpath_buffer[MAXPATHLEN + 1];
+    char realpath_buffer[MAXPATHLEN + 1];
     /* If the path contains symlinks, get the real name */
     if (realpath( QFile::encodeName(dirname), realpath_buffer) != 0) {
         // succes, use result from realpath
