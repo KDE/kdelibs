@@ -1725,13 +1725,15 @@ bool HTTPProtocol::readHeader()
   // Convert some common mimetypes to standard KDE mimetypes
   if (m_strMimeType == "application/x-targz")
      m_strMimeType = QString::fromLatin1("application/x-tgz");
-  if (m_strMimeType == "image/x-png")
+  else if (m_strMimeType == "image/x-png")
      m_strMimeType = QString::fromLatin1("image/png");
-  if (m_strMimeType == "audio/mpeg" || m_strMimeType == "audio/x-mpeg" || m_strMimeType == "audio/mp3")
+  else if (m_strMimeType == "audio/mpeg" || m_strMimeType == "audio/x-mpeg" || m_strMimeType == "audio/mp3")
      m_strMimeType = QString::fromLatin1("audio/x-mp3");
+  else if (m_strMimeType == "audio/midi")
+     m_strMimeType = QString::fromLatin1("audio/x-midi");
 
   // Prefer application/x-tgz over application/x-gzip
-  if (m_strMimeType == "application/x-gzip")
+  else if (m_strMimeType == "application/x-gzip")
   {
      if ((m_request.url.path().right(7) == ".tar.gz") ||
          (m_request.url.path().right(4) == ".tar"))
@@ -1739,7 +1741,7 @@ bool HTTPProtocol::readHeader()
   }
 
   // Some webservers say "text/plain" when they mean "application/x-bzip2"
-  if (m_strMimeType == "text/plain")
+  else if (m_strMimeType == "text/plain")
   {
      if (m_request.url.path().right(4) == ".bz2")
         m_strMimeType = QString::fromLatin1("application/x-bzip2");
