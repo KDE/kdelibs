@@ -24,90 +24,134 @@
 
 template class QList<KURIFilterPlugin>;
 
-bool KURIFilterPlugin::filterURI( QString &uri ) {
-    KURL kuri(uri);
-    bool filtered = filterURI(kuri);
-    uri = kuri.url();
-    return filtered;
+KURIFilterPlugin::KURIFilterPlugin( QObject *parent, const char *name, double pri )
+                 :QObject( parent, name )
+{
+    debug( "Filter Plugin name is : %s", name );
+    m_strName = QString::fromLatin1( name );
+    m_dblPriority = pri;
 }
 
+void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KURL& uri ) const
+{
+    if ( data.uri() != uri )
+    {
+        data.m_pURI = uri;
+        data.m_bFiltered = true;
+    }
+}
+
+KURIFilterData::KURIFilterData( const KURIFilterData& data )
+{
+    m_iType = data.m_iType;
+    m_pURI = data.m_pURI;
+    m_strErrMsg = data.m_strErrMsg;
+    m_bFiltered = data.m_bFiltered;
+}
+
+void KURIFilterData::init( const KURL& url )
+{
+    m_iType = KURIFilterData::UNKNOWN;
+    m_pURI = url;
+    m_strErrMsg = QString::null;
+    m_bFiltered = false;
+}
+
+//********************************************  KURIFilter **********************************************
 KURIFilter *KURIFilter::ms_pFilter = 0;
 
-KURIFilter::KURIFilter() {
+KURIFilter::KURIFilter()
+{
     m_lstPlugins.setAutoDelete(true);
-
     loadPlugins();
 }
 
-KURIFilter *KURIFilter::filter() {
-    if (!ms_pFilter) {
-	ms_pFilter = new KURIFilter();
-    }
+KURIFilter *KURIFilter::self()
+{
+    if (!ms_pFilter)
+        ms_pFilter = new KURIFilter();
 
     return ms_pFilter;
 }
 
-bool KURIFilter::filterURI(KURL &uri) {
+bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
+{
     bool filtered = false;
-    QListIterator<KURIFilterPlugin> it(m_lstPlugins);
-
-    for (; it.current(); ++it) {
-	filtered |= it.current()->filterURI(uri);
+    KURIFilterPluginList plugins = m_lstPlugins;
+    // If we have a filter list, only include those
+    // specifically requested for filtering.
+    if( filters.count() > 0 )
+    {
+        for( KURIFilterPlugin* it = plugins.first(); it != 0; it = plugins.next() )
+        {
+            bool found = false;
+            for ( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst )
+            {
+                if( (*lst) == it->name() ) { found = true; break; }
+                debug( "Allowed Filter name : %s\nCurrent filter name : %s\nIs a match : %i",
+                       (*lst).latin1(), it->name().latin1(), found );
+            }
+            if( !found ) plugins.remove(); // remove current item from the list if not found!!!
+        }
     }
+    QListIterator<KURIFilterPlugin> it( plugins );
+    for (; it.current(); ++it)
+        filtered |= it.current()->filterURI( data );
 
     return filtered;
 }
 
-bool KURIFilter::filterURI(QString &uri) {
-    bool filtered = false;
-    QListIterator<KURIFilterPlugin> it(m_lstPlugins);
-
-    for (; it.current(); ++it) {
-	filtered |= it.current()->filterURI(uri);
-    }
-
+bool KURIFilter::filterURI( KURL& uri, const QStringList& filters )
+{
+    KURIFilterData data = uri;
+    bool filtered = filterURI( data, filters );
+    if( filtered ) uri = data.uri();
     return filtered;
 }
 
-KURL KURIFilter::filteredURI(const KURL &uri) {
-    KURL filtered = uri;
-    filterURI(filtered);
+bool KURIFilter::filterURI( QString& uri, const QStringList& filters )
+{
+    KURIFilterData data = uri;
+    bool filtered = filterURI( data, filters );
+    if( filtered )  uri = data.uri().url();
     return filtered;
+
 }
 
-QString KURIFilter::filteredURI(const QString &uri) {
-    QString filtered = uri;
-    filterURI(filtered);
-    return filtered;
+KURL KURIFilter::filteredURI( const KURL &uri, const QStringList& filters )
+{
+    KURIFilterData data = uri;
+    filterURI( data, filters );
+    return data.uri();
 }
 
-QListIterator<KURIFilterPlugin> KURIFilter::pluginsIterator() const {
+QString KURIFilter::filteredURI( const QString &uri, const QStringList& filters )
+{
+    KURIFilterData data = uri;
+    filterURI( data, filters );
+    return data.uri().url();
+}
+
+QListIterator<KURIFilterPlugin> KURIFilter::pluginsIterator() const
+{
     return QListIterator<KURIFilterPlugin>(m_lstPlugins);
 };
 
-void KURIFilter::loadPlugins() {
+void KURIFilter::loadPlugins()
+{
     KTrader::OfferList offers = KTrader::self()->query( "KURIFilter/Plugin" );
     KTrader::OfferList::ConstIterator it = offers.begin();
     KTrader::OfferList::ConstIterator end = offers.end();
 
-    for (; it != end; ++it ) {
-	if ((*it)->library().isEmpty()) {
-	    continue;
-	}
-
-	KLibFactory *factory = KLibLoader::self()->factory((*it)->library());
-						
-	if (!factory) {
-	    continue;
-	}
-
-	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, 0, "KURIFilterPlugin");
-	if (plugin) {
-	    m_lstPlugins.append(plugin);
-	}
+    for (; it != end; ++it )
+    {
+	    if ((*it)->library().isEmpty()) { continue; }
+        KLibFactory *factory = KLibLoader::self()->factory((*it)->library());						
+    	if (!factory) { continue; }
+    	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->name(), "KURIFilterPlugin");
+	    if ( plugin ) { m_lstPlugins.append( plugin ); }
     }
-
-    m_lstPlugins.sort();
+    m_lstPlugins.sort(); // TODO: Prioritize based on the user preference from control module.
 }
 
 #include "kurifilter.moc"
