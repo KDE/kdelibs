@@ -50,11 +50,6 @@ NodeImpl::Id HTMLBlockquoteElementImpl::id() const
     return ID_BLOCKQUOTE;
 }
 
-void HTMLBlockquoteElementImpl::attach()
-{
-    HTMLElementImpl::attach();
-}
-
 // -------------------------------------------------------------------------
 
 HTMLDivElementImpl::HTMLDivElementImpl(DocumentPtr *doc)
@@ -163,11 +158,6 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLHRElementImpl::attach()
-{
-    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------

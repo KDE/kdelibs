@@ -50,11 +50,6 @@ void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLUListElementImpl::attach()
-{
-    HTMLElementImpl::attach();
-}
-
 // -------------------------------------------------------------------------
 
 NodeImpl::Id HTMLDirectoryElementImpl::id() const
@@ -62,21 +57,11 @@ NodeImpl::Id HTMLDirectoryElementImpl::id() const
     return ID_DIR;
 }
 
-void HTMLDirectoryElementImpl::attach()
-{
-    HTMLElementImpl::attach();
-}
-
 // -------------------------------------------------------------------------
 
 NodeImpl::Id HTMLMenuElementImpl::id() const
 {
     return ID_MENU;
-}
-
-void HTMLMenuElementImpl::attach()
-{
-    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -107,11 +92,6 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
     default:
         HTMLUListElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLOListElementImpl::attach()
-{
-    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------

@@ -98,7 +98,7 @@ public:
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach();
+    virtual void init();
 
 protected:
     HTMLTableSectionElementImpl *head;
@@ -126,8 +126,6 @@ public:
         { }
 
     virtual void parseAttribute(AttrImpl *attr);
-
-    void attach();
 
 protected:
     bool m_solid : 1;
@@ -196,7 +194,8 @@ public:
 
     // overrides
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach();
+    virtual void init();
+    virtual khtml::RenderObject *createRenderer();
 
 protected:
     int _row;

@@ -234,18 +234,9 @@ void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLBRElementImpl::attach()
+RenderObject *HTMLBRElementImpl::createRenderer()
 {
-    //kdDebug( 6030 ) << "HTMLBRElementImpl::attach" << endl;
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    khtml::RenderObject *r = _parent->renderer();
-    if(r)
-    {
-        m_render = new RenderBR();
-        m_render->setStyle(m_style);
-        r->addChild(m_render, nextRenderer());
-    }
-    HTMLElementImpl::attach();
+    return new RenderBR();
 }
 
 // -------------------------------------------------------------------------
@@ -308,32 +299,6 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
         HTMLElementImpl::parseAttribute(attr);
     }
 }
-
-
-void HTMLFontElementImpl::attach()
-{
-    HTMLElementImpl::attach();
-#if 0
-    // the font element needs special handling because it has to behave like
-    // an inline or block level element depending on context.
-
-    setStyle(document->styleSelector()->styleForElement(this));
-    if(_parent && _parent->renderer())
-    {
-        if(_parent->style()->display() != INLINE)
-            m_style->setDisplay(BLOCK);
-        m_render = khtml::RenderObject::createObject(style());
-
-        if(m_render)
-        {
-            _parent->renderer()->addChild(m_render, nextRenderer());
-        }
-    }
-
-    HTMLElementImpl::attach();
-#endif
-}
-
 
 // -------------------------------------------------------------------------
 

@@ -49,6 +49,7 @@ public:
                                     int _tx, int _ty,
                                     MouseEvent *ev );
 
+    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void recalcStyle( StyleChange ch );
 

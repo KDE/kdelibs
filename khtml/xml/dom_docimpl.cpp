@@ -1074,12 +1074,6 @@ NodeImpl *DocumentImpl::findElement( Id id )
 
 NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 {
-    // Search through the document, starting from fromNode, for the next selectable element that comes after fromNode.
-    // The order followed is as specified in section 17.11.1 of the HTML4 spec, which is elements with tab indexes
-    // first (from lowest to highest), and then elements without tab indexes (in document order).
-    //
-    // See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
-
     unsigned short fromTabIndex;
 
     if (!fromNode) {
@@ -1168,12 +1162,6 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 
 NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 {
-    // Search through the document, starting from fromNode, for the previous selectable element (that comes _before_)
-    // fromNode. The order followed is as specified in section 17.11.1 of the HTML4 spec, which is elements with tab
-    // indexes first (from lowest to highest), and then elements without tab indexes (in document order).
-    //
-    // See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
-
     NodeImpl *lastNode = this;
     while (lastNode->lastChild())
 	lastNode = lastNode->lastChild();
@@ -1449,15 +1437,6 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 
 void DocumentImpl::updateStyleSelector()
 {
-    // Called when one or more stylesheets in the document may have been added, removed or changed.
-    //
-    // Creates a new style selector and assign it to this document. This is done by iterating
-    // through all nodes in document (or those before <BODY> in a HTML document), searching
-    // for stylesheets. Stylesheets can be contained in <LINK>, <STYLE> or <BODY> elements,
-    // as well as processing instructions (XML documents only). A list is constructed from
-    // these which is used to create the a new style selector which collates all of the
-    // stylesheets found and is used to calculate the derived styles for all rendering objects.
-
     if ( !m_render || !attached() ) return;
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;

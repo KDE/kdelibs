@@ -41,8 +41,6 @@ public:
     ~HTMLBlockquoteElementImpl();
 
     virtual NodeImpl::Id id() const;
-
-    void attach();
 };
 
 // -------------------------------------------------------------------------
@@ -73,8 +71,6 @@ public:
     virtual NodeImpl::Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
-
-    virtual void attach();
 protected:
     bool noShade : 1;
 };

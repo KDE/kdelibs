@@ -51,7 +51,7 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach();
+    virtual void init();
 
 protected:
     DOMString _href;
@@ -74,8 +74,7 @@ public:
     StyleSheetImpl *sheet() const;
 
     // overload from HTMLElementImpl
-    virtual void attach();
-    virtual void detach();
+    virtual void init();
     virtual void parseAttribute(AttrImpl *attr);
 
     // from CachedObjectClient
@@ -106,7 +105,7 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach();
+    virtual void init();
 
 protected:
     DOMString _equiv;
@@ -147,8 +146,7 @@ public:
     void sheetLoaded();
     void reparseSheet();
 
-    virtual void attach();
-    virtual void detach();
+    virtual void init();
 
 protected:
     StyleSheetImpl *m_sheet;

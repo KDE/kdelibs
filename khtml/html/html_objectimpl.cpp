@@ -84,56 +84,39 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLAppletElementImpl::attach()
+RenderObject *HTMLAppletElementImpl::createRenderer()
 {
-  setStyle(ownerDocument()->styleSelector()->styleForElement(this));
+    if (getAttribute(ATTR_CODE).isNull())
+	return 0;
 
-  khtml::RenderObject *r = _parent->renderer();
-  RenderWidget *f = 0;
-
-  if(r && m_style->display() != NONE && !getAttribute(ATTR_CODE).isNull()) {
-      view = ownerDocument()->view();
+    KHTMLView *view = ownerDocument()->view();
 
 #ifndef Q_WS_QWS // FIXME(E)? I don't think this is possible with Qt Embedded...
-      if( view->part()->javaEnabled() )
-      {
-          QMap<QString, QString> args;
+    if( view->part()->javaEnabled() )
+    {
+	QMap<QString, QString> args;
 
-          args.insert( "code", getAttribute(ATTR_CODE).string());
-          DOMString codeBase = getAttribute(ATTR_CODEBASE);
-          if(!codeBase.isNull())
-              args.insert( "codeBase", codeBase.string() );
-          DOMString name = getDocument()->htmlMode() != DocumentImpl::XHtml ?
-                           getAttribute(ATTR_NAME) : getAttribute(ATTR_ID);
-          if(!name.isNull())
-              args.insert( "name", name.string() );
-          DOMString archive = getAttribute(ATTR_ARCHIVE);
-          if(!archive.isNull())
-              args.insert( "archive", archive.string() );
+	args.insert( "code", getAttribute(ATTR_CODE).string());
+	DOMString codeBase = getAttribute(ATTR_CODEBASE);
+	if(!codeBase.isNull())
+	    args.insert( "codeBase", codeBase.string() );
+	DOMString name = getDocument()->htmlMode() != DocumentImpl::XHtml ?
+			 getAttribute(ATTR_NAME) : getAttribute(ATTR_ID);
+	if(!name.isNull())
+	    args.insert( "name", name.string() );
+	DOMString archive = getAttribute(ATTR_ARCHIVE);
+	if(!archive.isNull())
+	    args.insert( "archive", archive.string() );
 
-          args.insert( "baseURL", ownerDocument()->baseURL() );
-          f = new RenderApplet(view, args, this);
-      }
-      else
-          f = new RenderEmptyApplet(view);
+	args.insert( "baseURL", ownerDocument()->baseURL() );
+	return new RenderApplet(view, args, this);
+    }
+    else {
+	return new RenderEmptyApplet(view);
+    }
 #else
-      f = 0;
+    return 0;
 #endif
-  }
-
-  if(f)
-  {
-      m_render = f;
-      m_render->setStyle(m_style);
-      r->addChild(m_render, nextRenderer());
-  }
-  HTMLElementImpl::attach();
-}
-
-void HTMLAppletElementImpl::detach()
-{
-    view = 0;
-    HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------
@@ -215,36 +198,27 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
   }
 }
 
-void HTMLEmbedElementImpl::attach()
+RenderObject *HTMLEmbedElementImpl::createRenderer()
 {
-   KHTMLView* w = ownerDocument()->view();
-   setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
-   khtml::RenderObject *r = _parent->renderer();
-   RenderPartObject* p = 0;
-   if ( r && m_style->display() != NONE ) {
-       if (w->part()->pluginsEnabled())
-       {
-           if ( _parent->id()!=ID_OBJECT )
-           {
-               p = new RenderPartObject( w, this );
-               m_render = p;
-               m_render->setStyle(m_style);
-               r->addChild( m_render, nextRenderer() );
-           } else
-               r->setStyle(m_style);
-       }
-   }
-
-
-   HTMLElementImpl::attach();
-
-  if ( p )
-      p->updateWidget();
+    KHTMLView* w = getDocument()->view();
+    if (w->part()->pluginsEnabled())
+    {
+	if ( _parent->id()!=ID_OBJECT )
+	{
+	    return new RenderPartObject( w, this );
+	}
+	else
+	    _parent->renderer()->setStyle(m_style);
+    }
+    return 0;
 }
 
-void HTMLEmbedElementImpl::detach()
+void HTMLEmbedElementImpl::attach()
 {
-  HTMLElementImpl::detach();
+    HTMLElementImpl::attach();
+
+    if (m_render)
+	static_cast<RenderPartObject*>(m_render)->updateWidget();
 }
 
 // -------------------------------------------------------------------------
@@ -315,23 +289,20 @@ DocumentImpl* HTMLObjectElementImpl::contentDocument() const
     return 0;
 }
 
+RenderObject *HTMLObjectElementImpl::createRenderer()
+{
+    KHTMLView* w = ownerDocument()->view();
+    if (w->part()->pluginsEnabled()) {
+	needWidgetUpdate = false;
+	return new RenderPartObject( w, this );
+    }
+    else {
+	return 0;
+    }
+}
+
 void HTMLObjectElementImpl::attach()
 {
-  KHTMLView* w = ownerDocument()->view();
-  setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
-
-  khtml::RenderObject *r = _parent->renderer();
-  if ( r && m_style->display() != NONE ) {
-      if (w->part()->pluginsEnabled())
-      {
-          RenderPartObject *p = new RenderPartObject( w, this );
-          m_render = p;
-          m_render->setStyle(m_style);
-          r->addChild( m_render, nextRenderer() );
-          needWidgetUpdate = false;
-      }
-  }
-
   HTMLElementImpl::attach();
 
   // ### do this when we are actually finished loading instead
@@ -341,6 +312,7 @@ void HTMLObjectElementImpl::attach()
 void HTMLObjectElementImpl::detach()
 {
   HTMLElementImpl::detach();
+
   // ### do this when we are actualy removed from document instead
   dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 }

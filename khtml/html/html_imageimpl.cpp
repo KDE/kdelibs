@@ -50,10 +50,6 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-
-
-// -------------------------------------------------------------------------
-
 HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
@@ -198,22 +194,19 @@ DOMString HTMLImageElementImpl::altText() const
     return alt;
 }
 
+RenderObject *HTMLImageElementImpl::createRenderer()
+{
+    return new RenderImage(this);
+}
+
 void HTMLImageElementImpl::attach()
 {
-    //kdDebug( 6030 ) << "HTMLImageImpl::attach" << endl;
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    khtml::RenderObject *r = _parent->renderer();
-    if(r && m_style->display() != NONE) {
-        RenderImage *renderImage = new RenderImage(this);
-        renderImage->setStyle(m_style);
-        renderImage->setAlt(altText());
-        m_render = renderImage;
-        if(m_render) r->addChild(m_render, nextRenderer());
-        renderImage->setImageUrl(m_imageURL,
-                                 static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
-
-    }
     HTMLElementImpl::attach();
+
+    if (m_render) {
+        static_cast<RenderImage*>(m_render)->setAlt(altText());
+        static_cast<RenderImage*>(m_render)->setImageUrl(m_imageURL,getDocument()->docLoader());
+    }
 }
 
 void HTMLImageElementImpl::recalcStyle( StyleChange ch )

@@ -758,6 +758,11 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
     return 0;
 }
 
+RenderObject *ElementImpl::createRenderer()
+{
+    return RenderObject::createObject(this);
+}
+
 void ElementImpl::attach()
 {
     if (!m_render)
@@ -767,9 +772,10 @@ void ElementImpl::attach()
 #if SPEED_DEBUG < 1
         if(_parent && _parent->renderer())
         {
-            m_render = khtml::RenderObject::createObject(this);
+            m_render = createRenderer();
             if(m_render)
             {
+                m_render->setStyle(m_style);
                 _parent->renderer()->addChild(m_render, nextRenderer());
             }
         }

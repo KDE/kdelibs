@@ -449,7 +449,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLTableElementImpl::attach()
+void HTMLTableElementImpl::init()
 {
     if (!m_noBorder) {
         int v = m_solid ? CSS_VAL_SOLID : CSS_VAL_OUTSET;
@@ -459,7 +459,7 @@ void HTMLTableElementImpl::attach()
         addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
     }
 
-    HTMLElementImpl::attach();
+    HTMLElementImpl::init();
 }
 
 // --------------------------------------------------------------------------
@@ -510,11 +510,6 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLTablePartElementImpl::attach()
-{
-    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -718,7 +713,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLTableCellElementImpl::attach()
+void HTMLTableCellElementImpl::init()
 {
     HTMLElementImpl* p = static_cast<HTMLElementImpl*>(_parent);
     while(p && p->id() != ID_TABLE)
@@ -741,26 +736,22 @@ void HTMLTableCellElementImpl::attach()
                 addCSSProperty(CSS_PROP_BORDER_COLOR, "inherit");
         }
     }
-
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    khtml::RenderObject *r = _parent->renderer();
-    if(r)
-    {
-        m_render = khtml::RenderObject::createObject(this);
-        if(m_render && m_render->style()->display() == TABLE_CELL)
-        {
-            RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);
-            cell->setRowSpan(rSpan);
-            cell->setColSpan(cSpan);
-            cell->setNoWrap(m_nowrap);
-        }
-        if(m_render) r->addChild(m_render, nextRenderer());
-    }
-
-    HTMLElementImpl::attach();
 }
 
+RenderObject *HTMLTableCellElementImpl::createRenderer()
+{
+    RenderObject *render = RenderObject::createObject(this);
 
+    if(render && render->style()->display() == TABLE_CELL)
+    {
+	RenderTableCell *cell = static_cast<RenderTableCell *>(render);
+	cell->setRowSpan(rSpan);
+	cell->setColSpan(cSpan);
+	cell->setNoWrap(m_nowrap);
+    }
+
+    return render;
+}
 
 // -------------------------------------------------------------------------
 

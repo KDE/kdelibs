@@ -55,7 +55,8 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
-    void attach();
+    virtual void init();
+    virtual khtml::RenderObject *createRenderer();
 
     virtual bool prepareMouseEvent( int _x, int _y,
                                     int _tx, int _ty,
@@ -84,6 +85,8 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
+    virtual void init();
+    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void detach();
 
@@ -123,7 +126,8 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
-    virtual void attach();
+    virtual void init();
+    virtual khtml::RenderObject *createRenderer();
 
     virtual bool prepareMouseEvent( int _x, int _y,
                                     int _tx, int _ty,
@@ -146,7 +150,6 @@ public:
 protected:
     QPtrList<khtml::Length> *m_rows;
     QPtrList<khtml::Length> *m_cols;
-    KHTMLView *view;
 
     int m_totalRows;
     int m_totalCols;
@@ -181,8 +184,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void attach();
-
+    virtual khtml::RenderObject *createRenderer();
 };
 
 
@@ -198,6 +200,7 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
+    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void recalcStyle( StyleChange ch );
 

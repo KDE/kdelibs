@@ -48,11 +48,9 @@ public:
 
     virtual void parseAttribute(AttrImpl *token);
 
-    virtual void attach();
-    virtual void detach();
+    virtual khtml::RenderObject *createRenderer();
 
 protected:
-    KHTMLView *view;
     khtml::VAlign valign;
 };
 
@@ -69,8 +67,8 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
+    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
-    virtual void detach();
 
     QString url;
     QString pluginPage;
@@ -94,6 +92,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *token);
 
+    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void detach();
 

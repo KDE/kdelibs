@@ -154,6 +154,16 @@ public:
 
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
+
+    /**
+     * Called when one or more stylesheets in the document may have been added, removed or changed.
+     * 
+     * Creates a new style selector and assign it to this document. This is done by iterating through all nodes in
+     * document (or those before <BODY> in a HTML document), searching for stylesheets. Stylesheets can be contained in
+     * <LINK>, <STYLE> or <BODY> elements, as well as processing instructions (XML documents only). A list is
+     * constructed from these which is used to create the a new style selector which collates all of the stylesheets
+     * found and is used to calculate the derived styles for all rendering objects.
+     */
     void updateStyleSelector();
 
     QString nextState();
@@ -305,7 +315,30 @@ public:
     virtual void removeWindowEventListener(int id);
     EventListener *createHTMLEventListener(QString code);
 
+    /**
+     * Searches through the document, starting from fromNode, for the next selectable element that comes after fromNode.
+     * The order followed is as specified in section 17.11.1 of the HTML4 spec, which is elements with tab indexes
+     * first (from lowest to highest), and then elements without tab indexes (in document order).
+     * 
+     * @param fromNode The node from which to start searching. The node after this will be focused. May be null.
+     * 
+     * @return The focus node that comes after fromNode
+     * 
+     * See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
+     */
     NodeImpl *nextFocusNode(NodeImpl *fromNode);
+
+    /**
+     * Searches through the document, starting from fromNode, for the previous selectable element (that comes _before_)
+     * fromNode. The order followed is as specified in section 17.11.1 of the HTML4 spec, which is elements with tab
+     * indexes first (from lowest to highest), and then elements without tab indexes (in document order).
+     *
+     * @param fromNode The node from which to start searching. The node before this will be focused. May be null.
+     * 
+     * @return The focus node that comes before fromNode
+     * 
+     * See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
+     */
     NodeImpl *previousFocusNode(NodeImpl *fromNode);
 
     int nodeAbsIndex(NodeImpl *node);

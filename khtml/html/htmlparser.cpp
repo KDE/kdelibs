@@ -295,14 +295,20 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             pushBlock(id, tagPriority[id]);
             current = newNode;
 #if SPEED_DEBUG < 2
-            if(!n->attached() && HTMLWidget )  n->attach();
+            if(!n->attached() && HTMLWidget ) {
+		n->init();
+		n->attach();
+	    }
 #endif
             //_inline = current->isInline();
             if(current->isInline()) _inline = true;
         }
         else {
 #if SPEED_DEBUG < 2
-            if(!n->attached() && HTMLWidget)  n->attach();
+            if(!n->attached() && HTMLWidget) {
+		n->init();
+		n->attach();
+	    }
 	    if(n->renderer()) {
 		if (n->maintainsState())
 		    n->restoreState(document->document()->nextState());
@@ -344,8 +350,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if( head ) {
                 head->addChild(n);
 #if SPEED_DEBUG < 2
-                if(!n->attached() && HTMLWidget)
+		if(!n->attached() && HTMLWidget) {
+                    n->init();
                     n->attach();
+		}
 #endif
                 return true;
             }
@@ -364,8 +372,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = newNode;
 #if SPEED_DEBUG < 2
-                    if(!n->attached() && HTMLWidget)
+		    if(!n->attached() && HTMLWidget) {
+                        n->init();
                         n->attach();
+		    }
 #endif
                 } else {
 #ifdef PARSER_DEBUG
@@ -441,7 +451,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             {
                 map->addChild(n);
 #if SPEED_DEBUG < 2
-                if(!n->attached() && HTMLWidget)  n->attach();
+                if(!n->attached() && HTMLWidget) {
+		    n->init();
+		    n->attach();
+		}
 #endif
                 handled = true;
             }
@@ -573,7 +586,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #endif
                         break;
                     }
-                    if ( HTMLWidget ) container->attach();
+                    if ( !container->attached() && HTMLWidget ) {
+			container->init();
+			container->attach();
+		    }
                     pushBlock( ID__KONQBLOCK, tagPriority[ID__KONQBLOCK] );
                     haveKonqBlock = true;
                     current = container;

@@ -174,6 +174,7 @@ public:
     // State of the element.
     virtual QString state() { return QString::null; }
 
+    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void detach();
     virtual void recalcStyle( StyleChange = NoChange );

@@ -45,7 +45,6 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
 
-    virtual void attach();
     virtual int start() const { return 1; }
 };
 
@@ -58,8 +57,6 @@ public:
     virtual ~HTMLDirectoryElementImpl() {}
 
     virtual Id id() const;
-
-    virtual void attach();
 };
 
 // -------------------------------------------------------------------------
@@ -71,8 +68,6 @@ public:
     virtual ~HTMLMenuElementImpl() {}
 
     virtual Id id() const;
-
-    virtual void attach();
 };
 
 // -------------------------------------------------------------------------
@@ -87,8 +82,6 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
-
-    virtual void attach();
 
     int start() const { return _start; }
 private:

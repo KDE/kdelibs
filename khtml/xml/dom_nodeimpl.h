@@ -244,16 +244,6 @@ public:
      */
     virtual bool isSelectable() const { return false; };
 
-    /**
-     * attach to a KHTMLView. Additional info (like style information,
-     * frames, etc...) will only get loaded, when attached to a widget.
-     */
-    virtual void attach() { setAttached(true); }
-    /**
-     * detach from a HTMLWidget
-     */
-    virtual void detach() { setAttached(false); }
-
     // ### check if this function is still needed at all...
     virtual bool isInline() const { return true; }
     virtual void printTree(int indent=0);
@@ -302,7 +292,25 @@ public:
     virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
+
+    /**
+     * Does a pre-order traversal of the tree to find the node next node after this one. This uses the same order that
+     * the tags appear in the source file.
+     * 
+     * @param stayWithin If not null, the traversal will stop once the specified node is reached. This can be used to
+     * restrict traversal to a particular sub-tree.
+     * 
+     * @return The next node, in document order
+     * 
+     * see @ref traversePreviousNode()
+     */
     NodeImpl *traverseNextNode(NodeImpl *stayWithin = 0) const;
+
+    /**
+     * Does a reverse pre-order traversal to find the node that comes before the current one in document order
+     * 
+     * see @ref traverseNextNode()
+     */
     NodeImpl *traversePreviousNode() const;
 
     DocumentPtr *docPtr() const { return document; }
@@ -321,6 +329,39 @@ public:
     static bool malformedQualifiedName(const DOMString &/*qualifiedName*/) { return false; }
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
+
+    /**
+     * Performs any necessary initialization of the element based on attributes that have been set during parsing. This
+     * method is called after the parser has finished parsing the element and inserted it into the tree, but before it
+     * is attached to the rendering tree.
+     *
+     * This method will eventually be removed once all of the initialization that currently only works during parsing is
+     * fixed to work with dynamic changes.
+     */
+    virtual void init();
+
+    // Integration with rendering tree
+
+    /**
+     * Creates a rendering object for this node. The object will be inserted into the rendering tree under this
+     * node's parent, and as such is used to provide a visual representation of the node to the user.
+     *
+     * @return A newly created RenderObject for this node
+     */
+    virtual khtml::RenderObject *createRenderer();
+
+    /**
+     * Attaches this node to the rendering tree. This calculates the style to be applied to the node and creates an
+     * appropriate RenderObject which will be inserted into the tree (except when the style has display: none). This
+     * makes the node visible in the KHTMLView.
+     */
+    virtual void attach();
+
+    /**
+     * Detaches the node from the rendering tree, making it invisible in the rendered view. This method will remove
+     * the node's rendering object from the rendering tree and delete it.
+     */
+    virtual void detach();
 
     // Methods for maintaining the state of the element between history navigation
 

@@ -193,6 +193,7 @@ QByteArray HTMLFormElementImpl::formData()
     for(unsigned int i=0; i < str.length(); i++) if(str[i].latin1() == ',') str[i] = space;
     QStringList charsets = QStringList::split(' ', str);
     QTextCodec* codec = 0;
+    KHTMLView *view = getDocument()->view();
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it )
     {
         QString enc = (*it);
@@ -315,6 +316,7 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
 
 bool HTMLFormElementImpl::prepareSubmit()
 {
+    KHTMLView *view = getDocument()->view();
     if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
         return m_insubmit;
 
@@ -345,6 +347,7 @@ void HTMLFormElementImpl::submit(  )
     kdDebug( 6030 ) << "submitting!" << endl;
 #endif
 
+    KHTMLView *view = getDocument()->view();
     for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
     {
         if (current->id() == ID_INPUT &&
@@ -376,6 +379,7 @@ void HTMLFormElementImpl::submit(  )
 
 void HTMLFormElementImpl::reset(  )
 {
+    KHTMLView *view = getDocument()->view();
     if(m_inreset || !view || !view->part()) return;
 
     m_inreset = true;
@@ -447,18 +451,6 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLFormElementImpl::attach()
-{
-    view = ownerDocument()->view();
-    HTMLElementImpl::attach();
-}
-
-void HTMLFormElementImpl::detach()
-{
-    view = 0;
-    HTMLElementImpl::detach();
-}
-
 void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
 {
     HTMLGenericFormElementImpl *current;
@@ -487,7 +479,7 @@ void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLElementImpl(doc)
 {
-    init();
+    clear();
 
     m_form = f;
     if (m_form)
@@ -497,16 +489,15 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFor
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
-    init();
+    clear();
 
     m_form = getForm();
     if (m_form)
         m_form->registerFormElement(this);
 }
 
-void HTMLGenericFormElementImpl::init()
+void HTMLGenericFormElementImpl::clear()
 {
-    view = 0;
     m_disabled = m_readOnly = false;
     m_name = 0;
 }
@@ -568,18 +559,6 @@ void HTMLGenericFormElementImpl::setName(const DOMString& name)
     if (m_name) m_name->deref();
     m_name = name.implementation();
     if (m_name) m_name->ref();
-}
-
-void HTMLGenericFormElementImpl::attach()
-{
-    view = ownerDocument()->view();
-    HTMLElementImpl::attach();
-}
-
-void HTMLGenericFormElementImpl::detach()
-{
-    view = 0;
-    HTMLElementImpl::detach();
 }
 
 void HTMLGenericFormElementImpl::onSelect()
@@ -655,6 +634,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	}
 
 	// Report focus in/out changes to the browser extension (editable widgets only)
+	KHTMLView *view = getDocument()->view();
 	if (evt->id()==EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render->isWidget()) {
 	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
 	    QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
@@ -759,11 +739,6 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
 
-void HTMLButtonElementImpl::attach()
-{
-    HTMLElementImpl::attach();
-}
-
 bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool /*multipart*/)
 {
     if (m_type != SUBMIT || name().isEmpty() || !m_activeSubmit)
@@ -803,19 +778,19 @@ NodeImpl::Id HTMLFieldSetElementImpl::id() const
 HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc)
     : HTMLGenericFormElementImpl(doc)
 {
-    init();
+    clear();
 }
 
 HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
-    init();
+    clear();
 
     if ( f )
         m_autocomplete = f->autoComplete();
 }
 
-void HTMLInputElementImpl::init()
+void HTMLInputElementImpl::clear()
 {
     m_type = TEXT;
     m_maxLen = -1;
@@ -825,14 +800,11 @@ void HTMLInputElementImpl::init()
     m_checked = false;
     m_filename = "";
     m_haveType = false;
-    m_firstAttach = true;
     m_activeSubmit = false;
     m_autocomplete = true;
 
     xPos = 0;
     yPos = 0;
-
-    view = 0;
 }
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
@@ -1022,8 +994,10 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLInputElementImpl::attach()
+void HTMLInputElementImpl::init()
 {
+    HTMLGenericFormElementImpl::init();
+
     // make sure we don't inherit a color to the form elements
     // by adding a non-CSS color property. this his higher
     // priority than inherited color, but lesser priority than
@@ -1046,61 +1020,55 @@ void HTMLInputElementImpl::attach()
         break;
     };
 
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    view = ownerDocument()->view();
+    m_defaultChecked = m_checked;
+    m_defaultValue = m_value;
+}
 
-    if(m_firstAttach) {
-        m_defaultChecked = m_checked;
-        m_defaultValue = m_value;
-        m_firstAttach = false;
-    }
-
-    khtml::RenderObject *r = _parent ? _parent->renderer() : 0;
-    if(r && m_style->display() != NONE)
+RenderObject *HTMLInputElementImpl::createRenderer()
+{
+    KHTMLView *view = getDocument()->view();
+    switch(m_type)
     {
-        switch(m_type)
-        {
-        case TEXT:
-        case PASSWORD:
-        case ISINDEX:
-            m_render = new RenderLineEdit(view, this);
-            break;
-        case CHECKBOX:
-            m_render = new RenderCheckBox(view, this);
-            break;
-        case RADIO:
-            m_render = new RenderRadioButton(view, this);
-            break;
-        case SUBMIT:
-            m_render = new RenderSubmitButton(view, this);
-            break;
-        case IMAGE:
-        {
-            m_render = new RenderImageButton(this);
-            setHasEvents();
-            break;
-        }
-        case RESET:
-            m_render = new RenderResetButton(view, this);
-            break;
-        case FILE:
-            m_render = new RenderFileButton(view, this);
-            break;
-        case HIDDEN:
-            m_render = 0;
-            break;
-        case BUTTON:
-            m_render = new RenderPushButton(view, this);
-            break;
-        }
-
-        if (m_render)
-        {
-            m_render->setStyle(m_style);
-            r->addChild(m_render, nextRenderer());
-        }
+    case TEXT:
+    case PASSWORD:
+    case ISINDEX:
+	return new RenderLineEdit(view, this);
+	break;
+    case CHECKBOX:
+	return new RenderCheckBox(view, this);
+	break;
+    case RADIO:
+	return new RenderRadioButton(view, this);
+	break;
+    case SUBMIT:
+	return new RenderSubmitButton(view, this);
+	break;
+    case IMAGE:
+    {
+	return new RenderImageButton(this);
+	setHasEvents(); // ### remove?
+	break;
     }
-    HTMLElementImpl::attach();
+    case RESET:
+	return new RenderResetButton(view, this);
+	break;
+    case FILE:
+	return new RenderFileButton(view, this);
+	break;
+    case HIDDEN:
+	return 0;
+	break;
+    case BUTTON:
+	return new RenderPushButton(view, this);
+	break;
+    }
+
+    return 0;
+}
+
+void HTMLInputElementImpl::attach()
+{
+    HTMLGenericFormElementImpl::attach();
 
     if (m_render && m_type == IMAGE) {
         RenderImage* renderImage = static_cast<RenderImage*>( m_render );
@@ -1467,7 +1435,6 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc)
     : HTMLGenericFormElementImpl(doc)
 {
     m_multiple = false;
-    view = 0;
     // 0 means invalid (i.e. not set)
     m_size = 0;
     m_minwidth = 0;
@@ -1477,7 +1444,6 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementIm
     : HTMLGenericFormElementImpl(doc, f)
 {
     m_multiple = false;
-    view = 0;
     // 0 means invalid (i.e. not set)
     m_size = 0;
     m_minwidth = 0;
@@ -1691,29 +1657,20 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLSelectElementImpl::attach()
+void HTMLSelectElementImpl::init()
 {
+    HTMLGenericFormElementImpl::init();
+
     addCSSProperty(CSS_PROP_COLOR, "text");
 
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    view = ownerDocument()->view();
-
-    khtml::RenderObject *r = _parent->renderer();
-    if(r && m_style->display() != NONE)
-    {
-        if ( m_listItems.isEmpty() )
-            recalcListItems(); // useful if we already have contents (e.g. setInnerHTML instead of normal parsing)
-        RenderSelect *f = new RenderSelect(view, this);
-        if (f)
-        {
-            m_render = f;
-            m_render->setStyle(m_style);
-            r->addChild(m_render, nextRenderer());
-        }
-    }
-    HTMLElementImpl::attach();
+    if ( m_listItems.isEmpty() ) // ###
+	recalcListItems(); // useful if we already have contents (e.g. setInnerHTML instead of normal parsing)
 }
 
+RenderObject *HTMLSelectElementImpl::createRenderer()
+{
+    return new RenderSelect(ownerDocument()->view(), this);
+}
 
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
 {
@@ -1854,16 +1811,16 @@ void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selected
 HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc)
     : HTMLSelectElementImpl(doc)
 {
-    init(doc);
+    clear(doc);
 }
 
 HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc, HTMLFormElementImpl* f)
     : HTMLSelectElementImpl(doc, f)
 {
-    init(doc);
+    clear(doc);
 }
 
-void HTMLKeygenElementImpl::init(DocumentPtr* doc)
+void HTMLKeygenElementImpl::clear(DocumentPtr* doc)
 {
     QStringList keys = KSSLKeyGen::supportedKeySizes();
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
@@ -2204,28 +2161,16 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLTextAreaElementImpl::attach()
+void HTMLTextAreaElementImpl::init()
 {
+    HTMLGenericFormElementImpl::init();
+
     addCSSProperty(CSS_PROP_COLOR, "text");
+}
 
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    view = ownerDocument()->view();
-
-    khtml::RenderObject *r = _parent->renderer();
-    if(r && m_style->display() != NONE)
-    {
-        RenderTextArea *f = new RenderTextArea(view, this);
-        if (f)
-        {
-            m_render = f;
-            m_render->setStyle(m_style);
-            r->addChild(m_render, nextRenderer());
-
-            // registerElement and restoreState calls are in RenderTextArea::close
-
-        }
-    }
-    HTMLElementImpl::attach();
+RenderObject *HTMLTextAreaElementImpl::createRenderer()
+{
+    return new RenderTextArea(getDocument()->view(), this);
 }
 
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)
@@ -2352,9 +2297,9 @@ void HTMLIsIndexElementImpl::parseAttribute(AttrImpl* attr)
     }
 }
 
-void HTMLIsIndexElementImpl::attach()
+void HTMLIsIndexElementImpl::init()
 {
-    HTMLInputElementImpl::attach();
+    HTMLInputElementImpl::init();
 
     setName("isindex");
     // ### fix this, this is just a crude hack

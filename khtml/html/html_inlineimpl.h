@@ -71,7 +71,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach();
+    virtual khtml::RenderObject *createRenderer();
 };
 
 // -------------------------------------------------------------------------
@@ -86,7 +86,6 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
-    void attach();
 };
 
 // -------------------------------------------------------------------------

@@ -73,18 +73,15 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-
-void HTMLBaseElementImpl::attach()
+void HTMLBaseElementImpl::init()
 {
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
+    HTMLElementImpl::init();
 
     if(!_href.isEmpty())
         ownerDocument()->setBaseURL( KURL( ownerDocument()->view()->part()->url(), _href.string() ).url() );
 
     if(!_target.isEmpty())
         ownerDocument()->setBaseTarget( _target.string() );
-
-    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -108,10 +105,9 @@ NodeImpl::Id HTMLLinkElementImpl::id() const
     return ID_LINK;
 }
 
-// other stuff...
-void HTMLLinkElementImpl::attach()
+void HTMLLinkElementImpl::init()
 {
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
+    HTMLElementImpl::init();
 
     QString type = m_type.string().lower();
     QString rel = m_rel.string().lower();
@@ -137,19 +133,9 @@ void HTMLLinkElementImpl::attach()
             if(m_cachedSheet) m_cachedSheet->ref(this);
         }
     }
-    HTMLElementImpl::attach();
 
     getDocument()->updateStyleSelector();
 }
-
-void HTMLLinkElementImpl::detach()
-{
-    if ( sheet() )
-        getDocument()->updateStyleSelector();
-
-    HTMLElementImpl::detach();
-}
-
 
 void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 {
@@ -247,12 +233,13 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-
-void HTMLMetaElementImpl::attach()
+void HTMLMetaElementImpl::init()
 {
+    HTMLElementImpl::init();
+
     KHTMLView *v = ownerDocument()->view();
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    //kdDebug() << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
+    //kdDebug() << "meta::init() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {
         // get delay and url
@@ -311,7 +298,6 @@ void HTMLMetaElementImpl::attach()
         HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
         d->setCookie(_content);
     }
-    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -409,16 +395,11 @@ void HTMLStyleElementImpl::reparseSheet()
     getDocument()->updateStyleSelector();
 }
 
-void HTMLStyleElementImpl::attach()
+void HTMLStyleElementImpl::init()
 {
-    if (m_sheet) getDocument()->updateStyleSelector();
-    HTMLElementImpl::attach();
-}
+    HTMLElementImpl::init();
 
-void HTMLStyleElementImpl::detach()
-{
     if (m_sheet) getDocument()->updateStyleSelector();
-    HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------

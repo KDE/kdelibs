@@ -75,9 +75,6 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach();
-    virtual void detach();
-
     void radioClicked( HTMLGenericFormElementImpl *caller );
 
     void registerFormElement(khtml::RenderFormElement *);
@@ -102,7 +99,6 @@ public:
     DOMString m_boundary;
     DOMString m_acceptcharset;
     QString m_encCharset;
-    KHTMLView *view;
     bool m_post : 1;
     bool m_multipart : 1;
     bool m_autocomplete : 1;
@@ -126,9 +122,6 @@ public:
     HTMLFormElementImpl *form() { return m_form; }
 
     virtual void parseAttribute(AttrImpl *attr);
-
-    virtual void attach();
-    virtual void detach();
 
     virtual void reset() {}
 
@@ -162,14 +155,13 @@ public:
     virtual bool isEditable();
 
 private:
-    void init();
+    void clear();
 
 protected:
     HTMLFormElementImpl *getForm() const;
 
     DOMStringImpl* m_name;
     HTMLFormElementImpl *m_form;
-    KHTMLView *view;
     bool m_disabled, m_readOnly;
 };
 
@@ -194,8 +186,6 @@ public:
     DOMString type() const;
 
     void parseAttribute(AttrImpl *attr);
-
-    virtual void attach();
 
     virtual void defaultEventHandler(EventImpl *evt);
 
@@ -279,6 +269,8 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
+    virtual void init();
+    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void recalcStyle( StyleChange );
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
@@ -311,12 +303,11 @@ protected:
     bool m_defaultChecked : 1;
     bool m_checked : 1;
     bool m_haveType : 1;
-    bool m_firstAttach :1;
     bool m_activeSubmit : 1;
     bool m_autocomplete : 1;
 
 private:
-    void init();
+    void clear();
 };
 
 // -------------------------------------------------------------------------
@@ -396,7 +387,8 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach();
+    virtual void init();
+    virtual khtml::RenderObject *createRenderer();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     // get the actual listbox index of the optionIndexth option
@@ -437,7 +429,7 @@ public:
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
 private:
-    void init(DocumentPtr*);
+    void clear(DocumentPtr*);
 };
 
 // -------------------------------------------------------------------------
@@ -531,7 +523,8 @@ public:
     void select (  );
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach();
+    virtual void init();
+    virtual khtml::RenderObject *createRenderer();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     virtual void reset();
     DOMString value();
@@ -564,7 +557,7 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach();
+    virtual void init();
 
 protected:
     DOMString m_prompt;

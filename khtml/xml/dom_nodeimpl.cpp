@@ -997,6 +997,27 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
     }
 }
 
+void NodeImpl::init()
+{
+}
+
+RenderObject *NodeImpl::createRenderer()
+{
+    return 0;
+}
+
+void NodeImpl::attach()
+{
+    // ### assert(!attached());
+    setAttached(true);
+}
+
+void NodeImpl::detach()
+{
+    // ### assert(attached());
+    setAttached(false);
+}
+
 bool NodeImpl::maintainsState()
 {
     return false;

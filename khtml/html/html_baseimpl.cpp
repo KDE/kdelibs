@@ -153,8 +153,10 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 }
 
 
-void HTMLBodyElementImpl::attach()
+void HTMLBodyElementImpl::init()
 {
+    HTMLElementImpl::init();
+
     KHTMLView* w = ownerDocument()->view();
     if(w->marginWidth() != -1) {
         QString s;
@@ -173,19 +175,12 @@ void HTMLBodyElementImpl::attach()
 //         addCSSProperty(CSS_PROP_COLOR, "black");
 
     ownerDocument()->updateStyleSelector();
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
+}
 
-    khtml::RenderObject *r = _parent->renderer();
-
-    // ignore display: none for this element!
-    if ( !r )
-      return;
-
-    m_render = new RenderBody(this);
-    m_render->setStyle(m_style);
-    r->addChild( m_render, nextRenderer() );
-
-    HTMLElementImpl::attach();
+RenderObject *HTMLBodyElementImpl::createRenderer()
+{
+    // ### ignore display: none for this element?
+    return new RenderBody(this);
 }
 
 bool HTMLBodyElementImpl::prepareMouseEvent(int _x, int _y, int _tx, int _ty, MouseEvent *ev)
@@ -263,21 +258,9 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLFrameElementImpl::attach()
+void HTMLFrameElementImpl::init()
 {
-    KHTMLView* w = ownerDocument()->view();
-    // limit to how deep we can nest frames
-    KHTMLPart *part = w->part();
-    int depth = 0;
-    while ((part = part->parentPart()))
-        depth++;
-
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-
-    if (depth > 6) {
-        style()->setDisplay( NONE );
-        return;
-    }
+    HTMLElementImpl::init();
 
     // inherit default settings from parent frameset
     HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
@@ -292,30 +275,44 @@ void HTMLFrameElementImpl::attach()
         }
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
+}
 
-    khtml::RenderObject *r = _parent->renderer();
+RenderObject *HTMLFrameElementImpl::createRenderer()
+{
+    // ### ignore display: none for this element?
 
-    // ignore display: none for this element!
-    if ( !r )
-      return;
+    KHTMLView* w = ownerDocument()->view();
+    // limit to how deep we can nest frames
+    KHTMLPart *part = w->part();
+    int depth = 0;
+    while ((part = part->parentPart()))
+        depth++;
 
-    khtml::RenderFrame *renderFrame = new khtml::RenderFrame( w, this );
-    m_render = renderFrame;
-    m_render->setStyle(m_style);
-    r->addChild( m_render, nextRenderer() );
+    if (depth > 6) {
+        return 0;
+    }
+
+    return new khtml::RenderFrame( w, this );
+}
+
+void HTMLFrameElementImpl::attach()
+{
+    HTMLElementImpl::attach();
+
+    if (!m_render)
+	return;
 
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
+    KHTMLView* w = ownerDocument()->view();
     if(name.isEmpty() || w->part()->frameExists( name.string() ) )
     {
       name = DOMString(w->part()->requestFrameName());
       kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
     }
 
+    // load the frame contents
     if (!url.isNull())
-        w->part()->requestFrame( renderFrame, url.string(), name.string() );
-
-    HTMLElementImpl::attach();
-    return;
+        w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
 }
 
 void HTMLFrameElementImpl::detach()
@@ -380,8 +377,6 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)
     noresize = false;
 
     m_resizing = false;
-
-    view = 0;
 }
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
@@ -440,9 +435,10 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLFrameSetElementImpl::attach()
+void HTMLFrameSetElementImpl::init()
 {
-    KHTMLView* w = ownerDocument()->view();
+    HTMLElementImpl::init();
+
     // inherit default settings from parent frameset
     HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
     while(node)
@@ -456,21 +452,12 @@ void HTMLFrameSetElementImpl::attach()
         }
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
+}
 
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    view = w;
-    khtml::RenderObject *r = _parent->renderer();
-
-    // ignore display: none for this element!
-    if ( !r )
-      return;
-
-    khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( this, w );
-    m_render = renderFrameSet;
-    m_render->setStyle(m_style);
-    r->addChild( m_render, nextRenderer() );
-
-    HTMLElementImpl::attach();
+RenderObject *HTMLFrameSetElementImpl::createRenderer()
+{
+    // ### ignore display: none for this element?
+    return new khtml::RenderFrameSet( this, ownerDocument()->view() );
 }
 
 bool HTMLFrameSetElementImpl::prepareMouseEvent( int _x, int _y,
@@ -562,23 +549,10 @@ NodeImpl::Id HTMLHeadElementImpl::id() const
     return ID_HEAD;
 }
 
-void HTMLHtmlElementImpl::attach()
+RenderObject *HTMLHtmlElementImpl::createRenderer()
 {
-    khtml::RenderObject *r = _parent->renderer();
-
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-
-    // ignore display: none for this element!
-    if ( !r )
-      return;
-
-    m_render = new khtml::RenderHtml();
-    m_render->setStyle(m_style);
-    r->addChild( m_render, nextRenderer() );
-
-    HTMLElementImpl::attach();
+    return new khtml::RenderHtml();
 }
-
 
 // -------------------------------------------------------------------------
 
@@ -635,41 +609,36 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
   }
 }
 
+RenderObject *HTMLIFrameElementImpl::createRenderer()
+{
+    KHTMLView* w = ownerDocument()->view();
+    // limit to how deep we can nest frames
+    KHTMLPart *part = w->part();
+    int depth = 0;
+    while ((part = part->parentPart()))
+	depth++;
+    if (depth > 6) {
+	return 0;
+    }
+
+    return new khtml::RenderPartObject( w, this );
+}
+
 void HTMLIFrameElementImpl::attach()
 {
-  KHTMLView* w = ownerDocument()->view();
-  // limit to how deep we can nest frames
-  KHTMLPart *part = w->part();
-  int depth = 0;
-  while ((part = part->parentPart()))
-    depth++;
-  if (depth > 6) {
-      style()->setDisplay( NONE );
-      return;
-  }
+    HTMLElementImpl::attach();
 
-  khtml::RenderObject *r = _parent->renderer();
+    if (m_render) {
+	// we need a unique name for every frame in the frameset. Hope that's unique enough.
+	if(name.isEmpty())
+	{
+	    name = DOMString(ownerDocument()->view()->part()->requestFrameName());
+	    kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
+	}
 
-  setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-
-  if(r && m_style->display() != NONE) {
-
-      // we need a unique name for every frame in the frameset. Hope that's unique enough.
-      if(name.isEmpty())
-      {
-          name = DOMString(w->part()->requestFrameName());
-          kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
-      }
-
-      khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, this );
-      m_render = renderFrame;
-      m_render->setStyle(m_style);
-      r->addChild( m_render, nextRenderer() );
-      renderFrame->updateWidget();
-      needWidgetUpdate = false;
-  }
-
-  HTMLElementImpl::attach();
+	static_cast<RenderPartObject*>(m_render)->updateWidget();
+	needWidgetUpdate = false;
+    }
 }
 
 void HTMLIFrameElementImpl::recalcStyle( StyleChange ch )
