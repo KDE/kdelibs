@@ -221,6 +221,17 @@ KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
 }
 
 
+int KIntSpinBox::value() const
+{
+    #ifdef __GNUC__
+    #warning workaround for a bug of QSpinBox in Qt 2.2.0
+    #endif
+    if ( editor()->edited() )
+        const_cast<KIntSpinBox*>(this)->interpretText();
+    return QSpinBox::value();
+} 
+
+
 void KIntSpinBox::setBase(int base)
 {
     val_base = base;

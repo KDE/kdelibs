@@ -569,6 +569,11 @@ public:
      */
     virtual ~KIntSpinBox() {};
 
+     /**
+     *  Reimplemented for internal reasons; the API is not affected. 
+     */
+    int value () const;
+
     /**
      * Sets the base in which the numbers in the spin box are represented.
      */
