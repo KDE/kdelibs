@@ -125,7 +125,9 @@ bool StyleBackgroundData::operator==(const StyleBackgroundData& o) const
 
 StyleInheritedData::StyleInheritedData()
     : indent( Fixed ), line_height( -100, Percent ), style_image( 0 ),
-      font(), color( Qt::black ), border_spacing( 0 )
+      font(), color( Qt::black ),
+      border_hspacing( 0 ), border_vspacing( 0 )
+
 {
 }
 
@@ -137,7 +139,8 @@ StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
     : Shared<StyleInheritedData>(),
       indent( o.indent ), line_height( o.line_height ), style_image( o.style_image ),
       font( o.font ), color( o.color ), decoration_color( o.decoration_color ),
-      border_spacing( o.border_spacing )
+      border_hspacing( o.border_hspacing ),
+      border_vspacing( o.border_vspacing )
 {
 }
 
@@ -146,7 +149,8 @@ bool StyleInheritedData::operator==(const StyleInheritedData& o) const
     return
 	indent == o.indent &&
 	line_height == o.line_height &&
-	border_spacing == o.border_spacing &&
+        border_hspacing == o.border_hspacing &&
+        border_vspacing == o.border_vspacing &&
 	style_image == o.style_image &&
 	font == o.font &&
 	color == o.color &&
@@ -328,7 +332,8 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
          !(inherited->line_height == other->inherited->line_height) ||
          !(inherited->style_image == other->inherited->style_image) ||
          !(inherited->font == other->inherited->font) ||
-         !(inherited->border_spacing == other->inherited->border_spacing) ||
+         !(inherited->border_hspacing == other->inherited->border_hspacing) ||
+         !(inherited->border_vspacing == other->inherited->border_vspacing) ||
          !(inherited_flags.f._visuallyOrdered == other->inherited_flags.f._visuallyOrdered) ||
          !(inherited_flags.f._htmlHacks == other->inherited_flags.f._htmlHacks) )
         return CbLayout;

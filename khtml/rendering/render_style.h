@@ -413,7 +413,8 @@ public:
     QColor color;
     QColor decoration_color;
 
-    short border_spacing;
+    short border_hspacing;
+    short border_vspacing;
 };
 
 
@@ -741,7 +742,8 @@ public:
 
     // returns true for collapsing borders, false for separate borders
     bool borderCollapse() const { return inherited_flags.f._border_collapse; }
-    short borderSpacing() const { return inherited->border_spacing; }
+    short borderHorizontalSpacing() const { return inherited->border_hspacing; }
+    short borderVerticalSpacing() const { return inherited->border_vspacing; }
     EEmptyCell emptyCells() const { return inherited_flags.f._empty_cells; }
     ECaptionSide captionSide() const { return inherited_flags.f._caption_side; }
 
@@ -850,7 +852,9 @@ public:
     void setBackgroundYPosition(Length v) {  SET_VAR(background,y_position,v) }
 
     void setBorderCollapse(bool collapse) { inherited_flags.f._border_collapse = collapse; }
-    void setBorderSpacing(short v) { SET_VAR(inherited,border_spacing,v) }
+    void setBorderHorizontalSpacing(short v) { SET_VAR(inherited,border_hspacing,v) }
+    void setBorderVerticalSpacing(short v) { SET_VAR(inherited,border_vspacing,v) }
+
     void setEmptyCells(EEmptyCell v) { inherited_flags.f._empty_cells = v; }
     void setCaptionSide(ECaptionSide v) { inherited_flags.f._caption_side = v; }
 

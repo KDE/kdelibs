@@ -58,7 +58,7 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
     rules = None;
     frame = Void;
     has_col_elems = false;
-    spacing = 0;
+    hspacing = vspacing = 0;
     padding = 0;
     needSectionRecalc = false;
     padding = 0;
@@ -87,8 +87,9 @@ void RenderTable::setStyle(RenderStyle *_style)
     setInline(style()->display()==INLINE_TABLE && !isPositioned());
     setReplaced(style()->display()==INLINE_TABLE);
 
-    spacing = style()->borderSpacing();
-    columnPos[0] = spacing;
+    hspacing = style()->borderHorizontalSpacing();
+    vspacing = style()->borderVerticalSpacing();
+    columnPos[0] = hspacing;
 
     if ( !tableLayout || style()->tableLayout() != oldTableLayout ) {
 	delete tableLayout;
@@ -941,7 +942,7 @@ void RenderTableSection::setCellWidths()
 		cspan -= table()->columns[endCol].span;
 		endCol++;
 	    }
-	    int w = columnPos[endCol] - columnPos[j] - table()->cellSpacing();
+	    int w = columnPos[endCol] - columnPos[j] - table()->borderHSpacing();
 #ifdef DEBUG_LAYOUT
 	    kdDebug( 6040 ) << "setting width of cell " << cell << " " << cell->row() << "/" << cell->col() << " to " << w << " colspan=" << cell->colSpan() << " start=" << j << " end=" << endCol << endl;
 #endif
@@ -961,10 +962,10 @@ void RenderTableSection::calcRowHeight()
     RenderTableCell *cell;
 
     int totalRows = grid.size();
-    int spacing = table()->cellSpacing();
+    int vspacing = table()->borderVSpacing();
 
     rowPos.resize( totalRows + 1 );
-    rowPos[0] =  spacing + borderTop();
+    rowPos[0] =  vspacing + borderTop();
 
     for ( int r = 0; r < totalRows; r++ ) {
 	rowPos[r+1] = 0;
@@ -973,7 +974,7 @@ void RenderTableSection::calcRowHeight()
 	int bdesc = 0;
 // 	qDebug("height of row %d is %d/%d", r, grid[r].height.value, grid[r].height.type );
 	int ch = grid[r].height.minWidth( 0 );
-	int pos = rowPos[ r+1 ] + ch + table()->cellSpacing();
+	int pos = rowPos[ r+1 ] + ch + vspacing;
 
 	if ( pos > rowPos[r+1] )
 	    rowPos[r+1] = pos;
@@ -996,7 +997,7 @@ void RenderTableSection::calcRowHeight()
 	    if ( cell->height() > ch)
 		ch = cell->height();
 
-	    pos = rowPos[ indx ] + ch + table()->cellSpacing();
+	    pos = rowPos[ indx ] + ch + vspacing;
 
 	    if ( pos > rowPos[r+1] )
 		rowPos[r+1] = pos;
@@ -1020,7 +1021,7 @@ void RenderTableSection::calcRowHeight()
 	//do we have baseline aligned elements?
 	if (baseline) {
 	    // increase rowheight if baseline requires
-	    int bRowPos = baseline + bdesc  + table()->cellSpacing() ; // + 2*padding
+	    int bRowPos = baseline + bdesc  + vspacing ; // + 2*padding
 	    if (rowPos[r+1]<bRowPos)
 		rowPos[r+1]=bRowPos;
 
@@ -1038,7 +1039,8 @@ int RenderTableSection::layoutRows( int toAdd )
     int rHeight;
     int rindx;
     int totalRows = grid.size();
-    int spacing = table()->cellSpacing();
+    int hspacing = table()->borderHSpacing();
+    int vspacing = table()->borderVSpacing();
 
     if (toAdd && totalRows && (rowPos[totalRows] || !nextSibling())) {
 
@@ -1104,7 +1106,7 @@ int RenderTableSection::layoutRows( int toAdd )
         }
     }
 
-    int leftOffset = borderLeft() + spacing;
+    int leftOffset = borderLeft() + hspacing;
 
     int nEffCols = table()->numEffCols();
     for ( int r = 0; r < totalRows; r++ )
@@ -1122,7 +1124,7 @@ int RenderTableSection::layoutRows( int toAdd )
             if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
                 rindx = 0;
 
-            rHeight = rowPos[r+1] - rowPos[rindx] - spacing;
+            rHeight = rowPos[r+1] - rowPos[rindx] - vspacing;
 
             // Force percent height children to lay themselves out again.
             // This will cause, e.g., textareas to grow to

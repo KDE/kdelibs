@@ -84,7 +84,8 @@ public:
     int getColumnPos(int col) const
         { return columnPos[col]; }
 
-    int cellSpacing() const { return spacing; }
+    int borderHSpacing() const { return hspacing; }
+    int borderVSpacing() const { return vspacing; }
 
     Rules getRules() const { return rules; }
 
@@ -156,7 +157,7 @@ public:
     }
 
     int bordersAndSpacing() const {
-	return borderLeft() + borderRight() + (numEffCols()+1) * cellSpacing();
+	return borderLeft() + borderRight() + (numEffCols()+1) * borderHSpacing();
     }
 
     RenderTableCol *colElement( int col );
@@ -185,9 +186,11 @@ protected:
     Rules rules                 : 4;
 
     bool has_col_elems		: 1;
-    uint spacing                : 11;
-    uint padding		: 11;
     uint needSectionRecalc	: 1;
+    uint padding		: 22;
+
+    ushort hspacing;
+    ushort vspacing;
 
     friend class TableSectionIterator;
 };

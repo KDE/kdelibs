@@ -2130,14 +2130,21 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
       break;
       }
     case CSS_PROP_BORDER_SPACING:
-        {
-        if(!primitiveValue) break;
-        short spacing = 0;
-        spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
-        style->setBorderSpacing(spacing);
+        assert( false );
+
+    case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING: {
+        if (!primitiveValue) break;
+        short spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
+        style->setBorderHorizontalSpacing(spacing);
         break;
-        }
-        // CSS2BorderSpacing
+    }
+    case CSS_PROP__KHTML_BORDER_VERTICAL_SPACING: {
+        if (!primitiveValue) break;
+        short spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
+        style->setBorderVerticalSpacing(spacing);
+        break;
+    }
+
     case CSS_PROP_CURSOR:
         // CSS2Cursor
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {

@@ -24,6 +24,8 @@ background-position-y
 
 border-collapse
 border-spacing
+-khtml-border-horizontal-spacing
+-khtml-border-vertical-spacing
 border-top-color
 border-right-color
 border-bottom-color

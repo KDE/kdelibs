@@ -1,5 +1,8 @@
 2003-10-20  Dirk Mueller  <dmuell@gmx.net>
 
+	* split up borderSpacing into a horizontal and vertical border spacing so that
+	tables can have assymmetric spacing.
+
 	* html/htmlparser.cpp (insertNode): don't set css list position on stray <li>
 	elements. its an inherited attribute, and might mess up rendering of nested
 	<ul>/<ol> constructs.

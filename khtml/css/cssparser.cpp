@@ -688,8 +688,26 @@ bool CSSParser::parseValue( int propId, bool important )
         break;
 
     case CSS_PROP_BORDER_SPACING:
-        // ### should be able to have two values
-        valid_primitive = ( validUnit( value, FLength|FNonNeg, strict&(!nonCSSHint) ) );
+    {
+        const int properties[2] = { CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING,
+                                    CSS_PROP__KHTML_BORDER_VERTICAL_SPACING };
+        int num = valueList->numValues;
+        if (num == 1) {
+            if (!parseValue(properties[0], important)) return false;
+            CSSValueImpl* value = parsedProperties[numParsedProperties-1]->value();
+            addProperty(properties[1], value, important);
+            return true;
+        }
+        else if (num == 2) {
+            if (!parseValue(properties[0], important)) return false;
+            if (!parseValue(properties[1], important)) return false;
+            return true;
+        }
+        return false;
+    }
+    case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING:
+    case CSS_PROP__KHTML_BORDER_VERTICAL_SPACING:
+        valid_primitive = validUnit(value, FLength|FNonNeg, strict&(!nonCSSHint));
         break;
 
     case CSS_PROP_SCROLLBAR_FACE_COLOR:         // IE5.5

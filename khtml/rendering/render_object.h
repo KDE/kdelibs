@@ -271,12 +271,8 @@ public:
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox);
 
-    // for discussion of lineHeight see CSS2 spec
     virtual short lineHeight( bool firstLine ) const;
-    // for the vertical-align property of inline elements
-    // the difference between this objects baseline position and the lines baseline position.
     virtual short verticalPositionHint( bool firstLine ) const;
-    // the offset of baseline from the top of the object.
     virtual short baselinePosition( bool firstLine ) const;
 
     /*
