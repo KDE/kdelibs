@@ -96,7 +96,7 @@ namespace KJS {
     virtual String toString() const;
 
     // Set the current "event" object
-    void setCurrentEvent( DOM::Event *evt ) { m_evt = evt; }
+    void setCurrentEvent( DOM::Event *evt );
 
     QList<JSEventListener> jsEventListeners;
     virtual const TypeInfo* typeInfo() const { return &info; }

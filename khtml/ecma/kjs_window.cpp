@@ -172,7 +172,7 @@ KJSO Screen::get(const UString &p) const
 const TypeInfo Window::info = { "Window", HostType, 0, 0, 0 };
 
 Window::Window(KHTMLPart *p)
-  : m_part(p), screen(0), history(0), frames(0), loc(0)
+  : m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << endl;
@@ -880,6 +880,12 @@ void Window::clear()
 {
   delete winq;
   winq = 0;
+}
+
+void Window::setCurrentEvent( DOM::Event *evt )
+{
+  m_evt = evt;
+  kdDebug() << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
 }
 
 Completion WindowFunc::tryExecute(const List &args)
