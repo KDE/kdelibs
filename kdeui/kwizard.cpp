@@ -55,47 +55,6 @@ struct KWizProtected
   
 };
 
-KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
-  : QDialog(parent, name, modal, f)
-{
-  //debug("KDialog creation");
-
-  initMetaObject();
-  setFocusPolicy(QWidget::StrongFocus);
-
-}
-
-// Grab QDialogs keypresses if non-modal.
-void KDialog::keyPressEvent(QKeyEvent *e)
-{
-  if ( e->state() == 0 )
-  {
-    switch ( e->key() )
-    {
-      case Key_Escape:
-      case Key_Enter:
-      case Key_Return:
-      {
-        if(testWFlags(WType_Modal))
-          QDialog::keyPressEvent(e);
-        else
-        {
-          //debug("KDialog - Eating keyevent");
-  	  e->ignore();
-        }
-      }
-      break;
-      default:
-	e->ignore();
-	return;
-    }
-  }
-  else
-  {
-    e->ignore();
-  }
-}
-
 KWizard::KWizard(QWidget *parent, const char *name, bool modal, WFlags f)
   : KDialog(parent, name, modal, f)
 //  : QWidget(parent, name, modal ? (f | WType_Modal) : f)

@@ -24,37 +24,9 @@
 #define KWIZARD_VERSION_MINOR 20
 #define KWIZARD_VERSION (KWIZARD_VERSION_MAJOR * 10) + KWIZARD_VERSION_MINOR
 
-#include <qdialog.h>
 #include <qlist.h>
 #include <kdbtn.h>
-
-/**
- * Dialog with extended modeless support.
- *
- * So far the only extended functionality is that if the dialog is
- * modeless and has a parent the default keybindings (escape = reject(),
- * enter = accept() etc.) are disabled.
- *
- * @author Thomas Tanghus <tanghus@earthling.net>
- * @version 0.1.1
-*/
-class KDialog : public QDialog
-{
-	Q_OBJECT
-
-public:
-/**
-* Constructor. Takes the same arguments as QDialog.
-*/
-	KDialog(QWidget *parent = 0, const char *name = 0, 
-			bool modal = false, WFlags f = 0);
-protected:
-
-/**
-* @internal
-*/
-	virtual void keyPressEvent(QKeyEvent*);
-};
+#include <kdialog.h>
 
 struct KWizProtected;
 

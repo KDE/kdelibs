@@ -39,7 +39,8 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
-		kintlineedit.h qxembed.h knumvalidator.h knumlineedit.h
+		kintlineedit.h qxembed.h knumvalidator.h knumlineedit.h \
+		kdialog.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -59,7 +60,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
 		kthemebase.cpp kcharselect.cpp \
 		kcolordrag.cpp qxembed.cpp \
-		knumvalidator.cpp knumlineedit.cpp
+		knumvalidator.cpp knumlineedit.cpp kdialog.cpp
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcombo.moc kcontainer.moc kcontrol.moc \
@@ -73,7 +74,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	ktopwidget.moc ktreelist.moc kurllabel.moc kwizard.moc kwmmapp.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc \
-	qxembed.moc knumlineedit.moc
+	qxembed.moc knumlineedit.moc kdialog.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
