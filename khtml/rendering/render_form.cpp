@@ -1226,7 +1226,7 @@ void RenderTextArea::updateFromElement()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     w->setReadOnly(element()->readOnly());
     QString elementText = element()->value().string();
-    if ( elementText != w->text() )
+    if ( elementText != text() )
     {
         w->blockSignals(true);
         int line, col;
