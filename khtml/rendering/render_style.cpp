@@ -155,7 +155,7 @@ StyleCSS3NonInheritedData::StyleCSS3NonInheritedData()
 
 StyleCSS3NonInheritedData::StyleCSS3NonInheritedData(const StyleCSS3NonInheritedData& o)
 :Shared<StyleCSS3NonInheritedData>(),
- opacity(o.opacity), 
+ opacity(o.opacity),
 #ifdef APPLE_CHANGES
  flexibleBox(o.flexibleBox),
 #endif
@@ -166,7 +166,7 @@ StyleCSS3NonInheritedData::StyleCSS3NonInheritedData(const StyleCSS3NonInherited
 bool StyleCSS3NonInheritedData::operator==(const StyleCSS3NonInheritedData& o) const
 {
     return
-     opacity == o.opacity && 
+     opacity == o.opacity &&
 #ifdef APPLE_CHANGES
      flexibleBox == o.flexibleBox &&
 #endif
@@ -576,13 +576,13 @@ void RenderStyle::setQuotes(DOM::QuotesValueImpl* q)
 {
     DOM::QuotesValueImpl *t = inherited->quotes;
     inherited.access()->quotes = q;
-    q->ref();
+    if (q) q->ref();
     if (t) t->deref();
 }
 
 QString RenderStyle::openQuote(int level) const
 {
-    if (inherited->quotes) 
+    if (inherited->quotes)
         return inherited->quotes->openQuote(level);
     else
         return "\"";
@@ -590,7 +590,7 @@ QString RenderStyle::openQuote(int level) const
 
 QString RenderStyle::closeQuote(int level) const
 {
-    if (inherited->quotes) 
+    if (inherited->quotes)
         return inherited->quotes->closeQuote(level);
     else
         return "\"";
