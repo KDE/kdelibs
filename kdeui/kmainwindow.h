@@ -786,7 +786,7 @@ template <typename T>
 inline void kRestoreMainWindows() {
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
-    if ( className == T::staticMetaObject()->className() )
+    if ( className == QString::fromLatin1( T::staticMetaObject()->className() ) )
       (new T)->restore( n );
   }
 }
@@ -806,9 +806,9 @@ inline void kRestoreMainWindows() {
   classNames[1] = T1::staticMetaObject()->className();
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
-    if ( className == classNames[0] )
+    if ( className == QString::fromLatin1( classNames[0] ) )
       (new T0)->restore( n );
-    else if ( className == classNames[1] )
+    else if ( className == QString::fromLatin1( classNames[1] ) )
       (new T1)->restore( n );
   }
 }
@@ -829,11 +829,11 @@ inline void kRestoreMainWindows() {
   classNames[2] = T1::staticMetaObject()->className();
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
-    if ( className == classNames[0] )
+    if ( className == QString::fromLatin1( classNames[0] ) )
       (new T0)->restore( n );
-    else if ( className == classNames[1] )
+    else if ( className == QString::fromLatin1( classNames[1] ) )
       (new T1)->restore( n );
-    else if ( className == classNames[2] )
+    else if ( className == QString::fromLatin1( classNames[2] ) )
       (new T2)->restore( n );
   }
 }
