@@ -50,6 +50,7 @@ start_launcher(int socket)
 
    KLauncher launcher(socket);
 
+   signal( SIGHUP, sig_handler);
    signal( SIGTERM, sig_handler);
    signal( SIGSEGV, sig_handler);
 
