@@ -489,7 +489,8 @@ class KApplication : public QApplication
 	*
 	* This method allows you to get the KDE font 
 	* list which was composed by the user with kfontmanager. Usually you should 
-	* @return The full path of the file to open.
+	* work only with those fonts in your kapplication. 
+	*  
 	*  @return true on success.
 	*/
   bool getKDEFonts(QStrList *fontlist);
