@@ -172,7 +172,9 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, bool reload, int
     : CachedObject(url, Script, reload, _expireDate)
 {
     // It's javascript we want.
-    setAccept( QString::fromLatin1("application/x-javascript") );
+    // But some websites think their scripts are <some wrong mimetype here>
+    // and refuse to serve them if we only accept application/x-javascript.
+    setAccept( QString::fromLatin1("*/*") );
     // load the file
     Cache::loader()->load(dl, this, false);
     loading = true;
@@ -969,6 +971,7 @@ void Loader::slotFinished( KIO::Job* job )
 
   if (j->error() || j->isErrorPage())
   {
+      kdDebug(6060) << "Loader::slotFinished, with error. job->error()= " << j->error() << " job->isErrorPage()=" << j->isErrorPage() << endl;
       r->object->error( job->error(), job->errorText().ascii() );
       emit requestFailed( r->m_docLoader, r->object );
   }
@@ -1024,7 +1027,7 @@ int Loader::numRequests( DocLoader* dl ) const
 
 void Loader::cancelRequests( DocLoader* dl )
 {
-    //kdDebug( 6060 ) << "void Loader::cancelRequests( " << baseURL.string() << " )" << endl;
+    //kdDebug( 6060 ) << "void Loader::cancelRequests()" << endl;
     //kdDebug( 6060 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
     QListIterator<Request> pIt( m_requestsPending );
     while ( pIt.current() )
