@@ -39,6 +39,7 @@
 #include <ksimpleconfig.h>
 #include <kdialog.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kstandarddirs.h>
 #include <ktabctl.h>
 #include <kcmoduleinfo.h>
@@ -497,7 +498,7 @@ class KPluginSelector::KPluginSelectorPrivate
     d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
     d->widgetstack->setMinimumSize( 200, 200 );
 
-    splitter->setOpaqueResize( true );
+    splitter->setOpaqueResize( KGlobalSettings::opaqueResize() );
     splitter->setResizeMode( d->widgetstack, QSplitter::FollowSizeHint );
 
     QLabel * label = new QLabel( i18n( "(This plugin is not configurable)" ),
