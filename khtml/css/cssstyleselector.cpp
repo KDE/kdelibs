@@ -199,7 +199,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
-#if 1
     // try to sort out most style rules as early as possible.
     int id = e->id();
     int smatch = 0;
@@ -232,38 +231,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 //     qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
 //     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
 //             selectors_size, schecked, smatch, propsToApply->count(), properties_size );
-
-#else
-    // try to sort out most style rules as early as possible.
-    int id = e->id();
-    for ( unsigned int i = 0; i < selectors_size; i++ ) {
-	int tag = selectors[i]->tag;
-	if ( id != tag && tag != -1 )
-	    selectorCache[i].state = Invalid;
-	else
-	    selectorCache[i].state = Unknown;
-    }
-
-    //qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
-
-    CSSOrderedProperty **prop = properties;
-    while ( *prop ) {
-	unsigned int selIndex = (*prop)->selector;
-        SelectorState selstate = selectorCache[selIndex].state;
-	if ( selstate != Invalid ) {
-	    if ( selstate == Unknown )
-		checkSelector( selIndex, e );
-
-            selstate = selectorCache[selIndex].state;
-	    if ( selstate == Applies ) {
-		//qDebug("adding property" );
-		static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( new CSSOrderedProperty( **prop ) );
-	    } else if ( selstate == AppliesPseudo )
-		static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append( *prop );
-	}
-	++prop;
-    }
-#endif
 
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
