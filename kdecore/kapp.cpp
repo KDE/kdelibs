@@ -1105,11 +1105,28 @@ void KApplication::kdisplaySetPalette()
     highlightVal = 100 + (2*contrast_+4)*16/10;
     lowlightVal = 100 + (2*contrast_+4)*10;
 
-    QColorGroup disabledgrp(foreground, background, background.light(150),
-	    background.dark(), background.dark(120), background.dark(120), base);
+    QColorGroup disabledgrp(foreground, background,
+                            background.light(highlightVal),
+                            background.dark(lowlightVal),
+                            background.dark(120),
+                            background.dark(120), base);
 
-    QColorGroup colgrp(foreground, background, background.light(150),
-	    background.dark(), background.dark(120), foreground, base);
+    QColorGroup colgrp(foreground, background, background.light(highlightVal),
+                       background.dark(lowlightVal),
+                       background.dark(120),
+                       foreground, base);
+    /*
+    QColorGroup disabledgrp( textColor, backgroundColor,
+                             backgroundColor.light(highlightVal),
+                             backgroundColor.dark(lowlightVal),
+                             backgroundColor.dark(120),
+                             backgroundColor.dark(120), windowColor );
+
+    QColorGroup colgrp( textColor, backgroundColor,
+                        backgroundColor.light(highlightVal),
+                        backgroundColor.dark(lowlightVal),
+                        backgroundColor.dark(120),
+                        textColor, windowColor );*/
 
     colgrp.setColor(QColorGroup::Highlight, highlight);
     colgrp.setColor(QColorGroup::HighlightedText, highlightedText);
