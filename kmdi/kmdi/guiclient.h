@@ -51,7 +51,6 @@ private slots:
     void clientAdded( KXMLGUIClient *client );
     void setupActions();
     void actionDeleted(QObject*);
-    void mdiModeHasBeenChangedTo(KMDI::MdiMode);
 signals:
     void toggleTop();
     void toggleLeft();
@@ -61,7 +60,6 @@ signals:
 private:
     class KMDIGUIClientPrivate;
     KMDIGUIClientPrivate *d;
-    KMDI::MdiMode m_mdiMode;
 
     QGuardedPtr<KMDI::MainWindow> m_mdiMainFrm;
     QPtrList<KAction> m_toolViewActions;

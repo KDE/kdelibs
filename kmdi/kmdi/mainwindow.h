@@ -68,7 +68,6 @@ class MainWindow : public KParts::DockMainWindow
 
 // attributes
 protected:
-   KMDI::MdiMode           m_mdiMode;
    QMap<QWidget*,KMDI::ToolViewAccessor*> *m_pToolViews;
    QPopupMenu              *m_pWindowPopup;
    QPopupMenu              *m_pTaskBarPopup;
@@ -85,7 +84,6 @@ protected:
    int                     m_oldMainFrmHeight;
    int                     m_oldMainFrmMinHeight;
    int                     m_oldMainFrmMaxHeight;
-   static KMDI::FrameDecor m_frameDecoration;
    bool                    m_bSDIApplication;
    KDockWidget*         m_pDockbaseAreaOfDocumentViews;
    bool                    m_bClearingOfWindowMenuBlocked;
@@ -122,11 +120,6 @@ public:
    void setManagedDockPositionModeEnabled(bool enabled);
 
    /**
-   * Returns the MDI mode. This can be one of the enumerations KMDI::MdiMode.
-   */
-   KMDI::MdiMode mdiMode() { return m_mdiMode; };
-
-   /**
    * Returns whether this MDI child view is under MDI control (using addWindow() ) or not.
    */
    enum ExistsAs {DocumentView,ToolView,AnyView};
@@ -145,11 +138,6 @@ public:
    * Returns the Childframe mode height of this. Makes only sense when in Toplevel mode.
    */
    int childFrameModeHeight() { return m_oldMainFrmHeight; };
-
-  /**
-   * @return the decoration of the window frame of docked (attached) MDI views
-   */
-   static int frameDecorOfAttachedViews() { return m_frameDecoration; };
 
    /**
    *
@@ -190,14 +178,6 @@ private:
    void setupTabbedDocumentViewSpace();
 
 protected:
-   /**
-   *
-   */
-   virtual void resizeEvent(QResizeEvent * );
-   /**
-   * Creates the MDI view area and connects some signals and slots with the MainWindow widget.
-   */
-   virtual void createMdiManager();
    /**
    * prevents fillWindowMenu() from m_pWindowMenu->clear(). You have to care for it by yourself.
    * This is useful if you want to add some actions in your overridden fillWindowMenu() method.

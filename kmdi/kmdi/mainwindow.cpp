@@ -71,10 +71,6 @@
 
 #include "guiclient.h"
 
-KMDI::FrameDecor KMDI::MainWindow::m_frameDecoration = KMDI::KDELook;
-
-//KMDI::MdiMode MainWindow::m_mdiMode = KMDI::ChildframeMode;
-
 class MainWindowPrivate {
 public:
   MainWindowPrivate() {
@@ -96,7 +92,6 @@ namespace KMDI
 //============ constructor ============//
 MainWindow::MainWindow(QWidget* parentWidget, const char* name, WFlags flags)
 : KParts::DockMainWindow( parentWidget, name, flags)
-   ,m_mdiMode(KMDI::UndefinedMode)
    ,m_pWindowPopup(0L)
    ,m_pTaskBarPopup(0L)
    ,m_pDockMenu(0L)
@@ -129,9 +124,6 @@ MainWindow::MainWindow(QWidget* parentWidget, const char* name, WFlags flags)
 
   // This seems to be needed (re-check it after Qt2.0 comed out)
   setFocusPolicy(ClickFocus);
-
-  // create the central widget
-  createMdiManager();
 
   // cover KMdi's childarea by a dockwidget
   m_pDockbaseAreaOfDocumentViews = createDockWidget( "mdiAreaCover", QPixmap(), 0L, "mdi_area_cover");
@@ -198,38 +190,10 @@ MainWindow::~MainWindow()
   d=0;
 }
 
-//============ createMdiManager ============//
-void MainWindow::createMdiManager()
-{
-  // dummy TODO
-  /*KDockWidget *w = createDockWidget("muh", SmallIcon("view_tree"), this);
-
-
-
-  m_centralView = new QWidget (w);
-  w->setWidget (m_centralView);
-
-  setMainDockWidget(w);
-
-  m_centralView->show();*/
-}
-
-void MainWindow::resizeEvent(QResizeEvent *e)
-{
-  if( (m_mdiMode == KMDI::ToplevelMode) && !parentWidget())
-    if( e->oldSize().height() != e->size().height()) {
-      return;
-    }
-  KParts::DockMainWindow::resizeEvent(e);
-  if (!m_mdiGUIClient) return;
-}
-
 //================ setMinimumSize ===============//
 
 void MainWindow::setMinimumSize( int minw, int minh)
 {
-  if( (m_mdiMode == KMDI::ToplevelMode) && !parentWidget())
-    return;
   DockMainWindow::setMinimumSize( minw, minh);
 }
 
@@ -382,9 +346,8 @@ void MainWindow::setIDEAlModeStyle(int flags)
 
 void MainWindow::setToolviewStyle(int flag)
 {
-  if (m_mdiMode == KMDI::IDEAlMode) {
-    setIDEAlModeStyle(flag);
-  }
+  setIDEAlModeStyle(flag);
+
   d->m_toolviewStyle = flag;
   bool toolviewExists = false;
   QMap<QWidget*,KMDI::ToolViewAccessor*>::Iterator it;
@@ -412,7 +375,7 @@ void MainWindow::setToolviewStyle(int flag)
   if (toolviewExists)
   {
     //workaround for the above FIXME to make switching to TextOnly mode work in IDEAl as well. Be sure that this version of switch* is called.
-    if (m_mdiMode == KMDI::IDEAlMode && flag == KMDI::TextOnly)
+    if (flag == KMDI::TextOnly)
     {
    /*   MainWindow::switchToTabPageMode();
       MainWindow::switchToIDEAlMode();*/ //TODO

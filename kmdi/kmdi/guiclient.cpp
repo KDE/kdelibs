@@ -105,7 +105,6 @@ void ToggleToolViewAction::slotWidgetDestroyed()
 KMDIGUIClient::KMDIGUIClient(KMDI::MainWindow* mdiMainFrm,bool showMDIModeAction, const char* name): QObject( mdiMainFrm,name ),
 KXMLGUIClient( mdiMainFrm )
 {
-   m_mdiMode=KMDI::ChildframeMode;
    m_mdiMainFrm=mdiMainFrm;
     connect( mdiMainFrm->guiFactory(), SIGNAL( clientAdded( KXMLGUIClient * ) ),
              this, SLOT( clientAdded( KXMLGUIClient * ) ) );
@@ -128,9 +127,6 @@ KXMLGUIClient( mdiMainFrm )
 	    actionCollection()->setWidget(mdiMainFrm);
     m_toolMenu=new KActionMenu(i18n("Tool &Views"),actionCollection(),"kmdi_toolview_menu");
     m_mdiModeAction=0;
-
-     connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMDI::MdiMode)),
-	this,SLOT(mdiModeHasBeenChangedTo(KMDI::MdiMode)));
 
     m_gotoToolDockMenu=new KActionMenu(i18n("Tool &Docks"),actionCollection(),"kmdi_tooldock_menu");
     m_gotoToolDockMenu->insert(new KAction(i18n("Switch Top Dock"),ALT+CTRL+SHIFT+Key_T,this,SIGNAL(toggleTop()),
@@ -193,7 +189,7 @@ void KMDIGUIClient::setupActions()
 		addList.append(m_toolViewActions.at(i));
 	else
       addList.append(m_toolMenu);
-      if (m_mdiMode==KMDI::IDEAlMode) addList.append(m_gotoToolDockMenu);
+      addList.append(m_gotoToolDockMenu);
       if (m_mdiModeAction) addList.append(m_mdiModeAction);
       kdDebug(760)<<"KMDIGUIClient::setupActions: plugActionList"<<endl;
       plugActionList( actionListName, addList );
@@ -241,30 +237,6 @@ void KMDIGUIClient::clientAdded( KXMLGUIClient *client )
         setupActions();
 }
 
-
-void KMDIGUIClient::mdiModeHasBeenChangedTo(KMDI::MdiMode mode) {
-	kdDebug(760)<<"KMDIGUIClient::mdiModeHasBennChangeTo"<<endl;
-	m_mdiMode=mode;
-        if (m_mdiModeAction) {
-		switch (mode) {
-			case KMDI::ToplevelMode:
-				m_mdiModeAction->setCurrentItem(0);
-				break;
-			case KMDI::ChildframeMode:
-				m_mdiModeAction->setCurrentItem(1);
-				break;
-			case KMDI::TabPageMode:
-				m_mdiModeAction->setCurrentItem(2);
-				break;
-			case KMDI::IDEAlMode:
-				m_mdiModeAction->setCurrentItem(3);
-				break;
-			default: Q_ASSERT(0);
-		}
-	}
-	setupActions();
-
-}
 
 
 // kate: space-indent off;

@@ -79,21 +79,6 @@ namespace KMDI
       AddWindowFlags = 0xff
    };
 
-   enum FrameDecor {
-      Win95Look = 0,
-      KDE1Look  = 1,
-      KDELook  = 2,
-      KDELaptopLook = 3
-   };
-
-   enum MdiMode {
-      UndefinedMode  = 0,
-      ToplevelMode   = 1,
-      ChildframeMode = 2,
-      TabPageMode    = 3,
-      IDEAlMode      = 4
-   };
-
    enum TabWidgetVisibility {
       AlwaysShowTabs         = 0,
       ShowWhenMoreThanOneTab = 1,
