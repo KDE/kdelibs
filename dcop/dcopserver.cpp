@@ -53,9 +53,11 @@ template class QDict<DCOPConnection>;
 template class QPtrDict<DCOPConnection>;
 template class QList<DCOPListener>;
 
+static bool only_local = false;
+
 static Bool HostBasedAuthProc ( char* /*hostname*/)
 {
-    return false; // no host based authentication
+    return only_local; // no host based authentication
 }
 
 // SM DUMMY
@@ -202,6 +204,34 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
 
 #define MAGIC_COOKIE_LEN 16
 
+Status SetAuthentication_local (int count, IceListenObj *listenObjs)
+{
+    int i;
+    for (i = 0; i < count; i ++) {
+	char *prot = IceGetListenConnectionString(listenObjs[i]);
+	if (!prot) continue;
+	char *host = strchr(prot, '/');
+	char *sock = 0;
+	if (host) {
+	    *host=0;
+	    host++;
+	    sock = strchr(host, ':');
+	    if (sock) {
+		*sock = 0;
+		sock++;
+	    }
+	}
+	qDebug("DCOPServer: SetAProc_loc: conn %d, prot=%s, file=%s",
+		(unsigned)i, prot, sock);
+	if (sock && !strcmp(prot, "local")) {
+	    chmod(sock, 0700);
+	}
+	IceSetHostBasedAuthProc (listenObjs[i], HostBasedAuthProc);
+	free(prot);
+    }
+    return 1;
+}
+
 Status
 SetAuthentication (int count, IceListenObj *_listenObjs,
 		   IceAuthDataEntry **_authDataEntries)
@@ -319,6 +349,9 @@ FreeAuthenticationData(int count, IceAuthDataEntry *_authDataEntries)
 
     char command[256];
     int i;
+
+    if (only_local)
+	return;
 
     for (i = 0; i < count * 2; i++) {
 	free (_authDataEntries[i].network_id);
@@ -590,10 +623,18 @@ static void sighandler(int sig)
     //exit(0);
 }
 
-DCOPServer::DCOPServer()
+extern "C" int _IceTransNoListen(const char *protocol);
+
+DCOPServer::DCOPServer(bool _only_local)
     : QObject(0,0), appIds(263), clients(263)
 {
     time = 0; // the beginning of time....
+    
+    only_local = _only_local;
+
+    if (only_local)
+	_IceTransNoListen("tcp");
+    
     dcopSignals = new DCOPSignals;
 
     extern int _IceLastMajorOpcode; // from libICE
@@ -640,8 +681,13 @@ DCOPServer::DCOPServer()
 	    fclose(f);
 	}
 
-    if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
-	qFatal("DCOPSERVER: authentication setup failed.");
+    if (only_local) {
+	if (!SetAuthentication_local(numTransports, listenObjs))
+	    qFatal("DCOPSERVER: authentication setup failed.");
+    } else {
+	if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
+	    qFatal("DCOPSERVER: authentication setup failed.");
+    }
 
     IceAddConnectionWatch (DCOPWatchProc, static_cast<IcePointer>(this));
 
@@ -977,7 +1023,7 @@ void IoErrorHandler ( IceConn iceConn)
 }
 
 const char* const ABOUT =
-"Usage: dcopserver [--nofork] [--nosid] [--help]\n"
+"Usage: dcopserver [--nofork] [--nosid] [--nolocal] [--help]\n"
 "\n"
 "DCOP is KDE's Desktop Communications Protocol. It is a lightweight IPC/RPC\n"
 "mechanism built on top of the X Consortium's Inter Client Exchange protocol.\n"
@@ -990,11 +1036,14 @@ int main( int argc, char* argv[] )
 {
     bool nofork = false;
     bool nosid = false;
+    bool nolocal = false;
     for(int i = 1; i < argc; i++) {
 	if (strcmp(argv[i], "--nofork") == 0)
 	    nofork = true;
 	else if (strcmp(argv[i], "--nosid") == 0)
 	    nosid = true;
+	else if (strcmp(argv[i], "--nolocal") == 0)
+	    nolocal = true;
 	else {
 	    fprintf(stdout, ABOUT );
 	    return 0;
@@ -1059,7 +1108,7 @@ int main( int argc, char* argv[] )
     QApplication a( argc, argv, false );
 
     IceSetIOErrorHandler (IoErrorHandler );
-    DCOPServer *server = new DCOPServer; // this sets the_server
+    DCOPServer *server = new DCOPServer(!nolocal); // this sets the_server
 
     int ret = a.exec();
     delete server;

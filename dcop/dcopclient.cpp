@@ -118,7 +118,10 @@ const char* DCOPClientPrivate::serverAddr = 0;
 #include <X11/SM/SMlib.h>
 static Bool HostBasedAuthProc ( char* /*hostname*/)
 {
-    return false; // no host based authentication
+    /* we don't need any security here, as this is only a hack to
+     * get the protocol number we want for DCOP.  We don't use the SM
+     * connection in any way */
+    return true;
 }
 static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*, char** )
 {
@@ -424,7 +427,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     int setupstat;
     setupstat = IceProtocolSetup(d->iceConn, d->majorOpcode,
 				 static_cast<IcePointer>(d),
-				 True, /* must authenticate */
+				 False, /* must authenticate */
 				 &(d->majorVersion), &(d->minorVersion),
 				 &(d->vendor), &(d->release), 1024, errBuf);
 

@@ -78,7 +78,7 @@ class DCOPServer : public QObject
 {
     Q_OBJECT
 public:
-    DCOPServer();
+    DCOPServer(bool _only_local);
     ~DCOPServer();
 
     void* watchConnection( IceConn iceConn );
