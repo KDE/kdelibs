@@ -1,5 +1,5 @@
 <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
-<book id="index" lang="en">
+<book lang="en">
       
    <bookinfo>
       <title>KDE Library Reference</title>
@@ -11,14 +11,7 @@
          </author> 
       </authorgroup>
       <date>08/06/2000</date>
-      <releaseinfo>0.0.1</releaseinfo>
-      <revhistory>
-         <revision>
-            <revnumber>0.0.1</revnumber>
-            <date>today</date>
-            <authorinitials>BG</authorinitials>
-         </revision>
-      </revhistory>
+      <releaseinfo>0.00.01</releaseinfo>
       <abstract><para>The ultimate KDE Library Reference (just kidding :-)</para></abstract>
       <keywordset><keyword>KDE</keyword></keywordset>
    </bookinfo>
@@ -722,39 +715,39 @@ while (!childel.isNull()) {
       <title>Screenshots</title>
       <para>
          The <ulink url="kfile/KFileDialog.html">KFileDialog</ulink>:
-         <screenshot>
-            <graphic fileref="kfile/kfiledialog.png"></graphic>
-         </screenshot>
+         <screenshot><mediaobject><imageobject>
+            <imagedata fileref="kfile/kfiledialog.png" format="png">
+         </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KColorDialog.html">KColorDialog</ulink>:
-         <screenshot>
-            <graphic fileref="kdeui/kcolordialog.png"></graphic>
-         </screenshot>
+         <screenshot><mediaobject><imageobject>
+            <imagedata fileref="kdeui/kcolordialog.png" format="png">
+         </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KFontDialog.html">KFontDialog</ulink>:
-         <screenshot>
-            <graphic fileref="kdeui/kfontdialog.png"></graphic>
-         </screenshot>
+         <screenshot><mediaobject><imageobject>
+            <imagedata fileref="kdeui/kfontdialog.png" format="png">
+         </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KEditToolbar.html">KEditToolbar</ulink>:
-         <screenshot>
-            <graphic fileref="kdeui/kedittoolbar.png"></graphic>
-         </screenshot>
+         <screenshot><mediaobject><imageobject>
+            <imagedata fileref="kdeui/kedittoolbar.png" format="png">
+         </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="kfile/KKeyDialog.html">KKeyDialog</ulink>:
-         <screenshot>
-            <graphic fileref="kdeui/kkeydialog.png"></graphic>
-         </screenshot>
+         <screenshot><mediaobject><imageobject>
+            <imagedata fileref="kdeui/kkeydialog.png" format="png">
+         </imageobject></mediaobject></screenshot>
       </para>
       <para>
          The <ulink url="_QTDOCDIR_/qcolordialog.html">QPrintDialog</ulink>:
-         <screenshot>
-            <graphic fileref="_QTDOCDIR_/qprintdlg-m.png"></graphic>
-         </screenshot>
+         <screenshot><mediaobject><imageobject>
+            <imagedata fileref="_QTDOCDIR_/qprintdlg-m.png" format="png">
+         </imageobject></mediaobject></screenshot>
       </para>
       <para>
          ...
