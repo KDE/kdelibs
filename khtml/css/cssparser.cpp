@@ -376,7 +376,7 @@ static bool validUnit( Value *value, int unitflags, bool strict )
     return b;
 }
 
-bool CSSParser::parseValue( int propId, bool important )
+bool CSSParser::parseValue( int propId, bool important, int expected )
 {
     if ( !valueList ) return false;
 
@@ -385,13 +385,12 @@ bool CSSParser::parseValue( int propId, bool important )
     if ( !value )
         return false;
 
-    int id = 0;
-    id = value->id;
+    int id = value->id;
 
-    if ( id == CSS_VAL_INHERIT ) {
+    if ( id == CSS_VAL_INHERIT && expected == 1 ) {
         addProperty( propId, new CSSInheritedValueImpl(), important );
         return true;
-    } else if (id == CSS_VAL_INITIAL) {
+    } else if (id == CSS_VAL_INITIAL && expected == 1 ) {
         addProperty(propId, new CSSInitialValueImpl(), important);
         return true;
     }
@@ -657,12 +656,12 @@ bool CSSParser::parseValue( int propId, bool important )
                          new CSSPrimitiveValueImpl( pos[1], CSSPrimitiveValue::CSS_PERCENTAGE ),
                          important );
         } else {
-            bool ok = parseValue( CSS_PROP_BACKGROUND_POSITION_X, important );
+            bool ok = parseValue( CSS_PROP_BACKGROUND_POSITION_X, important, 2 );
             if ( !ok )
                 break;
             value = valueList->current();
             if ( value )
-                ok = parseValue( CSS_PROP_BACKGROUND_POSITION_Y, important );
+                ok = parseValue( CSS_PROP_BACKGROUND_POSITION_Y, important, 1 );
             if ( !ok )
                 addProperty( CSS_PROP_BACKGROUND_POSITION_Y,
                              new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE ),
@@ -687,8 +686,8 @@ bool CSSParser::parseValue( int propId, bool important )
             return true;
         }
         else if (num == 2) {
-            if (!parseValue(properties[0], important)) return false;
-            if (!parseValue(properties[1], important)) return false;
+            if (!parseValue(properties[0], important, 2)) return false;
+            if (!parseValue(properties[1], important, 1)) return false;
             return true;
         }
         return false;
@@ -1120,6 +1119,7 @@ bool CSSParser::parseValue( int propId, bool important )
     }
 
     if ( valid_primitive ) {
+
         if ( id != 0 ) {
             // qDebug(" new value: id=%d", id );
             parsedValue = new CSSPrimitiveValueImpl( id );
@@ -1135,7 +1135,13 @@ bool CSSParser::parseValue( int propId, bool important )
             // qDebug(" new quirks value: value=%.2f, unit=%d", value->fValue, value->unit );
             parsedValue = new CSSQuirkPrimitiveValueImpl( value->fValue, CSSPrimitiveValue::CSS_EMS );
         }
+        --expected;
         valueList->next();
+        if ( valueList->current() && expected == 0)
+        {
+            delete parsedValue;
+            parsedValue = 0;
+        }
     }
     if ( parsedValue ) {
         addProperty( propId, parsedValue, important );
@@ -1153,6 +1159,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
     inParseShortHand = true;
 
     bool found = false;
+    bool oldPropIndex = numParsedProperties;
     bool fnd[6]; //Trust me ;)
     for( int i = 0; i < numProperties; i++ )
             fnd[i] = false;
@@ -1169,7 +1176,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
 #ifdef CSS_DEBUG
                 kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
 #endif
-                if ( parseValue( properties[propIndex], important ) ) {
+                if ( parseValue( properties[propIndex], important, numProperties ) ) {
                     fnd[propIndex] = found = true;
 #ifdef CSS_DEBUG
                     kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << endl;
@@ -1183,6 +1190,12 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
 #ifdef CSS_DEBUG
             qDebug("didn't find anything" );
 #endif
+
+            // need to nuke the already added values
+            for ( int i = oldPropIndex; i < numParsedProperties; ++i )
+                delete parsedProperties[i];
+
+            numParsedProperties = oldPropIndex;
             inParseShortHand = false;
             return false;
         }
@@ -1212,12 +1225,12 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
      */
 
     int num = inParseShortHand ? 1 : valueList->numValues;
-    // qDebug("parse4Values: num=%d", num );
+    //qDebug("parse4Values: num=%d %d", num,  valueList->numValues );
 
     // the order is top, right, bottom, left
     switch( num ) {
     case 1: {
-        if( !parseValue( properties[0], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
         CSSValueImpl *value = parsedProperties[numParsedProperties-1]->value();
         addProperty( properties[1], value, important );
         addProperty( properties[2], value, important );
@@ -1226,8 +1239,8 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
     }
     case 2: {
 
-        if( !parseValue( properties[0], important ) ) return false;
-        if( !parseValue( properties[1], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[1], important, valueList->numValues) ) return false;
         CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
         addProperty( properties[2], value, important );
         value = parsedProperties[numParsedProperties-2]->value();
@@ -1235,18 +1248,18 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
         return true;
     }
     case 3: {
-        if( !parseValue( properties[0], important ) ) return false;
-        if( !parseValue( properties[1], important ) ) return false;
-        if( !parseValue( properties[2], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[1], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[2], important, valueList->numValues ) ) return false;
         CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
         addProperty( properties[3], value, important );
         return true;
     }
     case 4: {
-        if( !parseValue( properties[0], important ) ) return false;
-        if( !parseValue( properties[1], important ) ) return false;
-        if( !parseValue( properties[2], important ) ) return false;
-        if( !parseValue( properties[3], important ) ) return false;
+        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[1], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[2], important, valueList->numValues ) ) return false;
+        if( !parseValue( properties[3], important, valueList->numValues ) ) return false;
         return true;
     }
     default:
@@ -1577,7 +1590,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 }
 
 
-static bool parseColor(const QString &name, QRgb& rgb)
+static bool parseColor(int unit, const QString &name, QRgb& rgb)
 {
     int len = name.length();
 
@@ -1605,12 +1618,14 @@ static bool parseColor(const QString &name, QRgb& rgb)
         }
     }
 
-    // try a little harder
-    QColor tc;
-    tc.setNamedColor(name.lower());
-    if ( tc.isValid() ) {
-        rgb = tc.rgb();
-        return true;
+    if ( unit == CSSPrimitiveValue::CSS_IDENT ) {
+        // try a little harder
+        QColor tc;
+        tc.setNamedColor(name.lower());
+        if ( tc.isValid() ) {
+            rgb = tc.rgb();
+            return true;
+        }
     }
 
     return false;
@@ -1625,12 +1640,12 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
               value->fValue >= 0. && value->fValue < 1000000. ) {
         QString str;
         str.sprintf( "%06d", (int)(value->fValue+.5) );
-        if ( !::parseColor( str, c ) )
+        if ( !::parseColor( value->unit, str, c ) )
             return 0;
     } else if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
               value->unit == CSSPrimitiveValue::CSS_IDENT ||
               (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION) ) {
-        if ( !::parseColor( qString( value->string ), c) )
+        if ( !::parseColor( value->unit, qString( value->string ), c) )
             return 0;
     }
     else if ( value->unit == Value::Function &&
