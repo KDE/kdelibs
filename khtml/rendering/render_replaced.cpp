@@ -183,6 +183,9 @@ bool RenderWidget::event( QEvent *e )
         QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
         m_widget->resize( re->w,  re->h );
     }
+    // eat all events - except if this is a frame (in which case KHTMLView handles it all)
+    if ( ::qt_cast<KHTMLView *>( m_widget ) )
+        return QObject::event( e );
     return true;
 }
 
@@ -445,6 +448,9 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
 
 bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 {
+    // no special event processing if this is a frame (in which case KHTMLView handles it all)
+    if ( ::qt_cast<KHTMLView *>( m_widget ) )
+        return false;
     if ( !element() ) return true;
 
     ref();
