@@ -84,7 +84,10 @@ int seteuid(INT32_BASETYPE euid); /* defined in fakes.c */
 #if !defined(__STDC__) || !__STDC__
 #define __STDC__  1
 #endif
-typedef unsigned int u_int32_t;
+typedef unsigned int   u_int32_t;
+typedef unsigned char  uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int   uint32_t;
 #include <stdarg.h>          /* va_start and the like */
 #define RTLD_GLOBAL 0        /* dlopen flag not known under Tru64  */
 #ifndef HAVE_USLEEP          /* usleep not defined in Tru64        */
