@@ -81,7 +81,7 @@ public:
    *             should not use this constructor.
    *             Instead create an empty url and set the path by using
    *             @ref setPath().
-   * @param encoding_hint MIB of original encoding of URL. 
+   * @param encoding_hint MIB of original encoding of URL.
    *             @see QTextCodec::mibEnum()
    */
   KURL( const QString& url, int encoding_hint = 0 );
@@ -91,6 +91,12 @@ public:
    * then URL, in its encoded form, is strictly ascii.
    */
   KURL( const char * url, int encoding_hint = 0 );
+  /**
+   * Constructor taking a QCString @p url, which is an _encoded_ representation
+   * of the URL, exactly like the usual constructor. This is useful when
+   * then URL, in its encoded form, is strictly ascii.
+   */
+  KURL( const QCString& url, int encoding_hint = 0 );
   /**
    * Copy constructor.
    */
@@ -108,7 +114,7 @@ public:
    * If this is a relative URL it will be combined with @p _baseurl.
    * Note that _rel_url should be encoded too, in any case.
    * So do NOT pass a path here (use setPath or addPath instead).
-   * @param encoding_hint MIB of original encoding of URL. 
+   * @param encoding_hint MIB of original encoding of URL.
    *             @see QTextCodec::mibEnum()
    */
   KURL( const KURL& _baseurl, const QString& _rel_url, int encoding_hint=0 );
@@ -209,7 +215,7 @@ public:
 
   /**
    * Resolves "." and ".." components in path.
-   * 
+   *
    * @param cleanDirSeparator if true, occurances of consecutive
    * directory separators (e.g. /foo//bar) are cleaned up as well.
    *
@@ -221,7 +227,7 @@ public:
   /**
    * This is useful for HTTP. It looks first for '?' and decodes then.
    * The encoded path is the concatenation of the current path and the query.
-   * @param encoding_hint MIB of original encoding of @p _txt . 
+   * @param encoding_hint MIB of original encoding of @p _txt .
    *             @see QTextCodec::mibEnum()
    */
   void setEncodedPathAndQuery( const QString& _txt, int encoding_hint = 0 );
@@ -232,7 +238,7 @@ public:
    * @return The concatenation if the encoded path , '?' and the encoded query.
    *
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
-   * @param encoding_hint MIB of desired encoding of URL. 
+   * @param encoding_hint MIB of desired encoding of URL.
    *             @see QTextCodec::mibEnum()
    */
   QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false, int encoding_hint = 0) const;
@@ -242,7 +248,7 @@ public:
    * The query may contain the 0 character.
    *
    * The query should start with a '?'. If it doesn't '?' is prepended.
-   * @param encoding_hint MIB of original encoding of _txt. 
+   * @param encoding_hint MIB of original encoding of _txt.
    *             @see QTextCodec::mibEnum()
    * @param encoding_hint Reserved, should be 0.
    */
@@ -418,7 +424,7 @@ public:
    * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged.
-   * @param encoding_hint MIB of encoding to use. 
+   * @param encoding_hint MIB of encoding to use.
    *             @see QTextCodec::mibEnum()
    */
   QString url( int _trailing = 0, int encoding_hint = 0) const;
@@ -503,7 +509,7 @@ public:
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters.
    * @param str String to encode
-   * @param encoding_hint MIB of encoding to use. 
+   * @param encoding_hint MIB of encoding to use.
    *             @see QTextCodec::mibEnum()
    **/
   static QString encode_string(const QString &str, int encoding_hint = 0);
@@ -515,7 +521,7 @@ public:
    * encoding for all common delimiters / non-ascii characters
    * as well as the slash '/'.
    * @param str String to encode
-   * @param encoding_hint MIB of encoding to use. 
+   * @param encoding_hint MIB of encoding to use.
    *             @see QTextCodec::mibEnum()
    **/
   static QString encode_string_no_slash(const QString &str, int encoding_hint = 0);
@@ -527,7 +533,7 @@ public:
    *
    * Reverse of encode_string()
    * @param str String to decode
-   * @param encoding_hint MIB of original encoding of @p str . 
+   * @param encoding_hint MIB of original encoding of @p str .
    *             @see QTextCodec::mibEnum()
    **/
   static QString decode_string(const QString &str, int encoding_hint = 0);

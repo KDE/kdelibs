@@ -364,6 +364,12 @@ KURL::KURL( const char * url, int encoding_hint )
   parse( QString::fromLatin1(url), encoding_hint );
 }
 
+KURL::KURL( const QCString& url, int encoding_hint )
+{
+  reset();
+  parse( QString::fromLatin1(url), encoding_hint );
+}
+
 KURL::KURL( const KURL& _u )
 {
   *this = _u;
@@ -1033,7 +1039,7 @@ bool KURL::isLocalFile() const
 
 void KURL::setFileEncoding(const QString &encoding)
 {
-  if (!isLocalFile()) 
+  if (!isLocalFile())
      return;
 
   QString q = query();
@@ -1059,12 +1065,12 @@ void KURL::setFileEncoding(const QString &encoding)
   else
      setQuery(args.join("&"));
 }
-  
+
 QString KURL::fileEncoding() const
 {
-  if (!isLocalFile()) 
+  if (!isLocalFile())
      return QString::null;
-  
+
   QString q = query();
 
   if (q.isEmpty())
@@ -1080,7 +1086,7 @@ QString KURL::fileEncoding() const
   {
       QString s = decode_string(*it);
       if (s.startsWith("charset="))
-         return s.mid(8); 
+         return s.mid(8);
   }
   return QString::null;
 }
@@ -1559,8 +1565,8 @@ void KURL::setQuery( const QString &_txt, int encoding_hint)
          int s = i;
          // Re-encode. Break encoded string up in '&' and '=' parts and re-encode
          // part by part.
-         while((i < l) && 
-               (m_strQuery_encoded[i] != '&') && 
+         while((i < l) &&
+               (m_strQuery_encoded[i] != '&') &&
                (m_strQuery_encoded[i] != '='))
             i++;
          if (i > s)
@@ -1667,7 +1673,7 @@ QString KURL::queryItem( const QString& _item ) const
   for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it )
   {
     item = (*it);
-    if ( item.startsWith( _item ) ) 
+    if ( item.startsWith( _item ) )
     {
       int len = item.length();
       if ( len > _len && item.at( _len ) == '=' )
