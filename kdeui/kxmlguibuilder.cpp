@@ -105,6 +105,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     QString attrFullWidth = element.attribute( "fullWidth" ).lower();
     QString attrPosition = element.attribute( "position" ).lower();
+    QString attrIconText = element.attribute( "iconText" ).lower();
+    QString attrIconSize = element.attribute( "iconSize" ).lower();
 
     if ( honor || ( !attrFullWidth.isEmpty() && attrFullWidth == "true" ) )
       bar->setFullWidth( true );
@@ -118,29 +120,41 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       else if ( attrPosition == "left" )
         bar->setBarPos( KToolBar::Left );
       else if ( attrPosition == "right" )
-	bar->setBarPos( KToolBar::Right );
+        bar->setBarPos( KToolBar::Right );
       else if ( attrPosition == "bottom" )
-	bar->setBarPos( KToolBar::Bottom );
+        bar->setBarPos( KToolBar::Bottom );
       else if ( attrPosition == "floating" )
-	bar->setBarPos( KToolBar::Floating );
+        bar->setBarPos( KToolBar::Floating );
       else if ( attrPosition == "flat" )
-	bar->setBarPos( KToolBar::Flat );
+        bar->setBarPos( KToolBar::Flat );
     }
-    else if ( containerStateBuffer.size() > 0 )
+
+    if ( !attrIconText.isEmpty() && containerStateBuffer.size() == 0 )
+    {
+      if ( attrIconText == "icontextright" )
+        bar->setIconText( KToolBar::IconTextRight );
+      else if ( attrIconText == "textonly" )
+        bar->setIconText( KToolBar::TextOnly );
+      else if ( attrIconText == "icontextbottom" )
+        bar->setIconText( KToolBar::IconTextBottom );
+      else if ( attrIconText == "icononly" )
+        bar->setIconText( KToolBar::IconOnly );
+    }
+
+    if ( !attrIconSize.isEmpty() && containerStateBuffer.size() == 0 )
+    {
+      bar->setIconSize( attrIconSize.toInt() );
+    }
+
+    if ( containerStateBuffer.size() > 0 )
     {
       QDataStream stream( containerStateBuffer, IO_ReadOnly );
-      QVariant iconText, barPos, fullSize;
-      stream >> iconText >> barPos >> fullSize;
+      QVariant iconText, barPos, fullSize, iconSize;
+      stream >> iconText >> barPos >> fullSize >> iconSize;
       bar->setProperty( "iconText", iconText );
       bar->setProperty( "barPos", barPos );
       bar->setProperty( "fullSize", fullSize );
-      /*
-      Q_INT32 i;
-      stream >> i;
-      bar->setBarPos( (KToolBar::BarPosition)i );
-      stream >> i;
-      bar->setIconText( (KToolBar::IconText)i );
-      */
+      bar->setProperty( "iconSize", iconSize );
     }
 
     bar->show();
@@ -180,8 +194,7 @@ QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent,
   else if ( container->inherits( "KToolBar" ) )
   {
     QDataStream stream( stateBuff, IO_WriteOnly );
-    //    stream << (int)((KToolBar *)container)->barPos() << (int)((KToolBar *)container)->iconText();
-    stream << container->property( "iconText" ) << container->property( "barPos" ) << container->property( "fullSize" );
+    stream << container->property( "iconText" ) << container->property( "barPos" ) << container->property( "fullSize" ) << container->property( "iconSize" );
     delete (KToolBar *)container;
   }
   else if ( container->inherits( "KStatusBar" ) )

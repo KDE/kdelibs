@@ -80,6 +80,7 @@ class KToolBar : public QFrame
   Q_PROPERTY( IconText iconText READ iconText WRITE setIconText )
   Q_PROPERTY( BarPosition barPos READ barPos WRITE setBarPos )
   Q_PROPERTY( bool fullSize READ fullSize WRITE setFullSize )
+  Q_PROPERTY( int iconSize READ iconSize WRITE setIconSize )
 
 public:
   /**
