@@ -971,10 +971,9 @@ bool HTTPProtocol::http_open()
       header += "\r\n";
   }
 
-  // Only check the cached copy if the previous
-  // response was NOT a 401 or 407
-  if ( m_prevResponseCode != 401 &&
-       m_prevResponseCode != 407 )
+  // Only check for a cached copy if the previous
+  // response was NOT a 401 or 407.
+  if ( m_responseCode != 401 && m_responseCode != 407 )
   {
     AuthInfo info;
     info.url = m_request.url;
@@ -1043,18 +1042,18 @@ bool HTTPProtocol::http_open()
       }
       else
       {
-        if ( checkCachedAuthentication( info ) )
+        if ( checkCachedAuthentication(info) )
         {
-            m_proxyURL.setUser( info.username );
-            m_proxyURL.setPass( info.password );
-            m_strProxyRealm = info.realmValue;
-            if ( info.digestInfo.isEmpty() )
-                ProxyAuthentication = AUTH_Basic;
-            else
-            {
-                ProxyAuthentication = AUTH_Digest;
-                m_strProxyAuthorization = info.digestInfo;
-            }
+          m_proxyURL.setUser( info.username );
+          m_proxyURL.setPass( info.password );
+          m_strProxyRealm = info.realmValue;
+          if ( info.digestInfo.isEmpty() )
+            ProxyAuthentication = AUTH_Basic;
+          else
+          {
+            ProxyAuthentication = AUTH_Digest;
+            m_strProxyAuthorization = info.digestInfo;
+          }
         }
         else
         {
@@ -1356,7 +1355,7 @@ bool HTTPProtocol::readHeader()
       else // Assume everything else to be 1.1 or higher....
       {
          m_HTTPrev = HTTP_11;
-         Authentication = AUTH_None;
+         //Authentication = AUTH_None;  Do not do this here!! it is reset before each request!!!
          // Connections with proxies are closed by default because
          // some proxies like junkbuster can't handle persistent
          // connections but don't tell us.
@@ -1752,16 +1751,11 @@ bool HTTPProtocol::readHeader()
         m_strMimeType = QString::fromLatin1("application/x-bzip2");
   }
 
-#if 0
-  // Even if we can't rely on content-length, it seems that we should
-  // never get more data than content-length. Maybe less, if the 
-  // content-length refers to the unzipped data.
   if (!m_qContentEncodings.isEmpty())
   {
      // If we still have content encoding we can't rely on the Content-Length.
      m_iSize = -1;
   }
-#endif
 
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
@@ -2486,7 +2480,7 @@ int HTTPProtocol::readChunked()
         return -1;
      }
 
-     //kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
+     kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
 
      if (m_iBytesLeft == 0)
      {
@@ -2706,6 +2700,7 @@ bool HTTPProtocol::readBody( )
       else
       {
         // nope.  slap this all onto the end of a big buffer for later use
+        kdDebug( 7113 ) << "Further decoding needed..." << endl;
         unsigned int old_len = 0;
         old_len = big_buffer.size();
         big_buffer.resize(old_len + bytesReceived);
@@ -3310,117 +3305,188 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
   return true;
 }
 
+bool HTTPProtocol::retryPrompt()
+{
+  QString prompt;
+  switch ( m_responseCode )
+  {
+    case 401:
+      prompt = i18n("Authentication Failed!");
+      break;
+    case 407:
+      prompt = i18n("Proxy Authentication Failed!");
+      break;
+    default:
+      break;
+  }
+  prompt += i18n("  Do you want to retry ?");
+  return (messageBox(QuestionYesNo, prompt, i18n("Authentication")) == 3);
+}
+
+void HTTPProtocol::promptInfo( AuthInfo& info )
+{
+  if ( m_responseCode == 401 )
+  {
+    info.url = m_request.url;
+    if ( !m_state.user.isEmpty() )
+      info.username = m_state.user;
+    info.readOnly = !m_request.url.user().isEmpty();
+    info.prompt = i18n( "You need to supply a username and a "
+                        "password to access this site." );
+    //info.keepPassword = true; // Prompt the user for persistence as well.
+    if ( !m_strRealm.isEmpty() )
+    {
+      info.realmValue = m_strRealm;
+      info.verifyPath = false;
+      if ( Authentication == AUTH_Digest )
+        info.digestInfo = m_strAuthorization;
+      info.commentLabel = i18n( "Site:" );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname );
+    }
+  }
+  else if ( m_responseCode == 407 )
+  {
+    info.url = m_proxyURL;
+    info.username = m_proxyURL.user();
+    info.prompt = i18n( "You need to supply a username and a password for "
+                        "the proxy server listed below before you are allowed "
+                        "to access any sites." );
+    info.keepPassword = true;
+    if ( !m_strProxyRealm.isEmpty() )
+    {
+      info.realmValue = m_strProxyRealm;
+      info.verifyPath = false;
+      if ( ProxyAuthentication == AUTH_Digest )
+        info.digestInfo = m_strProxyAuthorization;
+      info.commentLabel = i18n( "Proxy:" );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.host() );
+    }
+  }
+}
+
 bool HTTPProtocol::getAuthorization()
 {
-    AuthInfo info;
-    info.verifyPath = true;
+  AuthInfo info;
+  bool result = false;
+  bool repeatFailure = (m_prevResponseCode == m_responseCode);
 
-    bool result = false;
-    bool repeatFailure = (m_prevResponseCode == m_responseCode);
-    kdDebug(7113) << "m_prevResponseCode = " << m_prevResponseCode
-                  << ", m_responseCode = " << m_responseCode << endl;
-    if ( repeatFailure )
+  if ( repeatFailure )
+  {
+    bool prompt = true;
+    if ( Authentication == AUTH_Digest )
     {
-        switch ( m_responseCode )
+      bool isStaleNonce = false;
+      QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
+      int pos = auth.find("stale", 0, false);
+      if ( pos != -1 )
+      {
+        pos += 5;
+        int len = auth.length();
+        while( pos < len && (auth[pos] == ' ' || auth[pos] == '=') ) pos++;
+        if ( pos < len && auth.find("true", pos, false) != -1 )
         {
-            case 401:
-                info.prompt = i18n("Authentication Failed!");
-                break;
-            case 407:
-                info.prompt = i18n("Proxy Authentication Failed!");
-                break;
-            default:
-                break;
+          isStaleNonce = true;
+          kdDebug(7113) << "Stale nonce value. Will retry using same info..." << endl;
         }
-        info.prompt += i18n("  Do you want to retry ?");
-        if ( messageBox(QuestionYesNo, info.prompt, i18n("Authentication")) != 3  )
+      }
+      if ( isStaleNonce )
+      {
+        prompt = false;
+        result = true;
+        if ( m_responseCode == 401 )
         {
-            error(ERR_USER_CANCELED, QString::null);
-            return result;
+          info.username = m_request.user;
+          info.password = m_request.passwd;
+          info.realmValue = m_strRealm;
+          info.digestInfo = m_strAuthorization;
         }
+        else if ( m_responseCode == 407 )
+        {
+          info.username = m_proxyURL.user();
+          info.password = m_proxyURL.pass();
+          info.realmValue = m_strProxyRealm;
+          info.digestInfo = m_strProxyAuthorization;
+        }
+      }
     }
-
-    switch ( m_responseCode )
+    if ( prompt && !retryPrompt() )
     {
-        case 401: // Request-Authentication
-        {
-            info.url = m_request.url;
-            if ( !m_state.user.isEmpty() )
-                info.username = m_state.user;
-            info.readOnly = !m_request.url.user().isEmpty();
-            info.prompt = i18n( "You need to supply a username and a "
-                                "password to access this site." );
-            info.keepPassword = true; // Prompt the user for persistence as well.
-            if ( !m_strRealm.isEmpty() )
-            {
-                info.realmValue = m_strRealm;
-                info.verifyPath = false;
-                if ( Authentication == AUTH_Digest )
-                    info.digestInfo = m_strAuthorization;
-                info.commentLabel = i18n( "Site:" );
-                info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname );
-            }
-            break;
-        }
-        case 407: // Proxy-Authentication
-        {
-            info.url = m_proxyURL;
-            info.username = m_proxyURL.user();
-            info.prompt = i18n( "You need to supply a username and a password for "
-                                "the proxy server listed below before you are "
-                                "allowed to access any sites." );
-            info.keepPassword = true;   // Prompt the user for persistence as well.
-            if ( !m_strProxyRealm.isEmpty() )
-            {
-                info.realmValue = m_strProxyRealm;
-                info.verifyPath = false;
-                if ( ProxyAuthentication == AUTH_Digest )
-                    info.digestInfo = m_strProxyAuthorization;
-                info.commentLabel = i18n( "Proxy:" );
-                info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.host() );
-            }
-            break;
-        }
-        default:
-            break;
+      error(ERR_USER_CANCELED, QString::null);
+      return result;
     }
-
-    if ( !repeatFailure )
+  }
+  else
+  {
+    // At this point we know more detials, so use it to find
+    // out if we have a cached version and avoid a re-prompt!
+    // We also do not use verify path unlike the pre-emptive
+    // requests because we already know the realm value...
+    if ( m_responseCode == 407 )
     {
-        result = checkCachedAuthentication( info );
-        if ((m_responseCode == 401 &&
-             m_request.user == info.username &&
-             m_request.passwd == info.password) ||
-            (m_responseCode == 407 &&
-             m_proxyURL.user() == info.username &&
-             m_proxyURL.pass() == info.password))
-             result = false;
-    }
-
-    if ( !result )
-        result = openPassDlg( info );
-
-    if ( result )
-    {
-        switch (m_responseCode)
-        {
-            case 401: // Request-Authentication
-                m_request.user = info.username;
-                m_request.passwd = info.password;
-                break;
-            case 407: // Proxy-Authentication
-                m_proxyURL.setUser( info.username );
-                m_proxyURL.setPass( info.password );
-                break;
-            default:
-                break;
-        }
+      info.url = m_proxyURL;
+      info.url.setPass( QString::null );
+      info.url.setUser( QString::null );
+      info.url = m_strProxyRealm;
     }
     else
     {
-        error( ERR_USER_CANCELED, QString::null ); // Ignore the user then!!
+      info.url = m_request.url;
+      info.realmValue = m_strRealm;
     }
-    return result;
+
+    info.verifyPath = false;
+    result = checkCachedAuthentication( info );
+    if ( Authentication == AUTH_Digest )
+    {
+      QString auth = (m_responseCode == 401) ? m_strAuthorization : m_strProxyAuthorization;
+      int pos = auth.find("stale", 0, false);
+      if ( pos != -1 )
+      {
+        pos += 5;
+        int len = auth.length();
+        while( pos < len && (auth[pos] == ' ' || auth[pos] == '=') ) pos++;
+        if ( pos < len && auth.find("true", pos, false) != -1 )
+        {
+          info.digestInfo = (m_responseCode == 401) ? m_strAuthorization : m_strProxyAuthorization;
+          kdDebug(7113) << "Stale nonce value. Will retry using same info..." << endl;
+        }
+      }
+    }
+  }
+
+  if ( !result )
+  {
+    kdDebug( 7113 ) << "About to prompt user for authorization..." << endl;
+    promptInfo( info );
+    result = openPassDlg( info );
+  }
+
+  if ( result )
+  {
+    switch (m_responseCode)
+    {
+      case 401: // Request-Authentication
+        m_request.user = info.username;
+        m_request.passwd = info.password;
+        m_strRealm = info.realmValue;
+        if ( Authentication == AUTH_Digest )
+          m_strAuthorization = info.digestInfo;
+        break;
+      case 407: // Proxy-Authentication
+        m_proxyURL.setUser( info.username );
+        m_proxyURL.setPass( info.password );
+        m_strProxyRealm = info.realmValue;
+        if ( Authentication == AUTH_Digest )
+          m_strProxyAuthorization = info.digestInfo;
+        break;
+      default:
+        break;
+    }
+  }
+  else
+    error( ERR_USER_CANCELED, QString::null );
+
+  return result;
 }
 
 void HTTPProtocol::saveAuthorization()
@@ -3478,12 +3544,57 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   return auth;
 }
 
-QString HTTPProtocol::createDigestAuth ( bool /* isForProxy */ )
+void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
+{
+  KMD5 md;
+  HASHHEX HA1, HA2;
+  QCString authStr;
+
+  // Calculate H(A1)
+  authStr = info.username + ':' + info.realm + ':' + info.password;
+  md.update( authStr );
+  md.finalize();
+  if ( info.algorithm == "md5-sess" )
+  {
+    authStr = md.hexDigest();
+    authStr += ':' + info.nonce + ':' + info.cnonce;
+    md.reset();
+    md.update( authStr );
+    md.finalize();
+  }
+//  kdDebug(7113) << "A1 => " << authStr << endl;
+  md.hexDigest( HA1 );
+
+  // Calcualte H(A2)
+  authStr = info.method + ':' + info.digestURI.at( 0 );
+  if ( info.qop == "auth-int" )
+    authStr += ':' + info.entity_body;
+//  kdDebug(7113) << "A2 => " << authStr << endl;
+  md.reset();
+  md.update( authStr );
+  md.finalize();
+  md.hexDigest( HA2 );
+
+  // Calcualte the response.
+  authStr = HA1;
+  authStr += ':' + info.nonce + ':';
+  if ( !info.qop.isEmpty() )
+    authStr += info.nc + ':' + info.cnonce + ':' + info.qop + ':';
+  authStr += HA2;
+
+//  kdDebug(7113) << "response:" << authStr << endl;
+  md.reset();
+  md.update( authStr );
+  md.finalize();
+  md.hexDigest( Response );
+}
+
+
+QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 {
   QString auth;
-/*
   const char *p;
-  HASHHEX SessionKey, Response;
+  HASHHEX Response;
   QCString opaque = "";
   DigestAuthInfo info;
 
@@ -3506,14 +3617,16 @@ QString HTTPProtocol::createDigestAuth ( bool /* isForProxy */ )
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
     return QString::null;
 
-  info.entity_body = p;
+  // info.entity_body = p;   // FIXME: need to have the data to be sent for POST action!!
   info.realm = "";
   info.algorithm = "MD5";
   info.nonce = "";
   info.qop = "";
-  info.digestURI.append( m_request.path.latin1() );
-  // RIDDLE: Can anyone guess what this value means ??
-  info.cnonce = "4477b65d";
+
+  // Use some random # b/n 1 and 100,000 for generating the nonce value...
+  info.cnonce.setNum((1 + static_cast<int>(100000.0*rand()/(RAND_MAX+1.0))));
+  info.cnonce = KCodecs::base64Encode(info.cnonce).latin1();
+
   // HACK: Should be fixed according to RFC 2617 section 3.2.2
   info.nc = "00000001";
 
@@ -3555,22 +3668,32 @@ QString HTTPProtocol::createDigestAuth ( bool /* isForProxy */ )
     {
       p+=9;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
-      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.algorithm = QCString(p, i+1);
+      while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
+      info.algorithm = QCString(p, i+1).lower();
     }
     else if (strncasecmp(p, "algorithm=", 10)==0)
     {
       p+=10;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
-      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.algorithm = QCString(p,i+1);
+      while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
+      info.algorithm = QCString(p,i+1).lower();
     }
     else if (strncasecmp(p, "domain=", 7)==0)
     {
       p+=7;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.digestURI = QCString(p,i+1);
+      int pos = 0, idx = 0;
+      QCString uri = QCString(p,i+1);
+      do
+      {
+        pos = uri.find( ',', pos );
+        if ( pos != -1 )
+          info.digestURI.append( uri.mid(idx, pos-idx) );
+        else
+          info.digestURI.append( uri.mid(idx, uri.length()-idx) );
+        idx = pos+1;
+      } while ( pos != -1 );
     }
     else if (strncasecmp(p, "nonce=", 6)==0)
     {
@@ -3596,57 +3719,59 @@ QString HTTPProtocol::createDigestAuth ( bool /* isForProxy */ )
     p+=(i+1);
   }
 
-  kdDebug(7113) << "Parse result:" << endl
+  if ( info.digestURI.isEmpty() )
+    info.digestURI.append( m_request.path.latin1() );
+/*
+  kdDebug(7113) << "RESULT OF PARSING:" << endl
                 << "  algorithm: " << info.algorithm << endl
                 << "  realm:     " << info.realm << endl
-                << "  domain:    " << info.digestURI << endl
                 << "  nonce:     " << info.nonce << endl
                 << "  opaque:    " << opaque << endl
                 << "  qop:       " << info.qop << endl;
-
+  int count = info.digestURI.count();
+  for( int i = 0; i < count; i++ )
+    kdDebug(7113) << "  domain[" << i << "]:    " << info.digestURI.at(i) << endl;
+*/
   // Calculate the response...
-  //calculateResponse( info, Response );
+  calculateResponse( info, Response );
 
   auth += "username=\"";
   auth += info.username;
-  auth += "\"";
 
-  auth += ", realm=\"";
+  auth += "\", realm=\"";
   auth += info.realm;
   auth += "\"";
 
   auth += ", nonce=\"";
   auth += info.nonce;
-  auth += "\"";
 
-  auth += ", uri=\"";
-  auth += info.digestURI;
-  auth += "\"";
+  auth += "\", uri=\"";
+  auth += info.digestURI.at(0);
+
+  auth += "\", algorithm=\"";
+  auth += info.algorithm;
+  auth +="\"";
 
   if ( !info.qop.isEmpty() )
   {
-    auth += ", qop=";
+    auth += ", qop=\"";
     auth += info.qop;
-    auth += ", cnonce=\"";
+    auth += "\", cnonce=\"";
     auth += info.cnonce;
-    auth += "\"";
-    auth += ", nc=";
+    auth += "\", nc=";
     auth += info.nc;
   }
 
   auth += ", response=\"";
   auth += Response;
-  auth += "\"";
-
   if ( !opaque.isEmpty() )
   {
-    auth += ", opaque=\"";
+    auth += "\", opaque=\"";
     auth += opaque;
-    auth += "\"";
   }
+  auth += "\"";
 
   kdDebug(7113) << "Digest header: " << auth << endl;
-*/
   return auth;
 }
 

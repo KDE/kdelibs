@@ -41,7 +41,6 @@
 
 class DCOPClient;
 
-
 class HTTPProtocol : public KIO::SlaveBase
 {
 public:
@@ -278,10 +277,30 @@ protected:
    */
   void saveAuthorization();
 
+  /**
+   * Creates the entity-header for Basic authentication.
+   */
   QString createBasicAuth( bool isForProxy = false );
 
+  /**
+   * Creates the entity-header for Digest authentication.
+   */
   QString createDigestAuth( bool isForProxy = false );
 
+  /**
+   * Calcualtes the message digest response based on RFC 2617.
+   */
+  void calculateResponse( DigestAuthInfo& info, HASHHEX Response );
+
+  /**
+   * Prompts the user for authorization retry.
+   */
+  bool retryPrompt();
+
+  /**
+   * Creates authorization prompt info.
+   */
+  void promptInfo( KIO::AuthInfo& info );
 
 protected:
   HTTPState m_state;
@@ -384,5 +403,4 @@ protected:
 #endif
 
 };
-
 #endif
