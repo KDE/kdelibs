@@ -368,7 +368,7 @@ private:
   /**
    * Send "TYPE I" or "TYPE A" only if required, see m_cDataMode.
    */
-  bool Ftp::ftpDataMode(char cMode);
+  bool ftpDataMode(char cMode);
   
   //void ftpAbortTransfer();
 
