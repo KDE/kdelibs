@@ -966,15 +966,14 @@ void KToolBar::saveState()
     // first, try to save to the xml file
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
         //kdDebug(220) << name() << " saveState: saving to " << d->m_xmlguiClient->xmlFile() << endl;
-        // go down one level to get to the right tags
-        QDomElement elem = d->m_xmlguiClient->domDocument().documentElement().toElement();
-        elem = elem.firstChild().toElement();
         QString barname(!::qstrcmp(name(), "unnamed") ? "mainToolBar" : name());
-        QDomElement current;
-        // now try to find our toolbar
+        // try to find our toolbar
         d->modified = false;
-        for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
-            current = elem;
+        // go down one level to get to the right tags
+        QDomElement current;
+        for( QDomNode n = d->m_xmlguiClient->domDocument().documentElement().firstChild();
+             !n.isNull(); n = n.nextSibling()) {
+            current = n.toElement();
 
             if ( current.tagName().lower() != "toolbar" )
                 continue;
@@ -997,10 +996,11 @@ void KToolBar::saveState()
 
         // make sure we don't append if this toolbar already exists locally
         bool just_append = true;
-        elem = local.documentElement().toElement();
-        KXMLGUIFactory::removeDOMComments( elem );
-        elem = elem.firstChild().toElement();
-        for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
+
+        for( QDomNode n = local.documentElement().firstChild();
+             !n.isNull(); n = n.nextSibling()) {
+            QDomElement elem = n.toElement();
+
             if ( elem.tagName().lower() != "toolbar" )
                 continue;
 

@@ -483,8 +483,11 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 
       QDomDocument doc = domDocument();
 
-      QDomElement e = doc.documentElement().firstChild().toElement();
-      for (; !e.isNull(); e = e.nextSibling().toElement() ) {
+      for( QDomNode n = doc.documentElement().firstChild();
+           !n.isNull(); n = n.nextSibling())
+      {
+          QDomElement e = n.toElement();
+      
           if ( e.tagName().lower() == "toolbar" )
               factory_->resetContainer( e.attribute( "name" ) );
           else if ( e.tagName().lower() == "menubar" )

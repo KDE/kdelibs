@@ -159,19 +159,22 @@ public:
   /**
    * Return a list of toolbar elements given a toplevel element
    */
-  ToolbarList findToolbars(QDomElement elem)
+  ToolbarList findToolbars(QDomNode n)
   {
     static const QString &tagToolbar = KGlobal::staticQString( "ToolBar" );
     static const QString &attrNoEdit = KGlobal::staticQString( "noEdit" );
     ToolbarList list;
 
-    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
+    for( ; !n.isNull(); n = n.nextSibling() )
     {
+      QDomElement elem = n.toElement();
+      if (elem.isNull())
+        continue;
+        
       if (elem.tagName() == tagToolbar && elem.attribute( attrNoEdit ) != "true" )
         list.append(elem);
 
-      QDomElement child = elem.firstChild().toElement();
-      list += findToolbars(child);
+      list += findToolbars(elem.firstChild());
     }
 
     return list;
@@ -211,9 +214,9 @@ public:
   QDomElement findElementForToolbarItem( const ToolbarItem* item ) const
   {
     static const QString &attrName    = KGlobal::staticQString( "name" );
-    QDomElement elem = m_currentToolbarElem.firstChild().toElement();
-    for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
+    for(QDomNode n = m_currentToolbarElem.firstChild(); !n.isNull(); n = n.nextSibling())
     {
+      QDomElement elem = n.toElement();
       if ((elem.attribute(attrName) == item->internalName()) &&
           (elem.tagName() == item->internalTag()))
         return elem;
@@ -436,7 +439,6 @@ void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
   local.m_type    = XmlData::Local;
   local.m_document.setContent(localXML);
   elem = local.m_document.documentElement().toElement();
-  KXMLGUIFactory::removeDOMComments( elem );
   local.m_barList = d->findToolbars(elem);
   local.m_actionCollection = collection;
   d->m_xmlFiles.append(local);
@@ -485,7 +487,6 @@ void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
       data.m_type = XmlData::Part;
     data.m_document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->instance() ) );
     elem = data.m_document.documentElement().toElement();
-    KXMLGUIFactory::removeDOMComments( elem );
     data.m_barList = d->findToolbars(elem);
     data.m_actionCollection = client->actionCollection();
     d->m_xmlFiles.append(data);

@@ -488,9 +488,10 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
 {
     static const QString &tagAction = KGlobal::staticQString( "action" );
 
-    QDomElement e = actionPropElement.firstChild().toElement();
-    for (; !e.isNull(); e = e.nextSibling().toElement() )
+    for (QDomNode n = actionPropElement.firstChild(); 
+         !n.isNull(); n = n.nextSibling() )
     {
+        QDomElement e = n.toElement();
         if ( e.tagName().lower() != tagAction )
             continue;
 

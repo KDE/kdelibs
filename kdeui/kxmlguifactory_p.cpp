@@ -367,13 +367,15 @@ QDomElement ContainerNode::findElementForChild( const QDomElement &baseElement,
 {
     static const QString &attrName = KGlobal::staticQString( "name" );
 
-    QDomElement e;
     // ### slow
-    for ( e = baseElement.firstChild().toElement(); !e.isNull();
-          e = e.nextSibling().toElement() )
+    for ( QDomNode n = baseElement.firstChild(); !n.isNull();
+          n = n.nextSibling() )
+    {
+        QDomElement e = n.toElement();
         if ( e.tagName().lower() == childNode->tagName &&
              e.attribute( attrName ) == childNode->name )
             return e;
+    }
 
     return QDomElement();
 }
@@ -543,9 +545,12 @@ BuildHelper::BuildHelper( BuildState &state, ContainerNode *node )
 
 void BuildHelper::build( const QDomElement &element )
 {
-    QDomElement e = element.firstChild().toElement();
-    for (; !e.isNull(); e = e.nextSibling().toElement() )
+    for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling() )
+    {
+        QDomElement e = n.toElement();
+        if (e.isNull()) continue;
         processElement( e );
+    }
 }
 
 void BuildHelper::processElement( const QDomElement &e )
@@ -633,9 +638,11 @@ void BuildHelper::processStateElement( const QDomElement &element )
 
     if ( !stateName || !stateName.length() ) return;
 
-    QDomElement e = element.firstChild().toElement();
+    for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling() )
+    {
+        QDomElement e = n.toElement();
+        if (e.isNull()) continue;
 
-    for (; !e.isNull(); e = e.nextSibling().toElement() ) {
         QString tagName = e.tagName().lower();
 
         if ( tagName != "enable" && tagName != "disable" )
@@ -644,9 +651,9 @@ void BuildHelper::processStateElement( const QDomElement &element )
         bool processingActionsToEnable = (tagName == "enable");
 
         // process action names
-        QDomElement actionEl = e.firstChild().toElement();
-
-        for (; !actionEl.isNull(); actionEl = actionEl.nextSibling().toElement() ) {
+        for (QDomNode n2 = element.firstChild(); !n2.isNull(); n2 = n2.nextSibling() )
+        {
+            QDomElement actionEl = n2.toElement();
             if ( actionEl.tagName().lower() != "action" ) continue;
 
             QString actionName = actionEl.attribute( "name" );

@@ -228,7 +228,6 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
     QDomElement base = d->m_doc.documentElement();
 
     QDomElement e = document.documentElement();
-    KXMLGUIFactory::removeDOMComments( e );
 
     // merge our original (global) xml with our new one
     mergeXML(base, e, actionCollection());
@@ -244,7 +243,6 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
   else
   {
     d->m_doc = document;
-    KXMLGUIFactory::removeDOMComments( d->m_doc );
   }
 
   setXMLGUIBuildDocument( QDomDocument() );
@@ -277,10 +275,15 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
 
   QString tag;
 
-  QDomElement e = base.firstChild().toElement();
   // iterate over all elements in the container (of the global DOM tree)
-  while ( !e.isNull() )
+  QDomNode n = base.firstChild();
+  while ( !n.isNull() )
   {
+    QDomElement e = n.toElement();
+    n = n.nextSibling(); // Advance now so that we can safely delete e
+    if (e.isNull())
+       continue;
+
     tag = e.tagName();
 
     // if there's an action tag in the global tree and the action is
@@ -292,9 +295,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
            (kapp && !kapp->authorizeKAction(name)))
       {
         // remove this child as we aren't using it
-        QDomElement oldChild = e;
-        e = e.nextSibling().toElement();
-        base.removeChild( oldChild );
+        base.removeChild( e );
         continue;
       }
     }
@@ -314,9 +315,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
 	 ( prev.tagName() == tagText ) )
       {
         // the previous element was a weak separator or didn't exist
-        QDomElement oldChild = e;
-        e = e.nextSibling().toElement();
-        base.removeChild( oldChild );
+        base.removeChild( e );
         continue;
       }
     }
@@ -326,18 +325,13 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
     // elements we delete this element
     else if ( tag == tagMergeLocal )
     {
-      QDomElement currElement = e;
-
-      // switch our iterator "e" to the next sibling, so that we don't
-      // process the local tree's inserted items!
-      e = e.nextSibling().toElement();
-
-      QDomElement it = additive.firstChild().toElement();
+      QDomNode it = additive.firstChild();
       while ( !it.isNull() )
       {
-        QDomElement newChild = it;
-
-        it = it.nextSibling().toElement();
+        QDomElement newChild = it.toElement();
+        it = it.nextSibling();
+        if (newChild.isNull() )
+          continue;
 
         if ( newChild.tagName() == tagText )
           continue;
@@ -346,7 +340,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
           continue;
 
         QString itAppend( newChild.attribute( attrAppend ) );
-        QString elemName( currElement.attribute( attrName ) );
+        QString elemName( e.attribute( attrName ) );
 
         if ( ( itAppend.isNull() && elemName.isEmpty() ) ||
              ( itAppend == elemName ) )
@@ -356,11 +350,11 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
           // be merged in, later
           QDomElement matchingElement = findMatchingElement( newChild, base );
           if ( matchingElement.isNull() || newChild.tagName() == tagSeparator )
-            base.insertBefore( newChild, currElement );
+            base.insertBefore( newChild, e );
         }
       }
 
-      base.removeChild( currElement );
+      base.removeChild( e );
       continue;
     }
 
@@ -372,23 +366,17 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
     {
       // handle the text tag
       if ( tag == tagText )
-      {
-        e = e.nextSibling().toElement();
         continue;
-      }
 
       QDomElement matchingElement = findMatchingElement( e, additive );
-
-      QDomElement currElement = e;
-      e = e.nextSibling().toElement();
 
       if ( !matchingElement.isNull() )
       {
         matchingElement.setAttribute( attrAlreadyVisited, (uint)1 );
 
-        if ( mergeXML( currElement, matchingElement, actionCollection ) )
+        if ( mergeXML( e, matchingElement, actionCollection ) )
         {
-          base.removeChild( currElement );
+          base.removeChild( e );
           continue;
         }
 
@@ -397,7 +385,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
         for(uint i = 0; i < attribs.count(); i++)
         {
           QDomNode node = attribs.item(i);
-          currElement.setAttribute(node.nodeName(), node.nodeValue());
+          e.setAttribute(node.nodeName(), node.nodeValue());
         }
 
         continue;
@@ -409,31 +397,29 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
         // this container. However we have to call mergeXML recursively
         // and make it check if there are actions implemented for this
         // container. *If* none, then we can remove this container now
-        if ( mergeXML( currElement, QDomElement(), actionCollection ) )
-          base.removeChild( currElement );
+        if ( mergeXML( e, QDomElement(), actionCollection ) )
+          base.removeChild( e );
         continue;
       }
     }
-
-    //I think this can be removed ;-)
-    e = e.nextSibling().toElement();
   }
 
   //here we append all child elements which were not inserted
   //previously via the LocalMerge tag
-  e = additive.firstChild().toElement();
-  while ( !e.isNull() )
+  n = additive.firstChild();
+  while ( !n.isNull() )
   {
+    QDomElement e = n.toElement();
+    n = n.nextSibling(); // Advance now so that we can safely delete e
+    if (e.isNull())
+       continue;
+
     QDomElement matchingElement = findMatchingElement( e, base );
 
     if ( matchingElement.isNull() )
     {
-      QDomElement newChild = e;
-      e = e.nextSibling().toElement();
-      base.appendChild( newChild );
+      base.appendChild( e );
     }
-    else
-      e = e.nextSibling().toElement();
   }
 
   // do one quick check to make sure that the last element was not
@@ -441,16 +427,22 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
   QDomElement last = base.lastChild().toElement();
   if ( (last.tagName() == tagSeparator) && (!last.attribute( attrWeakSeparator ).isNull()) )
   {
-    base.removeChild( base.lastChild() );
+    base.removeChild( last );
   }
 
   // now we check if we are empty (in which case we return "true", to
   // indicate the caller that it can delete "us" (the base element
   // argument of "this" call)
   bool deleteMe = true;
-  e = base.firstChild().toElement();
-  for ( ; !e.isNull(); e = e.nextSibling().toElement() )
+
+  n = base.firstChild();
+  while ( !n.isNull() )
   {
+    QDomElement e = n.toElement();
+    n = n.nextSibling(); // Advance now so that we can safely delete e
+    if (e.isNull())
+       continue;
+
     tag = e.tagName();
 
     if ( tag == tagAction )
@@ -511,9 +503,14 @@ QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const Q
   static const QString &tagMergeLocal = KGlobal::staticQString( "MergeLocal" );
   static const QString &attrName = KGlobal::staticQString( "name" );
 
-  QDomElement e = additive.firstChild().toElement();
-  for ( ; !e.isNull(); e = e.nextSibling().toElement() )
+  QDomNode n = additive.firstChild();
+  while ( !n.isNull() )
   {
+    QDomElement e = n.toElement();
+    n = n.nextSibling(); // Advance now so that we can safely delete e
+    if (e.isNull())
+       continue;
+
     // skip all action and merge tags as we will never use them
     if ( ( e.tagName() == tagAction ) || ( e.tagName() == tagMergeLocal ) )
     {
@@ -529,7 +526,7 @@ QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const Q
   }
 
   // nope, return a (now) null element
-  return e;
+  return QDomElement();
 }
 
 void KXMLGUIClient::conserveMemory()
@@ -796,9 +793,10 @@ KXMLGUIClient::ActionPropertiesMap KXMLGUIClient::extractActionProperties( const
     return properties;
 
   QDomNode n = actionPropElement.firstChild();
-  for (; !n.isNull(); n = n.nextSibling() )
+  while(!n.isNull())
   {
     QDomElement e = n.toElement();
+    n = n.nextSibling(); // Advance now so that we can safely delete e
     if ( e.isNull() )
       continue;
 
