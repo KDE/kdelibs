@@ -1,0 +1,85 @@
+GROUP|general|General
+OPTION|PageSize|Page Size
+CHOICE|letter|US Letter
+CHOICE|legal|US Legal
+CHOICE|ledger|Ledger
+CHOICE|11x17|11x17
+CHOICE|tabloid|Tabloid
+CHOICE|oversize|Oversize
+CHOICE|executive|Executive
+CHOICE|envelope|Envelope
+CHOICE|a0|A0
+CHOICE|a1|A1
+CHOICE|a2|A2
+CHOICE|a3|A3
+CHOICE|a4|A4
+DEFAULT|a4
+OPTION|MediaType|Media Type
+CHOICE|bond|Bond paper
+CHOICE|cardstock|Card stock
+CHOICE|color|Color paper
+CHOICE|glossy|Glossy paper
+CHOICE|heavy|Heavy paper
+CHOICE|labels|Labels
+CHOICE|letterhead|Letter head
+CHOICE|plain|Plain paper
+CHOICE|preprinted|Preprinted paper
+CHOICE|prepunched|Prepunched paper
+CHOICE|recycle|Recycled paper
+CHOICE|transparency|Transparencies
+CHOICE|default|Default setting
+DEFAULT|default
+OPTION|InputSlot|Input Slot
+CHOICE|manual|Manual tray
+CHOICE|inupper|Upper tray
+CHOICE|inmiddle|Middle tray
+CHOICE|inlower|Lower tray
+CHOICE|inlarge|Large tray
+CHOICE|inright|Right tray
+CHOICE|intray1|Tray 1
+CHOICE|intray2|Tray 2
+CHOICE|intray3|Tray 3
+CHOICE|intray4|Tray 4
+CHOICE|intray5|Tray 5
+CHOICE|intray6|Tray 6
+CHOICE|intray7|Tray 7
+CHOICE|intray8|Tray 8
+CHOICE|intray9|Tray 9
+CHOICE|intray10|Tray 10
+CHOICE|inlargecapacity|Large capacity tray
+CHOICE|inhighcapacity|High capacity tray
+CHOICE|default|Default setting
+DEFAULT|default
+OPTION|OutputBin|Output Tray
+CHOICE|outupper|Upper tray
+CHOICE|outlower|Lower tray
+CHOICE|outbin2|Tray 2
+CHOICE|outbin3|Tray 3
+CHOICE|outbin4|Tray 4
+CHOICE|outbin5|Tray 5
+CHOICE|outbin6|Tray 6
+CHOICE|outbin7|Tray 7
+CHOICE|outbin8|Tray 8
+CHOICE|outbin9|Tray 9
+CHOICE|default|Default setting
+DEFAULT|default
+ENDGROUP
+GROUP|others|Others
+OPTION|Duplex|Duplex
+CHOICE|simplex|Simplex
+CHOICE|duplex|Duplex
+CHOICE|duplexshort|Duplex (short edge)
+CHOICE|tumble|Tumble
+CHOICE|default|Default setting
+DEFAULT|default
+OPTION|Resolution|Printing Resolution
+CHOICE|300|300 DPI
+CHOICE|600|600 DPI
+CHOICE|1200|1200 DPI
+CHOICE|default|Default setting
+DEFAULT|default
+ENDGROUP
+GROUP|advanced|Advanced Settings
+OPTION|filter|Filter options (comma sepatared)|STRING
+OPTION|lpr|LPR options (comma separated)|STRING
+ENDGROUP

@@ -8,6 +8,7 @@
 
 #define FOOMATIC_BASE	"/usr/share/foomatic/db/source"
 #define APS_BASE		"/usr/share/apsfilter/setup"
+#define IFHP_BASE		"/usr/libexec/filters"
 
 char	**files;
 int	nfiles, maxfiles;
@@ -17,6 +18,23 @@ void initFiles(void)
 	maxfiles = 100;
 	nfiles = 0;
 	files = (char**)malloc(sizeof(char*) * maxfiles);
+}
+
+void simplifyModel(const char *modelname)
+{
+	char	*g;
+
+	if ((g=strchr(modelname, ',')) != NULL)
+		*g = 0;
+	else if ((g=strchr(modelname, '(')) != NULL || (g=strchr(modelname, '{')) != NULL)
+	{
+		if (g != modelname)
+		{
+			if (isspace(*(g-1)))
+				g--;
+			*g = 0;
+		}
+	}
 }
 
 void freeFiles(void)
@@ -159,7 +177,7 @@ int initMatic(void)
 void parseApsFile(char *filename, FILE *output)
 {
 	FILE	*apsfile;
-	char	buf[256];
+	char	buf[256], modelname[256];
 	char	*c, *d;
 
 	apsfile = fopen(filename, "r");
@@ -177,16 +195,20 @@ void parseApsFile(char *filename, FILE *output)
 		if (d)
 		{
 			*d = 0;
+			strncpy(modelname, d+1, 255);
+			simplifyModel(modelname);
 			fprintf(output, "MANUFACTURER=%s\n", buf);
-			fprintf(output, "MODELNAME=%s\n", d+1);
-			fprintf(output, "MODEL=%s\n", d+1);
+			fprintf(output, "MODELNAME=%s\n", modelname);
+			fprintf(output, "MODEL=%s\n", modelname);
 			fprintf(output, "DESCRIPTION=%s %s (APSFilter + %s)\n", buf, d+1, c+1);
 		}
 		else
 		{
+			strncpy(modelname, buf, 255);
+			simplifyModel(modelname);
 			fprintf(output, "MANUFACTURER=Unknown\n");
-			fprintf(output, "MODELNAME=%s\n", buf);
-			fprintf(output, "MODEL=%s\n", buf);
+			fprintf(output, "MODELNAME=%s\n", modelname);
+			fprintf(output, "MODEL=%s\n", modelname);
 			fprintf(output, "DESCRIPTION=%s (APSFilter + %s)\n", buf, c+1);
 		}
 		fprintf(output, "\n");
@@ -199,7 +221,7 @@ int initAps(void)
 	char	drFile[256];
 	DIR	*apsdir;
 	struct dirent	*d;
-	int	n = 0;
+	int	n = 0, gsversion = 0;
 
 	apsdir = opendir(APS_BASE);
 	if (apsdir == NULL)
@@ -208,6 +230,12 @@ int initAps(void)
 	{
 		if (strncmp(d->d_name, "printer-", 8) != 0)
 			continue;
+		if (isdigit(d->d_name[8]))
+		{
+			if (gsversion)
+				continue;
+			gsversion = 1;
+		}
 		snprintf(drFile, 256, "apsfilter:%s/%s", APS_BASE, d->d_name);
 		checkSize();
 		files[nfiles++] = strdup(drFile);
@@ -215,6 +243,92 @@ int initAps(void)
 	}
 	closedir(apsdir);
 	return n;
+}
+
+char* nextWord(char *c)
+{
+	char	*d = c;
+	while (*d && isspace(*d))
+		d++;
+	return d;
+}
+
+void parseIfhpFile(const char *filename, FILE *output)
+{
+	char	buf[1024];
+	FILE	*in;
+	char	model[32], desc[256];
+
+	in = fopen(filename, "r");
+	if (in == NULL)
+		return;
+	while (fgets(buf, 1023, in))
+	{
+		char	*c;
+		if ((c = strchr(buf, '\n')) != NULL)
+			*c = 0;
+		c = buf;
+		while (*c && isspace(*c))
+			c++;
+		if (*c == '#')
+			continue;
+		if (strncmp(c, "IfhpModel:", 10) == 0)
+			strncpy(model, nextWord(c+11), 31);
+		else if (strncmp(c, "Description:", 12) == 0)
+			strncpy(desc, nextWord(c+13), 255);
+		else if (strncmp(c, "EndEntry", 8) == 0)
+		{
+			char	*d = desc, *e, make[32] = {0};
+			int	first_time = 1;
+			do
+			{
+				e = strchr(d, ',');
+				if (e)
+					*e = 0;
+				if (first_time)
+				{
+					char	*f = strchr(d, ' ');
+					if (f)
+						strncpy(make, d, f-d);
+					first_time = 0;
+				}
+				if (strstr(d, "Family") == NULL)
+				{
+					char	modelname[256] = {0}, *g;
+
+					strncpy(modelname, d, 255);
+					simplifyModel(modelname);
+					fprintf(output, "FILE=lprngtool/%s\n", model);
+					fprintf(output, "MANUFACTURER=%s\n", make);
+					fprintf(output, "MODEL=%s\n", d);
+					fprintf(output, "MODELNAME=%s\n", d);
+					fprintf(output, "DESCRIPTION=%s (IFHP + %s)\n", d, model);
+					fprintf(output, "\n");
+				}
+				if (e)
+				{
+					d = e+1;
+					while (*d && isspace(*d))
+						d++;
+				}
+			} while (e);
+		}
+	}
+	fclose(in);
+}
+
+int initIfhp()
+{
+	char	path[256];
+
+	snprintf(path, 255, "lprngtool:%s/printerdb", IFHP_BASE);
+	if (access(path+10, R_OK) == 0)
+	{
+		checkSize();
+		files[nfiles++] = strdup(path);
+		return 1;
+	}
+	return 0;
 }
 
 void parseAllFiles(FILE *output)
@@ -226,6 +340,8 @@ void parseAllFiles(FILE *output)
 			parseMaticDriverFile(files[i]+9, output);
 		else if (strncmp(files[i], "apsfilter:", 10) == 0)
 			parseApsFile(files[i]+10, output);
+		else if (strncmp(files[i], "lprngtool:", 10) == 0)
+			parseIfhpFile(files[i]+10, output);
 		fprintf(stdout, "%d\n", i);
 		fflush(stdout);
 	}
@@ -255,6 +371,7 @@ int main(int argc, char **argv)
 	initFiles();
 	n += initMatic();
 	n += initAps();
+	n += initIfhp();
 	/* do it for other handlers */
 
 	fprintf(stdout, "%d\n", n);

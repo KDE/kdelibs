@@ -23,6 +23,7 @@
 #include "lpchelper.h"
 #include "matichandler.h"
 #include "apshandler.h"
+#include "lprngtoolhandler.h"
 #include "lprsettings.h"
 #include "driver.h"
 
@@ -123,9 +124,8 @@ void KMLprManager::initHandlers()
 	m_handlerlist.clear();
 
 	insertHandler(new MaticHandler(this));
-#if 1
 	insertHandler(new ApsHandler(this));
-#endif
+	insertHandler(new LPRngToolHandler(this));
 
 	// default handler
 	insertHandler(new LprHandler("default", this));
@@ -235,7 +235,15 @@ bool KMLprManager::savePrinterDriver(KMPrinter *prt, DrMain *driver)
 	LprHandler	*handler = findHandler(prt);
 	PrintcapEntry	*entry = findEntry(prt);
 	if (handler && entry)
-		return handler->savePrinterDriver(prt, entry, driver);
+	{
+		bool	mustSave(false);
+		if (handler->savePrinterDriver(prt, entry, driver, &mustSave))
+		{
+			if (mustSave)
+				return savePrintcapFile();
+			return true;
+		}
+	}
 	return false;
 }
 

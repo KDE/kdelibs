@@ -111,8 +111,11 @@ PrintcapEntry* PrintcapReader::nextEntry()
     do
     {
         line = nextLine();
-        if (line.isEmpty())
+        if (m_stream.atEnd())
             return NULL;
+        else if (line.isEmpty())
+            //return NULL;
+            continue;
         if (line.startsWith("#"))
             comment = line;
         else

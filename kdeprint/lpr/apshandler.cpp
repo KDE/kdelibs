@@ -183,77 +183,10 @@ DrMain* ApsHandler::loadDbDriver(const QString& s)
 
 DrMain* ApsHandler::loadApsDriver(bool config)
 {
-	QFile	f(locate("data", (config ? "kdeprint/apsdriver1" : "kdeprint/apsdriver2")));
-	if (f.open(IO_ReadOnly))
-	{
-		DrMain	*driver = new DrMain;
-		QValueStack<DrGroup*>	groups;
-		QTextStream	t(&f);
-		QStringList	l;
-		DrListOption	*lopt(0);
-		DrBase	*opt(0);
-
-		groups.push(driver);
+	DrMain	*driver = loadToolDriver(locate("data", (config ? "kdeprint/apsdriver1" : "kdeprint/apsdriver2")));
+	if (driver)
 		driver->set("text", "APS Common Driver");
-		while (!t.atEnd())
-		{
-			l = QStringList::split('|', t.readLine().stripWhiteSpace(), false);
-			if (l.count() == 0)
-				continue;
-			if (l[0] == "GROUP")
-			{
-				DrGroup	*grp = new DrGroup;
-				grp->setName(l[1]);
-				grp->set("text", l[2]);
-				groups.top()->addGroup(grp);
-				groups.push(grp);
-			}
-			else if (l[0] == "ENDGROUP")
-			{
-				groups.pop();
-			}
-			else if (l[0] == "OPTION")
-			{
-				opt = 0;
-				lopt = 0;
-				if (l.count() > 3)
-				{
-					if (l[3] == "STRING")
-						opt = new DrStringOption;
-					else if (l[3] == "BOOLEAN")
-					{
-						lopt = new DrBooleanOption;
-						opt = lopt;
-					}
-				}
-				else
-				{
-					lopt = new DrListOption;
-					opt = lopt;
-				}
-				if (opt)
-				{
-					opt->setName(l[1]);
-					opt->set("text", l[2]);
-					groups.top()->addOption(opt);
-				}
-			}
-			else if (l[0] == "CHOICE" && lopt)
-			{
-				DrBase	*ch = new DrBase;
-				ch->setName(l[1]);
-				ch->set("text", l[2]);
-				lopt->addChoice(ch);
-			}
-			else if (l[0] == "DEFAULT" && opt)
-			{
-				opt->setValueText(l[1]);
-				opt->set("default", l[1]);
-			}
-		}
-		return driver;
-	}
-	return NULL;
+	return driver;
 }
 
 void ApsHandler::reset()
@@ -351,7 +284,7 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 	return entry;
 }
 
-bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver)
+bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver, bool*)
 {
 	if (driver->get("gsdriver").isEmpty())
 	{

@@ -21,7 +21,12 @@
 #include "kmprinter.h"
 #include "printcapentry.h"
 #include "kmmanager.h"
+#include "lprsettings.h"
+#include "driver.h"
 
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qvaluestack.h>
 #include <klocale.h>
 
 LprHandler::LprHandler(const QString& name, KMManager *mgr)
@@ -49,25 +54,43 @@ KMPrinter* LprHandler::createPrinter(PrintcapEntry *entry)
 
 bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 {
-    prt->setDescription(i18n("Unknown (unrecognized entry)"));
-    QString val = entry->field("lp");
-    KURL uri;
-    if (!val.isEmpty() && val != "/dev/null")
-    {
-        prt->setLocation(i18n("Local printer on %1").arg(val));
-        uri.setProtocol("parallel");
-        uri.setPath(val);
-    }
-    else if (!(val = entry->field("rm")).isEmpty())
-    {
-        prt->setLocation(i18n("Remote queue (%1) on %2").arg(entry->field("rp")).arg(val));
-        uri.setProtocol("lpd");
-        uri.setHost(val);
-        uri.setPath("/" + entry->field("rp"));
-    }
-    else
-        prt->setLocation(i18n("Unknown (unrecognized entry)"));
-    prt->setDevice(uri);
+	prt->setDescription(i18n("Unknown (unrecognized entry)"));
+	QString val = entry->field("lp");
+	KURL uri;
+	if (!val.isEmpty() && val != "/dev/null")
+	{
+		int	p = val.find('@');
+		if (p != -1)
+		{
+			prt->setLocation(i18n("Remote queue (%1) on %2").arg(val.left(p)).arg(val.mid(p+1)));
+			uri.setProtocol("lpd");
+			uri.setHost(val.mid(p+1));
+			uri.setPath("/" + val.left(p));
+		}
+		else if ((p = val.find('%')) != -1)
+		{
+			prt->setLocation(i18n("Network printer (%1)").arg("socket"));
+			uri.setProtocol("socket");
+			uri.setHost(val.left(p));
+			uri.setPort(val.mid(p+1).toInt());
+		}
+		else
+		{
+			prt->setLocation(i18n("Local printer on %1").arg(val));
+			uri.setProtocol("parallel");
+			uri.setPath(val);
+		}
+	}
+	else if (!(val = entry->field("rm")).isEmpty())
+	{
+		prt->setLocation(i18n("Remote queue (%1) on %2").arg(entry->field("rp")).arg(val));
+		uri.setProtocol("lpd");
+		uri.setHost(val);
+		uri.setPath("/" + entry->field("rp"));
+	}
+	else
+		prt->setLocation(i18n("Unknown (unrecognized entry)"));
+	prt->setDevice(uri);
 	return true;
 }
 
@@ -77,7 +100,7 @@ DrMain* LprHandler::loadDriver(KMPrinter*, PrintcapEntry*, bool)
 	return NULL;
 }
 
-bool LprHandler::savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*)
+bool LprHandler::savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool*)
 {
 	manager()->setErrorMsg(i18n("Unrecognized entry."));
 	return false;
@@ -131,4 +154,79 @@ QString LprHandler::printOptions(KPrinter*)
 
 void LprHandler::reset()
 {
+}
+
+DrMain* LprHandler::loadToolDriver(const QString& filename)
+{
+	QFile	f(filename);
+	if (f.open(IO_ReadOnly))
+	{
+		DrMain	*driver = new DrMain;
+		QValueStack<DrGroup*>	groups;
+		QTextStream	t(&f);
+		QStringList	l;
+		DrListOption	*lopt(0);
+		DrBase	*opt(0);
+
+		groups.push(driver);
+		driver->set("text", "Tool Driver");
+		while (!t.atEnd())
+		{
+			l = QStringList::split('|', t.readLine().stripWhiteSpace(), false);
+			if (l.count() == 0)
+				continue;
+			if (l[0] == "GROUP")
+			{
+				DrGroup	*grp = new DrGroup;
+				grp->setName(l[1]);
+				grp->set("text", l[2]);
+				groups.top()->addGroup(grp);
+				groups.push(grp);
+			}
+			else if (l[0] == "ENDGROUP")
+			{
+				groups.pop();
+			}
+			else if (l[0] == "OPTION")
+			{
+				opt = 0;
+				lopt = 0;
+				if (l.count() > 3)
+				{
+					if (l[3] == "STRING")
+						opt = new DrStringOption;
+					else if (l[3] == "BOOLEAN")
+					{
+						lopt = new DrBooleanOption;
+						opt = lopt;
+					}
+				}
+				else
+				{
+					lopt = new DrListOption;
+					opt = lopt;
+				}
+				if (opt)
+				{
+					opt->setName(l[1]);
+					opt->set("text", l[2]);
+					groups.top()->addOption(opt);
+				}
+			}
+			else if (l[0] == "CHOICE" && lopt)
+			{
+				DrBase	*ch = new DrBase;
+				ch->setName(l[1]);
+				ch->set("text", l[2]);
+				lopt->addChoice(ch);
+			}
+			else if (l[0] == "DEFAULT" && opt)
+			{
+				opt->setValueText(l[1]);
+				opt->set("default", l[1]);
+			}
+		}
+		return driver;
+	}
+	return NULL;
 }

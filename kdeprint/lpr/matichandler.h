@@ -36,7 +36,7 @@ public:
 	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
 	DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
 	DrMain* loadDbDriver(const QString&);
-	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
+	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
 	PrintcapEntry* createEntry(KMPrinter*);
 	bool removePrinter(KMPrinter*, PrintcapEntry*);
 	QString printOptions(KPrinter*);

@@ -328,7 +328,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 	return NULL;
 }
 
-bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver)
+bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver, bool*)
 {
 	QFile	tmpFile(locateLocal("tmp", "foomatic_" + kapp->randomString(8)));
 	QFile	inFile(driver->get("template"));

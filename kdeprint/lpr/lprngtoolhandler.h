@@ -17,38 +17,37 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef APSHANDLER_H
-#define APSHANDLER_H
+#ifndef LPRNGTOOLHANDLER_H
+#define LPRNGTOOLHANDLER_H
 
 #include "lprhandler.h"
-
 #include <qmap.h>
+#include <qstringlist.h>
+#include <qpair.h>
 
-class ApsHandler : public LprHandler
+class LPRngToolHandler : public LprHandler
 {
 public:
-	ApsHandler(KMManager*);
+	LPRngToolHandler(KMManager *mgr = 0);
 
 	bool validate(PrintcapEntry*);
-	KMPrinter* createPrinter(PrintcapEntry*);
 	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
 	DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
 	DrMain* loadDbDriver(const QString&);
-	void reset();
 	PrintcapEntry* createEntry(KMPrinter*);
 	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
-	bool removePrinter(KMPrinter*, PrintcapEntry*);
-	QString printOptions(KPrinter*);
+
+protected:
+	QMap<QString,QString> parseXferOptions(const QString&);
+	void loadAuthFile(const QString&, QString&, QString&);
+	QValueList< QPair<QString,QStringList> > loadChoiceDict(const QString&);
+	QMap<QString,QString> parseZOptions(const QString&);
+	QString filterDir();
+
 
 private:
-	QMap<QString,QString> loadResources(PrintcapEntry*);
-	QMap<QString,QString> loadVarFile(const QString&);
-	QString sysconfDir();
-	QString shareDir();
-	DrMain* loadApsDriver(bool = false);
-
-private:
-	int	m_counter;
+	QValueList< QPair<QString,QStringList> >	m_dict;
+	QString	m_filterdir;
 };
 
 #endif

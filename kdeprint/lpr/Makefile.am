@@ -7,7 +7,8 @@ libkdeprint_lpr_la_SOURCES = printcapreader.cpp lprhandler.cpp \
 			     kmlpruimanager.cpp lpchelper.cpp lpqhelper.cpp \
 			     kmlprjobmanager.cpp matichelper.cpp \
 			     klprprinterimpl.cpp printcapentry.cpp \
-			     lprsettings.cpp kmconfiglpr.cpp apshandler.cpp
+			     lprsettings.cpp kmconfiglpr.cpp apshandler.cpp \
+			     lprngtoolhandler.cpp
 libkdeprint_lpr_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 libkdeprint_lpr_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la $(LIB_KDEUI) $(top_builddir)/kdecore/libkdefakes.la
 libkdeprint_lpr_la_METASOURCES = AUTO
@@ -16,7 +17,8 @@ noinst_HEADERS = printcapentry.h printcapreader.h lprhandler.h \
 		 matichandler.h klprfactory.h kmlprmanager.h \
 		 kmlpruimanager.h lpchelper.h lpqhelper.h \
 		 kmlprjobmanager.h matichelper.h klprprinterimpl.h \
-		 lprsettings.h kmconfiglpr.h apshandler.h
+		 lprsettings.h kmconfiglpr.h apshandler.h \
+		 lprngtoolhandler.h
 
 bin_PROGRAMS = make_driver_db_lpr
 make_driver_db_lpr_SOURCES = make_driver_db_lpr.c
@@ -25,5 +27,5 @@ make_driver_db_lpr_LDADD = $(top_builddir)/kdecore/libkdefakes.la
 entry_DATA = lpr.print
 entrydir = $(kde_datadir)/kdeprint/plugins
 
-miscdata_DATA = apsdriver1 apsdriver2
+miscdata_DATA = apsdriver1 apsdriver2 lprngtooldriver1
 miscdatadir = $(kde_datadir)/kdeprint

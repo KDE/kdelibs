@@ -39,7 +39,7 @@ public:
 	virtual bool completePrinter(KMPrinter*, PrintcapEntry*, bool shortmode = true);
 	virtual DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
 	virtual DrMain* loadDbDriver(const QString&);
-	virtual bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
+	virtual bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
 	virtual PrintcapEntry* createEntry(KMPrinter*);
 	virtual bool removePrinter(KMPrinter*, PrintcapEntry*);
 	virtual QString printOptions(KPrinter*);
@@ -47,6 +47,9 @@ public:
 
 	QString name() const;
 	KMManager* manager() const;
+
+protected:
+	DrMain* loadToolDriver(const QString&);
 
 protected:
 	QString	m_name;
