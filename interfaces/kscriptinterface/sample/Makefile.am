@@ -9,5 +9,5 @@ libshellscript_la_LIBADD = $(top_builddir)/kparts/libkparts.la
 
 METASOURCES = AUTO
 
-servicetypedir = $(kde_servicetypesdir)
+servicetypedir = $(kde_servicesdir)
 servicetype_DATA = shellscript.desktop

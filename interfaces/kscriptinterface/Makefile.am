@@ -12,5 +12,5 @@ include_HEADERS = scriptloader.h scriptinterface.h
 
 METASOURCES = AUTO
 
-#servicetypedir = $(kde_servicetypesdir)
-#servicetype_DATA = scriptinterface.desktop
+servicetypedir = $(kde_servicetypesdir)
+servicetype_DATA = scriptinterface.desktop

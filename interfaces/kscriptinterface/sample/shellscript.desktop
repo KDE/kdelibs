@@ -1,4 +1,5 @@
 [Desktop Entry]
-Type=ServiceType
-X-KDE-ServiceType=ScriptRunner/ShellScript
+Type=Service
+X-KDE-Service=ShellScript/ShellScript
+ServiceTypes=ScriptRunner/ScriptRunner
 Comment=Runs bash shell scripts from inside the application.
