@@ -1,3 +1,33 @@
+/*-
+ * B2Style (C)2000 Daniel M. Duley <mosfet@kde.org>
+ * Animated menu code based on code by Mario Weilguni <mweilguni@kde.org>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ */
+
+
 #ifndef INCLUDE_MENUITEM_DEF
 #define INCLUDE_MENUITEM_DEF
 #endif
@@ -12,20 +42,80 @@
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
+#include <qpopupmenu.h>
+#include <qimage.h>
+#include <qtimer.h>
+#include <kimageeffect.h>
+#include <unistd.h>
 
 #include "bitmaps.h"
 
-static unsigned char up_bits[] = {
-    0x00, 0x18, 0x3c, 0x7e, 0xff, 0xff, 0x00, 0x00};
+B2AniMenu::B2AniMenu(QPopupMenu *menu)
+    : QObject()
+{
+    mnu = menu;
+    widget = NULL;
+    menu->installEventFilter(this);
+    connect(mnu, SIGNAL(destroyed()), this, SLOT(slotFinished()));
+}
 
-static unsigned char down_bits[] = {
-    0x00, 0x00, 0xff, 0xff, 0x7e, 0x3c, 0x18, 0x00};
+B2AniMenu::~B2AniMenu()
+{
+    if(widget)
+        delete widget;
+}
 
-static unsigned char left_bits[] = {
-    0x30, 0x38, 0x3c, 0x3e, 0x3e, 0x3c, 0x38, 0x30};
+bool B2AniMenu::eventFilter(QObject *, QEvent *ev)
+{
+    if(ev->type() == QEvent::Show)
+        scrollIn();
+    else if(ev->type() == QEvent::Hide){
+        ;
+    }
+    return(false);
+}
 
-static unsigned char right_bits[] = {
-    0x0c, 0x1c, 0x3c, 0x7c, 0x7c, 0x3c, 0x1c, 0x0c};
+void B2AniMenu::scrollIn()
+{
+    int w = mnu->width();
+    int h = mnu->height();
+    
+    QPixmap bgPix(QPixmap::grabWindow(QApplication::desktop()->winId(),
+                                      mnu->x(), mnu->y(), w, h));
+    QPixmap mnuPix;
+
+    mnuPix.resize(w, h);
+    mnuPix.fill(mnu->colorGroup().color(QColorGroup::Background));
+    QPainter::redirect(mnu, &mnuPix);
+    mnu->repaint(false);
+    QPainter::redirect(mnu, 0);
+    if(!widget)
+        widget = new QWidget(0, 0, WStyle_Customize | WStyle_NoBorder |
+                        WStyle_Tool);
+    widget->move(mnu->x(), mnu->y());
+    widget->resize(w, h);
+    widget->setBackgroundMode(QWidget::NoBackground);
+    widget->show();
+    bitBlt(widget, 0, 0, &bgPix);
+    int x;
+    for(x = 0; x <= w-3; x+=2)
+        bitBlt(widget, x, 0, &mnuPix, x, 0, x+2, h);
+    QTimer::singleShot(1, this, SLOT(slotDestroyFake()));
+}
+
+void B2AniMenu::slotDestroyFake()
+{
+    if(widget)
+        delete(widget);
+    widget = NULL;
+}
+
+void B2AniMenu::slotFinished()
+{
+    if(widget)
+        delete(widget);
+    delete this;
+}
 
 
 B2Style::B2Style()
@@ -959,6 +1049,13 @@ void B2Style::drawFocusRect(QPainter *p, const QRect &r,
         p->drawWinFocusRect( r );
 }
 
+void B2Style::polishPopupMenu(QPopupMenu *mnu)
+{
+    KStyle::polishPopupMenu(mnu);
+    // disabled for now because it breaks kicker
+    // (void)new B2AniMenu(mnu); 
+}
 
+#include "b2style.moc"
 
 
