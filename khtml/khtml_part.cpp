@@ -687,6 +687,10 @@ bool KHTMLPart::openURL( const KURL &url )
   // data arrives) (Simon)
   // That has been fixed by calling setBaseURL() in begin(). (Waldo)
   m_url = url;
+  if(m_url.protocol().startsWith( "http" ) && !m_url.host().isEmpty() &&
+     m_url.path().isEmpty())
+    m_url.setPath("/");
+
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
   emit started( d->m_job );
@@ -1616,6 +1620,9 @@ const KHTMLSettings *KHTMLPart::settings() const
 void KHTMLPart::setBaseURL( const KURL &url )
 {
   d->m_baseURL = url;
+  if ( d->m_baseURL.protocol().startsWith( "http" ) && !d->m_baseURL.host().isEmpty() &&
+       d->m_baseURL.path().isEmpty() )
+    d->m_baseURL.setPath( "/" );
 }
 
 KURL KHTMLPart::baseURL() const
