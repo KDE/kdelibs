@@ -64,7 +64,7 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
 
 void KReplaceTest::slotReplace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
 {
-    kdDebug() << "slotReplace index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << endl;
+    kdDebug() << "slotReplace index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 ) << endl;
     *m_currentPos = text; // KReplace hacked the replacement into 'text' in already.
 }
 
@@ -87,6 +87,7 @@ void KReplaceTest::slotReplaceNext()
         }
     }
 
+#if 0 // commented out so that this test doesn't require interaction
     if ( res == KFind::NoMatch ) // i.e. at end
         if ( m_replace->shouldRestart() ) {
             if ( m_replace->options() & KFindDialog::FindBackwards )
@@ -95,6 +96,7 @@ void KReplaceTest::slotReplaceNext()
                 m_currentPos = m_text.begin();
             slotReplaceNext();
         }
+#endif
 }
 
 void KReplaceTest::print()
@@ -108,6 +110,16 @@ int main( int argc, char **argv )
 {
   KCmdLineArgs::init(argc, argv, "kreplacetest", 0, 0);
   KApplication app;
+
+  {
+    KReplaceTest test( QString( "yeah foo yeah" ) );
+    test.replace( "foo", "foobar", 0 );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "a foobar b" ) {
+      kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'a foobar b'" << endl;
+    }
+  }
 
   QString text = "This file is part of the KDE project.\n"
 "This library is free software; you can redistribute it and/or\n"

@@ -160,14 +160,17 @@ KFind::Result KReplace::replace()
                 }
                 else
                 {
-                    doReplace();
+                    doReplace(); // this moves on too
                 }
             }
-            // not validated, or auto-replaced -> move on
-            if (m_options & KFindDialog::FindBackwards)
-                m_index--;
             else
-                m_index++;
+            {
+                // not validated -> move on
+                if (m_options & KFindDialog::FindBackwards)
+                    m_index--;
+                else
+                    m_index++;
+            }
         } else
             m_index = INDEX_NOMATCH; // will exit the loop
     }

@@ -34,6 +34,7 @@ public:
 
     void replace( const QString &pattern, const QString &replacement, long options );
     void print();
+    const QStringList& textLines() const { return m_text; }
 
 public slots:
     void slotHighlight( const QString &, int, int );
