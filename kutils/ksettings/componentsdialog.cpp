@@ -85,6 +85,11 @@ ComponentsDialog::~ComponentsDialog()
 {
 }
 
+void ComponentsDialog::addPluginInfo( KPluginInfo * info )
+{
+    d->plugininfolist.append( info );
+}
+
 void ComponentsDialog::setPluginInfos( const QMap<QString, KPluginInfo*> &
         plugininfos )
 {
@@ -102,8 +107,11 @@ void ComponentsDialog::setPluginInfos( const QValueList<KPluginInfo *> &plugins 
 
 void ComponentsDialog::show()
 {
-    // construct the treelist
+    // clear the treelist
     d->listview->clear();
+    d->plugininfomap.clear();
+
+    // construct the treelist
     for( QValueList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
             it != d->plugininfolist.end(); ++it )
     {

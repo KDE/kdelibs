@@ -49,11 +49,15 @@ class ComponentsDialog : public KDialogBase
         ~ComponentsDialog();
 
         /**
-          Set list of plugins the dialog offers for selection.
+          Add a plugin that the dialog offers for selection.
+        */
+        void addPluginInfo( KPluginInfo * );
+        /**
+          Set list of plugins the dialog offers for selection. (Overwrites a previous list)
         */
         void setPluginInfos( const QMap<QString, KPluginInfo*> & plugininfos );
         /**
-          Set list of plugins the dialog offers for selection.
+          Set list of plugins the dialog offers for selection. (Overwrites a previous list)
         */
         void setPluginInfos( const QValueList<KPluginInfo *> &plugins );
 
