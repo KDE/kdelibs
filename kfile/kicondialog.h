@@ -7,8 +7,8 @@
  *           (C) 2000 Kurt Granroth <granroth@kde.org>
  *           (C) 1997 Christoph Neerfeld <chris@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
@@ -49,6 +49,9 @@ public:
     /** Returns the current icon. */
     QString getCurrent();
 
+public slots:
+    void stopLoading();
+
 signals:
     /** Emitted when the current icon has changed. */
     void nameChanged(QString);
@@ -71,7 +74,7 @@ private:
 
 
 /**
- * Dialog for interactive selection of icons. Use the function 
+ * Dialog for interactive selection of icons. Use the function
  * selectIcon() let the user select an icon.
  */
 class KIconDialog: public KDialogBase
@@ -83,7 +86,7 @@ public:
     KIconDialog(QWidget *parent=0L, const char *name=0L);
 
     /** Alternate constructor to use a different iconloader. */
-    KIconDialog(KIconLoader *loader, QWidget *parent=0, 
+    KIconDialog(KIconLoader *loader, QWidget *parent=0,
 	    const char *name=0);
 
     ~KIconDialog();
@@ -109,7 +112,7 @@ public:
      */
     QString selectIcon(int group=KIcon::Desktop, int
 	    context=KIcon::Application, bool user=false);
-    
+
 private slots:
     void slotButtonClicked(int);
     void slotContext(int);
@@ -137,7 +140,7 @@ private:
 
 /**
  * A pushbutton for choosing an icon. Pressing on the button will open a
- * KIconDialog for the user to select an icon. The current icon will be 
+ * KIconDialog for the user to select an icon. The current icon will be
  * displayed on the button.
  */
 class KIconButton: public QPushButton
@@ -160,7 +163,7 @@ public:
      */
     void setStrictIconSize(bool b);
 
-    /** 
+    /**
      * Set the icon group and context. Use KIcon::NoGroup if you want to
      * allow icons for any group in the given context.
      */

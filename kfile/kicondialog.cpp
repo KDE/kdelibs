@@ -7,8 +7,8 @@
  *           (C) 2000 Kurt Granroth <granroth@kde.org>
  *           (C) 1997 Christoph Neerfeld <chris@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
@@ -68,7 +68,7 @@ public:
  { return m_iconName == ip.m_iconName; }
 
  bool operator< (const IconPath &ip)
- { return m_iconName < ip.m_iconName; } 
+ { return m_iconName < ip.m_iconName; }
 
 };
 
@@ -123,13 +123,13 @@ void KIconCanvas::slotLoadFiles()
 	img.load(*it);
 	if (img.isNull())
 	    continue;
-	if (img.width() > 60 || img.height() > 60) 
+	if (img.width() > 60 || img.height() > 60)
 	{
 	    if (img.width() > img.height())
 	    {
 		int height = (int) ((60.0 / img.width()) * img.height());
 		img = img.smoothScale(60, height);
-	    } else 
+	    } else
 	    {
 		int width = (int) ((60.0 / img.height()) * img.width());
 		img = img.smoothScale(width, 60);
@@ -155,6 +155,11 @@ QString KIconCanvas::getCurrent()
     if (!currentItem())
 	return QString::null;
     return currentItem()->key();
+}
+
+void KIconCanvas::stopLoading()
+{
+    d->m_bLoading = false;
 }
 
 void KIconCanvas::slotCurrentChanged(QIconViewItem *item)
@@ -228,6 +233,9 @@ void KIconDialog::init()
     connect(mpCanvas, SIGNAL(progress(int)), SLOT(slotProgress(int)));
     connect(mpCanvas, SIGNAL(finished()), SLOT(slotFinished()));
 
+    // When pressing Ok or Cancel, stop loading icons
+    connect(this, SIGNAL(hidden()), mpCanvas, SLOT(stopLoading()));
+
     // The order must match the context definitions in KIcon.
     mpCombo->insertItem(i18n("Actions"));
     mpCombo->insertItem(i18n("Applications"));
@@ -235,7 +243,7 @@ void KIconDialog::init()
     mpCombo->insertItem(i18n("Filesystems"));
     mpCombo->insertItem(i18n("Mimetypes"));
     mpCombo->setFixedSize(mpCombo->sizeHint());
-    mpBrowseBut->setFixedSize(mpCombo->sizeHint());
+    mpBrowseBut->setFixedSize(QSize(mpCombo->width(), mpCombo->height()+6));
 
     // Make the dialog a little taller
     incInitialSize(QSize(0,100));
@@ -254,7 +262,7 @@ void KIconDialog::showIcons()
     if (mType == 0)
 	if (d->m_bStrictIconSize)
 	  filelist=mpLoader->queryIcons(mGroup, mContext);
-        else 
+        else
 	  filelist=mpLoader->queryIconsByContext(mGroup, mContext);
     else
 	filelist=mFileList;
@@ -291,7 +299,7 @@ QString KIconDialog::selectIcon(int group, int context, bool user)
     mpCombo->setCurrentItem(mContext-1);
     showIcons();
     KDialogBase::exec();
-    
+
     if (result() == Accepted)
     {
 	QString name = mpCanvas->getCurrent();
@@ -324,7 +332,7 @@ void KIconDialog::slotButtonClicked(int id)
 	break;
 
     case 2:
-	file = KFileDialog::getOpenFileName(QString::null, 
+	file = KFileDialog::getOpenFileName(QString::null,
 		QString::fromLatin1("*.png *.xpm"), this);
 	if (!file.isEmpty())
 	{
@@ -334,7 +342,7 @@ void KIconDialog::slotButtonClicked(int id)
 	break;
     }
 }
-	
+
 void KIconDialog::slotContext(int id)
 {
     mContext = id+1;
@@ -381,7 +389,7 @@ KIconButton::KIconButton(QWidget *parent, const char *name)
 {
     d = new KIconButtonPrivate;
     // arbitrary
-    mGroup = KIcon::Desktop; 
+    mGroup = KIcon::Desktop;
     mContext = KIcon::Application;
 
     mpLoader = KGlobal::iconLoader();
@@ -394,7 +402,7 @@ KIconButton::KIconButton(KIconLoader *loader,
     : QPushButton(parent, name)
 {
     d = new KIconButtonPrivate;
-    mGroup = KIcon::Desktop; 
+    mGroup = KIcon::Desktop;
     mContext = KIcon::Application;
 
     mpLoader = loader;
