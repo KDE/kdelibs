@@ -108,6 +108,8 @@ by using a graphical package manager or with the following command lines:
 	rpm -qa | grep docbook
 	rpm -qa | grep stylesheet
 	rpm -qa | grep sgml-tools
+        rpm -q sp
+        rpm -q sp_libs
 
 and you may then remove them using the instruction:
 
