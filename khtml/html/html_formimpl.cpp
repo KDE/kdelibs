@@ -842,9 +842,8 @@ void HTMLFieldSetElementImpl::attach()
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE)
+    if (parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderFieldset(this);
-    if (m_render) {
         m_render->setStyle(_style);
     }
     HTMLGenericFormElementImpl::attach();
@@ -1396,6 +1395,12 @@ void HTMLLabelElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+void HTMLLabelElementImpl::attach()
+{
+    // skip the generic handler
+    HTMLElementImpl::attach();
+}
+
 #if 0
 ElementImpl *HTMLLabelElementImpl::formElement()
 {
@@ -1431,11 +1436,10 @@ void HTMLLegendElementImpl::attach()
     addCSSProperty(CSS_PROP_PADDING_RIGHT, "1px");
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE)
+    if (parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderLegend(this);
-    if (m_render)
         m_render->setStyle(_style);
-
+    }
     HTMLGenericFormElementImpl::attach();
     _style->deref();
 }
