@@ -45,6 +45,7 @@ public:
 	void setDefault(KMPrinter *p, bool save = true);
 	QString defaultPrinterName();
 	bool isDefault(KMPrinter *p, const QString& name);
+	bool testInstance(KMPrinter *p);
 
 	void create(KMPrinter *p, const QString& name);
 	void remove(KMPrinter *p, const QString& name);

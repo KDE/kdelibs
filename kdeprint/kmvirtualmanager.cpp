@@ -313,3 +313,18 @@ void KMVirtualManager::saveFile(const QString& filename)
 		}
 	}
 }
+
+bool KMVirtualManager::testInstance(KMPrinter *p)
+{
+	QString	testpage = KMManager::self()->testPage();
+	if (testpage.isEmpty())
+		return false;
+	else
+	{
+		KPrinter	pr;
+		pr.setPrinterName(p->printerName());
+		pr.setSearchName(p->name());
+		pr.setOptions(p->defaultOptions());
+		return (pr.printFiles(testpage));
+	}
+}

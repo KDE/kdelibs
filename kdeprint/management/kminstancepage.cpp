@@ -251,22 +251,14 @@ void KMInstancePage::slotTest()
 		if (src == i18n("(Default)"))
 			src = QString::null;
 		KMPrinter	*mpr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
-		QString		testpage = locate("data","kdeprint/testprint.ps");
-		if (testpage.isEmpty())
-			KMessageBox::error(this,i18n("Unable to locate test page."));
-		else if (!mpr)
+		if (!mpr)
 			KMessageBox::error(this,i18n("Internal error: printer not found."));
 		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?").arg(mpr->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
-			KPrinter::setApplicationType(KPrinter::StandAlone);
-			KPrinter	pr;
-			pr.setPrinterName(mpr->printerName());
-			pr.setSearchName(mpr->name());
-			pr.setOptions(mpr->defaultOptions());
-			if (!pr.printFiles(testpage))
-				KMessageBox::error(this,i18n("Unable to send test page to %1.").arg(pr.printerName()));
+			if (!KMFactory::self()->virtualManager()->testInstance(mpr))
+				KMessageBox::error(this, i18n("Unable to send test page to %1.").arg(mpr->printerName()));
 			else
-				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.").arg(pr.printerName()));
+				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.").arg(mpr->printerName()));
 		}
 	}
 
