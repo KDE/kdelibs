@@ -108,7 +108,7 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e) {
         && ( e->type() == QEvent::ChildInserted ||
              e->type() == QEvent::ChildRemoved ) )
     {
-        autoCheckTimer.start( 100, true ); // 100 ms
+        autoCheckTimer.start( 20, true ); // 20 ms
     }
     return false;
 }
@@ -119,7 +119,7 @@ void KCheckAccelerators::autoCheckSlot()
         QWidget::keyboardGrabber() ||
         QApplication::activePopupWidget())
     {
-        autoCheckTimer.start( 100, true );
+        autoCheckTimer.start( 20, true );
         return;
     }
     block = true;
