@@ -262,6 +262,7 @@ void KFileMetaInfoItem::deref()
 //        kdDebug(7033) << "item " << d->key
 //                      << " is finally deleted\n";
         delete d;
+        d = 0;
     }
 }
 
@@ -739,6 +740,7 @@ void KFileMetaInfo::deref()
     {
 //        kdDebug(7033) << "metainfo object for " << d->url.path << " is finally deleted\n";
         delete d;
+        d = 0;
     }
 
 }
@@ -1330,6 +1332,7 @@ void KFileMetaInfoGroup::deref()
 //        kdDebug(7033) << "metainfo group " << d->name
 //                      << " is finally deleted\n";
         delete d;
+        d = 0;
     }
 
 }
@@ -1768,7 +1771,6 @@ KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
     // we need a new object for our data
     group.deref();
     group.d = new KFileMetaInfoGroup::Data();
-    group.ref();
 
     s >> group.d->name
       >> group.d->items
@@ -1824,7 +1826,6 @@ KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
     // we need a new object for our data
     info.deref();
     info.d = new KFileMetaInfo::Data();
-    info.ref();
 
     s >> info.d->url
       >> info.d->what
