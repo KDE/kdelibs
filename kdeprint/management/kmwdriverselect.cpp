@@ -27,8 +27,10 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
+#include <kpushbutton.h>
 #include <klistbox.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 
 KMWDriverSelect::KMWDriverSelect(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -43,10 +45,16 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent, const char *name)
 	l1->setText(i18n("<p>Several drivers have been detected for this model. Select the driver "
 			 "you want to use. You will have the opportunity to test it as well as to "
 			 "change it if necessary.</p>"));
+	m_drivercomment = new KPushButton(i18n("Driver information"), this);
+	connect(m_drivercomment, SIGNAL(clicked()), SLOT(slotDriverComment()));
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
 	main_->addWidget(l1,0);
 	main_->addWidget(m_list,1);
+	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 0);
+	main_->addLayout(lay0,0);
+	lay0->addStretch(1);
+	lay0->addWidget(m_drivercomment);
 }
 
 bool KMWDriverSelect::isValid(QString& msg)
@@ -97,3 +105,14 @@ void KMWDriverSelect::updatePrinter(KMPrinter *p)
 		p->setDriverInfo(QString::null);
 	}
 }
+
+void KMWDriverSelect::slotDriverComment()
+{
+	int	index = m_list->currentItem();
+	if (m_entries && index >=0 && index < (int)(m_entries->count()) && !m_entries->at(index)->drivercomment.isEmpty())
+		KMessageBox::information(this, m_entries->at(index)->drivercomment);
+	else
+		KMessageBox::error(this, i18n("No information about the selected driver."));
+}
+
+#include "kmwdriverselect.moc"

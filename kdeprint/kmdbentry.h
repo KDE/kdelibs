@@ -40,6 +40,7 @@ struct KMDBEntry
 	QString	description;
 	// tell whether this is the recommanded driver
 	bool recommanded;
+	QString	drivercomment;
 
 	KMDBEntry();
 	bool validate(bool checkIt = true);

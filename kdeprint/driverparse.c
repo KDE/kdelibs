@@ -130,11 +130,25 @@ void readValue(FILE *f, char *value, int len)
 	int	p = 0;
 
 	while (!feof(f) && p < (len-1) && (c = fgetc(f)) != '<')
+	{
+		if (isspace(c))
+			c = ' ';
 		value[p++] = c;
+	}
 	value[p] = 0;
 }
 
-int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model, char* recomm)
+void readComment(FILE *f, char *comment, int len)
+{
+	char	tag[32] = {0};
+
+	do nextTag(f, tag, 32);
+	while (tag[0] && strcmp(tag, "en") != 0 && strcmp(tag, "/comments") != 0);
+	if (strcmp(tag, "en") == 0)
+		readValue(f, comment, len);
+}
+
+int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model, char *recomm, char *comment)
 {
 	char	filePath[256];
 	FILE	*xmlFile;
@@ -145,7 +159,7 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 	xmlFile = fopen(filePath, "r");
 	if (xmlFile == NULL)
 		return 0;
-	while (!feof(xmlFile) && n < 3)
+	while (!feof(xmlFile) && n < 4)
 	{
 		tag[0] = 0;
 		nextTag(xmlFile, tag, 32);
@@ -159,6 +173,12 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 				c = model;
 			else if (!recomm[0] && strcmp(tag, "driver") == 0)
 				c = recomm;
+			else if (comment && !comment[0] && strcmp(tag, "comments") == 0)
+			{
+				readComment(xmlFile, comment, 4096);
+				n++;
+				continue;
+			}
 			else
 				continue;
 			n++;
@@ -172,7 +192,7 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 int parseMaticFile(const char *driver, FILE *output)
 {
 	FILE	*drFile;
-	char	name[32] = {0}, make[64] = {0}, model[64] = {0}, tag[32] = {0}, recomm[64] = {0};
+	char	name[32] = {0}, make[64] = {0}, model[64] = {0}, tag[32] = {0}, recomm[64] = {0}, comment[4096] = {0}, comment2[4096] = {0};
 	char	id[128];
 	char	path[256], *c;
 
@@ -182,6 +202,7 @@ int parseMaticFile(const char *driver, FILE *output)
 	strncpy(path, driver, 255);
 	if ((c = strstr(path, "/driver/")) != NULL)
 		*c = 0;
+	c = comment;
 	while (!feof(drFile))
 	{
 		tag[0] = 0;
@@ -190,20 +211,41 @@ int parseMaticFile(const char *driver, FILE *output)
 		{
 			if (strcmp(tag, "name") == 0)
 				readValue(drFile, name, 32);
-			else if (strcmp(tag, "id") == 0)
+			else if (strcmp(tag, "comments") == 0)
+				readComment(drFile, c, 4096);
+			else if (strcmp(tag, "printers") == 0)
+				c = comment2;
+			else if (strcmp(tag, "printer") == 0)
 			{
+				id[0] = 0;
+				comment2[0] = 0;
+			}
+			else if (strcmp(tag, "id") == 0)
 				readValue(drFile, id, 128);
+			else if (strcmp(tag, "/printer") == 0 && id[0])
+			{
 				fprintf(output, "FILE=foomatic/%s/%s\n", id+8, name);
 				make[0] = 0;
 				model[0] = 0;
 				recomm[0] = 0;
-				getMaticPrinterInfos(path, id, make, model, recomm);
+				getMaticPrinterInfos(path, id, make, model, recomm, NULL);
 				fprintf(output, "MANUFACTURER=%s\n", make);
 				fprintf(output, "MODELNAME=%s\n", model);
 				fprintf(output, "MODEL=%s\n", model);
 				fprintf(output, "DESCRIPTION=%s %s (Foomatic + %s)\n", make, model, name);
 				if (recomm[0] && strcmp(name, recomm) == 0)
 					fprintf(output, "RECOMMANDED=yes\n");
+				if (comment[0] || comment2[0])
+				{
+					fprintf(output, "DRIVERCOMMENT=");
+					if (comment2[0])
+					{
+						fprintf(output, "&lt;h3&gt;Printer note&lt;/h3&gt;%s", comment2);
+					}
+					if (comment[0])
+						fprintf(output, "&lt;h3&gt;General driver note&lt;/h3&gt;%s", comment);
+					fprintf(output, "\n");
+				}
 				fprintf(output, "\n");
 			}
 			else if (strcmp(tag, "/printers") == 0)
