@@ -62,6 +62,7 @@ k_dcop:
   bool cacheSeenCertificate(KSSLCertificate cert);
 
   bool cacheRemoveByCN(QString cn);
+  bool cacheRemoveBySubject(QString subject);
   bool cacheRemoveByCertificate(KSSLCertificate cert);
 	       
   bool cacheIsPermanent(KSSLCertificate cert);

@@ -235,7 +235,7 @@ KSSLCNode *node;
 	n->policy = policy;
 	n->permanent = permanent;
 	// remove the old one
-	cacheRemoveByCN(KSSLX509Map(n->cert->getSubject()).getValue("CN"));
+	cacheRemoveBySubject(n->cert->getSubject());
 	certList.prepend(n); 
 
 	if (!permanent) {
@@ -367,6 +367,26 @@ KSSLCNode *node;
 	}
 
 return false;
+}
+
+
+bool KSSLD::cacheRemoveBySubject(QString subject) {
+KSSLCNode *node;
+bool gotOne = false;
+
+	for (node = certList.first(); node; node = certList.next()) {
+		if (node->cert->getSubject() == subject) {
+			certList.remove(node);
+			cfg->deleteGroup(node->cert->getSubject());
+			searchRemoveCert(node->cert);
+			delete node;
+			gotOne = true;
+		}
+	}
+
+	cacheSaveToDisk();
+
+return gotOne;
 }
 
 
