@@ -912,6 +912,9 @@ KToolBar::sizeHint() const
       return (QSize(min_width, d->m_maxVerHeight));
     }
     break;
+  case Flat:
+    return (QSize(30, 10));
+    break;
   default:
     break;
   }
@@ -995,6 +998,7 @@ KToolBar::sizePolicy() const
   switch (d->m_position)
   {
   case Floating:
+  case Flat:
     /* Floating bars are under direct control of the WM. sizePolicy() is
      * ignored. */
     return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
