@@ -14,6 +14,7 @@
 #include <kservices.h>
 #include <kmimemagic.h>
 #include <kdebug.h>
+#include <kstddirs.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -49,12 +50,9 @@ KApplicationTree::KApplicationTree( QWidget *parent ) : QWidget( parent )
   tree->setSmoothScrolling( true );
   setFocusProxy( tree );
 
-  QString personal = KApplication::localkdedir().data();
-  personal += "/share/applnk";
-  QString global   = KApplication::kde_appsdir().data();
-
-  parseDesktopDir( QDir(personal), tree );
-  parseDesktopDir( QDir(global), tree );
+  QStringList list = KGlobal::dirs()->getResourceDirs("apps");
+  for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
+      parseDesktopDir( QDir(*it), tree );
 
   tree->show();
   connect( tree, SIGNAL( expanded(int) ), SLOT( expanded(int) ) );

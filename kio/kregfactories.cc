@@ -215,10 +215,7 @@ void KServiceEntry::save( QDataStream& _str ) const
 
 KServiceFactory::KServiceFactory()
 {
-  m_pathList.append( kapp->kde_appsdir() );
-  QString tmp = kapp->localkdedir();
-  tmp += "/share/applnk";
-  m_pathList.append( tmp );
+  m_pathList += KGlobal::dirs()->getResourceDirs( "apps" );
   m_pathList += KGlobal::dirs()->getResourceDirs( "services" );
 }
 

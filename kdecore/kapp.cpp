@@ -1125,19 +1125,20 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	  if( filename.isEmpty() )
 	    filename = aAppName + "/index.html";
 
-	 QString path = KApplication::kde_htmldir().copy() + "/";
-
          // first try the locale setting
-         QString file = path + KGlobal::locale()->language() + '/' + filename;
-         if( !QFileInfo( file ).exists() )
-               // not found: use the default
-               file = path + "default/" + filename;
+         QString file = locate("html", KGlobal::locale()->language() + '/' + filename);
+	 if (file.isNull())
+	     file = locate("html", "default/" + filename);
 
-	  if( !topic.isEmpty() )
-		{
-                 file.append( "#" );
-                 file.append(topic);
-		}
+	 if (file.isNull()) {
+	     warning("no help file %s found\n", filename.ascii());
+	     return;
+	 }
+
+	 if( !topic.isEmpty() ) {
+	     file.append( "#" );
+	     file.append(topic);
+	 }
 	
 	  /* Since this is a library, we must conside the possibilty that
 	   * we are being used by a suid root program. These next two
@@ -1181,8 +1182,8 @@ QString KApplication::kde_htmldir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_HTMLDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
+      if (!strncmp(dir.data(), "KDEDIR", 6))  
+         dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
 }
@@ -1193,10 +1194,11 @@ QString KApplication::kde_appsdir()
   if (dir.isNull()) {
       dir = KDE_APPSDIR;
       if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
+         dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
 }
+                                        
 
 QString KApplication::kde_datadir()
 {
