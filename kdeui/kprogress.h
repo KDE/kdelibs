@@ -104,7 +104,7 @@ public:
   void setRange(int min, int max) KDE_DEPRECATED;
 
   /**
-   * @deprecated used totalSteps() instead
+   * @deprecated Use totalSteps() instead
    */
   // ### Remove this KDE 4.0
   int maxValue() KDE_DEPRECATED;
@@ -120,8 +120,8 @@ public slots:
    * since it's often impossible to layout a progressbar with a more general format with the
    * indicator string anywhere else.
    *
-   * @param format %p is replaced by percentage done, %v is replaced by actual
-   * value, %m is replaced by the maximum value.
+   * @param format "%p" is replaced by percentage done, "%v" is replaced by actual
+   * value, "%m" is replaced by the maximum value.
    */
   void setFormat(const QString & format);
 
@@ -132,22 +132,22 @@ public slots:
   void setTotalSteps(int totalSteps);
 
   /**
-    * Set the current value of the progress bar to @p value.
+    * Set the current value of the progress bar to @p progress.
     */
   virtual void setProgress(int progress);
 
   /**
-    * @deprecated. Use setProgress(int) instead
+    * @deprecated Use setProgress(int) instead
     */
   // ### Remove this KDE 4.0
   void setValue(int progress);
 
   /**
-   * Advance the progress bar by @p prog.
+   * Advance the progress bar by @p offset.
    *
    * This method is
    * provided for convenience and is equivalent with
-   * setProgress(progress()+prog).
+   * setProgress(progress()+offset).
    */
   virtual void advance(int offset);
 
