@@ -948,7 +948,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @begin HTMLIFrameElementTable 12
   align		  KJS::HTMLElement::IFrameAlign			DontDelete
   contentDocument KJS::HTMLElement::IFrameContentDocument       DontDelete|ReadOnly
-  document	  KJS::HTMLElement::IFrameDocument		DontDelete|ReadOnly
   frameBorder	  KJS::HTMLElement::IFrameFrameBorder		DontDelete
   height	  KJS::HTMLElement::IFrameHeight		DontDelete
   longDesc	  KJS::HTMLElement::IFrameLongDesc		DontDelete
@@ -1087,21 +1086,6 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
         return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
       break;
-  case ID_FRAME:
-  case ID_IFRAME: {
-      DOM::DocumentImpl* doc = static_cast<DOM::HTMLFrameElementImpl *>(element.handle())->contentDocument();
-      if ( doc && doc->view() ) {
-        KHTMLPart* part = doc->view()->part();
-        if ( part ) {
-          Object globalObject = Object::dynamicCast( Window::retrieve( part ) );
-          // Calling hasProperty on a Window object doesn't work, it always says true.
-          // Hence we need to use getDirect instead.
-          if ( !globalObject.isNull() && static_cast<ObjectImp *>(globalObject.imp())->getDirect( propertyName ) )
-            return globalObject.get( exec, propertyName );
-        }
-      }
-      break;
-  }
   case ID_APPLET:
   case ID_EMBED: {
       DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
@@ -1752,7 +1736,6 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case IFrameAlign:                return getString(iFrame.align());
       // ### security check ?
-    case IFrameDocument: // non-standard, mapped to contentDocument
     case IFrameContentDocument:      return getDOMNode(exec, iFrame.contentDocument());
     case IFrameFrameBorder:     return getString(iFrame.frameBorder());
     case IFrameHeight:          return getString(iFrame.height());
@@ -1840,7 +1823,7 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
       KJavaApplet* applet = elm->applet();
       if (applet) {
         QString str;
-        str.sprintf("[object APPLET ref=%d,%d]", 
+        str.sprintf("[object APPLET ref=%d,%d]",
                     applet->getContext()->contextId(), applet->appletId());
         return UString(str);
       }
@@ -2885,7 +2868,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning single node" << endl;
 #endif
-      return getDOMNode(exec,node);
+      return getDOMNodeOrFrame(exec,node);
     }
     else // multiple items, return a collection
     {
