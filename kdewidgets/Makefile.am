@@ -27,4 +27,4 @@ kdewidgets_la_LIBADD = $(LIB_KDEUI) $(LIB_KFILE)
 kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp 
 
 make-kdewidgets: kde.widgets
-	$(srcdir)/makekdewidgets -o kdewidgets.cpp $<
+	$(srcdir)/makekdewidgets -o $(srcdir)/kdewidgets.cpp $<
