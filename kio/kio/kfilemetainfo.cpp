@@ -522,7 +522,7 @@ KFileMetaInfoItem & KFileMetaInfo::item(const KFileMetaInfoItem::Hint hint,
     
     for (it = d->items.begin(); it!=d->items.end(); ++it)
     {
-        if (it.data().hint() | hint == hint)
+        if ((it.data().hint() | hint) == hint)
             return it.data();
     }
     
