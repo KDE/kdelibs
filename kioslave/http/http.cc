@@ -2183,6 +2183,7 @@ bool HTTPProtocol::httpOpen()
  */
 bool HTTPProtocol::readHeader()
 {
+
   // Check
   if (m_bCachedRead)
   {
@@ -2227,8 +2228,13 @@ bool HTTPProtocol::readHeader()
   QString disposition; // Incase we get a Content-Disposition
   QString mediaValue;
   QString mediaAttribute;
-  QStringList responseHeader;
+  QStringList responseHeader, upgradeOffers;
 
+  bool upgradeRequired = false;   // Server demands that we upgrade to something
+                                  // This is also true if we ask to upgrade and
+                                  // the server accepts, since we are now
+                                  // committed to doing so
+  bool canUpgrade = false;        // The server offered an upgrade
 
   m_etag = QString::null;
   m_lastModified = QString::null;
@@ -2381,6 +2387,7 @@ bool HTTPProtocol::readHeader()
       // Upgrade Required
       else if (m_responseCode == 426)
       {
+        upgradeRequired = true;
       }
       // Any other client errors
       else if (m_responseCode >= 400 && m_responseCode <= 499)
@@ -2610,6 +2617,9 @@ bool HTTPProtocol::readHeader()
     }
 
     else if (strncasecmp(buf, "Upgrade:", 8) == 0) {
+       // Now we have to check to see what is offered for the upgrade
+       QString offered = &(buf[8]);
+       upgradeOffers = QStringList::split(QRegExp("[ \n,\r\t]"), offered);
     }
 
     // content?
@@ -2704,12 +2714,15 @@ bool HTTPProtocol::readHeader()
         } else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0) {
           m_bKeepAlive = true;
         } else if (strncasecmp(trimLead(buf + 11), "Upgrade", 7)==0) {
-          // The server is demanding that we upgrade.  The upgrade that
-          // is required is listed in the Upgrade: header line.
-          // If we got HTTP/1.1 101 Switching Protocols along with this,
-          // then it is a response to our request to switch to TLS (affirmative)
-          // but if it is HTTP/1.1 426, then it is a demand from the server.
-          // In any other case, it is simply an "offer" but not required.
+          if (m_responseCode == 101) {
+            // Ok, an upgrade was accepted, now we must do it
+            upgradeRequired = true;
+          } else if (upgradeRequired) {  // 426
+            // Nothing to do since we did it above already
+          } else {
+            // Just an offer to upgrade - no need to take it
+            canUpgrade = true;
+          }
         }
 
       }
@@ -2750,6 +2763,29 @@ bool HTTPProtocol::readHeader()
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
   } while (len && (gets(buffer, sizeof(buffer)-1)));
+
+
+  // Now process the HTTP/1.1 upgrade
+  for(QStringList::Iterator opt = upgradeOffers.begin(); 
+                             opt != upgradeOffers.end();
+                                                  ++opt) {
+     if (*opt == "TLS/1.0") {
+        if(upgradeRequired) {
+           if (!startTLS() && !usingTLS()) {
+              error(ERR_UPGRADE_REQUIRED, *opt);
+              return false;
+           }
+        }
+     } else if (*opt == "HTTP/1.1") {
+        m_HTTPrev = HTTP_11;
+     } else {
+        // unknown
+        if (upgradeRequired) {
+           error(ERR_UPGRADE_REQUIRED, *opt);
+           return false;
+        }
+     }
+  }
 
   // Send HTTP version
   if (m_HTTPrev == HTTP_11)
