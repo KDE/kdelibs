@@ -31,6 +31,7 @@ KJScript::KJScript()
   : rep(new KJScriptImp())
 {
   rep->init();
+  enableDebug();
 }
 
 KJScript::~KJScript()

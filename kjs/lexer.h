@@ -77,6 +77,8 @@ namespace KJS {
     unsigned int pos8, pos16;
     bool terminator;
     bool restrKeyword;
+    // encountered delimiter like "'" and "}" on last run
+    bool delimited;
     int stackToken;
 
     State state;

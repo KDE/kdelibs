@@ -49,7 +49,7 @@ int kjsyylex()
 Lexer::Lexer()
   : yylineno(0),
     size8(128), size16(128),
-    stackToken(0), pos(0),
+    stackToken(-1), pos(0),
     code(0), length(0),
     current(0), next1(0), next2(0), next3(0)
 {
@@ -73,7 +73,8 @@ Lexer *Lexer::curr()
 void Lexer::setCode(const UChar *c, unsigned int len)
 {
   yylineno = 0;
-  stackToken = 0;
+  delimited = false;
+  stackToken = -1;
   pos = 0;
   code = c;
   length = len;
@@ -113,7 +114,7 @@ int Lexer::lex()
 
   // did we push a token on the stack previously ?
   // (after an automatic semicolon insertion)
-  if (stackToken) {
+  if (stackToken >= 0) {
     setDone(Other);
     token = stackToken;
     stackToken = 0;
@@ -135,7 +136,13 @@ int Lexer::lex()
 	shift(1);
 	state = InMultiLineComment;
       } else if (current == 0) {
-	setDone(Eof);
+	if (!terminator && !delimited) {
+	  // automatic semicolon insertion if program incomplete
+	  token = ';';
+	  stackToken = 0;
+	  setDone(Other);
+	} else
+	  setDone(Eof);
       } else if (isLineTerminator()) {
 	yylineno++;
 	terminator = true;
@@ -381,11 +388,15 @@ int Lexer::lex()
 #endif
 
   restrKeyword = false;
+  delimited = false;
 
   switch (state) {
   case Eof:
     return 0;
   case Other:
+    if(token == '}' || token == ';') {
+      delimited = true;
+    }
     return token;
   case Identifier:
     if ((token = Lookup::find(&mainTable, buffer16, pos16)) < 0) {

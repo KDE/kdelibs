@@ -151,15 +151,19 @@ Completion GlobalFunc::execute(const List &args)
       }
 
       res = KJS::Node::progNode()->evaluate();
-      /* TODO: analyse completion value */
-
-//       if (error())
-// 	error()->deref();
+      if (!res.isA(CompletionType))
+	res = Undefined();
+      else {
+	Completion c(res.imp());
+	if ((c.complType() == Normal && c.isValueCompletion())
+	    || c.complType() != Normal)
+	  return c;
+	else
+	  res = Undefined();
+      }
 
       //      if (KJS::Node::progNode())
       //	KJS::Node::progNode()->deleteStatements();
-
-      res = Undefined();
     }
   } else if (id == ParseInt) {
     String str = args[0].toString();
