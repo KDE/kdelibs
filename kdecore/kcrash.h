@@ -1,7 +1,7 @@
 /*
  * This file is part of the KDE Libraries
- * Copyright (C) 2000 Timo Hummel (timo.hummel@sap.com)
- *
+ * Copyright (C) 2000 Timo Hummel <timo.hummel@sap.com>
+ *                    Tom Braun <braunt@fh-konstanz.de>
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -19,39 +19,77 @@
  *
  */
 
-/*
- * This file is used to catch signals which would normally
- * crash the application (like segmentation fault, floating
- * point exception and such).
- */
-
 #ifndef __KCRASH_H
 #define __KCRASH_H
 
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <qstring.h>
 
-extern "C" {
- // Taken from signal.h
- typedef void(*kdesignal_t) (int);  
+/**
+ * This class handles segmentation-faults.
+ * By default it displays a  message-box saying the application crashed.
+ * This default can be overridden by setting a custom crash handler with
+ * @ref setCrashHandler().
+ * If a function is specified with @ref setEmergencySaveFunction() it will
+ * be called by the default crash handler, giving the application a chance
+ * to save its data.
+ */ 
+class KCrash 
+{
+ private: // ;o)
+  static QString appName;
+  static QString appPath;
 
- void defaultCrashHandler (int signal);
- void setCrashHandler (kdesignal_t);
- void setEmergencySaveFunction (kdesignal_t);
- void resetCrashRecursion (void);
+ public:
+  static void defaultCrashHandler (int signal);
+  typedef void (*HandlerType)(int);
 
- const kdesignal_t KDE_CRASH_DEFAULT  = ((kdesignal_t)0x1);
- const kdesignal_t KDE_CRASH_INTERNAL = ((kdesignal_t)0x2);
- const kdesignal_t KDE_SAVE_NONE      = ((kdesignal_t)0x3);
+  /**
+   * Install a function to be called in case a SIGSEGV is caught.
+   * @param HandlerType handler can be one of 
+   * @li null in wich case signal-catching is disabled 
+   *  (by calling signal(SIGSEGV, SIG_DFL))
+   * @li if handler is omitted the default crash handler is installed.
+   * @li an user defined function in the form: HandlerType myCrashHandler { myFunctions(); }
+   */
+#warning the comment above needs to be checked if HandlerType myCrashHandler { myFunctions(); } works
+   
+  static void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
- struct kcrashargs {
- 	char *crashObjName;
- 	char *crashObjValue;
- };
+  /**
+   * Returns the intalled crash handler
+   */
+  static HandlerType crashHandler() { return _crashHandler; }
 
-}
+  /**
+   * Installs a function which should try to save the applications data.
+   * It is the crash handler´s responsibility to call this function.
+   * Therefore, if no crash handler is set, the default crash handler 
+   * is installed to ensure the save function is called.
+   */
+  static void setEmergencySaveFunction (HandlerType saveFunction = (HandlerType)0);
+  /**
+   * Return the currently set emergency save function.
+   */
+  static HandlerType emergencySaveFunction() { return _emergencySaveFunction; }
+
+  /**
+   * Sets the application path @param path which should be passed to 
+   * Dr. Konqi, our nice crash display application.
+   */
+  void setApplicationPath (QString path) { appPath = path; }
+
+  /**
+   * Sets the application name @param name which should be passed to
+   * Dr. Konqi, our nice crash display application.
+   */
+  void setApplicationName (QString name) { appName = name; }
+    
+ protected:
+  static HandlerType _crashHandler;
+  static HandlerType _emergencySaveFunction; 
+};
 
 #endif
 
