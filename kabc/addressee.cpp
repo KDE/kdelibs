@@ -114,7 +114,7 @@ QString Addressee::uid() const
   return mData->uid;
 }
 
-QString Addressee::uidLabel() const
+QString Addressee::uidLabel()
 {
   return i18n("Unique Identifier");
 }
@@ -133,7 +133,7 @@ QString Addressee::name() const
   return mData->name;
 }
 
-QString Addressee::nameLabel() const
+QString Addressee::nameLabel()
 {
   return i18n("Name");
 }
@@ -152,7 +152,7 @@ QString Addressee::formattedName() const
   return mData->formattedName;
 }
 
-QString Addressee::formattedNameLabel() const
+QString Addressee::formattedNameLabel()
 {
   return i18n("Formatted Name");
 }
@@ -171,7 +171,7 @@ QString Addressee::familyName() const
   return mData->familyName;
 }
 
-QString Addressee::familyNameLabel() const
+QString Addressee::familyNameLabel()
 {
   return i18n("Family Name");
 }
@@ -190,7 +190,7 @@ QString Addressee::givenName() const
   return mData->givenName;
 }
 
-QString Addressee::givenNameLabel() const
+QString Addressee::givenNameLabel()
 {
   return i18n("Given Name");
 }
@@ -209,7 +209,7 @@ QString Addressee::additionalName() const
   return mData->additionalName;
 }
 
-QString Addressee::additionalNameLabel() const
+QString Addressee::additionalNameLabel()
 {
   return i18n("Additional Names");
 }
@@ -228,7 +228,7 @@ QString Addressee::prefix() const
   return mData->prefix;
 }
 
-QString Addressee::prefixLabel() const
+QString Addressee::prefixLabel()
 {
   return i18n("Honorific Prefixes");
 }
@@ -247,7 +247,7 @@ QString Addressee::suffix() const
   return mData->suffix;
 }
 
-QString Addressee::suffixLabel() const
+QString Addressee::suffixLabel()
 {
   return i18n("Honorific Suffixes");
 }
@@ -266,7 +266,7 @@ QString Addressee::nickName() const
   return mData->nickName;
 }
 
-QString Addressee::nickNameLabel() const
+QString Addressee::nickNameLabel()
 {
   return i18n("Nick Name");
 }
@@ -285,7 +285,7 @@ QDateTime Addressee::birthday() const
   return mData->birthday;
 }
 
-QString Addressee::birthdayLabel() const
+QString Addressee::birthdayLabel()
 {
   return i18n("Birthday");
 }
@@ -304,7 +304,7 @@ QString Addressee::mailer() const
   return mData->mailer;
 }
 
-QString Addressee::mailerLabel() const
+QString Addressee::mailerLabel()
 {
   return i18n("Mail Client");
 }
@@ -323,7 +323,7 @@ TimeZone Addressee::timeZone() const
   return mData->timeZone;
 }
 
-QString Addressee::timeZoneLabel() const
+QString Addressee::timeZoneLabel()
 {
   return i18n("Time Zone");
 }
@@ -342,7 +342,7 @@ Geo Addressee::geo() const
   return mData->geo;
 }
 
-QString Addressee::geoLabel() const
+QString Addressee::geoLabel()
 {
   return i18n("Geographic Position");
 }
@@ -361,7 +361,7 @@ QString Addressee::title() const
   return mData->title;
 }
 
-QString Addressee::titleLabel() const
+QString Addressee::titleLabel()
 {
   return i18n("Title");
 }
@@ -380,7 +380,7 @@ QString Addressee::role() const
   return mData->role;
 }
 
-QString Addressee::roleLabel() const
+QString Addressee::roleLabel()
 {
   return i18n("Role");
 }
@@ -399,7 +399,7 @@ QString Addressee::organization() const
   return mData->organization;
 }
 
-QString Addressee::organizationLabel() const
+QString Addressee::organizationLabel()
 {
   return i18n("Organization");
 }
@@ -418,7 +418,7 @@ QString Addressee::note() const
   return mData->note;
 }
 
-QString Addressee::noteLabel() const
+QString Addressee::noteLabel()
 {
   return i18n("Note");
 }
@@ -437,7 +437,7 @@ QString Addressee::productId() const
   return mData->productId;
 }
 
-QString Addressee::productIdLabel() const
+QString Addressee::productIdLabel()
 {
   return i18n("Product Identifier");
 }
@@ -456,7 +456,7 @@ QDateTime Addressee::revision() const
   return mData->revision;
 }
 
-QString Addressee::revisionLabel() const
+QString Addressee::revisionLabel()
 {
   return i18n("Revision Date");
 }
@@ -475,7 +475,7 @@ QString Addressee::sortString() const
   return mData->sortString;
 }
 
-QString Addressee::sortStringLabel() const
+QString Addressee::sortStringLabel()
 {
   return i18n("Sort String");
 }
@@ -494,7 +494,7 @@ KURL Addressee::url() const
   return mData->url;
 }
 
-QString Addressee::urlLabel() const
+QString Addressee::urlLabel()
 {
   return i18n("URL");
 }

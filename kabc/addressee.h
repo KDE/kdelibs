@@ -77,7 +77,7 @@ class Addressee
     /*
       Return translated label for uid field.
     */
-    QString uidLabel() const;
+    static QString uidLabel();
 
     /*
       Set name.
@@ -90,7 +90,7 @@ class Addressee
     /*
       Return translated label for name field.
     */
-    QString nameLabel() const;
+    static QString nameLabel();
 
     /*
       Set formatted name.
@@ -103,7 +103,7 @@ class Addressee
     /*
       Return translated label for formattedName field.
     */
-    QString formattedNameLabel() const;
+    static QString formattedNameLabel();
 
     /*
       Set family name.
@@ -116,7 +116,7 @@ class Addressee
     /*
       Return translated label for familyName field.
     */
-    QString familyNameLabel() const;
+    static QString familyNameLabel();
 
     /*
       Set given name.
@@ -129,7 +129,7 @@ class Addressee
     /*
       Return translated label for givenName field.
     */
-    QString givenNameLabel() const;
+    static QString givenNameLabel();
 
     /*
       Set additional names.
@@ -142,7 +142,7 @@ class Addressee
     /*
       Return translated label for additionalName field.
     */
-    QString additionalNameLabel() const;
+    static QString additionalNameLabel();
 
     /*
       Set honorific prefixes.
@@ -155,7 +155,7 @@ class Addressee
     /*
       Return translated label for prefix field.
     */
-    QString prefixLabel() const;
+    static QString prefixLabel();
 
     /*
       Set honorific suffixes.
@@ -168,7 +168,7 @@ class Addressee
     /*
       Return translated label for suffix field.
     */
-    QString suffixLabel() const;
+    static QString suffixLabel();
 
     /*
       Set nick name.
@@ -181,7 +181,7 @@ class Addressee
     /*
       Return translated label for nickName field.
     */
-    QString nickNameLabel() const;
+    static QString nickNameLabel();
 
     /*
       Set birthday.
@@ -194,7 +194,7 @@ class Addressee
     /*
       Return translated label for birthday field.
     */
-    QString birthdayLabel() const;
+    static QString birthdayLabel();
 
     /*
       Set mail client.
@@ -207,7 +207,7 @@ class Addressee
     /*
       Return translated label for mailer field.
     */
-    QString mailerLabel() const;
+    static QString mailerLabel();
 
     /*
       Set time zone.
@@ -220,7 +220,7 @@ class Addressee
     /*
       Return translated label for timeZone field.
     */
-    QString timeZoneLabel() const;
+    static QString timeZoneLabel();
 
     /*
       Set geographic position.
@@ -233,7 +233,7 @@ class Addressee
     /*
       Return translated label for geo field.
     */
-    QString geoLabel() const;
+    static QString geoLabel();
 
     /*
       Set title.
@@ -246,7 +246,7 @@ class Addressee
     /*
       Return translated label for title field.
     */
-    QString titleLabel() const;
+    static QString titleLabel();
 
     /*
       Set role.
@@ -259,7 +259,7 @@ class Addressee
     /*
       Return translated label for role field.
     */
-    QString roleLabel() const;
+    static QString roleLabel();
 
     /*
       Set organization.
@@ -272,7 +272,7 @@ class Addressee
     /*
       Return translated label for organization field.
     */
-    QString organizationLabel() const;
+    static QString organizationLabel();
 
     /*
       Set note.
@@ -285,7 +285,7 @@ class Addressee
     /*
       Return translated label for note field.
     */
-    QString noteLabel() const;
+    static QString noteLabel();
 
     /*
       Set product identifier.
@@ -298,7 +298,7 @@ class Addressee
     /*
       Return translated label for productId field.
     */
-    QString productIdLabel() const;
+    static QString productIdLabel();
 
     /*
       Set revision date.
@@ -311,7 +311,7 @@ class Addressee
     /*
       Return translated label for revision field.
     */
-    QString revisionLabel() const;
+    static QString revisionLabel();
 
     /*
       Set sort string.
@@ -324,7 +324,7 @@ class Addressee
     /*
       Return translated label for sortString field.
     */
-    QString sortStringLabel() const;
+    static QString sortStringLabel();
 
     /*
       Set URL.
@@ -337,7 +337,7 @@ class Addressee
     /*
       Return translated label for url field.
     */
-    QString urlLabel() const;
+    static QString urlLabel();
 
     /**
       Set name fields by parsing the given string and trying to associate the
