@@ -503,6 +503,7 @@ const List ObjectImp::scope() const
 
 void ObjectImp::setScope(const List &s)
 {
+  if (_scope) _scope->setGcAllowed();
   _scope = static_cast<ListImp*>(s.imp());
 }
 
