@@ -103,6 +103,7 @@ int DeviceManager::checkInit(void)
     if (initialized==0) 
     {
         int r=initManager();
+	if (default_dev>=n_total) default_dev=0;
         setMidiMap(mapper_tmp);
         DEBUGPRINTF("check : %d\n",r);
         return r;
@@ -485,7 +486,7 @@ int DeviceManager::getDefaultDevice(void)
 
 void DeviceManager::setDefaultDevice(int i)
 {
-    if (i>=n_total) return;
+    if (i>=n_total) return; 
     default_dev=i;
     for (int i=0;i<16;i++) chn2dev[i]=default_dev;
 }
@@ -501,7 +502,9 @@ void DeviceManager::setMidiMap(MidiMapper *map)
 {
     if (map==NULL) return;
     mapper_tmp=map;
-    if ((device==NULL)||(device[default_dev]==NULL)) return;
+    if (default_dev>=n_total) {default_dev=0;return;};
+    if ((device==NULL)||(device[default_dev]==NULL)) 
+		return;
     device[default_dev]->useMapper(map);
 }
 
