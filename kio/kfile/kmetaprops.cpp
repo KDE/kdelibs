@@ -265,7 +265,7 @@ QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
 
   QCheckBox* c = new QCheckBox(parent);
   c->setChecked(item.value().toBool());
-  connect(c, SIGNAL(toggled()), this, SIGNAL(changed()));
+  connect(c, SIGNAL(toggle()), this, SIGNAL(changed()));
   return c;
 }
 
