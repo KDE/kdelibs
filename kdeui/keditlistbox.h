@@ -55,6 +55,7 @@ public:
      *
      * @since 3.1
      **/
+    // ### KDE4: add virtual destructor
     class CustomEditor
     {
     public:
