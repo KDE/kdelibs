@@ -238,7 +238,7 @@ void KService::load( QDataStream& s )
     >> dst
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2 
-    >> m_lstKeywords >> m_strInit >> (Q_UINT32)m_mapNotify;
+    >> m_lstKeywords >> m_strInit >> (Q_UINT32 &)m_mapNotify;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
