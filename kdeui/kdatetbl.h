@@ -38,6 +38,9 @@ class KDateInternalMonthPicker : public QTableView
 protected:
   /** Store the month that has been clicked [1..12]. */
   int result;
+  /** the cell under mouse cursor when LBM is pressed */
+  short int activeCol;
+  short int activeRow;
   /** Contains the largest rectangle needed by the month names. */
   QRect max;
 signals:
@@ -58,10 +61,12 @@ protected:
   void resizeEvent(QResizeEvent*);
   /** Paint a cell. This simply draws the month names in it. */
   void paintCell(QPainter* painter, int row, int col);
-  /** Catch mouse click events.
-      Emit monthSelected(int) when a cell has been clicked. */
+  /** Catch mouse click and move events to paint a rectangle around the item.*/
   void mousePressEvent(QMouseEvent *e);
-
+  void mouseMoveEvent(QMouseEvent *e);
+  /** Emit monthSelected(int) when a cell has been released. */
+  void mouseReleaseEvent(QMouseEvent *e);
+    
 private:
   class KDateInternalMonthPrivate;
   KDateInternalMonthPrivate *d;

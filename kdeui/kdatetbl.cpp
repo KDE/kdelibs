@@ -333,6 +333,8 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   QRect rect;
   QFont font;
   // -----
+  activeCol = -1;
+  activeRow = -1;
   font=KGlobal::generalFont();
   font.setPointSize(fontsize);
   setFont(font);
@@ -388,18 +390,78 @@ KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
   index=3*row+col+1;
   text=*(KDatePicker::Month[index-1]);
   painter->drawText(0, 0, cellWidth(), cellHeight(), AlignCenter, text);
+  if ( activeCol == col && activeRow == row )
+      painter->drawRect( 0, 0, cellWidth(), cellHeight() );
 }
 
 void
 KDateInternalMonthPicker::mousePressEvent(QMouseEvent *e)
 {
-  if(e->type()!=QEvent::MouseButtonPress)
-    { // we only react on mouse press events:
-      return;
-    }
-  if(!isEnabled())
+  if(!isEnabled() || e->button() != LeftButton)
     {
       kapp->beep();
+      return;
+    }
+  // -----
+  int row, col;
+  QPoint mouseCoord;
+  // -----
+  mouseCoord = e->pos();
+  row=findRow(mouseCoord.y());
+  col=findCol(mouseCoord.x());
+  
+  if(row<0 || col<0)
+    { // the user clicked on the frame of the table
+	activeCol = -1;
+	activeRow = -1;
+    }
+  else {
+      activeCol = col;
+      activeRow = row;
+      updateCell( row, col, false );
+  }
+}
+
+void KDateInternalMonthPicker::mouseMoveEvent(QMouseEvent *e)
+{
+    if (e->state() & LeftButton) {
+	int row, col;
+	QPoint mouseCoord;
+	// -----
+	mouseCoord = e->pos();
+	row=findRow(mouseCoord.y());
+	col=findCol(mouseCoord.x());
+	int tmpRow = -1, tmpCol = -1;
+	if(row<0 || col<0) { // the user clicked on the frame of the table
+	    if ( activeCol > -1 ) {
+		tmpRow = activeRow;
+		tmpCol = activeCol;
+	    }
+	    activeCol = -1;
+	    activeRow = -1;
+	}
+	else {
+	    bool differentCell = (activeRow != row || activeCol != col);
+	    if ( activeCol > -1 && differentCell) {
+		tmpRow = activeRow;
+		tmpCol = activeCol;
+	    }
+	    if ( differentCell) {
+		activeRow = row;
+		activeCol = col;
+		updateCell( row, col, false ); // mark the new active cell
+	    }
+	}
+	if ( tmpRow > -1 ) // repaint the former active cell
+	    updateCell( tmpRow, tmpCol, true ), debug("**** repainting former active cell....");
+    }
+}
+
+void
+KDateInternalMonthPicker::mouseReleaseEvent(QMouseEvent *e)
+{
+  if(!isEnabled())
+    {
       return;
     }
   // -----
@@ -417,6 +479,8 @@ KDateInternalMonthPicker::mousePressEvent(QMouseEvent *e)
   result=pos;
   emit(closeMe(1));
 }
+
+
 
 KDateInternalYearSelector::KDateInternalYearSelector
 (int fontsize, QWidget* parent, const char* name)
