@@ -13,7 +13,7 @@ class KIOCopyProgressDlg : public QDialog
 {
   Q_OBJECT
 public:
-  KIOCopyProgressDlg( KIOJob* );
+  KIOCopyProgressDlg( KIOJob*, bool m_bStartIconified = false );
 
   void totalSize( unsigned long );
   void totalDirs( unsigned long );
@@ -34,6 +34,7 @@ protected:
   QLabel* m_pLine2;
   QLabel* m_pLine3;
   QLabel* m_pLine4;
+  QLabel* m_pLine5;
   KProgress* m_pProgressBar;
 
   unsigned long m_iTotalSize;
