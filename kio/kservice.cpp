@@ -133,6 +133,7 @@ KService::init( KDesktopFile *config )
   m_bDeleted = config->readBoolEntry( "Hidden", false );
   m_lstKeywords = config->readListEntry("Keywords");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
+  m_strInit = config->readEntry("X-KDE-Init" );
   m_libraryMajor = config->readNumEntry( "X-KDE-LibraryMajor", 0 );
   m_libraryMinor = config->readNumEntry( "X-KDE-LibraryMinor", 0 );
   m_lstLibraryDeps = config->readListEntry( "X-KDE-LibraryDependencies" );
@@ -222,7 +223,7 @@ void KService::load( QDataStream& s )
     >> dst
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2 
-    >> m_lstKeywords;
+    >> m_lstKeywords >> m_strInit;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -251,7 +252,7 @@ void KService::save( QDataStream& s )
     << dst
     << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
-    << m_lstKeywords;
+    << m_lstKeywords << m_strInit;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -362,6 +363,11 @@ KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
   KService * s = KServiceFactory::self()->findServiceByDesktopName( _name );
   return KService::Ptr( s );
+}
+
+KService::List KService::allInitServices()
+{
+  return KServiceFactory::self()->allInitServices();
 }
 
 bool KService::substituteUid() const {

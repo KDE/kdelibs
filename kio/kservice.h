@@ -88,6 +88,12 @@ public:
    */
   QString library() const { return m_strLibrary; }
   /**
+   * Returns the name of the init function to call in this service
+   * during startup of KDE. (KControl modules only)
+   */
+  QString init() const { return m_strInit; }
+
+  /**
    * Returns the major number of the library.
    *
    * @see library()
@@ -275,6 +281,13 @@ public:
    */
   static List allServices();
 
+  /** 
+   * Returns all services that require initialisation.
+   *
+   * Only needed by "kcminit"
+   */
+  static List allInitServices();
+
 protected:
 
   void init(KDesktopFile *config);
@@ -304,5 +317,6 @@ private:
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
   QStringList m_lstKeywords;
+  QString m_strInit;
 };
 #endif

@@ -77,6 +77,11 @@ public:
   KService::List allServices();
 
   /**
+   * @return all services which have a "X-KDE-Init" line.
+   */
+  KService::List allInitServices();
+
+  /**
    * @return the unique service factory, creating it if necessary
    */
   static KServiceFactory * self();
@@ -84,6 +89,7 @@ public:
 protected:
   virtual KService * createEntry(int offset);
   int m_offerListOffset;
+  int m_initListOffset;  
   KSycocaDict *m_nameDict;
   int m_nameDictOffset;
   KSycocaDict *m_relNameDict;

@@ -45,6 +45,8 @@ KServiceFactory::KServiceFactory()
       m_relNameDictOffset = i; 
       (*m_str) >> i;
       m_offerListOffset = i; 
+      (*m_str) >> i;
+      m_initListOffset = i; 
   
       int saveOffset = m_str->device()->at();
       // Init index tables
@@ -182,6 +184,35 @@ KService::List KServiceFactory::allServices()
          result.append( KService::Ptr( newService ) );
    }
    return result;
+}
+
+KService::List KServiceFactory::allInitServices()
+{
+   KService::List list;
+   if (!m_str) return list;
+
+   // Assume we're NOT building a database
+
+   m_str->device()->at(m_initListOffset);
+   Q_INT32 entryCount;
+   (*m_str) >> entryCount;
+
+   Q_INT32 *offsetList = new Q_INT32[entryCount];
+   for(int i = 0; i < entryCount; i++)
+   {
+      (*m_str) >> offsetList[i];
+   }
+
+   for(int i = 0; i < entryCount; i++)
+   {
+      KService *newEntry = createEntry(offsetList[i]);
+      if (newEntry)
+      {
+         list.append( KService::Ptr( newEntry ) );
+      }
+   }
+   delete [] offsetList;
+   return list;
 }
 
 KService::List KServiceFactory::offers( int serviceTypeOffset )

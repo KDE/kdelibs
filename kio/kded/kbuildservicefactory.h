@@ -64,6 +64,7 @@ public:
   virtual void saveHeader(QDataStream &str);
 private:
   void saveOfferList(QDataStream &str);
+  void saveInitList(QDataStream &str);
 
   KSycocaFactory *m_serviceTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;

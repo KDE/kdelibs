@@ -222,6 +222,17 @@ int main(int argc, char *argv[])
       }
    }
    }
+
+   debug("--services that require initialisation--");
+   sl = KService::allInitServices();
+   for( KService::List::ConstIterator it = sl.begin();
+       it != sl.end(); it++)
+   {
+      KService *service = static_cast<KService *>(*it);
+      debug(service->name());
+   }
+   debug("--End of list--");
+
 #if 0
    KImageIO::registerFormats();
 
