@@ -1,4 +1,6 @@
 
+SUBDIRS = kfile
+
 data_DATA = kdebug.html
 
 datadir = $(kde_htmldir)/en/kdelibs

@@ -127,5 +127,6 @@ AC_OUTPUT(Makefile \
 	mediatool/Makefile \
 	po/Makefile \
 	toolbar/Makefile \
-	doc/Makefile)
+	doc/Makefile \
+	doc/kfile/Makefile )
 
