@@ -636,6 +636,7 @@ public:
  *  <pre>
  * typedef KGenericFactory<MyPlugin> MyFactory;
  * K_EXPORT_COMPONENT_FACTORY(kfile_foo, MyFactory("kfile_foo"));
+ *  </pre>
  *
  * and then just overwrite the methods your plugin supports. If your plugin
  * can only read data, it is sufficient to only write a @ref readInfo() method.
