@@ -66,7 +66,10 @@ using namespace VCARD;
 
 ContentLine::ContentLine()
 	:	Entity(),
-		value_(0)
+		value_(0),
+		paramType_( ParamUnknown ),
+		valueType_( ValueUnknown ),
+		entityType_( EntityUnknown )
 {
 }
 
@@ -75,13 +78,19 @@ ContentLine::ContentLine(const ContentLine & x)
                 group_ (x.group_),
                 name_ (x.name_),
 		paramList_(x.paramList_),
-		value_(x.value_->clone())
+		value_(x.value_->clone()),
+		paramType_( x.paramType_ ),
+		valueType_( x.valueType_ ),
+		entityType_( x.entityType_ )
 {
 }
 
 ContentLine::ContentLine(const QCString & s)
 	:	Entity(s),
-		value_(0)
+		value_(0),
+		paramType_( ParamUnknown ),
+		valueType_( ValueUnknown ),
+		entityType_( EntityUnknown )
 {
 }
 
@@ -286,4 +295,7 @@ ContentLine::clear()
 	paramList_.clear();
         delete value_;
 	value_ = 0;
+	paramType_ = ParamUnknown;
+	valueType_ = ValueUnknown;
+	entityType_ = EntityUnknown;
 }

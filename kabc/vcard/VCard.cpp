@@ -36,6 +36,7 @@ using namespace VCARD;
 VCard::VCard()
 	:	Entity()
 {
+    contentLineList_.setAutoDelete( true );
 }
 
 VCard::VCard(const VCard & x)
