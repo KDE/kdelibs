@@ -142,7 +142,7 @@ public:
      * sets the directories to choose from. By default this are
      * all directories that keep toolbar icons
      */
-    void changeDirs( const QStringList &l ); 
+    void changeDirs( const QStringList &l ) { cb_dirs->clear(); cb_dirs->insertStringList(l); }
     int exec(QString filter);
 
 protected slots:
