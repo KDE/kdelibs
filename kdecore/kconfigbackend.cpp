@@ -311,7 +311,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   }
 #ifdef HAVE_MMAP
   if (map)
-     munmap((void *)map,rFile.size());
+     munmap((char *)map,rFile.size());
 #endif
 }
 
