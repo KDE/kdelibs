@@ -105,9 +105,9 @@ public class Main
 
         try  //Check for the JSSE packages, and install them
         {
+            //set this property first
             System.setProperty("java.protocol.handler.pkgs",
                                "com.sun.net.ssl.internal.www.protocol");
-
             if( Security.getProvider( "SunJSSE" ) == null )
             {
                 Class provider = Class.forName("com.sun.net.ssl.internal.ssl.Provider");
@@ -122,16 +122,9 @@ public class Main
             }
             else
                 Main.debug( "could not get provider: SunJSSE" );
-        } catch( ClassNotFoundException cfe )
-        {
-            Main.debug( "Unable to load JSSE SSL stream handler" );
-            Main.debug( "exception = " + cfe );
-            cfe.printStackTrace();
         } catch( Exception e )
         {
-            Main.debug( "Unable to create Provider class for JSSE" );
-            Main.debug( "exception = " + e );
-            e.printStackTrace();
+            Main.kjas_err( "Unable to load JSSE SSL stream handler, https support not available", e );
         }
 
         //start the command parsing
