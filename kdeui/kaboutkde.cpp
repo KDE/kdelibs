@@ -37,23 +37,23 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "free software development.<br><br>"
     "No single group, company or organization controls the KDE source "
     "code. Everyone is welcome to contribute to KDE.<br><br>"
-    "Visit <A HREF=\"http://www.kde.org/\">http://www.kde.org/</A> for "
-    "more information on the KDE Project. ");
+    "Visit <A HREF=\"http://www.kde.org/\">http://www.kde.org</A> for "
+    "more information on the KDE project. ");
 
   const QString text2 = i18n(""
     "Software can always be improved, and the KDE Team is ready to "
     "do so. However, you - the user - must tell us when "
     "something does not work as expected or could be done better.<br><br>"
     "The K Desktop Environment has a bug tracking system. Visit "
-    "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org/</A> or "
-    "use the \"Report Bug\" dialog from the \"Help\" menu to report bugs.<br><br>"
+    "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org</A> or "
+    "use the \"Report Bug...\" dialog from the \"Help\" menu to report bugs.<br><br>"
     "If you have a suggestion for improvement then you are welcome to use "
     "the bug tracking system to register your wish. Make sure you use the "
     "severity called \"Wishlist\"." );
 
   const QString text3 = i18n(""
     "You don't have to be a software developer to be a member of the "
-    "KDE Team. You can join the national teams that translate "
+    "KDE team. You can join the national teams that translate "
     "program interfaces. You can provide graphics, themes, sounds and "
     "improved documentation. You decide!"
     "<br><br>"
@@ -62,16 +62,16 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "for information on some projects in which you can participate."
     "<br><br>"
     "If you need more information or documentation, then a visit to "
-    "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org/</A> "
+    "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org</A> "
     "will provide you with what you need.");
   const QString text4 = i18n(""
     "KDE is available free of charge, but making it is not for free.<br><br>"
-    "Thus, the KDE Team formed the KDE Association, a non-profit organization"
-    " legally founded in Tuebingen, Germany. The KDE Association represents"
-    " the KDE Project in legal and financial matters."
-    " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org/</a>"
-    " for information on the KDE Association.<br><br>"
-    "The KDE Team does need financial support. Most of the money is used to "
+    "Thus, the KDE team formed the KDE e.V., a non-profit organization"
+    " legally founded in Tuebingen, Germany. The KDE e.V. represents"
+    " the KDE project in legal and financial matters."
+    " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org</a>"
+    " for information on the KDE e.V.<br><br>"
+    "The KDE team does need financial support. Most of the money is used to "
     "reimburse members and others on expenses they experienced when "
     "contributing to KDE. You are encouraged to support KDE through a financial "
     "donation, using one of the ways described at "
@@ -83,13 +83,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
   addTextPage( i18n("About KDE","&About"), text1, true );
   addTextPage( i18n("&Report Bugs or Wishes"), text2, true );
   addTextPage( i18n("&Join the KDE Team"), text3, true );
-  addTextPage( i18n("&Supporting KDE"), text4, true );
+  addTextPage( i18n("&Support KDE"), text4, true );
   setImage( locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
   setImageBackgroundColor( white );
 }
-
-
-
-
-
-
