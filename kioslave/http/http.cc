@@ -2773,8 +2773,8 @@ bool HTTPProtocol::readHeader()
       {
          m_request.bCachedWrite = false; // Don't put in cache
          mayCache = false;
+         hasCacheDirective = true;
       }
-      hasCacheDirective = true;
     }
 
     // The deprecated Refresh Response
@@ -3202,13 +3202,13 @@ bool HTTPProtocol::readHeader()
 
   // We don't cache certain text objects
   if (m_strMimeType.startsWith("text/") &&
-      (m_strMimeType != "text/css"))
+      (m_strMimeType != "text/css") &&
+      !hasCacheDirective)
   {
      // Do not cache secure pages or pages 
      // originating from password protected sites
-     if ( m_bIsSSL ||
-         (!hasCacheDirective && Authentication != AUTH_None)
-        ) 
+     // unless the webserver explicitly allows it.
+     if ( m_bIsSSL || (Authentication != AUTH_None) ) 
      {
         m_request.bCachedWrite = false;
         mayCache = false;
