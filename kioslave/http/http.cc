@@ -199,7 +199,7 @@ void HTTPProtocol::resetSessionSettings()
 
     kdDebug(7113) << "(" << m_pid << ") Using proxy: " << m_bUseProxy << endl;
     kdDebug(7113) << "(" << m_pid << ")   URL: " << m_proxyURL.url() << endl;
-    kdDebug(7113) << "(" << m_pid << ")   Realm: " << m_strRealm << endl;
+    kdDebug(7113) << "(" << m_pid << ")   Realm: " << m_strProxyRealm << endl;
   }  
 
   m_bPersistentProxyConnection = config()->readBoolEntry("PersistentProxyConnection", false);
@@ -2145,12 +2145,11 @@ bool HTTPProtocol::httpOpen()
         info.username = m_request.user;
       if ( checkCachedAuthentication( info ) )
       {
-        Authentication = info.digestInfo.isEmpty() ? AUTH_Basic : AUTH_Digest ;
+        Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : AUTH_Digest ;
         m_state.user   = info.username;
         m_state.passwd = info.password;
         m_strRealm = info.realmValue;
-        if ( Authentication == AUTH_Digest )
-          m_strAuthorization = info.digestInfo;
+        m_strAuthorization = info.digestInfo;
       }
     }
 
@@ -4371,9 +4370,9 @@ void HTTPProtocol::cleanCache()
 void HTTPProtocol::configAuth( const char *p, bool b )
 {
   HTTP_AUTH f = AUTH_None;
-  const char *strAuth = p;
 
   while( *p == ' ' ) p++;
+  const char *strAuth = p;
 
   if ( strncasecmp( p, "Basic", 5 ) == 0 )
   {
@@ -4429,14 +4428,16 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   {
     int i = 0;
     while( (*p == ' ') || (*p == ',') || (*p == '\t') ) { p++; }
-    if ( strncasecmp( p, "realm=\"", 7 ) == 0 )
+    if ( strncasecmp( p, "realm=", 6 ) == 0 )
     {
-      p += 7;
-      while( p[i] != '"' ) i++;
+      p += 6;
+      if (*p == '"') p++;
+      while( p[i] && p[i] != '"' ) i++;
       if( b )
         m_strProxyRealm = QString::fromLatin1( p, i );
       else
         m_strRealm = QString::fromLatin1( p, i );
+      if (!p[i]) break;
     }
     p+=(i+1);
   }
@@ -4444,12 +4445,12 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   if( b )
   {
     ProxyAuthentication = f;
-    m_strProxyAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
+    m_strProxyAuthorization = QString::fromLatin1( strAuth );
   }
   else
   {
     Authentication = f;
-    m_strAuthorization = QString::fromLatin1( strAuth, strlen(strAuth) );
+    m_strAuthorization = QString::fromLatin1( strAuth );
   }
 }
 
@@ -4487,8 +4488,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
     {
       info.realmValue = m_strRealm;
       info.verifyPath = false;
-      if ( Authentication == AUTH_Digest )
-        info.digestInfo = m_strAuthorization;
+      info.digestInfo = m_strAuthorization;
       info.commentLabel = i18n( "Site:" );
       info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname );
     }
@@ -4505,8 +4505,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
     {
       info.realmValue = m_strProxyRealm;
       info.verifyPath = false;
-      if ( ProxyAuthentication == AUTH_Digest )
-        info.digestInfo = m_strProxyAuthorization;
+      info.digestInfo = m_strProxyAuthorization;
       info.commentLabel = i18n( "Proxy:" );
       info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.host() );
     }
@@ -4595,6 +4594,7 @@ bool HTTPProtocol::getAuthorization()
       info.username = m_proxyURL.user();
       info.password = m_proxyURL.pass();
       info.realmValue = m_strProxyRealm;
+      info.digestInfo = m_strProxyAuthorization;
     }
     else
     {
@@ -4602,6 +4602,7 @@ bool HTTPProtocol::getAuthorization()
       info.username = m_request.user;
       info.password = m_request.passwd;
       info.realmValue = m_strRealm;
+      info.digestInfo = m_strAuthorization;
     }
 
     // If either username or password is not supplied
@@ -4663,15 +4664,13 @@ bool HTTPProtocol::getAuthorization()
         m_request.user = info.username;
         m_request.passwd = info.password;
         m_strRealm = info.realmValue;
-        if ( Authentication == AUTH_Digest )
-          m_strAuthorization = info.digestInfo;
+        m_strAuthorization = info.digestInfo;
         break;
       case 407: // Proxy-Authentication
         m_proxyURL.setUser( info.username );
         m_proxyURL.setPass( info.password );
         m_strProxyRealm = info.realmValue;
-        if ( Authentication == AUTH_Digest )
-          m_strProxyAuthorization = info.digestInfo;
+        m_strProxyAuthorization = info.digestInfo;
         break;
       default:
         break;
@@ -4695,8 +4694,7 @@ void HTTPProtocol::saveAuthorization()
     info.username = m_proxyURL.user();
     info.password = m_proxyURL.pass();
     info.realmValue = m_strProxyRealm;
-    if( Authentication == AUTH_Digest )
-      info.digestInfo = m_strProxyAuthorization;
+    info.digestInfo = m_strProxyAuthorization;
     cacheAuthentication( info );
   }
   else
@@ -4705,8 +4703,7 @@ void HTTPProtocol::saveAuthorization()
     info.username = m_request.user;
     info.password = m_request.passwd;
     info.realmValue = m_strRealm;
-    if( Authentication == AUTH_Digest )
-      info.digestInfo = m_strAuthorization;
+    info.digestInfo = m_strAuthorization;
     cacheAuthentication( info );
   }
 }
@@ -5012,7 +5009,7 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     // without prompting the user...
     if ( !info.username.isNull() && !info.password.isNull() )
     {
-      if( m_strProxyAuthorization.isEmpty() )
+      if( m_strProxyAuthorization.startsWith("Basic") )
         ProxyAuthentication = AUTH_Basic;
       else
         ProxyAuthentication = AUTH_Digest;
@@ -5024,13 +5021,11 @@ QString HTTPProtocol::proxyAuthenticationHeader()
         m_proxyURL.setUser( info.username );
         m_proxyURL.setPass( info.password );
         m_strProxyRealm = info.realmValue;
-        if ( info.digestInfo.isEmpty() )
+        m_strProxyAuthorization = info.digestInfo;
+        if( m_strProxyAuthorization.startsWith("Basic") )
           ProxyAuthentication = AUTH_Basic;
         else
-        {
           ProxyAuthentication = AUTH_Digest;
-          m_strProxyAuthorization = info.digestInfo;
-        }
       }
       else
       {
