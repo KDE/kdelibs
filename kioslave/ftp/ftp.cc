@@ -1139,14 +1139,14 @@ bool Ftp::closedir()
 
 bool Ftp::ftpCloseDir()
 {
-  kdebug(KDEBUG_INFO, 7102, "... closing");
+  kdebug(KDEBUG_INFO, 7102, "... closing (ftpCloseDir)");
 
-  if ( !readresp( '2' ) ) {
-    kdebug(KDEBUG_INFO, 7102, "Did not get transfer complete message");
+  if (! ftpCloseCommand() ) {
+    kdebug(KDEBUG_INFO, 7102, "Error on closing socket");
     return false;
   }
 
-  return ftpCloseCommand();
+  return readresp('2');
 }
 
 
@@ -1217,7 +1217,7 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 
 bool Ftp::ftpClose()
 {
-  kdebug(KDEBUG_INFO, 7102, "... closing");
+  kdebug(KDEBUG_INFO, 7102, "... closing (ftpClose)");
 
   // first close, then read response ( should be 226 )
 
