@@ -1093,7 +1093,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 const QPushButton * btn = ( const QPushButton* ) widget;
                 bool sunken = btn->isOn() || btn->isDown();
                 int diw = pixelMetric( PM_ButtonDefaultIndicator, btn );
-                drawBaseButton( p, diw, diw, btn->width() - 2 * diw, btn->height() - 2 * diw,
+                drawBaseButton( p, diw, diw, w - 2 * diw, h - 2 * diw,
                                 *colorGroup( btn->colorGroup(), sunken ? PushButtonDown :
                                              PushButton ), sunken, roundButton(),
                                 sunken ? PushButtonDown : PushButton );
