@@ -2481,6 +2481,25 @@ void QIconView::alignItemsInGrid()
 
 	item = item->next;
     }
+
+    if ( d->alignMode == South ) {
+	item = d->lastItem;
+	int x = item->x();
+	while ( item && item->x() >= x ) {
+	    w = QMAX( w, item->x() + item->width() );
+	    h = QMAX( h, item->y() + item->height() );
+	    item = item->prev;
+	}
+    }
+	
+    w = QMAX( QMAX( d->cachedW, w ), d->lastItem->x() + d->lastItem->width() );
+    h = QMAX( QMAX( d->cachedH, h ), d->lastItem->y() + d->lastItem->height() );
+
+    if ( d->alignMode == South )
+	w += d->spacing;
+    else
+	h += d->spacing;
+    
     resizeContents( w, h );
     d->dirty = FALSE;
 }
@@ -3528,7 +3547,7 @@ void QIconView::resizeEvent( QResizeEvent* e )
     if ( d->resizeMode == Adjust ) {
 	if ( d->adjustTimer->isActive() )
 	    d->adjustTimer->stop();
-	d->adjustTimer->start( 400, TRUE );
+	d->adjustTimer->start( d->firstAdjust ? 0 : 100, TRUE );
     }
 }
 
@@ -3541,10 +3560,8 @@ void QIconView::adjustItems()
     d->adjustTimer->stop();
     if ( d->resizeMode == Adjust ) {
 	if ( size() != d->oldSize ) {
- 	    if ( d->firstAdjust ) {
+ 	    if ( d->firstAdjust )
  		d->firstAdjust = FALSE;
- 		return;
- 	    }
 	    alignItemsInGrid();
 	    viewport()->repaint( FALSE );
 	}
