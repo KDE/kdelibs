@@ -41,7 +41,9 @@ class KActionMenu;
 class KFileReader;
 class QWidgetStack;
 class KProgress;
-class KIO::DeleteJob;
+namespace KIO {
+  class DeleteJob;
+}
 
 class KDirOperator : public QWidget
 {
