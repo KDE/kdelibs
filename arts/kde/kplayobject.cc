@@ -25,7 +25,6 @@
 #include "kplayobject.moc"
 
 using namespace Arts;
-using namespace std;
 
 KPlayObject::KPlayObject() : QObject()
 {

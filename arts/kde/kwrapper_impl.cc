@@ -33,7 +33,6 @@ using namespace std;
 
 KWrapperFactory_impl::KWrapperFactory_impl()
 {
-    arts_debug("KWRAPPERFACTORY CTOR");
 }
 
 KWrapperFactory_impl::~KWrapperFactory_impl()
