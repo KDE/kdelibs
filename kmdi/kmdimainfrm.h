@@ -37,8 +37,6 @@
 #include <kpopupmenu.h>
 #include <kparts/dockmainwindow.h>
 #else
-#include <qmenubar.h>
-#include <qpopupmenu.h>
 #include "dummykpartsdockmainwindow.h"
 #endif
 
@@ -57,6 +55,9 @@
 #include "kmdinulliterator.h"
 
 class QTimer;
+class QPopupMenu;
+class QMenuBar;
+class QToolButton;
 
 /**
  * @short Internal class
@@ -345,7 +346,7 @@ public:
    * Additionally, this menu provides some placing actions for these views.
    * Usually, you insert this popup menu in your main menubar as "Window" menu.
    */
-   QPopupMenu* windowMenu() { return m_pWindowMenu; };
+   QPopupMenu* windowMenu() const { return m_pWindowMenu; };
    /**
    * Sets a background colour for the MDI view area widget.
    */

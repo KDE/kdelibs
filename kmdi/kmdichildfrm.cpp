@@ -33,7 +33,8 @@
 #include <qcursor.h>
 #include <qobjectlist.h>
 #include <qframe.h>
-
+#include <qpopupmenu.h>
+#include <qtoolbutton.h>
 #include <qnamespace.h>
 
 #include "kmdidefines.h"

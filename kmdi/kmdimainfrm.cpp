@@ -31,6 +31,9 @@
 #include <qcursor.h>
 #include <qclipboard.h>
 #include <qobjectlist.h>
+#include <qpopupmenu.h>
+#include <qmenubar.h>
+
 #ifndef NO_KDE
 #include <kmenubar.h>
 #include <kapplication.h>
@@ -38,6 +41,7 @@
 #include <kdeversion.h>
 #include <qtabwidget.h>
 #endif
+
 #include <qtoolbutton.h>
 #include <qlayout.h>
 #include <qtimer.h>

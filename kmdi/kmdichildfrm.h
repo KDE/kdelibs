@@ -30,9 +30,7 @@
 
 #include <qptrlist.h>
 #include <qpixmap.h>
-#include <qpopupmenu.h>
 #include <qpushbutton.h>
-#include <qtoolbutton.h>
 #include <qlabel.h>
 #include <qdatetime.h>
 #include <qlayout.h>
@@ -43,6 +41,8 @@
 
 class KMdiChildArea;
 class KMdiChildView;
+class QPopupMenu;
+class QToolButton;
 
 //==============================================================================
 /**
