@@ -168,7 +168,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "close" ||
       p == "setInterval" ||
       p == "clearInterval" ||
-      Imp::hasProperty(p,recursive) ||
+      HostImp::hasProperty(p,recursive) ||
       part->findFrame( p.qstring() ))
     return true;
 

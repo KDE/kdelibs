@@ -139,11 +139,27 @@ QList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
 QList<PluginBase::MimeTypeInfo> *KJS::PluginBase::mimes = 0;
 int KJS::PluginBase::m_refCount = 0;
 
+bool Navigator::hasProperty(const UString &p, bool recursive) const
+{
+  if (p == "javaEnabled" ||
+      p == "appCodeName" ||
+      p == "appName" ||
+      p == "appVersion" ||
+      p == "language" ||
+      p == "userAgent" ||
+      p == "platform" ||
+      p == "plugins" ||
+      p == "mimeTypes" ||
+      HostImp::hasProperty(p, recursive) )
+    return true;
+  return false;
+}
 
 KJSO Navigator::get(const UString &p) const
 {
   KURL url = part->url();
   QString userAgent = KProtocolManager::userAgentForHost(url.host());
+  kdDebug() << "userAgent=" << userAgent << endl;
 
   if (p == "javaEnabled")
      return Function (new NavigatorFunc(part));
@@ -153,10 +169,17 @@ KJSO Navigator::get(const UString &p) const
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
     if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
         userAgent.find(QString::fromLatin1("compatible")) == -1)
+    {
+      //kdDebug() << "appName -> Mozilla" << endl;
       return String("Netscape");
+    }
     if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
         userAgent.find(QString::fromLatin1("MSIE")) >= 0)
+    {
+      //kdDebug() << "appName -> IE" << endl;
       return String("Microsoft Internet Explorer");
+    }
+    //kdDebug() << "appName -> Konqueror" << endl;
     return String("Konqueror");
   } else if (p == "appVersion"){
     // We assume the string is something like Mozilla/version (properties)
