@@ -31,9 +31,9 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
   : QFrame(parent, name, f)
   , _type(type)
   , _orient( Horizontal )
+  , _dir(Up)
   , _config(0)
   , _actions(actions)
-  , _dir(Up)
 {
   setFrameStyle(NoFrame);
   QPalette pal(palette());
