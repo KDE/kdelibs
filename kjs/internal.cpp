@@ -816,24 +816,15 @@ void InterpreterImp::initGlobalObject()
 
   // Constructors (Object, Array, etc.)
 
-  ObjectObjectImp *objectObj = new ObjectObjectImp(globExec,objProto,funcProto);
-  b_Object = Object(objectObj);
-  FunctionObjectImp *funcObj = new FunctionObjectImp(globExec,funcProto);
-  b_Function = Object(funcObj);
-  ArrayObjectImp *arrayObj = new ArrayObjectImp(globExec,funcProto,arrayProto);
-  b_Array = Object(arrayObj);
-  StringObjectImp *stringObj = new StringObjectImp(globExec,funcProto,stringProto);
-  b_String = Object(stringObj);
-  BooleanObjectImp *booleanObj = new BooleanObjectImp(globExec,funcProto,booleanProto);
-  b_Boolean = Object(booleanObj);
-  NumberObjectImp *numberObj = new NumberObjectImp(globExec,funcProto,numberProto);
-  b_Number = Object(numberObj);
-  DateObjectImp *dateObj = new DateObjectImp(globExec,funcProto,dateProto);
-  b_Date = Object(dateObj);
-  RegExpObjectImp *regexpObj = new RegExpObjectImp(globExec,regexpProto,funcProto);
-  b_RegExp = Object(regexpObj);
-  ErrorObjectImp *errorObj = new ErrorObjectImp(globExec,funcProto,errorProto);
-  b_Error = Object(errorObj);
+  b_Object = Object(new ObjectObjectImp(globExec, objProto, funcProto));
+  b_Function = Object(new FunctionObjectImp(globExec, funcProto));
+  b_Array = Object(new ArrayObjectImp(globExec, funcProto, arrayProto));
+  b_String = Object(new StringObjectImp(globExec, funcProto, stringProto));
+  b_Boolean = Object(new BooleanObjectImp(globExec, funcProto, booleanProto));
+  b_Number = Object(new NumberObjectImp(globExec, funcProto, numberProto));
+  b_Date = Object(new DateObjectImp(globExec,funcProto,dateProto));
+  b_RegExp = Object(new RegExpObjectImp(globExec, regexpProto, funcProto));
+  b_Error = Object(new ErrorObjectImp(globExec, funcProto, errorProto));
 
   // Error object prototypes
   b_evalErrorPrototype = Object(new NativeErrorPrototypeImp(globExec,errorProto,EvalError,

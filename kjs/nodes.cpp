@@ -2998,7 +2998,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   func.put(exec, "prototype", proto, Internal|DontDelete);
 
   int plen = 0;
-  for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
+  for(const ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
     fimp->addParameter(p->ident());
 
   func.put(exec, "length", Number(plen), ReadOnly|DontDelete|DontEnum);
@@ -3053,7 +3053,7 @@ Value FuncExprNode::evaluate(ExecState *exec)
   fimp->put(exec, "prototype", proto, Internal|DontDelete);
 
   int plen = 0;
-  for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
+  for(const ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
     fimp->addParameter(p->ident());
   fimp->put(exec,"length", Number(plen), ReadOnly|DontDelete|DontEnum);
 

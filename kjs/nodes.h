@@ -982,8 +982,8 @@ namespace KJS {
     virtual bool deref();
     virtual ~ParameterNode();
     Value evaluate(ExecState *exec);
-    UString ident() { return id; }
-    ParameterNode *nextParam() { return next; }
+    UString ident() const { return id; }
+    ParameterNode *nextParam() const { return next; }
     virtual void streamTo(SourceStream &s) const;
   private:
     UString id;
