@@ -2,6 +2,8 @@
 
 #include "lookup.h"
 
+using namespace KJS;
+
 namespace KJS {
 
 const struct HashEntry numberTableEntries[] = {
