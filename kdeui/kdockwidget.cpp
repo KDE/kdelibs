@@ -1260,7 +1260,7 @@ void KDockManager::startDrag( KDockWidget* w )
   mg = new KDockMoveManager( w );
   curPos = KDockWidget::DockDesktop;
   draging = true;
-  mg->doMove( true, true, false);
+  mg->doMove();
 }
 
 void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
@@ -1454,6 +1454,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
   autoCreateDock = new QObjectList();
   autoCreateDock->setAutoDelete( true );
 
+  bool isMainVisible = main->isVisible();
   main->hide();
 
   QObjectListIt it( *childDock );
@@ -1508,6 +1509,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
           tab->setVisiblePage( c->readNumEntry( oname+":curTab" ) );
         }
       }
+      obj = tabDockGroup;
     }
 
     if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent") == "___null___" ){
@@ -1554,7 +1556,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
 
   QRect mr = c->readRectEntry("Main:Geometry");
   main->setGeometry(mr);
-  if ( !main->inherits("QDialog") ) main->show();
+  if ( isMainVisible ) main->show();
 }
 
 KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )

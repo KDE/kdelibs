@@ -53,7 +53,7 @@ KDockMoveManager::~KDockMoveManager()
   stop();
 }
 
-void KDockMoveManager::doMove (bool /*hot_static*/, bool /*_dynamic*/, bool /*dontmove*/)
+void KDockMoveManager::doMove()
 {
   if (working) return;
 
@@ -334,12 +334,10 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       child1->setUpdatesEnabled(false);
       if (orientation == Horizontal) {
         int position = checkValue( divider->mapToParent(mev->pos()).y() );
-        divider->setGeometry(0, position, width(), 4);
-        divider->repaint(0);
+	divider->move( 0, position );
       } else {
-        int position = checkValue( divider->mapToParent(mev->pos()).x() );
-        divider->setGeometry(position, 0, 4, height());
-        divider->repaint(0);
+        int position = checkValue( mapFromGlobal(QCursor::pos()).x() );
+	divider->move( position, 0 );
       }
       handled= true;
       break;

@@ -49,7 +49,7 @@ private:
   KDockMoveManager(QWidget *widget);
   ~KDockMoveManager();
   
-  void doMove(bool in_hotspot_static=false, bool dynamic = false, bool dontmove=false);
+  void doMove();
   void movePause(){ pauseMove = true; }
   void moveContinue(){ pauseMove = false; }
   void setGeometry(int x, int y, int w, int h);
