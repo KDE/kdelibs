@@ -115,7 +115,7 @@ protected:
 /**
  * A color palette in table form.
  * @author Waldo Bastian <bastian@kde.org>
- * @version $Id:  $
+ * @version $Id$
  **/
 class KPaletteTable : public QWidget
 {
@@ -124,6 +124,7 @@ public:
   KPaletteTable( QWidget *parent, int minWidth=210, int cols = 16);
   void addToCustomColors( const QColor &);
   void addToRecentColors( const QColor &);
+  QString palette();
 public slots:
   void setPalette(const QString &paletteName);
 signals:
@@ -137,7 +138,7 @@ protected:
   QComboBox *combo;
   KColorCells *cells;
   QScrollView *sv;
-  KPalette *palette;
+  KPalette *mPalette;
   int mMinWidth;
   int mCols;
 };
@@ -162,6 +163,8 @@ public:
   {	return numRows() * numCols(); }
 
   void setShading(bool _shade) { shade = _shade; }
+  
+  void setAcceptDrags(bool _acceptDrags) { acceptDrags = _acceptDrags; }
 	
   int getSelected()
   {	return selected; }
@@ -185,6 +188,7 @@ protected:
   QPoint mPos;
   int	selected;
   bool shade;  
+  bool acceptDrags;
 };
 
 /**
@@ -286,8 +290,17 @@ class KColorDialog : public KDialogBase
     void slotColorSelected( const QColor &col, const QString &name );
     void slotColorPicker();
     void slotAddToCustomColors();
+    /**
+     * Write the settings of the dialog to config file.
+     **/
+    void slotWriteSettings();
 
   private:
+    /**
+     * Read the settings for the dialog from config file.
+     **/
+    void readSettings();
+
     void setRgbEdit( void );
     void setHsvEdit( void );
     void setHtmlEdit( void );

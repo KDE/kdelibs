@@ -344,7 +344,7 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
 
 void KColorCells::dragEnterEvent( QDragEnterEvent *event)
 {
-     event->accept( KColorDrag::canDecode( event));
+     event->accept( acceptDrags && KColorDrag::canDecode( event));
 }
 
 void KColorCells::dropEvent( QDropEvent *event)
@@ -443,7 +443,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 	: QWidget( parent ), mMinWidth(minWidth), mCols(cols)
 {
   cells = 0;
-  palette = 0;
+  mPalette = 0;
   i18n_customColors = i18n("* Custom Colors *");
   i18n_recentColors = i18n("* Recent Colors *");
 
@@ -473,10 +473,18 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 	this, SLOT(setPalette( const QString &)));
 }
 
+QString
+KPaletteTable::palette()
+{
+  return combo->currentText();
+}
+
 void
 KPaletteTable::setPalette( const QString &_paletteName )
 {
   QString paletteName( _paletteName);
+  if (paletteName.isEmpty())
+     paletteName = i18n_recentColors;
 
   if (combo->currentText() != paletteName)
   {
@@ -502,20 +510,21 @@ KPaletteTable::setPalette( const QString &_paletteName )
   else if (paletteName == i18n_recentColors)
      paletteName = recentColors;
 
-  if (!palette || (palette->name() != paletteName))
+  if (!mPalette || (mPalette->name() != paletteName))
   {
      delete cells;
-     delete palette;
-     palette = new KPalette(paletteName);
-     int rows = (palette->nrColors()+mCols-1) / mCols;
+     delete mPalette;
+     mPalette = new KPalette(paletteName);
+     int rows = (mPalette->nrColors()+mCols-1) / mCols;
      if (rows < 1) rows = 1;
      cells = new KColorCells( sv->viewport(), rows, mCols);
      cells->setShading(false);
+     cells->setAcceptDrags(false);
      QSize cellSize = QSize( mMinWidth, mMinWidth * rows / mCols);
      cells->setFixedSize( cellSize );
-     for( int i = 0; i < palette->nrColors(); i++)
+     for( int i = 0; i < mPalette->nrColors(); i++)
      {
-        cells->setColor( i, palette->color(i) );
+        cells->setColor( i, mPalette->color(i) );
      }
      connect( cells, SIGNAL( colorSelected( int ) ),
               SLOT( slotColorCellSelected( int ) ) );
@@ -528,19 +537,19 @@ KPaletteTable::setPalette( const QString &_paletteName )
 void 
 KPaletteTable::slotColorCellSelected( int col )
 {
-  if (!palette || (col >= palette->nrColors()))
+  if (!mPalette || (col >= mPalette->nrColors()))
      return;
-  emit colorSelected( palette->color(col), palette->colorName(col) );
+  emit colorSelected( mPalette->color(col), mPalette->colorName(col) );
 }
 
 void 
 KPaletteTable::addToCustomColors( const QColor &color)
 {
   setPalette(i18n_customColors);
-  palette->addColor( color );
-  palette->save();
-  delete palette;
-  palette = 0;
+  mPalette->addColor( color );
+  mPalette->save();
+  delete mPalette;
+  mPalette = 0;
   setPalette(i18n_customColors);
 }
 
@@ -548,15 +557,18 @@ void
 KPaletteTable::addToRecentColors( const QColor &color)
 {
   bool recentIsSelected = false;
-  if (palette->name() == recentColors)
+  if (mPalette->name() == recentColors)
   {
-     delete palette;
-     palette = 0;
+     delete mPalette;
+     mPalette = 0;
      recentIsSelected = true;
   }
   KPalette *recentPal = new KPalette(recentColors);
-  recentPal->addColor( color );
-  recentPal->save();
+  if (recentPal->findColor(color) == -1) 
+  {
+     recentPal->addColor( color );
+     recentPal->save();
+  }
   delete recentPal;
   if (recentIsSelected)
      setPalette(i18n_recentColors);
@@ -690,15 +702,9 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   tl_layout->addLayout(l_right, 0, 2);
 
   //
-  // Query the list of available palettes 
-  //
-  QStringList paletteList = KPalette::getPaletteList();
-
-  //
   // Add the palette table
   //
   table = new KPaletteTable( page );
-  table->setPalette(paletteList[2]);
   l_right->addWidget(table, 10);
 
   connect( table, SIGNAL( colorSelected( const QColor &, const QString & ) ),
@@ -770,13 +776,39 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   tl_layout->activate();
   page->setMinimumSize( page->sizeHint() );
 
-//WABA
-//  readSettings();
+  readSettings();
   bRecursion = false;
   bEditHsv = false;
   bEditRgb = false;
 
   disableResize();
+}
+
+void
+KColorDialog::readSettings()
+{
+  KConfig* config = KGlobal::config();
+ 
+  QString oldgroup = config->group();
+
+  config->setGroup("Colors");
+  QString palette = config->readEntry("CurrentPalette");
+  table->setPalette(palette);
+
+  config->setGroup( oldgroup );
+}
+
+void
+KColorDialog::slotWriteSettings()
+{
+  KConfig* config = KGlobal::config();
+ 
+  QString oldgroup = config->group();
+
+  config->setGroup("Colors");
+  config->writeEntry("CurrentPalette", table->palette() );
+
+  config->setGroup( oldgroup );
 }
 
 QColor
@@ -802,7 +834,9 @@ int KColorDialog::getColor( QColor &theColor, QWidget *parent )
   int result = dlg.exec();
 
   if ( result == Accepted )
+  {
     theColor = dlg.color();
+  }
 
   return result;
 }
