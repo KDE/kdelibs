@@ -144,6 +144,23 @@ public:
    */
   bool hasChanged() const;
 
+  /**
+   * Adds a widget and its signal to the internal list so that when
+   * KAutoConfig finds widgetName in @ref retrieveSettings() it will know
+   * how to connect its signal that it has changed to KAutoConfig's signal
+   * widgetModifed().  This function should be called before 
+   * @ref retrieveSettings().
+   *
+   * Example: addWidgetChangedSignal("QCheckbox", SIGNAL(stateChanged(int)));
+   *
+   * This is generally used in conjunction with the addition of the class
+   * to QSqlPropertyMap so KAutoConfig can get/set its values.
+   *
+   * @param widgetName - The class name of the widget (className())
+   * @param signal - the signal (with SIGNAL() wrapper) that should be called.
+   */ 
+  inline void addWidgetChangedSignal(const QString &widgetName, const char *signal);
+
 public slots:
   /**
    * Traverse the specified widgets, retrieve the settings for all known
