@@ -52,6 +52,7 @@ public:
 
 	list<WeakReferenceBase *> weakReferences;
 	NamedStore<Arts::Object> children;
+	bool stubForLocalObject;
 
 	// for _skel classes only:
 	bool methodTableInit;
@@ -331,6 +332,7 @@ Object_base::Object_base() :  _deleteOk(false), _scheduleNode(0), _nextNotifyID(
 							_refCnt(1)
 {
 	_internalData = new Arts::ObjectInternalData();
+	_internalData->stubForLocalObject = false;
 	_staticObjectCount++;
 }
 
@@ -338,7 +340,7 @@ void Object_base::_destroy()
 {
 	_deleteOk = true;
 
-	if(_scheduleNode)
+	if(_scheduleNode && !_internalData->stubForLocalObject)
 	{
 		if(_scheduleNode->remoteScheduleNode())
 		{
@@ -413,7 +415,31 @@ ScheduleNode *Object_base::_node()
 				break;
 
 			case objectIsRemote:
-					_scheduleNode=new RemoteScheduleNode(_stub());
+				{
+					/*
+					 * if we're just a stub to an object that is local inside
+					 * this process, then we don't create a new schedule node,
+					 * but find the one associated with the implementation
+					 *
+					 * (this happens for instance for objects implemented as
+					 * artsbuilder structures)
+					 */
+					if(_internalData->stubForLocalObject)
+					{
+						Dispatcher *disp = Dispatcher::the();
+						Object_skel *localObject;
+
+						localObject = disp->getLocalObject(_stub()->_objectID);
+						arts_assert(localObject);
+
+						_scheduleNode = localObject->_node();
+						localObject->_release();
+					}
+					else
+					{
+						_scheduleNode = new RemoteScheduleNode(_stub());
+					}
+				}
 				break;
 		}
 
@@ -1118,6 +1144,9 @@ Object_stub::Object_stub(Connection *connection, long objectID)
 	_connection->_copy();
 	_objectID = objectID;
 	_lookupCacheRandom = rand();
+
+	if(_connection == Dispatcher::the()->loopbackConnection())
+		_internalData->stubForLocalObject = true;
 
 	char ioid[1024];
 	sprintf(ioid,"STUB:%ld:%p",_objectID,connection);

@@ -248,6 +248,14 @@ public:
 	DelayedReturn *delayReturn();	
 
 	/**
+	 * - internal usage only -
+	 *
+	 * gets object with a given ID
+	 * @returns the object if successful, 0 otherwise
+	 */
+	Object_skel *getLocalObject(long ID);
+
+	/**
 	 * reloads the trader data (do this if things have been added/changed
 	 * there)
 	 */

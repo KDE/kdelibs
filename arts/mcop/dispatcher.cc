@@ -1049,6 +1049,14 @@ DelayedReturn *Dispatcher::delayReturn()
 	return d->delayedReturn = new DelayedReturn();
 }
 
+Object_skel *Dispatcher::getLocalObject(long objectID)
+{
+	Object_skel *result = objectPool[objectID];
+
+	if(result) result->_copy();
+	return result;
+}
+
 void Dispatcher::lock()
 {
 	_instance->d->mutex.lock();
