@@ -55,21 +55,21 @@ enum { ID_TOTAL_FILES = 1, ID_TOTAL_SIZE, ID_TOTAL_TIME, ID_TOTAL_SPEED };
 int UIServer::s_jobId = 0;
 
 static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
-				    160, // LOCAL_FILENAME
-				    40,  // RESUME
-				    60,  // COUNT
-				    30,  // PROGRESS
-				    65,  // TOTAL
-				    70,  // SPEED
-				    70,  // REMAINING_TIME
-				    450  // URL
+                                    160, // LOCAL_FILENAME
+                                    40,  // RESUME
+                                    60,  // COUNT
+                                    30,  // PROGRESS
+                                    65,  // TOTAL
+                                    70,  // SPEED
+                                    70,  // REMAINING_TIME
+                                    450  // URL
 };
 
 // number of listview columns
 #define NUM_COLS  9
 
 ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
-			    bool showDefault )
+                            bool showDefault )
   : QListViewItem( view, after ) {
 
   listProgress = view;
@@ -234,7 +234,8 @@ void ProgressItem::setUnmounting( const QString & point ) {
   defaultProgress->slotUnmounting( 0, point );
 }
 
-void ProgressItem::setCanResume( bool _resume ) {
+void ProgressItem::setCanResume( bool /*_resume*/ ) {
+  /*
   QString tmps;
   // set canResume
   if ( _resume ) {
@@ -243,6 +244,7 @@ void ProgressItem::setCanResume( bool _resume ) {
     tmps = i18n("No");
   }
   setText( listProgress->lv_resume, tmps );
+  */
 }
 
 
@@ -287,7 +289,7 @@ ListProgress::ListProgress (QWidget *parent, const char *name)
 
   lv_operation = addColumn( i18n("Operation") );
   lv_filename = addColumn( i18n("Local Filename") );
-  lv_resume = addColumn( i18n("Res.") );
+  //lv_resume = addColumn( i18n("Res.") );
   lv_count = addColumn( i18n("Count") );
   lv_progress = addColumn( i18n("%") );
   lv_total = addColumn( i18n("Total") );
@@ -342,8 +344,8 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
 
   // setup toolbar
   toolBar()->insertButton("editdelete", TOOL_CANCEL,
-			  SIGNAL(clicked()), this,
-			  SLOT(cancelCurrent()), FALSE, i18n("Cancel"));
+                          SIGNAL(clicked()), this,
+                          SLOT(cancelCurrent()), FALSE, i18n("Cancel"));
 
   toolBar()->setBarPos( KToolBar::Left );
 
@@ -359,14 +361,14 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
   setCentralWidget( listProgress );
 
   connect( listProgress, SIGNAL( selectionChanged() ),
-	   SLOT( slotSelection() ) );
+           SLOT( slotSelection() ) );
   connect( listProgress, SIGNAL( executed( QListViewItem* ) ),
-	   SLOT( slotToggleDefaultProgress( QListViewItem* ) ) );
+           SLOT( slotToggleDefaultProgress( QListViewItem* ) ) );
 
   // setup animation timer
   updateTimer = new QTimer( this );
   connect( updateTimer, SIGNAL( timeout() ),
-	   SLOT( slotUpdate() ) );
+           SLOT( slotUpdate() ) );
 
   if (m_bShowList)
     updateTimer->start( 1000 );
@@ -388,7 +390,7 @@ UIServer::~UIServer() {
 int UIServer::newJob( QCString observerAppId )
 {
   kdDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
-	    << "Giving id=" << s_jobId+1 << endl;
+            << "Giving id=" << s_jobId+1 << endl;
 
   QListViewItemIterator it( listProgress );
   for ( ; it.current(); ++it ) {
@@ -402,7 +404,7 @@ int UIServer::newJob( QCString observerAppId )
 
   ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId, s_jobId, !m_bShowList );
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
- 	   SLOT( slotJobCanceled( ProgressItem* ) ) );
+           SLOT( slotJobCanceled( ProgressItem* ) ) );
 
   return s_jobId;
 }
@@ -693,10 +695,10 @@ void UIServer::slotUpdate() {
   // update statusbar
   statusBar()->changeItem( i18n( " Files : %1 ").arg( iTotalFiles ), ID_TOTAL_FILES);
   statusBar()->changeItem( i18n( " Size : %1 ").arg( KIO::convertSize( iTotalSize ) ),
-			   ID_TOTAL_SIZE);
+                           ID_TOTAL_SIZE);
   statusBar()->changeItem( i18n( " Time : %1 ").arg( totalRemTime.toString() ), ID_TOTAL_TIME);
   statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( iTotalSpeed ) ),
-			   ID_TOTAL_SPEED);
+                           ID_TOTAL_SPEED);
 
 }
 
@@ -748,19 +750,19 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
     KDEsuClient client;
     if( !key.isNull() )
     {
-        kdDebug(7024) << "Checking if password is cached for " << key.utf8() << endl;  	
-    	int sucess = client.ping();
-    	if( sucess == -1 )
-    	{
-            kdDebug(7024) << "No running kdesu daemon found. Starting one..." << endl;  	    	
+        kdDebug(7024) << "Checking if password is cached for " << key.utf8() << endl;
+        int sucess = client.ping();
+        if( sucess == -1 )
+        {
+            kdDebug(7024) << "No running kdesu daemon found. Starting one..." << endl;
             sucess = client.startServer();
             if( sucess != -1 )
                 kdDebug(7024) << "New kdesu daemon sucessfully started..." << endl;
         }
-    		
+
         if( sucess != - 1 )
         {
-            kdDebug(7024) << "Checking for presence of a key named " << (key + "-user").utf8() << endl;   		
+            kdDebug(7024) << "Checking for presence of a key named " << (key + "-user").utf8() << endl;
             QString u = QString::fromUtf8( client.getVar( (key + "-user").utf8() ) );
             kdDebug(7024) << "Key check resulted in " << u.utf8() << endl;
             // Re-request the password if the user is supplied and is different!!
@@ -769,28 +771,28 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
                 isCached = true;
                 kdDebug(7024) << "Check for the authorization key named " << (key + "-pass").utf8() << endl;
                 QString p = QString::fromUtf8( client.getVar( (key + "-pass").utf8() ) );
-                kdDebug(7024) << "Key check resulted in " << p.utf8() << endl;			
+                kdDebug(7024) << "Key check resulted in " << p.utf8() << endl;
                 stream << Q_UINT8(1) << u << p;
-                kdDebug(7024) << "Success.  Sending back Authorization..." << endl;           		
+                kdDebug(7024) << "Success.  Sending back Authorization..." << endl;
                 return packedArgs;
             }
         }
     }
     if( !isCached )
     {
-    	KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, QString::null );
+        KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, QString::null );
         if ( dlg.exec() )
         {
             QString u = dlg.user();
             QString p = dlg.password();
             kdDebug(7024) << "Caching Authorization for " << key.utf8() << endl;
             kdDebug(7024) << "Username: " << u.utf8() << endl;
-            //kdDebug(7024) << "Password: " << p.utf8() << endl;   		
+            //kdDebug(7024) << "Password: " << p.utf8() << endl;
             client.setVar( (key + "-user").utf8() , u.utf8() );
             client.setVar( (key + "-pass").utf8() , p.utf8() );
             stream << Q_UINT8(1) << u << p;
-            kdDebug(7024) << "Authorization cached sucessfully..." << endl;       		
-            return packedArgs;			
+            kdDebug(7024) << "Authorization cached sucessfully..." << endl;
+            return packedArgs;
         }
     }
     stream << Q_UINT8(0) << QString::null << QString::null;
