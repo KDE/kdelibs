@@ -872,6 +872,22 @@ protected:
    */
   virtual void viewportResizeEvent(QResizeEvent* e);
 
+  /**
+   * Disable AutoSelection. This overrides the system wide setting for
+   * AutoSelection. Please don't call this unless you have good reasons to
+   * override the system wide setting for AutoSelection.
+   * @see resetAutoSelection()
+   * @since 3.2
+   */
+  void disableAutoSelection();
+
+  /**
+   * Reset AutoSelection to the system wide setting.
+   * @see disableAutoSelection()
+   * @since 3.2
+   */
+  void resetAutoSelection();
+
 protected slots:
   /**
    * Update internal settings whenever the global ones change.

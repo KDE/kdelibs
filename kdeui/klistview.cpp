@@ -87,6 +87,7 @@ public:
       validDrag (false),
       dragEnabled (false),
       autoOpen (true),
+      disableAutoSelection (false),
       dropVisualizer (true),
       dropHighlighter (false),
       createChildren (true),
@@ -141,6 +142,7 @@ public:
   bool validDrag:1;
   bool dragEnabled:1;
   bool autoOpen:1;
+  bool disableAutoSelection:1;
   bool dropVisualizer:1;
   bool dropHighlighter:1;
   bool createChildren:1;
@@ -516,7 +518,8 @@ void KListView::slotSettingsChanged(int category)
                this, SLOT (slotMouseButtonClicked( int, QListViewItem*, const QPoint &, int)));
 
     d->bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
-    d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
+    if ( !d->disableAutoSelection )
+      d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
 
     if( !d->bUseSingle || !d->bChangeCursorOverItem )
        viewport()->unsetCursor();
@@ -2009,6 +2012,25 @@ void KListView::takeItem(QListViewItem *item)
   QListView::takeItem(item);
 }
 
+void KListView::disableAutoSelection()
+{
+  if ( d->disableAutoSelection )
+    return;
+
+  d->disableAutoSelection = true;
+  d->autoSelect.stop();
+  d->autoSelectDelay = -1;
+}
+
+void KListView::resetAutoSelection()
+{
+  if ( !d->disableAutoSelection )
+    return;
+
+  d->disableAutoSelection = false;
+  d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
+}
+
 
 
 KListViewItem::KListViewItem(QListView *parent)
@@ -2101,7 +2123,7 @@ bool KListViewItem::isAlternate()
     // said painting is happening top to bottem -- this assumption is present
     // elsewhere in the implementation of this class, (2) itemBelow() is fast --
     // roughly constant time.
-    // 
+    //
     // Given these assumptions we can do a mixture of caching and telling the
     // next item that the when that item is the current item that the now
     // current item will be the item above it.
