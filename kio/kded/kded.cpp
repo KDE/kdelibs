@@ -226,6 +226,23 @@ static KCmdLineOptions options[] =
   { 0, 0, 0 }
 };
 
+class KDEDApplication : public KUniqueApplication
+{
+public:
+  KDEDApplication() : KUniqueApplication( false, false ) // No styles, no GUI 
+    { startup = true; }
+
+  int newInstance()
+    {
+       if (startup)
+          startup = false;
+       else
+          runBuildSycoca();
+       return 0;
+    }
+  bool startup;
+};
+
 int main(int argc, char *argv[])
 {
      KAboutData aboutData( "kded", I18N_NOOP("KDE Daemon"),
@@ -266,7 +283,7 @@ int main(int argc, char *argv[])
      kded->recreate();
 
      signal(SIGTERM, sighandler);
-     KUniqueApplication k( false, false ); // No styles, no GUI
+     KDEDApplication k; // No styles, no GUI
 
      kapp->dcopClient()->setDaemonMode( true );
 
