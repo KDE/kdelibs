@@ -523,10 +523,6 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     Q_ASSERT( view );
     if ( !view )
         return;
-    // No word-wrap ? Call the default paintItem in that case
-    // (because we don't have access to calcTmpText()).
-    // ################ This prevents the use of KPixmapEffect::selectedPixmap
-    // This really needs to be opened up in qt.
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !view->inherits("KIconView") )
     {
