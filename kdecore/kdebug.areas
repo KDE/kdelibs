@@ -242,6 +242,7 @@
 30002        koffice (lib store)
 30003        koffice (lib kofficecore)
 30004        koffice (lib kofficeui)
+30500        koffice (filter manager)
 30501        csvfilter
 30502        asciifilter
 30503        htmlfilter
