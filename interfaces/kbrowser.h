@@ -37,17 +37,17 @@ class QString;
   * The following standard actions are defined by the host of the view :
   * 
   * cut : copy selected items to clipboard and notifies that a cut has been done, using DCOP
-  * paste : copy selected items to clipboard (and notifies it's not a cut)
-  * pastecopy : called when doing a paste after a copy
+  * copy : copy selected items to clipboard (and notifies it's not a cut)
   * pastecut : called when doing a paste after a cut
-  * erase : delete selected items (couldn't call it delete!)
+  * pastecopy : called when doing a paste after a copy
+  * del : delete selected items (couldn't call it delete!)
   * trash : move selected items to trash
   * print : print :-)
   *
   * reparseConfiguration : re-read configuration and apply it
   * saveLocalProperties : save current configuration into .directory
   * savePropertiesAsDefault : save current configuration as default
-  * refreshMimeTypes :
+  * refreshMimeTypes : if the view uses mimetypes it should re-determine them
   * 
   * 
   * The view should emit enableAction when an action should be enabled/disabled,
