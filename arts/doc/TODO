@@ -115,3 +115,10 @@ crash/hang).
   => Documentation & Web
 
 - make kdoc classtree available online
+
+  => aRts C API
+
+- implement an arts_stream_flush for writing half-written data packets
+  (useful for implementing SNDCTL_DSP_POST in artsdsp)
+- maybe implement atomic setting of fragmentcount and -size
+  (useful for implementing SNDCTL_DSP_SETFRAGMENT)
