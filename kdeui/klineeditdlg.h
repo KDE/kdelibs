@@ -47,7 +47,7 @@ public:
    */
   KLineEditDlg( const QString&_text, const QString&_value, 
 		QWidget *parent, bool _file_mode = FALSE );
-  ~KLineEditDlg();
+  virtual ~KLineEditDlg();
 
   /**
    * @return the value the user entered

@@ -46,7 +46,7 @@ class KLineEdit : public QLineEdit
 public:
   KLineEdit (const QString &string, QWidget *parent, const char *name = 0);
   KLineEdit ( QWidget *parent=0, const char *name=0 );
-  ~KLineEdit ();
+  virtual ~KLineEdit ();
 
   /**
     * This puts cursor at and of string. When using out of toolbar,
