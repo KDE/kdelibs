@@ -505,9 +505,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->addClient(instance);
 
   kdDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path
-		<< QString((e->m_status==NonExistent)?" NotExisting":"")
-		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : "")
-		<< (instance ? QString(" [%1]").arg(instance->name()) : "")
+		<< (e->m_status == NonExistent ? " NotExisting" : "")
+		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
+		<< (instance ? QString(" [%1]").arg(instance->name()) : QString(""))
 		<< endl;
 
 
@@ -601,8 +601,8 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   }
 
   kdDebug(7001) << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
-		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : "")
-		<< (instance ? QString(" [%1]").arg(instance->name()) : "")
+		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
+		<< (instance ? QString(" [%1]").arg(instance->name()) : QString(""))
 		<< endl;
   m_mapEntries.remove( e->path ); // <e> not valid any more
 }
