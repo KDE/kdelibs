@@ -3489,7 +3489,8 @@ int HTTPProtocol::readUnlimited()
   }
   m_bufReceive.resize(4096);
 
-  return read(m_bufReceive.data(), m_bufReceive.size());
+  int result = read(m_bufReceive.data(), m_bufReceive.size());
+  return (result > 0) ? result : 0;
 }
 
 /**
