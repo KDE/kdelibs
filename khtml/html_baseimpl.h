@@ -31,6 +31,7 @@
 #include "qscrollview.h"
 
 class KHTMLWidget;
+class BrowserView;
 
 namespace DOM {
 
@@ -71,7 +72,8 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLFrameElementImpl : public HTMLPositionedElementImpl
+class HTMLFrameElementImpl : public HTMLPositionedElementImpl, 
+  public HTMLFrameRequester
 {
     friend class KHTMLWidget;
 public:
@@ -94,10 +96,14 @@ public:
 
     bool noResize() { return noresize; }
 
+    virtual const QString &url();
+    virtual const QString &name();
+    virtual void setFrame(BrowserView *frame);
+
 protected:
-    DOMString url;
-    DOMString name;
-    KHTMLWidget *view;
+    DOMString m_strUrl;
+    DOMString m_strName;
+    BrowserView *view;
     KHTMLWidget *parentWidget;
 
     bool frameBorder;

@@ -37,6 +37,8 @@
 
 class QPixmap;
 class QMovie;
+class BrowserView;
+
 #include <qdict.h>
 #include <qobject.h>
 #include <qstringlist.h>
@@ -48,6 +50,15 @@ class QMovie;
 #include "dom_string.h"
 
 class KHTMLWidget;
+
+class HTMLFrameRequester
+{
+public:
+    virtual const QString &url() = 0;
+    virtual const QString &name() = 0;
+    virtual const QString &mimetype() { return QString::null; }
+    virtual void setFrame(BrowserView *frame) = 0;
+};
 
 /**
  * @internal

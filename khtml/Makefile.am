@@ -81,7 +81,7 @@ data_DATA = khtml_dnd.png
 datadir = $(kde_datadir)/khtml/pics
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
-	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes)
+	-I$(srcdir)/java -I$(top_srcdir)/dcop  -I$(top_srcdir)/interfaces $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 

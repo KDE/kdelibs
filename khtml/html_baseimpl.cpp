@@ -38,6 +38,7 @@ using namespace DOM;
 #include <qnamespace.h>
 
 #include <kapp.h>
+#include <kbrowser.h>
 
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *v)
     : HTMLBlockElementImpl(doc), HTMLImageRequester()
@@ -196,10 +197,10 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
     switch(attr->id)
     {
     case ATTR_SRC:
-	url = attr->value();
+	m_strUrl = attr->value();
 	break;
     case ATTR_NAME:
-	name = attr->value();
+	m_strName = attr->value();
 	break;
     case ATTR_FRAMEBORDER:
 	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
@@ -254,26 +255,35 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
     if(w)
     {	
 	// we need a unique name for every frame in the frameset. Hope that's unique enough.
-	if(name.isEmpty())
+	if(m_strName.isEmpty())
 	{
 	    QString tmp;
 	    tmp.sprintf("0x%p", this);
-	    name = DOMString(tmp) + url;
-	    printf("creating frame name: %s\n",name.string().ascii());
+	    m_strName = DOMString(tmp) + m_strUrl;
+	    printf("creating frame name: %s\n",m_strName.string().ascii());
 	}
-	view = w->getFrame(name.string());
+	view = w->getFrame(m_strName.string());
 	if(view)
 	    open = false;
 	else
-	    view = w->createFrame(w->viewport(), name.string());
-	view->setIsFrame(true);
+	{
+	    w->requestFrame(this);
+	    return;
+	}
+	//view->setIsFrame(true);
     }
-    if(url != 0 && open)
+#if 0
+    if(m_strUrl != 0 && open)
     {
-	KURL u(w->url(), url.string());
+	KURL u(w->url(), m_strUrl.string());
 	view->openURL(u.url());
     }
+#endif
+}
 
+void HTMLFrameElementImpl::setFrame(BrowserView *frame)
+{
+    view = frame;
     if(!parentWidget || !view) return;
 
     int x,y;
@@ -282,16 +292,18 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
     printf("adding frame at %d/%d\n", x, y);
     printf("frame size %d/%d\n", width, descent);
 #endif
-    w->addChild(view, x, y);
+    parentWidget->addChild(view, x, y);
     view->resize(width, descent);
 
+// ###
+#if 0
     if(!frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(_parent))->frameBorder()))
 	view->setFrameStyle(QFrame::NoFrame);
     view->setVScrollBarMode(scrolling);
     view->setHScrollBarMode(scrolling);
-    if(marginWidth != -1) view->setMarginWidth(marginWidth);
-    if(marginHeight != -1) view->setMarginHeight(marginHeight);
-
+//    if(marginWidth != -1) view->setMarginWidth(marginWidth);
+//    if(marginHeight != -1) view->setMarginHeight(marginHeight);
+#endif
     view->show();
     printf("adding frame\n");
 
@@ -303,6 +315,17 @@ void HTMLFrameElementImpl::detach()
     parentWidget = 0;
     NodeBaseImpl::detach();
 }
+
+const QString &HTMLFrameElementImpl::url()
+{
+    return m_strUrl.string();
+}
+
+const QString &HTMLFrameElementImpl::name()
+{
+    return m_strName.string();
+}
+
 
 // -------------------------------------------------------------------------
 

@@ -54,6 +54,8 @@ namespace DOM {
 class KHTMLCache;
 class KHTMLDecoder;
 class HTMLSettings;
+class HTMLFrameRequester;
+class BrowserView;
 
 // JScript class
 class KJSWorld;
@@ -214,13 +216,15 @@ public:
      * overload this function to make shure that all frames are of the same
      * derived class.
      */
-    virtual KHTMLWidget* createFrame( QWidget *_parent, QString _name );
+    //virtual KHTMLWidget* createFrame( QWidget *_parent, QString _name );
+
+    void requestFrame(HTMLFrameRequester *frame);
 
     /**
      * This function is mainly used internally. It gets the frame with name _name,
      *  if it exists and is a child of this widget, otherwise return 0.
      */
-    KHTMLWidget *getFrame( QString _name);
+    BrowserView *getFrame( QString _name);
 
     /**
      * Clears the widget and prepares it for new content.
@@ -649,6 +653,11 @@ signals:
 
     void textSelected( bool );
 
+    void newFrame( QWidget *parent, const QString &name, const QString &url,
+		   const QString &mimetye = QString::null); 
+
+public slots:
+    void slotReceiveFrame( BrowserView *frame, QString name );
 
 protected slots:
     void slotData( int _id, const char* data, int _len );
@@ -895,6 +904,8 @@ private:
     QCString post_data;
     
     static QPixmap* paintBuffer;
+
+    QList<HTMLFrameRequester> requestedFrames;
 };
 
 #endif

@@ -311,6 +311,7 @@ KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
     return 0;
 }
 
+#if 0
 KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, QString _name )
 {
     KHTMLWidget *child = new KHTMLWidget( _parent, this, _name );
@@ -318,9 +319,33 @@ KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, QString _name )
     m_lstChildren.append(c);
     return child;
 }
+#endif
 
-KHTMLWidget* KHTMLWidget::getFrame( QString _name )
+void KHTMLWidget::requestFrame(HTMLFrameRequester *frame)
 {
+  requestedFrames.append(frame);
+  emit newFrame(viewport(), frame->name(), frame->url(), frame->mimetype());
+}
+
+void KHTMLWidget::slotReceiveFrame( BrowserView *frame, QString name )
+{
+    HTMLFrameRequester *f;
+    for(f = requestedFrames.first(); f != 0; f = requestedFrames.next())
+    {
+	if(f->name() == name) break;
+    }
+    
+    if(!f)
+    {
+	printf("============>>>>>>> received unrequested frame\n");
+	return;
+    }
+    f->setFrame(frame);
+}
+
+BrowserView* KHTMLWidget::getFrame( QString _name )
+{
+#if 0
     Child *c = m_lstChildren.first();
     while(c)
     {	
@@ -328,6 +353,7 @@ KHTMLWidget* KHTMLWidget::getFrame( QString _name )
 	c = m_lstChildren.next();
     }
     return 0;
+#endif
 }
 
 
@@ -335,6 +361,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 {
     debug("KHTMLWidget::begin(....)");
 
+    end();
     clear();
 
     m_iNextXOffset = _x_offset;
@@ -1590,6 +1617,7 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
 
 void KHTMLWidget::saveState( QDataStream &stream )
 {
+#if 0
     if(m_strURL.isEmpty() && !m_strWorkingURL.isEmpty())
 	stream << m_strWorkingURL;
     else
@@ -1654,10 +1682,12 @@ void KHTMLWidget::saveState( QDataStream &stream )
     }
     else
 	printf("error in KHTMLWidget::saveState()\n");
+#endif
 }
 
 void KHTMLWidget::restoreState( QDataStream &stream )
 {
+#if 0
     int x, y, info;
     QString u;
     stream >> u;
@@ -1683,11 +1713,12 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    QString name;
 	    stream >> name;
 
-	    KHTMLWidget *w = getFrame(name);
+// ###
+	    BrowserView *w = getFrame(name);
 	    if(!w)
 	    {
 		printf("have to vreate the frame!!!\n");
-		w = createFrame(viewport(), name);
+		//w = createFrame(viewport(), name);
 	    }
 	    w->resize(500,100);
 	    w->restoreState(stream);
@@ -1698,6 +1729,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
     }
 
     layout();
+#endif
 }
 
 bool KHTMLWidget::isFrameSet()
