@@ -106,8 +106,9 @@ void KFileDetailList::reorderFiles(int inColumn)
     KFileInfoContents::setSorting(new_sort);
 }
 
-bool KFileDetailList::insertItem(const KFileInfo *i, int index)
+bool KFileDetailList::insertItem(const KFileInfo *i, int /* index */)
 {
+  // WABA: Why is index not used?
   QPixmap type;
 
   if (i->isDir())
@@ -129,7 +130,8 @@ bool KFileDetailList::insertItem(const KFileInfo *i, int index)
 					  i->access(), i->date(),
 					  i->owner(), i->group());
   item->setPixmap(0, type);
-  QListView::insertItem(item);
+// WABA: I was told the following call is redundant
+//  QListView::insertItem(item);
   
   // TODO: find out, if a repaint is really necessary
   return true;
