@@ -3,7 +3,7 @@
  * $Id$
  *
  * This file is part of the KDE libraries.
- * Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
+ * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,8 +32,9 @@ class KSharedPixmapPrivate;
  * to copy (a part of) a shared pixmap into. KSharedPixmap inherits KPixmap
  * for that purpose.
  *
- * The server part of shared pixmaps is not implemented here, that's
- * provided by KPixmapServer.
+ * The server part of shared pixmaps is not implemented here. 
+ * That part is provided by KPixmapServer, in the source file:
+ * kdebase/kdesktop/pixmapserver.cc.
  *
  * An example: copy from a shared pixmap:
  * <pre>
@@ -42,7 +43,7 @@ class KSharedPixmapPrivate;
  *   pm->loadFromShared("My Pixmap");
  * </pre>
  *
- * @author Geert Jansen <g.t.jansen@stud.tue.nl>
+ * @author Geert Jansen <jansen@kde.org>
  * @version $Id$
  *
  */
@@ -106,7 +107,6 @@ private:
     Atom m_Selection;
 
     QRect m_Rect;
-
     KSharedPixmapPrivate *d;
 };
 

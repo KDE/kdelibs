@@ -3,29 +3,14 @@
  * $Id$
  *
  * This file is part of the KDE libraries.
- * Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
+ * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
  *
- *
  * Shared pixmap client for KDE.
- *
- * 5 Dec 99 Geert Jansen:
- *
- *	MAJOR change: KSharedPixmap is client-only and asynchronous now. It
- *	uses the new selection mechanism to transfer the pixmap handle. This
- *	has the advantage that shared pixmaps can be deleted and/or changed
- *	now, and that the very ugly XSetCloseDownMode() is not necessary
- *	anymore.
- *	The server is implemented in KPixmapServer, see the file
- *	kdebase/kdesktop/pixmapserver.cpp.
- *
- * 1 Oct 99 Geert Jansen:
- *
- *	Initial implementation.
  */
 
 #include <qrect.h>
@@ -38,8 +23,16 @@
 #include <kapp.h>
 #include <krootprop.h>
 #include <ksharedpixmap.h>
+#include <kdebug.h>
 
 #include <X11/Xlib.h>
+
+
+#ifdef __GNUC__
+#define ID __PRETTY_FUNCTION__ << ": "
+#else
+#define ID "KSharedPixmap: "
+#endif
 
 
 /**
@@ -61,7 +54,9 @@ KSharedPixmap::~KSharedPixmap()
 void KSharedPixmap::init()
 {
     pixmap = XInternAtom(qt_xdisplay(), "PIXMAP", false);
-    target = XInternAtom(qt_xdisplay(), "target prop", false);
+    QCString atom;
+    atom.sprintf("target prop for window %x", winId());
+    target = XInternAtom(qt_xdisplay(), atom.data(), false);
     m_Selection = None;
 }
 
@@ -89,7 +84,8 @@ bool KSharedPixmap::loadFromShared(QString name, QRect rect)
     m_Selection = XInternAtom(qt_xdisplay(), str.latin1(), true);
     if (m_Selection == None)
 	return false;
-    if (XGetSelectionOwner(qt_xdisplay(), m_Selection) == None) {
+    if (XGetSelectionOwner(qt_xdisplay(), m_Selection) == None) 
+    {
 	m_Selection = None;
 	return false;
     }
@@ -109,7 +105,9 @@ bool KSharedPixmap::x11Event(XEvent *event)
     if (ev->selection != m_Selection)
 	return false;
 
-    if ((ev->target != pixmap) || (ev->property == None)) {
+    if ((ev->target != pixmap) || (ev->property == None)) 
+    {
+	kdWarning(270) << ID << "illegal selection notify event.\n";
 	m_Selection = None;
 	emit done(false);
 	return true;
@@ -126,7 +124,9 @@ bool KSharedPixmap::x11Event(XEvent *event)
 	    pixmap, &type, &format, &nitems, &ldummy,
 	    (unsigned char **) &pixmap_id);
 
-    if (nitems != 1) {
+    if (nitems != 1) 
+    {
+	kdWarning(270) << ID << "could not read property, nitems = " << nitems << "\n";
 	emit done(false);
 	return true;
     }
@@ -136,7 +136,8 @@ bool KSharedPixmap::x11Event(XEvent *event)
     XGetGeometry(qt_xdisplay(), *pixmap_id, &root, &dummy, &dummy, &width,
 	    &height, &udummy, &udummy);
 
-    if (m_Rect.isEmpty()) {
+    if (m_Rect.isEmpty()) 
+    {
 	QPixmap::resize(width, height);
 	XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 		0, 0, width, height, 0, 0);
