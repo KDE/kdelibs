@@ -67,11 +67,9 @@ KJSO *KJS::toBoolean(KJSO *obj)
       b = (obj->stringVal().size() > 0);
       break;
     case ObjectType:
+    default: // Error Objects etc.
       b = true;
       break;
-    default:
-      b = false;
-      assert(!"unhandled object type in switch");
     }
 
   return KJSO::newBoolean(b);
@@ -100,12 +98,10 @@ KJSO *KJS::toNumber(KJSO *obj)
       d = obj->stringVal().toDouble();
       break;
     case ObjectType:
+    default: // Error Object etc.
       tmp = toPrimitive(obj, NumberType);
       res = toNumber(tmp);
       return res->ref();
-    default:
-      assert(!"toNumber: unhandled switch case");
-      exit(1);
     }
 
   return KJSO::newNumber(d);
