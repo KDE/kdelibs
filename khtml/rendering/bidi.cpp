@@ -372,7 +372,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
                 case QChar::DirAL:
                 case QChar::DirEN:
                 case QChar::DirAN:
-                    appendRun();
+                    appendRun();	
                     break;
                 case QChar::DirES:
                 case QChar::DirET:
@@ -421,6 +421,9 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
                 case QChar::DirEN:
                 case QChar::DirAN:
                     appendRun();
+		    dir = QChar::DirR;
+		    eor = current;
+		    status.eor = QChar::DirR;
                     break;
                 case QChar::DirES:
                 case QChar::DirET:
@@ -436,10 +439,12 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
                             appendRun();
                             dir = QChar::DirR;
                             eor = current;
+			    status.eor = QChar::DirR;
                         } else {
                             eor = last;
                             appendRun();
                             dir = QChar::DirR;
+			    status.eor = QChar::DirR;
                         }
                     } else {
                         eor = current; status.eor = QChar::DirR;
@@ -470,6 +475,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 			if ( status.lastStrong == QChar::DirR || status.lastStrong == QChar::DirAL ) {
 			    appendRun();
 			    dir = QChar::DirAN;
+			    status.eor = QChar::DirAN;
 			}
 			// fall through
                     case QChar::DirEN:
@@ -481,6 +487,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
                     case QChar::DirAL:
                     case QChar::DirAN:
                         appendRun();
+			status.eor = QChar::DirEN;
                         dir = QChar::DirAN; break;
                     case QChar::DirES:
                     case QChar::DirCS:
@@ -643,6 +650,8 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     kdDebug(6041) << "reached end of line current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
     if ( !emptyRun ) {
+	if ( eor != last && dir != context->dir )
+	    appendRun();
 	eor = last;
 	appendRun();
     }
