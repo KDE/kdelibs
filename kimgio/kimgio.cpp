@@ -65,7 +65,7 @@ void kimgioRegister(void)
 	    lt_dladdsearchdir( (*it).ascii() );
 
 	QRegExp reg("/kimg_[^.]*\\.la$");
-	list = KGlobal::dirs()->findAllResources("lib"); // TODO: use the regexp right away
+	list = KGlobal::dirs()->findAllResources("lib", "kimg_*.la"); // TODO: use the regexp right away
        
 	for (it = list.begin(); it != list.end(); it++) {
 	
