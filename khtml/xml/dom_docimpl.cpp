@@ -370,7 +370,7 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 
 Attr DocumentImpl::createAttribute( NodeImpl::Id id )
 {
-    return new AttrImpl(0, new AttributeImpl(id, DOMString("").implementation()));
+    return new AttrImpl(0, docPtr(), new AttributeImpl(id, DOMString("").implementation()));
 }
 
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
@@ -378,11 +378,72 @@ EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name
     return new EntityReferenceImpl(docPtr(), name.implementation());
 }
 
-NodeImpl *DocumentImpl::importNode( NodeImpl */*importedNode*/, bool /*deep*/,
-                                           int &/*exceptioncode*/ )
+NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &exceptioncode)
 {
-    // ### implement
-    return 0;
+	NodeImpl *result = 0;
+
+	if(importedNode->nodeType() == Node::ELEMENT_NODE)
+	{
+		ElementImpl *tempElementImpl = createElementNS(getDocument()->namespaceURI(id()), importedNode->nodeName());
+		result = tempElementImpl;
+
+		if(static_cast<ElementImpl *>(importedNode)->attributes(true) && static_cast<ElementImpl *>(importedNode)->attributes(true)->length())
+		{
+			NamedNodeMapImpl *attr = static_cast<ElementImpl *>(importedNode)->attributes();
+			
+			for(unsigned int i = 0; i < attr->length(); i++)
+			{
+				DOM::DOMString qualifiedName = attr->item(i)->nodeName();
+				DOM::DOMString value = attr->item(i)->nodeValue();
+
+				int colonpos = qualifiedName.find(':');
+				DOMString localName = qualifiedName;
+				if(colonpos >= 0)
+				{
+					localName.remove(0, colonpos + 1);
+					// ### extract and set new prefix
+				}
+				
+				NodeImpl::Id nodeId = getDocument()->attrId(getDocument()->namespaceURI(id()), localName.implementation(), false /* allocate */);
+				tempElementImpl->setAttribute(nodeId, value.implementation(), exceptioncode);
+
+				if(exceptioncode != 0)
+					break;
+			}
+		}
+	}
+	else if(importedNode->nodeType() == Node::TEXT_NODE)
+	{
+		result = createTextNode(importedNode->nodeValue());
+		deep = false;
+	}
+	else if(importedNode->nodeType() == Node::CDATA_SECTION_NODE)
+	{
+		result = createCDATASection(importedNode->nodeValue());
+		deep = false;
+	}
+	else if(importedNode->nodeType() == Node::ENTITY_REFERENCE_NODE)
+		result = createEntityReference(importedNode->nodeName());
+	else if(importedNode->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
+	{
+		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue());
+		deep = false;
+	}
+	else if(importedNode->nodeType() == Node::COMMENT_NODE)
+	{
+		result = createComment(importedNode->nodeValue());
+		deep = false;
+	}
+	else
+		exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+
+	if(deep)
+	{
+		for(Node n = importedNode->firstChild(); !n.isNull(); n = n.nextSibling())
+			result->appendChild(importNode(n.handle(), true, exceptioncode), exceptioncode);
+	}
+
+	return result;
 }
 
 ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
