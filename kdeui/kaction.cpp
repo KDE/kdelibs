@@ -1282,7 +1282,11 @@ void KSelectAction::setItems( const QStringList &lst )
     QStringList::ConstIterator it = d->m_list.begin();
     int id = 0;
     for( ; it != d->m_list.end(); ++it )
-      d->m_menu->insertItem( *it, this, SLOT( slotActivated( int ) ), 0, id++ );
+      if (!((*it).isEmpty())) {
+        d->m_menu->insertItem( *it, this, SLOT( slotActivated( int ) ), 0, id++ );
+      } else {
+        d->m_menu->insertSeparator();
+      }
   }
 
   int len = containerCount();
