@@ -1333,6 +1333,9 @@ protected:
 protected slots:
   void slotDockWidgetUndocked();
 
+public:
+	virtual void resizeEvent(QResizeEvent *);
+
 private:
   class KDockMainWindowPrivate;
   KDockMainWindowPrivate *d;

@@ -36,6 +36,7 @@
 #include <ktoolbar.h>
 #include <kpopupmenu.h>
 #include <kwin.h>
+#include <kdebug.h>
 #else
 #include <qapplication.h>
 #include <qtoolbar.h>
@@ -386,7 +387,7 @@ void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
     layout = new QVBoxLayout( this );
     layout->setResizeMode( QLayout::Minimum );
     layout->addWidget( header );
-     setWidget( widget );    
+     setWidget( widget );
   } else {
     header = h;
     layout->addWidget( header );
@@ -1011,7 +1012,7 @@ public:
 };
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
-:QObject( 0, name )
+:QObject( mainWindow, name )
   ,main(mainWindow)
   ,currentDragWidget(0L)
   ,currentMoveWidget(0L)
@@ -1088,7 +1089,12 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
    In short: QMainWindow knows how to layout its children, no need to
    mess that up.
 
-  if ( obj == main && event->type() == QEvent::Resize && main->children() ){
+   >>>>>I need this in the KDockArea at the moment (JoWenn)
+
+  if ( obj == main && event->type() == QEvent::Resize && dynamic_cast<KDockArea*>(main) && main->children() ){
+#ifndef NO_KDE2
+    kdDebug()<<"KDockManager::eventFilter(): main is a KDockArea and there are children"<<endl;
+#endif
     QWidget* fc = (QWidget*)main->children()->getFirst();
     if ( fc )
       fc->setGeometry( QRect(QPoint(0,0), main->geometry().size()) );
@@ -1515,7 +1521,7 @@ static QStrList listEntry(QDomElement &base, const QString &tagName, const QStri
 }
 
 
-void KDockManager::writeConfig(QDomElement &base) 
+void KDockManager::writeConfig(QDomElement &base)
 {
     // First of all, clear the tree under base
     while (!base.firstChild().isNull())
@@ -2191,6 +2197,40 @@ void KDockArea::slotDockWidgetUndocked()
   emit dockWidgetHasUndocked( pDW);
 }
 
+void KDockArea::resizeEvent(QResizeEvent *rsize)
+{
+  QWidget::resizeEvent(rsize);
+  if (children()){
+#ifndef NO_KDE2
+    kdDebug()<<"KDockArea::resize"<<endl;
+#endif
+    KDockSplitter *split;
+    QObjectList *list=queryList("QWidget",0,false);
+
+    QObjectListIt it( *list ); // iterate over the buttons
+    QObject *obj;
+
+    while ( (obj = it.current()) != 0 ) {
+        // for each found object...
+        ((QWidget*)obj)->setGeometry(QRect(QPoint(0,0),size()));
+	break;
+    }
+    delete list;
+#if 0
+//    for (unsigned int i=0;i<children()->count();i++)
+    {
+//    	QPtrList<QObject> list(children());
+//       QObject *obj=((QPtrList<QObject*>)children())->at(i);
+	QObject *obj=children()->getFirst();
+       if (split=dynamic_cast<KDockSplitter*>(obj))
+       {
+          split->setGeometry( QRect(QPoint(0,0), size() ));
+//	  break;
+       }
+    }
+#endif
+   }
+}
 
 #ifndef NO_KDE2
 void KDockArea::writeDockConfig( KConfig* c, QString group )
