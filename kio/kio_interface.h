@@ -257,7 +257,7 @@ public:
   virtual void slotError( int _errid, const char *_text ) { };
   virtual void slotReady() { };
   virtual void slotFinished() { };
-  virtual void slotListEntry( UDSEntry& _entry ) { };
+  virtual void slotListEntry( const UDSEntry& _entry ) { };
   virtual void slotIsDirectory() { };
   virtual void slotIsFile() { };
   virtual void slotRenamed( const char* _new ) { };
