@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "hconv.h"
 #include "kcalendarsystemhijri.h"
 
 
