@@ -2980,7 +2980,15 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
     return getDOMNodeList(exec, list);
   }
   case KJS::HTMLCollection::NamedItem:
-    return static_cast<HTMLCollection *>(thisObj.imp())->getNamedItems(exec,args[0].toString(exec).string());
+  {
+    Value val = static_cast<HTMLCollection *>(thisObj.imp())->getNamedItems(exec,args[0].toString(exec).string());
+    // Must return null when asking for a named item that isn't in the collection
+    // (DOM2 testsuite, HTMLCollection12 test)
+    if ( val.type() == KJS::UndefinedType )
+      return Null();
+    else
+      return val;
+  }
   default:
     return Undefined();
   }
