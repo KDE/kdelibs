@@ -206,6 +206,7 @@ HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentPtr *doc)
     marginHeight = -1;
     scrolling = QScrollView::Auto;
     noresize = false;
+    url = "about:blank";
 }
 
 HTMLFrameElementImpl::~HTMLFrameElementImpl()
