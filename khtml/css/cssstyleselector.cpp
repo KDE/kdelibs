@@ -658,34 +658,31 @@ void CSSStyleSelector::buildLists()
     }
     *prop = 0;
 
-    // This algorithm sucks badly. but hey, its performance shouldn't matter much ( Dirk )
-    for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
-        prop = properties;
-        int len = 0;
-        int offset = 0;
-        bool matches = properties[0] ? properties[0]->selector == sel : false;
-        for ( unsigned int p = 0; p < properties_size; ++p ) {
-            if ( !properties[p] || ( matches != ( properties[p]->selector == sel ) )) {
-                if ( matches ) {
-                    int* newprops = new int[selectorCache[sel].props_size+2];
-                    for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
-                        newprops[i] = selectorCache[sel].props[i];
-                    newprops[selectorCache[sel].props_size] = offset;
-                    newprops[selectorCache[sel].props_size+1] = len;
-                    delete [] selectorCache[sel].props;
-                    selectorCache[sel].props = newprops;
-                    selectorCache[sel].props_size += 2;
-                    matches = false;
-                }
-                else {
-                    matches = true;
-                    offset = p;
-                    len = 0;
-                }
+    unsigned int* offsets = new unsigned int[selectors_size];
+    if(properties[0])
+	offsets[properties[0]->selector] = 0;
+    for(unsigned int p = 1; p < properties_size; ++p) {
+
+	if(!properties[p] || (properties[p]->selector != properties[p - 1]->selector)) {
+	    unsigned int sel = properties[p - 1]->selector;
+            int* newprops = new int[selectorCache[sel].props_size+2];
+            for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
+                newprops[i] = selectorCache[sel].props[i];
+
+	    newprops[selectorCache[sel].props_size] = offsets[sel];
+	    newprops[selectorCache[sel].props_size+1] = p - offsets[sel];
+            delete [] selectorCache[sel].props;
+            selectorCache[sel].props = newprops;
+            selectorCache[sel].props_size += 2;
+
+	    if(properties[p]) {
+		sel = properties[p]->selector;
+		offsets[sel] = p;
             }
-            ++len;
         }
     }
+    delete [] offsets;
+
 
 #if 0
     // and now the same for the selector map
