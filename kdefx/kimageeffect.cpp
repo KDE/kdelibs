@@ -33,13 +33,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <qimage.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "kimageeffect.h"
 
 #define MaxRGB 255L
 #define DegreesToRadians(x) ((x)*M_PI/180.0)
 
+using std::cerr;
 
 inline unsigned int intensityValue(unsigned int color)
 {
