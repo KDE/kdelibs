@@ -323,8 +323,7 @@ failure_exit:
 }
 
 static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, 
-	                                 KBookmarkManager * /*mgr*/, QPoint & pt,
-					 KToolBarButton ** p_b = 0) 
+	                                 KBookmarkManager * /*mgr*/, QPoint & pt)
 {
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(tb);
@@ -338,9 +337,6 @@ static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions,
     a = findPluggedAction(actions, tb, b->id());
     Q_ASSERT(a);
     pt = tb->mapToGlobal(pos);
-
-    if (p_b)
-	(*p_b) = b;
 
     return a;
 }
@@ -389,34 +385,20 @@ void KBookmarkBar::slotRMBActionOpen( int val )
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
-    static bool shuffling = false;
     static bool atFirst = false;
     static KAction* a = 0;
-    QPoint origPos;
     if (dptr()->m_readOnly)
         return false; // todo: make this limit the actions
     kdDebug(7043) << "FOOOO>>>> got an event (" << e << ") of type" << e->type() << endl;
 
-    bool release = (e->type() == QEvent::MouseButtonRelease);
-    bool press   = (e->type() == QEvent::MouseButtonPress);
-    if ( e->type() == QEvent::MouseMove && shuffling )
-    {
-        kdDebug(7043) << "FOOOO>>>> got an mouse move event" << e->type() << endl;
-
-	QString address = a->property("address").toString();
-	KBookmark bookmark = m_pManager->findByAddress( address );
-
-        kdDebug(7043) << "FOOOO>>>> moving thingy" << bookmark.url().url() << endl;
-    }
-    else if ( release || press )
+    if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) )
     {
         QMouseEvent *mev = (QMouseEvent*)e;
 
 	QPoint pt;
 	KAction *_a; 
 
-	KToolBarButton *b = 0;
-	_a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt, &b );
+	_a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt );
 
 	if (_a)
 	{
@@ -431,23 +413,6 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 		pm->popup( pt );
 	 
 		mev->accept();
-	    }
-	    else if (mev->button() == Qt::MidButton)
-	    {
-		shuffling = press;
-		m_toolBar->setMouseTracking(shuffling);
-		a = _a;
-
-		static QColor origBgColor;
-		if ( shuffling )
-		{
-		    origBgColor = b->paletteBackgroundColor();
-		    b->setPaletteBackgroundColor( QColor(230,190,190) );
-		}
-		else
-		{
-		    b->setPaletteBackgroundColor( origBgColor );
-		}
 	    }
 	     
 	    return !!_a;
