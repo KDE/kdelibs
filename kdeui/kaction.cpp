@@ -32,6 +32,7 @@
 
 #include <kaccel.h>
 #include <kaccelbase.h>
+#include <kaccelprivate.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kguiitem.h>
@@ -241,7 +242,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
 
     d->m_cutDefault = cut;
     d->m_activationReason = KAction::UnknownActivation;
-    
+
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
     kdDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
     if ( m_parentCollection )
@@ -487,11 +488,11 @@ void KAction::updateShortcut( int i )
   int id = itemId( i );
 
   QWidget* w = container( i );
-  if ( w->inherits( "QPopupMenu" ) ) {
+  if ( ::qt_cast<QPopupMenu *>( w ) ) {
     QPopupMenu* menu = static_cast<QPopupMenu*>(w);
     updateShortcut( menu, id );
   }
-  else if ( w->inherits( "QMenuBar" ) )
+  else if ( ::qt_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->setAccel( d->m_cut.keyCodeQt(), id );
 }
 
@@ -586,7 +587,7 @@ void KAction::updateToolTip( int i )
 {
   QWidget *w = container( i );
 
-  if ( w->inherits( "KToolBar" ) )
+  if ( ::qt_cast<KToolBar *>( w ) )
     QToolTip::add( static_cast<KToolBar*>(w)->getWidget( itemId( i ) ), d->toolTip() );
 }
 
@@ -618,7 +619,7 @@ int KAction::plug( QWidget *w, int index )
 
   plugShortcut();
 
-  if ( w->inherits("QPopupMenu") )
+  if ( ::qt_cast<QPopupMenu *>( w ) )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
     int id;
@@ -662,7 +663,7 @@ int KAction::plug( QWidget *w, int index )
 
     return d->m_containers.count() - 1;
   }
-  else if ( w->inherits( "KToolBar" ) )
+  else if ( ::qt_cast<KToolBar *>( w ) )
   {
     KToolBar *bar = static_cast<KToolBar *>( w );
 
@@ -716,17 +717,17 @@ void KAction::unplug( QWidget *w )
     return;
   int id = itemId( i );
 
-  if ( w->inherits( "QPopupMenu" ) )
+  if ( ::qt_cast<QPopupMenu *>( w ) )
   {
     QPopupMenu *menu = static_cast<QPopupMenu *>( w );
     menu->removeItem( id );
   }
-  else if ( w->inherits( "KToolBar" ) )
+  else if ( ::qt_cast<KToolBar *>( w ) )
   {
     KToolBar *bar = static_cast<KToolBar *>( w );
     bar->removeItemDelayed( id );
   }
-  else if ( w->inherits( "QMenuBar" ) )
+  else if ( ::qt_cast<QMenuBar *>( w ) )
   {
     QMenuBar *bar = static_cast<QMenuBar *>( w );
     bar->removeItem( id );
@@ -817,11 +818,11 @@ void KAction::updateEnabled( int i )
 {
     QWidget *w = container( i );
 
-    if ( w->inherits("QPopupMenu") )
+    if ( ::qt_cast<QPopupMenu *>( w ) )
       static_cast<QPopupMenu*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
-    else if ( w->inherits("QMenuBar") )
+    else if ( ::qt_cast<QMenuBar *>( w ) )
       static_cast<QMenuBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
-    else if ( w->inherits( "KToolBar" ) )
+    else if ( ::qt_cast<KToolBar *>( w ) )
       static_cast<KToolBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
 }
 
@@ -857,18 +858,18 @@ void KAction::updateText( int i )
 {
   QWidget *w = container( i );
 
-  if ( w->inherits( "QPopupMenu" ) ) {
+  if ( ::qt_cast<QPopupMenu *>( w ) ) {
     int id = itemId( i );
     static_cast<QPopupMenu*>(w)->changeItem( id, d->text() );
     if (!d->m_cut.isNull())
       updateShortcut( static_cast<QPopupMenu*>(w), id );
   }
-  else if ( w->inherits( "QMenuBar" ) )
+  else if ( ::qt_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( i ), d->text() );
-  else if ( w->inherits( "KToolBar" ) )
+  else if ( ::qt_cast<KToolBar *>( w ) )
   {
     QWidget *button = static_cast<KToolBar *>(w)->getWidget( itemId( i ) );
-    if ( button->inherits( "KToolBarButton" ) )
+    if ( ::qt_cast<KToolBarButton *>( button ) )
       static_cast<KToolBarButton *>(button)->setText( d->plainText() );
   }
 }
@@ -897,15 +898,15 @@ void KAction::updateIcon( int id )
 {
   QWidget* w = container( id );
 
-  if ( w->inherits( "QPopupMenu" ) ) {
+  if ( ::qt_cast<QPopupMenu *>( w ) ) {
     int itemId_ = itemId( id );
     static_cast<QPopupMenu*>(w)->changeItem( itemId_, d->iconSet( KIcon::Small ), d->text() );
     if (!d->m_cut.isNull())
       updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
   }
-  else if ( w->inherits( "QMenuBar" ) )
+  else if ( ::qt_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
-  else if ( w->inherits( "KToolBar" ) )
+  else if ( ::qt_cast<KToolBar *>( w ) )
     static_cast<KToolBar *>(w)->setButtonIcon( itemId( id ), d->iconName() );
 }
 
@@ -928,16 +929,16 @@ void KAction::updateIconSet( int id )
 {
   QWidget *w = container( id );
 
-  if ( w->inherits( "QPopupMenu" ) )
+  if ( ::qt_cast<QPopupMenu *>( w ) )
   {
     int itemId_ = itemId( id );
     static_cast<QPopupMenu*>(w)->changeItem( itemId_, d->iconSet(), d->text() );
     if (!d->m_cut.isNull())
       updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
   }
-  else if ( w->inherits( "QMenuBar" ) )
+  else if ( ::qt_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
-  else if ( w->inherits( "KToolBar" ) )
+  else if ( ::qt_cast<KToolBar *>( w ) )
   {
     if ( icon().isEmpty() && d->hasIconSet() ) // only if there is no named icon ( scales better )
       static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), d->iconSet() );
@@ -1060,11 +1061,11 @@ void KAction::slotActivated()
   const QObject *senderObj = sender();
   if ( senderObj )
   {
-    if ( senderObj->inherits( "KAccelPrivate" ) ) 
+    if ( ::qt_cast<KAccelPrivate *>( senderObj ) )
       d->m_activationReason = KAction::AccelActivation;
-    else if ( senderObj->inherits( "QSignal" ) ) 
+    else if ( ::qt_cast<QSignal *>( senderObj ) )
       d->m_activationReason = KAction::PopupMenuActivation;
-    else if ( senderObj->inherits( "KToolBarButton" ) ) 
+    else if ( ::qt_cast<KToolBarButton *>( senderObj ) )
       d->m_activationReason = KAction::ToolBarActivation;
     else
       d->m_activationReason = KAction::UnknownActivation;

@@ -25,16 +25,18 @@
 
 #include "kactioncollection.h"
 #include "kactionshortcutlist.h"
-
-#include <qptrdict.h>
-#include <qvariant.h>
+#include "ktoolbar.h"
+#include "kxmlguifactory.h"
+#include "kxmlguiclient.h"
 
 #include <kaccel.h>
 #include <kaccelbase.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <kxmlguifactory.h>
-#include <kxmlguiclient.h>
+
+#include <qpopupmenu.h>
+#include <qptrdict.h>
+#include <qvariant.h>
 
 class KActionCollection::KActionCollectionPrivate
 {
@@ -499,14 +501,14 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   {
     actionList = new QPtrList<KAction>;
 
-    if ( container->inherits( "QPopupMenu" ) )
+    if ( ::qt_cast<QPopupMenu *>( container ) )
     {
       connect( container, SIGNAL( highlighted( int ) ),
                this, SLOT( slotMenuItemHighlighted( int ) ) );
       connect( container, SIGNAL( aboutToHide() ),
                this, SLOT( slotMenuAboutToHide() ) );
     }
-    else if ( container->inherits( "KToolBar" ) )
+    else if ( ::qt_cast<KToolBar *>( container ) )
     {
       connect( container, SIGNAL( highlighted( int, bool ) ),
                this, SLOT( slotToolBarButtonHighlighted( int, bool ) ) );
