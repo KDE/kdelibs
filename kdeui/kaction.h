@@ -11,6 +11,7 @@
 
 class QIconSet;
 class KConfigBase;
+class QPopupMenu;
 
 /**
 * A named user action.
@@ -24,6 +25,7 @@ class KAction : public QObject
 public:
 
 	typedef QWidget		Trigger;
+	typedef QPopupMenu	MenuType;
 
 private:
 
@@ -32,9 +34,9 @@ private:
 	 */
 	class MenuTrigger {
 	public:
-		QObject *menu;
+		MenuType *menu;
 		int	id;
-		MenuTrigger( QObject *m, int i ) { menu = m; id = i; }
+		MenuTrigger( MenuType *m, int i ) { menu = m; id = i; }
 	};
 
 	typedef QList<Trigger>	Triggers;
@@ -43,6 +45,8 @@ private:
 
 	QString	_name;
 	QString _localName;
+	QString _whatsThis;
+	QString _toolTip;
 
 	QIconSet *_icon;
 	int _accel;
@@ -70,6 +74,13 @@ public:
 	void setIcon( const QIconSet& icon );
 	const QIconSet& icon() const;
 
+	void setWhatsThis( const QString& whatsthis )
+						{ _whatsThis = whatsthis; }
+	QString whatsThis() const		{ return _whatsThis; }
+
+	void setToolTip( const QString& tip )	{ _toolTip = tip; }
+	QString toolTip() const			{ return _toolTip; }
+
 	/**
 	 * @return the name of this action. 
 	 */
@@ -88,7 +99,7 @@ public:
 	void setAccel( int accel );
 	int accel() const { return _accel; }
 
-	void addMenuItem( QObject *menu, int id );
+	void addMenuItem( MenuType *menu, int id );
 
 	void addTrigger( Trigger *uitrigger,
 			const char *member = SIGNAL(clicked()),
@@ -120,6 +131,12 @@ public:
 signals:
 
 	void activate();
+	
+	/**
+	 * Emitted when the user information (icon, tooltip, WhatsThis ) has
+	 * been changed.
+	 */
+	void infoChanged();
 
 	/**
 	 * Emitted when the action expects the parent to set a widget-level

@@ -122,7 +122,8 @@ void KUIActions::setAccel( KAction *action, int accel )
 	if( accel != 0 && action->receiver() != 0 
 			&& !action->member().isNull() ) {
 		id = _accel->insertItem( accel, id );
-		_accel->connectItem( id, action->receiver(), action->member().ascii() );
+		_accel->connectItem( id, action->receiver(), 
+			action->member().ascii() );
 	}
 	
 	action->setAccelId( id );

@@ -8,7 +8,7 @@
 
 #include<assert.h>
 #include<qiconset.h>
-#include<qmenudata.h>
+#include<qpopupmenu.h>
 
 #include<kconfigbase.h>
 
@@ -79,21 +79,18 @@ void KAction::setAccel( int accel )
  	// set accel for all related menu items.
 
 	QListIterator<MenuTrigger> iter( *_menus );
-	QMenuData *d = 0;
+	MenuTrigger *t = iter.toFirst();
 
-	for( MenuTrigger *t = iter.toFirst(); 
-			t != 0; t = ++iter ) {
-		d = dynamic_cast<QMenuData *>( t->menu );
-		assert( d != 0 );
-		d->setAccel( accel, t->id );
+	for( ; t != 0; t = ++iter ) {
+		t->menu->setAccel( accel, t->id );
 	}
 
-	if( d != 0 && _accel != 0 ) {
+	if( t != 0 && _accel != 0 ) {
 		removeAccel( this );
 	}
 }
 
-void KAction::addMenuItem( QObject *menu, int id )
+void KAction::addMenuItem( MenuType *menu, int id )
 {
 	assert( menu != 0 );
 
@@ -121,11 +118,10 @@ void KAction::addMenuItem( QObject *menu, int id )
 	connect( menu, SIGNAL(activated(int)), 
 			this, SLOT(menuActivated(int)) );
 
-	QMenuData *menud = dynamic_cast<QMenuData *>(menu);
-	menud->setItemEnabled( id, enabled() );
+	menu->setItemEnabled( id, enabled() );
 
 	if( _accel ) {
-		menud->setAccel( _accel, id );
+		menu->setAccel( _accel, id );
 	}
 	
 	debug( "going to set global accel..." );
@@ -158,11 +154,13 @@ void KAction::addTrigger( Trigger *uitrigger, const char *member,
 
 void KAction::senderDead()
 {
-	const Trigger *sdr = dynamic_cast<const Trigger *>(sender());
+	const QObject * s = sender();
 
-	if( sdr == 0 ) {
+	if( s == 0 || ! s->inherits("QWidget") ) {
 		return;
 	}
+
+	const Trigger *sdr = (const Trigger *)s;
 
 	for (Trigger *curr = _triggers->first(); curr != 0; ) {
 		if ( curr == sdr ) {
@@ -177,11 +175,13 @@ void KAction::senderDead()
 
 void KAction::menuDead()
 {
-	const QObject *sdr = sender();
+	const QObject *s = sender();
 
-	if( sdr == 0 || _menus == 0 ) {
+	if( s == 0 || !s->inherits( "QPopupMenu") ) {
 		return;
 	}
+
+	const MenuType *sdr = (MenuType *)s;
 
 	for (MenuTrigger *curr = _menus->first(); curr != 0; ) {
 		if ( curr->menu == sdr ) {
@@ -200,11 +200,13 @@ void KAction::menuDead()
 
 void KAction::menuActivated( int id )
 {
-	const QObject *sdr = sender();
+	const QObject *s = sender();
 	
-	if( sdr == 0 || _menus == 0 ) {
+	if( s == 0 || !s->inherits( "QPopupMenu" ) ) {
 		return;
 	}
+
+	const MenuType *sdr = (MenuType *)s;
 
 	QListIterator<MenuTrigger> miter( *_menus );
 	const MenuTrigger *m = miter.toFirst();
@@ -235,9 +237,7 @@ void KAction::setEnabled( bool state )
 		MenuTrigger *t = 0;
 
 		for( ; (t = miter.current()) != 0; ++miter ) {
-			QMenuData *menu = dynamic_cast<QMenuData *>(t->menu);
-			assert( menu != 0 );
-			menu->setItemEnabled( t->id, state );
+			t->menu->setItemEnabled( t->id, state );
 		}
 	}
 }
