@@ -3591,7 +3591,6 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
     if (dirty & WMIconName) {
         delete[] p->icon_name;
         p->icon_name = NULL;
-	char* text_ret = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_name, 0l,
 			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
@@ -3602,13 +3601,6 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 
 	    if( data_ret )
 		XFree(data_ret);
-	}
-
-	if ( !p->visible_icon_name &&  XGetIconName(p->display, p->window, &text_ret) ) {
-	    p->icon_name = nstrdup(text_ret);
-
-	    if( text_ret )
-		XFree(text_ret);
 	}
     }
 
