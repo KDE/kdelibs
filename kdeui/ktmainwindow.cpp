@@ -164,7 +164,7 @@ KTMainWindow::~KTMainWindow()
       delete toolbar;
     }
   }
-  
+
   if (kmenubar)
   {
     delete kmenubar; // Eeeh? (sven)
@@ -183,6 +183,7 @@ KTMainWindow::~KTMainWindow()
   //if (!QApplication::closingDown())
     delete mHelpMenu;
 
+  delete d;
   debug ("KTM destructor: end");
 }
 
