@@ -36,7 +36,7 @@ CupsdServerMiscPage::CupsdServerMiscPage(QWidget *parent, const char *name)
 {
 	path_.append(i18n("Server"));
 	path_.append(i18n("Misc"));
-	header_ = i18n("Server misceallenous configuration");
+	header_ = i18n("Server miscellaneous configuration");
 
 	for (int i=0;i<5;i++)
 		opt_[i] = new CupsdOption(this);

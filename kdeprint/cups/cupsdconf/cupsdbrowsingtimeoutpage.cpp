@@ -100,7 +100,7 @@ bool CupsdBrowsingTimeoutPage::saveConfig(CupsdConf *conf, QString& msg)
 	}
 	if (v2 <= v1)
 	{
-		msg = i18n("Browse timeout value must be greater than browse iinterval");
+		msg = i18n("Browse timeout value must be greater than browse interval");
 		return false;
 	}
 	return true;
