@@ -20,7 +20,7 @@ AC_ARG_WITH(ssl-dir,
 
 want_ssl=yes
 AC_ARG_WITH(ssl,
-    [  --without-ssl          disable SSL checks],
+    [  --without-ssl           disable SSL checks],
     [want_ssl=$withval])
 
 if test $want_ssl = yes; then
