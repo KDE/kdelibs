@@ -64,6 +64,10 @@ int main(int argc, char *argv[])
   s = "kedit --caption \"%n\" %f";
   check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\\"Chew It\\\"\" 'filename.txt'");
 
+  s = "dcop `dcop|grep konqueorr|head -n -1` default 'createNewWindow(QString)' %s || kfmclient exec %%s";
+  s = "kfmclient exec \\%s";
+  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\\"Chew It\\\"\" 'filename.txt'");
+
   map.replace('n', "Restaurant $HOME");
   s = "kedit --caption \"%n\" %f";
   check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\$HOME\" 'filename.txt'");
