@@ -84,7 +84,7 @@
 
 #endif /* HAVE_LIBGSSAPI */
 
-#include <kio/kntlm.h>
+#include <misc/kntlm/kntlm.h>
 
 using namespace KIO;
 
