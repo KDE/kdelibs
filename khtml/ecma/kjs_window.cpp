@@ -601,7 +601,9 @@ Value Window::get(ExecState *exec, const UString &p) const
     }
   }
 
-  kdWarning() << "Window::get property not found: " << p.qstring() << endl;
+  // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
+  // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
+  kdDebug(6070) << "WARNING: Window::get property not found: " << p.qstring() << endl;
   return Undefined();
 }
 
@@ -615,12 +617,12 @@ void Window::put(ExecState* exec, const UString &p, const Value &v, int attr)
     return;
   }
 
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "Window::put " << p.qstring() << endl;
-#endif
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
   if (entry)
   {
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << "Window::put " << p.qstring() << endl;
+#endif
     switch( entry->value ) {
     case Status: {
       String s = v.toString(exec);
