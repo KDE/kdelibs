@@ -1884,7 +1884,7 @@ void KWidgetAction::unplug( QWidget *w )
 
 void KWidgetAction::slotToolbarDestroyed()
 {
-  Q_ASSERT( m_widget );
+  //Q_ASSERT( m_widget ); // When exiting the app the widget could be destroyed before the toolbar.
   Q_ASSERT( isPlugged() );
   if( !m_widget || !isPlugged() )
     return;
