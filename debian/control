@@ -9,10 +9,10 @@ Standards-Version: 3.1.1
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs3-cvs, kdelibs3-nossl
+Replaces: kdelibs3-cvs, kdelibs3-nossl, kdelibs2g
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3-crypto
-Conflicts: kdelibs3-nossl, kdeadmin, kdegames, kdegraphics, kdemultimedia, kdenetwork, kdepim, kdetoys, kdeutils, koffice
+Conflicts: kdelibs3-nossl
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -22,7 +22,6 @@ Architecture: all
 Section: doc
 Replaces: kdelibs3-doc-cvs, kdelibs-doc
 Suggests: kdelibs3, kdelibs3-dev, libqt2.2-dev, kdoc
-Provides: kdelibs-doc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
  is needed for developing KDE related packages.
@@ -30,8 +29,8 @@ Description: KDE core library documentation
 Package: kdelibs3-dev
 Architecture: any
 Section: devel
-Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev
-Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev
+Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< ${Source-Version})
+Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Suggests: kdelibs3-doc, kdoc
 Provides: kdelibs-dev
