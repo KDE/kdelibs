@@ -20,17 +20,23 @@
  *    2) readln() (or fgets()) reads a line of data and buffers any 
  *        leftovers.
  *
+ * Added:
+ *
+ *    3) Conversion from/to unicode.
+ *
  * Basically, KProcIO gives you buffered I/O similar to fgets()/fputs().
  *
  * Aside from these, and the fact that start() takes different
  *  parameters, use this class just like KProcess.
  **/
 
+class QTextCodec;
+
 class KProcIO : public KProcess
 {
   Q_OBJECT
 public:
-  KProcIO ();
+  KProcIO ( QTextCodec *codec = 0 );
   
   bool start (RunMode  runmode = NotifyOnExit);
 
@@ -41,12 +47,12 @@ public:
    * unless you specify FALSE as the second parameter.
    * FALSE is returned on an error, or else TRUE is.
    **/
-  virtual bool writeStdin(const char *buffer, bool AppendNewLine=TRUE);
+  virtual bool writeStdin(const QString &line, bool AppendNewLine=TRUE);
 
   //I like fputs better -- it's the same as writeStdin
   //inline
-  bool fputs (const char *buffer, bool AppendNewLine=TRUE)
-    { return writeStdin(buffer, AppendNewLine); }
+  bool fputs (const QString &line, bool AppendNewLine=TRUE)
+    { return writeStdin(line, AppendNewLine); }
 
   /**
    * readln() reads up to '\n' (or max characters) and
@@ -64,10 +70,10 @@ public:
    *
    * autoAck==TRUE makes these functions call ackRead() for you.
    **/
-  virtual int readln (char *buffer, int max, bool autoAck=FALSE);
+  virtual int readln (QString &line, bool autoAck=FALSE);
 
-  int fgets (char *buffer, int max, bool autoAck=FALSE)
-    { return readln (buffer, max, autoAck); }
+  int fgets (QString &line, bool autoAck=FALSE)
+    { return readln (line, autoAck); }
 
   /**
    * Reset the class.  Doesn't kill the process.
@@ -98,6 +104,7 @@ signals:
 protected:
   QStrList qlist;
   QString recvbuffer;
+  QTextCodec *codec;
   int rbi;
   bool needreadsignal, readsignalon, writeready;
 

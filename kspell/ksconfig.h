@@ -68,7 +68,7 @@ public:
 
   /**
    *Options setting routines.
-   * The ignorelist is a QStrList that contains words you'd like KSpell
+   * The ignorelist is a QStringList that contains words you'd like KSpell
    *  to ignore when it it spellchecking.  When you get a KSpellConfig
    *  object back from KSpell (using KSpell::kcConfig()), the ignorlist
    *  contains whatever was put in by you plus any words the user has
@@ -82,7 +82,7 @@ public:
   void setDictFromList (bool dfl);
   //  void setPersonalDict (const char *s);
   void setEncoding (int enctype);
-  void setIgnoreList (QStrList _ignorelist);
+  void setIgnoreList (QStringList _ignorelist);
   void setClient (int client);
 
   /**
@@ -94,7 +94,7 @@ public:
   bool dictFromList () const;
   //QString personalDict () const;
   int encoding () const;
-  QStrList ignoreList () const;
+  QStringList ignoreList () const;
   int client () const; //see enums at top of file
 
   /**
@@ -114,7 +114,7 @@ protected:
   bool nodialog;
   QString qsdict;		// -d [dict]
   QString qspdict;		// -p [dict]
-  QStrList ignorelist;
+  QStringList ignorelist;
   enum {rdictlist=3, rencoding=4, rhelp=6};
   KConfig *kc;			 
   int iclient;            // defaults to ispell, may be aspell, too
@@ -128,7 +128,7 @@ protected:
   QComboBox *dictcombo, *encodingcombo, *clientcombo;
   QPushButton *browsebutton1;
 
-  QStrList *langnames, *langfnames;
+  QStringList langfnames;
   void fillInDialog ();
   bool readGlobalSettings ();
 

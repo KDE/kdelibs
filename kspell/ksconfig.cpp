@@ -53,8 +53,6 @@ KSpellConfig::KSpellConfig (QWidget *parent, const char *name,
       setClient (_ksc->client());
     }
 
-  //  langnames=new QStrList ();
-  langfnames=new QStrList ();
   nodialog=FALSE;
 
   //  if (parent!=0)
@@ -246,10 +244,6 @@ KSpellConfig::KSpellConfig (QWidget *parent, const char *name,
 
 KSpellConfig::~KSpellConfig ()
 {
-  if (! nodialog) {
-//    delete langnames;
-    delete langfnames;
-  }
 }
 
 
@@ -377,11 +371,10 @@ KSpellConfig::fillInDialog ()
   //  kle1->setText (dictionary());
   //  kle2->setText (personalDict());
 
-  if (langfnames->count()==0) //will only happen once
+  if (langfnames.count()==0) //will only happen once
     {
       
-      langfnames->append("");
-      //      langnames->append("ISpell Default");
+      langfnames.append(""); // Default
       dictcombo->insertItem (i18n("ISpell Default"));
 
       QFileInfo dir ("/usr/lib/ispell");
@@ -409,20 +402,17 @@ KSpellConfig::fillInDialog ()
 	      // so place it first in the lists (overwrite "Default")
 
 	      //	      kdebug (KDEBUG_INFO, 750, "default is [%s][%s]",hname.data(),fname.data());
-	      langfnames->remove (  );
-	      langfnames->insert (0,fname.ascii());
+	      langfnames.remove ( langfnames.begin() );
+	      langfnames.prepend ( fname );
 
 	      hname="Default - "+hname+"("+fname+")";
-	      //	      langnames->insert (0,hname);
-	      //	      langnames->removeFirst();
 	      
 	      dictcombo->changeItem (hname,0);
 	    }
 	  else
 	    {
-	      langfnames->append (fname.ascii());
+	      langfnames.append (fname);
 	      hname=hname+" ("+fname+")";
-	      //	      langnames->append (hname);
 	      
 	      dictcombo->insertItem (hname.data());
 	    }
@@ -433,10 +423,10 @@ KSpellConfig::fillInDialog ()
   int whichelement=-1;
   //  kdebug (KDEBUG_INFO, 750, "dfl=%d",dictFromList());
   if (dictFromList())
-    for (unsigned int i=0;i<langfnames->count();i++)
+    for (unsigned int i=0;i<langfnames.count();i++)
       {
-	//	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary().data());
-	if (langfnames->at(i) == dictionary())
+	//	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames[i], dictionary().data());
+	if (langfnames[i] == dictionary())
 	  whichelement=i;
       }
 
@@ -595,7 +585,7 @@ void KSpellConfig::sBrowsePDict()
 void
 KSpellConfig::sSetDictionary (int i)
 {
-  setDictionary (langfnames->at(i));
+  setDictionary (langfnames[i]);
   setDictFromList (TRUE);
 }
 
@@ -605,7 +595,7 @@ KSpellConfig::sDictionary(bool on)
   if (on)
     {
       dictcombo->setEnabled (TRUE);
-      setDictionary (langfnames->at(dictcombo->currentItem()));
+      setDictionary (langfnames[dictcombo->currentItem()] );
       setDictFromList (TRUE);
     }
   else
@@ -670,12 +660,12 @@ KSpellConfig::operator= (const KSpellConfig &ksc)
 }
 
 void
-KSpellConfig::setIgnoreList (QStrList _ignorelist)
+KSpellConfig::setIgnoreList (QStringList _ignorelist)
 {
   ignorelist=_ignorelist;
 }
 
-QStrList
+QStringList
 KSpellConfig::ignoreList () const
 {
   return ignorelist;

@@ -1,13 +1,6 @@
 #ifndef __KSPELL_H__
 #define __KSPELL_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
- 
 #include <qobject.h>
 #include <qstrlist.h>
 
@@ -38,6 +31,7 @@
  * @see KSpellConfig
  */
 
+class QTextCodec;
 
 class KSpell : public QObject
 {
@@ -88,7 +82,7 @@ public:
    *  in _buffer check() reached before stopping.
    */
 
-  virtual bool check (const QString _buffer);
+  virtual bool check (const QString &_buffer);
 
   /**
    * Returns the position (for check())  or word number (for checkList()) of
@@ -106,7 +100,7 @@ public:
    * The progress() signals will be accurate here since words are
    *  checked one at a time.
    */
-  virtual bool checkList (QStrList *_wordlist);
+  virtual bool checkList (QStringList *_wordlist);
 
   /**
    * checkWord() is the most flexible function.  Some apps might need this
@@ -146,7 +140,7 @@ public:
    *  use this to get the list of
    *  suggestions (if any were available)
    */
-  inline QStrList *suggestions ()	{ return &sugg; }
+  inline QStringList *suggestions ()	{ return &sugg; }
 
   /**
    * After calling checkWord, you can use this to get the dialog box's
@@ -216,13 +210,13 @@ signals:
    *  If it is emitted by check(), the pos indicates the position of
    *   the misspelled word in the (original) _buffer.  (The first position is zero.)
    *  If it is emitted by checkList(), pos is the index to the misspelled
-   *   word in the QStrList passed to checkList().
+   *   word in the QStringList passed to checkList().
    *
    *  These are called _before_ the dialog is opened, so that the
    *   calling program's GUI may be updated. (e.g. the misspelled word may
    *   be highlighted).
    */
-  void misspelling (QString originalword, QStrList *suggestions, 
+  void misspelling (QString originalword, QStringList *suggestions, 
 		    unsigned pos);
 
   /**
@@ -311,13 +305,13 @@ protected:
   QWidget *parent;
   KSpellConfig *ksconfig;
   KSpellDlg *ksdlg;
-  QStrList *wordlist;
-  QStrList ignorelist;
-  QStrList replacelist;
-  QStrList sugg;
+  QStringList *wordlist;
+  QStringList::Iterator wlIt;
+  QStringList ignorelist;
+  QStringList replacelist;
+  QStringList sugg;
+  QTextCodec* codec;
   
-  char *temp;
-
   bool cleaning;
   bool usedialog;
   bool texmode;
@@ -357,9 +351,9 @@ protected:
   static int modalreturn;
   static QWidget* modalWidgetHack;
     
-  int parseOneResponse (const QString &_buffer, QString &word, QStrList *sugg);
+  int parseOneResponse (const QString &_buffer, QString &word, QStringList *sugg);
   QString funnyWord (QString word);
-  void dialog (QString word, QStrList *sugg, const char* _slot);
+  void dialog (QString word, QStringList *sugg, const char* _slot);
   inline QString replacement ()
     { return dlgreplacement; }
 

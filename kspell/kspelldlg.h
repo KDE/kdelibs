@@ -25,6 +25,8 @@ enum KS_RESULT {
 
 enum Geometries {buttonwidth=80, labelwidth=100};
 
+class QStringList;
+
 class KSpellDlg : public QWidget
 {
   Q_OBJECT
@@ -32,7 +34,7 @@ class KSpellDlg : public QWidget
   KLineEdit *editbox;
   KProgress *progbar;
   QListBox *listbox;
-  QStrList *sugg;
+  QStringList *sugg;
   QPushButton *qpbrep, *qpbrepa;
   QLabel *wordlabel;
   QList<QWidget> *children;
@@ -52,7 +54,7 @@ public:
    *  and enable the disabled buttons on the dialog box.
    * (Buttons are disabled by @ref standby().)
    **/
-  void init (const QString& _word, QStrList *_sugg);
+  void init (const QString& _word, QStringList *_sugg);
 
   /**
    * Disable some buttons and gray out the misspelled word.

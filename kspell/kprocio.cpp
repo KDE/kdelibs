@@ -9,11 +9,22 @@
 #include "kprocio.h"
 
 #include <kdebug.h>
+#include <qtextcodec.h>
 
-KProcIO::KProcIO ()
+KProcIO::KProcIO ( QTextCodec *_codec)
+  : codec(_codec)
 {
   rbi=0;
   readsignalon=writeready=TRUE;
+  
+  if (!codec)
+  {
+     codec = QTextCodec::codecForName("ISO 8859-1");
+     if (!codec)
+     {
+        kdebug(KDEBUG_ERROR, 0, "Can't create ISO 8859-1 codec!");
+     }
+  }
 }
 
 void
@@ -49,13 +60,13 @@ bool KProcIO::start (RunMode runmode)
   return KProcess::start (runmode, KProcess::All);
 }
 
-bool KProcIO::writeStdin (const char *buffer, bool appendnewline)
+bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 {
-  QString qs (buffer);
+  QCString qs( codec->fromUnicode(line));
   if (appendnewline)
     qs+='\n';
 
-  qlist.append (qs.ascii());
+  qlist.append (qs.data());
 
   //  kdebug(KDEBUG_INFO, 750, "KPIO::write [%s],[%s]", buffer, qlist.current());
 
@@ -131,7 +142,7 @@ void KProcIO::enableReadSignals (bool enable)
 	emit readReady (this);
 }
 
-int KProcIO::readln (char *buffer, int max, bool autoAck)
+int KProcIO::readln (QString &line, bool autoAck)
 {
   int len;
 
@@ -155,20 +166,9 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
 
   if (len>=0)
     {
-    if (len-rbi<max)
-      {
-	strcpy (buffer, recvbuffer.mid (rbi,len).ascii());
-	buffer [len]='\0';
-	rbi+=len+1;
-	return len;
-      }
-    else
-      {
-	strcpy (buffer, recvbuffer.mid (rbi,max).ascii());
-	buffer [max]='\0';
-	rbi+=max+1;
-	return max;
-      }
+      line = codec->toUnicode(recvbuffer.mid(rbi,len).ascii(), len);   
+      rbi += len+1;
+      return len;
     }
   
   recvbuffer="";

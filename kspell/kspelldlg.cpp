@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -208,13 +208,13 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
 }
 
 void
-KSpellDlg::init (const QString& _word, QStrList *_sugg)
+KSpellDlg::init (const QString& _word, QStringList *_sugg)
 {
   //  printf ("init %s\n", (const char *)_word);
   sugg=_sugg;
   word=_word;
   listbox->clear();
-  listbox->insertStrList (sugg);
+  listbox->insertStringList (*sugg);
 
   QWidget *widget;
 
@@ -228,7 +228,7 @@ KSpellDlg::init (const QString& _word, QStrList *_sugg)
 
   if (sugg->count()!=0)
     {
-      editbox->setText (sugg->at(0));
+      editbox->setText ((*sugg)[0]);
       //      printf ("ENABLE\n");
       qpbrep->setEnabled (TRUE);
       qpbrepa->setEnabled (TRUE);
