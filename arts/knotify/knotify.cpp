@@ -411,7 +411,7 @@ bool KNotify::notifyByPassivePopup( const QString &text, const QString &appName 
     if (senderWinId != 0) {
 	KIconLoader iconLoader( appName );
 	QPixmap icon = iconLoader.loadIcon( appName, KIcon::Desktop );
-	KPassivePopup::message(text, appName, icon, senderWinId);
+	KPassivePopup::message(appName, text, icon, senderWinId);
 	return true;
     }
     return false;
