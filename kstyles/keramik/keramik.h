@@ -190,6 +190,9 @@ private:
 
 
 	bool kickerMode;
+	
+	// For progress bar animation
+	QTimer *animationTimer;
 
 	QRect subRect(SubRect r, const QWidget *widget) const;
 
