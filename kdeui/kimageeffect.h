@@ -113,6 +113,13 @@ public:
 			 QImage &blendImage, RGBComponent channel);
 
     /**
+     * Blend an image into another one, using alpha in the expected way.
+     * @author Rik Hemsley (rikkus) <rik@kde.org>
+     */
+    static bool blend(const QImage & upper, const QImage & lower, QImage & output);
+// Not yet...    static bool blend(const QImage & image1, const QImage & image2, QImage & output, const QRect & destRect);
+
+    /**
      * Modifies the intensity of a pixmap's RGB channel component.
      *
      * @param image The QImage to process.

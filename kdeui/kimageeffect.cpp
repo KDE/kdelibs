@@ -1627,3 +1627,71 @@ int KImageEffect::nearestColor( int r, int g, int b, const QColor *palette, int 
 
     return nearest;
 }
+
+bool KImageEffect::blend(
+    const QImage & upper, 
+    const QImage & lower, 
+    QImage & output
+)
+{
+  if (
+      upper.width()  > lower.width()  ||
+      upper.height() > lower.height() ||
+      upper.depth() != 32             ||
+      lower.depth() != 32
+  )
+    return false;
+
+  output = lower.copy();
+
+  register uchar *i, *o;
+  register int a;
+  register int col;
+  register int w = upper.width();
+  int row(upper.height() - 1);
+
+  do {
+
+    i = upper.scanLine(row);
+    o = output.scanLine(row);
+
+    col = w << 2;
+    --col;
+
+    do {
+
+      while (!(a = i[col]) && (col != 3)) {
+        --col; --col; --col; --col;
+      }
+
+      --col; 
+      o[col] += ((i[col] - o[col]) * a) >> 8;
+
+      --col;
+      o[col] += ((i[col] - o[col]) * a) >> 8;
+
+      --col;
+      o[col] += ((i[col] - o[col]) * a) >> 8;
+
+    } while (col--);
+
+  } while (row--);
+
+  return true;
+}
+
+#if 0
+// Not yet...
+bool KImageEffect::blend(
+    const QImage & upper, 
+    const QImage & lower, 
+    QImage & output,
+    const QRect & destRect
+)
+{
+  output = lower.copy();
+  return output;
+}
+
+#endif
+
