@@ -2137,6 +2137,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                 skip( oldURL );
                 dirs.remove( it ); // Move on to next dir
             } else if ( m_bOverwriteAll ) { // overwrite all => just skip
+                emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
                 dirs.remove( it ); // Move on to next dir
             } else
             {
@@ -2267,11 +2268,13 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             break;
         case R_OVERWRITE:
             m_overwriteList.append( existingDest );
+            emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.remove( it );
             break;
         case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
+            emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.remove( it );
             break;
