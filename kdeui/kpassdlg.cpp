@@ -42,11 +42,9 @@
 
 #include "kpassdlg.h"
 
-
 /*
  * Password line editor.
  */
-
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     : QLineEdit(parent, name), m_EchoMode(OneStar)
 {
@@ -88,6 +86,30 @@ void KPasswordEdit::erase()
     for (int i=0; i<PassLen; i++)
 	m_Password[i] = '\000';
     setText("");
+}
+
+void KPasswordEdit::mousePressEvent(QMouseEvent *)
+{
+    // Do nothing.
+}
+
+void KPasswordEdit::mouseMoveEvent(QMouseEvent *)
+{
+    // Do nothing.
+}
+
+void KPasswordEdit::mouseReleaseEvent(QMouseEvent *)
+{
+    // Do nothing.
+}
+
+void KPasswordEdit::focusInEvent(QFocusEvent *e)
+{
+    QString txt = text();
+    setUpdatesEnabled(false);
+    QLineEdit::focusInEvent(e);
+    setUpdatesEnabled(true);
+    setText(txt);
 }
 
 
