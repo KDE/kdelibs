@@ -1217,11 +1217,6 @@ public slots:
                         const QString& boundary = QString::null );
 
 private slots:
-  /**
-   * @internal
-   * Jump to the anchor as defined in the url. Typically connected to KHTMLView::finishedLayout().
-   */
-  void gotoAnchor();
 
   /**
    * @internal
@@ -1455,6 +1450,8 @@ private slots:
 
   /**
    * @internal
+   * used to restore or reset the view's scroll position (including positioning on anchors)
+   * once a sufficient portion of the document as been laid out.
    */
   void restoreScrollPosition();
 
