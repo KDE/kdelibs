@@ -48,6 +48,7 @@ public:
      * transparent.
      */
     KRootPixmap(QWidget *widget);
+    ~KRootPixmap();
     
     /**
      * Sets the fade effect. This effect will fade the background to the

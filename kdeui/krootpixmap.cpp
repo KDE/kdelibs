@@ -40,6 +40,7 @@
 
 
 KRootPixmap::KRootPixmap(QWidget *widget)
+    : QObject(widget)
 {
     m_pWidget = widget;
     m_pPixmap = new KSharedPixmap;
@@ -55,6 +56,13 @@ KRootPixmap::KRootPixmap(QWidget *widget)
     while (obj->parent())
 	obj = obj->parent();
     obj->installEventFilter(this);
+}
+
+
+KRootPixmap::~KRootPixmap()
+{
+    delete m_pPixmap;
+    delete m_pTimer;
 }
 
 
