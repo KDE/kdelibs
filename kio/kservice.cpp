@@ -83,7 +83,7 @@ KService::init( KDesktopFile *config )
   }
   QString resource = config->resource();
 
-  if ( (m_strType == "Application") && 
+  if ( (m_strType == "Application") &&
        (!resource.isEmpty()) &&
        (resource != "apps") &&
        !absPath)
@@ -95,7 +95,7 @@ KService::init( KDesktopFile *config )
     return;
   }
 
-  if ( (m_strType == "Service") && 
+  if ( (m_strType == "Service") &&
        (!resource.isEmpty()) &&
        (resource != "services") &&
        !absPath)
@@ -150,7 +150,7 @@ KService::init( KDesktopFile *config )
      name = name.left(pos);
 
   m_strDesktopEntryName = name.lower();
-  
+
   if ( m_strType == "Application" )
     // Specify AllowDefault = false to explicitely forbid it.
     // Most service files don't have that field, so true is the default
@@ -159,6 +159,8 @@ KService::init( KDesktopFile *config )
     // Doesn't exist for generic services, since KRun has to be able
     // to run the default service. It can't run a lib...
     m_bAllowAsDefault = false;
+
+  m_initialPreference = config->readNumEntry( "InitialPreference", 1 );
 
   // Load all additional properties
   QStringList::Iterator it = m_lstServiceTypes.begin();
@@ -196,20 +198,21 @@ QPixmap KService::pixmap( int _group, int _force_size, int _state, QString * _pa
 void KService::load( QDataStream& s )
 {
   Q_INT8 def, term, suid;
-  Q_INT8 dst;
+  Q_INT8 dst, initpref;
 
-  s >> m_strType >> m_strName >> m_strExec >> m_strIcon 
+  s >> m_strType >> m_strName >> m_strExec >> m_strIcon
     >> term >> m_strTerminalOptions
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> def >> m_mapProps
-    >> m_strLibrary >> m_libraryMajor >> m_libraryMinor 
+    >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
     >> dst
     >> m_strDesktopEntryPath >> m_strDesktopEntryName
-    >> suid >> m_strUsername;
+    >> suid >> m_strUsername >> initpref;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
   m_bSuid = suid;
   m_DCOPServiceType = (DCOPServiceType_t) dst;
+  m_initialPreference = initpref;
 
   m_bValid = true;
 }
@@ -217,20 +220,20 @@ void KService::load( QDataStream& s )
 void KService::save( QDataStream& s )
 {
   KSycocaEntry::save( s );
-  Q_INT8 def = m_bAllowAsDefault;
+  Q_INT8 def = m_bAllowAsDefault, initpref = m_initialPreference;
   Q_INT8 term = m_bTerminal, suid = m_bSuid;
   Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
 
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
-  s << m_strType << m_strName << m_strExec << m_strIcon 
+  s << m_strType << m_strName << m_strExec << m_strIcon
     << term << m_strTerminalOptions
     << m_strPath << m_strComment << m_lstServiceTypes << def << m_mapProps
-    << m_strLibrary << m_libraryMajor << m_libraryMinor 
+    << m_strLibrary << m_libraryMajor << m_libraryMinor
     << dst
     << m_strDesktopEntryPath << m_strDesktopEntryName
-    << suid << m_strUsername;
+    << suid << m_strUsername << initpref;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -269,6 +272,8 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_lstServiceTypes );
   else if ( _name == "AllowAsDefault" )
     return QVariant( static_cast<int>(m_bAllowAsDefault) );
+  else if ( _name == "InitialPreference" )
+    return QVariant( m_initialPreference );
   else if ( _name == "Library" )
     return QVariant( m_strLibrary );
   else if ( _name == "LibraryMajor" )
@@ -308,6 +313,7 @@ QStringList KService::propertyNames() const
   res.append( "File" );
   res.append( "ServiceTypes" );
   res.append( "AllowAsDefault" );
+  res.append( "InitialPreference" );
   res.append( "Library" );
   res.append( "LibraryMajor" );
   res.append( "LibraryMinor" );

@@ -46,13 +46,13 @@ void KServiceTypeProfile::initStatic()
   KSimpleConfig config( "profilerc");
 
   QStringList tmpList = config.groupList();
-  for (QStringList::Iterator aIt = tmpList.begin(); 
+  for (QStringList::Iterator aIt = tmpList.begin();
        aIt != tmpList.end(); ++aIt) {
     if ( *aIt == "<default>" )
       continue;
-      
+
     config.setGroup( *aIt );
-    
+
     QString type = config.readEntry( "ServiceType" );
     int pref = config.readNumEntry( "Preference" );
     bool allow = config.readBoolEntry( "AllowAsDefault" );
@@ -73,20 +73,35 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
 {
   OfferList offers;
 
+  //kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << ")" << endl;
   KServiceTypeProfile* profile = serviceTypeProfile( _servicetype );
   if ( profile )
+  {
+    //kdDebug(7010) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
     return profile->offers();
+  }
 
   KService::List list = KServiceType::offers( _servicetype );
+  //kdDebug(7010) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
     bool allow = (*it)->allowAsDefault();
-    KServiceOffer o( (*it), 1, allow );
+    KServiceOffer o( (*it), (*it)->initialPreference(), allow );
     offers.append( o );
+    //kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
   }
 
   qBubbleSort( offers );
+
+  // debug code, please leave for debugging
+  /*kdDebug(7010) << "Sorted list:" << endl;
+  OfferList::Iterator itOff = offers.begin();
+  for( ; itOff != offers.end(); ++itOff )
+  {
+    kdDebug(7010) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
+  }
+  */
 
   return offers;
 }
@@ -224,9 +239,13 @@ KServiceOffer::KServiceOffer( KService::Ptr _service, int _pref, bool _default )
 
 bool KServiceOffer::operator< ( const KServiceOffer& _o ) const
 {
+  // Put offers allowed as default FIRST.
   if ( _o.m_bAllowAsDefault && !m_bAllowAsDefault )
-    return true;
-  if ( _o.m_iPreference < m_iPreference )
-    return true;
-  return false;
+    return false; // _o is default and not 'this'.
+  if ( !_o.m_bAllowAsDefault && m_bAllowAsDefault )
+    return true; // 'this' is default but not _o.
+ // Both offers are allowed or not allowed as default
+ // -> use preferences to sort them
+ // The bigger the better, but we want the better FIRST
+  return _o.m_iPreference < m_iPreference;
 }

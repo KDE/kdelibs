@@ -138,7 +138,8 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    * @return a list of all the supported servicetypes. Useful for
    *         showing the list of available servicetypes in a listbox,
    *         for example.
-   * Very memory consuming, don't use unless really necessary.
+   * More memory consuming than the ones above, don't use unless
+   * really necessary.
    */
   static List allServiceTypes();
 

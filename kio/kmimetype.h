@@ -93,8 +93,8 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    * no URL is passed, it is impossible to obey icon hints in desktop
    * entries for example.
    * @param _group The icon group where the icon is going to be used.
-   * @param _force_size Override globallly configured icon size. 
-   * @param _state The icon state, one of: KIcon::DefaultState, 
+   * @param _force_size Override globallly configured icon size.
+   * @param _state The icon state, one of: KIcon::DefaultState,
    * KIcon::ActiveState or KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
@@ -106,19 +106,19 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    * Convenience method that uses icon(), but also locates and load the pixmap
    * @param _url URL for the file
    * @param _group The icon group where the icon is going to be used.
-   * @param _force_size Override globallly configured icon size. 
-   * @param _state The icon state, one of: KIcon::DefaultState, 
+   * @param _force_size Override globallly configured icon size.
+   * @param _state The icon state, one of: KIcon::DefaultState,
    * KIcon::ActiveState or KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0, 
+  virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
 	    int _state = 0, QString * _path = 0L ) const;
 
   /**
    * Convenience method to find the pixmap for a URL
    * Call this one when you don't know the mimetype.
    */
-  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, int _group = 0, 
+  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, int _group = 0,
                                int _force_size = 0, int _state = 0, QString * _path = 0L );
 
   /**
@@ -189,7 +189,8 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * Get all the mimetypes. Useful for showing the list of
    * available mimetypes.
-   * Very memory consuming, don't use unless really necessary.
+   * More memory consuming than the ones above, don't use unless
+   * really necessary.
    */
   static List allMimeTypes();
 
@@ -266,7 +267,7 @@ public:
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
-  virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0, 
+  virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
                           int _state = 0, QString * _path = 0L ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KURL& _url, bool _is_local ) const;

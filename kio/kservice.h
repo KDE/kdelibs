@@ -38,7 +38,7 @@ class KService;
 //class KServiceList;
 /**
  * Represents a service, i.e. an application bound to one or several mimetypes
- * (or servicetypes) as written in its desktop entry file. 
+ * (or servicetypes) as written in its desktop entry file.
  * A service may be a library, too.
  * The starting point you need is often the static methods.
  *
@@ -66,7 +66,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   KService( KDesktopFile *config );
 
   /**
-   * @internal construct a service from a stream. 
+   * @internal construct a service from a stream.
    * The stream must already be positionned at the correct offset
    */
   KService( QDataStream& _str, int offset );
@@ -116,7 +116,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * @return a pixmap for this service (finds and loads icon())
    */
-  QPixmap pixmap( int _group, int _force_size = 0, int _state = 0, 
+  QPixmap pixmap( int _group, int _force_size = 0, int _state = 0,
                   QString * _path = 0L ) const;
   /**
    * @return Run the service in a terminal?
@@ -149,7 +149,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   QString desktopEntryPath() const { return m_strDesktopEntryPath; }
 
   /**
-   * @return the filename of the service desktop entry without any 
+   * @return the filename of the service desktop entry without any
    * extension. E.g. "kppp"
    */
   QString desktopEntryName() const { return m_strDesktopEntryName; }
@@ -164,7 +164,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    *             the PID of the process.
    */
   enum DCOPServiceType_t { DCOP_None = 0, DCOP_Unique, DCOP_Multi };
- 
+
   /**
    * @return The DCOPServiceType supported by this service.
    */
@@ -198,6 +198,13 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    *         them. This kind of services returns FALSE here.
    */
   bool allowAsDefault() const { return m_bAllowAsDefault; }
+
+  /**
+   * What preference to associate with this service initially (before
+   * the user has had any chance to define a profile for it)
+   * The bigger the value, the most preferred the service is.
+   */
+  int initialPreference() const { return m_initialPreference; }
 
   /**
    * @return the requested properties. Some often used properties
@@ -256,7 +263,8 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * @return the whole list of services. Useful for being able to
    * to display them in a list box, for example.
-   * Very memory consuming, don't use unless really necessary.
+   * More memory consuming than the ones above, don't use unless
+   * really necessary.
    */
   static List allServices();
 
@@ -279,10 +287,11 @@ private:
   QStringList m_lstLibraryDeps;
   QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
+  int m_initialPreference;
   bool m_bTerminal;
   bool m_bSuid;
-  QString m_strDesktopEntryPath;  
-  QString m_strDesktopEntryName;  
+  QString m_strDesktopEntryPath;
+  QString m_strDesktopEntryName;
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;

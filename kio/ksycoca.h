@@ -32,7 +32,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 19
+#define KSYCOCA_VERSION 20
 
 /**
  * @internal
@@ -81,7 +81,7 @@ public:
     * @internal - returns kfsstnd stored inside database
     */
    QString kfsstnd_prefixes();
-    
+
    /**
     * @internal - add a factory
     */
