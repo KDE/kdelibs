@@ -69,6 +69,8 @@ using namespace KJS;
   CaseClauseNode      *ccl;
   ElementNode         *elm;
   Operator            op;
+  PropertyValueNode   *plist;
+  PropertyNode        *pnode;
 }
 
 %start Program
@@ -113,7 +115,7 @@ using namespace KJS;
 
 /* non-terminal types */
 %type <node>  Literal PrimaryExpr Expr MemberExpr FunctionExpr NewExpr CallExpr
-%type <node>  ArrayLiteral PropertyName PropertyNameAndValueList
+%type <node>  ArrayLiteral
 %type <node>  LeftHandSideExpr PostfixExpr UnaryExpr
 %type <node>  MultiplicativeExpr AdditiveExpr
 %type <node>  ShiftExpr RelationalExpr EqualityExpr
@@ -150,6 +152,8 @@ using namespace KJS;
 %type <clist> CaseClauses  CaseClausesOpt
 %type <ival>  Elision ElisionOpt
 %type <elm>   ElementList
+%type <plist> PropertyNameAndValueList
+%type <pnode> PropertyName
 
 %%
 

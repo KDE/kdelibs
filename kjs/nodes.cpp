@@ -494,23 +494,27 @@ Value ObjectLiteralNode::evaluate(ExecState *exec) const
 
 void PropertyValueNode::ref()
 {
-  Node::ref();
-  if ( name )
-    name->ref();
-  if ( assign )
-    assign->ref();
-  if ( list )
-    list->ref();
+  for (PropertyValueNode *n = this; n; n = n->list) {
+    n->Node::ref();
+    if (n->name)
+      n->name->ref();
+    if (n->assign)
+      n->assign->ref();
+  }
 }
 
 bool PropertyValueNode::deref()
 {
-  if ( name && name->deref() )
-    delete name;
-  if ( assign && assign->deref() )
-    delete assign;
-  if ( list && list->deref() )
-    delete list;
+  PropertyValueNode *next;
+  for (PropertyValueNode *n = this; n; n = next) {
+    next = n->list;
+    if ( n->name && n->name->deref() )
+      delete n->name;
+    if ( n->assign && n->assign->deref() )
+      delete n->assign;
+    if (n != this && n->Node::deref() )
+      delete n;
+  }
   return Node::deref();
 }
 

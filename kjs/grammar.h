@@ -20,6 +20,8 @@ typedef union {
   CaseClauseNode      *ccl;
   ElementNode         *elm;
   Operator            op;
+  PropertyValueNode   *plist;
+  PropertyNode        *pnode;
 } YYSTYPE;
 
 #ifndef YYLTYPE

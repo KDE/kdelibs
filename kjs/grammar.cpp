@@ -145,6 +145,8 @@ typedef union {
   CaseClauseNode      *ccl;
   ElementNode         *elm;
   Operator            op;
+  PropertyValueNode   *plist;
+  PropertyNode        *pnode;
 } YYSTYPE;
 
 #ifndef YYLTYPE
@@ -1340,7 +1342,7 @@ case 13:
     break;}
 case 14:
 #line 179 "grammar.y"
-{ yyval.node = new ObjectLiteralNode(yyvsp[-1].node); ;
+{ yyval.node = new ObjectLiteralNode(yyvsp[-1].plist); ;
     break;}
 case 15:
 #line 183 "grammar.y"
@@ -1376,11 +1378,11 @@ case 23:
     break;}
 case 24:
 #line 205 "grammar.y"
-{ yyval.node = new PropertyValueNode(yyvsp[-2].node, yyvsp[0].node); ;
+{ yyval.plist = new PropertyValueNode(yyvsp[-2].pnode, yyvsp[0].node); ;
     break;}
 case 25:
 #line 207 "grammar.y"
-{ yyval.node = new PropertyValueNode(yyvsp[-2].node, yyvsp[0].node, yyvsp[-4].node); ;
+{ yyval.plist = new PropertyValueNode(yyvsp[-2].pnode, yyvsp[0].node, yyvsp[-4].plist); ;
     break;}
 case 26:
 #line 211 "grammar.y"

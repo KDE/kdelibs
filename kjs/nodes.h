@@ -39,6 +39,8 @@ namespace KJS {
   class SourceElementsNode;
   class ProgramNode;
   class SourceStream;
+  class PropertyValueNode;
+  class PropertyNode;
 
   enum Operator { OpEqual,
 		  OpEqEq,
@@ -268,25 +270,27 @@ namespace KJS {
 
   class ObjectLiteralNode : public Node {
   public:
-    ObjectLiteralNode(Node *l) : list(l) { }
+    ObjectLiteralNode(PropertyValueNode *l) : list(l) { }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    Node *list;
+    PropertyValueNode *list;
   };
 
   class PropertyValueNode : public Node {
   public:
-    PropertyValueNode(Node *n, Node *a, Node *l = 0L)
+    PropertyValueNode(PropertyNode *n, Node *a, PropertyValueNode *l = 0L)
       : name(n), assign(a), list(l) { }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    Node *name, *assign, *list;
+    PropertyNode *name;
+    Node *assign;
+    PropertyValueNode *list;
   };
 
   class PropertyNode : public Node {
