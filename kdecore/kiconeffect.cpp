@@ -139,7 +139,7 @@ QImage KIconEffect::apply(QImage image, int group, int state)
 	    mColor[group][state], mTrans[group][state]);
 }
 
-QImage KIconEffect::apply(QImage image, int effect, float value, QColor col, bool trans)
+QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, bool trans)
 {
     if (effect >= LastEffect )
     {
