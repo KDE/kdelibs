@@ -1768,11 +1768,15 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
             //kdDebug(220) << "KToolBar::applySettings updating ToolbarInfo" << endl;
             d->toolBarInfo = KToolBarPrivate::ToolBarInfo( (QMainWindow::ToolBarDock)pos, index, newLine, offset );
 
+            // moveToolBar calls QDockArea which does a reparent() on us with
+            // showIt = true, so we loose our visibility status
+            bool doHide = isHidden();
+
             mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, index, offset );
             //kdDebug(220) << "KToolBar::applySettings " << name() << " moveToolBar with pos=" << pos << " newLine=" << newLine << " idx=" << index << " offs=" << offset << endl;
             // Yeah, we just did it... I guess it's for saving the "realpos" again ?
             // Hmm, in that case we could simply do the hide/show after the moveToolBar, no ? (David)
-            if ( testWState( WState_ForceHide ) )
+            if ( doHide )
                 hide();
         }
         if (isVisible ())
@@ -1990,16 +1994,16 @@ void KToolBar::positionYourself()
         //kdDebug(220) << "KToolBar::positionYourself d->positioned=true  ALREADY DONE" << endl;
         return;
     }
+    // we can't test for ForceHide after moveToolBar because QDockArea
+    // does a reparent() with showIt == true
+    bool doHide = isHidden();
     //kdDebug(220) << "positionYourself " << name() << " dock=" << d->toolBarInfo.dock << " newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
     mainWindow()->moveToolBar( this, d->toolBarInfo.dock,
                                d->toolBarInfo.newline,
                                d->toolBarInfo.index,
                                d->toolBarInfo.offset );
-    if ( testWState( Qt::WState_ForceHide ) )
-    {
-        //kdDebug(220) << "Hiding" << endl;
+    if ( doHide )
         hide();
-    }
     // This method can only have an effect once - unless force is set
     d->positioned = TRUE;
 }
