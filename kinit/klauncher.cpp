@@ -1100,7 +1100,7 @@ KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QCString&
 
 bool
 KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
-   const QValueList<QCString> &envs, const QCString& startup_id, bool wait)
+   const QValueList<QCString> &envs, QCString startup_id, bool wait)
 {
    KLaunchRequest *request = new KLaunchRequest;
    request->autoStart = false;
@@ -1112,6 +1112,9 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        QString arg = *it;
        request->arg_list.append(arg.local8Bit());
    }
+
+   if( startup_id == "" )
+       startup_id = "0"; // no ASN with kdeinit_exec unless requested
 
    request->name = app.local8Bit();
 
