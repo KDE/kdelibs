@@ -1721,7 +1721,7 @@ public:
    *    revertToDefault(key)
    * else
    *    writeEntry(key, value)
-   * \encode
+   * \endcode
    *
    * This ensures that as long as the entry is not modified to differ 
    * from the dynamically determined default, the application will
