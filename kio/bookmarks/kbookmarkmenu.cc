@@ -223,6 +223,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
   }
 }
 
+// change to static non method
 bool KBookmarkMenu::invalid( int val )
 {
   bool valid = true;
@@ -263,7 +264,10 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
+    id = contextMenu->insertItem( i18n( "Insert Bookmark" ), this, SLOT(slotRMBActionInsert(int)) );
+    contextMenu->setItemParameter( id, val );
     // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
+    // contextMenu->setItemParameter( id, val );
   } 
   else
   {
@@ -272,6 +276,8 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
     id = contextMenu->insertItem( i18n( "Copy Link Location" ), this, SLOT(slotRMBActionCopyLocation(int)) );
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen(int)) );
+    contextMenu->setItemParameter( id, val );
+    id = contextMenu->insertItem( i18n( "Insert Bookmark Here" ), this, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
   }
 
@@ -287,6 +293,43 @@ void KBookmarkMenu::slotRMBActionEditAt( int val )
   Q_ASSERT(!bookmark.isNull());
 
   emit m_pManager->slotEditBookmarksAtAddress( s_highlightedAddress );
+}
+
+void KBookmarkMenu::slotRMBActionInsert( int val )
+{
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionInsert" << s_highlightedAddress << endl;
+  if (invalid(val)) return;
+
+  QString url = m_pOwner->currentURL();
+  if (url.isEmpty())
+  {
+    KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL"));
+    return;
+  }
+  QString title = m_pOwner->currentTitle();
+  if (title.isEmpty())
+    title = url;
+
+  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+  Q_ASSERT(!bookmark.isNull());
+
+  // TODO use unique title
+
+  if (bookmark.isGroup()) 
+  {
+    KBookmarkGroup parentBookmark = bookmark.toGroup();
+    Q_ASSERT(!parentBookmark.isNull());
+    parentBookmark.addBookmark( m_pManager, title, url );
+    m_pManager->emitChanged( parentBookmark );
+  }
+  else 
+  {
+    KBookmarkGroup parentBookmark = bookmark.parentGroup();
+    Q_ASSERT(!parentBookmark.isNull());
+    KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, title, url );
+    parentBookmark.moveItem( newBookmark, parentBookmark.previous(bookmark) );
+    m_pManager->emitChanged( parentBookmark );
+  }
 }
 
 void KBookmarkMenu::slotRMBActionRemove( int val )

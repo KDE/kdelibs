@@ -162,6 +162,7 @@ protected slots:
   void slotActionHighlighted( KAction * );
 
   void slotRMBActionRemove( int );
+  void slotRMBActionInsert( int );
   void slotRMBActionOpen( int );
   void slotRMBActionCopyLocation( int );
   //void slotRMBActionEdit( int );
