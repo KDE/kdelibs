@@ -531,7 +531,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 {
   Entry* e = entry(_path);
   if (!e) {
-    qWarning("KDirWatch::removeDir can't handle '%s'", _path.ascii() );
+    kdWarning(7001) << "KDirWatch::removeDir can't handle '" << _path << "'" << endl;
     return;
   }
 
@@ -730,7 +730,7 @@ void KDirWatchPrivate::startScan(KDirWatch* instance,
 
 
 // clear all pending events, also from stopped
-void KDirWatchPrivate::resetList( KDirWatch* instance,
+void KDirWatchPrivate::resetList( KDirWatch* /*instance*/,
 				  bool skippedToo )
 {
   EntryMap::Iterator it = m_mapEntries.begin();
@@ -1137,6 +1137,11 @@ KDirWatch* KDirWatch::self()
   }
 
   return s_pSelf;
+}
+
+bool KDirWatch::exists()
+{
+  return s_pSelf != 0;
 }
 
 KDirWatch::KDirWatch (QObject* parent, const char* name)

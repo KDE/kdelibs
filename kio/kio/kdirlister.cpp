@@ -77,7 +77,8 @@ KDirListerCache::~KDirListerCache()
   urlsCurrentlyListed.clear();
   urlsCurrentlyHeld.clear();
 
-  kdirwatch->disconnect( this );
+  if ( KDirWatch::exists() )
+    kdirwatch->disconnect( this );
 }
 
 // setting _reload to true will emit the old files and

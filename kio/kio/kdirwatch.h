@@ -191,11 +191,17 @@ class KDirWatch : public QObject
 
    /**
     * The KDirWatch instance usually globally used in an application.
+    * It is automatically deleted when the application exits.
+    *
     * However, you can create an arbitrary number of KDirWatch instances
-    * aside from this one.
+    * aside from this one - for those you have to take care of memory management.
     */
    static KDirWatch* self();
-    
+   /**
+    * Return true if KDirWatch::self() exists
+    */
+   static bool exists();
+
  signals:
 
    /**

@@ -218,7 +218,7 @@ private:
 
     ~DirItem()
     {
-      if ( autoUpdates )
+      if ( autoUpdates && KDirWatch::exists() )
         kdirwatch->removeDir( url.path() );
 
       delete rootItem;
