@@ -65,69 +65,39 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
     divider->setCursor(QCursor(sizeVerCursor));
   else
     divider->setCursor(QCursor(sizeHorCursor));
-
   divider->installEventFilter(this);
 
   initialised= true;
 
   updateName();
   divider->show();
+
+  // without this resize event, things will not work. why exactly? :(
   resizeEvent(0);
 
-  // dominik: the following is still something I don't understand 100%
-  // I even think that this includes some bugs!
-  if (fixedWidth0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
-  if (fixedWidth1!=-1) restoreFromForcedFixedSize((KDockWidget*)child1);
-  if (((KDockWidget*)child0)->forcedFixedWidth()!=-1)
-  {
-    setForcedFixedWidth(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedWidth());
-    //QTimer::singleShot(100,this,SLOT(delayedResize()));
+
+  KDockWidget* dw0 = (KDockWidget*) child0;
+  KDockWidget* dw1 = (KDockWidget*) child1;
+
+  // if fixed size is set, restore first, to restore xpos correctly
+  if( fixedWidth0 != -1 || fixedHeight0 != -1 ) restoreFromForcedFixedSize( dw0 );
+  if( fixedWidth1 != -1 || fixedHeight1 != -1 ) restoreFromForcedFixedSize( dw1 );
+
+
+  // now force fixed sizes, if they are set.
+  if( dw0->forcedFixedWidth() != -1 ) {
+    setForcedFixedWidth( dw0, dw0->forcedFixedWidth() );
   }
-  else
-  if (((KDockWidget*)child1)->forcedFixedWidth()!=-1)
-  {
-    setForcedFixedWidth(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedWidth());
-    //QTimer::singleShot(100,this,SLOT(delayedResize()));
+  else if( dw1->forcedFixedWidth() != -1 ) {
+    setForcedFixedWidth( dw1, dw1->forcedFixedWidth() );
   }
 
-  if (((KDockWidget*)child0)->forcedFixedHeight()!=-1)
-  {
-    setForcedFixedHeight(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedHeight());
-    //QTimer::singleShot(100,this,SLOT(delayedResize()));
+  if( dw0->forcedFixedHeight() != -1 ) {
+    setForcedFixedHeight (dw0, dw0->forcedFixedHeight() );
   }
-  else
-  if (((KDockWidget*)child1)->forcedFixedHeight()!=-1)
-  {
-    setForcedFixedHeight(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedHeight());
-    //QTimer::singleShot(100,this,SLOT(delayedResize()));
+  else if( dw1->forcedFixedHeight() != -1 ) {
+    setForcedFixedHeight( dw1, dw1->forcedFixedHeight() );
   }
-  /*
-  if (m_orientation == Horizontal) {
-    if (fixedHeight0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
-    if (fixedHeight1!=-1) restoreFromForcedFixedSize((KDockWidget*)child1);
-
-  } else {
-    if (fixedWidth0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
-    if (fixedWidth1!=-1) restoreFromForcedFixedSize((KDockWidget*)child1);
-  }
-
-//   if (m_orientation == Vertical) {
-
-    if (((KDockWidget*)child0)->forcedFixedWidth()!=-1) {
-      setForcedFixedWidth(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedWidth());
-    }
-    else if (((KDockWidget*)child1)->forcedFixedWidth()!=-1) {
-      setForcedFixedWidth(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedWidth());
-    }
-//    } else {
-    if (((KDockWidget*)child0)->forcedFixedHeight()!=-1) {
-      setForcedFixedHeight(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedHeight());
-    }
-    else if (((KDockWidget*)child1)->forcedFixedHeight()!=-1) {
-      setForcedFixedHeight(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedHeight());
-    }
-//   }
-  */
 }
 
 /*
