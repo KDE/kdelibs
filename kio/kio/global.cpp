@@ -447,9 +447,9 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       domain = host;
 
     path = reqUrl->path(1);
-    filename = reqUrl->filename();
+    filename = reqUrl->fileName();
     dir =  path + filename;
-    
+
     // detect if protocol is a network protocol...
     // add your hacks here...
     if ( protocol == "http" ||
