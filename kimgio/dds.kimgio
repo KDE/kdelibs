@@ -3,6 +3,7 @@ Type=DDS
 Header=^DDS 
 Name=Direct Draw Surface
 Name[be]=Паверхня Draw Surface
+Name[bg]=Област с директно изчертаване
 Name[da]=Overflade til direkte tegning
 Name[eo]=Rekta desegnosurfaco
 Name[hu]=DirectDraw-felület
