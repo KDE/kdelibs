@@ -1,8 +1,8 @@
 /* This file is part of the KDE libraries
 	Copyright (C) 1998 	Mark Donohoe <donohoe@kde.org>,
-						Jani Jaakkola (jjaakkol@cs.helsinki.fi),
-					   	Nicolas Hadacek <hadacek@via.ecp.fr>,
-					   	Matthias Ettrich (ettrich@kde.org) 
+	Jani Jaakkola (jjaakkol@cs.helsinki.fi),
+	Nicolas Hadacek <hadacek@via.ecp.fr>
+	Matthias Ettrich (ettrich@kde.org) 
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -42,10 +42,9 @@
 KGlobalAccel::KGlobalAccel(bool _do_not_grab)
  : QObject(), aKeyDict(100)
 {
-  aKeyDict.setAutoDelete(false);
 	aAvailableId = 1;
 	bEnabled = true;
-	aGroup.sprintf("Global Keys");
+	aGroup = "Global Keys";
 	do_not_grab =_do_not_grab;
 }
 
@@ -61,8 +60,8 @@ void KGlobalAccel::clear()
 }
 
 void KGlobalAccel::connectItem( const char * action,
-							const QObject* receiver, const char* member,
-							bool activate )
+				const QObject* receiver, const char* member,
+				bool activate )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
@@ -75,7 +74,7 @@ void KGlobalAccel::connectItem( const char * action,
 	}
 	
 	pEntry->receiver = receiver;
-	pEntry->member = new QString( member );
+	pEntry->member = member;
 	pEntry->aAccelId = aAvailableId;
 	aAvailableId++;
 	
@@ -109,13 +108,12 @@ uint KGlobalAccel::defaultKey( const char * action )
 }
 
 void KGlobalAccel::disconnectItem( const char * action,
-							const QObject* receiver, const char* member )
+				   const QObject* /*receiver*/, const char* /*member*/ )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry ) 
 		return;
 	
-	//pAccel->disconnectItem( pEntry->aAccelId, receiver, member  );
 }
 
 const char * KGlobalAccel::findKey( int key ) const
@@ -124,7 +122,7 @@ const char * KGlobalAccel::findKey( int key ) const
 	aKeyIt.toFirst();
 #define pE aKeyIt.current()
 	while ( pE ) {
-		if ( key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
+		if ( (unsigned int)key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
 		++aKeyIt;
 	}
 #undef pE
@@ -218,7 +216,7 @@ bool KGlobalAccel::insertItem(  const char* descr, const char * action, uint key
 	pEntry->aAccelId = 0;
 	pEntry->receiver = 0;
 	pEntry->member = 0;
-	pEntry->descr = new QString(descr);
+	pEntry->descr = descr;
 
 	return TRUE;
 }
@@ -318,7 +316,7 @@ void KGlobalAccel::removeItem( const char * action )
 
 void KGlobalAccel::setConfigGroup( const char *group )
 {
-	aGroup.sprintf( group );
+	aGroup = group;
 }
 
 const char *KGlobalAccel::configGroup()
@@ -410,11 +408,7 @@ bool KGlobalAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->bConfigurable = pE->bConfigurable;
 		pEntry->aAccelId = pE->aAccelId;
 		pEntry->receiver = pE->receiver;
-		if( pE->member ) {
-		  pEntry->member = new QString( pE->member->data() );
-		} else {
-			pEntry->member = 0;
-		}
+		pEntry->member = pE->member;
 		pEntry->bEnabled = pE->bEnabled;
 		
 		if ( pEntry->bEnabled ) {
@@ -513,8 +507,8 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	
 	//	debug("Key press event :: mod = %d, sym =%d", mod, keysym );
    
-	KKeyEntry *pEntry =0;
-	const char *action;
+// 	KKeyEntry *pEntry =0;
+// 	const char *action;
    
 	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
 	aKeyIt->toFirst();
@@ -550,9 +544,9 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
 	XSync(qt_xdisplay(), false);
-	connect( this, SIGNAL( activated() ), pE->receiver, pE->member->data() );
+	connect( this, SIGNAL( activated() ), pE->receiver, pE->member);
 	emit activated();
-	disconnect( this, SIGNAL( activated() ), pE->receiver, pE->member->data() );
+	disconnect( this, SIGNAL( activated() ), pE->receiver, pE->member );
 
 //    warning("Signal has been sent!");
 	return true;

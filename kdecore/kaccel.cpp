@@ -1,6 +1,7 @@
-/* This file is part of the KDE libraries
-	Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
+/*
+    Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,18 +30,17 @@
 
 #include "kaccel.h"
 
-KAccel::KAccel( QWidget * parent, const char * name )
-	: aKeyDict(100)
-{
-  aKeyDict.setAutoDelete(false);
+KAccel::KAccel( QWidget * parent, const char * name ): 
+  aKeyDict(100){
 	aAvailableId = 1;
 	bEnabled = true;
-	aGroup.sprintf("Keys");
+	aGroup = "Keys";
 	pAccel = new QAccel( parent, name );
 }
 
 KAccel::~KAccel()
 {
+  delete pAccel;
 }
 
 void KAccel::clear()
@@ -50,8 +50,8 @@ void KAccel::clear()
 }
 
 void KAccel::connectItem( const char * action,
-							const QObject* receiver, const char* member,
-							bool activate )
+			  const QObject* receiver, const char* member,
+			  bool activate )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
 
@@ -64,7 +64,7 @@ void KAccel::connectItem( const char * action,
 	}
 	
 	pEntry->receiver = receiver;
-	pEntry->member = new QString( member );
+	pEntry->member = member;
 	pEntry->aAccelId = aAvailableId;
 	aAvailableId++;
 	
@@ -101,7 +101,7 @@ uint KAccel::defaultKey( const char * action )
 }
 
 void  KAccel::disconnectItem( const char * action,
-							const QObject* receiver, const char* member )
+			      const QObject* receiver, const char* member )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry ) 
@@ -116,7 +116,7 @@ const char * KAccel::findKey( int key ) const
 	aKeyIt.toFirst();
 #define pE aKeyIt.current()
 	while ( pE ) {
-		if ( key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
+		if ( (unsigned int)key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
 		++aKeyIt;
 	}
 #undef pE
@@ -124,7 +124,7 @@ const char * KAccel::findKey( int key ) const
 }
 
 bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
-					   bool configurable )
+			 bool configurable )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -141,7 +141,7 @@ bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
 	pEntry->aAccelId = 0;
 	pEntry->receiver = 0;
 	pEntry->member = 0;
-	pEntry->descr = new QString(descr);
+	pEntry->descr = descr;
 	
 	return TRUE;
 }
@@ -163,86 +163,85 @@ bool KAccel::insertItem( const char* descr, const char * action,
 
 const char * KAccel::insertStdItem( StdAccel id )
 {
-	QString name;
-	const char* action=0, *key=0;
+	const char* action=0, *key=0, *name = 0;
 	switch( id ) {
 		case Open:
-			name.sprintf( i18n("Open") );
+			name=i18n("Open") ;
 			key = "CTRL+O";
 			break;
 		case New:
-			name.sprintf( i18n("New") );
+			name=i18n("New") ;
 			key = "CTRL+N";
 			break;
 		case Close:
-			name.sprintf( i18n("Close") );
+			name=i18n("Close") ;
 			key = "CTRL+W";
 			break;
 		case Save:
-			name.sprintf( i18n("Save") );
+			name=i18n("Save") ;
 			key = "CTRL+S";
 			break;
 		case Print:
-			name.sprintf( i18n("Print") );
+			name=i18n("Print") ;
 			key = "CTRL+P";
 			break;
 		case Quit:
-			name.sprintf( i18n("Quit") );
+			name=i18n("Quit") ;
 			key = "CTRL+Q";
 			break;
 		case Cut:
-			name.sprintf( i18n("Cut") );
+			name=i18n("Cut") ;
 			key = "CTRL+X";
 			break;
 		case Copy:
-			name.sprintf( i18n("Copy") );
+			name=i18n("Copy") ;
 			key = "CTRL+C";
 			break;
 		case Paste:
-			name.sprintf( i18n("Paste") );
+			name=i18n("Paste") ;
 			key = "CTRL+V";
 			break;
 		case Undo:
-			name.sprintf( i18n("Undo") );
+			name=i18n("Undo") ;
 			key = "CTRL+Z";
 			break;
 		case Find:
-			name.sprintf( i18n("Find") );
+			name=i18n("Find") ;
 			key = "CTRL+F";
 			break;
 		case Replace:
-			name.sprintf( i18n("Replace") );
+			name=i18n("Replace") ;
 			key = "CTRL+R";
 			break;
 		case Insert:
-			name.sprintf( i18n("Insert") );
+			name=i18n("Insert") ;
 			key = "CTRL+Insert";
 			break;
 		case Home:
-			name.sprintf( i18n("Home") );
+			name=i18n("Home") ;
 			key = "CTRL+Home";
 			break;
 		case End:
-			name.sprintf( i18n("End") );
+			name=i18n("End") ;
 			key = "CTRL+End";
 			break;
 		case Prior:
-			name.sprintf( i18n("Prior") );
+			name=i18n("Prior") ;
 			key = "Prior";
 			break;
 		case Next:
-			name.sprintf( i18n("Next") );
+			name=i18n("Next") ;
 			key = "Next";
 			break;
 		case Help:
-			name.sprintf( i18n("Help") );
+			name=i18n("Help") ;
 			key = "F1";
 			break;
 		default:
 			return 0;
 			break;
 	}
-	insertItem( name.data(), stdAction(id), key, false );
+	insertItem( name, stdAction(id), key, false );
 	return action;
 }
 
@@ -287,11 +286,11 @@ void KAccel::readSettings(KConfig* config)
 		pE->aCurrentKeyCode = pE->aConfigKeyCode;
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
 			pAccel->disconnectItem( pE->aAccelId, pE->receiver, 
-													pE->member->data() );
+						pE->member );
 			pAccel->removeItem( pE->aAccelId );
 			pAccel->insertItem( pE->aCurrentKeyCode, pE->aAccelId );
 			pAccel->connectItem( pE->aAccelId, pE->receiver, 
-													pE->member->data() );
+					     pE->member);
 		}
 		++aKeyIt;
 	}
@@ -300,6 +299,7 @@ void KAccel::readSettings(KConfig* config)
 
 void KAccel::removeItem( const char * action )
 {
+
     KKeyEntry *pEntry = aKeyDict[ action ];
 	
     if ( !pEntry ) 
@@ -307,7 +307,7 @@ void KAccel::removeItem( const char * action )
 	
 	if ( pEntry->aAccelId ) {
 		pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver, 
-					pEntry->member->data());
+					pEntry->member);
 		pAccel->removeItem( pEntry->aAccelId );
 	}
 	
@@ -354,7 +354,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		QString s;
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
 			pAccel->disconnectItem( pE->aAccelId, pE->receiver, 
-												pE->member->data() );
+						pE->member );
 			pAccel->removeItem( pE->aAccelId );
 		}
 		++*aKeyIt;
@@ -384,16 +384,12 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->bConfigurable = pE->bConfigurable;
 		pEntry->aAccelId = pE->aAccelId;
 		pEntry->receiver = pE->receiver;
-		if( pE->member ) {
-			pEntry->member = new QString( pE->member->data() );
-		} else {
-			pEntry->member = 0;
-		}
+		pEntry->member = pE->member;
 		
 		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
 			pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
 			pAccel->connectItem( pEntry->aAccelId, pEntry->receiver, 
-													pEntry->member->data() );
+					     pEntry->member);
 		}
 		++*aKeyIt;
 	}
@@ -468,7 +464,7 @@ const char * KAccel::stdAction( StdAccel id ) {
 
 void KAccel::setConfigGroup( const char *group )
 {
-	aGroup.sprintf( group );
+	aGroup = group;
 }
 
 void KAccel::setConfigGlobal( bool global )

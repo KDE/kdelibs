@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997	Mark Donohoe <donohoe@kde.org>
-						Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1997 Mark Donohoe <donohoe@kde.org>
+    Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -48,8 +49,8 @@ struct KKeyEntry {
 	bool bEnabled;
 	int aAccelId;
 	const QObject *receiver;
-	QString *member;
-	QString *descr;	
+	const char* member;
+	const char* descr;	
 };
 
 /** 
