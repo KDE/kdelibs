@@ -73,6 +73,12 @@ KJSO Math::get(const UString &p) const
   return Number(d);
 }
 
+bool Math::hasProperty(const UString &p, bool recursive) const
+{
+  return (Lookup::find(&mathTable, p) >= 0 ||
+	  (recursive && Imp::hasProperty(p, recursive)));
+}
+
 Completion MathFunc::execute(const List &args)
 {
   KJSO v = args[0];
