@@ -1113,8 +1113,9 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
 
     while(tdis>0)
     {
-//    	kdDebug( 6040 ) << "ct=" << colType[c] << endl;
-	if (colType[c]==toType)
+//    	kdDebug( 6040 ) << c << ": ct=" << colType[c] << " min=" << colMinWidth[c] 
+//                << " max=" << colMaxWidth[c] << endl;
+	if (colType[c]==toType || (mlim && colMaxWidth[c]-colMinWidth[c]>0))
 	{
 	    int delta = distrib/span;
             if (totper)
@@ -1122,9 +1123,13 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
 	    if (mlim)
 	        delta = QMIN(delta,colMaxWidth[c]-colMinWidth[c]);
             
-	    delta = QMIN(tdis,delta);
+	    delta = QMIN(tdis,delta);                        
+            
 	    if (delta==0 && tdis && (!mlim || colMaxWidth[c]>colMinWidth[c]))
 	    	delta=1;
+            
+//            kdDebug( 6040 ) << "delta=" << delta << endl;
+            
 	    colMinWidth[c]+=delta;
             if (mlim)
 	        colType[c]=distType;
