@@ -30,7 +30,6 @@
 #include <qprogressdialog.h>
 #include <qclipboard.h>
 #include <qtimer.h>
-#include <kbutton.h>
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kfiledialog.h>
