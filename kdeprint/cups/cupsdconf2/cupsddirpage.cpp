@@ -20,6 +20,7 @@
 #include "cupsddirpage.h"
 #include "cupsdconf.h"
 #include "qdirlineedit.h"
+#include "qdirmultilineedit.h"
 
 #include <qlabel.h>
 #include <qlayout.h>
@@ -36,7 +37,7 @@ CupsdDirPage::CupsdDirPage(QWidget *parent, const char *name)
 
 	datadir_ = new QDirLineEdit(false, this);
 	documentdir_ = new QDirLineEdit(false, this);
-	fontpath_ = new QDirLineEdit(false, this);
+	fontpath_ = new QDirMultiLineEdit(this);
 	requestdir_ = new QDirLineEdit(false, this);
 	serverbin_ = new QDirLineEdit(false, this);
 	serverfiles_ = new QDirLineEdit(false, this);
@@ -64,7 +65,7 @@ CupsdDirPage::CupsdDirPage(QWidget *parent, const char *name)
 	m1->setColStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
-	m1->addWidget(l3, 2, 0, Qt::AlignRight);
+	m1->addWidget(l3, 2, 0, Qt::AlignRight|Qt::AlignTop);
 	m1->addWidget(l4, 3, 0, Qt::AlignRight);
 	m1->addWidget(l5, 4, 0, Qt::AlignRight);
 	m1->addWidget(l6, 5, 0, Qt::AlignRight);
@@ -83,7 +84,7 @@ bool CupsdDirPage::loadConfig(CupsdConf *conf, QString&)
 	conf_ = conf;
 	datadir_->setURL(conf_->datadir_);
 	documentdir_->setURL(conf_->documentdir_);
-	fontpath_->setURL(conf_->fontpath_);
+	fontpath_->setURLs(conf_->fontpath_);
 	requestdir_->setURL(conf_->requestdir_);
 	serverbin_->setURL(conf_->serverbin_);
 	serverfiles_->setURL(conf_->serverfiles_);
@@ -96,7 +97,7 @@ bool CupsdDirPage::saveConfig(CupsdConf *conf, QString&)
 {
 	conf->datadir_ = datadir_->url();
 	conf->documentdir_ = documentdir_->url();
-	conf->fontpath_ = fontpath_->url();
+	conf->fontpath_ = fontpath_->urls();
 	conf->requestdir_ = requestdir_->url();
 	conf->serverbin_ = serverbin_->url();
 	conf->serverfiles_ = serverfiles_->url();

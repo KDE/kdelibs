@@ -113,7 +113,7 @@ struct CupsdConf
 	// Directories
 	QString datadir_;
 	QString documentdir_;
-	QString fontpath_;
+	QStringList fontpath_;
 	QString requestdir_;
 	QString serverbin_;
 	QString serverfiles_;

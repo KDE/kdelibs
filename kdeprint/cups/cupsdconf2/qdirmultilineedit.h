@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001-2002 Michael Goffioul <goffioul@imec.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,31 +17,37 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef CUPSDDIRPAGE_H
-#define CUPSDDIRPAGE_H
+#ifndef QDIRMULTILINEEDIT_H
+#define QDIRMULTILINEEDIT_H
 
-#include "cupsdpage.h"
+#include <qwidget.h>
 
-class QDirLineEdit;
-class QDirMultiLineEdit;
+class KListView;
+class QListViewItem;
+class QPushButton;
 
-class CupsdDirPage : public CupsdPage
+class QDirMultiLineEdit : public QWidget
 {
-public:
-	CupsdDirPage(QWidget *parent = 0, const char *name = 0);
+	Q_OBJECT
 
-	bool loadConfig(CupsdConf*, QString&);
-	bool saveConfig(CupsdConf*, QString&);
-	void setInfos(CupsdConf*);
+public:
+	QDirMultiLineEdit(QWidget *parent = 0, const char *name = 0);
+	~QDirMultiLineEdit();
+
+	void setURLs(const QStringList&);
+	QStringList urls();
+
+protected:
+	void addURL(const QString&);
+
+private slots:
+	void slotAddClicked();
+	void slotRemoveClicked();
+	void slotSelected(QListViewItem*);
 
 private:
-	QDirLineEdit	*datadir_,
-			*documentdir_,
-			*requestdir_,
-			*serverbin_,
-			*serverfiles_,
-			*tmpfiles_;
-	QDirMultiLineEdit	*fontpath_;
+	KListView	*m_view;
+	QPushButton	*m_add, *m_remove;
 };
 
 #endif

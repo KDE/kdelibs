@@ -48,7 +48,7 @@ CupsdConf::CupsdConf()
 			<< "/opt/local/share/cups");
 	documentdir_ = findDir(QStringList(datadir_+"/doc")
 			<< datadir_.left(datadir_.length()-5)+"/doc/cups");
-	fontpath_ = datadir_+"/fonts";
+	//fontpath_ << (datadir_+"/fonts");
 	requestdir_ = findDir(QStringList("/var/spool/cups")
 			<< "/var/cups");
 	serverbin_ = findDir(QStringList("/usr/lib/cups")
@@ -364,7 +364,8 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << "DocumentRoot " << documentdir_ << endl;
 
 		t << endl << comments_["fontpath"] << endl;
-		t << "FontPath " << fontpath_ << endl;
+		for (QStringList::ConstIterator it=fontpath_.begin(); it!=fontpath_.end(); ++it)
+			t << "FontPath " << *it << endl;
 
 		t << endl << comments_["requestroot"] << endl;
 		t << "RequestRoot " << requestdir_ << endl;
@@ -512,7 +513,7 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "documentroot") documentdir_ = value;
 	else if (keyword == "errorlog") errorlog_ = value;
 	else if (keyword == "filterlimit") filterlimit_ = value.toInt();
-	else if (keyword == "fontpath") fontpath_ = value;
+	else if (keyword == "fontpath") fontpath_ += QStringList::split(':', value, false);
 	else if (keyword == "group") group_ = value;
 	else if (keyword == "hideimplicitmembers") hideimplicitmembers_ = (value.lower() != "no");
 	else if (keyword == "hostnamelookups")
