@@ -360,6 +360,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     KURL destURL;
     destURL.setPath( m_file );
     d->m_job = KIO::file_copy( m_url, destURL, 0600, true, false, d->m_showProgressInfo );
+    d->m_job->setWindow( widget() ? widget()->topLevelWidget() : 0 );
     emit started( d->m_job );
     connect( d->m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobFinished ( KIO::Job * ) ) );
     return true;
@@ -603,6 +604,7 @@ bool ReadWritePart::saveToURL()
        return false;
     }
     d->m_uploadJob = KIO::file_move( uploadFile, m_url, -1, true /*overwrite*/ );
+    d->m_uploadJob->setWindow( widget() ? widget()->topLevelWidget() : 0 );
     connect( d->m_uploadJob, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
     return true;
   }
