@@ -252,12 +252,10 @@ public:
 	 * The resulting permissions will depend on the current umask setting.
 	 * permission = mode & ~umask.
 	 *
-	 * Since we are paranoid we use 0700 as default permission. 
-	 *
 	 * @param dir absolute path of the directory to be made
 	 * @param mode directory permissions
 	 */
-	static bool makeDir(const QString& dir, int mode = 0700);
+	static bool makeDir(const QString& dir, int mode = 0755);
 
 	static QString kde_default(const QString& type);
 
