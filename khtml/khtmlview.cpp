@@ -136,8 +136,6 @@ void KHTMLView::init()
   _width = width()- SCROLLBARWIDTH - 2*marginWidth();
 
   resizeContents(clipper()->width(), clipper()->height());
-
-  khtml::Cache::init();
 }
 
 void KHTMLView::clear()
@@ -644,7 +642,7 @@ QString KHTMLView::selectedText() const
 bool KHTMLView::hasSelection() const
 {
   return ( d->selectionStart != 0 && d->selectionEnd != 0 );
-} 
+}
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {

@@ -588,9 +588,10 @@ private slots:
 
   void slotSelectionChanged();
 
+private slots:
+  void checkCompleted();
 private:
   void clear();
-  void checkCompleted();
 
   DOM::HTMLDocumentImpl *docImpl() const;
   khtml::ChildFrame *frame( const QObject *obj );

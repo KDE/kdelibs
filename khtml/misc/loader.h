@@ -104,6 +104,7 @@ namespace khtml
 	    m_type = type;
 	    m_status = Pending;
 	    m_size = 0;
+	    m_free = false;
 	}
 	virtual ~CachedObject() {}
 
@@ -129,12 +130,20 @@ namespace khtml
 	 */
 	void computeStatus();
 
+        /*
+         * Called by the cache if the object has been removed from the cache dict
+         * while still being referenced. This means the object should kill itself
+         * if its reference counter drops down to zero.
+         */
+        void setFree( bool b ) { m_free = b; }
+
     protected:
 	DOM::DOMString m_url;
 	Type m_type;
 	Status m_status;
 	QList<CachedObjectClient> m_clients;
 	int m_size;
+        bool m_free;
     };
 
 
@@ -144,7 +153,7 @@ namespace khtml
     class CachedCSSStyleSheet : public CachedObject
     {
     public:
-	CachedCSSStyleSheet(const DOM::DOMString &url);
+	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL);
 	virtual ~CachedCSSStyleSheet();
 	
 	const DOM::DOMString &sheet() const { return m_sheet; }
@@ -171,7 +180,7 @@ namespace khtml
     {
 	Q_OBJECT
     public:
-	CachedImage(const DOM::DOMString &url);
+	CachedImage(const DOM::DOMString &url, const DOM::DOMString &baseURL);
 	virtual ~CachedImage();
 	
 	const QPixmap &pixmap() const;
@@ -219,7 +228,7 @@ namespace khtml
     /**
      * @internal
      */
-    class Loader : QObject
+    class Loader : public QObject
     {
 	Q_OBJECT
 
@@ -227,8 +236,14 @@ namespace khtml
 	Loader();
 	~Loader();
 
-	void load(CachedObject *object, bool incremental = true);
-	
+	void load(CachedObject *object, const DOM::DOMString &baseURL, bool incremental = true);
+
+        int numRequests( const DOM::DOMString &baseURL );
+        void cancelRequests( const DOM::DOMString &baseURL );	
+
+    signals:
+	void requestDone();
+
     protected slots:
 	void slotFinished( KIO::Job * );
 	void slotData( KIO::Job *, const QByteArray & );
@@ -239,14 +254,16 @@ namespace khtml
 	class Request
 	{
 	public:
-	    Request(CachedObject *_object, bool _incremental)
+	    Request(CachedObject *_object, const DOM::DOMString &baseURL, bool _incremental)
 	    {
 		object = _object;
 		incremental = _incremental;
+		m_baseURL = baseURL;
 	    }
 	    bool incremental;
 	    QBuffer m_buffer;
 	    CachedObject *object;
+	    DOM::DOMString m_baseURL;
 	};
 	QList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
@@ -262,6 +279,10 @@ namespace khtml
     class Cache
     {
     public:
+
+        static void ref();
+	static void deref();
+
 	/**
 	 * init the cache in case it's not already. This needs to get called once
 	 * before using it.
@@ -307,6 +328,8 @@ namespace khtml
 	
     	static QPixmap *nullPixmap;
 
+        static void removeCacheEntry( CachedObject *object );
+
     protected:
 	/*
 	 * @internal
@@ -334,6 +357,7 @@ namespace khtml
 
 	static Loader *m_loader;
 
+        static unsigned long s_ulRefCnt;
     };
 
 

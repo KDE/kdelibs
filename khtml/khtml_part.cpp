@@ -34,6 +34,7 @@
 #include "html/html_inlineimpl.h"
 #include "rendering/render_frames.h"
 #include "misc/htmlhashes.h"
+#include "misc/loader.h"
 
 #include "khtmlview.h"
 #include "decoder.h"
@@ -104,7 +105,7 @@ public:
     m_decoder = 0L;
     m_jscript = 0L;
     m_job = 0L;
-    m_bComplete = false;
+    m_bComplete = true;
     m_bParsing = false;
     m_manager = 0L;
     m_settings = new khtml::Settings();
@@ -188,6 +189,8 @@ namespace khtml {
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
+  khtml::Cache::ref();
+  
   setInstance( KHTMLFactory::instance() );
   setXMLFile( "khtml.rc" );
 
@@ -222,10 +225,15 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 	   this, SLOT( updateActions() ) );
 
   d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
+  
+  connect( khtml::Cache::loader(), SIGNAL( requestDone() ),
+	   this, SLOT( checkCompleted() ) );
 }
 
 KHTMLPart::~KHTMLPart()
 {
+  disconnect( khtml::Cache::loader(), SIGNAL( requestDone() ),
+	      this, SLOT( checkCompleted() ) );
   if ( d->m_view )
   {
     d->m_view->hide();
@@ -236,6 +244,7 @@ KHTMLPart::~KHTMLPart()
   clear();
 
   delete d;
+  khtml::Cache::deref();
 }
 
 bool KHTMLPart::openURL( const KURL &url )
@@ -302,7 +311,7 @@ bool KHTMLPart::closeURL()
 
   d->m_workingURL = KURL();
 
-  // ### cancel all file requests
+  khtml::Cache::loader()->cancelRequests( m_url.url() );
 
   if ( !d->m_bComplete )
     emit canceled( QString::null );
@@ -574,7 +583,7 @@ void KHTMLPart::end()
 
 void KHTMLPart::checkCompleted()
 {
-  if ( d->m_bParsing )
+  if ( d->m_bParsing || d->m_bComplete )
     return;
 
   QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
@@ -583,7 +592,10 @@ void KHTMLPart::checkCompleted()
     if ( !it.data().m_bCompleted )
       return;
 
-  // ### check all additional data downloaded
+  int requests = khtml::Cache::loader()->numRequests( m_url.url() );
+  kdDebug() << "number of loader requests: " << requests << endl;
+  if ( requests > 0 )
+    return;
 
   d->m_bComplete = true;
 
@@ -1312,9 +1324,9 @@ void KHTMLPart::popupMenu( const QString &url )
       mode = S_IFDIR;
   }
   */
-  mode_t mode = S_IFDIR; // treat all html documents as "DIR" in order to have the back/fwd/reload 
+  mode_t mode = S_IFDIR; // treat all html documents as "DIR" in order to have the back/fwd/reload
                          // buttons in the popupmenu
-  
+
   KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, url.isEmpty() ? KURL() : u );
 
   emit d->m_extension->popupMenu( client, QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
@@ -1683,7 +1695,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     d->m_paReloadFrame = new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
 				      actionCollection(), "reloadframe" );
   }
-  
+
   if ( !url.isEmpty() )
   {
     d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
@@ -1736,13 +1748,13 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
 
 void KHTMLPopupGUIClient::slotReloadFrame()
 {
-  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() ); 
+  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
   args.reload = true;
   // reload document
   d->m_khtml->closeURL();
   d->m_khtml->browserExtension()->setURLArgs( args );
   d->m_khtml->openURL( d->m_khtml->url() );
-} 
+}
 
 void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url )
 {
