@@ -1133,7 +1133,7 @@ void KDockTabBar::setCurrentTab( int id, bool allowDisable )
             count--;
           }
           count = mainData->count();
-          while ( count > 0 && -barPainter->delta + curx > width()- 100 ){
+          while ( count > 0 && -barPainter->delta + curx > width() ){
             rightClicked();
             count--;
           }
@@ -1145,7 +1145,7 @@ void KDockTabBar::setCurrentTab( int id, bool allowDisable )
             count--;
           }
           count = mainData->count();
-          while ( count > 0 && -barPainter->delta + curx > height() - 100 ){
+          while ( count > 0 && -barPainter->delta + curx > height() ){
             rightClicked();
             count--;
           }
@@ -1272,17 +1272,23 @@ void KDockTabBar::resizeEvent(QResizeEvent *)
         barPainter->delta = 0;
         leftTab = 0;
       }
-      maxAllowWidth = width(); // CCC - 50 + barPainter->delta;
+      maxAllowWidth = width() + barPainter->delta;
       barPainter->move( -barPainter->delta, 0 );
-      barPainter->resize( QMIN(tabsWidth(),maxAllowWidth),  height() - 1 );
+      if ( barPainter->delta > 0 ||  tabsWidth() > maxAllowWidth )
+        barPainter->resize( QMIN(tabsWidth(),maxAllowWidth-45),  height() - 1 );
+      else
+        barPainter->resize( QMIN(tabsWidth(),maxAllowWidth),  height() - 1 );
       break;
     case TAB_RIGHT:
       if ( height() - 50 > tabsWidth() || _currentTab == -1 ){
         barPainter->delta = 0;
         leftTab = 0;
       }
-      maxAllowHeight = height(); //CCC - 50 + barPainter->delta;
-      barPainter->resize( width() - 1, QMIN(tabsWidth(),maxAllowHeight) );
+      maxAllowHeight = height() + barPainter->delta;
+      if ( barPainter->delta > 0 ||  tabsWidth() > maxAllowHeight )
+        barPainter->resize( width() - 1, QMIN(tabsWidth(),maxAllowHeight-45) );
+      else
+        barPainter->resize( width() - 1, QMIN(tabsWidth(),maxAllowHeight) );
       barPainter->move( 0, height() - barPainter->height() + barPainter->delta );
       break;
   }
