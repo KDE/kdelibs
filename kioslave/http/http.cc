@@ -1957,6 +1957,8 @@ bool HTTPProtocol::httpOpenConnection()
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpenConnection" << endl;
 
   setBlockConnection( true );
+  // kio_http uses its own proxying:
+  KSocks::self()->disableSocks();
 
   if ( m_state.doProxy )
   {
