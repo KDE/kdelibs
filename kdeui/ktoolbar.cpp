@@ -95,6 +95,12 @@ KToolBarCombo::KToolBarCombo(bool rw, int ID,
 { 
 }
 
+void KToolBarCombo::enable (bool enable)
+{
+  QWidget::setEnabled (enable);
+}
+
+
 KToolBarLined::KToolBarLined(const char *text, int ID,
                              QWidget *parent, const char *name) : KLined (parent, name)
 {
@@ -105,11 +111,6 @@ KToolBarLined::KToolBarLined(const char *text, int ID,
 }
 
 void KToolBarLined::enable (bool enable)
-{
-  QWidget::setEnabled (enable);
-}
-
-void KToolBarCombo::enable (bool enable)
 {
   QWidget::setEnabled (enable);
 }
