@@ -695,7 +695,7 @@ void KFileDialog::accept()
 
     KDialogBase::accept();
 
-    if ( mode() & KFile::Files != KFile::Files ) // single selection
+    if ( (mode() & KFile::Files) != KFile::Files ) // single selection
 	emit fileSelected(d->url.url());
 
     ops->close();
