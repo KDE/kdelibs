@@ -30,7 +30,6 @@
 #include <qframe.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include <list>
 
 class QVBoxLayout;
 class KURLLabel;
@@ -290,7 +289,7 @@ protected:
   /** Show the maintainer? */
   bool showMaintainer;
   /** A set of people who contributed to the application. */
-  std::list<KAboutContributor*> contributors;
+  QList<KAboutContributor> contributors;
   // #########################################################################
 };
 

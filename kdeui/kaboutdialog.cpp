@@ -39,7 +39,7 @@
 #include <kurllabel.h>
 
 template class QArray<QWidget*>;
-template class std::list<KAboutContributor*>;
+template class QList<KAboutContributor>;
 
 #define WORKTEXT_IDENTATION 16
 #define Grid 3
@@ -1285,7 +1285,6 @@ KAboutWidget::adjust()
 {
   // #################################################################
   int cx, cy, tempx;
-  std::list<KAboutContributor*>::iterator pos;
   int maintWidth, maintHeight;
   QSize size;
   // -----
@@ -1308,13 +1307,14 @@ KAboutWidget::adjust()
   cy+=QMAX(logo->height(),
 	   size.height()+(showMaintainer ? Grid+maintHeight : 0));
   // -----
-  if(!contributors.empty())
+  if(!contributors.isEmpty())
     {
       cx=QMAX(cx, cont->sizeHint().width());
       cy+=cont->sizeHint().height()+Grid;
-      for(pos=contributors.begin(); pos!=contributors.end(); ++pos)
+      QListIterator<KAboutContributor> pos(contributors);
+      for( ; pos.current(); ++pos)
 	{
-	  cy+=(*pos)->sizeHint().height();
+	  cy+=pos.current()->sizeHint().height();
 	}
     }
   // -----
@@ -1376,7 +1376,7 @@ KAboutWidget::addContributor(const QString& n, const QString& e,
   c->setEmail(e);
   c->setURL(url);
   c->setWork(w);
-  contributors.push_back(c);
+  contributors.append(c);
   connect(c, SIGNAL(sendEmail(const QString&, const QString&)),
 	  SLOT(sendEmailSlot(const QString&, const QString&)));
   connect(c, SIGNAL(openURL(const QString&)), SLOT(openURLSlot(const QString&)));
@@ -1396,7 +1396,6 @@ KAboutWidget::resizeEvent(QResizeEvent*)
 {
   // ############################################################################
   int x, y, cx, tempx, tempy;
-  std::list<KAboutContributor*>::iterator pos;
   // -----
   x=0;
   // ----- set version label geometry:
@@ -1416,7 +1415,7 @@ KAboutWidget::resizeEvent(QResizeEvent*)
   y+=QMAX(logo->height(),
 	  author->height()+(showMaintainer ? Grid+maintainer->height() : 0));
   // -----
-  if(!contributors.empty())
+  if(!contributors.isEmpty())
     {
       tempy=cont->sizeHint().height();
       cont->setGeometry(0, y, width(), tempy);
@@ -1425,11 +1424,12 @@ KAboutWidget::resizeEvent(QResizeEvent*)
     } else {
       cont->hide();
     }
-  for(pos=contributors.begin(); pos!=contributors.end(); ++pos)
+
+  for(QListIterator<KAboutContributor> pos(contributors); pos.current(); ++pos)
     {
-      tempy=(*pos)->sizeHint().height();
+      tempy=pos.current()->sizeHint().height();
       // y+=Grid;
-      (*pos)->setGeometry(x, y, width(), tempy);
+      pos.current()->setGeometry(x, y, width(), tempy);
       y+=tempy;
     }
   if(showMaintainer)
