@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2000/06/03 23:09:02  gehrmab
+ * Completely redesigned KRuler's API
+ *
  * Revision 1.11  2000/04/15 16:16:56  habenich
  * fixed bug with disappearing vertical text
  * enabled offset drawing of begin and end marks
@@ -128,8 +131,8 @@ KRuler::KRuler(QWidget *parent, const char *name)
 
 
 KRuler::KRuler(Orientation orient,
-               QWidget *parent, const char *name, WFlags f, bool allowLines)
-  : QFrame(parent, name, f, allowLines),
+               QWidget *parent, const char *name, WFlags f)
+  : QFrame(parent, name, f),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {
@@ -142,8 +145,8 @@ KRuler::KRuler(Orientation orient,
 
 
 KRuler::KRuler(Orientation orient, int widgetWidth,
-               QWidget *parent, const char *name, WFlags f, bool allowLines)
-  : QFrame(parent, name, f, allowLines),
+               QWidget *parent, const char *name, WFlags f)
+  : QFrame(parent, name, f),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {

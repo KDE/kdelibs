@@ -112,9 +112,9 @@ public:
    */
   KRuler(QWidget *parent=0, const char *name=0);
   /**
-   * Constructor, requires the ruler direction.
+   * Constructs a ruler with orientation @p orient.
    *
-   * @p parent, @p name, @p f and @p allowLines are passed to QFrame.
+   * @p parent, @p name and @p f are passed to QFrame.
    * The default look is a raised widget
    * but may be changed with the inherited @ref QFrame methods.
    *
@@ -126,17 +126,17 @@ public:
    *
    **/
   KRuler(Orientation orient, QWidget *parent=0, const char *name=0, 
-	 WFlags f=0, bool allowLines=TRUE);
+	 WFlags f=0);
 
   /**
-   * Constructor, requires the direction of the ruler and an initial width.
+   * Constructs a ruler with orientation @p orient and initial width @p widgetWidth.
    *
-   * The width sets the fixed width of the widget. This is usefullif you
+   * The width sets the fixed width of the widget. This is useful if you
    * want to draw the ruler bigger or smaller than the default size.
    * Note: The size of the marks doesn't change.
-   * @p parent, @p name, @p f and @p allowLines are passed to @ref QFrame.
+   * @p parent, @p name and @p f are passed to @ref QFrame.
    *
-   * @param orient      Orientatio of the ruler.
+   * @param orient      Orientation of the ruler.
    * @param widgetWidth Fixed width of the widget.
    * @param parent      Will be handed over to @ref QFrame.
    * @param name        Will be handed over to @ref QFrame.
@@ -145,7 +145,7 @@ public:
    *
    */
   KRuler(Orientation orient, int widgetWidth, QWidget *parent=0, 
-	 const char *name=0, WFlags f=0, bool allowLines=TRUE);
+	 const char *name=0, WFlags f=0);
 
   /**
    * Destructor.
@@ -351,7 +351,7 @@ public:
    * per pixel ;-)
    * For English (inches) it is 9.0, and for centimetres ~2.835 -> 3.0 .
    * If you want to magnify your part of display, you have to
-   * adjust the mark distance @bf here.
+   * adjust the mark distance @em here.
    * Notice: The double type is only supported to give the possibility
    *         of having some double values.
    *         It should be used with care.  Using values below 10.0
@@ -452,6 +452,9 @@ public slots:
   void slotEndOffset(int);
 
 protected:
+  /**
+   * @reimplemented
+   */
   virtual void drawContents(QPainter *);
 
 private:
