@@ -7,10 +7,10 @@
  * By using this file, you agree to the terms and conditions set
  * forth in the LICENSE file which can be found at the top level of
  * the sendmail distribution.
- * 
- * A copy of the above mentioned LICENSE file can be found in 
+ *
+ * A copy of the above mentioned LICENSE file can be found in
  * LICENSE.setproctitle.
- * 
+ *
  * Ported for use with KDE by Waldo Bastian <bastian@kde.org>
  */
 
@@ -20,9 +20,12 @@
 #include <config.h>
 #endif
 
-#define _GNU_SOURCE
+/* _GNU_SOURCE might already be defined in <config.h> */
+#ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+#endif
 #include <stdio.h>
-#include <stdarg.h>                                                      
+#include <stdarg.h>
 #include <sys/ioctl.h>
 #include <sys/param.h>
 #include <limits.h>
@@ -158,7 +161,7 @@ kdeinit_initsetproctitle(int argc, char **argv, char **envp)
 	Argv = argv;
 
 	/*
-	**  Determine how much space we can use for setproctitle.  
+	**  Determine how much space we can use for setproctitle.
 	**  Use all contiguous argv and envp pointers starting at argv[0]
  	*/
 	for (i = 0; i < argc; i++)
