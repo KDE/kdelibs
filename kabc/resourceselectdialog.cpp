@@ -49,7 +49,7 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
   KButtonBox *buttonBox = new KButtonBox( this );
 
   buttonBox->addStretch();    
-  buttonBox->addButton( i18n( "&Ok" ), this, SLOT( accept() ) );
+  buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
   buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
   buttonBox->layout();
 
