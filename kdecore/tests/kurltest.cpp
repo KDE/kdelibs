@@ -439,6 +439,8 @@ int main(int argc, char *argv[])
   waba1.setQuery("hello:My Value");
   check("http: URL with ':' in query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello:My%20Value");
+  check("upURL() removes query", waba1.upURL().url(),
+        "http://www.kde.org/cgi/test.cgi");
 
   // URLs who forgot to encode spaces in the query.
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value+20";
@@ -622,6 +624,8 @@ int main(int argc, char *argv[])
   check("mailto: URL, general form", umail2.protocol(), "mailto");
   check("mailto: URL, general form", umail2.path(), "Faure David <faure@kde.org>");
   check("isRelativeURL(\"mailto:faure@kde.org\")", KURL::isRelativeURL("mailto:faure@kde.org") ? "yes" : "no", "no");
+  KURL umail3 ( "mailto:" );
+  check("mailto: invalid URL", umail3.isValid()?"valid":"malformed", "malformed");
 
   check("man: URL, is relative", KURL::isRelativeURL("man:mmap") ? "true" : "false", "false");
   check("javascript: URL, is relative", KURL::isRelativeURL("javascript:doSomething()") ? "true" : "false", "false");
@@ -864,7 +868,12 @@ int main(int argc, char *argv[])
   weird = "ftp://user%40host.com@ftp.host.com/var/www/";
   check("user()?", weird.user(), "user@host.com" );
   check("host()?", weird.host(), "ftp.host.com" );
-  check("KURL::upURL()", weird.upURL().url(), "ftp://user%40host.com@ftp.host.com/var/");
+  KURL up = weird.upURL();
+  check("KURL::upURL()", up.url(), "ftp://user%40host.com@ftp.host.com/var/");
+  up = up.upURL();
+  check("KURL::upURL()", up.url(), "ftp://user%40host.com@ftp.host.com/");
+  up = up.upURL();
+  check("KURL::upURL()", up.url(), "ftp://user%40host.com@ftp.host.com/"); // unchanged
 
   KURL ldap = "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)";
   check("host()?", ldap.host(), "host.com");
