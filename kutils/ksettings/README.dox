@@ -1,0 +1,259 @@
+/** 
+
+\page KSettings The KSettings classes
+
+<h2>How to use KSettings::Dialog in your application.</h2>
+
+<hr>
+<h3>1. Open the dialog from your app</h3>
+
+All you need to do is instanciate KSettings::Dialog and show() it. I recommend
+the following:
+
+create the 'Configure MyApp' StdAction like this:
+\code
+KStdAction::preferences( this, SLOT( showConfigDialog() ), actionCollection );
+\endcode
+
+and the slot looks like this:
+\code
+if( m_dlg == 0 )
+  m_dlg = new KSettings::Dialog( this );
+m_dlg->show();
+\endcode
+
+Of course you need to have the 'KSettings::Dialog * m_dlg' member var and
+initialize it to 0 in the ctor.
+
+If your application uses KParts that don't set 'X-KDE-ParentApp=&lt;the instance
+name of your application&gt;' then you need to use the second ctor of
+KSettings::Dialog:
+\code
+m_dlg = new KSettings::Dialog( QStringList::split( ';', "component1;component2" ) );
+\endcode
+
+The KSettings::Dialog object will be destructed automatically by the QObject
+mechanisms.
+
+
+<hr>
+<h3>2. Create pages for your dialog</h3>
+
+Every page is a KCM. This is what you need for creating a page:
+
+\code
+class MyAppConfig : public KCModule
+{
+  Q_OBJECT
+public:
+  MyAppConfig( QWidget *parent, const char *name = 0, const QStringList &args =
+      QStringList() );
+  ~MyAppConfig();
+
+  void load();
+  void save();
+  void defaults();
+}
+\endcode
+
+and in the cpp file:
+
+\code
+typedef KGenericFactory<MyAppConfig, QWidget> MyAppConfigFactory;
+K_EXPORT_COMPONENT_FACTORY( kcm_myappconfig, MyAppConfigFactory(
+    "kcm_myappconfig" ) );
+
+MyAppConfig::MyAppConfig( QWidget *parent, const char *, const QStringList &args )
+  : KCModule( MyAppConfigFactory::instance(), parent, args )
+{
+  // create the pages GUI
+  load();
+}
+
+// implementations for the other methods
+\endcode
+
+For the KConfig object you can either use
+KGlobal::config() (I don't recommend it) or KSimpleConfig( "myapprc" ).
+I added a method to KSettings::Dispatcher that gives you the KConfig
+object for every registered instance name: \ref KSettings::Dispatcher::configForInstanceName
+
+
+<hr>
+<h3>3. The .desktop file for the page</h3>
+
+The .desktop file holds all the information for the dialog to find the page and
+insert it at the right place (with the right icon, name and comment).
+
+An example file:
+\verbatim
+[Desktop Entry]
+Encoding=UTF-8
+Icon=myapp
+Type=Service
+ServiceTypes=KCModule
+
+X-KDE-ModuleType=Library
+X-KDE-Library=myappconfig
+X-KDE-FactoryName=MyAppConfigFactory
+X-KDE-ParentApp=myapp
+X-KDE-ParentComponents=myapp
+X-KDE-Weight=10
+
+Name=General
+Comment=General configuration of my app
+\endverbatim
+
+
+Some explanation for those keys:
+- You just keep 'Encoding', 'Type', 'ServiceTypes' and 'X-KDE-ModuleType' like
+  in the example. For very special needs you might add another ServiceType to
+  the list...
+- Icon is the icon that will be used in the listview/iconview for your page.
+- X-KDE-Library is the name of the library where the page is in. The library
+  always needs to be prefixed with kcm_ but you don't write the prefix in the
+  desktop file. For more docu on this look for the KCModule docu.
+- X-KDE-FactoryName is either the name of the Factory you used in the
+  KGenericFactory call or the suffix of the create_ function that you created.
+  Again for more info look for the KCModule docu.
+- X-KDE-ParentApp is the name of the application this config page belongs to. It
+  is used by the first two \ref KSettings::Dialog constructors. The Dialog will
+  use all modules that set X-KDE-ParentApp to
+  KGlobal::instance()->instanceName(). It
+  should be pretty easy to find out what name that is: look at the first
+  argument to the KAboutData ctor.
+- X-KDE-ParentComponents is a list of the components (plugin/KPart/whatever)
+  this config page belongs to. Normally there is only one component.
+  It is used for two things:
+  1. If you use KSettings::Dispatcher the dispatcher will notify all components
+     in this list after the save() method of your KCM has been called. The
+     components then can reload the configuration and apply the changes the user
+     did to the config.
+  2. If your component is used by another application (that is not =
+     X-KDE-ParentApp) then it may add the name of the component to the ctor of
+     KSettings::Dialog and the dialog will automatically include all config
+     pages that have the components name in their ParentComponents list.
+- X-KDE-Weight sets the order for the modules to be inserted into the dialog.
+  The higher the number (heavier) the lower the module will appear in the list.
+  (the default value is 100)
+- Name is the string that is shown in the listview/iconview right below the
+  icon.
+- Comment is the string that is shown on top of the config page for a short
+  description what you can do on this page.
+
+
+<hr>
+<h3>4. The .setdlg file for hierarchical (TreeList) page layouts</h3>
+
+If your config dialog should show a tree of pages in the config dialog you need
+to define that hierarchy with a .setdlg file.
+
+The file should be installed in apps/&lt;appname&gt;/&lt;appname&gt;.setdlg. If third party
+plugins need to merge in they will install their file to
+apps/&lt;appname&gt;/ksettingsdialog/&lt;pluginname&gt;.setdlg.
+
+A .setdlg file contains one or more blocks like the following:
+
+\verbatim
+[id]
+Name=
+Comment=
+Icon=
+Weight=
+Parent=
+\endverbatim
+
+- The group name (id) is the name you use in the .desktop file of the page:
+  If your page's .desktop file says "X-KDE-CfgDlgHierarchy=id" then it will be
+  inserted as a child of this entry.
+- The Name
+
+
+<hr>
+<h3>5. The Pluginselector</h3>
+
+There are two ways to use the KPluginSelector widget. One is to use the class
+directly and the second to use KSettings::PluginPage as baseclass for a config
+page that shows the KPluginSelector widget.
+
+I'll cover the second usage here and the calls to addPlugins are just the same
+for the first.
+
+To create a plugin page you need the following code:
+
+\code
+typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
+K_EXPORT_COMPONENT_FACTORY( kcm_myapppluginconfig, MyAppPluginConfigFactory( "kcm_myapppluginconfig" ) );
+
+MyAppPluginConfig( QWidget * parent, const char *, const QStringList & args )
+    : PluginPage( MyAppPluginConfigFactory::instance(), parent, args )
+{
+    pluginSelector()->addPlugins( ... );
+    pluginSelector()->addPlugins( ... );
+    .
+    .
+    .
+}
+\endcode
+
+pluginSelector() returns a pointer to the KPluginSelector widget of the page.
+There are three addPlugins methods available, two for adding KParts plugins and
+one for the rest.
+
+
+<hr>
+<h3>6. The .desktop files of plugin config pages</h3>
+
+this is the entry for the Makefile.am:
+
+\verbatim
+myappconfigpagedir = $(kde_servicesdir)/<appname>
+myappconfigpage_DATA = myappconfigpage.desktop
+\endverbatim
+
+
+And this is what the .desktop file looks like:
+
+\verbatim
+[Desktop Entry]
+Encoding=UTF-8
+Icon=myplugin
+Type=Service
+ServiceTypes=KPluginInfo
+
+X-KDE-PluginInfo-Author=<your name>
+X-KDE-PluginInfo-Email=<your email>
+X-KDE-PluginInfo-Website=http://www.myplugin.org/
+X-KDE-PluginInfo-Name=myplugin
+X-KDE-PluginInfo-Category=CoolPlugins
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true
+X-KDE-PluginInfo-Depends=myotherplugin
+
+Name=MyPlugin
+Comment=My plugin is cool and does foo and bar.
+\endverbatim
+
+
+Explanation:
+mandatory entries:
+- Name
+- Comment
+- X-KDE-PluginInfo-Name is the "internal name" of the plugin.
+- You need to have KPluginInfo in ServiceTypes but of course you may have more
+  entries in there.
+- leave Type and Encoding like in the example
+
+optional entries:
+- Icon is the icon used for your plugin (it's shown in the pluginselector if you
+  set one)
+- Author and Email is some information about the author of the plugin.
+- Website is the address for a webpage for this plugin
+- Category is used if your application has different categories of plugins.
+- Depends can be used to tell the application that you need to have
+  myotherplugin enabled for your plugin to work.
+
+If you have questions contact Matthias Kretz <kretz@kde.org>.
+*/
+// vim: tw=80
