@@ -1,5 +1,4 @@
 #include "kfileaudiopreview.h"
-#include "../player.h"
 
 #include <qcheckbox.h>
 #include <qhbox.h>
@@ -9,6 +8,7 @@
 #include <kconfig.h>
 #include <klibloader.h>
 #include <klocale.h>
+#include <kmediaplayer/player.h>
 #include <kmimetype.h>
 #include <kparts/componentfactory.h>
 
