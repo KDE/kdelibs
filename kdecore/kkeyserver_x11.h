@@ -93,8 +93,8 @@ private:
 
 	bool codeXToSym( uchar codeX, uint modX, uint& symX );
 
-	QString symToStringInternal( uint sym );
-	QString symToStringUser( uint sym );
+	//QString symToStringInternal( uint sym );
+	//QString symToStringUser( uint sym );
 	QString modToStringInternal( uint mod );
 	QString modToStringUser( uint mod );
 

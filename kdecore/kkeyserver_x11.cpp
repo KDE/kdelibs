@@ -559,8 +559,8 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 	return true;
 }
 
-QString symToStringInternal( uint sym ) { return Sym(sym).toStringInternal(); }
-QString symToStringUser( uint sym ) { return Sym(sym).toStringInternal(); }
+//QString symToStringInternal( uint sym ) { return Sym(sym).toStringInternal(); }
+//QString symToStringUser( uint sym ) { return Sym(sym).toStringInternal(); }
 
 static QString modToString( uint mod, bool bUserSpace )
 {
