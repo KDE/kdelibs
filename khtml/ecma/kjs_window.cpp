@@ -425,10 +425,8 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Length:
       return Number(m_part->frames().count());
     case _Location:
-      if (isSafeScript(exec))
+      // No isSafeScript test here, we must be able to _set_ location.href (#49819)
         return Value(location());
-      else
-        return Undefined();
     case Name:
       return String(m_part->name());
     case _Navigator:
@@ -697,19 +695,18 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     }
     case _Location: {
+      // No isSafeScript here, it's not a security problem to redirect another window
+      // (tested in other browsers)
       // Complete the URL using the "active part" (running interpreter)
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
       if (p) {
         QString dstUrl = p->htmlDocument().completeURL(value.toString(exec).string()).string();
         //kdDebug() << "Window::put dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
-        if (dstUrl.find("javascript:", 0, false) || isSafeScript(exec))
-        {
-          // Check if the URL is the current one. No [infinite] redirect in that case.
-          if ( !m_part->url().cmp( KURL(dstUrl), true ) )
+        // Check if the URL is the current one. No [infinite] redirect in that case.
+        if ( !m_part->url().cmp( KURL(dstUrl), true ) )
             m_part->scheduleRedirection(0,
                                         dstUrl,
                                         false /*don't lock history*/);
-        }
       }
       return;
     }
@@ -899,10 +896,13 @@ bool Window::isSafeScript(ExecState *exec) const
   DOM::DOMString actDomain = actDocument.domain();
   DOM::DOMString thisDomain = thisDocument.domain();
 
-  if ( actDomain == thisDomain )
+  if ( actDomain == thisDomain ) {
+    //kdDebug(6070) << "Javascript: access granted, domain is '" << actDomain.string() << "'" << endl;
     return true;
+  }
 
   kdWarning(6070) << "Javascript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
+  // TODO after 3.1: throw security exception (exec->setException())
   return false;
 }
 
@@ -1569,6 +1569,9 @@ Value Location::get(ExecState *exec, const UString &p) const
 
   if (m_part.isNull())
     return Undefined();
+  Window* window = Window::retrieveWindow( m_part );
+  if ( !window || !window->isSafeScript(exec) )
+    return Undefined();
 
   KURL url = m_part->url();
   const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
@@ -1679,15 +1682,23 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
 
 Value Location::toPrimitive(ExecState *exec, Type) const
 {
+  Window* window = Window::retrieveWindow( m_part );
+  if ( window && window->isSafeScript(exec) )
   return String(toString(exec));
+  return Undefined();
 }
 
-UString Location::toString(ExecState *) const
+UString Location::toString(ExecState *exec) const
 {
+  Window* window = Window::retrieveWindow( m_part );
+  if ( window && window->isSafeScript(exec) )
+  {
   if (!m_part->url().hasPath())
     return m_part->url().prettyURL()+"/";
   else
     return m_part->url().prettyURL();
+  }
+  return "";
 }
 
 Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
