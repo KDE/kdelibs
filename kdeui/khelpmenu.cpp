@@ -158,7 +158,7 @@ KPopupMenu* KHelpMenu::menu()
         i18n( "&About %1" ).arg(appName), menuAboutApp );
       mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
     }
-    
+
     if (kapp->authorizeKAction("help_about_kde"))
     {
       mMenu->insertItem( SmallIcon("about_kde"), i18n( "About &KDE" ), menuAboutKDE );
@@ -199,7 +199,7 @@ void KHelpMenu::aboutApplication()
       mAboutApp = new KDialogBase( QString::null, // Caption is defined below
 				   KDialogBase::Yes, KDialogBase::Yes,
 				   KDialogBase::Yes, mParent, "about",
-				   false, true, i18n("&OK") );
+				   false, true, KStdGuiItem::ok() );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
 
       QHBox *hbox = new QHBox( mAboutApp );
