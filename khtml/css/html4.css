@@ -60,7 +60,7 @@ script {
 
 p {
 	display: block;
-	margin: 1.0em 0px;
+	margin: 1.0__qem 0px;
 }
 
 div {
@@ -79,8 +79,7 @@ address {
       
 blockquote {
 	display: block;
-	margin-left: 40px; 
-	margin-right: 40px;
+        margin: 1__qem 40px 1em 40px;
         -khtml-flow-mode: -khtml-around-floats
 }
 
@@ -150,41 +149,41 @@ embed {
 H1 { 
 	display: block;
 	font-size: 1.7em; 
-	margin: .67em auto;
+	margin: .67__qem auto .67em auto;
 	font-weight: bolder;
 }
       
 H2 { 
 	display: block;
 	font-size: 1.4em; 
-	margin: .83em auto;
+	margin: .83__qem auto .83em auto;
 	font-weight: bolder;
 }
       
 H3 { 
 	display: block;
 	font-size: 1.17em; 
-	margin: 1em auto;
+	margin: 1__qem auto 1em auto;
 	font-weight: bolder;
 }
       
 H4 {
 	display: block;
-	margin: 1.0em auto;
+	margin: 1.33__qem auto 1.33em auto;
 	font-weight: bolder;
 }
 
 H5 { 
 	display: block;
 	font-size: .83em; 
-	margin: 1.67em auto;
+	margin: 1.67__qem auto 1.67em auto;
 	font-weight: bolder;
 }
 
 H6 { 
 	display: block;
 	font-size: .67em; 
-	margin: 2.33em auto;
+	margin: 2.33__qem auto 2.33em auto;
 	font-weight: bolder;
 }
 
@@ -280,14 +279,14 @@ TD[align="left"] > HR { margin-left: 0px; margin-right: auto; }
 UL, MENU, DIR {
         display: block;
         list-style-type: disc;
-        margin: 1em 0;
+        margin: 1__qem 0 1em 0;
         padding-left: 40px;
 }
 
 OL {
         display: block;
         list-style-type: decimal;
-        margin: 1em 0;
+        margin: 1__qem 0 1em 0;
         padding-left: 40px;
 }
 
@@ -317,7 +316,7 @@ DD {
 
 DL {
 	display: block;
-        margin: .83em auto;
+        margin: 1__qem 0 1em 0;
         -khtml-flow-mode: -khtml-around-floats
 } 
 
@@ -360,6 +359,7 @@ LI > DIV {
 
 FORM {
 	display: block;
+        margin 0__qem 0 1em 0;
 }
 
 LEGEND { 
@@ -390,7 +390,9 @@ BUTTON:active {
         border-style: inset;
 }
 
-INPUT { color: windowtext; }
+INPUT { color: windowtext; 
+        margin: 0__qem;
+}
 
 INPUT[type="hidden"] {
 	display: none; 
@@ -424,11 +426,13 @@ SELECT {
         display: block; 
         font-size: medium; 
         color: windowtext; 
+        margin: 0__qem;
 }
 
 TEXTAREA { 
         color: windowtext; 
         font-family: monospace; 
+        margin: 0__qem;
 }
 
 /*
@@ -467,7 +471,7 @@ PLAINTEXT {
 	font-family: monospace; 
 	white-space: pre; 
 	text-align: -khtml-auto;
-	margin: 1.0em 0px;
+	margin: 1__qem 0;
 }
       
 BIG { 

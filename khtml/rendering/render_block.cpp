@@ -830,8 +830,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
             // See if the top margin is quirky. We only care if this child has
             // margins that will collapse with us.
-            bool topQuirk = child->isBlockFlow() &&
-                            static_cast<RenderBlock*>( this )->m_topMarginQuirk;
+            bool topQuirk = child->isTopMarginQuirk();
 
             if (canCollapseTopWithChildren && topMarginContributor && !clearOccurred) {
                 // This child is collapsing with the top of the

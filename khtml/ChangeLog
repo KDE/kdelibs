@@ -1,3 +1,7 @@
+2003-11-25  Dirk Mueller  <mueller@kde.org>
+
+	* css/html4.css: Set quirky margins on elements that need it (#66490).
+
 2003-11-25  Stephan Kulow  <coolo@kde.org>
 
 	* html/html_baseimpl.cpp (parseAttribute): fix parsing of body attributes (safari merge)
