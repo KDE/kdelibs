@@ -811,6 +811,65 @@ KJSProxy *KHTMLPart::jScript()
   return d->m_jscript;
 }
 
+QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QString& script)
+{
+  KHTMLPart* destpart = this;
+
+  QString trg = target.lower();
+
+  if (target == "_top") {
+    while (destpart->parentPart())
+      destpart = destpart->parentPart();
+  }
+  else if (target == "_parent") {
+    if (parentPart())
+      destpart = parentPart();
+  }
+  else if (target == "_self" || target == "_blank")  {
+    // we always allow these
+  }
+  else {
+    while (destpart->parentPart())
+      destpart = destpart->parentPart();
+    destpart = destpart->findFrame(target);
+
+    if (!destpart)
+      destpart = this; // ### doesn't make sense, does it?
+  }
+
+  // easy way out?
+  if (destpart == this)
+    return executeScript(script);
+
+
+  // now compare the domains
+  if (!destpart->htmlDocument().isNull() &&
+      !htmlDocument().isNull())  {
+    DOM::DOMString actDomain = htmlDocument().domain();
+    DOM::DOMString destDomain = destpart->htmlDocument().domain();
+
+    if (actDomain == destDomain)
+      return destpart->executeScript(script);
+  }
+
+
+  // eww, something went wrong. better execute it in our frame
+  return executeScript(script);
+}
+
+QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const DOM::Node& n, const QString& script)
+{
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "executeScript: caller='" << name() << "' filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
+#endif
+  KJSProxy *proxy = jScript();
+
+  if (!proxy || proxy->paused())
+    return QVariant();
+  QVariant ret = proxy->evaluate(filename,baseLine,script, n );
+  return ret;
+}
+
 QVariant KHTMLPart::executeScript( const QString &script )
 {
     return executeScript( DOM::Node(), script );
@@ -2848,13 +2907,9 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !target.isEmpty() )
       hasTarget = true;
 
-  // either ignore the target on javascript: as we do now and is
-  // inconsistent to other browsers, or make sure we don't create a XSS
-  // problem here!
-  if ( (!hasTarget || _target.lower() == "_self") &&
-        url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-    executeScript( KURL::decode_string( url.mid( 11 ) ) );
+    crossFrameExecuteScript( target, KURL::decode_string( url.mid( 11 ) ) );
     return;
   }
 
@@ -3652,7 +3707,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   if ( urlstring.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
     urlstring = KURL::decode_string(urlstring);
-    executeScript( urlstring.right( urlstring.length() - 11) );
+    crossFrameExecuteScript( _target, urlstring.right( urlstring.length() - 11) );
     return;
   }
 
@@ -5225,19 +5280,6 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
     return (response==KMessageBox::Continue);
   }
   return true;
-}
-
-QVariant KHTMLPart::executeScript(QString filename, int baseLine, const DOM::Node &n, const QString &script)
-{
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "executeScript: caller='" << name() << "' filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
-#endif
-  KJSProxy *proxy = jScript();
-
-  if (!proxy || proxy->paused())
-    return QVariant();
-  QVariant ret = proxy->evaluate(filename,baseLine,script, n );
-  return ret;
 }
 
 void KHTMLPart::slotPartRemoved( KParts::Part *part )

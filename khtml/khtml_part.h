@@ -1084,28 +1084,13 @@ private:
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
   void setStatusBarText( const QString& text, StatusBarPriority p);
 
-  /**
-   * @internal
-   */
   bool restoreURL( const KURL &url );
-
-  /**
-   * @internal
-   */
   void emitSelectionChanged();
-
-  /**
-   * @internal
-   */
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
-
   void startAutoScroll();
   void stopAutoScroll();
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
 
-  /**
-   * @internal
-   */
   bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
   /**
@@ -1122,17 +1107,16 @@ private:
                    const QString &target, const QString& contentType = QString::null,
                    const QString& boundary = QString::null );
 
-  /**
-   * @internal
-   */
   void popupMenu( const QString &url );
 
   void init( KHTMLView *view, GUIProfile prof );
+
 
   void clear();
 
   bool scheduleScript( const DOM::Node &n, const QString& script);
 
+  QVariant crossFrameExecuteScript(const QString& target, const QString& script);
   QVariant executeScheduledScript();
 
   bool requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
@@ -1161,7 +1145,7 @@ private:
   khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
 
   bool checkLinkSecurity( const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null );
-  QVariant executeScript( QString filename, int baseLine, const DOM::Node &n, const QString &script );
+  QVariant executeScript( const QString& filename, int baseLine, const DOM::Node &n, const QString& script );
 
   KJSProxy *jScript();
 
