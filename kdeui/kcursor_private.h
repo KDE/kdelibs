@@ -44,8 +44,10 @@ private:
     int count;
     bool isCursorHidden;
     bool isOwnCursor;
+    bool enabled;
     QCursor oldCursor;
     QTimer *autoHideTimer;
+    QWidget *hideWidget;
     static KCursorPrivate *s_self;
 };
 

@@ -143,6 +143,18 @@ public:
     static void setAutoHideCursor( QWidget *w, bool enable );
 
     /**
+     * Overloaded method for the case where you have an event-filter installed
+     * on the widget you want to enable auto-cursor-hiding.
+     *
+     * In this case set @p customEventFilter to true and call
+     * @ref autoHideEventFilter() from the beginning of your eventFilter().
+     *
+     * @see #autoHideEventFilter
+     */
+    static void setAutoHideCursor( QWidget *w, bool enable,
+				   bool customEventFilter );
+
+    /**
      * Sets the delay time in milliseconds for auto-hiding. When no keyboard
      * events arrive for that time-frame, the cursor will be hidden.
      *
@@ -157,6 +169,36 @@ public:
      */
     static int hideCursorDelay();
 
+    /**
+     * KCursor has to install an eventFilter over the widget you want to
+     * auto-hide. If you have an own eventFilter() on that widget and stop
+     * some events by returning true, you might break auto-hiding, because
+     * KCursor doesn't get those events.
+     *
+     * In this case, you need to call setAutoHideCursor( widget, true, true );
+     * to tell KCursor not to install an eventFilter. Then you call this method
+     * from the beginning of your eventFilter, for example:
+     * <pre>
+     * edit = new KEdit( this, "some edit widget" );
+     * edit->installEventFilter( this );
+     * KCursor::setAutoHideCursor( edit, true, true );
+     *
+     * [...]
+     *
+     * bool YourClass::eventFilter( QObject *o, QEvent *e )
+     * {
+     *     if ( o == edit ) // only that widget where you enabled auto-hide!
+     *         KCursor::autoHideEventFilter( o, e );
+     *
+     *     // now you can do your own event-processing
+     *     [...]
+     * }
+     * </pre>
+     *
+     * Note that you must not call KCursor::autoHideEventFilter() when you
+     * didn't enable or after disabling auto-hiding.
+     */
+    static void autoHideEventFilter( QObject *, QEvent * );
 };
 
 
