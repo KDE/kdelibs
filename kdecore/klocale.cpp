@@ -242,12 +242,12 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
         it != langlist.end();
         ++it)
   {
-    lang = *it;
+    lang = (*it).latin1();
 
     if (lang.isEmpty()) continue;
 
     // This always exists
-    if (lang == QString::fromLatin1("C")) break;
+    if (lang == "C") break;
 
     QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo").arg(lang);
     if (!locate("locale", path.arg(catalogue)).isNull() &&
@@ -363,9 +363,9 @@ void KLocale::initFormat(KConfig *config)
 
 void KLocale::setLanguage(const QString &_lang)
 {
-  lang = _lang;
+  lang = _lang.latin1();
   // k_dcgettext doesn't like NULL pointers, so default to C
-  if (lang.isEmpty()) lang = QString::fromLatin1("C");
+  if (lang.isEmpty()) lang = "C";
 
   setEncodingLang(lang);
 
@@ -403,10 +403,13 @@ QString KLocale::translate_priv(const char *msgid, const char *fallback) const
     return QString::null;
   }
 
+  if(lang == "C")
+      return QString::fromUtf8( fallback );
+
   for (const char* catalogue = catalogues->first(); catalogue;
        catalogue = catalogues->next())
   {
-    const char *text = k_dcgettext( catalogue, msgid, lang.ascii());
+    const char *text = k_dcgettext( catalogue, msgid, lang);
     if ( text != msgid) // we found it
       return _codec->toUnicode( text );
   }

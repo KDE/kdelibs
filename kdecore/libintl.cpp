@@ -2,7 +2,7 @@
    Copyright (C) 1995 Software Foundation, Inc.
 
 This file is part of the KDE libraries, but it's derived work out
-of glibc. The master sources can be found in 
+of glibc. The master sources can be found in
 
       bindtextdom.c
       dcgettext.c
@@ -18,7 +18,7 @@ of glibc. The master sources can be found in
       loadinfo.h
       loadmsgcat.c
       localealias.c
-      textdomain.c            
+      textdomain.c
 
 which are part of glibc. The license is the same as in GLIBC, which
 is the GNU Library General Public License. See COPYING.LIB for more
@@ -56,7 +56,7 @@ Cambridge, MA 02139, USA.  */
 
 #ifndef LOCALE_ALIAS_PATH
 #define LOCALE_ALIAS_PATH "/usr/share/local"
-#endif     
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -78,8 +78,8 @@ extern "C" {
 }
 #undef __BEGIN_DECLS
 #undef __END_DECLS
-#define __BEGIN_DECLS	extern "C" { 
-#define	__END_DECLS	} 
+#define __BEGIN_DECLS	extern "C" {
+#define	__END_DECLS	}
 #endif // _ARGZ_H_WORKAROUND_
 #endif // HAVE_ARGZ_H
 
@@ -101,7 +101,7 @@ extern "C" {
 # define alloca __builtin_alloca
 # define HAVE_ALLOCA 1
 #else
-# if defined HAVE_ALLOCA_H 
+# if defined HAVE_ALLOCA_H
 #  include <alloca.h>
 # else
 #  ifdef _AIX
@@ -138,13 +138,13 @@ extern int errno;
 #undef NULL
 #endif
 
-#define NULL 0 
+#define NULL 0
 
 #if HAVE_LIMITS_H
 # include <limits.h>
 #endif
 
-#if (defined HAVE_MMAP && defined HAVE_MUNMAP) 
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP)
 # include <sys/mman.h>
 #endif
 
@@ -327,7 +327,7 @@ char *
 k_bindtextdomain(const char *domainname, const char *dirname)
 {
   struct binding *binding;
-  
+
   /* Some sanity checks.  */
   if (domainname == NULL || domainname[0] == '\0')
     return NULL;
@@ -535,11 +535,11 @@ k_dcgettext (const char *domainname, const char *msgid, const char *categoryvalu
   struct loaded_l10nfile *domain;
   struct binding *binding;
   char *dirname, *xdomainname;
-  const char *categoryname;  
+  const char *categoryname;
   char *single_locale;
   char *retval;
   int saved_errno = errno;
-  const char *_domainname = (domainname == 0L) ? k_nl_current_default_domain : domainname;     
+  const char *_domainname = (domainname == 0L) ? k_nl_current_default_domain : domainname;
 
   /* If no real MSGID is given return NULL.  */
   if (msgid == NULL)
@@ -565,6 +565,8 @@ k_dcgettext (const char *domainname, const char *msgid, const char *categoryvalu
   else if (binding->dirname[0] == '/')
     dirname = binding->dirname;
   else
+      return (char*)msgid;
+#if 0
     {
       /* We have a relative path.  Make it absolute now.  */
       size_t dirname_len = strlen (binding->dirname) + 1;
@@ -601,6 +603,7 @@ k_dcgettext (const char *domainname, const char *msgid, const char *categoryvalu
 	 HAVE_STPCPY to be defined.  */
       stpcpy (stpcpy (strchr (dirname, '\0'), "/"), binding->dirname);
     }
+#endif
 
   /* Now determine the symbolic name of CATEGORY and its value.  */
   /* Stephan: we don't use this
@@ -794,13 +797,13 @@ stpcpy (char *dest, const char *src)
 
 
 int
-_nl_explode_name (char * name, const char **language, 
-		  const char **modifier, const char **territory, 
-		  const char **codeset, 
-		  const char **normalized_codeset, 
-		  const char **special, const char **sponsor, 
+_nl_explode_name (char * name, const char **language,
+		  const char **modifier, const char **territory,
+		  const char **codeset,
+		  const char **normalized_codeset,
+		  const char **special, const char **sponsor,
 		  const char **revision)
-     
+
 {
   enum { undecided, xpg, cen } syntax;
   char *cp;
@@ -940,7 +943,7 @@ static struct loaded_l10nfile *_nl_loaded_domains;
    the DOMAINNAME and CATEGORY parameters with respect to the currently
    established bindings.  */
 struct loaded_l10nfile *
-_nl_find_domain (const char *dirname, char *locale, 
+_nl_find_domain (const char *dirname, char *locale,
 		 const char *domainname)
 
 {
@@ -1160,13 +1163,13 @@ static inline int pop (int x)
 
 
 struct loaded_l10nfile *
-_nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list, 
-		    const char *dirlist, size_t dirlist_len, 
+_nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
+		    const char *dirlist, size_t dirlist_len,
 		    int mask, const char *language,
-		    const char *territory, const char *codeset, 
-		    const char *normalized_codeset, 
+		    const char *territory, const char *codeset,
+		    const char *normalized_codeset,
 		    const char *modifier, const char *special,
-		    const char *sponsor, const char *revision, 
+		    const char *sponsor, const char *revision,
 		    const char *filename, int do_allocate)
 {
   char *abs_filename;
@@ -1545,7 +1548,7 @@ _nl_expand_alias (const char *name)
       item.alias = name;
 
       if (nmap > 0)
-	  retval = (struct alias_map *) 
+	  retval = (struct alias_map *)
 	      bsearch (&item, map, nmap,
 		       sizeof (struct alias_map),
 		       (int (*) (const void *,
@@ -1738,7 +1741,7 @@ extend_alias_table ()
 
 
 static int
-alias_compare (const struct alias_map *map1, 
+alias_compare (const struct alias_map *map1,
 	       const struct alias_map *map2)
 {
 #if defined HAVE_STRCASECMP

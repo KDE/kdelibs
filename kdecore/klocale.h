@@ -71,7 +71,7 @@ public:
       * The constructor looks for an entry Locale/Language in the
       * configuration file.
       * If nothing is set there, it looks for the environment variable
-      * $LANG. The format for LANG is de, if de (german) is your 
+      * $LANG. The format for LANG is de, if de (german) is your
       * prefered language. If none of them can be find, the default (C)
       * will be used.
       *
@@ -473,7 +473,7 @@ public:
     void initFormat(KConfig *config);
 
     /**
-     * Init the language part of the instance with the given config object. It 
+     * Init the language part of the instance with the given config object. It
      * should be valid and contain the global entries.
      *
      * @param config The configuration object used for init.
@@ -526,7 +526,7 @@ protected:
     QStrList *catalogues;
     bool _inited;
 
-    QString lang; // The current language used by the locale
+    QCString lang; // The current language used by the locale
     QTextCodec *_codec; // Codec used for translations
     QString langs; // Prefered languages
     QString _country; // Where the user lives
