@@ -118,7 +118,7 @@ void RenderRoot::layout()
 #endif
     if (!m_printingMode) {
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
-                                       m_view->contentsHeight());
+                                       0);
         m_width = s.width();
         m_height = s.height();
     }
