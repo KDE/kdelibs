@@ -61,12 +61,34 @@ Value MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) cons
   }
 }
 
-Value MozillaSidebarExtensionFunc::tryCall(ExecState *exec, Object &thisObj, const List &)
+Value MozillaSidebarExtensionFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Q_UNUSED(exec);
   KJS_CHECK_THIS( KJS::MozillaSidebarExtension, thisObj );
-  // addPanel()
-  return Boolean(true);
+  MozillaSidebarExtension *mse = static_cast<MozillaSidebarExtension*>(thisObj.imp());
+
+  KHTMLPart *part = mse->part();
+  if (!part)
+    return Undefined();
+
+  // addPanel()  id == 0
+  KParts::BrowserExtension *ext = part->browserExtension();
+  if (ext) {
+    QString url, name;
+    if (args.size() == 1) {  // I've seen this, don't know if it's legal.
+      name = QString::null;
+      url = args[0].toString(exec).qstring();
+    } else if (args.size() == 2 || args.size() == 3) {
+      name = args[0].toString(exec).qstring();
+      url = args[1].toString(exec).qstring();
+      // 2 is the "CURL" which I don't understand and don't think we need.
+    } else {
+      return Boolean(false);
+    }
+    emit ext->addMozillaSidebar(url, name);
+    return Boolean(true);
+  }
+
+  return Undefined();
 } 
 
 
