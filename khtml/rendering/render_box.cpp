@@ -292,7 +292,7 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
     }
     if (!style()->clipRight().isVariable())
     {
-	int w = style()->clipRight().width(m_width-bl-br); 
+	int w = style()->clipRight().width(m_width-bl-br);
 	if ( style()->jsClipMode() )
 	    clipw = w + tx + bl;
 	else

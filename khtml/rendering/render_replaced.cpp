@@ -124,9 +124,6 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     // a replaced element doesn't support being anonymous
     assert(node);
     m_view = node->getDocument()->view();
-    m_paintingSelf = false;
-    m_ignorePaintEvents = false;
-    m_widgetShown = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -204,7 +201,6 @@ void RenderWidget::setStyle(RenderStyle *_style)
         m_widget->setFont(style()->font());
         if (style()->visibility() != VISIBLE) {
             m_widget->hide();
-            m_widgetShown = false;
         }
     }
 
@@ -219,7 +215,6 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
 
     if (style()->visibility() != VISIBLE) {
 	m_widget->hide();
-	m_widgetShown = false;
 	return;
     }
 
@@ -227,56 +222,8 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
     if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
 
-    // Although the widget is a child of our KHTMLView, it is not displayed directly in the view area. Instead, it is
-    // first drawn onto a pixmap which is then drawn onto the rendering area. This is to that form controls and other
-    // widgets can be drawn as part of the normal rendering process, and the z-index of other objects can be properly
-    // taken into account.
-
-//    if (!m_widgetShown) {
-//	m_widgetShown = true;
-	m_view->addChild(m_widget, _tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop());
-	m_widget->show();
-//    }
-
-/*
-    m_view->setIgnoreEvents(true);
-    QWidget *prevFocusWidget = qApp->focusWidget();
-    DocumentImpl *doc = m_view->part()->xmlDocImpl();
-    if (doc->focusNode() && doc->focusNode()->renderer() == this)// ### use RenderObject flag
-	m_widget->setFocus();
-
-    m_paintingSelf = true;
-    QPixmap widgetPixmap = QPixmap::grabWidget(m_widget);
-    m_paintingSelf = false;
-
-    if (prevFocusWidget)
-	prevFocusWidget->setFocus();
-    m_view->setIgnoreEvents(false);
-
-    p->drawPixmap(_tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop(), widgetPixmap);
-*/
-}
-
-bool RenderWidget::eventFilter(QObject *o, QEvent *e)
-{
-/*
-//    if (e->type() == QEvent::ShowWindowRequest)
-//	return true;
-
-    if ((e->type() == QEvent::Paint) && m_paintingSelf)
-	return false;
-
-    if (e->type() == QEvent::Paint) {
-	if (!m_paintingSelf && !m_ignorePaintEvents) {
-	    int xpos = 0;
-	    int ypos = 0;
-	    absolutePosition(xpos,ypos);
-	    m_view->updateContents(xpos,ypos,width(),height());
-	}
-	return true;
-    }
-*/
-    return QObject::eventFilter(o,e);
+    m_view->addChild(m_widget, _tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop());
+    m_widget->show();
 }
 
 void RenderWidget::handleDOMEvent(EventImpl *evt)
@@ -390,17 +337,16 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
 bool RenderWidget::sendWidgetEvent(QEvent *event)
 {
     m_view->setIgnoreEvents(true);
-    m_ignorePaintEvents = true;
     QWidget *prevFocusWidget = qApp->focusWidget();
     DocumentImpl *doc = m_view->part()->xmlDocImpl();
-    if (doc->focusNode() && doc->focusNode()->renderer() == this)// ### use RenderObject flag
-	m_widget->setFocus();
+    if (doc->focusNode() && doc->focusNode()->renderer() == this)
+        m_widget->setFocus();
 
     bool eventHandled = QApplication::sendEvent(m_widget,event);
 
     if (prevFocusWidget)
-	prevFocusWidget->setFocus();
-    m_ignorePaintEvents = false;
+        prevFocusWidget->setFocus();
+
     m_view->setIgnoreEvents(false);
 
     return eventHandled;

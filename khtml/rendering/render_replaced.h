@@ -80,8 +80,6 @@ public:
     virtual void detach();
     virtual void layout( );
 
-    virtual bool eventFilter(QObject *o, QEvent *e);
-
     virtual void handleDOMEvent(DOM::EventImpl *evt);
 
     bool sendWidgetEvent(QEvent *event);
@@ -95,10 +93,6 @@ protected:
     void setQWidget(QWidget *widget);
     QWidget *m_widget;
     KHTMLView* m_view;
-
-    bool m_paintingSelf : 1;
-    bool m_ignorePaintEvents : 1;
-    bool m_widgetShown : 1;
 };
 
 };
