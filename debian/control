@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.2-dev, libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, docbook, mesag-dev, libssl095a-dev | libssl09-dev
+Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000821-0), libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, docbook, mesag-dev, libssl095a-dev | libssl09-dev
 Section: non-US/main
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
