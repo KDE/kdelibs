@@ -25,8 +25,8 @@
    Any updates should be validated, e.g. http://jigsaw.w3.org/css-validator/
 
    Check out http://www.richinstyle.com/ where many of the declarations and
-   setup in the KDE CSS are obtained from.  In fact, DO NOT change anything 
-   without checking whether it is wise to do so on those (brilliant) pages.
+   setup in the KDE CSS are obtained from.  In fact, do not change anything 
+   without checking so on those pages whether it is wise to do.
 */
 
 :lg(**language**) { }
