@@ -694,13 +694,10 @@ void KStandardDirs::addKDEDefaults()
 	 it != kdedirList.end(); it++)
 	addPrefix(*it);
 
-    // should we honor GNOME paths?
-    if (KGlobalSettings::honorGnome()) {
-        QString gnomedir(getenv("GNOMEDIR"));
-        if (!gnomedir.isEmpty()) {
-            addPrefix(gnomedir);
-            addResourceDir("apps", gnomedir + "/share/gnome/apps");
-        }
+    QString gnomedir(getenv("GNOMEDIR"));
+    if (!gnomedir.isEmpty()) {
+	addPrefix(gnomedir);
+	addResourceDir("apps", gnomedir + "/share/gnome/apps");
     }
 
     addResourceDir("apps", "/etc/X11/applnk");
@@ -710,7 +707,6 @@ void KStandardDirs::addKDEDefaults()
 	addResourceType(types[index], kde_default(types[index]));
 	index++;
     }
-
 }
 
 bool KStandardDirs::addCustomized(KConfig *config)
@@ -739,8 +735,16 @@ bool KStandardDirs::addCustomized(KConfig *config)
     for (it2 = entries.begin(); it2 != entries.end(); it2++)
     {
 	QString key = it2.key();
-	if (key.left(4) == "dir_")
-	   addResourceDir(key.mid(4, key.length()).ascii(), it2.data());
+	if (key.left(4) == "dir_") {
+	    // generate directory list, there may be more than 1.
+	    QStringList dirs = QStringList::split(',',
+						  *it2);
+	    QStringList::Iterator sIt(dirs.begin());
+	    const char *resType = key.mid(4, key.length()).ascii();
+	    for (; sIt != dirs.end(); ++sIt) {
+		addResourceDir(resType, *sIt);
+	    }
+	}
     }
 
     // save it for future calls - that will return
