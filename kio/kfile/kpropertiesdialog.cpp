@@ -1620,6 +1620,7 @@ public:
   }
 
   QFrame *m_frame;
+  QCheckBox *nocloseonexitCheck;
 };
 
 KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
@@ -1683,19 +1684,34 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   mainlayout->addWidget(tmpQGroupBox);
 
-  grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
+  grid = new QGridLayout(tmpQGroupBox->layout(), 3, 2);
   grid->setSpacing( KDialog::spacingHint() );
   grid->setColStretch(1, 1);
 
   terminalCheck = new QCheckBox( tmpQGroupBox );
   terminalCheck->setText( i18n("&Run in terminal") );
   grid->addMultiCellWidget(terminalCheck, 0, 0, 0, 1);
-
+  
+  // check to see if we use konsole if not do not add the nocloseonexit
+  // because we don't know how to do this on other terminal applications
+  KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
+  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+  
+  int posOptions = 1;
+  d->nocloseonexitCheck = 0L;
+  if (preferredTerminal == "konsole")
+  {
+    posOptions = 2;
+    d->nocloseonexitCheck = new QCheckBox( tmpQGroupBox );
+    d->nocloseonexitCheck->setText( i18n("Do not &close when command exits") );
+    grid->addMultiCellWidget(d->nocloseonexitCheck, 1, 1, 0, 1);
+  }
+  
   terminalLabel = new QLabel( i18n( "&Terminal options:" ), tmpQGroupBox );
-  grid->addWidget(terminalLabel, 1, 0);
+  grid->addWidget(terminalLabel, posOptions, 0);
 
   terminalEdit = new KLineEdit( tmpQGroupBox );
-  grid->addWidget(terminalEdit, 1, 1);
+  grid->addWidget(terminalEdit, posOptions, 1);
 
   terminalLabel->setBuddy( terminalEdit );
 
@@ -1749,6 +1765,12 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   if ( !execStr.isNull() )
     execEdit->setText( execStr );
+
+  if ( d->nocloseonexitCheck )
+  {
+    d->nocloseonexitCheck->setChecked( (termOptionsStr.contains( "--noclose" ) > 0) );
+    termOptionsStr.replace( "--noclose", "");
+  }
   if ( !termOptionsStr.isNull() )
     terminalEdit->setText( termOptionsStr );
 
@@ -1787,6 +1809,9 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
            this, SIGNAL( changed() ) );
   connect( terminalEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
+  if (d->nocloseonexitCheck)
+    connect( d->nocloseonexitCheck, SIGNAL( toggled( bool ) ),
+           this, SIGNAL( changed() ) );
   connect( terminalCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
   connect( suidCheck, SIGNAL( toggled( bool ) ),
@@ -1814,6 +1839,8 @@ void KExecPropsPlugin::enableCheckedEdit()
 {
   bool checked = terminalCheck->isChecked();
   terminalLabel->setEnabled( checked );
+  if (d->nocloseonexitCheck)
+    d->nocloseonexitCheck->setEnabled( checked );
   terminalEdit->setEnabled( checked );
 }
 
@@ -1857,7 +1884,12 @@ void KExecPropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("SwallowExec"), swallowExecEdit->text() );
   config.writeEntry( QString::fromLatin1("SwallowTitle"), swallowTitleEdit->text() );
   config.writeEntry( QString::fromLatin1("Terminal"), terminalCheck->isChecked() );
-  config.writeEntry( QString::fromLatin1("TerminalOptions"), terminalEdit->text() );
+  QString temp = terminalEdit->text();
+  if (d->nocloseonexitCheck )
+    if ( d->nocloseonexitCheck->isChecked() )
+      temp += QString::fromLatin1("--noclose ");
+  temp = temp.stripWhiteSpace();
+  config.writeEntry( QString::fromLatin1("TerminalOptions"), temp );
   config.writeEntry( QString::fromLatin1("X-KDE-SubstituteUID"), suidCheck->isChecked() );
   config.writeEntry( QString::fromLatin1("X-KDE-Username"), suidEdit->text() );
 }
