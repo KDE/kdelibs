@@ -1281,7 +1281,7 @@ bool AddressBook::literalName(const string& key, string& text, bool reverse,
 bool AddressBook::description(const string& key, string& text, bool reverse,
 			      bool initials)
 {
-  ID(bool GUARD=false);
+  ID(bool GUARD=true);
   LG(GUARD, "AddressBook::description: called.\n");
   // ############################################################################  
   string temp;

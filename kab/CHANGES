@@ -63,7 +63,8 @@ November 2, 1998:
 		StringListEditDialog.h
 		StringListEditDialog.cpp.
 	Writing dialogs becomes more and more easy using the DialogBase class.
-
+November 22, 1998:
+	The displayed email addresses and URLs are interactive now.
 	
 
 

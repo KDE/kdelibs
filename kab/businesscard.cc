@@ -15,7 +15,9 @@
 #include <qpainter.h>
 #include <qmessagebox.h>
 #include <qtooltip.h>
+#include <kurllabel.h>
 #include "businesscard.h"
+
 extern "C" {
 #include <stdio.h>
 	   }
@@ -32,6 +34,27 @@ BusinessCard::BusinessCard(QWidget* parent, const char* name)
   ID(bool GUARD=false);
   // ############################################################################
   LG(GUARD, "BusinessCard constructor: creating object.\n");
+  urlEmail=new KURLLabel(this);
+  CHECK(urlEmail!=0);
+  urlEmail->setAutoResize(true);
+  urlEmail->setTransparentMode(true);
+  urlEmail->setFloat(true);
+  urlEmail->setUnderline(false);
+  urlEmail->setLineWidth(0);
+  urlEmail->setMidLineWidth(0);
+  urlHome=new KURLLabel(this);
+  CHECK(urlHome!=0);
+  urlHome->setAutoResize(true);
+  urlHome->setTransparentMode(true);
+  urlHome->setFloat(true);
+  urlHome->setUnderline(false);
+  urlHome->setLineWidth(0);
+  urlHome->setMidLineWidth(0);
+  // -----
+  connect(urlEmail, SIGNAL(leftClickedURL(const char*)),
+	  SLOT(mailURLClicked(const char*)));
+  connect(urlHome, SIGNAL(leftClickedURL(const char*)),
+	  SLOT(homeURLClicked(const char*)));
   resize(310, 160);
   // ############################################################################
 }
@@ -88,18 +111,28 @@ void BusinessCard::paintEvent(QPaintEvent*)
   if(!current.URL.empty())
     {
       temp=(string)"URL: "+current.URL;
-      p.drawText(Grid, cy, temp.c_str());
-      cy-=p.fontMetrics().height();
+      urlHome->setFont(font);
+      urlHome->setText(temp.c_str());
+      urlHome->move(Grid, cy+3-urlHome->height());
+      urlHome->show();
+      cy-=urlHome->height();
       drawSeparator=true;
       temp="";
+    } else {
+      urlHome->hide();
     }
   if(!current.emails.empty())
     {
       temp=(string)"email: "+current.emails.front();
-      p.drawText(Grid, cy, temp.c_str());
-      cy-=p.fontMetrics().height();
+      urlEmail->setFont(font);
+      urlEmail->setText(temp.c_str());
+      urlEmail->move(Grid, cy+3-urlEmail->height());
+      urlEmail->show();
+      cy-=urlEmail->height();
       drawSeparator=true;
       temp="";
+    } else {
+      urlEmail->hide();
     }
   if(!current.telephone.empty())
     {
@@ -267,8 +300,8 @@ void BusinessCard::setBackground(const string& path)
   LG(GUARD, "BusinessCard::setBackground: loaded image from file \"%s\".\n", 
      path.c_str());
   filename=path;
-  tile=true; // WORK_TO_DO: respect settings!
   setBackground(&pixmap);
+  useTile(true); // WORK_TO_DO: respect settings!
   // ############################################################################
 }
 
@@ -276,7 +309,28 @@ void BusinessCard::useTile(bool what)
 {
   // ############################################################################
   tile=what;
+  if(tile && background!=0) 
+    {
+      setBackgroundPixmap(*background);
+    } else {
+      QPixmap dummy;
+      setBackgroundPixmap(dummy);
+    }
   repaint(false);
+  // ############################################################################
+}
+
+void BusinessCard::mailURLClicked(const char*)
+{
+  // ############################################################################
+  emit(mailURLActivated());
+  // ############################################################################
+}
+
+void BusinessCard::homeURLClicked(const char*)
+{
+  // ############################################################################
+  emit(homeURLActivated());
   // ############################################################################
 }
 
@@ -284,3 +338,4 @@ void BusinessCard::useTile(bool what)
 // MOC OUTPUT FILES:
 #include "businesscard.moc"
 // #############################################################################
+

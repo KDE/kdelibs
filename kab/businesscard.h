@@ -18,6 +18,8 @@
 #include <qpixmap.h>
 #include "addressbook.h"
 
+class KURLLabel;
+
 class BusinessCard : public QWidget
 {
   // ############################################################################
@@ -38,6 +40,7 @@ protected:
   QColor bgColor;
   QPixmap* background;
   AddressBook::Entry current;
+  KURLLabel *urlEmail, *urlHome;
   void paintEvent(QPaintEvent*);
   // ----------------------------------------------------------------------------
 public slots:
@@ -46,6 +49,12 @@ public slots:
   string getBackground() { return filename; }
   void setBackground(QPixmap*);
   void setBackground(const string&); // path
+  void mailURLClicked(const char*);
+  void homeURLClicked(const char*);
+  // ----------------------------------------------------------------------------
+signals:
+  void mailURLActivated();
+  void homeURLActivated();
   // ############################################################################
 };
 

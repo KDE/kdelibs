@@ -120,6 +120,8 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   buttonSearch->setPixmap(search);
   // -----
   card=new BusinessCard(this);
+  connect(card, SIGNAL(mailURLActivated()), SLOT(mail()));
+  connect(card, SIGNAL(homeURLActivated()), SLOT(browse()));
   // -----
   dropZone=new KDNDDropZone(this, DndText);
   // -----
@@ -781,6 +783,8 @@ void AddressWidget::enableWidgets()
       buttonChange->show();
       buttonRemove->show();
     }
+  // -----
+  emit(statusChanged(noOfEntries()));
   // ############################################################################
 }
 

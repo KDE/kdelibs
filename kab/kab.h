@@ -142,6 +142,7 @@ signals:
   void enableMail(bool);
   void enableBrowse(bool);
   void setStatus(const char*);
+  void statusChanged(int noOfEntries);
   // ############################################################################
 };
 
