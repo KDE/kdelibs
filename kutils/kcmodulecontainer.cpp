@@ -89,6 +89,7 @@ void KCModuleContainer::init()
 {
 	d->topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint(), "topLayout" );
 	d->tabWidget = new QTabWidget(this, "tabWidget");
+	d->tabWidget->setMargin(KDialog::marginHint());
 	connect( d->tabWidget, SIGNAL( currentChanged( QWidget* ) ), SLOT( tabSwitched( QWidget* ) ));
 	d->topLayout->addWidget( d->tabWidget );
 
