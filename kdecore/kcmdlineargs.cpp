@@ -265,14 +265,13 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
    if (ds.atEnd())
       return;
+   assert( argsList );
+   if ( !argsList ) return;
 
    KCmdLineArgs *args;
-   if (argsList)
+   for(args = argsList->first(); args; args = argsList->next())
    {
-      for(args = argsList->first(); args; args = argsList->next())
-      {
-         args->clear();
-      }
+      args->clear();
    }
 
    QCString qCwd;
@@ -319,7 +318,7 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
 #ifndef NDEBUG
       fprintf(stderr, "WARNING (KCmdLineArgs):\n");
       fprintf(stderr, "Application requests for parsedArgs(\"%s\") without a prior call\n", id?id:"null");
-      fprintf(stderr, "to addCmdLineOptions( ..., \"%s\")\n\n", id?id:"null");
+      fprintf(stderr, "to addCmdLineOptions( ..., \"%s\"), or after a reset()\n\n", id?id:"null");
 #endif
    }
    return args;
@@ -851,7 +850,7 @@ KCmdLineArgs::usage(const char *id)
          QString description;
          QString descriptionRest;
          QStringList dl;
-         
+
          // Option header
          if (option->name[0] == ':')
          {
@@ -865,7 +864,7 @@ KCmdLineArgs::usage(const char *id)
             option++;
             continue;
          }
-         
+
          // Free-form comment
          if (option->name[0] == 0)
          {
@@ -879,7 +878,7 @@ KCmdLineArgs::usage(const char *id)
             option++;
             continue;
          }
-         
+
          // Options
          if (option->description)
          {
@@ -999,6 +998,18 @@ KCmdLineArgs::clear()
    parsedArgList = 0;
    delete parsedOptionList;
    parsedOptionList = 0;
+}
+
+void
+KCmdLineArgs::reset()
+{
+   if ( argsList ) {
+      argsList->setAutoDelete( true );
+      argsList->clear();
+      delete argsList;
+      argsList = 0;
+   }
+   parsed = false;
 }
 
 void

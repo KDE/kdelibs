@@ -34,7 +34,7 @@ typedef QValueList<QCString> QCStringList;
  * This class is intended to be used with the KCmdLineArgs class, which
  * provides convenient and powerful command line argument parsing and
  * handling functionality.
- * 
+ *
  * @see KCmdLineArgs for additional usage information
  */
 struct KCmdLineOptions
@@ -60,7 +60,7 @@ struct KCmdLineOptions
    const char *description;
    /**
     * The default value for the option, if it is not specified on the
-    * command line. 
+    * command line.
     */
    const char *def; // Default
 };
@@ -238,7 +238,7 @@ public:
    *                match with @p argv[0].
    * @param programName A program name string to be used for display
    *        purposes. This string should be marked for
-   *        translation. Example: I18N_NOOP("KEdit") 
+   *        translation. Example: I18N_NOOP("KEdit")
    * @param _description A short description of what your application is about.
    * @param _version A version.
    * @param noKApp Set this true to not add commandline options for
@@ -456,7 +456,7 @@ public:
    *  @return The value of the option. It will be true if the option
    *  was specifically turned on in the command line, or if the option
    *  is turned on by default (in the KCmdLineOptions list) and was
-   *  not specifically turned off in the command line. Equivalently, 
+   *  not specifically turned off in the command line. Equivalently,
    *  it will be false if the option was specifically turned off in
    *  the command line, or if the option is turned off by default (in
    *  the KCmdLineOptions list) and was not specifically turned on in
@@ -517,6 +517,15 @@ public:
    *  Clear all options and arguments.
    */
   void clear();
+
+  /**
+   *  Reset all option definitions, i.e. cancel all addCmdLineOptions calls.
+   *  Note that KApplication's options are removed too, you might want to
+   *  call KApplication::addCmdLineOptions if you want them back.
+   *
+   *  You usually don't want to call this method.
+   */
+  static void reset();
 
   /**
    * Load arguments from a stream.
