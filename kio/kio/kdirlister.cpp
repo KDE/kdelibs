@@ -1767,7 +1767,12 @@ void KDirLister::setMimeFilter( const QStringList& mimeFilter )
   if ( !(d->changes & MIME_FILTER) )
     d->oldMimeFilter = d->mimeFilter;
 
-  d->mimeFilter = mimeFilter;
+  if (mimeFilter.find ("all/allfiles") != mimeFilter.end () ||
+      mimeFilter.find ("all/all") != mimeFilter.end ())
+    d->mimeFilter.clear ();
+  else
+    d->mimeFilter = mimeFilter;
+
   d->changes |= MIME_FILTER;
 }
 
