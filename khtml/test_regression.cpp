@@ -849,11 +849,9 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
             for ( int x = 0; x < w; ++x ) {
                 QRgb l = ls[x];
                 QRgb r = rs[x];
-                if ( abs( qRed( l ) - qRed(r ) ) < 10 )
-                    continue;
-                if ( abs( qGreen( l ) - qGreen(r ) ) < 10 )
-                    continue;
-                if ( abs( qBlue( l ) - qBlue(r ) ) < 10 )
+                if ( ( abs( qRed( l ) - qRed(r ) ) < 10 ) &&
+                     ( abs( qGreen( l ) - qGreen(r ) ) < 10 ) &&
+                     ( abs( qBlue( l ) - qBlue(r ) ) < 10 ) )
                     continue;
                  kdDebug() << "pixel (" << x << ", " << y << ") is different " << QColor(  lhsi.pixel (  x, y ) ) << " " << QColor(  rhsi.pixel (  x, y ) ) << endl;
                 return false;
