@@ -233,17 +233,10 @@ void RenderFlow::layout()
         return;
     }
 
-
     clearFloats();
 
     m_height = 0;
     m_clearStatus = CNONE;
-
-    // empty rendering objects should have no height...
-    if(!m_first) {
-        setLayouted();
-        return;
-    }
 
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline())
@@ -260,7 +253,7 @@ void RenderFlow::layout()
             m_height = floatBottom();
             m_height += borderBottom() + paddingBottom();
         }
-        else if( m_next) 
+        else if( m_next)
         {
             assert(!m_next->isInline());
             m_next->setLayouted(false);
@@ -352,9 +345,9 @@ void RenderFlow::layoutBlockChildren()
 
         child->setYPos(m_height);
         child->layout();
-        
+
         int chPos = xPos + child->marginLeft();
-                
+
         if( m_style->textAlign() == KONQ_CENTER && !child->style()->marginLeft().isVariable()) {
             //kdDebug() << "should align to center" << endl;
             chPos += ( width() - child->width() )/2;
@@ -566,24 +559,24 @@ void RenderFlow::positionNewFloats()
         f->endY = f->startY + _height;
 
 
-        // Copy float to the containing block 
+        // Copy float to the containing block
         // In case of anonymous box, copy to containing block _and_ it's containing block,
         // so the creation of anonymous box does not prevent elements dom parent
         // of getting the float.
         //
         // The whole thing is a hack to support html behaviour, where certain block
         // elements (tables, lists) flow around floats as if they were inlines.
-        // Khtml float layouting is modeled after css2, and implementing this has 
+        // Khtml float layouting is modeled after css2, and implementing this has
         // been somewhat messy
         //
         if(style()->htmlHacks() && childrenInline() && !style()->flowAroundFloats())
         {
             RenderObject* obj = this;
-                        
+
             for (int n = 0 ; n < (isAnonymousBox()?2:1); n++ )
             {
-                obj = obj->containingBlock();                       
-            
+                obj = obj->containingBlock();
+
                 if (obj && obj->isFlow() )
                 {
                     RenderFlow* par = static_cast<RenderFlow*>(obj);
@@ -814,16 +807,16 @@ RenderFlow::clearFloats()
 
     // find the element to copy the floats from
     // pass non-flows
-    // pass fAF's unless they contain overhanging stuff 
-    while (prev && (!prev->isFlow() || 
-        (prev->style()->flowAroundFloats() && 
+    // pass fAF's unless they contain overhanging stuff
+    while (prev && (!prev->isFlow() ||
+        (prev->style()->flowAroundFloats() &&
             (static_cast<RenderFlow *>(prev)->floatBottom()+prev->yPos() < m_y ))))
             prev = prev->previousSibling();
 
     int offset = m_y;
-    if(prev ) {        
+    if(prev ) {
         if(prev->isTableCell()) return;
-        
+
         offset -= prev->yPos();
     } else {
         prev = m_parent;
@@ -859,7 +852,7 @@ RenderFlow::clearFloats()
                 // we need to add the float here too
                 SpecialObject *special = new SpecialObject;
                 special->count = specialObjects->count();
-                special->startY = r->startY - offset; 
+                special->startY = r->startY - offset;
                 special->endY = r->endY - offset;
                 special->left = r->left + prev->marginLeft() - marginLeft();
                 special->width = r->width;
@@ -912,6 +905,9 @@ void RenderFlow::calcMinMaxWidth()
     kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
+//    if(minMaxKnown())
+//        return;
+
     // non breaking space
     const QChar nbsp = 0xa0;
 
@@ -928,7 +924,7 @@ void RenderFlow::calcMinMaxWidth()
         while(child != 0)
         {
             if( !child->isBR() )
-            {    
+            {
                 int margins = 0;
                 if (child->style()->marginLeft().isVariable())
                     margins += child->marginLeft();
@@ -936,10 +932,10 @@ void RenderFlow::calcMinMaxWidth()
                     margins += child->marginRight();
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
-                                                    
+
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
-//                    if(!child->minMaxKnown())
+                    if(!child->minMaxKnown())
                         child->calcMinMaxWidth();
                     bool hasNbsp=false;
                     RenderText* t = static_cast<RenderText *>(child);
@@ -1041,9 +1037,13 @@ void RenderFlow::calcMinMaxWidth()
     m_minWidth += toAdd;
     m_maxWidth += toAdd;
 
-//    setMinMaxKnown();
-    // ### compare with min/max width set in style sheet...
+//    seems to work but I'm not sure so I better leave it out
+//    maybe checking minMaxKnown() for each child and only set it if
+//    all childs have minMaxKnown() set ? this should be save? (Dirk)
+//    if(childrenInline())
+//        setMinMaxKnown();
 
+    // ### compare with min/max width set in style sheet...
 }
 
 void RenderFlow::close()
@@ -1374,3 +1374,6 @@ void RenderFlow::specialHandler(RenderObject *o)
 
 }
 
+#undef DEBUG
+#undef DEBUG_LAYOUT
+#undef BOX_DEBUG
