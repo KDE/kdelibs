@@ -608,8 +608,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     eor = end;
 #endif
     
-    if(sor != end)
-        appendRun(runs, sor, eor, context, dir);
+    appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;
     // both commands below together give a noop...
