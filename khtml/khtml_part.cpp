@@ -1720,6 +1720,38 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
        extra = i18n(" (In other frame)");
     }
 
+    if (u.protocol() == "mailto") {
+      QString mailtoMsg = i18n("E-Mail to: ") + KURL::decode_string(u.path());
+      QStringList queries = QStringList::split('&', u.query().mid(1));
+      for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
+        if ((*it).startsWith("subject="))
+          mailtoMsg += i18n(" - Subject: ") + KURL::decode_string((*it).mid(8));
+        else
+        if ((*it).startsWith("cc="))
+          mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
+        else
+        if ((*it).startsWith("bcc="))
+          mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
+      emit setStatusBarText(mailtoMsg);
+
+    } else
+    if (u.protocol() == "http") {
+      DOM::Node hrefNode = nodeUnderMouse().parentNode();
+      while (hrefNode.nodeName().string() != "A" && !hrefNode.isNull())
+        hrefNode = hrefNode.parentNode();
+
+      // Is this check neccessary at all? (Frerich)
+      if (!hrefNode.isNull()) {
+        DOM::Node hreflangNode = hrefNode.attributes().getNamedItem("HREFLANG");
+        if (!hreflangNode.isNull()) {
+          QString countryCode = hreflangNode.nodeValue().string().lower();
+          QPixmap flag(locate("locale", QString::fromLatin1("l10n/") + countryCode + QString::fromLatin1("/flag.png")));
+          emit setStatusBarText("[" + countryCode + "] "  + u.prettyURL() + extra);
+        } else
+        emit setStatusBarText(u.prettyURL() + extra);
+      } else
+      emit setStatusBarText( u.prettyURL()+extra );
+    } else
     emit setStatusBarText( u.prettyURL()+extra );
   }
 
