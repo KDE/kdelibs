@@ -729,13 +729,13 @@ uint KAccel::stringToKey(const QString& key)
 	// break the string in tokens separated by "+"
 	uint k = 0;
 	QArray<int> tokens;
-	int i = -1;
+	int plus = -1;
 	do {
 		tokens.resize(k+1);
-		tokens[k] = i+1;
-		i = key.find('+', i+1);
+		tokens[k] = plus+1;
+		plus = key.find('+', plus+1);
 		k++;
-	} while ( i!=-1 );
+	} while ( plus!=-1 );
 	tokens.resize(k+1);
 	tokens[k] = key.length() + 1;
 	
