@@ -73,6 +73,8 @@ CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDecl
         for (lstValuesIt.toFirst(); lstValuesIt.current(); ++lstValuesIt)
             m_lstValues->append(new CSSProperty(*lstValuesIt.current()));
     }
+
+    return *this;
 }
 
 CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
