@@ -348,38 +348,8 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   }
 
   m_bCanResume = true; // most of http servers support resuming ?
-
   m_bUseProxy = false;
-
-  if ( KProtocolManager::useProxy() ) {
-
-    // Use the appropriate proxy depending on the protocol
-    KURL ur (
-      protocol == "ftp"
-      ? KProtocolManager::ftpProxy()
-      : KProtocolManager::httpProxy() );
-
-    if (!ur.isEmpty())
-    {
-      kdDebug(7103) << "Using proxy " << ur.url() << endl;
-      // Set "use proxy" to true if we got a non empty proxy URL
-      m_bUseProxy = true;
-
-      m_strProxyHost = ur.host();
-      m_strProxyPort = ur.port();
-      m_strProxyUser = ur.user();
-      m_strProxyPass = ur.pass();
-
-      m_strNoProxyFor = KProtocolManager::noProxyFor();
-    }
-  }
-
-  m_bUseCache = KProtocolManager::self().useCache();
-  if (m_bUseCache)
-  {
-     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-     m_maxCacheAge = KProtocolManager::self().maxCacheAge();
-  }
+  m_bUseCache = false;
 
   m_bEOF=false;
 #ifdef DO_SSL
@@ -554,7 +524,31 @@ HTTPProtocol::http_isConnected()
 
 void HTTPProtocol::http_checkConnection()
 {
-  // do we want to use a proxy?
+  // Do we want to use a proxy?
+  if ( KProtocolManager::useProxy() ) {
+
+    // Use the appropriate proxy depending on the protocol
+    KURL proxyUrl ( mProtocol.lower() == "ftp" ? KProtocolManager::ftpProxy() : KProtocolManager::httpProxy() );
+    if (!proxyUrl.isEmpty())
+    {
+      kdDebug(7103) << "Using proxy " << proxyUrl.url() << endl;
+      m_bUseProxy = true;
+      m_strProxyHost = proxyUrl.host();
+      m_strProxyPort = proxyUrl.port();
+      m_strProxyUser = proxyUrl.user();
+      m_strProxyPass = proxyUrl.pass();
+      m_strNoProxyFor = KProtocolManager::noProxyFor();
+    }
+  }
+
+  // How about cache useage ??
+  m_bUseCache = KProtocolManager::useCache();
+  if (m_bUseCache)
+  {
+     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
+     m_maxCacheAge = KProtocolManager::maxCacheAge();
+  }
+
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
@@ -997,7 +991,7 @@ bool HTTPProtocol::readHeader()
      return true;
   }
 
-  // to get rid of those "Open with" dialogs...
+  // To get rid of those "Open with" dialogs...
   // however at least extensions should be checked
   m_strMimeType = "text/html";
 
