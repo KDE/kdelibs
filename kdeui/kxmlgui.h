@@ -58,6 +58,9 @@ class KXMLGUIFactory : public QObject
   /**
    * Constructs a KXMLGUIFactory. The provided @p builder @ref KXMLGUIBuilder will be called
    * for creating and removing container widgets, when clients are added/removed from the GUI.
+   *
+   * Note that the ownership of the given KXMLGUIBuilder object won't be transferred to this
+   * KXMLGUIFactory, so you have to take care of deleting it properly.
    */
   KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent = 0, const char *name = 0 );
 
