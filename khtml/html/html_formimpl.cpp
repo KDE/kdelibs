@@ -23,10 +23,6 @@
  */
 #include "html_formimpl.h"
 
-//#include <klocale.h>
-
-//#include <qstack.h>
-
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "html_documentimpl.h"
