@@ -63,7 +63,6 @@
 #include <krfcdate.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
-#include <kdesu/client.h>
 #include <kmimemagic.h>
 #ifdef DO_SSL
 #include <kssl.h>
