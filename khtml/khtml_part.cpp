@@ -861,6 +861,9 @@ KHTMLView *KHTMLPart::view() const
 
 void KHTMLPart::setJScriptEnabled( bool enable )
 {
+  if ( !enable && jScriptEnabled() && d->m_jscript ) {
+    d->m_jscript->clear();
+  }
   d->m_bJScriptForce = enable;
   d->m_bJScriptOverride = true;
 }
@@ -1413,14 +1416,10 @@ void KHTMLPart::showError( KIO::Job* job )
   else
   {
     // make sure we're not executing any embedded JS
-    /*
-     * rodda: this was causing an assertion:
-     * KJS::Window::retrieveWindow at kjs_window.cpp:256
-     *
     bool bJSFO = d->m_bJScriptForce;
     bool bJSOO = d->m_bJScriptOverride;
     d->m_bJScriptForce = false;
-    d->m_bJScriptOverride = true;*/
+    d->m_bJScriptOverride = true;
 
     if ( 0 ) {
       htmlError( job->error(), job->errorString(), d->m_workingURL );
@@ -1437,10 +1436,8 @@ void KHTMLPart::showError( KIO::Job* job )
       write(errText);
       end();
     }
-    /**
-     * rodda: see above
     d->m_bJScriptForce = bJSFO;
-    d->m_bJScriptOverride = bJSOO;*/
+    d->m_bJScriptOverride = bJSOO;
 
     // make the working url the current url, so that reload works and
     // emit the progress signals to advance one step in the history
