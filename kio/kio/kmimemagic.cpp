@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Fritz Elfert <fritz@kde.org>
+   Copyright (C) 2004 Allan Sandfeld Jensen <kde@carewolf.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -97,7 +98,7 @@ void KMimeMagic::initStatic()
 
 #define MAXMIMESTRING        256
 
-#define HOWMANY 1024            /* big enough to recognize most WWW files */
+#define HOWMANY 4000            /* big enough to recognize most WWW files, and skip GPL-headers */
 #define MAXDESC   50            /* max leng of text description */
 #define MAXstring 64            /* max leng of "string" types */
 
@@ -227,6 +228,7 @@ static long from_oct(int, char *);
 #define L_MAIL   0x100          /* Electronic mail */
 #define L_NEWS   0x200          /* Usenet Netnews */
 #define L_DIFF   0x400          /* Output of diff */
+#define L_OBJC   0x800          /* Objective C */
 
 #define P_HTML   0          /* HTML */
 #define P_C      1          /* first and foremost on UNIX */
@@ -239,6 +241,7 @@ static long from_oct(int, char *);
 #define P_MAIL   8          /* Electronic mail */
 #define P_NEWS   9          /* Usenet Netnews */
 #define P_DIFF  10          /* Output of diff */
+#define P_OBJC  11          /* Objective C */
 
 typedef struct asc_type {
 	const char *type;
@@ -247,17 +250,18 @@ typedef struct asc_type {
 } asc_type;
 
 static const asc_type types[] = {
-	{ "text/html",          19, 2 }, // 10 items but 10 different words only
-	{ "text/x-c",           9, 1.3 },
+	{ "text/html",         19, 2 }, // 10 items but 10 different words only
+	{ "text/x-c",          13, 1 },
 	{ "text/x-makefile",    4, 1.9 },
 	{ "text/x-pli",         1, 3 },
 	{ "text/x-assembler",   6, 2.1 },
 	{ "text/x-pascal",      1, 1 },
-	{ "text/x-java",       14, 1 },
-	{ "text/x-c++",        14, 1 },
+	{ "text/x-java",       12, 1 },
+	{ "text/x-c++",        19, 1 },
 	{ "message/rfc822",     4, 1.9 },
 	{ "message/news",       3, 2 },
-        { "text/x-diff",        4, 2 }
+        { "text/x-diff",        4, 2 },
+        { "text/x-objc",    10, 1 }
 };
 
 #define NTYPES (sizeof(types)/sizeof(asc_type))
@@ -342,28 +346,37 @@ static struct names {
                 "<SCRIPT", L_HTML
         },
 	{
-		"/*", L_C|L_CPP|L_JAVA
-	},                      /* must precede "The", "the", etc. */
+		"/*", L_C|L_CPP|L_JAVA|L_OBJC
+	},
 	{
-		"//", L_CPP|L_JAVA
-	},                      /* must precede "The", "the", etc. */
+		"//", L_C|L_CPP|L_JAVA|L_OBJC
+	},
 	{
 		"#include", L_C|L_CPP
 	},
 	{
-		"char", L_C|L_CPP|L_JAVA
+		"#ifdef", L_C|L_CPP
 	},
 	{
-		"double", L_C|L_CPP|L_JAVA
+		"#ifndef", L_C|L_CPP
+	},
+	{
+		"bool", L_C|L_CPP
+	},
+	{
+		"char", L_C|L_CPP|L_JAVA|L_OBJC
+	},
+	{
+		"int", L_C|L_CPP|L_JAVA|L_OBJC
+	},
+	{
+		"float", L_C|L_CPP|L_JAVA|L_OBJC
+	},
+	{
+		"void", L_C|L_CPP|L_JAVA|L_OBJC
 	},
 	{
 		"extern", L_C|L_CPP
-	},
-	{
-		"float", L_C|L_CPP|L_JAVA
-	},
-	{
-		"real", L_C|L_CPP|L_JAVA
 	},
 	{
 		"struct", L_C|L_CPP
@@ -388,6 +401,27 @@ static struct names {
 	},
 	{
 		"private", L_CPP|L_JAVA
+	},
+	{
+		"explicit", L_CPP
+	},
+	{
+		"virtual", L_CPP
+	},
+	{
+		"namespace", L_CPP
+	},
+	{
+		"#import", L_OBJC
+	},
+	{
+		"@interface", L_OBJC
+	},
+	{
+		"@implementation", L_OBJC
+	},
+	{
+		"@protocol", L_OBJC
 	},
 	{
 		"CFLAGS", L_MAKE
@@ -1670,9 +1704,73 @@ static int tagmagic(unsigned char *buf, int nbytes)
 	return 0;
 }
 
+struct Token {
+    char *data;
+    int length;
+};
+
+struct Tokenizer
+{
+    Tokenizer(char* buf, int nbytes) {
+        data = buf;
+        length = nbytes;
+        pos = 0;
+    }
+    bool isNewLine() {
+        return newline;
+    }
+    Token* nextToken() {
+        if (pos == 0)
+            newline = true;
+        else
+            newline = false;
+        token.data = data+pos;
+        token.length = 0;
+        while(pos<length) {
+            switch (data[pos]) {
+                case '\n':
+                    newline = true;
+                case '\0':
+                case '\t':
+                case ' ':
+                case '\r':
+                case '\f':
+                case ',':
+                case ';':
+                case '>':
+                    if (token.length == 0) token.data++;
+                    else
+                        return &token;
+                    break;
+                default:
+                    token.length++;
+            }
+            pos++;
+        }
+        return &token;
+    }
+
+private:
+    Token token;
+    char* data;
+    int length;
+    int pos;
+    bool newline;
+};
+
 
 /* an optimization over plain strcmp() */
-#define    STREQ(a, b)    (*(a) == *(b) && strcmp((a), (b)) == 0)
+//#define    STREQ(a, b)    (*(a) == *(b) && strcmp((a), (b)) == 0)
+static inline bool STREQ(const Token *token, const char *b) {
+    const char *a = token->data;
+    int len = token->length;
+    if (a == b) return true;
+    while(*a && *b && len > 0) {
+        if (*a != *b) return false;
+        a++; b++; len--;
+    }
+    return (len == 0 && *b == 0);
+}
 
 static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 {
@@ -1680,13 +1778,10 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 	double pct, maxpct, pctsum;
 	double pcts[NTYPES];
 	int mostaccurate, tokencount;
-	int typeset, jonly, conly, jconly, cppcomm, ccomm;
+	int typeset, jonly, conly, jconly, objconly, cpponly;
 	int has_escapes = 0;
-	unsigned char *s;
-	char nbuf[HOWMANY + 1]; /* one extra for terminating '\0' */
-	char *token;
-	register const struct names *p;
-	int typecount[NTYPES];
+	//unsigned char *s;
+	//char nbuf[HOWMANY + 1]; /* one extra for terminating '\0' */
 
 	/* these are easy, do them first */
 	conf->accuracy = 70;
@@ -1715,10 +1810,12 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 	}
 	assert(nbytes-1 < HOWMANY + 1);
 	/* look for tokens - this is expensive! */
-	/* make a copy of the buffer here because strtok() will destroy it */
-	s = (unsigned char *) memcpy(nbuf, buf, nbytes);
-	s[nbytes-1] = '\0';
-	has_escapes = (memchr(s, '\033', nbytes) != NULL);
+	has_escapes = (memchr(buf, '\033', nbytes) != NULL);
+        Tokenizer tokenizer((char*)buf, nbytes);
+        const Token* token;
+        bool linecomment = false, blockcomment = false;
+	const struct names *p;
+	int typecount[NTYPES];
 /*
  * Fritz:
  * Try a little harder on C/C++/Java.
@@ -1728,58 +1825,72 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 	jonly = 0;
 	conly = 0;
 	jconly = 0;
-	cppcomm = 0;
-	ccomm = 0;
+	objconly = 0;
+	cpponly = 0;
 	tokencount = 0;
         bool foundClass = false; // mandatory for java
 	// first collect all possible types and count matches
         // we stop at '>' too, because of "<title>blah</title>" on HTML pages
-	while ((token = strtok((char *) s, " \t\n\r\f,;>")) != NULL) {
-		s = NULL;       /* make strtok() keep on tokin' */
+	while ((token = tokenizer.nextToken())->length > 0) {
 #ifdef DEBUG_MIMEMAGIC
-                kdDebug(7018) << "KMimeMagic::ascmagic token=" << token << endl;
+            kdDebug(7018) << "KMimeMagic::ascmagic token=" << token << endl;
 #endif
-		for (p = names; p->name ; p++) {
-			if (STREQ(p->name, token)) {
+            if (linecomment && tokenizer.isNewLine())
+                linecomment = false;
+            if (blockcomment && STREQ(token, "*/")) {
+                blockcomment = false;
+                continue;
+            }
+            for (p = names; p->name ; p++) {
+                if (STREQ(token, p->name)) {
 #ifdef DEBUG_MIMEMAGIC
-                                kdDebug(7018) << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
+                    kdDebug(7018) << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
 #endif
-			        tokencount++;
-				typeset |= p->type;
-				if (p->type == L_JAVA)
+                    tokencount++;
+                    typeset |= p->type;
+                    if(p->type & (L_C|L_CPP|L_JAVA|L_OBJC)) {
+                        if (linecomment || blockcomment) {
+                            continue;
+                        }
+                        else {
+                            switch(p->type & (L_C|L_CPP|L_JAVA|L_OBJC))
+                            {
+				case L_JAVA:
 					jonly++;
-				if ((p->type & (L_C|L_CPP|L_JAVA))
-				    == (L_CPP|L_JAVA)) {
+					break;
+				case L_OBJC:
+					objconly++;
+					break;
+				case L_CPP:
+					cpponly++;
+					break;
+				case (L_CPP|L_JAVA):
 					jconly++;
-                                        if ( !foundClass && STREQ("class", token) )
+                                        if ( !foundClass && STREQ(token, "class") )
                                             foundClass = true;
-                                }
-				if ((p->type & (L_C|L_CPP|L_JAVA))
-				    == (L_C|L_CPP))
+					break;
+				case (L_C|L_CPP):
 					conly++;
-				if (STREQ(token, "//"))
-					cppcomm++;
-				if (STREQ(token, "/*"))
-					ccomm++;
-				for (i = 0; i < (int)NTYPES; i++)
-					if ((1 << i) & p->type)
-						typecount[i]++;
+					break;
+				default:
+                                    if (STREQ(token, "//")) linecomment = true;
+                                    if (STREQ(token, "/*")) blockcomment = true;
+                            }
 			}
+                    }
+                    for (i = 0; i < (int)NTYPES; i++) {
+                        if ((1 << i) & p->type) typecount[i]++;
+                    }
 		}
+            }
 	}
 
-	if (typeset & (L_C|L_CPP|L_JAVA)) {
-		conf->accuracy = 40;
-	        if (!(typeset & ~(L_C|L_CPP|L_JAVA))) {
+	if (typeset & (L_C|L_CPP|L_JAVA|L_OBJC)) {
+		conf->accuracy = 60;
+	        if (!(typeset & ~(L_C|L_CPP|L_JAVA|L_OBJC))) {
 #ifdef DEBUG_MIMEMAGIC
-                        kdDebug(7018) << "C/C++/Java: jonly=" << jonly << " conly=" << conly << " jconly=" << jconly << " ccomm=" << ccomm << endl;
+                        kdDebug(7018) << "C/C++/Java/ObjC: jonly=" << jonly << " conly=" << conly << " jconly=" << jconly << " objconly=" << objconly << endl;
 #endif
-			if (jonly && conly)
-                            // Take the biggest
-                            if ( jonly > conly )
-                                conly = 0;
-                            else
-                                jonly = 0;
 			if (jonly > 1 && foundClass) {
 				// At least two java-only tokens have matched, including "class"
 				conf->resultBuf = QString(types[P_JAVA].type);
@@ -1787,22 +1898,22 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 			}
 			if (jconly > 1) {
 				// At least two non-C (only C++ or Java) token have matched.
-				if (typecount[P_JAVA] > typecount[P_CPP])
+				if (typecount[P_JAVA] < typecount[P_CPP])
+				  conf->resultBuf = QString(types[P_CPP].type);
+				else
 				  conf->resultBuf = QString(types[P_JAVA].type);
-				else
-				  conf->resultBuf = QString(types[P_CPP].type);
 				return 1;
 			}
-			if (conly) {
-				// Either C or C++, rely on comments.
-				if (cppcomm)
-				  conf->resultBuf = QString(types[P_CPP].type);
-				else
-				  conf->resultBuf = QString(types[P_C].type);
-				return 1;
-			}
-			if (ccomm) {
-				conf->resultBuf = QString(types[P_C].type);
+                        if (conly + cpponly > 1) {
+			     // Either C or C++.
+        		      if (cpponly > 0)
+                                conf->resultBuf = QString(types[P_CPP].type);
+                              else
+                                conf->resultBuf = QString(types[P_C].type);
+                              return 1;
+                        }
+			if (objconly > 0) {
+				conf->resultBuf =  QString(types[P_OBJC].type);
 				return 1;
 			}
 	      }
@@ -2131,10 +2242,21 @@ refineResult(KMimeMagicResult *r, const QString & _filename)
 	QString tmp = r->mimeType();
 	if (tmp.isEmpty())
 		return;
-	if ( tmp == "text/x-c"  ||
-	     tmp == "text/x-c++" )
+	if ( tmp == "text/x-c" || tmp == "text/x-objc" )
 	{
 		if ( _filename.right(2) == ".h" )
+			tmp += "hdr";
+		else
+			tmp += "src";
+		r->setMimeType(tmp);
+	}
+	else
+	if ( tmp == "text/x-c++" )
+	{
+		if ( _filename.endsWith(".h")
+		  || _filename.endsWith(".hh")
+		  || _filename.endsWith(".H")
+		  || !_filename.right(4).contains('.'))
 			tmp += "hdr";
 		else
 			tmp += "src";
