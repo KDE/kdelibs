@@ -32,9 +32,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include <kimageeffect.h>
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include <math.h>
+
+using namespace std;
 
 //Force-touch-embedded-revision: 1
 

@@ -201,7 +201,7 @@ protected:
     mutable QPixmap* menuCache;
     mutable QPixmap* vsliderCache;
 
-    int brushHandle;
+    Qt::HANDLE brushHandle;
     bool brushHandleSet;
 
 protected slots:
