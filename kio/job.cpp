@@ -2870,59 +2870,87 @@ void DeleteJob::deleteNextFile()
     //kdDebug(7007) << "deleteNextFile" << endl;
     if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
-        // Take first file to delete out of list
-        KURL::List::Iterator it = files.begin();
-        bool isLink = false;
-        if ( it == files.end() ) // No more files
-        {
-            it = symlinks.begin(); // Pick up a symlink to delete
-            isLink = true;
-        }
         SimpleJob *job;
-        // Use shredding ?
-        if ( m_shred && (*it).isLocalFile() && !isLink )
-        {
-            // KShred your KTie
-            KIO_ARGS << int(3) << (*it).path();
-            job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
-            Scheduler::scheduleJob(job);
-            m_currentURL=(*it);
-            //emit deleting( this, *it );
-            connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                     this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
-        } else
-        {
-            // Normal deletion
-            job = KIO::file_delete( *it, false /*no GUI*/);
-            Scheduler::scheduleJob(job);
-            m_currentURL=(*it);
-            //emit deleting( this, *it );
-        }
-        if ( isLink )
-           symlinks.remove(it);
-        else
-           files.remove(it);
-        addSubjob(job);
-    } else
-    {
-        state = STATE_DELETING_DIRS;
-        deleteNextDir();
+        do {
+            // Take first file to delete out of list
+            KURL::List::Iterator it = files.begin();
+            bool isLink = false;
+            if ( it == files.end() ) // No more files
+            {
+                it = symlinks.begin(); // Pick up a symlink to delete
+                isLink = true;
+            }
+            // Use shredding ?
+            if ( m_shred && (*it).isLocalFile() && !isLink )
+            {
+                // KShred your KTie
+                KIO_ARGS << int(3) << (*it).path();
+                job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
+                Scheduler::scheduleJob(job);
+                m_currentURL=(*it);
+                connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
+                         this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
+            } else
+            {
+                // Normal deletion
+                // If local file, try do it directly
+                if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
+                    job = 0;
+                    m_processedFiles++;
+                    if ( m_processedFiles % 300 == 0 ) { // update progress info every 300 files
+                        m_currentURL = *it;
+                        slotReport();
+                    }
+                } else
+                { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
+                    job = KIO::file_delete( *it, false /*no GUI*/);
+                    Scheduler::scheduleJob(job);
+                    m_currentURL=(*it);
+                }
+            }
+            if ( isLink )
+                symlinks.remove(it);
+            else
+                files.remove(it);
+            if ( job ) {
+                addSubjob(job);
+                return;
+            }
+            // loop only if direct deletion worked (job=0) and there is something else to delete
+        } while (!job && (!files.isEmpty() || !symlinks.isEmpty()));
     }
+    state = STATE_DELETING_DIRS;
+    deleteNextDir(); 
 }
 
 void DeleteJob::deleteNextDir()
 {
     if ( !dirs.isEmpty() ) // some dirs to delete ?
     {
-        // Take first dir to delete out of list - last ones first !
-        KURL::List::Iterator it = dirs.fromLast();
-        SimpleJob *job = KIO::rmdir( *it );
-        Scheduler::scheduleJob(job);
-        dirs.remove(it);
-        addSubjob( job );
+        do {
+            // Take first dir to delete out of list - last ones first !
+            KURL::List::Iterator it = dirs.fromLast();
+            // If local dir, try to rmdir it directly
+            if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
+
+                m_processedDirs++;
+                if ( m_processedDirs % 100 == 0 ) { // update progress info every 100 dirs
+                    m_currentURL = *it;
+                    slotReport();
+               }
+            } else
+            {
+                SimpleJob *job = KIO::rmdir( *it );
+                Scheduler::scheduleJob(job);
+                dirs.remove(it);
+                addSubjob( job );
+                return;
+            }
+            dirs.remove(it);
+        } while ( !dirs.isEmpty() );
     }
-    else // We have finished deleting
-        startNextJob();
+    // We have finished deleting
+    startNextJob();
 }
 
 void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
@@ -3096,9 +3124,6 @@ void DeleteJob::slotResult( Job *job )
       assert( subjobs.isEmpty() );
       m_processedFiles++;
 
-      /*emit processedFiles( this, m_processedFiles );
-       if (!m_shred)
-       emitPercent( m_processedFiles, m_totalFilesDirs );*/
       deleteNextFile();
       break;
    case STATE_DELETING_DIRS:
