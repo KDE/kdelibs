@@ -2037,9 +2037,6 @@ bool HTTPProtocol::readBody( )
 
   bool useMD5 = !m_sContentMD5.isEmpty();
 
-  // we are getting the following URL
-  gettingFile(m_request.url.url());
-
   totalSize( m_iSize );
   // get the starting time.  this is used later to compute the transfer
   // speed.
