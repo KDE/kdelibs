@@ -3,6 +3,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2002-2003 Lars Knoll (knoll@kde.org)
+ *  Copyright (C) 2003 Dirk Mueller (mueller@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +19,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #ifdef HAVE_CONFIG_H
@@ -620,11 +620,13 @@ specifier_list:
     }
     | specifier_list specifier {
 	$$ = $1;
-        CSSSelector *end = $1;
-        while( end->tagHistory )
-            end = end->tagHistory;
-        end->relation = CSSSelector::SubSelector;
-        end->tagHistory = $2;
+	if ( $$ ) {
+            CSSSelector *end = $1;
+            while( end->tagHistory )
+                end = end->tagHistory;
+            end->relation = CSSSelector::SubSelector;
+            end->tagHistory = $2;
+	}
     }
     | specifier_list error {
 	delete $1;
@@ -907,7 +909,7 @@ unary_term:
   | EMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
   | QEMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = Value::Q_EMS; }
   | EXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
-  | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_DIMENSION }
+  | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_DIMENSION; }
     ;
 
 
