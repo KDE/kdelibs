@@ -140,41 +140,42 @@ DOMString khtml::parseURL(const DOMString &url)
 
 void khtml::setFontSize(  QFont &f,  float size, const KHTMLSettings *s )
 {
-        QFontDatabase db;
+    QFontDatabase db;
 
-        // ok, now some magic to get a nice unscaled font
-        // ### all other font properties should be set before this one!!!!
-        // ####### make it use the charset needed!!!!
-	QFont::CharSet cs = s->charset();
-	QString charset = KGlobal::charsets()->xCharsetName( cs );
-        if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
+    // ok, now some magic to get a nice unscaled font
+    // ### all other font properties should be set before this one!!!!
+    // ####### make it use the charset needed!!!!
+    QFont::CharSet cs = s->charset();
+    QString charset = KGlobal::charsets()->xCharsetName( cs );
+
+    if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
+    {
+        QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
+        // lets see if we find a nice looking font, which is not too far away
+        // from the requested one.
+
+        QValueList<int>::Iterator it;
+        float diff = 1; // ### 100% deviation
+        int bestSize = 0;
+        for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
         {
-            QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
-            // lets see if we find a nice looking font, which is not too far away
-            // from the requested one.
-
-            QValueList<int>::Iterator it;
-            float diff = 1; // ### 100% deviation
-            int bestSize = 0;
-            for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
+            float newDiff = ((*it) - size)/size;
+            //kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
+            if(newDiff < 0) newDiff = -newDiff;
+            if(newDiff < diff)
             {
-                float newDiff = ((*it) - size)/size;
-                //kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
-                if(newDiff < 0) newDiff = -newDiff;
-                if(newDiff < diff)
-                {
-                    diff = newDiff;
-                    bestSize = *it;
-                }
+                diff = newDiff;
+                bestSize = *it;
             }
-            //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
-            if ( bestSize != 0 ) // 15% deviation, otherwise we use a scaled font...
-                size = bestSize;
         }
+        //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
+        if ( bestSize != 0 ) // 15% deviation, otherwise we use a scaled font...
+            size = bestSize;
+        else if ( size > 4 && size < 16 )
+            size = float( int( ( size + 1 ) / 2 )*2 );
+    }
 
-//        size *= zoomFactor;
+    //qDebug(" -->>> using %f point font", size);
 
-        //qDebug(" -->>> using %f point font", size);
-        f.setPointSize( ( int )size );
-
+    f.setPointSizeFloat( size );
 }
