@@ -749,8 +749,9 @@ void KDirListerCache::slotFileDirty( const QString& _file )
     item->refresh();
     emitRefreshItem( item );
   }
-  else
-    updateDirectory( u );
+
+  // in case u is a directory that is held by some lister
+  updateDirectory( u );
 }
 
 void KDirListerCache::slotFileCreated( const QString& _file )
