@@ -1075,12 +1075,12 @@ void KDockManager::activate()
 
 bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 {
-  if ( obj == main && event->type() == QEvent::Resize && main->children() ){
+/*  if ( obj == main && event->type() == QEvent::Resize && main->children() ){
     QWidget* fc = (QWidget*)main->children()->getFirst();
     if ( fc )
       fc->setGeometry( QRect(QPoint(0,0), main->geometry().size()) );
   }
-
+*/
   if ( obj->inherits("KDockWidgetAbstractHeaderDrag") ){
     KDockWidget* pDockWdgAtCursor = 0L;
     KDockWidget* curdw = ((KDockWidgetAbstractHeaderDrag*)obj)->dockWidget();
