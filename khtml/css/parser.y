@@ -533,9 +533,12 @@ selector:
 	$$ = $1;
     }
     | selector combinator simple_selector {
-	$$ = $3;
-	$$->relation = $2;
-	$$->tagHistory = $1;
+        $$ = $3;
+        CSSSelector *end = $3;
+        while( end->tagHistory )
+            end = end->tagHistory;
+        end->relation = $2;
+        end->tagHistory = $1;
     }
     | selector error {
 	delete $1;
@@ -602,9 +605,11 @@ specifier_list:
     }
     | specifier_list specifier {
 	$$ = $1;
-	$$->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
-	$$->relation = CSSSelector::SubSelector;
-	$$->tagHistory = $2;
+        CSSSelector *end = $1;
+        while( end->tagHistory )
+            end = end->tagHistory;
+        end->relation = CSSSelector::SubSelector;
+        end->tagHistory = $2;
     }
     | specifier_list error {
 	delete $1;
