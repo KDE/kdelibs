@@ -692,8 +692,6 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 		continue;
         }
 
-    // return _nothing_ if length > 12...
-    if (shortfmt && rst.length() > 12) return QString::null;
     return rst;
 }
 
