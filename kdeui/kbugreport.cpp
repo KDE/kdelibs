@@ -477,7 +477,7 @@ QString KBugReport::text() const
      bodyText += line;
   }
 
-  if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != QString::fromLatin1("C")) {
+  if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != KLocale::defaultLanguage()) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());
       package = package.replace(QRegExp("_"), QString::fromLatin1("-"));
