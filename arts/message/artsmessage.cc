@@ -78,14 +78,15 @@ int main(int argc, char **argv) {
 			msg += QString(" ") + args->arg(i);
 	}
 
+	const int notifyOptions = 0; // never activate KNotify
 	if (args->isSet("w")) {
-		KMessageBox::sorry(0, msg, i18n("Warning"));
+		KMessageBox::sorry(0, msg, i18n("Warning"), notifyOptions);
 	} else if (args->isSet("i")) {
 		QString id = msg;
 		id.replace(QRegExp("[\\[\\]\\s=]"), "_");
-		KMessageBox::information(0, msg, i18n("Informational"), id);
+		KMessageBox::information(0, msg, i18n("Informational"), id, notifyOptions);
 	} else {
-		KMessageBox::error(0, msg, i18n("Error"));
+		KMessageBox::error(0, msg, i18n("Error"), notifyOptions);
 	}
 	
 	return 0;
