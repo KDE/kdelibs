@@ -341,7 +341,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_H5:
     case ID_H6:
     case ID_Q:
-    case ID_DT:
     case ID_LEGEND:
     case ID_CAPTION:
 	// _0 *
@@ -370,13 +369,14 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	// ADDRESS: ( _0 | P ) *
 	if( check_array(childID, tag_list_0) ) return true;
 	return (childID == ID_P);
+    case ID_LI:
+    case ID_DT:
     case ID_DIV:
     case ID_CENTER:
     case ID_BLOCKQUOTE:
     case ID_INS:
     case ID_DEL:
     case ID_DD:
-    case ID_LI:
     case ID_TH:
     case ID_TD:
     case ID_IFRAME:
