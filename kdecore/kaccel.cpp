@@ -33,6 +33,9 @@
 #include "kckey.h"
 
 #include "kaccel.h"
+#include <qpopupmenu.h>
+#include <kconfig.h>
+#include <qaccel.h>
 
 KAccel::KAccel( QWidget * parent, const QString& name ):
   aKeyDict(100){

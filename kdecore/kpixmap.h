@@ -63,6 +63,11 @@ public:
 	~KPixmap() {};
     
 	/**
+	 * Copies the QPixmap pix
+         */
+	KPixmap(const QPixmap& pix);
+
+	/**
 	 * Fills the pixmap with a color blend running from color ca to
 	 * color cb.
 

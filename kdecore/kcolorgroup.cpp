@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7  1998/06/16 06:03:19  kalle
+// Implemented copy constructors and assignment operators or disabled them
+//
 // Revision 1.6  1998/01/18 14:38:34  kulow
 // reverted the changes, Jacek commited.
 // Only the RCS comments were affected, but to keep them consistent, I
@@ -52,9 +55,8 @@
 //
 // (C) 1996 Matthias Kalle Dalheimer <mda@stardivision.de>
 
-#ifndef _KCOLORGROUP_H
 #include "kcolorgroup.h"
-#endif
+#include "kconfig.h"
 
 KColorGroup::KColorGroup()
 {

@@ -7,6 +7,7 @@
 #include <ksimpleconfig.h>
 #include <qdir.h>
 #include <qstrlist.h>
+#include <kconfig.h>
 
 KProtocolManager* KProtocolManager::s_pManager = 0L;
 

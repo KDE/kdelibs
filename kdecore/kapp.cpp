@@ -73,6 +73,7 @@
 #endif
 
 #include "qplatinumstyle.h"
+#include <kconfig.h>
 
 KCharsets* KApplication::pCharsets = 0L;
 

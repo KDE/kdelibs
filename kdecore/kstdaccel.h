@@ -19,10 +19,8 @@
 #ifndef KSTDACCEL_H
 #define KSTDACCEL_H
 
-#include <qkeycode.h>
-#include "kconfig.h"
+class KConfig;
 #include "kaccel.h"
-// #include <kkeyconf.h>
 
 /**
  * Convenient methods for access of the common accelerator keys in

@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   cleaning up yet some more header files (fixheaders is your friend).
+   Load large icons in icons/large or pics/large if setting is 'large'.
+   The rest of the fixes in kdelibs and kdebase I will commit silently
    Revision 1.32  1999/03/10 15:21:34  kulow
    going over sprintfs in kdelibs to find dangerous usings :)
 #include <qapplication.h>
@@ -104,6 +107,7 @@
 #include <kpixmap.h>
 #include <klocale.h>
 #include <kapp.h>
+#include <kconfig.h>
 }
 void KIconLoader::initPath()
 {

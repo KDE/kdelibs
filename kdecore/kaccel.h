@@ -23,12 +23,12 @@
 #define _KACCEL_H
 
 #include <qdict.h>
-#include <qaccel.h>
-#include <qpopupmenu.h>
-
-#include <kconfig.h>
-
-#include <qcstring.h>
+#include <qstring.h>
+class QAccel;
+class QPopupMenu;
+class KConfig;
+class QObject;
+class QWidget;
 
 /**
  * Returns the key code corresponding to the string sKey or zero if the string

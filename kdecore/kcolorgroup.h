@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.9  1999/04/18 09:15:04  kulow
+// taking out config.h from Header files. I don't know if I haven't noticed
+// before, but this is even very dangerous
+//
 // Revision 1.8  1998/06/16 06:03:20  kalle
 // Implemented copy constructors and assignment operators or disabled them
 //
@@ -59,12 +63,9 @@
 #ifndef _KCOLORGROUP_H
 #define _KCOLORGROUP_H
 
-#ifndef _KCONFIG_H
-#include <kconfig.h>
-#endif
-
+class KConfig;
+class QString;
 #include <qpalette.h>
-#include <qstring.h>
 
 /// KColorGroup: A collection of color entries for application widgets
 /** A KColorGroup provides seven colors for widgets: foreground,

@@ -28,11 +28,10 @@
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 3
 
-#include <kconfig.h>
-
 #define Icon(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
 #define ICON(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
 
+class KConfig;
 class KIconLoader;
 class KCharsets;
 class KLocale;
@@ -722,6 +721,15 @@ private:
 #endif
 
 // $Log$
+// Revision 1.67  1999/04/17 19:15:41  kulow
+// cleaning up kapp.h, so that only needed headers are included. Guess how
+// many files include kapp.h because it includes almost anything they need ;)
+// If you find problems after this, please use
+//
+//   make -k 2>&1 | perl ..../kdesdk/script/fixheaders
+//
+// And if you find a problem, fixheaders doesn't fix, fix fixheaders
+//
 // Revision 1.66  1999/04/12 16:47:15  ssk
 // Wrote and updated some documentation.
 //

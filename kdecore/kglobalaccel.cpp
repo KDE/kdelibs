@@ -21,11 +21,6 @@
 */
 
 #include "kglobalaccel.h"
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <string.h>
-
 #include <qkeycode.h>
 #include <qlayout.h>
 #include <qpainter.h>
@@ -33,8 +28,14 @@
 #include <qdrawutil.h>
 #include <qmessagebox.h>
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
+#include <string.h>
+
 #include <kapp.h>
 #include <klocale.h>
+#include <kconfig.h>
 
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs

@@ -22,8 +22,8 @@
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
-#include <kapp.h>
 #include <qobject.h>
+#include <qdict.h>
 #include "kaccel.h"
 
 /**

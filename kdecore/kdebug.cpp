@@ -30,7 +30,8 @@
 #include <stdlib.h>	// abort
 #include <stdarg.h>	// vararg stuff
 #include <syslog.h>
-#include <math.h>	// pow
+#include <math.h>
+#include <kconfig.h>	// pow
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

@@ -1,11 +1,9 @@
 #ifndef __kclipboard_h__
 #define __kclipboard_h__
 
-#include <qclipboard.h>
 #include <qobject.h>
-#include <qapplication.h>
 #include <qbuffer.h>
-#include <qwidget.h>
+class QWidget;
 #include <qstring.h>
 #include <qstrlist.h>
 

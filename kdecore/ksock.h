@@ -29,17 +29,12 @@
 #ifndef KSOCK_H
 #define KSOCK_H
 
-#ifdef NULL
-#undef NULL
-#endif
-#define NULL 0
-
+#include <qobject.h>
 #include <sys/types.h>
-#include <sys/socket.h> 
+#include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/in.h>
-
-#include <qsocketnotifier.h>
+class QSocketNotifier;
 
 /** 
  * A TCP/IP client socket. You can connect this socket to any internet address. 

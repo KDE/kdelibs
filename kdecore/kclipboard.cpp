@@ -1,6 +1,7 @@
 #include "kclipboard.h"
 
 #include <qdatetime.h>
+#include <qapplication.h>
 #define  GC GC_QQQ
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

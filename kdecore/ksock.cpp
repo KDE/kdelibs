@@ -19,10 +19,15 @@
 
 /*
  * $Log$
+ * Revision 1.29  1999/04/18 19:55:43  kulow
+ * CVS_SILENT some more fixes
+ *
  * Revision 1.28  1999/04/11 00:00:46  garbanzo
  * Introduce the new static member, initsockaddr
  *
  */
+
+#include "ksock.h"
 
 #include <qapplication.h>
 
@@ -64,15 +69,18 @@
 #define SOMAXCONN 5
 #endif
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <netinet/in.h>
+
 #include <sys/resource.h>
 #include <sys/time.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <fcntl.h>
 #include <signal.h>
-
-#include "ksock.h"
+#include <qsocketnotifier.h>
 
 #ifndef UNIX_PATH_MAX
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux
