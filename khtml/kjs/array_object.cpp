@@ -45,7 +45,7 @@ KJSO* ArrayObject::execute(KJSContext *context)
   Ptr length = context->activation->get("length");
   unsigned int numArgs = (unsigned int) length->dVal();
   for (unsigned int u = 0; u < numArgs; u++)
-    argList.append(context->activation->get(CString(u)));
+    argList.append(context->activation->get(int2String(u)));
 
   Ptr result = construct(&argList);
 
@@ -74,7 +74,7 @@ KJSObject* ArrayConstructor::construct(KJSList *args)
     // initialize array
     len = args->size();
     for (unsigned int u = 0; it != args->end(); it++, u++)
-      result->put(CString(u), it);
+      result->put(int2String(u), it);
   }
 
   // array size

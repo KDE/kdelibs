@@ -65,14 +65,6 @@ CString::CString(const CString *b)
   strcpy(data, b->ascii());
 }
 
-CString::CString(unsigned int u)
-{
-  char buf[20];
-  sprintf(buf, "%u", u);
-  data = new char[strlen(buf)+1];
-  strcpy(data, buf);
-}
-
 CString::CString(int i)
 {
   char buf[20];
@@ -146,6 +138,13 @@ void CString::resize(unsigned int l)
 const char * CString::ascii() const
 {
   return data;
+}
+
+CString KJS::int2String(int i)
+{
+  char buf[20];
+  sprintf(buf, "%d", i);
+  return CString(buf);
 }
 
 bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)

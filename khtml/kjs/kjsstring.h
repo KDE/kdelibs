@@ -39,7 +39,6 @@ namespace KJS {
     CString(const CString *);
     // conversions
     CString(int i);
-    CString(unsigned int u);
 
     ~CString();
 
@@ -55,6 +54,8 @@ namespace KJS {
   private:
     char *data;
   };
+
+  CString int2String(int i);
 
   class UString {
   public:
