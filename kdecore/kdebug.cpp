@@ -19,6 +19,8 @@
 
 // $Id$
 
+#error ?!
+
 #include "kdebugdialog.h"
 #include "kdebug.h"
 #include "kapp.h"
@@ -228,17 +230,17 @@ void kdebug( ushort nLevel, ushort nArea,
                 va_start( arguments, pFormat );
 #ifdef HAVE_VSNPRINTF
                 // use the more secure version if we have it
-                int nSize = vsnprintf( buf, 4095, pFormat, arguments );
+                int nSize = vsnprintf( buf, sizeof(buf)-1, pFormat, arguments );
 #else
                 int nSize = vsprintf( buf, pFormat, arguments );
 #endif
-                if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
+                if( nSize > ((sizeof(buf)-2)-nPrefix) ) nSize = (sizeof(buf)-2)-nPrefix;
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
                 va_end( arguments );
                 QFile aOutputFile( aOutputFileName );
                 aOutputFile.open( IO_WriteOnly );
-                aOutputFile.writeBlock( buf, nSize+2 );
+                aOutputFile.writeBlock( buf, nSize+1 );
                 aOutputFile.close();
                 break;
           }
@@ -297,38 +299,29 @@ KDebugDialog::KDebugDialog() :
   QDialog( 0L, "Debug Settings", true )
 {
   pInfoGroup = new QGroupBox( "Information", this );
+  pInfoCombo = new QComboBox( false, this );
   pInfoGroup->setGeometry( 5, 10, 140, 185 );
-  pInfoGroup->show();
   pInfoLabel1 = new QLabel( "Output to:", this );
   pInfoLabel1->setGeometry( 15, 30, 120, 15 );
-  pInfoLabel1->show();
-  pInfoCombo = new QComboBox( false, this );
   pInfoCombo->setGeometry( 15, 50, 120, 20 );
   pInfoCombo->insertItem( "File" );
   pInfoCombo->insertItem( "Message Box" );
   pInfoCombo->insertItem( "Shell" );
   pInfoCombo->insertItem( "Syslog" );
   pInfoCombo->insertItem( "None" );
-  pInfoCombo->show();
   pInfoLabel2 = new QLabel( "Filename:", this );
   pInfoLabel2->setGeometry( 15, 85, 120, 15 );
-  pInfoLabel2->show();
   pInfoFile = new QLineEdit( this );
   pInfoFile->setGeometry( 15, 105, 120, 20 );
-  pInfoFile->show();
   pInfoLabel3 = new QLabel( "Show only area(s):", this );
   pInfoLabel3->setGeometry( 15, 140, 120, 15 );
-  pInfoLabel3->show();
   pInfoShow = new QLineEdit( this );
   pInfoShow->setGeometry( 15, 160, 120, 20 );
-  pInfoShow->show();
-  
+
   pWarnGroup = new QGroupBox( "Warning", this );
   pWarnGroup->setGeometry( 165, 10, 140, 185 );
-  pWarnGroup->show();
   pWarnLabel1 = new QLabel( "Output to:", this );
   pWarnLabel1->setGeometry( 175, 30, 120, 15 );
-  pWarnLabel1->show();
   pWarnCombo = new QComboBox( false, this );
   pWarnCombo->setGeometry( 175, 50, 120, 20 );
   pWarnCombo->insertItem( "File" );
@@ -336,26 +329,19 @@ KDebugDialog::KDebugDialog() :
   pWarnCombo->insertItem( "Shell" );
   pWarnCombo->insertItem( "Syslog" );
   pWarnCombo->insertItem( "None" );
-  pWarnCombo->show();
   pWarnLabel2 = new QLabel( "Filename:", this );
   pWarnLabel2->setGeometry( 175, 85, 120, 15 );
-  pWarnLabel2->show();
   pWarnFile = new QLineEdit( this );
   pWarnFile->setGeometry( 175, 105, 120, 20 );
-  pWarnFile->show();
   pWarnLabel3 = new QLabel( "Show only area(s):", this );
   pWarnLabel3->setGeometry( 175, 140, 120, 15 );
-  pWarnLabel3->show();
   pWarnShow = new QLineEdit( this );
   pWarnShow->setGeometry( 175, 160, 120, 20 );
-  pWarnShow->show();
 
   pErrorGroup = new QGroupBox( "Error", this );
   pErrorGroup->setGeometry( 5, 215, 140, 185 );
-  pErrorGroup->show();
   pErrorLabel1 = new QLabel( "Output to:", this );
   pErrorLabel1->setGeometry( 15, 235, 120, 15 );
-  pErrorLabel1->show();
   pErrorCombo = new QComboBox( false, this );
   pErrorCombo->setGeometry( 15, 255, 120, 20 );
   pErrorCombo->insertItem( "File" );
@@ -363,26 +349,19 @@ KDebugDialog::KDebugDialog() :
   pErrorCombo->insertItem( "Shell" );
   pErrorCombo->insertItem( "Syslog" );
   pErrorCombo->insertItem( "None" );
-  pErrorCombo->show();
   pErrorLabel2 = new QLabel( "Filename:", this );
   pErrorLabel2->setGeometry( 15, 290, 120, 15 );
-  pErrorLabel2->show();
   pErrorFile = new QLineEdit( this );
   pErrorFile->setGeometry( 15, 310, 120, 20 );
-  pErrorFile->show();
   pErrorLabel3 = new QLabel( "Show only area(s):", this );
   pErrorLabel3->setGeometry( 15, 345, 120, 15 );
-  pErrorLabel3->show();
   pErrorShow = new QLineEdit( this );
   pErrorShow->setGeometry( 15, 365, 120, 20 );
-  pErrorShow->show();
 
   pFatalGroup = new QGroupBox( "Fatal error", this );
   pFatalGroup->setGeometry( 165, 215, 140, 185 );
-  pFatalGroup->show();
   pFatalLabel1 = new QLabel( "Output to:", this );
   pFatalLabel1->setGeometry( 175, 235, 120, 15 );
-  pFatalLabel1->show();
   pFatalCombo = new QComboBox( false, this );
   pFatalCombo->setGeometry( 175, 255, 120, 20 );
   pFatalCombo->insertItem( "File" );
@@ -390,36 +369,60 @@ KDebugDialog::KDebugDialog() :
   pFatalCombo->insertItem( "Shell" );
   pFatalCombo->insertItem( "Syslog" );
   pFatalCombo->insertItem( "None" );
-  pFatalCombo->show();
   pFatalLabel2 = new QLabel( "Filename:", this );
   pFatalLabel2->setGeometry( 175, 290, 120, 15 );
-  pFatalLabel2->show();
   pFatalFile = new QLineEdit( this );
   pFatalFile->setGeometry( 175, 310, 100, 20 );
-  pFatalFile->show();
   pFatalLabel3 = new QLabel( "Show only area(s):", this );
   pFatalLabel3->setGeometry( 175, 345, 120, 15 );
-  pFatalLabel3->show();
   pFatalShow = new QLineEdit( this );
   pFatalShow->setGeometry( 175, 365, 120, 20 );
-  pFatalShow->show();
 
   pAbortFatal = new QCheckBox( "Abort on fatal errors", this );
   pAbortFatal->setGeometry( 15, 420, 200, 15 );
-  pAbortFatal->show();
   pOKButton = new QPushButton( "OK", this );
   pOKButton->setGeometry( 15, 460, 80, 20 );
   pOKButton->setDefault( true );
-  pOKButton->show();
   connect( pOKButton, SIGNAL( clicked() ), SLOT( accept() ) );
   pCancelButton = new QPushButton( "Cancel", this );
   pCancelButton->setGeometry( 110, 460, 80, 20 );
-  pCancelButton->show();
   connect( pCancelButton, SIGNAL( clicked() ), SLOT( reject() ) );
   pHelpButton = new QPushButton( "Help", this );
   pHelpButton->setGeometry( 205, 460, 80, 20 );
-  pHelpButton->show();
   connect( pHelpButton, SIGNAL( clicked() ), SLOT( showHelp() ) );
+
+  pInfoGroup->show();
+  pInfoLabel1->show();
+  pInfoCombo->show();
+  pInfoLabel2->show();
+  pInfoFile->show();
+  pInfoLabel3->show();
+  pInfoShow->show();
+  pWarnGroup->show();
+  pWarnLabel1->show();
+  pWarnCombo->show();
+  pWarnLabel2->show();
+  pWarnFile->show();
+  pWarnLabel3->show();
+  pWarnShow->show();
+  pErrorGroup->show();
+  pErrorLabel1->show();
+  pErrorCombo->show();
+  pErrorLabel2->show();
+  pErrorFile->show();
+  pErrorLabel3->show();
+  pErrorShow->show();
+  pFatalGroup->show();
+  pFatalLabel1->show();
+  pFatalCombo->show();
+  pFatalLabel2->show();
+  pFatalFile->show();
+  pFatalLabel3->show();
+  pFatalShow->show();
+  pAbortFatal->show();
+  pOKButton->show();
+  pCancelButton->show();
+  pHelpButton->show();
 }
 
 KDebugDialog::~KDebugDialog()
