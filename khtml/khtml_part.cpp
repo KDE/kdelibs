@@ -178,6 +178,7 @@ public:
     m_bPluginsOverride = false;
 
     m_metaRefreshEnabled = true;
+    m_bHTTPRefresh = false;
 
     m_bFirstData = true;
 
@@ -269,6 +270,7 @@ public:
   QTimer m_redirectionTimer;
   int m_delayRedirect;
   QString m_redirectURL;
+  bool m_bHTTPRefresh;
 
   KAction *m_paViewDocument;
   KAction *m_paViewFrame;
@@ -486,7 +488,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       setUserStyleSheet( KURL( userStyleSheet ) );
 
   connect( this, SIGNAL( completed() ),
-           this, SLOT( updateActions() ) );
+           this, SLOT( updateActions() ) );  
+  connect( this, SIGNAL( completed( bool ) ),
+           this, SLOT( updateActions( bool ) ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
            this, SLOT( updateActions() ) );
 
@@ -630,6 +634,7 @@ bool KHTMLPart::openURL( const KURL &url )
   }
   else
       d->m_job = KIO::get( url, args.reload, false );
+  
   d->m_job->addMetaData(args.metaData());
 
   connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
@@ -1033,6 +1038,7 @@ void KHTMLPart::clear()
   d->m_baseTarget = QString::null;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
+  d->m_bHTTPRefresh = false;
   d->m_bClearing = false;
   d->m_frameNameId = 1;
   d->m_bFirstData = true;
@@ -1120,38 +1126,37 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
        d->m_haveCharset = true;
        d->m_encoding = qData;
     }
-
+    
     // Support for HTTP based meta-refresh
     qData = d->m_job->queryMetaData("meta-refresh");
     if( !qData.isEmpty() && d->m_metaRefreshEnabled )
     {
-        kdDebug(6050) << "HTTP Refresh Request: " << qData << endl;
-        int delay;
-        int pos = qData.find( ';' );
-        if ( pos == -1 )
-            pos = qData.find( ',' );
-
-        if( pos == -1 )
-        {
-            delay = qData.toInt();
-            if ( delay != -1 )
-                scheduleRedirection( qData.toInt(), m_url.url() );
-        }
-        else
-        {
-            delay = qData.left(pos).toInt();
-            QString refUrl = qData.mid(pos+1).stripWhiteSpace();
-            if ( refUrl.startsWith( "url=" ) )
-                refUrl = refUrl.remove( 0, 4 ).stripWhiteSpace();
-            refUrl = KURL( d->m_baseURL, refUrl ).url();
-            scheduleRedirection( delay, refUrl );
-        }
+      kdDebug(6050) << "HTTP Refresh Request: " << qData << endl;
+      int delay;
+      int pos = qData.find( ';' );
+      if ( pos == -1 )
+        pos = qData.find( ',' );
+        
+      if( pos == -1 )
+      {
+        delay = qData.toInt();
+        if ( delay != -1 )
+          scheduleRedirection( qData.toInt(), m_url.url() );
+      }
+      else
+      {
+        delay = qData.left(pos).toInt();
+        QString refUrl = qData.mid(pos+1).stripWhiteSpace();
+        if ( refUrl.startsWith( "url=" ) )
+          refUrl = refUrl.remove( 0, 4 ).stripWhiteSpace();
+        refUrl = KURL( d->m_baseURL, refUrl ).url();
+        scheduleRedirection( delay, refUrl );
+      }
+      d->m_bHTTPRefresh = true;
     }
-
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
-
   write( data.data(), data.size() );
 }
 
@@ -1425,15 +1430,22 @@ void KHTMLPart::checkCompleted()
   if (!parentPart())
     emit setStatusBarText(i18n("Done."));
 
-  if ( !d->m_redirectURL.isEmpty() )
-      d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
-
   //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() emitting completed()"  << endl;
-  if ( !d->m_redirectURL.isEmpty() )
+
+/*
+  if ( !d->m_redirectURL.isEmpty() )  
   {
-    return; // We don't emit completed as long as we have a redirection pending.
-    // We might want to add a message to the statusbar when we are not i18n-frozen.
+    // Actually we should emit completed since the META redirections are
+    // supposed to be started after the current loading is finished. Thus,
+    // a new signal is needed to  (DA)
+    //
+    // We don't emit completed as long as we have a redirection pending.
+    // We might want to add a message to the statusbar when we are not
+    // i18n-frozen.
+    emit completed();
+    return;
   }
+*/
 
   // check for a <link rel="SHORTCUT ICON" href="url to icon">,
   // IE extension to set an icon for this page to use in
@@ -1460,8 +1472,12 @@ void KHTMLPart::checkCompleted()
 
   if ( m_url.htmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+  
+  if ( !d->m_redirectURL.isEmpty() )
+    emit completed( true );
+  else
+    emit completed();
 
-  emit completed();
   emit setStatusBarText( i18n("Loading complete") );
 }
 
@@ -1514,17 +1530,18 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
-    if(d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect)
+    if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
-        d->m_delayRedirect = delay;
-        d->m_redirectURL = url;
+       d->m_delayRedirect = delay;
+       d->m_redirectURL = url;
+       if ( d->m_bComplete )
+          d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
     }
 }
 
 void KHTMLPart::slotRedirect()
 {
-  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
-
+  // kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -1534,10 +1551,8 @@ void KHTMLPart::slotRedirect()
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
 {
   // the slave told us that we got redirected
-    //kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
-
+  // kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
   emit d->m_extension->setLocationBarURL( url.prettyURL() );
-
   d->m_workingURL = url;
 }
 
@@ -2045,6 +2060,17 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   KParts::URLArgs args;
   args.frameName = target;
 
+  // For an HTTP meta-refresh, force the io-slave to re-get the
+  // page as needed instead of loading from cache. NOTE: I would
+  // have done a "verify" instead, but I am not sure that servers
+  // will include the correct response (specfically "Refresh:") on
+  // a "HEAD" request which is what a "verify" setting results in.(DA)
+  if ( d->m_bHTTPRefresh )
+  {
+    d->m_bHTTPRefresh = false;
+	args.metaData()["cache"]="reload"; //"verify";
+  }
+
   if ( hasTarget )
   {
     // unknown frame names should open in a new window.
@@ -2191,6 +2217,11 @@ void KHTMLPart::slotSetEncoding()
 
 void KHTMLPart::updateActions()
 {
+    updateActions( false );
+}
+
+void KHTMLPart::updateActions( bool )
+{
   bool frames = d->m_frames.count() > 0;
   d->m_paViewFrame->setEnabled( frames );
   d->m_paSaveFrame->setEnabled( frames );
@@ -2227,14 +2258,13 @@ void KHTMLPart::updateActions()
   QString bgURL;
 
   // ### frames
-
   if ( d->m_doc && d->m_doc->isHTMLDocument() && static_cast<HTMLDocumentImpl*>(d->m_doc)->body() && !d->m_bClearing )
     bgURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
-
-  // Now start the timer if there is supposed to be
-  // a redirection to somewhere else!!
+  
+  // Now start the redirection since the current
+  // document should be completely loaded. (DA)
   if ( !d->m_redirectURL.isEmpty() )
     d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 }

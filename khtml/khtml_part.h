@@ -771,6 +771,10 @@ private slots:
   /**
    * @internal
    */
+  void updateActions( bool );
+  /**
+   * @internal
+   */
   void slotPartRemoved( KParts::Part *part );
   /**
    * @internal
