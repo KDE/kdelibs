@@ -87,7 +87,7 @@ namespace KNotifyClient
     {
     public:
         /**
-         * Constructs a KNotifyClient::Instance to make @ref KNotifyClient use
+         * Constructs a @ref KNotifyClient::Instance to make @ref KNotifyClient use
          * the specified @ref KInstance for the event configuration
          */
         Instance(KInstance *);
@@ -97,17 +97,20 @@ namespace KNotifyClient
          */
         ~Instance();
 	/**
+	 * Checks whether the system bell should be used.
 	 * @returns true if this instance should use the System bell instead
 	 * of KNotify.
 	 */
 	bool useSystemBell() const;
         /**
-         * Returns the currently active @ref KInstance
+         * Returns the currently active @ref KInstance.
+	 * @return the active KInstance
          */
         static KInstance *current();
 
 	/**
-	 * Returns the current KNotifyClient::Instance (not the KInstance)
+	 * Returns the current KNotifyClient::Instance (not the KInstance).
+	 * @return the active Instance
 	 */
 	static Instance *currentInstance();
 	
@@ -118,6 +121,9 @@ namespace KNotifyClient
     };
 
 
+    /**
+     * Describes the notification method.
+     */
 	enum {
 		Default = -1,
 		None = 0,
@@ -128,7 +134,10 @@ namespace KNotifyClient
 		PassivePopup = 16,
 		Execute = 32
 	};
-	
+
+	/**
+	 * Describes the level of the error.
+	 */
 	enum {
 		Notification=1,
 		Warning=2,
@@ -163,23 +172,25 @@ namespace KNotifyClient
 	 * the server
 	 * @param message The name of the event
 	 * @param text The text to put in a dialog box.  This won't be shown if
-	 *             the user connected the event to sound, only.
+	 *             the user connected the event to sound, only. Can be QString::null.
 	 */
 	bool event(const QString &message, const QString &text=QString::null);
 
 	/**
 	 * Allows to easily emit standard events.
 	 * @param event The event you want to raise.
-	 * @param text The text explaining the event you raise.
+	 * @param text The text explaining the event you raise. Can be QString::null.
 	 */
 	bool event( StandardEvent event, const QString& text=QString::null );
 
 	/**
 	 * Will fire an event that's not registered.
 	 * @param text The error message text, if applicable
-	 * @param present The error message level, defaulting to "Default"
+	 * @param present The presentation method(s) of the event
+	 * @param level The error message level, defaulting to "Default"
 	 * @param sound The sound file to play if selected with @p present
-     * @param file The log file to play if selected with @p present
+	 * @param file The log file to play if selected with @p present
+	 * @return true if successful, false otherwise
 	 */
 	bool userEvent(const QString &text=QString::null, int present=Default, int level=Default,
 	                      const QString &sound=QString::null, const QString &file=QString::null);
@@ -190,6 +201,7 @@ namespace KNotifyClient
 	 * <pre>
 	 * KNotifyClient::event( KNotifyClient::notification, reason );
 	 * </pre>
+	 * @param reason the reason, can be QString::null.
 	 */
 	void beep(const QString& reason=QString::null);
 
@@ -197,6 +209,8 @@ namespace KNotifyClient
 	 * Gets the presentation associated with a certain event name
 	 * Remeber that they may be ORed:
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }	
+	 * @param eventname the event name to check
+	 * @return the presentation methods
 	 */
 	int getPresentation(const QString &eventname);
 	
@@ -204,6 +218,9 @@ namespace KNotifyClient
 	 * Gets the default file associated with a certain event name
 	 * The control panel module will list all the event names
 	 * This has the potential for being slow.
+	 * @param eventname the name of the event
+	 * @param present the presentation method
+	 * @return the associated file. Can be QString::null if not found.
 	 */
 	QString getFile(const QString &eventname, int present);
 	
@@ -211,6 +228,7 @@ namespace KNotifyClient
 	 * Gets the default presentation for the event of this program.
 	 * Remember that the Presentation may be ORed.  Try this:
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }
+	 * @return the presentation methods
 	 */
 	int getDefaultPresentation(const QString &eventname);
 	
@@ -219,6 +237,9 @@ namespace KNotifyClient
 	 * It gets it in relation to present.
 	 * Some events don't apply to this function ("Message Box")
 	 * Some do (Sound)
+	 * @param eventname the name of the event
+	 * @param present the presentation method
+	 * @return the default file. Can be QString::null if not found.
 	 */
 	QString getDefaultFile(const QString &eventname, int present);
 
