@@ -156,7 +156,7 @@ public:
    * Note: The hint has also effect for clients that are not session management
    * enabled or do not even do pseudo session management
    *
-   * Note 2: May have no effekt with other window- or session managers
+   * Note 2: May have no effect with other window- or session managers
    */
   static void setUnsavedDataHint(Window w, bool value);
 
@@ -175,7 +175,7 @@ public:
    * Note: kwm will even detect changes of this property when your
    * window is mapped.
    *
-   * Note 2: May have no effekt with other windowmanagers */
+   * Note 2: May have no effect with other windowmanagers */
   static void setMiniIcon(Window w, const QPixmap &pm);
 
   /**
@@ -304,7 +304,7 @@ public:
    * messages from kwm. Argument is either a window ((Window)
    * XClientMessageEvent.data.l[0]), a (long) number or nothing.
    *
-   * KWM_MODULE_INIT             - initinalization starts
+   * KWM_MODULE_INIT             - initialization starts
    * KWM_MODULE_INITIALIZED      - initialization is complete
    * KWM_MODULE_DESKTOP_CHANGE   - new current virtual desktop
    * KWM_MODULE_DESKTOP_NAME_CHANGE   - a desktop got a new name
