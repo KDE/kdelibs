@@ -1,6 +1,13 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.3  - 4 Jan 1999 (Martin Jones)
+--------------
+
+Added void KHTMLWidget::setForceDefault( bool force ) to allow a user
+to force the use of their colours.
+
+
 Version 0.13.3  - 17 Nov 1998 (Lars Knoll <knoll@mpi-hd.mpg.de>)
 --------------
 

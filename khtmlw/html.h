@@ -537,6 +537,12 @@ public:
 	{	linkCursor = c; }
 
     /**
+     * Force use of user defined colors
+     */
+    void setForceDefault( bool force )
+    { defaultSettings->forceDefault = force; }
+
+    /**
      * Cryptic?  This is used to set the number of tokens to parse
      * in one timeslice during background processing.
      *

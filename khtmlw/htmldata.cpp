@@ -45,6 +45,7 @@ HTMLSettings::HTMLSettings()
     charset	  = KApplication::getKApplication()->getCharsets()->defaultCh();
 
     underlineLinks = true;
+    forceDefault = false;
 }
 
 HTMLSettings::HTMLSettings( const HTMLSettings &s )
@@ -64,6 +65,7 @@ HTMLSettings::HTMLSettings( const HTMLSettings &s )
     charset       = s.charset;
 
     underlineLinks = s.underlineLinks;
+    forceDefault   = s.forceDefault;
 }
 
 const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
@@ -83,6 +85,7 @@ const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
     charset       = s.charset;
 
     underlineLinks = s.underlineLinks;
+    forceDefault   = s.forceDefault;
 
     return *this;
 }

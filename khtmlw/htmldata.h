@@ -53,6 +53,7 @@ public:
     KCharset charset; 
 
     bool    underlineLinks;
+    bool    forceDefault;
 };
 
 #endif

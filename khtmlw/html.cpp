@@ -2717,7 +2717,8 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		    bgColor.setNamedColor( token+8 );
 		bgColorSet = TRUE;
 	    }
-	    else if ( strncasecmp( token, "background=", 11 ) == 0 )
+	    else if ( strncasecmp( token, "background=", 11 ) == 0 &&
+                    !defaultSettings->forceDefault )
 	    {
 		const char* filename = token + 11;
 		KURL kurl( baseURL, filename );
@@ -2734,23 +2735,26 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		if ( !bgPixmap.isNull() )
 		    bgPixmapSet = TRUE;
 	    }
-	    else if ( strncasecmp( token, "text=", 5 ) == 0 )
+	    else if ( strncasecmp( token, "text=", 5 ) == 0 &&
+                    !defaultSettings->forceDefault )
 	    {
 		settings->fontBaseColor.setNamedColor( token+5 );
 		*(colorStack.top()) = settings->fontBaseColor;
 		font_stack.top()->setTextColor( settings->fontBaseColor );
 	    }
-	    else if ( strncasecmp( token, "link=", 5 ) == 0 )
+	    else if ( strncasecmp( token, "link=", 5 ) == 0 &&
+                    !defaultSettings->forceDefault )
 	    {
 		settings->linkColor.setNamedColor( token+5 );
 	    }
-	    else if ( strncasecmp( token, "vlink=", 6 ) == 0 )
+	    else if ( strncasecmp( token, "vlink=", 6 ) == 0 &&
+                    !defaultSettings->forceDefault )
 	    {
 		settings->vLinkColor.setNamedColor( token+6 );
 	    }
 	}
 
-	if ( !bgColorSet )
+	if ( !bgColorSet || defaultSettings->forceDefault )
 	{
 	    QPalette pal = palette().copy();
 	    QColorGroup cg = pal.normal();
@@ -3033,7 +3037,8 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 			    else
 				newSize = num - 3;
 		    }
-		    else if ( strncasecmp( token, "color=", 6 ) == 0 )
+		    else if ( strncasecmp( token, "color=", 6 ) == 0 &&
+                        !defaultSettings->forceDefault )
 		    {
 			if ( *(token+6) != '#' && strlen( token+6 ) == 6 )
 			{
@@ -4395,7 +4400,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	    else if ( strcasecmp( token + 6, "right" ) == 0 )
 		align = HTMLClue::Right;
 	}
-	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 &&
+                !defaultSettings->forceDefault )
 	{
 	    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
 	    {
@@ -4511,7 +4517,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			    else if ( strcasecmp( token+6, "center" ) == 0)
 				rowhalign = HTMLClue::HCenter;
 			}
-			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 &&
+                        !defaultSettings->forceDefault )
 			{
 			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
 			    {
@@ -4614,7 +4621,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 				fixedWidth = true;
 			    }
 			}
-			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 &&
+                        !defaultSettings->forceDefault )
 			{
 			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
 			    {
