@@ -373,7 +373,7 @@ QStringList KLocale::languageList()const{
 
 #else /* ENABLE_NLS */
 
-KLocale::KLocale( QString ) 
+KLocale::KLocale( QString ) : lang(0)
 {
 }
 
