@@ -12,7 +12,7 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #    Library General Public License for more details.
 
-#    You should have received a copy of the GNU Library General Public License 
+#    You should have received a copy of the GNU Library General Public License
 #    along with this library; see the file COPYING.LIB.  If not, write to
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
@@ -26,8 +26,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kurl.h ksock.h drag.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
-	kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
-	kpoint.h ltdl.h kprotocolmanager.h kregexp.h kstyle.h \
+	kaccel.h kglobalaccel.h kclipboard.h ltdl.h \
+	kprotocolmanager.h kregexp.h kstyle.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h qproperty.h
 
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h kregpriv.h
@@ -39,7 +39,7 @@ libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp kconfig.cpp kconfigbase.cp
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
 	kchartables.cpp kpixmap.cpp dither.cpp \
 	kckey.cpp kaccel.cpp kclipboard.cpp \
-	krect.cpp ksize.cpp kpoint.cpp kprotocolmanager.cpp\
+	kprotocolmanager.cpp\
 	kurl.cpp ltdl.c kregexp.cpp kstyle.cpp kglobal.cpp \
 	dmalloc.cpp qproperty.cpp
 
@@ -59,7 +59,7 @@ kdebug_DATA = kdebug.areas
 kckey_h : generate_keys.sh $(QNAMESPACE_H)
 	./generate_keys.sh $(QNAMESPACE_H)
 
-install-data-local: charsets.config 
+install-data-local: charsets.config
 	$(mkinstalldirs) $(kde_confdir)
 	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
 
