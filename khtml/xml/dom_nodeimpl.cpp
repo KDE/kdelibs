@@ -540,10 +540,11 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     // In the case of a mouse click, also send a DOMActivate event, which causes things like form submissions
     // to occur. Note that this only happens for _real_ mouse clicks (for which we get a KHTML_CLICK_EVENT or
     // KHTML_DBLCLICK_EVENT), not the standard DOM "click" event that could be sent from js code.
-    if (evt->id() == EventImpl::KHTML_CLICK_EVENT)
-        dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 1);
-    else if (evt->id() == EventImpl::KHTML_DBLCLICK_EVENT)
-        dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 2);
+    if (!evt->defaultPrevented())
+        if (evt->id() == EventImpl::KHTML_CLICK_EVENT)
+            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 1);
+        else if (evt->id() == EventImpl::KHTML_DBLCLICK_EVENT)
+            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 2);
 
     // copy this over into a local variable, as the following deref() calls might cause this to be deleted.
     DocumentPtr *doc = document;
