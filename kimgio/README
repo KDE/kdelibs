@@ -1,6 +1,5 @@
-
-KDE Image I/O library.
-
+KDE Image I/O library
+---------------------
 This library allows applications that use the Qt library to read and
 write images in extra formats. Current formats include:
 
@@ -19,9 +18,9 @@ To use these formats, you must
 3. call kimgioRegister() once, somewhere in your code
    before you load an image.
 
+
 Writing handlers
 ----------------
-
 Please read the documentation for the QImageIO class in the Qt
 documentation.
 
@@ -47,5 +46,3 @@ when attempting to call the unimplemented handler.
 Yours in good faith and pedantry,
 
 Sirtaj Singh Kang <taj@kde.org>, 23 September 1998.
-
-$Id$

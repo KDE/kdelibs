@@ -1,43 +1,43 @@
 KDB - the KDE database library
-------------------------------
+==============================
 
-Author:
+Author
 ------
-
 Basic design and implementation from:
 
 Alessandro Praduroux
 pradu@thekompany.com
 http://www.thekompany.com
 
-Structure:
-----------
 
+Structure
+---------
 KDB is divided in 5 pieces:
 
-- lib/kdbcore: the base data access library
-- lib/kdbui: the widgets and dialogs library
-- plugins: low level DBMS access 
-- kio_sql: an IOSlave that enables browsing of sql databases
-- test: a small test program
+* lib/kdbcore: the base data access library
+* lib/kdbui: the widgets and dialogs library
+* plugins: low level DBMS access 
+* kio_sql: an IOSlave that enables browsing of sql databases
+* test: a small test program
 
-Status:
--------
 
+Status
+------
 The library must be considered in early ALPHA stage of development. This means
 that program developed with the current version of the libs may not even compile 
 with the subsequent versions. Many features are missing, altought are in the 
 documentation and an API is provided
 
-Support:
---------
 
+Support
+-------
 Anyone that is willing to support the development of KDB with patches, plugins, 
 bug reports and such is welcome. Please send all material to pradu@thekompany.com.
 If you want cvs write access, please contact me at pradu@thekompany.com
 
-License:
---------
+
+License
+-------
 The libraries themselves have been covered 
 by the GNU Library General Public License (LGPL).  The test program
 is covered by the GNU General Public License (GPL).  All the
@@ -47,7 +47,7 @@ COPYING.
 When in doubt, check the individual file, they should all have license
 headings and other identifying marks.
 
-Updates:
--------
 
+Updates
+-------
 see http://www.thekompanu.com/projects/kdb for details.
