@@ -237,7 +237,7 @@ QString KMFactory::printSystem()
 {
 	KConfig	*conf = printConfig();
 	conf->setGroup("General");
-	QString	sys = conf->readEntry("PrintSystem",QString::null);
+	QString	sys = conf->readEntry("PrintSystem");
 	if (sys.isEmpty())
 	{
 		// perform auto-detection (will at least return "lpdunix")

@@ -120,7 +120,7 @@ void CupsInfos::load()
 	savepwd_ = conf_->readBoolEntry( "SavePassword", false );
 	if ( savepwd_ )
 	{
-		password_ = KStringHandler::obscure( conf_->readEntry( "Password", QString::null ) );
+		password_ = KStringHandler::obscure( conf_->readEntry( "Password" ) );
 		KMFactory::self()->initPassword( login_, password_, host_, port_ );
 	}
 	else

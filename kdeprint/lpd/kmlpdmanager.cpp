@@ -279,9 +279,9 @@ QString KMLpdManager::programName(int f)
 	conf->setGroup("LPD");
 	switch (f)
 	{
-		case 0: return conf->readEntry("LpdCommand","/usr/sbin/lpc");
-		case 1: return conf->readEntry("LpdQueue","lpq");
-		case 2: return conf->readEntry("LpdRemove","lprm");
+		case 0: return conf->readPathEntry("LpdCommand","/usr/sbin/lpc");
+		case 1: return conf->readPathEntry("LpdQueue","lpq");
+		case 2: return conf->readPathEntry("LpdRemove","lprm");
 	}
 	return QString::null;
 }

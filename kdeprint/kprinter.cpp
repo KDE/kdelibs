@@ -181,7 +181,7 @@ void KPrinter::loadSettings()
 
 	// load latest used printer from config file, if required in the options
 	if (searchName().isEmpty() && pconf->readBoolEntry("UseLast", true))
-		setSearchName(conf->readEntry("Printer",QString::null));
+		setSearchName(conf->readEntry("Printer"));
 
 	// latest used print command
 	setOption("kde-printcommand",conf->readPathEntry("PrintCommand"));
