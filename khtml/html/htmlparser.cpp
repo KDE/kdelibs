@@ -48,6 +48,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "cssproperties.h"
+#include "cssvalues.h"
 
 #include "rendering/render_object.h"
 
@@ -523,8 +524,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             break;
         case ID_LI:
             e = new HTMLUListElementImpl(document);
-            e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt") );
-            e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside") );
+            e->addCSSProperty(CSS_PROP_MARGIN_LEFT, "0pt");
+            e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, CSS_VAL_INSIDE);
             // only try to insert <LI> when <UL> succeeds.
             // helps for <html><head><ul><li></html>
             if(insertNode(e)) {
@@ -739,7 +740,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         case ID_DIR:
         case ID_MENU:
             e = new HTMLLIElementImpl(document);
-            e->addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, DOMString("none") );
+            e->addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_NONE);
             insertNode(e);
             handled = true;
             break;
@@ -967,7 +968,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         HTMLElementImpl *e = new HTMLLIElementImpl(document);
         n = e;
         if( current->id() != ID_UL && current->id() != ID_OL )
-                e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside") );
+                e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, CSS_VAL_INSIDE);
         break;
     }
 // formatting elements (block)

@@ -31,6 +31,7 @@
 #include "rendering/render_image.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include "html_documentimpl.h"
 
@@ -125,7 +126,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         if(attr->value().toInt())
         {
             addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
+            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
         }
         break;
     case ATTR_VSPACE:
@@ -142,15 +143,15 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         if ( strcasecmp( attr->value(), "left" ) == 0 )
         {
             addCSSProperty(CSS_PROP_FLOAT, attr->value());
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top");
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
         }
         else if ( strcasecmp( attr->value(), "right" ) == 0 )
         {
             addCSSProperty(CSS_PROP_FLOAT, attr->value());
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top");
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
         }
         else if( strcasecmp( attr->value(), "center") == 0)
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "middle");
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_MIDDLE);
         else
             addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
         break;

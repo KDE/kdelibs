@@ -26,6 +26,7 @@
 using namespace DOM;
 
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "rendering/render_list.h"
 #include "misc/htmlhashes.h"
 #include "xml/dom_docimpl.h"
@@ -111,15 +112,15 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ALPHA);
         else if ( strcmp( attr->value(), "A" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ALPHA);
         else if ( strcmp( attr->value(), "i" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ROMAN);
         else if ( strcmp( attr->value(), "I" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ROMAN);
         else if ( strcmp( attr->value(), "1" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_DECIMAL);
         break;
     case ATTR_START:
             _start = attr->val() ? attr->val()->toInt() : 1;
@@ -164,15 +165,15 @@ void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ALPHA);
         else if ( strcmp( attr->value(), "A" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ALPHA);
         else if ( strcmp( attr->value(), "i" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ROMAN);
         else if ( strcmp( attr->value(), "I" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ROMAN);
         else if ( strcmp( attr->value(), "1" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal");
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_DECIMAL);
         else
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value());
         break;

@@ -1996,7 +1996,15 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
 }
 #endif
 
-void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue)
+void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
+				   bool important, QList<CSSProperty> *propList)
+{
+  m_bImportant = important;
+  m_propList = propList;
+  setParsedValue( propId, parsedValue);
+}
+
+void StyleBaseImpl::setParsedValue( int propId, const CSSValueImpl *parsedValue)
 {
     QListIterator<CSSProperty> propIt(*m_propList);
     propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property

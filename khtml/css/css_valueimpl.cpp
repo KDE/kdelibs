@@ -175,6 +175,28 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	m_node->setChanged(true);
 }
 
+void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, bool nonCSSHint)
+{
+    if(!m_lstValues) {
+	m_lstValues = new QList<CSSProperty>;
+	m_lstValues->setAutoDelete(true);
+    }
+    removeProperty(id);
+    int pos = m_lstValues->count();
+    CSSValueImpl * cssValue = new CSSPrimitiveValueImpl(value);
+    setParsedValue(id, cssValue, important, m_lstValues);
+
+    if( nonCSSHint && pos < (int)m_lstValues->count() ) {
+	CSSProperty *p = m_lstValues->at(pos);
+	while ( p ) {
+	    p->nonCSSHint = true;
+	    p = m_lstValues->next();
+	}
+    } else if((unsigned) pos == m_lstValues->count() )
+	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << " value: " << value << endl;
+    if (m_node)
+	m_node->setChanged(true);
+}
 
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 {

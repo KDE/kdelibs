@@ -36,6 +36,7 @@ using namespace DOM;
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "css/csshelper.h"
 
 #include "rendering/render_table.h"
@@ -61,7 +62,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     // this is 90% compatible to ie and mozilla, and the by way easiest solution...
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
     if ( ownerDocument()->parseMode() != DocumentImpl::Strict ) {
-        addCSSProperty( CSS_PROP_FONT_SIZE, "medium" );
+        addCSSProperty( CSS_PROP_FONT_SIZE, CSS_VAL_MEDIUM );
         addCSSProperty( CSS_PROP_COLOR, ownerDocument()->textColor() );
         addCSSProperty( CSS_PROP_FONT_FAMILY, "konq_default" );
     }
@@ -294,7 +295,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BORDERCOLOR:
         if(!attr->value().isEmpty()) {
             addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
+            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
         }
         break;
     case ATTR_BACKGROUND:
@@ -690,7 +691,7 @@ void HTMLTableCellElementImpl::attach()
         if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull())
             addCSSProperty(CSS_PROP_BORDER_WIDTH, "0px");
         if(!table->getAttribute(ATTR_BORDERCOLOR).isNull())
-            addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
+            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
     }
 
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));

@@ -150,6 +150,12 @@ void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
     m_styleDecls->setProperty(id, value, false, true);
 }
 
+void HTMLElementImpl::addCSSProperty(int id, int value)
+{
+    if(!m_styleDecls) createDecl();
+    m_styleDecls->setProperty(id, value, false, true);
+}
+
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
 {
     if(!m_styleDecls) createDecl();

@@ -28,6 +28,7 @@
 #include "css/cssstyleselector.h"
 
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "misc/htmlhashes.h"
 
 #include <kdebug.h>
@@ -124,11 +125,11 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_ALIGN:
         if ( strcasecmp( attr->value(), "left") != 0) // _not_ equal
-            addCSSProperty(CSS_PROP_MARGIN_LEFT, "auto");
+            addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
         else
             addCSSProperty(CSS_PROP_MARGIN_LEFT, "1px");
         if( strcasecmp( attr->value(), "right") != 0)
-            addCSSProperty(CSS_PROP_MARGIN_RIGHT, "auto");
+            addCSSProperty(CSS_PROP_MARGIN_RIGHT, CSS_VAL_AUTO);
         else
             addCSSProperty(CSS_PROP_MARGIN_RIGHT, "1px");
         break;
@@ -166,7 +167,7 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
         break;
     }
     case ATTR_NOSHADE:
-        addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
+        addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
         break;
     case ATTR_COLOR:
         addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
@@ -290,7 +291,7 @@ void HTMLPreElementImpl::setWidth( long /*w*/ )
 HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc)
     : HTMLDivElementImpl( doc )
 {
-//    addCSSProperty(CSS_PROP_POSITION, "absolute" );
+//    addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
 //    fixed = false;
 }
 

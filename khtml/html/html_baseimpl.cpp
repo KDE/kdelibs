@@ -36,6 +36,7 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include "misc/loader.h"
 #include "misc/htmlhashes.h"
@@ -118,7 +119,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     }
     case ATTR_BGPROPERTIES:
         if ( strcasecmp( attr->value(), "fixed" ) == 0)
-            addCSSProperty(CSS_PROP_BACKGROUND_ATTACHMENT, "fixed");
+            addCSSProperty(CSS_PROP_BACKGROUND_ATTACHMENT, CSS_VAL_FIXED);
         break;
     case ATTR_VLINK:
     {

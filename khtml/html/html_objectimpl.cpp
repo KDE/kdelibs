@@ -36,6 +36,7 @@
 #include "css/cssstyleselector.h"
 #include "css/csshelper.h"
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "rendering/render_applet.h"
 #include "rendering/render_frames.h"
 #include "xml/dom2_eventsimpl.h"
@@ -242,12 +243,12 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
         if ( strcasecmp( attr->value(), "left" ) == 0 )
         {
            addCSSProperty(CSS_PROP_FLOAT, attr->value());
-           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top");
+           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
         }
         else if ( strcasecmp( attr->value(), "right" ) == 0 )
         {
            addCSSProperty(CSS_PROP_FLOAT, attr->value());
-           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top");
+           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
         }
         else
            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());

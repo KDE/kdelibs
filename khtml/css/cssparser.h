@@ -146,6 +146,8 @@ public:
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties);
 	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num);
 	void setParsedValue(int propId, const CSSValueImpl *parsedValue);
+	void setParsedValue(int propId, const CSSValueImpl *parsedValue,
+			    bool important, QList<CSSProperty> *propList);
 	QList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
 	bool parseBackgroundPosition(const QChar *curP, const QChar *&nextP, const QChar *endP);
 	
