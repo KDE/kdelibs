@@ -32,96 +32,20 @@
 
 #include "kaccelprivate.h"
 
-#ifdef Q_WS_X11
-#	include <X11/Xlib.h>
-#	ifdef KeyPress // needed for --enable-final
-		// defined by X11 headers
-		const int XKeyPress = KeyPress;
-#		undef KeyPress
-#	endif
-#endif
-
-// TODO: Put in kaccelbase.cpp
-//---------------------------------------------------------------------
-// KAccelEventHandler
-//---------------------------------------------------------------------
+// KAccel abuses AccelOverride somewhat to ensure that KAccelPrivate::eventFilter
+// (as an event filter on the toplevel widget) will get the key event first
+// (in the form of AccelOverride) before any of the intermediate widgets are
+// able to process it. 
+//
+// The problem with this is that accepting and acting on AccelOverride does not cause
+// the AccelOverride/Accel/KeyPress sequence of event handling to be stopped.
+// Only the Accel phase will be skipped.
+//
+// kde_g_bKillAccelOverride is used to tell KApplication::notify to eat the next
+// KeyPress event after we a KAccel triggered on AccelOverride
 
 bool kde_g_bKillAccelOverride = false;
-
-class KAccelEventHandler : public QWidget
-{
- public:
-	static KAccelEventHandler* self()
-	{
-		if( !g_pSelf )
-			g_pSelf = new KAccelEventHandler;
-		return g_pSelf;
-	}
-
-	static void accelActivated( bool b ) { g_bAccelActivated = b; }
-
- private:
-	KAccelEventHandler();
-
-#	ifdef Q_WS_X11
-	bool x11Event( XEvent* pEvent );
-#	endif
-
-	static KAccelEventHandler* g_pSelf;
-	static bool g_bAccelActivated;
-};
-
-KAccelEventHandler* KAccelEventHandler::g_pSelf = 0;
-bool KAccelEventHandler::g_bAccelActivated = false;
-
-KAccelEventHandler::KAccelEventHandler()
-{
-#	ifdef Q_WS_X11
-	if ( kapp )
-		kapp->installX11EventFilter( this );
-#	endif
-}
-
-#ifdef Q_WS_X11
-bool	qt_try_modal( QWidget *, XEvent * );
-
-bool KAccelEventHandler::x11Event( XEvent* pEvent )
-{
-	if( QWidget::keyboardGrabber() || !kapp->focusWidget() )
-		return false;
-
-	if ( !qt_try_modal(kapp->focusWidget(), pEvent) )
-	        return false;
-
-	if( pEvent->type == XKeyPress ) {
-		KKeyNative keyNative( pEvent );
-		KKey key( keyNative );
-		key.simplify();
-		int keyCodeQt = key.keyCodeQt();
-		int state = 0;
-		if( key.modFlags() & KKey::SHIFT ) state |= Qt::ShiftButton;
-		if( key.modFlags() & KKey::CTRL )  state |= Qt::ControlButton;
-		if( key.modFlags() & KKey::ALT )   state |= Qt::AltButton;
-		if( key.modFlags() & KKey::WIN )   state |= Qt::MetaButton;
-
-		QKeyEvent ke( QEvent::AccelOverride, keyCodeQt, 0,  state );
-		ke.ignore();
-
-		g_bAccelActivated = false;
-		kapp->sendEvent( kapp->focusWidget(), &ke );
-
-		// If the Override event was accepted from a non-KAccel widget,
-		//  then kill the next AccelOverride in KApplication::notify.
-		if( ke.isAccepted() && !g_bAccelActivated )
-			kde_g_bKillAccelOverride = true;
-
-		// Stop event processing if a KDE accelerator was activated.
-		return g_bAccelActivated;
-	}
-
-	return false;
-}
-#endif // Q_WS_X11
+static void accelActivated( bool b ) { kde_g_bKillAccelOverride = b; }
 
 //---------------------------------------------------------------------
 // KAccelPrivate
@@ -138,7 +62,6 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent, QWidget* pWatch )
 
 	if( m_pWatch )
 		m_pWatch->installEventFilter( this );
-	KAccelEventHandler::self();
 }
 
 void KAccelPrivate::setEnabled( bool bEnabled )
@@ -310,6 +233,14 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 		for( ; it != m_mapIDToKey.end(); ++it ) {
 			if( (*it) == keyCodeQt ) {
 				int nID = it.key();
+				if (pKeyEvent->isAutoRepeat())
+				{
+					// Ignore repeating keys
+					pKeyEvent->accept();
+					accelActivated( true );
+					return true;
+				}
+
 				kdDebug(125) << "shortcut found!" << endl;
 				if( m_mapIDToAction.contains( nID ) ) {
 					// TODO: reduce duplication between here and slotMenuActivated
@@ -323,7 +254,7 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 					slotKeyPressed( nID );
 
 				pKeyEvent->accept();
-				KAccelEventHandler::accelActivated( true );
+				accelActivated( true );
 				return true;
 			}
 		}
