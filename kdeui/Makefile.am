@@ -41,20 +41,24 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
 		kintlineedit.h qxembed.h knumvalidator.h knumlineedit.h
 
-libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
-		kselect.cpp kdatepik.cpp kdatetbl.cpp kfontdialog.cpp \
-		kmsgbox.cpp kpopmenu.cpp ktabctl.cpp ktreelist.cpp \
-		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
-		kmenubar.cpp ktoolbar.cpp kbutton.cpp kslider.cpp \
-		kseparator.cpp klined.cpp kcombo.cpp krestrictedline.cpp \
+# the order of the sources isn't randomly (at least not completly).
+# the order is predictated by the use of X11 header files
+libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
+		kiconloaderdialog.cpp ktablistbox.cpp ktoolbar.cpp \
+		klined.cpp kledlamp.cpp kprogress.cpp kpanner.cpp \
+		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
+		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp \
+		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
+		kmenubar.cpp kbutton.cpp kslider.cpp \
+		kseparator.cpp kcombo.cpp krestrictedline.cpp \
 		kintegerline.cpp kspinbox.cpp kcontrol.cpp kcolorbtn.cpp \
-		kiconloaderdialog.cpp kwmmapp.cpp kbuttonbox.cpp \
-		ktablistbox.cpp knewpanner.cpp keditcl1.cpp keditcl2.cpp \
+		kwmmapp.cpp kbuttonbox.cpp \
+		knewpanner.cpp keditcl1.cpp keditcl2.cpp \
 		ktoolboxmgr.cpp kled.cpp kdbtn.cpp knotebook.cpp \
 		ktabbar.cpp kwizard.cpp kcontainer.cpp kkeydialog.cpp \
-		kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp \
+		kruler.cpp kquickhelp.cpp kcursor.cpp \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
-		kthemebase.cpp kthemestyle.cpp kcharselect.cpp \
+		kthemebase.cpp kcharselect.cpp \
 		kcolordrag.cpp qxembed.cpp \
 		knumvalidator.cpp knumlineedit.cpp
 

@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.54  1999/05/23 00:53:59  kulow
+// CVS_SILENT moving some header files that STL comes before Qt
+//
 // Revision 1.53  1999/05/22 20:54:13  ssk
 // Minor doc reformat.
 //
@@ -104,8 +107,8 @@
 //#include <qiconset.h>
 
 #include "kcombo.h"
-#include "klined.h"
 
+class KLined;
 class KToolBar;
 class KToolBoxManager;
 

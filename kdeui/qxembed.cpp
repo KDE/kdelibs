@@ -216,7 +216,7 @@ void QXEmbed::keyPressEvent( QKeyEvent *e )
     int i = 1;
     int m = QMAX(1, text.length());
     do{
-	bzero(&ev, sizeof(ev));
+	memset(&ev, 0, sizeof(ev));
 	ev.xclient.type = ClientMessage;
 	ev.xclient.window = window;
 	ev.xclient.message_type = qt_unicode_key_press;
@@ -247,7 +247,7 @@ void QXEmbed::keyReleaseEvent( QKeyEvent *e )
     int i = 1;
     int m = QMAX(1, text.length());
     do{
-	bzero(&ev, sizeof(ev));
+	memset(&ev, 0, sizeof(ev));
 	ev.xclient.type = ClientMessage;
 	ev.xclient.window = window;
 	ev.xclient.message_type = qt_unicode_key_release;
@@ -293,7 +293,7 @@ void QXEmbed::wheelEvent( QWheelEvent * e)
 	return;
 
     XEvent ev;
-    bzero(&ev, sizeof(ev));
+    memset(&ev, 0, sizeof(ev));
     ev.xclient.type = ClientMessage;
     ev.xclient.window = window;
     ev.xclient.message_type = qt_wheel_event;

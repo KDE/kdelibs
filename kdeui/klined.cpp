@@ -23,9 +23,11 @@
 
 #include <qlineedit.h>
 #include "klined.h"
-
 #include <qkeycode.h>
 
+#ifdef KeyPress
+#undef KeyPress
+#endif
 
 KLined::KLined (QWidget *parent, const char *name)
   : QLineEdit (parent, name)

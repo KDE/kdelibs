@@ -32,15 +32,15 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h kregpriv.h
 
-libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
+libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
 	kchartables.cpp kpixmap.cpp dither.cpp \
-	kckey.cpp kaccel.cpp kglobalaccel.cpp kclipboard.cpp \
+	kckey.cpp kaccel.cpp kclipboard.cpp \
 	krect.cpp ksize.cpp kpoint.cpp kprotocolmanager.cpp\
-	kurl.cpp ltdl.c kregexp.cpp kstyle.cpp kstddirs.cpp kglobal.cpp \
+	kurl.cpp ltdl.c kregexp.cpp kstyle.cpp kglobal.cpp \
 	dmalloc.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined

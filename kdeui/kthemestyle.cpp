@@ -22,6 +22,7 @@
 #include <kapp.h>
 #include <qbitmap.h>
 #define INCLUDE_MENUITEM_DEF
+#include <qmenudata.h>
 #include <qpopupmenu.h>
 
 void KThemeStyle::polish(QApplication *app)
