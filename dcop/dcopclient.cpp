@@ -822,10 +822,11 @@ static void fillQtObjects( QCStringList& l, QObject* o, QCString path )
 	while ( (obj=it.current()) ) {
 	    ++it;
  	    QCString n = obj->name();
- 	    if ( n == "unnamed" || n.isEmpty() ) 
+ 	    if ( n == "unnamed" || n.isEmpty() )
+ 		n.sprintf("unnamed%d(%s)", ++unnamed, obj->className(), obj );
+ 	    if ( n == "unnamed" || n.isEmpty() )
  		n.sprintf("unnamed%d(%s, %p)", ++unnamed, obj->className(), obj );
  	    QCString fn = path + n;
- 	    qDebug("append %s", fn.data() );
  	    l.append( fn );
  	    if ( obj->children() )
  		fillQtObjects( l, obj, fn );
@@ -1031,6 +1032,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	    replyType = "QCStringList";
 	    QDataStream reply( replyData, IO_WriteOnly );
 	    QCStringList l;
+	    l << "qt"; // the Qt bridge object
 	    if ( dcopObjMap ) {
 		QMap<QCString, DCOPObject *>::ConstIterator it( dcopObjMap->begin());
 		for (; it != dcopObjMap->end(); ++it) {
