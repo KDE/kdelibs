@@ -149,6 +149,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
   if (part.isNull())
     return false;
 
+  // Properties
   if (p == "crypto" ||
       p == "defaultStatus" ||
       p == "document" ||
@@ -172,25 +173,30 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "screenX" ||
       p == "screenY" ||
       p == "scrollbars" ||
-      p == "scroll" ||
-      p == "scrollBy" ||
-      p == "scrollTo" ||
       p == "self" ||
       p == "top" ||
       p == "screen" ||
       p == "Image" ||
       p == "Option" ||
+  // Methods
       p == "alert" ||
       p == "confirm" ||
-      p == "prompt" ||
-      p == "open" ||
-      p == "setTimeout" ||
-      p == "clearTimeout" ||
-      p == "focus" ||
       p == "blur" ||
-      p == "close" ||
-      p == "setInterval" ||
       p == "clearInterval" ||
+      p == "clearTimeout" ||
+      p == "close" ||
+      p == "focus" ||
+      p == "moveBy" ||
+      p == "moveTo" ||
+      p == "open" ||
+      p == "prompt" ||
+      p == "resizeBy" ||
+      p == "resizeTo" ||
+      p == "scroll" ||
+      p == "scrollBy" ||
+      p == "scrollTo" ||
+      p == "setInterval" ||
+      p == "setTimeout" ||
       HostImp::hasProperty(p,recursive) ||
       part->findFrame( p.qstring() ))
     return true;
@@ -281,6 +287,14 @@ KJSO Window::get(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::ScrollBy));
   else if (p == "scrollTo")
     return Function(new WindowFunc(this, WindowFunc::ScrollTo));
+  else if (p == "moveBy")
+    return Function(new WindowFunc(this, WindowFunc::MoveBy));
+  else if (p == "moveTo")
+    return Function(new WindowFunc(this, WindowFunc::MoveTo));
+  else if (p == "resizeBy")
+    return Function(new WindowFunc(this, WindowFunc::ResizeBy));
+  else if (p == "resizeTo")
+    return Function(new WindowFunc(this, WindowFunc::ResizeTo));
   else if (p == "self" || p == "window")
     return KJSO(newWindow(part));
   else if (p == "top") {
@@ -526,13 +540,61 @@ Completion WindowFunc::tryExecute(const List &args)
   }
   case ScrollBy:
     if(args.size() == 2 && widget)
-      part->view()->scrollBy(args[0].toInt32(), args[1].toInt32());
+      widget->scrollBy(args[0].toInt32(), args[1].toInt32());
     result = Undefined();
     break;
   case ScrollTo:
     if(args.size() == 2 && widget)
       widget->setContentsPos(args[0].toInt32(), args[1].toInt32());
     result = Undefined();
+    break;
+  case MoveBy:
+    if(args.size() == 2 && widget)
+    {
+      QWidget * tl = widget->topLevelWidget();
+      QPoint dest = tl->pos() + QPoint( args[0].toInt32(), args[1].toInt32() );
+      // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
+      if ( dest.x() >= 0 && dest.y() >= 0 &&
+           dest.x()+tl->width() <= QApplication::desktop()->width() &&
+           dest.y()+tl->height() <= QApplication::desktop()->height() )
+          tl->move( dest );
+    }
+    break;
+  case MoveTo:
+    if(args.size() == 2 && widget)
+    {
+      QWidget * tl = widget->topLevelWidget();
+      QPoint dest = QPoint( args[0].toInt32(), args[1].toInt32() );
+      // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
+      if ( dest.x() >= 0 && dest.y() >= 0 &&
+           dest.x()+tl->width() <= QApplication::desktop()->width() &&
+           dest.y()+tl->height() <= QApplication::desktop()->height() )
+          tl->move( dest );
+    }
+    break;
+  case ResizeBy:
+    if(args.size() == 2 && widget)
+    {
+      QWidget * tl = widget->topLevelWidget();
+      QSize dest = tl->size() + QSize( args[0].toInt32(), args[1].toInt32() );
+      // Security check: within desktop limits and bigger than 100x100 (per spec)
+      if ( tl->x()+dest.width() <= QApplication::desktop()->width() &&
+           tl->y()+dest.height() <= QApplication::desktop()->height() &&
+           dest.width() >= 100 && dest.height() >= 100 )
+          tl->resize( dest );
+    }
+    break;
+  case ResizeTo:
+    if(args.size() == 2 && widget)
+    {
+      QWidget * tl = widget->topLevelWidget();
+      QSize dest = QSize( args[0].toInt32(), args[1].toInt32() );
+      // Security check: within desktop limits and bigger than 100x100 (per spec)
+      if ( tl->x()+dest.width() <= QApplication::desktop()->width() &&
+           tl->y()+dest.height() <= QApplication::desktop()->height() &&
+           dest.width() >= 100 && dest.height() >= 100 )
+          tl->resize( dest );
+    }
     break;
   case SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {

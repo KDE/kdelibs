@@ -69,7 +69,7 @@ namespace KJS {
     WindowFunc(const Window *w, int i) : window(w), id(i) { };
     Completion tryExecute(const List &);
     enum { Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout, Focus, Blur, Close,
-          ScrollBy, ScrollTo, SetInterval, ClearInterval };
+          MoveBy, MoveTo, ResizeBy, ResizeTo, ScrollBy, ScrollTo, SetInterval, ClearInterval };
 
     static void initJScript(KHTMLPart *);
   private:
