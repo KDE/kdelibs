@@ -318,7 +318,7 @@ when porting:
   the second, and so on.  QMessageBox is 0-based, and thus the first
   button will have a return code of 0.
 - Do not use QMessageBox::message.  It is deprecated.  Use 
-  QMessageBox::info for bits of information, QMessageBox::warning when
+  QMessageBox::information for bits of information, QMessageBox::warning when
   something has failed but the program will continue to work fine, and
   as a last resort, use QMessageBox::critical when very bad errors have
   occurred.
@@ -329,4 +329,6 @@ when porting:
   QMessageBox::information(this, i18n("Information"),
 	 	i18n("This is the text that will appear"
 		     " in the message box."), i18n("&OK"));
+- Please note too that it's recommended to use kapp->getCaption as second
+  argument 
 
