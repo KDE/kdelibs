@@ -557,7 +557,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     {
       // Merge can be named or not - use the name if there is one
       QString name = it.attribute( attrName );
-      ToolbarItem *act = new ToolbarItem(m_activeList, name, i18n("This is where elements from an embedded component are merged into this list. You can move it, but if you remove it you won't be able to readd it. If it is removed, the merged elements are appended at the end.") );
+      ToolbarItem *act = new ToolbarItem(m_activeList, name, i18n("This element will be replaced with all the elements of an embedded component."));
       if ( name.isEmpty() )
           act->setText(1, i18n("<Merge>"));
       else
