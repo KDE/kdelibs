@@ -84,13 +84,6 @@ public:
     int depth;
   } DAVRequest;
   
-  typedef struct davLockInfo
-  {
-    QString scope;
-    QString type;
-    QString owner;
-  };
-
   /** The request for the current connection **/
   typedef struct
   {
