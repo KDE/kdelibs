@@ -215,7 +215,7 @@ QFont &KCharset::setQFont(QFont &fnt){
     int ch = fi.charSet();
 #if QT_VERSION==142
     if( ch == 0 ) ch = 1;
-    if( ch == 1 ) ch = 0;
+    else if( ch == 1 ) ch = 0;
 #endif
     if (ch != qtCharset())
     {
