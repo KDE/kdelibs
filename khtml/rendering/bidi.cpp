@@ -712,13 +712,19 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     if(maxHeight < maxAscent + maxDescent) maxHeight = maxAscent + maxDescent;
 
     r = runs.first();
-    while (r ) {
+    int totWidth = 0;
+    while ( r ) {
 	if(r->yOffset == -PositionTop)
 	    r->yOffset = m_height;
 	else if(r->yOffset == -PositionBottom)
 	    r->yOffset = maxHeight + m_height - r->obj->bidiHeight();
 	else
 	    r->yOffset += maxAscent + m_height;
+	if(r->obj->isText())
+	    r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
+	else
+	    r->width = r->obj->width();
+	totWidth += r->width;
 	r = runs.next();
     }
     //kdDebug(6040) << "yPos of line=" << m_height << "  lineHeight=" << maxHeight << endl;
@@ -727,11 +733,19 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
     r = runs.first();
     int x = leftMargin(m_height);
+    int availableWidth = lineWidth(m_height);
+    switch(m_style->textAlign()) {
+    case LEFT:
+    case JUSTIFY:
+	break;
+    case RIGHT:
+	x += availableWidth - totWidth;
+	break;
+    case CENTER:
+	x += (availableWidth - totWidth)/2;
+	break;
+    }
     while ( r ) {
-	if(r->obj->isText())
-	    r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
-	else
-	    r->width = r->obj->width();
 	//kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop" << r->stop << " yPos=" << r->yOffset << endl;
 	r->obj->position(x, r->yOffset, r->start, r->stop - r->start, r->width, r->level%2);
 	x += r->width;

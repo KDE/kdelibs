@@ -254,7 +254,7 @@ void RenderFlow::layout( bool deep )
 	setLayouted();
 	return;
     }
-    
+
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline())
 	layoutInlineChildren();

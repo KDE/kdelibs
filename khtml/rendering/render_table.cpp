@@ -1268,7 +1268,7 @@ void RenderTable::layout(bool deep)
     calcHeight();
 
     //kdDebug(0) << "table height: " << m_height << endl;
-    
+
     setLayouted();
 
 }
