@@ -34,7 +34,7 @@ check_PROGRAMS =kledlamptest kprogresstest \
 		kwizardtest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest dialogbasetest \
-		kgradienttest \
+		kgradienttest kmemtest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest \
 		kruntest kspelltest kidlservertest kidlclienttest
@@ -95,6 +95,7 @@ ktartest_SOURCES = ktartest.cpp
 ktartest_LDADD = $(LIB_KIO)
 kruntest_SOURCES = kruntest.cpp
 kruntest_LDADD = $(LIB_KIO)
+kmemtest_SOURCES = kmemtest.cpp
 kidlservertest_SOURCES = KIDLTest.cpp KIDLTest_skel.cpp
 kidlservertest_LDADD = $(LIB_KDECORE)
 kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest_stub.cpp
