@@ -99,7 +99,7 @@ bool IOJob::getSize( const char* _url )
   return ConnectionSignals::getSize( _url );
 }
 
-bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume )
+bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume, long int _size )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_PUT;
@@ -107,7 +107,7 @@ bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume )
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::put( _url, _mode, _overwrite, _resume );
+  return ConnectionSignals::put( _url, _mode, _overwrite, _resume, _size );
 }
 
 bool IOJob::mkdir( const char *_url, int _mode )
