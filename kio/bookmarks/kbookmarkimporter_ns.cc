@@ -35,6 +35,29 @@
 #include <sys/stat.h>
 #include <assert.h>
 
+void KNSBookmarkImporterImpl::parse()
+{
+    KNSBookmarkImporter importer(m_fileName);
+    connect(&importer, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
+            this,      SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ));
+    connect(&importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
+            this,      SIGNAL( newFolder( const QString &, bool, const QString & ) ));
+    connect(&importer, SIGNAL( newSeparator() ),
+            this,      SIGNAL( newSeparator() ) );
+    connect(&importer, SIGNAL( endFolder() ),
+            this,      SIGNAL( endFolder() ) );
+    importer.parseNSBookmarks(m_utf8);
+}
+
+QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
+{
+    return m_utf8 ? KNSBookmarkImporter::netscapeBookmarksFile(forSaving)
+                  : KNSBookmarkImporter::mozillaBookmarksFile(forSaving);
+}
+
+////////////////////////////////////////////////////////////////
+
+
 void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
 {
     QFile f(m_fileName);
@@ -115,16 +138,23 @@ QString KNSBookmarkImporter::mozillaBookmarksFile( bool forSaving )
                                              i18n("*.html|HTML files (*.html)") );
 }
 
-// for compat
+
+////////////////////////////////////////////////////////////////
+//                   compat only
+////////////////////////////////////////////////////////////////
+
 void KNSBookmarkExporter::write(bool utf8) {
    KNSBookmarkExporterImpl exporter(m_pManager, m_fileName);
    exporter.write(utf8, m_pManager->root());
 }
 
-// for compat
 void KNSBookmarkExporter::writeFolder(QTextStream &/*stream*/, KBookmarkGroup /*gp*/) {
    // TODO - requires a d pointer workaround hack?
 }
+
+
+////////////////////////////////////////////////////////////////
+
 
 void KNSBookmarkExporterImpl::write(bool utf8, KBookmarkGroup parent) {
    if (QFile::exists(m_fileName)) {

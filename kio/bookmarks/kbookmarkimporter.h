@@ -24,11 +24,6 @@
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
-// for SC
-
-#include "kbookmarkimporter_ns.h"
-#include "kbookmarkimporter_kde1.h"
-
 /**
  * A class for importing NS bookmarks
  * KEditBookmarks uses it to insert bookmarks into its DOM tree,
@@ -44,7 +39,7 @@ public:
     void setFilename(const QString &filename) { m_fileName = filename; }
 
     virtual void parse() = 0;
-    virtual const QString findDefaultLocation(bool forSaving = false) const;
+    virtual QString findDefaultLocation(bool forSaving = false) const = 0;
 
 signals:
     /**
@@ -74,5 +69,10 @@ protected:
     QString m_fileName;
 
 };
+
+// for SC
+
+#include "kbookmarkimporter_ns.h"
+#include "kbookmarkimporter_kde1.h"
 
 #endif

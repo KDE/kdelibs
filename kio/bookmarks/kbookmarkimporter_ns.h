@@ -24,12 +24,14 @@
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
+#include "kbookmarkimporter.h"
 #include "kbookmarkexporter.h"
 
 /**
  * A class for importing NS bookmarks
  * KEditBookmarks uses it to insert bookmarks into its DOM tree,
  * and KActionMenu uses it to create actions directly.
+ * @deprecated
  */
 class KNSBookmarkImporter : public QObject
 {
@@ -43,42 +45,28 @@ public:
     // go for it. Set utf8 to true for Mozilla, false for Netscape.
     void parseNSBookmarks( bool utf8 );
 
-    // Usual place for NS bookmarks
     static QString netscapeBookmarksFile( bool forSaving=false );
-    // Usual place for Mozilla bookmarks
     static QString mozillaBookmarksFile( bool forSaving=false );
 
 signals:
-
-    /**
-     * Notify about a new bookmark
-     * Use "html" for the icon
-     */
     void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-
-    /**
-     * Notify about a new folder
-     * Use "bookmark_folder" for the icon
-     */
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
-
-    /**
-     * Notify about a new separator
-     */
     void newSeparator();
-
-    /**
-     * Tell the outside world that we're going down
-     * one menu
-     */
     void endFolder();
 
 protected:
     QString m_fileName;
 };
 
-// Note - KNSBookmarkImporter can be used to get the path to the filename
-
+class KNSBookmarkImporterImpl : public KBookmarkImporterBase
+{
+public:
+    void setUtf8(bool utf8) { m_utf8 = utf8; }
+    virtual void parse();
+    virtual QString findDefaultLocation(bool forSaving = false) const;
+private:
+    bool m_utf8;
+};
 
 /**
  * A class that exports all the current bookmarks to Netscape/Mozilla bookmarks
