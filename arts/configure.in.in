@@ -16,7 +16,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   [
     AC_CHECK_LIB(audiofile,afOpenFile,[
       dnl LDFLAGS in case it's in KDEDIR/lib
-      LIBAUDIOFILE="-laudiofile"
+      LIBAUDIOFILE="$LDFLAGS -laudiofile"
       AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
         [Define if you have libaudiofile (required for playing wavs with aRts)])
       arts_audiolib_found=yes
