@@ -188,8 +188,7 @@ void HTMLImageElementImpl::attach()
     //kdDebug( 6030 ) << "HTMLImageImpl::attach" << endl;
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     khtml::RenderObject *r = _parent->renderer();
-    if(r)
-    {
+    if(r && m_style->display() != NONE) {
         RenderImage *renderImage = new RenderImage(this);
         renderImage->setStyle(m_style);
         renderImage->setAlt(alt);
