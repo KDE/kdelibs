@@ -1006,7 +1006,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
  end:
 
     if( lBreak == start && !lBreak.obj->isBR() ) {
-	kdDebug( 6041 ) << "lBreak == start, adding...." << endl;
+	//kdDebug( 6041 ) << "lBreak == start, adding...." << endl;
 	// we just add as much as possible
 	if ( m_pre ) {
 	    if(pos != 0) {
