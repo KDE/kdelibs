@@ -84,6 +84,8 @@
 #>8	string		RMID		audio/x-midi?
 # Microsoft WAVE format (*.wav)
 >8	string		WAVE		audio/x-wav
+>>20	leshort		80		audio/mpeg
+>>20	leshort		85		audio/x-mp3
 # Corel Draw Picture
 #>8	string		CDRA		Corel Draw Picture
 # AVI == Audio Video Interleave
