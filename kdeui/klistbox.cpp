@@ -106,6 +106,10 @@ void KListBox::slotSettingsChanged(int category)
 
 void KListBox::slotAutoSelect()
 {
+  // check that the item still exists
+  if( index( m_pCurrentItem ) == -1 )
+    return;
+
   //Give this widget the keyboard focus.
   if( !hasFocus() )
     setFocus();

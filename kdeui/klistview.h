@@ -214,6 +214,13 @@ public:
    */
   SelectionModeExt selectionModeExt () const;
 
+  /**
+   * Returns the index of @param item within the item tree or -1 if 
+   * @param item doesn't exist in this list view. This function takes 
+   * all items into account not only the visible ones. 
+   */
+  int index( const QListViewItem *item ) const;
+
 signals:
 
   /**
