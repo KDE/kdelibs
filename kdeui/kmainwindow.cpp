@@ -404,14 +404,14 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     entryList.clear();
 
     if (internalStatusBar()) {
-        if (internalStatusBar()->isVisible())
+        if ( !internalStatusBar()->isHidden() )
             config->writeEntry(QString::fromLatin1("StatusBar"), QString::fromLatin1("Enabled"));
         else
             config->writeEntry(QString::fromLatin1("StatusBar"), QString::fromLatin1("Disabled"));
     }
 
     if (internalMenuBar()) {
-        if (internalMenuBar()->isVisible())
+        if ( !internalMenuBar()->isHidden() )
             entryList.append("Enabled");
         else
             entryList.append("Disabled");
@@ -425,7 +425,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     QListIterator<KToolBar> it( toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
         ++it;
-        if ( !toolbar->testWState( Qt::WState_ForceHide ) )
+        if ( !toolbar->isHidden() )
             entryList.append("Enabled");
         else
             entryList.append("Disabled");
