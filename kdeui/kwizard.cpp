@@ -24,6 +24,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
+#include <kstdguiitem.h>
 
 #include "kwizard.h"
 
@@ -34,21 +35,11 @@ KWizard::KWizard( QWidget *parent, const char *name, bool modal, WFlags f )
 
   if ( useIcons )
   {
-    QString nextIcon, backIcon;
+    KGuiItem back = KStdGuiItem::back( KStdGuiItem::UseRTL );
+    KGuiItem forward = KStdGuiItem::forward( KStdGuiItem::UseRTL );
 
-    if ( QApplication::reverseLayout() )
-    {
-      backIcon = "forward";
-      nextIcon = "back";
-    }
-    else
-    {
-      backIcon = "back";
-      nextIcon = "forward";
-    }
-
-    backButton()->setIconSet( SmallIconSet( backIcon ) );
-    nextButton()->setIconSet( SmallIconSet( nextIcon ) );
+    backButton()->setIconSet( back.iconSet() );
+    nextButton()->setIconSet( forward.iconSet() );
 
     finishButton()->setIconSet( SmallIconSet( "apply" ) );
     cancelButton()->setIconSet( SmallIconSet( "button_cancel" ) );
