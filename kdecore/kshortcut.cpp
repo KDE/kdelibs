@@ -496,7 +496,7 @@ uint KShortcut::count() const
 
 const KKeySequence& KShortcut::seq( uint i ) const
 {
-	return m_rgseq[i];
+	return (i < m_nSeqs) ? m_rgseq[i] : KKeySequence::null();
 }
 
 int KShortcut::keyCodeQt() const
