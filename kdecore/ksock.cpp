@@ -202,7 +202,7 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
   sock = ks.fd();
   if (sock >= 0)
     {
-      KSocketAddress *sa = ks.localAddress();
+      const KSocketAddress *sa = ks.localAddress();
       if (sa != NULL)
 	domain = sa->family();
     }
@@ -366,7 +366,7 @@ bool KServerSocket::bindAndListen()
 	return false;
     }
 
-  KSocketAddress *sa = d->ks->localAddress();
+  const KSocketAddress *sa = d->ks->localAddress();
   if (sa != NULL)
     domain = sa->family();
 
@@ -382,7 +382,7 @@ unsigned short int KServerSocket::port()
 {
   if (d == NULL || d->ks == NULL || sock == -1)
     return 0;
-  KSocketAddress *sa = d->ks->localAddress();
+  const KSocketAddress *sa = d->ks->localAddress();
   if (sa == NULL)
     return 0;
 
@@ -406,7 +406,7 @@ unsigned long KServerSocket::ipv4_addr()
 {
   if (d == NULL || d->ks == NULL || sock == -1)
     return 0;
-  KSocketAddress *sa = d->ks->localAddress();
+  const KSocketAddress *sa = d->ks->localAddress();
   
   const sockaddr_in *sin = (sockaddr_in*)sa->address();
 
