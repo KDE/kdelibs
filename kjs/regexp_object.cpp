@@ -85,7 +85,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
     // Get values from the last time (in case of /g)
     Value lastIndex = thisObj.get(exec,"lastIndex");
-    int i = lastIndex.isNull() ? 0 : lastIndex.toInt32(exec);
+    int i = lastIndex.isValid() ? lastIndex.toInt32(exec) : 0;
     bool globalFlag = thisObj.get(exec,"global").toBoolean(exec);
     if (!globalFlag)
       i = 0;

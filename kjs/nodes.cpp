@@ -3143,7 +3143,7 @@ Completion SourceElementsNode::execute(ExecState *exec)
 
   // The spec says to return c2 here, but it seems that mozilla returns c1 if
   // c2 doesn't have a value
-  if (c2.complType() == Normal && c2.value().isNull())
+  if (c2.complType() == Normal && !c2.value().isValid())
     return c1;
   else
     return c2;

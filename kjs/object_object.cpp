@@ -110,9 +110,8 @@ Object ObjectObjectImp::construct(ExecState *exec, const List &args)
 
   Value arg = *(args.begin());
   Object obj = Object::dynamicCast(arg);
-  if (!obj.isNull()) {
+  if (obj.isValid())
     return obj;
-  }
 
   switch (arg.type()) {
   case StringType:

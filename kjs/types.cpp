@@ -75,7 +75,7 @@ Reference& Reference::operator=(const Reference &v)
 
 Reference Reference::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != ReferenceType)
+  if (!v.isValid() || v.type() != ReferenceType)
     return 0;
 
   return static_cast<ReferenceImp*>(v.imp());
@@ -188,7 +188,7 @@ List& List::operator=(const List &v)
 
 List List::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != ListType)
+  if (!v.isValid() || v.type() != ListType)
     return 0;
 
   return static_cast<ListImp*>(v.imp());
@@ -310,7 +310,7 @@ Completion& Completion::operator=(const Completion &v)
 
 Completion Completion::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != CompletionType)
+  if (!v.isValid() || v.type() != CompletionType)
     return 0;
 
   return static_cast<CompletionImp*>(v.imp());
@@ -333,5 +333,5 @@ UString Completion::target() const
 
 bool Completion::isValueCompletion() const
 {
-  return !value().isNull();
+  return value().isValid();
 }

@@ -272,7 +272,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
         UString rstr;
         // Prepare replacement
-        if ( o1.isNull() )
+        if (!o1.isValid())
         {
           rstr = u3;
           bool ok;

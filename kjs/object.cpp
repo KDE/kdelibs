@@ -76,7 +76,7 @@ bool Object::inherits(const ClassInfo *cinfo) const
 
 Object Object::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != ObjectType)
+  if (!v.isValid() || v.type() != ObjectType)
     return Object(0);
 
   return Object(static_cast<ObjectImp*>(v.imp()));
@@ -297,7 +297,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
   if (propertyName == "__proto__") {
     Object proto = Object::dynamicCast(prototype());
     // non-standard netscape extension
-    if (proto.isNull())
+    if (!proto.isValid())
       return Null();
     else
       return proto;
@@ -308,7 +308,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
     return Value(imp);
 
   Object proto = Object::dynamicCast(prototype());
-  if (proto.isNull())
+  if (!proto.isValid())
     return Undefined();
 
   return proto.get(exec,propertyName);
@@ -327,7 +327,7 @@ ValueImp* ObjectImp::getDirect(const UString& propertyName) const
 void ObjectImp::put(ExecState *exec, const UString &propertyName,
                      const Value &value, int attr)
 {
-  assert(!value.isNull());
+  assert(value.isValid());
   assert(value.type() != ReferenceType);
   assert(value.type() != CompletionType);
   assert(value.type() != ListType);
@@ -384,7 +384,7 @@ bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName) const
 
   // Look in the prototype
   Object proto = Object::dynamicCast(prototype());
-  return !proto.isNull() && proto.hasProperty(exec,propertyName);
+  return proto.isValid() && proto.hasProperty(exec, propertyName);
 }
 
 // ECMA 8.6.2.5

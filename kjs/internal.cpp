@@ -237,7 +237,7 @@ Value Reference2::getValue(ExecState *exec) const
   if (!isValid())
     return base();
 
-  if (bs.isNull() || bs.type() == NullType) {
+  if (!bs.isValid() || bs.type() == NullType) {
     UString m = I18N_NOOP("Can't find variable: ") + propertyName();
     Object err = Error::create(exec, ReferenceError, m.ascii());
     exec->setException(err);
@@ -570,7 +570,7 @@ void ListImp::removeLast()
 
 void ListImp::remove(const Value &obj)
 {
-  if (obj.isNull())
+  if (!obj.isValid())
     return;
   ListNode *n = hook->next;
   while (n != hook) {
@@ -1036,7 +1036,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   Object globalObj = globalObject();
   Object thisObj = globalObject();
 
-  if (!thisV.isNull()) {
+  if (thisV.isValid()) {
     // "this" must be an object... use same rules as Function.prototype.apply()
     if (thisV.isA(NullType) || thisV.isA(UndefinedType))
       thisObj = globalObject();
@@ -1136,7 +1136,7 @@ double KJS::roundValue(ExecState *exec, const Value &v)
 #include <stdio.h>
 void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
 {
-  if (o.isNull())
+  if (!o.isValid())
     fprintf(stderr, "KJS: %s: (null)", s);
   else {
     Value v = o;
@@ -1196,7 +1196,7 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
       fprintf(stderr, ", line %d\n",lineno);
     else
       fprintf(stderr, "\n");
-    if (!o.isNull())
+    if (o.isValid())
       if (o.isA(ReferenceType)) {
         fprintf(stderr, "KJS: Was property '%s'\n", o.getPropertyName(exec).ascii());
         printInfo(exec,"of", o.getBase(exec));

@@ -83,7 +83,7 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
   switch (id) {
   case ToString: {
     // ### also make this work for internal functions
-    if (thisObj.isNull() || !thisObj.inherits(&InternalFunctionImp::info)) {
+    if (!thisObj.isValid() || !thisObj.inherits(&InternalFunctionImp::info)) {
 #ifndef NDEBUG
       fprintf(stderr,"attempted toString() call on null or non-function object\n");
 #endif

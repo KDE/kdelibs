@@ -145,7 +145,7 @@ Value ValueImp::getValue(ExecState *exec) const
 
   Value o = getBase(exec);
 
-  if (o.isNull() || o.type() == NullType) {
+  if (!o.isValid() || o.type() == NullType) {
     UString m = I18N_NOOP("Can't find variable: ") + getPropertyName(exec);
     Object err = Error::create(exec, ReferenceError, m.ascii());
     exec->setException(err);
@@ -242,7 +242,7 @@ bool Value::isValid() const
 
 bool Value::isNull() const
 {
-  return (rep == 0);
+  return !isValid();
 }
 
 ValueImp *Value::imp() const
@@ -354,7 +354,7 @@ Undefined& Undefined::operator=(const Undefined &v)
 
 Undefined Undefined::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != UndefinedType)
+  if (!v.isValid() || v.type() != UndefinedType)
     return Undefined(0);
 
   return Undefined();
@@ -386,7 +386,7 @@ Null& Null::operator=(const Null &v)
 
 Null Null::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != NullType)
+  if (!v.isValid() || v.type() != NullType)
     return Null(0);
 
   return Null();
@@ -426,7 +426,7 @@ bool Boolean::value() const
 
 Boolean Boolean::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != BooleanType)
+  if (!v.isValid() || v.type() != BooleanType)
     return static_cast<BooleanImp*>(0);
 
   return static_cast<BooleanImp*>(v.imp());
@@ -462,7 +462,7 @@ UString String::value() const
 
 String String::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != StringType)
+  if (!v.isValid() || v.type() != StringType)
     return String(0);
 
   return String(static_cast<StringImp*>(v.imp()));
@@ -503,7 +503,7 @@ Number& Number::operator=(const Number &v)
 
 Number Number::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != NumberType)
+  if (!v.isValid() || v.type() != NumberType)
     return Number((NumberImp*)0);
 
   return Number(static_cast<NumberImp*>(v.imp()));

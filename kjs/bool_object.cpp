@@ -85,7 +85,7 @@ Value BooleanProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*
   // execute "toString()" or "valueOf()", respectively
 
   Value v = thisObj.internalValue();
-  assert(!v.isNull());
+  assert(v.isValid());
 
   if (id == ToString)
     return String(v.toString(exec));

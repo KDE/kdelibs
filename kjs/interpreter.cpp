@@ -370,7 +370,7 @@ bool ExecState::hadException() const
 {
   if (terminate_request)
       rep->exception = Error::create((ExecState*)this);
-  return !rep->exception.isNull();
+  return rep->exception.isValid();
 }
 
 ExecState::ExecState(Interpreter *interp, ContextImp *con)
