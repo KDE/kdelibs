@@ -42,6 +42,8 @@
 class KURLComboBox : public KComboBox
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList urls READ urls WRITE setURLs DESIGNABLE true)
+    Q_PROPERTY(int maxItems READ maxItems WRITE setMaxItems DESIGNABLE true)
 
 public:
     enum Mode { Files = -1, Directories = 1, Both = 0 };
