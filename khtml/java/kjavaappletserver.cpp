@@ -1,12 +1,15 @@
-#include <stdlib.h>
 
+#include "kjavaappletserver.h"
 #include "kjavaappletcontext.h"
 #include "kjavaprocess.h"
-#include "kjavaappletserver.moc"
 
 #include <kconfig.h>
 #include <kstddirs.h>
 #include <kdebug.h>
+
+#include <qtimer.h>
+
+#include <stdlib.h>
 
 #define CREATE_CONTEXT   (char)1
 #define DESTROY_CONTEXT  (char)2
@@ -48,13 +51,16 @@ KJavaAppletServer::KJavaAppletServer()
 
 KJavaAppletServer::~KJavaAppletServer()
 {
-   delete process;
-   delete d;
+    self->quit();
+
+    delete process;
+    delete d;
 }
 
 KJavaAppletServer* KJavaAppletServer::allocateJavaServer()
 {
-   if( self == 0 ) {
+   if( self == 0 )
+   {
       self = new KJavaAppletServer();
       self->d->counter = 0;
    }
@@ -65,14 +71,24 @@ KJavaAppletServer* KJavaAppletServer::allocateJavaServer()
 
 void KJavaAppletServer::freeJavaServer()
 {
-   self->d->counter--;
+    self->d->counter--;
 
-   if( self->d->counter == 0 )
-   {
-      self->quit();
-      delete self;
-      self = 0;
-   }
+    if( self->d->counter == 0 )
+    {
+        //instead of immediately quitting here, set a timer to kill us
+        //if there are still no servers- give us one minute
+        //this is to prevent repeated loading and unloading of the jvm
+        QTimer::singleShot( 60*1000, self, SLOT( checkShutdown() ) );
+    }
+}
+
+void KJavaAppletServer::checkShutdown()
+{
+    if( self->d->counter == 0 )
+    {
+        delete self;
+        self = 0;
+    }
 }
 
 void KJavaAppletServer::setupJava( KJavaProcess *p )
@@ -338,3 +354,5 @@ void KJavaAppletServer::received( const QByteArray& qb )
 
     emit receivedCommand( cmd, args );
 }
+
+#include "kjavaappletserver.moc"

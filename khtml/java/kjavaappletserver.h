@@ -96,6 +96,7 @@ protected:
 protected slots:
     void received( const QString &s );
     void received( const QByteArray& qb );
+    void checkShutdown();
 
 private:
     void setupJava( KJavaProcess *p );
