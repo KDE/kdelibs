@@ -183,7 +183,6 @@ void SlaveBase::dispatchLoop()
             QString app_socket;
             QDataStream stream( data, IO_ReadOnly);
             stream >> app_socket;
-            kdDebug(7019) << "slavewrapper: Connecting to new app (" << app_socket << ")." << endl;
             appconn->send( MSG_SLAVE_ACK );
             disconnectSlave();
             mConnectedToApp = true;
@@ -199,7 +198,6 @@ void SlaveBase::dispatchLoop()
           // When the app exits, should the slave be put back in the pool ?
           if (mConnectedToApp)
           {
-            kdDebug(7019) << "slavewrapper: Communication with app lost. Returning to slave pool." << endl;
             disconnectSlave();
             mConnectedToApp = false;
             closeConnection();
@@ -207,7 +205,6 @@ void SlaveBase::dispatchLoop()
           }
           else
           {
-            kdDebug(7019) << "slavewrapper: Communication with pool lost. Exiting." << endl;
             exit(0);
           }
         }
@@ -215,7 +212,7 @@ void SlaveBase::dispatchLoop()
     }
     else if (retval == -1) // error
     {
-      kdDebug(7019) << "slavewrapper: select returned error "
+      kdDebug(7019) << "dispatchLoop(): select returned error "
                     << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
                     << " (" << errno << ")" << endl;
        exit(0);
@@ -236,8 +233,6 @@ void SlaveBase::disconnectSlave()
 
 void SlaveBase::setMetaData(const QString &key, const QString &value)
 {
-   kdDebug(7019) << "(" << getpid() << ") SlaveBase::setMetaData: Key= "
-                 << key << ", Value= " << value << endl;
    mOutgoingMetaData.replace(key, value);
 }
 
@@ -266,9 +261,6 @@ KConfigBase *SlaveBase::config()
 
 void SlaveBase::sendMetaData()
 {
-   kdDebug(7019) << "(" << getpid() << ") SlaveBase::sendMetaData"
-                 << endl;
-
    KIO_DATA << mOutgoingMetaData;
 
    m_pConnection->send( INF_META_DATA, data );
@@ -278,7 +270,6 @@ void SlaveBase::sendMetaData()
 
 void SlaveBase::data( const QByteArray &data )
 {
-    kdDebug(7019) << "(" << getpid() << ") SlaveBase::data" << endl;
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
     m_pConnection->send( MSG_DATA, data );
@@ -286,7 +277,6 @@ void SlaveBase::data( const QByteArray &data )
 
 void SlaveBase::dataReq( )
 {
-    kdDebug(7019) << "(" << getpid() << ") SlaveBase::dataReq" << endl;
 /*
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
@@ -312,7 +302,6 @@ void SlaveBase::connected()
 
 void SlaveBase::finished()
 {
-    kdDebug(7019) << "(" << getpid() << ") SlaveBase::finished" << endl;
     mIncomingMetaData.clear(); // Clear meta data
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
@@ -377,7 +366,7 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  kdDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType" << endl;
+  kdDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'" << endl;
   int cmd;
   do
   {
@@ -411,7 +400,6 @@ void SlaveBase::mimeType( const QString &_type)
   // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which
   // case the slave had been put on hold.) [or special,
   // for http posts]. Something else is basically an error
-  kdDebug(7019) << "(" << getpid() << ") mimetype: reading " << cmd << endl;
   ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
 }
 
@@ -442,7 +430,6 @@ bool SlaveBase::requestNetwork(const QString& host)
         bool status;
         QDataStream stream( data, IO_ReadOnly );
         stream >> status;
-        kdDebug(7019) << "got " << status << endl;
         return status;
     } else
         return false;
@@ -541,9 +528,8 @@ void SlaveBase::sigpipe_handler (int)
     kdDebug(7019) << "SIGPIPE" << endl;
 }
 
-void SlaveBase::setHost(QString const &host, int, QString const &, QString const &)
+void SlaveBase::setHost(QString const &, int, QString const &, QString const &)
 {
-    kdDebug( 7019 ) << "setHost( host = " << host << ")" << endl;
 }
 
 void SlaveBase::openConnection(void)
@@ -813,7 +799,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         special( data );
         break;
     case CMD_META_DATA:
-        kdDebug(7019) << "(" << getpid() << ") Incoming meta-data..." << endl;
+        //kdDebug(7019) << "(" << getpid() << ") Incoming meta-data..." << endl;
         stream >> mIncomingMetaData;
         break;
     case CMD_SUBURL:
@@ -859,7 +845,7 @@ bool SlaveBase::pingCacheDaemon() const
             kdDebug(7019) << "Cannot start a new deamon!!" << endl;
             return false;
         }
-        kdDebug(7019) << "Sucessfully started new deamon!!" << endl;
+        kdDebug(7019) << "Sucessfully started new cache deamon!!" << endl;
     }
     return true;
 }
