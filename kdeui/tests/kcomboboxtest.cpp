@@ -20,26 +20,20 @@ int main ( int argc, char **argv)
     w->resize( 500, 100 );
 
     // All the other widgets
-    KComboBox *rwc = new KComboBox( true, w, "rwcombobox" );
+    KComboBox *rwc = new KComboBox( true, w, "rwcombobox", true );
     QLabel* lblrw = new QLabel( rwc, i18n("&Editable ComboBox"), w, "rwcombolabel" );
-    KComboBox *soc = new KComboBox( w, "socombobox" );
+    KComboBox *soc = new KComboBox( w, "socombobox", true );
     QLabel* lblso = new QLabel( soc, i18n("&Select-Only ComboBox"), w, "socombolabel" );
     QPushButton * push = new QPushButton( "E&xit", w );
 
     // Set up the editable combo box.
-    rwc->enableCompletion();
     rwc->setEnableMultipleInsertion( false );
-    rwc->autoHighlightItems( true );
     QObject::connect( rwc, SIGNAL( returnPressed( const QString& ) ), rwc->completionObject(), SLOT( addItem( const QString& ) ) );
-    QObject::connect( rwc, SIGNAL( clicked( int ) ), rwc, SLOT( setSelectedItem( int ) ) );
+
 
     // Set up select-only combo box.
-    soc->enableCompletion();
     soc->setCompletionMode( KGlobal::CompletionAuto );
     soc->setEnableMultipleInsertion( false );
-    soc->autoHighlightItems();
-    soc->autoSelectItems();
-    QObject::connect( soc, SIGNAL( clicked( int ) ), soc, SLOT( setSelectedItem( int ) ) );
     // Popuplate the select-only list box
     QStringList list;
     list <<i18n("Stone") <<i18n("Tree") <<i18n("Peables") <<i18n("Ocean") <<i18n("Sand") <<i18n("Chips") <<i18n("Computer") <<i18n("Mankind");
