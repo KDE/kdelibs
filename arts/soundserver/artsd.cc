@@ -168,7 +168,8 @@ int main(int argc, char **argv)
 
 	if(!AudioSubSystem::the()->check())
 	{
-		cerr << "Can't open sound device -> exit" << endl;
+		cerr << "Error while initializing the sound driver: " << endl;
+		cerr << AudioSubSystem::the()->error() << endl;
 		exit(1);
 	}
 
