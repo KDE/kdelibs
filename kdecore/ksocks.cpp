@@ -278,46 +278,62 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
                                               ++it) {
          switch(it.key()) {
          case S_SOCKSinit:
-           (void *)F_SOCKSinit = _socksLib->symbol(it.data().latin1());
+           F_SOCKSinit = (int (*)(char *))
+                         _socksLib->symbol(it.data().latin1());
           break;
          case S_connect:
-           (void *)F_connect = _socksLib->symbol(it.data().latin1());
+           F_connect = (int (*)(int, const struct sockaddr *, ksocklen_t))
+                       _socksLib->symbol(it.data().latin1());
           break;
          case S_read:
-           (void *)F_read = _socksLib->symbol(it.data().latin1());
+           F_read = (signed long int (*)(int, void *, unsigned long int))
+                    _socksLib->symbol(it.data().latin1());
           break;
          case S_write:
-           (void *)F_write = _socksLib->symbol(it.data().latin1());
+           F_write = (signed long int (*)(int, const void *, unsigned long int))
+                     _socksLib->symbol(it.data().latin1());
           break;
          case S_recvfrom:
-           (void *)F_recvfrom = _socksLib->symbol(it.data().latin1());
+           F_recvfrom = (int (*)(int, void *, unsigned long int, int, 
+                                 struct sockaddr *, ksocklen_t *))
+                        _socksLib->symbol(it.data().latin1());
           break;
          case S_sendto:
-           (void *)F_sendto = _socksLib->symbol(it.data().latin1());
+           F_sendto = (int (*)(int, const void *, unsigned long int, int,
+                               const struct sockaddr *, ksocklen_t))
+                      _socksLib->symbol(it.data().latin1());
           break;
          case S_recv:
-           (void *)F_recv = _socksLib->symbol(it.data().latin1());
+           F_recv = (int (*)(int, void *, unsigned long int, int))
+                    _socksLib->symbol(it.data().latin1());
           break;
          case S_send:
-           (void *)F_send = _socksLib->symbol(it.data().latin1());
+           F_send = (int (*)(int, const void *, unsigned long int, int))
+                    _socksLib->symbol(it.data().latin1());
           break;
          case S_getsockname:
-           (void *)F_getsockname = _socksLib->symbol(it.data().latin1());
+           F_getsockname = (int (*)(int, struct sockaddr *, ksocklen_t *))
+                           _socksLib->symbol(it.data().latin1());
           break;
          case S_getpeername:
-           (void *)F_getpeername = _socksLib->symbol(it.data().latin1());
+           F_getpeername = (int (*)(int, struct sockaddr *, ksocklen_t *))
+                           _socksLib->symbol(it.data().latin1());
           break;
          case S_accept:
-           (void *)F_accept = _socksLib->symbol(it.data().latin1());
+           F_accept = (int (*)(int, struct sockaddr *, ksocklen_t *))
+                      _socksLib->symbol(it.data().latin1());
           break;
          case S_select:
-           (void *)F_select = _socksLib->symbol(it.data().latin1());
+           F_select = (int (*)(int, fd_set *, fd_set *, fd_set *, struct timeval *))
+                      _socksLib->symbol(it.data().latin1());
           break;
          case S_listen:
-           (void *)F_listen = _socksLib->symbol(it.data().latin1());
+           F_listen = (int (*)(int, int))
+                      _socksLib->symbol(it.data().latin1());
           break;
          case S_bind:
-           (void *)F_bind = _socksLib->symbol(it.data().latin1());
+           F_bind = (int (*)(int, struct sockaddr *, ksocklen_t))
+                    _socksLib->symbol(it.data().latin1());
           break;
          default:
           kdDebug() << "KSocks got a symbol it doesn't know about!" << endl;
