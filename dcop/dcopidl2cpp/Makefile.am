@@ -12,3 +12,9 @@ noinst_HEADERS = main.h
 dcopidl2cpp_LDADD = $(LIB_QT)
 dcopidl2cpp_LDFLAGS = $(KDE_RPATH)
 
+dcopidl_output.kidl: ../dcopidl/dcopidl $(srcdir)/dcopidl_test.h
+	../dcopidl/dcopidl $(srcdir)/dcopidl_test.h > dcopidl_output.kidl
+
+check-local: dcopidl_output.kidl
+	./dcopidl2cpp dcopidl_output.kidl
+	md5sum dcopidl_output_*
