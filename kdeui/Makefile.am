@@ -55,7 +55,8 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kpixmapio.h \
 		kedittoolbar.h kdocktabctl.h kdockwidget.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
-		kpanelapplet.h kdcopactionproxy.h kcolorcombo.h
+		kpanelapplet.h kdcopactionproxy.h kcolorcombo.h \
+		kpanelextension.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -89,10 +90,10 @@ libkdeui_la_SOURCES = \
 		kdocktabctl.cpp kdockwidget.cpp kdockwidget_private.cpp \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
-		kcolorcombo.cpp
+		kcolorcombo.cpp kpanelextension.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h \
-		kdialogbase_priv.h kaboutdialog_private.h 
+		kdialogbase_priv.h kaboutdialog_private.h
 
 libkdeui_la_METASOURCES = AUTO
 
