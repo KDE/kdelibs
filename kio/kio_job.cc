@@ -414,15 +414,12 @@ void KIOJob::slotFinished()
 
   m_id = 0;
   
-  cerr << "kiojob: slotFinished1  " << m_pSlave->pid() << endl;
   // Put the slave back to the pool
   if ( m_pSlave )
   {  
-    cerr << "kiojob: slotFinished2  " << m_pSlave->pid() << endl;
     // Delete the notifier NOW. One never know what happens ....
     if ( m_pNotifier )
     {
-      cerr << "kiojob: slotFinished3  " << m_pSlave->pid() << endl;
       m_pNotifier->setEnabled( false );
       delete m_pNotifier;
       m_pNotifier = 0L;
@@ -667,10 +664,8 @@ void KIOJob::slotDispatch( int )
 {
   if ( !dispatch() )
   {    
-    cerr << "slotDispatch0  " << m_pSlave->pid() << endl;
     if ( m_pNotifier )
     {
-      cerr << "slotDispatch1  " << m_pSlave->pid() << endl;
       m_pNotifier->setEnabled( false );
       delete m_pNotifier;
       m_pNotifier = 0L;
@@ -679,7 +674,6 @@ void KIOJob::slotDispatch( int )
       // putback in the pool.
       if ( m_pSlave )
       {    
-	cerr << "slotDispatch2  " << m_pSlave->pid() << endl;
 	delete m_pSlave;
 	m_pSlave = 0L;
       }
