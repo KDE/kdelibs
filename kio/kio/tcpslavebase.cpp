@@ -302,7 +302,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
                                         "longer be encrypted.\nThis "
                                         "means that a third party could "
                                         "observe your data in transit."),
-                                   i18n("Security information"),
+                                   i18n("Security Information"),
                                    i18n("Continue Loading") );
           if ( result == KMessageBox::Cancel ) {
              d->userAborted = true;
@@ -1006,7 +1006,7 @@ int TCPSlaveBase::verifyCertificate()
                                                         "will be able to "
                                                         "easily observe your "
                                                         "data in transit."),
-                                                   i18n("Security information"),
+                                                   i18n("Security Information"),
                                                    i18n("Display SSL "
                                                         "Information"),
                                                    i18n("Continue") );

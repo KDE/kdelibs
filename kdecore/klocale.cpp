@@ -174,7 +174,7 @@ void KLocale::doBindInit()
       QString pf = translate_priv
 	( I18N_NOOP("_: Dear translator, please do not translate this string "
 		    "in any form, but pick the _right_ value out of "
-		    "NoPlural/TwoForms/French.... If not sure what to do mail "
+		    "NoPlural/TwoForms/French... If not sure what to do mail "
 		    "thd@kde.org and coolo@kde.org, they will tell you. "
 		    "Better leave that out if unsure, the programs will "
 		    "crash!!\nDefinition of PluralForm - to be set by the "

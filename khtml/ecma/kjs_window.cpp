@@ -1257,7 +1257,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       // has more than one entry in the history (NS does that too).
       History history(part);
       if ( history.get( exec, "length" ).toInt32(exec) <= 1 ||
-           KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window ?"), i18n("Confirmation required") ) == KMessageBox::Yes )
+           KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation required") ) == KMessageBox::Yes )
         (const_cast<Window*>(window))->scheduleClose();
     }
     else

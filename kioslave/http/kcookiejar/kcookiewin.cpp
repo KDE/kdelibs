@@ -233,7 +233,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
                               QWidget* parent, const char* name )
               :QGroupBox( parent, name )
 {
-    setTitle( i18n("Cookie details") );
+    setTitle( i18n("Cookie Details") );
     QGridLayout* grid = new QGridLayout( this, 9, 2,
                                          KDialog::spacingHint(),
                                          KDialog::marginHint() );

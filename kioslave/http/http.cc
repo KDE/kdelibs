@@ -3661,7 +3661,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
        totalSize ( 0 );
   }
   else
-    infoMessage( i18n( "Retrieving from %1 ..." ).arg( m_request.hostname ) );
+    infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.hostname ) );
 
   if (m_bCachedRead)
   {

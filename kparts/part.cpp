@@ -438,7 +438,7 @@ bool ReadWritePart::closeURL()
   if ( m_bModified && m_bReadWrite )
   {
     int res = KMessageBox::warningYesNoCancel( widget(),
-            i18n( "The document has been modified.\nDo you want to save it ?" ));
+            i18n( "The document has been modified.\nDo you want to save it?" ));
 
     switch(res) {
     case KMessageBox::Yes :

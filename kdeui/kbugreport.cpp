@@ -220,7 +220,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
     // Subject
     QHBoxLayout * hlay = new QHBoxLayout( lay );
-    tmpLabel = new QLabel( i18n("S&ubject : "), parent );
+    tmpLabel = new QLabel( i18n("S&ubject: "), parent );
     hlay->addWidget( tmpLabel );
     m_subject = new QLineEdit( parent );
     m_subject->setFocus();

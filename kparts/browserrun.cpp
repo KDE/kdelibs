@@ -205,7 +205,7 @@ bool BrowserRun::allowExecution( const QString &serviceType, const KURL &url )
     if ( !url.isLocalFile() ) // Don't permit to execute remote files
         return false;
 
-    return ( KMessageBox::warningYesNo( 0, i18n( "Do you really want to execute '%1' ? " ).arg( url.prettyURL() ) ) == KMessageBox::Yes );
+    return ( KMessageBox::warningYesNo( 0, i18n( "Do you really want to execute '%1'? " ).arg( url.prettyURL() ) ) == KMessageBox::Yes );
 }
 
 //static
@@ -217,7 +217,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     {
         question = offer ? i18n("Open '%1' using '%2'?").
                    arg( surl ).arg(offer->name())
-                   : i18n("Open '%1' ?").arg( surl );
+                   : i18n("Open '%1'?").arg( surl );
     } else {
         question = offer ? i18n("Open '%1' (%2) using '%3'?").
                    arg( surl ).arg(suggestedFilename).arg(offer->name())

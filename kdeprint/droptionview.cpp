@@ -305,7 +305,7 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	m_stack->addWidget(w,0);	// empty widget
 
 	m_stack->raiseWidget(w);
-	setTitle(i18n("No option selected"));
+	setTitle(i18n("No Option Selected"));
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 10);
 	main_->addSpacing(10);
@@ -338,7 +338,7 @@ void DrOptionView::slotItemSelected(QListViewItem *i)
 			enabled = ((m_item->drItem()->get("fixed") != "1") || m_allowfixed);
 		}
 		else
-			setTitle(i18n("No option selected"));
+			setTitle(i18n("No Option Selected"));
 		m_stack->raiseWidget(w);
 		w->setEnabled(enabled);
 		m_block = false;
