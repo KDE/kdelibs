@@ -2500,10 +2500,12 @@ bool HTTPProtocol::readHeader()
         // 303 See Other
         if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
         {
+#if 0
            // Reset the POST buffer to avoid a double submit 
            // on redirection
            if (m_request.method == HTTP_POST)
               m_bufPOST.resize(0);
+#endif
               
            // NOTE: This is wrong according to RFC 2616.  However,
            // because most other existing user agent implementations
@@ -3298,17 +3300,20 @@ bool HTTPProtocol::sendBody()
   // the data OR a re-connect is requested from ::readHeader because the
   // connection was lost for some reason.
   if ( !m_bufPOST.isNull() )
-    {
+  {
     kdDebug(7113) << "(" << m_pid << ") POST'ing saved data..." << endl;
+    
+    result = 0;    
     length = m_bufPOST.size();
-    result = 0;
   }
   else
   {
     kdDebug(7113) << "(" << m_pid << ") POST'ing live data..." << endl;
-    m_bufPOST.resize(0);
+
     QByteArray buffer;
     int old_size;
+    
+    m_bufPOST.resize(0);    
     do
     {
       dataReq(); // Request for data
@@ -3321,7 +3326,7 @@ bool HTTPProtocol::sendBody()
         memcpy( m_bufPOST.data()+ old_size, buffer.data(), buffer.size() );
         buffer.resize(0);
       }
-    } while ( result > 0 );
+    } while ( result > 0 );    
   }
 
   if ( result < 0 )
