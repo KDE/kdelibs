@@ -147,7 +147,7 @@ public:
 KListViewLineEdit::KListViewLineEdit(KListView *parent)
         : KLineEdit(parent->viewport()), item(0), col(0), p(parent)
 {
-	setFrame( false );
+        setFrame( false );
         hide();
 }
 
@@ -163,16 +163,29 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         QRect rect(p->itemRect(i));
         setText(item->text(c));
 
-        int fieldX = - p->contentsX();
+        int fieldX = rect.x() - 1;
+        int fieldW = p->columnWidth(col) + 2;
 
-        int pos = p->header()->mapToIndex( col );
-        for ( int index = 0; index < pos; index++ )
-            fieldX += p->columnWidth( p->header()->mapToSection( index ) );
+        for ( int index = 0; index < col; index++ )
+            fieldX += p->columnWidth( col );
 
-        setGeometry(fieldX, rect.y(), p->columnWidth(c)+2, rect.height() + 2);
+        if ( col == 0 ) {
+            int d = i->depth() + (p->rootIsDecorated() ? 1 : 0);
+            d *= p->treeStepSize();
+            fieldX += d;
+            fieldW -= d;
+        }
+
+        if ( i->pixmap( col ) ) {// add width of pixmap
+            int d = i->pixmap( col )->width();
+            fieldX += d;
+            fieldW -= d;
+        }
+
+        setGeometry(fieldX, rect.y() - 1, fieldW, rect.height() + 2);
         show();
         setFocus();
-        grabMouse();
+//        grabMouse();
 
 }
 
@@ -221,9 +234,9 @@ void KListViewLineEdit::paintEvent( QPaintEvent *e )
     KLineEdit::paintEvent( e );
 
     if ( !frame() ) {
-	QPainter p( this );
-	p.setClipRegion( e->region() );
-	p.drawRect( rect() );
+        QPainter p( this );
+        p.setClipRegion( e->region() );
+        p.drawRect( rect() );
     }
 }
 
@@ -1440,7 +1453,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        ir = ir.unite( itemRect(repaintItem2) );
 
     if ( !ir.isEmpty() )
-    {		      // rectangle to be repainted
+    {                 // rectangle to be repainted
        if ( ir.x() < 0 )
           ir.moveBy( -ir.x(), 0 );
        viewport()->repaint( ir, FALSE );
@@ -1485,19 +1498,19 @@ KListView::SelectionModeExt KListView::selectionModeExt () const
 int KListView::itemIndex( const QListViewItem *item ) const
 {
     if ( !item )
-	return -1;
+        return -1;
 
     if ( item == firstChild() )
-	return 0;
+        return 0;
     else {
         QListViewItemIterator it(firstChild());
-	uint j = 0;
-	for (; it.current() && it.current() != item; ++it, ++j );
+        uint j = 0;
+        for (; it.current() && it.current() != item; ++it, ++j );
 
-	if( !it.current() )
-	  return -1;
+        if( !it.current() )
+          return -1;
 
-	return j;
+        return j;
     }
 }
 
