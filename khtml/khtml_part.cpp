@@ -1951,12 +1951,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   if ( strcmp( action, "get" ) == 0 )
   {
-    QString query = u.query();
-    if ( !query.isEmpty() )
-      query = query + "&";
-
-    query.append( QString::fromLatin1( formData.data(), formData.size() ) );
-    u.setQuery( query );
+    u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
 
     KParts::URLArgs args;
     args.frameName = target;
