@@ -1023,7 +1023,7 @@ public:
    * Returns true if the splitter uses the high resolution, false otherwise.
    */
   bool splitterHighResolution() const;
-#if 0
+
   /**
    * @since 3.2
    */
@@ -1031,7 +1031,7 @@ public:
   void setSpecialTopDockContainer(KDockWidget* container);  
   void setSpecialRightDockContainer(KDockWidget* container);  
   void setSpecialBottomDockContainer(KDockWidget* container);  
-#endif
+
 signals:
 
   /**

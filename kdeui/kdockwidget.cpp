@@ -453,6 +453,11 @@ public:
   QGuardedPtr<KDockWidget> mainDockWidget;
 
   QObjectList containerDocks;
+
+  QGuardedPtr<KDockWidget> leftContainer;
+  QGuardedPtr<KDockWidget> topContainer;
+  QGuardedPtr<KDockWidget> rightContainer;
+  QGuardedPtr<KDockWidget> bottomContainer;
 };
 
 
@@ -930,6 +935,25 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   if ( !(eDocking & (int)dockPos) ){
     succes = false;
 //  kdDebug()<<"KDockWidget::manualDock(): success = false (1)"<<endl;
+  }
+
+  KDockWidget *tmpTarget;
+  switch (dockPos) {
+	case DockLeft:tmpTarget=dockManager()->d->leftContainer;
+		break;
+	case DockRight:tmpTarget=dockManager()->d->rightContainer;
+		break;
+	case DockBottom:tmpTarget=dockManager()->d->bottomContainer;
+		break;
+	case DockTop:tmpTarget=dockManager()->d->topContainer;
+		break;
+	default: tmpTarget=0;
+  }
+
+  if (this!=tmpTarget) {
+    if (target && (target==dockManager()->d->mainDockWidget) && tmpTarget) {
+  	return manualDock(tmpTarget,DockCenter,spliPos,pos,check,tabIndex);
+    }
   }
 
   // check allowed target submit this operations
@@ -2704,6 +2728,22 @@ void KDockManager::drawDragRectangle()
   d->oldDragRect = d->dragRect;
 }
 
+void KDockManager::setSpecialLeftDockContainer(KDockWidget* container) {
+	d->leftContainer=container;
+}
+
+void KDockManager::setSpecialTopDockContainer(KDockWidget* container) {
+	d->topContainer=container;
+}
+
+void KDockManager::setSpecialRightDockContainer(KDockWidget* container) {
+	d->rightContainer=container;
+
+}
+
+void KDockManager::setSpecialBottomDockContainer(KDockWidget* container) {
+	d->bottomContainer=container;
+}
 
 
 KDockArea::KDockArea( QWidget* parent, const char *name)
