@@ -43,6 +43,8 @@ using namespace khtml;
 #include <kdebug.h>
 #include <klocale.h>
 
+namespace khtml {
+
 class KanjiCode
 {
 public:
@@ -64,6 +66,8 @@ public:
 		    return 0;
 	return (kanji_map_sjis[code & 0xff] & 2);
     }
+
+};
 
 };
 
