@@ -144,7 +144,7 @@ QString Decoder::decode(const char *data, int len)
                         const char * end = ptr;
                         while(*end != '>' && *end != '\0') end++;
                         if ( *end == '\0' ) break;
-                        QCString str( ptr, (end-ptr));
+                        QCString str( ptr, (end-ptr)+1);
                         str = str.lower();
                         int pos = 0;
                         //if( (pos = str.find("http-equiv", pos)) == -1) break;
@@ -157,8 +157,8 @@ QString Decoder::decode(const char *data, int len)
                             pos++;
 
                         uint endpos = pos;
-                        while( (str[endpos] != ' ' || str[endpos] != '"'
-                                || str[endpos] != '>')
+                        while( (str[endpos] != ' ' && str[endpos] != '"'
+                                && str[endpos] != '>')
                                && endpos < str.length() )
                             endpos++;
 
