@@ -91,7 +91,7 @@ qtmessages:
 	cd $$top_srcdir/../qt-copy/src ;\
 	find . -name "*.cpp" | grep -v moc_ > list ;\
 	for file in qfiledialog qcolordialog qprintdialog \
-		qurloperator qftp qhttp qlocal qerrormessage; do \
+		qurloperator qftp qhttp qlocal qerrormessage qxml; do \
 		grep -v $$file list > list.new && mv list.new list ;\
 	done ;\
 	xgettext -C -ktr -kQT_TRANSLATE_NOOP `cat list`  ;\
