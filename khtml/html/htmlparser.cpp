@@ -623,7 +623,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                          !flat && endTag[id] != DOM::FORBIDDEN ) {
 
                         pushBlock(id, tagPriority[id]);
-                        setCurrent ( current );
+                        setCurrent ( n );
                         haveMalformedTable = true;
                     }
                     return true;
