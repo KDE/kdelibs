@@ -107,20 +107,20 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     QRadioButton* rb = new QRadioButton( txt, m_btnGrp );
     QWhatsThis::add( rb, i18n("Select this option to accept/reject only this cookie. "
                               "You will be prompted if another cookie is received. "
-                              "<em>(see WebBrowsing/Cookies in the control panel)</em>." ) );
+                              "<em>(see WebBrowsing/Cookies in the Control Center)</em>." ) );
     m_btnGrp->insert( rb );
     rb = new QRadioButton( i18n("All cookies from this &domain"), m_btnGrp );
     QWhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
                               "this site. Choosing this option will add a new policy for "
                               "the site this cookie originated from.  This policy will be "
-                              "permanent until you manually change it from the control panel "
-                              "<em>(see WebBrowsing/Cookies in the control panel)</em>.") );
+                              "permanent until you manually change it from the Control Center "
+                              "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
     m_btnGrp->insert( rb );
     rb = new QRadioButton( i18n("All &cookies"), m_btnGrp );
     QWhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
                               "anywhere. Choosing this option will change the global "
-                              "cookie policy set in the control panel for all cookies "
-                              "<em>(see WebBrowsing/Cookies in the control panel)</em>.") );
+                              "cookie policy set in the Control Center for all cookies "
+                              "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
     m_btnGrp->insert( rb );
     vlayout->addWidget( m_btnGrp );
 
