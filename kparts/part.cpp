@@ -467,39 +467,53 @@ void ReadWritePart::setModified()
   setModified( true );
 }
 
+bool ReadWritePart::queryClose()
+{
+  if ( !isReadWrite() || !isModified() )
+    return true;
+
+  int res = KMessageBox::warningYesNoCancel( widget(),
+          i18n( "The document \"%1\" has been modified.\n"
+                "Do you want to save it?" ).arg( url().fileName() ),
+          i18n( "Save Document?" ), KStdGuiItem::save(), KStdGuiItem::discard() );
+
+  switch(res) {
+  case KMessageBox::Yes :
+    if (m_url.isEmpty())
+    {
+        KURL url = KFileDialog::getSaveURL();
+        if (url.isEmpty())
+        {
+          m_bClosing = false;
+          return false;
+        }
+        return saveAs( url );
+    }
+    return save();
+  case KMessageBox::No :
+    m_bClosing = false;
+    return true;
+  default : // case KMessageBox::Cancel :
+    m_bClosing = false;
+    return false;
+  }
+}
+
 bool ReadWritePart::closeURL()
 {
   abortLoad(); //just in case
-  if ( m_bModified && m_bReadWrite )
+  if ( isReadWrite() && isModified() )
   {
-    int res = KMessageBox::warningYesNoCancel( widget(),
-            i18n( "The document \"%1\" has been modified.\n"
-                  "Do you want to save it?" ).arg( url().fileName() ),
-            i18n( "Save Document?" ), KStdGuiItem::save(), KStdGuiItem::discard() );
-
-    switch(res) {
-    case KMessageBox::Yes :
-      m_bClosing = true; // remember to clean up the temp file
-      if (m_url.isEmpty())
-      {
-          KURL url = KFileDialog::getSaveURL();
-          if (url.isEmpty())
-          {
-            m_bClosing = false;
-            return false;
-          }
-          return saveAs( url );
-      }
-      return save();
-    case KMessageBox::No :
-      setModified( false ); // the user isn't interested in the changes, forget them
-      return true;
-    default : // case KMessageBox::Cancel :
-      return false;
-    }
+    m_bClosing = true; // remember to clean up the temp file
+    return queryClose();
   }
   // Not modified => ok and delete temp file.
   return ReadOnlyPart::closeURL();
+}
+
+bool ReadWritePart::closeURL( bool promptToSave )
+{
+  return promptToSave ? closeURL() : ReadOnlyPart::closeURL();
 }
 
 bool ReadWritePart::save()
