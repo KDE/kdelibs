@@ -28,16 +28,6 @@ class KPushButton;
 class KShortcutDialogSimple;
 class KShortcutDialogAdvanced;
 
-/**
- * @short Dialog for configuring a shortcut.
- *
- * This dialog allows configuring a single KShortcut. KKeyDialog
- * should be usually used instead.
- *
- * @internal
- * @see KKeyDialog
- * @since 3.4
- */
 class KDEUI_EXPORT KShortcutDialog : public KDialogBase
 {
 	Q_OBJECT
@@ -45,7 +35,6 @@ public:
 	KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent = 0, const char* name = 0 );
 	~KShortcutDialog();
 
-	void setShortcut( const KShortcut & shortcut );
 	const KShortcut& shortcut() const { return m_shortcut; }
 
 private:
@@ -63,6 +52,7 @@ private:
 	KShortcutDialogAdvanced *m_adv;
 	QVBox *m_stack;
 	
+	void setShortcut( const KShortcut & shortcut );
 	void updateShortcutDisplay();
 	//void displayMods();
 	void keyPressed( KKey key );
@@ -79,7 +69,7 @@ private:
 	virtual bool event(QEvent * e);
 	#endif
 
-protected slots:
+private slots:
 	void slotDetails();
 	void slotSelectPrimary();
 	void slotSelectAlternate();
@@ -89,8 +79,8 @@ protected slots:
 	void slotMultiKeyMode( bool bOn );
 
 private:
-        class KShortcutDialogPrivate* d;
-        static bool s_showMore;
+    // ### KDE4: add d-pointer?
+    static bool s_showMore;
 };
 
 #endif // _KSHORTCUTDIALOG_H_
