@@ -123,9 +123,9 @@ static const KStdActionInfo* infoPtr( StdAction id )
 
 KAction* create( StdAction id, const char *name, const QObject *recvr, const char *slot, KActionCollection* parent )
 {
-	kdDebug(125) << "KStdAction::create( " << id << ", " << parent << ", " << name << " )" << endl; // ellis
 	KAction* pAction = 0;
 	const KStdActionInfo* pInfo = infoPtr( id );
+	kdDebug(125) << "KStdAction::create( " << id << "=" << (pInfo ? pInfo->psName : (const char*)0) << ", " << parent << ", " << name << " )" << endl; // ellis
 	if( pInfo ) {
 		QString sLabel;
 		switch( id ) {
