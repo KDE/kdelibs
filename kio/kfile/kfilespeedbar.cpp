@@ -46,7 +46,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
         insertItem( u, i18n("Desktop"), false );
 
 //TODO: win32
-        if ((KGlobalSettings::documentPath() != (QDir::homeDirPath()+"/")) && 
+        if ((KGlobalSettings::documentPath() != (QDir::homeDirPath()+"/")) &&
             QDir(KGlobalSettings::documentPath()).exists())
         {
             u.setPath( KGlobalSettings::documentPath() );
@@ -61,15 +61,16 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Floppy"), false,
                                    KProtocolInfo::icon( "floppy" ) );
-        u = "devices:/";
+        u = "media:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Devices"), false,
-                                   KProtocolInfo::icon( "devices" ) );
+                                   KProtocolInfo::icon( "media" ) );
+	//FIXME i18n("Devices") should be i18n("Media") after string freeze
 
         u = "remote:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Network"), false,
-                                   "network_local" );
+                                   KProtocolInfo::icon( "remote" ) );
     }
 }
 
