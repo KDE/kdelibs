@@ -75,6 +75,7 @@ namespace KJS {
     Node();
     virtual ~Node();
     virtual Value evaluate(ExecState *exec) = 0;
+    virtual UString toString() const;
     virtual void processVarDecls(ExecState */*exec*/) {}
     int lineNo() const { return line; }
 
@@ -927,6 +928,7 @@ namespace KJS {
     Completion execute(ExecState *exec);
     virtual void processFuncDecl(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
+    UString toString() const;
   protected:
     SourceElementsNode *source;
   };
@@ -940,6 +942,7 @@ namespace KJS {
     virtual ~FuncDeclNode();
     Completion execute(ExecState */*exec*/)
       { /* empty */ return Completion(); }
+    UString toString() const;
     void processFuncDecl(ExecState *exec);
   private:
     UString ident;

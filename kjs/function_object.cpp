@@ -92,7 +92,11 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
       exec->setException(err);
       return err;
     }
-    if (thisObj.inherits(&FunctionImp::info) &&
+    if (thisObj.inherits(&DeclaredFunctionImp::info)) {
+       DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>
+                                 (thisObj.imp());
+       return String("function " + fi->name() + "() " + fi->body->toString());
+    } else if (thisObj.inherits(&FunctionImp::info) &&
         !static_cast<FunctionImp*>(thisObj.imp())->name().isNull()) {
       result = String("function " + static_cast<FunctionImp*>(thisObj.imp())->name() + "()");
     }

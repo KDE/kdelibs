@@ -28,7 +28,7 @@ libkjs_la_SOURCES =  ustring.cpp internal.cpp collector.cpp nodes.cpp \
 		     array_object.cpp math_object.cpp object_object.cpp \
 		     regexp_object.cpp error_object.cpp function.cpp \
 		     debugger.cpp value.cpp types.cpp object.cpp \
-		     interpreter.cpp property_map.cpp
+		     interpreter.cpp property_map.cpp nodes2string.cpp
 
 kjsincludedir = $(includedir)/kjs
 kjsinclude_HEADERS = value.h types.h object.h interpreter.h operations.h \
