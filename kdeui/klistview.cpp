@@ -583,7 +583,7 @@ bool KListView::event( QEvent *e )
 {
   if (e->type() == QEvent::ApplicationPaletteChange)
     d->alternateBackground=KGlobalSettings::alternateBackgroundColor();
-  
+
   return QListView::event(e);
 }
 
@@ -951,7 +951,7 @@ void KListView::startDrag()
     emit moved();
 }
 
-QDragObject *KListView::dragObject() const
+QDragObject *KListView::dragObject()
 {
   if (!currentItem())
         return 0;
@@ -1116,7 +1116,7 @@ QRect KListView::drawItemHighlighter(QPainter *painter, QListViewItem *item)
 #if QT_VERSION < 300
       style().drawFocusRect(painter, r, colorGroup(), &colorGroup().highlight(), true);
 #else
-      style().drawPrimitive(QStyle::PE_FocusRect, painter, r, colorGroup(), 
+      style().drawPrimitive(QStyle::PE_FocusRect, painter, r, colorGroup(),
                             QStyle::Style_FocusAtBorder, colorGroup().highlight());
 #endif
   }
@@ -1680,7 +1680,7 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
 #if QT_VERSION < 300
       style().drawFocusRect(&painter, d->mOldDropHighlighter, colorGroup(), 0, true);
 #else
-      style().drawPrimitive(QStyle::PE_FocusRect, &painter, d->mOldDropHighlighter, colorGroup(), 
+      style().drawPrimitive(QStyle::PE_FocusRect, &painter, d->mOldDropHighlighter, colorGroup(),
                             QStyle::Style_FocusAtBorder);
 #endif
     }
@@ -1880,7 +1880,7 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
   }
   else
         _cg.setColor(QColorGroup::Base, backgroundColor());
-  
+
   QListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 

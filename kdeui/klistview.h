@@ -394,7 +394,7 @@ signals:
 	 * @ref moveItem()
 	 **/
 	void aboutToMove();
-  
+
   /**
    * This signal is emitted when ever the user moves an item in the list via
    * DnD.
@@ -574,7 +574,7 @@ protected:
    * Reimplemented to reload the alternate background in palette changes.
    * @internal
    */
-  virtual bool event( QEvent * ); 
+  virtual bool event( QEvent * );
 
   /**
    * Emit signal @ref executed.
@@ -694,10 +694,9 @@ protected:
   /**
    * @return a dragobject encoding the current selection.
    *
-   * A common mistake is to forget the "const" in your reimplementation
    * @see setDragEnabled()
    */
-  virtual QDragObject *dragObject() const;
+  virtual QDragObject *dragObject();
 
   /**
    * @return true if the @p event provides some acceptable
