@@ -1006,9 +1006,12 @@ DCOPServer::DCOPServer(bool _suicide)
 	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
-            // Create a link named like the old-style (KDE 2.x) naming
-            QCString compatName = DCOPClient::dcopServerFileOld();
-            ::symlink(fName,compatName);
+	    if (QCString(getenv("DCOPAUTHORITY")).isEmpty())
+	    {
+                // Create a link named like the old-style (KDE 2.x) naming
+                QCString compatName = DCOPClient::dcopServerFileOld();
+                ::symlink(fName,compatName);
+            }
 	}
 
 #if 0
