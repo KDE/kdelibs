@@ -632,7 +632,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else
-                setContentsPos( 0, contentsHeight() - height() );
+                setContentsPos( 0, contentsHeight() - visibleHeight() );
             break;
         default:
 	    _ke->ignore();
