@@ -51,7 +51,8 @@ static const char*not_close_xpm[]={
 "#####"};
 
 static const char*dock_close_bottom[]={
-"16 16 4 1",
+"16 16 5 1",
+"z c None",
 "b c #c0c000",
 "# c #c0c0c0",
 "a c #868686",
@@ -64,8 +65,8 @@ static const char*dock_close_bottom[]={
 ".##############a",
 ".##############a",
 ".##############a",
-"#aaaaaaaaaaaaaaa",
-"...............#",
+"zaaaaaaaaaaaaaaa",
+"...............z",
 ".bbbbbbbbbbbbbba",
 ".bbbbbbbbbbbbbba",
 ".bbbbbbbbbbbbbba",
@@ -74,12 +75,13 @@ static const char*dock_close_bottom[]={
 "#aaaaaaaaaaaaaaa"};
 
 static const char*dock_close_left[]={
-"16 16 4 1",
+"16 16 5 1",
+"z c None",
 "a c #c0c000",
 "# c #c0c0c0",
 "b c #868686",
 ". c #ffffff",
-"......#........#",
+"......z........#",
 ".aaaaab.#######b",
 ".aaaaab.#######b",
 ".aaaaab.#######b",
@@ -94,15 +96,16 @@ static const char*dock_close_left[]={
 ".aaaaab.#######b",
 ".aaaaab.#######b",
 ".aaaaab.#######b",
-"#bbbbbb#bbbbbbbb"};
+"#bbbbbbzbbbbbbbb"};
 
 static const char*dock_close_right[]={
-"16 16 4 1",
+"16 16 5 1",
+"z c None",
 "b c #c0c000",
 "# c #c0c0c0",
 "a c #868686",
 ". c #ffffff",
-"........#......#",
+"........z......#",
 ".#######a.bbbbba",
 ".#######a.bbbbba",
 ".#######a.bbbbba",
@@ -117,31 +120,32 @@ static const char*dock_close_right[]={
 ".#######a.bbbbba",
 ".#######a.bbbbba",
 ".#######a.bbbbba",
-"#aaaaaaaa#aaaaaa"};
+"#aaaaaaaazaaaaaa"};
 
 static const char*dock_close_top[]={
-"16 16 4 1",
-"a c #c0c000",
-"# c #c0c0c0",
-"b c #868686",
-". c #ffffff",
-"...............#",
-".aaaaaaaaaaaaaab",
-".aaaaaaaaaaaaaab",
-".aaaaaaaaaaaaaab",
-".aaaaaaaaaaaaaab",
-".aaaaaaaaaaaaaab",
-"#bbbbbbbbbbbbbbb",
-"...............#",
-".##############b",
-".##############b",
-".##############b",
-".##############b",
-".##############b",
-".##############b",
-".##############b",
-"#bbbbbbbbbbbbbbb"};
-
+"16 16 5 1",
+"z c None",
+"  c #c0c000",
+". c #c0c0c0",
+"X c #868686",
+"o c Gray100",
+"ooooooooooooooo.",
+"o              X",
+"o              X",
+"o              X",
+"o              X",
+"o              X",
+"zXXXXXXXXXXXXXXX",
+"oooooooooooooooz",
+"o..............X",
+"o..............X",
+"o..............X",
+"o..............X",
+"o..............X",
+"o..............X",
+"o..............X",
+".XXXXXXXXXXXXXXX"
+};
 /**
  * A special kind of KTMainWindow that is able to have dockwidget child widgets.
  *
