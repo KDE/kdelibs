@@ -534,6 +534,7 @@ protected:
      * if it is known as well as the comment and caption to be displayed:
      *
      * <pre>
+     * KIO::AuthInfo authInfo;
      * authInfo.caption= "Acme Password Dialog";
      * authInfo.username= "Wile E. Coyote";
      * if ( openPassDlg( authInfo ) )
