@@ -1,6 +1,10 @@
 This file is meant to be a place to track of medium to large-scale API changes
 that we would like to make for the next binary incompatible release.
 
+- Move alll utility functions away from KApplication. TDB: Make KApplication a very thin wrapper around
+  QApplication. Ideally, KApplication should go away completely. The kapp pointer references everywhere
+  must die. Find a way to make that possible
+
 - Remove all KDE_NO_COMPAT from the KDE2 -> KDE3 port before adding new ones for KDE4.
 
 - Remove the smart-to-dumb-pointer conversion operator from KSharedPtr
@@ -13,6 +17,7 @@ that we would like to make for the next binary incompatible release.
   throughout KDE in favour of libqt-addon's socket implementations.
   (note: if all goes well, libqt-addon will be part of Qt by then)
 	thiago.macieira@kdemail.net
+  => Won't be, what now?
 
 - Remove all methods marked 'deprecated' in KDE 3.x.
 
