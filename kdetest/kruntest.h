@@ -19,4 +19,20 @@ public:
 
 };
 
+
+class Receiver : public QWidget
+{
+  Q_OBJECT
+public:
+  Receiver();
+  ~Receiver() {}
+public slots:
+ void slotStart();
+ void slotStop();
+private:
+ QPushButton * start;
+ QPushButton * stop;
+
+};
+
 #endif
