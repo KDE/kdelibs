@@ -63,7 +63,7 @@ public:
     }
 
     QPtrList<KWinModule> modules;
-    KWinModule* module;
+    KWinModule* module; 
 
     QValueList<WId> windows;
     QValueList<WId> stackingOrder;
@@ -128,23 +128,23 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	int m = NETRootInfo::event( ev );
 
 	if ( m & CurrentDesktop )
-	    for ( module = modules.first(); module; module = modules.next() )
+	    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 		emit module->currentDesktopChanged( currentDesktop() );
 	if ( m & ActiveWindow )
-	    for ( module = modules.first(); module; module = modules.next() )
+	    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 		emit module->activeWindowChanged( activeWindow() );
 	if ( m & DesktopNames )
-	    for ( module = modules.first(); module; module = modules.next() )
+	    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 		emit module->desktopNamesChanged();
 	if ( m & NumberOfDesktops )
-	    for ( module = modules.first(); module; module = modules.next() )
+	    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 		emit module->numberOfDesktopsChanged( numberOfDesktops() );
 	if ( m & WorkArea )
-	    for ( module = modules.first(); module; module = modules.next() )
+	    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 		emit module->workAreaChanged();
 	if ( m & ClientListStacking ) {
 	    updateStackingOrder();
-	    for ( module = modules.first(); module; module = modules.next() )
+	    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 		emit module->stackingOrderChanged();
 	}
     } else  if ( windows.contains( ev->xany.window ) ){
@@ -158,7 +158,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 		strutWindows.append( ev->xany.window );
 	}
 	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
-	    for ( module = modules.first(); module; module = modules.next() ) {
+	    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit ) {
 		emit module->windowChanged( ev->xany.window );
                 emit module->windowChanged( ev->xany.window, dirty );
 		emit module->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
@@ -184,7 +184,7 @@ void KWinModulePrivate::addClient(Window w)
     if ( !QWidget::find( w ) )
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask | StructureNotifyMask );
     bool emit_strutChanged = FALSE;
-    for ( module = modules.first(); module; module = modules.next() ) {
+    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit ) {
 	NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
 	NETStrut strut = info.strut();
 	if ( strut.left || strut.top || strut.right || strut.bottom ) {
@@ -194,7 +194,7 @@ void KWinModulePrivate::addClient(Window w)
 	break;
     }
     windows.append( w );
-    for ( module = modules.first(); module; module = modules.next() ) {
+    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit ) {
 	emit module->windowAdded( w );
 	if ( emit_strutChanged )
 	    emit module->strutChanged();
@@ -206,7 +206,7 @@ void KWinModulePrivate::removeClient(Window w)
     bool emit_strutChanged = strutWindows.contains( w );
     strutWindows.remove( w );
     windows.remove( w );
-    for ( module = modules.first(); module; module = modules.next() ) {
+    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit ) {
 	emit module->windowRemoved( w );
 	if ( emit_strutChanged )
 	    emit module->strutChanged();
@@ -216,14 +216,14 @@ void KWinModulePrivate::removeClient(Window w)
 void KWinModulePrivate::addSystemTrayWin(Window w)
 {
     systemTrayWindows.append( w );
-    for ( module = modules.first(); module; module = modules.next() )
+    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 	emit module->systemTrayWindowAdded( w );
 }
 
 void KWinModulePrivate::removeSystemTrayWin(Window w)
 {
     systemTrayWindows.remove( w );
-    for ( module = modules.first(); module; module = modules.next() )
+    for ( QPtrListIterator<KWinModule> mit( modules ); (module = mit.current()); ++mit )
 	emit module->systemTrayWindowRemoved( w );
 }
 
