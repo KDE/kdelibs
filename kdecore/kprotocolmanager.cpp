@@ -26,7 +26,9 @@ KProtocolManager::KProtocolManager()
 
 void KProtocolManager::scanConfig( const QString& _dir )
 {
-  QDir dir( _dir, QString::null, QDir::Unsorted, QDir::Files | QDir::Readable );
+// The right way to put the 0x3 below is QDir::Unsorted; for some reason
+// gcc 2.95 doesn't like it. Fix it if you find a better solution.
+  QDir dir( _dir, QString::null, 0x3, QDir::Files | QDir::Readable );
   if (!dir.exists())
     return;
   QStringList p = dir.entryList();
