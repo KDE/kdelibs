@@ -167,14 +167,13 @@ static QList<KSessionManaged>* sessionClients()
 /*
   Auxiliary function to calculate a a session config name used for the
   instance specific config object.
-  Syntax:  "<appname>:<level>:<sessionId>"
+  Syntax:  "<appname>:<sessionId>"
  */
-static int session_restore_level = 0;
 static QString sessionConfigName()
 {
   QString aSessionConfigName;
   QTextOStream ts( &aSessionConfigName );
-  ts << qApp->name() << ":" << session_restore_level << ":" << qApp->sessionId();
+  ts << qApp->name() << ":" << qApp->sessionId();
   return aSessionConfigName;
 }
 
@@ -307,14 +306,15 @@ DCOPClient *KApplication::dcopClient()
   return pDCOPClient;
 }
 
-KConfig* KApplication::sessionConfig() {
-  if (pSessionConfig)
+KConfig* KApplication::sessionConfig()
+{
+    if (pSessionConfig)
+	return pSessionConfig;
+
+    // create an instance specific config object
+    pSessionConfig = new KConfig( sessionConfigName(), false, false);
+
     return pSessionConfig;
-
-  // create an instance specific config object
-  pSessionConfig = new KConfig( sessionConfigName(), false, false);
-
-  return pSessionConfig;
 }
 
 
@@ -400,25 +400,18 @@ void KApplication::saveState( QSessionManager& sm )
 	return; // no need to save the state.
     }
 
+    QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
+	sessionConfigName();
 
-    // remove former session config, we need a new one
+    // remove former session config, we want a new and fresh one
     if ( pSessionConfig ) {
 	delete pSessionConfig;
 	pSessionConfig = 0;
+	QDir d; d.remove( aLocalFileName, TRUE );
     }
-
-    // increase restoration level, we are in a new lifecycle now
-    QFile file;
-    do {
-	session_restore_level++;
-	QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
-				 sessionConfigName();
-	file.setName( aLocalFileName );
-    } while ( file.exists() );
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
-    restartCommand << QString::fromLatin1("-restore") << QString::number( session_restore_level );
     sm.setRestartCommand( restartCommand );
 
     // finally: do session management
@@ -434,7 +427,7 @@ void KApplication::saveState( QSessionManager& sm )
     if ( pSessionConfig ) {
 	pSessionConfig->sync();
 	QStringList discard;
-	discard  << ( "rm "+file.name()); // only one argument  due to broken xsm
+	discard  << ( "rm "+aLocalFileName ); // only one argument  due to broken xsm
 	sm.setDiscardCommand( discard );
     }
 
@@ -541,8 +534,8 @@ void KApplication::dcopFailure(const QString &msg)
 
 void KApplication::parseCommandLine( int& argc, char** argv )
 {
-    enum parameter_code { unknown = 0, caption, icon, miniicon, restore, dcopserver };
-    const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , "-dcopserver", 0 };
+    enum parameter_code { unknown = 0, caption, icon, miniicon, dcopserver };
+    const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-dcopserver", 0 };
 
     aDummyString2 = " ";
     int i = 1;
@@ -589,12 +582,6 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    aDummyString2 += argv[i+1];
 	    aDummyString2 += " ";
 	    break;
-	case restore:
-	    session_restore_level = QString( argv[i+1] ).toInt();
-	    delete pSessionConfig; // should be 0 anyway
-	    // create a new read-only session config for the restortation
-	    pSessionConfig = new KConfig( sessionConfigName(), true, false);
-	    break;
 	case dcopserver:
 	    dcopClient()->setServerAddress(argv[i+1]);
 	    break;
@@ -626,7 +613,6 @@ static const KCmdLineOptions kde_options[] =
    { "caption <caption>",	I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
    { "icon <icon>",  		I18N_NOOP("Use 'icon' as the application icon"), 0},
    { "miniicon <icon>", 	I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
-   { "restore <number>", 	I18N_NOOP("Restore session and use 'number' for something"), 0},
    { "dcopserver <server>",	I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
    { 0, 0, 0 }
 };
@@ -659,14 +645,6 @@ void KApplication::parseCommandLine( )
        aIconPixmap = KGlobal::iconLoader()->loadIcon( tmp );
        if (aMiniIconPixmap.isNull())
           aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( tmp, KIconLoader::Small);
-    }
-
-    if (args->isSet("restore"))
-    {
-       session_restore_level = QString( args->getOption("restore") ).toInt();
-       delete pSessionConfig; // should be 0 anyway
-       // create a new read-only session config for the restortation
-       pSessionConfig = new KConfig( sessionConfigName(), true, false);
     }
 
     if (args->isSet("dcopserver"))
@@ -1051,7 +1029,6 @@ void KApplication::kdisplaySetPalette()
     emit kdisplayPaletteChanged();
     emit appearanceChanged();
 }
-
 
 void KApplication::kdisplaySetFont()
 {
