@@ -1751,7 +1751,7 @@ bool KFileDialog::keepsLocation() const
 void KFileDialog::setOperationMode( OperationMode mode )
 {
     d->operationMode = mode;
-    d->keepLocation = true;
+    d->keepLocation = (mode == Saving);
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     d->okButton->setGuiItem( (mode == Saving) ? KStdGuiItem::save() : KStdGuiItem::ok() );
 }
