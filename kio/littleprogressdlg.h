@@ -1,11 +1,12 @@
 #ifndef __kio_littleprogress_dlg_h__
 #define __kio_littleprogress_dlg_h__
 
-#include <qwidget.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 
 #include <kprogress.h>
+
+#include "kio_progressbase.h"
 
 class KIOJob;
 
@@ -37,36 +38,35 @@ class KIOJob;
 *
 * @short IO progress widget for embedding in a statusbar.
 */ 
-class KIOLittleProgressDlg : public QWidget {
+class KIOLittleProgressDlg : public KIOProgressBase {
 
   Q_OBJECT
 
 public:
 
-  KIOLittleProgressDlg( QWidget* parent );
+  KIOLittleProgressDlg( QWidget* parent, bool button = true );
   ~KIOLittleProgressDlg() {}
 
-  void setJob( KIOJob *job );
-  void clean();
+  virtual void setJob( KIOJob * );
+  virtual void clean();
 
-public slots:
+protected slots:
 
-  void slotTotalSize( int, unsigned long _bytes );
-  void slotPercent( int, unsigned long _bytes );
-  void slotSpeed( int, unsigned long _bytes_per_second );
+  virtual void slotTotalSize( int, unsigned long _bytes );
+  virtual void slotPercent( int, unsigned long _bytes );
+  virtual void slotSpeed( int, unsigned long _bytes_per_second );
 
 protected:
   KProgress* m_pProgressBar;
   QLabel* m_pLabel;
   QPushButton* m_pButton;
 
-  KIOJob* m_pJob;
-
   unsigned long m_iTotalSize;
 
   enum Mode { None, Label, Progress };
 
   uint mode;
+  bool m_bShowButton;
 
   void setMode();
 

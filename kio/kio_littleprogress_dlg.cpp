@@ -8,11 +8,12 @@
 #include "kio_job.h" 
 #include "kio_littleprogress_dlg.h"
 
-KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent ) 
-  : QWidget( parent ) {
+KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent, bool button ) 
+  : KIOProgressBase( parent ) {
 
-  m_pJob = 0L;
-  
+  m_bShowButton = button;
+  m_bOnlyClean = true;  // we don't want to delete this widget, only clean
+
   QFontMetrics fm = fontMetrics();
   int w_offset = fm.width( "x" ) + 10;
   int w = fm.width( " 999.9 kB/s 00:00:01 " ) + 8;
@@ -39,21 +40,13 @@ KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent )
   setMode();
 
   resize( w + w_offset, h );
-
-  this->show();
 }
 
 
 void KIOLittleProgressDlg::setJob( KIOJob *job ) {
-  m_pJob = job;
-  connect( m_pJob, SIGNAL( sigSpeed( int, unsigned long ) ),
-	   SLOT( slotSpeed( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalSize( int, unsigned long ) ),
-	   SLOT( slotTotalSize( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
-	   SLOT( slotPercent( int, unsigned long ) ) );
+  KIOProgressBase::setJob( job );
 
-  connect( m_pButton, SIGNAL( clicked() ), m_pJob, SLOT(slotCancel()) );
+  connect( m_pButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
   mode = Progress;
   setMode();
 }
@@ -62,19 +55,25 @@ void KIOLittleProgressDlg::setJob( KIOJob *job ) {
 void KIOLittleProgressDlg::setMode() {
   switch ( mode ) {
   case None:
-    m_pButton->hide();
+    if ( m_bShowButton ) {
+      m_pButton->hide();
+    }
     m_pProgressBar->hide();
     m_pLabel->hide();
     break;
 
   case Label:
-    m_pButton->show();
+    if ( m_bShowButton ) {
+      m_pButton->show();
+    }
     m_pProgressBar->hide();
     m_pLabel->show();
     break;
 
   case Progress:
-    m_pButton->show();
+    if ( m_bShowButton ) {
+      m_pButton->show();
+    }
     m_pProgressBar->show();
     m_pLabel->hide();
     break;

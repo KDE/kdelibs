@@ -13,38 +13,8 @@
 #include "kio_simpleprogress_dlg.h"
 
 
-KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified )
-  : QWidget( 0L ) {
-
-  m_pJob = _job;
-  connect( m_pJob, SIGNAL( sigSpeed( int, unsigned long ) ),
-	   SLOT( slotSpeed( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalSize( int, unsigned long ) ),
-	   SLOT( slotTotalSize( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalFiles( int, unsigned long ) ),
-	   SLOT( slotTotalFiles( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned long ) ),
-	   SLOT( slotTotalDirs( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedSize( int, unsigned long ) ),
-	   SLOT( slotProcessedSize( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
-	   SLOT( slotPercent( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned long ) ),
-	   SLOT( slotProcessedFiles( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned long ) ),
-	   SLOT( slotProcessedDirs( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigCopying( int, const char*, const char* ) ),
-	   SLOT( slotCopyingFile( int, const char*, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigScanningDir( int, const char* ) ),
-	   SLOT( slotScanningDir( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigMakingDir( int, const char* ) ),
-	   SLOT( slotMakingDir( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigGettingFile( int, const char* ) ),
-	   SLOT( slotGettingFile( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigDeletingFile( int, const char* ) ),
-	   SLOT( slotDeletingFile( int, const char* ) ) );
-  connect( m_pJob, SIGNAL( sigCanResume( int, bool ) ),
- 	   SLOT( slotCanResume( int, bool ) ) );
+KIOSimpleProgressDlg::KIOSimpleProgressDlg()
+  : KIOProgressBase() {
 
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
 					    KDialog::spacingHint() );
@@ -89,33 +59,10 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
   hBox->addStretch(1);
 
   QPushButton *pb = new QPushButton( i18n("Cancel"), this );
-  connect( pb, SIGNAL( clicked() ), SLOT( quit() ) );
+  connect( pb, SIGNAL( clicked() ), SLOT( stop() ) );
   hBox->addWidget( pb );
 
   resize( sizeHint() );
-
-  // instead of showing immediately, we fire off a one shot timer to
-  // show ourselves after 1.5 seconds.  This avoids massive window creation/
-  // destruction on single file copies or other short operations.
-
-  QTimer::singleShot(1500, this, SLOT(show()));
-
-  if ( m_bStartIconified ) {
-    KWM::setIconify( this->winId(), true );
-  }
-}
-
-
-void KIOSimpleProgressDlg::closeEvent( QCloseEvent * )
-{
-  quit();
-}
-
-
-void KIOSimpleProgressDlg::quit() {
-  if ( m_pJob ) {
-    m_pJob->kill();
-  }
 }
 
 

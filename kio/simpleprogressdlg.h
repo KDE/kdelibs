@@ -1,43 +1,41 @@
 #ifndef __kio_simpleprogress_dlg_h__
 #define __kio_simpleprogress_dlg_h__
 
-#include <qwidget.h>
 #include <qlabel.h>
 
 #include <kprogress.h>
 
+#include "kio_progressbase.h"
+
 class KIOJob;
 
-class KIOSimpleProgressDlg : public QWidget {
+class KIOSimpleProgressDlg : public KIOProgressBase {
 
   Q_OBJECT
 
 public:
-  KIOSimpleProgressDlg( KIOJob*, bool m_bStartIconified = false );
+
+  KIOSimpleProgressDlg();
   ~KIOSimpleProgressDlg() {}
   
-public slots:
-
-  void slotTotalSize( int, unsigned long _bytes );
-  void slotTotalFiles( int, unsigned long _files );
-  void slotTotalDirs( int, unsigned long _dirs );
-  void slotPercent( int, unsigned long _bytes );
-  void slotProcessedSize( int, unsigned long _bytes );
-  void slotProcessedFiles( int, unsigned long _files );
-  void slotProcessedDirs( int, unsigned long _dirs );
-  void slotScanningDir( int, const char *_dir );
-  void slotSpeed( int, unsigned long _bytes_per_second );
-  void slotCopyingFile( int, const char *_from, const char *_to );
-  void slotMakingDir( int, const char *_dir );
-  void slotGettingFile( int, const char *_url );
-  void slotDeletingFile( int, const char *_url );
-  void slotCanResume( int, bool );
-
 protected slots:
-  void quit();
+
+  virtual void slotTotalSize( int, unsigned long _bytes );
+  virtual void slotTotalFiles( int, unsigned long _files );
+  virtual void slotTotalDirs( int, unsigned long _dirs );
+  virtual void slotPercent( int, unsigned long _bytes );
+  virtual void slotProcessedSize( int, unsigned long _bytes );
+  virtual void slotProcessedFiles( int, unsigned long _files );
+  virtual void slotProcessedDirs( int, unsigned long _dirs );
+  virtual void slotScanningDir( int, const char *_dir );
+  virtual void slotSpeed( int, unsigned long _bytes_per_second );
+  virtual void slotCopyingFile( int, const char *_from, const char *_to );
+  virtual void slotMakingDir( int, const char *_dir );
+  virtual void slotGettingFile( int, const char *_url );
+  virtual void slotDeletingFile( int, const char *_url );
+  virtual void slotCanResume( int, bool );
 
 protected:
-  void closeEvent( QCloseEvent * );
 
   QLabel* sourceLabel;
   QLabel* destLabel;
@@ -51,8 +49,6 @@ protected:
   unsigned long m_iTotalFiles;
   unsigned long m_iTotalDirs;
 
-  KIOJob* m_pJob;
-  
   enum ModeType { Copy, Delete, Create, Scan, Fetch };
   ModeType mode;
 };
