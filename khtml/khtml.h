@@ -585,6 +585,12 @@ public:
      */
     void setBackground( HTMLBackground *_background); 
 
+    /**
+     * Returns the URL of the background image or NULL if no background
+     * is available.
+     */
+    QString getBackground();
+
     /*
      * Set background color
      */

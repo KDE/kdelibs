@@ -880,6 +880,8 @@ public:
     virtual void changeImage( HTMLString _url );
     virtual void changeColor( QColor& );
 
+    virtual HTMLString getURL() const { return imageURL; }
+
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * = 0 );
 

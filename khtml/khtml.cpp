@@ -2316,6 +2316,15 @@ KHTMLWidget::buildFrameSet(SavedPage *p, QString *s)
     *s += "</frameset>";
 }
 
+QString
+KHTMLWidget::getBackground()
+{
+  if ( !background )
+    return QString::null;
+
+  return background->getURL().string();
+}
+
 HTMLPageInfo *
 KHTMLWidget::getPageInfo()
 {
