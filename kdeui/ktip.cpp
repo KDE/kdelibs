@@ -309,11 +309,28 @@ void KTipDialog::showTip(QWidget *parent, const QString &tipFile, bool force)
 
 void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool force)
 {
-    const bool runOnStart = KConfigGroup(kapp->config(), "TipOfDay")
-                                        .readBoolEntry("RunOnStart", true);
+    KConfigGroup configGroup(kapp->config(), "TipOfDay");
 
-    if (!force && !runOnStart)
+    const bool runOnStart = configGroup.readBoolEntry("RunOnStart", true);
+
+    if (!force)
+    {
+        if (!runOnStart)
 	    return;
+
+        bool hasLastShown = configGroup.hasKey("TipLastShown");
+        if (hasLastShown)
+        {
+           QDateTime lastShown = configGroup.readDateTimeEntry("TipLastShown");
+           // Show tip roughly once a week
+           if (lastShown.secsTo(QDateTime::currentDateTime()) < (3600 + (kapp->random() % 30000)))
+               return;
+        }
+        configGroup.writeEntry("TipLastShown", QDateTime::currentDateTime());
+        kapp->config()->sync();
+        if (!hasLastShown)
+           return; // Don't show tip on first start
+    }
 
     if (!mInstance)
 	mInstance = new KTipDialog(new KTipDatabase(tipFiles), parent);
