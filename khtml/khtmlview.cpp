@@ -106,7 +106,10 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     m_part = part;
 
     // initialize QScrollview
-    enableClipper(true);
+
+//*** DISABLED because of clipper bugs in QTbeta2    
+//    enableClipper(true);    
+    enableClipper(false);
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
 
@@ -965,11 +968,12 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     if( m_part->docImpl() )
 	body = m_part->docImpl()->body();
 
-    QRect rr(
+    //*** DISABLED because of clipper bugs in QTbeta2
+    /*QRect rr(
 	-viewport()->x(), -viewport()->y(),
 	clipper()->width(), clipper()->height()
     );
-    r &= rr;
+    r &= rr;*/
     int ex = r.x() + viewport()->x() + contentsX();;
     int ey = r.y() + viewport()->y() + contentsY();;
     int ew = r.width();
@@ -982,7 +986,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
 	return;
     }
-//    printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
+    printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
 
     if ( paintBuffer->width() < width() )
     {
@@ -1557,10 +1561,10 @@ void KHTMLView::slotRedirect()
 bool KHTMLView::focusNextPrevChild( bool next )
 {
     printf("focusNextPrev %d\n",next);
-    return true;    // ### temporary fix for qscrollview focus bug
+//    return true;    // ### temporary fix for qscrollview focus bug
     	    	    // as a side effect, disables tabbing between form elements
 		    // -antti
     
-    //return QScrollView::focusNextPrevChild( next );
+    return QScrollView::focusNextPrevChild( next );
 }
 
