@@ -1,4 +1,5 @@
 #include "kautoconfigdialog.h"
+#include "kautoconfigdialog.moc"
 #include "kautoconfig.h"
 
 #include <klocale.h>
@@ -12,8 +13,8 @@ class KAutoConfigDialog::KAutoConfigDialogPrivate {
 
 public:
   KAutoConfigDialogPrivate(KDialogBase::DialogType t) : shown(false), type(t){ }
- 
-  bool shown; 
+
+  bool shown;
   KDialogBase::DialogType type;
 };
 
@@ -29,7 +30,7 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
   kautoconfig = new KAutoConfig(kdialogbase, "kautoconfig");
   connect(kautoconfig, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
   connect(kautoconfig, SIGNAL(widgetModified()), this, SLOT(settingModified()));
- 
+
   connect(kdialogbase, SIGNAL(destroyed()), this, SLOT(deleteLater()));
   connect(kdialogbase, SIGNAL(okClicked()), kautoconfig, SLOT(saveSettings()));
   connect(kdialogbase, SIGNAL(applyClicked()), kautoconfig, SLOT(saveSettings()));
@@ -42,7 +43,7 @@ KAutoConfigDialog::~KAutoConfigDialog(){
   openDialogs.remove(name());
   delete d;
 }
-  
+
 void KAutoConfigDialog::addPage(QWidget *page,
 		                  const QString &itemName,
 				  const QString &groupName,
@@ -63,13 +64,13 @@ void KAutoConfigDialog::addPage(QWidget *page,
       page->reparent(((QWidget*)frame), 0, QPoint());
     }
     break;
-    
+
     case KDialogBase::Swallow: {
       page->reparent(((QWidget*)kdialogbase), 0, QPoint());
       kdialogbase->setMainWidget(page);
     }
     break;
-    
+
     case KDialogBase::Plain:{
       page->reparent(((QWidget*)kdialogbase), 0, QPoint());
       QFrame *page = kdialogbase->plainPage();
@@ -79,7 +80,7 @@ void KAutoConfigDialog::addPage(QWidget *page,
       kdialogbase->setMainWidget(page);
     }
     break;
-    
+
     default:
       kdDebug() << "KAutoConfigDialog::addWidget" << " unknown type.";
   }
