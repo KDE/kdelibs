@@ -155,8 +155,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			str << "    QByteArray data;" << endl;
 			if ( !args.isEmpty() ) {
 			    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
-			    for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
-				str << "    arg << " << *it << ";" << endl;
+			    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
+				str << "    arg << " << *args_count << ";" << endl;
 			    }
 			}
 			str << "    kapp->dcopClient()->send( app(), obj(), \"" << funcName << "\", data );" << endl;
@@ -171,8 +171,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		
 			if ( !args.isEmpty() ) {
 			    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
-			    for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
-				str << "    arg << " << *it << ";" << endl;
+			    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
+				str << "    arg << " << *args_count << ";" << endl;
 			    }
 			}
 			str << "    if ( kapp->dcopClient()->call( app(), obj(), \"" << funcName << "\",";

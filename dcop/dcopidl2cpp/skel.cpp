@@ -130,7 +130,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	
 	    int fhash = functions.count() + 1;
 	    for ( int i = 0; primes[i]; i++ ) {
-		if ( primes[i] > (int) functions.count() ) {
+		if ( primes[i] >  static_cast<int>(functions.count()) ) {
 		    fhash = primes[i];
 		    break;
 		}
@@ -195,11 +195,11 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    QString plainFuncName = funcName;
 		    funcName += "(";
 		    bool first = TRUE;
-		    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
+		    for( QStringList::Iterator argtypes_count = argtypes.begin(); argtypes_count != argtypes.end(); ++argtypes_count ){
 			if ( !first )
 			    funcName += ",";
 			first = FALSE;
-			funcName += *it;
+			funcName += *argtypes_count;
 		    }
 		    funcName += ")";
 			
@@ -214,13 +214,14 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    }
 		    if ( !args.isEmpty() ) {
 			QStringList::Iterator ittypes = argtypes.begin();
-			for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
-			    str << "\t"<< *ittypes << " " << *it << ";" <<  endl;
+			QStringList::Iterator args_count;
+			for( args_count = args.begin(); args_count != args.end(); ++args_count ){
+			    str << "\t"<< *ittypes << " " << *args_count << ";" <<  endl;
 			    ++ittypes;
 			}
 			str << "\tQDataStream arg( data, IO_ReadOnly );" << endl;
-			for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
-			    str << "\targ >> " << *it << ";" << endl;
+			for( args_count = args.begin(); args_count != args.end(); ++args_count ){
+			    str << "\targ >> " << *args_count << ";" << endl;
 			}
 		    }
 
@@ -233,11 +234,11 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    }
 
 		    first = TRUE;
-		    for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
+		    for ( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 			if ( !first )
 			    str << ", ";
 			first = FALSE;
-			str << *it;
+			str << *args_count;
 		    }
 		    str << " );" << endl;
 		    if (useHashing ) {

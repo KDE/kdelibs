@@ -24,8 +24,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "dcopstub.h"
 
-DCOPStub::DCOPStub( const QCString& app, const QCString& obj )
-    : m_app( app ), m_obj( obj ), m_status( CallSucceeded )
+DCOPStub::DCOPStub( const QCString& _app, const QCString& _obj )
+    : m_app( _app ), m_obj( _obj ), m_status( CallSucceeded )
 {
 }
 
@@ -38,9 +38,9 @@ DCOPStub::Status DCOPStub::status() const
     return m_status;
 }
 
-void DCOPStub::setStatus( Status status )
+void DCOPStub::setStatus( Status _status )
 {
-    m_status = status;
+    m_status = _status;
 }
 
 bool DCOPStub::ok() const

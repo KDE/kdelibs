@@ -54,8 +54,8 @@ DCOPObject::DCOPObject(QObject *obj)
   objMap()->insert(ident, this);
 }
 
-DCOPObject::DCOPObject(const QCString &objId)
-  : ident(objId)
+DCOPObject::DCOPObject(const QCString &_objId)
+  : ident(_objId)
 {
  if ( ident.isEmpty() )
      ident.sprintf("%p", this );
@@ -72,18 +72,18 @@ QCString DCOPObject::objId() const
   return ident;
 }
 
-bool DCOPObject::hasObject(const QCString &objId)
+bool DCOPObject::hasObject(const QCString &_objId)
 {
-  if (objMap()->contains(objId))
+  if (objMap()->contains(_objId))
     return true;
   else
     return false;
 }
 
-DCOPObject *DCOPObject::find(const QCString &objId)
+DCOPObject *DCOPObject::find(const QCString &_objId)
 {
   QMap<QCString, DCOPObject *>::ConstIterator it;
-  it = objMap()->find(objId);
+  it = objMap()->find(_objId);
   if (it != objMap()->end())
     return *it;
   else
@@ -106,19 +106,19 @@ QCString DCOPObject::objectName( QObject* obj )
     if ( obj == 0 )
 	return QCString();
 
-    QCString ident;
+    QCString identity;
 
     QObject *currentObj = obj;
     while (currentObj != 0 )
     {
-	ident.prepend( currentObj->name() );
-	ident.prepend("/");
+	identity.prepend( currentObj->name() );
+	identity.prepend("/");
 	currentObj = currentObj->parent();
     }
-    if ( ident[0] == '/' )
-	ident = ident.mid(1);
+    if ( identity[0] == '/' )
+	identity = identity.mid(1);
 
-    return ident;
+    return identity;
 }
 
 bool DCOPObject::process(const QCString &fun, const QByteArray &data,

@@ -125,7 +125,7 @@ static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*,
 static void registerXSM()
 {
     char 	errormsg[256];
-    if (!SmsInitialize ((char *)"SAMPLE-SM", (char *)"1.0",
+    if (!SmsInitialize (const_cast<char *>("SAMPLE-SM"), const_cast<char *>("1.0"),
 			NewClientProc, NULL,
 			HostBasedAuthProc, 256, errormsg))
 	{
@@ -144,7 +144,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 			Bool *replyWaitRet)
 {
     DCOPMsg *pMsg = 0;
-    DCOPClientPrivate *d = (DCOPClientPrivate *) clientObject;
+    DCOPClientPrivate *d = static_cast<DCOPClientPrivate *>(clientObject);
     DCOPClient *c = d->parent;
 
     IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
@@ -155,7 +155,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     switch (opcode ) {
     case DCOPCallRejected:
 	if ( replyWait ) {
-	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Rejected;
+	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Rejected;
 	    *replyWaitRet = True;
 	    return;
 	} else {
@@ -166,7 +166,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	if ( replyWait ) {
 	    QByteArray tmp( length );
 	    IceReadData(iceConn, length, tmp.data() );
-	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Failed;
+	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Failed;
 	    *replyWaitRet = True;
 	    return;
 	} else {
@@ -178,9 +178,9 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	    QByteArray tmp( length );
 	    IceReadData(iceConn, length, tmp.data() );
 
-	    QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
-	    QCString* t =  ((ReplyStruct*) replyWait->reply)->replyType;
-	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Ok;
+	    QByteArray* b = static_cast<ReplyStruct*>(replyWait->reply)->replyData;
+	    QCString* t =  static_cast<ReplyStruct*>(replyWait->reply)->replyType;
+	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Ok;
 
 	    // TODO: avoid this data copying
 	    QDataStream tmpStream( tmp, IO_ReadOnly );
@@ -200,7 +200,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	    Q_INT32 id;
 	    QDataStream tmpStream( tmp, IO_ReadOnly );
 	    tmpStream >> id;
-	    ((ReplyStruct*) replyWait->reply)->replyId = id;
+	    static_cast<ReplyStruct*>(replyWait->reply)->replyId = id;
 	    return;
 	} else {
 	    qWarning("Very strange! got a DCOPReplyWait opcode, but we were not waiting for a reply!");
@@ -211,17 +211,17 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	    QByteArray tmp( length );
 	    IceReadData(iceConn, length, tmp.data() );
 
-	    QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
-	    ((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Ok;
-	    QCString* t =  ((ReplyStruct*) replyWait->reply)->replyType;
+	    QByteArray* b = static_cast<ReplyStruct*>(replyWait->reply)->replyData;
+	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Ok;
+	    QCString* t =  static_cast<ReplyStruct*>(replyWait->reply)->replyType;
 
 	    QDataStream ds( tmp, IO_ReadOnly );
 	    QCString calledApp, app;
 	    Q_INT32 id;
 
 	    ds >> calledApp >> app >> id >> *t >> *b;
-	    if (id != ((ReplyStruct*) replyWait->reply)->replyId) {
-		((ReplyStruct*) replyWait->reply)->status = ReplyStruct::Failed;
+	    if (id != static_cast<ReplyStruct*>(replyWait->reply)->replyId) {
+		static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Failed;
 		qWarning("Very strange! DCOPReplyDelayed got wrong sequence id!");
 	    }
 
@@ -274,7 +274,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
 	    pMsg->time = d->time;
 	    pMsg->length += reply.size();
-	    IceSendData( iceConn, reply.size(), (char *) reply.data());
+	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
 	    return;
 	}
 
@@ -286,7 +286,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
 	    pMsg->time = d->time;
 	    pMsg->length += reply.size();
-	    IceSendData( iceConn, reply.size(), (char *) reply.data());
+	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
 	    return;
 	}
 
@@ -301,8 +301,8 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	pMsg->length += datalen;
 	// use IceSendData not IceWriteData to avoid a copy.  Output buffer
 	// shouldn't need to be flushed.
-	IceSendData( iceConn, reply.size(), (char *) reply.data());
-	IceSendData( iceConn, replyData.size(), (char *) replyData.data());
+	IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+	IceSendData( iceConn, replyData.size(), const_cast<char *>(replyData.data()));
 	return;
     }
 }
@@ -377,9 +377,12 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if (_IceLastMajorOpcode < 1 )
 	registerXSM();
 
-    if ((d->majorOpcode = IceRegisterForProtocolSetup((char *) "DCOP", (char *) DCOPVendorString,
-						      (char *) DCOPReleaseString, 1, DCOPVersions,
-						      DCOPAuthCount, (char **) DCOPAuthNames,
+    if ((d->majorOpcode = IceRegisterForProtocolSetup(const_cast<char *>("DCOP"),
+						      const_cast<char *>(DCOPVendorString),
+						      const_cast<char *>(DCOPReleaseString),
+						      1, DCOPVersions,
+						      DCOPAuthCount,
+						      const_cast<char **>(DCOPAuthNames),
 						      DCOPClientAuthProcs, 0L)) < 0) {
 	emit attachFailed("Communications could not be established.");
 	return false;
@@ -402,11 +405,11 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	    QTextStream t(&f);
 	    dcopSrv = t.readLine();
 	}
-	d->serverAddr = qstrdup( dcopSrv.latin1() );
+	d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.latin1()) );
     }
 
-    if ((d->iceConn = IceOpenConnection((char*)d->serverAddr,
-					(IcePointer) this, False, d->majorOpcode,
+    if ((d->iceConn = IceOpenConnection(const_cast<char*>(d->serverAddr),
+					static_cast<IcePointer>(this), False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
 	emit attachFailed(errBuf);
 	d->iceConn = 0;
@@ -417,7 +420,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 
     int setupstat;
     setupstat = IceProtocolSetup(d->iceConn, d->majorOpcode,
-				 (IcePointer) d,
+				 static_cast<IcePointer>(d),
 				 True, /* must authenticate */
 				 &(d->majorVersion), &(d->minorVersion),
 				 &(d->vendor), &(d->release), 1024, errBuf);
@@ -594,8 +597,8 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
     pMsg->time = d->time;
     pMsg->length += datalen;
 
-    IceSendData( d->iceConn, ba.size(), (char *) ba.data() );
-    IceSendData( d->iceConn, data.size(), (char *) data.data() );
+    IceSendData( d->iceConn, ba.size(), const_cast<char *>(ba.data()) );
+    IceSendData( d->iceConn, data.size(), const_cast<char *>(data.data()) );
 
     //IceFlush(d->iceConn);
 
@@ -712,7 +715,7 @@ void DCOPClient::setNotifications(bool enabled)
 {
     QByteArray data;
     QDataStream ds(data, IO_WriteOnly);
-    ds << (Q_INT8) enabled;
+    ds << static_cast<Q_INT8>(enabled);
 
     QCString replyType;
     QByteArray reply;
@@ -894,8 +897,8 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	int datalen = ba.size() + data.size();
 	pMsg->length += datalen;
 
-	IceSendData(d->iceConn, ba.size(), (char *) ba.data());
-	IceSendData(d->iceConn, data.size(), (char *) data.data());
+	IceSendData(d->iceConn, ba.size(), const_cast<char *>(ba.data()));
+	IceSendData(d->iceConn, data.size(), const_cast<char *>(data.data()));
 
 
 	if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
@@ -910,7 +913,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	ReplyStruct tmp;
 	tmp.replyType = &replyType;
 	tmp.replyData = &replyData;
-	waitInfo.reply = (IcePointer) &tmp;
+	waitInfo.reply = static_cast<IcePointer>(&tmp);
 
 	Bool readyRet = False;
 	IceProcessMessagesStatus s;
@@ -1050,7 +1053,7 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
     pMsg->time = d->time;
     pMsg->length += ba.size();
 
-    IceSendData( d->iceConn, ba.size(), (char *) ba.data() );
+    IceSendData( d->iceConn, ba.size(), const_cast<char *>(ba.data()) );
 
     delete trans;
 }

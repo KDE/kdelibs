@@ -34,7 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class DCOPStub
 {
 public:
-    DCOPStub( const QCString& app, const QCString& obj );
+    DCOPStub( const QCString& _app, const QCString& _obj );
     virtual ~DCOPStub();
 
     /**
@@ -68,7 +68,7 @@ protected:
     /**
        Sets the status to status. Possible values are 'CallSucceeded' and 'CallFailed'
      */
-    void setStatus( Status status );
+    void setStatus( Status _status );
 
     /**
       Invoked whenever a call fails.  The default implementation

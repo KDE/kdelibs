@@ -38,13 +38,13 @@ DCOPRef::DCOPRef( const DCOPRef& ref )
     m_obj = ref.object();
 }
 
-DCOPRef::DCOPRef( const QCString& app, const QCString& obj )
-    : m_app( app ), m_obj( obj )
+DCOPRef::DCOPRef( const QCString& _app, const QCString& obj )
+    : m_app( _app ), m_obj( obj )
 {
 }
 
-DCOPRef::DCOPRef( const QCString& app, const QCString& obj, const QCString& type )
-    : m_app( app ), m_obj( obj ), m_type( type )
+DCOPRef::DCOPRef( const QCString& _app, const QCString& _obj, const QCString& _type )
+    : m_app( _app ), m_obj( _obj ), m_type( _type )
 {
 }
 
@@ -77,18 +77,18 @@ DCOPRef& DCOPRef::operator=( const DCOPRef& ref )
     return *this;
 }
 
-void DCOPRef::setRef( const QCString& app, const QCString& obj )
+void DCOPRef::setRef( const QCString& _app, const QCString& _obj )
 {
-    m_app = app;
-    m_obj = obj;
+    m_app = _app;
+    m_obj = _obj;
     m_type = 0;
 }
 
-void DCOPRef::setRef( const QCString& app, const QCString& obj, const QCString& type )
+void DCOPRef::setRef( const QCString& _app, const QCString& _obj, const QCString& _type )
 {
-    m_app = app;
-    m_obj = obj;
-    m_type = type;
+    m_app = _app;
+    m_obj = _obj;
+    m_type = _type;
 }
 
 void DCOPRef::clear()

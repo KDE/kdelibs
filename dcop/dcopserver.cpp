@@ -68,7 +68,7 @@ static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*,
 static void registerXSM()
 {
     char 	errormsg[256];
-    if (!SmsInitialize ((char *)"SAMPLE-SM", (char *)"1.0",
+    if (!SmsInitialize (const_cast<char *>("SAMPLE-SM"), const_cast<char *>("1.0"),
 			NewClientProc, NULL,
 			HostBasedAuthProc, 256, errormsg))
 	{
@@ -185,7 +185,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char *ptr;
 
     sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
-    ptr = (char *)malloc(strlen(tempFile) + 1);
+    ptr = static_cast<char *>(malloc(strlen(tempFile) + 1));
     if (ptr != NULL)
 	{
 	    strcpy(ptr, tempFile);
@@ -198,8 +198,8 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
 #define MAGIC_COOKIE_LEN 16
 
 Status
-SetAuthentication (int count, IceListenObj *listenObjs,
-		   IceAuthDataEntry **authDataEntries)
+SetAuthentication (int count, IceListenObj *_listenObjs,
+		   IceAuthDataEntry **_authDataEntries)
 {
     FILE        *addfp = NULL;
     FILE        *removefp = NULL;
@@ -242,33 +242,32 @@ SetAuthentication (int count, IceListenObj *listenObjs,
 	goto bad;
 #endif
 
-    if ((*authDataEntries = (IceAuthDataEntry *) malloc (
-							 count * 2 * sizeof (IceAuthDataEntry))) == NULL)
+    if ((*_authDataEntries = static_cast<IceAuthDataEntry *>(malloc (count * 2 * sizeof (IceAuthDataEntry)))) == NULL)
 	goto bad;
 
     for (i = 0; i < numTransports * 2; i += 2) {
-	(*authDataEntries)[i].network_id =
+	(*_authDataEntries)[i].network_id =
 	    IceGetListenConnectionString (listenObjs[i/2]);
-	(*authDataEntries)[i].protocol_name = (char *) "ICE";
-	(*authDataEntries)[i].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
+	(*_authDataEntries)[i].protocol_name = const_cast<char *>("ICE");
+	(*_authDataEntries)[i].auth_name = const_cast<char *>("MIT-MAGIC-COOKIE-1");
 
-	(*authDataEntries)[i].auth_data =
+	(*_authDataEntries)[i].auth_data =
 	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
-	(*authDataEntries)[i].auth_data_length = MAGIC_COOKIE_LEN;
+	(*_authDataEntries)[i].auth_data_length = MAGIC_COOKIE_LEN;
 
-	(*authDataEntries)[i+1].network_id =
+	(*_authDataEntries)[i+1].network_id =
 	    IceGetListenConnectionString (listenObjs[i/2]);
-	(*authDataEntries)[i+1].protocol_name = (char *) "DCOP";
-	(*authDataEntries)[i+1].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
+	(*_authDataEntries)[i+1].protocol_name = const_cast<char *>("DCOP");
+	(*_authDataEntries)[i+1].auth_name = const_cast<char *>("MIT-MAGIC-COOKIE-1");
 
-	(*authDataEntries)[i+1].auth_data =
+	(*_authDataEntries)[i+1].auth_data =
 	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
-	(*authDataEntries)[i+1].auth_data_length = MAGIC_COOKIE_LEN;
+	(*_authDataEntries)[i+1].auth_data_length = MAGIC_COOKIE_LEN;
 
-	write_iceauth (addfp, removefp, &(*authDataEntries)[i]);
-	write_iceauth (addfp, removefp, &(*authDataEntries)[i+1]);
+	write_iceauth (addfp, removefp, &(*_authDataEntries)[i]);
+	write_iceauth (addfp, removefp, &(*_authDataEntries)[i+1]);
 
-	IceSetPaAuthData (2, &(*authDataEntries)[i]);
+	IceSetPaAuthData (2, &(*_authDataEntries)[i]);
 
 	IceSetHostBasedAuthProc (listenObjs[i/2], HostBasedAuthProc);
     }
@@ -309,7 +308,7 @@ SetAuthentication (int count, IceListenObj *listenObjs,
  * Free up authentication data.
  */
 void
-FreeAuthenticationData(int count, IceAuthDataEntry *authDataEntries)
+FreeAuthenticationData(int count, IceAuthDataEntry *_authDataEntries)
 {
     /* Each transport has entries for ICE and XSMP */
 
@@ -317,11 +316,11 @@ FreeAuthenticationData(int count, IceAuthDataEntry *authDataEntries)
     int i;
 
     for (i = 0; i < count * 2; i++) {
-	free (authDataEntries[i].network_id);
-	free (authDataEntries[i].auth_data);
+	free (_authDataEntries[i].network_id);
+	free (_authDataEntries[i].auth_data);
     }
 
-    free (authDataEntries);
+    free (_authDataEntries);
 
     sprintf (command, "iceauth source %s", remAuthFile);
     system(command);
@@ -334,13 +333,13 @@ FreeAuthenticationData(int count, IceAuthDataEntry *authDataEntries)
 
 void DCOPWatchProc ( IceConn iceConn, IcePointer client_data, Bool opening, IcePointer* watch_data)
 {
-    DCOPServer* ds = ( DCOPServer*) client_data;
+    DCOPServer* ds = static_cast<DCOPServer*>(client_data);
 
     if (opening) {
-	*watch_data = (IcePointer) ds->watchConnection( iceConn );
+	*watch_data = static_cast<IcePointer>(ds->watchConnection( iceConn ));
     }
     else  {
-	ds->removeConnection( (void*) *watch_data );
+	ds->removeConnection( static_cast<void*>(*watch_data) );
     }
 }
 
@@ -403,9 +402,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 			    IceGetHeader(client->iceConn, majorOpcode, DCOPSend,
 					 sizeof(DCOPMsg), DCOPMsg, pMsg);
 			    pMsg->time = ++time;
-			    int datalen = ba.size();
-			    pMsg->length += datalen;
-			    IceSendData(client->iceConn, datalen, (char *) ba.data());
+			    int msglen = ba.size();
+			    pMsg->length += msglen;
+			    IceSendData(client->iceConn, msglen, const_cast<char *>(ba.data()) );
 			}
 		}
 	    }
@@ -442,7 +441,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		pMsg->time = ++time;
 		target->time = pMsg->time;
 		pMsg->length += datalen;
-		IceSendData(target->iceConn, datalen, (char *) ba.data());
+		IceSendData(target->iceConn, datalen, const_cast<char *>(ba.data()) );
 	    } else {
 		QCString replyType;
 		QByteArray replyData;
@@ -461,20 +460,20 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		    QByteArray reply;
 		    QDataStream replyStream( reply, IO_WriteOnly );
 		    replyStream << replyType << replyData.size();
-		    int datalen = reply.size() + replyData.size();
+		    int replylen = reply.size() + replyData.size();
 		    IceGetHeader( iceConn, majorOpcode, DCOPReply,
 				  sizeof(DCOPMsg), DCOPMsg, pMsg );
 		    pMsg->time = ++time;
-		    pMsg->length += datalen;
-		    IceSendData( iceConn, reply.size(), (char *) reply.data());
-		    IceSendData( iceConn, replyData.size(), (char *) replyData.data());
+		    pMsg->length += replylen;
+		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
+		    IceSendData( iceConn, replyData.size(), const_cast<char *>(replyData.data()) );
 		} else {
 		    QByteArray reply;
 		    IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
 				  sizeof(DCOPMsg), DCOPMsg, pMsg );
 		    pMsg->time = ++time;
 		    pMsg->length += reply.size();
-		    IceSendData( iceConn, reply.size(), (char *) reply.data());
+		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
 		}
 	    }
 	}
@@ -503,7 +502,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		pMsg->time = ++time;
 		int datalen = ba.size();
 		pMsg->length += datalen;
-		IceSendData(connreply->iceConn, datalen, (char *) ba.data());
+		IceSendData(connreply->iceConn, datalen, const_cast<char *>(ba.data()) );
 	    }
 	}
 	break;
@@ -569,7 +568,7 @@ static Status DCOPServerProtocolSetupProc ( IceConn iceConn,
     serverConn->proto_minor_version = minorVersion;
     //serverConn->clientId already initialized
 
-    *clientDataRet = (IcePointer) serverConn;
+    *clientDataRet = static_cast<IcePointer>(serverConn);
 
 
     return 1;
@@ -599,11 +598,11 @@ DCOPServer::DCOPServer()
 	registerXSM();
 
     the_server = this;
-    if (( majorOpcode = IceRegisterForProtocolReply ((char *) "DCOP",
-						     (char *) DCOPVendorString,
-						     (char *) DCOPReleaseString,
+    if (( majorOpcode = IceRegisterForProtocolReply (const_cast<char *>("DCOP"),
+						     const_cast<char *>(DCOPVendorString),
+						     const_cast<char *>(DCOPReleaseString),
 						     1, DCOPVersions,
-						     1, (char **) DCOPAuthNames,
+						     1, const_cast<char **>(DCOPAuthNames),
 						     DCOPServerAuthProcs,
 						     HostBasedAuthProc,
 						     DCOPServerProtocolSetupProc,
@@ -641,7 +640,7 @@ DCOPServer::DCOPServer()
     if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
 	qFatal("DCOPSERVER: authentication setup failed.");
 
-    IceAddConnectionWatch (DCOPWatchProc, (IcePointer) this);
+    IceAddConnectionWatch (DCOPWatchProc, static_cast<IcePointer>(this));
 
     listener.setAutoDelete( TRUE );
     DCOPListener* con;
@@ -651,7 +650,7 @@ DCOPServer::DCOPServer()
 	connect( con, SIGNAL( activated(int) ), this, SLOT( newClient(int) ) );
     }
     char c;
-    (void) write(ready[1], &c, 1); // dcopserver is started
+    write(ready[1], &c, 1); // dcopserver is started
     close(ready[1]);
 }
 
@@ -680,7 +679,7 @@ void DCOPServer::ioError( IceConn /* iceConn */ )
 
 void DCOPServer::processData( int /*socket*/ )
 {
-    IceConn iceConn = ((DCOPConnection*)sender())->iceConn;
+    IceConn iceConn = static_cast<const DCOPConnection*>(sender())->iceConn;
     IceProcessMessagesStatus status = IceProcessMessages( iceConn, 0, 0 );
     if ( status == IceProcessMessagesIOError ) {
 	(void) IceCloseConnection( iceConn );
@@ -690,7 +689,7 @@ void DCOPServer::processData( int /*socket*/ )
 void DCOPServer::newClient( int /*socket*/ )
 {
     IceAcceptStatus status;
-    IceConn iceConn = IceAcceptConnection( ((DCOPListener*)sender())->listenObj, &status);
+    IceConn iceConn = IceAcceptConnection( static_cast<const  DCOPListener*>(sender())->listenObj, &status);
     IceSetShutdownNegotiation( iceConn, False );
 
     IceConnectStatus cstatus;
@@ -713,12 +712,12 @@ void* DCOPServer::watchConnection( IceConn iceConn )
 
     clients.insert(iceConn, con );
 
-    return (void*) con;
+    return static_cast<void*>(con);
 }
 
 void DCOPServer::removeConnection( void* data )
 {
-    DCOPConnection* conn = (DCOPConnection*)data;
+    DCOPConnection* conn = static_cast<DCOPConnection*>(data);
     clients.remove(conn->iceConn );
 
     // Send DCOPReplyFailed to all in conn->waitingForReply
@@ -733,7 +732,7 @@ void DCOPServer::removeConnection( void* data )
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
 	    pMsg->time = ++time;
 	    pMsg->length += reply.size();
-	    IceSendData( iceConn, reply.size(), (char *) reply.data());
+	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
 	}
     }
 
@@ -749,7 +748,7 @@ void DCOPServer::removeConnection( void* data )
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
 	    pMsg->time = ++time;
 	    pMsg->length += reply.size();
-	    IceSendData( iceConn, reply.size(), (char *) reply.data());
+	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
 	}
     }
 
@@ -776,7 +775,7 @@ void DCOPServer::removeConnection( void* data )
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->time = ++time;
 		pMsg->length += datalen;
-		IceSendData(c->iceConn, datalen, (char *) ba.data());
+		IceSendData(c->iceConn, datalen, const_cast<char *>(ba.data()));
 	    }
 	}
     }
@@ -840,7 +839,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 				      sizeof(DCOPMsg), DCOPMsg, pMsg );
 			pMsg->time = ++time;
 			pMsg->length += datalen;
-			IceWriteData( c->iceConn, datalen, (char *) ba.data());
+			IceWriteData( c->iceConn, datalen, const_cast<char *>(ba.data()));
 			IceFlush( c->iceConn );
 		    }
 		}
@@ -917,7 +916,6 @@ const char* const ABOUT =
 "Copyright (C) 1999-2000, The KDE Developers <http://www.kde.org>\n"
 ;
 
-
 int main( int argc, char* argv[] )
 {
     bool nofork = false;
@@ -969,7 +967,7 @@ int main( int argc, char* argv[] )
 		{
 		    char c;
 		    close(ready[1]);
-		    (void) read(ready[0], &c, 1); // Wait till dcopserver is started
+		    read(ready[0], &c, 1); // Wait till dcopserver is started
 		    close(ready[0]);
 		    exit(0); // I am the parent
 		}
