@@ -391,6 +391,11 @@ void KDirLister::updateDirectory( const KURL& _dir )
 {
   kdDebug(7003) << "KDirLister::updateDirectory( " << _dir.prettyURL() << " )" << endl;
 
+  QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator it = d->jobs.begin();
+  for ( ; it != d->jobs.end(); it++ )
+    if ( it.key()->url() == _dir )
+        return;
+
   // we have a limit of MAX_JOBS concurrently running jobs
   if ( d->jobs.count() >= d->MAX_JOBS )
   {
