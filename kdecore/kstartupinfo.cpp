@@ -850,7 +850,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         {
         if( age_P )
             ( *it ).age++;
-	int tout = timeout;
+	unsigned int tout = timeout;
 	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
         if( ( *it ).age >= tout )
@@ -869,7 +869,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         {
         if( age_P )
             ( *it ).age++;
-	int tout = timeout;
+	unsigned int tout = timeout;
 	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
         if( ( *it ).age >= tout )
@@ -888,7 +888,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         {
         if( age_P )
             ( *it ).age++;
-	int tout = timeout;
+	unsigned int tout = timeout;
 	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
         if( ( *it ).age >= tout )
