@@ -21,10 +21,7 @@
 
 
 #include <klocale.h>
-#include <qtabbar.h>
-#include <qtabdialog.h>
-#include <qpushbutton.h>
-#include "kcontrol.moc"
+#include "kcontrol.h"
 
 static int minimum_width_;
 
@@ -173,10 +170,4 @@ void KControlApplication::help()
   kapp->invokeHTMLHelp(QString("kcontrol/")+kapp->appName()+"/"+name, "");
 }
 
-/*
-****************************************************************************
-*
-* $Log$ 
-*
-****************************************************************************
-*/
+#include "kcontrol.moc"
