@@ -1,5 +1,10 @@
 2004-04-18  Leo Savernik  <l.savernik@aon.at>
 
+	* khtml_part.cpp: (extendSelectionTo): Fixed deselection of whole
+	word/line at line boundaries in ExtendByWord/ExtendByLine mode.
+
+2004-04-18  Leo Savernik  <l.savernik@aon.at>
+
 	* khtml_part.cpp: Merged firstRunAt, lastRunAt from WebCore.
 	(khtmlMouse{Press,DoubleClick,Move,Release}Event): Support extending selection
 	by word and by line as mandated by the KDE style guide.

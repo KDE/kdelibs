@@ -5507,6 +5507,11 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
                                                            absY-innerNode.handle()->renderer()->yPos(), node, offset, state);
       if (!node || !node->renderer()) return;
 
+      // Words at the beginning/end of line cannot be deselected in
+      // ExtendByWord mode. Therefore, do not enforce it if the selection
+      // point does not match the node under the mouse cursor.
+      bool withinNode = innerNode == node;
+
       // we have to get to know if end is before start or not...
       // shouldn't be null but it can happen with dynamic updating of nodes
       if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
@@ -5514,7 +5519,7 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
           !d->m_selectionStart.handle()->renderer() ||
           !d->m_selectionEnd.handle()->renderer()) return;
 
-      if (d->m_extendMode != d->ExtendByChar) {
+      if (d->m_extendMode != d->ExtendByChar && withinNode) {
         // check whether we should extend at the front, or at the back
         bool caretBeforeInit = RangeImpl::compareBoundaryPoints(
       			d->caretNode().handle(), d->caretOffset(),
@@ -5542,7 +5547,7 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
       if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
       {
 //         kdDebug(6000) << "extto: startBefEnd " << d->m_startBeforeEnd << " extAtEnd " << d->m_extendAtEnd << " (" << d->m_startOffset << ") - (" << d->m_endOffset << ")" << " initOfs " << d->m_initialOffset << endl;
-        if (d->m_extendMode != d->ExtendByChar)
+        if (d->m_extendMode != d->ExtendByChar && withinNode)
           extendSelection( node, offset, d->caretNode(), d->caretOffset(), d->m_startBeforeEnd ^ !d->m_extendAtEnd, d->m_extendMode == d->ExtendByLine );
 
         if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
