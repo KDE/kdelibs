@@ -780,6 +780,7 @@ Completion ForNode::execute()
 {
   KJSO e, v, cval;
   Boolean b;
+  Context *context = Context::current();
 
   if (expr1) {
     e = expr1->evaluate();
@@ -793,6 +794,10 @@ Completion ForNode::execute()
       if (b.value() == false)
 	return Completion(Normal, cval);
     }
+    // bail out on error
+    if (context->hadError())
+      return Completion(ReturnValue, context->error());
+
     Completion c = stat->execute();
     if (c.isValueCompletion())
       cval = c.value();
@@ -892,8 +897,13 @@ Completion DoWhileNode::execute()
   KJSO be, bv;
   Completion c;
   KJSO value;
+  Context *context = Context::current();
 
   do {
+    // bail out on error
+    if (context->hadError())
+      return Completion(ReturnValue, context->error());
+
     c = statement->execute();
     if (!((c.complType() == Continue) && ls.contains(c.target()))) {
       if ((c.complType() == Break) && ls.contains(c.target()))
@@ -901,7 +911,6 @@ Completion DoWhileNode::execute()
       if (c.complType() != Normal)
         return c;
     }
-
     be = expr->evaluate();
     bv = be.getValue();
   } while (bv.toBoolean().value());
@@ -916,11 +925,16 @@ Completion WhileNode::execute()
   Completion c;
   Boolean b(false);
   KJSO value;
+  Context *context = Context::current();
 
   while (1) {
     be = expr->evaluate();
     bv = be.getValue();
     b = bv.toBoolean();
+
+    // bail out on error
+    if (context->hadError())
+      return Completion(ReturnValue, context->error());
 
     if (!b.value())
       return Completion(Normal, value);
