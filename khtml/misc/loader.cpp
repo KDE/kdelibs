@@ -251,11 +251,18 @@ namespace khtml
         */
         void rewind();
 
+        /*
+          Indicates that the buffered data is no longer
+          needed.
+        */
+        void cleanBuffer();
+
     private:
         QByteArray buffer;
-        bool rew;
-        int pos;
-        bool eof;
+        unsigned int pos;
+        bool eof     : 1;
+        bool rew     : 1;
+        bool rewable : 1;
     };
 }
 
@@ -269,6 +276,7 @@ ImageSource::ImageSource(QByteArray buf)
   rew = false;
   pos = 0;
   eof = false;
+  rewable = true;
 }
 
 /**
@@ -291,6 +299,13 @@ void ImageSource::sendTo(QDataSink* sink, int n)
   sink->receive((const uchar*)&buffer.at(pos), n);
 
   pos += n;
+
+  // buffer is no longer needed
+  if(eof && pos == buffer.size() && !rewable)
+  {
+      buffer.resize(0);
+      pos = 0;
+  }
 }
 
 /**
@@ -304,7 +319,7 @@ void ImageSource::setEOF( bool state )
 // ImageSource's is rewindable.
 bool ImageSource::rewindable() const
 {
-    return TRUE;
+    return rewable;
 }
 
 // Enables rewinding.  No special action is taken.
@@ -324,6 +339,22 @@ void ImageSource::rewind()
 }
 
 
+void ImageSource::cleanBuffer()
+{
+    // if we need to be able to rewind, buffer is needed
+    if(rew)
+        return;
+
+    rewable = false;
+
+    // buffer is no longer needed
+    if(eof && pos == buffer.size())
+    {
+        buffer.resize(0);
+        pos = 0;
+    }
+}
+
 static QString buildAcceptHeader()
 {
   QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
@@ -341,9 +372,10 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool re
 
     m = 0;
     p = 0;
-    pixPart = new QPixmap;
+    pixPart = 0;
     bg = 0;
     typeChecked = false;
+    isFullyTransparent = false;
     formatType = 0;
     m_status = Unknown;
     m_size = 0;
@@ -357,10 +389,7 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool re
 
 CachedImage::~CachedImage()
 {
-    delete p;
-    delete m;
-    delete bg;
-    delete pixPart;
+    clear();
 }
 
 void CachedImage::ref( CachedObjectClient *c )
@@ -394,73 +423,10 @@ void CachedImage::deref( CachedObjectClient *c )
         delete this;
 }
 
-static bool
-fixBackground(QPixmap &bgPixmap, const QSize& pixmap_size)
-{
-#define BGMINWIDTH      50
-#define BGMINHEIGHT     25
-   if (bgPixmap.isNull())
-       return false;
-   int w = pixmap_size.width();
-   int h = pixmap_size.height();
-   if (w < BGMINWIDTH)
-   {
-       int factor = ((BGMINWIDTH+w-1) / w);
-       QPixmap newPixmap(w * factor, h);
-       QPainter p;
-       p.begin(&newPixmap);
-       for(int i=0; i < factor; i++)
-           p.drawPixmap(i*w, 0, bgPixmap);
-       p.end();
-       const QBitmap *mask = bgPixmap.mask();
-       if (mask)
-       {
-          QBitmap newBitmap( w * factor, h);
-          p.begin(&newBitmap);
-          for(int i=0; i < factor; i++)
-             p.drawPixmap(i*w, 0, *mask);
-          p.end();
-          newPixmap.setMask(newBitmap);
-       }
-       bgPixmap = newPixmap;
-       w = w * factor;
-   }
-#ifdef CACHE_DEBUG
-   else {
-       kdDebug( 6060 ) << "Not scaling in X-dir" << endl;
-   }
-#endif
-   if (h < BGMINHEIGHT)
-   {
-       int factor = ((BGMINHEIGHT+h-1) / h);
-       QPixmap newPixmap(w, h*factor);
-       QPainter p;
-       p.begin(&newPixmap);
-       for(int i=0; i < factor; i++)
-          p.drawPixmap(0, i*h, bgPixmap);
-       p.end();
-       const QBitmap *mask = bgPixmap.mask();
-       if (mask)
-       {
-          QBitmap newBitmap( w, h*factor);
-          p.begin(&newBitmap);
-          for(int i=0; i < factor; i++)
-             p.drawPixmap(0, i*h, *mask);
-          p.end();
-          newPixmap.setMask(newBitmap);
-       }
-       bgPixmap = newPixmap;
-       h = h * factor;
-   }
-#ifdef CACHE_DEBUG
-   else {
-       kdDebug( 6060 ) << "Not scaling in Y-dir" << endl;
-   }
-#endif
-   return true;
-}
+#define BGMINWIDTH      32
+#define BGMINHEIGHT     32
 
-const QPixmap &CachedImage::tiled_pixmap() const
+const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
     const QPixmap &r = pixmap();
 
@@ -469,13 +435,21 @@ const QPixmap &CachedImage::tiled_pixmap() const
     if (bg)
        return *bg;
 
-    if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT))
+    if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT) || newc != bgColor)
     {
-       delete bg;
-       bg = new QPixmap(r);
-       fixBackground(*bg, pixmap_size());
+       QSize s(pixmap_size());
+       int w = ((BGMINWIDTH  / s.width())+1) * s.width();
+       int h = ((BGMINHEIGHT / s.height())+1) * s.height();
+
+       bg = new QPixmap(w, h);
+       QPixmap pix = pixmap();
+       QPainter p(bg);
+       p.fillRect(0, 0, w, h, newc);
+       p.drawTiledPixmap(0, 0, w, h, pix);
+
        return *bg;
     }
+
     return r;
 }
 
@@ -488,6 +462,8 @@ const QPixmap &CachedImage::pixmap( ) const
             // pixmap is not yet completely loaded, so we
             // return a clipped version. asserting here
             // that the valid rect is always from 0/0 to fullwidth/ someheight
+            if(!pixPart) pixPart = new QPixmap(m->getValidRect().size());
+
             (*pixPart) = m->framePixmap();
             pixPart->resize(m->getValidRect().size());
             return *pixPart;
@@ -568,18 +544,65 @@ void CachedImage::movieStatus(int status)
 #endif
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
+        // just another Qt 2.2.0 bug. we cannot call
+        // QMovie::frameImage if we're after QMovie::EndOfMovie
+        if(status == QMovie::EndOfFrame)
+        {
+            const QImage& im = m->frameImage();
+            if(im.width() < 5 && im.height() < 5 && im.hasAlphaBuffer()) // only evaluate for small images
+            {
+                QImage am = im.createAlphaMask();
+                if(am.depth() == 1)
+                {
+                    bool solid = false;
+                    for(int y = 0; y < am.height(); y++)
+                        for(int x = 0; x < am.width(); x++)
+                            if(am.pixelIndex(x, y)) {
+                                solid = true;
+                                break;
+                            }
+
+                    isFullyTransparent = (!solid);
+                }
+
+            }
+
+            // we have to delete our tiled bg variant here
+            // because the frame has changed (in order to keep it in sync)
+            delete bg;
+            bg = 0;
+        }
+
+        if(status == QMovie::EndOfMovie)
+        {
+            // the movie has ended and it doesn't loop nor is it an animation,
+            // so there is no need to keep the buffer in memory
+            if(imgSource && m->frameNumber() == 1)
+            {
+                imgSource->cleanBuffer();
+                delete p;
+                p = new QPixmap(m->framePixmap());
+                delete m;
+                m = 0;
+            }
+        }
+
 #ifdef CACHE_DEBUG
         QRect r(valid_rect());
         qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
                m->framePixmap().size().width(), m->framePixmap().size().height());
 #endif
-        do_notify(m->framePixmap(), valid_rect());
+        if(m)
+            do_notify(m->framePixmap(), valid_rect());
     }
 }
 
 void CachedImage::clear()
 {
-    delete m;  m = 0;
+    delete m;   m = 0;
+    delete p;   p = 0;
+    delete bg;  bg = 0;
+    delete pixPart; pixPart = 0;
 
     formatType = 0;
 
@@ -597,7 +620,6 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #endif
     if ( !typeChecked )
     {
-        clear();
         formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
         typeChecked = true;
 
@@ -769,9 +791,10 @@ void Loader::servePendingRequests()
 #endif
 
   KIO::TransferJob* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);
-  job->addMetaData("referrer", req->m_baseURL.string());
+
   if (!req->object->accept().isEmpty())
      job->addMetaData("accept", req->object->accept());
+  job->addMetaData("referrer", req->m_baseURL.string());
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
@@ -973,6 +996,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
         CachedImage *im = new CachedImage(kurl.url(), baseUrl, reload );
         cache->insert( kurl.url(), im );
         lru->append( kurl.url() );
+        flush();
         return im;
     }
 
@@ -1014,6 +1038,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
         CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), baseUrl, reload);
         cache->insert( kurl.url(), sheet );
         lru->append( kurl.url() );
+        flush();
         return sheet;
     }
 
@@ -1055,6 +1080,7 @@ CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMStr
         CachedScript *script = new CachedScript(kurl.url(), baseUrl, reload);
         cache->insert( kurl.url(), script );
         lru->append( kurl.url() );
+        flush();
         return script;
     }
 
@@ -1096,9 +1122,7 @@ void Cache::flush()
         if( !o->canDelete() || o->status() == CachedObject::Persistent )
             continue; // image is still used or cached permanently
 
-#ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache: removing " << url << endl;
-#endif
         actSize -= o->size();
         lru->remove( url );
         cache->remove( url );

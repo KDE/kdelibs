@@ -71,7 +71,7 @@ struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     JOCTET buffer[max_buf];
 
     int valid_buffer_len;
-    int skip_input_bytes;
+    unsigned int skip_input_bytes;
     int ateof;
 
 public:

@@ -78,7 +78,7 @@ namespace khtml
 	    CSSStyleSheet,
 	    Script
 	};
-	
+
 	enum Status {
 	    NotCached,    // this URL is not cached
 	    Unknown,      // let imagecache decide what to do with it
@@ -102,13 +102,13 @@ namespace khtml
 
 	virtual void data( QBuffer &buffer, bool eof) = 0;
 	virtual void error( int err, const char *text ) = 0;
-	
+
 	const DOM::DOMString &url() { return m_url; }
 	Type type() { return m_type; }
-	
+
 	virtual void ref(CachedObjectClient *consumer) = 0;
 	virtual void deref(CachedObjectClient *consumer) = 0;
-	
+
 	int count() { return m_clients.count(); }
 
 	void setStatus(Status s) { m_status = s; }
@@ -163,7 +163,7 @@ namespace khtml
     public:
 	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
 	virtual ~CachedCSSStyleSheet();
-	
+
 	const DOM::DOMString &sheet() const { return m_sheet; }
 
 	virtual void ref(CachedObjectClient *consumer);
@@ -178,7 +178,7 @@ namespace khtml
 	DOM::DOMString m_sheet;
 	bool loading;
     };
-	
+
     /**
      * a cached script
      */
@@ -187,7 +187,7 @@ namespace khtml
     public:
 	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
 	virtual ~CachedScript();
-	
+
 	const DOM::DOMString &script() const { return m_script; }
 
 	virtual void ref(CachedObjectClient *consumer);
@@ -214,9 +214,9 @@ namespace khtml
     public:
 	CachedImage(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
 	virtual ~CachedImage();
-	
+
 	const QPixmap &pixmap() const;
-	const QPixmap &tiled_pixmap() const;
+	const QPixmap &tiled_pixmap(const QColor& bg);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
         QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
@@ -226,8 +226,13 @@ namespace khtml
 
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
-	
+
 	void load();
+
+        bool isTransparent() { return isFullyTransparent; }
+
+    protected:
+	void clear();
 
     private slots:
 	/**
@@ -239,29 +244,24 @@ namespace khtml
     private:
         void do_notify(const QPixmap& p, const QRect& r);
 
-    public:
+        DOM::DOMString m_baseURL;
+        QColor bgColor;
 	QMovie* m;
         QPixmap* p;
+	QPixmap* bg;
+        mutable QPixmap* pixPart;
 
-    protected:
-	void clear();
+        ImageSource* imgSource;
+        const char* formatType;  // Is the name of the movie format type
 
 	int width;
 	int height;
 
-	// Is the name of the movie format type
-	const char* formatType;
-
 	// Is set if movie format type ( incremental/animation) was checked
 	bool typeChecked;
-	
-        // Used to cache a tiled version of the image
-	mutable QPixmap *bg;
-        QPixmap* pixPart;
+        bool isFullyTransparent;
 
-	ImageSource* imgSource;
-
-	DOM::DOMString m_baseURL;
+        friend class Cache;
     };
 
     /**
@@ -274,7 +274,7 @@ namespace khtml
     public:
  	DocLoader();
  	~DocLoader();
- 	
+
 	CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 	CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
@@ -296,8 +296,8 @@ namespace khtml
 	DOM::DOMString m_baseURL;
     };
 
-	
-	
+
+
     /**
      * @internal
      */
@@ -314,7 +314,7 @@ namespace khtml
         int numRequests( const DOM::DOMString &baseURL );
         int numRequests( const DOM::DOMString &baseURL, CachedObject::Type type );
 
-        void cancelRequests( const DOM::DOMString &baseURL );	
+        void cancelRequests( const DOM::DOMString &baseURL );
 
     signals:
 	void requestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
@@ -325,12 +325,12 @@ namespace khtml
 
     private:
 	void servePendingRequests();
-	
+
 	QList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
-#ifdef HAVE_LIBJPEG        
+#ifdef HAVE_LIBJPEG
         KJPEGFormatType m_jpegloader;
-#endif        
+#endif
     };
 
 
@@ -371,7 +371,7 @@ namespace khtml
 	 * load the requested data in case it's not cahced
 	 */
 	static CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload = false);
-	
+
 	/**
 	 * sets the size of the cache. This will only hod approximately, since the size some
 	 * cached objects (like stylesheets) take up in memory is not exaclty known.
@@ -396,7 +396,7 @@ namespace khtml
 	static Loader *loader() { return m_loader; }
 
 	static KURL completeURL(const DOM::DOMString &url, const DOM::DOMString &baseUrl);
-	
+
     	static QPixmap *nullPixmap;
 
         static void removeCacheEntry( CachedObject *object );

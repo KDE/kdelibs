@@ -74,8 +74,6 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     }
 
     // Image dimensions have been changed, recalculate layout
-//    kdDebug( 6040 ) << "Image: setPixmap" << endl;
-
     if(o->pixmap_size() !=  pixSize)
     {
         //kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
@@ -98,6 +96,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     else
     {
         pix = p;
+        resizeCache = QPixmap(); // for scaled animations
         repaintRectangle(r.x(), r.y(), r.width(), r.height());
     }
 }
@@ -135,28 +134,34 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
                 p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
         }
     }
-    else
+    else if (image && !image->isTransparent())
     {
-        if ( (cWidth != image->pixmap_size().width() ||  cHeight != image->pixmap_size().height() ) &&
+        if ( (cWidth != pixSize.width() ||  cHeight != pixSize.height() ) &&
              pix.width() && pix.height() && image->valid_rect().isValid())
         {
-//            kdDebug( 6040 ) << "have to scale: " << endl;
-//            kdDebug( 6040 ) << "cWidth " << cWidth << " cHeight " << cHeight
-//                            << " pw: " << image->pixmap_size().width()
-//                             << " ph: " << image->pixmap_size().height() << endl;
-
             QRect scaledrect(image->valid_rect());
             //scaling does not work if w or h is 1
             if (scaledrect.width()==1) scaledrect.setWidth(2);
             if (scaledrect.height()==1) scaledrect.setHeight(2);
 
-            if (resizeCache.isNull() || image->valid_rect().size() != resizeCache.size())
+            if (resizeCache.isNull() || QSize(cWidth, cHeight) != resizeCache.size())
             {
+                //kdDebug( 6040 ) << "have to scale: " << endl;
+                //qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
+                //       cWidth, cHeight, pixSize.width(), pixSize.height(), resizeCache.width(), resizeCache.height());
                 QWMatrix matrix;
-                matrix.scale( (float)(cWidth)/pix.width(),
-                        (float)(cHeight)/pix.height() );
+                matrix.scale( (float)(cWidth)/pixSize.width(),
+                        (float)(cHeight)/pixSize.height() );
                 resizeCache = pix.xForm( matrix );
                 scaledrect = matrix.map(scaledrect);
+                // sometimes scaledrect.width/height are off by one because
+                // of rounding errors. if the image is fully loaded, we
+                // make sure that we don't do unnecessary resizes during painting
+                QSize s(scaledrect.size());
+                if(image->valid_rect().size() == pixSize) // fully loaded
+                    s = QSize(cWidth, cHeight);
+                if(resizeCache.size() != s)
+                    resizeCache.resize(s);
             }
             //qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
             p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, scaledrect );
@@ -220,7 +225,7 @@ void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLo
 {
     if(image) image->deref(this);
     image = docLoader->requestImage(url, baseUrl);
-    image->ref(this);
+    if(image) image->ref(this);
 }
 
 void RenderImage::setAlt(DOM::DOMString text)

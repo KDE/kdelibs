@@ -135,7 +135,7 @@ public:
 
 signals:
     void cleared();
-    
+
 protected:
     void clear();
 
@@ -170,7 +170,7 @@ protected:
      */
     void doAutoScroll();
 
-private:    
+private:
     bool gotoLink();
 
     void useSlowRepaints();
@@ -193,9 +193,6 @@ private:
     int _marginHeight;
 
     KHTMLPart *m_part;
-
-    static QPixmap* paintBuffer;
-
     KHTMLViewPrivate *d;
 };
 

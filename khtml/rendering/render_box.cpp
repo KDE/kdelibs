@@ -215,19 +215,14 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 
 void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
 {
-
-    if(c.isValid())
-        p->fillRect(_tx, clipy, w, cliph, c);
-
     // no progressive loading of the background image
-    if(bg && bg->pixmap_size() == bg->valid_rect().size()) {
-//      kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
+    if(bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent()) {
+        //kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
         // ### might need to add some correct offsets
         // ### use paddingX/Y
 
         int sx = 0;
         int sy = 0;
-
 
         //hacky stuff
         EBackgroundRepeat bgr = m_style->backgroundRepeat();
@@ -241,6 +236,13 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             sx = _tx - r.x();
             sy = _ty - r.y();
 
+        }
+        else
+        {
+            // make sure that the pixmap is tiled correctly
+            // because we clip the tiling to the visible area (for speed reasons)
+            if(bg->pixmap_size().height())
+                sy = clipy % bg->pixmap_size().height();
         }
 
         switch(bgr) {
@@ -257,9 +259,10 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         case REPEAT:
             break;
         }
-        p->drawTiledPixmap(_tx, _ty, w, h, bg->pixmap(), sx, sy);
+        p->drawTiledPixmap(_tx, clipy, w, cliph, bg->tiled_pixmap(c), sx, sy);
     }
-
+    else if(c.isValid())
+        p->fillRect(_tx, clipy, w, cliph, c);
 }
 
 void RenderBox::printBorder(QPainter *p, int _tx, int _ty, int w, int h)
@@ -383,11 +386,11 @@ void RenderBox::updateHeight()
     {
         int oldHeight = m_height;
         setLayouted(false);
-        
+
         if (hasOverhangingFloats()) {
             if(containingBlock() != this) containingBlock()->updateHeight();
         }
-            
+
         layout();
 
         if(m_height != oldHeight) {
@@ -540,7 +543,7 @@ void RenderBox::calcWidth()
             {
                 m_width = w.width(cw);
                 m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
-                
+
                 if(m_width < m_minWidth) m_width = m_minWidth;
             }
 
