@@ -379,7 +379,7 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
            SLOT( slotUpdate() ) );
   m_bUpdateNewJob=false;
 
-  setCaption("Progress Dialog");
+  setCaption(i18n("Progress Dialog"));
   setMinimumSize( 350, 150 );
   resize( 460, 150 );
 
