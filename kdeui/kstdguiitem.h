@@ -33,7 +33,6 @@
  * your own.
  *
  * @author Holger Freyther <freyther@kde.org>
- * @version $Id
  */
 class KStdGuiItem
 {
