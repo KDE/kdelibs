@@ -706,6 +706,40 @@ namespace KIO {
     };
 
     /**
+     * @internal
+     * Used for direct copy from or to the local filesystem (i.e. SlaveBase::copy())
+     */
+    class DirectCopyJob : public SimpleJob {
+    Q_OBJECT
+
+    public:
+        /**
+         * Do not create a DirectCopyJob. Use KIO::copy() or KIO::file_copy() instead.
+         */
+        DirectCopyJob(const KURL& url, int command, const QByteArray &packedArgs,
+                      bool showProgressInfo);
+        /**
+	 * @internal
+         * Called by the scheduler when a @p slave gets to
+         * work on this job.
+	 * @param slave the slave that starts working on this job
+         */
+        virtual void start(Slave *slave);
+
+    signals:
+        /**
+         * @internal
+         * Emitted if the job found an existing partial file
+         * and supports resuming. Used by FileCopyJob.
+         */
+        void canResume( KIO::Job *job, KIO::filesize_t offset );
+
+    private slots:
+        void slotCanResume( KIO::filesize_t offset );
+    };
+
+
+    /**
      * The transfer job pumps data into and/or out of a Slave.
      * Data is sent to the slave on request of the slave ( dataReq).
      * If data coming from the slave can not be handled, the
@@ -1204,7 +1238,7 @@ namespace KIO {
 	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
-        
+
     protected slots:
         virtual void slotFinished( );
         virtual void slotMetaData( const KIO::MetaData &_metaData);

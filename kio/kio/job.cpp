@@ -1294,6 +1294,26 @@ MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
 
 //////////////////////////
 
+DirectCopyJob::DirectCopyJob( const KURL& url, int command,
+                              const QByteArray &packedArgs, bool showProgressInfo )
+    : SimpleJob(url, command, packedArgs, showProgressInfo)
+{
+}
+
+void DirectCopyJob::start( Slave* slave )
+{
+    connect( slave, SIGNAL(canResume( KIO::filesize_t ) ),
+             SLOT( slotCanResume( KIO::filesize_t ) ) );
+    SimpleJob::start(slave);
+}
+
+void DirectCopyJob::slotCanResume( KIO::filesize_t offset )
+{
+    emit canResume(this, offset);
+}
+
+//////////////////////////
+
 
 class FileCopyJob::FileCopyJobPrivate
 {
@@ -1398,9 +1418,11 @@ void FileCopyJob::startCopyJob(const KURL &slave_url)
 {
     //kdDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
     KIO_ARGS << m_src << m_dest << m_permissions << (Q_INT8) m_overwrite;
-    m_copyJob = new SimpleJob(slave_url, CMD_COPY, packedArgs, false);
+    m_copyJob = new DirectCopyJob(slave_url, CMD_COPY, packedArgs, false);
     addSubjob( m_copyJob );
     connectSubjob( m_copyJob );
+    connect( m_copyJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
+             SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
 }
 
 void FileCopyJob::connectSubjob( SimpleJob * job )
@@ -1462,7 +1484,7 @@ void FileCopyJob::startDataPump()
 
 void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
 {
-    if ( job == m_putJob )
+    if ( job == m_putJob || job == m_copyJob )
     {
         //kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << KIO::number(offset) << endl;
         if (offset)
@@ -1486,7 +1508,10 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
               offset = 0;
             else if ( res == R_CANCEL )
             {
-                m_putJob->kill(true);
+                if ( job == m_putJob )
+                    m_putJob->kill(true);
+                else
+                    m_copyJob->kill(true);
                 m_error = ERR_USER_CANCELED;
                 emitResult();
                 return;
@@ -1495,31 +1520,38 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         else
             m_resumeAnswerSent = true; // No need for an answer
 
-        m_getJob = get( m_src, false, false /* no GUI */ );
-        //kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
-        m_getJob->addMetaData( "errorPage", "false" );
-        m_getJob->addMetaData( "AllowCompressedPage", "false" );
-        // Set size in subjob. This helps if the slave doesn't emit totalSize.
-        if ( d->m_sourceSize != (KIO::filesize_t)-1 )
-            m_getJob->slotTotalSize( d->m_sourceSize );
-        if (offset)
+        if ( job == m_putJob )
         {
-            //kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
-            m_getJob->addMetaData( "resume", KIO::number(offset) );
+            m_getJob = get( m_src, false, false /* no GUI */ );
+            //kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
+            m_getJob->addMetaData( "errorPage", "false" );
+            m_getJob->addMetaData( "AllowCompressedPage", "false" );
+            // Set size in subjob. This helps if the slave doesn't emit totalSize.
+            if ( d->m_sourceSize != (KIO::filesize_t)-1 )
+                m_getJob->slotTotalSize( d->m_sourceSize );
+            if (offset)
+            {
+                //kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
+                m_getJob->addMetaData( "resume", KIO::number(offset) );
 
-            // Might or might not get emitted
-            connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
-                     SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
+                // Might or might not get emitted
+                connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
+                         SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
+            }
+            m_putJob->slave()->setOffset( offset );
+
+            m_putJob->suspend();
+            addSubjob( m_getJob );
+            connectSubjob( m_getJob ); // Progress info depends on get
+            m_getJob->resume(); // Order a beer
+
+            connect( m_getJob, SIGNAL(data(KIO::Job *, const QByteArray&)),
+                     SLOT( slotData(KIO::Job *, const QByteArray&)));
         }
-        m_putJob->slave()->setOffset( offset );
-
-        m_putJob->suspend();
-        addSubjob( m_getJob );
-        connectSubjob( m_getJob ); // Progress info depends on get
-        m_getJob->resume(); // Order a beer
-
-        connect( m_getJob, SIGNAL(data(KIO::Job *, const QByteArray&)),
-                 SLOT( slotData(KIO::Job *, const QByteArray&)));
+        else // copyjob
+        {
+            m_copyJob->slave()->sendResumeAnswer( offset != 0 );
+        }
     }
     else if ( job == m_getJob )
     {
