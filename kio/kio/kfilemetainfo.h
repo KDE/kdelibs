@@ -190,6 +190,12 @@ public:
     }
 
     /**
+     * @return whether an item for this key exists.
+     */
+    bool contains( const QString& key ) const
+    { return d->items.contains(key); }
+
+    /**
      * @return The list of keys the plugin knows about. No variable keys.
      */
     const QStringList supportedKeys() const
