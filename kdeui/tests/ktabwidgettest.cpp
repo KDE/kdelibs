@@ -2,13 +2,17 @@
 #include <qlayout.h>
 #include <qdragobject.h>
 #include <qinputdialog.h>
+
+#include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kdebug.h>
 
-#include "tab.h"
+#include "ktabwidgettest.h"
 
 Test::Test( QWidget* parent, const char *name )
-  :QVBox( parent, name ), mChange(0), mLeftPopup( false ), mRightPopup( false ), mContextPopup( false ), mTabbarContextPopup( false ),
-   mLeftWidget(0), mRightWidget(0)
+  :QVBox( parent, name ), mChange(0), mLeftWidget(0), mRightWidget(0),
+  mLeftPopup( false ), mRightPopup( false ), mTabbarContextPopup( false ), mContextPopup( false )
+
 {
   resize( 600,300 );
 
@@ -367,6 +371,17 @@ void Test::toggleLabels(bool state)
   mRightWidget->adjustSize();
   mWidget->hide();   // trigger update
   mWidget->show();
+}
+
+int main(int argc, char** argv )
+{
+    KCmdLineArgs::init(argc, argv, "ktabwidgettest", "ktabwidget test app", "1.0");
+    KApplication app(argc, argv);
+    Test *t = new Test();
+
+    app.setMainWidget( t );
+    t->show();
+    app.exec();
 }
 
 #include "ktabwidgettest.moc"

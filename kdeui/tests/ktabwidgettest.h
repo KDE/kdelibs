@@ -1,9 +1,9 @@
-#ifndef TAB_H
-#define TAB_H
+#ifndef KTABWIDGETTEST_H
+#define KTABWIDGETTEST_H
 
 #include <kiconloader.h>
 #include <qwidget.h>
-#include "../ktabwidget.h"
+#include <ktabwidget.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qpopupmenu.h>
