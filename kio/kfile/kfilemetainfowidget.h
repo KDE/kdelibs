@@ -14,7 +14,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-  
+
     $Id$
  */
 
@@ -25,6 +25,9 @@
 #include <qvariant.h>
 #include <kfilemetainfo.h>
 
+/*!
+ * A widget to display file meta infos (like id3 for mp3)
+ */
 class KFileMetaInfoWidget: public QWidget
 {
     Q_OBJECT

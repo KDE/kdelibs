@@ -304,9 +304,7 @@ public:
         }
 
         /**
-         * The name of the item
-         *
-         * @return the @ref name
+         * @return The name of the item
          */
         const QString& key() const
         {
@@ -317,7 +315,7 @@ public:
          * @return a string for the specified value, if possible. If not,
          * QString::null is returned. This can be used by programs if they want
          * to display a sum or an average of some item for a list of files.
-         * 
+         *
          * if @p mangle is true, the string will already contain prefix and
          * suffix
          */
@@ -345,7 +343,7 @@ public:
         }
 
         /**
-         * Return the attributes of the item. See 
+         * Return the attributes of the item. See
          * @ref KFileMimeTypInfo::Attributes
          */
         uint attributes() const
@@ -435,7 +433,7 @@ public:
 
     /**
      * Get the group info for a specific group.
-     * 
+     *
      * @return a pointer to the info. Don't delete this object!
      */
     const GroupInfo * groupInfo( const QString& group ) const;
@@ -447,14 +445,14 @@ public:
     /**
      * Return a list of all supported keys without looking for a specific
      * group
-     * 
+     *
      * @return the list of keys
      */
     QStringList supportedKeys() const;
 
     /**
      * Return a list of all supported keys in preference order
-     * 
+     *
      * @return the list of keys
      */
     QStringList preferredKeys() const
@@ -577,7 +575,7 @@ public:
      * the next @ref KFileMetaInfo::applyChanges() , it will be removed from
      * the file. With this method, you can ask if the item is marked for
      * removal.
-     * 
+     *
      * @return true if the item was removed, false if not
      */
     bool isRemoved() const;
@@ -596,7 +594,7 @@ public:
      * This method returns a translated prefix to be displayed before the
      * value. Think e.g. of the $ in $30
      *
-     * @return the prefix 
+     * @return the prefix
      */
     QString prefix() const;
 
@@ -733,7 +731,7 @@ public:
         return i.value();
     }
 
-    
+
     /**
      * Use this method to get a list of keys in the specified group that
      * the plugin knows about. No variable keys.
@@ -1169,7 +1167,7 @@ public:
     QStringList preferredGroups( const QString& mimeType ) const;
 
     QStringList supportedMimeTypes() const;
-    
+
 protected:
     KFileMetaInfoProvider();
 

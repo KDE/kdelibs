@@ -152,7 +152,7 @@ public:
     * comment when prompting the user for password.
     *
     * This setting is @em optional and only applicable when
-    * the @ref comment field is also set.
+    * the @ref #comment field is also set.
     */
    QString commentLabel;
 

@@ -110,10 +110,10 @@ public:
     /**
      * Uploads file @p src to URL @p target.
      *
-     * Both must be specified, unlike @ref download.
+     * Both must be specified, unlike @ref #download.
      * Note that this is assumed to be used for saving a file over
      * the network, so overwriting is set to true. This is not the
-     * case with @ref copy.
+     * case with @ref #copy.
      *
      * @param src URL Referencing the file to upload.
      *

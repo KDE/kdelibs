@@ -45,18 +45,18 @@ public:
    ~KDiskFreeSp();
    /**
     * Call this to fire a search on the disk usage information
-    * for @p mountPoint. @ref foundMountPoint will be emitted
+    * for @p mountPoint. @ref #foundMountPoint will be emitted
     * if this mount point is found, with the info requested.
-    * @ref done is emitted in any case.
+    * @ref #done is emitted in any case.
     */
    int readDF( const QString & mountPoint );
 
    /**
     * Call this to fire a search on the disk usage information
     * for the mount point containing @p path.
-    * @ref foundMountPoint will be emitted
+    * @ref #foundMountPoint will be emitted
     * if this mount point is found, with the info requested.
-    * @ref done is emitted in any case.
+    * @ref #done is emitted in any case.
     */
    static KDiskFreeSp * findUsageInfo( const QString & path );
 

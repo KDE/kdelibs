@@ -165,15 +165,15 @@ public:
     ///////////
 
     /**
-     * Call this in @ref get and @ref copy, to give the total size
+     * Call this in @ref #get and @ref #copy, to give the total size
      * of the file
      * Call in @ref listDir too, when you know the total number of items.
      */
     void totalSize( KIO::filesize_t _bytes );
     /**
-     * Call this during @ref get and @ref copy, once in a while,
+     * Call this during @ref #get and @ref #copy, once in a while,
      * to give some info about the current state.
-     * Don't emit it in @ref listDir, @ref listEntries speaks for itself.
+     * Don't emit it in @ref #listDir, @ref #listEntries speaks for itself.
      */
     void processedSize( KIO::filesize_t _bytes );
 
@@ -184,19 +184,19 @@ public:
      *
      * STUB ! Currently unimplemented. Here now for binary compatibility.
      *
-     * Call this during @ref get and @ref copy, once in a while,
+     * Call this during @ref #get and @ref #copy, once in a while,
      * to give some info about the current state.
      * Don't emit it in @ref listDir, @ref listEntries speaks for itself.
      */
     void processedPercent( float percent );
 
     /**
-     * Call this in @ref get and @ref copy, to give the current transfer
-     * speed, but only if it can't be calculated out of the size you 
+     * Call this in @ref #get and @ref #copy, to give the current transfer
+     * speed, but only if it can't be calculated out of the size you
      * passed to processedSize (in most cases you don't want to call it)
      */
     void speed( unsigned long _bytes_per_second );
-  
+
     /**
      * Call this to signal a redirection
      * The job will take care of going to that url.
@@ -211,8 +211,8 @@ public:
     void errorPage();
 
     /**
-     * Call this in @ref mimetype, when you know the mimetype.
-     * See @ref mimetype about other ways to implement it.
+     * Call this in @ref #mimetype, when you know the mimetype.
+     * See @ref #mimetype about other ways to implement it.
      */
     void mimeType( const QString &_type );
 
@@ -322,7 +322,7 @@ public:
      * get, aka read.
      * @param url the full url for this request. Host, port and user of the URL
      *        can be assumed to be the same as in the last setHost() call.
-     * The slave emits the data through @ref data
+     * The slave emits the data through @ref #data
      */
     virtual void get( const KURL& url );
 
@@ -339,7 +339,7 @@ public:
 
     /**
      * Finds all details for one file or directory.
-     * The information returned is the same as what @ref listDir returns,
+     * The information returned is the same as what @ref #listDir returns,
      * but only for one file or directory.
      */
     virtual void stat( const KURL& url );
@@ -351,7 +351,7 @@ public:
      * should send a block of data big enough to be able
      * to determine the mimetype.
      *
-     * If the slave doesn't reimplement it, a @ref get will
+     * If the slave doesn't reimplement it, a @ref #get will
      * be issued, i.e. the whole file will be downloaded before
      * determining the mimetype on it - this is obviously not a
      * good thing in most cases.
@@ -362,7 +362,7 @@ public:
      * Lists the contents of @p path.
      * The slave should emit ERR_CANNOT_ENTER_DIRECTORY if it doesn't exist,
      * if we don't have enough permissions, or if it is a file
-     * It should also emit @ref totalFiles as soon as it knows how many
+     * It should also emit @ref #totalFiles as soon as it knows how many
      * files it will list.
      */
     virtual void listDir( const KURL& url );
@@ -432,7 +432,7 @@ public:
     virtual void special( const QByteArray & );
 
     /**
-     * Used for multiple get. Currently only used foir HTTP pielining 
+     * Used for multiple get. Currently only used foir HTTP pielining
      * support.
      *
      * @param data packed data; Contains number of URLs to fetch, and for
@@ -498,7 +498,7 @@ public:
     virtual void dispatch( int command, const QByteArray &data );
 
     /**
-     * Read data send by the job, after a @ref dataReq
+     * Read data send by the job, after a @ref #dataReq
      *
      * @param buffer buffer where data is stored
      * @return 0 on end of data,
@@ -628,8 +628,8 @@ public:
 
     /**
      * Explicitly store authentication information. openPassDlg already
-     * stores password information automatically, you only need to call 
-     * this function if you want to store authentication information that 
+     * stores password information automatically, you only need to call
+     * this function if you want to store authentication information that
      * is different from the information returned by openPassDlg.
      */
     bool cacheAuthentication( const AuthInfo& info );

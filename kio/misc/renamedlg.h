@@ -42,7 +42,7 @@ enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERW
 
 
 /**
- * @internal
+ * A dialog for the options to rename two files
  */
 class RenameDlg : public QDialog
 {
@@ -107,6 +107,9 @@ private:
 };
 
   /**
+   * \addtogroup renamedlg "RenameDlg related Functions"
+   *  @{
+   * \relate KIO::RenameDlg
    * Construct a modal, parent-less "rename" dialog, and return
    * a result code, as well as the new dest. Much easier to use than the
    * class @ref RenameDlg directly.
@@ -138,8 +141,7 @@ RenameDlg_Result open_RenameDlg( const QString & caption,
                                  time_t mtimeDest = (time_t) -1
                                  );
 
-/// ???
-//unsigned long getOffset( QString dest );
+/*! @} */
 
 }
 #endif

@@ -174,7 +174,7 @@ public:
 
     /**
      * Creates a list of actions from a list of information about data-tools.
-     * The slot must have a signature corresponding to the @ref toolActivated signal.
+     * The slot must have a signature corresponding to the @ref #toolActivated signal.
      *
      * Note that it's the caller's responsibility to delete the actions when they're not needed anymore.
      */

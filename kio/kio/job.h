@@ -99,7 +99,7 @@ namespace KIO {
 
     /**
      * Changes permissions on a file or directory.
-     * See the other @ref chmod below for changing many files
+     * See the other @ref #chmod below for changing many files
      * or directories.
      *
      * @param url The URL of file or directory.
@@ -246,7 +246,7 @@ namespace KIO {
      */
     TransferJob *http_post( const KURL& url, const QByteArray &postData,
                             bool showProgressInfo = true );
-                            
+
     MultiGetJob *multi_get( long id, const KURL &url, const MetaData &metaData);
 
     /**
@@ -300,7 +300,7 @@ namespace KIO {
      * pass includeHidden = false to cull out UNIX hidden files/dirs
      * (whose names start with .)
      */
-    ListJob *listDir( const KURL& url, bool showProgressInfo = true, 
+    ListJob *listDir( const KURL& url, bool showProgressInfo = true,
                       bool includeHidden = true );
 
     /**
@@ -312,7 +312,7 @@ namespace KIO {
      * pass includeHidden = false to cull out UNIX hidden files/dirs
      * (whose names start with .)
      */
-    ListJob *listRecursive( const KURL& url, bool showProgressInfo = true, 
+    ListJob *listRecursive( const KURL& url, bool showProgressInfo = true,
                             bool includeHidden = true );
 
     /**
@@ -327,7 +327,7 @@ namespace KIO {
      * Copy a file or directory @p src into the destination @dest,
      * which is the destination name in any case, even for a directory.
      *
-     * As opposed to @ref copy, this doesn't emulate @p cp, but is the only
+     * As opposed to @ref #copy, this doesn't emulate @p cp, but is the only
      * way to copy a directory, giving it a new name and getting an error
      * box if a directory already exists with the same name.
      */

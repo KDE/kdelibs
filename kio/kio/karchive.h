@@ -118,13 +118,13 @@ public:
 protected:
     /**
      * Opens an archive for reading or writing.
-     * Called by @ref open.
+     * Called by @ref #open.
      */
     virtual bool openArchive( int mode ) = 0;
 
     /**
      * Closes the archive.
-     * Called by @ref close.
+     * Called by @ref #close.
      */
     virtual bool closeArchive() = 0;
 

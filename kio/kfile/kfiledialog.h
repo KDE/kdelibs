@@ -68,7 +68,7 @@ struct KFileDialogPrivate;
  * by subclassing. It uses geometry management to ensure that subclasses
  * can easily add children that will be incorporated into the layout.
  *
- * @image kfiledialog.png KFileDialog
+ * \image html kfiledialog.png "KDE File Dialog"
  *
  * @short A file selection dialog.
  *
@@ -111,7 +111,7 @@ public:
                       which files to display.
       * See @ref setFilter() for details on how to use this argument.
       *
-      * @param acceptURLs If set to @p false, @ref KFileDialog will
+      * @param acceptURLs If set to @p false, the dialog will
       * just accept files on the local filesystem.
       */
     KFileDialog(const QString& startDir, const QString& filter,
@@ -144,7 +144,7 @@ public:
       *               which files to display.
       * See @ref setFilter() for details on how to use this argument.
       *
-      * @param acceptURLs If set to @p false, @ref KFileDialog will
+      * @param acceptURLs If set to @p false, the dialog will
       * just accept files on the local filesystem.
       *
       * @param widget A widget, or a widget of widgets, for displaying custom
@@ -683,11 +683,11 @@ public:
     KActionCollection *actionCollection() const;
 
     /**
-     * @returns the index of the path combobox so when inserting widgets into 
+     * @returns the index of the path combobox so when inserting widgets into
      * the dialog (e.g. subclasses) they can do so without hardcoding in an index
      */
     int pathComboIndex();
-    
+
 signals:
     /**
       * Emitted when the user selects a file. It is only emitted in single-

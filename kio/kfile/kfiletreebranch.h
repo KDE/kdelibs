@@ -3,7 +3,7 @@
    Copyright (C) 2000 David Faure <faure@kde.org>
                  2000 Carsten Pfeiffer <pfeiffer@kde.org>
                  2001 Klaas Freitag <freitag@suse.de>
-		
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -94,7 +94,7 @@ public:
 
    /*
     * returns the current root item pixmap set in the constructor. The root
-    * item pixmap defaults to the icon for directories. 
+    * item pixmap defaults to the icon for directories.
     * @see openPixmap()
     */
    const QPixmap& pixmap(){ return(m_rootIcon); }
@@ -108,13 +108,13 @@ public:
     * open pixmap are displayed or not.
     */
    const QPixmap& openPixmap() { return(m_openRootIcon); }
-   
+
    /**
     * @returns whether the items in the branch show their file extensions in the
     * tree or not. See @ref setShowExtensions for more information.
     */
    bool showExtensions( ) const;
-   
+
    /**
     * sets the root of the branch open or closed.
     */
@@ -126,8 +126,8 @@ public:
     * child directories of a just opened directory are not listed internally.
     * That means that it can not be determined if the sub directories are
     * expandable or not. If this is switched off there will be no call to
-    * @ref setExpandable.
-    * @param t: set to true to switch on child recursion
+    * @ref #setExpandable.
+    * @param t set to true to switch on child recursion
     */
    void setChildRecurse( bool t=true );
 
@@ -137,7 +137,7 @@ public:
     */
    bool childRecurse()
       { return m_recurseChildren; }
-   
+
 public slots:
    /**
     * populates a branch. This method must be called after a branch was added
@@ -156,17 +156,17 @@ public slots:
    virtual void setShowExtensions( bool visible = true );
 
    void setOpenPixmap( const QPixmap& pix );
-      
+
 protected:
    /**
     * allocates a @ref KFileTreeViewItem for the branch
     * for new items.
-    */ 
+    */
    virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
 						  KFileItem *fileItem );
 
    /**
-    * find the according KFileTreeViewItem by an url 
+    * find the according KFileTreeViewItem by an url
     */
    virtual KFileTreeViewItem *findTVIByURL( const KURL& );
 
@@ -187,7 +187,7 @@ signals:
     * emitted with the exact count of children for a directory.
     */
    void directoryChildCount( KFileTreeViewItem* item, int count );
-   
+
 private slots:
    void addItems( const KFileItemList& );
    void slCompleted( const KURL& );
@@ -197,16 +197,16 @@ private slots:
    void slotDirlisterClear();
    void slotDirlisterClearURL( const KURL& url );
    void slotRedirect( const KURL& oldUrl, const KURL&newUrl );
-   
+
 private:
    KFileTreeViewItem    *parentKFTVItem( KFileItem *item );
-   
+
    KFileTreeViewItem 	*m_root;
    KURL 		m_startURL;
    QString 		m_name;
    QPixmap 		m_rootIcon;
    QPixmap              m_openRootIcon;
-   
+
    /* this list holds the url's which children are opened. */
    KURL::List           m_openChildrenURLs;
 
@@ -217,7 +217,7 @@ private:
 
    bool                 m_recurseChildren :1;
    bool                 m_showExtensions  :1;
-   
+
 protected:
    virtual void virtual_hook( int id, void* data );
 private:

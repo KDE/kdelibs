@@ -34,7 +34,7 @@ namespace KIO {
         /**
          * Constructor
          *  @param items   A list of KFileItems to get the metainfo for
-         *  @param deleteItems If true, the finished KFileItems are deleted 
+         *  @param deleteItems If true, the finished KFileItems are deleted
          */
         MetaInfoJob(const KFileItemList &items, bool deleteItems = false);
         virtual ~MetaInfoJob();
@@ -97,7 +97,7 @@ namespace KIO {
      * @param save if the data should be cached for later use
      * @param enabledPlugins if non-zero, this points to a list containing
      * the names of the plugins that may be used.
-     * see @ref availablePlugins.
+     * see @ref #availablePlugins.
      */
     MetaInfoJob* fileMetaInfo(const KFileItemList& items);
 

@@ -40,6 +40,9 @@
 #include <kdebug.h>
 #include <kurl.h>
 
+/*!
+ * This KFileView is an empbedded preview for some file types.
+ */
 class KFilePreview : public QSplitter, public KFileView
 {
     Q_OBJECT
@@ -114,6 +117,7 @@ private:
     QString viewname;
 
 protected:
+    /// @internal
     virtual void virtual_hook( int id, void* data );
 private:
     class KFilePreviewPrivate;

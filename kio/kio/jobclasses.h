@@ -75,7 +75,7 @@ namespace KIO {
         /**
          * Abort this job.
          * This kills all subjobs and deletes the job.
-         * @param quietly if false, Job will emit signal @ref result
+         * @param quietly if false, Job will emit signal @ref #result
          * and ask kio_uiserver to close the progress window.
          * @p quietly is set to true for subjobs. Whether applications
          * should call with true or false depends on whether they rely
@@ -86,7 +86,7 @@ namespace KIO {
         /**
          * @return the error code for this job, 0 if no error
          * Error codes are defined in @ref KIO::Error.
-         * Only call this method from the slot connected to @ref result.
+         * Only call this method from the slot connected to @ref result().
          */
         int error() const { return m_error; }
 
@@ -98,7 +98,7 @@ namespace KIO {
         /**
          * @return a string to help understand the error, usually the url
          * related to the error.
-         * Only call if @ref error is not 0.
+         * Only call if @ref #error is not 0.
          * This is really internal, better use errorString or errorDialog.
          */
         const QString & errorText() const { return m_errorText; }
@@ -132,8 +132,8 @@ namespace KIO {
         /**
          * Display a dialog box to inform the user of the error given by
          * this job.
-         * Only call if @ref error is not 0, and only in the slot connected
-         * to @ref result.
+         * Only call if @ref #error is not 0, and only in the slot connected
+         * to @ref #result.
          * @param parent the parent widget for the dialog box
          */
         void showErrorDialog( QWidget * parent = 0L );
@@ -146,16 +146,16 @@ namespace KIO {
          *
          * The default is false.
          *
-         * See also @ref isAutoErrorHandlingEnabled , @ref showErrorDialog
+         * See also @ref #isAutoErrorHandlingEnabled , @ref #showErrorDialog
          *
          * @param enable enable or disable automatic error handling
-         * @param parentWidget the parent widget, passed to @ref showErrorDialog
+         * @param parentWidget the parent widget, passed to @ref #showErrorDialog
          */
         void setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget = 0 );
 
         /**
          * Returns whether automatic error handling is enabled or disabled.
-         * See also @ref setAutoErrorHandlingEnabled .
+         * See also @ref #setAutoErrorHandlingEnabled .
          */
         bool isAutoErrorHandlingEnabled() const;
 
@@ -211,7 +211,7 @@ namespace KIO {
     signals:
         /**
          * Emitted when the job is finished, in any case (completed, canceled,
-         * failed...). Use @ref error to know the result.
+         * failed...). Use @ref #error to know the result.
          */
         void result( KIO::Job *job );
 
@@ -265,7 +265,7 @@ namespace KIO {
         /**
          * Called whenever a subjob finishes.
          * Default implementation checks for errors and propagates
-         * to parent job, then calls @ref removeSubjob.
+         * to parent job, then calls @ref #removeSubjob.
          * Override if you don't want subjobs errors to be propagated.
          */
         virtual void slotResult( KIO::Job *job );
@@ -358,7 +358,7 @@ namespace KIO {
         /**
          * Abort job.
          * This kills all subjobs and deletes the job.
-         * @param quietly if true, Job will emit signal @ref result
+         * @param quietly if true, Job will emit signal @ref #result
          * Should only be set to false when the user kills the job
          * (from kio_uiserver), not when you want to abort a job.
          */
@@ -493,7 +493,7 @@ namespace KIO {
         void setDetails( short int details ) { m_details = details; }
 
         /**
-         * Call this in the slot connected to @ref result,
+         * Call this in the slot connected to @ref #result,
          * and only after making sure no error happened.
          */
         const UDSEntry & statResult() const { return m_statResult; }
@@ -531,7 +531,7 @@ namespace KIO {
 
     /**
      * The transfer job pumps data into and/or out of a Slave.
-     * Data is sent to the slave on request of the slave (@ref dataReq).
+     * Data is sent to the slave on request of the slave (@ref #dataReq).
      * If data coming from the slave can not be handled, the
      * reading of data from the slave should be suspended.
      */
@@ -710,7 +710,7 @@ namespace KIO {
         MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
         /**
-         * Call this in the slot connected to @ref result,
+         * Call this in the slot connected to @ref #result,
          * and only after making sure no error happened.
          */
          QString mimetype() const { return m_mimetype; }
@@ -818,8 +818,8 @@ namespace KIO {
         /**
          * This signal emits the entry found by the job while listing.
          * The progress signals aren't specific to ListJob. It simply
-         * uses SimpleJob's @ref processedSize (number of entries listed) and
-         * @ref totalSize (total number of entries, if known),
+         * uses SimpleJob's @ref #processedSize (number of entries listed) and
+         * @ref #totalSize (total number of entries, if known),
          * as well as percent.
          */
         void entries( KIO::Job *, const KIO::UDSEntryList& );
@@ -989,6 +989,9 @@ namespace KIO {
 	class CopyJobPrivate* d;
     };
 
+    /*!
+     * A more complex Job to delete files and directories.
+     */
     class DeleteJob : public Job {
     Q_OBJECT
 
@@ -1041,6 +1044,7 @@ namespace KIO {
         bool m_shred;
         QTimer *m_reportTimer;
     protected:
+        /// \internal
 	virtual void virtual_hook( int id, void* data );
     private:
 	class DeleteJobPrivate* d;

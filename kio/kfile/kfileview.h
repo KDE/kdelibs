@@ -84,7 +84,7 @@ signals:
   * make a file view working.
   *
   * Since this class is not a widget, but it's meant to be added to other
-  * widgets, its most important function is @ref widget. This should return
+  * widgets, its most important function is @ref #widget. This should return
   * a pointer to the implemented widget.
   *
   * @short A base class for views of the KDE file selector

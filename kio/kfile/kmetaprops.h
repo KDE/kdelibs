@@ -14,7 +14,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-  
+
     $Id$
  */
 
@@ -22,13 +22,12 @@
 #define __KMETAPROPS_H__
 #include <kpropertiesdialog.h>
 
- 
+
 class KFileMetaInfoItem;
 
-/**
+/*!
  * 'MetaProps plugin
  * In this plugin you can modify meta information like id3 tags of mp3 files
- * @internal
  */
 class KFileMetaPropsPlugin : public KPropsDlgPlugin
 {
@@ -46,7 +45,7 @@ public:
    * Tests whether the file specified by _items has a 'MetaInfo' plugin.
    */
   static bool supports( KFileItemList _items );
-  
+
 signals:
     void changed();
 
@@ -64,9 +63,9 @@ private:
 private slots:
     // Code disabled until the "Add" button is implemented
 //    void slotAdd();
-    
+
 private:
-    
+
   class KFileMetaPropsPluginPrivate;
   KFileMetaPropsPluginPrivate *d;
 };

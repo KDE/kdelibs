@@ -35,7 +35,7 @@ class KFileTreeItem;
 
 
 /**
- * An item for @ref a KFileTreeView that knows about its own @ref KFileItem.
+ * An item for a @ref KFileTreeView that knows about its own @ref KFileItem.
  */
 class KFileTreeViewItem : public KListViewItem
 {
@@ -64,20 +64,20 @@ public:
    KURL    url() const;
 
    /**
-    * @return if the item represents a directory 
-    */ 
+    * @return if the item represents a directory
+    */
    bool    isDir() const;
 
    /**
     * @return if this directory was already seen by a @ref KDirLister.
-    */ 
+    */
    bool    alreadyListed() const;
 
    /**
     * set the flag if the directory was already listed.
-    */ 
+    */
    void    setListed( bool wasListed );
-   
+
 protected:
 
 private:

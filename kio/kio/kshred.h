@@ -99,9 +99,9 @@ class KShred : public QObject {
         bool fillpattern(unsigned char *pattern, unsigned int size);
 
 	/**
-	 * Shreds a file by writing a series of values over it (uses @ref 
-	 * fill0s, then @ref fill1s, then @ref fillrandom, then @ref fillbyte
-	 * with 0101..., then @ref fillbyte with 1010....
+	 * Shreds a file by writing a series of values over it (uses @ref
+	 * #fill0s, then @ref #fill1s, then @ref #fillrandom, then
+         * @ref #fillbyte with 0101..., then @ref #fillbyte with 1010....
 	 * @return true on success, false on error (invalid filename or write error)
          */
         bool shred();

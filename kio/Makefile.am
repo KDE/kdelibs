@@ -52,6 +52,6 @@ kdeddir = $(kde_servicesdir)/kded
 dummy.cpp:
 	echo >dummy.cpp
 
-DOXYGEN_REFERENCES = kdecore kdefx dcop kdeui
+DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui
 DOXYGEN_EXCLUDE = kssl/kssl/*
 include ../admin/Doxyfile.am
