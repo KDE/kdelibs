@@ -151,9 +151,11 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
 
+    bool clipped = false;
     // overflow: hidden
-    if (style()->overflow()==OHIDDEN) {
+    if (style()->overflow()==OHIDDEN || style()->jsClipMode() ) {
         calcClip(p, _tx, _ty);
+	clipped = true;
     }
 
 
@@ -173,7 +175,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
     // overflow: hidden
     // restore clip region
-    if (style()->overflow()==OHIDDEN) {
+    if ( clipped ) {
 	p->restore();
     }
 
@@ -1018,6 +1020,8 @@ void RenderFlow::calcMinMaxWidth()
                     margins += child->marginRight();
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
+// 		if ( cstyle->whiteSpace() != NORMAL )
+// 		    childMin = childMax;
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
 
@@ -1085,7 +1089,8 @@ void RenderFlow::calcMinMaxWidth()
         }
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
-//        kdDebug( 6040 ) << "m_maxWidth=" << m_maxWidth << endl;
+//         kdDebug( 6040 ) << "m_minWidth=" << m_minWidth 
+// 			<< " m_maxWidth=" << m_maxWidth << endl;
     }
     else
     {

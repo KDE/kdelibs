@@ -609,7 +609,8 @@ protected:
         bool _hasHover : 1;
         bool _hasActive : 1;
 
-        int _unused : 3;
+	bool _jsClipMode : 1;
+        int _unused : 2;
     } noninherited_flags;
 
 // non-inherited attributes
@@ -716,6 +717,8 @@ public:
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
+    bool jsClipMode() const { return noninherited_flags._jsClipMode; }
+
     EClear clear() const { return  noninherited_flags._clear; }
     ETableLayout inheritedLayout() const { return  noninherited_flags._table_layout; }
 
@@ -819,6 +822,7 @@ public:
     void setClipRight(Length v) { SET_VAR(visual,clip.right,v) }
     void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
     void setClipBottom(Length v) { SET_VAR(visual,clip.bottom,v) }
+    void setJsClipMode( bool b ) { noninherited_flags._jsClipMode = b; }
 
     void setClear(EClear v) {  noninherited_flags._clear = v; }
     void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }

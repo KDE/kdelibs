@@ -292,7 +292,11 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
     }
     if (!style()->clipRight().isVariable())
     {
-        clipw-=style()->clipRight().width(m_width-bl-br);
+	int w = style()->clipRight().width(m_width-bl-br); 
+	if ( style()->jsClipMode() )
+	    clipw = w + tx + bl;
+	else
+	    clipw -= w;
     }
     if (!style()->clipTop().isVariable())
     {
@@ -302,7 +306,11 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
     }
     if (!style()->clipBottom().isVariable())
     {
-        cliph-=style()->clipBottom().width(m_height-bt-bb);
+	int h = style()->clipBottom().width(m_height-bt-bb);
+	if ( style()->jsClipMode() )
+	    cliph = h + ty + bt;
+	else
+	    cliph -= h;
     }
     //kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
 

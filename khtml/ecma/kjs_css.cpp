@@ -148,8 +148,13 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
 }
 
 
-void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int )
+void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const Value& value, int )
 {
+  UString propertyName = pName;
+  if ( propertyName == "clip" ) {
+    propertyName = "-konq-js-clip";
+  }
+  
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMCSSStyleDeclaration::tryPut " << propertyName.qstring() << endl;
 #endif

@@ -962,7 +962,7 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
 	else if(type == CSSPrimitiveValue::CSS_NUMBER)
 	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
-	else if ( *ok )
+	else if ( ok )
 	    *ok = false;
     }
     return l;
@@ -1374,7 +1374,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_VAL_VISIBLE:
             o = OVISIBLE; break;
         case CSS_VAL_HIDDEN:
-            o = OHIDDEN; kdDebug() << "overflow:hidden" << endl; break;
+            o = OHIDDEN; //kdDebug() << "overflow:hidden" << endl; break;
         case CSS_VAL_SCROLL:
             o = SCROLL; break;
         case CSS_VAL_AUTO:
@@ -2207,7 +2207,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
 	return;
     }
+    
 // rect
+	case CSS_PROP__KONQ_JS_CLIP:
     case CSS_PROP_CLIP:
     {
 	Length top;
@@ -2233,15 +2235,17 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	} else if ( primitiveValue->getIdent() != CSS_VAL_AUTO ) {
 	    break;
 	}
-// 	qDebug("setting top to %d", top.value );
-// 	qDebug("setting right to %d", right.value );
-// 	qDebug("setting bottom to %d", bottom.value );
-// 	qDebug("setting left to %d", left.value );
+// 	qDebug("setting clip top to %d", top.value );
+// 	qDebug("setting clip right to %d", right.value );
+// 	qDebug("setting clip bottom to %d", bottom.value );
+// 	qDebug("setting clip left to %d", left.value );
 	style->setClipTop( top );
 	style->setClipRight( right );
 	style->setClipBottom( bottom );
 	style->setClipLeft( left );
 
+	
+	style->setJsClipMode( (prop->m_id == CSS_PROP__KONQ_JS_CLIP) ? true : false );
         // rect, ident
         break;
     }

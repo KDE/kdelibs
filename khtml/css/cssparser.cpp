@@ -1255,6 +1255,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
             break;
         }
 
+      case CSS_PROP__KONQ_JS_CLIP:
       case CSS_PROP_CLIP:                 // <shape> | auto | inherit
       {
 	  int i;
@@ -1289,7 +1290,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		      goto cleanup;
 		  CSSPrimitiveValueImpl *length = 0;
 		  if ( str.find( "auto", pos, FALSE ) == pos )
-		      length = new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
+		      length = new CSSPrimitiveValueImpl( CSS_VAL_AUTO );
 		  else
 		      length = parseUnit( start, end, LENGTH );
 		  if ( !length )
