@@ -33,7 +33,7 @@ bool isClipboardEmpty()
   return true;
 }
 
-void pasteClipboard( const char *_dest_url )
+void pasteClipboard( const char *_dest_url, bool move )
 {
   if ( KURL::split( _dest_url ).isEmpty() ) {
     kioErrorDialog( KIO::ERR_MALFORMED_URL, _dest_url );
@@ -50,7 +50,11 @@ void pasteClipboard( const char *_dest_url )
     }
 
     KIOJob* job = new KIOJob;
-    job->copy( urls, _dest_url );
+
+    if ( move )
+      job->move( urls, _dest_url );
+    else
+      job->copy( urls, _dest_url );
 
     return;
   }

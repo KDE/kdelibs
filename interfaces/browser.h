@@ -48,10 +48,11 @@ class EditExtension : public QObject
 public:
   EditExtension( QObject *parent, const char *name = 0L ) : QObject( parent, name ) {}
 
-  virtual void can( bool &copy, bool &paste, bool &move ) = 0;
+  virtual void can( bool &cut, bool &copy, bool &paste, bool &move ) = 0;
 
+  virtual void cutSelection() = 0;
   virtual void copySelection() = 0;
-  virtual void pasteSelection() = 0;
+  virtual void pasteSelection( bool move = false ) = 0;
   virtual void moveSelection( const QString &destinationURL = QString::null ) = 0;
 
 signals:

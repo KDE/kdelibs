@@ -3,7 +3,7 @@
 
 #include <qstring.h>
 
-void pasteClipboard( const char *_dest_url );
+void pasteClipboard( const char *_dest_url, bool move = false );
 void pasteData( const char *_dest_url, QByteArray _data );
 bool isClipboardEmpty();
 
