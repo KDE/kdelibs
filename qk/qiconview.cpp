@@ -992,7 +992,7 @@ void QIconViewItem::setSelected( bool s, bool cb )
 {
     if ( view->selectionMode() != QIconView::NoSelection &&
 	 selectable && s != selected ) {
-	if ( !s ) 
+	if ( !s )
 	    selected = FALSE;
 	else {
 	    if ( view->d->selectionMode == QIconView::Single && view->d->currentItem )
@@ -2149,7 +2149,7 @@ void QIconView::slotUpdate()
 
 	    w = QMAX( w, item->x() + item->width() );
 	    h = QMAX( h, item->y() + item->height() );
-	    
+	
 	    item = item->next;
 	}
 
@@ -2170,8 +2170,7 @@ void QIconView::slotUpdate()
 	    w += d->spacing;
 	else
 	    h += d->spacing;
-	resizeContents( QMAX( contentsWidth(), w ),
-			QMAX( contentsHeight(), h ) );
+	resizeContents( w, h );
     }
     viewport()->repaint( FALSE );
 
