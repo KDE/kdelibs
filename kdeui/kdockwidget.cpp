@@ -27,6 +27,7 @@
 #include <qcursor.h>
 #include <qwidgetlist.h>
 #include <qtabwidget.h>
+#include <qtooltip.h>
 #include <qstyle.h>
 
 #ifndef NO_KDE2
@@ -42,7 +43,6 @@
 #include <X11/Xlib.h>
 #endif
 #else
-#include <qapplication.h>
 #include <qtoolbar.h>
 #include <qpopupmenu.h>
 #endif
@@ -221,24 +221,28 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   drag = new KDockWidgetHeaderDrag( this, parent );
 
   closeButton = new KDockButton_Private( this, "DockCloseButton" );
+  QToolTip::add( closeButton, i18n("Close") );
   closeButton->setPixmap( style().stylePixmap (QStyle::SP_TitleBarCloseButton , this));
   closeButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( closeButton, SIGNAL(clicked()), parent, SIGNAL(headerCloseButtonClicked()));
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new KDockButton_Private( this, "DockStayButton" );
+  QToolTip::add( stayButton, i18n("Freeze the window geometry", "Freeze") );
   stayButton->setToggleButton( true );
   stayButton->setPixmap( const_cast< const char** >(not_close_xpm) );
   stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new KDockButton_Private( this, "DockbackButton" );
+  QToolTip::add( dockbackButton, i18n("Dock this window", "Dock") );
   dockbackButton->setPixmap( const_cast< const char** >(dockback_xpm));
   dockbackButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
 
   d->toDesktopButton = new KDockButton_Private( this, "ToDesktopButton" );
+  QToolTip::add( d->toDesktopButton, i18n("Detach") );
   d->toDesktopButton->setPixmap( const_cast< const char** >(todesktop_xpm));
   d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));
