@@ -1258,20 +1258,22 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     if (Entity)
         parseEntity(src, dest);
 
-    if (plaintext)
-        parseText(src);
-    else if (comment)
-        parseComment(src);
-    else if (script)
-        parseScript(src);
-    else if (style)
-        parseStyle(src);
-    else if (listing)
-        parseListing(src);
-    else if (processingInstruction)
-        parseProcessingInstruction(src);
-    else if (tag)
-        parseTag(src);
+    if ( src.length() ) {
+        if (plaintext)
+            parseText(src);
+        else if (comment)
+            parseComment(src);
+        else if (script)
+            parseScript(src);
+        else if (style)
+            parseStyle(src);
+        else if (listing)
+            parseListing(src);
+        else if (processingInstruction)
+            parseProcessingInstruction(src);
+        else if (tag)
+            parseTag(src);
+    }
 
     while ( src.length() )
     {
