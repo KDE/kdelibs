@@ -34,6 +34,7 @@
 #include <kstandarddirs.h>
 #include <kstartupinfo.h>
 #include <ktempfile.h>
+#include <kconfig.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -356,6 +357,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    }
    else if (fun == "reparseConfiguration()")
    {
+      KGlobal::config()->reparseConfiguration();
       kdDebug(7016) << "KLauncher::process : reparseConfiguration" << endl;
       KProtocolManager::reparseConfiguration();
       IdleSlave *slave;
