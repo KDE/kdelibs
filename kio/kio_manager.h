@@ -25,19 +25,11 @@ public:
   bool supportsLinking( const char *_protocol );
   bool supportsMoving( const char *_protocol );
 
-  int getConnectTimeout();
   int getReadTimeout();
   int getReadTimeoutNoResume();
   bool getMarkPartial();
-
-  /**
-   * Sets timeout for connecting to the server.
-   * This applies to ftp and http connections.
-   * If after this timeout slave still can't connect, it's stopped with alarm command.
-   *
-   * NOT YET IMPLEMENTED !!!
-   */
-  void setConnectTimeout( int _time );
+  int getMinimumKeepSize();
+  bool getAutoResume();
 
   /**
    * Sets timeout for read operations. This applies to ftp and http connections.
@@ -68,6 +60,26 @@ public:
    *
    */
   void setMarkPartial( bool _mode );
+
+  /**
+   * Set the minimum size for keepenig of interrupted transfer
+   *
+   * Downloaded file will only be kept, if its size is bigger then this limit,
+   * Otherwise it will be deleted
+   *
+   * Default value is 5000 bytes
+   *
+   */
+  void setMinimumKeepSize( int _size );
+
+  /**
+   * Set this flag if you want slaves to automatically resume files without
+   * asking in rename dialog
+   *
+   * Default value is false - don't resume automaticaly.
+   *
+   */
+  void setAutoResume( bool _mode );
 
   static ProtocolManager* self() { 
     if ( ! s_pManager )

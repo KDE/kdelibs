@@ -223,19 +223,6 @@ ProtocolManager::Type ProtocolManager::outputType( const char *_protocol )
 
 
 int
-ProtocolManager::getConnectTimeout() {
-  K2Config *g = findIntern( "common" );
-
-  int connect_timeout = 60; // 60 seconds
-
-  if ( g != 0L )
-    g->readLong( "connectTimeout", connect_timeout );
-
-  return connect_timeout;
-}
-
-
-int
 ProtocolManager::getReadTimeout() {
   K2Config *g = findIntern( "common" );
 
@@ -275,13 +262,29 @@ ProtocolManager::getMarkPartial() {
 }
 
 
-void ProtocolManager::setConnectTimeout( int _timeout ) {
+int
+ProtocolManager::getMinimumKeepSize() {
   K2Config *g = findIntern( "common" );
 
-  if ( g != 0L )
-    g->writeLong( "connectTimeout", _timeout );
+  int minimum_keep_size = 5000;  // 5000 bytes
 
-  m_pConfig->save();
+  if ( g )
+    g->readLong( "minimumKeepSize", minimum_keep_size );
+
+  return minimum_keep_size;
+}
+
+
+bool
+ProtocolManager::getAutoResume() {
+  K2Config *g = findIntern( "common" );
+
+  bool automatic_resume = false;
+
+  if ( g )
+    g->readBool( "autoResume", automatic_resume );
+
+  return automatic_resume;
 }
 
 
@@ -314,3 +317,22 @@ void ProtocolManager::setMarkPartial( bool _mode ) {
   m_pConfig->save();
 }
 
+
+void ProtocolManager::setMinimumKeepSize( int _size ) {
+  K2Config *g = findIntern( "common" );
+
+  if ( g )
+    g->writeLong( "minimumKeepSize", _size );
+
+  m_pConfig->save();
+}
+
+
+void ProtocolManager::setAutoResume( bool _mode ) {
+  K2Config *g = findIntern( "common" );
+
+  if ( g )
+    g->writeBool( "autoResume", _mode );
+
+  m_pConfig->save();
+}
