@@ -12,11 +12,7 @@
 
 #ifdef HAVE_SSL
 extern "C" {
-#include <openssl/crypto.h>
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+	#include <openssl/ssl.h>
 };
 #endif
 
@@ -26,9 +22,8 @@ extern "C" {
 using namespace KIO;
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &protocol, const QCString &pool_socket, const QCString &app_socket)
-	: SlaveBase (protocol, pool_socket, app_socket), m_iDefaultPort(default_port), m_iSock(-1), m_sServiceName(protocol)
+	: SlaveBase (protocol, pool_socket, app_socket), m_iDefaultPort(default_port), m_iSock(-1), m_sServiceName(protocol), fp(0)
 {
-	fp=0;
 	InitializeSSL();
 }
 
@@ -66,10 +61,10 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 	memset(data, 0, len);
 #ifdef HAVE_SSL
 	if (m_bIsSSL) {
-		int c = 0;
+		int c = 0, rc;
+		char x;
 		for (c = 0; c < len-1; c++) {
-			char x;
-			int rc = SSL_read(ssl, &x, 1);
+			rc = SSL_read(ssl, &x, 1);
 			if (rc <= 0)
 				return 0;
 			data[c] = x;
