@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -31,6 +32,8 @@
  *  David Faure <faure@kde.org>
  * More layout and cleanups by
  *  Preston Brown <pbrown@kde.org>
+ * Plugin capability, cleanups and port to KDialogBase by
+ *  Simon Hausmann <hausmann@kde.org>
  */
 
 #include <pwd.h>
@@ -74,6 +77,8 @@
 #include <kglobal.h>
 #include <kcompletion.h>
 #include <klineedit.h>
+#include <klibloader.h>
+#include <ktrader.h>
 
 #include "kpropsdlg.h"
 
@@ -91,9 +96,21 @@ mode_t FilePermissionsPropsPage::fperm[3][4] = {
 
 template class QList<PropsPage>;
 
+class PropertiesDialog::PropertiesDialogPrivate
+{
+public:
+  PropertiesDialogPrivate()
+  {
+  }
+  ~PropertiesDialogPrivate()
+  {
+  }
+};
+
 PropertiesDialog::PropertiesDialog( KFileItem * item ) :
   m_singleUrl( item->url() ), m_bMustDestroyItems( false )
 {
+  d = new PropertiesDialogPrivate;
   m_items.append( item );
   assert( item );
   assert(!m_singleUrl.isEmpty());
@@ -104,6 +121,7 @@ PropertiesDialog::PropertiesDialog( KFileItemList _items ) :
   m_singleUrl( _items.first()->url() ), m_items( _items ),
   m_bMustDestroyItems( false )
 {
+  d = new PropertiesDialogPrivate;
   assert( !_items.isEmpty() );
   assert(!m_singleUrl.isEmpty());
   init();
@@ -112,6 +130,7 @@ PropertiesDialog::PropertiesDialog( KFileItemList _items ) :
 PropertiesDialog::PropertiesDialog( const KURL& _url, mode_t _mode ) :
   m_singleUrl( _url ), m_bMustDestroyItems( true )
 {
+  d = new PropertiesDialogPrivate;
   assert(!_url.isEmpty());
   // Create a KFileItem from the information we have
   m_items.append( new KFileItem( _mode, -1, m_singleUrl ) );
@@ -123,6 +142,7 @@ PropertiesDialog::PropertiesDialog( const KURL& _tempUrl, const KURL& _currentDi
   : m_singleUrl( _tempUrl ), m_bMustDestroyItems( true ),
     m_defaultName( _defaultName ), m_currentDir( _currentDir )
 {
+  d = new PropertiesDialogPrivate;
   assert(!m_singleUrl.isEmpty());
   // Create the KFileItem for the _template_ file, in order to read from it.
   m_items.append( new KFileItem( -1, -1, m_singleUrl ) );
@@ -133,9 +153,8 @@ void PropertiesDialog::init()
 {
   pageList.setAutoDelete( true );
 
-  // Shouldn't this be ported to KDialogBase ?
-  tab = new QTabDialog( 0L, 0L );
-  tab->setCaption( i18n( "Properties Dialog" ) );
+  tab = new KDialogBase( KDialogBase::Tabbed, i18n( "Properties Dialog" ),
+			 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, 0L, "propsdlg", false );
 
   // Matthias: let the dialog look like a modal dialog
   XSetTransientForHint(qt_xdisplay(), tab->winId(), tab->winId());
@@ -144,11 +163,8 @@ void PropertiesDialog::init()
 
   insertPages();
 
-  tab->setOkButton(i18n("OK"));
-  tab->setCancelButton(i18n("Cancel"));
-
-  connect( tab, SIGNAL( applyButtonPressed() ), this, SLOT( slotApply() ) );
-  connect( tab, SIGNAL( cancelButtonPressed() ), this, SLOT( slotCancel() ) );
+  connect( tab, SIGNAL( okClicked() ), this, SLOT( slotApply() ) );
+  connect( tab, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
 
   tab->resize(tab->sizeHint());
   tab->show();
@@ -160,11 +176,17 @@ PropertiesDialog::~PropertiesDialog()
   pageList.clear();
   // HACK
   if ( m_bMustDestroyItems ) delete m_items.first();
+  delete tab;
+  delete d;
+}
+
+void PropertiesDialog::slotDeleteMyself()
+{
+  delete this;
 }
 
 void PropertiesDialog::addPage(PropsPage *page)
 {
-  tab->addTab( page, page->tabName() );
   pageList.append( page );
 }
 
@@ -187,21 +209,29 @@ void PropertiesDialog::slotApply()
   // PropertiesDialog::rename, so other tab will be ok with whatever order
   // BUT for file copied from templates, we need to do the renaming first !
   for ( page = pageList.first(); page != 0L; page = pageList.next() )
-    page->applyChanges();
+    if ( page->isDirty() )
+    {
+      kdDebug( 1202 ) << "applying changes for " << page->className() << endl;
+      page->applyChanges();
+    }
+    else
+      kdDebug( 1202 ) << "skipping page " << page->className() << endl;
 
   if ( pageList.first()->isA("FilePropsPage") )
     ((FilePropsPage *)pageList.first())->postApplyChanges();
 
   emit applied();
   emit propertiesClosed();
-  delete this;
+
+  QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
 }
 
 void PropertiesDialog::slotCancel()
 {
   emit canceled();
   emit propertiesClosed();
-  delete this;
+
+  QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
 }
 
 void PropertiesDialog::insertPages()
@@ -209,51 +239,100 @@ void PropertiesDialog::insertPages()
   if ( FilePropsPage::supports( m_items ) )
   {
     PropsPage *p = new FilePropsPage( this );
-    tab->addTab( p, p->tabName() );
     pageList.append( p );
   }
 
   if ( FilePermissionsPropsPage::supports( m_items ) )
   {
     PropsPage *p = new FilePermissionsPropsPage( this );
-    tab->addTab( p, p->tabName() );
     pageList.append( p );
   }
 
   if ( ExecPropsPage::supports( m_items ) )
   {
     PropsPage *p = new ExecPropsPage( this );
-    tab->addTab( p, p->tabName() );
     pageList.append( p );
   }
 
   if ( ApplicationPropsPage::supports( m_items ) )
   {
     PropsPage *p = new ApplicationPropsPage( this );
-    tab->addTab( p, p->tabName() );
     pageList.append( p );
   }
 
   if ( BindingPropsPage::supports( m_items ) )
   {
     PropsPage *p = new BindingPropsPage( this );
-    tab->addTab( p, p->tabName() );
     pageList.append( p );
   }
 
   if ( URLPropsPage::supports( m_items ) )
   {
     PropsPage *p = new URLPropsPage( this );
-    tab->addTab( p, p->tabName() );
     pageList.append( p );
   }
 
   if ( DevicePropsPage::supports( m_items ) )
   {
     PropsPage *p = new DevicePropsPage( this );
-    tab->addTab( p, p->tabName() );
     pageList.append( p );
   }
+
+  //plugins
+
+  if ( m_items.count() != 1 )
+    return;
+
+  KFileItem *item = m_items.first();
+  QString mimetype = item->mimetype();
+
+  if ( mimetype.isEmpty() )
+    return;
+
+  KTrader::OfferList offers = KTrader::self()->query( mimetype, QString::fromLatin1( "'KPropsDlg/Plugin' in ServiceTypes" ) );
+  KTrader::OfferList::ConstIterator it = offers.begin();
+  KTrader::OfferList::ConstIterator end = offers.end();
+  for (; it != end; ++it )
+  {
+    QString libName = (*it)->library();
+
+    if ( libName.isEmpty() )
+      continue;
+
+    KLibrary *lib = KLibLoader::self()->library( libName.local8Bit() );
+
+    if ( !lib )
+      continue;
+
+    KLibFactory *factory = lib->factory();
+
+    if ( !factory )
+    {
+      delete lib;
+      continue;
+    }
+
+    QObject *obj = factory->create( this, (*it)->name().latin1(), "PropsPage" );
+    if ( !obj )
+    {
+      delete lib;
+      continue;
+    }
+
+    if ( !obj->inherits( "PropsPage" ) )
+    {
+      delete obj;
+      continue;
+    }
+
+    PropsPage *page = static_cast<PropsPage *>( obj );
+    pageList.append( page );
+  }
+  
+  PropsPage *page;
+  for (page = pageList.first(); page != 0L; page = pageList.next() )
+    connect( page, SIGNAL( changed() ),
+	     page, SLOT( setDirty() ) );
 }
 
 void PropertiesDialog::updateUrl( const KURL& _newUrl )
@@ -283,10 +362,31 @@ void PropertiesDialog::rename( const QString& _name )
   updateUrl( newUrl );
 }
 
-PropsPage::PropsPage( PropertiesDialog *_props ) : QWidget( _props->tabDialog(), 0L )
+class PropsPage::PropsPagePrivate
 {
+public:
+  PropsPagePrivate()
+  {
+  }
+  ~PropsPagePrivate()
+  {
+  }
+
+  bool m_bDirty;
+};
+
+PropsPage::PropsPage( PropertiesDialog *_props )
+: QObject( _props, 0L )
+{
+  d = new PropsPagePrivate;
   properties = _props;
-  fontHeight = 2*fontMetrics().height();
+  fontHeight = 2*properties->dialog()->fontMetrics().height();
+  d->m_bDirty = false;
+}
+
+PropsPage::~PropsPage()
+{
+  delete d;
 }
 
 bool PropsPage::isDesktopFile( KFileItem * _item )
@@ -310,11 +410,44 @@ bool PropsPage::isDesktopFile( KFileItem * _item )
   return ( _item->mimetype() == QString::fromLatin1("application/x-desktop") );
 }
 
+void PropsPage::setDirty( bool b )
+{
+  d->m_bDirty = b; 
+}
+
+void PropsPage::setDirty()
+{
+  d->m_bDirty = true; 
+} 
+
+bool PropsPage::isDirty() const
+{
+  return d->m_bDirty; 
+} 
+
+void PropsPage::applyChanges()
+{
+}
+
 ///////////////////////////////////////////////////////////////////////////////
+
+class FilePropsPage::FilePropsPagePrivate
+{
+public:
+  FilePropsPagePrivate()
+  {
+  }
+  ~FilePropsPagePrivate()
+  {
+  }
+
+  QFrame *m_frame;
+};
 
 FilePropsPage::FilePropsPage( PropertiesDialog *_props )
   : PropsPage( _props )
 {
+  d = new FilePropsPagePrivate;
   m_bFromTemplate = false;
   // Extract the file name only
   QString filename = properties->defaultName();
@@ -372,7 +505,9 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
       while ( m_sRelativePath.left( 1 ).at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
   }
 
-  QVBoxLayout *vbl = new QVBoxLayout(this, KDialog::marginHint(),
+  d->m_frame = properties->dialog()->addPage( i18n("&General") );
+
+  QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, KDialog::marginHint(),
 				     KDialog::spacingHint(), "vbl");
   QGridLayout *grid = new QGridLayout(0, 3); // unknown rows
   grid->setColStretch(2, 1);
@@ -383,7 +518,7 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
   bool bDesktopFile = isDesktopFile(item);
   if (bDesktopFile || S_ISDIR( item->mode())) {
 
-    KIconButton *iconButton = new KIconButton(this);
+    KIconButton *iconButton = new KIconButton( d->m_frame );
     iconButton->setFixedSize(50, 50);
     iconButton->setIconType(KIcon::Desktop, KIcon::Application);
     // This works for everything except Device icons on unmounted devices
@@ -400,8 +535,10 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
     }
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
+    connect( iconButton, SIGNAL( iconChanged(QString &) ),
+	     this, SIGNAL( changed() ) );
   } else {
-    QLabel *iconLabel = new QLabel(this);
+    QLabel *iconLabel = new QLabel( d->m_frame );
     iconLabel->setFixedSize(50, 50);
     iconLabel->setPixmap(KMimeType::pixmapForURL(properties->kurl(),
 	    item->mode(), KIcon::Desktop));
@@ -410,39 +547,41 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
 
   if (isTrash || filename == QString::fromLatin1("/")) {
-    QLabel *lab = new QLabel(filename, this);
+    QLabel *lab = new QLabel(filename, d->m_frame );
     nameArea = lab;
   } else {
-    KLineEdit *lined = new KLineEdit(this);
+    KLineEdit *lined = new KLineEdit( d->m_frame );
     lined->setText(filename);
     nameArea = lined;
     lined->setFocus();
+    connect( lined, SIGNAL( textChanged( const QString & ) ),
+	     this, SIGNAL( changed() ) );
   }
 
   grid->addWidget(nameArea, curRow++, 2);
   oldName = filename;
 
-  QLabel *l = new QLabel(this);
+  QLabel *l = new QLabel( d->m_frame );
   l->setFrameStyle(QFrame::HLine|QFrame::Sunken);
   grid->addMultiCellWidget(l, curRow, curRow, 0, 2);
   ++curRow;
 
-  l = new QLabel(i18n("Type:"), this);
+  l = new QLabel(i18n("Type:"), d->m_frame );
   grid->addWidget(l, curRow, 0);
 
   QString tempstr = item->mimeComment();
-  l = new QLabel(tempstr, this);
+  l = new QLabel(tempstr, d->m_frame );
   grid->addWidget(l, curRow++, 2);
 
-  l = new QLabel( i18n("Location:"), this);
+  l = new QLabel( i18n("Location:"), d->m_frame );
   grid->addWidget(l, curRow, 0);
 
-  l = new QLabel(this);
+  l = new QLabel( d->m_frame );
   l->setText( directory );
   grid->addWidget(l, curRow++, 2);
 
   if (S_ISREG(item->mode())) {
-    l = new QLabel(i18n("Size:"), this);
+    l = new QLabel(i18n("Size:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
     // Should we use KIO::convertSize ? Seems less accurate...
@@ -456,19 +595,19 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
       tempstr += i18n("(%1 bytes)").arg(KGlobal::locale()->formatNumber(size, 0));
     } else
       tempstr = i18n("%1 bytes").arg(KGlobal::locale()->formatNumber(size, 0));
-    l = new QLabel(tempstr, this);
+    l = new QLabel(tempstr, d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
   if (item->isLink()) {
-    l = new QLabel(i18n("Points to:"), this);
+    l = new QLabel(i18n("Points to:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    l = new QLabel(item->linkDest(), this);
+    l = new QLabel(item->linkDest(), d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
-  l = new QLabel(this);
+  l = new QLabel( d->m_frame );
   l->setFrameStyle(QFrame::HLine|QFrame::Sunken);
   grid->addMultiCellWidget(l, curRow, curRow, 0, 2);
   ++curRow;
@@ -479,32 +618,37 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
   vbl->addLayout(grid);
   curRow = 0;
 
-  l = new QLabel(i18n("Created:"), this);
+  l = new QLabel(i18n("Created:"), d->m_frame );
   grid->addWidget(l, curRow, 0);
 
   QDateTime dt;
   dt.setTime_t( item->time(KIO::UDS_CREATION_TIME) );
   tempstr = KGlobal::locale()->formatDateTime(dt);
-  l = new QLabel(tempstr, this);
+  l = new QLabel(tempstr, d->m_frame );
   grid->addWidget(l, curRow++, 2);
 
-  l = new QLabel(i18n("Modified:"), this);
+  l = new QLabel(i18n("Modified:"), d->m_frame );
   grid->addWidget(l, curRow, 0);
 
   dt.setTime_t( item->time(KIO::UDS_MODIFICATION_TIME) );
   tempstr = KGlobal::locale()->formatDateTime(dt);
-  l = new QLabel(tempstr, this);
+  l = new QLabel(tempstr, d->m_frame );
   grid->addWidget(l, curRow++, 2);
 
-  l = new QLabel(i18n("Accessed:"), this);
+  l = new QLabel(i18n("Accessed:"), d->m_frame );
   grid->addWidget(l, curRow, 0);
 
   dt.setTime_t( item->time(KIO::UDS_ACCESS_TIME) );
   tempstr = KGlobal::locale()->formatDateTime(dt);
-  l = new QLabel(tempstr, this);
+  l = new QLabel(tempstr, d->m_frame );
   grid->addWidget(l, curRow++, 2);
 
   vbl->addStretch(1);
+}
+
+FilePropsPage::~FilePropsPage()
+{
+  delete d;
 }
 
 bool FilePropsPage::supports( KFileItemList /*_items*/ )
@@ -600,7 +744,7 @@ void FilePropsPage::slotRenameFinished( KIO::Job * job )
     qApp->exit_loop();
     if ( job->error() )
     {
-	job->showErrorDialog(this);
+	job->showErrorDialog( d->m_frame );
 	return;
     }
   }
@@ -670,9 +814,23 @@ void FilePropsPage::postApplyChanges()
   }
 }
 
+class FilePermissionsPropsPage::FilePermissionsPropsPagePrivate
+{
+public:
+  FilePermissionsPropsPagePrivate()
+  {
+  }
+  ~FilePermissionsPropsPagePrivate()
+  {
+  }
+
+  QFrame *m_frame;
+};
+
 FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
   : PropsPage( _props )
 {
+  d = new FilePermissionsPropsPagePrivate;
   grpCombo = 0L; grpEdit = 0;
   usrEdit = 0L;
   QString path = properties->kurl().path(-1);
@@ -713,14 +871,16 @@ FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
     //KIO::chmod will tell, if we had no right to change permissions
   }
 
-  QBoxLayout *box = new QVBoxLayout( this, KDialog::spacingHint() );
+  d->m_frame = properties->dialog()->addPage( i18n("&Permissions") );
+
+  QBoxLayout *box = new QVBoxLayout( d->m_frame, KDialog::spacingHint() );
 
   QLabel *l, *cl[3];
   QGroupBox *gb;
   QGridLayout *gl;
 
   /* Group: Access Permissions */
-  gb = new QGroupBox ( i18n("Access permissions"), this );
+  gb = new QGroupBox ( i18n("Access permissions"), d->m_frame );
   box->addWidget (gb);
 
   gl = new QGridLayout (gb, 6, 6, 15);
@@ -781,12 +941,14 @@ FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
       cb->setEnabled ((isMyFile || IamRoot) && (!isLink));
       permBox[row][col] = cb;
       gl->addWidget (permBox[row][col], row+2, col+1);
+      connect( cb, SIGNAL( toggled( bool ) ),
+	       this, SIGNAL( changed() ) );
     }
   }
   gl->setColStretch(6, 10);
 
     /**** Group: Ownership ****/
-  gb = new QGroupBox ( i18n("Ownership"), this );
+  gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
   box->addWidget (gb);
 
   gl = new QGridLayout (gb, 4, 3, 15);
@@ -819,6 +981,8 @@ FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
 	  KGlobalSettings::CompletionNone);
     usrEdit->setText(strOwner);
     gl->addWidget(usrEdit, 1, 1);
+    connect( usrEdit, SIGNAL( textChanged( const QString & ) ),
+	     this, SIGNAL( changed() ) );
   }
   else
   {
@@ -892,6 +1056,8 @@ FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
     grpEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
     grpEdit->setText(strGroup);
     gl->addWidget(grpEdit, 2, 1);
+    connect( grpEdit, SIGNAL( textChanged( const QString & ) ),
+	     this, SIGNAL( changed() ) );
   }
   else if ((groupList.count() > 1) && isMyFile && isLocal)
   {
@@ -899,6 +1065,8 @@ FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
     grpCombo->insertStringList(groupList);
     grpCombo->setCurrentItem(groupList.findIndex(strGroup));
     gl->addWidget(grpCombo, 2, 1);
+    connect( grpCombo, SIGNAL( activated( int ) ),
+	     this, SIGNAL( changed() ) );
   }
   else
   {
@@ -915,6 +1083,11 @@ FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
     cl[1]->setText(i18n("<b>Group</b>"));
   else
     cl[2]->setText(i18n("<b>Others</b>"));
+}
+
+FilePermissionsPropsPage::~FilePermissionsPropsPage()
+{
+  delete d;
 }
 
 bool FilePermissionsPropsPage::supports( KFileItemList /*_items*/ )
@@ -978,7 +1151,7 @@ void FilePermissionsPropsPage::slotChmodResult( KIO::Job * job )
 {
   kdDebug(1203) << "FilePermissionsPropsPage::slotChmodResult" << endl;
   if (job->error())
-    job->showErrorDialog(this);
+    job->showErrorDialog( d->m_frame );
   else
   {
     // Force refreshing information about that file if displayed.
@@ -988,15 +1161,30 @@ void FilePermissionsPropsPage::slotChmodResult( KIO::Job * job )
   qApp->exit_loop();
 }
 
+class ExecPropsPage::ExecPropsPagePrivate
+{
+public:
+  ExecPropsPagePrivate()
+  {
+  }
+  ~ExecPropsPagePrivate()
+  {
+  }
+
+  QFrame *m_frame;
+};
+
 ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
   : PropsPage( _props )
 {
-  QVBoxLayout * mainlayout = new QVBoxLayout(this, KDialog::spacingHint());
+  d = new ExecPropsPagePrivate;
+  d->m_frame = properties->dialog()->addPage( i18n("E&xecute") );
+  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
   // Now the widgets in the top layout
 
   QLabel* l;
-  l = new QLabel( this, "Label_1" );
+  l = new QLabel( d->m_frame, "Label_1" );
   l->setText( i18n("Program Name:") );
   mainlayout->addWidget(l, 1);
 
@@ -1004,10 +1192,10 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
   hlayout = new QHBoxLayout(KDialog::spacingHint());
   mainlayout->addLayout(hlayout);
 
-  execEdit = new KLineEdit( this, "LineEdit_1" );
+  execEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
   hlayout->addWidget(execEdit, 1);
 
-  execBrowse = new QPushButton( this, "Button_1" );
+  execBrowse = new QPushButton( d->m_frame, "Button_1" );
   execBrowse->setText( i18n("&Browse...") );
   hlayout->addWidget(execBrowse);
 
@@ -1015,13 +1203,13 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
 
   // The groupbox about swallowing
   QGroupBox* tmpQGroupBox;
-  tmpQGroupBox = new QGroupBox( i18n("Panel Embedding"), this, "GroupBox_1" );
+  tmpQGroupBox = new QGroupBox( i18n("Panel Embedding"), d->m_frame, "GroupBox_1" );
   tmpQGroupBox->setFrameStyle(49);
   mainlayout->addWidget(tmpQGroupBox, 2); // 2 vertical items
 
   QVBoxLayout * grouplayout;
   grouplayout = new QVBoxLayout(tmpQGroupBox, KDialog::spacingHint());
-  grouplayout->addSpacing( fontMetrics().height() );
+  grouplayout->addSpacing( d->m_frame->fontMetrics().height() );
 
   QGridLayout *grid = new QGridLayout(KDialog::spacingHint(), 0, 2);
   grid->setColStretch(1, 1);
@@ -1043,7 +1231,7 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
 
   // The groupbox about run in terminal
 
-  tmpQGroupBox = new QGroupBox( this, "GroupBox_2" );
+  tmpQGroupBox = new QGroupBox( d->m_frame, "GroupBox_2" );
   tmpQGroupBox->setFrameStyle( 49 );
   tmpQGroupBox->setAlignment( 1 );
   mainlayout->addWidget(tmpQGroupBox, 2);  // 2 vertical items -> stretch = 2
@@ -1068,7 +1256,7 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
 
   // The groupbox about run with substituted uid.
 
-  tmpQGroupBox = new QGroupBox(this, "GroupBox_3");
+  tmpQGroupBox = new QGroupBox( d->m_frame, "GroupBox_3");
   tmpQGroupBox->setFrameStyle(QFrame::Sunken|QFrame::Box);
   tmpQGroupBox->setAlignment(Qt::AlignLeft);
   mainlayout->addWidget(tmpQGroupBox, 2);
@@ -1143,12 +1331,31 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
     delete compl;
   }
 
+  connect( swallowExecEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( swallowTitleEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( execEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( terminalEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( terminalCheck, SIGNAL( toggled( bool ) ),
+	   this, SIGNAL( changed() ) );
+  connect( suidCheck, SIGNAL( toggled( bool ) ),
+	   this, SIGNAL( changed() ) );
+  connect( suidEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  
   connect( execBrowse, SIGNAL( clicked() ), this, SLOT( slotBrowseExec() ) );
   connect( terminalCheck, SIGNAL( clicked() ), this,  SLOT( enableCheckedEdit() ) );
   connect( suidCheck, SIGNAL( clicked() ), this,  SLOT( enableSuidEdit() ) );
 
 }
 
+ExecPropsPage::~ExecPropsPage()
+{
+  delete d;
+}
 
 void ExecPropsPage::enableCheckedEdit()
 {
@@ -1199,29 +1406,44 @@ void ExecPropsPage::applyChanges()
 void ExecPropsPage::slotBrowseExec()
 {
     KURL f = KFileDialog::getOpenURL( QString::null,
-				      QString::null, this );
+				      QString::null, d->m_frame );
     if ( f.isEmpty() )
 	return;
 
     if ( !f.isLocalFile()) {
-	KMessageBox::sorry(this, i18n("Sorry, but only executables of the local file systems are supported."));
+	KMessageBox::sorry(d->m_frame, i18n("Sorry, but only executables of the local file systems are supported."));
 	return;
     }
 
     execEdit->setText( f.path() );
 }
 
+class URLPropsPage::URLPropsPagePrivate
+{
+public:
+  URLPropsPagePrivate()
+  {
+  }
+  ~URLPropsPagePrivate()
+  {
+  }
+
+  QFrame *m_frame;
+};
+
 URLPropsPage::URLPropsPage( PropertiesDialog *_props )
   : PropsPage( _props )
 {
-  QVBoxLayout * layout = new QVBoxLayout(this, KDialog::spacingHint());
+  d = new URLPropsPagePrivate;
+  d->m_frame = properties->dialog()->addPage( i18n("U&RL") );
+  QVBoxLayout * layout = new QVBoxLayout(d->m_frame, KDialog::spacingHint());
 
   QLabel *l;
-  l = new QLabel( this, "Label_1" );
+  l = new QLabel( d->m_frame, "Label_1" );
   l->setText( i18n("URL:") );
   layout->addWidget(l);
 
-  URLEdit = new KLineEdit( this, "LineEdit_1" );
+  URLEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
   layout->addWidget(URLEdit);
 
   QString path = properties->kurl().path();
@@ -1238,7 +1460,15 @@ URLPropsPage::URLPropsPage( PropertiesDialog *_props )
   if ( !URLStr.isNull() )
     URLEdit->setText( URLStr );
 
+  connect( URLEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  
   layout->addStretch (1);
+}
+
+URLPropsPage::~URLPropsPage()
+{
+  delete d;
 }
 
 bool URLPropsPage::supports( KFileItemList _items )
@@ -1276,14 +1506,29 @@ void URLPropsPage::applyChanges()
  *
  * -------------------------------------------------- */
 
+class ApplicationPropsPage::ApplicationPropsPagePrivate
+{
+public:
+  ApplicationPropsPagePrivate()
+  {
+  }
+  ~ApplicationPropsPagePrivate()
+  {
+  }
+
+  QFrame *m_frame;
+};
+
 ApplicationPropsPage::ApplicationPropsPage( PropertiesDialog *_props )
   : PropsPage( _props )
 {
-  QVBoxLayout *toplayout = new QVBoxLayout(this, KDialog::spacingHint());
+  d = new ApplicationPropsPagePrivate;
+  d->m_frame = properties->dialog()->addPage( i18n("&Application") );
+  QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
-  availableExtensionsList = new QListBox( this );
-  addExtensionButton = new QPushButton( QString::fromLatin1("<<"), this );
-  delExtensionButton = new QPushButton( QString::fromLatin1(">>"), this );
+  availableExtensionsList = new QListBox( d->m_frame );
+  addExtensionButton = new QPushButton( QString::fromLatin1("<<"), d->m_frame );
+  delExtensionButton = new QPushButton( QString::fromLatin1(">>"), d->m_frame );
 
   QLabel *l;
 
@@ -1291,19 +1536,19 @@ ApplicationPropsPage::ApplicationPropsPage( PropertiesDialog *_props )
   grid->setColStretch(1, 1);
   toplayout->addLayout(grid);
 
-  l = new QLabel(i18n("Name:"),  this, "Label_4" );
+  l = new QLabel(i18n("Name:"), d->m_frame, "Label_4" );
   grid->addWidget(l, 0, 0);
 
-  nameEdit = new KLineEdit( this, "LineEdit_3" );
+  nameEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
   grid->addWidget(nameEdit, 0, 1);
 
-  l = new QLabel(i18n("Comment:"),  this, "Label_3" );
+  l = new QLabel(i18n("Comment:"),  d->m_frame, "Label_3" );
   grid->addWidget(l, 1, 0);
 
-  commentEdit = new KLineEdit( this, "LineEdit_2" );
+  commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
   grid->addWidget(commentEdit, 1, 1);
 
-  l = new QLabel(i18n("File types:"), this);
+  l = new QLabel(i18n("File types:"), d->m_frame);
   toplayout->addWidget(l, 0, AlignLeft);
 
   grid = new QGridLayout(4, 3);
@@ -1311,7 +1556,7 @@ ApplicationPropsPage::ApplicationPropsPage( PropertiesDialog *_props )
   grid->setColStretch(2, 1);
   toplayout->addLayout(grid, 2);
 
-  extensionsList = new QListBox( this );
+  extensionsList = new QListBox( d->m_frame );
   grid->addMultiCellWidget(extensionsList, 0, 3, 0, 0);
 
   grid->addWidget(addExtensionButton, 1, 1);
@@ -1359,6 +1604,24 @@ ApplicationPropsPage::ApplicationPropsPage( PropertiesDialog *_props )
   QValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
   for ( ; it2 != mimeTypes.end(); ++it2 )
     addMimeType ( (*it2)->name() );
+  
+  connect( availableExtensionsList, SIGNAL( selected( int ) ),
+	   this, SIGNAL( changed() ) );
+  connect( addExtensionButton, SIGNAL( pressed() ),
+	   this, SIGNAL( changed() ) );
+  connect( delExtensionButton, SIGNAL( pressed() ),
+	   this, SIGNAL( changed() ) );
+  connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( extensionsList, SIGNAL( selected( int ) ),
+	   this, SIGNAL( changed() ) );
+}
+
+ApplicationPropsPage::~ApplicationPropsPage()
+{
+  delete d;
 }
 
 void ApplicationPropsPage::addMimeType( const QString & name )
@@ -1437,16 +1700,31 @@ void ApplicationPropsPage::slotDelExtension()
  *
  * -------------------------------------------------- */
 
+class BindingPropsPage::BindingPropsPagePrivate
+{
+public:
+  BindingPropsPagePrivate()
+  {
+  }
+  ~BindingPropsPagePrivate()
+  {
+  }
+
+  QFrame *m_frame;
+};
+
 BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
 {
-  patternEdit = new KLineEdit( this, "LineEdit_1" );
-  commentEdit = new KLineEdit( this, "LineEdit_2" );
-  mimeEdit = new KLineEdit( this, "LineEdit_3" );
+  d = new BindingPropsPagePrivate;
+  d->m_frame = properties->dialog()->addPage( i18n("A&ssociation") );
+  patternEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
+  commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
+  mimeEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
 
-  QBoxLayout * mainlayout = new QVBoxLayout(this, KDialog::spacingHint());
+  QBoxLayout * mainlayout = new QVBoxLayout(d->m_frame, KDialog::spacingHint());
   QLabel* tmpQLabel;
 
-  tmpQLabel = new QLabel( this, "Label_1" );
+  tmpQLabel = new QLabel( d->m_frame, "Label_1" );
   tmpQLabel->setText(  i18n("Pattern ( example: *.html;*.HTML; )") );
   tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
   mainlayout->addWidget(tmpQLabel, 1);
@@ -1458,7 +1736,7 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
   patternEdit->setFixedHeight( fontHeight );
   mainlayout->addWidget(patternEdit, 1);
 
-  tmpQLabel = new QLabel( this, "Label_2" );
+  tmpQLabel = new QLabel( d->m_frame, "Label_2" );
   tmpQLabel->setText(  i18n("Mime Type") );
   tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
   mainlayout->addWidget(tmpQLabel, 1);
@@ -1469,7 +1747,7 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
   mimeEdit->setFixedHeight( fontHeight );
   mainlayout->addWidget(mimeEdit, 1);
 
-  tmpQLabel = new QLabel( this, "Label_3" );
+  tmpQLabel = new QLabel( d->m_frame, "Label_3" );
   tmpQLabel->setText(  i18n("Comment") );
   tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
   mainlayout->addWidget(tmpQLabel, 1);
@@ -1480,7 +1758,7 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
   commentEdit->setFixedHeight( fontHeight );
   mainlayout->addWidget(commentEdit, 1);
 
-  cbAutoEmbed = new QCheckBox( i18n("Left click previews"), this, "cbAutoEmbed" );
+  cbAutoEmbed = new QCheckBox( i18n("Left click previews"), d->m_frame, "cbAutoEmbed" );
   mainlayout->addWidget(cbAutoEmbed, 1);
 
   mainlayout->addStretch (10);
@@ -1509,6 +1787,20 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
       cbAutoEmbed->setChecked( config.readBoolEntry( QString::fromLatin1("X-KDE-AutoEmbed") ) );
   else
       cbAutoEmbed->setNoChange();
+  
+  connect( patternEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( mimeEdit, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( cbAutoEmbed, SIGNAL( toggled( bool ) ),
+	   this, SIGNAL( changed() ) );
+}
+
+BindingPropsPage::~BindingPropsPage()
+{
+  delete d;
 }
 
 bool BindingPropsPage::supports( KFileItemList _items )
@@ -1559,8 +1851,23 @@ void BindingPropsPage::applyChanges()
  *
  * -------------------------------------------------- */
 
+class DevicePropsPage::DevicePropsPagePrivate
+{
+public:
+  DevicePropsPagePrivate()
+  {
+  }
+  ~DevicePropsPagePrivate()
+  {
+  }
+
+  QFrame *m_frame;
+};
+
 DevicePropsPage::DevicePropsPage( PropertiesDialog *_props ) : PropsPage( _props )
 {
+  d = new DevicePropsPagePrivate;
+  d->m_frame = properties->dialog()->addPage( i18n("De&vice") );
   IamRoot = (geteuid() == 0);
 
   QStringList devices;
@@ -1606,60 +1913,60 @@ DevicePropsPage::DevicePropsPage( PropertiesDialog *_props ) : PropsPage( _props
   }
 
 
-  QGridLayout *layout = new QGridLayout(this, 0, 3, KDialog::marginHint(),
+  QGridLayout *layout = new QGridLayout( d->m_frame, 0, 3, KDialog::marginHint(),
 					KDialog::spacingHint());
   layout->setColStretch(1, 1);
 
   QLabel* label;
-  label = new QLabel( this );
+  label = new QLabel( d->m_frame );
   label->setText( devices.count() == 0 ?
                       i18n("Device (/dev/fd0):") : // old style
                       i18n("Device:") ); // new style (combobox)
   layout->addWidget(label, 0, 0);
 
-  device = new QComboBox( true, this, "ComboBox_device" );
+  device = new QComboBox( true, d->m_frame, "ComboBox_device" );
   device->insertStringList( devices );
   layout->addWidget(device, 0, 1);
   connect( device, SIGNAL( activated( int ) ),
            this, SLOT( slotActivated( int ) ) );
 
-  readonly = new QCheckBox( this, "CheckBox_readonly" );
+  readonly = new QCheckBox( d->m_frame, "CheckBox_readonly" );
   readonly->setText(  i18n("Read Only") );
   layout->addWidget(readonly, 1, 1);
   if ( !IamRoot )
     readonly->setEnabled( false );
 
-  label = new QLabel( this );
+  label = new QLabel( d->m_frame );
   label->setText( devices.count()==0 ?
                       i18n("Mount Point (/mnt/floppy):") : // old style
                       i18n("Mount Point:")); // new style (combobox)
   layout->addWidget(label, 2, 0);
 
-  mountpoint = new KLineEdit( this, "LineEdit_mountpoint" );
+  mountpoint = new KLineEdit( d->m_frame, "LineEdit_mountpoint" );
   layout->addWidget(mountpoint, 2, 1);
   if ( !IamRoot )
     mountpoint->setEnabled( false );
 
-  label = new QLabel( this );
+  label = new QLabel( d->m_frame );
   label->setText(  i18n("File System Type:") );
   layout->addWidget(label, 3, 0);
 
-  fstype = new KLineEdit( this, "LineEdit_fstype" );
+  fstype = new KLineEdit( d->m_frame, "LineEdit_fstype" );
   layout->addWidget(fstype, 3, 1);
   if ( !IamRoot )
     fstype->setEnabled( false );
 
-  QFrame *frame = new QFrame(this);
+  QFrame *frame = new QFrame( d->m_frame );
   frame->setFrameStyle(QFrame::HLine|QFrame::Sunken);
   layout->addMultiCellWidget(frame, 4, 4, 0, 2);
 
 
-  unmounted = new KIconButton(this);
+  unmounted = new KIconButton( d->m_frame );
   unmounted->setFixedSize(50, 50);
   unmounted->setIconType(KIcon::Desktop, KIcon::Device);
   layout->addWidget(unmounted, 5, 0);
 
-  label = new QLabel( i18n("Unmounted Icon"),  this );
+  label = new QLabel( i18n("Unmounted Icon"),  d->m_frame );
   layout->addWidget(label, 5, 1);
 
   layout->setRowStretch(6, 1);
@@ -1706,6 +2013,22 @@ DevicePropsPage::DevicePropsPage( PropertiesDialog *_props ) : PropsPage( _props
     unmountedStr = KMimeType::mimeType(QString::fromLatin1("application/octet-stream"))->KServiceType::icon(); // default icon
 
   unmounted->setIcon( unmountedStr );
+  
+  connect( device, SIGNAL( activated( int ) ),
+	   this, SIGNAL( changed() ) );
+  connect( readonly, SIGNAL( toggled( bool ) ),
+	   this, SIGNAL( changed() ) );
+  connect( mountpoint, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( fstype, SIGNAL( textChanged( const QString & ) ),
+	   this, SIGNAL( changed() ) );
+  connect( unmounted, SIGNAL( iconChanged( QString ) ),
+	   this, SIGNAL( changed() ) );
+}
+
+DevicePropsPage::~DevicePropsPage()
+{
+  delete d;
 }
 
 void DevicePropsPage::slotActivated( int index )

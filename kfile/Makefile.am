@@ -50,6 +50,9 @@ EXTRA_DIST = configure.png KFile.kdoc NOTES
 libkfile_la_LDFLAGS = -no-undefined -version-info 3:0
 libkfile_la_LIBADD =  $(top_builddir)/kio/libksycoca.la
 
+servicetype_DATA = kpropsdlgplugin.desktop
+servicetypedir = $(kde_servicetypesdir)
+
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(KDE_RPATH)
 kfstest_LDADD = libkfile.la

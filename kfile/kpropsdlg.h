@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -31,7 +32,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include <qtabdialog.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
 #include <qlayout.h>
@@ -45,6 +45,7 @@
 #include <kurl.h>
 #include <klocale.h>
 #include <kfileitem.h>
+#include <kdialogbase.h>
 
 class QLineEdit;
 class QCheckBox;
@@ -114,7 +115,7 @@ public:
   /**
    * This looks very much like a destructor :)
    */
-  ~PropertiesDialog();
+  virtual ~PropertiesDialog();
 
 
   /**
@@ -148,7 +149,7 @@ public:
   /**
    * @return a pointer to the dialog
    */
-  QTabDialog* tabDialog() const { return tab; }
+  KDialogBase* dialog() const { return tab; }
 
   /**
    * If we are building this dialog from a template,
@@ -192,7 +193,7 @@ signals:
   void applied();
   void canceled();
 
-protected:
+private:
 
   /**
    * Common initialization for all constructors
@@ -226,7 +227,13 @@ protected:
   /**
    * The dialog
    */
-  QTabDialog *tab;
+  KDialogBase *tab;
+
+private slots:
+  void slotDeleteMyself();
+private:
+  class PropertiesDialogPrivate;
+  PropertiesDialogPrivate *d;
 };
 
 /**
@@ -234,32 +241,44 @@ protected:
  * This is an abstract class. You must inherit from this class
  * to build a new kind of page.
  */
-class PropsPage : public QWidget
+class PropsPage : public QObject
 {
   Q_OBJECT
 public:
   /**
    * Constructor
+   * To insert tabs into the properties dialog, use the add methods provided by
+   * KDialogBase (via props->dialog() )
    */
   PropsPage( PropertiesDialog *_props );
-
-  /**
-   * @return the name that should appear in the tab.
-   */
-  virtual QString tabName() const { return QString::null; }
+  virtual ~PropsPage();
 
   /**
    * Apply all changes to the file.
    * This function is called when the user presses 'Ok'. The last page inserted
    * is called first.
    */
-  virtual void applyChanges() { }
+  virtual void applyChanges();
 
   /**
    * Convenience method for most ::supports methods
    * @return true if the file is a local, regular, readable, desktop file
    */
   static bool isDesktopFile( KFileItem * _item );
+
+  void setDirty( bool b );
+  bool isDirty() const;
+
+public slots:
+  void setDirty(); // same as setDirty( true )
+
+signals:
+  /**
+   * Emit this event when the user changed anything the page's tabs.
+   * The hosting PropertiesDialog will call @ref applyChanges only if the
+   * PropsPage emits the changed event.
+   */
+  void changed();
 
 protected:
   /**
@@ -268,6 +287,9 @@ protected:
   PropertiesDialog *properties;
 
   int fontHeight;
+private:
+  class PropsPagePrivate;
+  PropsPagePrivate *d;
 };
 
 /**
@@ -282,8 +304,7 @@ public:
    * Constructor
    */
   FilePropsPage( PropertiesDialog *_props );
-
-  virtual QString tabName() const { return i18n("&General"); }
+  virtual ~FilePropsPage();
 
   /**
    * Applies all changes made.  'General' must be always the first
@@ -307,7 +328,7 @@ public:
 protected slots:
   void slotRenameFinished( KIO::Job * );
 
-protected:
+private:
   QWidget *iconArea;
   QWidget *nameArea;
 
@@ -318,6 +339,9 @@ protected:
    * The initial filename
    */
   QString oldName;
+
+  class FilePropsPagePrivate;
+  FilePropsPagePrivate *d;
 };
 
 /**
@@ -333,8 +357,8 @@ public:
    * Constructor
    */
   FilePermissionsPropsPage( PropertiesDialog *_props );
+  virtual ~FilePermissionsPropsPage();
 
-  virtual QString tabName() const { return i18n("&Permissions"); }
   virtual void applyChanges();
 
   /**
@@ -342,11 +366,11 @@ public:
    */
   static bool supports( KFileItemList _items );
 
-protected slots:
+private slots:
 
   void slotChmodResult( KIO::Job * );
 
-protected:
+private:
   QCheckBox *permBox[3][4];
 
   QComboBox *grpCombo;
@@ -369,6 +393,9 @@ protected:
    * Changeable Permissions
    */
   static mode_t fperm[3][4];
+
+  class FilePermissionsPropsPagePrivate;
+  FilePermissionsPropsPagePrivate *d;
 };
 
 /**
@@ -386,8 +413,8 @@ public:
    * Constructor
    */
   ExecPropsPage( PropertiesDialog *_props );
+  virtual ~ExecPropsPage();
 
-  virtual QString tabName() const { return i18n("E&xecute"); }
   virtual void applyChanges();
 
   static bool supports( KFileItemList _items );
@@ -399,7 +426,7 @@ private slots:
   void enableCheckedEdit();
   void enableSuidEdit();
 
-protected:
+private:
 
     KLineEdit *execEdit;
     QCheckBox *terminalCheck;
@@ -417,6 +444,9 @@ protected:
     bool termBool;
     bool suidBool;
     QString suidUserStr;
+
+    class ExecPropsPagePrivate;
+    ExecPropsPagePrivate *d;
 };
 
 /**
@@ -434,13 +464,13 @@ public:
    * Constructor
    */
   URLPropsPage( PropertiesDialog *_props );
+  virtual ~URLPropsPage();
 
-  virtual QString tabName() const { return i18n("U&RL"); }
   virtual void applyChanges();
 
   static bool supports( KFileItemList _items );
 
-protected:
+private:
   QLineEdit *URLEdit;
   KIconButton *iconBox;
 
@@ -449,6 +479,9 @@ protected:
 
   QPixmap pixmap;
   QString pixmapFile;
+private:
+  class URLPropsPagePrivate;
+  URLPropsPagePrivate *d;
 };
 
 /**
@@ -466,8 +499,8 @@ public:
    * Constructor
    */
   ApplicationPropsPage( PropertiesDialog *_props );
+  virtual ~ApplicationPropsPage();
 
-  virtual QString tabName() const { return i18n("&Application"); }
   virtual void applyChanges();
 
   static bool supports( KFileItemList _items );
@@ -476,7 +509,7 @@ public slots:
   void slotDelExtension();
   void slotAddExtension();
 
-protected:
+private:
 
   void addMimeType( const QString & name );
 
@@ -490,6 +523,9 @@ protected:
   QString nameStr;
   QStringList extensions;
   QString commentStr;
+
+  class ApplicationPropsPagePrivate;
+  ApplicationPropsPagePrivate *d;
 };
 
 /**
@@ -505,13 +541,13 @@ public:
    * Constructor
    */
   BindingPropsPage( PropertiesDialog *_props );
+  virtual ~BindingPropsPage();
 
-  virtual QString tabName() const { return i18n("A&ssociation"); }
   virtual void applyChanges();
 
   static bool supports( KFileItemList _items );
 
-protected:
+private:
 
   QLineEdit *commentEdit;
   QLineEdit *patternEdit;
@@ -519,6 +555,9 @@ protected:
   QString m_sMimeStr;
 
   QCheckBox * cbAutoEmbed;
+
+  class BindingPropsPagePrivate;
+  BindingPropsPagePrivate *d;
 };
 
 /**
@@ -529,17 +568,16 @@ class DevicePropsPage : public PropsPage
   Q_OBJECT
 public:
   DevicePropsPage( PropertiesDialog *_props );
-  ~DevicePropsPage() { }
+  virtual ~DevicePropsPage();
 
-  virtual QString tabName() const { return i18n("De&vice"); }
   virtual void applyChanges();
 
   static bool supports( KFileItemList _items );
 
-protected slots:
+private slots:
   void slotActivated( int );
 
-protected:
+private:
   QComboBox* device;
   QLineEdit* mountpoint;
   QCheckBox* readonly;
@@ -556,6 +594,9 @@ protected:
 
   QPixmap pixmap;
   QString pixmapFile;
+
+  class DevicePropsPagePrivate;
+  DevicePropsPagePrivate *d;
 };
 
 #endif
