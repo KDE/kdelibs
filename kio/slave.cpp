@@ -27,7 +27,7 @@ using namespace KIO;
 
 void Slave::accept(KSocket *socket)
 {
-    printf("got a socket\n");
+    kDebugInfo("got a socket");
     slaveconn.init(socket);
     delete serv;
     serv = 0;
