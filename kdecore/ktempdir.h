@@ -121,8 +121,19 @@ public:
 
 protected:
 
+   /**
+    * Creates a "random" directory with specified mode
+    * @param directoryPrefix to use when creating temp directory
+    *       (the rest is generated randomly)
+    * @param mode directory permissions
+    * @return bool true upon sucess
+    */
    bool create(const QString &directoryPrefix,  int mode);
 
+   /**
+    * Sets the errno value 
+    * @param error the value to set the status to.
+    */
    void setError(int error) { mError = error; }
 
 private:
