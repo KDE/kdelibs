@@ -14,7 +14,8 @@
 <!ENTITY Jogchum.Reitsma    '<othercredit role="translator"><firstname>Jogchum</firstname><surname>Reitsma</surname><affiliation><address><email>j.reitsma@hcc.net</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Otto.Bruggeman     '<othercredit role="translator"><firstname>Otto</firstname><surname>Bruggeman</surname><affiliation><address><email>bruggie@home.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Douwe.vanderSchaaf '<othercredit role="translator"><firstname>Douwe</firstname><surname>van der Schaaf</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Rinse.Devries      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>rinse@kde.nl</email></address></affiliation><contrib>Nederlandse vertaling voor KDE 3.1</contrib></othercredit>'>
+<!ENTITY Richard.Voss       '<othercredit role="translator"><firstname>Richard</firstname><surname>Voss</surname><affiliation><address><email>richard@nergenshuizen.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Rinse.Devries      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>rinse@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Bram.Schoenmakers  '<othercredit role="translator"><firstname>Bram</firstname><surname>Schoenmakers</surname><affiliation><address><email>bram_s@softhome.net</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Tijmen.Baarda      '<othercredit role="translator"><firstname>Tijmen</firstname><surname>Baarda</surname><affiliation><address><email>tijmenbaarda@tijgerweb.net</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Jo.Vermeulen       '<othercredit role="translator"><firstname>Jo</firstname><surname>Vermeulen</surname><affiliation><address><email>jo@lumumba.luc.ac.be</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
@@ -37,6 +38,7 @@
 <!ENTITY vertaling.michel  "<para>Dit document is vertaald naar het Nederlands door &Michel.Fontes;.</para>">
 <!ENTITY vertaling.niels   "<para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
 <!ENTITY vertaling.otto    "<para>Dit document is vertaald naar het Nederlands door &Otto.Bruggeman;.</para>">
+<!ENTITY vertaling.richard "<para>Dit document is vertaald naar het Nederlands door &Richard.Voss;.</para>">
 <!ENTITY vertaling.rinse   "<para>Dit document is vertaald naar het Nederlands door &Rinse.Devries;.</para>">
 <!ENTITY vertaling.tijmen  "<para>Dit document is vertaald naar het Nederlands door &Tijmen.Baarda;.</para>">
 <!ENTITY vertaling.tom     "<para>Dit document is vertaald naar het Nederlands door &Tom.Albers;.</para>">
@@ -58,6 +60,7 @@
 <!ENTITY nagelezen.michel  "<para>De vertaling werd nagelezen door &Michel.Fontes;.</para>">
 <!ENTITY nagelezen.niels   "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
 <!ENTITY nagelezen.otto    "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
+<!ENTITY nagelezen.richard "<para>De vertaling werd nagelezen door &Richard.Voss;.</para>">
 <!ENTITY nagelezen.rinse   "<para>De vertaling werd nagelezen door &Rinse.Devries;.</para>">
 <!ENTITY nagelezen.tijmen  "<para>De vertaling werd nagelezen door &Tijmen.Baarda;.</para>">
 <!ENTITY nagelezen.tom     "<para>De vertaling werd nagelezen door &Tom.Albers;.</para>">
