@@ -35,8 +35,6 @@ namespace KJS {
   class ObjectPrototype : public ObjectImp {
   public:
     ObjectPrototype();
-    bool hasProperty(const UString &p, bool recursive) const;
-    KJSO get(const UString &p) const;
     enum { ToString, ValueOf };
   };
 

@@ -62,16 +62,11 @@ BooleanPrototype::BooleanPrototype(const Object& proto)
   : ObjectImp(BooleanClass, Boolean(false), proto)
 {
   // The constructor will be added later in BooleanObject's constructor
-}
 
-KJSO BooleanPrototype::get(const UString &p) const
-{
-  if (p == "toString")
-    return Function(new BooleanProtoFunc(ToString));
-  else if (p == "valueOf")
-    return Function(new BooleanProtoFunc(ValueOf));
-  else
-    return Imp::get(p);
+  put("toString", new BooleanProtoFunc(ToString), DontEnum);
+  put("valueOf",  new BooleanProtoFunc(ValueOf),  DontEnum);
+
+
 }
 
 BooleanProtoFunc::BooleanProtoFunc(int i)

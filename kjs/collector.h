@@ -83,6 +83,8 @@ namespace KJS {
     static CollectorBlock* currentBlock;
     static unsigned long filled;
     static unsigned long softLimit;
+    static unsigned long timesFilled;
+    static unsigned long increaseLimitAt;
     enum { BlockSize = 100 };
   };
 

@@ -35,7 +35,6 @@ namespace KJS {
   class BooleanPrototype : public ObjectImp {
   public:
     BooleanPrototype(const Object& proto);
-    virtual KJSO get(const UString &p) const;
     enum { ToString, ValueOf };
   };
 

@@ -35,7 +35,6 @@ namespace KJS {
   class RegExpPrototype : public ObjectImp {
   public:
     RegExpPrototype(const Object& proto);
-    KJSO get(const UString &p) const;
   };
 
   class RegExpProtoFunc : public InternalFunctionImp {

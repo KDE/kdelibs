@@ -31,14 +31,8 @@ StringObject::StringObject(const Object &funcProto, const Object &stringProto)
 {
   // ECMA 15.5.3.1 String.prototype
   setPrototypeProperty(stringProto);
-}
 
-KJSO StringObject::get(const UString &p) const
-{
-  if (p == "fromCharCode")
-    return Function(new StringObjectFunc());
-  else
-    return Imp::get(p);
+  put("fromCharCode", new StringObjectFunc(), DontEnum);
 }
 
 // ECMA 15.5.1
@@ -94,74 +88,37 @@ StringPrototype::StringPrototype(const Object& proto)
   : ObjectImp(StringClass, String(""), proto)
 {
   // The constructor will be added later in StringObject's constructor
-}
 
-KJSO StringPrototype::get(const UString &p) const
-{
-  int id;
-
-  if (p == "toString")
-    id = StringProtoFunc::ToString;
-  else if (p == "valueOf")
-    id = StringProtoFunc::ValueOf;
-  else if (p == "charAt")
-    id = StringProtoFunc::CharAt;
-  else if (p == "charCodeAt")
-    id = StringProtoFunc::CharCodeAt;
-  else if (p == "indexOf")
-    id = StringProtoFunc::IndexOf;
-  else if (p == "lastIndexOf")
-    id = StringProtoFunc::LastIndexOf;
-  else if (p == "match")
-    id = StringProtoFunc::Match;
-  else if (p == "replace")
-    id = StringProtoFunc::Replace;
-  else if (p == "search")
-    id = StringProtoFunc::Search;
-  else if (p == "slice")
-    id = StringProtoFunc::Slice;
-  else if (p == "split")
-    id = StringProtoFunc::Split;
-  else if (p == "substr")
-    id = StringProtoFunc::Substr;
-  else if (p == "substring")
-    id = StringProtoFunc::Substring;
-  else if (p == "toLowerCase")
-    id = StringProtoFunc::ToLowerCase;
-  else if (p == "toUpperCase")
-    id = StringProtoFunc::ToUpperCase;
+  put("toString",    new StringProtoFunc(StringProtoFunc::ToString),    DontEnum);
+  put("valueOf",     new StringProtoFunc(StringProtoFunc::ValueOf),     DontEnum);
+  put("charAt",      new StringProtoFunc(StringProtoFunc::CharAt),      DontEnum);
+  put("charCodeAt",  new StringProtoFunc(StringProtoFunc::CharCodeAt),  DontEnum);
+  put("indexOf",     new StringProtoFunc(StringProtoFunc::IndexOf),     DontEnum);
+  put("lastIndexOf", new StringProtoFunc(StringProtoFunc::LastIndexOf), DontEnum);
+  put("match",       new StringProtoFunc(StringProtoFunc::Match),       DontEnum);
+  put("replace",     new StringProtoFunc(StringProtoFunc::Replace),     DontEnum);
+  put("search",      new StringProtoFunc(StringProtoFunc::Search),      DontEnum);
+  put("slice",       new StringProtoFunc(StringProtoFunc::Slice),       DontEnum);
+  put("split",       new StringProtoFunc(StringProtoFunc::Split),       DontEnum);
+  put("substr",      new StringProtoFunc(StringProtoFunc::Substr),      DontEnum);
+  put("substring",   new StringProtoFunc(StringProtoFunc::Substring),   DontEnum);
+  put("toLowerCase", new StringProtoFunc(StringProtoFunc::ToLowerCase), DontEnum);
+  put("toUpperCase", new StringProtoFunc(StringProtoFunc::ToUpperCase), DontEnum);
 #ifndef KJS_PURE_ECMA
-  else if (p == "big")
-    id = StringProtoFunc::Big;
-  else if (p == "small")
-    id = StringProtoFunc::Small;
-  else if (p == "blink")
-    id = StringProtoFunc::Blink;
-  else if (p == "bold")
-    id = StringProtoFunc::Bold;
-  else if (p == "fixed")
-    id = StringProtoFunc::Fixed;
-  else if (p == "italics")
-    id = StringProtoFunc::Italics;
-  else if (p == "strike")
-    id = StringProtoFunc::Strike;
-  else if (p == "sub")
-    id = StringProtoFunc::Sub;
-  else if (p == "sup")
-    id = StringProtoFunc::Sup;
-  else if (p == "fontcolor")
-    id = StringProtoFunc::Fontcolor;
-  else if (p == "fontsize")
-    id = StringProtoFunc::Fontsize;
-  else if (p == "anchor")
-    id = StringProtoFunc::Anchor;
-  else if (p == "link")
-    id = StringProtoFunc::Link;
+  put("big",         new StringProtoFunc(StringProtoFunc::Big),         DontEnum);
+  put("small",       new StringProtoFunc(StringProtoFunc::Small),       DontEnum);
+  put("blink",       new StringProtoFunc(StringProtoFunc::Blink),       DontEnum);
+  put("bold",        new StringProtoFunc(StringProtoFunc::Bold),        DontEnum);
+  put("fixed",       new StringProtoFunc(StringProtoFunc::Fixed),       DontEnum);
+  put("italics",     new StringProtoFunc(StringProtoFunc::Italics),     DontEnum);
+  put("strike",      new StringProtoFunc(StringProtoFunc::Strike),      DontEnum);
+  put("sub",         new StringProtoFunc(StringProtoFunc::Sub),         DontEnum);
+  put("sup",         new StringProtoFunc(StringProtoFunc::Sup),         DontEnum);
+  put("fontcolor",   new StringProtoFunc(StringProtoFunc::Fontcolor),   DontEnum);
+  put("fontsize",    new StringProtoFunc(StringProtoFunc::Fontsize),    DontEnum);
+  put("anchor",      new StringProtoFunc(StringProtoFunc::Anchor),      DontEnum);
+  put("link",        new StringProtoFunc(StringProtoFunc::Link),        DontEnum);
 #endif
-  else
-    return Imp::get(p);
-
-  return Function(new StringProtoFunc(id));
 }
 
 StringProtoFunc::StringProtoFunc(int i)

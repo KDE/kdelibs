@@ -61,6 +61,10 @@ CollectorBlock* Collector::root = 0L;
 CollectorBlock* Collector::currentBlock = 0L;
 unsigned long Collector::filled = 0;
 unsigned long Collector::softLimit = KJS_MEM_INCREMENT;
+
+unsigned long Collector::timesFilled = 0;
+unsigned long Collector::increaseLimitAt = 1;
+
 #ifdef KJS_DEBUG_MEM
 bool Collector::collecting = false;
 #endif
@@ -70,10 +74,25 @@ void* Collector::allocate(size_t s)
   if (s == 0)
     return 0L;
 
+  // Try and deal with memory requirements in a scalable way. Simple scripts
+  // should only require small amounts of memory, but for complex scripts we don't
+  // want to end up running the garbage collector hundreds of times a second.
   if (filled >= softLimit) {
+    timesFilled++;
     collect();
-    if (filled >= softLimit && softLimit < KJS_MEM_LIMIT) // we are actually using all this memory
+
+    if (filled >= softLimit && softLimit < KJS_MEM_LIMIT) {
+      // Even after collection we are still using more than the limit, so increase
+      // the limit
       softLimit *= 2;
+    }
+    else if (timesFilled == increaseLimitAt && increaseLimitAt < 128) {
+      // The allowed memory limit keeps getting reached (lots of objects created
+      // and deleted). Increase it a bit so GC gets run less often.
+      timesFilled = 0;
+      softLimit *= 2;
+      increaseLimitAt *= 2;
+    }
   }
 
   void *m = malloc(s);

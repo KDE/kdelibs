@@ -82,23 +82,9 @@ ObjectPrototype::ObjectPrototype()
 {
   // the spec says that [[Property]] should be `null'.
   // Not sure if Null or C's NULL is needed.
-}
 
-bool ObjectPrototype::hasProperty(const UString &p, bool recursive) const
-{
-    if ( p == "toString" || p == "valueOf" )
-        return true;
-    return /*recursive &&*/ ObjectImp::hasProperty(p, recursive);
-}
-
-KJSO ObjectPrototype::get(const UString &p) const
-{
-  if (p == "toString")
-    return Function(new ObjectProtoFunc(ToString));
-  else if (p == "valueOf")
-    return Function(new ObjectProtoFunc(ValueOf));
-  else
-    return Imp::get(p);
+  put("toString", new ObjectProtoFunc(ToString), DontEnum);
+  put("valueOf",  new ObjectProtoFunc(ValueOf), DontEnum);
 }
 
 ObjectProtoFunc::ObjectProtoFunc(int i)

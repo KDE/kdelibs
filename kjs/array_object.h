@@ -35,7 +35,6 @@ namespace KJS {
   class ArrayPrototype : public ObjectImp {
   public:
     ArrayPrototype(const Object& proto);
-    virtual KJSO get(const UString &p) const;
   };
 
   class ArrayProtoFunc : public InternalFunctionImp {

@@ -28,23 +28,13 @@ NumberObject::NumberObject(const Object& funcProto, const Object &numProto)
 {
   // Number.Prototype
   setPrototypeProperty(numProto);
-}
 
-// ECMA 15.7.3
-KJSO NumberObject::get(const UString &p) const
-{
-  double d;
-
-  if (p == "NaN")
-    d = NaN;
-  else if (p == "NEGATIVE_INFINITY")
-    d = -Inf;
-  else if (p == "POSITIVE_INFINITY")
-    d = Inf;
-  else
-    return Imp::get(p);
-
-  return Number(d);
+  // ECMA 15.7.3
+  put("NaN",               Number(NaN),                     DontEnum|DontDelete|ReadOnly);
+  put("NEGATIVE_INFINITY", Number(-Inf),                    DontEnum|DontDelete|ReadOnly);
+  put("POSITIVE_INFINITY", Number(Inf),                     DontEnum|DontDelete|ReadOnly);
+  put("MAX_VALUE",         Number(1.7976931348623157E+308), DontEnum|DontDelete|ReadOnly);
+  put("MIN_VALUE",         Number(5E-324),                  DontEnum|DontDelete|ReadOnly);
 }
 
 // ECMA 15.7.1
@@ -113,19 +103,8 @@ NumberPrototype::NumberPrototype(const Object& proto)
   : ObjectImp(NumberClass, Number(0), proto)
 {
   // The constructor will be added later in NumberObject's constructor
-}
 
-KJSO NumberPrototype::get(const UString &p) const
-{
-  int t;
-  if (p == "toString")
-    t = NumberProtoFunc::ToString;
-  else if (p == "toLocaleString")
-    t = NumberProtoFunc::ToLocaleString;
-  else if (p == "valueOf")
-    t = NumberProtoFunc::ValueOf;
-  else
-    return Imp::get(p);
-
-  return Function(new NumberProtoFunc(t));
+  put("toString",       new NumberProtoFunc(NumberProtoFunc::ToString),       DontEnum);
+  put("toLocaleString", new NumberProtoFunc(NumberProtoFunc::ToLocaleString), DontEnum);
+  put("valueOf",        new NumberProtoFunc(NumberProtoFunc::ValueOf),        DontEnum);
 }

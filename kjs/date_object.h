@@ -30,13 +30,11 @@ namespace KJS {
     DateObject(const Object& funcProto, const Object &dateProto);
     Completion execute(const List &);
     Object construct(const List &);
-    KJSO get(const UString &p) const;
   };
 
   class DatePrototype : public ObjectImp {
   public:
     DatePrototype(const Object& proto);
-    virtual KJSO get(const UString &p) const;
   };
 
 }; // namespace

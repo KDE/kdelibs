@@ -28,7 +28,6 @@ namespace KJS {
   class NumberObject : public ConstructorImp {
   public:
     NumberObject(const Object& funcProto, const Object &numProto);
-    virtual KJSO get(const UString &p) const;
     Completion execute(const List &);
     Object construct(const List &);
   };
@@ -36,7 +35,6 @@ namespace KJS {
   class NumberPrototype : public ObjectImp {
   public:
     NumberPrototype(const Object& proto);
-    virtual KJSO get(const UString &p) const;
   };
 
 }; // namespace

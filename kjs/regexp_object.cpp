@@ -76,22 +76,10 @@ RegExpPrototype::RegExpPrototype(const Object& proto)
   : ObjectImp(RegExpClass, String(""), proto)
 {
   // The constructor will be added later in RegExpObject's constructor
-}
 
-KJSO RegExpPrototype::get(const UString &p) const
-{
-  int id = -1;
-  if (p == "exec")
-    id = RegExpProtoFunc::Exec;
-  else if (p == "test")
-    id = RegExpProtoFunc::Test;
-  else if (p == "toString")
-    id = RegExpProtoFunc::ToString;
-
-  if (id >= 0)
-    return Function(new RegExpProtoFunc(id));
-  else
-    return Imp::get(p);
+  put("exec",     new RegExpProtoFunc(RegExpProtoFunc::Exec),     DontEnum);
+  put("test",     new RegExpProtoFunc(RegExpProtoFunc::Test),     DontEnum);
+  put("toString", new RegExpProtoFunc(RegExpProtoFunc::ToString), DontEnum);
 }
 
 Completion RegExpProtoFunc::execute(const List &args)

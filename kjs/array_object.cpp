@@ -72,39 +72,19 @@ ArrayPrototype::ArrayPrototype(const Object& proto)
   // The constructor will be added later in ArrayObject's constructor
 
   put("length", 0u, DontEnum | DontDelete);
-}
 
-KJSO ArrayPrototype::get(const UString &p) const
-{
-  int id;
-  if(p == "toString")
-    id = ArrayProtoFunc::ToString;
-  else if(p == "toLocaleString")
-    id = ArrayProtoFunc::ToLocaleString;
-  else if(p == "concat")
-    id = ArrayProtoFunc::Concat;
-  else if (p == "join")
-    id = ArrayProtoFunc::Join;
-  else if(p == "pop")
-    id = ArrayProtoFunc::Pop;
-  else if(p == "push")
-    id = ArrayProtoFunc::Push;
-  else if(p == "reverse")
-    id = ArrayProtoFunc::Reverse;
-  else if(p == "shift")
-    id = ArrayProtoFunc::Shift;
-  else if(p == "slice")
-    id = ArrayProtoFunc::Slice;
-  else if(p == "sort")
-    id = ArrayProtoFunc::Sort;
-  else if(p == "splice")
-    id = ArrayProtoFunc::Splice;
-  else if(p == "unshift")
-    id = ArrayProtoFunc::UnShift;
-  else
-    return Imp::get(p);
-
-  return Function(new ArrayProtoFunc(id));
+  put("toString",       new ArrayProtoFunc(ArrayProtoFunc::ToString),       DontEnum);
+  put("toLocaleString", new ArrayProtoFunc(ArrayProtoFunc::ToLocaleString), DontEnum);
+  put("concat",         new ArrayProtoFunc(ArrayProtoFunc::Concat),         DontEnum);
+  put("join",           new ArrayProtoFunc(ArrayProtoFunc::Join),           DontEnum);
+  put("pop",            new ArrayProtoFunc(ArrayProtoFunc::Pop),            DontEnum);
+  put("push",           new ArrayProtoFunc(ArrayProtoFunc::Push),           DontEnum);
+  put("reverse",        new ArrayProtoFunc(ArrayProtoFunc::Reverse),        DontEnum);
+  put("shift",          new ArrayProtoFunc(ArrayProtoFunc::Shift),          DontEnum);
+  put("slice",          new ArrayProtoFunc(ArrayProtoFunc::Slice),          DontEnum);
+  put("sort",           new ArrayProtoFunc(ArrayProtoFunc::Sort),           DontEnum);
+  put("splice",         new ArrayProtoFunc(ArrayProtoFunc::Splice),         DontEnum);
+  put("unshift",        new ArrayProtoFunc(ArrayProtoFunc::UnShift),        DontEnum);
 }
 
 // ECMA 15.4.4

@@ -51,9 +51,7 @@ namespace KJS {
     virtual ~GlobalImp();
     virtual void mark(Imp*);
     void init();
-    virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO& v);
-    virtual bool hasProperty(const UString &p, bool recursive = true) const;
     Imp *filter;
     void *extraData;
   private:
@@ -200,6 +198,10 @@ GlobalImp::GlobalImp()
   dateProto.setConstructor(dateObj);
   regexpProto.setConstructor(regObj);
   errorProto.setConstructor(errObj);
+
+  Imp::put("NaN", Number(NaN), DontEnum);
+  Imp::put("Infinity", Number(Inf), DontEnum);
+  Imp::put("undefined", Undefined(), DontEnum);
 };
 
 void GlobalImp::init()
@@ -227,18 +229,6 @@ void GlobalImp::mark(Imp*)
     filter->mark();
 }
 
-KJSO GlobalImp::get(const UString &p) const
-{
-  if (p == "NaN")
-    return Number(NaN);
-  else if (p == "Infinity")
-    return Number(Inf);
-  else if (p == "undefined")
-    return Undefined();
-
-  return Imp::get(p);
-}
-
 void GlobalImp::put(const UString &p, const KJSO& v)
 {
   // if we already have this property (added by init() or a variable
@@ -254,13 +244,6 @@ void GlobalImp::put(const UString &p, const KJSO& v)
   else
     Imp::put(p, v);
 #endif  
-}
-
-bool GlobalImp::hasProperty(const UString &p, bool recursive) const
-{
-    if (p == "NaN" || p == "Infinity" || p == "undefined")
-	return true;
-    return (recursive && Imp::hasProperty(p, recursive));
 }
 
 CodeType GlobalFunc::codeType() const
