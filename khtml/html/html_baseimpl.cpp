@@ -105,7 +105,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_LINK:
     {
-	kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
+	//kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
 	if(!m_styleSheet) {
 	    m_styleSheet = new CSSStyleSheetImpl(this);
 	    m_styleSheet->ref();
@@ -164,6 +164,8 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     NodeBaseImpl::attach( w );
+    
+    document->applyChanges();
 }
 
 // -------------------------------------------------------------------------
