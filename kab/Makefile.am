@@ -54,8 +54,8 @@ include_HEADERS = \
 	keyvaluemap.h \
 	sections.h
 
-libkab_la_LDFLAGS = -version-info 2:0
-libkab_la_LIBADD  =  -lXext  $(LIB_QT)
+libkab_la_LDFLAGS = -version-info 2:0 $(X_LDFLAGS) $(QT_LDFLAGS)
+libkab_la_LIBADD  = -lXext $(LIB_QT)
 
 # just to make sure, automake makes them 
 BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
