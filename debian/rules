@@ -60,14 +60,13 @@ binary-arch:  build
 	dh_installdocs
 	if test -f /usr/bin/qt2kdoc; then \
 	  (mkdir -p debian/tmp/usr/share/kdoc/index) ; \
-	  (mkdir -p debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html) ; \
-	  qt2kdoc --url=/usr/share/doc/qt2-doc/doc \
+	  (mkdir -p debian/tmp/usr/share/doc/kdelibs3-cvs/html) ; \
+	  qt2kdoc --url=/usr/share/doc/qt2-doc/html \
 	  --outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
 	  --compress \
-	  /usr/share/doc/qt2-doc/doc ; \
+	  /usr/share/doc/qt2-doc/html ; \
 	  makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
-	  --outputdir=`pwd`/debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html ; \
-	  dh_movefiles -pkdelibs-doc-cvs usr/share/kdoc ; \
+	  --outputdir=`pwd`/debian/tmp/usr/share/doc/kdelibs3-cvs/html ; \
 	fi
 
 # libraries not starting with lib are modules
