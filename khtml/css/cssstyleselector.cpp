@@ -81,12 +81,12 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     KHTMLView* view = doc->view();
     strictParsing = _strictParsing;
-    if(!defaultStyle) loadDefaultStyle(view ? view->part()->settings() : 0);
+    settings = view ? view->part()->settings() : 0;
+    if(!defaultStyle) loadDefaultStyle(settings);
     m_medium = view ? view->mediaType() : "all";
 
     selectors = 0;
     selectorCache = 0;
-    settings = view ? view->part()->settings() : 0;
     properties = 0;
     userStyle = 0;
     userSheet = 0;
@@ -251,6 +251,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     parentStyle = ( parentNode && parentNode->renderer()) ? parentNode->renderer()->style() : 0;
     view = element->getDocument()->view();
     part = view->part();
+    settings = part->settings();
     paintDeviceMetrics = element->getDocument()->paintDeviceMetrics();
 
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
