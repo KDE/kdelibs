@@ -186,20 +186,20 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   unsigned int startLine = 0, endLine;
   for(endLine = 0; endLine < contents.length(); endLine++)
   {
-    if(contents[endLine] == '\n')
+    if(contents[endLine].latin1() == '\n')
     {
       QString aCurrentLine = contents.mid(startLine,endLine-startLine);
       startLine = endLine + 1;
 
       // check for a group
-      if(aCurrentLine[0] == '[')
+      if(aCurrentLine[0].latin1() == '[')
       {
         int nRightBracket = aCurrentLine.find( ']', 1 );
         if( nRightBracket != -1 ) {
           // group found; get the group name by taking everything in
           // between the brackets
           aCurrentGroup = aCurrentLine.mid( 1, nRightBracket-1 );
-  
+
           if (pWriteBackMap) {
 	    // add the special group key indicator
 	    KEntryKey groupKey(aCurrentGroup, QString::fromLatin1(""));
@@ -208,11 +208,11 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
           continue;
         };
       }
-  
-      if( aCurrentLine[0] == '#' )
+
+      if( aCurrentLine[0].latin1() == '#' )
         // comment character in the first column, skip the line
         continue;
-  
+
       int nEqualsPos = aCurrentLine.find( '=' );
       if( nEqualsPos == -1 )
         // no equals sign: incorrect or empty line, skip it
@@ -335,7 +335,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       if (currentEntry.bGlobal == bGlobal)
       {
         KEntryKey entryKey = aInnerIt.key();
-	
+
         // put this entry from the config object into the
         // temporary map, possibly replacing an existing entry
         if (aTempMap.contains(entryKey))
