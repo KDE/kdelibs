@@ -1,17 +1,6 @@
-<?xml version='1.0' ?>
+<?xml version='1.0' encoding="US-ASCII"?>
 <!-- there is no doctype for these files, they are WF only -->
-<locale language="xh"
-        xmlns:doc="http://nwalsh.com/xsl/documentation/1.0">
-
-<doc:localeinfo xmlns="">
-<authorgroup>
-  <author><firstname>Antoinette</firstname><surname>Dekeni</surname>
-          <affiliation><address><email>antoinette@translate.org.za</email>
-				</address>
-          </affiliation>
-  </author>
-</authorgroup>
-</doc:localeinfo>
+<localization language="xh">
 
 <gentext key="Abstract" text="Isiqalo"/>
 <gentext key="abstract" text="Isiqalo"/>
@@ -392,5 +381,5 @@
 <template name="MsgOrig"><MsgOrig/>: </template>
 </context>
 
-</locale>
+</localization>
 
