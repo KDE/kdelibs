@@ -82,7 +82,7 @@ namespace khtml {
 		value = v.implementation();
             }
             else if ( !attrName.isEmpty() && attrName != "/" ) {
-		id = doc->attrId(0, DOMString(attrName).implementation(), false);
+		id = doc->attrNames()->getId(DOMString(attrName).implementation(), false);
 		value = v.implementation();
             }
 
@@ -92,7 +92,7 @@ namespace khtml {
                     attrs->ref();
                 }
                 if (!attrs->getValue(id))
-		    attrs->setValue(id,value);
+		    attrs->setValue(id,0,0,value);
             }
         }
         void reset()

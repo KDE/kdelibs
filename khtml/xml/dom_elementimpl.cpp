@@ -44,23 +44,87 @@
 #include <kdebug.h>
 #include <stdlib.h>
 
+// ### support default attributes
+// ### dispatch mutation events
+// ### check for INVALID_CHARACTER_ERR where appropriate
+
 using namespace DOM;
 using namespace khtml;
 
-// ### support prefixes on Attrs
+namespace DOM {
+    DOMString extractPrefix(DOMStringImpl *qualifiedName);
+    DOMString extractLocalName(DOMStringImpl *qualifiedName);
+};
+
+DOMString DOM::extractPrefix(DOMStringImpl *qualifiedName)
+{
+    DOMString prefix;
+    int colonpos = -1;
+    for (uint i = 0; i < qualifiedName->l && colonpos < 0; ++i)
+        if (qualifiedName->s[i] == ':')
+            colonpos = i;
+
+    if (colonpos >= 0) {
+        prefix = qualifiedName->copy();
+        prefix.implementation()->truncate(colonpos);
+    }
+    return prefix;
+}
+
+DOMString DOM::extractLocalName(DOMStringImpl *qualifiedName)
+{
+    DOMString localName;
+    int colonpos = -1;
+    for (uint i = 0; i < qualifiedName->l && colonpos < 0; ++i)
+        if (qualifiedName->s[i] == ':')
+            colonpos = i;
+
+    if (colonpos >= 0) {
+        localName = qualifiedName->copy();
+        localName.implementation()->remove(0,colonpos+1);
+    }
+    else {
+        localName = qualifiedName;
+    }
+    return localName;
+}
 
 AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
-		   DOMStringImpl *value, DOMStringImpl *prefix)
+		   DOMStringImpl *_value)
     : NodeBaseImpl(docPtr),
-      m_element(element),
-      m_attrId(attrId),
-      m_value(value),
-      m_prefix(prefix)
+      m_element(element)
 {
-    assert(m_value);
+    m_attrId = attrId;
+    m_value = _value;
     m_value->ref();
+
+    m_prefix = 0;
+    m_namespaceURI = 0;
+    m_localName = 0;
+    m_specified = true; // we don't yet support default attributes
+}
+
+AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, DOMStringImpl *_namespaceURI,
+		   DOMStringImpl *_qualifiedName, DOMStringImpl *_value)
+    : NodeBaseImpl(docPtr),
+      m_element(element)
+{
+    m_attrId = docPtr->document()->attrNames()->getId(_qualifiedName,false);
+    m_value = _value;
+    m_value->ref();
+    m_namespaceURI = _namespaceURI;
+    if (m_namespaceURI)
+	m_namespaceURI->ref();
+
+    DOMString prefix = extractPrefix(_qualifiedName);
+    m_prefix = prefix.implementation();
     if (m_prefix)
 	m_prefix->ref();
+    DOMString localName = extractLocalName(_qualifiedName);
+    m_localName = localName.implementation();
+    if (m_localName)
+	m_localName->ref();
+    m_specified = true; // we don't yet support default attributes
 }
 
 AttrImpl::~AttrImpl()
@@ -68,11 +132,15 @@ AttrImpl::~AttrImpl()
     m_value->deref();
     if (m_prefix)
 	m_prefix->deref();
+    if (m_namespaceURI)
+	m_namespaceURI->deref();
+    if (m_localName)
+	m_localName->deref();
 }
 
 DOMString AttrImpl::nodeName() const
 {
-    return getDocument()->attrName(m_attrId);
+    return getDocument()->attrNames()->getName(m_attrId);
 }
 
 unsigned short AttrImpl::nodeType() const
@@ -91,6 +159,9 @@ void AttrImpl::setPrefix(const DOMString &_prefix, int &exceptioncode )
     if (exceptioncode)
         return;
 
+    if (m_prefix == _prefix.implementation())
+	return;
+
     if (m_prefix)
 	m_prefix->deref();
     m_prefix = _prefix.implementation();
@@ -98,9 +169,24 @@ void AttrImpl::setPrefix(const DOMString &_prefix, int &exceptioncode )
 	m_prefix->ref();
 }
 
+DOMString AttrImpl::namespaceURI() const
+{
+    return m_namespaceURI;
+}
+
+DOMString AttrImpl::localName() const
+{
+    return m_localName;
+}
+
 DOMString AttrImpl::nodeValue() const
 {
     return m_value;
+}
+
+DOMString AttrImpl::name() const
+{
+    return getDocument()->attrNames()->getName(m_attrId);
 }
 
 void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
@@ -123,9 +209,12 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
         return;
     }
 
+    if (m_value == v.implementation())
+	return;
+
     m_value->deref();
     m_value = v.implementation();
-    m_value->deref();
+    m_value->ref();
 
     if (m_element)
         m_element->parseAttribute(m_attrId,m_value);
@@ -140,7 +229,11 @@ void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
 
 NodeImpl *AttrImpl::cloneNode ( bool /*deep*/)
 {
-    return new AttrImpl(0,docPtr(),m_attrId,m_value,m_prefix);
+    if (m_localName) // namespace support
+	return new AttrImpl(0,docPtr(),m_namespaceURI,
+			    getDocument()->attrNames()->getName(m_attrId).implementation(),m_value);
+    else
+	return new AttrImpl(0,docPtr(),m_attrId,m_value);
 }
 
 // DOM Section 1.1.1
@@ -175,6 +268,8 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
 {
     assert(value);
     if (m_attrId) {
+	if (m_data.value == value)
+	    return;
 	m_data.value->deref();
 	m_data.value = value;
 	m_data.value->ref();
@@ -182,7 +277,7 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
 	    element->parseAttribute(this);
     }
     else {
-	int exceptioncode;
+	int exceptioncode = 0;
 	m_data.attr->setValue(value,exceptioncode);
 	// AttrImpl::setValue() calls parseAttribute()
     }
@@ -191,7 +286,7 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
 AttrImpl *AttributeImpl::createAttr(ElementImpl *element, DocumentPtr *docPtr)
 {
     if (m_attrId) {
-	AttrImpl *attr = new AttrImpl(element,docPtr,m_attrId,m_data.value,0);
+	AttrImpl *attr = new AttrImpl(element,docPtr,m_attrId,m_data.value);
 	m_data.value->deref();
 	m_data.attr = attr;
 	m_data.attr->ref();
@@ -220,6 +315,7 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
     namedAttrMap = 0;
     m_styleDecls = 0;
     m_prefix = 0;
+    m_namespaceURI = 0;
 }
 
 ElementImpl::~ElementImpl()
@@ -239,48 +335,32 @@ ElementImpl::~ElementImpl()
         m_prefix->deref();
 }
 
-void ElementImpl::removeAttribute( NodeImpl::Id id, int &exceptioncode )
-{
-    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
-    if (isReadOnly()) {
-        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-        return;
-    }
-
-    if (namedAttrMap)
-        namedAttrMap->removeNamedItem(id, exceptioncode);
-}
-
-void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
-{
-    int exceptioncode = 0;
-    setAttribute(id,value.implementation(),exceptioncode);
-}
-
 unsigned short ElementImpl::nodeType() const
 {
     return Node::ELEMENT_NODE;
 }
 
-DOMString ElementImpl::getAttribute(NodeImpl::Id id) const
+DOMString ElementImpl::getAttribute( NodeImpl::Id id, DOMStringImpl *namespaceURI,
+				     DOMStringImpl *qualifiedName ) const
 {
     if (!namedAttrMap)
 	return DOMString();
 
-    DOMStringImpl *value = namedAttrMap->getValue(id);
+    DOMStringImpl *value = namedAttrMap->getValue(id,namespaceURI,qualifiedName);
     if (value)
 	return value;
 
     // then search in default attr in case it is not yet set
     NamedAttrMapImpl* dm = defaultMap();
-    value = dm ? dm->getValue(id) : 0;
+    value = dm ? dm->getValue(id,namespaceURI,qualifiedName) : 0;
     if (value)
 	return value;
 
     return DOMString();
 }
 
-void ElementImpl::setAttribute(NodeImpl::Id id, DOMStringImpl* value, int &exceptioncode )
+void ElementImpl::setAttribute( NodeImpl::Id id, DOMStringImpl *namespaceURI, DOMStringImpl *qualifiedName,
+				DOMStringImpl* value, int &exceptioncode )
 {
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
     if (isReadOnly()) {
@@ -288,7 +368,13 @@ void ElementImpl::setAttribute(NodeImpl::Id id, DOMStringImpl* value, int &excep
         return;
     }
 
-    attributes()->setValue(id,value);
+    attributes()->setValue(id,namespaceURI,qualifiedName,value);
+}
+
+void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
+{
+    int exceptioncode = 0;
+    setAttribute(id,0,0,value.implementation(),exceptioncode);
 }
 
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
@@ -335,14 +421,9 @@ DOMString ElementImpl::nodeName() const
     return tagName();
 }
 
-DOMString ElementImpl::tagName() const
+DOMString ElementImpl::prefix() const
 {
-    DOMString tn = getDocument()->tagName(id());
-
-    if (m_prefix)
-        return DOMString(m_prefix) + ":" + tn;
-
-    return tn;
+    return m_prefix;
 }
 
 void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
@@ -351,11 +432,31 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
     if (exceptioncode)
         return;
 
+    if (m_prefix == _prefix.implementation())
+	return;
+
     if (m_prefix)
         m_prefix->deref();
     m_prefix = _prefix.implementation();
     if (m_prefix)
         m_prefix->ref();
+}
+
+DOMString ElementImpl::namespaceURI() const
+{
+    return m_namespaceURI;
+}
+
+void ElementImpl::setNamespaceURI(const DOMString &_namespaceURI)
+{
+    if (m_namespaceURI == _namespaceURI.implementation())
+	return;
+
+    if (m_namespaceURI)
+	m_namespaceURI->deref();
+    m_namespaceURI = _namespaceURI.implementation();
+    if (m_namespaceURI)
+	m_namespaceURI->ref();
 }
 
 void ElementImpl::createAttributeMap() const
@@ -529,53 +630,54 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl *
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName)
     : ElementImpl(doc)
 {
-    m_id = doc->document()->tagId(0 /* no namespace */, _tagName,  false /* allocate */);
+    // Called from createElement(). In this case localName, prefix, and namespaceURI all need to be null.
+    m_tagName = _tagName;
+    m_tagName->ref();
+    m_localName = 0;
 }
 
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI)
     : ElementImpl(doc)
 {
-    int colonpos = -1;
-    for (uint i = 0; i < _qualifiedName->l; ++i)
-        if (_qualifiedName->s[i] == ':') {
-            colonpos = i;
-            break;
-        }
+    // Called from createElementNS()
+    m_tagName = _qualifiedName;
+    m_tagName->ref();
 
-    if (colonpos >= 0) {
-        // we have a prefix
-        DOMStringImpl* localName = _qualifiedName->copy();
-        localName->ref();
-        localName->remove(0,colonpos+1);
-        m_id = doc->document()->tagId(_namespaceURI, localName, false /* allocate */);
-        localName->deref();
-        m_prefix = _qualifiedName->copy();
-        m_prefix->ref();
-        m_prefix->truncate(colonpos);
-    }
-    else {
-        // no prefix
-        m_id = doc->document()->tagId(_namespaceURI, _qualifiedName, false /* allocate */);
-        m_prefix = 0;
-    }
+    DOMString prefix = extractPrefix(_qualifiedName);
+    m_prefix = prefix.implementation();
+    if (m_prefix)
+	m_prefix->ref();
+    DOMString localName = extractLocalName(_qualifiedName);
+    m_localName = localName.implementation();
+    if (m_localName)
+	m_localName->ref();
+
+    m_namespaceURI = _namespaceURI;
+    if (m_namespaceURI)
+	m_namespaceURI->ref();
 }
 
 XMLElementImpl::~XMLElementImpl()
 {
 }
 
-DOMString XMLElementImpl::localName() const
+DOMString XMLElementImpl::tagName() const
 {
-    return getDocument()->tagName(m_id);
+    return m_tagName;
 }
 
+DOMString XMLElementImpl::localName() const
+{
+    return m_localName;
+}
 
 NodeImpl *XMLElementImpl::cloneNode ( bool deep )
 {
-    // ### we loose namespace here FIXME
-    // should pass id around
-    XMLElementImpl *clone = new XMLElementImpl(docPtr(), getDocument()->tagName(m_id).implementation());
-    clone->m_id = m_id;
+    XMLElementImpl *clone;
+    if (!m_localName)
+	clone = new XMLElementImpl(docPtr(),m_tagName);
+    else
+	clone = new XMLElementImpl(docPtr(),m_tagName,m_namespaceURI);
 
     // clone attributes
     if (namedAttrMap)
@@ -607,22 +709,26 @@ NamedAttrMapImpl::~NamedAttrMapImpl()
     free(m_attrs);
 }
 
-NodeImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id ) const
+NodeImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
+					   const DOMString &localName ) const
 {
-    // ### add useNamespace parameter
     if (!m_element)
 	return 0;
 
-    for (unsigned long i = 0; i < m_attrCount; i++)
-	if (m_attrs[i].id() == id)
+    for (unsigned long i = 0; i < m_attrCount; i++) {
+	// For getNamedItem(), just compare the id (nodeName). For getNamedItemNS(), we need to compare
+	// the namespace and local name, as there may be multiple attributes with the same nodeName.
+	if ((id != 0 && m_attrs[i].id() == id) ||
+	    (id == 0 && m_attrs[i].namespaceURI() == namespaceURI && m_attrs[i].localName() == localName))
 	    return m_attrs[i].createAttr(m_element,m_element->docPtr());
+    }
 
     return 0;
 }
 
-Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
+Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
+					 const DOMString &localName, int &exceptioncode )
 {
-    // ### add useNamespace parameter
     if (!m_element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
@@ -635,10 +741,14 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
     }
 
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	if (m_attrs[i].id() == id) {
+	// For removeNamedItem(), just compare the id (nodeName). For removeNamedItemNS(), we need to compare
+	// the namespace and local name, as there may be multiple attributes with the same nodeName.
+	if ((id != 0 && m_attrs[i].id() == id) ||
+	    (id == 0 && m_attrs[i].namespaceURI() == namespaceURI && m_attrs[i].localName() == localName)) {
+	    id = m_attrs[i].id();
 	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
 	    m_attrs[i].free();
-	    memmove(m_attrs+i,m_attrs+i+1,m_attrCount-i-1*sizeof(AttributeImpl));
+	    memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
 	    m_attrCount--;
 	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
 	    m_element->parseAttribute(id,0);
@@ -652,9 +762,8 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
     return 0;
 }
 
-Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
+Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool ns, int &exceptioncode )
 {
-    // ### add useNamespace parameter
     if (!m_element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
@@ -687,20 +796,24 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     }
 
     if (attr->ownerElement() == m_element) {
-	// Already have this attribute
-	return attr;
+	// Already have this attribute. Since we're not "replacing" it, return null.
+	return 0;
     }
 
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	if (m_attrs[i].id() == attr->attrId()) {
+	// For setNamedItem(), just compare the id (nodeName). For setNamedItemNS(), we need to compare
+	// the namespace and local name, as there may be multiple attributes with the same nodeName.
+	if ((!ns && m_attrs[i].id() == attr->attrId()) ||
+	    (ns && m_attrs[i].namespaceURI() == attr->namespaceURI() &&
+	     m_attrs[i].localName() == attr->localName())) {
 	    // Attribute exists; replace it
 	    Node replaced = m_attrs[i].createAttr(m_element,m_element->docPtr());
 	    m_attrs[i].free();
-	    m_attrs[i].m_attrId = attr->attrId();
+	    m_attrs[i].m_attrId = 0;
 	    m_attrs[i].m_data.attr = attr;
 	    m_attrs[i].m_data.attr->ref();
-	    m_element->parseAttribute(&m_attrs[i]);
 	    attr->setElement(m_element);
+	    m_element->parseAttribute(&m_attrs[i]);
 	    // ### dispatch mutation events
 	    return replaced;
 	}
@@ -709,7 +822,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     // No existing attribute; add to list
     m_attrCount++;
     m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
-    m_attrs[m_attrCount-1].m_attrId = attr->attrId();
+    m_attrs[m_attrCount-1].m_attrId = 0;
     m_attrs[m_attrCount-1].m_data.attr = attr;
     m_attrs[m_attrCount-1].m_data.attr->ref();
     attr->setElement(m_element);
@@ -750,56 +863,103 @@ DOMStringImpl *NamedAttrMapImpl::valueAt(unsigned long index) const
     return m_attrs[index].val();
 }
 
-DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id) const
+DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, DOMStringImpl *namespaceURI,
+					  DOMStringImpl *localName) const
 {
+    DOMString nsURI(namespaceURI);
+    DOMString lName(localName);
     for (unsigned long i = 0; i < m_attrCount; i++)
-	if (m_attrs[i].id() == id)
+	if ((id != 0 && m_attrs[i].id() == id) ||
+	    (id == 0 && m_attrs[i].namespaceURI() == nsURI && m_attrs[i].localName() == lName))
 	    return m_attrs[i].val();
 
     return 0;
 }
 
-void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value)
+void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *namespaceURI,
+				DOMStringImpl *qualifiedName, DOMStringImpl *value)
 {
+    // Passing in a null value here causes the attribute to be removed. This is a khtml extension
+    // (the spec does not specify what to do in this situation).
+    int exceptioncode = 0;
+    if (!value) {
+	DOMString localName = (id ? DOMString() : extractLocalName(qualifiedName));
+	removeNamedItem(id,namespaceURI,localName,exceptioncode);
+	return;
+    }
+
+    DOMString prefix;
+    DOMString localName;
+    if (id == 0) {
+	prefix = extractPrefix(qualifiedName);
+	localName = extractLocalName(qualifiedName);
+    }
+
+    // Check for an existing attribute. If called from setAttribute(), we only compare the ids (i.e. nodeName)
+    // If called from setAttributeNS(), we need to compare both the namespace URI and the local name (there
+    // may be multiple attributes with the same nodeName).
+    DOMString nsURI(namespaceURI);
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	if (m_attrs[i].id() == id) {
-	    if (value) {
-		m_attrs[i].setValue(value,m_element);
-	    }
-	    else {
-		m_attrs[i].free();
-		memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
-		m_attrCount--;
-		m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
-		if (m_element)
-		    m_element->parseAttribute(id,0);
-	    }
+	if ((id != 0 && m_attrs[i].id() == id) ||
+	    (id == 0 && m_attrs[i].namespaceURI() == nsURI && m_attrs[i].localName() == localName)) {
+
+	    if (id == 0)
+		m_attrs[i].attr()->setPrefix(prefix,exceptioncode);
+
+	    m_attrs[i].setValue(value,m_element);
 	    // ### dispatch mutation events
 	    return;
 	}
     }
 
-    if (!value)
-	return;
-
-    // No existing attribute; add to list
+    // No existing matching attribute; add a new one
     m_attrCount++;
     m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
     m_attrs[m_attrCount-1].m_attrId = id;
-    m_attrs[m_attrCount-1].m_data.value = value;
-    m_attrs[m_attrCount-1].m_data.value->ref();
+    if (id) {
+	// Called from setAttribute()... we only have a name
+	m_attrs[m_attrCount-1].m_data.value = value;
+	m_attrs[m_attrCount-1].m_data.value->ref();
+    }
+    else {
+	// Called from setAttributeNS()... need to create a full AttrImpl here to store the
+	// namespaceURI, prefix and localName
+	m_attrs[m_attrCount-1].m_data.attr = new AttrImpl(m_element,m_element->docPtr(),
+							  namespaceURI,
+							  qualifiedName,
+							  value);
+	m_attrs[m_attrCount-1].m_data.attr->ref();
+    }
     if (m_element)
 	m_element->parseAttribute(&m_attrs[m_attrCount-1]);
     // ### dispatch mutation events
 }
 
-NodeImpl::Id NamedAttrMapImpl::mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly)
+Attr NamedAttrMapImpl::removeAttr(AttrImpl *attr)
+{
+    for (unsigned long i = 0; i < m_attrCount; i++) {
+	if (m_attrs[i].attr() == attr) {
+	    NodeImpl::Id id = m_attrs[i].id();
+	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
+	    m_attrs[i].free();
+	    memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
+	    m_attrCount--;
+	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
+	    m_element->parseAttribute(id,0);
+	    // ### dispatch mutation events
+	    return removed;
+	}
+    }
+
+    return 0;
+}
+
+NodeImpl::Id NamedAttrMapImpl::mapId(const DOMString& name, bool readonly)
 {
     if (!m_element)
 	return 0;
 
-    return m_element->getDocument()->attrId(namespaceURI.implementation(),
-					    localName.implementation(), readonly);
+    return m_element->getDocument()->attrNames()->getId(name.implementation(), readonly);
 }
 
 void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)

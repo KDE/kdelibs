@@ -719,7 +719,7 @@ void RenderPartObject::updateWidget()
           for (unsigned long i = 0; i < a->length(); ++i) {
 	      NodeImpl::Id id = a->idAt(i);
 	      DOMString value = a->valueAt(i);
-              params.append(o->getDocument()->attrName(id).string() + "=\"" + value.string() + "\"");
+              params.append(o->getDocument()->attrNames()->getName(id).string() + "=\"" + value.string() + "\"");
           }
       }
       part->requestObject( this, url, serviceType, params );

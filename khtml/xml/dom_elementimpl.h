@@ -52,7 +52,9 @@ class AttrImpl : public NodeBaseImpl
 
 public:
     AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
-	     DOMStringImpl *value, DOMStringImpl *prefix);
+	     DOMStringImpl *_value);
+    AttrImpl(ElementImpl* element, DocumentPtr* docPtr, DOMStringImpl *_namespaceURI,
+	     DOMStringImpl *_qualifiedName, DOMStringImpl *_value);
     ~AttrImpl();
 
 private:
@@ -64,6 +66,7 @@ public:
     bool specified() const { return m_specified; }
     ElementImpl* ownerElement() const { return m_element; }
     NodeImpl::Id attrId() const { return m_attrId; }
+    DOMString name() const;
 
     //DOMString value() const;
     void setValue( const DOMString &v, int &exceptioncode );
@@ -73,6 +76,8 @@ public:
     virtual unsigned short nodeType() const;
     virtual DOMString prefix() const;
     virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
+    virtual DOMString namespaceURI() const;
+    virtual DOMString localName() const;
 
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
@@ -91,6 +96,8 @@ protected:
     NodeImpl::Id m_attrId;
     DOMStringImpl *m_value;
     DOMStringImpl *m_prefix;
+    DOMStringImpl *m_namespaceURI;
+    DOMStringImpl *m_localName;
 };
 
 // Mini version of AttrImpl. Stores either the id and value of an attribute
@@ -104,6 +111,9 @@ struct AttributeImpl
     DOMStringImpl *val() const { return m_attrId ? m_data.value : m_data.attr->val(); }
     DOMString value() const { return val(); }
     AttrImpl *attr() const { return m_attrId ? 0 : m_data.attr; }
+    DOMString namespaceURI() { return m_attrId ? DOMString() : m_data.attr->namespaceURI(); }
+    DOMString prefix() { return m_attrId ? DOMString() : m_data.attr->prefix(); }
+    DOMString localName() { return m_attrId ? DOMString() : m_data.attr->localName(); }
 
     void setValue(DOMStringImpl *value, ElementImpl *element);
     AttrImpl *createAttr(ElementImpl *element, DocumentPtr *docPtr);
@@ -127,15 +137,18 @@ public:
     ElementImpl(DocumentPtr *doc);
     ~ElementImpl();
 
-    DOMString getAttribute( NodeImpl::Id id ) const;
-    void setAttribute( NodeImpl::Id id, DOMStringImpl* value, int &exceptioncode );
-    void removeAttribute( NodeImpl::Id id, int &exceptioncode );
+    DOMString getAttribute( NodeImpl::Id i, DOMStringImpl *namespaceURI = 0,
+			    DOMStringImpl *qualifiedName = 0 ) const;
+    void setAttribute( NodeImpl::Id id, DOMStringImpl *namespaceURI, DOMStringImpl *qualifiedName,
+		       DOMStringImpl* value, int &exceptioncode );
 
-    DOMString prefix() const { return m_prefix; }
+    virtual DOMString prefix() const;
     void setPrefix(const DOMString &_prefix, int &exceptioncode );
+    virtual DOMString namespaceURI() const;
+    void setNamespaceURI(const DOMString &_namespaceURI);
 
     // DOM methods overridden from  parent classes
-    virtual DOMString tagName() const;
+    virtual DOMString tagName() const = 0;
     virtual unsigned short nodeType() const;
     virtual NodeImpl *cloneNode ( bool deep );
     virtual DOMString nodeName() const;
@@ -196,6 +209,7 @@ protected: // member variables
 
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
     DOMStringImpl *m_prefix;
+    DOMStringImpl *m_namespaceURI;
 };
 
 
@@ -209,15 +223,16 @@ public:
 
     // DOM methods overridden from  parent classes
 
+    virtual DOMString tagName() const;
     virtual DOMString localName() const;
     virtual NodeImpl *cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
     virtual bool isXMLElementNode() const { return true; }
-    virtual Id id() const { return m_id; }
 
 protected:
-    Id m_id;
+    DOMStringImpl *m_localName;
+    DOMStringImpl *m_tagName;
 };
 
 // the map of attributes of an element
@@ -228,24 +243,27 @@ public:
     NamedAttrMapImpl(ElementImpl *element);
     virtual ~NamedAttrMapImpl();
 
-    // ### are the non-NS methods equivalent to NS methods with a namespace of ""/null, or
-    // should they match attributes in any namespace?
-
     // DOM methods & attributes for NamedNodeMap
-    virtual NodeImpl *getNamedItem ( NodeImpl::Id id ) const;
-    virtual Node removeNamedItem ( NodeImpl::Id id, int &exceptioncode );
-    virtual Node setNamedItem ( NodeImpl* arg, int &exceptioncode );
+    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
+				     const DOMString &localName ) const;
+    virtual Node removeNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
+				   const DOMString &localName, int &exceptioncode );
+    virtual Node setNamedItem ( NodeImpl* arg, bool ns, int &exceptioncode );
 
     virtual NodeImpl *item ( unsigned long index ) const;
     virtual unsigned long length(  ) const;
 
     // Other methods (not part of DOM)
     virtual bool isReadOnly() { return false; }
+
+    AttributeImpl *attrAt(unsigned long index) const { return &m_attrs[index]; }
+    // ### replace idAt and getValueAt with attrAt
     NodeImpl::Id idAt(unsigned long index) const;
     DOMStringImpl *valueAt(unsigned long index) const;
-    DOMStringImpl *getValue(NodeImpl::Id id) const;
-    void setValue(NodeImpl::Id id, DOMStringImpl *value);
-    NodeImpl::Id mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly);
+    DOMStringImpl *getValue(NodeImpl::Id id, DOMStringImpl *namespaceURI = 0, DOMStringImpl *localName = 0) const;
+    void setValue(NodeImpl::Id id, DOMStringImpl *namespaceURI, DOMStringImpl *qualifiedName, DOMStringImpl *value);
+    Attr removeAttr(AttrImpl *attr);
+    NodeImpl::Id mapId(const DOMString& name, bool readonly);
     void copyAttributes(NamedAttrMapImpl *other);
     void setElement(ElementImpl *element);
     void detachFromElement();

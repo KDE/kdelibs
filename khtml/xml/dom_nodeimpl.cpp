@@ -189,6 +189,11 @@ DOMString NodeImpl::prefix() const
     return DOMString();
 }
 
+DOMString NodeImpl::namespaceURI() const
+{
+    return DOMString();
+}
+
 void NodeImpl::setPrefix(const DOMString &/*_prefix*/, int &exceptioncode )
 {
     // The spec says that for nodes other than elements and attributes, prefix is always null.
@@ -773,7 +778,7 @@ void NodeImpl::checkSetPrefix(const DOMString &_prefix, int &exceptioncode)
     //   the namespaceURI of this node is different from "http://www.w3.org/2000/xmlns/",
     // - or if this node is an attribute and the qualifiedName of this node is "xmlns" [Namespaces].
     if (Element::khtmlMalformedPrefix(_prefix) || (!(id() & NodeImpl_IdNSMask) && id() > ID_LAST_TAG) ||
-        (_prefix == "xml" && DOMString(getDocument()->namespaceURI(id())) != "http://www.w3.org/XML/1998/namespace")) {
+        (_prefix == "xml" && namespaceURI() != "http://www.w3.org/XML/1998/namespace")) {
         exceptioncode = DOMException::NAMESPACE_ERR;
         return;
     }
@@ -1391,20 +1396,6 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone)
     }
 }
 
-NodeListImpl* NodeBaseImpl::getElementsByTagNameNS ( DOMStringImpl* namespaceURI,
-                                                     DOMStringImpl* localName )
-{
-    if (!localName) return 0;
-
-    NodeImpl::Id idMask = NodeImpl_IdNSMask | NodeImpl_IdLocalMask;
-    if (localName->l && localName->s[0] == '*')
-        idMask &= ~NodeImpl_IdLocalMask;
-    if (namespaceURI && namespaceURI->l && namespaceURI->s[0] == '*')
-        idMask &= ~NodeImpl_IdNSMask;
-
-    return new TagNodeListImpl( this,
-                                getDocument()->tagId(namespaceURI, localName, true), idMask);
-}
 
 // I don't like this way of implementing the method, but I didn't find any
 // other way. Lars
@@ -1634,6 +1625,7 @@ unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
 
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
         if ( n->nodeType() == Node::ELEMENT_NODE ) {
+            // ### rename to elementMatches()
             if (nodeMatches(n))
                 len++;
             len+= recursiveLength(n);
@@ -1700,31 +1692,51 @@ bool ChildNodeListImpl::nodeMatches( NodeImpl* /*testNode*/ ) const
     return true;
 }
 
-TagNodeListImpl::TagNodeListImpl(NodeImpl *n, NodeImpl::Id _id, NodeImpl::Id _idMask )
-    : refNode(n), m_id(_id & _idMask), m_idMask(_idMask)
+TagNodeListImpl::TagNodeListImpl( NodeImpl *n, NodeImpl::Id id )
+  : m_refNode(n),
+    m_id(id),
+    m_namespaceAware(false)
 {
-    refNode->ref();
+    m_refNode->ref();
+    // An id of 0 here means "*" (match all nodes)
+    m_matchAllNames = (id == 0);
+    m_matchAllNamespaces = false;
+}
+
+TagNodeListImpl::TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName )
+  : m_refNode(n),
+    m_id(0),
+    m_namespaceURI(namespaceURI),
+    m_localName(localName),
+    m_namespaceAware(true)
+{
+    m_refNode->ref();
+    m_matchAllNames = (localName == "*");
+    m_matchAllNamespaces = (namespaceURI == "*");
 }
 
 TagNodeListImpl::~TagNodeListImpl()
 {
-    refNode->deref();
+    m_refNode->deref();
 }
 
 unsigned long TagNodeListImpl::length() const
 {
-    return recursiveLength( refNode );
+    return recursiveLength( m_refNode );
 }
 
 NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
 {
-    return recursiveItem( refNode, index );
+    return recursiveItem( m_refNode, index );
 }
 
 bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    return ( testNode->isElementNode() && m_id &&
-             (testNode->id() & m_idMask) == m_id);
+    if (m_namespaceAware)
+	return (m_matchAllNamespaces || testNode->namespaceURI() == m_namespaceURI) &&
+	       (m_matchAllNames || testNode->localName() == m_localName);
+    else
+	return (m_id == 0 || m_id == testNode->id());
 }
 
 NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
@@ -1754,8 +1766,8 @@ bool NameNodeListImpl::nodeMatches( NodeImpl *testNode ) const
     return static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 
-NamedTagNodeListImpl::NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name, NodeImpl::Id tagIdMask )
-    : TagNodeListImpl( n, tagId, tagIdMask ), nodeName( name )
+NamedTagNodeListImpl::NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name )
+    : TagNodeListImpl( n, tagId ), nodeName( name )
 {
 }
 

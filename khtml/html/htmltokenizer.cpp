@@ -1563,7 +1563,7 @@ void HTMLTokenizer::processToken()
         for (unsigned long i = 0; i < l; ++i) {
             NodeImpl::Id id = currToken.attrs->idAt(i);
             DOMString value = currToken.attrs->valueAt(i);
-            kdDebug( 6036 ) << "    " << id << " " << parser->doc()->getDocument()->attrName(id).string()
+            kdDebug( 6036 ) << "    " << id << " " << parser->doc()->getDocument()->attrNames()->getName(id).string()
                             << "=\"" << value.string() << "\"" << endl;
         }
     }

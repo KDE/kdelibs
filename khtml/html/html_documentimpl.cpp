@@ -75,6 +75,9 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
 */
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
              SLOT( slotHistoryChanged() ));
+
+    m_attrNames->setCaseSensitive(false);
+    m_elementNames->setCaseSensitive(false);
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()

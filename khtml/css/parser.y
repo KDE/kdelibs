@@ -535,7 +535,7 @@ element_name:
 	    if (doc->isHTMLDocument())
 		tag = tag.lower();
 	    const DOMString dtag(tag);
-	    $$ = doc->tagId(0, dtag.implementation(), false);
+	    $$ = doc->elementNames()->getId(dtag.implementation(), false);
 	} else {
 	    $$ = khtml::getTagID(tag.lower().ascii(), tag.length());
 	    // this case should never happen - only when loading
@@ -592,7 +592,7 @@ attrib_id:
 	    if (doc->isHTMLDocument())
 		attr = attr.lower();
 	    const DOMString dattr(attr);
-	    $$ = doc->attrId(0, dattr.implementation(), false);
+	    $$ = doc->attrNames()->getId(dattr.implementation(), false);
 	} else {
 	    $$ = khtml::getAttrID(attr.lower().ascii(), attr.length());
 	    // this case should never happen - only when loading

@@ -98,6 +98,7 @@ public:
     virtual NodeImpl *cloneNode ( bool deep ) = 0;
     virtual DOMString localName() const;
     virtual DOMString prefix() const;
+    virtual DOMString namespaceURI() const;
     virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
     void normalize ();
 
@@ -401,10 +402,6 @@ public:
     virtual NodeImpl *addChild(NodeImpl *newChild);
     virtual void attach();
     virtual void detach();
-   
-
-    virtual NodeListImpl *getElementsByTagNameNS ( DOMStringImpl* namespaceURI,
-                                                   DOMStringImpl* localName );
 
     virtual QRect getRect() const;
     bool getUpperLeftCorner(int &xPos, int &yPos) const;
@@ -479,7 +476,8 @@ protected:
 class TagNodeListImpl : public NodeListImpl
 {
 public:
-    TagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, NodeImpl::Id tagIdMask );
+    TagNodeListImpl( NodeImpl *n, NodeImpl::Id id );
+    TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName );
     virtual ~TagNodeListImpl();
 
     // DOM methods overridden from  parent classes
@@ -492,9 +490,14 @@ public:
 protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
 
-    NodeImpl *refNode;
+    NodeImpl *m_refNode;
     NodeImpl::Id m_id;
-    NodeImpl::Id m_idMask;
+    DOMString m_namespaceURI;
+    DOMString m_localName;
+
+    bool m_matchAllNames;
+    bool m_matchAllNamespaces;
+    bool m_namespaceAware;
 };
 
 
@@ -521,7 +524,6 @@ protected:
     DOMString nodeName;
 };
 
-
 /**
  * NodeList which lists all Nodes in a document with a given tag name
  * _and_ a given value for the name attribute (combination of TagNodeListImpl and NameNodeListImpl)
@@ -529,8 +531,7 @@ protected:
 class NamedTagNodeListImpl : public TagNodeListImpl
 {
 public:
-    NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name,
-                          NodeImpl::Id tagIdMask = NodeImpl_IdNSMask | NodeImpl_IdLocalMask );
+    NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name );
 protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
     DOMString nodeName;
@@ -546,15 +547,17 @@ public:
     virtual ~NamedNodeMapImpl();
 
     // DOM methods & attributes for NamedNodeMap
-    virtual NodeImpl *getNamedItem ( NodeImpl::Id id ) const = 0;
-    virtual Node removeNamedItem ( NodeImpl::Id id, int &exceptioncode ) = 0;
-    virtual Node setNamedItem ( NodeImpl* arg, int &exceptioncode ) = 0;
+    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
+				     const DOMString &localName ) const = 0;
+    virtual Node removeNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
+				   const DOMString &localName, int &exceptioncode ) = 0;
+    virtual Node setNamedItem ( NodeImpl* arg, bool ns, int &exceptioncode ) = 0;
 
     virtual NodeImpl *item ( unsigned long index ) const = 0;
     virtual unsigned long length(  ) const = 0;
 
     // Other methods (not part of DOM)
-    virtual NodeImpl::Id mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly) = 0;
+    virtual NodeImpl::Id mapId(const DOMString& name, bool readonly) = 0;
     virtual bool isReadOnly() { return false; }
 };
 

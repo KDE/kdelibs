@@ -271,7 +271,11 @@ ProcessingInstruction Document::createProcessingInstruction( const DOMString &ta
 
 Attr Document::createAttribute( const DOMString &name )
 {
-    return createAttributeNS(DOMString(), name);
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    if (name.isNull()) throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    NodeImpl::Id attrId = impl->getDocument()->attrNames()->getId(name.implementation(),false);
+    return new AttrImpl(0,impl->docPtr(),attrId,DOMString("").implementation());
 }
 
 Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
@@ -279,25 +283,10 @@ Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (qualifiedName.isNull()) throw DOMException(DOMException::NAMESPACE_ERR);
 
-    DOMString localName(qualifiedName.copy());
-    DOMString prefix;
-    int colonpos;
-    if ((colonpos = qualifiedName.find(':')) >= 0) {
-        prefix = qualifiedName.copy();
-        prefix.truncate(colonpos);
-        localName.remove(0, colonpos+1);
-    }
+    // ### check exceptions
 
-    // ### check correctness of parameters
-
-    NodeImpl::Id id = static_cast<DocumentImpl*>(impl)->attrId(namespaceURI.implementation(), localName.implementation(), false /* allocate */);
-    Attr r = static_cast<DocumentImpl*>(impl)->createAttribute(id);
-    int exceptioncode = 0;
-    if (r.handle() && prefix.implementation())
-        r.handle()->setPrefix(prefix.implementation(), exceptioncode);
-    if (exceptioncode)
-        throw DOMException(exceptioncode);
-    return r;
+    return new AttrImpl(0,impl->docPtr(),namespaceURI.implementation(),qualifiedName.implementation(),
+			DOMString("").implementation());
 }
 
 EntityReference Document::createEntityReference( const DOMString &name )
@@ -315,15 +304,14 @@ Element Document::getElementById( const DOMString &elementId ) const
 NodeList Document::getElementsByTagName( const DOMString &tagName )
 {
     if (!impl) return 0;
-    return static_cast<DocumentImpl*>(impl)->
-        getElementsByTagNameNS(0, tagName.implementation());
+    NodeImpl::Id id = impl->getDocument()->elementNames()->getId(tagName.implementation(), false);
+    return new TagNodeListImpl( impl, id );
 }
 
 NodeList Document::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
 {
     if (!impl) return 0;
-    return static_cast<DocumentImpl*>(impl)->
-        getElementsByTagNameNS(namespaceURI.implementation(), localName.implementation());
+    return new TagNodeListImpl( impl, namespaceURI, localName );
 }
 
 Node Document::importNode( const Node & importedNode, bool deep )

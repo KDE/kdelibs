@@ -85,10 +85,8 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         DOMString uri(atts.uri(i));
         DOMString ln(atts.localName(i));
         DOMString val(atts.value(i));
-        NodeImpl::Id id = m_doc->document()->attrId(uri.implementation(),
-                                                    ln.implementation(),
-                                                    false /* allocate */);
-        newElement->setAttribute(id, val.implementation(), exceptioncode);
+        newElement->setAttribute(0, uri.implementation(), ln.implementation(),
+				 val.implementation(), exceptioncode);
         if (exceptioncode) // exception setting attributes
             return false;
     }

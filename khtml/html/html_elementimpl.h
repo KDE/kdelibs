@@ -46,6 +46,8 @@ public:
     virtual bool isInline() const;
 
     virtual Id id() const = 0;
+    virtual DOMString tagName() const;
+    virtual DOMString localName() const;
 
     virtual void parseAttribute(AttributeImpl *token);
 
@@ -62,8 +64,6 @@ public:
     DocumentFragmentImpl *createContextualFragment( const DOMString &html );
     bool setInnerHTML( const DOMString &html );
     bool setInnerText( const DOMString &text );
-
-    virtual DOMString namespaceURI() const;
 
 protected:
     // for IMG, OBJECT and APPLET

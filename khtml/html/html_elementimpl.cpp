@@ -98,6 +98,34 @@ bool HTMLElementImpl::isInline() const
     }
 }
 
+DOMString HTMLElementImpl::tagName() const
+{
+    DOMString tn = getDocument()->elementNames()->getName(id());
+
+    // HTML elements in the XHTML namespace are lowercase
+    // ### do we need to do this conversion here? should it come back from getName()
+    // in the correct case?
+    if (m_namespaceURI)
+	tn = getTagName(id()).lower();
+
+    if (m_prefix)
+        return DOMString(m_prefix) + ":" + tn;
+
+    return tn;
+}
+
+DOMString HTMLElementImpl::localName() const
+{
+    // We only have a localName if we were created by createElementNS(), in which
+    // case we have a namespace URI. This also means we're an XHTML element and
+    // we have a lowercase name.
+    if (m_namespaceURI)
+	return getTagName(id()).lower();
+    // createElement() always returns elements with a null localName.
+    else
+	return DOMString();
+}
+
 void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 {
     DOMString indexstring;
@@ -507,16 +535,6 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
     if ( !ec )
         return true;
     return false;
-}
-
-DOMString HTMLElementImpl::namespaceURI() const
-{
-    // For HTML documents, we treat HTML elements as having no namespace. But for XML documents
-    // the elements have the namespace defined in the XHTML spec
-    if (getDocument()->isHTMLDocument())
-        return DOMString();
-    else
-        return XHTML_NAMESPACE;
 }
 
 void HTMLElementImpl::addHTMLAlignment( DOMString alignment )

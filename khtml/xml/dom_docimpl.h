@@ -45,6 +45,9 @@ class QPaintDeviceMetrics;
 class KHTMLView;
 class Tokenizer;
 
+typedef DOM::DOMString (*NameLookupFunction)(unsigned short id);
+typedef int (*IdLookupFunction)(const char *tagStr, int len);
+
 namespace khtml {
     class CSSStyleSelector;
     class DocLoader;
@@ -81,6 +84,30 @@ namespace DOM {
     class StyleSheetListImpl;
     class TextImpl;
     class TreeWalkerImpl;
+
+class IdNameMapping
+{
+public:
+    IdNameMapping(NameLookupFunction nameLookup, IdLookupFunction idLookup,
+		  unsigned short idStart, bool caseSensitive);
+    ~IdNameMapping();
+
+    NodeImpl::Id getId(DOMStringImpl *_name, bool readonly);
+    DOMString getName(unsigned short _id) const;
+    void setCaseSensitive(bool _caseSensitive) { m_caseSensitive = _caseSensitive; }
+
+private:
+
+    NameLookupFunction m_nameLookup;
+    IdLookupFunction m_idLookup;
+
+    DOM::DOMStringImpl **m_names;
+    unsigned short m_alloc;
+    unsigned short m_count;
+    unsigned short m_idStart;
+    QDict<void> m_dict;
+    bool m_caseSensitive;
+};
 
 class DOMImplementationImpl : public khtml::Shared<DOMImplementationImpl>
 {
@@ -140,7 +167,6 @@ public:
     CommentImpl *createComment ( DOMStringImpl* data );
     CDATASectionImpl *createCDATASection ( DOMStringImpl* data );
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, DOMStringImpl* data );
-    Attr createAttribute(NodeImpl::Id id);
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
     virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
@@ -299,18 +325,8 @@ public:
     virtual bool childTypeAllowed( unsigned short nodeType );
     virtual NodeImpl *cloneNode ( bool deep );
 
-    // ### think about implementing ref'counting for the id's
-    // in order to be able to reassign those that are no longer in use
-    // (could make problems when it is still kept somewhere around, i.e. styleselector)
-    NodeImpl::Id tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly);
-    DOMString tagName(NodeImpl::Id _id) const;
-
-    NodeImpl::Id attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly);
-    DOMString attrName(NodeImpl::Id _id) const;
-
-    // the namespace uri is mapped to the same id for both
-    // tagnames as well as attributes.
-    DOMStringImpl* namespaceURI(NodeImpl::Id _id) const;
+    IdNameMapping *elementNames() const { return m_elementNames; }
+    IdNameMapping *attrNames() const { return m_attrNames; }
 
     StyleSheetListImpl* styleSheets();
 
@@ -427,7 +443,6 @@ protected:
     // elements.
     int m_pendingStylesheets;
 
-
     CSSStyleSheetImpl *m_elemSheet;
 
     QPaintDevice *m_paintDevice;
@@ -438,19 +453,8 @@ protected:
     QColor m_textColor;
     NodeImpl *m_focusNode;
 
-    // ### replace me with something more efficient
-    // in lookup and insertion.
-    DOMStringImpl **m_elementNames;
-    unsigned short m_elementNameAlloc;
-    unsigned short m_elementNameCount;
-
-    DOMStringImpl **m_attrNames;
-    unsigned short m_attrNameAlloc;
-    unsigned short m_attrNameCount;
-
-    DOMStringImpl** m_namespaceURIs;
-    unsigned short m_namespaceURIAlloc;
-    unsigned short m_namespaceURICount;
+    IdNameMapping *m_attrNames;
+    IdNameMapping *m_elementNames;
 
     QPtrList<NodeIteratorImpl> m_nodeIterators;
     AbstractViewImpl *m_defaultView;

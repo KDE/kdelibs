@@ -72,8 +72,97 @@
 #include <kapplication.h>
 #include <kio/job.h>
 
+#include <stdlib.h>
+
 using namespace DOM;
 using namespace khtml;
+
+IdNameMapping::IdNameMapping(NameLookupFunction nameLookup, IdLookupFunction idLookup,
+			     unsigned short idStart, bool caseSensitive)
+  : m_nameLookup(nameLookup),
+    m_idLookup(idLookup),
+    m_names(0),
+    m_alloc(0),
+    m_count(0),
+    m_idStart(idStart),
+    m_caseSensitive(caseSensitive)
+{
+}
+
+IdNameMapping::~IdNameMapping()
+{
+    if (m_names) {
+        for (unsigned short id = 0; id < m_count; id++)
+            m_names[id]->deref();
+        free(m_names);
+    }
+}
+
+NodeImpl::Id IdNameMapping::getId(DOMStringImpl *_name, bool readonly)
+{
+    // Map an attribute/element name to an Id value. Note that this only takes into account
+    // the name/nodeName. For nodes created with any of the *NS() methods, this is the fully
+    // qualified name (prefix:localName). We ignore namespaces here, thus it is possible for
+    // two nodes in different namespace to have the same id. But that is what we want for the
+    // non-namespace aware methods like getNamedItem() and getAttribute().
+
+    // Also note that html attributes in XHTML documents have no namespace (and thus no prefix),
+    // even though they are associated with elements that are in the XHTML namespace.
+
+    NodeImpl::Id id = 0;
+
+    // First see if the name is present in the built-in list
+    QString nameStr = DOMString(_name).string();
+    // For case sensitive lookups (i.e. in an XML document), we're only interested in built-in
+    // names that are lower case (elements & attribute names). Others with mixed case or
+    // uppercase go into the custom name list.
+    if (m_caseSensitive && (id = m_idLookup(nameStr.ascii(),_name->l)))
+	return id;
+    if (!m_caseSensitive && (id = m_idLookup(nameStr.lower().ascii(),_name->l)))
+	return id;
+
+    // Non-builtin name; lookup or add to our mapping
+    if (!m_caseSensitive)
+	nameStr = nameStr.upper();
+    id = (NodeImpl::Id)m_dict.find(nameStr);
+    if (id)
+	return id;
+
+    // Don't add to the mapping unless necessary. Some methods are only interested in id
+    // if it actually exists.
+    if (readonly)
+	return 0;
+
+    if (m_count >= m_alloc) {
+        m_alloc += 32;
+	m_names = (DOMStringImpl**)realloc(m_names,m_alloc*sizeof(DOMStringImpl*));
+    }
+
+    DOMString str(_name);
+    if (!m_caseSensitive)
+	str = str.upper();
+    m_names[m_count] = str.implementation();
+    m_names[m_count]->ref();
+    id = m_idStart+m_count;
+    m_count++;
+
+    m_dict.insert(nameStr,(void*)id);
+    return id;
+}
+
+DOMString IdNameMapping::getName(unsigned short _id) const
+{
+    assert(_id < m_idStart+m_count);
+    if (_id >= m_idStart)
+        return m_names[_id-m_idStart];
+    else if (m_caseSensitive)
+	return m_nameLookup(_id);
+    // for HTML documents: element & attribute names are uppercased
+    else
+	return m_nameLookup(_id).upper();
+}
+
+// ------------------------------------------------------------------------
 
 DOMImplementationImpl *DOMImplementationImpl::m_instance = 0;
 
@@ -268,18 +357,8 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     pMode = Strict;
     hMode = XHtml;
     m_textColor = "#000000";
-    m_elementNames = 0;
-    m_elementNameAlloc = 0;
-    m_elementNameCount = 0;
-    m_attrNames = 0;
-    m_attrNameAlloc = 0;
-    m_attrNameCount = 0;
-    m_namespaceURIAlloc = 4;
-    m_namespaceURICount = 1;
-    QString xhtml(XHTML_NAMESPACE);
-    m_namespaceURIs = new DOMStringImpl* [m_namespaceURIAlloc];
-    m_namespaceURIs[0] = new DOMStringImpl(xhtml.unicode(), xhtml.length());
-    m_namespaceURIs[0]->ref();
+    m_attrNames = new IdNameMapping(getAttrName,getAttrID,ATTR_LAST_ATTR+1,true);
+    m_elementNames = new IdNameMapping(getTagName,getTagID,ID_LAST_TAG+1,true);
     m_focusNode = 0;
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
@@ -311,20 +390,8 @@ DocumentImpl::~DocumentImpl()
         m_doctype->deref();
     m_implementation->deref();
     delete m_paintDeviceMetrics;
-
-    if (m_elementNames) {
-        for (unsigned short id = 0; id < m_elementNameCount; id++)
-            m_elementNames[id]->deref();
-        delete [] m_elementNames;
-    }
-    if (m_attrNames) {
-        for (unsigned short id = 0; id < m_attrNameCount; id++)
-            m_attrNames[id]->deref();
-        delete [] m_attrNames;
-    }
-    for (unsigned short id = 0; id < m_namespaceURICount; ++id)
-        m_namespaceURIs[id]->deref();
-    delete [] m_namespaceURIs;
+    delete m_elementNames;
+    delete m_attrNames;
     m_defaultView->deref();
     m_styleSheets->deref();
     if (m_focusNode)
@@ -357,7 +424,10 @@ ElementImpl *DocumentImpl::documentElement() const
 
 ElementImpl *DocumentImpl::createElement( const DOMString &name )
 {
-    return new XMLElementImpl( document, name.implementation() );
+    if (isHTMLDocument())
+	return new XMLElementImpl( document, name.upper().implementation() );
+    else
+	return new XMLElementImpl( document, name.implementation() );
 }
 
 DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
@@ -380,11 +450,6 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
     return new ProcessingInstructionImpl( docPtr(),target,data);
 }
 
-Attr DocumentImpl::createAttribute( NodeImpl::Id id )
-{
-    return new AttrImpl(0, docPtr(), id, DOMString("").implementation(), 0);
-}
-
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
 {
     return new EntityReferenceImpl(docPtr(), name.implementation());
@@ -402,33 +467,36 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 
     if(importedNode->nodeType() == Node::ELEMENT_NODE)
     {
-	ElementImpl *tempElementImpl = createElementNS(getDocument()->namespaceURI(id()), importedNode->nodeName());
+	ElementImpl *tempElementImpl = createElementNS(tempElementImpl->namespaceURI(), importedNode->nodeName());
 	result = tempElementImpl;
 
-	if(static_cast<ElementImpl *>(importedNode)->attributes(true) &&
-	   static_cast<ElementImpl *>(importedNode)->attributes(true)->length())
-	{
-	    NamedNodeMapImpl *attr = static_cast<ElementImpl *>(importedNode)->attributes();
+	ElementImpl *otherElem = static_cast<ElementImpl*>(importedNode);
+	DocumentImpl *otherDoc = importedNode->getDocument();
+	NamedAttrMapImpl *otherMap = static_cast<ElementImpl *>(importedNode)->attributes(true);
 
-	    for(unsigned int i = 0; i < attr->length(); i++)
+	if(otherMap) {
+	    for(unsigned long i = 0; i < otherMap->length(); i++)
 	    {
-		DOM::DOMString qualifiedName = attr->item(i)->nodeName();
-		DOM::DOMString value = attr->item(i)->nodeValue();
+		AttrImpl *otherAttr = otherMap->attrAt(i)->createAttr(otherElem,otherElem->docPtr());
 
-		int colonpos = qualifiedName.find(':');
-		DOMString localName = qualifiedName;
-		if(colonpos >= 0)
-		{
-		    localName.remove(0, colonpos + 1);
-		    // ### extract and set new prefix
+		if (!otherAttr->localName().isNull()) {
+		    // attr was created via createElementNS()
+		    tempElementImpl->setAttribute(0,
+						  otherAttr->namespaceURI().implementation(),
+						  otherAttr->name().implementation(),
+						  otherAttr->nodeValue().implementation(),
+						  exceptioncode);
+		}
+		else {
+		    // attr was created via createElement()
+		    DOMString name = otherDoc->attrNames()->getName(otherAttr->attrId());
+		    NodeImpl::Id id = m_attrNames->getId(name.implementation(),false);
+		    tempElementImpl->setAttribute(id,0,0,otherAttr->nodeName().implementation(),
+						  exceptioncode);
 		}
 
-		NodeImpl::Id nodeId = getDocument()->attrId(getDocument()->namespaceURI(id()),
-							    localName.implementation(), false /* allocate */);
-		tempElementImpl->setAttribute(nodeId, value.implementation(), exceptioncode);
-
 		if(exceptioncode != 0)
-		    break;
+		    break; // ### properly cleanup here
 	    }
 	}
     }
@@ -471,15 +539,17 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     ElementImpl *e = 0;
     QString qName = _qualifiedName.string();
     int colonPos = qName.find(':',0);
+    QString localName = qName.mid(colonPos+1);
 
-    if ((_namespaceURI.isNull() && colonPos < 0) ||
-        _namespaceURI == XHTML_NAMESPACE) {
-        // User requested an element in the XHTML namespace - this means we create a HTML element
-        // (elements not in this namespace are treated as normal XML elements)
-        e = createHTMLElement(qName.mid(colonPos+1));
+    // ### make sure html elements only get localName set if created through createElementNS
+    if ((isHTMLDocument() && _namespaceURI.isNull()) ||
+        (_namespaceURI == XHTML_NAMESPACE && localName == localName.lower())) {
+        e = createHTMLElement(localName);
         int exceptioncode = 0;
-        if (colonPos >= 0)
-            e->setPrefix(qName.left(colonPos),  exceptioncode);
+        if (colonPos >= 0 && e)
+            e->setPrefix(qName.left(colonPos),  exceptioncode); // ### propagate exceptions
+	if (e)
+	    e->setNamespaceURI(_namespaceURI);
     }
     if (!e)
         e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
@@ -1565,210 +1635,6 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
     return 0;
-}
-
-NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
-{
-    // Each document maintains a mapping of attrname -> id for every attr name
-    // encountered in the document.
-    // For attrnames without a prefix (no qualified element name) and without matching
-    // namespace, the value defined in misc/htmlattrs.h is used.
-    NodeImpl::Id id = 0;
-
-    // First see if it's a HTML attribute name
-    QConstString n(_name->s, _name->l);
-    if (!_namespaceURI || !strcasecmp(_namespaceURI, XHTML_NAMESPACE)) {
-        // we're in HTML namespace if we know the tag.
-        // xhtml is lower case - case sensitive, easy to implement
-        if ( htmlMode() == XHtml && (id = khtml::getAttrID(n.string().ascii(), _name->l)) )
-            return id;
-        // compatibility: upper case - case insensitive
-        if ( htmlMode() != XHtml && (id = khtml::getAttrID(n.string().lower().ascii(), _name->l )) )
-            return id;
-
-        // ok, the fast path didn't work out, we need the full check
-    }
-
-    // now lets find out the namespace
-    if (_namespaceURI) {
-        DOMString nsU(_namespaceURI);
-        bool found = false;
-        // ### yeah, this is lame. use a dictionary / map instead
-        for (unsigned short ns = 0; ns < m_namespaceURICount; ++ns)
-            if (nsU == DOMString(m_namespaceURIs[ns])) {
-                id |= ns << 16;
-                found = true;
-                break;
-            }
-
-        if (!found && !readonly) {
-            // something new, add it
-            if (m_namespaceURICount >= m_namespaceURIAlloc) {
-                m_namespaceURIAlloc += 32;
-                DOMStringImpl **newURIs = new DOMStringImpl* [m_namespaceURIAlloc];
-                for (unsigned short i = 0; i < m_namespaceURICount; i++)
-                    newURIs[i] = m_namespaceURIs[i];
-                delete [] m_namespaceURIs;
-                m_namespaceURIs = newURIs;
-            }
-            m_namespaceURIs[m_namespaceURICount++] = _namespaceURI;
-            _namespaceURI->ref();
-            id |= m_namespaceURICount << 16;
-        }
-    }
-
-    // Look in the m_attrNames array for the name
-    // ### yeah, this is lame. use a dictionary / map instead
-    DOMString nme(n.string());
-    // compatibility mode has to store upper case
-    if (htmlMode() != XHtml) nme = nme.upper();
-    for (id = 0; id < m_attrNameCount; id++)
-        if (DOMString(m_attrNames[id]) == nme)
-            return ATTR_LAST_ATTR+id;
-
-    // unknown
-    if (readonly) return 0;
-
-    // Name not found in m_attrNames, so let's add it
-    // ### yeah, this is lame. use a dictionary / map instead
-    if (m_attrNameCount+1 > m_attrNameAlloc) {
-        m_attrNameAlloc += 100;
-        DOMStringImpl **newNames = new DOMStringImpl* [m_attrNameAlloc];
-        if (m_attrNames) {
-            unsigned short i;
-            for (i = 0; i < m_attrNameCount; i++)
-                newNames[i] = m_attrNames[i];
-            delete [] m_attrNames;
-        }
-        m_attrNames = newNames;
-    }
-
-    id = m_attrNameCount++;
-    m_attrNames[id] = nme.implementation();
-    m_attrNames[id]->ref();
-
-    return ATTR_LAST_ATTR+id;
-}
-
-DOMString DocumentImpl::attrName(NodeImpl::Id _id) const
-{
-    if (_id >= ATTR_LAST_ATTR)
-        return m_attrNames[_id-ATTR_LAST_ATTR];
-    else {
-        // ### put them in a cache
-        if (getDocument()->htmlMode() == DocumentImpl::XHtml)
-            return getAttrName(_id).lower();
-        else
-            return getAttrName(_id);
-    }
-}
-
-NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
-{
-    if (!_name || !_name->l) return 0;
-    // Each document maintains a mapping of tag name -> id for every tag name encountered
-    // in the document.
-    NodeImpl::Id id = 0;
-
-    // First see if it's a HTML element name
-    QConstString n(_name->s, _name->l);
-    if (!_namespaceURI || !strcasecmp(_namespaceURI, XHTML_NAMESPACE)) {
-        // we're in HTML namespace if we know the tag.
-        // xhtml is lower case - case sensitive, easy to implement
-        if ( htmlMode() == XHtml && (id = khtml::getTagID(n.string().ascii(), _name->l)) )
-            return id;
-        // compatibility: upper case - case insensitive
-        if ( htmlMode() != XHtml && (id = khtml::getTagID(n.string().lower().ascii(), _name->l )) )
-            return id;
-
-        // ok, the fast path didn't work out, we need the full check
-    }
-
-    // now lets find out the namespace
-    if (_namespaceURI) {
-        DOMString nsU(_namespaceURI);
-        bool found = false;
-        // ### yeah, this is lame. use a dictionary / map instead
-        for (unsigned short ns = 0; ns < m_namespaceURICount; ++ns)
-            if (nsU == DOMString(m_namespaceURIs[ns])) {
-                id |= ns << 16;
-                found = true;
-                break;
-            }
-
-        if (!found && !readonly) {
-            // something new, add it
-            if (m_namespaceURICount >= m_namespaceURIAlloc) {
-                m_namespaceURIAlloc += 32;
-                DOMStringImpl **newURIs = new DOMStringImpl* [m_namespaceURIAlloc];
-                for (unsigned short i = 0; i < m_namespaceURICount; i++)
-                    newURIs[i] = m_namespaceURIs[i];
-                delete [] m_namespaceURIs;
-                m_namespaceURIs = newURIs;
-            }
-            m_namespaceURIs[m_namespaceURICount++] = _namespaceURI;
-            _namespaceURI->ref();
-            id |= m_namespaceURICount << 16;
-        }
-    }
-
-    // Look in the m_elementNames array for the name
-    // ### yeah, this is lame. use a dictionary / map instead
-    DOMString nme(n.string());
-    // compatibility mode has to store upper case
-    if (htmlMode() != XHtml) nme = nme.upper();
-    for (id = 0; id < m_elementNameCount; id++)
-        if (DOMString(m_elementNames[id]) == nme)
-            return ID_LAST_TAG+id;
-
-    // unknown
-    if (readonly) return 0;
-
-    // Name not found in m_elementNames, so let's add it
-    if (m_elementNameCount+1 > m_elementNameAlloc) {
-        m_elementNameAlloc += 100;
-        DOMStringImpl **newNames = new DOMStringImpl* [m_elementNameAlloc];
-        // ### yeah, this is lame. use a dictionary / map instead
-        if (m_elementNames) {
-            unsigned short i;
-            for (i = 0; i < m_elementNameCount; i++)
-                newNames[i] = m_elementNames[i];
-            delete [] m_elementNames;
-        }
-        m_elementNames = newNames;
-    }
-
-    id = m_elementNameCount++;
-    m_elementNames[id] = nme.implementation();
-    m_elementNames[id]->ref();
-
-    return ID_LAST_TAG+id;
-}
-
-DOMString DocumentImpl::tagName(NodeImpl::Id _id) const
-{
-    if (_id >= ID_LAST_TAG)
-        return m_elementNames[_id-ID_LAST_TAG];
-    else {
-        // ### put them in a cache
-        if (getDocument()->htmlMode() == DocumentImpl::XHtml)
-            return getTagName(_id).lower();
-        else
-            return getTagName(_id);
-    }
-}
-
-
-DOMStringImpl* DocumentImpl::namespaceURI(NodeImpl::Id _id) const
-{
-    if (_id < ID_LAST_TAG)
-        return htmlMode() == XHtml ? m_namespaceURIs[0] : 0;
-
-    unsigned short ns = _id >> 16;
-
-    if (!ns) return 0;
-
-    return m_namespaceURIs[ns-1];
 }
 
 StyleSheetListImpl* DocumentImpl::styleSheets()
