@@ -186,7 +186,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
     d->kaccel = actionCollection()->kaccel();
-    d->toolbarMenu=new KToolBarMenuAction(this,"toolbars_showhide");
+    d->toolbarMenu=new KToolBarMenuAction(this,"options_show_toolbar");
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
