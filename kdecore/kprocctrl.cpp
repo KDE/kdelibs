@@ -159,8 +159,6 @@ void KProcessController::slotDoHousekeeping(int )
 	}
 	proc = processList->next();
   }
-  if (!found)
-    fprintf(stderr, "Unknown child process %d died\n", pid);
 }
 
 KProcessController::~KProcessController()
