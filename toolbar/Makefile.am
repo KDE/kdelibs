@@ -13,7 +13,7 @@ kde_toolbar_DATA = add_point.png airbrush.png back.png blend.png bottom.png \
 	prev.png print_preview.png rectangle_select.png redo.png \
 	reload.png rightjust.png search.png send.png smart_select.png \
 	spellcheck.png stamp.png start.png stop.png text.png tick.png \
-	top.png transform.png undo.png up.png viewmag+.png \
+	top.png transform.png trash.png undo.png up.png viewmag+.png \
 	viewmag-.png viewmag.png viewzoom.png unknown.png \
 	1rightarrow.png 1leftarrow.png 2rightarrow.png 2leftarrow.png
 
