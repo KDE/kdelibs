@@ -129,11 +129,19 @@ public:
      * @return true if successful, false otherwise
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+
+    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
+    bool writeSymLink(const QString &name, const QString &target,
+                        const QString &user, const QString &group,
+                        mode_t perm, time_t atime, time_t mtime, time_t ctime);
     // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
     bool prepareWriting( const QString& name, const QString& user,
-                         const QString& group, uint size, mode_t perm,
-                         time_t atime, time_t mtime, time_t ctime );
-
+                        const QString& group, uint size, mode_t perm,
+                        time_t atime, time_t mtime, time_t ctime );
+    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
+    bool writeFile( const QString& name, const QString& user, const QString& group,
+                        uint size, mode_t perm, time_t atime, time_t mtime,
+                        time_t ctime, const char* data );
     /**
      * Write data to a file that has been created using @ref prepareWriting().
      * @param data a pointer to the data
@@ -164,6 +172,9 @@ protected:
      * @internal Not needed for zip
      */
     virtual bool writeDir( const QString&, const QString&, const QString& ) { return true; }
+    // TODO(BIC) uncomment and make virtual for KDE 4.
+//    bool writeDir( const QString& name, const QString& user, const QString& group,
+//                        mode_t perm, time_t atime, time_t mtime, time_t ctime );
 
 protected:
     virtual void virtual_hook( int id, void* data );
@@ -173,7 +184,9 @@ protected:
     bool prepareWriting_impl(const QString& name, const QString& user,
                         const QString& group, uint size, mode_t perm,
                         time_t atime, time_t mtime, time_t ctime);
-
+    bool writeSymLink_impl(const QString &name, const QString &target,
+                        const QString &user, const QString &group,
+                        mode_t perm, time_t atime, time_t mtime, time_t ctime);
 private:
     QString m_filename;
     class KZipPrivate;

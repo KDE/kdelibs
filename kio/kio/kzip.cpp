@@ -40,7 +40,9 @@
 
 
 #include <sys/time.h>
+#include <alloca.h>
 
+#include <qasciidict.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <time.h>
@@ -54,6 +56,8 @@
 #include "kfilterdev.h"
 #include "kzip.h"
 #include "klimitediodevice.h"
+
+const int max_path_len = 4095;	// maximum number of character a path may contain
 
 static void transformToMsDos(const QDateTime& dt, char* buffer)
 {
@@ -84,11 +88,210 @@ static void transformToMsDos(const QDateTime& dt, char* buffer)
     }
 }
 
+#if 0 // not needed anymore
 static int getActualTime( void )
 {
     timeval value;
     gettimeofday( &value, NULL );
     return value.tv_sec;
+}
+#endif
+
+// == parsing routines for zip headers
+
+/** all relevant information about parsing file information */
+struct ParseFileInfo {
+  // file related info
+//  QCString name;		// filename
+  mode_t perm;			// permissions of this file
+  time_t atime;			// last access time (UNIX format)
+  time_t mtime;			// modification time (UNIX format)
+  time_t ctime;			// creation time (UNIX format)
+  int uid;			// user id (-1 if not specified)
+  int gid;			// group id (-1 if not specified)
+  QCString guessed_symlink;	// guessed symlink target
+  int extralen;			// length of extra field
+
+  // parsing related info
+  bool exttimestamp_seen;	// true if extended timestamp extra field
+  				// has been parsed
+  bool newinfounix_seen;	// true if Info-ZIP Unix New extra field has
+  				// been parsed
+
+  ParseFileInfo() : perm(0100644), uid(-1), gid(-1), extralen(0),
+  	exttimestamp_seen(false), newinfounix_seen(false) {
+    ctime = mtime = atime = time(0);
+  }
+};
+
+/** updates the parse information with the given extended timestamp extra field.
+  * @param buffer start content of buffer known to contain an extended
+  *	timestamp extra field (without magic & size)
+  * @param size size of field content (must not count magic and size entries)
+  * @param islocal true if this is a local field, false if central
+  * @param pfi ParseFileInfo object to be updated
+  * @return true if processing was successful
+  */
+static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
+			ParseFileInfo &pfi) {
+  if (size < 1) {
+    kdDebug(7040) << "premature end of extended timestamp (#1)" << endl;
+    return false;
+  }/*end if*/
+  int flags = *buffer;		// read flags
+  buffer += 1;
+
+  if (flags & 1) {		// contains modification time
+    if (size < 5) {
+      kdDebug(7040) << "premature end of extended timestamp (#2)" << endl;
+      return false;
+    }/*end if*/
+    pfi.mtime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
+    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+  }/*end if*/
+  buffer += 4;
+  // central extended field cannot contain more than the modification time
+  // even if other flags are set
+  if (!islocal) {
+    pfi.exttimestamp_seen = true;
+    return true;
+  }/*end if*/
+
+  if (flags & 2) {		// contains last access time
+    if (size < 9) {
+      kdDebug(7040) << "premature end of extended timestamp (#3)" << endl;
+      return false;
+    }/*end if*/
+    pfi.atime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
+    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+  }/*end if*/
+  buffer += 4;
+
+  if (flags & 4) {		// contains creation time
+    if (size < 13) {
+      kdDebug(7040) << "premature end of extended timestamp (#4)" << endl;
+      return false;
+    }/*end if*/
+    pfi.ctime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
+    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+  }/*end if*/
+  buffer += 4;
+
+  pfi.exttimestamp_seen = true;
+  return true;
+}
+
+/** updates the parse information with the given Info-ZIP Unix old extra field.
+  * @param buffer start of content of buffer known to contain an Info-ZIP
+  *	Unix old extra field (without magic & size)
+  * @param size size of field content (must not count magic and size entries)
+  * @param islocal true if this is a local field, false if central
+  * @param pfi ParseFileInfo object to be updated
+  * @return true if processing was successful
+  */
+static bool parseInfoZipUnixOld(const char *buffer, int size, bool islocal,
+			ParseFileInfo &pfi) {
+  // spec mandates to omit this field if one of the newer fields are available
+  if (pfi.exttimestamp_seen || pfi.newinfounix_seen) return true;
+
+  if (size < 8) {
+    kdDebug(7040) << "premature end of Info-ZIP unix extra field old" << endl;
+    return false;
+  }/*end if*/
+
+  pfi.atime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
+    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+  buffer += 4;
+  pfi.mtime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
+    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+  buffer += 4;
+  if (islocal && size >= 12) {
+    pfi.uid = (uchar)buffer[0] | (uchar)buffer[1] << 8;
+    buffer += 2;
+    pfi.gid = (uchar)buffer[0] | (uchar)buffer[1] << 8;
+    buffer += 2;
+  }/*end if*/
+  return true;
+}
+
+#if 0 // not needed yet
+/** updates the parse information with the given Info-ZIP Unix new extra field.
+  * @param buffer start of content of buffer known to contain an Info-ZIP
+  *		Unix new extra field (without magic & size)
+  * @param size size of field content (must not count magic and size entries)
+  * @param islocal true if this is a local field, false if central
+  * @param pfi ParseFileInfo object to be updated
+  * @return true if processing was successful
+  */
+static bool parseInfoZipUnixNew(const char *buffer, int size, bool islocal,
+			ParseFileInfo &pfi) {
+  if (!islocal) {	// contains nothing in central field
+    pfi.newinfounix = true;
+    return true;
+  }/*end if*/
+
+  if (size < 4) {
+    kdDebug(7040) << "premature end of Info-ZIP unix extra field new" << endl;
+    return false;
+  }/*end if*/
+
+  pfi.uid = (uchar)buffer[0] | (uchar)buffer[1] << 8;
+  buffer += 2;
+  pfi.gid = (uchar)buffer[0] | (uchar)buffer[1] << 8;
+  buffer += 2;
+
+  pfi.newinfounix = true;
+  return true;
+}
+#endif
+
+/**
+ * parses the extra field
+ * @param buffer start of buffer where the extra field is to be found
+ * @param size size of the extra field
+ * @param islocal true if this is part of a local header, false if of central
+ * @param pfi ParseFileInfo object which to write the results into
+ * @return true if parsing was successful
+ */
+static bool parseExtraField(const char *buffer, int size, bool islocal,
+			ParseFileInfo &pfi) {
+  // extra field in central directory doesn't contain useful data, so we
+  // don't bother parsing it
+  if (!islocal) return true;
+
+  while (size >= 4) {	// as long as a potiential extra field can be read
+    int magic = (uchar)buffer[0] | (uchar)buffer[1] << 8;
+    buffer += 2;
+    int fieldsize = (uchar)buffer[0] | (uchar)buffer[1] << 8;
+    buffer += 2;
+    size -= 4;
+
+    if (fieldsize > size) {
+      //kdDebug(7040) << "fieldsize: " << fieldsize << " size: " << size << endl;
+      kdDebug(7040) << "premature end of extra fields reached" << endl;
+      break;
+    }/*end if*/
+
+    switch (magic) {
+      case 0x5455:		// extended timestamp
+        if (!parseExtTimestamp(buffer, fieldsize, islocal, pfi)) return false;
+	break;
+      case 0x5855:		// old Info-ZIP unix extra field
+        if (!parseInfoZipUnixOld(buffer, fieldsize, islocal, pfi)) return false;
+	break;
+#if 0	// not needed yet
+      case 0x7855:		// new Info-ZIP unix extra field
+        if (!parseInfoZipUnixNew(buffer, fieldsize, islocal, pfi)) return false;
+	break;
+#endif
+      default:
+        /* ignore everything else */;
+    }/*end switch*/
+
+    buffer += fieldsize;
+    size -= fieldsize;
+  }/*wend*/
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -165,6 +368,10 @@ bool KZip::openArchive( int mode )
     uint offset = 0; // holds offset, where we read
     int n;
 
+    // contains information gathered from the local file headers
+    QAsciiDict<ParseFileInfo> pfi_map(1009, true, false);
+    pfi_map.setAutoDelete(true);
+
     for (;;) // repeat until 'end of entries' signature is reached
     {
         n = dev->readBlock( buffer, 4 );
@@ -183,12 +390,46 @@ bool KZip::openArchive( int mode )
         {
             dev->at( dev->at() + 2 ); // skip 'version needed to extract'
 
-            // we have to take care of the 'general purpose bit flag'.
+	    // read static header stuff
+            n = dev->readBlock( buffer, 24 );
+	    if (n < 24) {
+                kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#4)" << endl;
+                return false;
+	    }
+
+	    int gpf = (uchar)buffer[0];	// "general purpose flag" not "general protection fault" ;-)
+	    int compression_mode = (uchar)buffer[2] | (uchar)buffer[3] << 8;
+	    Q_LONG compr_size = (uchar)buffer[12] | (uchar)buffer[13] << 8
+	    			| (uchar)buffer[14] << 16 | (uchar)buffer[15] << 24;
+	    Q_LONG uncomp_size = (uchar)buffer[16] | (uchar)buffer[17] << 8
+	    			| (uchar)buffer[18] << 16 | (uchar)buffer[19] << 24;
+	    int namelen = (uchar)buffer[20] | (uchar)buffer[21] << 8;
+	    int extralen = (uchar)buffer[22] | (uchar)buffer[23] << 8;
+
+	    // read filename
+	    char *filename = (char *)alloca(namelen + 1);
+	    n = dev->readBlock(filename, namelen);
+            if ( n < namelen ) {
+                kdWarning(7040) << "Invalid ZIP file. Name not completely read (#2)" << endl;
+		return false;
+	    }
+	    filename[namelen] = '\0';
+
+	    ParseFileInfo *pfi = new ParseFileInfo();
+	    pfi_map.insert(filename, pfi);
+
+	    // read and parse extra field
+	    pfi->extralen = extralen;
+	    int handledextralen = QMIN(extralen, (int)sizeof buffer);
+	    n = dev->readBlock(buffer, handledextralen);
+	    // no error msg necessary as we deliberately truncate the extra field
+	    if (!parseExtraField(buffer, handledextralen, true, *pfi))
+	        return false;
+
+	    // we have to take care of the 'general purpose bit flag'.
             // if bit 3 is set, the header doesn't contain the length of
             // the file and we look for the signature 'PK\7\8'.
-
-            dev->readBlock( buffer, 2 );
-            if ( buffer[0] & 8 )
+            if ( gpf & 8 )
             {
                 bool foundSignature = false;
 
@@ -220,24 +461,24 @@ bool KZip::openArchive( int mode )
             }
             else
             {
+		// check if this could be a symbolic link
+		if (compression_mode == NoCompression
+	    		&& uncomp_size <= max_path_len
+			&& uncomp_size > 0) {
+		    // read content and store it
+		    pfi->guessed_symlink.resize(uncomp_size + 1);
+		    n = dev->readBlock(pfi->guessed_symlink.data(), uncomp_size);
+		    if (n < uncomp_size) {
+			kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#5)" << endl;
+			return false;
+		    }
+		} else {
+
+                    dev->at( dev->at() + compr_size );
+		}
                 // here we calculate the length of the file in the zip
                 // with headers and jump to the next header.
-                dev->at( dev->at() + 10 );
-
-                uint skip;
-
-                n = dev->readBlock( buffer, 4 ); // compressed file size
-                skip = (uchar)buffer[3] << 24 | (uchar)buffer[2] << 16 |
-                       (uchar)buffer[1] << 8 | (uchar)buffer[0];
-
-                dev->at( dev->at() + 4 );
-                n = dev->readBlock( buffer, 2 ); // file name length
-                skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
-
-                n = dev->readBlock( buffer, 2 ); // extra field length
-                skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
-
-                dev->at( dev->at() + skip );
+                uint skip = compr_size + namelen + extralen;
                 offset += 30 + skip;
             }
         }
@@ -259,12 +500,18 @@ bool KZip::openArchive( int mode )
             }
 			// length of the filename (well, pathname indeed)
             int namelen = (uchar)buffer[29] << 8 | (uchar)buffer[28];
-            char* bufferName = new char[ namelen + 1 ];
-            n = dev->readBlock( bufferName, namelen );
+            QCString bufferName( namelen + 1 );
+            n = dev->readBlock( bufferName.data(), namelen );
             if ( n < namelen )
                 kdWarning(7040) << "Invalid ZIP file. Name not completely read" << endl;
-            QString name( QString::fromLocal8Bit(bufferName, namelen) );
-            delete[] bufferName;
+
+	    ParseFileInfo *pfi = pfi_map[bufferName];
+	    if (pfi == 0) {	// can that happen?
+		char *b = (char *)alloca(namelen + 1);
+		memcpy(b, (const char *)bufferName, namelen + 1);
+	        pfi_map.insert(b, pfi = new ParseFileInfo());
+	    }
+            QString name( QFile::decodeName(bufferName) );
 
             //kdDebug(7040) << "name: " << name << endl;
             // only in central header ! see below.
@@ -293,12 +540,8 @@ bool KZip::openArchive( int mode )
             // in the central header and in the local header... funny.
             // so we need to get the localextralen to calculate the offset
             // from localheaderstart to dataoffset
-            char localbuf[5];
-            int save_at = dev->at();
-		    dev->at( localheaderoffset + 28 );
-            dev->readBlock( localbuf, 4);
-            int localextralen = (uchar)localbuf[1] << 8 | (uchar)localbuf[0];
-		    dev->at(save_at);
+            int localextralen = pfi->extralen; // FIXME: this will not work if
+	    					// no local header exists
 
             //kdDebug(7040) << "localextralen: " << localextralen << endl;
 
@@ -309,9 +552,13 @@ bool KZip::openArchive( int mode )
             //kdDebug(7040) << "eoffset: " << eoffset << endl;
             //kdDebug(7040) << "csize: " << csize << endl;
 
+	    int os_madeby = (uchar)buffer[5];
             bool isdir = false;
-            int access = 0777; // TODO available in zip file?
-            int time = getActualTime();
+            int access = 0100644;
+
+	    if (os_madeby == 3) {	// good ole unix
+	    	access = (uchar)buffer[40] | (uchar)buffer[41] << 8;
+	    }
 
             QString entryName;
 
@@ -319,7 +566,8 @@ bool KZip::openArchive( int mode )
             {
                 isdir = true;
                 name = name.left( name.length() - 1 );
-                access |= S_IFDIR;
+                if (os_madeby != 3) access |= S_IFDIR | 0111;
+		else Q_ASSERT(access & S_IFDIR);
             }
 
             int pos = name.findRev( '/' );
@@ -341,14 +589,20 @@ bool KZip::openArchive( int mode )
                 }
                 else
                 {
-                    entry = new KArchiveDirectory( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null );
+                    entry = new KArchiveDirectory( this, entryName, access, (int)pfi->mtime, rootDir()->user(), rootDir()->group(), QString::null );
                     //kdDebug(7040) << "KArchiveDirectory created, entryName= " << entryName << ", name=" << name << endl;
                 }
-            }
+	    }
             else
             {
-                entry = new KZipFileEntry( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null,
-                                        name, dataoffset, ucsize, cmethod, csize );
+	        QString symlink;
+		if (S_ISLNK(access)) {
+		    symlink = QFile::decodeName(pfi->guessed_symlink);
+		}
+                entry = new KZipFileEntry( this, entryName, access, pfi->mtime,
+					rootDir()->user(), rootDir()->group(),
+					symlink, name, dataoffset,
+					ucsize, cmethod, csize );
                 static_cast<KZipFileEntry *>(entry)->setHeaderStart( localheaderoffset );
                 //kdDebug(7040) << "KZipFileEntry created, entryName= " << entryName << ", name=" << name << endl;
                 d->m_fileList.append( static_cast<KZipFileEntry *>( entry ) );
@@ -443,7 +697,8 @@ bool KZip::closeArchive()
 
         QCString path = QFile::encodeName(it.current()->path());
 
-        int bufferSize = path.length() + 46;
+	const int extra_field_len = 9;
+        int bufferSize = extra_field_len + path.length() + 46;
         char* buffer = new char[ bufferSize ];
 
         memset(buffer, 0, 46); // zero is a nice default for most header fields
@@ -451,7 +706,7 @@ bool KZip::closeArchive()
         const char head[] =
         {
             'P', 'K', 1, 2, // central file header signature
-            0x14, 0,        // version made by
+            0x14, 3,        // version made by (3 == UNIX)
             0x14, 0         // version needed to extract
         };
 
@@ -488,6 +743,12 @@ bool KZip::closeArchive()
         buffer[ 28 ] = char(it.current()->path().length()); // filename length
         buffer[ 29 ] = char(it.current()->path().length() >> 8);
 
+	buffer[ 30 ] = char(extra_field_len);
+	buffer[ 31 ] = char(extra_field_len >> 8);
+
+	buffer[ 40 ] = char(it.current()->permissions());
+	buffer[ 41 ] = char(it.current()->permissions() >> 8);
+
         int myhst = it.current()->headerStart();
         buffer[ 42 ] = char(myhst); //relative offset of local header
         buffer[ 43 ] = char(myhst >> 8);
@@ -497,6 +758,22 @@ bool KZip::closeArchive()
         // file name
         strncpy( buffer + 46, path, path.length() );
 	//kdDebug(7040) << "closearchive length to write: " << bufferSize << endl;
+
+	// extra field
+	char *extfield = buffer + 46 + path.length();
+	extfield[0] = 'U';
+	extfield[1] = 'T';
+	extfield[2] = 5;
+	extfield[3] = 0;
+	extfield[4] = 1 | 2 | 4;	// specify flags from local field
+					// (unless I misread the spec)
+	// provide only modification time
+	unsigned long time = (unsigned long)it.current()->date();
+	extfield[5] = char(time);
+	extfield[6] = char(time >> 8);
+	extfield[7] = char(time >> 16);
+	extfield[8] = char(time >> 24);
+
         crc = crc32(crc, (Bytef *)buffer, bufferSize );
         device()->writeBlock( buffer, bufferSize );
         delete[] buffer;
@@ -553,27 +830,40 @@ bool KZip::closeArchive()
 // Doesn't need to be reimplemented anymore. Remove for KDE-4.0
 bool KZip::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
-    return KArchive::writeFile( name, user, group, size, data );
+    mode_t mode = 0100644;
+    time_t the_time = time(0);
+    return KArchive::writeFile( name, user, group, size, mode, the_time,
+    			the_time, the_time, data );
 }
 
+// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
+bool KZip::writeFile( const QString& name, const QString& user,
+                        const QString& group, uint size, mode_t perm,
+                        time_t atime, time_t mtime, time_t ctime,
+                        const char* data ) {
+  return KArchive::writeFile(name, user, group, size, perm, atime, mtime,
+  			ctime, data);
+}
+
+// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
+bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint size )
+{
+    mode_t dflt_perm = 0100644;
+    time_t the_time = time(0);
+    return prepareWriting(name,user,group,size,dflt_perm,
+    		the_time,the_time,the_time);
+}
+
+// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
 bool KZip::prepareWriting(const QString& name, const QString& user,
-                         const QString& group, uint size, mode_t perm,
-                         time_t atime, time_t mtime, time_t ctime) {
+    			const QString& group, uint size, mode_t perm,
+    			time_t atime, time_t mtime, time_t ctime) {
   return KArchive::prepareWriting(name,user,group,size,perm,atime,mtime,ctime);
 }
 
-bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint size )
-{
-    mode_t dflt_perm = 0777; // was 0100644 ?;
-    time_t the_time = getActualTime();
-    return prepareWriting(name,user,group,size,dflt_perm,
-                the_time,the_time,the_time);
-}
-
-bool KZip::prepareWriting_impl( const QString& name, const QString& user,
-                         const QString& group, uint /*size*/, mode_t perm,
-                         time_t /*atime*/, time_t mtime, time_t /*ctime*/)
-{
+bool KZip::prepareWriting_impl(const QString &name, const QString &user,
+    			const QString &group, uint /*size*/, mode_t perm,
+    			time_t atime, time_t mtime, time_t ctime) {
     //kdDebug(7040) << "prepareWriting reached." << endl;
     if ( !isOpened() )
     {
@@ -630,9 +920,11 @@ bool KZip::prepareWriting_impl( const QString& name, const QString& user,
     d->m_currentFile = e;
     d->m_fileList.append( e );
 
+    const int extra_field_len = 17;	// value also used in doneWriting()
+
     // write out zip header
     QCString encodedName = QFile::encodeName(name);
-    int bufferSize = encodedName.length() + 30;
+    int bufferSize = extra_field_len + encodedName.length() + 30;
     //kdDebug(7040) << "KZip::prepareWriting bufferSize=" << bufferSize << endl;
     char* buffer = new char[ bufferSize ];
 
@@ -670,11 +962,34 @@ bool KZip::prepareWriting_impl( const QString& name, const QString& user,
     buffer[ 26 ] = (uchar)(encodedName.length()); //filename length
     buffer[ 27 ] = (uchar)(encodedName.length() >> 8);
 
-    buffer[ 28 ] = 0; // extra field length
-    buffer[ 29 ] = 0;
+    buffer[ 28 ] = (uchar)(extra_field_len); // extra field length
+    buffer[ 29 ] = (uchar)(extra_field_len >> 8);
 
     // file name
     strncpy( buffer + 30, encodedName, encodedName.length() );
+
+    // extra field
+    char *extfield = buffer + 30 + encodedName.length();
+    extfield[0] = 'U';
+    extfield[1] = 'T';
+    extfield[2] = 13;
+    extfield[3] = 0;
+    extfield[4] = 1 | 2 | 4;	// contains mtime, atime, ctime
+
+    extfield[5] = char(mtime);
+    extfield[6] = char(mtime >> 8);
+    extfield[7] = char(mtime >> 16);
+    extfield[8] = char(mtime >> 24);
+
+    extfield[9] = char(atime);
+    extfield[10] = char(atime >> 8);
+    extfield[11] = char(atime >> 16);
+    extfield[12] = char(atime >> 24);
+
+    extfield[13] = char(ctime);
+    extfield[14] = char(ctime >> 8);
+    extfield[15] = char(ctime >> 16);
+    extfield[16] = char(ctime >> 24);
 
     // Write header
     bool b = (device()->writeBlock( buffer, bufferSize ) == bufferSize );
@@ -720,7 +1035,7 @@ bool KZip::doneWriting( uint size )
     d->m_currentFile->setSize(size);
     int csize = device()->at() -
         d->m_currentFile->headerStart() - 30 -
-		d->m_currentFile->path().length();
+		d->m_currentFile->path().length() - 17/*extra_field_len*/;
     d->m_currentFile->setCompressedSize(csize);
     //kdDebug(7040) << "usize: " << d->m_currentFile->size() << endl;
     //kdDebug(7040) << "csize: " << d->m_currentFile->compressedSize() << endl;
@@ -736,24 +1051,70 @@ bool KZip::doneWriting( uint size )
     return true;
 }
 
+bool KZip::writeSymLink(const QString &name, const QString &target,
+    			const QString &user, const QString &group,
+    			mode_t perm, time_t atime, time_t mtime, time_t ctime) {
+  return KArchive::writeSymLink(name,target,user,group,perm,atime,mtime,ctime);
+}
+
+bool KZip::writeSymLink_impl(const QString &name, const QString &target,
+    			const QString &user, const QString &group,
+    			mode_t perm, time_t atime, time_t mtime, time_t ctime) {
+
+  // reassure that symlink flag is set, otherwise strange things happen on
+  // extraction
+  perm |= S_IFLNK;
+  Compression c = compression();
+  setCompression(NoCompression);	// link targets are never compressed
+
+  if (!prepareWriting(name, user, group, 0, perm, atime, mtime, ctime)) {
+    kdWarning() << "KZip::writeFile prepareWriting failed" << endl;
+    setCompression(c);
+    return false;
+  }
+
+  QCString symlink_target = QFile::encodeName(target);
+  if (!writeData(symlink_target, symlink_target.length())) {
+    kdWarning() << "KZip::writeFile writeData failed" << endl;
+    setCompression(c);
+    return false;
+  }
+
+  if (!doneWriting(symlink_target.length())) {
+    kdWarning() << "KZip::writeFile doneWriting failed" << endl;
+    setCompression(c);
+    return false;
+  }
+
+  setCompression(c);
+  return true;
+}
+
 void KZip::virtual_hook( int id, void* data )
 {
-    switch ( id ) {
-    case VIRTUAL_WRITE_DATA: {
+    switch (id) {
+      case VIRTUAL_WRITE_DATA: {
         WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
         params->retval = writeData_impl( params->data, params->size );
         break;
-    }
-    case VIRTUAL_PREPARE_WRITING: {
-      PrepareWritingParams *params = reinterpret_cast<PrepareWritingParams *>(data);
-      params->retval = prepareWriting_impl(*params->name,*params->user,
-                       *params->group,params->size,params->perm,
-                       params->atime,params->mtime,params->ctime);
-      break;
-    }
-    default:
+      }
+      case VIRTUAL_WRITE_SYMLINK: {
+        WriteSymlinkParams *params = reinterpret_cast<WriteSymlinkParams *>(data);
+        params->retval = writeSymLink_impl(*params->name,*params->target,
+        		*params->user,*params->group,params->perm,
+          		params->atime,params->mtime,params->ctime);
+        break;
+      }
+      case VIRTUAL_PREPARE_WRITING: {
+        PrepareWritingParams *params = reinterpret_cast<PrepareWritingParams *>(data);
+        params->retval = prepareWriting_impl(*params->name,*params->user,
+        		*params->group,params->size,params->perm,
+          		params->atime,params->mtime,params->ctime);
+        break;
+      }
+      default:
         KArchive::virtual_hook( id, data );
-    }
+    }/*end switch*/
 }
 
 // made virtual using virtual_hook
