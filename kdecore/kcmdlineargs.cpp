@@ -525,13 +525,14 @@ KCmdLineArgs::parseAllArgs()
 	     if ( about ) {
 		 const QValueList<KAboutPerson> authors = about->authors();
 		 if ( !authors.isEmpty() ) {
-		     printQ( i18n("%1 was written by\n").arg ( QString(about->programName()) ) );
+                     QString authorlist;
 		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
-			 printQ( QString("    ") + (*it).name() + " <" + (*it).emailAddress() + ">\n");
+			 authorlist += QString("    ") + (*it).name() + " <" + (*it).emailAddress() + ">\n";
 		     }
+		     printQ( i18n("%2 is a list of name+address, one on each line","%1 was written by\n%2").arg ( QString(about->programName()) ).arg( authorlist ) );
 		 }
 	     } else {
-		 printQ( QString(about->programName()) + " " + i18n("was written by somebody who wants to remain anonymous.") );
+		 printQ( i18n("%1 was written by somebody who wants to remain anonymous.").arg(about->programName()) );
 	     }
 	     exit(0);
          } else {
