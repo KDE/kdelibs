@@ -136,6 +136,7 @@ struct KIconLoaderPrivate
 KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
 {
     d = new KIconLoaderPrivate;
+    d->imgDict.setAutoDelete( true );
 
     if (_dirs)
 	d->mpDirs = _dirs;

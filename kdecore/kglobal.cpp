@@ -132,6 +132,7 @@ KGlobal::staticQString(const QString &str)
 {
     if (!_stringDict) {
       _stringDict = new KStringDict;
+      _stringDict->setAutoDelete( true );
       kglobal_init();
     }
    QString *result = _stringDict->find(str);
