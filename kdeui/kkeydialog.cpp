@@ -32,15 +32,17 @@
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
-#include <kaccelaction.h>
+//#include <kaccelaction.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kglobalaccel.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
+#include <kshortcutlist.h>
 #include <kxmlguifactory.h>
 
 #ifdef Q_WS_X11
@@ -61,35 +63,58 @@ const int XKeyRelease = KeyRelease;
 #endif
 #endif
 
-static KAccelActions *g_pactionsGlobal, *g_pactionsApplication;
+//static KAccelActions *g_pactionsGlobal;
+
+//---------------------------------------------------------------------
+// KKeyChooserItem
+//---------------------------------------------------------------------
 
 class KKeyChooserItem : public KListViewItem
 {
  public:
-	KKeyChooserItem( KListView* parent, QListViewItem* after, KAccelAction& action );
-	KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action );
+	KKeyChooserItem( KListView* parent, QListViewItem* after, KShortcutList* pList, uint iAction );
+	KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KShortcutList* pList, uint iAction );
+
+	QString actionName() const;
+	const KShortcut& shortcut() const;
+	bool isConfigurable() const
+		{ return m_pList->isConfigurable( m_iAction ); }
+	const KShortcut& shortcutDefault() const
+		{ return m_pList->shortcutDefault( m_iAction ); }
+
+	void setShortcut( const KShortcut& cut );
+	void commitChanges();
 
 	virtual QString text( int iCol ) const;
-	KAccelAction& action() const { return *m_pAction; }
 
  protected:
-	KAccelAction* m_pAction;
+	KShortcutList* m_pList;
+	uint m_iAction;
+	bool m_bModified;
+	KShortcut m_cut;
 
  private:
 	class KKeyChooserItemPrivate* d;
 };
 
+//---------------------------------------------------------------------
+// KKeyChooserPrivate
+//---------------------------------------------------------------------
+
 class KKeyChooserPrivate
 {
  public:
+	QValueList<KShortcutList*> rgpLists;
+	QValueList<KShortcutList*> rgpListsAllocated;
+
 	KListView *pList;
 	QLabel *lInfo;
 	KKeyButton *bChange;
 	QGroupBox *fCArea;
 	QButtonGroup *kbGroup;
-	KActionCollection* pColl;
-	KAccelActions *pActionsOrig;
-	KAccelActions actionsNew;
+	//KActionCollection* pColl;
+	//KAccelActions *pActionsOrig;
+	//KAccelActions actionsNew;
 
 	bool bAllowWinKey;
 	// If this is set, then shortcuts require a modifier:
@@ -102,193 +127,42 @@ class KKeyChooserPrivate
 	bool bPreferFourModifierKeys;
 };
 
-/************************************************************************/
-/* KKeyDialog                                                           */
-/*                                                                      */
-/* Originally by Nicolas Hadacek <hadacek@via.ecp.fr>                   */
-/*                                                                      */
-/* Substantially revised by Mark Donohoe <donohoe@kde.org>              */
-/*                                                                      */
-/* And by Espen Sand <espen@kde.org> 1999-10-19                         */
-/* (by using KDialogBase there is almost no code left ;)                */
-/*                                                                      */
-/************************************************************************/
-KKeyDialog::KKeyDialog( KAccelActions& actions, QWidget *parent, KKeyChooser::ActionType type )
-: KDialogBase( parent, 0, true, i18n("Configure Shortcuts"), Help|Default|Ok|Cancel, Ok )
+//---------------------------------------------------------------------
+// KKeyChooser
+//---------------------------------------------------------------------
+
+KKeyChooser::KKeyChooser( QWidget* parent, ActionType type, bool bAllowLetterShortcuts )
+: QWidget( parent )
 {
-	m_pKeyChooser = new KKeyChooser( actions, this, type );
-	setMainWidget( m_pKeyChooser );
-	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
-	enableButton( Help, false );
+	initGUI( type, bAllowLetterShortcuts );
 }
 
-KKeyDialog::~KKeyDialog()
-{
-}
-
-void KKeyDialog::commitChanges()
-{
-	m_pKeyChooser->commitChanges();
-}
-
-int KKeyDialog::configure( KAccelActions& actions, QWidget* parent, KKeyChooser::ActionType type )
-{
-	KKeyDialog kd( actions, parent, type );
-	int retcode = kd.exec();
-	if( retcode == Accepted )
-		kd.commitChanges();
-	return retcode;
-}
-
-int KKeyDialog::configure( KAccelActions& actions, const QString& sXmlFile, QWidget* parent, bool bSaveSettings )
-{
-	kdDebug(125) << "KKeyDialog::configureKeys( KaccelActions&, " << sXmlFile << ", " << bSaveSettings << " )" << endl;
-
-	int retcode = configure( actions, parent, KKeyChooser::Application );
-	if( retcode != Accepted || !bSaveSettings || sXmlFile.isEmpty() )
-		return retcode;
-
-	// let's start saving this info
-	QString raw_xml( KXMLGUIFactory::readConfigFile( sXmlFile ) );
-	QDomDocument doc;
-	doc.setContent( raw_xml );
-
-	QString tagActionProp = QString::fromLatin1("ActionProperties");
-	QString tagAction     = QString::fromLatin1("Action");
-	QString attrName      = QString::fromLatin1("name");
-	QString attrShortcut  = QString::fromLatin1("shortcut");
-	// Depricated attribute
-	QString attrAccel     = QString::fromLatin1("accel");
-
-	// first, lets see if we have existing properties
-	QDomElement elem;
-	QDomElement it = doc.documentElement();
-	KXMLGUIFactory::removeDOMComments( it );
-	it = it.firstChild().toElement();
-	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
-		if( it.tagName() == tagActionProp ) {
-			elem = it;
-			break;
-		}
-	}
-
-	// if there was none, create one
-	if( elem.isNull() )
-	{
-		elem = doc.createElement( tagActionProp );
-		doc.firstChild().appendChild(elem);
-	}
-
-	// now, iterate through our actions
-	for( uint i = 0; i < actions.count(); i++ )
-	{
-		KAccelAction* pAction = actions.actionPtr( i );
-
-		// now see if this element already exists
-		QDomElement act_elem;
-		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
-			if( it.attribute( attrName ) == pAction->name() ) {
-				act_elem = it;
-				break;
-			}
-		}
-
-		// nope, create a new one
-		if( act_elem.isNull() ) {
-			act_elem = doc.createElement( tagAction );
-			act_elem.setAttribute( attrName, pAction->name() );
-		} else
-			// Get rid of depricated attribute if it exists.
-			act_elem.removeAttribute( attrAccel );
-
-		if( pAction->shortcut() != pAction->shortcutDefault() )
-			act_elem.setAttribute( attrShortcut, pAction->shortcut().toStringInternal() );
-		else
-			act_elem.removeAttribute( attrShortcut );
-
-		elem.appendChild( act_elem );
-	}
-
-	kdDebug(125) << "calling KXMLGUIFactory::saveConfigFile()" << endl;
-	// finally, write out the result
-	KXMLGUIFactory::saveConfigFile( doc, sXmlFile );
-
-	return retcode;
-}
-
-int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings )
-{
-	int retcode = configure( keys->actions(), parent, KKeyChooser::Application );
-	if( retcode == Accepted ) {
-		keys->updateConnections();
-		if( bSaveSettings )
-			keys->writeSettings();
-	}
-	return retcode;
-}
-
-int KKeyDialog::configure( KGlobalAccel* keys, QWidget *parent, bool bSaveSettings )
-{
-	int retcode = configure( keys->actions(), parent, KKeyChooser::Global );
-	if( retcode == Accepted ) {
-		keys->updateConnections();
-		if( bSaveSettings )
-			keys->writeSettings();
-	}
-	return retcode;
-}
-
-int KKeyDialog::configure( KActionCollection* coll, const QString& file, QWidget *parent, bool bSaveSettings )
-{
-	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
-	KAccelActions actions;
-	coll->createKeyMap( actions );
-
-	int retcode = configure( actions, file, parent, bSaveSettings );
-	if( retcode == Accepted )
-		coll->setKeyMap( actions );
-
-	return retcode;
-}
-
-int KKeyDialog::configure( KActionPtrList* coll, const QString& file, QWidget *parent, bool bSaveSettings )
-{
-	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
-	KAccelActions actions;
-	coll->createKeyMap( actions );
-
-	int retcode = configure( actions, file, parent, bSaveSettings );
-	if( retcode == Accepted )
-		coll->setKeyMap( actions );
-
-	return retcode;
-}
-
-//************************************************************************
-// KKeyChooser                                                           *
-//************************************************************************
 KKeyChooser::KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts )
 : QWidget( parent )
 {
-	init( coll, 0, Application, bAllowLetterShortcuts );
-}
-
-KKeyChooser::KKeyChooser( KAccelActions& actions, QWidget* parent, ActionType type, bool bAllowLetterShortcuts )
-: QWidget( parent )
-{
-	init( 0, &actions, type, bAllowLetterShortcuts );
+	initGUI( Application, bAllowLetterShortcuts );
+	insert( coll );
 }
 
 KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts )
 : QWidget( parent )
 {
-	init( 0, &actions->actions(), Application, bAllowLetterShortcuts );
+	initGUI( Application, bAllowLetterShortcuts );
+	insert( actions->actions(), false );
 }
 
 KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent )
 : QWidget( parent )
 {
-	init( 0, &actions->actions(), Global, false );
+	initGUI( ApplicationGlobal, false );
+	insert( actions->actions(), true );
+}
+
+KKeyChooser::KKeyChooser( KShortcutList* pList, QWidget* parent, ActionType type, bool bAllowLetterShortcuts )
+: QWidget( parent )
+{
+	initGUI( type, bAllowLetterShortcuts );
+	insert( pList );
 }
 
 KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent,
@@ -303,7 +177,8 @@ KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent,
 	else
 		type = Application;
 
-	init( 0, &actions->actions(), type, bAllowLetterShortcuts );
+	initGUI( type, bAllowLetterShortcuts );
+	insert( actions->actions(), false );
 }
 
 KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
@@ -318,41 +193,76 @@ KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 	else
 		type = Application;
 
-	init( 0, &actions->actions(), type, bAllowLetterShortcuts );
+	initGUI( type, bAllowLetterShortcuts );
+	insert( actions->actions(), true );
 }
 
 KKeyChooser::~KKeyChooser()
 {
-	delete d->pList;
 	delete d;
-	// Make sure that we don't still have global accelerators turned off.
-	//KGlobalAccel::setKeyEventsEnabled( true );
+	// TODO: delete rgpListsAllocated pointers
+}
+
+bool KKeyChooser::insert( KActionCollection* pColl )
+{
+	KShortcutList* pList = new KActionShortcutList( pColl );
+	d->rgpListsAllocated.append( pList );
+	d->rgpLists.append( pList );
+	buildListView( d->rgpLists.count() - 1 );
+	return true;
+}
+
+bool KKeyChooser::insert( KAccelActions& actions, bool bGlobal )
+{
+	KShortcutList* pList = new KAccelShortcutList( actions, bGlobal );
+	d->rgpListsAllocated.append( pList );
+	d->rgpLists.append( pList );
+	buildListView( d->rgpLists.count() - 1 );
+	return true;
+}
+
+bool KKeyChooser::insert( KShortcutList* pList )
+{
+	d->rgpLists.append( pList );
+	buildListView( d->rgpLists.count() - 1 );
+	return true;
 }
 
 void KKeyChooser::commitChanges()
 {
 	kdDebug(125) << "KKeyChooser::commitChanges()" << endl;
-	if( d->pColl )
-		d->pColl->setKeyMap( d->actionsNew );
-	else
-		d->pActionsOrig->updateShortcuts( d->actionsNew );
+
+	for( QListViewItem* pChild = d->pList->firstChild(); pChild; pChild = pChild->nextSibling() )
+		commitChanges( pChild );
 }
 
-void KKeyChooser::init( KActionCollection* pColl, KAccelActions* pActions, ActionType type, bool bAllowLetterShortcuts )
+void KKeyChooser::commitChanges( QListViewItem* pItem )
+{
+	KKeyChooserItem* pShortcutItem = dynamic_cast<KKeyChooserItem*>(pItem);
+	if( pShortcutItem )
+		pShortcutItem->commitChanges();
+	else {
+		for( QListViewItem* pChild = pItem->firstChild(); pChild; pChild = pChild->nextSibling() )
+			commitChanges( pChild );
+	}
+}
+
+void KKeyChooser::save()
+{
+	commitChanges();
+	for( uint i = 0; i < d->rgpLists.count(); i++ )
+		d->rgpLists[i]->save();
+}
+
+void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 {
   d = new KKeyChooserPrivate();
 
-  d->pColl = pColl;
-  d->pActionsOrig = pActions; // Keep pointer to original for saving
   m_type = type;
   d->bAllowLetterShortcuts = bAllowLetterShortcuts;
 
-  if( d->pColl )
-    d->pColl->createKeyMap( d->actionsNew );
-  else
-    d->actionsNew.init( *d->pActionsOrig ); // Make copy to modify
   d->bAllowWinKey = (m_type == Global || m_type == ApplicationGlobal);
-  d->bPreferFourModifierKeys = KAccelAction::useFourModifierKeys();
+  d->bPreferFourModifierKeys = KGlobalAccel::useFourModifierKeys();
 
   //
   // TOP LAYOUT MANAGER
@@ -391,8 +301,6 @@ void KKeyChooser::init( KActionCollection* pColl, KAccelActions* pActions, Actio
   d->pList->addColumn(i18n("Action"));
   d->pList->addColumn(i18n("Shortcut"));
   d->pList->addColumn(i18n("Alternate"));
-
-  buildListView();
 
   connect( d->pList, SIGNAL(currentChanged(QListViewItem*)),
            SLOT(slotListItemSelected(QListViewItem*)) );
@@ -475,46 +383,44 @@ void KKeyChooser::init( KActionCollection* pColl, KAccelActions* pActions, Actio
   readGlobalKeys();
   //d->stdDict = new QDict<int> ( 100, false );
   //d->stdDict->setAutoDelete( true );
-  if (type == Application || type == ApplicationGlobal)
-    readStdKeys();
+  //if (type == Application || type == ApplicationGlobal)
+  //  readStdKeys();
 }
 
-//
-// Add all "keys" to the list
-//
-void KKeyChooser::buildListView()
+// Add all shortcuts to the list
+void KKeyChooser::buildListView( uint iList )
 {
-	d->pList->clear();
+	KShortcutList* pList = d->rgpLists[iList];
+
 	d->pList->setSorting( -1 );
-	// HACK to avoid alphabetic ording.  I'll re-write this in the
-	//  next development phase where API changes are not so sensitive. -- ellis
 	KListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
-	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, "Shortcuts" );
+	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, i18n("Shortcuts") );
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
 	pParentItem->setSelectable( false );
-	for( uint i = 0; i < d->actionsNew.count(); i++ ) {
-		KAccelAction& action = *d->actionsNew.actionPtr( i );
-		kdDebug(125) << "Key: " << action.name() << endl;
-		if( action.name().startsWith( "Program:" ) ) {
-			pItem = new KListViewItem( d->pList, pProgramItem, action.label() );
+	uint nSize = pList->count();
+	for( uint iAction = 0; iAction < nSize; iAction++ ) {
+		QString sName = pList->name(iAction);
+		kdDebug(125) << "Key: " << sName << endl;
+		if( sName.startsWith( "Program:" ) ) {
+			pItem = new KListViewItem( d->pList, pProgramItem, pList->label(iAction) );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
 			if( !pProgramItem->firstChild() )
 				delete pProgramItem;
 			pProgramItem = pParentItem = pItem;
-		} else if( action.name().startsWith( "Group:" ) ) {
-			pItem = new KListViewItem( pProgramItem, pParentItem, action.label() );
+		} else if( sName.startsWith( "Group:" ) ) {
+			pItem = new KListViewItem( pProgramItem, pParentItem, pList->label(iAction) );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
 			if( pGroupItem && !pGroupItem->firstChild() )
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
-		} else if( !action.name().isEmpty() )
-			pItem = new KKeyChooserItem( pParentItem, pItem, action );
+		} else if( !sName.isEmpty() )
+			pItem = new KKeyChooserItem( pParentItem, pItem, pList, iAction );
 	}
 	if( !pProgramItem->firstChild() )
 		delete pProgramItem;
@@ -539,20 +445,22 @@ void KKeyChooser::updateButtons()
 		d->bChange->setEnabled( false );
 		d->bChange->setShortcut( KShortcut() );
 	} else {
-		KAccelAction& action = pItem->action();
+		//KAccelAction& action = pItem->action();
+		bool bConfigurable = pItem->isConfigurable();
+		const KShortcut& cutDef = pItem->shortcutDefault();
 
 		// Set key strings
-		QString keyStrCfg = action.shortcut().toString();
-		QString keyStrDef = action.shortcutDefault().toString();
+		QString keyStrCfg = pItem->shortcut().toString();
+		QString keyStrDef = cutDef.toString();
 
-		d->bChange->setShortcut( action.shortcut() );
+		d->bChange->setShortcut( pItem->shortcut() );
 		//item->setText( 1, keyStrCfg );
 		pItem->repaint();
 		d->lInfo->setText( i18n("Default Key") + QString(": %1").arg(keyStrDef.isEmpty() ? i18n("None") : keyStrDef) );
 
 		// Select the appropriate radio button.
-		int index = (action.shortcut().count() == 0) ? NoKey
-				: (action.shortcut() == action.shortcutDefault()) ? DefaultKey
+		int index = (pItem->shortcut().count() == 0) ? NoKey
+				: (pItem->shortcut() == cutDef) ? DefaultKey
 				: CustomKey;
 		m_prbNone->setChecked( index == NoKey );
 		m_prbDef->setChecked( index == DefaultKey );
@@ -560,10 +468,10 @@ void KKeyChooser::updateButtons()
 
 		// Enable buttons if this key is configurable.
 		// The 'Default Key' button must also have a default key.
-		m_prbNone->setEnabled( action.isConfigurable() );
-		m_prbDef->setEnabled( action.isConfigurable() && action.shortcutDefault().count() != 0 );
-		m_prbCustom->setEnabled( action.isConfigurable() );
-		d->bChange->setEnabled( action.isConfigurable() );
+		m_prbNone->setEnabled( bConfigurable );
+		m_prbDef->setEnabled( bConfigurable && cutDef.count() != 0 );
+		m_prbCustom->setEnabled( bConfigurable );
+		d->bChange->setEnabled( bConfigurable );
 	}
 }
 
@@ -573,7 +481,7 @@ void KKeyChooser::slotNoKey()
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
 	if( pItem ) {
 		//kdDebug(125) << "no Key" << d->pList->currentItem()->text(0) << endl;
-		pItem->action().setShortcut( KShortcut() );
+		pItem->setShortcut( KShortcut() );
 		//updateButtons( d->pList->currentItem() );
 		updateButtons();
 		emit keyChange();
@@ -585,7 +493,7 @@ void KKeyChooser::slotDefaultKey()
 	// return if no key is selected
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
 	if( pItem ) {
-		pItem->action().setShortcut( pItem->action().shortcutDefault() );
+		pItem->setShortcut( pItem->shortcutDefault() );
 		updateButtons();
 		emit keyChange();
 	}
@@ -594,12 +502,6 @@ void KKeyChooser::slotDefaultKey()
 void KKeyChooser::slotCustomKey()
 {
 	d->bChange->captureShortcut();
-}
-
-void KKeyChooser::allDefault()
-{
-	kdDebug(125) << "KKeyChooser::allDefault()" << endl;
-	allDefault( d->bPreferFourModifierKeys );
 }
 
 /*
@@ -630,6 +532,7 @@ void KKeyChooser::readKeysInternal( QMap<KKeySequence, QString>& map, const QStr
 
 void KKeyChooser::readGlobalKeys()
 {
+	/*
 	if( !g_pactionsGlobal )
 		g_pactionsGlobal = new KAccelActions;
 
@@ -639,22 +542,7 @@ void KKeyChooser::readGlobalKeys()
 	KConfig config;
 	if( g_pactionsGlobal->count() == 0 )
 		g_pactionsGlobal->init( config, QString::fromLatin1("Global Shortcuts") );
-}
-
-void KKeyChooser::readStdKeys()
-{
-	if( !g_pactionsApplication )
-		g_pactionsApplication = new KAccelActions;
-
-	// debug("KKeyChooser::readStdKeys()");
-	//readKeysInternal( d->stdDict, QString::fromLatin1("Keys"));
-	KConfig config;
-	if( g_pactionsApplication->count() == 0 )
-		g_pactionsApplication->init( config, QString::fromLatin1("Shortcuts") );
-	// Only insert std keys which don't appear in the dictionary to be configured
-//	for( KAccelActions::ConstIterator it = m_pActionsOrig->begin(); it != m_pActionsOrig->end(); ++it )
-//		if ( d->stdDict->find( it.key() ) )
-//			d->stdDict->remove( it.key() );
+	*/
 }
 
 void KKeyChooser::fontChange( const QFont & )
@@ -666,7 +554,17 @@ void KKeyChooser::fontChange( const QFont & )
         setMinimumWidth( 20+5*(widget_width+10) );
 }
 
-void KKeyChooser::allDefault( bool useFourModifierKeys )
+void KKeyChooser::allDefault()
+{
+	kdDebug(125) << "KKeyChooser::allDefault()" << endl;
+	allDefault( d->pList->firstChild() );
+
+	emit keyChange();
+	update();
+	updateButtons();
+}
+
+/*void KKeyChooser::allDefault( bool useFourModifierKeys )
 {
 	// Change all configKeyCodes to default values
 	kdDebug(125) << QString( "KKeyChooser::allDefault( %1 )\n" ).arg( useFourModifierKeys );
@@ -679,7 +577,19 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 	emit keyChange();
 	update();
 	updateButtons();
+}*/
+
+void KKeyChooser::allDefault( QListViewItem* pItem )
+{
+	KKeyChooserItem* pShortcutItem = dynamic_cast<KKeyChooserItem*>(pItem);
+	if( pShortcutItem )
+		pShortcutItem->setShortcut( pShortcutItem->shortcutDefault() );
+	else {
+		for( QListViewItem* pChild = pItem->firstChild(); pChild; pChild = pChild->nextSibling() )
+			commitChanges( pChild );
+	}
 }
+
 
 void KKeyChooser::slotListItemSelected( QListViewItem* )
 {
@@ -699,9 +609,12 @@ void KKeyChooser::capturedShortcut( const KShortcut& cut )
 		setShortcut( cut );
 }
 
+// FIXME: give this functionality again -- I don't think it's ever used, though. -- ellis
+// It's used in kdebase/kcontrol/keys/shortcuts.cpp
 void KKeyChooser::listSync()
 {
-	kdDebug(125) << "KKeyChooser::listSync() -- m_pActionsOrig = " << d->pActionsOrig << endl;
+/*	kdDebug(125) << "KKeyChooser::listSync()" << endl;
+
 	if( d->pColl ) {
 		// TODO: This is very inefficient.  Come up with something better.
 		KAccelActions aa;
@@ -711,10 +624,34 @@ void KKeyChooser::listSync()
 		d->actionsNew.updateShortcuts( *d->pActionsOrig );
 		update();
 		updateButtons();
-	}
+	}*/
 }
 
-//#include <iostream.h>
+void KKeyChooser::syncToConfig( const QString& sConfigGroup, KConfigBase* pConfig, bool bClearUnset )
+{
+	kdDebug(125) << "KKeyChooser::syncToConfig( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
+	if( !pConfig )
+		pConfig = KGlobal::config();
+	KConfigGroupSaver cgs( pConfig, sConfigGroup );
+
+	QListViewItemIterator it( d->pList );
+	for( ; it.current(); ++it ) {
+		KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(it.current());
+		if( pItem ) {
+			QString sEntry = pConfig->readEntry( pItem->actionName() );
+			if( !sEntry.isNull() || bClearUnset ) {
+				if( sEntry == "none" )
+					sEntry = QString::null;
+				pItem->setShortcut( sEntry );
+			}
+			kdDebug(125) << pItem->actionName() << " = " << pItem->shortcut().toStringInternal() << endl;
+		}
+	}
+	//d->pList->update();
+	updateButtons();
+	kdDebug(125) << "KKeyChooser::syncToConfig() done" << endl;
+}
+
 void KKeyChooser::setShortcut( const KShortcut& cut )
 {
 	kdDebug(125) << "KKeyChooser::setShortcut( " << cut.toString() << " )" << endl;
@@ -725,7 +662,7 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 	// If key isn't already in use,
 	if( !isKeyPresent( cut ) ) {
 		// Set new key code
-		pItem->action().setShortcut( cut );
+		pItem->setShortcut( cut );
 		// Update display
 		//updateButtons( pItem );
 		updateButtons();
@@ -764,17 +701,38 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 
 bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 {
-	if( cut.count() == 0 )
-		return false;
-
-	// TODO: check for all sequences of a shortcut
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(d->pList->currentItem());
-	KAccelAction* pAction = d->actionsNew.actionPtr( cut.seq(0) );
-	if( pAction && pAction != &pItem->action() ) {
-		if( bWarnUser )
-			_warning( cut, pAction->name(), i18n("Key Conflict") );
-		return true;
+
+	// If editing global shortcuts, check them for conflicts with the stdaccels.
+	if( m_type == ApplicationGlobal || m_type == Global ) {
+		// For each key sequence in the shortcut,
+		for( uint i = 0; i < cut.count(); i++ ) {
+			const KKeySequence& seq = cut.seq(i);
+
+			KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
+			if( id != KStdAccel::AccelNone ) {
+				if( bWarnUser )
+					_warning( seq, KStdAccel::label(id), i18n("Conflict with Standard Application Shortcut") );
+				return true;
+			}
+		}
 	}
+
+	// Search for shortcut conflicts with other actions in the
+	//  lists we're configuring.
+	for( uint iList = 0; iList < d->rgpLists.count(); iList++ ) {
+		KShortcutList* pList = d->rgpLists[iList];
+		for( uint iSeq = 0; iSeq < cut.count(); iSeq++ ) {
+			const KKeySequence& seq = cut.seq(iSeq);
+			int iAction = pList->index( seq );
+			if( iAction > -1 && pList->name(iAction) != pItem->actionName() ) {
+				if( bWarnUser )
+					_warning( seq, pList->label(iAction), i18n("Key Conflict") );
+				return true;
+			}
+		}
+	}
+
 	return false;
 /*
 	// Search the global key codes to find if this keyCode is already used
@@ -843,7 +801,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
     return false;
 }
 
-void KKeyChooser::_warning( const KShortcut& cut, QString sAction, QString sTitle )
+void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )
 {
 	sAction = sAction.stripWhiteSpace();
 
@@ -857,29 +815,221 @@ void KKeyChooser::_warning( const KShortcut& cut, QString sAction, QString sTitl
 }
 
 //---------------------------------------------------
-KKeyChooserItem::KKeyChooserItem( KListView* parent, QListViewItem* after, KAccelAction& action )
+KKeyChooserItem::KKeyChooserItem( KListView* parent, QListViewItem* after, KShortcutList* pList, uint iAction )
 :	KListViewItem( parent, after )
 {
-	m_pAction = &action;
+	m_pList = pList;
+	m_iAction = iAction;
+	m_bModified = false;
+	m_cut = m_pList->shortcut(m_iAction);
 }
 
-KKeyChooserItem::KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action )
+KKeyChooserItem::KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KShortcutList* pList, uint iAction )
 :	KListViewItem( parent, after )
 {
-	m_pAction = &action;
+	m_pList = pList;
+	m_iAction = iAction;
+	m_bModified = false;
+	m_cut = m_pList->shortcut(m_iAction);
+}
+
+QString KKeyChooserItem::actionName() const
+{
+	return m_pList->name(m_iAction);
+}
+
+const KShortcut& KKeyChooserItem::shortcut() const
+{
+	return m_cut;
+}
+
+void KKeyChooserItem::setShortcut( const KShortcut& cut )
+{
+	m_cut = cut;
+	m_bModified = (m_cut != m_pList->shortcut(m_iAction));
+	listView()->repaintItem( this );
+}
+
+void KKeyChooserItem::commitChanges()
+{
+	if( m_bModified )
+		m_pList->setShortcut( m_iAction, m_cut );
 }
 
 QString KKeyChooserItem::text( int iCol ) const
 {
-	KAccelAction& action = *m_pAction;
-
 	if( iCol == 0 )
-		return action.label();
-	else if( iCol <= (int) action.sequenceCount()
-		  && iCol <= (int) action.shortcut().count() )
-		return action.seq(iCol-1).toString();
+		return m_pList->label(m_iAction);
+	else if( iCol <= (int) m_cut.count() )
+		return m_cut.seq(iCol-1).toString();
 	else
 		return QString::null;
 }
+
+/************************************************************************/
+/* KKeyDialog                                                           */
+/*                                                                      */
+/* Originally by Nicolas Hadacek <hadacek@via.ecp.fr>                   */
+/*                                                                      */
+/* Substantially revised by Mark Donohoe <donohoe@kde.org>              */
+/*                                                                      */
+/* And by Espen Sand <espen@kde.org> 1999-10-19                         */
+/* (by using KDialogBase there is almost no code left ;)                */
+/*                                                                      */
+/************************************************************************/
+KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char* name )
+: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Help|Default|Ok|Cancel, Ok )
+{
+	m_pKeyChooser = new KKeyChooser( this, KKeyChooser::Application, bAllowLetterShortcuts );
+	setMainWidget( m_pKeyChooser );
+	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
+	enableButton( Help, false );
+}
+
+KKeyDialog::~KKeyDialog()
+{
+}
+
+bool KKeyDialog::insert( KActionCollection* pColl )
+{
+	return m_pKeyChooser->insert( pColl );
+}
+
+bool KKeyDialog::configure( bool bSaveSettings )
+{
+	int retcode = exec();
+	if( retcode == Accepted ) {
+		if( bSaveSettings )
+			m_pKeyChooser->save();
+		else
+			commitChanges();
+	}
+	return retcode;
+}
+
+void KKeyDialog::commitChanges()
+{
+	m_pKeyChooser->commitChanges();
+}
+
+/*int KKeyDialog::configure( KAccelActions& actions, QWidget* parent, KKeyChooser::ActionType type )
+{
+	KKeyDialog kd( parent, type );
+	int retcode = kd.exec();
+	if( retcode == Accepted )
+		kd.commitChanges();
+	return retcode;
+}
+
+int KKeyDialog::configure( KAccelActions& actions, const QString& sXmlFile, QWidget* parent, bool bSaveSettings )
+{
+	kdDebug(125) << "KKeyDialog::configureKeys( KaccelActions&, " << sXmlFile << ", " << bSaveSettings << " )" << endl;
+
+	int retcode = configure( actions, parent, KKeyChooser::Application );
+	if( retcode != Accepted || !bSaveSettings || sXmlFile.isEmpty() )
+		return retcode;
+
+	// let's start saving this info
+	QString raw_xml( KXMLGUIFactory::readConfigFile( sXmlFile ) );
+	QDomDocument doc;
+	doc.setContent( raw_xml );
+
+	QString tagActionProp = QString::fromLatin1("ActionProperties");
+	QString tagAction     = QString::fromLatin1("Action");
+	QString attrName      = QString::fromLatin1("name");
+	QString attrShortcut  = QString::fromLatin1("shortcut");
+	// Depricated attribute
+	QString attrAccel     = QString::fromLatin1("accel");
+
+	// first, lets see if we have existing properties
+	QDomElement elem;
+	QDomElement it = doc.documentElement();
+	KXMLGUIFactory::removeDOMComments( it );
+	it = it.firstChild().toElement();
+	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
+		if( it.tagName() == tagActionProp ) {
+			elem = it;
+			break;
+		}
+	}
+
+	// if there was none, create one
+	if( elem.isNull() )
+	{
+		elem = doc.createElement( tagActionProp );
+		doc.firstChild().appendChild(elem);
+	}
+
+	// now, iterate through our actions
+	for( uint i = 0; i < actions.count(); i++ )
+	{
+		KAccelAction* pAction = actions.actionPtr( i );
+
+		// now see if this element already exists
+		QDomElement act_elem;
+		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
+			if( it.attribute( attrName ) == pAction->name() ) {
+				act_elem = it;
+				break;
+			}
+		}
+
+		// nope, create a new one
+		if( act_elem.isNull() ) {
+			act_elem = doc.createElement( tagAction );
+			act_elem.setAttribute( attrName, pAction->name() );
+		} else
+			// Get rid of depricated attribute if it exists.
+			act_elem.removeAttribute( attrAccel );
+
+		if( pAction->shortcut() != pAction->shortcutDefault() )
+			act_elem.setAttribute( attrShortcut, pAction->shortcut().toStringInternal() );
+		else
+			act_elem.removeAttribute( attrShortcut );
+
+		elem.appendChild( act_elem );
+	}
+
+	kdDebug(125) << "calling KXMLGUIFactory::saveConfigFile()" << endl;
+	// finally, write out the result
+	KXMLGUIFactory::saveConfigFile( doc, sXmlFile );
+
+	return retcode;
+}*/
+
+int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings )
+{
+	KKeyDialog dlg( parent );
+	dlg.m_pKeyChooser->insert( keys->actions(), true );
+	return dlg.configure( bSaveSettings );
+}
+
+int KKeyDialog::configure( KGlobalAccel* keys, QWidget *parent, bool bSaveSettings )
+{
+	KKeyDialog dlg( parent );
+	dlg.m_pKeyChooser->insert( keys->actions(), true );
+	return dlg.configure( bSaveSettings );
+}
+
+int KKeyDialog::configure( KActionCollection* coll, QWidget *parent, bool bSaveSettings )
+{
+	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << bSaveSettings << " )" << endl;
+	KKeyDialog dlg( parent );
+	dlg.m_pKeyChooser->insert( coll );
+	return dlg.configure( bSaveSettings );
+}
+
+/*int KKeyDialog::configure( KActionPtrList* coll, const QString& file, QWidget *parent, bool bSaveSettings )
+{
+	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
+	KAccelActions actions;
+	coll->createKeyMap( actions );
+
+	int retcode = configure( actions, file, parent, bSaveSettings );
+	if( retcode == Accepted )
+		coll->setKeyMap( actions );
+
+	return retcode;
+}*/
 
 #include "kkeydialog.moc"

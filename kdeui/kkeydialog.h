@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 2001,2001 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,12 +32,14 @@ class QLabel;
 class QLineEdit;
 class QRadioButton;
 class KAccel;
-class KAccelAction;
 class KAccelActions;
 class KActionCollection;
 class KActionPtrList;
+class KConfigBase;
 class KGlobalAccel;
+class KKeySequence;
 class KShortcut;
+class KShortcutList;
 
 /**
  * Configure dictionaries of key/action associations for KAccel and
@@ -51,7 +54,6 @@ class KShortcut;
  * @see KKeyDialog
  * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
-
  */
 class KKeyChooser : public QWidget
 {
@@ -66,29 +68,31 @@ class KKeyChooser : public QWidget
 	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 **/
+	KKeyChooser( QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts = true );
-	KKeyChooser( KAccelActions& actions, QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KGlobalAccel* actions, QWidget* parent );
+	KKeyChooser( KShortcutList*, QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 
-	~KKeyChooser();
+	virtual ~KKeyChooser();
 
+	bool insert( KActionCollection* );
+
+	void syncToConfig( const QString& sConfigGroup, KConfigBase* pConfig, bool bClearUnset );
+
+	/**
+	 * This function writes any shortcut changes back to the original
+	 * action set(s).
+	 */
 	void commitChanges();
 
- protected:
-	enum { NoKey = 1, DefaultKey, CustomKey };
-
-	void init( KActionCollection*, KAccelActions*, ActionType type, bool bAllowLetterShortcuts );
-	void buildListView();
-
-	void readGlobalKeys();
-	void readStdKeys();
-
-	void updateButtons();
-	void fontChange( const QFont& _font );
-	void setShortcut( const KShortcut& cut );
-	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
-	void _warning( const KShortcut& cut, QString sAction, QString sTitle );
+	/**
+	 * This commits and then saves the actions to disk.
+	 * Any KActionCollection objects with the xmlFile() value set
+	 * will be written to an xml file.  All other will be written
+	 * to the application's rc file.
+	 */
+	void save();
 
  signals:
 	/**
@@ -102,16 +106,31 @@ class KKeyChooser : public QWidget
 	 **/
 	void allDefault();
 	// Whether to use the 3 or 4 modifier key scheme.
-	void allDefault( bool useFourModifierKeys );
+	//virtual void allDefault( bool useFourModifierKeys );
 	// This determines which default is used when the 'Default' button is
 	//  clicked.
 	void setPreferFourModifierKeys( bool preferFourModifierKeys );
 
-	/**
-	 * Rebuild list entries based on underlying map.
-	 * Use this if you changed the underlying map.
-	 **/
-	void listSync();
+ protected:
+	enum { NoKey = 1, DefaultKey, CustomKey };
+
+	void initGUI( ActionType type, bool bAllowLetterShortcuts );
+	bool insert( KAccelActions&, bool bGlobal );
+	bool insert( KShortcutList* );
+	void buildListView( uint iList );
+
+	void readGlobalKeys();
+	//void readStdKeys();
+
+	void updateButtons();
+	void fontChange( const QFont& _font );
+	void setShortcut( const KShortcut& cut );
+	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
+	void _warning( const KKeySequence& seq, QString sAction, QString sTitle );
+
+	void allDefault( QListViewItem* );
+
+	void commitChanges( QListViewItem* pItem );
 
  protected slots:
 	void slotNoKey();
@@ -134,6 +153,8 @@ class KKeyChooser : public QWidget
 
  private:
 	class KKeyChooserPrivate *d;
+	friend class KKeyDialog;
+
 #ifndef KDE_NO_COMPAT
  public:
 	/** @obsolete */
@@ -146,6 +167,14 @@ class KKeyChooser : public QWidget
 			bool bCheckAgainstStdKeys,
 			bool bAllowLetterShortcuts,
 			bool bAllowWinKey = false );
+
+ public slots:
+	/**
+	 * Rebuild list entries based on underlying map.
+	 * Use this if you changed the underlying map.
+	 **/
+	void listSync();
+
 #endif
 };
 typedef KKeyChooser KKeyChooser;
@@ -196,10 +225,11 @@ class KKeyDialog : public KDialogBase
   Q_OBJECT
 
 public:
-	KKeyDialog( KAccelActions& actions, QWidget* parent = 0,
-		KKeyChooser::ActionType = KKeyChooser::Application );
+	KKeyDialog( bool bAllowLetterShortcuts = true, QWidget* parent = 0, const char* name = 0 );
 	virtual ~KKeyDialog();
 
+	bool insert( KActionCollection* );
+	bool configure( bool bSaveSettings = true );
 	void commitChanges();
 
 	/**
@@ -208,10 +238,10 @@ public:
 	 * when the dialog is closed.
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 **/
-	static int configure( KAccelActions& actions, QWidget* parent = 0,
-		KKeyChooser::ActionType = KKeyChooser::Application );
-	static int configure( KAccelActions& actions, const QString& sXmlFile = QString::null,
-		QWidget* parent = 0, bool bSaveSettings = true );
+	//static int configure( KAccelActions& actions, QWidget* parent = 0,
+	//	KKeyChooser::ActionType = KKeyChooser::Application );
+	//static int configure( KAccelActions& actions, const QString& sXmlFile = QString::null,
+	//	QWidget* parent = 0, bool bSaveSettings = true );
 	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
 	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
 	/**
@@ -219,22 +249,22 @@ public:
 	 * from an action collection (for XMLGUI based applications).
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 **/
-	static int configure( KActionCollection* coll, const QString& sXmlFile,
+	static int configure( KActionCollection* coll,
 		QWidget* parent = 0, bool bSaveSettings = true );
-	static int configure( KActionPtrList* coll, const QString& sXmlFile,
-		QWidget* parent = 0, bool bSaveSettings = true );
+	//static int configure( KActionPtrList* coll, const QString& sXmlFile,
+	//	QWidget* parent = 0, bool bSaveSettings = true );
 
 	// obsolete.
 	static int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
 	static int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
-	static int configureKeys( KActionCollection* coll, const QString& xmlfile,
+	static int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
 		bool save_settings = true, QWidget* parent = 0 )
-		{ return configure( coll, xmlfile, parent, save_settings ); }
-	static int configureKeys( KActionPtrList* coll, const QString& xmlfile,
-		bool save_settings = true, QWidget* parent = 0 )
-		{ return configure( coll, xmlfile, parent, save_settings ); }
+		{ return configure( coll, parent, save_settings ); }
+	//static int configureKeys( KActionPtrList* coll, const QString& xmlfile,
+	//	bool save_settings = true, QWidget* parent = 0 )
+	//	{ return configure( coll, xmlfile, parent, save_settings ); }
 
 private:
 	KKeyChooser* m_pKeyChooser;
