@@ -82,6 +82,9 @@ UTCValue::~UTCValue()
 	void
 UTCValue::_parse()
 {
+  if ( strRep_.isEmpty() )
+    return;
+
 	positive_ = (strRep_[0] == '+');
 	
 	int colon = strRep_.find(':');
