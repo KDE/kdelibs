@@ -31,19 +31,6 @@
 inline void debugC(const char *,...) {};
 #endif
 
-struct KURL_intern {
-    QString protocol_part;
-    QString host_part;
-    QString path_part;
-    QString path_part_decoded;
-    QString ref_part;
-    // This variable is only valid after calling 'directory'.
-    QString dir_part;
-    QString user_part;
-    QString passwd_part;
-    int paths;
-};
-
 void KURL::encodeURL( QString& _url ) {
 
     static int count = 0;
@@ -125,45 +112,41 @@ void KURL::decodeURL( QString& _url ) {
 void
 KURL::detach()
 {
-    data->protocol_part.detach();
-    data->host_part.detach();
-    data->path_part.detach();
-    data->ref_part.detach();
+    protocol_part.detach();
+    host_part.detach();
+    path_part.detach();
+    ref_part.detach();
     /* temporarily removed */
-    // data->dir_part.detach();
-    data->user_part.detach();
-    data->passwd_part.detach();
-    data->path_part_decoded.detach();
+    // dir_part.detach();
+    user_part.detach();
+    passwd_part.detach();
+    path_part_decoded.detach();
 }
 
 KURL::KURL() 
 { 
-    data = new KURL_intern;
-    debugC("c1 %p %p",data, this);
+    debugC("c1 %p", this);
     malformed = true;
-    data->protocol_part = "";
-    data->host_part = ""; 
-    data->path_part = ""; 
-    data->ref_part = ""; 
-    data->paths = 0;
+    protocol_part = "";
+    host_part = ""; 
+    path_part = ""; 
+    ref_part = ""; 
     bNoPath = false;
 }
 
 
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
-    data = new KURL_intern;
-    debugC("c2 %p %p",data, this);
+    debugC("c2 %p", this);
     malformed = _base_url.malformed;
-    data->protocol_part = _base_url.data->protocol_part;
-    data->host_part = _base_url.data->host_part;
+    protocol_part = _base_url.protocol_part;
+    host_part = _base_url.host_part;
     port_number = _base_url.port_number;
-    data->path_part = _base_url.data->path_part;
-    data->ref_part = _base_url.data->ref_part;
-    data->dir_part = _base_url.data->dir_part;
-    data->user_part = _base_url.data->user_part;
-    data->passwd_part = _base_url.data->passwd_part;
-    data->paths = 0;
+    path_part = _base_url.path_part;
+    ref_part = _base_url.ref_part;
+    dir_part = _base_url.dir_part;
+    user_part = _base_url.user_part;
+    passwd_part = _base_url.passwd_part;
     detach();
     
     if ( strstr( _rel_url, ":/" ) == 0 )
@@ -174,9 +157,7 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
 
 KURL::KURL( const char* _url)
 {
-    data = new KURL_intern;
-    debugC("c3 %p %p",data, this);
-    data->paths = 0;
+    debugC("c3 %p", this);
     parse( _url );
 }
 
@@ -191,9 +172,9 @@ void KURL::parse( const char * _url )
     if ( _url[0] == '/' )
     {
 	// Create a light weight URL with protocol
-	data->path_part = url;
-	data->path_part.detach();
-	data->protocol_part = "file";
+	path_part = url;
+	path_part.detach();
+	protocol_part = "file";
 	return;
     }
     
@@ -204,12 +185,12 @@ void KURL::parse( const char * _url )
 	malformed = true;
 	return;
     }
-    data->protocol_part = url.left( pos );
+    protocol_part = url.left( pos );
 
-    if ( data->protocol_part == "info" || data->protocol_part == "mailto" || 
-	 data->protocol_part == "man" || data->protocol_part == "news" )
+    if ( protocol_part == "info" || protocol_part == "mailto" || 
+	 protocol_part == "man" || protocol_part == "news" )
     {
-	data->path_part = url.mid( pos + 1, url.length() );
+	path_part = url.mid( pos + 1, url.length() );
 	detach();
 	return;
     }
@@ -238,58 +219,58 @@ void KURL::parse( const char * _url )
 	// We dont have a path ?
 	if ( pos2 == -1 )
 	{
-	    data->host_part = url.mid( pos + 1, url.length() );
+	    host_part = url.mid( pos + 1, url.length() );
 	    pos2 = url.length();
 	}
 	else
-	    data->host_part = url.mid( pos + 1, 
+	    host_part = url.mid( pos + 1, 
 				 (( pos2 == -1) ? url.length() : pos2) 
 				 - pos - 1);      
     }
     else
     {
-	data->host_part = "";
+	host_part = "";
 	// Go back to the '/'
 	pos2 = pos - 1;
     }
 
-    if ( data->host_part.length() > 0 )
+    if ( host_part.length() > 0 )
     {    
-	int j = data->host_part.find( "@" );
+	int j = host_part.find( "@" );
 	if ( j != -1 )
 	{	
-	    int i = data->host_part.find( ":" );
+	    int i = host_part.find( ":" );
 	    if ( i != -1 && i < j )
 	    {
-		data->user_part = data->host_part.left( i );
-		data->passwd_part = data->host_part.mid( i + 1, j - i - 1 );
-		data->host_part = data->host_part.mid( j + 1, data->host_part.length() );
+		user_part = host_part.left( i );
+		passwd_part = host_part.mid( i + 1, j - i - 1 );
+		host_part = host_part.mid( j + 1, host_part.length() );
 	    }
 	    else
 	    {
-		data->user_part = data->host_part.left( j );
-		data->passwd_part = "";
-		data->host_part = data->host_part.mid( j + 1, data->host_part.length() );
+		user_part = host_part.left( j );
+		passwd_part = "";
+		host_part = host_part.mid( j + 1, host_part.length() );
 	    }
 	}
 	else
 	{
-	    data->passwd_part = "";
-	    data->user_part = "";
+	    passwd_part = "";
+	    user_part = "";
 	}
     }
     else
     {
-	data->passwd_part = "";
-	data->user_part = "";
+	passwd_part = "";
+	user_part = "";
     }
   
     // find a possible port number
-    int p = data->host_part.find(":");
+    int p = host_part.find(":");
     if ( p != -1 )
     {
-	port_number = data->host_part.right( data->host_part.length() - (p + 1) ).toInt();
-	data->host_part = data->host_part.left( p );
+	port_number = host_part.right( host_part.length() - (p + 1) ).toInt();
+	host_part = host_part.left( p );
     }
     else
 	port_number = 0;
@@ -301,22 +282,22 @@ void KURL::parse( const char * _url )
 	int pos3 = url.findRev( '#' );
 	// Is there a) no reference or b) only a subprotocol like file:/tmp/arch.tgz#tar:/usr/
 	if ( pos3 == -1 || exp.match( url, pos3 + 1 ) != -1 )
-	    data->path_part = url.mid( pos2, url.length() );
+	    path_part = url.mid( pos2, url.length() );
 	else 
 	{
-	    data->path_part = url.mid( pos2, pos3 - pos2 );
-	    data->ref_part = url.mid( pos3 + 1, url.length() );
-	    // if (data->path_part.right(1) == "/")  no filename and a reference
+	    path_part = url.mid( pos2, pos3 - pos2 );
+	    ref_part = url.mid( pos3 + 1, url.length() );
+	    // if (path_part.right(1) == "/")  no filename and a reference
 	    // malformed = true;
 	}
 	bNoPath = false;
     }
     else
     {
-	data->path_part = "/";
+	path_part = "/";
 	// Indicate that we did not see a path originally
 	bNoPath = true;
-	data->ref_part = "";
+	ref_part = "";
     } 
 
     cleanPath();
@@ -334,102 +315,98 @@ void KURL::parse( const char * _url )
 KURL::KURL( const char* _protocol, const char* _host, 
 			const char* _path, const char* _ref)
 {
-    data = new KURL_intern;
-    debugC("c4 %p %p",data, this);
-    data->protocol_part = _protocol;
-    data->host_part = _host;
-    data->path_part = _path;
-    data->ref_part  = _ref;
-    data->paths = 0;
+    debugC("c4 %p",this);
+    protocol_part = _protocol;
+    host_part = _host;
+    path_part = _path;
+    ref_part  = _ref;
     malformed = false;
 }     
 
 bool KURL::hasSubProtocol()
 {
-    return ( data->path_part.isNull() && 
-	     strchr( data->path_part, '#' ) != 0L );
+    return ( path_part.isNull() && 
+	     strchr( path_part, '#' ) != 0L );
 }
 
 const char* KURL::directory( bool _trailing )
 {
     // Calculate only on demand
-    if ( data->path_part.right( 1 )[0] == '/' )
-	data->dir_part = data->path_part.copy();
+    if ( path_part.right( 1 )[0] == '/' )
+	dir_part = path_part.copy();
     else
     {
-	QString p = data->path_part;
+	QString p = path_part;
 	if ( !_trailing )
 	    if ( p.right( 1 )[0] == '/' )
 		p = p.left( p.length() - 1 );
 	int i = p.findRev( "/" );
 	if ( i == -1 )
 	    // Should never happen
-	    data->dir_part = "/";
+	    dir_part = "/";
 	else
-	    data->dir_part = p.left( i + 1 );
+	    dir_part = p.left( i + 1 );
     }
 
-    return data->dir_part.data();
+    return dir_part.data();
 }
 
 const char* KURL::host() const 
 {
-    if (data->host_part.isNull()) 
+    if (host_part.isNull()) 
 	return "";
     else 
-	return data->host_part.data();
+	return host_part.data();
 }
 
 KURL::~KURL() {
-    debugC("~ %p %p %d",this, data, data->paths);
-    delete data;
+    debugC("~ %p",this);
 }
 
-const char* KURL::path() const 
+const char* KURL::path() 
 { 
-    data->paths++;
     static uint count = 0;
     debugC("path() %d",++count);
 
-    if (data->path_part.isNull()) 
+    if (path_part.isNull()) 
 	return "";
     else {
-	if (data->path_part_decoded.isNull()) {
-	    data->path_part_decoded = data->path_part.copy();
-	    KURL::decodeURL(data->path_part_decoded);
+	if (path_part_decoded.isNull()) {
+	    path_part_decoded = path_part.copy();
+	    KURL::decodeURL(path_part_decoded);
 	}
-	debugC("path return \"%s\"",data->path_part_decoded.data());
-	return data->path_part_decoded.data();
+	debugC("path return \"%s\"",path_part_decoded.data());
+	return path_part_decoded.data();
     }
 }
 
 const char* KURL::protocol() const 
 { 
-    if (data->protocol_part.isNull()) 
+    if (protocol_part.isNull()) 
 	return ""; 
     else 
-	return data->protocol_part.data(); 
+	return protocol_part.data(); 
 }
 
 void KURL::setProtocol( const char* newProto) 
 { 
-    data->protocol_part = newProto; 
+    protocol_part = newProto; 
 }
 
 const char* KURL::reference() const 
 { 
-    if (data->ref_part.isNull()) 
+    if (ref_part.isNull()) 
 	return "";
     else 
-	return data->ref_part.data(); 
+	return ref_part.data(); 
 }
 
 const char* KURL::user() 
 { 
-    if (data->user_part.isNull()) 
+    if (user_part.isNull()) 
 	return "";
     else 
-	return data->user_part.data(); 
+	return user_part.data(); 
 }
 
 unsigned int KURL::port() const 
@@ -439,15 +416,15 @@ unsigned int KURL::port() const
 
 const char* KURL::passwd() 
 { 
-    if (data->passwd_part.isNull()) 
+    if (passwd_part.isNull()) 
 	return "";
     else 
-	return data->passwd_part.data(); 
+	return passwd_part.data(); 
 }
 
 void KURL::setPassword( const char *password )
 {
-    data->passwd_part = password;
+    passwd_part = password;
 }
 
 bool KURL::cdUp( bool zapRef ) 
@@ -468,7 +445,7 @@ const char* KURL::directoryURL( bool _trailing )
     
     // Calculate only on demand
     if ( u.right( 1 )[0] == '/' && ( _trailing || u.right(2) == ":/" ) )
-	data->dir_part = u.data();
+	dir_part = u.data();
     else
     {
 	if ( !_trailing && u.right( 1 ) == "/" && u.right(2) != ":/" )
@@ -476,12 +453,12 @@ const char* KURL::directoryURL( bool _trailing )
 	int i = u.findRev( "/" );
 	if ( i == -1 )
 	    // Should never happen
-	    data->dir_part = "/";
+	    dir_part = "/";
 	else
-	    data->dir_part = u.left( i + 1 );
+	    dir_part = u.left( i + 1 );
     }
 
-    return data->dir_part.data();
+    return dir_part.data();
 }
 
 QString KURL::url() const
@@ -489,22 +466,22 @@ QString KURL::url() const
     static int count = 0;
     debugC("url() %d",++count);
 
-    QString url = data->protocol_part.copy();
+    QString url = protocol_part.copy();
 
-    if( !data->host_part.isEmpty() ) 
+    if( !host_part.isEmpty() ) 
     {
 	url += "://";   
-	if ( !data->user_part.isEmpty() )
+	if ( !user_part.isEmpty() )
 	{
-	    url += data->user_part.data();
-	    if ( !data->passwd_part.isEmpty() )
+	    url += user_part.data();
+	    if ( !passwd_part.isEmpty() )
 	    {
 		url += ":";
-		url += data->passwd_part.data();
+		url += passwd_part.data();
 	    }      
 	    url += "@";
 	}    
-	url += data->host_part;
+	url += host_part;
 	
 	if ( port_number != 0 )
 	{
@@ -515,60 +492,57 @@ QString KURL::url() const
     else
 	url += ":";
     
-    if( !data->path_part.isEmpty() && hasPath() )
-	url += data->path_part; 
+    if( !path_part.isEmpty() && hasPath() )
+	url += path_part; 
     
-    if( !data->ref_part.isEmpty() )
-	url += "#" + data->ref_part;
+    if( !ref_part.isEmpty() )
+	url += "#" + ref_part;
     
     return url;
 }
 
 const char* KURL::filename()
 {
-    if ( data->path_part.isEmpty() )
+    if ( path_part.isEmpty() )
 	return "";
     
-    if ( data->path_part.data() == "/")
+    if ( path_part.data() == "/")
 	return "";
     
-    if (data->path_part_decoded.isNull()) {
-	data->path_part_decoded = data->path_part.copy();
-	KURL::decodeURL(data->path_part_decoded);
+    if (path_part_decoded.isNull()) {
+	path_part_decoded = path_part.copy();
+	KURL::decodeURL(path_part_decoded);
     }
-    int pos = data->path_part_decoded.findRev( "/" );
-    return data->path_part_decoded.data() + pos + 1;
+    int pos = path_part_decoded.findRev( "/" );
+    return path_part_decoded.data() + pos + 1;
 }
     
 bool KURL::cd( const char* _dir, bool zapRef)
 {
     if ( !_dir )
-      return false;
+	return false;
     
     // Now we have a path for shure
-    if ( _dir[0] == 0 )
-	bNoPath = true;
-    else
-	bNoPath = false;
+    bNoPath == ( _dir[0] == 0);
 
     if( _dir[0] == '/' )
     {
-	data->path_part = _dir;
+	path_part = _dir;
     }
     else if ( _dir[0] == '~' )
     {
-	if ( data->protocol_part != "file" )
+	if ( protocol_part != "file" )
 	    return false;
 	
-	data->path_part = getenv( "HOME" );
-	data->path_part += "/";
-	data->path_part += _dir + 1;
+	path_part = getenv( "HOME" );
+	path_part += "/";
+	path_part += _dir + 1;
     }
     else
     {
-	if ( data->path_part.right(1)[0] != '/' && _dir[0] != '/' )
-	    data->path_part += "/";
-	data->path_part += _dir;
+	if ( path_part.right(1)[0] != '/' && _dir[0] != '/' )
+	    path_part += "/";
+	path_part += _dir;
     }
 
     if ( zapRef )
@@ -582,19 +556,19 @@ bool KURL::cd( const char* _dir, bool zapRef)
 bool KURL::setReference( const char* _ref)
 {
     // We cant have a referece if we have no path (other than /)
-    // if( data->path_part.isNull() || data->path_part.data()[0] == 0 )
+    // if( path_part.isNull() || path_part.data()[0] == 0 )
     // return false;
-    data->ref_part = _ref;
+    ref_part = _ref;
     return true;
 }
 
 KURL& KURL::operator=( const KURL &u)
 {
   malformed = u.malformed;
-  data->protocol_part = u.data->protocol_part;
-  data->host_part = u.data->host_part;
-  data->path_part = u.data->path_part;
-  data->ref_part = u.data->ref_part;
+  protocol_part = u.protocol_part;
+  host_part = u.host_part;
+  path_part = u.path_part;
+  ref_part = u.ref_part;
   bNoPath = u.bNoPath;
   
   detach();
@@ -603,14 +577,7 @@ KURL& KURL::operator=( const KURL &u)
 
 KURL& KURL::operator=( const char *_url )
 {
-    debugC("= %p %p",data, this);
-
-    // this is of course a big fat memory leak, but
-    // if I remove it, it will end up in a FMW and I
-    // have no idea why. if someone knows, please try
-    // to remove it
-    data = new KURL_intern();
-    data->paths = 0;
+    debugC("= %p", this);
     parse( _url );
     return *this;
 }
@@ -657,30 +624,30 @@ QString KURL::nestedURL()
 
 void KURL::cleanPath()
 {
-    if ( data->path_part.isEmpty() )
+    if ( path_part.isEmpty() )
 	return;
 
     // Did we have a trailing '/'
-    int len = data->path_part.length();
+    int len = path_part.length();
     bool slash = false;
-    if ( len > 0 && data->path_part.right(1)[0] == '/' )
+    if ( len > 0 && path_part.right(1)[0] == '/' )
 	slash = true;
     
-    data->path_part = QDir::cleanDirPath( data->path_part );
+    path_part = QDir::cleanDirPath( path_part );
 
     // Restore the trailing '/'
-    len = data->path_part.length();
-    if ( len > 0 && data->path_part.right(1)[0] != '/' && slash )
-	data->path_part += "/";
+    len = path_part.length();
+    if ( len > 0 && path_part.right(1)[0] != '/' && slash )
+	path_part += "/";
 }
 
 bool KURL::isLocalFile() 
 {
-    if (data->protocol_part != "file")
+    if (protocol_part != "file")
 	return false;
 
     if (hasSubProtocol())
 	return false;
 
-    return data->host_part.isEmpty();
+    return host_part.isEmpty();
 }

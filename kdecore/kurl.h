@@ -56,8 +56,6 @@
 * @short A class for URL processing.
 */
 
-struct KURL_intern;
-
 class KURL
 { 
 public:
@@ -147,7 +145,7 @@ public:
      * For example, path() on "tar://ftp.foo.org/bar/stuff.tar.gz#tex/doc.tex" 
      * returns "/bar/stuff.tar.gz".
      */
-    const char* path() const;
+    const char* path();
     
     /**
      * If we parse for example ftp://weis@localhost then we dont have a path.
@@ -342,7 +340,16 @@ protected:
      */
     bool bNoPath;
     int port_number; 
-    KURL_intern *data;
+
+    QString protocol_part;
+    QString host_part;
+    QString path_part;
+    QString path_part_decoded;
+    QString ref_part;
+    // This variable is only valid after calling 'directory'.
+    QString dir_part;
+    QString user_part;
+    QString passwd_part;
     
 private:
     void detach();
