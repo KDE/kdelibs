@@ -55,6 +55,11 @@ static const char * const SYSTEM_MESSAGES = "kdelibs";
 
 static const char *maincatalogue = 0;
 
+class KLocalePrivate {
+public:
+    int plural_form;
+};
+
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
 			  QString& country,
@@ -170,6 +175,9 @@ extern void qt_set_locale_codec( QTextCodec *codec );
 KLocale::KLocale( const QString& _catalogue )
   : _inited(false), _codec( 0 )
 {
+    d = new KLocalePrivate;
+    d->plural_form = 0;
+
     KConfig *config = KGlobal::instance()->config();
     if (config)
     {
@@ -317,8 +325,8 @@ void KLocale::initFormat(KConfig *config)
   KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
 
   KSimpleConfig entry(locate("locale",
-			     QString::fromLatin1("l10n/%1/entry.desktop")
-			     .arg(_country)), true);
+                             QString::fromLatin1("l10n/%1/entry.desktop")
+                             .arg(_country)), true);
   entry.setGroup(QString::fromLatin1("KCM Locale"));
 
   // Numeric
@@ -396,6 +404,30 @@ void KLocale::initFormat(KConfig *config)
   m_weekStartsMonday = entry.readBoolEntry(QString::fromLatin1("WeekStartsMonday"), true);
   m_weekStartsMonday = config->readBoolEntry(QString::fromLatin1("WeekStartsMonday"), m_weekStartsMonday);
 
+  QString pf = translate_priv( "_: Definition of PluralForm\nLook at klocale.cpp for now", 0);
+  if ( pf.isEmpty() )
+      kdWarning() << "found no definition of PluralForm" << endl;
+  else if ( pf == "NoPlural" )
+      d->plural_form = 0;
+  else if ( pf == "TwoForms" )
+      d->plural_form = 1;
+  else if ( pf == "French" )
+      d->plural_form = 2;
+  else if ( pf == "Gaeilge" )
+      d->plural_form = 3;
+  else if ( pf == "Russian" )
+      d->plural_form = 4;
+  else if ( pf == "Polish" )
+      d->plural_form = 5;
+  else if ( pf == "Slovenian" )
+      d->plural_form = 6;
+  else if ( pf == "Lithuanian" )
+      d->plural_form = 7;
+  else {
+      kdWarning() << "Definition of PluralForm is none of NoPlural/TwoForms/French/Gaeilge/Russian/Polish/Slovenian/Lithuanian: " << pf << endl;
+      exit(1);
+  }
+
   KGlobal::_locale = lsave;
 }
 
@@ -431,7 +463,8 @@ void KLocale::insertCatalogue( const QString& catalogue )
 
 KLocale::~KLocale()
 {
-  delete catalogues;
+    delete d;
+    delete catalogues;
 }
 
 QString KLocale::translate_priv(const char *msgid, const char *fallback, const char **translated) const
@@ -485,6 +518,115 @@ QString KLocale::translate( const char *index, const char *fallback) const
   delete [] newstring;
 
   return r;
+}
+
+QString put_n_in(const QString &orig, unsigned long n)
+{
+    QString ret = orig;
+    int index = ret.find("%n");
+    if (index == -1)
+        return ret;
+    ret.replace(index, 2, QString::number(n));
+    return ret;
+}
+
+#define EXPECT_LENGTH(x) \
+   if (forms.count() != x) \
+      kdFatal() << "translation of \"" << singular << "\" doesn't contain " << x << " different plural forms as expected\n";
+
+QString KLocale::translate( const char *singular, const char *plural,
+                            unsigned long n ) const
+{
+    if (!singular || !singular[0] || !plural || !plural[0])
+    {
+        kdDebug() << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
+        return QString::null;
+    }
+
+    char *newstring = new char[strlen(singular) + strlen(plural) + 6];
+    sprintf(newstring, "_n: %s\n%s", singular, plural);
+    // as copying QString is very fast, it looks slower as it is ;/
+    QString r = translate_priv(newstring, 0);
+    delete [] newstring;
+
+    if ( r.isEmpty() || lang == "C") {
+        if ( n == 1 )
+            return put_n_in( QString::fromUtf8( singular ),  n );
+        else
+            return put_n_in( QString::fromUtf8( plural ),  n );
+    }
+
+    QStringList forms = QStringList::split( "\n", r, false );
+    switch ( d->plural_form ) {
+    case 0: // NoPlural
+        EXPECT_LENGTH( 1 );
+        return put_n_in( forms[0], n);
+        break;
+    case 1: // TwoForms
+        EXPECT_LENGTH( 2 );
+        if ( n == 1 )
+            return put_n_in( forms[0], n);
+        else
+            return put_n_in( forms[1], n);
+        break;
+    case 2: // French
+        EXPECT_LENGTH( 2 );
+        if ( n == 1 || n == 0 )
+            return put_n_in( forms[0], n);
+        else
+            return put_n_in( forms[1], n);
+        break;
+    case 3: // Gaeilge
+        EXPECT_LENGTH( 3 );
+        if ( n == 1 )
+            return put_n_in( forms[0], n);
+        else if ( n == 2 )
+            return put_n_in( forms[1], n);
+        else
+            return put_n_in( forms[2], n);
+        break;
+    case 4: // Russian
+        EXPECT_LENGTH( 3 );
+        if ( n == 1 )
+            return put_n_in( forms[0], n);
+        else if ( n%10 >= 2 && n%10 <=4 )
+            return put_n_in( forms[1], n);
+        else
+            return put_n_in( forms[2], n);
+        break;
+    case 5: // Polish
+        EXPECT_LENGTH( 3 );
+        if ( n == 1 )
+            return put_n_in( forms[0], n);
+        else if ( n%10 >= 2 && n%10 <=4 && (n%100<10 || n%100>=20) )
+            return put_n_in( forms[1], n);
+        else
+            return put_n_in( forms[2], n);
+        break;
+    case 6: // Slovenian
+        EXPECT_LENGTH( 4 );
+        if ( n%100 == 1 )
+            return put_n_in( forms[0], n);
+        else if ( n%100 == 2 )
+            return put_n_in( forms[1], n);
+        else if ( n%100 == 3 || n%100 == 4 )
+            return put_n_in( forms[2], n);
+        else
+            return put_n_in( forms[3], n);
+        break;
+    case 7: // Lithuanian
+        EXPECT_LENGTH( 3 );
+        if ( n%10 == 0 || (n%100>=11 && n%100<=19) )
+            return put_n_in( forms[2], n);
+        else if ( n%10 == 1 )
+            return put_n_in( forms[0], n);
+        else
+            return put_n_in( forms[1], n);
+        break;
+    }
+    kdFatal() << "The function should have been returned in another way\n";
+
+    return QString::null;
 }
 
 QString KLocale::translateQt( const char *index, const char *fallback) const
@@ -1120,14 +1262,66 @@ QString i18n(const char* index, const char *text)
   return QString::fromUtf8(text);
 }
 
+QString i18n(const char* singular, const char* plural, unsigned long n)
+{
+    register KLocale *instance = KGlobal::locale();
+    if (instance)
+        return instance->translate(singular, plural, n);
+    if (n == 1)
+        return put_n_in(QString::fromUtf8(singular), n);
+    else
+        return put_n_in(QString::fromUtf8(plural), n);
+}
+
 void KLocale::initInstance()
 {
-  if (KGlobal::_locale)
-     return;
+    if (KGlobal::_locale)
+        return;
 
-  KInstance *app = KGlobal::instance();
-  if (app)
-    KGlobal::_locale = new KLocale(app->instanceName());
-  else
-      kdDebug() << "no app name available using KLocale - nothing to do\n";
+    KInstance *app = KGlobal::instance();
+    if (app)
+        KGlobal::_locale = new KLocale(app->instanceName());
+    else
+        kdDebug() << "no app name available using KLocale - nothing to do\n";
+}
+
+static void test()
+{
+    /* old way:
+    if ( dirs == 1 )
+        lDirText = i18n("directory");
+    else
+        lDirText = i18n("directories");
+
+    if ( files == 1 )
+        lFileText = i18n("file");
+    else
+        lFileText = i18n("files");
+
+    if (dirs != 0 && files != 0) {
+        lStatusText = i18n("%1 %2 and %3 %4")
+            .arg(dirs).arg( lDirText )
+            .arg(files).arg( lFileText );
+    } else if ( dirs == 0 )
+        lStatusText = i18n("%1 %2").arg(files).arg( lFileText );
+    else
+        lStatusText = i18n("%1 %2").arg(dirs).arg( lDirText );
+
+    */
+    int dirs = 12;
+    int files = 1;
+
+    QString lDirText  = i18n( "%n directory", "%n directories", dirs );
+    QString lFileText = i18n( "%n file", "%n files", files );
+
+    QString lStatusText;
+
+    if ( dirs == 0 )
+        lStatusText = lFileText;
+    else if ( files == 0 )
+        lStatusText = lDirText;
+    else {
+        lStatusText = i18n( "%1 and %2" ).arg( lDirText ).arg( lFileText );
+    }
+
 }

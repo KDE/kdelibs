@@ -51,6 +51,13 @@ QString i18n(const char *text);
 QString i18n(const char *index, const char *text);
 
 /**
+ *  If you want to handle plural forms, use this form of i18n.
+ *  The plural has to contain a %n where n fits into.
+ *  @see translate
+ **/
+QString i18n(const char *singular, const char *plural, unsigned long n);
+
+/**
   *
   * KLocale provides support for country specific stuff like
   * the national language.
@@ -125,6 +132,9 @@ public:
      * @return translation
      */
     QString translate( const char *index, const char *fallback) const;
+
+    QString translate( const char *singular, const char *plural,
+                       unsigned long n) const;
 
     /**
      * Allows programs such as kcmlocale to choose which translation to use.
