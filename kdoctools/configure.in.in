@@ -74,9 +74,11 @@ fi
 
 if test -n "$HELP_SUBDIR"; then  
   MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
+  MEINPROC_DEP='$(top_builddir)/kdoctools/meinproc'
   KDE_XSL_STYLESHEET='$(top_srcdir)/kdoctools/customization/kde-chunk.xsl'
 else
   MEINPROC=""
+  MEINPROC_DEP=""
   KDE_XSL_STYLESHEET=""
   DO_NOT_COMPILE="$DO_NOT_COMPILE kdoctools"
 fi
