@@ -219,6 +219,7 @@ bool ResourceFile::save( Ticket * )
   (void) KSaveFile::backupFile( mFileName, QString::null /*directory*/,
                                 extension );
 
+  mDirWatch.stopScan();
   KSaveFile saveFile( mFileName );
   bool ok = false;
   if ( saveFile.status() == 0 && saveFile.file() )
@@ -229,6 +230,7 @@ bool ResourceFile::save( Ticket * )
 
   if ( !ok )
     addressBook()->error( i18n( "Unable to save file '%1'." ).arg( mFileName ) );
+  mDirWatch.startScan();
 
   return ok;
 }
@@ -242,6 +244,7 @@ bool ResourceFile::asyncSave( Ticket * )
     return false;
   }
 
+  mDirWatch.stopScan();
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
@@ -335,6 +338,7 @@ void ResourceFile::uploadFinished( KIO::Job *job )
     emit savingError( this, job->errorString() );
   else
     emit savingFinished( this );
+  mDirWatch.startScan();
 }
 
 #include "resourcefile.moc"
