@@ -83,8 +83,11 @@ public:
 
 
 	/*
-	 * with this we add types
-	 * all basic types ("html", "config", etc) are added by kdelibs.
+	 * with this we add suffixes for types. You may add as many as
+	 * you need, but it is advised that there is exactly one to make
+	 * writing definite.
+	 * all basic types (@see kde_default) are added by addKDEDefaults,
+	 * but for those you can add more relative paths as well.
 	 *
 	 * @param type specifies a short descriptive string to access
 	 * files of this type.
@@ -96,9 +99,11 @@ public:
 
 
 	/**
-	 * Adds hard path to the front of the search path for
+	 * Adds absolute path at the end of the search path for
 	 * particular types for example in case of icons where
-	 * the user specifies extra paths.
+	 * the user specifies extra paths. You shouldn't need this
+	 * function in 99% of all cases besides adding user given
+	 * paths.
 	 * 
 	 * @param type specifies a short descriptive string to access files 
 	 * of this type.
@@ -113,8 +118,8 @@ public:
 
 	/**
 	 * Tries to find resource in the following order:
-	 * @li all hard paths (most recent first)
 	 * @li all PREFIX/<relativename> paths (most recent first)
+	 * @li all hard paths (most recent first)
 	 *
 	 * @return a full path to the filename specified in the second
 	 *         argument.
