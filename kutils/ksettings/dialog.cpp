@@ -587,7 +587,7 @@ void Dialog::createDialogFromServices()
 	//d->dlg->showButton( KDialogBase::User1, true );
 
 	if( ! d->staticlistview )
-		d->dlg->addButtonBelowList( i18n( "Configure..." ), this,
+		d->dlg->addButtonBelowList( i18n( "Select Components..." ), this,
 			SLOT( configureTree() ) );
 
 	connect( d->dlg, SIGNAL( okClicked() ), Dispatcher::self(),
