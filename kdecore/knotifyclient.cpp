@@ -225,9 +225,12 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 bool KNotifyClient::startDaemon()
 {
   static bool firstTry = true;
-  if (firstTry && !kapp->dcopClient()->isApplicationRegistered(daemonName)) {
-    firstTry = false;
-    return KApplication::startServiceByDesktopName(daemonName) == 0;
+  if (!kapp->dcopClient()->isApplicationRegistered(daemonName)) {
+    if( firstTry ) {
+      firstTry = false;
+      return KApplication::startServiceByDesktopName(daemonName) == 0;
+    }
+    return false;
   }
   return true;
 }
