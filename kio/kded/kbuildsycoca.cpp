@@ -102,9 +102,7 @@ void KBuildSycoca::recreate()
     exit(-1);
   }
 
-  QFile qFile;
-  qFile.open(IO_WriteOnly, database.fstream());
-  m_str = new QDataStream(&qFile);
+  m_str = database.dataStream();
 
   kdebug(KDEBUG_INFO, 7020, "Recreating ksycoca file");
      
@@ -117,7 +115,6 @@ void KBuildSycoca::recreate()
   save(); // Save database
   clear(); // save memory usage
 
-  delete m_str;
   m_str = 0L;
   if (!database.close())
   {
