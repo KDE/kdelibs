@@ -32,6 +32,7 @@
 #ifndef NO_KDE2
 #include <kconfig.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <ktoolbar.h>
 #include <kpopupmenu.h>
 #include <kwin.h>
@@ -2478,13 +2479,13 @@ void KDockManager::slotMenuPopup()
     ++it;
     if ( obj->mayBeHide() )
     {
-      menu->insertItem( obj->icon() ? *(obj->icon()) : QPixmap(), QString("Hide ") + obj->caption(), numerator++ );
+      menu->insertItem( obj->icon() ? *(obj->icon()) : QPixmap(), i18n("Hide %1").arg(obj->caption()), numerator++ );
       menuData->append( new MenuDockData( obj, true ) );
     }
 
     if ( obj->mayBeShow() )
     {
-      menu->insertItem( obj->icon() ? *(obj->icon()) : QPixmap(), QString("Show ") + obj->caption(), numerator++ );
+      menu->insertItem( obj->icon() ? *(obj->icon()) : QPixmap(), i18n("Show %1").arg(obj->caption()), numerator++ );
       menuData->append( new MenuDockData( obj, false ) );
     }
   }
