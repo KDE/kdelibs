@@ -48,6 +48,9 @@ public slots:
   void b6Pressed();
   void b7Pressed();
 
+protected slots:
+  void enableRenameButton(const QString &);
+
 signals:
   void result( QWidget* _widget, int _button, const char *_src, const char *_data );
 };

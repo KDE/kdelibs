@@ -29,6 +29,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
   
   b1 = new QPushButton( i18n( "Rename" ), this );
+  b1->setEnabled(false);
   connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
   
   if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) )
@@ -83,6 +84,8 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   m_pLineEdit = new QLineEdit( this );
   m_pLayout->addWidget( m_pLineEdit );
   m_pLineEdit->setText( dest );
+  connect(m_pLineEdit, SIGNAL(textChanged(const QString &)),
+	  SLOT(enableRenameButton(const QString &)));
 
   m_pLayout->addSpacing( 10 );
     
@@ -114,6 +117,14 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
 
 KIORenameDlg::~KIORenameDlg()
 {
+}
+
+void KIORenameDlg::enableRenameButton(const QString &newDest)
+{
+  if (newDest != dest)
+    b1->setEnabled(true);
+  else
+    b1->setEnabled(false);
 }
 
 void KIORenameDlg::b0Pressed()
