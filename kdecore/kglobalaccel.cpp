@@ -511,9 +511,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     }
 
     if ( !QWidget::keyboardGrabber() ) {
-	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
-	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
-	XSync(qt_xdisplay(), false);
+	XUngrabKeyboard(qt_xdisplay(), event_->xkey.time );
 	if ( !entry.receiver || !entry.bEnabled ) {
 		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed (" << KAccel::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
 		return false;
