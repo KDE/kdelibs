@@ -20,6 +20,11 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.68  1999/08/15 13:14:36  kulow
+   get rid of ICON and Icon. These macros names are very misleading as it doesn't
+   load anything than toolbar pictures. I added the function BarIcon as replacement
+   for these macros which doesn't require klobal.h to be included
+
    Revision 1.67  1999/08/10 16:50:12  kulow
    what would you do with absolute paths in "getIconPath"? Returning them
    seems to be the only good thing - instead of this warning
@@ -306,7 +311,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 	if (result.isNull() && !canReturnNull) {
 	    warning("%s : ERROR: couldn't find icon: %s",
 		    appname.ascii(), name.ascii() );
-	    result = loadInternal("unknown.xpm", w, h);
+	    result = loadInternal("unknown.png", w, h);
 	}
 
 	return result;
@@ -360,7 +365,7 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
       full_path = locate(iconType, path);
   }
   if (full_path.isNull() && always_valid)
-    full_path = locate(iconType, "unknown.xpm");
+    full_path = locate(iconType, "unknown.png");
     
   return full_path;
 }
