@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 193
-#define KDE_VERSION_STRING "1.91 Beta >= 20000629"
+#define KDE_VERSION_STRING "1.91 Beta >= 20000713"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 3
@@ -750,6 +750,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.173  2000/07/02 11:45:51  jansen
+// Adding KApplication::libmapnotify()
+//
 // Revision 1.172  2000/06/29 07:51:07  coolo
 // the after wednesday version
 //
