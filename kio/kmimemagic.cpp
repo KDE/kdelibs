@@ -432,6 +432,12 @@ public:
                     tmpDirs += cfg.readListEntry( "atimeDirs" );
                 }
             }
+            for ( QStringList::Iterator it = tmpDirs.begin() ; it != tmpDirs.end() ; ++it )
+            {
+                QString dir = *it;
+                if ( !dir.isEmpty() && dir[ dir.length()-1 ] != '/' )
+                    (*it) += '/';
+            }
         }
 #if 0
         // debug code
