@@ -669,9 +669,6 @@ KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
   index=3*row+col+1;
   text=KGlobal::locale()->calendar()->monthName(index, 
     KGlobal::locale()->calendar()->year(mDate), false);
-
-  kdDebug() << "Year: " << KGlobal::locale()->calendar()->year(mDate) << endl; 
-
   painter->drawText(0, 0, cellWidth(), cellHeight(), AlignCenter, text);
   if ( activeCol == col && activeRow == row )
       painter->drawRect( 0, 0, cellWidth(), cellHeight() );
