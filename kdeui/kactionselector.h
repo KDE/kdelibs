@@ -33,6 +33,7 @@ class KActionSelectorPrivate;
 
 /**
     @short A widget for selecting and arranging actions/objects
+
     This widget allows the user to select from a set of objects and arrange
     the order of the selected ones using two list boxes labeled "Available"
     and "Used" with horizontal arrows in between to move selected objects between

@@ -28,6 +28,8 @@ class QMouseEvent;
 
 class KAnimWidgetPrivate;
 /**
+ * @short Standard "About KDE" dialog box
+ *
  * This is a widget used to display animation using multiple
  * individual pixmaps.  This widget allows you to deal with variable
  * size icons (e.g., ones that will change based on a global setting)
@@ -48,7 +50,6 @@ class KAnimWidgetPrivate;
  * "three.png" in the share/icons/small/ directories as well as the
  * app's pics directory.
  *
- * @short Widget animated using individual icons
  * @author Kurt Granroth <granroth@kde.org>
  */
 class KDEUI_EXPORT KAnimWidget : public QFrame
@@ -57,7 +58,7 @@ class KDEUI_EXPORT KAnimWidget : public QFrame
   Q_PROPERTY( int size READ size WRITE setSize )
   Q_PROPERTY( QString icons READ icons WRITE setIcons )
 
-public:	
+public:
   /**
    * This is the most common constructor.  Pass along the name of the
    * animated icons to use (e.g., "kde") for the animation and an
@@ -98,7 +99,7 @@ public:
   * since 3.4
   */
   QString icons() const;
-  
+
   /**
    * Sets the name of the animated icons to load.  This will use the
    * KIconLoader::loadAnimated method for the actual loading.
