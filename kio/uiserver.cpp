@@ -667,7 +667,7 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
             QString p = dlg.password();
             kdDebug(7024) << "Caching Authorization for " << key.utf8() << endl;
             kdDebug(7024) << "Username: " << u.utf8() << endl;
-            kdDebug(7024) << "Password: " << p.utf8() << endl;   		
+            //kdDebug(7024) << "Password: " << p.utf8() << endl;   		
             client.setVar( (key + "-user").utf8() , u.utf8() );
             client.setVar( (key + "-pass").utf8() , p.utf8() );
             stream << Q_UINT8(1) << u << p;

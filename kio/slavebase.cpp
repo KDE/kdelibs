@@ -404,7 +404,7 @@ bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass, 
     } else {
         QDataStream stream( data, IO_ReadOnly );
         stream >> user >> pass;
-        kdDebug(7007) << "got " << cmd << " " << user << " " << pass << endl;
+        kdDebug(7007) << "got " << cmd << " " << user << "  [password hidden]" << endl;
         return true;
     }
 }
@@ -553,7 +553,7 @@ bool SlaveBase::checkCachedAuthentication(QString& user, QString& passwd, int& a
     QCString auth = client.getVar( (realm + "-auth").utf8() );
     auth_type = auth.isNull() ? 0 : auth.toInt();
 
-    kdDebug(7007) << "Got cached info: key=" << realm << ", user=" << user << ", password=" << passwd << ", path=" << valid_path << endl;			
+    kdDebug(7007) << "Got cached info: key=" << realm << ", user=" << user << ", password=[hidden], path=" << valid_path << endl;
 
     return true;
 }
@@ -576,7 +576,7 @@ void SlaveBase::cacheAuthentication(const KURL& url, const QString& user, const 
     else
       path = url.directory();
 
-    kdDebug(7007) << "Caching: key=" << key << ", user=" << user << ", password=" << password << ", path=" << path << endl;			
+    kdDebug(7007) << "Caching: key=" << key << ", user=" << user << ", password=[hidden], path=" << path << endl;			
     QCString auth;
     auth.setNum(auth_type);
     client.setVar( (key + "-user").utf8(), user.utf8() );
