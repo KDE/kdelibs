@@ -1186,12 +1186,10 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
 
     // When the first data arrives, the metadata has just been made available
-
-    //kdDebug( 6050 ) << "First data is arriving. Reading SSL metadata." << endl;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
-    //kdDebug(6050) << "SSL in use ? " << d->m_ssl_in_use << endl;
+    kdDebug(6050) << "SSL in use ? " << d->m_ssl_in_use << endl;
     d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
-    //kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
+    kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
 
@@ -1235,14 +1233,29 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
       }
       else
       {
+        int end_pos = qData.length();
         delay = qData.left(pos).stripWhiteSpace().toInt();
         while ( qData[++pos] == ' ' );
         if ( qData.find( "url", pos, false ) == pos )
         {
           pos += 3;
-          while (qData[pos] == ' ' || qData[pos] == '=') pos++;
+          while (qData[pos] == ' ' || qData[pos] == '=' )
+              pos++;
+          if ( qData[pos] == '"' )
+          {
+              pos++;
+              int index = end_pos-1;
+              while( index > pos )
+              {
+                if ( qData[index] == '"' )
+                    break;
+                index--;
+              }
+              if ( index > pos )
+                end_pos = index;
+          }
         }
-        qData = KURL( d->m_baseURL, qData.mid(pos) ).url();
+        qData = KURL( d->m_baseURL, qData.mid(pos, end_pos) ).url();
         scheduleRedirection( delay, qData );
       }
       d->m_bHTTPRefresh = true;
