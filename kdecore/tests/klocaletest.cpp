@@ -126,6 +126,17 @@ int main( int argc, char ** argv )
   date = QDate::currentDate();
   checkDate("readDate( QDate::currentDate() )",date,KGlobal::locale()->readDate( KGlobal::locale()->formatDate( date ) ) );
 
+  QTime time;
+  time = KGlobal::locale()->readTime( "11:22:33", &ok );
+  check("readTime(\"11:22:33\")", (ok && time == QTime(11, 22, 33)) ?
+        "yes" : "no", "yes");
+  time = KGlobal::locale()->readTime( "11:22", &ok );
+  check("readTime(\"11:22\")", (ok && time == QTime(11, 22, 0)) ?
+        "yes" : "no", "yes");
+  time = KGlobal::locale()->readTime( "foo", &ok );
+  check("readTime(\"foo\")", (!ok && !time.isValid()) ?
+        "invalid" : "valid", "invalid");
+
   kdDebug() << "setLanguage C\n";
   KGlobal::locale()->setLanguage(QString::fromLatin1("C"));
   kdDebug() << "C: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
