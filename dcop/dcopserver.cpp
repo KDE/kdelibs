@@ -22,20 +22,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <config.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/types.h>
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#ifdef __NetBSD__
-/* NetBSD doesn't define symbol unix and gives a warning if it's used */
-#undef unix
-#define unix
 #endif
-#if (defined(__unix__) || defined(unix)) && !defined(USG)
-#if defined(__FreeBSD__) || defined(__NetBSD__)
-#define HAS_MKSTEMP
-#endif
+#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
 
@@ -181,13 +176,13 @@ write_iceauth (FILE *addfp, FILE *removefp, IceAuthDataEntry *entry)
 	   entry->auth_name);
 }
 
-#ifndef HAS_MKSTEMP
+#ifndef HAVE_MKSTEMP
 static char *unique_filename (const char *path, const char *prefix)
 #else
 static char *unique_filename (const char *path, const char *prefix, int *pFd)
 #endif
 {
-#ifndef HAS_MKSTEMP
+#ifndef HAVE_MKSTEMP
 #ifndef X_NOT_POSIX
   return ((char *) tempnam (path, prefix));
 #else
@@ -232,7 +227,7 @@ SetAuthentication (int count, IceListenObj *listenObjs,
   int         original_umask;
   char        command[256];
   int         i;
-#ifdef HAS_MKSTEMP
+#ifdef HAVE_MKSTEMP
   int         fd;
 #endif
 
@@ -241,7 +236,7 @@ SetAuthentication (int count, IceListenObj *listenObjs,
   path = getenv ("DCOP_SAVE_DIR");
   if (!path)
     path = "/tmp";
-#ifndef HAS_MKSTEMP
+#ifndef HAVE_MKSTEMP
   if ((addAuthFile = unique_filename (path, "dcop")) == NULL)
     goto bad;
 
