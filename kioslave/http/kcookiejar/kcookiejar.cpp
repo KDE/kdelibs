@@ -522,7 +522,7 @@ bool KCookieJar::parseURL(const QString &_url,
                           QString &_path)
 {
     KURL kurl(_url);
-    if (kurl.isMalformed())
+    if (!kurl.isValid())
        return false;
 
     _fqdn = kurl.host().lower();

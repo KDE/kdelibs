@@ -3333,7 +3333,7 @@ bool HTTPProtocol::readHeader()
   if (!locationStr.isEmpty())
   {
     KURL u(m_request.url, locationStr);
-    if(u.isMalformed())
+    if(!u.isValid())
     {
       error(ERR_MALFORMED_URL, u.url());
       return false;
@@ -5270,13 +5270,13 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
         if ( pos != -1 )
         {
           KURL u (m_request.url, uri.mid(idx, pos-idx));
-          if (!u.isMalformed ())
+          if (u.isValid ())
             info.digestURI.append( u.url().latin1() );
         }
         else
         {
           KURL u (m_request.url, uri.mid(idx, uri.length()-idx));
-          if (!u.isMalformed ())
+          if (u.isValid ())
             info.digestURI.append( u.url().latin1() );
         }
         idx = pos+1;
