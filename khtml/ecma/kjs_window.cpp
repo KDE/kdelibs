@@ -73,7 +73,8 @@ void Window::tryPut(const UString &p, const KJSO &v)
   } else if (p == "onload") {
     if (v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
-      widget->part()->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
+      // doesn't work yet
+      //      widget->part()->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
     }
   } else
     Imp::put(p, v);
