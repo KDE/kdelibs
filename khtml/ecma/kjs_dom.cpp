@@ -647,7 +647,7 @@ const TypeInfo DOMElement::info = { "Element", HostType,
 KJSO DOMElement::tryGet(const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMElement::tryGet " << p.qstring().latin1() << endl;
+  kdDebug(6070) << "DOMElement::tryGet " << p.qstring() << endl;
 #endif
   DOM::Element element = static_cast<DOM::Element>(node);
 

@@ -1264,8 +1264,6 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "disabled")        { option.setDisabled(v.toBoolean().value()); return; }
       else if (p == "label")           { option.setLabel(str); return; }
       else if (p == "selected")        { option.setSelected(v.toBoolean().value()); return; }
-      // despide its name, it doesn't seem to modify the value, but the text!
-      // (DF: ??? testcases shows that this indeed modifies the value! - code looks fine)
       else if (p == "value")           { option.setValue(str); return; }
     }
     break;
