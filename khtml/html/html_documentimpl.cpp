@@ -45,6 +45,7 @@
 #include "css/css_stylesheetimpl.h"
 #include "rendering/render_style.h"
 #include "rendering/render_root.h"
+#include <stdlib.h>
 
 #include <qstack.h>
 
