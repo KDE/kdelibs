@@ -2313,6 +2313,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
       connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
                d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
+      connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs &, const KParts::WindowArgs &, KParts::ReadOnlyPart *& ) ),
+               d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & , const KParts::WindowArgs &, KParts::ReadOnlyPart *&) ) );
 
       connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
                d->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
