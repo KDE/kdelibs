@@ -114,12 +114,12 @@ KMdi::FrameDecor KMdiMainFrm::m_frameDecoration = KMdi::KDELook;
 
 class KMdiMainFrmPrivate {
 public:
-	KMdiMainFrmPrivate(): focusList(0) {
-		for (int i=0;i<4;i++) activeDockPriority[i]=0;
-	}
-	~KMdiMainFrmPrivate(){}
-	KMdiDockContainer* activeDockPriority[4];
-	KMdiFocusList *focusList;
+    KMdiMainFrmPrivate(): focusList(0) {
+        for (int i=0;i<4;i++) activeDockPriority[i]=0;
+    }
+    ~KMdiMainFrmPrivate(){}
+    KMdiDockContainer* activeDockPriority[4];
+    KMdiFocusList *focusList;
     int m_styleIDEAlMode;
 };
 
@@ -212,22 +212,22 @@ public:
    setMenuForSDIModeSysButtons(menuBar());
 
    switch (mdiMode) {
-	case KMdi::IDEAlMode:
-			kdDebug(760)<<"switch(mdiMode): IDEAlMode"<<endl;	
-			switchToIDEAlMode();
-		break;
-	case KMdi::TabPageMode:
-			kdDebug(760)<<"switch(mdiMode): TabPageMode"<<endl;	
-			switchToTabPageMode();
-		break;
-	case KMdi::ToplevelMode:
-			kdDebug(760)<<"switch(mdiMode): TopLevelMode"<<endl;	
-			switchToToplevelMode();
-		break;
-	default:
-		m_mdiMode=KMdi::ChildframeMode;
-		kdDebug(760)<<"switch(mdiMode): default"<<endl;
-		break;
+    case KMdi::IDEAlMode:
+            kdDebug(760)<<"switch(mdiMode): IDEAlMode"<<endl;    
+            switchToIDEAlMode();
+        break;
+    case KMdi::TabPageMode:
+            kdDebug(760)<<"switch(mdiMode): TabPageMode"<<endl;    
+            switchToTabPageMode();
+        break;
+    case KMdi::ToplevelMode:
+            kdDebug(760)<<"switch(mdiMode): TopLevelMode"<<endl;    
+            switchToToplevelMode();
+        break;
+    default:
+        m_mdiMode=KMdi::ChildframeMode;
+        kdDebug(760)<<"switch(mdiMode): default"<<endl;
+        break;
    }   
 
    // drag end timer
@@ -243,14 +243,14 @@ void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
   connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
 
   if (m_mdiMode==KMdi::IDEAlMode) {
-	if (m_topContainer) 
-		connect(this,SIGNAL(toggleTop()),m_topContainer->getWidget(),SLOT(toggle()));
-	if (m_leftContainer) 
-		connect(this,SIGNAL(toggleLeft()),m_leftContainer->getWidget(),SLOT(toggle()));
-	if (m_rightContainer) 
-		connect(this,SIGNAL(toggleRight()),m_rightContainer->getWidget(),SLOT(toggle()));
-	if (m_bottomContainer) 
-		connect(this,SIGNAL(toggleBottom()),m_bottomContainer->getWidget(),SLOT(toggle()));
+    if (m_topContainer) 
+        connect(this,SIGNAL(toggleTop()),m_topContainer->getWidget(),SLOT(toggle()));
+    if (m_leftContainer) 
+        connect(this,SIGNAL(toggleLeft()),m_leftContainer->getWidget(),SLOT(toggle()));
+    if (m_rightContainer) 
+        connect(this,SIGNAL(toggleRight()),m_rightContainer->getWidget(),SLOT(toggle()));
+    if (m_bottomContainer) 
+        connect(this,SIGNAL(toggleBottom()),m_bottomContainer->getWidget(),SLOT(toggle()));
   }
 
   mdiModeHasBeenChangedTo(m_mdiMode);
@@ -354,8 +354,8 @@ KMdiChildView* KMdiMainFrm::createWrapper(QWidget *view, const QString& name, co
   Q_ASSERT( view ); // if this assert fails, then some part didn't return a widget. Fix the part ;)
 
   KMdiChildView* pMDICover = new KMdiChildView(name, // caption
-					       0L, // parent
-					       name.latin1()); // object name, necessary later in the dockwidgets
+                           0L, // parent
+                           name.latin1()); // object name, necessary later in the dockwidgets
   QBoxLayout* pLayout = new QHBoxLayout( pMDICover, 0, -1, "layout");
   view->reparent(pMDICover, QPoint(0,0));
   pLayout->addWidget(view);
@@ -506,14 +506,14 @@ KMdiToolViewAccessor *KMdiMainFrm::createToolWindow()
 
 
 void KMdiMainFrm::deleteToolWindow( QWidget* pWnd) {
-	if (m_pToolViews->contains(pWnd)) {
-		deleteToolWindow((*m_pToolViews)[pWnd]);
-	}
+    if (m_pToolViews->contains(pWnd)) {
+        deleteToolWindow((*m_pToolViews)[pWnd]);
+    }
 }
 
 void KMdiMainFrm::deleteToolWindow( KMdiToolViewAccessor *accessor) {
-	if (!accessor) return;
-	delete accessor;
+    if (!accessor) return;
+    delete accessor;
 }
 
 //============ addWindow ============//
@@ -767,9 +767,9 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
    }
 
    if ((m_mdiMode == KMdi::TabPageMode) || (m_mdiMode==KMdi::IDEAlMode)) {
-	if (!m_documentTabWidget) return; //oops
-	if (m_pDocumentViews->count()==0) m_pClose->hide();
-	pWnd->reparent(0L, QPoint(0,0));
+    if (!m_documentTabWidget) return; //oops
+    if (m_pDocumentViews->count()==0) m_pClose->hide();
+    pWnd->reparent(0L, QPoint(0,0));
         if (m_pDocumentViews->count() == 1) {
            m_pDocumentViews->last()->activate(); // all other views are activated by tab switch
         }
@@ -896,7 +896,7 @@ QPopupMenu * KMdiMainFrm::taskBarPopup(KMdiChildView *pWnd,bool /*bIncludeWindow
 
 
 void KMdiMainFrm::slotDocCurrentChanged(QWidget* pWnd) {
-	activateView((KMdiChildView*) pWnd);
+    activateView((KMdiChildView*) pWnd);
 }
 void KMdiMainFrm::activateView(KMdiChildView* pWnd)
 {
@@ -1166,7 +1166,7 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
 void KMdiMainFrm::switchToToplevelMode()
 {
    if (m_mdiMode == KMdi::ToplevelMode) {
-	   mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
+       mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
            return;
    }
 
@@ -1464,7 +1464,7 @@ void KMdiMainFrm::finishTabPageMode()
          QSize sz = pView->size();
          QWidget* pParent = pView->parentWidget();
          QPoint p(pParent->mapToGlobal(pParent->pos())-pParent->pos()+m_undockPositioningOffset);
-	 m_documentTabWidget->removePage(pView);
+     m_documentTabWidget->removePage(pView);
          pView->reparent(0,0,p);
 //         pView->reparent(0,0,p);
          pView->resize(sz);
@@ -1567,7 +1567,7 @@ void KMdiMainFrm::switchToIDEAlMode()
    setupToolViewsForIDEALMode();
 
    if (pRemActiveWindow)
-	   pRemActiveWindow->setFocus();
+       pRemActiveWindow->setFocus();
 
    m_pTaskBar->switchOn(false);
 
@@ -2021,6 +2021,8 @@ void KMdiMainFrm::activateFirstWin()
    for (it->first(); !it->isDone(); it->next()) {
       m.insert(it->currentItem()->getTimeStamp(), it->currentItem());
    }
+   
+   if ( !activeWindow() ) return;
 
    QDateTime current = activeWindow()->getTimeStamp();
    QMap<QDateTime,KMdiChildView*>::iterator pos(m.find(current));
@@ -2048,6 +2050,8 @@ void KMdiMainFrm::activateLastWin()
       m.insert(it->currentItem()->getTimeStamp(), it->currentItem());
    }
 
+   if ( !activeWindow() ) return;
+   
    QDateTime current = activeWindow()->getTimeStamp();
    QMap<QDateTime,KMdiChildView*>::iterator pos(m.find(current));
    if (pos != m.begin()) {
@@ -2461,49 +2465,49 @@ void KMdiMainFrm::setManagedDockPositionModeEnabled(bool enabled)
 }
 
 void KMdiMainFrm::setActiveToolDock(KMdiDockContainer* td) {
-	if (td==d->activeDockPriority[0]) return;
-	if (d->activeDockPriority[0]==0) {
-		d->activeDockPriority[0]=td;
-		d->focusList=new KMdiFocusList(this);
-		if (m_pMdi)  d->focusList->addWidgetTree(m_pMdi);
-		if (m_documentTabWidget) d->focusList->addWidgetTree(m_documentTabWidget);
-		return;
-	}
-	int offset=0;
-	for (int dst=3,src=2;src>=0;dst--,src--) {
-		if (d->activeDockPriority[src]==td) src--;
-		if (src<0) break;
-		d->activeDockPriority[dst]=d->activeDockPriority[src];
-	}
-	d->activeDockPriority[0]=td;
+    if (td==d->activeDockPriority[0]) return;
+    if (d->activeDockPriority[0]==0) {
+        d->activeDockPriority[0]=td;
+        d->focusList=new KMdiFocusList(this);
+        if (m_pMdi)  d->focusList->addWidgetTree(m_pMdi);
+        if (m_documentTabWidget) d->focusList->addWidgetTree(m_documentTabWidget);
+        return;
+    }
+    int offset=0;
+    for (int dst=3,src=2;src>=0;dst--,src--) {
+        if (d->activeDockPriority[src]==td) src--;
+        if (src<0) break;
+        d->activeDockPriority[dst]=d->activeDockPriority[src];
+    }
+    d->activeDockPriority[0]=td;
 }
 
 void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
-	for (int i=0;i<4;i++) {
-		if (d->activeDockPriority[i]==td) {
-			for (int i2=i;i<3;i++)
-				d->activeDockPriority[i]=d->activeDockPriority[i+1];
-			d->activeDockPriority[3]=0;
-			break;
-		}
-	}
-	if (d->activeDockPriority[0]==0) {
-		if (d->focusList) d->focusList->restore();
-		delete d->focusList;
-		d->focusList=0;
-	}
+    for (int i=0;i<4;i++) {
+        if (d->activeDockPriority[i]==td) {
+            for (int i2=i;i<3;i++)
+                d->activeDockPriority[i]=d->activeDockPriority[i+1];
+            d->activeDockPriority[3]=0;
+            break;
+        }
+    }
+    if (d->activeDockPriority[0]==0) {
+        if (d->focusList) d->focusList->restore();
+        delete d->focusList;
+        d->focusList=0;
+    }
 }
 
 void KMdiMainFrm::prevToolViewInDock() {
-	KMdiDockContainer* td=d->activeDockPriority[0];
-	if (!td) return;
-	td->prevToolView();	
+    KMdiDockContainer* td=d->activeDockPriority[0];
+    if (!td) return;
+    td->prevToolView();    
 }
 
 void KMdiMainFrm::nextToolViewInDock() {
-	KMdiDockContainer* td=d->activeDockPriority[0];
-	if (!td) return;
-	td->nextToolView();
+    KMdiDockContainer* td=d->activeDockPriority[0];
+    if (!td) return;
+    td->nextToolView();
 }
 
 #include "kmdimainfrm.moc"
