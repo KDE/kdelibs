@@ -453,6 +453,9 @@
 # KDOM OASIS XML Catalogs
 26600  KDOM Catalog
 
+# KDOM kxmllint, the parser utility
+26650  KDOM kxmllint
+
 # libkscan / kooka
 28000   Kooka
 29000   libkscan
