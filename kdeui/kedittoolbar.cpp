@@ -216,12 +216,6 @@ KEditToolbar::KEditToolbar(QActionCollection *collection,
     enableButtonOK(false);
 }
 
-
-QDomDocument KEditToolbar::localDocument() const
-{
-  return m_widget->localDocument();
-}
-
 void KEditToolbar::slotOk()
 {
   // just the fact that we got here means that we've been modified.
@@ -360,11 +354,6 @@ bool KEditToolbarWidget::save(QDomDocument& doc, const QString& xmlfile)
   rc_file.close();
 
   return true;
-}
-
-QDomDocument KEditToolbarWidget::localDocument() const
-{
-  return d->m_localDoc;
 }
 
 void KEditToolbarWidget::setupLayout()

@@ -55,6 +55,24 @@ class KEditToolbarWidgetPrivate;
  * That code snippet also takes care of redrawing the menu and
  * toolbars if you have made any changes.
  *
+ * Note that the procedure is a bit different for KParts applications.
+ * In this case, you need to pass along an action collection with
+ * @bf all actions -- shell and part combined.  You also must pass
+ * along the name of your shell's xml file and your current part's xml
+ * file.  The dialog aims to be semi-intelligent about where it
+ * assigns any modifications.  In other words, it will not write out
+ * part specific changes to your shell's xml file.
+ *
+ * An example would be:
+ *
+ * <pre>
+ * QActionCollection collection;
+ * collection = *actionCollection() + *m_part->actionCollection();
+ * KEditToolbar dlg(&collection, xmlFile(), m_part->xmlFile());
+ * if (dlg.exec())
+ * ...
+ * </pre>
+ *
  * @short A dialog used to customize or configure toolbars
  * @author Kurt Granroth <granroth@kde.org>
  * @id $Id$
@@ -71,7 +89,7 @@ public:
    *
    * The second parameter, @ref #xmlfile, is the name (absolute or
    * relative) of your application's UI resource file.  If it is
-   * left blank, then the resource file: * share/apps/appname/appnameui.rc
+   * left blank, then the resource file: share/apps/appname/appnameui.rc
    * is used.  This is the same resource file that is used by the
    * default createGUI function in KTMainWindow so you're usually
    * pretty safe in leaving it blank.
@@ -82,7 +100,7 @@ public:
    * local one.  If it is false, then you may edit only your
    * application's entries.  The only time you should set this to
    * false is if your application does not use the global resource
-   * file at all (e.g., some components)
+   * file at all (very rare)
    *
    * @param collection The collection of actions to work on
    * @param xmlfile The application's local resource file
@@ -97,22 +115,16 @@ public:
    * the parameters.
    *
    * The first parameter, @ref #collection, is your collection of all
-   * of the actions that appear in your application.  This is usually
-   * just 'actionCollection()' in nearly all apps
+   * of the actions that appear in your application.  This is
+   * 'actionCollection() + m_part->actionCollection()' in many apps
    *
    * The second parameter, @ref #shellxml, is the name of your shell
    * (or MainWindow) XML resource file.  It may be relative or
-   * absolute.
+   * absolute.  Relative is best.
    *
    * The last parameter, @ref #partxml, is the name of your currently
    * active part's XML resource file.  It may be relative or absolute.
-   *
-   * A very typical example of this would be:
-   * <pre>
-   * KEditToolbar edit(actionCollection(), xmlFile(), * m_part->xmlFile());
-   * if (edit.exec())
-   * ...
-   * </pre>
+   * Relative is best.
    *
    * @param collection The collection of actions to work on
    * @param xmlfile The shell XML resource file
@@ -120,13 +132,6 @@ public:
    */
   KEditToolbar(QActionCollection *collection, const QString& shellxml,
                const QString& partxml);
-
-  /**
-   * This will return  final XML after any user changes have been made
-   *
-   * @return The finished XML
-   */
-  QDomDocument localDocument() const;
 
 protected slots:
   /**
@@ -171,7 +176,7 @@ public:
    *
    * The second parameter, @ref #xmlfile, is the name (absolute or
    * relative) of your application's UI resource file.  If it is
-   * left blank, then the resource file: * share/apps/appname/appnameui.rc
+   * left blank, then the resource file: share/apps/appname/appnameui.rc
    * is used.  This is the same resource file that is used by the
    * default createGUI function in KTMainWindow so you're usually
    * pretty safe in leaving it blank.
@@ -182,7 +187,7 @@ public:
    * local one.  If it is false, then you may edit only your
    * application's entries.  The only time you should set this to
    * false is if your application does not use the global resource
-   * file at all (e.g., some components)
+   * file at all (very rare)
    *
    * The last parameter, @ref #parent, is the standard parent stuff.
    *
@@ -199,21 +204,25 @@ public:
   /**
    * Constructor for KParts based apps.  You must pass along all of
    * the parameters.
-   *
+   * 
    * The first parameter, @ref #collection, is your collection of all
-   * of the actions that appear in your application.  This is usually
-   * just 'actionCollection()' in nearly all apps
+   * of the actions that appear in your application.  This is
+   * 'actionCollection() + m_part->actionCollection()' in many apps
    *
    * The second parameter, @ref #shellxml, is the name of your shell
    * (or MainWindow) XML resource file.  It may be relative or
-   * absolute.
+   * absolute.  Relative is best.
    *
-   * The last parameter, @ref #partxml, is the name of your currently
+   * The third parameter, @ref #partxml, is the name of your currently
    * active part's XML resource file.  It may be relative or absolute.
+   * Relative is best.
+   *
+   * The last parameter, @ref #parent, is the standard parent
    *
    * @param collection The collection of actions to work on
    * @param xmlfile The shell XML resource file
    * @param partxml The active part's XML resource file
+   * @param parent This widget's parent
    */
   KEditToolbarWidget(QActionCollection *collection, const QString& shellxml,
                      const QString& partxml, QWidget *parent = 0L);
@@ -244,13 +253,6 @@ public:
    * @return The status of whether or not the save succeeded.
    */
   bool save();
-
-  /**
-   * This will return  final XML after any user changes have been made
-   *
-   * @return The finished XML
-   */
-  QDomDocument localDocument() const;
 
 signals:
   /**
