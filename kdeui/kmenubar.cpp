@@ -249,26 +249,24 @@ void KMenuBar::leaveEvent (QEvent *e){
 		//debug ("KMenuBar: moving done");
     if (ev->type() == Event_Paint){
       }
-      QPainter *paint = new QPainter();
+      QPainter paint(handle); 
 
-      paint->begin( handle );
-      qDrawShadePanel( paint, 0, 0, 9, handle->height(),
+      qDrawShadePanel( &paint, 0, 0, 9, handle->height(),
                        g , FALSE, 1);
-      paint->setPen( g.light() );
+      paint.setPen( g.light() );
       stipple_height = 3;
       while ( stipple_height < handle->height()-3 ) {
-	paint->drawPoint( 1, stipple_height+1);
-	paint->drawPoint( 4, stipple_height);
+	paint.drawPoint( 1, stipple_height+1);
+	paint.drawPoint( 4, stipple_height);
 	stipple_height+=3;
           paint.drawLine(0, h-a+3, h, 0-a+3);
-      paint->setPen( g.dark() );
+      paint.setPen( g.dark() );
       stipple_height = 4;
       while ( stipple_height < handle->height()-3 ) {
-	paint->drawPoint( 2, stipple_height+1);
-	paint->drawPoint( 5, stipple_height);
+	paint.drawPoint( 2, stipple_height+1);
+	paint.drawPoint( 5, stipple_height);
 	stipple_height+=3;
       }
-      paint->end();
       return TRUE;
           a +=6;
         }
