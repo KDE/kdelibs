@@ -172,12 +172,11 @@ KGlobal::deleteStaticDeleters()
     if (!KGlobal::_staticDeleters)
         return;
 
-    for(KStaticDeleterBase *ptr = KGlobal::_staticDeleters->first();
-	ptr;
-	ptr = KGlobal::_staticDeleters->next())
+    for(;_staticDeleters->count();)
     {
-        ptr->destructObject();
+        _staticDeleters->take(0)->destructObject();
     }
+
     delete KGlobal::_staticDeleters;
     KGlobal::_staticDeleters = 0;
 }
