@@ -51,10 +51,7 @@ const int KPasswordEdit::PassLen = 100;
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     : QLineEdit(parent, name), m_EchoMode(OneStar)
 {
-    setAcceptDrops(false);
-    m_Password = new char[PassLen];
-    m_Password[0] = '\000';
-    m_Length = 0;
+    init();
 
     KConfig *cfg = KGlobal::config();
     KConfigGroupSaver saver(cfg, "Passwords");
@@ -71,6 +68,18 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name, int echoMode)
     : QLineEdit(parent, name), m_EchoMode(echoMode)
 {
+    init();
+}
+
+KPasswordEdit::KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name)
+    : QLineEdit(parent, name), m_EchoMode(echoMode)
+{
+    init();
+}
+
+void KPasswordEdit::init()
+{
+    setAcceptDrops(false);
     m_Password = new char[PassLen];
     m_Password[0] = '\000';
     m_Length = 0;
@@ -187,13 +196,27 @@ void KPasswordEdit::showPass()
  * Password dialog.
  */
 
-KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
-	int extraBttn)
-    : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
-	    Ok, true)
+KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
+                                 QWidget *parent=0, const char *name=0)
+    : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
+                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type)
 {
-    m_Keep = enableKeep ? 1 : 0;
-    m_Type = type;
+    init();
+}
+
+
+KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
+                                 int extraBttn)
+    : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
+                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type)
+{
+    init();
+    setPrompt(prompt);
+}
+
+
+void KPasswordDialog::init()
+{
     m_Row = 0;
 
     KConfig *cfg = KGlobal::config();
@@ -220,7 +243,6 @@ KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
     m_pHelpLbl = new QLabel(m_pMain);
     m_pHelpLbl->setAlignment(AlignLeft|AlignVCenter|WordBreak);
     m_pGrid->addWidget(m_pHelpLbl, 0, 2, AlignLeft);
-    setPrompt(prompt);
     m_pGrid->addRowSpacing(1, 10);
     m_pGrid->setRowStretch(1, 12);
 
@@ -290,6 +312,13 @@ void KPasswordDialog::setPrompt(QString prompt)
 {
     m_pHelpLbl->setText(prompt);
     m_pHelpLbl->setFixedSize(275, m_pHelpLbl->heightForWidth(275));
+}
+
+
+QString KPasswordDialog::prompt() const
+
+{
+    return m_pHelpLbl->text();
 }
 
 

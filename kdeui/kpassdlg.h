@@ -43,16 +43,24 @@ class KPasswordEdit
     Q_OBJECT
 
 public:
-    /**
-     * Create a widget using the user's global "echo mode" setting.
-     */
-    KPasswordEdit(QWidget *parent=0, const char *name=0);
+    enum EchoModes { OneStar, ThreeStars, NoEcho };
 
     /**
-     * Create a widget using echoMode as "echo mode".
+     * Constructs a password input widget using the user's global "echo mode" setting.
+     */
+    KPasswordEdit(QWidget *parent=0, const char *name=0);
+    /**
+     * Constructs a password input widget using echoMode as "echo mode".
+     */
+    KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name);
+    /**
+     * @deprecated
+     * Creates a password input widget using echoMode as "echo mode".
      */
     KPasswordEdit(QWidget *parent, const char *name, int echoMode);
-     
+    /**
+     * Destructs the widget.
+     */
     ~KPasswordEdit();
 
     /** 
@@ -61,11 +69,12 @@ public:
      */
     const char *password() const { return m_Password; }
 
-    /** Erase the current password. */
+    /**
+     * Erases the current password.
+     */
     void erase();
 
     static const int PassLen;
-    enum EchoModes { OneStar, ThreeStars, NoEcho };
 
 protected:
     virtual void keyPressEvent(QKeyEvent *);
@@ -73,6 +82,7 @@ protected:
     virtual bool event(QEvent *e);
 
 private:
+    void init();
     void showPass();
 
     char *m_Password;
@@ -120,17 +130,59 @@ class KPasswordDialog
 {
     Q_OBJECT
 
-public: 
+public:
+    /**
+     * This enum distinguishes the two operation modes of this dialog:
+     */
+    enum Types {
+        /**
+         * The user is asked to enter a password.
+         */
+        Password,
+        /**
+         * The user is asked to enter a password and to confirm it
+         * a second time. This is usually used when the user
+         * changes his password.
+         */
+        NewPassword
+    };
+
+    /**
+     * Constructs a password dialog.
+     *
+     * @param type: if NewPassword is given here, the dialog contains two
+     *        input fields, so that the user must confirm his password
+     *        and possible typos are detected immediately.
+     * @param enableKeep: if true, a check box is shown in the dialog
+     *        which allows the user to keep his password input for later.
+     * @param extraBttn: allows to show additional buttons, @ref KDialogBase.
+     */
+    KPasswordDialog(Types type, bool enableKeep, int extraBttn,
+                    QWidget *parent=0, const char *name=0);
+    /**
+     * @deprecated Variant of the previous constructor without the
+     * possibility to specify a parent. May be removed in KDE 4.0
+     */
     KPasswordDialog(int type, QString prompt, bool enableKeep=false, 
 	    int extraBttn=0);
+    /**
+     * Destructs the password dialog.
+     */
     virtual ~KPasswordDialog();
 
-    /** Set the password prompt. */
+    /**
+     * Sets the password prompt.
+     */
     void setPrompt(QString prompt);
+    /**
+     * Returns the password prompt.
+     */
+    QString prompt() const;
 
-    /** Add a line of information to the dialog. */
+    /**
+     * Adds a line of information to the dialog.
+     */
     void addLine(QString key, QString value);
-
     /** 
      * Returns the password entered. The memory is freed in the destructor,
      * so you should make a copy.
@@ -169,8 +221,6 @@ public:
     /** Static helper funtion that disables core dumps. */
     static void disableCoreDumps();
 
-    enum Types { Password, NewPassword };
-
 protected slots:
     void slotOk();
     void slotCancel();
@@ -184,6 +234,7 @@ protected:
     virtual bool checkPassword(const char *) { return true; }
 
 private:
+    void init();
     void erase();
 
     int m_Keep, m_Type, m_Row;
