@@ -122,6 +122,8 @@ const int XKeyRelease = KeyRelease;
 
 #include <kipc.h>
 
+bool kde_have_kipc = true; // magic hook to disable kipc in kdm
+
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
 
@@ -672,7 +674,7 @@ void KApplication::init(bool GUIenabled)
   bSessionManagement = true;
 
   // register a communication window for desktop changes (Matthias)
-  if (GUIenabled)
+  if (GUIenabled && kde_have_kipc )
   {
     Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", false);
     smw = new QWidget(0,0);
