@@ -21,6 +21,8 @@
 #include "kxmlgui.h"
 #include "kxmlguibuilder.h"
 
+#include <qdir.h>
+#include <qfile.h>
 #include <qdom.h>
 
 #include <kinstance.h>
@@ -146,11 +148,17 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
     file = locate( "data", QString(instance()->instanceName())+"/"+file );
     if ( file.isEmpty() )
     {
-      // this might or might not be an error.  for the time being,
-      // let's treat this as if it isn't a problem and the user just
-      // wants the global standards file
-      setXML( QString::null, true );
-      return;
+      // maybe the user hasn't installed the rc file or is just
+      // testing.  try searching in the current directory
+      file = QDir::currentDirPath() + "/" + _file;
+      if ( QFile::exists( file ) == false )
+      {
+        // this might or might not be an error.  for the time being,
+        // let's treat this as if it isn't a problem and the user just
+        // wants the global standards file
+        setXML( QString::null, true );
+        return;
+      }
     }
   }
 
