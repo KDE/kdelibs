@@ -1118,6 +1118,9 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->bEditHtml = false;
 
   disableResize();
+  KColor col;
+  col.setHsv( 0, 0, 255 );
+  _setColor( col );
 }
 
 KColorDialog::~KColorDialog()
