@@ -1280,7 +1280,7 @@ void CopyJob::startNextJob()
         // Finished - tell the world
         KDirNotify_stub allDirNotify("*", "KDirNotify*");
         KURL url( m_dest );
-        if ( m_asMethod )
+        if ( !m_asMethod )
           url.setPath( url.directory() );
         kdDebug(7007) << "KDirNotify'ing with m_dest=" << url.url() << endl;
         allDirNotify.FilesAdded( url );
