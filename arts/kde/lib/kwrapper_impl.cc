@@ -84,3 +84,5 @@ PlayObject KWrapperFactory_impl::createPlayObject(const string &url, const strin
 
     return PlayObject::null();
 }
+
+REGISTER_IMPLEMENTATION(KWrapperFactory_impl);
