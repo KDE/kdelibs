@@ -856,8 +856,16 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 		// SLIDER HANDLE
 		// -------------------------------------------------------------------
 		case KPE_SliderHandle:
-			Keramik::ScaledPainter( "slider" ).draw( p, r, cg.button(), disabled );
-			break;
+			{
+				const QSlider* slider = static_cast< const QSlider* >( widget );		
+				bool horizontal = slider->orientation() == Horizontal;
+
+				if (horizontal)
+					Keramik::ScaledPainter( "slider" ).draw( p, r, cg.button(), disabled );
+				else
+					Keramik::ScaledPainter( "vslider" ).draw( p, r, cg.button(), disabled );
+				break;
+			}
 
 		// TOOLBAR HANDLE
 		// -------------------------------------------------------------------
@@ -1035,6 +1043,7 @@ void KeramikStyle::drawControl( ControlElement element,
 				if ( index == 0 ) mode = Keramik::InactiveTabPainter::First;
 				else if ( index == tabBar->count() - 1 ) mode = Keramik::InactiveTabPainter::Last;
 				else mode = Keramik::InactiveTabPainter::Middle;
+				
 				if ( bottom )
 				{
 					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - 4, cg.button(), disabled );
