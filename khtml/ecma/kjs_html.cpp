@@ -1728,7 +1728,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FrameName:            return getString(frameElement.name());
     case FrameNoResize:        return Boolean(frameElement.noResize());
     case FrameScrolling:       return getString(frameElement.scrolling());
-    case FrameSrc:             return getString(frameElement.src());
+    case FrameSrc:
+    case FrameLocation:        return getString(frameElement.src());
     }
   }
   break;
@@ -1776,7 +1777,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     return getHTMLCollection(exec,element.children());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
-  kdWarning() << "HTMLElement::getValueProperty unhandled token " << token << endl;
+  kdError() << "HTMLElement::getValueProperty unhandled token " << token << endl;
   return Undefined();
 }
 
