@@ -507,8 +507,8 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
 static pid_t runCommandInternal( KProcess* proc, const KService* service, const QString& binName,
     const QString &execName, const QString & iconName )
 {
-  if (!service->desktopEntryPath().isEmpty() &&
-      service && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
+  if (service && !service->desktopEntryPath().isEmpty()
+      && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
   {
      kdWarning() << "No authorization to execute " << service->desktopEntryPath() << endl;
      KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
