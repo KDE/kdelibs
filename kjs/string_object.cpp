@@ -292,10 +292,8 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       } else {
 	// return array of matches
 	List list;
-	int lastIndex = 0;
 	while (pos >= 0) {
 	  list.append(String(mstr));
-	  lastIndex = pos;
 	  pos += mstr.isEmpty() ? 1 : mstr.size();
 	  delete [] *ovector;
 	  mstr = reg->match(s, pos, &pos, ovector);
