@@ -1466,15 +1466,20 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
         if (m_type == RADIO || m_type == CHECKBOX || m_type == SUBMIT || m_type == RESET || m_type == BUTTON ) {
 	    bool check = false;
-	    if (active() && evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
+	    if (active() && ( evt->id() == EventImpl::KHTML_KEYUP_EVENT ||
+	                      evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) ) {
 		TextEventImpl *te = static_cast<TextEventImpl *>(evt);
 		if (te->keyVal() == ' ')
 		    check = true;
 	    }
 	    if (check) {
-		if (m_type == RADIO || m_type == CHECKBOX)
-		    setChecked(m_type == RADIO ? true : !checked());
-		click();
+	        if (evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
+		    if (m_type == RADIO || m_type == CHECKBOX)
+		        setChecked(m_type == RADIO ? true : !checked());
+		    click();
+		}
+	        // Tell the parent that we handle this key (keyup and keydown), even though only keyup activates (#70748)
+	        evt->setDefaultHandled();
 	    }
         }
 
