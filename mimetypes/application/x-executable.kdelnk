@@ -19,4 +19,4 @@ Comment[sk]=Spustiteµný súbor
 Icon=exec.xpm
 Type=MimeType
 MimeType=application/x-executable
-Patterns=;
+Patterns=*.exe;
