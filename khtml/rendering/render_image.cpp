@@ -36,6 +36,7 @@
 
 #include "rendering/render_style.h"
 #include "misc/helper.h"
+#include "misc/htmlattrs.h"
 #include "html/html_elementimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
@@ -90,18 +91,38 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
         return;
     }
 
-    if(o->isErrorImage())
-    {
-        setIntrinsicWidth( QMAX(p.width()+8, intrinsicWidth()) );
-        setIntrinsicHeight( QMAX(p.height()+8, intrinsicHeight()) );
+    bool iwchanged = false;
+
+    if(o->isErrorImage()) {
+        int iw = p.width() + 8;
+        int ih = p.height() + 8;
+
+        // we have an alt and the user meant it (its not a text we invented)
+        if ( !alt.isEmpty() && !element->getAttribute( ATTR_ALT ).isNull()) {
+            QFontMetrics fm = fontMetrics( style()->font() );
+            QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
+            if ( br.width() > iw )
+                iw = br.width();
+            if ( br.height() > ih )
+                ih = br.height();
+        }
+
+        if ( iw != intrinsicWidth() ) {
+            setIntrinsicWidth( iw );
+            iwchanged = true;
+        }
+        if ( ih != intrinsicHeight() ) {
+            setIntrinsicHeight( ih );
+            iwchanged = true;
+        }
     }
     berrorPic = o->isErrorImage();
 
     bool needlayout = false;
 
     // Image dimensions have been changed, see what needs to be done
-    if(o->pixmap_size().width() != intrinsicWidth() ||
-       o->pixmap_size().height() != intrinsicHeight() )
+    if( o->pixmap_size().width() != intrinsicWidth() ||
+       o->pixmap_size().height() != intrinsicHeight() || iwchanged )
     {
 //          qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d",
 //                 intrinsicWidth(), intrinsicHeight(),
@@ -192,18 +213,15 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
                 r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
                 p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), pix, r );
             }
-            if(!alt.isEmpty())
-            {
+            if(!alt.isEmpty()) {
                 QString text = alt.string();
                 p->setFont(style()->font());
                 p->setPen( style()->color() );
-                int ax = _tx + leftBorder + QMAX(5, leftPad);
-                int ay = _ty + topBorder + QMAX(5, topPad);
-                int ah = cHeight - QMAX(10, leftPad + paddingRight());
-                int aw = cWidth - QMAX(10, topPad + paddingBottom());
+                int ax = _tx + leftBorder + leftPad + 2;
+                int ay = _ty + topBorder + topPad + 2;
                 QFontMetrics fm = fontMetrics(style()->font());
-                if (aw>15 && ah>fm.height())
-                    p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
+                if (cWidth>5 && cHeight>=fm.height())
+                    p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::DontClip, text );
             }
         }
     }
