@@ -187,9 +187,9 @@ public:
 
     /**
      * Returns if the user wants to use blend the icons with the background
-     *  using the alpha channel information.
+     *  using the alpha channel information for a given group.
      */
-    bool alphaBlending() const;
+    bool alphaBlending( int group ) const;
 
  private:
     /**

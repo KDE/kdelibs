@@ -128,6 +128,7 @@ struct KIconGroup
 {
     int size;
     bool dblPixels;
+    bool alphaBlending;
 };
 
 
@@ -143,7 +144,6 @@ struct KIconLoaderPrivate
     KIconEffect mpEffect;
     QDict<QImage> imgDict;
     QIntDict<QImage> imgCache;
-    bool alphaBlending;
 };
 
 /*** KIconLoader: the icon loader ***/
@@ -206,8 +206,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     // These have to match the order in kicontheme.h
     const char *groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
     KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs(config, "General");
-    d->alphaBlending=config->readBoolEntry( "alphaBlending", false);
+    KConfigGroupSaver cs(config, "dummy");
 
     // loading config and default sizes
     d->mpGroups = new KIconGroup[(int) KIcon::LastGroup];
@@ -218,6 +217,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 	config->setGroup(QString::fromLatin1(groups[i]) + "Icons");
 	d->mpGroups[i].size = config->readNumEntry("Size", 0);
 	d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
+	d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", false);
 	if (!d->mpGroups[i].size)
 	    d->mpGroups[i].size = d->mpThemeRoot->theme->defaultSize(i);
     }
@@ -581,7 +581,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 
     // We only insert the image in the cache if alphaBlending is
     // being used
-    if (d->alphaBlending)
+    if (d->mpGroups[group].alphaBlending)
 	d->imgCache.insert(pix.serialNumber(), img);
 
     QPixmapCache::insert(key, pix);
@@ -751,6 +751,18 @@ KIconEffect * KIconLoader::iconEffect()
     return &d->mpEffect;
 }
 
+bool KIconLoader::alphaBlending(int group) const
+{
+    if (!d->mpGroups) return -1;
+
+    if ((group < 0) || (group >= KIcon::LastGroup))
+    {
+	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	return -1;
+    }
+    return d->mpGroups[group].alphaBlending;
+}
+
 // Easy access functions
 
 QPixmap DesktopIcon(const QString& name, int force_size, int state,
@@ -916,9 +928,4 @@ QPixmap KIconLoader::unknown()
     }
 
     return pix;
-}
-
-bool KIconLoader::alphaBlending() const
-{
-    return d->alphaBlending;
 }
