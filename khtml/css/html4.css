@@ -201,6 +201,7 @@ TABLE {
 	display: table;
 	border-collapse: separate;
 	vertical-align: middle;
+	text-align: -konq-auto;
 	border-spacing: 2px;
 	padding: 1px;
         -konq-flow-mode: -konq-around-floats;

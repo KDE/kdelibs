@@ -2215,9 +2215,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         }
         if(!primitiveValue) return;
         if(primitiveValue->getIdent())
-        {
             style->setTextAlign( (ETextAlign) (primitiveValue->getIdent() - CSS_VAL__KONQ_AUTO) );
-        }
 	return;
     }
     
