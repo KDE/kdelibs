@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<kprintfilter name="psbook1" require="psbook" description="Pamphlet printing - even pages (step 1)">
+	<filtercommand data="psbook %filterinput | psnup -2 | psselect -e %filteroutput" />
+	<filterargs>
+	</filterargs>
+	<filterinput>
+		<filterarg name="file" format="%in" />
+		<filterarg name="pipe" format="" />
+	</filterinput>
+	<filteroutput>
+		<filterarg name="file" format="> %out" />
+		<filterarg name="pipe" format="" />
+	</filteroutput>
+</kprintfilter>

@@ -1,0 +1,5 @@
+[KDE Print Filter Entry]
+Name=psbook1
+Name[es]=Psnup
+Require=exec:/psbook,exec:/psnup,exec:/psselect
+Comment=Pamphlet printing - even pages (step 1)
