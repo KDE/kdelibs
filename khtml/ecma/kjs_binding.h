@@ -24,6 +24,7 @@
 #include <kjs/function.h>
 #include <dom/dom_node.h>
 #include <dom/dom_doc.h>
+#include <qguardedptr.h>
 
 namespace KJS {
 
