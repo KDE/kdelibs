@@ -965,7 +965,7 @@ StdFlowSystem::StdFlowSystem()
     g_thread_init(0);
     gsl_init(0);
     gsl_engine_init(false, 512, 44100);
-	op_debug_enable(OpDebugLevel(OP_DEBUG_JOBS | OP_DEBUG_SCHED));
+	gsl_engine_debug_enable(GslEngineDebugLevel(GSL_ENGINE_DEBUG_JOBS | GSL_ENGINE_DEBUG_SCHED));
 	//gsl_transact(gsl_job_process_check(gslCheck, 0, 0), 0);
 	gslMainLoop.initialize();
 	fprintf(stderr,"done...\n");
