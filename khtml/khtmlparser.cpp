@@ -198,7 +198,7 @@ const unsigned short tagPriority[] = {
  * 2. We are not allowed to add the element directly. It could be, that
  *    the person writing the document forgot some tag inbetween (or that the
  *    tag inbetween is optional...) This could be the case with the following
- *    tags: HTML HEAD BODY TBODY TR TD LI (did I forget any????)
+ *    tags: HTML HEAD BODY TBODY TR TD LI (did I forget any?)
  * 3. We wan't to add a block element inside to an inline element. Close all
  *    inline elements up to the next higher block element.
  * 4. If this doesn't help close elements, until we are allowed to add the
