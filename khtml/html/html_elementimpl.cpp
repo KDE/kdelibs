@@ -315,6 +315,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
                 ++i;
             }
         }
+	if (numOnly) suffix = "";
 
         QString ns = QString::number(v) + suffix;
         m_styleDecls->setLengthProperty( id, DOMString( ns ), false, true, multiLength );

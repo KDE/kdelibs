@@ -324,7 +324,7 @@ public:
 // Random visual rendering model attributes. Not inherited.
 
 enum EOverflow {
-    OVISIBLE, OHIDDEN, OSCROLL, OAUTO
+    OVISIBLE, OHIDDEN, OSCROLL, OAUTO, OMARQUEE
 };
 
 enum EVerticalAlign {
@@ -400,6 +400,53 @@ public:
     BorderValue outline;
 };
 
+//------------------------------------------------
+// CSS3 Marquee Properties
+
+enum EMarqueeBehavior { MNONE, MSCROLL, MSLIDE, MALTERNATE, MUNFURL };
+enum EMarqueeDirection { MAUTO = 0, MLEFT = 1, MRIGHT = -1, MUP = 2, MDOWN = -2, MFORWARD = 3, MBACKWARD = -3 };
+
+class StyleMarqueeData : public Shared<StyleMarqueeData>
+{
+public:
+    StyleMarqueeData();
+    StyleMarqueeData(const StyleMarqueeData& o);
+
+    bool operator==(const StyleMarqueeData& o) const;
+    bool operator!=(const StyleMarqueeData& o) const {
+        return !(*this == o);
+    }
+
+    Length increment;
+    int speed;
+
+    int loops; // -1 means infinite.
+
+    EMarqueeBehavior behavior : 3;
+    EMarqueeDirection direction : 3;
+};
+
+// This struct is for rarely used non-inherited CSS3 properties.  By grouping them together,
+// we save space, and only allocate this object when someone actually uses
+// a non-inherited CSS3 property.
+class StyleCSS3NonInheritedData : public Shared<StyleCSS3NonInheritedData>
+{
+public:
+    StyleCSS3NonInheritedData();
+    ~StyleCSS3NonInheritedData() {}
+    StyleCSS3NonInheritedData(const StyleCSS3NonInheritedData& o);
+
+    bool operator==(const StyleCSS3NonInheritedData& o) const;
+    bool operator!=(const StyleCSS3NonInheritedData &o) const {
+        return !(*this == o);
+    }
+
+#ifdef APPLE_CHANGES	// ### we don't have those (yet)
+    float opacity;         // Whether or not we're transparent.
+    DataRef<StyleFlexibleBoxData> flexibleBox; // Flexible box properties
+#endif
+    DataRef<StyleMarqueeData> marquee; // Marquee properties
+};
 
 //------------------------------------------------
 // Inherited attributes.
@@ -609,6 +656,7 @@ protected:
     DataRef<StyleVisualData> visual;
     DataRef<StyleBackgroundData> background;
     DataRef<StyleSurroundData> surround;
+    DataRef<StyleCSS3NonInheritedData> css3NonInheritedData;
 
 // inherited attributes
     DataRef<StyleInheritedData> inherited;
@@ -816,7 +864,15 @@ public:
 
     ECursor cursor() const { return inherited_flags.f._cursor_style; }
 
+    // CSS3 Getter Methods
     EUserInput userInput() const { return inherited_flags.f._user_input; }
+
+    Length marqueeIncrement() { return css3NonInheritedData->marquee->increment; }
+    int marqueeSpeed() { return css3NonInheritedData->marquee->speed; }
+    int marqueeLoopCount() { return css3NonInheritedData->marquee->loops; }
+    EMarqueeBehavior marqueeBehavior() { return css3NonInheritedData->marquee->behavior; }
+    EMarqueeDirection marqueeDirection() { return css3NonInheritedData->marquee->direction; }
+    // End CSS3 Getters
 
 // attribute setter methods
 
@@ -936,8 +992,6 @@ public:
 
     void setCursor( ECursor c ) { inherited_flags.f._cursor_style = c; }
 
-    void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
-
     bool htmlHacks() const { return inherited_flags.f._htmlHacks; }
     void setHtmlHacks(bool b=true) { inherited_flags.f._htmlHacks = b; }
 
@@ -948,6 +1002,16 @@ public:
     void setZIndex(int v) { SET_VAR(box,z_auto,false ); SET_VAR(box, z_index, v); }
     bool hasAutoZIndex() const { return box->z_auto; }
     void setHasAutoZIndex() { SET_VAR(box, z_auto, true ); }
+
+    // CSS3 Setters
+    void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
+
+    void setMarqueeIncrement(const Length& f) { SET_VAR(css3NonInheritedData.access()->marquee, increment, f); }
+    void setMarqueeSpeed(int f) { SET_VAR(css3NonInheritedData.access()->marquee, speed, f); }
+    void setMarqueeDirection(EMarqueeDirection d) { SET_VAR(css3NonInheritedData.access()->marquee, direction, d); }
+    void setMarqueeBehavior(EMarqueeBehavior b) { SET_VAR(css3NonInheritedData.access()->marquee, behavior, b); }
+    void setMarqueeLoopCount(int i) { SET_VAR(css3NonInheritedData.access()->marquee, loops, i); }
+    // End CSS3 Setters
 
     QPalette palette() const { return visual->palette; }
     void setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c);
@@ -1017,6 +1081,11 @@ public:
     static bool initialFlowAroundFloats() { return false; }
     static int initialOutlineOffset() { return 0; }
     static float initialOpacity() { return 1.0f; }
+    static int initialMarqueeLoopCount() { return -1; }
+    static int initialMarqueeSpeed() { return 85; }
+    static Length initialMarqueeIncrement() { return Length(6, Fixed); }
+    static EMarqueeBehavior initialMarqueeBehavior() { return MSCROLL; }
+    static EMarqueeDirection initialMarqueeDirection() { return MAUTO; }
 };
 
 

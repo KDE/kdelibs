@@ -297,6 +297,7 @@ level
 line-through
 loud
 lower
+marquee
 mix
 no-close-quote
 no-open-quote
@@ -317,10 +318,39 @@ underline
 # CSS_PROP__KONQ_FLOW_MODE
 -khtml-normal
 -khtml-around-floats
+
+# CSS3 Values
 # CSS_PROP__KONQ_USER_INPUT
 enabled
 disabled
 #none
+
+# CSS_PROP_MARQUEE_DIRECTION
+forwards
+backwards
+ahead
+reverse
+# left
+# right
+up
+down
+# auto
+
+# CSS_PROP_MARQUEE_SPEED
+slow
+# normal
+fast
+
+# CSS_PROP_MARQUEE_REPETITION
+infinite
+
+# CSS_PROP_MARQUEE_STYLE
+# none
+slide
+# scroll
+alternate
+unfurl
+
 #
 # Not supported CSS 2 Aural values
 #

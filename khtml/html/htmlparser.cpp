@@ -1070,7 +1070,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         return 0;
         break;
     case ID_MARQUEE:
-        n = new HTMLGenericElementImpl(document, t->tid);
+        n = new HTMLMarqueeElementImpl(document);
         break;
 // text
     case ID_TEXT:

@@ -229,6 +229,8 @@ public:
     virtual bool isFrameSet() const { return false; }
     virtual bool isApplet() const { return false; }
 
+    bool isHTMLMarquee() const;
+
     bool isAnonymous() const { return m_isAnonymous; }
     void setIsAnonymous(bool b) { m_isAnonymous = b; }
 
@@ -237,6 +239,7 @@ public:
     bool isRelPositioned() const { return m_relPositioned; }
     bool isText() const { return m_isText; }
     bool isInline() const { return m_inline; }
+    bool isCompact() const { return style()->display() == COMPACT; } // compact
     bool mouseInside() const;
     bool isReplaced() const { return m_replaced; }
     bool isReplacedBlock() const { return isInline() && isReplaced() && isRenderBlock(); }
@@ -363,6 +366,10 @@ public:
     virtual void close() { }
 
     virtual int availableHeight() const { return 0; }
+
+    // Whether or not the element shrinks to its max width (rather than filling the width
+    // of a containing block).  HTML4 buttons, legends, and floating/compact elements do this.
+    bool sizesToMaxWidth() const;
 
     // does a query on the rendertree and finds the innernode
     // and overURL for the given position
@@ -591,9 +598,9 @@ public:
     // returns the lowest position of the lowest object in that particular object.
     // This 'height' is relative to the topleft of the margin box of the object.
     // Implemented in RenderFlow.
-    virtual int lowestPosition() const {return 0;}
-
-    virtual short rightmostPosition() const {return 0;}
+    virtual int lowestPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
+    virtual int rightmostPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
+    virtual int leftmostPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
 
     // recursively invalidate current layout
     // unused: void invalidateLayout();

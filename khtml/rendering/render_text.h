@@ -228,8 +228,6 @@ public:
     virtual short marginLeft() const { return style()->marginLeft().minWidth(0); }
     virtual short marginRight() const { return style()->marginRight().minWidth(0); }
 
-    virtual short rightmostPosition() const;
-
     virtual void repaint(bool immediate=false);
 
     bool hasBreakableChar() const { return m_hasBreakableChar; }

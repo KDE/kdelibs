@@ -125,7 +125,51 @@ bool StyleBackgroundData::operator==(const StyleBackgroundData& o) const
 	outline == o.outline;
 }
 
+StyleMarqueeData::StyleMarqueeData()
+{
+    increment = RenderStyle::initialMarqueeIncrement();
+    speed = RenderStyle::initialMarqueeSpeed();
+    direction = RenderStyle::initialMarqueeDirection();
+    behavior = RenderStyle::initialMarqueeBehavior();
+    loops = RenderStyle::initialMarqueeLoopCount();
+}
 
+StyleMarqueeData::StyleMarqueeData(const StyleMarqueeData& o)
+:Shared<StyleMarqueeData>(), increment(o.increment), speed(o.speed), loops(o.loops),
+ behavior(o.behavior), direction(o.direction)
+{}
+
+bool StyleMarqueeData::operator==(const StyleMarqueeData& o) const
+{
+    return (increment == o.increment && speed == o.speed && direction == o.direction &&
+            behavior == o.behavior && loops == o.loops);
+}
+
+StyleCSS3NonInheritedData::StyleCSS3NonInheritedData()
+:Shared<StyleCSS3NonInheritedData>()
+#ifdef APPLE_CHANGES
+, opacity(RenderStyle::initialOpacity())
+#endif
+{
+}
+
+StyleCSS3NonInheritedData::StyleCSS3NonInheritedData(const StyleCSS3NonInheritedData& o)
+:Shared<StyleCSS3NonInheritedData>(),
+#ifdef APPLE_CHANGES
+ opacity(o.opacity), flexibleBox(o.flexibleBox),
+#endif
+ marquee(o.marquee)
+{
+}
+
+bool StyleCSS3NonInheritedData::operator==(const StyleCSS3NonInheritedData& o) const
+{
+    return
+#ifdef APPLE_CHANGES
+     opacity == o.opacity && flexibleBox == o.flexibleBox &&
+#endif
+     marquee == o.marquee;
+}
 
 StyleInheritedData::StyleInheritedData()
     : indent( RenderStyle::initialTextIndent() ), line_height( RenderStyle::initialLineHeight() ),
@@ -175,6 +219,10 @@ RenderStyle::RenderStyle()
     visual = _default->visual;
     background = _default->background;
     surround = _default->surround;
+    css3NonInheritedData = _default->css3NonInheritedData;
+#ifdef APPLE_CHANGES	// ### not merged (yet)
+    css3InheritedData = _default->css3InheritedData;
+#endif
 
     inherited = _default->inherited;
 
@@ -192,7 +240,14 @@ RenderStyle::RenderStyle(bool)
     visual.init();
     background.init();
     surround.init();
-
+    css3NonInheritedData.init();
+#ifdef APPLE_CHANGES	// ### yet to be merged
+    css3NonInheritedData.access()->flexibleBox.init();
+#endif
+    css3NonInheritedData.access()->marquee.init();
+#ifdef APPLE_CHANGES	// ### yet to be merged
+    css3InheritedData.init();
+#endif
     inherited.init();
 
     pseudoStyle = 0;

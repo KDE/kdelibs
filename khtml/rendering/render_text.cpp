@@ -821,15 +821,6 @@ bool RenderText::posOfChar(int chr, int &x, int &y)
     return false;
 }
 
-short RenderText::rightmostPosition() const
-{
-    if (style()->whiteSpace() != NORMAL)
-        return maxWidth();
-
-    return 0;
-}
-
-
 void RenderText::paint( PaintInfo& pI, int tx, int ty)
 {
     if (pI.phase == PaintActionSelection && selectionState() == SelectionNone)

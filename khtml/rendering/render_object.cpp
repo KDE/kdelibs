@@ -230,6 +230,10 @@ bool RenderObject::isRoot() const
         element()->getDocument()->documentElement() == element();
 }
 
+bool RenderObject::isHTMLMarquee() const
+{
+    return element() && element()->renderer() == this && element()->id() == ID_MARQUEE;
+}
 
 void RenderObject::addChild(RenderObject* , RenderObject *)
 {
@@ -541,6 +545,34 @@ int RenderObject::containingBlockHeight() const
 {
     // ###
     return containingBlock()->contentHeight();
+}
+
+bool RenderObject::sizesToMaxWidth() const
+{
+    // Marquees in WinIE are like a mixture of blocks and inline-blocks.  They size as though they're blocks,
+    // but they allow text to sit on the same line as the marquee.
+    if (isFloating() || isCompact() ||
+        (isInlineBlockOrInlineTable() && !isHTMLMarquee()) ||
+        (element() && (element()->id() == ID_BUTTON || element()->id() == ID_LEGEND)))
+        return true;
+
+    // Children of a horizontal marquee do not fill the container by default.
+    // FIXME: Need to deal with MAUTO value properly.  It could be vertical.
+    if (parent()->style()->overflow() == OMARQUEE) {
+        EMarqueeDirection dir = parent()->style()->marqueeDirection();
+        if (dir == MAUTO || dir == MFORWARD || dir == MBACKWARD || dir == MLEFT || dir == MRIGHT)
+            return true;
+    }
+
+#ifdef APPLE_CHANGES	// ### what the heck is a flexbox?
+    // Flexible horizontal boxes lay out children at their maxwidths.  Also vertical boxes
+    // that don't stretch their kids lay out their children at their maxwidths.
+    if (parent()->isFlexibleBox() &&
+        (parent()->style()->boxOrient() == HORIZONTAL || parent()->style()->boxAlign() != BSTRETCH))
+        return true;
+#endif
+
+    return false;
 }
 
 // from Mozilla's nsCSSColorUtils.cpp

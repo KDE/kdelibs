@@ -123,6 +123,7 @@ void RenderBox::setStyle(RenderStyle *_style)
             else
                 style()->setHasAutoZIndex();
         }
+        m_layer->styleChanged();
     }
     // ### outlineSize() and outlineOffset() not merged yet
     if (style()->outlineWidth() > 0 && style()->outlineWidth() > maximalOutlineSize(PaintActionOutline))
@@ -695,7 +696,7 @@ void RenderBox::calcWidth()
 
         if (cw && cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
         {
-            if (style()->direction()==LTR)
+            if (cb->style()->direction()==LTR)
                 m_marginRight = cw - m_width - m_marginLeft;
             else
                 m_marginLeft = cw - m_width - m_marginRight;
@@ -727,9 +728,7 @@ int RenderBox::calcWidthUsing(WidthType widthType, int cw, LengthType& lengthTyp
         if (cw) width = cw - marginLeft - marginRight;
 
         // size to max width?
-        if (isFloating() ||
-            style()->display() == COMPACT ||
-            ( isReplaced() && !isInline() ) ) {
+        if (sizesToMaxWidth()) {
             if (width < m_minWidth)
                 width = m_minWidth;
             if (width > m_maxWidth)
@@ -747,7 +746,7 @@ int RenderBox::calcWidthUsing(WidthType widthType, int cw, LengthType& lengthTyp
 
 void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw)
 {
-    if (isFloating())
+    if (isFloating() || isInline()) // Inline blocks/tables and floats don't have their margins increased.
     {
         m_marginLeft = ml.minWidth(cw);
         m_marginRight = mr.minWidth(cw);
@@ -1241,20 +1240,19 @@ void RenderBox::calcAbsoluteVertical()
 }
 
 
-int RenderBox::lowestPosition() const
+int RenderBox::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int bottom = m_height + marginBottom();
-    if ( m_layer )
-	bottom = kMax( bottom, m_layer->height() );
-    return bottom;
+    return includeSelf ? m_height : 0;
 }
 
-short RenderBox::rightmostPosition() const
+int RenderBox::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    short right = m_width;
-    if ( m_layer )
-	right = kMax( right, m_layer->width() );
-    return m_width;
+    return includeSelf ? m_width : 0;
+}
+
+int RenderBox::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    return includeSelf ? 0 : m_width;
 }
 
 void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width, int &height)

@@ -1970,8 +1970,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         case CSS_VAL_SCROLL:
 	    o = OSCROLL; break;
         case CSS_VAL_AUTO:
-	    o = OAUTO;
-	    break;
+	    o = OAUTO; break;
+        case CSS_VAL_MARQUEE:
+            o = OMARQUEE; break;
         default:
             return;
         }
@@ -2729,7 +2730,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_INHERIT_AND_INITIAL(widows, Widows)
         if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
             return;
-        style->setWidows((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER));
+        style->setWidows((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
         break;
      }
 
@@ -2738,7 +2739,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_INHERIT_AND_INITIAL(orphans, Orphans)
         if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
             return;
-        style->setOrphans((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER));
+        style->setOrphans((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
         break;
     }
     */
@@ -3192,6 +3193,127 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         else if (isInitial)
             style->resetOutline();
         break;
+    case CSS_PROP__KHTML_MARQUEE:
+        if (value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;
+        style->setMarqueeDirection(parentStyle->marqueeDirection());
+        style->setMarqueeIncrement(parentStyle->marqueeIncrement());
+        style->setMarqueeSpeed(parentStyle->marqueeSpeed());
+        style->setMarqueeLoopCount(parentStyle->marqueeLoopCount());
+        style->setMarqueeBehavior(parentStyle->marqueeBehavior());
+        break;
+    case CSS_PROP__KHTML_MARQUEE_REPETITION: {
+        HANDLE_INHERIT_AND_INITIAL(marqueeLoopCount, MarqueeLoopCount)
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent() == CSS_VAL_INFINITE)
+            style->setMarqueeLoopCount(-1); // -1 means repeat forever.
+        else if (primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_NUMBER)
+            style->setMarqueeLoopCount((int)(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)));
+        break;
+    }
+    case CSS_PROP__KHTML_MARQUEE_SPEED: {
+        HANDLE_INHERIT_AND_INITIAL(marqueeSpeed, MarqueeSpeed)
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent()) {
+            switch (primitiveValue->getIdent())
+            {
+                case CSS_VAL_SLOW:
+                    style->setMarqueeSpeed(500); // 500 msec.
+                    break;
+                case CSS_VAL_NORMAL:
+                    style->setMarqueeSpeed(85); // 85msec. The WinIE default.
+                    break;
+                case CSS_VAL_FAST:
+                    style->setMarqueeSpeed(10); // 10msec. Super fast.
+                    break;
+            }
+        }
+        else if (primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_S)
+            style->setMarqueeSpeed(int(1000*primitiveValue->floatValue(CSSPrimitiveValue::CSS_S)));
+        else if (primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_MS)
+            style->setMarqueeSpeed(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_MS)));
+        else if (primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_NUMBER) // For scrollamount support.
+            style->setMarqueeSpeed(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)));
+        break;
+    }
+    case CSS_PROP__KHTML_MARQUEE_INCREMENT: {
+        HANDLE_INHERIT_AND_INITIAL(marqueeIncrement, MarqueeIncrement)
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent()) {
+            switch (primitiveValue->getIdent())
+            {
+                case CSS_VAL_SMALL:
+                    style->setMarqueeIncrement(Length(1, Fixed)); // 1px.
+                    break;
+                case CSS_VAL_NORMAL:
+                    style->setMarqueeIncrement(Length(6, Fixed)); // 6px. The WinIE default.
+                    break;
+                case CSS_VAL_LARGE:
+                    style->setMarqueeIncrement(Length(36, Fixed)); // 36px.
+                    break;
+            }
+        }
+        else {
+            bool ok = true;
+            Length l = convertToLength(primitiveValue, style, paintDeviceMetrics, &ok);
+            if (ok)
+                style->setMarqueeIncrement(l);
+        }
+        break;
+    }
+    case CSS_PROP__KHTML_MARQUEE_STYLE: {
+        HANDLE_INHERIT_AND_INITIAL(marqueeBehavior, MarqueeBehavior)
+        if (!primitiveValue || !primitiveValue->getIdent()) return;
+        switch (primitiveValue->getIdent())
+        {
+            case CSS_VAL_NONE:
+                style->setMarqueeBehavior(MNONE);
+                break;
+            case CSS_VAL_SCROLL:
+                style->setMarqueeBehavior(MSCROLL);
+                break;
+            case CSS_VAL_SLIDE:
+                style->setMarqueeBehavior(MSLIDE);
+                break;
+            case CSS_VAL_ALTERNATE:
+                style->setMarqueeBehavior(MALTERNATE);
+                break;
+            case CSS_VAL_UNFURL:
+                style->setMarqueeBehavior(MUNFURL);
+                break;
+        }
+        break;
+    }
+    case CSS_PROP__KHTML_MARQUEE_DIRECTION: {
+        HANDLE_INHERIT_AND_INITIAL(marqueeDirection, MarqueeDirection)
+        if (!primitiveValue || !primitiveValue->getIdent()) return;
+        switch (primitiveValue->getIdent())
+        {
+            case CSS_VAL_FORWARDS:
+                style->setMarqueeDirection(MFORWARD);
+                break;
+            case CSS_VAL_BACKWARDS:
+                style->setMarqueeDirection(MBACKWARD);
+                break;
+            case CSS_VAL_AUTO:
+                style->setMarqueeDirection(MAUTO);
+                break;
+            case CSS_VAL_AHEAD:
+            case CSS_VAL_UP: // We don't support vertical languages, so AHEAD just maps to UP.
+                style->setMarqueeDirection(MUP);
+                break;
+            case CSS_VAL_REVERSE:
+            case CSS_VAL_DOWN: // REVERSE just maps to DOWN, since we don't do vertical text.
+                style->setMarqueeDirection(MDOWN);
+                break;
+            case CSS_VAL_LEFT:
+                style->setMarqueeDirection(MLEFT);
+                break;
+            case CSS_VAL_RIGHT:
+                style->setMarqueeDirection(MRIGHT);
+                break;
+        }
+        break;
+    }
     default:
         return;
     }

@@ -1,3 +1,61 @@
+2004-06-13  Leo Savernik  <l.savernik@aon.at>
+
+	* khtml_part.cpp: (clear) Stopping marquees.
+	* css/cssparser.cpp: (parserValue) Parse overflow: marquee.
+	Inserted CSS3 Properties section.
+	Moved -khtml-user-input to CSS3 Properties.
+	Added parsing of -khtml-marquee{,-direction,-increment,-style,-repetition,
+	-speed}.
+	* css/cssproperties.{c,h}: Regenerated.
+	* css/cssproperties.in: Added -khtml-marquee{,-direction,-increment,
+	-style,-repetition,	-speed} keywords.
+	* css/cssstyleselector: (applyRule) Handle overflow: marquee.
+	Handle applying of -khtml-marquee{,-direction,-increment,-style,-repetition,
+	-speed}.
+	* css/cssvalues.{c,h}: Regenerated.
+	* css/cssvalues.in: Added marquee, forwards, backwards, ahead, reverse,
+	up, down, slow, fast, infinite, slide, alternate, and unfurl keywords.
+	* css/html4.css: Updated rule to make marquee behave like marquee.
+	* html/html_blockimpl.{cpp,h}: Added class HTMLMarqueeElementImpl.
+	* html/html_elementimpl.cpp: (addCSSLength) Fixed adding numeric lengths
+	without unit.
+	* html/html_parser.cpp: (getElement) Made ID_MARQUEE generate an
+	HTMLMarqueeElement.
+	* htmlattrs.{c,h}: Regenerated.
+	* htmlattrs.in: Added behavior, direction, loop, scrollamount, scrolldelay,
+	truespeed attribute keywords.
+	* rendering/bidi.cpp: (RenderBlock::findNextLineBreak): marquee-related extensions.
+	* rendering/render_block.{cpp,h}: Updated lowestPosition, rightmostPosition, added
+	leftmostPosition.
+	* rendering/render_box.{cpp,h}: Updated lowestPosition, rightmostPosition, added
+	leftmostPosition.
+	(setStyle) Inserted call to styleChanged of layer.
+	(calcWidth) Used containing block's direction when aligning this box.
+	(calcWidthUsing) Used centralized sizesToMaxWidth() method.
+	(calcHorizontalMargins) Margin fix for inline blocks.
+	* rendering/render_flow.{cpp,h}: Updated lowestPosition, rightmostPosition, added
+	leftmostPosition.
+	* rendering/render_layer.{cpp,h}: Added Marquee class which takes care of
+	the shifting operations.
+	Added styleChanged and suspendMarquees methods.
+	(updateLayerPositions) Inserted call to updateMarqueePosition.
+	(scrollToOffset) Took care of marquee.
+	* rendering/render_object.{cpp,h}: Updated lowestPosition, rightmostPosition,
+	added leftmostPosition.
+	Added isHTMLMarquee, sizesToMaxWidth, and isCompact.
+	* rendering/render_style.{cpp,h}: Added CSS3NonInheritedData structure.
+	Added StyleMarqueeData. Added OMARQUEE to EOverflow.
+	Added EMarqueeBehavior, EMarqueeDirection.
+	Added CSS3 Getter Methods section.
+	Moved userInput to CSS3 Getter Methods section.
+	Added marqueeIncrement, marqueeSpeed, marqueeLoopCount,
+	marqueeBehavior, marqueeDirection.
+	(RenderStyle::RenderStyle) Instantiated CSS3NonInheritedData there.
+	Added respective setters to new CSS3 Setters section.
+	* rendering/render_text.{cpp,h}: Removed rightmostPosition.
+	* xml/dom_docimpl.cpp: (createHTMLElement) Made it return a
+	HTMLMarqueeElement for ID_MARQUEE.
+
 2004-06-10  Zack Rusin  <zack@kde.org>
 
         * xml/dom_textimpl.cpp (escapeHTML): Move from dom_elementimpl.cpp,

@@ -1197,6 +1197,10 @@ void KHTMLPart::clear()
   if ( d->m_jscript )
     d->m_jscript->clear();
 
+  // stopping marquees
+  if (d->m_doc && d->m_doc->renderer() && d->m_doc->renderer()->layer())
+      d->m_doc->renderer()->layer()->suspendMarquees();
+
   if ( d->m_view )
     d->m_view->clear();
 

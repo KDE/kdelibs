@@ -1,4 +1,4 @@
-/* 
+/*
  * The default style sheet used by khtml to render HTML pages
  * (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *
@@ -10,16 +10,16 @@
 html {
 	display: block;
 	color: -khtml-text;
-} 
+}
 
 /*
  * head and it's children all have display=none
  */
 
-head { 
+head {
 	display: none;
 }
-     
+
 meta {
 	display: none;
 }
@@ -76,7 +76,7 @@ layer {
 address {
 	display: block;
 }
-      
+
 blockquote {
 	display: block;
         margin: 1__qem 40px 1em 40px;
@@ -97,88 +97,88 @@ Q:after  {
     /*   content: close-quote;  */
 }
 
-CENTER { 
+CENTER {
 	display: block;
 	/* special centering to be able to emulate the html4/netscape behavior */
 	text-align: -khtml-center;
-}  
-      
-HR  { 
-        display: block; 
-        margin-top: 12px; 
-        margin-bottom: 12px; 
+}
+
+HR  {
+        display: block;
+        margin-top: 12px;
+        margin-bottom: 12px;
         border-style: inset;
         border-width: 1px;
-        margin-left: 1px; /* will be overwritten by ALIGN */ 
+        margin-left: 1px; /* will be overwritten by ALIGN */
         margin-right: 1px; /* will be overwritten by ALIGN */
         -khtml-flow-mode: -khtml-around-floats
-} 
- 
-MAP { 
+}
+
+MAP {
 	display: inline;
-} 
+}
 
 object {
         width: 50px;
         height: 50px;
-}   
+}
 
 embed {
         width: 50px;
         height: 50px;
-}   
+}
 
 
-/* 
- * heading elements 
+/*
+ * heading elements
  */
-      
-H1 { 
+
+H1 {
 	display: block;
-	font-size: 1.7em; 
+	font-size: 1.7em;
 	margin: .67__qem auto .67em auto;
 	font-weight: bolder;
 }
-      
-H2 { 
+
+H2 {
 	display: block;
-	font-size: 1.4em; 
+	font-size: 1.4em;
 	margin: .83__qem auto .83em auto;
 	font-weight: bolder;
 }
-      
-H3 { 
+
+H3 {
 	display: block;
-	font-size: 1.17em; 
+	font-size: 1.17em;
 	margin: 1__qem auto 1em auto;
 	font-weight: bolder;
 }
-      
+
 H4 {
 	display: block;
 	margin: 1.33__qem auto 1.33em auto;
 	font-weight: bolder;
 }
 
-H5 { 
+H5 {
 	display: block;
-	font-size: .83em; 
+	font-size: .83em;
 	margin: 1.67__qem auto 1.67em auto;
 	font-weight: bolder;
 }
 
-H6 { 
+H6 {
 	display: block;
-	font-size: .67em; 
+	font-size: .67em;
 	margin: 2.33__qem auto 2.33em auto;
 	font-weight: bolder;
 }
 
-/* 
+/*
  * tables
  */
 
-TABLE { 
+TABLE {
 	display: table;
 	border-collapse: separate;
 	vertical-align: middle;
@@ -186,62 +186,62 @@ TABLE {
 	border-spacing: 2px;
         -khtml-flow-mode: -khtml-around-floats;
 }
-      
-TABLE[align="center"] { 
-	margin-left: auto; 
+
+TABLE[align="center"] {
+	margin-left: auto;
 	margin-right: auto;
 }
 
-THEAD { 
-	display: table-header-group; 
-        border-color: inherit; 
+THEAD {
+	display: table-header-group;
+        border-color: inherit;
 }
-      
-TBODY { 
+
+TBODY {
 	display: table-row-group;
-	vertical-align: inherit; 
-        border-color: inherit; 
-}
-      
-TFOOT { 
-	display: table-footer-group; 
-        border-color: inherit; 
+	vertical-align: inherit;
+        border-color: inherit;
 }
 
-COL { 
-	display: table-column; 
-}
-      
-COLGROUP { 
-	display: table-column-group; 
+TFOOT {
+	display: table-footer-group;
+        border-color: inherit;
 }
 
-TR { 
+COL {
+	display: table-column;
+}
+
+COLGROUP {
+	display: table-column-group;
+}
+
+TR {
 	display: table-row;
-	vertical-align: inherit; 
-        border-color: inherit; 
+	vertical-align: inherit;
+        border-color: inherit;
 }
-      
-      
-TD, TH { 
+
+
+TD, TH {
 	display: table-cell;
 	vertical-align: inherit;
 }
-      
-TH { 
-	font-weight: bolder; 
+
+TH {
+	font-weight: bolder;
 	text-align: center;
 }
 
-CAPTION { 
-	display: table-caption;  
-	text-align: -khtml-center; 
+CAPTION {
+	display: table-caption;
+	text-align: -khtml-center;
 }
 
 /* don't use "TD[align=...] > *". This sould give problems with
  * constructs as <td align=left><ul><li>...
- * Hope the next ones cover all relevant cases. Lars 
- */ 
+ * Hope the next ones cover all relevant cases. Lars
+ */
 TD[align="center"] > TABLE { margin-left: auto; margin-right: auto; }
 TD[align="middle"] > TABLE { margin-left: auto; margin-right: auto; }
 TD[align="right"] > TABLE { margin-left: auto; margin-right: 0px; }
@@ -283,18 +283,18 @@ LI {
 }
 
 
-UL UL { 
+UL UL {
 	list-style-type: circle;
 }
 
-OL UL { 
+OL UL {
 	list-style-type: circle;
 }
 
-UL UL UL { 
+UL UL UL {
 	list-style-type: square;
 }
-      
+
 
 DD {
 	display: block;
@@ -305,7 +305,7 @@ DL {
 	display: block;
         margin: 1__qem 0 1em 0;
         -khtml-flow-mode: -khtml-around-floats
-} 
+}
 
 DT {
 	display: block;
@@ -314,33 +314,33 @@ DT {
 DL[compact] > DT {
 	display: compact;
 }
- 
+
 /* for right to left */
-      
-*[dir="rtl"] UL, 
-*[dir="rtl"] OL,  
-*[dir="rtl"] DIR, 
-*[dir="rtl"] MENU, 
-*[dir="rtl"] DD { 
-	margin-right:40px; 
+
+*[dir="rtl"] UL,
+*[dir="rtl"] OL,
+*[dir="rtl"] DIR,
+*[dir="rtl"] MENU,
+*[dir="rtl"] DD {
+	margin-right:40px;
 	margin-left: auto;
 }
-      
-OL UL, 
+
+OL UL,
 UL OL,
-UL UL, 
-OL OL { 
-	margin-top: auto; 
-	margin-bottom: auto; 
+UL UL,
+OL OL {
+	margin-top: auto;
+	margin-bottom: auto;
 }
 
-LI > P { 
-	margin-top: auto; 
+LI > P {
+	margin-top: auto;
 /*	margin-bottom: auto;*/
 }
-      
-LI > DIV { 
-	margin-top: auto; 
+
+LI > DIV {
+	margin-top: auto;
 /*	margin-bottom: auto;*/
 }
 
@@ -353,7 +353,7 @@ FORM {
         margin: 0__qem 0 1em 0;
 }
 
-LEGEND { 
+LEGEND {
         display: inline-block;
         padding-left: 2px;
         padding-right: 2px;
@@ -366,7 +366,7 @@ FIELDSET {
         padding: 0.75em 0.625em;
 	margin: 1.0em auto;
         border: 2px groove ThreeDFace;
-} 
+}
 
 BUTTON {
         display: inline-block;
@@ -381,7 +381,7 @@ BUTTON:active {
         border-style: inset;
 }
 
-INPUT { color: windowtext; 
+INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: small;
         margin: 0__qem;
@@ -389,7 +389,7 @@ INPUT { color: windowtext;
 }
 
 INPUT[type="hidden"] {
-	display: none; 
+	display: none;
 }
 
 INPUT[type="radio"], INPUT[type="checkbox"] {
@@ -401,103 +401,103 @@ INPUT[type="text"], INPUT[type="password"] {
 	cursor: text;
 }
 
-INPUT[type="submit"], INPUT[type="reset"], INPUT[type="button"] { 
-        color: buttontext; 
+INPUT[type="submit"], INPUT[type="reset"], INPUT[type="button"] {
+        color: buttontext;
 }
 
 ISINDEX { color: windowtext; font-size: small; }
 
-      
-OPTION, 
-OPTGROUP, 
+
+OPTION,
+OPTGROUP,
 AREA,
-PARAM  { 
-	display: none; 
+PARAM  {
+	display: none;
 }
 
-SELECT { 
+SELECT {
         font-family: sans-serif;
         font-size: small;
-        color: windowtext; 
+        color: windowtext;
         margin: 0__qem;
 }
 
-TEXTAREA { 
-        color: windowtext; 
+TEXTAREA {
+        color: windowtext;
         font-size: normal;
-        font-family: monospace; 
+        font-family: monospace;
         margin: 0__qem;
 }
 
 /*
  * inline elements
- */      
-      
-U, 
-INS { 
+ */
+
+U,
+INS {
 	text-decoration: underline;
 }
-      
+
 STRONG,
-B { 
-	font-weight: bolder; 
+B {
+	font-weight: bolder;
 }
-      
-I, 
-CITE, 
+
+I,
+CITE,
 EM,
-VAR, 
-ADDRESS { 
-	font-style: italic; 
+VAR,
+ADDRESS {
+	font-style: italic;
 }
-      
-TT, 
+
+TT,
 CODE,
-KBD, 
-SAMP { 
-	font-family: monospace; 
+KBD,
+SAMP {
+	font-family: monospace;
 }
-      
+
 PRE,
-XMP, 
-PLAINTEXT { 
+XMP,
+PLAINTEXT {
 	display: block;
-	font-family: monospace; 
-	white-space: pre; 
+	font-family: monospace;
+	white-space: pre;
 	text-align: -khtml-auto;
 	margin: 1__qem 0;
 }
-      
-BIG { 
-	font-size: large; 
-}
-      
-SMALL { 
-	font-size: small; 
+
+BIG {
+	font-size: large;
 }
 
-S, 
-STRIKE, 
-DEL  { 
-	text-decoration: line-through; 
+SMALL {
+	font-size: small;
 }
 
-SUB { 
+S,
+STRIKE,
+DEL  {
+	text-decoration: line-through;
+}
+
+SUB {
 	vertical-align: sub;
-	font-size: smaller; 
+	font-size: smaller;
 }
-SUP { 
-	vertical-align: super;	
+SUP {
+	vertical-align: super;
 	font-size: smaller;
 }
 
 /* ### not supported at the moment
-ABBR, ACRONYM { 
-	font-variant: small-caps; 
-	letter-spacing: 0.1em 
+ABBR, ACRONYM {
+	font-variant: small-caps;
+	letter-spacing: 0.1em
 }
 */
-abbr, 
+abbr,
 acronym {
 	font-style: italic;
 }
@@ -513,13 +513,13 @@ a:visited:active          { color: red; outline: 1px dotted invert; }
 
 /* Bidirectionality settings (do not change) */
 
-BDO[DIR="ltr"]  { 
-	direction: ltr; 
-	unicode-bidi: bidi-override; 
+BDO[DIR="ltr"]  {
+	direction: ltr;
+	unicode-bidi: bidi-override;
 }
 
-BDO[DIR="rtl"]  { 
-	direction: rtl; 
+BDO[DIR="rtl"]  {
+	direction: rtl;
 	unicode-bidi: bidi-override;
 }
 
@@ -527,7 +527,7 @@ BDO[DIR="rtl"]  {
       *[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
       *[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
 */
-      
+
 /* Elements that are block-level in HTML4 */
 /* ### don't support unicode-bidi at the moment
       ADDRESS, BLOCKQUOTE, BODY, DD, DIV, DL, DT, FIELDSET,
@@ -537,7 +537,7 @@ BDO[DIR="rtl"]  {
       COL, COLGROUP, TD, TH, CAPTION
                       { unicode-bidi: embed }
 */
-      
+
 /* End bidi settings */
 
 /*
@@ -552,25 +552,22 @@ frameset {
 	display: block;
 }
 
-frame { 
+frame {
 	display: block;
 }
 
 nobr {
         display: inline;
-        white-space: nowrap; 
+        white-space: nowrap;
 }
 
 wbr {
         white-space: normal;
 }
 
-/* yeah, thats a joke. but it is better than display: none for now */
 marquee {
-        display: block;
-        height: 1.2em;
-        position: relative;
-        overflow:hidden;
+    display: inline-block;
+    overflow: marquee;
 }
 
 /* noscript is handled internally, as it depends on the html settings */

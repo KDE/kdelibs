@@ -490,8 +490,9 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = true;
         break;
 
-    case CSS_PROP_OVERFLOW:             // visible | hidden | scroll | auto | inherit
-        if ( id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_SCROLL || id == CSS_VAL_AUTO )
+    case CSS_PROP_OVERFLOW:             // visible | hidden | scroll | auto | marquee | inherit
+        if (id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_SCROLL || id == CSS_VAL_AUTO ||
+            id == CSS_VAL_MARQUEE)
             valid_primitive = true;
         break;
 
@@ -967,11 +968,48 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = true;
         break;
 
+    /* CSS3 properties */
     case CSS_PROP__KHTML_USER_INPUT:        // none | enabled | disabled | inherit
         if ( id == CSS_VAL_NONE || id == CSS_VAL_ENABLED || id == CSS_VAL_DISABLED )
             valid_primitive = true;
 //        kdDebug(6080) << "CSS_PROP__KHTML_USER_INPUT: " << valid_primitive << endl;
         break;
+    case CSS_PROP__KHTML_MARQUEE: {
+        const int properties[5] = { CSS_PROP__KHTML_MARQUEE_DIRECTION, CSS_PROP__KHTML_MARQUEE_INCREMENT,
+                                    CSS_PROP__KHTML_MARQUEE_REPETITION,
+                                    CSS_PROP__KHTML_MARQUEE_STYLE, CSS_PROP__KHTML_MARQUEE_SPEED };
+        return parseShortHand(properties, 5, important);
+    }
+    case CSS_PROP__KHTML_MARQUEE_DIRECTION:
+        if (id == CSS_VAL_FORWARDS || id == CSS_VAL_BACKWARDS || id == CSS_VAL_AHEAD ||
+            id == CSS_VAL_REVERSE || id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT || id == CSS_VAL_DOWN ||
+            id == CSS_VAL_UP || id == CSS_VAL_AUTO)
+            valid_primitive = true;
+        break;
+    case CSS_PROP__KHTML_MARQUEE_INCREMENT:
+        if (id == CSS_VAL_SMALL || id == CSS_VAL_LARGE || id == CSS_VAL_MEDIUM)
+            valid_primitive = true;
+        else
+            valid_primitive = validUnit(value, FLength|FPercent, strict&(!nonCSSHint));
+        break;
+    case CSS_PROP__KHTML_MARQUEE_STYLE:
+        if (id == CSS_VAL_NONE || id == CSS_VAL_SLIDE || id == CSS_VAL_SCROLL || id == CSS_VAL_ALTERNATE ||
+            id == CSS_VAL_UNFURL)
+            valid_primitive = true;
+        break;
+    case CSS_PROP__KHTML_MARQUEE_REPETITION:
+        if (id == CSS_VAL_INFINITE)
+            valid_primitive = true;
+        else
+            valid_primitive = validUnit(value, FInteger|FNonNeg, strict&(!nonCSSHint));
+        break;
+    case CSS_PROP__KHTML_MARQUEE_SPEED:
+        if (id == CSS_VAL_NORMAL || id == CSS_VAL_SLOW || id == CSS_VAL_FAST)
+            valid_primitive = true;
+        else
+            valid_primitive = validUnit(value, FTime|FInteger|FNonNeg, strict&(!nonCSSHint));
+        break;
+    // End of CSS3 properties
 
         /* shorthand properties */
     case CSS_PROP_BACKGROUND:
