@@ -1167,7 +1167,7 @@ bool HTTPProtocol::readHeader()
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
-     m_strCharset = QString::fromUtf8( buffer).stripWhiteSpace();
+     m_strCharset = QString::fromUtf8( buffer).stripWhiteSpace().lower();
      setMetaData("charset", m_strCharset);
      return true;
   }
@@ -1700,7 +1700,7 @@ bool HTTPProtocol::readHeader()
      m_strMimeType = QString::fromLatin1("application/x-tgz");
   if (m_strMimeType == "image/x-png")
      m_strMimeType = QString::fromLatin1("image/png");
-  if (m_strMimeType == "audio/mpeg" || m_strMimeType == "audio/mp3")
+  if (m_strMimeType == "audio/mpeg" || m_strMimeType == "audio/x-mpeg" || m_strMimeType == "audio/mp3")
      m_strMimeType = QString::fromLatin1("audio/x-mp3");
 
   // Prefer application/x-tgz over application/x-gzip
