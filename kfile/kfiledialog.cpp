@@ -246,6 +246,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     filterWidget->setFixedHeight(filterWidget->height());
     connect(filterWidget, SIGNAL(filterChanged()),
 	    SLOT(filterChanged()));
+    ops->setNameFilter(filterWidget->currentFilter());
 
     connect( locationEdit, SIGNAL( returnPressed() ),
     	     SLOT( slotOk()));
@@ -926,6 +927,20 @@ KFileDialog::Mode KFileDialog::mode() const
     return ops->mode();
 }
 
+//////////////////7
+
+/*
+KDirComboBox::KDirComboBox( QWidget *parent, const char *name )
+    : QComboBox( parent, name )
+{
+}
+
+KDirComboBox::~KDirComboBox()
+{
+}
+*/
+
+///////////////////
 
 void KFileComboBox::setCompletion(const QString& completion)
 {

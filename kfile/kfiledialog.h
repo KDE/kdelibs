@@ -389,4 +389,49 @@ private:
 };
 
 
+#if 0
+class KDirComboBox : public QComboBox
+{
+    // Q_OBJECT
+
+public:
+    KDirComboBox( QWidget *parent=0, const char *name=0 );
+    ~KDirComboBox();
+
+    /**
+     * sets the current url
+     */
+    void setCurrentURL( const QString& url );
+
+    // signals:
+    /**
+     * emitted when an item was clicked at
+     * @param url is the url of the now current item. If it is a local url,
+     * it won't have a protocol (file:/), otherwise it will.
+     */
+    urlActivated( const QString& url );
+
+    // protected slots:
+    void slotActivated( int );
+
+protected:
+    struct _KDirComboItem {
+	QString url;
+	QPixmap icon;
+	int id;
+    };
+    typedef _KDirComboItem KDirComboItem;
+    QList<KDirComboItem> itemList;
+
+    KDirComboItem *rootItem;
+    KDirComboItem *homeItem;
+    KDirComboItem *desktopItem;
+
+    static QPixmap *dirPix;
+    static QPixmap *opendirPix;
+
+};
+
+#endif
+
 #endif

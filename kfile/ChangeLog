@@ -1,3 +1,8 @@
+Fri Feb 11 12:17:59 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfiledialog.cpp (KFileDialog): 
+	fixed filefilter not being applied in constructor
+
 Thu Feb 10 17:06:36 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kdiroperator.cpp (connectView): 
