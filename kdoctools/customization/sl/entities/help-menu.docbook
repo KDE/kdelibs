@@ -16,7 +16,7 @@ s pomočjo za &kappname; (ta dokument).</para></listitem>
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
+<keycombo action="simul">&slShift;<keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Pomoč</guimenu>
 <guimenuitem>Kaj je to?</guimenuitem>
