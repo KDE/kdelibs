@@ -643,6 +643,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             if (tquote == IgnoreQuote)
                 tquote = NoQuote;
 
+//             int l = 0;
+//             while(l < src.length() && (*(src.current()+l)).latin1() != '>')
+//                 l++;
+//             qDebug("src is now: *%s*, pending: %d, discard: %d, tquote: %d",
+//                    QConstString((QChar*)src.current(), l).string().latin1(), pending, discard, tquote);
+
             switch(tag) {
             case NoTag:
             {
@@ -700,7 +706,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     ((curchar >= '0') && (curchar <= '9')) ||
                     curchar == '/' )
                 {
-                    *dest = src[0].lower();
+                    // this is faster than QChar::lower()
+                    if((curchar >= 'A') && (curchar <= 'Z'))
+                        *dest = curchar + 'a' - 'A';
+                    else
+                        *dest = src[0];
                     dest++;
                     ++src;
                 }
@@ -727,7 +737,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     if((len > 1) && (*(dest-1) == '/')) len--;
 
                     QConstString tmp(ptr, len);
-                    uint tagID = khtml::getTagID(tmp.string().ascii(), len);
+                    uint tagID = khtml::getTagID(tmp.string().latin1(), len);
                     if (!tagID) {
 #ifdef TOKEN_DEBUG
                         kdDebug( 6036 ) << "Unknown tag: \"" << tmp.string() << "\"" << endl;
@@ -741,16 +751,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         kdDebug( 6036 ) << "found tag id=" << tagID << endl;
 #endif
 
-                        if (beginTag)
+                        if (beginTag) {
                             currToken->id = tagID;
+                            tag = SearchAttribute;
+                        }
                         else
+                        {
                             currToken->id = tagID + ID_CLOSE_TAG;
-
-                        // We _need_ to search for attributes even if it is a CLOSE tag!!
-                        // some sites use the closing variant instead of the opening variant
-                        // i.e. </COL>
+                            tag = SearchEnd;
+                        }
                         dest = buffer;
-                        tag = SearchAttribute;
                     }
                 }
                 break;
@@ -780,7 +790,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if( ((curchar >= 'a') && (curchar <= 'z')) ||
                     ((curchar >= 'A') && (curchar <= 'Z')) ||
                     ((curchar >= '0') && (curchar <= '9')) ||
-                    curchar == '-' )
+                    curchar == '-' || curchar == '!')
                 {
                     tag = AttributeName;
                     discard = NoneDiscard;
@@ -791,10 +801,17 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case AttributeName:
             {
+                if( tquote == SingleQuote || tquote == DoubleQuote) {
+                    *dest++ = tquote == SingleQuote ? QChar('\'') : QChar('\"');
+                    tquote = NoQuote;
+                    discard = AllDiscard; // stop as soon as possible
+                }
+
+                // allow !ignoreme as attribute name
                 if( (((curchar >= 'a') && (curchar <= 'z')) ||
                      ((curchar >= 'A') && (curchar <= 'Z')) ||
                      ((curchar >= '0') && (curchar <= '9')) ||
-                     curchar == '-') && !tquote )
+                     curchar == '-' || curchar == '!'))
                 {
                     if((curchar >= 'A') && (curchar <= 'Z'))
                         *dest = curchar + 'a' - 'A';
@@ -809,21 +826,21 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     // beginning of name
                     QChar *ptr = buffer;
                     attrName = QString(ptr, dest-buffer);
-                    uint a = khtml::getAttrID(attrName.ascii(), dest-buffer);
+                    unsigned int a = 0;
+                    // ignore attributes with leading '!'
+                    if(dest-buffer && attrName[0].latin1() != '!')
+                        a = khtml::getAttrID(attrName.latin1(), dest-buffer);
                     dest = buffer;
                     *dest++ = a;
 
-                    if (!a) {
 #ifdef TOKEN_DEBUG
+                    if (!a || (attrName.length() && attrName[0].latin1() == '!')) {
                        kdDebug( 6036 ) << "Unknown attribute: \"" << attrName << "\"" << endl;
-#endif
                     } else
                     {
-#ifdef TOKEN_DEBUG
                        kdDebug( 6036 ) << "Known attribute: \"" << attrName << "\"" << endl;
-#endif
                     }
-
+#endif
                     tag = SearchEqual;
                     discard = AllDiscard; // discard whitespaces before '='
                 }
@@ -897,11 +914,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if ( curchar == '&' )
                 {
                     ++src;
-
                     discard = NoneDiscard;
                     if (pending)
                         addPending();
-
                     charEntity = true;
                     parseEntity(src, dest, true);
                     break;
@@ -937,19 +952,30 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case Value:
             {
-                if( tquote )
-                {
-                  // additional quote. discard it, and define as end of
-                  // attribute
-#ifdef TOKEN_DEBUG
-                    kdDebug( 6036 ) << "bad HTML in parseTag: Value" << endl;
-#endif
+                // we allow quotes inside nonquoted text
+                // compatible to IE
+                // <tag attr=test/"text" other=..> -> attr='test/"text"'
+                if( tquote == SingleQuote || tquote == DoubleQuote) {
+                    *dest++ = tquote == SingleQuote ? QChar('\'') : QChar('\"');
                     tquote = NoQuote;
+                    discard = AllDiscard; // stop as soon as possible
                 }
+
+                // parse Entities
+                if ( curchar == '&' )
+                {
+                    ++src;
+                    if (pending)
+                        addPending();
+                    charEntity = true;
+                    parseEntity(src, dest, true);
+                    break;
+                }
+
                 // if discard==NoneDiscard at this point, it means
                 // that we passed an empty "" pair. bit hacky, but...
                 // helps with <tag attr=""otherattr="something">
-                if ( pending || src[0].latin1() == '>' || discard==NoneDiscard)
+                if ( pending || curchar == '>' || discard==NoneDiscard)
                 {
                     // no quotes. Every space means end of value
                     Attribute a;
