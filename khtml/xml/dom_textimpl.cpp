@@ -391,7 +391,7 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
         return false;
     }
     
-    if (style->whiteSpace() == PRE) {
+    if (style->preserveWS() || style->preserveLF()) {
         return true;
     }
     
