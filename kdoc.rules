@@ -27,14 +27,14 @@ kspell_FILES = *.h
 kspell_LIBS = -lkdecore -lkdeui -lqt
 
 khtml_FILES = *.h
-khtml_LIBS = -lkio -lkparts -lkdecore -lkdeui -lkimgio -lqt
+khtml_LIBS = -lkio -lkparts -lkdecore -lkdeui -lqt
 
 kjs_FILES = kjs.h object.h types.h function.h operations.h ustring.h
 kjs_LIBS = -lqt
 
 kdejava_FILES = *.h
 kdejava_PATH = khtml/java
-kdejava_LIBS = -lkdecore -lkdeui -lkimgio -lqt
+kdejava_LIBS = -lkdecore -lkdeui -lqt
 
 kio_FILES = *.h
 kio_LIBS = -lkdecore -lkdeui -ldcop -lqt
