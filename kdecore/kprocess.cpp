@@ -280,6 +280,7 @@ KProcess::KProcess()
 {
   d = new KProcessPrivate;
 
+  KProcessController::create();
   KProcessController::theKProcessController->addKProcess(this);
   out[0] = out[1] = -1;
   in[0] = in[1] = -1;
