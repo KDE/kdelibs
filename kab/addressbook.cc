@@ -44,15 +44,15 @@ const int AddressBook::NoOfFields=sizeof(Fields)/sizeof(Fields[0]);
  */
 
 const char* AddressBook::Defaults[]= { 
-  "Version=0.9",
+  "Version=1.0",
   "QueryOnDelete=true",
   "QueryOnChange=true",
   "SaveOnExit=true",
   "QueryOnSave=true",
   "CreateBackup=true",
-  "MailCommand=/opt/kde/bin/kmail",
+  "MailCommand=kmail",
   "MailSelectAddress=true",
-  "TalkCommand=/opt/kde/bin/ktalk",
+  "TalkCommand=ktalk",
   "Background=background_1.jpg"
 };
 
@@ -731,8 +731,66 @@ bool AddressBook::change(const string& key, const Entry& contents)
   register bool GUARD; GUARD=true;
   LG(GUARD, "AddressBook::change: changing entry.\n");
   // ############################################################################
+  const char* StringKeys[]= { // all keys with data type string
+    "name",
+    "firstname",
+    "additionalName", 
+    "namePrefix",
+    "fn",
+    "comment",
+    "org",
+    "orgUnit",
+    "orgSubUnit", 
+    "title",
+    "role", 
+    "deliveryLabel",
+    "address", 
+    "town", 
+    "telephone",
+    "fax", 
+    "modem",
+    "URL",
+    "zip",
+    "state", 
+    "country" };
+  const string * StringObjects[]= { // the respective fields - all strings:
+    &contents.name,
+    &contents.firstname,
+    &contents.additionalName,
+    &contents.namePrefix,
+    &contents.fn,
+    &contents.comment,
+    &contents.org,
+    &contents.orgUnit,
+    &contents.orgSubUnit,
+    &contents.title,
+    &contents.role,
+    &contents.deliveryLabel,
+    &contents.address,
+    &contents.town,
+    &contents.telephone,
+    &contents.fax,
+    &contents.modem,
+    &contents.URL,
+    &contents.zip,
+    &contents.state,
+    &contents.country };
+  const int NoOfStrings=sizeof(StringKeys)/sizeof(StringKeys[0]);
+  const char* ListKeys[]= { // all keys with data type string list
+    "talk", "emails", "keywords" 
+  };
+  const list<string> *ListObjects[]= { // the respective fields - all lists:
+    &contents.talk,
+    &contents.emails,
+    &contents.keywords
+  };
+  const int NoOfLists=sizeof(ListKeys)/sizeof(ListKeys[0]);
   list<int> birthday;
-  // -----
+  int count;
+  // ----- verification:
+  CHECK(NoOfStrings==sizeof(StringObjects)/sizeof(StringObjects[0]));
+  CHECK(NoOfLists==sizeof(ListObjects)/sizeof(ListObjects[0]));
+  // ----- check permissions:
   if(readonly)
     {
       L("AddressBook::change: DB is readonly!\n");
@@ -754,46 +812,45 @@ bool AddressBook::change(const string& key, const Entry& contents)
     }
   KeyValueMap* keys=section->getKeys();
   CHECK(keys!=0);
-  if(!keys->insert("name", contents.name, true)
-     || !keys->insert("firstname", contents.firstname, true)
-     || !keys->insert("additionalName", contents.additionalName, true)
-     || !keys->insert("namePrefix", contents.namePrefix, true)
-     || !keys->insert("fn", contents.fn, true)
-     || !keys->insert("comment", contents.comment, true)
-     || !keys->insert("org", contents.org, true)
-     || !keys->insert("orgUnit", contents.orgUnit, true)
-     || !keys->insert("orgSubUnit", contents.orgSubUnit, true)
-     || !keys->insert("title", contents.title, true)
-     || !keys->insert("role", contents.role, true)
-     || !keys->insert("deliveryLabel", contents.deliveryLabel, true)
-     || !keys->insert("email", contents.email, true)
-     || !keys->insert("email2", contents.email2, true)
-     || !keys->insert("email3", contents.email3, true)
-     || !keys->insert("address", contents.address, true)
-     || !keys->insert("town", contents.town, true)
-     || !keys->insert("telephone", contents.telephone, true)
-     || !keys->insert("fax", contents.fax, true)
-     || !keys->insert("modem", contents.modem, true)
-     || !keys->insert("URL", contents.URL, true)
-     || !keys->insert("comment", contents.comment, true)
-     || !keys->insert("talk", contents.talk, true)
-     || !keys->insert("emails", contents.emails, true)
-     || !keys->insert("keywords", contents.keywords, true)
-     || !keys->insert("zip", contents.zip, true)
-     || !keys->insert("state", contents.state, true)
-     || !keys->insert("country", contents.country, true)	
-     || (birthday.empty() ? !keys->insert("birthday", "", true)
+  // ----- set the values for the string fields:
+  for(count=0; count<NoOfStrings; ++count)
+    {
+      LG(GUARD, "AddressBook::change: setting value \"%s\" for key \"%s\".\n",
+	 StringObjects[count]->c_str(), StringKeys[count]);
+      if(!keys->insert(StringKeys[count], *(StringObjects[count]), true))
+	{
+	  LG(GUARD, "AddressBook::change: failed.\n");
+	  // kill the program -> may not happen in debug version!
+	  CHECK(0); 
+	  return false;
+	}
+    }
+  // ----- set the values for the string list fields:
+  for(count=0; count<NoOfLists; ++count)
+    {
+      LG(GUARD, "AddressBook::change: setting value for key \"%s\".\n",
+	 ListKeys[count]);
+      if(!keys->insert(ListKeys[count], *(ListObjects[count]), true))
+	{
+	  LG(GUARD, "AddressBook::change: failed.\n");
+	  // kill the program -> may not happen in debug version!
+	  CHECK(0); 
+	  return false;
+	}
+    }
+  // ----- now handle special cases - lists, dates:
+  if((birthday.empty() 
+	 ? !keys->insert("birthday", "", true)
 	 : !keys->insert("birthday", birthday, true)))
     {
-      LG(GUARD, "AddressBook::change: failed to set values.\n");
-      // kill the program -> may not happen in debug version!
+      LG(GUARD, "AddressBook::change: failed to set birthday.\n");
       CHECK(0); 
       return false;
-    } else {
-      LG(GUARD, "AddressBook::change:  done, updating using current-key %s.\n",
-	 currentEntry().c_str());
-      updateEntriesMap((*current).second);
     }
+  // ----- done:
+  LG(GUARD, "AddressBook::change:  done, updating using current-key %s.\n",
+     currentEntry().c_str());
+  updateEntriesMap((*current).second);
   return true;
   // ############################################################################
 } 

@@ -234,7 +234,7 @@ bool AddressWidget::updateDB()
 	      "All configuration values have been reset to\n"
 	      "its default settings."));
     }          
-  if((format==KAB_FILE_FORMAT)&&(kabVersion>=0.9))
+  if((format==KAB_FILE_FORMAT)&&(kabVersion>=1.0))
     {
       LG(GUARD, "AddressWidget::updateDB: same format.\n");
       return true;
@@ -305,6 +305,8 @@ bool AddressWidget::updateDB()
 	 "could not set new file format number.\n");
       return false;
     }
+  // ----- reset database configuration to the defaults:
+  restoreDefaults();
   // ----- save DB:
   if(!ConfigDB::save())
     {
@@ -324,9 +326,7 @@ bool AddressWidget::updateDB()
   CHECK(isRO());
   updateEntriesMap();
   LG(GUARD, "AddressWidget::updateDB: done.\n");
-  // ----- reset database configuration to the defaults:
-  restoreDefaults();
-  save();
+  // save();
   return true;
   // ############################################################################
 }
@@ -1313,6 +1313,7 @@ bool AddressWidget::print(QPrinter& printer, const list<string>& fields,
   float stretch;
   int pageNum=0;
   // -----
+  KApplication::setOverrideCursor(waitCursor);
   // draw main part of page
   p.begin(&printer);
   LG(GUARD, "AddressWidget::print: printing %i entries,"
@@ -1338,7 +1339,12 @@ bool AddressWidget::print(QPrinter& printer, const list<string>& fields,
 	      keys=(*entryPos).second->getKeys();
 	      CHECK(keys!=0);
 	      text="";
-	      keys->get((*pos), text);
+	      if(*pos=="emails")
+		 {
+		   emailAddress((*entryPos).first, text, false);
+		 } else {
+		   keys->get((*pos), text);
+		 }
 	      // find largest value in pixels:
 	      rect=p.boundingRect(0, 0, PageWidth, PageHeight,
 				  AlignLeft | AlignTop, text.c_str());
@@ -1564,6 +1570,23 @@ bool AddressWidget::print(QPrinter& printer, const list<string>& fields,
 		  count++;
 		  continue;
 		}
+	      if(*pos=="emails")
+		{
+		  list<string> emails;
+		  string address;
+		  // -----
+		  if(keys->get(*pos, emails))
+		    {
+		      if(!emails.empty())
+			{
+			  address=emails.front();
+			} 
+		    }
+		  p.drawText(cx+Spacing, cy, fieldWidth[count], 
+			     PageHeight, AlignLeft | AlignTop, 
+			     address.c_str());
+		  continue;
+		}
 	      keys->get(*pos, text);
 	      p.drawText(cx+Spacing, cy, fieldWidth[count], PageHeight,
 		 AlignLeft | AlignTop, text.c_str());
@@ -1599,6 +1622,7 @@ bool AddressWidget::print(QPrinter& printer, const list<string>& fields,
   p.end();
   delete fieldWidth;
   emit(setStatus(i18n("Printing finished successfully.")));
+  KApplication::restoreOverrideCursor();
   return true;
   // ############################################################################
 }
@@ -1896,6 +1920,18 @@ void AddressWidget::exportHTML()
 		}
 	      continue;
 	    }
+	  if(*fieldPos=="emails")
+	    {
+	      string mail;
+	      // -----
+	      if(emailAddress((*pos).second, mail, false))
+	        {
+	          body+=(string)"<td>"+mail+(string)"\n";
+	        } else {
+	          body+=(string)"<td>"+"&nbsp"+(string)"\n";
+		}
+	      continue;
+	    }
 	  if(!keys->get(*fieldPos, temp))
 	    {
 	      L("AddressWidget::exportHTML: could not get data for key %s.\n",
@@ -1918,7 +1954,7 @@ void AddressWidget::exportHTML()
       qApp->beep();
       return;
     }
-  dummy=KFileDialog::getOpenFileName(home.c_str(), "*html", this);
+  dummy=KFileDialog::getSaveFileName(home.c_str(), "*html", this);
   if(!dummy.isEmpty())
     {
       file=dummy;
@@ -2111,6 +2147,7 @@ bool AddressWidget::sendEmail(const string& address, const string& subject)
       QMessageBox::information
 	(this, i18n("Error"), i18n
 	 ("The mail command must be configured before!"));
+      return false;
     }
   if(!keys->get("MailParameters", params))
     {
@@ -2173,6 +2210,7 @@ bool AddressWidget::sendEmail(const string& address, const string& subject)
       emit(setStatus(i18n("Mail program started.")));
       return true;
     }  
+  return true;
   // ############################################################################
 }
 
