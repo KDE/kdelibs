@@ -131,9 +131,11 @@ public:
   static pid_t runCommand( QString cmd );
   
   /**
-   * @deprecated
+   * Same as the other runCommand, but it also takes the name of the
+   * binary, to display an error message in case it couldn't find it.
+   * The last argument is now unused but kept for binary compatibility.
    */
-  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & iconName );
+  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & );
 
   /**
    * Quotes a string for the shell
@@ -278,7 +280,7 @@ class KProcessRunner : public QObject
 
   public:
 
-    static pid_t run(KProcess *);
+    static pid_t run(KProcess *, const QString & binName);
 
     virtual ~KProcessRunner();
 
@@ -290,10 +292,11 @@ class KProcessRunner : public QObject
 
   private:
 
-    KProcessRunner(KProcess *);
+    KProcessRunner(KProcess *, const QString & binName);
     KProcessRunner();
 
     KProcess * process_;
+    QString binName;
 };
 
 #endif
