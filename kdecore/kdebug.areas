@@ -48,6 +48,7 @@
 7102    kio_ftp
 7103    kio_http
 7104    kcookiejar
+7105    kio_pop3
 
 8000    corba
 8001    parts (corba)
