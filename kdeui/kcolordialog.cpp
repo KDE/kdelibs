@@ -188,8 +188,6 @@ static void createStandardPalette()
     standardPalette[i++] = Qt::gray;
     standardPalette[i++] = Qt::darkGray;
     standardPalette[i++] = Qt::black;
-
-    KGlobal::locale()->insertCatalogue("kdelibs_colors");
 }
 
 
@@ -619,6 +617,8 @@ KPaletteTable::readNamedColor( void )
   {
     return; // Strings already present
   }
+
+  KGlobal::locale()->insertCatalogue("kdelibs_colors");
 
   //
   // Code somewhat inspired by KPalette.
