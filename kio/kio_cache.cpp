@@ -20,6 +20,8 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
+template class QDict<KIOCacheEntry>;
+
 /************************************************
  *
  * KIOCacheEntry
