@@ -359,7 +359,9 @@ KDockWidgetPrivate::~KDockWidgetPrivate()
 void KDockWidgetPrivate::slotFocusEmbeddedWidget(QWidget* w)
 {
    if (w) {
-      w->setFocus();
+      if ((w->focusPolicy() == QWidget::ClickFocus) || (w->focusPolicy() == QWidget::StrongFocus)) {
+         w->setFocus();
+      }
    }
 }
 
