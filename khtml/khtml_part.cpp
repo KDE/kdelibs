@@ -167,7 +167,7 @@ public:
   QString m_baseTarget;
 
   int m_delayRedirect;
-  KURL m_redirectURL;
+  QString m_redirectURL;
 
   KAction *m_paViewDocument;
   KAction *m_paViewFrame;
@@ -566,7 +566,7 @@ void KHTMLPart::clear()
   d->m_baseURL = KURL();
   d->m_baseTarget = QString::null;
   d->m_delayRedirect = 0;
-  d->m_redirectURL = KURL();
+  d->m_redirectURL = QString::null;
   d->m_bClearing = false;
 
   d->m_bMousePressed = false;
@@ -860,7 +860,7 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
 
 }
 
-void KHTMLPart::scheduleRedirection( int delay, const KURL &url )
+void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
   d->m_delayRedirect = delay;
   d->m_redirectURL = url;
@@ -870,10 +870,10 @@ void KHTMLPart::slotRedirect()
 {
   kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
 
-  KURL u = d->m_redirectURL;
+  QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
-  d->m_redirectURL = KURL();
-  urlSelected( u.url() );
+  d->m_redirectURL = QString::null;
+  urlSelected( u );
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
@@ -1670,7 +1670,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     if (contentType.isNull())
       d->m_userHeaders = "Content-type: application/x-www-form-urlencoded\r\n";
     else
-      d->m_userHeaders = "Content-type: " + contentType + "; boundary=" + boundary + "\r\n"; 
+      d->m_userHeaders = "Content-type: " + contentType + "; boundary=" + boundary + "\r\n";
 
     emit d->m_extension->openURLRequest( u, args );
   }

@@ -297,7 +297,7 @@ public:
   /**
    * @internal
    */
-  void scheduleRedirection( int delay, const KURL &url );
+  void scheduleRedirection( int delay, const QString &url );
 
   /**
    * sets the charset to use for displaying html pages. If override is true,
