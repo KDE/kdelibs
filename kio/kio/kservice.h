@@ -30,6 +30,7 @@
 class QDataStream;
 class KDesktopFile;
 class KService;
+class KMimeType;
 class KBuildSycoca;
 class QWidget;
 
@@ -271,13 +272,31 @@ public:
 
   /**
    * Checks whether the service supports this service type
-   * @param _service The name of the service type you are
+   * @param _serviceType The name of the service type you are
    *        interested in determining whether this services supports.
    *
-   * @return true if the service you specified is supported,
+   * @return true if the service type you specified is supported,
    *        otherwise false.
    */
-  bool hasServiceType( const QString& _service ) const;
+  bool hasServiceType( const QString& _serviceType ) const;
+
+  /**
+   * Checks whether the service supports this service type
+   * @param _servicePtr A pointer to the service type you are
+   *        interested in.
+   *
+   * @return true if the service type you specified is supported,
+   *        otherwise false.
+   * @since 3.2
+   */
+  bool hasServiceType( KMimeType *_servicePtr, const QString &_serviceType ) const;
+
+  /**
+   * Enable caching of service types
+   * @since 3.2
+   */
+  void enableServiceTypeCache(bool b);
+
   /**
    * Checks whether a service is used as a default setting, for
    *         example as plugin in a file manager. Usually that is the 
