@@ -69,37 +69,52 @@ int main(int argc, char **argv) {
     filter( "~/.kde", QCString("file:")+QDir::homeDirPath().local8Bit()+"/.kde", "kshorturifilter" );
 
     // SMB share test with a specific filter chosen
-    // TODO: put the expected results instead of 0
-    filter( "\\\\THUNDER\\", 0, "kshorturifilter" );
-    filter( "smb://", 0, "kshorturifilter" );
-    filter( "smb://THUNDER\\WORKGROUP", 0, "kshorturifilter" );
-    filter( "smb:/THUNDER/WORKGROUP", 0, "kshorturifilter" );
-    filter( "smb:///", 0, "kshorturifilter" ); // use specific filter.
-    filter( "smb:", 0, "kshorturifilter" ); // use specific filter.
-    filter( "smb:/", 0, "kshorturifilter" ); // use specific filter.
-
-    // Executable tests
-    filter( "kppp", "kppp", "kshorturifilter" );
-    filter( "xemacs", "xemacs" );
+    filter( "\\\\THUNDER\\", "smb:/THUNDER/", "kshorturifilter" );
+    filter( "smb://", "smb:/", "kshorturifilter" );
+    filter( "smb://THUNDER\\WORKGROUP", "smb:/THUNDER%5CWORKGROUP", "kshorturifilter" );
+    filter( "smb:/THUNDER/WORKGROUP", "smb:/THUNDER/WORKGROUP", "kshorturifilter" );
+    filter( "smb:///", "smb:/", "kshorturifilter" ); // use specific filter.
+    filter( "smb:", "smb:/", "kshorturifilter" ); // use specific filter.
+    filter( "smb:/", "smb:/", "kshorturifilter" ); // use specific filter.
 
     // IKWS test
     filter( "KDE", "http://navigation.realnames.com/resolver.dll?realname=KDE&charset=utf-8&providerid=180" );
     filter( "GNOME", "http://navigation.realnames.com/resolver.dll?realname=GNOME&charset=utf-8&providerid=180" );
+
+    // Executable tests
+    filter( "kppp", "kppp", minicliFilters );
+    filter( "xemacs", "xemacs", minicliFilters );
+
     // No IKWS in minicli
     filter( "KDE", "KDE", minicliFilters );
     filter( "I/dont/exist", "I/dont/exist", minicliFilters );
 
     // ENVIRONMENT variable
     filter( "$KDEDIR/kdelibs/kio" ); // note: this dir doesn't exist...
-        // and this currently launches realnames, which is wrong IMHO. Maybe
-        // we should prevent realnames from happening when there is a '/' ?
+
+    // and this currently launches realnames, which is wrong IMHO. Maybe
+    // we should prevent realnames from happening when there is a '/' ?
+    //
+    // Now "Realnames" will should only get invoked if and only if
+    // $KDEDIR has not already been set.  Otherwise, the shortURI filter
+    // plugin will consume it, evenif the environment variable does not
+    // exist. (DA)
     filter( "$KDEDIR/include" );
     filter( "$HOME/.kde/share" );
     filter( "$HOME/$KDEDIR/kdebase/kcontrol/ebrowsing" );
     filter( "$1/$2/$3" );  // can be used as bogus or valid test
     filter( "$$$$" ); // worst case scenarios.
-    filter( "$QTDIR", QCString("file:")+getenv("QTDIR"), "kshorturifilter" ); //use specific filter.
-    filter( "$KDEDIR", QCString("file:")+getenv("KDEDIR"), "kshorturifilter" ); //use specific filter.
+
+    // Replaced the match testing with a 0 since
+    // the shortURI filter will return the string
+    // itself if the requested environment variable
+    // is not already set.
+    filter( "$QTDIR", 0, "kshorturifilter" ); //use specific filter.
+    filter( "$KDEDIR", 0, "kshorturifilter" ); //use specific filter.
+
+    // Search Engine tests
+    filter( "gg:foo bar" );
+    filter( "ya:foo bar was here" );
 
     return 0;
 }
