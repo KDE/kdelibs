@@ -237,7 +237,7 @@ void yy_flush_buffer YY_PROTO(( YY_BUFFER_STATE b ));
 #define YY_FLUSH_BUFFER yy_flush_buffer( yy_current_buffer )
 
 YY_BUFFER_STATE yy_scan_buffer YY_PROTO(( char *base, yy_size_t size ));
-YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *str ));
+YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str ));
 YY_BUFFER_STATE yy_scan_bytes YY_PROTO(( yyconst char *bytes, int len ));
 
 static void *yy_flex_alloc YY_PROTO(( yy_size_t ));
@@ -849,7 +849,7 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 128 "scanner.ll"
-idl_line_no++;
+{ idl_line_no++; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -859,11 +859,13 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 #line 130 "scanner.ll"
-;
+{
+                          exit( 1 );
+                        }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 131 "scanner.ll"
+#line 133 "scanner.ll"
 {
 			  QString s( yytext );
 			  yylval._str = new QString( s.mid( 10, s.stripWhiteSpace().length() - 11 ) );
@@ -873,153 +875,155 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 137 "scanner.ll"
-;
+#line 139 "scanner.ll"
+{
+                          idl_line_no++;
+                        }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 140 "scanner.ll"
+#line 142 "scanner.ll"
 return T_LEFT_CURLY_BRACKET;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 141 "scanner.ll"
+#line 143 "scanner.ll"
 return T_RIGHT_CURLY_BRACKET;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 142 "scanner.ll"
+#line 144 "scanner.ll"
 return T_LEFT_PARANTHESIS;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 143 "scanner.ll"
+#line 145 "scanner.ll"
 return T_RIGHT_PARANTHESIS;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 144 "scanner.ll"
+#line 146 "scanner.ll"
 return T_COLON;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 145 "scanner.ll"
+#line 147 "scanner.ll"
 return T_COMMA;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 146 "scanner.ll"
+#line 148 "scanner.ll"
 return T_SEMICOLON;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 147 "scanner.ll"
+#line 149 "scanner.ll"
 return T_AMPERSAND;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 148 "scanner.ll"
+#line 150 "scanner.ll"
 return T_LESS;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 149 "scanner.ll"
+#line 151 "scanner.ll"
 return T_GREATER;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 150 "scanner.ll"
+#line 152 "scanner.ll"
 return T_SCOPE;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 151 "scanner.ll"
+#line 153 "scanner.ll"
 return T_EQUAL;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 153 "scanner.ll"
+#line 155 "scanner.ll"
 return T_CONST;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 154 "scanner.ll"
+#line 156 "scanner.ll"
 return T_ENUM;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 155 "scanner.ll"
+#line 157 "scanner.ll"
 return T_CLASS;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 156 "scanner.ll"
+#line 158 "scanner.ll"
 return T_VIRTUAL;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 157 "scanner.ll"
+#line 159 "scanner.ll"
 return T_PUBLIC;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 158 "scanner.ll"
+#line 160 "scanner.ll"
 return T_DCOP_AREA;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 159 "scanner.ll"
+#line 161 "scanner.ll"
 return T_TYPEDEF;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 160 "scanner.ll"
+#line 162 "scanner.ll"
 return T_DCOP;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 161 "scanner.ll"
+#line 163 "scanner.ll"
 return T_NULL;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 163 "scanner.ll"
+#line 165 "scanner.ll"
 return T_DCOP_AREA;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 164 "scanner.ll"
+#line 166 "scanner.ll"
 return T_RIGHT_CURLY_BRACKET;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 165 "scanner.ll"
+#line 167 "scanner.ll"
 return T_DCOP_AREA;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 166 "scanner.ll"
+#line 168 "scanner.ll"
 return T_RIGHT_CURLY_BRACKET;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 168 "scanner.ll"
+#line 170 "scanner.ll"
 {
 			  yylval._str = new QString( yytext );
 			  return T_IDENTIFIER;
 			}
 	YY_BREAK
 case 33:
-#line 173 "scanner.ll"
-case 34:
-#line 174 "scanner.ll"
-case 35:
 #line 175 "scanner.ll"
-case 36:
+case 34:
 #line 176 "scanner.ll"
+case 35:
+#line 177 "scanner.ll"
+case 36:
+#line 178 "scanner.ll"
 case 37:
 YY_RULE_SETUP
-#line 176 "scanner.ll"
+#line 178 "scanner.ll"
 {
 			  yylval._float = ascii_to_longdouble( yytext );
 			  return T_DOUBLE_LITERAL;
@@ -1027,7 +1031,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 180 "scanner.ll"
+#line 182 "scanner.ll"
 {
 			  yylval._int = ascii_to_longlong( 10, yytext );
 			  return T_INTEGER_LITERAL;
@@ -1035,7 +1039,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 184 "scanner.ll"
+#line 186 "scanner.ll"
 {
 			  yylval._int = ascii_to_longlong( 8, yytext );
 			  return T_INTEGER_LITERAL;
@@ -1043,7 +1047,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 188 "scanner.ll"
+#line 190 "scanner.ll"
 {
 			  yylval._int = ascii_to_longlong( 16, yytext + 2 );
 			  return T_INTEGER_LITERAL;
@@ -1051,7 +1055,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 192 "scanner.ll"
+#line 194 "scanner.ll"
 {
                           QCString s( yytext );
 	                  s = s.mid( 1, s.length() - 2 );
@@ -1061,7 +1065,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 198 "scanner.ll"
+#line 200 "scanner.ll"
 {
                           QString s( yytext );
                           yylval._str = new QString( s.mid( 1, s.length() - 2 ) );
@@ -1070,17 +1074,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 203 "scanner.ll"
+#line 205 "scanner.ll"
 {
                           return T_UNKNOWN;
                         }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 207 "scanner.ll"
+#line 209 "scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1084 "scanner.cc"
+#line 1088 "scanner.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1265,7 +1269,7 @@ static int yy_get_next_buffer()
 		/* don't do the read, it's not guaranteed to return an EOF,
 		 * just force an EOF
 		 */
-		yy_n_chars = 0;
+		yy_current_buffer->yy_n_chars = yy_n_chars = 0;
 
 	else
 		{
@@ -1320,6 +1324,8 @@ static int yy_get_next_buffer()
 		/* Read in more data. */
 		YY_INPUT( (&yy_current_buffer->yy_ch_buf[number_to_move]),
 			yy_n_chars, num_to_read );
+
+		yy_current_buffer->yy_n_chars = yy_n_chars;
 		}
 
 	if ( yy_n_chars == 0 )
@@ -1444,7 +1450,8 @@ register char *yy_bp;
 
 		yy_cp += (int) (dest - source);
 		yy_bp += (int) (dest - source);
-		yy_n_chars = yy_current_buffer->yy_buf_size;
+		yy_current_buffer->yy_n_chars =
+			yy_n_chars = yy_current_buffer->yy_buf_size;
 
 		if ( yy_cp < yy_current_buffer->yy_ch_buf + 2 )
 			YY_FATAL_ERROR( "flex scanner push-back overflow" );
@@ -1487,13 +1494,26 @@ static int input()
 
 			switch ( yy_get_next_buffer() )
 				{
+				case EOB_ACT_LAST_MATCH:
+					/* This happens because yy_g_n_b()
+					 * sees that we've accumulated a
+					 * token and flags that we need to
+					 * try matching the token before
+					 * proceeding.  But for input(),
+					 * there's no matching to consider.
+					 * So convert the EOB_ACT_LAST_MATCH
+					 * to EOB_ACT_END_OF_FILE.
+					 */
+
+					/* Reset buffer status. */
+					yyrestart( yyin );
+
+					/* fall through */
+
 				case EOB_ACT_END_OF_FILE:
 					{
 					if ( yywrap() )
-						{
-						yy_c_buf_p = yytext_ptr + offset;
 						return EOF;
-						}
 
 					if ( ! yy_did_buffer_switch_on_eof )
 						YY_NEW_FILE;
@@ -1507,15 +1527,6 @@ static int input()
 				case EOB_ACT_CONTINUE_SCAN:
 					yy_c_buf_p = yytext_ptr + offset;
 					break;
-
-				case EOB_ACT_LAST_MATCH:
-#ifdef __cplusplus
-					YY_FATAL_ERROR(
-					"unexpected last match in yyinput()" );
-#else
-					YY_FATAL_ERROR(
-					"unexpected last match in input()" );
-#endif
 				}
 			}
 		}
@@ -1679,6 +1690,9 @@ YY_BUFFER_STATE b;
 #endif
 
 	{
+	if ( ! b )
+		return;
+
 	b->yy_n_chars = 0;
 
 	/* We always need two end-of-buffer characters.  The first causes
@@ -1738,17 +1752,17 @@ yy_size_t size;
 
 #ifndef YY_NO_SCAN_STRING
 #ifdef YY_USE_PROTOS
-YY_BUFFER_STATE yy_scan_string( yyconst char *str )
+YY_BUFFER_STATE yy_scan_string( yyconst char *yy_str )
 #else
-YY_BUFFER_STATE yy_scan_string( str )
-yyconst char *str;
+YY_BUFFER_STATE yy_scan_string( yy_str )
+yyconst char *yy_str;
 #endif
 	{
 	int len;
-	for ( len = 0; str[len]; ++len )
+	for ( len = 0; yy_str[len]; ++len )
 		;
 
-	return yy_scan_bytes( str, len );
+	return yy_scan_bytes( yy_str, len );
 	}
 #endif
 
@@ -1957,7 +1971,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 207 "scanner.ll"
+#line 209 "scanner.ll"
 
 
 void dcopidlInitFlex( const char *_code )

@@ -20,5 +20,5 @@ DISTCLEANFILES = $(SRCMETA)
 
 parser:
 	cd $(srcdir) && flex -B -8 -oscanner.cc scanner.ll  ;\
-	bison -d -t -v -o yacc.cc yacc.yy
+	bison -t -d -v -o yacc.cc yacc.yy
 

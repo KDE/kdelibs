@@ -125,18 +125,20 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 %%
 
 [ \t]			;
-[\n]			idl_line_no++;
+[\n]			{ idl_line_no++; }
 "//"[^\n]*		;
-"#!"[^\n]*		;
+"#!"[^\n]*		{
+                          exit( 1 );
+                        }
 "#include <"[^>]*">"\s*\n {
 			  QString s( yytext );
 			  yylval._str = new QString( s.mid( 10, s.stripWhiteSpace().length() - 11 ) );
                           idl_line_no++;
                           return T_INCLUDE;
                         }
-"#"[^\n]*\n             ;
-
-
+"#"[^\n]*\n             {
+                          idl_line_no++;
+                        }
 "{"			return T_LEFT_CURLY_BRACKET;
 "}"			return T_RIGHT_CURLY_BRACKET;
 "("			return T_LEFT_PARANTHESIS;
