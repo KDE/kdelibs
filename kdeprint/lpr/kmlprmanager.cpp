@@ -195,6 +195,9 @@ void KMLprManager::checkPrinterState(KMPrinter *prt)
 
 DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool config)
 {
+	if (!prt)
+		return NULL;
+
 	LprHandler	*handler = findHandler(prt);
 	PrintcapEntry	*entry = findEntry(prt);
 	if (handler && entry)
