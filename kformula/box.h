@@ -26,7 +26,8 @@ enum BoxType {
   EQUAL = '=',
   MORE = '>',
   LESS = '<',
-  ABS = '|'
+  ABS = '|',
+  SLASH = '\\'
 };
 
 //a box is a unit of a formula.
@@ -73,5 +74,13 @@ public:
 
 
 #endif // BOX_H_INCLUDED
+
+
+
+
+
+
+
+
 
 

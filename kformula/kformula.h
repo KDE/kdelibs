@@ -6,7 +6,7 @@
 #include <qcstring.h>
 #include <qrect.h>
 
-#define SPECIAL "+-*/@^#{}_(=<>|"
+#define SPECIAL "+-*/@^#{}_(=<>|\\"
 
 class box;
 

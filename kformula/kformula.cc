@@ -184,9 +184,9 @@ void KFormula::parse(QCString text, QArray<charinfo> *info)
     i++;
   }
 
-  //multiplication
+  //multiplication and slash
   for(i = (int)temp.size() - 2; i >= 0; i--) {
-    if(temp[i] != TIMES) continue;
+    if(temp[i] != TIMES && temp[i] != SLASH) continue;
     parenthesize(temp, i, info);
     i++;
   }
@@ -279,6 +279,9 @@ box * KFormula::makeBoxes(char * str, int offset,
   int toplevel = -1; //the location of the toplevel operator
   int level = 0;
   int i;
+
+  //when the posinstr bug is fixed, change the "maxlen + 1" in the info
+  //comparison to "maxlen"
 
   if(maxlen <= 0) { // make empty box:
     boxes.resize(boxes.size() + 1);

@@ -186,6 +186,21 @@ void box::calculate(QPainter &p, int setFontsize)
       rect = rect.unite(tmp1);
       break;
 
+    case SLASH:
+      b1->calculate(p, fontsize);
+      b2->calculate(p, fontsize);
+      tmp1 = b1->getRect();
+      tmp2 = b2->getRect();
+      
+      relx += tmp1.right() + SPACE;
+      b2x += -tmp2.left() + tmp1.right() + SPACE * 2 +
+	QMAX(tmp1.height(), tmp2.height()) / 2;
+      tmp2.moveBy(b2x, 0);
+
+      rect = tmp1.unite(tmp2);
+
+      break;
+
       //for the bar--yes, I know it's unreadable
     case DIVIDE:
       b1->calculate(p, fontsize * 19 / 20);
@@ -365,6 +380,19 @@ void box::draw(QPainter &p, int x, int y)
     p.setBrush( Qt::NoBrush );
     break;
 
+  case SLASH:
+    if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
+      p.setPen(QPen(Qt::black, 2));
+    else
+      p.setPen(QPen(Qt::black, 1));  // mainly for the printer
+    
+    p.drawLine(x + relx, rect.bottom() + y,
+	       x + relx + rect.height() / 2, rect.top() + y);
+    
+    p.setPen(QPen());
+
+    break;
+
   case DIVIDE: //draw the bar whose thickness depends on fontsize
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
       p.setPen(QPen(Qt::black, 2));
@@ -468,15 +496,20 @@ QRect box::getCursorPos(charinfo i, int x, int y)
 
   switch(type) {
   case TEXT: //just the position in the text.
+    //The assert should be returned when the posinstr bug is fixed.
+    //ASSERT(i.posinbox < (int)text.size());
+    if(i.posinbox >= (int)text.size()) i.posinbox = (int)text.size() - 1;
     if(text.size() <= 1) {
       tmp.setX(rect.center().x() + x - 1);
       break;
     }
     if(i.posinbox == 0) tmp.setX(rect.left() + x - 1); 
     else tmp.setX(fm.boundingRect(text, i.posinbox).right() + x + 1);
+
     break;
 
   case PLUS:
+  case SLASH:
   case MINUS:
   case TIMES:
   case MORE:
@@ -484,7 +517,13 @@ QRect box::getCursorPos(charinfo i, int x, int y)
   case EQUAL: //for these, the cursor can be to the left or right
               //of the operator.
     if(i.posinbox == 0) tmp.setX(relx + x - 1);
-    else tmp.setX(x + rect.right() + 1);
+    else {
+      //uncomment the following and comment the line after when
+      //the bug with posinstr is fixed.  For now, a (partial) workaround.
+      //      if(b2 != NULL) tmp.setX(x + b2x + b2->rect.x() + 1);
+      //      else  tmp.setX(x + rect.right() + 1);
+      tmp.setX(x + rect.right() + 1);
+    }
     break;
 
   default: //for everything else, the cursor is either to the left
@@ -498,6 +537,12 @@ QRect box::getCursorPos(charinfo i, int x, int y)
 
   return tmp;
 }
+
+
+
+
+
+
 
 
 

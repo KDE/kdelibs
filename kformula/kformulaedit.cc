@@ -160,6 +160,10 @@ void KFormulaEdit::redraw(int all)
 	else {
 	  tmp = tmp.unite(getCursorPos(i));
 	}
+	if(formText[i] == SLASH) { //we need its height
+	  tmp = tmp.unite(QRect(tmp.x(), info[i].where->getLastRect().y(),
+				1, info[i].where->getLastRect().height()));
+	}
       }
     }
 
@@ -848,7 +852,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	    if(level < 0) break;
 	    if(level == 0 && strchr("+-#=<>", formText[i])) break;
 	    //the "+-#=<>" are all operators with lower precedence than
-	    //the slash.  if they are encoundered, they don't end up in
+	    //the divide.  if they are encoundered, they don't end up in
 	    //the numerator (unless they are selected but then we wouldn't
 	    //be here).
 	  }
