@@ -221,46 +221,52 @@ void KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
                 ytable[y][1] = (unsigned char) abs((int)gd);
                 ytable[y][2] = (unsigned char) abs((int)bd);
             }
+            int h = (pixmap.height()+1)>>1;
             
-            for (y = 0; y < pixmap.height(); y++) {
-                unsigned int *scanline = (unsigned int *)image.scanLine(y);
-                for (x = 0; x < pixmap.width(); x++) {
-                    if (eff == PyramidGradient)
-                    {
-                        scanline[x] = qRgb(rcb-rSign*(xtable[x][0]+ytable[y][0]),
-                                           gcb-gSign*(xtable[x][1]+ytable[y][1]),
-                                           bcb-bSign*(xtable[x][2]+ytable[y][2]));
+            for (y = 0; y < h; y++) {
+                unsigned int *sl1 = (unsigned int *)image.scanLine(y);
+                unsigned int *sl2 = (unsigned int *)image.scanLine(QMAX(pixmap.height()-y-1, y));
+                
+                unsigned int rgb;
+                int w = (pixmap.width()+1)>>1;
+                int x2 = pixmap.width()-1;
+                    
+                for (x = 0; x < w; x++, x2--) {
+                    if (eff == PyramidGradient) {
+                        rgb = qRgb(rcb-rSign*(xtable[x][0]+ytable[y][0]),
+                                   gcb-gSign*(xtable[x][1]+ytable[y][1]),
+                                   bcb-bSign*(xtable[x][2]+ytable[y][2]));
                     }
-                    if (eff == RectangleGradient)
-                    {
-                        scanline[x] = qRgb(rcb - rSign * 
-                                           QMAX(xtable[x][0], ytable[y][0]) * 2,
-                                           gcb - gSign *
-                                           QMAX(xtable[x][1], ytable[y][1]) * 2,
-                                           bcb - bSign *
-                                           QMAX(xtable[x][2], ytable[y][2]) * 2);
+                    if (eff == RectangleGradient) {
+                        rgb = qRgb(rcb - rSign * 
+                                   QMAX(xtable[x][0], ytable[y][0]) * 2,
+                                   gcb - gSign *
+                                   QMAX(xtable[x][1], ytable[y][1]) * 2,
+                                   bcb - bSign *
+                                   QMAX(xtable[x][2], ytable[y][2]) * 2);
                     }
-                    if (eff == PipeCrossGradient)
-                    {
-                        scanline[x] = qRgb(rcb - rSign * 
-                                           QMIN(xtable[x][0], ytable[y][0]) * 2,
-                                           gcb - gSign *
-                                           QMIN(xtable[x][1], ytable[y][1]) * 2,
-                                           bcb - bSign *
-                                           QMIN(xtable[x][2], ytable[y][2]) * 2);
+                    if (eff == PipeCrossGradient) {
+                        rgb = qRgb(rcb - rSign * 
+                                   QMIN(xtable[x][0], ytable[y][0]) * 2,
+                                   gcb - gSign *
+                                   QMIN(xtable[x][1], ytable[y][1]) * 2,
+                                   bcb - bSign *
+                                   QMIN(xtable[x][2], ytable[y][2]) * 2);
                     }
-                    if (eff == EllipticGradient)
-                    {
-                        scanline[x] = qRgb(rcb - rSign * 
-                                           (int)sqrt((xtable[x][0]*xtable[x][0] +
-                                                      ytable[y][0]*ytable[y][0])*2),
-                                           gcb - gSign *
-                                           (int)sqrt((xtable[x][1]*xtable[x][1] +
-                                                      ytable[y][1]*ytable[y][1])*2),
-                                           bcb - bSign *
-                                           (int)sqrt((xtable[x][2]*xtable[x][2] +
-                                                      ytable[y][2]*ytable[y][2])*2));
+                    if (eff == EllipticGradient) {
+                        rgb = qRgb(rcb - rSign * 
+                                   (int)sqrt((xtable[x][0]*xtable[x][0] +
+                                              ytable[y][0]*ytable[y][0])*2),
+                                   gcb - gSign *
+                                   (int)sqrt((xtable[x][1]*xtable[x][1] +
+                                              ytable[y][1]*ytable[y][1])*2),
+                                   bcb - bSign *
+                                   (int)sqrt((xtable[x][2]*xtable[x][2] +
+                                              ytable[y][2]*ytable[y][2])*2));
                     }
+                    
+                    sl1[x] = sl2[x] = rgb;
+                    sl1[x2] = sl2[x2] = rgb;
                 }
             }
         }
