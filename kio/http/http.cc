@@ -1690,6 +1690,14 @@ bool HTTPProtocol::readHeader()
   if ( m_request.method==HTTP_POST && !m_bUnauthorized )
     m_bufPOST.resize(0);
 
+  // Do not cache pages originating from password
+  // protected sites.
+  if ( Authentication != AUTH_None )
+  {
+    m_bCachedWrite = false;
+    mayCache = false;
+  }
+
   // WABA: Correct for tgz files with a gzip-encoding.
   // They really shouldn't put gzip in the Content-Encoding field!
   // Web-servers really shouldn't do this: They let Content-Size refer
