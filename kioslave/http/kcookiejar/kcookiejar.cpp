@@ -458,7 +458,8 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 static const char * parseNameValue(const char *header,
                                   QString &Name,
                                   QString &Value,
-                                  bool keepQuotes=false)
+                                  bool keepQuotes=false,
+                                  bool rfcQuotes=false)
 {
     const char *s = header;
     // Parse 'my_name' part
@@ -494,11 +495,13 @@ static const char * parseNameValue(const char *header,
         }
     }
 
-    if (!keepQuotes && (*s == '\"'))
+    if ((rfcQuotes || !keepQuotes) && (*s == '\"'))
     {
         // Parse '"my_value"' part (quoted value)
-        s++;  // skip "
-        header = s;
+        if (keepQuotes)
+           header = s++;
+        else
+           header = ++s; // skip "
         for(;(*s != '\"');s++)
         {
             if ((*s=='\0') || (*s=='\n'))
@@ -510,10 +513,12 @@ static const char * parseNameValue(const char *header,
             }
         }
         Value = QString::fromLatin1(header);
-        Value.truncate( s - header );
-
         // *s == '\"';
-        s++;
+        if (keepQuotes)
+           Value.truncate( ++s - header );
+        else
+           Value.truncate( s++ - header );
+
         // Skip any remaining garbage
         for(;; s++)
         {
@@ -722,7 +727,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         else if (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0)
         {
             // Attempt to follow rfc2965
-            cookieStr = parseNameValue(cookieStr+12, Name, Value, true);
+            cookieStr = parseNameValue(cookieStr+12, Name, Value, true, true);
 
             // Host = FQDN
             // Default domain = ""
@@ -963,6 +968,13 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
           // Maybe the domain doesn't start with a "."
           QString domain = '.' + cookiePtr->domain();
           if (domains.contains(domain))
+             valid = true;
+       }
+       
+       if (!valid)
+       {
+          // Maybe it points to a sub-domain
+          if (cookiePtr->domain().endsWith("."+cookiePtr->host()))
              valid = true;
        }
 

@@ -1,5 +1,6 @@
 # Makefile.am of kdebase/kioslave/http
 
+SUBDIRS=tests
 INCLUDES=	$(all_includes)
 
 ####### Files
