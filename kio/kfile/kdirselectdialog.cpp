@@ -63,7 +63,7 @@ public:
 KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
                                    QWidget *parent, const char *name,
                                    bool modal)
-    : KDialogBase( parent, name, modal, i18n("Select a Directory"), Ok|Cancel),
+    : KDialogBase( parent, name, modal, i18n("Select Directory"), Ok|Cancel),
       m_localOnly( localOnly )
 {
     d = new KDirSelectDialogPrivate;
