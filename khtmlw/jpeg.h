@@ -62,7 +62,7 @@ void qimageio_jpeg_src(j_decompress_ptr cinfo, QDataStream *image);
 //
 
 void qimageio_init_source(j_decompress_ptr cinfo);
-int qimageio_fill_input_buffer(j_decompress_ptr cinfo);
+boolean qimageio_fill_input_buffer(j_decompress_ptr cinfo);
 void qimageio_skip_input_data(j_decompress_ptr cinfo, long num_bytes);
 void qimageio_term_source(j_decompress_ptr cinfo);
 

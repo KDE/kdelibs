@@ -29,6 +29,7 @@
 
 #include<stdio.h>
 #include<assert.h>
+#include<sys/types.h>
 
 #include"qimage.h"
 #include"qdatastream.h"
@@ -80,7 +81,7 @@ void read_jpeg_jfif(QImageIO * iio)
     jpeg_create_decompress(&cinfo);
 
     qimageio_jpeg_src(&cinfo, &s);
-    jpeg_read_header(&cinfo, TRUE);
+    jpeg_read_header(&cinfo, (boolean) TRUE);
 
 
 
@@ -88,7 +89,7 @@ void read_jpeg_jfif(QImageIO * iio)
     // If we're in an 8bit display, we want a colourmap.
 
     if ((depth < 32) && (cinfo.out_color_space == JCS_RGB)) {
-	cinfo.quantize_colors = TRUE;
+	cinfo.quantize_colors = (boolean) TRUE;
 	cinfo.dither_mode = JDITHER_ORDERED;
     }
     jpeg_start_decompress(&cinfo);
@@ -234,13 +235,13 @@ void qimageio_init_source(j_decompress_ptr cinfo)
 {
     qimageio_jpeg_source_mgr *ptr = (qimageio_jpeg_source_mgr *) cinfo->src;
 
-    ptr->start_of_file = TRUE;
+    ptr->start_of_file = (boolean)TRUE;
 }				/////////
 
     //
     // Reads data from stream into JPEG working buffer
     //
-int qimageio_fill_input_buffer(j_decompress_ptr cinfo)
+boolean qimageio_fill_input_buffer(j_decompress_ptr cinfo)
 {
     qimageio_jpeg_source_mgr *ptr = (qimageio_jpeg_source_mgr *) cinfo->src;
     size_t nbytes;
@@ -253,7 +254,7 @@ int qimageio_fill_input_buffer(j_decompress_ptr cinfo)
 	if (ptr->start_of_file) {
 	    fprintf(stderr, "error: file empty.\n");
 
-	    return FALSE;
+	    return (boolean)FALSE;
 	}
 	fprintf(stderr, "warning: premature EOF in file.\n");
 
@@ -265,9 +266,9 @@ int qimageio_fill_input_buffer(j_decompress_ptr cinfo)
     }
     ptr->pub.next_input_byte = ptr->buffer;
     ptr->pub.bytes_in_buffer = nbytes;
-    ptr->start_of_file = FALSE;
+    ptr->start_of_file = (boolean) FALSE;
 
-    return TRUE;
+    return (boolean) TRUE;
 }
 
 

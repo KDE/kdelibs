@@ -62,11 +62,15 @@ int unsetenv(const char *name) {
 #include <sys/select.h>
 #endif
 
+extern "C" {
+
 void usleep(unsigned int usec) {
         struct timeval _usleep_tv;
         _usleep_tv.tv_sec = usec/1000000;
         _usleep_tv.tv_usec = usec%1000000;
         select(0,0,0,0,&_usleep_tv);
+}
+
 }
 
 #endif
