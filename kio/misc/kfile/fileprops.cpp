@@ -120,16 +120,23 @@ bool FileProps::setValue( const QString& group,
                           const QString& key, const QString &value )
 {
     KFileMetaInfoGroup g = m_info->group( group );
+    bool wasAdded = false;
     if ( !g.isValid() )
     {
         if ( m_info->addGroup( group ) )
+        {
+            wasAdded = true;
             g = m_info->group( group );
+        }
         else
             return false;
     }
 
     bool ok = g[key].setValue( value );
 
+    if ( !ok && wasAdded ) // remove the created group again
+        (void) m_info->removeGroup( group );
+        
     m_dirty |= ok;
     return ok;
 }
