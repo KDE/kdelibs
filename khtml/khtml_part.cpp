@@ -182,7 +182,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "decrypted", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
-  d->m_paDebugScript = new KAction( "Script debugger", 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
+  d->m_paDebugScript = new KAction( "Script Debugger", 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( "Print Rendering Tree to STDOUT", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( "Print DOM Tree to STDOUT", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
