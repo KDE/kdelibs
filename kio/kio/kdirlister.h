@@ -59,7 +59,7 @@ class KDirLister : public QObject
   Q_PROPERTY( bool autoUpdate READ autoUpdate WRITE setAutoUpdate )
   Q_PROPERTY( bool showingDotFiles READ showingDotFiles WRITE setShowingDotFiles )
   Q_PROPERTY( bool dirOnlyMode READ dirOnlyMode WRITE setDirOnlyMode )
-  Q_PROPERTY( bool autoErrorHandlingEnabled READ autoErrorHandlingEnabled WRITE setAutoErrorHandlingEnabled )
+  Q_PROPERTY( bool autoErrorHandlingEnabled READ autoErrorHandlingEnabled )
   Q_PROPERTY( QString nameFilter READ nameFilter WRITE setNameFilter )
   Q_PROPERTY( QStringList mimeFilter READ mimeFilters WRITE setMimeFilter RESET clearMimeFilter )
 public:
