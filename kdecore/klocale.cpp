@@ -699,6 +699,9 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 	case 'C':
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.year() / 100));
 		continue;
+	case 'n':
+                rst.replace(i, 2, QString().sprintf("%2d", pDate.month()));
+		continue;
 	case 'm':
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.month()));
 		continue;
