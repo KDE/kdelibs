@@ -133,12 +133,15 @@ void KLineEdit::setCompletionMode( KGlobal::Completion mode )
     // feature will be enabled even if one is requested.
     if ( echoMode() != QLineEdit::Normal )
         mode = KGlobal::CompletionNone; // override the request.
-    if( comp != 0 )
+
+    m_iCompletionMode = mode;
+
+    // Always sync up KCompletion mode with ours as long as we
+    // are performing completions.
+    if( comp != 0 && m_iCompletionMode != KGlobal::CompletionNone )
     {
-        //Sync KCompletion mode with ours.
         comp->setCompletionMode( m_iCompletionMode );
     }
-    m_iCompletionMode = mode;
 }
 
 bool KLineEdit::setCompletionKey( int ckey )
@@ -225,7 +228,7 @@ void KLineEdit::rotateText( const QString& input )
         return;
 
     if( m_iCompletionMode != KGlobal::CompletionNone &&
-	comp != 0 && comp->hasMultipleMatches() )
+	    comp != 0 && comp->hasMultipleMatches() )
     {
         if( m_iCompletionMode == KGlobal::CompletionShell )
         {
@@ -277,7 +280,6 @@ void KLineEdit::slotTextChanged( const QString& text )
     {
         int pos = cursorPosition();
         int len = text.length();
-        debug( "pos : %i\nprevpos : %i\nlen : %i\nprevlen : %i", pos, prevpos, len, prevlen );
         if( pos > prevpos && len >= prevlen )
             emit completion( text );
         prevpos = pos;
