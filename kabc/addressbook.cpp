@@ -744,8 +744,12 @@ QPtrList<Resource> AddressBook::resources()
   QPtrList<Resource> list;
 
   KRES::Manager<Resource>::ActiveIterator it;
-  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
-    list.append( *it );
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
+    if ( d->mManager->standardResource() == (*it) )
+      list.prepend( *it );
+    else
+      list.append( *it );
+  }
 
   return list;
 }
