@@ -14,7 +14,7 @@ Appendix: Currently supported properties
 
 Non-DOM properties:
 
-window.alert(), confirm(), open() [not complete yet]
+window.status, alert(), confirm(), open() [not complete yet]
 navigator.appCodeName, appName, appVersion, userAgent [latter one is set
   to "Mozilla/4.0 (X11; Konqueror; Unix)" currently]
 Image.src

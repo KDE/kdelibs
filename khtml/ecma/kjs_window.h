@@ -26,6 +26,7 @@
 #include "kjs_binding.h"
 
 class KHTMLView;
+class KHTMLPart;
 
 namespace KJS {
 
@@ -43,6 +44,7 @@ namespace KJS {
     WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
     Completion tryExecute(const List &);
     enum { Alert, Confirm, Open };
+    static void setStatusBarText(KHTMLPart *, const QString &);
   private:
     KHTMLView *widget;
     int id;

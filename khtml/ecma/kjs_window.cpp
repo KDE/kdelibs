@@ -42,8 +42,12 @@ KJSO Window::tryGet(const UString &p) const
   return Undefined();
 }
 
-void Window::tryPut(const UString &, const KJSO&)
+void Window::tryPut(const UString &p, const KJSO &v)
 {
+  if (p == "status") {
+    String s = v.toString();
+    WindowFunc::setStatusBarText(widget->part(), s.value().qstring());
+  }
 }
 
 Completion WindowFunc::tryExecute(const List &args)
@@ -58,11 +62,11 @@ Completion WindowFunc::tryExecute(const List &args)
 
   switch (id) {
   case Alert:
-    KMessageBox::error((QWidget*)widget, str, "JavaScript");
+    KMessageBox::error(widget, str, "JavaScript");
     result = Undefined();
     break;
   case Confirm:
-    i = KMessageBox::warningYesNo((QWidget*)widget, str, "JavaScript",
+    i = KMessageBox::warningYesNo(widget, str, "JavaScript",
 				  i18n("OK"), i18n("Cancel"));
     result = Boolean((i == KMessageBox::Yes));
     break;
@@ -78,4 +82,9 @@ Completion WindowFunc::tryExecute(const List &args)
   }
   }
   return Completion(Normal, result);
+}
+
+void WindowFunc::setStatusBarText(KHTMLPart *p, const QString &s)
+{
+  p->setStatusBarText(s);
 }
