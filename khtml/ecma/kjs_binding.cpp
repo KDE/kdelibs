@@ -87,28 +87,24 @@ UString DOMObject::toString(ExecState *) const
 
 Value DOMFunction::get(ExecState *exec, const Identifier &propertyName) const
 {
-  Value result;
   try {
-    result = tryGet(exec, propertyName);
+    return tryGet(exec, propertyName);
   }
   catch (DOM::DOMException e) {
-    result = Undefined();
     Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).local8Bit());
     exec->setException(err);
+    return Undefined();
   }
   catch (...) {
     kdError(6070) << "Unknown exception in DOMFunction::get()" << endl;
-    result = String("Unknown exception");
+    return String("Unknown exception");
   }
-
-  return result;
 }
 
 Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value val;
   try {
-    val = tryCall(exec, thisObj, args);
+    return tryCall(exec, thisObj, args);
   }
   // pity there's no way to distinguish between these in JS code
   // ### Look into setting prototypes of these & the use of instanceof so the exception
@@ -117,28 +113,32 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
     Object err = Error::create(exec, GeneralError, QString("DOM Exception %1").arg(e.code).local8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
+    return Undefined();
   }
   catch (DOM::RangeException e) {
     Object err = Error::create(exec, GeneralError, QString("DOM Range Exception %1").arg(e.code).local8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
+    return Undefined();
   }
   catch (DOM::CSSException e) {
     Object err = Error::create(exec, GeneralError, QString("CSS Exception %1").arg(e.code).local8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
+    return Undefined();
   }
   catch (DOM::EventException e) {
     Object err = Error::create(exec, GeneralError, QString("DOM Event Exception %1").arg(e.code).local8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
+    return Undefined();
   }
   catch (...) {
     kdError(6070) << "Unknown exception in DOMFunction::call()" << endl;
     Object err = Error::create(exec, GeneralError, "Unknown exception");
     exec->setException(err);
+    return Undefined();
   }
-  return val;
 }
 
 typedef QPtrList<ScriptInterpreter> InterpreterList;
