@@ -48,7 +48,7 @@ using namespace DOM;
 
 // -------------------------------------------------------------------------
 
-HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc) 
+HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc)
     : HTMLPositionedElementImpl(doc), HTMLImageRequester()
 {
     ismap = false;
@@ -199,7 +199,7 @@ void  HTMLImageElementImpl::pixmapChanged( QPixmap *p )
 	setPixmap( p );
 }
 
-void HTMLImageElementImpl::print(QPainter *p, int _x, int _y, 
+void HTMLImageElementImpl::print(QPainter *p, int _x, int _y,
 				 int _w, int _h, int _tx, int _ty)
 {
    _tx += x;
@@ -208,7 +208,7 @@ void HTMLImageElementImpl::print(QPainter *p, int _x, int _y,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void HTMLImageElementImpl::printObject(QPainter *p, int, int _y, 
+void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
     //printf("%s(Image)::printObject()\n", nodeName().string().ascii());
@@ -289,7 +289,7 @@ void HTMLImageElementImpl::calcMinMaxWidth()
     printf("%s(Image)::calcMinMaxWidth() known=%d\n", nodeName().string().ascii(), minMaxKnown());
 #endif
     setMinMaxKnown();
-    
+
     switch(predefinedWidth.type)
     {
     case Fixed:
@@ -312,7 +312,7 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 	    width = pixmap->width();
 	    setLayouted(false);
 	    // if it doesn't fit... make it fit
-	    // NO! Images don't scale unless told to. Ever.  -AKo 
+	    // NO! Images don't scale unless told to. Ever.  -AKo
 	    //if(availableWidth < width) width = availableWidth;
 	    minWidth = width;
 	    printf("IMG Width changed, width=%d\n",width);
@@ -352,7 +352,7 @@ void HTMLImageElementImpl::layout(bool)
 	{
 	    if(width == pixmap->width())
 		imgHeight = pixmap->height();
-	    else 
+	    else
 		imgHeight = pixmap->height()*width/pixmap->width();
 	}
     }
@@ -369,6 +369,8 @@ void HTMLImageElementImpl::layout(bool)
 	ascent = imgHeight/2;
 	descent = imgHeight/2;
 	break;
+    default:
+	break; 
     }
 
     if(border)
@@ -376,7 +378,7 @@ void HTMLImageElementImpl::layout(bool)
 	ascent += border;
 	descent += border;
     }
-    
+
 
     //printf("HTMLIMage:: layout(): w/a/d = %d/%d/%d", width, ascent, descent);
 
@@ -404,12 +406,12 @@ ushort HTMLMapElementImpl::id() const
 }
 
 bool
-HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_, 
+HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     	int button_, MouseEventType type_, DOMString& url_)
 {
     //cout << "map:mapMouseEvent " << endl;
     bool inside = false;
-    
+
     QStack<NodeImpl> nodeStack;
 
     NodeImpl *current = firstChild();
@@ -432,10 +434,10 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 		if (!area->isDefault())
 	    	    break;
 	    }
-	} 
+	}
 	NodeImpl *child = current->firstChild();
 	if(child)
-	{	    
+	{	
 	    nodeStack.push(current);
 	    current = child;
 	}
@@ -444,19 +446,24 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	    current = current->nextSibling();
 	}
     }
-    
+
     return inside;
 }
 
 QMap<QString,HTMLMapElementImpl*> HTMLMapElementImpl::mapMap;
 
-HTMLMapElementImpl* 
-HTMLMapElementImpl::getMap(const DOMString& url_) 
+HTMLMapElementImpl*
+HTMLMapElementImpl::getMap(const DOMString& _url)
 {
-    if (mapMap.contains(url_.string()))
-	    return mapMap[url_.string()];
-	else
-	    return 0;
+    QString s;
+    if(*_url.unicode() == '#')
+	s = QString(_url.unicode()+1, _url.length()-1);
+    else
+	s = _url.string();
+    if (mapMap.contains(s))
+	return mapMap[s];
+    else
+	return 0;
 }
 
 
@@ -466,9 +473,15 @@ void HTMLMapElementImpl::parseAttribute(Attribute *attr)
     switch (attr->id)
     {
     case ATTR_NAME:
-    	name = "#"+attr->value().string();
+    {
+	DOMString s = attr->value();
+	if(*s.unicode() == '#')
+	    name = QString(s.unicode()+1, s.length()-1);
+	else
+	    name = s.string();
 	HTMLMapElementImpl::mapMap[name] = this;
 	break;
+    }
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -483,7 +496,7 @@ HTMLMapStore* HTMLMapStore::instance()
 {
     if (!instance_)
     	instance_ = new HTMLMapStore();	
-    return instance_;	    
+    return instance_;	
 }*/
 
 // -------------------------------------------------------------------------
@@ -545,8 +558,8 @@ void HTMLAreaElementImpl::parseAttribute(Attribute *attr)
 	    shape = Circle;
 	else if ( strcasecmp( attr->value(), "poly" ) == 0 )
 	    shape = Poly;
-	else 
-	    shape = Rect;	    
+	else
+	    shape = Rect;	
 	break;
     case ATTR_COORDS:	
     	coords = attr->val()->toLengthList(); 		
@@ -568,8 +581,8 @@ void HTMLAreaElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-bool 
-HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_, 
+bool
+HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 				   int /*button_*/, MouseEventType /*type*/, DOMString& url_)
 {
     //cout << "area:mapMouseEvent " << endl;
@@ -596,12 +609,12 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
     cout << "getting region" << endl;
     if (!coords)
     	return region;
-    
+
     if (shape==Poly)
-    {    
+    {
     	cout << " poly " << endl;	
 	bool xcoord=true;
-	int xx, yy;
+	int xx = 0, yy = 0; // shut up egcs...
 	int i=0;
 
 	QListIterator<Length> it(*coords);
@@ -620,7 +633,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 	    }	    	
 	}
 	region = QRegion(points);	
-    } 
+    }
     else if (shape==Rect && coords->count()>=4)
     {
     	cout << " rect " << endl;
@@ -638,7 +651,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 	int r1 = coords->at(2)->minWidth(width_);
 	int r2 = coords->at(2)->minWidth(height_);
 	int r;
-	if (r1<r2) 
+	if (r1<r2)
 	    r = r1;
 	else
 	    r = r2;
@@ -647,7 +660,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
     } else if (shape==Default) {
     	region = QRegion(0,0,width_,height_);
     }
-    
+
     return region;
 }
 

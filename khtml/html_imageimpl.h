@@ -36,7 +36,7 @@ namespace DOM {
 
 class DOMString;
 
-class HTMLImageElementImpl 
+class HTMLImageElementImpl
     : public HTMLPositionedElementImpl, public HTMLImageRequester
 {
 public:
@@ -49,7 +49,7 @@ public:
 
     virtual tagStatus startTag() { return IMGStartTag; }
     virtual tagStatus endTag() { return IMGEndTag; }
-    
+
     virtual bool isFloating() { return hAlign()==Left || hAlign()==Right; }
 
     bool isMap() const;
@@ -57,33 +57,33 @@ public:
 
     virtual bool isRendered() { return true; }
     virtual void parseAttribute(Attribute *);
-    
+
     virtual VAlign vAlign() { return valign; }
-    virtual int hSpace() { 
+    virtual int hSpace() {
     	if (isFloating() && hspace.isUndefined())
 	    return 2;
 	else
 	    return hspace.minWidth(width);
     }
-    virtual int vSpace() {  
+    virtual int vSpace() {
     	if (isFloating() && vspace.isUndefined())
 	    return 2;
 	else
 	    return vspace.minWidth(getHeight());
     }
-    
+
     virtual int getHeight() { return ascent+descent; }
 
     virtual void calcMinMaxWidth();
-    
+
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int _tx, int _ty, DOMString &url);
 
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * );
-    virtual void print(QPainter *p, int _x, int _y, int _w, int _h, 
+    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
 		       int _tx, int _ty);
-    virtual void printObject(QPainter *p, int _x, int _y, int _w, int _h, 
+    virtual void printObject(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty);
 
     virtual void layout(bool deep = false);
@@ -102,7 +102,7 @@ protected:
     Length vspace;
 
     bool ismap;
-    
+
     int imgHeight;
 
     /*
@@ -117,10 +117,10 @@ protected:
      * The URL of this image.
      */
     DOMString imageURL;
-    
+
     bool bComplete;
     VAlign valign;
-    
+
     DOMString usemap;
 };
 
@@ -141,9 +141,9 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-    
+
     virtual DOMString areaHref() const {
-    	return href;    
+    	return href;
     }
 
     virtual tagStatus startTag() { return AREAStartTag; }
@@ -154,25 +154,25 @@ public:
     long tabIndex() const;
 
     void setTabIndex( long );
-    
+
     void parseAttribute(Attribute *attr);
-    
+
     bool isDefault() { return shape==Default; }
-    
-    bool mapMouseEvent(int x_, int y_, int width_, int height_, 
+
+    bool mapMouseEvent(int x_, int y_, int width_, int height_,
     	int button_, MouseEventType type_, DOMString& url_);
-    
+
 protected:
-    
+
     QRegion getRegion(int width_, int height);
-    
+
     Shape shape;
     QList<Length>* coords;
     DOMStringImpl *href;
-    
+
     QRegion region;
-    
-    int lastw, lasth;    
+
+    int lastw, lasth;
 };
 
 
@@ -187,24 +187,26 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-    
+
     virtual DOMString getName() const {
     	return name;
     }
-    
+
     virtual void parseAttribute(Attribute *attr);
 
     virtual tagStatus startTag() { return MAPStartTag; }
-    virtual tagStatus endTag() { return MAPEndTag; }    
-    
-    bool mapMouseEvent(int x_, int y_, int width_, int height_, 
+    virtual tagStatus endTag() { return MAPEndTag; }
+
+    bool mapMouseEvent(int x_, int y_, int width_, int height_,
     	int button_, MouseEventType type_, DOMString& url_);
 
     static HTMLMapElementImpl* getMap(const DOMString& url_);
-    
+
 private:
 
-    QString name;        
+    QString name;
+    // ### FIxme: this doesn't work, if we have multiple views at the same time.
+    // the map has to be somehow attached to the document.
     static QMap<QString,HTMLMapElementImpl*> mapMap;
 };
 

@@ -387,11 +387,11 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   if ( !m_bReload && urlcmp( m_strWorkingURL, m_strURL, true, true ) )
   {
     KURL u( m_strWorkingURL );
-    
+
     m_strURL = m_strWorkingURL;
-    
+
     emit started( m_strWorkingURL );
-    
+
     if ( !u.htmlRef().isEmpty() )
       gotoAnchor( u.htmlRef() );
     else
@@ -399,9 +399,9 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 
     m_bComplete = true;
     m_bParsing = false;
-      
+
     emit completed();
-    
+
     return;
   }
 
@@ -678,17 +678,6 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
     if ( u1.isMalformed() )
     {
       kioErrorDialog( KIO::ERR_MALFORMED_URL, url );
-      return;
-    }
-
-    // if only the reference differs, then we just go to the new anchor
-    if ( urlcmp( url, m_strURL, TRUE, TRUE ) )
-    {
-      QString anchor = u1.htmlRef();
-      kdebug(0,1202,"Going to anchor %s", anchor.ascii());
-      // ###
-      gotoAnchor( anchor );
-      emit urlClicked( url, _target, _button );
       return;
     }
 
@@ -1208,9 +1197,6 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     if ( m_strSelectedURL.isNull() )
 	return;
 
-     if ( m_strSelectedURL.data()[0] == '#' )
-    	gotoAnchor( m_strSelectedURL.data() );
-     else
     if ( _mouse->button() != RightButton )
     {
 	printf("m_strSelectedURL='%s'\n",m_strSelectedURL.data());
@@ -1270,9 +1256,15 @@ KHTMLWidget::gotoAnchor( const QString &_name )
 	new HTMLCollectionImpl(document, HTMLCollectionImpl::DOC_ANCHORS);
     anchors->ref();
     NodeImpl *n = anchors->namedItem(_name);
+    anchors->deref();
 
-    if(!n) return false;
-
+    if(!n)
+    {
+	n = document->getElementById(_name);
+	if(n) printf("found element with matching id\n");
+    }
+	
+    if(!n) return;
     printf("found anchor %p!\n", n);
 
     int x = 0, y = 0;
@@ -1280,9 +1272,6 @@ KHTMLWidget::gotoAnchor( const QString &_name )
     a->getAnchorPosition(x, y);
     printf("going to %d/%d\n", x, y);
     ensureVisible(x, y);
-
-    anchors->deref();
-
     return true;
 }
 
