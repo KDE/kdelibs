@@ -1148,7 +1148,7 @@ void Ftp::stat( const KURL &url)
                     linkURL.setPath( listarg ); // this is what we were listing (the link)
                     linkURL.setPath( linkURL.directory() ); // go up one dir
                     linkURL.addPath( e->link ); // replace link by its destination
-                    kdDebug() << "linkURL now " << linkURL.url() << endl;
+                    kdDebug() << "linkURL now " << linkURL.prettyURL() << endl;
                 }
                 // Re-add the filename we're looking for
                 linkURL.addPath( filename );
@@ -1170,7 +1170,7 @@ void Ftp::stat( const KURL &url)
   {
       if ( linkURL == url || linkURL == tempurl )
       {
-          error( ERR_CYCLIC_LINK, linkURL.url() );
+          error( ERR_CYCLIC_LINK, linkURL.prettyURL() );
           return;
       }
       stat( linkURL );
@@ -1184,7 +1184,7 @@ void Ftp::stat( const KURL &url)
 
 void Ftp::listDir( const KURL &url )
 {
-  kdDebug(7102) << "Ftp::listDir " << url.url() << endl;
+  kdDebug(7102) << "Ftp::listDir " << url.prettyURL() << endl;
   if (!m_bLoggedOn)
   {
       openConnection();
@@ -1211,7 +1211,7 @@ void Ftp::listDir( const KURL &url )
     if ( m_initialPath.isEmpty() )
         m_initialPath = "/";
     realURL.setPath( m_initialPath );
-    kdDebug(7102) << "REDIRECTION to " << realURL.url() << endl;
+    kdDebug(7102) << "REDIRECTION to " << realURL.prettyURL() << endl;
     redirection( realURL.url() );
     path = m_initialPath;
     finished();
