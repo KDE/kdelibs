@@ -33,7 +33,7 @@ void yyerror( const char *s )
 {
   long   _int;
   QString        *_str;
-  ushort          _char;
+  unsigned short          _char;
   double _float;
 }
 

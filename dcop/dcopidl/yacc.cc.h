@@ -2,7 +2,7 @@ typedef union
 {
   long   _int;
   QString        *_str;
-  ushort          _char;
+  unsigned short          _char;
   double _float;
 } YYSTYPE;
 #define	T_CHARACTER_LITERAL	257
