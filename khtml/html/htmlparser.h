@@ -29,6 +29,12 @@
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
 
+//#define SPEED_DEBUG
+
+#ifdef SPEED_DEBUG
+#include <qdatetime.h>
+#endif
+
 #include "dom/dom_string.h"
 
 class KHTMLView;
@@ -156,6 +162,10 @@ protected:
     int discard_until;
 
     bool headLoaded;
+
+#ifdef SPEED_DEBUG
+    QTime qt;
+#endif
 };
 
 #endif // HTMLPARSER_H

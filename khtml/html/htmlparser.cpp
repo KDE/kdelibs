@@ -203,7 +203,6 @@ public:
     HTMLStackElem *next;
 };
 
-
 /**
  * @internal
  *
@@ -230,7 +229,10 @@ public:
 KHTMLParser::KHTMLParser( KHTMLView *_parent, HTMLDocumentImpl *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
-
+#ifdef SPEED_DEBUG
+    qt.start();
+#endif
+    
     HTMLWidget    = _parent;
     document      = doc;
 
@@ -257,6 +259,10 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, HTMLDocumentImpl *doc )
 
 KHTMLParser::~KHTMLParser()
 {
+#ifdef SPEED_DEBUG
+    kdDebug( ) << "TIME: parsing time was = " << qt.elapsed() << endl;
+#endif
+    
     freeBlock();
 
     delete [] forbiddenTag;
@@ -393,21 +399,27 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         {
             pushBlock(id, tagPriority[id]);
             current = newNode;
+#ifndef SPEED_DEBUG
             if(!n->attached() && HTMLWidget )  n->attach(HTMLWidget);
+#endif
             // ### HACK!!!
             if(n->id() == ID_BODY)
                 document->createSelector();
             if(current->isInline()) _inline = true;
         }
         else {
+#ifndef SPEED_DEBUG
             if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
+#endif
 	    flat = false;
 	}
 
+#ifndef SPEED_DEBUG
         if(tagPriority[id] == 0 && n->renderer()) {
             n->renderer()->calcMinMaxWidth();
             if (n->id() == ID_EMBED) n->renderer()->close();
         }
+#endif
         return true;
     } else {
 #ifdef PARSER_DEBUG
@@ -438,9 +450,9 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 int exceptioncode = 0;
                 parent->insertBefore(n, node, exceptioncode );
                 if ( exceptioncode ) {
-    #ifdef PARSER_DEBUG
+#ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding element before table failed!!!!" << endl;
-    #endif
+#endif
                     return false;
                 }
 
@@ -448,9 +460,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = n;
                 }
+#ifndef SPEED_DEBUG
                 if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
                 if(tagPriority[id] == 0 && n->renderer())
                     n->renderer()->close();
+#endif
                 return true;
             }
         }
@@ -473,8 +487,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 createHead();
             if( head ) {
                 head->addChild(n);
+#ifndef SPEED_DEBUG
                 if(!n->attached() && HTMLWidget)
                     n->attach(HTMLWidget);
+#endif
                 return true;
             }
             break;
@@ -492,8 +508,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 if ( newNode ) {
                     pushBlock(id, tagPriority[id]);
                     current = newNode;
+#ifndef SPEED_DEBUG
                     if(!n->attached() && HTMLWidget)
                         n->attach(HTMLWidget);
+#endif		    
                 } else {
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
@@ -585,9 +603,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = n;
                 }
+#ifndef SPEED_DEBUG
                 if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
                 if(tagPriority[id] == 0 && n->renderer())
                     n->renderer()->close();
+#endif
                 return true;
             }
             break;
@@ -604,7 +624,9 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if(map)
             {
                 map->addChild(n);
+#ifndef SPEED_DEBUG
                 if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
+#endif
                 handled = true;
             }
             else
@@ -1275,9 +1297,11 @@ void KHTMLParser::popOneBlock()
     kdDebug( 6035 ) << "popping block: " << Elem->id << endl;
 #endif
 
+#ifndef SPEED_DEBUG
     if(Elem->node != current)
         if(current->renderer()) current->renderer()->close();
-
+#endif
+    
     removeForbidden(Elem->id, forbiddenTag);
 
     blockStack = Elem->next;

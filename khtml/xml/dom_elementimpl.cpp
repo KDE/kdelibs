@@ -485,9 +485,12 @@ AttributeList *ElementImpl::defaultMap() const
     return 0;
 }
 
+//#define SPEED_DEBUG
+
 void ElementImpl::attach(KHTMLView *w)
 {
     setStyle(document->styleSelector()->styleForElement(this));
+#ifndef SPEED_DEBUG
     if(_parent && _parent->renderer())
     {
 	m_render = khtml::RenderObject::createObject(this);
@@ -496,7 +499,7 @@ void ElementImpl::attach(KHTMLView *w)
 	    _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
 	}
     }
-
+#endif
     NodeBaseImpl::attach(w);
 }
 

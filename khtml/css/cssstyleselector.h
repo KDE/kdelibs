@@ -112,6 +112,11 @@ namespace khtml
 	static DOM::CSSStyleSheetImpl *userSheet;
 	static CSSStyleSelectorList *userStyle;
 	CSSStyleSelectorList *authorStyle;
+	struct Encodedurl {
+	    QString host; //also contains protocol
+	    QString path;
+	    QString file;
+	} encodedurl;
     };
 
     /*

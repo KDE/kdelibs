@@ -393,7 +393,8 @@ public:
    * Retrieve the base URL of this document
    *
    * The base URL is ususally set by a <base url=...>
-   * tag in the document head.
+   * tag in the document head. If no base tag is set, the url of the current
+   * document serves as base url and is returned.
    */
   KURL baseURL() const;
 

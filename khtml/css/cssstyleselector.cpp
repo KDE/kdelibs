@@ -73,6 +73,8 @@ static RenderStyle::PseudoId dynamicPseudo;
 static int usedDynamicStates;
 static int selectorState;
 static bool lastSelectorPart;
+static CSSStyleSelector::Encodedurl *encodedurl;
+
 
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 {
@@ -86,6 +88,24 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     for (; it.current(); ++it)
 	authorStyle->append(it.current());
 
+//     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl; 
+//     if ( userStyle )
+//     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl; 
+
+    KURL u = doc->view()->part()->baseURL();
+    u.setQuery( QString::null );
+    u.setRef( QString::null );
+    encodedurl.file = u.url();
+    int pos = encodedurl.file.findRev('/');
+    encodedurl.path = encodedurl.file;
+    if ( pos > 0 ) {
+	encodedurl.path.truncate( pos );
+	encodedurl.path += '/';
+    }
+    u.setPath( QString::null );
+    encodedurl.host = u.url();
+
+    //kdDebug() << "CSSStyleSelector::CSSStyleSelector encoded url " << encodedurl.path << endl; 
 }
 
 CSSStyleSelector::CSSStyleSelector(StyleSheetImpl *sheet)
@@ -137,6 +157,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 
     defaultStyle = new CSSStyleSelectorList();
     defaultStyle->append(defaultSheet);
+    //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl; 
 }
 
 void CSSStyleSelector::clear()
@@ -159,16 +180,18 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     ::strictParsing = strictParsing;
     ::dynamicState = state;
     ::usedDynamicStates = StyleSelector::None;
-    
+    ::encodedurl = &encodedurl;
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
 
    // the higher the offset or important number, the later the rules get applied.
 
     pseudoState = PseudoUnknown;
 
+
     if(defaultStyle) defaultStyle->collect(propsToApply, e, 0x00100000); // no important rules here
     // important rules from user styles are higher than important rules from author styles.
     // for non important rules the order is reversed
+
 
     if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
 
@@ -190,6 +213,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     else
         style = new RenderStyle();
 
+    if ( propsToApply->count() != 0 ) {
 
     QList<CSSOrderedProperty> *pseudoProps = new QList<CSSOrderedProperty>;
     pseudoProps->setAutoDelete( false ); // so we don't delete them twice
@@ -210,6 +234,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     }
 
     delete pseudoProps;
+    }
     delete propsToApply;
 
     if ( usedDynamicStates & StyleSelector::Hover )
@@ -304,15 +329,48 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
     return true;
 }
 
+// modified version of the one in kurl.cpp
+static void cleanpath(QString &path)
+{
+    int pos;
+    
+    while ( (pos = path.find( "/../" )) != -1 ) {
+	int prev;
+	if ( pos > 0 )
+	    prev = path.findRev( "/", pos -1 );
+	else 
+	    prev = 0;
+	path.remove( prev, pos- prev + 3 );
+    }
+    pos = 0;
+    while ( (pos = path.find( "//", pos )) != -1) {
+	if ( pos == 0 || path[pos-1] != ':' )
+	    path.remove( pos, 1 );
+	else
+	    pos += 2;
+    }
+    //kdDebug() << "checkPseudoState " << path << endl; 
+}
+
 static void checkPseudoState( DOM::ElementImpl *e )
 {
-    if( e->getAttribute(ATTR_HREF).isNull() ) {
+    DOMString attr;
+    if( e->id() != ID_A || (attr = e->getAttribute(ATTR_HREF)).isEmpty() ) {
 	pseudoState = PseudoNone;
 	return;
     }
-    KHTMLView *v = e->ownerDocument()->view();
-    KURL url = v->part()->completeURL( e->getAttribute(ATTR_HREF).string() );
-    if ( KHTMLFactory::vLinks()->contains( url.url() ) )
+    QString u = attr.string();
+    if ( !u.contains("://") ) {
+	if ( u[0] == '/' )
+	    u = encodedurl->host + u;
+	else if ( u[0] == '#' )
+	    u = encodedurl->file + u;
+	else
+	    u = encodedurl->path + u;
+	cleanpath( u );
+    }
+    //completeURL( attr.string() );
+    if ( KHTMLFactory::vLinks()->contains( u ) )
 	pseudoState = PseudoVisited;
     else
 	pseudoState = PseudoLink;
@@ -488,14 +546,15 @@ void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::El
 {
     int i;
     int num = count();
-    for(i = 0; i< num; i++)
-    {
-        if(at(i)->checkSelector(e))
-        {
-            //kdDebug( 6080 ) << "found matching rule for element " << e->id() << endl;
-            CSSStyleDeclarationImpl *decl = at(i)->rule->declaration();
-            propsToApply->append(decl, offset + i, important);
-        }
+    int id = e->id();
+    for(i = 0; i< num; i++) {
+	register CSSOrderedRule *r = at(i);
+	if(id == r->selector->tag || r->selector->tag == -1) {
+	    if(r->checkSelector(e)) {
+		//kdDebug( 6080 ) << "found matching rule for element " << e->id() << endl;
+		propsToApply->append(r->rule->declaration(), offset + i, important);
+	    }
+	}
     }
 }
 

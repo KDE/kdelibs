@@ -1563,6 +1563,8 @@ void KHTMLPart::setBaseURL( const KURL &url )
 
 KURL KHTMLPart::baseURL() const
 {
+    if ( d->m_baseURL.isEmpty() )
+	return m_url;
   return d->m_baseURL;
 }
 
@@ -1581,20 +1583,17 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
   // WABA: The following check is necassery to fix forms which don't set
   // an action URL in the believe that it default to the same URL as
   // the current page which contains the form.
-  if (url.isEmpty())
-  {
+  if (url.isEmpty()) {
     return m_url;
   }
 
   if (d->m_baseURL.isEmpty())
   {
-     KURL u ( m_url, url );
-     return u;
+     return KURL( m_url, url );
   }
   else
   {
-     KURL u ( d->m_baseURL, url );
-     return u;
+     return KURL( d->m_baseURL, url );
   }
 }
 
