@@ -29,7 +29,7 @@
 
 #include "dhcp.h"
 
-#ifndef INADDR_NONE /* some crappy OSes don't define this */
+#ifndef INADDR_NONE /* some OSes don't define this */
 #define INADDR_NONE -1
 #endif
 
