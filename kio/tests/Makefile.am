@@ -59,18 +59,15 @@ previewtest_SOURCES = previewtest.cpp previewtest.h
 ktartest_SOURCES = ktartest.cpp
 metatest_SOURCES = metatest.cpp
 
-#Needs kfile, so commented out
-#kopenwithtest_SOURCES = kopenwithtest.cpp
-#kopenwithtest_LDADD = $(LIB_KFILE)
-
 INCLUDES=  -I$(srcdir)/.. $(all_includes)
 METASOURCES = AUTO
 
-# kfile meta stuff
-kde_module_LTLIBRARIES = dummymeta.la
-dummymeta_la_SOURCES = dummymeta.cpp
-dummymeta_la_LIBADD = $(LIB_KSYCOCA)
-dummymeta_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+# kfile meta stuff. Comment this in, if you want a small
+# metadata plugin test and "make install".
+# kde_module_LTLIBRARIES = dummymeta.la
+# dummymeta_la_SOURCES = dummymeta.cpp
+# dummymeta_la_LIBADD = $(LIB_KSYCOCA)
+# dummymeta_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 services_DATA = dummymeta.desktop
 servicesdir = $(kde_servicesdir)
