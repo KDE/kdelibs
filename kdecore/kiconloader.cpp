@@ -452,6 +452,51 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     return pix;
 }
 
+QStringList KIconLoader::loadAnimated(QString name, int group, int size)
+{
+    QStringList lst;
+    if (mpThemeRoot == 0L)
+	return lst;
+
+    if ((group < -1) || (group >= KIcon::LastGroup))
+    {
+	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	group = 0;
+    }
+    if ((size == 0) && (group < 0))
+    {
+	kdDebug(264) << "Neither size nor group specified!\n";
+	group = 0;
+    }
+    
+    QString file = name + "/0001";
+    if (group == KIcon::User)
+    {
+	file = mpDirs->findResource("appicon", file + ".png");
+    } else
+    {
+	if (size == 0)
+	    size = mpGroups[group].size;
+	KIcon icon = iconPath2(file, size);
+	file = icon.isValid() ? icon.path : QString::null;
+    }
+    if (file.isEmpty())
+	return lst;
+    lst += file;
+
+    int i=1;
+    QString fmt = file.left(file.length() - 8) + "%04d.png";
+    file.sprintf(fmt.latin1(), i);
+    QFileInfo fi(file);
+    while (fi.exists())
+    {
+	lst += file;
+	file.sprintf(fmt.latin1(), ++i);
+	fi.setFile(file);
+    }
+    return lst;
+}
+
 KIconTheme *KIconLoader::theme()
 {
     if (mpThemeRoot == 0L)

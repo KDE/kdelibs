@@ -122,6 +122,17 @@ public:
 	    bool canReturnNull=false);
 
     /**
+     * Load an animated icon. In the future, this will be replaced by a
+     * routine which loads an MNG animation and returns a QMovie.
+     * @param name The name of the icon.
+     * @param group The icon group. See @ref #loadIcon.
+     * @param size Override the default size for @em group.
+     * @return A QStringList containing the absolute path of all the frames
+     * making up the animation.
+     */
+    QStringList loadAnimated(QString name, int group, int size=0);
+
+    /**
      * Query all available icons for a specific group, having a specific
      * context.
      * @param group_or_size The icon group or size. See @ref #iconPath.
