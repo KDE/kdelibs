@@ -32,6 +32,7 @@
 #include <qpaintdevicemetrics.h>
 #include <qfile.h>
 #include <qtl.h>
+#include <qdir.h>
 #include <qguardedptr.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
@@ -102,6 +103,7 @@ public:
 	bool		m_previewonly;
 	WId		m_parentId;
 	QString		m_docfilename;
+	QString m_docdirectory;
 	KPrinterWrapper		*m_wrapper;
 	QMap<QString,QString>	m_options;
 	QString			m_tmpbuffer;
@@ -920,6 +922,12 @@ void KPrinter::setDocFileName(const QString& s)
 
 QString KPrinter::docFileName() const
 { return d->m_docfilename; }
+
+void KPrinter::setDocDirectory( const QString& s )
+{ d->m_docdirectory = s; }
+
+QString KPrinter::docDirectory() const
+{ return ( d->m_docdirectory.isEmpty() ? QDir::homeDirPath() : d->m_docdirectory ); }
 
 void KPrinter::setResolution(int dpi)
 { d->m_wrapper->setResolution(dpi); }

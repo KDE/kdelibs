@@ -702,6 +702,21 @@ public:
 	 * @see setDocFileName()
 	 */
 	QString docFileName() const;
+	/**
+	 * Set the default document directory. This directory will be used as
+	 * the default location for any output file. If not set, $HOME directory
+	 * is used instead.
+	 * @param dir the new default output directory
+	 * @see docDirectory()
+	 */
+	void setDocDirectory( const QString& dir );
+	/**
+	 * Get the default document directory, that is the directory used for
+	 * any output file. By default, it is the $HOME directory.
+	 * @returns the default output directory
+	 * @see setDocDirectory
+	 */
+	QString docDirectory() const;
 
 protected:
 	virtual bool cmd(int, QPainter*, QPDevCmdParam*);

@@ -351,7 +351,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	if (!d->m_printer->outputFileName().isEmpty())
 		d->m_file->lineEdit()->setText(d->m_printer->outputFileName());
 	else if (!d->m_printer->docFileName().isEmpty())
-		d->m_file->lineEdit()->setText(QDir::homeDirPath()+"/"+d->m_printer->docFileName()+".ps");
+		d->m_file->lineEdit()->setText(d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps");
 
 	if ( d->m_printers->count() > 0 )
 		slotPrinterSelected( d->m_printers->currentItem() );
