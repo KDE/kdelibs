@@ -46,12 +46,14 @@ class KLed : public QWidget
 
   /**
    * Status of the light is on/off.
+   * NoOfStates gives the total number of states.
    * @short LED on/off.
    */
   enum State { Off, On, NoOfStates };
   
   /** 
-   * Shades of the lamp. 
+   * Shades of the lamp.
+   * NoOfShapes gives the total number of shapes
    * @short shade
    */ 
   enum Shape { NoShape, Rectangular, Circular, NoOfShapes=Circular };
@@ -73,6 +75,8 @@ class KLed : public QWidget
    *  @li sunken approx. 3.3 msec per paint
    *
    * The widget will be updated on the next repaining event.
+   * NoOfLooks gives the total number Looks
+   *
    * @short LED look.
    */
   enum Look  { NoLook, Flat, Raised, Sunken, NoOfLooks=Sunken };
@@ -153,6 +157,8 @@ class KLed : public QWidget
 
   /**
    * Set the color of the widget.
+   * The Color is shown with the KLed::On state.
+   * The KLed::Off state is shown with QColor.dark() method
    *
    * The widget calls the update() method, so it will
    * be updated when entering the main event loop.
