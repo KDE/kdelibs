@@ -2,6 +2,7 @@
 Type=XCF
 Header=^gimp xcf
 Name=GIMP Image
+Name[br]=Skeudenn GIMP
 Name[fr]=Image GIMP
 Name[ga]=Íomhá GIMP
 Name[ms]=Imej GIMP
