@@ -35,14 +35,21 @@
 #include <html/html_imageimpl.h>
 #include <rendering/render_style.h>
 #include <kmainwindow.h>
+#include "domtreeview.h"
+
 
 int main(int argc, char *argv[])
 {
     KHTMLFactory *fac = new KHTMLFactory();
     KApplication a(argc, argv, "testkhtml");
 
-    KMainWindow *toplevel = new KMainWindow;
-    KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
+    KMainWindow *toplevel = new KMainWindow();
+    KHTMLPart *doc = new KHTMLPart( toplevel, 0,
+				    toplevel, 0, KHTMLPart::BrowserViewGUI );
+
+    DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
+    dtv->show();
+
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize(800,800);
 
@@ -51,9 +58,7 @@ int main(int argc, char *argv[])
     doc->enableJScript(true);
     doc->enableJava(true);
     //doc->setCharset("unicode");
-
     //doc->setFollowsLinks(false);
-
     //a.setTopWidget(doc);
     doc->setURLCursor(QCursor(PointingHandCursor));
     //doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
@@ -62,13 +67,13 @@ int main(int argc, char *argv[])
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
 		     doc->widget(), SLOT(setCaption(const QString &)));
     doc->widget()->show();
-
     toplevel->show();
     ((QScrollView *)doc->widget())->viewport()->show();
 
     Dummy *dummy = new Dummy( doc );
-       QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
-             dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
+    QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
+
     doc->openURL( KURL( argv[1] ) );
 
     QPushButton *p = new QPushButton("&Quit", 0);
