@@ -41,7 +41,7 @@ ResourceDir::ResourceDir( const KConfig *config )
   QString path;
 
   if ( config ) {
-     path = config->readEntry( "FilePath" );
+     path = config->readPathEntry( "FilePath" );
      mFormatName = config->readEntry( "FileFormat" );
   } else {
     path = StdAddressBook::directoryName();
@@ -74,7 +74,7 @@ void ResourceDir::writeConfig( KConfig *config )
 {
   Resource::writeConfig( config );
 
-  config->writeEntry( "FilePath", mPath );
+  config->writePathEntry( "FilePath", mPath );
   config->writeEntry( "FileFormat", mFormatName );
 }
 

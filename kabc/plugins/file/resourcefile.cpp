@@ -36,7 +36,7 @@ ResourceFile::ResourceFile( const KConfig *config )
   QString fileName, formatName;
 
   if ( config ) {
-    fileName = config->readEntry( "FileName", StdAddressBook::fileName() );
+    fileName = config->readPathEntry( "FileName", StdAddressBook::fileName() );
     formatName = config->readEntry( "FileFormat", "vcard" );
   } else {
     fileName = StdAddressBook::fileName();
@@ -82,7 +82,7 @@ void ResourceFile::writeConfig( KConfig *config )
 {
   Resource::writeConfig( config );
 
-  config->writeEntry( "FileName", mFileName );
+  config->writePathEntry( "FileName", mFileName );
   config->writeEntry( "FileFormat", mFormatName );
 }
 
