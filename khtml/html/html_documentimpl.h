@@ -56,6 +56,7 @@ public:
 
     DOMString referrer() const;
     DOMString domain() const;
+    DOMString lastModified() const;
 
     HTMLElementImpl *body();
     void setBody(HTMLElementImpl *_body);

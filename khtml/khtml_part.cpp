@@ -268,6 +268,7 @@ public:
 
   QString m_kjsStatusBarText;
   QString m_kjsDefaultStatusBarText;
+  QString m_lastModified;
 
   // QStrings for SSL metadata
   // Note: When adding new variables don't forget to update ::saveState()/::restoreState()!
@@ -1306,6 +1307,10 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
       }
       d->m_bHTTPRefresh = true;
     }
+
+    // Support for http last-modified
+    d->m_lastModified = d->m_job->queryMetaData("modified");
+    kdDebug() << "KHTMLPart::slotData metadata modified: " << d->m_lastModified << endl;
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -1953,7 +1958,7 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
         {
             DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
             QConstString s(t->s, t->l);
-            
+
             int matchLen = 0;
             if ( isRegExp ) {
               QRegExp matcher( str );
@@ -1966,7 +1971,7 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
               d->m_findPos = s.string().find(str, d->m_findPos+1, caseSensitive);
               matchLen = str.length();
             }
-            
+
             if(d->m_findPos != -1)
             {
                 int x = 0, y = 0;
@@ -3530,6 +3535,11 @@ QString KHTMLPart::jsDefaultStatusBarText() const
 QString KHTMLPart::referrer() const
 {
    return d->m_referrer;
+}
+
+QString KHTMLPart::lastModified() const
+{
+  return d->m_lastModified;
 }
 
 void KHTMLPart::updateFontSize( int add )

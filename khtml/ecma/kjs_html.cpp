@@ -177,7 +177,8 @@ bool KJS::HTMLDocument::hasProperty(const UString &p, bool recursive) const
       p == "body" || p == "location" || p == "images" || p == "applets" ||
       p == "links" || p == "forms" || p == "anchors" || p == "all" ||
       p == "cookie" || p == "open" || p == "close" || p == "write" ||
-      p == "writeln" || p == "getElementById" || p == "getElementsByName")
+      p == "writeln" || p == "getElementById" || p == "getElementsByName" ||
+      p == "lastModified" )
     return true;
   if (!static_cast<DOM::HTMLDocument>(node).all().
       namedItem(p.string()).isNull())
@@ -265,8 +266,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 //    return Undefined();
 //  else if (p == "ids")
 //    return Undefined();
-//  else if (p == "lastModified")
-//    return Undefined();
+  else if (p == "lastModified")
+    return String(doc.lastModified());
   else if (p == "height")
     return Number(part->view() ? part->view()->visibleWidth() : 0);
   else if (p == "width")

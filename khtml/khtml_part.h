@@ -148,7 +148,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartBrowserHostExtension;
   friend class HTMLTokenizer;
   friend class XMLTokenizer;
-  
+
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
@@ -341,16 +341,16 @@ public:
   void enablePlugins(bool e) { return setPluginsEnabled(e); }
   void autoloadImages(bool e) { return setAutoloadImages(e); }
   void enableMetaRefresh(bool e) { return setMetaRefreshEnabled(e); }
-  
+
   KURL baseURL() const;
   QString baseTarget() const;
   KURL completeURL( const QString &url );
-#endif  
-  
+#endif
+
   /**
    * schedules a redirection after delay seconds
    */
-  void scheduleRedirection( int delay, const QString &url ); 
+  void scheduleRedirection( int delay, const QString &url );
 
   /**
    * Clear the widget and prepares it for new content.
@@ -527,7 +527,7 @@ public:
   /**
    * Retrieve the cursor which is used when the cursor is on a link.
    */
-  QCursor urlCursor() const; 
+  QCursor urlCursor() const;
 
   /**
    * Initiate a text search.
@@ -617,7 +617,7 @@ public:
   /**
    * @internal
    */
-  const KHTMLSettings *settings() const; 
+  const KHTMLSettings *settings() const;
 
   /**
    * Retrieve a pointer to the parent KHTMLPart if the part is a frame
@@ -634,11 +634,11 @@ public:
    */
   QStringList frameNames() const;
 
-#if QT_VERSION < 300  
+#if QT_VERSION < 300
   QList<KParts::ReadOnlyPart> frames() const;
 #else
   QPtrList<KParts::ReadOnlyPart> frames() const;
-#endif  
+#endif
 
   /**
    * Find a frame by name. Returns 0L if frame can't be found.
@@ -686,6 +686,11 @@ public:
    * Referrer used for links in this page.
    */
   QString referrer() const;
+
+  /**
+   * Last-modified date (in raw string format), if received in the [HTTP] headers.
+   */
+  QString lastModified() const;
 
 signals:
   /**
@@ -788,7 +793,7 @@ private slots:
   /**
    * @internal
    */
-  void reparseConfiguration(); 
+  void reparseConfiguration();
 
   /**
    * @internal
@@ -861,7 +866,7 @@ private slots:
   void slotLoadImages();
 
   /**
-   * @internal  
+   * @internal
    */
   void submitFormAgain();
 
@@ -928,8 +933,8 @@ private:
   /**
    * @internal
    */
-  bool restoreURL( const KURL &url ); 
-    
+  bool restoreURL( const KURL &url );
+
   /**
    * @internal
    */
@@ -938,30 +943,30 @@ private:
   /**
    * @internal
    */
-  bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs ); 
+  bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
 
   void startAutoScroll();
   void stopAutoScroll();
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
-  void updateFontSize( int add ); 
-  void setFontBaseInternal( int base, bool absolute ); 
+  void updateFontSize( int add );
+  void setFontBaseInternal( int base, bool absolute );
 
   /**
    * @internal
    */
-  bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype ); 
+  bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
   /**
    * @internal
    */
   void submitForm( const char *action, const QString &url, const QByteArray &formData,
                    const QString &target, const QString& contentType = QString::null,
-                   const QString& boundary = QString::null ); 
-  
+                   const QString& boundary = QString::null );
+
   /**
    * @internal
    */
-  void popupMenu( const QString &url ); 
+  void popupMenu( const QString &url );
 
 
   void init( KHTMLView *view, GUIProfile prof );

@@ -122,6 +122,12 @@ public:
     DOMString domain() const;
 
     /**
+     * The date the document was last modified.
+     *
+     */
+    DOMString lastModified() const;
+
+    /**
      * The complete URI of the document.
      *
      */
@@ -289,7 +295,7 @@ public:
      *
      * converts the given (potentially relative) URL in a
      * full-qualified one, using the baseURL / document URL for
-     * the missing parts. 
+     * the missing parts.
      */
     DOMString completeURL( const DOMString& url) const;
 };

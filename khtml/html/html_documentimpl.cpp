@@ -108,6 +108,13 @@ DOMString HTMLDocumentImpl::domain() const
     return KURL( URL() ).host();
 }
 
+DOMString HTMLDocumentImpl::lastModified() const
+{
+    if ( view() )
+        return view()->part()->lastModified();
+    return DOMString();
+}
+
 HTMLElementImpl *HTMLDocumentImpl::body()
 {
     NodeImpl *de = documentElement();

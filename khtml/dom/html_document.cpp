@@ -128,6 +128,12 @@ DOMString HTMLDocument::domain() const
     return ((HTMLDocumentImpl *)impl)->domain();
 }
 
+DOMString HTMLDocument::lastModified() const
+{
+    if(!impl) return DOMString();
+    return ((HTMLDocumentImpl *)impl)->lastModified();
+}
+
 DOMString HTMLDocument::URL() const
 {
     if(!impl) return DOMString();
