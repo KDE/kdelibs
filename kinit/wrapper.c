@@ -209,7 +209,7 @@ static void setup_signal_handler( int signo, int clean )
         sa.sa_handler = sig_pass_handler;
     sigemptyset( &sa.sa_mask );
     sigaddset( &sa.sa_mask, signo );
-    sa.sa_flags = 0; // don't use SA_RESTART
+    sa.sa_flags = 0; /* don't use SA_RESTART */
     sigaction( signo, &sa, 0 );
 }
 
