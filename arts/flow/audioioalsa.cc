@@ -1,9 +1,9 @@
     /*
 
-    Copyright (C) 2000 Jozef Kosoru
-                       jozef.kosoru@pobox.sk
-			  (C) 2000 Stefan Westerfeld
-			           stefan@space.twc.de
+    Copyright (C) 2000,2001 Jozef Kosoru
+                            jozef.kosoru@pobox.sk
+			  (C) 2000,2001 Stefan Westerfeld
+			                stefan@space.twc.de
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -68,12 +68,13 @@ protected:
 	BufferMode m_bufferMode;
 
 	snd_pcm_t *m_pcm_handle;
-	struct snd_pcm_channel_info m_cinfo;
+	snd_pcm_channel_info_t m_cinfo;
 	snd_pcm_format_t m_cformat;
-	struct snd_pcm_channel_params m_params;
-	struct snd_pcm_channel_setup m_setup;
+	snd_pcm_channel_params_t m_params;
+	snd_pcm_channel_setup_t m_setup;
 
 	int setPcmParams(const int channel);
+	void checkCapabilities();
 
 public:
 	AudioIOALSA();
@@ -96,11 +97,11 @@ using namespace Arts;
 AudioIOALSA::AudioIOALSA()
 {
  	param(samplingRate) = 44100;
-	paramStr(deviceName) = "/dev/dsp";
+	paramStr(deviceName) = "/dev/dsp"; //!! alsa doesn't need this
 	requestedFragmentSize = param(fragmentSize) = 1024;
 	requestedFragmentCount = param(fragmentCount) = 7;
 	param(channels) = 2;
-	param(direction) = 2;
+	param(direction) = directionWrite;
 
 	/*
 	 * default parameters
@@ -108,7 +109,7 @@ AudioIOALSA::AudioIOALSA()
     m_card = snd_defaults_pcm_card();  //!! need interface !!
     m_device = snd_defaults_pcm_device(); //!!
     m_format = SND_PCM_SFMT_S16_LE;
-    m_bufferMode = block;  //block/stream
+    m_bufferMode = block;  //block/stream (stream mode doesn't work yet)
 
 	if(m_card >= 0) {
     	char* cardname;
@@ -136,16 +137,23 @@ bool AudioIOALSA::open()
 
 	/*
 	 * initialize format - TODO: implement fallback (i.e. if no format given,
-	 * it should try 16bit first, then fall back to 8bit
+	 * it should try 16bit first, then fall back to 8bit)
 	 */
-	if(_format == 8)
+	switch(_format)
 	{
-		m_format = SND_PCM_SFMT_U8;
-	}
-	else
-	{
-    	m_format = SND_PCM_SFMT_S16_LE;
-		_format = 16;
+		default:	_format = 16;
+
+		case 16:	// 16bit, signed little endian
+				m_format = SND_PCM_SFMT_S16_LE;
+			break;
+
+		case 17:	// 16bit, signed big endian
+				m_format = SND_PCM_SFMT_S16_BE;
+			break;
+
+		case 8:		// 8bit, unsigned
+				m_format = SND_PCM_SFMT_U8;
+			break;
 	}
 
 	/* open pcm device */
@@ -184,7 +192,7 @@ bool AudioIOALSA::open()
 		(void)snd_pcm_channel_flush(m_pcm_handle, SND_PCM_CHANNEL_PLAYBACK);
 
 	/* check device capabilities */
-	//maybe later
+	checkCapabilities();
 
 	/* set the fragment settings to what the user requested */
 	_fragmentSize = requestedFragmentSize;
@@ -263,12 +271,15 @@ bool AudioIOALSA::open()
             (float)(2.0 * _samplingRate * _channels)*1000.0);
 
   	/* obtain PCM file descriptor */
+	//!! in duplex mode we can provide
+	//!! only one fd (playback or capture) but not both,
+	//!! so there might be problems with full duplex
   	audio_fd = snd_pcm_file_descriptor(m_pcm_handle,
 		(mode & SND_PCM_OPEN_PLAYBACK)	? SND_PCM_CHANNEL_PLAYBACK
 										: SND_PCM_CHANNEL_CAPTURE);
 
   	/* start recording */
-  	if((_direction & directionRead) & snd_pcm_capture_go(m_pcm_handle)){
+  	if((_direction & directionRead) && snd_pcm_capture_go(m_pcm_handle)) {
     	_error = "Can't start recording!";
 		return false;
   	}
@@ -278,7 +289,12 @@ bool AudioIOALSA::open()
 
 void AudioIOALSA::close()
 {
-	snd_pcm_close(m_pcm_handle);
+	int& _direction = param(direction);
+	if(_direction & directionRead)
+		(void)snd_pcm_channel_flush(m_pcm_handle, SND_PCM_CHANNEL_CAPTURE);
+	if(_direction & directionWrite)
+		(void)snd_pcm_channel_flush(m_pcm_handle, SND_PCM_CHANNEL_PLAYBACK);
+	(void)snd_pcm_close(m_pcm_handle);
 }
 
 void AudioIOALSA::setParam(AudioParam p, int& value)
@@ -353,6 +369,7 @@ int AudioIOALSA::read(void *buffer, int size)
 				arts_info("Overrun: capture prepare error!");
 				return -1;
 			}
+			length = 0;
 		}
 		else {
 			arts_info("Unknown capture error!");
@@ -368,8 +385,6 @@ int AudioIOALSA::read(void *buffer, int size)
 
 int AudioIOALSA::write(void *buffer, int size)
 {
-    assert(m_bufferMode == block);
-
 	while(snd_pcm_write(m_pcm_handle, buffer, size) != size) {
         snd_pcm_channel_status_t status;
         (void)memset(&status, 0, sizeof(status));
@@ -454,4 +469,59 @@ int AudioIOALSA::setPcmParams(const int channel)
 		return 0;
 	}
 }
-#endif
+
+void AudioIOALSA::checkCapabilities()
+{
+	snd_pcm_info_t info;
+	(void)memset(&info, 0, sizeof(info));
+	if(!snd_pcm_info(m_pcm_handle, &info)) {
+		string flags = "";
+		if(info.flags & SND_PCM_INFO_PLAYBACK) flags += "playback ";
+		if(info.flags & SND_PCM_INFO_CAPTURE) flags += "capture ";
+		if(info.flags & SND_PCM_INFO_DUPLEX) flags += "duplex ";
+		if(info.flags & SND_PCM_INFO_DUPLEX_RATE) flags += "duplex_rate ";
+		artsdebug(" type:%d id:%s\n"
+							" flags:%s\n"
+							" playback_subdevices:%d capture_subdevices:%d",
+							info.type, info.id,
+							flags.c_str(),
+							info.playback+1, info.capture+1);
+	}
+	else {
+		arts_warning("Can't get device info!"); //not fatal error
+	}
+	
+	(void)memset(&m_cinfo, 0, sizeof(m_cinfo));
+	m_cinfo.channel = SND_PCM_CHANNEL_PLAYBACK;
+	if(!snd_pcm_channel_info(m_pcm_handle, &m_cinfo)) {
+		string flags = "";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_MMAP) flags += "mmap ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_STREAM) flags += "stream ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_BLOCK) flags += "block ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_BATCH) flags += "batch ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_INTERLEAVE) flags += "interleave ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_NONINTERLEAVE) flags += "noninterleave ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_BLOCK_TRANSFER) flags += "block_transfer ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_OVERRANGE) flags += "overrange ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_MMAP_VALID) flags += "mmap_valid ";
+		if(m_cinfo.flags & SND_PCM_CHNINFO_PAUSE) flags += "pause ";
+	
+		artsdebug(" subdevice:%d\n"
+				  "  flags:%s\n"
+				  "  min_rate:%d max_rate:%d\n"
+				  "  buffer_size:%d min_fragment_size:%d max_fragment_size:%d\n"
+				  "  fragment_align:%d fifo_size:%d transfer_block_size:%d\n"
+				  "  mmap_size:%d",
+				  m_cinfo.subdevice,
+				  flags.c_str(),
+				  m_cinfo.min_rate, m_cinfo.max_rate,
+				  m_cinfo.buffer_size, m_cinfo.min_fragment_size, m_cinfo.max_fragment_size,
+				  m_cinfo.fragment_align, m_cinfo.fifo_size, m_cinfo.transfer_block_size,
+				  m_cinfo.mmap_size);
+	}
+	else {
+		arts_warning("Can't get channel info!"); //not fatal error
+	}
+}
+
+#endif /* HAVE_LIBASOUND */
