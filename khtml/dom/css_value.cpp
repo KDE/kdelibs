@@ -81,6 +81,11 @@ DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 
 CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName )
 {
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyCSSValue( propertyName );
+}
+
+CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName ) const
+{
     if(!impl) return 0;
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
     if (!id) return 0;
