@@ -816,6 +816,8 @@ void KHTMLWidget::end()
 
   m_bComplete = true;
 
+  document->close();
+
   // Are all children complete now ?
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
@@ -1275,14 +1277,20 @@ bool KHTMLWidget::findTextNext( const QRegExp &/*exp*/ )
 }
 
 void KHTMLWidget::saveState( QDataStream &stream )
-{ 
-  stream << url() << (Q_INT32)contentsX() << (Q_INT32)contentsY(); 
+{
+  stream << url() << (Q_INT32)contentsX() << (Q_INT32)contentsY();
 }
-  
+
 void KHTMLWidget::restoreState( QDataStream &stream )
-{ 
-  QString u; 
-  Q_INT32 xOfs, yOfs; 
+{
+  QString u;
+  Q_INT32 xOfs, yOfs;
   stream >> u >> xOfs >> yOfs;
-  openURL( u, false, xOfs, yOfs ); 
+  openURL( u, false, xOfs, yOfs );
+}
+
+bool KHTMLWidget::isFrameSet()
+{
+    if(document->body()->id() == ID_FRAMESET) return true;
+    return false;
 }
