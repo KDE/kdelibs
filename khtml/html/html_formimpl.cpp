@@ -149,12 +149,23 @@ QByteArray HTMLFormElementImpl::formData()
             if(view && view->part())
                 enc = view->part()->encoding();
         }
-        if((codec = QTextCodec::codecForName(enc.latin1())))
+        if((codec = KGlobal::charsets()->codecForName(enc.latin1())))
             break;
     }
     if(!codec)
+    {
+        QString n = KGlobal::charsets()->name(view->part()->settings()->charset());
+        if(n != "any")
+            codec = KGlobal::charsets()->codecForName(n);
+    }
+
+    if(!codec) {
         codec = QTextCodec::codecForLocale();
-    assert(codec);
+
+        // users with UTF8 locale should be killed immediately
+        if(!codec || codec->mibEnum() == 106)
+            codec = QTextCodec::codecForMib(4);
+    }
 
     HTMLGenericFormElementImpl *current = formElements.first();
     for( ; current; current = formElements.next() )
@@ -613,7 +624,6 @@ void HTMLButtonElementImpl::attach(KHTMLView *_view)
         r->addChild(m_render, _next ? _next->renderer() : 0);
     }
     NodeBaseImpl::attach(_view);
-
 }
 
 // -------------------------------------------------------------------------
