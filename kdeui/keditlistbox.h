@@ -198,14 +198,16 @@ public:
       void changed();
 
       /**
-       * This signal is emmitted when the user adds a new string to the list,
+       * This signal is emitted when the user adds a new string to the list,
        * the parameter is the added string.
+       * @since 3.2
        */
       void added( const QString & text );
 
       /**
-       * This signal is emmitted when the user removes a string from the list,
+       * This signal is emitted when the user removes a string from the list,
        * the parameter is the removed string.
+       * @since 3.2
        */
       void removed( const QString & text );
 
