@@ -45,7 +45,6 @@ class KComboBox::KComboBoxPrivate
 public:
     KComboBoxPrivate()
     {
-        ignoreDoubleKeyEvents = true;
         handleURLDrops = true;
         completionBox = 0L;
         popupMenu = 0L;
@@ -57,7 +56,6 @@ public:
         delete completionBox;
     }
 
-    bool ignoreDoubleKeyEvents;
     bool handleURLDrops;
     KCompletionBox *completionBox;
     QPopupMenu* popupMenu;
@@ -251,8 +249,6 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 
     if ( edit && edit->hasFocus() )
     {
-        if ( !d->ignoreDoubleKeyEvents )
-        {
             // ### this will most probably need fixing when Qt3 is used.
             // QCombBox in Qt2 is buggy, so here are some hacks that might
             // break with Qt3.
@@ -388,8 +384,6 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                     return;
                 }
             }
-        }
-        d->ignoreDoubleKeyEvents = !d->ignoreDoubleKeyEvents;
     }
 
 //     // read-only combobox
@@ -469,64 +463,63 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
                 return m_trapReturnKey;
             }
-            // HACK: Workaround for double key-pressed events
-            d->ignoreDoubleKeyEvents = true;
         }
 
-        else if ( type == QEvent::MouseButtonPress )
+        else if ( type == QEvent::ContextMenu )
         {
-            QMouseEvent* e = static_cast<QMouseEvent*>( ev );
+            QContextMenuEvent* e = static_cast<QContextMenuEvent*>( ev );
 
-            if ( e->button() == RightButton )
-            {
-                if( !m_bEnableMenu )
-                    return true;
+	    if( !m_bEnableMenu )
+		return true;
 
-                KGlobalSettings::Completion oldMode = completionMode();
+	    KGlobalSettings::Completion oldMode = completionMode();
 
-                d->popupMenu = contextMenuInternal();
-                initPopup();
-                emit aboutToShowContextMenu( d->popupMenu );
-                int result = d->popupMenu->exec( e->globalPos() );
+	    d->popupMenu = contextMenuInternal();
+	    initPopup();
+	    emit aboutToShowContextMenu( d->popupMenu );
+	    QPoint pos = e->reason() == QContextMenuEvent::Mouse ? e->globalPos() :
+		mapToGlobal( QPoint(e->pos().x(), 0) ) + QPoint( width() / 2, height() / 2
+);
+	    int result = d->popupMenu->exec( pos );
 
-                if ( result == Cut )
-                    edit->cut();
-                else if ( result == Copy )
-                    edit->copy();
-                else if ( result == Paste )
-                    edit->paste();
-                else if ( result == Clear )
-                    edit->clear();
-                else if ( result == Unselect )
-                    edit->deselect();
-                else if ( result == SelectAll )
-                    edit->selectAll();
-                else if ( result == Default )
-                    setCompletionMode( KGlobalSettings::completionMode() );
-                else if ( result == NoCompletion )
-                    setCompletionMode( KGlobalSettings::CompletionNone );
-                else if ( result == AutoCompletion )
-                    setCompletionMode( KGlobalSettings::CompletionAuto );
-                else if ( result == SemiAutoCompletion )
-                    setCompletionMode( KGlobalSettings::CompletionMan );
-                else if ( result == ShellCompletion )
-                    setCompletionMode( KGlobalSettings::CompletionShell );
-                else if ( result == PopupCompletion )
-                    setCompletionMode( KGlobalSettings::CompletionPopup );
+	    if ( result == Cut )
+		edit->cut();
+	    else if ( result == Copy )
+		edit->copy();
+	    else if ( result == Paste )
+		edit->paste();
+	    else if ( result == Clear )
+		edit->clear();
+	    else if ( result == Unselect )
+		edit->deselect();
+	    else if ( result == SelectAll )
+		edit->selectAll();
+	    else if ( result == Default )
+		setCompletionMode( KGlobalSettings::completionMode() );
+	    else if ( result == NoCompletion )
+		setCompletionMode( KGlobalSettings::CompletionNone );
+	    else if ( result == AutoCompletion )
+		setCompletionMode( KGlobalSettings::CompletionAuto );
+	    else if ( result == SemiAutoCompletion )
+		setCompletionMode( KGlobalSettings::CompletionMan );
+	    else if ( result == ShellCompletion )
+		setCompletionMode( KGlobalSettings::CompletionShell );
+	    else if ( result == PopupCompletion )
+		setCompletionMode( KGlobalSettings::CompletionPopup );
 
-                // Delete the on demand popup menu :)
-                delete d->popupMenu;
-                d->popupMenu = 0L;
+	    // Delete the on demand popup menu :)
+	    delete d->popupMenu;
+	    d->popupMenu = 0L;
 
-                if ( oldMode != completionMode() )
-                {
-                    if ( oldMode == KGlobalSettings::CompletionPopup &&
-                         d->completionBox )
-                        d->completionBox->hide();
-                    emit completionModeChanged( completionMode() );
-                }
-                return true;
-            }
+	    if ( oldMode != completionMode() )
+	    {
+		if ( oldMode == KGlobalSettings::CompletionPopup &&
+			d->completionBox )
+		    d->completionBox->hide();
+		emit completionModeChanged( completionMode() );
+	    }
+            e->accept();
+	    return true;
         }
         else if(type == QEvent::Drop)
         {
