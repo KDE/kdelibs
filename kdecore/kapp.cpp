@@ -838,11 +838,16 @@ void KApplication::kdisplaySetPalette()
   KConfigBase* config;
   config  = kapp->config();
   config->setGroup( "General" );
-  QColor button =
-    config->readColorEntry( "buttonBackground", &lightGray );
 
+  QColor buttonFallback =
+    config->readColorEntry( "background", &lightGray );
+  QColor button =
+    config->readColorEntry( "buttonBackground", &buttonFallback );
+
+  QColor buttonTextFallback =
+    config->readColorEntry( "foreground", &black );
   QColor buttonText =
-    config->readColorEntry( "buttonForeground", &black );
+    config->readColorEntry( "buttonForeground", &buttonTextFallback );
 
   QColor background =
     config->readColorEntry( "background", &lightGray );
