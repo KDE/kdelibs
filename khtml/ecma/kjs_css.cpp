@@ -126,9 +126,16 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
   kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << jsNameToProp(propertyName) << endl;
 #endif
   DOM::CSSStyleDeclaration styleDecl2 = styleDecl;
-  DOM::DOMString v = styleDecl2.getPropertyValue(DOM::DOMString(jsNameToProp(propertyName)));
+  DOM::DOMString p = jsNameToProp(propertyName);
+  DOM::DOMString v = styleDecl2.getPropertyValue(p);
   if (!v.isNull())
     return getString(v);
+
+  // see if we know this css property, return empty then
+  QCString prop = p.string().latin1();
+  if (DOM::getPropertyID(prop.data(), prop.length()))
+      return getString(DOM::DOMString(""));
+
   return DOMObject::tryGet(exec, propertyName);
 }
 
