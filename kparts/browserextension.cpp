@@ -549,17 +549,10 @@ QStringList BrowserHostExtension::frameNames() const
   return QStringList();
 }
 
-#if QT_VERSION < 300
-const QList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
-{
-  return QList<KParts::ReadOnlyPart>();
-}
-#else
 const QPtrList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
 {
   return QPtrList<KParts::ReadOnlyPart>();
 }
-#endif
 
 bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs & )
 {
