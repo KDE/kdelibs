@@ -10,7 +10,7 @@ bin_PROGRAMS = dcopidl
 dcopidl_SOURCES = main.cpp yacc.cc scanner.cc
 noinst_HEADERS = yacc.cc.h
 
-dcopidl_LDADD = $(LIB_KDEQTADDON) $(LIB_QT)
+dcopidl_LDADD = $(LIB_QT)
 dcopidl_LDFLAGS = $(KDE_RPATH)
 
 ####### Build rules

@@ -138,10 +138,6 @@ AC_SUBST(LIBCOMPAT)
 AC_SUBST(LIBUTIL)
 AC_SUBST(LIBICE)
 
-KDE_CHECK_KDEQTADDON
-
-LIB_KDEQTADDON='-lkde-qt-addon'
-AC_SUBST(LIB_KDEQTADDON)
 LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la'
 AC_SUBST(LIB_KDECORE)
 LIB_KDEUI='$(top_builddir)/kdeui/libkdeui.la'
