@@ -1,7 +1,5 @@
 This module contains the ECMAScript a.k.a. JavaScript language bindings for
 the KHTML Part.
-Specs can be found at ftp://ftp.ecma.ch/ecma-st/Ecma-262.pdf and
-ftp://ftp.ecma.ch/ecma-st/Ecma-262.psc (postscript).
 
 The module is loaded into KHTML's address space on demand.
 
