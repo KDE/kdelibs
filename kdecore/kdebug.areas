@@ -257,6 +257,8 @@
 
 # Kate/Kant/KWrite
 13000   Kate
+13001   Kate (App)
+13002   Kate (View Manager)
 13010   Kate (XML/Syntax)
 13020   Kate (Document)
 13030   Kate (View)
