@@ -51,7 +51,7 @@ ktelnetservice_SOURCES = ktelnetservice.cpp
 ktelnetservice_LDADD = $(LIB_KDECORE)
 ktelnetservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-protocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol
+protocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol
 protocoldir = $(kde_servicesdir)
 
 kiomiscdir = $(includedir)/kio
