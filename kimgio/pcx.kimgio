@@ -2,14 +2,6 @@
 Type=PCX
 Header=^\012
 Name=PCX Image
-Name[be]=Малюнак PCX
-Name[da]=PCX billedfil
-Name[es]=Archivo de imagen PCX
-Name[hu]=PCX kép
-Name[pt_BR]=Arquivo de Imagem PCX
-Name[sv]=PCX-bildfil
-Name[tr]=PCX Resim Dosyası
-Name[zh_CN]=PCX 图像文件
 Read=true
 Write=true
 Suffices=pcx,PCX

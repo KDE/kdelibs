@@ -1,16 +1,25 @@
 [!Global!]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[da]=Automatisk proxy-indstilling
+Comment[es]=Configuración automática del Proxy
+Comment[eu]=Proxy Konfigurazio Automatikoa
 Comment[hu]=Automatikus proxybeállítás
 Comment[pt_BR]=Configuração Automática do Proxy
 Comment[sv]=Automatisk proxyinställning
 
 [script-error]
 Name=Invalid proxy script
+Name[da]=Ugyldigt proxy-script
+Name[es]=Procedimiento inválido del proxy
+Name[eu]=Proxy script baliogabekoa
 Name[hu]=Érvénytelen proxy-szkript
 Name[pt_BR]=Script de proxy inválido
 Name[sv]=Ogiltigt proxy-skript
 Comment=The downloaded proxy configuration script is invalid
+Comment[da]=Det downloadede proxy-indstillingsscript er ugyldigt
+Comment[es]=El procedimiento descargado para la configuración del proxy es inválido
+Comment[eu]=Jaitsitako proxyaren konfigurazio scripta baliogabekoa da
 Comment[hu]=A letöltött proxybeállító szkript érvénytelen
 Comment[pt_BR]=O script de configuração do proxy baixado é inválido
 Comment[sv]=Det nerladdade proxyinställningsskriptet är ogiltigt
@@ -18,10 +27,16 @@ default_presentation=16
 
 [download-error]
 Name=Script download error
+Name[da]=Script download-fejl
+Name[es]=Error de descarga del procedimiento
+Name[eu]=Script-a jaistean errorea
 Name[hu]=Szkriptletöltési hiba
 Name[pt_BR]=Erro de download de script
 Name[sv]=Nerladdningsfel för skript
 Comment=The proxy configuration script could not be downloaded
+Comment[da]=Proxy-indstillingsscriptet kunne ikke downloades
+Comment[es]=El procedimiento de configuración del proxy no se pudo descargar
+Comment[eu]=Proxyaren konfiguraziorako scripta ezin da jaitsi
 Comment[hu]=A proxybeállító szkript letöltése nem sikerült
 Comment[pt_BR]=O script de configuração do proxy não pode ser carregado
 Comment[sv]=Proxyinställningsskriptet kunde inte laddas ner
@@ -29,10 +44,16 @@ default_presentation=16
 
 [evaluation-error]
 Name=Script evaluation error
+Name[da]=Script evalueringsfejl
+Name[es]=Error de evaluación del procedimiento
+Name[eu]=Script ebaluazio errorea
 Name[hu]=Szkriptkiértékelési hiba
 Name[pt_BR]=Erro de avaliação de script
 Name[sv]=Utvärderingsfel för skript
 Comment=There was an error executing the proxy configuration script
+Comment[da]=Der opstod en fejl ved kørslen af proxy-indstillingsscriptet
+Comment[es]=Se produjo un error al ejecutarse el procedimiento de configuración del proxy
+Comment[eu]=Oker bat gertatu da proxyaren konfiguraziorako scriptean
 Comment[hu]=Hiba történt a proxybeállító szkript végrehajtása közben
 Comment[pt_BR]=Ocorreu um erro ao executar o script de configuração do proxy.
 Comment[sv]=Ett fel uppstod vid körning av proxyinställningsskriptet
