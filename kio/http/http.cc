@@ -584,7 +584,7 @@ bool HTTPProtocol::checkSSL()
   {
     kdDebug(7103) << "SSL warnings activated" << endl;
     bool ssl_was_in_use = metaData( "ssl_was_in_use" ) == "TRUE";
-    kdDebug() << "ssl_was_in_use: " << ssl_was_in_use << endl;
+    kdDebug(7103) << "ssl_was_in_use: " << ssl_was_in_use << endl;
 
 #ifdef DO_SSL
     kdDebug(7103) << "m_bUseSSL: " << m_bUseSSL << endl;
