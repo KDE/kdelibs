@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <iostream.h>
+#include <errno.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -761,6 +762,17 @@ void KStandardDirs::addKDEDefaults()
     char link[1024];
     link[1023] = 0;
     int result = readlink(QFile::encodeName(dir).data(), link, 1023);
+    if ((result == -1) && (errno == ENOENT))
+    {
+       QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
+       if (srv.isEmpty())
+          srv = findExe(QString::fromLatin1("lnusertemp"));
+       if (!srv.isEmpty())
+       {
+          system(QFile::encodeName(srv)+" socket");
+          result = readlink(QFile::encodeName(dir).data(), link, 1023);
+       }
+    }
     if (result > 0)
     {
        link[result] = 0;
