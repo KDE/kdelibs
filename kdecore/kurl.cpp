@@ -611,7 +611,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       if (badHostName)
          goto NodeErr;
 
-      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
+      setHost(decode(QString( buf + start, pos - start ), encoding_hint));
       goto NodeOk;
     }
   if ( x == '@' )
@@ -620,18 +620,12 @@ void KURL::parse( const QString& _url, int encoding_hint )
       pos++;
       goto Node7;
     }
-  /* else if ( x == ':' )
-     {
-     m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
-     pos++;
-     goto Node8a;
-     } */
   else if ( (x == '/') || (x == '?') || (x == '#'))
     {
       if (badHostName)
          goto NodeErr;
 
-      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
+      setHost(decode(QString( buf + start, pos - start ), encoding_hint));
       start = pos;
       goto Node9;
     }
@@ -658,7 +652,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       // Ok the : was used to separate host and port
       if (badHostName)
          goto NodeErr;
-      m_strHost = m_strUser.lower();
+      setHost(m_strUser);
       m_strUser = QString::null;
       QString tmp( buf + start, pos - start );
       char *endptr;
@@ -705,7 +699,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     }
     if (badHostName)
        goto NodeErr;
-    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
+    setHost(decode(QString( buf + start, pos - start ), encoding_hint));
     if (pos < len) pos++; // Skip ']'
     if (pos == len)
        goto NodeOk;
@@ -730,10 +724,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
        goto NodeErr;
     if ( pos == len )
     {
-       m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
+       setHost(decode(QString( buf + start, pos - start ), encoding_hint));
        goto NodeOk;
     }
-    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
+    setHost(decode(QString( buf + start, pos - start ), encoding_hint));
   }
   x = buf[pos];
   if ( x == '/' )
@@ -1647,7 +1641,11 @@ KURL::setPass( const QString& _txt )
 void
 KURL::setHost( const QString& _txt )
 {
+#ifndef KDE_QT_ONLY
+   m_strHost = KIDNA::toAscii(_txt).lower();
+#else
    m_strHost = _txt.lower();
+#endif
 }
 
 void
@@ -1847,12 +1845,14 @@ void KURL::addQueryItem( const QString& _item, const QString& _value, int encodi
   m_strQuery_encoded += item + value;
 }
 
-#ifndef KDE_QT_ONLY
 QString KURL::prettyHost() const 
 { 
+#ifndef KDE_QT_ONLY
    return KIDNA::toUnicode(m_strHost);
-}
+#else
+   return m_strHost;
 #endif
+}
 
 
 // static

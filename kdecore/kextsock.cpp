@@ -1798,7 +1798,7 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
   QCString _host;
   QCString _serv;
   if (!host.isNull())
-    _host = KIDNA::toAscii(host);
+    _host = KIDNA::toAsciiCString(host);
   if (!serv.isNull())
     _serv = serv.latin1();
   // Please read the comments before kde_getaddrinfo in netsupp.cpp

@@ -63,7 +63,7 @@ static void KIDNA_load_lib()
    KIDNA_lib_load_failed = false; // Succes
 }
 
-QCString KIDNA::toAscii(const QString &idna)
+QCString KIDNA::toAsciiCString(const QString &idna)
 {
    int l = idna.length();
    const QChar *u = idna.unicode();
@@ -100,6 +100,47 @@ QCString KIDNA::toAscii(const QString &idna)
       else
       {
          return 0; // Can't convert
+      }
+   }
+}
+
+QString KIDNA::toAscii(const QString &idna)
+{
+   int l = idna.length();
+   const QChar *u = idna.unicode();
+   bool needConversion = false;
+   for(;l--;)
+   {
+      if ((*u++).unicode() > 127)
+      {
+          needConversion = true;
+          break;
+      }
+   }
+   if (!needConversion)
+      return idna;
+
+   if (!KIDNA_lib && !KIDNA_lib_load_failed)
+   {
+      KIDNA_load_lib();
+   }
+
+   if (KIDNA_lib_load_failed)
+   {
+      return QString::null; // Can't convert
+   }
+   else 
+   {
+      char *pOutput;
+      if ((*KIDNA_utf8_to_ace)(idna.utf8(), &pOutput) == IDNA_SUCCESS)
+      {
+         QString result(pOutput);
+         free(pOutput);
+         return result;
+      }
+      else
+      {
+         return QString::null; // Can't convert
       }
    }
 }
