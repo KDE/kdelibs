@@ -528,7 +528,7 @@ void KFileDialog::slotOk()
 
     KIO::StatJob *job = 0L;
     d->statJobs.clear();
-    d->filenames = locationEdit->currentText();
+    d->filenames = KShell::tildeExpand(locationEdit->currentText());
 
     if ( (mode() & KFile::Files) == KFile::Files &&
          !locationEdit->currentText().contains( '/' )) {
