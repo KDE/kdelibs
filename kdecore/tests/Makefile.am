@@ -27,7 +27,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
 	kdebugtest ksocktest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
-	cplusplustest kiconloadertest
+	cplusplustest kiconloadertest kresolvertest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h kipctest.h
 
@@ -55,3 +55,4 @@ kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest.stub
 kipctest_SOURCES = kipctest.cpp
 cplusplustest_SOURCES = cplusplustest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp
+kresolvertest_SOURCES = kresolvertest.cpp
