@@ -722,8 +722,18 @@ void KProcess::slotSendData(int)
     innot->setEnabled(false);
     input_data = 0;
     emit wroteStdin(this);
-  } else
-    input_sent += ::write(in[1], input_data+input_sent, input_total-input_sent);
+  } else {
+    int result = ::write(in[1], input_data+input_sent, input_total-input_sent);
+    if (result >= 0)
+    {
+       input_sent += result;
+    }
+    else if ((errno != EAGAIN) && (errno != EINTR))
+    {
+       kdDebug(175) << "Error writing to stdin of child process" << endl;
+       closeStdin();
+    }
+  }
 }
 
 void KProcess::setUseShell(bool useShell, const char *shell)
