@@ -789,7 +789,13 @@ int main( int argc, char* argv[] )
   InstallIOErrorHandler();
   DCOPServer server;
 
-  daemon(1, 0);
+  if (fork() > 0)
+    exit(0); // I am the parent
+
+  setsid();
+
+  if (fork() > 0)
+    exit(0); // get rid of controlling terminal
 
   signal(SIGTERM, sighandler);
 
