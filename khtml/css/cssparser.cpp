@@ -1362,7 +1362,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
         if(allowedUnits & INTEGER && isInt) // ### DOM CSS doesn't seem to define something for integer
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_NUMBER);
 
-        if(allowedUnits & LENGTH)
+        if(allowedUnits & LENGTH && value == 0)
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
 
         return 0;
