@@ -122,6 +122,11 @@ protected:
      */
     KInstance( const KInstance& );
 
+    /**
+     * Set name of default config file.
+     */
+    void setConfigName(const QString &);
+
 private:
     mutable KStandardDirs       *_dirs;
 

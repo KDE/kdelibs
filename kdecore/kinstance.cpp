@@ -43,6 +43,7 @@ public:
     }
 
     KMimeSourceFactory* mimeSourceFactory;
+    QString configName;
     bool ownAboutdata;
 };
 
@@ -143,7 +144,9 @@ KStandardDirs *KInstance::dirs() const
 KConfig	*KInstance::config() const
 {
     if( _config == 0 ) {
-	if ( !_name.isEmpty() )
+        if ( !d->configName.isEmpty() )
+            _config = new KConfig( d->configName );
+	else if ( !_name.isEmpty() )
 	    _config = new KConfig( _name + "rc");
 	else
 	    _config = new KConfig();
@@ -153,6 +156,11 @@ KConfig	*KInstance::config() const
     }
 
     return _config;
+}
+
+void KInstance::setConfigName(const QString &configName)
+{
+    d->configName = configName;
 }
 
 KIconLoader *KInstance::iconLoader() const
