@@ -134,7 +134,7 @@ template<class T>
 inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
 
 template<class T>
-inline const T& kAbs (const T& a) { return a < 0 ? -a : a; }
+inline T kAbs (const T& a) { return a < 0 ? -a : a; }
 
 /**
  * @libdoc The KDE Core Functionality Library
