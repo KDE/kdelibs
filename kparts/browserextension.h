@@ -610,9 +610,9 @@ class LiveConnectExtension : public QObject
 {
   Q_OBJECT
 public:
-  typedef enum { 
+  enum Type { 
       TypeVoid=0, TypeBool, TypeFunction, TypeNumber, TypeObject, TypeString 
-  } Type;
+  };
   typedef QValueList<QPair<Type, QString> > ArgList;
 
   LiveConnectExtension( KParts::ReadOnlyPart *parent, const char *name = 0L );
