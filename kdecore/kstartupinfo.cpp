@@ -492,11 +492,15 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     NETWinInfo info( qt_xdisplay(),  w_P, qt_xrootwin(),
         NET::WMWindowType | NET::WMPid | NET::WMState );
     // ignore NET::Tool and other special window types
-    if( info.windowType() != NET::Normal
-        && info.windowType() != NET::Override
-        && info.windowType() != NET::Unknown
-        && info.windowType() != NET::Dialog
-        && info.windowType() != NET::Dock )
+    NET::WindowType type = info.windowType( NET::NormalMask | NET::DesktopMask
+        | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
+        | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
+    if( type != NET::Normal
+        && type != NET::Override
+        && type != NET::Unknown
+        && type != NET::Dialog
+        && type != NET::Utility )
+//        && type != NET::Dock ) why did I put this here?
 	return NoMatch;
     // lets see if this is a transient
     Window transient_for;
