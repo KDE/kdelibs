@@ -1,6 +1,13 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.43  1997/10/05 16:40:09  mark
+// MD:
+// 1) Bug fix for unregisterMainWidget method; IDs and separators are removed
+// properly from the string held in _DT_APP_WINDOWS.
+//
+// 2) Added unregisterMainWidget to the destructor of KApplication.
+//
 // Revision 1.42  1997/10/05 13:12:24  kalle
 // Coolos patch for creating the directories
 //
@@ -880,81 +887,52 @@ const char* KApplication::getCaption() const
   else
 	return aAppName;
 }
-	// This is the default light gray for KDE
-	QColor col;
-	col.setRgb(214,214,214);
-
-
 		  return;
 
 void KApplication::buildSearchPaths()
   // Torben
-	str = config->readEntry( "InactiveTitleBarColor" );
-	if ( !str.isNull() )
-		inactiveTitleColor.setNamedColor( str );
-	else
-		inactiveTitleColor = gray;
-		
-	str = config->readEntry( "InactiveTitleTextColor" );
-	if ( !str.isNull() )
-		inactiveTextColor.setNamedColor( str );
-	else
-		inactiveTextColor = col;
-		
-	str = config->readEntry( "ActiveTitleBarColor" );
-	if ( !str.isNull() )
-		activeTitleColor.setNamedColor( str );
-	else
-		activeTitleColor = black;
-		
-	str = config->readEntry( "ActiveTitleTextColor" );
-	if ( !str.isNull() )
-		activeTextColor.setNamedColor( str );
-	else
-		activeTextColor = white;
-		
-	str = config->readEntry( "TextColor" );
-	if ( !str.isNull() )
-		textColor.setNamedColor( str );
-	else
-		textColor = black;
-		
-	str = config->readEntry( "BackgroundColor" );
-	if ( !str.isNull() )
-		backgroundColor.setNamedColor( str );
-	else
-		backgroundColor = col;
-		
-	str = config->readEntry( "SelectColor" );
-	if ( !str.isNull() )
-		selectColor.setNamedColor( str );
-	else
-		selectColor = black;	
-	
-	str = config->readEntry( "SelectTextColor" );
-	if ( !str.isNull() )
-		selectTextColor.setNamedColor( str );
-	else
-		selectTextColor = white;
-		
-	str = config->readEntry( "WindowColor" );
-	if ( !str.isNull() )
-		windowColor.setNamedColor( str );
-	else
-		windowColor = white;
-		
-	str = config->readEntry( "WindowTextColor" );
-	if ( !str.isNull() )
-		windowTextColor.setNamedColor( str );
-	else
-		windowTextColor = black;
-		
-	str = config->readEntry( "Contrast" );
-	if ( !str.isNull() )
-		contrast = atoi( str );
-	else
-		contrast = 7;
-	
+  // We want to search the local files with highest priority
+        int num;
+  QString tmp( getenv( "HOME" ) );
+  tmp += "/.kde";
+  appendSearchPath( tmp );
+	// use the global config files
+        KConfig* config = getConfig();
+        config->reparseConfiguration();
+  QString kdePathRc = getConfig()->readEntry( "Path" );
+	QString str;
+  if ( !kdePathRc.isNull() )
+    {
+      char *start, *end, *workPath = new char [ kdePathRc.length() + 1 ];
+	  strcpy( workPath, kdePathRc );
+	config->setGroup( "Color Scheme");
+	// this default is the KDE standard grey
+	str = config->readEntry( "InactiveTitleBarColor", "#C0C0C0" );
+	inactiveTitleColor.setNamedColor( str );
+		  if ( end )
+		    *end = '\0';
+	str = config->readEntry( "InactiveTitleTextColor", "#808080" );
+	inactiveTextColor.setNamedColor( str );
+		}
+	  delete [] workPath;
+	str = config->readEntry( "ActiveTitleBarColor", "#000080" );
+	activeTitleColor.setNamedColor( str );
+  // add paths in the KDEPATH environment variable
+  const char *kdePathEnv = getenv( "KDEPATH" );
+	str = config->readEntry( "ActiveTitleTextColor", "#FFFFFF" );
+	activeTextColor.setNamedColor( str );
+	  char *start, *end, *workPath = new char [ strlen( kdePathEnv ) + 1 ];
+	  strcpy( workPath, kdePathEnv );
+	str = config->readEntry( "TextColor", "#000000" );
+	textColor.setNamedColor( str );
+		{
+	  	  end = strchr( start, ':' );
+	str = config->readEntry( "BackgroundColor", "#C0C0C0" );
+	backgroundColor.setNamedColor( str );
+		  appendSearchPath( start );
+		  start = end ? end + 1 : end;
+	str = config->readEntry( "SelectColor", "#000080" );
+	selectColor.setNamedColor( str );
     }
 
 	str = config->readEntry( "SelectTextColor", "#FFFFFF" );
