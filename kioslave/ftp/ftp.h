@@ -164,7 +164,7 @@ private:
    * @return true if the command was accepted by the server.
    */
   bool ftpOpenCommand( const char *command, const QString & path, char mode,
-                       int errorcode, unsigned long offset = 0 );
+                       int errorcode, KIO::fileoffset_t offset = 0 );
 
   /**
    * The counterpart to openCommand.
