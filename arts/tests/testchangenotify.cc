@@ -175,6 +175,21 @@ struct TestChangeNotify : public TestCase
 		process();
 		testEquals(four,f.value());
 	}
+	TEST(myEnumNotify)
+	{
+		MyEnumValue e1, e2;
+
+		connect(e1,"value_changed",e2,"value");
+
+		testEquals(meIdle, e1.value());
+		testEquals(meIdle, e2.value());
+
+		e1.value(meHelloWorld);
+		process();
+
+		testEquals(meHelloWorld, e1.value());
+		testEquals(meHelloWorld, e2.value());
+	}
 };
 
 TESTMAIN(TestChangeNotify);

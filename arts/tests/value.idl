@@ -6,6 +6,12 @@ interface StringValue {
 	attribute string value;
 };
 
+enum MyEnum { meIdle, meHelloWorld };
+
+interface MyEnumValue {
+	attribute MyEnum value;
+};
+
 interface FloatSender {
 	void send(sequence<float> data);
 	async out float stream outstream;

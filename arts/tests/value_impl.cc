@@ -48,3 +48,23 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(FloatSender_impl);
+
+class MyEnumValue_impl : virtual public MyEnumValue_skel {
+private:
+	MyEnum _value;
+public:
+	MyEnumValue_impl() : _value(meIdle) { };
+	void value(MyEnum newvalue)
+	{
+		if(newvalue != _value)
+		{
+			_value = newvalue;
+			value_changed(_value);
+		}
+	}
+	MyEnum value() { return _value; }
+};
+
+REGISTER_IMPLEMENTATION(MyEnumValue_impl);
+
+

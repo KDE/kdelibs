@@ -181,6 +181,31 @@ struct TestWrapper : public TestCase
 		d = DynamicCast(aNullD);
 		testEquals(true, d.isNull());
 	}
+
+	TEST(stringification) {
+		D d;
+		d.value(5);
+
+		string s = d.toString();
+
+		D anotherD = Arts::Reference(s);
+		testEquals(false, anotherD.isNull());
+		testEquals(5, anotherD.value());
+	}
+	/*
+	unfortunately, this currently fails, because resolving a reference to a
+	non-existing object is not handled properly by the dispatcher - I am not
+	sure whether it is worth fixing it (which might be complicated)
+
+	TEST(stringificationFailures) {
+		D d;
+		d.value(5);
+		string s = d.toString();
+		d = D::null();
+
+		D anotherD = Arts::Reference(s);
+		testEquals(true, anotherD.isNull());
+	}*/
 };
 
 TESTMAIN(TestWrapper);
