@@ -241,7 +241,7 @@
 ]]>
 
 <!ENTITY % Brazilian-Portuguese "IGNORE">
-<![%Brasilian-Portuguese;[
+<![%Brazilian-Portuguese;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Brazilian-Portuguese Documentation V1.0//PTBR"
            "../pt-BR/lang.entities">
 %kde.l10n.ents;
