@@ -22,13 +22,16 @@
 #include <qlist.h>
 #include <qvaluelist.h>
 #include <kdebug.h>
+#include <stdlib.h>
 
 struct string_entry {
   string_entry(QString _key, KSycocaEntry *_payload) 
-     { key = _key; payload = _payload; }
-  QString key;
-  KSycocaEntry *payload;
+     { keyStr = _key; key = keyStr.unicode(); length = keyStr.length(); payload = _payload; }
   uint hash;
+  int length;
+  const QChar *key;
+  QString keyStr;
+  KSycocaEntry *payload;
 };
 
 template class QList<string_entry>;
@@ -148,7 +151,7 @@ uint
 KSycocaDict::hashKey( const QString &key)
 {
    int l = key.length();
-   uint h = 0;
+   register uint h = 0;
   
    for(uint i = 0; i < mHashList.count(); i++)
    {
@@ -157,15 +160,13 @@ KSycocaDict::hashKey( const QString &key)
       {
          pos = -pos-1;
          if (pos < l)
-            h = (h * 13) + (key[l-pos].cell() % 29);
-         h = h & 0x3ffffff;
+            h = ((h * 13) + (key[l-pos].cell() % 29)) & 0x3ffffff;
       } 
       else
       {
          pos = pos-1;
          if (pos < l)
-            h = (h * 13) + (key[pos].cell() % 29);
-         h = h & 0x3ffffff;
+            h = ((h * 13) + (key[pos].cell() % 29)) & 0x3ffffff;
       }
    }
    return h;
@@ -177,22 +178,19 @@ int
 calcDiversity(KSycocaDictStringList *d, int pos, int sz)
 {
    if (pos == 0) return 0;
-   bool *matrix = new bool[sz];
- 
-   for(int i=sz;i--;)
-      matrix[i] = false;
+   bool *matrix = (bool *) calloc(sz, sizeof(bool));
+   uint usz = sz;
 
    if (pos < 0)
    {
       pos = -pos-1;
       for(string_entry *entry=d->first(); entry; entry = d->next())
       {
-         register int l = entry->key.length();
+         register int l = entry->length;
          if (pos < l)
          {
-            uint hash = (entry->hash * 13) + (entry->key[l-pos].cell() % 29);
-            hash = hash & 0x3ffffff;
-            matrix[ hash % sz ] = true;
+            register uint hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3ffffff;
+            matrix[ hash % usz ] = true;
          }
       }
    }
@@ -201,12 +199,10 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
       pos = pos-1;
       for(string_entry *entry=d->first(); entry; entry = d->next())
       {
-         register int l = entry->key.length();
-         if (pos < l)
+         if (pos < entry->length)
          {
-            uint hash = (entry->hash * 13) + (entry->key[pos].cell() % 29);
-            hash = hash & 0x3ffffff;
-            matrix[ hash % sz ] = true;
+            register uint hash = ((entry->hash * 13) + (entry->key[pos].cell() % 29)) & 0x3ffffff;
+            matrix[ hash % usz ] = true;
          }
       }
    }
@@ -214,7 +210,7 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
    for(int i=0;i< sz;i++)
       if (matrix[i]) diversity++;
    
-   delete [] matrix;
+   free((void *) matrix);
 
    return diversity;
 }
@@ -230,10 +226,9 @@ addDiversity(KSycocaDictStringList *d, int pos)
       pos = -pos-1;
       for(string_entry *entry=d->first(); entry; entry = d->next())
       {
-         register int l = entry->key.length();
+         register int l = entry->length;
          if (pos < l)
-            entry->hash = (entry->hash * 13) + (entry->key[l-pos].cell() % 29);
-         entry->hash = entry->hash & 0x3fffffff;
+            entry->hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3fffffff;
       }
    }
    else
@@ -241,10 +236,8 @@ addDiversity(KSycocaDictStringList *d, int pos)
       pos = pos - 1;
       for(string_entry *entry=d->first(); entry; entry = d->next())
       {
-         register int l = entry->key.length();
-         if (pos < l)
-            entry->hash = (entry->hash * 13) + (entry->key[pos].cell() % 29);
-         entry->hash = entry->hash & 0x3fffffff;
+         if (pos < entry->length)
+            entry->hash = ((entry->hash * 13) + (entry->key[pos].cell() % 29)) & 0x3fffffff;
       }
    }
 }
@@ -273,9 +266,8 @@ KSycocaDict::save(QDataStream &str)
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
       entry->hash = 0;
-//fprintf( stderr, "%s\n", entry->key.ascii() );
-      if ((int) entry->key.length() > maxLength)
-         maxLength = entry->key.length();
+      if (entry->length > maxLength)
+         maxLength = entry->length;
    }
 
    //kdDebug(7011) << QString("Max string length = %1").arg(maxLength) << endl;
@@ -320,7 +312,8 @@ KSycocaDict::save(QDataStream &str)
          divsum+=diversity; divnum++;
       }
       // arbitrary cut-off value 3/4 of average seems to work
-      mindiv=(3*divsum)/(4*divnum);
+      if (divnum)
+         mindiv=(3*divsum)/(4*divnum);
 
       if (maxDiv <= lastDiv)
          break;
@@ -334,27 +327,11 @@ KSycocaDict::save(QDataStream &str)
 
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
-      entry->hash = hashKey(entry->key);
+      entry->hash = hashKey(entry->keyStr);
    }
 // fprintf(stderr, "Calculating minimum table size..\n");
 
    mHashTableSize = sz;
-   int *checkList = new int[sz];
-
-   for(uint i = 0; i < sz; i++)
-      checkList[i] = 0;
-   for(string_entry *entry=d->first(); entry; entry = d->next())
-   {
-      checkList[entry->hash % sz]++;
-   }
-
-   int dups = 0;
-   for(uint i = 0; i < sz; i++)
-   {
-      if (checkList[i] > 1)
-         dups += (checkList[i]-1) *(checkList[i]-1);
-   }
-   delete [] checkList;
 
    struct hashtable_entry {
       string_entry *entry;
@@ -374,7 +351,6 @@ KSycocaDict::save(QDataStream &str)
    //kdDebug(7011) << "Filling hashtable..." << endl;
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
-//fprintf(stderr, "Filling with %s\n", entry->key.ascii());
       int hash = entry->hash % sz;
       if (!hashTable[hash].entry)
       { // First entry
@@ -429,8 +405,7 @@ KSycocaDict::save(QDataStream &str)
             for(string_entry *dup = dups->first(); dup; dup=dups->next())
             {
                str << (Q_INT32) dup->payload->offset(); // Positive ID
-               str << dup->key;                         // Key (QString)
-               //kdDebug(7011) << QString(">> %1 %2")               //       .arg(dup->payload->offset(),8,16).arg(dup->key) << endl;
+               str << dup->keyStr;                      // Key (QString)
             }
             str << (Q_INT32) 0;               // End of list marker (0)
          }
