@@ -67,6 +67,7 @@
 >28	string		\x80theora	video/x-theora
 >28	string		Speex\ \ 	audio/x-speex
 >29	string		video		video/x-ogm
+>29	string		FLAC		audio/x-oggflac
 
 # FLAC files
 0	string		fLaC		audio/x-flac
@@ -313,7 +314,7 @@
 
 # OpenOffice.org 1.1 puts the mimetype into the header too
 0    string   PK\003\004			     application/x-zip
->30  string   mimetype     
+>30  string   mimetype
 >>38 string   application/vnd.sun.xml.calc               application/vnd.sun.xml.calc
 >>38 string   application/vnd.sun.xml.calc.template      application/vnd.sun.xml.calc.template
 >>38 string   application/vnd.sun.xml.draw               application/vnd.sun.xml.draw
