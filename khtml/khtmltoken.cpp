@@ -248,7 +248,7 @@ void HTMLTokenizer::parseListing( HTMLString &src)
 
         // Allocate memory to store the script. We will write maximal
         // 10 characers.
-        if ( scriptCodeSize + 11 > scriptCodeMaxSize )
+        if ( scriptCodeSize + 10 > scriptCodeMaxSize )
         {
             QChar *newbuf = new QChar [ scriptCodeSize + 1024 ];
 	    memcpy( newbuf, scriptCode, scriptCodeSize );
@@ -549,7 +549,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		    ((src[0] >= QChar('0')) && (src[0] <= QChar('9'))) ||
 		    src[0] == QChar('/') ) 
 		{
-		    *dest = tolower( src[0] );
+		    *dest = src[0].lower();
 		    dest++;
 		    ++src;
 		} 
