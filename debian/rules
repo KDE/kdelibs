@@ -57,7 +57,9 @@ binary-indep:	build
 		--outputdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR) ; \
 	fi
 	
+	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
 	cp doc/api/*.png `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
+	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
 	cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
 	sed -e "s#_QTDOCDIR_#$(QTDOCDIR)#g" doc/api/index.docbook.in > doc/api/index.docbook
 	( cd doc/api && /bin/sh $(BUILDDIR)/ksgmltools/kdb2html `pwd`/index.docbook )
