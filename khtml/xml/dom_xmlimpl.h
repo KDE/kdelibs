@@ -97,7 +97,7 @@ protected:
 };
 
 
-class ProcessingInstructionImpl : public NodeBaseImpl, khtml::CachedObjectClient
+class ProcessingInstructionImpl : public NodeBaseImpl, private khtml::CachedObjectClient
 {
 public:
     ProcessingInstructionImpl(DocumentPtr *doc);
