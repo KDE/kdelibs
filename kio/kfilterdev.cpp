@@ -331,14 +331,14 @@ int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
                 int size = filter->device()->writeBlock( d->buffer.data(), towrite );
                 if ( size != towrite )
                     kdWarning() << "KFilterDev::writeBlock. Could only write " << size << " out of " << towrite << " bytes" << endl;
-                else
-                    kdDebug() << " KFilterDev::writeBlock wrote " << size << " bytes" << endl;
+                //else
+                    //kdDebug() << " KFilterDev::writeBlock wrote " << size << " bytes" << endl;
             }
             d->buffer.resize( 8*1024 );
             filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
             if (d->result == KFilterBase::END)
             {
-                kdDebug() << " KFilterDev::writeBlock END" << endl;
+                //kdDebug() << " KFilterDev::writeBlock END" << endl;
                 ASSERT(finish); // hopefully we don't get end before finishing
                 break;
             }
