@@ -328,7 +328,7 @@ void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
     KURL url (doc);
     KParts::URLArgs args;
     args.frameName = frame;
-    emit openURLRequestDelayed (url, args);
+    emit openURLRequest (url, args);
 }
         
 //-----------------------------------------------------------------------------
