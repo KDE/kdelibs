@@ -47,7 +47,9 @@ const int XKeyRelease = KeyRelease;
 #endif
 #endif
 
-const char* psTemp[] = { I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key") };
+//static const char* psTemp[] = { 
+//  I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key") 
+//};
 
 class KKeyButtonPrivate
 {
