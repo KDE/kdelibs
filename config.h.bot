@@ -199,3 +199,20 @@ int openpty(int *, int *, char *, struct termios *, struct winsize *);
 __END_DECLS
 #endif
 
+#ifndef HAVE_STRLCPY
+#include <sys/types.h>
+#ifdef __cplusplus
+extern "C" size_t strlcpy(char*,const char*,size_t) throw();
+#else
+size_t strlcpy(char*,const char*,size_t); 
+#endif
+#endif
+
+#ifndef HAVE_STRLCAT
+#include <sys/types.h>
+#ifdef __cplusplus
+extern "C" size_t strlcat(char*,const char*,size_t) throw();
+#else
+size_t strlcat(char*,const char*,size_t);
+#endif
+#endif
