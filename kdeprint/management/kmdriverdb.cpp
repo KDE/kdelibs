@@ -1,0 +1,201 @@
+#include "kmdriverdb.h"
+#include "kmdbentry.h"
+#include "kmdbcreator.h"
+#include "kmmanager.h"
+#include "kmfactory.h"
+
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qfileinfo.h>
+#include <kstddirs.h>
+#include <kapp.h>
+
+KMDriverDB* KMDriverDB::m_self = 0;
+
+KMDriverDB* KMDriverDB::self()
+{
+	if (!m_self)
+	{
+		m_self = new KMDriverDB();
+		CHECK_PTR(m_self);
+	}
+	return m_self;
+}
+
+KMDriverDB::KMDriverDB(QObject *parent, const char *name)
+: QObject(parent,name)
+{
+	m_creator = new KMDBCreator(this,"db-creator");
+	connect(m_creator,SIGNAL(dbCreated()),SLOT(slotDbCreated()));
+
+	m_entries.setAutoDelete(true);
+	m_pnpentries.setAutoDelete(true);
+}
+
+KMDriverDB::~KMDriverDB()
+{
+}
+
+QString KMDriverDB::dbFile()
+{
+	// this calls insure missing directories creation
+	QString	filename = locateLocal("data","kdeprint/printerdb.txt");
+	return filename;
+}
+
+void KMDriverDB::init(QWidget *parent)
+{
+	QFileInfo	dbfi(dbFile());
+	QString		dirname = KMFactory::self()->manager()->driverDirectory();
+
+	if (!m_creator->checkDriverDB(dirname,dbfi.lastModified()))
+		// starts DB creation and wait for creator signal
+		m_creator->createDriverDB(dirname,dbfi.absFilePath(),parent);
+	else if (m_entries.count() == 0)
+		// call directly the slot as the DB won't be re-created
+		// this will (re)load the driver DB
+		slotDbCreated();
+	else
+		// no need to refresh, and already loaded, just emit signal
+		emit dbLoaded(false);
+}
+
+void KMDriverDB::slotDbCreated()
+{
+	// DB should be created, check creator status
+	if (m_creator->status())
+	{
+		// OK, load DB and emit signal
+		loadDbFile();
+		emit dbLoaded(true);
+	}
+}
+
+KMDBEntryList* KMDriverDB::findEntry(const QString& manu, const QString& model)
+{
+	QDict<KMDBEntryList>	*models = m_entries.find(manu);
+	if (models)
+		return models->find(model);
+	return 0;
+}
+
+KMDBEntryList* KMDriverDB::findPnpEntry(const QString& manu, const QString& model)
+{
+	QDict<KMDBEntryList>	*models = m_pnpentries.find(manu);
+	if (models)
+		return models->find(model);
+	return 0;
+}
+
+QDict<KMDBEntryList>* KMDriverDB::findModels(const QString& manu)
+{
+	return m_entries.find(manu);
+}
+
+void KMDriverDB::insertEntry(KMDBEntry *entry)
+{
+	// first check entry
+	if (!entry->validate())
+	{
+		qDebug("Incorrect entry, skipping...(%s)",entry->file.latin1());
+		delete entry;
+		return;
+	}
+
+	// insert it in normal entries
+	QDict<KMDBEntryList>	*models = m_entries.find(entry->manufacturer);
+	if (!models)
+	{
+		models = new QDict<KMDBEntryList>(17,false);
+		models->setAutoDelete(true);
+		m_entries.insert(entry->manufacturer,models);
+	}
+	KMDBEntryList	*list = models->find(entry->model);
+	if (!list)
+	{
+		list = new KMDBEntryList;
+		list->setAutoDelete(true);
+		models->insert(entry->model,list);
+	}
+	list->append(entry);
+
+	if (!entry->pnpmanufacturer.isEmpty() && !entry->pnpmodel.isEmpty())
+	{
+		// insert it in PNP entries
+		models = m_pnpentries.find(entry->manufacturer);
+		if (!models)
+		{
+			models = new QDict<KMDBEntryList>(17,false);
+			models->setAutoDelete(true);
+			m_pnpentries.insert(entry->manufacturer,models);
+		}
+		list = models->find(entry->model);
+		if (!list)
+		{
+			list = new KMDBEntryList;
+			list->setAutoDelete(true);
+			models->insert(entry->model,list);
+		}
+		list->append(entry);
+	}
+
+	// don't block GUI
+	kapp->processEvents();
+}
+
+/*
+  Driver DB file format:
+	FILE=<path>
+	MANUFACTURER=<string>
+	MODEL=<string>
+	PNPMANUFACTURER=<string>
+	PNPMODEL=<string>
+	DESCRIPTION=<string>
+*/
+
+void KMDriverDB::loadDbFile()
+{
+	// first clear everything
+	m_entries.clear();
+	m_pnpentries.clear();
+
+	QFile	f(dbFile());
+	if (f.exists() && f.open(IO_ReadOnly))
+	{
+		QTextStream	t(&f);
+		QString		line;
+		QStringList	words;
+		KMDBEntry	*entry(0);
+
+		while (!t.eof())
+		{
+			line = t.readLine().stripWhiteSpace();
+			if (line.isEmpty())
+				continue;
+			words = QStringList::split('=',line,false);
+			if (words.count() < 2)
+				continue;
+			if (words[0] == "FILE")
+			{
+				if (entry) insertEntry(entry);
+				entry = new KMDBEntry;
+				entry->file = words[1];
+			}
+			else if (words[0] == "MANUFACTURER" && entry)
+				entry->manufacturer = words[1].upper();
+			else if (words[0] == "MODEL" && entry)
+				entry->model = words[1];
+			else if (words[0] == "MODELNAME" && entry)
+				entry->modelname = words[1];
+			else if (words[0] == "PNPMANUFACTURER" && entry)
+				entry->pnpmanufacturer = words[1].upper();
+			else if (words[0] == "PNPMODEL" && entry)
+				entry->pnpmodel = words[1];
+			else if (words[0] == "DESCRIPTION" && entry)
+				entry->description = words[1];
+		}
+		if (entry)
+			insertEntry(entry);
+	}
+}
+#include "kmdriverdb.moc"

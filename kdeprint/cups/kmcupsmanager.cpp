@@ -1,0 +1,584 @@
+#include "kmcupsmanager.h"
+#include "kmprinter.h"
+#include "ipprequest.h"
+#include "cupsinfos.h"
+#include "driver.h"
+#include "matic.h"
+#include "kmcupsconfig.h"
+
+#include <qfile.h>
+#include <qtextstream.h>
+#include <kdebug.h>
+#include <kapp.h>
+#include <kstddirs.h>
+#include <cups/cups.h>
+#include <cups/ppd.h>
+
+void extractMaticData(QString& buf, const QString& filename);
+QString printerURI(KMPrinter *p);
+
+//*****************************************************************************************************
+
+KMCupsManager::KMCupsManager(QObject *parent, const char *name)
+: KMManager(parent,name)
+{
+}
+
+KMCupsManager::~KMCupsManager()
+{
+}
+
+QString KMCupsManager::driverDbCreationProgram()
+{
+	return QString::fromLatin1("make_driver_db_cups");
+}
+
+QString KMCupsManager::driverDirectory()
+{
+	return QString::fromLatin1("/tmp/opt/share/cups/model");
+}
+
+void KMCupsManager::reportIppError(IppRequest *req)
+{
+	int 	status = req->status();
+	if (status == IPP_OK)
+		setErrorMsg(QString::fromLatin1("IPP connection error."));
+	else
+		setErrorMsg(QString::fromLocal8Bit(ippErrorString((ipp_status_t)status)));
+}
+
+bool KMCupsManager::createPrinter(KMPrinter *p)
+{
+	bool isclass = p->isClass(false), result(false);
+	IppRequest	req;
+	QString		uri;
+
+	uri = printerURI(p);
+	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+
+	if (isclass)
+	{
+		req.setOperation(CUPS_ADD_CLASS);
+		QStringList	members = p->members(), uris;
+		QString		s = QString::fromLatin1("ipp://%1:%2/printers/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+		for (QStringList::ConstIterator it=members.begin(); it!=members.end(); ++it)
+			uris.append(s+(*it));
+		req.addURI(IPP_TAG_PRINTER,"member-uris",uris);
+	}
+	else
+	{
+		req.setOperation(CUPS_ADD_PRINTER);
+		req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().prettyURL());
+		if (!p->option("kde-banners").isEmpty())
+		{
+			QStringList	bans = QStringList::split(',',p->option("kde-banners"),false);
+			while (bans.count() < 2)
+				bans.append("none");
+			req.addName(IPP_TAG_PRINTER,"job-sheets-default",bans);
+		}
+	}
+	req.addText(IPP_TAG_PRINTER,"printer-info",p->description());
+	req.addText(IPP_TAG_PRINTER,"printer-location",p->location());
+
+	if (req.doRequest("/admin/"))
+	{
+		result = true;
+		if (p->driver())
+			result = savePrinterDriver(p,p->driver());
+		if (result)
+			enablePrinter(p);
+	}
+	else reportIppError(&req);
+
+	return result;
+}
+
+bool KMCupsManager::removePrinter(KMPrinter *p)
+{
+	bool	result = setPrinterState(p,CUPS_DELETE_PRINTER);
+	return result;
+}
+
+bool KMCupsManager::enablePrinter(KMPrinter *p)
+{
+	bool	result = setPrinterState(p,CUPS_ACCEPT_JOBS);
+	result = result && setPrinterState(p,IPP_RESUME_PRINTER);
+	return result;
+}
+
+bool KMCupsManager::disablePrinter(KMPrinter *p)
+{
+	bool	result = setPrinterState(p,CUPS_REJECT_JOBS);
+	result = result && setPrinterState(p,IPP_PAUSE_PRINTER);
+	return result;
+}
+
+bool KMCupsManager::setDefaultPrinter(KMPrinter *p)
+{
+	return setPrinterState(p,CUPS_SET_DEFAULT);
+}
+
+bool KMCupsManager::setPrinterState(KMPrinter *p, int state)
+{
+	IppRequest	req;
+	QString		uri;
+
+	req.setOperation(state);
+	uri = printerURI(p);
+	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	if (req.doRequest("/admin/"))
+		return true;
+	reportIppError(&req);
+	return false;
+}
+
+bool KMCupsManager::completePrinter(KMPrinter *p)
+{
+	if (completePrinterShort(p))
+	{
+		// driver informations
+		QString	ppdname = cupsGetPPD(p->printerName());
+		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.latin1()));
+		if (ppd)
+		{
+			p->setManufacturer(QString::fromLocal8Bit(ppd->manufacturer));
+			p->setModel(QString::fromLocal8Bit(ppd->shortnickname));
+			p->setDriverInfo(QString::fromLocal8Bit(ppd->nickname));
+			ppdClose(ppd);
+		}
+		QFile::remove(ppdname);
+
+		return true;
+	}
+	return false;
+}
+
+bool KMCupsManager::completePrinterShort(KMPrinter *p)
+{
+	IppRequest	req;
+	QStringList	keys;
+	QString		uri;
+
+	req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
+	uri = printerURI(p);
+	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	keys.append("printer-location");
+	keys.append("printer-info");
+	keys.append("printer-make-and-model");
+	keys.append("printer-uri-supported");
+	keys.append("job-sheets-default");
+	keys.append("job-sheets-supported");
+	if (p->isClass(false))
+		keys.append("member-uris");
+	else
+		keys.append("device-uri");
+	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
+
+	if (req.doRequest("/printers/"))
+	{
+		QString	value;
+		if (req.text("printer-info",value)) p->setDescription(value);
+		if (req.text("printer-location",value)) p->setLocation(value);
+		if (req.text("printer-make-and-model",value)) p->setDriverInfo(value);
+		if (req.uri("printer-uri-supported",value)) p->setUri(KURL(value));
+		if (req.uri("device-uri",value)) p->setDevice(KURL(value));
+		QStringList	values;
+		if (req.uri("member-uris",values))
+		{
+			QStringList	members;
+			for (QStringList::ConstIterator it=values.begin(); it!=values.end(); ++it)
+			{
+				int	p = (*it).findRev('/');
+				if (p != -1)
+					members.append((*it).right((*it).length()-p-1));
+			}
+			p->setMembers(members);
+		}
+		// banners
+		req.name("job-sheets-default",values);
+		while (values.count() < 2) values.append("none");
+		p->setOption("kde-banners",values.join(QString::fromLatin1(",")));
+		if (req.name("job-sheets-supported",values)) p->setOption("kde-banners-supported",values.join(QString::fromLatin1(",")));
+
+		return true;
+	}
+
+	reportIppError(&req);
+	return false;
+}
+
+bool KMCupsManager::testPrinter(KMPrinter *p)
+{
+	QString	testpage = locate("data","kdeprint/testprint.ps");
+	if (testpage.isEmpty())
+	{
+		setErrorMsg(QString::fromLatin1("Unable to locate test page."));
+		return false;
+	}
+
+	IppRequest	req;
+	QString		uri;
+
+	req.setOperation(IPP_PRINT_JOB);
+	uri = printerURI(p);
+	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	req.addMime(IPP_TAG_OPERATION,"document-format","application/postscript");
+	if (!CupsInfos::self()->login().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
+	req.addName(IPP_TAG_OPERATION,"job-name",QString::fromLatin1("KDE Print Test"));
+	if (req.doFileRequest("/printers/",testpage))
+		return true;
+	reportIppError(&req);
+	return false;
+}
+
+void KMCupsManager::listPrinters()
+{
+	loadServerPrinters();
+}
+
+void KMCupsManager::loadServerPrinters()
+{
+	IppRequest	req;
+	QStringList	keys;
+
+	// get printers
+	req.setOperation(CUPS_GET_PRINTERS);
+	keys.append("printer-name");
+	keys.append("printer-type");
+	keys.append("printer-state");
+	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
+
+	if (req.doRequest("/printers/"))
+		processRequest(&req);
+
+	// get classes
+	req.init();
+	req.setOperation(CUPS_GET_CLASSES);
+	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
+
+	if (req.doRequest("/classes/"))
+		processRequest(&req);
+
+	// load default
+	req.init();
+	req.setOperation(CUPS_GET_DEFAULT);
+	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QString::fromLatin1("printer-name"));
+	if (req.doRequest("/printers/"))
+	{
+		QString	s = QString::null;
+		req.name("printer-name",s);
+		setHardDefault(findPrinter(s));
+	}
+}
+
+void KMCupsManager::processRequest(IppRequest* req)
+{
+	ipp_attribute_t	*attr = req->first();
+	KMPrinter	*printer = new KMPrinter();
+	while (attr)
+	{
+		QString	attrname(attr->name);
+		if (attrname == "printer-name")
+		{
+			QString	value = QString::fromLocal8Bit(attr->values[0].string.text);
+			printer->setName(value);
+			printer->setPrinterName(value);
+		}
+		else if (attrname == "printer-type")
+		{
+			int	value = attr->values[0].integer;
+			printer->setType(0);
+			printer->addType((value & CUPS_PRINTER_CLASS ? KMPrinter::Class : KMPrinter::Printer));
+			if ((value & CUPS_PRINTER_REMOTE)) printer->addType(KMPrinter::Remote);
+			if ((value & CUPS_PRINTER_IMPLICIT)) printer->addType(KMPrinter::Implicit);
+		}
+		else if (attrname == "printer-state")
+		{
+			switch (attr->values[0].integer)
+			{
+				case IPP_PRINTER_IDLE: printer->setState(KMPrinter::Idle); break;
+				case IPP_PRINTER_PROCESSING: printer->setState(KMPrinter::Processing); break;
+				case IPP_PRINTER_STOPPED: printer->setState(KMPrinter::Stopped); break;
+			}
+		}
+		if (attrname.isEmpty() || attr == req->last())
+		{
+			addPrinter(printer);
+			printer = new KMPrinter();
+		}
+		attr = attr->next;
+	}
+}
+
+DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
+{
+	if (p->isClass(true))
+		return NULL;
+
+	QString	fname = cupsGetPPD(p->printerName().local8Bit());
+	DrMain	*driver(0);
+	if (!fname.isEmpty())
+	{
+		driver = loadDriverFile(fname);
+		if (driver)
+			driver->set("temporary",fname);
+	}
+	return driver;
+}
+
+DrMain* KMCupsManager::loadFileDriver(const QString& filename)
+{
+	return loadDriverFile(filename);
+}
+
+DrMain* KMCupsManager::loadDriverFile(const QString& fname)
+{
+	if (QFile::exists(fname))
+	{
+		QString	unzipfname;
+		if (!uncompressFile(fname,unzipfname))
+			return NULL;
+
+		DrMain	*driver = new DrMain();
+		if (unzipfname.isEmpty()) unzipfname = fname;
+		else driver->set("temporary",unzipfname);
+
+		// at this point we can only work with unzipfname
+		ppd_file_t	*ppd = ppdOpenFile(unzipfname.latin1());
+		if (ppd)
+		{
+			ppdMarkDefaults(ppd);
+
+			driver->set("text",QString::fromLocal8Bit(ppd->nickname));
+			driver->set("manufacturer",QString::fromLocal8Bit(ppd->manufacturer));
+			driver->set("model",QString::fromLocal8Bit(ppd->shortnickname));
+			driver->set("description",QString::fromLocal8Bit(ppd->nickname));
+			driver->set("template",unzipfname);
+			for (int i=0;i<ppd->num_groups;i++)
+			{
+				ppd_group_t	*grp = ppd->groups+i;
+				DrGroup	*gr = new DrGroup();
+				gr->set("text",QString::fromLocal8Bit(grp->text));
+				bool 	fixed = gr->get("text").contains("install",false);
+				driver->addGroup(gr);
+				for (int k=0;k<grp->num_options;k++)
+				{
+					ppd_option_t	*opt = grp->options+k;
+					if (strcmp(opt->keyword,"PageRegion") == 0) continue;
+					DrListOption	*op;
+					switch (opt->ui)
+					{
+					   case PPD_UI_BOOLEAN:
+						op = new DrBooleanOption();
+						break;
+					   case PPD_UI_PICKONE:
+						op = new DrListOption();
+						break;
+					   default:
+						continue;	// skip option
+					}
+					op->setName(QString::fromLatin1(opt->keyword));
+					op->set("text",QString::fromLocal8Bit(opt->text));
+					op->set("default",QString::fromLatin1(opt->defchoice));
+					if (fixed) op->set("fixed","1");
+					gr->addOption(op);
+					for (int n=0;n<opt->num_choices;n++)
+					{
+						ppd_choice_t	*cho = opt->choices+n;
+						DrBase	*ch = new DrBase();
+						ch->setName(QString::fromLatin1(cho->choice));
+						ch->set("text",QString::fromLocal8Bit(cho->text));
+						op->addChoice(ch);
+					}
+					op->setValueText(QString::fromLocal8Bit(opt->defchoice));
+				}
+			}
+
+			// add constraints
+			for (int i=0; i<ppd->num_consts; i++)
+			{
+				ppd_const_t	*cst = ppd->consts+i;
+				driver->addConstraint(new DrConstraint(QString::fromLatin1(cst->option1),QString::fromLatin1(cst->option2),QString::fromLatin1(cst->choice1),QString::fromLatin1(cst->choice2)));
+			}
+
+			// add page sizes
+			for (int i=0; i<ppd->num_sizes; i++)
+			{
+				ppd_size_t	*sz = ppd->sizes+i;
+				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)sz->left,(int)sz->bottom,(int)sz->right,(int)sz->top));
+			}
+
+			ppdClose(ppd);
+
+			// try to extract Matic data
+			QString	maticdata;
+			DrGroup	*adjgrp(0);
+			extractMaticData(maticdata,unzipfname);
+			if (!maticdata.isEmpty())
+			{
+				driver->set("matic","1");
+
+				MaticBlock	*blk = loadMaticData(maticdata.data()), *varblk(0), *argblk(0);
+				if (blk) varblk = blk->block("$VAR1");
+				if (varblk) argblk = varblk->block("args_byname");
+				for (int i=0;i<2;i++)
+				{
+					if (argblk)
+					{
+						QDictIterator<MaticBlock>	it(argblk->m_blocks);
+						for (;it.current();++it)
+						{
+							QString	type = it.current()->arg("type");
+							if (type != "float" && type != "int")
+								continue;	// skip it
+							if (!adjgrp)
+							{
+								adjgrp = new DrGroup();
+								adjgrp->set("text","Adjustments");
+								driver->addGroup(adjgrp);
+							}
+							DrBase	*opt(0);
+							if (type == "float")
+								opt = new DrFloatOption();
+							else
+								opt = new DrIntegerOption();
+							opt->setName(it.current()->arg("name"));
+							opt->set("text",it.current()->arg("comment"));
+							opt->set("minval",it.current()->arg("min"));
+							opt->set("maxval",it.current()->arg("max"));
+							opt->setValueText(it.current()->arg("default"));
+							opt->set("default",it.current()->arg("default"));
+							adjgrp->addOption(opt);
+						}
+					}
+					if (varblk) argblk = varblk->block("args");	// for new Foomatic structure
+				}
+				delete blk;
+			}
+
+			return driver;
+		}
+		else delete driver;
+	}
+	return NULL;
+}
+
+void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
+{
+	QFile	in(driver->get("template")), out(filename);
+	if (in.exists() && in.open(IO_ReadOnly) && out.open(IO_WriteOnly))
+	{
+		QTextStream	tin(&in), tout(&out);
+		QString		line, keyword;
+		bool 		isnumeric(false);
+		DrBase		*opt(0);
+
+		while (!tin.eof())
+		{
+			line = tin.readLine();
+			if (line.startsWith("*% COMDATA #"))
+			{
+				int	p(-1), q(-1);
+				if ((p=line.find("'name'")) != -1)
+				{
+					p = line.find('\'',p+6)+1;
+					q = line.find('\'',p);
+					keyword = line.mid(p,q-p);
+					opt = driver->findOption(keyword);
+					if (opt && (opt->type() == DrBase::Integer || opt->type() == DrBase::Float))
+						isnumeric = true;
+					else
+						isnumeric = false;
+				}
+				/*else if ((p=line.find("'type'")) != -1)
+				{
+					p = line.find('\'',p+6)+1;
+					if (line.find("float",p) != -1 || line.find("int",p) != -1)
+						isnumeric = true;
+					else
+						isnumeric = false;
+				}*/
+				else if ((p=line.find("'default'")) != -1 && !keyword.isEmpty() && opt && isnumeric)
+				{
+					QString	prefix = line.left(p+9);
+					tout << prefix << " => '" << opt->valueText() << '\'';
+					if (line.find(',',p) != -1)
+						tout << ',';
+					tout << endl;
+					continue;
+				}
+				tout << line << endl;
+			}
+			else if (line.startsWith("*Default"))
+			{
+				int	p = line.find(':',8);
+				keyword = line.mid(8,p-8);
+				DrListOption	*opt = (DrListOption*)driver->findOption((keyword == "PageRegion" ? QString::fromLatin1("PageSize") : keyword));
+				if (opt && opt->currentChoice())
+					tout << "*Default" << keyword << ": " << opt->currentChoice()->name() << endl;
+				else
+					tout << line << endl;
+			}
+			else
+				tout << line << endl;
+		}
+	}
+}
+
+bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
+{
+	QString	tmpfilename = locateLocal("tmp","print_") + kapp->randomString(8);
+
+	// first save the driver in a temporary file
+	saveDriverFile(d,tmpfilename);
+
+	// then send a request
+	IppRequest	req;
+	QString		uri;
+	bool		result(false);
+
+	req.setOperation(CUPS_ADD_PRINTER);
+	uri = printerURI(p);
+	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	result = req.doFileRequest("/admin/",tmpfilename);
+
+	// remove temporary file
+	QFile::remove(tmpfilename);
+
+	if (!result)
+		reportIppError(&req);
+	return result;
+}
+
+bool KMCupsManager::configure(QWidget *parent)
+{
+	return KMCupsConfig::configure(parent);
+}
+
+//*****************************************************************************************************
+
+void extractMaticData(QString& buf, const QString& filename)
+{
+	QFile	f(filename);
+	if (f.exists() && f.open(IO_ReadOnly))
+	{
+		QTextStream	t(&f);
+		QString		line;
+		while (!t.eof())
+		{
+			line = t.readLine();
+			if (line.startsWith("*% COMDATA #"))
+				buf.append(line.right(line.length()-12)).append('\n');
+		}
+	}
+}
+
+QString printerURI(KMPrinter *p)
+{
+	QString	uri;
+	if (!p->uri().isEmpty())
+		uri = p->uri().prettyURL();
+	else
+		uri = QString("ipp://%1:%2/%4/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(p->printerName()).arg((p->isClass(false) ? "classes" : "printers"));
+	return uri;
+}

@@ -1,0 +1,113 @@
+#include "kmwlpd.h"
+#include "kmwizard.h"
+#include "kmprinter.h"
+
+#include <kurl.h>
+#include <klocale.h>
+#include <qlabel.h>
+#include <qlineedit.h>
+
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <unistd.h>
+
+static int openConnection(const char *host);
+static bool checkLpdQueue(const char *host, const char *queue);
+
+//********************************************************************************************************
+
+KMWLpd::KMWLpd(QWidget *parent, const char *name)
+: KMWInfoBase(2,parent,name)
+{
+	m_ID = KMWizard::LPD;
+	m_title = i18n("LPD queue informations");
+	m_nextpage = KMWizard::Driver;
+
+	setInfo(i18n("<p>Enter the informations concerning the remote LPD queue. "
+		     "This wizard will check them before continuing.</p>"));
+	setLabel(0,i18n("Host:"));
+	setLabel(1,i18n("Queue:"));
+}
+
+bool KMWLpd::isValid(QString& msg)
+{
+	if (text(0).isEmpty() || text(1).isEmpty())
+	{
+		msg = i18n("Some informations are missing !");
+		return false;
+	}
+
+	// check LPD queue
+	if (!checkLpdQueue(text(0).latin1(),text(1).latin1()))
+	{
+		msg = i18n("<nobr>Can't find queue <b>%1</b> on <b>%2</b> !</nobr>").arg(text(1)).arg(text(0));
+		return false;
+	}
+	return true;
+}
+
+void KMWLpd::updatePrinter(KMPrinter *p)
+{
+	QString	dev = QString::fromLatin1("lpd://%1/%2").arg(text(0)).arg(text(1));
+	p->setDevice(KURL(dev));
+}
+
+//*******************************************************************************************************
+
+int openConnection(const char *rhost)
+{
+	int	sock;
+	struct hostent	*host;
+	struct servent	*serv;
+	struct sockaddr_in	sin;
+
+	if (!rhost) return -1;
+	host = gethostbyname(rhost);
+	if (!host) return -1;
+	serv = getservbyname("printer","tcp");
+	if (!serv) return -1;
+	bzero((char*)&sin,sizeof(sin));
+	if (host->h_length > (int)sizeof(sin.sin_addr))
+		host->h_length = sizeof(sin.sin_addr);
+	bcopy(host->h_addr,(caddr_t)&sin.sin_addr,host->h_length);
+	sin.sin_family = host->h_addrtype;
+	sin.sin_port = serv->s_port;
+
+	sock = socket(AF_INET,SOCK_STREAM,0);
+	if (sock < 0) return -1;
+	// host connecting
+	if (::connect(sock,(struct sockaddr*)(&sin),sizeof(sin)) < 0) return -1;
+	return sock;
+}
+
+bool checkLpdQueue(const char *host, const char *queue)
+{
+	int	sock = openConnection(host);
+	if (sock < 0) return false;
+
+	char	res[64] = {0};
+	snprintf(res,64,"%c%s\n",(char)4,queue);
+qDebug("write: %s",res);
+	if ((int)::write(sock,res,strlen(res)) != (int)strlen(res))
+	{
+qDebug("connection closed");
+		close(sock);
+		return false;
+	}
+
+	char	buf[1024] = {0};
+	int	n;
+qDebug("reading");
+	while ((n=::read(sock,res,63)) > 0)
+	{
+		res[n] = 0;
+qDebug("%s",buf);
+		strncat(buf,res,1023);
+	}
+	close(sock);
+	if (strlen(buf) == 0 || strstr(buf,"unknown printer") != NULL) return false;
+	else return true;
+}

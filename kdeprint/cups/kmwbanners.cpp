@@ -1,0 +1,95 @@
+#include "kmwbanners.h"
+#include "kmwizard.h"
+#include "kmprinter.h"
+#include "kmfactory.h"
+#include "kmmanager.h"
+
+#include <qcombobox.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <klocale.h>
+
+QStringList defaultBanners()
+{
+	QStringList	bans;
+	QList<KMPrinter>	*list = KMFactory::self()->manager()->printerList(false);
+	if (list && list->count() > 0 && KMFactory::self()->manager()->completePrinter(list->getFirst()))
+	{
+		QString	s = list->getFirst()->option("kde-banners-supported");
+		bans = QStringList::split(',',s,false);
+	}
+	if (bans.count() == 0)
+		bans.append("none");
+	return bans;
+}
+
+void setComboItem(QComboBox *cb, const QString& txt)
+{
+	for (int i=0;i<cb->count();i++)
+		if (cb->text(i) == txt)
+		{
+			cb->setCurrentItem(i);
+			return;
+		}
+	cb->setCurrentItem(0);
+}
+
+//**************************************************************************************************************
+
+KMWBanners::KMWBanners(QWidget *parent, const char *name)
+: KMWizardPage(parent,name)
+{
+	m_ID = KMWizard::Banners;
+	m_title = i18n("Banners selection");
+	m_nextpage = KMWizard::Name;
+
+	m_start = new QComboBox(this);
+	m_end = new QComboBox(this);
+
+	QLabel	*l1 = new QLabel(i18n("Starting banner:"),this);
+	QLabel	*l2 = new QLabel(i18n("Ending banner:"),this);
+	QLabel	*l0 = new QLabel(this);
+	l0->setText(i18n("<p>Select the default banners associated with this printer. These "
+			 "banners will be inserted before and/or after each print job sent "
+			 "to the printer. If you don't want to use banners, select <b>none</b>.</p>"));
+
+	QGridLayout	*lay = new QGridLayout(this, 5, 2, 0, 10);
+	lay->setColStretch(1,1);
+	lay->addRowSpacing(1,20);
+	lay->setRowStretch(4,1);
+	lay->addMultiCellWidget(l0,0,0,0,1);
+	lay->addWidget(l1,2,0);
+	lay->addWidget(l2,3,0);
+	lay->addWidget(m_start,2,1);
+	lay->addWidget(m_end,3,1);
+}
+
+void KMWBanners::initPrinter(KMPrinter *p)
+{
+	if (p)
+	{
+		if (m_start->count() == 0)
+		{
+			QStringList	bans = QStringList::split(',',p->option("kde-banners-supported"),false);
+			if (bans.count() == 0)
+				bans = defaultBanners();
+			if (bans.find("none") == bans.end())
+				bans.prepend("none");
+			m_start->insertStringList(bans);
+			m_end->insertStringList(bans);
+		}
+		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
+		while (l.count() < 2)
+			l.append("none");
+		setComboItem(m_start,l[0]);
+		setComboItem(m_end,l[1]);
+	}
+}
+
+void KMWBanners::updatePrinter(KMPrinter *p)
+{
+	if (m_start->count() > 0)
+	{
+		p->setOption("kde-banners",m_start->currentText()+","+m_end->currentText());
+	}
+}
