@@ -80,7 +80,7 @@
 <!ENTITY John.Cirillo '<personname><firstname>John</firstname><surname>Cirillo</surname></personname>'>
 <!ENTITY John.Cirillo.mail '<email><!-- FIXME --></email>'>
 <!ENTITY Claudiu.Costin '<personname><firstname>Claudiu</firstname><surname>Costin</surname></personname>'>
-<!ENTITY Claudiu.Costin.mail '<email>claudiuc@geocities.com</email>'>
+<!ENTITY Claudiu.Costin.mail '<email>claudiuc@kde.org</email>'>
 <!ENTITY Neal.Crook '<personname><firstname>Neal</firstname><surname>Crook</surname></personname>'>
 <!ENTITY Neal.Crook.mail '<email>nac@forth.org</email>'>
 <!ENTITY Christoph.Cullmann '<personname><firstname>Christoph</firstname><surname>Cullmann</surname></personname>'>
