@@ -385,7 +385,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_A:
 	// A: _0 * - A
 	if( check_array(childID, tag_list_0) ) return true;
-	if( childID >= ID_H1 && childID <= ID_H6 ) return true;
+	if( check_array(childID, tag_list_3) ) return true;
+	if( childID == ID_ADDRESS ) return true;
 	return false;
     case ID_MAP:
 	// MAP: ( _3 + | AREA + )
@@ -398,8 +399,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	return check_array(childID, tag_list_4);
     case ID_PRE:
 	// PRE: _0 * - _5
-	if( childID == ID_HR ) return true;
-	return check_array(childID, tag_list_0);
+	return check_array(childID, tag_list_1);
     case ID_DL:
 	// DL: _6 +
 	return check_array(childID, tag_list_6);
