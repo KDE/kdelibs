@@ -177,6 +177,8 @@
 6080        khtml (css)
 6090        khtml (memory)
 6100        kjas
+6200        khtml (caret)
+6210        khtml (editor)
 
 # libkio
 7000        kio
