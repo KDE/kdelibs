@@ -60,7 +60,7 @@ KFileList::KFileList(QWidget *parent, const char *name)
 					        " </qt>" );
 
 	QString whatsThisMoveFileDownButton = i18n(" <qt> <p>This button moves the highlighted file down in the list"
-						" of files to be printed..</p>"
+						" of files to be printed.</p>"
 						" <p>In effect, this changes the order"
 						" of the files' printout.</p>"
 					        " </qt>" );
