@@ -32,6 +32,7 @@ class HTMLButton;
 class HTMLTextArea;
 
 #include <qwidget.h>
+#include <qtimer.h>
 
 #include "htmlobj.h"
 
@@ -67,6 +68,8 @@ public:
 
 	virtual void resetElement() { }
 
+    virtual void hideElement() {}
+
 protected:
 	// encode special characters
 	QString encodeString( const QString &e );
@@ -100,6 +103,8 @@ public:
 	virtual void position( int _x, int _y, int _width, int _height );
 
 	virtual void calcAbsolutePos( int _x, int _y );
+
+    virtual void hideElement();
 
 protected:
 	QWidget *widget;
@@ -348,6 +353,9 @@ public slots:
 	void slotSubmit();
 	void slotRadioSelected( const char *n, const char *v );
 
+protected slots:
+    void slotTimeout();
+
 signals:
 	void submitted( const char *method, const char *url, const char *data );
 	void radioSelected( const char *n, const char *v );
@@ -358,6 +366,12 @@ private:
 
 	QList<HTMLElement> elements;
 	QList<HTMLHidden>  hidden;
+
+    QTimer *timer;
+    int dx;
+    int dy;
+    int width;
+    int height;
 };
 
 //---------------------------------------------------------------------------

@@ -31,6 +31,7 @@
 #include <qlineedit.h>
 #include <qmultilinedit.h>
 #include <qfontmetrics.h>
+#include <qapp.h>
 #include "htmlform.h"
 #include <strings.h>
 #include "htmlform.h"
@@ -112,6 +113,15 @@ void HTMLWidgetElement::calcAbsolutePos( int _x, int _y )
 	_absX = _x + x;
 	_absY = _y + y - ascent;
 }
+
+void HTMLWidgetElement::hideElement()
+{
+    if ( widget )
+    {
+        widget->hide();
+    }
+}
+
 //----------------------------------------------------------------------------
 
 HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool m,
@@ -723,6 +733,9 @@ HTMLForm::HTMLForm( const char *a, const char *m )
 
     elements.setAutoDelete( false );
     hidden.setAutoDelete( true );
+
+    timer = new QTimer( this );
+    connect( timer, SIGNAL(timeout()), SLOT(slotTimeout()) );
 }
 
 void HTMLForm::addElement( HTMLElement *e )
@@ -743,12 +756,28 @@ void HTMLForm::removeElement( HTMLElement *e )
 
 void HTMLForm::position( int _x, int _y, int _width, int _height )
 {
-    HTMLElement *e;
-
-    for ( e = elements.first(); e != 0; e = elements.next() )
+    if ( !timer->isActive() )
     {
-	e->position( _x, _y, _width, _height );
+        // Repositioning has started.  We first hide the elements, then
+        // start a timer to perform the actual positioning once moving has
+        // finished.  This makes scrolling a document with form controls
+        // smoother.
+        for ( HTMLElement *e = elements.first(); e != 0; e = elements.next() )
+        {
+            e->hideElement();
+        }
     }
+    else
+    {
+        timer->stop();
+    }
+
+    dx = _x;
+    dy = _y;
+    width = _width;
+    height = _height;
+
+    timer->start( 200, true );
 }
 
 void HTMLForm::slotReset()
@@ -789,6 +818,14 @@ void HTMLForm::slotRadioSelected( const char *n, const char *v )
     emit radioSelected( n, v );
 }
 
+void HTMLForm::slotTimeout()
+{
+    for ( HTMLElement *e = elements.first(); e != 0; e = elements.next() )
+    {
+        e->position( dx, dy, width, height );
+    }
+}
+
 HTMLForm::~HTMLForm()
 {
     HTMLElement *e;
@@ -797,5 +834,7 @@ HTMLForm::~HTMLForm()
     {
 	e->setForm( 0 );
     }
+
+    delete timer;
 }
 #include "htmlform.moc"
