@@ -211,7 +211,10 @@ public:
      * a save-as dialog. So setOperationMode( KFileDialog::Saving ); sets
      * setKeepLocation for example.
      *
-     * The default mode is @p Other.
+     * The mode @p Saving, together with a default filter set via
+     * @ref setMimeFilter() will make the filter combobox read-only.
+     *
+     * The default mode is @p Opening.
      *
      * Call this method right after instantiating KFileDialog.
      *
