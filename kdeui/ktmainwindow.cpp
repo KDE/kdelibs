@@ -172,7 +172,7 @@ KTMainWindow::~KTMainWindow()
     if (toolbar->barPos() == KToolBar::Floating
         && !QApplication::closingDown())
     {
-	  //debug ("KTM destructor: deleted toolbar");
+	  //kdDebug(200) << "KTM destructor: deleted toolbar" << endl;
       delete toolbar;
     }
   }
@@ -180,10 +180,10 @@ KTMainWindow::~KTMainWindow()
   if (kmenubar)
   {
     delete kmenubar; // Eeeh? (sven)
-    debug ("KTM destructor: deleted menubar");
+    kdDebug(200) << "KTM destructor: deleted menubar" << endl;
   }
   else
-    debug ("KTM destructor: Menubar deleted, don´t wanna hurt myself");
+    kdDebug(200) << "KTM destructor: Menubar deleted, don´t wanna hurt myself" << endl;
 
 
 
@@ -197,7 +197,7 @@ KTMainWindow::~KTMainWindow()
 
   delete d;
 
-  debug ("KTM destructor: end");
+  kdDebug(200) << "KTM destructor: end" << endl;
 }
 
 
@@ -221,7 +221,7 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
 	  }
       }
   }
-  debug ("KTM CloseEvent end");
+  kdDebug(200) << "KTM CloseEvent end" << endl;
 }
 
 bool KTMainWindow::queryClose()
@@ -755,7 +755,7 @@ void KTMainWindow::menubarKilled()
 {
   if (localKill)
   {
-    debug ("KTM: ACK mb kill, local kill, NOT zeroed");
+    kdDebug(200) << "KTM: ACK mb kill, local kill, NOT zeroed" << endl;
     return;
   }
 
@@ -764,11 +764,11 @@ void KTMainWindow::menubarKilled()
   if (dyer)                  // Doe he live still
   {
     kmenubar = 0L;
-    debug ("KTM: ACK mb kill, zeroed");
+    kdDebug(200) << "KTM: ACK mb kill, zeroed" << endl;
   }
   else
   {
-   debug ("KTM: ACK mb kill, dyer zero, NOT zeroed");
+   kdDebug(200) << "KTM: ACK mb kill, dyer zero, NOT zeroed" << endl;
   }
 
 }
@@ -777,7 +777,7 @@ void KTMainWindow::toolbarKilled()
 {
   if (localKill)
   {
-    debug ("KTM: ACK tb kill, local kill, NOT removed from list");
+    kdDebug(200) << "KTM: ACK tb kill, local kill, NOT removed from list" << endl;
     return;
   }
 
@@ -787,12 +787,12 @@ void KTMainWindow::toolbarKilled()
   if (dyer)
   {
     toolbars.removeRef((KToolBar *) dyer); // remove it from the list;
-    debug ("KTM: ACK tb kill, removed from list");
+    kdDebug(200) << "KTM: ACK tb kill, removed from list" << endl;
     //else
-      //debug ("KTM: ACK tb kill, NOT removed from list");
+      //kdDebug(200) << "KTM: ACK tb kill, NOT removed from list");
   }
   else
-    debug ("KTM: ACK tb kill, dyer zero, NOT removed from list");
+    kdDebug(200) << "KTM: ACK tb kill, dyer zero, NOT removed from list" << endl;
 }
 
 
