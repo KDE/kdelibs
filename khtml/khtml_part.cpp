@@ -696,7 +696,7 @@ void KHTMLPart::slotRedirection(const KURL& url)
 }
 
 // ####
-bool KHTMLPart::setCharset( const QString &name, bool override )
+bool KHTMLPart::setCharset( const QString &name, bool /*override*/ )
 {
   // ### hack: FIXME, use QFontDatabase!!!!!
   KCharsets *c = KGlobal::charsets();
@@ -714,7 +714,7 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
   return true;
 }
 
-bool KHTMLPart::setEncoding( const QString &name, bool override )
+bool KHTMLPart::setEncoding( const QString &name, bool /*override*/ )
 {
     d->m_encoding = name;
 
@@ -727,6 +727,8 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
     KURL url = m_url;
     m_url = 0;
     openURL(url);
+    
+    return true;
 }
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
@@ -808,7 +810,7 @@ void KHTMLPart::findTextBegin()
 #endif
 }
 
-bool KHTMLPart::findTextNext( const QRegExp &exp )
+bool KHTMLPart::findTextNext( const QRegExp &/*exp*/ )
 {
 #if 0
     if(!findNode) findNode = document->body();
@@ -1101,8 +1103,8 @@ void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
 
   if ( it == d->m_frames.end() )
   {
-    kdDebug(300) << "inserting new frame into frame map" << endl;
     khtml::ChildFrame child;
+    kdDebug(300) << "inserting new frame into frame map" << endl;
     child.m_name = frameName;
     it = d->m_frames.insert( frameName, child );
   }
@@ -1494,6 +1496,8 @@ void KHTMLPart::saveState( QDataStream &stream )
 {
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
+  stream << fontSizes() << d->m_fontBase;
+  
   stream << (Q_UINT32)d->m_frames.count();
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
@@ -1532,8 +1536,14 @@ void KHTMLPart::restoreState( QDataStream &stream )
   QStringList frameNames, frameServiceTypes, frameServiceNames;
   KURL::List frameURLs;
   QValueList<QByteArray> frameStateBuffers;
+  QValueList<int> fSizes;
 
-  stream >> u >> xOffset >> yOffset >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
+  stream >> u >> xOffset >> yOffset;
+  
+  stream >> fSizes >> d->m_fontBase;
+  setFontSizes( fSizes );
+  
+  stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
 	 >> frameURLs >> frameStateBuffers;
 
   d->m_bComplete = false;
