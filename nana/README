@@ -1,0 +1,10 @@
+This directory contains the src subdirectory of the Nana
+distribution. No scripts are installed from here. 
+The goal is to make sure we are able to use Nana statements in KDE
+sources, no matter if the whole library is installed on the system. 
+For information on how to use Nana, see the Nana documentation (HTML,
+dvi or Postscript) at
+http://www.cs.ntu.edu.au/homepages/pjm/nana-home/index.html
+On any problems caused by the interaction of Nana with KDE code,
+contact me (Mirko Sucker) using the email address mirko@kde.org.
+--Mirko.

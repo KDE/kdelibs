@@ -187,6 +187,7 @@ AC_CONFIG_SUBDIRS(libltdl)
 CXXFLAGS="$CXXFLAGS "'$(USE_RTTI)'
 
 AC_OUTPUT(Makefile \
+	nana/Makefile \
 	kdecore/Makefile \
 	qk/Makefile \
 	kdecore/tests/Makefile \
