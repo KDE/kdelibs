@@ -22,13 +22,13 @@
 <!ENTITY ie     "isto é">
 <!ENTITY infocenter	"<application>Centro de Informações</application>">
 <!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
-<!ENTITY kicon	"<guiicon>
+<!ENTITY kicon	"ícone <guiicon>
 <inlinemediaobject>
  <objectinfo><title>O ícone K do &kde;</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon> icon"><!-- if image is localised, then entityref should be used 
+</guiicon>"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
 <!ENTITY kmenu    "Menu <guimenu>K</guimenu>">
 <!ENTITY LMB    "botão <mousebutton>esquerdo</mousebutton> do mouse">
