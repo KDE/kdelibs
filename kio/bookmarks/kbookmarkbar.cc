@@ -98,14 +98,12 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     connect( mgr, SIGNAL( changed(const QString &, const QString &) ),
              SLOT( slotBookmarksChanged(const QString &) ) );
 
-    KBookmarkGroup toolbar = getToolbar(); // modifies m_filteredMgr
-    dptr()->m_readOnly = !!dptr()->m_filteredMgr;
-
+    KBookmarkGroup toolbar = getToolbar();
     fillBookmarkBar( toolbar );
 }
 
-KBookmarkGroup KBookmarkBar::getToolbar() {
-
+KBookmarkGroup KBookmarkBar::getToolbar() 
+{
     if ( KBookmarkSettings::self()->m_filteredtoolbar )
     {
         QString fname = m_pManager->path() + ".ftbcache"; // never actually written to
@@ -279,6 +277,7 @@ static QString handleToolbarDragMoveEvent(
     KBookmarkBarPrivate *p, KToolBar *tb, QPoint pos, QPtrList<KAction> actions, 
     bool &atFirst, KBookmarkManager *mgr
 ) {
+    Q_UNUSED( mgr );
     Q_ASSERT( actions.isEmpty() || (tb == dynamic_cast<KToolBar*>(actions.first()->container(0))) );
     p->m_sepToolBar = tb;
     p->m_sepToolBar->removeItemDelayed(const_sepId);
@@ -408,7 +407,7 @@ void KBookmarkBar::slotRMBActionCopyLocation( int val )
 
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
-    if (dptr()->m_readOnly)
+    if (dptr()->m_readOnly || dptr()->m_filteredMgr)
         return false; // todo: make this limit the actions
 
     if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) ) // FIXME, which one?
