@@ -154,6 +154,12 @@ void KLocale::splitLocale(const QString& aStr,
     }
 }
 
+QString KLocale::language() const
+{
+  ASSERT(_inited);
+  return lang;
+}
+
 #ifdef ENABLE_NLS
 
 KLocale::KLocale( const QString& _catalogue )
@@ -411,12 +417,6 @@ void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QSt
   if (!_money.isNull()) money = _money;
   if (!_time.isNull()) time = _time;
   initFormat();
-}
-
-QString KLocale::language() const
-{
-  ASSERT(_inited);
-  return lang;
 }
 
 void KLocale::insertCatalogue( const QString& catalogue )
@@ -841,7 +841,7 @@ QStringList KLocale::languageList() const
 
 #else /* ENABLE_NLS */
 
-KLocale::KLocale( QString ) : _inited(true), lang(0)
+KLocale::KLocale( const QString & = QString::null ) : _inited(true), lang(0)
 {
 }
 
@@ -914,7 +914,7 @@ QString KLocale::formatMoney(const QString &numStr) const
   return numStr;
 }
 
-QString KLocale::formatNumber(double num) const
+QString KLocale::formatNumber(double num, int = -1) const
 {
   return QString().setNum(num);
 }
@@ -960,6 +960,9 @@ void KLocale::insertCatalogue( const QString& ) {
 
 #endif /* ENABLE_NLS */
 
+void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time)
+{
+}
 
 QString KLocale::getAlias(long key) const
 {
