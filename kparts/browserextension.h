@@ -159,6 +159,18 @@ struct KPARTS_EXPORT URLArgs
    */
   void setRedirectedRequest(bool redirected);
 
+  /**
+   * Set whether the URL specifies to be opened in a new window
+   * @since 3.4
+   */
+  void setForcesNewWindow( bool forcesNewWindow );
+  
+  /**
+   * Whether the URL specifies to be opened in a new window
+   * @since 3.4
+   */
+  bool forcesNewWindow() const;
+  
   URLArgsPrivate *d;
 };
 

@@ -71,6 +71,7 @@ struct URLArgsPrivate
       redirectedRequest = false;
       lockHistory = false;
       newTab = false;
+      forcesNewWindow = false;
     }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
@@ -78,6 +79,7 @@ struct URLArgsPrivate
     bool redirectedRequest;
     bool lockHistory;
     bool newTab;
+    bool forcesNewWindow;
 };
 
 }
@@ -201,6 +203,17 @@ bool URLArgs::newTab() const
     return d ? d->newTab : false;
 }
 
+void URLArgs::setForcesNewWindow( bool forcesNewWindow )
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  d->forcesNewWindow = forcesNewWindow;
+}
+
+bool URLArgs::forcesNewWindow() const
+{
+    return d ? d->forcesNewWindow : false;
+}
 
 namespace KParts
 {
