@@ -77,13 +77,6 @@ void KMimeMagic::initStatic()
 #endif
 
 /*
- * data structures and related constants
- */
-#define DECLINED 999
-#define ERROR    998
-#define OK         0
-
-/*
  * Buitltin Mime types
  */
 #define MIME_BINARY_UNKNOWN    "application/octet-stream"
@@ -726,7 +719,7 @@ signextend(struct magic *m, unsigned long v)
 				break;
 			default:
 				kdError(7018) << "" << "signextend" << ": can't happen: m->type=" << m->type << endl;
-				return ERROR;
+				return 998; //good value
 		}
 	return v;
 }
