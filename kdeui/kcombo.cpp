@@ -1,9 +1,6 @@
-#include <qpainter.h>
-#include <qdrawutil.h>
-#include <qkeycode.h>
 #include "kcombo.h"
-#include "kcombo.h"
-#include <qaccel.h>
+
+#include <qlineedit.h>
 
 KCombo::KCombo( QWidget* parent, const char* name, WFlags ) :
 	QComboBox( parent, name)
@@ -23,8 +20,13 @@ void KCombo::setText( const QString& text)
     if (!set_text_called) {
 	set_text_called = true;
 	insertItem(text, 0);
-    } 
-    changeItem(text, 0);
+    } else {
+        // changeItem(text, 0);
+
+        // HACK to fix a bug in Qt : QListBox::removeItem is not properly implemented
+        // and this breaks changeItem. Bug reported to TT. David.
+        Q_CHILD(this, QLineEdit, "combo edit")->setText( text );
+    }
 }
 
 #include "kcombo.moc"
