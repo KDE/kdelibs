@@ -24,6 +24,9 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// Revision 1.13  1998/08/05 09:58:47  radej
+// sven: fixed removeItem SEGV; thanks to Frans van Dorsselaer for report.
+//
 // Revision 1.12  1998/05/08 16:25:55  radej
 // Fixed timer ftr temp messages.
 //
@@ -85,6 +88,7 @@ KStatusBar::~KStatusBar ()
     delete b;
   if (tempMessage)
     delete tempMessage;
+
   delete tmpTimer; // What do I have to notice!?
 };
 
@@ -187,7 +191,17 @@ int KStatusBar::insertItem( const char *text, int id )
 }	
 
 int KStatusBar::insertItem( const QString& text, int id )
-  
+{
+  KStatusBarLabel *label = new KStatusBarLabel( text, id, this );
+  KStatusBarItem *item = new KStatusBarItem(label, id, true);
+/*
+  // resize last item to default
+  KStatusBarItem *l = items.getLast();
+  if( l )
+  {
+    QFontMetrics fm = fontMetrics();
+    int w = fm.width(((QLabel *) l->getItem())->text() )+8;
+    int h = fm.height() + FONT_Y_DELTA;
     l->getItem()->resize( w, h );
   }
 */
@@ -198,7 +212,7 @@ int KStatusBar::insertItem( const QString& text, int id )
   return items.at();
 }
 
-  
+int KStatusBar::insertWidget(QWidget *_widget, int size, int id)
 {
    KStatusBarItem *item = new KStatusBarItem(_widget, id, false);
 
@@ -209,7 +223,12 @@ int KStatusBar::insertItem( const QString& text, int id )
 }
 
 void KStatusBar::removeItem (int id)
+{
+  for ( KStatusBarItem *b = items.first(); b; b=items.next() ) 
     if ( b->ID() == id )
+    {
+      items.remove();
+      delete b;
       updateRects(false );
     }
 void KStatusBar::replaceItem(int /* _id */, const char * /* _text */ )
