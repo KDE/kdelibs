@@ -136,14 +136,15 @@ public:
   /**
    * Return a list of toolbar elements given a toplevel element
    */
-  ToolbarList findToolbars(QDomElement& elem)
+  ToolbarList findToolbars(QDomElement elem)
   {
     static const QString &tagToolbar = KGlobal::staticQString( "ToolBar" );
+    static const QString &attrNoEdit = KGlobal::staticQString( "noEdit" );
     ToolbarList list;
 
     for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
     {
-      if (elem.tagName() == tagToolbar)
+      if (elem.tagName() == tagToolbar && elem.attribute( attrNoEdit ) != "true" )
         list.append(elem);
 
       QDomElement child = elem.firstChild().toElement();
@@ -166,7 +167,7 @@ public:
   QDomDocument       m_localDoc;
   bool               m_isPart;
 
-  ToolbarList        m_barList;   
+  ToolbarList        m_barList;
 
   XmlDataList m_xmlFiles;
 };
@@ -308,6 +309,7 @@ KEditToolbarWidget::~KEditToolbarWidget()
 
 bool KEditToolbarWidget::save()
 {
+  //kdDebug() << "KEditToolbarWidget::save" << endl;
   XmlDataList::Iterator it = d->m_xmlFiles.begin();
   for ( ; it != d->m_xmlFiles.end(); ++it)
   {
@@ -334,12 +336,14 @@ bool KEditToolbarWidget::save()
   KXMLGUIClient *client = clients.last();
   while ( client )
   {
+    //kdDebug() << "factory->removeClient " << client << endl;
     factory()->removeClient( client );
     client = clients.prev();
   }
 
   client = clients.first();
   // now, rebuild the gui from the first to the last
+  //kdDebug() << "rebuildling the gui" << endl;
   for (; client; client = clients.next() )
   {
     // passing an empty stream forces the clients to reread the XML
@@ -348,6 +352,7 @@ bool KEditToolbarWidget::save()
     // and this forces it to use the *new* XML file
     client->reloadXML();
 
+    //kdDebug() << "factory->addClient " << client << endl;
     // finally, do all the real work
     factory()->addClient( client );
   }
@@ -508,6 +513,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 {
   static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
   static const QString &tagMerge     = KGlobal::staticQString( "Merge" );
+  static const QString &tagActionList= KGlobal::staticQString( "ActionList" );
   static const QString &attrName     = KGlobal::staticQString( "name" );
 
   int     sep_num = 0;
@@ -538,8 +544,20 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
     if (it.tagName() == tagMerge)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, "merge");
-      act->setText(1, "<Merge>");
+      // Merge can be named or not - use the name if there is one
+      QString name = it.attribute( attrName );
+      ToolbarItem *act = new ToolbarItem(m_activeList, name);
+      if ( name.isEmpty() )
+          act->setText(1, i18n("<Merge>"));
+      else
+          act->setText(1, i18n("<Merge %1>").arg(name));
+      continue;
+    }
+
+    if (it.tagName() == tagActionList)
+    {
+      ToolbarItem *act = new ToolbarItem(m_activeList, it.attribute(attrName));
+      act->setText(1, i18n("ActionList: %1").arg(it.attribute(attrName)));
       continue;
     }
 
