@@ -185,8 +185,10 @@ void KSSL::close() {
 #ifdef HAVE_SSL
   // kdDebug() << "KSSL close" << endl;
   if (!m_bInit) return;
-  d->kossl->SSL_shutdown(d->m_ssl);
-  d->kossl->SSL_free(d->m_ssl);
+  if (d->m_ssl) {
+     d->kossl->SSL_shutdown(d->m_ssl);
+     d->kossl->SSL_free(d->m_ssl);
+  }
   d->kossl->SSL_CTX_free(d->m_ctx);
   m_bInit = false;
 #endif
