@@ -1,3 +1,36 @@
+2004-04-15  Leo Savernik <l.savernik@aon.at>
+
+	* khtml_caret{.cpp,_p.h}: Vast changes.
+	Added classes CaretBox, CaretBoxLine, CaretBoxIterator,
+	EditableCaretBoxIterator. Changed every other class.
+
+	* khtmlview.[cpp,h}: (class KHTMLView) Adapt to khtml_caret* changes.
+	(KHTMLToolTip::maybeTip) Save tooltip position instead of recalculating it.
+
+	* rendering/render_{inline,box}.{cpp,h}: (Render{Box,Inline}::caretPos)
+	Handle outside caret positions.
+
+	* rendering/render_{image,br}.{cpp,h}: Remove superfluous
+	Render{Image,BR}::caretPos.
+
+	* rendering/render_line.h: (InlineBox::maxOffset) Return 0 instead of 1.
+
+	* rendering/render_object.{cpp,h}: (RenderObject::caretPos) Introduce
+	flags to denote outside positions.
+	Add RenderObject::isRenderReplaced.
+
+	* rendering/render_replaced.h: Add RenderReplaced::isRenderReplaced
+	returning true.
+
+	* rendering/render_text.{cpp,h}: (RenderObject::caretPos) Handle flags.
+
+	* xml/dom_nodeimpl.{cpp,h}: (NodeImpl::getCaret) Handle DOM Range
+	positions.
+	Remove unused NodeImpl::{prev,next}LeafNode.
+	(NodeImpl::maxOffset) Return child node count instead of 1 for element
+	nodes.
+	(NodeBaseImpl::childNode): Don't crash on out-of-bounds offsets.
+
 2004-04-02  Dirk Mueller  <mueller@kde.org>
 
 	* misc/loader.cpp (slotFinished): store suggestedfilename for later.
@@ -63,7 +96,7 @@
 	* rendering/bidi.cpp (findNextLineBreak): make sure we move
 	replaced elements, that don't fit on a line below the floats (#74609).
 
-	* rendering/render_replaced.cpp (calcMinMaxWidth): respect 
+	* rendering/render_replaced.cpp (calcMinMaxWidth): respect
 	padding and borders (#65788).
 
 	* rendering/render_form.h (RenderFormElement): make sure we never
@@ -71,7 +104,7 @@
 
 	* rendering/render_frames.cpp (partLoadingErrorNotify): don't trigger
 	slotPartLoadingErrorNotify twice.
-	
+
 	(slotPartLoadingErrorNotify): avoid KMessageBox deletion race.
 
 	* misc/loader_jpeg.cpp: fix incredibly rare lockup in jpeg decoder.
@@ -79,7 +112,7 @@
 2004-02-28  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_block.cpp (layoutBlockChildren):
-        - displace the check for if we need to relayout our childs 
+        - displace the check for if we need to relayout our childs
         because of a float. It was outside of loop (#71445)
         - remove check for floatBottom() > m_y has it seems outdated.
 
@@ -119,7 +152,7 @@
 
 2004-02-23  Stephan Kulow  <coolo@kde.org>
 
-	* rendering/render_inline.cpp: check if the containingBlock is displayed 
+	* rendering/render_inline.cpp: check if the containingBlock is displayed
 	as block before using it as continuation (#73573)
 
 2004-02-22  Frerich Raabe  <raabe@kde.org>
@@ -159,7 +192,7 @@
 
         * rendering/render_block.cpp (addChildToFlow): first-letter:
         better fix for pure punctuation/single letter text childs.
-        Fixes an invalid reference crash (#70546). 
+        Fixes an invalid reference crash (#70546).
 
 2004-02-16  Germain Garand  <germain@ebooksfrance.org>
 
@@ -173,25 +206,25 @@
 
         * rendering/render_block.cpp (setStyle): skip pseudo
         styles when updating anonymous blocks'style (#73978).
-        (addChildToFlow):don't crash when installing 
-        first-letter in anonymous blocks or when remaining 
+        (addChildToFlow):don't crash when installing
+        first-letter in anonymous blocks or when remaining
         content is empty.
 
         * rendering/render_container.cpp (updatePseudoChild):
         always regenerate :before/:after content holding
-        :first-letter. 
+        :first-letter.
 
         * rendering/render_style.cpp (addPseudoStyle): don't use
         RenderStyle's copy constructor for pseudo-elements.
 
 2004-02-16  Stephan Kulow  <coolo@kde.org>
 
-	* rendering/render_container.cpp (updatePseudoChild): merge more 
+	* rendering/render_container.cpp (updatePseudoChild): merge more
 	code for content generated elements
 
 2004-02-15  Zack Rusin  <zack@kde.org>
 
-	*  xml/dom2_viewsimpl.cpp (getComputedStyle): implementing 
+	*  xml/dom2_viewsimpl.cpp (getComputedStyle): implementing
 	26311
 	* css/css_renderstyledeclarationimpl : implementing
 	CSSStyleDeclarationImpl which maps the properties
@@ -213,7 +246,7 @@
 
 2004-02-11  Germain Garand  <germain@ebooksfrance.org>
 
-        Activate merged alternate code path for inline boxes 
+        Activate merged alternate code path for inline boxes
         construction/painting. Whitespace count consistency.
 
         * rendering/bidi.cpp: merge computeHorizontalPositionsForLine
@@ -244,7 +277,7 @@
 
 	* implement support for pageX/pageY. fix layerX/layerY, which was horrible broken
 	due to its (wrong) assumption that clientX is the same as pageX (#74718), (#70290).
-	
+
 	* dom/dom2_events.cpp (pageX/Y): add bindings.
 
 	* html/htmlparser.cpp (insertNode): argh. regression fix (http://www.cygwin.com) (#74329).
@@ -271,10 +304,10 @@
 
 2004-02-04  Zack Rusin  <zack@kde.org>
 
-	* dom/dom2_traversal : Making NodeFilter( NodeFilterImpl* ) 
+	* dom/dom2_traversal : Making NodeFilter( NodeFilterImpl* )
 	constructor public. Making setFilter method take arg by
 	reference
-	* dom/dom_doc.cpp (createTreeWalker): implementing the 
+	* dom/dom_doc.cpp (createTreeWalker): implementing the
 	method
 	* xml/dom2_traversalimpl : Implementing TreeWalkerImpl
 	* xml/dom_docimpl (createTreeWalker): Implementing the
@@ -282,14 +315,14 @@
 
 2004-02-04  Stephan Kulow  <coolo@kde.org>
 
-	* html/html_tableimpl.cpp (insertRow): append to tbody if 
+	* html/html_tableimpl.cpp (insertRow): append to tbody if
 	there is no tfood for insertRow(numRows) (#74125)
 
 2004-01-29  Germain Garand  <germain@ebooksfrance.org>
 
         * xml/dom_elementimpl.cpp (name): return attribute names in lowercase
 	in compatibility mode. Solves contradiction between DOM L2/L3. Erratum
-	to DOM L2 is pending, thanks to David Faure. 
+	to DOM L2 is pending, thanks to David Faure.
 
 2004-01-29  David Faure  <faure@kde.org>
 
@@ -379,7 +412,7 @@
 	should simply do nothing.
 
 	* dom/dom_element.cpp (removeAttributeNode): Fixed logic for NOT_FOUND_ERR.
-	(setAttributeNode): removed tests for WRONG_DOCUMENT_ERR and 
+	(setAttributeNode): removed tests for WRONG_DOCUMENT_ERR and
 	INUSE_ATTRIBUTE_ERR, the latter being incorrect and both being already
 	done by setNamedItem
 
@@ -403,11 +436,11 @@
 
 2004-01-20  Dirk Mueller  <mueller@kde.org>
 
-	* css/cssstyleselector.cpp (applyRule): Implement handling of 
+	* css/cssstyleselector.cpp (applyRule): Implement handling of
 	empty-cells.
 
 	 * css/cssstyleselector.cpp (applyRule): remove superfluous setZIndex(0)
-	after setHasAutoZIndex, which breaks auto. 
+	after setHasAutoZIndex, which breaks auto.
 
 2004-01-19  Dirk Mueller  <mueller@kde.org>
 
@@ -417,7 +450,7 @@
 2004-01-19  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_style.h: providing an initial property
-	function for every css property and using it in macros 
+	function for every css property and using it in macros
 	from cssselector.cpp to unify the handling of short hand
 	properties (based on safari patch)
 
@@ -434,7 +467,7 @@
 	that a RenderTableCol object is correctly nested inside
 	a table (#59766).
 
-	* xml/dom_elementimpl.cpp (recalcStyle): fix tree corruption 
+	* xml/dom_elementimpl.cpp (recalcStyle): fix tree corruption
 	when recalcStyle() happens to be invoked in the wrong moment.
 
 	* html/html_baseimpl.cpp (setLocation): fix KURL() casting issue.
@@ -455,7 +488,7 @@
 
 2004-01-15  Lars Knoll <knoll@kde.org>
 
-	* rendering/render_table.cpp: set overflowWidth to width 
+	* rendering/render_table.cpp: set overflowWidth to width
 	when layouting (#72420)
 	* xml/dom2_eventsimpl.cpp rendering/render_block.cpp
 	nodeAtPoint() should always use contents coordinates.
@@ -519,7 +552,7 @@
         * rendering/render_text.cpp (paintDecoration):
         revert revision 1.224, avoid resurecting #50683
         by matching the conditionals of RenderText::position
-        (RenderText::nodeAtPoint): revert part of r1.234, 
+        (RenderText::nodeAtPoint): revert part of r1.234,
         avoid #69345 by commenting incompatible merge.
         (RenderText::width): add padding/border/margin
 
@@ -529,24 +562,24 @@
 	(#67851).
 
 	* misc/loader_jpeg.cpp (decode): try hard not to shoot
-	down the machine with large images 
+	down the machine with large images
 	(try http://www.parisc-linux.org/~willy/kde/graph.jpg)
 
 	* rendering/render_image.cpp (layout): ugh, major stupidity. don't rescale large
-	images if nobody explicitely asked for it. makes loading of very large images 
+	images if nobody explicitely asked for it. makes loading of very large images
 	quite a bit faster.
 
 	* rendering/render_image.cpp/.h: Reduce X-server pressure with large images (#39693).
 
 	* misc/loader_jpeg.cpp: Upon suggestion from Maksim, implement decoding of
 	nonprogressive jpegs in non-buffered-image mode. This massively reduces memory
-	footprint and slightly improves performance. 
+	footprint and slightly improves performance.
 
 2004-01-09  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_replaced.cpp (eventFilter): readd the wheel event handling
 	which allows scrolling of the page again. Thanks a lot for just removing it. (#45180)
-	
+
 
 2004-01-02  Dirk Mueller  <mueller@kde.org>
 
@@ -696,7 +729,7 @@
 
 	* rendering/render_container.cpp (updatePseudoChild): fix handling of
 	images in :content (#67373)
-	
+
 	* html/html_baseimpl.cpp (parseAttribute): fix parsing of body attributes (safari merge)
 
 	* rendering/render_box.cpp (calcAbsoluteVertical): basically reverting commit 1.218
@@ -709,23 +742,23 @@
 
 2003-11-25  Germain Garand  <germain@ebooksfrance.org>
 
-        * khtml_part.cpp (checkCompleted): prepend "Automatic Detection" entry to 
+        * khtml_part.cpp (checkCompleted): prepend "Automatic Detection" entry to
         "Use Stylesheet" menu.
         (slotUseStylesheet): set m_sheetUsed to null string if autodetect is on.
         Fixes #54335.
 
         * xml/dom_docimpl.cpp (recalcStyleSelector): if the previous sheet is sticky but
-        still missing when we've already got <body>, choose the document's best 
+        still missing when we've already got <body>, choose the document's best
         candidate until parsing ends. Avoids ending with no decision (#63348).
 
 2003-11-24  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_formimpl.cpp (defaultEventHandler): ignore stale keyup events.
-	Only react when we saw a matching keydown before. 
+	Only react when we saw a matching keydown before.
 
 2003-11-24  David Faure  <faure@kde.org>
 
-	* html/htmlparser.cpp (popInlineBlocks): Fixed infinite loop due to 
+	* html/htmlparser.cpp (popInlineBlocks): Fixed infinite loop due to
 	popOneBlock returning immediately if blockStack==0. #68034.
 
 	* rendering/bidi.cpp: Fixed infinite loop with <nobr> due to findNextLineBreak
@@ -744,7 +777,7 @@
 	* html/htmlparser.cpp (getElement, processCloseTag): Allow only one
 	non-empty <title> tag, discard any following <title> tag. This matches
 	both IE and Mozilla. Testcases khtmltests/regression/tests/ecma/title*
-	
+
 	* html/html_headimpl.cpp (childrenChanged): Set title immediately, like
 	other browsers do.
 
@@ -755,7 +788,7 @@
 
 2003-11-23  Stephan Kulow  <coolo@kde.org>
 
-	* css/cssstyleselector.cpp (applyRule): fixing my fix for #60556, which 
+	* css/cssstyleselector.cpp (applyRule): fixing my fix for #60556, which
 	introduced quite some regressions (thanks to Paul Sprakes for working
 	that out with me)
 
@@ -783,14 +816,14 @@
 2003-11-19  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_baseimpl.cpp (attach): respect display: NONE on <frame>, since
-	it is used to indicate the FOUC prevention code path now. 
+	it is used to indicate the FOUC prevention code path now.
 
 	* css/cssparser.cpp (parseColor): remove use of invalidColor. use a boolean
-	return instead. invalidColor was confusing as it was actually a valid color. 
-	Also add rgba() parsing. 
+	return instead. invalidColor was confusing as it was actually a valid color.
+	Also add rgba() parsing.
 
 	* css/cssstyleselector.cpp (adjustRenderStyle): add check to avoid that
-	<FRAME> gets a display != BLOCK assigned (#63640). 
+	<FRAME> gets a display != BLOCK assigned (#63640).
 
 2003-11-18  Harri Porten  <porten@kde.org>
 
@@ -810,17 +843,17 @@
 
 	* rendering/render_*.cpp: changing the output of dump to
 	get a more comprehensive renderer tree output - as inspired
-	by Safari's kwqDebugTree. This allows for a change in 
+	by Safari's kwqDebugTree. This allows for a change in
 	test_regression to check layouts
 
 2003-11-15  Zack Rusin  <zack@kde.org>
 
 	* rendering/render_box.cpp (calcHeight): correctly compute the
 	height for relatively positioned object with percentage based
-	dimensions - pretty much a merge from safari (#53902) 
+	dimensions - pretty much a merge from safari (#53902)
 
 2003-11-14  Germain Garand  <germain@ebooksfrance.org>
-        
+
         fix "overflow: scroll" layout/painting issues
 
         * rendering/render_box.cpp (getOverflowClipRect): substract
@@ -837,7 +870,7 @@
 
 2003-11-11  Dirk Mueller  <mueller@kde.org>
 
-	* rendering/render_style.h (StyleBoxData>): fix SunProCC 
+	* rendering/render_style.h (StyleBoxData>): fix SunProCC
 	compatibility problem.
 
 	* xml/dom_elementimpl.cpp (attach): don't attach a renderobject
@@ -850,7 +883,7 @@
 
 2003-11-10  David Faure  <faure@kde.org>
 
-	* khtml_part.cpp: Ask the user "open or save?" before embedding a 
+	* khtml_part.cpp: Ask the user "open or save?" before embedding a
 	non-usual mimetype into a frame (e.g. ZIP files or PS files).
 	(html and images are the 'usual' exceptions)
 	Includes a dontshowagain checkbox, so this shouldn't be too annoying.
@@ -862,16 +895,16 @@
 
 2003-11-07  Dirk Mueller  <mueller@kde.org>
 
-	* css/css_valueimpl.cpp (cssText): wrap uri's into url(). 
+	* css/css_valueimpl.cpp (cssText): wrap uri's into url().
 	Stephan Kulow noted that other browsers do that.
 
-	* rendering/render_list.h (class RenderListItem): another 
+	* rendering/render_list.h (class RenderListItem): another
 	SunCC incompatibility fixed. Only applies to HEAD (*phew*).
 
 2003-11-05  Germain Garand  <germain@ebooksfrance.org>
 
         Refinement of namespace handling for Attributes,
-        following David's patch of 2003-10-25. 
+        following David's patch of 2003-10-25.
 
         * xml/dom_elementimpl.cpp: get rid of the m_localName string member
         for Attributes.
@@ -884,7 +917,7 @@
 2003-11-05  Dirk Mueller  <mueller@kde.org>
 
 	* html/htmltokenizer.cpp (parseEntity): fix annoying entity parsing problem
-	that caused stale ';''s popping up everywhere. 
+	that caused stale ';''s popping up everywhere.
 
 2003-11-04  Leo Savernik <l.savernik@aon.at>
 
@@ -909,14 +942,14 @@
 	* misc/loader.cpp (buildAcceptHeader): add */* to Accept-Header
 	for image requests with low priority to fix www.tweakers.net (#53515).
 
-	* css/parser.y: lowercase the media we get via CSS stylesheets. 
+	* css/parser.y: lowercase the media we get via CSS stylesheets.
 	Its true that the media is case insensitive in CSS, but it is
 	case sensitive in HTML, and as we don't want to do the code twice
-	we cheat a little here. 
+	we cheat a little here.
 
 	Also change media parsing logic for @import to handle
 	http://www.hixie.ch/tests/evil/css/import/extra/importexoticmedia.html
-	correctly (idea by Stephan Kulow). 
+	correctly (idea by Stephan Kulow).
 
 	* html/html_formimpl.cpp (defaultEventHandler): react on space too
 	(#64200).
@@ -926,7 +959,7 @@
 	* html/html_formimpl.cpp: remove the addCSSProperty calls and put
 	them in the default stylesheet. the original reasons for them in that
 	place is no longer valid since we implemented the CSS 2.1 selector rules.
-	
+
 
 2003-11-02  Dirk Mueller  <mueller@kde.org>
 
@@ -936,12 +969,12 @@
 	* khtmlview.cpp (viewportWheelEvent): toggle Font zooming orientation (#61862).
 
 	* rendering/render_box.cpp (paintBackgroundExtended): implement. needed
-	for inline elements background drawing somewhen. 
+	for inline elements background drawing somewhen.
 
 	* rendering/render_object.cpp (nodeAtPoint): merge from Safari. Still
-	does not work, but at least its the same now. 
+	does not work, but at least its the same now.
 	(lineHeight): handle replaced elements here. They don't necessarily
-	inherit RenderReplaced anymore. 
+	inherit RenderReplaced anymore.
 	(baselinePosition): handle replaced elements.
 
 	* rendering/render_replaced.cpp: remove baselinePosition/lineHeight. its in
@@ -971,7 +1004,7 @@
 2003-10-30  Dirk Mueller  <mueller@kde.org>
 
 	* xml/dom_docimpl.cpp (open): do a full detach()/attach(),
-	otherwise we're corrupting the rendertree (#66590). 
+	otherwise we're corrupting the rendertree (#66590).
 
 2003-10-29  Stephan Kulow  <coolo@kde.org>
 
@@ -1060,13 +1093,13 @@
 	Also provides completion, yay! :)
 
 	right now <input type=file> has severe rendering errors which I blame
-	on the widget painting code from Lars. 
+	on the widget painting code from Lars.
 
 2003-10-25  David Faure  <faure@kde.org>
 
-	Make use of the ID scheme much more for elements, getting rid of 
+	Make use of the ID scheme much more for elements, getting rid of
 	m_localName and m_tagName strings in XMLElementImpl.
-	
+
 	* misc/maketags: switched to lowercase; uppercase is the html-compat case only.
 	* html/html_elementimpl.cpp(tagName,localName): lookup name from id, with proper
 	handling of m_htmlCompat vs xhtml difference.
@@ -1083,7 +1116,7 @@
 	Removed m_tagName and m_localName member vars in all methods, used id lookups instead.
 	* xml/dom_elementimpl.cpp (cloneNode): fixed namespace being lost. Factorized
 	common code with HTMLElementImpl in finishCloneNode.
-	* xml/dom_nodeimpl.*: added m_htmlCompat bool in bitfield. Only makes 
+	* xml/dom_nodeimpl.*: added m_htmlCompat bool in bitfield. Only makes
 	sense for elements currently, but would take more memory in ElementImpl.
 
 	* xml/dom_docimpl.cpp (DOMImplementationImpl::createDocument):
@@ -1106,12 +1139,12 @@
 	  - bring back the NodeImpl_NSMask bits in id() for Attributes and XMLElements
 	    => the cssselector need that to support CSS namespaces in an efficient way.
 	    => fixes CSS selection for XML documents
-	  - change Nodeimpl::Id registration mechanism: 
+	  - change Nodeimpl::Id registration mechanism:
 	    We tried to solve the DOM1/DOM2 NS methods compatibility problems
 	    by registering the qualifiedName. However, this is doomed to  fail in other
-	    places that relies on Ids because prefixes aren't  encoded in  the Ids and 
+	    places that relies on Ids because prefixes aren't  encoded in  the Ids and
 	    are irrelevant for NS nodes identification.
-	    Instead, use registered aliases (see DocumentImpl::getId) to solve  
+	    Instead, use registered aliases (see DocumentImpl::getId) to solve
 	    compatibility issues while maintaining a sound Id system.
 
         * css/cssstyleselector.cpp: change getId calls
@@ -1132,7 +1165,7 @@
         * html/html_documentimpl.cpp:
         (HTMLDocumentImpl::createElement): check DOM exceptions
 
-        * html/html_documentimpl.h: ditto 
+        * html/html_documentimpl.h: ditto
 
         * html/html_elementimpl.cpp: use m_xhtml bool flag to distinguish HTML/XHTML elements
 
@@ -1157,7 +1190,7 @@
         * xml/dom_docimpl.h: IdNameMapping change
 
         * xml/dom_elementimpl.h:
-        * xml/dom_elementimpl.cpp: 
+        * xml/dom_elementimpl.cpp:
         (AttrImpl::AttrImpl): no more m_namespaceURI, now dynamically retrieved with getName(NamespaceId...)
         (AttrImpl::nodeName): now built from prefix + localName
         (ElementImpl::setAttributeNS): check exceptions on qualifiedName
@@ -1187,9 +1220,9 @@
 	it possible to remove quite some code in html_formimpl.cpp
 
 2003-10-24  Lars Knoll <knoll@kde.org>
-	* A few more small fixes to Html event handlers. We can unfortunately not 
+	* A few more small fixes to Html event handlers. We can unfortunately not
 	easily get the events for <select> and <textarea> correct, as they use
-	either modality or QScrollView (but doesn't work in 3.1.x neither).	
+	either modality or QScrollView (but doesn't work in 3.1.x neither).
 
 2003-10-24  Lars Knoll <knoll@kde.org>
 	* Hopefully fixed most repainting problems.
@@ -1217,7 +1250,7 @@
 
 	* rendering/render_box.cpp (calcAbsoluteHorizontal): fixed containing block
 	height calculation for position:fixed.
-	(paintBackground): fix negative backgroundx/y positioning. fix 
+	(paintBackground): fix negative backgroundx/y positioning. fix
 	background-attachment: fixed (http://placenamehere.com/safari/fixedbgtest.html)
 	avoid division by zero. fix table background positioning (#49336).
 	http://c133.org/testcase1.html, http://c133.org/testcase2.html,
@@ -1236,11 +1269,11 @@
 
 	* html/html_listimpl.cpp (attach): fix thinko. Revert Safari merge which
 	broke <ul><p><li>. Thanks to Maksim for noticing.
-	
+
 	* rendering/render_list.cpp (calcListValue): handle <ul><p><li> again.
 
 	* rendering/render_box.cpp (repaint): revert commit which introduced another
-	4 bytes overhead. No need to waste memory here. 
+	4 bytes overhead. No need to waste memory here.
 
 	* rendering/render_object.cpp (setStyle): schedule repaint on old object
 	when the new outline is going to be thinner.
@@ -1254,7 +1287,7 @@
 
 	* html/html_formimpl.cpp (HTMLButtonElement::attach): Remove.
 
-	* rendering/render_box.cpp (calcWidth): implement CSS min-width/max-width 
+	* rendering/render_box.cpp (calcWidth): implement CSS min-width/max-width
 	support (#12994).
 
 	* rendering/render_block.cpp (renderName): don't crash when style() is 0L.
@@ -1272,12 +1305,12 @@
 
 	* css/makeprop: don't export getPropertyName. declare it.
 
-	* xml/dom_nodeimpl.cpp (replaceChild/appendChild/removeChild): 
+	* xml/dom_nodeimpl.cpp (replaceChild/appendChild/removeChild):
 	Reverting patch which invalidated layout on child when it was attached.
 
 2003-10-20  Lars Knoll <knoll@kde.org>
 
-	* fix most issues with the layering code by 
+	* fix most issues with the layering code by
 	merging and adapting safaris implementation
 	* fix a bug in RenderBox::calcAbsoluteVertical(), that probably
 	has destroyed a lot of layouts.
@@ -1300,7 +1333,7 @@
 
 	* rendering/render_layer.cpp (showScrollbar): set IE-CSS-extension styled
 	palette on the overflow=scroll/auto scrollbars.
-	
+
 	* rendering/render_frames.cpp (close): reorder. updateWidget() might
 	delete this.
 
@@ -1379,7 +1412,7 @@
 
 	* rendering/render_object.cpp (scrollHeight): return overflowHeight() not contentHeight()
 	by default. (David Hyatt)
-	
+
 	* rendering/render_object.cpp (scrollWidth): return overflowWidth() not contentWidth()
 	by default. (David Hyatt)
 
@@ -1457,9 +1490,9 @@
 	to avoid ugly crashes when DHTML deletes the node while we're still parsing.
 	#57020, testcase alja.html
 
-	
+
 2003-10-04  Dirk Mueller  <mueller@kde.org>
-	
+
 	* khtml_settings.cc (init): change default for JS debugger to off.
 
 	* html/html_elementimpl.cpp (createContextualFragment): Fix memory
@@ -1469,7 +1502,7 @@
 
 	* html/html_elementimpl.h (class HTMLElementImpl): adjust return type.
 
-	* dom/dom2_range.cpp (createContextualFragment): Adjust to DocumentFragment 
+	* dom/dom2_range.cpp (createContextualFragment): Adjust to DocumentFragment
 	return type.
 
-	
+
