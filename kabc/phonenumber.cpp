@@ -150,7 +150,7 @@ QString PhoneNumber::typeLabel( int type )
       return i18n("Fax");
       break;  
     case Cell:
-      return i18n("Cell Phone");
+      return i18n("Mobile Phone");
       break;  
     case Video:
       return i18n("Video");

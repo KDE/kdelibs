@@ -830,6 +830,9 @@ void Addressee::setNameFromString( const QString &str )
     }
     setSuffix( suffix );
 
+    if ( rightOffset < 0 )
+      return;
+
     if ( rightOffset - 1 >= 0 && prefixes.contains( parts[ rightOffset - 1 ].lower() ) ) {
       setFamilyName( parts[ rightOffset - 1 ] + " " + parts[ rightOffset ] );
       rightOffset--;
