@@ -825,7 +825,8 @@ void RenderPartObject::updateWidget()
 // ugly..
 void RenderPartObject::close()
 {
-    updateWidget();
+    if (m_obj->id() == ID_OBJECT)
+        updateWidget();
     RenderPart::close();
 }
 
