@@ -692,7 +692,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
     if (neg)
         str.remove( 0, negativeSign().length() );
 
-    int pos = str.find(monetaryDecimalSymbol());
+    int pos = str.find(decimalSymbol());
     QString major;
     QString minior;
     if ( pos == -1 )
@@ -700,12 +700,12 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
     else
     {
         major = str.left(pos);
-        minior = str.mid(pos + monetaryDecimalSymbol().length());
+        minior = str.mid(pos + decimalSymbol().length());
     }
 
     // Remove thousand separators
-    while ( ( pos = major.find( monetaryThousandsSeparator() ) ) > 0 )
-        major.remove( pos, monetaryThousandsSeparator().length() );
+    while ( ( pos = major.find( thousandsSeparator() ) ) > 0 )
+        major.remove( pos, thousandsSeparator().length() );
 
     QString tot;
     if (neg) tot = '-';
