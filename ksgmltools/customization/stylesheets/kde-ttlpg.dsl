@@ -250,7 +250,7 @@
     (let ((author-name  (author-string))
 	  (author-contrib (select-elements (children (current-node)) 
 					   (normalize "contrib"))))
-      (make element gi: P
+      (make element gi: "P"
 	      attributes: (list (list "CLASS" (gi)))
 	      (process-node-list author-contrib)
 	      (literal ": ")
