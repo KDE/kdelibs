@@ -35,6 +35,8 @@ const int defaultMediumFontSizes[MAXFONTSIZES] =
 const int defaultLargeFontSizes[MAXFONTSIZES] =
   { 10, 12, 14, 16, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
 
+typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
+
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
 {
@@ -213,26 +215,76 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnableJavaScript" ) )
       m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", false );
 
-        // The domain-specific settings.
-        if( reset || config->hasKey( "JavaScriptDomainAdvice" ) ) {
-          QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
-          for (QStringList::ConstIterator it = domainList.begin();
-                   it != domainList.end(); ++it) {
-                QString domain;
-                KJavaScriptAdvice javaAdvice;
-                KJavaScriptAdvice javaScriptAdvice;
-                splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
-                javaDomainPolicy[domain] = javaAdvice;
-                javaScriptDomainPolicy[domain] = javaScriptAdvice;
-          }
-        }
+    // The domain-specific settings.
+    bool check_old_java = true;
+	if( reset || config->hasKey( "JavaDomainSettings" ) ){
+	  check_old_java = false;
+	  QStringList domainList = config->readListEntry( "JavaDomainSettings" );
+      for ( QStringList::ConstIterator it = domainList.begin();
+                it != domainList.end(); ++it) {
+        QString domain;
+        KJavaScriptAdvice javaAdvice;
+        KJavaScriptAdvice javaScriptAdvice;
+        splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
+        javaDomainPolicy[domain] = javaAdvice;
+      }	
+	}
+
+	bool check_old_ecma = true;
+	if( reset || config->hasKey( "ECMADomainSettings" ) ){
+ 	  check_old_ecma = false;
+	  QStringList domainList = config->readListEntry( "ECMADomainSettings" );
+      for ( QStringList::ConstIterator it = domainList.begin();
+                it != domainList.end(); ++it) {
+        QString domain;
+        KJavaScriptAdvice javaAdvice;
+        KJavaScriptAdvice javaScriptAdvice;
+        splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
+        javaScriptDomainPolicy[domain] = javaScriptAdvice;
+      }	
+	}
+
+    if( reset || config->hasKey( "JavaScriptDomainAdvice" )
+	     && ( check_old_java || check_old_ecma ) ) {
+      QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
+      for ( QStringList::ConstIterator it = domainList.begin();
+                it != domainList.end(); ++it) {
+        QString domain;
+        KJavaScriptAdvice javaAdvice;
+        KJavaScriptAdvice javaScriptAdvice;
+        splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
+		if( check_old_java )
+		  javaDomainPolicy[domain] = javaAdvice;
+		if( check_old_ecma )
+          javaScriptDomainPolicy[domain] = javaScriptAdvice;
+      }
+
+	  //save all the settings into the new keywords if they don't exist
+	  if( check_old_java ){
+	    QStringList domainConfig;	
+	  	PolicyMap::Iterator it;
+	  	for( it = javaDomainPolicy.begin(); it != javaDomainPolicy.end(); ++it ){
+          QCString javaPolicy = adviceToStr( it.data() );
+          QCString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
+          domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
+	  	}
+        config->writeEntry( "JavaDomainSettings", domainConfig );
+	  }
+	
+	  if( check_old_ecma ){
+	    QStringList domainConfig;
+	    PolicyMap::Iterator it;
+	  	for( it = javaScriptDomainPolicy.begin(); it != javaScriptDomainPolicy.end(); ++it ){
+          QCString javaPolicy = adviceToStr( KJavaScriptDunno );
+          QCString javaScriptPolicy = adviceToStr( it.data() );
+          domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
+	  	}
+        config->writeEntry( "ECMADomainSettings", domainConfig );
+	  }
+    }
   }
 }
 
-
-
-// Local typedef for the helper function below
-typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
 
 // Local helper for isJavaEnabled & isJavaScriptEnabled.
 static bool lookup_hostname_policy(const QString& hostname,
