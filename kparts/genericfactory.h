@@ -71,7 +71,8 @@ namespace KParts
      *     The signature of that static method has to be
      *         KAboutData *createAboutData()
      *
-     * The template will take care of memory management of the KInstance and the KAboutData object.
+     * The template will take care of memory management of the KInstance and the KAboutData object,
+     * meaning ownership of what createAboutData returns is passed to the caller (this template) .
      *
      * For advanced use you can also inherit from the template and re-implement additionally the
      * virtual KInstance *createInstance() method, for example in case you want to extend the
