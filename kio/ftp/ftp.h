@@ -183,6 +183,8 @@ private:
   size_t ftpRead( void *buffer, long len );
   size_t ftpWrite( void *buffer, long len );
 
+  bool ftpChmod( const QString & path, int permissions );
+
   // used by listDir
   bool ftpOpenDir( const QString & path );
   bool ftpCloseDir();

@@ -28,6 +28,7 @@
 #include <kprotocolmanager.h>
 
 #include <kdebug.h>
+#include <klocale.h>
 #include <kinstance.h>
 #include <ksock.h>
 #include <unistd.h>
@@ -255,6 +256,8 @@ void Ftp::openConnection()
 {
   kdDebug(7102) << "openConnection " << m_host << ":" << m_port << " " << m_user << " " << m_pass << endl;
 
+  infoMessage( i18n("Opening connection to host %1").arg(m_host) );
+
   if ( m_host.isEmpty() )
   {
     error( ERR_UNKNOWN_HOST, "" );
@@ -270,6 +273,7 @@ void Ftp::openConnection()
 
   m_bFtpStarted = true;
 
+  infoMessage( i18n("Connected to host %1").arg(m_host) );
   kdDebug(7102) << "Connected ...." << endl;
 
   m_bLoggedOn = ftpLogin( m_user, m_pass );
@@ -352,6 +356,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
 bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 {
   kdDebug(7102) << "ftpLogin " << user << _pass << endl;
+  infoMessage( i18n("Sending login information") );
 
   assert( !m_bLoggedOn );
 
@@ -394,6 +399,7 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
   }
 
   kdDebug(7102) << "Login ok" << endl;
+  infoMessage( i18n("Login ok") );
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
@@ -769,21 +775,8 @@ void Ftp::mkdir( const KURL & url, int permissions )
 
   if ( permissions != -1 )
   {
-    // chmod the file we just put.
-    // We can't call the chmod call implementation
-    // since we want to ignore errors.
-
-    QCString cmd = "SITE CHMOD ";
-
-    char buf[10];
-    // we need to do bit AND 777 to get permissions, in case
-    // we were sent a full mode (unlikely)
-    sprintf(buf, "%o ", permissions & 511 );
-
-    cmd += buf;
-    cmd += path;
-
-    (void) ftpSendCmd( cmd, '2' );
+    // chmod the dir we just created, ignoring errors.
+    (void) ftpChmod( path, permissions );
   }
 
   finished();
@@ -833,12 +826,8 @@ void Ftp::del( const KURL& url, bool isfile )
     finished();
 }
 
-void Ftp::chmod( const KURL & url, int permissions )
+bool Ftp::ftpChmod( const QString & path, int permissions )
 {
-  QString path = url.path();
-  if (!m_bLoggedOn)
-     openConnection();
-
   assert( m_bLoggedOn );
 
   QCString cmd = "SITE CHMOD ";
@@ -851,8 +840,16 @@ void Ftp::chmod( const KURL & url, int permissions )
   cmd += buf;
   cmd += path;
 
-  if ( !ftpSendCmd( cmd, '2' ) )
-    error( ERR_CANNOT_CHMOD, path );
+  return ftpSendCmd( cmd, '2' );
+}
+
+void Ftp::chmod( const KURL & url, int permissions )
+{
+  if (!m_bLoggedOn)
+     openConnection();
+
+  if ( !ftpChmod( url.path(), permissions ) )
+    error( ERR_CANNOT_CHMOD, url.path() );
   else
     finished();
 }
@@ -1600,8 +1597,8 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   {
     if ( m_user == FTP_LOGIN )
       kdDebug(7102) << "Trying to chmod over anonymous FTP ???" << endl;
-    chmod(dest_orig, permissions); // will emit error or finished
-    return;
+    // chmod the file we just put, ignoring errors.
+    (void) ftpChmod( dest_orig, permissions );
   }
 
   // We have done our job => finish
