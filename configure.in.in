@@ -49,6 +49,7 @@ DCOPIDL2CPP="compiled"
 DCOPIDL="compiled"
 MEINPROC="compiled"
 KDECONFIG="compiled"
+BROCKENBORING='$(bindir)/brockenboring'
 
 dnl Checks for libraries etc
 AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case

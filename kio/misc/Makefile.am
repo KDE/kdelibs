@@ -22,12 +22,8 @@ INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir) -I$(srcdir)/../kssl -I../kssl $(all_in
 
 SUBDIRS = . ksendbugmail kpac kdesasl kssld kfile
 
-lib_LTLIBRARIES = kio_uiserver.la
-bin_PROGRAMS = kio_uiserver kmailservice ktelnetservice
-
-kio_uiserver_SOURCES = dummy.cpp
-kio_uiserver_LDADD = kio_uiserver.la
-kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+kdeinit_LTLIBRARIES = kio_uiserver.la
+bin_PROGRAMS = kmailservice ktelnetservice
 
 kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub
 kio_uiserver_la_LIBADD = $(LIB_KIO)
@@ -38,9 +34,6 @@ observer_DIR = $(top_srcdir)/kio/kio
 METASOURCES = AUTO
 
 kde_services_DATA = kio_uiserver.desktop
-
-dummy.cpp: uiserver.kidl
-	echo > dummy.cpp
 
 kmailservice_SOURCES = kmailservice.cpp
 kmailservice_LDADD = $(LIB_KDECORE)

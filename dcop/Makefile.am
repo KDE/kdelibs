@@ -26,10 +26,10 @@ KDE_OPTIONS = qtonly
 
 INCLUDES=  $(all_includes)
 
-bin_PROGRAMS = dcopserver dcopserver_shutdown
+bin_PROGRAMS = dcopserver_shutdown
 check_PROGRAMS = testdcop testdcopc
 
-lib_LTLIBRARIES  = libDCOP.la dcopserver.la
+lib_LTLIBRARIES  = libDCOP.la 
 libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
 libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
 libDCOP_la_NMCHECK = $(srcdir)/libDCOP.nmcheck
@@ -47,13 +47,10 @@ testdcop_METASOURCES = testdcop.moc
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp
 
+kdeinit_LTLIBRARIES = dcopserver.la
 dcopserver_la_LDFLAGS = -module -avoid-version $(all_libraries)
 dcopserver_la_SOURCES = dcopserver.cpp dcopsignals.cpp
-dcopserver_la_LIBADD   = libDCOP.la
-
-dcopserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-dcopserver_SOURCES = dummy.cpp
-dcopserver_LDADD   = dcopserver.la
+dcopserver_la_LIBADD  = libDCOP.la
 
 dcopserver_shutdown_SOURCES = dcopserver_shutdown.c
 
@@ -66,9 +63,6 @@ testdcopc_SOURCES = testdcopc.c dcopc.c
 testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
 
 EXTRA_DIST = HOWTO ICE
-
-dummy.cpp:
-	echo > dummy.cpp
 
 DOXYGEN_REFERENCES = kdecore
 DOXYGEN_EXCLUDE = KDE-ICE/*

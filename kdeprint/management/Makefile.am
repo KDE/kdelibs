@@ -1,11 +1,6 @@
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdeprint -I$(top_builddir)/kdeprint -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint_management.la kaddprinterwizard.la
-bin_PROGRAMS = kaddprinterwizard
-
-kaddprinterwizard_SOURCES = dummy.cpp
-kaddprinterwizard_LDADD = kaddprinterwizard.la
-kaddprinterwizard_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 kaddprinterwizard_la_SOURCES = kaddprinterwizard.cpp
 kaddprinterwizard_la_LIBADD = libkdeprint_management.la
@@ -45,7 +40,4 @@ noinst_HEADERS = kmdbcreator.h kmdriverdb.h kmdriverdbwidget.h kmiconview.h \
 
 dataicon_DATA = tileup.png tiledown.png side.png
 dataicondir = $(kde_datadir)/kdeprint
-
-dummy.cpp:
-	echo > dummy.cpp
 

@@ -19,9 +19,8 @@ INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes)
 
 SUBDIRS = . tests
 
-bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper klauncher kioslave
-lib_LTLIBRARIES = klauncher.la
-
+bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper kioslave brockenboring
+kdeinit_LTLIBRARIES = klauncher.la
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
 # NOTE: We link against all common libraries even if we don't need them ourselves.
@@ -36,6 +35,9 @@ kioslave_LDADD = $(LIB_KIO)
 
 kdeinit_wrapper_SOURCES = wrapper.c
 kdeinit_wrapper_LDADD = $(LIBSOCKET)
+
+brockenboring_SOURCES = brockenboring.c
+brockenboring_LDADD = $(top_builddir)/libltdl/libltdlc.la 
 
 kshell_SOURCES = shell.c
 kshell_LDADD = $(LIBSOCKET)
@@ -52,10 +54,6 @@ kwrapper_LDADD = $(LIBSOCKET)
 klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
 klauncher_la_LIBADD = $(LIB_KIO)
 klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
-
-klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)
-klauncher_LDADD = klauncher.la
-klauncher_SOURCES = dummy.cpp
 
 METASOURCES = AUTO
 

@@ -19,7 +19,7 @@
 
 INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 
-lib_LTLIBRARIES = kded.la kbuildsycoca.la
+kdeinit_LTLIBRARIES = kded.la kbuildsycoca.la
 
 kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kded_la_LIBADD = $(LIB_KIO)
@@ -37,15 +37,7 @@ kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kctimefactory.cpp \
 				vfolder_menu.cpp
 
-bin_PROGRAMS = kded kbuildsycoca kdontchangethehostname
-
-kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kded_LDADD = kded.la
-kded_SOURCES = dummy.cpp
-
-kbuildsycoca_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kbuildsycoca_LDADD = kbuildsycoca.la
-kbuildsycoca_SOURCES = dummy.cpp
+bin_PROGRAMS = kdontchangethehostname
 
 kdontchangethehostname_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kdontchangethehostname_LDADD = $(LIB_KDECORE) 
@@ -69,5 +61,3 @@ applnkdir = $(kde_appsdir)
 update_DATA = kded.upd
 updatedir = $(kde_datadir)/kconf_update
 
-dummy.cpp:
-	echo > dummy.cpp
