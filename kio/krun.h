@@ -225,7 +225,9 @@ protected:
   static void clientStarted(
     const QString & execName,
     const QString & iconName,
-    pid_t pid);
+    pid_t pid,
+    const QString & binaryName,
+    bool compliant);
 
   /**
    * Extracts binary name from Exec command line

@@ -122,12 +122,8 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
       kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
 
       // App-starting notification
-      bool notify = _service.mapNotify();
-
-      kdDebug(7010) << "MapNotify is " << (notify ? "true" : "false") << endl;
-
-      if (notify)
-        clientStarted(_service.name(), miniicon, pid);
+      bool compliant = _service.mapNotify();
+      clientStarted(_service.name(), miniicon, pid, _service.exec(), compliant);
 
       return pid;
 
@@ -698,18 +694,20 @@ void KRun::killJob()
 void KRun::clientStarted(
   const QString & name,
   const QString & iconName,
-  pid_t pid
+  pid_t pid,
+  const QString & binaryName,
+  bool compliant
 )
 {
   kdDebug(7010) << "clientStarted pid=" << (int)pid << endl;
 
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
-  stream << name << iconName << (int)pid;
+  stream << name << iconName << (int)pid << binaryName << compliant;
   kapp->dcopClient()->send(
     "kicker",
     "TaskbarApplet",
-    "clientStarted(QString,QString,pid_t)",
+    "clientStarted(QString,QString,pid_t,QString,bool)",
     params
   );
 }
