@@ -554,6 +554,9 @@
 # X11 cursor files
 0	string	Xcur	image/x-xcursor
 
+# EXR images
+0	lelong		0x762f3101	image/x-exr
+ 
 #------------------------------------------------------------------------------
 # lisp:  file(1) magic for lisp programs
 #
