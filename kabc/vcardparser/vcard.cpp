@@ -23,28 +23,16 @@
 using namespace KABC;
 
 VCard::VCard()
-  : mLineMap( 0 )
 {
 }
 
 VCard::VCard( const VCard& vcard )
-  : mLineMap( 0 )
 {
-  if ( vcard.mLineMap ) {
-    if ( !mLineMap )
-      mLineMap = new QMap<QString, QValueList<VCardLine> >;
-
-    *mLineMap = *(vcard.mLineMap);
-  } else {
-    delete mLineMap;
-    mLineMap = 0;
-  }
+  mLineMap = vcard.mLineMap;
 }
 
 VCard::~VCard()
 {
-  delete mLineMap;
-  mLineMap = 0;
 }
 
 VCard& VCard::operator=( const VCard& vcard )
@@ -52,63 +40,47 @@ VCard& VCard::operator=( const VCard& vcard )
   if ( &vcard == this )
     return *this;
 
-  if ( vcard.mLineMap ) {
-    if ( !mLineMap )
-      mLineMap = new QMap<QString, QValueList<VCardLine> >;
-
-    *mLineMap = *(vcard.mLineMap);
-  } else {
-    delete mLineMap;
-    mLineMap = 0;
-  }
+  mLineMap = vcard.mLineMap;
 
   return *this;
 }
 
 void VCard::clear()
 {
-  if ( mLineMap )
-    mLineMap->clear();
+  mLineMap.clear();
 }
 
 QStringList VCard::identifiers() const
 {
-  if ( !mLineMap )
-    return QStringList();
-  else
-    return mLineMap->keys();
+  return mLineMap.keys();
 }
 
 void VCard::addLine( const VCardLine& line )
 {
-  if ( !mLineMap )
-    mLineMap = new QMap<QString, QValueList<VCardLine> >;
-
-  (*mLineMap)[ line.identifier() ].append( line );
+  mLineMap[ line.identifier() ].append( line );
 }
 
-VCardLine::List VCard::lines( const QString& identifier )
+VCardLine::List VCard::lines( const QString& identifier ) const
 {
-  if ( !mLineMap )
+  LineMap::ConstIterator it = mLineMap.find( identifier );
+  if ( it == mLineMap.end() )
     return VCardLine::List();
-  else
-    return (*mLineMap)[ identifier ];
+
+  return *it;
 }
 
-VCardLine VCard::line( const QString& identifier )
+VCardLine VCard::line( const QString& identifier ) const
 {
-  if ( !mLineMap )
+  LineMap::ConstIterator it = mLineMap.find( identifier );
+  if ( it == mLineMap.end() )
     return VCardLine();
-  else
-    return (*mLineMap)[ identifier ][ 0 ];
+
+  return ( *it ).first();
 }
 
 void VCard::setVersion( Version version )
 {
-  if ( !mLineMap )
-    mLineMap = new QMap<QString, QValueList<VCardLine> >;
-  else
-    mLineMap->erase( "VERSION" );
+  mLineMap.erase( "VERSION" );
 
   VCardLine line;
   line.setIdentifier( "VERSION" );
@@ -117,15 +89,16 @@ void VCard::setVersion( Version version )
   if ( version == v3_0 )
     line.setIdentifier( "3.0" );
 
-  (*mLineMap)[ "VERSION" ].append( line );
+  mLineMap[ "VERSION" ].append( line );
 }
 
 VCard::Version VCard::version() const
 {
-  if ( !mLineMap )
+  LineMap::ConstIterator versionEntry = mLineMap.find( "VERSION" );
+  if ( versionEntry == mLineMap.end() )
     return v3_0;
 
-  VCardLine line = (*mLineMap)[ "VERSION" ][ 0 ];
+  VCardLine line = ( *versionEntry )[ 0 ];
   if ( line.value() == "2.1" )
     return v2_1;
   else
