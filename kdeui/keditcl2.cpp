@@ -658,6 +658,10 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
 
   d->combo->setMinimumWidth(fontMetrics().maxWidth()*20);
   d->combo->setFocus();
+
+  connect(d->combo, SIGNAL(textChanged ( const QString & )),
+          this,SLOT(textSearchChanged ( const QString & )));
+
   topLayout->addWidget(d->combo);
 
   QButtonGroup *group = new QButtonGroup( i18n("Options"), page );
@@ -673,6 +677,7 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
   gbox->setRowStretch( 2, 10 );
+  enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
 }
 
 KEdFind::~KEdFind()
@@ -680,6 +685,10 @@ KEdFind::~KEdFind()
     delete d;
 }
 
+void KEdFind::textSearchChanged ( const QString &text )
+{
+   enableButton( KDialogBase::User1, !text.isEmpty() );
+}
 
 void KEdFind::slotCancel( void )
 {
@@ -763,7 +772,7 @@ public:
 
 KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Replace"),
-		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close, 
+		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close,
                 User3, false,
 		i18n("Replace &All"), i18n("&Replace"), i18n("&Find") )
 {

@@ -80,6 +80,7 @@ public:
 protected slots:
     void slotCancel( void );
     void slotUser1( void );
+    void textSearchChanged ( const QString & );
 
 private:
     QCheckBox *sensitive;
