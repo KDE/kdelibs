@@ -1,3 +1,11 @@
+kdelibs-cvs (4:2.0-19990524-1) experimental; urgency=low
+
+  * migrating back to / from /opt
+  * migrating in new build fixes from -stable bringing package more in
+    line with current Debian dist
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 24 May 1999 07:00:28 -0400
+
 kdelibs-cvs (4:2.0-19990314-1) experimental; urgency=low
 
   * moving the -cvs from version to package name

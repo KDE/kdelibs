@@ -163,8 +163,8 @@ sub finddesktop {
 	/\.desktop$/ && push @lnkfiles, "$File::Find::dir/$_" ;
 }
 
-if (-d "debian/tmp/opt/kde2pre/share/applnk") {
-	find(\&finddesktop,"debian/tmp/opt/kde2pre/share/applnk");
+if (-d "debian/tmp/usr/share/applnk") {
+	find(\&finddesktop,"debian/tmp/usr/share/applnk");
 }
 
 if (-e "debian/menu.in") {
@@ -238,10 +238,10 @@ foreach $file (@lnkfiles) {
 	}
 	if (defined $desktop{"Icon"}) {
    	        $icon=$desktop{"Icon"} ;
-		if (! -f "debian/tmp/opt/kde2pre/share/icons/$icon" ) {
+		if (! -f "debian/tmp/usr/share/icons/$icon" ) {
                    $icon="";
 	        } else {
-	          system("/usr/bin/X11/convert -map /usr/X11R6/include/X11/pixmaps/cmap.xpm debian/tmp/opt/kde2pre/share/icons/$icon debian/tmp/usr/share/pixmaps/$icon");
+	          system("/usr/bin/X11/convert -map /usr/X11R6/include/X11/pixmaps/cmap.xpm debian/tmp/usr/share/icons/$icon debian/tmp/usr/share/pixmaps/$icon");
 	  	  $icon="/usr/share/pixmaps/" . $icon ;
                }
 	}
