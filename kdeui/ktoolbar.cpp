@@ -461,7 +461,7 @@ void KToolBar::layoutHorizontal(int w)
     }
   }
 
-  int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
+  int newXOffset = w - totalRightItemWidth;
   if (newXOffset < xOffset)
   {
     /* right aligned items do not fit in the current line, so we start
@@ -481,7 +481,7 @@ void KToolBar::layoutHorizontal(int w)
     /* Right aligned items do fit in the current line. The auto-space
      * item may fill the space between left and right aligned items. */
     if (autoSizeItem)
-      autoSizeItem->resize(newXOffset - xOffset - 3 + MIN_AUTOSIZE,
+      autoSizeItem->resize(newXOffset - xOffset - 6 + MIN_AUTOSIZE,
                            autoSizeItem->height());
   }
   xOffset = newXOffset;
@@ -491,7 +491,7 @@ void KToolBar::layoutHorizontal(int w)
   {
     if ((*qli)->isRight())
     {
-      if (xOffset + 3 + (*qli)->width() > w)
+      if (xOffset + (*qli)->width() > w)
       {
         xOffset = 4 + 9 + 3;
         yOffset += tallest + 3;
