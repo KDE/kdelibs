@@ -64,7 +64,9 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
     d->frameStyle = frameStyle();
 
     if ( kapp )
-        connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
+        // toolbarAppearanceChanged(int) is sent when changing macstyle
+        connect( kapp, SIGNAL(toolbarAppearanceChanged(int)),
+            this, SLOT(slotReadConfig()));
 
     slotReadConfig();
 }
@@ -130,12 +132,9 @@ void KMenuBar::show()
 
 void KMenuBar::slotReadConfig()
 {
-  static const QString &grpKDE = KGlobal::staticQString("KDE");
-  static const QString &keyMac = KGlobal::staticQString("macStyle");
-
   KConfig *config = KGlobal::config();
-  KConfigGroupSaver saver( config, grpKDE );
-  setTopLevelMenuInternal( config->readBoolEntry( keyMac, false ) );
+  KConfigGroupSaver saver( config, "KDE" );
+  setTopLevelMenuInternal( config->readBoolEntry( "macStyle", false ) );
 }
 
 bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
