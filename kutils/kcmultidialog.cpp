@@ -237,7 +237,8 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
     connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
     if( module->changed() )
     {
-        kdWarning() << "Just loaded a KCModule but it's already changed.";
+        kdWarning() << "Just loaded a KCModule but it's already changed."
+            << endl;
         clientChanged( true );
     }
     //setHelp( docpath, QString::null );
