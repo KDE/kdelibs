@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1999/03/01 23:35:19  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.5.2.2  1999/02/21 20:56:16  kulow
  * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
  *
@@ -102,6 +105,7 @@ public:
     void setTabEnabled(const QString&, bool);
     void setBorder(bool);
     void setShape( QTabBar::Shape shape );
+	virtual QSize sizeHint(void);
 
 protected:
     void paintEvent(QPaintEvent *);

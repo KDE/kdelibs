@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.17  1999/03/01 23:35:18  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.16.2.1  1999/02/21 20:56:15  kulow
  * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
  *
@@ -133,6 +136,7 @@ KTabCtl::KTabCtl(QWidget *parent, const char *name)
 
 KTabCtl::~KTabCtl()
 {
+	delete tabs;
 }
 
 void KTabCtl::resizeEvent(QResizeEvent *)
@@ -277,6 +281,48 @@ void KTabCtl::setShape( QTabBar::Shape shape )
     tabs->setShape( shape );  
 }
 
+QSize
+KTabCtl::sizeHint(void)
+{
+	/* desired size of the tabbar */
+	QSize hint(tabs->sizeHint());
+
+	/* overall desired size of all pages */
+	QSize pageHint;
+	for (unsigned int i = 0; i < pages.size(); i++)
+	{
+		QSize sizeI(pages[i]->sizeHint());
+
+		if (sizeI.isValid())
+		{
+			/* only pages with valid size are used */
+			if (sizeI.width() > pageHint.width())
+				pageHint.setWidth(sizeI.width());
+
+			if (sizeI.height() > pageHint.height())
+				pageHint.setHeight(sizeI.height());
+		}
+	}
+	
+	if (pageHint.isValid())
+	{
+		/* use maximum of width of tabbar and pages */
+		if (pageHint.width() > hint.width())
+			hint.setWidth(pageHint.width());
+
+		/* heights must just be added */
+		hint.setHeight(hint.height() + pageHint.height());
+		
+		return (hint);
+	}
+	
+	/*
+	 * If not at least a one page has a valid sizeHint we have to return
+	 * an invalid size as well.
+	 */
+	return (pageHint);
+}
+
 void KTabCtl::paintEvent(QPaintEvent *)
 {
     if (!tabs)
@@ -293,8 +339,11 @@ void KTabCtl::paintEvent(QPaintEvent *)
     int x1 = getChildRect().right() + 2;
     int x0 = getChildRect().left() - 1;
 
-    p.setPen( colorGroup().light() );
-    p.drawLine(x0, y0, x1 - 1, y0);      /* top line */
+    p.setPen(colorGroup().light());
+    p.drawLine(x0, y0 - 1, x1 - 1, y0 - 1);      /* 1st top line */
+    p.setPen(colorGroup().midlight());
+    p.drawLine(x0, y0, x1 - 1, y0);      /* 2nd top line */
+    p.setPen(colorGroup().light());
     p.drawLine(x0, y0 + 1, x0, y1);      /* left line */
     p.setPen(black);
     p.drawLine(x1, y1, x0, y1);          /* bottom line */
@@ -338,9 +387,10 @@ void KTabCtl::showTab(int i)
 
     if((unsigned)i < pages.size()) {
         emit(tabSelected(i));
-	if( pages.size() >= 2 ) { 
-	  pages[i]->raise();
-	}
+		if( pages.size() >= 2 ) { 
+			pages[i]->raise();
+		}
+		tabs->setCurrentTab(i);
         pages[i]->setGeometry(getChildRect());
         pages[i]->show();
     }
