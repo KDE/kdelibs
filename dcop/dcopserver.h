@@ -51,6 +51,15 @@ class DCOPSignalConnectionList;
 class DCOPSignals;
 class QTimer;
 
+// If you enable the following define DCOP will create
+// $HOME/.dcop.log file which will list all signals passing
+// through it.
+//#define DCOP_LOG
+#ifdef DCOP_LOG
+class QTextStream;
+class QFile;
+#endif
+
 typedef QValueList<QCString> QCStringList;
 
 /**
@@ -64,7 +73,7 @@ public:
 
     DCOPSignalConnectionList *signalConnectionList();
 
-    // Add the data from offset @p start in @p _data to the output 
+    // Add the data from offset @p start in @p _data to the output
     // buffer and schedule it for later transmission.
     void waitForOutputReady(const QByteArray &_data, int start);
 
@@ -78,13 +87,13 @@ public:
     int notifyRegister;
     /**
      * When client A has called client B then for the duration of the call:
-     * A->waitingOnReply contains B 
+     * A->waitingOnReply contains B
      *   and either
      * B->waitingForReply contains A
      *   or
      * B->waitingForDelayedReply contains A
      *
-     * This allows us to do proper bookkeeping in case client A, client B 
+     * This allows us to do proper bookkeeping in case client A, client B
      * or both unregister during the call.
      */
     QPtrList <_IceConn> waitingOnReply;
@@ -121,7 +130,7 @@ public:
     DCOPConnection *findApp(const QCString &appId);
     DCOPConnection *findConn(IceConn iceConn)
        { return clients.find(iceConn); }
-       
+
     void sendMessage(DCOPConnection *conn, const QCString &sApp,
                      const QCString &rApp, const QCString &rObj,
                      const QCString &rFun, const QByteArray &data);
@@ -149,6 +158,11 @@ private:
     QPtrDict<DCOPConnection> clients; // index on iceConn
     QIntDict<DCOPConnection> fd_clients; // index on fd
     QPtrList<_IceConn> deadConnections;
+
+#ifdef DCOP_LOG
+    QTextStream *m_stream;
+    QFile *m_logger;
+#endif
 };
 
 extern DCOPServer* the_server;

@@ -35,7 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/param.h>
 #endif
 #include <sys/resource.h>
-                   
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -49,6 +49,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define QT_CLEAN_NAMESPACE 1
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qdir.h>
 #include <qdatastream.h>
 #include <qptrstack.h>
 #include <qtimer.h>
@@ -528,7 +529,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     const char  *path;
     int         original_umask;
     int         i;
-    QCString command;    
+    QCString command;
 #ifdef HAVE_MKSTEMP
     int         fd;
 #endif
@@ -587,13 +588,13 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     umask (original_umask);
 
     command = DCOPClient::iceauthPath();
-    
+
     if (command.isEmpty())
     {
        fprintf( stderr, "dcopserver: 'iceauth' not found in path, aborting.\n" );
        exit(1);
     }
-    
+
     command += " source ";
     command += addAuthFile;
     system (command);
@@ -1039,6 +1040,13 @@ DCOPServer::DCOPServer(bool _suicide)
     connect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
     m_deadConnectionTimer = new QTimer(this);
     connect( m_deadConnectionTimer, SIGNAL(timeout()), this, SLOT(slotCleanDeadConnections()) );
+
+#ifdef DCOP_LOG
+    m_logger = new QFile( QString( "%1/.dcop.log" ).arg( QDir::homeDirPath() ) );
+    if ( m_logger->open( IO_WriteOnly ) ) {
+        m_stream = new QTextStream( m_logger );
+    }
+#endif
 }
 
 DCOPServer::~DCOPServer()
@@ -1047,6 +1055,11 @@ DCOPServer::~DCOPServer()
     IceFreeListenObjs(numTransports, listenObjs);
     FreeAuthenticationData(numTransports, authDataEntries);
     delete dcopSignals;
+#ifdef DCOP_LOG
+    delete m_stream;
+    m_logger->close();
+    delete m_logger;
+#endif
 }
 
 
@@ -1252,6 +1265,16 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 			 QCString& replyType, QByteArray &replyData,
 			 IceConn iceConn)
 {
+#ifdef DCOP_LOG
+    (*m_stream) << "Received a message: obj =\""
+                << obj << "\", fun =\""
+                << fun << "\", replyType =\""
+                << replyType << "\", data.size() =\""
+                << data.size() << "\", replyData.size() ="
+                << replyData.size() << "\n";
+    m_logger->flush();
+#endif
+
     if ( obj == "emit")
     {
         DCOPConnection* conn = clients.find( iceConn );
@@ -1458,13 +1481,13 @@ void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const Q
         ++it;
         if ( c->notifyRegister && (c != conn) ) {
             IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
-	      sizeof(DCOPMsg), DCOPMsg, pMsg );
+                          sizeof(DCOPMsg), DCOPMsg, pMsg );
             pMsg->key = 1;
 	    pMsg->length += datalen;
             _DCOPIceSendBegin(c->iceConn);
 	    DCOPIceSendData( c->iceConn, ba );
             _DCOPIceSendEnd();
-	    }
+        }
     }
 }
 
@@ -1483,6 +1506,17 @@ DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp,
                  sizeof(DCOPMsg), DCOPMsg, pMsg );
    pMsg->length += datalen;
    pMsg->key = 1; // important!
+
+#ifdef DCOP_LOG
+   (*m_stream) << "Sending a message: sApp =\""
+               << sApp << "\", rApp =\""
+               << rApp << "\", rObj =\""
+               << rObj << "\", rFun =\""
+               << rFun << "\", datalen ="
+               << datalen << "\n";
+   m_logger->flush();
+#endif
+
    _DCOPIceSendBegin( conn->iceConn );
    DCOPIceSendData(conn->iceConn, ba);
    _DCOPIceSendEnd();
@@ -1585,15 +1619,15 @@ extern "C" int kdemain( int argc, char* argv[] )
        return 0;
     }
 
-    struct rlimit limits; 
-     
-    int retcode = getrlimit(RLIMIT_NOFILE, &limits); 
-    if (!retcode) { 
+    struct rlimit limits;
+
+    int retcode = getrlimit(RLIMIT_NOFILE, &limits);
+    if (!retcode) {
        if (limits.rlim_max > 512 && limits.rlim_cur < 512)
        {
           int cur_limit = limits.rlim_cur;
-          limits.rlim_cur = 512; 
-          retcode = setrlimit(RLIMIT_NOFILE, &limits); 
+          limits.rlim_cur = 512;
+          retcode = setrlimit(RLIMIT_NOFILE, &limits);
 
           if (retcode != 0)
           {
@@ -1642,10 +1676,10 @@ extern "C" int kdemain( int argc, char* argv[] )
     putenv(strdup("SESSION_MANAGER="));
 
     QApplication a( argc, argv, false );
-    
+
     QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
     a.connect(&DEATH, SIGNAL(activated(int)), SLOT(quit()));
-    
+
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 
