@@ -41,6 +41,11 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.52  1998/11/23 15:34:04  radej
+// sven: Nicer sysmenu button
+//
+// Revision 1.51  1998/11/23 11:57:17  radej
 // sven: Mac: Force show, if on top y= -2, take icon in showEvent.
 // small improvement, hope Sven like it
 //       ToolBar does.
@@ -182,20 +187,19 @@ int KMenuBar::heightForWidth ( int max_width ) const
   return menu->heightForWidth( max_width - 9);
 }
 
+void KMenuBar::resizeEvent (QResizeEvent *)
 {
+  if (position == Flat)
+  
+  int hwidth = 9;
+                     menu->heightForWidth(width()));
+    hwidth = 20;
+
+  frame->setGeometry(hwidth , 0, width()-hwidth,
                      menu->heightForWidth(width()-hwidth));
-    frame->setGeometry(0, 0, width(), height());
-    //menu->resize(frame->width(), frame->height());
+  menu->resize(frame->width(), frame->height());
   handle->setGeometry(0,0,hwidth,height());
   if (height() != heightForWidth(width()))
-
-     frame->setGeometry( 9, 0, width()-9, menu->heightForWidth(width()));
-     menu->resize(frame->width(), frame->height());
-     handle->setGeometry(0,0,9,height());
-     if (height() != heightForWidth(width())) {
-	 resize(width(), heightForWidth(width()));
-	 return;
-      }
   {
     resize(width(), heightForWidth(width()));
 void KMenuBar::ContextCallback( int index )
@@ -250,20 +254,8 @@ void KMenuBar::ContextCallback( int )
 	  int verticalOffset = config->readNumEntry("verticalOffset", 0);
           standalone_menubar = TRUE;
           Parent->installEventFilter(this); // to show menubar
-          handle->removeEventFilter(this);
-          handle->hide();
-          /*
-          int dim = fontMetrics().height();
-          QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
-          if (px.isNull()){
-	      if (!miniGo)
-		  miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
-	      px = *miniGo;
-	  }
-          if (!px.isNull()){
-          menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
-          }
-          */
+          //handle->removeEventFilter(this);
+          //handle->hide();
       }
   }
 
@@ -413,16 +405,12 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
     setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(), // check panel top
                 heightForWidth(r.width()));
     int dim = fontMetrics().height();
-    QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
-    if (px.isNull()){
-      if (!miniGo)
-        miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
-      px = *miniGo;
-    }
-    //repair_accel();
-    if (!px.isNull())
-      menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
+    if (!miniGo)
+      miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
 
+    QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
+    if (!px.isNull())
+      *miniGo = px;
 
     //if (aha)
       show();  //force show
@@ -437,7 +425,26 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
   if (mgr)
     if (ev->type() == Event_MouseButtonPress)
 
-      //pointerOffset = mapFromGlobal(handle->mapToGlobal(((QMouseEvent*)ev)->pos()));
+
+  if (ob == handle){
+    if (ev->type() == QEvent::MouseButtonPress)
+    {
+      if (standalone_menubar)
+      {
+        //Dunno but krootwm does this; without it menu stays...
+        XUngrabPointer(qt_xdisplay(), CurrentTime);
+        XSync(qt_xdisplay(), False);
+
+        QString x,y;
+        x.setNum(pos().x());
+        y.setNum(pos().y()+height());
+        if (((QMouseEvent*)ev)->button() == LeftButton)
+          x.prepend("0");
+        else
+          KWM::sendKWMCommand(QString("krootwm:go")+x+y);
+        return false;
+          KWM::sendKWMCommand(QString("kpanel:go")+x+y);
+      
         //  KWM::sendKWMCommand(QString("krootwm:go")+x+y);
         return false; //or true? Bah...
       buttonDownOnHandle = TRUE;
@@ -496,15 +503,38 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 	      mgr->stop();
 	  if ( position != Floating)
     if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
+	  return TRUE;
       }
 
+    if ((ev->type() == QEvent::Paint)||(ev->type() == QEvent::Enter)||(ev->type() == QEvent::Leave) ){
+      
+      QColorGroup g = QWidget::colorGroup();
+      QPainter paint(handle);
+      QBrush b = QWidget::backgroundColor();
 
-      QBrush b;
+      if (standalone_menubar)
+      {
+        if ( style() == WindowsStyle )
+          qDrawWinButton( &paint, 0, 0, handle->width(), handle->height(),
+                          g, false );
+        else
+          qDrawShadePanel( &paint, 0, 0, handle->width(), handle->height(),
+                           g, false, 1, 0L );
+
+        if (miniGo)
+        {
+        else
+          debug ("No go mini Go");
+        
+          int dy = ( handle->height() - miniGo->height() ) / 2;
+          paint.drawPixmap( dx, dy, *miniGo);
+        }
+
       if (ev->type() == Event_Enter && highlight) // highlight? - sven
         b = kapp->selectColor; // this is much more logical then
-      // the hardwired value used before!!
-      else
-        b = QWidget::backgroundColor();
+
+      //else
+      //  b = QWidget::backgroundColor();
       if (ev->type() == QEvent::Enter && highlight) // highlight? - sven
         b = colorGroup().highlight();  // this is much more logical then
                                              colorGroup(), true);
@@ -806,18 +836,6 @@ void KMenuBar::slotActivated (int id)
 {
   emit activated(id);
 }
-}
-
-void KMenuBar::slotSysMenu()
-{
-  QString x,y;
-  x.setNum(9);
-  y.setNum(pos().y()+height());
-  while (x.length()<4)
-    x.prepend("0");
-  while (y.length()<4)
-    y.prepend("0");
-  KWM::sendKWMCommand(QString("kpanel:go")+x+y);
 
 void KMenuBar::slotHighlighted (int id)
 {
