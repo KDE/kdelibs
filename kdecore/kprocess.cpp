@@ -541,7 +541,7 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
   if (input_data != 0)
     return false;
 
-  if (runs && (communication & Stdin)) {
+  if (communication & Stdin) {
     input_data = buffer;
     input_sent = 0;
     input_total = buflen;
@@ -567,11 +567,12 @@ void KProcess::resume()
 
 bool KProcess::closeStdin()
 {
-  if (communication & ~d->usePty & Stdin) {
+  if (communication & Stdin) {
     communication = (Communication) (communication & ~Stdin);
     delete innot;
     innot = 0;
-    close(in[1]);
+    if (!(d->usePty & Stdin))
+      close(in[1]);
     in[1] = -1;
     return true;
   } else
@@ -580,11 +581,12 @@ bool KProcess::closeStdin()
 
 bool KProcess::closeStdout()
 {
-  if (communication & ~d->usePty & Stdout) {
+  if (communication & Stdout) {
     communication = (Communication) (communication & ~Stdout);
     delete outnot;
     outnot = 0;
-    close(out[0]);
+    if (!(d->usePty & Stdout))
+      close(out[0]);
     out[0] = -1;
     return true;
   } else
@@ -593,17 +595,36 @@ bool KProcess::closeStdout()
 
 bool KProcess::closeStderr()
 {
-  if (communication & ~d->usePty & Stderr) {
+  if (communication & Stderr) {
     communication = (Communication) (communication & ~Stderr);
     delete errnot;
     errnot = 0;
-    close(err[0]);
+    if (!(d->usePty & Stderr))
+      close(err[0]);
     err[0] = -1;
     return true;
   } else
     return false;
 }
 
+bool KProcess::closePty()
+{
+  if (d->pty && d->pty->masterFd() >= 0) {
+    if (d->addUtmp)
+      d->pty->logout();
+    d->pty->close();
+    return true;
+  } else
+    return false;
+}
+
+void KProcess::closeAll()
+{
+  closeStdin();
+  closeStdout();
+  closeStderr();
+  closePty();
+}
 
 /////////////////////////////
 // protected slots         //
@@ -887,29 +908,23 @@ int KProcess::commSetupDoneC()
 
 void KProcess::commClose()
 {
-  delete innot;
-  delete outnot;
-  delete errnot;
-  innot = outnot = errnot = 0;
+  closeStdin();
 
     // If both channels are being read we need to make sure that one socket
     // buffer doesn't fill up whilst we are waiting for data on the other
     // (causing a deadlock). Hence we need to use select.
 
-    bool b_out = communication & Stdout;
-    bool b_err = communication & Stderr;
-
-    while (b_out || b_err) {
+    while (communication & (Stdout | Stderr)) {
       fd_set rfds;
       FD_ZERO(&rfds);
       struct timeval timeout, *p_timeout;
 
       int max_fd = 0;
-      if (b_out) {
+      if (communication & Stdout) {
         FD_SET(out[0], &rfds);
         max_fd = out[0];
       }
-      if (b_err) {
+      if (communication & Stderr) {
         FD_SET(err[0], &rfds);
         if (err[0] > max_fd)
           max_fd = err[0];
@@ -933,28 +948,17 @@ void KProcess::commClose()
       } else if (!fds_ready)
         break;
 
-      if (b_out && FD_ISSET(out[0], &rfds) && childOutput(out[0]) <= 0)
-        b_out = false;
+      if ((communication & Stdout) && FD_ISSET(out[0], &rfds))
+        slotChildOutput(out[0]);
 
-      if (b_err && FD_ISSET(err[0], &rfds) && childError(err[0]) <= 0)
-        b_err = false;
+      if ((communication & Stderr) && FD_ISSET(err[0], &rfds))
+        slotChildError(err[0]);
     }
 
-  int rcomm = communication & ~d->usePty;
-  if (rcomm & Stdin)
-    close(in[1]);
-  if (rcomm & Stdout)
-    close(out[0]);
-  if (rcomm & Stderr)
-    close(err[0]);
-  in[1] = out[0] = err[0] = -1;
-  communication = NoCommunication;
+  closeStdout();
+  closeStderr();
 
-  if (d->usePty) {
-    if (d->addUtmp)
-      d->pty->logout();
-    d->pty->close();
-  }
+  closePty();
 }
 
 
