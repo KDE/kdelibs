@@ -993,7 +993,7 @@ KAboutContributor::KAboutContributor(QWidget* parent, const char* n)
   // ############################################################
   if(name==0 || email==0)
     { // this will nearly never happen (out of memory in about box?)
-      debug("KAboutContributor::KAboutContributor: Out of memory.");
+      kdDebug() << "KAboutContributor::KAboutContributor: Out of memory." << endl;
       kapp->quit();
     }
   setFrameStyle(QFrame::Panel | QFrame::Raised);
@@ -1056,7 +1056,7 @@ void
 KAboutContributor::emailClickedSlot(const QString& e)
 {
   // ###########################################################
-  debug("KAboutContributor::emailClickedSlot: called.");
+  kdDebug() << "KAboutContributor::emailClickedSlot: called." << endl;
   emit(sendEmail(name->text(), e));
   // ###########################################################
 }
@@ -1065,7 +1065,7 @@ void
 KAboutContributor::urlClickedSlot(const QString& u)
 {
   // ###########################################################
-  debug("KAboutContributor::urlClickedSlot: called.");
+  kdDebug() << "KAboutContributor::urlClickedSlot: called." << endl;
   emit(openURL(u));
   // ###########################################################
 }
@@ -1600,8 +1600,8 @@ void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 {
   kapp->invokeMailer( email, QString::null );
   /*
-  debug("KAboutDialog::sendEmailSlot: request to send an email to %s <%s>.",
-	name.ascii(), email.ascii());
+  kdDebug() << "KAboutDialog::sendEmailSlot: request to send an email to "
+	<< name << ", " << email << endl;
   emit(sendEmail(name, email));
   */
 }
@@ -1609,7 +1609,7 @@ void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 void KAboutDialog::openURLSlot(const QString& url)
 {
   kapp->invokeBrowser( url );
-  //debug("KAboutDialog::openURLSlot: request to open URL <%s>.", url.ascii());
+  //kdDebug() << "KAboutDialog::openURLSlot: request to open URL " << url << endl;
   //emit(openURL(url));
 }
 

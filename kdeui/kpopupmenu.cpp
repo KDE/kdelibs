@@ -21,6 +21,7 @@
 #include "kpopupmenu.h"
 
 #include <kconfig.h>
+#include <kdebug.h>
 #include <kapp.h>
 #include <kipc.h>
 #include <kiconloader.h>
@@ -73,8 +74,7 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     else if(tmpStr == QString::fromLatin1("Elliptic"))
         grType = KPixmapEffect::EllipticGradient;
     else{
-        qWarning("KPopupMenu: Unknown gradient type %s for title item",
-                tmpStr.latin1());
+        kdWarning() << "KPopupMenu: Unknown gradient type " << tmpStr << " for title item" << endl;
         grType = KPixmapEffect::HorizontalGradient;
     }
 
@@ -105,7 +105,7 @@ KPopupTitle::KPopupTitle(const KPixmap &background, const QColor &color,
     if(!background.isNull())
         fill = background;
     else
-        qWarning("KPopupMenu: Empty pixmap used for title.");
+        kdWarning() << "KPopupMenu: Empty pixmap used for title." << endl;
     useGradient = false;
 
     fgColor = textColor;

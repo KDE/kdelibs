@@ -111,10 +111,9 @@ int KAccelMenu::insItem (const char * text, const char * action,
 
 char *KAccelMenu::stripAnd(const char *str)
 {
-  QString s = str;
-
-  s.replace(QRegExp("&"),"");
-  return strdup(s.ascii());
+  QCString s = str;
+  s.replace(QRegExp(QString::fromLatin1("&")), "");
+  return strdup(s.data());
 }
 
 void KAccelMenu::popMsg () {

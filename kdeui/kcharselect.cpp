@@ -33,6 +33,7 @@
 #include <qfontdatabase.h>
 
 #include <klocale.h>
+#include <kdebug.h>
 #include <kdialog.h>
 #include <kapp.h>
 
@@ -362,7 +363,7 @@ void KCharSelect::setFont( const QString &_font )
 	charTable->setFont( _font );
     }
     else
-	qWarning( "Can't find Font: %s", _font.latin1() );
+	kdWarning() << "Can't find Font: " << _font << endl;
 }
 
 //==================================================================
