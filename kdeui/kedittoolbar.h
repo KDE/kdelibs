@@ -55,6 +55,19 @@ class KEditToolbarWidgetPrivate;
  * That code snippet also takes care of redrawing the menu and
  * toolbars if you have made any changes.
  *
+ * If you are using KMainWindow's settings methods (either save/apply manually
+ * or autoSaveSettings), you should write something like:
+ * <pre>
+ * saveMainWindowSettings( KGlobal::config(), "MainWindow" );
+ * KEditToolbar dlg(actionCollection());
+ * if (dlg.exec())
+ * {
+ *    createGUI();
+ *    ...if you use any action list, use plugActionList on each here...
+ *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
+ * }
+ * </pre>
+ *
  * Note that the procedure is a bit different for @ref KParts applications.
  * In this case, you need only pass along a pointer to your
  * application's @ref KXMLGUIFactory object.  The editor will take care of
@@ -70,6 +83,9 @@ class KEditToolbarWidgetPrivate;
  * if (dlg.exec())
  * ...
  * </pre>
+ *
+ * See previous example for adding calls to save/applyMainWindowSettings
+ * and plugging action lists back in.
  *
  * @short A dialog used to customize or configure toolbars.
  * @author Kurt Granroth <granroth@kde.org>
