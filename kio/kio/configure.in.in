@@ -12,7 +12,7 @@ dnl runtime systems would conflict (e.g. in KAI C++) (matz)
 test "$GXX" = yes || kde_have_fam=no
 
 if test "$kde_have_fam" = "yes" ; then
-  AC_CHECK_LIB(fam, FAMOpen, [LIBFAM="-lfam"; kde_have_fam=yes],kde_have_fam=no)
+  KDE_CHECK_LIB(fam, FAMOpen, [LIBFAM="-lfam"; kde_have_fam=yes],kde_have_fam=no)
   if test $kde_have_fam = yes; then
     AC_DEFINE_UNQUOTED(HAVE_FAM, 1, [Define if your system has libfam])
   fi
