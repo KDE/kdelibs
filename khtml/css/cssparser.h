@@ -27,6 +27,7 @@
 #include "dom_string.h"
 #include "dom_misc.h"
 #include <qlist.h>
+#include <qdatetime.h> 
 
 namespace DOM {
 
@@ -135,9 +136,9 @@ public:
 
 	/* parses generic CSSValues, return true, if it found a valid value */
 	bool parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
-			QList<CSSProperty> *propList);
+			QList<CSSProperty> *propList);	
 	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties,
-			    int num, bool important, QList<CSSProperty> *propList, bool multiple = false);
+			    int num, bool important, QList<CSSProperty> *propList);
 	bool parseBackground(const QChar *curP, const QChar *endP, bool important,
 			     QList<CSSProperty> *propList);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties,
@@ -146,6 +147,13 @@ public:
 		       bool important, QList<CSSProperty> *propList);
 	void setParsedValue(int propId, bool important, QList<CSSProperty> *propList,
 			    CSSValueImpl *parsedValue);
+	QList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
+	
+	/* define CSS_AURAL in cssparser.cpp if you want to parse CSS2 Aural properties */
+	bool parse2Values(const QChar *curP, const QChar *endP, const int *properties,
+			  bool important, QList<CSSProperty> *propList);
+	bool parseAuralValue(const QChar *curP, const QChar *endP, int propId, bool important,
+			     QList<CSSProperty> *propList);
 
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units
@@ -171,6 +179,8 @@ public:
 	virtual void checkLoaded();
 
 	void setStrictParsing( bool b ) { strictParsing = b; }
+	
+   	QTime m_pingTimer;   
 
     protected:
 	StyleBaseImpl *m_parent;
