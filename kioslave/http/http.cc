@@ -21,6 +21,11 @@
 #endif
 #include "extern_md5.h"
 
+#ifdef DO_GZIP
+#include <fcntl.h>
+#include <zlib.h>
+#endif
+
 #include "http.h"
 
 #include <kurl.h>
@@ -383,7 +388,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     command += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
   }
 
-#if 0
+#ifdef DO_GZIP
   // Content negotiation
   command += "Accept-Encoding: gzip, identity\r\n";
 #endif
@@ -862,13 +867,12 @@ void HTTPProtocol::decodeChunked()
     }
   }
   // Is this necesary?
-  big_buffer.resize(0);
-  big_buffer=ar;
-  big_buffer.detach();
+
 }
 
 void HTTPProtocol::decodeGzip()
 {
+#ifdef DO_GZIP
   // Note I haven't found an implementation
   // that correctly handles this stuff.  Apache
   // sends both Transfer-Encoding and Content-Length
@@ -876,6 +880,28 @@ void HTTPProtocol::decodeGzip()
   // could really be bigger than the content-length
   // header implies.. like with gzip.
   // eek. This is no fun for progress indicators.
+  QByteArray ar;
+  void *my_buf=malloc(big_buffer.size());
+  char tmp_buf[1024];
+  unsigned long _size, len;
+  _size =big_buffer.size();
+  bzero(my_buf, _size);
+  memcpy(my_buf, big_buffer.data(), _size);
+
+  int f=mkstemp(strdup("kio_http"));
+  write(f, my_buf, _size);
+  lseek(f, 0, SEEK_SET);
+  gzFile gzf = gzdopen(f, "rb");
+  while ( (len=gzread(gzf, tmp_buf, 1024))>0){
+    int old_len=ar.size();
+    ar.resize(ar.size()+len);
+    memcpy(ar.data()+old_len, tmp_buf, len);
+  }
+  gzclose(gzf);
+  big_buffer.resize(0);
+  big_buffer=ar;
+  big_buffer.detach();
+#endif
 }
 
 size_t HTTPProtocol::sendData()
