@@ -305,7 +305,7 @@ void KIconView::contentsMousePressEvent( QMouseEvent *e )
   }
 
   QIconView::contentsMousePressEvent( e );
-  d->doAutoSelect = FALSE;
+  d->doAutoSelect = false;
 }
 
 void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
@@ -331,7 +331,7 @@ void KIconView::slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoi
 
 void KIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
-    d->doAutoSelect = TRUE;
+    d->doAutoSelect = true;
     QIconView::contentsMouseReleaseEvent( e );
 }
 

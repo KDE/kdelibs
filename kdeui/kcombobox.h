@@ -61,7 +61,7 @@ class KURL;
  * internally whenever a completion object is created through either one of the
  * methods mentioned above.  If you do not need this functionality, simply use
  * KCompletionBase::setHandleSignals(bool) or alternatively set the boolean
- * parameter in the @p setCompletionObject call to FALSE.
+ * parameter in the @p setCompletionObject call to false.
  *
  * The default key-bindings for completion and rotation is determined from the
  * global settings in KStdAccel. These values, however, can be overridden

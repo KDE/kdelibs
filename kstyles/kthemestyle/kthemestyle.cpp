@@ -1654,7 +1654,7 @@ void KThemeStyle::drawControl( ControlElement element,
             {
                 QBrush bg;
                 const QColorGroup * cg2 = colorGroup( cg, ProgressBg );
-                qDrawWinPanel( p, r, *cg2, TRUE );
+                qDrawWinPanel( p, r, *cg2, true );
                 bg.setColor( cg2->color( QColorGroup::Background ) );
                 if ( isPixmap( ProgressBg ) )
                     bg.setPixmap( *uncached( ProgressBg ) );

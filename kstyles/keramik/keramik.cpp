@@ -1946,7 +1946,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 					
 					//Ensure that we have clipping on, and have a sane base.
 					//If need be, Qt will shrink us to the paint region.
-					p->setClipping(TRUE);
+					p->setClipping(true);
 					p->setClipRect(r);
 					toolbarMode = true;
 				}

@@ -725,14 +725,14 @@ KeyValueMap::get(const QCString& key, bool& value) const
   if(v=="true")
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[bool]: success, "
-	    "value is TRUE." << endl;
+	    "value is true." << endl;
       value=true;
       return true;
     }
   if(v=="false")
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[bool]: success, "
-      "value is FALSE." << endl;
+      "value is false." << endl;
       value=false;
       return true;
     }

@@ -256,11 +256,11 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 	}
 	QString fc = f.left( left );
 	fc += '(';
-	bool first = TRUE;
+	bool first = true;
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
 	    if ( !first )
 		fc +=",";
-	    first = FALSE;
+	    first = false;
 	    fc += *it;
 	}
 	fc += ')';

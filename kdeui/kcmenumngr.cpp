@@ -38,7 +38,7 @@ KContextMenuManager::KContextMenuManager( QObject* parent, const char* name )
     KConfigGroupSaver saver ( KGlobal::config(), QString::fromLatin1("Shortcuts") ) ;
     menuKey = KShortcut( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
     saver.config()->setGroup( QString::fromLatin1("ContextMenus") ) ;
-    showOnPress = saver.config()->readBoolEntry(QString::fromLatin1("ShowOnPress"), TRUE );
+    showOnPress = saver.config()->readBoolEntry(QString::fromLatin1("ShowOnPress"), true );
 }
 
 KContextMenuManager::~KContextMenuManager()
@@ -73,7 +73,7 @@ bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
 	if (((QMouseEvent*) e )->button() != RightButton )
 	    break;
 	if ( !showOnPress )
-	    return TRUE; // eat event for safety
+	    return true; // eat event for safety
 	popup = menus[o];
 	pos = ((QMouseEvent*) e )->globalPos();
 	break;
@@ -114,10 +114,10 @@ bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
     
     if ( popup ) {
 	popup->popup( pos );
-	return TRUE;
+	return true;
     }
 	
-    return FALSE;
+    return false;
 }
 
 void KContextMenuManager::widgetDestroyed()

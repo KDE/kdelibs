@@ -67,9 +67,9 @@ setAutoSaveSettings();
     itemsMenu = new QPopupMenu;
     menuBar->insertItem ("&Items", itemsMenu);
 
-    exitB = TRUE;   // exit button is shown
-    lineL = TRUE;   // Lined is enabled
-    greenF = FALSE;  // Frame not inserted
+    exitB = true;   // exit button is shown
+    lineL = true;   // Lined is enabled
+    greenF = false;  // Frame not inserted
     
     itemsMenu->insertItem ("delete/insert exit button", this, SLOT(slotExit()));
     itemsMenu->insertItem ("insert/delete green frame!", this, SLOT(slotFrame()));
@@ -107,36 +107,36 @@ setAutoSaveSettings();
     tb = toolBar();
 
     // and set it to full width
-    tb->setFullSize(TRUE);
+    tb->setFullSize(true);
 
 
     
     // First four  buttons
     pix = BarIcon("filenew");
     itemId = tb->insertButton(pix, 0, SIGNAL(clicked()), this, SLOT(slotNew()),
-                         TRUE, "Create.. (toggles upper button)", 50);
+                         true, "Create.. (toggles upper button)", 50);
     pix = BarIcon("fileopen");
     tb->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
                          false, "Open");
     pix = BarIcon("filefloppy");
     tb->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
-                          TRUE, "Save (beep or delayed popup)");
+                          true, "Save (beep or delayed popup)");
     tb->setDelayedPopup(2, itemsMenu);
     pix = BarIcon("fileprint");
     tb->insertButton(pix, 3, SIGNAL(clicked()), this, SLOT(slotPrint()),
-                         TRUE, "Print (enables/disables open)");
+                         true, "Print (enables/disables open)");
 
     // And a combobox
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
     //            tooltiptext, size
-    tb->insertCombo (QString("one"), 4, TRUE, SIGNAL(activated(const QString&)), this,
-                          SLOT(slotList(const QString&)), TRUE, "ComboBox", 150);
+    tb->insertCombo (QString("one"), 4, true, SIGNAL(activated(const QString&)), this,
+                          SLOT(slotList(const QString&)), true, "ComboBox", 150);
 
 
     // Then one line editor
     // arguments: text, id, signal, object (this), slot, enabled, tooltiptext, size
     tb->insertLined ("ftp://ftp.kde.org/pub/kde", 5, SIGNAL(returnPressed()), this,
-                          SLOT(slotReturn()), TRUE, "Location", 200);
+                          SLOT(slotReturn()), true, "Location", 200);
 
     // Set this Lined to auto size itself. Note that only one item (Lined or Combo)
     // Can be set to autosize; If you specify more of them only last (according to
@@ -149,7 +149,7 @@ setAutoSaveSettings();
     // Now add another button and align it right
     pix = BarIcon("exit");
     tb->insertButton(pix, 6, SIGNAL(clicked()), KApplication::kApplication(),
-                          SLOT( quit() ), TRUE, "Exit");
+                          SLOT( quit() ), true, "Exit");
     tb->alignItemRight (6);
 
     // Another toolbar
@@ -157,19 +157,19 @@ setAutoSaveSettings();
 
 
     pix = BarIcon("filenew");
-    tb1->insertButton(pix, 0, TRUE, "Create new file2 (Toggle)");
+    tb1->insertButton(pix, 0, true, "Create new file2 (Toggle)");
     tb1->setToggle(0);
     tb1->addConnection (0, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
 
     pix = BarIcon("fileopen");
     tb1->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
-                          TRUE, "Open (starts progres in sb)");
+                          true, "Open (starts progres in sb)");
 
     tb1->insertSeparator ();
     
     pix = BarIcon("filefloppy");
     tb1->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
-                      TRUE, "Save file2 (autorepeat)");
+                      true, "Save file2 (autorepeat)");
     tb1->setAutoRepeat(2);
     
     pix = BarIcon("fileprint");
@@ -220,8 +220,8 @@ setAutoSaveSettings();
     connect (tb1, SIGNAL(highlighted(int, bool)), this, SLOT(slotMessage(int, bool)));
 
     // Floating is enabled by default, so you don't need this.
-    // tb->enableFloating(TRUE);
-    // tb1->enableFloating(TRUE);
+    // tb->enableFloating(true);
+    // tb1->enableFloating(true);
 
     // Show toolbars
     tb->show();
@@ -399,19 +399,19 @@ void testWindow::slotImportant ()
 
 void testWindow::slotExit ()
 {
-  if (exitB == TRUE)
+  if (exitB == true)
    {
      tb->removeItem(6);
-     exitB = FALSE;
+     exitB = false;
    }
   else
    {
      QPixmap pix;
      pix = BarIcon("exit");
      tb->insertButton(pix, 6, SIGNAL(clicked()), KApplication::kApplication(),
-                           SLOT( quit() ), TRUE, "Exit");
+                           SLOT( quit() ), true, "Exit");
      tb->alignItemRight (6);
-     exitB = TRUE;
+     exitB = true;
    }
 }
 
@@ -423,7 +423,7 @@ void testWindow::slotLined()
 
 void testWindow::slotToggle (bool on)
 {
-  if (on == TRUE)
+  if (on == true)
     statusBar->changeItem("Toggle is on", 0);
   else
     statusBar->changeItem("Toggle is off", 0);
@@ -432,7 +432,7 @@ void testWindow::slotToggle (bool on)
 void testWindow::slotFrame()
 {
 #if 0
-  if (greenF == FALSE)
+  if (greenF == false)
    {
      tb1->insertFrame(10, 100);
      tb1->alignItemRight (10); // this is pointless 'cause tb1 is not fullwidth
@@ -452,12 +452,12 @@ void testWindow::slotFrame()
      // max_width with setMaxWidth()
      myFrame->setBackgroundColor (QColor("green"));
 
-     greenF = TRUE;
+     greenF = true;
    }
   else
    {
      tb1->removeItem (10);
-     greenF = FALSE;
+     greenF = false;
    }
 #endif
 }

@@ -1836,7 +1836,7 @@ bool KConfigBase::checkConfigFilesWritable(bool warnUser)
   if (backEnd)
     return backEnd->checkConfigFilesWritable(warnUser);
   else
-    return FALSE;
+    return false;
 }
 
 #include "kconfigbase.moc"

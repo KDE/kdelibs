@@ -96,7 +96,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 {
     setLayouted( false );
 
-    bool madeBoxesNonInline = FALSE;
+    bool madeBoxesNonInline = false;
 
     RenderStyle* pseudoStyle=0;
     if ((!firstChild() || firstChild() == beforeChild) &&

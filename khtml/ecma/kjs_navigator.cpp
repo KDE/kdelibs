@@ -254,7 +254,7 @@ PluginBase::PluginBase(ExecState *exec)
             for ( type=types.begin(); type!=types.end(); ++type ) {
 
                 // get mime information
-                QStringList tokens = QStringList::split(':', *type, TRUE);
+                QStringList tokens = QStringList::split(':', *type, true);
                 if ( tokens.count() < 3 ) // we need 3 items
                   continue;
 

@@ -26,15 +26,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 bool mkBool( const QString& s )
 {
     if ( s.lower()  == "true" )
-	return TRUE;
+	return true;
     if ( s.lower()  == "yes" )
-	return TRUE;
+	return true;
     if ( s.lower()  == "on" )
-	return TRUE;
+	return true;
     if ( s.toInt() != 0 )
-	return TRUE;
+	return true;
 
-    return FALSE;
+    return false;
 }
 
 QPoint mkPoint( const QString &str )

@@ -53,7 +53,7 @@ KDiskFreeSp::KDiskFreeSp(QObject *parent, const char *name)
     connect(dfProc,SIGNAL(processExited(KProcess *) ),
             this, SLOT(dfDone() ) );
 
-    readingDFStdErrOut=FALSE;
+    readingDFStdErrOut=false;
 }
 
 
@@ -96,7 +96,7 @@ int KDiskFreeSp::readDF( const QString & mountPoint )
 **/
 void KDiskFreeSp::dfDone()
 {
-  readingDFStdErrOut=TRUE;
+  readingDFStdErrOut=true;
 
   QTextStream t (dfStringErrOut, IO_ReadOnly);
   QString s=t.readLine();
@@ -155,7 +155,7 @@ void KDiskFreeSp::dfDone()
     }//if not header
   }//while further lines available
 
-  readingDFStdErrOut=FALSE;
+  readingDFStdErrOut=false;
   emit done();
   delete this;
 }

@@ -32,7 +32,7 @@ KDESasl::KDESasl(const KURL &aUrl)
   mProtocol = aUrl.protocol();
   mUser = aUrl.user();
   mPass = aUrl.pass();
-  mFirst = TRUE;
+  mFirst = true;
 }
 
 KDESasl::KDESasl(const QString &aUser, const QString &aPass,
@@ -41,7 +41,7 @@ KDESasl::KDESasl(const QString &aUser, const QString &aPass,
   mProtocol = aProtocol;
   mUser = aUser;
   mPass = aPass;
-  mFirst = TRUE;
+  mFirst = true;
 }
 
 KDESasl::~KDESasl() {
@@ -245,7 +245,7 @@ QByteArray KDESasl::getBinaryResponse(const QByteArray &aChallenge, bool aBase64
   {
     QByteArray ba;
     KCodecs::base64Decode(aChallenge, ba);
-    KCodecs::base64Encode(getBinaryResponse(ba, FALSE), ba);
+    KCodecs::base64Encode(getBinaryResponse(ba, false), ba);
     return ba;
   }
   if (qstricmp(mMethod, "PLAIN") == 0) return getPlainResponse();

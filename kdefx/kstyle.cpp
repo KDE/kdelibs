@@ -399,8 +399,8 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			{
 				// make 128*1 and 1*128 bitmaps that can be used for
 				// drawing the right sort of lines.
-				verticalLine   = new QBitmap( 1, 129, TRUE );
-				horizontalLine = new QBitmap( 128, 1, TRUE );
+				verticalLine   = new QBitmap( 1, 129, true );
+				horizontalLine = new QBitmap( 128, 1, true );
 				QPointArray a( 64 );
 				QPainter p2;
 				p2.begin( verticalLine );

@@ -39,7 +39,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
   : codec(_codec), d(new KProcIOPrivate)
 {
   rbi=0;
-  readsignalon=writeready=TRUE;
+  readsignalon=writeready=true;
   outbuffer.setAutoDelete(true);
 
   if (!codec)
@@ -65,7 +65,7 @@ KProcIO::resetAll ()
 
   clearArguments();
   rbi=0;
-  readsignalon=writeready=TRUE;
+  readsignalon=writeready=true;
 
   disconnect (this, SIGNAL (receivedStdout (KProcess *, char *, int)),
 	   this, SLOT (received (KProcess *, char *, int)));
@@ -130,7 +130,7 @@ bool KProcIO::writeStdin (const QCString &line, bool appendnewline)
 
   if (writeready)
   {
-     writeready=FALSE;
+     writeready=false;
      return KProcess::writeStdin( b->data(), b->size() );
   }
   return true;
@@ -145,7 +145,7 @@ bool KProcIO::writeStdin(const QByteArray &data)
   
   if (writeready)
   {
-     writeready=FALSE;
+     writeready=false;
      return KProcess::writeStdin( b->data(), b->size() );
   }
   return true;
@@ -170,7 +170,7 @@ void KProcIO::sent(KProcess *)
   if (outbuffer.count()==0)
   {
      kdDebug(174) << "Empty" << endl;
-     writeready=TRUE;
+     writeready=true;
   }
   else
   {
@@ -198,7 +198,7 @@ void KProcIO::received (KProcess *, char *buffer, int buflen)
 
 void KProcIO::ackRead ()
 {
-  readsignalon=TRUE;
+  readsignalon=true;
   if (needreadsignal || recvbuffer.length()!=0)
      controlledEmission();
 }
@@ -207,13 +207,13 @@ void KProcIO::controlledEmission ()
 {
   if (readsignalon)
   {
-     needreadsignal=FALSE;
-     readsignalon=FALSE; //will stay off until read is acknowledged
+     needreadsignal=false;
+     readsignalon=false; //will stay off until read is acknowledged
      emit readReady (this);
   }
   else
   {
-    needreadsignal=TRUE;
+    needreadsignal=true;
   }
 }
 
@@ -230,7 +230,7 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
   int len;
 
   if (autoAck)
-     readsignalon=TRUE;
+     readsignalon=true;
 
   //need to reduce the size of recvbuffer at some point...
 

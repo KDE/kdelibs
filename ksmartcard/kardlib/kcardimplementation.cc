@@ -31,7 +31,7 @@ KCardImplementation::KCardImplementation(const QString & type,
 
   _errno = 0;
   _kcardreader = NULL;
-  pcscInt = new KPCSC(TRUE);
+  pcscInt = new KPCSC(true);
 }
 
 

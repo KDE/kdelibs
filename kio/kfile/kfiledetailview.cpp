@@ -68,8 +68,8 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     addColumn( i18n( "Permissions" ) );
     addColumn( i18n( "Owner" ) );
     addColumn( i18n( "Group" ) );
-    setShowSortIndicator( TRUE );
-    setAllColumnsShowFocus( TRUE );
+    setShowSortIndicator( true );
+    setAllColumnsShowFocus( true );
     setDragEnabled(true);
 
     connect( header(), SIGNAL( sectionClicked(int)),

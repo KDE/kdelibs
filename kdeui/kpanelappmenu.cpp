@@ -161,9 +161,9 @@ bool KPanelAppMenu::process(const QCString &fun, const QByteArray &data,
 	dataStream >> id;
 	emit activated( id );
 	replyType = "void";
-	return TRUE;
+	return true;
     }
-    return FALSE;
+    return false;
 }
 
 

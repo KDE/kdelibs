@@ -116,8 +116,8 @@ int kdemain( int argc, char **argv )
 
 FileProtocol::FileProtocol( const QCString &pool, const QCString &app ) : SlaveBase( "file", pool, app )
 {
-    usercache.setAutoDelete( TRUE );
-    groupcache.setAutoDelete( TRUE );
+    usercache.setAutoDelete( true );
+    groupcache.setAutoDelete( true );
 }
 
 void FileProtocol::chmod( const KURL& url, int permissions )

@@ -78,7 +78,7 @@ KEdit::~KEdit()
 void
 KEdit::insertText(QTextStream *stream)
 {
-//   setAutoUpdate(FALSE);
+//   setAutoUpdate(false);
    int line, col;
    getCursorPosition(&line, &col);
    int saveline = line;
@@ -139,7 +139,7 @@ KEdit::insertText(QTextStream *stream)
 void
 KEdit::cleanWhiteSpace()
 {
-   setAutoUpdate(FALSE);
+   setAutoUpdate(false);
    if (!hasMarkedText())
       selectAll();
    QString oldText = markedText();
@@ -191,7 +191,7 @@ KEdit::cleanWhiteSpace()
    if (oldText == newText)
    {
       deselect();
-      setAutoUpdate(TRUE);
+      setAutoUpdate(true);
       repaint();
       return;
    }
@@ -216,7 +216,7 @@ KEdit::cleanWhiteSpace()
    }
 
    insert(newText);
-   setAutoUpdate(TRUE);
+   setAutoUpdate(true);
    repaint();
 
    setModified(true);
@@ -351,7 +351,7 @@ void KEdit::computePosition()
 
 
   while(find >=0 && find <= coltemp- 1 ){
-    find = linetext.find('\t', find+start_of_line, TRUE )-start_of_line;
+    find = linetext.find('\t', find+start_of_line, true )-start_of_line;
     if( find >=0 && find <= coltemp - 1 ){
       found_one = true;
       pos = pos + find - mem;

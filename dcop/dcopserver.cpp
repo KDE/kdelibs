@@ -776,7 +776,7 @@ if (opcode == DCOPCall)
 	    } else {
 		QCString replyType;
 		QByteArray replyData;
-		bool b = FALSE;
+		bool b = false;
 		// DCOPServer itself does not do DCOPFind.
 		if ( (opcode == DCOPCall) && (toApp == "DCOPServer") ) {
    		    QCString obj = readQCString(ds);
@@ -1021,7 +1021,7 @@ DCOPServer::DCOPServer(bool _suicide)
     IceAddConnectionWatch (DCOPWatchProc, static_cast<IcePointer>(this));
     _IceWriteHandler = DCOPIceWriteChar;
 
-    listener.setAutoDelete( TRUE );
+    listener.setAutoDelete( true );
     DCOPListener* con;
     for ( int i = 0; i < numTransports; i++) {
 	con = new DCOPListener( listenObjs[i] );
@@ -1358,7 +1358,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 	    }
 	    replyType = "QCString";
 	    reply << conn->appId;
-	    return TRUE;
+	    return true;
 	}
     }
     else if ( fun == "registeredApplications()" ) {
@@ -1371,7 +1371,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 	}
 	replyType = "QCStringList";
 	reply << applications;
-	return TRUE;
+	return true;
     } else if ( fun == "isApplicationRegistered(QCString)" ) {
 	QDataStream args( data, IO_ReadOnly );
 	if (!args.atEnd()) {
@@ -1380,7 +1380,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 	    int b = ( findApp( s ) != 0 );
 	    replyType = "bool";
 	    reply << b;
-	    return TRUE;
+	    return true;
 	}
     } else if ( fun == "setNotifications(bool)" ) {
 	QDataStream args( data, IO_ReadOnly );
@@ -1395,7 +1395,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    conn->notifyRegister--;
 	    }
 	    replyType = "void";
-	    return TRUE;
+	    return true;
 	}
     } else if ( fun == "connectSignal(QCString,QCString,QCString,QCString,QCString,bool)") {
         DCOPConnection* conn = clients.find( iceConn );
@@ -1414,7 +1414,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
         replyType = "bool";
         QDataStream reply( replyData, IO_WriteOnly );
         reply << (Q_INT8) (b?1:0);
-        return TRUE;
+        return true;
     } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCString,QCString)") {
         DCOPConnection* conn = clients.find( iceConn );
         if (!conn) return false;
@@ -1430,10 +1430,10 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
         replyType = "bool";
         QDataStream reply( replyData, IO_WriteOnly );
         reply << (Q_INT8) (b?1:0);
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const QCString type,

@@ -54,7 +54,7 @@
 
 #include "netwm.h" // schroder
 
-static bool atoms_created = FALSE;
+static bool atoms_created = false;
 extern Atom qt_wm_protocols;
 extern Time qt_x_last_input_time;
 
@@ -75,7 +75,7 @@ static void kwin_net_create_atoms() {
 	names[n++] = "_KDE_WM_CHANGE_STATE";
 
 	// we need a const_cast for the shitty X API
-	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, FALSE, atoms_return );
+	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, false, atoms_return );
 	for (int i = 0; i < n; i++ )
 	    *atoms[i] = atoms_return[i];
 
@@ -145,7 +145,7 @@ ContextWidget::ContextWidget()
 	QWhatsThis::enterWhatsThisMode();
 	QCursor c = *QApplication::overrideCursor();
 	QWhatsThis::leaveWhatsThisMode();
-	XGrabPointer( qt_xdisplay(), qt_xrootwin(), TRUE,
+	XGrabPointer( qt_xdisplay(), qt_xrootwin(), true,
 		      (uint)( ButtonPressMask | ButtonReleaseMask |
 			      PointerMotionMask | EnterWindowMask |
 			      LeaveWindowMask ),
@@ -178,11 +178,11 @@ bool ContextWidget::x11Event( XEvent * ev)
 	    e.xbutton.subwindow = w;
 	    e.xbutton.x = lx;
 	    e.xbutton.y = ly;
-	    XSendEvent( qt_xdisplay(), w, TRUE, ButtonPressMask, &e );
+	    XSendEvent( qt_xdisplay(), w, true, ButtonPressMask, &e );
 	    qApp->exit_loop();
-	    return TRUE;
+	    return true;
 	}
-	return FALSE;
+	return false;
 #endif
     }
 } // namespace
@@ -346,7 +346,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
         NETIcon ni = info.icon( width, height );
         if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
     	    QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
-	    img.setAlphaBuffer( TRUE );
+	    img.setAlphaBuffer( true );
 	    if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) && !img.isNull() )
 	        img = img.smoothScale( width, height );
 	    if ( !img.isNull() )

@@ -304,13 +304,13 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
 static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 {
     while( b < e ) {
-	bool swapped = FALSE;
+	bool swapped = false;
         CSSOrderedProperty **y = e+1;
 	CSSOrderedProperty **x = e;
         CSSOrderedProperty **swappedPos = 0;
 	do {
 	    if ( !((**(--x)) < (**(--y))) ) {
-		swapped = TRUE;
+		swapped = true;
                 swappedPos = x;
                 CSSOrderedProperty *tmp = *y;
                 *y = *x;

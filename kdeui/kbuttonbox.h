@@ -92,7 +92,7 @@ public:
     *
     * @return A pointer to the new button.
     */
-  QPushButton *addButton(const QString& text, QObject * receiver, const char * slot, bool noexpand = FALSE);
+  QPushButton *addButton(const QString& text, QObject * receiver, const char * slot, bool noexpand = false);
 
   /**
     * Add a stretch to the buttonbox.

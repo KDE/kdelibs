@@ -702,7 +702,7 @@ void KApplication::init(bool GUIenabled)
       atoms[n] = &kde_net_wm_user_time;
       names[n++] = (char *) "_NET_WM_USER_TIME";
       
-      XInternAtoms( qt_xdisplay(), names, n, FALSE, atoms_return );
+      XInternAtoms( qt_xdisplay(), names, n, false, atoms_return );
       for (int i = 0; i < n; i++ )
 	  *atoms[i] = atoms_return[i];
   }
@@ -734,8 +734,8 @@ void KApplication::init(bool GUIenabled)
   if (readOnly.isEmpty() && (qstrcmp(name(), "kdialog") != 0))
   {
     KConfigGroupSaver saver(config, "KDE Action Restrictions");
-    if (config->readBoolEntry("warn_unwritable_config",TRUE))
-       config->checkConfigFilesWritable(TRUE);
+    if (config->readBoolEntry("warn_unwritable_config",true))
+       config->checkConfigFilesWritable(true);
   }
 
   if (GUIenabled)
@@ -979,7 +979,7 @@ bool KApplication::requestShutDown(
 
 	// flush the request
 	IceFlush(SmcGetIceConnection(mySmcConnection));
-        return TRUE;
+        return true;
     }
 
     // open a temporary connection, if possible
@@ -987,7 +987,7 @@ bool KApplication::requestShutDown(
     propagateSessionManager();
     QCString smEnv = ::getenv("SESSION_MANAGER");
     if (smEnv.isEmpty())
-        return FALSE;
+        return false;
 
     if (! tmpSmcConnection) {
 	char cerror[256];
@@ -1002,7 +1002,7 @@ bool KApplication::requestShutDown(
 					      cerror );
 	::free( myId ); // it was allocated by C
 	if (!tmpSmcConnection )
-	    return FALSE;
+	    return false;
     }
 
     SmcRequestSaveYourself( tmpSmcConnection, SmSaveBoth, True,
@@ -1010,7 +1010,7 @@ bool KApplication::requestShutDown(
 
     // flush the request
     IceFlush(SmcGetIceConnection(tmpSmcConnection));
-    return TRUE;
+    return true;
 #else
     // FIXME(E): Implement for Qt Embedded
     return false;
@@ -1046,7 +1046,7 @@ void KApplication::propagateSessionManager()
         t.setEncoding( QTextStream::Latin1 );
         QString s = t.readLine();
         f.close();
-        ::setenv( "SESSION_MANAGER", s.latin1(), TRUE  );
+        ::setenv( "SESSION_MANAGER", s.latin1(), true  );
     }
 }
 
@@ -1065,7 +1065,7 @@ void KApplication::commitData( QSessionManager& sm )
     if ( sm.allowsInteraction() ) {
         QWidgetList done;
         QWidgetList *list = QApplication::topLevelWidgets();
-        bool canceled = FALSE;
+        bool canceled = false;
         QWidget* w = list->first();
         while ( !canceled && w ) {
             if ( !w->testWState( WState_ForceHide ) && !w->inherits("KMainWindow") ) {
@@ -1380,7 +1380,7 @@ void KApplication::parseCommandLine( )
         unsigned long length, after;
         unsigned char *data;
         while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom_NetSupported,
-				    0, 1, FALSE, AnyPropertyType, &type, &format,
+				    0, 1, false, AnyPropertyType, &type, &format,
                                     &length, &after, &data ) != Success || !length ) {
             if ( data )
                 XFree( data );
@@ -1536,7 +1536,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
         case XKeyPress:
         case XKeyRelease:
         case MotionNotify:
-            return TRUE;
+            return true;
         default:
             break;
         }

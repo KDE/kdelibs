@@ -411,7 +411,7 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
 	    bitBlt(&pm, 0, 0, p->device(), pt.x(), pt.y());
 	}
 	QPainter::redirect(widget, &pm);
-	QPaintEvent e( widget->rect(), FALSE );
+	QPaintEvent e( widget->rect(), false );
 	QApplication::sendEvent( widget, &e );
 	QPainter::redirect(widget, 0);
 	QSharedDoubleBuffer::setDisabled(dsbld);
@@ -424,7 +424,7 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
 	// to fix qtextedit for that.
 	// KHTMLView::eventFilter()
 #if 0
-	QPaintEvent e( widget->rect(), FALSE );
+	QPaintEvent e( widget->rect(), false );
 	QApplication::sendEvent( widget, &e );
 	QScrollView *sv = static_cast<QScrollView *>(widget);
 	sv->repaint(true);

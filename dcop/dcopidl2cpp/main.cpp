@@ -46,8 +46,8 @@ int main( int argc, char** argv )
         exit(1);
     }
     int argpos = 1;
-    bool generate_skel    = TRUE;
-    bool generate_stub    = TRUE;
+    bool generate_skel    = true;
+    bool generate_stub    = true;
 
     QString suffix = "cpp";
 
@@ -55,13 +55,13 @@ int main( int argc, char** argv )
 
 	if ( strcmp( argv[argpos], "--no-skel" ) == 0 )
 	{
-	    generate_skel = FALSE;
+	    generate_skel = false;
 	    for (int i = argpos; i < argc - 1; i++) argv[i] = argv[i+1];
 	    argc--;
 	}
 	else if ( strcmp( argv[argpos], "--no-stub" ) == 0 )
 	{
-	    generate_stub = FALSE;
+	    generate_stub = false;
 	    for (int i = argpos; i < argc - 1; i++) argv[i] = argv[i+1];
 	    argc--;
 	}

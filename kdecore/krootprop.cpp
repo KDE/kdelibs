@@ -35,7 +35,7 @@
 KRootProp::KRootProp(const QString& rProp )
 {
   atom = 0;
-  dirty = FALSE;
+  dirty = false;
   setProp( rProp );
 }
 
@@ -148,7 +148,7 @@ QString KRootProp::prop() const
 
 void KRootProp::destroy()
 {
-    dirty = FALSE;
+    dirty = false;
     propDict.clear();
     if( atom ) {
 	XDeleteProperty( qt_xdisplay(), qt_xrootwin(), atom );
@@ -244,7 +244,7 @@ QColor KRootProp::readColorEntry( const QString& rKey,
 
 QString KRootProp::writeEntry( const QString& rKey, const QString& rValue )
 {
-    dirty = TRUE;
+    dirty = true;
     if ( propDict.contains( rKey ) ) {
 	QString aValue = propDict[ rKey ];
 	propDict.replace( rKey, rValue );
@@ -280,7 +280,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
 QString KRootProp::removeEntry(const QString& rKey)
 {
     if (propDict.contains(rKey)) {
-	dirty = TRUE;
+	dirty = true;
 	QString aValue = propDict[rKey];
 	propDict.remove(rKey);
 	return aValue;

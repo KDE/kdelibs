@@ -361,7 +361,7 @@ void KColorCells::paintCell( QPainter *painter, int row, int col )
 	if (shade)
         {
 		qDrawShadePanel( painter, 1, 1, cellWidth()-2,
-		    cellHeight()-2, colorGroup(), TRUE, 1, &brush );
+		    cellHeight()-2, colorGroup(), true, 1, &brush );
 		w = 2;
         }
         QColor color = colors[ row * numCols() + col ];
@@ -1263,7 +1263,7 @@ void KColorDialog::setColor( const QColor &col )
 //
 int KColorDialog::getColor( QColor &theColor, QWidget *parent )
 {
-  KColorDialog dlg( parent, "Color Selector", TRUE );
+  KColorDialog dlg( parent, "Color Selector", true );
   if ( theColor.isValid() )
     dlg.setColor( theColor );
   int result = dlg.exec();
@@ -1281,7 +1281,7 @@ int KColorDialog::getColor( QColor &theColor, QWidget *parent )
 //
 int KColorDialog::getColor( QColor &theColor, const QColor& defaultCol, QWidget *parent )
 {
-  KColorDialog dlg( parent, "Color Selector", TRUE );
+  KColorDialog dlg( parent, "Color Selector", true );
   dlg.setDefaultColor( defaultCol );
   dlg.setColor( theColor );
   int result = dlg.exec();
@@ -1436,7 +1436,7 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
   d->valuePal->setSaturation( s );
   d->valuePal->setValue( v );
   d->valuePal->updateContents();
-  d->valuePal->repaint( FALSE );
+  d->valuePal->repaint( false );
   d->bRecursion = false;
 }
 
@@ -1451,9 +1451,9 @@ static int kde_color_dlg_handler(XEvent *event)
         QMouseEvent e( QEvent::MouseButtonRelease, QPoint(),
                        QPoint(event->xmotion.x_root, event->xmotion.y_root) , 0, 0 );
         QApplication::sendEvent( kde_color_dlg_widget, &e );
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 #endif
 void

@@ -38,12 +38,12 @@ bool DCOPReply::typeCheck( const char* t )
 bool DCOPReply::typeCheck( const char* t, bool warn )
 {
     if ( type == t )
-	return TRUE;
+	return true;
     if( warn
 	|| strcmp( t, "<unknown>" )) // type not listed in dcoptypes.h
 	qWarning( "DCOPReply<%s>: cast to '%s' error",
 	         STR( type ), t );
-    return FALSE;
+    return false;
 }
 
 // this has to stay BC too even if private, because it's called from inlines
@@ -83,7 +83,7 @@ bool DCOPRef::sendInternal( const QCString& fun, const QCString& args, const QBy
     if ( isNull() ) {
 	qWarning( "DCOPRef: send '%s' on null reference error",
 		  STR( fun ) );
-	return FALSE;
+	return false;
     }
     Q_UNUSED( data );
     QCString sig = fun;

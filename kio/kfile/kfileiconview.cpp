@@ -246,7 +246,7 @@ void KFileIconView::showToolTip( QIconViewItem *item )
 		toolTip->move(toolTip->x(), screen.bottom()-toolTip->y()-toolTip->height()+toolTip->y());
 	}
 	toolTip->setFont( QToolTip::font() );
-	toolTip->setPalette( QToolTip::palette(), TRUE );
+	toolTip->setPalette( QToolTip::palette(), true );
 	toolTip->show();
     }
 }

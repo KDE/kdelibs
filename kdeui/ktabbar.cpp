@@ -330,8 +330,8 @@ void KTabBar::paintLabel( QPainter *p, const QRect& br,
         int inactiveXShift = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this );
         int inactiveYShift = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this );
 
-        p->drawPixmap( br.left() + 2 + ((selected == TRUE) ? 0 : inactiveXShift),
-                         br.center().y()-pixh/2 + ((selected == TRUE) ? 0 : inactiveYShift),
+        p->drawPixmap( br.left() + 2 + ((selected == true) ? 0 : inactiveXShift),
+                         br.center().y()-pixh/2 + ((selected == true) ? 0 : inactiveYShift),
                          pixmap );
     }
 

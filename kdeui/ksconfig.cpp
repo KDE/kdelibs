@@ -183,7 +183,7 @@ KSpellConfig::readGlobalSettings()
   setNoRootAffix   ( kc->readNumEntry("KSpell_NoRootAffix", 0) );
   setRunTogether   ( kc->readNumEntry("KSpell_RunTogether", 0) );
   setDictionary    ( kc->readEntry("KSpell_Dictionary") );
-  setDictFromList  ( kc->readNumEntry("KSpell_DictFromList", FALSE) );
+  setDictFromList  ( kc->readNumEntry("KSpell_DictFromList", false) );
   setEncoding ( kc->readNumEntry ("KSpell_Encoding", KS_E_ASCII) );
   setClient ( kc->readNumEntry ("KSpell_Client", KS_CLIENT_ISPELL) );
 
@@ -195,14 +195,14 @@ KSpellConfig::writeGlobalSettings ()
 {
   KConfigGroupSaver cs( kc,"KSpell" );
 
-  kc->writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), TRUE, TRUE);
-  kc->writeEntry ("KSpell_RunTogether", (int) runTogether(), TRUE, TRUE);
-  kc->writeEntry ("KSpell_Dictionary", dictionary(), TRUE, TRUE);
-  kc->writeEntry ("KSpell_DictFromList",(int) dictFromList(), TRUE, TRUE);
+  kc->writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), true, true);
+  kc->writeEntry ("KSpell_RunTogether", (int) runTogether(), true, true);
+  kc->writeEntry ("KSpell_Dictionary", dictionary(), true, true);
+  kc->writeEntry ("KSpell_DictFromList",(int) dictFromList(), true, true);
   kc->writeEntry ("KSpell_Encoding", (int) encoding(),
-		  TRUE, TRUE);
+		  true, true);
   kc->writeEntry ("KSpell_Client", client(),
-		  TRUE, TRUE);
+		  true, true);
   kc->sync();
 
   return true;
@@ -401,7 +401,7 @@ KSpellConfig::fillInDialog ()
 
   if (dictionary().isEmpty() ||  whichelement!=-1)
   {
-    setDictFromList (TRUE);
+    setDictFromList (true);
     if (whichelement!=-1)
       dictcombo->setCurrentItem(whichelement);
   }
@@ -843,7 +843,7 @@ void
 KSpellConfig::sSetDictionary (int i)
 {
   setDictionary (langfnames[i]);
-  setDictFromList (TRUE);
+  setDictFromList (true);
   emit configChanged();
 }
 
@@ -852,13 +852,13 @@ KSpellConfig::sDictionary(bool on)
 {
   if (on)
   {
-    dictcombo->setEnabled (TRUE);
+    dictcombo->setEnabled (true);
     setDictionary (langfnames[dictcombo->currentItem()] );
-    setDictFromList (TRUE);
+    setDictFromList (true);
   }
   else
   {
-    dictcombo->setEnabled (FALSE);
+    dictcombo->setEnabled (false);
   }
   emit configChanged();
 }
@@ -871,15 +871,15 @@ KSpellConfig::sPathDictionary(bool on)
 
   if (on)
   {
-    //kle1->setEnabled (TRUE);
-    //      browsebutton1->setEnabled (TRUE);
+    //kle1->setEnabled (true);
+    //      browsebutton1->setEnabled (true);
     //setDictionary (kle1->text());
-    setDictFromList (FALSE);
+    setDictFromList (false);
   }
   else
   {
-    //kle1->setEnabled (FALSE);
-    //browsebutton1->setEnabled (FALSE);
+    //kle1->setEnabled (false);
+    //browsebutton1->setEnabled (false);
   }
   emit configChanged();
 }

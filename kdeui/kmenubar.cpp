@@ -251,7 +251,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 	    if ( ev->type() == QEvent::Accel || ev->type() == QEvent::AccelAvailable )
             {
 		if ( QApplication::sendEvent( topLevelWidget(), ev ) )
-		    return TRUE;
+		    return true;
 	    }
             if(ev->type() == QEvent::ShowFullScreen )
                 // will update the state properly

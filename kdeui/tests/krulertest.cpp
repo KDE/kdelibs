@@ -24,14 +24,14 @@ MouseWidget::MouseWidget( QWidget *parent, const char *name, WFlags f )
 void
 MouseWidget::mousePressEvent( QMouseEvent *e )
 {
-  mouseButtonDown = TRUE;
+  mouseButtonDown = true;
   emit newXPos(e->x());
   emit newYPos(e->y());
 }
 
 void
 MouseWidget::mouseReleaseEvent( QMouseEvent * )
-{ mouseButtonDown = FALSE; }
+{ mouseButtonDown = false; }
 
 void
 MouseWidget::mouseMoveEvent( QMouseEvent *e )

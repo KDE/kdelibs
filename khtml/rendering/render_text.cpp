@@ -356,7 +356,7 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
     int n1 = 0;
     int n2 = len - 1;
     int mid = 0;
-    bool found = FALSE;
+    bool found = false;
     while ( n1 <= n2 ) {
 	int  res;
 	mid = (n1 + n2)/2;
@@ -369,7 +369,7 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
 	else if ( res > 0 )
 	    n1 = mid + 1;
 	else {					// found it
-	    found = TRUE;
+	    found = true;
 	    break;
 	}
     }

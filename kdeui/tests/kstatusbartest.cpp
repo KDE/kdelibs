@@ -31,7 +31,7 @@ testWindow::testWindow (QWidget *, const char *name)
 
     statusbar->changeItem("Zoom: 100%", 0);
     statusbar->changeItem("INS", 1);
-    insert = TRUE;
+    insert = true;
     statusbar->changeItem("Line: 13567", 2);
 
     connect (statusbar, SIGNAL(pressed(int)), this, SLOT(slotPress(int)));
@@ -64,14 +64,14 @@ void testWindow::slotClick(int id)
       break;
 
     case 1:
-      if (insert == TRUE)
+      if (insert == true)
        {
-         insert = FALSE;
+         insert = false;
          statusbar->changeItem("OVR", 1);
        }
       else
        {
-         insert = TRUE;
+         insert = true;
          statusbar->changeItem("INS", 1);
        }
       break;

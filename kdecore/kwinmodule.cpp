@@ -183,7 +183,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	}
     }
 
-    return FALSE;
+    return false;
 }
 
 bool KWinModulePrivate::removeStrutWindow( WId w )
@@ -209,13 +209,13 @@ void KWinModulePrivate::addClient(Window w)
 {
     if ( !QWidget::find( w ) )
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask | StructureNotifyMask );
-    bool emit_strutChanged = FALSE;
+    bool emit_strutChanged = false;
     if( strutSignalConnected && modules.count() > 0 ) {
         NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut | NET::WMDesktop );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             strutWindows.append( StrutData( w, strut, info.desktop()));
-            emit_strutChanged = TRUE;
+            emit_strutChanged = true;
         }
     } else
         possibleStrutWindows.append( w );
@@ -234,7 +234,7 @@ void KWinModulePrivate::removeClient(Window w)
         NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
-            emit_strutChanged = TRUE;
+            emit_strutChanged = true;
         }
     }
     possibleStrutWindows.remove( w );

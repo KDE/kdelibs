@@ -86,7 +86,7 @@ static bool startCondition(const QString &condition)
   if (condition.isEmpty())
      return true;
 
-  QStringList list = QStringList::split(':', condition, TRUE);
+  QStringList list = QStringList::split(':', condition, true);
   if (list.count() < 4) 
      return true;
   if (list[0].isEmpty() || list[2].isEmpty()) 

@@ -72,7 +72,7 @@ public:
              time_t ctimeDest = (time_t) -1,
              time_t mtimeSrc = (time_t) -1,
              time_t mtimeDest = (time_t) -1,
-             bool modal = FALSE );
+             bool modal = false );
   ~RenameDlg();
 
   /**

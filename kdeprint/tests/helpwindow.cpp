@@ -111,8 +111,8 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
     menuBar()->insertSeparator();
     menuBar()->insertItem( tr("&Help"), help );
 
-    menuBar()->setItemEnabled( forwardId, FALSE);
-    menuBar()->setItemEnabled( backwardId, FALSE);
+    menuBar()->setItemEnabled( forwardId, false);
+    menuBar()->setItemEnabled( backwardId, false);
     connect( browser, SIGNAL( backwardAvailable( bool ) ),
 	     this, SLOT( setBackwardAvailable( bool ) ) );
     connect( browser, SIGNAL( forwardAvailable( bool ) ),
@@ -125,21 +125,21 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 
     button = new QToolButton( icon_back, tr("Backward"), "", browser, SLOT(backward()), toolbar );
     connect( browser, SIGNAL( backwardAvailable(bool) ), button, SLOT( setEnabled(bool) ) );
-    button->setEnabled( FALSE );
+    button->setEnabled( false );
     button = new QToolButton( icon_forward, tr("Forward"), "", browser, SLOT(forward()), toolbar );
     connect( browser, SIGNAL( forwardAvailable(bool) ), button, SLOT( setEnabled(bool) ) );
-    button->setEnabled( FALSE );
+    button->setEnabled( false );
     button = new QToolButton( icon_home, tr("Home"), "", browser, SLOT(home()), toolbar );
 
     toolbar->addSeparator();
 
-    pathCombo = new QComboBox( TRUE, toolbar );
+    pathCombo = new QComboBox( true, toolbar );
     connect( pathCombo, SIGNAL( activated( const QString & ) ),
 	     this, SLOT( pathSelected( const QString & ) ) );
     toolbar->setStretchableWidget( pathCombo );
-    setRightJustification( TRUE );
-    setDockEnabled( DockLeft, FALSE );
-    setDockEnabled( DockRight, FALSE );
+    setRightJustification( true );
+    setDockEnabled( DockLeft, false );
+    setDockEnabled( DockRight, false );
 
     pathCombo->insertItem( home_ );
 
@@ -167,11 +167,11 @@ void HelpWindow::textChanged()
 
     selectedURL = caption();
     if ( !selectedURL.isEmpty() && pathCombo ) {
-	bool exists = FALSE;
+	bool exists = false;
 	int i;
 	for ( i = 0; i < pathCombo->count(); ++i ) {
 	    if ( pathCombo->text( i ) == selectedURL ) {
-		exists = TRUE;
+		exists = true;
 		break;
 	    }
 	}
@@ -247,7 +247,7 @@ void HelpWindow::print()
 #else
     QPrinter printer;
 #endif
-    printer.setFullPage(TRUE);
+    printer.setFullPage(true);
     printer.setDocName("Help Viewer");
     printer.setDocFileName("my_document");
 #ifdef KDE_PRINT
@@ -288,7 +288,7 @@ void HelpWindow::print()
 		break;
 	    printer.newPage();
 	    page++;
-	} while (TRUE);
+	} while (true);
     }
 }
 
@@ -296,10 +296,10 @@ void HelpWindow::pathSelected( const QString &_path )
 {
     browser->setSource( _path );
     QMap<int, QString>::Iterator it = mHistory.begin();
-    bool exists = FALSE;
+    bool exists = false;
     for ( ; it != mHistory.end(); ++it ) {
 	if ( *it == _path ) {
-	    exists = TRUE;
+	    exists = true;
 	    break;
 	}
     }

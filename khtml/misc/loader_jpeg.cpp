@@ -106,12 +106,12 @@ extern "C" {
             src->buffer[1] = (JOCTET) JPEG_EOI;
             src->bytes_in_buffer = 2;
 #ifdef BUFFER_DEBUG
-            qDebug("...returning TRUE!");
+            qDebug("...returning true!");
 #endif
-            return TRUE;
+            return true;
         }
         else
-            return FALSE;  /* I/O suspension mode */
+            return false;  /* I/O suspension mode */
     }
 
     static
@@ -298,7 +298,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 
     if(state == Init)
     {
-        if(jpeg_read_header(&cinfo, TRUE) != JPEG_SUSPENDED) {
+        if(jpeg_read_header(&cinfo, true) != JPEG_SUSPENDED) {
             if ( consumer )
                 consumer->setSize(cinfo.output_width, cinfo.output_height);
 
@@ -308,12 +308,12 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 
     if(state == startDecompress)
     {
-        cinfo.buffered_image = TRUE;
-        cinfo.do_fancy_upsampling = TRUE;
-        cinfo.do_block_smoothing = FALSE;
+        cinfo.buffered_image = true;
+        cinfo.do_fancy_upsampling = true;
+        cinfo.do_block_smoothing = false;
         cinfo.dct_method = JDCT_FASTEST;
 
-        // FALSE: IO suspension
+        // false: IO suspension
         if(jpeg_start_decompress(&cinfo)) {
             if ( cinfo.output_components == 3 || cinfo.output_components == 4) {
                 image.create( cinfo.output_width, cinfo.output_height, 32 );
@@ -359,7 +359,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
     if(state == prepareOutputScan)
     {
         jsrc.decoder_timestamp.restart();
-        cinfo.buffered_image = TRUE;
+        cinfo.buffered_image = true;
         jpeg_start_output(&cinfo, cinfo.input_scan_number);
         state = doOutputScan;
     }

@@ -379,7 +379,7 @@ class KColorDialog : public KDialogBase
      * Constructs a color selection dialog.
      */
     KColorDialog( QWidget *parent = 0L, const char *name = 0L,
-		  bool modal = FALSE );
+		  bool modal = false );
     /**
      * Destroys the color selection dialog.
      */

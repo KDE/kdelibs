@@ -223,9 +223,9 @@ public:
     bool overlayStretch;
 
     KLegacyImageData()
-	: recolorable(FALSE),
-	  stretch(FALSE),
-	  overlayStretch(FALSE)
+	: recolorable(false),
+	  stretch(false),
+	  overlayStretch(false)
     { key.cachekey = 0; }
 };
 
@@ -252,7 +252,7 @@ public:
 	: fn(0), ref(0)
     {
 	// have the imageList delete the items it holds when it's deleted
-	imageList.setAutoDelete(TRUE);
+	imageList.setAutoDelete(true);
     }
 };
 
@@ -918,13 +918,13 @@ QPixmap *GtkObject::draw(KLegacyImageData *imagedata, int width, int height) {
 
     if (! imagedata->file.isNull()) {
 	QImage *image = imageCache->find(imagedata->file);
-	bool found = TRUE;
+	bool found = true;
 
 	if (! image) {
 	    image = new QImage(imagedata->file);
 
 	    if (! image || image->isNull()) {
-		found = FALSE;
+		found = false;
 	    } else {
 		imageCache->insert(imagedata->file, image);
 	    }
@@ -939,13 +939,13 @@ QPixmap *GtkObject::draw(KLegacyImageData *imagedata, int width, int height) {
 
     if (! imagedata->overlayFile.isNull()) {
 	QImage *image = imageCache->find(imagedata->overlayFile);
-	bool found = TRUE;
+	bool found = true;
 
 	if (! image) {
 	    image = new QImage(imagedata->overlayFile);
 
 	    if (! image || image->isNull()) {
-		found = FALSE;
+		found = false;
 	    } else {
 		imageCache->insert(imagedata->overlayFile, image);
 	    }
@@ -1060,7 +1060,7 @@ public:
 
 
 KLegacyStylePrivate::KLegacyStylePrivate()
-    : lastWidget(0), mousePos(-1, -1), hovering(FALSE), gtktree(0)
+    : lastWidget(0), mousePos(-1, -1), hovering(false), gtktree(0)
 {
     QPixmapCache::setCacheLimit(8192);
 
@@ -1068,10 +1068,10 @@ KLegacyStylePrivate::KLegacyStylePrivate()
 	imageCache = new QDict<QImage>(imageCacheSize);
 	CHECK_PTR(imageCache);
 
-	imageCache->setAutoDelete(TRUE);
+	imageCache->setAutoDelete(true);
     }
 
-    styleDict.setAutoDelete(TRUE);
+    styleDict.setAutoDelete(true);
 
     gtktree = initialize(gtkDict);
     CHECK_PTR(gtktree);
@@ -1131,7 +1131,7 @@ KLegacyStylePrivate::~KLegacyStylePrivate() {
 
 
 bool KLegacyStylePrivate::parseClass() {
-    if (filestream.atEnd()) return FALSE;
+    if (filestream.atEnd()) return false;
 
     QString classname, keyword, stylename;
     filestream >> classname;
@@ -1142,18 +1142,18 @@ bool KLegacyStylePrivate::parseClass() {
 	keyword != "style" ||
 	classname[0] != '\"' || classname[classname.length() - 1] != '\"' ||
 	stylename[0] != '\"' || stylename[stylename.length() - 1] != '\"')
-	return FALSE;
+	return false;
 
     classname = classname.mid(1, classname.length() - 2);
     stylename = stylename.mid(1, stylename.length() - 2);
 
     QRegExp r(classname);
-    r.setWildcard(TRUE);
+    r.setWildcard(true);
     GtkObject *obj = gtktree->find(r);
 
     if (! obj) {
 	qWarning("unknown object '%s'", classname.latin1());
-	return FALSE;
+	return false;
     }
 
     KLegacyStyleData *styledata = styleDict.find(stylename);
@@ -1161,20 +1161,20 @@ bool KLegacyStylePrivate::parseClass() {
     if (! styledata) {
 	qWarning("no such style '%s' for class '%s' (%p)", stylename.latin1(),
 		 classname.latin1(), styledata);
-	return FALSE;
+	return false;
     }
 
     obj->d = styledata;
     styledata->ref++;
 
-    return TRUE;
+    return true;
 }
 
 
 bool KLegacyStylePrivate::parseImage(KLegacyStyleData *styledata) {
     if (filestream.atEnd()) {
 	qWarning("parseImage: premature end of stream");
-	return FALSE;
+	return false;
     }
 
     QString next, equals, parameter;
@@ -1190,7 +1190,7 @@ bool KLegacyStylePrivate::parseImage(KLegacyStyleData *styledata) {
 	qWarning("parseImage: expected '{' after 'image'\n"
 		 "  in style '%s', after processing %d previous images\n",
 		 styledata->name.latin1(), styledata->imageList.count());
-	return FALSE;
+	return false;
     }
 
     KLegacyImageData *imagedata = new KLegacyImageData;
@@ -1378,9 +1378,9 @@ bool KLegacyStylePrivate::parseImage(KLegacyStyleData *styledata) {
 	    if (equals.isNull() || parameter.isNull() || equals != "=") continue;
 
 	    if (parameter == "TRUE")
-		imagedata->overlayStretch = TRUE;
+		imagedata->overlayStretch = true;
 	    else
-		imagedata->overlayStretch = FALSE;
+		imagedata->overlayStretch = false;
 	} else if (next == "stretch") {
 	    filestream >> equals;
 	    filestream >> parameter;
@@ -1388,9 +1388,9 @@ bool KLegacyStylePrivate::parseImage(KLegacyStyleData *styledata) {
 	    if (equals.isNull() || parameter.isNull() || equals != "=") continue;
 
 	    if (parameter == "TRUE")
-		imagedata->stretch = TRUE;
+		imagedata->stretch = true;
 	    else
-		imagedata->stretch = FALSE;
+		imagedata->stretch = false;
 	} else if (next == "shadow") {
 	    filestream >> equals;
 	    filestream >> parameter;
@@ -1429,12 +1429,12 @@ bool KLegacyStylePrivate::parseImage(KLegacyStyleData *styledata) {
 
     styledata->imageList.append(imagedata);
 
-    return TRUE;
+    return true;
 }
 
 
 bool KLegacyStylePrivate::parseEngine(KLegacyStyleData *styledata) {
-    if (filestream.atEnd()) return FALSE;
+    if (filestream.atEnd()) return false;
 
     QString enginename, paren;
     filestream >> enginename;
@@ -1443,7 +1443,7 @@ bool KLegacyStylePrivate::parseEngine(KLegacyStyleData *styledata) {
     if (enginename.isNull() || paren.isNull() ||
 	enginename[0] != '\"' || enginename[enginename.length() - 1] != '\"' ||
 	paren != "{") {
-	return FALSE;
+	return false;
     }
 
     QString next;
@@ -1468,20 +1468,20 @@ bool KLegacyStylePrivate::parseEngine(KLegacyStyleData *styledata) {
 	}
     }
 
-    return TRUE;
+    return true;
 }
 
 
 bool KLegacyStylePrivate::parsePixmapPath() {
     if (filestream.atEnd()) {
-	return FALSE;
+	return false;
     }
 
     QString next;
     filestream >> next;
 
     if (next.isNull() || next[0] != '\"' || next[next.length() - 1] != '\"') {
-	return FALSE;
+	return false;
     }
 
     next = next.mid(1, next.length() - 2);
@@ -1516,12 +1516,12 @@ bool KLegacyStylePrivate::parsePixmapPath() {
 	pixmapPath.append(path);
     }
 
-    return TRUE;
+    return true;
 }
 
 
 bool KLegacyStylePrivate::parseStyle() {
-    if (filestream.atEnd()) return FALSE;
+    if (filestream.atEnd()) return false;
 
     QString stylename, paren;
     filestream >> stylename;
@@ -1529,7 +1529,7 @@ bool KLegacyStylePrivate::parseStyle() {
 
     if (stylename.isNull() || paren.isNull() ||
 	stylename[0] != '\"' || stylename[stylename.length() - 1] != '\"')
-	return FALSE;
+	return false;
 
     stylename = stylename.mid(1, stylename.length() - 2);
 
@@ -1539,23 +1539,23 @@ bool KLegacyStylePrivate::parseStyle() {
 
 	if (newstylename.isNull() ||
 	    newstylename[0] != '\"' || newstylename[newstylename.length() - 1] != '\"')
-	    return FALSE;
+	    return false;
 
 	newstylename = newstylename.mid(1, newstylename.length() - 2);
 
 	KLegacyStyleData *styledata = styleDict.find(stylename);
 
-	if (! styledata) return FALSE;
+	if (! styledata) return false;
 
 	KLegacyStyleData *newstyledata = new KLegacyStyleData(*styledata);
 	newstyledata->name = newstylename;
 	styleDict.insert(newstylename, newstyledata);
 
-	return TRUE;
+	return true;
     } else if (paren != "{") {
 	qWarning("parseStyle: expected '{' while parsing style %s",
 		 stylename.latin1());
-	return FALSE;
+	return false;
     }
 
     KLegacyStyleData *styledata = new KLegacyStyleData;
@@ -1739,7 +1739,7 @@ bool KLegacyStylePrivate::parseStyle() {
 
     styleDict.insert(styledata->name, styledata);
 
-    return TRUE;
+    return true;
 }
 
 
@@ -1771,7 +1771,7 @@ void KLegacyStyle::polish(QApplication *app) {
 
     if (gobj) {
 	if (gobj->font()) {
-	    app->setFont(*gobj->font(), TRUE);
+	    app->setFont(*gobj->font(), true);
 	}
 
 	QPalette pal = app->palette();
@@ -1868,7 +1868,7 @@ void KLegacyStyle::polish(QApplication *app) {
 	brush.setColor(gobj->foreColor(KLegacy::Active));
 	pal.setBrush(QPalette::Active, QColorGroup::HighlightedText, brush);
 
-	app->setPalette(pal, TRUE);
+	app->setPalette(pal, true);
     }
 
     qt_set_draw_menu_bar_impl((QDrawMenuBarItemImpl) &KLegacyStyle::drawMenuBarItem);
@@ -1893,30 +1893,30 @@ void KLegacyStyle::polish(QWidget *widget) {
     KLegacyImageDataKey key;
     key.cachekey = 0;
 
-    bool eventFilter = FALSE;
-    bool mouseTrack = FALSE;
-    bool immediateRender = FALSE;
-    bool bgPixmap = FALSE;
+    bool eventFilter = false;
+    bool mouseTrack = false;
+    bool immediateRender = false;
+    bool bgPixmap = false;
 
     if (widget->inherits("QButton")) {
 	metaobject = QButton::staticMetaObject();
-	eventFilter = TRUE;
+	eventFilter = true;
     }
 
     if (widget->inherits("QComboBox")) {
 	metaobject = QComboBox::staticMetaObject();
-	eventFilter = TRUE;
+	eventFilter = true;
     }
 
     if (widget->inherits("QScrollBar")) {
 	metaobject = QScrollBar::staticMetaObject();
-	eventFilter = TRUE;
-	mouseTrack = TRUE;
+	eventFilter = true;
+	mouseTrack = true;
     }
 
     if (widget->inherits("QMenuBar")) {
-	eventFilter = TRUE;
-	immediateRender = TRUE;
+	eventFilter = true;
+	immediateRender = true;
 
 	metaobject = QMenuBar::staticMetaObject();
 
@@ -1933,8 +1933,8 @@ void KLegacyStyle::polish(QWidget *widget) {
     if (widget->inherits("QToolBar")) {
 	metaobject = QToolBar::staticMetaObject();
 
-	eventFilter = TRUE;
-	immediateRender = TRUE;
+	eventFilter = true;
+	immediateRender = true;
 
 	detail = "menubar";
 	key.data.function = KLegacy::Box;
@@ -1947,8 +1947,8 @@ void KLegacyStyle::polish(QWidget *widget) {
     if (widget->inherits("QLineEdit")) {
 	metaobject = QLineEdit::staticMetaObject();
 
-	eventFilter = TRUE;
-	immediateRender = TRUE;
+	eventFilter = true;
+	immediateRender = true;
 
 	detail = "entry_bg";
 	key.data.function = KLegacy::FlatBox;
@@ -1959,9 +1959,9 @@ void KLegacyStyle::polish(QWidget *widget) {
     }
 
     if (widget->isTopLevel() || widget->inherits("QWorkspaceChild")) {
-	immediateRender = TRUE;
+	immediateRender = true;
 
-	bgPixmap = TRUE;
+	bgPixmap = true;
 	metaobject = QMainWindow::staticMetaObject();
 	key.cachekey = 0;
 	key.data.function = KLegacy::FlatBox;
@@ -2073,8 +2073,8 @@ void KLegacyStyle::polish(QWidget *widget) {
 void KLegacyStyle::polishPopupMenu(QPopupMenu *popup) {
     KStyle::polishPopupMenu(popup);
 
-    popup->setMouseTracking(TRUE);
-    popup->setCheckable(TRUE);
+    popup->setMouseTracking(true);
+    popup->setCheckable(true);
 
     popup->installEventFilter(this);
 }
@@ -2088,14 +2088,14 @@ void KLegacyStyle::unPolish(QWidget *widget) {
     widget->setBackgroundPixmap(QPixmap());
     widget->removeEventFilter(this);
     widget->unsetPalette();
-    widget->setAutoMask(FALSE);
+    widget->setAutoMask(false);
     KStyle::unPolish(widget);
 }
 
 
 void KLegacyStyle::unPolish(QApplication *app) {
-    app->setFont(priv->oldfont, TRUE);
-    app->setPalette(priv->oldpalette, TRUE);
+    app->setFont(priv->oldfont, true);
+    app->setPalette(priv->oldpalette, true);
 
     qt_set_draw_menu_bar_impl(0);
 
@@ -2107,7 +2107,7 @@ void KLegacyStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h, const 
 				 bool active, QMenuItem *mi, QBrush *)
 {
     drawMenuBarItem(p, x, y, w, h, mi, (QColorGroup &) g,
-		    (mi) ? mi->isEnabled() : FALSE, active);
+		    (mi) ? mi->isEnabled() : false, active);
 }
 
 
@@ -2200,7 +2200,7 @@ void KLegacyStyle::drawPushButton(QPushButton *btn, QPainter *p) {
 	    p->drawPixmap(x1, y1, *pix);
         else
 	    KStyle::drawBevelButton(p, x1, y1, x2 - x1 + 1, y2 - y1 + 1,
-				    g, TRUE, &fill);
+				    g, true, &fill);
     }
 
     int diw = buttonDefaultIndicatorWidth();
@@ -2450,7 +2450,7 @@ void KLegacyStyle::drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw, in
     if ( mi->isChecked() ) {
 	if ( mi->iconSet() ) {
 	    qDrawShadePanel( p, x+2, y+2, checkcol, h-2*2,
-			     g, TRUE, 1, &g.brush( QColorGroup::Midlight ) );
+			     g, true, 1, &g.brush( QColorGroup::Midlight ) );
 	}
     } else if ( !act ) {
 	p->fillRect(x+2, y+2, checkcol, h-2*2,
@@ -2521,7 +2521,7 @@ void KLegacyStyle::drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw, in
     if (mi->popup()) {
 	int hh = h / 2;
 
-	drawMenuArrow(p, RightArrow, (act) ? mi->isEnabled() : FALSE,
+	drawMenuArrow(p, RightArrow, (act) ? mi->isEnabled() : false,
 		      x + w - hh - 6, y + (hh / 2), hh, hh, g, mi->isEnabled());
     }
 }
@@ -2741,7 +2741,7 @@ void KLegacyStyle::drawScrollBarControls(QPainter *p, const QScrollBar *scrollba
 		  (active & SubLine), x, y,
 		  buttonDim,
 		  buttonDim,
-		  scrollbar->colorGroup(), TRUE);
+		  scrollbar->colorGroup(), true);
 
 	if  (scrollbar->orientation() == Vertical)
 	    y = scrollbar->height() - buttonDim - defaultFrameWidth();
@@ -2753,7 +2753,7 @@ void KLegacyStyle::drawScrollBarControls(QPainter *p, const QScrollBar *scrollba
 		  (active & AddLine), x, y,
 		  buttonDim,
 		  buttonDim,
-		  scrollbar->colorGroup(), TRUE);
+		  scrollbar->colorGroup(), true);
     }
     p->drawPixmap(0, 0, buf);
 }
@@ -2925,7 +2925,7 @@ void KLegacyStyle::drawSplitter(QPainter *p, int x, int y, int w, int h,
 
 	qDrawShadeLine(p, xpos, kpos + ksize - 1, xpos, h, g);
 	drawBevelButton(p, xpos - (splitterWidth() / 2) + 1, kpos, ksize, ksize,
-			g, FALSE, &g.brush(QColorGroup::Button));
+			g, false, &g.brush(QColorGroup::Button));
 	qDrawShadeLine(p, xpos, 0, xpos, kpos, g);
     } else {
 	int ypos = y + (h / 2);
@@ -2934,7 +2934,7 @@ void KLegacyStyle::drawSplitter(QPainter *p, int x, int y, int w, int h,
 
 	qDrawShadeLine(p, 0, ypos, kpos, ypos, g);
 	drawBevelButton(p, kpos, ypos - (splitterWidth() / 2) + 1, ksize, ksize,
-			g, FALSE, &g.brush(QColorGroup::Button));
+			g, false, &g.brush(QColorGroup::Button));
 	qDrawShadeLine(p, kpos + ksize - 1, ypos, w, ypos, g);
     }
 }
@@ -3261,7 +3261,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 		obj->inherits("QSlider") ||
 		obj->inherits("QScrollbar")) {
 		priv->lastWidget = (QWidget *) obj;
-		priv->lastWidget->repaint(FALSE);
+		priv->lastWidget->repaint(false);
 	    } else if (obj->inherits("QRadioButton")) {
 		QWidget *w = (QWidget *) obj;
 
@@ -3327,7 +3327,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 	{
 	    if (obj == priv->lastWidget) {
 		priv->lastWidget = 0;
-		((QWidget *) obj)->repaint(FALSE);
+		((QWidget *) obj)->repaint(false);
 	    } else if (obj->inherits("QRadioButton") ||
 		       obj->inherits("QCheckBox")) {
 		QWidget *w = (QWidget *) obj;
@@ -3335,7 +3335,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 		if (! w->isTopLevel()) {
 		    w->setBackgroundMode(QWidget::X11ParentRelative);
 		    w->setBackgroundOrigin(QWidget::WidgetOrigin);
-		    w->repaint(TRUE);
+		    w->repaint(true);
 		}
 	    }
 
@@ -3348,9 +3348,9 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 	    priv->mousePos = me->pos();
 	    if (obj->inherits("QScrollBar") &&
 		(! (me->state() & (LeftButton | MidButton | RightButton)))) {
-		priv->hovering = TRUE;
-		((QWidget *) obj)->repaint(FALSE);
-		priv->hovering = FALSE;
+		priv->hovering = true;
+		((QWidget *) obj)->repaint(false);
+		priv->hovering = false;
 	    }
 
 	    break;

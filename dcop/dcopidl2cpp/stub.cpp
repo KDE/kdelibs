@@ -165,14 +165,14 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	    Q_ASSERT ( r.tagName() == "NAME" );
 	    str << r.firstChild().toText().data() << "(";
 
-	    bool first = TRUE;
+	    bool first = true;
 	    r = r.nextSibling().toElement();
 	    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
 		if ( !first )
 		    str << ", ";
 		else
 		    str << " ";
-		first = FALSE;
+		first = false;
 		Q_ASSERT( r.tagName() == "ARG" );
 		QDomElement a = r.firstChild().toElement();
 		writeType( str, a );

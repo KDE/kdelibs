@@ -111,7 +111,7 @@ bool KJavaEmbed::eventFilter( QObject* o, QEvent* e)
 
     }
 
-    return FALSE;
+    return false;
 }
 
 /*!
@@ -126,8 +126,8 @@ KJavaEmbed::KJavaEmbed( QWidget *parent, const char *name, WFlags f )
     d = new KJavaEmbedPrivate;
 
     setFocusPolicy( StrongFocus );
-    setKeyCompression( FALSE );
-    setAcceptDrops( TRUE );
+    setKeyCompression( false );
+    setAcceptDrops( true );
 
     window = 0;
     // we are interested in SubstructureNotify
@@ -236,9 +236,9 @@ static bool wstate_withdrawn( WId winid )
     unsigned long length, after;
     unsigned char *data;
     int r = XGetWindowProperty( qt_xdisplay(), winid, qt_wm_state, 0, 2,
-                                FALSE, AnyPropertyType, &type, &format,
+                                false, AnyPropertyType, &type, &format,
                                 &length, &after, &data );
-    bool withdrawn = TRUE;
+    bool withdrawn = true;
     if ( r == Success && data && format == 32 ) {
         Q_UINT32 *wstate = (Q_UINT32*)data;
         withdrawn  = (*wstate == WithdrawnState );
@@ -309,7 +309,7 @@ void KJavaEmbed::embed( WId w )
 bool KJavaEmbed::focusNextPrevChild( bool next )
 {
     if ( window )
-        return FALSE;
+        return false;
     else
         return QWidget::focusNextPrevChild( next );
 }
@@ -358,7 +358,7 @@ void KJavaEmbed::sendSyntheticConfigureNotifyEvent() {
         c.border_width = 0;
         c.above = None;
         c.override_redirect = 0;
-        XSendEvent( qt_xdisplay(), c.event, TRUE, StructureNotifyMask, (XEvent*)&c );
+        XSendEvent( qt_xdisplay(), c.event, true, StructureNotifyMask, (XEvent*)&c );
         //kdDebug(6100) << "SENT " << KXEventUtil::getX11EventInfo((XEvent*)&c) << endl;
     }
 }

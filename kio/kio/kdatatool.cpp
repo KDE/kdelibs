@@ -85,7 +85,7 @@ QStringList KDataToolInfo::mimeTypes() const
 bool KDataToolInfo::isReadOnly() const
 {
     if ( !m_service )
-        return TRUE;
+        return true;
 
     return m_service->property( "ReadOnly" ).toBool();
 }

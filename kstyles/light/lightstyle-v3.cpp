@@ -422,12 +422,12 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
     case PE_DockWindowHandle:
 	{
 	    QString title;
-	    bool drawTitle = FALSE;
+	    bool drawTitle = false;
 	    if ( p && p->device()->devType() == QInternal::Widget ) {
 		QWidget *w = (QWidget *) p->device();
 		QWidget *p = w->parentWidget();
 		if (p->inherits("QDockWindow") && ! p->inherits("QToolBar")) {
-		    drawTitle = TRUE;
+		    drawTitle = true;
 		    title = p->caption();
 		}
 	    }
@@ -913,7 +913,7 @@ void LightStyleV3::drawControl( ControlElement control,
 	    }
 
 	    if (flags & Style_Active)
-		qDrawShadePanel(p, r, cg, TRUE, 1,
+		qDrawShadePanel(p, r, cg, true, 1,
 				&cg.brush(QColorGroup::Midlight));
 	     else if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
 		p->drawPixmap( r.topLeft(), *widget->erasePixmap(), r );
@@ -946,7 +946,7 @@ void LightStyleV3::drawControl( ControlElement control,
 	    if (mi->isChecked() &&
 		! (flags & Style_Active) &
 		(flags & Style_Enabled))
-		qDrawShadePanel(p, cr, cg, TRUE, 1, &cg.brush(QColorGroup::Midlight));
+		qDrawShadePanel(p, cr, cg, true, 1, &cg.brush(QColorGroup::Midlight));
 
 	    if (mi->iconSet()) {
 		QIconSet::Mode mode =
@@ -1055,7 +1055,7 @@ void LightStyleV3::drawControl( ControlElement control,
     case CE_MenuBarItem:
 	{
 	    if ( flags & Style_Active )
-		qDrawShadePanel(p, r, cg, TRUE, 1, &cg.brush(QColorGroup::Midlight));
+		qDrawShadePanel(p, r, cg, true, 1, &cg.brush(QColorGroup::Midlight));
 	    else
 		p->fillRect( r, cg.brush( QColorGroup::Button ) );
 

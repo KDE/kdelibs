@@ -39,9 +39,9 @@ KLedTest::KLedTest(QWidget* parent)
     l->move(5,5);
     //    ktmp tmpobj(l);
     
-    t_toggle.start(1000, FALSE);
-    t_color.start(3500, FALSE);
-    t_look.start(3500, FALSE);
+    t_toggle.start(1000, false);
+    t_color.start(3500, false);
+    t_look.start(3500, false);
     QObject::connect(&t_toggle, SIGNAL(timeout()), l, SLOT(toggle()));
     QObject::connect(&t_color, SIGNAL(timeout()), this, SLOT(nextColor()));
     QObject::connect(&t_look, SIGNAL(timeout()), this, SLOT(nextLook()));

@@ -38,7 +38,7 @@ KTabCtl::KTabCtl(QWidget *parent, const char *name)
     connect(tabs, SIGNAL(selected(int)), this, SLOT(showTab(int)));
     tabs->move(2, 1);
 
-    blBorder = TRUE;
+    blBorder = true;
 
 }
 

@@ -980,11 +980,11 @@ void KConfigINIBackEnd::virtual_hook( int id, void* data )
 bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
 {
   // WARNING: Do NOT use the event loop as it may not exist at this time.
-  bool allWritable = TRUE;
+  bool allWritable = true;
   QString errorMsg( I18N_NOOP("Will not save configuration.\n") );
   if ( !mLocalFileName.isEmpty() && !bFileImmutable && !checkAccess(mLocalFileName,W_OK) )
   {
-    allWritable = FALSE;
+    allWritable = false;
     errorMsg = errorMsg + QString(I18N_NOOP("Configuration file \"%1\" not writable.\n")).arg(mLocalFileName);
   }
   // We do not have an immutability flag for kdeglobals. However, making kdeglobals mutable while making
@@ -992,7 +992,7 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
   if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !checkAccess(mGlobalFileName,W_OK) )
   {
     errorMsg = errorMsg + QString(I18N_NOOP("Configuration file \"%1\" not writable.\n")).arg(mGlobalFileName);
-    allWritable = FALSE;
+    allWritable = false;
   }
 
   if (warnUser && !allWritable)

@@ -905,7 +905,7 @@ QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) co
     if ( overhead == 0 ) {
         state = KDoubleValidator::validate( str, pos );
     } else {
-        bool stripedVersion = FALSE;
+        bool stripedVersion = false;
         if ( str.length() >= overhead && str.startsWith(pref)
              && (str.endsWith(suff)
                  || (stripedVersion = str.endsWith(suffStriped))) ) {

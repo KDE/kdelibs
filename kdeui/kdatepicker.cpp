@@ -177,7 +177,7 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
        {
           QApplication::sendEvent( table, e );
           table->setFocus();
-          return TRUE; // eat event
+          return true; // eat event
        }
    }
    return QFrame::eventFilter( o, e );

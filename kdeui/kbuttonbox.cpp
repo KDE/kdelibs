@@ -81,7 +81,7 @@ KButtonBox::KButtonBox(QWidget *parent, Orientation _orientation,
   data->orientation = _orientation;
   data->border = border;
   data->autoborder = autoborder < 0 ? border : autoborder;
-  data->buttons.setAutoDelete(TRUE);
+  data->buttons.setAutoDelete(true);
 }
 
 KButtonBox::~KButtonBox() {
@@ -120,7 +120,7 @@ void KButtonBox::addStretch(int scale) {
   if(scale > 0) {
     Item *item = new Item;
     item->button = 0;
-    item->noexpand  = FALSE;
+    item->noexpand  = false;
     item->stretch = scale;
     data->buttons.append(item);
   }

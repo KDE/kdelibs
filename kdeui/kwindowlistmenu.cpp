@@ -145,7 +145,7 @@ void KWindowListMenu::init()
 	int items = 0;
 
 	if (!active_window && d == cd)
-	    setItemChecked(1000 + d, TRUE);
+	    setItemChecked(1000 + d, true);
 
         NameSortedInfoList list;
         list.setAutoDelete(true);
@@ -186,7 +186,7 @@ void KWindowListMenu::init()
                 insertItem( pm, itemText, i);
                 map.insert(i, info->win());
                 if (info->win() == active_window)
-                    setItemChecked(i, TRUE);
+                    setItemChecked(i, true);
             }
         }
 

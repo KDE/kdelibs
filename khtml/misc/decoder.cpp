@@ -125,7 +125,7 @@ enum KanjiCode::Type KanjiCode::judge(const char *str, int length)
 {
     enum Type code;
     int i;
-    int bfr = FALSE;		/* Kana Moji */
+    int bfr = false;		/* Kana Moji */
     int bfk = 0;		/* EUC Kana */
     int sjis = 0;
     int euc = 0;
@@ -154,11 +154,11 @@ enum KanjiCode::Type KanjiCode::judge(const char *str, int length)
 	    } else {
 		i++;
 	    }
-	    bfr = FALSE;
+	    bfr = false;
 	    bfk = 0;
 	} else {
 	    if (ptr[i] < 0x20) {
-		bfr = FALSE;
+		bfr = false;
 		bfk = 0;
 		/* ?? check kudokuten ?? && ?? hiragana ?? */
 		if ((i >= 2) && (ptr[i - 2] == 0x81)
@@ -217,7 +217,7 @@ enum KanjiCode::Type KanjiCode::judge(const char *str, int length)
 			} else if (0x20 <= ptr[i] && ptr[i] <= 0x7f) {
 			    sjis++;
 			}
-			bfr = FALSE;
+			bfr = false;
 			bfk = 0;
 		    }
 		} else if (0x8e == ptr[i]) {
@@ -253,7 +253,7 @@ enum KanjiCode::Type KanjiCode::judge(const char *str, int length)
 		} else if (ptr[i] <= 0x7f) {
 		    ;
 		} else {
-		    bfr = TRUE;
+		    bfr = true;
 		    bfk = 0;
 		}
 	    }

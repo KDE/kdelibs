@@ -747,7 +747,7 @@ QString KCardGsmImplementation::getStatusString (const QString & status){
 QString resultString;
 bool * result= new bool;
 ushort shortStatus = status.toUShort(result,16);
-if (*result!=TRUE)    { delete result;return i18n("Not a valid status");}
+if (*result!=true)    { delete result;return i18n("Not a valid status");}
 delete result;
 switch (shortStatus) {
 

@@ -159,14 +159,14 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 
 	    QStringList args;
 	    QStringList argtypes;
-	    bool first = TRUE;
+	    bool first = true;
 	    r = r.nextSibling().toElement();
 	    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
 		if ( !first )
 		    str << ", ";
 		else
 		    str << " ";
-		first = FALSE;
+		first = false;
 		Q_ASSERT( r.tagName() == "ARG" );
 		QDomElement a = r.firstChild().toElement();
 		QString type = writeType( str, a );
@@ -187,11 +187,11 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 
 	
 	    funcName += "(";
-	    first = TRUE;
+	    first = true;
 	    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
 		if ( !first )
 		    funcName += ",";
-		first = FALSE;
+		first = false;
 		funcName += *it;
 	    }
 	    funcName += ")";

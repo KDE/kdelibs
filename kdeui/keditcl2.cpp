@@ -93,7 +93,7 @@ void KEdit::search_slot(){
 
 again:
   int  result = doSearch(to_find_string, srchdialog->case_sensitive(),
-			 FALSE, (!srchdialog->get_direction()),line,col);
+			 false, (!srchdialog->get_direction()),line,col);
 
   if(result == 0){
     if(!srchdialog->get_direction()){ // forward search
@@ -166,13 +166,13 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 
 	length = s_pattern.length();
 
-	setCursorPosition(i,pos,FALSE);
+	setCursorPosition(i,pos,false);
 
 	for(int l = 0 ; l < length; l++){
-	  cursorRight(TRUE);
+	  cursorRight(true);
 	}
 
-	setCursorPosition( i , pos + length, TRUE );
+	setCursorPosition( i , pos + length, true );
 	pattern = s_pattern;
 	last_search = FORWARD;
 
@@ -197,13 +197,13 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 
 	if( ! (line == i && pos > col ) ){
 
-	  setCursorPosition(i ,pos ,FALSE );
+	  setCursorPosition(i ,pos ,false );
 
 	  for(int l = 0 ; l < length; l++){
-	    cursorRight(TRUE);
+	    cursorRight(true);
 	  }
 
-	  setCursorPosition(i ,pos + length ,TRUE );
+	  setCursorPosition(i ,pos + length ,true );
 	  pattern = s_pattern;
 	  last_search = BACKWARD;
 	  return 1;
@@ -291,14 +291,14 @@ void KEdit::replace_slot(){
 
   insertAt(string,line,col);
   setModified(true);
-  can_replace = FALSE;
+  can_replace = false;
 
   if (replace_dialog->get_direction())
   {
     // Backward
     setCursorPosition(line,col+length);
     for( int k = 0; k < length; k++){
-      cursorLeft(TRUE);
+      cursorLeft(true);
     }
   }
   else
@@ -306,7 +306,7 @@ void KEdit::replace_slot(){
     // Forward
     setCursorPosition(line,col);
     for( int k = 0; k < length; k++){
-      cursorRight(TRUE);
+      cursorRight(true);
     }
   }
 }
@@ -352,18 +352,18 @@ void KEdit::replace_all_slot(){
 
 again:
 
-  setAutoUpdate(FALSE);
+  setAutoUpdate(false);
   int result = 1;
 
   while(result){
 
     result = doReplace(to_find_string, replace_dialog->case_sensitive(),
-		       FALSE, (!replace_dialog->get_direction()),
-		       replace_all_line,replace_all_col,TRUE);
+		       false, (!replace_dialog->get_direction()),
+		       replace_all_line,replace_all_col,true);
 
   }
 
-  setAutoUpdate(TRUE);
+  setAutoUpdate(true);
   update();
 
   if(!replace_dialog->get_direction()){ // forward search
@@ -442,7 +442,7 @@ void KEdit::replace_search_slot(){
 again:
 
   int  result = doReplace(to_find_string, replace_dialog->case_sensitive(),
-			 FALSE, (!replace_dialog->get_direction()), line, col, FALSE );
+			 false, (!replace_dialog->get_direction()), line, col, false );
 
   if(result == 0){
     if(!replace_dialog->get_direction()){ // forward search
@@ -493,7 +493,7 @@ void KEdit::replacedone_slot(){
   setFocus();
 
   last_replace = NONE;
-  can_replace  = FALSE;
+  can_replace  = false;
 
 }
 
@@ -557,16 +557,16 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	}
 	else{ // interactive
 
-	  setCursorPosition( line_counter , pos, FALSE );
+	  setCursorPosition( line_counter , pos, false );
 
 	  for(int l = 0 ; l < length; l++){
-	    cursorRight(TRUE);
+	    cursorRight(true);
 	  }
 
-	  setCursorPosition( line_counter , pos + length, TRUE );
+	  setCursorPosition( line_counter , pos + length, true );
 	  pattern = s_pattern;
 	  last_replace = FORWARD;
-	  can_replace = TRUE;
+	  can_replace = true;
 
 	  return 1;
 
@@ -641,17 +641,17 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  //	  printf("line_counter %d pos %d col %d\n",line_counter, pos,col);
 	  if( ! (line == line_counter && pos > col ) ){
 
-	    setCursorPosition(line_counter, pos + length ,FALSE );
+	    setCursorPosition(line_counter, pos + length ,false );
 
 	    for(int l = 0 ; l < length; l++){
-	      cursorLeft(TRUE);
+	      cursorLeft(true);
 	    }
 
-	    setCursorPosition(line_counter, pos ,TRUE );
+	    setCursorPosition(line_counter, pos ,true );
 	    pattern = s_pattern;
 
 	    last_replace = BACKWARD;
-	    can_replace = TRUE;
+	    can_replace = true;
 
 	    return 1;
 	  }

@@ -252,7 +252,7 @@ void kimgio_eps_write( QImageIO *imageio )
 
   // making some definitions (papersize, output to file, filename):
   psOut.setCreator( "KDE " KDE_VERSION_STRING  );
-  psOut.setOutputToFile( TRUE );
+  psOut.setOutputToFile( true );
 
   KTempFile tmpFile;
   tmpFile.setAutoDelete(true);

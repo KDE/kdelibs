@@ -96,7 +96,7 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
 
 	QBrush brush;
 	qDrawShadePanel( &painter, 0, 0, width(), height(), colorGroup(),
-			TRUE, 2, &brush );
+			true, 2, &brush );
 
 	drawContents( &painter );
 	if (paintRect.contains(cursorRect))
@@ -208,14 +208,14 @@ KSelector::KSelector( QWidget *parent, const char *name )
 	: QWidget( parent, name ), QRangeControl()
 {
 	_orientation = Horizontal;
-	_indent = TRUE;
+	_indent = true;
 }
 
 KSelector::KSelector( Orientation o, QWidget *parent, const char *name )
 	: QWidget( parent, name ), QRangeControl()
 {
 	_orientation = o;
-	_indent = TRUE;
+	_indent = true;
 }
 
 
@@ -245,14 +245,14 @@ void KSelector::paintEvent( QPaintEvent * )
 	{
 		if ( orientation() == Vertical )
 			qDrawShadePanel( &painter, 0, 3, width()-5, height()-6,
-				colorGroup(), TRUE, 2, &brush );
+				colorGroup(), true, 2, &brush );
 		else
 			qDrawShadePanel( &painter, 3, 0, width()-6, height()-5,
-				colorGroup(), TRUE, 2, &brush );
+				colorGroup(), true, 2, &brush );
 	}
 
 	QPoint pos = calcArrowPos( value() );
-	drawArrow( &painter, TRUE, pos );   
+	drawArrow( &painter, true, pos );   
 
 	painter.end();
 }
@@ -281,10 +281,10 @@ void KSelector::valueChange()
 	painter.begin( this );
 
 	pos = calcArrowPos( prevValue() );
-	drawArrow( &painter, FALSE, pos );   
+	drawArrow( &painter, false, pos );   
 
 	pos = calcArrowPos( value() );
-	drawArrow( &painter, TRUE, pos );   
+	drawArrow( &painter, true, pos );   
 
 	painter.end();
 

@@ -169,13 +169,13 @@ bool KPasswordEdit::event(QEvent *e) {
       case QEvent::MouseMove:
       case QEvent::IMStart:
       case QEvent::IMCompose:
-        return TRUE; //Ignore
+        return true; //Ignore
 
       case QEvent::IMEnd:
       {
         QIMEvent *ie = (QIMEvent*) e;
         insert( ie->text() );
-        return TRUE;
+        return true;
       }
 
       case QEvent::AccelOverride:
@@ -189,7 +189,7 @@ bool KPasswordEdit::event(QEvent *e) {
                     showPass();
                 }
         }
-        return TRUE; // stop bubbling
+        return true; // stop bubbling
       }
 
       default:

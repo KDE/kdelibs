@@ -714,7 +714,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     }
     else if ( KStdAccel::deleteWordBack().contains( key ) )
     {
-        cursorWordBackward(TRUE);
+        cursorWordBackward(true);
         if ( hasSelectedText() )
             del();
 
@@ -724,7 +724,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     else if ( KStdAccel::deleteWordForward().contains( key ) )
     {
         // Workaround for QT bug where
-        cursorWordForward(TRUE);
+        cursorWordForward(true);
         if ( hasSelectedText() )
             del();
 

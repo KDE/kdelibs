@@ -658,7 +658,7 @@ bool KJSDebugWin::eventFilter(QObject *o, QEvent *e)
     if (o == this)
       return QWidget::eventFilter(o,e);
     else
-      return TRUE;
+      return true;
     break;
   default:
     return QWidget::eventFilter(o,e);

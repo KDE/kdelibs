@@ -298,7 +298,7 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
         b = tb->getButton(tb->idAt(index));
         // if !b and not past last button, we didn't find button
         if (pos.x() <= b->geometry().left())
-            goto failure_exit;
+            goto hell;
     }
 
     a = findPluggedAction(actions, tb, b->id());
@@ -320,7 +320,7 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
     }
     //
 
-failure_exit:
+hell:
     tb->insertLineSeparator(sepIndex, sepId);
     return a;
 }

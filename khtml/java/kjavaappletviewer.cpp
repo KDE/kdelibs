@@ -279,7 +279,7 @@ bool KJavaAppletViewer::eventFilter (QObject *o, QEvent *e) {
             case QEvent::Destroy:
             case QEvent::Close:
             case QEvent::Quit:
-                return TRUE;
+                return true;
             default:
                 break;
         }

@@ -69,7 +69,7 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
         }
         QString t = codec->toUnicode( s.stripWhiteSpace() );
         QRegExp rx( "(.*)\\((.*)\\):(.*)$" );
-        rx.setMinimal( TRUE );
+        rx.setMinimal( true );
         if ( !rx.exactMatch( t ) ) 
             continue;
         if ( rx.cap(1) == "opened" )

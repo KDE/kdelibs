@@ -686,7 +686,7 @@ return true;
 ///////////////////////////////////////////////////////////////////////////
 
 void KSSLD::searchAddCert(KSSLCertificate *cert) {
-	skMD5Digest.insert(cert->getMD5DigestText(), cert, TRUE);
+	skMD5Digest.insert(cert->getMD5DigestText(), cert, true);
 
 	QStringList mails;
 	cert->getEmails(mails);

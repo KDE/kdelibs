@@ -37,7 +37,7 @@ KMimeMagic* KMimeMagic::self()
 void KMimeMagic::initStatic()
 {
   s_pSelf = kmimemagicsd.setObject( s_pSelf, new KMimeMagic() );
-  s_pSelf->setFollowLinks( TRUE );
+  s_pSelf->setFollowLinks( true );
 }
 
 #include <stdio.h>
@@ -2077,7 +2077,7 @@ void KMimeMagic::init( const QString& _configfile )
 	/* set up the magic list (empty) */
 	conf->magic = conf->last = NULL;
 	magicResult = NULL;
-	followLinks = FALSE;
+	followLinks = false;
 
         conf->utimeConf = 0L; // created on demand
 	/* on the first time through we read the magic file */

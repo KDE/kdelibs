@@ -1453,7 +1453,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
         && (e->key()!=Key_Meta) && (e->key()!=Key_Alt))
     {
        if ((e_state==ShiftButton) && (!d->wasShiftEvent) && (!d->selectedBySimpleMove))
-          selectAll(FALSE);
+          selectAll(false);
        d->selectionDirection=0;
        d->wasShiftEvent = (e_state == ShiftButton);
     };
@@ -1496,8 +1496,8 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
     switch (e->key())
     {
     case Key_Escape:
-       selectAll(FALSE);
-       emitSelectionChanged=TRUE;
+       selectAll(false);
+       emitSelectionChanged=true;
        break;
 
     case Key_Space:
@@ -1505,7 +1505,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        if (d->selectedBySimpleMove)
           d->selectedBySimpleMove=false;
        item->setSelected(!item->isSelected());
-       emitSelectionChanged=TRUE;
+       emitSelectionChanged=true;
        break;
 
     case Key_Insert:
@@ -1513,7 +1513,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        if (d->selectedBySimpleMove)
        {
           d->selectedBySimpleMove=false;
-          if (!item->isSelected()) item->setSelected(TRUE);
+          if (!item->isSelected()) item->setSelected(true);
        }
        else
        {
@@ -1529,7 +1529,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           setCurrentItem(nextItem);
        };
        d->selectionDirection=1;
-       emitSelectionChanged=TRUE;
+       emitSelectionChanged=true;
        break;
 
     case Key_Down:
@@ -1545,14 +1545,14 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
              if (oldSelectionDirection!=-1)
              {
                 item->setSelected(!item->isSelected());
-                emitSelectionChanged=TRUE;
+                emitSelectionChanged=true;
              };
           };
        }
        else if ((d->selectedBySimpleMove) && (nextItem!=0))
        {
           item->setSelected(false);
-          emitSelectionChanged=TRUE;
+          emitSelectionChanged=true;
        };
 
        if (nextItem!=0)
@@ -1580,14 +1580,14 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
              if (oldSelectionDirection!=1)
              {
                 item->setSelected(!item->isSelected());
-                emitSelectionChanged=TRUE;
+                emitSelectionChanged=true;
              };
           }
        }
        else if ((d->selectedBySimpleMove) && (nextItem!=0))
        {
           item->setSelected(false);
-          emitSelectionChanged=TRUE;
+          emitSelectionChanged=true;
        };
 
        if (nextItem!=0)
@@ -1622,7 +1622,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           }
           nextItem=nextItem->itemBelow();
        }
-       emitSelectionChanged=TRUE;
+       emitSelectionChanged=true;
        break;
 
     case Key_Home:
@@ -1644,7 +1644,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           item->setSelected( !item->isSelected() );
        }
        setCurrentItem( firstChild() );
-       emitSelectionChanged=TRUE;
+       emitSelectionChanged=true;
        break;
 
     case Key_Next:
@@ -1719,11 +1719,11 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 
     case Key_Minus:
        if ( item->isOpen() )
-          setOpen( item, FALSE );
+          setOpen( item, false );
        break;
     case Key_Plus:
        if (  !item->isOpen() && (item->isExpandable() || item->childCount()) )
-          setOpen( item, TRUE );
+          setOpen( item, true );
        break;
     default:
        bool realKey = ((e->key()!=Key_Shift) && (e->key()!=Key_Control)
@@ -1740,7 +1740,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        if (realKey && selectCurrentItem)
        {
           currentItem()->setSelected(true);
-          emitSelectionChanged=TRUE;
+          emitSelectionChanged=true;
        }
        repaintItem2=currentItem();
        if (realKey)
@@ -1761,7 +1761,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
     {                 // rectangle to be repainted
        if ( ir.x() < 0 )
           ir.moveBy( -ir.x(), 0 );
-       viewport()->repaint( ir, FALSE );
+       viewport()->repaint( ir, false );
     }
     /*if (repaintItem1)
        repaintItem1->repaint();

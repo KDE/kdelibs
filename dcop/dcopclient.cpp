@@ -410,7 +410,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     case DCOPCall:
     case DCOPFind:
     case DCOPSend:
-        DCOPProcessInternal( d, opcode, key, dataReceived, TRUE );
+        DCOPProcessInternal( d, opcode, key, dataReceived, true );
     }
 }
 
@@ -427,11 +427,11 @@ void DCOPClient::processPostedMessagesInternal()
             continue;
         d->messages.removeRef( msg );
         d->opcode = msg->opcode;
-        DCOPProcessInternal( d, msg->opcode, msg->key, msg->data, FALSE );
+        DCOPProcessInternal( d, msg->opcode, msg->key, msg->data, false );
         delete msg;
     }
     if ( !d->messages.isEmpty() )
-        d->postMessageTimer.start( 0, TRUE );
+        d->postMessageTimer.start( 0, true );
 }
 
 /**
@@ -480,7 +480,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
         msg->key = key;
         msg->data = dataReceived;
         d->messages.append( msg );
-        d->postMessageTimer.start( 0, TRUE );
+        d->postMessageTimer.start( 0, true );
         return;
     }
 
@@ -1014,10 +1014,10 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
         d->transaction = saveTransaction;
         d->transactionId = saveTransactionId;
         d->senderId = saveSenderId;
-        // send() returns TRUE if the data could be send to the DCOPServer,
+        // send() returns true if the data could be send to the DCOPServer,
         // regardles of receiving the data on the other application.
         // So we assume the data is successfully send to the (virtual) server
-        // and return TRUE in any case.
+        // and return true in any case.
         return true;
     }
 
@@ -1165,12 +1165,12 @@ QCStringList DCOPClient::remoteObjects( const QCString& remApp, bool *ok )
     QByteArray data, replyData;
     QCStringList result;
     if ( ok )
-        *ok = FALSE;
+        *ok = false;
     if ( call( remApp, "DCOPClient", "objects()", data, replyType, replyData ) ) {
         QDataStream reply( replyData, IO_ReadOnly );
         reply >> result;
         if ( ok )
-            *ok = TRUE;
+            *ok = true;
     }
     return result;
 }
@@ -1181,12 +1181,12 @@ QCStringList DCOPClient::remoteInterfaces( const QCString& remApp, const QCStrin
     QByteArray data, replyData;
     QCStringList result;
     if ( ok )
-        *ok = FALSE;
+        *ok = false;
     if ( call( remApp, remObj, "interfaces()", data, replyType, replyData ) && replyType == "QCStringList") {
         QDataStream reply( replyData, IO_ReadOnly );
         reply >> result;
         if ( ok )
-            *ok = TRUE;
+            *ok = true;
     }
     return result;
 }
@@ -1197,12 +1197,12 @@ QCStringList DCOPClient::remoteFunctions( const QCString& remApp, const QCString
     QByteArray data, replyData;
     QCStringList result;
     if ( ok )
-        *ok = FALSE;
+        *ok = false;
     if ( call( remApp, remObj, "functions()", data, replyType, replyData ) && replyType == "QCStringList") {
         QDataStream reply( replyData, IO_ReadOnly );
         reply >> result;
         if ( ok )
-            *ok = TRUE;
+            *ok = true;
     }
     return result;
 }

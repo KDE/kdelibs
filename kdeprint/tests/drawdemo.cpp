@@ -150,7 +150,7 @@ DrawView::DrawView()
         QRadioButton *rb = new QRadioButton( n, bgroup );
         rb->setGeometry( 10, i*30+10, maxwidth, 30 );
         if ( i == 0 )
-            rb->setChecked( TRUE );
+            rb->setChecked( true );
     }
 
     drawindex = 0;				// draw first thing

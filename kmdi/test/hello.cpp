@@ -36,7 +36,7 @@ Hello::Hello( const char *title, const char *text, QWidget *parentWidget )
 void Hello::animate()
 {
     b = (b + 1) & 15;
-    repaint( FALSE );
+    repaint( false );
 }
 
 

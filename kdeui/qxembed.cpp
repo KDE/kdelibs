@@ -96,9 +96,9 @@ class QXEmbedData
 {
 public:
     QXEmbedData(){ 
-        autoDelete = TRUE;
-        xplain = FALSE;
-        xgrab = FALSE;
+        autoDelete = true;
+        xplain = false;
+        xgrab = false;
         lastPos = QPoint(0,0);
     }
     ~QXEmbedData(){};
@@ -126,7 +126,7 @@ static QXEmbedAppFilter* filter = 0;
 static QPtrDict<QGuardedPtr<QWidget> > *focusMap = 0;
 
 static XKeyEvent last_key_event;
-static bool tabForward = TRUE;
+static bool tabForward = true;
 
 
 class QPublicWidget : public QWidget
@@ -156,7 +156,7 @@ static void send_xembed_message( WId window, long message, long detail = 0,
     ev.xclient.data.l[2] = detail;
     ev.xclient.data.l[3] = data1;
     ev.xclient.data.l[4] = data2;
-    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+    XSendEvent(qt_xdisplay(), window, false, NoEventMask, &ev);
 }
 
 static void sendClientMessage(Window window, Atom a, long x)
@@ -170,7 +170,7 @@ static void sendClientMessage(Window window, Atom a, long x)
   ev.xclient.format = 32;
   ev.xclient.data.l[0] = x;
   ev.xclient.data.l[1] = qt_x_time;
-  XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+  XSendEvent(qt_xdisplay(), window, false, NoEventMask, &ev);
 }
 
 static void sendFocusMessage(Window window, int type, int mode, int detail)
@@ -182,17 +182,17 @@ static void sendFocusMessage(Window window, int type, int mode, int detail)
   ev.xfocus.window = window;
   ev.xfocus.mode = mode;
   ev.xfocus.detail = detail;
-  XSendEvent(qt_xdisplay(), window, FALSE, FocusChangeMask, &ev);
+  XSendEvent(qt_xdisplay(), window, false, FocusChangeMask, &ev);
 }
 
 
 bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 {
-    static bool obeyFocus = FALSE;
+    static bool obeyFocus = false;
     switch ( e->type() ) {
     case QEvent::MouseButtonPress:
         if ( !((QWidget*)o)->isActiveWindow() )
-            obeyFocus = TRUE;
+            obeyFocus = true;
         break;
     case QEvent::FocusIn:
         if ( qApp->focusWidget() == o &&
@@ -210,13 +210,13 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
                                   new QGuardedPtr<QWidget>(qApp->focusWidget()->topLevelWidget()->focusWidget() ) );
                 qApp->focusWidget()->clearFocus();
             }
-            obeyFocus = FALSE;
+            obeyFocus = false;
         }
         break;
     default:
         break;
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -241,10 +241,10 @@ static int qxembed_x11_event_filter( XEvent* e)
                 QWidget* last = fd->prev(); last = fd->prev();
                 if ( !tabForward && fd->focusWidget() == first ) {
                     send_xembed_message( window, XEMBED_FOCUS_PREV );
-                    return TRUE;
+                    return true;
                 } else if ( tabForward && fd->focusWidget() == last ) {
                     send_xembed_message( window, XEMBED_FOCUS_NEXT );
-                    return TRUE;
+                    return true;
                 }
             }
         } else
@@ -378,7 +378,7 @@ static int qxembed_x11_event_filter( XEvent* e)
 
     if ( oldFilter )
         return oldFilter( e );
-    return FALSE;
+    return false;
 }
 
 /*!
@@ -391,18 +391,18 @@ static int qxembed_x11_event_filter( XEvent* e)
  */
 void QXEmbed::initialize()
 {
-    static bool is_initialized = FALSE;
+    static bool is_initialized = false;
     if ( is_initialized )
         return;
-    xembed = XInternAtom( qt_xdisplay(), "_XEMBED", FALSE );
+    xembed = XInternAtom( qt_xdisplay(), "_XEMBED", false );
     oldFilter = qt_set_x11_event_filter( qxembed_x11_event_filter );
 
     focusMap = new QPtrDict<QGuardedPtr<QWidget> >;
-    focusMap->setAutoDelete( TRUE );
+    focusMap->setAutoDelete( true );
 
     filter = new QXEmbedAppFilter;
 
-    is_initialized = TRUE;
+    is_initialized = true;
 }
 
 
@@ -453,7 +453,7 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
     initialize();
     window = 0;
     setFocusPolicy(StrongFocus);
-    setKeyCompression( FALSE );
+    setKeyCompression( false );
 
     //trick to create extraData();
     (void) topData();
@@ -481,7 +481,7 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
             XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
                             RevertToParent, qt_x_time );
 
-    setAcceptDrops( TRUE );
+    setAcceptDrops( true );
 }
 
 /*!
@@ -497,7 +497,7 @@ QXEmbed::~QXEmbed()
             XUnmapWindow( qt_xdisplay(), window );
         
         XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
-        XSync(qt_xdisplay(), FALSE);
+        XSync(qt_xdisplay(), false);
 
         if ( autoDelete() ) {
             XEvent ev;
@@ -507,7 +507,7 @@ QXEmbed::~QXEmbed()
             ev.xclient.message_type = qt_wm_protocols;
             ev.xclient.format = 32;
             ev.xclient.data.s[0] = qt_wm_delete_window;
-            XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+            XSendEvent(qt_xdisplay(), window, false, NoEventMask, &ev);
         }
         XFlush( qt_xdisplay() );
      }
@@ -533,9 +533,9 @@ QXEmbed::~QXEmbed()
 void QXEmbed::setProtocol( Protocol proto )
 {
     if (window == 0) {
-        d->xplain = FALSE;
+        d->xplain = false;
         if (proto == XPLAIN)
-            d->xplain = TRUE;
+            d->xplain = true;
     }
 }
 
@@ -611,7 +611,7 @@ bool QXEmbed::eventFilter( QObject *o, QEvent * e)
     default:
         break;
    }
-   return FALSE;
+   return false;
 }
 
 
@@ -627,7 +627,7 @@ void QXEmbed::keyPressEvent( QKeyEvent *)
     if (!window)
         return;
     last_key_event.window = window;
-    XSendEvent(qt_xdisplay(), window, FALSE, KeyPressMask, (XEvent*)&last_key_event);
+    XSendEvent(qt_xdisplay(), window, false, KeyPressMask, (XEvent*)&last_key_event);
 
 }
 
@@ -638,7 +638,7 @@ void QXEmbed::keyReleaseEvent( QKeyEvent *)
     if (!window)
         return;
     last_key_event.window = window;
-    XSendEvent(qt_xdisplay(), window, FALSE, KeyReleaseMask, (XEvent*)&last_key_event);
+    XSendEvent(qt_xdisplay(), window, false, KeyReleaseMask, (XEvent*)&last_key_event);
 }
 
 /*!\reimp
@@ -685,9 +685,9 @@ static bool wstate_withdrawn( WId winid )
     unsigned long length, after;
     unsigned char *data;
     int r = XGetWindowProperty( qt_xdisplay(), winid, qt_wm_state, 0, 2,
-                                FALSE, AnyPropertyType, &type, &format,
+                                false, AnyPropertyType, &type, &format,
                                 &length, &after, &data );
-    bool withdrawn = TRUE;
+    bool withdrawn = true;
     if ( r == Success && data && format == 32 ) {
         Q_UINT32 *wstate = (Q_UINT32*)data;
         withdrawn  = (*wstate == WithdrawnState );
@@ -793,7 +793,7 @@ WId QXEmbed::embeddedWinId() const
 bool QXEmbed::focusNextPrevChild( bool next )
 {
     if ( window )
-        return FALSE;
+        return false;
     else
         return QWidget::focusNextPrevChild( next );
 }
@@ -832,7 +832,7 @@ bool QXEmbed::x11Event( XEvent* e)
             setFocus();
             QFocusEvent::resetReason();
             XAllowEvents(qt_xdisplay(), ReplayPointer, CurrentTime);
-            return TRUE;
+            return true;
         }
         break;
     case ButtonRelease:
@@ -849,10 +849,10 @@ bool QXEmbed::x11Event( XEvent* e)
 //          long detail = e->xclient.data.l[2];
             switch ( message ) {
             case XEMBED_FOCUS_NEXT:
-                QWidget::focusNextPrevChild( TRUE );
+                QWidget::focusNextPrevChild( true );
                 break;
             case XEMBED_FOCUS_PREV:
-                QWidget::focusNextPrevChild( FALSE );
+                QWidget::focusNextPrevChild( false );
                 break;
             case XEMBED_REQUEST_FOCUS:
                 QFocusEvent::setReason( QFocusEvent::Mouse );
@@ -880,7 +880,7 @@ bool QXEmbed::x11Event( XEvent* e)
     default:
         break;
     }
-    return FALSE;
+    return false;
 }
 
  // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
@@ -888,7 +888,7 @@ void QXEmbed::enterWhatsThisMode()
 {
     QWhatsThis::leaveWhatsThisMode();
     if ( !context_help )
-        context_help = XInternAtom( x11Display(), "_NET_WM_CONTEXT_HELP", FALSE );
+        context_help = XInternAtom( x11Display(), "_NET_WM_CONTEXT_HELP", false );
     sendClientMessage(window , qt_wm_protocols, context_help );
 }
 
@@ -908,7 +908,7 @@ void QXEmbed::windowChanged( WId )
   client will be embedded in the window that is passed as
   \c -embed command line argument.
 
-  The function returns TRUE on success or FALSE if no such command line
+  The function returns true on success or false if no such command line
   parameter is specified.
 
   \sa embedClientIntoWindow()
@@ -936,10 +936,10 @@ bool QXEmbed::processClientCmdline( QWidget* client, int& argc, char ** argv )
 
     if ( window != 0 ) {
         embedClientIntoWindow( client, window );
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 
@@ -955,7 +955,7 @@ void QXEmbed::embedClientIntoWindow(QWidget* client, WId window)
 {
     initialize();
     XReparentWindow(qt_xdisplay(), client->winId(), window, 0, 0);
-    ((QXEmbed*)client)->topData()->embedded = TRUE;
+    ((QXEmbed*)client)->topData()->embedded = true;
     ((QXEmbed*)client)->topData()->parentWinId = window;
     client->show();
 }
@@ -1024,7 +1024,7 @@ bool QXEmbed::autoDelete() const
  */
 bool QXEmbed::customWhatsThis() const
 {
-    return TRUE;
+    return true;
 }
 
 
@@ -1033,13 +1033,13 @@ void QXEmbed::checkGrab()
     if (d->xplain && isActiveWindow() && !hasFocus()) {
         if (! d->xgrab)
             XGrabButton(qt_xdisplay(), AnyButton, AnyModifier, winId(),
-                        FALSE, ButtonPressMask, GrabModeSync, GrabModeAsync,
+                        false, ButtonPressMask, GrabModeSync, GrabModeAsync,
                         None, None );
-        d->xgrab = TRUE;
+        d->xgrab = true;
     } else {
         if (d->xgrab)
             XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, winId() );
-        d->xgrab = FALSE;
+        d->xgrab = false;
     }
 }
 
@@ -1063,7 +1063,7 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
         c.border_width = 0;
         c.above = None;
         c.override_redirect = 0;
-        XSendEvent( qt_xdisplay(), c.event, TRUE, StructureNotifyMask, (XEvent*)&c );
+        XSendEvent( qt_xdisplay(), c.event, true, StructureNotifyMask, (XEvent*)&c );
         //kdDebug(6100) << "SENT " << KXEventUtil::getX11EventInfo((XEvent*)&c) << endl;
     }
 }

@@ -97,7 +97,7 @@ public:
 
         oldPos = Qt::DockUnmanaged;
 
-        modified = m_isHorizontal = positioned = FALSE;
+        modified = m_isHorizontal = positioned = false;
 
         IconSizeDefault = 0;
         IconTextDefault = "IconOnly";
@@ -128,7 +128,7 @@ public:
 
     struct ToolBarInfo
     {
-        ToolBarInfo() : index( -1 ), offset( -1 ), newline( FALSE ), dock( Qt::DockTop ) {}
+        ToolBarInfo() : index( -1 ), offset( -1 ), newline( false ), dock( Qt::DockTop ) {}
         ToolBarInfo( Qt::Dock d, int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {}
         int index, offset;
         bool newline;
@@ -201,7 +201,7 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool readConfig )
     : QToolBar( QString::fromLatin1( name ),
       parent && parent->inherits( "QMainWindow" ) ? static_cast<QMainWindow*>(parent) : 0,
-      parent, FALSE,
+      parent, false,
       name ? name : "mainToolBar")
 {
     init( readConfig, honorStyle );
@@ -234,7 +234,7 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     d = new KToolBarPrivate;
     // Get the default iconSize sense m_iconSize == 0 which isn't the default
     d->IconSizeDefault = iconSize();
-    setFullSize( TRUE );
+    setFullSize( true );
     d->m_honorStyle = honorStyle;
     context = 0;
     layoutTimer = new QTimer( this );
@@ -407,14 +407,14 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
 
 int KToolBar::insertSeparator(int index, int id)
 {
-    QWidget *w = new KToolBarSeparator( orientation(), FALSE, this, "tool bar separator" );
+    QWidget *w = new KToolBarSeparator( orientation(), false, this, "tool bar separator" );
     insertWidgetInternal( w, index, id );
     return index;
 }
 
 int KToolBar::insertLineSeparator(int index, int id)
 {
-    QWidget *w = new KToolBarSeparator( orientation(), TRUE, this, "tool bar separator" );
+    QWidget *w = new KToolBarSeparator( orientation(), true, this, "tool bar separator" );
     insertWidgetInternal( w, index, id );
     return index;
 }
@@ -771,7 +771,7 @@ void KToolBar::removeItemDelayed(int id)
 
     w->blockSignals(true);
     d->idleButtons.append(w);
-    layoutTimer->start( 50, TRUE );
+    layoutTimer->start( 50, true );
 }
 
 
@@ -918,13 +918,13 @@ void KToolBar::setIconText(IconText icontext, bool update)
     if (doUpdate)
         emit modechange(); // tell buttons what happened
 
-    // ugly hack to force a QMainWindow::triggerLayout( TRUE )
+    // ugly hack to force a QMainWindow::triggerLayout( true )
     QMainWindow *mw = mainWindow();
     if ( mw ) {
-        mw->setUpdatesEnabled( FALSE );
+        mw->setUpdatesEnabled( false );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
-        mw->setUpdatesEnabled( TRUE );
+        mw->setUpdatesEnabled( true );
     }
 }
 
@@ -955,13 +955,13 @@ void KToolBar::setIconSize(int size, bool update)
     if (doUpdate)
         emit modechange(); // tell buttons what happened
 
-    // ugly hack to force a QMainWindow::triggerLayout( TRUE )
+    // ugly hack to force a QMainWindow::triggerLayout( true )
     if ( mainWindow() ) {
         QMainWindow *mw = mainWindow();
-        mw->setUpdatesEnabled( FALSE );
+        mw->setUpdatesEnabled( false );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
-        mw->setUpdatesEnabled( TRUE );
+        mw->setUpdatesEnabled( true );
     }
 }
 
@@ -1322,7 +1322,7 @@ void KToolBar::childEvent( QChildEvent *e )
         }
         if ( isVisibleTo( 0 ) )
         {
-            layoutTimer->start( 50, TRUE );
+            layoutTimer->start( 50, true );
             QBoxLayout *l = boxLayout();
 
             // clear the old layout so that we don't get unnecassery layout
@@ -1460,7 +1460,7 @@ void KToolBar::show()
 void KToolBar::resizeEvent( QResizeEvent *e )
 {
     bool b = isUpdatesEnabled();
-    setUpdatesEnabled( FALSE );
+    setUpdatesEnabled( false );
     QToolBar::resizeEvent( e );
     if (b)
        d->repaintTimer.start( 100, true );
@@ -1733,15 +1733,15 @@ bool KToolBar::event( QEvent *e )
 
 void KToolBar::slotRepaint()
 {
-    setUpdatesEnabled( FALSE );
+    setUpdatesEnabled( false );
     // Send a resizeEvent to update the "toolbar extension arrow"
     // (The button you get when your toolbar-items don't fit in
     // the available space)
     QResizeEvent ev(size(), size());
     resizeEvent(&ev);
     QApplication::sendPostedEvents( this, QEvent::LayoutHint );
-    setUpdatesEnabled( TRUE );
-    repaint( TRUE );
+    setUpdatesEnabled( true );
+    repaint( true );
 }
 
 void KToolBar::toolBarPosChanged( QToolBar *tb )
@@ -1972,7 +1972,7 @@ void KToolBar::positionYourself( bool force )
     if ( doHide )
         hide();
     // This method can only have an effect once - unless force is set
-    d->positioned = TRUE;
+    d->positioned = true;
 }
 
 KPopupMenu *KToolBar::contextMenu()

@@ -254,7 +254,7 @@ Preview::Preview( QWidget *parent )
 :QWidgetStack( parent )
 {
     normalText = new QMultiLineEdit( this );
-    normalText->setReadOnly( TRUE );
+    normalText->setReadOnly( true );
     html = new QTextView( this );
     pixmap = new PixmapView( this );
     raiseWidget( normalText );
@@ -410,7 +410,7 @@ CustomFileDialog::CustomFileDialog( QWidget* parent )
 
   p->setPopup( bookmarkMenu );
   p->setPopupDelay(0);
-  addToolButton( p, TRUE );
+  addToolButton( p, true );
 
   QToolButton *b = new QToolButton( this );
   QToolTip::add( b, tr( "Go Home!" ) );
@@ -459,9 +459,9 @@ CustomFileDialog::~CustomFileDialog()
 
 void CustomFileDialog::setDir2( const QString &s )
 {
-  blockSignals( TRUE );
+  blockSignals( true );
   setDir( s );
-  blockSignals( FALSE );
+  blockSignals( false );
 }
 
 void CustomFileDialog::bookmarkChosen( int i )
@@ -638,12 +638,12 @@ void Directory::setOpen( bool o )
     QString s( fullName() );
     QDir thisDir( s );
     if ( !thisDir.isReadable() ) {
-    readable = FALSE;
-    setExpandable( FALSE );
+    readable = false;
+    setExpandable( false );
     return;
   }
 
-  listView()->setUpdatesEnabled( FALSE );
+  listView()->setUpdatesEnabled( false );
   const QFileInfoList * files = thisDir.entryInfoList();
   if ( files ){
     QFileInfoListIterator it( *files );
@@ -654,7 +654,7 @@ void Directory::setOpen( bool o )
         (void)new Directory( this, f->fileName() );
       }
     }
-    listView()->setUpdatesEnabled( TRUE );
+    listView()->setUpdatesEnabled( true );
   }
   QListViewItem::setOpen( o );
 }
@@ -662,7 +662,7 @@ void Directory::setOpen( bool o )
 
 void Directory::setup()
 {
-  setExpandable( TRUE );
+  setExpandable( true );
   QListViewItem::setup();
 }
 
@@ -702,8 +702,8 @@ DirectoryView::DirectoryView( QWidget *parent, const char *name )
   connect( this, SIGNAL( returnPressed( QListViewItem * ) ),
            this, SLOT( slotFolderSelected( QListViewItem * ) ) );
 
-  setAcceptDrops( TRUE );
-  viewport()->setAcceptDrops( TRUE );
+  setAcceptDrops( true );
+  viewport()->setAcceptDrops( true );
 }
 
 void DirectoryView::setOpen( QListViewItem* i, bool b )
@@ -738,7 +738,7 @@ void DirectoryView::setDir( const QString &s )
   QListViewItemIterator it( this );
   ++it;
   for ( ; it.current(); ++it ) {
-    it.current()->setOpen( FALSE );
+    it.current()->setOpen( false );
   }
 
   QStringList lst( QStringList::split( "/", s ) );
@@ -747,7 +747,7 @@ void DirectoryView::setDir( const QString &s )
   for ( ; it2 != lst.end(); ++it2 ) {
     while ( item ) {
       if ( item->text( 0 ) == *it2 ) {
-        item->setOpen( TRUE );
+        item->setOpen( true );
         break;
       }
       item = item->itemBelow();

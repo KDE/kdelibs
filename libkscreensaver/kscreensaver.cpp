@@ -59,7 +59,7 @@ KScreenSaver::KScreenSaver( WId id ) : QWidget()
             &w, &h, &au, &au); 
 #endif
 
-        create( id, FALSE, TRUE );
+        create( id, false, true );
     }
 
     if ( w == 0 ) w = 600;
@@ -70,7 +70,7 @@ KScreenSaver::KScreenSaver( WId id ) : QWidget()
 
 KScreenSaver::~KScreenSaver()
 {
-    destroy( FALSE, FALSE );
+    destroy( false, false );
     delete d;
 }
 

@@ -158,8 +158,8 @@ public:
      * is used instead).
      */
     virtual void drawBaseButton( QPainter *p, int x, int y, int w, int h,
-                                 const QColorGroup &g, bool sunken = FALSE,
-                                 bool rounded = FALSE, WidgetType type = Bevel ) const;
+                                 const QColorGroup &g, bool sunken = false,
+                                 bool rounded = false, WidgetType type = Bevel ) const;
     /**
      * Draw a mask with for widgets that may be rounded.
      *

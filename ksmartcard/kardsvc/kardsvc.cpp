@@ -57,7 +57,7 @@ KardSvc::KardSvc(const QCString &name) : KDEDModule(name)
 
 
   _readers.clear();
-  _pcsc = new KPCSC(FALSE);
+  _pcsc = new KPCSC(false);
   _pcsc->connect();
   _timer = NULL;
   //_readers = _pcsc->listReaders(NULL);

@@ -48,7 +48,7 @@ KToolBarRadioGroup::~KToolBarRadioGroup()
 void KToolBarRadioGroup::addButton (int id)
 {
     KToolBarButton *b = tb->getButton( id );
-    b->setRadio( TRUE );
+    b->setRadio( true );
     buttons->insert( id, b );
 }
 

@@ -130,7 +130,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 	    funcName += '(';
 	    QString fullFuncName = funcName;
-	    bool first = TRUE;
+	    bool first = true;
 	    QStringList::Iterator ittype = argtypes.begin();
 	    QStringList::Iterator itname = argnames.begin();
 	    while ( ittype != argtypes.end() && itname != argnames.end() ) {
@@ -138,7 +138,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    funcName += ',';
 		    fullFuncName += ',';
 		}
-		first = FALSE;
+		first = false;
 		funcName += *ittype;
 		fullFuncName += *ittype;
 		if ( ! (*itname).isEmpty() ) {
@@ -218,7 +218,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "    static QAsciiDict<int>* fdict = 0;" << endl;
     
 	    str << "    if ( !fdict ) {" << endl;
-	    str << "\tfdict = new QAsciiDict<int>( " << className << "_fhash, TRUE, FALSE );" << endl;
+	    str << "\tfdict = new QAsciiDict<int>( " << className << "_fhash, true, false );" << endl;
 	    str << "\tfor ( int i = 0; " << className << "_ftable[i][1]; i++ )" << endl;
 	    str << "\t    fdict->insert( " << className << "_ftable[i][1],  new int( i ) );" << endl;
 	    str << "    }" << endl;
@@ -228,7 +228,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	}
 	s = n.nextSibling().toElement();
 	int fcount = 0; // counter of written functions
-	bool firstFunc = TRUE;
+	bool firstFunc = true;
 	for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 	    if ( s.tagName() != "FUNC" )
 		continue;
@@ -252,11 +252,11 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 	    QString plainFuncName = funcName;
 	    funcName += '(';
-	    bool first = TRUE;
+	    bool first = true;
 	    for( QStringList::Iterator argtypes_count = argtypes.begin(); argtypes_count != argtypes.end(); ++argtypes_count ){
 		if ( !first )
 		    funcName += ',';
-		first = FALSE;
+		first = false;
 		funcName += *argtypes_count;
 	    }
 	    funcName += ')';
@@ -268,7 +268,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    str << "    if ( fun == " << className << "_ftable[" << fcount << "][1] ) { // " << funcType << " " << funcName << endl;
 		else
 		    str << " else if ( fun == " << className << "_ftable[" << fcount << "][1] ) { // " << funcType << " " << funcName << endl;
-		firstFunc = FALSE;
+		firstFunc = false;
 	    }
 	    if ( !args.isEmpty() ) {
 		QStringList::Iterator ittypes = argtypes.begin();
@@ -291,11 +291,11 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		str << "\t_replyStream << " << plainFuncName << '(';
 	    }
 
-	    first = TRUE;
+	    first = true;
 	    for ( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 		if ( !first )
 		    str << ", ";
-		first = FALSE;
+		first = false;
 		str << *args_count;
 	    }
 	    str << " );" << endl;
@@ -319,15 +319,15 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	if (!DCOPParent.isEmpty()) {
 	    str << "\treturn " << DCOPParent << "::process( fun, data, replyType, replyData );" << endl;
 	} else {
-	    str << "\treturn FALSE;" << endl;
+	    str << "\treturn false;" << endl;
 	}
 
-	// only close the 'else' clause and add the default 'return TRUE'
+	// only close the 'else' clause and add the default 'return true'
 	// (signifying a DCOP method was found and called) if there were
 	// one or more functions.
 	if ( fcount > 0 ) {
 	    str << "    }" << endl;
-	    str << "    return TRUE;" << endl;
+	    str << "    return true;" << endl;
 	}
 
 	// close the 'process' function
@@ -381,14 +381,14 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 
 	    QStringList args;
 	    QStringList argtypes;
-	    bool first = TRUE;
+	    bool first = true;
 	    r = r.nextSibling().toElement();
 	    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
 		if ( !first )
 		    str << ", ";
 		else
 		    str << " ";
-		first = FALSE;
+		first = false;
 		Q_ASSERT( r.tagName() == "ARG" );
 		QDomElement a = r.firstChild().toElement();
 		QString type = writeType( str, a );
@@ -407,11 +407,11 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "{" << endl ;
 
 	    funcName += "(";
-	    first = TRUE;
+	    first = true;
 	    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
 		if ( !first )
 		    funcName += ",";
-		first = FALSE;
+		first = false;
 		funcName += *it;
 	    }
 	    funcName += ")";

@@ -1586,7 +1586,7 @@ void RenderFlow::addChildToFlow(RenderObject* newChild, RenderObject* beforeChil
 {
     setLayouted( false );
 
-    bool madeBoxesNonInline = FALSE;
+    bool madeBoxesNonInline = false;
 
     RenderStyle* pseudoStyle=0;
     if ( !isInline() && ( !firstChild() || firstChild() == beforeChild )
