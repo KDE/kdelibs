@@ -818,7 +818,6 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
 
 bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
 {
-    fprintf(stderr, "HTMLElement::hasProperty(%s)\n", p.ascii());
     KJSO tmp = tryGet(p);
     if (tmp.isDefined())
 	return true;
