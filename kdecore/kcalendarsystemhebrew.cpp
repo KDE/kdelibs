@@ -456,7 +456,7 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
 
 QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
 {
-  return locale()->weekDayName(day, shortName);
+  return locale()->calendar()->weekDayName(day, shortName);
 }
 
 // Ok

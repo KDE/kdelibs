@@ -239,7 +239,7 @@ QString KCalendarSystemGregorian::weekDayName(int col, bool shortName) const
   // ### Should this really be different to each calendar system? Or are we
   //     only going to support weeks with 7 days?
 
-  return locale()->weekDayName(col, shortName);
+  return locale()->calendar()->weekDayName(col, shortName);
 }
 
 QString KCalendarSystemGregorian::weekDayName(const QDate& date, bool shortName) const
