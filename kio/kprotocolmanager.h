@@ -25,6 +25,7 @@
 
 
 class KConfig;
+class KPAC;
 
 /**
  * Information about I/O (Internet, etc.) settings.
@@ -164,6 +165,17 @@ public:
    */
   static QString proxyFor( const QString& /* protocol */);
 
+  /*
+   * Returns the Proxy server address for a given URL
+   * If automatic proxy configuration is configured, @ref KPAC
+   * is used to determine the proxy server, otherwise the return
+   * value of @ref proxyFor for the URL's protocol is used.
+   *
+   * @param url the URL whose proxy info is needed
+   * @returns the proxy server address if one is available
+   */
+  static QString proxyForURL( const KURL& /* url */ );
+
   /**
    * Return the protocol to use in order to handle the given @p protocol
    * It's usually the same, except that FTP, when handled by a proxy,
@@ -297,6 +309,11 @@ public:
   static void setNoProxyFor( const QString& _noproxy );
 
   /**
+   * Set the URL of the script for automatic proxy configuration
+   */
+  static void setProxyConfigScript( const QString & /* url */ );
+
+  /**
    * Force a reload of the general config file of
    * io-slaves ( kioslaverc).
    */
@@ -335,8 +352,10 @@ public:
 
 private:
   static KConfig *config();
+  static KPAC *pac();
 
   static KConfig *_config;
+  static KPAC *_pac;
 };
 
 #endif

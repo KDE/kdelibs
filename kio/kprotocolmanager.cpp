@@ -28,6 +28,9 @@
 #include <qstrlist.h>
 #include <kconfig.h>
 #include <kstringhandler.h>
+#include <klibloader.h>
+#include <kstaticdeleter.h>
+#include <kio/kpac.h>
 
 // CACHE SETTINGS
 #define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
@@ -46,6 +49,8 @@
 #define MIN_TIMEOUT_VALUE                 5           //  5 SEC
 
 KConfig *KProtocolManager::_config = 0;
+KPAC *KProtocolManager::_pac = 0;
+KStaticDeleter<KPAC> _pacDeleter;
 
 void KProtocolManager::reparseConfiguration()
 {
@@ -61,6 +66,30 @@ KConfig *KProtocolManager::config()
      _config = new KConfig("kioslaverc", false, false);
   }
   return _config;
+}
+
+KPAC *KProtocolManager::pac()
+{
+  if (!_pac)
+  {
+    KConfig *cfg = config();
+    cfg->setGroup( "Proxy Settings" );
+    QString scriptURL = cfg->readEntry( "Proxy Config Script" );
+    if (!scriptURL.isEmpty())
+    {
+      KLibrary *lib = KLibLoader::self()->library("libkpac");
+      if (lib)
+      {
+        KPAC *(*create_pac)() = (KPAC *(*)())(lib->symbol("create_pac"));
+        if (create_pac)
+        {
+          _pacDeleter.setObject(_pac = create_pac());
+          _pac->setConfig(scriptURL);
+        }
+      }
+    }
+  }
+  return _pac;
 }
 
 int KProtocolManager::readTimeout()
@@ -200,6 +229,14 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   return cfg->readEntry( protocol.lower() + "Proxy" );
 }
 
+QString KProtocolManager::proxyForURL( const KURL &url )
+{
+  if (pac())
+    return pac()->proxyForURL( url );
+  else
+    return proxyFor( url.protocol() );
+}
+
 QString KProtocolManager::slaveProtocol( const QString & protocol )
 {
   return ( protocol == "ftp" && useProxy() && !proxyFor("ftp").isEmpty() )
@@ -298,6 +335,16 @@ void KProtocolManager::setNoProxyFor( const QString& _noproxy )
   cfg->setGroup( "Proxy Settings" );
   cfg->writeEntry( "NoProxyFor", _noproxy );
   cfg->sync();
+}
+
+void KProtocolManager::setProxyConfigScript( const QString& _url )
+{
+  KConfig *cfg = config();
+  cfg->setGroup( "Proxy Settings" );
+  cfg->writeEntry( "Proxy Config Script", _url );
+  cfg->sync();
+  if (_pac)
+    _pac->setConfig( _url );
 }
 
 void KProtocolManager::setProxyFor( const QString& protocol, const QString& _proxy )

@@ -1,0 +1,2 @@
+* Implement Netscape's behaviour to detect down proxies and fallback
+  to the next proxy returned by the script

@@ -18,7 +18,7 @@
 
 INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_includes)
 
-SUBDIRS = . klauncher kded file http ftp pics tests ksendbugmail
+SUBDIRS = . klauncher kded file http ftp pics tests ksendbugmail kpac
 
 lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la
 bin_PROGRAMS = kio_uiserver kmailservice
@@ -99,7 +99,8 @@ kioinclude_HEADERS = connection.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h uiserver.h uiserver_stub.h tcpslavebase.h \
 	renamedlg.h skipdlg.h \
-	observer.h chmodjob.h
+	observer.h chmodjob.h \
+    kpac.h
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
