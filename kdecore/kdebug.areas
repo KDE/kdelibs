@@ -7,6 +7,7 @@
 125	kaccel (kdecore)
 126	kurl (kdecore)
 200	KTMW (kdeui)
+220	KToolBar (kdeui)
 250	kfile (kdelibs)
 300	khtml
 750	kspell (kdelibs)
@@ -55,9 +56,9 @@
 7016	kio (KIOSlave)
 7017	kio (KIOConnection)
 7018	kio (KMimeMagic)
-7019    kio (kioslave)
+7019	kio (kioslave)
 7020	kded
-7021    kbuildsycoca
+7021	kbuildsycoca
 
 # 710x	are for kioslaves
 7101	kio_file
@@ -66,8 +67,8 @@
 7104	kcookiejar
 7105	kio_pop3
 7106	kio_smb
-7107    kio_man
-7108    kio_info
+7107	kio_man
+7108	kio_info
 7109	kio_tar
 
 # old stuff
