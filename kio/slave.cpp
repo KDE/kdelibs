@@ -115,7 +115,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!client->isApplicationRegistered( "kioslave" ))
     {
         kDebugInfo("Trying to start kioslave");
-#if 0
+#if 1
         // Launch the kioslave service
         QString error;
         QCString dcopName;
