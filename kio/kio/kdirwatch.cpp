@@ -624,6 +624,8 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
     return;
 
   if (delayRemove) {
+    // removeList is allowed to contain any entry at most once
+    if (removeList.findRef(e)==-1)
     removeList.append(e);
     // now e->isValid() is false
     return;
