@@ -199,7 +199,7 @@ public:
     * @return @p true If context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
-    
+
     /**
      * By default, @ref KComboBox recognizes @p Key_Return and @p Key_Enter and emits
      * the @ref returnPressed() signals, but it also lets the event pass,
@@ -215,7 +215,7 @@ public:
     void setTrapReturnKey( bool grab );
 
     /**
-     * @returns @p true if keyevents of @p Key_Return or 
+     * @returns @p true if keyevents of @p Key_Return or
      * @p Key_Enter will be stopped or if they will be propagated.
      *
      * @see setTrapReturnKey ()
@@ -249,7 +249,7 @@ signals:
     * @em normal.
     */
     void completion( const QString& );
-  
+
     /**
     * Emitted when the text rotation key-bindings are pressed.
     *
@@ -260,7 +260,7 @@ signals:
     *
     * Note that this signal is @em not emitted if the completion
     * mode is set to @p CompletionNone or @p EchoMode is @em not  normal.
-    */    
+    */
     void textRotation( KCompletionBase::KeyBindingType );
 
 public slots:
@@ -276,10 +276,10 @@ public slots:
     * @param type The key-binding invoked.
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
-    
+
     /*
     * See @ref KCompletionBase::setCompletionText.
-    */    
+    */
     virtual void setCompletedText( const QString& );
 
 protected slots:
@@ -291,11 +291,6 @@ protected slots:
     virtual void makeCompletion( const QString& );
 
 protected:
-
-    /**
-    * Initializes variables.  Called from the constructors.
-    */
-    void init();
 
     /**
     * Re-implemented for internal reasons.  API not affected.
@@ -310,7 +305,7 @@ protected:
     * See @ref QLineEdit::mousePressEvent().
     */
     virtual void mousePressEvent( QMouseEvent * );
-    
+
     /*
     * This function simply sets the lineedit text and
     * highlights the text appropriately if the boolean
@@ -339,7 +334,12 @@ private:
         ShellCompletion,
         SemiAutoCompletion	
     };
-    
+
+    /**
+    * Initializes variables.  Called from the constructors.
+    */
+    void init();
+
     // Indicates whether the context
     // menu is enabled or disabled
     bool m_bEnableMenu;

@@ -129,7 +129,7 @@ public:
     * parent object and a name.
     *
     * @param parent The parent object of this widget
-    * @param name The name of this widget 
+    * @param name The name of this widget
     */
     KComboBox( QWidget *parent=0, const char *name=0 );
 
@@ -140,7 +140,7 @@ public:
     *
     * @param rw When @p true, widget will be editable.
     * @param parent The parent object of this widget.
-    * @param name The name of this widget.  
+    * @param name The name of this widget.
     */
     KComboBox( bool rw, QWidget *parent=0, const char *name=0 );
 
@@ -164,7 +164,7 @@ public:
     *
     * If @p true, the completion mode will be set to automatic.
     * Otherwise, it is defaulted to the gloabl setting.  This
-    * methods has been replaced by the more comprehensive 
+    * methods has been replaced by the more comprehensive
     * @ref setCompletionMode().
     *
     * @param autocomplete Flag to enable/disable automatic completion mode.
@@ -282,7 +282,7 @@ signals:
 
     /**
     * This signal is emitted when the completion key
-    * is pressed. 
+    * is pressed.
     *
     * The argument is the current text
     * being edited.
@@ -357,13 +357,8 @@ protected slots:
     * is left to iterate through the list as usual.
     */
     virtual void makeCompletion( const QString& );
-    
-protected:
 
-    /**
-    * Initializes the variables upon construction.
-    */
-    void init();
+protected:
 
     /**
     * @reimplemented
@@ -398,6 +393,11 @@ private:
         ShellCompletion,
         SemiAutoCompletion	
     };
+
+    /**
+    * Initializes the variables upon construction.
+    */
+    void init();
 
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
