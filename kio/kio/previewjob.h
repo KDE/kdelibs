@@ -112,9 +112,8 @@ namespace KIO {
 
     private:
         void determineNextFile();
-        void emitPreview(const QPixmap &pix);
+        void emitPreview(const QImage &thumb);
         void emitFailed(const KFileItem *item = 0);
-        void saveThumbnail(const QByteArray &imgData);
 
     protected:
 	virtual void virtual_hook( int id, void* data );
