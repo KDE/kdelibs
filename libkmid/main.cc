@@ -50,9 +50,9 @@
  You can run 'consolekmid -l' to know the available devices
  */
 
-#define DEFAULT_MAP "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
+//#define DEFAULT_MAP "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
+#define DEFAULT_MAP NULL
 /*
- #define DEFAULT_MAP NULL
  If you want to use a midi mapper, use something like this :
  #define DEFAULT_MAP "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
  */
