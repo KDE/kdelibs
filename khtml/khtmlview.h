@@ -132,7 +132,6 @@ protected:
 
     void paintElement( khtml::RenderObject *o, int x, int y );
     virtual void resizeEvent ( QResizeEvent * event );
-    virtual void viewportPaintEvent ( QPaintEvent* pe  );
     virtual bool focusNextPrevChild( bool next );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
 
@@ -161,6 +160,12 @@ protected:
      * Scroll the view
      */
     void doAutoScroll();
+
+public slots:
+    /**
+     * @internal
+     */
+    void triggerResize();
 
 private:
     void init();

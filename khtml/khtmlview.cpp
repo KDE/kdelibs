@@ -38,6 +38,7 @@
 #include <qdatetime.h>
 #include <qprinter.h>
 #include <qpaintdevicemetrics.h>
+#include <qtimer.h>
 
 #include <kimageio.h>
 #include <kdebug.h>
@@ -70,11 +71,14 @@ public:
 
     bool linkPressed;
     short tabIndex;
+
+    QTimer resizeTimer;
 };
 
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name)
+    : QScrollView( parent, name )
+//    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase)
 {
     m_part = part;
 
@@ -83,7 +87,9 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     enableClipper(true);
 
     viewport()->setMouseTracking(true);
+    //viewport()->setBackgroundMode(PaletteBase);
     viewport()->setBackgroundMode(NoBackground);
+
 
     KImageIO::registerFormats();
 
@@ -96,6 +102,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     setHScrollBarMode(Auto);
 
     d = new KHTMLViewPrivate;
+
+    connect(&d->resizeTimer, SIGNAL(timeout()), this, SLOT(triggerResize()));
 }
 
 KHTMLView::~KHTMLView()
@@ -137,12 +145,12 @@ void KHTMLView::init()
   _width = 0;
   _height = 0;
 
-  resizeContents(clipper()->width(), clipper()->height());
+  resizeContents(visibleWidth(), visibleHeight());
 }
 
 void KHTMLView::clear()
 {
-    resizeContents(clipper()->width(), clipper()->height());
+    resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
 
     setVScrollBarMode(Auto);
@@ -150,59 +158,45 @@ void KHTMLView::clear()
 
     delete d;
     d = new KHTMLViewPrivate();
+    connect(&d->resizeTimer, SIGNAL(timeout()), this, SLOT(triggerResize()));
 }
 
 void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
-//    kdDebug( 6000 ) << "resizeEvent" << endl;
 
     QScrollView::resizeEvent(event);
 
-    layout();
+    if(!m_part->parentPart()) {
+	   kdDebug( 0 ) << "top level resizeEvent" << endl;
+	   // ### this doesn't work for some strange reason
+	   //d->resizeTimer.start(100, true);
+	   layout();
+    } else
+	layout();
 }
 
-
-
-void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
+void KHTMLView::triggerResize()
 {
-    QRect r = pe->rect();
+    kdDebug(0 ) << "triggerResize" << endl;
 
-    //kdDebug( 6000 ) << "viewportPaintEvent r x=" << r.x() << ",y=" << r.y() << ",w=" << r.width() << ",h=" << r.height() << endl;
+    layout(true);
+}
 
-    NodeImpl *body = 0;
+void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
+{
+   NodeImpl *body = 0;
 
     if( m_part->docImpl() )
 	body = m_part->docImpl()->body();
 
-    QRect rr(
-	-viewport()->x(), -viewport()->y(),
-	clipper()->width(), clipper()->height()
-    );
-    r &= rr;
-    int ex = r.x() + viewport()->x() + contentsX();
-    int ey = r.y() + viewport()->y() + contentsY();
-    int ew = r.width();
-    int eh = r.height();
-
-    if (ew<0)	    	// events generated with repaint() are bit weird...
-    	ew = pe->rect().width();
-    if (eh<0)
-    	eh = pe->rect().height();
-
-    if(!body)
-    {
-	QPainter p(viewport());
-
-       	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+    if(!body) {
+       	p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Background));
 	return;
     }
-//    kdDebug( 6000 ) << "viewportPaintEvent x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
 
-    if ( paintBuffer->width() < width() )
-    {
-        paintBuffer->resize(width(),PAINT_BUFFER_HEIGHT);
-	QPainter p(paintBuffer);
-	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+    if ( paintBuffer->width() < visibleWidth() ) {
+	paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
     }
 
 //    QTime qt;
@@ -224,18 +218,16 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
 
 	
-	drawContents(tp,ex,ey+py,ew,ph); // in case someone want to extend the widget
+	//drawContents(tp,ex,ey+py,ew,ph); // in case someone want to extend the widget
 	tp->end();
 
 	delete tp;
 
     	//kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
-	bitBlt(viewport(),r.x(),r.y()+py,paintBuffer,0,0,ew,ph,Qt::CopyROP);
+	p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
 	
 	py += PAINT_BUFFER_HEIGHT;
     }
-
-    //kdDebug( 6000 ) << "TIME: print() dt=" << qt.elapsed() << endl;
 }
 
 void KHTMLView::layout(bool force)
@@ -254,7 +246,7 @@ void KHTMLView::layout(bool force)
 	{
 	    setVScrollBarMode(AlwaysOff);
 	    setHScrollBarMode(AlwaysOff);
-	    _width = width();
+	    _width = visibleWidth();
 
 	    root->layout(true);
 	    return;
@@ -293,7 +285,7 @@ void KHTMLView::layout(bool force)
     }
     else
     {
-	_width = width();
+	_width = visibleWidth();
     }
 
 }
@@ -311,7 +303,7 @@ void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
     yOff += vp->y();
     p.translate( -xOff, -yOff );
 
-    o->printObject( &p , xOff, yOff, vp->width(), vp->height(),
+    o->printObject( &p , xOff, yOff, visibleWidth(), visibleHeight(),
 		    xPos , yPos );
 }
 
@@ -484,13 +476,6 @@ bool KHTMLView::focusNextPrevChild( bool next )
     return QScrollView::focusNextPrevChild( next );
 }
 
-void KHTMLView::drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph )
-{
-//    m_part->drawContentsHook(p);
-  khtml::DrawContentsEvent event( p, clipx, clipy, clipw, cliph );
-  QApplication::sendEvent( m_part, &event );
-}
-
 void KHTMLView::doAutoScroll()
 {
     QPoint pos = QCursor::pos();
@@ -500,8 +485,8 @@ void KHTMLView::doAutoScroll()
     viewportToContents(pos.x(), pos.y(), xm, ym);
 
     pos = QPoint(pos.x() - viewport()->x(), pos.y() - viewport()->y());
-    if ( (pos.y() < 0) || (pos.y() > viewport()->height()) ||
-         (pos.x() < 0) || (pos.x() > viewport()->width()))
+    if ( (pos.y() < 0) || (pos.y() > visibleHeight()) ||
+         (pos.x() < 0) || (pos.x() > visibleWidth()) )
     {
 	ensureVisible( xm, ym, 0, 5 );
     }
@@ -534,9 +519,8 @@ bool KHTMLView::gotoLink()
     {
       x+=n->renderer()->width();
       y+=n->renderer()->height();
-      ensureVisible(x+30, y-30);
+      ensureVisible(x, y);
     }
-  viewportPaintEvent(new QPaintEvent(QRegion(0, 0, viewport()->width(), viewport()->height())));
   return true;
 }
 

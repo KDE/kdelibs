@@ -88,8 +88,8 @@ void RenderFrameSet::layout( bool deep )
 
     if ( strcmp( m_parent->renderName(), "RenderFrameSet" ) != 0 )
     {
-      m_width = m_view->clipper()->width();
-      m_height = m_view->clipper()->height();
+	m_width = m_view->visibleWidth();
+	m_height = m_view->visibleHeight();	
     }
 
     int remainingWidth = m_width - (m_frameset->totalCols()-1)*m_frameset->border();
