@@ -153,7 +153,7 @@ void RenderBox::setPos( int xPos, int yPos )
         // propagate position change to childs
         for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
             if(child->isWidget())
-                static_cast<RenderWidget*>(child)->placeWidget(m_x+child->xPos(),m_y+child->yPos());
+                static_cast<RenderWidget*>(child)->placeWidget(x+child->xPos(),y+child->yPos());
         }
     }
 }
