@@ -137,6 +137,7 @@ public:
    */
   virtual void setIcon(const QString &icon);
 
+  /// @since 3.1
   virtual void setIcon( const QPixmap &pixmap )
   { QToolButton::setIcon( pixmap ); }
 
@@ -281,8 +282,11 @@ protected:
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
 
+  /// @since 3.1
   bool isRaised() const;
+  /// @since 3.1
   bool isActive() const;
+  /// @since 3.1
   int iconTextMode() const;
 
 protected slots:

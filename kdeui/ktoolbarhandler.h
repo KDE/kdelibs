@@ -29,6 +29,7 @@ class KToolBar;
 namespace KDEPrivate
 {
 
+/// @since 3.1
 class ToolBarHandler : public QObject,
                        public KXMLGUIClient
 {

@@ -532,6 +532,7 @@ public:
   * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
+  * @since 3.1
   */
    
   static void informationList(QWidget *parent, 

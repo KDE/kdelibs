@@ -264,6 +264,7 @@ public:
 
   bool dragEnabled() const;
   void setDragEnabled(bool b);
+  /// @since 3.1
   void showUndockButton(bool show);
 
 #ifndef NO_KDE2
@@ -432,7 +433,7 @@ public:
     DockBottom = 0x0008,
     DockCenter = 0x0010,
     DockDesktop= 0x0020,
-    DockToSpecialSites=0x0040,
+    DockToSpecialSites=0x0040, ///< @since 3.1
     DockCorner = DockTop | DockLeft | DockRight | DockBottom,
     DockFullSite = DockCorner | DockCenter,
     DockFullDocking = DockFullSite | DockDesktop
@@ -588,6 +589,7 @@ public:
    */
   KDockTabGroup* parentDockTabGroup() const;
   
+  /// @since 3.1
   QWidget *parentDockContainer() const;
   
 #ifndef NO_KDE2
@@ -612,6 +614,7 @@ public:
    * Lookup the nearest dockwidget docked left/right/top/bottom to this one or return 0
    *
    * @param pos is the position the wanted widget is docked to this one
+   * @since 3.1
    */
   KDockWidget *findNearestDockWidget(DockPosition pos);
   
@@ -620,17 +623,22 @@ public slots:
    * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps 
    * KDE 3.1.x oder 3.2
    * width is in pixel. It only affects a widget, which is placed directly into a horizontal KDockSplitter
+   * @since 3.1
    **/
   void setForcedFixedWidth(int);
   /**
    * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps 
    * KDE 3.1.x oder 3.2
    * height is in pixel. It only affects a widget, which is placed directly into a vertical KDockSplitter
+   * @since 3.1
    **/
   void setForcedFixedHeight(int);
+  /// @since 3.1
   void restoreFromForcedFixedSize();
 
+  /// @since 3.1
   int forcedFixedWidth();
+  /// @since 3.1
   int forcedFixedHeight();
   
   /**
@@ -653,6 +661,7 @@ public slots:
 
   /**
    * Docks the widget to the desktop (as a toplevel widget)
+   * @since 3.1
    */
   void toDesktop( );
 
@@ -667,7 +676,9 @@ protected:
    */
   void updateHeader();
 
+  /// @since 3.1
   void setLatestKDockContainer(QWidget *);
+  /// @since 3.1
   QWidget *latestKDockContainer();
   
 signals:
@@ -875,6 +886,7 @@ public:
   void readConfig ( KConfig* c = 0L, QString group = QString::null );
 #endif
 
+  /// @since 3.1
   void setMainDockWidget2(KDockWidget *);
 
   /**

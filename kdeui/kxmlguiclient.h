@@ -247,8 +247,11 @@ public:
 
   StateChange getActionsToChangeForState(const QString& state);
 
+  /// @since 3.1
   void beginXMLPlug( QWidget * );
+  /// @since 3.1
   void endXMLPlug();
+  /// @since 3.1
   void prepareXMLUnplug( QWidget * );
 
 protected:

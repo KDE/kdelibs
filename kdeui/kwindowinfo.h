@@ -35,6 +35,7 @@
  *
  * @author Richard Moore, rich@kde.org
  * @version $Id$
+ * @since 3.1
 */
 class KWindowInfo : public QObject
 {

@@ -52,6 +52,7 @@ class QLabel;
  * </pre>
  *
  * @version $Id$
+ * @since 3.1
  * @author Richard Moore, rich@kde.org
  */
 class KPassivePopup : public QFrame

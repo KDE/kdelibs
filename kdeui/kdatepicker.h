@@ -62,6 +62,7 @@ public:
 
   /** The usual constructor.  The given date will be displayed
    * initially.
+   * @since 3.1
    **/
   KDatePicker(QWidget *parent,
 	      QDate,
@@ -71,6 +72,7 @@ public:
   /**
    * Standard qt widget constructor. The initial date will be the
    * current date.
+   * @since 3.1
    */
   KDatePicker( QWidget *parent, const char *name );
 
@@ -128,12 +130,14 @@ public:
    * method being called. This is mostly useful for toplevel datepickers
    * without a window manager decoration.
    * @see #hasCloseButton
+   * @since 3.1
    */
   void setCloseButton( bool enable );
 
   /**
    * @returns true if a KDatePicker shows a close-button.
    * @see #setCloseButton
+   * @since 3.1
    */
   bool hasCloseButton() const;
 
@@ -171,6 +175,7 @@ protected slots:
   void monthBackwardClicked();
   void yearForwardClicked();
   void yearBackwardClicked();
+  /// @since 3.1
   void selectWeekClicked();
   void selectMonthClicked();
   void selectYearClicked();

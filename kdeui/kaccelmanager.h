@@ -33,6 +33,7 @@ class QWidget;
  *
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
  * @version $Id$
+ * @since 3.1
 */
 
 class KAcceleratorManager

@@ -104,6 +104,7 @@ public:
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom };
     enum Alignment { LeftTop = 0, Center, RightBottom };
+    /// @since 3.1
     enum Size { SizeTiny = 0, SizeSmall, SizeNormal, SizeLarge, SizeCustom };
 
     /**
@@ -188,16 +189,19 @@ public:
     void setAlignment( Alignment a );
     /**
      * @internal
+     * @since 3.1
      **/
     void setSize( Size size, int customSize );
 
     /**
     * @return the extension's size
+     * @since 3.1
     **/
     Size sizeSetting() const;
 
     /**
     * @return the custom sizel setting in pixels
+     * @since 3.1
     **/
     int customSize() const;
 
@@ -266,6 +270,7 @@ protected:
 
     /**
      * @return the appropriate size in pixels for the panel
+     * @since 3.1
      */
     int sizeInPixels() const;
 

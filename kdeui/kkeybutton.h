@@ -54,6 +54,7 @@ class KKeyButton: public QPushButton
 
 	/** @deprecated */
 	void setShortcut( const KShortcut& cut );
+	/// @since 3.1
 	void setShortcut( const KShortcut& cut, bool bQtShortcut );
 	const KShortcut& shortcut() const
 		{ return m_cut; }

@@ -74,7 +74,9 @@ public:
     QSize sizeHint() const;
 
 public slots:
+    /// @since 3.1
     void setText( const QString &text );
+    /// @since 3.1
     void setIcon( const QPixmap &pix );
 
 protected:
@@ -165,12 +167,14 @@ public:
      * WARNING: though pre-existing keyboard shortcuts will not interfere with the
      * operation of this feature, they may be confusing to the user as the existing
      * shortcuts will not work.
+     * @since 3.1
      */
     void setKeyboardShortcutsEnabled(bool enable);
 
     /**
      * Enables execution of the menu item once it is uniquely specified.
      * Defaults to off.
+     * @since 3.1
      */
     void setKeyboardShortcutsExecute(bool enable);
 
@@ -192,7 +196,9 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 protected slots:
+    /// @since 3.1
     QString underlineText(const QString& text, uint length);
+    /// @since 3.1 
     void resetKeyboardVars(bool noMatches = false);
 
 private:

@@ -571,11 +571,13 @@ public slots:
 
   /**
    * Enable/disable tabbing between editable cells
+   * @since 3.1
    */
   void setTabOrderedRenaming(bool b);
 
   /**
    * Returns whether tab ordered renaming is enabled
+   * @since 3.1
    */
   bool tabOrderedRenaming() const;
 

@@ -45,6 +45,7 @@ public:
 	 * Creates a color button with an initial color @p c.
 	 */
 	KColorButton( const QColor &c, QWidget *parent, const char *name = 0L );
+	/// @since 3.1
         KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent,
                       const char *name=0L );
 

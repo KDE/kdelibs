@@ -41,6 +41,7 @@ class KEditListBox : public QGroupBox
    Q_OBJECT
 
 public:
+    /// @since 3.1
     class CustomEditor
     {
     public:
@@ -113,6 +114,7 @@ public:
        * the representation widget.
        *
        * @see KURLRequester::customEditor()
+       * @since 3.1
        */
       KEditListBox( const QString& title,
                     const CustomEditor &customEditor,

@@ -94,6 +94,7 @@ class KDialog : public QDialog
      * Centers @p widget on the desktop, taking multi-head setups into 
      * account. If @p screen is -1, @p widget will be centered on its
      * current screen (if it was shown already) or on the primary screen.
+     * @since 3.1
      */
     static void centerOnScreen( QWidget *widget, int screen = -1 );
 

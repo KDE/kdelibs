@@ -90,6 +90,7 @@ public:
 
     /**
      * @return if the num input has a slider.
+     * @since 3.1
      */
     bool showSlider() const { return m_slider; }
 
@@ -241,11 +242,13 @@ public:
 
     /**
      * @return the curent value in units of the @ref referencePoint.
+     * @since 3.1
      */
     double relativeValue() const;
 
     /**
      * @return the current reference point
+     * @since 3.1
      */
     int referencePoint() const;
 
@@ -318,11 +321,13 @@ public slots:
 
     /** 
      * Sets the value in units of the @ref referencePoint
+     * @since 3.1
      */
     void setRelativeValue(double);
 
     /**
      * Sets the reference point for @ref relativeValue.
+     * @since 3.1
      */
     void setReferencePoint(int);
 
@@ -362,6 +367,7 @@ signals:
     /**
      * Emitted whenever @ref #valueChanged is. Contains the change
      * relative to the @ref referencePoint.
+     * @since 3.1
      */
     void relativeValueChanged(double);
 
@@ -460,6 +466,7 @@ public:
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
      * @param name   internal name for this widget
+     * @since 3.1
      */
     KDoubleNumInput(double lower, double upper, double value, double step=0.01,
 		    int precision=2, QWidget *parent=0, const char *name=0);
@@ -494,6 +501,7 @@ public:
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
      * @param name   internal name for this widget
+     * @since 3.1
      */
     KDoubleNumInput(KNumInput* below,
 		    double lower, double upper, double value, double step=0.02,
@@ -558,11 +566,13 @@ public:
 
     /**
      * @return the reference point for @ref #relativeValue calculation
+     * @since 3.1
      */
     double referencePoint() const;
 
     /**
      * @return the current value in units of @ref #referencePoint.
+     * @since 3.1
      */
     double relativeValue() const;
 
@@ -595,6 +605,7 @@ public slots:
 
     /**
      * Sets the value in units of @ref #referencePoint.
+     * @since 3.1
      */
     void setRelativeValue(double);
 
@@ -602,6 +613,7 @@ public slots:
      * Sets the reference Point to @p ref. It @p ref == 0, emitting of
      * @ref #relativeValueChanged is blocked and @ref #relativeValue
      * just returns 0.
+     * @since 3.1
      */
     void setReferencePoint(double ref);
 
@@ -633,6 +645,7 @@ signals:
      * convenience. It essentially behaves like the above function.
      *
      * Contains the value in units of @ref #referencePoint.
+     * @since 3.1
      */
     void relativeValueChanged(double);
 
@@ -814,7 +827,8 @@ private:
 
    @short A spin box for fractional numbers.
    @author Marc Mutz <mutz@kde.org>
-   @version $Id: $
+   @version $Id$
+   @since 3.1
 **/
 
 class KDoubleSpinBox : public QSpinBox {

@@ -1094,6 +1094,7 @@ class KDialogBase : public KDialog
      * slots like @ref closeClicked() and @ref hidden().
      * You should not use the dialog any more after
      * calling this function.
+     * @since 3.1
      */
     void delayedDestruct();
 

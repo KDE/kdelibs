@@ -33,6 +33,7 @@
  * @see QTextEdit
  * @short A KDE'ified QTextEdit
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ * @since 3.1
  */
 class KTextEdit : public QTextEdit
 {

@@ -254,6 +254,7 @@ public:
      * from the current one.  Otherwise, the call to setText is ignored.
      *
      * @param true enable smart text update, false otherwise.
+     * @since 3.1
      */
     void setEnableSmartTextUpdate (bool);
     
@@ -288,6 +289,7 @@ signals:
 
     /**
      * Emitted whenever the completion box is activated.
+     * @since 3.1
      */
     void completionBoxActivated (const QString &);
 
@@ -386,6 +388,7 @@ public slots:
     /**
      * Squeezes @p text into the line edit. 
      * This can only be used with read-only line-edits.
+     * @since 3.1
      */
     void setSqueezedText( const QString &text);
     

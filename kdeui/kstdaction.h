@@ -145,7 +145,8 @@ namespace KStdAction
 		Preferences, ConfigureToolbars,
 
 		// Help Menu
-		Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE, TipofDay,
+		Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE, 
+		TipofDay, ///< @since 3.1
 
 		// Another settings menu item
 		ConfigureNotifications
@@ -184,6 +185,7 @@ namespace KStdAction
        /**
          * Returns a list of all standard names. Used by @ref KAccelManager
          * to give those heigher weight.
+	 * @since 3.1
         */
         QStringList stdNames();
 
@@ -463,6 +465,7 @@ namespace KStdAction
 	/**
 	* @obsolete. toolbar actions are created automatically now in the Settings menu. Don't use this anymore
 	* Show/Hide the primary toolbar.
+	* @since 3.1
 	*/
 	KToggleAction *showToolbar(const QObject *recvr, const char *slot,
 					KActionCollection* parent, const char *name = 0 );
@@ -506,7 +509,8 @@ namespace KStdAction
 					const char *name = 0 );
 
 	/**
-	* The Configure Notifications dialog
+	* The Configure Notifications dialo
+	* @since 3.1
 	*/
 	KAction *configureNotifications(const QObject *recvr,
 					const char *slot,
@@ -533,6 +537,7 @@ namespace KStdAction
 
 	/**
 	* Display "Tip of the Day"
+	* @since 3.1
 	*/
 	KAction *tipOfDay(const QObject *recvr, const char *slot,
 				KActionCollection* parent, const char *name = 0 );

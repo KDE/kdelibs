@@ -202,6 +202,7 @@ class KAction : public QObject
   Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
   Q_PROPERTY( QString icon READ icon WRITE setIcon )
 public:
+    /// @since 3.1
     enum Scope { ScopeUnspecified, ScopeWidget, ScopeBuilder, ScopeGlobal };
 
     /**
@@ -372,6 +373,7 @@ public:
 
     /**
      * returns whether the action is plugged into any container widget or not.
+     * @since 3.1
      */
     virtual bool isPlugged() const;
 
@@ -396,6 +398,7 @@ public:
     int itemId( int index ) const;
     QWidget* representative( int index ) const;
     int containerCount() const;
+    /// @since 3.1
     uint kaccelCount() const;
 
     virtual bool hasIcon() const;
@@ -551,6 +554,7 @@ protected:
 
 signals:
     void activated();
+    /// @since 3.1
     void activated( int );
     void enabled( bool );
 
@@ -984,16 +988,20 @@ public:
 
     /**
      * Deprecated. See @ref setMenuAccelsEnabled .
+     * @since 3.1
      */
     void setRemoveAmpersandsInCombo( bool b );
+    /// @since 3.1
     bool removeAmpersandsInCombo() const;
 
     /**
      * Sets whether any occurence of the ampersand character ( &amp; ) in items
      * should be interpreted as keyboard accelerator for items displayed in a
      * menu or not.
+     * @since 3.1
      */
     void setMenuAccelsEnabled( bool b );
+    /// @since 3.1
     bool menuAccelsEnabled() const;
 
 public slots:
@@ -1035,6 +1043,7 @@ protected:
      * Depending on the menuAccelsEnabled property this method will return the
      * actions items in a way for inclusion in a combobox with the ampersand
      * character removed from all items or not.
+     * @since 3.1
      */
     QStringList comboItems() const;
 
@@ -1651,6 +1660,7 @@ private:
  * toolbar is shown or hidden, connect to the toggled(bool)
  * signal. It will be emitted after the toolbar's
  * visibility has changed, whenever it changes.
+ * @since 3.1
  */
 class KToggleToolBarAction : public KToggleAction
 {

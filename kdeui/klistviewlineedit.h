@@ -45,6 +45,7 @@ protected:
 	virtual void paintEvent(QPaintEvent *e);
 	virtual bool event (QEvent *pe);
 
+	/// @since 3.1
 	void selectNextCell (QListViewItem *pi, int column, bool forward);
 	void terminate(bool commit);
 	QListViewItem *item;

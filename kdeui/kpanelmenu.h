@@ -120,6 +120,7 @@ public slots:
      * Deinitialize the menu: the menu is cleared and the initialized state is set to
      * false. #initialize() is NOT called. It will be called before the menu is
      * next shown, however. Use this slot if you want a delayed reinitialization.
+     * @since 3.1
      */
     void deinitialize();
 

@@ -290,7 +290,7 @@ public:
 
     /**
      * Returns true, if there is a menubar
-     *
+     * @since 3.1
      */
      bool hasMenuBar();
 
@@ -401,16 +401,20 @@ public:
      *
      * Note that you should enable this feature before calling createGUI() ( or similar ) .
      * You enable/disable it anytime if you pass false to the conserveMemory argument of createGUI.
+     * @since 3.1
      */
     void setStandardToolBarMenuEnabled( bool enable );
+    /// @since 3.1
     bool isStandardToolBarMenuEnabled() const;
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
+     * @since 3.1
      */
     KAction *toolBarMenuAction();
 
     // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
+    /// @since 3.1
     virtual void finalizeGUI( KXMLGUIClient *client );
 
     /**
@@ -485,6 +489,7 @@ public slots:
      * Apply a state change
      *
      * Enable and disable actions as defined in the XML rc file
+     * @since 3.1
      */
     virtual void slotStateChanged(const QString &newstate);
 
@@ -494,6 +499,7 @@ public slots:
      * Enable and disable actions as defined in the XML rc file,
      * can "reverse" the state (disable the actions which should be
      * enabled, and vice-versa) if specified.
+     * @since 3.1
      */
     void slotStateChanged(const QString &newstate,
                           KXMLGUIClient::ReverseStateChange); // KDE 4.0: remove this
