@@ -44,7 +44,7 @@ static long getSimpleProperty(Window w, Atom a)
 {
     Atom real_type;
     int format;
-    unsigned long n, extra, *p, res;
+    unsigned long n, extra, *p = 0, res;
     int status;
 
     res = 0;
@@ -87,7 +87,7 @@ void KIPC::sendMessage(Message msg, WId w, int data)
 void KIPC::sendMessageAll(Message msg, int data)
 {
     unsigned int i, nrootwins;
-    Window dw1, dw2, *rootwins;
+    Window dw1, dw2, *rootwins = 0;
     int (*defaultHandler)(Display *, XErrorEvent *);
     Display *dpy = qt_xdisplay();
     int screen = DefaultScreen(dpy);
