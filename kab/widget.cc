@@ -22,6 +22,7 @@
 #include <kmessagebox.h>
 #include <qcombobox.h>
 #include <qtooltip.h>
+#include <qtoolbutton.h>
 #include <qstring.h>
 #include <qfiledialog.h>
 #include <qpaintdevicemetrics.h> 
