@@ -331,7 +331,9 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
     if (image == finishedObj && !loadEventSent && element()) {
         loadEventSent = true;
-        element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+        element()->dispatchHTMLEvent(
+            image->isErrorImage() ? EventImpl::ERROR_EVENT : EventImpl::LOAD_EVENT,
+            false,false);
     }
 }
 
