@@ -152,9 +152,6 @@ public:
    */
   class SizedBuffer: public Buffer
   {
-  protected:
-    Q_ULONG m_maxlen;
-
   public:
     /**
      * Default constructor.
@@ -183,7 +180,10 @@ public:
      * will fail to write.
      */
     virtual Q_LONG feedBlock(const char *data, Q_ULONG len);
-  };
+ 
+  private:
+    Q_ULONG m_maxlen;
+ };
 
 public:
   /**
