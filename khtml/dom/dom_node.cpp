@@ -28,6 +28,7 @@
 #include "dom_nodeimpl.h"
 #include "dom_elementimpl.h"
 #include <qstring.h>
+#include <qrect.h>
 using namespace DOM;
 
 
@@ -298,6 +299,12 @@ void Node::getCursor(int offset, int &_x, int &_y, int &height)
 {
     if(!impl) return;
     impl->getCursor(offset, _x, _y, height);
+}
+
+QRect Node::getRect()
+{
+    if(!impl) return QRect();
+    return impl->getRect();
 }
 
 //-----------------------------------------------------------------------------

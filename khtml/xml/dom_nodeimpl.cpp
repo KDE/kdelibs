@@ -34,6 +34,7 @@
 
 #include "rendering/render_object.h"
 #include <qstring.h>
+#include <qrect.h>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
@@ -286,6 +287,17 @@ void NodeImpl::applyChanges(bool)
 void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
 {
     if(m_render) m_render->cursorPos(offset, _x, _y, height);
+}
+
+QRect NodeImpl::getRect()
+{
+    int _x, _y;
+    if(m_render)
+        {
+            m_render->absolutePosition(_x, _y);
+            return QRect( _x, _y, m_render->width(), m_render->height() );
+        }
+    return QRect();
 }
 
 void NodeImpl::setKeyboardFocus(ActivationState b)

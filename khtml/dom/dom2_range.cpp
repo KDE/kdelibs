@@ -31,8 +31,7 @@
 #include "dom_exception.h"
 #include "dom_docimpl.h"
 #include <qstring.h>
-#include <stdio.h>
-#include <kdebug.h>
+#include <stdio.h>               // for printf
 
 /* Functions not yet implemented:
    deleteContents
@@ -63,6 +62,7 @@ Range::Range()
 
 Range::Range(const Document rootContainer)
 {
+    ownerDocument = rootContainer;
     startContainer = (Node)rootContainer;
     endContainer = (Node)rootContainer;
     startOffset = 0;
@@ -74,6 +74,7 @@ Range::Range(const Document rootContainer)
 
 Range::Range(const Range &other)
 {
+    ownerDocument = other.ownerDocument;
     startContainer = other.startContainer;
     startOffset = other.startOffset;
     endContainer = other.endContainer;
@@ -158,14 +159,12 @@ Node Range::getCommonAncestorContainer() /*const*/
 
         if(parentStart == parentEnd)  break;
         parentStart = parentStart.parentNode();
-        parentEnd = endContainer;
     }
 
     if(parentStart == parentEnd)
         commonAncestorContainer = parentStart;
     else
     {
-        kdDebug( 6010 ) << "Error in getCommonAncestorContainer(): No common ancestor container?" << endl;
         return Node();
     }
     
@@ -629,7 +628,7 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
                                       sourceRange.getStartContainer(), sourceRange.getStartOffset() );
         break;
     default:
-        kdDebug( 6010 ) << "Function compareBoundaryPoints: Invalid CompareHow" << endl;
+        printf( "Function compareBoundaryPoints: Invalid CompareHow\n" );
         return 2;     // undocumented - should throw an exception here
     }
 }
@@ -638,7 +637,7 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
 {
     if( offsetA < 0 || offsetB < 0 )
     {
-        kdDebug( 6010 ) << "Function compareBoundaryPoints: No negative offsets allowed" << endl;
+        printf( "Function compareBoundaryPoints: No negative offsets allowed\n" );
         return 2;     // undocumented - should throw an exception here
     }
 
@@ -674,140 +673,149 @@ bool Range::boundaryPointsValid(  )
                                           getEndContainer(), getEndOffset() );
     if( valid == 1 )  return false;
     else  return true;
+    
 }
 
 void Range::deleteContents(  )
 {
-    
     Node cmnRoot = getCommonAncestorContainer();
-    /*
-    kdDebug( 6010 ) << "CommonAC: " << cmnRoot.nodeName().string() << " " << endl;
-    kdDebug( 6010 ) << "end: " << startOffset << ", start: " << endOffset << " " << endl;
-    kdDebug( 6010 ) << "startContainer: " << startContainer.nodeName().string() << " " << endl;
-    kdDebug( 6010 ) << "endContainer: " << endContainer.nodeName().string() << " " << endl;
-    */
-
-//    kdDebug( 6010 ) << "end common case" << endl;
-    Node _nextCurrent, _tempCurrent;
-    bool delStart=false, delEnd=false;
-
-    //  kdDebug( 6010 ) << "left side node: " << startContainer.nodeName().string() << " " << endl;
+    printf("CommonAC: %s \n", cmnRoot.nodeName().string().ascii());
+//    printf("end: %d, start: %d", startOffset, endOffset);
     
-    // cleanup left side
-    Node _leftParent = startContainer;
+    if(startContainer == endContainer)
+    {
+        if(startOffset == endOffset)            // we have a collapsed range
+        {printf("collapsed\n");return;} 
 
-    if( startContainer == cmnRoot )
-    {
-        delStart = true;
-        unsigned int i;
-        _leftParent = startContainer.firstChild();
-        for(i=1; i < startOffset; i++)    // get the node given by the offset
-            _leftParent = _leftParent.nextSibling();
-    }
-    else
-    {
+        // TODO: we need to delete the text Node if a whole text is selected!!
         if( startContainer.nodeType() == Node::TEXT_NODE )
         {
-            (void)startContainer.nodeValue().split(startOffset);
+            startContainer.nodeValue().remove(startOffset, endOffset);
+            startContainer.applyChanges();
         }
-        else
+        else 
         {
-            _tempCurrent = startContainer.firstChild();
+            printf("same but not a text node\n");
+            Node _tempParent = startContainer;
+            Node _tempCurrent = startContainer.firstChild();
             unsigned int i;
-        
-            for(i=1; i < startOffset; i++)    // get the node given by the offset
-                _tempCurrent = _tempCurrent.nextSibling();
-        
-            _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
-        
-            while( !_tempCurrent.isNull() )   
-            {
-                _nextCurrent = _tempCurrent.nextSibling();
-                _leftParent.removeChild(_tempCurrent);
-                _tempCurrent = _nextCurrent;
-            }
-        }
 
-        _tempCurrent = _leftParent;
-        _leftParent = _leftParent.parentNode();
-        while( _leftParent != cmnRoot && _tempCurrent != cmnRoot )
-        {
-            while( !_tempCurrent.isNull() )   
+            for(i=0; i < startOffset; i++)    // get the node given by the offset
+                _tempCurrent = _tempCurrent.nextSibling();
+
+            /* now delete all nodes between the offsets */
+            unsigned int range = endOffset - startOffset;
+            Node _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
+
+            for(i=0; i<range && !_tempCurrent.isNull(); i++)   
             {
+                if(_tempParent == _tempCurrent.parentNode() )
+                    printf("like\n");
                 _nextCurrent = _tempCurrent.nextSibling();
-                _leftParent.removeChild(_tempCurrent);
+                printf("just before remove\n");
+                _tempParent.removeChild(_tempCurrent);
+                printf("just after remove\n");
                 _tempCurrent = _nextCurrent;
             }
-            _tempCurrent = _leftParent;
-            _leftParent = _leftParent.parentNode();
+        _tempParent.applyChanges();
         }
-        _leftParent = _tempCurrent;
-    }
-    
-    // cleanup right side
-    Node _rightParent = endContainer;
-    if( endContainer == cmnRoot )
+        return;
+    }// END COMMON CONTAINER CASE!!
+
+    printf("end common case\n");
+    Node _nextCurrent;                 
+    Node _tempCurrent;
+
+    // cleanup left side
+    Node _leftParent = startContainer;
+    if( startContainer.nodeType() == Node::TEXT_NODE )
     {
-        delEnd = true;
-        unsigned int i;
-        _rightParent = endContainer.firstChild();
-        for(i=1; i < endOffset; i++)  
-            _rightParent = _rightParent.nextSibling();
+        printf("left side text\n");
+        (void)startContainer.nodeValue().split(startOffset); // what about complete removals?
     }
     else
     {
-        if( endContainer.nodeType() == Node::TEXT_NODE )
-        {
-            endContainer.nodeValue().remove(0, endOffset);
-        }
-        else
-        {
      
-            _tempCurrent = endContainer.firstChild();
-            unsigned int i;
+        _tempCurrent = startContainer.firstChild();
+        unsigned int i;
         
-            for(i=1; i < endOffset; i++)    // get the node given by the offset
-                _tempCurrent = _tempCurrent.nextSibling();
-
-            while( !_tempCurrent.isNull() )
-            {
-                _nextCurrent = _tempCurrent.previousSibling();
-                _rightParent.removeChild(_tempCurrent);
-                _tempCurrent = _nextCurrent;
-            }
+        for(i=0; i < startOffset; i++)    // get the node given by the offset
+            _tempCurrent = _tempCurrent.nextSibling();
+        
+        _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
+        
+        while( !_tempCurrent.isNull() )   
+        {
+            _nextCurrent = _tempCurrent.nextSibling();
+            _leftParent.removeChild(_tempCurrent);
+            _tempCurrent = _nextCurrent;
         }
+    }
+    _tempCurrent = _leftParent;
+    _leftParent = _leftParent.parentNode();
+    while( _leftParent != cmnRoot )
+    {
+        while( !_tempCurrent.isNull() )   
+        {
+            _nextCurrent = _tempCurrent.nextSibling();
+            _leftParent.removeChild(_tempCurrent);
+            _tempCurrent = _nextCurrent;
+        }
+        _tempCurrent = _leftParent;
+        _leftParent = _leftParent.parentNode();
+    }
 
+
+    // cleanup right side
+    Node _rightParent = endContainer;
+    if( endContainer.nodeType() == Node::TEXT_NODE )
+    {
+        endContainer.nodeValue().remove(0, endOffset); // what about complete removals?
+    }
+    else
+    {
+     
+        Node _tempCurrent = endContainer.firstChild();
+        unsigned int i;
+        
+        for(i=0; i < endOffset; i++)    // get the node given by the offset
+            _tempCurrent = _tempCurrent.nextSibling();
+        
+        Node _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
+        
+        while( !_tempCurrent.isNull() )   
+        {
+            _nextCurrent = _tempCurrent.previousSibling();
+            _leftParent.removeChild(_tempCurrent);
+            _tempCurrent = _nextCurrent;
+        }
+    }
+    _tempCurrent = _rightParent;
+    _rightParent = _rightParent.parentNode();
+    while( _rightParent != cmnRoot )
+    {
+        while( !_tempCurrent.isNull() )   
+        {
+            _nextCurrent = _tempCurrent.previousSibling();
+            _rightParent.removeChild(_tempCurrent);
+            _tempCurrent = _nextCurrent;
+        }
         _tempCurrent = _rightParent;
         _rightParent = _rightParent.parentNode();
-        while( _rightParent != cmnRoot && _tempCurrent != cmnRoot)
-        {
-            while( !_tempCurrent.isNull() )   
-            {
-                _nextCurrent = _tempCurrent.previousSibling();
-                _rightParent.removeChild(_tempCurrent);
-                _tempCurrent = _nextCurrent;
-            }
-            _tempCurrent = _rightParent;
-            _rightParent = _rightParent.parentNode();
-        }
-        _rightParent = _tempCurrent;
     }
-    
+
     // cleanup middle
-    _nextCurrent = _leftParent.nextSibling();
-    if( delStart )
-        cmnRoot.removeChild(_leftParent);
-
-    _leftParent = _nextCurrent;
-    while( _leftParent != _rightParent && !_leftParent.isNull() )
+    _leftParent = _leftParent.nextSibling();
+    while( _leftParent != _rightParent )
     {
-        _nextCurrent = _leftParent.nextSibling();
         cmnRoot.removeChild(_leftParent);
-        _leftParent = _nextCurrent;
+        _leftParent = _leftParent.nextSibling();
     }
 
-    if(delEnd)
-        cmnRoot.removeChild(_leftParent);
+
+    // FIXME! this allways collapses to the front (see DOM specs)
+    //collapse(true);
+    return;
 
 }
 
@@ -861,7 +869,7 @@ DOMString Range::toString(  )
     
     while( !_node.isNull() )
     {
-        kdDebug( 6010 ) << "\nNodetype: " << _node.nodeName().string() << endl;
+        printf( "\nNodetype: %s\n", _node.nodeName().string().ascii() );
         if( _node.nodeType() == Node::TEXT_NODE )
         {
             QString str = _node.nodeValue().string();
@@ -911,7 +919,7 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
      * We end with returning the fragment of course
      */
     Node _clone;
-    DocumentFragment _endFragment;
+    DocumentFragment _endFragment( ownerDocument.createDocumentFragment() );
 
     if(startContainer == endContainer)
     {
@@ -922,12 +930,12 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
         if( startContainer.nodeType() == Node::TEXT_NODE )    // we have a text node.. special :)
         {
             _clone = startContainer.cloneNode(false);
-            // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
-            // use QString.mid() and QString.remove()
+            _clone.nodeValue().remove(0, startOffset);  // we need to get the SUBSTRING
+            _clone.nodeValue().remove(endOffset, _clone.nodeValue().length() - endOffset);
             if(contentExtract)
             {
-                //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
-                // remove what wasn't in the substring
+                // full trim :)
+                startContainer.nodeValue().remove(startOffset, endOffset - startOffset);
             }
             _endFragment.appendChild(_clone);
         }
@@ -979,12 +987,11 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
     if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
         _clone = _tempCurrent.cloneNode(false);
-        // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
-        // use QString.mid() and QString.remove()
+        _clone.nodeValue().remove(0, startOffset);  // we need to get the SUBSTRING
         if(contentExtract)
         {
-            //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
             // remove what wasn't in the substring
+            startContainer.nodeValue().split(startOffset);
         }
     }
     else // container node was not a text node
@@ -1059,12 +1066,11 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
     if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
         _clone = _tempCurrent.cloneNode(false);
-        // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
-        // use QString.mid() and QString.remove()
+        _clone.nodeValue().split(endOffset);  // we need to get the SUBSTRING
         if(contentExtract)
         {
-            //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
             // remove what wasn't in the substring
+            endContainer.nodeValue().remove(endOffset, endContainer.nodeValue().length() - endOffset );
         }
     }
     else // container node was not a text node

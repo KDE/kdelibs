@@ -31,6 +31,7 @@
 
 class QPainter;
 class KHTMLView;
+class QRect;
 
 namespace khtml {
     class RenderStyle;
@@ -218,7 +219,8 @@ public:
 
     virtual void applyChanges(bool top = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
-
+    virtual QRect getRect();
+    
     void setKeyboardFocus(ActivationState b=ActivationPassive);
 
 protected:

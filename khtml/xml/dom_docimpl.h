@@ -119,7 +119,7 @@ protected:
     khtml::RenderStyle *m_style;
 };
 
-class DocumentFragmentImpl : public NodeImpl
+class DocumentFragmentImpl : public NodeBaseImpl
 {
 public:
     DocumentFragmentImpl(DocumentImpl *doc);

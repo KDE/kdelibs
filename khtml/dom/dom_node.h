@@ -25,12 +25,14 @@
 
 #include <qstring.h>
 
+class QRect;
+
 namespace DOM {
 
 class Node;
 class DOMString;
 class NodeImpl;
-
+ 
 /**
  * Objects implementing the <code> NamedNodeMap </code> interface are
  * used to represent collections of nodes that can be accessed by
@@ -581,6 +583,11 @@ public:
     QString toHTML();
     virtual void applyChanges();
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
+    /**
+     * not part of the DOM.
+     * @returns the exact coordinates and size of this element.
+     */
+    QRect getRect();
     
 protected:
     NodeImpl *impl;

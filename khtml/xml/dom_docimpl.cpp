@@ -439,12 +439,12 @@ NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 
 // ----------------------------------------------------------------------------
 
-DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeImpl(doc)
+DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
 }
 
 DocumentFragmentImpl::DocumentFragmentImpl(const DocumentFragmentImpl &other)
-    : NodeImpl(other)
+    : NodeBaseImpl(other)
 {
 }
 

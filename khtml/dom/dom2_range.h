@@ -459,6 +459,7 @@ public:
     DocumentFragment masterTraverse(bool contentExtract);
     
 protected:
+    Document ownerDocument;
     Node startContainer;
     unsigned long startOffset;
     Node endContainer;
