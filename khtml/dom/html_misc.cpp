@@ -158,6 +158,27 @@ Node HTMLCollection::base() const
     return static_cast<HTMLCollectionImpl*>( impl )->base;
 }
 
+Node HTMLCollection::firstItem() const
+{
+    if ( !impl )
+        return 0;
+    return static_cast<HTMLCollectionImpl*>( impl )->firstItem();
+}
+
+Node HTMLCollection::nextItem() const
+{
+    if ( !impl )
+        return 0;
+    return static_cast<HTMLCollectionImpl*>( impl )->nextItem();
+}
+
+Node HTMLCollection::nextNamedItem( const DOMString &name ) const
+{
+    if ( !impl )
+        return 0;
+    return static_cast<HTMLCollectionImpl*>( impl )->nextNamedItem( name );
+}
+
 HTMLCollectionImpl *HTMLCollection::handle() const
 {
     return impl;
