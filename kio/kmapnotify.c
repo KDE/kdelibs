@@ -29,6 +29,14 @@
 
 #include <dlfcn.h>
 
+/* sometimes __STDC__ is defined, but to 0. The hateful X headers
+   ask for '#if __STDC__', so they become confused. */
+#ifdef __STDC__
+#if !__STDC__
+#undef __STDC__
+#define __STDC__ 1
+#endif
+#endif
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -67,33 +75,33 @@ XMapRaised(Display * d, Window w)
   return KDE_RealXMapRaised(d, w);
 }
 
+/* Helper functions ****************************************************/
+
+  char *
+writeInt(char * buf, int i)
+{
+  char * p = (char *)(&i);
+  buf[3] = *p++;
+  buf[2] = *p++;
+  buf[1] = *p++;
+  buf[0] = *p;
+
+  return buf + 4;
+}
+
+  char *
+writeText(char * buf, const char * text)
+{
+  char * pos = buf;
+  int l = strlen( text ) + 1; /* we need the \0! (Simon) */
+  pos = writeInt(buf, l);
+  memcpy(pos, text, l);
+  return pos + l;
+}
+
   void
 KDE_InterceptXMapRequest()
 {
-  /* Helper functions ****************************************************/
-
-    char *
-  writeInt(char * buf, int i)
-  {
-    char * p = (char *)(&i);
-    buf[3] = *p++;
-    buf[2] = *p++;
-    buf[1] = *p++;
-    buf[0] = *p;
-
-    return buf + 4;
-  }
-
-    char *
-  writeText(char * buf, const char * text)
-  {
-    char * pos = buf;
-    int l = strlen( text ) + 1; /* we need the \0! (Simon) */
-    pos = writeInt(buf, l);
-    memcpy(pos, text, l);
-    return pos + l;
-  }
-
   /* Vars *****************************************************************/
 
     struct
