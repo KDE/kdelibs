@@ -373,13 +373,13 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
 {
   QStringList list = KProtocolManager::userAgentList();
   QString user_agent = DEFAULT_USERAGENT_STRING;
-  int host_len = hostname.length();
-
   if ( list.count() > 0 )
   {
-    QStringList::ConstIterator it(list.begin());
+    QStringList::ConstIterator it = list.begin();
     for( ; it != list.end(); ++it)
     {
+      //kdDebug() << "Hostname to lookup: " << hostname << endl;
+      //kdDebug() << "Supplied hostname: " << (*it) << endl;
       QStringList split;
       int pos = (*it).find("::");
       if ( pos == -1 )
@@ -395,14 +395,20 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
         split = QStringList::split("::", (*it));
 
       QString match = split[0];
+      //kdDebug() << "Possible Match: " << match << endl;
       int match_len = match.length();
-      if ( match.isEmpty() || split[1].isEmpty() || match_len > host_len ||
+      int host_len = hostname.length();
+      if ( match.isEmpty() || split[1].isEmpty() ||
+           match_len > host_len ||
            (match.contains( '.' ) == 1 && match[0] == '.') )
         continue;
 
       // We look for a reverse domain name match...
-      int rev_match = match.findRev(hostname, -1, false) + host_len;
-      if ( rev_match == match_len )
+      int rev_match = hostname.findRev(match, -1, false);
+      //kdDebug() << "Hostname length: " << host_len << endl;
+      //kdDebug() << "Match length: " << match_len << endl;
+      //kdDebug() << "Reverse match length: " << rev_match << endl;
+      if ( rev_match != -1 && match_len == (host_len - rev_match) )
       {
         user_agent = split[1];
         break;
