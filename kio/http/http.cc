@@ -1130,8 +1130,9 @@ bool HTTPProtocol::readHeader()
   // and that we do indeed have a header
   // Do this only if there is no redirection. Buggy server implementations
   // incorrectly send Content-Type with a redirection response. (DA)
-  if( locationStr.isEmpty() )
-  mimeType(m_strMimeType);
+  debug( "Location field's text is : %s", locationStr.latin1() );
+  if( locationStr.length() == 0 )
+     mimeType(m_strMimeType);
 
   if (m_request.method == HTTP_HEAD)
      return true;
