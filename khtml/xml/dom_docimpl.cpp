@@ -372,6 +372,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
+    m_usesDescendantRules = false;
 }
 
 DocumentImpl::~DocumentImpl()

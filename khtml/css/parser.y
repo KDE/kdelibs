@@ -539,6 +539,13 @@ selector:
             end = end->tagHistory;
         end->relation = $2;
         end->tagHistory = $1;
+	if ( $2 == CSSSelector::Descendant ||
+	     $2 == CSSSelector::Child ) {
+	    CSSParser *p = static_cast<CSSParser *>(parser);
+	    DOM::DocumentImpl *doc = p->document();
+	    if ( doc )
+		doc->setUsesDescendantRules(true);
+	}
     }
     | selector error {
 	delete $1;
@@ -563,7 +570,7 @@ simple_selector:
 
 ns_element:
     ns_selector element_name { $$ = ($1<<16) | $2; }
-  | element_name { 
+  | element_name {
         /* according to the specs this one matches all namespaces if no
 	   default namespace has been specified otherwise the default namespace */
 	CSSParser *p = static_cast<CSSParser *>(parser);
@@ -574,7 +581,7 @@ ns_element:
 ns_selector:
     '|' { $$ = 0; }
   | IDENT '|' { $$ = 1; /* #### insert correct namespace id here */ }
-  | '*' '|' { $$ = 0xffff; } 
+  | '*' '|' { $$ = 0xffff; }
 ;
 
 
@@ -640,13 +647,13 @@ class:
 
 ns_attrib_id:
     ns_selector attrib_id { $$ = ($1<<16) | $2; }
-  | attrib_id { 
+  | attrib_id {
 	/* opposed to elements, these only match for non namespaced attributes */
-	$$ = $1; 
+	$$ = $1;
     }
 ;
 
-attrib_id: 
+attrib_id:
     IDENT maybe_space {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();

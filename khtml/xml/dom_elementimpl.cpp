@@ -494,6 +494,8 @@ void ElementImpl::recalcStyle( StyleChange change )
 {
     // ### should go away and be done in renderobject
     RenderStyle* _style = m_render ? m_render->style() : 0;
+    bool hasParentRenderer = parent() ? parent()->renderer() : false;
+
 #if 0
     const char* debug;
     switch(change) {
@@ -508,7 +510,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     }
     qDebug("recalcStyle(%d: %s, changed: %d)[%p: %s]", change, debug, changed(), this, tagName().string().latin1());
 #endif
-    if ( change >= Inherit || changed() ) {
+    if ( hasParentRenderer && (change >= Inherit || changed()) ) {
         EDisplay oldDisplay = _style ? _style->display() : NONE;
         EPosition oldPosition = _style ? _style->position() : STATIC;
 
@@ -534,8 +536,12 @@ void ElementImpl::recalcStyle( StyleChange change )
         }
         newStyle->deref();
 
-        if ( change != Force )
-            change = ch;
+       if ( change != Force) {
+            if (getDocument()->usesDescendantRules())
+                change = Force;
+            else
+                change = ch;
+        }
     }
 
     NodeImpl *n;

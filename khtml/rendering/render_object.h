@@ -203,7 +203,7 @@ public:
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
     bool isText() const  { return m_isText; }
     bool isInline() const { return m_inline; }  // inline object
-    bool mouseInside() const { return m_mouseInside; }
+    bool mouseInside() const;
     bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
     bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }
     bool layouted() const   { return m_layouted; }

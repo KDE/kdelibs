@@ -1115,6 +1115,13 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
     return SelectionPointAfter;
 }
 
+bool RenderObject::mouseInside() const
+{
+    if (!m_mouseInside && continuation())
+        return continuation()->mouseInside();
+    return m_mouseInside;
+}
+
 void RenderObject::setHoverAndActive(NodeInfo& info, bool oldinside, bool inside)
 {
     DOM::NodeImpl* elt = element();
@@ -1179,7 +1186,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     if (!info.readonly()) {
         // lets see if we need a new style
         bool oldinside = mouseInside();
-        setMouseInside(inside && inner);
+        setMouseInside(inside);
 
 	setHoverAndActive(info, oldinside, inside);
         if (!isInline() && continuation())
