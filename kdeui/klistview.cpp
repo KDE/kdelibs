@@ -527,7 +527,7 @@ void KListView::cleanDropVisualizer()
 {
     if (mOldDropVisualizer.isValid())
 	  {
-		viewport()->update (mOldDropVisualizer);
+		viewport()->repaint (mOldDropVisualizer, true);
 		mOldDropVisualizer = QRect();
 	  }
 }
