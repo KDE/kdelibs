@@ -25,9 +25,9 @@ namespace khtml {
         // rectangle of the part that has been loaded very recently
         // pointer to us
         // return whether we need manual update
-	virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *) {}
-	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
-	virtual void notifyFinished(CachedObject * /*finishedObj*/) {}
+	virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
+	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/);
+	virtual void notifyFinished(CachedObject * /*finishedObj*/);
     };
 };
 

@@ -1521,4 +1521,11 @@ void Cache::removeCacheEntry( CachedObject *object )
 }
 
 
+// --------------------------------------
+
+void CachedObjectClient::setPixmap(const QPixmap &, const QRect&, CachedImage *) {}
+void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
+void CachedObjectClient::notifyFinished(CachedObject * /*finishedObj*/) {}
+
+
 #include "loader.moc"
