@@ -337,7 +337,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	if(kapp->appName().length() > 0)
 	  st = kapp->appName() + ": ";
 	st =  i18n("Select Color");
-	setCaption( st.data() );
+	setCaption( st );
 	
 	// create a toplevel layout
 	QGridLayout *tl_layout = new QGridLayout(this, 3, 3, 10);
