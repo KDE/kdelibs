@@ -593,6 +593,7 @@ void Scheduler::delCachedAuthKeys( const AuthKeyList& list )
 
 void Scheduler::slotSlaveDied(KIO::Slave *slave)
 {
+    assert(!slave->isAlive());
     ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
     protInfo->activeSlaves.removeRef(slave);
     if (slave == slaveOnHold)
@@ -793,10 +794,13 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
        job->kill();
     }
     delete list;
-    idleSlaves->append(slave);
-    slave->connection()->send( CMD_DISCONNECT );
-    slave->setIdle();
-    _scheduleCleanup();
+    if (slave->isAlive())
+    {
+       idleSlaves->append(slave);
+       slave->connection()->send( CMD_DISCONNECT );
+       slave->setIdle();
+       _scheduleCleanup();
+    }
     return true;
 }
 
