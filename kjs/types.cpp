@@ -200,6 +200,16 @@ void List::prepend(const Value& val)
   return static_cast<ListImp*>(rep)->prepend(val);
 }
 
+void List::appendList(const List& lst)
+{
+  return static_cast<ListImp*>(rep)->appendList(lst);
+}
+
+void List::prependList(const List& lst)
+{
+  return static_cast<ListImp*>(rep)->prependList(lst);
+}
+
 void List::removeFirst()
 {
   static_cast<ListImp*>(rep)->removeFirst();

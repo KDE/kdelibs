@@ -219,6 +219,8 @@ namespace KJS {
 
     void append(const Value& val);
     void prepend(const Value& val);
+    void appendList(const List& lst);
+    void prependList(const List& lst);
     void removeFirst();
     void removeLast();
     void remove(const Value &val);

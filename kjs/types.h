@@ -167,6 +167,15 @@ namespace KJS {
      */
     void prepend(const Value& val);
     /**
+     * Appends the items of another list at the end of this one.
+     */
+    void appendList(const List& lst);
+    /**
+     * Prepend the items of another list to this one.
+     * The first item of @p lst will become the first item of the list.
+     */
+    void prependList(const List& lst);
+    /**
      * Remove the element at the beginning of the list.
      */
     void removeFirst();

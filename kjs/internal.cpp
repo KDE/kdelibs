@@ -503,6 +503,26 @@ void ListImp::prepend(const Value& obj)
   hook->next = n;
 }
 
+void ListImp::appendList(const List& lst)
+{
+  ListIterator it = lst.begin();
+  ListIterator e = lst.end();
+  while(it != e) {
+    append(*it);
+    ++it;
+  }
+}
+
+void ListImp::prependList(const List& lst)
+{
+  ListIterator it = lst.end();
+  ListIterator e = lst.begin();
+  while(it != e) {
+    prepend(*it);
+    --it;
+  }
+}
+
 void ListImp::removeFirst()
 {
   erase(hook->next);
