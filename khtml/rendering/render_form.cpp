@@ -99,20 +99,22 @@ void RenderFormElement::calcMinMaxWidth()
 
 bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
 {
+    if ( !m_element || !m_element->view || !m_element->view->part() ) return true;
+
     ref();
     m_element->ref();
 
     switch(e->type()) {
     case QEvent::FocusOut:
         m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-        if(isEditable()) {
+        if ( isEditable() ) {
             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( m_element->view->part()->browserExtension() );
             if ( ext )  ext->editableWidgetBlurred( m_widget );
         }
         break;
     case QEvent::FocusIn:
         m_element->ownerDocument()->setFocusNode(m_element);
-        if(isEditable()) {
+        if ( isEditable() ) {
             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( m_element->view->part()->browserExtension() );
             if ( ext )  ext->editableWidgetFocused( m_widget );
         }
