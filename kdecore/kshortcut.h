@@ -222,13 +222,16 @@ class KKey
 
 	/**
 	 * Returns a human-readable representation of the key in the form
-	 * "modifier+key".
+	 * "modifier+key". Note that the representation is localised,
+	 * use toStringInternal() for cases like saving to configuration files.
 	 * @return the string representation of the key
+	 * @see toStringInternal()
 	 */
 	QString toString() const;
 
 	/**
-	 * @internal
+	 * Returns an untranslated text representation of the key in the form
+	 * "modifier+key", suitable e.g. for saving in configuration files.
 	 */
 	QString toStringInternal() const;
 
