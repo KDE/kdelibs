@@ -9,6 +9,6 @@ het volgende in de basisdirectory van de
 
 <para>Aangezien &kappname; <command>autoconf</command> en
 <command>automake</command> gebruikt, zouden er bij de compilatie geen
-problemen mogen zijn.  Indien u er toch tegenkomt, meldt u ze dan in
+problemen mogen zijn.  Indien u toch problemen tegenkomt, meldt u ze dan in
 de toepasselijke &kde;-discussielijsten.</para>
 
