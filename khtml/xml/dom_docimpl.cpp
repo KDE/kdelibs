@@ -352,7 +352,14 @@ EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name
 
 NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &exceptioncode)
 {
-	NodeImpl *result = 0;
+    NodeImpl *result = 0;
+
+    // Not mentioned in spec: throw NOT_FOUND_ERR if evt is null
+    if (!importedNode) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return 0;
+    }
+
 
 	if(importedNode->nodeType() == Node::ELEMENT_NODE)
 	{
