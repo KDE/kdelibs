@@ -89,6 +89,10 @@ public:
 				else
 					ret *= m_engine->height();
 			}
+			else if(check.compare("em") == 0)
+			{
+				ret = (value / 72.0) * dpi() * 12.0; // TODO make this depend on actual font size
+			}
 		}
 		else
 			ret = value;
@@ -576,19 +580,24 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		float w = points[2].toFloat();
 		float h = points[3].toFloat();
 
-		double vratiow = d->width / w;
-		double vratioh = d->height / h;
+		double vratiow = width / w;
+		double vratioh = height / h;
+
+		d->width = w;
+		d->height = h;
 
 		d->painter->worldMatrix()->scale(vratiow, vratioh);
 	}
+	else
+	{
+		// Fit into 'width' and 'height'
+		// FIXME: Use an aspect ratio
+		double ratiow = width / d->width;
+		double ratioh = height / d->height;
 
-	// Fit into 'width' and 'height'
-	// FIXME: Use an aspect ratio
-	double ratiow = width / d->width;
-	double ratioh = height / d->height;
+		d->painter->worldMatrix()->scale(ratiow, ratioh);
+	}
 
-	d->painter->worldMatrix()->scale(ratiow, ratioh);
-	
 	QWMatrix initialMatrix = *d->painter->worldMatrix();
 	d->helper->m_initialMatrix = initialMatrix;
 	
