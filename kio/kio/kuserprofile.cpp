@@ -132,7 +132,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     }
 
     // Collect services, to make the next loop faster
-    OfferList::Iterator<KServiceOffer> itOffers = offers.begin();
+    OfferList::Iterator itOffers = offers.begin();
     for( ; itOffers != offers.end(); ++itOffers )
         serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
     //kdDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
