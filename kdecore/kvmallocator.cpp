@@ -97,7 +97,7 @@ KVMAllocator::allocate(size_t _size)
       {
          Block &free_block = it.data();
          Block block;
-         kdDebug(13020)<<"VM alloc: using block from free list "<<(long)free_block.start<<" size ="<<(long)free_block.size<<" request = "<<_size<< endl;
+         kdDebug(180)<<"VM alloc: using block from free list "<<(long)free_block.start<<" size ="<<(long)free_block.size<<" request = "<<_size<< endl;
          block.start = free_block.start;
          block.length = _size;
          block.size = (_size + KVM_ALIGN) & ~KVM_ALIGN;
@@ -119,7 +119,7 @@ KVMAllocator::allocate(size_t _size)
    block.length = _size;
    block.size = (_size + KVM_ALIGN) & ~KVM_ALIGN;
    block.mmap = 0;
-   kdDebug(13020)<<"VM alloc: using new block "<<(long)block.start<<" size ="<<(long)block.size<<" request = "<<_size<< endl;
+   kdDebug(180)<<"VM alloc: using new block "<<(long)block.start<<" size ="<<(long)block.size<<" request = "<<_size<< endl;
    it = d->used_blocks.replace(block.start, block);
    d->max_length += block.size;
    return &(it.data());
@@ -134,14 +134,14 @@ KVMAllocator::free(Block *block_p)
    Block block = *block_p;
    if (block.mmap)
    {
-      kdDebug(13020)<<"VM free: Block "<<(long)block.start<<" is still mmapped!"<<endl;
+      kdDebug(180)<<"VM free: Block "<<(long)block.start<<" is still mmapped!"<<endl;
       return;
    }
    QMap<off_t,KVMAllocator::Block>::iterator it;
    it = d->used_blocks.find(block.start);
    if (it == d->used_blocks.end())
    {
-      kdDebug(13020)<<"VM free: Block "<<(long)block.start<<" is not allocated."<<endl;
+      kdDebug(180)<<"VM free: Block "<<(long)block.start<<" is not allocated."<<endl;
       return;
    }
    d->used_blocks.remove(it);
@@ -154,7 +154,7 @@ KVMAllocator::free(Block *block_p)
       if ((block_before.start + off_t(block_before.size)) == block.start)
       {
          // Merge blocks.
-         kdDebug(13020) << "VM merging: Block "<< (long)block_before.start<<
+         kdDebug(180) << "VM merging: Block "<< (long)block_before.start<<
                            " with "<< (long)block.start<< " (before)" << endl;
          block.size += block_before.size;
          block.start = block_before.start;
@@ -171,7 +171,7 @@ KVMAllocator::free(Block *block_p)
       if ((block.start + off_t(block.size)) == block_after.start)
       {
          // Merge blocks.
-         kdDebug(13020) << "VM merging: Block "<< (long)block.start<<
+         kdDebug(180) << "VM merging: Block "<< (long)block.start<<
                            " with "<< (long)block_after.start<< " (after)" << endl;
          block.size += block_after.size;
          it.data() = block;
@@ -192,7 +192,7 @@ KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
 bool
 KVMAllocator::copyBlock(void *dest, Block *src, int _offset, size_t length)
 {
-   //kdDebug(13020)<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<":"<<length<<endl;
+   //kdDebug(180)<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<":"<<length<<endl;
    lseek(d->tempfile->handle(), src->start+_offset, SEEK_SET);
    if (length == 0)
       length = src->length - _offset;
@@ -228,7 +228,7 @@ KVMAllocator::copy(Block *dest, void *src, int _offset, size_t length)
 bool
 KVMAllocator::copyBlock(Block *dest, void *src, int _offset, size_t length)
 {
-   //kdDebug(13020)<<"VM write: seek "<<(long)dest->start<<" +"<<_offset<< ":" << length << endl;
+   //kdDebug(180)<<"VM write: seek "<<(long)dest->start<<" +"<<_offset<< ":" << length << endl;
    lseek(d->tempfile->handle(), dest->start+_offset, SEEK_SET);
    if (length == 0)
       length = dest->length - _offset;
