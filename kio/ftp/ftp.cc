@@ -28,6 +28,7 @@
 #include <kprotocolmanager.h>
 
 #include <kdebug.h>
+#include <kinstance.h>
 #include <ksock.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -50,8 +51,30 @@
 
 using namespace KIO;
 
-Ftp::Ftp( Connection *connection )
-    : SlaveBase( "ftp", connection )
+extern "C" { int kdemain(int argc, char **argv); }
+
+int kdemain( int argc, char **argv )
+{
+  KInstance instance( "kio_ftp" );
+
+  kDebugInfo(7102, "Starting %d", getpid());
+
+  if (argc != 4)
+  {
+     fprintf(stderr, "Usage: kio_ftp protocol domain-socket1 domain-socket2\n");
+     exit(-1);
+  }
+
+  Ftp slave(argv[2], argv[3]);
+  slave.dispatchLoop();
+
+  kDebugInfo(7102, "Done" );
+  return 0;
+}
+
+
+Ftp::Ftp( const QCString &pool, const QCString &app )
+    : SlaveBase( "ftp", pool, app )
 {
   dirfile = 0L;
   sControl = sData = sDatal = 0;
@@ -1527,8 +1550,3 @@ const char* strnextchr( const char * p , char c )
 */
 // end patch
 
-extern "C" {
-    SlaveBase *init_ftp() {
-        return new Ftp();
-    }
-}

@@ -58,7 +58,7 @@ struct netbuf
 class Ftp : public KIO::SlaveBase
 {
 public:
-  Ftp( KIO::Connection *connection = 0 );
+  Ftp( const QCString &pool, const QCString &app );
   virtual ~Ftp();
 
   virtual void setHost( const QString& host, int port, const QString& user, const QString& pass );
