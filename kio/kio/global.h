@@ -266,7 +266,7 @@ namespace KIO
    * @see enum Command
    * @since 3.2
    */
-  QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd);
+  QString unsupportedActionErrorString(const QString &protocol, int cmd);
 
   /**
    * Constants used to specify the type of a KUDSAtom.
