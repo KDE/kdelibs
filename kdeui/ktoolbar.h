@@ -3,6 +3,7 @@
               (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
+              (C) 1999 Kurt Granroth (granroth@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,174 +20,16 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
     */
-
-// $Id$
-// $Log$
-// Revision 1.70  1999/12/21 18:36:00  granroth
-// By default, toolbars will no longer honor the user-set icon mode (icons
-// only, text under icon, etc).  This is for the benefit of apps that
-// have many many toolbars -- multiple toolbars look very bad in any
-// other mode but "icons only".
-//
-// There *ARE* two ways to force a mode change, though.  The first is a
-// boolean flag in the constructor (honor_mode -- default 'false') that,
-// if set to true, will allow the toolbar to read in the global settings.
-// It is up to the application OR more importantly, the application
-// framework to decide which toolbar should honor the setting.  This is
-// the "main" toolbar, in 99.9% of all apps.  In current apps, this is
-// done with 'toolBar(0)' in KTMainWindow or the "mainToolBar" toolbar in
-// the KParts realm.
-//
-// I also added a sub-menu to the toolbar context menu.  This will allow
-// users to change the style for individual toolbars "on the fly"!
-//
-// Revision 1.69  1999/12/19 00:17:33  shausman
-// - KToolBar, KAction: const fixes (QObject *receiver -> const QObject
-//   *receiver )
-// - KStdAction:
-//   - const fixes
-//   - make KStdAction::action() return QAction * instead of KAction *
-//   - make KStdAction::openRecent() return KSelectAction *
-//   - make KStdAction::show*Bar() return KToggleAction *
-//
-// Revision 1.68  1999/12/18 22:00:17  granroth
-// Added convience method: 'clear()'  Basically, it just iterates through
-// all of it's children and removes them in turn.
-//
-// Revision 1.67  1999/11/26 12:48:06  dfaure
-// More proofreading. Found what I was looking for, will stop proofreading :-)
-//
-// Revision 1.66  1999/10/10 08:18:58  bero
-// Code cleanup ((void) stuff)
-//
-// Revision 1.65  1999/10/08 22:49:18  bero
-// - Replace KTopLevelWidget with KTMainWindow where it's still used
-// - Disable ktopwidget.h
-// - Remove ktopwidget stuff from libs
-//
-// Revision 1.64  1999/09/21 11:03:55  waba
-// WABA: Clean up interface
-//
-// Revision 1.63  1999/07/26 19:42:45  pbrown
-// fixed for qcombobox.
-//
-// Revision 1.62  1999/06/15 20:36:34  cschlaeg
-// some more cleanup in ktmlayout; fixed random toolbar handle highlighting
-//
-// Revision 1.61  1999/06/10 21:47:50  cschlaeg
-// setFullWidth(false) ignore feature re-implemented; floating resize bug fixed; layout manager documented; resizing floating bars still does not work properly
-//
-// Revision 1.60  1999/06/09 21:52:27  cschlaeg
-// serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
-//
-// Revision 1.59  1999/06/07 21:11:05  cschlaeg
-// more work done for layout management integration; setFullWidth(false) still does not work; will work on this tomorrow
-//
-// Revision 1.58  1999/06/06 22:48:39  pbrown
-// "warning: extra qualification `KToolBar::' on member `sizePolicy'
-// ignored" fixed.
-//
-// Revision 1.57  1999/06/06 17:29:45  cschlaeg
-// New layout management implemented for KTMainWindow. This required
-// updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
-// public variables removed. Use mainViewGeometry() instead if you really
-// have to. Added new classes in ktmlayout to handle the new layout
-// management.
-//
-// Revision 1.56  1999/06/04 15:43:55  pbrown
-// improved KLineEdit to have a right popup menu with cut, copy, past, clear
-// etc. like newer windows (heh) applications have.  Renamed class from
-// KLined to KLineEdit for consistency -- provided a #define for backwards
-// comptability, but I am working on stamping the old class name out now.
-//
-// Revision 1.55  1999/05/28 10:17:21  kulow
-// several fixes to make --enable-final work. Most work is done by changing
-// the order of the files in _SOURCES
-//
-// Revision 1.54  1999/05/23 00:53:59  kulow
-// CVS_SILENT moving some header files that STL comes before Qt
-//
-// Revision 1.53  1999/05/22 20:54:13  ssk
-// Minor doc reformat.
-//
-// Revision 1.52  1999/05/04 04:28:08  ssk
-// Updated KToolBar description.
-//
-// Revision 1.51  1999/04/22 15:59:44  shausman
-// - support QStringList for combos
-//
-// Revision 1.50  1999/03/06 18:03:37  ettrich
-// the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
-// It has its own menu entry and reacts on simple LMP clicks.
-//
-// Revision 1.49  1999/03/01 23:35:26  kulow
-// CVS_SILENT ported to Qt 2.0
-//
-// Revision 1.48  1999/02/10 19:51:23  koss
-// *** empty log message ***
-//
-// Revision 1.46  1998/11/25 13:22:00  radej
-// sven: Someone made some private things protected (was it me?).
-//
-// Revision 1.45  1998/11/21 19:27:20  radej
-// sven: doubleClicked signal for buttons.
-//
-// Revision 1.44  1998/11/11 14:32:11  radej
-// sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
-//
-// Revision 1.43  1998/11/09 00:28:43  radej
-// sven: Docs update (more to come)
-//
-// Revision 1.42  1998/11/06 12:54:54  radej
-// sven: radioGroup is in. handle changed again (broken in vertical mode)
-//
-// Revision 1.41  1998/10/09 12:42:21  radej
-// sven: New: (un) highlight sugnals, Autorepeat buttons, button down when
-//       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
-//
-// Revision 1.40  1998/09/15 05:56:47  antlarr
-// I've added a setIconText function to change the state of a variable
-// in KToolBar
-//
-// Revision 1.39  1998/09/01 20:22:24  kulow
-// I renamed all old qt header files to the new versions. I think, this looks
-// nicer (and gives the change in configure a sense :)
-//
-// Revision 1.38  1998/08/09 14:01:19  radej
-// sven: reintroduced makeDisabledPixmap code, and dumped QIconSet. Fixed a bug
-//       with paletteChange too.
-//
-// Revision 1.37  1998/08/06 15:39:03  radej
-// sven: Popups & delayedPopups. Uses QIconSet. Needs Qt-1.4x
-//
-// Revision 1.36  1998/06/20 10:57:00  radej
-// sven: mispelled something...
-//
-// Revision 1.35  1998/06/19 13:09:31  radej
-// sven: Docs.
-//
-// Revision 1.34  1998/05/04 16:38:36  radej
-// Bugfixes for moving + opaque moving
-//
-// Revision 1.33  1998/04/28 09:17:49  radej
-// New moving and docking BINARY INCOMPATIBLE
-//
-
 #ifndef _KTOOLBAR_H
 #define _KTOOLBAR_H
 
-#include <qlist.h>
 #include <qframe.h>
-#include <qpixmap.h>
-#include <qpopupmenu.h>
-#include <qbutton.h>
-#include <qfont.h>
-#include <qsize.h>
-#include <qintdict.h>
-#include <qstringlist.h>
 #include <qcombobox.h>
 
-//#include <qiconset.h>
+class QSize;
+class QPixmap;
+class QPopupMenu;
+class QStringList;
 
 class KLineEdit;
 class KToolBar;
@@ -274,7 +117,7 @@ public:
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
                    const QString& tooltiptext = QString::null,
-		   int index=-1 );
+                   int index=-1 );
 
   /**
    * This inserts a button with popupmenu. Button will have small
@@ -304,7 +147,7 @@ public:
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
                    const QString& toolTipText = QString::null,
-		   int size = 70, int index =-1);
+                   int size = 70, int index =-1);
 
   /**
    * Inserts QComboBox with list. Can be writable, but cannot contain
@@ -322,7 +165,7 @@ public:
                    const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
                    QComboBox::Policy policy = QComboBox::AtBottom);
-		
+
   /**
    * Inserts QComboBox with list. Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
@@ -411,7 +254,7 @@ public:
    * toolbar):
    * <pre>
    * bar->insertButton(pixmap, id, const SIGNAL(clicked ()), this,
-   *     		SLOT (slotClick()), true, "click or wait for popup");
+   *                   SLOT (slotClick()), true, "click or wait for popup");
    * </pre> And then add a delayed popup:
    * <pre>
    * bar->setDelayedPopup (id, historyPopup); </pre>
@@ -685,7 +528,7 @@ public:
    */
   int maxHeight()
   {
-	  return (maxVerHeight);
+      return (maxVerHeight);
   }
 
   /**
@@ -700,7 +543,7 @@ public:
    */
   int maxWidth()
   {
-	  return (maxHorWidth);
+      return (maxHorWidth);
   }
 
   /**
