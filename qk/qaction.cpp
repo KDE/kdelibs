@@ -14,8 +14,6 @@
 #include "qtooltip.h"
 #include "qobjectlist.h"
 
-template QList<QAction>;
-
 // NOT REVISED
 
 static const char*folder[]={
