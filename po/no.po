@@ -1,0 +1,204 @@
+# Norwegian (Norsk) translation by Marius Sundbakken <marius6@hermes.hibu.no>
+# Comments welcome.
+
+# general messages, that are often used
+msgid "Error"
+msgstr "Feil"
+
+msgid "Malformed URL"
+msgstr "Feilaktig URL"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "No"
+msgstr "Nei"
+
+msgid "Warning"
+msgstr "Advarsel"
+
+msgid "Open a file"
+msgstr "Åpne en fil"
+
+msgid "Save a file"
+msgstr "Lagre en fil"
+
+msgid "Contents"
+msgstr "Innhold"
+
+msgid "About"
+msgstr "Om"
+
+msgid "Open"
+msgstr "Åpne"
+
+msgid "Save"
+msgstr "Lagre"
+
+msgid "Save As"
+msgstr "Lagre som"
+
+msgid "Close"
+msgstr "Lukk"
+
+msgid "Quit"
+msgstr "Avslutt"
+
+msgid "Untitled"
+msgstr "Uten tittel"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Apply"
+msgstr "Bruk"
+
+msgid "File"
+msgstr "Fil"
+
+msgid "Help"
+msgstr "Hjelp"
+
+msgid "Edit"
+msgstr "Editer"
+
+# libkdeui messages
+
+#: kcolordlg.cpp:239
+msgid "Select Color"
+msgstr "Velg Farge"
+
+#: kcolordlg.cpp:244
+msgid "System Colors"
+msgstr "System Farger"
+
+#: kcolordlg.cpp:269
+msgid "Custom Colors"
+msgstr "Egendefinerte Farger"
+
+#: kcolordlg.cpp:345
+msgid "Add to Custom Colors"
+msgstr "Legg til egendefinerte farger"
+
+#: kcolordlg.cpp:649 kcolordlg.cpp:699
+msgid "Custom..."
+msgstr ""
+
+#: kfontdialog.cpp:95
+msgid "Select Font"
+msgstr "Velg Skrifttype"
+
+#: kfontdialog.cpp:99
+msgid "Requested Font"
+msgstr "Etterspurt Skrifttype"
+
+#: kfontdialog.cpp:104
+msgid "Actual Font"
+msgstr ""
+
+#: kfontdialog.cpp:108 kfontdialog.cpp:112
+msgid "Family:"
+msgstr "Familie:"
+
+#: kfontdialog.cpp:119 kfontdialog.cpp:124
+msgid "Size:"
+msgstr "Størrelse:"
+
+#: kfontdialog.cpp:133 kfontdialog.cpp:138
+msgid "Weight:"
+msgstr "Vekt:"
+
+#: kfontdialog.cpp:147 kfontdialog.cpp:155
+msgid "Style:"
+msgstr "Stil:"
+
+#: kfontdialog.cpp:190
+msgid "Size"
+msgstr "Størrelse"
+
+#: kfontdialog.cpp:229
+msgid "Weight"
+msgstr "Vekt"
+
+#: kfontdialog.cpp:230 kfontdialog.cpp:327
+msgid "normal"
+msgstr "normal"
+
+#: kfontdialog.cpp:231 kfontdialog.cpp:329
+msgid "bold"
+msgstr "fet"
+
+#: kfontdialog.cpp:240
+msgid "Style"
+msgstr "Stil"
+
+#: kfontdialog.cpp:241 kfontdialog.cpp:340 kfontdialog.cpp:369
+msgid "roman"
+msgstr "roman"
+
+#: kfontdialog.cpp:242 kfontdialog.cpp:342 kfontdialog.cpp:367
+msgid "italic"
+msgstr "kursiv"
+
+#: kfontdialog.cpp:270
+msgid "Dolor Ipse"
+msgstr ""
+
+#: kfontdialog.cpp:362
+msgid "Bold"
+msgstr "fet"
+
+#: kfontdialog.cpp:364
+msgid "Normal"
+msgstr "Normal"
+
+#: kiconloader.cpp:176
+msgid "Select Icon"
+msgstr "Velg Ikon"
+
+#: kiconloader.cpp:182
+msgid "Filter:"
+msgstr "Filter:"
+
+#: kiconloader.cpp:337
+#, c-format
+msgid "ERROR: couldn't find icon: %s"
+msgstr "FEIL: kunne ikke finne ikon: %s"
+
+#: kmenubar.cpp:106 ktoolbar.cpp:273
+msgid "Top"
+msgstr "Topp"
+
+#: kmenubar.cpp:107 ktoolbar.cpp:275
+msgid "Bottom"
+msgstr "Bunn"
+
+#: kmenubar.cpp:108 ktoolbar.cpp:276
+msgid "Floating"
+msgstr "Flytende"
+
+#: kmenubar.cpp:182 kmenubar.cpp:223 ktoolbar.cpp:699 ktoolbar.cpp:1208
+msgid "Float"
+msgstr "Flyt"
+
+#: kmenubar.cpp:213 ktoolbar.cpp:1198
+msgid "UnFloat"
+msgstr ""
+
+#: ktoolbar.cpp:87 ktoolbar.cpp:145
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: pixmap er tom, kanskje en manglende fil"
+
+#: ktoolbar.cpp:272
+msgid "Left"
+msgstr "Venstre"
+
+#: ktoolbar.cpp:274
+msgid "Right"
+msgstr "Høyre"
