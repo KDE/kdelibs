@@ -24,6 +24,7 @@
 #include "kjs_window.h"
 #include "kjs_events.h"
 #include <khtml_part.h>
+#include <kprotocolmanager.h>
 #include <kdebug.h>
 
 using namespace KJS;
@@ -240,6 +241,11 @@ void KJSProxyImpl::initScript()
 #endif
   //m_script->enableDebug();
   globalObject.put(m_script->globalExec(),"debug",new TestFunctionImp(),Internal);
+
+  QString userAgent = KProtocolManager::userAgentForHost(m_part->url().host());
+  if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
+      userAgent.find(QString::fromLatin1("MSIE")) >= 0)
+    m_script->setIECompatMode(true);
 }
 
 // Helper method, so that all classes which need jScript() don't need to be added
