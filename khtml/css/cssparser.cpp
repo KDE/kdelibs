@@ -105,12 +105,7 @@ DOMString StyleBaseImpl::baseUrl()
 /*
  * parsing functions for stylesheets
  */
-/*
-inline bool isspace(const QChar &c)
-{
-     return (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\r' || c == QChar(0xa0));
-}
-*/
+
 const QChar *
 StyleBaseImpl::parseSpace(const QChar *curP, const QChar *endP)
 {
@@ -1127,7 +1122,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT || id == CSS_VAL_TOP || id == CSS_VAL_BOTTOM) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
 		}
         break;
@@ -1137,7 +1132,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		if (cssval) {
 	    	int id = cssval->id;
 	    	if ( id == CSS_VAL_COLLAPSE || id == CSS_VAL_SEPARATE ) {
-				parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+				parsedValue = new CSSPrimitiveValueImpl(id);
 	    	}
 		}
 		break;
@@ -1147,7 +1142,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_COLLAPSE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
 		}
         break;
@@ -1157,7 +1152,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		if (cssval) {
 	    	int id = cssval->id;
 	    	if ( id == CSS_VAL_INSIDE || id == CSS_VAL_OUTSIDE ) {
-				parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+				parsedValue = new CSSPrimitiveValueImpl(id);
 	    	}
 		}
 		break;
@@ -1171,7 +1166,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if ((id >= CSS_VAL_CIRCLE && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
 		}
         break;
@@ -1184,7 +1179,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if ((id >= CSS_VAL_INLINE && id <= CSS_VAL_TABLE_CAPTION) || id == CSS_VAL_NONE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
 		}
         break;
@@ -1194,7 +1189,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		if (cssval) {
 	    	int id = cssval->id;
 	    	if ( id == CSS_VAL_LTR || id == CSS_VAL_RTL ) {
-				parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+				parsedValue = new CSSPrimitiveValueImpl(id);
 	    	}
 		}
 		break;
@@ -1204,7 +1199,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		if (cssval) {
 			int id = cssval->id;
 			if ((id >= CSS_VAL_CAPITALIZE && id <= CSS_VAL_LOWERCASE) || id == CSS_VAL_NONE) {
-				parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+				parsedValue = new CSSPrimitiveValueImpl(id);
 			}
 		}
 		break;
@@ -1216,7 +1211,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
             int id = cssval->id;
             if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT || id == CSS_VAL_NONE ||
 				(propId == CSS_PROP_CLEAR && id == CSS_VAL_BOTH)) {
-				parsedValue = new CSSPrimitiveValueImpl(cssval->id); 
+				parsedValue = new CSSPrimitiveValueImpl(id); 
 			}
 		}
 		break;
@@ -1227,7 +1222,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id >= CSS_VAL_LEFT && id <= CSS_VAL__KONQ_CENTER) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
                 break;
             }
         } else {
@@ -1245,7 +1240,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id >= CSS_VAL_NONE && id <= CSS_VAL_OUTSET) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         }
         break;
@@ -1276,7 +1271,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if ( id >= CSS_VAL_REPEAT && id <= CSS_VAL_NO_REPEAT ) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         }
         break;
@@ -1289,7 +1284,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if ( id == CSS_VAL_SCROLL || id == CSS_VAL_FIXED ) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         }
         break;
@@ -1443,7 +1438,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id >= CSS_VAL_AUTO && id <= CSS_VAL_HELP) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
         		break;
 	    	}
         } else {
@@ -1481,7 +1476,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_THIN || id == CSS_VAL_MEDIUM || id == CSS_VAL_THICK) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         } else {
             parsedValue = parseUnit(curP, endP, LENGTH);
@@ -1491,7 +1486,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_MARKER_OFFSET:        // <length> | auto | inherit
     {
         if (cssval && cssval->id == CSS_VAL_AUTO) {
-	    parsedValue = new CSSPrimitiveValueImpl(cssval->id);            
+	    	parsedValue = new CSSPrimitiveValueImpl(cssval->id);            
         } else {
             parsedValue = parseUnit(curP, endP, LENGTH);
         }
@@ -1526,7 +1521,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id >= CSS_VAL_XX_SMALL && id <= CSS_VAL_LARGER) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
                 break;
             }
         } else {
@@ -1539,7 +1534,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if ( id == CSS_VAL_NORMAL || id == CSS_VAL_ITALIC || id == CSS_VAL_OBLIQUE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         }
         break;
@@ -1549,7 +1544,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if ( id == CSS_VAL_NORMAL || id == CSS_VAL_SMALL_CAPS) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         }
         break;
@@ -1561,7 +1556,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id >= CSS_VAL_BASELINE && id <= CSS_VAL_BOTTOM) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         } else {
             parsedValue = parseUnit(curP, endP, LENGTH | PERCENT );
@@ -1915,7 +1910,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
             int id = cssval->id;
             if (id == CSS_VAL_BELOW || id == CSS_VAL_LEVEL || id == CSS_VAL_ABOVE ||
                 id == CSS_VAL_HIGHER || id == CSS_VAL_LOWER) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
                 break;
             }
         }
@@ -1931,7 +1926,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
             if (id == CSS_VAL_X_SLOW || id == CSS_VAL_SLOW || id == CSS_VAL_MEDIUM ||
                 id == CSS_VAL_FAST || id == CSS_VAL_X_FAST || id == CSS_VAL_FASTER ||
                 id == CSS_VAL_SLOWER) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
                 break;
             }
         } else {
@@ -1947,7 +1942,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
             int id = cssval->id;
             if (id == CSS_VAL_SILENT || id == CSS_VAL_X_SOFT || id == CSS_VAL_SOFT ||
                 id == CSS_VAL_MEDIUM || id == CSS_VAL_X_LOUD || id == CSS_VAL_X_LOUD) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         } else {
             parsedValue = parseUnit(curP, endP, PERCENT | NUMBER);
@@ -1961,7 +1956,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
             int id = cssval->id;
             if (id == CSS_VAL_X_LOW || id == CSS_VAL_LOW || id == CSS_VAL_MEDIUM ||
                 id == CSS_VAL_HIGH || id == CSS_VAL_X_HIGH ) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+                parsedValue = new CSSPrimitiveValueImpl(id);
             }
         } else {
             parsedValue = parseUnit(curP, endP, FREQUENCY);
