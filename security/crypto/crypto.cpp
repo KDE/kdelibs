@@ -19,6 +19,11 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+//
+//   Attention.  The suck factor on this code is increasing.  It's a bit of a
+//   hack. </understatement>  It might be time to rewrite it soon.
+//
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -32,6 +37,7 @@
 #include <qlabel.h>
 #include <qbuttongroup.h>
 #include <qhbuttongroup.h>
+#include <qvbuttongroup.h>
 #include <qradiobutton.h>
 #include <qwhatsthis.h>
 #include <qpushbutton.h>
@@ -46,8 +52,15 @@
 #include <klocale.h>
 #include <kdialog.h>
 #include <kmessagebox.h>
+#include <kseparator.h>
 
 #include <qframe.h>
+
+#include <ksslx509map.h>
+#include <ksslinfodlg.h>
+#include <ksslcertificatecache.h>
+
+#include <kdebug.h>
 
 #include "crypto.h"
 
@@ -81,12 +94,36 @@ QString CipherItem::configName() const
 }
 
 
+
+OtherCertItem::OtherCertItem( QListView *view, QString& sub, bool perm, int policy, QDateTime exp, KCryptoConfig *module )
+    : QListViewItem( view, QString::null ), _sub(sub), _exp(exp), _perm(perm), _policy(policy)
+
+{
+    m_module = module;
+KSSLX509Map cert(sub);
+    setText(0, cert.getValue("O"));
+    setText(1, cert.getValue("CN"));
+}
+
+void OtherCertItem::stateChange( bool )
+{
+    m_module->configChanged();
+}
+
+QString OtherCertItem::configName() const
+{
+    return _sub;
+}
+
+
 KCryptoConfig::KCryptoConfig(QWidget *parent, const char *name)
   : KCModule(parent, name)
 {
 QGridLayout *grid;
 QBoxLayout *top = new QVBoxLayout(this);
 QString whatstr;
+
+  certDelList.setAutoDelete(true);
 
   ///////////////////////////////////////////////////////////////////////////
   // Create the GUI here - there are currently a total of 4 tabs.
@@ -104,7 +141,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   tabSSL = new QFrame(this);
   grid = new QGridLayout(tabSSL, 7, 2, KDialog::marginHint(),
-                                        KDialog::spacingHint() );
+                                       KDialog::spacingHint() );
   mUseTLS = new QCheckBox(i18n("Enable &TLS support if supported by the server."), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseTLS, 0, 0);
@@ -149,6 +186,7 @@ QString whatstr;
 
   // no need to parse kdeglobals.
   config = new KConfig("cryptodefaults", false, false);
+  policies = new KSimpleConfig("ksslpolicies", false);
 
 #ifdef HAVE_SSL
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
@@ -336,38 +374,70 @@ QString whatstr;
 
 #endif
 
-#if 0   // NOT YET IMPLEMENTED
   ///////////////////////////////////////////////////////////////////////////
   // FOURTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabOtherSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabOtherSSLCert, 8, 2, KDialog::marginHint(), KDialog::spacingHint());
+  oGrid = grid = new QGridLayout(tabOtherSSLCert, 20, 6, KDialog::marginHint(), KDialog::spacingHint());
 
-  otherSSLBox = new QListBox(tabOtherSSLCert);
+  otherSSLBox = new QListView(tabOtherSSLCert);
+  connect(otherSSLBox, SIGNAL(selectionChanged()), SLOT(slotOtherCertSelect()));
   whatstr = i18n("This list box shows which site and person certificates KDE"
                 " knows about.  You can easily manage them from here.");
   QWhatsThis::add(otherSSLBox, whatstr);
-  otherSSLBox->setSelectionMode(QListBox::Single);
-  otherSSLBox->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(otherSSLBox, 0, 7, 0, 0);
+//  otherSSLBox->setSelectionMode(QListView::Single);
+  otherSSLBox->addColumn(i18n("Organization"));
+  otherSSLBox->addColumn(i18n("Common Name"));
+  grid->addMultiCellWidget(otherSSLBox, 0, 7, 0, 4);
 
-  otherSSLImport = new QPushButton(i18n("&Import..."), tabOtherSSLCert);
-  //connect(otherSSLImport, SIGNAL(), SLOT());
-  grid->addWidget(otherSSLImport, 0, 1);
-
-  otherSSLView = new QPushButton(i18n("&View/Edit..."), tabOtherSSLCert);
-  //connect(otherSSLView, SIGNAL(), SLOT());
-  grid->addWidget(otherSSLView, 1, 1);
+  otherSSLExport = new QPushButton(i18n("&Export..."), tabOtherSSLCert);
+  connect(otherSSLExport, SIGNAL(clicked()), SLOT(slotExportCert()));
+  grid->addWidget(otherSSLExport, 0, 5);
 
   otherSSLRemove = new QPushButton(i18n("&Remove..."), tabOtherSSLCert);
-  //connect(otherSSLRemove, SIGNAL(), SLOT());
-  grid->addWidget(otherSSLRemove, 2, 1);
+  connect(otherSSLRemove, SIGNAL(clicked()), SLOT(slotRemoveCert()));
+  grid->addWidget(otherSSLRemove, 1, 5);
 
-  otherSSLVerify = new QPushButton(i18n("Verif&y..."), tabOtherSSLCert);
-  //connect(otherSSLVerify, SIGNAL(), SLOT());
-  grid->addWidget(otherSSLVerify, 3, 1);
+  otherSSLVerify = new QPushButton(i18n("&Verify..."), tabOtherSSLCert);
+  connect(otherSSLVerify, SIGNAL(clicked()), SLOT(slotVerifyCert()));
+  grid->addWidget(otherSSLVerify, 2, 5);
+
+      otherSSLExport->setEnabled(false);
+      otherSSLVerify->setEnabled(false);
+      otherSSLRemove->setEnabled(false);
+
+  grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabOtherSSLCert), 8, 8, 0, 5);
+  oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(""));
+  oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(""));
+  grid->addMultiCellWidget(oSubject, 9, 13, 0, 2);
+  grid->addMultiCellWidget(oIssuer, 9, 13, 3, 5);
+
+  grid->addWidget(new QLabel(i18n("Valid From:"), tabOtherSSLCert), 14, 0);
+  grid->addWidget(new QLabel(i18n("Valid Until:"), tabOtherSSLCert), 15, 0);
+  validFrom = new QLabel(tabOtherSSLCert);
+  grid->addWidget(validFrom, 14, 1);
+  validUntil = new QLabel(tabOtherSSLCert);
+  grid->addWidget(validUntil, 15, 1);
+
+  grid->addWidget(new QLabel(i18n("Cache..."), tabOtherSSLCert), 16, 0);
+  cachePerm = new QRadioButton(i18n("Permanentl&y"), tabOtherSSLCert);
+  cacheUntil = new QRadioButton(i18n("&Until..."), tabOtherSSLCert);
+  cachePerm->setEnabled(false);
+  cacheUntil->setEnabled(false);
+  grid->addWidget(cachePerm, 17, 0);
+  grid->addWidget(cacheUntil, 18, 0);
+  connect(cachePerm, SIGNAL(clicked()), SLOT(slotPermanent()));
+  connect(cacheUntil, SIGNAL(clicked()), SLOT(slotUntil()));
+
+  policyGroup = new QVButtonGroup(i18n("Policy"), tabOtherSSLCert);
+  policyAccept = new QRadioButton(i18n("A&ccept"), policyGroup);
+  policyReject = new QRadioButton(i18n("Re&ject"), policyGroup);
+  policyPrompt = new QRadioButton(i18n("&Prompt"), policyGroup);
+  policyGroup->setEnabled(false);
+  grid->addMultiCellWidget(policyGroup, 14, 17, 3, 5);
+  connect(policyGroup, SIGNAL(clicked(int)), SLOT(slotPolicyChanged(int)));
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
@@ -377,6 +447,7 @@ QString whatstr;
 #endif
 
 
+#if 0
   ///////////////////////////////////////////////////////////////////////////
   // FIFTH TAB
   ///////////////////////////////////////////////////////////////////////////
@@ -472,10 +543,10 @@ QString whatstr;
 #ifdef HAVE_SSL
   tabs->addTab(tabOSSL, i18n("OpenSSL"));
 #endif
+  tabs->addTab(tabOtherSSLCert, i18n("Other SSL Certificates"));
 
 #if 0
   tabs->addTab(tabYourSSLCert, i18n("Your SSL Certificates"));
-  tabs->addTab(tabOtherSSLCert, i18n("Other SSL Certificates"));
   tabs->addTab(tabSSLCA, i18n("SSL C.A.s"));
   tabs->addTab(tabSSLCOpts, i18n("Validation Options"));
 #endif
@@ -487,6 +558,7 @@ QString whatstr;
 KCryptoConfig::~KCryptoConfig()
 {
     delete config;
+    delete policies;
 }
 
 void KCryptoConfig::configChanged()
@@ -498,6 +570,7 @@ void KCryptoConfig::configChanged()
 void KCryptoConfig::load()
 {
 #ifdef HAVE_SSL
+  certDelList.clear();
   config->setGroup("TLS");
   mUseTLS->setChecked(config->readBoolEntry("Enabled", true));
 
@@ -551,6 +624,21 @@ void KCryptoConfig::load()
 
   SSLv2Box->setEnabled( mUseSSLv2->isChecked() );
   SSLv3Box->setEnabled( mUseSSLv3->isChecked() );
+
+  QStringList groups = policies->groupList();
+ 
+  otherSSLBox->clear();
+  for (QStringList::Iterator i = groups.begin();
+                             i != groups.end();
+                             ++i) {
+    if ((*i).isEmpty() || *i == "<default>") continue;
+    policies->setGroup(*i);
+    new OtherCertItem(otherSSLBox, *i, 
+                      policies->readBoolEntry("Permanent", true), 
+                      policies->readNumEntry("Policy", 3),
+                      policies->readDateTimeEntry("Expires"), this );
+  }
+
 #endif
 
   emit changed(false);
@@ -632,9 +720,26 @@ void KCryptoConfig::save()
     KMessageBox::information(this, i18n("If you don't select at least one"
                                        " cipher, SSLv3 will not work."),
                                    i18n("SSLv3 Ciphers"));
+  // SSL Policies code
+  for (OtherCertItem *x = certDelList.first(); x != 0; x = certDelList.next()) {
+     policies->deleteGroup(x->configName());
+     certDelList.remove(x);
+  }
+  // Go through the non-deleted ones and save them
+  for (OtherCertItem *x = 
+        static_cast<OtherCertItem *>(otherSSLBox->firstChild()); 
+                                                              x;
+             x = static_cast<OtherCertItem *>(x->nextSibling())) {
+     policies->setGroup(x->configName());
+     policies->writeEntry("Policy", x->getPolicy());
+     policies->writeEntry("Expires", x->getExpires());
+     policies->writeEntry("Permanent", x->isPermanent());
+  }
+
 #endif
 
   config->sync();
+  policies->sync();
 
   // insure proper permissions -- contains sensitive data
   QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
@@ -769,6 +874,145 @@ void KCryptoConfig::slotCWall() {
   mUseSSLv3->setChecked(true);
   configChanged();
   #endif
+}
+
+
+
+void KCryptoConfig::slotExportCert() {
+
+}
+
+
+
+void KCryptoConfig::slotRemoveCert() {
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+   if (x) {
+      otherSSLBox->takeItem(x);
+      certDelList.append(x);
+      configChanged();
+   }
+}
+
+
+
+void KCryptoConfig::slotVerifyCert() {
+
+}
+
+
+
+void KCryptoConfig::slotUntil() {
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+
+   cachePerm->setChecked(false);
+
+   if (!x) return;
+   x->setPermanent(false);
+
+   configChanged();
+}
+
+
+
+void KCryptoConfig::slotPermanent() {
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+
+   cacheUntil->setChecked(false);
+
+   if (!x) return;
+   x->setPermanent(true);
+
+   configChanged();
+}
+
+
+
+void KCryptoConfig::slotPolicyChanged(int id) {
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+if (!x) return;
+
+   if (id == policyGroup->id(policyAccept)) {
+     x->setPolicy(KSSLCertificateCache::Accept);
+   } else if (id == policyGroup->id(policyReject)) {
+     x->setPolicy(KSSLCertificateCache::Reject);
+   } else if (id == policyGroup->id(policyPrompt)) {
+     x->setPolicy(KSSLCertificateCache::Prompt);
+   }
+
+   configChanged();
+}
+
+
+
+void KCryptoConfig::slotOtherCertSelect() {
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+QString iss = "";
+   if (x) {
+      otherSSLExport->setEnabled(true);
+      otherSSLVerify->setEnabled(true);
+      otherSSLRemove->setEnabled(true);
+      policyGroup->setEnabled(true);
+      cachePerm->setEnabled(true);
+      cacheUntil->setEnabled(true);
+      policies->setGroup(x->getSub());
+
+      KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", "").local8Bit());
+
+      if (cert) {
+         QPalette cspl;
+         iss = cert->getIssuer();
+         cspl = validFrom->palette();
+         if (QDateTime::currentDateTime() < cert->getQDTNotBefore()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         validFrom->setPalette(cspl);
+
+         cspl = validUntil->palette();
+         if (QDateTime::currentDateTime() > cert->getQDTNotAfter()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         validUntil->setPalette(cspl);
+
+         validFrom->setText(cert->getNotBefore());
+         validUntil->setText(cert->getNotAfter());
+      } else {
+         validFrom->setText("");
+         validUntil->setText("");
+      }
+
+      switch(x->getPolicy()) {
+      case KSSLCertificateCache::Accept:
+        policyGroup->setButton(policyGroup->id(policyAccept)); 
+      break;
+      case KSSLCertificateCache::Reject:
+        policyGroup->setButton(policyGroup->id(policyReject)); 
+      break;
+      case KSSLCertificateCache::Prompt:
+        policyGroup->setButton(policyGroup->id(policyPrompt)); 
+      break;
+      }
+
+      cachePerm->setChecked(x->isPermanent());
+      cacheUntil->setChecked(!x->isPermanent());
+
+   } else {
+      otherSSLExport->setEnabled(false);
+      otherSSLVerify->setEnabled(false);
+      otherSSLRemove->setEnabled(false);
+      policyGroup->setEnabled(false);
+      cachePerm->setEnabled(false);
+      cacheUntil->setEnabled(false);
+      validFrom->setText("");
+      validUntil->setText("");
+   }
+
+   oSubject->setValues(x ? x->getSub() : QString(""));
+   oIssuer->setValues(iss);
+
 }
 
 
