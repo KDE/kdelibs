@@ -2386,7 +2386,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     RenameDlg_Mode mode = (RenameDlg_Mode)( M_MULTI | M_SKIP );
     // Overwrite only if the existing thing is a dir (no chance with a file)
     if ( m_conflictError == ERR_DIR_ALREADY_EXIST )
-        mode = (RenameDlg_Mode)( mode | ((*it).uSource == (*it).uDest) ? M_OVERWRITE_ITSELF : M_OVERWRITE );
+        mode = (RenameDlg_Mode)( mode | (((*it).uSource == (*it).uDest) ? M_OVERWRITE_ITSELF : M_OVERWRITE ));
 
     QString existingDest = (*it).uDest.path();
     QString newPath;
