@@ -464,14 +464,14 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
                 .arg( files.first() ),
                                                       i18n("Delete File"),
-                                                      i18n("Delete"), "AskForDelete" );
+                                                      KGuiItem(i18n("Delete"),"editdelete"), "AskForDelete" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
                 i18n("translators: not called for n == 1", "Do you really want to delete these %n items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
-                                                    i18n("Delete"), "AskForDelete" );
+                                                    KGuiItem(i18n("Delete"), "editdelete"), "AskForDelete" );
         doIt = (ret == KMessageBox::Continue);
     }
 
