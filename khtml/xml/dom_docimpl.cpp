@@ -579,7 +579,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         n = new HTMLParagraphElementImpl(docPtr());
         break;
     case ID_PRE:
-        n = new HTMLPreElementImpl(docPtr());
+        n = new HTMLPreElementImpl(docPtr(), id);
         break;
 
 // font stuff
@@ -855,7 +855,7 @@ void DocumentImpl::updateRendering()
 {
     int o=changedNodes.count();
     if (!o) return;
-//    kdDebug() << "UPDATERENDERING "<<o<<endl;
+    kdDebug() << "UPDATERENDERING: "<<o<<endl;
 
     int a=0;
     QListIterator<NodeImpl> it(changedNodes);
@@ -870,11 +870,11 @@ void DocumentImpl::updateRendering()
             t=t->parentNode();
         }
 
-//        kdDebug() << n->nodeName().string() << ": applyChanges opt=" << (n!=it.current()) << endl;
+        kdDebug() << n << ": " << n->nodeName().string() << ": applyChanges opt=" << (n!=it.current()) << endl;
 	n->applyChanges( true, true );
         a++;
     }
-//    kdDebug() << "UPDATERENDERING orig="<<o<<" actual="<<a<<endl;
+    kdDebug() << "UPDATERENDERING orig="<<o<<" actual="<<a<<endl;
     changedNodes.clear();
 }
 
