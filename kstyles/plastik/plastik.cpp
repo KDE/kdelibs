@@ -1972,8 +1972,6 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
 
         case PE_DockWindowHandle: {
 
-            p->fillRect(r, cg.brush(QColorGroup::Background));
-
             int counter = 1;
 
             if(horiz) {
