@@ -2433,6 +2433,7 @@ bool HTTPProtocol::readHeader()
   time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
   int currentAge = 0;
   int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
+  int maxHeaderSize = 64*1024; // 64Kb to catch DOS-attacks
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
@@ -2489,6 +2490,7 @@ bool HTTPProtocol::readHeader()
 
   bool noHeader = true;
   HTTP_REV httpRev = HTTP_Unknown;
+  int headerSize = 0;
 
   do
   {
@@ -2504,6 +2506,8 @@ bool HTTPProtocol::readHeader()
       kdDebug(7103) << "(" << m_pid << ") --empty--" << endl;
       continue;
     }
+    
+    headerSize += len;
 
     // We have a response header.  This flag is a work around for
     // servers that append a "\r\n" before the beginning of the HEADER
@@ -3056,7 +3060,7 @@ bool HTTPProtocol::readHeader()
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
 
-  } while ((len || noHeader) && (gets(buffer, sizeof(buffer)-1)));
+  } while ((len || noHeader) && (headerSize < maxHeaderSize) && (gets(buffer, sizeof(buffer)-1)));
 
 
   // Now process the HTTP/1.1 upgrade
