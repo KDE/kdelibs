@@ -100,7 +100,7 @@ public:
    *
    * @see KConfig::getConfigState
    */
-  virtual KConfigBase::KConfigState getConfigState() const { return KConfig::NoAccess; }
+  virtual KConfigBase::ConfigState getConfigState() const { return KConfig::NoAccess; }
 
 protected:
   KConfigBase *pConfig;
