@@ -1190,12 +1190,8 @@ void FileProtocol::slotListDir( const char *_url )
   
   QValueList<KUDSEntry>::Iterator it = entries.begin();
   QValueList<KUDSEntry>::Iterator end = entries.end();
-  int i = 0;
   for (; it != end; ++it )
-  {
     listEntry( *it );
-    processedFiles( ++i );
-  }
   
   m_cmd = CMD_NONE;
 
