@@ -1,7 +1,10 @@
 #include <qobject.h>
+#include <qcstring.h>
 #include <qstring.h>
 #include <qsocketnotifier.h>
 #include <qlist.h>
+#include <qvaluelist.h>
+#include <qcstring.h>
 #include <qdict.h>
 #include <qptrdict.h>
 #include <qapplication.h>
@@ -20,6 +23,8 @@ extern "C" {
 class DCOPConnection;
 class DCOPListener;
 
+typedef QValueList<QCString> QCStringList;
+
 class DCOPServer : public QObject
 {
 Q_OBJECT
@@ -31,8 +36,8 @@ Q_OBJECT
  void removeConnection( void* data );
  void processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap);
 
- virtual bool receive(const QString &app, const QString &obj, 
-		      const QString &fun, const QByteArray& data,
+ virtual bool receive(const QCString &app, const QCString &obj,
+		      const QCString &fun, const QByteArray& data,
 		      QByteArray &replyData);
 
 private slots:

@@ -9,22 +9,22 @@ class DCOPObject
 {
  public:
   DCOPObject(QObject *obj);
-  DCOPObject(const QString &objId);
+  DCOPObject(const QCString &objId);
   virtual ~DCOPObject();
 
-  QString id() const;
+  QCString id() const;
 
   /**
    * dispatch a message.
    */
-  virtual bool process(const QString &fun, const QByteArray &data,
+  virtual bool process(const QCString &fun, const QByteArray &data,
 		       QByteArray &replyData);
 
-  static bool hasObject(const QString &objId);
-  static DCOPObject *find(const QString &objId);
+  static bool hasObject(const QCString &objId);
+  static DCOPObject *find(const QCString &objId);
 
  private:
-  QString ident;
+  QCString ident;
 };
 
 #endif

@@ -9,7 +9,7 @@ class DCOPListener : public QSocketNotifier
 {
  public:
   DCOPListener( IceListenObj obj )
-    : QSocketNotifier( IceGetListenConnectionNumber( obj ), 
+    : QSocketNotifier( IceGetListenConnectionNumber( obj ),
 		       QSocketNotifier::Read, 0, 0)
     {
       listenObj = obj;
@@ -22,14 +22,14 @@ class DCOPConnection : public QSocketNotifier
 {
  public:
   DCOPConnection( IceConn conn )
-    : QSocketNotifier( IceConnectionNumber( conn ), 
+    : QSocketNotifier( IceConnectionNumber( conn ),
 		       QSocketNotifier::Read, 0, 0 )
     {
       ice_conn = conn;
       status = IceConnectPending;
     }
 
-  QString appId;
+  QCString appId;
   IceConn ice_conn;
   IceConnectStatus status;
   QStack< _IceConn> waitingForReply;
@@ -52,7 +52,7 @@ MyIoErrorHandler ( IceConn ice_conn )
 {
     if (prev_handler)
 	(*prev_handler) (ice_conn);
-}    
+}
 
 void
 InstallIOErrorHandler ()
@@ -94,11 +94,11 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       QByteArray ba( length );
       IceReadData(iceConn, length, ba.data() );
       QDataStream ds( ba, IO_ReadOnly );
-      QString app;
+      QCString app;
       ds >> app;
       DCOPConnection* con = clients.find( iceConn );
       if ( con ) {
-	qDebug("registered app %s", app.latin1() );
+	qDebug("registered app %s", app.data() );
 	DCOPConnection* con = clients[iceConn];
 	con->appId = app;
 	appIds.insert( app, con );
@@ -112,18 +112,18 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       QByteArray ba( length );
       IceReadData(iceConn, length, ba.data() );
       QDataStream ds( ba, IO_ReadOnly );
-      QString app;
+      QCString app;
       ds >> app;
       DCOPConnection* target = appIds.find( app );
       if ( target ) {
-	IceGetHeader( target->ice_conn, majorOpcode, DCOPRegisterClient, 
+	IceGetHeader( target->ice_conn, majorOpcode, DCOPRegisterClient,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	int datalen = ba.size();
 	pMsg->length += datalen;
 	IceWriteData( target->ice_conn, datalen, (char *) ba.data());
 	IceFlush( target->ice_conn );
       } else if ( app == "DCOPServer" ) {
-	QString obj, fun;
+	QCString obj, fun;
 	QByteArray data;
 	ds >> obj >> fun >> data;
 	QByteArray replyData;
@@ -138,28 +138,28 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       QByteArray ba( length );
       IceReadData(iceConn, length, ba.data() );
       QDataStream ds( ba, IO_ReadOnly );
-      QString app;
+      QCString app;
       ds >> app;
       DCOPConnection* target = appIds.find( app );
       int datalen = ba.size();
       if ( target ) {
 	target->waitingForReply.push( iceConn );
-	IceGetHeader( target->ice_conn, majorOpcode, DCOPCall, 
+	IceGetHeader( target->ice_conn, majorOpcode, DCOPCall,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
 	IceWriteData( target->ice_conn, datalen, (char *) ba.data());
 	IceFlush( target->ice_conn );
-      } else { 
+      } else {
 	QByteArray replyData;
 	bool b = FALSE;
 	if ( app == "DCOPServer" ) {
-	  QString obj, fun;
+	  QCString obj, fun;
 	  QByteArray data;
 	  ds >> obj >> fun >> data;
 	  b = receive( app, obj, fun, data, replyData );
 	}
 	int datalen = replyData.size();
-	IceGetHeader( iceConn, majorOpcode, b? DCOPReply : DCOPReplyFailed, 
+	IceGetHeader( iceConn, majorOpcode, b? DCOPReply : DCOPReplyFailed,
 		      sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
 	IceWriteData( iceConn, datalen, (char *) replyData.data());
@@ -178,7 +178,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       if ( con ) {
 	DCOPConnection* conreply = clients.find( con->waitingForReply.pop() );
 	if ( conreply ) {
-	  IceGetHeader( conreply->ice_conn, majorOpcode, opcode, 
+	  IceGetHeader( conreply->ice_conn, majorOpcode, opcode,
 			sizeof(DCOPMsg), DCOPMsg, pMsg );
 	  int datalen = ba.size();
 	  pMsg->length += datalen;
@@ -203,9 +203,8 @@ IcePaVersionRec DCOPVersions[] = {
 static Bool HostBasedAuthProc ( char* hostname)
 {
 
-  qDebug("HostBasedAuthProc for %s", hostname);
+//   qDebug("HostBasedAuthProc for %s", hostname);
   return TRUE; // do no security at all (for now)
-  return (0);	      /* For now, we don't support host based authentication */
 }
 
 typedef struct DCOPServerConnStruct *DCOPServerConn;
@@ -281,7 +280,7 @@ DCOPServer::DCOPServer()
 {
   the_server = this;
   if (( majorOpcode = IceRegisterForProtocolReply ("DCOP",
-					      DCOPVendorString, DCOPReleaseString, 
+					      DCOPVendorString, DCOPReleaseString,
 					      1, DCOPVersions,
 					      1, DCOPAuthNames, DCOPServerAuthProcs, HostBasedAuthProc,
 						 DCOPServerProtocolSetupProc,
@@ -326,7 +325,7 @@ DCOPServer::DCOPServer()
 	authDataEntries[i+1].protocol_name = "DCOP";
 	authDataEntries[i+1].auth_name = "MIT-MAGIC-COOKIE-1";
 
-	authDataEntries[i+1].auth_data = 
+	authDataEntries[i+1].auth_data =
 	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
 	authDataEntries[i+1].auth_data_length = MAGIC_COOKIE_LEN;
 
@@ -353,7 +352,7 @@ DCOPServer::DCOPServer()
 
     char * networkIds = IceComposeNetworkIdList (numTransports, listenObjs);
     qDebug("networkids: %s", networkIds );
-    
+
     free ( networkIds );
 }
 
@@ -402,7 +401,7 @@ void* DCOPServer::watchConnection( IceConn ice_conn )
 {
   DCOPConnection* con = new DCOPConnection( ice_conn );
   connect( con, SIGNAL( activated(int) ), this, SLOT( processData(int) ) );
-  
+
   clients.insert(ice_conn, con );
 
   return (void*) con;
@@ -411,22 +410,22 @@ void* DCOPServer::watchConnection( IceConn ice_conn )
 void DCOPServer::removeConnection( void* data )
 {
   DCOPConnection* con = (DCOPConnection*)data;
-  qDebug("remove appId %s", con->appId.latin1() );
+  qDebug("remove appId %s", con->appId.data() );
   clients.remove(con->ice_conn );
   appIds.remove( con->appId );
   delete con;
 }
 
-bool DCOPServer::receive(const QString &app, const QString &obj, 
-			 const QString &fun, const QByteArray& data,
+bool DCOPServer::receive(const QCString &app, const QCString &obj,
+			 const QCString &fun, const QByteArray& data,
 			 QByteArray &replyData)
 {
   if ( fun == "attachedApplications" ) {
     QDataStream reply( replyData, IO_WriteOnly );
-    QStringList applications;
+    QCStringList applications;
     QDictIterator<DCOPConnection> it( appIds );
     while ( it.current() ) {
-      applications << it.currentKey();
+      applications << it.currentKey().ascii();
       ++it;
     }
     reply << applications;
@@ -434,7 +433,7 @@ bool DCOPServer::receive(const QString &app, const QString &obj,
   } else if ( fun == "isApplicationAttached" ) {
     QDataStream args( data, IO_ReadOnly );
     if (!args.atEnd()) {
-      QString s;
+      QCString s;
       args >> s;
       QDataStream reply( replyData, IO_WriteOnly );
       int b = ( appIds.find( s ) != 0 );
@@ -451,6 +450,6 @@ int main( int argc, char* argv[] )
   QApplication a( argc, argv );
   InstallIOErrorHandler();
   DCOPServer server;
-  
+
   return a.exec();
 }

@@ -1,11 +1,11 @@
 #include <dcopobject.h>
 
-static QMap<QString, DCOPObject *> *objMap_ = 0;
+static QMap<QCString, DCOPObject *> *objMap_ = 0;
 
-inline QMap<QString, DCOPObject *> *objMap()
+inline QMap<QCString, DCOPObject *> *objMap()
 {
   if (!objMap_)
-    objMap_ = new QMap<QString, DCOPObject *>;
+    objMap_ = new QMap<QCString, DCOPObject *>;
   return objMap_;
 }
 
@@ -13,17 +13,17 @@ DCOPObject::DCOPObject(QObject *obj)
 {
   QObject *currentObj = obj;
   while (currentObj != 0L) {
-    ident.prepend(QString::fromLatin1(currentObj->name()));
-    ident.prepend('/');
+    ident.prepend( currentObj->name() );
+    ident.prepend("/");
     currentObj = currentObj->parent();
   }
   ident = ident.mid(2);
-  qDebug("set dcopobject id to %s",ident.latin1());
+  qDebug("set dcopobject id to %s",ident.data());
 
   objMap()->insert(ident, this);
 }
 
-DCOPObject::DCOPObject(const QString &objId)
+DCOPObject::DCOPObject(const QCString &objId)
   : ident(objId)
 {
   ident = objId;
@@ -35,19 +35,19 @@ DCOPObject::~DCOPObject()
   objMap()->remove(ident);
 }
 
-QString DCOPObject::id() const
+QCString DCOPObject::id() const
 {
   return ident;
 }
 
-bool DCOPObject::process(const QString &fun, const QByteArray &data,
+bool DCOPObject::process(const QCString &fun, const QByteArray &data,
 			 QByteArray &replyData)
 {
   qDebug("called DCOPObject::process");
   return false;
 }
 
-bool DCOPObject::hasObject(const QString &objId)
+bool DCOPObject::hasObject(const QCString &objId)
 {
   if (objMap()->contains(objId))
     return true;
@@ -55,9 +55,9 @@ bool DCOPObject::hasObject(const QString &objId)
     return false;
 }
 
-DCOPObject *DCOPObject::find(const QString &objId)
+DCOPObject *DCOPObject::find(const QCString &objId)
 {
-  QMap<QString, DCOPObject *>::ConstIterator it;
+  QMap<QCString, DCOPObject *>::ConstIterator it;
   it = objMap()->find(objId);
   if (it != objMap()->end())
     return *it;

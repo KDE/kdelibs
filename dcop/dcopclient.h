@@ -2,9 +2,13 @@
 #define _DCOPCLIENT_H
 
 #include <qobject.h>
+#include <qcstring.h>
+#include <qvaluelist.h>
 #include <qstring.h>
 
 class DCOPClientPrivate;
+
+typedef QValueList<QCString> QCStringList;
 
 class DCOPClient : public QObject
 {
@@ -16,7 +20,7 @@ class DCOPClient : public QObject
    * @param appId is a UNIQUE application/program id that the server
    * will use to associate requests with.
    */
-  DCOPClient(const QString &appId);
+  DCOPClient(const QCString &appId);
 
   /**
    * clean up any open connections and dynamic data.
@@ -35,7 +39,7 @@ class DCOPClient : public QObject
    * @return true if attaching was successful.
    */
   bool attach();
-  
+
   /**
    * Detach from the DCOP server.
    */
@@ -59,16 +63,16 @@ class DCOPClient : public QObject
    *
    * @return whether or not the server was able to accept the send.
    */
-  bool send(const QString &remApp, const QString &remObj, 
-	    const QString &remFun, const QByteArray &data,
+  bool send(const QCString &remApp, const QCString &remObj,
+	    const QCString &remFun, const QByteArray &data,
 	    bool fast=false);
 
   /**
    * This function acts exactly the same as the above, but the data
    * parameter can be specified as a QString for convenience.
    */
-  bool send(const QString &remApp, const QString &remObj, 
-	    const QString &remFun, const QString &data,
+  bool send(const QCString &remApp, const QCString &remObj,
+	    const QCString &remFun, const QString &data,
 	    bool fast=false);
 
   /**
@@ -78,27 +82,27 @@ class DCOPClient : public QObject
    *
    * @see #send
    */
-  bool call(const QString &remApp, const QString &remObj,
-	    const QString &remFun, const QByteArray &data,
+  bool call(const QCString &remApp, const QCString &remObj,
+	    const QCString &remFun, const QByteArray &data,
 	    QByteArray &replyData, bool fast=false);
 
 
   /**
    * override to handle app-wide function calls unassociated w/an object.
    */
-  virtual bool process(const QString &fun, const QByteArray &data,
+  virtual bool process(const QCString &fun, const QByteArray &data,
 		       QByteArray &replyData);
 
   /**
    * Check whether @param remApp is attached to the DCOPServer.
    * @return true if the remote application is attached, otherwise false.
    */
-  bool isApplicationAttached( const QString& remApp);
+  bool isApplicationAttached( const QCString& remApp);
 
   /**
    * Return the list of all currently attached applications.
    */
-  QStringList attachedApplications();
+  QCStringList attachedApplications();
 
   /**
    * receive a piece of data from the server.
@@ -110,8 +114,8 @@ class DCOPClient : public QObject
    * @param data the arguments for the function.
    * @internal
    */
-  bool receive(const QString &app, const QString &obj, 
-	       const QString &fun, const QByteArray& data,
+  bool receive(const QCString &app, const QCString &obj,
+	       const QCString &fun, const QByteArray& data,
 	       QByteArray &replyData);
 
  public slots:

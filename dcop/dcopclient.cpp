@@ -23,7 +23,7 @@ class DCOPClientPrivate
 {
 public:
   DCOPClient *parent;
-  QString appId;
+  QCString appId;
   IceConn iceConn;
   int majorOpcode; // major opcode negotiated w/server and used to tag all comms.
 
@@ -73,12 +73,12 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     QByteArray ba( length );
     IceReadData(iceConn, length, ba.data() );
     QDataStream ds( ba, IO_ReadOnly );
-    QString app, objId, fun;
+    QCString app, objId, fun;
     QByteArray data;
     ds >> app >> objId >> fun >> data;
-    
+
     QByteArray replyData;
-    bool b = c->receive( app, objId, fun, 
+    bool b = c->receive( app, objId, fun,
 			 data, replyData );
 
     if (opcode != DCOPCall)
@@ -98,7 +98,7 @@ static IcePoVersionRec DCOPVersions[] = {
   { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
-DCOPClient::DCOPClient(const QString &appId)
+DCOPClient::DCOPClient(const QCString &appId)
 {
   d = new DCOPClientPrivate;
   d->parent = this;
@@ -120,21 +120,21 @@ DCOPClient::~DCOPClient()
 
 void DCOPClient::setServerAddress(const QCString &addr)
 {
-  DCOPClientPrivate::serverAddr = qstrdup(addr); 
+  DCOPClientPrivate::serverAddr = qstrdup(addr);
 }
 
 bool DCOPClient::attach()
 {
   char errBuf[1024];
 
-  if ((d->majorOpcode = IceRegisterForProtocolSetup("DCOP", DCOPVendorString, 
+  if ((d->majorOpcode = IceRegisterForProtocolSetup("DCOP", DCOPVendorString,
 						    DCOPReleaseString, 1, DCOPVersions,
 						    DCOPAuthCount, DCOPAuthNames,
 						    DCOPClientAuthProcs, 0L)) < 0) {
     qDebug("Could not register DCOP protocol with ICE");
     return false;
   }
-  
+
   // first, check if serverAddr was ever set.
   if (!d->serverAddr) {
     // here, we will check some environment variable and find the
@@ -142,7 +142,7 @@ bool DCOPClient::attach()
     char buff[1024];
 
     gethostname(buff, 1023);
-    d->serverAddr = qstrdup(QString("local/" + QString(buff) + ":/tmp/.ICE-unix/5432").ascii());
+    d->serverAddr = qstrdup( (QCString("local/") + buff + ":/tmp/.ICE-unix/5432").data() );
     //    serverAddr = "tcp/faui06e:5000";
   }
 
@@ -173,8 +173,8 @@ bool DCOPClient::attach()
   }
 
   DCOPMsg *pMsg;
-  
-  IceGetHeader(d->iceConn, d->majorOpcode, DCOPRegisterClient, 
+
+  IceGetHeader(d->iceConn, d->majorOpcode, DCOPRegisterClient,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);
 
   QByteArray ba;
@@ -182,10 +182,10 @@ bool DCOPClient::attach()
   ds << d->appId;
 
   int datalen = ba.size();
-  
+
   pMsg->length += datalen;
   IceWriteData(d->iceConn, datalen, (char *) ba.data());
-  
+
   IceFlush(d->iceConn);
 
   // check if we have a qApp instantiated.  If we do,
@@ -218,27 +218,27 @@ bool DCOPClient::detach()
 
 int DCOPClient::socket() const
 {
-  return IceConnectionNumber(d->iceConn); 
+  return IceConnectionNumber(d->iceConn);
 }
 
-bool DCOPClient::send(const QString &remApp, const QString &remObjId, 
-		      const QString &remFun, const QByteArray &data, 
+bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
+		      const QCString &remFun, const QByteArray &data,
 		      bool fast)
 {
   DCOPMsg *pMsg;
-  
+
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
   ds << remApp << remObjId << remFun << data;
-  
-  IceGetHeader(d->iceConn, d->majorOpcode, DCOPSend, 
+
+  IceGetHeader(d->iceConn, d->majorOpcode, DCOPSend,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);
-  
+
   int datalen = ba.size();
   pMsg->length += datalen;
 
   IceWriteData(d->iceConn, datalen, (char *) ba.data());
-  
+
   IceFlush(d->iceConn);
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
@@ -247,8 +247,8 @@ bool DCOPClient::send(const QString &remApp, const QString &remObjId,
     return true;
 }
 
-bool DCOPClient::send(const QString &remApp, const QString &remObjId,
-		      const QString &remFun, const QString &data, 
+bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
+		      const QCString &remFun, const QString &data,
 		      bool fast)
 {
   QByteArray ba;
@@ -257,13 +257,13 @@ bool DCOPClient::send(const QString &remApp, const QString &remObjId,
   return send(remApp, remObjId, remFun, ba);
 }
 
-bool DCOPClient::process(const QString &fun, const QByteArray &data,
+bool DCOPClient::process(const QCString &fun, const QByteArray &data,
 			 QByteArray &replyData)
 {
   return false;
 }
 
-bool DCOPClient::isApplicationAttached( const QString& remApp)
+bool DCOPClient::isApplicationAttached( const QCString& remApp)
 {
   QByteArray data, replyData;
   QDataStream arg( data, IO_WriteOnly );
@@ -276,10 +276,10 @@ bool DCOPClient::isApplicationAttached( const QString& remApp)
   return result;
 }
 
-QStringList DCOPClient::attachedApplications()
+QCStringList DCOPClient::attachedApplications()
 {
   QByteArray data, replyData;
-  QStringList result;
+  QCStringList result;
   if ( call( "DCOPServer", "", "attachedApplications", data, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
@@ -287,8 +287,8 @@ QStringList DCOPClient::attachedApplications()
   return result;
 }
 
-bool DCOPClient::receive(const QString &app, const QString &objId, 
-			 const QString &fun, const QByteArray &data,
+bool DCOPClient::receive(const QCString &app, const QCString &objId,
+			 const QCString &fun, const QByteArray &data,
 			 QByteArray &replyData)
 {
   if (app != d->appId) {
@@ -314,24 +314,24 @@ bool DCOPClient::receive(const QString &app, const QString &objId,
   return true;
 }
 
-bool DCOPClient::call(const QString &remApp, const QString &remObjId,
-		      const QString &remFun, const QByteArray &data,
+bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
+		      const QCString &remFun, const QByteArray &data,
 		      QByteArray &replyData, bool fast)
 {
   DCOPMsg *pMsg;
-  
+
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
   ds << remApp << remObjId << remFun << data;
-  
-  IceGetHeader(d->iceConn, d->majorOpcode, DCOPCall, 
+
+  IceGetHeader(d->iceConn, d->majorOpcode, DCOPCall,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);
-  
+
   int datalen = ba.size();
   pMsg->length += datalen;
 
   IceWriteData(d->iceConn, datalen, (char *) ba.data());
-  
+
   IceFlush(d->iceConn);
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
@@ -344,7 +344,7 @@ bool DCOPClient::call(const QString &remApp, const QString &remObjId,
   ReplyStruct tmp;
   tmp.replyData = &replyData;
   waitInfo.reply = (IcePointer) &tmp;
-  
+
   Bool readyRet = False;
   IceProcessMessagesStatus s;
 
