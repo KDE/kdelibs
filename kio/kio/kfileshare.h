@@ -140,8 +140,6 @@ private:
     static QString s_fileShareGroup;
     static bool s_sharingEnabled;
     
-    static Authorization getAuthFromScript();
-    
 };
 
 #endif

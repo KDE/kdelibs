@@ -31,6 +31,8 @@
 #include <errno.h>
 #include <kdirnotify_stub.h>
 #include <ksimpleconfig.h>
+#include <kuser.h>
+#include <kgroup.h>
 
 KFileShare::Authorization KFileShare::s_authorization = NotInitialized;
 QStringList* KFileShare::s_shareList = 0L;
@@ -91,52 +93,29 @@ void KFileShare::readConfig() // static
     s_restricted = config.readEntry("RESTRICT", "yes") == "yes";
     s_fileShareGroup = config.readEntry("FILESHAREGROUP", "fileshare");
     
-    if (!s_sharingEnabled || s_restricted)
+    
+    if (!s_sharingEnabled) 
         s_authorization = UserNotAllowed;
-    else
+    else 
+    if (!s_restricted )
         s_authorization = Authorized;
+    else {
+        // check if current user is in fileshare group
+        KUserGroup shareGroup(s_fileShareGroup);
+        if (shareGroup.users().findIndex(KUser()) > -1 ) 
+            s_authorization = Authorized;
+        else
+            s_authorization = UserNotAllowed;
+    }
                 
-    if (config.readEntry("SHARINGMODE", "simple") == "simple") {
+    if (config.readEntry("SHARINGMODE", "simple") == "simple") 
         s_shareMode = Simple;
-        s_authorization = getAuthFromScript();
-    }        
     else        
         s_shareMode = Advanced;
           
         
     s_sambaEnabled = config.readEntry("SAMBA", "yes") == "yes";
     s_nfsEnabled = config.readEntry("NFS", "yes") == "yes";
-}
-
-KFileShare::Authorization KFileShare::getAuthFromScript() {
-    // /usr/sbin on Mandrake, $PATH allows flexibility for other distributions
-    QString exe = findExe( "filesharelist" );
-    if (exe.isEmpty()) {
-        return ErrorNotFound;
-    }
-    
-    KProcIO proc;
-    proc << exe;
-    if ( !proc.start( KProcess::Block ) ) {
-        kdError() << "Can't run " << exe << endl;
-        return ErrorNotFound;
-    }
-
-    if ( proc.normalExit() ) {
-      switch (proc.exitStatus())
-      {
-        case 0:
-          kdDebug(7000) << "KFileShare::readConfig: s_authorization = Authorized" << endl;
-          return Authorized;
-        case 1:
-          kdDebug(7000) << "KFileShare::readConfig: s_authorization = UserNotAllowed" << endl;
-          return UserNotAllowed;
-        default:
-          break;
-      }  
-    }
-    
-    return UserNotAllowed;
 }
 
 KFileShare::ShareMode KFileShare::shareMode() {
