@@ -33,7 +33,9 @@
 2000	kfind (kdebase)
 4300	kdvi (kdegraphics)
 
+# kdenetwork
 5001	caitoo
+5002	kppp
 
 # libkio
 7001	kio (KDirWatch)
