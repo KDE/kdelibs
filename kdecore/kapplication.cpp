@@ -2495,7 +2495,7 @@ QString KApplication::randomString(int length)
 {
    if (length <=0 ) return QString::null;
 
-   QString str; str.setLength( length + 1 );
+   QString str; str.setLength( length );
    int i = 0;
    while (length--)
    {
@@ -2506,7 +2506,6 @@ QString KApplication::randomString(int length)
       str[i++] =  char(r);
       // so what if I work backwards?
    }
-   str[i] = 0;
    return str;
 }
 
