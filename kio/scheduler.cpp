@@ -39,7 +39,7 @@ Scheduler *Scheduler::instance = 0;
 class KIO::Scheduler::ProtocolInfo
 {
   public:
-     ProtocolInfo() : activeSlaves(0), idleSlaves(0), maxSlaves(5) 
+     ProtocolInfo() : activeSlaves(0), idleSlaves(0), maxSlaves(5)
 	{ joblist.setAutoDelete(false); }
 
      QList<SimpleJob> joblist;
@@ -57,8 +57,12 @@ class KIO::Scheduler::ProtocolInfoDict : public QDict<KIO::Scheduler::ProtocolIn
 };
 
 KIO::Scheduler::ProtocolInfo *
-KIO::Scheduler::ProtocolInfoDict::get(const QString &key)
+KIO::Scheduler::ProtocolInfoDict::get(const QString &_key)
 {
+  // The key is the protocol of the job, except when using an ftp proxy
+  QString key = KProtocolManager::slaveProtocol( _key );
+  kdDebug() << "ProtocolInfoDict::get(" << _key << ")  getting info for " << key << endl;
+
   ProtocolInfo *info = find(key);
   if (!info)
   {
@@ -123,12 +127,6 @@ Scheduler::debug_info()
         kdDebug(7006) << " IdleSlave: " << slave->protocol() << " " << slave->host() << " " << slave->port() << endl;
 
     }
-    kdDebug(7006) << "Jobs in Queue: " << joblist.count() << endl;
-    SimpleJob *job = joblist.first();
-    for(; job; job = joblist.next())
-    {
-        kdDebug(7006) << " Job: " << job << " " << job->url().url() << endl;
-    }
 #endif
 }
 
@@ -166,11 +164,12 @@ QCStringList Scheduler::functions()
 
 void Scheduler::_doJob(SimpleJob *job) {
     QString protocol = job->url().protocol();
+    //kdDebug(7006) << "Scheduler::_doJob protocol=" << protocol << endl;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
     protInfo->joblist.append(job);
     mytimer.start(0, true);
 }
-	
+
 void Scheduler::_cancelJob(SimpleJob *job) {
 //    kdDebug(7006) << "Scheduler: canceling job " << job << endl;
     if ( job->slave() ) // was running
@@ -204,7 +203,9 @@ bool Scheduler::startStep(ProtocolInfo *protInfo)
 //       kdDebug(7006) << "Scheduling job" << endl;
        debug_info();
        SimpleJob *job = protInfo->joblist.at(0);
-       QString protocol = job->url().protocol();
+       // Look for a slave matching the protocol we want to use, i.e.
+       // the slaveProtocol. For FTP-proxy, it's http.
+       QString protocol = KProtocolManager::slaveProtocol( job->url().protocol() );
        QString host = job->url().host();
        int port = job->url().port();
        QString user = job->url().user();
@@ -242,7 +243,7 @@ bool Scheduler::startStep(ProtocolInfo *protInfo)
                slave;
                slave = idleSlaves->next())
           {
-             if ((protocol == slave->protocol()) &&
+             if ((protocol == slave->slaveProtocol()) &&
                   (host == slave->host()) &&
                   (port == slave->port()) &&
                   (user == slave->user()))
@@ -285,7 +286,7 @@ bool Scheduler::startStep(ProtocolInfo *protInfo)
           slave = idleSlaves->first();
           for(; slave; slave = idleSlaves->next())
           {
-             if (protocol == slave->protocol())
+             if (protocol == slave->slaveProtocol())
                 break;
           }
        }

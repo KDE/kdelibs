@@ -352,8 +352,10 @@ bool revmatch( const QString& host, const QString& nplist )
 /*****************************************************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
-  : SlaveBase( protocol, pool, app)
+  : SlaveBase( (protocol=="ftp") ? QCString("ftp-proxy") : protocol , pool, app)
 {
+  m_protocol = protocol;
+  kdDebug() << "******* mProtocol=" << mProtocol << "     m_protocol=" << m_protocol << " ********" << endl;
   m_maxCacheAge = 0;
   m_fsocket = 0L;
   m_sock = 0;
@@ -382,7 +384,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_HTTPrev = HTTP_Unknown;
 
 #ifdef DO_SSL
-  if (mProtocol == "https")
+  if (m_protocol == "https")
   {
      struct servent *sent = getservbyname("https", "tcp");
      if (sent) {
@@ -393,7 +395,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   }
   else
 #endif
-  if (mProtocol == "ftp")
+  if (m_protocol == "ftp")
   {
      struct servent *sent = getservbyname("ftp", "tcp");
      if (sent) {
@@ -860,7 +862,7 @@ bool HTTPProtocol::checkSSL()
 bool HTTPProtocol::http_open()
 {
 #ifdef NOT_IMPLEMENTED
-  error( ERR_UNSUPPORTED_PROTOCOL, mProtocol );
+  error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
   return false;
 #else
   http_checkConnection();
@@ -956,7 +958,8 @@ bool HTTPProtocol::http_open()
   if(m_state.do_proxy) {
     sprintf(c_buffer, ":%u", m_state.port);
     // The URL for the request uses ftp:// if we are in "ftp-proxy" mode
-    header += (mProtocol == "ftp") ? "ftp://" : "http://";
+    kdDebug() << "Using basis for URL : " << m_protocol << endl;
+    header += (m_protocol == "ftp") ? "ftp://" : "http://";
     header += m_state.hostname;
     header += c_buffer;
   }
@@ -1550,7 +1553,7 @@ bool HTTPProtocol::readHeader()
         maxAge = 0;
      expireDate = time(0) + maxAge;
   }
-  
+
   if (!expireDate)
      expireDate = time(0) + DEFAULT_EXPIRE;
 
@@ -1931,7 +1934,7 @@ void HTTPProtocol::slave_status()
 
 void HTTPProtocol::buildURL()
 {
-  m_request.url = QString::fromLatin1(mProtocol+":/");
+  m_request.url = QString::fromLatin1(m_protocol+":/");
   m_request.url.setUser( m_request.user );
   m_request.url.setPass( m_request.passwd );
   m_request.url.setHost( m_request.hostname );
@@ -3022,7 +3025,7 @@ void HTTPProtocol::reparseConfiguration()
 
     // Use the appropriate proxy depending on the protocol
     KURL ur (
-      mProtocol == "ftp"
+      m_protocol == "ftp"
       ? KProtocolManager::ftpProxy()
       : KProtocolManager::httpProxy() );
 

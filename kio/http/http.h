@@ -281,6 +281,7 @@ protected: // Members
   QString m_strProxyUser;
   QString m_strProxyPass;
   ksockaddr_in m_proxySockaddr;
+  QCString m_protocol;
 
   // Authentication
   QString m_strRealm,

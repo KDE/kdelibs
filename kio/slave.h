@@ -42,7 +42,7 @@ namespace KIO {
     class Slave : public KIO::SlaveInterface
     {
 	Q_OBJECT
-	
+
     public:
 	Slave(KServerSocket *unixdomain,
 	      const QString &protocol, const QString &socketname);
@@ -74,9 +74,16 @@ namespace KIO {
                       const QString &user, const QString &passwd);
 
         /**
-         * @return Protocol handled by this slave
+         * @return Protocol handled by this slave, as seen by the user
+         * (For FTP-proxy, this is FTP)
          */
         QString protocol() { return m_protocol; }
+
+        /**
+         * @return Protocol handled by this slave, internally
+         * (For FTP-proxy, this is HTTP)
+         */
+        QString slaveProtocol() { return m_slaveProtocol; }
 
         /**
          * @return Host this slave is (was?) connected to
@@ -115,28 +122,29 @@ namespace KIO {
         void resume();
 
         bool suspended();
-	
+
 	/**
 	 * @return The time this slave has been idle.
 	 */
 	time_t idleTime();
-	
+
 	/**
 	 * Marks this slave as idle.
 	 */
 	void setIdle();
 
         Connection *connection() { return &slaveconn; }
-    
+
     public slots:
         void accept(KSocket *socket);
 	void gotInput();
 	void gotAnswer();
     signals:
         void slaveDied(KIO::Slave *slave);
-	
+
     private:
         QString m_protocol;
+        QString m_slaveProtocol;
         QString m_host;
         int m_port;
         QString m_user;

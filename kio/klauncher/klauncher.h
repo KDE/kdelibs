@@ -1,16 +1,16 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -45,9 +45,10 @@ public:
    void connect( const QString &app_socket);
    pid_t pid() { return mPid;}
    int age(time_t now);
+   void reparseConfiguration();
 
 protected slots:
-   void gotInput();      
+   void gotInput();
 
 protected:
    KIO::Connection mConn;
@@ -112,7 +113,7 @@ protected:
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
                     const QStringList &url);
 
-   void replaceArg( QValueList<QCString> &args, const QCString &target, 
+   void replaceArg( QValueList<QCString> &args, const QCString &target,
                     const QCString &replace, const char *replacePrefix = 0);
 
    void removeArg( QValueList<QCString> &args, const QCString &target);
@@ -122,7 +123,7 @@ protected:
 
 
    void queueRequest(KLaunchRequest *);
-   
+
 public slots:
    void slotDequeue();
    void slotKDEInitData(int);
@@ -138,7 +139,7 @@ protected:
    QSocketNotifier *kdeinitNotifier;
    serviceResult DCOPresult;
    KLaunchRequest *lastRequest;
-   QString mPoolSocketName;                         
+   QString mPoolSocketName;
    KServerSocket *mPoolSocket;
    QList<IdleSlave> mSlaveList;
    QTimer mTimer;

@@ -44,6 +44,7 @@
 #include "kio/slave.h"
 #include "kio/kservice.h"
 #include <kio/global.h>
+#include <kprotocolmanager.h>
 
 
 #ifdef HAVE_PATHS_H
@@ -71,6 +72,9 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
   : SlaveInterface(&slaveconn), serv(socket), contacted(false)
 {
     m_protocol = protocol;
+    // Store the real protocol handled by this slave (i.e. http for ftp proxy)
+    // Will be used later on, when trying to reuse the slave
+    m_slaveProtocol = KProtocolManager::slaveProtocol( protocol );
     m_socket = socketname;
     dead = false;
     contact_started = time(0);

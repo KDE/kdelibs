@@ -138,6 +138,12 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   return cfg->readEntry( protocol.lower() + "Proxy" );
 }
 
+QString KProtocolManager::slaveProtocol( const QString & protocol )
+{
+  return ( protocol == "ftp" && useProxy() && !proxyFor("ftp").isEmpty() )
+           ? QString::fromLatin1("ftp-proxy") : protocol;
+}
+
 void KProtocolManager::setReadTimeout( int _timeout )
 {
   KConfig *cfg = config();

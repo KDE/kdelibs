@@ -77,6 +77,13 @@ public:
    */
   static QString proxyFor( const QString& /* protocol */);
 
+  /**
+   * Return the protocol to use in order to handle the given @p protocol
+   * It's usually the same, except that FTP, when handled by a proxy,
+   * needs an HTTP ioslave.
+   */
+  static QString slaveProtocol( const QString & protocol );
+
   static bool useCache();
   static int maxCacheAge();  // Maximum cache age in seconds.
   static int maxCacheSize(); // Maximum cache size in Kb.
