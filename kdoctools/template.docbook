@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
-  <!ENTITY kappname "&kapp;"><!-- replace kapp here -->
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
+  <!ENTITY kappname "&kapp;"><!-- replace kapp here, do *not* replace kappname-->
   <!ENTITY package "kde-module"><!-- kdebase, kdeadmin, etc -->
   <!ENTITY % addindex "IGNORE">
   <!ENTITY % English "INCLUDE"><!-- change language only here -->
@@ -25,8 +25,7 @@ of the KDE DocBook team.
 You may freely use this template for writing any sort of KDE documentation.
 If you have any changes or improvements, please let us know.
 
-In the future, we may want to change from SGML-based DocBook to XML-based
-DocBook. To make this change easier, please be careful :
+Remember:
 - in XML, the case of the <tags> and attributes is relevant ;
 - also, quote all attributes.
 
@@ -475,6 +474,7 @@ Documentation copyright 1999 George N. Ugnacious <email>gnu@kde.org</email>
 
 <sect1 id="getting-kapp">
 <title>How to obtain &kapp;</title>
+
 <!-- This first entity contains boiler plate for applications that are
 part of KDE CVS.  You should remove it if you are releasing your
 application --> 
@@ -549,5 +549,7 @@ sgml-general-insert-case:lower
 sgml-indent-step:0
 sgml-indent-data:nil
 End:
+
+vim:tabstop=2:shiftwidth=2:expandtab 
 -->
 
