@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
  *  Copyright (C) 2000 Yves Arrouye <yves@realnames.com>
+ *  Copyright (C) 2000 Dawit Alemayehu <adawit@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -41,8 +42,15 @@ void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KURL& uri ) c
         data.m_pURI = uri;
         data.m_bChanged = true;
     }
-    // data.m_bFiltered = true; deprecated!!!
 }
+
+class KURIFilterDataPrivate
+{
+public:
+    KURIFilterDataPrivate() {};
+    QString abs_path;
+    QString args;
+};
 
 KURIFilterData::KURIFilterData( const KURIFilterData& data )
 {
@@ -50,9 +58,14 @@ KURIFilterData::KURIFilterData( const KURIFilterData& data )
     m_pURI = data.m_pURI;
     m_strErrMsg = data.m_strErrMsg;
     m_strIconName = data.m_strIconName;
-    // m_bFiltered = data.m_bFiltered;  deprecated!!!
     m_bChanged = data.m_bChanged;
+    d = new KURIFilterDataPrivate;
+    d->abs_path = data.absolutePath();
+}
 
+KURIFilterData::~KURIFilterData()
+{
+    delete d;
 }
 
 void KURIFilterData::init( const KURL& url )
@@ -63,6 +76,39 @@ void KURIFilterData::init( const KURL& url )
     m_strIconName = QString::null;
     m_bFiltered = true;  //deprecated!!! Always returns true!
     m_bChanged = true;
+    d = new KURIFilterDataPrivate;
+}
+
+bool KURIFilterData::hasArgsAndOptions() const
+{
+    return !d->args.isEmpty();
+}
+
+bool KURIFilterData::hasAbsolutePath() const
+{
+    return !d->abs_path.isEmpty();
+}
+
+bool KURIFilterData::setAbsolutePath( const QString& absPath )
+{
+    // Since a malformed URL could possibly be a relative
+    // URL we tag it as a possible local resource...
+    if( (m_pURI.isMalformed() || m_pURI.isLocalFile()) )
+    {
+        d->abs_path = absPath;
+        return true;
+    }
+    return false;
+}
+
+QString KURIFilterData::absolutePath() const
+{
+    return d->abs_path;
+}
+
+QString KURIFilterData::argsAndOptions() const
+{
+    return d->args;
 }
 
 QString KURIFilterData::iconName()
@@ -114,6 +160,12 @@ QString KURIFilterData::iconName()
     return m_strIconName;
 }
 
+//********************************************  KURIFilterPlugin **********************************************
+void KURIFilterPlugin::setArguments( KURIFilterData& data, const QString& args ) const
+{
+    data.d->args = args;
+}
+
 //********************************************  KURIFilter **********************************************
 KURIFilter *KURIFilter::ms_pFilter = 0;
 
@@ -143,15 +195,15 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
         use_plugins = m_lstPlugins;  // Use everything that is loaded...
     else
     {
+        kdDebug() << "Named plugins requested..."  << endl;
         for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst )
         {
             QListIterator<KURIFilterPlugin> it( m_lstPlugins );
             for( ; it.current() ; ++it )
             {
-                kdDebug() << "Requested Filter: " << (*lst) << "    Current Filter: " << it.current()->name() << endl;
                 if( (*lst) == it.current()->name() )
                 {
-                    kdDebug() << "Adding filter to \"OK-TO-USE\" list..." << endl;
+                    kdDebug() << "Will use filter plugin named: " << it.current()->name() << endl;
                     use_plugins.append( it.current() );
                     break;  // We already found it ; so lets test the next named filter...
                 }
@@ -160,10 +212,10 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
     }
 
     QListIterator<KURIFilterPlugin> it( use_plugins );
-    kdDebug() << "Using " << use_plugins.count() << " out of " << m_lstPlugins.count() << endl;
+    kdDebug() << "Using " << use_plugins.count() << " out of the " << m_lstPlugins.count() << " avaliable plugins" << endl;
     for (; it.current() && !filtered; ++it)
     {
-        kdDebug() << "Using the named filter plugin: " << it.current()->name() << endl;
+        kdDebug() << "Using a filter plugin named: " << it.current()->name() << endl;
         filtered |= it.current()->filterURI( data );
     }
     return filtered;

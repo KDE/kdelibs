@@ -27,6 +27,8 @@
 #include <kurl.h>
 
 class KURIFilterPrivate;
+class KURIFilterDataPrivate;
+
 class QStringList;
 class KCModule;
 
@@ -118,7 +120,7 @@ public:
     /**
      * Destructor.
      */
-    ~KURIFilterData() {};
+    ~KURIFilterData();
 
     /**
      * This method has been deprecated and will always return
@@ -182,7 +184,49 @@ public:
      * @param url the URL to be filtered.     
      */        
     void setData( const KURL& url ) { init( url ); }
-    
+
+    /**
+     * Sets the absolute path to be used whenever the supplied
+     * data is a relative local URL.
+     *
+     * NOTE: This function works only for a local resource and
+     * expects the absolute path to the relative URL set in this
+     * meta object.  If you are extracting the absolute path from
+     * a KURL object, make sure you always set the argument below
+     * using KURL::path() instead of KURL::url() so that "file:/"
+     * would not be appended! Otherwise, the filter might not be
+     * able to make correct determination whether the relative URL
+     * locally exists!
+     *
+     * @param abs_path  the abolute path to the local resource.
+     * @return true if absolute path is successfully set. Otherwise, false.
+     */
+    bool setAbsolutePath( const QString& /* abs_path */ );
+
+    /**
+     * Returns the absolute path if one has already been set.
+     */
+    QString absolutePath() const;
+
+    /**
+     * Returns true if the supplied data has an absolute path.
+     */
+    bool hasAbsolutePath() const;
+
+    /**
+     * Returns the command line options and arguments for a
+     * local resource when present.
+     *
+     * @return options and arguments when present, otherwise QString::null
+     */
+    QString argsAndOptions() const;
+
+    /**
+     * Returns true if the current data is a local resource with
+     * command line options and arguments.
+     */
+    bool hasArgsAndOptions() const;
+
     /**
      * Returns the name of the icon that matches
      * the current filtered URL.
@@ -231,7 +275,7 @@ private:
     
     KURL m_pURI; 
     URITypes m_iType;
-    KURIFilterPrivate *d;
+    KURIFilterDataPrivate *d;
 };
 
 
@@ -328,6 +372,12 @@ protected:
         data.m_iType = type;
         data.m_bChanged = true;
     }
+
+	/**
+	 * Sets the arguments and options string in @p data
+	 * to @p args if any were found during filterting.
+	 */
+    void setArguments( KURIFilterData& data, const QString& args ) const;
 
     QString m_strName;
     double m_dblPriority;
