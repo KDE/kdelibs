@@ -311,6 +311,10 @@ public:
   virtual ~IOProtocol() { }
   
   void setConnection( Connection* _conn );
+
+  static void sigsegv_handler(int);
+  static void sigchld_handler(int);
+
 };
 
 

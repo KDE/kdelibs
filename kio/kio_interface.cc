@@ -1,10 +1,18 @@
+// $Id$
+
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/uio.h>
+
+#include <assert.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "kio_interface.h"
 
 #include <kdebug.h>
-
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
 
 /**********************************************************
  *
@@ -804,4 +812,28 @@ void IOProtocol::setConnection( Connection* _conn )
 {
   ConnectionSignals::setConnection( _conn );
   ConnectionSlots::setConnection( _conn );
+}
+
+void IOProtocol::sigsegv_handler (int)
+{
+  // Debug and printf should be avoided because they might
+  // call malloc.. and get in a nice recursive malloc loop
+  write(2, "kioslave : ###############SEG FAULT#############\n", 49);
+  exit(1);
+}
+
+void IOProtocol::sigchld_handler (int)
+{
+  int pid, status;
+
+  while(true) {
+    pid = waitpid(-1, &status, WNOHANG);
+    if ( pid <= 0 ) {
+      // Reinstall signal handler, since Linux resets to default after
+      // the signal occured ( BSD handles it different, but it should do
+      // no harm ).
+      signal(SIGCHLD, sigchld_handler);
+      return;
+    }
+  }
 }
