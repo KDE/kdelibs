@@ -107,8 +107,15 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
     {
 	_tx += m_x;
 	_ty += m_y;
-	_ty += cellTopExtra();
     }
+    
+    // check if we need to do anything at all...
+    if(!isInline())
+    {
+	int h = m_height;
+	if(specialObjects && floatBottom() > h) h = floatBottom();
+	if((_ty > _y + _h) || (_ty + h < _y)) return;
+    }    
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
@@ -119,26 +126,29 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::printObject() w/h = (%d/%d)\n", renderName(), width(), height());
 #endif
-
-    //printf("%s(RenderFlow)::printObject(2) %d/%d (%d/%d)\n", renderName(),_tx, _ty, _x, _y);
-    //if(!layouted()) return;
-
-    // default implementation. Just pass things through to the children
-    // and paint paragraphs (groups of inline elements)
-    RenderObject *child;
-
-    // check if we need to do anything at all...
-    if(!isInline())
-    {
-	int h = m_height;
-	if(specialObjects && floatBottom() > h) h = floatBottom();
-	if((_ty > _y + _h) || (_ty + h < _y)) return;
-    }
-
+    
+    
+    // 1. print background, borders etc
     if(m_printSpecial && !isInline())
 	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    child = firstChild();
+    // 2. print floats and other non-flow objects
+    if(specialObjects)
+    {
+	SpecialObject* r;	
+	QListIterator<SpecialObject> it(*specialObjects);
+	for ( ; (r = it.current()); ++it )
+	{
+    	    if (!r->noPaint)
+	    {
+		RenderObject *o = r->node;	
+		o->print(p, _x, _y, _w, _h, _tx , _ty);
+	    }
+	}
+    }
+    
+    // 3. print contents
+    RenderObject *child = firstChild();
     while(child != 0)
     {
 	if(!child->isFloating())
@@ -149,20 +159,6 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty);
 #endif
-
-    // because of overhanging floats.
-    if(!specialObjects) return;
-
-    SpecialObject* r;	
-    QListIterator<SpecialObject> it(*specialObjects);
-    for ( ; (r = it.current()); ++it )
-    {
-    	if (!r->noPaint)
-	{
-	    RenderObject *o = r->node;	
-	    o->print(p, _x, _y, _w, _h, _tx , _ty);
-	}
-    }
 
 }
 

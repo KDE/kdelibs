@@ -368,8 +368,8 @@ public:
 
     virtual void setContainingBlock();
 
-    virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
-			int /*w*/, int /*h*/, int /*tx*/, int /*ty*/);
+    virtual void print( QPainter* p, int x, int y,
+			int w, int h, int tx, int ty);
 
 protected:
     RenderTable *table;

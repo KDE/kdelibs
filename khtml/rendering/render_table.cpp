@@ -1586,47 +1586,21 @@ void RenderTableCell::setContainingBlock()
 }
 
 
-void RenderTableCell::printObject(QPainter *p, int _x, int _y,
+void RenderTableCell::print(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(RenderTableCell)::printObject() w/h = (%d/%d)\n", renderName(), width(), height());
+    printf("%s(RenderTableCell)::print() w/h = (%d/%d)\n", renderName(), width(), height());
 #endif
 
-    RenderObject *child;
+    _tx += m_x;
+    _ty += m_y + cellTopExtra();
 
     // check if we need to do anything at all...
     if(!isInline() && ((_ty-_topExtra > _y + _h)
     	|| (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
-    if(m_printSpecial && !isInline())
-	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
-
-    child = firstChild();
-    while(child != 0)
-    {
-	child->print(p, _x, _y, _w, _h, _tx, _ty);
-	child = child->nextSibling();
-    }
-
-#ifdef BOX_DEBUG
-    outlineBox(p, _tx, _ty);
-#endif
-
-    // because of overhanging floats.
-    if(!specialObjects) return;
-
-    SpecialObject* r;	
-    QListIterator<SpecialObject> it(*specialObjects);
-    for ( ; (r = it.current()); ++it )
-    {
-    	if (!r->noPaint)
-	{
-	    RenderObject *o = r->node;
-	    o->printObject(p, _x, _y, _w, _h, r->left + o->marginLeft() + _tx , r->startY + o->marginTop() + _ty);
-	}
-    }
-
+    printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
 
