@@ -241,7 +241,7 @@ KConfig *cfg;
 #else
    libpaths 
             #ifdef _AIX
-            << "/opt/freeware/lib"
+            << "/opt/freeware/lib/"
 	    #endif
             << "/lib/"
 	    << "/usr/lib/"
