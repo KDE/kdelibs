@@ -262,6 +262,7 @@ Node Node::insertBefore( const Node &newChild, const Node &refChild )
     NodeImpl *r = impl->insertBefore( newChild.impl, refChild.impl, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
+    if (!newChild.impl->closed()) newChild.impl->close();
     return r;
 }
 
@@ -272,6 +273,7 @@ Node Node::replaceChild( const Node &newChild, const Node &oldChild )
     NodeImpl *r = impl->replaceChild( newChild.impl, oldChild.impl, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
+    if (!newChild.impl->closed()) newChild.impl->close();
     return r;
 }
 
@@ -292,6 +294,7 @@ Node Node::appendChild( const Node &newChild )
     NodeImpl *r = impl->appendChild( newChild.impl, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
+    if (!newChild.impl->closed()) newChild.impl->close();
     return r;
 }
 
