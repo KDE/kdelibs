@@ -24,7 +24,9 @@
 	uint mountpointMappingCount();
 	QString deviceNode(uint id);
 	bool deviceMounted(const QString dev);
+	bool deviceMounted(int);
 	QString mountPoint(const QString dev);
+	QString mountPoint(int);
   };
   
   extern "C" {
@@ -88,9 +90,11 @@ void HelloProtocol::listDir(const KURL& url)
 	else
 	{
 		QString device=url.queryItem("dev");
-		if (deviceMounted(device))
+		if (url.queryItem("mounted")=="true")
 		{
-			redirection("file:/"+mountPoint(device));
+			QString mp=url.queryItem("mp");
+			if (mp=="/") mp="";
+			redirection("file:/"+mp);
 		}
 		else
 			redirection("mycomputer:/");
@@ -149,6 +153,24 @@ bool HelloProtocol::deviceMounted(const QString dev)
       return retVal;
 }
 
+bool HelloProtocol::deviceMounted(int id)
+{
+        QByteArray data;
+        QByteArray param;
+        QCString retType;
+        bool retVal=false;
+        QDataStream streamout(param,IO_WriteOnly);
+        streamout<<id;
+        if ( m_dcopClient->call( "kded",
+                 "mountwatcher", "mounted(int)", param,retType,data,false ) )
+      {
+        QDataStream streamin(data,IO_ReadOnly);
+        streamin>>retVal;
+      }
+      return retVal;
+}
+
+
 QString HelloProtocol::mountPoint(const QString dev)
 {
         QByteArray data;
@@ -159,6 +181,23 @@ QString HelloProtocol::mountPoint(const QString dev)
         streamout<<dev;
         if ( m_dcopClient->call( "kded",
                  "mountwatcher", "mountpoint(QString)", param,retType,data,false ) )
+      {
+        QDataStream streamin(data,IO_ReadOnly);
+        streamin>>retVal;
+      }
+      return retVal;
+}
+
+QString HelloProtocol::mountPoint(int id)
+{
+        QByteArray data;
+        QByteArray param;
+        QCString retType;
+        QString retVal;
+        QDataStream streamout(param,IO_WriteOnly);
+        streamout<<id;
+        if ( m_dcopClient->call( "kded",
+                 "mountwatcher", "mountpoint(int)", param,retType,data,false ) )
       {
         QDataStream streamin(data,IO_ReadOnly);
         streamin>>retVal;
@@ -177,10 +216,10 @@ void HelloProtocol::listRoot()
 	for (uint i=0;i<count;i++)
 	{
 		QString device=deviceNode(i);
-		if (deviceMounted(device))
-		        createFileEntry(entry, i18n("floppy mounted at /"), QString("mycomputer:/entries?dev=")+deviceNode(i), "kdedevice/floppy_mounted");
+		if (deviceMounted(i))
+		        createFileEntry(entry, i18n("%1 mounted at %2").arg(deviceNode(i)).arg(mountPoint(i)), QString("mycomputer:/entries?dev=")+deviceNode(i)+"&mp="+mountPoint(i)+"&mounted=true", "kdedevice/floppy_mounted");
 		else
-		        createFileEntry(entry, i18n("floppy mounted at /"), QString("mycomputer:/entries?dev=")+deviceNode(i), "kdedevice/floppy_unmounted");
+		        createFileEntry(entry, i18n("%1 (not mounted)").arg(deviceNode(i)), QString("mycomputer:/entries?dev=")+deviceNode(i)+"&mp="+mountPoint(i)+"&mounted=false", "kdedevice/floppy_unmounted");
         	listEntry(entry, false);
 		
 	}
