@@ -1,0 +1,9 @@
+[Image Format]
+Type=ICO
+Header=^\001\001
+Name=MSWindows Icons
+Read=true
+Write=false
+Suffices=ico,ICO
+Mimetype=image/x-ico
+Library=kimg_ico.la
