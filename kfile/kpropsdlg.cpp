@@ -676,7 +676,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     if (S_ISREG(item->mode())) // File (or symlink to file)
     {
-        m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(item->size())).arg(KGlobal::locale()->formatNumber(item->size(), 0)));
+        m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(item->size())).arg(KGlobal::locale()->formatNumber(static_cast<unsigned long>( item->size() ), 0)));
         m_sizeDetermineButton = 0L;
         m_sizeStopButton = 0L;
     }
