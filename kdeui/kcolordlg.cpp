@@ -229,8 +229,9 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
         mPos = e->pos();
     }
     else{
-        if(e->x() > mPos.x()+3 || e->x() < mPos.x()-3 ||
-           e->y() > mPos.y()+3 || e->y() < mPos.y()-3){
+        int delay = KGlobal::dndEventDelay();
+        if(e->x() > mPos.x()+delay || e->x() < mPos.x()-delay ||
+           e->y() > mPos.y()+delay || e->y() < mPos.y()-delay){
             // Drag color object
             int row = e->pos().y() / cellHeight();
             int col = e->pos().x() / cellWidth();

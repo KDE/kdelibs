@@ -23,11 +23,10 @@
 
 #include <qpainter.h>
 #include <qdrawutil.h>
+#include <kglobal.h>
 #include "kcolordlg.h"
 #include "kcolorbtn.h"
 #include "kcolordrag.h"
-
-#include "kcolorbtn.h"
 
 KColorButton::KColorButton( QWidget *parent, const char *name )
 	: QPushButton( parent, name )
@@ -110,8 +109,9 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
             inMouse = true;
             return;
         }
-        if(e->x() > mPos.x()+5 || e->x() < mPos.x()-5 ||
-           e->y() > mPos.y()+5 || e->y() < mPos.y()-5){
+        int delay = KGlobal::dndEventDelay();
+        if(e->x() >= mPos.x()+delay || e->x() <= mPos.x()-delay ||
+           e->y() >= mPos.y()+delay || e->y() <= mPos.y()-delay){
             // Drag color object
             dragged = true;
             KColorDrag *d = KColorDrag::makeDrag( color(), this);
