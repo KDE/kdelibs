@@ -54,7 +54,7 @@ public:
     Data() : mimeTypeInfo( 0L )
     {}
 
-    ~Data()
+    ~Data() 
     {
         if ( this == null ) // only the null item owns its mimeTypeInfo
             delete mimeTypeInfo;
@@ -86,7 +86,7 @@ KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
 
         KFileMimeTypeInfo::ItemInfo* info = new KFileMimeTypeInfo::ItemInfo();
         null = new Data(info, QString::null, QVariant());
-        sd_KFileMetaInfoItemData.setObject( null, null );
+        sd_KFileMetaInfoItemData.setObject( null );
     }
     return null;
 }
@@ -192,6 +192,11 @@ QVariant::Type KFileMetaInfoItem::type() const
     return d->mimeTypeInfo->type();
 }
 
+uint KFileMetaInfoItem::unit() const
+{
+    return d->mimeTypeInfo->unit();
+}
+
 bool KFileMetaInfoItem::isModified() const
 {
     return d->dirty;
@@ -210,11 +215,6 @@ QString KFileMetaInfoItem::suffix() const
 uint KFileMetaInfoItem::hint() const
 {
     return d->mimeTypeInfo->hint();
-}
-
-uint KFileMetaInfoItem::unit() const
-{
-    return d->mimeTypeInfo->unit();
 }
 
 uint KFileMetaInfoItem::attributes() const
@@ -739,7 +739,7 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-	null = sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(QString::null, 0) );
+	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(QString::null, 0) );
     return null;
 }
 
@@ -892,7 +892,7 @@ KFileMetaInfoProvider::KFileMetaInfoProvider()
 
 KFileMetaInfoProvider::~KFileMetaInfoProvider()
 {
-    sd.setObject( s_self, static_cast<KFileMetaInfoProvider*>( 0 ) );
+    sd.setObject( 0 );
 }
 
 KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType)
@@ -1148,6 +1148,11 @@ QStringList KFileMetaInfoGroup::keys() const
     return list;
 }
 
+QString KFileMetaInfoGroup::translatedName() const
+{
+    return d->mimeTypeInfo->groupInfo(d->name)->translatedName();
+}
+
 QStringList KFileMetaInfoGroup::supportedKeys() const
 {
       return d->mimeTypeInfo->groupInfo(d->name)->supportedKeys();
@@ -1186,11 +1191,6 @@ KFileMetaInfoItem KFileMetaInfoGroup::item(uint hint) const
 QString KFileMetaInfoGroup::name() const
 {
     return d->name;
-}
-
-QString KFileMetaInfoGroup::translatedName() const
-{
-    return d->mimeTypeInfo->groupInfo(d->name)->translatedName();
 }
 
 uint KFileMetaInfoGroup::attributes() const
@@ -1333,7 +1333,7 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
         // where the d-pointer is compared against null.
         null = new Data(QString::null);
         null->mimeTypeInfo = new KFileMimeTypeInfo();
-        sd_KFileMetaInfoGroupData.setObject( null, null );
+        sd_KFileMetaInfoGroupData.setObject( null );
     }
     return null;
 }
