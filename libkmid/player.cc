@@ -107,6 +107,11 @@ int player::loadSong(char *filename)
 void player::insertBeat(SpecialEvent *ev,ulong ms,int num,int den)
 {
     SpecialEvent *beat=new SpecialEvent;
+/*
+    static beatcount=0;
+
+    printf("BeatCount %d\n",beatcount++);
+*/
     beat->next=ev->next;
     ev->next=beat;
     beat->id=1;
@@ -144,6 +149,8 @@ void player::generateBeats(void)
         switch (ev->type)
         {
         case (0): // End of list
+            {
+            };break;
         case (1): // Text
         case (2): // Lyrics
             {
@@ -388,6 +395,7 @@ void player::parseSpecialEvents(void)
     
     delete ev;
     pspev->type=0;
+    pspev->absmilliseconds=prevms;
     pspev->next=NULL;
     if (firsttempo==0) firsttempo=tempo;
     ctl->tempo=firsttempo;

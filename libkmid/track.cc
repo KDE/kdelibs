@@ -376,12 +376,12 @@ switch (ev->command)
 			ev->d3=power2to(*ptrdata);ptrdata++;currentpos++;
 			ev->d4=*ptrdata;ptrdata++;currentpos++;
 			ev->d5=*ptrdata;ptrdata++;currentpos++;
-//#ifdef TRACKDEBUG
+#ifdef TRACKDEBUG
 			printf("TIME SIGNATURE :\n");	
 			printf("%d\n",ev->d2);
 			printf("----  %d metronome , %d number of 32nd notes per quarter note\n",ev->d4,ev->d5);
 			printf("%d\n",ev->d3);
-//#endif
+#endif
 			break;
 		    case (ME_TRACK_SEQ_NUMBER) :
 		    case (ME_TEXT) :
