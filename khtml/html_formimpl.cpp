@@ -48,10 +48,12 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc)
     : HTMLBlockElementImpl(doc)
 {
     post = false;
+    formElements.setAutoDelete(false);
 }
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
 {
+    // ### set the form for all formElements to 0
 }
 
 const DOMString HTMLFormElementImpl::nodeName() const
@@ -117,52 +119,23 @@ void HTMLFormElementImpl::slotSubmit()
     printf("submit pressed!\n");
     if(!view) return;
 
-    QStack<NodeImpl> nodeStack;
     QString formData;
     bool first = true;
 
-    NodeImpl *current = _first;
-    while(1)
+    HTMLGenericFormElementImpl *current = formElements.first();
+    while(current)
     {
-	if(!current)
+	printf("getting data from %p\n", current);
+	QString enc = current->encoding();
+	if(enc.length())
 	{
-	    if(nodeStack.isEmpty()) break;
-	    current = nodeStack.pop();
-	    current = current->nextSibling();
+	    if(!first)
+		formData += '&';
+	    formData += enc;
+	    first = false;
 	}
-	else
-	{
-	    switch(current->id())
-	    {
-	    case ID_INPUT:
-	    {
-		QString enc =
-		    static_cast<HTMLGenericFormElementImpl *>(current)
-		    ->encoding();
-		if(enc.length())
-		{
-		    if(!first)
-			formData += '&';
-		    formData += enc;
-		    first = false;
-		}
-		break;
-	    }
-	    default:
-		break;
-	    }
-
-	    NodeImpl *child = current->firstChild();
-	    if(child)
-	    {	
-		nodeStack.push(current);
-		current = child;
-	    }
-	    else
-	    {
-		current = current->nextSibling();
-	    }
-	}
+	
+	current = formElements.next();
     }
 
     printf("formdata = %s\n", formData.ascii());
@@ -188,48 +161,39 @@ void HTMLFormElementImpl::radioClicked( NodeImpl *caller, DOMString ident )
     QStack<NodeImpl> nodeStack;
     QString formData;
 
-    NodeImpl *current = _first;
-    while(1)
+    HTMLGenericFormElementImpl *current = formElements.first();
+    while(current)
     {
-	if(!current)
+	switch(current->id())
 	{
-	    if(nodeStack.isEmpty()) break;
-	    current = nodeStack.pop();
-	    current = current->nextSibling();
-	}
-	else
+	case ID_INPUT:
 	{
-	    switch(current->id())
+	    if(current == caller) break;
+	    HTMLInputElementImpl *e = static_cast<HTMLInputElementImpl *>(current);
+	    if(e->_type == HTMLInputElementImpl::RADIO)
 	    {
-	    case ID_INPUT:
-	    {
-		if(current == caller) break;
-		HTMLInputElementImpl *e = static_cast<HTMLInputElementImpl *>(current);
-		if(e->_type == HTMLInputElementImpl::RADIO)
-		{
-		    if(e->_name == ident)
-			e->setChecked(false);
-		}
-		break;
+		if(e->_name == ident)
+		    e->setChecked(false);
 	    }
-	    default:
-		break;
-	    }
-
-	    NodeImpl *child = current->firstChild();
-	    if(child)
-	    {	
-		nodeStack.push(current);
-		current = child;
-	    }
-	    else
-	    {
-		current = current->nextSibling();
-	    }
+	    break;
 	}
+	default:
+	    break;
+	}
+	
+	current = formElements.next();
     }
+}
 
+void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
+{
+    //printf("registering %p %d\n", e, e->id());
+    formElements.append(e);
+}
 
+void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
+{
+    formElements.remove(e);
 }
 
 // -------------------------------------------------------------------------
@@ -238,6 +202,8 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFo
     : HTMLPositionedElementImpl(doc)
 {
     _form = f;
+    if(_form) _form->registerFormElement(this);
+
     view = 0;
     w = 0;
 
@@ -247,7 +213,9 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFo
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
     : HTMLPositionedElementImpl(doc)
 {
-    _form = 0;
+    _form = getForm();
+    if(_form) _form->registerFormElement(this);
+
     view = 0;
     w = 0;
 
@@ -421,6 +389,11 @@ short HTMLGenericFormElementImpl::getMaxWidth() const
 
 // -------------------------------------------------------------------------
 
+HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
+{
+}
+
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
@@ -467,6 +440,11 @@ DOMString HTMLButtonElementImpl::type() const
 }
 
 // -------------------------------------------------------------------------
+
+HTMLFieldSetElementImpl::HTMLFieldSetElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
+{
+}
 
 HTMLFieldSetElementImpl::HTMLFieldSetElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
@@ -925,6 +903,11 @@ void HTMLInputElementImpl::calcMinMaxWidth()
 
 // -------------------------------------------------------------------------
 
+HTMLLabelElementImpl::HTMLLabelElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
+{
+}
+
 HTMLLabelElementImpl::HTMLLabelElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
@@ -945,6 +928,11 @@ ushort HTMLLabelElementImpl::id() const
 }
 
 // -------------------------------------------------------------------------
+
+HTMLLegendElementImpl::HTMLLegendElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
+{
+}
 
 HTMLLegendElementImpl::HTMLLegendElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
@@ -1223,6 +1211,11 @@ void HTMLSelectElementImpl::close()
 
 // -------------------------------------------------------------------------
 
+HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
+{
+}
+
 HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
@@ -1253,6 +1246,11 @@ void HTMLOptGroupElementImpl::setDisabled( bool )
 }
 
 // -------------------------------------------------------------------------
+
+HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
+{
+}
 
 HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)

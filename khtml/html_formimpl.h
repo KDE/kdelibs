@@ -34,11 +34,13 @@ class QWidget;
 class QPixmap;
 class QMultiLineEdit;
 #include <qobject.h>
+#include <qlist.h>
 
 namespace DOM {
 
 class HTMLFormElement;
 class DOMString;
+class HTMLGenericFormElementImpl;
 
 class HTMLFormElementImpl : public QObject, public HTMLBlockElementImpl
 {
@@ -65,6 +67,9 @@ public:
 
     void radioClicked( NodeImpl *caller, DOMString ident );
 
+    void registerFormElement(HTMLGenericFormElementImpl *);
+    void removeFormElement(HTMLGenericFormElementImpl *);
+
 public slots:
     void slotSubmit();
     void slotReset();
@@ -74,6 +79,7 @@ protected:
     DOMString target;
     bool post;
     KHTMLWidget *view;
+    QList<HTMLGenericFormElementImpl> formElements;
 };
 
 // -------------------------------------------------------------------------
@@ -87,10 +93,7 @@ public:
     HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLGenericFormElementImpl();
 
-    HTMLFormElementImpl *form() {
-	if(!_form) _form = getForm();
-	return _form;
-    }
+    HTMLFormElementImpl *form() { return _form; }
 
     virtual bool isRendered() { return true; }
 
@@ -133,6 +136,7 @@ class HTMLButtonElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLButtonElementImpl(DocumentImpl *doc);
+    HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
 
     virtual ~HTMLButtonElementImpl();
 
@@ -157,6 +161,7 @@ class HTMLFieldSetElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLFieldSetElementImpl(DocumentImpl *doc);
+    HTMLFieldSetElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
 
     virtual ~HTMLFieldSetElementImpl();
 
@@ -263,6 +268,7 @@ class HTMLLabelElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLLabelElementImpl(DocumentImpl *doc);
+    HTMLLabelElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLLabelElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -278,6 +284,7 @@ class HTMLLegendElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLLegendElementImpl(DocumentImpl *doc);
+    HTMLLegendElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLLegendElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -350,6 +357,7 @@ class HTMLOptGroupElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLOptGroupElementImpl(DocumentImpl *doc);
+    HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLOptGroupElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -369,6 +377,7 @@ class HTMLOptionElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLOptionElementImpl(DocumentImpl *doc);
+    HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLOptionElementImpl();
 
     virtual const DOMString nodeName() const;
