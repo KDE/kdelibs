@@ -45,7 +45,6 @@
 #include "config-kfile.h"
 #include <kdebug.h>
 
-template class QIntDict<char>;
 template class QList<KFileViewItem>;
 
 KFileViewItem::IntCache   * KFileViewItem::passwdCache = 0L;
