@@ -332,7 +332,7 @@ public:
    * Set it to true if you are exporting a BrowserExtension implementation and
    * do not provide any special URI drop handling. If set to false you can be
    * sure to receive all those URI drop events unfiltered. Also note that the
-   * implementation as of Konqueror installs the even filter only on the part's
+   * implementation as of Konqueror installs the event filter only on the part's
    * widget itself, not on child widgets.
    */
   void setURLDropHandlingEnabled( bool enable );
