@@ -42,6 +42,11 @@ class KURL
   typedef QValueList<KURL> List;
 public:
   /**
+   * Construct an empty url
+   */
+  KURL();
+  /**
+   * Usual constructor, to construct from a string.
    * @param _url is considered to be encoded. You can pass strings like
    *             "/home/weis", in this case the protocol "file" is assumed.
    *             This is dangerous since even this simple path is assumed to be
@@ -49,12 +54,25 @@ public:
    *             "/home/Torben Weis". This means: If you have a usual UNIX like
    *             path, you have to use @ref encode first before you pass it to KURL.
    */
-  KURL();
   KURL( const QString& _url );
+  /**
+   * Copy constructor
+   */
   KURL( const KURL& _u );
+  /**
+   * Convert from a QUrl
+   */
   KURL( const QUrl &u );
   /**
-   * @param _rel_url is considered to be encoded.
+   * Constructor allowing relative urls
+   *
+   * Example : KURL u( QDir::currentDirPath()+"/", _url )
+   * Very useful for command-line parameters, where people tend to do
+   * "myprog myfile.ext"
+   *
+   * @param _u the base url
+   * @param _rel_url is considered to be encoded. If an absolute path/url,
+   * then _u will be ignored
    */
   KURL( const KURL& _u, const QString& _rel_url );
 
