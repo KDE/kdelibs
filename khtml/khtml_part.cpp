@@ -913,8 +913,11 @@ void KHTMLPart::clear()
   d->m_objects.clear();
 
 #ifndef Q_WS_QWS
-  delete d->m_javaContext;
-  d->m_javaContext = 0;
+  if( d->m_javaContext )
+  {
+    d->m_javaContext->deleteLater();
+    d->m_javaContext = 0;
+  }
 #endif
 
   d->m_delayRedirect = 0;
