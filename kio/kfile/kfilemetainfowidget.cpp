@@ -212,7 +212,6 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
     }
 
     if ( m_item.attributes() & KFileMimeTypeInfo::MultiLine ) {
-        qDebug("******** MULTI!");
         KEdit *edit = new KEdit( this );
         edit->setText( m_item.value().toString() );
         connect( edit, SIGNAL( textChanged() ),
