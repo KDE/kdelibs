@@ -1,0 +1,21 @@
+KDEINIT_USE_XFT=1
+dnl check if Qt is linked against Xft
+KDE_CHECK_LIB(qt-mt,XftInit,[],[KDEINIT_USE_XFT=])
+
+dnl Xft requires freetype to compile
+KDE_FIND_PATH(freetype-config, KDEINIT_FREETYPE_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/bin /usr/local/bin /opt/local/bin])
+if test -n "$KDEINIT_FREETYPE_CONFIG"; then
+    KDEINIT_XFT_INCLUDES=`$KDEINIT_FREETYPE_CONFIG --cflags`
+    kdeinit_cppflags=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $KDEINIT_XFT_INCLUDES"
+    KDE_CHECK_HEADER(X11/Xft/Xft.h,[],[KDEINIT_USE_XFT=])
+    CPPFLAGS=$kdeinit_cppflags
+    KDE_CHECK_HEADER(fontconfig/fontconfig.h,[],[KDEINIT_USE_XFT=])
+else
+    KDEINIT_USE_XFT=
+fi
+
+if test -n "$KDEINIT_USE_XFT"; then
+    AC_DEFINE(KDEINIT_USE_XFT,1,[Use Xft preinitialization in kdeinit])
+    AC_SUBST(KDEINIT_XFT_INCLUDES)
+fi

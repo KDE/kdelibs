@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <locale.h>
 
 #include <qstring.h>
 #include <qfile.h>
@@ -49,6 +50,7 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qregexp.h>
+#include <qfont.h>
 #include <kinstance.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
@@ -85,6 +87,12 @@
 # else
 #  define LTDL_GLOBAL	0
 # endif
+#endif
+
+#ifdef KDEINIT_USE_XFT
+#include <X11/Xft/Xft.h>
+extern "C" FcBool XftInitFtLibrary (void);
+#include <fontconfig/fontconfig.h>
 #endif
 
 extern char **environ;
@@ -1316,6 +1324,10 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
+#ifdef KDEINIT_USE_XFT
+            if( !FcConfigUptoDate(NULL))
+               FcInitReinitialize();
+#endif
             if (fork() == 0)
             {
                 close_fds();
@@ -1332,6 +1344,10 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper_old, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
+#ifdef KDEINIT_USE_XFT
+            if( !FcConfigUptoDate(NULL))
+               FcInitReinitialize();
+#endif
             if (fork() == 0)
             {
                 close_fds();
@@ -1741,6 +1757,22 @@ int main(int argc, char **argv, char **envp)
 //#ifdef Q_WS_X11
    X11fd = initXconnection();
 #endif
+
+   {
+#ifdef KDEINIT_USE_XFT
+      XftInit(0);
+      XftInitFtLibrary();
+#endif
+      QFont::initialize();
+      setlocale (LC_ALL, "");
+      setlocale (LC_NUMERIC, "C");
+      if (XSupportsLocale ())
+      {
+         // Similar to QApplication::create_xim()
+	 // but we need to use our own display
+	 XOpenIM (X11display, 0, 0, 0);
+      }
+   }
 
    for(i = 1; i < argc; i++)
    {
