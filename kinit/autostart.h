@@ -31,10 +31,12 @@ public:
     
   void loadAutoStartList();
   QString startService();
+  void    setPhase(int phase);
 
 private:
   AutoStartList *m_startList;  
   QStringList m_started;
+  int m_phase;
 };
 
 #endif

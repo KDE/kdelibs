@@ -376,7 +376,17 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    else if (fun == "autoStart()")
    {
       kdDebug() << "KLauncher::process ---> autoStart" << endl;
-      autoStart();
+      autoStart(1);
+      replyType = "void";
+      return true;
+   }
+   else if (fun == "autoStart(int)")
+   {
+      kdDebug() << "KLauncher::process ---> autoStart(int)" << endl;
+      QDataStream stream(data, IO_ReadOnly);
+      int phase;
+      stream >> phase;
+      autoStart(phase);
       replyType = "void";
       return true;
    }
@@ -543,9 +553,11 @@ KLauncher::slotAppRegistered(const QCString &appId)
 }
 
 void
-KLauncher::autoStart()
+KLauncher::autoStart(int phase)
 {
-   mAutoStart.loadAutoStartList();
+   mAutoStart.setPhase(phase);
+   if (phase == 1)
+      mAutoStart.loadAutoStartList();
    connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
    mAutoTimer.start(0, true);
 }

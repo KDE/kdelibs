@@ -139,7 +139,7 @@ protected:
 
    void waitForSlave(pid_t pid);
 
-   void autoStart();
+   void autoStart(int phase);
 
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
                     const QStringList &url);

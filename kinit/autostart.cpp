@@ -33,6 +33,7 @@ public:
    QString name;
    QString service;
    QString startAfter;
+   int     phase;
 };
 
 class AutoStartList: public QPtrList<AutoStartItem>
@@ -42,10 +43,18 @@ public:
 };
 
 AutoStart::AutoStart()
+  : m_phase(1)
 {
   m_startList = new AutoStartList;
   m_startList->setAutoDelete(true);
   KGlobal::dirs()->addResourceType("autostart", "share/autostart");
+}
+
+void
+AutoStart::setPhase(int phase)
+{
+   if (phase > m_phase)
+      m_phase = phase;
 }
 
 static QString extractName(QString path)
@@ -97,6 +106,9 @@ AutoStart::loadAutoStartList()
        item->name = extractName(*it);
        item->service = *it;
        item->startAfter = config.readEntry("X-KDE-autostart-after");
+       item->phase = config.readNumEntry("X-KDE-autostart-phase", 1);
+       if (item->phase < 1)
+          item->phase = 1;
        m_startList->append(item);
    }
 } 
@@ -115,7 +127,8 @@ AutoStart::startService()
      for(AutoStartItem *item = m_startList->first(); 
          item; item = m_startList->next())
      {
-        if (item->startAfter == lastItem)
+        if (item->phase == m_phase
+        &&  item->startAfter == lastItem)
         {
            m_started.prepend(item->name);
            QString service = item->service;
@@ -127,10 +140,12 @@ AutoStart::startService()
    }
    
    // Check for items that don't depend on anything
-   for(AutoStartItem *item = m_startList->first(); 
+   AutoStartItem *item;
+   for(item = m_startList->first();
        item; item = m_startList->next())
    {
-      if (item->startAfter.isEmpty())
+      if (item->phase == m_phase
+      &&  item->startAfter.isEmpty())
       {
          m_started.prepend(item->name);
          QString service = item->service;
@@ -139,10 +154,18 @@ AutoStart::startService()
       }
    }
 
-   // Just start something
-   AutoStartItem *item = m_startList->first();
-   m_started.prepend(item->name);
-   QString service = item->service;
-   m_startList->remove();
-   return service;
+   // Just start something in this phase
+   for(item = m_startList->first();
+       item; item = m_startList->next())
+   {
+      if (item->phase == m_phase)
+      {
+         m_started.prepend(item->name);
+         QString service = item->service;
+         m_startList->remove();
+         return service;
+      }
+   }
+
+   return 0;
 }

@@ -1,0 +1,61 @@
+KDE SESSION AUTOSTART
+=====================
+
+KDE session startup occurs in the following sequence:
+
+   Window manager startup
+   Autostart phase 1
+   Session restoration
+   Autostart phase 2
+
+Applications may be scheduled to be automatically run at KDE session startup
+in either autostart phase 1 or phase 2. Autostart phase 1 is the original
+autostart phase; phase 2 was introduced in KDE 3. To run in either phase, an
+application's .desktop file must be located in a KDE autostart directory such
+as $KDEDIR/share/autostart or $KDEHOME/share/autostart. The .desktop file can
+contain the following optional entries to control its autostart:
+
+   X-KDE-autostart-condition = rcfile:group:entry:default
+
+         rcfile   = name of a config file (including path if necessary)
+         group    = name of a group within the config file
+         entry    = name of a boolean entry within the group
+         default  = true or false
+
+      Starts the application only if the specified boolean entry in the
+      specified config file has the value 'true'. If the specified entry is
+      missing from the config file, the application will only be started if
+      'default' is 'true'.
+
+   X-KDE-autostart-after = desktop_name
+
+         desktop_name  = the name of another .desktop file excluding path and
+                         the .desktop suffix. E.g. panel.desktop would appear
+                         as 'X-KDE-autostart-after=panel'
+                      
+      Waits until the .desktop file specified by 'desktop_name' has been
+      autostarted. The entry is ignored if the specified application is not
+      scheduled in the same autostart phase as this .desktop file.
+
+   X-KDE-autostart-phase = phase
+
+         phase  = 1 or 2
+
+      Starts the application in the autostart phase specified by 'phase'.
+      If this entry is missing or 'phase' < 1, 'phase' defaults to 1. If
+      'phase' > 2 the application will not be autostarted since the specified
+      autostart phase will never be reached.
+      
+
+   Hidden = true
+
+      Disables autostarting the application.
+
+
+KUniqueApplication and session restoration
+------------------------------------------
+
+If KUniqueApplication applications are autostarted before they are restored
+from the previous session, they will never see the session restoration command.
+So if you need to autostart a KUniqueApplication which may also be restored
+in session restoration, you should schedule it for autostart in phase 2.
