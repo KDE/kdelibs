@@ -20,6 +20,10 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.9  2000/01/17 19:07:59  bieker
+* Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
+* yet).
+*
 * Revision 1.8  1999/11/19 21:09:34  pbrown
 * don't need to activate().
 *
@@ -35,12 +39,12 @@
 * in kdeui since it can not use the KDE file dialog. kfile is a better
 * location.
 *
-* 
+*
 *
 ****************************************************************************
 */
 
-KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value, 
+KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 			    QWidget *parent, bool _file_mode )
   : KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, 0L, true,
 		 true, i18n("C&lear") ), completion(0L)
@@ -57,9 +61,9 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   edit->setMinimumWidth(edit->sizeHint().width() * 3);
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
   hbox->addWidget( edit, 1 );
-  
 
-  if( _file_mode == true ) 
+
+  if( _file_mode == true )
   {
     completion = new KURLCompletion();
     connect(edit, SIGNAL (completion()),
@@ -74,8 +78,8 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
     QPushButton *browse = new QPushButton(i18n("&Browse..."), plainPage() );
     hbox->addWidget( browse );
     connect( browse, SIGNAL(clicked()), this, SLOT(slotBrowse()) );
-  } 
-  
+  }
+
   connect( this, SIGNAL(user1Clicked()), edit, SLOT(doClear()) );
   edit->setText( _value );
   edit->setSelection(0, edit->text().length());
@@ -85,7 +89,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 
 
 #if 0
-KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value, 
+KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 			    QWidget *parent, bool _file_mode )
     : QDialog( parent, 0L, true )
 {
@@ -97,7 +101,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   edit = new KLineEdit( this, 0L );
   edit->setMinimumWidth(edit->sizeHint().width() * 3);
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
-    
+
   if ( _file_mode ) {
     completion = new KURLCompletion();
     connect(edit, SIGNAL (completion()),
@@ -170,6 +174,33 @@ void KLineEditDlg::slotBrowse()
   if (!fn.isNull())
     edit->setText(QString::fromLatin1("file://") + fn);
 }
+
+
+QString KLineEditDlg::getText(const QString &_text, const QString& _value,
+                              bool *ok, QWidget *parent )
+{
+
+    KLineEditDlg* dlg = new KLineEditDlg(_text, _value, parent, false );
+#if 0
+    dlg->setCaption( caption );
+
+    if ( !_text.isEmpty() )
+        dlg->lineEdit()->selectAll();
+#endif
+
+    bool ok_ = FALSE;
+    QString result;
+    ok_ = dlg->exec() == QDialog::Accepted;
+    if ( ok )
+        *ok = ok_;
+    if ( ok_ )
+        result = dlg->text();
+
+    delete dlg;
+    return result;
+}
+
+
 
 #include "klineeditdlg.moc"
 

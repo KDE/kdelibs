@@ -1,17 +1,17 @@
 /* This file is part of the KDE libraries
 
    Copyright (C) 1999 Preston Brown <pbrown@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -40,14 +40,14 @@ public:
   /**
    * Create a dialog that asks for a single line of text. _value is the initial
    * value of the line. _text appears as label on top of the entry box.
-   * 
+   *
    * @param _text      Text of the label
    * @param _value     Initial value of the inputline
    * @param _file_mode if set to TRUE, the editor widget will provide command
    *                   completion ( Ctrl-S and Ctrl-D ), and a browse button
    *                   for the local file system.
    */
-  KLineEditDlg( const QString& _text, const QString& _value, 
+  KLineEditDlg( const QString& _text, const QString& _value,
 		QWidget *parent, bool _file_mode = FALSE );
   virtual ~KLineEditDlg();
 
@@ -55,7 +55,18 @@ public:
    * @return the value the user entered
    */
   QString text() { return edit->text(); }
-    
+
+  /**
+   * Static convenience function to get a textual input from the user.
+   *
+   * @param _text      Text of the label
+   * @param _value     Initial value of the inputline
+   * @param ok         this bool will be set to true if user pressed "Ok"
+   */
+
+  static QString getText(const QString &_text, const QString& _value,
+                 bool *ok, QWidget *parent );
+
 public slots:
   /**
    * Clears the edit widget
