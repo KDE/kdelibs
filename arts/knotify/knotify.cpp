@@ -76,27 +76,7 @@ KNotify::KNotify() : QObject(), DCOPObject("Notify")
 		cerr << "artsd is not running, there will be no sound notifications.\n";
 }
 
-bool KNotify::process(const QCString &fun, const QByteArray &data,
-                      QCString& /*replyType*/, QByteArray& /*replyData*/ )
-{
-	if (fun == "notify(QString,QString,QString,QString,QString,Presentation)")
-	{
-		QDataStream dataStream( data, IO_ReadOnly );
-		QString event;
-		QString fromApp;
-		QString text;
-		QString sound;
-		QString file;
-	 	int present;
-		dataStream >> event >>fromApp >> text >> sound >> file>> present;
-		processNotification(event, fromApp, text, sound, file, present);
- 
-		return true;
-	}
-	return false;
-}
-
-void KNotify::processNotification(const QString &event, const QString &fromApp,
+void KNotify::notify(const QString &event, const QString &fromApp,
                                   const QString &text, QString sound, QString file,
                                   int present)
 {

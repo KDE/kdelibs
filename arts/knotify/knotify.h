@@ -15,7 +15,6 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  
-        kaudioserver.cpp: Audio server starter for libmediatool/maudio
 */
 
 #ifndef KNOTIFY_H
@@ -34,13 +33,15 @@ K_DCOP
 
 public:
 	KNotify();
-//	~KNotify();
+	virtual ~KNotify() {}
 
 protected:
-	void processNotification(const QString &event, const QString &fromApp,
-	                         const QString &text, QString sound, QString file,
-	                         int present);
+k_dcop:
+	void notify(const QString &event, const QString &fromApp,
+                         const QString &text, QString sound, QString file,
+                         int present);
 
+protected:
 	bool notifyBySound(const QString &sound);
 	bool notifyByMessagebox(const QString &text);
 	bool notifyByLogfile(const QString &text, const QString &file);
