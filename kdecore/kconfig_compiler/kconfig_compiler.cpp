@@ -37,6 +37,8 @@
 
 static const KCmdLineOptions options[] =
 {
+  { "d", 0, 0 },
+  { "directory <dir>", I18N_NOOP("Directory to generate files in"), "." },
   { "+file.kfcg", I18N_NOOP("Input kcfg XML file."), 0 },
   { "+file.kcfgc", I18N_NOOP("Code generation options file."), 0 },
   KCmdLineLastOption
@@ -559,6 +561,10 @@ int main( int argc, char **argv )
     kdError() << "Too many arguments." << endl;
     return 1;
   }
+  
+  QString baseDir = QFile::decodeName(args->getOption("directory"));
+  if (!baseDir.endsWith("/"))
+    baseDir.append("/");
 
   QString inputFilename = args->url( 0 ).path();
   QString codegenFilename = args->url( 1 ).path();
@@ -675,7 +681,7 @@ int main( int argc, char **argv )
   QString headerFileName = baseName + ".h";
   QString implementationFileName = baseName + ".cpp";
 
-  QFile header( headerFileName );
+  QFile header( baseDir + headerFileName );
   if ( !header.open( IO_WriteOnly ) ) {
     kdError() << "Can't open '" << headerFileName << "for writing." << endl;
     return 1;
@@ -858,7 +864,7 @@ int main( int argc, char **argv )
 
   header.close();
 
-  QFile implementation( implementationFileName );
+  QFile implementation( baseDir + implementationFileName );
   if ( !implementation.open( IO_WriteOnly ) ) {
     kdError() << "Can't open '" << implementationFileName << "for writing."
               << endl;
