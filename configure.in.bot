@@ -22,7 +22,7 @@ if test "x$have_ssl" != xyes; then
   all_tests=bad
 fi
 
-if test -z "x$LIBPCRE"; then
+if test -z "$LIBPCRE"; then
   echo ""
   echo "You're missing libpcre."
   echo "Some web pages (using regular expressions in Javascript code) will not "
