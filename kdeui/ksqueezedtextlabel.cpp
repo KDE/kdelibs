@@ -4,7 +4,14 @@
 
 KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent)
  : QLabel ( parent) {
-  fontMetrics = new QFontMetrics(font());
+  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  setSizePolicy(myLabelSizePolicy);
+  fullText = text;
+  squeezeTextToLabel();
+}
+
+KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent, const char *name )
+ : QLabel ( parent, name ) {
   QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   setSizePolicy(myLabelSizePolicy);
   fullText = text;
@@ -13,7 +20,12 @@ KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent)
 
 KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent)
  : QLabel ( parent) {
-  fontMetrics = new QFontMetrics(font());
+  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  setSizePolicy(myLabelSizePolicy);
+}
+
+KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent, const char *name )
+ : QLabel ( parent, name ) {
   QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   setSizePolicy(myLabelSizePolicy);
 }
@@ -28,17 +40,18 @@ void KSqueezedTextLabel::setText( const QString &text ) {
 }
 
 void KSqueezedTextLabel::squeezeTextToLabel() {
+  QFontMetrics fm(fontMetrics());
   int labelWidth = size().width();
-  int textWidth = fontMetrics->width(fullText);
+  int textWidth = fm.width(fullText);
   if (textWidth > labelWidth) {
     // start with the dots only
     QString squeezedText = "...";
-    int squeezedWidth = fontMetrics->width(squeezedText);
+    int squeezedWidth = fm.width(squeezedText);
 
     // estimate how many letters we can add to the dots on both sides
     int letters = fullText.length() * (labelWidth - squeezedWidth) / textWidth / 2;
     squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-    squeezedWidth = fontMetrics->width(squeezedText);
+    squeezedWidth = fm.width(squeezedText);
 
     if (squeezedWidth < labelWidth) {
         // we estimated too short
@@ -46,7 +59,7 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
         do {
                 letters++;
                 squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-                squeezedWidth = fontMetrics->width(squeezedText);
+                squeezedWidth = fm.width(squeezedText);
         } while (squeezedWidth < labelWidth);
         letters--;
         squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
@@ -56,7 +69,7 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
         do {
             letters--;
             squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-            squeezedWidth = fontMetrics->width(squeezedText);
+            squeezedWidth = fm.width(squeezedText);
         } while (squeezedWidth > labelWidth);
     }
 

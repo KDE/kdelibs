@@ -49,7 +49,9 @@ public:
    * Default constructor.
    */
   KSqueezedTextLabel( QWidget *parent );
+  KSqueezedTextLabel( QWidget *parent, const char *name);                       //### merge with the above
   KSqueezedTextLabel( const QString &text, QWidget *parent );
+  KSqueezedTextLabel( const QString &text, QWidget *parent, const char *name ); //### merge with the above
 
 public slots:
   void setText( const QString & );
@@ -66,7 +68,7 @@ protected:
   QString fullText;
 
 private:
-  QFontMetrics *fontMetrics;
+  QFontMetrics *unused; //### unused, remove in 3.0
   class KSqueezedTextLabelPrivate;
   KSqueezedTextLabelPrivate *d;
 };
