@@ -21,6 +21,7 @@
       HR, MENU, PRE   { display: block }
       LI              { display: list-item }
       HEAD            { display: none }
+      SCRIPT         { display: none }
       TABLE           { display: table;
       	    	    	border-collapse: separate;
 			vertical-align: middle;
