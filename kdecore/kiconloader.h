@@ -240,8 +240,8 @@ QPixmap UserIcon(const QString& name, int state=KIcon::DefaultState,
 QPixmap UserIcon(const QString& name, KInstance *instance);
 
 /** Load a user icon, and apply the effects to get an IconSet.  */
-QIconSet UserIconSet(const QString& name, int size=0,
-		    KInstance *instance=KGlobal::instance());
+QIconSet UserIconSet(const QString& name, 
+	KInstance *instance=KGlobal::instance());
 
 /** Returns the current icon size for a specific group.  */
 int IconSize(int group, KInstance *instance=KGlobal::instance());
