@@ -94,7 +94,7 @@ public:
 			BeforeMoney = 3, AfterMoney = 4 };
 
     /**
-     * Specicies what a decimal point should look like ("." or "," etc.)
+     * Specifies what a decimal point should look like ("." or "," etc.)
      * according to the current locale or user settings.
      */
     QString decimalSymbol() const;
@@ -187,7 +187,7 @@ public:
      * Given an double, convert that to a numeric string containing
      * the localized numeric equivalent.
      * 
-     * e.g. given 123456.78, return "123.456.78" (for Europe).  
+     * e.g. given 123456.78, return "123,456.78" (for some European country).  
      */
     QString formatNumber(double num) const;
 
