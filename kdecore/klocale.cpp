@@ -71,6 +71,74 @@ char *k_bindtextdomain (const char *__domainname,
 static char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
                             "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
 
+const QString KLocale::mergeLocale(const QString& lang,const QString& country,
+				   const QString &charset)
+{
+    if (lang.isEmpty()) 
+	return "C";
+    QString ret = lang;
+    if (!country.isEmpty()) 
+	ret += "_" + country;
+    if (!charset.isEmpty()) 
+	ret+= "." +charset;
+    return ret;
+}
+
+void KLocale::splitLocale(const QString& aStr,
+			  QString& lang,
+			  QString& country,
+			  QString &chset){
+   
+    QString str = aStr.copy();
+
+    // just in case, there is another language appended
+    int f = str.find(':');
+    if (f >= 0) {
+	str = str.left(f);
+    }
+
+    country="";
+    chset="";
+    lang="";
+    
+    f = str.find('.');
+    if (f >= 0) {
+	chset = str.right(str.length() - f - 1);
+	str = str.left(f);
+    }
+    
+    f = str.find('_');
+    if (f >= 0) { 
+	country = str.right(str.length() - f - 1);
+	str = str.left(f);
+    }
+    
+    lang = str;
+    
+    if (chset.isEmpty() && kapp != 0){
+	QString directory = KApplication::kde_localedir();
+	QString dir=directory+"/"+lang+"_"+country;
+	QDir d(dir);
+	if (!d.exists("charset")){
+	    dir=directory+"/"+lang;
+	    d=QDir(dir);
+	}  
+	if (d.exists("charset")){
+	    QFile f(dir+"/charset");   
+	    if (f.exists() && f.open(IO_ReadOnly)){
+		char *buf=new char[256];
+		int l=f.readLine(buf,256);
+		if (l>0){
+		    if (buf[l-1]=='\n') buf[l-1]=0;
+		    if (KCharset(buf).ok()) chset=buf;
+		}
+		delete [] buf;
+		f.close();
+	    }
+	}    
+    }  
+}
+
 KLocale::KLocale( const char *catalogue )
 {
 #ifdef HAVE_SETLOCALE
@@ -259,74 +327,6 @@ const char *KLocale::getLocale(QString cat){
     else return "C";
 }
 
-void KLocale::splitLocale(const QString& aStr,
-			  QString& lang,
-			  QString& country,
-			  QString &chset){
-   
-    QString str = aStr.copy();
-
-    // just in case, there is another language appended
-    int f = str.find(':');
-    if (f >= 0) {
-	str = str.left(f);
-    }
-
-    country="";
-    chset="";
-    lang="";
-    
-    f = str.find('.');
-    if (f >= 0) {
-	chset = str.right(str.length() - f - 1);
-	str = str.left(f);
-    }
-    
-    f = str.find('_');
-    if (f >= 0) { 
-	country = str.right(str.length() - f - 1);
-	str = str.left(f);
-    }
-    
-    lang = str;
-    
-    if (chset.isEmpty() && kapp != 0){
-	QString directory = KApplication::kde_localedir();
-	QString dir=directory+"/"+lang+"_"+country;
-	QDir d(dir);
-	if (!d.exists("charset")){
-	    dir=directory+"/"+lang;
-	    d=QDir(dir);
-	}  
-	if (d.exists("charset")){
-	    QFile f(dir+"/charset");   
-	    if (f.exists() && f.open(IO_ReadOnly)){
-		char *buf=new char[256];
-		int l=f.readLine(buf,256);
-		if (l>0){
-		    if (buf[l-1]=='\n') buf[l-1]=0;
-		    if (KCharset(buf).ok()) chset=buf;
-		}
-		delete [] buf;
-		f.close();
-	    }
-	}    
-    }  
-}
-
-const QString KLocale::mergeLocale(const QString& lang,const QString& country,
-				   const QString &charset)
-{
-    if (lang.isEmpty()) 
-	return "C";
-    QString ret = lang;
-    if (!country.isEmpty()) 
-	ret += "_" + country;
-    if (!charset.isEmpty()) 
-	ret+= "." +charset;
-    return ret;
-}
-
 void KLocale::enableNumericLocale(bool on){
 #ifdef HAVE_SETLOCALE
     if (on) 
@@ -390,19 +390,8 @@ void KLocale::aliasLocale(const char* text, long int index)
     aliases.insert(index, text);
 }
 
-void  KLocale::getLocale(int){
-}
-
-void  KLocale::splitLocale(const QString&,QString& lang,
-			   QString& country,QString& charset) const
-{
-    lang=country=charset="";
-}
-
-QString  KLocale::mergeLocale(const QString&,const QString&,
-			      const QString &)const
-{
-    return "";
+const char *KLocale::getLocale(QString ){
+    return "C";
 }
 
 void  KLocale::enableNumericLocale(bool){
