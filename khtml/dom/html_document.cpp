@@ -87,9 +87,10 @@ DOMString HTMLDocument::title() const
     return static_cast<HTMLDocumentImpl *>(impl)->title();
 }
 
-void HTMLDocument::setTitle( const DOMString &/*value*/ )
+void HTMLDocument::setTitle( const DOMString &value )
 {
-    // ###
+    if (impl)
+        static_cast<HTMLDocumentImpl *>(impl)->setTitle(value);
 }
 
 DOMString HTMLDocument::referrer() const
