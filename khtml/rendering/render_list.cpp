@@ -83,7 +83,7 @@ void RenderListItem::setStyle(RenderStyle *style)
        if(newStyle->direction() == LTR)
            newStyle->setFloating(FLEFT);
        else
-           newStyle->setFloating(FRIGHT);                                      
+           newStyle->setFloating(FRIGHT);
        if(!m_marker) {
 	m_marker = new RenderListMarker();
 	m_marker->setStyle(newStyle);
@@ -293,7 +293,7 @@ void RenderListMarker::layout()
 	return;
     }
 
-    m_height = 0;
+    m_height = 1;
 }
 
 void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
@@ -409,4 +409,5 @@ short RenderListMarker::verticalPositionHint() const
 
 void RenderListMarker::calcWidth()
 {
+    RenderBox::calcWidth();
 }
