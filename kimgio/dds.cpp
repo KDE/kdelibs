@@ -828,7 +828,7 @@ void kimgio_dds_read( QImageIO *io )
 	uint fourcc;
 	s >> fourcc;
 	if( fourcc != FOURCC_DDS ) {
-		kdDebug() << "This is not a DDS file." << endl;
+		kdDebug(399) << "This is not a DDS file." << endl;
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;
@@ -840,7 +840,7 @@ void kimgio_dds_read( QImageIO *io )
 
 	// Check image file format.
 	if( s.atEnd() || !IsValid( header ) ) {
-		kdDebug() << "This DDS file is not valid." << endl;
+		kdDebug(399) << "This DDS file is not valid." << endl;
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;
@@ -848,7 +848,7 @@ void kimgio_dds_read( QImageIO *io )
 
 	// Determine image type, by now, we only support 2d textures.
 	if( !IsSupported( header ) ) {
-		kdDebug() << "This DDS file is not supported." << endl;
+		kdDebug(399) << "This DDS file is not supported." << endl;
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;
@@ -866,7 +866,7 @@ void kimgio_dds_read( QImageIO *io )
 	}
 
 	if( result == false ) {
-		kdDebug() << "Error loading DDS file." << endl;
+		kdDebug(399) << "Error loading DDS file." << endl;
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;
