@@ -1196,3 +1196,14 @@ KHTMLWidget::gotoAnchor( const QString &/*_name*/ )
 {
     // ### FIXME
 }
+
+void KHTMLWidget::findTextBegin()
+{
+    // ###
+}
+
+bool KHTMLWidget::findTextNext( const QRegExp &/*exp*/ )
+{
+    // ###
+    return false;
+}
