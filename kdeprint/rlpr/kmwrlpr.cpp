@@ -151,6 +151,46 @@ void KMWRlpr::initialize()
 				}
 			}
 		}
+		f.close();
+	}
+
+	// parse printcap file for local printers
+	f.setName("/etc/printcap");
+	if (f.exists() && f.open(IO_ReadOnly))
+	{
+		QTextStream	t(&f);
+		QString		line, buffer;
+		QListViewItem	*hitem(m_view->firstChild());
+		while (hitem) if (hitem->text(0) == "localhost") break; else hitem = hitem->nextSibling();
+		while (!t.eof())
+		{
+			buffer = QString::null;
+			while (!t.eof())
+			{
+				line = t.readLine().stripWhiteSpace();
+				if (line.isEmpty() || line[0] == '#')
+					continue;
+				buffer.append(line);
+				if (buffer.right(1) == "\\")
+					buffer = buffer.left(buffer.length()-1).stripWhiteSpace();
+				else
+					break;
+			}
+			if (buffer.isEmpty())
+				continue;
+			int	p = buffer.find(':');
+			if (p != -1)
+			{
+				QString	name = buffer.left(p);
+				if (!hitem)
+				{
+					hitem = new QListViewItem(m_view,"localhost");
+					hitem->setPixmap(0,SmallIcon("kdeprint_computer"));
+				}
+				QListViewItem	*pitem = new QListViewItem(hitem,name);
+				pitem->setPixmap(0,SmallIcon("kdeprint_printer"));
+			}
+		}
 	}
 
 	if (m_view->childCount() == 0)
