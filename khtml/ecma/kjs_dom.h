@@ -93,6 +93,7 @@ namespace KJS {
   public:
     DOMDocument(DOM::Document d) : DOMNode(d) { }
     virtual KJSO tryGet(const UString &p) const;
+    virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
   };

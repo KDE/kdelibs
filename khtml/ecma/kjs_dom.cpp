@@ -60,11 +60,26 @@ Boolean DOMNode::toBoolean() const
     return Boolean(!node.isNull());
 }
 
-bool DOMNode::hasProperty(const UString &p, bool) const
+bool DOMNode::hasProperty(const UString &p, bool recursive) const
 {
-    KJSO n = getDOMNode(node);
-    KJSO r = n.get(p);
-    return !r.isA(UndefinedType);
+  if (p == "nodeName" || p == "nodeValue" || p == "nodeType" ||
+      p == "parentNode" || p == "childNodes" || p == "firstChild" ||
+      p == "lastChild" || p == "previousSibling" || p == "nextSibling" ||
+      p == "attributes" ||
+      /* new for DOM2 - not yet in khtml
+      p == "namespaceURI" || p == "prefix" || p == "localName" || */
+      p == "ownerDocument" || p == "insertBefore" || p == "replaceChild" ||
+      p == "removeChild" || p == "appendChild" || p == "hasChildNodes" ||
+      p == "cloneNode" ||
+      /* moved here from Element in DOM2
+      p == "normalize"  || p == "supports" */
+      // no DOM standard, found in IE only
+      p == "offsetLeft" || p == "offsetTop" || p == "offsetParent" ||
+      p == "scrollLeft" || p == "scrollTop" || p == "addEventListener" ||
+      p == "removeEventListener" || p == "dispatchEvent")
+    return true;
+
+  return recursive && HostImp::hasProperty(p, true);
 }
 
 KJSO DOMNode::tryGet(const UString &p) const
@@ -307,6 +322,26 @@ void DOMAttr::tryPut(const UString &p, const KJSO& v)
 
 const TypeInfo DOMDocument::info = { "Document", HostType,
 				     &DOMNode::info, 0, 0 };
+
+bool DOMDocument::hasProperty(const UString &p, bool recursive) const
+{
+  if (p == "doctype" || p == "implementation" || p == "documentElement" ||
+      p == "createElement" || p == "createDocumentFragment" ||
+      p == "createTextNode" || p == "createComment" ||
+      p == "createCDATASection" || p == "createProcessingInstruction" ||
+      p == "createAttribute" || p == "createEntityReference" ||
+      p == "getElementsByTagName" ||
+      /* new for DOM2 - not yet in khtml
+      p == "importNode" || p == "createElementNS" ||
+      p == "createAttributeNS" || p == "getElementsByTagNameNS" ||
+      p == "getElementById" ) || */
+      p == "createRange" || p == "createNodeIterator" ||
+      p == "createTreeWalker" || p == "defaultView" || p == "createEvent" ||
+      p == "styleSheets" || p == "getOverrideStyle")
+    return true;
+
+  return recursive && DOMNode::hasProperty(p);
+}
 
 KJSO DOMDocument::tryGet(const UString &p) const
 {

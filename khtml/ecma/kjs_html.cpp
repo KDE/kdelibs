@@ -168,6 +168,20 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
 const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
 					   &DOMDocument::info, 0, 0 };
 
+bool KJS::HTMLDocument::hasProperty(const UString &p, bool recursive) const
+{
+  if (p == "title" || p == "referrer" || p == "domain" || p == "URL" ||
+      p == "body" || p == "location" || p == "images" || p == "applets" ||
+      p == "links" || p == "forms" || p == "anchors" || p == "all" ||
+      p == "cookie" || p == "open" || p == "close" || p == "write" ||
+      p == "writeln" || p == "getElementById" || p == "getElementsByName")
+    return true;
+  if (!static_cast<DOM::HTMLDocument>(node).all().
+      namedItem(p.string()).isNull())
+    return true;
+  return recursive && DOMDocument::hasProperty(p, true);
+}
+
 KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
@@ -177,7 +191,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   DOM::HTMLElement element = coll.namedItem(p.string());
   if (!element.isNull() &&
       (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
-    return getDOMNode(element);    
+    return getDOMNode(element);
 
   if (p == "title")
     return getString(doc.title());
@@ -207,8 +221,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::All);
   else if (p == "cookie")
     return String(doc.cookie());
-  else if (HostImp::hasProperty(p))	// expandos override functions
-    return HostImp::get(p);
+  else if (DOMDocument::hasProperty(p))	// expandos override functions
+    return DOMDocument::tryGet(p);
   else if (p == "open")
     return new HTMLDocFunction(doc, HTMLDocFunction::Open);
   else if (p == "close")
@@ -851,7 +865,7 @@ bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
     KJSO tmp = tryGet(p);
     if (tmp.isDefined())
 	return true;
-    return recursive ? DOMElement::hasProperty(p, true) : false;
+    return recursive && DOMElement::hasProperty(p, true);
 }
 
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)
