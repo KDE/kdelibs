@@ -713,6 +713,7 @@ public:
      * to not use the speed-bar.
      * @see KURLBar
      * @see KURLBar::insertDynamicItem
+     * @since 3.2
      */
     KURLBar *speedBar();
 
