@@ -1,5 +1,6 @@
 #include <qapplication.h>
 #include <qwidget.h>
+#include <qcursor.h>
 #include "kpopupmenu.h"
 
 class DemoWidget : public QWidget {

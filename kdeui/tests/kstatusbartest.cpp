@@ -5,6 +5,7 @@
 #include <qmultilineedit.h>
 #include <qkeycode.h>
 #include <qpixmap.h>
+#include <qcursor.h>
 
 #include <stdlib.h>
 

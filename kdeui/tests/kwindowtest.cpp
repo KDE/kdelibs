@@ -4,6 +4,7 @@
 #include <qkeycode.h>
 #include <qwidget.h>
 #include <qstring.h>
+#include <qcursor.h>
 
 #include <stdlib.h>
 
