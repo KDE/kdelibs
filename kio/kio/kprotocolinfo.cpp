@@ -29,12 +29,19 @@
 
 #include <stdio.h> // WAAB remove me
 
+class KProtocolInfo::KProtocolInfoPrivate
+{
+public:
+  QString docPath;
+};
+ 
 //
 // Internal functions:
 //
 KProtocolInfo::KProtocolInfo(const QString &path)
  : KSycocaEntry(path)
 {
+  d = new KProtocolInfoPrivate;
   QString fullPath = locate("services", path);
 
   KSimpleConfig config( fullPath, true );
@@ -78,16 +85,20 @@ KProtocolInfo::KProtocolInfo(const QString &path)
     m_outputType = KProtocolInfo::T_STREAM;
   else
     m_outputType = KProtocolInfo::T_NONE;
+    
+  d->docPath = config.readEntry( "DocPath" );
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
 	KSycocaEntry( _str, offset)
 {
+   d = new KProtocolInfoPrivate;
    load( _str );
 }
 
 KProtocolInfo::~KProtocolInfo()
 {
+   delete d;
 }
 
 void
@@ -110,7 +121,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsDeleting >> i_supportsLinking
         >> i_supportsMoving 
         >> i_canCopyFromFile >> i_canCopyToFile
-        >> m_config >> m_maxSlaves;
+        >> m_config >> m_maxSlaves >> d->docPath;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -166,7 +177,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config << m_maxSlaves;
+        << m_config << m_maxSlaves << d->docPath;
 }
 
 
@@ -373,6 +384,15 @@ KProtocolInfo::Type KProtocolInfo::outputType( const QString& _protocol )
     return T_NONE;
 
   return prot->m_outputType;
+}
+
+QString KProtocolInfo::docPath( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+    return QString::null;
+
+  return prot->d->docPath;
 }
 
 

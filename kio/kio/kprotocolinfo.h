@@ -367,6 +367,17 @@ public:
    */
   static bool determineMimetypeFromExtension( const QString &protocol );
 
+  /**
+   * Returns the documentation path for the specified protocol.
+   *
+   * This corresponds to the "DocPath=" field in the protocol description file. 
+   *
+   * @param protocol the protocol to check
+   * @return the docpath of the protocol, or null if unknown
+   */
+  static QString docPath( const QString& protocol );
+
+
 public:
   // Internal functions:
   /**
@@ -457,7 +468,8 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KProtocolInfoPrivate* d;
+  class KProtocolInfoPrivate;
+  KProtocolInfoPrivate* d;
 };
 
 #endif
