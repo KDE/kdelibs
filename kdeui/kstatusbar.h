@@ -108,7 +108,7 @@ public:
    *  @ref QStatusBar::addWidget .
    *
    *  If @p permanent is true, then item will be placed on the far right of
-   *  the statusbar and will never be hidden by @ref @QStatusBar::message.
+   *  the statusbar and will never be hidden by @ref QStatusBar::message.
    *
    *  @param ID id of item
    *  @param stretch stretch passed to @ref QStatusBar::addWidget
@@ -117,8 +117,18 @@ public:
    *  @see QStatusbar::addWidget
    * 
    */
-  void insertItem( const QString& text, int ID, int stretch=0, bool permanent=false );
+  void insertItem(const QString& text, int ID, int stretch=0, bool permanent=false );
 
+  /**
+   *  Insert fixed width text label into status bar. The width will be set
+   *  according to @p text, but will remain fixed even if you change text.
+   *  You can change fixed width by calling @ref setItemFixed.
+   *  @param ID id ov item
+   *  @param permanent permanent flag passed to QStatusBar::addWidget
+   */
+  inline void insertFixedItem(const QString& text, int ID, bool permanent=false)
+               { insertItem(text, ID, 0, permanent); setItemFixed(ID); }
+  
   /**
    *  Remove an item.
    *
@@ -144,12 +154,13 @@ public:
   void setItemAlignment(int id, int align);
 
   /**
-   * Sets item @p id to have fixed width. This cannot be undone.
+   * Sets item @p id to have fixed width. This cannot be undone, but you can
+   * always set new fixed width.
    *
    * @param id id of item
-   * @param width fixed width in pixels
+   * @param width fixed width in pixels. Default -1 is to adapt to text width.
    */
-  void setItemFixed(int id, int width);
+  void setItemFixed(int id, int width=-1);
 
 signals:
 
