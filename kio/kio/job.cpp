@@ -1689,6 +1689,7 @@ void CopyJob::slotResultStating( Job *job )
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 info.uDest.addPath( srcurl.fileName() );
+
             files.append( info );
             ++m_currentStatSrc;
             statNextSrc();
@@ -1929,7 +1930,25 @@ void CopyJob::statNextSrc()
             info.uDest = m_currentDest;
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                info.uDest.addPath( m_currentSrcURL.fileName() );
+            {
+                if (
+                    (m_currentSrcURL.protocol() == info.uDest.protocol()) &&
+                    (m_currentSrcURL.host() == info.uDest.host()) &&
+                    (m_currentSrcURL.port() == info.uDest.port()) &&
+                    (m_currentSrcURL.user() == info.uDest.user()) &&
+                    (m_currentSrcURL.pass() == info.uDest.pass()) )
+                {
+                    // This is the case of creating a real symlink
+                    info.uDest.addPath( m_currentSrcURL.fileName() );
+                }
+                else
+                {
+                    // Different protocols, we'll create a .desktop file
+                    // We have to change the extension anyway, so while we're at it,
+                    // name the file like the URL
+                    info.uDest.addPath( KIO::encodeFileName( m_currentSrcURL.prettyURL() )+".desktop" );
+                }
+            }
             files.append( info ); // Files and any symlinks
             ++m_currentStatSrc;
             statNextSrc(); // we could use a loop instead of a recursive call :)
@@ -2473,9 +2492,6 @@ void CopyJob::copyNextFile()
                 kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource.prettyURL() << " link=" << (*it).uDest.prettyURL() << endl;
                 if ( (*it).uDest.isLocalFile() )
                 {
-                    // We have to change the extension anyway, so while we're at it,
-                    // name the file like the URL
-                    (*it).uDest.setFileName( KIO::encodeFileName( (*it).uSource.prettyURL() )+".desktop" );
                     QString path = (*it).uDest.path();
                     kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
                     QFile f( path );
