@@ -330,7 +330,9 @@ KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immut
      for(QValueList<KSharedConfig*>::ConstIterator it = s_list->begin();
          it != s_list->end(); ++it)
      {
-        if ((*it)->backEnd->fileName() == fileName)
+        if ((*it)->backEnd->fileName() == fileName &&
+                (*it)->backEnd->bFileImmutable == immutable &&
+                (*it)->backEnd->useKDEGlobals == useKDEGlobals )
            return (*it);
      }
   }

@@ -47,6 +47,7 @@ class KConfigBackEndPrivate;
 class KConfigBackEnd
 {
   friend class KConfig;
+  friend class KSharedConfig;
 public:
   /**
    * Constructs a configuration back end.
