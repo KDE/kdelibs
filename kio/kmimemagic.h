@@ -70,6 +70,11 @@ public:
   void setAccuracy( int _accuracy ) { m_iAccuracy = _accuracy; }
   void setInvalid() { m_strMimeType = QString::null; }
 
+  /////////////////
+  // Obsolete, backwards compatibility only. Remove in KDE 3.0
+  /////////////////
+  void setEncoding( const QString&) { }
+
 protected:
   QString m_strMimeType;
   int m_iAccuracy;
