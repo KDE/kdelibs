@@ -132,7 +132,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
     setButtonOKText(i18n("&Send"),
                     i18n("Send bug report."),
-                    i18n("Send this bug report to the KDE buglist."));
+                    i18n("Send this bug report to %1.").arg(m_aboutData->bugAddress()));
 
   }
   else
@@ -231,22 +231,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                         "Enter the text (in English if possible) that you wish to submit for the "
                         "bug report.\n"
                         "If you press \"Send\", a mail message will be sent to the maintainer of "
-                        "this program \n"
-                        "and to the KDE buglist.");
+                        "this program.\n");
     QLabel * label = new QLabel( parent, "label" );
-
-    /*
-      2000-01-15 Espen
-      Does not work (yet). The label has no well defined height so the
-      dialog can be resized so that the action buttons become obscured
-
-      QString text = i18n(""
-      "Enter the text (in English if possible) that you wish to submit for the "
-      "bug report. If you press \"Send\", a mail message will be sent to the "
-      "maintainer of this program and to the KDE buglist.");
-      QLabel * label = new QLabel( parent, "label" );
-      label->setTextFormat( RichText );
-    */
 
     label->setText( text );
     lay->addWidget( label );
@@ -256,28 +242,6 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     m_lineedit->setMinimumHeight( 180 ); // make it big
     m_lineedit->setWordWrap(QMultiLineEdit::WidgetWidth);
     lay->addWidget( m_lineedit, 10 /*stretch*/ );
-
-
-    hlay = new QHBoxLayout( lay, 0 );
-
-    text = i18n("Please check that the bug you are about to report is not already listed at ");
-    label = new QLabel( text, parent, "label");
-    hlay->addWidget( label, 0, AlignBottom );
-    hlay->addSpacing(1); // Looks better :)
-
-    text = "http://bugs.kde.org/";
-    KURLLabel *url = new KURLLabel( parent );
-    url->setText(text);
-    url->setURL(text);
-    connect( url, SIGNAL(leftClickedURL(const QString &)),
-             this, SLOT(slotUrlClicked(const QString &)));
-    hlay->addWidget( url, 0, AlignBottom );
-
-    hlay->addStretch( 10 );
-
-    // Necessary for vertical label and url alignment.
-    label->setFixedHeight( fontMetrics().lineSpacing() );
-    url->setFixedHeight( fontMetrics().lineSpacing());
 
     slotSetFrom();
   } else {
