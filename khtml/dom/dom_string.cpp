@@ -93,8 +93,7 @@ DOMString::DOMString(const char *str)
     }
 
     int len = 0;
-    const char *p = str;
-    while(*p != '\0') p++, len++;
+    for(const char* p = str; *p; p++) len++;
     QChar *m_str = new QChar[len];
     int i = 0;
     while(i<len)
