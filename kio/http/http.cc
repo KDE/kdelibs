@@ -336,7 +336,12 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_bUseProxy = KProtocolManager::self().useProxy();
 
   if ( m_bUseProxy ) {
-    KURL ur ( KProtocolManager::self().httpProxy() );
+
+    // Use the appropriate proxy depending on the protocol
+    KURL ur (
+      protocol == "ftp"
+      ? KProtocolManager::self().ftpProxy()
+      : KProtocolManager::self().httpProxy() );
 
     m_strProxyHost = ur.host();
     m_strProxyPort = ur.port();
@@ -378,6 +383,16 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   }
   else
 #endif
+  if (mProtocol == "ftp")
+  {
+     struct servent *sent = getservbyname("ftp", "tcp");
+     if (sent) {
+        mDefaultPort = ntohs(sent->s_port);
+     } else {
+        mDefaultPort = DEFAULT_FTP_PORT;
+     }
+  }
+  else
   {
      struct servent *sent = getservbyname("http", "tcp");
      if (sent) {
@@ -710,7 +725,8 @@ bool HTTPProtocol::http_open()
   memset(c_buffer, 0, 64);
   if(m_state.do_proxy) {
     sprintf(c_buffer, ":%u", m_state.port);
-    header += "http://";
+    // The URL for the request uses ftp:// if we are in "ftp-proxy" mode
+    header += (mProtocol == "ftp") ? "ftp://" : "http://";
     header += m_state.hostname;
     header += c_buffer;
   }

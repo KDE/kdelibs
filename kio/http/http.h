@@ -43,8 +43,8 @@
 // HTTPS. Duh.
 #define DEFAULT_HTTP_PORT	80
 #define DEFAULT_HTTPS_PORT	443
+#define DEFAULT_FTP_PORT	21
 
-class HTTPIOJob;
 class DCOPClient;
 
 
@@ -57,7 +57,7 @@ public:
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
   enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
-  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, 
+  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST,
                     HTTP_HEAD, HTTP_DELETE};
 
   typedef struct
@@ -85,7 +85,7 @@ public:
 	KURL url;
   } HTTPRequest;
 
-  /** 
+  /**
    * Fills in m_request.url from the rest of the request data.
    */
   void buildURL();
@@ -196,7 +196,7 @@ protected:
    * Look for cookies in the cookiejar
    */
   QString findCookies( const QString &url);
-   
+
   /**
    * Do a cache lookup for the current url. (m_state.url)
    *
@@ -211,7 +211,7 @@ protected:
 
   /**
    * Create a cache entry for the current url. (m_state.url)
-   * 
+   *
    * Set the contents type of the cache entry to 'mimetype'.
    */
   void createCacheEntry(const QString &mimetype, time_t expireDate);
@@ -222,7 +222,7 @@ protected:
    * Write 'nbytes' from 'buffer' to the Cache Entry File
    */
   void writeCacheEntry( const char *buffer, int nbytes);
-  
+
   /**
    * Close cache entry
    */
@@ -247,13 +247,13 @@ protected: // Members
   long m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
 
-  // Cache related 
+  // Cache related
   bool m_bUseCache; // Whether the cache is active
   bool m_bCachedRead; // Whether the file is to be read from m_fcache.
   bool m_bCachedWrite; // Whether the file is to be written to m_fcache.
   int m_maxCacheAge; // Maximum age of a cache entry.
   FILE* m_fcache; // File stream of a cache entry
-  QString m_strCacheDir; // Location of the cache. 
+  QString m_strCacheDir; // Location of the cache.
 
   // Language/Encoding
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
@@ -262,7 +262,7 @@ protected: // Members
   QString m_strMimeType;
   QString m_strCharsets;
   QString m_strLanguages;
-  
+
   // Proxy related members
   bool m_bUseProxy;  // Whether we want a proxy
   int m_strProxyPort;
@@ -273,14 +273,14 @@ protected: // Members
   ksockaddr_in m_proxySockaddr;
 
   // Authentication
-  QString m_strRealm, 
-          m_strAuthString, 
+  QString m_strRealm,
+          m_strAuthString,
           m_strProxyAuthString;
   enum HTTP_AUTH Authentication, ProxyAuthentication;
 
   // Persistant connections
   bool m_bKeepAlive;
-  
+
   // Chunked tranfer encoding
   bool m_bChunked;
 
