@@ -48,7 +48,7 @@ libkssl_la_SOURCES	= \
 			ksslx509v3.cc		  \
 			ksslsigners.cc		  \
 			ksslpkcs7.cc		  \
-			ksslpemcallback.c	  \
+			ksslpemcallback.cc	  \
 			ksslx509map.cc
 
 libkssl_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
