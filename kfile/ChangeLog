@@ -1,3 +1,12 @@
+1998-05-24  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: use setSelection also for the initial filename
+	given
+
+	* kfiledialog.cpp: introduced KFileFilter to make an abstraction
+	for the used filter widget. Currently only QComboBox is supported,
+	but this may change in the future
+	
 1998-05-20  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: changed the accelerator for completion 

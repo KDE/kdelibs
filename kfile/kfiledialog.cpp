@@ -34,6 +34,7 @@
 
 #include "kcombiview.h"
 #include "kdirlistbox.h"
+#include "kfilefilter.h"
 #include "kdir.h"
 #include "bookmark.h"
 #include <kprocess.h>
@@ -62,32 +63,11 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
     bookmarksMenu= 0;
     acceptUrls = acceptURLs;
 
-    // Create the KDir
-    if (dirName != 0) {
-	KFileInfo i("", dirName );
-	if (i.isDir())
-	    dir = new KDir(dirName);
-	else {
-	 
-	    QString filename = dirName;
-	    int sep = filename.findRev('/');
-	    debugC("I got a filename %s %d %s", dirName, sep, filename.left(sep).data());
-	    if (sep >= 0) {
-		dir = new KDir(filename.left(sep));
-		filename_ = filename;
-	    } else {
-		dir = new KDir(); // take current path
-		debugC("path %s", dir->url().data());
-		if (acceptURLs)
-		    filename_ = dir->url() + filename;
-		else
-		    filename_ = dir->path() + filename;
-	    }
-	   
-	}
-	    
-    } else 
-	dir = new KDir();
+    dir = new KDir();
+    visitedDirs = new QStrIList();
+    
+    // we remember the selected name for init()
+    filename_ = dirName;
     
     // For testing
     connect(dir, SIGNAL(dirEntry(KFileInfo *)),
@@ -98,16 +78,7 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
     // Init flags
     finished = true;
     debug("start %ld", time(0));
-
-    filters = new QStrList( true );
-    if (filter) {
-       QString tmp = filter; // deep copy
-       char *g = strtok(tmp.data(), "\n");
-       while (g) {
-	  filters->append(g);
-	  g = strtok(0, "\n");
-       }
-    }
+    filterString = filter;
     
     connect(dir, SIGNAL(finished()),
 	    SLOT(slotFinished()));
@@ -207,7 +178,7 @@ void KFileBaseDialog::init()
         dir->setSorting( QDir::Name );
 
     showFilter = getShowFilter();
-
+    
     fileList = initFileList( wrapper );
     
     locationEdit = new KCombo(true, wrapper, "locationedit");
@@ -224,41 +195,23 @@ void KFileBaseDialog::init()
     connect(locationEdit, SIGNAL(activated(const char*)),
 	    SLOT(locationChanged(const char*)));
 
+    
     // Add the filter
     if (showFilter) {
 	filterLabel = new QLabel(i18n("&Filter:"), wrapper);
 	filterLabel->adjustSize();
 	filterLabel->setMinimumWidth(filterLabel->width());
 	filterLabel->resize(locationLabel->width(), filterLabel->height());
+	
+	filterWidget = new KFileFilter(wrapper, "filterwidget");
+	filterWidget->setFilter(filterString);
+	filterLabel->setBuddy(filterWidget);
+	filterWidget->adjustSize();
+	filterWidget->setMinimumWidth(100);
+	filterWidget->setFixedHeight(filterWidget->height());
+	connect(filterWidget, SIGNAL(filterChanged()), 
+		SLOT(filterChanged()));
 
-	if (filters->count() <= 1) {
-	    filterEdit = new QLineEdit(wrapper, "filteredit");
-	    filterEdit->adjustSize();
-	    filterEdit->setMinimumSize(100,filterLabel->size().height()+8);
-	    filterCombo = 0;
-	    connect(filterEdit, SIGNAL(returnPressed()), 
-		    SLOT(filterChanged()));
-	    filterEdit->setText(filters->first());
-	    filterLabel->setBuddy(filterEdit);
-	} else {
-	    filterCombo = new QComboBox(true, wrapper, "filtercombo");
-	    filterEdit = 0;
-	    QString name;
-	    for (const char *item = filters->first(); item; 
-		 item = filters->next()) {
-		name = item;
-		int tab = name.find('|');
-		filterCombo->insertItem((tab < 0) ? name :
-					name.mid(tab + 1, name.length() - tab));
-	    }
-	    filterCombo->adjustSize();
-	    filterCombo->setFixedHeight(filterCombo->height());
-	    filterCombo->setInsertionPolicy(QComboBox::NoInsertion);
-
-	    connect(filterCombo, SIGNAL(activated(const char*)),
-		    SLOT(filterChanged()));
-	    filterLabel->setBuddy(filterCombo);
-	}
 	hiddenToggle= new QCheckBox(i18n("Show hidden"), this, "hiddentoggle");
 	hiddenToggle->adjustSize();
 	hiddenToggle->setChecked(showHidden);
@@ -297,11 +250,12 @@ void KFileBaseDialog::init()
     bHelp->setFixedHeight(bHelp->height());
     connect(bHelp, SIGNAL(clicked()), SLOT(help()));
 
+    // filename_ is remembered as the dirName argument for the constructor
+    setSelection(filename_);
+    
     // c->setGroup(oldgroup); // reset the group
     initGUI(); // activate GM
 
-    visitedDirs = new QStrIList();
-    
     if (showFilter)
        filterChanged();
     else
@@ -318,6 +272,16 @@ void KFileBaseDialog::init()
     if (w1 < w2)
       setMinimumWidth(w2);
     resize(w, h);
+}
+
+void KFileBaseDialog::setFilter(const char *filter)
+{
+    filterString = filter;
+    if (showFilter) {
+	filterWidget->setFilter(filter);
+	dir->setNameFilter(filterWidget->currentFilter());
+	pathChanged();
+    }
 }
 
 void KFileBaseDialog::okPressed()
@@ -348,7 +312,7 @@ void KFileBaseDialog::initGUI()
 
     if (showFilter) {
 	lafBox->addWidget(filterLabel, 1, 0);
-	lafBox->addWidget(filterEdit ? filterEdit : filterCombo, 1, 1);
+	lafBox->addWidget(filterWidget, 1, 1);
 	lafBox->addWidget(hiddenToggle, 1, 2);
     }
 
@@ -378,7 +342,6 @@ KFileBaseDialog::~KFileBaseDialog()
     delete bookmarks;
     delete visitedDirs;
     delete dir;
-    delete filters;
     KConfig *c = kapp->getConfig();
     QString oldgroup= c->group();
     c->setGroup("KFileDialog Settings");
@@ -400,23 +363,10 @@ bool KFileDialog::getShowFilter()
 
 void KFileBaseDialog::filterChanged() // SLOT
 {
-    if (!showFilter)
+    if (!showFilter || !filterWidget)
        return;
 
-    if (filterEdit)
-	dir->setNameFilter(filterEdit->text());
-    else {
-	QString filter = filterCombo->currentText();
-	if (filter == filterCombo->text(filterCombo->currentItem()))
-	    filter = filters->at(filterCombo->currentItem());
-
-	int tab = filter.find('|');
-	if (tab < 0)
-	    dir->setNameFilter(filter);
-	else
-	    dir->setNameFilter(filter.left(tab));
-    }
-
+    dir->setNameFilter(filterWidget->currentFilter());
     pathChanged();
 }
 
@@ -1105,8 +1055,13 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 
 void KFileBaseDialog::setSelection(const char *name)
 {
+    if (!name) {
+	selection = 0;
+	return;
+    }
+
     KURL u(name);
-    if (u.isMalformed()) // perhaps we have a relative path!
+    if (u.isMalformed()) // perhaps we have a relative path!?
 	u = dir->url() + name;
     if (u.isMalformed()) { // if it still is
 	warning("%s is not a correct argument for setSelection!", name);

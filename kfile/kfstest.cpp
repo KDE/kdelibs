@@ -91,12 +91,13 @@ int main(int argc, char **argv)
         name1 = KFileDialog::getOpenFileURL("/etc/inetd/inetd.conf");
 	break;
     case Normal: {
-      KFileDialog dlg(QDir::homeDirPath(), 0, 0, 0, true);
-      dlg.setSelection("../hello");
-      dlg.exec();
-      name1 = dlg.selectedFile();
+	KFileDialog dlg(0, 0, 0, 0, true);
+	dlg.setSelection("../hello");
+	dlg.setFilter("*.*|All files");
+	dlg.exec();
+	name1 = dlg.selectedFile();
     }
-        break;
+    break;
     case Preview:
         // this is how you activate the new preview module
         // 

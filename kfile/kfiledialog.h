@@ -47,6 +47,7 @@ class QLabel;
 class QVBoxLayout;
 class QGridLayout;
 class QHBoxLayout;
+class KFileFilter;
 
 /**
  * The KFileDialog widget provides a user (and developer) friendly way to
@@ -75,8 +76,7 @@ public:
       *
       * @param dirName  The name of the directory to start in.
       * @param filter   A shell glob that specifies which files to display.
-      * Unlike QFileDialog this supports filters consisting of more than one
-      * glob seperated by space.
+      * see setFilter for details on how to use this argument
       * @param acceptURLs If set to false, kfiledialog will just accept
       * files on the local filesystem.
       */
@@ -188,6 +188,25 @@ public:
      */
     void setSelection(const char *name);
 
+    /**
+     * Sets the filter to be used to filter. You can set more
+     * filters for the user to select seperated by \n. Every
+     * filter entry is defined through namefilter|text to diplay.
+     * If no | is found in the expression, just the namefilter is
+     * shown. Examples:
+     *
+     * <pre>
+     * kfile->setFilter("*.cpp|C++ Source Files\n*.h|Header files");
+     * kfile->setFilter("*.cpp");
+     * kfile->setFilter("*.cpp|Sources (*.cpp");
+     * </pre>
+     *
+     * Note: the text to display is not parsed in any way. So, if you
+     * want to show the suffix to select by a specific filter, you must
+     * repeat it.
+     */
+    void setFilter(const char *filter);
+
 signals:
     /**
       * Emitted when the user selects a file.
@@ -219,10 +238,7 @@ protected:
     QCheckBox *hiddenToggle;
     KCombo *locationEdit;
 
-    // one of them is 0. If there are more filters, the Combobox
-    // is used, otherwise the LineEdit
-    QLineEdit *filterEdit;
-    QComboBox *filterCombo;
+    KFileFilter *filterWidget;
 
     KBookmarkManager *bookmarks;
     QStrList history;
@@ -364,8 +380,7 @@ private:
     // overriding swallower()
     //
     QWidget *wrapper;
-    QStrList *filters;
-
+  
     // flag for perfomance hype ;)
     bool repaint_files; 
     // for the handling of the cursor
@@ -383,7 +398,7 @@ private:
     QHBoxLayout *btngroup;
     QPushButton *bOk, *bCancel, *bHelp;
     QLabel *locationLabel, *filterLabel;
-    
+    QString filterString;
 };
 
 /**
