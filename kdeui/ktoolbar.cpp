@@ -214,10 +214,12 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     connect( &(d->repaintTimer), SIGNAL( timeout() ),
              this, SLOT( slotRepaint() ) );
 
-    connect(kapp, SIGNAL(toolbarAppearanceChanged(int)), this, SLOT(slotAppearanceChanged()));
-    // request notification of changes in icon style
-    kapp->addKipcEventMask(KIPC::IconChanged);
-    connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));
+    if ( kapp ) { // may be null when started inside designer
+        connect(kapp, SIGNAL(toolbarAppearanceChanged(int)), this, SLOT(slotAppearanceChanged()));
+        // request notification of changes in icon style
+        kapp->addKipcEventMask(KIPC::IconChanged);
+        connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));
+    }
 
     // finally, read in our configurable settings
     if ( readConfig )
@@ -1287,7 +1289,7 @@ QSize KToolBar::sizeHint() const
              minSize += QSize(sh.width()+1, 0);
           }
        }
-       minSize += QSize(kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
+       minSize += QSize(QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
        minSize += QSize(margin*2, margin*2);
        break;
        
@@ -1309,7 +1311,7 @@ QSize KToolBar::sizeHint() const
              minSize += QSize(0, sh.height()+1);
           }
        }
-       minSize += QSize(0, kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
+       minSize += QSize(0, QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
        minSize += QSize(margin*2, margin*2);
        break;       
 
