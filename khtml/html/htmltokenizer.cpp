@@ -165,7 +165,7 @@ void HTMLTokenizer::begin()
     discard = NoneDiscard;
     pre = false;
     prePos = 0;
-    plaintext = 0;
+    plaintext = false;
     listing = false;
     processingInstruction = false;
     script = false;
@@ -530,17 +530,13 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
         }
         else if (( chbegin == '\n' ) || ( chbegin == '\r' ))
         {
-            processToken();
-
-            /* Check for MS-DOS CRLF sequence */
             if (chbegin == '\r')
-            {
                 skipLF = true;
-            }
+
+            *dest++ = '\n';
             ++src;
         }
-        else
-        {
+        else {
             *dest++ = *src;
             ++src;
         }
@@ -1096,13 +1092,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 pre = false;
             }
 
-            if ( tagID == ID_PRE )
-            {
+            switch( tagID ) {
+            case ID_PRE:
                 prePos = 0;
                 pre = beginTag;
-            }
-            else if ( tagID == ID_TEXTAREA )
-            {
+                break;
+            case ID_TEXTAREA:
                 if(beginTag) {
                     listing = true;
                     textarea = true;
@@ -1110,11 +1105,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     searchFor = textareaEnd;
                     parseListing(src);
                 }
-            }
-            else if ( tagID == ID_SCRIPT )
-            {
-                if (beginTag)
-                {
+                break;
+            case ID_SCRIPT:
+                if (beginTag) {
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                     kdDebug( 6036 ) << "start of script, token->id = " << currToken.id << endl;
 #endif
@@ -1127,30 +1120,29 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     kdDebug( 6036 ) << "end of script" << endl;
 #endif
                 }
-            }
-            else if ( tagID == ID_STYLE )
-            {
-                if (beginTag)
-                {
+                break;
+            case ID_STYLE:
+                if (beginTag) {
                     style = true;
                     searchCount = 0;
                     searchFor = styleEnd;
                     parseStyle(src);
                 }
-            }
-            else if ( tagID == ID_LISTING )
-            {
-                if (beginTag)
-                {
+                break;
+            case ID_LISTING:
+                if (beginTag) {
                     listing = true;
                     searchCount = 0;
                     searchFor = listingEnd;
                     parseListing(src);
                 }
-            }
-            else if ( tagID == ID_SELECT )
-            {
+                break;
+            case ID_SELECT:
                 select = beginTag;
+                break;
+            case ID_PLAINTEXT:
+                plaintext = beginTag;
+                break;
             }
             return; // Finished parsing tag!
         }
@@ -1215,20 +1207,6 @@ void HTMLTokenizer::addPending()
     pending = NonePending;
 }
 
-#if 0
-void HTMLTokenizer::setPlainText()
-{
-    if (!plaintext)
-    {
-       // Do this only once!
-       plaintext = true;
-       currToken.id = ID_PLAIN;
-       processToken();
-       dest = buffer;
-    }
-}
-#endif
-
 void HTMLTokenizer::write( const QString &str, bool appendData )
 {
 #ifdef TOKEN_DEBUG
@@ -1285,10 +1263,12 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         if (skipLF && (cc != '\n'))
             skipLF = false;
 
-        if (skipLF)
-        {
+        if (skipLF) {
             skipLF = false;
             ++src;
+        }
+        else if ( plaintext ) {
+            parseText( src );
         }
         else if ( startTag )
         {
@@ -1575,7 +1555,6 @@ void HTMLTokenizer::enlargeBuffer(int len)
 {
     int newsize = kMax(size*2, size+len);
     int oldoffs = (dest - buffer);
-//    qDebug("size: %d, newsize: %d, len: %d, oldoffs: %d", size, newsize, len, oldoffs);
 
     buffer = (QChar*)realloc(buffer, newsize*sizeof(QChar));
     dest = buffer + oldoffs;

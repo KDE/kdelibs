@@ -854,6 +854,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLParagraphElementImpl(document);
         break;
     case ID_PRE:
+    case ID_PLAINTEXT:
         n = new HTMLPreElementImpl(document);
         break;
 
@@ -997,9 +998,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         return 0;
     case ID_NOLAYER:
 //        discard_until = ID_NOLAYER + ID_CLOSE_TAG;
-        return 0;
-        // Waldo's plaintext stuff
-    case ID_PLAIN:
         return 0;
         break;
 // text

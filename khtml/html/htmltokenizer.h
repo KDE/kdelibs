@@ -154,7 +154,6 @@ public:
     virtual ~HTMLTokenizer();
 
     void begin();
-    void setPlainText();
     void write( const QString &str, bool appendData );
     void end();
     void finish();

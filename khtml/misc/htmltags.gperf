@@ -80,7 +80,7 @@ optgroup, ID_OPTGROUP
 option, ID_OPTION
 p, ID_P
 param, ID_PARAM
-plain, ID_PLAIN
+plaintext, ID_PLAINTEXT
 pre, ID_PRE
 q, ID_Q
 s, ID_S

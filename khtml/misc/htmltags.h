@@ -80,7 +80,7 @@ DOM::DOMString getTagName(unsigned short id);
 #define ID_OPTION 70
 #define ID_P 71
 #define ID_PARAM 72
-#define ID_PLAIN 73
+#define ID_PLAINTEXT 73
 #define ID_PRE 74
 #define ID_Q 75
 #define ID_S 76
