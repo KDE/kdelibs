@@ -134,7 +134,8 @@ void KConfigBase::setLocale()
     aLocaleString = KGlobal::locale()->language().utf8();
   else
     aLocaleString = "C";
-  backEnd->setLocaleString(aLocaleString);
+  if (backEnd)
+     backEnd->setLocaleString(aLocaleString);
 }
 
 QString KConfigBase::locale() const
@@ -1395,7 +1396,8 @@ void KConfigBase::parseConfigFiles()
   if (!bLocaleInitialized && KGlobal::_locale) {
     setLocale();
   }
-  backEnd->parseConfigFiles();
+  if (backEnd)
+     backEnd->parseConfigFiles();
 }
 
 void KConfigBase::sync()
@@ -1403,13 +1405,16 @@ void KConfigBase::sync()
   if (isReadOnly())
     return;
 
-  backEnd->sync();
+  if (backEnd)
+     backEnd->sync();
   if (bDirty)
     rollback();
 }
 
 KConfigBase::ConfigState KConfigBase::getConfigState() const {
-    return backEnd->getConfigState();
+    if (backEnd)
+       return backEnd->getConfigState();
+    return ReadOnly;
 }
 
 #include "kconfigbase.moc"
