@@ -206,9 +206,6 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	initPrivate( item.text(), cut, receiver, slot );
 	if( item.hasIconSet() )
 		setIcon( item.iconName() );
-
-	if( receiver )
-		connect( this, SIGNAL(activated()), receiver, slot );
 }
 
 #ifndef KDE_NO_COMPAT
