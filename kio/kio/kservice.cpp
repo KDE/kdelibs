@@ -706,6 +706,10 @@ bool KService::noDisplay() const {
      if (aList.contains("KDE"))
         return true;
   }
+  
+  if (!kapp->authorizeControlModule(d->menuId))
+     return true;
+  
   return false;
 }
 
