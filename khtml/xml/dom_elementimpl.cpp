@@ -275,11 +275,6 @@ bool ElementImpl::isInline() const
     return (m_style->display() == khtml::INLINE);
 }
 
-bool ElementImpl::isXMLElementNode() const
-{
-    return true;
-}
-
 unsigned short ElementImpl::nodeType() const
 {
     return Node::ELEMENT_NODE;
@@ -843,6 +838,12 @@ const DOMString XMLElementImpl::nodeName() const
 DOMString XMLElementImpl::namespaceURI() const
 {
     return m_namespaceURI;
+}
+
+
+bool XMLElementImpl::isXMLElementNode() const
+{
+    return true;
 }
 
 // -------------------------------------------------------------------------

@@ -98,7 +98,6 @@ public:
     ~ElementImpl();
 
     virtual bool isInline() const;
-    virtual bool isXMLElementNode() const;
 
     virtual unsigned short nodeType() const;
     virtual bool isElementNode() const { return true; }
@@ -192,6 +191,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual DOMString namespaceURI() const;
     virtual unsigned short id() const { return m_id; };
+    virtual bool isXMLElementNode() const;
 
 protected:
     DOMStringImpl *m_name;
