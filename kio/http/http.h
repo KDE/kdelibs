@@ -34,7 +34,6 @@
 #include <qstringlist.h>
 
 #include <kurl.h>
-#include <kmdcodec.h>
 #include "kio/tcpslavebase.h"
 
 class DCOPClient;
@@ -143,7 +142,7 @@ public:
   void post( const KURL& url );
   void multiGet(const QByteArray &data);
   bool checkRequestURL( const KURL& );
-  void cache_update( const KURL &url, bool no_cache, time_t expireDate);
+  void cacheUpdate( const KURL &url, bool nocache, time_t expireDate);
 
 protected:
 
@@ -185,13 +184,13 @@ protected:
   void configAuth( const char *, bool );
 
 
-  bool http_open();             // Open transfer
-  void http_close();            // Close transfer
+  bool httpOpen();             // Open transfer
+  void httpClose();            // Close transfer
 
-  bool http_openConnection();   // Open connection
-  void http_checkConnection();  // Check whether to keep connection.
-  void http_closeConnection();  // Close conection
-  bool http_isConnected();      // Checks for existing connection.
+  bool httpOpenConnection();   // Open connection
+  void httpCheckConnection();  // Check whether to keep connection.
+  void httpCloseConnection();  // Close conection
+  bool httpIsConnected();      // Checks for existing connection.
 
   bool readHeader();
   bool sendBody();
@@ -206,6 +205,13 @@ protected:
    * Look for cookies in the cookiejar
    */
   QString findCookies( const QString &url);
+
+  /**
+   * Initializes the cookiejar if it is not running already
+   * and returns true if successful, i.e. the cookiejar started
+   * okay or is currently running.
+   */
+  bool initCookieJar() const;
 
   /**
    * Do a cache lookup for the current url. (m_state.url)
@@ -293,7 +299,7 @@ protected:
   /**
    * Calcualtes the message digest response based on RFC 2617.
    */
-  void calculateResponse( DigestAuthInfo& info, QCString& Response );
+  void calculateResponse( DigestAuthInfo &info, QCString &Response );
 
   /**
    * Prompts the user for authorization retry.
@@ -401,6 +407,8 @@ protected:
   int m_proxyConnTimeout;
   int m_remoteConnTimeout;
   int m_remoteRespTimeout;
+
+	int m_pid;
 
 };
 #endif
