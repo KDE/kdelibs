@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.15.4.1  1999/03/09 15:22:52  dfaure
+   Moved path-list initialisation to a private initPath().
+   Merged with Antonio's getIconPath(...) new method. (fixed missing .detach())
+    loadInternal() uses it.
+   Binary compatible. kfm will use it in a second :)
+
    Revision 1.15  1998/11/02 10:08:35  ettrich
    new reload method for kiconloader (Rene Beutler)
 
@@ -161,15 +167,18 @@ public:
 	 It returns TRUE if successful, or FALSE if index is out of range.
 	 Note that the default searchpath looks like this:
 
-	       0: kdedir()/share/apps/<appName>/toolbar
-	       1: kdedir()/share/toolbar
-	       2: kdedir()/share/apps/<appName>/pics
-
+	       1: $HOME/.kde/share/apps/<appName>/pics
+	       2: $KDEDIR/share/apps/<appName>/pics
 	       3: $HOME/.kde/share/apps/<appName>/toolbar
-	       4: $HOME/.kde/share/toolbar
-	       5: $HOME/.kde/share/apps/<appName>/pics
+	       4: $KDEDIR/share/apps/<appName>/toolbar
 
-	     6-x: list of directories in [KDE Setup]:IconPath=...
+	       5: $HOME/.kde/share/icons
+	       6: $HOME/.kde/share/toolbar
+
+	       7: $KDEDIR/share/icons
+	       8: $KDEDIR/share/toolbar
+
+	     9-x: list of directories in [KDE Setup]:IconPath=...
 
   */
 
