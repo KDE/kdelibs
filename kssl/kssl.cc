@@ -44,6 +44,7 @@
 #include <ksockaddr.h>
 
 #include <kopenssl.h>
+#include <ksslx509v3.h>
 #include <ksslpkcs12.h>
 #include <klocale.h>
 #include <ksocks.h>
@@ -382,11 +383,16 @@ KSSLPeerInfo& KSSL::peerInfo() {
 
 bool KSSL::setClientCertificate(KSSLPKCS12 *pkcs) {
 #ifdef HAVE_SSL
+	if (!pkcs || !pkcs->getCertificate()) return false;
+
   int rc;
   X509 *x = pkcs->getCertificate()->getCert();
   EVP_PKEY *k = pkcs->getPrivateKey();
 
   if (!x || !k) return false;
+
+  if (!pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient())
+	  return false;
 
   rc = d->kossl->SSL_CTX_use_certificate(d->m_ctx, x);
   if (rc <= 0) {
