@@ -1572,7 +1572,7 @@ DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
     return d->underMouse;
 }
 
-bool KHTMLView::scrollTo(const QRect &bounds, bool one_page)
+bool KHTMLView::scrollTo(const QRect &bounds)
 {
     d->scrollingSelf = true; // so scroll events get ignored
 
@@ -1617,13 +1617,10 @@ bool KHTMLView::scrollTo(const QRect &bounds, bool one_page)
     int maxx = curWidth-d->borderX;
     int maxy = curHeight-d->borderY;
 
-    int scrollX = deltax;
-    int scrollY = deltay;
+    int scrollX,scrollY;
 
-    if( one_page ) {
-        scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
-        scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
-    }
+    scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
+    scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
 
     if (contentsX() + scrollX < 0)
 	scrollX = -contentsX();
@@ -1722,7 +1719,17 @@ void KHTMLView::focusNextPrevNode(bool next)
 	}
 #endif // KHTML_NO_CARET
 
-	scrollTo(newFocusNode->getRect());
+      if (oldFocusNode)
+	{
+	  if (!scrollTo(newFocusNode->getRect()))
+	    return;
+	}
+      else
+	{
+	  ensureVisible(contentsX(), next?0:contentsHeight());
+	  //return;
+	}
+
     }
 
     // Set focus node on the document
@@ -1794,8 +1801,9 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
     }
 #endif // KHTML_NO_CARET
 
-    if (!scrollTo(node->getRect()))
-	return true;
+    QRect r = node->getRect();
+    ensureVisible( r.right(), r.bottom());
+    ensureVisible( r.left(), r.top());
 
     Node guard( node );
     if( node->isSelectable()) {
