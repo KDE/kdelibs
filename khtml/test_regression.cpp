@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
         signal(SIGFPE, sighandler);
 
         // set ulimits
-        static rlimit vmem_limit = { 0, 128*1024*1024 };	// 128Mb Memory should suffice
+        static rlimit vmem_limit = { 0, 512*1024*1024 };	// 512Mb Memory should suffice
         setrlimit(RLIMIT_AS, &vmem_limit);
     }
 
@@ -796,22 +796,22 @@ QImage RegressionTest::renderToImage()
     QImage img( ew, eh, 32 );
     img.fill( 0xff0000 );
     if (!m_paintBuffer )
-        m_paintBuffer = new QPixmap( 512, 64, -1, QPixmap::MemoryOptim );
+        m_paintBuffer = new QPixmap( 512, 128, -1, QPixmap::MemoryOptim );
 
-    for ( int py = 0; py < eh; py += 64 ) {
+    for ( int py = 0; py < eh; py += 128 ) {
         for ( int px = 0; px < ew; px += 512 ) {
             QPainter* tp = new QPainter;
             tp->begin( m_paintBuffer );
             tp->translate( -px, -py );
-            tp->fillRect(px, py, 512, 64, Qt::magenta);
-            m_part->document().handle()->renderer()->layer()->paint( tp, QRect( px, py, 512, 64 ) );
+            tp->fillRect(px, py, 512, 128, Qt::magenta);
+            m_part->document().handle()->renderer()->layer()->paint( tp, QRect( px, py, 512, 128 ) );
             tp->end();
             delete tp;
 
             // now fill the chunk into our image
             QImage chunk = m_paintBuffer->convertToImage();
             assert( chunk.depth() == 32 );
-            for ( int y = 0; y < 64 && py + y < eh; ++y )
+            for ( int y = 0; y < 128 && py + y < eh; ++y )
                 memcpy( &img.scanLine( py+y )[px*4], chunk.scanLine( y ), kMin( 512, ew-px )*4 );
         }
     }
