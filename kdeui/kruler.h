@@ -72,6 +72,15 @@ class KRuler : public QFrame
 Q_OBJECT
 public:
 
+/*
+#define KRULER_ROTATE_TEST KRULER_ROTATE_TEST
+#undef KRULER_ROTATE_TEST
+#ifdef KRULER_ROTATE_TEST
+  double xtrans, ytrans, rotate;
+# warning tmporaer variablen eingeschaltet
+#endif
+*/
+
   /**
    * Direction of the ruler.
    * Has to be defined when constructing the widget.
@@ -105,7 +114,7 @@ public:
    * @param allowLines Will be handed over to @ref QFrame.
    *
    **/
-  KRuler(direction dir, QWidget *parent=0, const char *name=0, 
+  KRuler(KRuler::direction dir, QWidget *parent=0, const char *name=0, 
 	 WFlags f=0, bool allowLines=TRUE);
 
   /**
@@ -124,7 +133,7 @@ public:
    * @param allowLines  Will be handed over to @ref QFrame.
    *
    */
-  KRuler(direction dir, int widgetWidth, QWidget *parent=0, 
+  KRuler(KRuler::direction dir, int widgetWidth, QWidget *parent=0, 
 	 const char *name=0, WFlags f=0, bool allowLines=TRUE);
 
   /**
@@ -224,22 +233,32 @@ public:
    * Show/hide tiny marks.
    **/
   void showTinyMarks(bool);
+  bool getShowTinyMarks() const;
   /**
    * Show/hide little marks.
    **/
   void showLittleMarks(bool);
+  bool getShowLittleMarks() const;
   /**
    * Show/hide medium marks.
    **/
   void showMediumMarks(bool);
+  bool getShowMediumMarks() const;
   /**
    * Show/hide big marks.
    **/
   void showBigMarks(bool);
+  bool getShowBigMarks() const;
   /**
    * Show/hide end marks.
    **/
   void showEndMarks(bool);
+  bool getShowEndMarks() const;
+  /**
+   * Show/hide the pointer.
+   */
+  void showPointer(bool);
+  bool getShowPointer() const;
 
   /**
    * Sets the value that is shown per little mark.
@@ -308,22 +327,22 @@ public:
    *
    * A convenience method.
    **/
-  void setRulerStyle(metric_style);
+  void setRulerStyle(KRuler::metric_style);
 #if implemented
-  inline metric_style getMetricRulerStyle() const;
+  inline KRuler::metric_style getMetricRulerStyle() const;
 
   /** currently not implemented */
-  void setRulerStyle(paint_style);
+  void setRulerStyle(KRuler::paint_style);
   /** currently not implemented */
-  inline paint_style getPaintRulerStyle() const;
+  inline KRuler::paint_style getPaintRulerStyle() const;
 #endif
 
   /** currently not implemented */
-  void setTickStyle(paint_style);
+  void setTickStyle(KRuler::paint_style);
 
 #if implemented
   /** currently not implemented */
-  inline paint_style getTickStyle() const;
+  inline KRuler::paint_style getTickStyle() const;
 #endif
 
   /**
@@ -346,23 +365,56 @@ public:
    */
   void setPixelPerMark(double);
   /*  void setPixelPerMark(int); */
+
   /**
    * Retrieve the number of pixels between two base marks.
    **/
   inline double getPixelPerMark() const;
 
   /**
-   * Set the number of pixels by which the ruler may slide up.
+   * sets the length of the ruler, i.e. the difference between
+   * the begin mark and the end mark of the ruler.
+   *
+   * Same as (width() - getOffset())
+   *
+   * when the length is not locked, it gets adjusted with the
+   * length of the widget.
+   */
+  void setLength(int);
+  int getLength() const;
+
+  /**
+   * locks the length of the ruler, i.e. the difference between
+   * the two end marks doesn't change when the widget is resized.
+   *
+   * @param fix fixes the length, if true
+   */
+  void setLengthFix(bool fix);
+  bool getLengthFix() const;
+
+  /**
+   * Set the number of pixels by which the ruler may slide up or left.
+   * The number of pixels moved is realive to the previous position.
+   * The Method makes sense for updating a ruler, which is working with 
+   * a scrollbar.
    *
    * This doesn't affect the position of the ruler pointer.
    * Only the visible part of the ruler is moved.
+   *
+   * @param count Number of pixel moving up or left relative to the previous position
    **/
   void slideup(int count = 1);
+
   /**
-   * Set the number of pixels by which the ruler may slide down.
+   * Set the number of pixels by which the ruler may slide down or right.
+   * The number of pixels moved is realive to the previous position.
+   * The Method makes sense for updating a ruler, which is working with 
+   * a scrollbar.
    *
    * This doesn't affect the position of the ruler pointer.
    * Only the visible part of the ruler is moved.
+   *
+   * @param count Number of pixel moving up or left relative to the previous position
    **/
   void slidedown(int count = 1);
 
@@ -371,12 +423,27 @@ public:
    *
    * This is like @ref slideup() or @ref slidedown() with an absolute offset
    * from the start of the ruler.
+   *
+   * @param offset Number of pixel to move the ruler up or left from the beginning
    **/
   void setOffset(int offset);
+
   /**
    * Get the current ruler offset.
    **/
   inline int getOffset() const;
+
+  int getEndOffset() const;
+
+#if implemented
+signals:
+  /* signals a resizing of the ruler length
+   * submitts the new length.
+   * due to library freeze this virtual funktion gets implemented later
+   * habenich, 15 apr 2000
+   */
+  /*void newLength(int);*/
+#endif
 
 public slots:
 
@@ -395,6 +462,8 @@ public slots:
    * @ref QWidget::repaint() is called afterwards.
    **/
   void slotNewOffset(int);
+
+  void slotEndOffset(int);
 
 protected:
   virtual void drawContents(QPainter *);
