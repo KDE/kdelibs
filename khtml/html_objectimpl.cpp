@@ -110,7 +110,7 @@ void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
 
     printf("resizing applet to %d/%d\n", width, getHeight());
     applet->resize(width, getHeight());
-    applet->show();
+    //applet->show();
     QString tmp;
     if(base)
     {
