@@ -39,6 +39,7 @@
 #include <kcursor.h>
 #include <kfiledialog.h>
 #include <kguiitem.h>
+#include <kio/netaccess.h>
 
 KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
@@ -219,28 +220,42 @@ void KMDriverDbWidget::slotOtherClicked()
 {
 	if (m_external.isEmpty())
 	{
-		QString	filename = KFileDialog::getOpenFileName(QString::null,QString::null,this);
-		if (!filename.isEmpty())
+		KFileDialog dlg( QString::null, QString::null, this, 0, true );
+		KURL url;
+
+		dlg.setMode( KFile::File );
+		dlg.setCaption( i18n( "Select a driver" ) );
+		if ( dlg.exec() )
+			url = dlg.selectedURL();
+
+		if ( !url.isEmpty() )
 		{
-			DrMain	*driver = KMFactory::self()->manager()->loadFileDriver(filename);
-			if (driver)
+			QString filename;
+			if ( KIO::NetAccess::download( url, filename, this ) )
 			{
-				m_external = filename;
-				disconnect(m_manu,SIGNAL(highlighted(const QString&)),this,SLOT(slotManufacturerSelected(const QString&)));
-				m_manu->clear();
-				m_model->clear();
-				QString	s = driver->get("manufacturer");
-				m_manu->insertItem((s.isEmpty() ? i18n("<Unknown>") : s));
-				s = driver->get("model");
-				m_model->insertItem((s.isEmpty() ? i18n("<Unknown>") : s));
-				m_manu->setCurrentItem(0);
-				m_model->setCurrentItem(0);
-				m_other->setText(i18n("Database"));
-				m_desc = driver->get("description");
-				delete driver;
+				DrMain	*driver = KMFactory::self()->manager()->loadFileDriver(filename);
+				if (driver)
+				{
+					m_external = filename;
+					disconnect(m_manu,SIGNAL(highlighted(const QString&)),this,SLOT(slotManufacturerSelected(const QString&)));
+					m_manu->clear();
+					m_model->clear();
+					QString	s = driver->get("manufacturer");
+					m_manu->insertItem((s.isEmpty() ? i18n("<Unknown>") : s));
+					s = driver->get("model");
+					m_model->insertItem((s.isEmpty() ? i18n("<Unknown>") : s));
+					m_manu->setCurrentItem(0);
+					m_model->setCurrentItem(0);
+					m_other->setText(i18n("Database"));
+					m_desc = driver->get("description");
+					delete driver;
+				}
+				else
+				{
+					KIO::NetAccess::removeTempFile( filename );
+					KMessageBox::error(this,i18n("Wrong driver format."));
+				}
 			}
-			else
-				KMessageBox::error(this,i18n("Wrong driver format."));
 		}
 	}
 	else

@@ -34,6 +34,7 @@
 #include <kapplication.h>
 #include <kmessagebox.h>
 #include <kguiitem.h>
+#include <kio/netaccess.h>
 
 KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -102,7 +103,11 @@ void KMWDriverTest::initPrinter(KMPrinter *p)
 	QString	drfile = p->option("kde-driver");
 	bool	checkDriver(true);
 	if (!drfile.isEmpty() && drfile != "raw")
+	{
 		m_driver = KMFactory::self()->manager()->loadFileDriver(drfile);
+		/* remove the temp file if it has been downloaded */
+		KIO::NetAccess::removeTempFile( drfile );
+	}
 	else if (p->dbEntry() != NULL)
 		m_driver = KMFactory::self()->manager()->loadDbDriver(p->dbEntry());
 	else
