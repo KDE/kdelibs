@@ -24,7 +24,8 @@ KDE RGB Palette
 255 255 255 	White
 255 192 192 	Pastel Red
 192 255 192 	Pastel Green
-192 192 255 	Pastel Blue
+192 192 255 	Light Pastel Blue
+128 128 255 	Dark Pastel Blue
 255 255 192 	Pastel Yellow
 255 192 255 	Pastel Purple
 192 255 255 	Pastel Turquoise
@@ -34,7 +35,8 @@ KDE RGB Palette
 255 255 255 	White
 255 192 192 	Pastel Red
 192 255 192 	Pastel Green
-192 192 255 	Pastel Blue
+192 192 255 	Light Pastel Blue
+128 128 255 	Dark Pastel Blue
 255 255 192 	Pastel Yellow
 255 192 255 	Pastel Purple
 192 255 255 	Pastel Turquoise
@@ -131,25 +133,25 @@ KDE RGB Palette
 # Blues 
 0 0 128 	Blue 50%
 0 0 128 	Blue 50%
-0 0 192 	Blue 75%
+0 0 255 	Blue 100%
 0 0 255 	Blue 100%
 
 # Repeated 
 0 0 128 	Blue 50%
 0 0 128 	Blue 50%
-0 0 192 	Blue 75%
+0 0 255 	Blue 100%
 0 0 255 	Blue 100%
 
 # Repeated 
 0 0 128 	Blue 50%
 0 0 128 	Blue 50%
-0 0 192 	Blue 75%
+0 0 255 	Blue 100%
 0 0 255 	Blue 100%
 
 # Repeated 
 0 0 128 	Blue 50%
 0 0 128 	Blue 50%
-0 0 192 	Blue 75%
+0 0 255 	Blue 100%
 0 0 255 	Blue 100%
 
 # Turqoise
