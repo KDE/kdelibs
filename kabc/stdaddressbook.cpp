@@ -172,8 +172,7 @@ void StdAddressBook::init( bool )
 
 void StdAddressBook::close()
 {
-  delete mSelf;
-  mSelf = 0;
+  addressBookDeleter.destructObject();
 }
 
 void StdAddressBook::setAutomaticSave( bool enable )
