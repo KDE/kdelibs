@@ -146,6 +146,13 @@ KFileIconView::~KFileIconView()
     removeToolTip();
 }
 
+void KFileIconView::keyPressEvent( QKeyEvent *e )
+{
+    KIconView::keyPressEvent( e );
+    if ( e->key() == Key_Return || e->key() == Key_Enter )
+        e->ignore();
+}
+
 void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
 {
     if ( !info )
@@ -155,9 +162,8 @@ void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
 
     if ( item ) {
-	KIconView::setSelected( item, enable );
+	KIconView::setSelected( item, enable, true );
         KIconView::setCurrentItem( item );
-	KIconView::ensureItemVisible( item );
     }
 }
 

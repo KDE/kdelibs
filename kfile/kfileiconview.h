@@ -82,6 +82,12 @@ public:
 
     void ensureItemVisible( const KFileViewItem * );
 
+protected:
+    /**
+     * Reimplemented to not let QIconView eat return-key events
+     */
+    virtual void keyPressEvent( QKeyEvent * );
+
 private slots:
     void selected( QIconViewItem *item );
     void highlighted( QIconViewItem *item );
