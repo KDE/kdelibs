@@ -139,7 +139,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
 }
 
-FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const QFontMetrics * fm, int & offset, short lineHeight)
+FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, int & offset, short lineHeight)
 {
     //kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
     //              << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
@@ -169,7 +169,7 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
     while(pos < m_len)
     {
         // ### this will produce wrong results for RTL text!!!
-        int w = fm->width(*(m_text+pos));
+        int w = f->width(*(m_text+pos));
         int w2 = w/2;
         w -= w2;
         delta -= w2;
@@ -364,8 +364,8 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         if ( s->m_reversed )
             return SelectionPointBefore; // abort if RTL (TODO)
         int result;
-        const QFontMetrics &fm = metrics(si == 0);
-        result = s->checkSelectionPoint(_x, _y, _tx, _ty, &fm, offset, m_lineHeight);
+        const Font *f = htmlFont( si==0 );
+        result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, offset, m_lineHeight);
 
         //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
         if ( result == SelectionPointInside ) // x,y is inside the textslave

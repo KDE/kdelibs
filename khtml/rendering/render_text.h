@@ -61,7 +61,7 @@ public:
     void printSelection(const Font *f, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
-    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const QFontMetrics * fm, int & offset, short lineheight);
+    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, int & offset, short lineheight);
 
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
