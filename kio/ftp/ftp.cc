@@ -1776,6 +1776,7 @@ bool Ftp::ftpCloseDir()
 
 void Ftp::get( const KURL & url )
 {
+  kdDebug(7102) << "Ftp::get " << url.url() << endl;
   if (!m_bLoggedOn)
   {
       openConnection();
@@ -1786,7 +1787,25 @@ void Ftp::get( const KURL & url )
       }
   }
 
-  ftpSize( url.path(), 'I' ); // try to find the size of the file
+  // try to find the size of the file (and check that it exists at the same time)
+  if ( !ftpSize( url.path(), 'I' ) )
+  {
+      // Not a file, or doesn't exist. We need to find out.
+      QCString tmp = "cwd ";
+      tmp += url.path().latin1();
+      if ( ftpSendCmd( tmp, '2' ) )
+      {
+          // Ok it's a dir in fact
+          kdDebug(7102) << "Ftp::get: it is a directory in fact" << endl;
+          error( ERR_IS_DIRECTORY, url.path() );
+      }
+      else
+      {
+          kdDebug(7102) << "Ftp::get: doesn't exist" << endl;
+          error( ERR_DOES_NOT_EXIST, url.path() );
+      }
+      return;
+  }
 
   unsigned long offset = 0;
   QString resumeOffset = metaData(QString::fromLatin1("resume"));
