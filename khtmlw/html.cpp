@@ -1559,7 +1559,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	             debugM("Converted to: %s (length: %i)\n",str1,l);
 		     if (str1 && l){
 		       HTMLFont f=*fp;
-		       if (r.charset().ok){
+		       if (r.charset().ok()){
 		         debugM("Needed charset: %s\n",r.charset().name());
 		         f.setCharset(r.charset());
 			 debugM("Set font: %s\n",charsets->name(QFont(f)));
