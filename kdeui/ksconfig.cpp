@@ -647,6 +647,8 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       // FIXME: use "aspell dump config" to find out the dict-dir
       QFileInfo dir ("/usr/lib/aspell");
       if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/lib/aspell-0.60");
+      if (!dir.exists() || !dir.isDir())
         dir.setFile ("/usr/local/lib/aspell");
       if (!dir.exists() || !dir.isDir())
         dir.setFile ("/usr/share/aspell");
