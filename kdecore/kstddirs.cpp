@@ -92,6 +92,11 @@ QString KStandardDirs::findResource( const QString& type,
 QString KStandardDirs::findResourceDir( const QString& type,
 					const QString& filename) const
 {
+    if (filename.isEmpty()) {
+        warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!\n", type.ascii());
+	return QString::null;
+    }
+    
     QStringList *candidates = getCandidates(type);
     QDir testdir;
     for (QStringList::ConstIterator it = candidates->begin(); 
@@ -112,10 +117,16 @@ QStringList KStandardDirs::findAllResources( const QString& type, bool recursive
 
     QStringList *candidates = getCandidates(type);
     QDir testdir;
+
+    QStringList entries;
     for (QStringList::ConstIterator it = candidates->begin(); 
 	 it != candidates->end(); it++) {
 	testdir.setPath(*it);
-	list += testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
+	entries = testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
+	for (QStringList::ConstIterator it2 = entries.begin(); 
+	     it2 != entries.end(); it2++) {
+	  list.append(*it + *it2);
+	}
     }
     return list;
 }
