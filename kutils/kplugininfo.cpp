@@ -58,11 +58,11 @@ class KPluginInfo::KPluginInfoPrivate
         /** WARNING: add every entry to the cctor and operator= */
 };
 
-    KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
-    : m_loaded( false )
+KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
+: m_loaded( false )
 , d( new KPluginInfoPrivate )
 {
-    KConfig file( filename, resource );
+    KConfig file( filename, true, true, resource );
 
     d->specfile = filename;
 
@@ -103,7 +103,7 @@ class KPluginInfo::KPluginInfoPrivate
     d->enabledbydefault = file.readBoolEntry( "EnabledByDefault", d->enabledbydefault );
 }
 
-    KPluginInfo::KPluginInfo()
+KPluginInfo::KPluginInfo()
 : d( new KPluginInfoPrivate )
 {
     d->hidden = true;
@@ -147,7 +147,7 @@ QValueList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & servi
     for( KService::List::ConstIterator it = services.begin();
             it != services.end(); ++it )
     {
-        const char* resource = ( *it )->type() == "Service" ? "service" : "apps";
+        const char* resource = ( *it )->type() == "Service" ? "services" : "apps";
         info = new KPluginInfo( ( *it )->desktopEntryPath(), resource );
         info->setConfig( config, group );
         infolist += info;
