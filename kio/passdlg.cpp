@@ -1,4 +1,4 @@
-#include "kio_pass_dlg.h"
+#include "kio/passdlg.h"
 
 #include <string.h>
 
@@ -115,4 +115,4 @@ bool KIO::open_PassDlg( const QString& _head, QString& _user, QString& _pass )
     return false;
 }
 
-#include "kio_pass_dlg.moc"
+#include "passdlg.moc"

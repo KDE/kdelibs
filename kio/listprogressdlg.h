@@ -7,7 +7,7 @@
 
 #include <ktmainwindow.h>
 
-#include "kio_job.h"
+#include "kio/job.h"
 
 class QTimer;
 class KIOListView;
@@ -23,7 +23,7 @@ class KIOListViewItem : public QObject, public QListViewItem {
 
 public:
 
-  KIOListViewItem( KIOListView* view, QListViewItem *after, KIOJob *job );
+  KIOListViewItem( KIOListView* view, QListViewItem *after, Job *job );
   ~KIOListViewItem() {}
 
   void update();
@@ -54,7 +54,7 @@ public slots:
 
 protected:
 
-  KIOJob* m_pJob;
+  Job* m_pJob;
 
   unsigned long m_iTotalSize;
   unsigned int m_iTotalFiles;

@@ -9,8 +9,8 @@
 #include "kuserprofile.h"
 #include "kmimetype.h"
 #include "kmimemagic.h"
-#include "kio_openwith.h"
-#include "kio_job.h"
+#include "kio/openwith.h"
+#include "kio/job.h"
 #include "kio/global.h"
 
 #include <kmessageboxwrapper.h>

@@ -19,7 +19,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "kio_connection.h"
+#include "kio/connection.h"
 
 #include <kdebug.h>
 
@@ -225,4 +225,4 @@ int Connection::read( int* _cmd, QByteArray &data )
     return len;
 }
 
-#include "kio_connection.moc"
+#include "connection.moc"

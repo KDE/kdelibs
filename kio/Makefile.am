@@ -45,7 +45,7 @@ libkio_la_SOURCES = \
         slavebase.cpp passdlg.cpp \
 	yacc.c lex.c
 # progressbase.cpp simpleprogress_dlg.cpp
-# littleprogress_dlg.cpp listprogress_dlg.cpp
+# littleprogress_dlg.cpp listprogressdlg.cpp
 
 METASOURCES = AUTO
 

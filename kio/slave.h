@@ -5,7 +5,7 @@
 
 #include <qobject.h>
 #include "kio/slaveinterface.h"
-#include "kio_connection.h"
+#include "kio/connection.h"
 #include <kurl.h>
 #include <time.h>
 
@@ -40,7 +40,7 @@ namespace KIO {
          * @param user to login as
          * @param passwd to login with
          */
-        void openConnection( const QString &host, int port, 
+        void openConnection( const QString &host, int port,
                              const QString &user, const QString &passwd);
 
         /**

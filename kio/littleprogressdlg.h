@@ -6,11 +6,11 @@
 
 #include <kprogress.h>
 
-#include "kio_progressbase.h"
+#include "kio/progressbase.h"
 
 class KIOJob;
 
-/** 
+/**
 * This is a special IO progress widget.
 *
 * Similarly to @ref #KIOSimpleProgressDlg and @ref #KIOListProgressDlg,
@@ -36,7 +36,7 @@ class KIOJob;
 *
 * @short IO progress widget for embedding in a statusbar.
 * @author Matej Koss <koss@miesto.sk>
-*/ 
+*/
 class KIOLittleProgressDlg : public KIOProgressBase {
 
   Q_OBJECT

@@ -45,7 +45,7 @@
 #include <dcopclient.h>
 #include <kmimetype.h>
 
-#include "kio_openwith.h"
+#include "kio/openwith.h"
 #include "krun.h"
 
 template class QList<QString>;
@@ -517,5 +517,5 @@ void KOpenWithDlg::slotOK()
   accept();
 }
 
-#include "kio_openwith.moc"
+#include "openwith.moc"
 

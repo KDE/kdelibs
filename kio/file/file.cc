@@ -32,9 +32,6 @@
 #include <kinstance.h>
 #include <qfile.h>
 
-#include "kio_rename_dlg.h"
-#include "kio_skip_dlg.h"
-
 #include "file.h"
 
 using namespace KIO;

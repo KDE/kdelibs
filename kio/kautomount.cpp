@@ -1,7 +1,7 @@
 #include "kautomount.h"
 #include "krun.h"
 #include "kdirwatch.h"
-#include "kio_job.h"
+#include "kio/job.h"
 #include <kdebug.h>
 
 /***********************************************************************

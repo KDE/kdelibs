@@ -5,7 +5,7 @@
 
 #include <kprogress.h>
 
-#include "kio_progressbase.h"
+#include "kio/progressbase.h"
 
 class KIOJob;
 
@@ -17,7 +17,7 @@ public:
 
   KIOSimpleProgressDlg();
   ~KIOSimpleProgressDlg() {}
-  
+
 protected slots:
 
   virtual void slotTotalSize( int, unsigned long _bytes );

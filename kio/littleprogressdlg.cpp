@@ -5,10 +5,10 @@
 #include <kapp.h>
 #include <klocale.h>
 
-#include "kio_job.h" 
+#include "kio_job.h"
 #include "kio_littleprogress_dlg.h"
 
-KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent, bool button ) 
+KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent, bool button )
   : KIOProgressBase( parent ) {
 
   m_bShowButton = button;
@@ -22,7 +22,7 @@ KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent, bool button )
   m_pButton = new QPushButton( "x", this );
   m_pButton->setGeometry( 0, 1, w_offset, h - 1);
   QToolTip::add( m_pButton, i18n("Cancel job") );
-  
+
   m_pProgressBar = new KProgress( 0, 100, 0, KProgress::Horizontal, this );
   m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
   m_pProgressBar->setLineWidth( 1 );
@@ -133,4 +133,4 @@ bool KIOLittleProgressDlg::eventFilter( QObject *, QEvent *ev ) {
 }
 
 
-#include "kio_littleprogress_dlg.moc"
+#include "littleprogressdlg.moc"

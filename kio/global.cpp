@@ -19,7 +19,7 @@
 #endif
 
 #include "kio/global.h"
-#include "kio_job.h"
+#include "kio/job.h"
 
 #include <kdebug.h>
 #include <kapp.h>

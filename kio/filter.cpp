@@ -4,7 +4,7 @@
 #include <config.h>
 #endif
 
-#include "kio_filter.h"
+#include "kio/filter.h"
 
 #include <sys/types.h>
 #include <sys/signal.h>
@@ -32,7 +32,7 @@ KIOFilter::KIOFilter( const char *_cmd , const char **arguments)
   m_pid = -1;
   send_in = -1;
   recv_out = -1;
-  
+
   if( !buildPipe( &recv_in, &send_in ) ) return;
   if( !buildPipe( &recv_out, &send_out ) ) return;
 
@@ -97,15 +97,15 @@ bool KIOFilter::send( void *_p, int _len )
 
   fd_set rfds;
   fd_set wfds;
-  
+
   char buffer[ 2048 ];
-  
+
   while( written < _len )
   {
     FD_ZERO( &rfds );
     FD_ZERO( &wfds );
     int max_fd = 0;
-    
+
     FD_SET( recv_out, &rfds );
     max_fd = recv_out + 1;
     FD_SET( send_in, &wfds );
@@ -133,7 +133,7 @@ bool KIOFilter::send( void *_p, int _len )
 	kDebugError( 7005, "ERROR: Write" );
 	return false;
       }
-      
+
       if ( n != -1 )
 	written += n;
     }
@@ -141,7 +141,7 @@ bool KIOFilter::send( void *_p, int _len )
     {
       int n;
       do
-      {  
+      {
       again2:
 	if ( ( n = read( recv_out, buffer, 2048 ) ) == -1 && errno == EINTR )
 	  goto again2;
@@ -165,7 +165,7 @@ bool KIOFilter::finish()
 {
   close( send_in );
   send_in = -1;
-  
+
   fcntl( recv_out, F_SETFL, 0 );
 
   char buffer[ 2048 ];
@@ -179,7 +179,7 @@ bool KIOFilter::finish()
 
     if ( n != -1 )
       emitData( buffer, n );
-    
+
   } while( n > 0 );
 
   return true;

@@ -13,7 +13,7 @@
 #include <qfile.h>
 #include <klibloader.h>
 #include "kio/global.h"
-#include "kio_connection.h"
+#include "kio/connection.h"
 #include "kio/slavewrapper.h"
 
 #include <X11/Xlib.h>

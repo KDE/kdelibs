@@ -22,7 +22,7 @@
 #ifndef _kio_scheduler_h
 #define _kio_scheduler_h
 
-#include <kio_job.h>
+#include "kio/job.h"
 #include <qtimer.h>
 
 namespace KIO {

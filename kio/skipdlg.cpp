@@ -1,6 +1,6 @@
 // $Id$
 
-#include "kio_skip_dlg.h"
+#include "kio/skipdlg.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -112,4 +112,4 @@ SkipDlg_Result KIO::open_SkipDlg( bool _multi, const QString& _error_text )
   return (SkipDlg_Result) dlg.exec();
 }
 
-#include "kio_skip_dlg.moc"
+#include "skipdlg.moc"

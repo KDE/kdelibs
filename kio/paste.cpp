@@ -1,9 +1,9 @@
 // $Id$
 
-#include "kio_job.h"
-#include "kio_paste.h"
+#include "kio/job.h"
+#include "kio/paste.h"
 #include "kio/global.h"
-#include "kio_netaccess.h"
+#include "kio/netaccess.h"
 
 #include <qapplication.h>
 #include <qclipboard.h>

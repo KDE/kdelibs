@@ -31,9 +31,9 @@
 
 #include <kdebug.h>
 #include <kurl.h>
-#include <kio_job.h>
+#include <kio/job.h>
 
-#include "kio_netaccess.h"
+#include "kio/netaccess.h"
 
 using namespace KIO;
 
@@ -88,11 +88,11 @@ bool NetAccess::downloadInternal(const KURL& src, KURL& target, Job *job)
       tmpfiles->append(path);
   }
   bDownloadOk = true; // success unless further error occurs
-  
+
   if (!job) kDebugFatal("Setting the job in KIO::NetAccess is not allowed anymore!");
- 
+
   job = KIO::file_copy( src, target );
-  connect( job, SIGNAL( result (KIO::Job *) ), 
+  connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
   qApp->enter_loop();
@@ -105,4 +105,4 @@ void NetAccess::slotResult( KIO::Job * job )
   qApp->exit_loop();
 }
 
-#include "kio_netaccess.moc"
+#include "netaccess.moc"

@@ -1,7 +1,7 @@
 #ifndef _ioslave_wrapper_h
 #define _ioslave_wrapper_h
 
-#include "kio_connection.h"
+#include "kio/connection.h"
 
 namespace KIO {
 class SlaveBase;

@@ -2,8 +2,8 @@
 
 #include <kwm.h>
 
-#include "kio_job.h"
-#include "kio_progressbase.h"
+#include "job.h"
+#include "progressbase.h"
 
 KIOProgressBase::KIOProgressBase( QWidget *parent )
   : QWidget( parent ) {
@@ -125,5 +125,5 @@ void KIOProgressBase::stop() {
   }
 }
 
-#include "kio_progressbase.moc"
+#include "progressbase.moc"
 

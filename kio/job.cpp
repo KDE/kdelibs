@@ -54,13 +54,13 @@
 #include <errno.h>
 
 #include "slave.h"
-#include "kio_job.h"
+#include "kio/job.h"
 #include <sys/stat.h>
 #include <scheduler.h>
 #include <kmimemagic.h>
 
-#include "kio_rename_dlg.h"
-#include "kio_skip_dlg.h"
+#include "kio/renamedlg.h"
+#include "kio/skipdlg.h"
 
 // #include "kio_simpleprogress_dlg.h"
 // #include "kio_listprogress_dlg.h"
@@ -1527,4 +1527,4 @@ DeleteJob *KIO::del( const KURL::List& src )
   return job;
 }
 
-#include "kio_job.moc"
+#include "job.moc"

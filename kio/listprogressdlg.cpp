@@ -434,4 +434,4 @@ void KIOListProgressDlg::cancelCurrent() {
 }
 
 
-#include "kio_listprogress_dlg.moc"
+#include "listprogressdlg.moc"

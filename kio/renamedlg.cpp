@@ -1,4 +1,4 @@
-#include "kio_rename_dlg.h"
+#include "kio/renamedlg.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -256,4 +256,4 @@ unsigned long KIO::getOffset( QString dest ) {
   return info.size();
 }
 
-#include "kio_rename_dlg.moc"
+#include "renamedlg.moc"

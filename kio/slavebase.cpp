@@ -1,6 +1,6 @@
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
-#include "kio_connection.h"
+#include "kio/connection.h"
 #include <assert.h>
 #include <kdebug.h>
 #include <stdlib.h>
