@@ -89,16 +89,26 @@ public:
     void setFace( const DOMString & );
 
     /**
-     * Font size. See the <a
+     * Computed Font size. See the <a
      * href="http://www.w3.org/TR/REC-html40/present/graphics.html#adef-size-BASEFONT">
      * size attribute definition </a> in HTML 4.0. This attribute is
      * deprecated in HTML 4.0.
      *
      */
+    long getSize() const;
+
+     /**
+      * see @ref size
+      */
+    void setSize( long );
+
+    /**
+     * @deprecated
+     */
     DOMString size() const;
 
     /**
-     * see @ref size
+     * @deprecated
      */
     void setSize( const DOMString & );
 };

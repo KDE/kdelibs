@@ -232,6 +232,18 @@ void HTMLImageElement::setBorder( long value )
     if (impl) static_cast<HTMLImageElementImpl*>(impl)->setAttribute(ATTR_BORDER, QString::number(value));
 }
 
+DOMString HTMLImageElement::getBorder() const
+{
+    if(!impl) return DOMString();
+    return static_cast<HTMLImageElementImpl*>(impl)->getAttribute(ATTR_BORDER);
+}
+
+void HTMLImageElement::setBorder( const DOMString& value )
+{
+    if (impl) static_cast<HTMLImageElementImpl*>(impl)->setAttribute(ATTR_BORDER, value);
+}
+
+
 long HTMLImageElement::height() const
 {
     if(!impl) return 0;

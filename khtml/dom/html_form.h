@@ -502,10 +502,21 @@ public:
      */
     bool readOnly() const;
 
+    // ### remove in 4.0
     /**
      * see @ref readOnly
      */
     void setReadOnly( bool );
+
+    /**
+     * @deprecated
+     */
+    DOMString size() const;
+
+    /**
+     * @deprecated
+     */
+    void setSize( const DOMString & );
 
     /**
      * Size information. The precise meaning is specific to each type
@@ -514,12 +525,12 @@ public:
      * size attribute definition </a> in HTML 4.0.
      *
      */
-    DOMString size() const;
+    long getSize() const;
 
     /**
-     * see @ref size
+     * see @ref getSize
      */
-    void setSize( const DOMString & );
+    void setSize( long );
 
     /**
      * When the <code> type </code> attribute has the value "Image",

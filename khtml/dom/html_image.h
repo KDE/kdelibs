@@ -244,10 +244,21 @@ public:
      * deprecated in HTML 4.0.
      *
      */
+    DOMString getBorder() const;
+
+     /**
+      * see @ref border
+      */
+    void setBorder( const DOMString& );
+
+
+    /**
+     * @deprecated
+     */
     long border() const;
 
     /**
-     * see @ref border
+     * @deprecated
      */
     void setBorder( long );
 
