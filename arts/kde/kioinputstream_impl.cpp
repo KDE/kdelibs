@@ -30,17 +30,14 @@
 
 using namespace Arts;
 
-const unsigned int KIOInputStream_impl::PACKET_COUNT = 1;
+const unsigned int KIOInputStream_impl::PACKET_COUNT = 2;
+const unsigned int KIOInputStream_impl::PACKET_BUFFER = 10;
 const unsigned int KIOInputStream_impl::PACKET_SIZE = 1024;
 
 KIOInputStream_impl::KIOInputStream_impl()
 {
 	m_job = 0;
 	m_data = 0;
-
-	m_position = 0;
-	m_size = 0;
-	
 	m_finished = false;
 }
 
@@ -100,8 +97,6 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 	QDataStream dataStream(m_data, IO_WriteOnly | IO_Append);
 	dataStream << data;
 	
-	m_size += data.size();
-
 	if(!m_sendqueue.empty())
 	    processQueue();
 }
@@ -115,7 +110,7 @@ void KIOInputStream_impl::slotResult(KIO::Job *job)
 
 bool KIOInputStream_impl::eof()
 {
-	return (m_finished || m_position >= m_size) && (m_sendqueue.size() == PACKET_COUNT);
+	return (m_finished && m_data.size() == 0 && m_sendqueue.empty());
 }
 
 bool KIOInputStream_impl::seekOk()
@@ -125,7 +120,7 @@ bool KIOInputStream_impl::seekOk()
 
 long KIOInputStream_impl::size()
 {
-	return m_size;
+	return m_data.size();
 }
 
 long KIOInputStream_impl::seek(long)
@@ -135,29 +130,23 @@ long KIOInputStream_impl::seek(long)
 
 void KIOInputStream_impl::processQueue()
 {
-	// Last part of flow control
-	// CRASHES! :(
-	/*
-	if(m_sendqueue.size() > 10)
+	if(m_data.size() > ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && !m_job->isSuspended())
 	    m_job->suspend();
-	else if(m_sendqueue.size() < 10)
-	{
-	    if(m_job->isSuspended())
-		m_job->resume();
-	}
-	*/
+	else if(m_data.size() < ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && m_job->isSuspended())
+	    m_job->resume();
+
 	for(unsigned int i = 0; i < m_sendqueue.size(); i++)
 	{
-	    if(m_position < m_size)
-	    {
-		DataPacket<mcopbyte> *packet = m_sendqueue.front();
-		m_sendqueue.pop();
+	    DataPacket<mcopbyte> *packet = m_sendqueue.front();
 		
-		packet->size = std::min(PACKET_SIZE, m_size - m_position);
-		memcpy(packet->contents, m_data.data() + m_position, packet->size);
-		m_position += packet->size;
-		packet->send();
-	    }
+	    packet->size = std::min(PACKET_SIZE, m_data.size());
+	    if(packet->size == 0)
+		return;	    
+	    m_sendqueue.pop();
+	    memcpy(packet->contents, m_data.data(), packet->size);
+	    memmove(m_data.data(), m_data.data() + packet->size, m_data.size() - packet->size);
+	    m_data.resize(m_data.size() - packet->size);
+	    packet->send();
 	}
 }
 

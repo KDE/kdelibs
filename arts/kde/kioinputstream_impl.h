@@ -60,10 +60,9 @@ private:
 	std::queue<DataPacket<mcopbyte> *> m_sendqueue;
 	QByteArray m_data;
 	bool m_finished;
-	unsigned int m_size;
-	unsigned int m_position;
 
 	static const unsigned int PACKET_COUNT;
+	static const unsigned int PACKET_BUFFER;
 	static const unsigned int PACKET_SIZE;
 };
 
