@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.27  1999/05/25 16:17:24  kulow
+   two changes:
+     kde_icondir() has been removed. Use locate("icon", pixmap) instead
+     KIconLoader::loadMiniIcon has been removed. It does the same as
+     loadApplicationMiniIcon and the later is less confusing in what it
+     does (loading icons out of share/icons/mini)
+
    Revision 1.26  1999/05/23 17:04:52  kulow
    let KGlobal create the IconLoader instance. Removed KApplication::getIconLoader.
    Steffen's idea - just more consequent ;)
@@ -76,6 +83,25 @@ class KConfig;
 	using @ref QPixmapCache, saving memory and loading time. 
 	
 	Icons are searched for according to the KDE file system standard.
+	The default search path is :
+  
+	@li $HOME/.kde/share/apps/<appName>/pics
+	@li $KDEDIR/share/apps/<appName>/pics
+	@li $HOME/.kde/share/apps/<appName>/toolbar
+	@li $KDEDIR/share/apps/<appName>/toolbar
+
+	@li $HOME/.kde/share/icons
+	@li $HOME/.kde/share/toolbar
+
+	@li $KDEDIR/share/icons
+	@li $KDEDIR/share/toolbar
+
+	@li list of directories given by config file (see the constructors)
+	
+	Some large/ directories are added to the search path for special
+	apps that support large icons (kpanel, kfm) or for all apps
+	depending on the settings in ~/.kderc
+
 	Extra directories can be added, see @ref insertDirectory.
 
 	All keys used in QPixmapCache by this class have the "$kico_.." prefix.
@@ -88,11 +114,16 @@ class KIconLoader : public QObject
   Q_OBJECT
 
 public:
+  /** Default constructor. 
+   * Adds to the search path the ones listed in [KDE Setup]/IconPath. 
+   * (in .kderc or the application config file)
+   */
+  KIconLoader();
+
   /**
     Constructor.
-
     If you want to use another path in your application then write into
-    your .my_application_rc:
+    a config file :
 
     <pre>
     [MyApplication]
@@ -101,17 +132,14 @@ public:
 
     and call KIconLoader( config, "MyApplication", "PixmapPath" ).
 
-    @param config	Pointer to a KConfig object which will be searched
+    @param conf		Pointer to a KConfig object which will be searched
     for additional paths.
-    @param group	Group to search for paths. Normally "KDE Setup" is used.
-    @param key	Key to search for paths. Normally "IconPath" is used.
+    @param app_name	Group to search for paths.
+    @param var_name	Key to search for paths.
 
   */
   KIconLoader ( KConfig *conf, const QString &app_name, 
 		  const QString &var_name );
-
-  /** Constructor. Searches for path in [KDE Setup]/IconPath.  */
-  KIconLoader();
 
   /** Destructor. */
   ~KIconLoader () {}
@@ -170,21 +198,6 @@ public:
 
   /** 
   	Insert a directory into icon search path.
-	Note that the default searchpath looks like this:
-
-	@li $HOME/.kde/share/apps/<appName>/pics
-	@li $KDEDIR/share/apps/<appName>/pics
-	@li $HOME/.kde/share/apps/<appName>/toolbar
-	@li $KDEDIR/share/apps/<appName>/toolbar
-
-	@li $HOME/.kde/share/icons
-	@li $HOME/.kde/share/toolbar
-
-	@li $KDEDIR/share/icons
-	@li $KDEDIR/share/toolbar
-
-	@li list of directories in [KDE Setup]:IconPath=...
-
 	@param index	The index in the search path at which to insert
 	the new directory.
 	@param dir_name	The directory to insert into the search path.
