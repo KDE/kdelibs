@@ -1491,7 +1491,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   static const QString& dot = KGlobal::staticQString(".");
   static const QString& dotdot = KGlobal::staticQString("..");
 
-  KFileItem *item, *tmp;
+  KFileItem *item = 0, *tmp;
 
   QValueList<KIO::UDSEntry> buf = jobs[job];
   QValueListIterator<KIO::UDSEntry> it = buf.begin();
@@ -1532,7 +1532,10 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     }
 
     // Form the complete url
-    item = new KFileItem( *it, jobUrl, delayedMimeTypes, true  );
+    if ( !item )
+      item = new KFileItem( *it, jobUrl, delayedMimeTypes, true );
+    else
+      item->setUDSEntry( *it, jobUrl, delayedMimeTypes, true );
 
     QString url = item->url().url();
     //kdDebug(7004) << "slotUpdateResult : look for " << url << endl;
@@ -1554,19 +1557,25 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
         for ( kdl = listers->first(); kdl; kdl = listers->next() )
           kdl->addRefreshItem( tmp );
       }
-      delete item;  // gmbl, this is the most often case... IMPORTANT TODO: speed it up somehow!
     }
     else // this is a new file
     {
       //kdDebug(7004) << "slotUpdateResult: new file: " << name << endl;
 
+      item = new KFileItem( *it, jobUrl, delayedMimeTypes, true );
       item->mark();
       dir->lstItems->append( item );
 
       for ( kdl = listers->first(); kdl; kdl = listers->next() )
         kdl->addNewItem( item );
+
+      // item used, we need a new one for the next iteration
+      item = 0;
     }
   }
+
+  if ( item )
+    delete item;
 
   jobs.remove( job );
 
