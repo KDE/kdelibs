@@ -34,7 +34,7 @@ KComboBox::KComboBox( QWidget *parent, const char *name )
     m_pContextMenu = 0;
     m_bShowContextMenu = false;
     m_bShowModeChanger = false;
-    initialize();
+    init();
 }
 
 KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
@@ -63,7 +63,7 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
         m_bShowContextMenu = false;
         m_bShowModeChanger = false;
     }
-    initialize();
+    init();
 }
 
 KComboBox::~KComboBox()
@@ -77,7 +77,7 @@ KComboBox::~KComboBox()
         delete m_pCompObj;
 }
 
-void KComboBox::initialize()
+void KComboBox::init()
 {
     // Permanently set some parameters in the parent object.
     setAutoCompletion( false );
@@ -85,16 +85,6 @@ void KComboBox::initialize()
     // Determines whether the completion object should
     // be deleted or not.
     m_bAutoDelCompObj = false;
-
-    // By default emit completion signal
-    m_bEmitCompletion = true;
-    // By default emit rotation signals
-    m_bEmitRotation = true;
-
-    // Do not handle rotation & completion signals
-    // internally by default.
-    m_bHandleCompletionSignal = false;
-    m_bHandleRotationSignal = false;
 
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
@@ -118,6 +108,18 @@ void KComboBox::initialize()
 
     // Initialize the pointer to the completion object.
     m_pCompObj = 0;
+
+    // By default emit completion signal
+    m_bEmitCompletion = true;
+    // By default emit rotation signals
+    m_bEmitRotation = true;
+
+    // Handle rotation & completion signals
+    // internally by default.
+    m_bHandleCompletion = false; //do not remove
+    m_bHandleRotation = false; //do not remove
+    setHandleCompletion ( true );
+    setHandleRotation ( true );
 
     // Connect the signals and slots.
     connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
@@ -149,15 +151,15 @@ void KComboBox::setHandleCompletion( bool complete )
     if( m_pCompObj == 0 && complete )
         setCompletionObject ( new KCompletion(), true );
 
-    if( complete && !m_bHandleCompletionSignal )
+    if( complete && !m_bHandleCompletion )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        m_bHandleCompletionSignal = complete;
+        m_bHandleCompletion = complete;
     }
-    else if( !complete && m_bHandleCompletionSignal )
+    else if( !complete && m_bHandleCompletion )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        m_bHandleCompletionSignal = complete;
+        m_bHandleCompletion = complete;
     }
 }
 
@@ -166,17 +168,17 @@ void KComboBox::setHandleRotation( bool rotate )
     if( m_pCompObj == 0 && rotate )
         setCompletionObject ( new KCompletion(), true );
 
-    if( rotate && !m_bHandleRotationSignal )
+    if( rotate && !m_bHandleRotation )
     {
         connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotationSignal = true;
+        m_bHandleRotation = true;
     }
-    else if( !rotate && m_bHandleRotationSignal )
+    else if( !rotate && m_bHandleRotation )
     {
         disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotationSignal = false;
+        m_bHandleRotation = false;
     }
 }
 

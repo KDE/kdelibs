@@ -48,12 +48,17 @@
  * through some kind of list in opposing directions.  The @ref returnPressed
  * signals are emitted when the user presses the return key.
  *
+ * By default both the completion and rotation signals are automatically handled
+ * by this widget.  If you do not need these features, simply use the appropriate
+ * accessor methods to shut them off.  See also @ref setHandleCompletion and @ref
+ * setHandleRotation for details.
+ *
  * The default key-binding for completion and rotation is determined from the
  * global settings in @ref KStdAccel.  However, these values can be set locally to
  * override the global settings.  Simply invoking @see useGlobalSettings then
  * allows you to immediately default the bindings back to the global settings
- * again.  You can also default the key-bindings by simply invoking the @ref setXXXKey
- * method without any argumet.
+ * again.  You can also default the key-bindings by simply invoking the @ref
+ * setXXXKey method without any argumet.
  *
  * @sect A small example:
  *
@@ -61,8 +66,6 @@
  *
  * <pre>
  * KComboBox *combo = new KComboBox( true, this, "mywidget" );
- * combo->setHandleCompletion(); // enables completion and automatically deletes that object at the end.
- * combo->setHandleRotation();
  * // Connect to the return pressed signal - optional
  * connect( combo, SIGNAL( returnPressed( const QString& ) ), combo->completionObject(), SLOT( addItem( const QString& ) );
  * </pre>
@@ -74,16 +77,11 @@
  * KComboBox *combo = new KComboBox( this,"mywidget" );
  * KURLCompletion *comp = new KURLCompletion();
  * combo->setCompletionObject( comp );
- * combo->setHandleCompletion();
- * combo->setHandleRotation();
  * </pre>
  *
  * Of course @ref setCompletionObject can also be used to assign the base
  * KCompletion class as the comepltion object.  This is specailly important
  * when you share a single completion object across multiple widgets.
- *
- * See @ref setCompletionObject and @ref enableCompletion for detailed
- * information.
  *
  * @short An enhanced combo box.
  * @author Dawit Alemayehu <adawit@earthlink.net>
@@ -233,19 +231,17 @@ public:
     /**
     * Sets this widget to handle the completion signals internally.
     *
-    * When this function is invoked with the default argument or the
-    * argument set to "true", KComboBox will automatically handle completion
-    * signals.  By default, this method enables completion and also creates
-    * a base completion object if one is not already present.  To stop this
-    * widget from handling the completion signal internally simply call it
-    * with its argument set to "false".
+    * When this function is invoked with the argument set to "true", KComboBox
+    * will automatically handle rotation signals.  To stop KComboBox from
+    * handling the completion signal internally simply invoke this function with
+    * with the deafult argument or the argument set to "false".
     *
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the completion signals externally.
     *
     * @param @p complete when true enables this widget to handle completion.
     */
-    void setHandleCompletion( bool complete = true );
+    void setHandleCompletion( bool complete = false );
 
     /**
     * Sets this widget to handle rotation signals internally.
@@ -253,28 +249,29 @@ public:
     * When this function is invoked with a default argument or the argument
     * set to "true", KComboBox will automatically handle rotation signals.
     * To stop KComboBox from handling the rotation signals internally simply
-    * invoke this function with the argument set to "false".
+    * invoke this function with the default argument or the argument set to
+    * "false".
     *
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the rotation signals externally.
     *
     * @param @p autoHandle when true handle rotation signals internally.
     */
-    void setHandleRotation( bool rotate = true );
+    void setHandleRotation( bool rotate = false );
 
     /**
     * Returns true if this widget handles completion signal internally.
     *
     * @return true when this widget handles completion signal.
     */
-    bool handlesCompletion() { return m_bEmitCompletion; }
+    bool handlesCompletion() { return m_bHandleCompletion; }
 
     /**
     * Returns true if this widget handles rotation signal internally.
     *
     * @return true when this widget handles rotation signal.
     */
-    bool handlesRotation() { return m_bEmitRotation; }
+    bool handlesRotation() { return m_bHandleRotation; }
 
     /**
     * Sets the type of completion to be used.
@@ -562,7 +559,7 @@ protected slots:
 
 protected:
     // Initializes the variables upon construction.
-    virtual void initialize();
+    virtual void init();
     // Override the key-press event for "select-only" box.
     virtual void keyPressEvent ( QKeyEvent* );
     /*
@@ -597,10 +594,10 @@ private :
     bool m_bAutoDelCompObj;
     // Determines whether this widget handles rotation signals
     // internally or not
-    bool m_bHandleRotationSignal;
+    bool m_bHandleRotation;
     // Determines whether this widget handles completion signals
     // internally or not
-    bool m_bHandleCompletionSignal;
+    bool m_bHandleCompletion;
     // Determines whether this widget fires rotation signals
     bool m_bEmitRotation;
     // Determines whether this widget fires completion signals
