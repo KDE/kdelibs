@@ -122,9 +122,9 @@ void KRecentDocument::add(const KURL& url)
     // create the applnk
     KSimpleConfig conf(ddesktop);
     conf.setDesktopGroup();
-    conf.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application") );
+    conf.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
     conf.writeEntry( QString::fromLatin1("URL"), openStr );
-    conf.writeEntry( QString::fromLatin1("Exec"), QString::fromLatin1(kapp->argv()[0]) + QString::fromLatin1(" \"") + openStr + '"' );
+    conf.writeEntry( QString::fromLatin1("X-KDE-LastOpenedWith"), QString::fromLatin1(kapp->argv()[0]) );
     conf.writeEntry( QString::fromLatin1("Name"), url.fileName() );
     conf.writeEntry( QString::fromLatin1("Icon"), KMimeType::iconForURL( url ) );
 }
