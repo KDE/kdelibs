@@ -26,6 +26,7 @@
 #include <qtoolbutton.h>
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qapplication.h>
 
 #include <klocale.h>
 #include <kconfig.h>
@@ -47,9 +48,9 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 	m_list2 = new KListBox(box);
 	m_list2->setSelectionMode(KListBox::Extended);
 	m_add = new QToolButton( box );
-	m_add->setIconSet(SmallIconSet( "forward" ));
+	m_add->setIconSet(QApplication::reverseLayout() ? SmallIconSet( "back" ) : SmallIconSet( "forward" ));
 	m_remove = new QToolButton( box );
-	m_remove->setIconSet(SmallIconSet( "back" ));
+	m_remove->setIconSet(QApplication::reverseLayout() ? SmallIconSet( "forward" ) : SmallIconSet( "back" ));
 	m_locationre = new QLineEdit(box);
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("The printer filtering allows you to view only a specific set of "
