@@ -306,12 +306,25 @@ signals:
   void dropped(QDropEvent* e, QListViewItem* parent, QListViewItem* after);
 
   /**
-   * For future expansions.
-   *
-   * Do not use.
-   * @deprecated
+   * This signal is emitted when ever the user moves an item in the list via
+   * DnD.
+   * If more than one item is moved at the same time, this signal is only emitted
+   * once.
    */
   void moved();
+
+  /**
+   * This signal is emitted when ever the user moves an item in the list via
+   * DnD.
+   * If more than one item is moved at the same time, parameters afterFirst and
+   * afterNow will all be the same for each item.  This differs from @ref moved() so
+   * be careful.  All the items will have been moved before this is emitted.
+   * @param item the item that was moved
+   * @param afterFirst the item that parameter item was in before the move, in the list
+   * @param afterNow the item it's currently after.
+   *
+   **/
+  void moved(QListViewItem *item, QListViewItem *afterFirst, QListViewItem *afterNow);
 
   /**
    * This signal gets emitted when an item is renamed via in-place renaming.

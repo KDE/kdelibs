@@ -267,63 +267,61 @@ void KListView::slotSettingsChanged(int category)
 //   if (category != KApplication::SETTINGS_MOUSE && category != KApplication::SETTINGS_POPUPMENU)
 // 	return;
   switch (category)
-	{
-	case KApplication::SETTINGS_MOUSE:
-	  d->bUseSingle = KGlobalSettings::singleClick();
+  {
+  case KApplication::SETTINGS_MOUSE:
+    d->bUseSingle = KGlobalSettings::singleClick();
 	  
-	  disconnect (this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
-				  this, SLOT (slotMouseButtonClicked (int, QListViewItem*, const QPoint &, int)));
+    disconnect(this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
+               this, SLOT (slotMouseButtonClicked (int, QListViewItem*, const QPoint &, int)));
 	  
-	  //       disconnect( this, SIGNAL( doubleClicked( QListViewItem *,
-	  // 					       const QPoint &, int ) ),
-	  // 		  this, SLOT( slotExecute( QListViewItem *,
-	  // 					   const QPoint &, int ) ) );
+//  disconnect(this, SIGNAL( doubleClicked( QListViewItem *,
+//             const QPoint &, int ) ),
+// 	           this, SLOT( slotExecute( QListViewItem *,
+//             const QPoint &, int ) ) );
 	  
-	  if( d->bUseSingle )
-		{
-		  connect (this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
-				   this, SLOT (slotMouseButtonClicked( int, QListViewItem*, const QPoint &, int)));
-		}
-	  else
-		{
-		  //       connect( this, SIGNAL( doubleClicked( QListViewItem *,
-		  // 					    const QPoint &, int ) ),
-		  // 	       this, SLOT( slotExecute( QListViewItem *,
-		  // 					const QPoint &, int ) ) );
-		}
+    if( d->bUseSingle )
+      connect (this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
+               this, SLOT (slotMouseButtonClicked( int, QListViewItem*, const QPoint &, int)));
+    else
+    {
+//    connect(this, SIGNAL( doubleClicked( QListViewItem *,
+//            const QPoint &, int ) ),
+//            this, SLOT( slotExecute( QListViewItem *,
+//            const QPoint &, int ) ) );
+    }
 	  
-	  d->bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
-	  d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
+    d->bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
+    d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
 	  
-	  if( !d->bUseSingle || !d->bChangeCursorOverItem )
-		viewport()->setCursor( d->oldCursor );
+    if( !d->bUseSingle || !d->bChangeCursorOverItem )
+       viewport()->setCursor( d->oldCursor );
 	  
-	  break;
+    break;
+	
+  case KApplication::SETTINGS_POPUPMENU:
+    // context menu settings
+    d->contextMenuKey = KGlobalSettings::contextMenuKey ();
+    d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
 	  
-	case KApplication::SETTINGS_POPUPMENU:
-	  // context menu settings
-	  d->contextMenuKey = KGlobalSettings::contextMenuKey ();
-	  d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
-	  
-	  if (d->showContextMenusOnPress)
-		{
-		  disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
-		  
-		  connect (this, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
-			   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
-		}
-	  else
-		{
-		  disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
-		  
-		  connect (this, SIGNAL (rightButtonClicked (QListViewItem*, const QPoint&, int)),
-				   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
-		}
-	  break;
+    if (d->showContextMenusOnPress)
+    {
+      disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
 
-	default:
-	  break;
-	}
+      connect(this, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
+              this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+    }
+    else
+    {
+      disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+		  
+      connect(this, SIGNAL (rightButtonClicked (QListViewItem*, const QPoint&, int)),
+              this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+    }
+    break;
+
+  default:
+    break;
+  }
 }
 
 void KListView::slotAutoSelect()
@@ -552,13 +550,29 @@ void KListView::contentsDropEvent(QDropEvent* e)
     {
       if (itemsMovable())
       {
+        // these for the moved() calls below
+        QListViewItem *afterNow(afterme);
+        QList<QListViewItem> items;
+        QListViewItem *afterFirst=0;
+
         for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
         {
           if (!i->isSelected())
             continue;
+          if (!afterFirst)
+            afterFirst=i->itemAbove();
           moveItem(i, parent, afterme);
+          items.append(i);
           afterme=i;
         }
+
+        if (items.first())
+        {
+          for (QListViewItem *i=items.first(); i!=0; i=items.next() )
+            emit moved(i, afterFirst, afterNow);
+          emit moved();
+        }
+
       }
     }
 	else
