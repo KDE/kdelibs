@@ -234,6 +234,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 newItem = count() -1;
 
             setCurrentItem( newItem );
+            emit activated ( newItem );
             e->accept();
             return true;
         }
