@@ -178,7 +178,7 @@ protected:
     */
   void addEncoding(QString, QStringList &);
 
-  void configAuth(const char *, bool, bool firstCall = true );
+  void configAuth(const char *, bool);
 #ifdef DO_SSL
   void initSSL();
   void closeSSL();
@@ -362,6 +362,8 @@ protected:
   HTTP_AUTH Authentication;
   HTTP_AUTH ProxyAuthentication;
   bool m_bUnauthorized;
+  short unsigned int m_iProxyAuthCount;
+  short unsigned int m_iWWWAuthCount;
 
   // Persistant connections
   bool m_bKeepAlive;
