@@ -72,6 +72,7 @@ struct {
   int deadpipe[2]; /* pipe used to detect dead children */
   int wrapper; /* socket for wrapper communication */
   char result;
+  int exit_status;
   pid_t fork;
   pid_t launcher_pid;
   int n;
@@ -510,7 +511,7 @@ static void WaitPid( pid_t waitForPid)
   int result;
   while(1)
   {
-    result = waitpid(waitForPid, 0, 0);
+    result = waitpid(waitForPid, &d.exit_status, 0);
     if ((result == -1) && (errno == ECHILD))
        return;
   }
@@ -908,6 +909,11 @@ int main(int argc, char **argv, char **envp)
       pid = launch( 2, "dcopserver", "--nosid" );
       fprintf(stderr, "DCOPServer: pid = %d result = %d\n", pid, d.result);
       WaitPid(pid);
+      if (!WIFEXITED(d.exit_status) || (WEXITSTATUS(d.exit_status) != 0))
+      {
+         fprintf(stderr, "kdeinit: DCOPServer could not be started, aborting.\n");
+         exit(1);
+      }
    }
 
    if (launch_klauncher)
