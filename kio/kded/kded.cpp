@@ -39,9 +39,22 @@
 #include <kstddirs.h>
 
 
-Kded::Kded() 
+Kded::Kded( bool needUpdate) 
   : KSycoca( true )
 {
+  QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
+  QCString cPath = QFile::encodeName(path);
+  struct stat buff;
+  if (!needUpdate && (stat( cPath, &buff) == 0))
+  {
+     m_sycocaDate = buff.st_ctime;
+     m_needUpdate = false;
+  }
+  else
+  {
+     m_sycocaDate = 0;
+     m_needUpdate = true;
+  }
   m_pTimer = new QTimer(this);
   connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
@@ -137,7 +150,15 @@ void Kded::readDirectory( const QString& _path )
   //************************************************************************
 
   if ( !m_pDirWatch->contains( path ) ) // New dir?
+  {
     m_pDirWatch->addDir(path);          // add watch on this dir
+    if (!m_needUpdate)
+    {
+       time_t ctime = m_pDirWatch->ctime(path);
+       if (ctime && (ctime > m_sycocaDate))
+          m_needUpdate = true;
+    }
+  }
 
   // Note: If some directory is gone, dirwatch will delete it from the list.
 
@@ -159,11 +180,19 @@ void Kded::readDirectory( const QString& _path )
   }
 }
 
+static KCmdLineOptions options[] =
+{
+  { "check", I18N_NOOP("Check sycoca database only once."), 0 },
+  { 0, 0, 0 }
+};
+
 int main(int argc, char *argv[])
 {
      KCmdLineArgs::init(argc, argv, "kded", 
         I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed."),
-        "$Id:  $");
+        "$Id$");
+
+     KCmdLineArgs::addCmdLineOptions( options );
 
      if (!KUniqueApplication::start())
      {
@@ -172,10 +201,21 @@ int main(int argc, char *argv[])
      }
      KUniqueApplication k( false, false ); // No styles, no GUI
 
-     Kded *kded = new Kded; // Build data base
+     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+     bool check = args->isSet("check");
+
+     Kded *kded = new Kded(false); // Build data base
 
      kded->build();
-     kded->recreate();
+     if (kded->needUpdate())
+        kded->recreate();
+
+     if (check)
+     {
+        k.processEvents();
+        return 0;
+     }
+
      return k.exec(); // keep running
 }
 

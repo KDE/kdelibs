@@ -20,6 +20,8 @@
 #ifndef __kded_h__
 #define __kded_h__ 
 
+#include <time.h>
+
 #include <qobject.h>
 #include <qstring.h>
 #include <ksycoca.h>
@@ -32,7 +34,7 @@ class Kded : public KSycoca
 {
   Q_OBJECT
 public:
-   Kded();
+   Kded( bool needUpdate );
    virtual ~Kded();
 
 public slots:
@@ -46,6 +48,11 @@ public slots:
     * Collect all directories to watch
     */
    void build();
+
+   /**
+    * @return true if it is necassery to rebuild the database upon start
+    */
+   bool needUpdate() { return m_needUpdate; }
    
 protected slots:
 
@@ -85,6 +92,9 @@ protected:
     * in only one rebuilding.
     */
    QTimer* m_pTimer;
+   
+   bool m_needUpdate;
+   time_t m_sycocaDate;
 };
 
 #endif
