@@ -4,7 +4,7 @@ Within KDE the following conventions are used for DSOs
 KDEInit Loadable Modules
 ========================
 Name: <appname>.la
-LDFLAGS: -module -avoid version
+LDFLAGS: -module -avoid-version
 
 
 KParts
