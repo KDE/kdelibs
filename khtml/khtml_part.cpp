@@ -2375,6 +2375,11 @@ KHTMLPart *KHTMLPart::findFrame( const QString &f )
   }
 }
 
+bool KHTMLPart::frameExists( const QString &frameName )
+{
+    return d->m_frames.find( frameName ) != d->m_frames.end();
+}
+
 KHTMLPart *KHTMLPart::parentPart()
 {
   if ( !parent() || !parent()->inherits( "KHTMLPart" ) )
@@ -2701,7 +2706,7 @@ void KHTMLPart::reparseConfiguration()
 {
   KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
   settings->init();
- 
+
   // Keep original charset setting.
   settings->setCharset(d->m_settings->charset());
 

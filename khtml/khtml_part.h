@@ -561,6 +561,14 @@ public:
    */
   KHTMLPart *findFrame( const QString &f );
 
+  /**
+   * Returns whether a frame with the specified name is exists or not.
+   * In contrary to the @findFrame method this one also returns true
+   * if the frame is defined but no displaying component has been
+   * found/loaded, yet.
+   */
+  bool frameExists( const QString &frameName );
+
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
 
 signals:

@@ -84,7 +84,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	str += attr->value().string() + "px";
         addCSSProperty(CSS_PROP_PADDING_LEFT, str, false);
         addCSSProperty(CSS_PROP_PADDING_RIGHT, str, false);
-	break;	
+	break;
     }
     case ATTR_MARGINHEIGHT:
     {
@@ -103,7 +103,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_LINK:
     {
-kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl; 
+kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
  if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
 	QString aStr = "a:link { color: " + attr->value().string() + "; }";
 	m_styleSheet->parseString(aStr);
@@ -132,7 +132,7 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
 	QString str;
 	str.sprintf("%dpx",w->marginWidth());
 	addCSSProperty(CSS_PROP_PADDING_LEFT, str, false);
-        addCSSProperty(CSS_PROP_PADDING_RIGHT, str, false);	
+        addCSSProperty(CSS_PROP_PADDING_RIGHT, str, false);
     }
     if(w->marginHeight() != -1) {
 	QString str;
@@ -239,7 +239,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
-    if(name.isEmpty())
+    if(name.isEmpty() || w->part()->frameExists( name.string() ) )
     {
       name = DOMString(w->part()->requestFrameName());
       kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
@@ -385,7 +385,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
     /*
     {
       kdDebug( 6030 ) << "mouseEvent:check" << endl;
-	
+
 	hSplit = -1;
 	vSplit = -1;
 	//bool resizePossible = true;
@@ -424,7 +424,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	else if( vSplit != -1 )
 	{
 	    cursor = Qt::splitHCursor;
-	}	
+	}
 	else if( hSplit != -1 )
 	{
 	    cursor = Qt::splitVCursor;
@@ -454,7 +454,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	    int delta = vSplitPos - _x;
 	    m_colWidth[vSplit] -= delta;
 	    m_colWidth[vSplit+1] += delta;
-	}	
+	}
 	if(vSplit)
 	{
 	    kdDebug( 6030 ) << "split ypos=" << _y << endl;
