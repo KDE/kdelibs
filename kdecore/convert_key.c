@@ -23,11 +23,11 @@ int main( int argc, char ** argv )
 	int nb_lines;
 	
 	if ( argc != 2 ) {
-		printf("Need QTdir in argument\n");
+		printf("Need qkeycode.h in argument\n");
 		exit(1);
 	}
 	
-	sprintf(qt_path, "%s/include/qkeycode.h", argv[1]);
+	sprintf(qt_path, "%s", argv[1]);
 	qt_key = fopen(qt_path, "r");
 	if ( qt_key==0L ) {
 		printf("Unable to read %s\n", qt_path);

@@ -7,7 +7,7 @@ typedef struct {
 
 #define MAX_KEY_LENGTH 15
 #define MAX_KEY_MODIFIER_LENGTH 15
-#define NB_KEYS 218
+#define NB_KEYS 229
 
 KKey KKeys[NB_KEYS] = {
 	{ "Escape", 0x1000 },
@@ -62,6 +62,17 @@ KKey KKeys[NB_KEYS] = {
 	{ "F22", 0x1045 },
 	{ "F23", 0x1046 },
 	{ "F24", 0x1047 },
+	{ "F25", 0x1048 },
+	{ "F26", 0x1049 },
+	{ "F27", 0x104a },
+	{ "F28", 0x104b },
+	{ "F29", 0x104c },
+	{ "F30", 0x104d },
+	{ "F31", 0x104e },
+	{ "F32", 0x104f },
+	{ "F33", 0x1050 },
+	{ "F34", 0x1051 },
+	{ "F35", 0x1052 },
 	{ "Space", 0x20 },
 	{ "Exclam", 0x21 },
 	{ "QuoteDbl", 0x22 },

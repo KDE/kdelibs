@@ -94,6 +94,11 @@ AC_CHECK_GETDOMAINNAME
 AC_CHECK_GETHOSTNAME
 AC_CHECK_KSIZE_T
 
+if test -n "$qt_includes"; then
+  QKEYCODE_H="$qt_includes/qkeycode.h"
+fi
+AC_SUBST(QKEYCODE_H)
+
 dnl Perform program name transformation
 AC_ARG_PROGRAM
 
