@@ -46,7 +46,7 @@ void KIconLoader::initPath()
 	appname = library->instanceName();
     }
 
-    if (!appname.isNull()) { // may still be the case 
+    if (!appname.isNull()) { // may still be the case
 
 	KStandardDirs* dirs = library->dirs();
 	
@@ -83,7 +83,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, Size size,
 {
     if (name.at(0) == '/')
         return loadInternal(name);
-    
+
     QPixmap pix;
     QString icon_path;
     QString path;
@@ -111,20 +111,20 @@ QPixmap KIconLoader::loadIcon ( const QString& name, Size size,
             current_size = Small;
             break;
         }
-        
-        // if noone wants to know the path, we can just lookup the pixmap 
+
+        // if noone wants to know the path, we can just lookup the pixmap
         if (!path_store) {
             if (QPixmapCache::find( path + name, pix)) {
                 return pix;
             }
         }
-        
+
         QString icon;
         if (!name.contains('/'))
             icon = "apps/" + name;
         else
             icon = name;
-        
+
         if (icon.right(4) == ".xpm") {
             icon.truncate(icon.length() - 4);
         }
@@ -132,23 +132,26 @@ QPixmap KIconLoader::loadIcon ( const QString& name, Size size,
         if (icon.right(4) == ".png") {
             icon.truncate(icon.length() - 4);
         }
-       
-        icon_path = locate("icon", path + "hicolor/" + icon + ".png", library );
+
+        if ( QPixmap::defaultDepth() > 8 )
+        {
+          icon_path = locate("icon", path + "hicolor/" + icon + ".png", library );
+          if (!icon_path.isEmpty())
+            goto loading;
+
+          icon_path = locate("icon", path + "hicolor/" + icon + ".xpm", library );
+          if (!icon_path.isEmpty())
+            goto loading;
+        }
+
+        icon_path = locate("icon", path + "locolor/" + icon + ".png", library );
         if (!icon_path.isEmpty())
             goto loading;
-        
-        icon_path = locate("icon", path + "hicolor/" + icon + ".xpm", library );
-        if (!icon_path.isEmpty()) 
-            goto loading;
-        
-        icon_path = locate("icon", path + "locolor/" + icon + ".png", library );
-        if (!icon_path.isEmpty()) 
-            goto loading;
-        
+
         icon_path = locate("icon", path + "locolor/" + icon + ".xpm", library );
         if (!icon_path.isEmpty())
             goto loading;
-    
+
     }
 
     // one last desparate gasp -- we try to locate our icon using the
@@ -175,7 +178,7 @@ QString KIconLoader::iconPath( const QString& name, bool always_valid)
 {
     if (name.at(0) == '/') // we can't do anything with an absolute path than returning
 	return name;
-    
+
     QString full_path;
     if (!name.isEmpty()) {
 	QString path = name;
@@ -192,7 +195,7 @@ QString KIconLoader::iconPath( const QString& name, bool always_valid)
     }
     if (full_path.isNull() && always_valid)
 	full_path = locate(iconType, "unknown.png", library);
-    
+
     return full_path;
 }
 
@@ -201,19 +204,19 @@ QPixmap KIconLoader::loadInternal ( const QString& name, bool hcache )
     QString cacheKey = "$kico_";
     cacheKey += name;
     KPixmap pix;
-    
+
     if ( hcache && QPixmapCache::find( cacheKey, pix ) == true ) {
 	return pix;
     }
-    
+
     pix.load( iconPath(name), 0, KPixmap::LowColor );
-    
+
     if ( pix.isNull() ) {
 	return pix;
     }
-    
+
     QPixmapCache::insert( cacheKey, pix );
-    
+
     return pix;
 }
 
