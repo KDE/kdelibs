@@ -353,6 +353,9 @@ bool KBugReport::sendBugReport()
 
   command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\" > %3").arg(m_subject->text()).arg(recipient).arg(outputfile.name());
 
+  fflush(stdin);
+  fflush(stderr);
+
   FILE * fd = popen(command.local8Bit(), "w");
   if (!fd)
   {
