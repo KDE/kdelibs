@@ -277,7 +277,7 @@ void KAccel::readSettings(KConfig* config)
 	QString s;
 
 	KConfig *pConfig = config ? config : KGlobal::config();
-        KConfigGroupSaver(pConfig, aGroup);
+	KConfigGroupSaver cgs(pConfig, aGroup);
 
 	for (KKeyEntryMap::Iterator it = aKeyMap.begin();
              it != aKeyMap.end(); ++it) {
