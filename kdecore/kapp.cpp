@@ -20,6 +20,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.95  1998/03/09 20:20:11  kulow
+// - set KApp to 0, after the destructor has run. After that, nothing is for sure
+// - remove widgetList given by QApplication::topLevelWidgets. You can see this
+//   in the documentation
+//
 // Revision 1.94  1998/02/24 21:36:04  kulow
 // fix for invokeHTMLHelp: missing / behind the path
 //
@@ -1058,52 +1063,44 @@ void KApplication::readSettings()
 
   QString str;
 	
-	// Read the color scheme group from config file
-	// If unavailable set color scheme to KDE default
+  QColor col;
+  col.setRgb(192,192,192);  
+
+  // Read the color scheme group from config file
+  // If unavailable set color scheme to KDE default
 	
   config->setGroup( "Color Scheme");
   // this default is the KDE standard grey
-  str = config->readEntry( "InactiveTitleBarColor", "#C0C0C0" );
-  inactiveTitleColor.setNamedColor( str );
+  inactiveTitleColor = config->readColorEntry( "InactiveTitleBarColor", &col );
 
-	// this default is Qt darkGrey
-  str = config->readEntry( "InactiveTitleTextColor", "#808080" );
-  inactiveTextColor.setNamedColor( str );
+  // this default is Qt darkGrey
+  inactiveTextColor = config->readColorEntry( "InactiveTitleTextColor", &darkGray );
+  
+  // this default is Qt darkBlue
+  activeTitleColor = config->readColorEntry( "ActiveTitleBarColor", &darkBlue );
 
-	// this default is Qt darkBlue
-  str = config->readEntry( "ActiveTitleBarColor", "#000080" );
-  activeTitleColor.setNamedColor( str );
+  // this default is Qt white
+  activeTextColor = config->readColorEntry( "ActiveTitleTextColor", &white );
+  
+  // this default is Qt black
+  textColor = config->readColorEntry( "TextColor", &black );
+  
+  // this default is the KDE standard grey
+  backgroundColor = config->readColorEntry( "BackgroundColor", &col  );
+  
+  // this default is Qt darkBlue
+  selectColor = config->readColorEntry( "SelectColor", &darkBlue );
 
-	// this default is Qt white
-  str = config->readEntry( "ActiveTitleTextColor", "#FFFFFF" );
-  activeTextColor.setNamedColor( str );
+  // this default is Qt white
+  selectTextColor = config->readColorEntry( "SelectTextColor", &white);
+  
+  // this default is Qt white
+  windowColor = config->readColorEntry( "WindowColor", &white );
+  
+  // this default is Qt black
+  windowTextColor = config->readColorEntry( "WindowTextColor", &black ); 
 
-	// this default is Qt black
-  str = config->readEntry( "TextColor", "#000000" );
-  textColor.setNamedColor( str );
-
-	// this default is the KDE standard grey
-  str = config->readEntry( "BackgroundColor", "#C0C0C0" );
-  backgroundColor.setNamedColor( str );
-
-	// this default is Qt darkBlue
-  str = config->readEntry( "SelectColor", "#000080" );
-  selectColor.setNamedColor( str );
-
-	// this default is Qt white
-  str = config->readEntry( "SelectTextColor", "#FFFFFF" );
-  selectTextColor.setNamedColor( str );
-
-	// this default is Qt white
-  str = config->readEntry( "WindowColor", "#FFFFFF" );
-  windowColor.setNamedColor( str );
-
-	// this default is Qt black
-  str = config->readEntry( "WindowTextColor", "#000000" ); 
-  windowTextColor.setNamedColor( str );
-
-  str = config->readEntry( "Contrast", "7" );
-  contrast = atoi( str );
+  contrast = config->readNumEntry( "Contrast", 7 );
 	
 	//	Read the font specification from config.
 	// 	Initialize fonts to default first or it won't work !!
@@ -1139,15 +1136,10 @@ void KApplication::readSettings()
 	// Finally, read GUI style from config.
 	
   config->setGroup( "GUI Style" );
-  str = config->readEntry( "Style" );
-  if ( !str.isNull() )
-	{
-	  if( str == "Windows 95" )
-		applicationStyle=WindowsStyle;
-	  else
-		applicationStyle=MotifStyle;
-	} else
-	  applicationStyle=MotifStyle;	
+  if ( config->readEntry( "Style", "Motif" ) == "Windows 95" )
+    applicationStyle=WindowsStyle;
+  else
+    applicationStyle=MotifStyle;
 	
 }
 
