@@ -234,3 +234,30 @@ ToolTip=A widget that provides a image preview of a URL
 Group=Display (KDE)
 ConstructorArgs=(parent)
 
+[KActionSelector]
+IncludeFile=kactionselector.h
+ToolTip=A widget for selecting and arranging actions/objects
+Group=Views (KDE)
+
+[KWritePermsIcon]
+IncludeFile=kauthicon.h
+ToolTip=Auth icon for write permission display.
+ConstructorArgs=("", parent, name)
+Group=Display (KDE)
+
+[KRootPermsIcon]
+IncludeFile=kauthicon.h
+ToolTip=Icon to show whether or not a user has root permissions.
+Group=Display (KDE)
+
+[KColorPatch]
+IncludeFile=kcolordialog.h
+ToolTip=The KColorPatch widget is a (usually small) widget showing a selected color.
+Group=Display (KDE)
+ConstructorArgs=(parent)
+
+[KPaletteTable]
+IncludeFile=kcolordialog.h
+ToolTip=A color palette in table form.
+Group=Display (KDE)
+ConstructorArgs=(parent, 210, 16)
