@@ -313,7 +313,7 @@ public:
    * @param pKey The key to search for.
    * @param sep  The list separator (default is ",").
    * @return The list. Empty if the entry does not exist.
-   * @since 3.2
+   * @since 3.1.3
    */
   QStringList readPathListEntry( const QString& pKey, char sep = ',' ) const;
 
@@ -327,7 +327,7 @@ public:
    * @param pKey The key to search for.
    * @param sep  The list separator (default is ",").
    * @return The list. Empty if the entry does not exist.
-   * @since 3.2
+   * @since 3.1.3
    */
   QStringList readPathListEntry( const char *pKey, char sep = ',' ) const;
 
@@ -1454,7 +1454,7 @@ public:
    *
    * @see  writePathEntry()
    * @see  readPathListEntry()
-   * @since 3.2
+   * @since 3.1.3
    */
   void writePathEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
@@ -1478,7 +1478,7 @@ public:
    *
    * @see  writePathEntry()
    * @see  readPathListEntry()
-   * @since 3.2
+   * @since 3.1.3
    */
   void writePathEntry( const char *pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
