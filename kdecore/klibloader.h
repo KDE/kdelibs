@@ -25,6 +25,8 @@
 #include <qlist.h>
 #include <kglobal.h>
 
+#include <stdlib.h> // For backwards compatibility
+
 class KInstance;
 class QTimer;
 class KLibFactoryPrivate;
