@@ -330,7 +330,7 @@ static void readIcon(NETWinInfoPrivate *p) {
     unsigned long bufsize = 0;
 
     // read data
-    while (after_ret > 0) {
+    do {
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
 			       BUFSIZE, False, XA_CARDINAL, &type_ret,
 			       &format_ret, &nitems_ret, &after_ret, &data_ret)
@@ -354,7 +354,7 @@ static void readIcon(NETWinInfoPrivate *p) {
             else if (buffer_offset + nitems_ret*sizeof(long) > bufsize)
             {
 fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
-               bufsize = nitems_ret * sizeof(long) + after_ret;
+               bufsize = buffer_offset + nitems_ret * sizeof(long) + after_ret;
                buffer = (unsigned char *) realloc(buffer, bufsize);
             }
 	    memcpy((buffer + buffer_offset), data_ret, nitems_ret * sizeof(long));
@@ -369,6 +369,7 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 	    return; // Some error occured cq. property didn't exist.
 	}
     }
+    while (after_ret > 0);
 
     CARD32 *data32;
     unsigned long i, j, k, sz, s;
