@@ -24,6 +24,7 @@
 #define KSPELL_FILTER_H
 
 #include <qstring.h>
+#include <kdelibs_export.h>
 
 namespace KSpell2
 {
@@ -61,7 +62,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short used to split text into words
      */
-    class Filter
+    class KDE_EXPORT Filter
     {
     public:
         static Filter *defaultFilter();

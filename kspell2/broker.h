@@ -45,7 +45,7 @@ namespace KSpell2
      * KSpell2 class, you can think of it as the kernel or manager
      * of the KSpell22 architecture.
      */
-    class Broker : public QObject,
+    class KDE_EXPORT Broker : public QObject,
                    public KShared
     {
         Q_OBJECT

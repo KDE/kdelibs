@@ -22,11 +22,12 @@
 #define KSPELL_CONFIGWIDGET_H
 
 #include <qwidget.h>
+#include <kdelibs_export.h>
 
 namespace KSpell2
 {
     class Broker;
-    class ConfigWidget : public QWidget
+    class KDE_EXPORT ConfigWidget : public QWidget
     {
         Q_OBJECT
     public:

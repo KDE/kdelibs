@@ -24,6 +24,7 @@
 
 #include <qstringlist.h>
 #include <qstring.h>
+#include <kdelibs_export.h>
 
 class KSharedConfig;
 
@@ -31,7 +32,7 @@ namespace KSpell2
 {
     class Broker;
 
-    class Settings
+    class KDE_EXPORT Settings
     {
     public:
         ~Settings();

@@ -27,7 +27,7 @@
 #include <kurl.h>
 #include <qobject.h>
 
-class KPlayObject : public QObject
+class KDE_EXPORT KPlayObject : public QObject
 {
 Q_OBJECT
 public:
