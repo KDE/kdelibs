@@ -292,7 +292,9 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
       // this is the first item in a container, then we nuke the
       // current one
       QDomElement prev = e.previousSibling().toElement();
-      if ( prev.isNull() || ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() ) )
+      if ( prev.isNull() || 
+	 ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() ) ||
+	 ( prev.tagName() == tagText ) )
       {
         // the previous element was a weak separator or didn't exist
         QDomElement oldChild = e;
