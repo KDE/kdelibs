@@ -92,7 +92,7 @@ QXMLSimpleParser::~QXMLSimpleParser()
 /*!
   Processes an external parameter-entity. It first queries the consumer to see wether this
   is ok.
-  
+
   TODO: Get the parameter entities content ....
 */
 bool QXMLSimpleParser::parameterEntity( const QString& name, const QString& publicId, const QString& systemId )
@@ -290,7 +290,7 @@ bool QXMLSimpleParser::replaceCharRefs( const QString& x, QString* text )
       if ( entity.isEmpty() )
 	return FALSE;
       ++pos;
-      
+
       QString value;
       if ( !paramEntityValue( entity, &value ) )
 	  return FALSE;
@@ -309,7 +309,7 @@ bool QXMLSimpleParser::replaceCharRefs( const QString& x, QString* text )
 /*!
   Replaces character entities and intern/extern entities in the text
   of an attribute.
-  
+
   Returns -1 on success or the error position.
 */
 int QXMLSimpleParser::replaceEntities( QString& text )
@@ -393,7 +393,7 @@ int QXMLSimpleParser::replaceEntities( QString& text )
 	else
 	    ++pos;
     }
-    
+
     return -1;
 }
 
@@ -425,7 +425,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
   int ignore_counter = 0;
   Type type;
   int i;
-  
+
  Node1: // accepts
   if ( pos == len )
     goto Ok;
@@ -711,7 +711,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
 	  pos += epos;
 	  goto Failed;
       }
-      if ( consumer ) 
+      if ( consumer )
 	  if ( !consumer->attrib( attrib, a ) )
 	      return pos;
       pos++;
@@ -1025,7 +1025,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     {
       QString tmp = text.mid( start, pos - start );
       if ( !tmp.isEmpty() )
-	if ( !consumer->text( tmp ) )
+	if ( !consumer->cdata( tmp ) )
 	  return pos;
     }
 

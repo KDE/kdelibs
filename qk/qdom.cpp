@@ -52,6 +52,7 @@ public:
   virtual bool tagEnd( const QString& name );
   virtual bool attrib( const QString& name, const QString& value );
   virtual bool text( const QString& text );
+  virtual bool cdata( const QString& text );
   virtual bool entityRef( const QString& name );
   virtual bool processingInstruction( const QString& name, const QString& value );
   virtual bool doctype( const QString& name );
@@ -1528,7 +1529,7 @@ QDOM_NodePrivate* QDOM_NamedNodeMapPrivate::item( int index ) const
     return 0;
 
   QDictIterator<QDOM_NodePrivate> it( m_map );
-  for( int i = 0; i < index; ++i ) { }
+  for( int i = 0; i < index; ++i, ++it ) { }
 
   return it.current();
 }
@@ -2924,7 +2925,7 @@ bool QDomElement::hasAttribute( const QString& name ) const
 
 /*!
   Returns the text contained in children of the tag.
-  If the tag has child tag, then the text() method is called
+  If the tag has child tags, then the text() method is called
   for this children, too.
 
   Example:
@@ -3278,7 +3279,8 @@ QDOM_NodePrivate* QDOM_CDATASectionPrivate::cloneNode( bool deep)
 
 void QDOM_CDATASectionPrivate::save( QTextStream& s ) const
 {
-  s << "<![CDATA[" << m_value << "]]>";
+    // #### How do we escape "]]>" ?
+    s << "<![CDATA[" << m_value << "]]>";
 }
 
 /**************************************************************
@@ -4502,9 +4504,6 @@ QDomCharacterData QDomNode::toCharacterData()
 
 QDomConsumer::QDomConsumer( QDOM_DocumentPrivate* d )
 {
-    qDebug("=============================================");
-    qDebug("=================== QDOM ==========================");
-    qDebug("=============================================");
   doc = d;
   node = doc;
   firstTag = FALSE;
@@ -4567,6 +4566,17 @@ bool QDomConsumer::text( const QString& text )
     return FALSE;
 
   node->appendChild( doc->createTextNode( text ) );
+
+  return TRUE;
+}
+
+bool QDomConsumer::cdata( const QString& text )
+{
+  // No text as child of some document
+  if ( node == doc )
+    return FALSE;
+
+  node->appendChild( doc->createCDATASection( text ) );
 
   return TRUE;
 }

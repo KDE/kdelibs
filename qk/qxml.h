@@ -37,6 +37,7 @@ public:
   virtual bool tagEnd( const QString& name ) = 0;
   virtual bool attrib( const QString& name, const QString& value ) = 0;
   virtual bool text( const QString& text ) = 0;
+  virtual bool cdata( const QString& text ) = 0;
   virtual bool entityRef( const QString& name ) = 0;
   virtual bool processingInstruction( const QString& name, const QString& value ) = 0;
   virtual bool doctype( const QString& name ) = 0;
@@ -74,7 +75,7 @@ private:
   bool entityValue( const QString& name, QString* value );
   bool replaceCharRefs( const QString& x, QString* text );
   int replaceEntities( QString& text );
-    
+
   QXMLSimpleParserPrivate* d;
 };
 
