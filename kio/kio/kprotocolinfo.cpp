@@ -219,6 +219,15 @@ bool KProtocolInfo::canRenameToFile( const KURL &url )
   return prot->canRenameToFile();
 }
 
+bool KProtocolInfo::canDeleteRecursive( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->canDeleteRecursive();
+}
+
 QString KProtocolInfo::defaultMimetype( const KURL &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);

@@ -480,7 +480,7 @@ namespace KIO {
      *
      * @param src file to delete
      * @param shred If true, delete in a way that makes recovery impossible
-     * (only supported for local files currently)
+     * (only supported for local files currently) // BIC: remove in KDE4
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */

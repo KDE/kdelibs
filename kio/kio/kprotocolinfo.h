@@ -380,6 +380,19 @@ public:
   static bool canRenameToFile( const KURL &url );
 
   /**
+   * Returns whether the protocol can recursively delete directories by itself.
+   * If not (the usual case) then KIO will list the directory and delete files
+   * and empty directories one by one.
+   *
+   * This corresponds to the "deleteRecursive=" field in the protocol description file.
+   * Valid values for this field are "true" or "false" (default).
+   *
+   * @param url the url to check
+   * @return true if the protocol can delete non-empty directories by itself.
+   */
+  static bool canDeleteRecursive( const KURL &url );
+
+  /**
    * Returns default mimetype for this URL based on the protocol.
    *
    * This corresponds to the "defaultMimetype=" field in the protocol description file.
@@ -615,6 +628,7 @@ protected:
 
   bool canRenameFromFile() const; // for kprotocolinfo_kdecore
   bool canRenameToFile() const; // for kprotocolinfo_kdecore
+  bool canDeleteRecursive() const; // for kprotocolinfo_kdecore
   static KProtocolInfo* findProtocol(const KURL &url); // for kprotocolinfo_kdecore
 
 protected:

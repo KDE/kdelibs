@@ -36,6 +36,7 @@ public:
   bool showPreviews;
   bool canRenameFromFile;
   bool canRenameToFile;
+  bool canDeleteRecursive;
   KURL::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;
@@ -67,6 +68,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_canCopyToFile = config.readBoolEntry( "copyToFile", false );
   d->canRenameFromFile = config.readBoolEntry( "renameFromFile", false );
   d->canRenameToFile = config.readBoolEntry( "renameToFile", false );
+  d->canDeleteRecursive = config.readBoolEntry( "deleteRecursive", false );
   m_listing = config.readListEntry( "listing" );
   // Many .protocol files say "Listing=false" when they really mean "Listing=" (i.e. unsupported)
   if ( m_listing.count() == 1 && m_listing.first() == "false" )
@@ -147,7 +149,8 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
-          i_uriMode, i_canRenameFromFile, i_canRenameToFile;
+          i_uriMode, i_canRenameFromFile, i_canRenameToFile,
+          i_canDeleteRecursive;
 
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
         >> i_determineMimetypeFromExtension
@@ -162,7 +165,8 @@ KProtocolInfo::load( QDataStream& _str)
         >> m_config >> m_maxSlaves >> d->docPath >> d->protClass
         >> d->extraFields >> i_showPreviews >> i_uriMode
         >> d->capabilities >> d->proxyProtocol
-        >> i_canRenameFromFile >> i_canRenameToFile;
+        >> i_canRenameFromFile >> i_canRenameToFile
+        >> i_canDeleteRecursive;
 
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
@@ -179,6 +183,7 @@ KProtocolInfo::load( QDataStream& _str)
    m_canCopyToFile = (i_canCopyToFile != 0);
    d->canRenameFromFile = (i_canRenameFromFile != 0);
    d->canRenameToFile = (i_canRenameToFile != 0);
+   d->canDeleteRecursive = (i_canDeleteRecursive != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
    d->showPreviews = (i_showPreviews != 0);
    d->uriMode = (KURL::URIMode) i_uriMode;
@@ -198,7 +203,8 @@ KProtocolInfo::save( QDataStream& _str)
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
-          i_uriMode, i_canRenameFromFile, i_canRenameToFile;
+          i_uriMode, i_canRenameFromFile, i_canRenameToFile,
+          i_canDeleteRecursive;
 
    i_inputType = (Q_INT32) m_inputType;
    i_outputType = (Q_INT32) m_outputType;
@@ -215,6 +221,7 @@ KProtocolInfo::save( QDataStream& _str)
    i_canCopyToFile = m_canCopyToFile ? 1 : 0;
    i_canRenameFromFile = d->canRenameFromFile ? 1 : 0;
    i_canRenameToFile = d->canRenameToFile ? 1 : 0;
+   i_canDeleteRecursive = d->canDeleteRecursive ? 1 : 0;
    i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
    i_showPreviews = d->showPreviews ? 1 : 0;
    i_uriMode = d->uriMode;
@@ -232,7 +239,8 @@ KProtocolInfo::save( QDataStream& _str)
         << m_config << m_maxSlaves << d->docPath << d->protClass
         << d->extraFields << i_showPreviews << i_uriMode
         << d->capabilities << d->proxyProtocol
-        << i_canRenameFromFile << i_canRenameToFile;
+        << i_canRenameFromFile << i_canRenameToFile
+        << i_canDeleteRecursive;
 }
 
 
@@ -512,6 +520,11 @@ bool KProtocolInfo::canRenameFromFile() const
 bool KProtocolInfo::canRenameToFile() const
 {
   return d->canRenameToFile;
+}
+
+bool KProtocolInfo::canDeleteRecursive() const
+{
+  return d->canDeleteRecursive;
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {

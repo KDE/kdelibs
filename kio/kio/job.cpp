@@ -3613,10 +3613,10 @@ CopyJob *KIO::linkAs(const KURL& src, const KURL& destDir, bool showProgressInfo
 
 //////////
 
-DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
+DeleteJob::DeleteJob( const KURL::List& src, bool /*shred*/, bool showProgressInfo )
 : Job(showProgressInfo), m_totalSize( 0 ), m_processedSize( 0 ), m_fileProcessedSize( 0 ),
   m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
-  m_srcList(src), m_currentStat(m_srcList.begin()), m_shred(shred), m_reportTimer(0)
+  m_srcList(src), m_currentStat(m_srcList.begin()), m_reportTimer(0)
 {
   if ( showProgressInfo ) {
 
@@ -3678,8 +3678,7 @@ void DeleteJob::slotReport()
         case STATE_DELETING_FILES:
             observer->slotProcessedFiles(this,m_processedFiles);
             emit processedFiles( this, m_processedFiles );
-            if (!m_shred)
-               emitPercent( m_processedFiles, m_totalFilesDirs );
+            emitPercent( m_processedFiles, m_totalFilesDirs );
             break;
    }
 }
@@ -3796,33 +3795,20 @@ void DeleteJob::deleteNextFile()
                 it = symlinks.begin(); // Pick up a symlink to delete
                 isLink = true;
             }
-            // Use shredding ?
-            if ( m_shred && (*it).isLocalFile() && !isLink )
-            {
-                // KShred your KTie
-                KIO_ARGS << int(3) << (*it).path();
-                job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
+            // Normal deletion
+            // If local file, try do it directly
+            if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
+                job = 0;
+                m_processedFiles++;
+                if ( m_processedFiles % 300 == 0 ) { // update progress info every 300 files
+                    m_currentURL = *it;
+                    slotReport();
+                }
+            } else
+            { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
+                job = KIO::file_delete( *it, false /*no GUI*/);
                 Scheduler::scheduleJob(job);
                 m_currentURL=(*it);
-                connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
-                         this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
-            } else
-            {
-                // Normal deletion
-                // If local file, try do it directly
-                if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
-                    job = 0;
-                    m_processedFiles++;
-                    if ( m_processedFiles % 300 == 0 ) { // update progress info every 300 files
-                        m_currentURL = *it;
-                        slotReport();
-                    }
-                } else
-                { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
-                    job = KIO::file_delete( *it, false /*no GUI*/);
-                    Scheduler::scheduleJob(job);
-                    m_currentURL=(*it);
-                }
             }
             if ( isLink )
                 symlinks.remove(it);
@@ -3854,9 +3840,15 @@ void DeleteJob::deleteNextDir()
                     m_currentURL = *it;
                     slotReport();
                 }
-            } else
-            {
-                SimpleJob *job = KIO::rmdir( *it );
+            } else {
+                SimpleJob* job;
+                if ( KProtocolInfo::canDeleteRecursive( *it ) ) {
+                    // If the ioslave supports recursive deletion of a directory, then
+                    // we only need to send a single CMD_DEL command, so we use file_delete :)
+                    job = KIO::file_delete( *it );
+                } else {
+                    job = KIO::rmdir( *it );
+                }
                 Scheduler::scheduleJob(job);
                 dirs.remove(it);
                 addSubjob( job );
@@ -3947,7 +3939,7 @@ void DeleteJob::slotResult( Job *job )
             {
                size = (*it2).m_long;
                atomsFound++;
-            };
+            }
             if (atomsFound==3) break;
          }
 
@@ -3963,17 +3955,22 @@ void DeleteJob::slotResult( Job *job )
             if ( url.isLocalFile() && !m_parentDirs.contains( url.path(-1) ) )
                 m_parentDirs.append( url.path(-1) );
 
-            //kdDebug(7007) << " Target is a directory " << endl;
-            // List it
-            state = STATE_LISTING;
-            ListJob *newjob = listRecursive( url, false );
-            newjob->setUnrestricted(true); // No KIOSK restrictions
-            Scheduler::scheduleJob(newjob);
-            connect(newjob, SIGNAL(entries( KIO::Job *,
-                                            const KIO::UDSEntryList& )),
-                    SLOT( slotEntries( KIO::Job*,
-                                       const KIO::UDSEntryList& )));
-            addSubjob(newjob);
+            if ( !KProtocolInfo::canDeleteRecursive( url ) ) {
+                //kdDebug(7007) << " Target is a directory " << endl;
+                // List it
+                state = STATE_LISTING;
+                ListJob *newjob = listRecursive( url, false );
+                newjob->setUnrestricted(true); // No KIOSK restrictions
+                Scheduler::scheduleJob(newjob);
+                connect(newjob, SIGNAL(entries( KIO::Job *,
+                                                const KIO::UDSEntryList& )),
+                        SLOT( slotEntries( KIO::Job*,
+                                           const KIO::UDSEntryList& )));
+                addSubjob(newjob);
+            } else {
+                ++m_currentStat;
+                statNextSrc();
+            }
          }
          else
          {

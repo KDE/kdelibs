@@ -1732,7 +1732,7 @@ namespace KIO {
         KURL::List m_srcList;
         KURL::List::Iterator m_currentStat;
 	QStringList m_parentDirs;
-        bool m_shred;
+        bool m_shred; // BIC: remove in KDE4
         QTimer *m_reportTimer;
     protected:
         /** \internal */

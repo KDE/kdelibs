@@ -465,7 +465,7 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     if ( !s_desktopPath->endsWith("/") )
       s_desktopPath->append('/');
 
-    // Trash Path
+    // Trash Path - TODO remove in KDE4 (kio_trash can't use it for interoperability reasons)
     *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
     *s_trashPath = config->readPathEntry( "Trash" , *s_trashPath);
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
