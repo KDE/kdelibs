@@ -1,4 +1,4 @@
-AC_FIND_BZIP2
+AC_REQUIRE([AC_FIND_BZIP2])
 
 AM_CONDITIONAL(include_bzip2, test -n "$BZIP2DIR")
 if test -n "$BZIP2DIR"; then
