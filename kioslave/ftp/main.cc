@@ -1189,15 +1189,6 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 }
 
 
-void FtpProtocol::slotDel( const char *_url )
-{
-  list<string> lst;
-  lst.push_back( _url );
-  
-  slotDel( lst );
-}
-
-
 void FtpProtocol::slotDel( list<string>& _source )
 {
   // Check wether the URLs are wellformed

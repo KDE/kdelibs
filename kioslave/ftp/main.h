@@ -28,7 +28,6 @@ public:
   virtual void slotMove( const char *_source, const char *_dest );
   virtual void slotMove( list<string>& _source, const char *_dest );
 
-  virtual void slotDel( const char *_url );
   virtual void slotDel( list<string>& _source );
 
   virtual void slotListDir( const char *_url );
