@@ -25,6 +25,7 @@
 #include <qobjectlist.h>
 #include <qbuttongroup.h>
 #include <qsqlpropertymap.h>
+#include <qmetaobject.h>
 
 #include <kapplication.h>
 #include <kconfigskeleton.h>
@@ -115,6 +116,22 @@ void KConfigDialogManager::addWidget(QWidget *widget)
   (void) parseChildren(widget, true);
 }
 
+void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *item)
+{
+  QVariant minValue = item->minValue();
+  if (minValue.isValid())
+  {
+    if (widget->metaObject()->findProperty("minValue", true) != -1)
+       widget->setProperty("minValue", minValue);
+  }
+  QVariant maxValue = item->maxValue();
+  if (maxValue.isValid())
+  {
+    if (widget->metaObject()->findProperty("maxValue", true) != -1)
+       widget->setProperty("maxValue", maxValue);
+  }
+}
+
 bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChanges)
 {
   bool valueChanged = false;
@@ -141,8 +158,9 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       KConfigSkeletonItem *item = m_conf->findItem(configId);
       if (item)
       {
-        qWarning("Found %s !!", configId.latin1());
         d->knownWidget.insert(configId, childWidget);
+
+        setupWidget(childWidget, item);
 
         QMap<QString, QCString>::const_iterator changedIt = changedMap.find(childWidget->className());
         if (changedIt == changedMap.end())

@@ -25,6 +25,7 @@
 #include <qptrlist.h>
 
 class KConfigSkeleton;
+class KConfigSkeletonItem;
 class QWidget;
 class QSqlPropertyMap;
 
@@ -66,6 +67,7 @@ class QSqlPropertyMap;
 
  * @since 3.2
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
+ * @author Waldo Bastian <bastian@kde.org>
  */ 
 class KConfigDialogManager : public QObject {
 
@@ -188,6 +190,11 @@ protected:
    * Retrieve a property
    */
   QVariant property(QWidget *w);
+
+  /**
+   * Setup secondary widget properties
+   */
+  void setupWidget(QWidget *widget, KConfigSkeletonItem *item);
 
 protected:
   /**

@@ -168,6 +168,7 @@ QVariant KConfigSkeleton::ItemBool::property() const
 KConfigSkeleton::ItemInt::ItemInt( const QString &group, const QString &name,
                               int &reference, int defaultValue )
   : KConfigSkeletonGenericItem<int>( group, name, reference, defaultValue )
+  ,mHasMin(false), mHasMax(false)
 {
 }
 
@@ -175,6 +176,10 @@ void KConfigSkeleton::ItemInt::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readNumEntry( mName, mDefault );
+  if (mHasMin)
+    mReference = QMAX(mReference, mMin);
+  if (mHasMax)
+    mReference = QMIN(mReference, mMax);
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -220,6 +225,7 @@ void KConfigSkeleton::ItemInt::setMaxValue(int v)
 KConfigSkeleton::ItemInt64::ItemInt64( const QString &group, const QString &name,
                               Q_INT64 &reference, Q_INT64 defaultValue )
   : KConfigSkeletonGenericItem<Q_INT64>( group, name, reference, defaultValue )
+  ,mHasMin(false), mHasMax(false)
 {
 }
 
@@ -227,6 +233,10 @@ void KConfigSkeleton::ItemInt64::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readNum64Entry( mName, mDefault );
+  if (mHasMin)
+    mReference = QMAX(mReference, mMin);
+  if (mHasMax)
+    mReference = QMIN(mReference, mMax);
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -329,6 +339,7 @@ KConfigSkeleton::ItemUInt::ItemUInt( const QString &group, const QString &name,
                                 unsigned int &reference,
                                 unsigned int defaultValue )
   : KConfigSkeletonGenericItem<unsigned int>( group, name, reference, defaultValue )
+  ,mHasMin(false), mHasMax(false)
 {
 }
 
@@ -336,6 +347,10 @@ void KConfigSkeleton::ItemUInt::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readUnsignedNumEntry( mName, mDefault );
+  if (mHasMin)
+    mReference = QMAX(mReference, mMin);
+  if (mHasMax)
+    mReference = QMIN(mReference, mMax);
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -381,6 +396,7 @@ void KConfigSkeleton::ItemUInt::setMaxValue(unsigned int v)
 KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &group, const QString &name,
                               Q_UINT64 &reference, Q_UINT64 defaultValue )
   : KConfigSkeletonGenericItem<Q_UINT64>( group, name, reference, defaultValue )
+  ,mHasMin(false), mHasMax(false)
 {
 }
 
@@ -388,6 +404,10 @@ void KConfigSkeleton::ItemUInt64::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readUnsignedNum64Entry( mName, mDefault );
+  if (mHasMin)
+    mReference = QMAX(mReference, mMin);
+  if (mHasMax)
+    mReference = QMIN(mReference, mMax);
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -432,6 +452,7 @@ void KConfigSkeleton::ItemUInt64::setMaxValue(Q_UINT64 v)
 KConfigSkeleton::ItemLong::ItemLong( const QString &group, const QString &name,
                                 long &reference, long defaultValue )
   : KConfigSkeletonGenericItem<long>( group, name, reference, defaultValue )
+  ,mHasMin(false), mHasMax(false)
 {
 }
 
@@ -439,6 +460,10 @@ void KConfigSkeleton::ItemLong::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readLongNumEntry( mName, mDefault );
+  if (mHasMin)
+    mReference = QMAX(mReference, mMin);
+  if (mHasMax)
+    mReference = QMIN(mReference, mMax);
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -485,6 +510,7 @@ KConfigSkeleton::ItemULong::ItemULong( const QString &group, const QString &name
                                   unsigned long &reference,
                                   unsigned long defaultValue )
   : KConfigSkeletonGenericItem<unsigned long>( group, name, reference, defaultValue )
+  ,mHasMin(false), mHasMax(false)
 {
 }
 
@@ -492,6 +518,10 @@ void KConfigSkeleton::ItemULong::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readUnsignedLongNumEntry( mName, mDefault );
+  if (mHasMin)
+    mReference = QMAX(mReference, mMin);
+  if (mHasMax)
+    mReference = QMIN(mReference, mMax);
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -537,6 +567,7 @@ void KConfigSkeleton::ItemULong::setMaxValue(unsigned long v)
 KConfigSkeleton::ItemDouble::ItemDouble( const QString &group, const QString &name,
                                     double &reference, double defaultValue )
   : KConfigSkeletonGenericItem<double>( group, name, reference, defaultValue )
+  ,mHasMin(false), mHasMax(false)
 {
 }
 
@@ -544,6 +575,10 @@ void KConfigSkeleton::ItemDouble::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
   mReference = config->readDoubleNumEntry( mName, mDefault );
+  if (mHasMin)
+    mReference = QMAX(mReference, mMin);
+  if (mHasMax)
+    mReference = QMIN(mReference, mMax);
   mLoadedValue = mReference;
 
   readImmutability( config );
