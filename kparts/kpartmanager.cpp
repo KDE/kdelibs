@@ -84,6 +84,15 @@ void KPartManager::addPart( KPart *part )
   m_activePart = part;
   //qDebug(QString("Part %1 added. Making active").arg(part->name()));
   emit activePartChanged( m_activePart );
+
+  // Prevent focus problems
+  if ( part->widget()->focusPolicy() == QWidget::NoFocus ||
+       part->widget()->focusPolicy() == QWidget::TabFocus )
+  {
+    qDebug(QString("Part %1 must have at least a ClickFocus policy. Prepare for trouble !").arg(part->name()));
+  }
+
+  part->widget()->show();
 }
 
 void KPartManager::removePart( KPart *part )

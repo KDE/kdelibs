@@ -24,7 +24,6 @@ NotepadPart::NotepadPart( QWidget * parentWidget )
 
   debug("NotepadPart::NotepadPart");
   m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
-  m_edit->show(); // don't forget this !
   m_edit->setFocus();
   setWidget( m_edit );
   setXMLFile( "notepadpart.rc" );

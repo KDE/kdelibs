@@ -79,7 +79,6 @@ void Shell::slotFileOpenRemote()
 
 void Shell::embedEditor()
 {
-  debug("embedEditor()");
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
@@ -166,8 +165,7 @@ Part2::Part2( QWidget * parentWidget )
   // Since the main widget is a dummy one, we HAVE to set
   // strong focus for it, otherwise we get the
   // the famous activating-file-menu-switches-part bug.
-  w->setFocusPolicy( QWidget::StrongFocus );
-  //w->setFocusProxy( cb );
+  w->setFocusPolicy( QWidget::ClickFocus );
 
   // setXMLFile( ... ); // no actions currently
 }
