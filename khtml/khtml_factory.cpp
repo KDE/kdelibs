@@ -90,7 +90,6 @@ KHTMLFactory::~KHTMLFactory()
         s_parts = 0;
 	KHTMLSettings::avFamilies = 0;
 
-        kdDebug( 6000 ) << "KHTMLFactory::~KHTMLFactory" << endl;
         // clean up static data
         khtml::CSSStyleSelector::clear();
         khtml::RenderStyle::cleanup();
