@@ -18,19 +18,16 @@
 #ifndef _KGLOBAL_H
 #define _KGLOBAL_H
 
-#include <qstring.h>
-
-class KStandardDirs;
-class KConfig;
-class KLocale;
-class KIconLoader;
 class KCharsets;
-class QFont;
+class KConfig;
+class KIconLoader;
 class KInstance;
-class KStringDict;
+class KLocale;
+class KStandardDirs;
 class KStaticDeleterBase;
 class KStaticDeleterList;
-#include <kinstance.h>
+class KStringDict;
+class QString;
 
 /**
  * Access to the KDE global objects.
