@@ -546,6 +546,7 @@ void KListView::contentsDropEvent (QDropEvent* e)
 	  findDrop(e->pos(), parent, afterme);
 
 	  emit dropped (e, afterme);
+	  emit dropped (this, e, afterme);
 	}
 }
 

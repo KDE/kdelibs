@@ -56,7 +56,7 @@ public:
    * Possible selection modes.
    *
    * The first four correspond directly to @ref QListView::SelectionMode
-   * The Konqueror selection mode is defined as follow:
+   * The Konqueror selection mode is defined as follows:
    *    home: move to the first
    *    end: move to the last
    *    PgUp/PgDn: move one page up/down
@@ -252,7 +252,21 @@ signals:
    *
    * @see #acceptDrop()
    */
-  void dropped(QDropEvent * e, QListViewItem *after);
+  void dropped (QDropEvent * e, QListViewItem *after);
+  
+  /**
+   * This signal gets emitted whenever something acceptable is
+   * dropped onto the listview.
+   *
+   * This is an overloaded version of the above (provided to simplify
+   * processing drops outside of the class).
+   *
+   * @param list is the listview
+   * @param e is the drop event itself (it has already been accepted)
+   * @param after is the item after which the drop occured (or 0L, if
+   * the drop was above all items
+   */
+  void dropped (KListView* list, QDropEvent* e, QListViewItem* after);
 
   /**
    * For future expansions.
