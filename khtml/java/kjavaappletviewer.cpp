@@ -176,6 +176,7 @@ protected:
 inline CoverWidget::CoverWidget (QWidget * parent) : QWidget (parent) {
     m_appletwidget = new KJavaAppletWidget (this);
     setFocusProxy (m_appletwidget);
+    hide ();
 }
 
 inline KJavaAppletWidget * CoverWidget::appletWidget () const {
@@ -183,7 +184,7 @@ inline KJavaAppletWidget * CoverWidget::appletWidget () const {
 }
 
 void CoverWidget::resizeEvent (QResizeEvent * e) {
-    m_appletwidget->setGeometry (0, 0, e->size().width(), e->size().height());
+    m_appletwidget->resize (e->size().width(), e->size().height());
 }
 
 //-----------------------------------------------------------------------------
@@ -264,7 +265,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         codebase = khtml_codebase;
 
     if (width > 0 && height > 0)
-        applet->setSize (QSize(width, height));
+        m_view->resize (width, height);
     applet->setBaseURL (baseurl);
     // check codebase first
     KURL newURL(baseurl, codebase);
@@ -473,7 +474,7 @@ bool KJavaAppletViewerLiveConnectExtension::get (
     QStringList args, ret_args;
     KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
     args.append (QString::number (applet->appletId ()));
-    args.append (QString::number (objid));
+    args.append (QString::number ((int) objid));
     args.append (name);
     m_jssessions++;
     bool ret = applet->getContext()->getMember (args, ret_args);
@@ -496,7 +497,7 @@ bool KJavaAppletViewerLiveConnectExtension::put(const unsigned long objid, const
     QStringList args;
     KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
     args.append (QString::number (applet->appletId ()));
-    args.append (QString::number (objid));
+    args.append (QString::number ((int) objid));
     args.append (name);
     args.append (value);
     m_jssessions++;
@@ -512,7 +513,7 @@ bool KJavaAppletViewerLiveConnectExtension::call( const unsigned long objid, con
     KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
     QStringList args, ret_args;
     args.append (QString::number (applet->appletId ()));
-    args.append (QString::number (objid));
+    args.append (QString::number ((int) objid));
     args.append (func);
     for (QStringList::const_iterator it=fargs.begin(); it != fargs.end(); ++it)
         args.append(*it);
@@ -542,7 +543,7 @@ void KJavaAppletViewerLiveConnectExtension::unregister(const unsigned long objid
     }
     QStringList args;
     args.append (QString::number (applet->appletId ()));
-    args.append (QString::number (objid));
+    args.append (QString::number ((int) objid));
     applet->getContext()->derefObject (args);
 }
 
