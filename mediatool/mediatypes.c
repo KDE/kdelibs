@@ -87,7 +87,7 @@ void MediatypesRead(FILE *fd)
 	break;
       if (strlen(TempString)>255)
         {
-          fprintf(stderr, "mediatypes_read(): mediatypes rc file conbtains LONG strings. Exiting!\n");
+          fprintf(stderr, "mediatypes_read(): mediatypes rc file contains LONG strings. Exiting!\n");
           exit(1);
         }
 
@@ -127,7 +127,7 @@ void MediatypesRead(FILE *fd)
 	  break;
 	}
       
-      /* fprintf(stderr, "mediatypes_read(): %s\n", TempString); */
+      // fprintf(stderr, "mediatypes_read(): %s\n", TempString);
     }
 
 }
