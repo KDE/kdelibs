@@ -867,6 +867,25 @@ static void kdeinit_library_path()
    }
 }
 
+static void output_kmapnotify_path()
+{
+   KInstance instance( "kdeinit" );
+   QStringList candidates = instance.dirs()->resourceDirs("lib");
+
+   QCString output;
+
+   for (QStringList::ConstIterator it = candidates.begin();
+        it != candidates.end();
+        it++)
+   {
+      QString path(*it + "libkmapnotify.so");
+      if (QFile::exists(path) && !output)
+         output = path;
+   }
+
+   printf("%s\n", (const char *)output);
+}
+
 extern "C" {
 int kdeinit_xio_errhandler( Display * );
 }
@@ -925,6 +944,7 @@ int main(int argc, char **argv, char **envp)
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
+   int libkmapnotify = 0;
 
    /** Save arguments first... **/
    char **safe_argv = (char **) malloc( sizeof(char *) * argc);
@@ -939,6 +959,14 @@ int main(int argc, char **argv, char **envp)
          launch_kded = 0;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
+      if (strcmp(safe_argv[i], "--libkmapnotify") == 0)
+         libkmapnotify = 1;
+   }
+
+   /** Output path to stdout if libkmapnotify was specified **/
+   if (libkmapnotify) {
+      output_kmapnotify_path();
+      return 0;
    }
 
    /** Make process group leader (for shutting down children later) **/
