@@ -28,13 +28,13 @@ class ByteBuffer
 public:
 	ByteBuffer() {
 		_size = rp = 0;
-                _maxSize = _DEFAULT_CHUNK_SIZE;
+		_maxSize = _DEFAULT_CHUNK_SIZE;
 		content = new unsigned char[_DEFAULT_CHUNK_SIZE];
 	}
 	ByteBuffer(const void* s, int len) {
-                _maxSize = _DEFAULT_CHUNK_SIZE;
-        	content = new unsigned char[_DEFAULT_CHUNK_SIZE];
-        	put(s, len);
+		_maxSize = _DEFAULT_CHUNK_SIZE;
+		content = new unsigned char[_DEFAULT_CHUNK_SIZE];
+		put(s, len);
 	}
 
 	~ByteBuffer() { delete content; }
@@ -47,15 +47,15 @@ public:
 
 	void* get()          { return content+rp; }
 	void* reset()        { _size = 0; rp = 0; return content; }
-	int push(int len)          { _size -= len; rp += len; return _size; }
-	void set(int len)          { _size = len; rp = 0; }
-	int size() const           { return _size; }
-	int maxSize() const        { return _maxSize; }
+	int push(int len)    { _size -= len; rp += len; return _size; }
+	void set(int len)    { _size = len; rp = 0; }
+	int size() const     { return _size; }
+	int maxSize() const  { return _maxSize; }
 
-        void setMaxSize(int size){
-        	delete content;
+	void setMaxSize(int size) {
+		delete content;
 		content = new unsigned char[size];
-                _maxSize = size;
+		_maxSize = size;
 	}
 };
 
@@ -99,12 +99,12 @@ public:
 
 	bool isEmpty() const       { return sema_produced->getValue() == 0; }
 	int bufferedChunks() const { return sema_produced->getValue(); }
-        int freeChunks() const     { return _MAX_CHUNKS - sema_produced->getValue(); }
+	int freeChunks() const     { return _MAX_CHUNKS - sema_produced->getValue(); }
 	int maxChunks() const      { return _MAX_CHUNKS; }
 	int chunkSize() const      { return bufs[0].maxSize(); }
 	void clear()               { rp = wp = 0; semaReinit(); }
 	void setChunkSize(int size){
-        	for (int i=0; i < maxChunks(); i++)
+		for (int i=0; i < maxChunks(); i++)
 			bufs[i].setMaxSize(size);
 	}
 };
