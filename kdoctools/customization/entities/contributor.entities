@@ -154,9 +154,9 @@
 <!ENTITY Michael.Haeckel.mail '<email>michael@haeckel.net</email>'>
 <!ENTITY Duncan.Haldane '<personname><firstname>Duncan</firstname><surname>Haldane</surname></personname>'>
 <!ENTITY Duncan.Haldane.mail '<email>duncan_haldane@users.sourceforge.net</email>'>
-<!ENTITY Jessica.Hall
-'<personname><firstname>Jessica</firstname><surname>Hall</surname></personname>'>
-<!ENTITY Jessica.Hall.mail '<email>jes.hall@kdemail.net</email>'>
+<!ENTITY J.Hall
+'<personname><firstname>J</firstname><surname>Hall</surname></personname>'>
+<!ENTITY J.Hall.mail '<email>jes.hall@kdemail.net</email>'>
 <!ENTITY Steffen.Hansen '<personname><firstname>Steffen</firstname><surname>Hansen</surname></personname>'>
 <!ENTITY Steffen.Hansen.mail '<email>steffen@klaralvdalens-datakonsult.se</email>'>
 <!ENTITY Brad.Hards '<personname><firstname>Brad</firstname><surname>Hards</surname></personname>'>
