@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 Charles Samuels <charles@altair.dhs.org>
+   Copyright (C) 2000 Charles Samuels <charles@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -42,17 +42,22 @@
  * default_presentation=1
  *  ...
  * </pre>
- * default_presentation contains these ANDed events:
+ * default_presentation contains these ORed events:
  *	None=0, Sound=1, Messagebox=2, Logfile=4, Stderr=8
+ *
+ * You can also use the "nopresentation" key, with any the presentations
+ * ORed.  Those that are in that field will not appear in the kcontrol
+ * module.  This was intended for software like KWin to not allow a window-opening
+ * that opens a window (e.g., allowing to disable KMessageBoxes from appearing)
+ * If the user edits the eventsrc file manually, it will appear.  This only
+ * affects the KcmNotify.
  *
  * You can also use the following events, which are system controlled
  * and do not need to be placed in your eventsrc:
  *
  * cannotopenfile (more to come)
  *
- * This class works, but is still in testing.
- *
- * @author Charles Samuels <charles@altair.dhs.org>
+ * @author Charles Samuels <charles@kde.org>
  */
 class KNotifyClient : public QObject
 {
