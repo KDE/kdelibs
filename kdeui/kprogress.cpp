@@ -331,7 +331,7 @@ void KProgressDialog::setAutoReset(bool autoReset)
 void KProgressDialog::setButtonText(const QString& text)
 {
     mCancelText = text;
-    setButtonCancelText(text);
+    setButtonCancel(text);
 }
 
 // ### KDE 4 remove
@@ -349,7 +349,7 @@ void KProgressDialog::slotAutoActions(int percentage)
 {
     if (percentage < 100)
     {
-        setButtonCancelText(mCancelText);
+        setButtonCancel(mCancelText);
         return;
     }
 
@@ -362,7 +362,7 @@ void KProgressDialog::slotAutoActions(int percentage)
     else
     {
         setAllowCancel(true);
-        setButtonCancelText(i18n("&Close"));
+        setButtonCancel(KStdGuiItem::close());
     }
 
     if (mAutoClose)
