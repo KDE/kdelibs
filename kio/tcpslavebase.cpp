@@ -58,6 +58,8 @@ using namespace KIO;
 class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
+  TcpSlaveBasePrivate() : militantSSL(false) {}
+  ~TcpSlaveBasePrivate() {}
   KSSL *kssl;
   bool usingTLS;
   KSSLCertificateCache *cc;
@@ -71,6 +73,8 @@ public:
     bool block;
     bool useSSLTunneling;
     bool needSSLHandShake;
+
+  bool militantSSL;
 };
 
 
@@ -325,6 +329,7 @@ void TCPSlaveBase::CleanSSL()
         d->usingTLS = false;
         setMetaData("ssl_in_use", "FALSE");
     }
+    d->militantSSL = false;
 }
 
 bool TCPSlaveBase::AtEOF()
@@ -601,6 +606,12 @@ int TCPSlaveBase::verifyCertificate()
     QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
     bool _IPmatchesCN = false;
 
+
+    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
+		d->militantSSL = false;
+    else if (metaData("ssl_militant") == "TRUE")
+		d->militantSSL = true;
+
     if (!d->cc) d->cc = new KSSLCertificateCache;
 
     KSSLCertificate& pc = d->kssl->peerInfo().getPeerCertificate();
@@ -642,6 +653,8 @@ int TCPSlaveBase::verifyCertificate()
 
       //  - validation code
       if (ksv != KSSLCertificate::Ok || !_IPmatchesCN) {
+         if (d->militantSSL)
+		return -1;
          if (cp == KSSLCertificateCache::Unknown || 
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
@@ -748,6 +761,8 @@ int TCPSlaveBase::verifyCertificate()
           rc = 1;
           setMetaData("ssl_action", "accept");
         } else {
+         if (d->militantSSL)
+		return -1;
           result = messageBox(WarningYesNo,
                               i18n("The certificate is valid but does not appear to have been assigned to this server.  Do you wish to continue loading?"),
                               i18n("Server Authentication"));
@@ -760,6 +775,8 @@ int TCPSlaveBase::verifyCertificate()
           }
         }
       } else {
+        if (d->militantSSL)
+		return -1;
         if (cp == KSSLCertificateCache::Accept) {
            if (certAndIPTheSame) {    // success
              rc = 1;
