@@ -655,7 +655,7 @@ KAction *KStdAction::forward(const QObject *recvr, const char *slot,
 KAction *KStdAction::home(const QObject *recvr, const char *slot,
 						  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Home"), QIconSet(BarIcon("home")),
+    return new KAction(i18n("&Home"), QIconSet(BarIcon("gohome")),
 					   KStdAccel::key(KStdAccel::Home), recvr, slot, parent,
 					   name ? name : stdName(Home));
 }
