@@ -21,7 +21,7 @@
  * $Id$
  */
 //#define DEBUG_LAYOUT
-#define BIDI_DEBUG
+//#define BIDI_DEBUG
 //#define NO_COMPOSE
 
 #if 0
