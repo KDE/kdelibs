@@ -28,7 +28,7 @@ bool KMCupsJobManager::sendCommand(const QList<KMJob>& jobs, int action, const Q
 	for (;it.current() && value;++it)
 	{
 		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri());
-		req.addName(IPP_TAG_OPERATION,"requesting-user-name",QString::fromLatin1(CupsInfos::self()->login()));
+		req.addName(IPP_TAG_OPERATION,"requesting-user-name", CupsInfos::self()->login());
 
 		switch (action)
 		{

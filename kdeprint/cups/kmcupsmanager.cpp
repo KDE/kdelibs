@@ -137,7 +137,7 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 	if (completePrinterShort(p))
 	{
 		// driver informations
-		QString	ppdname = cupsGetPPD(p->printerName());
+		QString	ppdname = cupsGetPPD(p->printerName().local8Bit());
 		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.latin1()));
 		if (ppd)
 		{
@@ -418,7 +418,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 			{
 				driver->set("matic","1");
 
-				MaticBlock	*blk = loadMaticData(maticdata.data()), *varblk(0), *argblk(0);
+				MaticBlock	*blk = loadMaticData(maticdata.latin1()), *varblk(0), *argblk(0);
 				if (blk) varblk = blk->block("$VAR1");
 				if (varblk) argblk = varblk->block("args_byname");
 				for (int i=0;i<2;i++)

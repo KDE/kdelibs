@@ -23,9 +23,6 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h kmmanager.h kmob
 
 include_HEADERS = kprinter.h
 
-kdeprint_HEADERS = kmmainview.h
-kdeprintdir = $(includedir)/kdeprint
-
 EXTRA_DIST = maticparser.yy maticscanner.ll kprintpreviewui.rc
 
 #messages:
