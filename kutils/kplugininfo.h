@@ -48,7 +48,6 @@ class KPluginInfo
            [Desktop Entry]
            Name=User Visible Name
            Comment=Description of what the plugin does
-           Type=Plugin
 
            [X-KDE Plugin Info]
            Author=Author's Name
@@ -57,18 +56,17 @@ class KPluginInfo
            Version=1.1
            Website=http://www.plugin.org/
            Category=playlist
-           Require=plugin1,plugin3
+           Depends=plugin1,plugin3
            License=GPL
            EnabledByDefault=true
            \endverbatim
-         * The first three entries in the "Desktop Entry" group always need to be
-         * present. The Type is always "Plugin".
+         * The first two entries in the "Desktop Entry" group always need to
+         * be present.
          *
-         * In the "X-KDE Plugin Info" section you may add further entries which
+         * The "X-KDE-PluginInfo" keys you may add further entries which
          * will be available using property(). The Website,Category,Require
          * keys are optional.
-         * For EnabledByDefault look at setPluginEnabledByDefault and/or
-         * pluginEnabledByDefault.
+         * For EnabledByDefault look at pluginEnabledByDefault.
          *
          * @param filename  The filename of the .desktop file.
          * If filename is relative, you need to specify a resource type
@@ -78,23 +76,39 @@ class KPluginInfo
         KPluginInfo( const QString & filename, const char* resource = 0 );
 
         /**
-         * Create an empty hidden plugin.
-         * @internal
-         */
-        KPluginInfo();
+         * Read plugin info from a KService object.
+         *
+         * The .desktop file should look like this:
+         * \verbatim
+           [Desktop Entry]
+           Encoding=UTF-8
+           Icon=mypluginicon
+           Type=Service
+           ServiceTypes=KPluginInfo
 
-    private:
-        /**
-         * Standard copy ctor. (deep copy)
-         */
-        KPluginInfo( const KPluginInfo & );
+           X-KDE-PluginInfo-Author=Author's Name
+           X-KDE-PluginInfo-Email=author@foo.bar
+           X-KDE-PluginInfo-Name=internalname
+           X-KDE-PluginInfo-Version=1.1
+           X-KDE-PluginInfo-Website=http://www.plugin.org/
+           X-KDE-PluginInfo-Category=playlist
+           X-KDE-PluginInfo-Depends=plugin1,plugin3
+           X-KDE-PluginInfo-License=GPL
+           X-KDE-PluginInfo-EnabledByDefault=true
 
-        /**
-         * Make a deep copy.
+           Name=User Visible Name
+           Comment=Description of what the plugin does
+           \endverbatim
+         * In the first three entries the Icon entry is optional. 
          */
-        const KPluginInfo & operator=( const KPluginInfo & );
+        KPluginInfo( const KService::Ptr service );
 
-    public:
+//X         /**
+//X          * Create an empty hidden plugin.
+//X          * @internal
+//X          */
+//X         KPluginInfo();
+
         virtual ~KPluginInfo();
 
         /**
@@ -130,6 +144,7 @@ class KPluginInfo
          * You might need to reimplement this method for special needs.
          *
          * @see pluginEnabled()
+         * @see save()
          */
         virtual void setPluginEnabled( bool enabled );
 
@@ -139,6 +154,7 @@ class KPluginInfo
          * You might need to reimplement this method for special needs.
          *
          * @see setPluginEnabled()
+         * @see load()
          */
         virtual bool pluginEnabled() const;
 
@@ -146,46 +162,41 @@ class KPluginInfo
          * @return The default value whether the plugin is enabled or not.
          * Defaults to the value set in the desktop file, or if that isn't set
          * to false.
-         *
-         * @see setPluginEnabledByDefault( bool )
          */
         bool pluginEnabledByDefault() const;
 
         /**
-         * @return The string associated with the @p key.
+         * @return The value associated the the @p key. You can use it if you
+         *         want to read custom values. To do this you need to define
+         *         your own servicetype and add it to the ServiceTypes keys.
          *
          * @see operator[]
          */
-        const QString & property( const QString & key ) const
-        { return m_propertymap[ key ]; }
+        QVariant property( const QString & key ) const;
 
         /**
          * This is the same as property(). It is provided for convenience.
          *
-         * @return The string associated with the @p key.
+         * @return The value associated with the @p key.
          *
          * @see property()
          */
-        const QString & operator[]( const QString & key ) const
-        { return property( key ); }
+        QVariant operator[]( const QString & key ) const;
 
         /**
          * @return The user visible name of the plugin.
          */
-        const QString & name() const
-        { return m_propertymap[ QString::fromLatin1("Name") ]; }
+        const QString & name() const;
 
         /**
          * @return A comment describing the plugin.
          */
-        const QString & comment() const
-        { return m_propertymap[ QString::fromLatin1("Comment") ]; }
+        const QString & comment() const;
 
         /**
          * @return The iconname for this plugin
          */
-        const QString & icon() const
-        { return m_propertymap[ QString::fromLatin1("Icon") ]; }
+        const QString & icon() const;
 
         /**
          * @return The file containing the information about the plugin.
@@ -195,58 +206,62 @@ class KPluginInfo
         /**
          * @return The author of this plugin.
          */
-        const QString & author() const
-        { return m_propertymap[ QString::fromLatin1("Author") ]; }
+        const QString & author() const;
 
         /**
          * @return The email address of the author.
          */
-        const QString & email() const
-        { return m_propertymap[ QString::fromLatin1("Email") ]; }
+        const QString & email() const;
 
         /**
          * @return The category of this plugin (e.g. playlist/skin).
          */
-        const QString & category() const
-        { return m_propertymap[ QString::fromLatin1("Category") ]; }
+        const QString & category() const;
 
         /**
          * @return The internal name of the plugin (for KParts Plugins this is
          * the same name as set in the .rc file).
          */
-        const QString & pluginname() const
-        { return m_propertymap[ QString::fromLatin1("PluginName") ]; }
+        const QString & pluginname() const;
 
         /**
          * @return The version of the plugin.
          */
-        const QString & version() const
-        { return m_propertymap[ QString::fromLatin1("Version") ]; }
+        const QString & version() const;
 
         /**
          * @return The website of the plugin/author.
          */
-        const QString & website() const
-        { return m_propertymap[ QString::fromLatin1("Website") ]; }
+        const QString & website() const;
 
 
         /**
          * @return The license of this plugin.
          */
-        const QString & license() const
-        { return m_propertymap[ QString::fromLatin1("License") ]; }
+        const QString & license() const;
 
         /**
          * @return A list of plugins required for this plugin to be enabled. Use
          *         the pluginname in this list.
          */
-        const QStringList & requirements() const;
+        const QStringList & dependencies() const;
+
+        /**
+         * @return The KService object for this plugin. You might need it if you
+         *         want to read custom values. To do this you need to define
+         *         your own servicetype and add it to the ServiceTypes keys.
+         *         Then you can use the KService::property() method to read your
+         *         keys.
+         *
+         * @see property()
+         */
+        KService::Ptr service() const;
 
         /**
          * @return A list of Service pointers if the plugin installs one or more
          *         KCModule
          */
-        const QValueList<KService::Ptr> & services() const;
+        const QValueList<KService::Ptr> & kcmServices() const;
 
         /**
          * Set the KConfigGroup to use for load()ing and save()ing the
@@ -289,12 +304,12 @@ class KPluginInfo
         virtual void defaults();
 
     private:
-        QMap<QString,QString> m_propertymap;
-        bool m_loaded;
+        KPluginInfo( const KPluginInfo & );
+        const KPluginInfo & operator=( const KPluginInfo & );
 
         class KPluginInfoPrivate;
         KPluginInfoPrivate * d;
 };
 
-// vim: sw=4 sts=4 et
+// vim: sw=4 sts=4 et tw=80
 #endif // KPLUGININFO_H

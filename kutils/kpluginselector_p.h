@@ -129,6 +129,13 @@ class KPluginSelectionWidget : public QWidget
          */
         void changed( bool );
 
+        /**
+         * Emitted after the config of an embedded KCM has been saved. The
+         * argument is the name of the parent component that needs to reload
+         * its config
+         */
+        void configCommitted( const QCString & instanceName );
+
     protected:
         /**
          * Reimplement in your subclass if you have special needs: The standard
@@ -185,6 +192,13 @@ class KPluginSelectionWidget : public QWidget
          * @internal
          */
         QWidget * insertKCM( QWidget * parent, const KCModuleInfo & );
+
+        /**
+         * Embed the KCMs for the plugin into the widgetstack
+         *
+         * @internal
+         */
+        void embeddPluginKCMs( KPluginInfo *, bool );
 
         QValueList<KPluginInfo*> kpartsPluginInfos() const;
         void init( const QValueList<KPluginInfo*> & plugininfos, const QString & );

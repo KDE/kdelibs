@@ -31,6 +31,7 @@
 #include <qcursor.h>
 #include <qapplication.h>
 #include <qobjectlist.h>
+#include <qcstring.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -53,6 +54,8 @@
 #include <qframe.h>
 #include "kplugininfo.h"
 #include <kinstance.h>
+#include <qptrdict.h>
+#include <qstringlist.h>
 
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 {
@@ -67,7 +70,9 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
         , currentplugininfo( 0 )
         , currentchecked( false )
         , changed( 0 )
-        {}
+    {
+        moduleParentComponents.setAutoDelete( true );
+    }
 
     ~KPluginSelectionWidgetPrivate()
     {
@@ -84,6 +89,8 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     QDict<KCModuleInfo> pluginconfigmodules;
     QMap<QString, int> widgetIDs;
     QString catname;
+    QValueList<KCModule*> modulelist;
+    QPtrDict<QStringList> moduleParentComponents;
 
     KPluginInfo * currentplugininfo;
     bool currentchecked;
@@ -203,8 +210,55 @@ QWidget * KPluginSelectionWidget::insertKCM( QWidget * parent,
 
         return label;
     }
+    // add the KCM to the list so that we can call load/save/defaults on it
+    d->modulelist.append( module );
+    d->moduleParentComponents.insert( module, new QStringList( moduleinfo.parentComponents() ) );
     connect( module, SIGNAL( changed( bool ) ), SLOT( clientChanged( bool ) ) );
     return module;
+}
+
+void KPluginSelectionWidget::embeddPluginKCMs( KPluginInfo * plugininfo, bool checked )
+{
+    //if we have Services for the plugin we should be able to
+    //create KCM(s)
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+    if( plugininfo->kcmServices().size() > 1 )
+    {
+        // we need a tabwidget
+        KTabWidget * tabwidget = new KTabWidget( d->widgetstack );
+        tabwidget->setEnabled( checked );
+
+        int id = d->widgetstack->addWidget( tabwidget );
+        d->kps->configPage( id );
+        d->widgetIDs[ plugininfo->pluginname() ] = id;
+
+        for( QValueList<KService::Ptr>::ConstIterator it =
+                plugininfo->kcmServices().begin();
+                it != plugininfo->kcmServices().end(); ++it )
+        {
+            if( !( *it )->noDisplay() )
+            {
+                KCModuleInfo moduleinfo( *it );
+                QWidget * module = insertKCM( tabwidget, moduleinfo );
+                tabwidget->addTab( module, moduleinfo.moduleName() );
+            }
+        }
+    }
+    else
+    {
+        if( !plugininfo->kcmServices().front()->noDisplay() )
+        {
+            KCModuleInfo moduleinfo(
+                    plugininfo->kcmServices().front() );
+            QWidget * module = insertKCM( d->widgetstack, moduleinfo );
+            module->setEnabled( checked );
+
+            int id = d->widgetstack->addWidget( module );
+            d->kps->configPage( id );
+            d->widgetIDs[ plugininfo->pluginname() ] = id;
+        }
+    }
+    QApplication::restoreOverrideCursor();
 }
 
 void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
@@ -223,53 +277,11 @@ void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
     // if no widget exists for the plugin (yet)
     if( !d->widgetIDs.contains( plugininfo->pluginname() ) )
     {
-        if( !plugininfo->services().empty() )
-        {
-            //if we have Services for the plugin we should be able to
-            //create KCM(s)
-            QApplication::setOverrideCursor( Qt::WaitCursor );
-            if( plugininfo->services().size() > 1 )
-            {
-                // we need a tabwidget
-                KTabWidget * tabwidget = new KTabWidget( d->widgetstack );
-                tabwidget->setEnabled( checked );
-
-                int id = d->widgetstack->addWidget( tabwidget );
-                d->kps->configPage( id );
-                d->widgetIDs[ plugininfo->pluginname() ] = id;
-
-                for( QValueList<KService::Ptr>::ConstIterator it =
-                        plugininfo->services().begin();
-                        it != plugininfo->services().end(); ++it )
-                {
-                    if( !( *it )->noDisplay() )
-                    {
-                        KCModuleInfo moduleinfo( *it );
-                        QWidget * module = insertKCM( tabwidget, moduleinfo );
-                        tabwidget->addTab( module, moduleinfo.moduleName() );
-                    }
-                }
-            }
-            else
-            {
-                if( !plugininfo->services().front()->noDisplay() )
-                {
-                    KCModuleInfo moduleinfo( plugininfo->services().front() );
-                    QWidget * module = insertKCM( d->widgetstack, moduleinfo );
-                    module->setEnabled( checked );
-
-                    int id = d->widgetstack->addWidget( module );
-                    d->kps->configPage( id );
-                    d->widgetIDs[ plugininfo->pluginname() ] = id;
-                }
-            }
-            QApplication::restoreOverrideCursor();
-        }
+        if( !plugininfo->kcmServices().empty() )
+            embeddPluginKCMs( plugininfo, checked );
         else
-        {
             //else no config...
             d->kps->configPage( 1 );
-        }
     }
     else
     {
@@ -345,6 +357,21 @@ void KPluginSelectionWidget::save()
         info->setPluginEnabled( checked );
         info->save( d->config );
     }
+    QStringList updatedModules;
+    for( QValueList<KCModule*>::Iterator it = d->modulelist.begin();
+            it != d->modulelist.end(); ++it )
+        if( ( *it )->changed() )
+        {
+            ( *it )->save();
+            QStringList * names = d->moduleParentComponents[ *it ];
+            for( QStringList::ConstIterator nameit = names->begin();
+                    nameit != names->end(); ++nameit )
+                if( updatedModules.find( *nameit ) == updatedModules.end() )
+                    updatedModules.append( *nameit );
+        }
+    for( QStringList::ConstIterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
+        emit configCommitted( ( *it ).latin1() );
+
     updateConfigPage( d->currentplugininfo, d->currentchecked );
     kdDebug( 702 ) << "syncing config file" << endl;
     d->config->sync();
@@ -368,11 +395,11 @@ void KPluginSelectionWidget::defaults()
 
 void KPluginSelectionWidget::checkDependencies( const KPluginInfo * info )
 {
-    if( info->requirements().isEmpty() )
+    if( info->dependencies().isEmpty() )
         return;
 
-    for( QStringList::ConstIterator it = info->requirements().begin();
-            it != info->requirements().end(); ++it )
+    for( QStringList::ConstIterator it = info->dependencies().begin();
+            it != info->dependencies().end(); ++it )
         for( QMap<QCheckListItem*,
                 KPluginInfo*>::Iterator infoIt = d->pluginInfoMap.begin();
                 infoIt != d->pluginInfoMap.end(); ++infoIt )
@@ -472,6 +499,8 @@ void KPluginSelector::addPlugins( const QString & instanceName,
         w = new KPluginSelectionWidget( instanceName, this, d->frame,
                 catname, category, cfgGroup );
     connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
+    connect( w, SIGNAL( configCommitted( const QCString & ) ), this,
+            SIGNAL( configCommitted( const QCString & ) ) );
     d->pswidgets += w;
 }
 
@@ -498,6 +527,8 @@ void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
         w = new KPluginSelectionWidget( plugininfos, this, d->frame,
                 catname, category, cfgGroup );
     connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
+    connect( w, SIGNAL( configCommitted( const QCString & ) ), this,
+            SIGNAL( configCommitted( const QCString & ) ) );
     d->pswidgets += w;
 }
 

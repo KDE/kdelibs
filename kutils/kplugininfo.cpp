@@ -24,6 +24,7 @@
 #include <kconfigbase.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <kservice.h>
 
 class KPluginInfo::KPluginInfoPrivate
 {
@@ -31,6 +32,7 @@ class KPluginInfo::KPluginInfoPrivate
         KPluginInfoPrivate()
             : hidden( false )
             , enabledbydefault( false )
+            , pluginenabled( false )
             , config( 0 )
             {}
 
@@ -40,27 +42,30 @@ class KPluginInfo::KPluginInfoPrivate
         }
 
         QString specfile; // the filename of the file containing all the info
-/*      QString name;
+        QString name;
         QString comment;
+        QString icon;
         QString author;
         QString email;
-        QString category;
         QString pluginname; // the name attribute in the .rc file
         QString version;
         QString website; // URL to the website of the plugin/author
-        QString license;*/
-        QStringList requirements;
-        QValueList<KService::Ptr> services;
+        QString category;
+        QString license;
+        QStringList dependencies;
+
         bool hidden;
         bool enabledbydefault;
+        bool pluginenabled;
+
         KConfig * config;
         QString configgroup;
-        /** WARNING: add every entry to the cctor and operator= */
+        KService::Ptr service;
+        QValueList<KService::Ptr> kcmservices;
 };
 
 KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
-: m_loaded( false )
-, d( new KPluginInfoPrivate )
+: d( new KPluginInfoPrivate )
 {
     KConfig file( filename, true, true, resource );
 
@@ -69,71 +74,81 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
     if( filename.endsWith( QString::fromAscii( ".desktop" ) ) )
     {
         file.setDesktopGroup();
-        if( file.readBoolEntry( "Hidden", false ) )
-        {
-            d->hidden = true;
+        d->hidden = file.readBoolEntry( "Hidden", false );
+        if( d->hidden )
             return;
-        }
 
-        m_propertymap = file.entryMap( "X-KDE Plugin Info" );
-        m_propertymap[ "Name" ] = file.readEntry( "Name" );
-        m_propertymap[ "Comment" ] = file.readEntry( "Comment" );
-        m_propertymap[ "Icon" ] = file.readEntry( "Icon" );
-
-        file.setGroup( "X-KDE Plugin Info" );
-        d->requirements = file.readListEntry( "Require" );
+        d->name = file.readEntry( "Name" );
+        d->comment = file.readEntry( "Comment" );
+        d->icon = file.readEntry( "Icon" );
+        d->author = file.readEntry( "X-KDE-PluginInfo-Author" );
+        d->email = file.readEntry( "X-KDE-PluginInfo-Email" );
+        d->pluginname = file.readEntry( "X-KDE-PluginInfo-Name" );
+        d->version = file.readEntry( "X-KDE-PluginInfo-Version" );
+        d->website = file.readEntry( "X-KDE-PluginInfo-Website" );
+        d->category = file.readEntry( "X-KDE-PluginInfo-Category" );
+        d->license = file.readEntry( "X-KDE-PluginInfo-License" );
+        d->dependencies = file.readListEntry( "X-KDE-PluginInfo-Depends" );
+        d->enabledbydefault = file.readBoolEntry(
+                "X-KDE-PluginInfo-EnabledByDefault", false );
     }
     else if( filename.endsWith( QString::fromAscii( ".plugin" ) ) )
     { // provided for noatun style .plugin files compatibility
-        m_propertymap = file.entryMap( QString::null );
-        //m_propertymap[ "Name" ] = file.readEntry( "Name" );
-        //m_propertymap[ "Comment" ] = file.readEntry( "Comment" );
 
-        m_propertymap[ "PluginName" ] = file.readPathEntry( "Filename" );
-        //m_propertymap[ "Author" ] = file.readEntry( "Author" );
-        m_propertymap[ "Website" ] = file.readEntry( "Site" );
-        //m_propertymap[ "Email" ] = file.readEntry( "Email" );
-        m_propertymap[ "Category" ] = file.readEntry( "Type" );
-        m_propertymap[ "Icon" ] = file.readEntry( "Icon" );
-        //m_propertymap[ "License" ] = file.readEntry( "License" );
-        d->requirements = file.readListEntry( "Require" );
+        d->name = file.readEntry( "Name" );
+        d->comment = file.readEntry( "Comment" );
+        d->icon = file.readEntry( "Icon" );
+        d->author = file.readEntry( "Author" );
+        d->email = file.readEntry( "Email" );
+        d->pluginname = file.readPathEntry( "Filename" );
+        // no version
+        d->website = file.readEntry( "Site" );
+        d->category = file.readEntry( "Type" );
+        d->license = file.readEntry( "License" );
+        d->dependencies = file.readListEntry( "Require" );
     }
-    d->services = KTrader::self()->query( "KCModule", "'" + pluginname() + "' in [X-KDE-ParentComponents]" );
-    kdDebug( 703 ) << "found " << d->services.count() << " offers for " << pluginname() << endl;
-    d->enabledbydefault = file.readBoolEntry( "EnabledByDefault", d->enabledbydefault );
+    d->kcmservices = KTrader::self()->query( "KCModule", "'" + d->pluginname +
+            "' in [X-KDE-ParentComponents]" );
+    kdDebug( 703 ) << "found " << d->kcmservices.count() << " offers for " <<
+        d->pluginname << endl;
 }
 
-KPluginInfo::KPluginInfo()
+KPluginInfo::KPluginInfo( const KService::Ptr service )
 : d( new KPluginInfoPrivate )
 {
-    d->hidden = true;
+    d->service = service;
+    d->specfile = service->desktopEntryPath();
+
+    QVariant tmp = service->property( "Hidden" );
+    if( tmp.isValid() && tmp.toBool() == true )
+    {
+        d->hidden = true;
+        return;
+    }
+
+    d->name = service->name();
+    d->comment = service->comment();
+    d->icon = service->icon();
+    d->author = service->property( "X-KDE-PluginInfo-Author" ).toString();
+    d->email = service->property( "X-KDE-PluginInfo-Email" ).toString();
+    d->pluginname = service->property( "X-KDE-PluginInfo-Name" ).toString();
+    d->version = service->property( "X-KDE-PluginInfo-Version" ).toString();
+    d->website = service->property( "X-KDE-PluginInfo-Website" ).toString();
+    d->category = service->property( "X-KDE-PluginInfo-Category" ).toString();
+    d->license = service->property( "X-KDE-PluginInfo-License" ).toString();
+    d->dependencies =
+        service->property( "X-KDE-PluginInfo-Depends" ).toStringList();
+    tmp = service->property( "X-KDE-PluginInfo-EnabledByDefault" );
+    d->enabledbydefault = tmp.isValid() ? tmp.toBool() : false;
+    d->kcmservices = KTrader::self()->query( "KCModule", "'" + d->pluginname +
+            "' in [X-KDE-ParentComponents]" );
 }
 
-KPluginInfo::KPluginInfo( const KPluginInfo & tocp )
-{
-    d = new KPluginInfoPrivate;
-    m_propertymap = tocp.m_propertymap;
-    m_loaded = tocp.m_loaded;
-    d->specfile = tocp.d->specfile;
-    d->requirements = tocp.d->requirements;
-    d->hidden = tocp.d->hidden;
-    d->services = tocp.d->services;
-    d->enabledbydefault = tocp.d->enabledbydefault;
-}
-
-const KPluginInfo & KPluginInfo::operator=( const KPluginInfo & tocp )
-{
-    delete d;
-    d = new KPluginInfoPrivate;
-    m_propertymap = tocp.m_propertymap;
-    m_loaded = tocp.m_loaded;
-    d->specfile = tocp.d->specfile;
-    d->requirements = tocp.d->requirements;
-    d->hidden = tocp.d->hidden;
-    d->services = tocp.d->services;
-    d->enabledbydefault = tocp.d->enabledbydefault;
-    return *this;
-}
+//X KPluginInfo::KPluginInfo()
+//X : d( new KPluginInfoPrivate )
+//X {
+//X     d->hidden = true;
+//X }
 
 KPluginInfo::~KPluginInfo()
 {
@@ -147,8 +162,7 @@ QValueList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & servi
     for( KService::List::ConstIterator it = services.begin();
             it != services.end(); ++it )
     {
-        const char* resource = ( *it )->type() == "Service" ? "services" : "apps";
-        info = new KPluginInfo( ( *it )->desktopEntryPath(), resource );
+        info = new KPluginInfo( *it );
         info->setConfig( config, group );
         infolist += info;
     }
@@ -179,16 +193,16 @@ bool KPluginInfo::isHidden() const
     return d->hidden;
 }
 
-void KPluginInfo::setPluginEnabled( bool loaded )
+void KPluginInfo::setPluginEnabled( bool enabled )
 {
     kdDebug( 703 ) << k_funcinfo << endl;
-    m_loaded = loaded;
+    d->pluginenabled = enabled;
 }
 
 bool KPluginInfo::pluginEnabled() const
 {
     kdDebug( 703 ) << k_funcinfo << endl;
-    return m_loaded;
+    return d->pluginenabled;
 }
 
 bool KPluginInfo::pluginEnabledByDefault() const
@@ -197,19 +211,74 @@ bool KPluginInfo::pluginEnabledByDefault() const
     return d->enabledbydefault;
 }
 
+const QString & KPluginInfo::name() const
+{
+    return d->name;
+}
+
+const QString & KPluginInfo::comment() const
+{
+    return d->comment;
+}
+
+const QString & KPluginInfo::icon() const
+{
+    return d->icon;
+}
+
 const QString & KPluginInfo::specfile() const
 {
     return d->specfile;
 }
 
-const QStringList & KPluginInfo::requirements() const
+const QString & KPluginInfo::author() const
 {
-    return d->requirements;
+    return d->author;
 }
 
-const QValueList<KService::Ptr> & KPluginInfo::services() const
+const QString & KPluginInfo::email() const
 {
-    return d->services;
+    return d->email;
+}
+
+const QString & KPluginInfo::category() const
+{
+    return d->category;
+}
+
+const QString & KPluginInfo::pluginname() const
+{
+    return d->pluginname;
+}
+
+const QString & KPluginInfo::version() const
+{
+    return d->version;
+}
+
+const QString & KPluginInfo::website() const
+{
+    return d->website;
+}
+
+const QString & KPluginInfo::license() const
+{
+    return d->license;
+}
+
+const QStringList & KPluginInfo::dependencies() const
+{
+    return d->dependencies;
+}
+
+KService::Ptr KPluginInfo::service() const
+{
+    return d->service;
+}
+
+const QValueList<KService::Ptr> & KPluginInfo::kcmServices() const
+{
+    return d->kcmservices;
 }
 
 void KPluginInfo::setConfig( KConfig * config, const QString & group )
@@ -228,6 +297,19 @@ const QString & KPluginInfo::configgroup() const
     return d->configgroup;
 }
 
+QVariant KPluginInfo::property( const QString & key ) const
+{
+    if( d->service )
+        return d->service->property( key );
+    else
+        return QVariant();
+}
+
+QVariant KPluginInfo::operator[]( const QString & key ) const
+{
+    return property( key );
+}
+
 void KPluginInfo::save( KConfigGroup * config )
 {
     kdDebug( 703 ) << k_funcinfo << endl;
@@ -239,10 +321,10 @@ void KPluginInfo::save( KConfigGroup * config )
             return;
         }
         d->config->setGroup( d->configgroup );
-        d->config->writeEntry( pluginname() + "Enabled", pluginEnabled() );
+        d->config->writeEntry( d->pluginname + "Enabled", pluginEnabled() );
     }
     else
-        config->writeEntry( pluginname() + "Enabled", pluginEnabled() );
+        config->writeEntry( d->pluginname + "Enabled", pluginEnabled() );
 }
 
 void KPluginInfo::load( KConfigGroup * config )
@@ -256,10 +338,10 @@ void KPluginInfo::load( KConfigGroup * config )
             return;
         }
         d->config->setGroup( d->configgroup );
-        setPluginEnabled( d->config->readBoolEntry( pluginname() + "Enabled", pluginEnabledByDefault() ) );
+        setPluginEnabled( d->config->readBoolEntry( d->pluginname + "Enabled", pluginEnabledByDefault() ) );
     }
     else
-        setPluginEnabled( config->readBoolEntry( pluginname() + "Enabled", pluginEnabledByDefault() ) );
+        setPluginEnabled( config->readBoolEntry( d->pluginname + "Enabled", pluginEnabledByDefault() ) );
 }
 
 void KPluginInfo::defaults()

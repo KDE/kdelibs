@@ -161,6 +161,13 @@ class KPluginSelector : public QWidget
          */
         void changed( bool );
 
+        /**
+         * Emitted after the config of an embedded KCM has been saved. The
+         * argument is the name of the parent component that needs to reload
+         * its config
+         */
+        void configCommitted( const QCString & instanceName );
+
     private:
         /**
          * return the KCM widgetstack
@@ -169,7 +176,6 @@ class KPluginSelector : public QWidget
          */
         QWidgetStack * widgetStack();
 
-        enum InfoPageName { NoKCM = 1, NothingSelected = 2 };
         /**
          * Show an info page in the widgetstack.
          *
