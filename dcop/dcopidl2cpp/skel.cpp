@@ -268,7 +268,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    if (!DCOPParent.isEmpty()) {
 		str << "    QCStringList funcs = " << DCOPParent << "::functions();" << endl;
 	    } else {
-		str << "    QCStringList func;" << endl;
+		str << "    QCStringList funcs;" << endl;
 	    }
 	    str << "    for ( int i = 0; " << className << "_ftable[i][1]; i++ ) {" << endl;
 	    str << "\tQCString func = " << className << "_ftable[i][0];" << endl;
