@@ -53,11 +53,11 @@ namespace KJS {
 
   class UStringData {
     friend UString;
-  private:
+  public:
     UStringData() : dat(0L), len(0), rc(1) { }
     UStringData(UChar *d, unsigned int l) : dat(d), len(l), rc(1) { }
     ~UStringData() { delete dat; }
-
+  private:
     UChar *data() const { return dat; }
     unsigned int size() const { return len; }
 
