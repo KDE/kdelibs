@@ -57,6 +57,7 @@ public:
 	bool insertItem( const QString& sDesc, const QString& sAction,
 	                 int key,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null );
 	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true );
 	// OBSOLETE!
 	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )

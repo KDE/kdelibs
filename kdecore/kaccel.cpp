@@ -226,20 +226,33 @@ bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 	bool b = d->insertAction( sAction, sDesc,
 		cuts, cuts,
 		0, 0,
-		nIDMenu, pMenu, bConfigurable );
+		nIDMenu, pMenu, bConfigurable ) != 0;
 	return b;
 }
 
+//------------------------------------------------------------
+// Obsolete methods -- for backward compatibility
+//------------------------------------------------------------
 bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 		int key,
 		int nIDMenu, QPopupMenu* pMenu, bool bConfigurable )
 {
 	KShortcuts cuts( key );
-	bool b = d->insertAction( sAction, sDesc,
+	KAccelAction* pAction = d->insertAction( sAction, sDesc,
 		cuts, cuts,
 		0, 0,
 		nIDMenu, pMenu, bConfigurable );
-	return b;
+	return pAction != 0;
+}
+
+// Used in kdeutils/kjots
+bool KAccel::insertStdItem( KStdAccel::StdAccel id, const QString& sDesc )
+{
+	insertAction( id, 0, 0 );
+	KAccelAction* pAction = d->actionPtr( KStdAccel::action( id ) );
+	if( pAction )
+		pAction->m_sDesc = sDesc;
+	return pAction != 0;
 }
 
 bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate )
