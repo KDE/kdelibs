@@ -15,13 +15,13 @@ libkdeprint_la_METASOURCES = AUTO
 libkdeprint_la_LDFLAGS = -version-info $(LIBVERSION) $(all_libraries)
 libkdeprint_la_LIBADD = $(LIB_KDEPRINT_CUPS) ./pdq/libkdeprint_pdq.la $(LIB_KPARTS) $(LIB_KFILE)
 
-noinst_HEADERS = kprintcopiespage.h kprintdialog.h kprintdialogpage.h \
+noinst_HEADERS = kprintcopiespage.h kprintdialog.h \
 		 kprinterpropertydialog.h kprintsizecolorpage.h klpddialogimpl.h klpdprinter.h \
 		 previewshell.h
 include_HEADERS = kprinter.h
 
 
-kdeprint_HEADERS = optionset.h kjob.h kjoblister.h kprinteritem.h kdialogimpl.h
+kdeprint_HEADERS = optionset.h kjob.h kjoblister.h kprinteritem.h kdialogimpl.h kprintdialogpage.h
 kdeprintdir = $(includedir)/kdeprint
 
 uidata_DATA = previewshellui.rc
