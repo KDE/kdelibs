@@ -56,9 +56,7 @@ public:
     virtual bool childrenInline() const { return m_childrenInline; }
     virtual bool isRendered() const { return true; }
 
-    bool haveAnonymousBox() const { return m_haveAnonymous; }
-    void setHaveAnonymousBox(bool b = true) { m_haveAnonymous = b; }
-    void makeChildrenNonInline();
+    void makeChildrenNonInline(RenderObject *box2Start = 0);
 
     // overrides RenderObject
 
@@ -179,7 +177,6 @@ protected:
 
 private:
     bool m_childrenInline : 1;
-    bool m_haveAnonymous  : 1;
     bool m_pre            : 1;
     bool firstLine        : 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs

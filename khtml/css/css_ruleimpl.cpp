@@ -28,12 +28,14 @@
 #include "cssparser.h"
 
 #include "misc/loader.h"
+#include "xml/dom_docimpl.h"
 
 #include "dom_exception.h"
 #include "dom_string.h"
 using namespace DOM;
 
 #include <kdebug.h>
+#include <iostream.h>
 
 CSSRuleImpl::CSSRuleImpl(StyleBaseImpl *parent)
     : StyleBaseImpl(parent)
@@ -121,27 +123,9 @@ CSSImportRuleImpl::CSSImportRuleImpl( StyleBaseImpl *parent,
     m_strHref = href;
     m_styleSheet = 0;
 
-    khtml::DocLoader *docLoader = 0;
-    StyleBaseImpl *root = this;
-    while (root->parent())
-	root = root->parent();
-    if (root->isCSSStyleSheet())
-	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
+    m_cachedSheet = 0;
 
-    DOMString absHref = href;
-    if (!parentStyleSheet()->href().isNull())
-      absHref = KURL(parentStyleSheet()->href().string(),href.string()).url();
-    kdDebug( 6080 ) << "CSSImportRule: requesting sheet " << href.string() << endl;
-
-    // we must have a docLoader !
-    // ### pass correct charset here!!
-    m_cachedSheet = docLoader->requestStyleSheet(absHref, QString::null);
-
-    if (m_cachedSheet)
-    {
-      m_cachedSheet->ref(this);
-      m_loading = true;
-    }
+    init();
 }
 
 CSSImportRuleImpl::~CSSImportRuleImpl()
@@ -184,6 +168,44 @@ bool CSSImportRuleImpl::isLoading()
     if(m_styleSheet->isLoading()) return true;
     return false;
 }
+
+void CSSImportRuleImpl::init()
+{
+    khtml::DocLoader *docLoader = 0;
+    StyleBaseImpl *root = this;
+    while (root->parent())
+	root = root->parent();
+    if (root->isCSSStyleSheet())
+	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
+
+    DOMString absHref = m_strHref;
+    if (!parentStyleSheet()->href().isNull()) {
+      // use parent styleheet's URL as the base URL
+      cerr << "CSSImportRuleImpl::init(): parent stylesheet url is " << parentStyleSheet()->href().string().ascii() << endl;
+      absHref = KURL(parentStyleSheet()->href().string(),m_strHref.string()).url();
+    }
+/*
+    else {
+      // use documents's URL as the base URL
+      DocumentImpl *doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
+      cerr << "CSSImportRuleImpl::init(): document url is " << doc->URL().ascii() << endl;
+      absHref = KURL(doc->URL(),m_strHref.string()).url();
+    }
+*/
+    kdDebug( 6080 ) << "CSSImportRule: requesting sheet " << m_strHref.string() << endl;
+    kdDebug( 6080 ) << "CSSImportRule: requesting absolute url " << absHref.string() << endl;
+
+    // we must have a docLoader !
+    // ### pass correct charset here!!
+    m_cachedSheet = docLoader->requestStyleSheet(absHref, QString::null);
+
+    if (m_cachedSheet)
+    {
+      m_cachedSheet->ref(this);
+      m_loading = true;
+    }
+}
+
 // --------------------------------------------------------------------------
 
 

@@ -57,6 +57,7 @@ public:
 
     DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
+    virtual void init() {}
 
 protected:
     CSSRule::RuleType m_type;
@@ -114,6 +115,8 @@ public:
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
 
     bool isLoading();
+    virtual void init();
+
 protected:
     DOMString m_strHref;
     MediaListImpl *m_lstMedia;

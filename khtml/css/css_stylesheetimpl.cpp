@@ -257,6 +257,7 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
         {
            m_lstChildren->append(rule);
            rule->setParent(this);
+//           rule->init();
         }
     }
     return true;

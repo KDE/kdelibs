@@ -67,7 +67,6 @@ RenderFlow::RenderFlow()
     : RenderBox()
 {
     m_childrenInline = true;
-    m_haveAnonymous = false;
     m_pre = false;
     firstLine = false;
     m_clearStatus = CNONE;
@@ -95,22 +94,18 @@ void RenderFlow::setStyle(RenderStyle *_style)
     if(style()->whiteSpace() == PRE)
         m_pre = true;
 
-    if (haveAnonymousBox())
+    RenderObject *child = firstChild();
+    while(child != 0)
     {
-        RenderObject *child = firstChild();
-        while(child != 0)
+        if(child->isAnonymousBox())
         {
-            if(child->isAnonymousBox())
-            {
-                RenderStyle* newStyle = new RenderStyle();
-                newStyle->inheritFrom(style());
-                newStyle->setDisplay(BLOCK);
-                child->setStyle(newStyle);
-                child->setIsAnonymousBox(true);
-            }
-            child = child->nextSibling();
+            RenderStyle* newStyle = new RenderStyle();
+            newStyle->inheritFrom(style());
+            newStyle->setDisplay(BLOCK);
+            child->setStyle(newStyle);
+            child->setIsAnonymousBox(true);
         }
-
+        child = child->nextSibling();
     }
 }
 
@@ -221,11 +216,21 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
     SpecialObject* r;
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it ) {
-	if (r->node->containingBlock()==this) {
+        // A special object may be registered with several different objects... so we only print the
+        // object if we are it's containing block (or in the case of an object inside an anonymous box,
+        // the anonymous box's containing block)
+        RenderObject *cb;
+        if (r->node->parent()->isAnonymousBox())
+            cb = r->node->parent()->containingBlock();
+        else
+            cb = r->node->containingBlock();
+
+	if (cb == this) {
 	    RenderObject *o = r->node;
 	    //kdDebug(0) << renderName() << "printing positioned at " << tx + o->xPos() << "/" << ty + o->yPos()<< endl;
 	    o->print(p, x, y, w, h, tx , ty);
 	}
+
     }
 }
 
@@ -512,6 +517,10 @@ void
 RenderFlow::insertFloat(RenderObject *o)
 {
     //kdDebug( 6040 ) << renderName() << " " << (void *)this << "::insertFloat(" << o <<")" << endl;
+//    if (isAnonymousBox() && parent()->isFlow()) {
+//        static_cast<RenderFlow*>(parent())->insertFloat(o);
+//        return;
+//    }
 
     // a floating element
     if(!specialObjects) {
@@ -1189,11 +1198,10 @@ void RenderFlow::calcMinMaxWidth()
 void RenderFlow::close()
 {
 //    kdDebug( 6040 ) << (void*)this<< " renderFlow::close()" << endl;
-    if(haveAnonymousBox())
+    if(lastChild() && lastChild()->isAnonymousBox())
     {
         lastChild()->close();
         //kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
-        setHaveAnonymousBox(false);
     }
 
     calcWidth();
@@ -1263,23 +1271,47 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	}
     }
 
-
     insertPseudoChild(RenderStyle::BEFORE, newChild, beforeChild);
 
-    bool nonInlineInChild = false;
-
+    // If the requested beforeChild is not one of our children, then this is most likely because
+    // there is an anonymous block box within this object that contains the beforeChild. So
+    // just insert the child into the anonymous block box instead of here.
     if (beforeChild && beforeChild->parent() != this) {
-        // perhaps beforeChild is inside an anonymous box that is our child
-        if (!newChild->isInline() && !newChild->isFloating() && beforeChild->parent() &&
-            beforeChild->parent()->isAnonymousBox() && beforeChild->parent()->parent() == this)
-            nonInlineInChild = true;
-        else {
+
+        assert(beforeChild->parent());
+        assert(beforeChild->parent()->isAnonymousBox());
+        assert(beforeChild->parent()->parent() == this);
+
+        if (newChild->isInline() || newChild->isFloating()) {
             beforeChild->parent()->addChild(newChild,beforeChild);
             return;
         }
+        else {
+            // Trying to insert a block child into an anonymous block box which contains only
+            // inline elements... move all of the anonymous box's inline children into other
+            // anonmous boxes which become children of this
+
+            RenderObject *anonBox = beforeChild->parent();
+            assert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
+
+            static_cast<RenderFlow*>(anonBox)->makeChildrenNonInline(beforeChild);
+            beforeChild = beforeChild->parent();
+
+            RenderObject *child;
+            while ((child = anonBox->firstChild()) != 0) {
+                anonBox->removeChild(child);
+                addChild(child,anonBox);
+            }
+
+            removeChildNode(anonBox);
+            anonBox->detach(); // does necessary cleanup & deletes anonBox
+
+            assert(beforeChild->parent() == this);
+        }
     }
 
-    //to prevents non-layouted elements from getting printed
+    // prevent non-layouted elements from getting printed by pushing them far above the top of the
+    // page
     if (!newChild->isInline() && !newChild->isFloating())
         newChild->setPos(newChild->xPos(), -500000);
 
@@ -1289,144 +1321,74 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 setContainsPositioned(true);
     }
 
-
-    if((m_childrenInline && !newChild->isInline() && !newChild->isFloating()) ||
-       nonInlineInChild)
+    // RenderFlow has to either have all of it's children inline, or all of it's children as blocks.
+    // So, if our children are currently inline and block child has to be inserted, we move all our
+    // inline children into anonymous block boxes
+    if ((m_childrenInline && !newChild->isInline() && !newChild->isFloating()))
     {
-        RenderObject *boxSource;
-        if (nonInlineInChild)
-            boxSource = beforeChild->parent();
-        else
-            boxSource = this;
-        // put all inline children from boxSource in two anonymous block boxes -
-        // one containing those before beforeChild, and one containing beforeChild and after
-        if(boxSource->lastChild())
-        {
-//          kdDebug( 6040 ) << "no inline child, moving previous inline children!" << endl;
-            RenderFlow *beforeBox = 0;
-
-            if(beforeChild != boxSource->firstChild()) {
-                RenderStyle *newStyle = new RenderStyle();
-                newStyle->inheritFrom(boxSource->style());
-                newStyle->setDisplay(BLOCK);
-
-                beforeBox = new RenderFlow();
-                beforeBox->setStyle(newStyle);
-                beforeBox->setIsAnonymousBox(true);
-                // ### the children have a wrong style!!!
-                // They get exactly the style of this element, not of the anonymous box
-                // might be important for bg colors!
-
-                RenderObject* node = boxSource->firstChild();
-                while(node && node != beforeChild) {
-                    RenderObject* cnode = node;
-                    node = node->nextSibling();
-                    beforeBox->appendChildNode(boxSource->removeChildNode(cnode));
-                }
-                boxSource->insertChildNode(beforeBox,boxSource->firstChild());
-                beforeBox->close();
-                beforeBox->setPos(beforeBox->xPos(), -100000);
-                beforeBox->setLayouted(false);
-            }
+        makeChildrenNonInline(beforeChild);
+        if (beforeChild) {
+            beforeChild = beforeChild->parent();
+            assert(beforeChild->parent() == this);
+        }
+    }
+    else if (!m_childrenInline)
+    {
+        // If we're inserting an inline child but all of our children are blocks, then we have to make sure
+        // it is put into an anomyous block box. We try to use an existing anonymous box if possible, otherwise
+        // a new one is created and inserted into our list of children in the appropriate position.
+        if(newChild->isInline()) {
             if (beforeChild) {
-                RenderFlow *afterBox = new RenderFlow();
-                RenderStyle *newStyle = new RenderStyle();
-                newStyle->inheritFrom(boxSource->style());
-                newStyle->setDisplay(BLOCK);
-                afterBox->setStyle(newStyle);
-                afterBox->setIsAnonymousBox(true);
-                // ### the children have a wrong style!!!
-                // They get exactly the style of this element, not of the anonymous box
-                // might be important for bg colors!
-                RenderObject* node = beforeChild;
-                while(node) {
-                    RenderObject* cnode = node;
-                    node = node->nextSibling();
-                    afterBox->appendChildNode(boxSource->removeChildNode(cnode));
+                if (beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymousBox()) {
+                    beforeChild->previousSibling()->addChild(newChild);
+                    return;
                 }
-                boxSource->appendChildNode(afterBox);
-                afterBox->close();
-                afterBox->setPos(afterBox->xPos(), -100000);
-                afterBox->setLayouted(false);
-                beforeChild = afterBox;
             }
-            if (nonInlineInChild) {
-                boxSource->setLayouted(false);
-                // boxSource will now contain up to two anonymous boxes - move
-                // them into this in place of boxSource
-                if(boxSource->firstChild())
-                    insertChildNode(boxSource->removeChildNode(boxSource->firstChild()), boxSource);
-                if(boxSource->lastChild())
-                    insertChildNode(boxSource->removeChildNode(boxSource->lastChild()), boxSource);
+            else{
+                if (m_last && m_last->isAnonymousBox()) {
+                    m_last->addChild(newChild);
+                    return;
+                }
+            }
 
-                // make sure boxSource doesn't muck other objects up when deleted
-                removeChildNode(boxSource);
-                boxSource->detach();
-                // ### what happens with boxSource's bg image if it had one?
+            // no suitable existing anonymous box - create a new one
+            RenderStyle *newStyle = new RenderStyle();
+            newStyle->inheritFrom(style());
+            newStyle->setDisplay(BLOCK);
+
+            RenderFlow *newBox = new RenderFlow();
+            newBox->setStyle(newStyle);
+            newBox->setIsAnonymousBox(true);
+
+            RenderBox::addChild(newBox,beforeChild);
+            newBox->addChild(newChild);
+            newBox->setPos(newBox->xPos(), -100000);
+
+            setLayouted(false);
+            return;
+        }
+        else {
+            // We are adding another block child... if the current last child is an anonymous box
+            // then it needs to be closed.
+            // ### get rid of the closing thing altogether this will only work during initial parsing
+            if (lastChild() && lastChild()->isAnonymousBox()) {
+                lastChild()->close();
+                lastChild()->layout();
             }
         }
-        m_childrenInline = false;
-    }
-    else if(!m_childrenInline)
-    {
-        if( newChild->isInline() )
-        {
-            // #### this won't work with beforeChild != 0 !!!!
-            if (beforeChild && beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymousBox()) {
-                beforeChild->previousSibling()->addChild(newChild);
-                setLayouted(false);
-                return;
-            }
-
-//          kdDebug( 6040 ) << "adding inline child to anonymous box" << endl;
-            if(!haveAnonymousBox())
-            {
-                //kdDebug( 6040 ) << "creating anonymous box" << endl;
-                RenderStyle *newStyle = new RenderStyle();
-                newStyle->inheritFrom(style());
-
-                newStyle->setDisplay(BLOCK);
-                RenderFlow *newBox = new RenderFlow();
-                newBox->setStyle(newStyle);
-                newBox->setIsAnonymousBox(true);
-                RenderBox::addChild(newBox,beforeChild);
-                newBox->addChild(newChild);
-                newBox->setPos(newBox->xPos(), -100000);
-                if (beforeChild)
-                {
-                    newBox->close();
-                    newBox->layout();
-                } else
-                    setHaveAnonymousBox();
-                return;
-            }
-            else
-            {
-                //kdDebug( 6040 ) << "adding to last box" << endl;
-                lastChild()->addChild(newChild); // ,beforeChild ???
-                return;
-            }
-        }
-        else if(haveAnonymousBox())
-        {
-            lastChild()->close();
-            lastChild()->layout();
-            setHaveAnonymousBox(false);
-//          kdDebug( 6040 ) << "closing anonymous box" << endl;
-        }
-    }
-    else if(!newChild->isInline() && !newChild->isFloating())
-    {
-        m_childrenInline = false;
     }
 
-    if(!newChild->isInline() && !newChild->isFloating())
+    if(!newChild->isInline() && !newChild->isFloating()) // block child
     {
+        // If we are inline ourselves and have become block, we have to make sure our parent
+        // makes the necessary adjustments so that all of it's other children are moved into
+        // anonymous block boxes where necessary
         if (style()->display() == INLINE)
         {
             setInline(false); // inline can't contain blocks
-            if (parent() && parent()->isFlow())
+            if (parent() && parent()->isFlow()) {
                 static_cast<RenderFlow*>(parent())->makeChildrenNonInline();
+            }
         }
     }
 
@@ -1435,12 +1397,15 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // ### care about aligned stuff
 
     insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);
+
 }
 
-void RenderFlow::makeChildrenNonInline()
+void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
 {
-// Put all inline children into anonymous block boxes
-// ### should we call this all the way up to the top of the tree?
+    assert(!box2Start || box2Start->parent() == this);
+
+    if (!m_childrenInline)
+        return;
 
     m_childrenInline = false;
 
@@ -1456,9 +1421,11 @@ void RenderFlow::makeChildrenNonInline()
         }
 
         if ((!child->isInline() && !child->isFloating() && boxFirst != child) ||
-            (!next && (boxFirst->isInline() || boxFirst->isFloating()))) {
+            (!next && (boxFirst->isInline() || boxFirst->isFloating())) ||
+            child == box2Start) {
 
-            // make anon box of those before child
+            // Create a new anonymous box containing all children starting from boxFirst
+            // and up to (but not including) boxLast, and put it in place of the children
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
@@ -1489,10 +1456,14 @@ void RenderFlow::makeChildrenNonInline()
 
         child = next;
     }
-    if ( isInline() ) {
+
+
+    if (isInline()) {
         setInline(false);
-        if ( parent()->isFlow() )
+        if (parent()->isFlow()) {
+            assert(parent()->childrenInline());
             static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
+        }
     }
     setLayouted(false);
 }
@@ -1543,7 +1514,6 @@ void RenderFlow::printTree(int indent) const
 void RenderFlow::dump(QTextStream *stream, QString ind) const
 {
     if (m_childrenInline) { *stream << " childrenInline"; }
-    if (m_haveAnonymous) { *stream << " haveAnonymous"; }
     if (m_pre) { *stream << " pre"; }
     if (firstLine) { *stream << " firstLine"; }
 

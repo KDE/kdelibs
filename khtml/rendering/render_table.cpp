@@ -1931,11 +1931,10 @@ void RenderTableCell::close()
 {
     //kdDebug( 6040 ) << "renderFlow::close()" << endl;
     setParsing(false);
-    if(haveAnonymousBox())
+    if(lastChild() && lastChild()->isAnonymousBox())
     {
         lastChild()->close();
         //kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
-        setHaveAnonymousBox(false);
     }
 
     //if(lastChild())
