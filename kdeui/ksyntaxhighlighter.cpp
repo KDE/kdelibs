@@ -82,7 +82,7 @@ public:
 	    statDict = new QDict<int>(50021);
 	return statDict;
     }
-    
+
     QDict<int> autoDict;
     QDict<int> autoIgnoreDict;
     static QObject *sDictionaryMonitor;
@@ -93,7 +93,7 @@ public:
     bool active, automatic, autoReady;
 private:
     static QDict<int>* statDict;
-    
+
 };
 
 QDict<int>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict = 0;
@@ -283,6 +283,8 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
 
 KDictSpellingHighlighter::~KDictSpellingHighlighter()
 {
+    delete d->spell;
+    d->spell = 0;
     delete d;
 }
 
@@ -290,7 +292,11 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 {
     connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
 	     this, SLOT( slotDictionaryChanged() ));
-    d->spell = spell;
+    if ( spell != d->spell )
+    {
+        delete d->spell;
+        d->spell = spell;
+    }
     const QStringList l = KSpellingHighlighter::personalWords();
     for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         d->spell->addPersonal( *it );
@@ -384,7 +390,7 @@ void KDictSpellingHighlighter::slotDictionaryChanged()
 
     // SCOTT: Hmm, this looks suspecious.  Shouldn't this be d->spell = ...?
 
-    new KSpell( 0, i18n( "Incremental Spellcheck - KMail" ), this,
+    d->spell = new KSpell( 0, i18n( "Incremental Spellcheck - KMail" ), this,
 		SLOT( slotSpellReady( KSpell * ) ));
 }
 
