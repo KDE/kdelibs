@@ -333,7 +333,8 @@ public:
      *
      * Typically, you will call setAutoSaveSettings() in your
      * KMainWindow-inherited class constructor, and it will take care
-     * of restoring and saving automatically.
+     * of restoring and saving automatically. Make sure you call this
+     * _after all_ your *bars have been created.
      */
     void setAutoSaveSettings( const QString & groupName = QString::fromLatin1("MainWindow"),
                               bool saveWindowSize = true );
