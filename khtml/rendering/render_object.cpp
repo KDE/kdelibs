@@ -649,6 +649,8 @@ void RenderObject::setStyle(RenderStyle *style)
     if ( d >= RenderStyle::Position && m_parent ) {
 	setMinMaxKnown(false);
 	setLayouted(false);
+    } else if ( m_parent ) {
+	repaint();
     }
 }
 
