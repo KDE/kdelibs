@@ -779,10 +779,10 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 }
                 else {
                     blockForCompactChild = curr;
-                    compactChild = child;          
+                    compactChild = child;
                     child->layoutIfNeeded();
                     int off = prevPosMargin - prevNegMargin;
-                    m_height += off + curr->marginTop() < child->marginTop() ? 
+                    m_height += off + curr->marginTop() < child->marginTop() ?
                                 child->marginTop() - curr->marginTop() -off: 0;
 
                     child->setPos(0,0); // This position will be updated to reflect the compact's
@@ -1000,9 +1000,10 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         if (topMarginContributor && !child->isSelfCollapsingBlock())
             topMarginContributor = false;
 
-        int chPos = xPos + child->marginLeft();
+        int chPos = xPos;
 
         if (style()->direction() == LTR) {
+            chPos += child->marginLeft();
             // html blocks flow around floats
             if (child->style()->hidesOverflow() ||
                  (( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats()))
@@ -1071,12 +1072,14 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             blockForCompactChild = 0;
             if (compactChild) {
                 // We have a compact child to squeeze in.
-                int compactXPos = xPos+compactChild->marginLeft();
-                if (style()->direction() == RTL) {
+                int compactXPos = xPos;
+                if (style()->direction() == LTR)
+                    compactXPos += compactChild->marginLeft();
+                else {
                     compactChild->calcWidth(); // have to do this because of the capped maxwidth
-                    compactXPos = width() - borderRight() - paddingRight() - marginRight() -
-                        compactChild->width() - compactChild->marginRight();
+                    compactXPos -= compactChild->width() - compactChild->marginRight();
                 }
+
                 int compactYPos = child->yPos() + child->borderTop() + child->paddingTop()
                                   - compactChild->paddingTop() - compactChild->borderTop();
                 int adj = 0;
@@ -2142,7 +2145,7 @@ RenderObject* InlineMinMaxIterator::next()
 // bidi.cpp defines the following functions too.
 // Maybe these should not be static, after all...
 
-#ifndef KDE_USE_FINAL                       
+#ifndef KDE_USE_FINAL
 
 static int getBPMWidth(int childValue, Length cssUnit)
 {
