@@ -447,3 +447,56 @@ else
   AC_DEFINE(ksize_t, size_t)
 fi
 ])
+
+
+dnl this should be included by aclocal, but wont
+dnl on linux (don't know, why)
+# serial 6 AM_PROG_LIBTOOL
+AC_DEFUN(AM_PROG_LIBTOOL,
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_REQUIRE([AC_PROG_CC])
+AC_REQUIRE([AC_PROG_RANLIB])
+
+# Always use our own libtool.
+LIBTOOL='$(top_builddir)/libtool'
+AC_SUBST(LIBTOOL)
+
+dnl Allow the --disable-shared flag to stop us from building shared libs.
+AC_ARG_ENABLE(shared,
+[  --enable-shared         build shared libraries [default=yes]],
+test "$enableval" = no && libtool_shared=" --disable-shared",
+libtool_shared=)
+
+dnl Allow the --disable-static flag to stop us from building static libs.
+AC_ARG_ENABLE(static,
+[  --enable-static         build static libraries [default=yes]],
+test "$enableval" = no && libtool_static=" --disable-static",
+libtool_static=)
+
+libtool_flags="$libtool_shared$libtool_static"
+test "$silent" = yes && libtool_flags="$libtool_flags --silent"
+test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
+
+# Some flags need to be propagated to the compiler or linker for good
+# libtool support.
+[case "$host" in
+*-*-irix6*)
+  for f in '-32' '-64' '-cckr' '-n32' '-mips1' '-mips2' '-mips3' '-mips4'; do
+    if echo " $CC $CFLAGS " | egrep -e "[ 	]$f[	 ]" > /dev/null; then
+      LD="${LD-ld} $f"
+    fi
+  done
+  ;;
+
+*-*-sco3.2v5*)
+  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
+  CFLAGS="$CFLAGS -belf"
+  ;;
+esac]
+
+# Actually configure libtool.  ac_aux_dir is where install-sh is found.
+CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LD="$LD" RANLIB="$RANLIB" \
+${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig \
+$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
+|| AC_MSG_ERROR([libtool configure failed])
+])
