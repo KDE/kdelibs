@@ -568,7 +568,7 @@ UCharReference UString::operator[](int pos)
   return UCharReference(this, pos);
 }
 
-int skipInfString(const char *start)
+static int skipInfString(const char *start)
 {
   const char *c = start;
   if (*c == '+' || *c == '-')
