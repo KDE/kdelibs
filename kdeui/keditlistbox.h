@@ -153,13 +153,12 @@ class KEditListBox : public QGroupBox
       void enableMoveButtons(int index);
       void enableAddButton(const QString& text);
 
-   protected:
-      //### should be private, there are accessors for all those.
+   private:
       QListBox *m_listBox;
       QPushButton *servUpButton, *servDownButton;
       QPushButton *servNewButton, *servRemoveButton;
       KLineEdit *m_lineEdit;
-   private:
+
       //this is called in both ctors, to avoid code duplication
       void init( bool checkAtEntering, int buttons );
 
