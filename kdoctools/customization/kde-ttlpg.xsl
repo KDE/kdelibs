@@ -12,30 +12,18 @@
   </span>
 </xsl:template>
 
+<!-- turn off these from displaying, they just clutter it for the user -->
+
 <xsl:template match="author" mode="titlepage.mode">
-  <h3 class="{name(.)}"><!--Documentation by--> <!-- to internationalise -->
-    <xsl:call-template name="person.name"/>
-  </h3>
-  <xsl:apply-templates mode="titlepage.mode" select="./affiliation"/>
 </xsl:template>
 
-<!-- other things to be added:
-disable email-link of author on title page, add date phrase: Last updated, revision? -->
-
 <xsl:template match="othercredit" mode="titlepage.mode">
-  <p class="{name(.)}">
-  <xsl:apply-templates mode="titlepage.mode" select="./contrib"/>
-  <xsl:text>: </xsl:text>
-  <a><!-- removed the name="./@id" attribute: it was wrong and I don't understand what it's supposed to do -->
-    <xsl:call-template name="person.name"/>
-  </a>
-  </p>
 </xsl:template>
 
 <xsl:template match="contrib" mode="titlepage.mode">
-  <span class="{name(.)}">
-    <xsl:apply-templates mode="titlepage.mode"/>
-  </span>
+</xsl:template>
+
+<xsl:template match="copyright" mode="titlepage.mode">
 </xsl:template>
 
 <xsl:template match="abstract" mode="titlepage.mode">
