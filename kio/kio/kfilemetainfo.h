@@ -108,6 +108,7 @@ public:
      * @li @p Centimeters     Sizes
      * @li @p Bytes           Some data/file size in bytes
      * @li @p FramesPerSecond A frame rate
+     * @li @p DotsPerInch     Resolution in DPI
      **/
     enum Unit {
         NoUnit          = 0,
@@ -118,7 +119,8 @@ public:
         Inches          = 5,
         Centimeters     = 6,
         Bytes           = 7,
-        FramesPerSecond = 8
+        FramesPerSecond = 8,
+        DotsPerInch     = 9
     };
 
 
