@@ -209,6 +209,11 @@ QByteArray HTMLFormElementImpl::formData()
     if(!codec)
         codec = QTextCodec::codecForLocale();
 
+    // we need to map visual hebrew to logical hebrew, as the web
+    // server alsways expects responses in logical ordering
+    if ( codec->mibEnum() == 11 )
+	codec = QTextCodec::codecForMib( 85 );
+    
     m_encCharset = codec->name();
     for(unsigned int i=0; i < m_encCharset.length(); i++)
         m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].lower();
