@@ -810,7 +810,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     // auto-launch for local dirs only, and not for '/'
     if ( isLocal && !hasRoot )
+    {
+      m_sizeDetermineButton->setText( i18n("Refresh") );
       slotSizeDetermine();
+    }
     else
       m_sizeStopButton->setEnabled( false );
   }
