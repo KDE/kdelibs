@@ -122,7 +122,6 @@ public:
 
     // ### remove for 3.0
     QString user();
-    QString password();
     
     /**
      * Determines whether supplied authorization should
