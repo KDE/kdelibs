@@ -288,7 +288,7 @@ void KHTMLPart::init( KHTMLView *view )
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
-  
+
   d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "fileprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
 
   /*
@@ -489,7 +489,7 @@ void KHTMLPart::autoloadImages( bool enable )
     d->m_paLoadImages = 0;
   }
   else if ( !d->m_paLoadImages )
-    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
+    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "mime-image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( guiFactory )
     guiFactory->addClient( this );
@@ -1351,30 +1351,30 @@ void KHTMLPart::updateActions()
     d->m_paFind->setText( i18n( "&Find" ) );
 
   KParts::Part *frame = 0;
-  
+
   if ( frames )
     frame = partManager()->activePart();
-  
+
   bool enableFind = true;
-  
+
   if ( frame )
     enableFind = frame->inherits( "KHTMLPart" );
-    
+
   d->m_paFind->setEnabled( enableFind );
 
   bool enablePrintFrame = false;
-  
+
   if ( frame )
   {
     QObject *ext = frame->child( 0, "KParts::BrowserExtension" );
     if ( ext )
       enablePrintFrame = ext->metaObject()->slotNames().contains( "print()" );
   }
-  
+
   d->m_paPrintFrame->setEnabled( enablePrintFrame );
-  
+
   QString bgURL;
-  
+
   // ### frames
 
   if ( d->m_doc && d->m_doc->body() && !d->m_bClearing )
@@ -2354,10 +2354,10 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 void KHTMLPart::slotFind()
 {
   KHTMLPart *part = this;
-  
+
   if ( d->m_frames.count() > 0 )
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
- 
+
   KHTMLFind *findDlg = new KHTMLFind( part, d->m_view, "khtmlfind" );
 
   findDlg->exec();
@@ -2369,18 +2369,18 @@ void KHTMLPart::slotPrintFrame()
 {
   if ( d->m_frames.count() == 0 )
     return;
-  
+
   KParts::Part *frame = partManager()->activePart();
-  
+
   KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( frame->child( 0, "KParts::BrowserExtension" ) );
-  
+
   if ( !ext )
     return;
-  
+
   QMetaData *mdata = ext->metaObject()->slot( "print()" );
   if ( mdata )
     (ext->*(mdata->ptr))();
-} 
+}
 
 void KHTMLPart::startAutoScroll()
 {
