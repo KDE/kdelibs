@@ -38,7 +38,7 @@ class KIntSpinBox;
 /* ------------------------------------------------------------------------ */
 
 /**
- * KIntNumInput combines a @ref QSpinbox and optionally a @ref QSlider
+ * KIntNumInput combines a @ref QSpinBox and optionally a @ref QSlider
  * with a label to make an easy to use control for setting some integer
  * parameter. This is especially nice for configuration dialogs,
  * which can have many such combinated controls.
@@ -183,7 +183,7 @@ protected:
 
 
 /**
- * KDoubleNumInput combines a QSpinbox and optionally a QSlider
+ * KDoubleNumInput combines a @ref QSpinBox and optionally a @ref QSlider
  * with a label to make an easy to use control for setting some float
  * parameter. This is especially nice for configuration dialogs,
  * which can have many such combinated controls.
