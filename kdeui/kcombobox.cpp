@@ -252,6 +252,7 @@ KCompletionBox * KComboBox::completionBox( bool create )
 {
     if ( d->klineEdit )
         return d->klineEdit->completionBox( create );
+    return 0;
 }
 
 // QWidget::create() turns off mouse-Tracking which would break auto-hiding
