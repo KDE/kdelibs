@@ -5778,6 +5778,8 @@ bool KHTMLWidget::cellUp( bool select )
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
+  if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
 
   emit onURL( next->pCell->getURL() );
 
@@ -5878,6 +5880,8 @@ bool KHTMLWidget::cellDown( bool select )
   next->pCell->setMarker( true );
   paint( next );
 
+  if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
   if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
 
@@ -5934,6 +5938,8 @@ bool KHTMLWidget::cellLeft( bool select )
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
+  if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
 
   emit onURL( next->pCell->getURL() );
 
@@ -5989,6 +5995,8 @@ bool KHTMLWidget::cellRight( bool select )
 
   emit onURL( next->pCell->getURL() );
   
+  if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
   if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
 
