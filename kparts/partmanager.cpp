@@ -84,7 +84,7 @@ PartManager::~PartManager()
   QListIterator<QWidget> it( d->m_managedTopLevelWidgets );
   for (; it.current(); ++it )
     disconnect( it.current(), SIGNAL( destroyed() ),
-		this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
+                this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
 
   // core dumps ... setActivePart( 0L );
   qApp->removeEventFilter( this );
@@ -158,35 +158,35 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       if ( d->m_policy == PartManager::TriState )
       {
         if ( ev->type() == QEvent::MouseButtonDblClick )
-	{
-	  if ( part == d->m_activePart && w == d->m_activeWidget )
-	    return false;
-	
-	  setActivePart( part, w );
-	  return true;
-	}
-	
-	if ( ( d->m_selectedWidget != w || d->m_selectedPart != part ) &&
-	     ( d->m_activeWidget != w || d->m_activePart != part ) )
-	{
-	  if ( part->isSelectable() )
-  	    setSelectedPart( part, w );
-	  else
-	    setActivePart( part, w );
-	  return true;
-	}
-	else if ( d->m_selectedWidget == w && d->m_selectedPart == part )
-	{
-	  setActivePart( part, w );
-	  return true;
-	}
-	else if ( d->m_activeWidget == w && d->m_activePart == part )
-	{
-  	  setSelectedPart( 0L );
-	  return false;
-	}
-	
-	return false;
+        {
+          if ( part == d->m_activePart && w == d->m_activeWidget )
+            return false;
+
+          setActivePart( part, w );
+          return true;
+        }
+
+        if ( ( d->m_selectedWidget != w || d->m_selectedPart != part ) &&
+             ( d->m_activeWidget != w || d->m_activePart != part ) )
+        {
+          if ( part->isSelectable() )
+            setSelectedPart( part, w );
+          else
+            setActivePart( part, w );
+          return true;
+        }
+        else if ( d->m_selectedWidget == w && d->m_selectedPart == part )
+        {
+          setActivePart( part, w );
+          return true;
+        }
+        else if ( d->m_activeWidget == w && d->m_activePart == part )
+        {
+          setSelectedPart( 0L );
+          return false;
+        }
+
+        return false;
       }
       else if ( part != d->m_activePart )
       {
@@ -219,7 +219,7 @@ Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
   for ( ; it.current() ; ++it )
   {
     Part *part = it.current()->hitTest( widget, pos );
-    if ( part )
+    if ( part && d->m_parts.findRef( part ) != -1 )
       return part;
   }
   return 0L;
@@ -227,6 +227,9 @@ Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
 
 void PartManager::addPart( Part *part, bool setActive )
 {
+    if ( d->m_parts.findRef( part ) != -1 ) // don't add parts more than once :)
+      return;
+
   connect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
   d->m_parts.append( part );
@@ -292,6 +295,12 @@ void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
 
 void PartManager::setActivePart( Part *part, QWidget *widget )
 {
+  if ( part && d->m_parts.findRef( part ) == -1 )
+  {
+      kdWarning( 1000 ) << "PartManager::setActivePart : trying to active a non-registered part! " << part->name() << endl;
+      return; // don't allow someone call setActivePart with a part we don't know about
+  }
+
   //check whether nested parts are disallowed and activate the top parent part then, by traversing the
   //tree recursively (Simon)
   if ( part && !d->m_bAllowNestedParts )
@@ -322,7 +331,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     if ( oldActiveWidget )
     {
       disconnect( oldActiveWidget, SIGNAL( destroyed() ),
-		  this, SLOT( slotWidgetDestroyed() ) );
+                  this, SLOT( slotWidgetDestroyed() ) );
       QApplication::sendEvent( oldActiveWidget, &ev );
     }
 
@@ -340,7 +349,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     if ( d->m_activeWidget )
     {
       connect( d->m_activeWidget, SIGNAL( destroyed() ),
-	       this, SLOT( slotWidgetDestroyed() ) );
+               this, SLOT( slotWidgetDestroyed() ) );
       QApplication::sendEvent( d->m_activeWidget, &ev );
     }
   }
@@ -434,7 +443,7 @@ void PartManager::addManagedTopLevelWidget( const QWidget *topLevel )
 
   d->m_managedTopLevelWidgets.append( topLevel );
   connect( topLevel, SIGNAL( destroyed() ),
-	   this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
+           this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
 }
 
 void PartManager::removeManagedTopLevelWidget( const QWidget *topLevel )
