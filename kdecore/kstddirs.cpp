@@ -211,8 +211,12 @@ bool KStandardDirs::exists(const QString &fullPath)
 {
     struct stat buff;
     if (access(fullPath.ascii(), R_OK) == 0 && stat( fullPath.ascii(), &buff ) == 0)
-	if ( S_ISREG( buff.st_mode ))
-	    return true;
+	if (fullPath.at(fullPath.length() - 1) != '/') {
+	    if (S_ISREG( buff.st_mode ))
+		return true;
+	} else
+	    if (S_ISDIR( buff.st_mode ))
+		return true;
     return false;
 }
 
