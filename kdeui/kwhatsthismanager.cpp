@@ -1,3 +1,21 @@
+/*  This file is part of the KDE Libraries
+ *  Copyright (C) 2004 Peter Rockai (mornfall) <mornfall@danill.sk>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ */
 #include "kwhatsthismanager_p.h"
 #include "qwhatsthis.h"
 #include <qvariant.h>
@@ -64,7 +82,7 @@ bool KWhatsThisUndefined::clicked (const QString& href)
         body . append (dsc);
         QString subj ("What's This submission: ");
         subj . append (qApp -> argv () [0]);
-        body . append ("\nPlease put type in your what's this help between these lines: "
+        body . append ("\nPlease type in your what's this help between these lines: "
                 "\n--%-----------------------------------------------------------------------\n"
                 "\n--%-----------------------------------------------------------------------");
         kapp -> invokeMailer ("mailto:quality-whatsthis@kde.org", "", "", subj, body);
