@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 #include <qstring.h>
+#include <qfile.h>
 #include <qtl.h>
 
 #include <ksimpleconfig.h>
@@ -65,9 +66,9 @@ KService::init( KDesktopFile *config )
 
   config->setDesktopGroup();
   config->setDollarExpansion( true ); // mainly for Exec and Path
-  if(access(entryPath().latin1(), R_OK))
+  if(access(QFile::encodeName(entryPath()), R_OK))
   {
-    m_bValid=false;
+    m_bValid = false;
     return;
   }
   m_bDeleted = config->readBoolEntry( "Hidden", false );
