@@ -1,5 +1,5 @@
 
-SUBDIRS = kdebug kfile kspell kded komop
+SUBDIRS = kdebug kfile kspell
 
 data_DATA = 
 
