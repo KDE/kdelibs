@@ -83,3 +83,10 @@ the file. It does NOT update its map of entries in memory with the entries
 "reparseConfiguration()" is called.
 
 
+Open Question: The standard writeEntry() function returns the original value,
+is this needed? Nobody seems to use it. 
+
+Open Question: The bPersistent flag doesn't seem to be used... could it be removed?
+
+Open Question: Is the bNLS flag needed? Localised entries seem to be mostly
+usefull for default files, are they ever created by the suer itself?
