@@ -1,10 +1,10 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qdragobject.h>
-#include <qinputdialog.h>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
+#include <kinputdialog.h>
 #include <kdebug.h>
 
 #include "ktabwidgettest.h"
@@ -343,8 +343,8 @@ void Test::tabbarContextMenuActivated(int item)
 void Test::mouseDoubleClick(QWidget *w)
 {
   bool ok;
-  QString text = QInputDialog::getText(
-            "Rename Tab", "Enter new name:", QLineEdit::Normal,
+  QString text = KInputDialog::getText(
+            "Rename Tab", "Enter new name:",
             mWidget->label( mWidget->indexOf( w ) ), &ok, this );
   if ( ok && !text.isEmpty() ) {
      mWidget->changeTab( w, text );
