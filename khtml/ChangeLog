@@ -1,3 +1,7 @@
+2005-03-12  Germain Garand  <germain@ebooksfrance.org>
+
+        * ecma/kjs_window.{cpp,h}: implement JS 1.2's window.atob/btoa (base-64 codec interface)
+
 2005-03-10  David Faure  <faure@kde.org>
 
         * ecma/kjs_events.cpp (handleEvent): Move "pushing element/form/doc onto the scope"

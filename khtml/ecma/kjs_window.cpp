@@ -29,6 +29,7 @@
 #include <kmessagebox.h>
 #include <kinputdialog.h>
 #include <klocale.h>
+#include <kmdcodec.h>
 #include <kparts/browserinterface.h>
 #include <kwin.h>
 
@@ -213,7 +214,9 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
 const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
 
 /*
-@begin WindowTable 87
+@begin WindowTable 89
+  atob		Window::AToB		DontDelete|Function 1
+  btoa		Window::BToA		DontDelete|Function 1
   closed	Window::Closed		DontDelete|ReadOnly
   crypto	Window::Crypto		DontDelete|ReadOnly
   defaultStatus	Window::DefaultStatus	DontDelete
@@ -532,6 +535,8 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Open:
     case Focus:
     case Blur:
+    case AToB:
+    case BToA:
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     default:
       break;
@@ -1509,6 +1514,25 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::Blur:
     // TODO
     return Undefined();
+  case Window::BToA:
+  case Window::AToB: {
+      if (!s.is8Bit())
+          return Undefined();
+       QByteArray  in, out;
+       char *binData = s.ascii();
+       in.setRawData( binData, s.size() );
+       if (id == Window::AToB)
+           KCodecs::base64Decode( in, out );
+       else
+           KCodecs::base64Encode( in, out );
+       in.resetRawData( binData, s.size() );
+       UChar *d = new UChar[out.size()];
+       for (int i = 0; i < out.size(); i++)
+           d[i].uc = (uchar) out[i];
+       UString ret(d, out.size(), false /*no copy*/);
+       return String(ret);
+  }
+
   };
 
 
