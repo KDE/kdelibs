@@ -137,10 +137,6 @@ public:
      */
     QPixmap titlePixmap(int id) const;
     /**
-     * Inserts a tear-off handle into the menu.
-     */
-    int insertTearOffHandle ( int id=-1, int index=-1 );
-    /**
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
      */

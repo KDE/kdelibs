@@ -264,14 +264,6 @@ QPixmap KPopupMenu::titlePixmap(int id) const
     QPixmap tmp;
     return(tmp);
 }
-
-int KPopupMenu::insertTearOffHandle ( int id, int index )
-{
-  if (KGlobalSettings::insertTearOffHandle())
-    return QPopupMenu::insertTearOffHandle( id, index );
-  return 0;
-}
-
 // Obsolete
 KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
