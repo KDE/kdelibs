@@ -23,7 +23,7 @@ static const char description[] = "KCalendarTest";
 static KCmdLineOptions options[] =
 {
   { "help", I18N_NOOP("Prints this help"), 0 },
-  { "type hijri|gregorian", I18N_NOOP("Supported calendar types"), 0 },
+  { "type hijri|gregorian|jalali|hebrew", I18N_NOOP("Supported calendar types"), 0 },
   { "date <date>", I18N_NOOP("Show day info"), 0 },
 };
 
@@ -69,7 +69,6 @@ int main(int argc, char **argv) {
   	} else 
     		date = QDate::currentDate();
 
-	
 	args->clear(); // Free up some memory.
 	
 	test(date);
@@ -90,11 +89,13 @@ void test(QDate & date) {
 	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->weekDayName(1, true) << endl;
 
 	kdDebug() << "Month name for second month is " << KGlobal::locale()->calendar()->monthName(2, KGlobal::locale()->calendar()->year(date)) << endl;
-	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->monthName(2, true) << endl;
+	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->monthName(2, KGlobal::locale()->calendar()->year(date), true) << endl;
 	kdDebug() << "Month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date)) << endl;
 	kdDebug() << "Short month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date), true) << endl;
-
-
+	kdDebug() << "Month name for fifth month is " << KGlobal::locale()->calendar()->monthName(5, KGlobal::locale()->calendar()->year(date)) << endl;
+	kdDebug() << "Short month name for fifth month is " << KGlobal::locale()->calendar()->monthName(5, KGlobal::locale()->calendar()->year(date), true) << endl;
+	kdDebug() << "Month name possessive for fifth month is " << KGlobal::locale()->calendar()->monthNamePossessive(5, KGlobal::locale()->calendar()->year(date)) << endl;
+	kdDebug() << "Short month name possessive for fifth month is " << KGlobal::locale()->calendar()->monthNamePossessive(5, KGlobal::locale()->calendar()->year(date), true) << endl;
 
 	kdDebug() << "Day for date " << date.toString() << " is " << KGlobal::locale()->calendar()->day(date) << endl;
 	kdDebug() << "Month for date " << date.toString() << " is " << KGlobal::locale()->calendar()->month(date) << endl;
@@ -147,5 +148,5 @@ void test(QDate & date) {
 	kdDebug() << "Is lunar based: " << KGlobal::locale()->calendar()->isLunar() << endl;
 	kdDebug() << "Is lunisolar based: " << KGlobal::locale()->calendar()->isLunisolar() << endl;
 	kdDebug() << "Is solar based: " << KGlobal::locale()->calendar()->isSolar() << endl;
-			
+
 }
