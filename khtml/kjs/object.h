@@ -326,8 +326,6 @@ public:
   KJSGlobal(KHTMLWidget *htmlw = 0L);
   Type type() const { return Object; }
   KJSPrototype *objProto, *funcProto, *arrayProto, *boolProto;
-private:
-  static KJSO* eval();
 };
 
 class KJSArgList;

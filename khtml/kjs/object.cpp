@@ -24,6 +24,10 @@
 #include <config.h>
 #endif
 
+#ifdef KJS_DEBUG_MEM
+#include <stdio.h>
+#endif
+
 #include "kjs.h"
 #include "object.h"
 #include "nodes.h"
@@ -311,7 +315,6 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
   put("Infinity", Inf);
 
   // function properties
-  //  put("eval", new KJSInternalFunction(&eval));
 
   // constructor properties. prototypes as Global's member variables first.
   objProto = new ObjectPrototype();
@@ -331,13 +334,8 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 
   objProto->deref();
   funcProto->deref();
+  arrayProto->deref();
   boolProto->deref();
-}
-
-KJSO* KJSGlobal::eval()
-{
-  Debug("KJSGLOBAL::eval");
-  return new KJSNumber(11);
 }
 
 // ECMA 10.2
