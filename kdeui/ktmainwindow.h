@@ -65,21 +65,22 @@ class KTMLayout;
  * its position, geometry and positions of toolbar(s) and menubar on
  * logout. If you want to save aditional data, overload saveProperties and
  * (to read them again on next login) readProperties. To save special
- * data about your data, overload saveData. To warn user
- * that application has unsaved data on logout, use setUnsavedData.
+ * data about your data, overload saveGlobalProperties. To warn user
+ * that application or windows have unsaved data on close or logout,
+ * reimplement queryClose and/or queryExit.
  *
  * There is also a macro RESTORE which can restore all your windows
  * on next login.
- *
- * This class is now merged with KTMainWindow (KTW). Biggest difference
- * is that KTMainWindow implements closeEvent and calls needed functios
- * in case when window is closed. By overloading these (virtual)
- * functions, you controll what happens in these cases.
  *
  * KTMainWindow might be replaced/extended in the future to
  * KMainWindow which will be a child of QMainWindow. Anyway,
  * the current interface  will be supported for compatibility
  * reasons.
+ *
+   Note that a KTMainWindow per-default is created with the
+   WDestructiveClose flag, i.e. it is automatically destroyed when the
+   window is closed. If you do not want this behavior, specify 0 as
+   widget flag in the constructor.
  *
  * @see KApplication
  * @see KTMainWindow
@@ -96,9 +97,18 @@ class KTMainWindow : public QWidget {
 
 public:
     /**
-     * Constructor.
-     * Note that for session management to work, KTMainWindow widget
-     * must be created with 'new'.
+       Constructs a main window.
+     
+       @param name is the object name. For session management to work
+       properly, all main windows in the application have to have a
+       different name. When passing 0 (the default), KTMainWindow will create
+       such a name for you. So simply never pass anything else ;-)
+       
+       @param f specifies the widget flags. The default is WDestructiveClose. 
+       It indicates, that a main windows is automatically destroyed when its
+       window is closed. Pass 0 if you do not want this behaviour.
+     
+       KTMainWindows must be created on the heap with 'new'.
      */
     KTMainWindow( const char *name = 0L, WFlags f= WDestructiveClose );
     /**
@@ -313,7 +323,7 @@ public:
     /**
      * Get the standard help menu.
      *
-     * @param aboutAppText User definable string that is used in the 
+     * @param aboutAppText User definable string that is used in the
      *        appication specific dialog box. Note: The help menu will
      *        not open this dialog box if you don't define a string.
      *
@@ -349,37 +359,59 @@ protected:
 
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
-     * Please do not reimplement closeEvent directly but use queryClose() 
-     * in your KDE applications. 
+     * Please do not reimplement closeEvent directly but use queryClose()
+     * in your KDE applications.
+     *
+     * Rationale: queryClose() also works when the session manager shuts 
+     * your application down. closeEvent() on the other hand only works when the 
+     * user actually closes the window.
+     *
      */
     virtual void closeEvent ( QCloseEvent *);
 
     /**
-     * KTMainWindow has the nice habbit that it will exit the
-     * application when the very last KTMainWindow is
-     * closed. Some applications may not want this default
-     * behaviour, for example if the application wants to ask the user
-     * wether he really wants to quit the application.  This can be
-     * achived by overloading the @ref #queryExit () method.  The default
-     * implementation simply returns TRUE, which means that the
-     * application will be quitted. FALSE will cancel the exiting
-     * process. 
-     *
-     * If you cancel exiting, your last window will remain visible.
-     * @see #queryClose
+       Called before the very last window is closed, either by the
+       user or indirectely by the session manager.
+     
+       It is not recommended to do any user interaction in this
+       function other than indicating severe errors. Better ask the
+       user on queryClose() (see below).
+
+       However, queryExit() is useful to do some final cleanups. A
+       typical example would be to write configuration data back.
+       
+       Note that the application may continue to run after queryExit()
+       (the user may have cancelled a shutdown). The purpose of
+       queryExit() is purely to prepare the application (with possible
+       user interaction) so it can safely be closed later (without
+       user interaction).
+       
+       If you need to do serious things on exit (like shutting a
+       dial-up connection down), connect to the signal
+       @ref KApplication::shutDown().
+       
+       Default implementation returns true. Returning false will
+       cancel the exiting. In the latter case, the last window will
+       remain visible.
+       
+       @see #queryClose
      */
     virtual bool queryExit();
 
     /**
-     * Called before window is closed, either by the user or indirectely by
-     * the session manager in "safely quit all applications"-mode.
-     *
-     * Default implementation returns true. Returning false will cancel
-     * the closing.
-     *
-       Reimplement this function to prevent the user from loosing data. 
+       Called before the window is closed, either by the user or indirectely by
+       the session manager.
+
+       The purpose of this function is to prepare the window in a way that it is
+       safe to close it, i.e. without the user losing some data.
+
+       Default implementation returns true. Returning false will cancel
+       the closing.
+
+       Reimplement this function to prevent the user from loosing data.
        Example:
-       
+       <pre>
+
            switch ( QMessageBox::warning( this, "Appname",
 				   i18n("Save changes to Document Foo?"),
 				   i18n("&Yes"),
@@ -394,19 +426,24 @@ protected:
            default: // cancel
 	return FALSE;
 
-     *
-     * @see #queryExit
-     */
+    </pre>
+ 
+   @see #queryExit
+    */
     virtual bool queryClose();
 
+    
      /**
-     * Save your instance-specific properties.
+     * Save your instance-specific properties. The function is
+     * invoked when the session manager requests your application 
+     * to save its state.
+     *
      * You MUST NOT change the group of the kconfig object,
      * since KTMainWindow uses one group for each window.
      * Please overload these function in childclasses.
      *
-     * Note that no user interaction is possible
-     * in these functions!
+     * Note that no user interaction is allowed
+     * in this function!
      *
      */
     virtual void saveProperties(KConfig*){};
@@ -417,9 +454,13 @@ protected:
    virtual void readProperties(KConfig*){};
 
    /**
-    * This method is called, when @ref KApplication emits signal saveYourself
-    * and after KTMainWindow has verified that it is "main" top-level window.
-    * So this method will be called only once and not in every widget.
+     * Save your application-wide properties. The function is
+     * invoked when the session manager requests your application 
+     * to save its state.
+     *
+     * The function is similar to saveProperties() but is only called for
+     * the very first main window, regardless how many main window are open.
+    
     * Override it if you need to save other data about your documents on
     * session end. sessionConfig is a config to which that data should be
     * saved. Normaly, you don't need this function. But if you want to save
@@ -428,12 +469,19 @@ protected:
     *
     * Default implementation does nothing.
     */
-   virtual void saveData(KConfig* sessionConfig);
+   virtual void saveGlobalProperties(KConfig* sessionConfig);
+    
+    
+    /**
+     * The counter-part of saveGlobalProperties(). Reads the application
+     * specific properties in again.
+     */
+   virtual void readGlobalProperties(KConfig* sessionConfig);
 
 public slots:
     /**
      * Makes a KDE compliant caption.
-     * 
+     *
      * @param caption Your caption. DO NOT include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
@@ -442,8 +490,8 @@ public slots:
 
     /**
      * Makes a plain caption without any modifications.
-     * 
-     * @param caption Your caption. This is the string that will be 
+     *
+     * @param caption Your caption. This is the string that will be
      * displayed in the window title.
      */
     virtual void setPlainCaption( const QString &caption );

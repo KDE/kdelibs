@@ -34,8 +34,6 @@
 // a static pointer (too bad we cannot have static objects in libraries)
 QList<KTMainWindow>* KTMainWindow::memberList = 0L;
 
-static bool commitingData = false;
-
 class KTLWSessionManaged : public KSessionManaged
 {
 public:
@@ -50,7 +48,7 @@ public:
 	if ( KTMainWindow::memberList->first() ){
 	    // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
 	    // hook is usefull for better document orientation
-	    KTMainWindow::memberList->first()->saveData(kapp->sessionConfig());
+	    KTMainWindow::memberList->first()->saveGlobalProperties(kapp->sessionConfig());
 	}
 
 	QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
@@ -67,36 +65,41 @@ public:
 
     bool commitData( QSessionManager& sm )
     {
-	// we do the Windows-thing here: close the windows step by
-	// step until it's cancelled.
-	
 	// not really a fast method but the only compatible one
 	if ( sm.allowsInteraction() ) {
 	    bool cancelled = false;
-	    commitingData = true;
-	    for ( KTMainWindow* it = KTMainWindow::memberList->first();
-		  it && !cancelled;
-		  it = KTMainWindow::memberList->next() ) {
-		cancelled = !it->close();
+	    QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
+	    KTMainWindow* last = 0;
+	    for (it.toFirst(); it.current() && !cancelled; ++it){
+		last = it.current();
+		cancelled = !last->queryClose();
 	    }
-	    commitingData = false;
+	    if ( !cancelled && last )
+		cancelled = !last->queryExit();
 	    return !cancelled;
 	}
+	
+	// the user wants it, the user gets it
+	return TRUE;
     }
 };
 
 static KTLWSessionManaged* ksm = 0;
 
 
+static bool initing = FALSE;
+
 KTMainWindow::KTMainWindow( const char *name, WFlags f )
     : QWidget( 0L, name, f )
 {
+    initing = TRUE;
+    
     kmenubar = 0L;
     kmainwidget = 0L;
     kstatusbar = 0L;
     borderwidth = 0;
     mHelpMenu = 0L;
-
+    
     kmainwidgetframe = new QFrame( this );
     CHECK_PTR( kmainwidgetframe );
     kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
@@ -104,23 +107,6 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
     kmainwidgetframe ->hide();
 
     kapp->setTopWidget( this );
-
-    //
-    // 1999-09-29 Espen Sand
-    // The KApplication::setTopWidget() above does a
-    // "widget->setCaption(getCaption())". I have reimplemented
-    // KTMainWindow::setCaption() so that it automatically adds the
-    // application name, so I need to revert the caption made in
-    // KApplication::setTopWidget().
-    //
-    // We should consider adding as new (default) parameter to
-    // KApplication::setTopWidget() were we can force it to use a
-    // "QString::null" argument instead of the current getCaption().
-    // That will reduce some overhead when starting an app. The code below
-    // is then not necessary.
-    //
-    setCaption( QString::null );
-
 
     // see if there already is a member list
     if( !memberList )
@@ -132,9 +118,18 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
     // enter the widget in the list of all KTWs
     memberList->append( this );
 
+    
+    if ( !name ) {
+	// set a unique object name. Required by session management.
+	QCString s;
+	s.setNum( memberList->count() );
+	setName( kapp->instanceName() + "-mainwindow#" + s );
+    }
 
     localKill = false;
     layoutMgr = 0;
+    
+    initing = FALSE;
 }
 
 KTMainWindow::~KTMainWindow()
@@ -179,7 +174,7 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
       e->accept();
 
       if (memberList->count() == 1) { // last window close accepted?
-	  if ( commitingData || queryExit() ) {            // Yes, Quit app?
+	  if ( queryExit() ) {            // Yes, Quit app?
 	      kapp->quit();             // ...and quit aplication.
 	  }  else {
 	      // cancel closing, it's stupid to end up with no windows at all....
@@ -255,6 +250,8 @@ void KTMainWindow::show ()
 
 void KTMainWindow::setCaption( const QString &caption )
 {
+    if ( initing ) // we are in our constructor
+	return;
   QWidget::setCaption( kapp->makeStdCaption(caption) );
 }
 
@@ -347,7 +344,11 @@ void KTMainWindow::updateRects()
 	resize(size());
 }
 
-void KTMainWindow::saveData(KConfig*)
+void KTMainWindow::saveGlobalProperties(KConfig*)
+{
+}
+
+void KTMainWindow::readGlobalProperties(KConfig*)
 {
 }
 
@@ -364,6 +365,9 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     s.setNum(number);
     s.prepend("WindowProperties");
     config->setGroup(s);
+
+    // store the objectName for later restorating
+    config->writeEntry("ObjectName", name());
 
     // store the className for later restorating
     config->writeEntry("ClassName", className());
@@ -449,6 +453,9 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
 
 bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 {
+    if ( number == 1 )
+	readGlobalProperties( config );
+    
     QString entry;
     QStrList entryList;
     int n = 1; // Tolbar counter. toolbars are counted from 1,
@@ -458,16 +465,16 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     s.setNum(number);
     s.prepend("WindowProperties");
     config->setGroup(s);
-    if (config->hasKey("KTWGeometry") == FALSE) // No global, return false
-      {
-	return FALSE;
-      }
+    
+    if ( config->hasKey("ObjectName" ) ) 
+	setName( config->readEntry("ObjectName").latin1() ); // latin1 is right here
+    
 
-    // Use KWM for window properties
-    QString geom = config->readEntry ("KTWGeometry");
-    if (!geom.isEmpty()){
-      setGeometry(KWM::setProperties(winId(), geom));
-    }
+//     // Use KWM for window properties
+//     QString geom = config->readEntry ("KTWGeometry");
+//     if (!geom.isEmpty()){
+//       setGeometry(KWM::setProperties(winId(), geom));
+//     }
 
     if (kstatusbar)
     {

@@ -83,8 +83,8 @@ public:
   /**
    * Constructor. Parses command-line arguments.
    *
-   * @param rAppName application name. Will be used for finding the 
-   * associated message files and icon files, and as the default 
+   * @param rAppName application name. Will be used for finding the
+   * associated message files and icon files, and as the default
    * registration name for DCOP. Now mandatory.
    *
    * @param allowStyles Set to false to disable the loading on plugin based
@@ -340,7 +340,7 @@ protected slots:
 
 private slots:
   void dcopFailure(const QString &);
- 
+
 private:
   KApplicationPrivate* pAppData;
   KConfig* pSessionConfig; //instance specific application config object
@@ -424,32 +424,42 @@ public:
   void appearanceChanged();
 
   /**
-   * The desktop background has been changed by kcmdisplay. 
-   * 
+   * The desktop background has been changed by kcmdisplay.
+   *
    * @param desk The desktop whose background has changed.
    *
    * NOTE: this method should move out of here as soon as DCOP is in place.
    */
   void backgroundChanged(int desk);
 
-  /** Session management asks you to save the state of your application.
-	*
-	* Connect to this signal in order to save your data. Do NOT
-	* manipulate the UI in that slot, it is blocked by the session manager.
-	*
-	* Use the @ref ::getSessionConfig KConfig object to store all
-	* your instance specific datas.
-	*
-	* Do not do any closing at this point! The user may still
-	* select "cancel" and then he wants to continue working with
-	* your application. Cleanups could be done after shutDown()
-	* (see below)
-	*
-	* Note: You should not use this if you are using the KTMainWindow.
-	*       Overload @ref KTMainWindow::saveProperties and
-	*	@ref KTMainWindow::readProperties in that case.
-	*	This allows you to simply handle applications with multiple
-	* toplevel windows.  */
+  /** 
+      Session management asks you to save the state of your application.
+   
+     This signal is provided for compatibility only. For new
+     appliations, simply use KTMainWindow. By reimplementing @ref
+     KTMainWindow::queryClose, @ref KTMainWindow::saveProperties and
+     @ref KTMainWindow::readProperties you can simply handle session
+     management for applications with multiple toplevel windows.
+     
+     For purposes without KTMainWindow, create an instance of
+     KSessionManaged and reimplement the functions @ref
+     KSessionManaged::commitData and/or @ref
+     KSessionManaged::saveState
+     
+     If you still want to use this signal, here is what you should do:
+     
+     Connect to this signal in order to save your data. Do NOT
+     manipulate the UI in that slot, it is blocked by the session
+     manager.
+       
+     Use the @ref ::getSessionConfig KConfig object to store all your
+     instance specific datas.
+
+     Do not do any closing at this point! The user may still select
+     "cancel" and then he wants to continue working with your
+     application. Cleanups could be done after shutDown() (see below)
+
+  */
   void saveYourself();
 
   /** Your application is killed. Either by your program itself, kwm's
@@ -488,25 +498,48 @@ bool checkAccess(const QString& pathname, int mode);
 
 
 /**
- *  Provides highlevel aceess to session management on a per-object base.
- *
- *  You don't need to do anything with this class when using KTMainWindow
- *
- * @short Highlevel access to session management.
- * @author Matthias Ettrich <ettrich@kde.org>
+   Provides highlevel aceess to session management on a per-object
+   base.
+   
+   KSessionManaged makes it possible to provide implementations for 
+   @ref QApplication::commitData() and @ref QApplication::saveState(), without
+   subclassing KApplication. KTMainWindow internally makes use of this.
+ 
+   You don't need to do anything with this class when using
+   KTMainWindow. Instead, use @ref KTMainWindow::saveProperties,
+   @ref KTMainWindow::readProperties, @ref KTMainWindow::queryClose,
+   @ref KTMainWindow::queryExit and friends.
+ 
+  @short Highlevel access to session management.
+  @author Matthias Ettrich <ettrich@kde.org>
  */
 class KSessionManaged
 {
 public:
   KSessionManaged();
   virtual ~KSessionManaged();
+    
+    /**
+       See @ref QApplication::saveState for documentation.
+       
+       This function is just a convenience version to avoid subclassing KApplication.
+     */
   virtual bool saveState( QSessionManager& sm );
+    /**
+       See @ref QApplication::commitData for documentation.
+       
+       This function is just a convenience version to avoid subclassing KApplication.
+     */
   virtual bool commitData( QSessionManager& sm );
 };
 
 #endif
 
 // $Log$
+// Revision 1.118  1999/10/30 09:46:16  dfaure
+// Documented rAppName in kapp.h
+// Added fourth argument to kuniqueapp, which has now exactly the same args as kapp.
+//
 // Revision 1.117  1999/10/23 16:16:23  kulow
 // here comes KInstance - "KApplication light"
 // It's a new KLibGlobal and KGlobal only keeps a pointer to a global

@@ -232,7 +232,7 @@ void KApplication::init()
   captionLayout = CaptionAppLast;
 }
 
-DCOPClient *KApplication::dcopClient() 
+DCOPClient *KApplication::dcopClient()
 {
   if (pDCOPClient)
     return pDCOPClient;
@@ -293,7 +293,7 @@ bool KSessionManaged::commitData(QSessionManager&)
 
 
 void KApplication::disableSessionManagement() {
-  bSessionManagement = true;
+  bSessionManagement = false;
 }
 
 void KApplication::commitData( QSessionManager& sm )
@@ -351,7 +351,7 @@ void KApplication::saveState( QSessionManager& sm )
     sm.setRestartCommand( restartCommand );
 
     // finally: do session management
-    emit saveYourself();
+    emit saveYourself(); // for compatiblity
     bool cancelled = false;
     for (KSessionManaged* it = sessionClients()->first();
 	 it && !cancelled;
@@ -373,10 +373,10 @@ void KApplication::saveState( QSessionManager& sm )
 
 #if 0
 //
-// 1999-10-21 Espen Sand: 
-// The functionality is moved to ktmainwindow. I have decided that I will 
-// not remove the code from kapp yet. You should only uncomment this is you 
-// really need to do so. In 99% of the cases it is simpler to modify the 
+// 1999-10-21 Espen Sand:
+// The functionality is moved to ktmainwindow. I have decided that I will
+// not remove the code from kapp yet. You should only uncomment this is you
+// really need to do so. In 99% of the cases it is simpler to modify the
 // code that depend on this See KDE2PORTING
 //
 // This code WILL be delected quite soon.
@@ -463,7 +463,7 @@ void KApplication::dcopFailure(const QString &msg)
   msgStr += +  msg;
   msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
 
-  QMessageBox::critical(kapp->mainWidget(), 
+  QMessageBox::critical(kapp->mainWidget(),
 			i18n("DCOP communications error (%1)").arg(kapp->caption()),
 			msgStr, i18n("Ok"));
 }
@@ -715,7 +715,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     QString styleStr = pConfig.readEntry("widgetStyle", "Platinum");
 
     void *oldHandle = styleHandle;
-    
+
     if(styleStr == "Platinum"){
         pKStyle=0;
         styleHandle=0;
