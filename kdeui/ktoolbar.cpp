@@ -1216,14 +1216,20 @@ void KToolBar::paintEvent(QPaintEvent *)
 
   if(kapp->kstyle()){
       kapp->kstyle()->drawKToolBar(paint, 0, 0, toolbarWidth, toolbarHeight,
-                                   colorGroup(), d->m_position == Floating);
+                                   colorGroup(),
+                                   (KStyle::KToolBarPos)d->m_position,
+                                   &b);
       if(moving){
           if(d->m_isHorizontal)
               kapp->kstyle()->drawKBarHandle(paint, 0, 0, 9, toolbarHeight,
-                                             colorGroup(), true,  &b);
+                                             colorGroup(),
+                                             (KStyle::KToolBarPos)
+                                             d->m_position, &b);
           else
               kapp->kstyle()->drawKBarHandle(paint, 0, 0, toolbarWidth, 9,
-                                             colorGroup(), false, &b);
+                                             colorGroup(),
+                                             (KStyle::KToolBarPos)
+                                             d->m_position, &b);
       }
       paint->end();
       delete paint;

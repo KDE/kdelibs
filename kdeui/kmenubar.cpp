@@ -98,7 +98,7 @@ void KMenuBar::drawContents(QPainter *p)
         bool popupshown;
         QFontMetrics fm = fontMetrics();
         stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
-                               NULL);
+                               d->m_macMode, NULL);
 
         for(i=0, nlitems=0, x=2, y=2; i < (int)mitems->count(); ++i, ++nlitems)
         {
