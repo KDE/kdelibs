@@ -76,11 +76,10 @@ AttrImpl::AttrImpl(DocumentImpl *doc, int id) : NodeImpl(doc) // ### change para
     attrId = id;
 }
 
-AttrImpl::AttrImpl(const AttrImpl &other) : NodeImpl(other)
+AttrImpl::AttrImpl(const AttrImpl &other) : NodeImpl(other.ownerDocument())
 {
     _specified = other.specified();
     _element = other._element;
-
     _name = other._name;
     if (_name) _name->ref();
     _value = other._value;
@@ -239,16 +238,8 @@ NodeImpl *AttrImpl::nextSibling() const
 
 NodeImpl *AttrImpl::cloneNode ( bool /*deep*/ )
 {
-    AttrImpl *newImpl = new AttrImpl();
-    newImpl->_name = _name ? _name->copy() : 0;
-    if (newImpl->_name) newImpl->_name->ref();
-    newImpl->_value = _value ? _value->copy() : 0;
-    if (newImpl->_value) newImpl->_value->ref();
-    newImpl->attrId = attrId;
-    newImpl->document = document;
-    newImpl->_specified = _specified;
+    AttrImpl *newImpl = new AttrImpl(*this);
     newImpl->_element = 0; // can't have two attributes with the same name/id attached to an element
-
     return newImpl;
 }
 
@@ -378,7 +369,7 @@ NodeImpl *ElementImpl::cloneNode ( bool deep )
     if(deep)
     {
 	NodeImpl *n;
-	for(n = firstChild(); n != lastChild(); n = n->nextSibling())
+	for(n = firstChild(); n; n = n->nextSibling())
 	{
 	    newImpl->appendChild(n->cloneNode(deep));
 	}

@@ -52,6 +52,8 @@
 #include "rendering/render_form.h"
 #include "rendering/render_style.h"
 
+#include <iostream.h>
+
 using namespace khtml;
 
 RenderFormElement::RenderFormElement(QScrollView *view,
@@ -766,21 +768,25 @@ RenderLegend::~RenderLegend()
 // -------------------------------------------------------------------------
 
 RenderSelect::RenderSelect(int size, bool multiple,
-                           QScrollView *view, HTMLFormElementImpl *form)
+                           QScrollView *view, HTMLFormElementImpl *form,
+                           HTMLSelectElementImpl *domParent)
     : RenderFormElement(view, form)
 {
     m_multiple = multiple;
     m_size = size;
+    m_domParent = domParent;
 
     if(m_multiple || m_size > 1) {
         KListBox* w = new KListBox(view);
         w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
         setQWidget(w);
+        connect(w,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
     }
     else {
         QComboBox *w = new QComboBox(view);
         m_size = 1;
         setQWidget(w);
+        connect(w,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
     }
 }
 
@@ -821,22 +827,55 @@ void RenderSelect::close()
     // insert all given <option>'s
     NodeImpl* current = f->firstChild();
     int i = 0;
+    bool inOptGroup = false;
+    bool finished = false;
 
-    while(current) {
-        if(current->id() == ID_OPTION &&
-           current->firstChild() && current->firstChild()->id() == ID_TEXT) {
+    listOptions.clear();
+    while(!finished) {
+	if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
+            if(m_multiple || m_size > 1) {
+		// put the optgroup label in the list - ### make this work for combo boxes
+		DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
+		if (text.isNull())
+		    text = "";	
+		QListBoxText *optGroupItem = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
 
-            DOMStringImpl *text = static_cast<TextImpl *>(current->firstChild())->string();
+                static_cast<KListBox*>(m_widget)->insertItem(optGroupItem, i);
+		optGroupItem->setSelectable(false);
+		i++;
+	    }
+	
+	    current = current->firstChild();
+	    inOptGroup = true;
+	}
+        if (current->id() == ID_OPTION) {
+            DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
+            if (text.isNull() && current->firstChild() && current->firstChild()->id() == ID_TEXT)
+		text = static_cast<TextImpl *>(current->firstChild())->string();
+	    if (text.isNull())
+		text = "";
+	    if (inOptGroup)
+		text = DOMString("    ")+text;
 
             if(m_multiple || m_size > 1)
                 static_cast<KListBox*>(m_widget)
-                    ->insertItem(QString(text->s, text->l), i);
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
             else
                 static_cast<QComboBox*>(m_widget)
-                    ->insertItem(QString(text->s, text->l), i);
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
+            listOptions.insert(i,static_cast<HTMLOptionElementImpl*>(current));
         }
+	NodeImpl *parent = current->parentNode();
         current = current->nextSibling();
         i++;
+        if (!current) {
+	    if (inOptGroup) {
+		current = parent->nextSibling();
+		inOptGroup = false;
+	    }
+	    if (!current)
+		finished = true;
+        }
     }
 
     if(m_multiple || m_size > 1) {
@@ -884,11 +923,14 @@ void RenderSelect::reset()
 
             HTMLOptionElementImpl* p = static_cast<HTMLOptionElementImpl*>(current);
 
-            if(m_multiple || m_size > 1)
+            if(m_multiple || m_size > 1) {
                 static_cast<KListBox*>(m_widget)
                     ->setSelected(i, p->selected());
+		m_domParent->setSelectedIndex(i,false);
+	    }
             else if(p->selected()) {
                 static_cast<QComboBox*>(m_widget)->setCurrentItem(i);
+		m_domParent->setSelectedIndex(i,false);
                 // we only honor the first option that is selected
                 // in case there is more than one selected
                 break;
@@ -901,7 +943,7 @@ void RenderSelect::reset()
 
 QCString RenderSelect::encoding()
 {
-    QCString encoding;
+    QCString encoding = "";
 
     if(m_name.isEmpty() || m_gform->disabled()) return encoding;
 
@@ -912,21 +954,16 @@ QCString RenderSelect::encoding()
         prefix += '=';
     }
     if(m_multiple || m_size > 1) {
-
         KListBox* w = static_cast<KListBox*>(m_widget);
-
-        HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
-
-        NodeImpl* current = f->firstChild();
-        int i = 0;
+        uint i;
         bool first = true;
-        while(current) {
-            if( w->isSelected(i) && current->id() == ID_OPTION ) {
-                HTMLOptionElementImpl* p = static_cast<HTMLOptionElementImpl*>(current);
-
-                if(p->m_value.isNull())
+        for (i = 0; i < w->count(); i++) {
+	    HTMLOptionElementImpl* p = listOptions[i];
+            if (w->isSelected(i) && p) {
+                if(p->m_value.isNull()) {
                     if(w->item(i))
                         encoding += prefix + encodeString(w->item(i)->text());
+                }
                 else
                     encoding += prefix + encodeString(p->m_value.string());
 
@@ -936,31 +973,18 @@ QCString RenderSelect::encoding()
                    prefix = '&' + prefix;
                 }
             }
-            current = current->nextSibling();
-            i++;
         }
     }
     else
     {
         QComboBox* w = static_cast<QComboBox*>(m_widget);
-        HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
-
-        NodeImpl* current = f->firstChild();
-        int i = 0;
-        while(current) {
-            if( i == w->currentItem() && current->id() == ID_OPTION ) {
-                HTMLOptionElementImpl* p = static_cast<HTMLOptionElementImpl*>(current);
-
-                if(p->m_value.isNull())
-                    encoding += prefix + encodeString(w->currentText());
-                else
-                    encoding += prefix + encodeString(p->m_value.string());
-
-                break;
-            }
-            current = current->nextSibling();
-            i++;
-        }
+	HTMLOptionElementImpl* p = listOptions[w->currentItem()];
+	if (p) {
+	    if(p->m_value.isNull())
+		encoding += prefix + encodeString(w->currentText());
+	    else
+		encoding += prefix + encodeString(p->m_value.string());
+	}
     }
 
     return encoding;
@@ -1052,6 +1076,35 @@ void RenderSelect::restoreState(const QString &state)
     }
 
 }
+
+void RenderSelect::setSelectedIndex(long index)
+{
+    if(m_multiple || m_size > 1) {
+        KListBox* w = static_cast<KListBox*>(m_widget);
+        w->clearSelection();
+        w->setSelected(w->item(index),true);
+    }
+    else
+        static_cast<QComboBox*>(m_widget)->setCurrentItem(index);
+    m_domParent->setSelectedIndex(index,false);
+}
+
+void RenderSelect::slotActivated(int index)
+{
+    int optionIndex = 0; // actual index of option not counting OPTGROUP entries that may be in list
+    if (!listOptions[index])
+	optionIndex = -1;
+    else {
+	int i;
+	for (i = 0; i < index; i++) {
+	    if (listOptions[i])
+		optionIndex++;
+	}
+    }
+    m_domParent->setSelectedIndex(optionIndex,false);
+
+}
+
 
 
 // -------------------------------------------------------------------------

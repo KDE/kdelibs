@@ -138,7 +138,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   // retrieve n'th element of collection
   if (id == Images || id == Applets || id == Links ||
       id == Forms || id == Anchors) {
-    element = coll.item((unsigned long)v.toNumber().value());
+    element = coll.item(v.toNumber().value());
     result = getDOMNode(element);
   }
 
@@ -298,7 +298,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
       if      (p == "elements")        return getHTMLCollection(form.elements()); // type HTMLCollection
-      else if (p == "length")          return Number((unsigned long)form.length());
+      else if (p == "length")          return Number(form.length());
       else if (p == "name")            return getString(form.name());
       else if (p == "acceptCharset")   return getString(form.acceptCharset());
       else if (p == "action")          return getString(form.action());
@@ -315,16 +315,16 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       if      (p == "type")            return getString(select.type());
-      else if (p == "selectedIndex")   return Number((unsigned long)select.selectedIndex());
+      else if (p == "selectedIndex")   return Number(select.selectedIndex());
       else if (p == "value")           return getString(select.value());
-      else if (p == "length")          return Number((unsigned long)select.length());
+      else if (p == "length")          return Number(select.length());
       else if (p == "form")            return getDOMNode(select.form()); // type HTMLFormElement
       else if (p == "options")         return getHTMLCollection(select.options()); // type HTMLCollection
       else if (p == "disabled")        return Boolean(select.disabled());
       else if (p == "multiple")        return Boolean(select.multiple());
       else if (p == "name")            return getString(select.name());
-      else if (p == "size")            return Number((unsigned long)select.size());
-      else if (p == "tabIndex")        return Number((unsigned long)select.tabIndex());
+      else if (p == "size")            return Number(select.size());
+      else if (p == "tabIndex")        return Number(select.tabIndex());
       // methods
       else if (p == "add")             return new HTMLElementFunction(element,HTMLElementFunction::Add);
       else if (p == "remove")          return new HTMLElementFunction(element,HTMLElementFunction::Remove);
@@ -343,7 +343,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       if      (p == "form")            return getDOMNode(option.form()); // type HTMLFormElement
       else if (p == "defaultSelected") return Boolean(option.defaultSelected());
       else if (p == "text")            return getString(option.text());
-      else if (p == "index")           return Number((unsigned long)option.index());
+      else if (p == "index")           return Number(option.index());
       else if (p == "disabled")        return Boolean(option.disabled());
       else if (p == "label")           return getString(option.label());
       else if (p == "selected")        return Boolean(option.selected());
@@ -361,12 +361,12 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "alt")             return getString(input.alt());
       else if (p == "checked")         return Boolean(input.checked());
       else if (p == "disabled")        return Boolean(input.disabled());
-      else if (p == "maxLength")       return Number((unsigned long)input.maxLength());
+      else if (p == "maxLength")       return Number(input.maxLength());
       else if (p == "name")            return getString(input.name());
       else if (p == "readOnly")        return Boolean(input.readOnly());
       else if (p == "size")            return getString(input.size());
       else if (p == "src")             return getString(input.src());
-      else if (p == "tabIndex")        return Number((unsigned long)input.tabIndex());
+      else if (p == "tabIndex")        return Number(input.tabIndex());
       else if (p == "type")            return getString(input.type());
       else if (p == "useMap")          return getString(input.useMap());
       else if (p == "value")           return getString(input.value());
@@ -382,12 +382,12 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       if      (p == "defaultValue")    return getString(textarea.defaultValue());
       else if (p == "form")            return getDOMNode(textarea.form()); // type HTMLFormElement
       else if (p == "accessKey")       return getString(textarea.accessKey());
-      else if (p == "cols")            return Number((unsigned long)textarea.cols());
+      else if (p == "cols")            return Number(textarea.cols());
       else if (p == "disabled")        return Boolean(textarea.disabled());
       else if (p == "name")            return getString(textarea.name());
       else if (p == "readOnly")        return Boolean(textarea.readOnly());
-      else if (p == "rows")            return Number((unsigned long)textarea.rows());
-      else if (p == "tabIndex")        return Number((unsigned long)textarea.tabIndex());
+      else if (p == "rows")            return Number(textarea.rows());
+      else if (p == "tabIndex")        return Number(textarea.tabIndex());
       else if (p == "type")            return getString(textarea.type());
       else if (p == "value")           return getString(textarea.value());
       // methods
@@ -402,7 +402,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "accessKey")       return getString(button.accessKey());
       else if (p == "disabled")        return Boolean(button.disabled());
       else if (p == "name")            return getString(button.name());
-      else if (p == "tabIndex")        return Number((unsigned long)button.tabIndex());
+      else if (p == "tabIndex")        return Number(button.tabIndex());
       else if (p == "type")            return getString(button.type());
       else if (p == "value")           return getString(button.value());
     }
@@ -435,7 +435,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_OL: {
       DOM::HTMLOListElement oList = element;
       if      (p == "compact")         return Boolean(oList.compact());
-      else if (p == "start")           return Number((unsigned long)oList.start());
+      else if (p == "start")           return Number(oList.start());
       else if (p == "type")            return getString(oList.type());
     }
     break;
@@ -457,7 +457,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_LI: {
       DOM::HTMLLIElement li = element;
       if      (p == "type")            return getString(li.type());
-      else if (p == "value")           return Number((unsigned long)li.value());
+      else if (p == "value")           return Number(li.value());
     }
     break;
     case ID_DIV: {
@@ -485,7 +485,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     }
     case ID_PRE: {
       DOM::HTMLPreElement pre = element;
-      if      (p == "width")           return Number((unsigned long)pre.width());
+      if      (p == "width")           return Number(pre.width());
     }
     break;
     case ID_BR: {
@@ -533,7 +533,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "rel")             return getString(anchor.rel());
       else if (p == "rev")             return getString(anchor.rev());
       else if (p == "shape")           return getString(anchor.shape());
-      else if (p == "tabIndex")        return Number((unsigned long)anchor.tabIndex());
+      else if (p == "tabIndex")        return Number(anchor.tabIndex());
       else if (p == "target")          return getString(anchor.target());
       else if (p == "type")            return getString(anchor.type());
       // methods
@@ -573,7 +573,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "hspace")          return getString(object.hspace());
       else if (p == "name")            return getString(object.name());
       else if (p == "standby")         return getString(object.standby());
-      else if (p == "tabIndex")        return Number((unsigned long)object.tabIndex());
+      else if (p == "tabIndex")        return Number(object.tabIndex());
       else if (p == "type")            return getString(object.type());
       else if (p == "useMap")          return getString(object.useMap());
       else if (p == "vspace")          return getString(object.vspace());
@@ -619,7 +619,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "href")            return getString(area.href());
       else if (p == "noHref")          return Boolean(area.noHref());
       else if (p == "shape")           return getString(area.shape());
-      else if (p == "tabIndex")        return Number((unsigned long)area.tabIndex());
+      else if (p == "tabIndex")        return Number(area.tabIndex());
       else if (p == "target")          return getString(area.target());
     }
     break;
@@ -671,7 +671,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       if      (p == "align")           return getString(tableCol.align());
       else if (p == "ch")              return getString(tableCol.ch());
       else if (p == "chOff")           return getString(tableCol.chOff());
-      else if (p == "span")            return Number((unsigned long)tableCol.span());
+      else if (p == "span")            return Number(tableCol.span());
       else if (p == "vAlign")          return getString(tableCol.vAlign());
       else if (p == "width")           return getString(tableCol.width());
     }
@@ -692,8 +692,8 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
-      if      (p == "rowIndex")        return Number((unsigned long)tableRow.rowIndex());
-      else if (p == "sectionRowIndex") return Number((unsigned long)tableRow.sectionRowIndex());
+      if      (p == "rowIndex")        return Number(tableRow.rowIndex());
+      else if (p == "sectionRowIndex") return Number(tableRow.sectionRowIndex());
       else if (p == "cells")           return getHTMLCollection(tableRow.cells()); // type HTMLCollection
       else if (p == "align")           return getString(tableRow.align());
       else if (p == "bgColor")         return getString(tableRow.bgColor());
@@ -708,18 +708,18 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_TH:
     case ID_TD: {
       DOM::HTMLTableCellElement tableCell = element;
-      if      (p == "cellIndex")       return Number((unsigned long)tableCell.cellIndex());
+      if      (p == "cellIndex")       return Number(tableCell.cellIndex());
       else if (p == "abbr")            return getString(tableCell.abbr());
       else if (p == "align")           return getString(tableCell.align());
       else if (p == "axis")            return getString(tableCell.axis());
       else if (p == "bgColor")         return getString(tableCell.bgColor());
       else if (p == "ch")              return getString(tableCell.ch());
       else if (p == "chOff")           return getString(tableCell.chOff());
-      else if (p == "colSpan")         return Number((unsigned long)tableCell.colSpan());
+      else if (p == "colSpan")         return Number(tableCell.colSpan());
       else if (p == "headers")         return getString(tableCell.headers());
       else if (p == "height")          return getString(tableCell.height());
       else if (p == "noWrap")          return Boolean(tableCell.noWrap());
-      else if (p == "rowSpan")         return Number((unsigned long)tableCell.rowSpan());
+      else if (p == "rowSpan")         return Number(tableCell.rowSpan());
       else if (p == "scope")           return getString(tableCell.scope());
       else if (p == "vAlign")          return getString(tableCell.vAlign());
       else if (p == "width")           return getString(tableCell.width());
@@ -1488,7 +1488,7 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 
   switch (id) {
     case Item:
-      result = getDOMNode(coll.item((unsigned long)args[0].toNumber().value()));
+      result = getDOMNode(coll.item(args[0].toNumber().value()));
       break;
     case NamedItem:
       result = getDOMNode(coll.namedItem(args[0].toString().value().string()));

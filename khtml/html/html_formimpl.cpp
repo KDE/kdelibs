@@ -38,6 +38,8 @@
 #include <kmimetype.h>
 #include <netaccess.h>
 
+#include <iostream.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -89,7 +91,7 @@ QByteArray HTMLFormElementImpl::formData()
 
     QByteArray form_data(0);
     bool first = true;
-    QCString enc_string; // used for non-multipart data
+    QCString enc_string = ""; // used for non-multipart data
 
     RenderFormElement *current = formElements.first();
     for( ; current; current = formElements.next() )
@@ -783,6 +785,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc)
     view = 0;
     // 0 means invalid (i.e. not set)
     m_size = 0;
+    m_selectedIndex = -1;
 }
 
 HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
@@ -792,6 +795,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementI
     view = 0;
     // 0 means invalid (i.e. not set)
     m_size = 0;
+    m_selectedIndex = -1;
 }
 
 ushort HTMLSelectElementImpl::id() const
@@ -801,30 +805,35 @@ ushort HTMLSelectElementImpl::id() const
 
 DOMString HTMLSelectElementImpl::type() const
 {
-    // ###
-    return DOMString();
+    return (m_multiple ? "select-multiple" : "select-one");
 }
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
-    kdDebug( 6030 ) << " HTMLSelectElementImpl::selectedIndex()" << endl;
-
-    // ###
-    return 0;
+    cerr << "HTMLSelectElementImpl::selectedIndex(): m_selectedIndex = " << m_selectedIndex << endl;
+    return m_selectedIndex;
 }
 
-void HTMLSelectElementImpl::setSelectedIndex( long  )
+void HTMLSelectElementImpl::setSelectedIndex( long  index, bool updateRender)
 {
+    if (m_render && updateRender)
+	static_cast<RenderSelect*>(m_render)->setSelectedIndex(index);
+    else
+	m_selectedIndex = index;
 }
 
 long HTMLSelectElementImpl::length() const
 {
-    // ###
-    return 0;
+    int len = 0;
+    NodeImpl *child;
+    for (child = firstChild(); child; child = child->nextSibling())
+	len++;
+    return len;
 }
 
 void HTMLSelectElementImpl::setSize( long  )
 {
+    // ###
 }
 
 long HTMLSelectElementImpl::tabIndex() const
@@ -835,14 +844,17 @@ long HTMLSelectElementImpl::tabIndex() const
 
 void HTMLSelectElementImpl::setTabIndex( long  )
 {
+    // ###
 }
 
 void HTMLSelectElementImpl::add( const HTMLElement &/*element*/, const HTMLElement &/*before*/ )
 {
+    // ###
 }
 
 void HTMLSelectElementImpl::remove( long /*index*/ )
 {
+    // ###
 }
 
 QString HTMLSelectElementImpl::state( )
@@ -855,10 +867,12 @@ QString HTMLSelectElementImpl::state( )
 
 void HTMLSelectElementImpl::blur(  )
 {
+    // ###
 }
 
 void HTMLSelectElementImpl::focus(  )
 {
+    // ###
 }
 
 void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
@@ -897,7 +911,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
     if(r)
     {
         RenderSelect *f = new RenderSelect(m_size, m_multiple,
-                                           view, _form);
+                                           view, _form, this);
 	if (f)
 	{
 	    f->setName(_name);
@@ -951,7 +965,7 @@ HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc)
 
 const DOMString HTMLOptionElementImpl::nodeName() const
 {
-    return "TEXTAREA";
+    return "OPTION";
 }
 
 ushort HTMLOptionElementImpl::id() const

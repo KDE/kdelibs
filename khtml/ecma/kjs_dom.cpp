@@ -52,7 +52,7 @@ KJSO DOMNode::tryGet(const UString &p) const
   else if (p == "nodeValue")
     result = getString(node.nodeValue());
   else if (p == "nodeType")
-    result = Number((unsigned long)node.nodeType());
+    result = Number(node.nodeType());
   else if (p == "parentNode")
     result = getDOMNode(node.parentNode());
   else if (p == "childNodes")
@@ -500,7 +500,7 @@ KJSO DOMNamedNodeMap::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "length")
-    return Number((unsigned long)map.length());
+    return Number(map.length());
   else if (p == "getNamedItem")
     result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::GetNamedItem);
   else if (p == "setNamedItem")

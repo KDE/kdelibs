@@ -293,7 +293,7 @@ public:
     DOMString type() const;
 
     long selectedIndex() const;
-    void setSelectedIndex( long );
+    void setSelectedIndex( long index, bool updateRender = true);
 
     long length() const;
 
@@ -318,6 +318,7 @@ public:
 protected:
     int m_size;
     bool m_multiple;
+    int m_selectedIndex;
 };
 
 

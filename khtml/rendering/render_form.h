@@ -39,12 +39,15 @@ class QWidget;
 class QMultiLineEdit;
 class QScrollView;
 class QLineEdit;
+class QListboxItem;
 
 #include <qpixmap.h>
+#include <qintdict.h>
 
 namespace DOM {
     class HTMLFormElementImpl;
     class HTMLInputElementImpl;
+    class HTMLSelectElementImpl;
 };
 
 namespace khtml {
@@ -426,9 +429,10 @@ public:
 
 class RenderSelect : public RenderFormElement
 {
+    Q_OBJECT
 public:
     RenderSelect(int size, bool multiple, QScrollView *view,
-                 HTMLFormElementImpl *form);
+                 HTMLFormElementImpl *form, HTMLSelectElementImpl *domParent);
 
     virtual const char *renderName() const { return "RenderSelect"; }
 
@@ -443,9 +447,16 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
+    void setSelectedIndex(long index);
+
 protected:
     unsigned  m_size;
     bool m_multiple;
+    HTMLSelectElementImpl *m_domParent;
+    QIntDict<HTMLOptionElementImpl> listOptions;
+
+protected slots:
+    void slotActivated(int index);
 };
 
 
