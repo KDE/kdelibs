@@ -76,6 +76,7 @@ public:
     virtual void write( const QString &str ) = 0;
     virtual void end() = 0;
     virtual void finish() = 0;
+    virtual void setOnHold(bool /*_onHold*/) {}
 
 signals:
     void finishedParsing();
@@ -102,6 +103,7 @@ public:
     void write( const QString &str );
     void end();
     void finish();
+    virtual void setOnHold(bool _onHold);
 
 protected:
     void reset();
@@ -273,6 +275,8 @@ protected:
     // the output of the script to be postponed until after the script has finished executing
     bool executingScript;
     khtml::CachedScript *cachedScript;
+    // you can pause the tokenizer if you need to display a dialog or something
+    bool onHold;
 
     QString scriptOutput;
 

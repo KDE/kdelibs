@@ -36,6 +36,7 @@
 #include "html/html_documentimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_imageimpl.h"
+#include "html/htmltokenizer.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_image.h"
@@ -2454,6 +2455,8 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 
 bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
 {
+  if (!checkLinkSecurity(url))
+    return false;
   if ( child->m_bPreloaded )
   {
 //      kdDebug(6005) << "requestObject preload" << endl;
@@ -3953,9 +3956,14 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL)
        ( linkProto == "cgi" || linkProto == "file" ) &&
        proto != "file" && proto != "cgi" && proto != "man")
   {
+    Tokenizer *tokenizer = d->m_doc->tokenizer();
+    if (tokenizer)
+      tokenizer->setOnHold(true);
     KMessageBox::error( 0,
                         i18n( "This page is untrusted\nbut it contains a link to your local file system."),
                         i18n( "Security Alert" ));
+    if (tokenizer)
+      tokenizer->setOnHold(false);
     return false;
   }
   return true;

@@ -24,6 +24,11 @@
 #include "khtml_part.h"
 #include <kio/job.h>
 #include <kdebug.h>
+#include <kuserprofile.h>
+#include <kmessagebox.h>
+#include <kstringhandler.h>
+#include <klocale.h>
+#include <khtml_ext.h>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args )
 : KRun( url, 0, false, false /* No GUI */ )
@@ -38,12 +43,68 @@ void KHTMLRun::foundMimeType( const QString &_type )
     QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
     if ( !m_part->processObjectRequest( m_child, m_strURL, mimeType ) )
     {
-        kdDebug() << "KHTMLRun::foundMimeType " << _type << " couldn't open" << endl;
-        KRun::foundMimeType( mimeType );
-        return;
+       if ( !m_bFinished && // couldn't embed
+            mimeType != "inode/directory" && // dirs can't be saved
+            !m_strURL.isLocalFile() ) // ... and remote URL
+       {
+           KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, true);
+           if ( askSave( m_strURL, offer ) ) // ... -> ask whether to save
+           { // true: saving done or canceled
+               m_bFinished = true;
+               m_bFault = true; // make Konqueror think there was an error, in order to stop the spinning wheel
+           }
+       }
+
+       // Check if running is allowed
+       if ( !m_bFinished &&  //     If not embedddable ...
+            !allowExecution( mimeType, m_strURL ) ) // ...and the user said no (for executables etc.)
+       {
+           m_bFinished = true;
+           //m_bFault = true; // might not be necessary in khtml
+       }
+
+       if ( m_bFinished )
+       {
+           m_timer.start( 0, true );
+           return;
+       }
+
+       kdDebug() << "KHTMLRun::foundMimeType " << _type << " couldn't open" << endl;
+       KRun::foundMimeType( mimeType );
+       return;
     }
     m_bFinished = true;
     m_timer.start( 0, true );
+}
+
+bool KHTMLRun::allowExecution( const QString &serviceType, const KURL &url )
+{
+    if ( !isExecutable( serviceType ) )
+      return true;
+
+    return ( KMessageBox::warningYesNo( 0, i18n( "Do you really want to execute '%1' ? " ).arg( url.prettyURL() ) ) == KMessageBox::Yes );
+}
+
+bool KHTMLRun::isExecutable( const QString &serviceType )
+{
+    return ( serviceType == "application/x-desktop" ||
+             serviceType == "application/x-executable" ||
+             serviceType == "application/x-shellscript" );
+}
+
+bool KHTMLRun::askSave( const KURL & url, KService::Ptr offer )
+{
+    QString surl = KStringHandler::csqueeze( url.prettyURL() );
+    // Inspired from kmail
+    QString question = offer ? i18n("Open '%1' using '%2'?").
+                               arg( surl ).arg(offer->name())
+                       : i18n("Open '%1' ?").arg( surl );
+    int choice = KMessageBox::warningYesNoCancel(0L, question, QString::null,
+                                                 i18n("Save to disk"), i18n("Open"));
+    if ( choice == KMessageBox::Yes ) // Save
+        KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As..." ), url );
+
+    return choice != KMessageBox::No; // saved or canceled -> don't open
 }
 
 void KHTMLRun::scanFile()

@@ -78,6 +78,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
     currToken = 0;
     cachedScript = 0;
     executingScript = false;
+    onHold = false;
 
     reset();
 }
@@ -93,6 +94,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentI
     currToken = 0;
     cachedScript = 0;
     executingScript = false;
+    onHold = false;
 
     reset();
 }
@@ -100,6 +102,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentI
 void HTMLTokenizer::reset()
 {
     assert(executingScript == false);
+    assert(onHold == false);
     if (cachedScript)
         cachedScript->deref(this);
     cachedScript = 0;
@@ -122,6 +125,7 @@ void HTMLTokenizer::reset()
 void HTMLTokenizer::begin()
 {
     executingScript = false;
+    onHold = false;
     reset();
     currToken = 0;
     size = 4095;
@@ -1181,7 +1185,7 @@ void HTMLTokenizer::write( const QString &str )
     // we just insert the code at the tokenizers current position. Parsing will continue once
     // we return from the script stuff
     // (this won't happen if we're in the middle of loading an external script)
-    if(executingScript) {
+    if(executingScript || onHold) {
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "adding to scriptOutput" << endl;
 #endif
@@ -1442,7 +1446,7 @@ void HTMLTokenizer::finish()
     // this indicates we will not recieve any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
-    if (!loadingExtScript && !executingScript)
+    if (!loadingExtScript && !executingScript && !onHold)
         end(); // this actually causes us to be deleted
 }
 
@@ -1580,4 +1584,16 @@ void HTMLTokenizer::addScriptOutput()
         scriptOutput = "";
     }
 }
+
+void HTMLTokenizer::setOnHold(bool _onHold)
+{
+    if (onHold == _onHold) return;
+    onHold = _onHold;
+    if (!onHold) {
+	QString rest = scriptOutput+pendingSrc;
+	scriptOutput = pendingSrc = "";
+	write(rest);
+    }
+}
+
 #include "htmltokenizer.moc"

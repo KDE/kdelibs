@@ -25,6 +25,7 @@
 
 #include <krun.h>
 #include <kurl.h>
+#include <kservice.h>
 #include <kparts/browserextension.h>
 
 class KHTMLPart;
@@ -47,6 +48,10 @@ public:
 
 protected:
   virtual void scanFile();
+
+  bool allowExecution( const QString &serviceType, const KURL &url );
+  bool isExecutable( const QString &serviceType );
+  bool askSave( const KURL & url, KService::Ptr offer );
 
 protected slots:
   void slotKHTMLScanFinished(KIO::Job *job);
