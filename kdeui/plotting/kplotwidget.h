@@ -37,7 +37,7 @@ class QPixmap;
  	*tickmarks and labels, and a list of KPlotObjects to be drawn.
 	*/
 
-class KPlotWidget : public QWidget {
+class KDE_EXPORT KPlotWidget : public QWidget {
 	Q_OBJECT
 public:
 	/**@short Constructor.  Sets the primary x and y limits in data units.

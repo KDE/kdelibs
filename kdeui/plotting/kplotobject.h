@@ -22,12 +22,14 @@
 class QString;
 class QPainter;
 
+#include <kdemacros.h>
+
 /**class DRect
 	*@short equivalent of QRect with double x,y coordinates
 	*@author Jason Harris
 	*@version 1.0
 	*/
-class DRect {
+class KDE_EXPORT DRect {
 public:
 	DRect() { DRect( 0.0, 0.0, 1.0, 1.0 ); }
 	DRect( double x, double y, double w, double h ) { X = x; Y = y; W = w; H = h; }
@@ -54,7 +56,7 @@ private:
 	*@author Jason Harris
 	*@version 1.0
 	*/
-class DPoint {
+class KDE_EXPORT DPoint {
 public:
 	DPoint() { DPoint( 0.0, 0.0 ); }
 	DPoint( double x, double y ) { setX( x ); setY( y ); }
@@ -85,7 +87,7 @@ private:
 	*about the object's appearance, depending on its type.  There is a draw function
 	*for plotting the object on a KPlotWidget's QPainter.
 	*/
-class KPlotObject{
+class KDE_EXPORT KPlotObject{
 public:
 /**@enum PTYPE
 	*The Type classification of the KPlotObject
