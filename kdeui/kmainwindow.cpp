@@ -672,7 +672,11 @@ KToolBar *KMainWindow::toolBar( const char * name )
     if ( tb )
         return tb;
     bool honor_mode = (name == "mainToolBar");
-    return new KToolBar(this, name, honor_mode);
+    
+    if ( builderClient() )
+	return new KToolBar(this, name, honor_mode); // XMLGUI constructor
+    else
+	return new KToolBar(this, Top, false, name, honor_mode ); // non-XMLGUI
 }
 
 QListIterator<KToolBar> KMainWindow::toolBarIterator()
