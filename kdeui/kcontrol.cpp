@@ -52,8 +52,7 @@ KControlDialog::KControlDialog()
 
   defaultBtn->setText(i18n("&Default"));
 
-  setMinimumWidth(500);
-  //  setMinimumWidth(w*5 + 60);
+  setMinimumWidth(w*5 + 60);
 }
 
 void KControlDialog::done(int result)
