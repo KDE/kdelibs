@@ -51,6 +51,7 @@ using namespace KJS;
   int                 ival;
   double              dval;
   UString             *ustr;
+  Identifier          *ident;
   Node                *node;
   StatementNode       *stat;
   ParameterNode       *param;
@@ -108,7 +109,7 @@ using namespace KJS;
 /* terminal types */
 %token <dval> NUMBER
 %token <ustr> STRING
-%token <ustr> IDENT
+%token <ident> IDENT
 
 /* automatically inserted semicolon */
 %token AUTOPLUSPLUS AUTOMINUSMINUS
@@ -213,7 +214,7 @@ PropertyNameAndValueList:
 
 PropertyName:
     IDENT                          { $$ = new PropertyNode(*$1); delete $1; }
-  | STRING                         { $$ = new PropertyNode(*$1); delete $1; }
+  | STRING                         { $$ = new PropertyNode(Identifier(*$1)); delete $1; }
   | NUMBER                         { $$ = new PropertyNode($1); }
 ;
 

@@ -57,7 +57,7 @@ DOMNodeIterator::~DOMNodeIterator()
   ScriptInterpreter::forgetDOMObject(nodeIterator.handle());
 }
 
-Value DOMNodeIterator::tryGet(ExecState *exec, const UString &p) const
+Value DOMNodeIterator::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMNodeIterator,DOMObject>(exec,p,&DOMNodeIteratorTable,this);
 }
@@ -131,7 +131,7 @@ NodeFilterConstructor::NodeFilterConstructor(ExecState* exec)
 {
 }
 
-Value NodeFilterConstructor::tryGet(ExecState *exec, const UString &p) const
+Value NodeFilterConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<NodeFilterConstructor,DOMObject>(exec,p,&NodeFilterConstructorTable,this);
 }
@@ -216,7 +216,7 @@ DOMTreeWalker::~DOMTreeWalker()
   ScriptInterpreter::forgetDOMObject(treeWalker.handle());
 }
 
-Value DOMTreeWalker::tryGet(ExecState *exec, const UString &p) const
+Value DOMTreeWalker::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMTreeWalker,DOMObject>(exec,p,&DOMTreeWalkerTable,this);
 }
@@ -241,7 +241,7 @@ Value DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-void DOMTreeWalker::tryPut(ExecState *exec, const UString &propertyName,
+void DOMTreeWalker::tryPut(ExecState *exec, const Identifier &propertyName,
                            const Value& value, int attr)
 {
   if (propertyName == "currentNode") {

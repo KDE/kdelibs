@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -98,7 +99,7 @@ namespace KJS {
     /**
      * Find an entry in the table, and return its value (i.e. the value field of HashEntry)
      */
-    static int find(const struct HashTable *table, const UString &s);
+    static int find(const struct HashTable *table, const Identifier &s);
     static int find(const struct HashTable *table,
 		    const UChar *c, unsigned int len);
 
@@ -108,14 +109,14 @@ namespace KJS {
      * especially the attr field.
      */
     static const HashEntry* findEntry(const struct HashTable *table,
-                                      const UString &s);
+                                      const Identifier &s);
     static const HashEntry* findEntry(const struct HashTable *table,
                                       const UChar *c, unsigned int len);
 
     /**
      * Calculate the hash value for a given key
      */
-    static unsigned int hash(const UString &key);
+    static unsigned int hash(const Identifier &key);
     static unsigned int hash(const UChar *c, unsigned int len);
     static unsigned int hash(const char *s);
   };
@@ -127,7 +128,7 @@ namespace KJS {
    * Helper for lookupFunction and lookupValueOrFunction
    */
   template <class FuncImp>
-  inline Value lookupOrCreateFunction(ExecState *exec, const UString &propertyName,
+  inline Value lookupOrCreateFunction(ExecState *exec, const Identifier &propertyName,
                                       const ObjectImp *thisObj, int token, int params, int attr)
   {
       // Look for cached value in dynamic map of properties (in ObjectImp)
@@ -164,7 +165,7 @@ namespace KJS {
    * @param thisObj "this"
    */
   template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value lookupGet(ExecState *exec, const UString &propertyName,
+  inline Value lookupGet(ExecState *exec, const Identifier &propertyName,
                          const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -183,7 +184,7 @@ namespace KJS {
    * Using this instead of lookupGet prevents 'this' from implementing a dummy getValueProperty.
    */
   template <class FuncImp, class ParentImp>
-  inline Value lookupGetFunction(ExecState *exec, const UString &propertyName,
+  inline Value lookupGetFunction(ExecState *exec, const Identifier &propertyName,
                          const HashTable* table, const ObjectImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -203,7 +204,7 @@ namespace KJS {
    * Using this instead of lookupGet removes the need for a FuncImp class.
    */
   template <class ThisImp, class ParentImp>
-  inline Value lookupGetValue(ExecState *exec, const UString &propertyName,
+  inline Value lookupGetValue(ExecState *exec, const Identifier &propertyName,
                            const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -221,7 +222,7 @@ namespace KJS {
    * Lookup hash entry for property to be set, and set the value.
    */
   template <class ThisImp, class ParentImp>
-  inline void lookupPut(ExecState *exec, const UString &propertyName,
+  inline void lookupPut(ExecState *exec, const Identifier &propertyName,
                         const Value& value, int attr,
                         const HashTable* table, ThisImp* thisObj)
   {
@@ -250,7 +251,7 @@ namespace KJS {
    * that cached object. Note that the object constructor must take 1 argument, exec.
    */
   template <class ClassCtor>
-  inline KJS::Object cacheGlobalObject(ExecState *exec, const UString &propertyName)
+  inline KJS::Object cacheGlobalObject(ExecState *exec, const Identifier &propertyName)
   {
     ValueImp *obj = static_cast<KJS::ObjectImp*>(exec->interpreter()->globalObject().imp())->getDirect(propertyName);
     if (obj)
@@ -283,7 +284,7 @@ namespace KJS {
 #define DEFINE_PROTOTYPE(ClassName,ClassProto) \
   namespace KJS { \
   class ClassProto : public KJS::ObjectImp { \
-    friend KJS::Object cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::UString &propertyName); \
+    friend KJS::Object cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
   public: \
     static KJS::Object self(KJS::ExecState *exec) \
     { \
@@ -296,25 +297,25 @@ namespace KJS {
   public: \
     virtual const KJS::ClassInfo *classInfo() const { return &info; } \
     static const KJS::ClassInfo info; \
-    KJS::Value get(KJS::ExecState *exec, const KJS::UString &propertyName) const; \
-    bool hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const; \
+    KJS::Value get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const; \
+    bool hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const; \
   }; \
   const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
   };
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
-    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
     { \
       /*fprintf( stderr, "%sProto::get(%s) [in macro, no parent]\n", info.className, propertyName.ascii());*/ \
       return lookupGetFunction<ClassFunc,KJS::ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
     } \
-    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
     { /*stupid but we need this to have a common macro for the declaration*/ \
       return KJS::ObjectImp::hasProperty(exec, propertyName); \
     }
 
 #define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
-    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
     { \
       /*fprintf( stderr, "%sProto::get(%s) [in macro]\n", info.className, propertyName.ascii());*/ \
       KJS::Value val = lookupGetFunction<ClassFunc,KJS::ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
@@ -322,7 +323,7 @@ namespace KJS {
       /* Not found -> forward request to "parent" prototype */ \
       return ParentProto::self(exec).get( exec, propertyName ); \
     } \
-    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
     { \
       if (KJS::ObjectImp::hasProperty(exec, propertyName)) \
         return true; \
@@ -336,7 +337,7 @@ namespace KJS {
     ClassFunc(KJS::ExecState *exec, int i, int len) \
        : ObjectImp( /*proto? */ ), id(i) { \
        KJS::Value protect(this); \
-       put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum); \
+       put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
     } \
     virtual bool implementsCall() const { return true; } \
     /** You need to implement that one */ \

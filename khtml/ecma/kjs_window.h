@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -48,7 +49,7 @@ namespace KJS {
       Height, Width, ColorDepth, PixelDepth, AvailLeft, AvailTop, AvailHeight,
       AvailWidth
     };
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
   private:
     KHTMLView *view;
@@ -83,11 +84,11 @@ namespace KJS {
     static Window *retrieveActive(ExecState *exec);
     QGuardedPtr<KHTMLPart> part() const { return m_part; }
     virtual void mark();
-    virtual bool hasProperty(ExecState *exec, const UString &p) const;
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
+    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
-    int installTimeout(const UString &handler, int t, bool singleShot);
+    int installTimeout(const Identifier &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
     void scheduleClose();
     void closeNow();
@@ -181,7 +182,7 @@ namespace KJS {
   public:
     WindowQObject(Window *w);
     ~WindowQObject();
-    int installTimeout(const UString &handler, int t, bool singleShot);
+    int installTimeout(const Identifier &handler, int t, bool singleShot);
     int installTimeout(const Value &func, List args, int t, bool singleShot);
     void clearTimeout(int timerId, bool delAction = true);
   public slots:
@@ -199,8 +200,8 @@ namespace KJS {
   class Location : public ObjectImp {
   public:
     ~Location();
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
     virtual Value toPrimitive(ExecState *exec, Type preferred) const;
     virtual UString toString(ExecState *exec) const;
     enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
@@ -219,8 +220,8 @@ namespace KJS {
     friend class KonquerorFunc;
   public:
     Konqueror(KHTMLPart *p) : part(p) { }
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual bool hasProperty(ExecState *exec, const UString &p) const;
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
     virtual UString toString(ExecState *exec) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

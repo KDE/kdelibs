@@ -2,7 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
- *  Copyright (C) 2002 Apple Computer, Inc.
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -37,6 +37,7 @@
 
 #include "ustring.h"
 #include "operations.h"
+#include "identifier.h"
 #include <math.h>
 
 namespace KJS {
@@ -176,6 +177,8 @@ UString::Rep *UString::Rep::create(UChar *d, int l)
 
 void UString::Rep::destroy()
 {
+  if (capacity == capacityForIdentifier)
+    Identifier::remove(this);
   delete [] dat;
   delete this;
 }

@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -40,13 +41,13 @@ namespace KJS {
   class DOMObject : public ObjectImp {
   public:
     DOMObject(const Object &proto) : ObjectImp(proto) {}
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const
       { return ObjectImp::get(exec, propertyName); }
 
-    virtual void put(ExecState *exec, const UString &propertyName,
+    virtual void put(ExecState *exec, const Identifier &propertyName,
                      const Value &value, int attr = None);
-    virtual void tryPut(ExecState *exec, const UString &propertyName,
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName,
                         const Value& value, int attr = None)
       { ObjectImp::put(exec,propertyName,value,attr); }
 
@@ -61,8 +62,8 @@ namespace KJS {
   class DOMFunction : public ObjectImp {
   public:
     DOMFunction() : ObjectImp( /* proto? */ ) {}
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const
       { return ObjectImp::get(exec, propertyName); }
 
     virtual bool implementsCall() const { return true; }
@@ -167,7 +168,7 @@ namespace KJS {
    * we call tryGet instead of get, in DOMObjects.
    */
   template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value DOMObjectLookupGet(ExecState *exec, const UString &propertyName,
+  inline Value DOMObjectLookupGet(ExecState *exec, const Identifier &propertyName,
                                   const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -185,7 +186,7 @@ namespace KJS {
    * functions, only "values".
    */
   template <class ThisImp, class ParentImp>
-  inline Value DOMObjectLookupGetValue(ExecState *exec, const UString &propertyName,
+  inline Value DOMObjectLookupGetValue(ExecState *exec, const Identifier &propertyName,
                                        const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -203,7 +204,7 @@ namespace KJS {
    * we call tryPut instead of put, in DOMObjects.
    */
   template <class ThisImp, class ParentImp>
-  inline void DOMObjectLookupPut(ExecState *exec, const UString &propertyName,
+  inline void DOMObjectLookupPut(ExecState *exec, const Identifier &propertyName,
                                  const Value& value, int attr,
                                  const HashTable* table, ThisImp* thisObj)
   {
@@ -231,7 +232,7 @@ namespace KJS {
     ClassFunc(ExecState *exec, int i, int len) \
        : DOMFunction( /*proto? */ ), id(i) { \
        Value protect(this); \
-       put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum); \
+       put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum); \
     } \
     /** You need to implement that one */ \
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args); \

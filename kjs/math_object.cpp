@@ -76,12 +76,12 @@ const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
 
 MathObjectImp::MathObjectImp(ExecState * /*exec*/,
                              ObjectPrototypeImp *objProto)
-  : ObjectImp(Object(objProto))
+  : ObjectImp(objProto)
 {
 }
 
 // ECMA 15.8
-Value MathObjectImp::get(ExecState *exec, const UString &propertyName) const
+Value MathObjectImp::get(ExecState *exec, const Identifier &propertyName) const
 {
   return lookupGet<MathFuncImp, MathObjectImp, ObjectImp>( exec, propertyName, &mathTable, this );
 }
@@ -130,7 +130,7 @@ MathFuncImp::MathFuncImp(ExecState *exec, int i, int l)
     ), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(l),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, l, DontDelete|ReadOnly|DontEnum);
 }
 
 bool MathFuncImp::implementsCall() const

@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -235,7 +236,7 @@ Value Reference2::getValue(ExecState *exec) const
     return base();
 
   if (!bs.isValid() || bs.type() == NullType) {
-    UString m = I18N_NOOP("Can't find variable: ") + propertyName();
+    UString m = I18N_NOOP("Can't find variable: ") + propertyName().ustring();
     Object err = Error::create(exec, ReferenceError, m.ascii());
     exec->setException(err);
     return err;
@@ -261,7 +262,7 @@ void Reference2::putValue(ExecState *exec, const Value& w)
   }
 #ifdef KJS_VERBOSE
   printInfo(exec, (UString("setting property ")+
-		   propertyName()).cstring().c_str(), w);
+		   propertyName().ustring()).cstring().c_str(), w);
 #endif
   if (bs.type() == NullType)
   {
@@ -362,7 +363,7 @@ LabelStack &LabelStack::operator=(const LabelStack &other)
   return *this;
 }
 
-bool LabelStack::push(const UString &id)
+bool LabelStack::push(const Identifier &id)
 {
   if (id.isEmpty() || contains(id))
     return false;
@@ -374,7 +375,7 @@ bool LabelStack::push(const UString &id)
   return true;
 }
 
-bool LabelStack::contains(const UString &id) const
+bool LabelStack::contains(const Identifier &id) const
 {
   if (id.isEmpty())
     return true;
@@ -413,7 +414,7 @@ void LabelStack::clear()
 
 // ------------------------------ CompletionImp --------------------------------
 
-CompletionImp::CompletionImp(ComplType c, const Value& v, const UString& t)
+CompletionImp::CompletionImp(ComplType c, const Value& v, const Identifier& t)
   : comp(c), val(v.imp()), tar(t)
 {
 }
@@ -947,7 +948,7 @@ void InterpreterImp::initGlobalObject()
   b_uriError = Object(new NativeErrorImp(globExec,funcProto,b_uriErrorPrototype));
 
   // ECMA 15.3.4.1
-  funcProto->put(globExec,"constructor", b_Function, DontEnum);
+  funcProto->put(globExec,constructorPropertyName, b_Function, DontEnum);
 
   global.put(globExec,"Object", b_Object, DontEnum);
   global.put(globExec,"Function", b_Function, DontEnum);
@@ -968,21 +969,21 @@ void InterpreterImp::initGlobalObject()
   global.put(globExec,"URIError",b_uriError, Internal);
 
   // Set the "constructor" property of all builtin constructors
-  objProto->put(globExec, "constructor", b_Object, DontEnum | DontDelete | ReadOnly);
-  funcProto->put(globExec, "constructor", b_Function, DontEnum | DontDelete | ReadOnly);
-  arrayProto->put(globExec, "constructor", b_Array, DontEnum | DontDelete | ReadOnly);
-  booleanProto->put(globExec, "constructor", b_Boolean, DontEnum | DontDelete | ReadOnly);
-  stringProto->put(globExec, "constructor", b_String, DontEnum | DontDelete | ReadOnly);
-  numberProto->put(globExec, "constructor", b_Number, DontEnum | DontDelete | ReadOnly);
-  dateProto->put(globExec, "constructor", b_Date, DontEnum | DontDelete | ReadOnly);
-  regexpProto->put(globExec, "constructor", b_RegExp, DontEnum | DontDelete | ReadOnly);
-  errorProto->put(globExec, "constructor", b_Error, DontEnum | DontDelete | ReadOnly);
-  b_evalErrorPrototype.put(globExec, "constructor", b_evalError, DontEnum | DontDelete | ReadOnly);
-  b_rangeErrorPrototype.put(globExec, "constructor", b_rangeError, DontEnum | DontDelete | ReadOnly);
-  b_referenceErrorPrototype.put(globExec, "constructor", b_referenceError, DontEnum | DontDelete | ReadOnly);
-  b_syntaxErrorPrototype.put(globExec, "constructor", b_syntaxError, DontEnum | DontDelete | ReadOnly);
-  b_typeErrorPrototype.put(globExec, "constructor", b_typeError, DontEnum | DontDelete | ReadOnly);
-  b_uriErrorPrototype.put(globExec, "constructor", b_uriError, DontEnum | DontDelete | ReadOnly);
+  objProto->put(globExec, constructorPropertyName, b_Object, DontEnum | DontDelete | ReadOnly);
+  funcProto->put(globExec, constructorPropertyName, b_Function, DontEnum | DontDelete | ReadOnly);
+  arrayProto->put(globExec, constructorPropertyName, b_Array, DontEnum | DontDelete | ReadOnly);
+  booleanProto->put(globExec, constructorPropertyName, b_Boolean, DontEnum | DontDelete | ReadOnly);
+  stringProto->put(globExec, constructorPropertyName, b_String, DontEnum | DontDelete | ReadOnly);
+  numberProto->put(globExec, constructorPropertyName, b_Number, DontEnum | DontDelete | ReadOnly);
+  dateProto->put(globExec, constructorPropertyName, b_Date, DontEnum | DontDelete | ReadOnly);
+  regexpProto->put(globExec, constructorPropertyName, b_RegExp, DontEnum | DontDelete | ReadOnly);
+  errorProto->put(globExec, constructorPropertyName, b_Error, DontEnum | DontDelete | ReadOnly);
+  b_evalErrorPrototype.put(globExec, constructorPropertyName, b_evalError, DontEnum | DontDelete | ReadOnly);
+  b_rangeErrorPrototype.put(globExec, constructorPropertyName, b_rangeError, DontEnum | DontDelete | ReadOnly);
+  b_referenceErrorPrototype.put(globExec, constructorPropertyName, b_referenceError, DontEnum | DontDelete | ReadOnly);
+  b_syntaxErrorPrototype.put(globExec, constructorPropertyName, b_syntaxError, DontEnum | DontDelete | ReadOnly);
+  b_typeErrorPrototype.put(globExec, constructorPropertyName, b_typeError, DontEnum | DontDelete | ReadOnly);
+  b_uriErrorPrototype.put(globExec, constructorPropertyName, b_uriError, DontEnum | DontDelete | ReadOnly);
 
   // built-in values
   global.put(globExec, "NaN",        Number(NaN), DontEnum|DontDelete);
@@ -1228,7 +1229,7 @@ Boolean InternalFunctionImp::hasInstance(ExecState *exec, const Value &value)
   if (value.type() != ObjectType)
     return Boolean(false);
 
-  Value prot = get(exec,"prototype");
+  Value prot = get(exec,prototypePropertyName);
   if (prot.type() != ObjectType && prot.type() != NullType) {
     Object err = Error::create(exec, TypeError, "Invalid prototype encountered "
                                "in instanceof operation.");

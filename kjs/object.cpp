@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -60,51 +61,6 @@ Object Object::dynamicCast(const Value &v)
   return Object(static_cast<ObjectImp*>(v.imp()));
 }
 
-Value Object::get(ExecState *exec, const UString &propertyName) const
-{
-  return static_cast<ObjectImp*>(rep)->get(exec,propertyName);
-}
-
-void Object::put(ExecState *exec, const UString &propertyName, const Value &value, int attr)
-{
-  static_cast<ObjectImp*>(rep)->put(exec,propertyName,value,attr);
-}
-
-bool Object::canPut(ExecState *exec, const UString &propertyName) const
-{
-  return static_cast<ObjectImp*>(rep)->canPut(exec,propertyName);
-}
-
-bool Object::hasProperty(ExecState *exec, const UString &propertyName) const
-{
-  return static_cast<ObjectImp*>(rep)->hasProperty(exec, propertyName);
-}
-
-bool Object::deleteProperty(ExecState *exec, const UString &propertyName)
-{
-  return static_cast<ObjectImp*>(rep)->deleteProperty(exec,propertyName);
-}
-
-Value Object::defaultValue(ExecState *exec, Type hint) const
-{
-  return static_cast<ObjectImp*>(rep)->defaultValue(exec,hint);
-}
-
-bool Object::implementsConstruct() const
-{
-  return static_cast<ObjectImp*>(rep)->implementsConstruct();
-}
-
-Object Object::construct(ExecState *exec, const List &args)
-{
-  return static_cast<ObjectImp*>(rep)->construct(exec,args);
-}
-
-bool Object::implementsCall() const
-{
-  return static_cast<ObjectImp*>(rep)->implementsCall();
-}
-
 Value Object::call(ExecState *exec, Object &thisObj, const List &args)
 {
 #if KJS_MAX_STACK > 0
@@ -129,16 +85,6 @@ Value Object::call(ExecState *exec, Object &thisObj, const List &args)
   return ret;
 }
 
-bool Object::implementsHasInstance() const
-{
-  return static_cast<ObjectImp*>(rep)->implementsHasInstance();
-}
-
-Boolean Object::hasInstance(ExecState *exec, const Value &value)
-{
-  return static_cast<ObjectImp*>(rep)->hasInstance(exec,value);
-}
-
 const List Object::scope() const
 {
   return static_cast<ObjectImp*>(rep)->scope();
@@ -150,6 +96,7 @@ void Object::setScope(const List &s)
     static_cast<ObjectImp*>(rep)->setScope(s);
 }
 
+// delme
 List Object::propList(ExecState *exec, bool recursive)
 {
   return static_cast<ObjectImp*>(rep)->propList(exec,recursive);
@@ -258,45 +205,44 @@ UString ObjectImp::className() const
   return "Object";
 }
 
-Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
+Value ObjectImp::get(ExecState *exec, const Identifier &propertyName) const
 {
-  if (propertyName == "__proto__") {
-    Object proto = Object::dynamicCast(prototype());
-    // non-standard netscape extension
+  ValueImp *imp = getDirect(propertyName);
+  if ( imp )
+    return Value(imp);
+
+  Object proto = Object::dynamicCast(prototype());
+
+  // non-standard netscape extension
+  if (propertyName == specialPrototypePropertyName) {
     if (!proto.isValid())
       return Null();
     else
       return proto;
   }
 
-  ValueImp *imp = getDirect(propertyName);
-  if ( imp )
-    return Value(imp);
-
-  Object proto = Object::dynamicCast(prototype());
-  if (!proto.isValid())
+  if (proto.isNull())
     return Undefined();
 
   return proto.get(exec,propertyName);
 }
 
-// This get method only looks at the property map.
-// A bit like hasProperty(recursive=false), this doesn't go to the prototype.
-// This is used e.g. by lookupOrCreateFunction (to cache a function, we don't want
-// to look up in the prototype, it might already exist there)
-ValueImp* ObjectImp::getDirect(const UString& propertyName) const
+Value ObjectImp::get(ExecState *exec, unsigned propertyName) const
 {
-  return _prop->get(propertyName);
+  return get(exec, Identifier::from(propertyName));
 }
 
 // ECMA 8.6.2.2
-void ObjectImp::put(ExecState *exec, const UString &propertyName,
+void ObjectImp::put(ExecState *exec, const Identifier &propertyName,
                      const Value &value, int attr)
 {
-  assert(value.isValid());
-  assert(value.type() != ReferenceType);
-  assert(value.type() != CompletionType);
-  assert(value.type() != ListType);
+  assert(!value.isNull());
+
+  // non-standard netscape extension
+  if (propertyName == specialPrototypePropertyName) {
+    setPrototype(value);
+    return;
+  }
 
   /* TODO: check for write permissions directly w/o this call */
   /* Doesn't look very easy with the PropertyMap API - David */
@@ -310,21 +256,30 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
     return;
   }
 
-  if (propertyName == "__proto__") {
-    // non-standard netscape extension
-    setPrototype(value);
-    return;
-  }
-
   _prop->put(propertyName,value.imp(),attr);
 }
 
+// delme
+void ObjectImp::put(ExecState *exec, unsigned propertyName,
+                     const Value &value, int attr)
+{
+  put(exec, Identifier::from(propertyName), value, attr);
+}
+
 // ECMA 8.6.2.3
-bool ObjectImp::canPut(ExecState *, const UString &propertyName) const
+bool ObjectImp::canPut(ExecState *, const Identifier &propertyName) const
+{
+// delme
 {
   PropertyMapNode *node = _prop->getNode(propertyName);
   if (node)
     return!(node->attr & ReadOnly);
+}
+// fixme
+//   int attributes;
+//   ValueImp *v = _prop.get(propertyName, attributes);
+//   if (v)
+//     return!(attributes & ReadOnly);
 
   // Look in the static hashtable of properties
   const HashEntry* e = findPropertyHashEntry(propertyName);
@@ -337,10 +292,8 @@ bool ObjectImp::canPut(ExecState *, const UString &propertyName) const
 }
 
 // ECMA 8.6.2.4
-bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName) const
+bool ObjectImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
 {
-  if (propertyName == "__proto__")
-    return true;
   if (_prop->get(propertyName))
     return true;
 
@@ -348,14 +301,24 @@ bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName) const
   if (findPropertyHashEntry(propertyName))
       return true;
 
+  // non-standard netscape extension
+  if (propertyName == specialPrototypePropertyName)
+    return true;
+
   // Look in the prototype
   Object proto = Object::dynamicCast(prototype());
-  return proto.isValid() && proto.hasProperty(exec, propertyName);
+  return !proto.isNull() && proto.hasProperty(exec,propertyName);
+}
+
+bool ObjectImp::hasProperty(ExecState *exec, unsigned propertyName) const
+{
+  return hasProperty(exec, Identifier::from(propertyName));
 }
 
 // ECMA 8.6.2.5
-bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
+bool ObjectImp::deleteProperty(ExecState */*exec*/, const Identifier &propertyName)
 {
+// delme
   PropertyMapNode *node = _prop->getNode(propertyName);
   if (node) {
     if ((node->attr & DontDelete))
@@ -364,11 +327,26 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
     return true;
   }
 
+// fixme
+//   int attributes;
+//   ValueImp *v = _prop.get(propertyName, attributes);
+//   if (v) {
+//     if ((attributes & DontDelete))
+//       return false;
+//     _prop.remove(propertyName);
+//     return true;
+//   }
+
   // Look in the static hashtable of properties
   const HashEntry* entry = findPropertyHashEntry(propertyName);
   if (entry && entry->attr & DontDelete)
     return false; // this builtin property can't be deleted
   return true;
+}
+
+bool ObjectImp::deleteProperty(ExecState *exec, unsigned propertyName)
+{
+  return deleteProperty(exec, Identifier::from(propertyName));
 }
 
 void ObjectImp::deleteAllProperties( ExecState * )
@@ -389,9 +367,9 @@ Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
 
   Value v;
   if (hint == StringType)
-    v = get(exec,"toString");
+    v = get(exec,toStringPropertyName);
   else
-    v = get(exec,"valueOf");
+    v = get(exec,valueOfPropertyName);
 
   if (v.type() == ObjectType) {
     Object o = Object(static_cast<ObjectImp*>(v.imp()));
@@ -408,9 +386,9 @@ Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
   }
 
   if (hint == StringType)
-    v = get(exec,"valueOf");
+    v = get(exec,valueOfPropertyName);
   else
-    v = get(exec,"toString");
+    v = get(exec,toStringPropertyName);
 
   if (v.type() == ObjectType) {
     Object o = Object(static_cast<ObjectImp*>(v.imp()));
@@ -431,7 +409,7 @@ Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
   return err;
 }
 
-const HashEntry* ObjectImp::findPropertyHashEntry( const UString& propertyName ) const
+const HashEntry* ObjectImp::findPropertyHashEntry( const Identifier& propertyName ) const
 {
   const ClassInfo *info = classInfo();
   while (info) {
@@ -501,7 +479,7 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
   PropertyMapNode *node = _prop->first();
   while (node) {
     if (!(node->attr & DontEnum))
-      list.append(Reference(Object(this), node->name));
+      list.append(Reference(Object(this), node->name.ustring()));
     node = node->next();
   }
 
@@ -586,6 +564,16 @@ Object ObjectImp::toObject(ExecState */*exec*/) const
   return Object(const_cast<ObjectImp*>(this));
 }
 
+void ObjectImp::putDirect(const Identifier &propertyName, ValueImp *value, int attr)
+{
+  value->setGcAllowed();
+  _prop->put(propertyName, value, attr);
+}
+
+void ObjectImp::putDirect(const Identifier &propertyName, int value, int attr)
+{
+  _prop->put(propertyName, NumberImp::create(value), attr);
+}
 
 // ------------------------------ Error ----------------------------------------
 
@@ -650,7 +638,7 @@ Object Error::create(ExecState *exec, ErrorType errtype, const char *message,
 
 /*
 #ifndef NDEBUG
-  const char *msg = err.get("message").toString().value().ascii();
+  const char *msg = err.get(messagePropertyName).toString().value().ascii();
   if (l >= 0)
       fprintf(stderr, "KJS: %s at line %d. %s\n", estr, l, msg);
   else

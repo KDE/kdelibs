@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -45,14 +46,14 @@ ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto)
 }
 
 // Special implementation of [[Put]] - see ECMA 15.4.5.1
-void ArrayInstanceImp::put(ExecState *exec, const UString &propertyName, const Value &value, int attr)
+void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr)
 {
   if ((attr == None || attr == DontDelete) && !canPut(exec,propertyName))
     return;
 
   if (hasProperty(exec,propertyName)) {
-    if (propertyName == "length") {
-      Value len = get(exec,"length");
+    if (propertyName == lengthPropertyName) {
+      Value len = get(exec,lengthPropertyName);
       unsigned int oldLen = len.toUInt32(exec);
       unsigned int newLen = value.toUInt32(exec);
       if (value.toNumber(exec) != double(newLen)) {
@@ -62,11 +63,11 @@ void ArrayInstanceImp::put(ExecState *exec, const UString &propertyName, const V
       }
       // shrink array
       for (unsigned int u = newLen; u < oldLen; u++) {
-	UString p = UString::from(u);
+	Identifier p = Identifier::from(u);
 	if (hasOwnProperty(exec, p))
 	  deleteProperty(exec, p);
       }
-      ObjectImp::put(exec, "length", Number(newLen), DontEnum | DontDelete);
+      ObjectImp::put(exec, lengthPropertyName, Number(newLen), DontEnum | DontDelete);
       return;
     }
     //    put(p, v);
@@ -75,26 +76,21 @@ void ArrayInstanceImp::put(ExecState *exec, const UString &propertyName, const V
 
   // array index ?
   unsigned int idx;
-  if (!sscanf(propertyName.cstring().c_str(), "%u", &idx)) /* TODO */
+  if (!sscanf(propertyName.ustring().cstring().c_str(), "%u", &idx)) /* TODO */
     return;
 
   // do we need to update/create the length property ?
-  if (hasOwnProperty(exec, "length")) {
-    Value len = get(exec, "length");
+  if (hasOwnProperty(exec, lengthPropertyName)) {
+    Value len = get(exec, lengthPropertyName);
     if (idx < len.toUInt32(exec))
       return;
   }
 
-  ObjectImp::put(exec, "length", Number(idx+1), DontDelete | DontEnum);
-}
-
-void ArrayInstanceImp::putDirect(ExecState *exec, const UString &propertyName, const Value &value, int attr)
-{
-  ObjectImp::put(exec,propertyName,value,attr);
+  ObjectImp::put(exec, lengthPropertyName, Number(idx+1), DontDelete | DontEnum);
 }
 
 bool ArrayInstanceImp::hasOwnProperty(ExecState *exec,
-                                      const UString &propertyName)
+                                      const Identifier &propertyName)
 {
   // disable this object's prototype temporarily for the hasProperty() call
   Value protoBackup = prototype();
@@ -134,10 +130,10 @@ ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
   setInternalValue(Null());
 
   // The constructor will be added later, by InterpreterImp, once ArrayObjectImp has been constructed.
-  put(exec,"length", Number(0), DontEnum | DontDelete);
+  put(exec,lengthPropertyName, Number(0), DontEnum | DontDelete);
 }
 
-Value ArrayPrototypeImp::get(ExecState *exec, const UString &propertyName) const
+Value ArrayPrototypeImp::get(ExecState *exec, const Identifier &propertyName) const
 {
   //fprintf( stderr, "ArrayPrototypeImp::get(%s)\n", propertyName.ascii() );
   return lookupGetFunction<ArrayProtoFuncImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
@@ -151,7 +147,7 @@ ArrayProtoFuncImp::ArrayProtoFuncImp(ExecState *exec, int i, int len)
     ), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 bool ArrayProtoFuncImp::implementsCall() const
@@ -162,7 +158,7 @@ bool ArrayProtoFuncImp::implementsCall() const
 // ECMA 15.4.4
 Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  unsigned int length = thisObj.get(exec,"length").toUInt32(exec);
+  unsigned int length = thisObj.get(exec,lengthPropertyName).toUInt32(exec);
 
   Value result;
   switch (id) {
@@ -188,7 +184,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
         str += separator;
-      Value element = thisObj.get(exec,UString::from(k));
+      Value element = thisObj.get(exec,k);
       if (element.type() != UndefinedType && element.type() != NullType)
         str += element.toString(exec);
     }
@@ -200,54 +196,49 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     int n = 0;
     Value curArg = thisObj;
     Object curObj = Object::dynamicCast(thisObj);
-    bool first = true;
     ListIterator it = args.begin();
     for (;;) {
       if (curArg.type() == ObjectType &&
           curObj.inherits(&ArrayInstanceImp::info)) {
         unsigned int k = 0;
-        if (!first)
-          length = curObj.get(exec,"length").toUInt32(exec);
+        // Older versions tried to optimize out getting the length of thisObj
+        // by checking for n != 0, but that doesn't work if thisObj is an empty array.
+        length = curObj.get(exec,lengthPropertyName).toUInt32(exec);
         while (k < length) {
-          UString p = UString::from(k);
-          if (curObj.hasProperty(exec,p))
-            arr.put(exec,UString::from(n), curObj.get(exec,p));
+          if (curObj.hasProperty(exec,k))
+            arr.put(exec, n, curObj.get(exec, k));
           n++;
           k++;
         }
       } else {
-        arr.put(exec,UString::from(n), curArg);
+        arr.put(exec, n, curArg);
         n++;
       }
       if (it == args.end())
         break;
       curArg = *it;
       curObj = Object::dynamicCast(it++); // may be 0
-      first = false;
     }
-    arr.put(exec,"length", Number(n), DontEnum | DontDelete);
+    arr.put(exec,lengthPropertyName, Number(n), DontEnum | DontDelete);
 
     result = arr;
     break;
   }
   case Pop:{
-
     if (length == 0) {
-      thisObj.put(exec, "length", Number(length), DontEnum | DontDelete);
+      thisObj.put(exec, lengthPropertyName, Number(length), DontEnum | DontDelete);
       result = Undefined();
     } else {
-      UString str = UString::from(length - 1);
-      result = thisObj.get(exec,str);
-      thisObj.deleteProperty(exec, str);
-      thisObj.put(exec, "length", Number(length - 1), DontEnum | DontDelete);
+      result = thisObj.get(exec, length - 1);
+      thisObj.put(exec, lengthPropertyName, Number(length - 1), DontEnum | DontDelete);
     }
     break;
   }
   case Push: {
     for (int n = 0; n < args.size(); n++)
-      thisObj.put(exec,UString::from(length + n), args[n]);
+      thisObj.put(exec, length + n, args[n]);
     length += args.size();
-    thisObj.put(exec,"length", Number(length), DontEnum | DontDelete);
+    thisObj.put(exec,lengthPropertyName, Number(length), DontEnum | DontDelete);
     result = Number(length);
     break;
   }
@@ -256,26 +247,25 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     unsigned int middle = length / 2;
 
     for (unsigned int k = 0; k < middle; k++) {
-      UString str = UString::from(k);
-      UString str2 = UString::from(length - k - 1);
-      Value obj = thisObj.get(exec,str);
-      Value obj2 = thisObj.get(exec,str2);
-      if (thisObj.hasProperty(exec,str2)) {
-        if (thisObj.hasProperty(exec,str)) {
-          thisObj.put(exec, str, obj2);
-          thisObj.put(exec, str2, obj);
+      unsigned lk1 = length - k - 1;
+      Value obj = thisObj.get(exec,k);
+      Value obj2 = thisObj.get(exec,lk1);
+      if (thisObj.hasProperty(exec,lk1)) {
+        if (thisObj.hasProperty(exec,k)) {
+          thisObj.put(exec, k, obj2);
+          thisObj.put(exec, lk1, obj);
         } else {
-          thisObj.put(exec, str, obj2);
-          thisObj.deleteProperty(exec, str2);
+          thisObj.put(exec, k, obj2);
+          thisObj.deleteProperty(exec, lk1);
         }
       } else {
-        if (thisObj.hasProperty(exec, str)) {
-          thisObj.deleteProperty(exec, str);
-          thisObj.put(exec, str2, obj);
+        if (thisObj.hasProperty(exec, k)) {
+          thisObj.deleteProperty(exec, k);
+          thisObj.put(exec, lk1, obj);
         } else {
           // why delete something that's not there ? Strange.
-          thisObj.deleteProperty(exec, str);
-          thisObj.deleteProperty(exec, str2);
+          thisObj.deleteProperty(exec, k);
+          thisObj.deleteProperty(exec, lk1);
         }
       }
     }
@@ -284,21 +274,19 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
   }
   case Shift: {
     if (length == 0) {
-      thisObj.put(exec, "length", Number(length), DontEnum | DontDelete);
+      thisObj.put(exec, lengthPropertyName, Number(length), DontEnum | DontDelete);
       result = Undefined();
     } else {
-      result = thisObj.get(exec, "0");
+      result = thisObj.get(exec, 0);
       for(unsigned int k = 1; k < length; k++) {
-        UString str = UString::from(k);
-        UString str2 = UString::from(k-1);
-        if (thisObj.hasProperty(exec, str)) {
-          Value obj = thisObj.get(exec, str);
-          thisObj.put(exec, str2, obj);
+        if (thisObj.hasProperty(exec, k)) {
+          Value obj = thisObj.get(exec, k);
+          thisObj.put(exec, k-1, obj);
         } else
-          thisObj.deleteProperty(exec, str2);
+          thisObj.deleteProperty(exec, k-1);
       }
-      thisObj.deleteProperty(exec, UString::from(length - 1));
-      thisObj.put(exec, "length", Number(length - 1), DontEnum | DontDelete);
+      thisObj.deleteProperty(exec, length - 1);
+      thisObj.put(exec, lengthPropertyName, Number(length - 1), DontEnum | DontDelete);
     }
     break;
   }
@@ -325,17 +313,16 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
 
     //printf( "Slicing from %d to %d \n", begin, end );
     for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
-      UString str = UString::from(k+begin);
-      if (thisObj.hasProperty(exec,str)) {
-        UString str2 = UString::from(k);
-        Value obj = thisObj.get(exec, str);
-        resObj.put(exec, str2, obj);
+      if (thisObj.hasProperty(exec,k+begin)) {
+        Value obj = thisObj.get(exec, k+begin);
+        resObj.put(exec, k, obj);
       }
     }
-    resObj.put(exec, "length", Number(end - begin), DontEnum | DontDelete);
+    resObj.put(exec, lengthPropertyName, Number(end - begin), DontEnum | DontDelete);
     break;
   }
   case Sort:{
+// Old version... replace with new version below once new ArrayInstanceImp class is in place
 #if 0
     printf("KJS Array::Sort length=%d\n", length);
     for ( unsigned int i = 0 ; i<length ; ++i )
@@ -351,7 +338,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
       }
 
     if (length == 0) {
-      thisObj.put(exec, "length", Number(0), DontEnum | DontDelete);
+      thisObj.put(exec, lengthPropertyName, Number(0), DontEnum | DontDelete);
       result = Undefined();
       break;
     }
@@ -360,12 +347,12 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     // or quicksort, and much less swapping than bubblesort/insertionsort.
     for ( unsigned int i = 0 ; i<length-1 ; ++i )
       {
-        Value iObj = thisObj.get(exec,UString::from(i));
+        Value iObj = thisObj.get(exec,i);
         unsigned int themin = i;
         Value minObj = iObj;
         for ( unsigned int j = i+1 ; j<length ; ++j )
           {
-            Value jObj = thisObj.get(exec,UString::from(j));
+            Value jObj = thisObj.get(exec,j);
             int cmp;
             if (jObj.type() == UndefinedType) {
               cmp = 1;
@@ -390,8 +377,8 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
         if ( themin > i )
           {
             //printf("KJS Array::Sort: swapping %d and %d\n", i, themin );
-            thisObj.put( exec, UString::from(i), minObj );
-            thisObj.put( exec, UString::from(themin), iObj );
+            thisObj.put( exec, i, minObj );
+            thisObj.put( exec, themin, iObj );
           }
       }
 #if 0
@@ -402,6 +389,83 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     result = thisObj;
     break;
   }
+// new version - awaiting merge of ArrayInstanceImp changes
+/*
+#if 0
+    printf("KJS Array::Sort length=%d\n", length);
+    for ( unsigned int i = 0 ; i<length ; ++i )
+      printf("KJS Array::Sort: %d: %s\n", i, thisObj.get(exec, i).toString(exec).ascii() );
+#endif
+    Object sortFunction;
+    bool useSortFunction = (args[0].type() != UndefinedType);
+    if (useSortFunction)
+      {
+        sortFunction = args[0].toObject(exec);
+        if (!sortFunction.implementsCall())
+          useSortFunction = false;
+      }
+
+    if (thisObj.imp()->classInfo() == &ArrayInstanceImp::info) {
+      if (useSortFunction)
+        ((ArrayInstanceImp *)thisObj.imp())->sort(exec, sortFunction);
+      else
+        ((ArrayInstanceImp *)thisObj.imp())->sort(exec);
+      result = thisObj;
+      break;
+    }
+
+    if (length == 0) {
+      thisObj.put(exec, lengthPropertyName, Number(0), DontEnum | DontDelete);
+      result = thisObj;
+      break;
+    }
+
+    // "Min" sort. Not the fastest, but definitely less code than heapsort
+    // or quicksort, and much less swapping than bubblesort/insertionsort.
+    for ( unsigned int i = 0 ; i<length-1 ; ++i )
+      {
+        Value iObj = thisObj.get(exec,i);
+        unsigned int themin = i;
+        Value minObj = iObj;
+        for ( unsigned int j = i+1 ; j<length ; ++j )
+          {
+            Value jObj = thisObj.get(exec,j);
+            int cmp;
+            if (jObj.type() == UndefinedType) {
+              cmp = 1;
+            } else if (minObj.type() == UndefinedType) {
+              cmp = -1;
+            } else if (useSortFunction) {
+                List l;
+                l.append(jObj);
+                l.append(minObj);
+                cmp = sortFunction.call(exec, exec->interpreter()->globalObject(), l).toInt32(exec);
+            } else {
+              cmp = (jObj.toString(exec) < minObj.toString(exec)) ? -1 : 1;
+            }
+            if ( cmp < 0 )
+              {
+                themin = j;
+                minObj = jObj;
+              }
+          }
+        // Swap themin and i
+        if ( themin > i )
+          {
+            //printf("KJS Array::Sort: swapping %d and %d\n", i, themin );
+            thisObj.put( exec, i, minObj );
+            thisObj.put( exec, themin, iObj );
+          }
+      }
+#if 0
+    printf("KJS Array::Sort -- Resulting array:\n");
+    for ( unsigned int i = 0 ; i<length ; ++i )
+      printf("KJS Array::Sort: %d: %s\n", i, thisObj.get(exec, i).toString(exec).ascii() );
+#endif
+    result = thisObj;
+    break;
+  }
+*/
   case Splice: {
     // 15.4.4.12 - oh boy this is huge
     Object resObj = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));
@@ -415,14 +479,12 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
 
     //printf( "Splicing from %d, deleteCount=%d \n", begin, deleteCount );
     for(unsigned int k = 0; k < deleteCount; k++) {
-      UString str = UString::from(k+begin);
-      if (thisObj.hasProperty(exec,str)) {
-        UString str2 = UString::from(k);
-        Value obj = thisObj.get(exec, str);
-        resObj.put(exec, str2, obj);
+      if (thisObj.hasProperty(exec,k+begin)) {
+        Value obj = thisObj.get(exec, k+begin);
+        resObj.put(exec, k, obj);
       }
     }
-    resObj.put(exec, "length", Number(deleteCount), DontEnum | DontDelete);
+    resObj.put(exec, lengthPropertyName, Number(deleteCount), DontEnum | DontDelete);
 
     unsigned int additionalArgs = maxInt( args.size() - 2, 0 );
     if ( additionalArgs != deleteCount )
@@ -431,57 +493,51 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
       {
         for ( unsigned int k = begin; k < length - deleteCount; ++k )
         {
-          UString str = UString::from(k+deleteCount);
-          UString str2 = UString::from(k+additionalArgs);
-          if (thisObj.hasProperty(exec,str)) {
-            Value obj = thisObj.get(exec, str);
-            thisObj.put(exec, str2, obj);
+          if (thisObj.hasProperty(exec,k+deleteCount)) {
+            Value obj = thisObj.get(exec, k+deleteCount);
+            thisObj.put(exec, k+additionalArgs, obj);
           }
           else
-            thisObj.deleteProperty(exec, str2);
+            thisObj.deleteProperty(exec, k+additionalArgs);
         }
         for ( unsigned int k = length ; k > length - deleteCount + additionalArgs; --k )
-          thisObj.deleteProperty(exec, UString::from(k-1));
+          thisObj.deleteProperty(exec, k-1);
       }
       else
       {
         for ( unsigned int k = length - deleteCount; (int)k > begin; --k )
         {
-          UString str = UString::from(k+deleteCount-1);
-          UString str2 = UString::from(k+additionalArgs-1);
-          if (thisObj.hasProperty(exec,str)) {
-            Value obj = thisObj.get(exec, str);
-            thisObj.put(exec, str2, obj);
+          if (thisObj.hasProperty(exec,k+deleteCount-1)) {
+            Value obj = thisObj.get(exec, k+deleteCount-1);
+            thisObj.put(exec, k+additionalArgs-1, obj);
           }
           else
-            thisObj.deleteProperty(exec, str2);
+            thisObj.deleteProperty(exec, k+additionalArgs-1);
         }
       }
     }
     for ( unsigned int k = 0; k < additionalArgs; ++k )
     {
-      thisObj.put(exec, UString::from(k+begin), args[k+2]);
+      thisObj.put(exec, k+begin, args[k+2]);
     }
-    thisObj.put(exec, "length", Number(length - deleteCount + additionalArgs), DontEnum | DontDelete);
+    thisObj.put(exec, lengthPropertyName, Number(length - deleteCount + additionalArgs), DontEnum | DontDelete);
     break;
   }
   case UnShift: { // 15.4.4.13
     unsigned int nrArgs = args.size();
     for ( unsigned int k = length; k > 0; --k )
     {
-      UString str = UString::from(k-1);
-      UString str2 = UString::from(k+nrArgs-1);
-      if (thisObj.hasProperty(exec,str)) {
-        Value obj = thisObj.get(exec, str);
-        thisObj.put(exec, str2, obj);
+      if (thisObj.hasProperty(exec,k-1)) {
+        Value obj = thisObj.get(exec, k-1);
+        thisObj.put(exec, k+nrArgs-1, obj);
       } else {
-        thisObj.deleteProperty(exec, str2);
+        thisObj.deleteProperty(exec, k+nrArgs-1);
       }
     }
     for ( unsigned int k = 0; k < nrArgs; ++k )
-      thisObj.put(exec, UString::from(k), args[k]);
+      thisObj.put(exec, k, args[k]);
     result = Number(length + nrArgs);
-    thisObj.put(exec, "length", result, DontEnum | DontDelete);
+    thisObj.put(exec, lengthPropertyName, result, DontEnum | DontDelete);
     break;
   }
   default:
@@ -500,10 +556,10 @@ ArrayObjectImp::ArrayObjectImp(ExecState *exec,
 {
   Value protect(this);
   // ECMA 15.4.3.1 Array.prototype
-  put(exec,"prototype", Object(arrayProto), DontEnum|DontDelete|ReadOnly);
+  put(exec,prototypePropertyName, Object(arrayProto), DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
+  put(exec,lengthPropertyName, Number(1), ReadOnly|DontDelete|DontEnum);
 }
 
 bool ArrayObjectImp::implementsConstruct() const
@@ -530,12 +586,12 @@ Object ArrayObjectImp::construct(ExecState *exec, const List &args)
     // initialize array
     len = args.size();
     for (unsigned int u = 0; it != args.end(); it++, u++)
-      result.put(exec, UString::from(u), *it);
+      result.put(exec, u, *it);
   }
 
   // array size
-  result.put(exec, "length", Number(len), DontEnum | DontDelete);
-  static_cast<ArrayInstanceImp*>(result.imp())->putDirect(exec, "length", Number(len), DontEnum | DontDelete);
+  result.put(exec, lengthPropertyName, Number(len), DontEnum | DontDelete);
+  static_cast<ArrayInstanceImp*>(result.imp())->putDirect(lengthPropertyName, Number(len).imp(), DontEnum | DontDelete);
 
   return result;
 }

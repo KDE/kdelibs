@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -133,7 +134,7 @@ DatePrototypeImp::DatePrototypeImp(ExecState *,
   // The constructor will be added later, after DateObjectImp has been built
 }
 
-Value DatePrototypeImp::get(ExecState *exec, const UString &propertyName) const
+Value DatePrototypeImp::get(ExecState *exec, const Identifier &propertyName) const
 {
   return lookupGetFunction<DateProtoFuncImp, ObjectImp>( exec, propertyName, &dateTable, this );
 }
@@ -147,7 +148,7 @@ DateProtoFuncImp::DateProtoFuncImp(ExecState *exec, int i, int len)
   // We use a negative ID to denote the "UTC" variant.
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 bool DateProtoFuncImp::implementsCall() const
@@ -351,13 +352,15 @@ DateObjectImp::DateObjectImp(ExecState *exec,
   Value protect(this);
 
   // ECMA 15.9.4.1 Date.prototype
-  put(exec,"prototype", Object(dateProto), DontEnum|DontDelete|ReadOnly);
+  putDirect(prototypePropertyName, dateProto, DontEnum|DontDelete|ReadOnly);
 
-  put(exec,"parse", Object(new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::Parse, 1)), DontEnum);
-  put(exec,"UTC",   Object(new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::UTC,   7)),   DontEnum);
+  static const Identifier parsePropertyName("parse");
+  putDirect(parsePropertyName, new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::Parse, 1), DontEnum);
+  static const Identifier UTCPropertyName("UTC");
+  putDirect(UTCPropertyName,   new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::UTC,   7),   DontEnum);
 
   // no. of arguments for constructor
-  put(exec,"length", Number(7), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, 7, ReadOnly|DontDelete|DontEnum);
 }
 
 bool DateObjectImp::implementsConstruct() const
@@ -440,12 +443,12 @@ Value DateObjectImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &
 
 // ------------------------------ DateObjectFuncImp ----------------------------
 
-DateObjectFuncImp::DateObjectFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto,
+DateObjectFuncImp::DateObjectFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
                                      int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 bool DateObjectFuncImp::implementsCall() const

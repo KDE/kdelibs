@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -121,7 +122,7 @@ namespace KJS {
     // Reference operations
 
     virtual Value getBase(ExecState *exec) const;
-    virtual UString getPropertyName(ExecState *exec) const;
+    virtual Identifier getPropertyName(ExecState *exec) const;
     virtual Value getValue(ExecState *exec) const;
     virtual void putValue(ExecState *exec, const Value w);
 
@@ -250,7 +251,7 @@ namespace KJS {
      * Performs the GetPropertyName type conversion operation on this value
      * (ECMA 8.7)
      */
-    UString getPropertyName(ExecState *exec) const;
+    Identifier getPropertyName(ExecState *exec) const;
 
     /**
      * Performs the GetValue type conversion operation on this value

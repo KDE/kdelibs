@@ -38,8 +38,8 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
   : ObjectImp() // [[Prototype]] is Null()
 {
   Value protect(this);
-  put(exec,"toString", Object(new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0)), DontEnum);
-  put(exec,"valueOf",  Object(new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0)), DontEnum);
+  putDirect(toStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0), DontEnum);
+  putDirect(valueOfPropertyName,  new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0), DontEnum);
 #ifndef KJS_PURE_ECMA // standard compliance location is the Global object
   // see http://www.devguru.com/Technologies/ecmascript/quickref/object.html
   put(exec, "eval",
@@ -51,13 +51,13 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
 
 // ------------------------------ ObjectProtoFuncImp --------------------------------
 
-ObjectProtoFuncImp::ObjectProtoFuncImp(ExecState *exec,
+ObjectProtoFuncImp::ObjectProtoFuncImp(ExecState */*exec*/,
                                        FunctionPrototypeImp *funcProto,
                                        int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 
@@ -78,17 +78,17 @@ Value ObjectProtoFuncImp::call(ExecState */*exec*/, Object &thisObj, const List 
 
 // ------------------------------ ObjectObjectImp --------------------------------
 
-ObjectObjectImp::ObjectObjectImp(ExecState *exec,
+ObjectObjectImp::ObjectObjectImp(ExecState */*exec*/,
                                  ObjectPrototypeImp *objProto,
                                  FunctionPrototypeImp *funcProto)
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
   // ECMA 15.2.3.1
-  put(exec,"prototype", Object(objProto), DontEnum|DontDelete|ReadOnly);
+  putDirect(prototypePropertyName, objProto, DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, NumberImp::one(), ReadOnly|DontDelete|DontEnum);
 }
 
 

@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001-2003 David Faure (faure@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -209,10 +210,10 @@ KJS::HTMLDocument::HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d)
   /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
   : DOMDocument(exec, d) { }
 
-bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName) const
+bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
-  //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << propertyName.qstring() << endl;
+  //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
@@ -224,22 +225,22 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
   NamedTagLengthDeterminer::TagLength tags[3] = {
     {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
   };
-  NamedTagLengthDeterminer(propertyName.string(), tags, 3)(doc.handle());
+  NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
   for (int i = 0; i < 3; i++)
     if (tags[i].length > 0)
         return true;
 
   if ( view && view->part() )
   {
-    KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
+    KHTMLPart *kp = view->part()->findFrame( p.qstring() );
     if (kp)
       return true;
   }
 
-  return DOMDocument::hasProperty(exec, propertyName);
+  return DOMDocument::hasProperty(exec, p);
 }
 
-Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
+Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << endl;
@@ -323,7 +324,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       // (http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/script.asp)
       kdWarning() << "KJS::HTMLDocument document.scripts called - not implemented" << endl;
       Object obj( new ObjectImp() );
-      obj.put( exec, "length", Number(0) );
+      obj.put( exec, lengthPropertyName, Number(0) );
       return obj;
     }
     case All:
@@ -385,7 +386,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   return Undefined();
 }
 
-void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void KJS::HTMLDocument::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLDocument::tryPut " << propertyName.qstring() << endl;
@@ -1189,7 +1190,7 @@ private:
     unsigned long objid;
 };
 
-Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) const
+Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -1965,7 +1966,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   return Undefined();
 }
 
-bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName) const
+bool KJS::HTMLElement::hasProperty(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   //kdDebug(6070) << "HTMLElement::hasProperty " << propertyName.qstring() << endl;
@@ -2040,7 +2041,7 @@ HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
   : DOMFunction(), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -2188,7 +2189,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
   return Undefined();
 }
 
-void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
   DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
@@ -2940,9 +2941,9 @@ KJS::HTMLCollection::~HTMLCollection()
 
 // We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
 // ## this breaks "for (..in..)" though.
-bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p) const
+bool KJS::HTMLCollection::hasProperty(ExecState *exec, const Identifier &p) const
 {
-  if (p == "length")
+  if (p == lengthPropertyName)
     return true;
   if ( collection.item(0).elementId() == ID_OPTION &&
        ( p == "selectedIndex" || p == "value" ) )
@@ -2950,12 +2951,12 @@ bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p) const
   return DOMObject::hasProperty(exec, p);
 }
 
-Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) const
+Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLCollection::tryGet " << propertyName.ascii() << endl;
 #endif
-  if (propertyName == "length")
+  if (propertyName == lengthPropertyName)
   {
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "  collection length is " << collection.length() << endl;
@@ -3036,7 +3037,7 @@ Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
       return getDOMNode(exec,element);
     }
     // support for document.images('<name>') etc.
-    return getNamedItems(exec,s);
+    return getNamedItems(exec,Identifier(s));
   }
   else if (args.size() >= 1) // the second arg, if set, is the index of the item we want
   {
@@ -3058,7 +3059,7 @@ Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
   return Undefined();
 }
 
-Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propertyName) const
+Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.ascii() << endl;
@@ -3127,7 +3128,7 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
   }
   case KJS::HTMLCollection::NamedItem:
   {
-    Value val = static_cast<HTMLCollection *>(thisObj.imp())->getNamedItems(exec,args[0].toString(exec).string());
+    Value val = static_cast<HTMLCollection *>(thisObj.imp())->getNamedItems(exec, Identifier(args[0].toString(exec)));
     // Must return null when asking for a named item that isn't in the collection
     // (DOM2 testsuite, HTMLCollection12 test)
     if ( val.type() == KJS::UndefinedType )
@@ -3140,7 +3141,7 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
   }
 }
 
-Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const UString &p) const
+Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p == "selectedIndex")
     return Number(element.selectedIndex());
@@ -3148,7 +3149,7 @@ Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const UString &p) const
   return  HTMLCollection::tryGet(exec, p);
 }
 
-void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int)
+void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
@@ -3158,7 +3159,7 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
     return;
   }
   // resize ?
-  else if (propertyName == "length") {
+  else if (propertyName == lengthPropertyName) {
     long newLen = value.toInteger(exec);
     long diff = element.length() - newLen;
 
@@ -3219,7 +3220,7 @@ OptionConstructorImp::OptionConstructorImp(ExecState *exec, const DOM::Document 
 
   // no. of arguments for constructor
   // ## is 4 correct ? 0 to 4, it seems to be
-  put(exec,"length", Number(4), ReadOnly|DontDelete|DontEnum);
+  put(exec,lengthPropertyName, Number(4), ReadOnly|DontDelete|DontEnum);
 }
 
 bool OptionConstructorImp::implementsConstruct() const
@@ -3288,7 +3289,7 @@ Image::Image(ExecState* exec, const DOM::Document &d)
 {
 }
 
-Value Image::tryGet(ExecState *exec, const UString &propertyName) const
+Value Image::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<Image,DOMObject>(exec, propertyName, &ImageTable, this);
 }
@@ -3318,7 +3319,7 @@ Value Image::getValueProperty(ExecState *, int token) const
   }
 }
 
-void Image::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void Image::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
   DOMObjectLookupPut<Image, DOMObject>( exec, propertyName, value, attr, &ImageTable, this );
 }
@@ -3331,6 +3332,7 @@ void Image::putValueProperty(ExecState *exec, int token, const Value& value, int
     src = str.value();
     if ( img ) img->deref(this);
     img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string() );
+// ### img = doc ? doc->docLoader()->requestImage( src.string() ) : 0;
     if ( img ) img->ref(this);
     break;
   }

@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -61,7 +62,7 @@ namespace KJS {
   class EventConstructor : public DOMObject {
   public:
     EventConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -77,9 +78,9 @@ namespace KJS {
     // Constructor for inherited classes
     DOMEvent(const Object &proto, DOM::Event e);
     ~DOMEvent();
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
-    virtual void tryPut(ExecState *exec, const UString &propertyName,
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName,
 			const Value& value, int attr = None);
     void putValueProperty(ExecState *exec, int token, const Value& value, int);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -104,7 +105,7 @@ namespace KJS {
   class EventExceptionConstructor : public DOMObject {
   public:
     EventExceptionConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -120,7 +121,7 @@ namespace KJS {
     // Constructor for inherited classes
     DOMUIEvent(const Object &proto, DOM::UIEvent ue);
     ~DOMUIEvent();
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -133,7 +134,7 @@ namespace KJS {
   public:
     DOMMouseEvent(ExecState *exec, DOM::MouseEvent me);
     ~DOMMouseEvent();
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -150,7 +151,7 @@ namespace KJS {
   public:
     DOMTextEvent(ExecState *exec, DOM::TextEvent ke);
     ~DOMTextEvent();
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -163,7 +164,7 @@ namespace KJS {
   class MutationEventConstructor : public DOMObject {
   public:
     MutationEventConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -176,7 +177,7 @@ namespace KJS {
   public:
     DOMMutationEvent(ExecState *exec, DOM::MutationEvent me);
     ~DOMMutationEvent();
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &p) const;
     Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }

@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -48,19 +49,21 @@ RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
 
   // The constructor will be added later in RegExpObject's constructor (?)
 
-  put(exec, "exec",     Object(new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0)), DontEnum);
-  put(exec, "test",     Object(new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0)), DontEnum);
-  put(exec, "toString", Object(new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0)), DontEnum);
+  static const Identifier execPropertyName("exec");
+  putDirect(execPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0), DontEnum);
+  static const Identifier testPropertyName("test");
+  putDirect(testPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0), DontEnum);
+  putDirect(toStringPropertyName, new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFuncImp ---------------------------
 
-RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState *exec,
+RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState */*exec*/,
                                        FunctionPrototypeImp *funcProto, int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 bool RegExpProtoFuncImp::implementsCall() const
@@ -147,7 +150,7 @@ RegExpImp::~RegExpImp()
 
 // ------------------------------ RegExpObjectImp ------------------------------
 
-RegExpObjectImp::RegExpObjectImp(ExecState *exec,
+RegExpObjectImp::RegExpObjectImp(ExecState */*exec*/,
                                  FunctionPrototypeImp *funcProto,
                                  RegExpPrototypeImp *regProto)
 
@@ -155,10 +158,10 @@ RegExpObjectImp::RegExpObjectImp(ExecState *exec,
 {
   Value protect(this);
   // ECMA 15.10.5.1 RegExp.prototype
-  put(exec,"prototype", Object(regProto), DontEnum|DontDelete|ReadOnly);
+  putDirect(prototypePropertyName, regProto, DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  put(exec,"length", Number(2), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, NumberImp::two(), ReadOnly|DontDelete|DontEnum);
 }
 
 RegExpObjectImp::~RegExpObjectImp()
@@ -192,12 +195,13 @@ Object RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) c
   return arr;
 }
 
-Value RegExpObjectImp::get(ExecState *exec, const UString &p) const
+Value RegExpObjectImp::get(ExecState *exec, const Identifier &p) const
 {
-  if (p[0] == '$' && lastOvector)
+  UString s = p.ustring();
+  if (s[0] == '$' && lastOvector)
   {
     bool ok;
-    unsigned long i = p.substr(1).toULong(&ok);
+    unsigned long i = s.substr(1).toULong(&ok);
     if (ok)
     {
       if (i < lastNrSubPatterns + 1)
@@ -231,12 +235,12 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
   bool multiline = (flags.find("m") >= 0);
   // TODO: throw a syntax error on invalid flags
 
-  dat->put(exec, "global", Boolean(global));
-  dat->put(exec, "ignoreCase", Boolean(ignoreCase));
-  dat->put(exec, "multiline", Boolean(multiline));
+  dat->putDirect("global", global ? BooleanImp::staticTrue : BooleanImp::staticFalse);
+  dat->putDirect("ignoreCase", ignoreCase ? BooleanImp::staticTrue : BooleanImp::staticFalse);
+  dat->putDirect("multiline", multiline ? BooleanImp::staticTrue : BooleanImp::staticFalse);
 
-  dat->put(exec, "source", String(p));
-  dat->put(exec, "lastIndex", Number(0), DontDelete | DontEnum);
+  dat->putDirect("source", new StringImp(p));
+  dat->putDirect("lastIndex", NumberImp::zero(), DontDelete | DontEnum);
 
   int reflags = RegExp::None;
   if (global)

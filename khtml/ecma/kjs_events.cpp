@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -167,7 +168,7 @@ EventConstructor::EventConstructor(ExecState *exec)
 {
 }
 
-Value EventConstructor::tryGet(ExecState *exec, const UString &p) const
+Value EventConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<EventConstructor, DOMObject>(exec,p,&EventConstructorTable,this);
 }
@@ -220,7 +221,7 @@ DOMEvent::~DOMEvent()
   ScriptInterpreter::forgetDOMObject(event.handle());
 }
 
-Value DOMEvent::tryGet(ExecState *exec, const UString &p) const
+Value DOMEvent::tryGet(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug() << "KJS::DOMEvent::tryGet " << p.qstring() << endl;
@@ -256,7 +257,7 @@ Value DOMEvent::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-void DOMEvent::tryPut(ExecState *exec, const UString &propertyName,
+void DOMEvent::tryPut(ExecState *exec, const Identifier &propertyName,
                       const Value& value, int attr)
 {
   DOMObjectLookupPut<DOMEvent, DOMObject>(exec, propertyName, value, attr,
@@ -346,7 +347,7 @@ EventExceptionConstructor::EventExceptionConstructor(ExecState *exec)
 {
 }
 
-Value EventExceptionConstructor::tryGet(ExecState *exec, const UString &p) const
+Value EventExceptionConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<EventExceptionConstructor, DOMObject>(exec,p,&EventExceptionConstructorTable,this);
 }
@@ -394,7 +395,7 @@ DOMUIEvent::~DOMUIEvent()
 {
 }
 
-Value DOMUIEvent::tryGet(ExecState *exec, const UString &p) const
+Value DOMUIEvent::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMUIEvent,DOMEvent>(exec,p,&DOMUIEventTable,this);
 }
@@ -490,7 +491,7 @@ DOMMouseEvent::~DOMMouseEvent()
 {
 }
 
-Value DOMMouseEvent::tryGet(ExecState *exec, const UString &p) const
+Value DOMMouseEvent::tryGet(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMMouseEvent::tryGet " << p.qstring() << endl;
@@ -618,7 +619,7 @@ DOMTextEvent::~DOMTextEvent()
 {
 }
 
-Value DOMTextEvent::tryGet(ExecState *exec, const UString &p) const
+Value DOMTextEvent::tryGet(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMTextEvent::tryGet " << p.qstring() << endl;
@@ -682,7 +683,7 @@ MutationEventConstructor::MutationEventConstructor(ExecState* exec)
 {
 }
 
-Value MutationEventConstructor::tryGet(ExecState *exec, const UString &p) const
+Value MutationEventConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<MutationEventConstructor,DOMObject>(exec,p,&MutationEventConstructorTable,this);
 }
@@ -724,7 +725,7 @@ DOMMutationEvent::~DOMMutationEvent()
 {
 }
 
-Value DOMMutationEvent::tryGet(ExecState *exec, const UString &p) const
+Value DOMMutationEvent::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMMutationEvent,DOMEvent>(exec,p,&DOMMutationEventTable,this);
 }

@@ -87,7 +87,7 @@ class KHTMLPartObject : public KJS::ObjectImp
 public:
     KHTMLPartObject(KJS::ExecState *exec, KHTMLPart *_part);
 
-    virtual KJS::Value get(KJS::ExecState *exec, const KJS::UString &propertyName) const;
+    virtual KJS::Value get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
 
 private:
     KHTMLPart *m_part;

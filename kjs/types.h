@@ -26,6 +26,7 @@
 
 // internal data types
 
+#include "identifier.h"
 #include "value.h"
 
 namespace KJS {
@@ -247,7 +248,7 @@ namespace KJS {
   class Completion : public Value {
   public:
     Completion(ComplType c = Normal, const Value& v = Value(),
-               const UString &t = UString::null);
+               const Identifier &t = Identifier::null);
     Completion(CompletionImp *v);
     Completion(const Completion &v);
     virtual ~Completion();
@@ -267,7 +268,7 @@ namespace KJS {
 
     ComplType complType() const;
     Value value() const;
-    UString target() const;
+    Identifier target() const;
     bool isValueCompletion() const;
   };
 

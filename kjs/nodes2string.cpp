@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2002 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -33,7 +34,10 @@ namespace KJS {
     };
 
     UString toString() const { return str; }
+    SourceStream& operator<<(const Identifier &);
     SourceStream& operator<<(const KJS::UString &);
+    SourceStream& operator<<(const char *);
+    SourceStream& operator<<(char);
     SourceStream& operator<<(Format f);
     SourceStream& operator<<(const Node *);
   private:
@@ -44,9 +48,27 @@ namespace KJS {
 
 using namespace KJS;
 
-SourceStream& SourceStream::operator<<(const KJS::UString &s)
+SourceStream& SourceStream::operator<<(char c)
+{
+  str += UString(c);
+  return *this;
+}
+
+SourceStream& SourceStream::operator<<(const char *s)
+{
+  str += UString(s);
+  return *this;
+}
+
+SourceStream& SourceStream::operator<<(const UString &s)
 {
   str += s;
+  return *this;
+}
+
+SourceStream& SourceStream::operator<<(const Identifier &s)
+{
+  str += s.ustring();
   return *this;
 }
 

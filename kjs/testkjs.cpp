@@ -50,7 +50,7 @@ public:
   virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 };
 
-Value VersionFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+Value VersionFunctionImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &/*args*/)
 {
   // We need this function for compatibility with the Mozilla JS tests but for now
   // we don't actually do any version-specific handling
@@ -77,11 +77,11 @@ int main(int argc, char **argv)
     // create interpreter
     Interpreter interp(global);
     // add debug() function
-    global.put(interp.globalExec(), UString("debug"), Object(new TestFunctionImp()));
+    global.put(interp.globalExec(), "debug", Object(new TestFunctionImp()));
     // add "print" for compatibility with the mozilla js shell
-    global.put(interp.globalExec(), UString("print"), Object(new TestFunctionImp()));
+    global.put(interp.globalExec(), "print", Object(new TestFunctionImp()));
     // add "version" for compatibility with the mozilla js shell 
-    global.put(interp.globalExec(), UString("version"), Object(new VersionFunctionImp()));
+    global.put(interp.globalExec(), "version", Object(new VersionFunctionImp()));
 
     const int BufferSize = 200000;
     char code[BufferSize];
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
         char *msg = exVal.toString(exec).ascii();
         int lineno = -1;
         if (exVal.type() == ObjectType) {
-          Value lineVal = Object::dynamicCast(exVal).get(exec,UString("line"));
+          Value lineVal = Object::dynamicCast(exVal).get(exec,"line");
           if (lineVal.type() == NumberType)
             lineno = int(lineVal.toNumber(exec));
         }

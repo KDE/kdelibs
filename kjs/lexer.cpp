@@ -36,7 +36,7 @@
 #include "interpreter.h"
 #include "nodes.h"
 #include "lexer.h"
-#include "ustring.h"
+#include "identifier.h"
 #include "lookup.h"
 #include "internal.h"
 
@@ -515,7 +515,7 @@ int Lexer::lex()
         break;
       }
       /* TODO: close leak on parse error. same holds true for String */
-      kjsyylval.ustr = new UString(buffer16, pos16);
+      kjsyylval.ident = new KJS::Identifier(buffer16, pos16);
       token = IDENT;
       break;
     }

@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2003 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001-2003 David Faure (faure@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -40,7 +41,7 @@ using namespace KJS;
  * these may be CSS exceptions - need to check - pmk
  */
 
-Value DOMObject::get(ExecState *exec, const UString &p) const
+Value DOMObject::get(ExecState *exec, const Identifier &p) const
 {
   Value result;
   try {
@@ -62,7 +63,7 @@ Value DOMObject::get(ExecState *exec, const UString &p) const
   return result;
 }
 
-void DOMObject::put(ExecState *exec, const UString &propertyName,
+void DOMObject::put(ExecState *exec, const Identifier &propertyName,
                     const Value &value, int attr)
 {
   try {
@@ -82,7 +83,7 @@ UString DOMObject::toString(ExecState *) const
   return "[object " + className() + "]";
 }
 
-Value DOMFunction::get(ExecState *exec, const UString &propertyName) const
+Value DOMFunction::get(ExecState *exec, const Identifier &propertyName) const
 {
   Value result;
   try {
@@ -256,6 +257,16 @@ QString UString::qstring() const
 QConstString UString::qconststring() const
 {
   return QConstString((QChar*) data(), size());
+}
+
+DOM::DOMString Identifier::string() const
+{
+  return DOM::DOMString((QChar*) data(), size());
+}
+
+QString Identifier::qstring() const
+{
+  return QString((QChar*) data(), size());
 }
 
 DOM::Node KJS::toNode(const Value& val)

@@ -285,7 +285,7 @@ void List::globalClear()
 
 // ------------------------------ Completion -----------------------------------
 
-Completion::Completion(ComplType c, const Value& v, const UString &t)
+Completion::Completion(ComplType c, const Value& v, const Identifier &t)
   : Value(new CompletionImp(c,v,t))
 {
 }
@@ -326,7 +326,7 @@ Value Completion::value() const
   return static_cast<CompletionImp*>(rep)->value();
 }
 
-UString Completion::target() const
+Identifier Completion::target() const
 {
   return static_cast<CompletionImp*>(rep)->target();
 }

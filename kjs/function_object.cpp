@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -40,9 +41,11 @@ FunctionPrototypeImp::FunctionPrototypeImp(ExecState *exec)
   : InternalFunctionImp(0)
 {
   Value protect(this);
-  put(exec, "toString", Object(new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::ToString, 0)), DontEnum);
-  put(exec, "apply",    Object(new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2)), DontEnum);
-  put(exec, "call",     Object(new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1)), DontEnum);
+  putDirect(toStringPropertyName, new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::ToString, 0), DontEnum);
+  static const Identifier applyPropertyName("apply");
+  putDirect(applyPropertyName,    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2), DontEnum);
+  static const Identifier callPropertyName("call");
+  putDirect(callPropertyName,     new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1), DontEnum);
 }
 
 FunctionPrototypeImp::~FunctionPrototypeImp()
@@ -62,12 +65,12 @@ Value FunctionPrototypeImp::call(ExecState */*exec*/, Object &/*thisObj*/, const
 
 // ------------------------------ FunctionProtoFuncImp -------------------------
 
-FunctionProtoFuncImp::FunctionProtoFuncImp(ExecState *exec,
+FunctionProtoFuncImp::FunctionProtoFuncImp(ExecState */*exec*/,
                                          FunctionPrototypeImp *funcProto, int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 
@@ -129,9 +132,9 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
            Object::dynamicCast(argArray).inherits(&ArgumentsImp::info)) {
 
         Object argArrayObj = Object::dynamicCast(argArray);
-        unsigned int length = argArrayObj.get(exec,"length").toUInt32(exec);
+        unsigned int length = argArrayObj.get(exec,lengthPropertyName).toUInt32(exec);
         for (unsigned int i = 0; i < length; i++)
-          applyArgs.append(argArrayObj.get(exec,UString::from(i)));
+          applyArgs.append(argArrayObj.get(exec,i));
       }
       else {
         Object err = Error::create(exec,TypeError);
@@ -170,14 +173,14 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
 
 // ------------------------------ FunctionObjectImp ----------------------------
 
-FunctionObjectImp::FunctionObjectImp(ExecState *exec, FunctionPrototypeImp *funcProto)
+FunctionObjectImp::FunctionObjectImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto)
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
-  put(exec,"prototype", Object(funcProto), DontEnum|DontDelete|ReadOnly);
+  putDirect(prototypePropertyName, funcProto, DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, NumberImp::one(), ReadOnly|DontDelete|DontEnum);
 }
 
 FunctionObjectImp::~FunctionObjectImp()
@@ -242,7 +245,7 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
   scopeChain.append(exec->interpreter()->globalObject());
   FunctionBodyNode *bodyNode = progNode;
 
-  FunctionImp *fimp = new DeclaredFunctionImp(exec, UString::null, bodyNode,
+  FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null, bodyNode,
 					      scopeChain);
   Object ret(fimp); // protect from GC
 
@@ -265,11 +268,11 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
 	  while (i < len && *c == ' ')
 	      c++, i++;
 	  if (i == len) {
-	      fimp->addParameter(param);
+	      fimp->addParameter(Identifier(param));
 	      params++;
 	      break;
 	  } else if (*c == ',') {
-	      fimp->addParameter(param);
+	      fimp->addParameter(Identifier(param));
 	      params++;
 	      c++, i++;
 	      continue;
@@ -282,15 +285,15 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
       return err;
   }
 
-  fimp->put(exec,"length", Number(params),ReadOnly|DontDelete|DontEnum);
+  fimp->put(exec,lengthPropertyName, Number(params),ReadOnly|DontDelete|DontEnum);
   List consArgs;
 
   Object objCons = exec->interpreter()->builtinObject();
   Object prototype = objCons.construct(exec,List::empty());
-  prototype.put(exec, "constructor",
+  prototype.put(exec, constructorPropertyName,
 		Object(fimp), DontEnum|DontDelete|ReadOnly);
-  fimp->put(exec,"prototype",prototype,DontEnum|DontDelete|ReadOnly);
-  fimp->put(exec,"arguments",Null(),DontEnum|DontDelete|ReadOnly);
+  fimp->put(exec,prototypePropertyName,prototype,DontEnum|DontDelete|ReadOnly);
+  fimp->put(exec,argumentsPropertyName,Null(),DontEnum|DontDelete|ReadOnly);
   return ret;
 }
 

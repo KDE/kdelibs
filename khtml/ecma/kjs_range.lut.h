@@ -17,7 +17,7 @@ static const struct HashEntry DOMRangeTableEntries[] = {
 
 static const struct HashTable DOMRangeTable = { 2, 8, DOMRangeTableEntries, 7 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -51,7 +51,7 @@ static const struct HashEntry DOMRangeProtoTableEntries[] = {
 
 static const struct HashTable DOMRangeProtoTable = { 2, 23, DOMRangeProtoTableEntries, 17 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -68,4 +68,4 @@ static const struct HashEntry RangeConstructorTableEntries[] = {
 
 static const struct HashTable RangeConstructorTable = { 2, 6, RangeConstructorTableEntries, 5 };
 
-}; // namespace
+} // namespace

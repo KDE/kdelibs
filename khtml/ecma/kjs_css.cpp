@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -30,7 +31,7 @@
 using namespace KJS;
 #include <kdebug.h>
 
-static QString jsNameToProp( const UString &p )
+static QString jsNameToProp( const Identifier &p )
 {
     QString prop = p.qstring();
     int i = prop.length();
@@ -78,7 +79,7 @@ DOMCSSStyleDeclaration::~DOMCSSStyleDeclaration()
   ScriptInterpreter::forgetDOMObject(styleDecl.handle());
 }
 
-bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const UString &p) const
+bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const Identifier &p) const
 {
   DOM::DOMString cssprop = jsNameToProp(p);
   // strip pos- / pixel- prefix here?
@@ -88,7 +89,7 @@ bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const UString &p) cons
   return ObjectImp::hasProperty(exec, p);
 }
 
-Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMCSSStyleDeclaration::tryGet " << propertyName.qstring() << endl;
@@ -152,9 +153,9 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
 }
 
 
-void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const Value& value, int attr )
+void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const Identifier &pName, const Value& value, int attr )
 {
-  UString propertyName = pName;
+  Identifier propertyName = pName;
 
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMCSSStyleDeclaration::tryPut " << propertyName.qstring() << endl;
@@ -248,7 +249,7 @@ DOMStyleSheet::~DOMStyleSheet()
   ScriptInterpreter::forgetDOMObject(styleSheet.handle());
 }
 
-Value DOMStyleSheet::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMStyleSheet::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<DOMStyleSheet,DOMObject>(exec,propertyName,&DOMStyleSheetTable,this);
 }
@@ -274,7 +275,7 @@ Value DOMStyleSheet::getValueProperty(ExecState *exec, int token) const
   return Value();
 }
 
-void DOMStyleSheet::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void DOMStyleSheet::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
   if (propertyName == "disabled") {
     styleSheet.setDisabled(value.toBoolean(exec));
@@ -326,12 +327,12 @@ DOMStyleSheetList::~DOMStyleSheetList()
   ScriptInterpreter::forgetDOMObject(styleSheetList.handle());
 }
 
-Value DOMStyleSheetList::tryGet(ExecState *exec, const UString &p) const
+Value DOMStyleSheetList::tryGet(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMStyleSheetList::tryGet " << p.qstring() << endl;
 #endif
-  if (p == "length")
+  if (p == lengthPropertyName)
     return Number(styleSheetList.length());
   else if (p == "item")
     return lookupOrCreateFunction<DOMStyleSheetListFunc>(exec,p,this,DOMStyleSheetList::Item,1,DontDelete|Function);
@@ -395,7 +396,7 @@ Value DOMStyleSheetList::tryCall(ExecState *exec, Object & /*thisObj*/, const Li
 {
   if (args.size() == 1) {
     // support for styleSheets(<index>) and styleSheets(<name>)
-    return tryGet( exec, args[0].toString(exec) );
+    return tryGet( exec, Identifier(args[0].toString(exec)) );
   }
   return Undefined();
 }
@@ -452,11 +453,11 @@ DOMMediaList::~DOMMediaList()
   ScriptInterpreter::forgetDOMObject(mediaList.handle());
 }
 
-Value DOMMediaList::tryGet(ExecState *exec, const UString &p) const
+Value DOMMediaList::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p == "mediaText")
     return getString(mediaList.mediaText());
-  else if (p == "length")
+  else if (p == lengthPropertyName)
     return Number(mediaList.length());
 
   bool ok;
@@ -467,7 +468,7 @@ Value DOMMediaList::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec, p);
 }
 
-void DOMMediaList::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void DOMMediaList::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
   if (propertyName == "mediaText")
     mediaList.setMediaText(value.toString(exec).string());
@@ -528,7 +529,7 @@ DOMCSSStyleSheet::~DOMCSSStyleSheet()
 {
 }
 
-Value DOMCSSStyleSheet::tryGet(ExecState *exec, const UString &p) const
+Value DOMCSSStyleSheet::tryGet(ExecState *exec, const Identifier &p) const
 {
   DOM::CSSStyleSheet cssStyleSheet = static_cast<DOM::CSSStyleSheet>(styleSheet);
   if (p == "ownerRule")
@@ -585,10 +586,10 @@ DOMCSSRuleList::~DOMCSSRuleList()
   ScriptInterpreter::forgetDOMObject(cssRuleList.handle());
 }
 
-Value DOMCSSRuleList::tryGet(ExecState *exec, const UString &p) const
+Value DOMCSSRuleList::tryGet(ExecState *exec, const Identifier &p) const
 {
   Value result;
-  if (p == "length")
+  if (p == lengthPropertyName)
     return Number(cssRuleList.length());
   else if (p == "item")
     return lookupOrCreateFunction<DOMCSSRuleListFunc>(exec,p,this,DOMCSSRuleList::Item,1,DontDelete|Function);
@@ -693,7 +694,7 @@ const ClassInfo* DOMCSSRule::classInfo() const
   encoding		DOMCSSRule::Charset_Encoding	DontDelete
 @end
 */
-Value DOMCSSRule::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMCSSRule::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMCSSRule::tryGet " << propertyName.qstring() << endl;
@@ -762,7 +763,7 @@ Value DOMCSSRule::getValueProperty(ExecState *exec, int token) const
   return Undefined();
 }
 
-void DOMCSSRule::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void DOMCSSRule::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
   const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -858,7 +859,7 @@ CSSRuleConstructor::CSSRuleConstructor(ExecState *exec)
 {
 }
 
-Value CSSRuleConstructor::tryGet(ExecState *exec, const UString &p) const
+Value CSSRuleConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<CSSRuleConstructor,DOMObject>(exec,p,&CSSRuleConstructorTable,this);
 }
@@ -910,7 +911,7 @@ DOMCSSValue::~DOMCSSValue()
   ScriptInterpreter::forgetDOMObject(cssValue.handle());
 }
 
-Value DOMCSSValue::tryGet(ExecState *exec, const UString &p) const
+Value DOMCSSValue::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p == "cssText")
     return getString(cssValue.cssText());
@@ -919,7 +920,7 @@ Value DOMCSSValue::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec,p);
 }
 
-void DOMCSSValue::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void DOMCSSValue::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
   if (propertyName == "cssText")
     cssValue.setCssText(value.toString(exec).string());
@@ -964,7 +965,7 @@ CSSValueConstructor::CSSValueConstructor(ExecState *exec)
 {
 }
 
-Value CSSValueConstructor::tryGet(ExecState *exec, const UString &p) const
+Value CSSValueConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<CSSValueConstructor,DOMObject>(exec,p,&CSSValueConstructorTable,this);
 }
@@ -1013,7 +1014,7 @@ IMPLEMENT_PROTOTYPE(DOMCSSPrimitiveValueProto,DOMCSSPrimitiveValueProtoFunc)
 DOMCSSPrimitiveValue::DOMCSSPrimitiveValue(ExecState *exec, const DOM::CSSPrimitiveValue& v)
   : DOMCSSValue(DOMCSSPrimitiveValueProto::self(exec), v) { }
 
-Value DOMCSSPrimitiveValue::tryGet(ExecState *exec, const UString &p) const
+Value DOMCSSPrimitiveValue::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p=="primitiveType")
     return Number(static_cast<DOM::CSSPrimitiveValue>(cssValue).primitiveType());
@@ -1081,7 +1082,7 @@ const ClassInfo CSSPrimitiveValueConstructor::info = { "CSSPrimitiveValueConstru
 @end
 */
 
-Value CSSPrimitiveValueConstructor::tryGet(ExecState *exec, const UString &p) const
+Value CSSPrimitiveValueConstructor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<CSSPrimitiveValueConstructor,CSSValueConstructor>(exec,p,&CSSPrimitiveValueConstructorTable,this);
 }
@@ -1112,12 +1113,12 @@ IMPLEMENT_PROTOFUNC_DOM(DOMCSSValueListFunc) // not really a proto, but doesn't 
 DOMCSSValueList::DOMCSSValueList(ExecState *exec, const DOM::CSSValueList& v)
   : DOMCSSValue(exec, v) { }
 
-Value DOMCSSValueList::tryGet(ExecState *exec, const UString &p) const
+Value DOMCSSValueList::tryGet(ExecState *exec, const Identifier &p) const
 {
   Value result;
   DOM::CSSValueList valueList = static_cast<DOM::CSSValueList>(cssValue);
 
-  if (p == "length")
+  if (p == lengthPropertyName)
     return Number(valueList.length());
   else if (p == "item")
     return lookupOrCreateFunction<DOMCSSValueListFunc>(exec,p,this,DOMCSSValueList::Item,1,DontDelete|Function);
@@ -1164,7 +1165,7 @@ DOMRGBColor::~DOMRGBColor()
   //rgbColors.remove(rgbColor.handle());
 }
 
-Value DOMRGBColor::tryGet(ExecState *exec, const UString &p) const
+Value DOMRGBColor::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMRGBColor,DOMObject>(exec, p,
 						       &DOMRGBColorTable,
@@ -1213,7 +1214,7 @@ DOMRect::~DOMRect()
   ScriptInterpreter::forgetDOMObject(rect.handle());
 }
 
-Value DOMRect::tryGet(ExecState *exec, const UString &p) const
+Value DOMRect::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMRect,DOMObject>(exec, p,
 						    &DOMRectTable, this);
@@ -1245,9 +1246,9 @@ Value KJS::getDOMRect(ExecState *exec, const DOM::Rect& r)
 const ClassInfo DOMCounter::info = { "Counter", 0, &DOMCounterTable, 0 };
 /*
 @begin DOMCounterTable 3
-  identifier	DOMCounter::_Identifier	DontDelete|ReadOnly
-  listStyle	DOMCounter::ListStyle	DontDelete|ReadOnly
-  separator	DOMCounter::Separator	DontDelete|ReadOnly
+  identifier	DOMCounter::identifier	DontDelete|ReadOnly
+  listStyle	DOMCounter::listStyle	DontDelete|ReadOnly
+  separator	DOMCounter::separator	DontDelete|ReadOnly
 @end
 */
 DOMCounter::DOMCounter(ExecState *exec, const DOM::Counter& c)
@@ -1260,7 +1261,7 @@ DOMCounter::~DOMCounter()
   ScriptInterpreter::forgetDOMObject(counter.handle());
 }
 
-Value DOMCounter::tryGet(ExecState *exec, const UString &p) const
+Value DOMCounter::tryGet(ExecState *exec, const Identifier &p) const
 {
   return DOMObjectLookupGetValue<DOMCounter,DOMObject>(exec, p,
 						       &DOMCounterTable, this);
@@ -1269,11 +1270,11 @@ Value DOMCounter::tryGet(ExecState *exec, const UString &p) const
 Value DOMCounter::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
-  case _Identifier:
+  case identifier:
     return getString(counter.identifier());
-  case ListStyle:
+  case listStyle:
     return getString(counter.listStyle());
-  case Separator:
+  case separator:
     return getString(counter.separator());
   default:
     return Value();

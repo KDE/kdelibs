@@ -22,7 +22,7 @@ static const struct HashEntry DOMCSSStyleDeclarationProtoTableEntries[] = {
 
 static const struct HashTable DOMCSSStyleDeclarationProtoTable = { 2, 13, DOMCSSStyleDeclarationProtoTableEntries, 7 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -37,7 +37,7 @@ static const struct HashEntry DOMCSSStyleDeclarationTableEntries[] = {
 
 static const struct HashTable DOMCSSStyleDeclarationTable = { 2, 4, DOMCSSStyleDeclarationTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -57,7 +57,7 @@ static const struct HashEntry DOMStyleSheetTableEntries[] = {
 
 static const struct HashTable DOMStyleSheetTable = { 2, 9, DOMStyleSheetTableEntries, 7 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -70,7 +70,7 @@ static const struct HashEntry DOMStyleSheetListTableEntries[] = {
 
 static const struct HashTable DOMStyleSheetListTable = { 2, 2, DOMStyleSheetListTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -83,7 +83,7 @@ static const struct HashEntry DOMMediaListTableEntries[] = {
 
 static const struct HashTable DOMMediaListTable = { 2, 2, DOMMediaListTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -98,7 +98,7 @@ static const struct HashEntry DOMMediaListProtoTableEntries[] = {
 
 static const struct HashTable DOMMediaListProtoTable = { 2, 4, DOMMediaListProtoTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -112,7 +112,7 @@ static const struct HashEntry DOMCSSStyleSheetTableEntries[] = {
 
 static const struct HashTable DOMCSSStyleSheetTable = { 2, 3, DOMCSSStyleSheetTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -127,7 +127,7 @@ static const struct HashEntry DOMCSSStyleSheetProtoTableEntries[] = {
 
 static const struct HashTable DOMCSSStyleSheetProtoTable = { 2, 4, DOMCSSStyleSheetProtoTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -141,7 +141,7 @@ static const struct HashEntry DOMCSSRuleListTableEntries[] = {
 
 static const struct HashTable DOMCSSRuleListTable = { 2, 3, DOMCSSRuleListTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -158,7 +158,7 @@ static const struct HashEntry DOMCSSRuleTableEntries[] = {
 
 static const struct HashTable DOMCSSRuleTable = { 2, 6, DOMCSSRuleTableEntries, 4 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -171,7 +171,7 @@ static const struct HashEntry DOMCSSStyleRuleTableEntries[] = {
 
 static const struct HashTable DOMCSSStyleRuleTable = { 2, 2, DOMCSSStyleRuleTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -187,7 +187,7 @@ static const struct HashEntry DOMCSSMediaRuleTableEntries[] = {
 
 static const struct HashTable DOMCSSMediaRuleTable = { 2, 5, DOMCSSMediaRuleTableEntries, 4 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -199,7 +199,7 @@ static const struct HashEntry DOMCSSFontFaceRuleTableEntries[] = {
 
 static const struct HashTable DOMCSSFontFaceRuleTable = { 2, 1, DOMCSSFontFaceRuleTableEntries, 1 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -212,7 +212,7 @@ static const struct HashEntry DOMCSSPageRuleTableEntries[] = {
 
 static const struct HashTable DOMCSSPageRuleTable = { 2, 2, DOMCSSPageRuleTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -227,7 +227,7 @@ static const struct HashEntry DOMCSSImportRuleTableEntries[] = {
 
 static const struct HashTable DOMCSSImportRuleTable = { 2, 4, DOMCSSImportRuleTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -239,7 +239,7 @@ static const struct HashEntry DOMCSSCharsetRuleTableEntries[] = {
 
 static const struct HashTable DOMCSSCharsetRuleTable = { 2, 1, DOMCSSCharsetRuleTableEntries, 1 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -259,7 +259,7 @@ static const struct HashEntry CSSRuleConstructorTableEntries[] = {
 
 static const struct HashTable CSSRuleConstructorTable = { 2, 9, CSSRuleConstructorTableEntries, 7 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -273,7 +273,7 @@ static const struct HashEntry DOMCSSValueTableEntries[] = {
 
 static const struct HashTable DOMCSSValueTable = { 2, 3, DOMCSSValueTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -289,7 +289,7 @@ static const struct HashEntry CSSValueConstructorTableEntries[] = {
 
 static const struct HashTable CSSValueConstructorTable = { 2, 5, CSSValueConstructorTableEntries, 5 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -301,7 +301,7 @@ static const struct HashEntry DOMCSSPrimitiveValueTableEntries[] = {
 
 static const struct HashTable DOMCSSPrimitiveValueTable = { 2, 1, DOMCSSPrimitiveValueTableEntries, 1 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -320,7 +320,7 @@ static const struct HashEntry DOMCSSPrimitiveValueProtoTableEntries[] = {
 
 static const struct HashTable DOMCSSPrimitiveValueProtoTable = { 2, 8, DOMCSSPrimitiveValueProtoTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -366,7 +366,7 @@ static const struct HashEntry CSSPrimitiveValueConstructorTableEntries[] = {
 
 static const struct HashTable CSSPrimitiveValueConstructorTable = { 2, 35, CSSPrimitiveValueConstructorTableEntries, 27 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -380,7 +380,7 @@ static const struct HashEntry DOMCSSValueListTableEntries[] = {
 
 static const struct HashTable DOMCSSValueListTable = { 2, 3, DOMCSSValueListTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -395,7 +395,7 @@ static const struct HashEntry DOMRGBColorTableEntries[] = {
 
 static const struct HashTable DOMRGBColorTable = { 2, 4, DOMRGBColorTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -411,18 +411,18 @@ static const struct HashEntry DOMRectTableEntries[] = {
 
 static const struct HashTable DOMRectTable = { 2, 5, DOMRectTableEntries, 4 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
 namespace KJS {
 
 static const struct HashEntry DOMCounterTableEntries[] = {
-   { "identifier", DOMCounter::_Identifier, DontDelete|ReadOnly, 0, 0 },
-   { "listStyle", DOMCounter::ListStyle, DontDelete|ReadOnly, 0, 0 },
-   { "separator", DOMCounter::Separator, DontDelete|ReadOnly, 0, 0 }
+   { "identifier", DOMCounter::identifier, DontDelete|ReadOnly, 0, 0 },
+   { "listStyle", DOMCounter::listStyle, DontDelete|ReadOnly, 0, 0 },
+   { "separator", DOMCounter::separator, DontDelete|ReadOnly, 0, 0 }
 };
 
 static const struct HashTable DOMCounterTable = { 2, 3, DOMCounterTableEntries, 3 };
 
-}; // namespace
+} // namespace

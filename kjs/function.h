@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -44,7 +45,7 @@ namespace KJS {
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
-    void addParameter(const UString &n);
+    void addParameter(const Identifier &n);
     // parameters in string representation, e.g. (a, b, c)
     UString parameterString() const;
     virtual CodeType codeType() const = 0;
@@ -79,7 +80,7 @@ namespace KJS {
 
   class DeclaredFunctionImp : public FunctionImp {
   public:
-    DeclaredFunctionImp(ExecState *exec, const UString &n,
+    DeclaredFunctionImp(ExecState *exec, const Identifier &n,
 			FunctionBodyNode *b, const List &sc);
     ~DeclaredFunctionImp();
 

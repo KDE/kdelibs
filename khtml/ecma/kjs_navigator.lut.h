@@ -26,4 +26,4 @@ static const struct HashEntry NavigatorTableEntries[] = {
 
 static const struct HashTable NavigatorTable = { 2, 17, NavigatorTableEntries, 11 };
 
-}; // namespace
+} // namespace

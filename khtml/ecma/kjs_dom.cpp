@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -148,7 +149,7 @@ bool DOMNode::toBoolean(ExecState *) const
   sourceIndex	DOMNode::SourceIndex		DontDelete|ReadOnly
 @end
 */
-Value DOMNode::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMNode::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNode::tryGet " << propertyName.qstring() << endl;
@@ -346,7 +347,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   return Undefined();
 }
 
-void DOMNode::tryPut(ExecState *exec, const UString& propertyName, const Value& value, int attr)
+void DOMNode::tryPut(ExecState *exec, const Identifier& propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNode::tryPut " << propertyName.qstring() << endl;
@@ -545,21 +546,21 @@ DOMNodeList::~DOMNodeList()
 
 // We have to implement hasProperty since we don't use a hashtable for 'length' and 'item'
 // ## this breaks "for (..in..)" though.
-bool DOMNodeList::hasProperty(ExecState *exec, const UString &p) const
+bool DOMNodeList::hasProperty(ExecState *exec, const Identifier &p) const
 {
-  if (p == "length" || p == "item")
+  if (p == lengthPropertyName || p == "item")
     return true;
   return ObjectImp::hasProperty(exec, p);
 }
 
-Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
+Value DOMNodeList::tryGet(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNodeList::tryGet " << p.ascii() << endl;
 #endif
   Value result;
 
-  if (p == "length")
+  if (p == lengthPropertyName)
     result = Number(list.length());
   else if (p == "item") {
     // No need for a complete hashtable for a single func, but we still want
@@ -626,7 +627,7 @@ DOMNodeListFunc::DOMNodeListFunc(ExecState *exec, int i, int len)
   : DOMFunction(), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 // Not a prototype class currently, but should probably be converted to one
@@ -653,7 +654,7 @@ const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
   ownerElement	DOMAttr::OwnerElement	DontDelete|ReadOnly
 @end
 */
-Value DOMAttr::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMAttr::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
@@ -677,7 +678,7 @@ Value DOMAttr::getValueProperty(ExecState *exec, int token) const
   return Value(); // not reached
 }
 
-void DOMAttr::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void DOMAttr::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
@@ -752,7 +753,7 @@ DOMDocument::~DOMDocument()
   ScriptInterpreter::forgetDOMObject(node.handle());
 }
 
-Value DOMDocument::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMDocument::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMDocument::tryGet " << propertyName.qstring() << endl;
@@ -803,7 +804,7 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-void DOMDocument::tryPut(ExecState *exec, const UString& propertyName, const Value& value, int attr)
+void DOMDocument::tryPut(ExecState *exec, const Identifier& propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMDocument::tryPut " << propertyName.qstring() << endl;
@@ -940,7 +941,7 @@ DOMElement::DOMElement(ExecState *exec, const DOM::Element& e)
 DOMElement::DOMElement(const Object& proto, const DOM::Element& e)
   : DOMNode(proto, e) { }
 
-Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMElement::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMElement::tryGet " << propertyName.qstring() << endl;
@@ -1086,7 +1087,7 @@ const ClassInfo DOMDocumentType::info = { "DocumentType", &DOMNode::info, &DOMDo
 DOMDocumentType::DOMDocumentType(ExecState *exec, const DOM::DocumentType& dt)
   : DOMNode( /*### no proto yet*/exec, dt ) { }
 
-Value DOMDocumentType::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMDocumentType::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<DOMDocumentType, DOMNode>(exec, propertyName, &DOMDocumentTypeTable, this);
 }
@@ -1143,16 +1144,16 @@ DOMNamedNodeMap::~DOMNamedNodeMap()
 
 // We have to implement hasProperty since we don't use a hashtable for 'length'
 // ## this breaks "for (..in..)" though.
-bool DOMNamedNodeMap::hasProperty(ExecState *exec, const UString &p) const
+bool DOMNamedNodeMap::hasProperty(ExecState *exec, const Identifier &p) const
 {
-  if (p == "length")
+  if (p == lengthPropertyName)
     return true;
   return DOMObject::hasProperty(exec, p);
 }
 
-Value DOMNamedNodeMap::tryGet(ExecState* exec, const UString &p) const
+Value DOMNamedNodeMap::tryGet(ExecState* exec, const Identifier &p) const
 {
-  if (p == "length")
+  if (p == lengthPropertyName)
     return Number(map.length());
 
   // array index ?
@@ -1203,7 +1204,7 @@ const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOM
   sheet		DOMProcessingInstruction::Sheet		DontDelete|ReadOnly
 @end
 */
-Value DOMProcessingInstruction::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMProcessingInstruction::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<DOMProcessingInstruction, DOMNode>(exec, propertyName, &DOMProcessingInstructionTable, this);
 }
@@ -1223,7 +1224,7 @@ Value DOMProcessingInstruction::getValueProperty(ExecState *exec, int token) con
   }
 }
 
-void DOMProcessingInstruction::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void DOMProcessingInstruction::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
   // Not worth using the hashtable for this one ;)
   if (propertyName == "data")
@@ -1242,7 +1243,7 @@ const ClassInfo DOMNotation::info = { "Notation", &DOMNode::info, &DOMNotationTa
   systemId		DOMNotation::SystemId	DontDelete|ReadOnly
 @end
 */
-Value DOMNotation::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMNotation::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<DOMNotation, DOMNode>(exec, propertyName, &DOMNotationTable, this);
 }
@@ -1271,7 +1272,7 @@ const ClassInfo DOMEntity::info = { "Entity", &DOMNode::info, 0, 0 };
   notationName		DOMEntity::NotationName	DontDelete|ReadOnly
 @end
 */
-Value DOMEntity::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMEntity::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<DOMEntity, DOMNode>(exec, propertyName, &DOMEntityTable, this);
 }
@@ -1403,7 +1404,7 @@ NodeConstructor::NodeConstructor(ExecState *exec)
 {
 }
 
-Value NodeConstructor::tryGet(ExecState *exec, const UString &propertyName) const
+Value NodeConstructor::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<NodeConstructor, DOMObject>(exec, propertyName, &NodeConstructorTable, this);
 }
@@ -1479,7 +1480,7 @@ DOMExceptionConstructor::DOMExceptionConstructor(ExecState* exec)
 {
 }
 
-Value DOMExceptionConstructor::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMExceptionConstructor::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   return DOMObjectLookupGetValue<DOMExceptionConstructor, DOMObject>(exec, propertyName, &DOMExceptionConstructorTable, this);
 }
@@ -1546,10 +1547,10 @@ DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const QValueLi
   // Maybe we should ref (and deref in the dtor) the nodes, though ?
 }
 
-Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyName) const
+Value DOMNamedNodesCollection::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
   kdDebug(6070) << k_funcinfo << propertyName.ascii() << endl;
-  if (propertyName == "length")
+  if (propertyName == lengthPropertyName)
     return Number(m_nodes.count());
   // index?
   bool ok;
@@ -1588,7 +1589,7 @@ DOMCharacterData::DOMCharacterData(ExecState *exec, const DOM::CharacterData& d)
 DOMCharacterData::DOMCharacterData(const Object& proto, const DOM::CharacterData& d)
  : DOMNode(proto, d) {}
 
-Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
+Value DOMCharacterData::tryGet(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070)<<"DOMCharacterData::tryGet "<<p.string().string()<<endl;
@@ -1610,7 +1611,7 @@ Value DOMCharacterData::getValueProperty(ExecState *, int token) const
   }
 }
 
-void DOMCharacterData::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
+void DOMCharacterData::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
 {
   if (propertyName == "data")
     static_cast<DOM::CharacterData>(node).setData(value.toString(exec).string());
@@ -1662,7 +1663,7 @@ IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextProto,DOMTextProtoFunc,DOMCharacterDataPr
 DOMText::DOMText(ExecState *exec, const DOM::Text& t)
   : DOMCharacterData(DOMTextProto::self(exec), t) { }
 
-Value DOMText::tryGet(ExecState *exec, const UString &p) const
+Value DOMText::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p == "")
     return Undefined(); // ### TODO

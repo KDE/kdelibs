@@ -109,16 +109,16 @@ void PartMonitor::partCompleted()
 RegTestObject::RegTestObject(ExecState *exec, RegressionTest *_regTest)
 {
     m_regTest = _regTest;
-    put(exec,"print",Object(new RegTestFunction(exec,m_regTest,RegTestFunction::Print,1)), DontEnum);
-    put(exec,"reportResult",Object(new RegTestFunction(exec,m_regTest,RegTestFunction::ReportResult,3)), DontEnum);
-    put(exec,"checkOutput",Object(new RegTestFunction(exec,m_regTest,RegTestFunction::CheckOutput,1)), DontEnum);
+    putDirect("print",new RegTestFunction(exec,m_regTest,RegTestFunction::Print,1), DontEnum);
+    putDirect("reportResult",new RegTestFunction(exec,m_regTest,RegTestFunction::ReportResult,3), DontEnum);
+    putDirect("checkOutput",new RegTestFunction(exec,m_regTest,RegTestFunction::CheckOutput,1), DontEnum);
 }
 
-RegTestFunction::RegTestFunction(ExecState *exec, RegressionTest *_regTest, int _id, int length)
+RegTestFunction::RegTestFunction(ExecState */*exec*/, RegressionTest *_regTest, int _id, int length)
 {
     m_regTest = _regTest;
     id = _id;
-    put(exec,"length",Number(length));
+    putDirect("length",length);
 }
 
 bool RegTestFunction::implementsCall() const
@@ -160,16 +160,16 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 KHTMLPartObject::KHTMLPartObject(ExecState *exec, KHTMLPart *_part)
 {
     m_part = _part;
-    put(exec, "openPage", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::OpenPage,1)), DontEnum);
-    put(exec, "openPageAsUrl", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::OpenPageAsUrl,1)), DontEnum);
-    put(exec, "begin",     Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Begin,1)), DontEnum);
-    put(exec, "write",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Write,1)), DontEnum);
-    put(exec, "end",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::End,0)), DontEnum);
-    put(exec, "executeScript", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ExecuteScript,0)), DontEnum);
-    put(exec, "processEvents", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ProcessEvents,0)), DontEnum);
+    putDirect("openPage", new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::OpenPage,1), DontEnum);
+    putDirect("openPageAsUrl", new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::OpenPageAsUrl,1), DontEnum);
+    putDirect("begin",     new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Begin,1), DontEnum);
+    putDirect("write",    new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Write,1), DontEnum);
+    putDirect("end",    new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::End,0), DontEnum);
+    putDirect("executeScript", new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ExecuteScript,0), DontEnum);
+    putDirect("processEvents", new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ProcessEvents,0), DontEnum);
 }
 
-Value KHTMLPartObject::get(ExecState *exec, const UString &propertyName) const
+Value KHTMLPartObject::get(ExecState *exec, const Identifier &propertyName) const
 {
     if (propertyName == "document")
         return getDOMNode(exec,m_part->document());
@@ -179,11 +179,11 @@ Value KHTMLPartObject::get(ExecState *exec, const UString &propertyName) const
         return ObjectImp::get(exec,propertyName);
 }
 
-KHTMLPartFunction::KHTMLPartFunction(ExecState *exec, KHTMLPart *_part, int _id, int length)
+KHTMLPartFunction::KHTMLPartFunction(ExecState */*exec*/, KHTMLPart *_part, int _id, int length)
 {
     m_part = _part;
     id = _id;
-    put(exec,"length",Number(length));
+    putDirect("length",length);
 }
 
 bool KHTMLPartFunction::implementsCall() const

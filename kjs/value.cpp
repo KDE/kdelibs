@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -127,15 +128,15 @@ Value ValueImp::getBase(ExecState *) const
 }
 
 // TODO: remove
-UString ValueImp::getPropertyName(ExecState * /*exec*/) const
+Identifier ValueImp::getPropertyName(ExecState * /*exec*/) const
 {
   if (type() != ReferenceType)
     // the spec wants a runtime error here. But getValue() and putValue()
     // will catch this case on their own earlier. When returning a Null
     // string we should be on the safe side.
-    return UString();
+    return Identifier();
 
-  return (static_cast<const ReferenceImp*>(this))->getPropertyName();
+  return Identifier((static_cast<const ReferenceImp*>(this))->getPropertyName());
 }
 
 // TODO: remove
@@ -147,7 +148,7 @@ Value ValueImp::getValue(ExecState *exec) const
   Value o = getBase(exec);
 
   if (!o.isValid() || o.type() == NullType) {
-    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName(exec);
+    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName(exec).ustring();
     Object err = Error::create(exec, ReferenceError, m.ascii());
     exec->setException(err);
     return err;
@@ -273,7 +274,7 @@ Value Value::getBase(ExecState *exec) const
 }
 
 // TODO: remove
-UString Value::getPropertyName(ExecState *exec) const
+Identifier Value::getPropertyName(ExecState *exec) const
 {
   return rep->getPropertyName(exec);
 }

@@ -24,17 +24,17 @@
 #ifndef _KJS_PROPERTY_MAP_H_
 #define _KJS_PROPERTY_MAP_H_
 
-#include "ustring.h"
+#include "identifier.h"
 #include "value.h"
 
 namespace KJS {
 
   class PropertyMapNode {
   public:
-    PropertyMapNode(const UString &n, ValueImp *v, int att, PropertyMapNode *p)
+    PropertyMapNode(const Identifier &n, ValueImp *v, int att, PropertyMapNode *p)
       : name(n), value(v), attr(att), left(0), right(0), parent(p), height(1) {}
 
-    UString name;
+    Identifier name;
     ValueImp *value;
     int attr;
 
@@ -57,7 +57,7 @@ namespace KJS {
   /**
    * @internal
    *
-   * Provides a name/value map for storing properties based on UString keys. The
+   * Provides a name/value map for storing properties based on Identifier keys. The
    * map is implemented using an AVL tree, which provides O(log2 n) performance
    * for insertion and deletion, and retrieval.
    *
@@ -70,15 +70,15 @@ namespace KJS {
     PropertyMap();
     ~PropertyMap();
 
-    void put(const UString &name, ValueImp *value, int attr);
-    void remove(const UString &name);
-    ValueImp *get(const UString &name) const;
+    void put(const Identifier &name, ValueImp *value, int attr);
+    void remove(const Identifier &name);
+    ValueImp *get(const Identifier &name) const;
 
     void clear(PropertyMapNode *node = 0);
     void dump(const PropertyMapNode *node = 0, int indent = 0) const;
     void checkTree(const PropertyMapNode *node = 0) const;
 
-    PropertyMapNode *getNode(const UString &name) const;
+    PropertyMapNode *getNode(const Identifier &name) const;
     PropertyMapNode *first() const;
 
   private:
@@ -95,7 +95,7 @@ namespace KJS {
     PropertyMapNode *root;
   };
 
-  int uscompare(const UString &s1, const UString &s2);
+  int uscompare(const Identifier &s1, const Identifier &s2);
 
 } // namespace
 

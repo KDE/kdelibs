@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2002, 2003 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2002 Apple Computer, Inc.
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -364,7 +364,7 @@ Value ResolveNode::evaluate(ExecState *exec) const
   }
 
   // identifier not found
-  UString m = I18N_NOOP("Can't find variable: ") + ident;
+  UString m = I18N_NOOP("Can't find variable: ") + ident.ustring();
   Object err = Error::create(exec, ReferenceError, m.ascii());
   exec->setException(err);
   return err;
@@ -429,7 +429,7 @@ Value ElementNode::evaluate(ExecState *exec) const
     array = Object(static_cast<ObjectImp*>(list->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
     val = node->evaluate(exec).getValue(exec);
-    length = array.get(exec,"length").toInt32(exec);
+    length = array.get(exec,lengthPropertyName).toInt32(exec);
   } else {
     Value newArr = exec->interpreter()->builtinArray().construct(exec,List::empty());
     array = Object(static_cast<ObjectImp*>(newArr.imp()));
@@ -437,7 +437,7 @@ Value ElementNode::evaluate(ExecState *exec) const
     KJS_CHECKEXCEPTIONVALUE
   }
 
-  array.put(exec, UString::from(elision + length), val);
+  array.put(exec, elision + length, val);
 
   return array;
 }
@@ -467,7 +467,7 @@ Value ArrayNode::evaluate(ExecState *exec) const
   if (element) {
     array = Object(static_cast<ObjectImp*>(element->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
-    length = opt ? array.get(exec,"length").toInt32(exec) : 0;
+    length = opt ? array.get(exec,lengthPropertyName).toInt32(exec) : 0;
   } else {
     Value newArr = exec->interpreter()->builtinArray().construct(exec,List::empty());
     array = Object(static_cast<ObjectImp*>(newArr.imp()));
@@ -475,7 +475,7 @@ Value ArrayNode::evaluate(ExecState *exec) const
   }
 
   if (opt)
-    array.put(exec,"length", Number(elision + length), DontEnum | DontDelete);
+    array.put(exec,lengthPropertyName, Number(elision + length), DontEnum | DontDelete);
 
   return array;
 }
@@ -544,7 +544,7 @@ Value PropertyValueNode::evaluate(ExecState *exec) const
     Value v = p->assign->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
 
-    obj.put(exec, n.toString(exec), v);
+    obj.put(exec, Identifier(n.toString(exec)), v);
   }
 
   return obj;
@@ -555,10 +555,15 @@ Value PropertyValueNode::evaluate(ExecState *exec) const
 // ECMA 11.1.5
 Value PropertyNode::evaluate(ExecState */*exec*/) const
 {
+  Value s;
+
   if (str.isNull()) {
-    return String(UString::from(numeric));
-  } else
-    return String(str);
+    s = String(UString::from(numeric));
+  } else {
+    s = String(str.ustring());
+  }
+
+  return s;
 }
 
 // ----------------------------- AccessorNode1 --------------------------------
@@ -590,7 +595,7 @@ Reference2 AccessorNode1::evaluateReference(ExecState *exec) const
   KJS_CHECKEXCEPTIONREFERENCE
   Object o = v1.toObject(exec);
   UString s = v2.toString(exec);
-  return Reference2(o, s);
+  return Reference2(o, Identifier(s));
 }
 
 // ----------------------------- AccessorNode2 --------------------------------
@@ -878,7 +883,7 @@ Value DeleteNode::evaluate(ExecState *exec) const
   if (!ref.isValid())
     return Boolean(true);
   Value b = ref.base();
-  UString n = ref.propertyName();
+  Identifier n = ref.propertyName();
 
   // The spec doesn't mention what to do if the base is null... just return true
   if (b.type() != ObjectType) {
@@ -1329,7 +1334,7 @@ Value RelationalNode::evaluate(ExecState *exec) const
           return throwError(exec,  TypeError,
                              "Shift expression not an object into IN expression." );
       Object o2(static_cast<ObjectImp*>(v2.imp()));
-      b = o2.hasProperty(exec,v1.toString(exec));
+      b = o2.hasProperty(exec,Identifier(v1.toString(exec)));
   } else {
     if (v2.type() != ObjectType)
         return throwError(exec,  TypeError,
@@ -1717,7 +1722,7 @@ Value AssignExprNode::evaluate(ExecState *exec) const
 
 // ----------------------------- VarDeclNode ----------------------------------
 
-VarDeclNode::VarDeclNode(const UString &id, AssignExprNode *in)
+VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in)
     : ident(id), init(in)
 {
 }
@@ -1758,7 +1763,7 @@ Value VarDeclNode::evaluate(ExecState *exec) const
   // "var location" creates a dynamic property instead of activating window.location.
   variable.put(exec, ident, val, DontDelete | Internal);
 
-  return String(ident);
+  return String(ident.ustring());
 }
 
 void VarDeclNode::processVarDecls(ExecState *exec)
@@ -2168,7 +2173,7 @@ ForInNode::ForInNode(Node *l, Node *e, StatementNode *s)
 {
 }
 
-ForInNode::ForInNode(const UString &i, AssignExprNode *in, Node *e, StatementNode *s)
+ForInNode::ForInNode(const Identifier &i, AssignExprNode *in, Node *e, StatementNode *s)
   : ident(i), init(in), expr(e), statement(s)
 {
   // for( var foo = bar in baz )
@@ -2224,7 +2229,7 @@ Completion ForInNode::execute(ExecState *exec)
   ListIterator propIt = propList.begin();
 
   while (propIt != propList.end()) {
-    UString name = propIt->getPropertyName(exec);
+    Identifier name = propIt->getPropertyName(exec);
     if (!v.hasProperty(exec,name)) {
       propIt++;
       continue;
@@ -2232,7 +2237,7 @@ Completion ForInNode::execute(ExecState *exec)
 
     Reference2 ref = lexpr->evaluateReference(exec);
     KJS_CHECKEXCEPTION
-    ref.putValue(exec, String(name));
+    ref.putValue(exec, String(name.ustring()));
 
     c = statement->execute(exec);
     if (c.isValueCompletion())
@@ -2816,7 +2821,7 @@ bool ParameterNode::deref()
   return Node::deref();
 }
 
-ParameterNode* ParameterNode::append(const UString &i)
+ParameterNode* ParameterNode::append(const Identifier &i)
 {
   ParameterNode *p = this;
   while (p->next)
@@ -2881,13 +2886,13 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   //  Value proto = exec->interpreter()->builtinObject().construct(exec,List::empty());
   List empty;
   Value proto = exec->interpreter()->builtinObject().construct(exec,empty);
-  func.put(exec, "prototype", proto, Internal|DontDelete);
+  func.put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
   int plen = 0;
   for(const ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
     fimp->addParameter(p->ident());
 
-  func.put(exec, "length", Number(plen), ReadOnly|DontDelete|DontEnum);
+  func.put(exec, lengthPropertyName, Number(plen), ReadOnly|DontDelete|DontEnum);
 
   ctx->variableObject().put(exec,ident,func,Internal);
 
@@ -2928,16 +2933,16 @@ bool FuncExprNode::deref()
 Value FuncExprNode::evaluate(ExecState *exec) const
 {
   const List sc = exec->context().scopeChain();
-  FunctionImp *fimp = new DeclaredFunctionImp(exec, UString::null, body, sc);
+  FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null, body, sc);
   Value ret(fimp);
   List empty;
   Value proto = exec->interpreter()->builtinObject().construct(exec,empty);
-  fimp->put(exec, "prototype", proto, Internal|DontDelete);
+  fimp->put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
   int plen = 0;
   for(const ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
     fimp->addParameter(p->ident());
-  fimp->put(exec,"length", Number(plen), ReadOnly|DontDelete|DontEnum);
+  fimp->put(exec,lengthPropertyName, Number(plen), ReadOnly|DontDelete|DontEnum);
 
   return ret;
 }

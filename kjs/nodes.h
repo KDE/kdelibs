@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000, 2003 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2002 Apple Computer, Inc.
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -136,7 +136,7 @@ namespace KJS {
     bool hitStatement(ExecState *exec);
     bool abortStatement(ExecState *exec);
     virtual Completion execute(ExecState *exec) = 0;
-    void pushLabel(const UString &id) { ls.push(id); }
+    void pushLabel(const Identifier &id) { ls.push(id); }
     virtual void processFuncDecl(ExecState *exec);
   protected:
     LabelStack ls;
@@ -216,12 +216,12 @@ namespace KJS {
 
   class ResolveNode : public Node {
   public:
-    ResolveNode(const UString &s) : ident(s) { }
+    ResolveNode(const Identifier &s) : ident(s) { }
     Reference2 evaluateReference(ExecState *exec) const;
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString ident;
+    Identifier ident;
   };
 
   class GroupNode : public Node {
@@ -289,12 +289,12 @@ namespace KJS {
   class PropertyNode : public Node {
   public:
     PropertyNode(double d) : numeric(d) { }
-    PropertyNode(const UString &s) : str(s) { }
+    PropertyNode(const Identifier &s) : str(s) { }
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     double numeric;
-    UString str;
+    Identifier str;
   };
 
   class ObjectLiteralNode : public Node {
@@ -325,14 +325,14 @@ namespace KJS {
 
   class AccessorNode2 : public Node {
   public:
-    AccessorNode2(Node *e, const UString &s) : expr(e), ident(s) { }
+    AccessorNode2(Node *e, const Identifier &s) : expr(e), ident(s) { }
     virtual void ref();
     virtual bool deref();
     Reference2 evaluateReference(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
-    UString ident;
+    Identifier ident;
   };
 
   class ArgumentListNode : public Node {
@@ -663,14 +663,14 @@ namespace KJS {
 
   class VarDeclNode : public Node {
   public:
-    VarDeclNode(const UString &id, AssignExprNode *in);
+    VarDeclNode(const Identifier &id, AssignExprNode *in);
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString ident;
+    Identifier ident;
     AssignExprNode *init;
   };
 
@@ -788,14 +788,14 @@ namespace KJS {
   class ForInNode : public StatementNode {
   public:
     ForInNode(Node *l, Node *e, StatementNode *s);
-    ForInNode(const UString &i, AssignExprNode *in, Node *e, StatementNode *s);
+    ForInNode(const Identifier &i, AssignExprNode *in, Node *e, StatementNode *s);
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString ident;
+    Identifier ident;
     AssignExprNode *init;
     Node *lexpr, *expr;
     VarDeclNode *varDecl;
@@ -805,21 +805,21 @@ namespace KJS {
   class ContinueNode : public StatementNode {
   public:
     ContinueNode() { }
-    ContinueNode(const UString &i) : ident(i) { }
+    ContinueNode(const Identifier &i) : ident(i) { }
     virtual Completion execute(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString ident;
+    Identifier ident;
   };
 
   class BreakNode : public StatementNode {
   public:
     BreakNode() { }
-    BreakNode(const UString &i) : ident(i) { }
+    BreakNode(const Identifier &i) : ident(i) { }
     virtual Completion execute(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString ident;
+    Identifier ident;
   };
 
   class ReturnNode : public StatementNode {
@@ -907,14 +907,14 @@ namespace KJS {
 
   class LabelNode : public StatementNode {
   public:
-    LabelNode(const UString &l, StatementNode *s) : label(l), statement(s) { }
+    LabelNode(const Identifier &l, StatementNode *s) : label(l), statement(s) { }
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString label;
+    Identifier label;
     StatementNode *statement;
   };
 
@@ -931,7 +931,7 @@ namespace KJS {
 
   class CatchNode : public StatementNode {
   public:
-    CatchNode(const UString &i, StatementNode *b) : ident(i), block(b) {}
+    CatchNode(const Identifier &i, StatementNode *b) : ident(i), block(b) {}
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
@@ -939,7 +939,7 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString ident;
+    Identifier ident;
     StatementNode *block;
   };
 
@@ -972,16 +972,16 @@ namespace KJS {
 
   class ParameterNode : public Node {
   public:
-    ParameterNode(const UString &i) : id(i), next(0L) { }
-    ParameterNode *append(const UString &i);
+    ParameterNode(const Identifier &i) : id(i), next(0L) { }
+    ParameterNode *append(const Identifier &i);
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
-    UString ident() const { return id; }
+    Identifier ident() const { return id; }
     ParameterNode *nextParam() const { return next; }
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString id;
+    Identifier id;
     ParameterNode *next;
   };
 
@@ -994,7 +994,7 @@ namespace KJS {
 
   class FuncDeclNode : public StatementNode {
   public:
-    FuncDeclNode(const UString &i, ParameterNode *p, FunctionBodyNode *b)
+    FuncDeclNode(const Identifier &i, ParameterNode *p, FunctionBodyNode *b)
       : ident(i), param(p), body(b) { }
     virtual void ref();
     virtual bool deref();
@@ -1003,7 +1003,7 @@ namespace KJS {
     void processFuncDecl(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString ident;
+    Identifier ident;
     ParameterNode *param;
     FunctionBodyNode *body;
   };

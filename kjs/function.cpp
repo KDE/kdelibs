@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -47,9 +48,9 @@ const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 
 namespace KJS {
   class Parameter {
   public:
-    Parameter(const UString &n) : name(n), next(0L) { }
+    Parameter(const Identifier &n) : name(n), next(0L) { }
     ~Parameter() { delete next; }
-    UString name;
+    Identifier name;
     Parameter *next;
   };
 };
@@ -63,7 +64,7 @@ FunctionImp::FunctionImp(ExecState *exec, const UString &n)
   argStack = new ListImp();
   Value protectArgStack( argStack ); // this also calls setGcAllowed on argStack
   //fprintf(stderr,"FunctionImp::FunctionImp this=%p argStack=%p\n");
-  put(exec,"arguments",Null(),ReadOnly|DontDelete|DontEnum);
+  put(exec,argumentsPropertyName,Null(),ReadOnly|DontDelete|DontEnum);
 }
 
 FunctionImp::~FunctionImp()
@@ -106,7 +107,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (codeType() == FunctionCode) {
     assert(ctx.activationObject().inherits(&ActivationImp::info));
     Object argsObj = static_cast<ActivationImp*>(ctx.activationObject().imp())->argumentsObject();
-    put(&newExec, "arguments", argsObj, DontDelete|DontEnum|ReadOnly);
+    put(&newExec, argumentsPropertyName, argsObj, DontDelete|DontEnum|ReadOnly);
     pushArgs(&newExec, argsObj);
   }
 
@@ -167,7 +168,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
     return Undefined();
 }
 
-void FunctionImp::addParameter(const UString &n)
+void FunctionImp::addParameter(const Identifier &n)
 {
   Parameter **p = &param;
   while (*p)
@@ -179,12 +180,12 @@ void FunctionImp::addParameter(const UString &n)
 UString FunctionImp::parameterString() const
 {
   UString s;
-  const Parameter * const *p = &param;
-  while (*p) {
+  const Parameter *p = param;
+  while (p) {
     if (!s.isEmpty())
         s += ", ";
-    s += (*p)->name;
-    p = &(*p)->next;
+    s += p->name.ustring();
+    p = p->next;
   }
 
   return s;
@@ -233,17 +234,17 @@ void FunctionImp::processVarDecls(ExecState */*exec*/)
 void FunctionImp::pushArgs(ExecState *exec, const Object &args)
 {
   argStack->append(args);
-  put(exec,"arguments",args,ReadOnly|DontDelete|DontEnum);
+  put(exec,argumentsPropertyName,args,ReadOnly|DontDelete|DontEnum);
 }
 
 void FunctionImp::popArgs(ExecState *exec)
 {
   argStack->removeLast();
   if (argStack->isEmpty()) {
-    put(exec,"arguments",Null(),ReadOnly|DontDelete|DontEnum);
+    put(exec,argumentsPropertyName,Null(),ReadOnly|DontDelete|DontEnum);
   }
   else
-    put(exec,"arguments",argStack->at(argStack->size()-1),ReadOnly|DontDelete|DontEnum);
+    put(exec,argumentsPropertyName,argStack->at(argStack->size()-1),ReadOnly|DontDelete|DontEnum);
 }
 
 // ------------------------------ DeclaredFunctionImp --------------------------
@@ -251,9 +252,9 @@ void FunctionImp::popArgs(ExecState *exec)
 // ### is "Function" correct here?
 const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 0};
 
-DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const UString &n,
+DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const Identifier &n,
 					 FunctionBodyNode *b, const List &sc)
-  : FunctionImp(exec,n), body(b)
+  : FunctionImp(exec,n.ustring()), body(b)
 {
   Value protect(this);
   body->ref();
@@ -278,7 +279,7 @@ bool DeclaredFunctionImp::implementsConstruct() const
 Object DeclaredFunctionImp::construct(ExecState *exec, const List &args)
 {
   Object proto;
-  Value p = get(exec,"prototype");
+  Value p = get(exec,prototypePropertyName);
   if (p.type() == ObjectType)
     proto = Object(static_cast<ObjectImp*>(p.imp()));
   else
@@ -317,12 +318,12 @@ ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args)
   : ObjectImp(exec->interpreter()->builtinObjectPrototype())
 {
   Value protect(this);
-  put(exec,"callee", Object(func), DontEnum);
-  put(exec,"length", Number(args.size()), DontEnum);
+  putDirect(calleePropertyName, func, DontEnum);
+  putDirect(lengthPropertyName, args.size(), DontEnum);
   if (!args.isEmpty()) {
     ListIterator arg = args.begin();
     for (int i = 0; arg != args.end(); arg++, i++) {
-      put(exec,UString::from(i), *arg, DontEnum);
+      put(exec,i, *arg, DontEnum);
     }
   }
 }
@@ -337,7 +338,7 @@ ActivationImp::ActivationImp(ExecState *exec, FunctionImp *f, const List &args)
 {
   Value protect(this);
   arguments = new ArgumentsImp(exec,f, args);
-  put(exec, "arguments", Object(arguments), Internal|DontDelete);
+  put(exec, argumentsPropertyName, Object(arguments), Internal|DontDelete);
 }
 
 ActivationImp::~ActivationImp()
@@ -348,11 +349,11 @@ ActivationImp::~ActivationImp()
 // ------------------------------ GlobalFunc -----------------------------------
 
 
-GlobalFuncImp::GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len)
+GlobalFuncImp::GlobalFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto, int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 CodeType GlobalFuncImp::codeType() const

@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2002 Apple Computer, Inc.
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -123,6 +123,13 @@ namespace KJS {
   class NumberImp : public ValueImp {
   public:
     NumberImp(double v);
+
+    static ValueImp *create(int v) { return new NumberImp(v); }
+    static ValueImp *create(double v)  { return new NumberImp(v); }
+    static ValueImp *zero() { return new NumberImp(0); }
+    static ValueImp *one() { return new NumberImp(1); }
+    static ValueImp *two() { return new NumberImp(2); }
+
     double value() const { return val; }
 
     Type type() const { return NumberType; }
@@ -170,7 +177,7 @@ namespace KJS {
   public:
     Type type() const { return CompletionType; }
 
-    CompletionImp(ComplType c, const Value& v, const UString& t);
+    CompletionImp(ComplType c, const Value& v, const Identifier& t);
     virtual ~CompletionImp();
     virtual void mark();
 
@@ -182,12 +189,12 @@ namespace KJS {
 
     ComplType complType() const { return comp; }
     Value value() const { return Value(val); }
-    UString target() const { return tar; }
+    Identifier target() const { return tar; }
 
   private:
     ComplType comp;
     ValueImp * val;
-    UString tar;
+    Identifier tar;
   };
 
   /**
@@ -207,7 +214,7 @@ namespace KJS {
     /**
      * Constructs an reference with the specified base and property.
      */
-    Reference2(const Value& v, const UString& p) : bs(v), prop(p) { }
+    Reference2(const Value& v, const Identifier& p) : bs(v), prop(p) { }
 
     bool isValid() const { return bs.isValid() && !prop.isNull(); }
 
@@ -215,7 +222,7 @@ namespace KJS {
     // ECMA 8.7.1
     Value base() const { return Value(bs); }
     // ECMA 8.7.2
-    UString propertyName() const { return prop; }
+    Identifier propertyName() const { return prop; }
 
     // ECMA 8.7.1
     Value getValue(ExecState *exec) const;
@@ -223,7 +230,7 @@ namespace KJS {
 
   private:
     Value bs;
-    UString prop;
+    Identifier prop;
   };
 
   /**
@@ -299,18 +306,18 @@ namespace KJS {
      * If id is not empty and is not in the stack already, puts it on top of
      * the stack and returns true, otherwise returns false
      */
-    bool push(const UString &id);
+    bool push(const Identifier &id);
     /**
      * Is the id in the stack?
      */
-    bool contains(const UString &id) const;
+    bool contains(const Identifier &id) const;
     /**
      * Removes from the stack the last pushed id (what else?)
      */
     void pop();
   private:
     struct StackElem {
-      UString id;
+      Identifier id;
       StackElem *prev;
     };
 

@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000-2003 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001-2003 David Faure (faure@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -63,7 +64,7 @@ namespace KJS {
   public:
     History(ExecState *exec, KHTMLPart *p)
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -76,7 +77,7 @@ namespace KJS {
   public:
     FrameArray(ExecState *exec, KHTMLPart *p)
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
-    virtual Value get(ExecState *exec, const UString &propertyName) const;
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
   private:
     QGuardedPtr<KHTMLPart> part;
   };
@@ -119,7 +120,7 @@ const ClassInfo Screen::info = { "Screen", 0, &ScreenTable, 0 };
 Screen::Screen(ExecState *exec)
   : ObjectImp(exec->interpreter()->builtinObjectPrototype()) {}
 
-Value Screen::get(ExecState *exec, const UString &p) const
+Value Screen::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Screen::get " << p.qstring() << endl;
@@ -352,7 +353,7 @@ void Window::mark()
     loc->mark();
 }
 
-bool Window::hasProperty(ExecState *exec, const UString &p) const
+bool Window::hasProperty(ExecState *exec, const Identifier &p) const
 {
   // we don't want any operations on a closed window
   if (m_part.isNull())
@@ -384,7 +385,7 @@ UString Window::toString(ExecState *) const
   return "[object Window]";
 }
 
-Value Window::get(ExecState *exec, const UString &p) const
+Value Window::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Window("<<this<<")::get " << p.qstring() << endl;
@@ -671,7 +672,7 @@ Value Window::get(ExecState *exec, const UString &p) const
   return Undefined();
 }
 
-void Window::put(ExecState* exec, const UString &propertyName, const Value &value, int attr)
+void Window::put(ExecState* exec, const Identifier &propertyName, const Value &value, int attr)
 {
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
   // If yes, save time and jump directly to ObjectImp.
@@ -820,7 +821,7 @@ bool Window::toBoolean(ExecState *) const
   return !m_part.isNull();
 }
 
-int Window::installTimeout(const UString &handler, int t, bool singleShot)
+int Window::installTimeout(const Identifier &handler, int t, bool singleShot)
 {
   return winq->installTimeout(handler, t, singleShot);
 }
@@ -1353,7 +1354,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
-      int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
+      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, true /*single shot*/);
       return Number(r);
     }
     else if (args.size() >= 2 && v.isA(ObjectType) && Object::dynamicCast(v).implementsCall()) {
@@ -1367,7 +1368,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 #endif
       if ( args.size() > 2 )
         kdWarning(6070) << "setTimeout(more than 2 args) is not fully implemented!" << endl;
-      int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
+      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, true /*single shot*/);
       return Number(r);
     }
     else
@@ -1375,7 +1376,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::SetInterval:
     if (args.size() >= 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
-      int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
+      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, false);
       return Number(r);
     }
     else if (args.size() >= 2 && !Object::dynamicCast(v).isNull() &&
@@ -1388,7 +1389,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       funcArgs->removeFirst(); // all args after 2 go to the function
       funcArgs->removeFirst();
 #endif
-      int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
+      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, false);
       return Number(r);
     }
     else
@@ -1569,7 +1570,7 @@ void WindowQObject::parentDestroyed()
   scheduledActions.clear();
 }
 
-int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
+int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleShot)
 {
   //kdDebug(6070) << "WindowQObject::installTimeout " << this << " " << handler.ascii() << " milliseconds=" << t << endl;
   if (t < 10) t = 10;
@@ -1635,7 +1636,7 @@ void WindowQObject::timeoutClose()
   parent->closeNow();
 }
 
-Value FrameArray::get(ExecState *exec, const UString &p) const
+Value FrameArray::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "FrameArray::get " << p.qstring() << " part=" << (void*)part << endl;
@@ -1645,7 +1646,7 @@ Value FrameArray::get(ExecState *exec, const UString &p) const
 
   QPtrList<KParts::ReadOnlyPart> frames = part->frames();
   int len = frames.count();
-  if (p == "length")
+  if (p == lengthPropertyName)
     return Number(len);
   else if (p== "location") // non-standard property, but works in NS and IE
   {
@@ -1705,7 +1706,7 @@ Location::~Location()
   //kdDebug(6070) << "Location::~Location " << this << " m_part=" << (void*)m_part << endl;
 }
 
-Value Location::get(ExecState *exec, const UString &p) const
+Value Location::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Location::get " << p.qstring() << " m_part=" << (void*)m_part << endl;
@@ -1769,7 +1770,7 @@ Value Location::get(ExecState *exec, const UString &p) const
   return Undefined();
 }
 
-void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
+void Location::put(ExecState *exec, const Identifier &p, const Value &v, int attr)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_part << endl;
@@ -1893,7 +1894,7 @@ const ClassInfo History::info = { "History", 0, 0, 0 };
 */
 IMPLEMENT_PROTOFUNC_DOM(HistoryFunc)
 
-Value History::get(ExecState *exec, const UString &p) const
+Value History::get(ExecState *exec, const Identifier &p) const
 {
   return lookupGet<HistoryFunc,History,ObjectImp>(exec,p,&HistoryTable,this);
 }
@@ -1974,14 +1975,14 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
 const ClassInfo Konqueror::info = { "Konqueror", 0, 0, 0 };
 
-bool Konqueror::hasProperty(ExecState *exec, const UString &p) const
+bool Konqueror::hasProperty(ExecState *exec, const Identifier &p) const
 {
   if ( p.qstring().startsWith( "goHistory" ) ) return false;
 
   return true;
 }
 
-Value Konqueror::get(ExecState *exec, const UString &p) const
+Value Konqueror::get(ExecState *exec, const Identifier &p) const
 {
   if ( p == "goHistory" || part->url().protocol() != "http" || part->url().host() != "localhost" )
     return Undefined();

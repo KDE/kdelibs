@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -38,10 +39,10 @@ namespace KJS {
     DOMNode(const Object& proto, const DOM::Node& n);
     ~DOMNode();
     virtual bool toBoolean(ExecState *) const;
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
 
-    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
     void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual DOM::Node toNode() const { return node; }
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -74,8 +75,8 @@ namespace KJS {
   public:
     DOMNodeList(ExecState *, const DOM::NodeList& l);
     ~DOMNodeList();
-    virtual bool hasProperty(ExecState *exec, const UString &p) const;
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     virtual Value call(ExecState *exec, Object &thisObj, const List&args);
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
@@ -105,9 +106,9 @@ namespace KJS {
     // Constructor for inherited classes
     DOMDocument(const Object& proto, const DOM::Document& d);
     virtual ~DOMDocument();
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
     void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -125,8 +126,8 @@ namespace KJS {
   class DOMAttr : public DOMNode {
   public:
     DOMAttr(ExecState *exec, const DOM::Attr& a) : DOMNode(exec, a) { }
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
     Value getValueProperty(ExecState *exec, int token) const;
     void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -140,7 +141,7 @@ namespace KJS {
     DOMElement(ExecState *exec, const DOM::Element& e);
     // Constructor for inherited classes
     DOMElement(const Object& proto, const DOM::Element& e);
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -170,7 +171,7 @@ namespace KJS {
   public:
     // Build a DOMDocumentType
     DOMDocumentType(ExecState *exec, const DOM::DocumentType& dt);
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -182,8 +183,8 @@ namespace KJS {
   public:
     DOMNamedNodeMap(ExecState *, const DOM::NamedNodeMap& m);
     ~DOMNamedNodeMap();
-    virtual bool hasProperty(ExecState *exec, const UString &p) const;
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
@@ -198,9 +199,9 @@ namespace KJS {
   class DOMProcessingInstruction : public DOMNode {
   public:
     DOMProcessingInstruction(ExecState *exec, const DOM::ProcessingInstruction& pi) : DOMNode(exec, pi) { }
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Target, Data, Sheet };
@@ -209,7 +210,7 @@ namespace KJS {
   class DOMNotation : public DOMNode {
   public:
     DOMNotation(ExecState *exec, const DOM::Notation& n) : DOMNode(exec, n) { }
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -220,7 +221,7 @@ namespace KJS {
   class DOMEntity : public DOMNode {
   public:
     DOMEntity(ExecState *exec, const DOM::Entity& e) : DOMNode(exec, e) { }
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -232,7 +233,7 @@ namespace KJS {
   class NodeConstructor : public DOMObject {
   public:
     NodeConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -243,7 +244,7 @@ namespace KJS {
   class DOMExceptionConstructor : public DOMObject {
   public:
     DOMExceptionConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -263,7 +264,7 @@ namespace KJS {
   class DOMNamedNodesCollection : public DOMObject {
   public:
     DOMNamedNodesCollection(ExecState *exec, const QValueList<DOM::Node>& nodes );
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     const QValueList<DOM::Node>& nodes() const { return m_nodes; }
@@ -277,9 +278,9 @@ namespace KJS {
     DOMCharacterData(ExecState *exec, const DOM::CharacterData& d);
     // Constructor for inherited classes
     DOMCharacterData(const Object& proto, const DOM::CharacterData& d);
-    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &propertyName) const;
     Value getValueProperty(ExecState *, int token) const;
-    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     DOM::CharacterData toData() const { return static_cast<DOM::CharacterData>(node); }
@@ -290,7 +291,7 @@ namespace KJS {
   class DOMText : public DOMCharacterData {
   public:
     DOMText(ExecState *exec, const DOM::Text& t);
-    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec,const Identifier &propertyName) const;
     Value getValueProperty(ExecState *, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

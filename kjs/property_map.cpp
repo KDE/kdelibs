@@ -106,7 +106,7 @@ PropertyMapNode *PropertyMapNode::next()
 
 // ------------------------------ PropertyMap ----------------------------------
 
-int KJS::uscompare(const UString &s1, const UString &s2)
+int KJS::uscompare(const Identifier &s1, const Identifier &s2)
 {
   int len1 = s1.size();
   int len2 = s2.size();
@@ -128,7 +128,7 @@ PropertyMap::~PropertyMap()
   clear();
 }
 
-void PropertyMap::put(const UString &name, ValueImp *value, int attr)
+void PropertyMap::put(const Identifier &name, ValueImp *value, int attr)
 {
   // if not root; make the root the new node
   if (!root) {
@@ -186,7 +186,7 @@ void PropertyMap::put(const UString &name, ValueImp *value, int attr)
   }
 }
 
-void PropertyMap::remove(const UString &name)
+void PropertyMap::remove(const Identifier &name)
 {
   PropertyMapNode *node = getNode(name);
   if (!node) // name not in tree
@@ -197,7 +197,7 @@ void PropertyMap::remove(const UString &name)
     delete node;
 }
 
-ValueImp *PropertyMap::get(const UString &name) const
+ValueImp *PropertyMap::get(const Identifier &name) const
 {
   const PropertyMapNode *n = getNode(name);
   return n ? n->value : 0;
@@ -266,7 +266,7 @@ void PropertyMap::checkTree(const PropertyMapNode *node) const
     checkTree(node->left);
 }
 
-PropertyMapNode *PropertyMap::getNode(const UString &name) const
+PropertyMapNode *PropertyMap::getNode(const Identifier &name) const
 {
   PropertyMapNode *node = root;
 #if 1 // optimized version of ...

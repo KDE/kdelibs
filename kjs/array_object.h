@@ -31,13 +31,12 @@ namespace KJS {
   public:
     ArrayInstanceImp(ObjectImp *proto);
 
-    virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
-    virtual void putDirect(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
+    virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
     /**
      * A shallow hasProperty() variant that doesn't look at the prototype's
      * properties.
      */
-    virtual bool hasOwnProperty(ExecState *exec, const UString &propertyName);
+    virtual bool hasOwnProperty(ExecState *exec, const Identifier &propertyName);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -47,7 +46,7 @@ namespace KJS {
   public:
     ArrayPrototypeImp(ExecState *exec,
                       ObjectPrototypeImp *objProto);
-    Value get(ExecState *exec, const UString &p) const;
+    Value get(ExecState *exec, const Identifier &p) const;
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   };

@@ -54,20 +54,20 @@ NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
 
   // The constructor will be added later, after NumberObjectImp has been constructed
 
-  put(exec,"toString",       Object(new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,       1)), DontEnum);
-  put(exec,"toLocaleString", Object(new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString, 0)), DontEnum);
-  put(exec,"valueOf",        Object(new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,        0)), DontEnum);
+  putDirect(toStringPropertyName,       new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,       1), DontEnum);
+  putDirect(toLocaleStringPropertyName, new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString, 0), DontEnum);
+  putDirect(valueOfPropertyName,        new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,        0), DontEnum);
 }
 
 
 // ------------------------------ NumberProtoFuncImp ---------------------------
 
-NumberProtoFuncImp::NumberProtoFuncImp(ExecState *exec,
+NumberProtoFuncImp::NumberProtoFuncImp(ExecState */*exec*/,
                                        FunctionPrototypeImp *funcProto, int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 
@@ -113,20 +113,20 @@ const ClassInfo NumberObjectImp::info = {"Number", &InternalFunctionImp::info, &
   MIN_VALUE		NumberObjectImp::MinValue	DontEnum
 @end
 */
-NumberObjectImp::NumberObjectImp(ExecState *exec,
+NumberObjectImp::NumberObjectImp(ExecState */*exec*/,
                                  FunctionPrototypeImp *funcProto,
                                  NumberPrototypeImp *numberProto)
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
   // Number.Prototype
-  put(exec,"prototype", Value(numberProto),DontEnum|DontDelete|ReadOnly);
+  putDirect(prototypePropertyName, numberProto, DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, NumberImp::one(), ReadOnly|DontDelete|DontEnum);
 }
 
-Value NumberObjectImp::get(ExecState *exec, const UString &propertyName) const
+Value NumberObjectImp::get(ExecState *exec, const Identifier &propertyName) const
 {
   return lookupGetValue<NumberObjectImp, InternalFunctionImp>( exec, propertyName, &numberTable, this );
 }

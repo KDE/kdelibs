@@ -25,7 +25,7 @@ static const struct HashEntry DOMNodeProtoTableEntries[] = {
 
 static const struct HashTable DOMNodeProtoTable = { 2, 16, DOMNodeProtoTableEntries, 13 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -102,7 +102,7 @@ static const struct HashEntry DOMNodeTableEntries[] = {
 
 static const struct HashTable DOMNodeTable = { 2, 66, DOMNodeTableEntries, 53 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -118,7 +118,7 @@ static const struct HashEntry DOMAttrTableEntries[] = {
 
 static const struct HashTable DOMAttrTable = { 2, 5, DOMAttrTableEntries, 5 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -159,7 +159,7 @@ static const struct HashEntry DOMDocumentProtoTableEntries[] = {
 
 static const struct HashTable DOMDocumentProtoTable = { 2, 30, DOMDocumentProtoTableEntries, 23 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -178,7 +178,7 @@ static const struct HashEntry DOMDocumentTableEntries[] = {
 
 static const struct HashTable DOMDocumentTable = { 2, 8, DOMDocumentTableEntries, 4 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -208,7 +208,7 @@ static const struct HashEntry DOMElementProtoTableEntries[] = {
 
 static const struct HashTable DOMElementProtoTable = { 2, 19, DOMElementProtoTableEntries, 17 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -222,7 +222,7 @@ static const struct HashEntry DOMElementTableEntries[] = {
 
 static const struct HashTable DOMElementTable = { 2, 3, DOMElementTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -239,7 +239,7 @@ static const struct HashEntry DOMDOMImplementationProtoTableEntries[] = {
 
 static const struct HashTable DOMDOMImplementationProtoTable = { 2, 6, DOMDOMImplementationProtoTableEntries, 5 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -257,7 +257,7 @@ static const struct HashEntry DOMDocumentTypeTableEntries[] = {
 
 static const struct HashTable DOMDocumentTypeTable = { 2, 7, DOMDocumentTypeTableEntries, 6 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -279,7 +279,7 @@ static const struct HashEntry DOMNamedNodeMapProtoTableEntries[] = {
 
 static const struct HashTable DOMNamedNodeMapProtoTable = { 2, 11, DOMNamedNodeMapProtoTableEntries, 7 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -294,7 +294,7 @@ static const struct HashEntry DOMProcessingInstructionTableEntries[] = {
 
 static const struct HashTable DOMProcessingInstructionTable = { 2, 4, DOMProcessingInstructionTableEntries, 3 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -308,7 +308,7 @@ static const struct HashEntry DOMNotationTableEntries[] = {
 
 static const struct HashTable DOMNotationTable = { 2, 3, DOMNotationTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -322,7 +322,7 @@ static const struct HashEntry DOMEntityTableEntries[] = {
 
 static const struct HashTable DOMEntityTable = { 2, 3, DOMEntityTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -347,7 +347,7 @@ static const struct HashEntry NodeConstructorTableEntries[] = {
 
 static const struct HashTable NodeConstructorTable = { 2, 14, NodeConstructorTableEntries, 11 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -377,7 +377,7 @@ static const struct HashEntry DOMExceptionConstructorTableEntries[] = {
 
 static const struct HashTable DOMExceptionConstructorTable = { 2, 19, DOMExceptionConstructorTableEntries, 15 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -391,7 +391,7 @@ static const struct HashEntry DOMCharacterDataTableEntries[] = {
 
 static const struct HashTable DOMCharacterDataTable = { 2, 3, DOMCharacterDataTableEntries, 2 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -410,7 +410,7 @@ static const struct HashEntry DOMCharacterDataProtoTableEntries[] = {
 
 static const struct HashTable DOMCharacterDataProtoTable = { 2, 8, DOMCharacterDataProtoTableEntries, 7 };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 
@@ -422,4 +422,4 @@ static const struct HashEntry DOMTextProtoTableEntries[] = {
 
 static const struct HashTable DOMTextProtoTable = { 2, 1, DOMTextProtoTableEntries, 1 };
 
-}; // namespace
+} // namespace

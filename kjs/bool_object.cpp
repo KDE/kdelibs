@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -53,20 +54,20 @@ BooleanPrototypeImp::BooleanPrototypeImp(ExecState *exec,
   Value protect(this);
   // The constructor will be added later by InterpreterImp::InterpreterImp()
 
-  put(exec,"toString", Object(new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0)), DontEnum);
-  put(exec,"valueOf",  Object(new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0)),  DontEnum);
+  putDirect(toStringPropertyName, new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0), DontEnum);
+  putDirect(valueOfPropertyName,  new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0),  DontEnum);
   setInternalValue(Boolean(false));
 }
 
 
 // ------------------------------ BooleanProtoFuncImp --------------------------
 
-BooleanProtoFuncImp::BooleanProtoFuncImp(ExecState *exec,
+BooleanProtoFuncImp::BooleanProtoFuncImp(ExecState */*exec*/,
                                          FunctionPrototypeImp *funcProto, int i, int len)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 
@@ -96,15 +97,15 @@ Value BooleanProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*
 // ------------------------------ BooleanObjectImp -----------------------------
 
 
-BooleanObjectImp::BooleanObjectImp(ExecState *exec, FunctionPrototypeImp *funcProto,
+BooleanObjectImp::BooleanObjectImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
                                    BooleanPrototypeImp *booleanProto)
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
-  put(exec,"prototype", Object(booleanProto),DontEnum|DontDelete|ReadOnly);
+  putDirect(prototypePropertyName, booleanProto,DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, NumberImp::one(), ReadOnly|DontDelete|DontEnum);
 }
 
 
