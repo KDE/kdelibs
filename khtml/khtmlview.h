@@ -52,7 +52,7 @@ namespace khtml {
     class RenderPartObject;
     class RenderWidget;
     class CSSStyleSelector;
-    void applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
+    void applyRule(DOM::CSSProperty *prop);
 };
 
 class KHTMLPart;
@@ -79,7 +79,7 @@ class KHTMLView : public QScrollView
     friend class khtml::RenderPartObject;
     friend class khtml::RenderWidget;
     friend class khtml::CSSStyleSelector;
-    friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
+    friend void khtml::applyRule(DOM::CSSProperty *prop);
 
 public:
     /**

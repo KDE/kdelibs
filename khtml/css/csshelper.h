@@ -59,11 +59,6 @@ namespace khtml
      */
     DOM::DOMString parseURL(const DOM::DOMString &url);
 
-    /*
-      Sets the font to the size closest to the requested one while trying not to use a scaled bitmap font
-    */
-    void setFontSize(  QFont &f,  int pixelSize, const KHTMLSettings *s, QPaintDeviceMetrics *devMetrics );
-
 };
 
 

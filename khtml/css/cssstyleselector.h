@@ -30,9 +30,11 @@
 
 class KHTMLSettings;
 class KHTMLView;
+class KHTMLPart;
 class KURL;
 
 namespace DOM {
+    class NodeImpl;
     class ElementImpl;
     class StyleSheetImpl;
     class CSSStyleRuleImpl;
@@ -50,10 +52,6 @@ namespace khtml
     class CSSOrderedProperty;
     class CSSOrderedPropertyList;
     class RenderStyle;
-
-    // independent of classes. Applies on styleDeclaration to the RenderStyle style
-    void applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop,
-		   DOM::ElementImpl *e);
 
     /*
      * to remember the source where a rule came from. Differntiates between
@@ -186,6 +184,25 @@ namespace khtml
 	CSSOrderedProperty **properties;
 	QMemArray<CSSOrderedProperty> inlineProps;
         QString m_medium;
+	
+	
+	int dynamicState;
+	RenderStyle::PseudoId dynamicPseudo;
+	int usedDynamicStates;
+	int selectorDynamicState;
+
+	RenderStyle *style;
+	RenderStyle *parentStyle;
+	DOM::ElementImpl *element;
+	DOM::NodeImpl *parentNode;
+	KHTMLView *view;
+	KHTMLPart *part;
+	const KHTMLSettings *settings;
+	QPaintDeviceMetrics *paintDeviceMetrics;
+		
+	bool fontDirty;
+
+	void applyRule(DOM::CSSProperty *prop);
     };
 
     /*

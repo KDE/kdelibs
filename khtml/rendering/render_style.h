@@ -41,6 +41,7 @@
 
 #include "dom/dom_misc.h"
 #include "misc/khtmllayout.h"
+#include "rendering/font.h"
 
 #include <assert.h>
 
@@ -435,8 +436,6 @@ class StyleInheritedData : public SharedData
 public:
     void setDefaultValues()
     {
-	letter_spacing = 0;
-	word_spacing = 0;
         line_height = Length( -100, Percent );
 	indent = Length(0, Fixed);
 	border_spacing = 0;
@@ -444,31 +443,23 @@ public:
 	cursor_image = 0;
     }
 
-    StyleInheritedData() : SharedData(), font(), fontMetrics( font ) { setDefaultValues(); }
+    StyleInheritedData() : SharedData(), font() { setDefaultValues(); }
     virtual ~StyleInheritedData() { }
 
-    StyleInheritedData(const StyleInheritedData& o ) : SharedData(), font(), fontMetrics( font )
+    StyleInheritedData(const StyleInheritedData& o ) 
+	: SharedData(), font( o.font ), color( o.color ), decoration_color( o.decoration_color )
     {
 	indent = o.indent;
 	line_height = o.line_height;
-	letter_spacing = o.letter_spacing;
 	border_spacing = o.border_spacing;
 	style_image = o.style_image;
 	cursor_image = o.cursor_image;
-	font = o.font;
-	fontMetrics = o.fontMetrics;
-	color = o.color;
-	decoration_color = o.decoration_color;
-	letter_spacing = 0;
-	word_spacing = 0;
     }
 
     bool operator==(const StyleInheritedData& o) const
     {
         return indent == o.indent &&
                line_height == o.line_height &&
-               letter_spacing == o.letter_spacing &&
-               word_spacing == o.word_spacing &&
                border_spacing == o.border_spacing &&
                style_image == o.style_image &&
 	 cursor_image == o.cursor_image &&
@@ -492,13 +483,9 @@ public:
     CachedImage *style_image;
     CachedImage *cursor_image;
 
-    QFont font;
-    QFontMetrics fontMetrics;
+    khtml::Font font;
     QColor color;
     QColor decoration_color;
-
-    int letter_spacing : 8;
-    int word_spacing : 8;
 
     short border_spacing;
 };
@@ -730,8 +717,10 @@ public:
 
     short colSpan() const { return visual->colspan; }
 
-    const QFont & font() const { return inherited->font; }
-    const QFontMetrics & fontMetrics() const { return inherited->fontMetrics; }
+    const QFont & font() const { return inherited->font.f; }
+    // use with care. call font->update() after modifications
+    const Font &htmlFont() { return inherited->font; }
+    const QFontMetrics & fontMetrics() const { return inherited->font.fm; }
 
     const QColor & color() const { return inherited->color; }
     Length textIndent() const { return inherited->indent; }
@@ -739,8 +728,8 @@ public:
     ETextTransform textTransform() const { return inherited_flags._text_transform; }
     int textDecoration() const { return inherited_flags._text_decoration; }
     const QColor &textDecorationColor() const { return inherited->decoration_color; }
-    int wordSpacing() const { return inherited->word_spacing; }
-    int letterSpacing() const { return inherited->letter_spacing; }
+    int wordSpacing() const { return inherited->font.wordSpacing; }
+    int letterSpacing() const { return inherited->font.letterSpacing; }
 
     EDirection direction() const { return inherited_flags._direction; }
     Length lineHeight() const { return inherited->line_height; }
@@ -836,10 +825,9 @@ public:
     void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }
     void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
 
-    void setFont(const QFont & v) {
-	if (!(inherited->font == v)) {
-	    inherited.access()->font = v;
-	    inherited.access()->fontMetrics = v;
+    void setFontDef(const khtml::FontDef & v) {
+	if (!(inherited->font.fontDef == v)) {
+	    inherited.access()->font = Font( v );
 	}
     }
 
@@ -854,8 +842,8 @@ public:
 
     void setWhiteSpace(EWhiteSpace v) { inherited_flags._white_space = v; }
 
-    void setWordSpacing(int v) { SET_VAR(inherited,word_spacing,v) }
-    void setLetterSpacing(int v) { SET_VAR(inherited,letter_spacing,v) }
+    void setWordSpacing(int v) { SET_VAR(inherited,font.wordSpacing,v) }
+    void setLetterSpacing(int v) { SET_VAR(inherited,font.letterSpacing,v) }
 
     void setBackgroundColor(const QColor & v) {  SET_VAR(background,color,v) }
     void setBackgroundImage(CachedImage *v) {  SET_VAR(background,image,v) }

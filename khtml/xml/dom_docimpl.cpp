@@ -800,10 +800,14 @@ void DocumentImpl::recalcStyle( StyleChange change )
         _style->setVisuallyOrdered( visuallyOrdered );
         // ### make the font stuff _really_ work!!!!
 
-        QFont f = KGlobalSettings::generalFont();
+	khtml::FontDef fontDef;
+	QFont f = KGlobalSettings::generalFont();
+	fontDef.family = f.family();
+	fontDef.italic = f.italic();
+	fontDef.weight = f.weight();
         if (m_view) {
             const KHTMLSettings *settings = m_view->part()->settings();
-            f.setFamily(settings->stdFontName());
+            fontDef.family = settings->stdFontName();
 
             QValueList<int> fs = settings->fontSizes();
             float dpiY = 72.; // fallback
@@ -814,12 +818,12 @@ void DocumentImpl::recalcStyle( StyleChange change )
             float size = fs[3] * dpiY / 72.;
             if(size < settings->minFontSize())
                 size = settings->minFontSize();
-
-            khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
+	    fontDef.size = size;
         }
 
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
-        _style->setFont(f);
+        _style->setFontDef(fontDef);
+	_style->htmlFont().update( paintDeviceMetrics() );
         if ( parseMode() != Strict )
             _style->setHtmlHacks(true); // enable html specific rendering tricks
 
