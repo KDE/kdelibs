@@ -123,8 +123,11 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         const QColor& tc = htmlColors->map[name];
         if (tc.isValid())
             color = tc;
-        else
+        else {
             color.setNamedColor(name);
+            if(!color.isValid())
+                color = Qt::black;
+        }
     }
 }
 
