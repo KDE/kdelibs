@@ -280,7 +280,7 @@ QRgb khtml::parseColor(QString name, bool strictParsing)
 
 namespace khtml {
   QPainter *printpainter = 0;
-};
+}
 
 void khtml::setPrintPainter( QPainter *printer )
 {

@@ -259,7 +259,7 @@ namespace KDEPrivate
             return object;
         }
     };
-};
+}
 
 /*
  * vim: et sw=4

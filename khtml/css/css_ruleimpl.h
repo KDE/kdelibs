@@ -230,6 +230,6 @@ protected:
     QPtrList<CSSRuleImpl> m_lstCSSRules;
 };
 
-}; // namespace
+} // namespace
 
 #endif
