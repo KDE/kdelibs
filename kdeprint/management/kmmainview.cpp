@@ -204,6 +204,10 @@ void KMMainView::initActions()
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 
+	tact = new KToggleAction(i18n("Toggle Printer Filtering"), "filter", 0, m_actions, "view_pfilter");
+	tact->setChecked(KMManager::self()->isFilterEnabled());
+	connect(tact, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
+
 	KActionMenu	*mact = new KActionMenu(i18n("Printer Tools"), "package_utilities", m_actions, "printer_tool");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(), SIGNAL(activated(int)), SLOT(slotToolSelected(int)));
@@ -241,6 +245,7 @@ void KMMainView::initActions()
 	m_actions->action("view_printerinfos")->plug(m_toolbar);
 	m_actions->action("view_change")->plug(m_toolbar);
 	m_actions->action("orientation_change")->plug(m_toolbar);
+	m_actions->action("view_pfilter")->plug(m_toolbar);
 
 	loadPluginActions();
 	slotPrinterSelected(0);
@@ -371,6 +376,7 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 	m_actions->action("view_change")->plug(m_pop);
 	m_actions->action("orientation_change")->plug(m_pop);
 	m_actions->action("view_toolbar")->plug(m_pop);
+	m_actions->action("view_pfilter")->plug(m_pop);
 
 	// pop the menu
 	m_pop->popup(p);
@@ -688,6 +694,13 @@ void KMMainView::slotToolSelected(int ID)
 			     "could not be found."));
 	
 	KMTimer::self()->release();
+}
+
+void KMMainView::slotToggleFilter(bool on)
+{
+	KMTimer::self()->hold();
+	KMManager::self()->enableFilter(on);
+	KMTimer::self()->release(true);
 }
 
 #include "kmmainview.moc"

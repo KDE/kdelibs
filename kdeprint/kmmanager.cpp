@@ -41,6 +41,7 @@ KMManager::KMManager(QObject *parent, const char *name)
 : QObject(parent,name)
 {
 	m_printers.setAutoDelete(true);
+	m_fprinters.setAutoDelete(false);
 	m_hasmanagement = false;
 	m_printeroperationmask = 0;
 	m_serveroperationmask = 0;
@@ -196,6 +197,7 @@ QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 	{
 		// reset filter
 		m_printerfilter->update();
+		m_fprinters.clear();
 
 		// first discard all printers
 		discardAllPrinters(true);
@@ -213,11 +215,16 @@ QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 
 		// remove discarded printers
 		for (uint i=0; i<m_printers.count(); i++)
-			if (m_printers.at(i)->isDiscarded())
+		{
+			KMPrinter	*prt = m_printers.at(i);
+			if (prt->isDiscarded())
 			{
 				m_printers.remove(i);
 				i--;
 			}
+			else if (prt->isSpecial() || m_printerfilter->filter(prt))
+				m_fprinters.append(prt);
+		}
 
 		// try to find the default printer from these situations:
 		//   - it already exists from .lpoptions file
@@ -230,6 +237,12 @@ QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 		}
 	}
 
+	return &m_fprinters;
+}
+
+QPtrList<KMPrinter>* KMManager::printerListComplete(bool reload)
+{
+	printerList(reload);
 	return &m_printers;
 }
 
@@ -242,9 +255,7 @@ void KMManager::addPrinter(KMPrinter *p)
 {
 	if (p)
 	{
-		// filter out printers with empty name and
-		// those that doesn't fit into filter spec
-		if (p->name().isEmpty() || (!p->isSpecial() && !m_printerfilter->filter(p)))
+		if (p->name().isEmpty())
 			// discard printer with empty name
 			delete p;
 		else
@@ -463,6 +474,11 @@ void KMManager::validatePluginActions(KActionCollection*, KMPrinter*)
 void KMManager::enableFilter(bool on)
 {
 	m_printerfilter->setEnabled(on);
+}
+
+bool KMManager::isFilterEnabled() const
+{
+	return m_printerfilter->isEnabled();
 }
 
 #include "kmmanager.moc"

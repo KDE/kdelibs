@@ -104,11 +104,13 @@ void KMLprManager::listPrinters()
 	}
 	else
 	{
-		discardAllPrinters(false);
 		QPtrListIterator<KMPrinter>	it(m_printers);
 		for (; it.current(); ++it)
 			if (!it.current()->isSpecial())
+			{
+				it.current()->setDiscarded(false);
 				checkPrinterState(it.current());
+			}
 	}
 }
 

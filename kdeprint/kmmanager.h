@@ -97,8 +97,10 @@ public:
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
 	QPtrList<KMPrinter>* printerList(bool reload = true);
+	QPtrList<KMPrinter>* printerListComplete(bool reload = true);
 	KMPrinter* defaultPrinter();
 	void enableFilter(bool on);
+	bool isFilterEnabled() const;
 
 	// driver DB functions
 	virtual QString driverDbCreationProgram();
@@ -149,7 +151,7 @@ protected:
 
 protected:
 	QString			m_errormsg;
-	KMPrinterList		m_printers;
+	KMPrinterList		m_printers, m_fprinters;	// filtered printers
 	bool 			m_hasmanagement;
 	int			m_printeroperationmask;
 	int 			m_serveroperationmask;

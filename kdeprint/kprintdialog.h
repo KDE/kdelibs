@@ -54,6 +54,7 @@ protected slots:
 	virtual void done(int);
 	void slotWizard();
 	void slotExtensionClicked();
+	void slotToggleFilter(bool);
 
 protected:
 	bool checkOutputFile();

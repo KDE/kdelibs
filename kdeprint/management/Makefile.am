@@ -23,7 +23,8 @@ libkdeprint_management_la_SOURCES = \
 	kmwinfobase.cpp kmwname.cpp kmwend.cpp kmwclass.cpp kmwlpd.cpp kmwfile.cpp kmdriverdialog.cpp \
 	kmwsmb.cpp smbview.cpp kmconfigdialog.cpp kmconfigpage.cpp kmconfiggeneral.cpp kmspecialprinterdlg.cpp \
 	kmwlocal.cpp kiconselectaction.cpp kmconfigpreview.cpp sidepixmap.cpp \
-	pluginaction.cpp kxmlcommanddlg.cpp kxmlcommandselector.cpp kmconfigcommand.cpp
+	pluginaction.cpp kxmlcommanddlg.cpp kxmlcommandselector.cpp kmconfigcommand.cpp \
+	kmconfigfilter.cpp
 libkdeprint_management_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkdeprint_management_la_LIBADD = ../libkdeprint.la
 libkdeprint_management_la_METASOURCES = AUTO
@@ -39,7 +40,8 @@ noinst_HEADERS = kmdbcreator.h kmdriverdb.h kmdriverdbwidget.h kmiconview.h \
 		 kmwbackend.h kmwsocket.h kmwdriver.h kmwdriverselect.h kmwdrivertest.h kmwinfobase.h kmwname.h kmwend.h \
 		 kmwclass.h kmwlpd.h kmwfile.h kmdriverdialog.h kmwsmb.h smbview.h kmconfigdialog.h kmconfigpage.h \
 		 kmconfiggeneral.h kmspecialprinterdlg.h kmwlocal.h kmconfigpreview.h sidepixmap.h \
-		 pluginaction.h kxmlcommanddlg.h kxmlcommandselector.h kmconfigcommand.h
+		 pluginaction.h kxmlcommanddlg.h kxmlcommandselector.h kmconfigcommand.h \
+		 kmconfigfilter.h
 
 dataicon_DATA = tileup.png tiledown.png side.png
 dataicondir = $(kde_datadir)/kdeprint

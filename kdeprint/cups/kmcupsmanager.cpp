@@ -253,7 +253,8 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		req.setHost(p->uri().host());
 		req.setPort(p->uri().port());
 	}
-	keys.append("printer-location");
+	// disable location as it has been transferred to listing (for filtering)
+	//keys.append("printer-location");
 	keys.append("printer-info");
 	keys.append("printer-make-and-model");
 	keys.append("job-sheets-default");
@@ -276,7 +277,8 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	{
 		QString	value;
 		if (req.text("printer-info",value)) p->setDescription(value);
-		if (req.text("printer-location",value)) p->setLocation(value);
+		// disabled location
+		//if (req.text("printer-location",value)) p->setLocation(value);
 		if (req.text("printer-make-and-model",value)) p->setDriverInfo(value);
 		if (req.uri("device-uri",value)) p->setDevice(KURL(value));
 		QStringList	values;
@@ -363,6 +365,8 @@ void KMCupsManager::loadServerPrinters()
 	keys.append("printer-name");
 	keys.append("printer-type");
 	keys.append("printer-state");
+	// location needed for filtering
+	keys.append("printer-location");
 	keys.append("printer-uri-supported");
 	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
 
@@ -432,6 +436,10 @@ void KMCupsManager::processRequest(IppRequest* req)
 		else if (attrname == "printer-uri-supported")
 		{
 			printer->setUri(KURL(attr->values[0].string.text));
+		}
+		else if (attrname == "printer-location")
+		{
+			printer->setLocation(QString::fromLocal8Bit(attr->values[0].string.text));
 		}
 		if (attrname.isEmpty() || attr == req->last())
 		{

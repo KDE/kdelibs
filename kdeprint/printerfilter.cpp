@@ -22,6 +22,8 @@
 #include "kmfactory.h"
 
 #include <kconfig.h>
+#include <kglobal.h>
+#include <kdebug.h>
 
 PrinterFilter::PrinterFilter(QObject *parent, const char *name)
 : QObject(parent, name)
@@ -40,22 +42,27 @@ void PrinterFilter::update()
 	conf->setGroup("Filter");
 	m_locationRe.setPattern(conf->readEntry("LocationRe"));
 	m_printers = conf->readListEntry("Printers");
-	m_enabled = conf->readBoolEntry("Enabled", false);
+	// filter enable state is saved on a per application basis,
+	// so this option is retrieve from the application config file
+	conf = KGlobal::config();
+	conf->setGroup("KPrinter Settings");
+	m_enabled = conf->readBoolEntry("FilterEnabled", false);
 }
 
 void PrinterFilter::setEnabled(bool on)
 {
 	m_enabled = on;
-	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("Filter");
-	conf->writeEntry("Enabled", m_enabled);
+	KConfig	*conf = KGlobal::config();
+	conf->setGroup("KPrinter Settings");
+	conf->writeEntry("FilterEnabled", m_enabled);
 }
 
 bool PrinterFilter::filter(KMPrinter *prt)
 {
+	kdDebug() << "Filtering " << prt->printerName() << endl;
 	if (m_enabled)
 	{
-		if (!m_locationRe.isEmpty() && !prt->location().isEmpty() && !m_locationRe.exactMatch(prt->location()))
+		if (!m_locationRe.isEmpty() && !m_locationRe.exactMatch(prt->location()))
 			return false;
 		if (!m_printers.isEmpty() && m_printers.find(prt->printerName()) == m_printers.end())
 			return false;

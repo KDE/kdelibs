@@ -61,7 +61,7 @@ class KPrintDialog::KPrintDialogPrivate
 {
 public:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
-	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard, *m_extbtn;
+	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard, *m_extbtn, *m_filter;
 	QCheckBox	*m_preview;
 	QLineEdit	*m_cmd;
 	TreeComboBox	*m_printers;
@@ -101,10 +101,16 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_properties = new QPushButton(i18n("P&roperties..."), m_pbox);
 	d->m_options = new QPushButton(i18n("System Op&tions..."), this);
 	d->m_default = new QPushButton(i18n("Set as &Default"), m_pbox);
+	d->m_filter = new QPushButton(m_pbox);
+	d->m_filter->setPixmap(SmallIcon("filter"));
+	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
+	d->m_filter->setToggleButton(true);
+	d->m_filter->setOn(KMManager::self()->isFilterEnabled());
+	QToolTip::add(d->m_filter, i18n("Toggle Printer Filtering"));
 	d->m_wizard = new QPushButton(m_pbox);
 	d->m_wizard->setPixmap(SmallIcon("wizard"));
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
-	QToolTip::add(d->m_wizard, i18n("&Add printer..."));
+	QToolTip::add(d->m_wizard, i18n("Add printer..."));
 	d->m_ok = new QPushButton(i18n("&Print"), this);
 	d->m_ok->setDefault(true);
 	QPushButton	*m_cancel = new QPushButton(i18n("&Cancel"), this);
@@ -155,6 +161,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QHBoxLayout	*ll4 = new QHBoxLayout(0, 0, 3);
 	l4->addLayout(ll4,0,1);
 	ll4->addWidget(d->m_printers,1);
+	ll4->addWidget(d->m_filter,0);
 	ll4->addWidget(d->m_wizard,0);
 	//l4->addWidget(d->m_printers,0,1);
 	l4->addWidget(d->m_state,1,1);
@@ -184,6 +191,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(d->m_options,SIGNAL(clicked()),SLOT(slotOptions()));
 	connect(d->m_wizard,SIGNAL(clicked()),SLOT(slotWizard()));
 	connect(d->m_extbtn, SIGNAL(clicked()), SLOT(slotExtensionClicked()));
+	connect(d->m_filter, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 
 	KConfig	*config = KGlobal::config();
 	config->setGroup("KPrinter Settings");
@@ -576,6 +584,12 @@ void KPrintDialog::slotExtensionClicked()
 KPrinter* KPrintDialog::printer() const
 {
 	return d->m_printer;
+}
+
+void KPrintDialog::slotToggleFilter(bool on)
+{
+	KMManager::self()->enableFilter(on);
+	initialize(d->m_printer);
 }
 
 #include "kprintdialog.moc"

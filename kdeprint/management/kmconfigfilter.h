@@ -17,33 +17,34 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef PRINTERFILTER_H
-#define PRINTERFILTER_H
+#ifndef KMCONFIGFILTER_H
+#define KMCONFIGFILTER_H
 
-#include <qobject.h>
-#include <qregexp.h>
-#include <qstringlist.h>
+#include "kmconfigpage.h"
 
-class KMPrinter;
+class KListBox;
+class QPushButton;
 
-class PrinterFilter : QObject
+class KMConfigFilter : public KMConfigPage
 {
+	Q_OBJECT
 public:
-	PrinterFilter(QObject *parent = 0, const char *name = 0);
-	~PrinterFilter();
+	KMConfigFilter(QWidget *parent = 0, const char *name = 0);
 
-	bool filter(KMPrinter*);
-	void update();
-	void setEnabled(bool on);
-	bool isEnabled() const;
+	void loadConfig(KConfig*);
+	void saveConfig(KConfig*);
+
+protected slots:
+	void slotSelectionChanged();
+	void slotAddClicked();
+	void slotRemoveClicked();
+	
+protected:
+	void transfer(KListBox *from, KListBox *to);
 
 private:
-	QRegExp		m_locationRe;
-	QStringList	m_printers;
-	bool		m_enabled;
+	KListBox	*m_list1, *m_list2;
+	QPushButton	*m_add, *m_remove;
 };
-
-inline bool PrinterFilter::isEnabled() const
-{ return m_enabled; }
 
 #endif

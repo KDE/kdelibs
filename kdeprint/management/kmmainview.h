@@ -71,6 +71,7 @@ public slots:
 	void slotAddSpecial();
 	void slotRefresh();
 	void slotToolSelected(int);
+	void slotToggleFilter(bool);
 
 protected slots:
 	void slotPrinterSelected(KMPrinter*);
