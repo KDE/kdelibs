@@ -252,7 +252,7 @@ void NodeIteratorImpl::notifyBeforeNodeRemoval(NodeImpl *removed)
 short NodeIteratorImpl::isAccepted(NodeImpl *n)
 {
   // if XML is implemented we have to check expandEntityRerefences in this function
-  if( ( ( 1 << n->nodeType()-1) & m_whatToShow) != 0 )
+  if( ( ( 1 << ( n->nodeType()-1 ) ) & m_whatToShow) != 0 )
     {
         if(!m_filter.isNull())
             return m_filter.acceptNode(n);
@@ -526,7 +526,7 @@ Node TreeWalkerImpl::nextNode(  )
 short TreeWalkerImpl::isAccepted(Node n)
 {
     // if XML is implemented we have to check expandEntityRerefences in this function
-  if( ( ( 1 << n.nodeType()-1 ) & m_whatToShow) != 0 )
+  if( ( ( 1 << ( n.nodeType()-1 ) ) & m_whatToShow) != 0 )
     {
       if(m_filter)
         return m_filter->acceptNode(n);
