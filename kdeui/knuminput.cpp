@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 4 -*-
 /*
  * knuminput.cpp
  *
@@ -274,6 +275,7 @@ void KIntNumInput::init(int val, int _base)
     connect(m_spin, SIGNAL(valueChanged(int)), SLOT(spinValueChanged(int)));
 
     setFocusProxy(m_spin);
+    layout(true);
 }
 
 
@@ -566,6 +568,7 @@ void KDoubleNumInput::init(double value)
     //setFocusProxy(edit);
 
     m_suffix = m_prefix = "";
+    layout(true);
 
     resetEditBox();
 }
