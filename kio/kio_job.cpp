@@ -9,12 +9,15 @@
 #include <qdialog.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
+#include <qtimer.h>
 
 #include <kapp.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kwm.h>
 #include <kdebug.h>
 #include <kprotocolmanager.h>
+#include <kdialog.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -241,8 +244,8 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
   }
   
   if ( m_iGUImode != NONE ) {
-    QString buffer = i18n("Mounting %1 ...").arg( _dev );
-    m_pDialog = createDialog( buffer.ascii() );
+    QString buffer = i18n("Mounting %1...").arg( _dev );
+    m_pDialog = createDialog( buffer.latin1() );
   }
   
   return KIOJobBase::mount( _ro, _fstype, _dev, _point );  
@@ -258,8 +261,8 @@ bool KIOJob::unmount( const char *_point ) {
   }
   
   if ( m_iGUImode != NONE ) {
-    QString buffer = i18n("Unmounting %1 ...").arg( _point );
-    m_pDialog = createDialog( buffer.ascii() );
+    QString buffer = i18n("Unmounting %1...").arg( _point );
+    m_pDialog = createDialog( buffer.latin1() );
   }
   
   return KIOJobBase::unmount( _point );  
@@ -986,24 +989,33 @@ void KIOJob::slotDispatch( int, int &result ) {
 
 QDialog* KIOJob::createDialog( const char *_text ) {
   QDialog* dlg = new QDialog;
-  QVBoxLayout* layout = new QVBoxLayout( dlg, 10, 0 );
+  QVBoxLayout* layout = new QVBoxLayout( dlg, KDialog::marginHint(),
+					 KDialog::spacingHint() );
   layout->addStrut( 360 );	// makes dlg at least that wide
 
   QLabel *line1 = new QLabel( _text, dlg );
-  line1->setFixedHeight( 20 );
   layout->addWidget( line1 );
 
+  layout->addSpacing( KDialog::spacingHint() );
+
+  QHBoxLayout *hBox = new QHBoxLayout();
+  layout->addLayout(hBox);
+  
+  hBox->addStretch(1);
+
   QPushButton *pb = new QPushButton( i18n("Cancel"), dlg );
-  pb->setFixedSize( pb->sizeHint() );
   connect( pb, SIGNAL( clicked() ), this, SLOT( slotCancel() ) );
-  layout->addSpacing( 10 );
-  layout->addWidget( pb );
+  hBox->addWidget( pb );
 
   layout->addStretch( 10 );
-  layout->activate();
+
   dlg->resize( dlg->sizeHint() );
 
-  dlg->show();
+  // instead of showing immediately, we fire off a one shot timer to
+  // show ourselves after 1.5 seconds.  This avoids massive window creation/
+  // destruction on single file copies or other short operations.
+
+  QTimer::singleShot(1500, dlg, SLOT(show()));
 
   return dlg;
 }
@@ -1017,24 +1029,24 @@ QString KIOJob::convertSize( unsigned long size )
     if ( size >= 1073741824 )
     {
         fsize = (float) size / (float) 1073741824;
-        s = i18n( "%1 GB" ).arg( fsize, 0, 'f', 1 );
+        s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
     }
     // Mega-byte
     else if ( size >= 1048576 )
     {
         fsize = (float) size / (float) 1048576;
-        s = i18n( "%1 MB" ).arg( fsize, 0, 'f', 1 );
+        s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
     }
     // Kilo-byte
     else if ( size > 1024 )
     {
         fsize = (float) size / (float) 1024;
-        s = i18n( "%1 KB" ).arg( fsize, 0, 'f', 1 );
+        s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
     }
     // Just a byte
     else
     {
-        s = i18n( "%1 B" ).arg( size );
+        s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(size, 0));
     }
     return s;
 }
