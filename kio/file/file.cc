@@ -362,8 +362,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     {
        if (::chmod(_dest_orig.data(), _mode) != 0)
        {
-           error( KIO::ERR_CANNOT_CHMOD, dest_orig );
-           return;
+           warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
        }
     }
 
@@ -488,8 +487,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     {
        if (::chmod(_dest.data(), _mode) != 0)
        {
-           error( KIO::ERR_CANNOT_CHMOD, dest.path() );
-           return;
+           warning( i18n( "Could not change permissions for\n%1" ).arg( dest.path() ) );
        }
     }
 
