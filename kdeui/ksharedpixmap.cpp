@@ -12,6 +12,7 @@
  *
  * Shared pixmap client for KDE.
  */
+#include "config.h"
 
 #include <qrect.h>
 #include <qsize.h>
@@ -26,6 +27,23 @@
 #include <kdebug.h>
 
 #include <X11/Xlib.h>
+
+// Make sure to include all this X-based shit before we clean up the mess.
+// Needed for --enable-final. Not needed by this file itself!
+#include <X11/Xutil.h>
+#ifdef HAVE_MITSHM
+#include <X11/extensions/XShm.h>
+#endif
+
+#include <netwm.h>
+
+// Clean up the mess
+
+#undef Bool
+#undef Above
+#undef Below
+#undef KeyPress
+#undef FocusOut
 
 /**
  * KSharedPixmap

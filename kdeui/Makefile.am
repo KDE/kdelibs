@@ -59,19 +59,24 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
-libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
+# the files on the first line need to occur first when compiling
+# with --enable-final since they use X defines that get undefined
+# in ksharedpixmap.cpp
+libkdeui_la_SOURCES = \
+		qxembed.cpp ksharedpixmap.cpp \
+		kthemestyle.cpp kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
 		kimageeffect.cpp kcolordlg.cpp kselect.cpp kdatepik.cpp \
 		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp ktmainwindow.cpp \
-		kmenubar.cpp \
+		kmenubar.cpp kpixmapio.cpp \
 		kseparator.cpp krestrictedline.cpp  \
 		kcolorbtn.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp \
 		kled.cpp kdbtn.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
-		klineeditdlg.cpp kthemebase.cpp ksharedpixmap.cpp \
-		kcharselect.cpp kcolordrag.cpp qxembed.cpp \
+		klineeditdlg.cpp kthemebase.cpp  \
+		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
@@ -80,7 +85,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp kdrawutil.cpp \
 		kiconview.cpp klistbox.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlgui.cpp \
-		kxmlguibuilder.cpp kpixmapio.cpp kedittoolbar.cpp \
+		kxmlguibuilder.cpp kedittoolbar.cpp \
 		kdocktabctl.cpp kdockwidget.cpp kdockwidget_private.cpp \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \

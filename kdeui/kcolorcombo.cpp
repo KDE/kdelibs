@@ -62,7 +62,10 @@
 
 // This is repeated from the KColorDlg, but I didn't 
 // want to make it public BL. 
+// We define it out when compiling with --enable-final in which case
+// we use the version defined in KColorDlg
 
+#ifndef KDE_USE_FINAL
 #define STANDARD_PAL_SIZE 17
 
 static QColor *standardPalette = 0;
@@ -94,6 +97,7 @@ static void createStandardPalette()
     standardPalette[i++] = Qt::darkGray;
     standardPalette[i++] = Qt::black;
 }
+#endif
 
 KColorCombo::KColorCombo( QWidget *parent, const char *name )
 	: QComboBox( parent, name )

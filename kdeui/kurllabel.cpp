@@ -1,7 +1,5 @@
 // (c) 2000 Peter Putzer
 
-#pragma implementation
-
 #include <qcolor.h>
 #include <qtimer.h>
 #include <qtooltip.h>

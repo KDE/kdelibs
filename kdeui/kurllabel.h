@@ -20,8 +20,6 @@
 #ifndef KURLLABEL_H
 #define KURLLABEL_H
 
-#pragma interface
-
 #include <qlabel.h>
 
 class QColor;
