@@ -112,8 +112,6 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         if(!m_styleSheet) {
             m_styleSheet = new CSSStyleSheetImpl(this,0,true);
             m_styleSheet->ref();
-            if (attached())
-		getDocument()->createSelector();
         }
         QString aStr;
 	if ( attr->attrId == ATTR_LINK )
@@ -125,6 +123,8 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	aStr += " { color: " + attr->value().string() + "; }";
         m_styleSheet->parseString(aStr);
         m_styleSheet->setNonCSSHints();
+        if (attached())
+            getDocument()->createSelector();
         break;
     }
     case ATTR_ONLOAD:
@@ -171,15 +171,13 @@ void HTMLBodyElementImpl::attach()
 
     khtml::RenderObject *r = _parent->renderer();
 
+    // ignore display: none for this element!
     if ( !r )
       return;
 
     m_render = new RenderBody(this);
     m_render->setStyle(m_style);
     r->addChild( m_render, nextRenderer() );
-
-    if (m_styleSheet)
-	getDocument()->createSelector();
 
     HTMLElementImpl::attach();
 }
@@ -289,6 +287,7 @@ void HTMLFrameElementImpl::attach()
     setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
     khtml::RenderObject *r = _parent->renderer();
 
+    // ignore display: none for this element!
     if ( !r )
       return;
 
@@ -432,6 +431,7 @@ void HTMLFrameSetElementImpl::attach()
     view = w;
     khtml::RenderObject *r = _parent->renderer();
 
+    // ignore display: none for this element!
     if ( !r )
       return;
 
@@ -571,6 +571,7 @@ void HTMLHtmlElementImpl::attach()
     setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
     khtml::RenderObject *r = _parent->renderer();
 
+    // ignore display: none for this element!
     if ( !r )
       return;
 
@@ -664,22 +665,21 @@ void HTMLIFrameElementImpl::attach()
 
   khtml::RenderObject *r = _parent->renderer();
 
-  if ( !r )
-    return;
+  if(r && m_style->display() != NONE) {
 
-  // we need a unique name for every frame in the frameset. Hope that's unique enough.
-  if(name.isEmpty())
-  {
-    name = DOMString(w->part()->requestFrameName());
-    kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
+      // we need a unique name for every frame in the frameset. Hope that's unique enough.
+      if(name.isEmpty())
+      {
+          name = DOMString(w->part()->requestFrameName());
+          kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
+      }
+
+      khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, this );
+      m_render = renderFrame;
+      m_render->setStyle(m_style);
+      r->addChild( m_render, nextRenderer() );
+      renderFrame->updateWidget();
   }
-
-  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, this );
-  m_render = renderFrame;
-  m_render->setStyle(m_style);
-  r->addChild( m_render, nextRenderer() );
-  renderFrame->updateWidget();
-
 
   HTMLElementImpl::attach();
 }
