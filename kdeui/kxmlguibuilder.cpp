@@ -335,7 +335,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         QDomAttr attr = attributes.item( i ).toAttr();
 	
         if ( attr.name().lower() == d->attrLineSeparator &&
-	     attr.value().lower().latin1() == "true" )
+	     attr.value().lower() == QString::fromLatin1("true") )
 	{
 	  isLineSep = true;
 	  break;
