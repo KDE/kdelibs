@@ -279,8 +279,8 @@ bool KFileMetaInfo::applyChanges()
     }
     if (!doit) 
     {
-        return true;
         kdDebug(7033) << "Don't need to write, nothing changed\n";
+        return true;
     }
   
     KFilePlugin* p = plugin();
