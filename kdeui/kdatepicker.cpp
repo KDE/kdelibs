@@ -165,7 +165,7 @@ KDatePicker::resizeEvent(QResizeEvent*)
     }
     // ----- place the line edit for direct input:
     sizes[0]=line->sizeHint();
-    int week_width=d->selectWeek->fontMetrics().width(i18n("Week XX"))+50;
+    int week_width=d->selectWeek->fontMetrics().width(i18n("Week XX"))+((d->closeButton != 0L) ? 50 : 20);
     line->setGeometry(0, height()-sizes[0].height(), width()-week_width, sizes[0].height());
     d->selectWeek->setGeometry(width()-week_width, height()-sizes[0].height(), week_width, sizes[0].height());
     // ----- adjust the table:
