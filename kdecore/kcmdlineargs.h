@@ -29,6 +29,8 @@ struct KCmdLineOptions
    const char *def; // Default
 };
 
+#define KCmdLineLastOption { 0, 0, 0 }
+
 class KCmdLineArgsList;
 class KApplication;
 class KUniqueApplication;
