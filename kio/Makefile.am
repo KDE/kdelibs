@@ -50,8 +50,8 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kdirlister.h kservicegroup.h\
 	progressbase.h defaultprogress.h statusbarprogress.h \
-	kimageio.h kdirnotify.h kurlpixmapprovider.h kprotocolinfo.h \
-	kprotocolmanager.h
+	kimageio.h kdirnotify.h kdirnotify_stub.h \
+        kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) 
@@ -89,7 +89,7 @@ kioinclude_HEADERS = connection.h \
         global.h passdlg.h netaccess.h job.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
-	statusbarprogress.h uiserver.h tcpslavebase.h \
+	statusbarprogress.h uiserver.h uiserver_stub.h tcpslavebase.h \
 	renamedlg.h skipdlg.h \
 	observer.h 
 
