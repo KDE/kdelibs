@@ -48,16 +48,16 @@
 
 #ifdef HAVE_LIBASOUND
 #define HAVE_ALSA_SUPPORT
-
-#include <sys/asoundlib.h>
+#include <linux/asequencer.h>
+#elsif defined(HAVE_LIBASOUND2)
+#define HAVE_ALSA_SUPPORT
 #include <linux/asequencer.h>
 #endif
 
-#ifdef HAVE_LIBASOUND2
-#define HAVE_ALSA_SUPPORT
-
+#ifdef HAVE_ALSA_ASOUNDLIB_H
+#include <alsa/asoundlib.h>
+#elif defined(HAVE_SYS_ASOUNDLIB_H)
 #include <sys/asoundlib.h>
-#include <linux/asequencer.h>
 #endif
 
 #if 1
@@ -298,21 +298,48 @@ int DeviceManager::initManager(void)
   {  // We are using ALSA
 
 #ifdef HAVE_ALSA_SUPPORT
+#ifdef HAVE_LIBASOUND2
+    snd_seq_client_info_t *clienti;
+    snd_seq_port_info_t *porti;
+#else
     snd_seq_client_info_t clienti;
     snd_seq_port_info_t porti;
+#endif
     int  client;
     int  port;
 
     snd_seq_t *handle;
+#ifdef HAVE_LIBASOUND2
+    snd_seq_open(&handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
+    snd_seq_system_info_t *info;
+    snd_seq_system_info(handle, info);
+#else
     snd_seq_open(&handle, SND_SEQ_OPEN);
 
     snd_seq_system_info_t info;
     info.clients=info.ports=0;
     snd_seq_system_info(handle, &info);
-
+#endif
     n_total=0;
     n_midi=0;
     n_synths=0;
+#ifdef HAVE_LIBASOUND2
+    device=new MidiOut*[snd_seq_system_info_get_clients(info)*snd_seq_system_info_get_ports(info)];
+    unsigned int k=SND_SEQ_PORT_CAP_SUBS_WRITE | SND_SEQ_PORT_CAP_WRITE ;
+    for (client=0 ; client<snd_seq_system_info_get_clients(info) ; client++)
+    {
+      snd_seq_get_any_client_info(handle, client, clienti);
+      for (port=0 ; port<snd_seq_client_info_get_num_ports(clienti) ; port++)
+      {
+        snd_seq_get_any_port_info(handle, client, port, porti);
+        if (( snd_seq_port_info_get_capability(porti) & k ) == k)
+        {
+          device[n_midi]=new AlsaOut(n_midi,client, port, snd_seq_client_info_get_name(clienti), snd_seq_port_info_get_name(porti));
+          n_midi++;
+        };
+      }
+    }
+#else
     device=new MidiOut*[info.clients*info.ports];
     unsigned int k=SND_SEQ_PORT_CAP_SUBS_WRITE | SND_SEQ_PORT_CAP_WRITE ;
     for (client=0 ; client<info.clients ; client++)
@@ -328,6 +355,7 @@ int DeviceManager::initManager(void)
 	};
       }
     }
+#endif
     n_total=n_midi;
 
     snd_seq_close(handle);
