@@ -171,18 +171,17 @@ public:
     /**
      * @return the specified item
      */
-    KFileMetaInfoItem & item( const QString& key ) const
-    { return d->items[key];}
+    KFileMetaInfoItem & item( const QString& key ) const;
 
     /**
      * operator for convenience. It does the same as @ref item()
      */
     KFileMetaInfoItem & operator[]( const QString& key ) const
-    { return d->items[key]; }
+    { return item( key ); }
 
     /**
      * Convenience function. Returns the value of the specified key.
-     * you can also use item(key)->value()
+     * you can also use item(key).value()
      */
     const QVariant value( const QString& key ) const
     {
@@ -193,14 +192,12 @@ public:
     /**
      * @return whether an item for this key exists.
      */
-    bool contains( const QString& key ) const
-    { return d->items.contains(key); }
+    bool contains( const QString& key ) const;
 
     /**
      * @return The list of keys the plugin knows about. No variable keys.
      */
-    const QStringList supportedKeys() const
-    { return d->supportedKeys; }
+    const QStringList supportedKeys() const;
 
    /**
     * @return all keys that the file has, but in preference order. The
@@ -214,8 +211,7 @@ public:
     * @return true if the mimetype supports adding or removing arbitrary keys,
     * false if not.
     */
-    bool supportsVariableKeys() const
-    { return d->supportsVariableKeys; }
+    bool supportsVariableKeys() const;
 
    /**
     * @return the type of the value for the specified key. You can use this to
@@ -310,10 +306,7 @@ public:
      *
      * @return the map of @ref KFileMetaInfoItem objects
      **/
-    QMap<QString, KFileMetaInfoItem>* map() const
-    {
-        return &d->items;
-    }
+    QMap<QString, KFileMetaInfoItem>* map() const;
     
     /**
      * set the list of keys that are supported by the plugin. If the info
@@ -321,31 +314,19 @@ public:
      * (e.g. common keys for which a translation is available) should be
      * specified with this function.
      **/
-    void setSupportedKeys(QStringList keys)
-    {
-        if (isValid())
-            d->supportedKeys = keys;
-    }
+    void setSupportedKeys(QStringList keys);
 
     /**
      * Specify the list of preferred keys. Most plugins just write the
      * list they get on the constructor.
      **/
-    void setPreferredKeys(QStringList keys)
-    {
-        if (isValid())
-            d->preferredKeys = keys;
-    }
+    void setPreferredKeys(QStringList keys);
     
     /**
      * Specify if the object supports variable keys, i.e. arbitrary key/value
      * pairs can be added
      **/
-    void setSupportsVariableKeys(bool b   )
-    {
-        if (isValid())
-            d->supportsVariableKeys = b;
-    }
+    void setSupportsVariableKeys(bool b);
     
     /**
      * Adds an item to the object. That's the most important function
@@ -359,20 +340,12 @@ public:
      * @/pre
      *
      */
-    void insert( const KFileMetaInfoItem &item )
-    {
-        //kdDebug(7033) << "insert\n";
-        if (isValid()) {
-            //kdDebug(7033) << "insert really " << item.key() << endl;
-            d->items.insert( item.key(), item );
-            //kdDebug(7033) << "inserted " << item.key() << endl;
-        }
-    }
+    void insert( const KFileMetaInfoItem &item );
         
     /**
      * returns the path to the file that belongs to this object
      */
-    const QString& path() const { return d->path; }
+    const QString& path() const;
     
 };
   

@@ -319,6 +319,27 @@ KFilePlugin * const KFileMetaInfo::plugin() const
     return prov->plugin( d->mimetype );
 }
 
+const QStringList KFileMetaInfo::supportedKeys() const
+{
+    return d->supportedKeys;
+}
+
+bool KFileMetaInfo::supportsVariableKeys() const
+{
+    return d->supportsVariableKeys;
+}
+
+bool KFileMetaInfo::contains( const QString& key ) const
+{
+    return d->items.contains(key);
+}
+
+KFileMetaInfoItem & KFileMetaInfo::item( const QString& key ) const
+{
+    return d->items[key];
+}
+
+
 KFileMetaInfo::Data* KFileMetaInfo::Data::null = 0L;
 static KStaticDeleter<KFileMetaInfo::Data> sd_KFileMetaInfoData;
 
@@ -327,6 +348,47 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
     if (!null)
         sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(QString::null) );
     return null;
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+QMap<QString, KFileMetaInfoItem>* KFileMetaInfo::Internal::map() const
+{
+    return &d->items;
+}
+
+void KFileMetaInfo::Internal::setSupportedKeys(QStringList keys)
+{
+    if (isValid())
+        d->supportedKeys = keys;
+}
+
+void KFileMetaInfo::Internal::setPreferredKeys(QStringList keys)
+{
+    if (isValid())
+        d->preferredKeys = keys;
+}
+
+void KFileMetaInfo::Internal::setSupportsVariableKeys(bool b)
+{
+    if (isValid())
+        d->supportsVariableKeys = b;
+}
+
+void KFileMetaInfo::Internal::insert( const KFileMetaInfoItem &item )
+{
+    //kdDebug(7033) << "insert\n";
+    if (isValid()) {
+        //kdDebug(7033) << "insert really " << item.key() << endl;
+        d->items.insert( item.key(), item );
+        //kdDebug(7033) << "inserted " << item.key() << endl;
+    }
+}
+
+const QString& KFileMetaInfo::Internal::path() const
+{
+    return d->path;
 }
 
 ///////////////////////////////////////////////////////////////////
