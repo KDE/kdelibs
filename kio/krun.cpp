@@ -433,20 +433,35 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  if ( !KProtocolManager::self().supportsReading( m_strURL.protocol() ) )
+  // First, let's check for well-known extensions
+  // and apply KMimeMagic for local files
+  KMimeType::Ptr mime = KMimeType::findByURL( m_strURL );
+  assert( mime );
+  if ( mime->mimeType() != "application/octet-stream" || m_bIsLocalFile )
   {
-     kdError(7010) << "#### NO SUPPORT FOR READING!" << endl;
-     m_bFault = true;
-     m_bFinished = true;
-     m_timer.start( 0, true );
-     return;
+    kdDebug(7010) << "Scanfile: MIME TYPE is " << debugString(mime->mimeType()) << endl;
+    foundMimeType( mime->mimeType() );
   }
-  kdDebug(7010) << "###### Scanning file " << debugString(m_strURL.url()) << endl;
+  else
+  {
+    // No mimetype found, and the URL is not local.
+    // We need to get some data out of the file, to know what mimetype it is.
 
-  KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
-  connect(job, SIGNAL( result( KIO::Job *)),
-          this, SLOT( slotScanFinished(KIO::Job *)));
-  m_job = job;
+    if ( !KProtocolManager::self().supportsReading( m_strURL.protocol() ) )
+    {
+      kdError(7010) << "#### NO SUPPORT FOR READING!" << endl;
+      m_bFault = true;
+      m_bFinished = true;
+      m_timer.start( 0, true );
+      return;
+    }
+    kdDebug(7010) << "###### Scanning file " << debugString(m_strURL.url()) << endl;
+
+    KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
+    connect(job, SIGNAL( result( KIO::Job *)),
+            this, SLOT( slotScanFinished(KIO::Job *)));
+    m_job = job;
+  }
 }
 
 void KRun::slotTimeout()
