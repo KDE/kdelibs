@@ -37,7 +37,7 @@
 static const KCmdLineOptions options[] =
 {
   { "+file.kfcg", I18N_NOOP("Input kcfg XML file."), 0 },
-  { "+file.kcfg-codegen", I18N_NOOP("Code generation options file."), 0 },
+  { "+file.kcfgc", I18N_NOOP("Code generation options file."), 0 },
   KCmdLineLastOption
 };
 
@@ -446,16 +446,14 @@ int main( int argc, char **argv )
   QString inputFilename = args->url( 0 ).path();
   QString codegenFilename = args->url( 1 ).path();
   
-  if (!codegenFilename.endsWith(".kcfg-codegen"))
+  if (!codegenFilename.endsWith(".kcfgc"))
   {
-    kdError() << "Codegen options file must have extension .kcfg-codegen" << endl;
+    kdError() << "Codegen options file must have extension .kcfgc" << endl;
     return 1;
   }
   QString baseName = args->url( 1 ).fileName();
   baseName = baseName.left(baseName.length() - 13);
 
-  kdDebug() << "Codegen options: " << codegenFilename << endl;
-  
   KSimpleConfig codegenConfig( codegenFilename, true );
   
   QString className = codegenConfig.readEntry("ClassName");
@@ -467,8 +465,6 @@ int main( int argc, char **argv )
   QStringList includes = codegenConfig.readListEntry("IncludeFiles");
   bool mutators = codegenConfig.readBoolEntry("Mutators");
   
-  kdDebug() << "Input file: " << inputFilename << endl;
-
   QFile input( inputFilename );
 
   QDomDocument doc;

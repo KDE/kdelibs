@@ -19,8 +19,8 @@ autoexample_SOURCES = general_base.ui myoptions_base.ui autoexample.cpp
 example.o exampleprefs_base.o: exampleprefs_base.h
 # avoid running the below command in parallel
 exampleprefs_base.cpp: exampleprefs_base.h
-exampleprefs_base.cpp exampleprefs_base.h: $(srcdir)/example.kcfg kconfig_compiler $(srcdir)/exampleprefs_base.kcfg-codegen
-	./kconfig_compiler $(srcdir)/example.kcfg $(srcdir)/exampleprefs_base.kcfg-codegen
+exampleprefs_base.cpp exampleprefs_base.h: $(srcdir)/example.kcfg kconfig_compiler $(srcdir)/exampleprefs_base.kcfgc
+	./kconfig_compiler $(srcdir)/example.kcfg $(srcdir)/exampleprefs_base.kcfgc
 
 METASOURCES = AUTO
 
