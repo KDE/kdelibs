@@ -126,6 +126,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_bUseCache = true;
   m_bBusy = false;
   m_maxCacheAge = 0;
+  m_maxCacheSize = 0;
   m_fcache = 0;
   m_iSize = -1;
   m_HTTPrev = HTTP_Unknown;
@@ -134,6 +135,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_remoteConnTimeout = DEFAULT_CONNECT_TIMEOUT;
   m_remoteRespTimeout = DEFAULT_RESPONSE_TIMEOUT;
   m_maxCacheAge = DEFAULT_MAX_CACHE_AGE;
+  m_maxCacheSize = DEFAULT_MAX_CACHE_SIZE / 2;
   m_pid = getpid();
 
   m_dcopClient = new DCOPClient();
@@ -2211,7 +2213,6 @@ bool HTTPProtocol::readHeader()
   QString mediaValue;
   QString mediaAttribute;
 
-  QStringList responseHeader;
   QStringList upgradeOffers;
 
   bool upgradeRequired = false;   // Server demands that we upgrade to something
@@ -2220,8 +2221,8 @@ bool HTTPProtocol::readHeader()
                                   // committed to doing so
   bool canUpgrade = false;        // The server offered an upgrade
 
-  bool propagateHeader = config()->readBoolEntry("PropagateHttpHeader", false);
 
+  m_responseHeader.clear();
   m_etag = QString::null;
   m_lastModified = QString::null;
   m_strCharset = QString::null;
@@ -2314,17 +2315,14 @@ bool HTTPProtocol::readHeader()
 
     kdDebug(7103) << "(" << m_pid << ") \"" << buffer << "\"" << endl;
 
-
-
     // Save broken servers from damnation!!
     char* buf = buffer;
     while( *buf == ' ' )
         buf++;
 
     // Store the the headers so they can be passed to the
-    // calling application later.
-    if (propagateHeader)
-      responseHeader << QString::fromLatin1(buf);
+    // calling application later
+    m_responseHeader << QString::fromLatin1(buf);
 
     if (strncasecmp(buf, "HTTP/", 5) == 0)
     {
@@ -3043,14 +3041,6 @@ bool HTTPProtocol::readHeader()
   if ( !mediaAttribute.isEmpty() )
     setMetaData(mediaAttribute, mediaValue);
 
-  // Send the response header if it was requested
-  if (!responseHeader.isEmpty())
-  {
-    //kdDebug(7113) << "(" << m_pid << ") Setting HTTP-Headers: " << endl
-    //              << responseHeader.join("\n") << endl;
-    setMetaData("HTTP-Headers", responseHeader.join("\n"));
-  }
-
   if( !disposition.isEmpty() )
   {
     kdDebug(7113) << "(" << m_pid << ") Setting Content-Disposition metadata to: "
@@ -3082,9 +3072,15 @@ bool HTTPProtocol::readHeader()
     mimeType( m_strMimeType );
   }
 
+  // Send the response header if it was requested
+  if ( config()->readBoolEntry("PropagateHttpHeader", false) )
+  {
+    setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
+    sendMetaData();
+  }
+
   if (m_request.method == HTTP_HEAD)
      return true;
-
 
   // Do we want to cache this request?
   if (m_bUseCache)
@@ -3096,6 +3092,7 @@ bool HTTPProtocol::readHeader()
         if (!m_fcache)
            m_bCachedWrite = false; // Error creating cache entry.
         m_expireDate = expireDate;
+        m_maxCacheSize = config()->readNumEntry("MaxCacheSize", DEFAULT_MAX_CACHE_AGE) / 2;
      }
      else
      {
@@ -3902,7 +3899,15 @@ void HTTPProtocol::error( int _err, const QString &_text )
   httpClose();
   
   if (!m_request.id.isEmpty())
+  {
+    // Send the response header if it was requested
+    if ( config()->readBoolEntry("PropagateHttpHeader", false) )
+    {
+       setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
+    }
+
     sendMetaData();
+  }
 
   SlaveBase::error( _err, _text );
   m_bError = true;
@@ -4295,6 +4300,16 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
    if (fwrite( buffer, nbytes, 1, m_fcache) != 1)
    {
       kdWarning(7103) << "writeCacheEntry: writing " << nbytes << " bytes failed." << endl;
+      fclose(m_fcache);
+      m_fcache = 0;
+      QString filename = m_state.cef + ".new";
+      ::unlink( QFile::encodeName(filename) );
+      return;
+   }
+   long file_pos = ftell( m_fcache ) / 1024;
+   if ( file_pos > m_maxCacheSize )
+   {
+      kdDebug(7103) << "writeCacheEntry: File size reaches " << file_pos << "Kb, exceeds cache limits." << endl;
       fclose(m_fcache);
       m_fcache = 0;
       QString filename = m_state.cef + ".new";

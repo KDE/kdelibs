@@ -394,6 +394,8 @@ protected:
   char *m_lineBufUnget;
   char *m_linePtrUnget;
   size_t m_lineCountUnget;
+  
+  QStringList m_responseHeader;
 
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
@@ -414,6 +416,7 @@ protected:
   bool m_bCachedRead; // Whether the file is to be read from m_fcache.
   bool m_bCachedWrite; // Whether the file is to be written to m_fcache.
   int m_maxCacheAge; // Maximum age of a cache entry.
+  long m_maxCacheSize; // Maximum cache size in Kb.
   FILE* m_fcache; // File stream of a cache entry
   QString m_strCacheDir; // Location of the cache.
   QString m_etag; // ETag header.
