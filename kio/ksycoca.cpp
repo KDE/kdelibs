@@ -131,8 +131,11 @@ void KSycoca::checkVersion()
    Q_INT32 aVersion;
    (*str) >> aVersion;
    if ( aVersion != KSYCOCA_VERSION )
+   {
+      // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
       kdebug( KDEBUG_ERROR, 7011, "Outdated database ! Stop kded and restart it !" );
-   // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
+      abort();
+   }
 }
 
 QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
@@ -144,6 +147,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
    while(true)
    {
       (*str) >> aId;
+      assert( aId > 0 && aId <= 2 ); // to update in case of new factories
       kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
       if (aId == 0)
       {
