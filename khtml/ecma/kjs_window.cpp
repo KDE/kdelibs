@@ -849,9 +849,12 @@ void Window::closeNow()
   if (!m_part.isNull())
   {
     //kdDebug(6070) << k_funcinfo << " -> closing window" << endl;
+    // We want to make sure that window.open won't find this part by name.
+    m_part->setName( 0 );
     m_part->deleteLater();
     m_part = 0;
-  }
+  } else
+    kdDebug(6070) << k_funcinfo << "part is deleted already" << endl;
 }
 
 void Window::afterScriptExecution()
@@ -1362,11 +1365,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
           // this fixes 'setTimeout('self.close()',1000); alert("Hi");' crash
           widget->closeChildDialogs();
         }
+        //kdDebug() << "scheduling delayed close"  << endl;
         // We'll close the window at the end of the script execution
         Window* w = const_cast<Window*>(window);
         w->m_delayed.append( Window::DelayedAction( Window::DelayedClose ) );
-      } else
+      } else {
+        //kdDebug() << "closing NOW"  << endl;
         (const_cast<Window*>(window))->closeNow();
+      }
     }
     return Undefined();
   }
