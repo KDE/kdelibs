@@ -1009,9 +1009,9 @@ RenderFlow::lowestPosition() const
     return bottom;
 }
 
-int RenderFlow::rightmostPosition() const
+short RenderFlow::rightmostPosition() const
 {
-    int right = RenderBox::rightmostPosition();
+    short right = RenderBox::rightmostPosition();
 
     RenderObject *c;
     for (c = firstChild(); c; c = c->nextSibling()) {

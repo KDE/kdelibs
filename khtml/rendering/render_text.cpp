@@ -40,6 +40,7 @@
 
 #include <qpainter.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <assert.h>
 #include <limits.h>
 
@@ -635,7 +636,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
 //kdDebug(6040) << "nearest_idx " << nearest_idx << " count " << count << endl;
     if (si >= count) s = m_lines[nearest_idx];
     // we are now in the correct text box
-    pos = kMin(offset - s->m_start, s->m_len);
+    pos = kMin(offset - s->m_start, int( s->m_len ));
     //kdDebug(6040) << "offset=" << offset << " s->m_start=" << s->m_start << endl;
     return s;
 }
@@ -846,7 +847,7 @@ bool RenderText::posOfChar(int chr, int &x, int &y)
     return false;
 }
 
-int RenderText::rightmostPosition() const
+short RenderText::rightmostPosition() const
 {
     if (style()->whiteSpace() != NORMAL)
         return maxWidth();
@@ -953,7 +954,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		else {
                     int offset = s->m_start;
                     int sPos = kMax( startPos - offset, 0 );
-                    int ePos = kMin( endPos - offset, s->m_len );
+                    int ePos = kMin( endPos - offset, int( s->m_len ) );
 // selected text is always separate in konqueror
 #ifdef APPLE_CHANGES
                     if (paintSelectedTextSeparately) {
@@ -995,7 +996,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if (haveSelection) {
 		int offset = s->m_start;
 		int sPos = kMax( startPos - offset, 0 );
-		int ePos = kMin( endPos - offset, s->m_len );
+		int ePos = kMin( endPos - offset, int( s->m_len ) );
                 //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
 		    s->paintSelection(font, this, p, _style, tx, ty, sPos, ePos, d);
@@ -1135,7 +1136,7 @@ void RenderText::calcMinMaxWidth()
     m_endMin = kMin( currMinWidth , 0x1ff );
 
     if (style()->whiteSpace() == NOWRAP) {
-	m_startMin = kMin( m_minWidth, 0x1ff );
+	m_startMin = kMin( m_minWidth, ( short )0x1ff );
 	m_endMin = m_startMin;
         m_minWidth = m_maxWidth;
     }
@@ -1151,7 +1152,7 @@ int RenderText::minXPos() const
     int retval=6666666;
     for (unsigned i=0;i < m_lines.count(); i++)
     {
-	retval = kMin ( retval, m_lines[i]->m_x);
+	retval = kMin ( retval, int( m_lines[i]->m_x ));
     }
     return retval;
 }

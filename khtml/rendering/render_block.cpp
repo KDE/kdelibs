@@ -35,7 +35,7 @@
 #include "render_block.h"
 
 #include "khtmlview.h"
-#include "htmltags.h"
+#include "misc/htmltags.h"
 
 using namespace DOM;
 

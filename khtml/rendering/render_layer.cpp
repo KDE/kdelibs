@@ -43,6 +43,8 @@
  */
 
 #include <kdebug.h>
+#include <kglobal.h>
+
 #include <assert.h>
 #include "khtmlview.h"
 #include "rendering/render_layer.h"
@@ -283,7 +285,7 @@ void RenderLayer::insertOnlyThisLayer()
 
 void RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const
 {
-    if (ancestorLayer == this)
+    if (ancestorLayer == this || !m_object->style() )
         return;
 
     if (m_object->style()->position() == FIXED) {
@@ -326,8 +328,8 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
 {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    int maxX = m_scrollWidth - m_object->clientWidth();
-    int maxY = m_scrollHeight - m_object->clientHeight();
+    int maxX = scrollWidth() - m_object->clientWidth();
+    int maxY = scrollHeight() - m_object->clientHeight();
     if (x > maxX) x = maxX;
     if (y > maxY) y = maxY;
 

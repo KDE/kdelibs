@@ -30,6 +30,7 @@
 #include "khtmlview.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 using namespace khtml;
 

@@ -525,7 +525,7 @@ public:
     // Implemented in RenderFlow.
     virtual int lowestPosition() const {return 0;}
 
-    virtual int rightmostPosition() const {return 0;}
+    virtual short rightmostPosition() const {return 0;}
 
     // recursively invalidate current layout
     // unused: void invalidateLayout();

@@ -20,16 +20,17 @@
  *
  * $Id$
  */
-#include "bidi.h"
-#include "break_lines.h"
-#include "render_flow.h"
-#include "render_text.h"
-#include "render_arena.h"
+#include "rendering/bidi.h"
+#include "rendering/break_lines.h"
+#include "rendering/render_flow.h"
+#include "rendering/render_text.h"
+#include "rendering/render_arena.h"
 using namespace khtml;
 
-#include "kdebug.h"
-#include "qdatetime.h"
-#include "qfontmetrics.h"
+#include <kdebug.h>
+#include <kglobal.h>
+#include <qdatetime.h>
+#include <qfontmetrics.h>
 
 #define BIDI_DEBUG 0
 //#define DEBUG_LINEBREAKS

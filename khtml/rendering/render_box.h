@@ -76,7 +76,7 @@ public:
     virtual void position(InlineBox* box, int from, int len, bool reverse, int);
 
     virtual int lowestPosition() const;
-    virtual int rightmostPosition() const;
+    virtual short rightmostPosition() const;
 
     virtual void repaint(bool immediate=false);
 

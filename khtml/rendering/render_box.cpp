@@ -1013,9 +1013,9 @@ int RenderBox::lowestPosition() const
     return bottom;
 }
 
-int RenderBox::rightmostPosition() const
+short RenderBox::rightmostPosition() const
 {
-    int right = m_width;
+    short right = m_width;
     if ( m_layer )
 	right = kMax( right, m_layer->width() );
     return m_width;

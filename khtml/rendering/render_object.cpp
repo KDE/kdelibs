@@ -34,6 +34,7 @@
 #include "misc/loader.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
 #include <qpainter.h>
 #include "khtmlview.h"
 #include "render_arena.h"
@@ -848,7 +849,7 @@ QString RenderObject::information() const
     if ( continuation() )
         ts << " continuation=" << continuation();
     if (isText())
-        ts << " \"" << QConstString(static_cast<const RenderText *>(this)->text(), kMin(static_cast<const RenderText *>(this)->length(), 10)).string() << "\"";
+        ts << " \"" << QConstString(static_cast<const RenderText *>(this)->text(), kMin(static_cast<const RenderText *>(this)->length(), 10u)).string() << "\"";
     return str;
 }
 

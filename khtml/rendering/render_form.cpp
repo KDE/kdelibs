@@ -165,7 +165,6 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
     QRadioButton* b = new QRadioButton(view()->viewport());
-    b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
 }
@@ -448,6 +447,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
         if (completions.count()) {
             edit->completionObject()->setItems(completions);
             edit->setContextMenuEnabled(true);
+            edit->completionBox()->setTabHandling( false );
         }
     }
 
@@ -1094,7 +1094,7 @@ void RenderSelect::layout( )
         // the average of that is IMHO kMin(number of elements, 10)
         // so I did that ;-)
         if(size < 1)
-            size = kMin(static_cast<KListBox*>(m_widget)->count(), 10);
+            size = kMin(static_cast<KListBox*>(m_widget)->count(), 10u);
 
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
         height = size*height + 2*w->frameWidth();
@@ -1632,9 +1632,9 @@ void RenderTextArea::calcMinMaxWidth()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     const QFontMetrics &m = style()->fontMetrics();
     w->setTabStopWidth(8 * m.width(" "));
-    QSize size( kMax(element()->cols(), 1)*m.width('x') + w->frameWidth() +
+    QSize size( kMax(element()->cols(), 1L)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
-                kMax(element()->rows(), 1)*m.lineSpacing() + w->frameWidth()*4 +
+                kMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 +
                 (w->wordWrap() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );
