@@ -389,10 +389,12 @@ void RenameDlg::b8Pressed()
   int pos;
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
-  QString basename, suffix, tmp;
+  QString basename, dotSuffix, tmp;
   QFileInfo info ( d->m_pLineEdit->text() );
   basename = info.baseName();
-  suffix = info.extension();
+  dotSuffix = info.extension();
+  if ( !dotSuffix.isEmpty() )
+    dotSuffix = '.' + dotSuffix;
   pos = basename.findRev('_' );
   if(pos != -1 )
   {
@@ -402,7 +404,7 @@ void RenameDlg::b8Pressed()
     if ( !ok ) // ok there is no number
     {
       basename.append("_1" );
-      d->m_pLineEdit->setText(basename + "." + suffix );
+      d->m_pLineEdit->setText(basename + dotSuffix );
       b1Pressed(); // prepended now  'click' rename
       return;
     }
@@ -410,14 +412,14 @@ void RenameDlg::b8Pressed()
     { // yes there's allready a number behind the _ so increment it by one
       QString tmp2 = QString::number ( number + 1 );
       basename.replace( pos+1, tmp.length() ,tmp2);
-      d->m_pLineEdit->setText( basename + "." + suffix );
+      d->m_pLineEdit->setText( basename + dotSuffix );
       //b1Pressed();
       return;
     }
   }
   else // no underscore yet
   {
-    d->m_pLineEdit->setText( basename + "_1." + suffix );
+    d->m_pLineEdit->setText( basename + "_1" + dotSuffix );
     //b1Pressed();
     return;
 
