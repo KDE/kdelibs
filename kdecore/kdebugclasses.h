@@ -27,6 +27,7 @@
 #include <qrect.h>
 #include <qsize.h>
 #include <qstringlist.h>
+#include <qbrush.h>
 
 #include "kurl.h"
 
