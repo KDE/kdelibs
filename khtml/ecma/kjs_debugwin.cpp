@@ -347,7 +347,7 @@ void EvalMultiLineEdit::keyPressEvent(QKeyEvent * e)
 }
 //-------------------------------------------------------------------------
 KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
-  : KMainWindow(parent, name, WType_TopLevel)
+  : KMainWindow(parent, name, WType_TopLevel), KInstance("kjs_debugger")
 {
   m_breakpoints = 0;
   m_breakpointCount = 0;
@@ -440,7 +440,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   menuBar()->insertItem("&Debug",debugMenu);
 
   m_actionCollection = new KActionCollection(this);
-  m_actionCollection->setInstance(KHTMLFactory::instance());
+  m_actionCollection->setInstance(this);
   m_nextAction       = new KAction(i18n("&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
 				   m_actionCollection,"next");
   m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(),this,SLOT(slotStep()),
