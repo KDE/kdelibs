@@ -41,7 +41,6 @@ ResourceManagerImpl::ResourceManagerImpl( const QString& family ) :
   mConfig = 0;
   mStandard = 0;
   mFactory = 0;
-  mChanged = false;
 
   load();
 
@@ -80,9 +79,7 @@ ResourceManagerImpl::~ResourceManagerImpl()
 void ResourceManagerImpl::sync()
 {
   kdDebug(5650) << "ResourceManagerImpl::sync()" << endl;
-  if ( mChanged ) {
-    save();
-  }
+  save();
 }
 
 void ResourceManagerImpl::add( Resource *resource, bool useDCOP )
@@ -94,7 +91,6 @@ void ResourceManagerImpl::add( Resource *resource, bool useDCOP )
   }
 
   mResources.append( resource );
-  mChanged = true;
 
   saveResource( resource, true );
 
@@ -107,7 +103,6 @@ void ResourceManagerImpl::remove( Resource *resource, bool useDCOP )
   removeResource( resource );
 
   mResources.remove( resource );
-  mChanged = true;
 
   if ( useDCOP ) signalResourceDeleted( resource->identifier() );
 
@@ -118,7 +113,6 @@ void ResourceManagerImpl::setActive( Resource *resource, bool active )
 {
   if ( resource && resource->isActive() != active ) {
     resource->setActive( active );
-    mChanged = true;
   }
 }
 
@@ -134,8 +128,6 @@ void ResourceManagerImpl::setStandardResource( Resource *resource )
 
 void ResourceManagerImpl::resourceChanged( Resource *resource )
 {
-  mChanged = true;
-
   saveResource( resource, true );
 
   signalResourceModified( resource->identifier() );
@@ -290,8 +282,6 @@ void ResourceManagerImpl::load()
     loadResource( *it, false );
     counter++;
   }
-
-  mChanged = false;
 }
 
 
@@ -358,7 +348,6 @@ void ResourceManagerImpl::save()
     mConfig->writeEntry( "Standard", "" );
 
   mConfig->sync();
-  mChanged = false;
   kdDebug(5650) << "ResourceManagerImpl::save() finished" << endl;
 }
 

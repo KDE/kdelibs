@@ -102,7 +102,6 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     QString mFamily;
     Resource::List mResources;
     ManagerImplListener *mListener;
-    bool mChanged;
     ResourceFactory *mFactory;
     KConfig *mConfig;
 };
