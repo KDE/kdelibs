@@ -431,13 +431,13 @@ void
 KSgiStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, 
 																int state)
 {
-  static QBitmap checkMask(16, 16, check_mask, true);
+//  static QBitmap checkMask(16, 16, check_mask, true);
 	
-  p->fillRect(x, y, w, h, Qt::color0);
-  p->fillRect(x, y, w, h-2, Qt::color1);
+//  p->fillRect(x, y, w, h, Qt::color0);
+  p->fillRect(x, y, w, h, Qt::color1);
 
-  if (state)
-    p->drawPixmap(x, y, checkMask);
+//  if (state)
+//    p->drawPixmap(x, y, checkMask);
   }
 
 //--------------------------------------------------------------------
@@ -470,7 +470,7 @@ KSgiStyle::drawCheckMark( QPainter *p, int x, int y, int w, int h,
 QSize 
 KSgiStyle::exclusiveIndicatorSize() const
 {
-	return(QSize(16,16));
+  return(QSize(16,16));
 }
 
 //--------------------------------------------------------------------
@@ -1183,9 +1183,10 @@ void KSgiStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
 void KSgiStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup &g, bool, QBrush *fill)
 {
-  qDrawShadePanel(p, x, y, w, h, g, false, 1,
-                        &g.brush(QColorGroup::Background));
-  
+//  qDrawShadePanel(p, x, y, w, h, g, false, 1,
+//                        &g.brush(QColorGroup::Background));
+  drawFullShadeButton (p, x, y, w, h, g, false, 
+                   &g.brush(QColorGroup::Background));
 }
 
 
