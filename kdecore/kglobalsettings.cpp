@@ -45,6 +45,7 @@ QFont *KGlobalSettings::_toolBarFont = 0;
 QFont *KGlobalSettings::_menuFont = 0;
 QColor *KGlobalSettings::kde2Blue = 0;
 QColor *KGlobalSettings::kde2Gray = 0;
+QColor *KGlobalSettings::kde2LightGray = 0;
 KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
 
 int KGlobalSettings::dndEventDelay()
@@ -226,6 +227,14 @@ QColor KGlobalSettings::highlightColor()
     return c->readColorEntry( "selectBackground", kde2Blue );
 }
 
+QColor KGlobalSettings::alternateBackgroundColor()
+{
+    initColors();
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    return c->readColorEntry( "alternateBackground", kde2LightGray );
+}
+
 QColor KGlobalSettings::linkColor()
 {
     initColors();
@@ -383,6 +392,8 @@ void KGlobalSettings::initColors()
       else
         kde2Blue = new QColor(0, 0, 192);
     }
+    if (!kde2LightGray)
+      kde2LightGray = new QColor(240, 240, 240);
 }
 
 void KGlobalSettings::rereadFontSettings()

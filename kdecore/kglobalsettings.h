@@ -216,6 +216,14 @@ class KGlobalSettings
     static QColor highlightedTextColor(); // Similair to QColorGroup::hightlightedText()
     static QColor highlightColor(); // Similair to QColorGroup::highlight()
 
+    /**
+     * Returns the alternate background color used by @ref KListView with
+     * @ref KListViewItem. Any other list that uses alternating background
+     * colors should use this too, to obey to the user's preferences. Returns
+     * an invalid color if the user doesn't want alternating backgrounds.
+     */
+    static QColor alternateBackgroundColor();
+
 
     static QFont generalFont();
     static QFont fixedFont();
@@ -255,6 +263,7 @@ private:
     static QFont *_menuFont;
     static QColor * kde2Gray;
     static QColor * kde2Blue;
+    static QColor * kde2LightGray;
     static KMouseSettings *s_mouseSettings;
 
     friend class KApplication;

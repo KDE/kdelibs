@@ -433,7 +433,6 @@ public:
   QString styleFile;
    QString geometry_arg;
   QCString startup_id;
-  QColor alternateBackground;
 };
 
 
@@ -1578,7 +1577,6 @@ void KApplication::kdisplaySetPalette()
       kde2Blue.setRgb(84, 112, 152);
     else
       kde2Blue.setRgb(0, 0, 192);
-	QColor alternate(240, 240, 240);
 
     QColor background = config->readColorEntry( "background", &kde2Gray );
     QColor foreground = config->readColorEntry( "foreground", &black );
@@ -1588,7 +1586,6 @@ void KApplication::kdisplaySetPalette()
     QColor highlightedText = config->readColorEntry( "selectForeground", &white );
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor baseText = config->readColorEntry( "windowForeground", &black );
-	d->alternateBackground = config->readColorEntry( "alternateBackground", &alternate );
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
@@ -2257,11 +2254,6 @@ QString KApplication::randomString(int length)
       // so what if I work backwards?
    }
    return str;
-}
-
-const QColor &KApplication::alternateBackground() const
-{
-    return d->alternateBackground;
 }
 
 #include "kapp.moc"
