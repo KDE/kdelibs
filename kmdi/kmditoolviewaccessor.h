@@ -29,11 +29,18 @@
 
 #include <kdockwidget.h>
 
+namespace KMDIPrivate {
+   class KMDIGUIClient;
+}
+
 
 class KMdiToolViewAccessor : public QObject
 {
-   friend class KMdiMainFrm;
    Q_OBJECT
+
+
+   friend class KMdiMainFrm;
+   friend class KMDIPrivate::KMDIGUIClient;
 
 private:
    /**
