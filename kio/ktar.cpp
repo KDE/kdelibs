@@ -552,6 +552,9 @@ KTarGz::KTarGz( QIODevice * dev )
 
 KTarGz::~KTarGz()
 {
+  // mjarrett: Closes to prevent ~KTarBase from aborting w/o device
+  if(m_open)
+    close();
   if ( !m_filename.isEmpty() )
     delete device(); // we created it ourselves
   delete d;
