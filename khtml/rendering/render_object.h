@@ -39,7 +39,7 @@ class CSSStyle;
 class KHTMLView;
 
 #define KHTMLAssert( x ) if( !(x) ) { \
-    RenderObject *o = this; while( o->parent() ) o = o->parent(); \
+    const RenderObject *o = this; while( o->parent() ) o = o->parent(); \
     o->printTree(); \
     assert( false ); \
 }
