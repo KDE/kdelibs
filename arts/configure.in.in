@@ -10,6 +10,8 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   CPPFLAGS="$CPPFLAGS $all_includes"
   arts_audiolib_found=no
   dnl WAV reading
+  AC_LANG_SAVE
+  AC_LANG_C
   AC_CHECK_HEADER(audiofile.h,
   [
     AC_CHECK_LIB(audiofile,afOpenFile,[
@@ -22,6 +24,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   ])
   AM_CONDITIONAL(HAVE_WAVSUPPORT,  test "x$arts_audiolib_found" = "xyes")
   AC_SUBST(LIBAUDIOFILE)
+  AC_LANG_RESTORE
   CPPFLAGS="$ac_CPPFLAGS_save"
   LDFLAGS="$ac_ldflags_save"
 ])
