@@ -19,6 +19,9 @@
 
 #include "config.h"
 
+#include <unistd.h>
+#include <fcntl.h>
+
 #include "kapplication.h"
 #include "klauncher.h"
 #include "kcmdlineargs.h"
@@ -37,18 +40,25 @@ static void sig_handler(int sig_num)
    // No recursion
    signal( SIGHUP, SIG_IGN);
    signal( SIGTERM, SIG_IGN);
-fprintf(stderr, "KLauncher: Exiting on signal %d\n", sig_num);
+fprintf(stderr, "klauncher: Exiting on signal %d\n", sig_num);
    KLauncher::destruct(255);
 }
 
-int
-start_launcher(int socket)
+extern "C" int kdemain( int argc, char**argv )
 {
+   // Started via kdeinit.
+   if (fcntl(LAUNCHER_FD, F_GETFD) == -1)
+   {
+      fprintf(stderr, "%s", i18n("klauncher: This program is not supposed to be started manually.\n"
+                                 "klauncher: It is started automatically by kdeinit.\n").local8Bit().data());
+      return 1;
+   }
+
    QCString cname = KApplication::launcher();
    char *name = cname.data();
-   // Started via kdeinit.
-   KCmdLineArgs::init(1, (char **) &name, name, "A service launcher.",
+   KCmdLineArgs::init(argc, argv, name, "KLauncher", "A service launcher.",
                        "v1.0");
+
    KLauncher::addCmdLineOptions();
 
    // WABA: Make sure not to enable session management.
@@ -73,7 +83,7 @@ start_launcher(int socket)
    }
 
    KApplication::dcopClient()->registerAs(name, false);
-   KLauncher *launcher = new KLauncher(socket);
+   KLauncher *launcher = new KLauncher(LAUNCHER_FD);
    launcher->dcopClient()->setDefaultObject( name );
    launcher->dcopClient()->setDaemonMode( true );
 
@@ -83,12 +93,6 @@ start_launcher(int socket)
    signal( SIGTERM, sig_handler);
 
    launcher->exec();
-   return 0;
-}
-
-extern "C" int kdemain( int, char** )
-{
-   start_launcher(LAUNCHER_FD);
    return 0;
 }
 
