@@ -861,7 +861,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
             put_it_in( buffer, index, pDate.year() % 100 );
             break;
 	case 'n':
-            put_it_in( buffer, index, pDate.month() );
+            number = pDate.month();
         case 'e':
             // to share the code
             if ( rst.at( format_index ).unicode() == 'e' )
