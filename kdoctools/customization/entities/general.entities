@@ -233,7 +233,7 @@
 <!ENTITY kmidi	"<application>KMidi</application>">
 <!ENTITY kmines	"<application>KMines</application>">
 <!ENTITY kmix	"<application>KMix</application>">
-<!ENTITY kmplot	"<application>KMPlot</application>">
+<!ENTITY kmplot	"<application>KmPlot</application>">
 <!ENTITY knewsticker	"<application>KNewsTicker</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
