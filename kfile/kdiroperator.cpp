@@ -1109,6 +1109,9 @@ bool KDirOperator::onlyDoubleClickSelectsFiles() const
 
 void KDirOperator::insertIntoView(const KFileItemList& items)
 {
+    if ( items.isEmpty() )
+	return;
+    
     pendingMimeTypes.clear();
     KFileViewItemList list;
     KFileItemListIterator it( items );
@@ -1127,9 +1130,10 @@ void KDirOperator::slotIOFinished()
 {
     if ( dir->url().isLocalFile() ) {
 	fileView->clear();
+	KFileItemList &list = dir->items();
 	insertIntoView( dir->items() );
     }
-    
+
     QTimer::singleShot(0, this, SLOT(readNextMimeType()));
     QTimer::singleShot(200, this, SLOT(resetCursor()));
     emit finishedLoading();
