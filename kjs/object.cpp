@@ -316,7 +316,14 @@ ErrorType KJSO::putValue(const KJSO& v)
   // here we catch attempts to set a value belonging to one interpreter
   // into another
   /* TODO */
+#if 0  
+  fprintf(stderr, "KJSO::putValue(%p) coll.curr %p base: %p value: %p\n",
+	  v.imp(), Collector::current(),
+	  o.imp()->internal,
+	  v.imp()->internal);
+#endif  
   if (o.imp()->internal != v.imp()->internal) {
+    //    fprintf(stderr, "DETECTED CROSS-INSTANCE ASSIGNMENT\n");
     ((Collector*)o.imp()->internal)->share((void*)v.imp());
     v.imp()->ref();
   }
