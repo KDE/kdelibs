@@ -483,7 +483,7 @@ void KIconViewItem::calcRect( const QString& text_ )
     }
     
     // Calculate the word-wrap
-    QRect outerRect( 0, 0, tw, height );
+    QRect outerRect( 0, 0, tw - 6, height );
     m_wordWrap = KWordWrap::formatText( *fm, outerRect, 0, t );
     r = m_wordWrap->boundingRect();
 
