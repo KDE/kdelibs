@@ -29,6 +29,8 @@
 #include <qptrlist.h>
 #include <kdebug.h>
 #include <xml/dom_nodeimpl.h>
+#include <xml/dom_docimpl.h>
+#include <rendering/render_object.h>
 
 using namespace KJS;
 
@@ -359,6 +361,8 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
   x		DOMMouseEvent::X	DontDelete|ReadOnly
   clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
   y		DOMMouseEvent::Y	DontDelete|ReadOnly
+  offsetX	DOMMouseEvent::OffsetX	DontDelete|ReadOnly
+  offsetY	DOMMouseEvent::OffsetY	DontDelete|ReadOnly
   ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
   shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
   altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
@@ -401,6 +405,25 @@ Value DOMMouseEvent::getValue(ExecState *exec, int token) const
   case ClientY:
   case Y:
     return Number(static_cast<DOM::MouseEvent>(event).clientY());
+  case OffsetX:
+  case OffsetY: // MSIE extension
+  {
+    DOM::Node node = event.target();
+    if ( node.handle() && node.handle()->ownerDocument() )
+      node.handle()->ownerDocument()->updateRendering();
+    khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
+    int x = static_cast<DOM::MouseEvent>(event).clientX();
+    int y = static_cast<DOM::MouseEvent>(event).clientY();
+    if ( rend ) {
+      int xPos, yPos;
+      if ( rend->absolutePosition( xPos, yPos ) ) {
+        kdDebug() << "DOMMouseEvent::getValue rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos << endl;
+        x -= xPos;
+        y -= yPos;
+      }
+    }
+    return Number( token == OffsetX ? x : y );
+  }
   case CtrlKey:
     return Boolean(static_cast<DOM::MouseEvent>(event).ctrlKey());
   case ShiftKey:

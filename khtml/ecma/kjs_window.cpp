@@ -828,9 +828,8 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
     if (it.current()->listenerObj().imp() == obj.imp())
       return it.current();
 
-  JSEventListener *listener = new JSEventListener(obj,Object(this),html);
-//  jsEventListeners.append(listener);
-  return listener;
+  // Note that the JSEventListener constructor adds it to our jsEventListeners list
+  return new JSEventListener(obj,Object(this),html);
 }
 
 void Window::clear()

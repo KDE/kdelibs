@@ -136,7 +136,7 @@ const ClassInfo KJS::HTMLDocument::info =
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
+  //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
 #endif
   if (!static_cast<DOM::HTMLDocument>(node).all().
       namedItem(p.string()).isNull())
@@ -1657,7 +1657,7 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
 bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "HTMLElement::hasProperty " << propertyName.qstring() << endl;
+  //kdDebug(6070) << "HTMLElement::hasProperty " << propertyName.qstring() << endl;
 #endif
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
   // First look at dynamic properties - keep this in sync with tryGet

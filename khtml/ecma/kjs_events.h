@@ -116,7 +116,8 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { ScreenX, ScreenY, ClientX, X, ClientY, Y, CtrlKey, ShiftKey, AltKey,
+    enum { ScreenX, ScreenY, ClientX, X, ClientY, Y, OffsetX, OffsetY,
+           CtrlKey, ShiftKey, AltKey,
            MetaKey, Button, RelatedTarget, FromElement, ToElement,
            InitMouseEvent };
     DOM::MouseEvent toMouseEvent() const { return static_cast<DOM::MouseEvent>(event); }
