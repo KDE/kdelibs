@@ -527,12 +527,11 @@ QString Address::countryToISO( const QString &cname )
     QTextStream s( &file );
     QString strbuf = s.readLine();
     while( !strbuf.isNull() ) {
-      if ( strbuf.startsWith( cname ) ) {
-        int index = strbuf.findRev('\t');
-        strbuf = strbuf.mid(index+1, 2);
+      QStringList countryInfo = QStringList::split( '\t', strbuf, true );
+      if ( countryInfo[ 0 ] == cname ) {
         file.close();
-        mISOMap->insert( cname, strbuf );
-        return strbuf;
+        mISOMap->insert( cname, countryInfo[ 1 ] );
+        return countryInfo[ 1 ];
       }
       strbuf = s.readLine();
     }
