@@ -158,20 +158,29 @@ namespace KIO {
     SimpleJob *file_delete( const KURL& src, bool showProgressInfo = true);
 
     /**
+     * @internal
      * Create a local symlink
-     * Mostly a wrapper around symlink(2)
+     * Mostly a wrapper around symlink(2).
+     * @param linkDest the existing file, destination of the link to be created
+     * @param destUrl name of the link to be created
+     * @param overwriteExistingFiles set to true to enforce overwriting if dest exists
+     * @param overwriteAll matches the corresponding button in RenameDlg, passed from one call to the next one
+     * @param autoSkip matches the corresponding button in RenameDlg, passed from one call to the next one
+     * @param cancelAll matches the corresponding button in RenameDlg, passed from one call to the next one
      */
-    bool link( const QString & linkDest, const KURL & dest, bool overwriteExistingFiles, bool & overwriteAll );
+    bool link( const QString & linkDest, const KURL & destUrl, bool overwriteExistingFiles,
+               bool & overwriteAll, bool & autoSkip, bool & cancelAll );
+
     /**
-     * Create a link
+     * Create one or more links
      * This not yet a job, and will become only if at least one other
      * protocol than file has support for it :)
      * @param src local files will result in symlinks,
      *            remote files will result in Type=Link .desktop files
-     * @param dest destination, has to be a local file currently.
+     * @param dest destination, has to be a local dir currently.
      * @return true on success, false on failure
      */
-    bool link( const KURL::List& src, const KURL& dest );
+    bool link( const KURL::List& src, const KURL& destDir );
 
     /**
      * Lists the contents of @p url, which is assumed to be a directory.

@@ -534,7 +534,7 @@ void MimetypeJob::slotFinished( )
     kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
     if ( m_redirectionURL.isEmpty() || m_error )
     {
-        // Return slave to the scheduler 
+        // Return slave to the scheduler
         TransferJob::slotFinished();
     } else {
         kdDebug(7007) << "Redirection to " << m_redirectionURL.url() << endl;
@@ -755,7 +755,8 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 //////////
 
-bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteExistingFiles, bool & overwriteAll )
+bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteExistingFiles,
+                bool & overwriteAll, bool & autoSkip, bool & cancelAll )
 {
     kdDebug(7007) << "linking " << destUrl.path() << " -> " << linkDest << endl;
     if ( !destUrl.isLocalFile() )
@@ -765,9 +766,46 @@ bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteEx
     }
     if ( symlink( linkDest.local8Bit(), destUrl.path().local8Bit() ) == -1 )
     {
+        // An error occured
+        if ( autoSkip )
+            return true; // eat error
         // Does the destination already exist ?
         if ( errno == EEXIST )
         {
+            if ( !overwriteExistingFiles && !overwriteAll )
+            {
+                // Ask the user what to do
+                RenameDlg_Mode mode = (RenameDlg_Mode) M_OVERWRITE;
+                // TODO if ( files.count() > 0 ) // Not last one
+                mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
+                // else
+                //  mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+                QString newPath;
+                RenameDlg_Result res = open_RenameDlg( i18n("File already exists"),
+                                                       linkDest, destUrl.path(), mode, newPath );
+                switch ( res ) {
+                    case R_CANCEL:
+                        cancelAll = true;
+                        return false;
+                    case R_RENAME:
+                        // Try again, with new name for the link
+                        return link( linkDest, newPath, overwriteExistingFiles, overwriteAll, autoSkip, cancelAll );
+                    case R_AUTO_SKIP:
+                        autoSkip = true;
+                        // fall through
+                    case R_SKIP:
+                        // Move on to next file
+                        return true;
+                    case R_OVERWRITE_ALL:
+                        overwriteAll = true;
+                        break;
+                    case R_OVERWRITE:
+                        overwriteExistingFiles = true;
+                        break;
+                    default:
+                        assert( 0 );
+                }
+            }
             // Are we allowed to overwrite the files ?
             if ( overwriteExistingFiles || overwriteAll )
             {
@@ -777,15 +815,11 @@ bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteEx
                     KMessageBox::sorry( 0L, i18n( "Could not overwrite\n%1"), destUrl.path() );
                     return false;
                 }
+                // Try again - this won't loop forever since unlink succeeded
+                return link( linkDest, destUrl, overwriteExistingFiles, overwriteAll, autoSkip, cancelAll );
             }
             else
-            {
-                // Ask the user what to do
-                // TODO
-                KMessageBox::sorry( 0L, i18n( "Destination exists (real dialog box not implemented yet)\n%1"), destUrl.path() );
-                // and change overwriteAll if chosen so
                 return false;
-            }
         }
         else
         {
@@ -801,7 +835,8 @@ bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteEx
 bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 {
     kdDebug(1202) << "destDir = " << destDir.url() << endl;
-    bool overwriteExistingFiles = false;
+    bool overwriteAll = false;
+    bool autoSkip = false;
     if ( destDir.isMalformed() )
     {
 	KMessageBox::sorry( 0L, i18n( "Malformed URL\n%1" ).arg( destDir.url() ) );
@@ -830,8 +865,11 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 	// Do we link a file on the local disk?
 	if ( srcUrl.isLocalFile() )
 	{
+            bool cancelAll= false;
 	    // Make a symlink
-            KIO::link( srcUrl.path(), destUrl, false, overwriteExistingFiles );
+            (void)KIO::link( srcUrl.path(), destUrl, false, overwriteAll, autoSkip, cancelAll );
+            if (cancelAll)
+                return false;
 	}
 	// Make a link from a file in a tar archive, ftp, http or what ever
 	else
@@ -1592,8 +1630,9 @@ void CopyJob::copyNextFile()
         KIO::Job * newjob;
         if ( !(*it).linkDest.isEmpty() ) // Copying a symlink
         {
+            bool bCancelAll = false;
             // The "source" is in fact what the existing link points to
-            if ( KIO::link( (*it).linkDest, (*it).uDest, bOverwrite, m_bOverwriteAll ) )
+            if ( KIO::link( (*it).linkDest, (*it).uDest, bOverwrite, m_bOverwriteAll, m_bAutoSkip, bCancelAll ) )
             {
                 if (m_move)
                 {
@@ -1608,6 +1647,13 @@ void CopyJob::copyNextFile()
                 }
             } else
             {
+                if ( bCancelAll )
+                {
+                    m_error = ERR_USER_CANCELED;
+                    emit result(this);
+                    delete this;
+                    return;
+                }
                 // Error - move to next file
                 files.remove( it );
                 copyNextFile();
