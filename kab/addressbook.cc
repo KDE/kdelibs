@@ -569,7 +569,7 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	      i18n("The currently loaded file\n"
                    "\"%1\"\n"
 	           "cannot be reloaded. kab may close or save it.\n"
-	           "Save it if you accidently deleted your data file.\n"
+	           "Save it if you accidentally deleted your data file.\n"
 	           "Close it if you intended to do so.\n"
 	           "Your file will be closed by default.")
 		 .arg(oldfile.absFilePath()),
