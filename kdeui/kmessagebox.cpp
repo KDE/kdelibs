@@ -31,6 +31,7 @@
 #include <qvgroupbox.h>
 #include <qstylesheet.h>
 #include <qsimplerichtext.h>
+#include <qpushbutton.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -199,6 +200,27 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     dialog->enableButtonSeparator(false);
     if (!listbox)
        dialog->disableResize();
+       
+    const KDialogBase::ButtonCode buttons[] = { 
+        KDialogBase::Help,
+        KDialogBase::Default,
+        KDialogBase::Ok,
+        KDialogBase::Apply,
+        KDialogBase::Try,
+        KDialogBase::Cancel,
+        KDialogBase::Close,
+        KDialogBase::User1,
+        KDialogBase::User2,
+        KDialogBase::User3,
+        KDialogBase::No,
+        KDialogBase::Yes,
+        KDialogBase::Details };
+    for( unsigned int i = 0;
+	 i < sizeof( buttons )/sizeof( buttons[ 0 ] );
+	 ++i )
+	if( QPushButton* btn = dialog->actionButton( buttons[ i ] ))
+	    if( btn->isDefault())
+		btn->setFocus();
 
     if (KMessageBox_queue)
     {

@@ -31,6 +31,7 @@
 #include <qvbox.h>
 #include <qwhatsthis.h>
 #include <qtimer.h>
+#include <qfocusdata.h>
 
 #include <kapplication.h>
 #include <klocale.h>
@@ -615,7 +616,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   QPushButton *pb = actionButton( defaultButton );
   if( pb != 0 )
   {
-    setButtonFocus( pb, true, true );
+    setButtonFocus( pb, true, false );
   }
 
   setButtonStyle( ActionStyle0 );
@@ -964,7 +965,8 @@ void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
 void KDialogBase::setButtonFocus( QPushButton *p,bool isDefault, bool isFocus )
 {
   p->setDefault( isDefault );
-  isFocus ? p->setFocus() : p->clearFocus();
+  if( isFocus )
+      p->setFocus();
 }
 
 
@@ -1362,6 +1364,19 @@ void KDialogBase::setMainWidget( QWidget *widget )
     if( mIsActivated == true )
     {
       setupLayout();
+    }
+  }
+  if( mMainWidget != NULL )
+  {
+    QFocusData* fd = focusData();
+    QWidget* prev = fd->last();
+    for( QPtrListIterator<KDialogBaseButton> it( d->mButton.list );
+	 it != NULL;
+	 ++it )
+    {
+      if( prev != *it )
+	setTabOrder( prev, *it );
+      prev = *it;
     }
   }
 }
