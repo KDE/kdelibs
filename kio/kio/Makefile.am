@@ -58,7 +58,7 @@ include_HEADERS = \
 #libkiocore_la_LDFLAGS = $(all_libraries)
 #libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
-libkiocore_la_SOURCES = \
+libkiocore_la_SOURCES = authinfo.cpp \
 	kshred.cpp \
 	kprotocolmanager.cpp \
 	slave.cpp slaveinterface.cpp observer.stub \
@@ -73,7 +73,7 @@ libkiocore_la_SOURCES = \
 	statusbarprogress.cpp \
 	kdirnotify.cpp kdirnotify.skel kdirnotify_stub.cpp \
 	observer.cpp uiserver.stub observer.skel \
-	kemailsettings.cpp authinfo.cpp \
+	kemailsettings.cpp  \
 	kprotocolinfo.cpp \
 	renamedlg.cpp skipdlg.cpp
 
