@@ -236,7 +236,7 @@ KJSO FrameArray::get(const UString &p) const
   
   if (i < len) {
     const KParts::ReadOnlyPart *frame = frames.at(i);
-    if (frame->inherits("KHTMLPart")) {
+    if (frame && frame->inherits("KHTMLPart")) {
       const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
       return KJSO(new Window(const_cast<KHTMLPart*>(khtml)));
     }
