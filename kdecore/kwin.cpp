@@ -52,7 +52,6 @@
 
 static bool atoms_created = FALSE;
 extern Atom qt_wm_protocols;
-extern Atom qt_wm_state;
 
 // Fix for --enable-final. This gets undefined at the end of this file.
 #ifndef None
