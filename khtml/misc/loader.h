@@ -41,17 +41,6 @@ namespace KIO {
   class TransferJob;
 }
 
-// up to which size is a picture for sure cacheable
-#define MAXCACHEABLE 10*1024
-// max. size of a single picture in percent of the total cache size
-// to be cacheable
-#define MAXPERCENT 10
-// default cache size
-#define DEFCACHESIZE 512*1024
-// maximum number of files the loader will try to load in parallel
-#define MAX_REQUEST_JOBS 4
-
-
 namespace DOM
 {
     class CSSStyleSheetImpl;
@@ -59,6 +48,8 @@ namespace DOM
 
 namespace khtml
 {
+    class CachedObject;
+
     /**
      * @internal
      *
@@ -68,7 +59,7 @@ namespace khtml
     class CachedObjectClient
     {
     public:
-	virtual void setPixmap(const QPixmap &) {}
+	virtual void setPixmap(const QPixmap &, CachedObject *) {}
 	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
     };
 

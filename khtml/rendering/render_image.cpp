@@ -44,15 +44,18 @@ RenderImage::RenderImage()
     bComplete = true;
     setLayouted(false);
     setParsing(false);
+    image = 0;
 }
 
 RenderImage::~RenderImage()
 {
 }
 
-void RenderImage::setPixmap( const QPixmap &p )
+void RenderImage::setPixmap( const QPixmap &p, CachedObject *o )
 {
-
+    if(o != image)
+	RenderReplaced::setPixmap(p, o);
+    
     // Image dimensions have been changed, recalculate layout
     //kdDebug( 6040 ) << "Image: setPixmap" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
@@ -169,8 +172,8 @@ void RenderImage::calcMinMaxWidth()
 //    setMinMaxKnown();
 
     // contentWidth
-    
-    
+
+
     Length w = m_style->width();
 
     switch(w.type)
@@ -230,8 +233,8 @@ void RenderImage::layout(bool)
     if (isPositioned())
     {
     	calcAbsoluteVertical();
-    	calcAbsoluteHorizontal(); 
-	return;       
+    	calcAbsoluteHorizontal();
+	return;
     }
 
     calcMinMaxWidth(); // ### just to be sure here...
@@ -279,9 +282,9 @@ void RenderImage::layout(bool)
 
 void RenderImage::setImageUrl(DOMString url, DOMString baseUrl)
 {
-    if(m_bgImage) m_bgImage->deref(this);
-    m_bgImage = Cache::requestImage(url, baseUrl);
-    m_bgImage->ref(this);
+    if(image) image->deref(this);
+    image = Cache::requestImage(url, baseUrl);
+    image->ref(this);
 }
 
 void RenderImage::setAlt(DOM::DOMString text)

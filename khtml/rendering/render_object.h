@@ -54,7 +54,8 @@ namespace DOM {
 namespace khtml {
 
     class RenderTable;
-
+    class CachedObject;
+    
 class RenderObject : public DOM::DomShared, public BiDiObject, public CachedObjectClient
 {
 public:
@@ -304,7 +305,7 @@ public:
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width, BorderSide s,
 		    const QColor &c, EBorderStyle style);
 
-    virtual void setPixmap(const QPixmap &) {}
+    virtual void setPixmap(const QPixmap &, CachedObject *) {}
 
     virtual void setTable(RenderTable *) {}
 
@@ -348,7 +349,7 @@ protected:
     // assumes (_tx/_ty) point to the upper left corner of the box
     virtual void printBoxDecorations(QPainter */*p*/, int /*_tx*/, int /*_ty*/) {}
     virtual void setContainingBlock();
-    
+
     virtual QRect viewRect() const;
 
     bool m_layouted       : 1;

@@ -26,6 +26,17 @@
 
 #include "loader.h"
 
+// up to which size is a picture for sure cacheable
+#define MAXCACHEABLE 10*1024
+// max. size of a single picture in percent of the total cache size
+// to be cacheable
+#define MAXPERCENT 10
+// default cache size
+#define DEFCACHESIZE 512*1024
+// maximum number of files the loader will try to load in parallel
+#define MAX_REQUEST_JOBS 4
+
+
 #include <qtextstream.h>
 #include <qasyncio.h>
 #include <qasyncimageio.h>
@@ -278,6 +289,7 @@ CachedImage::~CachedImage()
 void CachedImage::ref( CachedObjectClient *c )
 {
     // make sure we don't get it twice...
+    kdDebug( 6060 ) << "CachedImage::ref() " << endl;
     m_clients.remove(c);
     m_clients.append(c);
 
@@ -287,6 +299,7 @@ void CachedImage::ref( CachedObjectClient *c )
 
 void CachedImage::deref( CachedObjectClient *c )
 {
+    kdDebug( 6060 ) << "CachedImage::deref() " << endl;
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
 	m->pause();
@@ -369,7 +382,7 @@ const QPixmap &CachedImage::tiled_pixmap() const
     if (bg)
        return *bg;
 
-    if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT)) 
+    if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT))
     {
        CachedImage *non_const_this = const_cast<CachedImage *>(this);
        delete non_const_this->bg;
@@ -387,7 +400,7 @@ const QPixmap &CachedImage::pixmap( ) const
 
 void CachedImage::notify( CachedObjectClient *c )
 {
-    //kdDebug( 6060 ) << "Cache::notify()" << endl;
+    kdDebug( 6060 ) << "Cache::notify()" << endl;
 
     if ( m )
     {
@@ -404,9 +417,9 @@ void CachedImage::notify( CachedObjectClient *c )
 	    m_clients.append( c );
 
 	if ( m )
-	  c->setPixmap( m->framePixmap() );
+	  c->setPixmap( m->framePixmap(), this );
 	else if ( p != 0 && !p->isNull() )
-	  c->setPixmap( *p );
+	  c->setPixmap( *p, this );
 
 	return;
     }
@@ -422,18 +435,22 @@ void CachedImage::notify( CachedObjectClient *c )
     if ( !pixmap.isNull() )
     {
 	CachedObjectClient *c;
-        for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-	    c->setPixmap( pixmap );
+        for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
+	    kdDebug( 6060 ) << "CachedImage::setPixmap() " << endl;
+	    c->setPixmap( pixmap, this );
+	}
     }
 }
 
 void CachedImage::movieUpdated( const QRect & )
 {
-    //kdDebug( 6060 ) << "Cache::movieUpdated()" << endl;
+    kdDebug( 6060 ) << "Cache::movieUpdated()" << endl;
     QPixmap pixmap = m->framePixmap();
     CachedObjectClient *c;
-    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-	c->setPixmap( pixmap );
+    for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
+	kdDebug(6060) << "setting pixmap" << endl;
+	c->setPixmap( pixmap, this );
+    }
 }
 
 void CachedImage::clear()
@@ -459,7 +476,7 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
-    //kdDebug( 6060 ) << "in CachedImage::data()" << endl;
+    kdDebug( 6060 ) << "in CachedImage::data()" << endl;
     if ( !typeChecked )
     {
 	clear();
@@ -500,9 +517,10 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 	m_size = _buffer.size();
 	if ( imgSource )
 	{
-	    imgSource->setEOF( true );
 	    imgSource->maybeReady();
+	    imgSource->setEOF( true );
 	}
+	notify();
     }
 
     computeStatus();
@@ -555,7 +573,7 @@ void Loader::servePendingRequests()
   // get the first pending request
   Request *req = m_requestsPending.take(0);
 
-  //kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
+  kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 
   KIO::Job* job = KIO::get( req->object->url().string(), false, false /*no GUI*/);
 
@@ -569,10 +587,10 @@ void Loader::servePendingRequests()
 void Loader::slotFinished( KIO::Job* job )
 {
   Request *r = m_requestsLoading.take( job );
-  
+
   if ( !r )
     return;
-  
+
   if (job->error())
     r->object->error( job->error(), job->errorText() );
   else {

@@ -53,7 +53,7 @@ public:
 
     virtual void layout(bool deep = false);
 
-    virtual void setPixmap( const QPixmap & );
+    virtual void setPixmap( const QPixmap &, CachedObject * );
 
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl);
     void setAlt(DOM::DOMString text);
@@ -79,6 +79,7 @@ protected:
 
     bool bComplete;
 
+    CachedObject *image;
 };
 
 

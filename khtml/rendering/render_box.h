@@ -28,7 +28,7 @@
 #include "loader.h"
 
 namespace khtml {
-
+    class CachedObject;
 
 inline int MAX(int a, int b)
 {
@@ -54,7 +54,7 @@ public:
     virtual const char *renderName() const { return "RenderBox"; }
 
     virtual void setStyle(RenderStyle *style);
-    
+
     virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
 		       int _tx, int _ty);
 
@@ -106,7 +106,7 @@ public:
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
 
-    virtual void setPixmap(const QPixmap &);
+    virtual void setPixmap(const QPixmap &, CachedObject *);
 
     virtual short containingBlockWidth() const;
 
@@ -117,7 +117,7 @@ protected:
 
     virtual int cellTopExtra() { return 0; }
     virtual int cellBottomExtra() { return 0; }
-    
+
     void relativePositionOffset(int &tx, int &ty);
 
     void calcAbsoluteHorizontal();

@@ -179,7 +179,7 @@ void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
     }
 }
 
-void RenderBox::setPixmap(const QPixmap &)
+void RenderBox::setPixmap(const QPixmap &, CachedObject *)
 {
     repaint();	//repaint bg when it gets loaded
 }
@@ -435,19 +435,19 @@ void RenderBox::calcAbsoluteHorizontal()
 {
     const int AUTO = -666666;
     int l,r,w, cw;
-    
+
     l=r=w=AUTO;
     cw = containingBlockWidth()
     	+containingBlock()->paddingLeft() +containingBlock()->paddingRight();
-    
+
     if(!m_style->left().isVariable())
 	l = m_style->left().width(cw);
     if(!m_style->right().isVariable())
 	r = m_style->right().width(cw);		
     if(!m_style->width().isVariable())
 	w = m_style->width().width(cw);
-    
-    RenderObject* o=parent(); 
+
+    RenderObject* o=parent();
     if (style()->direction()==LTR && l==AUTO)
     {
 	if (m_next) l = m_next->xPos();
@@ -460,9 +460,9 @@ void RenderBox::calcAbsoluteHorizontal()
     	if (m_previous) r = cw - (m_previous->xPos() + m_previous->contentWidth());
 	else if (m_next) r = cw - m_next->xPos();
 	else r=cw;
-	while (o && o!=containingBlock()) { r+=o->xPos(); o=o->parent(); }	    
+	while (o && o!=containingBlock()) { r+=o->xPos(); o=o->parent(); }	
     }
-    
+
     if (w==AUTO)
     {
     	if (l==AUTO) l=0;
@@ -486,16 +486,16 @@ void RenderBox::calcAbsoluteVertical()
 {
     const int AUTO = -666666;
     int t,b,h, ch;
-    
+
     t=b=h=AUTO;
-   
+
     Length hl = containingBlock()->style()->height();
     if (hl.isFixed())
-    	ch = hl.value + containingBlock()->paddingTop() 
+    	ch = hl.value + containingBlock()->paddingTop()
 	     + containingBlock()->paddingBottom();
     else
     	ch = containingBlock()->height();
-    
+
     if(!m_style->top().isVariable())
 	t = m_style->top().width(ch);
     if(!m_style->bottom().isVariable())
@@ -504,8 +504,8 @@ void RenderBox::calcAbsoluteVertical()
 	h = m_style->height().width(ch);
 
 /*    if (t==AUTO && b!=AUTO && h!=AUTO)
-    { 
-    	t = ch - b - 
+    {
+    	t = ch - b -
 	    (h +borderBottom()+paddingTop()+paddingBottom());
     }*/
 
@@ -515,24 +515,24 @@ void RenderBox::calcAbsoluteVertical()
 	if (m_next) t = m_next->yPos();
 	else if (m_previous) t = m_previous->yPos()+m_previous->height();
 	else t=0;	
-	while (o && o!=containingBlock()) { t+=o->yPos(); o=o->parent(); }    
+	while (o && o!=containingBlock()) { t+=o->yPos(); o=o->parent(); }
     }
-    
+
     if (b==AUTO && h==AUTO)
     	b=0;
-    
+
     if (h==AUTO)
     	h = ch - ( t+b+marginTop()+marginBottom()+
 	    borderTop()+borderBottom()+paddingTop()+paddingBottom());	
-    
+
     h += borderTop()+borderBottom()+paddingTop()+paddingBottom();
-    
+
     if (m_height<h)
     	m_height = h;
-    
+
 //    printf("v: %d, %d, %d\n",t,h,b);
 
-    m_y = t + marginTop() + 
+    m_y = t + marginTop() +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();
     	
 }

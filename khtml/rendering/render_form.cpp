@@ -391,7 +391,7 @@ void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl)
     m_bgImage->ref(this);
 }
 
-void RenderImageButton::setPixmap( const QPixmap &p )
+void RenderImageButton::setPixmap( const QPixmap &p, CachedObject * )
 {
     static_cast<QPushButton *>(m_widget)->setPixmap(p);
     // Image dimensions have been changed, recalculate layout
