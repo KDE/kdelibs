@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- HTML Parser
-#define PARSER_DEBUG
+//#define PARSER_DEBUG
 
 #include "htmlparser.h"
 
