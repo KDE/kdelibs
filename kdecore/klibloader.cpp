@@ -22,7 +22,6 @@
 #include <qwidget.h>
 #include "kapp.h"
 #include "klibloader.h"
-#include "kglobal.h"
 #include "kstddirs.h"
 #include "kdebug.h"
 
@@ -301,7 +300,7 @@ KLibLoader::~KLibLoader()
 }
 
 //static
-QString KLibLoader::findLibrary( const char * name )
+QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
 {
     QCString libname( name );
  
@@ -321,10 +320,10 @@ QString KLibLoader::findLibrary( const char * name )
       libfile = libname;
     else
     {
-      libfile = KGlobal::dirs()->findResource( "module", libname );
+      libfile = instance->dirs()->findResource( "module", libname );
       if ( libfile.isEmpty() )
       {
-        libfile = KGlobal::dirs()->findResource( "lib", libname );
+        libfile = instance->dirs()->findResource( "lib", libname );
 #ifndef NDEBUG
         if ( !libfile.isEmpty() && libname.left(3) == "lib" ) // don't warn for kdeinit modules
           kdDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;

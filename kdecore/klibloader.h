@@ -23,6 +23,7 @@
 #include <qstringlist.h>
 #include <qasciidict.h>
 #include <qlist.h>
+#include <kglobal.h>
 
 #include "ltdl.h"
 
@@ -264,7 +265,7 @@ public:
      * Made public for code that doesn't use KLibLoader itself, but still
      * wants to open modules.
      */
-    static QString findLibrary( const char * name );
+    static QString findLibrary( const char * name, const KInstance * instance = KGlobal::instance() );
 
 protected:
     KLibLoader( QObject* parent = 0, const char* name = 0 );
