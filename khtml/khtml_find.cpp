@@ -130,10 +130,7 @@ void KHTMLFind::slotEditRegExp()
 
   assert( m_editorDialog );
   
-// ARHL, for some odd reason this dynamic_cast fails?!?! (Simon)
-//  KRegExpDialogInterface *iface = dynamic_cast<KRegExpDialogInterface *>( m_editorDialog );
-  KRegExpEditorInterface *iface = static_cast<KRegExpEditorInterface *>( m_editorDialog->qt_cast( "KRegExpEditorInterface" ) );
-
+  KRegExpDialogInterface *iface = dynamic_cast<KRegExpDialogInterface *>( m_editorDialog );
   assert( iface );
 
   iface->setRegExp( getText() );
