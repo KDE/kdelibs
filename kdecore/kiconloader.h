@@ -147,11 +147,7 @@ public:
     KIconTheme *theme();
 
 private:
-    KIcon iconPath2(const QString& name, int size) const;
-    KIcon iconPath2(const QString& name, int size,
-		    int match, KIconThemeNode *node) const;
-
-    void addIconTheme(KIconTheme *theme, KIconThemeNode *node);
+    KIcon findMatchingIcon(const QString& name, int size) const;
     void addAppThemes(const QString& appname);
 
     // @internal the data object
