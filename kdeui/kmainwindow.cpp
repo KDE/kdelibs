@@ -1203,6 +1203,17 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
     return size;
 }
 
+#if KDE_IS_VERSION( 3, 9, 0 )
+#warning Remove, should be in Qt
+#endif
+void KMainWindow::setIcon( const QPixmap& p )
+{
+    QMainWindow::setIcon( p );
+    // Qt3 doesn't support _NET_WM_ICON, but KApplication::setTopWidget(), which
+    // is used by KMainWindow, sets it
+    KWin::setIcons( winId(), p, QPixmap());
+}
+
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
 // DF: because they compile KDE much faster :)
 void KMainWindow::finalizeGUI( KXMLGUIClient *client )
