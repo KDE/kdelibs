@@ -508,7 +508,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         // know we can stop
         do {
             s = m_lines[si];
-	    
+
 	    if (isPrinting)
 	    {
                 int lh = lineHeight( false ) + paddingBottom() + borderBottom();
@@ -517,14 +517,14 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                    // This has been printed already we suppose.
                    continue;
                 }
-                
+
                 if (ty+lh+s->m_y > y+h)
                 {
                    RenderRoot *rootObj = root();
                    if (ty+s->m_y < rootObj->truncatedAt())
                       rootObj->setTruncatedAt(ty+s->m_y);
                    // Let's stop here.
-                   break; 
+                   break;
                 }
             }
 
@@ -782,7 +782,7 @@ short RenderText::baselinePosition( bool firstLine ) const
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int spaceAdd)
 {
     // ### should not be needed!!!
-    if(len == 0 || (len == 1 && *(str->s+from) == '\n') ) return;
+    assert(!(len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ));
 
     reverse = reverse && !style()->visuallyOrdered();
 
@@ -793,7 +793,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         width -= marginLeft();
     }
 
-    if(from + len == int(str->l) && parent()->isInline() && parent()->lastChild()==this)
+    if(from + len >= int(str->l) && parent()->isInline() && parent()->lastChild()==this)
         width -= marginRight();
 
 #ifdef DEBUG_LAYOUT
