@@ -730,7 +730,7 @@ void KSpell::checkList3a (KProcIO *)
 
     // if we got an empty line, t.e. end of ispell/aspell response
     // and the dialog isn't waiting for user interaction, send next word
-    if (endOfResponse and !dlgon) {
+    if (endOfResponse && !dlgon) {
       //kdDebug(750) << "checkList3a: send next word" << endl;
       checkList2();
     }
