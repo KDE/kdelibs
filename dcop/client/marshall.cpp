@@ -250,7 +250,7 @@ QCString demarshal( QDataStream &stream, const QString &type )
 
 }
 
-void marshall( QDataStream &arg, QCStringList args, uint i, QString type )
+void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 {
     if (type == "QStringList")
        type = "QValueList<QString>";
