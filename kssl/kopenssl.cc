@@ -21,18 +21,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 
-#ifdef HAVE_SSL
-#define crypt _openssl_crypt
-#include <openssl/ssl.h>
-#include <openssl/x509.h>
-#include <openssl/x509v3.h>
-#include <openssl/pem.h>
-#include <openssl/bio.h>
-#include <openssl/rand.h>
-#include <openssl/asn1.h>
-#undef crypt
-#endif
-
 #include <stdio.h>
 #include "kopenssl.h"
 
@@ -91,6 +79,11 @@ static ASN1_METHOD* (*K_X509_asn1_meth) (void) = NULL;
 static int (*K_ASN1_i2d_fp)(int (*)(),FILE *,unsigned char *) = NULL;
 static int (*K_i2d_ASN1_HEADER)(ASN1_HEADER *, unsigned char **) = NULL;
 static int (*K_X509_print_fp)  (FILE *, X509*) = NULL;
+static int (*K_i2d_PKCS12_fp)  (FILE *, PKCS12*) = NULL;
+static int (*K_PKCS12_newpass) (PKCS12*, char*, char*) = NULL;
+static PKCS12* (*K_d2i_PKCS12_fp) (FILE*, PKCS12**) = NULL;
+static PKCS12* (*K_PKCS12_new) (void) = NULL;
+static void (*K_PKCS12_free) (PKCS12 *) = NULL;
 };
 #endif
 
@@ -181,6 +174,11 @@ KConfig *cfg;
       K_i2d_ASN1_HEADER = (int (*)(ASN1_HEADER *, unsigned char **)) _cryptoLib->symbol("i2d_ASN1_HEADER");
       K_X509_print_fp = (int (*)(FILE*, X509*)) _cryptoLib->symbol("X509_print_fp");
 #endif
+      K_i2d_PKCS12_fp = (int (*)(FILE *, PKCS12*)) _cryptoLib->symbol("i2d_PKCS12_fp");
+      K_PKCS12_newpass = (int (*)(PKCS12*, char*, char*)) _cryptoLib->symbol("PKCS12_newpass");
+      K_d2i_PKCS12_fp = (PKCS12* (*)(FILE*, PKCS12**)) _cryptoLib->symbol("d2i_PKCS12_fp");
+      K_PKCS12_new = (PKCS12* (*)()) _cryptoLib->symbol("PKCS12_new");
+      K_PKCS12_free = (void (*)(PKCS12 *)) _cryptoLib->symbol("PKCS12_free");
    }
 
    for (QStringList::Iterator it = libpaths.begin();
@@ -562,6 +560,36 @@ int KOpenSSLProxy::X509_print(FILE *fp, X509 *x) {
    if (K_X509_print_fp) return (K_X509_print_fp)(fp, x);
    return -1;
 }
+
+
+PKCS12 *KOpenSSLProxy::d2i_PKCS12_fp(FILE *fp, PKCS12 **p12) {
+   if (K_d2i_PKCS12_fp) return (K_d2i_PKCS12_fp)(fp, p12);
+   else return NULL;
+}
+
+ 
+int KOpenSSLProxy::PKCS12_newpass(PKCS12 *p12, char *oldpass, char *newpass) {
+   if (K_PKCS12_newpass) return (K_PKCS12_newpass)(p12, oldpass, newpass);
+   else return -1;
+}
+
+ 
+int KOpenSSLProxy::i2d_PKCS12_fp(FILE *fp, PKCS12 *p12) {
+   if (K_i2d_PKCS12_fp) return (K_i2d_PKCS12_fp)(fp, p12);
+   else return -1;
+}
+
+
+PKCS12 *KOpenSSLProxy::PKCS12_new(void) {
+   if (K_PKCS12_new) return (K_PKCS12_new)();
+   else return NULL;
+}
+
+
+void KOpenSSLProxy::PKCS12_free(PKCS12 *a) {
+   if (K_PKCS12_free) (PKCS12_free)(a);
+}
+
 
 #endif
 

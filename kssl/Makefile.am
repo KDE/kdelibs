@@ -18,6 +18,7 @@ include_HEADERS = \
 		ksslutils.h              \
 		kopenssl.h               \
 		ksslall.h	 	 \
+		ksslpkcs12.h		 \
 		ksslx509map.h
  
 
@@ -33,6 +34,7 @@ libkssl_la_SOURCES	= \
 			ksslinfodlg.cc            \
 			ksslutils.cc              \
 			kopenssl.cc		  \
+			ksslpkcs12.cc		  \
 			ksslx509map.cc
 
 libkssl_la_LDFLAGS = $(all_libraries) -version-info 2:2 -no-undefined

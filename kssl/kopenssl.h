@@ -28,6 +28,20 @@ class KOpenSSLProxyPrivate;
 #include <config.h>
 #include <klibloader.h>
 
+#ifdef HAVE_SSL
+#define crypt _openssl_crypt
+#include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/pem.h>
+#include <openssl/bio.h>
+#include <openssl/rand.h>
+#include <openssl/asn1.h>
+#include <openssl/pkcs7.h>
+#include <openssl/pkcs12.h>
+#undef crypt
+#endif
+
 class KOpenSSLProxy {
 public:
 
@@ -339,6 +353,36 @@ public:
     *   X509_print - print the text form of an X509
     */
    int X509_print(FILE *fp, X509 *x);
+
+
+   /*
+    *   Read a PKCS#12 cert from fp
+    */
+   PKCS12 *d2i_PKCS12_fp(FILE *fp, PKCS12 **p12);
+
+
+   /*
+    *   Change the password on a PKCS#12 cert
+    */
+   int PKCS12_newpass(PKCS12 *p12, char *oldpass, char *newpass);
+
+
+   /*
+    *   Write a PKCS#12 to FILE*
+    */
+   int i2d_PKCS12_fp(FILE *fp, PKCS12 *p12);
+
+
+   /*
+    *   Create a new PKCS#12 object
+    */
+   PKCS12 *PKCS12_new(void);
+
+
+   /*
+    *   Destroy that PKCS#12 that you created!
+    */
+   void PKCS12_free(PKCS12 *a);
 
 
 #endif
