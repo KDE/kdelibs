@@ -1248,9 +1248,9 @@ QString KIOJob::findDeviceMountPoint( const char *filename )
       if (!GETMNTENT(mtab, me))
 	break;
 
-      int  length = strlen(MOUNTPOINT(me));
+      int  length = strlen(FSNAME(me));
 
-      if (!strncmp(MOUNTPOINT(me), realname, length)
+      if (!strncmp(FSNAME(me), realname, length)
 	  && length > max) {
 	max = length;
 	if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
