@@ -200,12 +200,7 @@ class KIOConnection
     private KJASInputStream in = null;
 
     KIOConnection(URL u) {
-        try {
-            url = new URL(u.toExternalForm());
-        } catch (MalformedURLException muex) {
-            url = null;
-            Main.debug ("Failed to create URL of URL: " + (u == null ? "null" :u.toExternalForm()));
-        }
+        url = u;
     }
     public void setData(int code, byte [] d) {
         // this method is synchronized on jobs in processCommand
@@ -549,7 +544,8 @@ final class KJASHttpURLStreamHandler extends URLStreamHandler
         default_port = port;
     }
     protected URLConnection openConnection(URL u) throws IOException {
-        return new KJASHttpURLConnection(u);
+        URL url = new URL(u.toExternalForm());
+        return new KJASHttpURLConnection(url);
     }
     protected int getDefaultPort() {
         return default_port;
@@ -563,7 +559,8 @@ final class KJASSimpleURLStreamHandler extends URLStreamHandler
         default_port = port;
     }
     protected URLConnection openConnection(URL u) throws IOException {
-        return new KJASSimpleURLConnection(u, default_port);
+        URL url = new URL(u.toExternalForm());
+        return new KJASSimpleURLConnection(url, default_port);
     }
     protected int getDefaultPort() {
         return default_port;
