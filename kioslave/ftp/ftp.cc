@@ -236,7 +236,7 @@ void Ftp::closeConnection()
             << QString(QChar(rspbuf[0]))+QChar(rspbuf[1])+QChar(rspbuf[2]) << endl;
       free( nControl );
       if (ksControl != NULL)
-	delete ksControl;
+        delete ksControl;
       //      ::close( sControl );
       sControl = 0;
     }
@@ -257,13 +257,13 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user,
   QString pass = _pass;
   if ( !_user.isEmpty() )
   {
-      user = _user;
-      pass = _pass.isEmpty() ? QString::null:_pass;
+    user = _user;
+    pass = _pass.isEmpty() ? QString::null:_pass;
   }
   else
   {
-      user = FTP_LOGIN;
-      pass = FTP_PASSWD;
+    user = FTP_LOGIN;
+    pass = FTP_PASSWD;
   }
 
   m_proxyURL = metaData("UseProxy");
@@ -273,7 +273,7 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user,
 
   if ( m_host != _host || m_port != _port ||
        m_user != user || m_pass != pass )
-      closeConnection( );
+    closeConnection( );
 
   m_host = _host;
   m_port = _port;
@@ -323,34 +323,36 @@ void Ftp::openConnection()
  */
 bool Ftp::connect( const QString &host, unsigned short int port )
 {
-  if ( port == 0 ) {
-      struct servent *pse;
-      if ( ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
-          port = 21;
-      else
-          port = ntohs(pse->s_port);
+  if ( port == 0 )  {
+    struct servent *pse;
+    if ( ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
+        port = 21;
+    else
+        port = ntohs(pse->s_port);
   }
+
   int on = 1;
+
   // require an Internet Socket
   ksControl = new KExtendedSocket(host, port, KExtendedSocket::inetSocket);
   if (ksControl == NULL)
-    {
-      error( ERR_OUT_OF_MEMORY, QString::null );
-      return false;
-    }
+  {
+    error( ERR_OUT_OF_MEMORY, QString::null );
+    return false;
+  }
 
   ksControl->setTimeout(connectTimeout());
-
   if (ksControl->connect() < 0)
-    {
-      if (ksControl->status() == IO_LookupError)
-	error(ERR_UNKNOWN_HOST, host);
-      else
-	error(ERR_COULD_NOT_CONNECT, host);
-      delete ksControl;
-      ksControl = NULL;
-      return false;
-    }
+  {
+    if (ksControl->status() == IO_LookupError)
+      error(ERR_UNKNOWN_HOST, host);
+    else
+      error(ERR_COULD_NOT_CONNECT, host);
+    delete ksControl;
+    ksControl = NULL;
+    return false;
+  }
+
   sControl = ksControl->fd();
 
   if ( setsockopt( sControl, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on) ) == -1 )
@@ -434,7 +436,7 @@ bool Ftp::ftpLogin()
       if ( failedAuth > 0 || (!user.isEmpty() && pass.isEmpty()) )
       {
         QString errorMsg;
-        kdDebug(7102) << "Prompt the user for password..." << endl;
+        kdDebug(7102) << "Show login dialog box..." << endl;
 
         // Ask user if we should retry after when login fails!
         if( failedAuth > 0 )
@@ -449,6 +451,7 @@ bool Ftp::ftpLogin()
 
         kdDebug(7102) << "Is FTP URL valid? " << info.url.isValid() << endl;
         kdDebug(7102) << "Username: " << info.username << endl;
+
         info.prompt = i18n("You need to supply a username and a password "
                            "to access this site.");
         info.commentLabel = i18n( "Site:" );
@@ -481,9 +484,10 @@ bool Ftp::ftpLogin()
           tempbuf += QString::number(m_port).latin1();
         }
       }
-      kdDebug(7102) << "Sending Login name: " << user << endl;
-      bool loggedIn = (ftpSendCmd( tempbuf, 0 ) &&
-                       !strncmp( rspbuf, "230", 3));
+
+      kdDebug(7102) << "Sending Login name: " << tempbuf << endl;
+
+      bool loggedIn = (ftpSendCmd( tempbuf, 0 ) && !strncmp( rspbuf, "230", 3));
       bool needPass = !strncmp( rspbuf, "331", 3);
       // Prompt user for login info if we do not
       // get back a "230" or "331".
@@ -606,11 +610,30 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
   buf += "\r\n";
 
   if ( cmd.left(4).lower() != "pass" ) // don't print out the password
-    kdDebug(7102) << cmd.data() << endl;
+    kdDebug(7102) << "ftpSendCmd: " << cmd.data() << endl;
+
   int num = KSocks::self()->write(sControl, buf.data(), buf.length());
-  if (num <= 0 )  {
-    error( ERR_COULD_NOT_WRITE, QString::null );
-    return false;
+
+  if (num < 1)  {
+    if (m_bLoggedOn)
+    {
+      error( ERR_CONNECTION_BROKEN, m_host );
+      return false;
+    }
+
+    if( sControl != 0 )
+    {
+      free( nControl );
+      if (ksControl != NULL)
+        delete ksControl;
+      sControl = 0;
+    }
+
+    // If we have not yet logged in, re-establish connection and
+    // attempt to send the command again...
+    if (!connect(m_host, m_port) ||
+        KSocks::self()->write(sControl, buf.data(), buf.length()) < 1)
+      return false;
   }
 
   char rsp = readresp();
@@ -629,14 +652,21 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
       if (!m_bLoggedOn)
       {
         kdDebug(7102) << "Login failure, aborting" << endl;
+        error (ERR_COULD_NOT_LOGIN, m_host);
         return false;
       }
       kdDebug(7102) << "Logged back in, reissuing command" << endl;
       // On success, try the command again
       return ftpSendCmd( cmd, maxretries - 1 );
-    } else if (cmd != "quit")
+    }
+    else if (cmd != "quit")
     {
-      error( ERR_SERVER_TIMEOUT, m_host );
+      // Do not send error message if we have not already logged on. This
+      // stops the error page from appearing when the login is incorrect
+      // and a retry dialog is displayed...
+      if (m_bLoggedOn)
+        error( ERR_SERVER_TIMEOUT, m_host );
+
       return false;
     }
   }
@@ -2263,3 +2293,4 @@ size_t Ftp::ftpWrite(void *buffer, long len)
 {
   return( KSocks::self()->write( sData, buffer, len ) );
 }
+
