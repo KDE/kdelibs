@@ -853,7 +853,7 @@ private:
   QString m_strRef_encoded;
   QString m_strQuery_encoded;
   bool m_bIsMalformed : 1;
-  int freeForUse      : 7;
+  uint freeForUse     : 7;
   unsigned short int m_iPort;
   QString m_strPath_encoded;
 
