@@ -54,7 +54,7 @@ protected slots:
  void slotOnItem( QIconViewItem *item );
  void slotOnViewport();
 
- void slotSettingsChanged();
+ void slotSettingsChanged(int);
 
  /**
   * Auto selection happend.
@@ -65,7 +65,7 @@ protected slots:
 protected:
   virtual void focusOutEvent( QFocusEvent *fe );
   virtual void contentsMousePressEvent( QMouseEvent *e );
- 
+
   QCursor oldCursor;
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;

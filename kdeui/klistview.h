@@ -15,7 +15,7 @@ protected slots:
     void slotOnItem( QListViewItem *item );
     void slotOnViewport();
 
-    void slotSettingsChanged();
+    void slotSettingsChanged(int);
 
 private:
     QCursor oldCursor;

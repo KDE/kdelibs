@@ -11,12 +11,14 @@ KListView::KListView( QWidget *parent, const char *name )
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QListViewItem * ) ),
 	     this, SLOT( slotOnItem( QListViewItem * ) ) );
-    slotSettingsChanged();
-    connect( kapp, SIGNAL( settingsChanged() ), SLOT( slotSettingsChanged() ) );
+    slotSettingsChanged(KApplication::SETTINGS_MOUSE);
+    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
 }
 
-void KListView::slotSettingsChanged()
+void KListView::slotSettingsChanged(int category)
 {
+    if (category != KApplication::SETTINGS_MOUSE)
+        return;
     m_bUseSingle = KGlobalSettings::singleClick();
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
 

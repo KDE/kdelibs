@@ -15,8 +15,8 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
              this, SLOT( slotOnItem( QIconViewItem * ) ) );
-    slotSettingsChanged();
-    connect( kapp, SIGNAL( settingsChanged() ), SLOT( slotSettingsChanged() ) );
+    slotSettingsChanged( KApplication::SETTINGS_MOUSE );
+    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
     m_pCurrentItem = 0L;
 
     m_pAutoSelect = new QTimer( this );
@@ -24,8 +24,10 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     	     this, SLOT( slotAutoSelect() ) );
 }
 
-void KIconView::slotSettingsChanged()
+void KIconView::slotSettingsChanged(int category)
 {
+    if ( category != KApplication::SETTINGS_MOUSE )
+        return;
     m_bUseSingle = KGlobalSettings::singleClick();
     if( m_bUseSingle )
     {
@@ -93,8 +95,8 @@ void KIconView::slotAutoSelect()
       blockSignals( true );
 
       //No Ctrl? Then clear before!
-      if( !(keybstate & ControlMask) )  
-	clearSelection(); 
+      if( !(keybstate & ControlMask) )
+	clearSelection();
 
       bool select = !m_pCurrentItem->isSelected();
       bool update = viewport()->isUpdatesEnabled();
