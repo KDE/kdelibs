@@ -27,6 +27,23 @@ static unsigned char uparrow_bits[] = {
   0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
 
 
+const char * return_xpm[] = {
+"15 9 4 1",
+" 	c None",
+".	c #000000",
+"+	c #FFFFFF",
+"@	c #515551",
+"    ..    ....+",
+"   . @    .   +",
+"  .  @.....   +",
+" .            +",
+".             +",
+" .            +",
+"  .  ++++++++++",
+"   . +         ",
+"    .+         "};
+
+
 KStepStyle::KStepStyle()
     :KStyle()
 {
@@ -97,10 +114,33 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
     int x1, y1, x2, y2;
     btn->rect().coords(&x1, &y1, &x2, &y2);
     bool act = btn->isOn() || btn->isDown();
-    drawItem(p, x1+act?1:0, y1+act?1:0, btn->width(), btn->height(),
-             AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
-             btn->pixmap(), btn->text(), -1,
-             act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());
+    QPixmap px(return_xpm);
+
+    if (btn->isDefault()) {
+
+      // If this is a default button, we have a 4 pixel border which is
+      // used to give a frame.
+      // We need to add the 'return' pixmap in the correct position too.
+      // We adjust the width available for the label according to how
+      // much space is left after adding the pixmap at the right edge.
+      // - rikkus
+
+        p->drawPixmap(btn->width() - 24, btn->height() / 2 - 4, px);
+     
+        drawItem(p,
+          (x1+act?1:0) + 6, y1+act?1:0,
+          btn->width() - 26, btn->height(),
+          AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
+          btn->pixmap(), btn->text(), -1,
+          act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());
+
+    } else {
+     
+        drawItem(p, x1+act?1:0, y1+act?1:0, btn->width(), btn->height(),
+          AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
+          btn->pixmap(), btn->text(), -1,
+          act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());
+   }
 }
 
 void KStepStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
