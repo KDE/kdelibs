@@ -598,7 +598,7 @@ void KSelectAction::updateComboWidth( int id )
 
 void KSelectAction::updateItems( int id )
 {
-	kdDebug(129) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
+  kdDebug(129) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
   QWidget* w = container( id );
   if ( ::qt_cast<KToolBar *>( w ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
@@ -609,10 +609,11 @@ void KSelectAction::updateItems( int id )
       QStringList::ConstIterator it = lst.begin();
       for( ; it != lst.end(); ++it )
         cb->insertItem( *it );
-      // Ok, this currently doesn't work due to a bug in QComboBox
-      // (the sizehint is cached for ever and never recalculated)
-      // Bug reported (against Qt 2.3.1).
-      cb->setMinimumWidth( cb->sizeHint().width() );
+      // qt caches and never recalculates the sizeHint()
+      // qcombobox.cpp recommends calling setFont to invalidate the sizeHint
+      // setFont sets own_font = True, so we're a bit mean and calll
+      // unsetFont which calls setFont and then overwrites the own_font
+      cb->unsetFont();
     }
    }
 }
