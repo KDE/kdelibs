@@ -315,10 +315,9 @@ AnonymousFunction::AnonymousFunction()
   /* TODO */
 }
 
-DeclaredFunctionImp::DeclaredFunctionImp(ParamList *p, StatementNode *b)
+DeclaredFunctionImp::DeclaredFunctionImp(StatementNode *b)
   : block(b)
 {
-  param = p;
 }
 
 Completion DeclaredFunctionImp::execute(const List &)

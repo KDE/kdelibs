@@ -173,21 +173,6 @@ namespace KJS {
     virtual ~Reference();
   };
 
-  class ParamList {
-  public:
-    ParamList(int s) : size(s){ param = new UString[s]; }
-    ~ParamList() { delete [] param; }
-    int count() const { return size; }
-    void insert(int i, const UString &s) { if (i<size) param[i] = s; }
-    UString at(int i) { if (i<size)
-                          return param[i];
-                        else
-			  return UString::null; }
-  private:
-    int size;
-    UString *param;
-  };
-
   /**
    * @short Execution context.
    */
@@ -219,7 +204,7 @@ namespace KJS {
 
   class DeclaredFunctionImp : public ConstructorImp {
   public:
-    DeclaredFunctionImp(ParamList *p, StatementNode *b);
+    DeclaredFunctionImp(StatementNode *b);
     Completion execute(const List &);
     Object construct(const List &);
     CodeType codeType() const { return FunctionCode; }

@@ -37,7 +37,7 @@ namespace KJS {
   enum FunctionAttribute { ImplicitNone, ImplicitThis, ImplicitParents };
 
   class Function;
-  class ParamList;
+  class Parameter;
 
   /**
    * @short Implementation class for Functions.
@@ -45,19 +45,21 @@ namespace KJS {
   class FunctionImp : public ObjectImp {
     friend Function;
   public:
-    FunctionImp(ParamList *p);
-    virtual ~FunctionImp() { }
+    FunctionImp();
+    virtual ~FunctionImp();
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
     virtual Completion execute(const List &) = 0;
     bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
     virtual CodeType codeType() const = 0;
     KJSO thisValue() const;
+    void addParameter(const UString &n);
     void processParameters(const List *);
     KJSO executeCall(Imp *thisV, const List *args);
   protected:
+    UString ident;
     FunctionAttribute attr;
-    ParamList *param;
+    Parameter *param;
   };
 
   /**

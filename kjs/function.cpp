@@ -36,9 +36,26 @@ const TypeInfo InternalFunctionImp::info = { "InternalFunction",
 const TypeInfo ConstructorImp::info = { "Constructor", ConstructorType,
 					 &InternalFunctionImp::info, 0, 0 };
 
-FunctionImp::FunctionImp(ParamList *p)
-  : ObjectImp(/*TODO*/BooleanClass), param(p)
+namespace KJS {
+
+  class Parameter {
+  public:
+    Parameter(const UString &n) : name(n), next(0L) { }
+    ~Parameter() { delete next; }
+    UString name;
+    Parameter *next;
+  };
+
+};
+
+FunctionImp::FunctionImp()
+  : ObjectImp(/*TODO*/BooleanClass), param(0L)
 {
+}
+
+FunctionImp::~FunctionImp()
+{
+  delete param;
 }
 
 KJSO FunctionImp::thisValue() const
@@ -46,6 +63,14 @@ KJSO FunctionImp::thisValue() const
   return KJSO(Context::current()->thisValue());
 }
 
+void FunctionImp::addParameter(const UString &n)
+{
+  Parameter **p = &param;
+  while (*p)
+    p = &(*p)->next;
+
+  *p = new Parameter(n);
+}
 
 // ECMA 10.1.3
 void FunctionImp::processParameters(const List *args)
@@ -56,12 +81,15 @@ void FunctionImp::processParameters(const List *args)
 
   if (param) {
     ListIterator it = args->begin();
-    for(int i = 0; i < param->count() && i < 100; i++)
+    Parameter **p = &param;
+    while (*p) {
       if (it != args->end()) {
-	variable.put(param->at(i), *it);
+	variable.put((*p)->name, *it);
 	it++;
       } else
-	variable.put(param->at(i), Undefined());
+	variable.put((*p)->name, Undefined());
+      p = &(*p)->next;
+    }
   }
 }
 
@@ -89,7 +117,6 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 }
 
 InternalFunctionImp::InternalFunctionImp()
-  : FunctionImp(0)
 {
 }
 

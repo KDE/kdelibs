@@ -660,7 +660,7 @@ namespace KJS {
   class ParameterNode : public Node {
   public:
     ParameterNode(const UString *i) : id(*i), next(0L) { }
-    ParameterNode(ParameterNode *l, const UString *i) : id(*i), next(l) { }
+    ParameterNode *append(const UString *i);
     KJSO evaluate();
     UString ident() { return id; }
     ParameterNode *nextParam() { return next; }

@@ -1011,27 +1011,31 @@ Completion FinallyNode::execute()
 // ECMA 13
 void FuncDeclNode::processFuncDecl()
 {
-  int num = 0;
-  ParameterNode *p = param;
-  while (p) {
-    p = p->nextParam();
-    num++;
-  }
-  ParamList *plist = new ParamList(num);
-  p = param;
-  for(int i = 0; i < num; i++, p = p->nextParam())
-    plist->insert(num - i - 1, p->ident());
+  FunctionImp *fimp = new DeclaredFunctionImp(block);
 
-  Function f(new DeclaredFunctionImp(plist, block));
+  for(ParameterNode *p = param; p != 0L; p = p->nextParam())
+    fimp->addParameter(p->ident());
+
+  Function f(fimp);
 
   /* TODO: decide between global and activation object */
   Global::current().put(ident, f);
 }
 
+ParameterNode* ParameterNode::append(const UString *i)
+{
+  ParameterNode *p = this;
+  while (p->next)
+    p = p->next;
+
+  p->next = new ParameterNode(i);
+
+  return this;
+}
+
 // ECMA 13
 KJSO ParameterNode::evaluate()
 {
-  /* TODO */
   return Undefined();
 }
 

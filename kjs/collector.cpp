@@ -137,8 +137,8 @@ void Collector::privateCollect()
     for (int i = 0; i < block->filled; i++, r++)
       if (*r) {
 	// emulate 'operator delete()'
-	(*r)->~Imp();
-	free(*r);
+	//	(*r)->~Imp();
+	//	free(*r);
 	*r = 0L;
 	count--;
       }

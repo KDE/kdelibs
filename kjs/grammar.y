@@ -534,7 +534,7 @@ FunctionDeclaration:
 
 FormalParameterList:
     IDENT                          { $$ = new ParameterNode($1); delete $1; }
-  | FormalParameterList ',' IDENT  { $$ = new ParameterNode($1, $3);
+  | FormalParameterList ',' IDENT  { $$ = $1->append($3);
 	                             delete $3; }
 ;
 
