@@ -14,4 +14,4 @@ Comment[pt]=Servidor de informações sobre progresso de operações
 Comment[sl]=Strežnik KDE's Progress Info UI
 ServiceTypes=
 # It is a server
-X-KDE-ServiceType=Unique
+X-DCOP-ServiceType=Unique
