@@ -103,6 +103,7 @@ KLibrary::~KLibrary()
 
     if (!d->do_not_unload)
         lt_dlclose( m_handle );
+    delete d;
 }
 
 QString KLibrary::name() const
