@@ -8,7 +8,7 @@ Standards-Version: 3.1.1
 Package: kdelibs3
 Architecture: any
 Section: libs
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, libssl095a | libssl09
 Replaces: kdelibs3-cvs
 Conflicts: kdelibs3-cvs
 Description: KDE core libraries (runtime files)
