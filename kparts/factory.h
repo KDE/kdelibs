@@ -23,8 +23,11 @@
 #include <klibloader.h>
 #include <qmetaobject.h>
 #include <kdebug.h>
+#include <kparts/part.h>
 
 class QWidget;
+class KAboutData;
+class KInstance;
 
 namespace KParts
 {
