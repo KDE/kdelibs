@@ -179,6 +179,7 @@ int AttributeList::find(const DOMString &name)
     {
 	if(_list[i].name() == name)
 	    return i;
+	i++;
     }
     return -1;
 }
