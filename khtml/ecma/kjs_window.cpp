@@ -698,10 +698,14 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     }
     case _Location: {
-      QString str = value.toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
-      if ( p )
-        m_part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string(), false/*don't lock history*/);
+      if (p) {
+        QString dstUrl = p->htmlDocument().completeURL(value.toString(exec).string()).string();
+        if (dstUrl.find("javascript:", 0, false) || isSafeScript(exec))
+          m_part->scheduleRedirection(0,
+                                      dstUrl,
+                                      false /*don't lock history*/);
+      }
       return;
     }
     case Onabort:
@@ -861,6 +865,7 @@ bool Window::isSafeScript(ExecState *exec) const
   //kdDebug(6070) << "current domain:" << actDomain.string() << ", frame domain:" << thisDomain.string() << endl;
   if ( actDomain == thisDomain )
     return true;
+
   kdWarning(6070) << "Javascript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
   return false;
 }
