@@ -971,8 +971,13 @@ private:
   void dragMove( KDockWidget* d, QPoint pos );
 
   /**
+   * Aborts the drag mode. Restores the cursor and hides the drag indicator.
+   */
+  void cancelDrop();
+
+  /**
    * Finishes the drag mode. If the user let it drop on an other dockwidget, it will possibly be docked (if allowed),
-   * otherwise it becomes toplevel.
+   * if the user drops it outside of the application window it becomes toplevel.
    */
   void drop();
 
@@ -1040,7 +1045,8 @@ private:
   bool undockProcess;
 
   /**
-   * The dockmanager sets it to true if one presses the Cancel key during the drag process.
+   * The dockmanager sets it to true if the user cancels the drag by moving the cursor
+   * on a invalid drop place
    */
   bool dropCancel;
 

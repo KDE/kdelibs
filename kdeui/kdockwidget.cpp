@@ -1005,7 +1005,7 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
   ,storeH(0)
   ,draging(false)
   ,undockProcess(false)
-  ,dropCancel(false)
+  ,dropCancel(true)
 {
   d = new KDockManagerPrivate;
   d->splitterOpaqueResize = false;
@@ -1071,19 +1071,6 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
       fc->setGeometry( QRect(QPoint(0,0), main->geometry().size()) );
   }
 
-  #ifdef KeyPress
-  #undef KeyPress
-  #endif  
-  if ( event->type() ==QEvent::KeyPress ){
-    if ( ((QKeyEvent*)event)->key() == Qt::Key_Escape ){
-      if ( draging ){
-        dropCancel = true;
-        draging = false;
-        drop();
-      }
-    }
-  }
-
   if ( obj->inherits("KDockWidgetAbstractHeaderDrag") ){
     KDockWidget* pDockWdgAtCursor = 0L;
     KDockWidget* curdw = ((KDockWidgetAbstractHeaderDrag*)obj)->dockWidget();
@@ -1091,7 +1078,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
       case QEvent::MouseButtonPress:
         if ( ((QMouseEvent*)event)->button() == LeftButton ){
           if ( curdw->eDocking != (int)KDockWidget::DockNone ){
-            dropCancel = false;
+            dropCancel = true;
             curdw->setFocus();
             qApp->processOneEvent();
 
@@ -1112,8 +1099,11 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
         break;
       case QEvent::MouseButtonRelease:
         if ( ((QMouseEvent*)event)->button() == LeftButton ){
-          if ( draging && !dropCancel ){
-            drop();
+          if ( draging ){
+            if ( !dropCancel )
+              drop();
+            else
+              cancelDrop();
           }
           if (d->readyToDrag) {
               d->readyToDrag = false;
@@ -1127,7 +1117,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
               childDockWidgetList = 0L;
           }
           draging = false;
-          dropCancel = false;
+          dropCancel = true;
         }
         break;
       case QEvent::MouseMove:
@@ -1137,6 +1127,15 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
           if ( currentMoveWidget  && pDockWdgAtCursor == currentMoveWidget ) { //move
             dragMove( currentMoveWidget, currentMoveWidget->mapFromGlobal( QCursor::pos() ) );
             break;
+          } else {
+            if (dropCancel && curdw) {
+              d->dragRect = QRect(curdw->geometry());
+              QPoint p = curdw->mapToGlobal(QPoint(0,0));
+              d->dragRect.moveTopLeft(p);
+            }else
+              d->dragRect = QRect();
+
+            drawDragRectangle();
           }
 
           if ( !pDockWdgAtCursor && (curdw->eDocking & (int)KDockWidget::DockDesktop) == 0 ){
@@ -1158,7 +1157,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
           if (d->readyToDrag) {
             d->readyToDrag = false;
           }
-          if ( (((QMouseEvent*)event)->state() == LeftButton) &&  !dropCancel &&
+          if ( (((QMouseEvent*)event)->state() == LeftButton) &&
                (curdw->eDocking != (int)KDockWidget::DockNone) ) {
             startDrag( curdw);
           }
@@ -1173,13 +1172,18 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 
 KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
 {
+  dropCancel = true;
+
   if (!currentDragWidget)
     return 0L; // pointer access safety
 
   if (currentDragWidget->eDocking == (int)KDockWidget::DockNone ) return 0L;
 
   QWidget* p = QApplication::widgetAt( pos );
-  if ( !p ) return 0L;
+  if ( !p ) {
+    dropCancel = false;
+    return 0L;
+  }
 #if defined(_OS_WIN32_) || defined(Q_OS_WIN32)
   p = p->topLevelWidget();
 #endif
@@ -1206,9 +1210,9 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
   int ww = www->widget->width() / 3;
   int hh = www->widget->height() / 3;
 
-	if ( cpos.y() <= hh ){
+  if ( cpos.y() <= hh ){
     curPos = KDockWidget::DockTop;
-	} else
+  } else
     if ( cpos.y() >= 2*hh ){
       curPos = KDockWidget::DockBottom;
     } else
@@ -1224,6 +1228,7 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
   if ( !(currentDragWidget->eDocking & (int)curPos) ) return 0L;
   if ( www->manager != this ) return 0L;
 
+  dropCancel = false;
   return www;
 }
 
@@ -1294,8 +1299,8 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
   QSize r = dw->widget->size();
   if ( dw->parentTabGroup() ){
     curPos = KDockWidget::DockCenter;
-  	 if ( oldPos != curPos ) {
-  	   d->dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
+    if ( oldPos != curPos ) {
+      d->dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
     }
     return;
   }
@@ -1332,6 +1337,19 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
     drawDragRectangle();
   }
 }
+
+
+void KDockManager::cancelDrop()
+{
+  QApplication::restoreOverrideCursor();
+
+  delete childDockWidgetList;
+  childDockWidgetList = 0L;
+
+  d->dragRect = QRect();  // cancel drawing
+  drawDragRectangle();    // only the old rect will be deleted
+}
+
 
 void KDockManager::drop()
 {
@@ -2057,7 +2075,7 @@ void KDockManager::drawDragRectangle()
 
     KDockWidget* pDockWdgAtRect = (KDockWidget*) QApplication::widgetAt( oldAndNewDragRect[i].topLeft(), true );
     if (!pDockWdgAtRect)
-      return;
+      continue;
 
     bool isOverMainWdg = false;
     bool unclipped;
