@@ -69,7 +69,24 @@ bool KTar::open( int mode )
       if ( n == 0x200 && buffer[0] != 0 )
       {
 	QString name( buffer );
-        //debug( name );
+
+        // If filename is longer than 100 (0x64) chars, then tar uses ././@LongLink (David)
+        if ( name == "././@LongLink" )
+        {
+          // in this case, here's what happens (according to od -cx !)
+          // 1) the filename is stored in the next 512b buffer
+          n = gzread( m_f, buffer, 0x200 );
+          if ( n == 0x200 && buffer[0] != 0 )
+          {
+            name = buffer;
+            // 2) read yet another 512b buffer, for permissions, time, size ...
+            n = gzread( m_f, buffer, 0x200 );
+            if (!( n == 0x200 && buffer[0] != 0 ))
+              break;
+          }
+          else
+            break;
+        }
 
 	bool isdir = false;
 	QString nm;
@@ -102,9 +119,6 @@ bool KTar::open( int mode )
 	p = buffer + 0x88;
 	while( *p == ' ' ) ++p;
 	int time = (int)strtol( p, &dummy, 8 );
-
-	// Skip header
-	// gzseek( m_f, 0x200, SEEK_CUR );
 
 	KTarEntry* e;
 	if ( isdir )
@@ -256,17 +270,42 @@ void KTar::writeDir( const QString& name, const QString& user, const QString& gr
   }
 
   // In some tar files we can find dir/./ => call cleanDirPath
-  QString n ( QDir::cleanDirPath( name ) );
+  QString dirName ( QDir::cleanDirPath( name ) );
+
   // Need trailing '/'
-  if ( n.right(1) != "/" )
-    n += "/";
+  if ( dirName.right(1) != "/" )
+    dirName += "/";
 
   char buffer[ 0x201 ];
   for( uint i = 0; i < 0x200; ++i )
     buffer[i] = 0;
 
+  // If more than 100 chars, we need to use the LongLink trick
+  if ( dirName.length() > 99 )
+  {
+    strcpy( buffer, "././@LongLink" );
+    /*
+    // Not sure they are necessary
+    buffer[ 0x64 ] = 0x20;
+    buffer[ 0x65 ] = 0x34;
+    buffer[ 0x66 ] = 0x30;
+    buffer[ 0x9b ] = 0x20;
+    buffer[ 0x9c ] = 0x35;
+    */
+    gzwrite( m_f, buffer, 0x200 );
+    for( uint i = 0; i < 20; ++i ) // erase ././@LongLink
+      buffer[i] = 0;
+  }
+
   // Write name
-  strcpy( buffer, n );
+  strcpy( buffer, dirName );
+
+  if ( dirName.length() > 99 )
+  {
+    // write long name
+    gzwrite( m_f, buffer, 0x200 );
+    // not even needed to reclear the buffer, tar doesn't do it
+  }
   
   // Write type
   buffer[ 0x64 ] = 0x20;
@@ -337,7 +376,7 @@ void KTar::writeDir( const QString& name, const QString& user, const QString& gr
   // Write header
   gzwrite( m_f, buffer, 0x200 );
 
-  m_dirList.append( name );
+  m_dirList.append( dirName ); // contains trailing slash
 }
 
 void KTar::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
@@ -355,26 +394,47 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
   }
 
   // In some tar files we can find dir/./file => call cleanDirPath
-  QString n ( QDir::cleanDirPath( name ) );
+  QString fileName ( QDir::cleanDirPath( name ) );
 
-  int i = n.findRev( '/' );
+  /*
+  // Create toplevel dirs
+  // Commented out by David since it's not necessary, and if anybody thinks it is,
+  // he needs to implement a findOrCreate equivalent in writeDir.
+  // But as KTar and the "tar" program both handle tar.gz files without
+  // dir entries, there's really no need for that
+  QString tmp ( fileName );
+  int i = tmp.findRev( '/' );
   if ( i != -1 )
   {
-    QString d = n.left( i );
+    QString d = tmp.left( i + 1 ); // contains trailing slash
     if ( !m_dirList.contains( d ) )
     {
-      n = n.mid( i + 1 );
-      writeDir( d, user, group );
+      tmp = tmp.mid( i + 1 );
+      writeDir( d, user, group ); // WARNING : this one doesn't create its toplevel dirs
     }
   }
+  */
 
   char buffer[ 0x201 ];
   for( uint i = 0; i < 0x200; ++i )
     buffer[i] = 0;
 
-  // Write name
-  strcpy( buffer, name );
-  
+  // If more than 100 chars, we need to use the LongLink trick
+  if ( fileName.length() > 99 )
+  {
+    strcpy( buffer, "././@LongLink" );
+    gzwrite( m_f, buffer, 0x200 );
+    for( uint i = 0; i < 20; ++i ) // erase ././@LongLink
+      buffer[i] = 0;
+    strcpy( buffer, fileName );
+    // write long name
+    gzwrite( m_f, buffer, 0x200 );
+    // not even needed to reclear the buffer, tar doesn't do it
+  }
+  else
+    // Write name
+    strcpy( buffer, fileName );
+
   // Write type
   buffer[ 0x64 ] = 0x31;
   buffer[ 0x65 ] = 0x30;
