@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <qfile.h>
+#include <qdir.h>
 #include <qtextstream.h>
 
 #include <kapplication.h>
@@ -1091,7 +1092,7 @@ static QString translatePath( QString path )
 
    // we can not use KGlobal::dirs()->relativeLocation("home", path)
    // here, since it would not recognize paths without a trailing '/' 
-   QString homeDir = QFile::decodeName(getenv("HOME"));
+   QString homeDir = QDir::homeDirPath();
    if (path.startsWith(homeDir)) {
 	unsigned int len = homeDir.length();
         // replace by $HOME if possible
