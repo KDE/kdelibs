@@ -53,7 +53,7 @@ void KEdit::search(){
 
   if( srchdialog == 0 )
   {
-    srchdialog = new KEdFind( parentWidget(), "searchdialog", false);
+    srchdialog = new KEdFind( this, "searchdialog", false);
     connect(srchdialog,SIGNAL(search()),this,SLOT(search_slot()));
     connect(srchdialog,SIGNAL(done()),this,SLOT(searchdone_slot()));
   }
@@ -199,7 +199,7 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 
 	  for(int l = 0 ; l < length; l++){
 	    cursorRight(TRUE);
-	  }	
+	  }
 
 	  setCursorPosition(i ,pos + length ,TRUE );
 	  pattern = s_pattern;
@@ -250,7 +250,7 @@ void KEdit::replace()
 
   if( replace_dialog == 0 )
   {
-    replace_dialog = new KEdReplace( parentWidget(), "replace_dialog" );
+    replace_dialog = new KEdReplace( this, "replace_dialog" );
     connect(replace_dialog,SIGNAL(find()),this,SLOT(replace_search_slot()));
     connect(replace_dialog,SIGNAL(replace()),this,SLOT(replace_slot()));
     connect(replace_dialog,SIGNAL(replaceAll()),this,SLOT(replace_all_slot()));
@@ -507,7 +507,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
       if( pos != -1){
 
 	length = s_pattern.length();
-	
+
 	if(replace_all){ // automatic
 
 	  stringnew = string.copy();
@@ -537,7 +537,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  return 1;
 
 	}
-	
+
       }
     }
   }
@@ -565,7 +565,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  string = "";
 	  string = textLine(line_counter);
 	  replace_all_col = string.length();
-	
+
 	}
 	replace_all_line = line_counter;
       }
@@ -597,8 +597,8 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 
 	    for(int l = 0 ; l < length; l++){
 	      cursorRight(TRUE);
-	    }	
-	
+	    }
+
 	    setCursorPosition(line_counter ,pos + length ,TRUE );
 	    pattern = s_pattern;
 
@@ -635,7 +635,7 @@ public:
     ~KEdFindPrivate() {
 	delete combo;
     }
-	
+
     KHistoryCombo *combo;
 };
 
@@ -644,6 +644,8 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
 		User1|Cancel, User1, false, i18n("&Find") )
 {
+  setWFlags( WType_TopLevel );
+
   QWidget *page = new QWidget( this );
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
@@ -755,7 +757,7 @@ public:
 	delete searchCombo;
 	delete replaceCombo;
     }
-	
+
     KHistoryCombo *searchCombo, *replaceCombo;
 };
 
@@ -764,6 +766,8 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
 		User3|User2|User1|Cancel, User3, false,
 		i18n("Replace &All"), i18n("&Replace"), i18n("&Find") )
 {
+  setWFlags( WType_TopLevel );
+
   setButtonBoxOrientation( Vertical );
 
   QFrame *page = makeMainWidget();

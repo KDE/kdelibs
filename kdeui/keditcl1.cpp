@@ -59,8 +59,6 @@ KEdit::KEdit(QWidget *_parent, const char *name)
 
     line_pos = col_pos = 0;
 
-    installEventFilter( this );
-
     srchdialog = NULL;
     replace_dialog= NULL;
     gotodialog = NULL;
@@ -467,22 +465,11 @@ bool KEdit::isModified(){
     return edited();
 }
 
-bool KEdit::eventFilter(QObject* o, QEvent* ev){
-
-    if (ev->type() == QEvent::Paint) {
-	if (srchdialog)
-            if (srchdialog->isVisible())
-                srchdialog->raise();
-
-	if (replace_dialog)
-            if (replace_dialog->isVisible())
-                replace_dialog->raise();
-    }
-
+// ### KDE3: remove!
+bool KEdit::eventFilter(QObject* o, QEvent* ev)
+{
   return QMultiLineEdit::eventFilter( o, ev );
-
 }
-
 
 QString KEdit::markedText(){
   return QMultiLineEdit::markedText();

@@ -380,7 +380,7 @@ protected:
 
 protected:
 
-    bool 	eventFilter	 ( QObject *, QEvent * );
+    bool 	eventFilter	 ( QObject *, QEvent * ); // ### KDE3: remove!
     void 	keyPressEvent 	 ( QKeyEvent *  );
     void 	mousePressEvent  ( QMouseEvent* );
     void 	mouseReleaseEvent( QMouseEvent* );
