@@ -761,7 +761,7 @@ private:
     void initKMainWindow(const char *name);
 };
 
-#define RESTORE(type) kRestoreMainWindows<type>()
+#define RESTORE(type) kRestoreMainWindows<type>();
 
 #define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS 3
 
