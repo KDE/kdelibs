@@ -526,7 +526,7 @@ public:
 KDoubleNumInput::KDoubleNumInput(QWidget *parent, const char *name)
     : KNumInput(parent, name)
 {
-    init(0.0, 0.0, 1.0, 0.01, 2);
+    init(0.0, 0.0, 9999.0, 0.01, 2);
 }
 
 KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value,
