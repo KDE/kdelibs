@@ -2,17 +2,11 @@ This library is severely functionally challenged.
 
 This TODO happens to cover SSL in all of KDE though.
 
-- Some of our certificates are not really valid CA's.  They need to be
-  sorted and the bad ones removed.
-
 - X509 parser now concatenates multiple tags (in particular /OU) 
   to the same string using \n in between.  Gui needs updates for this
   (ksslinfodlg)
 
-- We have to find a way to create the hashes in the CA root directory or
-  certificate validation will not work by any means.
-
-- make install should chmod 400 the .pem and .crl files I think....
+- make install should chmod 400 the .crt file I think....
 
 - The ASN1 date conversion code doesn't take international issues into
   account by any means.
