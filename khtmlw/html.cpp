@@ -1241,7 +1241,7 @@ void KHTMLWidget::paint( HTMLChain *_chain, int x, int y, int w, int h )
 	drawBackground( x_offset, y_offset, x, y, w, h );
 	bDrawBackground = db;
 
-	_chain->current()->print( painter, _chain, x - x_offset - leftBorder,
+	_chain->current()->print( painter, _chain, x + x_offset - leftBorder,
 		y + y_offset - topBorder, w, h, tx, ty );
     
 	if ( newPainter )
