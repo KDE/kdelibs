@@ -588,6 +588,8 @@ bool _IPmatchesCN = false;
       setMetaData("ssl_action", "accept");
    }
 
+   _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
+
    if (!hasMetaData("parent_frame") || metaData("parent_frame") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
@@ -595,8 +597,6 @@ bool _IPmatchesCN = false;
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp =
                                          d->cc->getPolicyByCertificate(pc);
-
-      _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
       //  - validation code
       if (ksv != KSSLCertificate::Ok || !_IPmatchesCN) {
@@ -696,8 +696,6 @@ bool _IPmatchesCN = false;
       KSSLCertificateCache::KSSLCertificatePolicy cp =
                                              d->cc->getPolicyByCertificate(pc);
       isChild = true;
-
-      _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
       // Check the cert and IP to make sure they're the same
       // as the parent frame
