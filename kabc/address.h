@@ -41,6 +41,7 @@ class Address
      * List of addresses.
      */
     typedef QValueList<Address> List;
+    typedef QValueList<int> TypeList;
   
     /**
      * Address types:
@@ -222,6 +223,16 @@ class Address
      * Returns the translated label for delivery label field.
      */
     QString labelLabel() const;
+
+    /**
+     * Returns the list of available types.
+     */
+    static TypeList typeList();
+
+    /**
+     * Returns the translated label for a special type.
+     */
+    static QString typeLabel( int type );
 
     /**
      * Used for debug output.

@@ -244,6 +244,44 @@ QString Address::labelLabel() const
   return i18n("Delivery Label");
 }
 
+Address::TypeList Address::typeList()
+{
+  TypeList list;
+  
+  list << Dom << Intl << Postal << Parcel << Home << Work << Pref;
+
+  return list;
+}
+
+QString Address::typeLabel( int type )
+{
+  switch ( type ) {
+    case Dom:
+      return i18n("Domestic");
+      break;
+    case Intl:
+      return i18n("International");
+      break;
+    case Postal:
+      return i18n("Postal");
+      break;
+    case Parcel:
+      return i18n("Parcel");
+      break;
+    case Home:
+      return i18n("Home address");
+      break;
+    case Work:
+      return i18n("Address at work");
+      break;
+    case Pref:
+      return i18n("Preferred address");
+      break;
+    default:
+      return i18n("Unknown");
+      break;
+  }
+}
 
 void Address::dump() const
 {

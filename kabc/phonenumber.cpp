@@ -94,7 +94,22 @@ QString PhoneNumber::label() const
   return label( type() );
 }
 
+PhoneNumber::TypeList PhoneNumber::typeList()
+{
+  TypeList list;
+  
+  list << Home << Work << Msg << Pref << Voice << Fax << Cell << Video
+       << Bbs << Modem << Car << Isdn << Pcs << Pager;
+
+  return list;
+}
+
 QString PhoneNumber::label( int type )
+{
+  return typeLabel( type );
+}
+
+QString PhoneNumber::typeLabel( int type )
 {
   switch ( type ) {
     case Home:

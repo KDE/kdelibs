@@ -40,6 +40,7 @@ class PhoneNumber
 
   public:
     typedef QValueList<PhoneNumber> List;
+    typedef QValueList<int> TypeList;
 
     /**
      * @li @p Home -  Home number
@@ -121,7 +122,18 @@ class PhoneNumber
     QString label() const;
 
     /**
+     * Returns a list of all available types
+     */
+    static TypeList typeList();
+
+    /**
      * Returns the translated label for phone number type.
+     */
+    static QString typeLabel( int type );
+
+    /**
+     * Returns the translated label for phone number type.
+     * @obsolete
      */
     static QString label( int type );
 
