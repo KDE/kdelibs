@@ -6,30 +6,34 @@
 <BODY>
 
 <H2>Porting Applications to KDE 2.0</H2>
-<H3>Last Modified on March 23, 2000</H3>
+<H3>Last Modified on October 22, 2000</H3>
 This document contains the changes you have to apply to programs written for
 KDE1.1 when you want to port them to KDE2.0.<P>
 
-As a start you should have a look at doc/porting.doc in the Qt package.<P>
+As a start you should have a look at doc/porting.doc in the Qt package,
+or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
 
 <H3><A NAME="TOC">Table of Contents</A></H3>
 
 <UL>
-<LI><A HREF="#general">General Information</A></LI>
-<LI><A HREF="#launching">Starting other programms</A></LI>
-<LI><A HREF="#khtmlw">khtmlw</A></LI>
-<LI><A HREF="#KIntegerLine">KIntegerLine, KIntLineEdit</A></LI>
-<LI><A HREF="#KLocale">KLocale</A></LI>
+<LI><A HREF="#gettingstarted">Getting Started</A></LI>
+<LI><A HREF="#general">Global changes</A></LI>
+<LI><A HREF="#automoc">automoc/am_edit, Makefile.am tags</A></LI>
 <LI><A HREF="#KApplication">KApplication</A></LI>
 <LI><A HREF="#KCmdLineArgs">KCmdLineArgs</A></LI>
+<LI><A HREF="#KLocale">KLocale</A></LI>
+<LI><A HREF="#KGlobal">KGlobal: access to KDE global objects.</A></LI>
+<LI><A HREF="#KIconLoader">KIconLoader</A></LI>
+<LI><A HREF="#KTMainWindow">KTMainWindow</A></LI>
+<LI><A HREF="#KHelpMenu">KHelpMenu</A></LI>
+<LI><A HREF="#KToolBar">KToolBar</A></LI>
+<LI><A HREF="#launching">Starting other programs</A></LI>
+<LI><A HREF="#khtmlw">khtmlw</A></LI>
+<LI><A HREF="#KIntegerLine">KIntegerLine, KIntLineEdit</A></LI>
 <LI><A HREF="#KDNDIcon">KDNDIcon, KDNDDropZone, KDNDWidget, kdecore/drag.h</A></LI>
 <LI><A HREF="#KConfigBase">KConfigBase, KConfig, KSimpleConfig</A></LI>
 <LI><A HREF="#libkfm">libkfm</A></LI>
-<LI><A HREF="#KGlobal">KGlobal: access to KDE global objects.</A></LI>
-<LI><A HREF="#KIconLoader">KIconLoader</A></LI>
 <LI><A HREF="#KDialog">KDialog</A></LI>
-<LI><A HREF="#KTMainWidget">KTMainWidget</A></LI>
-<LI><A HREF="#automoc">automoc</A></LI>
 <LI><A HREF="#kcharsets">kcharsets</A></LI>
 <LI><A HREF="#KWizard">KWizard, KNoteBook</A></LI>
 <LI><A HREF="#KSpinBox">KSpinBox, KNumericSpinBox</A></LI>
@@ -48,12 +52,8 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <LI><A HREF="#kbutton">kbutton.h / KButton</A></LI>
 <LI><A HREF="#kbuttonbox">kbuttonbox.h / KButtonBox</A></LI>
 <LI><A HREF="#kcolorgroup">kcolorgroup.h / KColorGroup</A></LI>
-<LI><A HREF="#get">Methods for getting the value of a member object named getXy*() are renamed to xy*()</A></LI>
 <LI><A HREF="#kled">kled.h, kledlamp.h / KLed, KLedLamp</A></LI>
 <LI><A HREF="#KDockWidget">KDockWidget</A></LI>
-<LI><A HREF="#KTMainWindow">KTMainWindow</A></LI>
-<LI><A HREF="#KMainWindow">KMainWindow</A></LI>
-<LI><A HREF="#KToolBar">KToolBar</A></LI>
 <LI><A HREF="#KPixmap">KPixmap, KPixmapEffect</A></LI>
 <LI><A HREF="#KControlCenter">KDE Control Center</A></LI>
 <LI><A HREF="#KWMModuleApplication">KWMModuleApplication libkdeui/kwmmapp.h</A></LI>
@@ -65,16 +65,231 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <LI><A HREF="#KImageIO">KImageIO (kimgio.h)</A></LI>
 </UL>
 
-<H3><A NAME="general">General</A></H3>
+<H3><A NAME="gettingstarted">Getting started</A></H3>
 
-We did our best to clean up the header files of kdelibs, so they do
-not include unnecessary bloat for your application. As a consequence, you
-may notice that some header files are missing from your source files as
-they have been included before by kapp.h for example. There is a script
-in kdesdk/scripts called "fixheaders" that takes care of most of these
-cases. Just call "make -k 2&gt;&amp;1 | perl .../fixheaders" and it will try
-to look after the error messages and add includes as it recognize the
-errors.<P>
+  The first step to get your KDE application to compile under KDE 2.0,
+  is to detect KDE 2.0 and Qt 2.x at configure time. The easiest way to
+  get a working autoconf/automake framework, is to either use 
+  <a href="http://www.kdevelop.org">KDevelop</a> or
+  <a href="http://home.earthlink.net/~granroth/kapptemplate/index.html">kapptemplate</a>
+  (available in CVS under the module "kdesdk"), to generate a new
+  application template. Replace the generated source files by yours
+  and adapt Makefile.am accordingly.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="general">Global changes</A></H3>
+
+  We did our best to clean up the header files of kdelibs, so they do
+  not include unnecessary bloat for your application. As a consequence, you
+  may notice that some header files are missing from your source files as
+  they have been included before by kapp.h for example. There is a script
+  in kdesdk/scripts called "fixheaders" that takes care of most of these
+  cases. Just call "make -k 2&gt;&amp;1 | perl .../fixheaders" and it will try
+  to look after the error messages and add includes as it recognize the
+  errors.<P>
+
+  Also, if your code does not compile and complains about missing member
+  functions, you should check for methods that started with get...().
+  These methods have been renamed to xy*() for consistency.<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="automoc">automoc/am_edit, Makefile.am tags</A></H3>
+
+  On the subject of the compilation framework, automoc has been removed from
+  the admin directory. It has been replaced by am_edit which provides a lot of
+  additional features.<P>
+  METASOURCES=AUTO still does the job of generating the appropriate moc files,
+  but in addition, you should use KDE_ICON for the icons representing the application
+  (and naming those icons conforming to lo16-app-&lt;appname&gt;.png), and install
+  the application-specific icons under $(kde_datadir)/&lt;appname&gt;/pics.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KApplication">KApplication</A></H3>
+
+  doesn't hold any longer a KLocale instance. With this getLocale()
+  and isLocaleInstantiated are now replaced by KGlobal::locale()<P>
+
+  it also doesn't hold a KiconLoader instance. As this also getIconLoader()
+  has been removed. Replace kapp-&gt;getIconLoader()-&gt;loadIcon() with
+  BarIcon() or use KGlobal::iconLoader() instead of getIconLoader()<P>
+
+  kde_*dir() have been removed as they require a unique top level directory
+  for all applications (KDEDIR). This concept doesn't exist in KDE 2.0
+  any more.<P>
+
+  Replace code that uses kde_*dir() + filename with calls to
+  locate(filetype, filename) where filetype is what * used to be
+  in kde_*dir(). locate is defined as function in kstddirs.h to call
+  KGlobal::dirs()-&gt;findResource<P>
+
+  generalFont() and fixedFont() are deprecated and will be removed soon.
+  Please use KGlobalSettings::generalFont() and KGlobalSettings::fixedFont() instead.<P>
+
+  appName() is deprecated. Please use QApplication::name() or instanceName
+  instead.<P>
+
+  The methods tempSaveName() and checkRecoverFile() return QString
+  now. The returned values must _not_ be free()d.<P>
+
+  helpMenu() has been moved to KMainWindow. aboutKDE(), aboutApp() and
+  appHelpActivated() have all been removed See section for KMainWindow
+  for more info.<P>
+
+  The KApplication constructor has changed. Command line arguments and
+  program name should no longer be passed to KApplication but to 
+  KCmdLineArgs. KCmdLineArgs performs command line parsing and a command
+  line help. See below for more info.<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KCmdLineArgs">KCmdLineArgs</A></H3>
+
+  KCmdLineArgs is a new class that handles command line parsing and
+  command line help. It is now required that your application
+  specifies at least:<P>
+  <UL>
+	<LI>Its name.
+	<LI>A short description what it does. (e.g. 1 line)
+	<LI>A version.
+	<LI>All command line options that it supports.
+  </UL>
+ 
+  KCmdLineArgs itself will add the command line options supported by Qt 
+  and KApplication.<P>
+
+  You can also use the KAboutData class to specify name, description and 
+  version.<P>
+
+  In return for this information you can query KCmdLineArgs whether an 
+  certain option was specified on the command line and your application 
+  now automatically supports --help and --version. It aborts with a
+  usefull error message when the command line contains a syntax error.
+  See kdelibs/kdecore/kcmdlineargs.h for more info.<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KLocale">KLocale</A></H3>
+
+  i18n is no longer a macro<P>
+
+  KApplication::getApplication()-&gt;getLocale()-&gt;translate<P>
+
+  but a function on its own. klocale is obsolete and replace every call
+  to klocale-&gt;translate with i18n.<P>
+
+  The return value of i18n is also no longer a const char*,
+  but a unicode QString.<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KGlobal">KGlobal: access to KDE global objects.</A></H3>
+
+KGlobal allows centralized access to KDE global objects without including
+extraneous headers. object creation is deferred if possible.<P>
+
+All methods are static and headers for returned types are not included. You
+must have created a KApplication object before the methods can be used.<P>
+<TABLE BORDER="0">
+<TR>
+  <TD COLSPAN="2">
+    <PRE>
+      #include &lt;kglobal.h&gt;
+      #include &lt;kconfig.h&gt;      // Needed to use KConfig
+      #include &lt;klocale.h&gt;      // Needed to use KLocale
+      #include &lt;kiconloader.h&gt;  // Needed to use KIconLoader
+    </PRE>
+  </TD>
+</TR>
+<TR>
+  <TD>
+    <PRE>
+    ...
+        	KConfig *appcfg = KGlobal::config();
+	        QString mystr	 = i18n( "This is a string" );
+
+
+		KIconLoader *loader = KGlobal::iconLoader();
+    </PRE>
+  </TD>
+</TR>
+</TABLE>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KIconLoader">KIconLoader</A></H3>
+
+KIconLoader in 1.1 used to mix icons for applications and for toolbars.
+This has changed, so you may notice that your application doesn't find
+the right icons. loadIcon (used by BarIcon) returns only toolbar icons.<P>
+If you need icons for applications, use loadApplicationIcon.<P>
+loadMiniIcon and loadApplicationMiniIcon have been removed, instead
+loadApplicationIcon now takes a "size" argument where you can specify the
+size of the icon (small, medium, large).<P>
+The other big change you may notice, is that ICON and Icon have been
+removed as they caused big confusion for not loading application icons
+(see above). For this we added BarIcon which does the same as ICON before.
+The third change in this row is that loadIcon doesn't need the extension
+anymore, but looks for standard extensions (png, xpm) itself. If you hard-
+coded .xpm, loadIcon will issue a warning at runtime, but will still work
+in stripping off the .xpm part<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KTMainWindow">KTMainWindow</A></H3>
+
+KTMainWindow has been replaced with KMainWindow.<p>
+
+The KMainWindow constructor needs a parent widget as first argument. 
+You can use 0 for this.<p>
+setView() has been replaced with setCentralWidget().<p>
+view() has been replaced with centralWidget().<p>
+addToolBar() has been removed, it is not needed any more.<p>
+setMenu(...) has been removed, it is not needed any more.<p>
+setStatusBar(...) has been removed, it is not needed any more.<p>
+updateRects() has been removed, it is not needed any more.<p>
+enableStatusBar(...) has been removed, use statusBar()-&gt;show() and/or
+statusBar()-&gt;hide() instead.<p>
+enableToolBar(...) has been removed, use toolBar()-&gt;show() and/or 
+toolBar()-&gt;hide() instead. <p>
+
+view_* public variables do no longer exist. There is really no reason
+for an app to use this information. If you do need it anyway, use
+mainViewGeometry() instead.<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KHelpMenu">KHelpMenu</A></H3>
+
+helpMenu() has been moved to KMainWindow from KApplication (kapp).<P>
+
+Both the "About KDE" and the "About &lt;Application&gt;" dialog boxes
+are now modeless. "About KDE" is a completely new widget.<P>
+
+If you used in the toplevel window (that is derived from KMainWindow)
+"kapp-&gt;helpMenu( bool, QString )" to get the help menu
+you must now change this to "helpMenu( QString )". The QString defaults
+to QString::null so it is sufficient to write helpMenu().<P>
+
+The old aboutKDE(), aboutApp() and appHelpActivated() of KApplication
+have all been removed. If you need direct access to these or need
+access to a help menu in a class that is not derived from
+KMainWindow then allocate an instance of the new class KHelpMenu.
+See KDE 2.0 API reference or khelpmenu.h (kdeui) for additional info.<P>
+Espen Sand &lt;<A HREF="mailto:espen@kde.org">espen@kde.org</A>&gt;<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KToolBar">KToolBar</A></H3>
+
+enable(...) is depreciated, use show()/hide() instead.<p>
+enableFloating(...) has been removed, use enableMoving() instead.<p>
+setMaxHeight() is depreciated, use setMaximumHeight() instead.<p>
+maxHeight() is depreciated, use maximumHeight() instead.<p>
+setMaxWidth() is depreciated, use setMaximumWidth() instead.<p>
+maxWidth() is depreciated, use maximumWidth() instead.<p>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -85,28 +300,28 @@ your application. Here is a short summary of your options with reasons why
 you should or should not use them.
 <H4>1. fork + exec</H4>
 <P>
-You never want to use this unless you have a very good reason why it is 
-impossible to use KProcess.
+You never want to use this unless you have a very good reason why it is 
+impossible to use KProcess.
 </P>
 <H4>2. KProcess</H4>
 <P>
-You want to use this if you need to start a new process which needs to be a 
-child of your process, e.g. because you want to catch stdout/stderr or need 
+You want to use this if you need to start a new process which needs to be a 
+child of your process, e.g. because you want to catch stdout/stderr or need 
 to send it data via stdin. You should never use this to start other KDE 
-applications unless your application is called kgdb :-)
+applications unless your application is called kgdb :-)
 </P>
 <H4>3. startServiceByDesktopPath</H4>
 <P>
-Preferred way to launch desktop (KDE/Gnome/X) applications or KDE services. 
-The application/service must have a .desktop file. It will make use of 
-KDEinit for increased startup performance and lower memory usage. These 
-benefits only apply to applications available as KDEinit loadable module (KLM)
+Preferred way to launch desktop (KDE/Gnome/X) applications or KDE services. 
+The application/service must have a .desktop file. It will make use of 
+KDEinit for increased startup performance and lower memory usage. These 
+benefits only apply to applications available as KDEinit loadable module (KLM)
 </P>
 <H4>4. KRun</H4>
 <P>
-Generic way to open documents/applications/shell commands. Uses
-startServiceBy.... where applicable. Offers the additional 
-benefit of startup-notification.<BR>
+Generic way to open documents/applications/shell commands. Uses
+startServiceBy.... where applicable. Offers the additional 
+benefit of startup-notification.<BR>
 KRun can start any application, from the binary or the desktop file,
 it will determine the mimetype of a file before running the
 preferred handler for it, and it can also start shell commands.
@@ -195,85 +410,6 @@ khtmlw has been replaced with khtml.<BR>
 
   The additional class KDoubleNumInput gives you the same look &amp; feel,
   but allows you to edit floating point numbers.<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-<H3><A NAME="KLocale">KLocale</A></H3>
-
-
-i18n is no longer a macro<P>
-
-  KApplication::getApplication()-&gt;getLocale()-&gt;translate<P>
-
-  but a function on its own. klocale is obsolete and replace every call
-  to klocale-&gt;translate with i18n.<P>
-
-  The return value of i18n is also no longer a const char*,
-  but a unicode QString.<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-<H3><A NAME="KApplication">KApplication</A></H3>
-
-  doesn't hold any longer a KLocale instance. With this getLocale()
-  and isLocaleInstantiated are now replaced by KGlobal::locale()<P>
-
-  it also doesn't hold a KiconLoader instance. As this also getIconLoader()
-  has been removed. Replace kapp-&gt;getIconLoader()-&gt;loadIcon() with
-  BarIcon() or use KGlobal::iconLoader() instead of getIconLoader()<P>
-
-  kde_*dir() have been removed as they require a unique top level directory
-  for all applications (KDEDIR). This concept doesn't exist in KDE 2.0
-  any more.<P>
-
-  Replace code that uses kde_*dir() + filename with calls to
-  locate(filetype, filename) where filetype is what * used to be
-  in kde_*dir(). locate is defined as function in kstddirs.h to call
-  KGlobal::dirs()-&gt;findResource<P>
-
-  generalFont() and fixedFont() are deprecated and will be removed soon.
-  Please use KGlobalSettings::generalFont() and KGlobalSettings::fixedFont() instead.<P>
-
-  appName() is deprecated. Please use QApplication::name() or instanceName
-  instead.<P>
-
-  The methods tempSaveName() and checkRecoverFile() return QString
-  now. The returned values must _not_ be free()d.<P>
-
-  helpMenu() has been moved to KMainWindow. aboutKDE(), aboutApp() and
-  appHelpActivated() have all been removed See section for KMainWindow
-  for more info.<P>
-
-  The KApplication constructor has changed. Command line arguments and
-  program name should no longer be passed to KApplication but to 
-  KCmdLineArgs. KCmdLineArgs performs command line parsing and a command
-  line help. See kdelibs/kdecore/kcmdlineargs for more info.<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-<H3><A NAME="KCmdLineArgs">KCmdLineArgs</A></H3>
-
-  KCmdLineArgs is a new class that handles command line parsing and
-  command line help. It is now required that your application
-  specifies at least:<P>
-<UL>
-	<LI>Its name.
-	<LI>A short description what it does. (e.g. 1 line)
-	<LI>A version.
-	<LI>All command line options that it supports.
-</UL>
- 
-  KCmdLineArgs itself will add the command line options supported by Qt 
-  and KApplication.<P>
-
-  You can also use the KAboutData class to specify name, description and 
-  version.<P>
-
-  In return for this information you can query KCmdLineArgs whether an 
-  certain option was specified on the command line and your application 
-  now automatically supports --help and --version. It aborts with a
-  usefull error message when the command line contains a syntax error.
-  See kdelibs/kdecore/kcmdlineargs for more info.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -367,72 +503,13 @@ are necessary to convert your old KDND-based stuff to Qt DND.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-<H3><A NAME="KGlobal">KGlobal: access to KDE global objects.</A></H3>
-
-KGlobal allows centralized access to KDE global objects without including
-extraneous headers. object creation is deferred if possible.<P>
-
-All methods are static and headers for returned types are not included. You
-must have created a KApplication object before the methods can be used.<P>
-<TABLE BORDER="0">
-<TR>
-  <TD COLSPAN="2">
-    <PRE>
-      #include &lt;kglobal.h&gt;
-      #include &lt;kconfig.h&gt;      // Needed to use KConfig
-      #include &lt;klocale.h&gt;      // Needed to use KLocale
-      #include &lt;kiconloader.h&gt;  // Needed to use KIconLoader
-    </PRE>
-  </TD>
-</TR>
-<TR>
-  <TD>
-    <PRE>
-    ...
-        	KConfig *appcfg = KGlobal::config();
-	        QString mystr	 = i18n( "This is a string" );
-
-
-		KIconLoader *loader = KGlobal::iconLoader();
-    </PRE>
-  </TD>
-</TR>
-</TABLE>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-<H3><A NAME="KIconLoader">KIconLoader</A></H3>
-
-KIconLoader in 1.1 used to mix icons for applications and for toolbars.
-This has changed, so you may notice that your application doesn't find
-the right icons. loadIcon (used by BarIcon) returns only toolbar icons.<P>
-If you need icons for applications, use loadApplicationIcon.<P>
-loadMiniIcon and loadApplicationMiniIcon have been removed, instead
-loadApplicationIcon now takes a "size" argument where you can specify the
-size of the icon (small, medium, large).<P>
-The other big change you may notice, is that ICON and Icon have been
-removed as they caused big confusion for not loading application icons
-(see above). For this we added BarIcon which does the same as ICON before.
-The third change in this row is that loadIcon doesn't need the extension
-anymore, but looks for standard extensions (png, xpm) itself. If you hard-
-coded .xpm, loadIcon will issue a warning at runtime, but will still work
-in stripping off the .xpm part<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
 <H3><A NAME="KDialog">KDialog</A></H3>
 
 KDialog is no longer defined in kwizard.h. Include kdialog.h instead.<P>
+Note that the best way to write new dialogs is to use KDialogBase (see kdialogbase.h)<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-
-<H3><A NAME="automoc">automoc</A></H3>
-
-automoc has been removed from the admin directory. It has been replaced
-by am_edit which provides a lot of additional features.<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kcharsets">kcharsets</A></H3>
 
@@ -649,14 +726,6 @@ functionality is provided by Qt. It has been removed. (<A HREF="mailto:mirko@kde
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-<H3><A NAME="get">Methods for getting the value of a member object named getXy*() are renamed to xy*()</A></H3>
-
-If your code does not compile and complains about missing member
-functions, you should check for methods that started with get...().
-These methods have been renamed to xy*().<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
 <H3><A NAME="kled">kled.h, kledlamp.h / KLed, KLedLamp</A></H3>
 
 There where two different classes for showing an LED lamp. Both are
@@ -670,61 +739,6 @@ Please adjust your code accordingly.<P>
 
 KDockWidget inherits form KMainWindow instead of KTMainWindow now.
 See <A HREF="KTMainWindow">KTMainWindow</A> for more details.
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-<H3><A NAME="KTMainWindow">KTMainWindow</A></H3>
-
-KTMainWindow has been replaced with KMainWindow.<p>
-
-The KMainWindow constructor needs a parent widget as first argument. 
-You can use 0 for this.<p>
-setView() has been replaced with setCentralWidget().<p>
-view() has been replaced with centralWidget().<p>
-addToolBar() has been revmoed, it is not needed any more.<p>
-setMenu(...) has been removed, it is not needed any more.<p>
-setStatusBar(...) has been removed, it is not needed any more.<p>
-updateRects() has been removed, it is not needed any more.<p>
-enableStatusBar(...) has been removed, use statusBar()-&gt;show() and/or
-statusBar()-&gt;hide() instead.<p>
-enableToolBar(...) has been removed, use toolBar()-&gt;show() and/or 
-toolBar()-&gt;hide() instead. <p>
-
-view_* public variables do no longer exist. There is really no reason
-for an app to use this information. If you do need it anyway, use
-mainViewGeometry() instead.<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-<H3><A NAME="KMainWindow">KMainWindow</A></H3>
-
-helpMenu() has been moved to KMainWindow from KApplication (kapp).<P>
-
-Both the "About KDE" and the "About &lt;Application&gt;" dialog boxes
-are now modeless. "About KDE" is a completely new widget.<P>
-
-If you used in the toplevel window (that is derived from KMainWindow)
-"kapp-&gt;helpMenu( bool, QString )" to get the help menu
-you must now change this to "helpMenu( QString )". The QString defaults
-to QString::null so it is sufficient to write helpMenu().<P>
-
-The old aboutKDE(), aboutApp() and appHelpActivated() of KApplication
-have all been removed. If you need direct access to these or need
-access to a help menu in a class that is not derived from
-KMainWindow then allocate an instance of the new class KHelpMenu.
-See KDE 2.0 API reference or khelpmenu.h (kdeui) for additional info.<P>
-Espen Sand &lt;<A HREF="mailto:espen@kde.org">espen@kde.org</A>&gt;<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
-<H3><A NAME="KToolBar">KToolBar</A></H3>
-
-enable(...) is depreciated, use show()/hide() instead.<p>
-enableFloating(...) has been removed, use enableMoving() instead.<p>
-setMaxHeight() is depreciated, use setMaximumHeight() instead.<p>
-maxHeight() is depreciated, use maximumHeight() instead.<p>
-setMaxWidth() is depreciated, use setMaximumWidth() instead.<p>
-maxWidth() is depreciated, use maximumWidth() instead.<p>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -777,6 +791,9 @@ errors in a very flexible way. kdebug has been improved, and the API simplified.
 kdesdk/scripts/kDebug2kdDebug.sh provides a script for automating the conversion.
 Note that enabling/disabling debug output can now be done with kdebugdialog,
 which can be found in kdebase. The hidden dialog on C+S+F12 no longer exists.
+<P>
+Also, note that qDebug and fprintf aren't disabled by -DNDEBUG, whereas kdDebug is.
+One more reason to use kdDebug !
 (<A HREF="mailto:faure@kde.org">faure@kde.org</A>)<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
