@@ -102,7 +102,7 @@ void KHTMLWidget::init()
   _javaEnabled = false;
   _jScriptEnabled = false;
   jscript = 0;
-  
+
     if ( lstViews == 0L )
 	lstViews = new QList<KHTMLWidget>;
     lstViews->setAutoDelete( FALSE );
@@ -135,7 +135,7 @@ void KHTMLWidget::clear()
     jscript = 0;
     if ( settings ) delete settings;
     settings = 0;
-    
+
     m_lstChildren.clear();
 
     if ( bIsTextSelected )
@@ -187,11 +187,11 @@ bool KHTMLWidget::jScriptEnabled() const
     return _jScriptEnabled;
 }
 
-void KHTMLWidget::executeScript(const QString &c) 
-{ 
+void KHTMLWidget::executeScript(const QString &c)
+{
     if(!_jScriptEnabled) return;
     if(!jscript) jscript = new KJSWorld(this);
-    jscript->evaluate((KJS::UnicodeChar*)c.unicode(), c.length()); 
+    jscript->evaluate((KJS::UnicodeChar*)c.unicode(), c.length());
 }
 
 
@@ -256,6 +256,8 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     clear();
 
+    m_strURL = _url;
+    
     //emit scrollHorz( _x_offset );
     //emit scrollVert( _y_offset );
 
