@@ -208,7 +208,7 @@ QString XMLHandler::errorString()
 
 bool XMLHandler::fatalError( const QXmlParseException& exception )
 {
-    errorProt += QString( "fatal parsing error: %1 in line %2, column %3\n" )
+    errorProt += QString( "fatal parsing error: %1 in line %2, column %3" )
         .arg( exception.message() )
         .arg( exception.lineNumber() )
         .arg( exception.columnNumber() );
