@@ -678,15 +678,49 @@ public:
    * @param genericAction The name of a generic  action
    */
   bool authorize(const QString &genericAction);
-  
+
   /**
-   * Returns whether a certain KAction is authorized. 
-   * 
+   * Returns whether a certain KAction is authorized.
+   *
    * @param action The name of a KAction action. The name is prepended
    * with "action/" before being passed to @ref authorize()
    */
   bool authorizeKAction(const char *action);
-   
+
+  // Same values as ShiftMask etc. in X.h
+  enum { ShiftModifier = 1<<0,
+         LockModifier = 1<<1,
+         ControlModifier = 1<<2,
+         Modifier1 = 1<<3,
+         Modifier2 = 1<<4,
+         Modifier3 = 1<<5,
+         Modifier4 = 1<<6,
+         Modifier5 = 1<<7 };
+  /**
+   * Returns the currently pressed keyboard modifiers (e.g. shift, control, etc.)
+   * Usually you simply want to test for those in key events, in which case
+   * QKeyEvent::state() does the job (or QKeyEvent::key() to notice when a modifier is pressed alone).
+   * But it can be useful to query for the status of the modifiers at another moment
+   * (e.g. some KDE apps do that upon a drop event).
+   */
+  static uint keyboardModifiers();
+
+  // Same values as Button1Mask etc. in X.h
+  enum { Button1Pressed = 1<<8,
+         Button2Pressed = 1<<9,
+         Button3Pressed = 1<<10,
+         Button4Pressed = 1<<11,
+         Button5Pressed = 1<<12 };
+  /**
+   * Returns the currently pressed mouse buttons.
+   * Usually you simply want to test for those in mouse events, in which case
+   * QMouseEvent::button() does the job (or QMouseEvent::state()).
+   * But it can be useful to query for the status of the mouse buttons at another moment.
+   * To query for the mouse pointer position, use QCursor::pos().
+   */
+  static uint mouseState();
+
+
 public slots:
   /**
    * Tells KApplication about one more operation that should be finished

@@ -54,7 +54,7 @@
 #endif
 
 #undef QT_NO_TRANSLATION
-#include <kapplication.h>
+#include "kapplication.h"
 #define QT_NO_TRANSLATION
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -2461,6 +2461,28 @@ bool KApplication::authorizeKAction(const char *action)
    static const QString &action_prefix = KGlobal::staticQString( "action/" );
 
    return authorize(action_prefix + action);
+}
+
+uint KApplication::keyboardModifiers()
+{
+    Window root;
+    Window child;
+    int root_x, root_y, win_x, win_y;
+    uint keybstate;
+    XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+                   &root_x, &root_y, &win_x, &win_y, &keybstate );
+    return keybstate & 0x00ff;
+}
+
+uint KApplication::mouseState()
+{
+    Window root;
+    Window child;
+    int root_x, root_y, win_x, win_y;
+    uint keybstate;
+    XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+                   &root_x, &root_y, &win_x, &win_y, &keybstate );
+    return keybstate & 0xff00;
 }
 
 void KApplication::virtual_hook( int id, void* data )
