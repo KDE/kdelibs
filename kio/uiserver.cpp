@@ -39,6 +39,8 @@
 #include "kio/jobclasses.h"
 #include "kio/uiserver.h"
 #include "kio/passdlg.h"
+#include "kio/renamedlg.h"
+#include "kio/skipdlg.h"
 
 // pointer for main instance of UIServer
 UIServer* uiserver;
@@ -656,6 +658,21 @@ void UIServer::slotUpdate() {
   }
 }
 
+void UIServer::setListMode( bool list )
+{
+  m_bShowList = list;
+  ProgressItem *item;
+  QListViewItemIterator it( listProgress );
+  for ( ; it.current(); ++it ) {
+    item = (ProgressItem*) it.current();
+    item->setVisible( !list );
+  }
+
+  if (m_bShowList)
+    show();
+  else
+    hide();
+}
 
 void UIServer::slotDefaultProgress( QListViewItem *item ) {
   ((ProgressItem*) item )->slotShowDefaultProgress();

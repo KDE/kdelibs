@@ -23,8 +23,6 @@
 #include <qdatetime.h>
 #include <dcopobject.h>
 #include <kio/global.h>
-#include <kio/renamedlg.h>
-#include <kio/skipdlg.h>
 #include <kurl.h>
 #include <ktmainwindow.h>
 #include <kdatastream.h>
@@ -257,6 +255,11 @@ k_dcop:
   int open_SkipDlg( int id,
                     int /*bool*/ multi,
                     const QString & error_text );
+
+  /**
+   * Switch to or from list mode - called by the kcontrol module
+   */
+  void setListMode( bool list );
 
 protected slots:
 
