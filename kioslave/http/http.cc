@@ -1710,15 +1710,3 @@ void HTTPIOJob::slotError( int _errid, const char *_txt )
   m_pHTTP->jobError( _errid, _txt );
 }
 
-/*************************************
- *
- * Utilities
- *
- *************************************/
-
-void openFileManagerWindow( const char * )
-{
-  assert( "???" );
-}
-
-
