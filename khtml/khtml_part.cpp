@@ -1347,6 +1347,13 @@ void KHTMLPart::showError( KIO::Job* job )
     errText += QString::fromLatin1( "</P></BODY></HTML>" );
     write(errText);
     end();
+    // make the working url the current url, so that reload works and
+    // emit the progress signals to advance one step in the history
+    // (so that 'back' works)
+    m_url = d->m_workingURL;
+    d->m_workingURL = KURL();
+    emit started( 0 ); 
+    emit completed();
   }
 }
 
