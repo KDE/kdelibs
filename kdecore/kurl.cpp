@@ -1347,7 +1347,8 @@ KURL KURL::join( const KURL::List & lst )
      KURL u(*it);
      if (it != first)
      {
-        u.m_strRef_encoded = tmp.url();
+        if (!u.m_strRef_encoded) u.m_strRef_encoded = tmp.url();
+        else u.m_strRef_encoded += "#" + tmp.url(); // Support more than one suburl thingy
      }
      tmp = u;
   }
@@ -1358,6 +1359,11 @@ KURL KURL::join( const KURL::List & lst )
 QString KURL::fileName( bool _strip_trailing_slash ) const
 {
   QString fname;
+  if (hasSubURL()) { // If we have a suburl, then return the filename from there
+    KURL::List list = KURL::split(*this);
+    KURL::List::Iterator it = list.fromLast();
+    return (*it).fileName(_strip_trailing_slash);
+  }
   const QString &path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
 
   int len = path.length();
@@ -1399,6 +1405,15 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
 
 void KURL::addPath( const QString& _txt )
 {
+  if (hasSubURL())
+  {
+     KURL::List lst = split( *this );
+     KURL &u = lst.last();
+     u.addPath(_txt);
+     *this = join( lst );
+     return;
+  }
+  
   m_strPath_encoded = QString::null;
 
   if ( _txt.isEmpty() )
