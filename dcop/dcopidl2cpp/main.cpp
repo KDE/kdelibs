@@ -440,6 +440,7 @@ int main( int argc, char** argv )
 			    if ( !first )
 				funcname += ",";
 			    funcname += args.attribute("type");
+			    first = FALSE;
 			}
 			funcname += ")";
 			
