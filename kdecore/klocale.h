@@ -495,6 +495,16 @@ public:
    * @param shortName we will return the short version of the string.
    *
    * @return The name of the month
+   * 
+   * Typically the correct replacement for this deprecated class is
+   * calendar()->monthString(), which requires a QDate (rather than an
+   * integer month) or both a month and a year.
+   * This will work across different calendars.
+   * Note that you also need to add 
+   * \code
+   * #include <kcalendarsystem.h>
+   * \endcode
+   * to the applicable file.
    */
   QString monthName(int i, bool shortName = false) const KDE_DEPRECATED;
 
@@ -510,6 +520,16 @@ public:
    *
    * @return The possessive form of the name of the month
    * @since 3.1
+   *
+   * Typically the correct replacement for this deprecated class is
+   * calendar()->monthNamePossessive(), which requires a QDate (rather than
+   * an integer month) or both a month and a year.
+   * This will work across dfferent calendars.
+   * Note that you also need to add 
+   * \code
+   * #include <kcalendarsystem.h>
+   * \endcode
+   * to the applicable file.
   */
   QString monthNamePossessive(int i, bool shortName = false) const KDE_DEPRECATED;
 
