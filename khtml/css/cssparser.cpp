@@ -2238,7 +2238,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
 
     bool isLast = false;
     bool foundAnything = false;
-    bool fnd[5]; //Trust me ;)
+    bool fnd[6]; //Trust me ;)
     for( int i = 0; i < num; i++ )
     	fnd[i] = false;
 
@@ -2246,42 +2246,43 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
     kdDebug(6080) << "PSH: parsing \"" << QString(curP, endP - curP) << "\"" << endl;
 #endif
 
-    for (int j = 0; j < num; j++) {
-    	int propIndex = 0;
-    	if (fnd[propIndex] == false) { // We have not yet found such a property
-	    while (propIndex < num && curP <= endP) {
-		const QChar *nextP = getNext( curP, endP, isLast );
-		//kdDebug(6080) << "PSH: \"" << QString(curP, nextP - curP) << "\"" << endl;
+    for (int j = 0; j < num; ++j) {
+        const QChar *nextP = getNext( curP, endP, isLast );
+        //kdDebug(6080) << "in PSH: \"" << QString(curP, nextP - curP) << "\"" << endl;
+        foundAnything = false;
+        for (int propIndex = 0; propIndex < num; ++propIndex) {
+            if (!fnd[propIndex]) {
 		// We have to tread this seperately
 		bool found = false;
-		if (!isLast && properties[propIndex] == CSS_PROP_BACKGROUND_POSITION) {
+		if (!isLast && properties[propIndex] == CSS_PROP_BACKGROUND_POSITION)
 		    found = parseBackgroundPosition(curP, nextP, endP);
-		} else {
+		else
 		    found = parseValue(curP, nextP, properties[propIndex]);
-		}
+
 		if (found) {
-		    fnd[propIndex] = true;
+                    kdDebug(6080) << "setting " << propIndex << " to true" << endl;
+		    fnd[propIndex] = foundAnything = true;
 #ifdef CSS_DEBUG
 		    kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << ": "
 				  << QString(curP, nextP - curP)  << endl;
 #endif
-		    //kdDebug(6080) << "RESETTING" << endl;
-		    propIndex = 0;
-		    foundAnything = true;
-
-		    do {	// skip Whitespace
-			nextP++;
-			curP = nextP;
-		    } while (curP->isSpace() && curP < endP); // Is second cond.  necessary?
+                    break;
 		}
-		/*
-		  for( int i = 0; i < num; i++ ) {
-		  kdDebug(6080) << getPropertyName(properties[0] + i).string() << ": " << fnd[i] << endl;
-		  }
-		*/
-		propIndex++;
 	    }
 	}
+        // if we didn't find at least one match, this is an
+        // invalid shorthand and we have to ignore it
+        if (!foundAnything)
+            return foundAnything;
+
+        do {
+            nextP++;
+            curP = nextP;
+
+            // oh, less parameteres than we expected
+            if (curP >= endP)
+                return foundAnything;
+        } while (curP->isSpace());
     }
     return foundAnything;
 }
