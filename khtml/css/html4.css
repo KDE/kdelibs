@@ -115,6 +115,7 @@
       INPUT[type="text"],
       INPUT[type="password"],
       TEXTAREA { font-family: monospace }
+      INPUT[type="hidden"] {display: none }
       OPTION, OPTGROUP, MAP  { display: none }
 
       /* An example of style for HTML 4.0's ABBR/ACRONYM elements */

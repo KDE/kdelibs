@@ -812,20 +812,19 @@ void RenderFlow::layoutInlineChildren()
 
 BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 {
-    //kdDebug(6041) << "findnextLineBreak" << endl;
     BidiIterator lBreak = start;
     BidiIterator current = start;
     BidiIterator last = start;
 
     int width = lineWidth(m_height);
-    //kdDebug(6041) << "line width " << width << endl;
+    kdDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
     int w = 0;
     int tmpW = 0;
     while( 1 ) {
 	RenderObject *o = current.obj;
 	if(!o) {
 	    lBreak = current;
-	    //kdDebug(6041) << "reached end sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+	    kdDebug(6041) << "reached end sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 	    return current;
 	}
 	if( o->isSpecial() ) {
@@ -833,13 +832,13 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    // ### check if it fits in the current line. If yes, add it directly. If no, add it delayed
 	    specialHandler(o);
 	    width = lineWidth(m_height);
-	    //kdDebug(6041) << "inserted special object, line width now " << width << endl;
+	    kdDebug(6041) << "inserted special object, line width now " << width << endl;
 	} else if( current.direction() == QChar::DirWS ) {
 	    lBreak = current;
 	    w += tmpW;
 	    tmpW = static_cast<RenderText *>(o)->width(current.pos, 1);
 	} else if( current.current() == QChar('\n') ) {
-	    //kdDebug(6041) << "\\n sol: " << start.obj << " " << start.pos << "   end: " << current.obj << " " << current.pos << "   width=" << w << endl;
+	    kdDebug(6041) << "\\n sol: " << start.obj << " " << start.pos << "   end: " << current.obj << " " << current.pos << "   width=" << w << endl;
 	    return current;
 	} else if( o->isText() )
 	    tmpW += static_cast<RenderText *>(o)->width(current.pos, 1);
@@ -852,10 +851,12 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		m_height = fb;
 		width = lineWidth(m_height);
 	    } else if( !w && current != start ) {
-		//kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+		kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << last.obj << " " << last.pos << "   width=" << w << endl;
 		return last;
-	    } else
+	    } else {
+		kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 		return lBreak;
+	    }
 	}
 	last = current;
 	++current;

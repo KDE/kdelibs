@@ -249,6 +249,12 @@ void RenderFlow::layout( bool deep )
     m_height = 0;
     m_clearStatus = CNONE;
 
+    // empty rendering objects should have no height...
+    if(!m_first) {
+	setLayouted();
+	return;
+    }
+    
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline())
 	layoutInlineChildren();
