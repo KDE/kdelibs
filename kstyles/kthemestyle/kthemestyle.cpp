@@ -1603,29 +1603,52 @@ void KThemeStyle::drawControl( ControlElement element,
             }
         case CE_ProgressBarContents:
             {
+                const QProgressBar* pb = (const QProgressBar*)widget;
+                QRect cr = subRect(SR_ProgressBarContents, widget);
+                double progress = pb->progress();
                 bool reverse = QApplication::reverseLayout();
-                const QProgressBar* br = ( const QProgressBar* ) widget;
-                QRect cr = subRect( SR_ProgressBarContents, widget );
-                cr.rect(&x,&y,&w,&h);
-                float prog = 1.0;
-                if ( br->totalSteps() )
-                    prog = ( float ) br->progress() / br->totalSteps();
-                if ( prog < 0 )
-                    prog = 0;
-                //p2.end();
-                int wp = (int)(w * prog);
+                int steps = pb->totalSteps();
+                
+                int pstep = 0;
 
-                if ( !reverse )
-                    drawBaseButton( p, x, y, wp, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
-                else
+                if (!cr.isValid())
+                        return;
+
+                // Draw progress bar
+                if (progress > 0 || steps == 0)
                 {
-                    //TODO:Optimize
-                    QPixmap buf( wp, h );
-                    QPainter p2( &buf );
-                    drawBaseButton( &p2, 0, 0, wp, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
-                    p2.end();
-                    QPixmap mirroredPix = QPixmap( buf.convertToImage().mirror( true, false ) );
-                    bitBlt( p->device(), x + ( w - wp ), y, &mirroredPix );
+                        double pg = (steps == 0) ? 0.1 : progress / steps;
+                        int width = QMIN(cr.width(), (int)(pg * cr.width()));
+                        if (steps == 0)
+                        { //Busy indicator
+
+                                if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
+
+                                int remWidth = cr.width() - width; //Never disappear completely
+                                if (remWidth <= 0) remWidth = 1; //Do something non-crashy when too small...                                       
+
+                                pstep =  int(progress) % ( 2 *  remWidth ); 
+
+                                if ( pstep > remWidth )
+                                {
+                                        //Bounce about.. We're remWidth + some delta, we want to be remWidth - delta...                                           
+                                        // - ( (remWidth + some delta) - 2* remWidth )  = - (some deleta - remWidth) = remWidth - some delta..
+                                        pstep = - (pstep - 2 * remWidth );                                                                                      
+                                }
+                        }
+                                                                           
+                        if ( !reverse )
+                                drawBaseButton( p, x + pstep, y, width, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
+                        else
+                        {
+                                //TODO:Optimize
+                                QPixmap buf( width, h );
+                                QPainter p2( &buf );
+                                drawBaseButton( &p2, 0, 0, width, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
+                                p2.end();
+                                QPixmap mirroredPix = QPixmap( buf.convertToImage().mirror( true, false ) );
+                                bitBlt( p->device(), x + w - width - pstep, y, &mirroredPix );
+                        }
                 }
 
                 handled = true;
