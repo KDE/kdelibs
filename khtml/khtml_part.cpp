@@ -61,7 +61,6 @@
 #include <klibloader.h>
 #include <ktrader.h>
 #include <kparts/partmanager.h>
-#include <kcharsets.h>
 #include <kxmlgui.h>
 #include <kcursor.h>
 
@@ -752,6 +751,9 @@ void KHTMLPart::write( const char *str, int len )
     len = strlen( str );
 
   QString decoded = d->m_decoder->decode( str, len );
+
+  if(decoded.isNull()) return;
+  
   if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
   const QTextCodec *c = d->m_decoder->codec();
   if(!d->m_settings->charset == QFont::Unicode)

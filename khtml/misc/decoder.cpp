@@ -29,6 +29,9 @@ using namespace khtml;
 #include "htmlhashes.h"
 #include <qregexp.h>
 
+#include <kglobal.h>
+#include <kcharsets.h>
+
 #include <ctype.h>
 #include <kdebug.h>
 
@@ -50,20 +53,9 @@ void Decoder::setEncoding(const char *_encoding)
     enc = _encoding;
     if(enc.isNull() || enc.isEmpty())
 	enc = "iso8859-1";
-    m_codec = QTextCodec::codecForName(enc);
-    if(!m_codec) {
-	if(!strcmp(_encoding, "windows-1252"))
-	    m_codec = QTextCodec::codecForName("iso8859-1");
-	// ### we need to write real decoders for these codepages, as
-	// they contain some additional chars not in iso8859-6/8
-	else if(!strcmp(_encoding, "windows-1255"))
-	    m_codec = QTextCodec::codecForName("iso8859-8-i");
-	else if(!strcmp(_encoding, "windows-1256"))
-	    m_codec = QTextCodec::codecForName("iso8859-6");
-	else // unknown code, default to latin1
-	    m_codec = QTextCodec::codecForName("iso8859-1");
-    }
-    else if(m_codec->mibEnum() == 11) // iso8859-8 (visually ordered)
+    m_codec = KGlobal::charsets()->codecForName(enc);
+
+    if(m_codec->mibEnum() == 11) // iso8859-8 (visually ordered)
     {
 	m_codec = QTextCodec::codecForName("iso8859-8-i");
 	visualRTL = true;
@@ -187,7 +179,7 @@ QString Decoder::decode(const char *data, int len)
 		else
 		    ptr++;
 	    }
-	    return 0;
+	    return QString::null;
 	}
     }
 

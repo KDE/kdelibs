@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     doc->enableJScript(true);
     doc->enableJava(true);
-//    doc->setCharset("unicode");
+    doc->setCharset("unicode");
 
     //doc->setFollowsLinks(false);
 
