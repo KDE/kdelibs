@@ -392,7 +392,7 @@ QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
 
   QString url, protocol, datetime;
   if ( reqUrl ) {
-    url = reqUrl->prettyURL();
+    url = reqUrl->htmlURL();
     protocol = reqUrl->protocol();
   } else {
     url = i18n( "(unknown)" );
