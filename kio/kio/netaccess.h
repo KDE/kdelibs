@@ -190,6 +190,7 @@ private:
     static QStringList* tmpfiles;
     /** Whether the download succeeded or not */
     bool bJobOK;
+    friend class I_like_this_class;
 
 private slots:
     void slotResult( KIO::Job * job );
