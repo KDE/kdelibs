@@ -945,6 +945,13 @@ bool TCPSlaveBase::isConnectionValid()
 bool TCPSlaveBase::waitForResponse( int t )
 {
 if (m_bIsSSL) {
+    if (t < 0) t *= -1;
+    t *= 10;
+    while (t--) {
+	if (d->kssl->pending()) return true;
+	usleep(100000);    // a tenth of a second
+    }
+    return false;
 } else {
     fd_set rd, wr;
     struct timeval timeout;
