@@ -78,7 +78,7 @@ bool KPrinterPropertyDialog::synchronize()
 		it.current()->setOptions(m_options);
 		if (!it.current()->isValid(msg))
 		{
-			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("Printer configuration"));
+			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("Printer Configuration"));
 			return false;
 		}
 	}
@@ -138,7 +138,7 @@ void KPrinterPropertyDialog::setupPrinter(KMPrinter *pr, QWidget *parent)
 	KPrinterPropertyDialog	dlg(pr,parent,"PropertyDialog");
 	KMFactory::self()->uiManager()->setupPropertyDialog(&dlg);
 	if (dlg.m_pages.count() == 0)
-		KMessageBox::information(parent,i18n("No configurable options for that printer!"),i18n("Printer configuration"));
+		KMessageBox::information(parent,i18n("No configurable options for that printer!"),i18n("Printer Configuration"));
 	else if (dlg.exec())
 	{
 		QMap<QString,QString>	opts;

@@ -417,7 +417,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
     {
       KMessageBox::error(this,
 	 i18n("Cannot initialize local variables."),
-	 i18n("Out of memory"));
+	 i18n("Out of Memory"));
       kapp->quit(); // It is critical, but will possibly never happen.
     }
   connect(data, SIGNAL(fileChanged()), SLOT(dataFileChanged()));
@@ -490,14 +490,14 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		      KMessageBox::information
 			(this,
 			 i18n("Cannot create backup file (permission denied)."),
-			 i18n("File error"));
+			 i18n("File Error"));
 		    }
 		} else {
 		  KMessageBox::error
 		    (this,
 		     i18n("Cannot open backup file for "
 			  "writing (permission denied)."),
-		     i18n("File error"));
+		     i18n("File Error"));
 		}
 	      // ----- reset the filename:
 	      if(!data->setFileName(temp, true, true))
@@ -506,7 +506,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		    (this,
 		     i18n("Critical error:\n"
 			  "Permissions changed in local directory!"),
-		     i18n("File error"));
+		     i18n("File Error"));
 		  closeFile(false);
 		  state=PermDenied;
 		} else {
@@ -576,7 +576,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	           "Close it if you intended to do so.\n"
 	           "Your file will be closed by default.")
 		 .arg(oldfile.absFilePath()),
-	      i18n("File error"),
+	      i18n("File Error"),
 	      i18n("&Close"), i18n("&Save")))
 	    {
 	    case 1: // save
@@ -584,7 +584,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 		{
 		  KMessageBox::information(this,
 		     i18n("Cannot save the file; will close it now."),
-		     i18n("File error"));
+		     i18n("File Error"));
 		  closeFile(false);
 		  state=NoFile;
 		  rc=PermDenied;
@@ -611,7 +611,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	    } else {
 	      KMessageBox::information(this,
 		 i18n("Could not load the file."),
-		 i18n("File error"));
+		 i18n("File Error"));
 	      closeFile(false);
 	      emit(setStatus(i18n("No such file.")));
 	      rc=NoSuchFile;
@@ -621,7 +621,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	     (this,
 	      i18n("The file\n\"")
 	      +fname+"\"\n"+
-	      i18n(" cannot be found. Create a new one?"), i18n("No such file"),
+	      i18n(" cannot be found. Create a new one?"), i18n("No Such File"),
 	      i18n("OK"), i18n("Cancel"))==0)
 	    {
 	      if(createNew(fname)==NoError)
@@ -823,7 +823,7 @@ AddressBook::configFileChanged()
     {
       KMessageBox::error(this,
 	 i18n("Cannot reload configuration file!"),
-	 i18n("File error"));
+	 i18n("File Error"));
     } else {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) << "AddressBook::configFileChanged: "
 	    "config file reloaded.\n";
@@ -1065,7 +1065,7 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
     {
       KMessageBox::error(this,
 	 i18n("Cannot initialize local variables."),
-	 i18n("Out of memory"));
+	 i18n("Out of Memory"));
       kapp->quit(); // It is critical, but will possibly never happen.
       return InternError; // shut the compiler up...
     }
@@ -1222,7 +1222,7 @@ AddressBook::lock()
       KMessageBox::information(this,
 	 i18n("The file you wanted to change could not be locked.\n"
 	      "It is probably in use by another application or read-only."),
-		 i18n("File error"));
+		 i18n("File Error"));
       return PermDenied;
     }
   // ###########################################################################
@@ -1598,7 +1598,7 @@ AddressBook::createNew(const QString& filename)
       KMessageBox::error(this,
 	 i18n("Cannot find kab's template file.\n"
 	      "You cannot create new files."),
-	 i18n("File error"));
+	 i18n("File Error"));
       return InternError;
     }
   if(!db.load())
@@ -1606,7 +1606,7 @@ AddressBook::createNew(const QString& filename)
       KMessageBox::error(this,
 	 i18n("Cannot read kab's template file.\n"
 	      "You cannot create new files."),
-	 i18n("Format error"));
+	 i18n("Format Error"));
 
       return InternError;
     }
@@ -1616,7 +1616,7 @@ AddressBook::createNew(const QString& filename)
 	 i18n("Cannot create the file\n\"")
 	 +filename+"\"\n"+
 	 i18n("Could not create the new file."),
-		 i18n("File error"));
+		 i18n("File Error"));
       return PermDenied;
     }
   if(!db.save())
@@ -1625,7 +1625,7 @@ AddressBook::createNew(const QString& filename)
 	 i18n("Cannot save the file\n\"")
 	 +filename+"\"\n"+
 	 i18n("Could not create the new file."),
-		 i18n("File error"));
+		 i18n("File Error"));
       return InternError;
     }
   // -----
@@ -1650,7 +1650,7 @@ AddressBook::createConfigFile()
       KMessageBox::error(this,
 	 i18n("Cannot find kab's configuration template file.\n"
 	      "kab cannot be configured."),
-	 i18n("File error"));
+	 i18n("File Error"));
 
       return InternError;
     }
@@ -1659,7 +1659,7 @@ AddressBook::createConfigFile()
       KMessageBox::error(this,
 	 i18n("Cannot read kab's configuration template file.\n"
 	      "kab cannot be configured."),
-	 i18n("File error"));
+	 i18n("File Error"));
       return InternError;
     }
   if(!db.setFileName(filename, false, false))
@@ -1668,7 +1668,7 @@ AddressBook::createConfigFile()
 	 i18n("Cannot create the file\n\"")
 	 +filename+"\"\n"+
 	 i18n("Could not create the new configuration file."),
-	 i18n("File error"));
+	 i18n("File Error"));
       return PermDenied;
     }
   if(!db.save())
@@ -1677,7 +1677,7 @@ AddressBook::createConfigFile()
 	 i18n("Cannot save the file\n\"")
 	 +filename+"\"\n"+
 	 i18n("Could not create the new configuration file."),
-	 i18n("File error"));
+	 i18n("File Error"));
       return InternError;
     }
   // -----
@@ -1700,14 +1700,14 @@ AddressBook::loadConfigFile()
 	     i18n("Cannot load kab's local configuration file.\n"
 		  "There may be a formatting error.\n"
 		  "kab cannot be configured."),
-	     i18n("File error"));
+	     i18n("File Error"));
 	  return InternError;
 	}
     } else {
       KMessageBox::information(this,
 	 i18n("Cannot find kab's local configuration file.\n"
 	      "kab cannot be configured."),
-	 i18n("File error"));
+	 i18n("File Error"));
       return NoSuchFile;
     }
   // ###########################################################################

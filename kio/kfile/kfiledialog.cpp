@@ -635,7 +635,7 @@ void KFileDialog::slotOk()
          !selectedURL.isLocalFile() ) {
         KMessageBox::sorry( d->mainWidget,
                             i18n("You can only select local files."),
-                            i18n("Remote files not accepted") );
+                            i18n("Remote Files not Accepted") );
         return;
     }
 
@@ -1364,7 +1364,7 @@ KURL::List& KFileDialog::parseSelectedURLs() const
             d->urlList.append( u );
         else
             KMessageBox::error( d->mainWidget,
-                                i18n("The chosen filename(s) don't\nappear to be valid."), i18n("Invalid filename(s)") );
+                                i18n("The chosen filename(s) don't\nappear to be valid."), i18n("Invalid Filename(s)") );
     }
 
     else
@@ -1394,7 +1394,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
 
     if ( (count % 2) == 1 ) { // odd number of " -> error
         QWidget *that = const_cast<KFileDialog *>(this);
-        KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in double quotes.").arg(line), i18n("Filename error"));
+        KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in double quotes.").arg(line), i18n("Filename Error"));
         return urls;
     }
 

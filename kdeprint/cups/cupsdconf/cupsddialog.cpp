@@ -187,7 +187,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	filename_ = filename;
 	if (!conf_->loadFromFile(filename_))
 	{
-		KMessageBox::error(this, i18n("Error while loading configuration file !"), i18n("CUPS configuration error"));
+		KMessageBox::error(this, i18n("Error while loading configuration file !"), i18n("CUPS Configuration Error"));
 		return false;
 	}
 	bool	ok(true);
@@ -196,7 +196,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 		ok = pagelist_.current()->loadConfig(conf_, msg);
 	if (!ok)
 	{
-		KMessageBox::error(this, msg, i18n("CUPS configuration error"));
+		KMessageBox::error(this, msg, i18n("CUPS Configuration Error"));
 		return false;
 	}
 	return true;
@@ -239,7 +239,7 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 
 	if (!errormsg.isEmpty())
 	{
-		KMessageBox::error(parent, errormsg, i18n("CUPS configuration error"));
+		KMessageBox::error(parent, errormsg, i18n("CUPS Configuration Error"));
 	}
 	else
 	{
@@ -270,7 +270,7 @@ void CupsdDialog::slotApply()
 		else ok = restartServer(msg);
                 if (!ok)
                 {
-			KMessageBox::error(this, msg, i18n("CUPS configuration error"));
+			KMessageBox::error(this, msg, i18n("CUPS Configuration Error"));
                 }
         }
 }

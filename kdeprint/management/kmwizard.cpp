@@ -190,7 +190,7 @@ void KMWizard::setCurrentPage(int ID, bool back)
 	KMWizardPage	*page = m_pagepool.find(ID);
 	if (!page)
 	{
-		KMessageBox::error(this,i18n("Unable to find the requested page."),i18n("Add printer wizard"));
+		KMessageBox::error(this,i18n("Unable to find the requested page."),i18n("Add Printer Wizard"));
 		return;
 	}
 

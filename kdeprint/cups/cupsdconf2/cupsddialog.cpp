@@ -163,7 +163,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	filename_ = filename;
 	if (!conf_->loadFromFile(filename_))
 	{
-		KMessageBox::error(this, i18n("Error while loading configuration file !"), i18n("CUPS configuration error"));
+		KMessageBox::error(this, i18n("Error while loading configuration file !"), i18n("CUPS Configuration Error"));
 		return false;
 	}
 	if (conf_->unknown_.count() > 0)
@@ -174,7 +174,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 			msg += ((*it).first + " = " + (*it).second + "<br>");
 		msg.prepend("<p>" + i18n("Some options were not recognized by this configuration tool. "
 		                          "They will be left untouched and you won't be able to change them.") + "</p>");
-		KMessageBox::sorry(this, msg, i18n("Unrecognized options"));
+		KMessageBox::sorry(this, msg, i18n("Unrecognized Options"));
 	}
 	bool	ok(true);
 	QString	msg;
@@ -182,7 +182,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 		ok = pagelist_.current()->loadConfig(conf_, msg);
 	if (!ok)
 	{
-		KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS configuration error"));
+		KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS Configuration Error"));
 		return false;
 	}
 	return true;
@@ -237,7 +237,7 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 
 	if (!errormsg.isEmpty())
 	{
-		KMessageBox::error(parent, errormsg.prepend("<qt>").append("</qt>"), i18n("CUPS configuration error"));
+		KMessageBox::error(parent, errormsg.prepend("<qt>").append("</qt>"), i18n("CUPS Configuration Error"));
 	}
 	else
 	{
@@ -284,7 +284,7 @@ void CupsdDialog::slotOk()
 		}
 		if (!ok)
 		{
-			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS configuration error"));
+			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS Configuration Error"));
 		}
 		else
 			KDialogBase::slotOk();
