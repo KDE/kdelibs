@@ -99,7 +99,13 @@ void KJavaAppletServer::freeJavaServer()
         //instead of immediately quitting here, set a timer to kill us
         //if there are still no servers- give us one minute
         //this is to prevent repeated loading and unloading of the jvm
-        QTimer::singleShot( 60*1000, self, SLOT( checkShutdown() ) );
+        KConfig config( "konquerorrc", true );
+        config.setGroup( "Java/JavaScript Settings" );
+        if( config.readBoolEntry( "ShutdownAppletServer", true )  )
+        {
+            int value = config.readNumEntry( "AppletServerTimeout", 60 );
+            QTimer::singleShot( value*1000, self, SLOT( checkShutdown() ) );
+        }
     }
 }
 
