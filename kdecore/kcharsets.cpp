@@ -294,10 +294,11 @@ const KCharsetConversionResult & KCharsetConverter::convert(const char *str){
   return result;
 }
 
-static QList<KCharsetConversionResult> resultList;
 
 const QList<KCharsetConversionResult> & KCharsetConverter::multipleConvert(
                                                              const char *str){
+static QList<KCharsetConversionResult> resultList;
+
   resultList.setAutoDelete(TRUE);
   resultList.clear();
   data->convert(str,resultList);
@@ -482,15 +483,16 @@ QFont & KCharsetConversionResult::setQFont(QFont &font)const{
          ->getCharsets()->setQFont(font,cCharset->name);
 }
 
-static KCharsetConversionResult convResult;
 
 const KCharsetConversionResult & KCharsets::convert(unsigned ch){
+static KCharsetConversionResult convResult;
   
   data->convert(ch,convResult);
   return convResult;
 }
 
 const KCharsetConversionResult & KCharsets::convertTag(const char *tag){
+static KCharsetConversionResult convResult;
 
   int tmp;
   data->convertTag(tag,convResult,tmp);
@@ -499,6 +501,7 @@ const KCharsetConversionResult & KCharsets::convertTag(const char *tag){
  
 const KCharsetConversionResult & KCharsets::convertTag(const char *tag
 							,int &l){
+static KCharsetConversionResult convResult;
 
   data->convertTag(tag,convResult,l);
   return convResult;

@@ -418,11 +418,11 @@ const char * KCharsetConverterData::convert(const char * str
   return 0;
 }
 
-static KCharsetConversionResult convResult;
 
 const KCharsetConversionResult & KCharsetConverterData::convert(unsigned code){
 unsigned chr;
 const unsigned *ptr;
+static KCharsetConversionResult convResult;
 
    kchdebug("KCCS:convert(code) ");
 
