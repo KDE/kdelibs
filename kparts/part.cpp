@@ -15,6 +15,7 @@
 #include <kmessagebox.h>
 #include <kio/job.h>
 #include <kstddirs.h>
+#include <kfiledialog.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -341,23 +342,24 @@ void ReadWritePart::setReadWrite( bool readwrite )
 
 void ReadWritePart::setModified( bool modified )
 {
+  kdDebug() << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")" << endl;
+  if ( !m_bReadWrite && modified )
+  {
+      kDebugError( 1000, "Can't set a read-only document to 'modified' !" );
+      return;
+  }
   m_bModified = modified;
 }
 
 void ReadWritePart::setModified()
 {
-  if ( !m_bReadWrite )
-  {
-      kDebugError( 1000, "Can't set a read-only document to 'modified' !" );
-      return;
-  }
   setModified( true );
 }
 
 bool ReadWritePart::closeURL()
 {
   abortLoad(); //just in case
-  if ( m_bModified && m_bReadWrite && !m_url.isEmpty() )
+  if ( m_bModified && m_bReadWrite )
   {
     int res = KMessageBox::warningYesNoCancel( 0L,
             i18n( "The document has been modified\nDo you want to save it ?" ));
@@ -365,7 +367,13 @@ bool ReadWritePart::closeURL()
     switch(res) {
     case KMessageBox::Yes :
       m_bClosing = true; // remember to clean up the temp file
-      return save();
+      if (m_url.isEmpty())
+      {
+          KURL url = KFileDialog::getSaveURL();
+          if (url.isEmpty()) return false;
+          return saveAs( url ) && ReadOnlyPart::closeURL();
+      }
+      return save() && ReadOnlyPart::closeURL();
     case KMessageBox::No :
       return true;
     default : // case KMessageBox::Cancel :

@@ -3,7 +3,7 @@
 INCLUDES= -I$(srcdir)/../ -I$(top_srcdir)/kio/ -I$(top_srcdir)/libltdl \
 $(all_includes)
 libkparts_la_LDFLAGS = -version-info 1:0:0 -no-undefined
-libkparts_la_LIBADD  = $(LIB_KIO)
+libkparts_la_LIBADD  = $(LIB_KFILE) $(LIB_KIO)
 
 SUBDIRS = .
 
