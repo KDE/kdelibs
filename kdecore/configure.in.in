@@ -35,6 +35,7 @@ AC_CHECK_HEADERS(netinet/in.h,
     AC_MSG_CHECKING([for struct sockaddr_in6])
     AC_TRY_COMPILE(
       [
+	#include <stdlib.h>
 	#include <netinet/in.h>
 	struct sockaddr_in6 sin6;
       ],
@@ -49,6 +50,7 @@ AC_CHECK_HEADERS(netinet/in.h,
 	AC_MSG_CHECKING([if struct sockaddr_in6 has member sin6_scope_id])
 	AC_TRY_COMPILE(
 	  [
+	    #include <stdlib.h>
 	    #include <netinet/in.h>
 	    struct sockaddr_in6 sin6;
 	  ],
