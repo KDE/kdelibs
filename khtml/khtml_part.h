@@ -82,6 +82,7 @@ namespace khtml
 namespace KJS {
     class Window;
     class WindowFunc;
+    class ExternalFunc;
     class JSEventListener;
     class DOMDocument;
     class SourceFile;
@@ -167,6 +168,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class khtml::RenderPartObject;
   friend class KJS::Window;
   friend class KJS::WindowFunc;
+  friend class KJS::ExternalFunc;
   friend class KJS::JSEventListener;
   friend class KJS::DOMDocument;
   friend class KJS::SourceFile;
