@@ -13,8 +13,8 @@
 1205    kiconcontainer (to be moved)
 1300	kfm (kioslave)
 
-1400	khelpcenter (khelpcenter server)
-1401	khelpcenterclient (khelpcenter client)
+1400	khelpcenter (kdebase)
+1401	khelpcenterclient (kdebase)
 1501	khexedit (kdeutils)
 1901	kfind (kdebase)
 1902	kfind (KfindWindow::updateResults)
