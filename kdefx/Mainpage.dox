@@ -1,0 +1,32 @@
+/**
+ * \mainpage The KDEfx Library
+ *
+ * This library provides various classes related to image and pixmap
+ * manipulation, a class that provides information about CPU support
+ * for architecture specific features, as well as the base class for
+ * the %KDE widget styles.
+ *
+ * The two graphical effects classes, KImageEffect and KPixmapEffect,
+ * provide static methods for applying graphical effects to images and
+ * pixmaps respectively. KImageEffect also provides highly optimized
+ * methods for compositing images.
+ *
+ * A class that's related to those two is KPixmapSplitter, which is
+ * used for calculating the positions of items in pixmaps with
+ * multiple items arranged in rows and columns.
+ * Another is KPixmap, which extends QPixmap with the capability to
+ * ensure that a 256 color pixmap uses a specific system wide
+ * palette.
+ *
+ * The KCPUInfo class provides a means for applications to obtain
+ * information at runtime about processor support for certain
+ * architecture extensions that are useful when processing images,
+ * such as MMX, SSE, 3DNow! and AltiVec.
+ *
+ * KStyle is the base class for the %KDE widget styles. It simplifies
+ * and extends the QStyle API in order to make style coding easier.
+ * It also provides an internal menu transparency and drop shadow
+ * engine, which means that all styles inheriting this class will
+ * automatically support those features.
+ */
+

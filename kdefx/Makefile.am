@@ -38,5 +38,8 @@ libkdefx_la_SOURCES = kpixmap.cpp kpixmapsplitter.cpp \
 
 METASOURCES = AUTO
 
+EXTRA_DIST = Mainpage.dox
+
 DOXYGEN_REFERENCES = kdecore
 include ../admin/Doxyfile.am
+
