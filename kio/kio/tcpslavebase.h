@@ -348,6 +348,9 @@ protected:
     // For prompting for the certificate to use
     void certificatePrompt();
 
+    // Did the user abort (as the reason for connectToHost returning false)
+    bool userAborted() const;
+
     int m_iSock;
     bool m_bIsSSL;
     unsigned short int m_iPort, m_iDefaultPort;

@@ -63,7 +63,7 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
 
-  TcpSlaveBasePrivate() : rblockSz(256), militantSSL(false) {}
+  TcpSlaveBasePrivate() : rblockSz(256), militantSSL(false), userAborted(false) {}
   ~TcpSlaveBasePrivate() {}
 
   KSSL *kssl;
@@ -83,6 +83,7 @@ public:
   bool needSSLHandShake;
   bool militantSSL;              // If true, we just drop a connection silently
                                  // if SSL certificate check fails in any way.
+  bool userAborted;
   MetaData savedMetaData;
 };
 
@@ -287,6 +288,8 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     unsigned short int p;
     KExtendedSocket ks;
 
+    d->userAborted = false;
+
     //  - leaving SSL - warn before we even connect
     if (metaData("ssl_activate_warnings") == "TRUE" &&
                metaData("ssl_was_in_use") == "TRUE" &&
@@ -301,8 +304,10 @@ bool TCPSlaveBase::connectToHost( const QString &host,
                                         "observe your data in transit."),
                                    i18n("Security information"),
                                    i18n("Continue Loading") );
-          if ( result == KMessageBox::Cancel )
+          if ( result == KMessageBox::Cancel ) {
+             d->userAborted = true;
              return false;
+          }
        }
     }
 
@@ -1161,4 +1166,10 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     d->savedMetaData = mOutgoingMetaData;
     return true;
 }
+
+
+bool TCPSlaveBase::userAborted() const {
+   return d->userAborted;
+}
+
 
