@@ -71,7 +71,6 @@ ushort HTMLTableElementImpl::id() const
 
 NodeImpl* HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 {
-    kdDebug() << "HTMLTableElementImpl::setCaption" << endl;
     int exceptioncode;
     NodeImpl* r;
     if(tCaption)
@@ -84,7 +83,6 @@ NodeImpl* HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 
 NodeImpl* HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 {
-    kdDebug() << "HTMLTableElementImpl::setTHead" << endl;
     int exceptioncode;
     NodeImpl* r;
     if(head)
@@ -101,7 +99,6 @@ NodeImpl* HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 
 NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 {
-    kdDebug() << "HTMLTableElementImpl::setTFoot" << endl;
     int exceptioncode;
     NodeImpl* r;
     if(foot)
@@ -116,7 +113,6 @@ NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 
 HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
 {
-    kdDebug() << "*HTMLTableElementImpl::createTHead" << endl;
     if(!head)
     {
 	int exceptioncode;
@@ -142,7 +138,6 @@ void HTMLTableElementImpl::deleteTHead(  )
 
 HTMLElementImpl *HTMLTableElementImpl::createTFoot(  )
 {
-    kdDebug() << "*HTMLTableElementImpl::createTFoot" << endl;
     if(!foot)
     {
 	int exceptioncode;
@@ -166,7 +161,6 @@ void HTMLTableElementImpl::deleteTFoot(  )
 
 HTMLElementImpl *HTMLTableElementImpl::createCaption(  )
 {
-    kdDebug() << "*HTMLTableElementImpl::createCaption" << endl;
     if(!tCaption)
     {
 	int exceptioncode;
