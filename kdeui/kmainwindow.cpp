@@ -877,12 +877,12 @@ void KMainWindow::restoreWindowSize( KConfig * config )
         if ( !size.isEmpty() ) {
             int state = ( size.width() > desk.width() ? NET::MaxHoriz : 0 )
                         | ( size.height() > desk.height() ? NET::MaxVert : 0 );
-            if( state & NET::Max )
+            if(( state & NET::Max ) == NET::Max )
                 ; // no resize
-            else if( state & NET::MaxHoriz )
+            else if(( state & NET::MaxHoriz ) == NET::MaxHoriz )
                 resize( width(), size.height());
-            else if( state & NET::MaxVert )
-                resize( size.height(), height());
+            else if(( state & NET::MaxVert ) == NET::MaxVert )
+                resize( size.width(), height());
             else
                 resize( size );
             // QWidget::showMaximized() is both insufficient and broken
