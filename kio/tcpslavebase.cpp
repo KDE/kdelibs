@@ -598,6 +598,7 @@ int TCPSlaveBase::verifyCertificate()
     bool isChild = false;
     QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
     bool _IPmatchesCN = false;
+    int result;
 
     if (!d->cc) d->cc = new KSSLCertificateCache;
 
@@ -662,7 +663,6 @@ int TCPSlaveBase::verifyCertificate()
           break;
          case KSSLCertificateCache::Prompt:
            {
-           int result;
              do {
                 if (ksv == KSSLCertificate::Ok && !_IPmatchesCN) {
                         QString msg = i18n("The IP address of the host %1 "
