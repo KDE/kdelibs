@@ -514,8 +514,11 @@ HTMLImage::~HTMLImage()
     if ( pixmap && !cached )
 	delete pixmap;
 
-	delete pCache;
-	pCache = NULL;
+	if( pCache != NULL )
+	  {
+		delete pCache;
+		pCache = NULL;
+	  }
 }
 
 //-----------------------------------------------------------------------------
