@@ -357,14 +357,18 @@ void HTMLTokenizer::write( const char *str )
 	        // Check for &abc12 sequence
 	        if (!isalnum(*src))
 	        {
-                    int len;
+	            int len;
 		    charEntity = false;
-	    	    searchBuffer[ searchCount+1] = '\0';
-		    res = charsets->convertTag(searchBuffer+1, len).copy();
-		    if (len <= 0)
-		    {
+		    // check trailing char (only ";" is good HTML, but
+		    // accept ' ', '&' and EOL too...) (David)
+                    if (strchr("; &\r\n", searchBuffer[searchCount+1])) {
+	              searchBuffer[ searchCount+1] = '\0';
+	              res = charsets->convertTag(searchBuffer+1, len).copy();
+	              if (len <= 0)
+	              {
 		    	res = 0;
-		    }
+	              }
+	           }
 	        }
 	    }
 	    
