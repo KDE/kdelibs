@@ -199,7 +199,7 @@ public:
      * determined by the XML UI framework).
      */
     void setEnableToolBar( KToolBar::BarStatus stat = KToolBar::Toggle,
-                           const QString& name = QString::fromLocal8Bit("mainToolBar") );
+                           const QString& name = QString::fromLatin1("mainToolBar") );
 
     /**
      * Set the width of the view frame.
