@@ -105,7 +105,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
   if (useKderc) {
     QStringList kdercs = KGlobal::dirs()->findAllResources("config", "kdeglobals");
     kdercs += KGlobal::dirs()->findAllResources("config", "system.kdeglobals");
-    if (access("/etc/kderc", R_OK)) 
+    if (!access("/etc/kderc", R_OK)) 
       kdercs += "/etc/kderc";
 
     QStringList::ConstIterator it;
