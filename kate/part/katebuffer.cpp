@@ -17,6 +17,10 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "katebuffer.h"
 #include "katebuffer.moc"
 
@@ -505,8 +509,15 @@ bool KateBuffer::openFile (const QString &m_file)
   // here we feed the loader with info
   KateBufFileLoader loader (m_file);
 
-  if ( !loader.file.open( IO_ReadOnly ) ||
-       (m_file.startsWith("/dev/") && !loader.file.isDirectAccess()) )
+  bool ok = false;
+  struct stat sbuf;
+  if (stat(QFile::encodeName(m_file), &sbuf) == 0)
+  {
+    if (S_ISREG(sbuf.st_mode) && loader.file.open( IO_ReadOnly ))
+      ok = true;
+  }
+
+  if (!ok)
   {
     clear();
     return false; // Error
