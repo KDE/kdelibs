@@ -249,14 +249,20 @@ public final class KJASAppletClassLoader
         Main.debug( dbgID + "loadClass, class name = " + name );
         //We need to be able to handle foo.class, so strip off the suffix
         String fixed_name = name;
-        if( name.endsWith( ".class" ) )
+        // need to convert to lowercase to match the suffix
+        // people from the windoze world don't know the difference
+        // see http://www.zdftext.de/
+        String lowerName = name.toLowerCase();
+        if( lowerName.endsWith( ".class" ) )
         {
-            fixed_name = name.substring( 0, name.lastIndexOf( ".class" ) );
+            int max = lowerName.lastIndexOf( ".class" );
+            fixed_name = name.substring( 0, max);
         }
-        else if( name.endsWith( ".java" ) )
+        else if( lowerName.endsWith( ".java" ) )
         {
             // be smart, some applets specify code=XyzClass.java
-            fixed_name = name.substring( 0, name.lastIndexOf( ".java" ) );
+            int max = lowerName.lastIndexOf( ".java" );
+            fixed_name = name.substring( 0, max);
         }
         Object o = loadedClasses.get(fixed_name);
         if (o != null) {
