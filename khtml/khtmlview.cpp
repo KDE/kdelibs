@@ -551,6 +551,7 @@ void KHTMLView::tripleClickTimeout()
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
+
     if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
@@ -1503,6 +1504,7 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
+
     if ( ( e->state() & ShiftButton ) == ShiftButton )
     {
         emit zoomView( e->delta() );
@@ -1520,7 +1522,12 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
     else {
         d->scrollBarMoved = true;
         QScrollView::viewportWheelEvent( e );
+
+        QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->state() );
+	emit viewportMouseMoveEvent ( tempEvent );
+	delete tempEvent;
     }
+
 }
 #endif
 
