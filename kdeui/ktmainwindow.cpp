@@ -607,14 +607,16 @@ bool KTMainWindow::restore(int number){
 
 bool KTMainWindow::event(QEvent* ev)
 {
+	if ( QWidget::event(ev) ) return TRUE;
     /* We will get a layout hint when the view widget or a bar changes it's
      * size constraines. Since we might have to adjust the window size we
      * call updateGeometry.
      * It has been added thanks to Nicolas Hadacek's hint. CS */
-    if (ev->type() == QEvent::LayoutHint)
-	updateRects();
-
-    return QWidget::event(ev);
+    if (ev->type() == QEvent::LayoutHint) {
+		updateRects();
+		return TRUE;
+	}
+    return FALSE;
 }
 
 void KTMainWindow::resizeEvent(QResizeEvent* )
