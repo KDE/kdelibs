@@ -225,7 +225,6 @@ void KMenuBar::leaveEvent (QEvent *e){
 			    None, sizeAllCursor.handle(),
 			    CurrentTime ) != GrabSuccess);
 	handle->grabMouse(sizeAllCursor);
-	pointerOffset = mapFromGlobal(QCursor::pos());
       }
       return TRUE;
 		//debug ("KMenuBar: moving done");

@@ -1421,7 +1421,6 @@ void KToolBar::mouseMoveEvent(QMouseEvent* /* m */){
 			None, sizeAllCursor.handle(), 
 			CurrentTime ) != GrabSuccess);
     grabMouse(sizeAllCursor);
-    pointerOffset = mapFromGlobal(QCursor::pos());
   }
 }
 
