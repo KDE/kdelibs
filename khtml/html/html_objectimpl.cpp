@@ -57,6 +57,9 @@ void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
     int pos = serviceType.find( ";" );
     if ( pos!=-1 )
         serviceType = serviceType.left( pos );
+    pos = serviceType.find( "-plugin" );
+    if ( pos!=-1 )
+        serviceType = serviceType.left( pos );
     needWidgetUpdate = true;
 }
 
