@@ -71,14 +71,12 @@ public:
     KDirOperatorPrivate() {
         onlyDoubleClickSelectsFiles = false;
         progressDelayTimer = 0L;
-	viewActionSeparator = new KActionSeparator;
 	dirHighlighting = false;
         restorePreview = KFile::Simple;
     }
 
     ~KDirOperatorPrivate() {
         delete progressDelayTimer;
-	delete viewActionSeparator;
     }
 
     int restorePreview; // the view that is restored when preview is toggled
@@ -86,7 +84,6 @@ public:
     QString lastURL; // used for highlighting a directory on cdUp
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
-    KActionSeparator *viewActionSeparator;
 };
 
 KDirOperator::KDirOperator(const KURL& _url,
@@ -175,7 +172,7 @@ void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
         viewActionCollection = m_fileView->actionCollection();
 
         if ( !viewActionCollection->isEmpty() ) {
-            viewActionMenu->insert( d->viewActionSeparator );
+            viewActionMenu->insert( actionSeparator );
             for ( uint i = 0; i < viewActionCollection->count(); i++ )
                 viewActionMenu->insert( viewActionCollection->action( i ));
         }
@@ -1059,7 +1056,7 @@ void KDirOperator::setupActions()
     homeAction = KStdAction::home( this, SLOT( home() ), myActionCollection, "home" );
     homeAction->setText(i18n("Home Directory"));
     reloadAction = KStdAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
-    actionSeparator = new KActionSeparator( this, "separator" );
+    actionSeparator = new KActionSeparator( myActionCollection, "separator" );
     mkdirAction = new KAction( i18n("New Directory..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
     new KAction( i18n( "Delete" ), "editdelete", Key_Delete, this,
@@ -1409,7 +1406,7 @@ void KDirOperator::clearHistory()
 void KDirOperator::slotViewActionAdded( KAction *action )
 {
     if ( viewActionMenu->popupMenu()->count() == 5 ) // need to add a separator
-	viewActionMenu->insert( d->viewActionSeparator );
+	viewActionMenu->insert( actionSeparator );
 
     viewActionMenu->insert( action );
 }
@@ -1419,7 +1416,7 @@ void KDirOperator::slotViewActionRemoved( KAction *action )
     viewActionMenu->remove( action );
 
     if ( viewActionMenu->popupMenu()->count() == 6 ) // remove the separator
-	viewActionMenu->remove( d->viewActionSeparator );
+	viewActionMenu->remove( actionSeparator );
 }
 
 void KDirOperator::slotViewSortingChanged( QDir::SortSpec sort )
