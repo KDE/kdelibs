@@ -147,7 +147,7 @@ public:
    * Use this method to make a client a child client of another client.
    * Usually you don't need to call this method, as it is called
    * automatically when using the second constructor, which takes a
-   * arent argument.
+   * parent argument.
    */
   void insertChildClient( KXMLGUIClient *child );
 
