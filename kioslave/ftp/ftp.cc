@@ -1926,8 +1926,6 @@ void Ftp::get( const KURL & url )
 
   kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
   int processed_size = offset;
-  time_t t_start = time( 0L );
-  time_t t_last = t_start;
 
   char buffer[ 2048 ];
   QByteArray array;
@@ -1973,12 +1971,7 @@ void Ftp::get( const KURL & url )
     }
 
     processed_size += n;
-    time_t t = time( 0L );
-    if ( t - t_last >= 1 ) {
-      processedSize( processed_size );
-      speed( ( processed_size - offset ) / ( t - t_start ) );
-      t_last = t;
-    }
+    processedSize( processed_size );
   }
 
   kdDebug(7102) << "Get: done, sending empty QByteArray" << endl;
@@ -1989,9 +1982,6 @@ void Ftp::get( const KURL & url )
   // proceed even on error
 
   processedSize( m_size );
-  time_t t = time( 0L );
-  if ( t - t_start >= 1 )
-    speed( ( processed_size - offset ) / ( t - t_start ) );
 
   kdDebug(7102) << "Get: emitting finished()" << endl;
   finished();
