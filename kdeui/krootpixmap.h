@@ -106,7 +106,7 @@ public:
     /** @since 3.2
      * @return the fade strength.
      */
-    double fadeStrenght() const { return m_Fade; }
+    double fadeStrength() const { return m_Fade; }
 
 public slots:
     /**
