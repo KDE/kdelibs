@@ -74,7 +74,7 @@ public:
    * If the user does not exist isValid() will return false.
    * @param uid the user id
    */
-  // XXX KDE4: Make this explicit
+  // XXX KDE4: Make this explicit; give parameter as uid_t instead of "long"
   KUser(long uid);
 
   /**
@@ -140,6 +140,7 @@ public:
    * Returns the user id of the user.
    * @return the id of the user or -1 if user is invalid
    */
+  // XXX KDE4: Make this return uid_t
   long uid() const;
 
 
@@ -147,6 +148,7 @@ public:
    * Returns the group id of the user.
    * @return the id of the group or -1 if user is invalid
    */
+  // XXX KDE4: Make this return gid_t
   long gid() const;
 
   /**
@@ -274,6 +276,7 @@ public:
    * If the group does not exist, isValid() will return false.
    * @param gid the group id
    */
+  // XXX KDE4: Give parameter as gid_t instead of "long"
   explicit KUserGroup(long gid);
   
   /**
@@ -336,6 +339,7 @@ public:
    * Returns the group id of the group.
    * @return the group id of the group or -1 if the group is invalid
    */
+  // XXX KDE4: Return gid_t instead of "long"
   long gid() const;
   
   /**
