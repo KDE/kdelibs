@@ -220,13 +220,21 @@ protected:
   QList<Child> m_lstChildren;
   
   /**
-   * Upper left corner of a rectangular selection.
+   * Left corner of a rectangular selection.
    */
-  int rectX1, rectY1;
+  int rectX1;
   /**
-   * Lower right corner of a rectangular selection.
+   * Top border of a rectangular selection.
    */
-  int rectX2, rectY2;
+  int rectY1;
+  /**
+   * Right border of a rectangular selection.
+   */
+  int rectX2;
+  /**
+   * Bottom border of a rectangular selection.
+   */
+  int rectY2;
   /**
    * This flag is TRUE if we are in the middle of a selection using a
    * rectangular rubber band.
