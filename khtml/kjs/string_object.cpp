@@ -206,9 +206,13 @@ KJSO *StringProtoFunc::execute(KJSContext *context)
     n = toInteger(a0);
     m = toInteger(a1);
     d = min(max(n->dVal(), 0), len);
-    d2 = min(max(m->dVal(), 0), len);
-    d2 = max(d2-d, 0);
-    result = new KJSString(s->sVal().substr((int)d, len - (int)d2 - 1));
+    if (a1->isA(Undefined))
+      d2 = len - d;
+    else {
+      d2 = min(max(m->dVal(), 0), len);
+      d2 = max(d2-d, 0);
+    }
+    result = new KJSString(s->sVal().substr((int)d, (int)d2));
     break;
   }
 
