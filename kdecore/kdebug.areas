@@ -201,7 +201,7 @@
 9002        kdevelop (doc tree view)
 9003        kdevelop (class view)
 9004        kdevelop (output views)
-9005        kdevelop (qextmdi)
+9005        kdevelop (class store)
 9006        kdevelop (cvs interface)
 9007        kdevelop (cpp support)
 9008        kdevelop (gcc options)
@@ -224,6 +224,7 @@
 9025        kdevelop (customproject)
 9026        kdevelop (doxygen)
 9027        kdevelop (cvs)
+9028        kdevelop (abbrev)
 
 # toys and games
 10000        amor
