@@ -26,9 +26,13 @@
 
 #include "kcalendarsystemfactory.h"
 
+//#define HEBREW_CALENDAR_SUPPORT
+
 #include "kcalendarsystemgregorian.h"
 #include "kcalendarsystemhijri.h"
-
+#ifdef HEBREW_CALENDAR_SUPPORT
+#include "kcalendarsystemhebrew.h"
+#endif
 
 KCalendarSystemFactory::KCalendarSystemFactory()
 {
@@ -42,26 +46,29 @@ KCalendarSystemFactory::~KCalendarSystemFactory()
 KCalendarSystem *KCalendarSystemFactory::create( const QString &calType,
                                                  const KLocale * locale )
 {
-  if ( calType == "hijri" )
-    return new KCalendarSystemHijri(locale);
-#if 0
+#ifdef HEBREW_CALENDAR_SUPPORT
   if ( calType == "hebrew" )
     return new KCalendarSystemHebrew(locale);
 #endif
-
-  // ### HPB: Should it really be a default here?
-  //if ( calType == "gregorian" )
+  if ( calType == "hijri" )
+    return new KCalendarSystemHijri(locale);
+  if ( calType == "gregorian" )
     return new KCalendarSystemGregorian(locale);
 
-  return 0;
+  kdDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian" << endl;
+
+  // ### HPB: Should it really be a default here?
+  return new KCalendarSystemGregorian(locale);
 }
 
 QStringList KCalendarSystemFactory::calendarSystems()
 {
    QStringList lst;
-   lst.append("gregorian");
+#ifdef HEBREW_CALENDAR_SUPPORT
+   lst.append("hebrew");
+#endif
    lst.append("hijri");
-   //lst.append("hebrew");
+   lst.append("gregorian");
 
    return lst;
 }
