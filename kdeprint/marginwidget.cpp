@@ -26,27 +26,141 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qwhatsthis.h>
 #include <klocale.h>
 #include <kglobal.h>
 
 MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUnit)
 : QWidget(parent, name), m_default(4, 0), m_pagesize( 2 )
 {
+	//WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThisTopMarginWidget = i18n( " <qt> "
+			" <p><b>Top Margin</b></p>. "
+			" <p>This spinbox/text edit field lets you control the top margin of your printout if the printing "
+			" application does not define its margins internally. </p> "
+			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
+			" and Konqueror.. </p>"
+			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" because these applications (or rather their users) are expected to do it by themselves. "
+			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
+			" internally.</p> " 
+			" <br> "
+			" <hr> "
+			" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+			" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o page-top=...      # use values from \"0\" or higher. \"72\" is equal to 1 inch. "
+			" </pre>"
+			" </p> "
+			" </qt>" );
+
+	QString whatsThisBottomMarginWidget = i18n( " <qt> "
+			" <p><b>Bottom Margin</b></p>. "
+			" <p>This spinbox/text edit field lets you control the bottom margin of your printout if the printing "
+			" application does not define its margins internally. </p> "
+			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
+			" and Konqueror. </p>"
+			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" because these applications (or rather their users) are expected to do it by themselves. "
+			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
+			" internally.</p> "
+			" <br> "
+			" <hr> "
+			" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+			" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o page-bottom=...      # use values from \"0\" or higher. \"72\" is equal to 1 inch. "
+			" </pre>"
+			" </qt>" );
+
+	QString whatsThisLeftMarginWidget = i18n( " <qt> "
+			" <p><b>Left Margin</b></p>. "
+			" <p>This spinbox/text edit field lets you control the left margin of your printout if the printing "
+			" application does not define its margins internally. </p> "
+			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
+			" and Konqueror. </p>"
+			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" because these applications (or rather their users) are expected to do it by themselves. "
+			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
+			" internally.</p> "
+			" <br> "
+			" <hr> "
+			" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+			" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o page-left=...      # use values from \"0\" or higher. \"72\" is equal to 1 inch. "
+			" </pre>"
+			" </qt>" );
+
+	QString whatsThisRightMarginWidget = i18n( " <qt> "
+			" <p><b>Right Margin</b></p>. "
+			" <p>This spinbox/text edit field lets you control the right margin of your printout if the printing "
+			" application does not define its margins internally. </p> "
+			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
+			" and Konqueror. </p>"
+			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" because these applications (or rather their users) are expected to do it by themselves. "
+			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
+			" internally.</p> "
+			" <br> "
+			" <hr> "
+			" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+			" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o page-right=...      # use values from \"0\" or higher. \"72\" is equal to 1 inch. "
+			" </pre>"
+			" </qt>" );
+
+	QString whatsThisMeasurementUnitMarginWidget = i18n( " <qt> "
+			" <p><b>Change Measurement Unit<b></p>. "
+			" <p>You can change the units of measurement for the page"
+			" margins here. Select from Millimeter, Centimeter, Inch or Pixels (1 pixel == 1/72 inch). "
+			" </p> "
+			" </qt>" );
+
+	QString whatsThisCheckboxMarginWidget = i18n( " <qt> "
+			" <p><b>Custom Margins Checkbox</b></p>. "
+			" <p>Enable this checkbox if you want to modify the margins of your printouts "
+			" <p>You can change margin settings in 4 ways: "
+			" <ul> "
+			" <li>Edit the text fields. </li> "
+			" <li>Click spinbox arrows. </li> "
+			" <li>Scroll wheel of wheelmouses. </li> "
+			" <li>Drag margins in preview frame with mouse. </li> "
+			" </ul> "
+			" <b>Note:</b> The margin setting does not work if you load such files directly into "
+			" kprinter, which have their print margins hardcoded internally, like as most "
+			" PDF or PostScript files. It works for all ASCII text files however. It also may not "
+			" work with non-KDE applications which fail to "
+			" fully utilize the KDEPrint framework, such as OpenOffice.org. </p> "
+			" </qt>" );
+
+	QString whatsThisDragAndPreviewMarginWidget = i18n( " <qt> "
+			" <p><b>\"Drag-your-Margins!\" </p>. "
+			" <p>Use your mouse to drag and set each margin on this little preview window. </p> "
+			" </qt>" );
+
 	m_symetric = m_block = false;
 	m_pagesize[ 0 ] = 595;
 	m_pagesize[ 1 ] = 842;
 	m_landscape = false;
 
 	m_custom = new QCheckBox(i18n("&Use custom margins"), this);
+	  QWhatsThis::add(m_custom, whatsThisCheckboxMarginWidget);
 	m_top = new MarginValueWidget(0, 0.0, this);
+	  QWhatsThis::add(m_top, whatsThisTopMarginWidget);
 	m_bottom = new MarginValueWidget(m_top, 0.0, this);
+	  QWhatsThis::add(m_bottom, whatsThisBottomMarginWidget);
 	m_left = new MarginValueWidget(m_bottom, 0.0, this);
+	  QWhatsThis::add(m_left, whatsThisLeftMarginWidget);
 	m_right = new MarginValueWidget(m_left, 0.0, this);
+	  QWhatsThis::add(m_right, whatsThisRightMarginWidget);
 	m_top->setLabel(i18n("&Top:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_bottom->setLabel(i18n("&Bottom:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_left->setLabel(i18n("Le&ft:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_units = new QComboBox(this);
+	  QWhatsThis::add(m_units, whatsThisMeasurementUnitMarginWidget);
 	m_units->insertItem(i18n("Pixels (1/72nd in)"));
 	if ( allowMetricUnit )
 	{
@@ -60,6 +174,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 	connect(m_units, SIGNAL(activated(int)), m_left, SLOT(setMode(int)));
 	connect(m_units, SIGNAL(activated(int)), m_right, SLOT(setMode(int)));
 	m_preview = new MarginPreview(this);
+	  QWhatsThis::add(m_preview, whatsThisDragAndPreviewMarginWidget);
 	m_preview->setMinimumSize(60, 80);
 	m_preview->setPageSize(m_pagesize[ 0 ], m_pagesize[ 1 ]);
 	connect(m_preview, SIGNAL(marginChanged(int,float)), SLOT(slotMarginPreviewChanged(int,float)));
