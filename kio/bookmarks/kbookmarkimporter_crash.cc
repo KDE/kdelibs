@@ -192,4 +192,6 @@ QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const
     return locateLocal( "tmp", "" );
 }
 
+#undef LINELIMIT
+
 #include "kbookmarkimporter_crash.moc"

@@ -499,4 +499,5 @@ void ToolbarFilter::visitLeave( const KBookmarkGroup &grp ) {
 }
 
 #undef dptr
+#undef BEGIN_RMB_ACTION
 #include "kbookmarkbar.moc"

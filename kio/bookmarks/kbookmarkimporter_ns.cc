@@ -45,15 +45,15 @@ void KNSBookmarkImporterImpl::parse()
 
     if(f.open(IO_ReadOnly)) {
 
-#define NSBKLINELIMIT 2048
-        QCString s(NSBKLINELIMIT);
+#define LINELIMIT 2048
+        QCString s(LINELIMIT);
         // skip header
-        while(f.readLine(s.data(), NSBKLINELIMIT) >= 0 && !s.contains("<DL>"));
+        while(f.readLine(s.data(), LINELIMIT) >= 0 && !s.contains("<DL>"));
 
-        while(f.readLine(s.data(), NSBKLINELIMIT)>=0) {
-            if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than NSBKLINELIMIT. Skipping.
+        while(f.readLine(s.data(), LINELIMIT)>=0) {
+            if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than LINELIMIT. Skipping.
             {
-               kdWarning() << "Netscape bookmarks contain a line longer than " << NSBKLINELIMIT << ". Skipping." << endl;
+               kdWarning() << "Netscape bookmarks contain a line longer than " << LINELIMIT << ". Skipping." << endl;
                continue;
             }
             QCString t = s.stripWhiteSpace();
@@ -230,4 +230,5 @@ QString KNSBookmarkExporterImpl::folderAsString(KBookmarkGroup parent) const {
 
 ////
 
+#undef LINELIMIT 
 #include "kbookmarkimporter_ns.moc"

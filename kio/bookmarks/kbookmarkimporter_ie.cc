@@ -179,5 +179,5 @@ void KIEBookmarkExporterImpl::write(KBookmarkGroup parent) {
     exporter.write( parent );
 }
 
-////
+#undef LINELIMIT 
 #include "kbookmarkimporter_ie.moc"
