@@ -41,41 +41,46 @@ class KDECORE_EXPORT KAcceleratorManager
 {
 public:
 
-  /**
-   * Manages the accelerators of a widget.
-   *
-   * Call this function on the top widget of the hierarchy you
-   * want to manage. It will fix the accelerators of the child widgets so
-   * there are never duplicate accelerators. It also tries to put
-   * accelerators on as many widgets as possible.
-   *
-   * The algorithm used tries to take the existing accelerators into
-   * account, as well as the class of each widget. Hopefully, the result
-   * is close to what you would assign manually.
-   *
-   * QPopupMenu's are managed dynamically, so when you add or remove entries,
-   * the accelerators are reassigned. If you add or remove widgets to your
-   * toplevel widget, you will have to call manage again to fix the
-   * accelerators.
-   *
-   * @param widget The toplevel widget you want to manage.
-   */
+    /**
+     * Manages the accelerators of a widget.
+     *
+     * Call this function on the top widget of the hierarchy you
+     * want to manage. It will fix the accelerators of the child widgets so
+     * there are never duplicate accelerators. It also tries to put
+     * accelerators on as many widgets as possible.
+     *
+     * The algorithm used tries to take the existing accelerators into
+     * account, as well as the class of each widget. Hopefully, the result
+     * is close to what you would assign manually.
+     *
+     * QPopupMenu's are managed dynamically, so when you add or remove entries,
+     * the accelerators are reassigned. If you add or remove widgets to your
+     * toplevel widget, you will have to call manage again to fix the
+     * accelerators.
+     *
+     * @param widget The toplevel widget you want to manage.
+     */
 
-  static void manage(QWidget *widget);
+    static void manage(QWidget *widget);
 
-  /**
-   * Does the same as the above function, but puts hints in the GUI so the
-   * programmer can enhance his program.
-   *
-   * TODO KDE4: merge with the above
-   * @param widget The toplevel widget you want to manage.
-   * @param programmers_mode if true, KAcceleratorManager adds (&) for removed
-   *             accels and & before added accels
-   */
-  static void manage(QWidget *widget, bool programmers_mode);
+    /**
+     * Does the same as the above function, but puts hints in the GUI so the
+     * programmer can enhance his program.
+     *
+     * TODO KDE4: merge with the above
+     * @param widget The toplevel widget you want to manage.
+     * @param programmers_mode if true, KAcceleratorManager adds (&) for removed
+     *             accels and & before added accels
+     */
+    static void manage(QWidget *widget, bool programmers_mode);
 
     /** \internal returns the result of the last manage operation. */
     static void last_manage(QString &added,  QString &changed,  QString &removed);
+
+    /**
+     * Use this method for a widget (and it's children) you want no accels to be set on.
+     */
+    static void setNoAccel( QWidget *widget );
 };
 
 
