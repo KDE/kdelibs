@@ -26,7 +26,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define SPEED_DEBUG
+//#define SPEED_DEBUG
 #include "khtml_part.h"
 
 #include "khtml_pagecache.h"
