@@ -86,7 +86,8 @@ binary-arch:  build
 	--compress \
 	/usr/doc/qt1g-doc/html ; \
 	makekdedoc --libdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html/kdoc-reference \
-	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html ; \
+	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html \
+	--url=/usr/doc/kdelibs-doc/html; \
 	dh_movefiles -pkdelibs-doc usr/doc/kdelibs-doc ; \
 	fi
 	dh_movefiles 

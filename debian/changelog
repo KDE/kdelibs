@@ -1,3 +1,9 @@
+kdelibs (4:1.1.2-20000417-1) stable; urgency=low
+
+  * Use --url in call to makekdedoc
+
+ -- Bernd Gehrmann <bernd@physik.hu-berlin.de>  Mon, 17 Apr 2000 21:49:48 +0200
+
 kdelibs (4:1.1.2-20000331-1.0) stable; urgency=low
 
   * Merging in fixes for postinst and other minor items
