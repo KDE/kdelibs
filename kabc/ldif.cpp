@@ -25,8 +25,6 @@
 
 using namespace KABC;
 
-static const char delimiter[ 3 ] = { '\n', '\n', '\n' };
-
 LDIF::LDIF()
 {
   startParsing();
@@ -90,9 +88,11 @@ QCString LDIF::assembleLine( const QString &fieldname, const QCString &value,
   QCString ret;
   QByteArray tmp;
   uint valuelen = value.length();
-  tmp.setRawData( value, valuelen );
+  const char *data = value.data();
+
+  tmp.setRawData( data, valuelen );
   ret = assembleLine( fieldname, tmp, linelen, url );
-  tmp.resetRawData( value, valuelen );
+  tmp.resetRawData( data, valuelen );
   return ret;
 
 }
@@ -108,6 +108,7 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
   int position;
   QByteArray tmp;
   int linelen;
+  const char *data;
 
 //  kdDebug(5700) << "splitLine line: " << QString::fromUtf8(line) << endl;
 
@@ -118,9 +119,10 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
     QCString str;
     str = line.stripWhiteSpace();
     linelen = str.length();
-    tmp.setRawData( str.data(), linelen );
+    data = str.data();
+    tmp.setRawData( data, linelen );
     value = tmp.copy();
-    tmp.resetRawData( str.data(), linelen );
+    tmp.resetRawData( data, linelen );
 //    kdDebug(5700) << "value : " << value[0] << endl;
     return false;
   }
@@ -135,9 +137,10 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
       value.resize( 0 );
       return false;
     }
-    tmp.setRawData( &line.data()[ position + 3 ], linelen - position - 3 );
+    data = &line.data()[ position + 3 ];
+    tmp.setRawData( data, linelen - position - 3 );
     KCodecs::base64Decode( tmp, value );
-    tmp.resetRawData( &line.data()[ position + 3 ], linelen - position - 3 );
+    tmp.resetRawData( data, linelen - position - 3 );
     return false;
   }
 
@@ -149,9 +152,10 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
       value.resize( 0 );
       return false;
     }
-    tmp.setRawData( &line.data()[ position + 3 ], linelen - position - 3 );
+    data = &line.data()[ position + 3];
+    tmp.setRawData( data, linelen - position - 3 );
     value = tmp.copy();
-    tmp.resetRawData( &line.data()[ position + 3 ], linelen - position - 3 );
+    tmp.resetRawData( data, linelen - position - 3 );
     return true;
   }
 
@@ -160,9 +164,10 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
     value.resize( 0 );
     return false;
   }
-  tmp.setRawData( &line.data()[ position + 2 ], linelen - position - 2 );
+  data = &line.data()[ position + 2 ];
+  tmp.setRawData( data, linelen - position - 2 );
   value = tmp.copy();
-  tmp.resetRawData( &line.data()[ position + 2 ], linelen - position - 2 );
+  tmp.resetRawData( data, linelen - position - 2 );
   return false;
 }
 
@@ -338,7 +343,11 @@ LDIF::ParseVal LDIF::nextItem()
 
 void LDIF::endLDIF()
 {
-  mLdif.resetRawData( delimiter, 3 );  
+  QByteArray tmp( 3 );
+  tmp[ 0 ] = '\n';
+  tmp[ 1 ] = '\n';
+  tmp[ 2 ] = '\n';
+  mLdif = tmp;
   mPos = 0;
 }
 
