@@ -33,6 +33,7 @@
 #endif
 
 #ifdef HAVE_LIBJPEG 
+#include <sys/types.h>
 #include "jpeg.h"
 #endif
 

@@ -30,12 +30,12 @@
 
 #include<qimage.h>
 
-#include "formats.h"
-#include "html.h"
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif  
+
+#include "formats.h"
+#include "html.h"
 
 void KHTMLWidget::registerFormats()
 {
