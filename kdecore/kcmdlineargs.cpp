@@ -982,14 +982,7 @@ KCmdLineArgs::~KCmdLineArgs()
   delete parsedOptionList;
   delete parsedArgList;
   if (argsList)
-  {
      argsList->removeRef(this);
-     if (argsList->count() == 0)
-     {
-        delete argsList;
-        argsList = 0;
-     }
-  }
 }
 
 void
