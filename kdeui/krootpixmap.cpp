@@ -91,7 +91,10 @@ void KRootPixmap::setFadeEffect(double fade, QColor color)
 bool KRootPixmap::eventFilter(QObject *, QEvent *event)
 {
     if (!m_bInit && (event->type() == QEvent::Paint))
+    {
 	m_bInit = true;
+	m_Desk = KWin::currentDesktop();
+    }
     if (!m_bActive)
 	return false;
 	
@@ -102,7 +105,7 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
 	break;
 
     case QEvent::Paint:
-	repaint();
+	repaint(false);
 	break;
 
     default:
@@ -123,6 +126,9 @@ void KRootPixmap::repaint(bool force)
 {
     QPoint p1 = m_pWidget->mapToGlobal(m_pWidget->rect().topLeft());
     QPoint p2 = m_pWidget->mapToGlobal(m_pWidget->rect().bottomRight());
+    if (!force && (m_Rect == QRect(p1, p2)))
+	return;
+
     if ((p1 == m_Rect.topLeft()) && (m_pWidget->width() < m_Rect.width()) &&
 	(m_pWidget->height() < m_Rect.height())
        ) {
@@ -133,11 +139,7 @@ void KRootPixmap::repaint(bool force)
 	m_pWidget->setBackgroundPixmap(*m_pPixmap);
 	return;
     }
-
-    if (!force && (m_Rect == QRect(p1, p2)))
-	return;
     m_Rect = QRect(p1, p2);
-    m_Desk = KWin::currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
     if (!m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect))
@@ -182,6 +184,7 @@ void KRootPixmap::slotDone(bool success)
 
 void KRootPixmap::slotBackgroundChanged(int desk)
 {
+    m_Desk = KWin::currentDesktop();
     if (desk == m_Desk)
 	repaint(true);
 }
