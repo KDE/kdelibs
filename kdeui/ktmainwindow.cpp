@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright  (C) 1997 Stephan Kulow (coolo@kde.org)
-               (C) 1997-99 Sven Radej (sven.radej@iname.com)
+               (C) 1997-2000 Sven Radej (radej@kde.org)
                (C) 1997-99 Matthias Ettrich (ettrich@kde.org)
                (C) 1999 Chris Schlaeger (cs@kde.org)
 
@@ -152,13 +152,15 @@ KTMainWindow::~KTMainWindow()
       delete toolbar;
     }
   }
-  // delete the menubar (necessary if floating)
-  if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Floating
-      && !QApplication::closingDown())
+  
+  if (kmenubar)
   {
-    delete kmenubar;
-    //debug ("KTM destructor: deleted menubar");
+    delete kmenubar; // Eeeh? (sven)
+    debug ("KTM destructor: deleted menubar");
   }
+  else
+    debug ("KTM destructor: Menubar deleted, don´t wanna hurt myself");
+
 
 
   /* I'm not sure if the layoutMgr is deleted by Qt. So I leave it out until
@@ -166,9 +168,9 @@ KTMainWindow::~KTMainWindow()
 //  delete layoutMgr;
 
 
-
-  delete mHelpMenu;
-  //debug ("KTM destructor: end");
+  //if (!QApplication::closingDown())
+    delete mHelpMenu;
+  debug ("KTM destructor: end");
 }
 
 
@@ -192,6 +194,7 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
 	  }
       }
   }
+  debug ("KTM CloseEvent end");
 }
 
 bool KTMainWindow::queryClose()
@@ -251,8 +254,6 @@ void KTMainWindow::focusOutEvent( QFocusEvent *)
 
 void KTMainWindow::show ()
 {
-    if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Floating)
-	kmenubar->show();
     QWidget::show();
     updateRects();
 }
@@ -295,23 +296,10 @@ void KTMainWindow::updateRects()
 	CHECK_PTR(layoutMgr);
 
 	/* add menu bar */
-	if (kmenubar && kmenubar->isVisibleTo(this))
-		switch (kmenubar->menuBarPos())
-		{
-		case KMenuBar::Top:
-			layoutMgr->addTopMenuBar(kmenubar);
-			break;
-		case KMenuBar::Flat:
-			layoutMgr->addFlatBar(kmenubar);
-			break;
-		case KMenuBar::Bottom:
-			layoutMgr->addBottomMenuBar(kmenubar);
-			break;
-		default:
-			break;
-		}
+        if (kmenubar && kmenubar->isVisibleTo(this))
+                layoutMgr->addTopMenuBar(kmenubar);
 
-	/* add toolbars */
+        /* add toolbars */
 	for (toolbars.first(); toolbars.current(); toolbars.next())
 		if (toolbars.current()->isVisibleTo(this))
 		{
@@ -400,7 +388,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
             entryList.append("Enabled");
         else
             entryList.append("Disabled");
-        switch (kmenubar->menuBarPos())
+        /* switch (kmenubar->menuBarPos())
         {
             case KMenuBar::Flat:   //ignore
             case KMenuBar::Top:
@@ -416,7 +404,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
             case KMenuBar::FloatingSystem:
                 entryList.append("FloatingSystem");
 	  break;
-        }
+        }                                              */
         config->writeEntry("MenuBar", entryList, ';');
         entryList.clear();
     }
@@ -508,7 +496,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	  showmenubar = True;
         else
 	  kmenubar->hide();
-	
+	/*
         entry = entryList.next();
         if (entry == "Top")
             kmenubar->setMenuBarPos(KMenuBar::Top);
@@ -525,7 +513,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	    {
 		kmenubar->setMenuBarPos(KMenuBar::FloatingSystem);
 		showmenubar = true;
-	    }
+	    } */
         entryList.clear();
 	if (showmenubar)
 	  kmenubar->show();
@@ -701,8 +689,8 @@ KMenuBar *KTMainWindow::menuBar()
 void KTMainWindow::setMenu (KMenuBar *menubar)
 {
   kmenubar = menubar;
-  connect ( kmenubar, SIGNAL( moved (menuPosition) ),
-            this, SLOT( updateRects() ) );
+  //connect ( kmenubar, SIGNAL( moved (menuPosition) ),
+  //          this, SLOT( updateRects() ) );
   connect (kmenubar, SIGNAL(destroyed ()), this, SLOT(menubarKilled ()));
   updateRects();
 }
@@ -711,7 +699,8 @@ KToolBar *KTMainWindow::toolBar( int ID )
 {
   KToolBar* result = 0;
   if (ID < int(toolbars.count()))
-    result = toolbars.at( ID );
+    result = toolbars.at( ID )
+      ;
   if (!result) {
     bool honor_mode = (ID == 0) ? true : false;
     result  = new KToolBar(this, 0, -1, honor_mode);
@@ -762,21 +751,21 @@ void KTMainWindow::menubarKilled()
 {
   if (localKill)
   {
-    //debug ("KTM: ACK mb kill, local kill, NOT zeroed");
+    debug ("KTM: ACK mb kill, local kill, NOT zeroed");
     return;
   }
 
   // No dead souls in here.
-  const QObject *dyer = sender (); // Who need last rites?
+  const QObject *dyer = sender (); // Who needs last rites?
   if (dyer)                  // Doe he live still
   {
     kmenubar = 0L;
-    //debug ("KTM: ACK mb kill, zeroed");
+    debug ("KTM: ACK mb kill, zeroed");
   }
-//  else
-//  {
-   //debug ("KTM: ACK mb kill, dyer zero, NOT zeroed");
-//  }
+  else
+  {
+   debug ("KTM: ACK mb kill, dyer zero, NOT zeroed");
+  }
 
 }
 
@@ -784,7 +773,7 @@ void KTMainWindow::toolbarKilled()
 {
   if (localKill)
   {
-    //debug ("KTM: ACK tb kill, local kill, NOT removed from list");
+    debug ("KTM: ACK tb kill, local kill, NOT removed from list");
     return;
   }
 
@@ -794,12 +783,12 @@ void KTMainWindow::toolbarKilled()
   if (dyer)
   {
     toolbars.removeRef((KToolBar *) dyer); // remove it from the list;
-      //debug ("KTM: ACK tb kill, removed from list");
+    debug ("KTM: ACK tb kill, removed from list");
     //else
       //debug ("KTM: ACK tb kill, NOT removed from list");
   }
-//  else
-    //debug ("KTM: ACK tb kill, dyer zero, NOT removed from list");
+  else
+    debug ("KTM: ACK tb kill, dyer zero, NOT removed from list");
 }
 
 
