@@ -193,6 +193,8 @@ AC_OUTPUT(Makefile \
 	jscript/Makefile \
 	corba/Makefile \
 	corba/cuteidl/Makefile \
+	corba/cuteidl/sti/Makefile \
+	corba/cuteidl/test/Makefile \
 	corba/kom/Makefile \
 	corba/kded/Makefile \
 	corba/partsui/Makefile \
