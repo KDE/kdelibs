@@ -30,13 +30,12 @@ thanks ;-).
 
 <!-- The language must be changed in the <book> tag for translations. -->
 
-<book id="kapp" lang="en">
+<book lang="en">
 
 <!-- This header contains all of the meta-information for the document such
 as Authors, publish date, the abstract, and Keywords -->
 
 <bookinfo>
-
 <title>The Kapp Handbook</title>
 
 <authorgroup>
@@ -44,6 +43,9 @@ as Authors, publish date, the abstract, and Keywords -->
 <firstname>George</firstname>
 <othername>N.</othername>
 <surname>Ugnacious</surname>
+<affiliation>
+<address><email>gnu@kde.org</email></address>
+</affiliation>
 </author>
 </authorgroup>
 
@@ -55,14 +57,6 @@ as Authors, publish date, the abstract, and Keywords -->
 Please at least include KDE, the KDE package it is in, the name
  of your application, and a few relevant keywords. -->
 
-<keywordset>
-<keyword>KDE</keyword>
-<keyword>Kapp</keyword>
-<keyword>kdeutils</keyword>
-<keyword>nothing</keyword>
-<keyword>nothing else</keyword>
-</keywordset>
-
 <!-- Date and version information of the documentation
 Don't forget to include this last date and this last revision number, we
 need them for translation coordination !
@@ -70,7 +64,7 @@ Please respect the format of the date (DD/MM/YYYY) and of the version
 (Major.minor.lesser), it could be used by automation scripts -->
 
 <date>03/04/1999</date>
-<releaseinfo>1.1.0</releaseinfo>
+<releaseinfo>1.01.00</releaseinfo>
 
 <!-- Abstract about this handbook -->
 
@@ -79,6 +73,14 @@ Please respect the format of the date (DD/MM/YYYY) and of the version
 &kapp; is an application specially designed to do nothing you would ever want.
 </para>
 </abstract>
+
+<keywordset>
+<keyword>KDE</keyword>
+<keyword>Kapp</keyword>
+<keyword>kdeutils</keyword>
+<keyword>nothing</keyword>
+<keyword>nothing else</keyword>
+</keywordset>
 
 </bookinfo>
 
