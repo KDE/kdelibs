@@ -542,7 +542,7 @@ static int qxembed_x11_event_filter( XEvent* e)
                     // L0695: update Qt message time variable
                     if ( (ulong) e->xclient.data.l[1] > qt_x_time )
                         qt_x_time = e->xclient.data.l[1];
-                    // L0696: There is no pronlem when the window is not active.
+                    // L0696: There is no problem when the window is not active.
                     //        Qt will generate a WindowActivate event that will
                     //        do the job (L1310).  This does not happen if the
                     //        window is already active.  So we simulate it.
@@ -874,10 +874,10 @@ void QXEmbed::focusOutEvent( QFocusEvent * ){
         // L1570: Send XEMBED focus out message. See L1531.
         sendXEmbedMessage( window, XEMBED_FOCUS_OUT );
     }
-    // L1580: The QXEmbed object might loose the focus because the
-    //        embedded application looses the X11 focus and is no longer active, 
+    // L1580: The QXEmbed object might loose the focus because its
+    //        toplevel window looses the X11 focus and is no longer active, 
     //        or simply because the Qt focus has been moved to another widget.
-    //        In the later case only, we want to make sure that the X11 focus
+    //        In the latter case only, we want to make sure that the X11 focus
     //        is properly set to the X11 focus widget.  We do this because
     //        the client application might have moved the X11 focus after
     //        receiving the fake focus messages.
@@ -930,7 +930,7 @@ void QXEmbed::embed(WId w)
     if (!w)
         return;
     // L1701: The has_window variable prevents embedding a same window twice.
-    //        But what happens if one embed two windows into the same QXEmbed?
+    //        ??? [what happens if one embed two windows into the same QXEmbed?]
     bool has_window =  (w == window);
     window = w;
     if ( !has_window ) {
