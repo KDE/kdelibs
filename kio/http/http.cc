@@ -3123,7 +3123,7 @@ void HTTPProtocol::reparseConfiguration()
   {
     // Use the appropriate proxy depending on the protocol
     kdDebug(7113) << "Protocol is: " << m_protocol << endl;
-    QString protocol = (m_protocol == "https") ? QString("http") : m_protocol;
+    QCString protocol = (m_protocol == "https") ? QCString("http") : m_protocol;
     m_proxyURL = KURL( KProtocolManager::proxyFor( protocol ) );
     if (!m_proxyURL.isMalformed() )
     {
