@@ -24,6 +24,8 @@
 #include <kdelibs_export.h>
 
 /**
+ * @short A replacement for QLabel that squeezes its text
+ *
  * A label class that squeezes its text into the label
  *
  * If the text is too long to fit into the label it is divided into
@@ -35,10 +37,7 @@
  *
  * \image html ksqueezedtextlabel.png "KSqueezedTextLabel Widget"
  *
- * @short A replacement for QLabel that squeezes its text
  * @author Ronny Standtke <Ronny.Standtke@gmx.de>
- * @version $Id$
- *
  */
 
 /*
