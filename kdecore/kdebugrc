@@ -1,6 +1,36 @@
 # This files includes the default behaviour for some specific debug areas
-# This allows to leave the kDebug* calls in the code, but still have them
+# This allows to leave the kdDebug* calls in the code, but still have them
 # disabled for most users.
+#
+# This file will be installed as $KDEDIR/share/config/kdebugrc
+#
+# There are four levels of output: Info, Warn, Error and Fatal
+# corresponding to kdDebug(), kdWarn(), kdError(), kdFatal()
+#
+# For every of them you can define a target by *Output=n
+# using the following numbers:
+#
+#   0 = file
+#   1 = message box
+#   2 = shell (stderr)
+#   3 = syslog
+#   4 = off
+#
+# For file output you can give a filename by *Filename=<file>
+# otherwise kdebug.dbg in the current directory ist used.
+#
+# ekzample:
+#
+# For the debug area 100 you want output of debug messages
+# to a file /var/log/dbg.log and error messages as message boxes.
+# Additionaly the program should abort on fatal errors.
+#
+# [100]
+# InfoOutput=0
+# InfoFilename=/var/log/dbg.log
+# ErrorOutput=1
+# AbortFatal=1
+#
 
 # KAccel debug info off
 [125]
