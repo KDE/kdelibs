@@ -144,8 +144,11 @@ public:
 
     const QString &encoding() const;
 
+    bool followSystemColors() const;
+
     // Color settings
     const QColor& textColor() const;
+    const QColor& baseColor() const;
     const QColor& linkColor() const;
     const QColor& vLinkColor() const;
 
@@ -174,7 +177,7 @@ public:
 				  KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice);
     static const char* adviceToStr(KJavaScriptAdvice _advice);
 
-    /** reads from @p config's current group, forcing initialization 
+    /** reads from @p config's current group, forcing initialization
       * if @p reset is true.
       * @param global true if the global domain is to be read.
       * @param pd_settings will be initialised with the computed (inherited)

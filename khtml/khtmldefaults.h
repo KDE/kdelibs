@@ -22,6 +22,7 @@
 #define HTML_DEFAULT_LNK_COLOR Qt::blue
 #define HTML_DEFAULT_TXT_COLOR Qt::black
 #define HTML_DEFAULT_VLNK_COLOR Qt::magenta
+#define HTML_DEFAULT_BASE_COLOR Qt::white
 
 // KEEP IN SYNC WITH konqdefaults.h in kdebase/libkonq!
 // lets be modern .. -- Bernd

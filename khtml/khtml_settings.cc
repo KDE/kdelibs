@@ -75,6 +75,7 @@ public:
     bool m_formCompletionEnabled : 1;
     bool m_autoDelayedActionsEnabled : 1;
     bool m_jsErrorsEnabled : 1;
+    bool m_follow_system_colors : 1;
 
     // the virtual global "domain"
     KPerDomainSettings global;
@@ -88,6 +89,7 @@ public:
     QString m_userSheet;
 
     QColor m_textColor;
+    QColor m_baseColor;
     QColor m_linkColor;
     QColor m_vLinkColor;
 
@@ -368,6 +370,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   }
 
   // Colors
+
+  if ( reset || config->hasKey( "FollowSystemColors" ) )
+      d->m_follow_system_colors = config->readBoolEntry( "FollowSystemColors", false );
+
   if ( reset || config->hasGroup( "General" ) )
   {
     config->setGroup( "General" ); // group will be restored by cgs anyway
@@ -379,8 +385,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     if ( reset || config->hasKey( "visitedLinkColor" ) )
       d->m_vLinkColor = config->readColorEntry( "visitedLinkColor", &HTML_DEFAULT_VLNK_COLOR);
-  }
 
+    if ( reset || config->hasKey( "background" ) )
+      d->m_baseColor = config->readColorEntry( "background", &HTML_DEFAULT_BASE_COLOR);
+  }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) )
   {
@@ -808,9 +816,19 @@ const QString &KHTMLSettings::encoding() const
   return d->m_encoding;
 }
 
+bool KHTMLSettings::followSystemColors() const
+{
+    return d->m_follow_system_colors;
+}
+
 const QColor& KHTMLSettings::textColor() const
 {
   return d->m_textColor;
+}
+
+const QColor& KHTMLSettings::baseColor() const
+{
+  return d->m_baseColor;
 }
 
 const QColor& KHTMLSettings::linkColor() const
