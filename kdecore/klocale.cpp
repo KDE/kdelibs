@@ -165,10 +165,10 @@ KLocale::KLocale( const QString& _catalogue )
     setlocale (LC_MESSAGES, "");
 #endif
     KConfig *config = KGlobal::instance()->_config;
+    if (config)
     {
       KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
-      if (!config || (chset = config->readEntry(QString::fromLatin1("Charset")).isNull()))
-        chset = QString::fromLatin1("unicode");
+      chset = config->readEntry(QString::fromLatin1("Charset"), QString::fromLatin1("unicode"));
     }
     QString catalogue;
 
