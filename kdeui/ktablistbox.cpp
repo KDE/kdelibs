@@ -670,7 +670,7 @@ void KTabListBox::resizeList(int newNumItems)
       delete itemList[i];
   }
 
-  if (itemList) delete itemList;
+  if (itemList) delete [] itemList;
   itemList = newItemList;
   maxItems = newNumItems;
 

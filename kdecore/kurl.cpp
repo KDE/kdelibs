@@ -167,8 +167,10 @@ void KURL::parse( const char * _url )
     debugC("parse() %d %s",++count, _url);
 
     QString url(_url);
+    // defaults
     malformed = false;
     path_part_decoded = 0;
+    bNoPath = false;
 
     if ( _url[0] == '/' )
     {
@@ -296,7 +298,7 @@ void KURL::parse( const char * _url )
     else
     {
 	path_part = "/";
-	// Indicate that we did not see a path originally
+	// indicate that we did not see a path originally
 	bNoPath = true;
 	ref_part = "";
     } 

@@ -439,6 +439,8 @@ void KToolBar::init()
   
   position = Top;
   moving = true;
+  icon_text = 0;
+  highlight = 0;
   setFrameStyle(NoFrame);
   setLineWidth( 1 );
   resize( width(), item_size );
