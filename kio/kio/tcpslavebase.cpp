@@ -891,6 +891,11 @@ int TCPSlaveBase::verifyCertificate()
       // as the parent frame
       bool certAndIPTheSame = (d->ip == metaData("ssl_parent_ip") &&
                                pc.toString() == metaData("ssl_parent_cert"));
+      kdDebug(7029) << "d->ip=[" << d->ip << "] "
+                << "ssl_parent_ip=[" << metaData("ssl_parent_ip") << "] "
+                << "pc.toString()=[" << pc.toString() << "] "
+                << "ssl_parent_cert=[" << metaData("ssl_parent_cert") << "] "
+                << endl;
 
       if (ksv == KSSLCertificate::Ok && _IPmatchesCN) {
         if (certAndIPTheSame) {       // success
@@ -898,7 +903,7 @@ int TCPSlaveBase::verifyCertificate()
           setMetaData("ssl_action", "accept");
         } else {
           /*
-    if (d->militantSSL) {
+          if (d->militantSSL) {
             return -1;
           }
           result = messageBox(WarningYesNo,
@@ -918,9 +923,10 @@ int TCPSlaveBase::verifyCertificate()
                     // icon on the toolbar, and can investigate with the RMB
         }
       } else {
-  if (d->militantSSL) {
-    return -1;
-  }
+        if (d->militantSSL) {
+          return -1;
+        }
+
         if (cp == KSSLCertificateCache::Accept) {
            if (certAndIPTheSame) {    // success
              rc = 1;
