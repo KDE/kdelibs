@@ -639,12 +639,14 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ROWSPAN:
         // ###
         rSpan = attr->val() ? attr->val()->toInt() : 1;
-        if(rSpan < 1) rSpan = 1;
+        // limit this to something not causing an overflow with short int
+        if(rSpan < 1 || rSpan > 1024) rSpan = 1;
         break;
     case ATTR_COLSPAN:
         // ###
         cSpan = attr->val() ? attr->val()->toInt() : 1;
-        if(cSpan < 1) cSpan = 1;
+        // limit this to something not causing an overflow with short int
+        if(cSpan < 1 || cSpan > 1024) cSpan = 1;
         break;
     case ATTR_NOWRAP:
         nWrap = (attr->val() != 0);
