@@ -165,6 +165,8 @@ int main(int argc, char *argv[])
   KURL ftpUrl ( "ftp://ftp.de.kde.org" );
   printf("\n* URL is %s\n",ftpUrl.url().latin1());
   check("KURL::path()", ftpUrl.path(), QString::null);
+  ftpUrl = "ftp://ftp.de.kde.org/";
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp.de.kde.org/host/subdir/") ? "yes" : "no", "yes");
   ftpUrl = "ftp://ftp/host/subdir/";
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdir/") ? "yes" : "no", "yes");
   check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdir") ? "yes" : "no", "yes");
