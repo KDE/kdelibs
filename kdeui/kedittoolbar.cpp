@@ -540,6 +540,9 @@ void KEditToolbarWidget::setupLayout()
 
   // "change icon" button
   d->m_changeIcon = new KPushButton( i18n( "Change &Icon..." ), this );
+  QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
+  if ( kdialogExe.isEmpty() )
+      d->m_changeIcon->setEnabled( false );
 
   connect( d->m_changeIcon, SIGNAL( clicked() ),
            this, SLOT( slotChangeIcon() ) );
@@ -1108,10 +1111,6 @@ void KEditToolbarWidget::slotChangeIcon()
   // ##### KDE4: reconsider this, e.g. move KEditToolbar to libkio
   KProcIO proc;
   QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
-  if ( kdialogExe.isEmpty() ) {
-    kdError(240) << "kdialog not found in paths, check your KDE installation" << endl;
-    return;
-   }
   proc << kdialogExe;
   proc << "--geticon";
   proc << "Toolbar";
