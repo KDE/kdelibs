@@ -26,29 +26,24 @@ class KProcIOPrivate;
 class QTextCodec;
 
 /**
- * @version $Id$
- * @author David Sweet
- * @short A slightly simpler interface to KProcess
- *
  * KProcIO
- * By David Sweet (LGPL 1997)
  *
  * This class provides a slightly simpler interface to the communication
  *  functions provided by KProcess.  The simplifications are:
- *    1) The buffer for a write is copied to an internal KProcIO
+ *    @li The buffer for a write is copied to an internal KProcIO
  *        buffer and maintained/freed appropriately.  There is no need
  *        to be concerned with wroteStdin() signals _at_all_.
- *    2) readln() (or fgets()) reads a line of data and buffers any 
- *        leftovers.
- *
- * Added:
- *
- *    3) Conversion from/to unicode.
+ *    @li readln() reads a line of data and buffers any leftovers.
+ *    @li Conversion from/to unicode.
  *
  * Basically, KProcIO gives you buffered I/O similar to fgets()/fputs().
  *
  * Aside from these, and the fact that start() takes different
- *  parameters, use this class just like KProcess.
+ * parameters, use this class just like @ref KProcess.
+ *
+ * @version $Id$
+ * @author David Sweet
+ * @short A slightly simpler interface to KProcess
  **/
 
 
@@ -61,43 +56,54 @@ public:
   ~KProcIO();
   
   /**
-   *  Starts the process.
-   *
-   *  @param runmode For a detailed description of the
-   *  various run modes, have a look at the
-   *  general description of the @ref KProcess class.
-   *
-   *  @param includeStderr If true, data from both stdout and stderr is 
-   *  listened to. If false, only stdout is listened to.
-   *
-   *  @return true on success, false on error
-   *
-   *  The following problems could cause this function to
-   *    return false:
-   *
+   *  Starts the process. It will fail in the following cases:
    *  @li The process is already running.
    *  @li The command line argument list is empty.
    *  @li The starting of the process failed (could not fork).
    *  @li The executable was not found.
+   *
+   *  @param runmode For a detailed description of the
+   *  various run modes, have a look at the
+   *  general description of the @ref KProcess class.
+   *  @param includeStderr If true, data from both stdout and stderr is 
+   *  listened to. If false, only stdout is listened to.
+   *  @return true on success, false on error. 
    **/
   bool start (RunMode  runmode = NotifyOnExit, bool includeStderr = false);
 
   /**
    * Writes text to stdin of the process.
    * @param line Text to write.
-   * @param AppendNewLine if true, a newline '\n' is appended.
+   * @param appendnewline if true, a newline '\n' is appended.
+   * @return true if successful, false otherwise
    **/
-  bool writeStdin(const QString &line, bool AppendNewLine=TRUE);
+  bool writeStdin(const QString &line, bool appendnewline=TRUE);
+
+  /**
+   * Writes text to stdin of the process.
+   * @param line Text to write.
+   * @param appendnewline if true, a newline '\n' is appended.
+   * @return true if successful, false otherwise
+   **/
   bool writeStdin(const QCString &line, bool appendnewline);
 
   /**
    * Writes data to stdin of the process.
    * @param data Data to write.
+   * @return true if successful, false otherwise
    **/
   bool writeStdin(const QByteArray &data);
 
   //I like fputs better -- it's the same as writeStdin
   //inline
+  /**
+   * This function just calls @ref writeStdin().
+   * 
+   * @param line Text to write.
+   * @param AppendNewLine if true, a newline '\n' is appended.
+   * @return true if successful, false otherwise
+   * @deprecated
+   **/
   bool fputs (const QString &line, bool AppendNewLine=TRUE)
     { return writeStdin(line, AppendNewLine); }
 
@@ -107,7 +113,7 @@ public:
   void closeWhenDone();
 
   /**
-   * reads a line of text (up to and including '\n')
+   * Reads a line of text (up to and including '\n').
    *
    * Use readln() in response to a readReady() signal.
    * You may use it multiple times if more than one line of data is
@@ -119,16 +125,26 @@ public:
    * readln() never blocks.
    *
    * autoAck==TRUE makes these functions call ackRead() for you.
+   *
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.
    * @param partial when provided the line is returned 
    * even if it does not contain a '\n'. *partial will be set to
    * false if the line contains a '\n' and false otherwise.
-   *
    * @return the number of characters read, or -1 if no data is available.
    **/
   int readln (QString &line, bool autoAck=true, bool *partial=0);
 
+  /**
+   * This function calls @ref readln().
+   * @param line is used to store the line that was read.
+   * @param autoAck when true, ackRead() is called for you.
+   * @param partial when provided the line is returned 
+   * even if it does not contain a '\n'. *partial will be set to
+   * false if the line contains a '\n' and false otherwise.
+   * @return the number of characters read, or -1 if no data is available.
+   * @deprecated
+   **/
   int fgets (QString &line, bool autoAck=false)
     { return readln (line, autoAck); }
 
@@ -149,14 +165,20 @@ public:
   void ackRead ();
 
   /**
-   *  Turns readReady() signals on and off.
+   *  Turns @ref readReady() signals on and off.
    *   You can turn this off at will and not worry about losing any data.
    *   (as long as you turn it back on at some point...)
+   * @param enable true to turn the signals on, false to turn them off
    */
   void enableReadSignals (bool enable);
 
 signals:
-  void readReady(KProcIO *);
+  /**
+   * Emitted when the process is ready for reading.
+   * @param pio the process that emitted the signal
+   * @see enableReadSignals()
+   */
+  void readReady(KProcIO *pio);
 
 protected:
   QPtrList<QByteArray> outbuffer;
