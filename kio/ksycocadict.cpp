@@ -58,9 +58,7 @@ KSycocaDict::KSycocaDict(QDataStream *str, int offset)
    mOffset = str->device()->at(); // Start of hashtable
    if (mHashTableSize == 0)
    {
-      kdebug(KDEBUG_ERROR, 7011, QString("KSycocaDict : mHashTableSize is 0 ! Re-run kded"));
-      kdebug(KDEBUG_ERROR, 7011, QString("and please report to faure@kde.org"));
-      exit(1);
+      kdebug(KDEBUG_WARN, 7011, QString("KSycocaDict : mHashTableSize is 0 !"));
    }
 }
 
@@ -93,6 +91,9 @@ KSycocaDict::find_string(const QString &key )
       kdebug( KDEBUG_ERROR, 7011, "No database available!");
       return 0;
    }
+
+   if (mHashTableSize == 0)
+      return 0; // Unlikely to find anything :-]
 
    // Read hash-table data 
    uint hash = hashKey(key) % mHashTableSize;
