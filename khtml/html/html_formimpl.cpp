@@ -1806,8 +1806,6 @@ void HTMLSelectElementImpl::recalcListItems()
 
 void HTMLSelectElementImpl::childrenChanged()
 {
-    qDebug("**HTMLSelectElementImpl::childrenChanged");
-
     setRecalcListItems();
 
     HTMLGenericFormElementImpl::childrenChanged();
