@@ -40,20 +40,6 @@
 
 #include <qapplication.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> 
-#ifndef KDE_USE_FINAL
-const int XFocusOut = FocusOut;
-const int XFocusIn = FocusIn;
-#endif
-#undef FocusOut
-#undef FocusIn
-#undef KeyPress
-#undef KeyRelease
-
-extern Time qt_x_time;
-#endif // Q_WS_X11 && ! K_WS_QTONLY
-
 class KSystemTrayPrivate
 {
 public:
@@ -143,25 +129,6 @@ void KSystemTray::showEvent( QShowEvent * )
 // KDE4 remove
 void KSystemTray::enterEvent( QEvent* e )
 {
-#if QT_VERSION < 0x030200
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS
-    // FIXME(E): Implement for Qt Embedded
-    if ( !qApp->focusWidget() ) {
-	XEvent ev;
-	memset(&ev, 0, sizeof(ev));
-	ev.xfocus.display = qt_xdisplay();
-	ev.xfocus.type = XFocusIn;
-	ev.xfocus.window = winId();
-	ev.xfocus.mode = NotifyNormal;
-	ev.xfocus.detail = NotifyAncestor;
-	Time time = qt_x_time;
-	qt_x_time = 1;
-	qApp->x11ProcessEvent( &ev );
-	qt_x_time = time;
-    }
-#endif
-#endif
     QLabel::enterEvent( e );
 }
 
