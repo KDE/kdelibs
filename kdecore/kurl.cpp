@@ -124,7 +124,7 @@ void KURL::parse( const char * _url )
 
   if ( _url[0] == '/' ) {
       encodeURL(url);
-      url.sprintf( "file:%s", url.data() );
+      url.insert( 0, "file:");
   };
   
   // We need a : somewhere to determine the protocol
