@@ -1992,8 +1992,12 @@ QString KHTMLPart::selectedText() const
 
 bool KHTMLPart::hasSelection() const
 {
-  return ( !d->m_selectionStart.isNull() &&
-           !d->m_selectionEnd.isNull() );
+  if ( d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() )
+      return false;
+  if ( d->m_selectionStart == d->m_selectionEnd &&
+       d->m_startOffset == d->m_endOffset )
+      return false; // empty
+  return true;
 }
 
 DOM::Range KHTMLPart::selection() const
