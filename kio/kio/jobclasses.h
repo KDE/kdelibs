@@ -1227,6 +1227,15 @@ namespace KIO {
         void totalDirs( KIO::Job *job, unsigned long dirs );
 
         /**
+	 * Emitted when it is known which files / directories are going
+	 * to be created. Note that this may still change e.g. when 
+	 * existing files with the same name are discovered.
+	 * @param job the job that emitted this signal
+	 * @param files a list of items that are about to be created.
+	 */ 
+        void aboutToCreate( KIO::Job *job, const QValueList<KIO::CopyInfo> &files);
+
+        /**
 	 * Sends the number of processed files.
 	 * @param job the job that emitted this signal
 	 * @param files the number of processed files

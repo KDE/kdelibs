@@ -1942,6 +1942,10 @@ void CopyJob::slotReport()
             emit totalSize( this, m_totalSize );
             emit totalFiles( this, files.count() );
             emit totalDirs( this, dirs.count() );
+            if (!dirs.isEmpty())
+               emit aboutToCreate( this, dirs );
+            if (!files.isEmpty())
+               emit aboutToCreate( this, files );
             break;
 
         default:
@@ -2076,8 +2080,20 @@ void CopyJob::statNextSrc()
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 dest.addPath( m_currentSrcURL.fileName() );
-            //kdDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del" << endl;
+            kdDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del" << endl;
             state = STATE_RENAMING;
+
+            struct CopyInfo info;
+            info.permissions = -1;
+            info.mtime = (time_t) -1;
+            info.ctime = (time_t) -1;
+            info.size = (KIO::filesize_t)-1;
+            info.uSource = m_currentSrcURL;
+            info.uDest = dest;
+            QValueList<CopyInfo> files;
+            files.append(info);
+            emit aboutToCreate( this, files );
+
             SimpleJob * newJob = KIO::rename( m_currentSrcURL, dest, false /*no overwrite */);
             Scheduler::scheduleJob(newJob);
             addSubjob( newJob );
@@ -2171,7 +2187,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                 // We need to stat the existing dir, to get its last-modification time
                 KURL existingDest( (*it).uDest );
                 SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
-    Scheduler::scheduleJob(newJob);
+                Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
                 state = STATE_CONFLICT_CREATING_DIRS;
                 addSubjob(newJob);
@@ -2278,6 +2294,10 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
                 if ( path.left(oldPath.length()) == oldPath )
                     (*renamefileit).uDest.setPath( path.replace( 0, oldPath.length(), newPath ) );
             }
+            if (!dirs.isEmpty())
+                emit aboutToCreate( this, dirs );
+            if (!files.isEmpty())
+                emit aboutToCreate( this, files );
         }
         break;
         case R_AUTO_SKIP:
@@ -2526,6 +2546,10 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             newUrl.setPath( newPath );
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
             (*it).uDest = newUrl;
+
+            QValueList<CopyInfo> files;
+            files.append(*it);
+            emit aboutToCreate( this, files );
         }
         break;
         case R_AUTO_SKIP:

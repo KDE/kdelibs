@@ -25,6 +25,7 @@
 
 namespace KIO {
   class Job;
+  class CopyJob;
 
   /**
    * Pastes the content of the clipboard (e.g. URLs) to the
@@ -44,6 +45,15 @@ namespace KIO {
    * @see pasteClipboard()
    */
   void pasteData( const KURL& _dest_url, const QByteArray& _data );
+
+  /**
+   * Pastes the given @p _data to the
+   * given destination URL.
+   * @param _dest_url the URL to receive the data
+   * @param _data the data to copy
+   * @see pasteClipboard()
+   */
+  CopyJob *pasteDataAsync( const KURL& _dest_url, const QByteArray& _data );
 
   /**
    * Checks whether the clipboard is empty.

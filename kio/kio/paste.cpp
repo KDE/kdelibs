@@ -36,6 +36,48 @@
 #include <kmessagebox.h>
 #include <ktempfile.h>
 
+static KURL getNewFileName(const KURL &u)
+{
+  KLineEditDlg l( i18n("Filename for clipboard content:"), "", 0L );
+  int x = l.exec();
+  if ( !x ) 
+     return KURL();
+
+  QString url = l.text();
+  if ( url.isEmpty() ) {
+      KMessageBox::error( 0L, i18n("You did not enter a filename"));
+      return KURL();
+  }
+
+  KURL myurl(u);
+  myurl.addPath( l.text() );
+
+  if (KIO::NetAccess::exists(myurl, false))
+  {
+      kdDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
+      KIO::RenameDlg_Result res = KIO::R_OVERWRITE;
+
+      QString newPath;
+      // Ask confirmation about resuming previous transfer
+      res = Observer::self()->open_RenameDlg(
+                          0L, i18n("File Already Exists"),
+                          u.prettyURL(0, KURL::StripFileProtocol),
+                          myurl.prettyURL(0, KURL::StripFileProtocol),
+                          (KIO::RenameDlg_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE), newPath);
+
+      if ( res == KIO::R_RENAME )
+      {
+          myurl = newPath;
+      }
+      else if ( res == KIO::R_CANCEL )
+      {
+          return KURL();
+      }
+  }
+
+  return myurl;
+}
+
 bool KIO::isClipboardEmpty()
 {
 #ifndef QT_NO_MIMECLIPBOARD
@@ -109,55 +151,42 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
     return 0;
   }
 
-  pasteData( dest_url, ba );
-  return 0;
+  return pasteDataAsync(dest_url, ba);
 }
+
 
 void KIO::pasteData( const KURL& u, const QByteArray& _data )
 {
-  KLineEditDlg l( i18n("Filename for clipboard content:"), "", 0L );
-  int x = l.exec();
-  if ( x ) {
-    QString url = l.text();
-    if ( url.isEmpty() ) {
-      KMessageBox::error( 0L, i18n("You did not enter a filename"));
-      return;
-    }
-
-    KURL myurl(u);
-    myurl.addPath( l.text() );
-
-    if (KIO::NetAccess::exists(myurl, false))
-    {
-        kdDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
-        RenameDlg_Result res = R_OVERWRITE;
-
-        QString newPath;
-        // Ask confirmation about resuming previous transfer
-        res = Observer::self()->open_RenameDlg(
-                          0L, i18n("File Already Exists"),
-                          u.prettyURL(0, KURL::StripFileProtocol),
-                          myurl.prettyURL(0, KURL::StripFileProtocol),
-                          (RenameDlg_Mode) (M_OVERWRITE | M_SINGLE), newPath);
-
-        if ( res == R_RENAME )
-        {
-            myurl = newPath;
-        }
-        else if ( res == R_CANCEL )
-        {
-            return;
-        }
-    }
-
+    KURL new_url = getNewFileName(u);
     // We could use KIO::put here, but that would require a class
     // for the slotData call. With NetAcess, we can do a synchronous call.
-
+    
+    if (new_url.isEmpty())
+       return;
+    
     KTempFile tempFile;
     tempFile.setAutoDelete( true );
     tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );
     tempFile.close();
 
-    (void) KIO::NetAccess::upload( tempFile.name(), myurl );
-  }
+    (void) KIO::NetAccess::upload( tempFile.name(), new_url );
+}
+
+KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data )
+{
+    KURL new_url = getNewFileName(u);
+    // We could use KIO::put here, but that would require a class
+    // for the slotData call. With NetAcess, we can do a synchronous call.
+    
+    if (new_url.isEmpty())
+       return 0;
+    
+     KTempFile tempFile;
+     tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );
+     tempFile.close();
+  
+     KURL orig_url;
+     orig_url.setPath(tempFile.name());
+
+     return KIO::move( orig_url, new_url );
 }
