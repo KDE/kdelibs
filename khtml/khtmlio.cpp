@@ -36,6 +36,7 @@
 //#define CACHE_DEBUG
 
 #include <qpixmap.h>
+#undef Status
 #include <qmovie.h>
 #include <qdict.h>
 #include <qasyncimageio.h>
