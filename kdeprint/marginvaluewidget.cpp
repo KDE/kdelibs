@@ -36,6 +36,8 @@ MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *pa
 
 float MarginValueWidget::margin()
 {
+	// Force synchronization
+	m_margin = toPixel(value(), m_mode);
 	return m_margin;
 }
 
