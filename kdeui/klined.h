@@ -1,5 +1,7 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Sven Radej (sven.radej@iname.com)
+    Copyright (C) 1997 Sven Radej <sven.radej@iname.com>
+    Copyright (c) 1999 Patrick Ward <PAT_WARD@HP-USA-om5.om.hp.com>
+    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,26 +22,35 @@
 // fileentry.h is part of KFM II, by Torben Weis
 
 
-
 #ifndef _KLINED_H
 #define _KLINED_H
 #include <qlineedit.h>
 
 /**
- * This widget has the same behaviour as QLineEditor, but emits
+ * Use of the class KLineEd is deprecated.  Please use KLineEdit instead.
+ */
+#define KLineEd KLineEdit
+
+/**
+ * This widget has the same behaviour as QLineEdit, but emits
  * signals for two more key-events: @ref completion when Ctrl-D is
- * pressed and  @ref rotation when Ctrl-S is pressed. This
- * class is inspired by Torben Weis' fileentry.cpp for KFM II
+ * pressed and  @ref rotation when Ctrl-S is pressed. 
+ *
+ * Completion can then be connected to a slot that will try and "fill in"
+ * the rest of the details, i.e. for URL or filename completion.  Rotation
+ * is usually used to rotate through a list of predefined text entries.
+ *
+ * This class is inspired by Torben Weis' fileentry.cpp for KFM II.
  * @short KDE Line input widget
  */
 
-class KLined : public QLineEdit
+class KLineEdit : public QLineEdit
 {
   Q_OBJECT
         
 public:
-  KLined ( QWidget *parent=0, const char *name=0 );
-  ~KLined ();
+  KLineEdit ( QWidget *parent=0, const char *name=0 );
+  ~KLineEdit ();
 
   /**
     * This puts cursor at and of string. When using out of toolbar,
@@ -47,20 +58,32 @@ public:
     */
   void cursorAtEnd();
 
-  signals:
+ signals:
 
   /**
-	* Connect to this signal to receive Ctrl-D
-	*/
+   * Connect to this signal to receive Ctrl-D
+   */
   void completion ();
-    
+  
   /**
-	* Connect to this signal to receive Ctrl-S
-	*/
+   * Connect to this signal to receive Ctrl-S
+   */
   void rotation ();
-    
- protected:
-     bool eventFilter (QObject *, QEvent *);
- };
+   
+protected slots:
+  virtual void mousePressEvent(QMouseEvent *);
+  virtual void doCut() { cut(); }
+  virtual void doCopy() { copy(); }
+  virtual void doPaste() { paste(); }
+  virtual void doSelect() { selectAll(); }
+  virtual void doClear() { setText(""); }
+
+protected:
+  bool eventFilter (QObject *, QEvent *);
+
+private:
+  int pmid[5];
+  QPopupMenu *pop;
+};
 
 #endif

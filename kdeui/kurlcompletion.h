@@ -7,12 +7,12 @@
 
 /**
  * URL completion helper. To use this, connect
- * it to a @ref KLined widget, which emits signals for completion
+ * it to a @ref KLineEdit widget, which emits signals for completion
  * (Tab/Ctrl-S) and rotation (Ctrl-D).
  *
  * Limitations: Currently only file completion is supported.
  *
- * @see KLined
+ * @see KLineEdit
  * @author Henner Zeller <zeller@think.de>, based on code by Torben Weis.
  * @version $Id$
  */

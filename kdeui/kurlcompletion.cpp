@@ -1,7 +1,7 @@
 /* 
  * KURLCompletion
  * Completion of URL's (currently just files), to
- * be connected to KLined() which emits signals for completion (Tab/Ctrl-S)
+ * be connected to KLineEdit() which emits signals for completion (Tab/Ctrl-S)
  * and rotation (Ctrl-D)
  *
  * 10/1997 Henner Zeller <zeller@think.de>

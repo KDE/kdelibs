@@ -22,6 +22,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.111  1999/05/11 23:16:39  dfaure
+// Added an "emit moved" in KToolBar::enable(...)
+//  -> it's connected to KTMainWindow::updateRects, which gets the thing right.
+// [ kfm contained the manual call to updateRects(), which was a hack ]
+//
 // Revision 1.110  1999/05/07 15:43:03  kulow
 // making some changes to the code and partly to the API to make it
 // -DQT_NO_ASCII_CAST compatible.
@@ -1896,14 +1901,14 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
 }
 
 /************** LINE EDITOR **************/
-/// Inserts a KLined. KLined is derived from QLineEdit and has another signal, tabPressed,
-//  for completions.
+// Inserts a KLineEdit. KLineEdit is derived from QLineEdit and has
+//  another signal, tabPressed, for completions.
 
 int KToolBar::insertLined(const QString& text, int id, const char *signal,
 			  const QObject *receiver, const char *slot,
 			  bool enabled, const QString& tooltiptext, int size, int index)
 {
-  KLined *lined = new KLined (this, 0);
+  KLineEdit *lined = new KLineEdit (this, 0);
   KToolBarItem *item = new KToolBarItem(lined, ITEM_LINED, id,
                                         true);
 
@@ -2191,8 +2196,8 @@ void KToolBar::setLinedText (int id, const QString& text)
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
     {
-      ((KLined *) b->getItem())->setText(text);
-      ((KLined *) b->getItem())->cursorAtEnd();
+      ((KLineEdit *) b->getItem())->setText(text);
+      ((KLineEdit *) b->getItem())->cursorAtEnd();
     }
 }
 
@@ -2200,7 +2205,7 @@ QString KToolBar::getLinedText (int id )
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-      return ((KLined *) b->getItem())->text();
+      return ((KLineEdit *) b->getItem())->text();
   return QString::null;
 }
 
@@ -2291,11 +2296,11 @@ KCombo *KToolBar::getCombo (int id)
   return 0;
 }
 
-KLined *KToolBar::getLined (int id)
+KLineEdit *KToolBar::getLined (int id)
 {
   for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
     if (b->ID() == id )
-      return ((KLined *) b->getItem());
+      return ((KLineEdit *) b->getItem());
   return 0;
 }
 

@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.55  1999/05/28 10:17:21  kulow
+// several fixes to make --enable-final work. Most work is done by changing
+// the order of the files in _SOURCES
+//
 // Revision 1.54  1999/05/23 00:53:59  kulow
 // CVS_SILENT moving some header files that STL comes before Qt
 //
@@ -108,7 +112,7 @@
 
 #include "kcombo.h"
 
-class KLined;
+class KLineEdit;
 class KToolBar;
 class KToolBoxManager;
 
@@ -338,14 +342,14 @@ public:
 
   /**
    * Inserts a KLined. You have to specify signals and slots to
-   * which KLined will be connected. KLined has all slots QLineEdit
-   * has, plus signals @ref KLined::completion and @ref KLined::rotation
-   * KLined can be set to autoresize itself to full free width
+   * which KLineEdit will be connected. KLineEdit has all slots QLineEdit
+   * has, plus signals @ref KLineEdit::completion and @ref KLineEdit::rotation
+   * KLineEdit can be set to autoresize itself to full free width
    * in toolbar, that is to last right aligned item. For that,
    * toolbar must be set to full width (which it is by default).
    * @see #setFullWidth
    * @see #setItemAutoSized
-   * @see KLined
+   * @see KLineEdit
    * @return Returns item index
    */
   int insertLined (const QString& text, int ID,
@@ -585,13 +589,13 @@ public:
   /**
    * This returns pointer to KToolBarLined. Example:
    * <pre>
-   * KLined * lined = toolbar->getKTollBarLined(lined_id);
+   * KLineEdit * lined = toolbar->getKTollBarLined(lined_id);
    * </pre>
    * That way you can get access to other public methods
-   * that @ref KLined provides. @ref KLined is the same thing
+   * that @ref KLineEdit provides. @ref KLineEdit is the same thing
    * as @ref QLineEdit plus completion signals.
    */
-  KLined * getLined (int id);
+  KLineEdit * getLined (int id);
 
   /**
    * This returns a pointer to KToolBarButton. Example:

@@ -18,7 +18,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   QLabel *label = new QLabel( _text , this );
   label->setGeometry( 10, 10, 330, 15 );
 
-  edit = new KLined( this, 0L );
+  edit = new KLineEdit( this, 0L );
     
   if ( _file_mode )
   {
