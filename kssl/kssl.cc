@@ -24,6 +24,7 @@
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
 #ifdef HAVE_SSL
+#include <unistd.h>
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>

@@ -17,10 +17,10 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifdef HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H 
 #include <config.h>
 #endif
-
+#include <unistd.h>
 #include <qstring.h>
 
 #include "kssldefs.h"
@@ -33,10 +33,6 @@
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
 #endif
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug

@@ -24,8 +24,11 @@
 #include <config.h>
 #endif
 
+#include <unistd.h>
 #ifdef HAVE_SSL
+#define crypt _openssl_crypt
 #include <openssl/x509.h>
+#undef crypt
 #endif
 class QString;
 
