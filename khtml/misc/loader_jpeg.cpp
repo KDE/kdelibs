@@ -70,7 +70,7 @@ static const int max_buf = 4096;
 struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     JOCTET buffer[max_buf];
 
-    int valid_buffer_len;
+    unsigned int valid_buffer_len;
     unsigned int skip_input_bytes;
     int ateof;
 
@@ -123,7 +123,7 @@ extern "C" {
         khtml_jpeg_source_mgr* src = (khtml_jpeg_source_mgr*)cinfo->src;
         src->skip_input_bytes += num_bytes;
 
-        int skipbytes = QMIN(src->bytes_in_buffer, src->skip_input_bytes);
+        unsigned int skipbytes = QMIN(src->bytes_in_buffer, src->skip_input_bytes);
 
 #ifdef BUFFER_DEBUG
         qDebug("skip_input_bytes is now %d", src->skip_input_bytes);

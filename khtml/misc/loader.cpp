@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
 
     Copyright (C) 1998 Lars Knoll (knoll@mpi-hd.mpg.de)
+    Copyright (C) 2000 Dirm Mueller (mueller@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,7 +23,7 @@
     pages from the web. It has a memory cache for these objects.
 */
 
-#undef CACHE_DEBUG
+//#undef CACHE_DEBUG
 //#define CACHE_DEBUG
 
 #include "loader.h"
@@ -296,16 +297,16 @@ int ImageSource::readyToSend()
 */
 void ImageSource::sendTo(QDataSink* sink, int n)
 {
-  sink->receive((const uchar*)&buffer.at(pos), n);
+    sink->receive((const uchar*)&buffer.at(pos), n);
 
-  pos += n;
+    pos += n;
 
-  // buffer is no longer needed
-  if(eof && pos == buffer.size() && !rewable)
-  {
-      buffer.resize(0);
-      pos = 0;
-  }
+    // buffer is no longer needed
+    if(eof && pos == buffer.size() && !rewable)
+    {
+        buffer.resize(0);
+        pos = 0;
+    }
 }
 
 /**
@@ -313,7 +314,7 @@ void ImageSource::sendTo(QDataSink* sink, int n)
  */
 void ImageSource::setEOF( bool state )
 {
-  eof = state;
+    eof = state;
 }
 
 // ImageSource's is rewindable.
@@ -357,10 +358,10 @@ void ImageSource::cleanBuffer()
 
 static QString buildAcceptHeader()
 {
-  QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
-  if (result.right(2) == ", ")
-     result = result.left(result.length()-2);
-  return result;
+    QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
+    if (result.right(2) == ", ")
+        result = result.left(result.length()-2);
+    return result;
 }
 
 // -------------------------------------------------------------------------------------
@@ -531,9 +532,9 @@ void CachedImage::movieUpdated( const QRect& r )
 {
 
 #if QT_VERSION ==  220
-#ifdef __GNUC__
-#warning EVIL QT 2.2.0 HACK REMOVE THIS
-#endif
+// #ifdef __GNUC__
+// #warning EVIL QT 2.2.0 HACK REMOVE THIS
+// #endif
     // evil hack to workaround png decoder bugs in Qt 2.2.0 release
     QRect& vrect = const_cast<QRect&>(m->getValidRect());
     vrect = vrect.unite(r);
@@ -592,18 +593,20 @@ void CachedImage::movieStatus(int status)
                 imgSource->cleanBuffer();
                 delete p;
                 p = new QPixmap(m->framePixmap());
+                m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+                m->disconnectStatus( this, SLOT( movieStatus(int)));
                 delete m;
                 m = 0;
+                imgSource = 0;
             }
         }
 
 #ifdef CACHE_DEBUG
         QRect r(valid_rect());
         qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
-               m->framePixmap().size().width(), m->framePixmap().size().height());
+               pixmap().size().width(), pixmap().size().height());
 #endif
-        if(m)
-            do_notify(m->framePixmap(), valid_rect());
+            do_notify(pixmap(), valid_rect());
     }
 }
 
@@ -660,17 +663,16 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #ifdef CACHE_DEBUG
             kdDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
 #endif
-            p = new QPixmap();
-            p->loadFromData( _buffer.buffer() );
+            p = new QPixmap( _buffer.buffer() );
             // set size of image.
-            if( p ) {
-                m_size = p->width() * p->height() * p->depth() / 8;
-
+            m_size = p->width() * p->height() * p->depth() / 8;
+#ifdef CACHE_DEBUG
+            kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
+#endif
                 if(p->isNull())
                     do_notify(*p, QRect(0, 0, 16, 16)); // ### load "broken image" icon
                 else
                     do_notify(*p, p->rect());
-            }
         }
 
         computeStatus();
@@ -683,8 +685,9 @@ void CachedImage::error( int /*err*/, const char */*text*/ )
 #ifdef CACHE_DEBUG
     kdDebug(6060) << "CahcedImage::error" << endl;
 #endif
-    if(imgSource)
-        imgSource->setEOF(true);
+
+    clear();
+    typeChecked = true;
 }
 
 
@@ -816,19 +819,19 @@ void Loader::servePendingRequests()
 void Loader::slotFinished( KIO::Job* job )
 {
   Request *r = m_requestsLoading.take( job );
+  KIO::TransferJob* j = static_cast<KIO::TransferJob*>(job);
 
   if ( !r )
     return;
 
-  if (job->error())
+  if (j->error() || j->isErrorPage())
     r->object->error( job->error(), job->errorText().ascii() );
-  else {
+  else
     r->object->data(r->m_buffer, true);
 
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 #endif
-  }
 
   emit requestDone( r->m_baseURL, r->object );
   delete r;
@@ -854,79 +857,71 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
 
 int Loader::numRequests( const DOMString &baseURL )
 {
-  int res = 0;
+    int res = 0;
 
-  QListIterator<Request> pIt( m_requestsPending );
-  for (; pIt.current(); ++pIt )
-    if ( pIt.current()->m_baseURL == baseURL )
-      res++;
+    QListIterator<Request> pIt( m_requestsPending );
+    for (; pIt.current(); ++pIt )
+        if ( pIt.current()->m_baseURL == baseURL )
+            res++;
 
-  QPtrDictIterator<Request> lIt( m_requestsLoading );
-  for (; lIt.current(); ++lIt )
-    if ( lIt.current()->m_baseURL == baseURL )
-      res++;
+    QPtrDictIterator<Request> lIt( m_requestsLoading );
+    for (; lIt.current(); ++lIt )
+        if ( lIt.current()->m_baseURL == baseURL )
+            res++;
 
-  return res;
+    return res;
 }
 
 int Loader::numRequests( const DOMString &baseURL, CachedObject::Type type )
 {
-  int res = 0;
+    int res = 0;
 
-  QListIterator<Request> pIt( m_requestsPending );
-  for (; pIt.current(); ++pIt )
-    if ( pIt.current()->m_baseURL == baseURL && pIt.current()->object->type() == type )
-      res++;
+    QListIterator<Request> pIt( m_requestsPending );
+    for (; pIt.current(); ++pIt )
+        if ( pIt.current()->m_baseURL == baseURL && pIt.current()->object->type() == type )
+            res++;
 
-  QPtrDictIterator<Request> lIt( m_requestsLoading );
-  for (; lIt.current(); ++lIt )
-    if ( lIt.current()->m_baseURL == baseURL && pIt.current()->object->type() == type )
-      res++;
+    QPtrDictIterator<Request> lIt( m_requestsLoading );
+    for (; lIt.current(); ++lIt )
+        if ( lIt.current()->m_baseURL == baseURL && pIt.current()->object->type() == type )
+            res++;
 
-  return res;
+    return res;
 }
 
 void Loader::cancelRequests( const DOMString &baseURL )
 {
     //kdDebug( 6060 ) << "void Loader::cancelRequests( " << baseURL.string() << " )" << endl;
-
     //kdDebug( 6060 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
-
-  QListIterator<Request> pIt( m_requestsPending );
-  while ( pIt.current() )
-  {
-    if ( pIt.current()->m_baseURL == baseURL )
+    QListIterator<Request> pIt( m_requestsPending );
+    while ( pIt.current() )
     {
-        //kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
-
-      Cache::removeCacheEntry( pIt.current()->object );
-
-      m_requestsPending.remove( pIt );
+        if ( pIt.current()->m_baseURL == baseURL )
+        {
+            //kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+            Cache::removeCacheEntry( pIt.current()->object );
+            m_requestsPending.remove( pIt );
+        }
+        else
+            ++pIt;
     }
-    else
-      ++pIt;
-  }
 
-  //kdDebug( 6060 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
+    //kdDebug( 6060 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
 
-  QPtrDictIterator<Request> lIt( m_requestsLoading );
-  while ( lIt.current() )
-  {
-    if ( lIt.current()->m_baseURL == baseURL )
+    QPtrDictIterator<Request> lIt( m_requestsLoading );
+    while ( lIt.current() )
     {
-        //kdDebug( 6060 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
-
-      KIO::Job *job = static_cast<KIO::Job *>( lIt.currentKey() );
-
-      Cache::removeCacheEntry( lIt.current()->object );
-
-      m_requestsLoading.remove( lIt.currentKey() );
-
-      job->kill();
+        if ( lIt.current()->m_baseURL == baseURL )
+        {
+            //kdDebug( 6060 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
+            KIO::Job *job = static_cast<KIO::Job *>( lIt.currentKey() );
+            Cache::removeCacheEntry( lIt.current()->object );
+            m_requestsLoading.remove( lIt.currentKey() );
+            job->kill();
+        }
+        else
+            ++lIt;
     }
-    else
-      ++lIt;
-  }
 }
 
 // ----------------------------------------------------------------------------
