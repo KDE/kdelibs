@@ -69,14 +69,20 @@ public:
   bool supportsMoving( const QString& protocol ) const;
 
   /**
-   * @return true if determining the mimetype of a URL with
-   * the protocol @p protocol can be done by simply looking at
-   * the extension (that's the fast mode). If false, or if
+   * Determining the mimetype of a URL can be done by simply looking at
+   * the extension (that's the fast mode). However, when
    * the extension is unknown, a KIO::mimetype job will be necessary
-   * (i.e. downloading the beginning of the file).
-   * Defaults to false.
+   * (i.e. downloading the beginning of the file or asking the server for
+   * the mimetype).
+   *
+   * @return true if we can trust the mimetype @p mimetype for
+   * the protocol @p protocol. A HTTP URL ending with
+   * .pl or .asp may not return that actual type, but anything else.
+   * This information is used by KRun to know whether it should trust
+   * or not the result of KMimeType::findByURL.
+   * Defaults to true.
    */
-  bool mimetypeFastMode( const QString& protocol ) const;
+  bool mimetypeFastMode( const QString& protocol, const QString& mimetype ) const;
 
   /**
    * @return list of all known protocols
@@ -220,7 +226,7 @@ private:
     bool supportsDeleting;
     bool supportsLinking;
     bool supportsMoving;
-    bool mimetypeFastMode;
+    QStringList mimetypesExcludedFromFastMode;
   };
 
   typedef QMap<QString,Protocol> Map;

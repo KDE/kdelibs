@@ -68,13 +68,9 @@ void KProtocolManager::scanConfig( const QString& _dir )
     p.supportsDeleting = config.readBoolEntry( "deleting", false );
     p.supportsLinking = config.readBoolEntry( "linking", false );
     p.supportsMoving = config.readBoolEntry( "moving", false );
-    p.mimetypeFastMode = config.readBoolEntry( "mimetypefastmode", false );
-    QStrList lst;
-    config.readListEntry( "listing", lst );
-    p.supportsListing = ( lst.count() > 0 );
-    const char *l;
-    for( l = lst.first(); l; l = lst.next() )
-      p.listing.append( l );
+    p.listing = config.readListEntry( "listing" );
+    p.supportsListing = ( p.listing.count() > 0 );
+    p.mimetypesExcludedFromFastMode = config.readListEntry( "mimetypesExcludedFromFastMode" );
     QString tmp = config.readEntry( "input" );
     if ( tmp == "filesystem" )
       p.inputType = T_FILESYSTEM;
@@ -236,7 +232,7 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   return it.data().supportsMoving;
 }
 
-bool KProtocolManager::mimetypeFastMode( const QString& _protocol ) const
+bool KProtocolManager::mimetypeFastMode( const QString& _protocol, const QString & _mimetype ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
@@ -245,7 +241,8 @@ bool KProtocolManager::mimetypeFastMode( const QString& _protocol ) const
     return false;
   }
 
-  return it.data().mimetypeFastMode;
+  // return true if the exclude-list doesn't contain this mimetype
+  return !(it.data().mimetypesExcludedFromFastMode.contains(_mimetype));
 }
 
 QStringList KProtocolManager::protocols() const
