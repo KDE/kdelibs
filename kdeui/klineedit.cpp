@@ -437,14 +437,18 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 
             if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
-                emit QLineEdit::returnPressed();
+                bool trap = d->completionBox && d->completionBox->isVisible();
+
+                // Qt will emit returnPressed() itself if we return false
+                if ( d->grabReturnKeyEvents || trap )
+                    emit QLineEdit::returnPressed();
+
                 emit returnPressed( displayText() );
 
-                bool trap = d->completionBox && d->completionBox->isVisible();
                 if ( trap )
                     d->completionBox->hide();
 
-                // don't go to QLineEdit::eventFilter!
+                // Eat the event if the user asked for it, or if a completionbox was visible
                 return d->grabReturnKeyEvents || trap;
             }
         }

@@ -136,7 +136,7 @@ class KURL;
 class KLineEdit : public QLineEdit, public KCompletionBase
 {
     friend class KComboBox;
-    
+
     Q_OBJECT
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
     Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
@@ -230,14 +230,12 @@ public:
     bool isURLDropsEnabled() const;
 
     /**
-     * By default, @ref KComboBox recognizes @p Key_Return and @p Key_Enter and emits
+     * By default, @ref KLineEdit recognizes @p Key_Return and @p Key_Enter and emits
      * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @p trap = @p true to make @p KComboBox stop these
+     * Call this method with @p trap = @p true to make @p KLineEdit stop these
      * events. The signals will still be emitted of course.
-     *
-     * Only affects read-writable comboboxes.
      *
      * @see trapReturnKey()
      */
