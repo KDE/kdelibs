@@ -3,6 +3,7 @@ Type=DDS
 Header=^DDS 
 Name=Direct Draw Surface
 Name[da]=Overflade til direkte tegning
+Name[eo]=Rekta desegnosurfaco
 Name[hu]=DirectDraw-felület
 Name[is]=Direct Draw yfirborð
 Name[pt]=Superfície Direct Draw
