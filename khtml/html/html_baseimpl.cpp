@@ -323,6 +323,15 @@ void HTMLFrameElementImpl::detach()
     parentWidget = 0;
 }
 
+void HTMLFrameElementImpl::setLocation( const DOMString& str )
+{
+    url = str;
+    KHTMLView* w = ownerDocument()->view();
+    if ( m_render && w && w->part() )
+        // don't call this for an iframe
+        w->part()->requestFrame( static_cast<khtml::RenderFrame *>(m_render), url.string(), name.string() );
+}
+
 bool HTMLFrameElementImpl::isSelectable() const
 {
     return m_render!=0;

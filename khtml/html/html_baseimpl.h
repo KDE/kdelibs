@@ -85,6 +85,7 @@ public:
     virtual void detach();
 
     bool noResize() { return noresize; }
+    void setLocation( const DOMString& str );
 
     virtual bool isSelectable() const;
     virtual void setFocus(bool);
