@@ -474,6 +474,7 @@
 
 # kdebindings
 70001	dcoppython
+80001	kjsembed
 
 # kdenonbeta
 100000       reaktivate (KPart)
