@@ -65,8 +65,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_defaulttestpage->setCursor(KCursor::handCursor());
 	m_embedfonts = new QCheckBox(i18n("&Embed fonts in PostScript data when printing"), this);
 	m_embedfonts->setChecked(QSettings().readBoolEntry("/qt/embedFonts"));
-	QWhatsThis::add(m_embedfonts, i18n("This option allows you to embed the missing fonts into the PostScript data generated "
-				           "by KDE applications. Font embedding will produce better print results "
+	QWhatsThis::add(m_embedfonts, i18n("This option allows you to embed the fonts into the PostScript data generated "
+				           "by KDE and Qt applications. Font embedding usually produces better print results "
 					   "(closer to what you see on the screen), but larger print data as well."));
 
 	//layout
