@@ -90,9 +90,21 @@ public:
 
     void setText( const QString& text ) {
 	if ( combo )
-	    combo->setEditText( text );
+	{
+	    if (combo->editable())
+	    {
+               combo->setEditText( text );
+            }
+            else
+            {
+               combo->insertItem( text );
+               combo->setCurrentItem( combo->count()-1 );
+            }
+        }
 	else
+	{
 	    edit->setText( text );
+	}
     }
 
     void connectSignals( QObject *receiver ) {
