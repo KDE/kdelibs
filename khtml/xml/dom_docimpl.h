@@ -29,6 +29,8 @@
 #include <qstringlist.h>
 #include <qobject.h>
 
+class QPaintDevice;
+class QPaintDeviceMetrics;
 class KHTMLView;
 class Tokenizer;
 
@@ -174,6 +176,10 @@ public:
     CSSStyleSheetImpl* elementSheet();
     virtual Tokenizer *createTokenizer();
 
+    QPaintDeviceMetrics *paintDeviceMetrics() { return m_paintDeviceMetrics; }
+    QPaintDevice *paintDevice() const { return m_paintDevice; }
+    void setPaintDevice( QPaintDevice *dev );
+
 signals:
     virtual void finishedParsing();
 
@@ -196,6 +202,9 @@ protected:
     bool m_loadingSheet;
 
     CSSStyleSheetImpl *m_elemSheet;
+
+    QPaintDevice *m_paintDevice;
+    QPaintDeviceMetrics *m_paintDeviceMetrics;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

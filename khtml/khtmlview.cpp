@@ -776,6 +776,8 @@ void KHTMLView::print()
         QPainter *p = new QPainter;
         p->begin( printer );
 
+        m_part->xmlDocImpl()->setPaintDevice( printer );
+
         QPaintDeviceMetrics metrics( printer );
 
         // this is a simple approximation... we layout the document
@@ -835,6 +837,7 @@ void KHTMLView::print()
 
         // and now reset the layout to the usual one...
         root->setPrintingMode(false);
+        m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
         m_part->xmlDocImpl()->applyChanges();
     }

@@ -59,6 +59,7 @@ using namespace DOM;
 #include <kurl.h>
 #include <qdatetime.h>
 #include <assert.h>
+#include <qpaintdevicemetrics.h>
 
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::userStyle = 0;
@@ -559,6 +560,8 @@ void CSSOrderedPropertyList::append(DOM::CSSProperty *prop, int priority)
 void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e)
 {
     CSSValueImpl *value = prop->value();
+
+    QPaintDeviceMetrics *paintDeviceMetrics = e->ownerDocument()->paintDeviceMetrics();
 
     //kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
 
@@ -1150,7 +1153,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
       Length l;
       int type = primitiveValue->primitiveType();
       if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	l = Length(computeLength(primitiveValue, style), Fixed);
+	l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
       else
@@ -1164,7 +1167,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
       Length l;
       int type = primitiveValue->primitiveType();
       if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	l = Length(computeLength(primitiveValue, style), Fixed);
+	l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
       else
@@ -1176,7 +1179,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
         if(!primitiveValue) break;
         short spacing = 0;
-        spacing = computeLength(primitiveValue, style);
+        spacing = computeLength(primitiveValue, style, paintDeviceMetrics);
         style->setBorderSpacing(spacing);
         break;
         }
@@ -1375,7 +1378,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             width = 5;
             break;
         case CSS_VAL_INVALID:
-            width = computeLength(primitiveValue, style);
+            width = computeLength(primitiveValue, style, paintDeviceMetrics);
             break;
         default:
             return;
@@ -1427,7 +1430,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             return;
         }
         if(!primitiveValue) return;
-        int width = computeLength(primitiveValue, style);
+        int width = computeLength(primitiveValue, style, paintDeviceMetrics);
 // reason : letter or word spacing may be negative.
 //      if( width < 0 ) return;
         switch(prop->m_id)
@@ -1516,7 +1519,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         } else if(primitiveValue && !apply) {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                l = Length(computeLength(primitiveValue, style), Fixed);
+                l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
             else
@@ -1593,7 +1596,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                l = Length(computeLength(primitiveValue, style), Fixed);
+                l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
             {
                 // ### compute from parents height!!!
@@ -1713,14 +1716,19 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             RenderStyle *parentStyle = style; // use the current style as fallback in case we have no parent
             if(e->parentNode()) parentStyle = e->parentNode()->style();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                size = computeLength(primitiveValue, parentStyle);
+                size = computeLength(primitiveValue, parentStyle, paintDeviceMetrics);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
                                   * parentStyle->font().pixelSize()) / 100;
             else
                 return;
 	    // size is now in pixels, for the font we need it in points
-	    size = (int) (size * 72+36)/QPaintDevice::x11AppDpiY();
+
+            int dpiY = 72; // fallback
+            if ( paintDeviceMetrics )
+                dpiY = paintDeviceMetrics->logicalDpiY();
+
+	    size = ( size * 72 + 36 ) / dpiY;
         }
 
         if(size <= 0) return;
@@ -1809,7 +1817,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(primitiveValue->getIdent() == CSS_VAL_NORMAL)
             lineHeight = Length(100, Percent);
         else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                lineHeight = Length(computeLength(primitiveValue, style), Fixed);
+                lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
         else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
             lineHeight = Length(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
         else if(type == CSSPrimitiveValue::CSS_NUMBER)

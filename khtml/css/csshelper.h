@@ -27,6 +27,8 @@
 
 #include "dom/dom_string.h"
 
+class QPaintDeviceMetrics;
+
 namespace DOM
 {
     class CSSPrimitiveValueImpl;
@@ -52,7 +54,7 @@ namespace khtml
      * this is screen/printer dependent, so we probably need a config option for this,
      * and some tool to calibrate.
      */
-    int computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Metrics m = MetricScreen);
+    int computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics, Metrics m = MetricScreen );
 
     /*
      * mostly just removes the url("...") brace

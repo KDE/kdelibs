@@ -35,6 +35,7 @@
 
 #include <qstring.h>
 #include <qstack.h>
+#include <qpaintdevicemetrics.h>
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include <kdebug.h>
@@ -102,6 +103,8 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_sheet = 0;
     m_elemSheet = 0;
     tokenizer = 0;
+    m_paintDevice = 0;
+    m_paintDeviceMetrics = 0;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
@@ -115,6 +118,8 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     m_sheet = 0;
     m_elemSheet = 0;
     tokenizer = 0;
+    m_paintDeviceMetrics = 0;
+    setPaintDevice( m_view );
 }
 
 DocumentImpl::~DocumentImpl()
@@ -127,6 +132,7 @@ DocumentImpl::~DocumentImpl()
 	m_elemSheet->deref();
     if (tokenizer)
 	delete tokenizer;
+    delete m_paintDeviceMetrics;
 }
 
 const DOMString DocumentImpl::nodeName() const
@@ -585,6 +591,7 @@ void DocumentImpl::setReloading()
 void DocumentImpl::attach(KHTMLView *w)
 {
     m_view = w;
+    setPaintDevice( m_view );
     if(!m_styleSelector) createSelector();
     m_render = new RenderRoot(w);
     recalcStyle();
@@ -619,6 +626,13 @@ void DocumentImpl::clearSelection()
 Tokenizer *DocumentImpl::createTokenizer()
 {
     return new XMLTokenizer(this,m_view);
+}
+
+void DocumentImpl::setPaintDevice( QPaintDevice *dev )
+{
+    m_paintDevice = dev;
+    delete m_paintDeviceMetrics;
+    m_paintDeviceMetrics = new QPaintDeviceMetrics( dev );
 }
 
 void DocumentImpl::open(  )
