@@ -18,6 +18,7 @@
 */
 
 #include <assert.h>
+#include <stdlib.h>
 
 // TODO: Torben: On error free memory!
 
@@ -93,19 +94,25 @@ void* newNOT( void *_ptr1 )
   return new ParseTreeNOT( (ParseTreeBase*)_ptr1 );
 }
 
-void* newEXIST( void *_ptr1 )
+void* newEXIST( char *_ptr1 )
 {
-  return new ParseTreeEXIST( (char*)_ptr1 );
+  ParseTreeEXIST *t = new ParseTreeEXIST( _ptr1 );
+  free(_ptr1);
+  return t;
 }
 
 void* newID( char *_ptr1 )
 {
-  return new ParseTreeID( _ptr1 );
+  ParseTreeID *t = new ParseTreeID( _ptr1 );
+  free(_ptr1);
+  return t;
 }
 
 void* newSTRING( char *_ptr1 )
 {
-  return new ParseTreeSTRING( _ptr1 );
+  ParseTreeSTRING *t = new ParseTreeSTRING( _ptr1 );
+  free(_ptr1);
+  return t;
 }
 
 void* newNUM( int _i )
@@ -123,12 +130,16 @@ void* newBOOL( char _b )
   return new ParseTreeBOOL( (bool)_b );
 }
 
-void* newMAX2( const char *_id )
+void* newMAX2( char *_id )
 {
-  return new ParseTreeMAX2( _id );
+  ParseTreeMAX2 *t = new ParseTreeMAX2( _id );
+  free(_id);
+  return t;
 }
 
-void* newMIN2( const char *_id )
+void* newMIN2( char *_id )
 {
-  return new ParseTreeMIN2( _id );
+  ParseTreeMIN2 *t = new ParseTreeMIN2( _id );
+  free(_id);
+  return t;
 }
