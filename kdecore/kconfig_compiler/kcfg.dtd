@@ -24,7 +24,7 @@
 <!ELEMENT group (entry*)>
   <!ATTLIST group name CDATA #REQUIRED>
 
-<!ELEMENT entry (parameter?,label?,whatsthis?,choices?,code?,default*)>
+<!ELEMENT entry (parameter?,label?,whatsthis?,choices?,code?,default*,min?,max?)>
   <!ATTLIST entry 
                   name CDATA #IMPLIED
 		  type (String|StringList|Font|Rect|Size|Color|
@@ -53,3 +53,8 @@
   <!ATTLIST default code (true|false) #IMPLIED>
   <!ATTLIST default param CDATA #IMPLIED>
 
+<!ELEMENT min (#PCDATA)>
+  <!ATTLIST min code (true|false) #IMPLIED>
+
+<!ELEMENT max (#PCDATA)>
+  <!ATTLIST max code (true|false) #IMPLIED>

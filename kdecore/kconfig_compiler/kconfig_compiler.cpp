@@ -48,6 +48,7 @@ static const KCmdLineOptions options[] =
 
 
 bool globalEnums;
+bool itemAccessors;
 
 class CfgEntry
 {
@@ -95,6 +96,12 @@ class CfgEntry
     void setCode( const QString &d ) { mCode = d; }
     QString code() const { return mCode; }
 
+    void setMinValue( const QString &d ) { mMin = d; }
+    QString minValue() const { return mMin; }
+
+    void setMaxValue( const QString &d ) { mMax = d; }
+    QString maxValue() const { return mMax; }
+
     void setParam( const QString &d ) { mParam = d; }
     QString param() const { return mParam; }
 
@@ -132,6 +139,8 @@ class CfgEntry
       kdDebug() << "  paramvalues: " << mParamValues.join(":") << endl;
       kdDebug() << "  default: " << mDefaultValue << endl;
       kdDebug() << "  hidden: " << mHidden << endl;
+      kdDebug() << "  min: " << mMin << endl;
+      kdDebug() << "  max: " << mMax << endl;
       kdDebug() << "</entry>" << endl;
     }
 
@@ -152,7 +161,10 @@ class CfgEntry
     QStringList mParamDefaultValues;
     int mParamMax;
     bool mHidden;
+    QString mMin;
+    QString mMax;
 };
+
 
 static QString varName(const QString &n)
 {
@@ -291,6 +303,8 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QValueList<CfgEntry::Choice> choices;
   QStringList paramValues;
   QStringList paramDefaultValues;
+  QString minValue;
+  QString maxValue;
   int paramMax = 0;
 
   QDomNode n;
@@ -298,7 +312,9 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     QDomElement e = n.toElement();
     QString tag = e.tagName();
     if ( tag == "label" ) label = e.text();
-    if ( tag == "whatsthis" ) whatsThis = e.text();
+    else if ( tag == "whatsthis" ) whatsThis = e.text();
+    else if ( tag == "min" ) minValue = e.text();
+    else if ( tag == "max" ) maxValue = e.text();
     else if ( tag == "code" ) code = e.text();
     else if ( tag == "parameter" )
     {
@@ -487,6 +503,9 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     result->setParamDefaultValues(paramDefaultValues);
     result->setParamMax(paramMax);
   }
+  result->setMinValue(minValue);
+  result->setMaxValue(maxValue);
+  
   return result;
 }
 
@@ -581,15 +600,22 @@ QString itemType( const QString &type )
   return t;
 }
 
-QString addFunction( const QString &type )
+static QString itemDeclaration(const CfgEntry *e)
 {
-  QString f = "addItem";
+  if (itemAccessors)
+     return QString::null;
 
-  QString t = itemType( type );
+  return "  KConfigSkeleton::Item"+itemType( e->type() ) +
+         "  *item" + e->name() + ";\n";
+}
 
-  f += t;
+static QString itemVar(const CfgEntry *e)
+{
+  if (itemAccessors)
+     return varName( e->name() ) + "Item";
 
-  return f;
+  return "item" + e->name();
+
 }
 
 QString newItem( const QString &type, const QString &name, const QString &key,
@@ -651,11 +677,11 @@ QString userTextsFunctions( CfgEntry *e )
 {
   QString txt;
   if ( !e->label().isEmpty() ) {
-    txt += "  " + varName( e->name() ) + "Item->setLabel( i18n(\"" +
+    txt += "  " + itemVar(e) + "->setLabel( i18n(\"" +
            e->label() + "\") );\n";
   }
   if ( !e->whatsThis().isEmpty() ) {
-    txt += "  " + varName( e->name() ) + "Item->setWhatsThis( i18n(\"" +
+    txt += "  " + itemVar(e) + "->setWhatsThis( i18n(\"" +
            e->whatsThis() + "\") );\n";
   }
   return txt;
@@ -711,7 +737,7 @@ int main( int argc, char **argv )
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList headerIncludes = codegenConfig.readListEntry("IncludeFiles");
   bool mutators = codegenConfig.readBoolEntry("Mutators");
-  bool itemAccessors = codegenConfig.readBoolEntry( "ItemAccessors", false );
+  itemAccessors = codegenConfig.readBoolEntry( "ItemAccessors", false );
   bool setUserTexts = codegenConfig.readBoolEntry( "SetUserTexts", false );
 
   globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
@@ -951,7 +977,7 @@ int main( int argc, char **argv )
       h << "    Item" << itemType( e->type() ) << " *"
         << getFunction( n ) << "Item()" << endl;
       h << "    {" << endl;
-      h << "      return " << varName( n ) << "Item;" << endl;
+      h << "      return " << itemVar(e) << ";" << endl;
       h << "    }" << endl;
     }
 
@@ -1005,8 +1031,7 @@ int main( int argc, char **argv )
   h << endl << "  private:" << endl;
   if ( itemAccessors ) {
     for( e = entries.first(); e; e = entries.next() ) {
-      h << "    Item" << itemType( e->type() ) << " *" << varName( e->name() )
-        << "Item;" << endl;
+      h << "    Item" << itemType( e->type() ) << " *" << itemVar( e ) << ";" << endl;
     }
   }
 
@@ -1127,98 +1152,47 @@ int main( int argc, char **argv )
         cpp << "    values" << e->name() << ".append( choice );" << endl;
         cpp << "  }" << endl;
       }
-      if (e->param().isEmpty())
+    }
+    cpp << itemDeclaration(e);
+    if (e->param().isEmpty())
+    {
+      // Normal case
+      cpp << "  " << itemVar(e) << " = " 
+          << newItem( e->type(), e->name(), key, e->defaultValue() ) << endl;
+
+      if ( !e->minValue().isEmpty() )
+        cpp << "  " << itemVar(e) << "->setMinValue(" << e->minValue() << ");" << endl;
+      if ( !e->maxValue().isEmpty() )
+        cpp << "  " << itemVar(e) << "->setMaxValue(" << e->maxValue() << ");" << endl;
+
+      if ( setUserTexts )
+        cpp << userTextsFunctions( e );
+
+      cpp << "  addItem( \"" << e->name() << "\", " << itemVar(e) << " );" << endl;
+    }
+    else
+    {
+// TODO: itemAccessors don't work with parameterized entries
+// TODO: itemVar(e) should be an array in that case
+      // Indexed
+      for(int i = 0; i <= e->paramMax(); i++)
       {
-        // Normal case
-        cpp << "  KConfigSkeleton::ItemEnum *item" << e->name()
-            << " = " << newItem( "Enum", e->name(), key, e->defaultValue() )
+        QString defaultStr;
+        if ( !e->paramDefaultValue(i).isEmpty() )
+          defaultStr = e->paramDefaultValue(i);
+        else if ( !e->defaultValue().isEmpty() )
+          defaultStr = paramString(e->defaultValue(), e, i);
+        else
+          defaultStr = defaultValue( e->type() );
+
+        cpp << "  " << itemVar(e) << " = " 
+            << newItem( e->type(), e->name(), paramString(key, e, i), defaultStr, QString("[%1]").arg(i) )
             << endl;
-        cpp << "  addItem( \"" << e->name() << "\", item" << e->name() << " );" << endl;
 
-        if ( itemAccessors ) {
-          cpp << "  " << varName( e->name() ) << "Item = item" << e->name()
-              << ";" << endl;
-          if ( setUserTexts ) cpp << userTextsFunctions( e );
-        }
-      }
-      else
-      {
-        cpp << "  KConfigSkeleton::ItemEnum *item" << e->name() << ";" << endl;
-        // Indexed
-        for(int i = 0; i <= e->paramMax(); i++)
-        {
-          QString defaultStr;
-          if ( !e->paramDefaultValue(i).isEmpty() )
-            defaultStr = e->paramDefaultValue(i);
-          else if ( !e->defaultValue().isEmpty() )
-            defaultStr = paramString(e->defaultValue(), e, i);
-          else
-            defaultStr = defaultValue( e->type() );
+        if ( setUserTexts )
+          cpp << userTextsFunctions( e );
 
-          cpp << "  item" << e->name()
-              << " = " << newItem( "Enum", e->name(), paramString(key, e, i), defaultStr, QString("[%1]").arg(i) )
-              << endl;
-
-          cpp << "  addItem( \"" << paramString(e->paramName(), e, i) << "\", item" << e->name() << " );" << endl;
-
-          if ( itemAccessors ) {
-            cpp << "  " << varName( e->name() ) << "Item = item" << e->name()
-                << ";" << endl;
-            if ( setUserTexts ) cpp << userTextsFunctions( e );
-          }
-        }
-      }
-    } else {
-      if (e->param().isEmpty())
-      {
-        if ( itemAccessors ) {
-          cpp << "  " << varName( e->name() ) << "Item = "
-              << newItem( e->type(), e->name(), key, e->defaultValue() )
-              << endl;
-          cpp << "  addItem( \"" << e->name() << "\", " << varName( e->name() )
-              << "Item );" << endl;
-          if ( setUserTexts ) cpp << userTextsFunctions( e );
-        } else {
-          // Normal case
-          cpp << "  " << addFunction( e->type() ) << "( \"" << e->name() << "\", "
-              << varName(e->name());
-          if ( !e->defaultValue().isEmpty() || !key.isEmpty() ) {
-            if ( e->defaultValue().isEmpty() )
-              cpp << ", " << defaultValue( e->type() );
-            else
-              cpp << ", " << e->defaultValue();
-            QString quotedName = e->name();
-            addQuotes( quotedName );
-            if ( !key.isEmpty() && key != quotedName )
-              cpp << ", " << key;
-          }
-          cpp << " );" << endl;
-        }
-      }
-      else
-      {
-        // Indexed
-        for(int i = 0; i <= e->paramMax(); i++)
-        {
-          cpp << "  " << addFunction( e->type() ) << "( \""
-              << paramString(e->paramName(), e, i) << "\", "
-              << varName(e->name()) << QString("[%1]").arg(i);
-
-          QString defaultStr;
-          if ( !e->paramDefaultValue(i).isEmpty() )
-            defaultStr = e->paramDefaultValue(i);
-          else if ( !e->defaultValue().isEmpty() )
-            defaultStr = paramString(e->defaultValue(), e, i);
-          else
-            defaultStr = defaultValue( e->type() );
-
-          cpp << ", " << defaultStr;
-
-          if (!key.isEmpty())
-            cpp << ", " << paramString(key, e, i);
-
-          cpp << " );" << endl;
-        }
+        cpp << "  addItem( \"" << paramString(e->paramName(), e, i) << "\", " << itemVar(e) << " );" << endl;
       }
     }
   }

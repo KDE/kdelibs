@@ -170,7 +170,7 @@ class Test1 : public KConfigSkeleton
       return mMyNumber;
     }
 
-  private:
+  protected:
     QString mParamtransport;
     QString mParamfolder;
 

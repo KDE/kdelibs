@@ -30,6 +30,11 @@
       <default param="left">PumpNDump</default>
     </entry>
     <entry name="FooBar" key="foo bar" type="String"/>
+    <entry name="Age" type="Int">
+      <min>8</min>
+      <max>88</max>
+      <default>35</default>
+    </entry>
   </group>
 
 </kcfg>

@@ -11,18 +11,18 @@ Test2::Test2(  )
   setCurrentGroup( "General" );
 
   mAutoSaveItem = new KConfigSkeleton::ItemBool( currentGroup(), "Auto Save", mAutoSave, false );
-  addItem( "AutoSave", mAutoSaveItem );
   mAutoSaveItem->setLabel( i18n("Enable automatic saving of calendar") );
   mAutoSaveItem->setWhatsThis( i18n("WhatsThis text for AutoSave option") );
+  addItem( "AutoSave", mAutoSaveItem );
   mAutoSaveIntervalItem = new KConfigSkeleton::ItemInt( currentGroup(), "Auto Save Interval", mAutoSaveInterval, 10 );
-  addItem( "AutoSaveInterval", mAutoSaveIntervalItem );
   mAutoSaveIntervalItem->setLabel( i18n("Auto Save Interval") );
+  addItem( "AutoSaveInterval", mAutoSaveIntervalItem );
   mConfirmItem = new KConfigSkeleton::ItemBool( currentGroup(), "Confirm Deletes", mConfirm, true );
-  addItem( "Confirm", mConfirmItem );
   mConfirmItem->setLabel( i18n("Confirm deletes") );
+  addItem( "Confirm", mConfirmItem );
   mArchiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), "Archive File", mArchiveFile );
-  addItem( "ArchiveFile", mArchiveFileItem );
   mArchiveFileItem->setLabel( i18n("Archive File") );
+  addItem( "ArchiveFile", mArchiveFileItem );
   QValueList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
@@ -38,19 +38,18 @@ Test2::Test2(  )
     choice.whatsThis = "";
     valuesDestination.append( choice );
   }
-  KConfigSkeleton::ItemEnum *itemDestination = new KConfigSkeleton::ItemEnum( currentGroup(), "Destination", mDestination, valuesDestination, standardDestination );
-  addItem( "Destination", itemDestination );
-  mDestinationItem = itemDestination;
+  mDestinationItem = new KConfigSkeleton::ItemEnum( currentGroup(), "Destination", mDestination, valuesDestination, standardDestination );
   mDestinationItem->setLabel( i18n("New Events/Todos Should") );
+  addItem( "Destination", mDestinationItem );
 
   setCurrentGroup( "Views" );
 
   mHourSizeItem = new KConfigSkeleton::ItemInt( currentGroup(), "Hour Size", mHourSize, 10 );
-  addItem( "HourSize", mHourSizeItem );
   mHourSizeItem->setLabel( i18n("Hour Size") );
+  addItem( "HourSize", mHourSizeItem );
   mSelectionStartsEditorItem = new KConfigSkeleton::ItemBool( currentGroup(), "SelectionStartsEditor", mSelectionStartsEditor, false );
-  addItem( "SelectionStartsEditor", mSelectionStartsEditorItem );
   mSelectionStartsEditorItem->setLabel( i18n("Time range selection in agenda view starts event editor") );
+  addItem( "SelectionStartsEditor", mSelectionStartsEditorItem );
 
   setCurrentGroup( "KOrganizer Plugins" );
 
@@ -59,23 +58,23 @@ Test2::Test2(  )
   defaultSelectedPlugins.append( "webexport" );
 
   mSelectedPluginsItem = new KConfigSkeleton::ItemStringList( currentGroup(), "SelectedPlugins", mSelectedPlugins, defaultSelectedPlugins );
-  addItem( "SelectedPlugins", mSelectedPluginsItem );
   mSelectedPluginsItem->setLabel( i18n("SelectedPlugins") );
+  addItem( "SelectedPlugins", mSelectedPluginsItem );
 
   setCurrentGroup( "Colors" );
 
   mHighlightColorItem = new KConfigSkeleton::ItemColor( currentGroup(), "Highlight Color", mHighlightColor, QColor( 100, 100, 255 ) );
-  addItem( "HighlightColor", mHighlightColorItem );
   mHighlightColorItem->setLabel( i18n("Highlight color") );
+  addItem( "HighlightColor", mHighlightColorItem );
   mAgendaBgColorItem = new KConfigSkeleton::ItemColor( currentGroup(), "Agenda Background Color", mAgendaBgColor, QColor( 255, 255, 255 ) );
-  addItem( "AgendaBgColor", mAgendaBgColorItem );
   mAgendaBgColorItem->setLabel( i18n("Agenda view background color") );
+  addItem( "AgendaBgColor", mAgendaBgColorItem );
 
   setCurrentGroup( "Fonts" );
 
   mTimeBarFontItem = new KConfigSkeleton::ItemFont( currentGroup(), "TimeBar Font", mTimeBarFont );
-  addItem( "TimeBarFont", mTimeBarFontItem );
   mTimeBarFontItem->setLabel( i18n("Time bar") );
+  addItem( "TimeBarFont", mTimeBarFontItem );
 }
 
 Test2::~Test2()

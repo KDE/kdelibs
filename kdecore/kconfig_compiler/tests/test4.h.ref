@@ -79,12 +79,31 @@ class Test4 : public KConfigSkeleton
       return self()->mFooBar;
     }
 
+    /**
+      Set Age
+    */
+    static
+    void setAge( int v )
+    {
+      if (!self()->isImmutable( "Age" ))
+        self()->mAge = v;
+    }
+
+    /**
+      Get Age
+    */
+    static
+    int age()
+    {
+      return self()->mAge;
+    }
+
     static
     void writeConfig()
     {
       static_cast<KConfigSkeleton*>(self())->writeConfig();
     }
-  private:
+  protected:
     Test4();
     static Test4 *mSelf;
 
@@ -93,6 +112,7 @@ class Test4 : public KConfigSkeleton
     QColor mColor[4];
     int mMouseAction[3];
     QString mFooBar;
+    int mAge;
 
   private:
 };

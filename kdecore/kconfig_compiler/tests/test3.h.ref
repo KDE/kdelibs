@@ -89,7 +89,7 @@ class Test3 : public KConfigSkeleton
       return mBlahBlahItem;
     }
 
-  private:
+  protected:
 
     // General
     bool mAutoSave;
