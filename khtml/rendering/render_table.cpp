@@ -1908,10 +1908,10 @@ void RenderTableCell::updateSize()
 }
 
 
-void RenderTableCell::repaintRectangle(int x, int y, int w, int h)
+void RenderTableCell::repaintRectangle(int x, int y, int w, int h, bool f)
 {
     y += _topExtra;
-    RenderFlow::repaintRectangle(x, y, w, h);
+    RenderFlow::repaintRectangle(x, y, w, h, f);
 }
 
 bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
