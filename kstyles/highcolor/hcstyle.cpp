@@ -336,6 +336,7 @@ bool HCStyle::eventFilter(QObject *obj, QEvent *ev)
                 if(child->isWidgetType())
                     ((QWidget *)child)->repaint(false);
             }
+	    delete tbChildList;
         }
     }
     else if(obj->inherits("QPushButton")){

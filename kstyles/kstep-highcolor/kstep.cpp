@@ -200,6 +200,7 @@ bool KStepStyle::eventFilter(QObject *obj, QEvent *ev)
             if(child->isWidgetType())
                 ((QWidget *)child)->repaint(false);
         }
+	delete tbChildList;
     }
     return(false);
 
