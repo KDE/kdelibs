@@ -227,7 +227,7 @@ void CSSSelector::extractPseudoType() const
         }
     }
 
-    value = QString::null;
+    value = DOMString();
 }
 
 
