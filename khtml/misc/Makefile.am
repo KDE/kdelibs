@@ -22,7 +22,7 @@
 noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
 	decoder.cpp    khtmldata.cpp  loader.cpp \
-	htmlhashes.cpp helper.cpp
+	htmlhashes.cpp helper.cpp font.cpp
 
 libkhtmlmisc_la_METASOURCES = AUTO
 
@@ -31,7 +31,7 @@ libkhtmlmisc_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
 	decoder.h      khtmllayout.h \
-	khtmldata.h    stringit.h     htmlhashes.h    helper.h
+	khtmldata.h    stringit.h     htmlhashes.h    helper.h font.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir) -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \
