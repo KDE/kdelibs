@@ -28,6 +28,7 @@
 
 #include <qpainter.h>
 #include <qlist.h>
+#include <qdict.h>
 #include <qstrlist.h>
 #include <qarray.h>
 #include <qpixmap.h>
@@ -367,6 +368,8 @@ public:
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & );
+    virtual void select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+        bool _select, int _tx, int _ty );
     virtual void recalcBaseSize( QPainter *_painter );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
@@ -563,7 +566,7 @@ public:
     HTMLCachedImage( const char * );
     virtual ~HTMLCachedImage() { }
 
-    QPixmap* getPixmap() { return pixmap; }
+    QPixmap* getPixmap();
     const char *getFileName() { return filename.data(); }
 
 protected:
@@ -656,7 +659,7 @@ protected:
     
     KHTMLWidget *htmlWidget;
     
-    static QList<HTMLCachedImage>* pCache;
+    static QDict<HTMLCachedImage>* pCache;
 
     /*
      * Flag telling wether this image was found in the cache

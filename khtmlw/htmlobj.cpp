@@ -41,11 +41,12 @@
 #include <qdrawutil.h>
 #include <qmovie.h>
 #include <qregexp.h>
+#include <qdict.h>
 
 #include "htmlobj.moc"
 
 // This will be constructed once and NEVER deleted.
-QList<HTMLCachedImage>* HTMLImage::pCache = 0L;
+QDict<HTMLCachedImage>* HTMLImage::pCache = 0L;
 int HTMLObject::objCount = 0;
 
 //-----------------------------------------------------------------------------
@@ -145,7 +146,7 @@ void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
     const char *u = getURL();
     if ( (u == 0) || (*u == '\0') || (_select == isSelected()) )
 	return;
-	
+
     setSelected( _select );
 
     _chain->push( this );
@@ -476,6 +477,23 @@ void HTMLText::getSelectedText( QString &_str )
 	    }
 	}
     }
+}
+
+void HTMLText::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    bool _select, int _tx, int _ty )
+{
+    const char *u = getURL();
+    if ( (u == 0) || (*u == '\0') || (_select == isSelected()) )
+	return;
+
+    setSelected( _select );
+
+	selStart = 0;
+	selEnd = strlen( text );
+
+    _chain->push( this );
+    _htmlw->paint(_chain, x + _tx, y - ascent + _ty, width, ascent+descent);
+    _chain->pop();
 }
 
 void HTMLText::recalcBaseSize( QPainter *_painter )
@@ -1221,9 +1239,19 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 
 HTMLCachedImage::HTMLCachedImage( const char *_filename )
 {
-    pixmap = new QPixmap();
-    pixmap->load( _filename );
+    pixmap = 0;
     filename = _filename;
+}
+
+QPixmap* HTMLCachedImage::getPixmap()
+{
+    if ( !pixmap )
+    {
+        pixmap = new QPixmap();
+        pixmap->load( filename );
+    }
+
+    return pixmap;
 }
 
 QPixmap* HTMLImage::findImage( const char *_filename )
@@ -1232,14 +1260,13 @@ QPixmap* HTMLImage::findImage( const char *_filename )
 	// yet been initialized. Better be careful.
 	if( !pCache )
 	{
-		pCache = new QList<HTMLCachedImage>;
+		pCache = new QDict<HTMLCachedImage>( 503, true, false );
 		return 0l;
 	}
 
-    HTMLCachedImage *img;
-    for ( img = pCache->first(); img != 0L; img = pCache->next() )
+    HTMLCachedImage *img = pCache->find( _filename );
+    if ( img )
     {
-	if ( strcmp( _filename, img->getFileName() ) == 0 )
 	    return img->getPixmap();
     }
     
@@ -1251,9 +1278,9 @@ void HTMLImage::cacheImage( const char *_filename )
 	// Since this method is static, it is possible that pCache has not
 	// yet been initialized. Better be careful.
 	if( !pCache )
-		pCache = new QList<HTMLCachedImage>;
+		pCache = new QDict<HTMLCachedImage>( 503, true, false );
 
-	pCache->append( new HTMLCachedImage( _filename ) );
+	pCache->insert( _filename, new HTMLCachedImage( _filename ) );
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
@@ -1262,7 +1289,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     : QObject(), HTMLObject()
 {
     if ( pCache == 0 )
-	pCache = new QList<HTMLCachedImage>;
+	pCache = new QDict<HTMLCachedImage>( 503, true, false );;
 
     pixmap = 0;
     movie = 0;
@@ -1307,8 +1334,6 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
       return;
     }
 
-    printf("********* IMAGE %s ******\n",_filename );
-    
     KURL kurl( _filename );
     if ( kurl.isMalformed() )
     {
@@ -1326,10 +1351,20 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     }
     else
     {
-      // the file is onl the local hard disk
-      synchron = true;
-      fileLoaded( kurl.path() );
-      synchron =false;
+      QPixmap *p = HTMLImage::findImage( kurl.path() );
+      if ( p )
+      {
+          pixmap = new QPixmap;
+          *pixmap = *p;
+          init();
+      }
+      else
+      {
+          // the file is onl the local hard disk
+          synchron = true;
+          fileLoaded( kurl.path() );
+          synchron =false;
+      }
     }
 
     // Is the image available ?
@@ -1382,17 +1417,16 @@ void HTMLImage::changeImage( const char *_url )
 
   if ( u.isLocalFile() )
   {
-    QPixmap *p = HTMLImage::findImage( _url );
+    if ( !pixmap )
+	  pixmap = new QPixmap();
+
+    QPixmap *p = HTMLImage::findImage( u.path() );
     if ( p )
     {
-      if ( pixmap )
-	delete pixmap;
-      pixmap = p;
+      *pixmap = *p;
     }
     else
     {
-      if ( !pixmap )
-	pixmap = new QPixmap();
       pixmap->load( u.path() );
       cached = false;
     }
@@ -1473,8 +1507,6 @@ bool HTMLImage::fileLoaded( const char* _url, QBuffer& _buffer )
 
 void HTMLImage::fileLoaded( const char *_filename )
 {
-  printf("*********** LOADED %s ******\n", _filename );
-  
     bComplete = true;
 
     char buffer[ 4 ];
