@@ -99,7 +99,7 @@ ResourceExample::ResourceExample( const KConfig *config )
 {
   if ( config ) {
     mLocation = config->readEntry( "Location" );
-    mPassword = decryptStr( config->readEntry( "Password" ) );
+    mPassword = KStringHandler::obscure( config->readEntry( "Password" ) );
   } else {
     mLocation = ""; // Or some sensible default
     mPassword = "";
@@ -110,7 +110,7 @@ void ResourceExample::writeConfig( KConfig *config )
 {
   KRES::Resource::writeConfig( config );
   config->writeEntry( "Location", mLocation );
-  config->writeEntry( "Password", encryptStr( mPassword ) );
+  config->writeEntry( "Password", KStringHandler::obscure( mPassword ) );
 }
 
 extern "C"
@@ -323,18 +323,6 @@ class Resource : public QObject
       Return true, if the resource is active.
     */
     bool isActive() const;
-
-    /**
-     * This method can be used by all resources to encrypt
-     * their passwords for storing in a config file.
-     */
-    static QString encryptStr( const QString & );
-
-    /**
-     * This method can be used by all resources to decrypt
-     * their passwords read from a config file.
-     */
-    static QString decryptStr( const QString & );
 
     friend class Factory;
     friend class ManagerImpl;

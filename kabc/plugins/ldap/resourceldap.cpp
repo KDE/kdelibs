@@ -23,6 +23,8 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kstringhandler.h>
+
 #include <stdlib.h>
 
 #include "resourceldap.h"
@@ -46,7 +48,7 @@ ResourceLDAP::ResourceLDAP( const KConfig *config )
 {
   if ( config ) {
     mUser = config->readEntry( "LdapUser" );
-    mPassword = decryptStr( config->readEntry( "LdapPassword" ) );
+    mPassword = KStringHandler::obscure( config->readEntry( "LdapPassword" ) );
     mDn = config->readEntry( "LdapDn" );
     mHost = config->readEntry( "LdapHost" );
     mPort = config->readNumEntry( "LdapPort", 389 );
@@ -81,7 +83,7 @@ void ResourceLDAP::writeConfig( KConfig *config )
   Resource::writeConfig( config );
 
   config->writeEntry( "LdapUser", mUser );
-  config->writeEntry( "LdapPassword", encryptStr( mPassword ) );
+  config->writeEntry( "LdapPassword", KStringHandler::obscure( mPassword ) );
   config->writeEntry( "LdapDn", mDn );
   config->writeEntry( "LdapHost", mHost );
   config->writeEntry( "LdapPort", mPort );
