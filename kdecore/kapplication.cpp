@@ -817,6 +817,11 @@ DCOPClient *KApplication::dcopClient()
     return s_DCOPClient;
 
   s_DCOPClient = new DCOPClient();
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+  if (args->isSet("dcopserver"))
+  {
+    s_DCOPClient->setServerAddress( args->getOption("dcopserver"));
+  }
   if( kapp ) {
     connect(s_DCOPClient, SIGNAL(attachFailed(const QString &)),
             kapp, SLOT(dcopFailure(const QString &)));
@@ -1259,11 +1264,6 @@ void KApplication::parseCommandLine( )
           aMiniIconPixmap = SmallIcon( tmp );
     }
 
-    if (args->isSet("dcopserver"))
-    {
-       dcopClient()->setServerAddress( args->getOption("dcopserver"));
-    }
-
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
     if (!nocrashhandler && args->isSet("crashhandler"))
     {
@@ -1300,8 +1300,6 @@ void KApplication::parseCommandLine( )
     {
         d->geometry_arg = args->getOption("geometry");
     }
-
-    delete args; // Throw away
 }
 
 QString KApplication::geometryArgument() const
