@@ -411,6 +411,9 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
    }
    QDir dir( dirname );
    const QFileInfoList *list = dir.entryInfoList( QDir::DefaultFilter, QDir::Unsorted );
+   if (!list)
+      return true;
+      
    for( QFileInfoListIterator it( *list );
         it.current() != NULL;
         ++it )
@@ -470,12 +473,13 @@ QStringList KBuildSycoca::existingResourceDirs()
       resources.remove( res ); // remove this 'res' and all its duplicates
    }
    for( QStringList::Iterator it = dirs->begin();
-        it != dirs->end();
-        ++it )
+        it != dirs->end(); )
    {
       QFileInfo inf( *it );
-      if( !inf.exists())
+      if( !inf.exists() || !inf.isReadable() )
          it = dirs->remove( it );
+      else
+         ++it;
    }
    return *dirs;
 }
