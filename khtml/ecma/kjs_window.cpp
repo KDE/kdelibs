@@ -588,6 +588,19 @@ Value Window::get(ExecState *exec, const UString &p) const
     }
   }
 
+  // give access to functions (and variables ?) from parent frameset
+  if (m_part->parentPart())
+  {
+    Object parentObject = retrieve(m_part->parentPart());
+    Value ret = parentObject.get(exec,p);
+    if (ret.type() != UndefinedType ) {
+#ifdef KJS_VERBOSE
+      kdDebug() << "Window::get property " << p.qstring() << " found in parent part" << endl;
+#endif
+      return ret;
+    }
+  }
+
   kdWarning() << "Window::get property not found: " << p.qstring() << endl;
   return Undefined();
 }
