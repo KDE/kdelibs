@@ -831,7 +831,8 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
     if(!str->s || from > str->l ) return 0;
     if ( from + len > str->l ) len = str->l - from;
 
-    return width( from, len, &metrics( firstLine) );
+    QFontMetrics fm = metrics(firstLine);
+    return width( from, len, &fm);
 }
 
 unsigned int RenderText::width(unsigned int from, unsigned int len, QFontMetrics *_fm) const
