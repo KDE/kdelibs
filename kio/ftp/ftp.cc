@@ -1817,7 +1817,8 @@ void Ftp::get( const KURL & url )
   }
 
   // try to find the size of the file (and check that it exists at the same time)
-  if ( !ftpSize( url.path(), 'I' ) )
+  // 550 is "File does not exist"/"not a plain file"
+  if ( !ftpSize( url.path(), 'I' ) && strncmp( rspbuf, "550", 3) == 0 )
   {
       // Not a file, or doesn't exist. We need to find out.
       QCString tmp = "cwd ";
