@@ -151,6 +151,12 @@ public:
   * @return TRUE this and kch are the same charset
   */
   bool operator ==(const KCharset& kch)const{ return entry==kch.entry; }
+
+  /**
+  * Gets X charset identifier (last two fields of X font name) 
+  *
+  * @return string representing X charset name
+  */ 
   QString xCharset();
  
  /**
@@ -546,6 +552,14 @@ public:
    */
   KCharset charset(const QFont& font);   
 
+ /** 
+   * Returns charset of given X name object
+   *
+   * @param xName X charset name
+   * @return charset object
+   */
+  KCharset charsetFromX(const QString& xName);   
+  
   /**
    * Unicode to displayable character conversion
    *

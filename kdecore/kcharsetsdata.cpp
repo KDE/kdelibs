@@ -879,3 +879,22 @@ const QIntDict<KDispCharEntry> * KCharsetsData::getDisplayableDict(){
  #endif
  return displayableCharsDict;
 }
+
+QString KCharsetsData::fromX(const QString &name){
+
+  KEntryIterator *it=config->entryIterator("XNames");
+  if ( it )
+  {
+      while( it->current() ){
+	if (it->current()->aValue==name ) return it->currentKey();
+	++(*it);
+      }  
+  }
+  return ""; 
+}
+
+QString KCharsetsData::toX(const QString &name){
+
+  config->setGroup("XNames");
+  return config->readEntry(name,"");
+}

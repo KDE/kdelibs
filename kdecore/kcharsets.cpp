@@ -211,6 +211,8 @@ bool KCharset::printable(int chr){
 QString KCharset::xCharset(){
 
   if (!entry) return 0;
+  QString xch=data->toX(entry->name);
+  if ( !xch.isEmpty() ) return xch; 
   if (strnicmp(entry->name,"iso-",4)==0){
      return QString("iso")+QString(entry->name).mid(4,100);
   }
@@ -471,3 +473,16 @@ const KCharsetConversionResult & KCharsets::convertTag(const char *tag
   return data->convertTag(tag,l);
 }
  
+KCharset KCharsets::charsetFromX(const QString &xName){
+  
+  QString name=data->fromX(xName);
+  KCharset kch;
+  if (!name.isEmpty()) kch=KCharset(name);
+  if ( !kch.ok() && strncmp(xName,"iso",3)==0 ){
+      name="iso-"+xName.mid(3,100);
+      kch=KCharset(name);
+      if (kch.ok()) return kch;
+  }
+  return kch;
+}
+

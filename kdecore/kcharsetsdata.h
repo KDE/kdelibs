@@ -175,6 +175,8 @@ public:
     convertTag(tag,*tempResult,l);
     return *tempResult;
   }
+  QString fromX(const QString &name);
+  QString toX(const QString &name);
   const QIntDict<KDispCharEntry> * getDisplayableDict();
 };
 

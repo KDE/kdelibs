@@ -153,14 +153,14 @@ public:
      * returns the parts of the parameter str understood as language setting
      * the format is language_country.charset
      */ 
-    void splitLocale(const QString& str,QString& language,QString& country,
-                     QString &charset) const;
+    static void splitLocale(const QString& str,QString& language,QString& country,
+                     QString &charset);
 
     /** 
      * does the same as the above, just reverse
      */
-    const QString mergeLocale(const QString& lang, const QString& country,
-			      const QString &charset) const;
+    static const QString mergeLocale(const QString& lang, const QString& country,
+			      const QString &charset);
 
     /**
      * if the application can handle localized numeric values, it should

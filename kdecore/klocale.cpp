@@ -255,7 +255,7 @@ const char *KLocale::getLocale(QString cat){
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
 			  QString& country,
-			  QString &chset) const {
+			  QString &chset){
    
     QString str = aStr.copy();
 
@@ -283,7 +283,7 @@ void KLocale::splitLocale(const QString& aStr,
     
     lang = str;
     
-    if (chset.isEmpty()){
+    if (chset.isEmpty() && kapp != 0){
 	QString directory = KApplication::kde_localedir();
 	QString dir=directory+"/"+lang+"_"+country;
 	QDir d(dir);
@@ -308,7 +308,7 @@ void KLocale::splitLocale(const QString& aStr,
 }
 
 const QString KLocale::mergeLocale(const QString& lang,const QString& country,
-				   const QString &charset) const
+				   const QString &charset)
 {
     if (lang.isEmpty()) 
 	return "C";
@@ -341,13 +341,18 @@ QStrList KLocale::languageList()const{
 // a list to be returned
     QStrList list;
 // temporary copy of language list
-    QString str=langs.data();
+    QString str=langs;
+    str.detach();
     
-    while(str.length()>0){
+    while(!str.isEmpty()){
       int f = str.find(':');
       if (f >= 0) {
-          list.append(str.right(str.length()-f-1));
-  	  str = str.left(f);
+  	list.append(str.left(f));
+        str=str.right(str.length()-f-1);
+      }
+      else{
+        list.append(str);
+        str="";
       }
     }   
     return list;
