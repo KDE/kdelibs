@@ -330,12 +330,12 @@ void KHTMLParser::parseToken(Token *t)
         if(t->text)
             kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
-	if (!_inline  || !inBody || current->id() == ID_OPTION)  {
-	    if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ')
-		return;
-	} else if ( inBody ) {
-	    noRealBody = false;
-	}
+        if (!_inline  || !inBody || current->id() == ID_OPTION)  {
+            if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ')
+                return;
+        } else if ( inBody ) {
+            noRealBody = false;
+        }
     }
 
 
@@ -410,8 +410,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
 #endif
-	    flat = false;
-	}
+            flat = false;
+        }
 
 #if SPEED_DEBUG < 1
         if(tagPriority[id] == 0 && n->renderer()) {
@@ -543,7 +543,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     }
                 if ( changed )
                     document->body()->applyChanges();
-		noRealBody = false;
+                noRealBody = false;
             } else if ( current->isDocumentNode() )
                 break;
             return false;
@@ -786,10 +786,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
             }
             break;
-	    case ID_OBJECT:
-		discard_until = id + ID_CLOSE_TAG;
-		return false;
-	    case ID_UL:
+            case ID_OBJECT:
+                discard_until = id + ID_CLOSE_TAG;
+                return false;
+            case ID_UL:
         case ID_OL:
         case ID_DIR:
         case ID_MENU:
@@ -831,8 +831,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             }
             else if(id == ID_SELECT)
             {
-		// IE treats a nested select as </select>. Let's do the same
-		popBlock( ID_SELECT );
+                // IE treats a nested select as </select>. Let's do the same
+                popBlock( ID_SELECT );
                 break;
             }
             break;
@@ -899,7 +899,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
         startBody();
-	noRealBody = false;
+        noRealBody = false;
         break;
 
 // head elements
@@ -925,7 +925,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         break;
     case ID_FRAMESET:
         popBlock(ID_HEAD);
- 	if ( inBody && noRealBody && !haveFrameSet) {
+        if ( inBody && noRealBody && !haveFrameSet) {
             popBlock( ID_BODY );
             document->setBody( 0 );
             inBody = false;
@@ -936,7 +936,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
         startBody();
-	noRealBody = false;
+        noRealBody = false;
         break;
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
@@ -960,12 +960,12 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLInputElementImpl(document, form);
         break;
     case ID_ISINDEX:
-	n = handleIsindex(t);
-	if( !inBody ) {
-	    isindex = n;
-	    n = 0;
-	} else
-	    flat = true;
+        n = handleIsindex(t);
+        if( !inBody ) {
+            isindex = n;
+            n = 0;
+        } else
+            flat = true;
         //n = new HTMLIsIndexElementImpl(document, form);
         break;
     case ID_LABEL:
@@ -1374,10 +1374,10 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     NodeImpl *n;
     HTMLFormElementImpl *myform = form;
     if ( !myform ) {
-	myform = new HTMLFormElementImpl(document);
-	n = myform;
+        myform = new HTMLFormElementImpl(document);
+        n = myform;
     } else
-	n = new HTMLDivElementImpl( document );
+        n = new HTMLDivElementImpl( document );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
     AttrImpl* a = 0;
@@ -1388,7 +1388,7 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     if(a)
         text = a->value();
     if( text.isNull() )
-	text =  i18n("This is a searchable index. Enter search keywords: ");
+        text =  i18n("This is a searchable index. Enter search keywords: ");
     child = new TextImpl(document, text);
     n->addChild( child );
     child = new HTMLInputElementImpl(document, myform);
@@ -1407,8 +1407,8 @@ void KHTMLParser::startBody()
     inBody = true;
 
     if( isindex ) {
-	flat = true; // don't decend into this node
-	insertNode( isindex );
-	isindex = 0;
+        flat = true; // don't decend into this node
+        insertNode( isindex );
+        isindex = 0;
     }
 }

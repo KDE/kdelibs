@@ -101,7 +101,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     cachedScript = 0;
-    m_executingScript = false;
+    m_executingScript = 0;
     onHold = false;
 
     reset();
@@ -116,7 +116,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentI
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     cachedScript = 0;
-    m_executingScript = false;
+    m_executingScript = 0;
     onHold = false;
 
     reset();
@@ -124,7 +124,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentI
 
 void HTMLTokenizer::reset()
 {
-    assert(m_executingScript == false);
+    assert(m_executingScript == 0);
     assert(onHold == false);
     if (cachedScript)
         cachedScript->deref(this);
@@ -145,7 +145,7 @@ void HTMLTokenizer::reset()
 
 void HTMLTokenizer::begin()
 {
-    m_executingScript = false;
+    m_executingScript = 0;
     onHold = false;
     reset();
     size = 254;
@@ -311,9 +311,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             else if (style)
             {
 #ifdef TOKEN_DEBUG
-		kdDebug( 6036 ) << "---START STYLE---" << endl;
-		kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
-		kdDebug( 6036 ) << "---END STYLE---" << endl;
+                kdDebug( 6036 ) << "---START STYLE---" << endl;
+                kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
+                kdDebug( 6036 ) << "---END STYLE---" << endl;
 #endif
                 // just add it. The style element will get a DOM::TextImpl passed, which it will
                 // convert into a StyleSheet.
@@ -329,8 +329,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 currToken.id = ID_SCRIPT + ID_CLOSE_TAG;
             else if(style)
                 currToken.id = ID_STYLE + ID_CLOSE_TAG;
-	    else if (textarea)
-		currToken.id = ID_TEXTAREA + ID_CLOSE_TAG;
+            else if (textarea)
+                currToken.id = ID_TEXTAREA + ID_CLOSE_TAG;
             else
                 currToken.id = ID_LISTING + ID_CLOSE_TAG;
             processToken();
@@ -348,11 +348,11 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 pendingSrc = QString( src.current(), src.length() );
                 _src = QString::null;
                 src = DOMStringIt( _src );
-                m_executingScript = true;
+                m_executingScript++;
                 script = false;
                 view->part()->executeScript(QString(scriptCode, scriptCodeSize));
                 script = true;
-                m_executingScript = false;
+                m_executingScript--;
             }
             script = style = listing = textarea = false;
             scriptCodeSize = 0;
@@ -382,19 +382,19 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             else
             {
                 searchBuffer[ searchCount ] = 0;
-		DOMStringIt pit(searchBuffer,searchCount);
-		while (pit.length()) {
-		    if (textarea && pit[0] == '&') {
-			QChar *scriptCodeDest = scriptCode+scriptCodeSize;
-			++pit;
-			parseEntity(pit,scriptCodeDest,true);
-			scriptCodeSize = scriptCodeDest-scriptCode;
-		    }
-		    else {
-			scriptCode[ scriptCodeSize++ ] = pit[0];
-			++pit;
-		    }
-		}
+                DOMStringIt pit(searchBuffer,searchCount);
+                while (pit.length()) {
+                    if (textarea && pit[0] == '&') {
+                        QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+                        ++pit;
+                        parseEntity(pit,scriptCodeDest,true);
+                        scriptCodeSize = scriptCodeDest-scriptCode;
+                    }
+                    else {
+                        scriptCode[ scriptCodeSize++ ] = pit[0];
+                        ++pit;
+                    }
+                }
                 searchCount = 0;
             }
         }
@@ -405,15 +405,15 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             searchBuffer[ 0 ] = src[0];
             ++src;
         }
-	else
+        else
         {
-	    if (textarea && !escaped && ch == '&') {
-		QChar *scriptCodeDest = scriptCode+scriptCodeSize;
-		++src;
-		parseEntity(src,scriptCodeDest,true);
-		scriptCodeSize = scriptCodeDest-scriptCode;
-	    }
-	    else {
+            if (textarea && !escaped && ch == '&') {
+                QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+                ++src;
+                parseEntity(src,scriptCodeDest,true);
+                scriptCodeSize = scriptCodeDest-scriptCode;
+            }
+            else {
                 if ( !escaped ) {
                     if(script && ch == '\"')
                         tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
@@ -423,10 +423,10 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                         tquote = NoQuote;
                 }
 
-		scriptCode[ scriptCodeSize++ ] = src[0];
-		++src;
+                scriptCode[ scriptCodeSize++ ] = src[0];
+                ++src;
                 escaped = false;
-	    }
+            }
         }
     }
 }
@@ -1602,9 +1602,9 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 #endif
         cachedScript->deref(this);
         cachedScript = 0;
-        m_executingScript = true;
+        m_executingScript++;
         view->part()->executeScript(scriptSource.string());
-        m_executingScript = false;
+        m_executingScript--;
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.
