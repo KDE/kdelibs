@@ -1,16 +1,16 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -92,7 +92,7 @@ public:
 
    /**
     * A QFile* open for writing to the file.
-    * @return A QFile open for writing to the file, or 0 if 
+    * @return A QFile open for writing to the file, or 0 if
     *         opening the temporary file failed.
     **/
    QFile *file()
@@ -108,7 +108,7 @@ public:
 
    /**
     * A QDataStream* open for writing to the file.
-    * @return A QDataStream that is open for writing to the file, or 0 
+    * @return A QDataStream that is open for writing to the file, or 0
     *         if opening the file failed
     **/
    QDataStream *dataStream()
@@ -127,6 +127,19 @@ public:
     * @return true if successful, or false if an error has occured.
     **/
    bool close();
+
+    /**
+     * Static method to create a backup file before saving.
+     * You can use this method even if you don't use KSaveFile.
+     * @param filename the file to backup
+     * @param backupDir optional directory where to save the backup file in.
+     * If empty (the default), the backup will be in the same directory as @p filename.
+     * @param backupExtension the extension to append to @p filename, "~" by default.
+     */
+   static bool backupFile( const QString& filename,
+                           const QString& backupDir = QString::null,
+                           const QString& backupExtension = "~");
+
 private:
    QString mFileName;
    KTempFile mTempFile;

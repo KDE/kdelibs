@@ -39,12 +39,12 @@
 #include "ksavefile.h"
 
 KSaveFile::KSaveFile(const QString &filename, int mode)
- : mTempFile(true) 
+ : mTempFile(true)
 {
    // we only check here if the directory can be written to
    // the actual filename isn't written to, but replaced later
    // with the contents of our tempfile
-   if (!checkAccess(filename, W_OK)) 
+   if (!checkAccess(filename, W_OK))
    {
       mTempFile.setError(EACCES);
       return;
@@ -62,7 +62,7 @@ KSaveFile::~KSaveFile()
    close();
 }
 
-QString 
+QString
 KSaveFile::name() const
 {
    return mFileName;
@@ -90,9 +90,113 @@ KSaveFile::close()
       }
       mTempFile.setError(errno);
    }
-    
+
    // Something went wrong, make sure to delete the interim file.
    mTempFile.unlink();
    return false;
 }
 
+static int
+write_all(int fd, const char *buf, size_t len)
+{
+   while (len > 0)
+   {
+      int written = write(fd, buf, len);
+      if (written < 0)
+      {
+          if (errno == EINTR)
+             continue;
+          return -1;
+      }
+      buf += written;
+      len -= written;
+   }
+   return 0;
+}
+
+bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
+                            const QString& backupExtension)
+{
+   QCString cFilename = QFile::encodeName(qFilename);
+   const char *filename = cFilename.data();
+
+   int fd = open( filename, O_RDONLY);
+   if (fd < 0)
+      return false;
+
+   struct stat buff;
+   if ( fstat( fd, &buff) < 0 )
+   {
+      ::close( fd );
+      return false;
+   }
+
+   QCString cBackup;
+   if ( backupDir.isEmpty() )
+       cBackup = cFilename;
+   else
+   {
+       QCString nameOnly;
+       int slash = cFilename.findRev('/');
+       if (slash < 0)
+	   nameOnly = cFilename;
+       else
+	   nameOnly = cFilename.mid(slash + 1);
+       cBackup = QFile::encodeName(backupDir);
+       if ( backupDir[backupDir.length()-1] != '/' )
+           cBackup += '/';
+       cBackup += nameOnly;
+   }
+   cBackup += QFile::encodeName(backupExtension);
+   const char *backup = cBackup.data();
+   int permissions = buff.st_mode & 07777;
+
+   if ( stat( backup, &buff) == 0)
+   {
+      if ( unlink( backup ) != 0 )
+      {
+         ::close(fd);
+         return false;
+      }
+   }
+
+   mode_t old_umask = umask(0);
+   int fd2 = open( backup, O_WRONLY | O_CREAT | O_EXCL, permissions | S_IWUSR);
+   umask(old_umask);
+
+   if ( fd2 < 0 )
+   {
+      ::close(fd);
+      return false;
+   }
+
+    char buffer[ 32*1024 ];
+
+    while( 1 )
+    {
+       int n = ::read( fd, buffer, 32*1024 );
+       if (n == -1)
+       {
+          if (errno == EINTR)
+              continue;
+          ::close(fd);
+          ::close(fd2);
+          return false;
+       }
+       if (n == 0)
+          break; // Finished
+
+       if (write_all( fd2, buffer, n))
+       {
+          ::close(fd);
+          ::close(fd2);
+          return false;
+       }
+    }
+
+    ::close( fd );
+
+    if (::close(fd2))
+        return false;
+    return true;
+}
