@@ -84,12 +84,12 @@ QString KPACImpl::proxyForURL(const KURL &url)
             if (proxy.left(5) == "PROXY")
             {
                 KURL proxyURL(proxy = proxy.mid(5).stripWhiteSpace());
-                // if the URL is invalid or the URL is valid but in opaque
+                // If the URL is invalid or the URL is valid but in opaque
                 // format which indicates a port number being present in
                 // this particular case, simply calling setProtocol() on
                 // it trashes the whole URL.
-                if (!proxyURL.isValid() ||
-                    proxy.find(":/", proxyURL.protocol().length()) != 0)
+                int len = proxyURL.protocol().length();
+                if (!proxyURL.isValid() || proxy.find(":/", len) != len)
                     proxy.prepend("http://");
                 time_t badMark = blackList.readNumEntry(proxy);
                 if (badMark < time(0) - 1800)
