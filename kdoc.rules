@@ -6,7 +6,7 @@
 #
 # $Id$
 
-kde_MODULES = dcop kdecore kdeui kio kded kfile kparts kjs khtml kdejava kspell kab kdeprint libkmid interfaces
+kde_MODULES = dcop kdecore kdeui kio kded kfile kparts khtml kjs kdejava kspell kab kdeprint libkmid interfaces
 
 dcop_FILES = *.h
 dcop_LIBS = -lqt
@@ -30,7 +30,7 @@ kjs_FILES = kjs.h object.h types.h function.h operations.h ustring.h
 kjs_LIBS = -lqt
 
 khtml_FILES = *.h dom/*.h
-khtml_LIBS = -lkjs -lkio -lkparts -lkdecore -lkdeui -lqt
+khtml_LIBS = -lkio -lkparts -lkdecore -lkdeui -lqt
 
 kdejava_FILES = *.h
 kdejava_PATH = khtml/java
