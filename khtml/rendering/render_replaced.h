@@ -86,10 +86,12 @@ public:
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 
+
 public slots:
     void slotWidgetDestructed();
 
 protected:
+    bool eventFilter(QObject* /*o*/, QEvent* e);
     void setQWidget(QWidget *widget);
     QWidget *m_widget;
     KHTMLView* m_view;

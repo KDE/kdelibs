@@ -30,6 +30,7 @@
 #include <qevent.h>
 #include <qapplication.h>
 
+#include "khtml_ext.h"
 #include "khtmlview.h"
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
@@ -178,8 +179,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             // widget immediately
             if (layouted()) {
 		// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
-		resizeWidget( m_widget, 
-			      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 
+		resizeWidget( m_widget,
+			      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
 			      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
             }
             else
@@ -195,10 +196,10 @@ void RenderWidget::layout( )
     KHTMLAssert( minMaxKnown() );
     if ( m_widget ) {
 	resizeWidget( m_widget,
-		      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 
+		      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
 		      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
-    } 
-    
+    }
+
     setLayouted();
 }
 
@@ -238,17 +239,15 @@ void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int
 
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
-    
+
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {
 	KHTMLView *vw = static_cast<KHTMLView *>(m_widget);
-	int cx = m_view->contentsX();
 	int cy = m_view->contentsY();
-	int cw = m_view->visibleWidth();
 	int ch = m_view->visibleHeight();
-	
-	
+
+
 	int childx = m_view->childX( m_widget );
 	int childy = m_view->childY( m_widget );
 
@@ -273,7 +272,7 @@ void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int
 	}
 	xPos = xNew;
 	yPos = yNew;
-    } 
+    }
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
 }
@@ -403,6 +402,98 @@ bool RenderWidget::sendWidgetEvent(QEvent *event)
 
     return eventHandled;
 }
+
+bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
+{
+    if ( !element() ) return true;
+
+    ref();
+    element()->ref();
+
+    switch(e->type()) {
+    case QEvent::FocusOut:
+       //static const char* const r[] = {"Mouse", "Tab", "Backtab", "ActiveWindow", "Popup", "Shortcut", "Other" };
+        //kdDebug() << "RenderFormElement::eventFilter FocusOut widget=" << m_widget << " reason:" << r[QFocusEvent::reason()] << endl;
+        // Don't count popup as a valid reason for losing the focus
+        // (example: opening the options of a select combobox shouldn't emit onblur)
+        if ( QFocusEvent::reason() != QFocusEvent::Popup )
+       {
+//           qDebug("captured focusout");
+            element()->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
+//             if (  element()->isEditable() ) {
+//                 KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
+//                 if ( ext )  ext->editableWidgetBlurred( m_widget );
+//             }
+//             handleFocusOut();
+        }
+        break;
+    case QEvent::FocusIn:
+        element()->getDocument()->setFocusNode(element());
+
+//         if ( isEditable() ) {
+//             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
+//             if ( ext )  ext->editableWidgetFocused( m_widget );
+//         }
+        break;
+    case QEvent::MouseButtonPress:
+//       handleMousePressed(static_cast<QMouseEvent*>(e));
+        break;
+    case QEvent::MouseButtonRelease:
+//    {
+//         int absX, absY;
+//         absolutePosition(absX,absY);
+//         QMouseEvent* _e = static_cast<QMouseEvent*>(e);
+//         m_button = _e->button();
+//         m_state  = _e->state();
+//         QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
+
+//         element()->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
+
+//         if((m_mousePos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
+//             // DOM2 Events section 1.6.2 says that a click is if the mouse was pressed
+//             // and released in the "same screen location"
+//             // As people usually can't click on the same pixel, we're a bit tolerant here
+//             element()->dispatchMouseEvent(&e2,EventImpl::CLICK_EVENT,m_clickCount);
+//         }
+
+//         if(!isRenderButton()) {
+//             // ### DOMActivate is also dispatched for thigs like selects & textareas -
+//             // not sure if this is correct
+//             element()->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
+//             element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+//             m_isDoubleClick = false;
+//         }
+//         else
+//             // save position for slotClicked - see below -
+//             m_mousePos = e2.pos();
+//     }
+    break;
+    case QEvent::MouseButtonDblClick:
+//     {
+//         m_isDoubleClick = true;
+//         handleMousePressed(static_cast<QMouseEvent*>(e));
+//     }
+    break;
+    case QEvent::MouseMove:
+//     {
+//         int absX, absY;
+//         absolutePosition(absX,absY);
+//         QMouseEvent* _e = static_cast<QMouseEvent*>(e);
+//         QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
+//         element()->dispatchMouseEvent(&e2);
+//         // ### change cursor like in KHTMLView?
+//     }
+    break;
+    default: break;
+    };
+
+    element()->deref();
+    bool deleted = hasOneRef();
+    deref();
+
+    return deleted;
+}
+
 
 #include "render_replaced.moc"
 
