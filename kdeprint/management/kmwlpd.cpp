@@ -69,10 +69,10 @@ int openConnection(const char *rhost)
 	if (!host) return -1;
 	serv = getservbyname("printer","tcp");
 	if (!serv) return -1;
-	bzero((char*)&sin,sizeof(sin));
+	memset(&sin,0,sizeof(sin));
 	if (host->h_length > (int)sizeof(sin.sin_addr))
 		host->h_length = sizeof(sin.sin_addr);
-	bcopy(host->h_addr,(caddr_t)&sin.sin_addr,host->h_length);
+	memcpy((caddr_t)&sin.sin_addr,host->h_addr,host->h_length);
 	sin.sin_family = host->h_addrtype;
 	sin.sin_port = serv->s_port;
 
