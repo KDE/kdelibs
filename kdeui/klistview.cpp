@@ -473,10 +473,11 @@ QListViewItem* KListView::findDrop(const QPoint &p)
 }
 
 
-void KListView::contentsMouseReleaseEvent( QMouseEvent * )
+void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
     delete pressPos;
     pressPos=0;
+	QListView::contentsMouseReleaseEvent( e );
 }
 
 
