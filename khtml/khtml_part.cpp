@@ -1326,6 +1326,7 @@ void KHTMLPart::checkCompleted()
   }
 
   emit completed();
+  emit setStatusBarText( i18n("Loading complete") );
 }
 
 const KHTMLSettings *KHTMLPart::settings() const
