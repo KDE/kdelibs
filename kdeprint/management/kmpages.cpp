@@ -27,6 +27,7 @@
 
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kdialog.h>
 
 KMPages::KMPages(QWidget *parent, const char *name)
 : QTabWidget(parent,name)
@@ -48,7 +49,7 @@ void KMPages::setPrinter(KMPrinter *p)
 
 void KMPages::initialize()
 {
-	setMargin(10);
+	setMargin(KDialog::marginHint());
 
 	// Info page
 	KMInfoPage	*infopage = new KMInfoPage(this, "InfoPage");

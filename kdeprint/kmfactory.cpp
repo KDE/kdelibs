@@ -30,6 +30,8 @@
 #include "kxmlcommand.h"
 
 #include <qdir.h>
+#include <qfile.h>
+
 #include <klibloader.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
@@ -193,7 +195,7 @@ void KMFactory::loadFactory(const QString& syst)
 			// load default configured print plugin
 			sys = printSystem();
 		QString	libname = QString::fromLatin1("kdeprint_%1").arg(sys);
-		m_factory = KLibLoader::self()->factory(libname.latin1());
+		m_factory = KLibLoader::self()->factory(QFile::encodeName(libname));
                 if (!m_factory)
                 {
                         KMessageBox::error(0,
