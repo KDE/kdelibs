@@ -78,8 +78,7 @@ public:
       **/
     //    KFileViewItem(const QString& baseURL, const QString& name, bool delaystat = false);
     KFileViewItem( mode_t _mode, mode_t _permissions, const KURL& _url,
-		   bool _determineMimeTypeOnDemand,
-		   bool _urlIsDirectory = false );
+		   bool _determineMimeTypeOnDemand );
 
     /**
       * Destroy the KFileViewItem object.

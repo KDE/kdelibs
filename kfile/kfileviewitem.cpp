@@ -70,9 +70,8 @@ KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
     init();
 }
 
-KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand, bool _urlIsDirectory )
-    : KFileItem( _mode, _permissions, _url, _determineMimeTypeOnDemand,
-		 _urlIsDirectory )
+KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand )
+    : KFileItem( _mode, _permissions, _url, _determineMimeTypeOnDemand )
 {
     d = new KFileViewItemPrivate();
     d->isReadable = true;
