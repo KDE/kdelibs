@@ -7,17 +7,17 @@
 <!-- Entities to fill in slots in docbook version of FDL notice.
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
-<!ENTITY FDLISTitles "LISTE DE LEURS TITRES" -- keep capitals -->
+<!ENTITY FDLISTitles "LISTE DE LEURS TITRES"><!-- keep capitals -->
 <!ENTITY FDLInvariantSections "les sections invariantes étant &FDLISTitles;">
  ]]>
 <!ENTITY FDLInvariantSections "aucune section invariante">
 <![%FDLFCT;[
-<!ENTITY FDLFCTTitles "LISTE" -- keep capitals -->
+<!ENTITY FDLFCTTitles "LISTE"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "les textes de devant de couverture étant &FDLFCTTitles;">
  ]]>
 <!ENTITY FDLFrontCoverText "aucun texte de devant de couverture">
 <![%FDLBCT;[
-<!ENTITY FDLBCTTitles "LISTE DE LEURS TITRES" -- keep capitals -->
+<!ENTITY FDLBCTTitles "LISTE DE LEURS TITRES"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "les textes d'arrière de couverture étant &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "aucun texte d'arrière de couverture">

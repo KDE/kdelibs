@@ -7,17 +7,17 @@
 <!-- Entities to fill in slots in docbook version of FDL notice.
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
-<!ENTITY FDLISTitles "SOM HUN TITELS OP" -- keep capitals -->
+<!ENTITY FDLISTitles "SOM HUN TITELS OP"><!-- keep capitals -->
 <!ENTITY FDLInvariantSections "als invariante paragrafen &FDLISTitles;">
  ]]>
 <!ENTITY FDLInvariantSections "zonder invariante paragrafen">
 <![%FDLFCT;[
-<!ENTITY FDLFCTTitles "SOM OP" -- keep capitals -->
+<!ENTITY FDLFCTTitles "SOM OP"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "als vooromslagteksten &FDLFCTTitles;">
  ]]>
 <!ENTITY FDLFrontCoverText "zonder vooromslagteksten">
 <![%FDLBCT;[
-<!ENTITY FDLBCTTitles "SOM HUN TITELS OP" -- keep capitals -->
+<!ENTITY FDLBCTTitles "SOM HUN TITELS OP"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "als achteromslagteksten &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "zonder achteromslagteksten">

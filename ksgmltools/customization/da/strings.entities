@@ -7,17 +7,17 @@
 <!-- Entities to fill in slots in docbook version of FDL notice.
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
-<!ENTITY FDLISTitles "LISTNING AF TITLER" -- keep capitals -->
+<!ENTITY FDLISTitles "LISTNING AF TITLER"><!-- keep capitals -->
 <!ENTITY FDLInvariantSections "De Invariante Sektioner er &FDLISTitles;">
  ]]>
 <!ENTITY FDLInvariantSections "Ingen Invariante Sektioner">
 <![%FDLFCT;[
-<!ENTITY FDLFCTTitles "LIST" -- keep capitals -->
+<!ENTITY FDLFCTTitles "LIST"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "Forsidetekster er &FDLFCTTitles;">
  ]]>
 <!ENTITY FDLFrontCoverText "Ingen forsidetekster">
 <![%FDLBCT;[
-<!ENTITY FDLBCTTitles "LIST THEIR TITLES" -- keep capitals -->
+<!ENTITY FDLBCTTitles "LIST THEIR TITLES"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "Bagsidetekster er &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "Ingen bagsidetekster">
