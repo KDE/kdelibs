@@ -63,7 +63,7 @@ kpanelextension.cpp
 kpanelmenu.cpp
 kpassdlg.cpp		Waldo Bastian <bastian@kde.org>
 kpixmapio.cpp
-kpopupmenu.cpp
+kpopupmenu.cpp		Holger Freyther <freyther@kde.org>
 kprogress.cpp
 kpushbutton.cpp		Carsten Pfeiffer <pfeiffer@kde.org>, Martijn Klingens <klingens@kde.org>
 krestrictedline.cpp

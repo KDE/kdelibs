@@ -27,11 +27,11 @@
 class QDragObject;
 
 /**
- * This is nothing but a QPushButton with drag-support. You have to call
+ * This is nothing but a QPushButton with drag-support and KGuiItem support. You have to call
  * @ref setDragEnabled( true ) and override the virtual method 
  * @ref dragObject() to specify the QDragObject to be used.
  *
- * @short A QPushButton with drag-support
+ * @short A QPushButton with drag-support and KGuiItem support
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KPushButton : public QPushButton

@@ -1,5 +1,5 @@
 
-              The basic design on KConfig for KDE 2.0:
+              The basic design on KConfig for KDE 2.0 and KDE 3.0:
               ----------------------------------------
 
 KConfig is a hierarchy of classes for loading and saving configuration

@@ -41,16 +41,15 @@ class KCModulePrivate;
  * the module author.
  *
  * To write a config module, you have to create a library
- * that contains at least one factory function like this:
+ * that contains at one factory function like this:
  *
  * <pre>
- *   extern "C" {
- *     KCModule *create_xyz(QWidget *parent, const char *name)
- *     {
- *       return new XYZ(parent, name);
- *     }
- *   }
+ * #include <kgenericfactory.h>
+ *
+ * typedef KGenericFactory<YourKCModule, QWidget> YourKCModuleFactory;
+ * K_EXPORT_COMPONENT_FACTORY( yourLibName, YourKCModuleFactory );
  * </pre>
+ *
  *
  * See kdebase/kcontrol/HOWTO for more detailed documentation.
  *
@@ -76,7 +75,9 @@ public:
   	       SysDefault=64 /* obsolete, do not use! */ };
 
   /*
-   * Creates a new module.
+   * Base class for all KControlModules. 
+   * Make sure you have a QStringList argument in your
+   * implementation.
    */
   KCModule(QWidget *parent=0, const char *name=0, const QStringList &args=QStringList() );
 

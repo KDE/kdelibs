@@ -33,7 +33,7 @@
  * This class is not supposed to be instantiated.  It exists mostly as
  * a namespace for the static member functions.
  *
- * In KDE-2.0, communication with the windowmanager is done with the
+ * In KDE 2 and KDE 3, communication with the windowmanager is done with the
  * NET-protocol, a common window manager specification designed by
  * various authors of X11 window managers (including those of the KDE
  * project).  The full specification can be found in

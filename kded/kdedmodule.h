@@ -31,7 +31,7 @@ class KDEDModulePrivate;
 /**
  * The base class for KDED modules.
  *
- * In KDE 2.x, KDED modules are realized as shared
+ * In KDE 2 and KDE 3, KDED modules are realized as shared
  * libraries that are loaded on-demand into kded at runtime.
  *
  * To write a config module, you have to create a library
