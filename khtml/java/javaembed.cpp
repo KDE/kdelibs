@@ -19,12 +19,19 @@
     Boston, MA 02111-1307, USA.
 *****************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#if HAVE_USLEEP
+#include <unistd.h>
+#endif // HAVE_USLEEP
+#endif // HAVE_CONFIG_H
 #include "javaembed.h"
 
 #include <kdebug.h>
 #include <klocale.h>
 
 #include <qapplication.h>
+#include <kapplication.h>
 #include <qevent.h>
 
 class KJavaEmbedPrivate
@@ -512,10 +519,25 @@ void KJavaEmbed::embed( WId w )
         QApplication::flushX();
         if (status > 0) {
             unsigned long cnt = 0;
-            for (cnt = 0; !wstate_withdrawn(window); cnt++) {
-                // do nothing
+            unsigned long max = 1000;
+            for (cnt = 0; !wstate_withdrawn(window) && cnt < max; cnt++) {
+                KApplication *app = KApplication::kApplication();
+                if (app) { 
+                    app->processEvents();
+                }
+#if HAVE_USLEEP
+                usleep(1000); // 1 ms 
+#endif
             }
-            kdDebug(6100) << "KJavaEmbed::embed: window withdrawn after " << cnt << " loops" << endl;
+            if (cnt < max) { 
+                kdDebug(6100) 
+                    << "KJavaEmbed::embed: window withdrawn after " 
+                    << cnt << " loops" << endl;
+            } else {
+                kdDebug(6100) 
+                    << "KJavaEmbed::embed: window still not withdrawn after " 
+                    << cnt << " loops " << endl;
+            }
         } else {
             kdDebug(6100) << "KJavaEmbed::embed: XWithdrawWindow returned status=" << status << endl;
         }
