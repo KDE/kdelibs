@@ -1313,6 +1313,7 @@ QStringList KFileMetaInfoGroup::removedItems()
 KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
                                                  const QVariant& value)
 {
+    //KDE4 enforce (value.type() == d->mimeTypeInfo->type())
     assert(isValid());
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
     if ( !ginfo ) {
