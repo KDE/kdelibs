@@ -58,6 +58,7 @@ bool KSSLX509V3::certTypeCA() {
 #ifdef HAVE_SSL
 	return (((_flags & EXFLAG_CA) && (_flags & EXFLAG_BCONS)) ||
 		((_flags & V1_ROOT) == V1_ROOT) ||
+		((_flags & (EXFLAG_SS|EXFLAG_SET)) == (EXFLAG_SS|EXFLAG_SET)) ||
 		(_flags & EXFLAG_KUSAGE) ||
 		(!(_flags & EXFLAG_BCONS) && 
 		  (_flags & EXFLAG_NSCERT) && 
