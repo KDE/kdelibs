@@ -279,7 +279,7 @@ int main(int argc, char **argv)
 
     filter( "$SOMEVAR/kdelibs/kio", 0, KURIFilterData::ERROR ); // note: this dir doesn't exist...
     filter( "$ETC/passwd", "/etc/passwd", KURIFilterData::LOCAL_FILE );
-    filter( "$QTDIR/doc/html/functions.html#s", QCString("file:")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
+    filter( "$QTDIR/doc/html/functions.html#s", QCString("file://")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
     filter( "http://www.kde.org/$USER", "http://www.kde.org/$USER", KURIFilterData::NET_PROTOCOL ); // no expansion
 
     // Assume the default (~/.kde) if
