@@ -300,6 +300,17 @@ QValueList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
   return list;
 }
 
+QString KConfigBase::readPathEntry( const QString& pKey, const QString& pDefault ) const
+{
+  // get around const'ness.
+  KConfigBase *that = const_cast<KConfigBase *>(this);
+  bool bExpandSave = bExpand;
+  that->bExpand = true;
+  QString aValue = readEntry( pKey );
+  that->bExpand = bExpandSave;
+  return aValue;
+}
+
 int KConfigBase::readNumEntry( const QString& pKey, int nDefault) const
 {
   bool ok;

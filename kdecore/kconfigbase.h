@@ -177,6 +177,19 @@ public:
   QValueList<int> readIntListEntry( const QString& key ) const;
 
   /**
+   * Read a path.
+   *
+   * Read the value of an entry specified by @p rKey in the current group
+   * and interpret it as a path. This means, dollar expansion is activated
+   * for this value, so that e.g. $HOME gets expanded.
+   *
+   * @param pKey The key to search for.
+   * @param aDefault A default value returned if the key was not found.
+   * @return The value for this key or a null string if no value was found.
+   */
+  QString readPathEntry( const QString& pKey, const QString & aDefault = QString::null ) const;
+
+  /**
    * Read a numerical value.
    *
    * Read the value of an entry specified by @p rKey in the current group
