@@ -111,3 +111,5 @@ install-apidox-kdelibs:
 		echo $(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
 		$(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
 	fi
+
+.PHONY: install-apidox-kdelibs apidox-am-toplevel-kdelibs apidox-am-toplevel-yes qtmessages
