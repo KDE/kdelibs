@@ -13,7 +13,7 @@ public:
     DummyMeta( QObject *parent, const char *name, const QStringList &args );
     ~DummyMeta() {}
 
-    virtual KFileMetaInfo * createInfo( const QString& path );
+    virtual bool readInfo( KFileMetaInfo::Internal& info );
 
 };
 

@@ -7,21 +7,27 @@ int main( int argc, char **argv )
 {
     KApplication app( argc, argv, "kfilemetatest" );
 
-    KFileMetaInfoProvider *prov = KFileMetaInfoProvider::self();
-
     QString path = argv[1] ? argv[1] : "/tmp/metatest.txt";
-    KFileMetaInfo* info = prov->metaInfo( path );
+    
+    KFileMetaInfo info( path );
+    
+    kdDebug() << "is it valid?\n";
 
-    if (!info) return 1;
+    if (!info.isValid()) return 1;
 
-    QStringList l = info->supportedKeys();
+    kdDebug() << "it is!\n";
+
+    QStringList l = info.preferredKeys();
+    
+    kdDebug() << "found " << l.size() << " keys\n";
+    
     QStringList::Iterator it;
     for (it = l.begin(); it!=l.end(); ++it)
     {
-        KFileMetaInfoItem* item = info->item(*it);
-        if ( item ) {
-            kdDebug() << item->translatedKey() << " -> " << item->prefix()
-                      << item->value().toString() << item->postfix() << endl;
+        KFileMetaInfoItem item = info.item(*it);
+        if ( item.isValid() ) {
+            kdDebug() << item.translatedKey() << " -> " << item.prefix()
+                      << item.value().toString() << item.postfix() << endl;
         }
     }
 

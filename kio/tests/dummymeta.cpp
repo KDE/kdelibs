@@ -11,9 +11,9 @@ DummyMeta::DummyMeta( QObject *parent, const char *name,
     qDebug("---- DummyMeta::DummyMeta: got %i preferred items.", preferredItems.count());
 }
 
-KFileMetaInfo * DummyMeta::createInfo( const QString& path )
+bool DummyMeta::readInfo( KFileMetaInfo::Internal & info )
 {
-   qDebug("#### DummyMeta:: createInfo: %s", path.latin1() );
+   qDebug("#### DummyMeta:: readInfo: %s", info.path().latin1() );
    return 0L;
 }
 
