@@ -59,12 +59,10 @@ class Resource;
   givenName() is the first name and familyName() the last name. In some 
   countries the family name comes first, that's the reason for the 
   naming. formattedName() is the full name with the correct formatting.
-  It is used as an override, when the correct formatting can't be generated
-  from the other name fields automatically.
  
-  realName() returns a fully formatted name(). It uses formattedName, if set,
-  otherwise  it constucts the name from the name fields. As fallback, if
-  nothing  else is set it uses name().
+  realName() returns a fully name, that consists of a prefix(), the givenName(),
+  additionalName(), familyName() and suffix(). As fallback, if nothing else
+  is set it uses name().
  
   name() is the NAME type of RFC2426. It can be used as internal name for the
   data enty, but shouldn't be used for displaying the data to the user.
