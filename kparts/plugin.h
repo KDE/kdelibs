@@ -111,6 +111,9 @@ public:
      * for new plugins that are not in that config file) is controlled by
      * @p enableNewPluginsByDefault.
      *
+     * If a disabled plugin is already loaded it will be removed from the GUI
+     * factory and deleted.
+     *
      * This method is automatically called by KParts::Plugin and by KParts::MainWindow.
      */
     static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true );
