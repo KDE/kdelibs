@@ -311,7 +311,7 @@ public:
      * Match a filename.
      * @param filename is the real decoded filename (or dirname
      *        without trailing '/').
-     * @param pattern is a pattern like *.txt, *.tar.gz, Makefile.*, etc.
+     * @param pattern is a pattern like *.txt, *.tar.gz, Makefile.*, *README*, etc.
      * Patterns with two asterisks like "*.*pk" are not supported.
      * @return true if the given filename matches the given pattern
      */
