@@ -125,7 +125,7 @@ struct kde_sockaddr_in6
 #if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
 
 extern int kde_getaddrinfo(const char *name, const char *service,
-			   struct addrinfo* hint,
+			   const struct addrinfo* hint,
 			   struct addrinfo** result);
 
 #else  /* !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO) */
