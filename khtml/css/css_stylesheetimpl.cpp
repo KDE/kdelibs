@@ -255,38 +255,13 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string)
     kdDebug( 6080 ) << "preprocessed sheet, len=" << preprocessed.length() << ", sheet is " << preprocessed << endl;
 #endif
 
-    // remove leading spaces
     while (curP && (curP < endP))
-    {
-	if(!curP->isSpace()) break;
-	++curP;
-    }
-    // remove leading '<!--' (html start of coment)
-    char comment[5] = "<!--";
-    int count = 0;
-    const QChar *startP = curP;
-    while (startP && (startP < endP))
-    {
-	if(*startP == comment[count])
-	    count++;
-	else
-	    break;
-	if(count == 4)
+    {        
+        CSSRuleImpl *rule = parseRule(curP, endP);
+        if(rule)
 	{
-	    curP = ++startP;
-	    break;
-	}
-	++startP;
-    }
-
-
-    while (curP && (curP < endP))
-    {
-	CSSRuleImpl *rule = parseRule(curP, endP);
-	if(rule)
-	{
-	    m_lstChildren->append(rule);
-	    rule->ref();
+	   m_lstChildren->append(rule);
+	   rule->ref();
 	}
     }
     return true;

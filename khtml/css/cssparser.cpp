@@ -232,7 +232,10 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
         if(!curP) return 0;
         startP = curP++;
         curP = parseToChar(startP, endP, ';', true);
-        if(!curP) return 0;
+        // Do not allow @import statements after explicity inlined
+        // declarations.  They should simply be ignored per CSS-1
+        // specification section 3.0.
+        if( !curP || hasInlinedDecl ) return 0;
         DOMString url = khtml::parseURL(DOMString(startP, curP - startP));
         startP = curP;
         if(*curP != ';')
@@ -1954,7 +1957,45 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 CSSRuleImpl *
 StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 {
-    curP = parseSpace(curP, endP);
+    const char *comment = "<!--";
+    const QChar *startP;
+    int count = 0;
+   
+    curP = parseSpace( curP, endP );
+    startP = curP;
+   
+    // The code below ignores any occurances of
+    // the beginning and/or the end of a html
+    // comment tag
+    while (startP && (startP < endP))
+    {
+       if(*startP == comment[count])
+	 count++;
+       else
+	 break;
+       if(count == 4)
+       {
+	  curP = ++startP;
+	  break;
+       }
+       ++startP;
+    }
+   
+    comment = "-->";
+    while (startP && (startP < endP))
+    {
+       if(*startP == comment[count])
+	 count++;
+       else
+	 break;
+       if(count == 3)
+       {
+	  curP = ++startP;
+	  break;
+       }
+       ++startP;
+    }
+   
     CSSRuleImpl *rule = 0;
 
     if(!curP) return 0;
@@ -1964,16 +2005,13 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 
     if (*curP == '@' )
     {
-        // Do not allow @import statements after explicit inline
-        // declarations.  They should simply be ignored per CSS-1
-        // specification section 3.0.
-        if(!hasInlinedDecl)
-            rule = parseAtRule(curP, endP);
+        rule = parseAtRule(curP, endP);
     }
     else
     {
         rule = parseStyleRule(curP, endP);
-        hasInlinedDecl = true;
+        if( rule )
+            hasInlinedDecl = true;  // set flag to true iff we have a valid inlined decl.
     }
 
     if(curP) curP++;
@@ -1989,6 +2027,8 @@ QString StyleBaseImpl::preprocess(const QString &str)
     bool dq = false;
     bool comment = false;
     bool firstChar = false;
+
+    hasInlinedDecl = false; // reset the inilned decl. flag
 
     const QChar *ch = str.unicode();
     const QChar *last = str.unicode()+str.length();
