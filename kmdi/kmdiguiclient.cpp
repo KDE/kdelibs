@@ -156,7 +156,7 @@ KXMLGUIClient( mdiMainFrm )
 KMDIGUIClient::~KMDIGUIClient()
 {
 
-    for (int i=0;i<m_toolViewActions.count();i++)
+    for (uint i=0;i<m_toolViewActions.count();i++)
 	    disconnect(m_toolViewActions.at(i),0,this,0);
 
     m_toolViewActions.setAutoDelete( false );
