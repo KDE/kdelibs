@@ -108,7 +108,7 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
 
     bool buttonicon =  KGlobalSettings::showIconsOnPushButtons();
     if (KSSL::doesSSLWork()) {
-      button = new QPushButton(buttonicon?SmallIcon("configure"):0, i18n("C&ryptography Configuration..."), this);
+      button = new QPushButton(buttonicon ? SmallIcon("configure") : QPixmap(0), i18n("C&ryptography Configuration..."), this);
       connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
       buttonLayout->addWidget( button );
     }
