@@ -277,12 +277,10 @@ ImageSource::ImageSource(QByteArray buf)
 */
 int ImageSource::readyToSend()
 {
-  int n = buffer.size() - pos;
+    if(eof)
+        return -1;
 
-  if ( !n && !eof )
-    return n;
-
-  return n ? n : -1;
+    return  buffer.size() - pos;
 }
 
 /*!
@@ -319,6 +317,7 @@ void ImageSource::enableRewind(bool on)
 void ImageSource::rewind()
 {
     pos = 0;
+    eof = false;
     if (!rew) {
         QDataSource::rewind();
     } else
@@ -367,10 +366,11 @@ CachedImage::~CachedImage()
 
 void CachedImage::ref( CachedObjectClient *c )
 {
-    // make sure we don't get it twice...
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "CachedImage::ref() " << endl;
 #endif
+
+    // make sure we don't get it twice...
     m_clients.remove(c);
     m_clients.append(c);
 
@@ -378,7 +378,7 @@ void CachedImage::ref( CachedObjectClient *c )
     if( m_status != Pending && !valid_rect().isNull())
         do_notify( pixmap(), valid_rect() );
 
-    if( m && m->paused())
+    if( m )
         m->unpause();
 }
 
@@ -557,6 +557,9 @@ void CachedImage::movieStatus(int status)
 {
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
         movieUpdated(valid_rect()); //wow, that's ugly!
+
+    if( !m->running() )
+        m->restart();
 }
 
 void CachedImage::clear()
@@ -602,7 +605,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
     if(eof)
     {
-        // QMovie currently doesn't support jpegs for progressive loading/animation
+        // QMovie currently doesn't support all kinds of image formats
         // so we need to use a QPixmap here when we finished loading the complete
         // picture and display it then all at once.
         if(typeChecked && !formatType)
@@ -616,6 +619,8 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
                 do_notify(*p, p->rect());
             }
         }
+        else
+            m->restart();
 
         computeStatus();
     }
@@ -771,7 +776,6 @@ void Loader::slotFinished( KIO::Job* job )
 #endif
   }
 
-  r->m_buffer.close();
   emit requestDone( r->m_baseURL, r->object );
   delete r;
 
