@@ -398,7 +398,7 @@ bool KTar::doneWriting( uint size )
         for( uint i = 0; i < 0x200; ++i )
             buffer[i] = 0;
         Q_LONG nwritten = device()->writeBlock( buffer, 0x200 - rest );
-        return nwritten == (Q_LONG)size;
+        return nwritten == 0x200 - rest;
     }
     return true;
 }
