@@ -1,5 +1,4 @@
 // $Id$
-#include "kio_listprogress_dlg.h"
 
 #include <qtimer.h>
 #include <qmessagebox.h>
@@ -11,6 +10,9 @@
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <ktoolbarbutton.h>
+
+#include "kio_simpleprogress_dlg.h"
+#include "kio_listprogress_dlg.h"
 
 
 static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
@@ -216,6 +218,14 @@ void KIOListViewItem::slotFinished( int ) {
 }
 
 
+void KIOListViewItem::showSmallGUI() {
+  qDebug( "showSmallGUI" );
+  if ( ! m_pJob->progressDlg() ) {
+    m_pJob->setProgressDlg( new KIOSimpleProgressDlg() );
+    m_pJob->progressDlg()->show();
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 KIOListView::KIOListView (QWidget *parent, const char *name)
@@ -272,7 +282,6 @@ void KIOListView::writeConfig() {
 
   config->sync();
 }
-
 
 
 //-----------------------------------------------------------------------------
@@ -385,7 +394,8 @@ void KIOListProgressDlg::slotUpdate() {
 
 
 void KIOListProgressDlg::slotOpenSimple( QListViewItem *item ) {
-  ((KIOListViewItem*) item )->showSimpleGUI( true );
+  qDebug( "slotOpenSimple"  );
+  ((KIOListViewItem*) item )->showSmallGUI();
 }
 
 
@@ -427,13 +437,5 @@ void KIOListProgressDlg::cancelCurrent() {
   }
 }
 
-
-void KIOListProgressDlg::showGUI( bool _mode ) {
-  if ( _mode ) {
-    show();
-  } else {
-    hide();
-  }
-}
 
 #include "kio_listprogress_dlg.moc"

@@ -25,7 +25,7 @@ public:
 
   int id() { return m_pJob->id(); }
 
-  void showSimpleGUI( bool _mode ) { m_pJob->showSimpleGUI( _mode ); }
+  void showSmallGUI();
   void remove() { m_pJob->kill(); }
 
 public slots:
@@ -133,7 +133,6 @@ public:
   enum { ID_TOTAL_FILES = 1, ID_TOTAL_SIZE, ID_TOTAL_TIME, ID_TOTAL_SPEED };
 
   void addJob( KIOJob *job );
-  void showGUI( bool _mode );
 
 protected:
 
