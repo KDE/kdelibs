@@ -2357,7 +2357,7 @@ void QIconView::setViewMode( QIconSet::Size mode )
     for ( ; item; item = item->next )
 	item->setViewMode( mode );
 
-    alignItemsInGrid();
+    alignItemsInGrid( TRUE );
 }
 
 /*!
@@ -2456,14 +2456,19 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
 }
 
 /*!
-  Allign all items in the grid. For the grid the the specified
+  Align all items in the grid. For the grid the the specified
   values, given by QIconView::setGridX() and QIconView::setGridY()
   are used.
+  Even if QIconView::sorting() is enabled, the items are not resorted
+  in this method. If you want to sort and re-align all items, use
+  iconview->sort( iconview->sortDirection() );
 
-  \sa QIconView::setGridX(), QIconView::setGridY()
+  If \a update is TRUE, the viewport is repainted.
+  
+  \sa QIconView::setGridX(), QIconView::setGridY(), QIconView::sort()
 */
 
-void QIconView::alignItemsInGrid()
+void QIconView::alignItemsInGrid( bool update )
 {
     if ( !d->firstItem || !d->lastItem )
 	return;
@@ -2502,6 +2507,8 @@ void QIconView::alignItemsInGrid()
 
     resizeContents( w, h );
     d->dirty = FALSE;
+    if ( update )
+	repaintContents( contentsX(), contentsY(), viewport()->width(), viewport()->height(), FALSE );
 }
 
 /*!
@@ -2509,9 +2516,12 @@ void QIconView::alignItemsInGrid()
   (see QSize::isValid(), an invalid size is created when using
   the default constructor of QSize())
   the best fitting grid is calculated first and used then.
+  
+  if \a update is TRUE, the viewport is repainted.
+
 */
 
-void QIconView::alignItemsInGrid( const QSize &grid )
+void QIconView::alignItemsInGrid( const QSize &grid, bool update )
 {
     QSize grid_( grid );
     if ( !grid_.isValid() ) {
@@ -2539,6 +2549,8 @@ void QIconView::alignItemsInGrid( const QSize &grid )
     }
 
     resizeContents( w, h );
+    if ( update )
+	repaintContents( contentsX(), contentsY(), viewport()->width(), viewport()->height(), FALSE );
 }
 
 /*!
@@ -2564,7 +2576,7 @@ void QIconView::showEvent( QShowEvent * )
 {
     if ( d->dirty ) {
 	resizeContents( viewport()->width(), viewport()->height() );
-	alignItemsInGrid();
+	alignItemsInGrid( FALSE );
     }
     QScrollView::show();
 }
@@ -2663,6 +2675,7 @@ void QIconView::singleClickConfiguration( QFont *normalText, QColor *normalTextC
 void QIconView::setUseSingleClickMode( bool b )
 {
     d->singleClickMode = b;
+    viewport()->repaint( FALSE );
 }
 
 /*!
@@ -2934,8 +2947,7 @@ void QIconView::setItemTextPos( ItemTextPos pos )
 	item->calcRect();
     }
 
-    alignItemsInGrid();
-    repaintContents( contentsX(), contentsY(), contentsWidth(), contentsHeight(), FALSE );
+    alignItemsInGrid( TRUE );
 }
 
 /*!
@@ -2964,7 +2976,7 @@ void QIconView::setAlignMode( AlignMode am )
 
     d->alignMode = am;
     resizeContents( viewport()->width(), viewport()->height() );
-    alignItemsInGrid();
+    alignItemsInGrid( TRUE );
 }
 
 /*!
@@ -3082,7 +3094,7 @@ bool QIconView::enableMoveItems() const
   gets visible.
 */
 
-void QIconView::setAlignItemsWhenInsert( bool b )
+void QIconView::setAligning( bool b )
 {
     d->reorderItemsWhenInsert = b;
 }
@@ -3091,10 +3103,10 @@ void QIconView::setAlignItemsWhenInsert( bool b )
   Returns TRUE if all items are re-aligned in the grid if a new one is
   inserted, else FALSE.
 
-  \sa QIconView::setAlignItemsWhenInsert()
+  \sa QIconView::setAligning()
 */
 
-bool QIconView::alignItemsWhenInsert() const
+bool QIconView::aligning() const
 {
     return d->reorderItemsWhenInsert;
 }
@@ -3103,13 +3115,13 @@ bool QIconView::alignItemsWhenInsert() const
   If \a sort is TRUE, new items are inserted sorted. The sort
   direction is specified using \a ascending.
 
-  Inserting items sorted only works when re-arranging items is
-  set to TRUE as well (using QIconView::setAlignItemsWhenInsert()).
+  Inserting items sorted only works when re-aligning items is
+  set to TRUE as well (using QIconView::setAligning()).
 
-  \sa QIconView::setAlignItemsWhenInsert(), QIconView::alignItemsWhenInsert()
+  \sa QIconView::setAligning(), QIconView::aligning()
 */
 
-void QIconView::setSortItemsWhenInsert( bool sort, bool ascending )
+void QIconView::setSorting( bool sort, bool ascending )
 {
     d->resortItemsWhenInsert = sort;
     d->sortDirection = ascending;
@@ -3118,10 +3130,10 @@ void QIconView::setSortItemsWhenInsert( bool sort, bool ascending )
 /*!
   Returns TRUE if new items are inserted sorted, else FALSE.
 
-  \sa QIconView::setSortItemsWhenInsert()
+  \sa QIconView::setSorting()
 */
 
-bool QIconView::sortItemsWhenInsert() const
+bool QIconView::sorting() const
 {
     return d->resortItemsWhenInsert;
 }
@@ -3131,7 +3143,7 @@ bool QIconView::sortItemsWhenInsert() const
   FALSE means descending. This sort dircction has only a meaning if re-sorting
   and re-aligning of new inserted items is enabled.
 
-  \sa QIconView::setSortItemsWhenInsert(), QIconView::setAlignItemsWhenInsert()
+  \sa QIconView::setSorting(), QIconView::setAligning()
 */
 
 bool QIconView::sortDirection() const
@@ -3185,7 +3197,7 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
     emit mouseButtonPressed( e->button(), item, e->globalPos() );
     emit pressed( item );
     emit pressed( item, e->globalPos() );
-    
+
     if ( d->currentItem )
 	d->currentItem->renameItem();
 
@@ -3276,7 +3288,7 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
     emit mouseButtonClicked( e->button(), item, e->globalPos() );
     emit clicked( item );
     emit clicked( item, e->globalPos() );
-    
+
     d->mousePressed = FALSE;
     d->startDrag = FALSE;
 
@@ -3569,8 +3581,7 @@ void QIconView::adjustItems()
 	if ( size() != d->oldSize ) {
  	    if ( d->firstAdjust )
  		d->firstAdjust = FALSE;
-	    alignItemsInGrid();
-	    viewport()->repaint( FALSE );
+	    alignItemsInGrid( TRUE );
 	}
     }
 }
@@ -4535,18 +4546,22 @@ static int cmpIconViewItems( const void *n1, const void *n2 )
 }
 
 /*!
-  Sorts the items of the listview. If \a ascending is TRUE, the items
+  Sorts the items of the listview and re-aligns them afterwards. 
+  If \a ascending is TRUE, the items
   are sorted in increasing order, else in decreasing order. For sorting
-  QIconViewItem::compare() is used.
+  QIconViewItem::compare() is used. The default sort direction is set to
+  the sort dicrection you set here.
 
-  \sa QIconViewItem::key(), QIconViewItem::setKey(), QIconViewItem::compare()
+  \sa QIconViewItem::key(), QIconViewItem::setKey(), QIconViewItem::compare(),
+  QIconView::setSorting(), QIconView::sortDirection()
 */
 
 void QIconView::sort( bool ascending )
 {
     if ( count() == 0 )
 	return;
-
+    
+    d->sortDirection = ascending;
     QIconViewPrivate::SortableItem *items = new QIconViewPrivate::SortableItem[ count() ];
 
     QIconViewItem *item = d->firstItem;
@@ -4592,8 +4607,7 @@ void QIconView::sort( bool ascending )
 
     delete [] items;
 
-    alignItemsInGrid();
-    viewport()->repaint( FALSE );
+    alignItemsInGrid( TRUE );
 }
 
 /*!

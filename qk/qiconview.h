@@ -353,10 +353,10 @@ public:
     int maxItemWidth() const;
     virtual void setMaxItemTextLength( int w );
     int maxItemTextLength() const;
-    void setAlignItemsWhenInsert( bool b );
-    bool alignItemsWhenInsert() const;
-    void setSortItemsWhenInsert( bool sort, bool ascending = TRUE );
-    bool sortItemsWhenInsert() const;
+    void setAligning( bool b );
+    bool aligning() const;
+    void setSorting( bool sort, bool ascending = TRUE );
+    bool sorting() const;
     bool sortDirection() const;
     virtual void setEnableMoveItems( bool b );
     bool enableMoveItems() const;
@@ -375,8 +375,8 @@ public:
     virtual void sort( bool ascending = TRUE );
 
 public slots:
-    virtual void alignItemsInGrid( const QSize &grid );
-    virtual void alignItemsInGrid();
+    virtual void alignItemsInGrid( const QSize &grid, bool update = TRUE );
+    virtual void alignItemsInGrid( bool update = TRUE );
     virtual void setContentsPos( int x, int y );
 
 signals:
@@ -389,7 +389,7 @@ signals:
     void clicked( QIconViewItem *, const QPoint & );
     void pressed( QIconViewItem * );
     void pressed( QIconViewItem *, const QPoint & );
-    
+
     void doubleClicked( QIconViewItem *item );
     void returnPressed( QIconViewItem *item );
     void rightButtonClicked( QIconViewItem* item, const QPoint& pos );
@@ -401,7 +401,7 @@ signals:
     void itemRightPressed( QIconViewItem *item );
     void viewportRightPressed();
     void viewportRightClicked();
-    
+
     void dropped( QDropEvent *e );
     void moved();
     void onItem( QIconViewItem *item );
