@@ -51,7 +51,7 @@ padding-right: 1em;
 padding-left: 1em;
 }
 
-.sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary {
+.sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary, .section {
 padding: 1em;
 }
 
