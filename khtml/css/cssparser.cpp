@@ -516,6 +516,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                     cs->tag = doc->elementId(s.implementation());
                 }
             }
+	    else cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
         }
    }
 #ifdef CSS_DEBUG
