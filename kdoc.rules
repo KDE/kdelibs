@@ -56,4 +56,4 @@ mediatool_FILES = *.h
 mediatool_LIBS = -lqt
 
 interfaces_FILES = *.h
-interfaces_LIBS = -lqt
+interfaces_LIBS = -lkparts -lqt
