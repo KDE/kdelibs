@@ -24,12 +24,15 @@
 
 #include "nodes.h"
 
-//#include <iostream>
 #include <math.h>
 #include <assert.h>
 #ifdef KJS_DEBUG_MEM
 #include <stdio.h>
 #include <typeinfo>
+#endif
+#ifdef KJS_VERBOSE
+#include <iostream>
+using namespace std;
 #endif
 
 #include "collector.h"
@@ -345,7 +348,9 @@ Reference2 ResolveNode::evaluateReference(ExecState *exec) const
   }
 
   // identifier not found
-  //cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
+#ifdef KJS_VERBOSE
+  cout << "Resolve::evaluateReference: didn't find '" << ident.ustring().ascii() << "'" << endl;
+#endif
   return Reference2(Null(), ident);
 }
 
@@ -364,6 +369,9 @@ Value ResolveNode::evaluate(ExecState *exec) const
   }
 
   // identifier not found
+#ifdef KJS_VERBOSE
+  cout << "Resolve::evaluate: didn't find '" << ident.ustring().ascii() << "'" << endl;
+#endif
   UString m = I18N_NOOP("Can't find variable: ") + ident.ustring();
   Object err = Error::create(exec, ReferenceError, m.ascii());
   exec->setException(err);
@@ -1757,7 +1765,7 @@ Value VarDeclNode::evaluate(ExecState *exec) const
   }
 
 #ifdef KJS_VERBOSE
-  printInfo(exec,(UString("new variable ")+ident).cstring().c_str(),val);
+  printInfo(exec,(UString("new variable ")+ident.ustring()).cstring().c_str(),val);
 #endif
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
