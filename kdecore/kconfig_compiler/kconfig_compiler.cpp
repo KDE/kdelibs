@@ -270,7 +270,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
     } else if ( type == "Path" && !defaultValue.isEmpty() ) {
       defaultValue = literalString( defaultValue );
 
-    } else if ( type == "StringList" && !defaultValue.isEmpty() ) {
+    } else if ( (type == "StringList" || type == "PathList") && !defaultValue.isEmpty() ) {
       QTextStream cpp( &code, IO_WriteOnly | IO_Append );
       if (!code.isEmpty())
          cpp << endl;
@@ -593,6 +593,7 @@ QString param( const QString &type )
     else if ( type == "IntList" )     return "const QValueList<int> &";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "const QString &";
+    else if ( type == "PathList" )    return "const QStringList &";
     else if ( type == "Password" )    return "const QString &";
     else {
         kdError() <<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
@@ -622,6 +623,7 @@ QString cppType( const QString &type )
     else if ( type == "IntList" )     return "QValueList<int>";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "QString";
+    else if ( type == "PathList" )    return "QStringList";
     else if ( type == "Password" )    return "QString";
     else {
         kdError()<<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
@@ -648,6 +650,7 @@ QString defaultValue( const QString &type )
     else if ( type == "IntList" )     return "QValueList<int>()";
     else if ( type == "Enum" )        return "0";
     else if ( type == "Path" )        return "\"\""; // Use empty string, not null string!
+    else if ( type == "PathList" )    return "QStringList()";
     else if ( type == "Password" )    return "\"\""; // Use empty string, not null string!
     else {
         kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;

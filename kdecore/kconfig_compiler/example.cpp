@@ -45,6 +45,8 @@ int main( int argc, char **argv )
 
   prefs->setAnotherOption(17);
 
-  qWarning("Another Option = %d", prefs->anotherOption());
-  qWarning("Another Option2 = %d", prefs->anotherOption2());
+  kdWarning() << "Another Option  = " << prefs->anotherOption() << endl;
+  kdWarning() << "Another Option2 = " << prefs->anotherOption2() << endl;
+  kdWarning() << "MyPaths         = " << prefs->myPaths() << endl;
+  kdWarning() << "MyPaths2        = " << prefs->myPaths2() << endl;
 }

@@ -162,6 +162,7 @@
 	    <xsd:enumeration value="IntList"/>
 	    <xsd:enumeration value="Enum"/>
 	    <xsd:enumeration value="Path"/>
+	    <xsd:enumeration value="PathList"/>
 	    <xsd:enumeration value="Password"/>
 	</xsd:restriction>
     </xsd:simpleType>
