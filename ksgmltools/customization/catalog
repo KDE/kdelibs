@@ -37,20 +37,23 @@ PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
 PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
        "dtd/kde-genent.entities"
 
+		      -- General KDE Entities --
+
+PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN"
+       "dtd/kde-prologue.entities"
+
+-- Do not use this FPI anymore, it is obsolete, but kept for 
+   backwards compatibility.  It will be removed after the release
+--
+PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
+       "dtd/kde-prologue.entities"
+
 		  -- DocBook Modular Style Sheets --
 
 PUBLIC "-//KDE//DOCUMENT Style Sheet V1.0//EN"
        "stylesheets/kde.dsl"
 PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN"
        "stylesheets/kde-l10n.entities"
-
-		      -- KDE General Entities --
-
-PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
-       "dtd/kde-prologue.entities"
-PUBLIC "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"
-       "dtd/fdl-notice.entities"
-
 
 		     -- Various external files --
 
@@ -61,20 +64,14 @@ PUBLIC "-//GNU//DOCUMENT GNU General Public License V2//EN"
        "entities/gpl-license"
 PUBLIC "-//GNU//DOCUMENT GNU General Public License V2 (HTML)//EN"
        "entities/gpl-license.html"
-PUBLIC "-//KDE//DOCUMENT GNU General Public License Notice//EN"
-       "entities/gpl-notice.docbook"
 PUBLIC "-//GNU//DOCUMENT GNU Lesser General Public License V2.1//EN"
        "entities/lgpl-license"
 PUBLIC "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN"
        "entities/lgpl-license.html"
-PUBLIC "-//KDE//DOCUMENT GNU Lesser General Public License Notice//EN"
-       "entities/lgpl-notice.docbook"
 PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
        "entities/fdl-license"
 PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
        "entities/fdl-license.html"
-PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//EN"
-       "entities/fdl-notice.docbook"
 -- decide on distinction notice and full licence (and adapt files 
    accordingly) --
 PUBLIC "-//KDE//DOCUMENT X11 License//EN"
@@ -89,3 +86,29 @@ PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
        "entities/artistic-license.docbook"
 PUBLIC "-//KDE//DOCUMENT Artistic License (HTML)//EN"
        "entities/artistic-license.html"
+
+CATALOG ca/catalog
+CATALOG cs/catalog
+CATALOG da/catalog
+CATALOG de/catalog
+CATALOG el/catalog
+CATALOG en/catalog
+CATALOG es/catalog
+CATALOG et/catalog
+CATALOG fi/catalog
+CATALOG fr/catalog
+CATALOG hu/catalog
+CATALOG it/catalog
+CATALOG ja/catalog
+CATALOG nl/catalog
+CATALOG no/catalog
+CATALOG pl/catalog
+CATALOG pt-BR/catalog
+CATALOG pt/catalog
+CATALOG ro/catalog
+CATALOG ru/catalog
+CATALOG sk/catalog
+CATALOG sl/catalog
+CATALOG sr/catalog
+CATALOG sv/catalog
+CATALOG zh-CN/catalog
