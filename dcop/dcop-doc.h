@@ -4,7 +4,8 @@
 */
 
 /**
- @libdoc The DCOP Desktop COmmunication Protocol library
+ \mainpage The DCOP Desktop COmmunication Protocol library
+
 DCOP is a simple IPC/RPC mechanism built to operate over sockets.
 Either unix domain sockets or tcp/ip sockets are supported. DCOP is
 built on top of the Inter Client Exchange (ICE) protocol, which comes
@@ -13,7 +14,7 @@ beyond that it does not require any other libraries. Because of this,
 it is extremely lightweight, enabling it to be linked into all KDE
 applications with low overhead.
 
-@sect Model:
+\section model Model:
 
 The model is simple.  Each application using DCOP is a client.  They
 communicate to each other through a DCOP server, which functions like
@@ -35,7 +36,7 @@ has the additional benefit of type safety.
 The manual method is covered first, followed by the automatic IDL method.
 
 
-@sect Establishing the Connection:
+\section establish Establishing the Connection:
 
 KApplication has gained a method called "KApplication::dcopClient()"
 which returns a pointer to a DCOPClient instance.  The first time this
@@ -57,9 +58,9 @@ you are communicating anonymously.  Use the
 DCOPClient::registerAs(const QCString &name) to do so.  In the simple
 case:
 
-<code>
+\code
 appId = client->registerAs(kApp->name());
-</code>
+\endcode
 
 If you never retrieve the DCOPClient pointer from KApplication, the
 object will not be created and thus there will be no memory overhead.
@@ -76,7 +77,7 @@ equal to kapp->name(). You can retrieve the registered DCOP client
 by calling kapp->dcopClient().
 
 
-@sect Sending Data to a Remote Application:
+\section sending_data Sending Data to a Remote Application:
 
 To actually communicate, you have one of two choices.  You may either
 call the "send" or the "call" method.  Both methods require three
@@ -108,14 +109,14 @@ called function, but you will not hang while the RPC is processed either.
 The return value of send() indicates whether DCOP communication succeeded
 or not.
 
-<code>
+\code
 QByteArray data;
 QDataStream arg(data, IO_WriteOnly);
 arg << 5;
 if (!client->send("someAppId", "fooObject/barObject", "doIt(int)",
 	          data))
   qDebug("there was some error using DCOP.");
-</code>
+\endcode
 
 OK, now let's say we wanted to get the data back from the remotely
 called function.  You have to execute a call() instead of a send().
@@ -123,7 +124,7 @@ The returned value will then be available in the data parameter "reply".
 The actual return value of call() is still whether or not DCOP
 communication was successful.
 
-<code>
+\code
 QByteArray data, replyData;
 QCString replyType;
 QDataStream arg(data, IO_WriteOnly);
@@ -140,10 +141,10 @@ else {
   } else
     qDebug("doIt returned an unexpected type of reply!");
 }
-</code>
+\endcode
 
 
-@sect Receiving Data via DCOP:
+\sect receiving_data Receiving Data via DCOP:
 
 Currently the only real way to receive data from DCOP is to multiply
 inherit from the normal class that you are inheriting (usually some
@@ -160,7 +161,7 @@ this method for you.  However, until that point you need to examine
 the incoming function signature and take action accordingly.  Here is
 an example implementation.
 
-<code>
+\code
 bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &replyType, QByteArray &replyData)
 {
@@ -178,10 +179,10 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
     return false;
   }
 }
-</code>
+\endcode
 
 
-@sect Receiving Calls and processing them:
+\sect receiving_calls Receiving Calls and processing them:
 
 If your applications is able to process incoming function calls
 right away the above code is all you need. When your application
@@ -196,7 +197,7 @@ can receive incoming DCOP function calls from other clients.
 
 Such code could like this:
 
-<code>
+\code
 bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &, QByteArray &)
 {
@@ -228,10 +229,10 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
     reply << result;
     kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
 }
-</code>
+\endcode
 
 
-@sect Using the dcopidl compiler:
+\section dcopidl Using the dcopidl compiler:
 
 dcopidl makes setting up a DCOP server easy. Instead of having to implement
 the process() method and unmarshalling (retrieving from QByteArray) parameters
@@ -247,7 +248,7 @@ expands to 'void'.
 
 Example:
 
-<code>
+\code
 #ifndef MY_INTERFACE_H
 #define MY_INTERFACE_H
 
@@ -264,7 +265,7 @@ class MyInterface : virtual public DCOPObject
 };
 
 #endif
-</code>
+\endcode
 
 As you can see, you're essentially declaring an abstract base class, which
 virtually inherits from DCOPObject.
@@ -287,7 +288,7 @@ but virtual, not pure virtual.
 
 Example:
 
-<code>
+\code
 class MyClass: public QObject, virtual public MyInterface
 {
   Q_OBJECT
@@ -299,7 +300,7 @@ class MyClass: public QObject, virtual public MyInterface
     ASYNC myAsynchronousMethod(QString someParameter);
     QRect mySynchronousMethod();
 };
-</code>
+\endcode
 Note: (Qt issue) Remember that if you are inheriting from QObject, you must
 place it first in the list of inherited classes.
 
@@ -310,14 +311,14 @@ the interface which your are implementing.
 
 Example:
 
-<code>
+\code
 MyClass::MyClass()
   : QObject(),
     DCOPObject("MyInterface")
 {
   // whatever...
 }
-</code>
+\endcode
 
 
 Now you can simply implement the methods you have declared in your interface,
@@ -325,18 +326,18 @@ exactly the same as you would normally.
 
 Example:
 
-<code>
+\code
 void MyClass::myAsynchronousMethod(QString someParameter)
 {
   qDebug("myAsyncMethod called with param `" + someParameter + "'");
 }
-</code>
+\endcode
 
 It is not necessary (though very clean) to define an interface as an
 abstract class of its own, like we did in the example above. We could
 just as well have defined a k_dcop section directly within MyClass:
 
-<code>
+\code
 class MyClass: public QObject, virtual public DCOPObject
 {
   Q_OBJECT
@@ -350,7 +351,7 @@ class MyClass: public QObject, virtual public DCOPObject
     ASYNC myAsynchronousMethod(QString someParameter);
     QRect mySynchronousMethod();
 };
-</code>
+\endcode
 
 In addition to skeletons, dcopidl2cpp also generate stubs. Those make
 it easy to call a DCOP interface without doing the marshalling
@@ -358,7 +359,7 @@ manually. To use a stub, add MyInterface.stub to the SOURCES list of
 your Makefile.am. The stub class will then be called MyInterface_stub.
 
 
-@sect Inter-user communication:
+\sect iuc Inter-user communication:
 
 Sometimes it might be interesting to use DCOP between processes
 belonging to different users, e.g. a frontend process running
@@ -394,25 +395,37 @@ pass important information around this way.
 @sect DCOP Protocol description:
 
 A DCOPSend message does not expect any reply.
+<code>
 data: << fromId << toId << objId << fun << dataSize + data[dataSize]
+</code>
 
 A DCOPCall message can get a DCOPReply, a DCOPReplyFailed
 or a DCOPReplyWait message in response.
+<code>
 data: << fromId << toId << objId << fun << dataSize + data[dataSize]
+</code>
 
 DCOPReply is the successful reply to a DCOPCall message
+<code>
 data: << fromId << toId << replyType << replyDataSize + replyData[replyDataSize]
+</code>
 
 DCOPReplyFailed indicates failure of a DCOPCall message
+<code>
 data: << fromId << toId
+</code>
 
 DCOPReplyWait indicates that a DCOPCall message is successfully
 being processed but that response will come later.
+<code>
 data: << fromId << toId << transactionId
+</code>
 
 DCOPReplyDelayed is the successful reply to a DCOPCall message
 after a DCOPReplyWait message.
+<code>
 data: << fromId << toId << transactionId << replyType << replyData
+</code>
 
 DCOPFind is a message much like a "call" message. It can however
 be send to multiple objects within a client. If a function in a
@@ -422,11 +435,13 @@ who returned "true".
 
 All c-strings (fromId, toId, objId, fun and replyType), are marshalled with
 their respective  length as 32 bit unsigned integer first:
+<code>
 data: length + string[length]
+</code>
 Note: This happens automatically when using QCString on a
 QDataStream.
 
-@sect Conclusion:
+\section conclusion Conclusion:
 
 Hopefully this document will get you well on your way into the world of
 inter-process communication with KDE!  Please direct all comments and/or

@@ -32,7 +32,7 @@ class DCOPObject;
 class DCOPClient;
 
 /**
- * Represents the return value of a @ref DCOPRef:call() or 
+ * Represents the return value of a @ref DCOPRef:call() or
  * @ref DCOPRef:send() invocation.
  *
  * @see DCOPRef
@@ -44,7 +44,7 @@ class DCOPReply
 {
 public:
   /**
-   * Casts the value to the type @p T. Requires that the 
+   * Casts the value to the type @p T. Requires that the
    * type @p T suppports @ref QDataStream deserialisation
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
@@ -61,7 +61,7 @@ public:
 	return t;
     }
   /**
-   * Retrieves the value from the type @p T. Requires that the 
+   * Retrieves the value from the type @p T. Requires that the
    * type @p T suppports @ref QDataStream deserialisation.
    * @param t the type will be written here, if successful
    * @param tname the signature type name
@@ -76,7 +76,7 @@ public:
 	return false;
     }
   /**
-   * Retrieves the value from the type @p T. Requires that the 
+   * Retrieves the value from the type @p T. Requires that the
    * type @p T suppports @ref QDataStream deserialisation
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
@@ -98,7 +98,7 @@ public:
      * @return true if valid, false otherwise
      */
     inline bool isValid() const { return !type.isNull(); }
-    
+
     /// The serialized data.
     QByteArray data;
     /// The name of the type, or 0 if unknown.
@@ -109,10 +109,10 @@ private:
 };
 
 /**
- * A generic DCOP argument. 
+ * A generic DCOP argument.
  * This class allows you to use user-defined argument types for
- * @ref DCOPRef::call() or @ref DCOPRef::send(). 
- * 
+ * @ref DCOPRef::call() or @ref DCOPRef::send().
+ *
  * @see DCOPRef::call()
  * @see DCOPRef
  * @see DCOPReply
@@ -120,10 +120,10 @@ private:
  */
 class DCOPArg  {
 public:
-    /** 
-     * Creates a DCOPArg for @ref DCOPRef::call(). 
+    /**
+     * Creates a DCOPArg for @ref DCOPRef::call().
      * @param t the data that will be written to a QDataStream. It must
-     *          overload writing to a @ref QDataStream using the "<<" 
+     *          overload writing to a @ref QDataStream using the "<<"
      *          operator
      * @param tname_arg the name of the data that will appear in the
      *        function's signature
@@ -134,10 +134,10 @@ public:
 	    QDataStream ds( data, IO_WriteOnly );
 	    ds << t;
 	}
-    /** 
-     * Creates a DCOPArg for @ref DCOPRef::call(). 
+    /**
+     * Creates a DCOPArg for @ref DCOPRef::call().
      * @param t the data that will be written to a QDataStream. It must
-     *          overload writing to a @ref QDataStream using the "<<" 
+     *          overload writing to a @ref QDataStream using the "<<"
      *          operator. The name of the type will be determined by
      *          calling the function dcopTypeName(T) that must be provided
      *          by you.
@@ -170,7 +170,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * objects in a DCOP interface, for example in the method
  * giveMeAnotherObject() in an interface like this:
  *
- * <code>
+ * \code
  *	class Example : public DCOPObject
  *	{
  *	   K_DCOP
@@ -181,7 +181,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *	   ASYNC pingMe( QCString message );
  *	   UserType userFunction( UserType );
  *	};
- * </code>
+ * \endcode
  *
  * In addition, the reference can operate as a comfortable generic
  * stub to call remote DCOP objects in cases where no DCOPStub is
@@ -193,30 +193,30 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * interface on an object called "example" that lives in application
  * "foo". Using DCOPRef, you would write
  *
- * <code>
+ * \code
  *	DCOPRef example( "foo", "example" );
  *	int result = example.call( "doSomething", QString("Hello World"), (float)2.5, true );
- * </code>
+ * \endcode
  *
  * If it is important for you to know whether the call succeeded or
  * not, you can use the slightly more elaborate pattern:
  *
- * <code>
+ * \code
  *	DCOPRef example( "foo", "example" );
  *	DCOPReply reply = example.call( "doSomething", QString("Hello World"), (float)2.5, true );
  *	if ( reply.isValid() ) {
  *	    int result = reply;
  *	    // ...
  *	}
- * </code>
- * 
- * Note that you must pass a QString for the first argument. If you use a 
+ * \endcode
+ *
+ * Note that you must pass a QString for the first argument. If you use a
  * regular char pointer, it will be converted to a @ref QCString.
  *
  * For curiosity, here is how you would achieve the exactly same
  * functionality by using DCOPClient::call() directly:
  *
- * <code>
+ * \code
  *    QByteArray data, replyData;
  *    QCString replyType;
  *    QDataStream arg( data, IO_WriteOnly );
@@ -231,41 +231,41 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *	    // ...
  *	}
  *    }
- * </code>
+ * \endcode
  *
  * As you might see from the code snippet, the DCOPRef has to "guess"
  * the names of the datatypes of the arguments to construct a dcop
  * call. This is done through global inline overloads of the
  * dcopTypeName function, for example
  *
- * <code>
+ * \code
  *	inline const char* dcopTypeName( const QString& ) { return "QString"; }
- * </code>
+ * \endcode
  *
  * If you use custom data types that do support QDataStream but have
  * no corrsponding dcopTypeName overload, you can either provide such
  * an overload or use a DCOPArg wrapper that allows you to specify the type.
  *
- * <code>
+ * \code
  *	UserType userType;
  *	DCOPReply reply = example.call( "userFunction", DCOPArg( userType, "UserType" ) );
- * </code>
+ * \endcode
  *
  * Similar, when you retrieve such a data type, you can use an
  * explicit call to DCOPReply::get():
  *
- * <code>
+ * \code
  *	UserType userType;
  *	reply.get( userType, "UserType" );
- * </code>
+ * \endcode
  *
  * The function send() works very similar to call(), only that it
  * returns a simple bool on whether the signal could be sent or not:
  *
- * <code>
+ * \code
  *	if ( example.pingMe( "message" ) == false )
  *	   qWarning("could not ping example" );
- * </code>
+ * \endcode
  *
  * A DCOP reference operates on DCOPClient::mainClient(), unless you
  * explicitly specify another client with setDCOPClient().
@@ -403,13 +403,13 @@ public:
      */
     enum EventLoopFlag { NoEventLoop, UseEventLoop };
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -427,7 +427,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     DCOPReply callExt( const QCString& fun, EventLoopFlag useEventLoop=NoEventLoop,
 		    int timeout=-1 ) {
 	QByteArray data;
@@ -435,15 +435,15 @@ public:
     }
 
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -467,7 +467,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -482,17 +482,17 @@ public:
     }
 
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -519,7 +519,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1, class T2>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -536,19 +536,19 @@ public:
     }
 
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -577,7 +577,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1, class T2, class T3>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -596,21 +596,21 @@ public:
     }
 
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -641,7 +641,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1,class T2,class T3,class T4>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -660,25 +660,25 @@ public:
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
-    
+
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -711,7 +711,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1,class T2,class T3,class T4,class T5>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -732,27 +732,27 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
-    
+
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t6 the sixth argument of the function. This can be a 
+     * @param t6 the sixth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -787,7 +787,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -811,27 +811,27 @@ public:
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t6 the sixth argument of the function. This can be a 
+     * @param t6 the sixth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t7 the seventh argument of the function. This can be a 
+     * @param t7 the seventh argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -868,7 +868,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -893,31 +893,31 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
-    
+
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t6 the sixth argument of the function. This can be a 
+     * @param t6 the sixth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t7 the seventh argument of the function. This can be a 
+     * @param t7 the seventh argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t8 the eigth argument of the function. This can be a 
+     * @param t8 the eigth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -956,7 +956,7 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
-     */ 
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     DCOPReply callExt( const QCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
@@ -983,16 +983,16 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
-    
+
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @since 3.1
@@ -1003,16 +1003,16 @@ public:
     }
 
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1029,18 +1029,18 @@ public:
 	return sendInternal( fun, args, data );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1060,20 +1060,20 @@ public:
 	return sendInternal( fun, args, data );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1095,22 +1095,22 @@ public:
 	return sendInternal( fun, args, data );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1134,24 +1134,24 @@ public:
 	return sendInternal( fun, args, data );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1177,26 +1177,26 @@ public:
 	return sendInternal( fun, args, data );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t6 the sixth argument of the function. This can be a 
+     * @param t6 the sixth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1224,28 +1224,28 @@ public:
 	return sendInternal( fun, args, data );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t6 the sixth argument of the function. This can be a 
+     * @param t6 the sixth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t7 the seventh argument of the function. This can be a 
+     * @param t7 the seventh argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1275,30 +1275,30 @@ public:
 	return sendInternal( fun, args, data );
     }
     /**
-     * Calls the function @p fun on the object referenced by this reference. 
+     * Calls the function @p fun on the object referenced by this reference.
      * Unlike @ref call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
-     *            only the function's name (e.g. "setName"). In the 
-     *            latter case the exact signature will be guessed from 
+     *            only the function's name (e.g. "setName"). In the
+     *            latter case the exact signature will be guessed from
      *            the arguments
-     * @param t1 the first argument of the function. This can be a 
+     * @param t1 the first argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t2 the second argument of the function. This can be a 
+     * @param t2 the second argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t3 the third argument of the function. This can be a 
+     * @param t3 the third argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t4 the fourth argument of the function. This can be a 
+     * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t5 the fifth argument of the function. This can be a 
+     * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t6 the sixth argument of the function. This can be a 
+     * @param t6 the sixth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t7 the seventh argument of the function. This can be a 
+     * @param t7 the seventh argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @param t8 the eigth argument of the function. This can be a 
+     * @param t8 the eigth argument of the function. This can be a
      *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
+     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg

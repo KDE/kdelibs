@@ -54,12 +54,12 @@ typedef QValueList<QCString> QCStringList;
  * initialized with the @ref QByteArray that you actually intend to send
  * the data in.  An example of how you might do this:
  *
- * <code>
+ * \code
  *   QByteArray data;
  *   QDataStream arg(data, IO_WriteOnly);
  *   arg << QString("This is text I am serializing");
  *   client->send("someApp", "someObject", "someFunction(QString)", arg);
- * </code>
+ * \endcode
  *
  * @see KApplication::dcopClient()
  * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
@@ -256,7 +256,7 @@ class DCOPClient : public QObject
   /**
    * This function acts exactly the same as the above, but the data
    * parameter can be specified as a @ref QString for convenience.
-   * 
+   *
    * @param remApp The remote application id.
    * @param remObj The name of the remote object.
    * @param remFun The remote function in the specified object to call.
@@ -427,9 +427,9 @@ class DCOPClient : public QObject
                           const QCString &receiverObj, const QCString &slot,
                           bool Volatile);
 
-  /** 
+  /**
    * @deprecated
-   * For backwards compatibility 
+   * For backwards compatibility
    */
   bool connectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot,
@@ -458,7 +458,7 @@ class DCOPClient : public QObject
 
   /**
    * @deprecated
-   * For backwards compatibility 
+   * For backwards compatibility
    */
   bool disconnectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot);
@@ -643,7 +643,7 @@ class DCOPClient : public QObject
    * true, notifications will be enabled until it was called with
    * @p enabled set to false as often.
    *
-   * They are disabled by default.  
+   * They are disabled by default.
    * @param enabled true to enable notifications, false to disable
    */
   void setNotifications( bool enabled );
@@ -706,7 +706,7 @@ class DCOPClient : public QObject
    * For backwards compatibility with KDE 2.x
    */
   static QCString dcopServerFileOld(const QCString &hostname=0);
-  
+
   /**
    * Return the path of iceauth or an empty string if not found.
    */
@@ -787,7 +787,7 @@ private slots:
 
 public:
   class ReplyStruct;
-  
+
   /**
    * @internal
    **/
