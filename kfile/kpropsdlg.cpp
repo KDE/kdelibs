@@ -786,7 +786,7 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
   else
   {
     unsigned long totalSize = static_cast<KDirSize*>(job)->totalSize();
-    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(totalSize) );
+    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
   }
   m_sizeStopButton->setEnabled(false);
   // just in case you change something and try again :)
