@@ -1,3 +1,4 @@
+// $Id$
 
 #include "kio_job.h" 
 #include <kapp.h>
@@ -6,10 +7,8 @@
 
 #include "kio_littleprogress_dlg.h"
 
-KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent ) : QWidget( parent )
-{
+KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent ) : QWidget( parent ) {
   m_pJob = 0L;
-  m_iPercent = 0;
   
   QFontMetrics fm = fontMetrics();
   int w = fm.width( " 999.9 kB/s 00:00:01 " ) + 8;
@@ -39,29 +38,33 @@ KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent ) : QWidget( parent 
 }
 
 
-void KIOLittleProgressDlg::setJob( KIOJob *job )
-{
+void KIOLittleProgressDlg::setJob( KIOJob *job ) {
   m_pJob = job;
+  connect( m_pJob, SIGNAL( sigSpeed( int, unsigned long ) ),
+	   SLOT( slotSpeed( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigTotalSize( int, unsigned long ) ),
+	   SLOT( slotTotalSize( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
+	   SLOT( slotPercent( int, unsigned long ) ) );
+
   m_pMenu->clear();
   m_pMenu->insertItem( i18n("Cancel"), m_pJob, SLOT(slotCancel()) );
   setMode( mode );
 }
 
-void KIOLittleProgressDlg::setMode( bool _mode )
-{
+
+void KIOLittleProgressDlg::setMode( bool _mode ) {
   if ( _mode ) {
     m_pProgressBar->hide();
     m_pLabel->show();
-  }
-  else {
+  } else {
     m_pProgressBar->show();
     m_pLabel->hide();
   }
 }
 
 
-void KIOLittleProgressDlg::clean()
-{
+void KIOLittleProgressDlg::clean() {
   m_pJob = 0L;
   m_pProgressBar->setValue( 0 );
   m_pLabel->clear();
@@ -69,56 +72,38 @@ void KIOLittleProgressDlg::clean()
 }
 
 
-void KIOLittleProgressDlg::processedSize()
-{
-  if ( m_pJob->m_iProcessedSize == 0 || m_pJob->m_iTotalSize == 0 )
-    return;
-  
-  int old = m_iPercent;
+void KIOLittleProgressDlg::slotTotalSize( int, unsigned long _size ) {
+  m_iTotalSize = _size;
+}
 
-  m_iPercent = (int)(( (float)m_pJob->m_iProcessedSize / (float)m_pJob->m_iTotalSize ) * 100.0);
-
-  if ( m_iPercent == old )
-    return;
-
-  m_pProgressBar->setValue( m_iPercent );
+void KIOLittleProgressDlg::slotPercent( int, unsigned long _percent ) {
+  m_pProgressBar->setValue( _percent );
 }
 
 
-void KIOLittleProgressDlg::speed()
-{
-  if ( m_pJob == 0L )
-    return;
-
-  if ( m_pJob->m_iProcessedSize == 0 )
-    return;
-  
-  if ( m_pJob->m_iSpeed == 0 )
+void KIOLittleProgressDlg::slotSpeed( int, unsigned long _bytes_per_second ) {
+  if ( _bytes_per_second == 0 ) {
     m_pLabel->setText( i18n( " Stalled ") );
-  else
-    m_pLabel->setText( i18n( " %1/s %2 ").arg( KIOJob::convertSize( m_pJob->m_iSpeed )).arg( m_pJob->m_RemainingTime.toString()) );
+  } else {
+    m_pLabel->setText( i18n( " %1/s %2 ").arg( KIOJob::convertSize( _bytes_per_second )).arg( m_pJob->getRemainingTime().toString()) );
+  }
 }
 
 
 bool KIOLittleProgressDlg::eventFilter( QObject *, QEvent *ev ) {
+  if ( ! m_pJob ) {
+    return true;
+  }
 
   if ( ev->type() == QEvent::MouseButtonPress ) {
     QMouseEvent *e = (QMouseEvent*)ev;
 
     if ( e->button() == LeftButton ) {    // toggle view on left mouse button
-
-      if ( m_pJob == 0L ) // only toggle when we have something to display
-	return true;
-
       mode = ! mode;
       setMode( mode );
       return true;
-    }
-    else if ( e->button() == RightButton ) {  // open popup menu on right mouse button
 
-      if ( m_pJob == 0L ) // only popup when we have something to cancel
-	return true;
-      
+    } else if ( e->button() == RightButton ) {  // open popup menu on right mouse button
       m_pMenu->move(-1000,-1000);
       m_pMenu->show();
       m_pMenu->hide();
