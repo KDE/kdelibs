@@ -229,7 +229,7 @@ void KMDriverDbWidget::slotOtherClicked()
 		KURL url;
 
 		dlg.setMode( KFile::File );
-		dlg.setCaption( i18n( "Select a driver" ) );
+		dlg.setCaption( i18n( "Select Driver" ) );
 		if ( dlg.exec() )
 			url = dlg.selectedURL();
 

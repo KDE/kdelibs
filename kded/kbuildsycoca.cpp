@@ -863,7 +863,7 @@ qWarning("Reusing existing ksycoca");
      dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged(QStringList)", data );
    }
 #ifdef ANNOYING_POPUP
-   KMessageBox::information(0, i18n("System Configuration Cache (ksycoca) successfully updated."));
+   KMessageBox::information(0, i18n("System configuration cache (ksycoca) successfully updated."));
 #endif
    return 0;
 }

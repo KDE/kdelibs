@@ -68,7 +68,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 
 	QGroupBox *m_outfile_gb = new QGroupBox( 0, Qt::Horizontal, i18n( "Outp&ut File" ), dummy );
 
-	m_usefile = new QCheckBox( i18n("&Enable Output File"), m_outfile_gb);
+	m_usefile = new QCheckBox( i18n("&Enable output file"), m_outfile_gb);
 
 	m_mimetype = new QComboBox(m_outfile_gb);
 	KMimeType::List	list = KMimeType::allMimeTypes();

@@ -197,7 +197,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                        "Shows the certificate of the displayed page. Only "
 				       "pages that have been transmitted using a secure, encrypted connection have a "
 				       "certificate.<p> "
-				       "Hint: if the image shows a closed lock, the page has been transmitted over a "
+				       "Hint: If the image shows a closed lock, the page has been transmitted over a "
 				       "secure connection.") );
   d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
@@ -2943,7 +2943,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   {
     KIO::MetaData metaData;
     metaData["referrer"] = d->m_referrer;
-    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As..." ), cURL, metaData );
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), cURL, metaData );
     return;
   }
 

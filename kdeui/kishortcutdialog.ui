@@ -109,7 +109,7 @@
                         <enum>NoFocus</enum>
                     </property>
                     <property name="text">
-                        <string>Alternate shortcut</string>
+                        <string>Alternate shortcut:</string>
                     </property>
                 </widget>
                 <widget class="QRadioButton" row="0" column="0">
@@ -120,7 +120,7 @@
                         <enum>NoFocus</enum>
                     </property>
                     <property name="text">
-                        <string>Primary shortcut</string>
+                        <string>Primary shortcut:</string>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget" row="1" column="2">
