@@ -68,8 +68,9 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
   KJScript* kjs_create(KHTMLPart *khtml)
   {
     KJScript *script = new KJScript();
+#ifndef NDEBUG
     script->enableDebug();
-
+#endif
     KJS::Global global(Global::current());
 
     KJSO window(newWindow(khtml));
