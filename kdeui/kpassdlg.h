@@ -301,7 +301,7 @@ public:
      * @param reasonableLength: The new reasonable password length.
      * @since 3.4
      */
-    void setReasonablePasswordLength(int maxLength);
+    void setReasonablePasswordLength(int reasonableLength);
 
     /**
      * Password length that is expected to be reasonably safe.
