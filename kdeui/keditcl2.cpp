@@ -690,7 +690,7 @@ public:
 
 KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
-		modal ? User1|Cancel : User1|Close, User1, false, i18n("&Find") )
+		modal ? User1|Cancel : User1|Close, User1, false, KGuiItem( i18n("&Find"), "find") )
 {
   setWFlags( WType_TopLevel );
 
@@ -822,7 +822,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Replace"),
 		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close,
                 User3, false,
-		i18n("Replace &All"), i18n("&Replace"), i18n("&Find") )
+		i18n("Replace &All"), i18n("&Replace"), KGuiItem( i18n("&Find"), "find") )
 {
   setWFlags( WType_TopLevel );
 
