@@ -250,8 +250,6 @@ public:
 	 **/
 	static int configure( KActionCollection* coll,
 		QWidget* parent = 0, bool bSaveSettings = true );
-	//static int configure( KActionPtrList* coll, const QString& sXmlFile,
-	//	QWidget* parent = 0, bool bSaveSettings = true );
 
 	// obsolete.
 	static int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
@@ -261,9 +259,6 @@ public:
 	static int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
 		bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( coll, parent, save_settings ); }
-	//static int configureKeys( KActionPtrList* coll, const QString& xmlfile,
-	//	bool save_settings = true, QWidget* parent = 0 )
-	//	{ return configure( coll, xmlfile, parent, save_settings ); }
 
 private:
 	KKeyChooser* m_pKeyChooser;
