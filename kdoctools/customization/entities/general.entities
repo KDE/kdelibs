@@ -267,6 +267,7 @@
 <!ENTITY kpovmodeler "<application>KPovModeler</application>">
 <!ENTITY kppp	"<application>kppp</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
+<!ENTITY kreatecd	"<application>KreateCD</application>">
 <!ENTITY kregexpeditor	"<application>KRegExpEditor</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
 <!ENTITY krita	"<application>Krita</application>">
@@ -277,6 +278,7 @@
 <!ENTITY kscreensaver	"<application>KScreensaver</application>">
 <!ENTITY ksgmltools	"<application>ksgmltools</application>">
 <!ENTITY kshisen	"<application>KShisen</application>">
+<!ENTITY ksim	"<application>KSim</application>">
 <!ENTITY ksirc	"<application>KSirc</application>">
 <!ENTITY ksirtet	"<application>KSirtet</application>">
 <!ENTITY ksmiletris	"<application>KSmiletris</application>">
@@ -296,6 +298,7 @@
 <!ENTITY kteatime "<application>KTeaTime</application>">
 <!ENTITY kthesaurus "<application>KThesaurus</application>">
 <!ENTITY ktimemon "<application>KTimemon</application>">
+<!ENTITY ktimer	"<application>KTimer</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
 <!ENTITY ktouch "<application>KTouch</application>">
 <!ENTITY ktron	"<application>KTron</application>">
