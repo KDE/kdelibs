@@ -588,7 +588,7 @@ int TCPSlaveBase::verifyCertificate()
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
-   if (!hasMetaData("parent_frame") || metaData("parent_frame") == "TRUE") {
+   if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
       setMetaData("ssl_parent_cert", pc.toString());
@@ -691,6 +691,7 @@ int TCPSlaveBase::verifyCertificate()
       d->cc->saveToDisk();    // So that other slaves can get at it.
       // FIXME: we should be able to notify other slaves of this here.
     } else {    // Child frame
+      kdDebug(7029) << "SSL HTTP child frame" << endl;
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp =
                                              d->cc->getPolicyByCertificate(pc);
@@ -735,7 +736,7 @@ int TCPSlaveBase::verifyCertificate()
 
    if (metaData("ssl_activate_warnings") == "TRUE") {
    //  - entering SSL
-   if (metaData("ssl_was_in_use") == "FALSE" &&
+   if (!isChild && metaData("ssl_was_in_use") == "FALSE" &&
                                         d->kssl->settings()->warnOnEnter()) {
             int result = messageBox( WarningYesNo, i18n("You are about to "
                                                         "enter secure mode.  "
@@ -746,11 +747,11 @@ int TCPSlaveBase::verifyCertificate()
                                                         "that no third party "
                                                         "will be able to "
                                                         "easily observe your "
-                                  " data in transfer."),
-                             i18n("Security information"),
+                                                        " data in transfer."),
+                                                   i18n("Security information"),
                                                    i18n("Display SSL "
                                                         "Information"),
-                             i18n("Continue") );
+                                                   i18n("Continue") );
       if ( result == KMessageBox::Yes )
       {
          // Force sending of the metadata
@@ -760,7 +761,7 @@ int TCPSlaveBase::verifyCertificate()
    }
 
    //  - leaving SSL
-   if (metaData("ssl_was_in_use") == "TRUE" &&
+   if (!isChild && metaData("ssl_was_in_use") == "TRUE" &&
                                          d->kssl->settings()->warnOnLeave()) {
       int result = messageBox( WarningContinueCancel,
                                      i18n("You are about to leave secure "
@@ -768,11 +769,12 @@ int TCPSlaveBase::verifyCertificate()
                                           "longer be encrypted.\nThis "
                                           "means that a third party could "
                                           "observe your data in transit."),
-                             i18n("Security information"),
-                             i18n("Continue Loading") );
+                                     i18n("Security information"),
+                                     i18n("Continue Loading") );
       if ( result == KMessageBox::Cancel )
       {
-         // FIXME: fail here!!
+         // FIXME: fail the ENTIRE page here!!
+         return -1;
       }
    }
 
