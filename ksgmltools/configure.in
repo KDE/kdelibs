@@ -1,0 +1,51 @@
+
+AC_INIT(template.docbook)
+
+AC_CONFIG_AUX_DIR(../admin)
+
+AM_INIT_AUTOMAKE(ksgmltools, 1.0)
+
+SGML_CATALOGS=
+
+AC_DEFUN(KDE_FIND_CAT, 
+[
+   dtd_paths="/usr/lib/sgml/jade /etc /usr/lib/sgml/docbook-dtd /usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml/ /usr/lib/sgml/docbook-3.1"
+   AC_FIND_FILE($1, $dtd_paths, CAT)
+   if test ! "x$CAT" = "xNO"; then
+     test -n "$SGML_CATALOGS" && SGML_CATALOGS="$SGML_CATALOGS:"
+     SGML_CATALOGS="$SGML_CATALOGS$CAT/$1"
+   fi
+])
+
+KDE_FIND_CAT(docbook.cat)
+KDE_FIND_CAT(iso-entities.cat)
+KDE_FIND_CAT(nwalsh-modular.cat)
+KDE_FIND_CAT(dsssl.cat)
+KDE_FIND_CAT(sgml.catalog)
+KDE_FIND_CAT(stylesheets.cat)
+
+AC_SUBST(SGML_CATALOGS)
+
+dnl this is /opt/teTex on COL, no?
+TEX_MF=/usr/share/texmf
+AC_SUBST(TEX_MF)
+
+KDE_CATALOG=$prefix
+AC_SUBST(KDE_CATALOG)
+AC_SUBST(KDE_STYLESHEET)
+
+catdir='$(prefix)/share/apps/ksgmltools'
+AC_SUBST(catdir)
+
+dtddir=$catdir
+AC_SUBST(dtddir)
+
+dsldir='$(prefix)/share/apps/ksgmltools/stylesheets'
+AC_SUBST(dsldir)
+
+AC_OUTPUT(kdb2html Makefile \
+	customization/Makefile \
+	customization/stylesheets/Makefile \
+	doc/Makefile \
+	doc/images/Makefile \
+	doc/HTML/Makefile)
