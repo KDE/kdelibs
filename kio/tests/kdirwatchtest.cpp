@@ -73,7 +73,7 @@ int main (int argc, char **argv)
 
   KDirWatch::statistics();
 
-  delete dirwatch2;
+  delete dirwatch1;
 
   KDirWatch::statistics();
 
