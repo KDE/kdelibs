@@ -477,6 +477,8 @@ void KTextPrint::newPage() {
 
 
 // string list helper functions
+// dupes, actually - so not needed when building with --enable-final
+#ifndef KDE_USE_FINAL
 static void addToStrList(QStringList &list, const QString &str) {
   if (str.isEmpty()) return;
   if (list.count() > 0) {
@@ -487,6 +489,7 @@ static void addToStrList(QStringList &list, const QString &str) {
   }
   list.prepend(str);
 }
+#endif
 
 static void appendToStrList(QStringList &list, const QString &str) {
   if (str.isEmpty()) return;

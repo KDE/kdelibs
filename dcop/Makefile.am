@@ -37,7 +37,8 @@ noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h
 
 METASOURCES = AUTO
 
-libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp dcopstub.cpp dcopref.cpp
+# dcopstub needs to go first for --enable-final to work
+libDCOP_la_SOURCES = dcopstub.cpp dcopclient.cpp dcopobject.cpp dcopref.cpp
 
 dcopserver_la_LDFLAGS = -module -avoid-version -R /usr/X11R6/lib -R /ext/qt-2.1/lib -R /ext/kde2.0/lib
 dcopserver_la_SOURCES = dcopserver.cpp

@@ -61,11 +61,13 @@
 #define _PATH_TMP "/tmp/"
 #endif
 
+#ifndef KDE_USE_FINAL
 struct BufferInfo {
   void *user;
   int   w;
   int   h;
 };
+#endif
 
 extern QPixmap *getBuffer(void *user);
 extern void releaseBuffer(void *user);
