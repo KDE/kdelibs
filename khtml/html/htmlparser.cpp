@@ -80,7 +80,7 @@ using namespace khtml;
 // 10 html
 const unsigned short tagPriority[] = {
     0, // 0
-    1, // ID_A == 1
+    5, // ID_A == 1
     1, // ID_ABBR
     1, // ID_ACRONYM
     3, // ID_ADDRESS
