@@ -28,7 +28,7 @@ class QWidget;
 /**
  * KDE Accelerator manager.
  *
- * This class can be used to find a valid and working set of 
+ * This class can be used to find a valid and working set of
  * accelerators for any widget.
  *
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
@@ -61,6 +61,16 @@ public:
 
   static void manage(QWidget *widget);
 
+  /**
+   * Does the same as the above function, but puts hints in the GUI so the
+   * programmer can enhance his program.
+   *
+   * TODO KDE4: merge with the above
+   * @param widget The toplevel widget you want to manage.
+   * @param programmers_mode if true, KAcceleratorManager adds (&) for removed
+   *             accels and & before added accels
+   */
+  static void manage(QWidget *widget, bool programmers_mode);
 };
 
 

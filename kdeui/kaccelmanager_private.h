@@ -58,7 +58,7 @@ public:
 
   int maxWeight(int &index, const QString &used);
 
-  bool operator == (const KAccelString &c) const { return accelerated() == c.accelerated(); };
+  bool operator == (const KAccelString &c) const { return m_pureText == c.m_pureText && m_accel == c.m_accel && orig_accel == c.orig_accel; }
 
 
 private:
@@ -68,7 +68,7 @@ private:
   void dump();
 
   QString        m_pureText;
-  int            m_accel;
+  int            m_accel, orig_accel;
   QMemArray<int> m_weight;
 
 };
@@ -78,7 +78,7 @@ typedef QValueList<KAccelString> KAccelStringList;
 
 
 /**
- * This class encapsulates the algorithm finding the 'best' 
+ * This class encapsulates the algorithm finding the 'best'
  * distribution of accelerators in a hierarchy of widgets.
  *
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>

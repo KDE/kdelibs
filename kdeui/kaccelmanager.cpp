@@ -60,9 +60,9 @@ const int KAccelManagerAlgorithm::MENU_TITLE_WEIGHT = 250;
 
 
 /*********************************************************************
- 
+
  class KAcceleratorManagerPrivate - internal helper class
- 
+
  This class does all the work to find accelerators for a hierarchy of
  widgets.
 
@@ -73,8 +73,8 @@ class KAcceleratorManagerPrivate
 {
 public:
 
-  static void manage(QWidget *widget);
-
+    static void manage(QWidget *widget);
+    static bool programmers_mode;
 
 private:
   class Item;
@@ -106,6 +106,7 @@ private:
   };
 };
 
+bool KAcceleratorManagerPrivate::programmers_mode = false;
 
 KAcceleratorManagerPrivate::Item::~Item()
 {
@@ -163,7 +164,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     {
       QTabBar *bar = static_cast<QTabBar*>(it->m_widget);
       if (it->m_index >= 0)
-	bar->tab(it->m_index)->setText(contents[cnt].accelerated());
+          bar->tab(it->m_index)->setText(contents[cnt].accelerated());
 
       continue;
     }
@@ -340,12 +341,17 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 
 void KAcceleratorManager::manage(QWidget *widget)
 {
-  KAcceleratorManagerPrivate::manage(widget);
+    KAcceleratorManager::manage(widget, false);
 }
 
+void KAcceleratorManager::manage(QWidget *widget, bool programmers_mode)
+{
+    KAcceleratorManagerPrivate::programmers_mode = programmers_mode;
+    KAcceleratorManagerPrivate::manage(widget);
+}
 
 /*********************************************************************
- 
+
  class KAccelString - a string with weighted characters
 
  *********************************************************************/
@@ -353,23 +359,54 @@ void KAcceleratorManager::manage(QWidget *widget)
 KAccelString::KAccelString(const QString &input, int initialWeight)
   : m_pureText(input), m_weight()
 {
-  m_accel = stripAccelerator(m_pureText);
+    bool accel = true;
 
-  if (initialWeight == -1)
-    initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
+    orig_accel = m_pureText.find("!&");
+    if (orig_accel != -1) {
+        m_pureText.replace(orig_accel, 2, "&");
+        orig_accel = -1;
+        accel = false;
+    }
+    m_accel = stripAccelerator(m_pureText);
+    if (accel)
+        orig_accel = m_accel;
 
-  calculateWeights(initialWeight);
+    kdDebug() << "strip " << m_pureText << " " << orig_accel << " " << m_accel << endl;
+    if (initialWeight == -1)
+        initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
-  dump();
+    calculateWeights(initialWeight);
+
+    dump();
 }
 
 
 QString KAccelString::accelerated() const
 {
   QString result = m_pureText;
+  if (result.isEmpty())
+      return result;
 
-  if (m_accel >= 0)
-    result.insert(m_accel, "&");
+  if (KAcceleratorManagerPrivate::programmers_mode)
+  {
+      int oa = orig_accel;
+
+      if (m_accel >= 0) {
+          if (m_accel != orig_accel) {
+              result.insert(m_accel, "!&");
+              if (m_accel < orig_accel)
+                  oa += 3;
+          } else {
+              result.insert(m_accel, "&");
+              if (m_accel < orig_accel)
+                  oa++;
+          }
+      }
+
+      if (m_accel != orig_accel && orig_accel >= 0)
+          result.insert(oa, "(&&)");
+  } else
+       result.insert(m_accel, "&");
 
   return result;
 }
@@ -379,7 +416,7 @@ QChar KAccelString::accelerator() const
 {
   if ((m_accel < 0) || (m_accel > (int)m_pureText.length()))
     return QChar();
-    
+
   return m_pureText[m_accel].lower();
 }
 
@@ -506,11 +543,11 @@ void KAccelString::dump()
 
    * it does not try to find as many accelerators as possible
 
- TODO: 
+ TODO:
 
  * The result is always correct, but not neccesarily optimal. Perhaps
    it would be a good idea to add another algorithm with higher complexity
-   that gets used when this one fails, i.e. leaves widgets without 
+   that gets used when this one fails, i.e. leaves widgets without
    accelerators.
 
  * The weights probably need some tweaking so they make more sense.
@@ -561,9 +598,9 @@ void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString 
 
 
 /*********************************************************************
- 
+
  class KPopupAccelManager - managing QPopupMenu widgets dynamically
- 
+
  *********************************************************************/
 
 KPopupAccelManager::KPopupAccelManager(QPopupMenu *popup)
@@ -625,7 +662,7 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
       continue;
 
     s = mitem->text();
-    
+
     // in full menues, look at entries with global accelerators last
     int weight = 50;
     if (s.contains('\t'))
