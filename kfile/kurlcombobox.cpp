@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -158,10 +158,12 @@ void KURLComboBox::setURLs( QStringList urls )
 
     // limit to myMaximum items
     int overload = urls.count() - myMaximum + defaultList.count();
-    if ( overload < 0 )
-        overload = 0;
-    it = urls.at( overload );
-
+    while ( overload > 0 ) {
+        urls.remove( urls.fromLast() );
+        overload--;
+    }
+    
+    it = urls.begin();
 
     KURLComboItem *item = 0L;
     KURL u;
@@ -218,7 +220,7 @@ void KURLComboBox::setURL( const KURL& url )
         itemList.removeLast();
         urlAdded = false;
     }
-    
+
     setDefaults();
 
     QListIterator<KURLComboItem> it( itemList );
