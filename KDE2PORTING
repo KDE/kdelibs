@@ -104,7 +104,8 @@ khtmlw has been replaced with khtml.
   generalFont() and fixedFont() are deprecated and will be removed soon.
   Please use KGlobal::generalFont() and KGlobal::fixedFont() instead.
 
-  appName() is deprecated. Please use QApplication::name() instead.
+  appName() is deprecated. Please use QApplication::name() or instanceName
+  instead.
 
   The methods tempSaveName() and checkRecoverFile() return QString
   now. The returned values must _not_ be free()d.
@@ -112,6 +113,12 @@ khtmlw has been replaced with khtml.
   helpMenu() has been moved to KTMainWindow. aboutKDE(), aboutApp() and 
   appHelpActivated() have all been removed See section about ktmainwindow 
   for more info.
+  
+  The third argument for KApplication used to be optional. But as it's
+  value is important for more things in KDE 2.0 (like DCOP), we decided
+  to make it's importance more clear and make it mandatory. Just add the
+  application name - preferably the name of the binary.
+
 
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget, kdecore/drag.h
