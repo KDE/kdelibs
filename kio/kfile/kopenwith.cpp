@@ -727,38 +727,9 @@ void KOpenWithDlg::slotOK()
   desktop->sync();
   delete desktop;
 
-  QApplication::setOverrideCursor( waitCursor );
-
-  // rebuild the database
-  {
-    // Ask kded to rebuild ksycoca. kded will most likely trigger 
-    // a rebuild automatically anyway, so by asking kded it
-    // happens only once
-    QCString replyType;
-    QByteArray params;
-    QByteArray reply;
-
-    if (!kapp->dcopClient()->call( "kded", "kbuildsycoca", "recreate()",
-                               params, replyType, reply ) )
-    {
-       kdWarning(250) << "Can't communicate with kded!" << endl;
-       KApplication::kdeinitExecWait( "kbuildsycoca" );
-    }
-  }
-
-
-
-  // get the new service pointer
-  kdDebug(250) << "kbuildsycoca finished, looking for service " << menuId << endl;
-  // We need to read in the new database. It seems the databaseChanged()
-  // signal hasn't been processed in this process yet, since we haven't been
-  // to the event loop yet.
-  QStringList lst;
-  lst << QString::fromLatin1("apps");
-  KSycoca::self()->notifyDatabaseChanged( lst );
+  KService::rebuildKSycoca(this);
 
   m_pService = KService::serviceByMenuId( menuId );
-  QApplication::restoreOverrideCursor();
 
   Q_ASSERT( m_pService );
 
