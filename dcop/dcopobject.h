@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
 
@@ -19,8 +18,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-******************************************************************/
+*/
 
 #ifndef _DCOPOBJECT_H
 #define _DCOPOBJECT_H
