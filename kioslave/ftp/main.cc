@@ -173,6 +173,11 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       m_cmd = CMD_NONE;
       return;
     }
+    if ( usrc.host().isEmpty() ) {
+      error( ERR_MALFORMED_URL, (*soit) ); // !!! create a new error type ?
+      m_cmd = CMD_NONE;
+      return;
+    }
     if ( strcmp( usrc.protocol(), "ftp" ) != 0L ) {
       error( ERR_INTERNAL, "kio_ftp got non ftp file as source in copy command" );
       m_cmd = CMD_NONE;
@@ -217,18 +222,21 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 
   // Connect to the ftp server
   KURL usrc( _source.first() );
-  if ( !ftp.ftpConnect( usrc ) ) {
+  if ( ! ftp.ftpConnect( usrc ) ) {
     error( ftp.error(), ftp.errorText() );
     ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
     return;
   }
   
+  debug( "kio_ftp : connected to a server" );
+
   // Find out, whether we are logged anonymously or not
   // Authorization has been already checked with ftp.ftpConnect( usrc )
   bool b_user = false;
-  if ( usrc.hasUser() )
+  if ( usrc.hasUser() ) {
     b_user = true;
+  }
 
   // Get a list of all source files and directories
   QValueList<Copy> files;
@@ -639,6 +647,9 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( 0 );
+
+	    renamed( u.path( -1 ) ); // emit signal
+
 	    // Change the destination name of the current file
 	    (*fit).m_strRelDest = u.path( -1 );
 	    // Dont clear error => we will repeat the current command
@@ -1030,7 +1041,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   // Loop until we got 'dataEnd'
   while ( m_cmd == CMD_PUT && dispatch() );
 
-  ftp.ftpClose();
+  ftp.ftpClose(); // check order !!!
   ftp.ftpDisconnect( true );
 
   if ( (e = ftp.ftpStat( udest )) ) {
@@ -1113,24 +1124,25 @@ void FtpProtocol::slotDel( QStringList& _source )
     qDebug( "kio_ftp : Parsed URL" );
 
     // Did an error occur ?
-//    int s;
-//     if ( ( s = listRecursive( usrc.path(), fs, ds, false ) ) == -1 )
-//       {
-// 	// Error message is already sent
-// 	ftp.ftpDisconnect();
-// 	m_cmd = CMD_NONE;
-// 	return;
-//       }
-    // Sum up the total amount of bytes we have to copy
-//    size += s;
+    int s;
+    if ( ( s = listRecursive( usrc.path(), fs, ds, false ) ) == -1 )
+      {
+ 	// Error message is already sent
+ 	ftp.ftpDisconnect();
+ 	m_cmd = CMD_NONE;
+ 	return;
+      }
+    // Sum up the total amount of bytes we have to delete
+    size += s;
   }
 
   qDebug( "kio_ftp : Recursive ok" );
 
-  if ( fs.count() == 1 )
+  if ( fs.count() == 1 ) {
     m_cmd = CMD_DEL;
-  else
+  } else {
     m_cmd = CMD_MDEL;
+  }
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
