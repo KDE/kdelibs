@@ -18,7 +18,7 @@ QString KIDLTest::hello( const QString& name )
 
 int main( int argc, char** argv )
 {
-    KApplication app( argc, argv, "kidlservertest" );
+    KApplication app( argc, argv, "kidlservertest", false /* No GUI */ );
 
     app.dcopClient()->attach();
     app.dcopClient()->registerAs( "kidlservertest" );
