@@ -222,6 +222,7 @@ public:
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
   KURLLabel* m_statusBarIconLabel;
+  KURLLabel* m_statusBarWalletLabel;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;

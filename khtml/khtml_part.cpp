@@ -60,6 +60,8 @@ using namespace DOM;
 
 #include <config.h>
 
+#include <dcopclient.h>
+#include <dcopref.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kio/job.h>
@@ -5811,7 +5813,22 @@ KWallet::Wallet* KHTMLPart::wallet()
 
   if (!d->m_wallet) {
     d->m_wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet());
-    if (d->m_wallet) connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
+    if (d->m_wallet) {
+      connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
+      d->m_statusBarWalletLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
+      d->m_statusBarWalletLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
+      d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+      d->m_statusBarWalletLabel->setUseCursor(false);
+      d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
+      QToolTip::add(d->m_statusBarWalletLabel, i18n("The wallet '%1' is open and being used for form data and passwords.").arg(KWallet::Wallet::NetworkWallet()));
+      d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open", instance()));
+      connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedURL()), SLOT(launchWalletManager()));
+      connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedURL()), SLOT(walletMenu()));
+    } else if (d->m_statusBarWalletLabel) {
+      d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarWalletLabel);
+      delete d->m_statusBarWalletLabel;
+      d->m_statusBarWalletLabel = 0L;
+    }
   }
   return d->m_wallet;
 }
@@ -5822,6 +5839,29 @@ void KHTMLPart::slotWalletClosed()
     d->m_wallet->deleteLater();
     d->m_wallet = 0L;
   }
+  if (d->m_statusBarWalletLabel) {
+    d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarWalletLabel);
+    delete d->m_statusBarWalletLabel;
+    d->m_statusBarWalletLabel = 0L;
+  }
+}
+
+void KHTMLPart::launchWalletManager()
+{
+  if (!DCOPClient::mainClient()->isApplicationRegistered("kwalletmanager")) {
+    KApplication::startServiceByDesktopName("kwalletmanager_show");
+  } else {
+    DCOPRef r("kwalletmanager", "kwalletmanager-mainwindow#1");
+    r.send("show");
+    r.send("raise");
+  }
+}
+
+void KHTMLPart::walletMenu()
+{
+  KPopupMenu *m = new KPopupMenu(0L);
+  m->insertItem(i18n("&Close Wallet"), this, SLOT(slotWalletClosed()));
+  m->popup(QCursor::pos());
 }
 
 void KHTMLPart::slotToggleCaretMode() 

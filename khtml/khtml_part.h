@@ -1056,6 +1056,8 @@ private slots:
 
   void slotLoadImages();
   void slotWalletClosed();
+  void launchWalletManager();
+  void walletMenu();
 
   /**
    * @internal
