@@ -51,7 +51,7 @@ JSEventListener::~JSEventListener()
 
 void JSEventListener::handleEvent(DOM::Event &evt)
 {
-  if (listener.implementsCall()) {
+  if (listener.implementsCall() && win->part() ) {
     List args;
     args.append(getDOMEvent(evt));
 
