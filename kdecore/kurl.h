@@ -41,7 +41,7 @@ class KURLPrivate;
  * http://localhost/cgi-bin/test%20me.pl?cmd=Hello%20you
  * </pre>
  * would result in a decoded path "/cgi-bin/test me.pl"
- * and in the encoded query "cmd=Hello%20you".
+ * and in the encoded query "?cmd=Hello%20you".
  * Since path is internally always encoded you may @bf not use
  * "%00" in the path, although this is OK for the query.
  *
@@ -100,42 +100,48 @@ public:
   /**
    * Set the protocol for the URL (i.e., file, http, etc.)
    **/
-  void setProtocol( const QString& _txt ) { m_strProtocol = _txt; }
+  void setProtocol( const QString& _txt );
 
   /**
-   * Retrieve the user name (login, user id, ...) included in the URL.
+   * Retrieve the decoded user name (login, user id, ...) included in the URL.
    **/
   QString user() const { return m_strUser; }
   /**
    * Set the user name (login, user id, ...) included the URL.
+   *
+   * Special characters in the user name will appear encoded in the URL.
    **/
-  void setUser( const QString& _txt ) { m_strUser = _txt; }
+  void setUser( const QString& _txt );
   /**
    * Test to see if this URL has a user name included in it.
    **/
   bool hasUser() const { return !m_strUser.isEmpty(); }
 
   /**
-   * Retrieve the password (corresponding to @ref user()) included in the URL.
+   * Retrieve the decoded password (corresponding to @ref user()) included in the URL.
    **/
   QString pass() const { return m_strPass; }
   /**
    * Set the password (corresponding to @ref user()) included in the URL.
+   *
+   * Special characters in the password will appear encoded in the URL.
    **/
-  void setPass( const QString& _txt ) { m_strPass = _txt; }
+  void setPass( const QString& _txt );
   /**
    * Test to see if this URL has a password included in it.
    **/
   bool hasPass() const { return !m_strPass.isEmpty(); }
 
   /**
-   * Retrieve the hostname included in the URL.
+   * Retrieve the decoded hostname included in the URL.
    **/
   QString host() const { return m_strHost; }
   /**
    * Set the hostname included in the URL.
+   *
+   * Special characters in the hostname will appear encoded in the URL.
    **/
-  void setHost( const QString& _txt ) { m_strHost = _txt; }
+  void setHost( const QString& _txt );
   /**
    * Test to see if this URL has a hostname included in it.
    **/
@@ -148,7 +154,7 @@ public:
   /**
    * Set the port number included in the URL.
    **/
-  void setPort( unsigned short int _p ) { m_iPort = _p; }
+  void setPort( unsigned short int _p );
 
   /**
    * @return The current decoded path. This does @bf not include the query.
@@ -198,16 +204,22 @@ public:
    *
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
    */
-  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false );
+  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false ) const;
 
   /**
    * @param _txt This is considered to be encoded. This has a good reason:
    * The query may contain the 0 character.
+   * 
+   * The query should start with a '?'. If it doesn't '?' is prepended.
    */
-  void setQuery( const QString& _txt ) { m_strQuery_encoded = _txt; }
+  void setQuery( const QString& _txt );
 
   /**
-   * @return The encoded query. This has a good reason: The query may contain the 0 character.
+   * @return The encoded query. 
+   * This has a good reason: The query may contain the 0 character.
+   * If a query is present it always starts with a '?'.
+   * A single '?' means an empty query.
+   * An empty string means no query.
    */
   QString query() const { return m_strQuery_encoded; }
 
@@ -342,20 +354,19 @@ public:
    */
   bool cd( const QString& _dir, bool zapRef = true );
 
-  /*
-   * Convenience method
-   * @return The complete decoded URL, for instance to be displayed to the user.
-   */
-  QString decodedURL() const { QString s = url( 0 ); decode( s ); return s; }
-
   /**
-   * @return The complete encoded URL.
+   * @return The complete URL.
    *
    * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged.
    */
   QString url( int _trailing = 0 ) const;
+
+  /**
+   * @return A human readable URL.
+   */
+  QString prettyURL() const;
 
   /**
    * Test to see if the @ref KURL is empty.
@@ -425,21 +436,25 @@ public:
   static QString join( const List& _list );
 
   /**
-   * Decode the string, this means decoding "%20" into a space for example. Note that "%00" is
-   * not handled correctly here.
-   */
-  static void decode( QString& _url );
+   * Convenience function
+   *
+   * Convert unicoded string to utf8 and use %-style encoding for all
+   * common delimiters / non-ascii characters.
+   **/
+  static QString encode_string(const QString &str);
 
   /**
-   * Reverse of @ref decode()
-   */
-  static void encode( QString& _url );
+   * Convenience function
+   *
+   * Decode %-style encoding and convert from utf8 to unicode.
+   *
+   * Revers of encode_string()
+   **/
+  static QString decode_string(const QString &str);
 
 protected:
   void reset();
   void parse( const QString& _url );
-
-  static char hex2int( unsigned int  _char );
 
 private:
   QString m_strProtocol;
