@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.7  1997/05/13 05:49:00  kalle
+// Kalle: Default arguments for KConfig::read*Entry()
+// app-specific config files don't start with a dot
+// Bufgix for the bugfix in htmlobj.cpp (FontManager)
+//
 // Revision 1.6  1997/05/08 22:53:16  kalle
 // Kalle:
 // KPixmap gone for good
@@ -266,9 +271,29 @@ private:
   bool bLocaleConstructed; // has the KLocale object already been constructed
   bool bSessionManagement; 
   bool bSessionManagementUserDefined;
+  QPixmap aIconPixmap;
+  QPixmap aMiniIconPixmap;
+  /// KApplication has changed its Palette on behalf of kdisplay.
+  /** Connect to this if you need to know when the KApplication changes 
+      its palette on behalf of kdisplay.
+      */
+
+signals:
+  /// KApplication has changed its Syle on behalf of kdisplay.
+  /** Connect to this if you need to know when the KApplication changes 
+      its style on behalf of kdisplay.
+      */
+public:
+/** 
+  /// KApplication has changed its Font on behalf of kdisplay.
+  /** Connect to this if you need to know when the KApplication changes 
+      its font on behalf of kdisplay.
+      */
+  QColor selectTextColor;
   void kdisplayStyleChanged();
 
   /**
+
 	* KApplication has changed its Font due to a KDisplay request.
 	*
 	* Normally widgets will update their fonts automatically, but you should

@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.9  1997/05/13 05:49:00  kalle
+// Kalle: Default arguments for KConfig::read*Entry()
+// app-specific config files don't start with a dot
+// Bufgix for the bugfix in htmlobj.cpp (FontManager)
+//
 // Revision 1.8  1997/05/09 19:52:54  kalle
 // Kalle: Application-specific config files without leading .
 //
@@ -646,6 +651,9 @@ void KApplication::appendSearchPath( const char *path )
 	lowlightVal=100+(2*contrast+4)*10;
 	//	Read the font specification from config.
 	// printf("contrast = %d\n", contrast);
+		
+	if ( applicationStyle==MotifStyle ) {
+    							backgroundColor.light(highlightVal),
     							backgroundColor.dark(lowlightVal), 
     							backgroundColor.dark(120),
                         	darkGray, windowColor );
@@ -660,16 +668,19 @@ void KApplication::appendSearchPath( const char *path )
 	
   str = config->readEntry( "Point Size" );
   if ( !str.isNull() )
+	generalFont.setPointSize(atoi(str.data()));
+    } else {
+    							backgroundColor.light(150),
     							backgroundColor.dark(), 
     							backgroundColor.dark(120),
                         	darkGray, windowColor );
 
     	QColorGroup colgrp( textColor, backgroundColor, 
     							backgroundColor.light(150),
-    
     							backgroundColor.dark(), 
     							backgroundColor.dark(120),
-	resizeAll();
+                        	textColor, windowColor );
+    	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
   if ( !str.isNull() )
 	{
 	  if( str == "Windows 95" )
@@ -677,7 +688,8 @@ void KApplication::appendSearchPath( const char *path )
 	}
 		applicationStyle=MotifStyle;
 	} else
-	resizeAll();
+	  applicationStyle=MotifStyle;	
+    QApplication::setFont( generalFont, TRUE );
     // setFont() works every time for me !
 void KApplication::kdisplaySetPalette()
     emit kdisplayFontChanged();    
@@ -686,6 +698,8 @@ void KApplication::kdisplaySetPalette()
   // 1) You can't change select colors
   // 2) You need different palettes to apply the same color scheme to
   //		different widgets !!
+  // 3) Motif style needs a different palette to Windows style.
+	
 	
     emit kdisplayStyleChanged();
 	emit appearanceChanged();
