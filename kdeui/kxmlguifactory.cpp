@@ -82,14 +82,14 @@ public:
     QString attrName;
 };
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, KInstance *instance )
+QString KXMLGUIFactory::readConfigFile( const QString &filename, const KInstance *instance )
 {
     return readConfigFile( filename, false, instance );
 }
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, KInstance *_instance )
+QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, const KInstance *_instance )
 {
-    KInstance *instance = _instance ? _instance : KGlobal::instance();
+    const KInstance *instance = _instance ? _instance : KGlobal::instance();
     QString xml_file;
 
     if (filename[0] == '/')
@@ -116,9 +116,9 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
 }
 
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
-                                     const QString& filename, KInstance *_instance )
+                                     const QString& filename, const KInstance *_instance )
 {
-    KInstance *instance = _instance ? _instance : KGlobal::instance();
+    const KInstance *instance = _instance ? _instance : KGlobal::instance();
     QString xml_file(filename);
 
     if (xml_file[0] != '/')
