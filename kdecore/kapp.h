@@ -121,15 +121,6 @@ public:
 	*/
   static KApplication* kApplication() { return KApp; }
 
-
-  /**
-   * Returns the application config object.
-   *
-   * @return A pointer to the application config object.
-   * @see KConfig
-   */
-  KConfig* config() const;
-
   /**
    * Retrieve the application session config object.
    *
@@ -551,6 +542,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.124  1999/11/26 17:08:10  waba
+// WABA: KUniqueApp always forks, added static KUniqueApp::start()
+//
 // Revision 1.123  1999/11/25 13:25:46  waba
 // WABA: Reverted last change
 //

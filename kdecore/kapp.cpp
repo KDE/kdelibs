@@ -182,8 +182,6 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     parseCommandLine( argc, argv );
 }
 
-KConfig* KApplication::config() const { return KGlobal::config(); }
-
 int KApplication::xioErrhandler()
 {
   emit shutDown();
@@ -960,7 +958,7 @@ void KApplication::kdisplaySetPalette()
     // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
 
   KConfigBase* config;
-  config  = kapp->config();
+  config  = KGlobal::config();
   config->setGroup( "General" );
 
   QColor buttonFallback =
