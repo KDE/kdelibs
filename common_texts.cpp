@@ -178,6 +178,7 @@ i18n( "Open Recent");
 i18n( "Open &Recent");
 i18n( "&Find...");
 i18n( "Find &Next");
+i18n( "Bookmarks");
 i18n( "&Bookmarks");
 i18n( "&Add Bookmark");
 i18n( "&Edit Bookmarks...");
