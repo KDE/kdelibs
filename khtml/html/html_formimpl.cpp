@@ -1548,6 +1548,7 @@ void HTMLSelectElementImpl::attach()
     if(r)
     {
         RenderSelect *f = new RenderSelect(view, this);
+        f->ref();
         if (f)
         {
             m_render = f;
@@ -1951,7 +1952,7 @@ void HTMLTextAreaElementImpl::attach()
     if(r)
     {
         RenderTextArea *f = new RenderTextArea(view, this);
-
+        f->ref();
         if (f)
         {
             m_render = f;
