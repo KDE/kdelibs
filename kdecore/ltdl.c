@@ -536,7 +536,7 @@ sys_wll_open (handle, filename)
 		strcpy(searchname, filename);
 		strcat(searchname, ".");
 	}
-    
+
 	handle->handle = LoadLibrary(searchname);
 	lt_dlfree(searchname);
 	
@@ -628,8 +628,8 @@ sys_bedl_open (handle, filename)
 	if (filename) {
 		image = load_add_on(filename);
 	} else {
-		image_info info; 
-		int32 cookie = 0; 
+		image_info info;
+		int32 cookie = 0;
 		if (get_next_image_info(0, &cookie, &info) == B_OK)
 			image = load_add_on(info.name);
 	}
@@ -659,7 +659,7 @@ sys_bedl_sym (handle, symbol)
 {
 	lt_ptr_t address = 0;
 	image_id image = (image_id)handle->handle;
-   
+
 	if (get_image_symbol(image, symbol, B_SYMBOL_TYPE_ANY,
 		&address) != B_OK) {
 		last_error = symbol_error;
@@ -918,7 +918,7 @@ tryall_dlopen (handle, filename)
 	while (cur) {
 		if (!cur->filename && !filename)
 			break;
-		if (cur->filename && filename && 
+		if (cur->filename && filename &&
 		    strcmp(cur->filename, filename) == 0)
 			break;
 		cur = cur->next;
@@ -964,7 +964,7 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 {
 	int	error;
 	char	*filename;
-	/* try to open the old library first; if it was dlpreopened, 
+	/* try to open the old library first; if it was dlpreopened,
 	   we want the preopened version of it, even if a dlopenable
 	   module is available */
 	if (old_name && tryall_dlopen(handle, old_name) == 0)
@@ -1132,7 +1132,7 @@ trim (dest, str)
 	char **dest;
 	const char *str;
 {
-	/* remove the leading and trailing "'" from str 
+	/* remove the leading and trailing "'" from str
 	   and store the result in dest */
 	char *tmp;
 	const char *end = strrchr(str, '\'');
@@ -1148,6 +1148,37 @@ trim (dest, str)
 		}
 		strncpy(tmp, &str[1], (end - str) - 1);
 		tmp[len-3] = '\0';
+		*dest = tmp;
+	} else
+		*dest = 0;
+	return 0;
+}
+
+/**
+ * Inserted by Torben Weis <weis@kde.org> to get the library
+ * name out of "library_names".
+ */
+static inline int
+trim2 (dest, str)
+	char **dest;
+	const char *str;
+{
+	/* remove the leading and trailing "'" from str
+	   and store the result in dest */
+	char *tmp;
+	const char *end = strchr(str, ' ');
+	int len = strlen(str);
+
+	if (*dest)
+		lt_dlfree(*dest);
+	if (len > 3 && str[0] == '\'') {
+		tmp = (char*) lt_dlmalloc(end - str + 1);
+		if (!tmp) {
+			last_error = memory_error;
+			return 1;
+		}
+		strncpy(tmp, &str[1], (end - str));
+		tmp[end - str - 1] = '\0';
 		*dest = tmp;
 	} else
 		*dest = 0;
@@ -1228,7 +1259,7 @@ lt_dlopen (filename)
 		/* if we can't find the installed flag, it is probably an
 		   installed libtool archive, produced with an old version
 		   of libtool */
-		int     installed = 1; 
+		int     installed = 1;
 
 		/* extract the module name from the file name */
 		name = (char*) lt_dlmalloc(ext - basename + 1);
@@ -1251,7 +1282,7 @@ lt_dlopen (filename)
 			last_error = file_not_found_error;
 		if (!file && !dir) {
 			/* try other directories */
-			file = (FILE*) find_file(basename, 
+			file = (FILE*) find_file(basename,
 						 user_search_path,
 						 &dir, 0);
 			if (!file)
@@ -1285,10 +1316,10 @@ lt_dlopen (filename)
 			if (line[0] == '\n' || line[0] == '#')
 				continue;
 #			undef  STR_DLNAME
-#			define STR_DLNAME	"dlname="
+#			define STR_DLNAME	"library_names="
 			if (strncmp(line, STR_DLNAME,
 				sizeof(STR_DLNAME) - 1) == 0)
-				error = trim(&dlname,
+				error = trim2(&dlname,
 					&line[sizeof(STR_DLNAME) - 1]);
 			else
 #			undef  STR_OLD_LIBRARY
@@ -1306,7 +1337,7 @@ lt_dlopen (filename)
 					&line[sizeof(STR_LIBDIR) - 1]);
 			else
 #			undef  STR_DL_DEPLIBS
-#			define STR_DL_DEPLIBS	"dl_dependency_libs="
+#			define STR_DL_DEPLIBS	"dependency_libs="
 			if (strncmp(line, STR_DL_DEPLIBS,
 				sizeof(STR_DL_DEPLIBS) - 1) == 0)
 				error = trim(&deplibs,
@@ -1336,7 +1367,7 @@ lt_dlopen (filename)
 		if (load_deplibs(handle, deplibs) == 0) {
 			newhandle = handle;
 			/* find_module may replace newhandle */
-			if (find_module(&newhandle, dir, libdir, 
+			if (find_module(&newhandle, dir, libdir,
 					dlname, old_name, installed)) {
 				unload_deplibs(handle);
 				error = 1;
@@ -1580,7 +1611,7 @@ lt_dladdsearchdir (search_dir)
 		}
 	} else {
 		char	*new_search_path = (char*)
-			lt_dlmalloc(strlen(user_search_path) + 
+			lt_dlmalloc(strlen(user_search_path) +
 				strlen(search_dir) + 2); /* ':' + '\0' == 2 */
 		if (!new_search_path) {
 			last_error = memory_error;
