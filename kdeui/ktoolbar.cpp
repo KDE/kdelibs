@@ -1071,9 +1071,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
       config->writeEntry("IconSize", iconSize());
     else config->deleteEntry("IconSize");
 
-    if(isHidden() != d->HiddenDefault)
-      config->writeEntry("Hidden", isHidden());
-    else config->deleteEntry("Hidden");
+    config->writeEntry("Hidden", isHidden());
 
     if ( !index.isEmpty() && index != d->IndexDefault )
         config->writeEntry( "Index", index );
