@@ -87,7 +87,12 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
 
 KFileTreeView::~KFileTreeView()
 {
-   m_mapCurrentOpeningFolders.clear();
+   // we must make sure that the KFileTreeViewItems are deleted _before_ the
+   // branches are deleted. Otherwise, the KFileItems would be destroyed 
+   // and the KFileTreeViewItems had dangling pointers to them.
+   hide();
+   clear();
+   m_branches.clear(); // finally delete the branches and KFileItems
 }
 
 
