@@ -159,11 +159,11 @@ protected:
     
 private slots:
     void selected( QIconViewItem *item );
+    void slotActivate( QIconViewItem * );
     void highlighted( QIconViewItem *item );
     void showToolTip( QIconViewItem *item );
     void removeToolTip();
     void slotActivateMenu( QIconViewItem *, const QPoint& );
-    void slotDoubleClicked( QIconViewItem * );
     void slotSelectionChanged();
 
     void slotSmallColumns();

@@ -112,13 +112,13 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     d->smallColumns->setChecked( true );
 
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
-	     SLOT( selected( QIconViewItem *) ) );
+	     SLOT( slotActivate( QIconViewItem *) ) );
 
     // we want single click _and_ double click (as convenience)
     connect( this, SIGNAL( clicked(QIconViewItem *, const QPoint&) ),
 	     SLOT( selected( QIconViewItem *) ) );
     connect( this, SIGNAL( doubleClicked(QIconViewItem *, const QPoint&) ),
-	     SLOT( slotDoubleClicked( QIconViewItem *) ) );
+	     SLOT( slotActivate( QIconViewItem *) ) );
 
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
 	     SLOT( showToolTip( QIconViewItem * ) ) );
@@ -320,7 +320,7 @@ void KFileIconView::insertItem( KFileItem *i )
         d->previewTimer->start( 10, true );
 }
 
-void KFileIconView::slotDoubleClicked( QIconViewItem *item )
+void KFileIconView::slotActivate( QIconViewItem *item )
 {
     if ( !item )
 	return;
