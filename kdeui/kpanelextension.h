@@ -231,6 +231,12 @@ signals:
      **/
     void updateLayout();
 
+    /**
+     * Emit this signal to make the panel maintain focus, e.g. don't autohide
+     * @since 3.4
+     **/
+    void maintainFocus(bool);
+
 protected:
 
     /**
