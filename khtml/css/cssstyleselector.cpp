@@ -98,15 +98,11 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
     StyleSheetListImpl* ss = doc->styleSheets();
-    
+
     QListIterator<StyleSheetImpl> it( ss->styleSheets );
     for ( ; it.current(); ++it )
-    {
-        CSSStyleSheetImpl *curSheet =
-                            dynamic_cast<CSSStyleSheetImpl *>( it.current() );
-        if( curSheet )
-     	    authorStyle->append( curSheet, doc->view()->mediaType() );
-    }
+        if( it.current()->isCSSStyleSheet() )
+     	    authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), doc->view()->mediaType() );
 
     buildLists();
 
@@ -782,7 +778,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
 
             //kdDebug( 6080 ) << "@import: Media: "
             //                << import->media()->mediaText().string() << endl;
-            
+
             if( !import->media() || import->media()->contains( medium ) )
             {
                 CSSStyleSheetImpl *importedSheet = import->styleSheet();
@@ -797,23 +793,23 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
             //DOMString mediaText = media->mediaText();
             //kdDebug( 6080 ) << "@media: Media: "
             //                << r->media()->mediaText().string() << endl;
-            
+
             if( ( !r->media() || r->media()->contains( medium ) ) && rules)
             {
                 // Traverse child elements of the @import rule. Since
                 // many elements are not allowed as child we do not use
                 // a recursive call to append() here
-                for( int j = 0; j < rules->length(); j++ )
+                for( unsigned j = 0; j < rules->length(); j++ )
                 {
                     //kdDebug( 6080 ) << "*** Rule #" << j << endl;
-        
+
                     CSSRuleImpl *childItem = rules->item( j );
                     if( childItem->isStyleRule() )
                     {
                         // It is a StyleRule, so append it to our list
                         CSSStyleRuleImpl *styleRule =
                                 static_cast<CSSStyleRuleImpl *>( childItem );
-                                
+
                         QList<CSSSelector> *s = styleRule->selector();
                         for( int j = 0; j < ( int ) s->count(); j++ )
                         {
@@ -2136,12 +2132,16 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         Length lineHeight;
         if(!primitiveValue) return;
         int type = primitiveValue->primitiveType();
-        if(primitiveValue->getIdent() == CSS_VAL_NORMAL)
-            lineHeight = Length(100, Percent);
+        if(primitiveValue->getIdent() == CSS_VAL_NORMAL) {
+            if ( style->font().pixelSize() )
+                lineHeight = Length(( QFontMetrics( style->font() ).height() * 100 ) / style->font().pixelSize(), Percent);
+            else
+                lineHeight = Length( 100, Percent );
+        }
         else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+            lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
         else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-            lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
+            lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
         else if(type == CSSPrimitiveValue::CSS_NUMBER)
             lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
         else
