@@ -4,7 +4,6 @@ TODO-List for the KFileDialog and associated classes (in order of importance)
 - KFD's default dirs configurable
 - drag&drop support for the views (somehow into baseclass KFileView?
 - KFileView::setSelected( const QRegExp& )
-- what about KRemoteFile?
 - separate KDirOperator, location-combo, filter-combo etc. from KFileDialog
   to another widget (everything besides OK/Cancel buttons).
 - implement in-place editing (rename) + make it configurable in all views
