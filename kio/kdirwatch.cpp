@@ -130,7 +130,7 @@ void KDirWatch::addDir( const QString& _path )
 {
   QString path = _path;
 
-  if ( path.right(1) == "/" )
+  if ( path.length() > 1 && path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
   KDirWatchPrivate::EntryMap::Iterator it = d->m_mapDirs.find( path );
