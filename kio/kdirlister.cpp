@@ -37,7 +37,6 @@ class KDirLister::KDirListerPrivate
 {
 public:
     KDirListerPrivate() { }
-    KURL::List lstDirs; // TODO: BCI: move this to main class, KonqDirLister needs it
     KURL::List lstPendingUpdates;
 };
 
@@ -87,8 +86,8 @@ void KDirLister::slotDirectoryDirty( const QString& _dir )
 
 void KDirLister::slotURLDirty( const KURL & dir )
 {
-  // Check for dir in d->lstDirs
-  for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
+  // Check for dir in m_lstDirs
+  for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
     if ( dir.cmp( (*it), true /* ignore trailing slash */ ) )
     {
       updateDirectory( dir );
@@ -129,7 +128,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
                this, SLOT( slotFileDirty( const QString& ) ) );
     }
   }
-  d->lstDirs.append( _url );
+  m_lstDirs.append( _url );
 
   m_bComplete = false;
 
@@ -232,14 +231,6 @@ void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
   kdDebug(1203) << "KDirLister::slotRedirection " << url.url() << endl;
   m_url = url;
   emit redirection( url );
-}
-
-// To be removed (BCI)
-void KDirLister::updateDirectory( const QString& _dir )
-{
-   KURL u;
-   u.setPath( _dir );
-   updateDirectory( u );
 }
 
 void KDirLister::updateDirectory( const KURL& _dir )
@@ -405,7 +396,7 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
   if ( m_isShowingDotFiles != _showDotFiles )
   {
     m_isShowingDotFiles = _showDotFiles;
-    for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
+    for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
       updateDirectory( *it ); // update all directories
   }
 }
@@ -424,14 +415,14 @@ KFileItem* KDirLister::find( const QString& _url )
 
 void KDirLister::forgetDirs()
 {
-  for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it ) {
+  for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it ) {
     if ( (*it).isLocalFile() )
     {
       kdDebug(1203) << "forgetting about " << (*it).path() << endl;
       kdirwatch->removeDir( (*it).path() );
     }
   }
-  d->lstDirs.clear();
+  m_lstDirs.clear();
   kdirwatch->disconnect( this );
 }
 
@@ -486,13 +477,8 @@ void KDirLister::setNameFilter(const QString& nameFilter)
         delete [] s;
     }
 
-    for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
+    for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
 	updateDirectory( *it ); // update all directories
-}
-
-KURL::List KDirLister::lstDirs() const
-{
-  return d->lstDirs;
 }
 
 #include "kdirlister.moc"

@@ -90,8 +90,7 @@ public:
    * local files, using KDirWatch, but it might be useful to force an
    * update manually.
    */
-  virtual void updateDirectory( const QString& _dir ); // remove ! BCI
-  /* virtual */ void updateDirectory( const KURL& dir ); // BCI
+  virtual void updateDirectory( const KURL& dir );
 
   /**
    * Changes the "is viewing dot files" setting.
@@ -237,17 +236,13 @@ protected:
    * But for a tree view, it contains all the dirs shown
    * (Used to unregister from kdirwatch)
    */
-  QStringList m_lstDirs; // To be removed (BCI)
-
-  KURL::List lstDirs() const; // To be removed (BCI)
+  KURL::List m_lstDirs;
 
   bool m_isShowingDotFiles;
   bool m_bComplete;
 
   /** Keep entries found - used by slotUpdate* */
   QValueList<KIO::UDSEntry> m_buffer;
-
-  QStringList m_lstPendingUpdates; // To be removed (BCI)
 
   /** List only directories */
   bool m_bDirOnlyMode;
