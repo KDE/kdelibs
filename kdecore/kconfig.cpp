@@ -200,7 +200,7 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 
 void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
 {
-  if (bFileImmutable)
+  if (bFileImmutable && !_key.bDefault)
     return;
 
   // check to see if the special group key is present,
@@ -211,16 +211,17 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
     KEntry &entry = aEntryMap[groupKey];
     bGroupImmutable = entry.bImmutable;
   }
-  if (bGroupImmutable)
+  if (bGroupImmutable && !_key.bDefault)
     return;
 
   // now either add or replace the data
   KEntry &entry = aEntryMap[_key];
-  if (entry.bImmutable)
+  bool immutable = entry.bImmutable;
+  if (immutable && !_key.bDefault)
     return;
 
   entry = _data;
-
+  entry.bImmutable |= immutable;
   entry.bGlobal |= bForceGlobal; // force to kdeglobals
 
   if (_key.bDefault)

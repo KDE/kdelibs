@@ -520,10 +520,10 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          KEntry entry = pConfig->lookupData(groupKey);
          groupSkip = entry.bImmutable;
 
-         if (groupSkip)
+         if (groupSkip && !bDefault)
             continue;
 
-         entry.bImmutable = groupOptionImmutable;
+         entry.bImmutable |= groupOptionImmutable;
          pConfig->putData(groupKey, entry, false);
 
          if (pWriteBackMap)
@@ -534,7 +534,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
          continue;
       }
-      if (groupSkip)
+      if (groupSkip && !bDefault)
         goto sktoeol; // Skip entry
 
       bool optionImmutable = groupOptionImmutable;
