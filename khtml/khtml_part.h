@@ -1339,6 +1339,8 @@ private slots:
   virtual void slotFindDone(); // ### remove me
   virtual void slotFindDialogDestroyed();
   void slotFindNext();
+  void slotFindAheadText();
+  void slotFindAheadLink();
 
   void slotIncZoom();
   void slotDecZoom();

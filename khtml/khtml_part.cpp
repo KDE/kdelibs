@@ -375,10 +375,18 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paFindNext->setWhatsThis( i18n( "Find next<p>"
 				       "Find the next occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
+
+  KAction* ft = new KAction( "Find Text As You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
+      actionCollection(), "findAheadText");
+  KAction* fl = new KAction( "Find Links As You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
+      actionCollection(), "findAheadLink");
+
   if ( parentPart() )
   {
       d->m_paFind->setShortcut( KShortcut() ); // avoid clashes
       d->m_paFindNext->setShortcut( KShortcut() ); // avoid clashes
+      ft->setShortcut( KShortcut());
+      fl->setShortcut( KShortcut());
   }
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "frameprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
@@ -2841,6 +2849,32 @@ void KHTMLPart::slotFindNext()
 void KHTMLPart::slotFindDone()
 {
   // ### remove me
+}
+
+void KHTMLPart::slotFindAheadText()
+{
+  KParts::ReadOnlyPart *part = currentFrame();
+  if (!part)
+    return;
+  if (!part->inherits("KHTMLPart") )
+  {
+      kdError(6000) << "slotFindNext: part is a " << part->className() << ", can't do a search into it" << endl;
+      return;
+  }
+  static_cast<KHTMLPart *>( part )->view()->startFindAhead( false );
+}
+
+void KHTMLPart::slotFindAheadLink()
+{
+  KParts::ReadOnlyPart *part = currentFrame();
+  if (!part)
+    return;
+  if (!part->inherits("KHTMLPart") )
+  {
+      kdError(6000) << "slotFindNext: part is a " << part->className() << ", can't do a search into it" << endl;
+      return;
+  }
+  static_cast<KHTMLPart *>( part )->view()->startFindAhead( true );
 }
 
 void KHTMLPart::slotFindDialogDestroyed()

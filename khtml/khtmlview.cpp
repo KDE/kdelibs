@@ -1413,30 +1413,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         return;
     }
 
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-	if((_ke->key() == '\'' || _ke->key() == '/') && !d->typeAheadActivated)
-	{
-		if(_ke->key() == '\'')
-		{
-			d->findLinksOnly = true;
-			m_part->setStatusBarText(i18n("Starting -- find links as you type"),
-			                         KHTMLPart::BarDefaultText);
-		}
-		else if(_ke->key() == '/')
-		{
-			d->findLinksOnly = false;
-			m_part->setStatusBarText(i18n("Starting -- find text as you type"),
-			                         KHTMLPart::BarDefaultText);
-		}
-
-		m_part->findTextBegin();
-		d->typeAheadActivated = true;
-		d->timer.start(3000, true);
-		_ke->accept();
-		return;
-	}
-#endif // KHTML_NO_TYPE_AHEAD_FIND
-
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     if (_ke->state() & Qt::ShiftButton)
       switch(_ke->key())
@@ -1592,6 +1568,26 @@ void KHTMLView::findTimeout()
 }
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
+void KHTMLView::startFindAhead( bool linksOnly )
+{
+	if( linksOnly )
+	{
+		d->findLinksOnly = true;
+		m_part->setStatusBarText(i18n("Starting -- find links as you type"),
+		                         KHTMLPart::BarDefaultText);
+	}
+	else
+	{
+		d->findLinksOnly = false;
+		m_part->setStatusBarText(i18n("Starting -- find text as you type"),
+		                         KHTMLPart::BarDefaultText);
+	}
+
+	m_part->findTextBegin();
+	d->typeAheadActivated = true;
+	d->timer.start(3000, true);
+}
+
 void KHTMLView::findAhead(bool increase)
 {
 	QString status;

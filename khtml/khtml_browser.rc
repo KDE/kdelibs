@@ -13,6 +13,8 @@
   <Separator />
   <Action name="find" />
   <Action name="findNext" />
+  <Action name="findAheadText" />
+  <Action name="findAheadLink" />
  </Menu>
  <Menu name="view"><text>&amp;View</text>
   <Action name="incFontSizes" />

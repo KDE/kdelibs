@@ -1,3 +1,8 @@
+2005-04-06  Lubos Lunak <l.lunak@kde.org>
+
+        * khtmlview.{h,cpp}: Use KActions for type ahead find.
+        * khtml_part.{h,cpp}: ditto.
+
 2005-04-05  Lubos Lunak <l.lunak@kde.org>
 
         * misc/loader_jpeg.cpp: Fix loading of progressive JPEGs.
