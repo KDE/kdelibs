@@ -161,7 +161,7 @@ class KDE_EXPORT Provider
  * the main provider database for this specific application.
  * It should probably not be used directly by the application.
  */
-class ProviderLoader : public QObject
+class KDE_EXPORT ProviderLoader : public QObject
 {
     Q_OBJECT
   public:
