@@ -1116,8 +1116,6 @@ void KCryptoConfig::slotUntil() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
    cachePerm->setChecked(false);
-   untilDate->setText(x ? x->getExpires().toString()
-                        : QDateTime::currentDateTime().toString());
    untilDate->setEnabled(true);
 
    if (!x) return;
@@ -1132,7 +1130,6 @@ void KCryptoConfig::slotPermanent() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
    cacheUntil->setChecked(false);
-   untilDate->setText("");
    untilDate->setEnabled(false);
 
    if (!x) return;
@@ -1214,10 +1211,8 @@ QString iss = "";
 
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
-         if (x && !x->isPermanent())
-            untilDate->setText(x ? x->getExpires().toString()
-                            : QDateTime::currentDateTime().toString());
-         else untilDate->setText("");
+         untilDate->setText(x ? x->getExpires().toString()
+                              : QDateTime::currentDateTime().toString());
          untilDate->setEnabled(x && !x->isPermanent());
          delete cert;
       } else {
