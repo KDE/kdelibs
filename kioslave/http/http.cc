@@ -78,7 +78,8 @@
 
 // Catch uncompatible crap (BR86019)
 #if defined(GSS_RFC_COMPLIANT_OIDS) && (GSS_RFC_COMPLIANT_OIDS == 0)
-#undef HAVE_LIBGSSAPI
+#include <gssapi/gssapi_generic.h>
+#define GSS_C_NT_HOSTBASED_SERVICE gss_nt_service_name
 #endif
 
 #endif /* HAVE_LIBGSSAPI */
