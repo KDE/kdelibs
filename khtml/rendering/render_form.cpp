@@ -1046,6 +1046,11 @@ void RenderSelect::recalcOptions()
     bool finished = false;
 
     listOptions.clear();
+    if(m_multiple || m_size > 1)
+      static_cast<KListBox*>(m_widget)->clear();
+    else
+      static_cast<QComboBox*>(m_widget)->clear();
+
     while(!finished) {
 	if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
             if(m_multiple || m_size > 1) {

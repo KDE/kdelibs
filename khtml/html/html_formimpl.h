@@ -343,6 +343,11 @@ public:
     virtual tagStatus startTag() { return OPTGROUPStartTag; }
     virtual tagStatus endTag() { return OPTGROUPEndTag; }
 
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild );
+    void recalcSelectOptions();
 };
 
 

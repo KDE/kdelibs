@@ -308,8 +308,10 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       // methods
       else if (p == "submit")          return new HTMLElementFunction(element,HTMLElementFunction::Submit);
       else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
-      // ### need to allow for thins like firstChild, etc. here
-      else return new HTMLElement(form.elements().namedItem(p.string()));
+      else {
+        KJSO result = DOMElement::tryGet(p);
+        return (result.isA(UndefinedType) ? new HTMLElement(form.elements().namedItem(p.string())) : result);
+      }
     }
     break;
     case ID_SELECT: {

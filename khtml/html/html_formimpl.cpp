@@ -910,9 +910,11 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_SIZE:
 	m_size = attr->val()->toInt();
+	// ### update renderer
 	break;
     case ATTR_MULTIPLE:
 	m_multiple = true;
+	// ### update render	
 	break;
     case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
@@ -976,6 +978,45 @@ HTMLOptGroupElementImpl::~HTMLOptGroupElementImpl()
 ushort HTMLOptGroupElementImpl::id() const
 {
     return ID_OPTGROUP;
+}
+
+NodeImpl *HTMLOptGroupElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild);
+    recalcSelectOptions();
+    return result;
+}
+
+NodeImpl *HTMLOptGroupElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild);
+    recalcSelectOptions();
+    return result;
+}
+
+NodeImpl *HTMLOptGroupElementImpl::removeChild ( NodeImpl *oldChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild);
+    recalcSelectOptions();
+    return result;
+}
+
+NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild);
+    recalcSelectOptions();
+    return result;
+}
+
+void HTMLOptGroupElementImpl::recalcSelectOptions()
+{
+    NodeImpl *select = parentNode();
+    while (select && select->id() != ID_SELECT)
+	select = select->parentNode();
+    if (select) {
+	if (select->renderer())
+	    static_cast<RenderSelect*>(select->renderer())->recalcOptions();
+    }
 }
 
 // -------------------------------------------------------------------------

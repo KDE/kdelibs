@@ -332,6 +332,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 {
     //kdDebug( 6030 ) << "checkChild: " << tagID << "/" << childID << endl;
 
+    // ### allow comments inside ANY node that can contain children
+
     switch(tagID)
     {
     case ID_TT:
