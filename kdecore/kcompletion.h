@@ -188,11 +188,11 @@ public:
      * if you need to save the state of a KCompletion object and restore it
      * later.
      *
-     * Important note: when order() == Weighted, then every item in the 
+     * Important note: when order() == Weighted, then every item in the
      * stringlist has its weight appended, delimited by a colon. E.g. an item
-     * "carp" might look like "carp:4", where 4 is the weight.
+     * "www.kde.org" might look like "www.kde.org:4", where 4 is the weight.
      *
-     * This is necessary so that you can save the items along with its 
+     * This is necessary so that you can save the items along with its
      * weighting on disk and load them back with @ref setItems(), restoring its
      * weight as well. If you really don't want the appended weightings, call
      * setOrder( KCompletion::Insertion )
@@ -221,7 +221,9 @@ public:
      * explicitly called @ref setCompletionMode().
      * @see #setCompletionMode
      */
-    KGlobalSettings::Completion completionMode() const { return myCompletionMode; }
+    KGlobalSettings::Completion completionMode() const { 
+	return myCompletionMode; 
+    }
 
     /**
      * KCompletion offers three different ways in which it offers its items:
@@ -284,10 +286,7 @@ public:
     void enableSounds() { myBeep = true; }
 
     /**
-     * Disables playing a sound when
-     * @li @ref makeCompletion() can't find a match
-     * @li there is a partial completion
-     *
+     * Disables playing sounds.
      * Sounds are only played in shell-completion mode. Default is enabled
      * @see #enableSounds
      * @see #isSoundEnabled
@@ -295,8 +294,7 @@ public:
     void disableSounds() { myBeep = false; }
 
     /**
-     * Tells you whether KCompletion will issue beeps (@ref KApplication::beep())
-     * Beeps only in manual-completion mode
+     * Tells you whether KCompletion will play sounds on certain occasions.
      * Default is enabled
      * @see #enableSounds
      * @see #disableSounds
@@ -346,7 +344,7 @@ public slots:
      * every item in the stringlist. Every item should have ":number" appended,
      * where number is an unsigned integer, specifying the weighting.
      *
-     * If you don't like this, call 
+     * If you don't like this, call
      * setOrder( KCompletion::Insertion )
      * before calling setItems().
      *
@@ -377,8 +375,8 @@ public slots:
 signals:
     /**
      * The matching item. Will be emitted by @ref makeCompletion(),
-     * @ref previousMatch() or @ref nextMatch(). May be QString::null if there is
-     * no matching item.
+     * @ref previousMatch() or @ref nextMatch(). May be QString::null if there
+     * is no matching item.
      */
     void match( const QString& );
 

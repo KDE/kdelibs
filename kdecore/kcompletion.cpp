@@ -83,8 +83,8 @@ void KCompletion::addItemInternal( const QString& item, bool weighted )
     KCompTreeNode *node = myTreeRoot;
     uint len = item.length();
     uint weight = 0;
-    
-    // find out the weighting of this item
+
+    // find out the weighting of this item (appended to the string as ":num")
     if ( weighted ) {
 	int index = item.findRev(':');
 	if ( index > 0 ) {
@@ -96,21 +96,21 @@ void KCompletion::addItemInternal( const QString& item, bool weighted )
 	    len = index; // only insert until the ':'
 	}
     }
-    
+
     bool sorted = (myOrder == Sorted);
-    bool setWeight = (weighted && weight > 1);
+    weighted = (weighted && weight > 1);
     // knowing the weight of an item, we simply add this weight to all of its
     // nodes.
-    
+
     for ( uint i = 0; i < len; i++ ) {
         ch = item.at( i );
 	node = node->insert( ch, sorted );
-	if ( setWeight )
+	if ( weighted )
 	    node->confirm( weight -1 ); // node->insert() sets weighting to 1
     }
 
     node->insert( 0x0, true ); // add 0x0-item as delimiter with evtl. weight
-    if ( setWeight )
+    if ( weighted )
 	node->confirm( weight -1 );
 }
 
@@ -387,7 +387,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
 
 void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 					  const QString& beginning,
-					  QStringList *matches, 
+					  QStringList *matches,
 					  bool addWeight ) const
 {
     if ( !node || !matches )
@@ -437,19 +437,19 @@ void KCompletion::doBeep( BeepMode mode )
 
     switch ( mode ) {
     case Rotation:
-	event = QString::fromLatin1("KCompletion: rotation");
+	event = QString::fromLatin1("Textcompletion: rotation");
 	text = i18n("You reached the end of the list\nof matching items.\n");
 	break;
     case PartialMatch:
 	if ( myCompletionMode == KGlobalSettings::CompletionShell ) {
-	    event = QString::fromLatin1("KCompletion: partial match");
+	    event = QString::fromLatin1("Textcompletion: partial match");
 	    text = i18n("The completion is ambiguous, more than one\nmatch is available.\n");
 	}
 	break;
     case NoMatch:
 	if ( myCompletionMode == KGlobalSettings::CompletionShell ||
 	     myCompletionMode == KGlobalSettings::CompletionMan ) {
-	    event = QString::fromLatin1("KCompletion: no match");
+	    event = QString::fromLatin1("Textcompletion: no match");
 	    text = i18n("There is no matching item available.\n");
 	}
 	break;
@@ -506,8 +506,6 @@ KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
     // implicit weighting: the more often an item is inserted, the higher
     // priority it gets.
     child->confirm();
-
-//    printf("Confirming %c %d\n", (char)*child, weight());
 
     return child;
 }
