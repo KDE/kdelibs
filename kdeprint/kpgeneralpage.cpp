@@ -27,6 +27,7 @@
 #include <qbuttongroup.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
+#include <qwhatsthis.h>
 
 #include <kcursor.h>
 #include <kdebug.h>
@@ -117,29 +118,136 @@ static const char*	default_type[] = {
 KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const char *name)
 : KPrintDialogPage(pr,dr,parent,name)
 {
+        //WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThisPrintPropertiesGeneralPage = i18n( " <qt> "
+			" This dialog page contains <em>general</em> print job settings."
+			" General settings are applicable to most printers, most jobs "
+			" and most job file types. "
+                        " <p>To get more specific help, enable the \"WhatsThis\" cursor and click on any of the "
+                        " text labels or GUI elements of this dialog. "
+			" </qt>" );
+	QString whatsThisGeneralPageSizeLabel = i18n( " <qt> "
+			" <b>Selection of page size:</b> Select paper size to be printed on from "
+			" the drop-down menu. "
+			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. "
+			" </qt>" );
+	QString whatsThisGeneralPaperTypeLabel = i18n( " <qt> "
+			" <b>Selection of paper type:</b> Select paper type to be printed on from "
+			" the drop-down menu. "
+			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. "
+			" </qt>" );
+	QString whatsThisGeneralPaperSourceLabel = i18n( " <qt> "
+			" <b>Selection of paper source:</b> Select paper source tray for the paper"
+                        " to be printed on from the drop-down menu. "
+			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. "
+			" </qt>" );
+	QString whatsThisGeneralOrientationLabel = i18n( " <qt> "
+			" <b>Selection of image orientation:</b> Orientation of the printed "
+                        " page mage on your paper is controlled by the radio buttons. By default, "
+                        " the orientation is <em>Portrait</em> "
+                        " <p>You can select 4 alternatives: "
+                        " <ul> "
+                        " <li> <b>Portrait.</b>.Portrait is the default setting. </li> "
+                        " <li> <b>Landscape.</b> </li> "
+                        " <li> <b>Reverse Landscape.</b> Reverse Landscape prints the images upside down. </li> "
+                        " <li> <b>Reverse Portrait.</b> Reverse Portrait prints the image upside down.</li> "
+                        " </ul> "
+                        " The icon changes according to your selection." 
+			" </qt>" );
+	QString whatsThisGeneralDuplexLabel = i18n( " <qt> "
+			" <b>Selection of duplex printing:</b> These controls may be grayed out if your printer "
+                        " does not support <em>duplex printing</em> (i.e. printing on both sides of the sheet). "
+                        " These controls are active if your printer supports duplex printing. "
+                        " <p> "
+                        " You can choose from 3 alternatives: "
+                        " <ul> "
+                        " <li> <b>None.</b> This prints each page of the job on one side of the sheets only. </li> "
+                        " <li> <b>Long Side.</b> This prints the job on both sides of the paper sheets. "
+                        " It prints the job in a way so that the backside has the same orientation as the front "
+                        " side if you turn the paper over the long edge. (Some printer drivers name this mode "
+                        " <em>duplex-non-tumbled</em>).  </li> "
+                        " <li> <b>Short Side.</b> This prints the job on both sides of the paper sheets. "
+                        " It prints the job so that the backside has the reverse orientation from the front "
+                        " side if you turn the paper over the long edge, but the same orientation, if you turn it over "
+                        " the short edge. (Some printer drivers name this mode "
+                        " <em>duplex-tumbled</em>).  </li> "
+                        " </ul> "
+			" </qt>" );
+	QString whatsThisGeneralBannersLabel = i18n( " <qt> "
+			" <b>Selection of banner page(s):</b> Select banner(s) to print one or two special sheets "
+                        " of paper just before or after your main job. "
+			" <p>Banners may contain some pieces of job information, such as user name, time of printing, job"
+                        " title and more. "
+                        " <p>Banner pages are useful to separate different jobs more easily, especially in a multi-user "
+                        " environment. "
+                        " <p><em><b>Hint:</em></b> You can design your own banner pages. To make use of them, just put the banner "
+                        " file into the standard CUPS <em>banners</em> directory, in one of the supported printable formats. "
+                        " Supported formats are ASCII text, PostScript, PDF and nearly any image format such as PNG, JPEG or "
+                        " GIF. Your added banner pages will appear in the drop down menu after a restart of CUPS. "
+                        " <p>CUPS comes with a selection of banner pages. "
+			" </qt>" );
+	QString whatsThisGeneralPagesPerSheetLabel = i18n( " <qt> "
+			" <b>Selection of pages per sheet:</b> "
+                        " You can choose to print more than one page onto each sheet of paper. "
+                        " This is sometimes useful to save paper. "
+                        " <p><b>Note 1:</b> the page images get scaled down accordingly to print 2 or 4 pages per sheet. "
+                        " The page image does not get scaled if you print 1 page per sheet (the default setting.). "
+                        " <p><b>Note 2:</b> If you select multiple pages per sheet here, the scaling and re-arranging is done "
+                        " by your printing system. Be aware, that some printers can by themselves print multiple pages per sheet. "
+                        " In this case you find the option in the printer driver settings. Be careful: if you enable multiple "
+                        " pages per sheet in both places, your printout will not look as you intended. "
+			" </qt>" );
+
+
 	setTitle(i18n("General"));
 
 	// widget creation
 	QLabel	*m_pagesizelabel = new QLabel(i18n("Page s&ize:"), this);
 	m_pagesizelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+          QWhatsThis::add(m_pagesizelabel, whatsThisGeneralPageSizeLabel);
+
 	QLabel	*m_papertypelabel = new QLabel(i18n("Paper t&ype:"), this);
 	m_papertypelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+          QWhatsThis::add(m_papertypelabel, whatsThisGeneralPaperTypeLabel);
+
 	QLabel	*m_inputslotlabel = new QLabel(i18n("Paper so&urce:"), this);
 	m_inputslotlabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+          QWhatsThis::add(m_inputslotlabel, whatsThisGeneralPaperSourceLabel);
+
 	m_pagesize = new QComboBox(this);
+          QWhatsThis::add(m_pagesize, whatsThisGeneralPageSizeLabel);
+
 	m_papertype = new QComboBox(this);
+          QWhatsThis::add(m_papertype, whatsThisGeneralPaperTypeLabel);
+
 	m_inputslot = new QComboBox(this);
+          QWhatsThis::add(m_inputslot, whatsThisGeneralPaperSourceLabel);
+
 	m_pagesizelabel->setBuddy(m_pagesize);
 	m_papertypelabel->setBuddy(m_papertype);
 	m_inputslotlabel->setBuddy(m_inputslot);
+
 	m_orientbox = new QButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
+          QWhatsThis::add(m_orientbox, whatsThisGeneralOrientationLabel);
+
 	m_duplexbox = new QButtonGroup(0, Qt::Vertical, i18n("Duplex Printing"), this);
+          QWhatsThis::add(m_duplexbox, whatsThisGeneralDuplexLabel);
+
 	m_nupbox = new QButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
+          QWhatsThis::add(m_nupbox, whatsThisGeneralPagesPerSheetLabel);
+
 	m_bannerbox = new QGroupBox(0, Qt::Vertical, i18n("Banners"), this);
+          QWhatsThis::add(m_bannerbox, whatsThisGeneralBannersLabel);
+
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
+          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
+          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
 	QRadioButton	*m_revland = new QRadioButton(i18n("&Reverse landscape"), m_orientbox);
+          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
 	QRadioButton	*m_revport = new QRadioButton(i18n("R&everse portrait"), m_orientbox);
+          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
+
 	m_portrait->setChecked(true);
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
@@ -164,6 +272,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 
 	// layout creation
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+        //  QWhatsThis::add(lay0, whatsThisPrintPropertiesGeneralPage);
 	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, KDialog::spacingHint());
 	QGridLayout	*lay2 = new QGridLayout(0, 2, 2, 0, KDialog::spacingHint());
 	lay0->addStretch(1);
