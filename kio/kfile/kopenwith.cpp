@@ -336,7 +336,7 @@ public:
 };
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
     setCaption( i18n( "Open With" ) );
     QString text;
@@ -355,7 +355,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
   QString caption = KStringHandler::csqueeze( _urls.first().prettyURL() );
   if (_urls.count() > 1)
@@ -367,7 +367,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 
 KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                             QWidget *parent)
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
     setCaption(i18n("Choose Application for %1").arg(serviceType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
@@ -380,7 +380,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
 }
 
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
   setCaption(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "
