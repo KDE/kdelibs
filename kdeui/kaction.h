@@ -99,7 +99,7 @@ class KPopupMenu;
  *
  * Here is an example of enabling a "New [document]" action
  * <PRE>
- * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
+ * KAction *newAct = new KAction(i18n("&New"), "filenew",
  *                               KStdAccel::key(KStdAccel::New), this,
  *                               SLOT(fileNew()), this);
  * </PRE>
@@ -152,7 +152,7 @@ class KPopupMenu;
  * previous example:
  *
  * <pre>
- * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
+ * KAction *newAct = new KAction(i18n("&New"), "filenew",
  *                               KStdAccel::key(KStdAccel::New), this,
  *                               SLOT(fileNew()), actionCollection());
  * </pre>
