@@ -43,8 +43,8 @@ check_PROGRAMS =kledlamptest kprogresstest \
 noinst_HEADERS = \
 		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h kstatusbartest.h \
-		kprocesstest.h kledtest.h kcontainertest.h \
-		klocaletest.h krulertest.h kconfigtest.h kgradienttest.h \
+		kledtest.h kcontainertest.h \
+		krulertest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
 		kdualcolortest.h khashtest.h kruntest.h
 
@@ -57,8 +57,6 @@ kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kaboutdialogtest_LDADD = $(LIB_KIMGIO) $(LIB_KDEUI)
 dialogbasetest_SOURCES = dialogbasetest.cpp
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
-kconfigtest_SOURCES = kconfigtest.cpp
-kconfigtest_LDADD = $(LIB_KDECORE)
 kcontainertest_SOURCES = kcontainertest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
@@ -67,18 +65,14 @@ kformulatest_LDADD = $(LIB_KFORMULA)
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
 kledtest_SOURCES = kledtest.cpp
-klocaletest_SOURCES = klocaletest.cpp
-klocaletest_LDADD = $(LIB_KDECORE)
 kmessageboxtest_SOURCES = kmessageboxtest.cpp
 knuminputtest_SOURCES = knuminputtest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
 kopenwithtest_LDADD = $(LIB_KIO)
 kpopuptest_SOURCES = kpopuptest.cpp
-kprocesstest_SOURCES = kprocesstest.cpp
 kprogresstest_SOURCES = kprogresstest.cpp
 krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
-ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp
 ktabctltest_SOURCES = ktabctltest.cpp
 kurltest_SOURCES = kurltest.cpp
