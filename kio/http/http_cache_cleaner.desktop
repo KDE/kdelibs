@@ -92,4 +92,4 @@ Comment[uk]=Вичищає старі елементи з кешу HTTP
 Comment[vi]=Xoá các danh mục cũ trong HTTP cache 
 Comment[xh]=Icoca ungeno oludala olusuka kwindawo efihlakeleyo yokugcina izixhobo ye HTTP
 Comment[zh_CN.GB2312]=从 HTTP 缓冲中清除旧的项
-KDE-X-StartupNotify=false
+X-KDE-StartupNotify=false

@@ -49,4 +49,4 @@ Comment[zh_CN.GB2312]=KDE 的进度信息用户接口服务器
 ServiceTypes=
 # It is a server
 X-DCOP-ServiceType=Unique
-KDE-X-StartupNotify=false
+X-KDE-StartupNotify=false

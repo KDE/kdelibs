@@ -40,4 +40,4 @@ Name[xh]=HTTP Cookie jar
 Exec=kcookiejar
 X-DCOP-ServiceType=Unique
 ServiceTypes=Daemon
-KDE-X-StartupNotify=false
+X-KDE-StartupNotify=false

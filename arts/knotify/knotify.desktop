@@ -59,4 +59,4 @@ Comment[zh_CN.GB2312]=KDE 通告进程
 Icon=knotify
 ServiceTypes=KNotify
 X-DCOP-ServiceType=Unique
-KDE-X-StartupNotify=false
+X-KDE-StartupNotify=false
