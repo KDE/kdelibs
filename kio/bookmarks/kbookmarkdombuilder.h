@@ -16,6 +16,9 @@
    Boston, MA 02111-1307, USA.
 */
 
+#ifndef __kbookmarkdombuilder_h
+#define __kbookmarkdombuilder_h
+
 #include <kbookmark.h>
 #include <qptrstack.h>
 #include <qobject.h>
@@ -37,3 +40,4 @@ private:
    KBookmarkManager *m_manager;
 };
 
+#endif
