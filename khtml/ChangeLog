@@ -1,22 +1,13 @@
 2004-10-27  Germain Garand  <germain@ebooksfrance.com>
 
-        make font-sizes CSS2.1 compliant. Match IE in quirk mode.
+        make font-sizes CSS2.1 compliant.
 
         * css/cssstyleselector.cpp (computeFontSizes): use standard ratios
-        from CSS 2.1 §15.7. IE quirk: scale is shifted one degree up starting at 'small'
+        from CSS 2.1 15.7.
         (applyRule): don't apply zoom factor to ems/exs relative values (#91228).
         
         * css/html4.css: Hx elements - margin ratios are now 1.1/corresponding ratio.
-        Switch to absolute sizes from CSS 2.1 §15.7
-
-        * css/quirks.css: account for IE quirk for Hx elements.
-
-        * html/html_inlineimpl.cpp (HTMLFontElementImpl::parseAtribute): account for IE quirk.
-
-        * html/html_tableimpl.cpp (ctor): ditto.
-
-        * xml/dom_docimpl.cpp (recalcStyle): ditto.
-
+        Switch to absolute sizes from CSS 2.1 15.7
 
 2004-10-27  Stephan Kulow  <coolo@kde.org>
 

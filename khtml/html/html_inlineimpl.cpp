@@ -245,8 +245,6 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
     {
         DOMStringImpl* v = attr->val();
         if(v) {
-            // IE quirk: font sizes are shifted
-            bool quirk = getDocument()->inCompatMode();
             const QChar* s = v->s;
             int num = v->toInt();
             int len = v->l;
@@ -260,14 +258,13 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
             case -2:
             case  1: size = CSS_VAL_XX_SMALL;  break;
             case -1:
-            case  2: size = quirk ? CSS_VAL_X_SMALL:CSS_VAL_SMALL;    break;
+            case  2: size = CSS_VAL_SMALL;    break;
             case  0: // treat 0 the same as 3, because people
                      // expect it to be between -1 and +1
-            case  3: size = quirk ? CSS_VAL_SMALL:CSS_VAL_MEDIUM;   break;
-            case  4: size = quirk ? CSS_VAL_MEDIUM:CSS_VAL_LARGE;    break;
-            case  5: size = quirk ? CSS_VAL_LARGE:CSS_VAL_X_LARGE;  break;
-            case  6: size = quirk ? CSS_VAL_X_LARGE:CSS_VAL_XX_LARGE; break;
-            case  7: size = CSS_VAL_XX_LARGE; if (quirk) break;
+            case  3: size = CSS_VAL_MEDIUM;   break;
+            case  4: size = CSS_VAL_LARGE;    break;
+            case  5: size = CSS_VAL_X_LARGE;  break;
+            case  6: size = CSS_VAL_XX_LARGE; break;
             default:
                 if (num > 6)
                     size = CSS_VAL__KHTML_XXX_LARGE;

@@ -131,7 +131,7 @@ embed {
 
 /*
  * heading elements
- * margin values rely on font-sizes ratio defined in CSS-2.1 §15.7
+ * margin values rely on font-sizes ratio defined in CSS-2.1 15.7
  * (cf. CSSStyleSelector for absolute font-sizes computation) 
  * We have an 1.1/font-ratio margin
  */
@@ -429,7 +429,6 @@ SELECT {
 
 TEXTAREA {
         color: windowtext;
-        font-size: normal;
         font-family: monospace;
         margin: 0__qem;
 }

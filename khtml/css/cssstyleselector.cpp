@@ -341,11 +341,9 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
     }
 
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-        // IE quirk: scale is shifted one degree up starting at 'small'
-        if (i==2 && !strictParsing) continue;
         factor = scale*fontFactors[i];
         fontSizes << int(KMAX( mediumFontSize*factor +.5f, minFontSize));
-        kdDebug( 6080 ) << "index: " << i << " factor: " << fontFactors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
+        // kdDebug( 6080 ) << "index: " << i << " factor: " << fontFactors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
     }
 }
 
@@ -2719,12 +2717,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if(parentNode) {
             oldSize = parentStyle->font().pixelSize();
         } else
-            oldSize = m_fontSizes[2 + strictParsing];
+            oldSize = m_fontSizes[3];
 
         if (isInherit )
             size = oldSize;
         else if (isInitial)
-            size = m_fontSizes[2 + strictParsing];
+            size = m_fontSizes[3];
         else if(primitiveValue->getIdent()) {
 	    // keywords are being used.  Pick the correct default
 	    // based off the font family.

@@ -22,31 +22,6 @@ TABLE {
     white-space: normal;
     line-height: normal;
     color: -khtml-text;
-    font-size: small;
+    font-size: medium;
     empty-cells: hide;
-}
-
-H1 {
-	font-size: x-large;
-        margin: .55__qem 0 .55em 0;
-}
-
-H2 {
-	font-size: large;
-        margin: .73__qem 0 .73em 0;
-}
-
-H3 {
-        font-size: medium;
-        margin: 0.92__qem 0 0.92em 0;
-}
-
-H4 {
-	font-size: small;
-        margin: 1.1__qem 0 1.1em 0;        
-}
-
-
-H5 {
-	font-size: x-small;
 }
