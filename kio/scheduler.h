@@ -34,9 +34,10 @@ namespace KIO {
 
     class Scheduler : public QObject, virtual public DCOPObject {
 	Q_OBJECT
-        class ProtocolInfo;
 
-    public:
+    public: // InfoDict needs Info, so we can't declare it private
+	class ProtocolInfo;
+
 	~Scheduler();
 
 	static void doJob(SimpleJob *job)
@@ -72,8 +73,6 @@ namespace KIO {
         bool startStep(ProtocolInfo *protInfo);
 	Scheduler();
 
-    public: // InfoDict needs Info, so we can't declare it private
-	class ProtocolInfo;
     private:
         class ProtocolInfoDict;
 
