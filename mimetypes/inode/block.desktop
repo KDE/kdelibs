@@ -24,7 +24,7 @@ Comment[sk]=Blokové zariadenie
 Comment[sl]=Bloèna enota
 Comment[sr]=Comment=Izgradite molekule iz ¹to manje pokreta
 Comment[sv]=Enhet av blocktyp (t ex hårddisk)
-Icon=blockdevice
+Icon=mimetypes/blockdevice
 Type=MimeType
-MimeType=mimetypes/blockdevice
+MimeType=inode/blockdevice
 Patterns=
