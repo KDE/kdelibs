@@ -207,7 +207,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       if ( fileName == ".directory" )
 	return mimeType( "text/plain" );
     }
-
+/*
   if ( !_is_local_file || _fast_mode )
   {
     QString path = _url.path();
@@ -218,7 +218,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
                                                  : mimeType( "inode/directory" );
     }
   }
-
+*/
   // No more chances for non local URLs
   if ( !_is_local_file || _fast_mode )
     return mimeType( "application/octet-stream" );
