@@ -934,6 +934,7 @@ const char* KApplication::getCaption() const
 		  return;
 
 void KApplication::buildSearchPaths()
+{
   // Torben
   // We want to search the local files with highest priority
         int num;
@@ -988,6 +989,11 @@ void KApplication::appendSearchPath( const char *path )
 
   // return if this path has already been added
 	str = config->readEntry( "WindowTextColor", "#000000" ); 
+	windowTextColor.setNamedColor( str );
+	contrast = atoi( str );
+	config->setGroup( "General Font" );
+
+	num = config->readNumEntry( "Charset",-1 );
 
   pSearchPaths->append( path );
 }
