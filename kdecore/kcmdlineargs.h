@@ -44,9 +44,9 @@ struct KCmdLineOptions
     * specified. i.e. if "nofoo" is the name of the option and
     * <i>myapp --nofoo</i> is called:
     * 
-    * <pre>
+    * \code
     * KCmdLineArgs::parsedArgs()->isSet("foo"); // false
-    * </pre>
+    * \endcode
     */
    const char *name;
    /**
@@ -81,7 +81,7 @@ class KCmdLineArgsPrivate;
  *
  *  A typical KDE application should look like this:
  *
- *  <pre>
+ *  \code
  *  int main(int argc, char *argv[])
  *  {
  *     // Initialize command line args
@@ -127,11 +127,11 @@ class KCmdLineArgsPrivate;
  *     args->clear(); // Free up some memory.
  *     ....
  *  }
- *  </pre>
+ *  \endcode
  *
  *  options are defined as follow
  *
- *  <pre>
+ *  \code
  *  static const KCmdLineOptions options[] =
  *  {
  *     { "a", I18N_NOOP("A short binary option."), 0 },
@@ -153,7 +153,7 @@ class KCmdLineArgsPrivate;
  *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'.), 0 },
  *     KCmdLineLastOption // End of options.
  *  };
- *  </pre>
+ *  \endcode
  *
  *  The I18N_NOOP macro is used to indicate that these strings should be
  *  marked for translation. The actual translation is done by KCmdLineArgs.
@@ -197,7 +197,7 @@ class KCmdLineArgsPrivate;
  *     myapp -I /usr/include -I /opt/kde/include -I /usr/X11/include
  *  </pre>
  *  When an application does this it should mention this in the description
- *  of the option. See @ref getOptionList().
+ *  of the option. @ref getOptionList()
  *
  *  Tips for end-users:
  *
@@ -276,7 +276,7 @@ public:
    *
    * The list of options should look like this:
    *
-   * <pre>
+   * \code
    * static KCmdLineOptions options[] =
    * {
    *    { "option1 \<argument>", I18N_NOOP("Description 1"), "default" },
@@ -285,7 +285,7 @@ public:
    *    { "nooption3", I18N_NOOP("Description 3"), 0 },
    *    { 0, 0, 0}
    * }
-   * </pre>
+   * \endcode
    *
    * @li "option1" is an option that requires an additional argument
    * @li "option2" is an option that can be turned on. The default is off.
@@ -297,11 +297,10 @@ public:
    *     when an argument is passed to it. Note that the reverse is not
    *     true. If required, you must check yourself the number of arguments
    *     specified by the user:
-   *     <pre>
+   *     \code
    *       KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-   *       if (args->count() == 0)
-   *           KCmdLineArgs::usage(i18n("No file specified!"));
-   *     </pre>
+   *       if (args->count() == 0) KCmdLineArgs::usage(i18n("No file specified!"));
+   *     \endcode
    *
    * In BNF:
    * cmd = myapp [options] file
