@@ -1161,8 +1161,11 @@ KZip::Compression KZip::compression() const
 QByteArray KZipFileEntry::data() const
 {
     QIODevice* dev = device();
-    QByteArray arr = dev->readAll();
-    delete dev;
+    QByteArray arr;
+    if ( dev ) {
+        arr = dev->readAll();
+        delete dev;
+    }
     return arr;
 }
 
