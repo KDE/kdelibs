@@ -245,11 +245,7 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     KConfig config(configFileName, true, false);
 
     // Are we initalized?
-    KRootProp *testProp = new KRootProp("Misc");
-    tmpStr = testProp->readEntry("ShadeStyle", "5000");
-    if(tmpStr == "5000"){
-        testProp->destroy();
-        for(i=0; i < INHERIT_ITEMS; ++i)
+      for(i=0; i < INHERIT_ITEMS; ++i)
             applyResourceGroup(&config, i);
         for(; i < INHERIT_ITEMS*2; ++i){
             if(config.hasGroup(widgetEntries[i]))
@@ -261,12 +257,9 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
                 copyProp.sync();
             }
         }
-        for(; i < WIDGETS; ++i)
-            applyResourceGroup(&config, i);
-
-        applyMiscResourceGroup(&config);
-    }
-    delete testProp;
+       for(; i < WIDGETS; ++i)
+           applyResourceGroup(&config, i);
+      applyMiscResourceGroup(&config);
 
     // initalize defaults that may not be read
     for(i=0; i < WIDGETS; ++i)
