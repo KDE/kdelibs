@@ -286,6 +286,25 @@ int HTTPProtocol::openStream() {
                   << "| Certificate matches CN: " << matchingCN << endl
                   << "+-----------------------------------------------"
                   << endl;
+
+      if (!matchingCN && false) {    // FIXME: remove the "&& false" once the
+                                     // certificate cache has been enabled
+                                     // and make a config option to enable this
+                                     // prompt in kcmcrypto.
+        int result = messageBox( WarningYesNo,
+                               i18n("This site presented an SSL certificate"
+                                    " for an address which is not the same as"
+                                    " the sites address.\nIt could mean that the"
+                                    " certificate has been compromised.  Are"
+                                    " you sure you wish to continue?"),
+                               i18n("Ban CN Presented"));
+        if ( result == KMessageBox::No )
+        {
+          m_ssl.close();
+          return false;
+        }
+      }
+
     setMetaData("ssl_in_use", "TRUE");
     setMetaData("ssl_peer_cert_subject", m_ssl.peerInfo().getPeerCertificate().getSubject());
     setMetaData("ssl_peer_cert_issuer", m_ssl.peerInfo().getPeerCertificate().getIssuer());
