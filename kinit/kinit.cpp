@@ -109,6 +109,7 @@ struct {
   int fd[2];
   int launcher[2]; /* socket pair for launcher communication */
   int deadpipe[2]; /* pipe used to detect dead children */
+  int initpipe[2];
   int wrapper; /* socket for wrapper communication */
   char result;
   int exit_status;
@@ -137,12 +138,28 @@ int kdeinit_xio_errhandler( Display * );
 static void close_fds()
 {
    if (d.deadpipe[0] != -1)
+   {
       close(d.deadpipe[0]);
-   d.deadpipe[0] = -1;
+      d.deadpipe[0] = -1;
+   }
 
    if (d.deadpipe[1] != -1)
+   {
       close(d.deadpipe[1]);
-   d.deadpipe[1] = -1;
+      d.deadpipe[1] = -1;
+   }
+
+   if (d.initpipe[0] != -1)
+   {
+      close(d.initpipe[0]);
+      d.initpipe[0] = -1;
+   }
+
+   if (d.initpipe[1] != -1)
+   {
+      close(d.initpipe[1]);
+      d.initpipe[1] = -1;
+   }
 
    if (d.launcher_pid)
    {
@@ -1318,9 +1335,13 @@ void _main(void)
 }
 #endif
 
+static void secondary_child_handler(int)
+{
+   waitpid(-1, 0, WNOHANG);
+}
+
 int main(int argc, char **argv, char **envp)
 {
-   int init_pipe[2];
    int i;
    pid_t pid;
    int launch_dcop = 1;
@@ -1346,22 +1367,26 @@ int main(int argc, char **argv, char **envp)
          keep_running = 0;
    }
 
-   pipe(init_pipe);
+   pipe(d.initpipe);
 
    // Fork here and let parent process exit.
    // Parent process may only exit after all required services have been
    // launched. (dcopserver/klauncher and services which start with '+')
+   signal( SIGCHLD, secondary_child_handler);
    if (fork() > 0) // Go into background
    {
-      close(init_pipe[1]);
+      close(d.initpipe[1]);
+      d.initpipe[1] = -1;
       // wait till init is complete
       char c;
-      while (read(init_pipe[0], &c, 1) < 0);
+      while( read(d.initpipe[0], &c, 1) < 0);
       // then exit;
-      close(init_pipe[0]);
+      close(d.initpipe[0]);
+      d.initpipe[0] = -1;
       return 0;
    }
-   close(init_pipe[0]);
+   close(d.initpipe[0]);
+   d.initpipe[0] = -1;
    d.my_pid = getpid();
 
    /** Make process group leader (for shutting down children later) **/
@@ -1481,8 +1506,9 @@ int main(int argc, char **argv, char **envp)
       return 0;
 
    char c = 0;
-   write(init_pipe[1], &c, 1); // Kdeinit is started.
-   close(init_pipe[1]);
+   write(d.initpipe[1], &c, 1); // Kdeinit is started.
+   close(d.initpipe[1]);
+   d.initpipe[1] = -1;
 
    handle_requests(0);
 
