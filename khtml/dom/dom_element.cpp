@@ -203,10 +203,7 @@ Attr Element::setAttributeNode( const Attr &newAttr )
 {
     if (!impl || newAttr.isNull())
         throw DOMException(DOMException::NOT_FOUND_ERR);
-    if (impl->getDocument() != newAttr.handle()->getDocument())
-        throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
-    if (!newAttr.ownerElement().isNull())
-        throw DOMException(DOMException::INUSE_ATTRIBUTE_ERR);
+    // WRONG_DOCUMENT_ERR and INUSE_ATTRIBUTE_ERR are already tested & thrown by setNamedItem
 
     int exceptioncode = 0;
     Attr r = static_cast<ElementImpl*>(impl)->attributes(false)->setNamedItem(newAttr.handle(), false,
@@ -302,10 +299,7 @@ Attr Element::setAttributeNodeNS( const Attr &newAttr )
 {
     if (!impl || newAttr.isNull())
         throw DOMException(DOMException::NOT_FOUND_ERR);
-    if (impl->getDocument() != newAttr.handle()->getDocument())
-        throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
-    if (!newAttr.ownerElement().isNull())
-        throw DOMException(DOMException::INUSE_ATTRIBUTE_ERR);
+    // WRONG_DOCUMENT_ERR and INUSE_ATTRIBUTE_ERR are already tested & thrown by setNamedItem
 
     int exceptioncode = 0;
     Attr r = static_cast<ElementImpl*>(impl)->attributes(false)->setNamedItem(newAttr.handle(), true, 0, exceptioncode);
