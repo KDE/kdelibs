@@ -21,8 +21,6 @@ WISHES
 
 - add the possibility to view a printjob file (if possible)
 
-- possibility of a generic "tiling" feature (coreldraw)
-
 - restarting server: use of "ps" in a subshell to get the pid, possibility
   of authentification (put this into separate program that would restart
   itself using kdesu).

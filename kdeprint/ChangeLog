@@ -576,3 +576,24 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 23/05/2002 Michael Goffioul <goffioul@imec.be>
   * job manager: added the possibility to control the username for jobs
     filtering, and the possibility to limit the number of jobs shown.
+
+16/08/2002 Michael Goffioul <goffioul@imec.be>
+  * filters/command: added the possibility to have comments about a specific
+    command, including clickable URL's. Modified the command selector to use
+	those comments.
+  * commands: added the "poster" command, but based on a modified version
+    of the original program. Still need to publish it somehow.
+  * job viewer: added possibility to drop files on the job viewer to print
+    them.
+  * print dialog: use the correct extension for output file in all cases,
+    even on first dialog showing (call slotPrinterSelected after setting
+	the output file name).
+
+20/08/2002 Michael Goffioul <goffioul@imec.be>
+  * print dialog:
+	  . added a method to disable a page in the main dialog
+	  . make the filename persistent in the SaveFile dialog
+	  . use a rename dialog if the output file already exists
+
+26/08/2002 Michael Goffioul <goffioul@imec.be>
+  * general: added a generic PS driver to (missing for too long)
