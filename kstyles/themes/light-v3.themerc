@@ -1,6 +1,7 @@
 [Misc]
 Name=Light Style, 3rd revision
 Name[ar]=نمط خفيف، التنقيح الثالث
+Name[de]=Leichter Stil, 3. Fassung
 Name[es]=Estilo Ligero, 3era revisión
 Name[fi]=Light Style, kolmas versio
 Name[fr]=Style lumière, 3ème version
@@ -17,6 +18,7 @@ Name[xx]=xx
 Comment=Third revision of the simple and elegant 'Light' widget style.
 Comment[ar]=التنقيح الثالث لنمط الكائن 'الخفيف' الأنيق والبسيط
 Comment[da]=Tredje revision af den simple og elegante 'Light' kontrol-stil.
+Comment[de]=Dritte Version des einfachen und eleganten "Leichten Stils"
 Comment[es]=Tercera revisión del elegante estilo de widgets 'Ligero'.
 Comment[fi]=Kolmas versio yksinkertaisesta ja elegantista 'Light' tyylistä
 Comment[fr]=Troisième version du style graphique «Lumière», simple et élégant
