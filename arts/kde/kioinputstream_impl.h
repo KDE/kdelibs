@@ -28,7 +28,9 @@
 
 namespace Arts {
 
-class KIOInputStream_impl : public QObject, virtual public KIOInputStream_skel, virtual public StdSynthModule
+class KIOInputStream_impl : public QObject, virtual public KIOInputStream_skel, 
+					    virtual public InputStream_skel,
+					    virtual public StdSynthModule
 {
 Q_OBJECT
 public:
@@ -49,6 +51,7 @@ public:
 	bool openURL(const std::string& url);
 
 	void processQueue();
+	void request_outdata(DataPacket<mcopbyte> *packet);
 
 private slots:
 	void slotData(KIO::Job *, const QByteArray &);
@@ -58,7 +61,10 @@ private:
 	KURL m_url;
 	KIO::TransferJob *m_job;
 	std::queue<DataPacket<mcopbyte> *> m_sendqueue;
+	mcopbyte *m_data;
 	bool m_finished;
+	unsigned int m_size;
+	unsigned int m_position;
 };
 
 };

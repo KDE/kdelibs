@@ -47,8 +47,8 @@ int main(int argc, char **argv)
 	
 	connect(stream, writer);
 
-	stream.start();
 	writer.start();
+	stream.start();
 	
 	app.exec();
 }

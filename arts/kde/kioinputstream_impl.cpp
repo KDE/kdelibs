@@ -19,6 +19,9 @@
 
 	*/
 
+#define protected public
+#include <kio/jobclasses.h>
+#undef protected
 #include <kio/job.h>
 #include <kdebug.h>
 #include <qtimer.h>
@@ -32,6 +35,11 @@ using namespace Arts;
 KIOInputStream_impl::KIOInputStream_impl()
 {
 	m_job = 0;
+	m_data = 0;
+
+	m_position = 0;
+	m_size = 0;
+	
 	m_finished = false;
 }
 
@@ -41,6 +49,8 @@ KIOInputStream_impl::~KIOInputStream_impl()
 
 void KIOInputStream_impl::streamStart()
 {
+	outdata.setPull(PACKET_COUNT, PACKET_SIZE);
+
 	if(m_job != 0)
 		m_job->kill();
 	m_job = KIO::get(m_url, false, true);
@@ -48,7 +58,6 @@ void KIOInputStream_impl::streamStart()
 			 this, SLOT(slotData(KIO::Job *, const QByteArray &)));		     
 	QObject::connect(m_job, SIGNAL(result(KIO::Job *)),
 			 this, SLOT(slotResult(KIO::Job *)));		     
-
 }
 
 void KIOInputStream_impl::streamEnd()
@@ -62,6 +71,16 @@ void KIOInputStream_impl::streamEnd()
 	
 	m_job->kill();
 	m_job = 0;
+
+	outdata.endPull();
+
+	while(!m_sendqueue.empty())
+	{
+	    DataPacket<mcopbyte> *packet = m_sendqueue.front();
+	    packet->size = 0;
+	    packet->send();
+	    m_sendqueue.pop();
+	}
 }
 
 bool KIOInputStream_impl::openURL(const std::string& url)
@@ -72,16 +91,22 @@ bool KIOInputStream_impl::openURL(const std::string& url)
 
 void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 {
-	DataPacket<mcopbyte> *packet = outdata.allocPacket(data.size());
-	memcpy(packet->contents, data.data(), packet->size);
-	m_sendqueue.push(packet);
-	processQueue();
+	char *newdata = new char[m_size + data.size()];
+	memcpy(newdata, m_data, m_size);
+	memcpy(newdata, data.data(), data.size());
+
+	m_data = (mcopbyte *) newdata;
+	m_size += data.size();
+
+	if(!m_sendqueue.empty())
+	    processQueue();
 }
 
-void KIOInputStream_impl::slotResult(KIO::Job *)
+void KIOInputStream_impl::slotResult(KIO::Job *job)
 {
-	kdDebug() << "RESULT!" << endl;
-	m_job = 0;
+	kdDebug() << "RESULT HUH?!" << endl;
+	if(job->error())
+	    job->showErrorDialog();
 }
 
 bool KIOInputStream_impl::eof()
@@ -106,14 +131,34 @@ long KIOInputStream_impl::seek(long)
 
 void KIOInputStream_impl::processQueue()
 {
-	// TODO:
-	// Respect PACKET_SIZE!
+	if(m_size > PACKET_SIZE * 10)
+	    m_job->suspend();
+	else if(m_size < PACKET_SIZE * 4)
+	{
+	    if(m_job->m_suspended)
+		m_job->resume();
+	}
+
 	for(unsigned int i = 0; i < m_sendqueue.size(); i++)
 	{
+	    if(m_position < m_size)
+	    {
 		DataPacket<mcopbyte> *packet = m_sendqueue.front();
-		packet->send();
 		m_sendqueue.pop();
+		
+		packet->size = min(PACKET_SIZE, m_size - m_position);
+		memcpy(packet->contents, m_data + m_position, packet->size);
+		m_position += packet->size;
+		packet->send();
+	    }
 	}
+}
+
+void KIOInputStream_impl::request_outdata(DataPacket<mcopbyte> *packet)
+{
+	kdDebug() << "RECEIVE!" << endl;
+	m_sendqueue.push(packet);
+	processQueue();
 }
 
 REGISTER_IMPLEMENTATION(KIOInputStream_impl);
