@@ -1,7 +1,5 @@
 
-INCLUDES= -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/qtmcop \
-		  -I$(top_srcdir)/arts/kde -I$(top_builddir)/arts/soundserver \
-		  -I$(top_builddir)/arts/flow $(all_includes)
+INCLUDES= -I$(includedir)/arts -I$(top_srcdir)/arts/kde $(all_includes)
 
 bin_PROGRAMS = kmcop
 lib_LTLIBRARIES = kmcop.la

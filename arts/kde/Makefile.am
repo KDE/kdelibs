@@ -1,15 +1,12 @@
 SUBDIRS = . mcop-dcop
-INCLUDES = -I$(top_srcdir)/arts \
-		   -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/qtmcop -I$(top_srcdir)/arts/flow \
-           -I$(top_builddir)/arts/flow \
-           -I$(top_srcdir)/arts/soundserver \
-           -I$(top_builddir)/arts/soundserver -I$(top_builddir)/arts/kde/lib \
+INCLUDES = -I$(includedir)/arts \
+           -I$(top_builddir)/arts/kde/lib \
            -I$(top_srcdir) $(all_includes)
 lib_LTLIBRARIES  	    =	libartskde.la
 libartskde_la_SOURCES	    =	artskde.cc kioinputstream_impl.cpp kplayobject.cc \
 				kplayobjectfactory.cc kartsfloatwatch.cpp kartsdispatcher.cc \
 				kreceiver.cpp kartsserver.cpp
-libartskde_la_LIBADD        =   $(LIB_KSYCOCA) $(top_builddir)/arts/qtmcop/libqtmcop.la $(top_builddir)/arts/soundserver/libsoundserver_idl.la
+libartskde_la_LIBADD        =   $(LIB_KSYCOCA) -lqtmcop -lsoundserver_idl
 libartskde_la_LDFLAGS       =   $(all_libraries) -no-undefined -version-info 1:0
 libartskde_la_METASOURCES   =	AUTO
 
@@ -22,7 +19,7 @@ artskde.cc: artskde.h
 artskde.mcoptype: artskde.h
 artskde.mcopclass: artskde.h
 artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
-	    $(MCOPIDL) -I$(top_srcdir)/arts/flow -I$(top_srcdir)/arts/soundserver -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
+	    $(MCOPIDL) -I$(includedir)/arts -I$(includedir)/arts -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
 
 DISTCLEANFILES = artskde.cc artskde.h artskde.mcoptype artskde.mcopclass
 

@@ -1,302 +1,11 @@
 
 dnl aRts specific configure tests
 dnl
-dnl Check for libaudioio (which can be used to get solaris audio support)
-AC_DEFUN([AC_CHECK_LIBAUDIOIO],
-[
-  ac_ldflags_save="$LDFLAGS"
-  ac_CPPFLAGS_save="$CPPFLAGS"
-  LDFLAGS="$all_libraries $LDFLAGS"
-  CPPFLAGS="$CPPFLAGS $all_includes"
-  arts_libaudioio_found=no
-  AC_LANG_SAVE
-  AC_LANG_C
-  kde_have_libaudioio=no
-  AC_CHECK_HEADER(libaudioio.h,
-  [
-    kde_have_libaudioio=yes
-  ])
-  if test "x$kde_have_libaudioio" = "xyes"; then
-     AC_CHECK_LIB(audioio,AudioIOGetVersion,[
-      dnl LDFLAGS in case it's in KDEDIR/lib
-      LIBAUDIOIO="$LDFLAGS -laudioio"
-      AC_DEFINE(HAVE_LIBAUDIOIO, 1,
-        [Define if you have libaudioIO (required if you want to have libaudioio support)])
-      arts_libaudioio_found=yes
-    ])
-  fi
-  AC_SUBST(LIBAUDIOIO)
-  AC_LANG_RESTORE
-  CPPFLAGS="$ac_CPPFLAGS_save"
-  LDFLAGS="$ac_ldflags_save"
-])
-
-dnl aRts specific configure tests
-dnl
-dnl Check for libaudio (which can be used to get network audio support)
-AC_DEFUN([AC_CHECK_LIBAUDIONAS],
-[
-  ac_ldflags_save="$LDFLAGS"
-  ac_CPPFLAGS_save="$CPPFLAGS"
-  LDFLAGS="$all_libraries $LDFLAGS"
-  CPPFLAGS="$CPPFLAGS $all_includes"
-  arts_libaudionas_found=no
-  AC_LANG_SAVE
-  AC_LANG_C
-  kde_has_audio_lib=no
-  AC_CHECK_HEADER(audio/audiolib.h,
-  [
-    kde_has_audio_lib=yes
-    ])
-  if test "x$kde_has_audio_lib" = "xyes"; then
-    AC_CHECK_LIB(audio,AuOpenServer,[
-     dnl LDFLAGS in case it's in KDEDIR/lib
-     LIBAUDIONAS="$LDFLAGS -laudio -lXt"
-     AC_DEFINE(HAVE_LIBAUDIONAS, 1,
-        [Define if you have libaudio (required if you want to have NAS support)])
-     arts_libaudionas_found=yes
-   ])
-  fi
-  AC_SUBST(LIBAUDIONAS)
-  AC_LANG_RESTORE
-  CPPFLAGS="$ac_CPPFLAGS_save"
-  LDFLAGS="$ac_ldflags_save"
-])
-
-dnl libaudiofile is used for loading wave files
-AC_DEFUN([AC_CHECK_LIBAUDIOFILE],
-[
-  ac_ldflags_save="$LDFLAGS"
-  ac_CPPFLAGS_save="$CPPFLAGS"
-  LDFLAGS="$all_libraries $LDFLAGS"
-  CPPFLAGS="$CPPFLAGS $all_includes"
-  arts_audiolib_found=no
-  dnl WAV reading
-  AC_LANG_SAVE
-  AC_LANG_C
-  kde_has_audio_lib=no
-  AC_CHECK_HEADER(audiofile.h,
-  [ 
-     kde_has_audio_lib=yes
-    ])
-  if test "x$kde_has_audio_lib" = "xyes"; then
-      KDE_CHECK_LIB(audiofile,afOpenFile,[
-      dnl LDFLAGS in case it's in KDEDIR/lib
-      LIBAUDIOFILE="$LDFLAGS -laudiofile"
-      AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
-        [Define if you have libaudiofile (required for playing wavs with aRts)])
-      arts_audiolib_found=yes
-      ])
-  fi
-  AM_CONDITIONAL(HAVE_WAVSUPPORT,  test "x$arts_audiolib_found" = "xyes")
-  AC_SUBST(LIBAUDIOFILE)
-  AC_LANG_RESTORE
-  CPPFLAGS="$ac_CPPFLAGS_save"
-  LDFLAGS="$ac_ldflags_save"
-])
-
-dnl Posix realtime scheduling - this is helpful if you want arts to run with
-dnl higher priority than everthing else
-
-AC_DEFUN([ARTS_TRY_LINK_POSIX_REALTIME],
-[
-AC_TRY_LINK([
-#include <sched.h>
-],
-[
-sched_getscheduler(0);
-],
-arts_realtime_sched=yes,
-arts_realtime_sched=no)
-])
-
-AC_DEFUN([AC_CHECK_REALTIME_SCHED],
-[
-AC_MSG_CHECKING([for posix realtime scheduling support])
-save_LIBS="$LIBS"
-LIBPOSIX4=""
-ARTS_TRY_LINK_POSIX_REALTIME
-if test "x$arts_realtime_sched" = "xno"; then
-   LIBS="$LIBS -lposix4"
-   ARTS_TRY_LINK_POSIX_REALTIME
-   if test "x$arts_realtime_sched" = "xyes"; then
-      LIBPOSIX4="-lposix4"
-   fi
-fi
-LIBS="$save_LIBS"
-AC_SUBST(LIBPOSIX4)
-AC_MSG_RESULT($arts_realtime_sched)
-
-if test "x$arts_realtime_sched" = "xyes"; then
-  AC_DEFINE(HAVE_REALTIME_SCHED,1,
-        [Define if your system supports realtime scheduling])
-fi
-])
-
-dnl Type of the ioctl function test - after some tries, it seems that this
-dnl not required for Linux vs. FreeBSD (for which this test was written), and
-dnl that only the Linux documentation claims that it has an "int" as second
-dnl argument. But maybe there will pop up systems for which the signature
-dnl differs, later.
-
-AC_DEFUN([AC_CHECK_IOCTL_TYPE],
-[
-  AC_MSG_CHECKING([ioctl type])
-  AC_CACHE_VAL(ac_cv_ioctl_type,
-  [
-    AC_LANG_SAVE
-    AC_LANG_C
-
-    AC_TRY_COMPILE(
-    [
-      #include <sys/ioctl.h>
-	  int ioctl(int d, int request,...);
-    ],
-    [
-    ],
-	ac_cv_ioctl_type=1)
-    AC_TRY_COMPILE(
-    [
-      #include <sys/ioctl.h>
-	  int ioctl(int d, unsigned long request,...);
-    ],
-    [
-    ],
-	ac_cv_ioctl_type=2)
-    AC_TRY_COMPILE(
-    [
-      #include <sys/ioctl.h>
-	  int ioctl(int d, unsigned long int request,...);
-    ],
-    [
-    ],
-	ac_cv_ioctl_type=3)
-     AC_LANG_RESTORE
-  ])
-  AC_MSG_RESULT($ac_cv_ioctl_type)
-  
-
-if test "$ac_cv_ioctl_type" = "1"; then
-  AC_DEFINE(HAVE_IOCTL_INT_INT_DOTS,1,
-	      [Define if ioctl is declared as int ioctl(int d, int request,...)])
-fi
-if test "$ac_cv_ioctl_type" = "2"; then
-  AC_DEFINE(HAVE_IOCTL_INT_ULONG_DOTS,2,
-	      [Define if ioctl is declared as int ioctl(int d, unsigned long request,...)])
-fi
-if test "$ac_cv_ioctl_type" = "3"; then
-  AC_DEFINE(HAVE_IOCTL_INT_ULONGINT_DOTS,3,
-	      [Define if ioctl is declared as int ioctl(int d, unsigned long int request,...)])
-fi
-])
-
-dnl check whether we can do rouding using asm optimization
-
-AC_DEFUN([AC_CHECK_X86_FLOAT_INT],
-[
-AC_MSG_CHECKING([for x86 float to int conversions])
-AC_CACHE_VAL(ac_cv_x86_float_int,
-[
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK([
-static inline long QRound (float inval)
-{
-  long ret;
-  __asm__ ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
-  return ret;
-}
-],
-[
-long i = QRound(41.93);  /* should be 42 */
-],
-ac_cv_x86_float_int=yes,
-ac_cv_x86_float_int=no)
-AC_LANG_RESTORE
-])
-AC_MSG_RESULT($ac_cv_x86_float_int)
-if test "x$ac_cv_x86_float_int" = "xyes"; then
-  AC_DEFINE(HAVE_X86_FLOAT_INT,1,
-        [Define if you want to use optimized x86 float to int conversion code])
-fi
-])
-
-dnl check if the assembler supports SSE instructions
-AC_DEFUN([AC_CHECK_X86_SSE],
-[
-AC_MSG_CHECKING([for x86 SSE instructions])
-AC_CACHE_VAL(ac_cv_x86_sse,
-[
-AC_TRY_COMPILE(,
-[
-#if defined(__GNUC__) && defined(__i386__)
-__asm__("movups %xmm0, (%esp)");
-#else
-#error Not gcc on x86
-#endif
-],
-ac_cv_x86_sse=yes,
-ac_cv_x86_sse=no)
-])
-AC_MSG_RESULT($ac_cv_x86_sse)
-if test "x$ac_cv_x86_sse" = "xyes"; then
-	AC_DEFINE(HAVE_X86_SSE,1,
-		[Define if your assembler supports x86 SSE instructions])
-fi
-])
-
-dnl check whether we should try to emulate stdio fopen/fclose via
-dnl glibc facilities (this *really* depends on glibc internals)
-
-AC_DEFUN([AC_CHECK_ARTSDSP_STDIO_EMU],
-[
-AC_MSG_CHECKING([for stdio emulation in artsdsp])
-AC_CACHE_VAL(ac_cv_artsdsp_stdio_emu,
-[
-AC_LANG_SAVE
-AC_LANG_C
-AC_TRY_LINK([
-#define _GNU_SOURCE
-#include <stdio.h>
-],
-[
-	cookie_io_functions_t fns = { 0, 0, 0, 0 };
-	struct fd_cookie *fdc = 0;
-	FILE *out = fopencookie (fdc,"w", fns);
-	out->_fileno = 0;
-],
-ac_cv_artsdsp_stdio_emu=yes,
-ac_cv_artsdsp_stdio_emu=no)
-])
-AC_LANG_RESTORE
-AC_MSG_RESULT($ac_cv_artsdsp_stdio_emu)
-if test "x$ac_cv_artsdsp_stdio_emu" = "xyes"; then
-  AC_DEFINE(HAVE_ARTSDSP_STDIO_EMU,1,
-	[Define if you want to use glibc facilities to emulate stdio accesses in artsdsp])
-fi
-])
-
-dnl call the tests
-AC_CHECK_LIBAUDIOIO
-AC_CHECK_LIBAUDIONAS
-AC_CHECK_LIBAUDIOFILE
-AC_CHECK_REALTIME_SCHED
-AC_CHECK_GETDOMAINNAME
-AC_CHECK_IOCTL_TYPE
-AC_CHECK_X86_FLOAT_INT
-AC_CHECK_X86_SSE
-AC_CHECK_ARTSDSP_STDIO_EMU
-KDE_CHECK_THREADING
-
-dnl somewhat more deeply nested template code than gcc understands by default
-if test "$GXX" = "yes"; then
-  KDE_CHECK_COMPILER_FLAG(ftemplate-depth-99,
-  [
-    CXXFLAGS="$CXXFLAGS -ftemplate-depth-99"
-  ])
-fi
 
 dnl check for ALSA audio support
+dnl
+dnl these tests are also required by libkmid, so don't remove them
+
 arts_with_alsa=yes
 AC_ARG_WITH(alsa, [  --with-alsa             enable aRts ALSA support],
 [arts_with_alsa=$withval])
@@ -382,107 +91,57 @@ fi
 
 AC_SUBST(LIBASOUND)
 
-dnl check for IRIX audio support
-AC_MSG_CHECKING([for IRIX])
-if test `uname` = "IRIX" ; then
-  AC_DEFINE(HAVE_IRIX, 1, [Define if you compile under IRIX])
-  AC_MSG_RESULT("yes")
-else
-  AC_MSG_RESULT("no")
-fi
+dnl
+dnl ensure that the user has aRts-0.7.1 installed
+dnl
 
-dnl check whether we want to use gsl
-AC_ARG_ENABLE(arts-gsl,
-[  --disable-arts-gsl      disable new aRts GSL style scheduling],
-[arts_want_gsl="$enableval"],[arts_want_gsl="yes"])
+dnl Check for artsc-config
+AC_PATH_PROG(ARTSC_CONFIG, artsc-config, no)
 
-if test "$arts_want_gsl" = "yes"; then
-  ARTS_GSL_SOURCES="gslschedule.cc"
-  AC_SUBST(HAVE_ARTS_GSL)
-  AC_DEFINE(HAVE_ARTS_GSL,1,[Define if you want aRts GSL style scheduling])
-else
-  ARTS_GSL_SOURCES=""
-fi
-AC_SUBST(ARTS_GSL_SOURCES)
-
-dnl Check for pkg-config
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+ARTS_WANT_VERSION=0.7.1
+ARTS_HAVE_VERSION=none
+ARTS_HAVE_PREFIX=none
 
 dnl Check for Glib-2.0
-# GLIB_CFLAGS:  cflags for compiling libraries and example progs
-# GLIB_LIBS:    libraries for linking example programs
-# GLIB_DEPLIBS: libraries for linking libraries against
+AC_MSG_CHECKING(for aRts-$ARTS_WANT_VERSION)
 
-GLIB_PACKAGES="gobject-2.0 gmodule-2.0 gthread-2.0"
-GLIB_VERSION="1.3.3"
-AC_MSG_CHECKING(for GLib-2.0 (at least $GLIB_VERSION))
+ARTS_OK=no
 
-if test "x$PKG_CONFIG" != "xno"; then
-if $PKG_CONFIG $GLIB_PACKAGES --atleast-version $GLIB_VERSION >/dev/null 2>&1 ; then
-    GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_PACKAGES`
-    GLIB_LIBS=`$PKG_CONFIG --libs $GLIB_PACKAGES`
-    GLIB_DEPLIBS=$GLIB_LIBS
-    AC_MSG_RESULT(yes)
-	ARTS_BUILD_GMCOP="gmcop"
-fi
+if test "x$ARTSC_CONFIG" != "xno"; then
+	ARTS_HAVE_VERSION=`$ARTSC_CONFIG --arts-version`
+	ARTS_HAVE_PREFIX=`$ARTSC_CONFIG --arts-prefix`
 fi
 
-if test -z "$GLIB_LIBS"; then
-	AC_MSG_RESULT(not installed)
-	ARTS_BUILD_GMCOP=""
-fi
-
-AC_SUBST(GLIB_CFLAGS)
-AC_SUBST(GLIB_LIBS)
-AC_SUBST(GLIB_DEPLIBS)
-AC_SUBST(ARTS_BUILD_GMCOP)
- 
-dnl OpenBSD requires an -lossaudio and soundcard.h to provide OSS audio I/O
-AC_CHECK_HEADERS(soundcard.h)
-AC_CHECK_LIB(ossaudio, _oss_ioctl, [LIBOSSAUDIO="-lossaudio"])
-AC_SUBST(LIBOSSAUDIO)
-
-dnl Don't remove !
-dnl AC_OUTPUT(arts/artsc/artsc-config)
-
-dnl Check if we are building as part of KDE. Arts can also be built as
-dnl a standalone snapshot in which case KDE may not be present and things
-dnl that depend on KDE should not be built.
-AC_MSG_CHECKING(if building standalone aRts snapshot without KDE)
-if test "$DCOPIDL" = ""; then
-	AC_MSG_RESULT(yes)
-	ARTS_BUILD_KDE=""
-	MOC="true"
-	DCOPIDL="true"
-	DCOPIDL2CPP="true"
-	AC_SUBST(MOC)
-	AC_SUBST(DCOPIDL)
-	AC_SUBST(DCOPIDL2CPP)
-else
-	AC_MSG_RESULT(no)
-	if test "x$kde_use_qt_emb" = "xyes"; then
-		ARTS_BUILD_KDE="qtmcop kde knotify message"
+if test "x$ARTS_HAVE_VERSION" = "x$ARTS_WANT_VERSION"; then
+	if test "x$ARTS_HAVE_PREFIX" = "x$prefix"; then
+		ARTS_OK=yes
 	else
-		ARTS_BUILD_KDE="x11 qtmcop kde knotify message"
+AC_MSG_ERROR([aRts $ARTS_WANT_VERSION not installed in the same prefix as KDE!
+Please reinstall aRts in the same prefix as KDE, different prefixes are not
+supported right now.
+
+(kdelibs prefix is $prefix, aRts prefix is $ARTS_HAVE_PREFIX)
+])
 	fi
 fi
-AC_SUBST(ARTS_BUILD_KDE)
 
-MCOPIDL='$(top_builddir)/arts/mcopidl/mcopidl'
+AC_MSG_RESULT($ARTS_OK)
+
+if test "x$ARTS_OK" = "xno"; then
+AC_MSG_ERROR([aRts $ARTS_WANT_VERSION not found.
+
+aRts has been moved to a seperate CVS module. Please checkout the "arts" CVS
+module, compile and install it with the same prefix as KDE, and then retry to
+build kdelibs. Sorry for any inconvenience caused by this move.
+
+(found
+ * artsc-config: $ARTSC_CONFIG
+ * kdelibs prefix: $prefix
+ * aRts prefix: $ARTS_HAVE_PREFIX
+ * aRts version: $ARTS_HAVE_VERSION (required: $ARTS_WANT_VERSION)
+)
+])
+fi
+
+AC_PATH_PROG(MCOPIDL, mcopidl, no)
 AC_SUBST(MCOPIDL)
-
-dnl Version (we /might/ want to use libtool versioning, too)
-ARTS_MAJOR_VERSION=0
-ARTS_MINOR_VERSION=7
-ARTS_MICRO_VERSION=0
-ARTS_VERSION=$ARTS_MAJOR_VERSION.$ARTS_MINOR_VERSION.$ARTS_MICRO_VERSION
-AC_SUBST(ARTS_MAJOR_VERSION)
-AC_SUBST(ARTS_MINOR_VERSION)
-AC_SUBST(ARTS_MICRO_VERSION)
-AC_SUBST(ARTS_VERSION)
-
-dnl Don't remove !
-dnl AC_OUTPUT(arts/artsc/artsdsp)
-dnl AC_OUTPUT(arts/soundserver/artsversion-new.h)
-
-

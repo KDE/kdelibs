@@ -1,7 +1,0 @@
-Interface=Arts::WavPlayObject,Arts::PlayObject,Arts::PlayObject_private,Arts::SynthModule,Arts::Object
-Author="Stefan Westerfeld <stefan@space.twc.de>"
-URL="http://www.arts-project.org"
-Extension=wav
-Language=C++
-Library=libartswavplayobject.la
-MimeType=audio/wav,audio/x-wav

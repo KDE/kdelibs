@@ -1,5 +1,0 @@
-Interface=Arts::FileInputStream,Arts::InputStream,Arts::SynthModule,Arts::Object
-Author="Stefan Westerfeld <stefan@space.twc.de>"
-URL="http://www.arts-project.org"
-Language=C++
-Library=libkmedia2.la
