@@ -569,8 +569,8 @@ void RenderFrame::slotViewCleared()
         QScrollView *view = static_cast<QScrollView *>(m_widget);
         if(!element()->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(element()->parentNode()))->frameBorder()))
             view->setFrameStyle(QFrame::NoFrame);
-        view->setVScrollBarMode(element()->scrolling);
-        view->setHScrollBarMode(element()->scrolling);
+	    view->setVScrollBarMode(view->height() < 3072 ? element()->scrolling : QScrollView::Auto );
+	    view->setHScrollBarMode(view->width() < 2000 ? element()->scrolling: QScrollView::Auto );
         if(view->inherits("KHTMLView")) {
 #ifdef DEBUG_LAYOUT
             kdDebug(6031) << "frame is a KHTMLview!" << endl;
@@ -888,8 +888,8 @@ void RenderPartObject::slotViewCleared()
 	  marginh = frame->marginHeight;
       }
       view->setFrameStyle(frameStyle);
-      view->setVScrollBarMode(scroll);
-      view->setHScrollBarMode(scroll);
+      view->setVScrollBarMode(view->height() < 3072 ? scroll : QScrollView::Auto );
+      view->setHScrollBarMode(view->width() < 2000 ? scroll : QScrollView::Auto );
       if(view->inherits("KHTMLView")) {
 #ifdef DEBUG_LAYOUT
           kdDebug(6031) << "frame is a KHTMLview!" << endl;

@@ -152,6 +152,21 @@ RenderWidget::~RenderWidget()
     delete m_widget;
 }
 
+static void resizeWidget( QWidget *widget, int w, int h )
+{
+    // ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
+    h = QMIN( h, 3072 );
+    w = QMIN( w, 2000 );
+    widget->resize( w, h );
+    if ( w == 3072 || h == 2000 ) {
+	if ( widget->inherits( "KHTMLView" ) ) {
+	    KHTMLView *sv = static_cast<KHTMLView *>(widget);
+	    if ( w == 2000 ) sv->setHScrollBarMode( QScrollView::Auto );
+	    if ( h == 3072 ) sv->setVScrollBarMode( QScrollView::Auto );
+	}
+    }
+}
+
 void RenderWidget::setQWidget(QWidget *widget)
 {
     if (widget != m_widget)
@@ -170,9 +185,9 @@ void RenderWidget::setQWidget(QWidget *widget)
             // widget immediately
             if (layouted()) {
 		// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
-		int w = QMIN( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 2000 );
-		int h = QMIN( m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 3072 );
-		m_widget->resize( w, h );
+		resizeWidget( m_widget, 
+			      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 
+			      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
             }
             else
                 setPos(xPos(), -500000);
@@ -185,10 +200,9 @@ void RenderWidget::layout( )
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
     if ( m_widget ) {
-	// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
-	int w = QMIN( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 2000 );
-	int h = QMIN( m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 3072 );
-        m_widget->resize( w, h );
+	resizeWidget( m_widget,
+		      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 
+		      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
     } 
     
     setLayouted();
