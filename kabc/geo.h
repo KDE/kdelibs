@@ -32,6 +32,9 @@ namespace KABC {
 */
 class Geo
 {
+    friend QDataStream &operator<<( QDataStream &, const Geo & );
+    friend QDataStream &operator>>( QDataStream &, Geo & );
+
   public:
     /**
       Construct invalid geographics position object.
@@ -84,6 +87,9 @@ class Geo
     bool mValidLat;
     bool mValidLong;
 };
+
+QDataStream &operator<<( QDataStream &, const Geo & );
+QDataStream &operator>>( QDataStream &, Geo & );
 
 }
 

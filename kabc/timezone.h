@@ -32,6 +32,9 @@ namespace KABC {
 */
 class TimeZone
 {
+    friend QDataStream &operator<<( QDataStream &, const TimeZone & );
+    friend QDataStream &operator>>( QDataStream &, TimeZone & );
+
   public:
     /*
       Construct invalid time zone.
@@ -73,6 +76,9 @@ class TimeZone
 
     bool mValid;
 };
+
+QDataStream &operator<<( QDataStream &, const TimeZone & );
+QDataStream &operator>>( QDataStream &, TimeZone & );
 
 }
 

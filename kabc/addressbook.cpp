@@ -422,3 +422,21 @@ bool AddressBook::addCustomField( const QString &label, int category,
 
   return true;
 }
+
+QDataStream &KABC::operator<<( QDataStream &s, const AddressBook &ab )
+{
+    if (!ab.d)
+	return s;
+
+    return s << ab.d->mAddressees;
+}
+
+QDataStream &KABC::operator>>( QDataStream &s, AddressBook &ab )
+{
+    if (!ab.d)
+	return s;
+
+    s >> ab.d->mAddressees;
+
+    return s;
+}

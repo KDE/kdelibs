@@ -12,13 +12,13 @@ libkabc_la_SOURCES = \
   stdaddressbook.cpp vcardformat.cpp address.cpp geo.cpp timezone.cpp \
   vcardformatimpl.cpp addresseedialog.cpp distributionlist.cpp \
   distributionlisteditor.cpp resource.cpp resourcefile.cpp \
-  vcard21parser.cpp field.cpp
+  vcard21parser.cpp field.cpp resourcesql.cpp binaryformat.cpp
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   distributionlist.h distributionlisteditor.h format.h geo.h phonenumber.h \
   simpleformat.h stdaddressbook.h timezone.h vcardformat.h resource.h \
-  resourcefile.h vcard21parser.h field.h
+  resourcefile.h vcard21parser.h field.h resourcesql.h binaryformat.h
 
 METASOURCES = AUTO
 

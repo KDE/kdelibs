@@ -255,3 +255,22 @@ void Address::dump() const
   kdDebug(5700) << "    Locality: " << locality() << endl;
   kdDebug(5700) << "  }" << endl;
 }
+
+QDataStream &KABC::operator<<( QDataStream &s, const Address &addr )
+{
+    return s << addr.mId << addr.mType << addr.mPostOfficeBox <<
+	    addr.mExtended << addr.mStreet << addr.mLocality <<
+	    addr.mRegion << addr.mPostalCode << addr.mCountry <<
+	    addr.mLabel;
+}
+
+QDataStream &KABC::operator>>( QDataStream &s, Address &addr )
+{
+    s >> addr.mId >> addr.mType >> addr.mPostOfficeBox >> addr.mExtended >>
+	    addr.mStreet >> addr.mLocality >> addr.mRegion >>
+	    addr.mPostalCode >> addr.mCountry >> addr.mLabel;
+
+    addr.mEmpty = false;
+
+    return s;
+}

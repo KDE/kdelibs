@@ -148,3 +148,15 @@ QString PhoneNumber::label( int type )
       return i18n("Other");
   }
 }
+
+QDataStream &KABC::operator<<( QDataStream &s, const PhoneNumber &phone )
+{
+    return s << phone.mId << phone.mType << phone.mNumber;
+}
+
+QDataStream &KABC::operator>>( QDataStream &s, PhoneNumber &phone )
+{
+    s >> phone.mId >> phone.mType >> phone.mNumber;
+
+    return s;
+}

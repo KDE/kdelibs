@@ -49,6 +49,9 @@ namespace KABC {
 */
 class PhoneNumber
 {
+    friend QDataStream &operator<<( QDataStream &, const PhoneNumber & );
+    friend QDataStream &operator>>( QDataStream &, PhoneNumber & );
+
   public:
     typedef QValueList<PhoneNumber> List;
   
@@ -117,6 +120,9 @@ class PhoneNumber
     int mType;
     QString mNumber;
 };
+
+QDataStream &operator<<( QDataStream &, const PhoneNumber & );
+QDataStream &operator>>( QDataStream &, PhoneNumber & );
 
 }
 

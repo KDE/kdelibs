@@ -1074,3 +1074,75 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     }
   }
 }
+
+QDataStream &KABC::operator<<( QDataStream &s, const Addressee &addr )
+{
+    if (!addr.mData)
+	return s;
+
+    s << addr.mData->uid;
+    s << addr.mData->name;
+    s << addr.mData->formattedName;
+    s << addr.mData->familyName;
+    s << addr.mData->givenName;
+    s << addr.mData->additionalName;
+    s << addr.mData->prefix;
+    s << addr.mData->suffix;
+    s << addr.mData->nickName;
+    s << addr.mData->birthday;
+    s << addr.mData->mailer;
+    s << addr.mData->timeZone;
+    s << addr.mData->geo;
+    s << addr.mData->title;
+    s << addr.mData->role;
+    s << addr.mData->organization;
+    s << addr.mData->note;
+    s << addr.mData->productId;
+    s << addr.mData->revision;
+    s << addr.mData->sortString;
+    s << addr.mData->url;
+    s << addr.mData->phoneNumbers;
+    s << addr.mData->addresses;
+    s << addr.mData->emails;
+    s << addr.mData->categories;
+    s << addr.mData->custom;
+
+    return s;
+}
+
+QDataStream &KABC::operator>>( QDataStream &s, Addressee &addr )
+{
+    if (!addr.mData)
+	return s;
+
+    s >> addr.mData->uid;
+    s >> addr.mData->name;
+    s >> addr.mData->formattedName;
+    s >> addr.mData->familyName;
+    s >> addr.mData->givenName;
+    s >> addr.mData->additionalName;
+    s >> addr.mData->prefix;
+    s >> addr.mData->suffix;
+    s >> addr.mData->nickName;
+    s >> addr.mData->birthday;
+    s >> addr.mData->mailer;
+    s >> addr.mData->timeZone;
+    s >> addr.mData->geo;
+    s >> addr.mData->title;
+    s >> addr.mData->role;
+    s >> addr.mData->organization;
+    s >> addr.mData->note;
+    s >> addr.mData->productId;
+    s >> addr.mData->revision;
+    s >> addr.mData->sortString;
+    s >> addr.mData->url;
+    s >> addr.mData->phoneNumbers;
+    s >> addr.mData->addresses;
+    s >> addr.mData->emails;
+    s >> addr.mData->categories;
+    s >> addr.mData->custom;
+
+    addr.mData->empty = false;
+
+    return s;
+}

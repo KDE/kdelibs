@@ -40,6 +40,10 @@ class Ticket;
 class AddressBook : public QObject
 {
     Q_OBJECT
+
+    friend QDataStream &operator<<( QDataStream &, const AddressBook & );
+    friend QDataStream &operator>>( QDataStream &, AddressBook & );
+
   public:
     /**
       @short Address Book Iterator
@@ -126,7 +130,7 @@ class AddressBook : public QObject
       @param ticket a ticket object returned by @ref requestSaveTicket()
     */
     bool save( Ticket *ticket );
-    
+
     /**
       Return iterator for first entry of address book.
     */
@@ -245,6 +249,9 @@ class AddressBook : public QObject
     struct AddressBookData;
     AddressBookData *d;
 };
+
+QDataStream &operator<<( QDataStream &, const AddressBook & );
+QDataStream &operator>>( QDataStream &, AddressBook & );
 
 }
 

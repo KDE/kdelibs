@@ -32,6 +32,9 @@ namespace KABC {
 */
 class Address
 {
+    friend QDataStream &operator<<( QDataStream &, const Address & );
+    friend QDataStream &operator>>( QDataStream &, Address & );
+
   public:
     /**
       List of addresses.
@@ -204,7 +207,7 @@ class Address
       Debug output.
     */
     void dump() const;
-  
+
   private:
     bool mEmpty;
   
@@ -221,6 +224,8 @@ class Address
     QString mLabel;
 };
 
-}
+QDataStream &operator<<( QDataStream &, const Address & );
+QDataStream &operator>>( QDataStream &, Address & );
 
+}
 #endif

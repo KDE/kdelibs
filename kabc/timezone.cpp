@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qdatastream.h>
+
 #include "timezone.h"
 
 using namespace KABC;
@@ -67,4 +69,17 @@ bool TimeZone::operator!=( const TimeZone &t ) const
 QString TimeZone::asString() const
 {
   return QString::number( mOffset );
+}
+
+QDataStream &KABC::operator<<( QDataStream &s, const TimeZone &zone )
+{
+    return s << zone.mOffset;
+}
+
+QDataStream &KABC::operator>>( QDataStream &s, TimeZone &zone )
+{
+    s >> zone.mOffset;
+    zone.mValid = true;
+
+    return s;
 }
