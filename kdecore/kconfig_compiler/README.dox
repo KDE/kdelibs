@@ -12,6 +12,8 @@ configuration data.
 The structure of the .kcfg file is described by its DTD kcfg.dtd.
 
 The \<kcfgfile\> tag contains the name of the configuration file described.
+Omitting the name will make the generated class use the default configuration
+file ("<appname>rc").
 
 The \<include\> tags are optional and may contain C++ header files that
 are needed to compile the code needed to compute default values.
@@ -49,7 +51,9 @@ the value isn't specified in any config file. Default values are interpreted
 as literal constant values. If a default value needs to be computed
 or if it needs to be obtained from a function call, the \<default\> tag
 should contain the code="true" attribute. The contents of the \<default\>
-tag is then considered to be a C++ expression.
+tag is then considered to be a C++ expression. Note that in this case you
+might have to add an \<include\> tag as described above so that the code
+which computes the default value can be compiled.
 
 Additional code for computing default values can be provided via
 the \<code\> tag. The contents of the \<code\> tag is inserted as-is. A
