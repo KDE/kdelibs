@@ -23,6 +23,8 @@
 #include <config.h>
 #include <klocale.h>
 
+#include <kdebug.h>
+
 #include "render_applet.h"
 #include "../khtmlview.h"
 #include "../khtml_part.h"
@@ -51,6 +53,7 @@ RenderApplet::RenderApplet(QScrollView *view,
     }
 
     if ( context ) {
+        kdDebug(6100) << "RenderApplet::RenderApplet, setting QWidget" << endl;
         setQWidget( new KJavaAppletWidget(context, view->viewport()) );
         processArguments(args);
         static_cast<KJavaAppletWidget*>(m_widget)->create();
@@ -63,14 +66,24 @@ RenderApplet::~RenderApplet()
 
 short RenderApplet::intrinsicWidth() const
 {
-    // ###
-    return 10;
+    int rval = 150;
+
+    if( m_widget )
+        rval = ((KJavaAppletWidget*)(m_widget))->sizeHint().width();
+
+    kdDebug(6100) << "RenderApplet::intrinsicWidth(), returning " << rval << endl;
+    return rval;
 }
 
 int RenderApplet::intrinsicHeight() const
 {
-    // ###
-    return 10;
+    int rval = 150;
+
+    if( m_widget )
+        rval = m_widget->sizeHint().height();
+
+    kdDebug(6100) << "RenderApplet::intrinsicHeight(), returning " << rval << endl;
+    return rval;
 }
 
 void RenderApplet::calcMinMaxWidth()
@@ -86,6 +99,8 @@ void RenderApplet::calcMinMaxWidth()
 
 void RenderApplet::layout()
 {
+    kdDebug(6100) << "RenderApplet::layout" << endl;
+
     if(layouted())
         return;
 
@@ -106,6 +121,7 @@ void RenderApplet::layout()
             }
             child = child->nextSibling();
         }
+        kdDebug(6100) << "setting applet widget to size: " << m_width << ", " << m_height << endl;
         m_widget->resize(m_width, m_height);
         tmp->showApplet();
     }
@@ -120,8 +136,10 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
     if ( tmp ) {
         tmp->setBaseURL( args[QString::fromLatin1("baseURL") ] );
         tmp->setAppletClass( args[QString::fromLatin1("code") ] );
+
         if( !args[QString::fromLatin1("codeBase") ].isEmpty() )
             tmp->setCodeBase( args[QString::fromLatin1("codeBase") ] );
+
         if( !args[QString::fromLatin1("name") ].isNull() )
             tmp->setAppletName( args[QString::fromLatin1("name") ] );
         else
@@ -139,18 +157,32 @@ RenderEmptyApplet::RenderEmptyApplet(QScrollView *view)
     setInline(true);
 
     QLabel* label = new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"), view->viewport());
+    label->setAlignment( Qt::AlignCenter | Qt::WordBreak );
     setQWidget(label);
-    label->setAlignment( Qt::AlignCenter );
 }
 
 short RenderEmptyApplet::intrinsicWidth() const
 {
-    return (m_widget ? m_widget->sizeHint().width() : 0);
+    kdDebug(6100) << "RenderEmptyApplet::intrinsicWidth()" << endl;
+
+    if( m_widget )
+    {
+        kdDebug(6100) << "intrinsicWidth, applet width = " << m_widget->width() << endl;
+    }
+
+    return (m_widget ? m_widget->sizeHint().width() : 150);
 }
 
 int RenderEmptyApplet::intrinsicHeight() const
 {
-    return (m_widget ? m_widget->sizeHint().height() : 0);
+    kdDebug(6100) << "RenderEmptyApplet::intrinsicHeight()" << endl;
+
+    if( m_widget )
+    {
+        kdDebug(6100) << "intrinsicHeight, applet height = " << m_widget->height() << endl;
+    }
+
+    return (m_widget ? m_widget->sizeHint().height() : 150);
 }
 
 void RenderEmptyApplet::calcMinMaxWidth()
@@ -175,7 +207,10 @@ void RenderEmptyApplet::layout()
     calcHeight();
 
     if(m_widget)
+    {
+        kdDebug(6100) << "RenderEmptyApplet::layout, m_width = " << m_width << ", m_height = " << m_height << endl;
         m_widget->resize(m_width, m_height);
+    }
 
     setLayouted();
 }
