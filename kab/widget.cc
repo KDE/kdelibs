@@ -172,7 +172,7 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   // -----
   keys->get("Background", bgFilename);
   CHECK(keys->get("Background", bgFilename));
-  path=(string) KGlobal::iconLoader()->getIconPath(QString(bgFilename.c_str()) ).data();
+  path=(string) KGlobal::iconLoader()->iconPath(QString(bgFilename.c_str()) ).data();
   LG(GUARD, "AddressWidget constructor: loading widget background "
      "from file \n             \"%s\".\n", path.c_str());
   card->setBackground(path.c_str());
