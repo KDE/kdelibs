@@ -1,0 +1,44 @@
+msgid "Error"
+msgstr "Chyba"
+
+msgid "Malformed URL"
+msgstr "URL má chybný formát"
+
+msgid "Yes"
+msgstr "Ano"
+
+msgid "No"
+msgstr "Ne"
+
+msgid "Warning"
+msgstr "Varování"
+
+msgid "Open a file"
+msgstr "Otevøít soubor"
+
+msgid "Save a file"
+msgstr "Ulo¾it soubor"
+
+msgid "Contents"
+msgstr "Nápovìda"
+
+msgid "About"
+msgstr "Informace"
+
+msgid "Open"
+msgstr "Otevøít soubor"
+
+msgid "Save"
+msgstr "Ulo¾it soubor"
+
+msgid "Save As"
+msgstr "Ulo¾it soubor jako"
+
+msgid "Close"
+msgstr "Uzavøít"
+
+msgid "Quit"
+msgstr "Ukonèit"
+
+msgid "Untitled"
+msgstr "Nepojmenovaný"
