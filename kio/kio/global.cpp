@@ -491,7 +491,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     "for further assistance." );
   if ( protocol == "http" )
     sServeradmin += i18n( " This is typically done by emailing <a href=\"mailto"
-      ":webmaster@%1\">webmaster@%1</a>, ." ).arg( host ).arg( host );
+      ":webmaster@%1\">webmaster@%1</a>, ." ).arg( host );
   // FIXME active link to permissions dialog
   QString sAccess = i18n( "Check your access permissions on this resource." );
   QString cAccess = i18n( "Your access permissions may be inadequate to "
@@ -800,7 +800,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "The <strong>U</strong>niversal <strong>R</strong>esource "
         "<strong>L</strong>ocation (URL) that you entered did not refer to "
         "a valid mechanism of accessing the specific resource, "
-        "<strong>%1%1</strong>." )
+        "<strong>%1%2</strong>." )
         .arg( host != QString::null ? host + '/' : QString::null ).arg( dir );
       causes << i18n( "KDE is able to communicate through a protocol within a "
         "protocol. This request specified a protocol be used as such, however "
@@ -1070,8 +1070,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "response was not received within the amount of time allocated for "
         "the request as follows:<ul>"
         "<li>Timeout for establishing a connection: %1 seconds</li>"
-        "<li>Timeout for receiving a response: %1 seconds</li>"
-        "<li>Timeout for accessing proxy servers: %1 seconds</li></ul>"
+        "<li>Timeout for receiving a response: %2 seconds</li>"
+        "<li>Timeout for accessing proxy servers: %3 seconds</li></ul>"
         "Please note that you can alter these timeout settings in the KDE "
         "Control Center, by selecting Network -> Preferences." )
         .arg( KProtocolManager::connectTimeout() )
@@ -1086,7 +1086,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Unknown Error" );
       description = i18n( "The program on your computer which provides access "
         "to the <strong>%1</strong> protocol has reported an unknown error: "
-        "%1." ).arg( protocol ).arg( errorText );
+        "%2." ).arg( protocol ).arg( errorText );
       causes << cBug;
       solutions << sUpdate << sBugreport;
       break;
@@ -1095,7 +1095,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Unknown Interruption" );
       description = i18n( "The program on your computer which provides access "
         "to the <strong>%1</strong> protocol has reported an interruption of "
-        "an unknown type: %1." ).arg( protocol ).arg( errorText );
+        "an unknown type: %2." ).arg( protocol ).arg( errorText );
       causes << cBug;
       solutions << sUpdate << sBugreport;
       break;
