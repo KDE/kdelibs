@@ -960,7 +960,14 @@ bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteEx
             if ( !overwriteExistingFiles && !overwriteAll )
             {
                 // Ask the user what to do
+                // Let's check if it's a directory
+                struct stat sbuff;
                 RenameDlg_Mode mode = (RenameDlg_Mode) M_OVERWRITE;
+                if ( lstat( QFile::encodeName(destUrl.path()), &sbuff ) == 0
+                     && S_ISDIR( sbuff.st_mode ) )
+                  // It's a dir ! Can't overwrite.
+                  mode = (RenameDlg_Mode) 0;
+
                 // TODO if ( files.count() > 0 ) // Not last one
                 mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
                 // else
@@ -997,7 +1004,7 @@ bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteEx
                 // Try to delete the destination
                 if ( unlink( destUrl.path().local8Bit() ) != 0 )
                 {
-                    KMessageBox::sorry( 0L, i18n( "Could not overwrite\n%1"), destUrl.path() );
+                    KMessageBox::sorry( 0L, i18n( "Could not overwrite\n%1").arg(destUrl.path()) );
                     return false;
                 }
                 // Try again - this won't loop forever since unlink succeeded
