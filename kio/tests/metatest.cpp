@@ -2,6 +2,7 @@
 #include <kfilemetainfo.h>
 #include <kcmdlineargs.h>
 #include <qstringlist.h>
+#include <qimage.h>
 #include <kdebug.h>
 #include <qlabel.h>
 #include <qvalidator.h>
@@ -201,7 +202,7 @@ int main( int argc, char **argv )
     
     if (!args->count()) return 1;
 
-    KFileMetaInfo info( args->arg(0));
+    KFileMetaInfo info( args->arg(0), QString::null, KFileMetaInfo::Everything);
     
     if (args->isSet("groups"))
     {
@@ -269,7 +270,8 @@ int main( int argc, char **argv )
 
     if (args->isSet("validator") && !group.isNull() && !item.isNull())
     {
-        KFileMimeTypeInfo* kfmti = KFileMetaInfoProvider::self()->mimeTypeInfo(info.mimeType());        QValidator* v = kfmti->createValidator(group, item);
+        const KFileMimeTypeInfo* kfmti = KFileMetaInfoProvider::self()->mimeTypeInfo(info.mimeType());
+        QValidator* v = kfmti->createValidator(group, item);
         if (!v)
             kdDebug() << "got no validator\n";
         else
@@ -295,18 +297,21 @@ int main( int argc, char **argv )
     
     printKeyValues(info);
 
-//    KFileMetaInfoItem item = info.item(KFileMetaInfoItem::Thumbnail);
-    KFileMetaInfoItem thumbitem = info.item("Thumbnail");
+    KFileMetaInfoItem thumbitem = info.item(KFileMimeTypeInfo::Thumbnail);
+//    KFileMetaInfoItem thumbitem = info.item("Thumbnail");
     
     if (!thumbitem.isValid()) kdDebug() << "no thumbnail\n";
     else
         kdDebug() << "type of thumbnail is " << thumbitem.value().typeName() << endl;
     
-    if (thumbitem.isValid() && thumbitem.value().canCast(QVariant::Pixmap))
+    
+    if (thumbitem.isValid() && thumbitem.value().canCast(QVariant::Image))
     {
         QLabel* label = new QLabel(0);
         app.setMainWidget(label);
-        label->setPixmap(thumbitem.value().toPixmap());
+        QPixmap pix;
+        pix.convertFromImage(thumbitem.value().toImage());
+        label->setPixmap(pix);
         label->show();
         app.exec();
     }
