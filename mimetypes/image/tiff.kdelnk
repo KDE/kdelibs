@@ -5,6 +5,7 @@ MimeType=image/tiff
 Icon=image.xpm
 Patterns=*.tif;*.TIF;*.TIFF;*.tiff;
 Comment=TIFF Image
+Comment[cs]=Obrázek ve formátu TIFF
 Comment[es]=Imagen TIFF
 Comment[de]=TIFF Bild
 Comment[no]=TIFF-bilde

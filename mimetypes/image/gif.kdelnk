@@ -5,6 +5,7 @@ MimeType=image/gif
 Icon=image.xpm
 Patterns=*.gif;*.GIF;
 Comment=Gif images
+Comment[cs]=Obrázek ve formátu Gif
 Comment[es]=Imagen GIF
 Comment[de]=GIF Bild
 Comment[no]=GIF-bilde
