@@ -1310,17 +1310,35 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   else
     l = new QLabel( i18n("Read"), gb );
   gl->addWidget (l, 1, 1);
+  QString readWhatsThis; 
+  if (isDir)
+    readWhatsThis = i18n("This flag allows viewing the content of the directory.");
+  else
+    readWhatsThis = i18n("The Read flag allows viewing the content of the file.");
+  QWhatsThis::add(l, readWhatsThis);
 
   if (isDir)
     l = new QLabel( i18n("Write\nEntries"), gb );
   else
     l = new QLabel( i18n("Write"), gb );
   gl->addWidget (l, 1, 2);
-
+  QString writeWhatsThis; 
   if (isDir)
-    l = new QLabel( i18n("Enter directory", "Enter"), gb );
+    writeWhatsThis = i18n("This flag allows adding, renaming and deleting of files. Note that deleting and renaming can be limited using the Sticky flag.");
   else
+    writeWhatsThis = i18n("The Write flag allows modifying the content of the file.");
+  QWhatsThis::add(l, writeWhatsThis);
+
+  QString execWhatsThis;
+  if (isDir) {
+    l = new QLabel( i18n("Enter directory", "Enter"), gb );
+    execWhatsThis = i18n("Enable this flag to allow entering the directory.");
+  }
+  else {
     l = new QLabel( i18n("Exec"), gb );
+    execWhatsThis = i18n("Enable this flag to allow executing the file as a program.");
+  }
+  QWhatsThis::add(l, execWhatsThis);
   // GJ: Add space between normal and special modes
   QSize size = l->sizeHint();
   size.setWidth(size.width() + 15);
@@ -1329,6 +1347,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   l = new QLabel( i18n("Special"), gb );
   gl->addMultiCellWidget(l, 1, 1, 4, 5);
+  QString specialWhatsThis;
+  if (isDir)
+    specialWhatsThis = i18n("Special flag. Valid for the whole directory, the exact meaning of the flag can be seen in the right column.");
+  else
+    specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen in the right column.");
+  QWhatsThis::add(l, specialWhatsThis);
 
   cl[0] = new QLabel( i18n("User"), gb );
   gl->addWidget (cl[0], 2, 0);
@@ -1341,12 +1365,30 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   l = new QLabel(i18n("Set UID"), gb);
   gl->addWidget(l, 2, 5);
+  QString setUidWhatsThis; 
+  if (isDir)
+    setUidWhatsThis = i18n("If this flag is set, the owner of this directory will be the owner of all new files.");
+  else
+    setUidWhatsThis = i18n("If this file is an executable and the flag is set, it will be executed with the permissions of the owner.");
+  QWhatsThis::add(l, setUidWhatsThis);
 
   l = new QLabel(i18n("Set GID"), gb);
   gl->addWidget(l, 3, 5);
+  QString setGidWhatsThis; 
+  if (isDir)
+    setGidWhatsThis = i18n("If this flag is set, the group of this directory will be set for all new files.");
+  else
+    setGidWhatsThis = i18n("If this file is an executable and the flag is set, it will be executed with the permissions of the group.");
+  QWhatsThis::add(l, setGidWhatsThis);
 
   l = new QLabel(i18n("File permission, sets user or group ID on execution", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
+  QString stickyWhatsThis; 
+  if (isDir)
+    stickyWhatsThis = i18n("If the Sticky flag is set on a directory, only the owner and root can delete or rename files. Otherwise everybody with write permissions can do this.");
+  else
+    stickyWhatsThis = i18n("The Sticky flag on a file is ignored on Linux, but may be used on some systems");
+  QWhatsThis::add(l, stickyWhatsThis);
 
   bool enablePage = (isMyFile || IamRoot) && (!isLink);
   /* Draw Checkboxes */
@@ -1364,6 +1406,30 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       gl->addWidget (permBox[row][col], row+2, col+1);
       connect( cb, SIGNAL( clicked() ),
                this, SIGNAL( changed() ) );
+      switch(col) {
+      case 0:
+	QWhatsThis::add(cb, readWhatsThis);
+	break;
+      case 1:
+	QWhatsThis::add(cb, writeWhatsThis);
+	break;
+      case 2:
+	QWhatsThis::add(cb, execWhatsThis);
+	break;
+      case 3:
+	switch(row) {
+	case 0:
+	  QWhatsThis::add(cb, setUidWhatsThis);
+	  break;
+	case 1:
+	  QWhatsThis::add(cb, setGidWhatsThis);
+	  break;
+	case 2:
+	  QWhatsThis::add(cb, stickyWhatsThis);
+	  break;
+	}
+	break;
+      }
     }
   }
   gl->setColStretch(6, 10);
