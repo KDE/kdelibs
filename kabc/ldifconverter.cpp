@@ -588,6 +588,8 @@ addComment:
   }
 
   if ( fieldname == QString::fromLatin1( "modifytimestamp" ) ) {
+    if (value == QString::fromLatin1("0Z")) // ignore
+        return true;
     QDateTime dt = VCardStringToDate( value );
     if ( dt.isValid() ) {
         a.setRevision(dt);
