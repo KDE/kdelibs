@@ -1009,7 +1009,7 @@ bool KateDocument::editWrapLine ( uint line, uint col, bool autowrap)
 
   TextLine::Ptr nl = buffer->plainLine(line+1);
   TextLine::Ptr tl = new TextLine();
-  int llen = l->length(), nllen;
+  int llen = l->length(), nllen = 0;
 
   if (!nl || !autowrap)
   {
@@ -2792,21 +2792,30 @@ bool KateDocument::isLastView(int numViews) {
   return ((int) m_views.count() == numViews);
 }
 
-uint KateDocument::textWidth(const TextLine::Ptr &textLine,
-			     int cursorX, WhichFont wf)
+uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorCol, WhichFont wf)
 {
   if (!textLine)
     return 0;
 
-  if (cursorX < 0)
-    cursorX = textLine->length();
+  if (cursorCol < 0)
+    cursorCol = textLine->length();
+
+  int len = textLine->length();
 
   const FontStruct & fs = getFontStruct(wf);
 
   int x = 0;
-  for (int z = 0; z < cursorX; z++) {
+  int width;
+  for (int z = 0; z < cursorCol; z++) {
     Attribute *a = attribute(textLine->attribute(z));
-    int width = a->width(fs, textLine->getChar(z));
+    
+    if (z < len) {
+      width = a->width(fs, textLine->getChar(z));
+    } else {
+      Q_ASSERT(!(configFlags() & KateDocument::cfWrapCursor));
+      width = a->width(fs, QChar (' '));
+    }
+    
     x += width;
 
     if (textLine->getChar(z) == QChar('\t'))
@@ -2920,7 +2929,7 @@ uint KateDocument::textWidth( KateTextCursor &cursor, int xPos,WhichFont wf, uin
   if (cursor.line > (int)lastLine()) cursor.line = lastLine();
   TextLine::Ptr textLine = buffer->line(cursor.line);
   len = textLine->length();
-
+  
   x = oldX = 0;
   int z = startCol;
   while (x < xPos && (!wrapCursor || z < len)) {
@@ -2935,7 +2944,7 @@ uint KateDocument::textWidth( KateTextCursor &cursor, int xPos,WhichFont wf, uin
       width = a->width(fs, textLine->getChar(z));
     else
       width = a->width(fs, QChar (' '));
-
+    
     x += width;
 
     if (textLine->getChar(z) == QChar('\t'))
