@@ -24,15 +24,15 @@ Send suggestions, comments, etc. to Frederik Fouvry
 			    -- DocBook --
 
 PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
-       "kde.dtd"
+       "dtd/kde.dtd"
 PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
-       "kde-next.dtd"
+       "dtd/kde-next.dtd"
 PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
-       "kde-rdbhier2.elements"
+       "dtd/kde-rdbhier2.elements"
 PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
-       "kde-rdbpool.elements"
+       "dtd/kde-rdbpool.elements"
 PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
-       "kde-genent.entities"
+       "dtd/kde-genent.entities"
 
 		  -- DocBook Modular Style Sheets --
 
@@ -44,9 +44,9 @@ PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN"
 		      -- KDE General Entities --
 
 PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
-       "kde-prologue.entities"
+       "dtd/kde-prologue.entities"
 PUBLIC "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"
-       "fdl-notice.entities"  -- is currently installed at top level dir by the Makefiles. Maybe should move in an "entities/" directory? --
+       "dtd/fdl-notice.entities"
 
 
 		     -- Various external files --
