@@ -15,7 +15,7 @@ Appendix A: Currently supported properties
 Non-DOM properties:
 
 window.status, alert(), confirm(), open()
-navigator.appCodeName, appName, appVersion, userAgent
+navigator.appCodeName, appName, appVersion, userAgent, vendor, product
 Image.src
 
 DOM Bindings:
