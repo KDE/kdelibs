@@ -392,13 +392,13 @@ void KWizard::resizeEvent(QResizeEvent *)
     {
       str = pages->at(pwiz->current+1)->title.data();
       str += " >>";
-      pwiz->next->setText(str.data());
+      pwiz->next->setText(str);
     }
     if(pwiz->current > 0)
     {
       str = "<< ";
       str += pages->at(pwiz->current-1)->title.data();
-      pwiz->previous->setText(str.data());
+      pwiz->previous->setText(str);
     }
   }
   else
@@ -487,7 +487,7 @@ int KWizard::addPage(KWizardPage *p)
   {
     pwiz->current = 0;
     pwiz->currentwidget = p->w;
-    pwiz->title->setText(p->title.data());
+    pwiz->title->setText(p->title);
     pwiz->title->setEnabled(p->enabled);
     pwiz->currentwidget->setEnabled(p->enabled);
     pwiz->pagina->setEnabled(p->enabled);
@@ -496,7 +496,7 @@ int KWizard::addPage(KWizardPage *p)
 
   p->id = pwiz->numpages;
   pwiz->numpages++;
-  pwiz->menu->insertItem(p->title.data(), p->id);
+  pwiz->menu->insertItem(p->title, p->id);
   pwiz->menu->setItemEnabled(p->id, p->enabled);
   //debug("inserted menuitem");
   pages->append(p);
@@ -521,7 +521,7 @@ int KWizard::addPage(KWizardPage *p)
   //debug("enabled buttons");
   QString strpagina = i18n("Page %1 of %2").arg(pwiz->current+1).arg(pwiz->numpages);
   if(pwiz->numpages > 1)
-    pwiz->pagina->setText(strpagina.data());
+    pwiz->pagina->setText(strpagina);
   else
     pwiz->pagina->setText("");
   //debug("pagina");
@@ -665,13 +665,13 @@ void KWizard::gotoPage(int p)
 
   pwiz->current = p;
 
-  QString strpagina = i18n("Page %d of %d").arg(pwiz->current+1).arg(pwiz->numpages);
+  QString strpagina = i18n("Page %1 of %2").arg(pwiz->current+1).arg(pwiz->numpages);
   if(pwiz->numpages > 1)
-    pwiz->pagina->setText(strpagina.data());
+    pwiz->pagina->setText(strpagina);
   else
     pwiz->pagina->setText("");
 
-  pwiz->title->setText(pages->at(pwiz->current)->title.data());
+  pwiz->title->setText(pages->at(pwiz->current)->title);
   pwiz->currentwidget->hide();
   pwiz->currentwidget = pages->at(pwiz->current)->w;
   pwiz->title->setEnabled(pages->at(pwiz->current)->enabled);
