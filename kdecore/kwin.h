@@ -181,6 +181,25 @@ public:
      */
     static QPixmap icon( WId win, int width = -1, int height = -1, bool scale = false );
 
+    /**
+     * Masks specifying from which sources to read an icon. They are tried from the best
+     * until an icon is found.
+     * @li NETWM from property from the window manager specification
+     * @li WMHints from WMHints property
+     * @li ClassHint load icon after getting name from the classhint
+     * @li XApp load the standard X icon (last fallback)
+     */
+    enum IconSource { NETWM = 1, WMHints = 2, ClassHint = 4, XApp = 8 };
+    /**
+     * @overload
+     *
+     * Overloaded variant that allows specifying from which sources the icon should be read.
+     * You should usually prefer the simpler variant which tries all possibilities to get
+     * an icon.
+     *
+     * @param icon OR-ed flags from the @ref IconSource enum
+     */
+    static QPixmap icon( WId win, int width, int height, bool scale, int flags );
 
     /**
      * Sets an @p icon and a  @p miniIcon on window @p win

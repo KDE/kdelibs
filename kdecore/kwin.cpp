@@ -295,93 +295,107 @@ KWin::Info KWin::info( WId win )
 
 QPixmap KWin::icon( WId win, int width, int height, bool scale )
 {
+    return icon( win, width, height, scale, NETWM | WMHints | ClassHint | XApp );
+}
+
+
+QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
+{
     QPixmap result;
-    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMIcon );
-    NETIcon ni = info.icon( width, height );
-    if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
-	QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
-	img.setAlphaBuffer( TRUE );
-	if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) && !img.isNull() )
-	    img = img.smoothScale( width, height );
-	if ( !img.isNull() )
-	    result.convertFromImage( img );
-	return result;
+    if( flags & NETWM ) {
+        NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMIcon );
+        NETIcon ni = info.icon( width, height );
+        if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
+    	    QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
+	    img.setAlphaBuffer( TRUE );
+	    if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) && !img.isNull() )
+	        img = img.smoothScale( width, height );
+	    if ( !img.isNull() )
+	        result.convertFromImage( img );
+	    return result;
+        }
     }
 
-    Pixmap p = None;
-    Pixmap p_mask = None;
+    if( flags & WMHints ) {
+        Pixmap p = None;
+        Pixmap p_mask = None;
 
-    XWMHints *hints = XGetWMHints(qt_xdisplay(), win );
-    if (hints && (hints->flags & IconPixmapHint)){
-	p = hints->icon_pixmap;
-    }
-    if (hints && (hints->flags & IconMaskHint)){
-	p_mask = hints->icon_mask;
-    }
-    if (hints)
-	XFree((char*)hints);
+        XWMHints *hints = XGetWMHints(qt_xdisplay(), win );
+        if (hints && (hints->flags & IconPixmapHint)){
+    	    p = hints->icon_pixmap;
+        }
+        if (hints && (hints->flags & IconMaskHint)){
+	    p_mask = hints->icon_mask;
+        }
+        if (hints)
+	    XFree((char*)hints);
 
-    if (p != None){
-	Window root;
-	int x, y;
-	unsigned int w = 0;
-	unsigned int h = 0;
-	unsigned int border_w, depth;
-	XGetGeometry(qt_xdisplay(), p, &root,
-		     &x, &y, &w, &h, &border_w, &depth);
-	if (w > 0 && h > 0){
-	    QPixmap pm(w, h, depth);
-	    // Always detach before doing something behind QPixmap's back.
-	    pm.detach();
-	    XCopyArea(qt_xdisplay(), p, pm.handle(),
-		      qt_xget_temp_gc(qt_xscreen(), depth==1),
-		      0, 0, w, h, 0, 0);
-	    if (p_mask != None){
-		QBitmap bm(w, h);
-		XCopyArea(qt_xdisplay(), p_mask, bm.handle(),
-			  qt_xget_temp_gc(qt_xscreen(), true),
-			  0, 0, w, h, 0, 0);
-		pm.setMask(bm);
+        if (p != None){
+	    Window root;
+	    int x, y;
+	    unsigned int w = 0;
+	    unsigned int h = 0;
+            unsigned int border_w, depth;
+	    XGetGeometry(qt_xdisplay(), p, &root,
+		         &x, &y, &w, &h, &border_w, &depth);
+	    if (w > 0 && h > 0){
+	        QPixmap pm(w, h, depth);
+	        // Always detach before doing something behind QPixmap's back.
+	        pm.detach();
+	        XCopyArea(qt_xdisplay(), p, pm.handle(),
+		          qt_xget_temp_gc(qt_xscreen(), depth==1),
+		          0, 0, w, h, 0, 0);
+	        if (p_mask != None){
+	    	    QBitmap bm(w, h);
+		    XCopyArea(qt_xdisplay(), p_mask, bm.handle(),
+			      qt_xget_temp_gc(qt_xscreen(), true),
+			      0, 0, w, h, 0, 0);
+		    pm.setMask(bm);
+	        }
+	        if ( scale && width > 0 && height > 0 && !pm.isNull() &&
+		     ( (int) w != width || (int) h != height) ){
+		    result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+	        } else {
+		    result = pm;
+	        }
 	    }
-	    if ( scale && width > 0 && height > 0 && !pm.isNull() &&
-		 ( (int) w != width || (int) h != height) ){
-		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
-	    } else {
-		result = pm;
-	    }
-	}
+        }
     }
 
-    // Try to load the icon from the classhint if the app didn't specify
-    // its own:
-    if( result.isNull() ) {
-	int iconWidth;
+    // Since width can be any arbitrary size, but the icons cannot,
+    // take the nearest value for best results (ignoring 22 pixel
+    // icons as they don't exist for apps):
+    int iconWidth;
+    if( width < 24 )
+        iconWidth = 16;
+    else if( width < 40 )
+        iconWidth = 32;
+    else
+        iconWidth = 48;
 
-	    // Since width can be any arbitrary size, but the icons cannot,
-	    // take the nearest value for best results (ignoring 22 pixel
-	    // icons as they don't exist for apps):
-	if( width < 24 )
-	    iconWidth = 16;
-	else if( width < 40 )
-	    iconWidth = 32;
-	else
-	    iconWidth = 48;
+    if( flags & ClassHint ) {
+        // Try to load the icon from the classhint if the app didn't specify
+        // its own:
+        if( result.isNull() ) {
 
-	XClassHint	hint;
-	if( XGetClassHint( qt_xdisplay(), win, &hint ) ) {
-	    QString className = hint.res_class;
+	    XClassHint	hint;
+	    if( XGetClassHint( qt_xdisplay(), win, &hint ) ) {
+	        QString className = hint.res_class;
 
-	    QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.lower(), KIcon::Small, iconWidth,
-								      KIcon::DefaultState, 0, true );
-	    if( scale && !pm.isNull() )
-		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
-	    else
-		result = pm;
+	        QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.lower(), KIcon::Small, iconWidth,
+								          KIcon::DefaultState, 0, true );
+	        if( scale && !pm.isNull() )
+		    result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+	        else
+		    result = pm;
 
-	    XFree( hint.res_name );
-	    XFree( hint.res_class );
-	}
+	        XFree( hint.res_name );
+	        XFree( hint.res_class );
+	    }
+        }
+    }
 
+    if( flags & XApp ) {
 	// If the icon is still a null pixmap, load the 'xapp' icon
 	// as a last resort:
 	if ( result.isNull() ) {
