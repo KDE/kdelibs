@@ -127,9 +127,9 @@ extern "C" {
  *         to handle multiple arguments.
  */
 
-#ifndef __GNUC__
-error you need gcc for this stuff to work properly
-#endif
+  // #ifndef __GNUC__
+  // error you need gcc for this stuff to work properly
+  // #endif
 
 #if L_LEVEL == 2 /* always log the message */
 #define LGHP(g,h,p,f...) \
