@@ -1327,6 +1327,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   KURL ref(url);
   ref.setRef(QString::null);
+  ref.setUser(QString::null);
+  ref.setPass(QString::null);
   d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : QString::fromLatin1( "" );
 
   m_url = url;
