@@ -44,7 +44,7 @@ public class KJASAppletStub extends Frame
                            String _windowName, KJASAppletClassLoader _loader )
     {
         super( _windowName );
-               
+        
         context    = _context;
         appletID   = _appletID;
         codeBase   = _codeBase;
@@ -69,6 +69,7 @@ public class KJASAppletStub extends Frame
         // applet is not embedded but shown in a separate window.
         // think of konqueror running under fvwm or gnome.
         // than, the user should have the ability to close the window.
+        
         addWindowListener
         (
             new WindowAdapter() {
@@ -77,6 +78,7 @@ public class KJASAppletStub extends Frame
                 }
             }
         );
+        
     }
 
     /*************************************************************************
@@ -113,7 +115,6 @@ public class KJASAppletStub extends Frame
                 if( appletClass == null ) {
                     Main.info( "Could not load applet class " + className);
                     panel.showFailed();
-                    // panel.setMessage("Applet Failed");
                     return;
                 }                
                 try {
@@ -150,11 +151,9 @@ public class KJASAppletStub extends Frame
                 } catch (Error e) {
                     Main.info("Error " + e.toString() + " during applet initialization"); 
                     e.printStackTrace();
-                    panel.showFailed();
                     return;
                 }
                 loader.removeStatusListener(panel);
-                panel.hideImage();
                 app.setVisible(true);
                 Main.debug("Applet " + appletName + " id=" + appletID + " initialized.");
                 
@@ -367,16 +366,18 @@ public class KJASAppletStub extends Frame
         void showFailed() {
             URL url = getClass().getClassLoader().getResource("images/brokenbean.gif");
             img = getToolkit().createImage(url);
+            msg = "Applet Failed.";
             repaint();
         }
         
-        void hideImage() {
-            img = null;
-            msg = null;
+        void showFailed(String message) {
+            showFailed();
+            showStatus(message);
         }
-
+        
         public void stopAnimation() {
             img = null;
+            msg = null;
         }
     }
     
