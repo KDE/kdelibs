@@ -859,6 +859,13 @@ void KDirWatchPrivate::slotRescan()
 {
   EntryMap::Iterator it;
 
+  // People can do very long things in the slot connected to dirty(),
+  // like showing a message box. We don't want to keep polling during
+  // that time, otherwise the value of 'delayRemove' will be reset.
+  bool timerRunning = timer->isActive();
+  if ( timerRunning )
+    timer->stop();
+
   // We delay deletions of entries this way.
   // removeDir(), when called in slotDirty(), can cause a crash otherwise
   delayRemove = true;
@@ -929,6 +936,10 @@ void KDirWatchPrivate::slotRescan()
   for(e=removeList.first();e;e=removeList.next())
     removeEntry(0, e->path, 0);
   removeList.clear();
+
+  if ( timerRunning )
+    timer->start(freq);
+
 }
 
 #ifdef HAVE_FAM
@@ -1039,7 +1050,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
             sub_entry->m_status = Normal;
             if (!useFAM(sub_entry))
               useStat(sub_entry);
-        
+
             emitEvent(sub_entry, Created);
           }
           else emitEvent(e, Created, QFile::decodeName(fe->filename));
