@@ -215,7 +215,7 @@ void KCompletionBox::show()
     }
     resize( sizeHint() );
 
-    // we shouldn't need to call this, but without this, the scrollbars
+    // ### we shouldn't need to call this, but without this, the scrollbars
     // are pretty b0rked.
     triggerUpdate( true );
     
