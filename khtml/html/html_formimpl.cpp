@@ -1240,6 +1240,8 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         if(m_type == RESET)
             m_form->prepareReset();
         else {
+            if ( ownerDocument() )
+                ownerDocument()->setFocusNode( this );
             m_activeSubmit = true;
             bool ret = m_form->prepareSubmit();
             m_activeSubmit = false; // in case we were canceled

@@ -96,6 +96,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         QString utarget;
         QString url;
 
+        if ( ownerDocument() )
+            ownerDocument()->setFocusNode( this );
+
         if ( href )
             url = QConstString( href->s, href->l ).string();
 
