@@ -410,7 +410,12 @@ if eval "test \"`echo $ac_cv_lib_jpeg`\" = yes"; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED(HAVE_LIBJPEG)
 else
-  AC_MSG_ERROR(You need jpeglib6a. Please install the kdesupport package)
+  AC_MSG_ERROR([
+You need jpeglib6a. Please install the kdesupport package.
+If you have already installed kdesupport, you may have an
+old libjpeg somewhere. 
+In this case copy $KDEDIR/lib/libjpeg* to /usr/lib.
+])
 fi
 ])
 
