@@ -97,9 +97,8 @@ KSSLCertificateCache::KSSLCertificateCache() {
   loadDefaultPolicies();
 }
 
-
 KSSLCertificateCache::~KSSLCertificateCache() {
-  // FIXME: empty the qlist.
+  saveToDisk();
   clearList();
 
   delete d->cfg;
@@ -107,25 +106,36 @@ KSSLCertificateCache::~KSSLCertificateCache() {
 }
 
 
+void KSSLCertificateCache::saveToDisk() {
+// FIXME: save permapolicies to disk.
+}
+
+
 void KSSLCertificateCache::clearList() {
   KSSLCNode *node;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
-    
+    d->certList.remove(node);
+    delete node;
   }  
 }
 
 
 void KSSLCertificateCache::loadDefaultPolicies() {
-
+  // FIXME: finish this
 }
 
 
 void KSSLCertificateCache::addCertificate(KSSLCertificate& cert, 
                        KSSLCertificatePolicy policy, bool permanent) {
-  if (seenCertificate(cert)) {
-    // FIXME - update the record to change the policy/permanent flag
-    return;
+  KSSLCNode *node;
+
+  for (node = d->certList.first(); node; node = d->certList.next()) {
+    if (cert == *(node->cert)) {
+      node->policy = policy;
+      node->permanent = permanent;
+      return;
+    }
   }
 
   KSSLCNode *n = new KSSLCNode;
@@ -140,7 +150,11 @@ KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(QString& cn) {
   KSSLCNode *node;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
-    // If the CN matches, return the policy
+    if (node->cert->getSubject() == cn) {
+      d->certList.remove(node);
+      d->certList.prepend(node);
+      return node->policy;
+    }
   }
   return Unknown;
 }
@@ -150,13 +164,26 @@ KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCertificate(KSSLCertifica
   KSSLCNode *node;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
-    if (cert == *(node->cert)) return node->policy;
+    if (cert == *(node->cert)) {
+      d->certList.remove(node);
+      d->certList.prepend(node);
+      return node->policy;
+    }
   }
   return Unknown;
 }
 
 
 bool KSSLCertificateCache::seenCN(QString& cn) {
+  KSSLCNode *node;
+
+  for (node = d->certList.first(); node; node = d->certList.next()) {
+    if (node->cert->getSubject() == cn) {
+      d->certList.remove(node);
+      d->certList.prepend(node);
+      return true;
+    }
+  }
   return false;
 }
 
@@ -165,19 +192,43 @@ bool KSSLCertificateCache::seenCertificate(KSSLCertificate& cert) {
   KSSLCNode *node;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
-    if (cert == *(node->cert)) return true;
+    if (cert == *(node->cert)) {
+      d->certList.remove(node);
+      d->certList.prepend(node);
+      return true;
+    }
   }
   return false;
 }
 
 
 bool KSSLCertificateCache::removeByCN(QString& cn) {
-  return false;
+  KSSLCNode *node;
+  bool gotOne = false;
+
+  for (node = d->certList.first(); node; node = d->certList.next()) {
+    if (node->cert->getSubject() == cn) {
+      d->certList.remove(node);
+      delete node;
+      gotOne = true;
+    }
+  }
+  return gotOne;
 }
 
 
 bool KSSLCertificateCache::removeByCertificate(KSSLCertificate& cert) {
-  return false;
+  KSSLCNode *node;
+  bool gotOne = false;
+
+  for (node = d->certList.first(); node; node = d->certList.next()) {
+    if (cert == *(node->cert)) {
+      d->certList.remove(node);
+      delete node;
+      gotOne = true;
+    }
+  }
+  return gotOne;
 }
 
 

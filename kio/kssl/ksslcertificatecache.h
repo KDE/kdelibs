@@ -67,6 +67,7 @@ private:
   KSSLCertificateCachePrivate *d;
 
   void loadDefaultPolicies();
+  void saveToDisk();
   void clearList();
 
 };
