@@ -63,6 +63,7 @@ extern "C" {
 #include <kdialog.h>
 #include <kdirsize.h>
 #include <kdirwatch.h>
+#include <kdirnotify_stub.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kicondialog.h>
@@ -989,12 +990,18 @@ void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const KURL &, const KURL & n
 
 void KFilePropsPlugin::postApplyChanges()
 {
+ /*
   // Called after all pages applied their changes
   if (properties->kurl().isLocalFile())
   {
     // Force updates if that file is displayed.
     KDirWatch::self()->setFileDirty( properties->kurl().path() );
   }
+ */
+  KURL::List lst;
+  lst.append(properties->kurl());
+  KDirNotify_stub allDirNotify("*", "KDirNotify*");
+  allDirNotify.FilesChanged( lst );
 }
 
 class KFilePermissionsPropsPlugin::KFilePermissionsPropsPluginPrivate
