@@ -27,9 +27,9 @@
 
 /**
  * This structure is used to store information about a person or developer.
- * It can store the person's name, a task, an email address and a 
- * link to a homepage. This class is intended for use in the 
- * @ref KAboutProgram class, but it can be used elsewhere as well. 
+ * It can store the person's name, a task, an email address and a
+ * link to a homepage. This class is intended for use in the
+ * @ref KAboutProgram class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
 */
 struct KAboutPerson
@@ -43,7 +43,7 @@ struct KAboutPerson
       name = _name;
       task = _task;
       emailAddress = _emailAddress;
-      webAddress = _webAddress; 
+      webAddress = _webAddress;
     }
     /**
      * @internal - don't use. Required by QValueList
@@ -71,10 +71,10 @@ struct KAboutPerson
 /**
  * This class is used to store information about a program. It can store
  * such values a version number, program name, homepage, email address
- * for bug reporting, multiple authors and contributors 
+ * for bug reporting, multiple authors and contributors
  * (using @ref KAboutPerson), license and copyright information.
  *
- * Currently, the values set here are shown by the "About" box 
+ * Currently, the values set here are shown by the "About" box
  * (@see KAboutDialog), used by the bug report dialog (@see KBugReport),
  * and by the help shown on command line (@see KCmdLineArguments).
  *
@@ -97,7 +97,7 @@ class KAboutData
   public:
     /**
      * Constructor.
-     * 
+     *
      * @param programName The program name string. Example : i18n("KEdit")
      *
      * @param version The program version string.
@@ -107,7 +107,7 @@ class KAboutData
      *        use a license not predefined here.
      *
      * @param copyrightStatement A copyright statement, that can look like
-     * this: 
+     * this:
      *        "(c) 1999-2000, Name". The string specified here is not modified
      *        in any manner. The author information from @ref addAuthor is not
      *        used.
@@ -128,16 +128,16 @@ class KAboutData
 		const QString &copyrightStatement = QString::null,
 		const QString &text = QString::null,
 		const QString &homePageAddress = QString::null,
-		const QString &bugsEmailAddress = "http://bugs.kde.org"
+		const QString &bugsEmailAddress = "submit@bugs.kde.org"
 		);
 
     /**
      * Defines an author. You can call this function as many times you
-     * need. Each entry is appended to a list. The person in the first entry 
+     * need. Each entry is appended to a list. The person in the first entry
      * is assumed to be the leader of the project.
-     * 
+     *
      * @param name The developer's name.
-     * 
+     *
      * @param task What the person is resposible for. This text can contain
      *             newlines.
      *
@@ -148,18 +148,18 @@ class KAboutData
      *        is correct, "some.domain" is not.
      *
      */
-    void addAuthor( const QString &name, 
+    void addAuthor( const QString &name,
 		    const QString &task=QString::null,
 		    const QString &emailAddress=QString::null,
 		    const QString &webAddress=QString::null );
 
     /**
-     * Defines a person that deserves credit. You can call this function 
-     * as many times you need. Each entry is appended to a list. 
-     * 
+     * Defines a person that deserves credit. You can call this function
+     * as many times you need. Each entry is appended to a list.
+     *
      * @param name The person's name.
-     * 
-     * @param task What the person has done to deserve the hounor. The 
+     *
+     * @param task What the person has done to deserve the hounor. The
      *        text can contain newlines.
      *
      * @param emailAddress An Email address when the person can be reached.
@@ -169,16 +169,16 @@ class KAboutData
      *        is correct, "some.domain" is not.
      *
      */
-    void addCredit( const QString &name, 
+    void addCredit( const QString &name,
                     const QString &task=QString::null,
 		    const QString &emailAddress=QString::null,
 		    const QString &webAddress=QString::null );
-    
+
     /**
      * Defines a licence text. Normally you should set a
      * value in the constructor which provides a set of standard licenses.
      * If you do so, any text defined with this function is ignored.
-     * 
+     *
      * @param license The license text.
      */
     void setLicenseText( const QString &license );
@@ -233,16 +233,16 @@ class KAboutData
     QString copyrightStatement() const { return( mCopyrightStatement ); }
 
     /**
-     * This function is intended to be used by the KDE libraries to 
-     * verify that certain parameters (program name and version number) 
-     * have been set. If a parameter is missing, a message will be 
+     * This function is intended to be used by the KDE libraries to
+     * verify that certain parameters (program name and version number)
+     * have been set. If a parameter is missing, a message will be
      * printed to stdout.
      */
     //void verify() const;
     // David : I think this depends on where the KAboutData is stored
     // The main issue is to make sure we have an instance of it.
     // With the new constructor, we are assured to have name and version anyway
-  
+
   private:
     QString mProgramName;
     QString mVersion;
