@@ -801,26 +801,64 @@ void B3Style::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
 void B3Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool, QBrush *)
 {
-    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
+    p->setPen(g.mid());
+    p->drawLine(w, y, w, h-1);
+
+    p->setPen(g.light());
+    p->drawLine(w+1, y, w+1, h-2);
+
     if(h > w)
-        qDrawArrow(p, RightArrow, WindowsStyle, false, x+1, y+4, w-4, w-4, g,
+        qDrawArrow(p, RightArrow, WindowsStyle, false, x+3, y+4, w-4, w-4, g,
                    true);
     else
         qDrawArrow(p, DownArrow, WindowsStyle, false, x+4, y+1, h-4, h-4, g,
                    true);
-        
 }
 
 void B3Style::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, QBrush *)
 {
-    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
+    int x2 = x+w-1;
+    int y2 = y+h;
+
+    p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+
+    p->setPen(g.dark());
+    p->drawRect(x, y, w, h);
+
+    p->setPen(g.mid());
+    p->drawRect(x+1, y+1, w-2, h-1);
+
+    p->setPen(g.light());
+    p->drawLine(x+2, y+2,  x+2, y2-2);
+    p->drawLine(x+2, y+2, x2-2, y+2);
+
+    // and a little touch for roundedness
+    p->setPen(g.button());
+    p->drawPoint(x, y);
+    p->drawPoint(x2, y);
 }
 
 void B3Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool)
 {
-    drawKMenuBar(p, x, y, w, h, g, NULL);
+    int x2 = x+w-1;
+    int y2 = y+h;
+
+    p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+
+    p->setPen(g.dark());
+    p->drawLine(x, y, x, y2);
+    p->drawLine(x2, y, x2, y2);
+
+    p->setPen(g.light());
+    p->drawLine(x+1,  y,  x2-1, y);
+    p->drawLine(x+2, y+1, x+2,  y2-1);
+
+    p->setPen(g.mid());
+    p->drawLine(x+1,  y, x+1,  y2);
+    p->drawLine(x2-1, y, x2-1, y2);
+    p->drawLine(x+1, y2-1, x2-1, y2-1);
 }
 
 void B3Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
@@ -839,7 +877,7 @@ void B3Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         int x2 = x+w;
         int y2 = y+h;
 
-        p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Midlight));
 
         p->setPen(g.dark());
         p->drawLine(x+1, y+1, x2-2, y+1);
