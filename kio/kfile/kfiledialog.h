@@ -130,8 +130,8 @@ public:
       * @param startDir This can either be
       *         @li The URL of the directory to start in.
       *         @li QString::null to start in the current working
-      *		    directory, or the last directory where a file has been
-      *		    selected.
+      *             directory, or the last directory where a file has been
+      *             selected.
       *         @li ':&lt;keyword&gt;' to start in the directory last used
       *             by a filedialog in the same application that specified
       *             the same keyword.
@@ -157,6 +157,37 @@ public:
 		QWidget *parent, const char *name,
 		bool modal, QWidget* widget);
 
+      
+    /**
+      * Constructs a file dialog for text files with encoding selection possibility.
+      *
+      * @param startDir This can either be
+      *         @li The URL of the directory to start in.
+      *         @li QString::null to start in the current working
+      *		    directory, or the last directory where a file has been
+      *		    selected.
+      *         @li ':&lt;keyword&gt;' to start in the directory last used
+      *             by a filedialog in the same application that specified
+      *             the same keyword.
+      *         @li '::&lt;keyword&gt;' to start in the directory last used
+      *             by a filedialog in any application that specified the
+      *             same keyword.
+      *
+      * @param encoding The encoding shown in the encoding combo. If it's
+      *		    QString::null, the global default encoding will be shown.
+      *
+      * @param caption The caption of the dialog
+      *
+      * @param type This can either be
+      *		@li Opening (open dialog, the default setting)
+      *		@li Saving 
+      *
+      * @since 3.2
+      */
+    KFileDialog (const QString& startDir = QString::null,
+                    const QString& encoding = QString::null,
+		    const QString& caption = QString::null, int type = Opening, 
+                    QWidget *parent= 0, const char *name="", bool modal = true);
     /**
      * Destructs the file dialog.
      */
@@ -171,6 +202,11 @@ public:
      * @returns The list of selected URLs.
      */
     KURL::List selectedURLs() const;
+    
+    /**
+    * @returns The selected encoding if the constructor with the encoding parameter was used, otherwise QString::null.
+    */
+    QString selectedEncoding() const;
 
     /**
      * @returns the currently shown directory.

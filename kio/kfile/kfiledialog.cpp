@@ -34,6 +34,7 @@
 #include <qlineedit.h>
 #include <qptrlist.h>
 #include <qpixmap.h>
+#include <qtextcodec.h>
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <qwhatsthis.h>
@@ -41,6 +42,7 @@
 #include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>
+#include <kcharsets.h>
 #include <kcmdlineargs.h>
 #include <kcompletionbox.h>
 #include <kconfig.h>
@@ -111,6 +113,7 @@ struct KFileDialogPrivate
     QWidget *mainWidget;
 
     QLabel *locationLabel;
+    KComboBox *encoding;
 
     // @deprecated remove in KDE4
     QLabel *filterLabel;
@@ -170,6 +173,51 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     : KDialogBase( parent, name, modal, QString::null, 0 )
 {
     init( startDir, filter, widget );
+}
+
+KFileDialog::KFileDialog(const QString& startDir, const QString& encoding , 
+			 const QString& caption, int type, QWidget *parent, const char* name, bool modal)
+   : KDialogBase( parent, name, modal, QString::null, 0)			 
+{
+  init( startDir, "all/allfiles text/plain", 0);
+  setCaption( caption );
+  if (type == Opening) {
+    setMode(KFile::Files);
+    setOperationMode(Opening);
+    }
+  else {
+    setMode(KFile::File);
+    setOperationMode(Saving);
+    }
+
+  toolBar()->insertCombo(QStringList(), 33333, false, 0L, 0L, 0L, true);
+  d->encoding = toolBar()->getCombo(33333);
+
+  d->encoding->clear ();
+  QString sEncoding = encoding;
+  if (sEncoding.isEmpty())
+     sEncoding = QString::fromLatin1(KGlobal::locale()->encoding());
+  
+  QStringList encodings (KGlobal::charsets()->availableEncodingNames());
+  int insert = 0;
+  for (uint i=0; i < encodings.count(); i++)
+  {
+    bool found = false;
+    QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encodings[i], found);
+
+    if (found)
+    {
+      d->encoding->insertItem (encodings[i]);
+      if ( (codecForEnc->name() == sEncoding) || (encodings[i] == sEncoding) )
+      {
+        d->encoding->setCurrentItem(insert);
+      }
+
+      insert++;
+    }
+  }
+        
+     
 }
 
 KFileDialog::~KFileDialog()
@@ -791,6 +839,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     initStatic();
     d = new KFileDialogPrivate();
 
+    d->encoding = 0;
     d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
@@ -1402,6 +1451,14 @@ KURL::List KFileDialog::selectedURLs() const
             list.append( d->url );
     }
     return list;
+}
+
+QString KFileDialog::selectedEncoding() const
+{
+  if (d->encoding)
+     return d->encoding->currentText();
+  else
+    return QString::null;     
 }
 
 
