@@ -377,7 +377,8 @@ bool KBuildSycoca::build()
              
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 
-     g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
+     KServiceGroup *entry = g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
+     entry->setLayoutInfo(kdeMenu->layoutList);
      createMenu(QString::null, kdeMenu);
      
      (void) existingResourceDirs();
@@ -428,7 +429,8 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
      }
      g_ctimeInfo->addCTime(directoryFile, timeStamp);
 
-     g_bsgf->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
+     entry = g_bsgf->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
+     entry->setLayoutInfo(subMenu->layoutList);
      createMenu(subName, subMenu);
   }
   if (name.isEmpty())

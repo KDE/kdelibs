@@ -24,6 +24,7 @@
 #include <qdom.h>
 #include <qstringlist.h>
 #include <qptrdict.h>
+#include <qptrlist.h>
 #include <qvaluestack.h>
 
 #include <kservice.h>
@@ -62,6 +63,17 @@ signals:
   void newService(const QString &path, KService **entry);
 
 public:
+  class SubMenu;
+  struct MenuItem 
+  {
+    enum Type { MI_Service, MI_SubMenu, MI_Separator };
+    Type type;
+    union { 
+       KService *service;
+       SubMenu  *submenu;
+    } data;
+  };
+
   class SubMenu {
   public:
      SubMenu() : items(43),isDeleted(false) { }
@@ -73,7 +85,10 @@ public:
      QPtrList<SubMenu> subMenus;
      QDict<KService> items;
      QDict<KService> excludeItems; // Needed when merging due to Move.
+     QDomElement defaultLayoutNode;
+     QDomElement layoutNode;
      bool isDeleted;
+     QStringList layoutList;
   };
 
 public:  
@@ -232,6 +247,7 @@ private:
   void processKDELegacyDirs();
   void processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix);
   void processMenu(QDomElement &docElem, int pass);
+  void layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout);
   void processCondition(QDomElement &docElem, QDict<KService> *items);
 
   void initDirs();

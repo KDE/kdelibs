@@ -71,14 +71,14 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, KService
   entry->addEntry( newEntry );
 }
 
-void
+KServiceGroup *
 KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file, KServiceGroup *entry, bool isDeleted)
 {
   KSycocaEntry::Ptr *ptr = m_entryDict->find(menuName);
   if (ptr)
   {
     kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): menu already exists!" << endl;
-    return;
+    return static_cast<KServiceGroup *>(static_cast<KSycocaEntry *>(*ptr));
   }
 
   // Create new group entry
@@ -112,6 +112,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
            parentEntry->addEntry( entry );
      }
   }
+  return entry;
 }
 
 KServiceGroup *

@@ -8,6 +8,12 @@
 	<KDELegacyDirs/>
 	<DefaultAppDirs/>
 	<DefaultDirectoryDirs/>
+	<DefaultLayout>
+		<Merge type="menus"/>
+		<Merge type="files"/>
+		<Separator/>
+		<Menuname>More</Menuname>
+	</DefaultLayout>
 
 	<Menu>
 		<Name>Unknown</Name>
@@ -207,6 +213,17 @@
 	<Menu>
 		<Name>Office</Name>
 		<Directory>kde-office.directory</Directory>
+		<Layout>
+			<Merge type="menus"/>
+			<Filename>kde-koshell.desktop</Filename>
+			<Separator/>
+			<Filename>kde-kword.desktop</Filename>
+			<Filename>kde-kspread.desktop</Filename>
+			<Filename>kde-kpresenter.desktop</Filename>
+			<Merge type="files"/>
+			<Separator/>
+			<Menuname>More</Menuname>
+		</Layout>
 		<Include>
 			<Category>Office</Category>
 		</Include>

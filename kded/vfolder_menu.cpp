@@ -212,12 +212,20 @@ VFolderMenu::mergeMenu(SubMenu *menu1, SubMenu *menu2, bool reversePriority)
       // Merge menu1 with menu2, menu1 takes precedent
       if (menu1->directoryFile.isEmpty())
          menu1->directoryFile = menu2->directoryFile;
+      if (menu1->defaultLayoutNode.isNull())
+         menu1->defaultLayoutNode = menu2->defaultLayoutNode;
+      if (menu1->layoutNode.isNull())
+         menu1->layoutNode = menu2->layoutNode;
    }
    else
    {
       // Merge menu1 with menu2, menu2 takes precedent
       if (!menu2->directoryFile.isEmpty())
          menu1->directoryFile = menu2->directoryFile;
+      if (!menu2->defaultLayoutNode.isNull())
+         menu1->defaultLayoutNode = menu2->defaultLayoutNode;
+      if (!menu2->layoutNode.isNull())
+         menu1->layoutNode = menu2->layoutNode;
    }
 
    delete menu2;
@@ -476,6 +484,8 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
    QMap<QString,QDomElement> appDirNodes;
    QMap<QString,QDomElement> directoryDirNodes;
    QMap<QString,QDomElement> legacyDirNodes;
+   QDomElement defaultLayoutNode;
+   QDomElement layoutNode;
 
    QDomNode n = docElem.firstChild();
    while( !n.isNull() ) {
@@ -593,6 +603,16 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
       }
       else if( e.tagName() == "Name") {
          name = e.text();
+      }
+      else if( e.tagName() == "DefaultLayout") {
+         if (!defaultLayoutNode.isNull())
+            docElem.removeChild(defaultLayoutNode);
+         defaultLayoutNode = e;
+      }
+      else if( e.tagName() == "Layout") {
+         if (!layoutNode.isNull())
+            docElem.removeChild(layoutNode);
+         layoutNode = e;
       }
       n = n.nextSibling();
    }
@@ -1020,6 +1040,8 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
    bool onlyUnallocated = false;
    bool isDeleted = false;
    bool kdeLegacyDirsDone = false;
+   QDomElement defaultLayoutNode;
+   QDomElement layoutNode;
 
    QDomElement query;
    QDomNode n = docElem.firstChild();
@@ -1054,6 +1076,14 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       else if (e.tagName() == "NotDeleted")
       {
          isDeleted = false;
+      }
+      else if (e.tagName() == "DefaultLayout")
+      {
+         defaultLayoutNode = e;
+      }
+      else if (e.tagName() == "Layout")
+      {
+         layoutNode = e;
       }
       n = n.nextSibling();
    }
@@ -1096,6 +1126,9 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       if (! tmp.isEmpty())
          m_currentMenu->directoryFile = tmp;
       m_currentMenu->isDeleted = isDeleted;
+
+      m_currentMenu->defaultLayoutNode = defaultLayoutNode;
+      m_currentMenu->layoutNode = layoutNode;
    }
    else
    {
@@ -1311,6 +1344,66 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
    m_currentMenu = parentMenu;
 }
 
+static QStringList parseLayoutNode(const QDomElement &docElem)
+{
+   QStringList layout;
+   
+   QDomNode n = docElem.firstChild();
+   while( !n.isNull() ) {
+      QDomElement e = n.toElement(); // try to convert the node to an element.
+      if (e.tagName() == "Separator")
+      {
+         layout.append(":S"); 
+      }
+      else if (e.tagName() == "Filename")
+      {
+         layout.append(e.text());
+      }
+      else if (e.tagName() == "Menuname")
+      {
+         layout.append("/"+e.text());
+      }
+      else if (e.tagName() == "Merge")
+      {
+         QString type = e.attributeNode("type").value();
+         if (type == "files")
+            layout.append(":F");
+         else if (type == "menus")
+            layout.append(":M");
+         else if (type == "all")
+            layout.append(":A");
+      }
+      
+      n = n.nextSibling();
+   }
+   return layout;
+}
+
+void 
+VFolderMenu::layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout)
+{
+   if (!menu->defaultLayoutNode.isNull())
+   {
+      defaultLayout = parseLayoutNode(menu->defaultLayoutNode);
+   }
+   
+   if (menu->layoutNode.isNull())
+   {
+     menu->layoutList = defaultLayout;
+   }
+   else
+   {
+     menu->layoutList = parseLayoutNode(menu->layoutNode);
+     if (menu->layoutList.isEmpty())
+        menu->layoutList = defaultLayout;
+   }
+   
+   for(VFolderMenu::SubMenu *subMenu = menu->subMenus.first(); subMenu; subMenu = menu->subMenus.next())
+   {
+      layoutMenu(subMenu, defaultLayout);
+   }
+}
+
 void
 VFolderMenu::markUsedApplications(VFolderMenu::SubMenu *menu)
 {
@@ -1353,6 +1446,13 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
          markUsedApplications(m_rootMenu);
 
          buildApplicationIndex(true);
+      }
+      if (pass == 2)
+      {
+         QStringList defaultLayout;
+         defaultLayout << ":M"; // Sub-Menus
+         defaultLayout << ":F"; // Individual entries
+         layoutMenu(m_rootMenu, defaultLayout);
       }
    }
    
