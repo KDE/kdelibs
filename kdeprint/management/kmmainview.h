@@ -33,6 +33,7 @@ class QPopupMenu;
 class QTimer;
 class QSplitter;
 class KToolBar;
+class KAction;
 
 class KMMainView : public QWidget
 {
@@ -45,16 +46,12 @@ public:
 	void stopTimer();
 	void setOrientation(int);
 	void setViewType(int);
+	void enableToolbar(bool on = true);
+	KAction* action(const char *name);
 
 public slots:
 	void slotTimer();
-
-protected slots:
-	void slotPrinterSelected(KMPrinter*);
-	void slotShowMenu();
-	void slotHideMenu();
-	void slotChangeView(int);
-	void slotRightButtonClicked(KMPrinter*, const QPoint&);
+	void slotShowPrinterInfos(bool);
 	void slotEnable();
 	void slotDisable();
 	void slotRemove();
@@ -62,13 +59,20 @@ protected slots:
 	void slotAdd();
 	void slotHardDefault();
 	void slotSoftDefault();
-	void slotChangeDirection(int);
 	void slotTest();
 	void slotServerRestart();
 	void slotServerConfigure();
-	void slotToggleToolBar(bool);
 	void slotManagerConfigure();
 	void slotAddSpecial();
+
+protected slots:
+	void slotPrinterSelected(KMPrinter*);
+	void slotShowMenu();
+	void slotHideMenu();
+	void slotChangeView(int);
+	void slotRightButtonClicked(KMPrinter*, const QPoint&);
+	void slotChangeDirection(int);
+	void slotToggleToolBar(bool);
 
 protected:
 	void initActions();

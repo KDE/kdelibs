@@ -11,7 +11,7 @@
 
 <blockquote>
 <h2>
-%1</h2>
+<img SRC="%1" HSPACE=10 align=CENTER>%1</h2>
 </blockquote>
 
 <center><table BORDER WIDTH="75%" NOSAVE >

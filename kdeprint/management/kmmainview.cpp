@@ -107,6 +107,9 @@ void KMMainView::restoreSettings()
 	bool 	view = conf->readBoolEntry("ViewToolBar",true);
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
+	view = conf->readBoolEntry("ViewPrinterInfos",true);
+	slotShowPrinterInfos(view);
+	((KToggleAction*)m_actions->action("view_printerinfos"))->setChecked(view);
 }
 
 void KMMainView::saveSettings()
@@ -116,7 +119,8 @@ void KMMainView::saveSettings()
 	conf->writeEntry("ViewType",(int)m_printerview->viewType());
 	conf->writeEntry("Orientation",(int)m_splitter->orientation());
 	conf->writeEntry("Sizes",m_splitter->sizes());
-	conf->writeEntry("ViewToolBar",m_toolbar->isVisible());
+	conf->writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());
+	conf->writeEntry("ViewPrinterInfos",m_printerpages->isVisible());
 	conf->sync();
 }
 
@@ -153,6 +157,9 @@ void KMMainView::initActions()
 
 	KToggleAction	*tact = new KToggleAction(i18n("View Toolbar"),0,m_actions,"view_toolbar");
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
+	tact = new KToggleAction(i18n("View Printer Informations"),0,m_actions,"view_printerinfos");
+	tact->setChecked(true);
+	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 
 	// add actions to the toolbar
 	m_actions->action("printer_add")->plug(m_toolbar);
@@ -203,8 +210,8 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 
 	// update actions state (only if toolbar enabled, workaround for toolbar
 	// problem).
-	if (m_toolbar->isEnabled())
-	{
+	//if (m_toolbar->isEnabled())
+	//{
 		int 	mask = (m_manager->hasManagement() ? m_manager->printerOperationMask() : 0);
 		bool	sp = !(p && p->isSpecial());
 		m_actions->action("printer_remove")->setEnabled(!sp || ((mask & KMManager::PrinterRemoval) && p && p->isLocal() && !p->isImplicit()));
@@ -214,7 +221,7 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 		m_actions->action("printer_test")->setEnabled((sp && (mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
 		m_actions->action("printer_enable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() == KMPrinter::Stopped));
 		m_actions->action("printer_disable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() != KMPrinter::Stopped));
-	}
+	//}
 }
 
 void KMMainView::slotShowMenu()
@@ -286,6 +293,7 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 	m_actions->action("view_change")->plug(m_pop);
 	m_actions->action("orientation_change")->plug(m_pop);
 	m_actions->action("view_toolbar")->plug(m_pop);
+	m_actions->action("view_printerinfos")->plug(m_pop);
 
 	// pop the menu
 	m_pop->popup(p);
@@ -496,4 +504,29 @@ void KMMainView::slotAddSpecial()
 	}
 	KMTimer::releaseTimer(true);
 }
+
+void KMMainView::slotShowPrinterInfos(bool on)
+{
+	if (on)
+		m_printerpages->show();
+	else
+		m_printerpages->hide();
+}
+
+void KMMainView::enableToolbar(bool on)
+{
+	KToggleAction	*act = (KToggleAction*)m_actions->action("view_toolbar");
+	m_toolbar->setEnabled(on);
+	act->setEnabled(on);
+	if (on && act->isChecked())
+		m_toolbar->show();
+	else
+		m_toolbar->hide();
+}
+
+KAction* KMMainView::action(const char *name)
+{
+	return m_actions->action(name);
+}
+
 #include "kmmainview.moc"

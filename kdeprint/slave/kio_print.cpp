@@ -29,6 +29,7 @@
 #include <kinstance.h>
 #include <kio/global.h>
 #include <kstddirs.h>
+#include <kiconloader.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +40,15 @@
 extern "C"
 {
 	int kdemain(int argc, char **argv);
+}
+
+void addAtom(KIO::UDSEntry& entry, unsigned int ID, long l, const QString& s = QString::null)
+{
+	KIO::UDSAtom	atom;
+	atom.m_uds = ID;
+	atom.m_long = l;
+	atom.m_str = s;
+	entry.append(atom);
 }
 
 int kdemain(int argc, char **argv)
@@ -104,25 +114,12 @@ void KIO_Print::listDir(const KURL& url)
 			}
 
 			KIO::UDSEntry	entry;
-			KIO::UDSAtom	atom;
-			atom.m_uds = KIO::UDS_NAME;
-			atom.m_str = it.current()->name();
-			entry.append(atom);
-			atom.m_uds = KIO::UDS_FILE_TYPE;
-			atom.m_long = S_IFREG;
-			entry.append(atom);
-			atom.m_uds = KIO::UDS_URL;
-			atom.m_str = QString::fromLatin1("print:%1/%2").arg(path).arg(it.current()->name());
-			entry.append(atom);
-			atom.m_uds = KIO::UDS_ACCESS;
-			atom.m_long = S_IRWXO | S_IRWXG | S_IRWXU;
-			entry.append(atom);
-			atom.m_uds = KIO::UDS_MIME_TYPE;
-			atom.m_str = mimeType;
-			entry.append(atom);
-			atom.m_uds = KIO::UDS_GUESSED_MIME_TYPE;
-			atom.m_str = "text/html";
-			entry.append(atom);
+			addAtom(entry, KIO::UDS_NAME, 0, it.current()->name());
+			addAtom(entry, KIO::UDS_FILE_TYPE, S_IFREG);
+			addAtom(entry, KIO::UDS_URL, 0, QString::fromLatin1("print:%1/%2").arg(path).arg(it.current()->name()));
+			addAtom(entry, KIO::UDS_ACCESS, S_IRWXO | S_IRWXG | S_IRWXU);
+			addAtom(entry, KIO::UDS_MIME_TYPE, 0, mimeType);
+			addAtom(entry, KIO::UDS_GUESSED_MIME_TYPE, 0, QString::fromLatin1("text/html"));
 
 			PRINT_DEBUG << "accepting " << it.current()->name() << endl;
 			listEntry(entry, false);
@@ -141,37 +138,33 @@ void KIO_Print::listRoot()
 {
 	PRINT_DEBUG << "listing root entry" << endl;
 
-	KIO::UDSAtom		atom;
 	KIO::UDSEntry	entry;
 
 	// Classes entry
 	createRootEntry(entry);
-	atom.m_uds = KIO::UDS_NAME;
-	atom.m_str = i18n("Classes");
-	entry.append(atom);
-	atom.m_uds = KIO::UDS_URL;
-	atom.m_str = QString::fromLatin1("print:/classes/");
-	entry.append(atom);
+	addAtom(entry, KIO::UDS_NAME, 0, i18n("Classes"));
+	addAtom(entry, KIO::UDS_URL, 0, QString::fromLatin1("print:/classes/"));
 	listEntry(entry, false);
 
 	// Printers entry
 	createRootEntry(entry);
-	atom.m_uds = KIO::UDS_NAME;
-	atom.m_str = i18n("Printers");
-	entry.append(atom);
-	atom.m_uds = KIO::UDS_URL;
-	atom.m_str = QString::fromLatin1("print:/printers/");
-	entry.append(atom);
+	addAtom(entry, KIO::UDS_NAME, 0, i18n("Printers"));
+	addAtom(entry, KIO::UDS_URL, 0, QString::fromLatin1("print:/printers/"));
 	listEntry(entry, false);
 
 	// Specials entry
 	createRootEntry(entry);
-	atom.m_uds = KIO::UDS_NAME;
-	atom.m_str = i18n("Specials");
-	entry.append(atom);
-	atom.m_uds = KIO::UDS_URL;
-	atom.m_str = QString::fromLatin1("print:/specials/");
-	entry.append(atom);
+	addAtom(entry, KIO::UDS_NAME, 0, i18n("Specials"));
+	addAtom(entry, KIO::UDS_URL, 0, QString::fromLatin1("print:/specials/"));
+	listEntry(entry, false);
+
+	// Management entry
+	entry.clear();
+	addAtom(entry, KIO::UDS_FILE_TYPE, S_IFREG);
+	addAtom(entry, KIO::UDS_ACCESS, S_IRUSR | S_IRGRP | S_IROTH);
+	addAtom(entry, KIO::UDS_MIME_TYPE, 0, QString::fromLatin1("print/manager"));
+	addAtom(entry, KIO::UDS_NAME, 0, i18n("Manager"));
+	addAtom(entry, KIO::UDS_URL, 0, QString::fromLatin1("print:/manager"));
 	listEntry(entry, false);
 
 	// finish
@@ -181,21 +174,11 @@ void KIO_Print::listRoot()
 
 void KIO_Print::createRootEntry(KIO::UDSEntry& entry)
 {
-	KIO::UDSAtom	atom;
-
 	entry.clear();
-	atom.m_uds = KIO::UDS_FILE_TYPE;
-	atom.m_long = S_IFDIR;
-	entry.append(atom);
-	atom.m_uds = KIO::UDS_ACCESS;
-	atom.m_long = S_IRWXO | S_IRWXG | S_IRWXU;
-	entry.append(atom);
-	atom.m_uds = KIO::UDS_MIME_TYPE;
-	atom.m_str = QString::fromLatin1("print/folder");
-	entry.append(atom);
-	atom.m_uds = KIO::UDS_GUESSED_MIME_TYPE;
-	atom.m_str = QString::fromLatin1("inode/directory");
-	entry.append(atom);
+	addAtom(entry, KIO::UDS_FILE_TYPE, S_IFDIR);
+	addAtom(entry, KIO::UDS_ACCESS, S_IRWXO | S_IRWXG | S_IRWXU);
+	addAtom(entry, KIO::UDS_MIME_TYPE, 0, QString::fromLatin1("print/folder"));
+	addAtom(entry, KIO::UDS_GUESSED_MIME_TYPE, 0, QString::fromLatin1("inode/directory"));
 }
 
 void KIO_Print::get(const KURL& url)
@@ -203,6 +186,18 @@ void KIO_Print::get(const KURL& url)
 	QStringList	elems = QStringList::split('/', url.path(), false);
 	QString		group(elems[0]), printer(elems[1]);
 	KMPrinter	*mprinter(0);
+
+	if (group == "manager")
+	{
+		PRINT_DEBUG << "opening print management part" << endl;
+
+		mimeType("print/manager");
+		infoMessage(i18n("Current Print System: %1").arg(KMFactory::self()->printSystem()));
+		finished();
+		return;
+	}
+
+	PRINT_DEBUG << "opening " << url.url() << endl;
 
 	KMFactory::self()->manager()->printerList(false);
 	if (elems.count() != 2 || (group != "printers" && group != "classes" && group != "specials")
@@ -235,7 +230,8 @@ void KIO_Print::showPrinterInfo(KMPrinter *printer)
 			return;
 		}
 
-		content = content.arg(printer->name())
+		content = content.arg(QString::fromLatin1("file:")+KGlobal::iconLoader()->iconPath("print_printer", KIcon::Desktop))
+				 .arg(printer->name())
 				 .arg(printer->isRemote() ? i18n("Remote") : i18n("Local"))
 				 .arg(printer->stateString())
 				 .arg(printer->location())
