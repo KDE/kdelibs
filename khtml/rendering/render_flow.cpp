@@ -359,7 +359,10 @@ void RenderFlow::layoutBlockChildren()
         child->layout();
 
 	int chPos = xPos;
-	if(m_style->direction() == LTR) {
+	if( m_style->textAlign() == KONQ_CENTER ) {
+	    kdDebug() << "should align to center" << endl;
+	    chPos += ( width() - child->width() - child->marginLeft() - child->marginRight() )/2;
+	} else if(m_style->direction() == LTR) {
 	    // html blocks flow around floats
 	    if (style()->htmlHacks() && child->style()->flowAroundFloats() )
 		chPos += leftOffset(m_height);

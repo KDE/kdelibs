@@ -193,7 +193,8 @@
 #define CSS_VAL_X_SOFT 183
 #define CSS_VAL_XX_LARGE 184
 #define CSS_VAL_XX_SMALL 185
+#define CSS_VAL_KONQ_CENTER 186
 
-#define CSS_VAL_TOTAL 186
+#define CSS_VAL_TOTAL 187
 #endif
 

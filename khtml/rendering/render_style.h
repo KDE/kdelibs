@@ -155,10 +155,8 @@ enum EPosition {
     STATIC, RELATIVE, ABSOLUTE, FIXED
 };
 
-// CENTER is not part of CSS, but we need it to get <inherited align=center> and the <center>
-// element right
 enum EFloat {
-    FNONE, FLEFT, FRIGHT, FCENTER
+    FNONE, FLEFT, FRIGHT
 };
 
 
@@ -385,7 +383,7 @@ enum EWhiteSpace {
 };
 
 enum ETextAlign{
-    LEFT, RIGHT, CENTER, JUSTIFY
+    LEFT, RIGHT, CENTER, JUSTIFY, KONQ_CENTER
 };
 
 enum EDirection{
@@ -505,7 +503,7 @@ protected:
     EListStyleType _list_style_type : 5 ;
     EListStylePosition _list_style_position :1;
     EVisiblity _visiblity : 2;
-    ETextAlign _text_align : 2;
+    ETextAlign _text_align : 3;
     EDirection _direction : 1;
     EWhiteSpace _white_space : 2;
     int _text_decoration : 4;

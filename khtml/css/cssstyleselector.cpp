@@ -774,11 +774,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             f = FLEFT; break;
         case CSS_VAL_RIGHT:
             f = FRIGHT; break;
-// ### we're not complying 100% to CSS standards here. There is no center value for the
-//     float property. Still it's the easiest way to get <table align=center> and <center>
-//     working as expected
-        case CSS_VAL_CENTER:
-            f = FCENTER; break;
         case CSS_VAL_NONE:
             f = FNONE; break;
         default:
@@ -1739,6 +1734,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 align = CENTER; break;
             case CSS_VAL_JUSTIFY:
                 align = JUSTIFY; break;
+            case CSS_VAL_KONQ_CENTER:
+	align = KONQ_CENTER; break;
             default:
                 return;
             }

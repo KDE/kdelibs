@@ -54,7 +54,6 @@
 			    border-top-color: #666666;
 			    border-bottom-color: #eeeeee;
 			    border-right-color: #eeeeee;
-      	    	    	    text-align: inherit;
 			 }
       TABLE[align="center"] { margin-left: auto; margin-right: auto }
 	/* don't use "TD[align=...] > *". This sould give problems with
@@ -118,8 +117,8 @@
       LI > P          { margin-top: auto; margin-bottom: auto }
       LI > DIV        { margin-top: auto; margin-bottom: auto }
       U, INS          { text-decoration: underline }
-      CENTER          { text-align: center; }
-      CENTER  > *    { margin-left: auto; margin-right: auto; } /* center all children of CENTER */
+	/* special centering to be able to emulate the html4/netscape behaviour */
+      CENTER          { text-align: konq-center;}
 
       /* ### :before is not supported at the moment */
       BR:before       { content: "\n" }
