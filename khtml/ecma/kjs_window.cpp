@@ -682,7 +682,7 @@ void Window::put(const UString &p, const KJSO &v)
     KHTMLPart* p = Window::retrieveActive()->m_part;
     if ( p )
       m_part->scheduleRedirection(0, p->htmlDocument().
-                                  completeURL(str).string().prepend( "target://_self/#" ));
+                                  completeURL(str).string().prepend( "target://_self/?#" ));
   }
   else if (p == "onabort") {
     if (isSafeScript())
@@ -1306,7 +1306,7 @@ void Location::put(const UString &p, const KJSO &v)
       return;
     }
   }
-  m_part->scheduleRedirection(0, url.url().prepend( "target://_self/#" ) );
+  m_part->scheduleRedirection(0, url.url().prepend( "target://_self/?#" ) );
 }
 
 KJSO Location::toPrimitive(Type) const
@@ -1331,10 +1331,10 @@ Completion LocationFunc::tryExecute(const List &args)
   if (part) {
     switch (id) {
     case Replace:
-      part->scheduleRedirection(0, args[0].toString().value().qstring().prepend( "target://_self/#" ));
+      part->scheduleRedirection(0, args[0].toString().value().qstring().prepend( "target://_self/?#" ));
       break;
     case Reload:
-      part->scheduleRedirection(0, part->url().url().prepend( "target://_self/#" ) );
+      part->scheduleRedirection(0, part->url().url().prepend( "target://_self/?#" ) );
       break;
     case ToString:
       KJSO result = location->toString();
