@@ -155,6 +155,12 @@
 20011	KDB (Connection)
 20012	KDB (plugin)
 
+# kafka
+25000	Kafka (kafkapp)
+25001	Kafka (kafkaeditpart)
+25002	Kafka (kafkapluginloader)
+25003	Kafka (kafkaplugins)
+
 # 30001-40000 are for KOffice
 30001	koffice (lib koml)
 30002	koffice (lib store)
