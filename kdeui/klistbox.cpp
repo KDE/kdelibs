@@ -2,6 +2,7 @@
 #include <kglobalsettings.h>
 #include <kcursor.h>
 #include <kapp.h>
+#include <kipc.h>
 
 KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     : QListBox( parent, name, f )
@@ -13,6 +14,7 @@ KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
 	     this, SLOT( slotOnItem( QListBoxItem * ) ) );
     slotSettingsChanged(KApplication::SETTINGS_MOUSE);
     connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+    kapp->addKipcEventMask( KIPC::SettingsChanged );
 }
 
 void KListBox::slotSettingsChanged(int category)

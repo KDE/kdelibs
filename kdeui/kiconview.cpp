@@ -3,6 +3,7 @@
 #include "kiconview.h"
 #include <kglobalsettings.h>
 #include <kapp.h>
+#include <kipc.h>
 #include <kcursor.h>
 
 #include <X11/Xlib.h>
@@ -17,6 +18,7 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
              this, SLOT( slotOnItem( QIconViewItem * ) ) );
     slotSettingsChanged( KApplication::SETTINGS_MOUSE );
     connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+    kapp->addKipcEventMask( KIPC::SettingsChanged );
     m_pCurrentItem = 0L;
 
     m_pAutoSelect = new QTimer( this );
