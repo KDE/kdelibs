@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   check("KURL::protocol()", url1.protocol(), "tar");
   check("KURL::path()", url1.path(), "/");
   check("KURL::hasPath()", url1.hasPath()  ? "yes" : "no", "yes");
-  check("KURL::host()", url1.host(), "");
+  check("KURL::host()", url1.host(), QString::null);
   check("KURL::ref()", url1.ref(), "gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   lst = KURL::split( u1 );
