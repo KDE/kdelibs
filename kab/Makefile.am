@@ -21,3 +21,6 @@ libkab_la_METASOURCES = AUTO
 
 picsdir = $(kde_datadir)/kab/pics
 pics_DATA = 
+
+templatedir = $(kde_datadir)/kab
+template_DATA = template.kab template.config

@@ -56,37 +56,37 @@ extern "C" {
 #ifdef STD_USERFILENAME
 #undef STD_USERFILENAME
 #endif
-#define STD_USERFILENAME "addressbook.kab"
+#define STD_USERFILENAME "kab/addressbook.kab"
+
 #ifdef STD_CONFIGFILENAME
 #undef STD_CONFIGFILENAME
 #endif
-#define STD_CONFIGFILENAME "kab.config"
-#ifdef KAB_LOCALDIR
-#undef KAB_LOCALDIR
-#endif
-/* Change this to another subdirectory of ~/.kde/share/apps in states that treaten
-   user data. */
-#define KAB_LOCALDIR "kab" 
+#define STD_CONFIGFILENAME "kab/kab.config"
+
 #ifdef ENTRY_SECTION
 #undef ENTRY_SECTION
 #endif
 #define ENTRY_SECTION "entries"
+
 #ifdef LOCAL_CONFIG_SECTION // the name of the file-local configuration section
 #undef LOCAL_CONFIG_SECTION
 #endif
 #define LOCAL_CONFIG_SECTION "config"
+
 #ifdef ADDRESS_SUBSECTION // the name of the subsection for each entry
 #undef ADDRESS_SUBSECTION
 #endif
 #define ADDRESS_SUBSECTION "addresses"
+
 #ifdef KAB_TEMPLATEFILE
 #undef KAB_TEMPLATEFILE
 #endif
-#define KAB_TEMPLATEFILE "template.kab"
+#define KAB_TEMPLATEFILE "kab/template.kab"
+
 #ifdef KAB_CONFIGTEMPLATE
 #undef KAB_CONFIGTEMPLATE
 #endif
-#define KAB_CONFIGTEMPLATE "template.config"
+#define KAB_CONFIGTEMPLATE "kab/template.config"
 
 struct QStringLess
   : public binary_function<const QString&, const QString&, bool>
@@ -174,11 +174,12 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 	  SLOT(reloaded(QConfigDB*)));
   connect(config, SIGNAL(fileChanged()), SLOT(configFileChanged()));
   // ----- set style:
-  dir=baseDir();
-  // ----- open or create the configuration file and load it:
-  filename=dir+"/"+STD_CONFIGFILENAME;
-  if(::access(filename.ascii(), F_OK)!=0) // if it does not exist
-    {
+
+  filename = locate( "data", STD_CONFIGFILENAME);
+  if (filename.isEmpty())
+  { 
+     filename = locateLocal( "data", STD_CONFIGFILENAME );
+     // config does not exist yet
       if(createConfigFile()!=NoError)
 	{
 	  KMessageBox::error(this,
@@ -196,12 +197,15 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 	     i18n("kab has created your local configuration file in\n"
 		  "\"%1\"").arg(filename));
 	}
-    }
+  }
   loadConfigFile();
+
   // ----- check and possibly create user standard file:
-  filename=dir+"/"+STD_USERFILENAME;
-  if(::access(filename.ascii(), F_OK)!=0) // if it does not exist
+  filename = locate( "data", STD_USERFILENAME );
+  
+  if(filename.isEmpty()) // if it does not exist
     {
+      filename = locateLocal( "data", STD_USERFILENAME);
       if(createNew(filename)!=NoError) // ...and we cannot create it
 	{
 	  KMessageBox::error(this,
@@ -291,7 +295,6 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 {
   // ----- Remark: Close the file if it could not be loaded!
   // ###########################################################################
-  const QString dir=baseDir();
   ErrorCode rc=NoError;
   QFileInfo newfile, oldfile;
   // -----
@@ -1358,7 +1361,7 @@ AddressBook::createConfigFile()
   const QString ConfigTemplateFile=locate("data", "kab/template.config");
   debug("AddressBook::createConfigFile: config template file is \"%s\".",
 	(const char*)ConfigTemplateFile.utf8());
-  const QString filename=baseDir()+"/"+STD_CONFIGFILENAME;
+  const QString filename= locateLocal( "data", STD_CONFIGFILENAME);
   QConfigDB db;
   // -----
   if(ConfigTemplateFile.isEmpty()
@@ -1406,9 +1409,7 @@ AddressBook::ErrorCode
 AddressBook::loadConfigFile()
 {
   // ###########################################################################
-  QString file;
-  // -----
-  file=baseDir()+"/"+STD_CONFIGFILENAME;
+  QString file = locateLocal( "data", STD_CONFIGFILENAME);
   if(config->setFileName(file, true, true))
     {
       if(config->load())
@@ -1452,54 +1453,7 @@ QString
 AddressBook::getStandardFilename()
 {
   // ###########################################################################
-  QString temp;
-  // -----
-  temp=baseDir();
-  temp+=QString("/")+STD_USERFILENAME;
-  return temp;
-  // ###########################################################################
-}
-
-QString
-AddressBook::baseDir()
-{
-  // ###########################################################################
-  QString dir;
-  // -----
-  // dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, false);
-  dir=KGlobal::dirs()->saveLocation("data", "kab", true);
-  if(dir==QString::null)
-    {
-      KMessageBox::information(this,
-	 i18n("The directory where user specific data for the\n"
-	      "addressbook application is stored does not exist.\n"
-	      "The program will try to create\n         \"")
-	 +dir+"\"\n"+
-	 i18n("and store all local files in this directory."),
-	i18n("First usage"));
-      // ----- create the directory and check success:
-      dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, true);
-      if(dir==QString::null)
-	{
-	  KMessageBox::information(this,
-		i18n("The directory could not be created.\n"
-		  "Probably you do not have used KDE before, so\n"
-		  "you do not have a local \".kde\" directory\n"
-		  "in your home directory. Run the KDE filemanager\n"
-		  "kfm once to automatically create it.\n"
-		  "kab will continue, but no file will be loaded."),
-		i18n("Error creating directory"));
-	  state=PermDenied;
-	  return QString::null;
-	} else { // ----- just for interactivity:
-	  KMessageBox::information(this,
-		i18n("The directory has been created."),
-		i18n("Directory created"));
-	  return dir;
-	}
-    } else {
-      return dir;
-    }
+  return locateLocal( "data", STD_USERFILENAME);
   // ###########################################################################
 }
 

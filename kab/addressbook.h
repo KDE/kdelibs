@@ -520,11 +520,6 @@ protected:
   // void setInteractiveMode(bool state);
   /** Get if the URL labels are interactive. */
   // bool getInteractiveMode();
-  /** Returns the users own kab data directory. Usually ~/.kde/share/apps/kab. */
-  QString baseDir();
-  /** Returns the global data dir of kab (usually $KDEDIR/share/apps/kab). */
-  // QString globalDir(); // replaced by locate, hopefully
-  // ----------------------------------------------------------------------------
 protected slots:
   /** Called when ::data has been cleared or reloaded. */
   void reloaded(QConfigDB*);
