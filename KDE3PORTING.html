@@ -244,7 +244,7 @@ in order to have styles that fully integrate in KDE and Qt applications.
       </ul>
   <li>The following functions in KProtocolManager have been removed:
       <ul>
-<li>setUserAgentList( const QStringList& )
+<li>setUserAgentList( const QStringList&amp; )
 <li>userAgentList();
 <li>setReadTimeout()
 <li>setConnectTimeout( int )
@@ -279,6 +279,11 @@ in order to have styles that fully integrate in KDE and Qt applications.
       one of these signals using the old signature.
   </li>
 </ul>
+
+<H4>KOpenWithHandler / KFileOpenWithHandler</H4>
+Those two classes are deprecated, no need to create a KFileOpenWithHandler anymore.
+The merging of libkio, libksycoca, libkfile and libkssl into a single libkio has
+allowed to fix this dependency problem: KRun can now use the OpenWith dialog directly.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
