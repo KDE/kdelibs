@@ -2564,9 +2564,9 @@ void KHTMLPart::updateActions()
   d->m_paSaveFrame->setEnabled( frames );
 
   if ( frames )
-    d->m_paFind->setText( i18n( "&Find in Frame" ) );
+    d->m_paFind->setText( i18n( "&Find in Frame..." ) );
   else
-    d->m_paFind->setText( i18n( "&Find" ) );
+    d->m_paFind->setText( i18n( "&Find..." ) );
 
   KParts::Part *frame = 0;
 
