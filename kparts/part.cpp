@@ -54,15 +54,20 @@ public:
 };
 };
 
-PartBase::PartBase( QObject *partObj )
+PartBase::PartBase()
 {
   d = new PartBasePrivate; 
-  m_obj = partObj; 
+  m_obj = 0L;
 }
 
 PartBase::~PartBase()
 {
   delete d; 
+}
+
+void PartBase::setObject( QObject *obj )
+{
+  m_obj = obj;
 }
 
 void PartBase::setInstance( KInstance *inst )
@@ -78,11 +83,12 @@ void PartBase::setInstance( KInstance *inst, bool loadPlugins )
 } 
 
 Part::Part( QObject *parent, const char* name )
- : QObject( parent, name ) , PartBase( this )
+ : QObject( parent, name )
 {
   d = new PartPrivate;
   m_widget = 0L;
   m_manager = 0L;
+  PartBase::setObject( this );
 }
 
 Part::~Part()

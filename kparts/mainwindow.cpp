@@ -41,11 +41,12 @@ public:
 };
 
 MainWindow::MainWindow( const char *name, WFlags f )
-  : KTMainWindow( name, f ), PartBase( this )
+  : KTMainWindow( name, f )
 {
   d = new MainWindowPrivate();
   m_factory = new KXMLGUIFactory( this );
   setInstance( KGlobal::instance() );
+  PartBase::setObject( this );
 }
 
 MainWindow::~MainWindow()

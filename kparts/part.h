@@ -28,8 +28,10 @@ class PartBasePrivate;
 class PartBase : virtual public KXMLGUIBase
 {
 public:
-  PartBase( QObject *partObj );
+  PartBase();
   virtual ~PartBase();
+
+  void setObject( QObject *object );
 
 protected:  
   /**
