@@ -1468,7 +1468,7 @@ QString KFileMimeTypeInfo::ItemInfo::string(QVariant value, bool mangle) const
             break;
 
         case QVariant::Size :
-            s = QString("%1x%2").arg(value.toSize().width())
+            s = QString("%1 x %2").arg(value.toSize().width())
                                 .arg(value.toSize().height());
             break;
 
