@@ -63,6 +63,8 @@ Here is an alphabetical list:
 
 * kdeui
     The main collection of misc. user interface classes (widgets).
+    KSpell and related classes are a frontend to ispell for use within a
+    GUI app.
 
 * kdewidgets
     For developers: KDE's custom widgets for Qt Designer.
@@ -98,10 +100,6 @@ Here is an alphabetical list:
 
 * ksmartcard
     Library for smartcard-support.
-
-* kspell
-    KSpell and related classes are a frontend to ispell for use within a
-    GUI app.
 
 * kstyles
     The theme engine lies within. It handles nearly anything relating to
