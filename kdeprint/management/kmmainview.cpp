@@ -59,10 +59,8 @@
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()
 
-extern "C"
+int kdeprint_management_add_printer_wizard( QWidget* parent )
 {
-	int add_printer_wizard(QWidget *parent)
-	{
 		KMWizard	dlg(parent);
 		int		flag(0);
 		if (dlg.exec())
@@ -77,13 +75,6 @@ extern "C"
 				flag = -1;
 		}
 		return flag;
-	}
-
-	bool config_dialog(QWidget *parent)
-	{
-		KMConfigDialog	dlg(parent);
-		return dlg.exec();
-	}
 }
 
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
@@ -561,7 +552,7 @@ void KMMainView::slotAdd()
 	KMTimer::self()->hold();
 
 	int	result(0);
-	if ((result=add_printer_wizard(this)) == -1)
+	if ((result=kdeprint_management_add_printer_wizard(this)) == -1)
 		showErrorMsg(i18n("Unable to create printer."));
 
 	KMTimer::self()->release((result == 1));
