@@ -27,7 +27,7 @@
 #ifndef _KMDI_DEFINES_H_
 #define _KMDI_DEFINES_H_
 
-#include <qglobal.h>
+#include <kdelibs_export.h>
 
 #define KMDI_CHILDFRM_SEPARATOR 2
 #define KMDI_CHILDFRM_BORDER 4
