@@ -62,12 +62,7 @@ void KConfigBase::setGroup( const QString& pGroup )
 {
   if ( pGroup.isNull() )
     mGroup = "<default>";
-  else if (pGroup.find(QString::fromLatin1("Desktop Entry")) != -1) {
-    kdDebug() << "warning, setting Desktop Entry group through KConfig::setGroup() is deprecated." << endl;
-    kdDebug() << "please use KConfig::setDesktopGroup() instead." << endl;
-    abort();
-    setDesktopGroup();
-  } else
+  else
     mGroup = pGroup.utf8();
 }
 
@@ -90,12 +85,7 @@ QString KConfigBase::group() const {
 
 void KConfigBase::setDesktopGroup()
 {
-  // we maintain the first for backwards compatibility with
-  // old .kdelnk files
-  if (hasGroup("KDE Desktop Entry"))
-    mGroup = "KDE Desktop Entry";
-  else
-    mGroup = "Desktop Entry";
+  mGroup = "Desktop Entry";
 }
 
 QString KConfigBase::readEntry( const QString& pKey,

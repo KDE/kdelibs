@@ -260,6 +260,10 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
           aCurrentGroup = QCString(startLine+1, s - startLine - 1);
         }
 
+        // Backwards compatibility
+        if (aCurrentGroup == "KDE Desktop Entry")
+           aCurrentGroup = "Desktop Entry";
+
         if (pWriteBackMap) {
 	    // add the special group key indicator
 	    KEntryKey groupKey(aCurrentGroup, 0);
