@@ -111,8 +111,8 @@ public:
     class StyleBaseImpl : public DomShared
     {
     public:
-	StyleBaseImpl() { m_parent = 0; hasInlinedDecl = false; strictParsing = true; }
-	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; strictParsing = true; }
+	StyleBaseImpl() : DOM::DomShared() { m_parent = 0; hasInlinedDecl = false; strictParsing = true; }
+	StyleBaseImpl(StyleBaseImpl *p) : DOM::DomShared() { m_parent = p; hasInlinedDecl = false; strictParsing = true; }
 
 	virtual ~StyleBaseImpl() {}
 

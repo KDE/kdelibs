@@ -833,6 +833,8 @@ void DocumentImpl::recalcStyle( StyleChange change )
         StyleChange ch = diff( _style, oldStyle );
         if(m_render && ch != NoChange)
             m_render->setStyle(_style);
+	else
+	    delete _style;
         if ( change != Force )
             change = ch;
 

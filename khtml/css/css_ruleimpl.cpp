@@ -244,8 +244,10 @@ CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
 
 CSSMediaRuleImpl::~CSSMediaRuleImpl()
 {
-    if( m_lstMedia )
+    if( m_lstMedia ) {
+	m_lstMedia->setParent( 0 );
         m_lstMedia->deref();
+    }
     m_lstCSSRules->deref();
 }
 

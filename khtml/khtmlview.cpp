@@ -56,6 +56,27 @@ using namespace DOM;
 using namespace khtml;
 class KHTMLToolTip;
 
+#ifndef QT_NO_TOOLTIP
+
+class KHTMLToolTip : public QToolTip
+{
+public:
+    KHTMLToolTip(KHTMLView *view,  KHTMLViewPrivate* vp) : QToolTip(view->viewport())
+    {
+        m_view = view;
+        m_viewprivate = vp;
+    };
+
+protected:
+    virtual void maybeTip(const QPoint &);
+
+private:
+    KHTMLView *m_view;
+    KHTMLViewPrivate* m_viewprivate;
+};
+
+#endif
+
 class KHTMLViewPrivate {
     friend class KHTMLToolTip;
 public:
@@ -70,6 +91,7 @@ public:
 	timerId = 0;
         repaintTimerId = 0;
         complete = false;
+	tooltip = 0;
     }
     ~KHTMLViewPrivate()
     {
@@ -78,6 +100,7 @@ public:
         delete paintBuffer; paintBuffer =0;
         if (underMouse)
 	    underMouse->deref();
+	delete tooltip;
     }
     void reset()
     {
@@ -149,27 +172,10 @@ public:
     bool firstRelayout;
     bool layoutSchedulingEnabled;
     QRect updateRect;
-
+    KHTMLToolTip *tooltip;
 };
 
 #ifndef QT_NO_TOOLTIP
-
-class KHTMLToolTip : public QToolTip
-{
-public:
-    KHTMLToolTip(KHTMLView *view,  KHTMLViewPrivate* vp) : QToolTip(view->viewport())
-    {
-        m_view = view;
-        m_viewprivate = vp;
-    };
-
-protected:
-    virtual void maybeTip(const QPoint &);
-
-private:
-    KHTMLView *m_view;
-    KHTMLViewPrivate* m_viewprivate;
-};
 
 void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
 {
@@ -208,7 +214,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     KImageIO::registerFormats();
 
 #ifndef QT_NO_TOOLTIP
-    ( void ) new KHTMLToolTip( this, d );
+    d->tooltip = new KHTMLToolTip( this, d );
 #endif
 
     init();

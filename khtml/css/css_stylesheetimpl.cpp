@@ -73,7 +73,10 @@ StyleSheetImpl::StyleSheetImpl(StyleBaseImpl *owner, DOMString href)
 
 StyleSheetImpl::~StyleSheetImpl()
 {
-    if(m_media) m_media->deref();
+    if(m_media) {
+	m_media->setParent( 0 );
+	m_media->deref();
+    }
 }
 
 bool StyleSheetImpl::deleteMe()
@@ -121,11 +124,11 @@ MediaListImpl *StyleSheetImpl::media() const
 
 void StyleSheetImpl::setMedia( MediaListImpl *media )
 {
+    if( media )
+	media->ref();
     if( m_media )
-        m_media->deref();
+	m_media->deref();
     m_media = media;
-    if( m_media )
-        m_media->ref();
 }
 
 // -----------------------------------------------------------------------
