@@ -1,12 +1,14 @@
 #include <kuserprofile.h>
 #include <kservice.h>
 #include <kmimetype.h>
+#include <assert.h>
+#include <kstddirs.h>
 
-//#include <kapp.h>
+#include <kapp.h>
 
 main(int argc, char *argv[])
 {
-   // KApplication k(argc,argv); // KMessageBox needs KApp for makeStdCaption
+   KApplication k(argc,argv); // KMessageBox needs KApp for makeStdCaption
 
    debug("Trying to look for text/plain");
    KMimeType * s1 = KMimeType::mimeType("text/plain");
@@ -49,6 +51,20 @@ main(int argc, char *argv[])
    {
      debug((*it).service()->name());
    }
+
+   debug("Trying findByURL for $KDEDIR/bin/kdesktop\n");
+   KMimeType* mf  = KMimeType::findByURL( KStandardDirs::findExe( "kdesktop" ), 0,
+				 true, false );
+   assert( mf );
+   debug(QString("Name is %1").arg(mf->name()));
+   debug(QString("Comment is %1").arg(mf->comment("",false)));
+
+   debug("Trying findByURL for home.png\n");
+   mf  = KMimeType::findByURL( locate( "toolbar", "home.png" ), 0,
+				 true, false );
+   assert( mf );
+   debug(QString("Name is %1").arg(mf->name()));
+   debug(QString("Comment is %1").arg(mf->comment("",false)));
 
    debug("done");
 }

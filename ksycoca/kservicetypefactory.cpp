@@ -122,6 +122,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 
 KMimeTypeList * KServiceTypeFactory::allMimeTypes()
 {
+   kdebug(KDEBUG_INFO, 7011, "KServiceTypeFactory::allMimeTypes()");
    KMimeTypeList * list = new KMimeTypeList;
    // Assume we're NOT building a database
    // Get stream to factory start

@@ -184,7 +184,7 @@ protected:
 };
 
 /**
- * @short mimetype for a folder (inode/directory)
+ * @short Mimetype for a folder (inode/directory)
  * Handles locked folders, for instance.
  */
 class KFolderType : public KMimeType
@@ -268,6 +268,9 @@ protected:
   static bool runMimeType( const QString& _url, KSimpleConfig &cfg );
 };
 
+/**
+ * @short MimeType for any executable, like /bin/ls
+ */
 class KExecMimeType : public KMimeType
 {
   K_SYCOCATYPE( KST_KExecMimeType, KMimeType );

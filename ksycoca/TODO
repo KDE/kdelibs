@@ -1,4 +1,3 @@
-No mimetype installed ? (for KMimeType::check())    (easy)
 matchFileName [without creating the mimetypes]      (difficult)
 Move canossa's koTrader and make it ktrader in libkio 
 (no problem but with the parser, the lex & yacc file, libkio is going to grow again)

@@ -67,7 +67,7 @@ void KMimeType::check()
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
-  if ( KServiceTypeFactory::self()->checkMimeTypes() )
+  if ( !KServiceTypeFactory::self()->checkMimeTypes() )
     KMessageBox::error( 0L, i18n( "No mime types installed!" ) );
 	
   if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
@@ -111,6 +111,7 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
 KMimeType* KMimeType::mimeType( const QString& _name )
 {
+  check();
   KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
@@ -122,6 +123,7 @@ KMimeType* KMimeType::mimeType( const QString& _name )
 
 KMimeTypeList * KMimeType::allMimeTypes()
 {
+  check();
   return KServiceTypeFactory::self()->allMimeTypes();
 }
 
@@ -170,15 +172,15 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( ! path.isNull() )
     {
       // Try to find it out by looking at the filename
-#warning FIXME matchFilename on all mimetypes (has to be fast !)
-      // Another index, with (mask, mimetype offset) ?
-#if 0
-      assert( s_mapMimeTypes );
-      QDictIterator<KMimeType> it( *s_mapMimeTypes );
+
+#warning FIXME Create another index, for file mask matching, with (mask, mimetype offset)
+      //
+      //The current solution works but is slow and memory eating
+      //
+      QListIterator<KMimeType> it( *allMimeTypes() );
       for( ; it.current() != 0L; ++it )
 	if ( it.current()->matchFilename( path.data() ) )
 	  return it.current();
-#endif
       
       // Another filename binding, hardcoded, is .desktop:
       if ( path.right(8) == ".desktop" )

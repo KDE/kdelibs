@@ -120,6 +120,7 @@ KService * KServiceFactory::createService(int offset)
 
 KServiceList * KServiceFactory::allServices()
 {
+   kdebug(KDEBUG_INFO, 7011, "KServiceFactory::allServices()");
    KServiceList * list = new KServiceList;
    // Assume we're NOT building a database
    // Get stream to factory start
