@@ -191,9 +191,10 @@ enum EFloat {
 // Border attributes. Not inherited.
 
 
+// These have been defined in the order of their precedence for border-collapsing. Do
+// not change this order!
 enum EBorderStyle {
-    BNONE, BHIDDEN, DOTTED, DASHED, DOUBLE, SOLID,
-    OUTSET, INSET, GROOVE, RIDGE
+    BNONE, BHIDDEN, INSET, GROOVE, RIDGE, OUTSET, DOTTED, DASHED, SOLID, DOUBLE
 };
 
 class BorderValue
@@ -205,11 +206,45 @@ public:
     unsigned short width : 12;
     EBorderStyle style : 4;
 
+    bool nonZero() const
+    {
+      // rikkus: workaround for gcc 2.95.3
+      return width!=0 && !(style==BNONE);
+    }
+
+    bool isTransparent() const {
+        return color.isValid() && qAlpha(color.rgb()) == 0;
+    }
+
     bool operator==(const BorderValue& o) const
     {
     	return width==o.width && style==o.style && color==o.color;
     }
 
+};
+
+enum EBorderPrecedence { BOFF, BTABLE, BCOLGROUP, BCOL, BROWGROUP, BROW, BCELL };
+
+struct CollapsedBorderValue
+{
+    CollapsedBorderValue() :border(0), precedence(BOFF) {}
+    CollapsedBorderValue(const BorderValue* b, EBorderPrecedence p) :border(b), precedence(p) {}
+
+    int width() const { return border && border->nonZero() ? border->width : 0; }
+    EBorderStyle style() const { return border ? border->style : BHIDDEN; }
+    bool exists() const { return border; }
+    QColor color() const { return border ? border->color : QColor(); }
+    bool isTransparent() const { return border ? border->isTransparent() : true; }
+
+    bool operator==(const CollapsedBorderValue& o) const
+    {
+        if (!border) return !o.border;
+        if (!o.border) return false;
+        return *border == *o.border && precedence == o.precedence;
+    }
+
+    const BorderValue* border;
+    EBorderPrecedence precedence;
 };
 
 class BorderData : public Shared<BorderData>
@@ -677,22 +712,31 @@ public:
     Length  	minHeight() const { return box->min_height; }
     Length  	maxHeight() const { return box->max_height; }
 
+    const BorderValue& borderLeft() const { return surround->border.left; }
+    const BorderValue& borderRight() const { return surround->border.right; }
+    const BorderValue& borderTop() const { return surround->border.top; }
+    const BorderValue& borderBottom() const { return surround->border.bottom; }
+
     unsigned short  borderLeftWidth() const
     { if( surround->border.left.style == BNONE) return 0; return surround->border.left.width; }
     EBorderStyle    borderLeftStyle() const { return surround->border.left.style; }
     const QColor &  borderLeftColor() const { return surround->border.left.color; }
+    bool borderLeftIsTransparent() const { return surround->border.left.isTransparent(); }
     unsigned short  borderRightWidth() const
     { if (surround->border.right.style == BNONE) return 0; return surround->border.right.width; }
     EBorderStyle    borderRightStyle() const {  return surround->border.right.style; }
     const QColor &  	    borderRightColor() const {  return surround->border.right.color; }
+    bool borderRightIsTransparent() const { return surround->border.right.isTransparent(); }
     unsigned short  borderTopWidth() const
     { if(surround->border.top.style == BNONE) return 0; return surround->border.top.width; }
     EBorderStyle    borderTopStyle() const {return surround->border.top.style; }
     const QColor &  borderTopColor() const {  return surround->border.top.color; }
+    bool borderTopIsTransparent() const { return surround->border.top.isTransparent(); }
     unsigned short  borderBottomWidth() const
     { if(surround->border.bottom.style == BNONE) return 0; return surround->border.bottom.width; }
     EBorderStyle    borderBottomStyle() const {  return surround->border.bottom.style; }
     const QColor &  	    borderBottomColor() const {  return surround->border.bottom.color; }
+    bool borderBottomIsTransparent() const { return surround->border.bottom.isTransparent(); }
 
     unsigned short  outlineWidth() const
     { if(background->outline.style == BNONE) return 0; return background->outline.width; }
@@ -936,7 +980,7 @@ public:
     static EClear initialClear() { return CNONE; }
     static EDirection initialDirection() { return LTR; }
     static EDisplay initialDisplay() { return INLINE; }
-    static EEmptyCell initialEmptyCells() { return SHOW; }
+    static EEmptyCell initialEmptyCells() { return HIDE; }
     static EFloat initialFloating() { return FNONE; }
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
     static EListStyleType initialListStyleType() { return DISC; }

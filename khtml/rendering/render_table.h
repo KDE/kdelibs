@@ -89,6 +89,12 @@ public:
 
     Rules getRules() const { return rules; }
 
+    bool collapseBorders() const { return style()->borderCollapse(); }
+    int borderLeft() const;
+    int borderRight() const;
+    int borderTop() const;
+    int borderBottom() const;
+
     const QColor &bgColor() const { return style()->backgroundColor(); }
 
     uint cellPadding() const { return padding; }
@@ -97,6 +103,7 @@ public:
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void paint( PaintInfo&, int tx, int ty);
+    virtual void paintBoxDecorations(PaintInfo&, int _tx, int _ty);
     virtual void layout();
     virtual void calcMinMaxWidth();
     virtual void close();
@@ -165,6 +172,13 @@ public:
 
     virtual RenderObject* removeChildNode(RenderObject* child);
 
+    RenderTableCell* cellAbove(const RenderTableCell* cell) const;
+    RenderTableCell* cellBelow(const RenderTableCell* cell) const;
+    RenderTableCell* cellLeft(const RenderTableCell* cell) const;
+    RenderTableCell* cellRight(const RenderTableCell* cell) const;
+
+    CollapsedBorderValue* currentBorderStyle() { return m_currentBorder; }
+
     RenderTableSection *firstBodySection() const { return firstBody; }
 
 protected:
@@ -180,6 +194,8 @@ protected:
     RenderTableSection *firstBody;
 
     TableLayout *tableLayout;
+
+    CollapsedBorderValue* m_currentBorder;
 
     Frame frame                 : 4;
     Rules rules                 : 4;
@@ -338,12 +354,25 @@ public:
     virtual void setWidth( int width );
     virtual void setStyle( RenderStyle *style );
 
+    int borderLeft() const;
+    int borderRight() const;
+    int borderTop() const;
+    int borderBottom() const;
+
+    CollapsedBorderValue collapsedLeftBorder() const;
+    CollapsedBorderValue collapsedRightBorder() const;
+    CollapsedBorderValue collapsedTopBorder() const;
+    CollapsedBorderValue collapsedBottomBorder() const;
+    virtual void collectBorders(QValueList<CollapsedBorderValue>& borderStyles);
+
     virtual void updateFromElement();
 
     void setCellTopExtra(int p) { _topExtra = p; }
     void setCellBottomExtra(int p) { _bottomExtra = p; }
 
     virtual void paint( PaintInfo& i, int tx, int ty);
+
+    void paintCollapsedBorder(QPainter* p, int x, int y, int w, int h);
 
     virtual void close();
 
@@ -361,6 +390,8 @@ public:
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
+
+    virtual void paintObject(PaintInfo &pI, int tx, int ty);
 
     bool widthChanged() {
 	bool retval = m_widthChanged;

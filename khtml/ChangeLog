@@ -1,3 +1,42 @@
+2004-05-04  Leo Savernik  <l.savernik@aon.at>
+
+	* css/cssparser.cpp: (parseValue) Updated order of border values to
+	accomodate border precedence.
+	Made all colors accept transparent.
+
+	* css/cssstyleselector.cpp: (applyRule) Fixed recognition of transparent
+	colors so that BorderValue::isTransparent returns true for border colors.
+
+	* css/cssvalues.in:  Updated order of border values to accomodate border
+	precedence.
+
+	* rendering/render_form.cpp: (paintBorderMinusLegend) Honor new border
+	precedence.
+
+	* rendering/render_object.cpp: (drawBorder) Inserted forgotten break.
+	(paintBorder) Make border-color: transparent work like in WebCore.
+	Honor new border precedence.
+
+	* rendering/render_object.h: Introduced PaintActionCollapsedTableBorders.
+
+	* rendering/render_style.h: Updated EBorderStyle to accomodate border
+	precedence.
+	(class BorderValue) Merged nonZero and isTransparent to make border
+	drawing code work.
+	Merged lots of stuff needed for border-collapse.
+	Set initial value of empty-cells to hide (to match NN, Moz, IE behaviour).
+
+	* rendering/render_table.cpp: (RenderTable::RenderTable,
+	RenderTable::setStyle) Merged small adaptations for border-collapse.
+	(RenderTable::paint) Merged border-collapse paint code from WebCore.
+	(class RenderTable) Merged new paintBoxDecorations code.
+	(class RenderTableCell) Merged lots of helper classes from WebCore.
+	(RenderTableSection::paint) Fixed cutting off of borders spilling into
+	neighbour cells.
+	(RenderTableCell::paint) Merged paint code from WebCore.
+
+	* rendering/render_table.h: Added prototypes/member variables.
+
 2004-04-18  Leo Savernik  <l.savernik@aon.at>
 
 	* khtml_part.cpp: (extendSelectionTo): Fixed deselection of whole

@@ -29,6 +29,7 @@
 #include <qcolor.h>
 #include <qrect.h>
 #include <assert.h>
+#include <qvaluelist.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -69,7 +70,8 @@ typedef enum {
     PaintActionChildBackgrounds,
     PaintActionFloat,
     PaintActionForeground,
-    PaintActionSelection
+    PaintActionSelection,
+    PaintActionCollapsedTableBorders
 } PaintAction;
 
 typedef enum {
@@ -525,6 +527,9 @@ public:
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, BorderSide s,
                     QColor c, const QColor& textcolor, EBorderStyle style,
                     int adjbw1, int adjbw2, bool invalidisInvert = false);
+
+    // Used by collapsed border tables.
+    virtual void collectBorders(QValueList<CollapsedBorderValue>& borderStyles);
 
     // force a complete repaint
     virtual void repaint(bool immediate = false) { if(m_parent) m_parent->repaint(immediate); }

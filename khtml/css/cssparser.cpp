@@ -551,7 +551,7 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_BORDER_RIGHT_STYLE:   //   Defined as:    none | hidden | dotted | dashed |
     case CSS_PROP_BORDER_BOTTOM_STYLE:  //   solid | double | groove | ridge | inset | outset
     case CSS_PROP_BORDER_LEFT_STYLE:    ////
-        if (id >= CSS_VAL_NONE && id <= CSS_VAL_RIDGE)
+        if (id >= CSS_VAL_NONE && id <= CSS_VAL_DOUBLE)
             valid_primitive = true;
         break;
 
@@ -721,14 +721,15 @@ bool CSSParser::parseValue( int propId, bool important )
             break;
         }
         /* nobreak */
-    case CSS_PROP_COLOR:                // <color> | inherit
-    case CSS_PROP_BORDER_TOP_COLOR:     // <color> | inherit
-    case CSS_PROP_BORDER_RIGHT_COLOR:   // <color> | inherit
-    case CSS_PROP_BORDER_BOTTOM_COLOR:  // <color> | inherit
-    case CSS_PROP_BORDER_LEFT_COLOR:    // <color> | inherit
+    case CSS_PROP_COLOR:                // <color> | transparent | inherit
+    case CSS_PROP_BORDER_TOP_COLOR:     // <color> | transparent | inherit
+    case CSS_PROP_BORDER_RIGHT_COLOR:   // <color> | transparent | inherit
+    case CSS_PROP_BORDER_BOTTOM_COLOR:  // <color> | transparent | inherit
+    case CSS_PROP_BORDER_LEFT_COLOR:    // <color> | transparent | inherit
     case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
         if ( id == CSS_VAL__KHTML_TEXT || id == CSS_VAL_MENU ||
              (id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT ) ||
+             id == CSS_VAL_TRANSPARENT ||
              (id >= CSS_VAL_GREY && id < CSS_VAL__KHTML_TEXT && (nonCSSHint|!strict) ) ) {
             valid_primitive = true;
         } else {
@@ -1027,11 +1028,6 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_BORDER_COLOR:
             // <color>{1,4} | transparent | inherit
     {
-        if ( id == CSS_VAL_TRANSPARENT ) {
-            // set border colors to invalid
-            valid_primitive = true;
-            break;
-        }
         const int properties[4] = { CSS_PROP_BORDER_TOP_COLOR, CSS_PROP_BORDER_RIGHT_COLOR,
                                     CSS_PROP_BORDER_BOTTOM_COLOR, CSS_PROP_BORDER_LEFT_COLOR };
         return parse4Values(properties, important);

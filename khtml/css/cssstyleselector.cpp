@@ -1524,6 +1524,7 @@ static const colorMap cmap[] = {
     { CSS_VAL_WHITE, 0xFFFFFFFF },
     { CSS_VAL_YELLOW, 0xFFFFFF00 },
     { CSS_VAL_INVERT, invertedColor },
+    { CSS_VAL_TRANSPARENT, transparentColor },
     { CSS_VAL_GREY, 0xff808080 },
     { 0, 0 }
 };
@@ -2207,7 +2208,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    if ( ident ) {
 		if ( ident == CSS_VAL__KHTML_TEXT )
 		    col = element->getDocument()->textColor();
-		else if ( ident == CSS_VAL_TRANSPARENT )
+  		// ### should be eliminated
+		else if ( ident == CSS_VAL_TRANSPARENT
+                	&& id != CSS_PROP_BORDER_TOP_COLOR
+                        && id != CSS_PROP_BORDER_RIGHT_COLOR
+      			&& id != CSS_PROP_BORDER_BOTTOM_COLOR
+      			&& id != CSS_PROP_BORDER_LEFT_COLOR )
 		    col = QColor();
 		else
 		    col = colorForCSSValue( ident );
@@ -3023,18 +3029,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             style->setBackgroundYPosition(RenderStyle::initialBackgroundYPosition());
         }
         break;
-    case CSS_PROP_BORDER_COLOR:
-        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_TRANSPARENT)
-        {
-            style->setBorderTopColor(QColor());
-            style->setBorderBottomColor(QColor());
-            style->setBorderLeftColor(QColor());
-            style->setBorderRightColor(QColor());
-            return;
-        }
     case CSS_PROP_BORDER:
     case CSS_PROP_BORDER_STYLE:
     case CSS_PROP_BORDER_WIDTH:
+    case CSS_PROP_BORDER_COLOR:
         if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_COLOR)
         {
              if (isInherit) {
