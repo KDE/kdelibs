@@ -91,6 +91,7 @@ extern "C" {
 #include <ktrader.h>
 #include <kparts/componentfactory.h>
 #include <kmetaprops.h>
+#include <krun.h>
 
 #include "kpropertiesdialog.h"
 
@@ -1819,7 +1820,9 @@ void KExecPropsPlugin::slotBrowseExec()
         return;
     }
 
-    execEdit->setText( f.path() );
+    QString path = f.path();
+    KRun::shellQuote( path );
+    execEdit->setText( path );
 }
 
 class KURLPropsPlugin::KURLPropsPluginPrivate
