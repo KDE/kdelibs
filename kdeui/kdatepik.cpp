@@ -277,6 +277,7 @@ KDatePicker::selectYearClicked()
   picker->resize(picker->sizeHint());
   popup->setMainWidget(picker);
   connect(picker, SIGNAL(closeMe(int)), popup, SLOT(close(int)));
+  picker->setFocus();
   if(popup->exec(selectYear->mapToGlobal(QPoint(0, selectMonth->height()))))
     {
       QDate date;
