@@ -261,7 +261,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 	if (m_proc.normalExit() && m_state != Start && m_status)
 	{
 		// last process went OK. If it was smbclient, then switch to rpcclient
-		if (qstrncmp(m_proc.args()->at(0), "smbclient", 9) == 0)
+		if (qstrncmp(m_proc.args().first(), "smbclient", 9) == 0)
 		{
 			doInstall();
 			return;
