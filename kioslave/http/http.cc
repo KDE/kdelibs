@@ -802,7 +802,7 @@ bool HTTPProtocol::readHeader()
 
 void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
 {
-  // Identy is the same as no encoding
+  // Identity is the same as no encoding
   if (encoding.lower() == "identity") {
     return;
   } else if (encoding.lower() == "chunked") {
