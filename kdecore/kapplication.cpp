@@ -818,7 +818,7 @@ void KApplication::init(bool GUIenabled)
     smw = new QWidget(0,0);
     long data = 1;
     XChangeProperty(qt_xdisplay(), smw->winId(), 
-		    atom_DesktopWindow, XA_WINDOW, 
+		    atom_DesktopWindow, atom_DesktopWindow, 
 		    32, PropModeReplace, (unsigned char *)&data, 1);
   }
 #else
