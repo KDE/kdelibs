@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <qmessagebox.h>
-
 #include <kapp.h>
 #include <klocale.h>
 #include <kurl.h>

@@ -1,7 +1,6 @@
 // $Id$
 
 #include <qtimer.h>
-#include <qmessagebox.h>
 
 #include <kconfig.h>
 #include <kapp.h>
