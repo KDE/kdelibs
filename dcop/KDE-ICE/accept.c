@@ -122,6 +122,7 @@ IceAcceptStatus	*statusRet;
     if ((iceConn->outbuf = iceConn->outbufptr =
 	(char *) malloc (ICE_OUTBUFSIZE)) != NULL)
     {
+	memset(iceConn->outbuf, 0, ICE_OUTBUFSIZE);
 	iceConn->outbufmax = iceConn->outbuf + ICE_OUTBUFSIZE;
     }
     else
