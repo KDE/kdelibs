@@ -1,5 +1,17 @@
 // $Id$
 
+// comment the following line out if you want debug output
+#define NO_DEBUG
+
+#ifdef NO_DEBUG
+#ifdef NDEBUG
+#undef NO_DEBUG
+#else
+#undef NDEBUG
+#define NDEBUG
+#endif
+#endif
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -591,3 +603,8 @@ const KSharedPtr<KService> KServiceProvider::service( const char *mime_type )
 }
 
 #include "krun.moc"
+
+#ifdef NO_DEBUG
+#undef NO_DEBUG
+#undef NDEBUG
+#endif
