@@ -174,8 +174,8 @@ void HTMLBodyElementImpl::init()
         addCSSLength(CSS_PROP_MARGIN_BOTTOM, s);
     }
 
-//     if ( m_bgSet && !m_fgSet )
-//         addCSSProperty(CSS_PROP_COLOR, "black");
+    if ( m_bgSet && !m_fgSet )
+        addCSSProperty(CSS_PROP_COLOR, "#000000");
 
     getDocument()->updateStyleSelector();
 }
@@ -186,9 +186,14 @@ void HTMLBodyElementImpl::attach()
     assert(parentNode());
     assert(parentNode()->renderer());
 
-    m_render = new RenderBody(this);
-    m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-    parentNode()->renderer()->addChild(m_render, nextRenderer());
+    RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
+    style->ref();
+    if (style->display() != NONE) {
+        m_render = new RenderBody(this);
+        m_render->setStyle(style);
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
+    style->deref();
 
     NodeBaseImpl::attach();
 }
