@@ -1,4 +1,4 @@
-INCLUDES=$(all_includes)
+INCLUDES=$(all_includes) $(SSL_INCLUDES)
 
 lib_LTLIBRARIES = libkcertpart.la
 KCERTPARTVERSION=	2.2.0
