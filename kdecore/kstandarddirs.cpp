@@ -53,12 +53,12 @@
 
 template class QDict<QStringList>;
 
-class KStandardDirs::KStandardDirsPrivate 
+class KStandardDirs::KStandardDirsPrivate
 {
 public:
    KStandardDirsPrivate()
-    : restrictionsActive(false), 
-      dataRestrictionActive(false) 
+    : restrictionsActive(false),
+      dataRestrictionActive(false)
    { }
 
    bool restrictionsActive;
@@ -91,10 +91,10 @@ bool KStandardDirs::isRestrictedResource(const char *type, const QString& relPat
 {
    if (!d || !d->restrictionsActive)
       return false;
-      
+
    if (d->restrictions[type])
       return true;
-      
+
    if (strcmp(type, "data")==0)
    {
       applyDataRestrictions(relPath);
@@ -115,7 +115,7 @@ void KStandardDirs::applyDataRestrictions(const QString &relPath) const
       key = "data_"+relPath.left(i);
    else
       key = "data_"+relPath;
-   
+
    if (d && d->restrictions[key.latin1()])
       d->dataRestrictionActive = true;
 }
@@ -528,8 +528,10 @@ KStandardDirs::findAllResources( const char *type,
 static QString realPath(const QString &dirname)
 {
     char realpath_buffer[MAXPATHLEN + 1];
+    memset(realpath_buffer, 0, MAXPATHLEN + 1);
+
     /* If the path contains symlinks, get the real name */
-    if (realpath( QFile::encodeName(dirname), realpath_buffer) != 0) {
+    if (realpath( QFile::encodeName(dirname).data(), realpath_buffer) != 0) {
         // succes, use result from realpath
         int len = strlen(realpath_buffer);
         realpath_buffer[len] = '/';
