@@ -1750,8 +1750,11 @@ bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
         int stx = _tx + xPos();
         int sty = _ty + yPos();
         if (isRoot()) {
-            stx += static_cast<RenderRoot*>(this)->view()->contentsX();
-            sty += static_cast<RenderRoot*>(this)->view()->contentsY();
+	    KHTMLView *view = static_cast<RenderRoot*>(this)->view();
+	    if (view) {
+		stx += view->contentsX();
+		sty += view->contentsY();
+	    }
         }
         FloatingObject* o;
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);

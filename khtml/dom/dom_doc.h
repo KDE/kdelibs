@@ -775,6 +775,103 @@ public:
                                          const DOMString &pseudoElt);
 
     /**
+     * Introduced in DOM Level 3
+     * This method is from the DocumentLS interface
+     *
+     * Indicates whether the method DocumentLS.load() should be synchronous or
+     * asynchronous. When the async attribute is set to true the load method
+     * returns control to the caller before the document has completed loading.
+     * The default value of this attribute is true.
+     */
+    bool async() const;
+
+    /**
+     * Introduced in DOM Level 3
+     * This method is from the DocumentLS interface
+     *
+     * see @ref async
+     *
+     * @exception DOMException
+     * NOT_SUPPORTED_ERR: Raised if the implementation doesn't support the mode
+     * the attribute is being set to.
+     */
+    void setAsync( bool );
+ 
+
+    /**
+     * Introduced in DOM Level 3
+     * This method is from the DocumentLS interface
+     *
+     * If the document is currently being loaded as a result of the method load
+     * being invoked the loading and parsing is immediately aborted. The
+     * possibly partial result of parsing the document is discarded and the
+     * document is cleared. 
+     */
+    void abort();
+ 
+    /**
+     * Introduced in DOM Level 3
+     * This method is from the DocumentLS interface
+     *
+     * Replaces the content of the document with the result of parsing the
+     * given URI. Invoking this method will either block the caller or return
+     * to the caller immediately depending on the value of the async attribute.
+     * Once the document is fully loaded a "load" event (as defined in
+     * [DOM Level 3 Events], except that the Event.targetNode will be the
+     * document, not an element) will be dispatched on the document. If an
+     * error occurs, an implementation dependent "error" event will be
+     * dispatched on the document. If this method is called on a document that
+     * is currently loading, the current load is interrupted and the new URI
+     * load is initiated. 
+     * 
+     * When invoking this method the parameters used in the DOMParser interface
+     * are assumed to have their default values with the exception that the
+     * parameters "entities", "normalize-characters",
+     * "check-character-normalization" are set to "false". 
+     * 
+     * The result of a call to this method is the same the result of a call to
+     * DOMParser.parseWithContext with an input stream referencing the URI that
+     * was passed to this call, the document as the context node, and the
+     * action ACTION_REPLACE_CHILDREN. 
+     * 
+     * @param uri of type DOMString
+     * The URI reference for the XML file to be loaded. If this is a relative
+     * URI, the base URI used by the implementation is implementation dependent.
+     * 
+     * @return If async is set to true load returns true if the document load
+     * was successfully initiated. If an error occurred when initiating the
+     * document load, load returns false.
+     * If async is set to false load returns true if the document was
+     * successfully loaded and parsed. If an error occurred when either loading
+     * or parsing the URI, load returns false.
+     */
+    void load( const DOMString &uri );
+
+    /**
+     * Introduced in DOM Level 3
+     * This method is from the DocumentLS interface
+     *
+     * Replace the content of the document with the result of parsing the input
+     * string, this method is always synchronous. This method always parses
+     * from a DOMString, which means the data is always UTF-16. All other
+     * encoding information is ignored. 
+     * 
+     * The parameters used in the DOMParser interface are assumed to have their
+     * default values when invoking this method. 
+     * 
+     * The result of a call to this method is the same the result of a call to
+     * DOMParser.parseWithContext with an input stream containing the string
+     * passed to this call, the document as the context node, and the action
+     * ACTION_REPLACE_CHILDREN. 
+     * 
+     * @param source A string containing an XML document.
+     * 
+     * @return true if parsing the input string succeeded without errors,
+     * otherwise false.
+     */
+    void loadXML( const DOMString &source );
+
+    /**
      * not part of the DOM
      *
      * completes a given URL

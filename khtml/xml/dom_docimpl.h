@@ -30,6 +30,7 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_traversalimpl.h"
 #include "misc/shared.h"
+#include "misc/loader.h"
 
 #include <qstringlist.h>
 #include <qptrlist.h>
@@ -53,6 +54,8 @@ namespace khtml {
     class DocLoader;
     class CSSStyleSelectorList;
     class RenderArena;
+    class CachedObject;
+    class CachedCSSStyleSheet;
 }
 
 namespace DOM {
@@ -146,7 +149,7 @@ protected:
 /**
  * @internal
  */
-class DocumentImpl : public QObject, public NodeBaseImpl
+class DocumentImpl : public QObject, khtml::CachedObjectClient, public NodeBaseImpl
 {
     Q_OBJECT
 public:
@@ -261,7 +264,7 @@ public:
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
 
-    void open (  );
+    void open ( bool clearEventListeners = true );
     virtual void close (  );
     void write ( const DOMString &text );
     void write ( const QString &text );
@@ -280,8 +283,6 @@ public:
     QString completeURL(const QString& url) const { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
     DOMString canonURL(const DOMString& url) const { return url.isEmpty() ? url : completeURL(url.string()); }
 
-    // from cachedObjectClient
-    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
     void setUserStyleSheet(const QString& sheet);
     QString userStyleSheet() const { return m_usersheet; }
     void setPrintStyleSheet(const QString& sheet) { m_printSheet = sheet; }
@@ -369,6 +370,15 @@ public:
 
     CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
 
+    bool async() const { return m_async; }
+    void setAsync(bool b) { m_async = b; }
+    void abort();
+    void load(const DOMString &uri);
+    void loadXML(const DOMString &source);
+    // from cachedObjectClient
+    void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+    void error(int err, const QString &text);
+
     typedef QMap<QString, ProcessingInstructionImpl*> LocalStyleRefs;
     LocalStyleRefs* localStyleRefs() { return &m_localStyleRefs; }
 
@@ -437,7 +447,6 @@ protected:
     DocumentTypeImpl *m_doctype;
     DOMImplementationImpl *m_implementation;
 
-    StyleSheetImpl *m_sheet;
     QString m_usersheet;
     QString m_printSheet;
     QStringList m_availableSheets;
@@ -470,16 +479,20 @@ protected:
     QPtrList<RegisteredEventListener> m_windowEventListeners;
     QPtrList<NodeImpl> m_maintainsState;
 
-    bool m_loadingSheet;
     bool visuallyOrdered;
     bool m_bParsing;
     bool m_docChanged;
     bool m_styleSelectorDirty;
     bool m_inStyleRecalc;
     bool m_usesDescendantRules;
+    bool m_async;
+    bool m_hadLoadError;
+    bool m_docLoading;
+    bool m_inSyncLoad;
 
     DOMString m_title;
     DOMString m_preferredStylesheetSet;
+    khtml::CachedCSSStyleSheet *m_loadingXMLDoc;
 
     int m_decoderMibEnum;
 

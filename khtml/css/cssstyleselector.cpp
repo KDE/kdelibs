@@ -149,7 +149,8 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     init();
 
     if(!defaultStyle) loadDefaultStyle();
-    m_medium = sheet->doc()->view()->mediaType();
+    KHTMLView *view = sheet->doc()->view();
+    m_medium = view ? view->mediaType() : "screen";
 
     authorStyle = new CSSStyleSelectorList();
     authorStyle->append( sheet, m_medium );
@@ -178,7 +179,8 @@ CSSStyleSelector::~CSSStyleSelector()
 
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
-    m_medium = sheet->doc()->view()->mediaType();
+    KHTMLView *view = sheet->doc()->view();
+    m_medium = view ? view->mediaType() : "screen";
     authorStyle->append( sheet, m_medium );
 }
 
@@ -322,7 +324,7 @@ static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
-    if (!e->getDocument()->haveStylesheetsLoaded()) {
+    if (!e->getDocument()->haveStylesheetsLoaded() || !e->getDocument()->view()) {
         if (!styleNotYetAvailable) {
             styleNotYetAvailable = new RenderStyle();
             styleNotYetAvailable->setDisplay(NONE);

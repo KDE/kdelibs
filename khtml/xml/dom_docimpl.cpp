@@ -339,10 +339,8 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
         m_docLoader = new DocLoader( 0, this );
 
     visuallyOrdered = false;
-    m_loadingSheet = false;
     m_bParsing = false;
     m_docChanged = false;
-    m_sheet = 0;
     m_elemSheet = 0;
     m_tokenizer = 0;
 
@@ -375,17 +373,23 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
     m_usesDescendantRules = false;
+    m_async = true;
+    m_hadLoadError = false;
+    m_docLoading = false;
+    m_inSyncLoad = false;
+    m_loadingXMLDoc = 0;
 }
 
 DocumentImpl::~DocumentImpl()
 {
     assert( !m_render );
 
+    if (m_loadingXMLDoc)
+	m_loadingXMLDoc->deref(this);
     if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
     delete m_tokenizer;
     document->doc = 0;
-    delete m_sheet;
     delete m_styleSelector;
     delete m_docLoader;
     if (m_elemSheet )  m_elemSheet->deref();
@@ -614,7 +618,7 @@ void DocumentImpl::setTitle(DOMString _title)
             titleStr[i] = ' ';
     titleStr = titleStr.stripWhiteSpace();
     titleStr.compose();
-    if ( !view()->part()->parentPart() ) {
+    if ( view() && !view()->part()->parentPart() ) {
 	if (titleStr.isNull() || titleStr.isEmpty()) {
 	    // empty title... set window caption as the URL
 	    KURL url = m_url;
@@ -1138,7 +1142,7 @@ void DocumentImpl::setPaintDevice( QPaintDevice *dev )
     }
 }
 
-void DocumentImpl::open(  )
+void DocumentImpl::open( bool clearEventListeners )
 {
     if (parsing()) return;
 
@@ -1149,9 +1153,11 @@ void DocumentImpl::open(  )
     m_tokenizer = 0;
 
     removeChildren();
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current();)
-        m_windowEventListeners.removeRef(it.current());
+    if (clearEventListeners) {
+	QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+	for (; it.current();)
+	    m_windowEventListeners.removeRef(it.current());
+    }
 
     m_tokenizer = createTokenizer();
     m_decoderMibEnum = 0;
@@ -1197,17 +1203,6 @@ void DocumentImpl::finishParsing (  )
 {
     if(m_tokenizer)
         m_tokenizer->finish();
-}
-
-void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
-{
-//    kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
-    m_sheet = new CSSStyleSheetImpl(this, url);
-    m_sheet->ref();
-    m_sheet->parseString(sheet);
-    m_loadingSheet = false;
-
-    updateStyleSelector();
 }
 
 void DocumentImpl::setUserStyleSheet( const QString& sheet )
@@ -1489,7 +1484,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
 
     KHTMLView *v = getDocument()->view();
 
-    if(strcasecmp(equiv, "refresh") == 0 && v->part()->metaRefreshEnabled())
+    if(strcasecmp(equiv, "refresh") == 0 && v && v->part()->metaRefreshEnabled())
     {
         // get delay and url
         QString str = content.string().stripWhiteSpace();
@@ -1543,7 +1538,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         if (m_docLoader)
             m_docLoader->setExpireDate(expire_date, relative);
     }
-    else if(strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0)
+    else if(v && (strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0))
     {
         QString str = content.string().lower().stripWhiteSpace();
         KURL url = v->part()->url();
@@ -1700,7 +1695,7 @@ void DocumentImpl::recalcStyleSelector()
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     StyleSheetImpl* altsheet = 0;
-    QString sheetUsed = view()->part()->d->m_sheetUsed;
+    QString sheetUsed = view() ? view()->part()->d->m_sheetUsed : QString();
     NodeImpl *n;
     for (;;) {
         m_availableSheets.clear();
@@ -1750,7 +1745,7 @@ void DocumentImpl::recalcStyleSelector()
                         if (!title.isEmpty() &&
                             ( (!l->isAlternate() && sheetUsed.isEmpty()) ||
                               m_preferredStylesheetSet == title))
-                            sheetUsed = view()->part()->d->m_sheetUsed = title;
+                            sheetUsed = view() ? view()->part()->d->m_sheetUsed = title : QString();
                     }
                 }
                 else {
@@ -1761,7 +1756,7 @@ void DocumentImpl::recalcStyleSelector()
                         if (sheet) title = s->getAttribute(ATTR_TITLE).string();
                     }
                     if (!title.isEmpty() && sheetUsed.isEmpty())
-                        sheetUsed = view()->part()->d->m_sheetUsed = title;
+                        sheetUsed = view() ? view()->part()->d->m_sheetUsed = title : QString();
                 }
 
                 if ( !title.isEmpty() ) {
@@ -1940,6 +1935,104 @@ CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl* /*elt*/, DO
     return 0; // ###
 }
 
+void DocumentImpl::abort()
+{
+    if (m_inSyncLoad) {
+	m_inSyncLoad = false;
+	kapp->exit_loop();
+    }
+
+    if (m_loadingXMLDoc)
+	m_loadingXMLDoc->deref(this);
+    m_loadingXMLDoc = 0;
+}
+
+void DocumentImpl::load(const DOMString &uri)
+{
+    if (m_inSyncLoad) {
+	m_inSyncLoad = false;
+	kapp->exit_loop();
+    }
+
+    m_hadLoadError = false;
+    if (m_loadingXMLDoc)
+	m_loadingXMLDoc->deref(this);
+
+    // Use the document loader to retrieve the XML file. We use CachedCSSStyleSheet because
+    // this is an easy way to retrieve an arbitrary text file... it is not specific to
+    // stylesheets.
+
+    // ### Note: By loading the XML document this way we do not get the proper decoding
+    // of the data retrieved from the server based on the character set, as happens with
+    // HTML files. Need to look into a way of using the decoder in CachedCSSStyleSheet.
+    m_docLoading = true;
+    m_loadingXMLDoc = m_docLoader->requestStyleSheet(uri.string(),QString(),"text/xml");
+
+    if (!m_loadingXMLDoc) {
+	m_docLoading = false;
+	return;
+    }
+
+    m_loadingXMLDoc->ref(this);
+
+    if (!m_async && m_docLoading) {
+	m_inSyncLoad = true;
+	kapp->enter_loop();
+    }
+}
+
+void DocumentImpl::loadXML(const DOMString &source)
+{
+    open(false);
+    write(source);
+    finishParsing();
+    close();
+    dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+}
+
+void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+{
+    if (!m_hadLoadError) {
+	m_url = url.string();
+	loadXML(sheet);
+    }
+
+    m_docLoading = false;
+    if (m_inSyncLoad) {
+	m_inSyncLoad = false;
+	kapp->exit_loop();
+    }
+
+    assert(m_loadingXMLDoc != 0);
+    m_loadingXMLDoc->deref(this);
+    m_loadingXMLDoc = 0;
+}
+
+void DocumentImpl::error(int err, const QString &text)
+{
+    m_docLoading = false;
+    if (m_inSyncLoad) {
+	m_inSyncLoad = false;
+	kapp->exit_loop();
+    }
+
+    m_hadLoadError = true;
+
+    int exceptioncode = 0;
+    EventImpl *evt = new EventImpl(EventImpl::ERROR_EVENT,false,false);
+    if (err != 0)
+      evt->setMessage(KIO::buildErrorString(err,text));
+    else
+      evt->setMessage(text);
+    evt->ref();
+    dispatchEvent(evt,exceptioncode,true);
+    evt->deref();
+
+    assert(m_loadingXMLDoc != 0);
+    m_loadingXMLDoc->deref(this);
+    m_loadingXMLDoc = 0;
+}
+
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
@@ -1992,7 +2085,7 @@ void DocumentImpl::removeWindowEventListener(int id)
 
 EventListener *DocumentImpl::createHTMLEventListener(QString code, QString name)
 {
-    return view()->part()->createHTMLEventListener(code,name);
+    return view() ? view()->part()->createHTMLEventListener(code,name) : 0;
 }
 
 void DocumentImpl::setDecoderCodec(const QTextCodec *codec)

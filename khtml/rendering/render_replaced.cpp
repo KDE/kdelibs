@@ -218,8 +218,10 @@ void RenderWidget::setQWidget(QWidget *widget)
             else
                 setPos(xPos(), -500000);
         }
-        m_view->setWidgetVisible(this, false);
-	m_view->addChild( m_widget, 0, -500000);
+	if (m_view) {
+	    m_view->setWidgetVisible(this, false);
+	    m_view->addChild( m_widget, 0, -500000);
+	}
     }
 }
 
@@ -427,7 +429,8 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         if (qApp->focusWidget() != m_widget &&
             m_widget->focusPolicy() <= QWidget::StrongFocus)  {
             static_cast<QWheelEvent*>(e)->ignore();
-            QApplication::sendEvent(m_view, e);
+	    if (m_view)
+		QApplication::sendEvent(m_view, e);
             filtered = true;
         }
     break;

@@ -2125,8 +2125,9 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         
         DOM::HTMLDocument doc = element.ownerDocument();
         KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
-        KHTMLSettings::KJSWindowOpenPolicy policy =
-               view->part()->settings()->windowOpenPolicy(view->part()->url().host());
+        KHTMLSettings::KJSWindowOpenPolicy policy = KHTMLSettings::KJSWindowOpenAllow;
+	if (view)
+	    policy = view->part()->settings()->windowOpenPolicy(view->part()->url().host());
 
         bool block = false;
 
@@ -2150,7 +2151,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
             }
           }
 
-          if ( block && policy == KHTMLSettings::KJSWindowOpenAsk ) {
+          if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && view ) {
        
             if ( KMessageBox::questionYesNo(view, form.action().isEmpty() ?
                    i18n( "This site is submitting a form which will open up a new browser "

@@ -26,7 +26,6 @@
 #define HTML_DOCUMENTIMPL_H
 
 #include "xml/dom_docimpl.h"
-#include "misc/loader_client.h"
 
 #include <qmap.h>
 
@@ -44,7 +43,7 @@ namespace DOM {
     class CSSStyleSheetImpl;
     class HTMLMapElementImpl;
 
-class HTMLDocumentImpl : public DOM::DocumentImpl, public khtml::CachedObjectClient
+class HTMLDocumentImpl : public DOM::DocumentImpl
 {
     Q_OBJECT
 public:

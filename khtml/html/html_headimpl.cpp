@@ -86,7 +86,7 @@ void HTMLBaseElementImpl::process()
     if (!inDocument())
 	return;
 
-    if(!m_href.isEmpty())
+    if(!m_href.isEmpty() && getDocument()->view())
 	getDocument()->setBaseURL( KURL( getDocument()->view()->part()->url(), m_href.string() ).url() );
 
     if(!m_target.isEmpty())

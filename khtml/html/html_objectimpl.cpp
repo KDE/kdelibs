@@ -149,7 +149,8 @@ void HTMLObjectBaseElementImpl::liveConnectEvent(const unsigned long, const QStr
 
     kdDebug(6036) << "HTMLObjectBaseElementImpl::liveConnectEvent " << script << endl;
     KHTMLView* w = getDocument()->view();
-    w->part()->executeScript(this, script);
+    if (w)
+	w->part()->executeScript(this, script);
 }
 
 void HTMLObjectBaseElementImpl::detach() {
@@ -220,7 +221,7 @@ void HTMLAppletElementImpl::attach()
     if ( !code.isEmpty() )
         url = KURL( url, code.string() );
 
-    if (w->part()->javaEnabled() &&
+    if (w && w->part()->javaEnabled() &&
         getDocument()->isURLAllowed( url.url() ) &&
         parentNode()->renderer() && 
         _style->display() != NONE) 
@@ -312,7 +313,7 @@ void HTMLEmbedElementImpl::attach()
         RenderStyle* _style = getDocument()->styleSelector()->styleForElement( this );
         _style->ref();
 
-        if (w->part()->pluginsEnabled() && getDocument()->isURLAllowed( url ) &&
+        if (w && w->part()->pluginsEnabled() && getDocument()->isURLAllowed( url ) &&
             parentNode()->id() != ID_OBJECT && _style->display() != NONE ) {
             needWidgetUpdate=false;
             m_render = new (getDocument()->renderArena()) RenderPartObject(this);
@@ -390,7 +391,7 @@ void HTMLObjectElementImpl::attach()
     assert(!m_render);
 
     KHTMLView* w = getDocument()->view();
-    if ( !w->part()->pluginsEnabled() ||
+    if ( !w || !w->part()->pluginsEnabled() ||
          ( url.isEmpty() && classId.isEmpty() && id() != ID_APPLET) ||
          m_renderAlternative || !getDocument()->isURLAllowed( url ) ) {
         // render alternative content

@@ -393,7 +393,7 @@ void HTMLFormElementImpl::submit(  )
     bool ok;
     KHTMLView* view = getDocument()->view();
     QByteArray form_data = formData(ok);
-    if (ok) {
+    if (ok && view) {
         DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
         if(m_post) {
             view->part()->submitForm( "post", url.string(), form_data,
@@ -652,7 +652,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
     {
         // Report focus in/out changes to the browser extension (editable widgets only)
         KHTMLView *view = getDocument()->view();
-        if (evt->id()==EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render && m_render->isWidget()) {
+        if (view && evt->id() == EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render && m_render->isWidget()) {
             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
             QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
             if (ext)
@@ -682,7 +682,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 		QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->widget(), k->qKeyEvent);
 	}
 
-	if (evt->id()==EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render && m_render->isWidget()) {
+	if (view && evt->id() == EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render && m_render->isWidget()) {
 	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
 	    QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
 	    if (ext)
@@ -914,7 +914,7 @@ QString HTMLInputElementImpl::state( )
     case RADIO:
         return QString::fromLatin1(m_checked ? "on" : "off");
     case TEXT:
-        if (autoComplete() && value() != getAttribute(ATTR_VALUE))
+        if (autoComplete() && value() != getAttribute(ATTR_VALUE) && getDocument()->view())
             getDocument()->view()->addFormCompletionItem(name().string(), value().string());
         /* nobreak */
     default:

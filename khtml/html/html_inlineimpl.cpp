@@ -142,8 +142,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::ControlButton;
 	    }
 
-            getDocument()->view()->part()->
-                urlSelected( url, button, state, utarget );
+	    if (getDocument()->view())
+		getDocument()->view()->part()->
+		    urlSelected( url, button, state, utarget );
         }
         evt->setDefaultHandled();
     }

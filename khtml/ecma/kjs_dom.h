@@ -110,8 +110,8 @@ namespace KJS {
            CreateEntityReference, GetElementsByTagName, ImportNode, CreateElementNS,
            CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
            CreateRange, CreateNodeIterator, CreateTreeWalker, DefaultView,
-           CreateEvent, StyleSheets, GetOverrideStyle, PreferredStylesheetSet,
-           SelectedStylesheetSet, ReadyState };
+           CreateEvent, StyleSheets, GetOverrideStyle, Abort, Load, LoadXML,
+           PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async };
   };
 
   class DOMAttr : public DOMNode {

@@ -1827,9 +1827,10 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
         if (layer()) {
             // special case - special objects in root are relative to viewport
-            if (isRoot()) {
-                stx += static_cast<RenderRoot*>(this)->view()->contentsX();
-                sty += static_cast<RenderRoot*>(this)->view()->contentsY();
+	    KHTMLView *view = static_cast<RenderRoot*>(this)->view();
+            if (isRoot() && view) {
+                stx += view->contentsX();
+                sty += view->contentsY();
             }
             for (RenderLayer* l=m_layer->firstChild(); l; l=l->nextSibling()) {
                 if (l->renderer()->isPositioned())

@@ -746,6 +746,9 @@ void DOMAttr::putValueProperty(ExecState *exec, int token, const Value& value, i
   createTreeWalker   DOMDocument::CreateTreeWalker             DontDelete|Function 4
   createEvent        DOMDocument::CreateEvent                  DontDelete|Function 1
   getOverrideStyle   DOMDocument::GetOverrideStyle             DontDelete|Function 2
+  abort              DOMDocument::Abort                        DontDelete|Function 0
+  load               DOMDocument::Load                         DontDelete|Function 1
+  loadXML            DOMDocument::LoadXML                      DontDelete|Function 2
 @end
 */
 DEFINE_PROTOTYPE("DOMDocument", DOMDocumentProto)
@@ -764,6 +767,7 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
   selectedStylesheetSet  DOMDocument::SelectedStylesheetSet    DontDelete
   readyState      DOMDocument::ReadyState                      DontDelete|ReadOnly
   defaultView     DOMDocument::DefaultView                     DontDelete|ReadOnly
+  async           DOMDocument::Async                           DontDelete
 @end
 */
 
@@ -823,6 +827,8 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
     }
     return Undefined();
     }
+  case Async:
+    return Boolean(doc.async());
   default:
     kdDebug(6070) << "WARNING: DOMDocument::getValueProperty unhandled token " << token << endl;
     return Value();
@@ -843,6 +849,10 @@ void DOMDocument::putValueProperty(ExecState *exec, int token, const Value& valu
   switch (token) {
     case SelectedStylesheetSet: {
       doc.setSelectedStylesheetSet(value.toString(exec).string());
+      break;
+    }
+    case Async: {
+      doc.setAsync(value.toBoolean(exec));
       break;
     }
   }
@@ -921,6 +931,30 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     else
       return getDOMCSSStyleDeclaration(exec,doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString(exec).string()));
   }
+  case DOMDocument::Abort:
+    doc.abort();
+    break;
+  case DOMDocument::Load: {
+    Window* active = Window::retrieveActive(exec);
+    // Complete the URL using the "active part" (running interpreter). We do this for the security
+    // check and to make sure we load exactly the same url as we have verified to be safe
+    if (active->part()) {
+      // Security: only allow documents to be loaded from the same host
+      QString dstUrl = active->part()->htmlDocument().completeURL(s).string();
+      KHTMLPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
+      if (part->url().host() == KURL(dstUrl).host()) {
+	kdDebug(6070) << "JavaScript: access granted for document.load() of " << dstUrl << endl;
+	doc.load(dstUrl);
+      }
+      else {
+	kdDebug(6070) << "JavaScript: access denied for document.load() of " << dstUrl << endl;
+      }
+    }
+    break;
+  }
+  case DOMDocument::LoadXML:
+    doc.loadXML(s);
+    break;
   default:
     break;
   }
@@ -1082,8 +1116,15 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
     return Boolean(implementation.hasFeature(args[0].toString(exec).string(),args[1].toString(exec).string()));
   case DOMDOMImplementation::CreateDocumentType: // DOM2
     return getDOMNode(exec,implementation.createDocumentType(args[0].toString(exec).string(),args[1].toString(exec).string(),args[2].toString(exec).string()));
-  case DOMDOMImplementation::CreateDocument: // DOM2
-    return getDOMNode(exec,implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2])));
+  case DOMDOMImplementation::CreateDocument: { // DOM2
+    // Initially set the URL to document of the creator... this is so that it resides in the same
+    // host/domain for security checks. The URL will be updated if Document.load() is called.
+    Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
+    KHTMLPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
+    QString url = static_cast<DocumentImpl*>(part->document().handle())->URL();
+    static_cast<DocumentImpl*>(doc.handle())->setURL(url);
+    return getDOMNode(exec,doc);
+  }
   case DOMDOMImplementation::CreateCSSStyleSheet: // DOM2
     return getDOMStyleSheet(exec,implementation.createCSSStyleSheet(args[0].toString(exec).string(),args[1].toString(exec).string()));
   case DOMDOMImplementation::CreateHTMLDocument: // DOM2-HTML

@@ -127,6 +127,9 @@ public:
     void setDefaultHandled() { m_defaultHandled = true; }
     bool defaultHandled() const { return m_defaultHandled; }
 
+    DOMString message() const { return m_message; }
+    void setMessage(const DOMString &_message) { m_message = _message; }
+
 protected:
     DOMStringImpl *m_type;
     bool m_canBubble;
@@ -140,6 +143,7 @@ protected:
     unsigned short m_eventPhase;
     NodeImpl *m_target;
     QDateTime m_createTime;
+    DOMString m_message;
 };
 
 

@@ -28,10 +28,12 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_object.h"
+#include "xml/dom2_eventsimpl.h"
 
 #include <kdebug.h>
 
 using namespace KJS;
+using namespace DOM;
 
 // -------------------------------------------------------------------------
 
@@ -249,6 +251,15 @@ Value DOMEvent::getValueProperty(ExecState *exec, int token) const
     kdDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return Value();
   }
+}
+
+Value DOMEvent::defaultValue(ExecState *exec, KJS::Type hint) const
+{
+  if (event.handle()->id() == EventImpl::ERROR_EVENT && !event.handle()->message().isNull()) {
+    return String(event.handle()->message());
+  }
+  else
+    return DOMObject::defaultValue(exec,hint);
 }
 
 void DOMEvent::tryPut(ExecState *exec, const Identifier &propertyName,

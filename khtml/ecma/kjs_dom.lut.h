@@ -145,13 +145,13 @@ static const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "getElementsByTagName", DOMDocument::GetElementsByTagName, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[25] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "abort", DOMDocument::Abort, DontDelete|Function, 0, 0 },
    { "createElement", DOMDocument::CreateElement, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[23] },
    { "createTreeWalker", DOMDocument::CreateTreeWalker, DontDelete|Function, 4, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "createAttribute", DOMDocument::CreateAttribute, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[24] },
-   { "createTextNode", DOMDocument::CreateTextNode, DontDelete|Function, 1, 0 },
+   { "createTextNode", DOMDocument::CreateTextNode, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[31] },
    { "createEntityReference", DOMDocument::CreateEntityReference, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[26] },
    { "createProcessingInstruction", DOMDocument::CreateProcessingInstruction, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[28] },
    { 0, 0, 0, 0, 0 },
@@ -167,10 +167,12 @@ static const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "getElementById", DOMDocument::GetElementById, DontDelete|Function, 1, 0 },
    { "createRange", DOMDocument::CreateRange, DontDelete|Function, 0, 0 },
    { "createEvent", DOMDocument::CreateEvent, DontDelete|Function, 1, 0 },
-   { "getOverrideStyle", DOMDocument::GetOverrideStyle, DontDelete|Function, 2, 0 }
+   { "getOverrideStyle", DOMDocument::GetOverrideStyle, DontDelete|Function, 2, &DOMDocumentProtoTableEntries[30] },
+   { "load", DOMDocument::Load, DontDelete|Function, 1, 0 },
+   { "loadXML", DOMDocument::LoadXML, DontDelete|Function, 2, 0 }
 };
 
-static const struct HashTable DOMDocumentProtoTable = { 2, 30, DOMDocumentProtoTableEntries, 23 };
+static const struct HashTable DOMDocumentProtoTable = { 2, 32, DOMDocumentProtoTableEntries, 23 };
 
 } // namespace
 
@@ -185,11 +187,12 @@ static const struct HashEntry DOMDocumentTableEntries[] = {
    { "selectedStylesheetSet", DOMDocument::SelectedStylesheetSet, DontDelete, 0, 0 },
    { "styleSheets", DOMDocument::StyleSheets, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[5] },
    { "preferredStylesheetSet", DOMDocument::PreferredStylesheetSet, DontDelete|ReadOnly, 0, 0 },
-   { "readyState", DOMDocument::ReadyState, DontDelete|ReadOnly, 0, 0 },
-   { "defaultView", DOMDocument::DefaultView, DontDelete|ReadOnly, 0, 0 }
+   { "readyState", DOMDocument::ReadyState, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[8] },
+   { "defaultView", DOMDocument::DefaultView, DontDelete|ReadOnly, 0, 0 },
+   { "async", DOMDocument::Async, DontDelete, 0, 0 }
 };
 
-static const struct HashTable DOMDocumentTable = { 2, 8, DOMDocumentTableEntries, 4 };
+static const struct HashTable DOMDocumentTable = { 2, 9, DOMDocumentTableEntries, 4 };
 
 } // namespace
 

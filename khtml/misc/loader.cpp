@@ -157,11 +157,14 @@ void CachedObject::setSize(int size)
 
 // -------------------------------------------------------------------------------------------
 
-CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, time_t _expireDate, const QString& charset)
+CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy,
+					 time_t _expireDate, const QString& charset, const char *accept)
     : CachedObject(url, CSSStyleSheet, _cachePolicy, _expireDate, 0)
 {
-    // It's css we want.
-    setAccept( QString::fromLatin1("text/css") );
+    // Set the type we want (probably css or xml)
+    setAccept( QString::fromLatin1(accept) );
+    m_hadError = false;
+    m_err = 0;
     // load the file
     Cache::loader()->load(dl, this, false);
     m_loading = true;
@@ -196,7 +199,12 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 {
     CachedObject::ref(c);
 
-    if(!m_loading) c->setStyleSheet( m_url, m_sheet );
+    if (!m_loading) {
+	if (m_hadError)
+	    c->error( m_err, m_errText );
+	else
+	    c->setStyleSheet( m_url, m_sheet );
+    }
 }
 
 void CachedCSSStyleSheet::deref(CachedObjectClient *c)
@@ -219,7 +227,7 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
 
 void CachedCSSStyleSheet::checkNotify()
 {
-    if(m_loading) return;
+    if(m_loading || m_hadError) return;
 
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
@@ -232,8 +240,18 @@ void CachedCSSStyleSheet::checkNotify()
 }
 
 
-void CachedCSSStyleSheet::error( int /*err*/, const char* /*text*/ )
+void CachedCSSStyleSheet::error( int err, const char* text )
 {
+    m_hadError = true;
+    m_err = err;
+    m_errText = text;
+    m_loading = false;
+
+    // it() first increments, then returnes the current item.
+    // this avoids skipping an item when setStyleSheet deletes the "current" one.
+    for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
+        it()->error( m_err, m_errText );
+
     m_loading = false;
     checkNotify();
 }
@@ -989,7 +1007,8 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
     return Cache::requestImage(this, url, reload, m_expireDate);
 }
 
-CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const QString& charset)
+CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const QString& charset,
+						   const char *accept )
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
@@ -997,7 +1016,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 
     bool reload = needReload(fullURL);
 
-    return Cache::requestStyleSheet(this, url, reload, m_expireDate, charset);
+    return Cache::requestStyleSheet(this, url, reload, m_expireDate, charset, accept);
 }
 
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString& charset)
@@ -1383,7 +1402,8 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
     return static_cast<CachedImage *>(o);
 }
 
-CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & url, bool /*reload*/, time_t _expireDate, const QString& charset)
+CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & url, bool /*reload*/,
+					       time_t _expireDate, const QString& charset, const char *accept)
 {
     // this brings the _url to a standard form...
     KURL kurl;
@@ -1411,7 +1431,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-        CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(dl, kurl.url(), cachePolicy, _expireDate, charset);
+        CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(dl, kurl.url(), cachePolicy, _expireDate, charset, accept);
         cache->insert( kurl.url(), sheet );
         o = sheet;
     }
@@ -1749,6 +1769,7 @@ void Cache::insertInLRUList(CachedObject *object)
 void CachedObjectClient::setPixmap(const QPixmap &, const QRect&, CachedImage *) {}
 void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
 void CachedObjectClient::notifyFinished(CachedObject * /*finishedObj*/) {}
+void CachedObjectClient::error(int /*err*/, const QString &/*text*/) {}
 
 
 #include "loader.moc"

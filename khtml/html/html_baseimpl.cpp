@@ -85,7 +85,8 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_MARGINWIDTH: {
 	KHTMLView* w = getDocument()->view();
-	w->setMarginWidth( -1 ); // unset this, so it doesn't override the setting here
+	if (w)
+	    w->setMarginWidth( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value() );
     }
         /* nobreak; */
@@ -94,7 +95,8 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_MARGINHEIGHT: {
 	KHTMLView* w = getDocument()->view();
-	w->setMarginHeight( -1 ); // unset this, so it doesn't override the setting here
+	if (w)
+	    w->setMarginHeight( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
     }
         /* nobreak */
@@ -165,13 +167,13 @@ void HTMLBodyElementImpl::insertedIntoDocument()
     HTMLElementImpl::insertedIntoDocument();
 
     KHTMLView* w = getDocument()->view();
-    if(w->marginWidth() != -1) {
+    if(w && w->marginWidth() != -1) {
         QString s;
         s.sprintf( "%d", w->marginWidth() );
         addCSSLength(CSS_PROP_MARGIN_LEFT, s);
         addCSSLength(CSS_PROP_MARGIN_RIGHT, s);
     }
-    if(w->marginHeight() != -1) {
+    if(w && w->marginHeight() != -1) {
         QString s;
         s.sprintf( "%d", w->marginHeight() );
         addCSSLength(CSS_PROP_MARGIN_TOP, s);
@@ -316,7 +318,6 @@ void HTMLFrameElementImpl::attach()
     }
 
     // ignore display: none for this element!
-    KHTMLView* w = getDocument()->view();
 
     if (parentNode()->renderer() && getDocument()->isURLAllowed(url.string()))  {
         m_render = new (getDocument()->renderArena()) RenderFrame(this);
@@ -329,12 +330,15 @@ void HTMLFrameElementImpl::attach()
     if (!m_render)
         return;
 
-    // we need a unique name for every frame in the frameset. Hope that's unique enough.
-    if(name.isEmpty() || w->part()->frameExists( name.string() ) )
-      name = DOMString(w->part()->requestFrameName());
+    KHTMLView* w = getDocument()->view();
+    if (w) {
+	// we need a unique name for every frame in the frameset. Hope that's unique enough.
+	if(name.isEmpty() || w->part()->frameExists( name.string() ) )
+	    name = DOMString(w->part()->requestFrameName());
 
-    // load the frame contents
-    w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
+	// load the frame contents
+	w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
+    }
 }
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
@@ -358,11 +362,13 @@ void HTMLFrameElementImpl::setLocation( const DOMString& str )
 
     // load the frame contents
     KHTMLView *w = getDocument()->view();
-    KHTMLPart *part = w->part()->findFrame(  name.string() );
-    if ( part ) {
-        part->openURL( getDocument()->completeURL( url.string() ) );
-    } else {
-        w->part()->requestFrame( static_cast<RenderFrame*>( m_render ), url.string(), name.string() );
+    if (w) {
+	KHTMLPart *part = w->part()->findFrame(  name.string() );
+	if ( part ) {
+	    part->openURL( getDocument()->completeURL( url.string() ) );
+	} else {
+	    w->part()->requestFrame( static_cast<RenderFrame*>( m_render ), url.string(), name.string() );
+	}
     }
 }
 
@@ -617,7 +623,7 @@ void HTMLIFrameElementImpl::attach()
     if (m_render) {
         // we need a unique name for every frame in the frameset. Hope that's unique enough.
         KHTMLView* w = getDocument()->view();
-        if(name.isEmpty() || w->part()->frameExists( name.string() ))
+        if(w && (name.isEmpty() || w->part()->frameExists( name.string() )))
             name = DOMString(w->part()->requestFrameName());
 
         static_cast<RenderPartObject*>(m_render)->updateWidget();

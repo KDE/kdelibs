@@ -419,18 +419,6 @@ KHTMLView *Document::view() const
     return static_cast<DocumentImpl*>(impl)->view();
 }
 
-DOMString Document::completeURL(const DOMString& url)
-{
-    if ( !impl ) return url;
-    return static_cast<DocumentImpl*>( impl )->completeURL( url.string() );
-}
-
-void Document::updateRendering()
-{
-    if ( !impl ) return;
-    static_cast<DocumentImpl*>( impl )->updateRendering(  );
-}
-
 CSSStyleDeclaration Document::getOverrideStyle(const Element &elt, const DOMString &pseudoElt)
 {
     if (!impl)
@@ -441,6 +429,60 @@ CSSStyleDeclaration Document::getOverrideStyle(const Element &elt, const DOMStri
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;
+}
+
+bool Document::async() const
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<DocumentImpl*>( impl )->async(  );
+}
+
+void Document::setAsync( bool b )
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    static_cast<DocumentImpl*>( impl )->setAsync( b );
+}
+
+void Document::abort()
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+
+    static_cast<DocumentImpl*>( impl )->abort(  );
+}
+
+void Document::load( const DOMString &uri )
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    static_cast<DocumentImpl*>( impl )->load( uri );
+}
+
+void Document::loadXML( const DOMString &source )
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+
+    static_cast<DocumentImpl*>( impl )->loadXML( source );
+}
+
+DOMString Document::completeURL(const DOMString& url)
+{
+    if ( !impl ) return url;
+    return static_cast<DocumentImpl*>( impl )->completeURL( url.string() );
+}
+
+void Document::updateRendering()
+{
+    if ( !impl ) return;
+    static_cast<DocumentImpl*>( impl )->updateRendering(  );
 }
 
 // ----------------------------------------------------------------------------

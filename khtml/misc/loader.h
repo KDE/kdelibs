@@ -185,12 +185,15 @@ namespace khtml
 
 
     /**
-     * a cached style sheet
+     * a cached style sheet. also used for loading xml documents.
+     *
+     * ### rename to CachedTextDoc or something since it's more generic than just for css
      */
     class CachedCSSStyleSheet : public CachedObject
     {
     public:
-	CachedCSSStyleSheet(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, time_t _expireDate, const QString& charset);
+	CachedCSSStyleSheet(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy,
+			    time_t _expireDate, const QString& charset, const char *accept);
 	CachedCSSStyleSheet(const DOM::DOMString &url, const QString &stylesheet_data);
 	virtual ~CachedCSSStyleSheet();
 
@@ -209,6 +212,9 @@ namespace khtml
 
 	DOM::DOMString m_sheet;
         QTextCodec* m_codec;
+	bool m_hadError;
+	int m_err;
+	QString m_errText;
     };
 
     /**
@@ -322,7 +328,8 @@ namespace khtml
  	~DocLoader();
 
 	CachedImage *requestImage( const DOM::DOMString &url);
-	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const QString& charset);
+	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const QString& charset,
+						const char *accept = "text/css");
         CachedScript *requestScript( const DOM::DOMString &url, const QString& charset);
 
 	bool autoloadImages() const { return m_bautoloadImages; }
@@ -434,7 +441,9 @@ namespace khtml
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cached
 	 */
-	static CachedCSSStyleSheet *requestStyleSheet( DocLoader* l, const DOM::DOMString &url, bool reload=false, time_t _expireDate=0, const QString& charset = QString::null);
+	static CachedCSSStyleSheet *requestStyleSheet( DocLoader* l, const DOM::DOMString &url, bool reload=false,
+						       time_t _expireDate=0, const QString& charset = QString::null,
+						       const char *accept = "text/css");
 
         /**
          * Pre-loads a stylesheet into the cache.

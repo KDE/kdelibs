@@ -301,7 +301,11 @@ JSNodeFilter::~JSNodeFilter()
 
 short JSNodeFilter::acceptNode(const DOM::Node &n)
 {
-  KHTMLPart *part = static_cast<DOM::DocumentImpl *>( n.handle()->docPtr()->document() )->view()->part();
+  KHTMLView *view = static_cast<DOM::DocumentImpl *>( n.handle()->docPtr()->document() )->view();
+  if (!view)
+      return DOM::NodeFilter::FILTER_REJECT;
+
+  KHTMLPart *part = view->part();
   KJSProxy *proxy = KJSProxy::proxy( part );
   if (proxy) {
     ExecState *exec = proxy->interpreter()->globalExec();

@@ -106,8 +106,8 @@ void RenderFrameSet::layout( )
 
     if ( !parent()->isFrameSet() ) {
         KHTMLView* view = root()->view();
-        m_width = view->visibleWidth();
-        m_height = view->visibleHeight();
+        m_width = view ? view->visibleWidth() : 0;
+        m_height = view ? view->visibleHeight() : 0;
     }
 
 #ifdef DEBUG_LAYOUT
@@ -432,8 +432,9 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
     setLayouted(false);
   }
 
-  if (m_resizing || evt->id() == EventImpl::MOUSEUP_EVENT) {
-      QPainter paint( root()->view() );
+  KHTMLView *view = root()->view();
+  if ((m_resizing || evt->id() == EventImpl::MOUSEUP_EVENT) && view) {
+      QPainter paint( view );
       paint.setPen( Qt::gray );
       paint.setBrush( Qt::gray );
       paint.setRasterOp( Qt::XorROP );

@@ -420,12 +420,13 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
     m_executingScript++;
     script = false;
     QString url;
-    if (scriptURL.isNull())
+    if (scriptURL.isNull() && view)
       url = static_cast<DocumentImpl*>(view->part()->document().handle())->URL();
     else
       url = scriptURL;
 
-    view->part()->executeScript(url,baseLine+1,Node(),str);
+    if (view)
+	view->part()->executeScript(url,baseLine+1,Node(),str);
     m_executingScript--;
     script = oldscript;
 }
@@ -1048,14 +1049,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 DOMStringImpl* a = 0;
                 scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
-                     parser->doc()->view()->part()->jScriptEnabled() && /* jscript allowed at all? */
-                     view /* are we a regular tokenizer or just for innerHTML ? */
+                     view &&  /* are we a regular tokenizer or just for innerHTML ? */
+                     parser->doc()->view()->part()->jScriptEnabled() /* jscript allowed at all? */
                     ) {
                     if ( ( a = currToken.attrs->getValue( ATTR_SRC ) ) )
                         scriptSrc = parser->doc()->completeURL(khtml::parseURL( DOMString(a) ).string() );
                     if ( ( a = currToken.attrs->getValue( ATTR_CHARSET ) ) )
                         scriptSrcCharset = DOMString(a).string().stripWhiteSpace();
-                    if ( scriptSrcCharset.isEmpty() )
+                    if ( scriptSrcCharset.isEmpty() && view)
                         scriptSrcCharset = parser->doc()->view()->part()->encoding();
                     if (!(a = currToken.attrs->getValue( ATTR_LANGUAGE )))
                         a = currToken.attrs->getValue(ATTR_TYPE);
