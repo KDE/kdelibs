@@ -95,7 +95,8 @@ void KLineEdit::setCompletedText( const QString& text, bool marked )
 //     }
 
     int pos = cursorPosition();
-    setText( text );
+    if ( text != QLineEdit::text() ) // no need to flicker if not necessary
+	setText( text );
     if( marked )
     {
         setSelection( pos, text.length() );
