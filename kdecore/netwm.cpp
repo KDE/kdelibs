@@ -2322,6 +2322,8 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->desktop = p->pid = p->handled_icons = 0;
     p->user_time = -1U;
     p->startup_id = NULL;
+    p->transient_for = None;
+    p->window_group = None;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2376,6 +2378,8 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->desktop = p->pid = p->handled_icons = 0;
     p->user_time = -1U;
     p->startup_id = NULL;
+    p->transient_for = None;
+    p->window_group = None;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -3150,6 +3154,10 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty |= WMVisibleIconName;
 	    else if (pe.xproperty.atom == net_wm_user_time)
 		dirty2 |= WM2UserTime;
+            else if (pe.xproperty.atom == XA_WM_HINTS)
+                dirty2 |= WM2GroupLeader;
+            else if (pe.xproperty.atom == XA_WM_TRANSIENT_FOR)
+                dirty2 |= WM2TransientFor;
 	    else {
 
 #ifdef    NETWMDEBUG
@@ -3578,6 +3586,23 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		XFree(data_ret);
 	}
     }
+
+    if (dirty2 & WM2TransientFor) {
+	p->transient_for = None;
+        XGetTransientForHint(p->display, p->window, &p->transient_for);
+    }
+
+    if (dirty2 & WM2GroupLeader) {
+        XWMHints *hints = XGetWMHints(p->display, p->window);
+        p->window_group = None;
+        if ( hints )
+        {
+            if( hints->flags & WindowGroupHint )
+                p->window_group = hints->window_group;
+            XFree( reinterpret_cast< char* >( hints ));
+        }
+    }
+
 }
 
 
@@ -3659,6 +3684,18 @@ int NETWinInfo::pid() const {
 
 Time NETWinInfo::userTime() const {
     return p->user_time;
+}
+
+const char* NETWinInfo::startupId() const {
+    return p->startup_id;
+}
+
+Window NETWinInfo::transientFor() const {
+    return p->transient_for;
+}
+
+Window NETWinInfo::groupLeader() const {
+    return p->window_group;
 }
 
 Bool NETWinInfo::handledIcons() const {

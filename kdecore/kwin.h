@@ -150,9 +150,11 @@ public:
      *    enum for details) - passing 0 means all properties. Unlisted properties
      *    cause related information to be invalid in the returned data, but
      *    make this function faster when not all data is needed.
+     * @param properties2 additional properties (see NET::Property2 enum)
      * @return the window information
+     * @since 3.2
      */
-    static WindowInfo windowInfo( WId win, unsigned long properties = 0 );
+    static WindowInfo windowInfo( WId win, unsigned long properties = 0, unsigned long properties2 = 0 );
 
     /**
      * Returns the WM_TRANSIENT_FOR property for the given window, i.e. the mainwindow
@@ -160,8 +162,15 @@ public:
      *
      * @param allow_root_window if false, and the WM_TRANSIENT_FOR property points
      *    to the root window, no window is returned
+     * @since 3.2
      */
-    static WId transientFor( WId window, bool allow_root_window );
+    static WId transientFor( WId window );
+
+    /**
+     * Returns the leader window for the group the given window is in, if any.
+     * @since 3.2
+     */    
+    static WId groupLeader( WId window );
 
     /**
      * Returns an icon for window @p win.
@@ -385,7 +394,7 @@ public:
     /**
      * Reads all the info about the given window.
      */
-    WindowInfo( WId window, unsigned long properties );
+    WindowInfo( WId window, unsigned long properties, unsigned long properties2 );
     WindowInfo(); // to make QValueList and others happy
     ~WindowInfo();
     /**
@@ -471,6 +480,17 @@ public:
      * Requires NET::WMGeometry passed to KWin::windowInfo().
      */
     QRect geometry() const;
+    /**
+     * Returns the WM_TRANSIENT_FOR property for the window, i.e. the mainwindow
+     * for this window.
+     * Requires NET::WM2TransientFor passed to KWin::windowInfo().
+     */
+    WId transientFor() const;
+    /**
+     * Returns the leader window for the group the window is in, if any.
+     * Requires NET::WM2GroupLeader passed to KWin::windowInfo().
+     */    
+    WId groupLeader() const;
     
     WindowInfo( const WindowInfo& );
     WindowInfo& operator=( const WindowInfo& );

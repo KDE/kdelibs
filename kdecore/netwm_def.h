@@ -477,11 +477,15 @@ public:
 
         @li WM2UserTime
         @li WM2StartupId
+        @li WM2TransientFor mainwindow for the window (WM_TRANSIENT_FOR)
+        @li WM2GroupLeader  group leader (window_group in WM_HINTS)
 
     **/
     enum Property2 {
         WM2UserTime            = 1<<0,
-        WM2StartupId           = 1<<1
+        WM2StartupId           = 1<<1,
+        WM2TransientFor        = 1<<2,
+        WM2GroupLeader         = 1<<3
     };
 
     /**

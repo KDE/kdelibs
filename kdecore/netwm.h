@@ -1090,6 +1090,17 @@ public:
      */
     const char* startupId() const;
 
+    /*
+     * Returns the WM_TRANSIENT_FOR property for the window, i.e. the mainwindow
+     * for this window.
+     */
+    Window transientFor() const;
+
+    /**
+     * Returns the leader window for the group the window is in, if any.
+     */    
+    Window groupLeader() const;
+    
     /**
        Places the window frame geometry in frame, and the application window
        geometry in window.  Both geometries are relative to the root window.

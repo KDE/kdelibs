@@ -232,19 +232,30 @@ void KWin::setUserTime( WId win, long time )
     info.setUserTime( time );
 }
 
-KWin::WindowInfo KWin::windowInfo( WId win, unsigned long properties )
+KWin::WindowInfo KWin::windowInfo( WId win, unsigned long properties, unsigned long properties2 )
 {
-    return WindowInfo( win, properties );
+    return WindowInfo( win, properties, properties2 );
 }
 
 
-WId KWin::transientFor( WId win, bool allow_root_window )
+WId KWin::transientFor( WId win )
 {
     Window transient_for = None;
     XGetTransientForHint( qt_xdisplay(), win, &transient_for );
-    if( allow_root_window )
-	return transient_for;
-    return transient_for == qt_xrootwin() ? None : transient_for;
+    return transient_for;
+}
+
+WId KWin::groupLeader( WId win )
+{
+    XWMHints *hints = XGetWMHints( qt_xdisplay(), win );
+    Window window_group = None;
+    if ( hints )
+    {
+        if( hints->flags & WindowGroupHint )
+            window_group = hints->window_group;
+        XFree( reinterpret_cast< char* >( hints ));
+    }
+    return window_group;
 }
 
 // this one is deprecated, KWin::WindowInfo should be used instead
@@ -540,7 +551,7 @@ class KWin::WindowInfoPrivate
 };
 
 // KWin::info() should be updated too if something has to be changed here
-KWin::WindowInfo::WindowInfo( WId win, unsigned long properties )
+KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long properties2 )
 {
     d = new WindowInfoPrivate;
     d->ref = 1;
@@ -557,7 +568,8 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties )
                      NET::WMGeometry;
     if( properties & NET::WMVisibleName )
 	properties |= NET::WMName; // force, in case it will be used as a fallback
-    d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), properties );
+    unsigned long props[ 2 ] = { properties, properties2 };
+    d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), props, 2 );
     d->win_ = win;
     if ( d->info->name() ) {
 	d->name_ = QString::fromUtf8( d->info->name() );
@@ -708,6 +720,20 @@ QRect KWin::WindowInfo::geometry() const
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
         << "Pass NET::WMGeometry to KWin::windowInfo()" << endl;
     return d->geometry_;
+}
+
+WId KWin::WindowInfo::transientFor() const
+{
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2TransientFor ) == 0, 176 )
+        << "Pass NET::WM2TransientFor to KWin::windowInfo()" << endl;
+    return d->info->transientFor();
+}
+
+WId KWin::WindowInfo::groupLeader() const
+{
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2GroupLeader ) == 0, 176 )
+        << "Pass NET::WM2GroupLeader to KWin::windowInfo()" << endl;
+    return d->info->groupLeader();
 }
 
 // see NETWM spec section 7.6

@@ -135,6 +135,7 @@ struct NETWinInfoPrivate {
     Window kde_system_tray_win_for;
     Time user_time;
     char* startup_id;
+    Window transient_for, window_group;
 
     unsigned long properties[ 2 ];
 
