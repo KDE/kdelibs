@@ -253,7 +253,6 @@ public:
   bool lookup( const KURL&, AutoLogin&, bool userealnetrc = false,
                QString type = QString::null,
                int mode = (exactOnly|defaultOnly) );
-  const LoginMap& autoLoginEntries() const { return loginMap; }
   void reload() { isDirty = true; }
 
 protected:

@@ -124,7 +124,6 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
     if ( type.isEmpty() )
         type = url.protocol();
 
-
     if ( loginMap.isEmpty() || isDirty )
     {
         int fd;
@@ -303,7 +302,7 @@ void NetRC::parse( int fd )
             if ( !mac.isEmpty() )
             {
                 loginMap[type][index].macdef[macro].append( mac );
-                kdDebug() << mac << endl;
+                // kdDebug() << mac << endl;
             }
             continue;
         }
@@ -323,24 +322,24 @@ void NetRC::parse( int fd )
                 l.machine = QString::fromLatin1("preset");
             }
         }
-        kdDebug() << "Machine: " << l.machine << endl;
+        // kdDebug() << "Machine: " << l.machine << endl;
 
         l.login = extract( buf, "login", pos );
-        kdDebug() << "Login: " << l.login << endl;
+        // kdDebug() << "Login: " << l.login << endl;
 
         l.password = extract( buf, "password", pos );
         if ( l.password.isEmpty() )
             l.password = extract( buf, "account", pos );
-        kdDebug() << "Password: " << l.password << endl;
+        // kdDebug() << "Password: " << l.password << endl;
 
         type = l.type = extract( buf, "type", pos );
         if ( l.type.isEmpty() && !l.machine.isEmpty() )
             type = l.type = QString::fromLatin1("ftp");
-        kdDebug() << "Type: " << l.type << endl;
+        // kdDebug() << "Type: " << l.type << endl;
 
         macro = extract( buf, "macdef", pos );
         isMacro = !macro.isEmpty();
-        kdDebug() << "Macro: " << macro << endl;
+        // kdDebug() << "Macro: " << macro << endl;
 
         loginMap[l.type].append(l);
         index = loginMap[l.type].count()-1;
