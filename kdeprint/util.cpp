@@ -57,3 +57,43 @@ void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer)
 	}
 }
 
+KURL smbToUrl(const QString& s)
+{
+	// allow to handle non-encoded chars in login/password
+	KURL	url;
+	int	p = s.find('@');
+	if (p == -1)
+	{
+		url = KURL(s);
+	}
+	else
+	{
+		// assumes URL starts with "smb://"
+		QString	username = s.mid(6, p-6);
+		url = KURL("smb://" + s.mid(p+1));
+		int	q = username.find(':');
+		if (q == -1)
+			url.setUser(username);
+		else
+		{
+			url.setUser(username.left(q));
+			url.setPass(username.mid(q+1));
+		}
+	}
+	return url;
+}
+
+QString urlToSmb(const KURL& url)
+{
+	// do not encode special chars in login/password
+	QString	s = "smb://";
+	if (!url.user().isEmpty())
+	{
+		s.append(url.user());
+		if (!url.pass().isEmpty())
+			s.append(":").append(url.pass());
+		s.append("@");
+	}
+	s.append(url.host()).append(url.path());
+	return s;
+}

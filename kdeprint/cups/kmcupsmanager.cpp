@@ -32,6 +32,7 @@
 #include "cupsaddsmb2.h"
 #include "ippreportdlg.h"
 #include "kpipeprocess.h"
+#include "util.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -135,7 +136,14 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 		// data (login/password in URI's like smb or ipp).
 		KMPrinter	*otherP = findPrinter(p->printerName());
 		if (!otherP || otherP->device() != p->device())
-			req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
+		{
+			// do not encode special chars in login/passwd in SMB devices
+			// to be compatible with CUPS/smbspool
+			if (p->device().protocol() == "smb")
+				req.addURI(IPP_TAG_PRINTER, "device-uri", urlToSmb(p->device()));
+			else
+				req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
+		}
 		if (!p->option("kde-banners").isEmpty())
 		{
 			QStringList	bans = QStringList::split(',',p->option("kde-banners"),false);
@@ -278,7 +286,14 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		// disabled location
 		//if (req.text("printer-location",value)) p->setLocation(value);
 		if (req.text("printer-make-and-model",value)) p->setDriverInfo(value);
-		if (req.uri("device-uri",value)) p->setDevice(KURL(value));
+		if (req.uri("device-uri",value))
+		{
+			// in case of SMB, encode special chars in login/passwd
+			if (value.startsWith("smb://"))
+				p->setDevice(smbToUrl(value));
+			else
+				p->setDevice(KURL(value));
+		}
 		QStringList	values;
 /*		if (req.uri("member-uris",values))
 		{
@@ -920,9 +935,14 @@ void KMCupsManager::printerIppReport()
 			req.setHost(m_currentprinter->uri().host());
 			req.setPort(m_currentprinter->uri().port());
 		}
+		req.dump(2);
 		if (req.doRequest("/printers/"))
 		{
 			ippReport(req, IPP_TAG_PRINTER, i18n("IPP report for %1").arg(m_currentprinter->printerName()));
+		}
+		else
+		{
+			KMessageBox::error(0, "<p>"+i18n("Unable to retrieve printer information. Error received:")+"</p>"+req.statusMessage());
 		}
 	}
 }

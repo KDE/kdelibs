@@ -25,5 +25,12 @@
 
 KURL smbToUrl(const QString& work, const QString& server, const QString& printer);
 void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer);
+// those 2 are only workarounds when the login/password may contain
+// strange characters ('@', '/'). In this case, those chars are not encoded
+// as other SMB tools (smbspool) doesn't seem to support encoding. This
+// utilities allow to continue working KURL class (and encoding) within
+// KDEPrint, but without encoding outside KDEPrint (shoudl fix bug #38733)
+KURL smbToUrl(const QString& s);
+QString urlToSmb(const KURL& url);
 
 #endif
