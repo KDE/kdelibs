@@ -16,6 +16,10 @@ import java.util.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.1.1.1  1999/07/22 17:28:08  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
  * </PRE>
  *
  * @version $Id$
@@ -94,7 +98,18 @@ public class KJASAppletClassLoader
 
       System.err.println( "class data URL = " + classURL );
 
-      InputStream dataStream = classURL.openStream();
+      InputStream dataStream;
+      try {
+	  dataStream = classURL.openStream();
+      }
+      catch( FileNotFoundException fnfe ) {
+	  String baseTmp = codeBase.toString();
+	  baseTmp += "/";
+	  URL baseURL = new URL( baseTmp );
+	  classURL = new URL( baseURL, name );
+	  dataStream = classURL.openStream();
+      }
+
       byte[] dataBytes = new byte[ 128 * 1024 ]; // Hard coded max of 128K classfile
       int count = 0;
 

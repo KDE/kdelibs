@@ -64,12 +64,12 @@ void KJavaAppletContext::show( KJavaApplet *applet, QString title )
     server->showApplet( id, applet->appletId(), title );
 }
 
-void KJavaAppletContext::start( KJavaApplet * )
+void KJavaAppletContext::start( KJavaApplet *applet )
 {
-    // server->start()
+    server->startApplet( id, applet->appletId() );
 }
 
-void KJavaAppletContext::stop (KJavaApplet *)
+void KJavaAppletContext::stop (KJavaApplet *applet )
 {
-    // server->stop()
+    server->stopApplet( id, applet->appletId() );
 }

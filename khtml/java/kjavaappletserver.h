@@ -14,6 +14,9 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/10/09 18:10:10  rich
+ * Const QString fixes
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:07  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -51,6 +54,7 @@ public:
     void createApplet( int contextId, int appletId,
 		       const QString name, const QString clazzName,
 		       const QString base );
+
     /**
      * Set a parameter for a specified applet. The parameter and value are both
      * treated as strings (though the string might of course be a number e.g. "1".
@@ -63,6 +67,16 @@ public:
      */
     void showApplet( int contextId, int appletId,
 		     const QString title );
+
+    /**
+     * Start the specified applet.
+     */
+    void startApplet( int contextId, int appletId );
+
+    /**
+     * Stop the specified applet.
+     */
+    void stopApplet( int contextId, int appletId );
 
     /**
      * Shut down the KJAS server.

@@ -17,6 +17,9 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/10/09 18:10:53  rich
+ * Const QString fixes
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:07  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -88,9 +91,9 @@ protected:
    QString jvmPath;
    QString mainClass;
    QString extraArgs;
-    QString classArgs;
+   QString classArgs;
 
-    QStrList inputBuffer;
+   QStrList inputBuffer;
 private:
    QDict<char> systemProps;
 };

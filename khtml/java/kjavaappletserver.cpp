@@ -62,6 +62,22 @@ void KJavaAppletServer::showApplet( int contextId, int appletId,
     process->send( s );
 }
 
+void KJavaAppletServer::startApplet( int contextId, int appletId )
+{
+    QString s;
+    s.sprintf( "startApplet!%d!%d\n",
+	       contextId, appletId );
+    process->send( s );
+}
+
+void KJavaAppletServer::stopApplet( int contextId, int appletId )
+{
+    QString s;
+    s.sprintf( "stopApplet!%d!%d\n",
+	       contextId, appletId );
+    process->send( s );
+}
+
 void KJavaAppletServer::quit()
 {
     QString s;
