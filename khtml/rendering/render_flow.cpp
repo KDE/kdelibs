@@ -228,8 +228,7 @@ void RenderFlow::layout()
 //    kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
 //            << m_width << ","<< layouted() << "," << isAnonymousBox() << endl;
 
-    if (specialObjects==0)
-    	if (oldWidth == m_width && layouted() && !isAnonymousBox()
+    if ( (!specialObjects || (isListItem() && specialObjects->count() == 1) ) && oldWidth == m_width && layouted() && !isAnonymousBox()
 	    && !containsPositioned() && !isPositioned()) return;
 
 
