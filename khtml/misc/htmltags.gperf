@@ -66,7 +66,6 @@ layer, ID_LAYER
 legend, ID_LEGEND
 li, ID_LI
 link, ID_LINK
-listing, ID_LISTING
 map, ID_MAP
 menu, ID_MENU
 meta, ID_META
@@ -107,7 +106,8 @@ tt, ID_TT
 u, ID_U
 ul, ID_UL
 var, ID_VAR
+xmp, ID_XMP
 anchor, ID_A
 image, ID_IMG
-xmp, ID_PRE
+listing, ID_PRE
 %%

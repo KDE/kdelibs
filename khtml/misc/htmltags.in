@@ -56,7 +56,6 @@ layer
 legend
 li
 link
-listing
 map
 menu
 meta
@@ -97,3 +96,4 @@ tt
 u
 ul
 var
+xmp

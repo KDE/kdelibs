@@ -54,7 +54,7 @@ while (<IN>) {
 }
 print out "anchor, ID_A\n";
 print out "image, ID_IMG\n";
-print out "xmp, ID_PRE\n";
+print out "listing, ID_PRE\n";
 $num = $num+1;
 print header "#define ID_TEXT $num\n";
 $num = $num+1;
