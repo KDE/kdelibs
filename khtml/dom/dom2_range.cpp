@@ -39,7 +39,8 @@ using namespace DOM;
 
 Range::Range()
 {
-    impl = 0;
+    impl = new RangeImpl();
+    impl->ref();
 }
 
 Range::Range(const Document rootContainer)
