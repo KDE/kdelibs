@@ -65,7 +65,7 @@ binary-indep:	build
 	( cd doc/api && /bin/sh $(BUILDDIR)/ksgmltools/kdb2html `pwd`/index.docbook )
 	cp doc/api/HTML/* `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)                                                                                          
 	dh_installdocs -i
-	dh_installchangelogs -pkdelibs3-doc ChangeLog
+	dh_installchangelogs -pkdelibs3-doc 
 	dh_compress -i
 	dh_fixperms -i
 	dh_installdeb -i
@@ -134,7 +134,7 @@ binary-arch:  build
 	mv debian/tmp/usr/lib/kde2/kio_https.la debian/tmp/usr/lib/kde2/kio_https-nossl.la
 	mv debian/tmp/usr/lib/libkssl.so.2.0.0 debian/tmp/usr/lib/libkssl-nossl.so.2.0.0
 	mv debian/tmp/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
-	dh_installchangelogs -a ChangeLog
+	dh_installchangelogs -a 
 	dh_strip -a
 	for i in `find debian/ -type l -name "common"`; do \
 		rm $$i; \
