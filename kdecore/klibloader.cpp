@@ -192,6 +192,12 @@ void* KLibrary::symbol( const char* symname ) const
     return sym;
 }
 
+bool KLibrary::hasSymbol( const char* symname ) const
+{
+    void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
+    return (sym != 0L );
+}
+
 void KLibrary::unload() const
 {
    KLibLoader::self()->unloadLibrary(QFile::encodeName(name()));

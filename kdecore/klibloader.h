@@ -80,6 +80,14 @@ public:
     void* symbol( const char* name ) const;
 
     /**
+     * Looks up a symbol from the library. This is a very low level
+     * function that you usually don't want to use.
+     * Unlike symbol(), this method doesn't warn if the symbol doesn't exist,
+     * so if the symbol might or might not exist, better use hasSymbol() before symbol().
+     */
+    bool hasSymbol( const char* name ) const;
+
+    /**
      * Unloads the library. 
      * This typically results in the deletion of this object. You should
      * not reference its pointer after calling this function.
