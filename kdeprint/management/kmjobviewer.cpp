@@ -721,7 +721,7 @@ void KMJobViewer::slotDropped( QDropEvent *e, QListViewItem* )
 	for ( KURL::List::ConstIterator it = uris.begin();
 	      it != uris.end(); ++it)
 	{
-		if ( KIO::NetAccess::download( *it, target ) )
+		if ( KIO::NetAccess::download( *it, target, 0 ) )
 			files << target;
 	}
 
