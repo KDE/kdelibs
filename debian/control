@@ -2,20 +2,16 @@ Source: kdelibs
 Section: libs
 Priority: optional
 Maintainer: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: debhelper (>> 4.0.18), libarts1-dev, automake1.6 | automake1.7, docbook-to-man, gawk, gettext, libart-2.0-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libdb4.0-dev, libpam0g-dev, libpcre3-dev, libsasl-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa-dev
+Build-Depends: automake1.7, debhelper (>> 4.0.18), docbook-to-man, gawk, gettext, libart-2.0-dev, libartsc0-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libdb4.0-dev, libpam0g-dev, libpcre3-dev, libsasl-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, qt3-doc, texinfo, xlibmesa-dev
 Build-Depends-Indep: doxygen, qt3-doc
 Standards-Version: 3.5.8.0
 
 Package: kdelibs
 Section: libs
 Architecture: all
-Depends: kdelibs4 (>= ${Source-Version}), kdelibs-bin (>= ${Source-Version}), kdelibs-data (>= ${Source-Version})
+Depends: kdelibs4 (>= ${Source-Version}), libkdefakes4 (>= ${Source-Version}), kdelibs-bin (>= ${Source-Version}), kdelibs-data (>= ${Source-Version})
 Description: KDE core libraries metapackage
- This is the kdelibs metapackage. It will install the base libraries
- needed by the KDE desktop. It includes kdelibs4, kdelibs-bin and
- kdelibs-data. It does not include the development enviroment.
- .
- For KDE development you want to install kdelibs4-dev and kdelibs4-doc
+ KDE core libraries metapackage.
 
 Package: kdelibs-bin
 Section: libs
@@ -24,6 +20,7 @@ Depends: ${shlibs:Depends}, netpbm, python
 Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core binaries
+ KDE core binaries.
  You need these binaries to run kde applications.
 
 Package: kdelibs-data
@@ -32,25 +29,36 @@ Architecture: all
 Conflicts: kchart (<< 1:1.2), kdeartwork-style (<< 3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kformula (<< 1:1.2), kivio (<< 1:1.2), koffice-libs (<< 1:1.2), kontour (<< 1:1.2), kpresenter (<< 1:1.2), kspread (<< 1:1.2), kugar (<< 1:1.2), kword (<< 1:1.2)
 Replaces: kchart (<< 1:1.2), kdeartwork-style (<< 3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kformula (<< 1:1.2), kivio (<< 1:1.2), koffice-libs (<< 1:1.2), kontour (<< 1:1.2), kpresenter (<< 1:1.2), kspread (<< 1:1.2), kugar (<< 1:1.2), kword (<< 1:1.2)
 Description: KDE core shared data
+ KDE core shared data
  You need these data files to run kde applications.
 
 Package: kdelibs4
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
+Depends: ${shlibs:Depends}, libkdefakes4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
 Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core libraries
+ KDE core libraries.
  You need these libraries to run kde applications.
+
+Package: libkdefakes4
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: KDE core library libkdefakes
+ KDE core libraries library libkdefakes
+ You need this library to run kde applications.
 
 Package: kdelibs4-dev
 Section: devel
 Architecture: any
-Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libarts1-dev, libart-2.0-dev, libcupsys2-dev, libfam-dev, libpcre3-dev
+Depends: kdelibs4 (= ${Source-Version}), libkdefakes4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libart-2.0-dev, libartsc0-dev, libcupsys2-dev, libfam-dev, libpcre3-dev
 Provides: kdelibs-dev
 Conflicts: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Replaces: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Description: KDE core libraries (development files)
+ KDE core libraries.
  You need these include files to compile kde applications.
 
 Package: kdelibs4-doc
@@ -60,4 +68,5 @@ Provides: kdelibs-doc
 Conflicts: kdelibs-doc
 Replaces: kdelibs-doc
 Description: KDE core library documentation
+ KDE core library documentation.
  You need this documentation to develop KDE applications.
