@@ -87,9 +87,20 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	QString	exestr = KMFactory::self()->manager()->driverDbCreationProgram();
 	m_proc.setExecutable(exestr);
 	m_proc << dirname << filename;
-	if (exestr.isEmpty() || KStandardDirs::findExe(exestr).isEmpty() || !m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
+	QString	msg;
+	if (exestr.isEmpty())
+		msg = i18n("No executable defined for the creation of the "
+		           "driver database. This operation is not implemented.");
+	else if (KStandardDirs::findExe(exestr).isEmpty())
+		msg = i18n("The executable %1 could not be found in your "
+		           "PATH. Check that this program exists and is "
+			   "accessible in your PATH variable.").arg(exestr);
+	else if (!m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
+		msg = i18n("Unable to start teh creation of the driver "
+		           "database. The execution of %1 failed.").arg(exestr);
+	if (!msg.isEmpty())
 	{
-		KMFactory::self()->manager()->setErrorMsg(i18n("Unable to start child process '%1' !").arg(exestr));
+		KMManager::self()->setErrorMsg(msg);
 		started = false;
 	}
 
