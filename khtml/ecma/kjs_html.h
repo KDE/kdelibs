@@ -116,6 +116,35 @@ namespace KJS {
     int id;
   };
 
+  // This class is a hack to allow scripts to write to an element's
+  // "document". IE supports the document attribute on some elements, so
+  // you can do:
+  //
+  // myspan.document.open("text/html");
+  // myspan.document.writeln("<b>hello</b>");
+  // myspan.document.close();
+  //
+  // This simply appends to innerHTML
+  class ElementDocument : public DOMObject {
+  public:
+    ElementDocument(DOM::HTMLElement e) : element(e) { }
+    ~ElementDocument();
+    virtual KJSO tryGet(const UString &p) const;
+    virtual Boolean toBoolean() const { return Boolean(true); }
+  protected:
+    DOM::HTMLElement element;
+  };
+
+  class ElementDocumentFunc : public DOMFunction {
+  public:
+    ElementDocumentFunc(DOM::HTMLElement e, int i) : element(e), id(i) { };
+    Completion tryExecute(const List &);
+    enum { Open, Close, Write, Writeln };
+  private:
+    DOM::HTMLElement element;
+    int id;
+  };
+
   ////////////////////// Option Object ////////////////////////
 
   class OptionConstructor : public ConstructorImp {
