@@ -5272,7 +5272,10 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
         //d->m_view->viewport()->repaint(false);
       }
 #else
-      if (d->m_selectionStart.isNull()) return;
+      // shouldn't be null but it can happen with dynamic updating of nodes
+      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
+          !d->m_selectionStart.handle()->renderer() ||
+          !d->m_selectionEnd.handle()->renderer()) return;
       d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
       			d->m_selectionStart.handle(), d->m_startOffset,
 			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
@@ -5519,8 +5522,10 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
         n = next;
       }
 #else
-      // shouldn't be null but who knows
-      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull()) return;
+      // shouldn't be null but it can happen with dynamic updating of nodes
+      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
+          !d->m_selectionStart.handle()->renderer() ||
+          !d->m_selectionEnd.handle()->renderer()) return;
       d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
       			d->m_selectionStart.handle(), d->m_startOffset,
 			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
