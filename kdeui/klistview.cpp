@@ -621,23 +621,20 @@ void KListView::contentsDropEvent(QDropEvent* e)
 
   if (acceptDrag (e))
   {
-    e->accept();
+    e->acceptAction();
     QListViewItem *afterme;
     QListViewItem *parent;
     findDrop(e->pos(), parent, afterme);
 
-    //    if (e->source() == viewport() && itemsMovable())
-    //      movableDropEvent(parent, afterme);
-    //  else
-    if (!itemsMovable() || e->source() != viewport())
-      {
+    if (e->source() == viewport() && itemsMovable())
+        movableDropEvent(parent, afterme);
+    else
+    {
         emit dropped(e, afterme);
         emit dropped(this, e, afterme);
         emit dropped(e, parent, afterme);
         emit dropped(this, e, parent, afterme);
-      }
-    else
-      movableDropEvent (parent, afterme);
+    }
   }
 }
 
@@ -687,7 +684,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
 {
   if (acceptDrag(event))
   {
-    event->accept();
+    event->acceptAction();
     //Clean up the view
 
     findDrop(event->pos(), d->parentItemDrop, d->afterItemDrop);
