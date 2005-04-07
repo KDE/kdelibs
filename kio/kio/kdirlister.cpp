@@ -830,7 +830,8 @@ void KDirListerCache::slotFileDirty( const QString& _file )
 
   if ( !pendingUpdates[_file] )
   {
-    KURL dir = KURL( _file );
+    KURL dir;
+    dir.setPath( _file );
     if ( checkUpdate( dir.url(-1) ) )
       updateDirectory( dir );
 
