@@ -41,3 +41,6 @@
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch
  -->
 <!ENTITY zb     "<abbrev>z.B.</abbrev>" ><!-- eg -->
+
+<!ENTITY artsbuilder "<application>aRtsbuilder</application>" > <!-- ak: make artsbuilders docu work -->
+
