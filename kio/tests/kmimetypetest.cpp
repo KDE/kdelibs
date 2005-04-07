@@ -40,7 +40,7 @@ int main( int argc, char** argv )
   // but at least they unit-test KMimeType::iconForURL.
   checkIcon( "file:/tmp/", "folder" );
   checkIcon( "file:/root/", "folder_locked" );
-  checkIcon( "trash:/", "trash" ); // #100321
+  checkIcon( "trash:/", "trashcan_full" ); // #100321
   checkIcon( "trash:/foo/", "folder" );
 
   return 0;
