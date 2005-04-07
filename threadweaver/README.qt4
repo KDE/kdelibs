@@ -1,0 +1,6 @@
+The development of ThreadWeaver for Qt3 has been stopped, since it will not be
+useable as-is with Qt4. A Qt4 port will be incorporated here. The Qt4 port
+will supposedly be portable to all Qt target platforms. 
+
+If you need to use ThreadWeaver, but not develop it, you still may go ahead,
+as the API is not intended to change (much). A later port should be trivial. 
