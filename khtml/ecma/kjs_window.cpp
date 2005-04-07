@@ -573,7 +573,10 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       }
       return getDOMNode(exec,part->document());
     case FrameElement:
-      return retrieve(m_frame->m_part);
+      if (m_frame->m_frame)
+        return getDOMNode(exec,m_frame->m_frame->element());
+      else
+        return Undefined();
     case Node:
       return getNodeConstructor(exec);
     case Range:
