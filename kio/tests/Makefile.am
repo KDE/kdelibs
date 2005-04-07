@@ -22,7 +22,7 @@ AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
-                 kdefaultprogresstest kclipboardtest kmimemagictest \
+                 kdefaultprogresstest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
                  previewtest kionetrctest kdcopcheck metatest \
 		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
@@ -35,6 +35,8 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 check-local: kziptest
 	./kziptest list $(srcdir)/wronglocalsizes.zip
 
+TESTS = kmimetypetest
+
 bin_PROGRAMS = ktradertest
 
 METASOURCES = AUTO
@@ -43,7 +45,6 @@ speed_SOURCES = speed.cpp
 kioslavetest_SOURCES = kioslavetest.cpp
 kshredtest_SOURCES = kshredtest.cpp
 kdefaultprogresstest_SOURCES = kdefaultprogresstest.cpp
-kclipboardtest_SOURCES = kclipboardtest.cpp
 kionetrctest_SOURCES = kionetrctest.cpp
 kiopassdlgtest_SOURCES = kiopassdlgtest.cpp
 kurifiltertest_SOURCES = kurifiltertest.cpp
