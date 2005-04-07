@@ -31,7 +31,9 @@ SOURCES = \
   katearbitraryhighlight.cpp katerenderer.cpp kateattribute.cpp \
   kateautoindent.cpp katefiletype.cpp kateschema.cpp \
   katetemplatehandler.cpp \
-  kateprinter.cpp
+  kateprinter.cpp 
+
+#todo:	katejscript.cpp
 
 HEADERS =
 
