@@ -70,7 +70,7 @@ void KMimeType::buildDefaultType()
   assert ( !s_pDefaultType );
   // Try to find the default type
   KServiceType * mime = KServiceTypeFactory::self()->
-	findServiceTypeByName( defaultMimeType() );
+        findServiceTypeByName( defaultMimeType() );
 
   if (mime && mime->isType( KST_KMimeType ))
   {
@@ -163,7 +163,7 @@ KMimeType::List KMimeType::allMimeTypes()
 }
 
 KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
-				 bool _is_local_file, bool _fast_mode )
+                                     bool _is_local_file, bool _fast_mode )
 {
   checkEssentialMimeTypes();
   QString path = _url.path();
@@ -186,7 +186,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     if ( _is_local_file )
     {
       if ( access( QFile::encodeName(path), R_OK ) == -1 )
-	return mimeType( "inode/directory-locked" );
+        return mimeType( "inode/directory-locked" );
     }
     return mimeType( "inode/directory" );
   }
@@ -213,21 +213,21 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       {
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
         if ( _is_local_file || _url.hasSubURL() || // Explicitly trust suburls
-	     KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) )
-	{
-    	    if ( _is_local_file && !_fast_mode ) {
-    	    	if ( mime->patternsAccuracy()<100 )
-    	    	{
-    	    	    KMimeMagicResult* result =
-    	    	    	    KMimeMagic::self()->findFileType( path );
+             KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) )
+        {
+            if ( _is_local_file && !_fast_mode ) {
+                if ( mime->patternsAccuracy()<100 )
+                {
+                    KMimeMagicResult* result =
+                            KMimeMagic::self()->findFileType( path );
 
-    	    	    if ( result && result->isValid() )
-    	    	    	return mimeType( result->mimeType() );
-    	    	}
-    	    }
+                    if ( result && result->isValid() )
+                        return mimeType( result->mimeType() );
+                }
+            }
 
-	    return mime;
-  	}
+            return mime;
+        }
       }
 
       static const QString& dotdesktop = KGlobal::staticQString(".desktop");
@@ -236,15 +236,15 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
       // Another filename binding, hardcoded, is .desktop:
       if ( fileName.endsWith( dotdesktop ) )
-	return mimeType( "application/x-desktop" );
+        return mimeType( "application/x-desktop" );
       // Another filename binding, hardcoded, is .kdelnk;
       // this is preserved for backwards compatibility
       if ( fileName.endsWith( dotkdelnk ) )
-	return mimeType( "application/x-desktop" );
+        return mimeType( "application/x-desktop" );
       // .directory files are detected as x-desktop by mimemagic
       // but don't have a Type= entry. Better cheat and say they are text files
       if ( fileName == dotdirectory )
-	return mimeType( "text/plain" );
+        return mimeType( "text/plain" );
     }
 
   if ( !_is_local_file || _fast_mode )
@@ -288,8 +288,8 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 }
 
 KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
-				     bool _is_local_file, bool _fast_mode,
-	    	    	    	     bool *accurate)
+                                     bool _is_local_file, bool _fast_mode,
+                                     bool *accurate)
 {
     KMimeType::Ptr mime = findByURL(_url, _mode, _is_local_file, _fast_mode);
     if (accurate) *accurate = !(_fast_mode) || ((mime->patternsAccuracy() == 100) && mime != defaultMimeTypePtr());
@@ -503,17 +503,25 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, KIcon::Group _
 
 QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
 {
-    KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
-				   false /*HACK*/);
+    const KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
+                                         false /*HACK*/);
     static const QString& unknown = KGlobal::staticQString("unknown");
-    QString i( mt->icon( _url, _url.isLocalFile() ));
+    const QString mimeTypeIcon = mt->icon( _url, _url.isLocalFile() );
+    QString i = mimeTypeIcon;
 
     // if we don't find an icon, maybe we can use the one for the protocol
-    if ( i == unknown || i.isEmpty() || mt == defaultMimeTypePtr()) {
+    if ( i == unknown || i.isEmpty() || mt == defaultMimeTypePtr()
+        // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
+        || _url.path().length() <= 1 ) 
+    {
         i = favIconForURL( _url ); // maybe there is a favicon?
 
         if ( i.isEmpty() )
             i = KProtocolInfo::icon( _url.protocol() );
+
+        // root of protocol: if we found nothing, revert to mimeTypeIcon (which is usually "folder")
+        if ( _url.path().length() <= 1 && ( i == unknown || i.isEmpty() ) )
+            i = mimeTypeIcon;
     }
     return i;
 }
@@ -740,14 +748,14 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
 }
 
 QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIcon::Group _group, int _force_size,
-	                            int _state, QString * _path ) const
+                                    int _state, QString * _path ) const
 {
   QString _icon = icon( _url, _url.isLocalFile() );
   QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _group,
-	_force_size, _state, _path, false );
+        _force_size, _state, _path, false );
   if ( pix.isNull() )
       pix = KGlobal::iconLoader()->loadIcon( "unknown", _group,
-	_force_size, _state, _path, false );
+        _force_size, _state, _path, false );
   return pix;
 }
 
@@ -787,7 +795,7 @@ pid_t KDEDesktopMimeType::run( const KURL& u, bool _is_local )
   if ( type.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file %1 "
-		       "has no Type=... entry.").arg(u.path() );
+                       "has no Type=... entry.").arg(u.path() );
     KMessageBoxWrapper::error( 0, tmp);
     return 0;
   }
@@ -932,24 +940,24 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
       // not mounted ?
       if ( mp.isEmpty() )
       {
-	Service mount;
-	mount.m_strName = i18n("Mount");
-	mount.m_type = ST_MOUNT;
-	result.append( mount );
+        Service mount;
+        mount.m_strName = i18n("Mount");
+        mount.m_type = ST_MOUNT;
+        result.append( mount );
       }
       else
       {
-	Service unmount;
+        Service unmount;
 #ifdef HAVE_VOLMGT
-	/*
-	 *  Solaris' volume management can only umount+eject
-	 */
-	unmount.m_strName = i18n("Eject");
+        /*
+         *  Solaris' volume management can only umount+eject
+         */
+        unmount.m_strName = i18n("Eject");
 #else
-	unmount.m_strName = i18n("Unmount");
+        unmount.m_strName = i18n("Unmount");
 #endif
-	unmount.m_type = ST_UNMOUNT;
-	result.append( unmount );
+        unmount.m_type = ST_UNMOUNT;
+        result.append( unmount );
       }
     }
   }
@@ -1020,9 +1028,9 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
           s.m_strName = cfg.readEntry( "Name" );
           s.m_strIcon = cfg.readEntry( "Icon" );
           s.m_strExec = exec;
-	  s.m_type = ST_USER_DEFINED;
+          s.m_type = ST_USER_DEFINED;
           s.m_display = !cfg.readBoolEntry( "NoDisplay" );
-	  result.append( s );
+          result.append( s );
         }
       }
     }
@@ -1084,8 +1092,8 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
       // Already mounted? Strange, but who knows ...
       if ( !mp.isEmpty() )
       {
-	kdDebug(7009) << "ALREADY Mounted" << endl;
-	return;
+        kdDebug(7009) << "ALREADY Mounted" << endl;
+        return;
       }
 
       bool ro = cfg.readBoolEntry( "ReadOnly", false );
@@ -1101,7 +1109,7 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
     {
       // Not mounted? Strange, but who knows ...
       if ( mp.isEmpty() )
-	return;
+        return;
 
 #ifndef Q_WS_WIN
       (void)new KAutoUnmount( mp, path );
