@@ -2749,6 +2749,9 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       else
       {
         m_doc->selectWord( cursor );
+        selectAnchor = KateTextCursor (m_doc->selEndLine(), m_doc->selEndCol());
+        selStartCached = m_doc->selectStart;
+        selEndCached = m_doc->selectEnd;
       }
 
       // Move cursor to end of selected word
