@@ -303,6 +303,9 @@ private:
  * The first macro argument is the name of your library, the second specifies the name
  * of your factory.
  *
+ * NOTE: you probably want to use KGenericFactory<PluginClassName>
+ * instead of writing your own factory.
+ *
  * In the constructor of your factory you should create an instance of KInstance
  * like this:
  * \code

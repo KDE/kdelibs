@@ -41,15 +41,15 @@ class KMultipleDragPrivate;
  *
  * \code
  * KMultipleDrag *drag = new KMultipleDrag( parentWidget );
- * drag->addDragObject( new QImageDrag( someQImage, 0L ) );
- * drag->addDragObject( new KURLDrag( someKURL, 0L ) );
+ * drag->addDragObject( new QImageDrag( someQImage, 0 ) );
+ * drag->addDragObject( new KURLDrag( someKURL, 0 ) );
  * drag->drag();
  * \endcode
  *
  * Note that the drag objects added to the multiple drag become owned by it.
- * For that reason their parent should be 0L.
+ * For that reason their parent should be 0.
  *
- * @author David Faure <david@mandrakesoft.com>
+ * @author David Faure <faure@kde.org>
  */
 class KDECORE_EXPORT KMultipleDrag : public QDragObject
 {
@@ -62,19 +62,19 @@ public:
      *                   0 for a parent-less object
      * @param name the name of the object, can be 0
      */
-    KMultipleDrag( QWidget *dragSource = 0L, const char *name = 0L );
+    KMultipleDrag( QWidget *dragSource = 0, const char *name = 0 );
 
     /**
      * Call this to add each underlying drag object to the multiple drag object.
      * The drag object should not have a parent because the multiple drag object
      * will own it.
-     * 
+     *
      * @param dragObject the drag object to add. Should have no parent object.
      */
     void addDragObject( QDragObject *dragObject );
 
 protected:
-    /** 
+    /**
      * Returns the data of a drag object with that supports the given
      * mime type.
      * @param mime the mime type to search
@@ -89,6 +89,7 @@ protected:
      */
     virtual const char* format( int i ) const;
 
+// KDE4: make private
     QPtrList<QDragObject> m_dragObjects;
     QValueList<int> m_numberFormats;
 protected:
