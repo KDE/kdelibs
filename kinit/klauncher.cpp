@@ -1276,8 +1276,9 @@ KLauncher::requestSlave(const QString &protocol,
        arg_list.prepend(QFile::encodeName(locate("exe", "kioslave")));
        name = "valgrind";
        if (!mSlaveValgrindSkin.isEmpty()) {
-           arg_list.prepend(QCString("--skin=") + mSlaveValgrindSkin);
-       }
+           arg_list.prepend(QCString("--tool=") + mSlaveValgrindSkin);
+       } else
+	   arg_list.prepend("--tool=addrcheck");
     }
 
     KLaunchRequest *request = new KLaunchRequest;
