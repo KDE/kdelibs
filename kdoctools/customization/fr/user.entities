@@ -77,8 +77,8 @@
 <!ENTITY traducteurSamiFantar    '<othercredit role="translator"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurSamiFantar     '<othercredit role="reviewer"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurNilsSergioFernandez    '<othercredit role="translator"><firstname>Nils Sergio</firstname><surname>FernÃ¡ndez Rönningen</surname><affiliation><address><email></email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurNilsSergioFernandez     '<othercredit role="reviewer"><firstname>Nils Sergio</firstname><surname>FernÃ¡ndez Rönningen</surname><affiliation><address><email></email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurNilsSergioFernandez    '<othercredit role="translator"><firstname>Nils Sergio</firstname><surname>Fernández Rønningen</surname><affiliation><address><email></email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurNilsSergioFernandez     '<othercredit role="reviewer"><firstname>Nils Sergio</firstname><surname>Fernández Rønningen</surname><affiliation><address><email></email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurFredericFoiry    '<othercredit role="translator"><firstname>Frédéric</firstname><surname>Foiry</surname><affiliation><address><email>frederic.foiry@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurFredericFoiry     '<othercredit role="reviewer"><firstname>Frédéric</firstname><surname>Foiry</surname><affiliation><address><email>frederic.foiry@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
