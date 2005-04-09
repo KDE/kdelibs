@@ -94,7 +94,7 @@ bool KKeyNative::init( const KKey& key )
 	m_sym = key.sym();
 	m_code = m_sym; //key.keyCodeQt();
 	m_mod = key.m_mod;
-#elif !defined(Q_WS_WIN)
+#elif !defined(Q_WS_WIN) && !defined(Q_WS_MACX)
 	// Get any extra mods required by the sym.
 	//  E.g., XK_Plus requires SHIFT on the en layout.
 	m_sym = key.sym();
