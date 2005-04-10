@@ -49,7 +49,7 @@ class Palette
       rgb[ i ] = RGB( color );
     }
 
-    QRgb color( int i )
+    QRgb color( int i ) const
     {
       return qRgb( rgb[ i ].r, rgb[ i ].g, rgb[ i ].b );
     }
@@ -60,12 +60,11 @@ class Palette
 class PCXHEADER
 {
   public:
-    PCXHEADER()
-    {
-      reset();
-    }
+    PCXHEADER();
 
-    void reset();
+    inline int width() const { return ( XMax-XMin ) + 1; }
+    inline int height() const { return ( YMax-YMin ) + 1; }
+    inline bool isCompressed() const { return ( Encoding==1 ); }
 
     Q_UINT8  Manufacturer;    // Constant Flag, 10 = ZSoft .pcx
     Q_UINT8  Version;         // Version information·
