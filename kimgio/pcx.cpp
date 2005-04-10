@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2002-2003 Nadeem Hasan <nhasan@kde.org>
+   Copyright (C) 2002-2005 Nadeem Hasan <nhasan@kde.org>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -290,7 +290,7 @@ KDE_EXPORT void kimgio_pcx_read( QImageIO *io )
   kdDebug( 399 ) << "Width: " << w << endl;
   kdDebug( 399 ) << "Height: " << h << endl;
   kdDebug( 399 ) << "Window: " << header.XMin << "," << header.XMax << "," 
-            << header.YMin << "," << header.YMax << endl;
+                 << header.YMin << "," << header.YMax << endl;
   kdDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine << endl;
   kdDebug( 399 ) << "NPlanes: " << header.NPlanes << endl;
 
@@ -365,9 +365,6 @@ static void writeImage1( QImage &img, QDataStream &s, PCXHEADER &header )
   header.Bpp = 1;
   header.NPlanes = 1;
   header.BytesPerLine = img.bytesPerLine();
-
-  for ( int i=0; i<16; ++i )
-    header.ColorMap.setColor( i, qRgb( 255, 255, 255 ) );
 
   s << header;
 
