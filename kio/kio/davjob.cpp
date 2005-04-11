@@ -46,6 +46,7 @@ class DavJob::DavJobPrivate
 {
 public:
   QByteArray savedStaticData;
+	QByteArray str_response; // replaces the QString previously used in DavJob itself
 };
 
 DavJob::DavJob( const KURL& url, int method, const QString& request, bool showProgressInfo )
@@ -66,46 +67,48 @@ DavJob::DavJob( const KURL& url, int method, const QString& request, bool showPr
 
 void DavJob::slotData( const QByteArray& data )
 {
-  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
-    m_str_response.append( QString( data ) );
+  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error) {
+    unsigned int oldSize = d->str_response.size();
+    d->str_response.resize( oldSize + data.size() );
+    memcpy( d->str_response.data() + oldSize, data.data(), data.size() );
+  }
 }
 
 void DavJob::slotFinished()
 {
-  // kdDebug() << "DavJob::slotFinished()" << endl;
-  // kdDebug() << m_str_response << endl;
-	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
-		QDataStream istream( m_packedArgs, IO_ReadOnly );
-		int s_cmd, s_method;
-		KURL s_url;
-		istream >> s_cmd;
-		istream >> s_url;
-		istream >> s_method;
-		// PROPFIND
-		if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
-			m_packedArgs.truncate(0);
-			QDataStream stream( m_packedArgs, IO_WriteOnly );
-			stream << (int)7 << m_redirectionURL << (int)KIO::DAV_PROPFIND;
-		}
-	} else if ( ! m_response.setContent( m_str_response, true ) ) {
-		// An error occurred parsing the XML response
-		QDomElement root = m_response.createElementNS( "DAV:", "error-report" );
-		m_response.appendChild( root );
+  // kdDebug(7113) << "DavJob::slotFinished()" << endl;
+  // kdDebug(7113) << d->str_response << endl;
+  if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
+    QDataStream istream( m_packedArgs, IO_ReadOnly );
+    int s_cmd, s_method;
+    KURL s_url;
+    istream >> s_cmd;
+    istream >> s_url;
+    istream >> s_method;
+    // PROPFIND
+    if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
+      m_packedArgs.truncate(0);
+      QDataStream stream( m_packedArgs, IO_WriteOnly );
+      stream << (int)7 << m_redirectionURL << (int)KIO::DAV_PROPFIND;
+    }
+  } else if ( ! m_response.setContent( d->str_response, true ) ) {
+    // An error occurred parsing the XML response
+    QDomElement root = m_response.createElementNS( "DAV:", "error-report" );
+    m_response.appendChild( root );
 
-		QDomElement el = m_response.createElementNS( "DAV:", "offending-response" );
-		QDomText textnode = m_response.createTextNode( m_str_response );
-		el.appendChild( textnode );
-		root.appendChild( el );
-		delete d; // Should be in virtual destructor
-		d = 0;
-	} else {
-		delete d; // Should be in virtual destructor
-		d = 0;
-	}
-
-	// kdDebug() << m_response.toString() << endl;
-	TransferJob::slotFinished();
-	if( d ) staticData = d->savedStaticData.copy(); // Need to send DAV request to this host too
+    QDomElement el = m_response.createElementNS( "DAV:", "offending-response" );
+    QDomText textnode = m_response.createTextNode( d->str_response );
+    el.appendChild( textnode );
+    root.appendChild( el );
+    delete d; // Should be in virtual destructor
+    d = 0;
+  } else {
+    delete d; // Should be in virtual destructor
+    d = 0;
+  }
+  // kdDebug(7113) << m_response.toString() << endl;
+  TransferJob::slotFinished();
+  if( d ) staticData = d->savedStaticData.copy(); // Need to send DAV request to this host too
 }
 
 /* Convenience methods */
