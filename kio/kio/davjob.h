@@ -80,7 +80,7 @@ namespace KIO {
     private:
 	class DavJobPrivate;
 	DavJobPrivate *d;
-	QString m_str_response;
+	QString dummy; // kept around for BC reasons
 	QDomDocument m_response;
    };
 
