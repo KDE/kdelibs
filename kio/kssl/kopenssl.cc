@@ -594,7 +594,7 @@ KOpenSSLProxy::~KOpenSSLProxy() {
    if (_cryptoLib) {
 	_cryptoLib->unload();
    }
-   medProxy.setObject(0);
+   medProxy.setObject(_me, 0);
 }
 
 

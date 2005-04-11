@@ -195,7 +195,7 @@ desinit (DES_KEY * key)
 
 /* Set key (initialize key schedule array) */
 int
-ntlm_des_set_key (DES_KEY * dkey, char *user_key, int len)
+ntlm_des_set_key (DES_KEY * dkey, char *user_key, int /*len*/)
 {
   char pc1m[56];		/* place to modify pc1 into */
   char pcr[56];			/* place to rotate pc1 into */
