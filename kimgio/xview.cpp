@@ -50,10 +50,14 @@ KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
 	sscanf(str, "%d %d %d", &x, &y, &maxval);
 
 	if (maxval != 255) return;
+	int blocksize = x*y;
+        if(x < 0 || y < 0 || blocksize < x || blocksize < y)
+            return;
 
 	// now follows a binary block of x*y bytes. 
-	int blocksize = x*y;
 	char *block = new char[ blocksize ];
+        if(!block)
+            return;
 
 	if (iodev->readBlock(block, blocksize) != blocksize ) 
 	{
