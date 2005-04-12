@@ -239,7 +239,7 @@ private:
     {
       if ( autoUpdates )
       {
-        if ( KDirWatch::exists() )
+        if ( KDirWatch::exists() && url.isLocalFile() )
           kdirwatch->removeDir( url.path() );
         sendSignal( false, url );
       }
