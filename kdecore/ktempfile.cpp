@@ -54,7 +54,7 @@
 #include "ktempfile.h"
 #include "kstandarddirs.h"
 #include "kde_file.h"
-
+#include "kdebug.h"
 
 /* antlarr: KDE 4: make the parameters const QString & */
 KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
@@ -101,7 +101,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    {
        // Recreate it for the warning, mkstemps emptied it
        QCString nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
-       qWarning("KTempFile: Error trying to create %s: %s", nme.data(), strerror(errno));
+       kdWarning() << "KTempFile: Error trying to create " << nme << ": " << strerror(errno) << endl;
        mError = errno;
        mTmpName = QString::null;
        return false;
@@ -160,7 +160,7 @@ KTempFile::fstream()
    // Create a stream
    mStream = KDE_fdopen(mFd, "r+");
    if (!mStream) {
-     qWarning("KTempFile: Error trying to open %s: %s", mTmpName.latin1(), strerror(errno));
+     kdWarning() << "KTempFile: Error trying to open " << mTmpName << ": " << strerror(errno) << endl;
      mError = errno;
    }
    return mStream;
@@ -226,7 +226,7 @@ KTempFile::sync()
       
       if (result)
       {
-         qWarning("KTempFile: Error trying to flush %s: %s", mTmpName.latin1(), strerror(errno));
+         kdWarning() << "KTempFile: Error trying to flush " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
@@ -236,7 +236,7 @@ KTempFile::sync()
       result = FDATASYNC(mFd);
       if (result)
       {
-         qWarning("KTempFile: Error trying to sync %s: %s", mTmpName.latin1(), strerror(errno));
+         kdWarning() << "KTempFile: Error trying to sync " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
@@ -264,7 +264,7 @@ KTempFile::close()
       mStream = 0;
       mFd = -1;
       if (result != 0) {
-         qWarning("KTempFile: Error trying to close %s: %s", mTmpName.latin1(), strerror(errno));
+         kdWarning() << "KTempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
@@ -275,7 +275,7 @@ KTempFile::close()
       result = ::close(mFd);
       mFd = -1;
       if (result != 0) {
-         qWarning("KTempFile: Error trying to close %s: %s", mTmpName.latin1(), strerror(errno));
+         kdWarning() << "KTempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
