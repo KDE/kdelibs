@@ -173,8 +173,12 @@ static int findXMLEncoding(const QCString &str, int &encodingLength)
     pos += 8;
 
     // Skip spaces and stray control characters.
-    while (str[pos] <= ' ' && pos != len)
+    while (pos < len && str[pos] <= ' ')
         ++pos;
+
+    //Bail out if nothing after
+    if (pos >= len)
+        return -1;
 
     // Skip equals sign.
     if (str[pos] != '=')
@@ -182,8 +186,12 @@ static int findXMLEncoding(const QCString &str, int &encodingLength)
     ++pos;
 
     // Skip spaces and stray control characters.
-    while (str[pos] <= ' ' && pos != len)
+    while (pos < len && str[pos] <= ' ')
         ++pos;
+
+    //Bail out if nothing after
+    if (pos >= len)
+        return -1;
 
     // Skip quotation mark.
     char quoteMark = str[pos];
@@ -193,10 +201,10 @@ static int findXMLEncoding(const QCString &str, int &encodingLength)
 
     // Find the trailing quotation mark.
     int end = pos;
-    while (str[end] != quoteMark)
+    while (end < len && str[end] != quoteMark)
         ++end;
 
-    if (end == len)
+    if (end >= len)
         return -1;
 
     encodingLength = end - pos;
@@ -316,7 +324,7 @@ QString Decoder::decode(const char *data, int len)
                         while (*end != '>' && *end != '\0') end++;
                         if (*end == '\0')
                             break;
-                        QCString str(ptr, end - ptr);
+                        QCString str(ptr, end - ptr + 1); //+1 as it must include the \0 terminator
                         int len;
                         int pos = findXMLEncoding(str, len);
                         if (pos != -1) {
