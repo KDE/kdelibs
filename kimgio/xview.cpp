@@ -62,6 +62,8 @@ KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
 
 	// Create the image
 	QImage image( x, y, 8, maxval + 1, QImage::BigEndian );
+	if( image.isNull())
+		return;
 
 	// how do the color handling? they are absolute 24bpp
 	// or at least can be calculated as such.

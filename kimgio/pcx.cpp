@@ -136,7 +136,8 @@ static void readImage1( QImage &img, QDataStream &s, const PCXHEADER &header )
 {
   QByteArray buf( header.BytesPerLine );
 
-  img.create( header.width(), header.height(), 1, 2, QImage::BigEndian );
+  if(!img.create( header.width(), header.height(), 1, 2, QImage::BigEndian ))
+    return;
 
   for ( int y=0; y<header.height(); ++y )
   {
@@ -162,7 +163,8 @@ static void readImage4( QImage &img, QDataStream &s, const PCXHEADER &header )
   QByteArray buf( header.BytesPerLine*4 );
   QByteArray pixbuf( header.width() );
 
-  img.create( header.width(), header.height(), 8, 16 );
+  if(!img.create( header.width(), header.height(), 8, 16 ))
+    return;
 
   for ( int y=0; y<header.height(); ++y )
   {
@@ -198,7 +200,8 @@ static void readImage8( QImage &img, QDataStream &s, const PCXHEADER &header )
 {
   QByteArray buf( header.BytesPerLine );
 
-  img.create( header.width(), header.height(), 8, 256 );
+  if(!img.create( header.width(), header.height(), 8, 256 ))
+    return;
 
   for ( int y=0; y<header.height(); ++y )
   {
@@ -238,7 +241,8 @@ static void readImage24( QImage &img, QDataStream &s, const PCXHEADER &header )
   QByteArray g_buf( header.BytesPerLine );
   QByteArray b_buf( header.BytesPerLine );
 
-  img.create( header.width(), header.height(), 32 );
+  if(!img.create( header.width(), header.height(), 32 ))
+    return;
 
   for ( int y=0; y<header.height(); ++y )
   {

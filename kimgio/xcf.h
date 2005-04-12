@@ -176,7 +176,7 @@ private:
 	bool loadProperty(QDataStream& xcf_io, PropType& type, QByteArray& bytes);
 	bool loadLayer(QDataStream& xcf_io, XCFImage& xcf_image);
 	bool loadLayerProperties(QDataStream& xcf_io, Layer& layer);
-	void composeTiles(XCFImage& xcf_image);
+	bool composeTiles(XCFImage& xcf_image);
 	void setGrayPalette(QImage& image);
 	void setPalette(XCFImage& xcf_image, QImage& image);
 	static void assignImageBytes(Layer& layer, uint i, uint j);
@@ -185,7 +185,7 @@ private:
 	static void assignMaskBytes(Layer& layer, uint i, uint j);
 	bool loadMask(QDataStream& xcf_io, Layer& layer);
 	bool loadChannelProperties(QDataStream& xcf_io, Layer& layer);
-	void initializeImage(XCFImage& xcf_image);
+	bool initializeImage(XCFImage& xcf_image);
 	bool loadTileRLE(QDataStream& xcf_io, uchar* tile, int size,
 			int data_length, Q_INT32 bpp);
 	static void copyLayerToImage(XCFImage& xcf_image);
