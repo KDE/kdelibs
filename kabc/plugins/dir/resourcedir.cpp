@@ -218,6 +218,8 @@ bool ResourceDir::save( Ticket * )
   Addressee::Map::Iterator it;
   bool ok = true;
 
+  mDirWatch.stopScan();
+
   for ( it = mAddrMap.begin(); it != mAddrMap.end(); ++it ) {
     if ( !it.data().changed() )
       continue;
@@ -235,6 +237,8 @@ bool ResourceDir::save( Ticket * )
 
     file.close();
   }
+
+  mDirWatch.startScan();
 
   return ok;
 }
