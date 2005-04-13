@@ -804,6 +804,11 @@ void AddressBook::cleanUp()
 {
 }
 
+bool AddressBook::loadingHasFinished() const
+{
+  return d->mPendingLoadResources.isEmpty();
+}
+
 void AddressBook::resourceLoadingFinished( Resource *res )
 {
   d->mPendingLoadResources.remove( res );

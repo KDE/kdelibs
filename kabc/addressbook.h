@@ -353,6 +353,14 @@ class KABC_EXPORT AddressBook : public QObject
     void emitAddressBookUnlocked() { emit addressBookUnlocked( this ); }
     void emitAddressBookChanged() { emit addressBookChanged( this ); }
 
+    /**
+      Returns true when the loading of the addressbook has finished,
+      otherwise false.
+
+      @since 3.5
+     */
+    bool loadingHasFinished() const;
+
   signals:
     /**
       Emitted when one of the resources discovered a change in its backend
