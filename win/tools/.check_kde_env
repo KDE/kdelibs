@@ -3,12 +3,12 @@
 # checks current environment
 
 if [ -z "$KDEWIN" ] ; then 
-	echo "$0: \$KDEWIN environment variable is not set. Set it to absolute path of kdelibs/win32 source code, e.g. C:\\kdelibs"
+	echo `basename $0`": \$KDEWIN environment variable is not set. Set it to absolute path of kdelibs/win32 source code, e.g. C:\\kdelibs"
 	exit 1
 fi
 
 if [ -z "$KDEDIR" ] ; then 
-	echo "$0: \$KDEDIR environment variable is not set. Set it to absolute path of kdelibs/win32 binaries, e.g. C:\\kde"
+	echo `basename $0`": \$KDEDIR environment variable is not set. Set it to absolute path of kdelibs/win32 binaries, e.g. C:\\kde"
 	exit 1
 fi
 

@@ -2,13 +2,9 @@
 
 # Copy this file as kde_env_custom and alter it
 
-if [ -z "$MSVC" ] ; then
 
-	# MSVC instalation directory, please change
+	# MSVC instalation directory, please change, or comment it out if not using msvc compiler
 	MSVC="c:\\vs7"
-
-	INCLUDE="$MSVC\\include;$INCLUDE"
-fi
 
 # Top KDE Directory - target of your compilation, please change
 export KDEDIR="c:\\kde"
