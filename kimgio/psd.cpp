@@ -182,6 +182,9 @@ namespace {	// Private.
 						// Copy next len+1 bytes literally.
 						len++;
 						count += len;
+                                                if ( count > pixel_count )
+                                                        return false;
+
 						while( len != 0 ) {
 							s >> *ptr;
 							ptr += 4;
@@ -194,6 +197,8 @@ namespace {	// Private.
 						len ^= 0xFF;
 						len += 2;
 						count += len;
+                                                if(s.atEnd() || count > pixel_count)
+                                                        return false;
 						uchar val;
 						s >> val;
 						while( len != 0 ) {
