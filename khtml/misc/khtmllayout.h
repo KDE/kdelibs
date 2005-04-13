@@ -44,7 +44,7 @@ namespace khtml
     struct Length
     {
 	Length() : _length(0) {}
-        Length(LengthType t) { l.value = 0; l.type = t; l.quirk = 0; }
+        Length(LengthType t) { _length = 0; l.type = t; }
         Length(int v, LengthType t, bool q=false)
         {  l.value = v; l.type = t; l.quirk = q; }
         bool operator==(const Length& o) const
