@@ -7,15 +7,15 @@
 dest=win/pro_files
 mkdir -p $dest
 
-[ -z "$KDELIBS" ] && echo "KDELIBS?" && exit 1
+.check_kde_env || exit 1
 
-cd $KDELIBS
+cd "$KDELIBS"
 
 for pro in `find . -name \*.pro | grep -v "\/\.\|^\.\/win/"` ; do
-	dir=`dirname $pro`
-	mkdir -p $dest/$dir
+	dir=`dirname "$pro"`
+	mkdir -p "$dest/$dir"
 	if [ "$pro" -nt "$dest/$pro" ] ; then
-		cp -p "$pro" $dest/$pro
+		cp -p "$pro" "$dest/$pro"
 		echo "$pro"
 	fi
 done

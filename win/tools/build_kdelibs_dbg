@@ -8,12 +8,25 @@ fi
 
 update_kdelibs_pro_files || exit 1
 
+cd "$KDELIBS"
+
+echo "-------------------------------------------------"
+echo "Building Debug Version of KDElibs/win32"
+echo "Source directory: \$KDELIBS = $KDELIBS"
+echo "Version: $KDE_VER_MAJ.$KDE_VER_MIN.$KDE_VER_PAT"
+echo "Destination directory: \$KDEDIR = $KDEDIR"
+if [ -n $noclean ] ; then
+	echo "Options: noclean"
+fi
+echo "-------------------------------------------------"
+echo
+
 pwd=`pwd`
 make='nmake -nologo'
 
 # special
 cd win/9x && $make || exit 1
-cd $pwd
+cd "$pwd"
 
 # all
 for d in \

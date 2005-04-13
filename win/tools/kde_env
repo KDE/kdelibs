@@ -5,10 +5,10 @@
 
 # Copy kde_env_custom.template to kde_env_custom and this it's paths if needed:
 
-source "kde_env_custom"
+source "kde_env_custom" || exit 1
 
 # Generic settings
-export KDELIBS=$KDEWIN\\kdelibs
+export KDELIBS=$KDEWIN\\kdelibs  # KDElibs/win32 source directory
 export INCLUDE="$KDEWIN\\include;$KDELIBS;$KDELIBS\\kdecore;$KDELIBS\\kdefx;$KDELIBS\\kdeprint;$KDELIBS\\kdeui;$KDELIBS\\kmdi;$KDELIBS\\dcop;$KDELIBS\\kio;$KDELIBS\\kio\\kio;$KDELIBS\\kio\\kfile;$INCLUDE"
 
 # Version information for binaries

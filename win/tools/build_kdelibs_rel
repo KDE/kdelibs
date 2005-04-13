@@ -2,7 +2,24 @@
 # compile entire kdelibs/win32 in debug mode
 # (c) 2003-2005, Jaroslaw Staniek, js@iidea.pl
 
+if [ "$1" == "noclean" ] ; then
+	noclean=1
+fi
+
 update_kdelibs_pro_files || exit 1
+
+cd "$KDELIBS"
+
+echo "-------------------------------------------------"
+echo "Building Release Version of KDElibs/win32"
+echo "Source directory: \$KDELIBS = $KDELIBS"
+echo "Version: $KDE_VER_MAJ.$KDE_VER_MIN.$KDE_VER_PAT"
+echo "Destination directory: \$KDEDIR = $KDEDIR"
+if [ -n $noclean ] ; then
+	echo "Options: noclean"
+fi
+echo "-------------------------------------------------"
+echo
 
 pwd=`pwd`
 
@@ -35,7 +52,11 @@ kate/interfaces \
 kate/part \
  ; do 
 	echo ================== $d =================
-	cd $d && mkrel  || exit 1
+	cd $d || exit 1
+	if [ -z $noclean ] ; then
+		$make clean || exit 1
+	fi
+	mkrel || exit 1
 	cd $pwd
 done
 
