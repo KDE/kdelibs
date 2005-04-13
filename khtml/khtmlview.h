@@ -293,6 +293,7 @@ private:
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     void findAhead(bool increase);
+    void updateFindAheadTimeout();
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 
 #ifndef KHTML_NO_CARET
