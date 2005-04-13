@@ -234,10 +234,10 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
 					property.readBytes(tag, size);
 
 					Q_UINT32 flags;
-					char* data;
+					char* data=0;
 					property >> flags >> data;
 
-					if (strcmp(tag, "gimp-comment") == 0)
+					if (tag && strncmp(tag, "gimp-comment", strlen("gimp-comment")) == 0)
 						xcf_image.image.setText("Comment", 0, data);
 
 					delete[] tag;
@@ -257,6 +257,9 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
 
 				case PROP_COLORMAP:
 					property >> xcf_image.num_colors;
+                                        if(xcf_image.num_colors < 0 || xcf_image.num_colors > 65535)
+                                            return false;
+
 					xcf_image.palette.reserve(xcf_image.num_colors);
 
 					for (int i = 0; i < xcf_image.num_colors; i++) {
@@ -307,6 +310,9 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 			return false;
 		}
 
+                if(size > 65535 || size < 4)
+                    return false;
+
 		size = 3 * (size - 4) + 4;
 		data = new char[size];
 
@@ -336,19 +342,21 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 		}
 
 		size = 0;
-	} else
-		xcf_io.readBytes(data, size);
+	} else {
+                xcf_io >> size;
+                if(size >256000)
+                    return false;
+                data = new char[size];
+		xcf_io.readRawBytes(data, size);
+        }
 
 	if (xcf_io.device()->status() != IO_Ok) {
 		kdDebug(399) << "XCF: read failure on property " << type << " data, size " << size << endl;
 		return false;
 	}
 
-	if (size != 0) {
-		bytes.resize(size);
-		for (uint i = 0; i < size; i++)
-			bytes[i] = data[i];
-		delete[] data;
+	if (size != 0 && data) {
+                bytes.assign(data,size);
 	}
 
 	return true;
