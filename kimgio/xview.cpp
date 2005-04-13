@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <qimage.h>
 
 #include <kdelibs_export.h>
@@ -14,6 +15,9 @@
 #include "xview.h"
 
 #define BUFSIZE 1024
+
+static const int b_255_3[]= {0,85,170,255},  // index*255/3
+           rg_255_7[]={0,36,72,109,145,182,218,255}; // index *255/7
 
 KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
 {      
@@ -55,7 +59,7 @@ KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
             return;
 
 	// now follows a binary block of x*y bytes. 
-	char *block = new char[ blocksize ];
+	char *block = (char*) malloc(blocksize);
         if(!block)
             return;
 
@@ -66,8 +70,10 @@ KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
 
 	// Create the image
 	QImage image( x, y, 8, maxval + 1, QImage::BigEndian );
-	if( image.isNull())
+	if( image.isNull()) {
+                free(block);
 		return;
+        }
 
 	// how do the color handling? they are absolute 24bpp
 	// or at least can be calculated as such.
@@ -75,29 +81,9 @@ KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
 
 	for ( int j = 0; j < 256; j++ )
 	{
-// ----------- OLIVER EIDEN
-// 	That is the old-code !
-/*		r =  ((int) ((j >> 5) & 0x07)) << 5;
-		g =  ((int) ((j >> 2) & 0x07)) << 5;
-		b =  ((int) ((j >> 0) & 0x03)) << 6;*/
-
-
-// 	That is the code-how xv, decode 3-3-2 pixmaps, it is slighly different,
-//	but yields much better visuals results
-/*		r =  (((int) ((j >> 5) & 0x07)) *255) / 7;
-		g =  (((int) ((j >> 2) & 0x07)) *255) / 7;
-		b =  (((int) ((j >> 0) & 0x03)) *255) / 3;*/
-
-//	This is the same as xv, with multiplications/divisions replaced by indexing
-
-//      Look-up table to avoid multiplications and divisons
-	static int b_255_3[]= {0,85,170,255},  // index*255/3
-		   rg_255_7[]={0,36,72,109,145,182,218,255}; // index *255/7
-
 		r =  rg_255_7[((j >> 5) & 0x07)];
 		g =  rg_255_7[((j >> 2) & 0x07)];
 		b =  b_255_3[((j >> 0) & 0x03)];
-// ---------------
 		image.setColor( j, qRgb( r, g, b ) );
 	}
 
@@ -110,7 +96,7 @@ KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
 	_imageio->setImage( image );
 	_imageio->setStatus( 0 );
 
-	delete [] block;
+	free(block);
 	return;
 }
 
