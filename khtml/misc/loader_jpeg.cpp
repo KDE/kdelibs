@@ -83,6 +83,7 @@ struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     size_t skip_input_bytes;
     int ateof;
     QRect change_rect;
+    QRect old_change_rect;
     QTime decoder_timestamp;
     bool final_pass;
     bool decoding_done;
@@ -374,6 +375,8 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         }
     }
 
+again:
+
     if(state == decompressStarted) {
         state =  (!jsrc.final_pass && jsrc.decoder_timestamp.elapsed() < max_consumingtime)
                 ? consumeInput : prepareOutputScan;
@@ -385,9 +388,10 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 
         do {
             retval = jpeg_consume_input(&cinfo);
-        } while (retval != JPEG_SUSPENDED && retval != JPEG_REACHED_EOI);
+        } while (retval != JPEG_SUSPENDED && retval != JPEG_REACHED_EOI
+                 && (retval != JPEG_REACHED_SOS || jsrc.decoder_timestamp.elapsed() < max_consumingtime));
 
-        if(jsrc.decoder_timestamp.elapsed() > max_consumingtime ||
+        if(jsrc.decoder_timestamp.elapsed() >= max_consumingtime ||
            jsrc.final_pass ||
            retval == JPEG_REACHED_EOI || retval == JPEG_REACHED_SOS)
             state = prepareOutputScan;
@@ -395,7 +399,6 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 
     if(state == prepareOutputScan)
     {
-        jsrc.decoder_timestamp.restart();
         if ( jpeg_start_output(&cinfo, cinfo.input_scan_number) )
             state = doOutputScan;
     }
@@ -443,6 +446,10 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
             jsrc.change_rect |= r;
 
             if ( jsrc.decoder_timestamp.elapsed() >= max_consumingtime ) {
+                if( !jsrc.old_change_rect.isEmpty()) {
+                    consumer->changed(jsrc.old_change_rect);
+                    jsrc.old_change_rect = QRect();
+                }
                 consumer->changed(jsrc.change_rect);
                 jsrc.change_rect = QRect();
                 jsrc.decoder_timestamp.restart();
@@ -455,8 +462,10 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
                 jpeg_finish_output(&cinfo);
                 jsrc.final_pass = jpeg_input_complete(&cinfo);
                 jsrc.decoding_done = jsrc.final_pass && cinfo.input_scan_number == cinfo.output_scan_number;
-                if ( !jsrc.decoding_done )
+                if ( !jsrc.decoding_done ) {
+                    jsrc.old_change_rect |= jsrc.change_rect;
                     jsrc.change_rect =  QRect();
+                }
             }
             else
                 jsrc.decoding_done = true;
@@ -471,9 +480,10 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
                 qDebug("starting another one, input_scan_number is %d/%d", cinfo.input_scan_number,
                        cinfo.output_scan_number);
 #endif
-                // don't return until necessary!
                 jsrc.decoder_timestamp.restart();
                 state = decompressStarted;
+                // don't return until necessary!
+                goto again;
             }
         }
 
