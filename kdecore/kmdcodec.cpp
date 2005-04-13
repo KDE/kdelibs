@@ -41,7 +41,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <kswap.h>
 #include <kdebug.h>
 #include "kmdcodec.h"
 
@@ -1424,11 +1423,14 @@ inline void KMD4::HH ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
 void KMD4::byteReverse( unsigned char *buf, Q_UINT32 len )
 {
   Q_UINT32 *b = (Q_UINT32*) buf;
+#ifdef WORDS_BIGENDIAN
   while ( len > 0 ) {
-    *b = KFromToLittleEndian( *b );
+    *b = ((((*b) & 0xff000000) >> 24) | (((*b) & 0x00ff0000) >>  8) |
+         (((*b) & 0x0000ff00) <<  8) | (((*b) & 0x000000ff) << 24));
     len--;
     b++;
   }
+#endif
 }
 
 /*
