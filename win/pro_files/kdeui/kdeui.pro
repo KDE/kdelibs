@@ -127,10 +127,13 @@ kdatetimewidget.cpp \
 ktimewidget.cpp \
 kinputdialog.cpp
 
-#added KMessageBox::Dangerous implementation
-SOURCES += \
-kmessagebox_win.cpp
-
+exists( kmessagebox_win.cpp ) {
+ #added KMessageBox::Dangerous implementation
+ SOURCES += kmessagebox_win.cpp
+}
+!exists( kmessagebox_win.cpp ) {
+ SOURCES += kmessagebox.cpp
+}
 
 # generated:
 SOURCES += \
