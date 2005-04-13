@@ -57,11 +57,11 @@ kate/interfaces \
 kate/part \
  ; do 
 	echo ================== $d =================
-	cd $d && qmake || exit 1
+	cd $d || exit 1
 	if [ -z $noclean ] ; then
-		$make clean || exit 1
+		$make clean
 	fi
-	$make || exit 1
+	qmake && $make || exit 1
 	cd $pwd
 done
 

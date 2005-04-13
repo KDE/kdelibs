@@ -1,5 +1,5 @@
 #!/bin/bash
-# compile entire kdelibs/win32 in debug mode
+# compile entire kdelibs/win32 in release mode
 # (c) 2003-2005, Jaroslaw Staniek, js@iidea.pl
 
 if [ "$1" == "noclean" ] ; then
@@ -54,7 +54,7 @@ kate/part \
 	echo ================== $d =================
 	cd $d || exit 1
 	if [ -z $noclean ] ; then
-		$make clean || exit 1
+		$make clean
 	fi
 	mkrel || exit 1
 	cd $pwd
