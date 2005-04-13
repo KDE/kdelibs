@@ -46,7 +46,7 @@ namespace khtml
 	Length() : _length(0) {}
         Length(LengthType t) { _length = 0; l.type = t; }
         Length(int v, LengthType t, bool q=false)
-        {  l.value = v; l.type = t; l.quirk = q; }
+        {  _length= 0; l.value = v; l.type = t; l.quirk = q; }
         bool operator==(const Length& o) const
         { return _length == o._length; }
         bool operator!=(const Length& o) const
