@@ -199,7 +199,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
         s = objname + '1'; // start adding number immediately
         unusedNumber = 1;
         }
-    else if( name[ strlen( name ) - 1 ] == '#' )
+    else if( name[0] != '\0' && name[ strlen( name ) - 1 ] == '#' )
         { // trailing # - always add a number
         objname = name;
         s = objname + '1'; // start adding number immediately
