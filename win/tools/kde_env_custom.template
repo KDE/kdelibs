@@ -11,7 +11,10 @@ if [ -z "$MSVC" ] ; then
 	INCLUDE="$MSVC\\include;$INCLUDE"
 fi
 
+# Top KDE Directory - target of your compilation, please change
+export KDEDIR="c:\\kde"
+
 # KDElibs/win32 source directory, please change
-KDEWIN="f:\\kdewin32"
+KDEWIN="c:\\kdewin32"
 
 export MSVC KDEWIN INCLUDE
