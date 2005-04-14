@@ -1030,10 +1030,13 @@ int Ftp::ftpOpenDataConnection()
       return iErrCodePASV ? iErrCodePASV : iErrCode;
   }
 
-  iErrCode = ftpOpenEPRTDataConnection();
-  if(iErrCode == 0)
-    return 0; // success
-  ftpCloseDataConnection();
+  if( !config()->readBoolEntry("DisableEPRT", false) )
+  {
+    iErrCode = ftpOpenEPRTDataConnection();
+    if(iErrCode == 0)
+      return 0; // success
+    ftpCloseDataConnection();
+  }
 
   // fall back to port mode
   iErrCode = ftpOpenPortDataConnection();
