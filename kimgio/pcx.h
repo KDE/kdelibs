@@ -98,7 +98,7 @@ class PCXHEADER
                               // found only in PB IV/IV Plus
     Q_UINT16 VScreenSize;     // Vertical screen size in pixels. New field
                               // found only in PB IV/IV Plus
-};
+} KDE_PACKED;
 
 #endif // PCX_H
 
