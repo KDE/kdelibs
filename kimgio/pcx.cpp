@@ -148,9 +148,10 @@ static void readImage1( QImage &img, QDataStream &s, const PCXHEADER &header )
     }
 
     readLine( s, buf, header );
-
-    for ( int x=0; x<header.BytesPerLine; ++x )
-      *( img.scanLine( y )+x ) = buf[ x ];
+    uchar *p = img.scanLine( y );
+    unsigned int bpl = QMIN((header.width()+7)/8, header.BytesPerLine);
+    for ( unsigned int x=0; x< bpl; ++x )
+      p[ x ] = buf[x];
   }
 
   // Set the color palette
@@ -180,15 +181,14 @@ static void readImage4( QImage &img, QDataStream &s, const PCXHEADER &header )
     for ( int i=0; i<4; i++ )
     {
       Q_UINT32 offset = i*header.BytesPerLine;
-      for ( int x=0; x<header.width(); ++x )
+      for ( unsigned int x=0; x<header.width(); ++x )
         if ( buf[ offset + ( x/8 ) ] & ( 128 >> ( x%8 ) ) )
           pixbuf[ x ] += ( 1 << i );
     }
 
     uchar *p = img.scanLine( y );
-
-    for ( int x=0; x<header.width(); ++x )
-      *p++ = pixbuf[ x ];
+    for ( unsigned int x=0; x<header.width(); ++x )
+      p[ x ] = pixbuf[ x ];
   }
 
   // Read the palette
@@ -214,9 +214,9 @@ static void readImage8( QImage &img, QDataStream &s, const PCXHEADER &header )
     readLine( s, buf, header );
 
     uchar *p = img.scanLine( y );
-
-    for ( int x=0; x<header.BytesPerLine; ++x )
-      *p++ = buf[ x ];
+    unsigned int bpl = QMIN(header.BytesPerLine, header.width());
+    for ( unsigned int x=0; x<bpl; ++x )
+      p[ x ] = buf[ x ];
   }
 
   Q_UINT8 flag;
@@ -257,9 +257,8 @@ static void readImage24( QImage &img, QDataStream &s, const PCXHEADER &header )
     readLine( s, b_buf, header );
 
     uint *p = ( uint * )img.scanLine( y );
-
-    for ( int x=0; x<header.BytesPerLine; ++x )
-      *p++ = qRgb( r_buf[ x ], g_buf[ x ], b_buf[ x ] );
+    for ( unsigned int x=0; x<header.width(); ++x )
+      p[ x ] = qRgb( r_buf[ x ], g_buf[ x ], b_buf[ x ] );
   }
 }
 
@@ -409,7 +408,7 @@ static void writeImage4( QImage &img, QDataStream &s, PCXHEADER &header )
     for ( int i=0; i<4; ++i )
       buf[ i ].fill( 0 );
 
-    for ( int x=0; x<header.width(); ++x )
+    for ( unsigned int x=0; x<header.width(); ++x )
     {
       for ( int i=0; i<4; ++i )
         if ( *( p+x ) & ( 1 << i ) )
@@ -466,7 +465,7 @@ static void writeImage24( QImage &img, QDataStream &s, PCXHEADER &header )
   {
     uint *p = ( uint * )img.scanLine( y );
 
-    for ( int x=0; x<header.width(); ++x )
+    for ( unsigned int x=0; x<header.width(); ++x )
     {
       QRgb rgb = *p++;
       r_buf[ x ] = qRed( rgb );
