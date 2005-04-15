@@ -685,12 +685,20 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
     setDefaultProperties();
-    if( properties_size > PROPERTIES_SIZE ) {
+    if( properties_size > 2 ) {
         fprintf( stderr, "NETWinInfo::NETWinInfo(): properties array too large\n");
-        properties_size = PROPERTIES_SIZE;
+        properties_size = 2;
     }
     for( int i = 0; i < properties_size; ++i )
-        p->client_properties[ i ] = properties[ i ];
+        // remap from [0]=NET::Property,[1]=NET::Property2
+        switch( i ) {
+            case 0:
+                p->client_properties[ PROTOCOLS ] = properties[ i ];
+                break;
+            case 1:
+                p->client_properties[ PROTOCOLS2 ] = properties[ i ];
+                break;
+        }
     for( int i = 0; i < PROPERTIES_SIZE; ++i )
         p->properties[ i ] = 0;
 
