@@ -1,0 +1,7 @@
+3rdparty source code
+
+- zlib
+- bzip2
+
+You need to unpack source code here and build it 
+or at least put here necessary header files.
