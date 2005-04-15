@@ -85,6 +85,7 @@ KDE_EXPORT void kimgio_tiff_read( QImageIO *io )
 
 	QImage image( width, height, 32 );
 	if( image.isNull()) {
+		TIFFClose( tiff );
 		return;
 	}
 	data = (uint32 *)image.bits();
