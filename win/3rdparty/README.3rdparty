@@ -1,7 +1,15 @@
 3rdparty source code
 
-- zlib
-- bzip2
+Contents:
+- zlib/
+- bzip2/
 
-You need to unpack source code here and build it 
+You need to download and unpack source code here and build it 
 or at least put here necessary header files.
+
+Optionally you can also get binaries and copy include files to above
+directories.
+
+You can give up with touching zlib diectory at all if your Qt library
+contains zlib.
+

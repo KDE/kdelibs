@@ -1,14 +1,13 @@
 TEMPLATE	= lib
 
 include( $(KDELIBS)/win/common.pro )
-
+include( $(KDELIBS)/win/zlib.pro )
 
 # needed to export library classes:
 DEFINES += MAKE_KIO_LIB
 
 LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdeui$$KDELIB_SUFFIX \
-	$$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdewin32$$KDELIB_SUFFIX \
-	$$KDELIBDESTDIR\zlib.lib
+	$$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdewin32$$KDELIB_SUFFIX
 
 system( bash kmoc kio kfile misc bookmarks )
 
@@ -16,7 +15,7 @@ TARGET = kio$$KDEBUG
 
 INCLUDEPATH += $(KDELIBS)/kdecore/network $(KDELIBS)/kio/kio $(KDELIBS)/kio/misc $(KDELIBS)/kio/bookmarks \
   $(KDELIBS)/kio/kssl \
-  $(KDELIBS)/win/3rdparty/zlib $(KDELIBS)/libltdl $(KDELIBS)/interfaces \
+  $(KDELIBS)/libltdl $(KDELIBS)/interfaces \
   $(KDELIBS)/kio/kio/moc $(KDELIBS)/kio/misc/moc $(KDELIBS)/kio/kfile/moc \
   $(KDELIBS)/kio/misc/moc \
   $(KDELIBS)/kio/bookmarks/moc \

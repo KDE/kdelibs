@@ -61,5 +61,5 @@ kate/part \
 done
 
 cd kded
-./makeall_rel || exit 1
+./makeall_rel.sh || exit 1
 cd $pwd

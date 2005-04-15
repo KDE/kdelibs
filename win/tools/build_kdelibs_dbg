@@ -75,5 +75,5 @@ cp $KDEDIR/lib/kde3/plugins/designer/kdewidgets.dll $QTDIR/plugins/designer/
 cd $pwd
 
 cd kded
-./makeall || exit 1
+./makeall.sh || exit 1
 cd $pwd
