@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003 Apple Computer, Inc.
- *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -3221,38 +3221,28 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_IDENT)
             {
                 DOM::DOMString quotes("-khtml-quotes");
+                CounterActImpl *act = 0;
+                CounterImpl *counter = new CounterImpl;
+                counter->m_identifier = quotes;
+                counter->m_listStyle = LNONE;
                 switch (val->getIdent()) {
                     case CSS_VAL_OPEN_QUOTE:
-                    {
-                        CounterImpl *counter = new CounterImpl;
-                        counter->m_identifier = quotes;
                         counter->m_listStyle = OPEN_QUOTE;
-                        style->setContent(counter, i != 0);
                         // no break
-                    }
                     case CSS_VAL_NO_OPEN_QUOTE:
-                    {
-                        CounterActImpl *act = new CounterActImpl(quotes, 1);
-                        style->addCounterIncrement(act);
+                        act = new CounterActImpl(quotes, 1);
                         break;
-                    }
                     case CSS_VAL_CLOSE_QUOTE:
-                    {
-                        CounterImpl *counter = new CounterImpl;
-                        counter->m_identifier = quotes;
                         counter->m_listStyle = CLOSE_QUOTE;
-                        style->setContent(counter, i != 0);
                         // no break
-                    }
                     case CSS_VAL_NO_CLOSE_QUOTE:
-                    {
-                        CounterActImpl *act = new CounterActImpl(quotes, -1);
-                        style->addCounterIncrement(act);
+                        act = new CounterActImpl(quotes, -1);
                         break;
-                    }
                     default:
                         assert(false);
                 }
+                style->setContent(counter, i != 0);
+                style->addCounterIncrement(act);
             }
 
         }
