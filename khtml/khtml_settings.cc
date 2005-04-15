@@ -99,6 +99,8 @@ public:
     PolicyMap domainPolicy;
     QStringList fonts;
     QStringList defaultFonts;
+    
+    QValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
 
@@ -379,6 +381,11 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
     d->m_autoDelayedActionsEnabled = config->readBoolEntry ("AutoDelayedActions", true);
     d->m_jsErrorsEnabled = config->readBoolEntry("ReportJSErrors", true);
+    QStringList accesskeys = config->readListEntry("FallbackAccessKeysAssignments");
+    d->m_fallbackAccessKeysAssignments.clear();
+    for( QStringList::ConstIterator it = accesskeys.begin(); it != accesskeys.end(); ++it )
+        if( (*it).length() > 2 && (*it)[ 1 ] == ':' )
+            d->m_fallbackAccessKeysAssignments.append( qMakePair( (*it).mid( 2 ), (*it)[ 0 ] ));
   }
 
   // Colors
@@ -896,4 +903,9 @@ bool KHTMLSettings::allowTabulation() const
 bool KHTMLSettings::autoSpellCheck() const
 {
     return d->m_autoSpellCheck;
+}
+
+QValueList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
+{
+    return d->m_fallbackAccessKeysAssignments;
 }

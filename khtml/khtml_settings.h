@@ -200,6 +200,8 @@ public:
 
     // Meta refresh/redirect (http-equiv)
     bool isAutoDelayedActionsEnabled () const;
+    
+    QValueList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
 
 private:
     friend class KHTMLFactory;

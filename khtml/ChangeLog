@@ -1,3 +1,8 @@
+2005-04-15  Lubos Lunak <l.lunak@kde.org>
+
+        * khtmlview.{h,cpp}: Assign unused accesskeys automatically to elements
+        without accesskeys.
+
 2005-04-06  Lubos Lunak <l.lunak@kde.org>
 
         * khtmlview.{h,cpp}: Use KActions for type ahead find.

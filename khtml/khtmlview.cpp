@@ -47,6 +47,7 @@
 #undef protected
 #include "xml/dom2_eventsimpl.h"
 #include "css/cssstyleselector.h"
+#include "css/csshelper.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "khtml_settings.h"
@@ -2137,13 +2138,19 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
 void KHTMLView::displayAccessKeys()
 {
+    QMap< ElementImpl*, QChar > fallbacks = buildFallbackAccessKeys();
     for( NodeImpl* n = m_part->xmlDocImpl(); n != NULL; n = n->traverseNextNode()) {
         if( n->isElementNode()) {
             ElementImpl* en = static_cast< ElementImpl* >( n );
             DOMString s = en->getAttribute( ATTR_ACCESSKEY );
-            if( s.length() == 1) {
+            QString accesskey;
+            if( s.length() == 1 )
+                accesskey = s.string()[ 0 ].upper();
+            if( accesskey.isNull() && fallbacks.contains( en ))
+                accesskey = "<qt><i>" + QString( fallbacks[ en ].upper()) + "</i></qt>";
+            if( !accesskey.isNull()) {
 	        QRect rec=en->getRect();
-	        QLabel *lab=new QLabel(s.string(),viewport(),0,Qt::WDestructiveClose);
+	        QLabel *lab=new QLabel(accesskey,viewport(),0,Qt::WDestructiveClose);
 	        connect( this, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
 	        connect( this, SIGNAL(repaintAccessKeys()), lab, SLOT(repaint()));
 	        lab->setPalette(QToolTip::palette());
@@ -2209,9 +2216,21 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
         }
         // pass up to the parent
         if (m_part->parentPart() && m_part->parentPart()->view()
-            && m_part->parentPart()->view() != caller )
-            return m_part->parentPart()->view()->focusNodeWithAccessKey( c, this );
-        return false;
+            && m_part->parentPart()->view() != caller
+            && m_part->parentPart()->view()->focusNodeWithAccessKey( c, this ))
+            return true;
+        if( caller == NULL ) { // the active frame (where the accesskey was pressed)
+            QMap< ElementImpl*, QChar > fallbacks = buildFallbackAccessKeys();
+            for( QMap< ElementImpl*, QChar >::ConstIterator it = fallbacks.begin();
+                 it != fallbacks.end();
+                 ++it )
+                if( *it == c ) {
+                    node = it.key();
+                    break;
+                }
+        }
+        if( node == NULL )
+            return false;
     }
 
     // Scroll the view as necessary to ensure that the new focus node is visible
@@ -2267,6 +2286,297 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
           break;
     }
     return true;
+}
+
+static QString getElementText( NodeImpl* start, bool after )
+{
+    QString ret;             // nextSibling(), to go after e.g. </select>
+    for( NodeImpl* n = after ? start->nextSibling() : start->traversePreviousNode();
+         n != NULL;
+         n = after ? n->traverseNextNode() : n->traversePreviousNode()) {
+        if( n->isTextNode()) {
+            if( after )
+                ret += static_cast< TextImpl* >( n )->toString().string();
+            else
+                ret.prepend( static_cast< TextImpl* >( n )->toString().string());
+        } else {
+            switch( n->id()) {
+                case ID_A:
+                case ID_FONT:
+                case ID_TT:
+                case ID_U:
+                case ID_B:
+                case ID_I:
+                case ID_S:
+                case ID_STRIKE:
+                case ID_BIG:
+                case ID_SMALL:
+                case ID_EM:
+                case ID_STRONG:
+                case ID_DFN:
+                case ID_CODE:
+                case ID_SAMP:
+                case ID_KBD:
+                case ID_VAR:
+                case ID_CITE:
+                case ID_ABBR:
+                case ID_ACRONYM:
+                case ID_SUB:
+                case ID_SUP:
+                case ID_SPAN:
+                case ID_NOBR:
+                case ID_WBR:
+                    break;
+                case ID_TD:
+                    if( ret.stripWhiteSpace().isEmpty())
+                        break;
+                    // fall through
+                default:
+                    return ret.simplifyWhiteSpace();
+            }
+        }
+    }
+    return ret.simplifyWhiteSpace();
+}
+
+static QMap< NodeImpl*, QString > buildLabels( NodeImpl* start )
+{
+    QMap< NodeImpl*, QString > ret;
+    for( NodeImpl* n = start;
+         n != NULL;
+         n = n->traverseNextNode()) {
+        if( n->id() == ID_LABEL ) {
+            HTMLLabelElementImpl* label = static_cast< HTMLLabelElementImpl* >( n );
+            NodeImpl* labelfor = label->getFormElement();
+            if( labelfor )
+                ret[ labelfor ] = label->innerText().string().simplifyWhiteSpace();
+        }
+    }
+    return ret;
+}
+
+namespace khtml {
+struct AccessKeyData {
+    ElementImpl* element;
+    QString text;
+    QString url;
+    int priority; // 10(highest) - 0(lowest)
+};
+}
+
+QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
+{
+    // build a list of all possible candidate elements that could use an accesskey
+    QValueList< AccessKeyData > data;
+    QMap< NodeImpl*, QString > labels = buildLabels( m_part->xmlDocImpl());
+    for( NodeImpl* n = m_part->xmlDocImpl();
+         n != NULL;
+         n = n->traverseNextNode()) {
+        if( n->isElementNode()) {
+            ElementImpl* element = static_cast< ElementImpl* >( n );
+            if( element->getAttribute( ATTR_ACCESSKEY ).length() == 1 )
+                continue; // has accesskey set, ignore
+            if( element->renderer() == NULL )
+                continue; // not visible
+            QString text;
+            QString url;
+            int priority = 0;
+            bool ignore = false;
+            bool text_after = false;
+            bool text_before = false;
+            switch( element->id()) {
+                case ID_A:
+                    url = khtml::parseURL(element->getAttribute(ATTR_HREF)).string();
+                    if( url.isEmpty()) // doesn't have href, it's only an anchor
+                        continue;
+                    text = static_cast< HTMLElementImpl* >( element )->innerText().string().simplifyWhiteSpace();
+                    priority = 2;
+                    break;
+                case ID_INPUT: {
+                    HTMLInputElementImpl* in = static_cast< HTMLInputElementImpl* >( element );
+                    switch( in->inputType()) {
+                        case HTMLInputElementImpl::SUBMIT:
+                            text = in->value().string();
+                            if( text.isEmpty())
+                                text = i18n( "Submit" );
+                            priority = 7;
+                            break;
+                        case HTMLInputElementImpl::IMAGE:
+                            text = in->altText().string();
+                            priority = 7;
+                            break;
+                        case HTMLInputElementImpl::BUTTON:
+                            text = in->value().string();
+                            priority = 5;
+                            break;
+                        case HTMLInputElementImpl::RESET:
+                            text = in->value().string();
+                            if( text.isEmpty())
+                                text = i18n( "Reset" );
+                            priority = 5;
+                            break;
+                        case HTMLInputElementImpl::HIDDEN:
+                            ignore = true;
+                            break;
+                        case HTMLInputElementImpl::CHECKBOX:
+                        case HTMLInputElementImpl::RADIO:
+                            text_after = true;
+                            priority = 5;
+                            break;
+                        case HTMLInputElementImpl::TEXT:
+                        case HTMLInputElementImpl::PASSWORD:
+                        case HTMLInputElementImpl::FILE:
+                            text_before = true;
+                            priority = 5;
+                            break;
+                        default:
+                            priority = 5;
+                            break;
+                    }
+                    break;
+                }
+                case ID_BUTTON:
+                    text = static_cast< HTMLElementImpl* >( element )->innerText().string().simplifyWhiteSpace();
+                    switch( static_cast< HTMLButtonElementImpl* >( element )->buttonType()) {
+                        case HTMLButtonElementImpl::SUBMIT:
+                            if( text.isEmpty())
+                                text = i18n( "Submit" );
+                            priority = 7;
+                            break;
+                        case HTMLButtonElementImpl::RESET:
+                            if( text.isEmpty())
+                                text = i18n( "Reset" );
+                            priority = 5;
+                            break;
+                        default:
+                            priority = 5;
+                            break;
+                    break;
+                    }
+                case ID_SELECT: // these don't have accesskey attribute, but quick access may be handy
+                    text_before = true;
+                    text_after = true;
+                    priority = 5;
+                    break;
+                default:
+                    ignore = !element->isFocusable();
+                    priority = 2;
+                    break;
+            }
+            if( ignore )
+                continue;
+            if( text.isNull() && labels.contains( element ))
+                text = labels[ element ];
+            if( text.isNull() && text_before )
+                text = getElementText( element, false );
+            if( text.isNull() && text_after )
+                text = getElementText( element, true );
+            text = text.stripWhiteSpace();
+            // increase priority of items which have explicitly specified accesskeys in the config
+            QValueList< QPair< QString, QChar > > priorities
+                = m_part->settings()->fallbackAccessKeysAssignments();
+            for( QValueList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
+                 it != priorities.end();
+                 ++it ) {
+                if( text == (*it).first )
+                    priority = 10;
+            }
+            AccessKeyData tmp = { element, text, url, priority };
+            data.append( tmp );
+        }
+    }
+
+    QValueList< QChar > keys;
+    for( char c = 'A'; c <= 'Z'; ++c )
+        keys << c;
+    for( char c = '0'; c <= '9'; ++c )
+        keys << c;
+    for( NodeImpl* n = m_part->xmlDocImpl();
+         n != NULL;
+         n = n->traverseNextNode()) {
+        if( n->isElementNode()) {
+            ElementImpl* en = static_cast< ElementImpl* >( n );
+            DOMString s = en->getAttribute( ATTR_ACCESSKEY );
+            if( s.length() == 1 ) {
+                QChar c = s.string()[ 0 ].upper();
+                keys.remove( c ); // remove manually assigned accesskeys
+            }
+        }
+    }
+
+    QMap< ElementImpl*, QChar > ret;
+    for( int priority = 10;
+         priority >= 0;
+         --priority ) {
+        for( QValueList< AccessKeyData >::Iterator it = data.begin();
+             it != data.end();
+             ) {
+            if( (*it).priority != priority ) {
+                ++it;
+                continue;
+            }
+            if( keys.isEmpty())
+                break;
+            QString text = (*it).text;
+            QChar key;
+            if( key.isNull() && !text.isEmpty()) {
+                QValueList< QPair< QString, QChar > > priorities
+                    = m_part->settings()->fallbackAccessKeysAssignments();
+                for( QValueList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
+                     it != priorities.end();
+                     ++it )
+                    if( text == (*it).first && keys.contains( (*it).second )) {
+                        key = (*it).second;
+                        break;
+                    }
+            }
+            // try first to select the first character as the accesskey,
+            // then first character of the following words,
+            // and then simply the first free character
+            if( key.isNull() && !text.isEmpty()) {
+                QStringList words = QStringList::split( ' ', text );
+                for( QStringList::ConstIterator it = words.begin();
+                     it != words.end();
+                     ++it ) {
+                    if( keys.contains( (*it)[ 0 ].upper())) {
+                        key = (*it)[ 0 ].upper();
+                        break;
+                    }
+                }
+            }
+            if( key.isNull() && !text.isEmpty()) {
+                for( unsigned int i = 0;
+                     i < text.length();
+                     ++i ) {
+                    if( keys.contains( text[ i ].upper())) {
+                        key = text[ i ].upper();
+                        break;
+                    }
+                }
+            }
+            if( key.isNull())
+                key = keys.front();
+            ret[ (*it).element ] = key;
+            keys.remove( key );
+            QString url = (*it).url;
+            it = data.remove( it );
+            // assign the same accesskey also to other elements pointing to the same url
+            if( !url.isEmpty()) {
+                for( QValueList< AccessKeyData >::Iterator it2 = data.begin();
+                     it2 != data.end();
+                     ) {                   
+                    if( (*it2).url == url ) {
+                        ret[ (*it2).element ] = key;
+                        if( it == it2 )
+                            ++it;
+                        it2 = data.remove( it2 );
+                    } else
+                        ++it2;
+                }
+            }
+        }
+    }
+    return ret;
 }
 
 void KHTMLView::setMediaType( const QString &medium )

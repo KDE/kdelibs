@@ -263,6 +263,7 @@ private:
     bool focusNextPrevNode(bool next);
     bool handleAccessKey(const QKeyEvent* ev);
     bool focusNodeWithAccessKey(QChar c, KHTMLView* caller = NULL);
+    QMap< DOM::ElementImpl*, QChar > buildFallbackAccessKeys() const;
 
     void useSlowRepaints();
 
