@@ -513,47 +513,43 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     break;
 #ifndef KJS_PURE_ECMA
   case Big:
-    result = String("<BIG>" + s + "</BIG>");
+    result = String("<big>" + s + "</big>");
     break;
   case Small:
-    result = String("<SMALL>" + s + "</SMALL>");
+    result = String("<small>" + s + "</small>");
     break;
   case Blink:
-    result = String("<BLINK>" + s + "</BLINK>");
+    result = String("<blink>" + s + "</blink>");
     break;
   case Bold:
-    result = String("<B>" + s + "</B>");
+    result = String("<b>" + s + "</b>");
     break;
   case Fixed:
-    result = String("<TT>" + s + "</TT>");
+    result = String("<tt>" + s + "</tt>");
     break;
   case Italics:
-    result = String("<I>" + s + "</I>");
+    result = String("<i>" + s + "</i>");
     break;
   case Strike:
-    result = String("<STRIKE>" + s + "</STRIKE>");
+    result = String("<strike>" + s + "</strike>");
     break;
   case Sub:
-    result = String("<SUB>" + s + "</SUB>");
+    result = String("<sub>" + s + "</sub>");
     break;
   case Sup:
-    result = String("<SUP>" + s + "</SUP>");
+    result = String("<sup>" + s + "</sup>");
     break;
   case Fontcolor:
-    result = String("<FONT COLOR=\"" + a0.toString(exec) + "\">"
-		    + s + "</FONT>");
+    result = String("<font color=\"" + a0.toString(exec) + "\">" + s + "</font>");
     break;
   case Fontsize:
-    result = String("<FONT SIZE=\"" + a0.toString(exec) + "\">"
-		    + s + "</FONT>");
+    result = String("<font size=\"" + a0.toString(exec) + "\">" + s + "</font>");
     break;
   case Anchor:
-    result = String("<a name=\"" + a0.toString(exec) + "\">"
-		    + s + "</a>");
+    result = String("<a name=\"" + a0.toString(exec) + "\">" + s + "</a>");
     break;
   case Link:
-    result = String("<a href=\"" + a0.toString(exec) + "\">"
-		    + s + "</a>");
+    result = String("<a href=\"" + a0.toString(exec) + "\">" + s + "</a>");
     break;
 #endif
   }

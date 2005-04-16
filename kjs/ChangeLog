@@ -1,3 +1,7 @@
+2005-04-16  Harri Porten  <porten@kde.org>
+
+	* string_object.cpp: adopted tag casing and code formatting to JSC-style
+
 2005-02-27  Harri Porten  <porten@kde.org>
 
 	* regexp_object.cpp: fixed RegExp(/regexp/) constructor
