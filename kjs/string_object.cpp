@@ -134,6 +134,8 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
   substring		StringProtoFuncImp::Substring	DontEnum|Function	2
   toLowerCase		StringProtoFuncImp::ToLowerCase	DontEnum|Function	0
   toUpperCase		StringProtoFuncImp::ToUpperCase	DontEnum|Function	0
+  toLocaleLowerCase	StringProtoFuncImp::ToLocaleLowerCase DontEnum|Function	0
+  toLocaleUpperCase     StringProtoFuncImp::ToLocaleUpperCase DontEnum|Function	0
 #
 # Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
 # I guess we need to generate two hashtables in the .lut.h file, and use #ifdef
@@ -502,11 +504,13 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     break;
   case ToLowerCase:
+  case ToLocaleLowerCase: // FIXME: To get this 100% right we need to detect Turkish and change I to lowercase i without a dot.
     for (i = 0; i < len; i++)
       s[i] = s[i].toLower();
     result = String(s);
     break;
   case ToUpperCase:
+  case ToLocaleUpperCase: // FIXME: To get this 100% right we need to detect Turkish and change i to uppercase I with a dot.
     for (i = 0; i < len; i++)
       s[i] = s[i].toUpper();
     result = String(s);
