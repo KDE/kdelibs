@@ -76,7 +76,7 @@ UString encodeURI(ExecState *exec, UString string, UString unescapedSet)
 	octets_len = 2;
       }
       else if (C.uc >= 0xD800 && C.uc <= 0xDBFF) {
-    
+
 	if (k == string.size()) {
 	  Object err = Error::create(exec,URIError);
 	  exec->setException(err);
@@ -334,7 +334,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   ContextImp ctx(globalObj, exec->interpreter()->imp(), thisObj, sid, codeType(),
                  exec->context().imp(), this, &args);
   ExecState newExec(exec->interpreter(), &ctx);
-  newExec._exception = exec->exception(); // could be null
+  newExec.setException(exec->exception()); // could be null
 
   // assign user supplied arguments to parameters
   processParameters(&newExec, args);
@@ -367,7 +367,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   // if an exception occurred, propogate it back to the previous execution object
   if (newExec.hadException())
-    exec->_exception = newExec.exception();
+    exec->setException(newExec.exception());
 
 #ifdef KJS_VERBOSE
   CString n = ident.isEmpty() ? CString("(internal)") : ident.ustring().cstring();
@@ -382,7 +382,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 #endif
 
   if (comp.complType() == Throw) {
-    exec->_exception = comp.value();
+    exec->setException(comp.value());
     return comp.value();
   }
   else if (comp.complType() == ReturnValue)
@@ -490,7 +490,7 @@ Value FunctionImp::get(ExecState *exec, const Identifier &propertyName) const
         }
         return Null();
     }
-    
+
     // Compute length of parameters.
     if (propertyName == lengthPropertyName) {
         const Parameter * p = param;
@@ -501,7 +501,7 @@ Value FunctionImp::get(ExecState *exec, const Identifier &propertyName) const
         }
         return Number(count);
     }
-    
+
     return InternalFunctionImp::get(exec, propertyName);
 }
 
@@ -722,7 +722,7 @@ bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyNa
 void ActivationImp::mark()
 {
   ObjectImp::mark();
-  if (_function && !_function->marked()) 
+  if (_function && !_function->marked())
     _function->mark();
   _arguments.mark();
   if (_argumentsObject && !_argumentsObject->marked())
@@ -755,9 +755,11 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
   Value res;
 
-  static const char non_escape[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-				   "abcdefghijklmnopqrstuvwxyz"
-				   "0123456789@*_+-./";
+  static const char do_not_escape[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789"
+    "*+-./@_";
 
   switch (id) {
   case Eval: { // eval()
@@ -837,7 +839,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 	// debugger requested we stop execution
 	dbg->imp()->abort();
       else if (newExec.hadException()) // propagate back to parent context
-	exec->_exception = newExec.exception(); 
+	exec->setException(newExec.exception());
       else if (c.complType() == Throw)
 	exec->setException(c.value());
       else if (c.isValueCompletion())
@@ -960,7 +962,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 	char tmp[7];
 	sprintf(tmp, "%%u%04X", u);
 	s = UString(tmp);
-      } else if (strchr(non_escape, (char)u)) {
+      } else if (u != 0 && strchr(do_not_escape, (char)u)) {
 	s = UString(c, 1);
       } else {
 	char tmp[4];
@@ -998,13 +1000,11 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     res = String(s);
     break;
   }
-  case KJSPrint: {
+  case KJSPrint:
 #ifndef NDEBUG
-    UString str = args[0].toString(exec);
-    puts(str.ascii());
+    puts(args[0].toString(exec).ascii());
 #endif
     break;
-  }
   }
 
   return res;

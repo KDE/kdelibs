@@ -1,5 +1,7 @@
 2005-04-16  Harri Porten  <porten@kde.org>
 
+	* function.cpp: escape() u0000 properly (found in JSC)
+
 	* nodes.cpp: save some cpu cycles on variable declarations 
 
 	* error_object.cpp: made prototype read-only (JSC patch) 
