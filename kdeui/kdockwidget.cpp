@@ -2852,9 +2852,14 @@ void KDockManager::readConfig( KConfig* c, QString group )
   }
 
   c->setGroup( group );
+
   QRect mr = c->readRectEntry("Main:Geometry");
-  main->move(mr.topLeft());
+
+  if (!main->inherits("KDockMainWindow"))
+    main->move(mr.topLeft());
+
   main->resize(mr.size());
+
   if ( isMainVisible ) main->show();
 }
 #endif
