@@ -280,6 +280,7 @@ public slots:
    virtual void setTextLabel(const QString&, bool tipToo);
 
 protected:
+  bool event(QEvent *e);
   void paletteChange(const QPalette &);
   void leaveEvent(QEvent *e);
   void enterEvent(QEvent *e);

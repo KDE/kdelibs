@@ -638,6 +638,20 @@ void KToolBarButton::paletteChange(const QPalette &)
   }
 }
 
+bool KToolBarButton::event(QEvent *e)
+{
+  if (e->type() == QEvent::ParentFontChange || e->type() == QEvent::ApplicationFontChange)
+  {
+     //If we use toolbar text, apply the settings again, to relayout...
+     if (d->m_iconText != KToolBar::IconOnly)
+       modeChange();
+     return true;
+  }
+
+  return QToolButton::event(e);
+}
+
+
 void KToolBarButton::showMenu()
 {
   // obsolete
