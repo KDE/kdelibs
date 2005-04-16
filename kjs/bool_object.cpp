@@ -105,7 +105,7 @@ BooleanObjectImp::BooleanObjectImp(ExecState * /*exec*/, FunctionPrototypeImp *f
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
-  putDirect(prototypePropertyName, booleanProto,DontEnum|DontDelete|ReadOnly);
+  putDirect(prototypePropertyName, booleanProto, DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
   putDirect(lengthPropertyName, NumberImp::one(), ReadOnly|DontDelete|DontEnum);

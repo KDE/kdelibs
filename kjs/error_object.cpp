@@ -76,14 +76,14 @@ Value ErrorProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*ar
   // toString()
   UString s = "Error";
 
-  Value v = thisObj.get(exec,namePropertyName);
+  Value v = thisObj.get(exec, namePropertyName);
   if (v.type() != UndefinedType) {
     s = v.toString(exec);
   }
 
-  v = thisObj.get(exec,messagePropertyName);
+  v = thisObj.get(exec, messagePropertyName);
   if (v.type() != UndefinedType) {
-    s += ": "+v.toString(exec);
+    s += " - "+v.toString(exec);
   }
 
   return String(s);
@@ -157,7 +157,7 @@ NativeErrorImp::NativeErrorImp(ExecState * /*exec*/, FunctionPrototypeImp *funcP
   proto = static_cast<ObjectImp*>(prot.imp());
 
   putDirect(lengthPropertyName, NumberImp::one(), DontDelete|ReadOnly|DontEnum); // ECMA 15.11.7.5
-  putDirect(prototypePropertyName, proto, 0);
+  putDirect(prototypePropertyName, proto, DontDelete|ReadOnly|DontEnum);
 }
 
 bool NativeErrorImp::implementsConstruct() const
@@ -190,4 +190,3 @@ void NativeErrorImp::mark()
   if (proto && !proto->marked())
     proto->mark();
 }
-
