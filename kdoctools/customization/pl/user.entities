@@ -9,7 +9,12 @@
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY Shift        		"<keycap>Shift</keycap>">				  <!-- English: &Shift; -->
 <!ENTITY Enter        		"<keycap>Enter</keycap>">				  <!-- English: &Enter; -->
+
 <!ENTITY kcontrolcenter-dopelniacz    '<application>Centrum sterowania &kde;</application>'>
+
 <!ENTITY kwallet-mianownik    '<application>Portfel &kde;</application>'>
 <!ENTITY kwallet-dopelniacz    '<application>Portfela &kde;</application>'>
 <!ENTITY kwallet-biernik    '<application>Portfel &kde;</application>'>
+
+<!ENTITY kwalletmanager-mianownik    '<application>Menedżer portfeli &kde;</application>'>
+<!ENTITY kwalletmanager-dopelniacz    '<application>Menedżera portfeli &kde;</application>'>
