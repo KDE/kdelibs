@@ -1292,7 +1292,6 @@ void RenderBox::calcAbsoluteHorizontal()
     m_width = w + pab;
     m_marginLeft = ml;
     m_marginRight = mr;
-    short old_m_x = m_x;
     m_x = l + ml + cb->borderLeft();
     //qDebug("h: w=%d, l=%d, r=%d, ml=%d, mr=%d",w,l,r,ml,mr);
 }

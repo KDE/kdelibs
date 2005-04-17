@@ -614,7 +614,7 @@ void DockContainer::toggle() {
     if (m_tb->isTabRaised(oldtab)) {
         m_tb->setTab(oldtab,false);
             tabClicked(oldtab);
-            KMDI::MainWindow *mainFrm = dynamic_cast<KMDI::MainWindow*>(m_mainWin);
+        //    KMDI::MainWindow *mainFrm = dynamic_cast<KMDI::MainWindow*>(m_mainWin);
         //     if (mainFrm && mainFrm->activeWindow() ) // TODO
          //           mainFrm->activeWindow()->setFocus();
 

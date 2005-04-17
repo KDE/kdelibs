@@ -1439,8 +1439,6 @@ void KHTMLParser::popBlock( int _id )
 
     bool isAffectedByStyle = isAffectedByResidualStyle(Elem->id);
     HTMLStackElem* residualStyleStack = 0;
-    NodeImpl* malformedTableParent = 0;
-
 
     Elem = blockStack;
 

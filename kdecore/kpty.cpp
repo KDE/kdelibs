@@ -491,13 +491,13 @@ void KPty::setXonXoff(bool useXonXoff)
 void KPty::setUtf8Mode(bool useUtf8)
 {
   d->utf8 = useUtf8;
+#ifdef IUTF8
   if (d->masterFd >= 0) {
     // without the '::' some version of HP-UX thinks, this declares
     // the struct in this class, in this method, and fails to find
     // the correct tc[gs]etattr
     struct ::termios ttmode;
 
-#ifdef IUTF8
     _tcgetattr(d->masterFd, &ttmode);
 
     if (!useUtf8)
@@ -506,8 +506,8 @@ void KPty::setUtf8Mode(bool useUtf8)
       ttmode.c_iflag |= IUTF8;
 
     _tcsetattr(d->masterFd, &ttmode);
-#endif
   }
+#endif
 }
 
 const char *KPty::ttyName() const

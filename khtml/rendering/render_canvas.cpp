@@ -651,7 +651,6 @@ int RenderCanvas::docHeight() const
     }
 
     RenderLayer *layer = m_layer;
-    int y = 0;
     h = kMax( h, layer->yPos() + layer->height() );
 // kdDebug(6040) << "h " << h << " layer(" << layer->renderer()->renderName() << "@" << layer->renderer() << ")->height " << layer->height() << " lp " << (layer->yPos() + layer->height()) << " height() " << layer->renderer()->height() << " rh " << layer->renderer()->effectiveHeight() << endl;
     return h;
@@ -677,7 +676,6 @@ int RenderCanvas::docWidth() const
     }
 
     RenderLayer *layer = m_layer;
-    int x = 0;
     w = kMax( w, layer->xPos() + layer->width() );
 // kdDebug(6040) << "w " << w << " layer(" << layer->renderer()->renderName() << ")->width " << layer->width() << " rm " << (layer->xPos() + layer->width()) << " width() " << layer->renderer()->width() << " rw " << layer->renderer()->effectiveWidth() << endl;
     return w;
