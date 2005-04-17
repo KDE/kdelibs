@@ -652,8 +652,6 @@ static double ymdhms_to_seconds(int year, int mon, int day, int hour, int minute
     return ret;
 }
 
-static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
-
 // we follow the recommendation of rfc2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000"
 static const struct {
@@ -722,6 +720,7 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
 static int findMonth(const char *monthStr)
 {
   assert(monthStr);
+  static const char haystack[37] = "janfebmaraprmayjunjulaugsepoctnovdec";
   char needle[4];
   for (int i = 0; i < 3; ++i) {
     if (!*monthStr)
@@ -761,7 +760,6 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      char *newPosStr;
      const char *dateString = _date.ascii();
      int day = 0;
-     char monthStr[4];
      int month = -1; // not set yet
      int year = 0;
      int hour = 0;
@@ -779,7 +777,6 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      {
         if ( isspace(*dateString) && dateString - wordStart >= 3 )
         {
-          //fprintf(stderr,"KJS::parseDate found word starting with '%s'\n", monthStr);
           month = findMonth(wordStart);
           while(*dateString && isspace(*dateString))
              dateString++;
