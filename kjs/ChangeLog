@@ -1,5 +1,8 @@
 2005-04-17  Harri Porten  <porten@kde.org>
 
+	* function.cpp: don't produce a null string result on unescape("")
+	(spotted in the JSC ChangeLog)
+
 	* string_object.cpp: faking toLocalLowerCase and toLocalUpperCase
 	by using their non-localized counter parts
 
