@@ -851,22 +851,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
        if ( month == -1 ) // not found yet
        {
-         for(int i=0; i < 3;i++)
-         {
-           if (!*dateString || (*dateString == '-') || isspace(*dateString))
-             return invalidDate;
-           monthStr[i] = tolower(*dateString++);
-         }
-         monthStr[3] = '\0';
-
-         newPosStr = (char*)strstr(haystack, monthStr);
-
-         if (!newPosStr || (newPosStr - haystack) % 3 != 0)
-           return invalidDate;
-
-         month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
-
-         if ((month < 0) || (month > 11))
+         month = findMonth(dateString);
+         if (month == -1)
            return invalidDate;
 
          while(*dateString && (*dateString != '-') && !isspace(*dateString))
