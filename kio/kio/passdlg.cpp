@@ -16,26 +16,22 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qpushbutton.h>
+#include "passdlg.h"
+
+#include <qapplication.h>
 #include <qcheckbox.h>
+#include <qhbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qaccel.h>
-#include <qhbox.h>
 #include <qsimplerichtext.h>
 #include <qstylesheet.h>
 
-#include <kapplication.h>
-#include <klineedit.h>
+#include <kcombobox.h>
 #include <kconfig.h>
 #include <kiconloader.h>
+#include <klineedit.h>
 #include <klocale.h>
-#include <kbuttonbox.h>
 #include <kstandarddirs.h>
-#include <kseparator.h>
-
-#include "passdlg.h"
-#include <kcombobox.h>
 
 using namespace KIO;
 
