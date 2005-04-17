@@ -112,7 +112,7 @@ with libkcal:
 The "exchange" calendar resource is compiled in a separate 
 library, dynamically loaded by the resource manager if 
 resources of this type are used. This resource is in
-kdepim/libkpimexchange/resources/calendar:
+kdepim/kresources/exchange:
 - resourceexchange.{h,cpp}
   Defines the exchange resource
 - resourceexchangeconfig.{h,cpp}
