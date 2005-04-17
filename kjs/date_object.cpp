@@ -718,6 +718,27 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
     return (mktime(t) + utcOffset) * 1000.0 + ms + yearOffset;
 }
 
+// returns 0-11 (Jan-Dec); -1 on failure
+static int findMonth(const char *monthStr)
+{
+  assert(monthStr);
+  char needle[4];
+  for (int i = 0; i < 3; ++i) {
+    if (!*monthStr)
+      return -1;
+    needle[i] = tolower(*monthStr++);
+  }
+  needle[3] = '\0';
+  const char *str = strstr(haystack, needle);
+  if (str) {
+    int position = str - haystack;
+    if (position % 3 == 0) {
+      return position / 3;
+    }
+  }
+  return -1;
+}
+
 double KJS::KRFCDate_parseDate(const UString &_date)
 {
      // This parse a date in the form:
@@ -758,18 +779,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      {
         if ( isspace(*dateString) && dateString - wordStart >= 3 )
         {
-          monthStr[0] = tolower(*wordStart++);
-          monthStr[1] = tolower(*wordStart++);
-          monthStr[2] = tolower(*wordStart++);
-          monthStr[3] = '\0';
           //fprintf(stderr,"KJS::parseDate found word starting with '%s'\n", monthStr);
-          const char *str = strstr(haystack, monthStr);
-          if (str) {
-            int position = str - haystack;
-            if (position % 3 == 0) {
-              month = position / 3; // Jan=00, Feb=01, Mar=02, ..
-            }
-          }
+          month = findMonth(wordStart);
           while(*dateString && isspace(*dateString))
              dateString++;
           wordStart = dateString;
