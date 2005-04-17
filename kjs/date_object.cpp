@@ -788,6 +788,11 @@ double KJS::KRFCDate_parseDate(const UString &_date)
         else
            dateString++;
      }
+     // missing delimiter between month and day (like "January29")?
+     if (month == -1 && dateString && wordStart != dateString) {
+       month = findMonth(wordStart);
+       // TODO: emit warning about dubious format found
+     }
 
      while(*dateString && isspace(*dateString))
      	dateString++;

@@ -1,5 +1,7 @@
 2005-04-17  Harri Porten  <porten@kde.org>
 
+	* date_object.cpp: parse date strings like "Apr17,2005" 
+
 	* function.cpp: don't produce a null string result on unescape("")
 	(spotted in the JSC ChangeLog)
 
