@@ -87,7 +87,7 @@ FixedTableLayout::~FixedTableLayout()
 {
 }
 
-int FixedTableLayout::calcWidthArray( int tableWidth )
+int FixedTableLayout::calcWidthArray()
 {
     int usedWidth = 0;
 
@@ -99,7 +99,7 @@ int FixedTableLayout::calcWidthArray( int tableWidth )
     width.fill( Length( Variable ) );
 
 #ifdef DEBUG_LAYOUT
-    qDebug("FixedTableLayout::calcWidthArray( %d )", tableWidth );
+    qDebug("FixedTableLayout::calcWidthArray()" );
     qDebug("    col elements:");
 #endif
 
@@ -235,7 +235,7 @@ void FixedTableLayout::calcMinMaxWidth()
     int bs = table->bordersPaddingAndSpacing();
     int tableWidth = table->style()->width().isFixed() ? table->style()->width().value() - bs : 0;
 
-    int mw = calcWidthArray( tableWidth ) + bs;
+    int mw = calcWidthArray() + bs;
     table->m_minWidth = kMin( kMax( mw, tableWidth ), 0x7fff );
     table->m_maxWidth = table->m_minWidth;
 

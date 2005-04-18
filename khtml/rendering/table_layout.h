@@ -58,7 +58,7 @@ public:
     void layout();
 
 protected:
-    int calcWidthArray( int tableWidth );
+    int calcWidthArray();
 
     QMemArray<Length> width;
 };

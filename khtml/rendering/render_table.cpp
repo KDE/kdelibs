@@ -229,7 +229,7 @@ void RenderTable::calcWidth()
         m_width = KMIN( short( availableWidth ), m_width );
 
     m_width = KMAX (m_width, m_minWidth);
-    
+
     // Finally, with our true width determined, compute our margins for real.
     m_marginRight=0;
     m_marginLeft=0;
@@ -1814,9 +1814,9 @@ int RenderTableRow::offsetLeft() const
     RenderObject *child = firstChild();
     while (child && !child->isTableCell())
         child = child->nextSibling();
-    
+
     if (!child)
-        return 0;    
+        return 0;
 
     return child->offsetLeft();
 }
@@ -1826,11 +1826,11 @@ int RenderTableRow::offsetTop() const
     RenderObject *child = firstChild();
     while (child && !child->isTableCell())
         child = child->nextSibling();
-    
+
     if (!child)
         return 0;
 
-    return child->offsetTop() - 
+    return child->offsetTop() -
                   static_cast<RenderTableCell*>(child)->cellTopExtra();
 }
 
@@ -1839,12 +1839,12 @@ int RenderTableRow::offsetHeight() const
     RenderObject *child = firstChild();
     while (child && !child->isTableCell())
         child = child->nextSibling();
-    
+
     if (!child)
         return 0;
 
-    return child->offsetHeight() + 
-                  static_cast<RenderTableCell*>(child)->cellTopExtra() + 
+    return child->offsetHeight() +
+                  static_cast<RenderTableCell*>(child)->cellTopExtra() +
                   static_cast<RenderTableCell*>(child)->cellBottomExtra();
 }
 
@@ -2391,7 +2391,7 @@ struct CollapsedBorder {
 class CollapsedBorders
 {
 public:
-    CollapsedBorders(int i) :count(0) {}
+    CollapsedBorders() :count(0) {}
 
     void addBorder(const CollapsedBorderValue& b, RenderObject::BorderSide s, bool paint,
                    int _x1, int _y1, int _x2, int _y2,
@@ -2489,7 +2489,7 @@ void RenderTableCell::paintCollapsedBorder(QPainter* p, int _tx, int _ty, int w,
 
     // We never paint diagonals at the joins.  We simply let the border with the highest
     // precedence paint on top of borders with lower precedence.
-    CollapsedBorders borders(4);
+    CollapsedBorders borders;
     borders.addBorder(topVal, BSTop, render_t, _tx, _ty, _tx + w, _ty + topWidth, ts);
     borders.addBorder(bottomVal, BSBottom, render_b, _tx, _ty + h - bottomWidth, _tx + w, _ty + h, bs);
     borders.addBorder(leftVal, BSLeft, render_l, _tx, _ty, _tx + leftWidth, _ty + h, ls);

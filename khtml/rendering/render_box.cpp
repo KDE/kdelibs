@@ -92,7 +92,7 @@ void RenderBox::restructureParentFlow() {
             // We have to split the parent flow.
             RenderInline* parentInline = static_cast<RenderInline*>(parent());
             RenderBlock* newBox = parentInline->createAnonymousBlock();
-            
+
             RenderFlow* oldContinuation = parent()->continuation();
             parentInline->setContinuation(newBox);
 
@@ -110,13 +110,13 @@ void RenderBox::restructureParentFlow() {
         box->appendChildNode(parent()->removeChildNode(this));
     }
 }
- 
+
 void RenderBox::setStyle(RenderStyle *_style)
 {
     bool affectsParent = style() && isFloatingOrPositioned() &&
          (!_style->isFloating() && _style->position() != ABSOLUTE && _style->position() != FIXED) &&
          parent() && (parent()->isBlockFlow() || parent()->isInlineFlow());
-    
+
     RenderObject::setStyle(_style);
 
     // The root always paints its background/border.
@@ -131,7 +131,7 @@ void RenderBox::setStyle(RenderStyle *_style)
         setInline(true);
         break;
     case RUN_IN:
-        if (isInline() && parent() && parent()->childrenInline()) 
+        if (isInline() && parent() && parent()->childrenInline())
             break;
     default:
         setInline(false);
@@ -644,7 +644,7 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
         // Cache the x position only if we were an INLINE type originally.
         bool wasInline = style()->originalDisplay() == INLINE ||
                          style()->originalDisplay() == INLINE_TABLE;
-        
+
         if (wasInline && hasStaticX()) {
             // The value is cached in the xPos of the box.  We only need this value if
             // our object was inline originally, since otherwise it would have ended up underneath
@@ -970,7 +970,7 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         // Only use the percentage if the cell has some kind of specified height
         // WinIE would check every cell in the row. We'll follow Mozilla/Opera here
         // and only check the containing block chain
-        if (cb->style()->height().isFixed() || cb->style()->height().isPercent() || 
+        if (cb->style()->height().isFixed() || cb->style()->height().isPercent() ||
               cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced) != -1) {
             result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
             if (result == 0)
@@ -997,13 +997,13 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         result = static_cast<RenderCanvas*>(cb)->viewportHeight();
         result -= cb->style()->borderTopWidth() - cb->style()->borderBottomWidth();
         result -= cb->paddingTop() + cb->paddingBottom();
-    } 
+    }
     else if (cb->isBody() && style()->htmlHacks() &&
                              cb->style()->height().isVariable() && !cb->isFloatingOrPositioned()) {
         int margins = cb->collapsedMarginTop() + cb->collapsedMarginBottom();
         int visHeight = canvas()->viewportHeight();
         RenderObject* p = cb->parent();
-        result = visHeight - (margins + p->marginTop() + p->marginBottom() + 
+        result = visHeight - (margins + p->marginTop() + p->marginBottom() +
                               p->borderTop() + p->borderBottom() +
                               p->paddingTop() + p->paddingBottom());
     }
@@ -1086,7 +1086,7 @@ int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
     switch( h.type() ) {
     case Fixed:
         return h.value();
-    case Percent: 
+    case Percent:
       {
         int th = calcPercentageHeight(h, true);
         if (th != -1)
@@ -1448,17 +1448,17 @@ void RenderBox::calcAbsoluteVertical()
 }
 
 
-int RenderBox::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
+int RenderBox::lowestPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {
     return includeSelf ? m_height : 0;
 }
 
-int RenderBox::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
+int RenderBox::rightmostPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {
     return includeSelf ? m_width : 0;
 }
 
-int RenderBox::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
+int RenderBox::leftmostPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {
     return includeSelf ? 0 : m_width;
 }
