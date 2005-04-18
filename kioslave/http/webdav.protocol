@@ -9,6 +9,7 @@ writing=true
 makedir=true
 deleting=true
 moving=true
+deleteRecursive=true
 defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=www
