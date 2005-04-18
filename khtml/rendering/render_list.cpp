@@ -43,6 +43,8 @@
 using namespace khtml;
 using namespace Enumerate;
 
+const int cMarkerPadding = 7;
+
 // -------------------------------------------------------------------------
 
 RenderListItem::RenderListItem(DOM::NodeImpl* node)
@@ -240,7 +242,6 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
 #endif
     p->setFont(style()->font());
     const QFontMetrics fm = p->fontMetrics();
-    int offset = fm.ascent()*2/3;
 
 
     // The marker needs to adjust its tx, for the case where it's an outside marker.
@@ -289,15 +290,25 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         }
     }
 
+    int offset = fm.ascent()*2/3;
+    bool haveImage = m_listImage && !m_listImage->isErrorImage();
+    if (haveImage)
+        offset = m_listImage->pixmap().width();
 
     int xoff = 0;
     int yoff = fm.ascent() - offset;
 
-    if (!listPositionInside())
+    int bulletWidth = offset/2;
+    if (offset%2)
+        bulletWidth++;
+    if (!listPositionInside()) {
         if (listItem->style()->direction() == LTR)
-            xoff = -7 - offset;
+            xoff = -cMarkerPadding - offset;
         else
-            xoff = offset;
+            xoff = cMarkerPadding + (haveImage ? 0 : (offset - bulletWidth));
+    }
+    else if (style()->direction() == RTL)
+        xoff += haveImage ? cMarkerPadding : (m_width - bulletWidth);
 
     if ( m_listImage && !m_listImage->isErrorImage()) {
 	if ( !listPositionInside() ) {
@@ -352,17 +363,29 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
     case LNONE:
         return;
     default:
-        if (!m_item.isNull()) {
+        if (!m_item.isEmpty()) {
             if(listPositionInside()) {
-            	if(style()->direction() == LTR)
-        	    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
-            	else
-            	    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, m_item);
+            	if( style()->direction() == LTR) {
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+                    p->drawText(_tx + fm.width(m_item), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip,
+                                QString::fromLatin1(". "));
+                }
+            	else {
+                    const QString& punct(QString::fromLatin1(" ."));
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, punct);
+            	    p->drawText(_tx + fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+                }
             } else {
-                if(style()->direction() == LTR)
-            	    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, m_item);
-            	else
-            	    p->drawText(_tx+offset/2 + parent()->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+                if (style()->direction() == LTR) {
+                    const QString& punct(QString::fromLatin1(". "));
+                    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, punct);
+                    p->drawText(_tx-offset/2-fm.width(punct), _ty, 0, 0, Qt::AlignRight|Qt::DontClip, m_item);
+                }
+            	else {
+                    const QString& punct(QString::fromLatin1(" ."));
+            	    p->drawText(_tx+offset/2, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, punct);
+                    p->drawText(_tx+offset/2+fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+                }
 	    }
         }
     }
@@ -398,7 +421,7 @@ void RenderListMarker::calcMinMaxWidth()
     m_markerWidth = m_width = 0;
 
     if(m_listImage) {
-        m_markerWidth = m_listImage->pixmap().width() + 5;
+        m_markerWidth = m_listImage->pixmap().width() + cMarkerPadding;
         if (listPositionInside())
             m_width = m_markerWidth;
         m_height = m_listImage->pixmap().height();
@@ -523,8 +546,7 @@ void RenderListMarker::calcMinMaxWidth()
     default:
         KHTMLAssert(false);
     }
-    m_item += QString::fromLatin1(". ");
-    m_markerWidth = fm.width(m_item);
+    m_markerWidth = fm.width(m_item) + fm.width(QString::fromLatin1(". "));
     }
 
 end:
