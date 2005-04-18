@@ -485,8 +485,7 @@ bool KBuildSycoca::recreate()
   KSaveFile database(path);
   if (database.status() != 0)
   {
-    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'!\n", path.local8Bit().data());
-    fprintf(stderr, "kbuildsycoca: Wrong permissions on directory? Disk full?\n");
+    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n", path.local8Bit().data(),strerror(database.status()));
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
     if (!silent)
