@@ -28,7 +28,7 @@ KDE_EXPORT void kimgio_g3_read( QImageIO *io )
 
   QImage image(width, height, 1, 0, QImage::BigEndian);
   
-  if (scanlength != image.bytesPerLine())
+  if (image.isNull() || scanlength != image.bytesPerLine())
     {
       TIFFClose(tiff);
       return;
