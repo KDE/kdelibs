@@ -40,7 +40,7 @@ struct props {
 };
 
 static const struct props * findProp (register const char *str, register unsigned int len);
-/* maximum key range = 432, duplicates = 0 */
+/* maximum key range = 350, duplicates = 0 */
 
 #ifdef __GNUC__
 __inline
@@ -54,32 +54,32 @@ hash_prop (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435,   0, 435, 435, 435, 435,
-      435,   0, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435,   0,   0,   0,
-        0,   5, 140,  20,  20,   0, 435,  30,   0,   0,
-        0,   0,   0,   0,   0,  15,   0, 115,  30,  65,
-      125,  55,  15, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435, 435, 435, 435, 435,
-      435, 435, 435, 435, 435, 435
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353,   0, 353, 353, 353, 353,
+      353,   0, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353,  30,   0,   5,
+        5,  10,  45,   0,   0,   0, 353,  60,   0,   0,
+       15,   0,   0,   5,   0,  20,   0, 115,  80, 100,
+       25,  45,  55, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353, 353, 353, 353, 353,
+      353, 353, 353, 353, 353, 353
     };
   register int hval = len;
 
@@ -193,305 +193,301 @@ findProp (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 121,
+      TOTAL_KEYWORDS = 123,
       MIN_WORD_LENGTH = 3,
       MAX_WORD_LENGTH = 32,
       MIN_HASH_VALUE = 3,
-      MAX_HASH_VALUE = 434
+      MAX_HASH_VALUE = 352
     };
 
   static const struct props wordlist_prop[] =
     {
-#line 100 "cssproperties.gperf"
+#line 102 "cssproperties.gperf"
       {"top", CSS_PROP_TOP},
+#line 94 "cssproperties.gperf"
+      {"right", CSS_PROP_RIGHT},
+#line 37 "cssproperties.gperf"
+      {"bottom", CSS_PROP_BOTTOM},
 #line 40 "cssproperties.gperf"
       {"clip", CSS_PROP_CLIP},
 #line 41 "cssproperties.gperf"
       {"color", CSS_PROP_COLOR},
-#line 37 "cssproperties.gperf"
-      {"bottom", CSS_PROP_BOTTOM},
-#line 39 "cssproperties.gperf"
-      {"clear", CSS_PROP_CLEAR},
-#line 110 "cssproperties.gperf"
-      {"border", CSS_PROP_BORDER},
-#line 42 "cssproperties.gperf"
-      {"content", CSS_PROP_CONTENT},
-#line 46 "cssproperties.gperf"
-      {"direction", CSS_PROP_DIRECTION},
-#line 113 "cssproperties.gperf"
-      {"border-top", CSS_PROP_BORDER_TOP},
-#line 111 "cssproperties.gperf"
-      {"border-color", CSS_PROP_BORDER_COLOR},
-#line 115 "cssproperties.gperf"
-      {"border-bottom", CSS_PROP_BORDER_BOTTOM},
-#line 25 "cssproperties.gperf"
-      {"border-top-color", CSS_PROP_BORDER_TOP_COLOR},
-#line 90 "cssproperties.gperf"
-      {"position", CSS_PROP_POSITION},
-#line 27 "cssproperties.gperf"
-      {"border-bottom-color", CSS_PROP_BORDER_BOTTOM_COLOR},
-#line 121 "cssproperties.gperf"
-      {"margin", CSS_PROP_MARGIN},
-#line 123 "cssproperties.gperf"
-      {"padding", CSS_PROP_PADDING},
-#line 62 "cssproperties.gperf"
-      {"margin-top", CSS_PROP_MARGIN_TOP},
-#line 83 "cssproperties.gperf"
-      {"padding-top", CSS_PROP_PADDING_TOP},
-#line 38 "cssproperties.gperf"
-      {"caption-side", CSS_PROP_CAPTION_SIDE},
-#line 64 "cssproperties.gperf"
-      {"margin-bottom", CSS_PROP_MARGIN_BOTTOM},
-#line 85 "cssproperties.gperf"
-      {"padding-bottom", CSS_PROP_PADDING_BOTTOM},
-#line 93 "cssproperties.gperf"
-      {"size", CSS_PROP_SIZE},
-#line 21 "cssproperties.gperf"
-      {"border-collapse", CSS_PROP_BORDER_COLLAPSE},
-#line 76 "cssproperties.gperf"
-      {"orphans", CSS_PROP_ORPHANS},
-#line 92 "cssproperties.gperf"
-      {"right", CSS_PROP_RIGHT},
-#line 22 "cssproperties.gperf"
-      {"border-spacing", CSS_PROP_BORDER_SPACING},
-#line 124 "cssproperties.gperf"
-      {"scrollbar-base-color", CSS_PROP_SCROLLBAR_BASE_COLOR},
-#line 114 "cssproperties.gperf"
-      {"border-right", CSS_PROP_BORDER_RIGHT},
-#line 57 "cssproperties.gperf"
-      {"letter-spacing", CSS_PROP_LETTER_SPACING},
-#line 77 "cssproperties.gperf"
-      {"opacity", CSS_PROP_OPACITY},
-#line 26 "cssproperties.gperf"
-      {"border-right-color", CSS_PROP_BORDER_RIGHT_COLOR},
-#line 130 "cssproperties.gperf"
-      {"scrollbar-track-color", CSS_PROP_SCROLLBAR_TRACK_COLOR},
-#line 102 "cssproperties.gperf"
-      {"vertical-align", CSS_PROP_VERTICAL_ALIGN},
 #line 55 "cssproperties.gperf"
       {"height", CSS_PROP_HEIGHT},
-#line 63 "cssproperties.gperf"
-      {"margin-right", CSS_PROP_MARGIN_RIGHT},
-#line 84 "cssproperties.gperf"
-      {"padding-right", CSS_PROP_PADDING_RIGHT},
-#line 74 "cssproperties.gperf"
+#line 112 "cssproperties.gperf"
+      {"border", CSS_PROP_BORDER},
+#line 115 "cssproperties.gperf"
+      {"border-top", CSS_PROP_BORDER_TOP},
+#line 116 "cssproperties.gperf"
+      {"border-right", CSS_PROP_BORDER_RIGHT},
+#line 117 "cssproperties.gperf"
+      {"border-bottom", CSS_PROP_BORDER_BOTTOM},
+#line 113 "cssproperties.gperf"
+      {"border-color", CSS_PROP_BORDER_COLOR},
+#line 75 "cssproperties.gperf"
       {"min-height", CSS_PROP_MIN_HEIGHT},
-#line 47 "cssproperties.gperf"
-      {"display", CSS_PROP_DISPLAY},
-#line 128 "cssproperties.gperf"
-      {"scrollbar-3dlight-color", CSS_PROP_SCROLLBAR_3DLIGHT_COLOR},
+#line 25 "cssproperties.gperf"
+      {"border-top-color", CSS_PROP_BORDER_TOP_COLOR},
+#line 26 "cssproperties.gperf"
+      {"border-right-color", CSS_PROP_BORDER_RIGHT_COLOR},
+#line 27 "cssproperties.gperf"
+      {"border-bottom-color", CSS_PROP_BORDER_BOTTOM_COLOR},
+#line 92 "cssproperties.gperf"
+      {"position", CSS_PROP_POSITION},
+#line 46 "cssproperties.gperf"
+      {"direction", CSS_PROP_DIRECTION},
 #line 58 "cssproperties.gperf"
       {"line-height", CSS_PROP_LINE_HEIGHT},
-#line 106 "cssproperties.gperf"
-      {"width", CSS_PROP_WIDTH},
+#line 39 "cssproperties.gperf"
+      {"clear", CSS_PROP_CLEAR},
+#line 123 "cssproperties.gperf"
+      {"margin", CSS_PROP_MARGIN},
+#line 42 "cssproperties.gperf"
+      {"content", CSS_PROP_CONTENT},
+#line 62 "cssproperties.gperf"
+      {"margin-top", CSS_PROP_MARGIN_TOP},
+#line 63 "cssproperties.gperf"
+      {"margin-right", CSS_PROP_MARGIN_RIGHT},
+#line 64 "cssproperties.gperf"
+      {"margin-bottom", CSS_PROP_MARGIN_BOTTOM},
+#line 56 "cssproperties.gperf"
+      {"left", CSS_PROP_LEFT},
+#line 125 "cssproperties.gperf"
+      {"padding", CSS_PROP_PADDING},
+#line 121 "cssproperties.gperf"
+      {"font", CSS_PROP_FONT},
+#line 84 "cssproperties.gperf"
+      {"padding-top", CSS_PROP_PADDING_TOP},
+#line 85 "cssproperties.gperf"
+      {"padding-right", CSS_PROP_PADDING_RIGHT},
+#line 86 "cssproperties.gperf"
+      {"padding-bottom", CSS_PROP_PADDING_BOTTOM},
+#line 77 "cssproperties.gperf"
+      {"orphans", CSS_PROP_ORPHANS},
+#line 73 "cssproperties.gperf"
+      {"max-height", CSS_PROP_MAX_HEIGHT},
+#line 49 "cssproperties.gperf"
+      {"float", CSS_PROP_FLOAT},
+#line 118 "cssproperties.gperf"
+      {"border-left", CSS_PROP_BORDER_LEFT},
+#line 129 "cssproperties.gperf"
+      {"scrollbar-highlight-color", CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR},
+#line 78 "cssproperties.gperf"
+      {"opacity", CSS_PROP_OPACITY},
+#line 130 "cssproperties.gperf"
+      {"scrollbar-3dlight-color", CSS_PROP_SCROLLBAR_3DLIGHT_COLOR},
+#line 95 "cssproperties.gperf"
+      {"size", CSS_PROP_SIZE},
+#line 97 "cssproperties.gperf"
+      {"text-align", CSS_PROP_TEXT_ALIGN},
+#line 99 "cssproperties.gperf"
+      {"text-indent", CSS_PROP_TEXT_INDENT},
+#line 28 "cssproperties.gperf"
+      {"border-left-color", CSS_PROP_BORDER_LEFT_COLOR},
+#line 21 "cssproperties.gperf"
+      {"border-collapse", CSS_PROP_BORDER_COLLAPSE},
+#line 38 "cssproperties.gperf"
+      {"caption-side", CSS_PROP_CAPTION_SIDE},
+#line 22 "cssproperties.gperf"
+      {"border-spacing", CSS_PROP_BORDER_SPACING},
 #line 48 "cssproperties.gperf"
       {"empty-cells", CSS_PROP_EMPTY_CELLS},
-#line 112 "cssproperties.gperf"
+#line 114 "cssproperties.gperf"
       {"border-style", CSS_PROP_BORDER_STYLE},
-#line 75 "cssproperties.gperf"
-      {"min-width", CSS_PROP_MIN_WIDTH},
+#line 57 "cssproperties.gperf"
+      {"letter-spacing", CSS_PROP_LETTER_SPACING},
+#line 122 "cssproperties.gperf"
+      {"list-style", CSS_PROP_LIST_STYLE},
 #line 29 "cssproperties.gperf"
       {"border-top-style", CSS_PROP_BORDER_TOP_STYLE},
-#line 89 "cssproperties.gperf"
-      {"page-break-inside", CSS_PROP_PAGE_BREAK_INSIDE},
+#line 47 "cssproperties.gperf"
+      {"display", CSS_PROP_DISPLAY},
+#line 30 "cssproperties.gperf"
+      {"border-right-style", CSS_PROP_BORDER_RIGHT_STYLE},
 #line 31 "cssproperties.gperf"
       {"border-bottom-style", CSS_PROP_BORDER_BOTTOM_STYLE},
+#line 108 "cssproperties.gperf"
+      {"width", CSS_PROP_WIDTH},
+#line 65 "cssproperties.gperf"
+      {"margin-left", CSS_PROP_MARGIN_LEFT},
+#line 98 "cssproperties.gperf"
+      {"text-decoration", CSS_PROP_TEXT_DECORATION},
+#line 110 "cssproperties.gperf"
+      {"z-index", CSS_PROP_Z_INDEX},
+#line 87 "cssproperties.gperf"
+      {"padding-left", CSS_PROP_PADDING_LEFT},
 #line 120 "cssproperties.gperf"
-      {"list-style", CSS_PROP_LIST_STYLE},
-#line 131 "cssproperties.gperf"
-      {"scrollbar-arrow-color", CSS_PROP_SCROLLBAR_ARROW_COLOR},
-#line 117 "cssproperties.gperf"
+      {"box-sizing", CSS_PROP_BOX_SIZING},
+#line 76 "cssproperties.gperf"
+      {"min-width", CSS_PROP_MIN_WIDTH},
+#line 119 "cssproperties.gperf"
       {"border-width", CSS_PROP_BORDER_WIDTH},
 #line 33 "cssproperties.gperf"
       {"border-top-width", CSS_PROP_BORDER_TOP_WIDTH},
-#line 35 "cssproperties.gperf"
-      {"border-bottom-width", CSS_PROP_BORDER_BOTTOM_WIDTH},
-#line 103 "cssproperties.gperf"
-      {"visibility", CSS_PROP_VISIBILITY},
-#line 107 "cssproperties.gperf"
-      {"word-spacing", CSS_PROP_WORD_SPACING},
-#line 104 "cssproperties.gperf"
-      {"white-space", CSS_PROP_WHITE_SPACE},
-#line 60 "cssproperties.gperf"
-      {"list-style-position", CSS_PROP_LIST_STYLE_POSITION},
-#line 122 "cssproperties.gperf"
-      {"outline", CSS_PROP_OUTLINE},
-#line 59 "cssproperties.gperf"
-      {"list-style-image", CSS_PROP_LIST_STYLE_IMAGE},
-#line 101 "cssproperties.gperf"
-      {"unicode-bidi", CSS_PROP_UNICODE_BIDI},
-#line 78 "cssproperties.gperf"
-      {"outline-color", CSS_PROP_OUTLINE_COLOR},
-#line 45 "cssproperties.gperf"
-      {"cursor", CSS_PROP_CURSOR},
-#line 126 "cssproperties.gperf"
-      {"scrollbar-shadow-color", CSS_PROP_SCROLLBAR_SHADOW_COLOR},
-#line 30 "cssproperties.gperf"
-      {"border-right-style", CSS_PROP_BORDER_RIGHT_STYLE},
-#line 127 "cssproperties.gperf"
-      {"scrollbar-highlight-color", CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR},
-#line 91 "cssproperties.gperf"
-      {"quotes", CSS_PROP_QUOTES},
-#line 119 "cssproperties.gperf"
-      {"font", CSS_PROP_FONT},
-#line 49 "cssproperties.gperf"
-      {"float", CSS_PROP_FLOAT},
-#line 97 "cssproperties.gperf"
-      {"text-indent", CSS_PROP_TEXT_INDENT},
-#line 43 "cssproperties.gperf"
-      {"counter-increment", CSS_PROP_COUNTER_INCREMENT},
 #line 34 "cssproperties.gperf"
       {"border-right-width", CSS_PROP_BORDER_RIGHT_WIDTH},
-#line 56 "cssproperties.gperf"
-      {"left", CSS_PROP_LEFT},
-#line 96 "cssproperties.gperf"
-      {"text-decoration", CSS_PROP_TEXT_DECORATION},
-#line 105 "cssproperties.gperf"
-      {"widows", CSS_PROP_WIDOWS},
-#line 108 "cssproperties.gperf"
-      {"z-index", CSS_PROP_Z_INDEX},
-#line 24 "cssproperties.gperf"
-      {"-khtml-border-vertical-spacing", CSS_PROP__KHTML_BORDER_VERTICAL_SPACING},
-#line 23 "cssproperties.gperf"
-      {"-khtml-border-horizontal-spacing", CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING},
-#line 44 "cssproperties.gperf"
-      {"counter-reset", CSS_PROP_COUNTER_RESET},
-#line 95 "cssproperties.gperf"
-      {"text-align", CSS_PROP_TEXT_ALIGN},
-#line 116 "cssproperties.gperf"
-      {"border-left", CSS_PROP_BORDER_LEFT},
-#line 61 "cssproperties.gperf"
-      {"list-style-type", CSS_PROP_LIST_STYLE_TYPE},
-#line 28 "cssproperties.gperf"
-      {"border-left-color", CSS_PROP_BORDER_LEFT_COLOR},
-#line 129 "cssproperties.gperf"
-      {"scrollbar-darkshadow-color", CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR},
-#line 109 "cssproperties.gperf"
-      {"background", CSS_PROP_BACKGROUND},
-#line 65 "cssproperties.gperf"
-      {"margin-left", CSS_PROP_MARGIN_LEFT},
-#line 86 "cssproperties.gperf"
-      {"padding-left", CSS_PROP_PADDING_LEFT},
-#line 125 "cssproperties.gperf"
-      {"scrollbar-face-color", CSS_PROP_SCROLLBAR_FACE_COLOR},
-#line 14 "cssproperties.gperf"
-      {"background-color", CSS_PROP_BACKGROUND_COLOR},
-#line 53 "cssproperties.gperf"
-      {"font-variant", CSS_PROP_FONT_VARIANT},
-#line 51 "cssproperties.gperf"
-      {"font-size", CSS_PROP_FONT_SIZE},
-#line 118 "cssproperties.gperf"
-      {"box-sizing", CSS_PROP_BOX_SIZING},
-#line 94 "cssproperties.gperf"
-      {"table-layout", CSS_PROP_TABLE_LAYOUT},
-#line 66 "cssproperties.gperf"
-      {"-khtml-marquee", CSS_PROP__KHTML_MARQUEE},
-#line 16 "cssproperties.gperf"
-      {"background-repeat", CSS_PROP_BACKGROUND_REPEAT},
-#line 18 "cssproperties.gperf"
-      {"background-position", CSS_PROP_BACKGROUND_POSITION},
-#line 72 "cssproperties.gperf"
-      {"max-height", CSS_PROP_MAX_HEIGHT},
-#line 67 "cssproperties.gperf"
-      {"-khtml-marquee-direction", CSS_PROP__KHTML_MARQUEE_DIRECTION},
-#line 15 "cssproperties.gperf"
-      {"background-image", CSS_PROP_BACKGROUND_IMAGE},
-#line 80 "cssproperties.gperf"
-      {"outline-style", CSS_PROP_OUTLINE_STYLE},
-#line 68 "cssproperties.gperf"
-      {"-khtml-marquee-increment", CSS_PROP__KHTML_MARQUEE_INCREMENT},
-#line 69 "cssproperties.gperf"
-      {"-khtml-marquee-repetition", CSS_PROP__KHTML_MARQUEE_REPETITION},
-#line 17 "cssproperties.gperf"
-      {"background-attachment", CSS_PROP_BACKGROUND_ATTACHMENT},
-#line 134 "cssproperties.gperf"
-      {"-khtml-text-decoration-color", CSS_PROP__KHTML_TEXT_DECORATION_COLOR},
-#line 81 "cssproperties.gperf"
-      {"outline-width", CSS_PROP_OUTLINE_WIDTH},
-#line 73 "cssproperties.gperf"
-      {"max-width", CSS_PROP_MAX_WIDTH},
-#line 70 "cssproperties.gperf"
-      {"-khtml-marquee-speed", CSS_PROP__KHTML_MARQUEE_SPEED},
-#line 87 "cssproperties.gperf"
-      {"page-break-after", CSS_PROP_PAGE_BREAK_AFTER},
+#line 35 "cssproperties.gperf"
+      {"border-bottom-width", CSS_PROP_BORDER_BOTTOM_WIDTH},
+#line 126 "cssproperties.gperf"
+      {"scrollbar-base-color", CSS_PROP_SCROLLBAR_BASE_COLOR},
 #line 52 "cssproperties.gperf"
       {"font-style", CSS_PROP_FONT_STYLE},
-#line 88 "cssproperties.gperf"
-      {"page-break-before", CSS_PROP_PAGE_BREAK_BEFORE},
-#line 98 "cssproperties.gperf"
-      {"text-shadow", CSS_PROP_TEXT_SHADOW},
+#line 45 "cssproperties.gperf"
+      {"cursor", CSS_PROP_CURSOR},
+#line 124 "cssproperties.gperf"
+      {"outline", CSS_PROP_OUTLINE},
+#line 60 "cssproperties.gperf"
+      {"list-style-position", CSS_PROP_LIST_STYLE_POSITION},
+#line 59 "cssproperties.gperf"
+      {"list-style-image", CSS_PROP_LIST_STYLE_IMAGE},
+#line 51 "cssproperties.gperf"
+      {"font-size", CSS_PROP_FONT_SIZE},
+#line 105 "cssproperties.gperf"
+      {"visibility", CSS_PROP_VISIBILITY},
+#line 93 "cssproperties.gperf"
+      {"quotes", CSS_PROP_QUOTES},
+#line 79 "cssproperties.gperf"
+      {"outline-color", CSS_PROP_OUTLINE_COLOR},
+#line 101 "cssproperties.gperf"
+      {"text-transform", CSS_PROP_TEXT_TRANSFORM},
 #line 32 "cssproperties.gperf"
       {"border-left-style", CSS_PROP_BORDER_LEFT_STYLE},
-#line 82 "cssproperties.gperf"
-      {"overflow", CSS_PROP_OVERFLOW},
-#line 36 "cssproperties.gperf"
-      {"border-left-width", CSS_PROP_BORDER_LEFT_WIDTH},
-#line 20 "cssproperties.gperf"
-      {"background-position-y", CSS_PROP_BACKGROUND_POSITION_Y},
+#line 61 "cssproperties.gperf"
+      {"list-style-type", CSS_PROP_LIST_STYLE_TYPE},
+#line 103 "cssproperties.gperf"
+      {"unicode-bidi", CSS_PROP_UNICODE_BIDI},
+#line 74 "cssproperties.gperf"
+      {"max-width", CSS_PROP_MAX_WIDTH},
+#line 127 "cssproperties.gperf"
+      {"scrollbar-face-color", CSS_PROP_SCROLLBAR_FACE_COLOR},
+#line 66 "cssproperties.gperf"
+      {"-khtml-margin-start", CSS_PROP__KHTML_MARGIN_START},
+#line 132 "cssproperties.gperf"
+      {"scrollbar-track-color", CSS_PROP_SCROLLBAR_TRACK_COLOR},
 #line 54 "cssproperties.gperf"
       {"font-weight", CSS_PROP_FONT_WEIGHT},
-#line 71 "cssproperties.gperf"
-      {"-khtml-marquee-style", CSS_PROP__KHTML_MARQUEE_STYLE},
-#line 132 "cssproperties.gperf"
-      {"-khtml-flow-mode", CSS_PROP__KHTML_FLOW_MODE},
-#line 99 "cssproperties.gperf"
-      {"text-transform", CSS_PROP_TEXT_TRANSFORM},
-#line 133 "cssproperties.gperf"
-      {"-khtml-user-input", CSS_PROP__KHTML_USER_INPUT},
-#line 19 "cssproperties.gperf"
-      {"background-position-x", CSS_PROP_BACKGROUND_POSITION_X},
+#line 104 "cssproperties.gperf"
+      {"vertical-align", CSS_PROP_VERTICAL_ALIGN},
+#line 88 "cssproperties.gperf"
+      {"-khtml-padding-start", CSS_PROP__KHTML_PADDING_START},
+#line 106 "cssproperties.gperf"
+      {"white-space", CSS_PROP_WHITE_SPACE},
+#line 109 "cssproperties.gperf"
+      {"word-spacing", CSS_PROP_WORD_SPACING},
 #line 50 "cssproperties.gperf"
       {"font-family", CSS_PROP_FONT_FAMILY},
-#line 79 "cssproperties.gperf"
-      {"outline-offset", CSS_PROP_OUTLINE_OFFSET}
+#line 36 "cssproperties.gperf"
+      {"border-left-width", CSS_PROP_BORDER_LEFT_WIDTH},
+#line 136 "cssproperties.gperf"
+      {"-khtml-text-decoration-color", CSS_PROP__KHTML_TEXT_DECORATION_COLOR},
+#line 44 "cssproperties.gperf"
+      {"counter-reset", CSS_PROP_COUNTER_RESET},
+#line 100 "cssproperties.gperf"
+      {"text-shadow", CSS_PROP_TEXT_SHADOW},
+#line 91 "cssproperties.gperf"
+      {"page-break-inside", CSS_PROP_PAGE_BREAK_INSIDE},
+#line 133 "cssproperties.gperf"
+      {"scrollbar-arrow-color", CSS_PROP_SCROLLBAR_ARROW_COLOR},
+#line 43 "cssproperties.gperf"
+      {"counter-increment", CSS_PROP_COUNTER_INCREMENT},
+#line 90 "cssproperties.gperf"
+      {"page-break-before", CSS_PROP_PAGE_BREAK_BEFORE},
+#line 53 "cssproperties.gperf"
+      {"font-variant", CSS_PROP_FONT_VARIANT},
+#line 81 "cssproperties.gperf"
+      {"outline-style", CSS_PROP_OUTLINE_STYLE},
+#line 107 "cssproperties.gperf"
+      {"widows", CSS_PROP_WIDOWS},
+#line 134 "cssproperties.gperf"
+      {"-khtml-flow-mode", CSS_PROP__KHTML_FLOW_MODE},
+#line 128 "cssproperties.gperf"
+      {"scrollbar-shadow-color", CSS_PROP_SCROLLBAR_SHADOW_COLOR},
+#line 111 "cssproperties.gperf"
+      {"background", CSS_PROP_BACKGROUND},
+#line 89 "cssproperties.gperf"
+      {"page-break-after", CSS_PROP_PAGE_BREAK_AFTER},
+#line 96 "cssproperties.gperf"
+      {"table-layout", CSS_PROP_TABLE_LAYOUT},
+#line 83 "cssproperties.gperf"
+      {"overflow", CSS_PROP_OVERFLOW},
+#line 67 "cssproperties.gperf"
+      {"-khtml-marquee", CSS_PROP__KHTML_MARQUEE},
+#line 14 "cssproperties.gperf"
+      {"background-color", CSS_PROP_BACKGROUND_COLOR},
+#line 82 "cssproperties.gperf"
+      {"outline-width", CSS_PROP_OUTLINE_WIDTH},
+#line 80 "cssproperties.gperf"
+      {"outline-offset", CSS_PROP_OUTLINE_OFFSET},
+#line 23 "cssproperties.gperf"
+      {"-khtml-border-horizontal-spacing", CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING},
+#line 18 "cssproperties.gperf"
+      {"background-position", CSS_PROP_BACKGROUND_POSITION},
+#line 15 "cssproperties.gperf"
+      {"background-image", CSS_PROP_BACKGROUND_IMAGE},
+#line 68 "cssproperties.gperf"
+      {"-khtml-marquee-direction", CSS_PROP__KHTML_MARQUEE_DIRECTION},
+#line 70 "cssproperties.gperf"
+      {"-khtml-marquee-repetition", CSS_PROP__KHTML_MARQUEE_REPETITION},
+#line 71 "cssproperties.gperf"
+      {"-khtml-marquee-speed", CSS_PROP__KHTML_MARQUEE_SPEED},
+#line 16 "cssproperties.gperf"
+      {"background-repeat", CSS_PROP_BACKGROUND_REPEAT},
+#line 24 "cssproperties.gperf"
+      {"-khtml-border-vertical-spacing", CSS_PROP__KHTML_BORDER_VERTICAL_SPACING},
+#line 69 "cssproperties.gperf"
+      {"-khtml-marquee-increment", CSS_PROP__KHTML_MARQUEE_INCREMENT},
+#line 19 "cssproperties.gperf"
+      {"background-position-x", CSS_PROP_BACKGROUND_POSITION_X},
+#line 72 "cssproperties.gperf"
+      {"-khtml-marquee-style", CSS_PROP__KHTML_MARQUEE_STYLE},
+#line 20 "cssproperties.gperf"
+      {"background-position-y", CSS_PROP_BACKGROUND_POSITION_Y},
+#line 131 "cssproperties.gperf"
+      {"scrollbar-darkshadow-color", CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR},
+#line 17 "cssproperties.gperf"
+      {"background-attachment", CSS_PROP_BACKGROUND_ATTACHMENT},
+#line 135 "cssproperties.gperf"
+      {"-khtml-user-input", CSS_PROP__KHTML_USER_INPUT}
     };
 
   static const signed char lookup[] =
     {
-       -1,  -1,  -1,   0,   1,   2,   3,  -1,  -1,  -1,
-        4,   5,   6,  -1,   7,   8,  -1,   9,  10,  -1,
-       -1,  11,  -1,  12,  13,  -1,  14,  15,  -1,  -1,
-       16,  17,  18,  19,  20,  -1,  -1,  -1,  -1,  21,
-       22,  -1,  23,  -1,  -1,  24,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  25,  26,  -1,  27,  -1,  28,
-       -1,  -1,  29,  30,  -1,  -1,  31,  -1,  -1,  32,
-       -1,  33,  34,  35,  -1,  36,  -1,  37,  38,  -1,
-       -1,  39,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       40,  41,  42,  -1,  43,  -1,  44,  45,  -1,  46,
-       47,  48,  49,  -1,  -1,  -1,  50,  -1,  -1,  51,
-       52,  -1,  53,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  54,  -1,  -1,  55,  -1,  -1,  56,  -1,  -1,
-       -1,  57,  58,  59,  -1,  -1,  60,  61,  62,  -1,
-       63,  64,  -1,  -1,  65,  66,  67,  68,  69,  70,
-       71,  72,  73,  -1,  -1,  74,  -1,  75,  76,  -1,
-       77,  78,  -1,  -1,  -1,  79,  -1,  80,  -1,  -1,
-       -1,  81,  -1,  -1,  -1,  82,  83,  84,  -1,  -1,
-       85,  86,  87,  -1,  88,  89,  -1,  90,  -1,  91,
-       -1,  -1,  92,  -1,  -1,  -1,  -1,  -1,  -1,  93,
-       94,  -1,  -1,  -1,  95,  -1,  96,  -1,  97,  98,
-       99, 100,  -1, 101,  -1,  -1,  -1,  -1, 102, 103,
-      104, 105,  -1,  -1,  -1, 106,  -1, 107,  -1,  -1,
+       -1,  -1,  -1,   0,  -1,   1,   2,  -1,  -1,   3,
+        4,  -1,  -1,  -1,  -1,  -1,   5,  -1,  -1,  -1,
+       -1,   6,  -1,  -1,  -1,   7,  -1,   8,   9,  -1,
+       -1,  -1,  10,  -1,  -1,  11,  12,  -1,  13,  14,
+       -1,  -1,  -1,  15,  16,  -1,  17,  -1,  -1,  -1,
+       18,  19,  20,  -1,  -1,  21,  -1,  22,  23,  24,
+       -1,  -1,  25,  -1,  26,  -1,  27,  -1,  28,  29,
+       -1,  -1,  30,  -1,  -1,  31,  -1,  -1,  -1,  -1,
+       32,  33,  -1,  -1,  -1,  34,  -1,  35,  36,  37,
+       38,  39,  40,  -1,  -1,  41,  -1,  42,  -1,  43,
+       -1,  44,  45,  -1,  46,  47,  48,  49,  50,  51,
+       52,  53,  -1,  -1,  -1,  54,  -1,  55,  -1,  -1,
+       -1,  -1,  56,  -1,  -1,  57,  -1,  -1,  -1,  58,
+       -1,  -1,  59,  -1,  -1,  -1,  60,  -1,  61,  62,
+       63,  -1,  -1,  -1,  -1,  64,  65,  66,  -1,  67,
+       -1,  68,  -1,  -1,  69,  70,  71,  -1,  72,  73,
+       -1,  -1,  74,  -1,  -1,  75,  -1,  76,  -1,  77,
+       78,  -1,  -1,  -1,  79,  -1,  80,  -1,  -1,  -1,
+       -1,  81,  -1,  -1,  82,  83,  84,  85,  -1,  -1,
+       -1,  86,  87,  88,  -1,  -1,  -1,  -1,  89,  -1,
+       -1,  90,  -1,  -1,  -1,  -1,  -1,  91,  -1,  -1,
+       -1,  92,  -1,  -1,  -1,  -1,  -1,  93,  -1,  -1,
+       -1,  -1,  94,  -1,  -1,  -1,  -1,  95,  96,  -1,
+       -1,  97,  -1,  -1,  -1,  -1,  98,  99,  -1,  -1,
+      100, 101, 102, 103, 104,  -1,  -1,  -1,  -1,  -1,
+       -1, 105,  -1,  -1,  -1,  -1,  -1,  -1, 106,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1, 108, 109,  -1,  -1,  -1,  -1,  -1, 110,  -1,
-       -1,  -1, 111,  -1,  -1,  -1, 112,  -1,  -1,  -1,
-       -1, 113,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      114,  -1,  -1,  -1,  -1,  -1, 115,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 116,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1, 117,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 118,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 119,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 120
+       -1,  -1,  -1,  -1, 107,  -1,  -1, 108,  -1,  -1,
+       -1,  -1,  -1,  -1, 109,  -1, 110,  -1,  -1, 111,
+      112,  -1,  -1,  -1,  -1, 113,  -1, 114,  -1,  -1,
+      115,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 116,
+       -1, 117,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 118,  -1,  -1,  -1,  -1,
+       -1, 119,  -1,  -1,  -1,  -1, 120,  -1,  -1,  -1,
+       -1, 121,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1, 122
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -513,7 +509,7 @@ findProp (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 135 "cssproperties.gperf"
+#line 137 "cssproperties.gperf"
 
 static const char * const propertyList[] = {
 "",
@@ -569,6 +565,7 @@ static const char * const propertyList[] = {
 "margin-right", 
 "margin-bottom", 
 "margin-left", 
+"-khtml-margin-start", 
 "-khtml-marquee", 
 "-khtml-marquee-direction", 
 "-khtml-marquee-increment", 
@@ -590,6 +587,7 @@ static const char * const propertyList[] = {
 "padding-right", 
 "padding-bottom", 
 "padding-left", 
+"-khtml-padding-start", 
 "page-break-after", 
 "page-break-before", 
 "page-break-inside", 

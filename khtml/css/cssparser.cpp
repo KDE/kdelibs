@@ -534,7 +534,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             //valueList->next();
         }
         break;
-        
+
     case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
         // close-quote | no-open-quote | no-close-quote ]+ | inherit
         return parseContent( propId, important );
@@ -954,6 +954,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     case CSS_PROP_PADDING_RIGHT:        //  <padding-width> | inherit
     case CSS_PROP_PADDING_BOTTOM:       //   Which is defined as
     case CSS_PROP_PADDING_LEFT:         //   <length> | <percentage>
+    case CSS_PROP__KHTML_PADDING_START:
         valid_primitive = ( !id && validUnit( value, FLength|FPercent|FNonNeg, strict&(!nonCSSHint) ) );
         break;
 
@@ -1014,6 +1015,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     case CSS_PROP_MARGIN_RIGHT:         //   Which is defined as
     case CSS_PROP_MARGIN_BOTTOM:        //   <length> | <percentage> | auto | inherit
     case CSS_PROP_MARGIN_LEFT:          ////
+    case CSS_PROP__KHTML_MARGIN_START:
         if ( id == CSS_VAL_AUTO )
             valid_primitive = true;
         else
