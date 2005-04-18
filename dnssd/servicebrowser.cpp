@@ -40,8 +40,8 @@ public:
 	QValueList<RemoteService::Ptr> m_services;
 	QValueList<RemoteService::Ptr> m_duringResolve;
 	QStringList m_types;
-	bool m_autoresolve;
 	DomainBrowser* m_domains;
+	int m_flags;
 	bool m_running;
 	bool m_finished;
 	QDict<Query> resolvers;
@@ -49,22 +49,21 @@ public:
 
 ServiceBrowser::ServiceBrowser(const QString& type,DomainBrowser* domains,bool autoResolve)
 {
-	if (domains) init(type,domains,autoResolve);
-		else init(type,new DomainBrowser(this),autoResolve);
+	if (domains) init(type,domains,autoResolve ? AutoResolve : 0);
+		else init(type,new DomainBrowser(this),autoResolve ?  AutoResolve|AutoDelete : AutoDelete);
 }
-
-ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,bool autoResolve)
+ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,int flags)
 {
-	if (domains) init(types,domains,autoResolve);
-		else init(types,new DomainBrowser(this),autoResolve);
+	if (domains) init(types,domains,flags);
+		else init(types,new DomainBrowser(this),flags|AutoDelete);
 }
 
-void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,bool autoResolve)
+void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,int flags)
 {
 	d = new ServiceBrowserPrivate();
 	d->resolvers.setAutoDelete(true);
 	d->m_types=type;
-	d->m_autoresolve=autoResolve;
+	d->m_flags=flags;
 	d->m_domains = domains;
 	connect(d->m_domains,SIGNAL(domainAdded(const QString& )),this,SLOT(addDomain(const QString& )));
 	connect(d->m_domains,SIGNAL(domainRemoved(const QString& )),this,
@@ -72,7 +71,11 @@ void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,bool au
 }
 ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,bool autoResolve)
 {
-	init(type,new DomainBrowser(domain,false,this),autoResolve);
+	init(type,new DomainBrowser(domain,false,this),autoResolve ? AutoResolve|AutoDelete : AutoDelete);
+}
+ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,int flags)
+{
+	init(type,new DomainBrowser(domain,false,this),flags | AutoDelete);
 }
 
 const ServiceBrowser::State ServiceBrowser::isAvailable()
@@ -89,6 +92,7 @@ const ServiceBrowser::State ServiceBrowser::isAvailable()
 }
 ServiceBrowser::~ ServiceBrowser()
 {
+	if (d->m_flags & AutoDelete) delete d->m_domains;
 	delete d;
 }
 
@@ -129,7 +133,7 @@ void ServiceBrowser::startBrowse()
 void ServiceBrowser::gotNewService(RemoteService::Ptr svr)
 {
 	if (findDuplicate(svr)==(d->m_services.end()))  {
-		if (d->m_autoresolve) {
+		if (d->m_flags & AutoResolve) {
 			connect(svr,SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
 			d->m_duringResolve+=svr;
 			svr->resolveAsync();

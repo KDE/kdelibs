@@ -125,6 +125,7 @@ public:
 	Translates service into URL that can be sent to another user. 
 	@param host Use specified hostname. If left empty, public IP address (the one used for 
 	default route) will be used.
+	@since 3.5
 	 */
 	const KURL toInvitation(const QString& host=QString::null);
 
