@@ -475,11 +475,11 @@ void HTMLFormElementImpl::submitFromKeyboard()
             switch(current->inputType())  {
             case HTMLInputElementImpl::SUBMIT:
             case HTMLInputElementImpl::IMAGE:
-		if(!current->disabled()) { 
-			current->activate(); 
-			return; 
-		} 
-		break; 
+		if(!current->disabled()) {
+			current->activate();
+			return;
+		}
+		break;
             case HTMLInputElementImpl::TEXT:
             case HTMLInputElementImpl::PASSWORD:
                 ++inputtext;
@@ -691,11 +691,11 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONSUBMIT:
         setHTMLEventListener(EventImpl::SUBMIT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onsubmit"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onsubmit", this));
         break;
     case ATTR_ONRESET:
         setHTMLEventListener(EventImpl::RESET_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onreset"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onreset", this));
         break;
     case ATTR_ID:
     case ATTR_NAME:
@@ -900,7 +900,7 @@ bool HTMLGenericFormElementImpl::isFocusable() const
         static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= QWidget::TabFocus) ||
 		/* INPUT TYPE="image" supports focus too */
 		(
-			id() == ID_INPUT && 
+			id() == ID_INPUT &&
 			static_cast<const HTMLInputElementImpl *>(this)->inputType() == HTMLInputElementImpl::IMAGE
 		);
 }
@@ -1343,11 +1343,11 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onselect"));
+            getDocument()->createHTMLEventListener(attr->value().string(), "onselect", this));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onchange"));
+            getDocument()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -2048,7 +2048,7 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onchange"));
+            getDocument()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -2462,11 +2462,11 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onselect"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onselect", this));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onchange"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);

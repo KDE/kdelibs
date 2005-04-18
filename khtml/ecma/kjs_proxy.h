@@ -30,6 +30,7 @@ class KHTMLPart;
 
 namespace DOM {
   class Node;
+  class NodeImpl;
   class EventListener;
   class Event;
 }
@@ -57,7 +58,7 @@ public:
   virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
 			    KJS::Completion *completion = 0) = 0;
   virtual void clear() = 0;
-  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code) = 0;
+  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl* node) = 0;
   virtual void finishedWithEvent(const DOM::Event &event) = 0;
   virtual KJS::Interpreter *interpreter() = 0;
 
@@ -81,7 +82,7 @@ private:
   void (*oldAlarmHandler)(int);
   static void alarmHandler(int);
   static bool confirmTerminate();
-  itimerval oldtv; 
+  itimerval oldtv;
 };
 
 #endif

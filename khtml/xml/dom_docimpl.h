@@ -223,6 +223,7 @@ public:
     void setRestoreState( const QStringList &s) { m_state = s; }
 
     KHTMLView *view() const { return m_view; }
+    KHTMLPart* part() const;
 
     RangeImpl *createRange();
 
@@ -390,7 +391,7 @@ public:
     virtual void setHTMLWindowEventListener(int id, EventListener *listener);
     EventListener *getHTMLWindowEventListener(int id);
     virtual void removeHTMLWindowEventListener(int id);
-    EventListener *createHTMLEventListener(QString code, QString name);
+    EventListener *createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node);
 
     void addWindowEventListener(int id, EventListener *listener, const bool useCapture);
     void removeWindowEventListener(int id, EventListener *listener, bool useCapture);

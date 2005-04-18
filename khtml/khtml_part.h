@@ -279,7 +279,7 @@ public:
    * Returns a reference to the DOM document.
    */
   DOM::Document document() const;
-  
+
   /**
    * Returns the content of the source document.
    * @since 3.4
@@ -341,10 +341,10 @@ public:
    * When this class wants to set the statusbar text, it emits
    * setStatusBarText(const QString & text)
    * If you want to catch this for your own statusbar, note that it returns
-   * back a rich text string, starting with "<qt>".  This you need to 
+   * back a rich text string, starting with "<qt>".  This you need to
    * either pass this into your own QLabel or to strip out the tags
    * before passing it to QStatusBar::message(const QString & message)
-   * 
+   *
    * @see KParts::Part::setStatusBarText( const QString & text )
    */
   void setStatusMessagesEnabled( bool enable );
@@ -770,7 +770,7 @@ public:
    * and to contain the \<html> and \<body> tags.
    *
    * FIXME probably should make virtual for 4.0 ?
-   * 
+   *
    * @since 3.4
    */
   QString selectedTextAsHTML() const;
@@ -1505,7 +1505,7 @@ private:
 
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
   void setStatusBarText( const QString& text, StatusBarPriority p);
-  
+
   bool restoreURL( const KURL &url );
   void resetFromScript();
   void emitSelectionChanged();
@@ -1568,7 +1568,7 @@ private:
 
   bool requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
-  DOM::EventListener *createHTMLEventListener( QString code, QString name );
+  DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node );
 
   DOM::HTMLDocumentImpl *docImpl() const;
   DOM::DocumentImpl *xmlDocImpl() const;

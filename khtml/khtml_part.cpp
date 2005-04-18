@@ -2013,7 +2013,7 @@ void KHTMLPart::resetFromScript()
     d->m_bComplete = false;
     d->m_bLoadEventEmitted = false;
     disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
-    connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));    
+    connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
     d->m_doc->setParsing(true);
 
     emit started( 0L );
@@ -6760,14 +6760,14 @@ DOM::Node KHTMLPart::activeNode() const
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
-DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString name )
+DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString name, NodeImpl* node )
 {
   KJSProxy *proxy = jScript();
 
   if (!proxy)
     return 0;
 
-  return proxy->createHTMLEventHandler( m_url.url(), name, code );
+  return proxy->createHTMLEventHandler( m_url.url(), name, code, node );
 }
 
 KHTMLPart *KHTMLPart::opener()

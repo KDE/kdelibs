@@ -103,7 +103,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
              removeCSSProperty( CSS_PROP_BORDER_TOP_STYLE );
              removeCSSProperty( CSS_PROP_BORDER_RIGHT_STYLE );
              removeCSSProperty( CSS_PROP_BORDER_BOTTOM_STYLE );
-             removeCSSProperty( CSS_PROP_BORDER_LEFT_STYLE );                                          
+             removeCSSProperty( CSS_PROP_BORDER_LEFT_STYLE );
         }
         break;
     case ATTR_VSPACE:
@@ -135,15 +135,15 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONABORT: // ### add support for this
         setHTMLEventListener(EventImpl::ABORT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onabort"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onabort", this));
         break;
     case ATTR_ONERROR:
         setHTMLEventListener(EventImpl::ERROR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onerror"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onerror", this));
         break;
     case ATTR_ONLOAD:
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
         break;
     case ATTR_NAME:
     case ATTR_NOSAVE:
@@ -207,7 +207,7 @@ long HTMLImageElementImpl::width() const
             getDocument()->view()->layout();
     }
 
-    return m_render ? m_render->contentWidth() : 
+    return m_render ? m_render->contentWidth() :
                       getAttribute(ATTR_WIDTH).toInt();
 }
 

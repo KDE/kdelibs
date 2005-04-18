@@ -201,51 +201,51 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 // standard events
     case ATTR_ONCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_CLICK_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onclick"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onclick", this));
         break;
     case ATTR_ONDBLCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_DBLCLICK_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"ondblclick"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "ondblclick", this));
         break;
     case ATTR_ONMOUSEDOWN:
         setHTMLEventListener(EventImpl::MOUSEDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onmousedown"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onmousedown", this));
         break;
     case ATTR_ONMOUSEMOVE:
         setHTMLEventListener(EventImpl::MOUSEMOVE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onmousemove"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onmousemove", this));
         break;
     case ATTR_ONMOUSEOUT:
         setHTMLEventListener(EventImpl::MOUSEOUT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseout"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onmouseout", this));
         break;
     case ATTR_ONMOUSEOVER:
         setHTMLEventListener(EventImpl::MOUSEOVER_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseover"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onmouseover", this));
         break;
     case ATTR_ONMOUSEUP:
         setHTMLEventListener(EventImpl::MOUSEUP_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseup"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onmouseup", this));
         break;
     case ATTR_ONKEYDOWN:
         setHTMLEventListener(EventImpl::KEYDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeydown"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeydown", this));
 	break;
     case ATTR_ONKEYPRESS:
         setHTMLEventListener(EventImpl::KHTML_KEYPRESS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeypress"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeypress", this));
 	break;
     case ATTR_ONKEYUP:
         setHTMLEventListener(EventImpl::KEYUP_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeyup"));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeyup", this));
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
+            getDocument()->createHTMLEventListener(attr->value().string(), "onfocus", this));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
+            getDocument()->createHTMLEventListener(attr->value().string(), "onblur", this));
         break;
 // other misc attributes
     default:
@@ -301,7 +301,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
 
         // no digits!
         if (j == 0) return;
-        
+
         int v = kClamp( QConstString(s, i).string().toInt(), -8192, 8191 ) ;
         const char* suffix = "px";
         if (!numOnly || multiLength) {

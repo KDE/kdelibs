@@ -2119,23 +2119,23 @@ void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
 
 bool DocumentImpl::isURLAllowed(const QString& url) const
 {
-    KHTMLView *w = view();
+    KHTMLPart *thisPart = part();
 
     KURL newURL(completeURL(url));
     newURL.setRef(QString::null);
 
     // Prohibit non-file URLs if we are asked to.
-    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file" && newURL.protocol() != "data")
+    if (!thisPart || thisPart->onlyLocalReferences() && newURL.protocol() != "file" && newURL.protocol() != "data")
         return false;
 
     // do we allow this suburl ?
-    if ( !kapp || (newURL.protocol() != "javascript" && !kapp->authorizeURLAction("redirect", w->part()->url(), newURL)) )
+    if ( !kapp || (newURL.protocol() != "javascript" && !kapp->authorizeURLAction("redirect", thisPart->url(), newURL)) )
         return false;
 
     // We allow one level of self-reference because some sites depend on that.
     // But we don't allow more than one.
     bool foundSelfReference = false;
-    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
+    for (KHTMLPart *part = thisPart; part; part = part->parentPart()) {
         KURL partURL = part->url();
         partURL.setRef(QString::null);
         if (partURL == newURL) {
@@ -2150,13 +2150,13 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
 
 void DocumentImpl::setDesignMode(bool b)
 {
-    if (m_view)
-         m_view->part()->setEditable(b);
+    if (part())
+         part()->setEditable(b);
 }
 
 bool DocumentImpl::designMode() const
 {
-    return m_view ? m_view->part()->isEditable() : false;
+    return part() ? part()->isEditable() : false;
 }
 
 EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptioncode)
@@ -2371,9 +2371,9 @@ bool DocumentImpl::hasWindowEventListener(int id)
     return false;
 }
 
-EventListener *DocumentImpl::createHTMLEventListener(QString code, QString name)
+EventListener *DocumentImpl::createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node)
 {
-    return view() ? view()->part()->createHTMLEventListener(code,name) : 0;
+    return part() ? part()->createHTMLEventListener(code, name, node) : 0;
 }
 
 void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
@@ -2383,10 +2383,7 @@ void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
 
 ElementImpl *DocumentImpl::ownerElement() const
 {
-    KHTMLView *childView = view();
-    if (!childView)
-        return 0;
-    KHTMLPart *childPart = childView->part();
+    KHTMLPart *childPart = part();
     if (!childPart)
         return 0;
     ChildFrame *childFrame = childPart->d->m_frame;
@@ -2410,7 +2407,7 @@ void DocumentImpl::setDomain(const DOMString &newDomain)
     if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
         m_domain = URL().host().lower(); // Initially set to the host
 
-    if ( m_domain.isEmpty() /*&& view() && view()->part()->openedByJS()*/ )
+    if ( m_domain.isEmpty() /*&& part() && part()->openedByJS()*/ )
         m_domain = newDomain.lower();
 
     // Both NS and IE specify that changing the domain is only allowed when
@@ -2439,6 +2436,13 @@ DOMString DocumentImpl::toString() const
     }
 
     return result;
+}
+
+
+KHTMLPart* DOM::DocumentImpl::part() const
+{
+    // ### TODO: make this independent from a KHTMLView one day.
+    return view() ? view()->part() : 0;
 }
 
 // ----------------------------------------------------------------------------

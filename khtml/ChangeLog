@@ -1,3 +1,14 @@
+2005-04-18  David Faure  <faure@kde.org>
+
+        Special scope entries for event handlers are based on the DOM node on 
+        which the handler is an attribute, not the event target, which also 
+        allows to set it up at the time the event handler is created, not at 
+        the time it fires (Safari merge).
+
+        Many files touched to simply pass the NodeImpl around.
+
+        Testcase events/eventhandlerscope.{html,js}
+
 2005-04-15  Lubos Lunak <l.lunak@kde.org>
 
         * khtmlview.{h,cpp}: Assign unused accesskeys automatically to elements

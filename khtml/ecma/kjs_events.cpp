@@ -129,11 +129,18 @@ Object JSEventListener::listenerObj() const
   return listener;
 }
 
-JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_name, const Object &_win, bool _html)
-  : JSEventListener(Object(), 0, _win, _html),
+JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_name, const Object &_win, DOM::NodeImpl* _originalNode)
+  : JSEventListener(Object(), 0, _win, true),
     code(_code), name(_name),
     parsed(false)
 {
+  // We don't retain the original node, because we assume it
+  // will stay alive as long as this handler object is around
+  // and we need to avoid a reference cycle. If JS transfers
+  // this handler to another node, parseCode will be called and
+  // then originalNode is no longer needed.
+
+  originalNode = _originalNode;
 }
 
 JSLazyEventListener::~JSLazyEventListener()
@@ -147,28 +154,7 @@ void JSLazyEventListener::handleEvent(DOM::Event &evt)
 {
   parseCode();
   if (!listener.isNull()) {
-
-    KHTMLPart *part = ::qt_cast<KHTMLPart *>(static_cast<Window*>(win.imp())->part());
-    KJSProxy *proxy = 0;
-    if (part)
-      proxy = part->jScript();
-    KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
-    ExecState *exec = interpreter->globalExec();
-    ScopeChain oldScope = listener.scope();
-    Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
-    if ( thisObj.isValid() ) {
-      ScopeChain scope = oldScope;
-      // Add the event's target element to the scope
-      // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
-      // ### we could do this in parseCode, once and for all, if only we
-      // had the node in the constructor (would require passing it through KHTMLPart)
-      static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
-      listener.setScope( scope );
-    }
-
     JSEventListener::handleEvent(evt);
-
-    listener.setScope( oldScope );
   }
 }
 
@@ -201,7 +187,7 @@ void JSLazyEventListener::parseCode() const
       args.append(KJS::String(code));
       listener = constr.construct(exec, args); // ### is globalExec ok ?
 
-      if ( exec->hadException() ) {
+      if (exec->hadException()) {
         exec->clearException();
 
         // failed to parse, so let's just make this listener a no-op
@@ -211,6 +197,18 @@ void JSLazyEventListener::parseCode() const
       } else {
         DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.imp());
         declFunc->setName(Identifier(name));
+
+        // Add the event's home element to the scope
+        // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
+        ScopeChain scope = listener.scope();
+
+        Object thisObj = Object::dynamicCast(getDOMNode(exec, originalNode));
+
+        if (!thisObj.isNull()) {
+          static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
+
+          listener.setScope(scope);
+        }
       }
     }
 
