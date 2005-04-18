@@ -140,23 +140,23 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_ONLOAD:
         getDocument()->setHTMLWindowEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", NULL));
         break;
     case ATTR_ONUNLOAD:
         getDocument()->setHTMLWindowEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onunload", NULL));
         break;
     case ATTR_ONBLUR:
         getDocument()->setHTMLWindowEventListener(EventImpl::BLUR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onblur", this));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onblur", NULL));
         break;
     case ATTR_ONFOCUS:
         getDocument()->setHTMLWindowEventListener(EventImpl::FOCUS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onfocus", this));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onfocus", NULL));
         break;
     case ATTR_ONRESIZE:
         getDocument()->setHTMLWindowEventListener(EventImpl::RESIZE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onresize", this));
+	    getDocument()->createHTMLEventListener(attr->value().string(), "onresize", NULL));
         break;
     case ATTR_NOSAVE:
 	break;

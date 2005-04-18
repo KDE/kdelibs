@@ -198,16 +198,19 @@ void JSLazyEventListener::parseCode() const
         DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.imp());
         declFunc->setName(Identifier(name));
 
-        // Add the event's home element to the scope
-        // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
-        ScopeChain scope = listener.scope();
+        if (originalNode)
+        {
+          // Add the event's home element to the scope
+          // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
+          ScopeChain scope = listener.scope();
 
-        Object thisObj = Object::dynamicCast(getDOMNode(exec, originalNode));
+          Object thisObj = Object::dynamicCast(getDOMNode(exec, originalNode));
 
-        if (!thisObj.isNull()) {
-          static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
+          if (!thisObj.isNull()) {
+            static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
 
-          listener.setScope(scope);
+            listener.setScope(scope);
+          }
         }
       }
     }
