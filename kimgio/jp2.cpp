@@ -157,8 +157,9 @@ namespace {
 	void
 	draw_view_gray( gs_t& gs, QImage& qti )
 	{
-		qti.create( jas_image_width( gs.image ), jas_image_height( gs.image ),
-			8, 256 );
+		if( !qti.create( jas_image_width( gs.image ), jas_image_height( gs.image ),
+			8, 256 ))
+			return;
 		for( int i = 0; i < 256; ++i )
 			qti.setColor( i, qRgb( i, i, i ) );
 

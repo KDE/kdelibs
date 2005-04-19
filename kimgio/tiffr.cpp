@@ -83,6 +83,10 @@ void kimgio_tiff_read( QImageIO *io )
             return;
 
 	QImage image( width, height, 32 );
+	if( image.isNull()) {
+		TIFFClose( tiff );
+		return;
+	}
 	data = (uint32 *)image.bits();
 
 	//Sven: changed to %ld for 64bit machines
