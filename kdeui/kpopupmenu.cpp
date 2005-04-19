@@ -506,7 +506,9 @@ void KPopupMenu::mouseReleaseEvent(QMouseEvent* e)
 {
     // Save the button, and the modifiers from state()
     d->state = Qt::ButtonState(e->button() | (e->state() & KeyButtonMask));
-    QPopupMenu::mouseReleaseEvent(e);
+    
+    if ( !d->m_ctxMenu || !d->m_ctxMenu->isVisible() )
+	QPopupMenu::mouseReleaseEvent(e);
 }
 
 QPopupMenu* KPopupMenu::contextMenu()
