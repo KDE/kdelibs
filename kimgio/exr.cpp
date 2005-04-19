@@ -136,6 +136,8 @@ KDE_EXPORT void kimgio_exr_read( QImageIO *io )
         file.readPixels (dw.min.y, dw.max.y);
 
 		QImage image(width, height, 32, 0, QImage::BigEndian);
+		if( image.isNull())
+			return;
 
 		// somehow copy pixels into image
 		for ( int y=0; y < height; y++ ) {
