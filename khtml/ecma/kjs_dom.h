@@ -244,7 +244,7 @@ namespace KJS {
   };
 
   bool checkNodeSecurity(ExecState *exec, const DOM::Node& n);
-  Value getDOMNode(ExecState *exec, const DOM::Node& n);
+  KDE_EXPORT Value getDOMNode(ExecState *exec, const DOM::Node& n);
   Value getDOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m);
   Value getDOMNodeList(ExecState *exec, const DOM::NodeList& l);
   Value getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i);

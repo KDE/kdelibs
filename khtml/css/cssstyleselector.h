@@ -123,7 +123,7 @@ namespace khtml
 	~CSSStyleSelector();
 
 	void addSheet( DOM::CSSStyleSheetImpl *sheet );
-        static void clear();
+        KDE_EXPORT static void clear();
         static void reparseConfiguration();
 
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);

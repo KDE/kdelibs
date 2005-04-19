@@ -18,6 +18,7 @@ namespace khtml {
     class CachedObjectClient
     {
     public:
+        virtual ~CachedObjectClient();
         // clipped pixmap (if it is not yet completely loaded,
         // size of the complete (finished loading) pixmap
         // rectangle of the part that has been loaded very recently

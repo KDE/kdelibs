@@ -90,7 +90,7 @@ namespace KJS {
    * that the interpreter runs for.
    * The interpreter also stores the DOM object - >KJS::DOMObject cache.
    */
-  class ScriptInterpreter : public Interpreter
+  class KDE_EXPORT ScriptInterpreter : public Interpreter
   {
   public:
     ScriptInterpreter( const Object &global, khtml::ChildFrame* frame );

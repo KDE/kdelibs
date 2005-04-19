@@ -229,7 +229,7 @@ public:
     // paints the layers that intersect the damage rect from back to
     // front.  The nodeAtPoint method looks for mouse events by walking
     // layers that intersect the point from front to back.
-    void paint(QPainter *p, const QRect& damageRect, bool selectionOnly=false);
+    KDE_EXPORT void paint(QPainter *p, const QRect& damageRect, bool selectionOnly=false);
     bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y);
 
     // This method figures out our layerBounds in coordinates relative to
@@ -248,7 +248,7 @@ public:
     void detach(RenderArena* renderArena);
 
 #ifdef ENABLE_DUMP
-    void dump(QTextStream &stream, const QString &ind = QString::null);
+    KDE_EXPORT void dump(QTextStream &stream, const QString &ind = QString::null);
 #endif
 
      // Overloaded new operator.  Derived classes must override operator new
@@ -271,7 +271,7 @@ private:
 
     void collectLayers(QPtrVector<RenderLayer>*&, QPtrVector<RenderLayer>*&);
 
-    void paintLayer(RenderLayer* rootLayer, QPainter *p, const QRect& paintDirtyRect, bool selectionOnly=false);
+    KDE_EXPORT void paintLayer(RenderLayer* rootLayer, QPainter *p, const QRect& paintDirtyRect, bool selectionOnly=false);
     RenderLayer* nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo& info,
                                      int x, int y, const QRect& hitTestRect);
 

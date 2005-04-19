@@ -70,7 +70,7 @@ namespace KParts
 
 namespace khtml
 {
-  class ChildFrame : public QObject
+  class KDE_EXPORT ChildFrame : public QObject
   {
       Q_OBJECT
   public:
@@ -177,6 +177,7 @@ class KHTMLWalletQueue : public QObject
 class KHTMLPartPrivate
 {
   KHTMLPartPrivate(const KHTMLPartPrivate & other);
+  KHTMLPartPrivate& operator=(const KHTMLPartPrivate&);
 public:
   KHTMLPartPrivate(QObject* parent)
   {

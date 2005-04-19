@@ -92,6 +92,10 @@ struct LRUList {
 static LRUList m_LRULists[MAX_LRU_LISTS];
 static LRUList* getLRUListFor(CachedObject* o);
 
+CachedObjectClient::~CachedObjectClient()
+{
+}
+
 CachedObject::~CachedObject()
 {
     Cache::removeFromLRUList(this);

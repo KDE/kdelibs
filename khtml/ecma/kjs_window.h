@@ -68,7 +68,7 @@ namespace KJS {
     static const ClassInfo info;
   };
 
-  class Window : public ObjectImp {
+  class KDE_EXPORT Window : public ObjectImp {
     friend QGuardedPtr<KHTMLPart> getInstance();
     friend class Location;
     friend class WindowFunc;
@@ -194,7 +194,7 @@ namespace KJS {
     int timerId;
   };
 
-  class WindowQObject : public QObject {
+  class KDE_EXPORT WindowQObject : public QObject {
     Q_OBJECT
   public:
     WindowQObject(Window *w);
