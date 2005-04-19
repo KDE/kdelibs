@@ -114,15 +114,15 @@ fi
 if test "$EXRSTATUS" = "no"; then
   echo ""
   echo "No OpenEXR Libraries were found"
-  echo "Install OpenEXR package (from http:///www.openexr.org)"
+  echo "Install the OpenEXR package (from http:///www.openexr.org)"
   echo "if you want EXR image format support"
   echo ""
 fi
 
 if test "$EXRSTATUS" = "old"; then
   echo ""
-  echo "OpenEXR libraries were found, but at least version 1.1.0 is requireds"
-  echo "Install newer OpenEXR package (from http:///www.openexr.org)"
+  echo "OpenEXR libraries were found, but at least version 1.1.0 is required"
+  echo "Install a newer OpenEXR package (from http:///www.openexr.org)"
   echo "if you want EXR image format support"
   echo ""
 fi
