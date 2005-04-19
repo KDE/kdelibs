@@ -856,7 +856,7 @@ void KHTMLView::closeEvent( QCloseEvent* ev )
 void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
     if (!m_part->xmlDocImpl()) return;
-    if (d->possibleTripleClick)
+    if (d->possibleTripleClick && ( _mouse->button() & MouseButtonMask ) == LeftButton)
     {
         viewportMouseDoubleClickEvent( _mouse ); // it handles triple clicks too
         return;
@@ -953,14 +953,9 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
             d->m_mouseScrollIndicator->hide();
     }
 
-    if (d->clickCount > 0 &&
-        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
-	d->clickCount++;
-    else {
 	d->clickCount = 1;
 	d->clickX = xm;
 	d->clickY = ym;
-    }
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
