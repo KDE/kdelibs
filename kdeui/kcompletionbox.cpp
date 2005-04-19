@@ -234,7 +234,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         if ( !rect().contains( ev->pos() )) // this widget
             hide();
 
-        if ( !d->emitSelected && currentItem() )
+        if ( !d->emitSelected && currentItem() && !::qt_cast<QScrollBar*>(o) )
         {
           emit highlighted( currentText() );
           hide();
