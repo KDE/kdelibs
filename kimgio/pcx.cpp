@@ -134,7 +134,10 @@ static void readImage1( QDataStream &s )
 {
   QByteArray buf( header.BytesPerLine );
 
-  img.create( w, h, 1, 2, QImage::BigEndian );
+  if (!img.create( w, h, 1, 2, QImage::BigEndian ))
+     return;  
+
+  w = QMIN(w, header.BytesPerLine*8);
 
   for ( int y=0; y<h; ++y )
   {
@@ -146,7 +149,8 @@ static void readImage1( QDataStream &s )
 
     readLine( s, buf );
 
-    for ( int x=0; x<header.BytesPerLine; ++x )
+    int bpl = (w+7)/8;
+    for ( int x=0; x<bpl; ++x )
       *( img.scanLine( y )+x ) = buf[ x ];
   }
 
@@ -160,7 +164,10 @@ static void readImage4( QDataStream &s )
   QByteArray buf( header.BytesPerLine*4 );
   QByteArray pixbuf( w );
 
-  img.create( w, h, 8, 16, QImage::IgnoreEndian );
+  if (!img.create( w, h, 8, 16, QImage::IgnoreEndian ))
+     return;  
+
+  w = QMIN(w, header.BytesPerLine*8);
 
   for ( int y=0; y<h; ++y )
   {
@@ -196,7 +203,10 @@ static void readImage8( QDataStream &s )
 {
   QByteArray buf( header.BytesPerLine );
 
-  img.create( w, h, 8, 256, QImage::IgnoreEndian );
+  if (!img.create( w, h, 8, 256, QImage::IgnoreEndian ))
+     return;  
+
+  w = QMIN(w, header.BytesPerLine);
 
   for ( int y=0; y<h; ++y )
   {
@@ -210,7 +220,7 @@ static void readImage8( QDataStream &s )
 
     uchar *p = img.scanLine( y );
 
-    for ( int x=0; x<header.BytesPerLine; ++x )
+    for ( int x=0; x<w; ++x )
       *p++ = buf[ x ];
   }
 
@@ -236,7 +246,10 @@ static void readImage24( QDataStream &s )
   QByteArray g_buf( header.BytesPerLine );
   QByteArray b_buf( header.BytesPerLine );
 
-  img.create( w, h, 32 );
+  if (!img.create( w, h, 32 ))
+     return;  
+
+  w = QMIN(w, header.BytesPerLine);
 
   for ( int y=0; y<h; ++y )
   {
@@ -252,7 +265,7 @@ static void readImage24( QDataStream &s )
 
     uint *p = ( uint * )img.scanLine( y );
 
-    for ( int x=0; x<header.BytesPerLine; ++x )
+    for ( int x=0; x<w; ++x )
       *p++ = qRgb( r_buf[ x ], g_buf[ x ], b_buf[ x ] );
   }
 }
