@@ -653,12 +653,12 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
             message = i18n( "End of document reached." );
     }
 
-    message += "\n"; // can't be in the i18n() of the first if() because of the plural form.
+    message += "<br><br>"; // can't be in the i18n() of the first if() because of the plural form.
     // Hope this word puzzle is ok, it's a different sentence
     message +=
         ( m_options & KFindDialog::FindBackwards ) ?
-        i18n("Do you want to restart search from the end?")
-        : i18n("Do you want to restart search at the beginning?");
+        i18n("Continue from the end?")
+        : i18n("Continue from the beginning?");
 
     int ret = KMessageBox::questionYesNo( dialogsParent(), QString("<qt>")+message+QString("</qt>") );
     bool yes = ( ret == KMessageBox::Yes );
