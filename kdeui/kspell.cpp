@@ -177,6 +177,10 @@ KSpell::startIspell()
     *proc << "hspell";
     kdDebug(750) << "Using hspell" << endl;
     break;
+  case KS_CLIENT_ZEMBEREK:
+    *proc << "zpspell";
+    kdDebug(750) << "Using zemberek(zpspell)" << endl;
+    break;
   }
 
   if ( ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_ASPELL )
@@ -276,7 +280,7 @@ KSpell::startIspell()
   // -a : pipe mode
   // -S : sort suggestions by probable correctness
   }
-  else       // hspell doesn't need all the rest of the options
+  else       // hspell and Zemberek(zpspell) doesn't need all the rest of the options
     *proc << "-a";
 
   if (trystart == 0) //don't connect these multiple times

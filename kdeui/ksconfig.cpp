@@ -146,6 +146,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   clientcombo->insertItem( i18n("International Ispell") );
   clientcombo->insertItem( i18n("Aspell") );
   clientcombo->insertItem( i18n("Hspell") );
+  clientcombo->insertItem( i18n("Zemberek") );
   connect( clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)) );
   glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
@@ -231,7 +232,12 @@ KSpellConfig::sChangeClient( int i )
       dictcombo->clear();
       dictcombo->insertItem( i18n("Hebrew") );
       sChangeEncoding( KS_E_CP1255 );
-    }
+    } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
+      langfnames.clear();
+      dictcombo->clear();
+      dictcombo->insertItem( i18n("Turkish") );
+      sChangeEncoding( KS_E_UTF8 );
+    } 
     else
       getAvailDictsAspell();
   }
@@ -385,6 +391,11 @@ KSpellConfig::fillInDialog ()
     dictcombo->clear();
     langfnames.append(""); // Default
     dictcombo->insertItem( i18n("Hebrew") );
+  } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
+    langfnames.clear();
+    dictcombo->clear();
+    langfnames.append("");
+    dictcombo->insertItem( i18n("Turkish") );
   }
   else
     getAvailDictsAspell();
@@ -637,6 +648,11 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       box->insertItem( i18n("Hebrew") );
       langfnames.append(""); // Default
       sChangeEncoding( KS_E_CP1255 );
+    } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
+      box->clear();
+      box->insertItem( i18n("Turkish") );
+      langfnames.append("");
+      sChangeEncoding( KS_E_UTF8 );
     }
     else {
       box->clear();

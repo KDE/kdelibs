@@ -34,8 +34,8 @@ class KSpellDlg;
 /**
  * %KDE Spellchecker
  *
- * A %KDE programmer's interface to International ISpell 3.1, ASpell and
- * HSpell.
+ * A %KDE programmer's interface to International ISpell 3.1, ASpell,
+ * HSpell and ZPSpell..
  * A static method, modalCheck() is provided for convenient
  *  access to the spellchecker.
  *
