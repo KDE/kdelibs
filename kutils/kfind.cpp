@@ -660,7 +660,8 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         i18n("Continue from the end?")
         : i18n("Continue from the beginning?");
 
-    int ret = KMessageBox::questionYesNo( dialogsParent(), QString("<qt>")+message+QString("</qt>") );
+    int ret = KMessageBox::questionYesNo( dialogsParent(), QString("<qt>")+message+QString("</qt>"),
+                                          QString::null, KStdGuiItem::cont(), KStdGuiItem::stop() );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )
         const_cast<KFind*>(this)->m_options &= ~KFindDialog::FromCursor; // clear FromCursor option
