@@ -498,7 +498,7 @@ namespace KStdAction
 	* @since 3.1
 	*/
 	KDEUI_EXPORT KToggleAction *showToolbar(const QObject *recvr, const char *slot,
-					KActionCollection* parent, const char *name = 0 );
+					KActionCollection* parent, const char *name = 0 ) KDE_DEPRECATED;
 	/**
 	* @obsolete. toolbar actions are created automatically now in the
 	* Settings menu. Don't use this anymore.
@@ -506,7 +506,7 @@ namespace KStdAction
 	* Show/Hide the primary toolbar.
 	*/
 	KDEUI_EXPORT KToggleToolBarAction *showToolbar(const char* toolBarName,
-					KActionCollection* parent, const char *name = 0 );
+					KActionCollection* parent, const char *name = 0 ) KDE_DEPRECATED;
 
 	/**
 	* Show/Hide the statusbar.
