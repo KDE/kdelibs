@@ -253,13 +253,13 @@ bool KMdiDockContainer::eventFilter( QObject *obj, QEvent *event )
 	case QEvent::MouseButtonPress:
 	{
 		KMultiTabBarTab* kmtbTab = dynamic_cast<KMultiTabBarTab*>( obj );
-		if ( !obj )
+		if ( !kmtbTab )
 		{
 			kdDebug(760) << k_funcinfo << "Got a mouse button press but we have no tab" << endl;
 			break;
 		}
-		
-		KDockWidget* w = m_revMap[ dynamic_cast<KMultiTabBarTab*>( obj )->id() ];
+
+		KDockWidget* w = m_revMap[ kmtbTab->id() ];
 		if ( !w )
 		{
 			kdDebug(760) << k_funcinfo << "Got a mouse button press but we have no widget" << endl;
