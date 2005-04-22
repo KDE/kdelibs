@@ -381,7 +381,6 @@ void KMultiTabBarInternal::setPosition(enum KMultiTabBar::KMultiTabBarPosition p
 	viewport()->repaint();
 }
 
-
 KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, QPopupMenu *popup,
 		int id,QWidget *parent,KMultiTabBar::KMultiTabBarPosition pos,KMultiTabBar::KMultiTabBarStyle style)
 	:QPushButton(QIconSet(),text,parent),m_style(style)
@@ -975,6 +974,11 @@ void KMultiTabBar::setPosition(KMultiTabBarPosition pos)
 	m_internal->setPosition(pos);
 	for (uint i=0;i<m_buttons.count();i++)
 		m_buttons.at(i)->setPosition(pos);
+}
+
+KMultiTabBar::KMultiTabBarPosition KMultiTabBar::position()
+{
+  return m_position;
 }
 void KMultiTabBar::fontChange(const QFont& /* oldFont */)
 {

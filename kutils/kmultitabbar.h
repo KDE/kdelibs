@@ -119,6 +119,11 @@ public:
 	 */
 	void setPosition(KMultiTabBarPosition pos);
 	/**
+	 * get the tabbar position.
+	 * @return position
+	 */
+	 KMultiTabBarPosition position();
+	/**
 	 * set the display style of the tabs
 	 */
 	void setStyle(KMultiTabBarStyle style);
