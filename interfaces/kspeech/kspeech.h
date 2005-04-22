@@ -1062,7 +1062,11 @@ class KSpeech : virtual public DCOPObject {
         *
         * The job is marked speakable.
         *
-        * If the job was not paused, it is the same as calling @ref startText.
+        * If the job is currently speaking, or is waiting to be spoken (speakable 
+        * state), the resumeText() call is ignored.
+        *
+        * If the job is currently queued, or is finished, it is the same as calling
+        * @ref startText .
         *
         * If there are speaking jobs preceeding this one in the queue,
         * those jobs continue speaking and when finished this job will begin
