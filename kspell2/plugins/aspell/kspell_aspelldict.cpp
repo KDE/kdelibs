@@ -22,6 +22,8 @@
 
 #include <kdebug.h>
 
+#include <qtextcodec.h>
+
 using namespace KSpell2;
 
 ASpellDict::ASpellDict( const QString& lang )
@@ -29,6 +31,9 @@ ASpellDict::ASpellDict( const QString& lang )
 {
     m_config = new_aspell_config();
     aspell_config_replace( m_config, "lang", lang.latin1() );
+    /* All communication with Aspell is done in UTF-8 */
+    /* For reference, please look at BR#87250         */
+    aspell_config_replace( m_config, "encoding", "utf-8" );
 
     AspellCanHaveError * possible_err = new_aspell_speller( m_config );
 
@@ -47,15 +52,22 @@ ASpellDict::~ASpellDict()
 
 bool ASpellDict::check( const QString& word )
 {
-    int correct = aspell_speller_check( m_speller, word.utf8(), word.length() );
+    /* ASpell is expecting length of a string in char representation */
+    /* word.length() != word.utf8().length() for nonlatin strings    */
+    int correct = aspell_speller_check( m_speller, word.utf8(), word.utf8().length() );
     return correct;
 }
 
 QStringList ASpellDict::suggest( const QString& word )
 {
+    /* Needed for Unicode conversion */
+    QTextCodec *codec = QTextCodec::codecForName("utf8");
+
+    /* ASpell is expecting length of a string in char representation */
+    /* word.length() != word.utf8().length() for nonlatin strings    */
     const AspellWordList * suggestions = aspell_speller_suggest( m_speller,
                                                                  word.utf8(),
-                                                                 word.length() );
+                                                                 word.utf8().length() );
 
     AspellStringEnumeration * elements = aspell_word_list_elements( suggestions );
 
@@ -63,7 +75,9 @@ QStringList ASpellDict::suggest( const QString& word )
     const char * cword;
 
     while ( (cword = aspell_string_enumeration_next( elements )) ) {
-        qsug.append( cword );
+        /* Since while creating the class ASpellDict the encoding is set */
+        /* to utf-8, one has to convert output from Aspell to Unicode    */
+        qsug.append( codec->toUnicode( cword ) );
     }
 
     delete_aspell_string_enumeration( elements );
@@ -82,25 +96,30 @@ bool ASpellDict::checkAndSuggest( const QString& word,
 bool ASpellDict::storeReplacement( const QString& bad,
                                    const QString& good )
 {
+    /* ASpell is expecting length of a string in char representation */
+    /* word.length() != word.utf8().length() for nonlatin strings    */
     return aspell_speller_store_replacement( m_speller,
-                                             bad.utf8(), bad.length(),
-                                             good.utf8(), good.length() );
+                                             bad.utf8(), bad.utf8().length(),
+                                             good.utf8(), good.utf8().length() );
 }
 
 bool ASpellDict::addToPersonal( const QString& word )
 {
     kdDebug() << "ASpellDict::addToPersonal: word = " << word << endl;
+    /* ASpell is expecting length of a string in char representation */
+    /* word.length() != word.utf8().length() for nonlatin strings    */
     aspell_speller_add_to_personal( m_speller, word.utf8(),
-                                           word.length() );
+                                    word.utf8().length() );
     /* Add is not enough, one has to save it. This is not documented */
-    /* in ASpell's API manual. I found it in                         */
+    /* in ASpell's API manual. I found it in                         */ 
     /* aspell-0.60.2/example/example-c.c                             */
-    return aspell_speller_save_all_word_lists(m_speller);
-
+    return aspell_speller_save_all_word_lists( m_speller );
 }
 
 bool ASpellDict::addToSession( const QString& word )
 {
+    /* ASpell is expecting length of a string in char representation */
+    /* word.length() != word.utf8().length() for nonlatin strings    */
     return aspell_speller_add_to_session( m_speller, word.utf8(),
-                                          word.length() );
+                                          word.utf8().length() );
 }
