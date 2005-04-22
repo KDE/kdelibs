@@ -46,6 +46,7 @@
 #include <qsemaphore.h>
 
 #include <kde_file.h>
+#include <kdebug.h>
 #include "kresolver.h"
 #include "kresolver_p.h"
 #include "kresolverworkerbase.h"
@@ -121,33 +122,35 @@ public:
   time_t mTime;
   int useCount;
 
-# ifdef SHARED_LIBRESOLV
+# ifndef RES_INIT_THREADSAFE
   QWaitCondition cond;
   QMutex mutex;
 # endif
 
-  bool shouldResInit(time_t &mTime)
+  bool shouldResInit()
   {
-    if (mTime == time(NULL))
-      return false;		// don't do it more than once per second
-
     // check if /etc/resolv.conf has changed 
     KDE_struct_stat st;
     if (KDE_stat("/etc/resolv.conf", &st) != 0)
       return false;
     
-    if (mTime < st.st_mtime)
+    if (mTime != st.st_mtime)
       {
-	//qDebug("ResInitUsage: /etc/resolv.conf updated");
+	kdDebug(179) << "shouldResInit: /etc/resolv.conf updated" << endl;
 	return true;
       }
     return false;
   }
 
-  void reResInit(time_t& mTime)
+  void callResInit()
   {
-    //qDebug("ResInitUsage: calling res_init()");
-    res_init();
+    if (mTime != 0)
+      {
+	// don't call it the first time
+	// let it be initialised naturally
+	kdDebug(179) << "callResInit: calling res_init()" << endl;
+	res_init();
+      }
     
     KDE_struct_stat st;
     if (KDE_stat("/etc/resolv.conf", &st) == 0)
@@ -163,10 +166,13 @@ public:
    */
   void release()
   {
-# ifdef SHARED_LIBRESOLV
+# ifndef RES_INIT_THREADSAFE
     QMutexLocker locker(&mutex);
     if (--useCount == 0)
       {
+	if (shouldResInit())
+	  callResInit();
+
 	// we've reached 0, wake up anyone that's waiting to call res_init
 	cond.wakeAll();
       }
@@ -178,12 +184,12 @@ public:
   /*
    * Marks the beginning of usage of the resolver API
    */
-  void acquire(time_t &mTime)
+  void acquire()
   {
-# ifdef SHARED_LIBRESOLV
+# ifndef RES_INIT_THREADSAFE
     mutex.lock();
 
-    if (shouldResInit(mTime))
+    if (shouldResInit())
       {
 	if (useCount)
 	  {
@@ -195,13 +201,15 @@ public:
 	  }
 	else
 	  // we're clear
-	  reResInit(mTime);
+	  callResInit();
       }
     useCount++;
     mutex.unlock();
+
 # else
-    if (shouldResInit(mTime))
-      reResInit(mTime);
+    if (shouldResInit())
+      callResInit();
+
 # endif
   }
 
@@ -209,10 +217,10 @@ public:
   ResInitUsage()
   { }
 
-  bool shouldResInit(time_t&)
+  bool shouldResInit()
   { return false; }
 
-  void acquire(time_t&)
+  void acquire()
   { }
 
   void release()
@@ -235,7 +243,7 @@ static const int maxThreads = 5;
 static pid_t pid;		// FIXME -- disable when everything is ok
 
 KResolverThread::KResolverThread()
-  : data(0L), resolverMTime(0)
+  : data(0L)
 {
 }
 
@@ -278,28 +286,16 @@ void KResolverThread::run()
 
 bool KResolverThread::checkResolver()
 {
-#ifdef SHARED_LIBRESOLV
-  time_t& mTime = resInit.mTime; // global
-#else
-  time_t& mTime = resolverMTime; // thread-specific
-#endif
-
-  return resInit.shouldResInit(mTime);
+  return resInit.shouldResInit();
 }
 
 void KResolverThread::acquireResolver()
 {
-#ifdef SHARED_LIBRESOLV
-  time_t& mTime = resInit.mTime; // global
-#else
-  time_t& mTime = resolverMTime; // thread-specific
-#endif
-
 #if defined(NEED_MUTEX) && !defined(Q_OS_FREEBSD)
   getXXbyYYmutex.lock();
 #endif
 
-  resInit.acquire(mTime);
+  resInit.acquire();
 }
 
 void KResolverThread::releaseResolver()
