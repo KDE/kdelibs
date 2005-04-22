@@ -70,11 +70,9 @@ extern "C" {
 }
 #endif
 
-/* decide whether res_init's context is shared by all threads, 
-   or is per-thread */
-#define SHARED_LIBRESOLV
+/* decide whether res_init is thread-safe or not */
 #if defined(__GLIBC__)
-# undef SHARED_LIBRESOLV
+# undef RES_INIT_THREADSAFE
 #endif
 
 namespace KNetwork
@@ -342,8 +340,6 @@ namespace KNetwork
       friend class KNetwork::KResolverWorkerBase;
 
     public:
-      time_t resolverMTime;	// thread-specific resolver's m_time
-
       bool checkResolver();	// @see KResolverWorkerBase::checkResolver
       void acquireResolver();	// @see KResolverWorkerBase::acquireResolver
       void releaseResolver();	// @see KResolverWorkerBase::releaseResolver
