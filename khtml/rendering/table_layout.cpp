@@ -232,7 +232,7 @@ void FixedTableLayout::calcMinMaxWidth()
     // width is fixed. If table width is percent, we set maxWidth to
     // unlimited.
 
-    int bs = table->bordersAndSpacing();
+    int bs = table->bordersPaddingAndSpacing();
     int tableWidth = table->style()->width().isFixed() ? table->style()->width().value() - bs : 0;
 
     int mw = calcWidthArray( tableWidth ) + bs;
@@ -257,7 +257,7 @@ void FixedTableLayout::calcMinMaxWidth()
 
 void FixedTableLayout::layout()
 {
-    int tableWidth = table->width() - table->bordersAndSpacing();
+    int tableWidth = table->width() - table->bordersPaddingAndSpacing();
     int available = tableWidth;
     int nEffCols = table->numEffCols();
 #ifdef DEBUG_LAYOUT
@@ -596,7 +596,7 @@ void AutoTableLayout::calcMinMaxWidth()
 
     maxWidth = kMax( maxWidth, spanMaxWidth );
 
-    int bs = table->bordersAndSpacing();
+    int bs = table->bordersPaddingAndSpacing();
     minWidth += bs;
     maxWidth += bs;
 
@@ -849,7 +849,7 @@ void AutoTableLayout::insertSpanCell( RenderTableCell *cell )
 void AutoTableLayout::layout()
 {
     // table layout based on the values collected in the layout structure.
-    int tableWidth = table->width() - table->bordersAndSpacing();
+    int tableWidth = table->width() - table->bordersPaddingAndSpacing();
     int available = tableWidth;
     int nEffCols = table->numEffCols();
 

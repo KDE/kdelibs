@@ -295,8 +295,8 @@ void RenderTable::layout()
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
-    int bpTop = borderTop();
-    int bpBottom = borderBottom();
+    int bpTop = borderTop() + (collapseBorders() ? 0 : paddingTop());
+    int bpBottom = borderBottom() + (collapseBorders() ? 0 : paddingBottom());
 
     m_height += bpTop;
 
@@ -306,13 +306,13 @@ void RenderTable::layout()
     m_height = oldHeight;
 
     Length h = style()->height();
-    int th = -(bpTop + bpBottom); // Tables size as though CSS height includes border/padding.
+    int th = 0;
     if (isPositioned())
         th = newHeight; // FIXME: Leave this alone for now but investigate later.
     else if (h.isFixed())
-        th += h.value();
+        th = h.value - (bpTop + bpBottom);  // Tables size as though CSS height includes border/padding.
     else if (h.isPercent())
-        th += calcPercentageHeight(h);
+        th = calcPercentageHeight(h);
 
     // layout rows
     if ( th > calculatedHeight ) {
@@ -326,6 +326,8 @@ void RenderTable::layout()
         }
     }
     int bl = borderLeft();
+    if (!collapseBorders())
+        bl += paddingLeft();
 
     // position the table sections
     if ( head ) {

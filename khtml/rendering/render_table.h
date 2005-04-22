@@ -160,9 +160,10 @@ public:
 	return c;
     }
 
-    int bordersAndSpacing() const {
-	return borderLeft() + borderRight() + (numEffCols()+1) * borderHSpacing();
-    }
+    int bordersPaddingAndSpacing() const {
+	return borderLeft() + borderRight() +
+               (collapseBorders() ? 0 : (paddingLeft() + paddingRight() + (numEffCols()+1) * borderHSpacing()));
+     }
 
     RenderTableCol *colElement( int col );
 

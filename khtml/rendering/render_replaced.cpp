@@ -307,7 +307,7 @@ void RenderWidget::updateFromElement()
             m_widget->unsetPalette();
         // Border:
         QFrame* frame = ::qt_cast<QFrame*>(m_widget);
-        if (frame) {
+        if (frame && canHaveBorder()) {
             if (shouldPaintBackgroundOrBorder())
             {
                 frame->setFrameShape(QFrame::NoFrame);
