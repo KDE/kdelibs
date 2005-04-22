@@ -53,6 +53,7 @@ class KArchive::KArchivePrivate
 {
 public:
     KArchiveDirectory* rootDir;
+    bool closeSucceeded;
 };
 
 class PosSortedPtrList : public QPtrList<KArchiveFile> {
@@ -110,7 +111,7 @@ void KArchive::close()
         return;
     // moved by holger to allow kzip to write the zip central dir
     // to the file in closeArchive()
-    closeArchive();
+    d->closeSucceeded = closeArchive();
 
     if ( m_dev )
         m_dev->close();
@@ -118,6 +119,11 @@ void KArchive::close()
     delete d->rootDir;
     d->rootDir = 0;
     m_open = false;
+}
+
+bool KArchive::closeSucceeded() const
+{
+    return d->closeSucceeded;
 }
 
 const KArchiveDirectory* KArchive::directory() const

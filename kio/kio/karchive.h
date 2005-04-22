@@ -69,6 +69,14 @@ public:
     virtual void close();
 
     /**
+     * Use to check if close had any problem
+     * @return true if close succeded without problems
+     * @since 3.5
+     */
+    // TODO KDE4 merge with above
+    bool closeSucceeded() const;
+
+    /**
      * Checks whether the archive is open.
      * @return true if the archive is opened
      */
