@@ -69,6 +69,7 @@ namespace KSpell2
 
         bool checkWord( const QString& word );
         QStringList suggest( const QString& ) const;
+        bool addWord( const QString& word );
     public slots:
         virtual void setFilter( KSpell2::Filter *filter );
         virtual void start();

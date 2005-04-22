@@ -200,7 +200,8 @@ void Dialog::show()
 
 void Dialog::slotAddWord()
 {
-    //FIXME: implement or hide the button
+   d->checker->addWord( d->currentWord.word ); 
+   d->checker->continueChecking();
 }
 
 void Dialog::slotReplaceWord()

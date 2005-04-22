@@ -89,8 +89,14 @@ bool ASpellDict::storeReplacement( const QString& bad,
 
 bool ASpellDict::addToPersonal( const QString& word )
 {
-    return aspell_speller_add_to_personal( m_speller, word.utf8(),
+    kdDebug() << "ASpellDict::addToPersonal: word = " << word << endl;
+    aspell_speller_add_to_personal( m_speller, word.utf8(),
                                            word.length() );
+    /* Add is not enough, one has to save it. This is not documented */
+    /* in ASpell's API manual. I found it in                         */
+    /* aspell-0.60.2/example/example-c.c                             */
+    return aspell_speller_save_all_word_lists(m_speller);
+
 }
 
 bool ASpellDict::addToSession( const QString& word )
