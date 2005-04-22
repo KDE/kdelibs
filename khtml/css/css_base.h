@@ -88,7 +88,8 @@ namespace DOM {
 	    Set,
 	    List,
 	    Hyphen,
-	    Pseudo,
+	    PseudoClass,
+	    PseudoElement,
 	    Contain,   // css3: E[foo*="bar"]
 	    Begin,     // css3: E[foo^="bar"]
 	    End        // css3: E[foo$="bar"]
@@ -153,7 +154,7 @@ namespace DOM {
         DOM::NodeImpl::Id tag;
 
 	Relation relation     : 3;
-	Match 	 match         : 4;
+	mutable Match 	 match         : 4;
 	bool	nonCSSHint : 1;
 	unsigned int pseudoId : 3;
 	mutable PseudoType _pseudoType : 5;

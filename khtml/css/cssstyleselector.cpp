@@ -824,7 +824,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     // so, we can't allow that to apply to every element on the page.  We assume the author intended
     // to apply the rules only to links.
     bool onlyHoverActive = (((sel->tag & NodeImpl_IdLocalMask) == NodeImpl_IdLocalMask) &&
-                            (sel->match == CSSSelector::Pseudo &&
+                            (sel->match == CSSSelector::PseudoClass &&
                               (sel->pseudoType() == CSSSelector::PseudoHover ||
                                sel->pseudoType() == CSSSelector::PseudoActive)));
     bool affectedByHover = style->affectedByHoverRules();
@@ -891,7 +891,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         case CSSSelector::SubSelector:
 	{
             if (onlyHoverActive)
-                onlyHoverActive = (sel->match == CSSSelector::Pseudo &&
+                onlyHoverActive = (sel->match == CSSSelector::PseudoClass &&
                                    (sel->pseudoType() == CSSSelector::PseudoHover ||
                                     sel->pseudoType() == CSSSelector::PseudoActive));
 
@@ -1069,17 +1069,16 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 && str[selStr.length()] != '-') return false;
             break;
         }
-        case CSSSelector::Pseudo:
+        case CSSSelector::PseudoClass:
+        case CSSSelector::PseudoElement:
         case CSSSelector::None:
             break;
         }
     }
-    if(sel->match == CSSSelector::Pseudo)
+    if(sel->match == CSSSelector::PseudoClass || sel->match == CSSSelector::PseudoElement)
     {
-        // Pseudo elements. We need to check first child here. No dynamic pseudo
-        // elements for the moment
-// 	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
 	switch (sel->pseudoType()) {
+        // Pseudo classes:
 	case CSSSelector::PseudoEmpty:
             // If e is not closed yet we don't know the number of children
             if (!e->closed()) {
@@ -1264,18 +1263,6 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
-	case CSSSelector::PseudoFirstLine:
-	    if ( subject ) {
-		dynamicPseudo=RenderStyle::FIRST_LINE;
-		return true;
-	    }
-	    break;
-	case CSSSelector::PseudoFirstLetter:
-	    if ( subject ) {
-		dynamicPseudo=RenderStyle::FIRST_LETTER;
-		return true;
-	    }
-	    break;
         case CSSSelector::PseudoTarget:
             if (e == e->getDocument()->getCSSTarget())
                 return true;
@@ -1349,15 +1336,6 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
-	case CSSSelector::PseudoSelection:
-	    dynamicPseudo = RenderStyle::SELECTION;
-	    return true;
-	case CSSSelector::PseudoBefore:
-	    dynamicPseudo = RenderStyle::BEFORE;
-	    return true;
-	case CSSSelector::PseudoAfter:
-	    dynamicPseudo = RenderStyle::AFTER;
-	    return true;
         case CSSSelector::PseudoEnabled: {
             if (e->isGenericFormElement()) {
                 HTMLGenericFormElementImpl *form;
@@ -1389,14 +1367,37 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
-
-	case CSSSelector::PseudoNotParsed:
-	    assert(false);
-	    break;
 	case CSSSelector::PseudoChecked:
 	case CSSSelector::PseudoIndeterminate:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
+	    break;
+
+	// Pseudo-elements:
+	case CSSSelector::PseudoFirstLine:
+	    if ( subject ) {
+		dynamicPseudo=RenderStyle::FIRST_LINE;
+		return true;
+	    }
+	    break;
+	case CSSSelector::PseudoFirstLetter:
+	    if ( subject ) {
+		dynamicPseudo=RenderStyle::FIRST_LETTER;
+		return true;
+	    }
+	    break;
+	case CSSSelector::PseudoSelection:
+	    dynamicPseudo = RenderStyle::SELECTION;
+	    return true;
+	case CSSSelector::PseudoBefore:
+	    dynamicPseudo = RenderStyle::BEFORE;
+	    return true;
+	case CSSSelector::PseudoAfter:
+	    dynamicPseudo = RenderStyle::AFTER;
+	    return true;
+
+	case CSSSelector::PseudoNotParsed:
+	    assert(false);
 	    break;
 	}
 	return false;

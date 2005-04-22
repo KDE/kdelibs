@@ -757,47 +757,47 @@ ident_or_string:
 pseudo:
     ':' IDENT {
 	$$ = new CSSSelector();
-	$$->match = CSSSelector::Pseudo;
+	$$->match = CSSSelector::PseudoClass;
 	$$->value = domString($2);
     }
     |
     ':' ':' IDENT {
 	$$ = new CSSSelector();
-	$$->match = CSSSelector::Pseudo;
+	$$->match = CSSSelector::PseudoElement;
         $$->value = domString($3);
     }
     // used by :nth-*
     | ':' FUNCTION NTH ')' {
         $$ = new CSSSelector();
-        $$->match = CSSSelector::Pseudo;
+        $$->match = CSSSelector::PseudoClass;
         $$->string_arg = domString($3);
         $$->value = domString($2);
     }
     // used by :nth-*
     | ':' FUNCTION NUMBER ')' {
         $$ = new CSSSelector();
-        $$->match = CSSSelector::Pseudo;
+        $$->match = CSSSelector::PseudoClass;
         $$->string_arg = QString::number($3);
         $$->value = domString($2);
     }
     // used by :nth-* and :lang
     | ':' FUNCTION IDENT ')' {
         $$ = new CSSSelector();
-        $$->match = CSSSelector::Pseudo;
+        $$->match = CSSSelector::PseudoClass;
         $$->string_arg = domString($3);
         $$->value = domString($2);
     }
     // used by :contains
     | ':' FUNCTION STRING ')' {
         $$ = new CSSSelector();
-        $$->match = CSSSelector::Pseudo;
+        $$->match = CSSSelector::PseudoClass;
         $$->string_arg = domString($3);
         $$->value = domString($2);
     }
     // used only by :not
     | ':' NOTFUNCTION maybe_space simple_selector ')' {
         $$ = new CSSSelector();
-        $$->match = CSSSelector::Pseudo;
+        $$->match = CSSSelector::PseudoClass;
         $$->simpleSelector = $4;
         $$->value = domString($2);
     }
