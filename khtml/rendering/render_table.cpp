@@ -310,7 +310,7 @@ void RenderTable::layout()
     if (isPositioned())
         th = newHeight; // FIXME: Leave this alone for now but investigate later.
     else if (h.isFixed())
-        th = h.value - (bpTop + bpBottom);  // Tables size as though CSS height includes border/padding.
+        th = h.value() - (bpTop + bpBottom);  // Tables size as though CSS height includes border/padding.
     else if (h.isPercent())
         th = calcPercentageHeight(h);
 
