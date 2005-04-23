@@ -63,6 +63,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <memory> // auto_ptr
 
 typedef QDict<KSycocaEntry> KBSEntryDict;
 typedef QValueList<KSycocaEntry::List> KSycocaEntryListList;
@@ -482,10 +483,15 @@ bool KBuildSycoca::recreate()
 
   // KSaveFile first writes to a temp file.
   // Upon close() it moves the stuff to the right place.
-  KSaveFile database(path);
-  if (database.status() != 0)
+  std::auto_ptr<KSaveFile> database( new KSaveFile(path) );
+  if (database->status() == EACCES && QFile::exists(path))
   {
-    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n", path.local8Bit().data(),strerror(database.status()));
+    QFile::remove( path );
+    database = std::auto_ptr<KSaveFile>( new KSaveFile(path) ); // try again
+  }
+  if (database->status() != 0)
+  {
+    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n", path.local8Bit().data(),strerror(database->status()));
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
     if (!silent)
@@ -494,7 +500,7 @@ bool KBuildSycoca::recreate()
     return false;
   }
 
-  m_str = database.dataStream();
+  m_str = database->dataStream();
 
   kdDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")" << endl;
 
@@ -510,11 +516,11 @@ bool KBuildSycoca::recreate()
   {
     save(); // Save database
     if (m_str->device()->status())
-      database.abort(); // Error
+      database->abort(); // Error
     m_str = 0L;
-    if (!database.close())
+    if (!database->close())
     {
-      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database.name().local8Bit().data());
+      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database->name().local8Bit().data());
       fprintf(stderr, "kbuildsycoca: Disk full?\n");
 #ifdef KBUILDSYCOCA_GUI
       if (!silent)
@@ -526,7 +532,7 @@ bool KBuildSycoca::recreate()
   else
   {
     m_str = 0L;
-    database.abort();
+    database->abort();
     if (bMenuTest)
        return true;
     kdDebug(7021) << "Database is up to date" << endl;
