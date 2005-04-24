@@ -123,6 +123,12 @@ bool BackgroundEngine::checkWord( const QString& word )
     return dict->check( word );
 }
 
+bool BackgroundEngine::addWord( const QString& word )
+{
+    Dictionary *dict = ( m_dict ) ? m_dict : static_cast<Dictionary*>( m_defaultDict );
+    return dict->addToPersonal( word );
+}
+
 QStringList BackgroundEngine::suggest( const QString& word )
 {
     Dictionary *dict = ( m_dict ) ? m_dict : static_cast<Dictionary*>( m_defaultDict );

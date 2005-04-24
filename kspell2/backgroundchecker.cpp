@@ -113,6 +113,11 @@ bool BackgroundChecker::checkWord( const QString& word )
     return d->engine->checkWord( word );
 }
 
+bool BackgroundChecker::addWord( const QString& word )
+{
+    return d->engine->addWord( word );
+}
+
 QStringList BackgroundChecker::suggest( const QString& word ) const
 {
     //return d->thread.suggest( word );

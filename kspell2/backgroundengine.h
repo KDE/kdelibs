@@ -56,6 +56,7 @@ namespace KSpell2
 
         bool        checkWord( const QString& word );
         QStringList suggest( const QString& word );
+        bool        addWord( const QString& word );
     signals:
         void misspelling( const QString&, int );
         void done();
