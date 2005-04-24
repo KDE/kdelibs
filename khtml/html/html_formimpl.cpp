@@ -1596,12 +1596,14 @@ DOMString HTMLInputElementImpl::value() const
         return val;
     }
 
+    DOMString val = m_value;
     // It's important *not* to fall back to the value attribute for file inputs,
     // because that would allow a malicious web page to upload files by setting the
     // value attribute in markup.
-    if (m_value.isNull() && m_type != FILE)
-        return getAttribute(ATTR_VALUE);
-    return m_value;
+    if (val.isNull() && m_type != FILE)
+        val = getAttribute(ATTR_VALUE);
+
+    return val.isNull() ? DOMString("") : val;
 }
 
 
