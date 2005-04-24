@@ -868,47 +868,49 @@ double KJS::KRFCDate_parseDate(const UString &_date)
         } else // in the normal case (we parsed the year), advance to the next number
             dateString = ++newPosStr;
 
-        have_time = true;
         hour = strtol(dateString, &newPosStr, 10);
-        dateString = newPosStr;
+        // read a number? if not this might be a timezone name
+        if (newPosStr != dateString) {
+          have_time = true;
+          dateString = newPosStr;
 
-        if ((hour < 0) || (hour > 23))
-           return invalidDate;
+          if ((hour < 0) || (hour > 23))
+            return invalidDate;
 
-        if (!*dateString)
-           return invalidDate;
+          if (!*dateString)
+            return invalidDate;
 
-        // ':12:40 GMT'
-        if (*dateString++ != ':')
-           return invalidDate;
+          // ':12:40 GMT'
+          if (*dateString++ != ':')
+            return invalidDate;
 
-        minute = strtol(dateString, &newPosStr, 10);
-        dateString = newPosStr;
+          minute = strtol(dateString, &newPosStr, 10);
+          dateString = newPosStr;
 
-        if ((minute < 0) || (minute > 59))
-           return invalidDate;
+          if ((minute < 0) || (minute > 59))
+            return invalidDate;
 
-        // ':40 GMT'
-        if (*dateString && *dateString != ':' && !isspace(*dateString))
-           return invalidDate;
+          // ':40 GMT'
+          if (*dateString && *dateString != ':' && !isspace(*dateString))
+            return invalidDate;
 
-        // seconds are optional in rfc822 + rfc2822
-        if (*dateString ==':') {
-           dateString++;
+          // seconds are optional in rfc822 + rfc2822
+          if (*dateString ==':') {
+            dateString++;
 
-           second = strtol(dateString, &newPosStr, 10);
-           dateString = newPosStr;
+            second = strtol(dateString, &newPosStr, 10);
+            dateString = newPosStr;
 
-           if ((second < 0) || (second > 59))
+            if ((second < 0) || (second > 59))
               return invalidDate;
+          }
+
+          while(*dateString && isspace(*dateString))
+            dateString++;
         }
-
-        while(*dateString && isspace(*dateString))
-           dateString++;
-     }
-     else
+     } else {
        dateString = newPosStr;
-
+     }
 
      // don't fail if the time zone is missing, some
      // broken mail-/news-clients omit the time zone
