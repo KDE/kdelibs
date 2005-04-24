@@ -311,6 +311,7 @@ void KIconDialog::init()
 
     mpCanvas = new KIconCanvas(main);
     connect(mpCanvas, SIGNAL(executed(QIconViewItem *)), SLOT(slotAcceptIcons()));
+    connect(mpCanvas, SIGNAL(returnPressed(QIconViewItem *)), SLOT(slotAcceptIcons()));
     mpCanvas->setMinimumSize(400, 125);
     top->addWidget(mpCanvas);
     d->searchLine->setIconView(mpCanvas);
