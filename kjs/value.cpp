@@ -330,7 +330,7 @@ Boolean Boolean::dynamicCast(const Value &v)
 
 // ------------------------------ String ---------------------------------------
 
-String::String(const UString &s) : Value(new StringImp(UString(s)))
+String::String(const UString &s) : Value(new StringImp(s))
 {
 #ifndef NDEBUG
   if (s.isNull())
