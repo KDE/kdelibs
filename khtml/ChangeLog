@@ -1,6 +1,6 @@
 2005-04-24  Harri Porten  <porten@kde.org>
 
-        * html/html_formimpl.cpp (value): never return a null string from
+        * dom/html_form.cpp (value): never return a null string from
         the value() function of input elements.
 
 2005-02-27  Harri Porten  <porten@kde.org>

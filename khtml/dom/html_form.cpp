@@ -524,7 +524,8 @@ void HTMLInputElement::setUseMap( const DOMString &value )
 DOMString HTMLInputElement::value() const
 {
     if(!impl) return DOMString();
-    return ((HTMLInputElementImpl*)impl)->value();
+    const DOMString val = ((HTMLInputElementImpl*)impl)->value();
+    return val.isNull() ? DOMString("") : val;
 }
 
 void HTMLInputElement::setValue( const DOMString &value )
