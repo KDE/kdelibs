@@ -534,14 +534,14 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
                 i18n( "<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" )
                 .arg( files.first() ),
                                                       i18n("Trash File"),
-                                                      KGuiItem("&Trash","edittrash"), "AskForTrash" );
+                                                      KGuiItem(i18n("&Trash"),"edittrash"), "AskForTrash" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
                 i18n("translators: not called for n == 1", "Do you really want to trash these %n items?", items.count() ),
                                                     files,
                                                     i18n("Trash Files"),
-                                                    KGuiItem("&Trash","edittrash"), "AskForTrash" );
+                                                    KGuiItem(i18n("&Trash"),"edittrash"), "AskForTrash" );
         doIt = (ret == KMessageBox::Continue);
     }
 
