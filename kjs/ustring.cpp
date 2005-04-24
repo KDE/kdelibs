@@ -899,6 +899,13 @@ bool KJS::operator==(const UString& s1, const UString& s2)
   if (s1.rep->len != s2.rep->len)
     return false;
 
+#ifndef NDEBUG
+  if ((s1.isNull() && s2.isEmpty() && !s2.isNull()) ||
+      (s2.isNull() && s1.isEmpty() && !s1.isNull()))
+    fprintf(stderr,
+            "KJS warning: comparison between empty and null string\n");
+#endif
+
   return (memcmp(s1.rep->dat, s2.rep->dat,
 		 s1.rep->len * sizeof(UChar)) == 0);
 }
