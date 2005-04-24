@@ -1,5 +1,8 @@
 2005-04-24  Harri Porten  <porten@kde.org>
 
+	* lexer.cpp (isIdentLetter): allow umlauts, accents as well as
+	greek, cyrillic, thai etc. letters in identifier names.
+
 	* date_object.cpp (KRFCDate_parseDate): correctly handle large
 	year numbers in "MM/DD/YYYY" formats
 

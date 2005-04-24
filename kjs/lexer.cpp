@@ -576,10 +576,23 @@ bool Lexer::isWhiteSpace(unsigned short c)
 
 bool Lexer::isIdentLetter(unsigned short c)
 {
-  /* TODO: allow other legitimate unicode chars */
+  // Allow any character in the Unicode categories
+  // Uppercase letter (Lu), Lowercase letter (Ll),
+  // Titlecase letter (Lt)", Modifier letter (Lm),
+  // Other letter (Lo), or Letter number (Nl).
+  // Also see: http://www.unicode.org/Public/UNIDATA/UnicodeData.txt */
   return (c >= 'a' && c <= 'z' ||
           c >= 'A' && c <= 'Z' ||
+          // A with grave - O with diaeresis
+          c >= 0x00c0 && c <= 0x00d6 ||
+          // O with stroke - o with diaeresis
+          c >= 0x00d8 && c <= 0x00f6 ||
+          // o with stroke - turned h with fishook and tail
+          c >= 0x00f8 && c <= 0x02af ||
+          // Greek etc. TODO: not precise
+          c >= 0x0388 && c <= 0x1ffc ||
           c == '$' || c == '_');
+  /* TODO: use complete category table */
 }
 
 bool Lexer::isDecimalDigit(unsigned short c)
