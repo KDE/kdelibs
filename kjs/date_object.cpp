@@ -614,22 +614,6 @@ double KJS::parseDate(const UString &u)
   fprintf(stderr,"KJS::parseDate %s\n",u.ascii());
 #endif
   double /*time_t*/ seconds = KRFCDate_parseDate( u );
-#ifdef KJS_VERBOSE
-  fprintf(stderr,"KRFCDate_parseDate returned seconds=%g\n",seconds);
-  bool withinLimits = true;
-  if ( sizeof(time_t) == 4 )
-  {
-    int limit = ((time_t)-1 < 0) ? 2038 : 2115;
-    if ( seconds > (limit-1970) * 365.25 * 86400 ) {
-      fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(seconds/(365.25*86400)+1970));
-      withinLimits = false;
-    }
-  }
-  if ( withinLimits ) {
-    time_t lsec = (time_t)seconds;
-    fprintf(stderr, "this is: %s\n", ctime(&lsec));
-  }
-#endif
 
   return seconds == -1 ? NaN : seconds * 1000.0;
 }
@@ -1002,7 +986,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
          t.tm_hour = hour;
        }
 
-       return mktime(&t);
+       // better not use mktime() as it can't handle the full year range
+       return makeTime(&t, 0, false) / 1000.0;
      }
 
      offset *= 60;
