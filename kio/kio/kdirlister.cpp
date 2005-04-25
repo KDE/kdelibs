@@ -2227,21 +2227,20 @@ void KDirLister::addNewItems( const KFileItemList& items )
 
 void KDirLister::aboutToRefreshItem( const KFileItem *item )
 {
-  bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
-  bool isMimeFilterMatch = !matchesMimeFilter( item );
-
-  if ( !isNameFilterMatch && !isMimeFilterMatch )
-    d->refreshItemWasFiltered = false;
-  else
+  // The code here follows the logic in addNewItem
+  if ( ( d->dirOnlyMode && !item->isDir() ) || !matchesFilter( item ) )
     d->refreshItemWasFiltered = true;
+  else if ( matchesMimeFilter( item ) )
+    d->refreshItemWasFiltered = true;
+  else
+    d->refreshItemWasFiltered = false;
 }
 
 void KDirLister::addRefreshItem( const KFileItem *item )
 {
-  bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
-  bool isMimeFilterMatch = !matchesMimeFilter( item );
+  bool isExcluded = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
 
-  if ( !isNameFilterMatch && !isMimeFilterMatch )
+  if ( !isExcluded && matchesMimeFilter( item ) )
   {
     if ( d->refreshItemWasFiltered )
     {
@@ -2311,10 +2310,9 @@ void KDirLister::emitItems()
 
 void KDirLister::emitDeleteItem( KFileItem *item )
 {
-  bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
-  bool isMimeFilterMatch = !matchesMimeFilter( item );
-
-  if ( !isNameFilterMatch && !isMimeFilterMatch )
+  if ( ( d->dirOnlyMode && !item->isDir() ) || !matchesFilter( item ) )
+    return; // No reason to continue... bailing out here prevents a mimetype scan.
+  if ( matchesMimeFilter( item ) )
     emit deleteItem( item );
 }
 
@@ -2459,11 +2457,8 @@ KFileItemList KDirLister::itemsForDir( const KURL& dir, WhichItems which ) const
         for ( KFileItemListIterator kit( *allItems ); kit.current(); ++kit )
         {
             KFileItem *item = *kit;
-            bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) ||
-                                     !matchesFilter( item );
-            bool isMimeFilterMatch = !matchesMimeFilter( item );
-
-            if ( !isNameFilterMatch && !isMimeFilterMatch )
+            bool isExcluded = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
+            if ( !isExcluded && matchesMimeFilter( item ) )
                 result.append( item );
         }
     }
