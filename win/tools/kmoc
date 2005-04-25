@@ -7,8 +7,8 @@
 mkdir -p moc
 find . -maxdepth 1 -name \*.h | while read ; do 
 	grep Q_OBJECT $REPLY > /dev/null || continue
-	moc=moc/`echo $REPLY | sed -e "s/\\.h/\\.moc/"`
-	if [ $moc -ot $REPLY ] ; then echo mocing $REPLY... ; moc $REPLY -o moc/`echo $REPLY | sed -e "s/\\.h/\\.moc/"` ; fi
+	moc=moc/`echo $REPLY | sed -e "s/\\.h/\\.moc/;s/\\.\\///"`
+	if [ $moc -ot $REPLY ] ; then echo mocing $REPLY... ; moc $REPLY -o $moc ; fi
 done
 
 pwd=`pwd`
