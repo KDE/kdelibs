@@ -43,6 +43,10 @@ class KDockContainer;
  */
 class KDEUI_EXPORT KDockSplitter : public QWidget
 {
+  // NOTE: in theory the KDEUI_EXPORT above shouldn't be there, but it's needed for kexi,
+  // which copies the whole definition of the class to be able to access separatorPosInPercent etc. 
+  // This needs real fixing in KDE4.
+  
   Q_OBJECT
 public:
   /**
@@ -239,7 +243,7 @@ private:
  *
  * @author Max Judin.
 */
-class KDEUI_EXPORT KDockButton_Private : public QPushButton
+class KDockButton_Private : public QPushButton
 {
   Q_OBJECT
 public:
@@ -264,7 +268,7 @@ private:
 /**
  * additional KDockWidget stuff (private)
 */
-class KDEUI_EXPORT KDockWidgetPrivate : public QObject
+class KDockWidgetPrivate : public QObject
 {
   Q_OBJECT
 public:
@@ -304,7 +308,7 @@ public:
   KDockWidgetResize resizeMode;
 };
 
-class KDEUI_EXPORT KDockWidgetHeaderPrivate
+class KDockWidgetHeaderPrivate
    : public QObject
 {
 public:
