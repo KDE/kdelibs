@@ -2196,14 +2196,10 @@ void KDirLister::handleError( KIO::Job *job )
 
 void KDirLister::addNewItem( const KFileItem *item )
 {
-  bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
-
-  if ( isNameFilterMatch )
+  if ( ( d->dirOnlyMode && !item->isDir() ) || !matchesFilter( item ) )
     return; // No reason to continue... bailing out here prevents a mimetype scan.
 
-  bool isMimeFilterMatch = !matchesMimeFilter( item );
-
-  if ( !isNameFilterMatch && !isMimeFilterMatch )
+  if ( matchesMimeFilter( item ) )
   {
     if ( !d->lstNewItems )
       d->lstNewItems = new KFileItemList;
@@ -2222,6 +2218,9 @@ void KDirLister::addNewItem( const KFileItem *item )
 void KDirLister::addNewItems( const KFileItemList& items )
 {
   // TODO: make this faster - test if we have a filter at all first
+  // DF: was this profiled? The matchesFoo() functions should be fast, w/o filters...
+  // Of course if there is no filter and we can do a range-insertion instead of a loop, that might be good.
+  // But that's for Qt4, not possible with QPtrList.
   for ( KFileItemListIterator kit( items ); kit.current(); ++kit )
     addNewItem( *kit );
 }
