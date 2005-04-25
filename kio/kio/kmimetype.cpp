@@ -311,8 +311,6 @@ KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fas
 KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 {
   KMimeMagicResult *result = KMimeMagic::self()->findBufferType(data);
-  QString type = (result && result->isValid())?
-    result->mimeType() : defaultMimeType();
   if (accuracy)
       *accuracy = result->accuracy();
   return mimeType( result->mimeType() );
@@ -321,8 +319,6 @@ KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
 {
   KMimeMagicResult *result = KMimeMagic::self()->findFileType(fileName);
-  QString type = (result && result->isValid())?
-    result->mimeType() : defaultMimeType();
   if (accuracy)
       *accuracy = result->accuracy();
   return mimeType( result->mimeType() );
@@ -336,8 +332,8 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
   KMimeType::Format result;
   result.compression = Format::NoCompression;
   KMimeType::Ptr mime = findByPath(fileName);
-  if (mime->name() == "application/octet-stream")
-     mime =  findByFileContent(fileName);
+  if (mime->name() == defaultMimeType())
+     mime = findByFileContent(fileName);
 
   result.text = mime->name().startsWith("text/");
   QVariant v = mime->property("X-KDE-text");
