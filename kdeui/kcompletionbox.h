@@ -141,7 +141,7 @@ public slots:
 
     /**
      * Set whether or not the selected signal should be emitted when an
-     * item is selected. By default the @ref selevted signal is emitted.
+     * item is selected. By default the @ref selected signal is emitted.
      *
      * @param state false if the signal should not be emitted.
      * @since 3.4.1
