@@ -968,9 +968,9 @@ void KMultiTabBar::setStyle(KMultiTabBarStyle style)
 	m_internal->setStyle(style);
 }
 
-KMultiTabBar::KMultiTabBarStyle KMultiTabBar::tabStyle()
+KMultiTabBar::KMultiTabBarStyle KMultiTabBar::tabStyle() const
 {
-  return m_internal->m_style;
+	return m_internal->m_style;
 }
 
 void KMultiTabBar::setPosition(KMultiTabBarPosition pos)
@@ -981,9 +981,9 @@ void KMultiTabBar::setPosition(KMultiTabBarPosition pos)
 		m_buttons.at(i)->setPosition(pos);
 }
 
-KMultiTabBar::KMultiTabBarPosition KMultiTabBar::position()
+KMultiTabBar::KMultiTabBarPosition KMultiTabBar::position() const
 {
-  return m_position;
+	return m_position;
 }
 void KMultiTabBar::fontChange(const QFont& /* oldFont */)
 {

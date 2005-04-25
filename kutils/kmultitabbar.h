@@ -122,7 +122,7 @@ public:
 	 * get the tabbar position.
 	 * @return position
 	 */
-	 KMultiTabBarPosition position();
+	KMultiTabBarPosition position() const;
 	/**
 	 * set the display style of the tabs
 	 */
@@ -131,7 +131,7 @@ public:
 	 * get the display style of the tabs
 	 * @return display style
 	 */
-	KMultiTabBarStyle tabStyle();
+	KMultiTabBarStyle tabStyle() const;
 	/**
 	 * be carefull, don't delete tabs yourself and don't delete the list itself
 	 */
