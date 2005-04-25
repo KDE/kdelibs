@@ -128,6 +128,11 @@ public:
 	 */
 	void setStyle(KMultiTabBarStyle style);
 	/**
+	 * get the display style of the tabs
+	 * @return display style
+	 */
+	KMultiTabBarStyle tabStyle();
+	/**
 	 * be carefull, don't delete tabs yourself and don't delete the list itself
 	 */
         QPtrList<KMultiTabBarTab>* tabs();

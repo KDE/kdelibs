@@ -968,6 +968,11 @@ void KMultiTabBar::setStyle(KMultiTabBarStyle style)
 	m_internal->setStyle(style);
 }
 
+KMultiTabBar::KMultiTabBarStyle KMultiTabBar::tabStyle()
+{
+  return m_internal->m_style;
+}
+
 void KMultiTabBar::setPosition(KMultiTabBarPosition pos)
 {
 	m_position=pos;
