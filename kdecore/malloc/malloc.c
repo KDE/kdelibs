@@ -5751,7 +5751,7 @@ posix_memalign (void **memptr, size_t alignment, size_t size)
 /* Some linkers (Solaris 2.6) don't like empty archives, but for
    easier Makefile's we want to link against libklmalloc.la every time,
    so simply make it non-empty.  */
-void __kdemalloc_dummy_function ()
+void kde_malloc_dummy_function ()
 {
   return;
 }
