@@ -7,7 +7,9 @@
 if [ -n "$MSVC" ] ; then
 	dir="$MSVC/vc7/include"
 	mkdir -p "$KDELIBS/win/msvc/" || exit 1
+	mkdir -p "$KDELIBS/win/sys/msvc/" || exit 1
 	cp "$dir/ctype.h" "$dir/signal.h" "$dir/stdlib.h" "$dir/string.h" "$KDELIBS/win/msvc/" || exit 1
+	cp "$dir/fcntl.h" "$dir/sys/stat.h" "$dir/sys/types.h" "$KDELIBS/win/sys/msvc/" || exit 1
 
 # todo: borland?
 
