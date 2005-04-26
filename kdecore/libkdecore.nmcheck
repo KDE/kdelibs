@@ -6,6 +6,7 @@ K*::*
 # these should preferably go in some namespace in KDE4
 NETRootInfo::*
 NETRootInfo2::*
+NETRootInfo3::*
 NETWinInfo::*
 NET::*
 kdbgstream::*
@@ -41,6 +42,8 @@ kde_*
 urlcmp
 operator>>
 operator<<
+qt_qclipboard_bailout_hack
+kasciistricmp
 
 # from libtldl
 lt_dl*
@@ -73,3 +76,4 @@ pvalloc
 posix_memalign
 memalign
 kde_malloc_is_used
+kde_malloc_dummy_function
