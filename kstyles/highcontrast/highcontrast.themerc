@@ -32,6 +32,7 @@ Name[sv]=Hög kontrast
 Name[uk]=Висока контрастність
 Name[xx]=xxHighContrastxx
 Name[zh_CN]=高对比度
+ConfigPage=kstyle_highcontrast_config
 Comment=A style that works well with high contrast color schemes
 Comment[bg]=Стил за схеми с висок контраст
 Comment[ca]=Un estil que funciona bé amb esquemes de color de contrast alt

@@ -19,6 +19,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+SUBDIRS = config
+
 KDE_CXXFLAGS = -DQT_PLUGIN
 
 INCLUDES = $(all_includes)

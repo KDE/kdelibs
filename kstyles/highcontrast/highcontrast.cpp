@@ -41,6 +41,7 @@
 #include <qtoolbar.h>
 #include <qpopupmenu.h>
 #include <qprogressbar.h>
+#include <qsettings.h>
 
 #include <kdrawutil.h>
 #include <kpixmapeffect.h>
@@ -110,8 +111,11 @@ void addOffset (QRect* r, int offset, int lineWidth = 0)
 HighContrastStyle::HighContrastStyle()
 	: KStyle( 0, ThreeButtonScrollBar )
 {
+	QSettings settings;
+	settings.beginGroup("/highcontraststyle/Settings/");
+	bool useWideLines = settings.readBoolEntry("wideLines", false);
 	hoverWidget = 0L;
-	basicLineWidth = 2;
+	basicLineWidth = useWideLines ? 4 : 2;
 }
 
 
@@ -124,7 +128,8 @@ void HighContrastStyle::polish( QPalette& pal )
 {
 	//We do not want the disabled widgets to be greyed out, 
 	//as that may be hard indeed (and since we use crossed-out text instead),
-	//so we make disabled colors be the same as active foreground and background colour
+	//so we make disabled colors be the same as active foreground and
+	//background colour
 	for (int c = 0; c < QColorGroup::NColorRoles; ++c)
 		switch (c)
 		{
@@ -238,13 +243,13 @@ void HighContrastStyle::drawRoundRect (QPainter* p, QRect r, int offset, bool fi
 		p->drawRect (r3);
 		p->restore();
 		
-		p->drawLine (r.left()+lineWidth, r2.top(), r.right()-lineWidth, r2.top());
+		p->drawLine (r.left()+lineWidth, r2.top(), r.right()+1-lineWidth, r2.top());
 		p->fillRect (r.left()+1, r.top()+1, lineWidth, lineWidth, p->pen().color());
-		p->drawLine (r2.left(), r.top()+lineWidth, r2.left(), r.bottom()-lineWidth);
+		p->drawLine (r2.left(), r.top()+lineWidth, r2.left(), r.bottom()+1-lineWidth);
 		p->fillRect (r.left()+1, r.bottom()-lineWidth, lineWidth, lineWidth, p->pen().color());
-		p->drawLine (r.left()+lineWidth, r2.bottom(), r.right()-lineWidth, r2.bottom());
+		p->drawLine (r.left()+lineWidth, r2.bottom(), r.right()+1-lineWidth, r2.bottom());
 		p->fillRect (r.right()-lineWidth, r.bottom()-lineWidth, lineWidth, lineWidth, p->pen().color());
-		p->drawLine (r2.right(), r.top()+lineWidth, r2.right(), r.bottom()-lineWidth);
+		p->drawLine (r2.right(), r.top()+lineWidth, r2.right(), r.bottom()+1-lineWidth);
 		p->fillRect (r.right()-lineWidth, r.top()+1, lineWidth, lineWidth, p->pen().color());
 	}
 	else
@@ -715,7 +720,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 	switch (element)
 	{
 		// TABS
-		// ------------------------------------------------------------------------
+		// -------------------------------------------------------------------
 #if (QT_VERSION-0 >= 0x030200)
 		case CE_ToolBoxTab: {
 			setColorsNormal (p, cg, flags, Style_Selected);
@@ -727,11 +732,29 @@ void HighContrastStyle::drawControl (ControlElement element,
 		case CE_TabBarTab: {
 			setColorsNormal (p, cg, flags, Style_Selected);
 			drawRoundRect (p, r);
-			p->fillRect (r.left(), r.bottom()-2*basicLineWidth+1, r.width(), 2*basicLineWidth, 
-						 p->pen().color());
-			p->fillRect (r.left()+basicLineWidth, r.bottom()-2*basicLineWidth+1, r.width()-2*basicLineWidth,
-						 flags & Style_Selected ? 2*basicLineWidth : basicLineWidth,
-						 p->backgroundColor());
+			
+			const QTabBar *tb = static_cast< const QTabBar * >(widget);
+            QTabBar::Shape shape = tb->shape();
+			if (shape == QTabBar::TriangularBelow || 
+				shape == QTabBar::RoundedBelow) {
+				p->fillRect (r.left(), r.top(), 
+							 r.width(), 2*basicLineWidth, 
+							 p->pen().color());
+				p->fillRect (r.left()+basicLineWidth, 
+							 flags & Style_Selected ? basicLineWidth : 2*basicLineWidth,
+							 r.width()-2*basicLineWidth,
+							 basicLineWidth,
+							 p->backgroundColor());
+			} else {
+				p->fillRect (r.left(), r.bottom()-2*basicLineWidth+1, 
+							 r.width(), 2*basicLineWidth, 
+							 p->pen().color());
+				p->fillRect (r.left()+basicLineWidth, 
+						     r.bottom()-2*basicLineWidth+1, 
+							 r.width()-2*basicLineWidth,
+							 flags & Style_Selected ? 2*basicLineWidth : basicLineWidth,
+							 p->backgroundColor());
+			}
 			break;
 		}
 
@@ -1407,7 +1430,7 @@ int HighContrastStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_IndicatorHeight: {
 			int h = 0;
 			if (widget != 0)
-				h = widget->fontMetrics().lineSpacing()/2;
+				h = widget->fontMetrics().lineSpacing()-2*basicLineWidth;
 			
 			if (h > 6*basicLineWidth)
 				return h;
