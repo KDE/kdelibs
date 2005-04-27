@@ -328,7 +328,7 @@ NodeImpl *HTMLLayerElementImpl::addChild(NodeImpl *child)
 {
     NodeImpl *retval = HTMLDivElementImpl::addChild(child);
     // When someone adds standard layers, we make sure not to interfere
-    if (retval->id() == ID_DIV) {
+    if (retval && retval->id() == ID_DIV) {
         if (!transparent)
             addCSSProperty(CSS_PROP_POSITION, CSS_VAL_STATIC);
         transparent = true;
