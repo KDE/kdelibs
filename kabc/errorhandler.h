@@ -26,6 +26,8 @@
 
 #include <kdelibs_export.h>
 
+class QWidget;
+
 namespace KABC {
 
 /**
