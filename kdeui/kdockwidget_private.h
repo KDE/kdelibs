@@ -239,11 +239,11 @@ private:
 
 /**
  * A mini-button usually placed in the dockpanel.
- * @internal
+ * @internal (but used by kmdi/dockcontainer.cpp)
  *
  * @author Max Judin.
 */
-class KDockButton_Private : public QPushButton
+class KDEUI_EXPORT KDockButton_Private : public QPushButton
 {
   Q_OBJECT
 public:
