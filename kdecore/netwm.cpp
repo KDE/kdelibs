@@ -417,7 +417,7 @@ static void create_atoms(Display *d) {
 }
 
 
-static void readIcon(NETWinInfoPrivate *p) {
+static void readIcon(Display* display, Window window, Atom property, NETRArray<NETIcon>& icons, int& icon_count) {
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NET: readIcon\n");
@@ -429,10 +429,10 @@ static void readIcon(NETWinInfoPrivate *p) {
     unsigned char *data_ret = 0;
 
     // reset
-    for (int i = 0; i < p->icons.size(); i++)
-        delete [] p->icons[i].data;
-    p->icons.reset();
-    p->icon_count = 0;
+    for (int i = 0; i < icons.size(); i++)
+        delete [] icons[i].data;
+    icons.reset();
+    icon_count = 0;
 
     // allocate buffers
     unsigned char *buffer = 0;
@@ -442,7 +442,7 @@ static void readIcon(NETWinInfoPrivate *p) {
 
     // read data
     do {
-	if (XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
+	if (XGetWindowProperty(display, window, property, offset,
 			       MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
 			       &format_ret, &nitems_ret, &after_ret, &data_ret)
 	    == Success) {
@@ -486,30 +486,30 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
     unsigned long i, j, k, sz, s;
     unsigned long *d = (unsigned long *) buffer;
     for (i = 0, j = 0; i < bufsize; i++) {
-	p->icons[j].size.width = *d++;
+	icons[j].size.width = *d++;
 	i += sizeof(long);
-	p->icons[j].size.height = *d++;
+	icons[j].size.height = *d++;
 	i += sizeof(long);
 
-	sz = p->icons[j].size.width * p->icons[j].size.height;
+	sz = icons[j].size.width * icons[j].size.height;
 	s = sz * sizeof(long);
 
 	if ( i + s - 1 > bufsize || sz == 0 || sz > 1024 * 1024 ) {
 	    break;
 	}
 
-	delete [] p->icons[j].data;
+	delete [] icons[j].data;
 	data32 = new CARD32[sz];
-	p->icons[j].data = (unsigned char *) data32;
+	icons[j].data = (unsigned char *) data32;
 	for (k = 0; k < sz; k++, i += sizeof(long)) {
 	    *data32++ = (CARD32) *d++;
 	}
 	j++;
-        p->icon_count++;
+        icon_count++;
     }
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr, "NET: readIcon got %d icons\n", p->icon_count);
+    fprintf(stderr, "NET: readIcon got %d icons\n", icon_count);
 #endif
 
     free(buffer);
@@ -2734,53 +2734,57 @@ const NETWinInfo &NETWinInfo::operator=(const NETWinInfo &wininfo) {
 
 
 void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
+    setIconInternal( p->icons, p->icon_count, net_wm_icon, icon, replace );
+}
+
+void NETWinInfo::setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Atom property, NETIcon icon, Bool replace) {
     if (role != Client) return;
 
     int proplen, i, sz, j;
 
     if (replace) {
 
-	for (i = 0; i < p->icons.size(); i++) {
-	    delete [] p->icons[i].data;
-	    p->icons[i].data = 0;
-	    p->icons[i].size.width = 0;
-	    p->icons[i].size.height = 0;
+	for (i = 0; i < icons.size(); i++) {
+	    delete [] icons[i].data;
+	    icons[i].data = 0;
+	    icons[i].size.width = 0;
+	    icons[i].size.height = 0;
 	}
 
-	p->icon_count = 0;
+	icon_count = 0;
     }
 
     // assign icon
-    p->icons[p->icon_count] = icon;
-    p->icon_count++;
+    icons[icon_count] = icon;
+    icon_count++;
 
     // do a deep copy, we want to own the data
-    NETIcon &ni = p->icons[p->icon_count - 1];
+    NETIcon &ni = icons[icon_count - 1];
     sz = ni.size.width * ni.size.height;
     CARD32 *d = new CARD32[sz];
     ni.data = (unsigned char *) d;
     memcpy(d, icon.data, sz * sizeof(CARD32));
 
     // compute property length
-    for (i = 0, proplen = 0; i < p->icon_count; i++) {
-	proplen += 2 + (p->icons[i].size.width *
-			p->icons[i].size.height);
+    for (i = 0, proplen = 0; i < icon_count; i++) {
+	proplen += 2 + (icons[i].size.width *
+			icons[i].size.height);
     }
 
     CARD32 *d32;
     long *prop = new long[proplen], *pprop = prop;
-    for (i = 0; i < p->icon_count; i++) {
+    for (i = 0; i < icon_count; i++) {
 	// copy size into property
-       	*pprop++ = p->icons[i].size.width;
-	*pprop++ = p->icons[i].size.height;
+       	*pprop++ = icons[i].size.width;
+	*pprop++ = icons[i].size.height;
 
 	// copy data into property
-	sz = (p->icons[i].size.width * p->icons[i].size.height);
-	d32 = (CARD32 *) p->icons[i].data;
+	sz = (icons[i].size.width * icons[i].size.height);
+	d32 = (CARD32 *) icons[i].data;
 	for (j = 0; j < sz; j++) *pprop++ = *d32++;
     }
 
-    XChangeProperty(p->display, p->window, net_wm_icon, XA_CARDINAL, 32,
+    XChangeProperty(p->display, p->window, property, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) prop, proplen);
 
     delete [] prop;
@@ -3339,28 +3343,32 @@ void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
 
 
 NETIcon NETWinInfo::icon(int width, int height) const {
+    return iconInternal( p->icons, p->icon_count, width, height );
+}
+
+NETIcon NETWinInfo::iconInternal(NETRArray<NETIcon>& icons, int icon_count, int width, int height) const {
     NETIcon result;
 
-    if ( !p->icon_count ) {
+    if ( !icon_count ) {
 	result.size.width = 0;
 	result.size.height = 0;
 	result.data = 0;
 	return result;
     }
 
-    result = p->icons[0];
+    result = icons[0];
 
     // find the icon that's closest in size to w x h...
     // return the first icon if w and h are -1
     if (width == height && height == -1) return result;
 
     int i;
-    for (i = 0; i < p->icons.size(); i++) {
-	if ((p->icons[i].size.width >= width &&
-	     p->icons[i].size.width < result.size.width) &&
-	    (p->icons[i].size.height >= height &&
-	     p->icons[i].size.height < result.size.height))
-	    result = p->icons[i];
+    for (i = 0; i < icons.size(); i++) {
+	if ((icons[i].size.width >= width &&
+	     icons[i].size.width < result.size.width) &&
+	    (icons[i].size.height >= height &&
+	     icons[i].size.height < result.size.height))
+	    result = icons[i];
     }
 
     return result;
@@ -3914,7 +3922,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
     }
 
     if (dirty & WMIcon) {
-	readIcon(p);
+	readIcon(p->display,p->window,net_wm_icon,p->icons,p->icon_count);
     }
 
     if (dirty & WMKDESystemTrayWinFor) {

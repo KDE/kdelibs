@@ -39,6 +39,7 @@
 // forward declaration
 struct NETRootInfoPrivate;
 struct NETWinInfoPrivate;
+template <class Z> class NETRArray;
 
 
 /**
@@ -1372,6 +1373,8 @@ protected:
 private:
     void update( const unsigned long[] );
     void updateWMState();
+    void setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Atom property, NETIcon icon, Bool replace);
+    NETIcon iconInternal(NETRArray<NETIcon>& icons, int icon_count, int width, int height) const;
     Role role;
 
 protected:
