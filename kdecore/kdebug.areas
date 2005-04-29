@@ -448,13 +448,9 @@
 26004	KSVG - Ecma
 26005	KSVG - Canvas
 
-# KDOM KXInclude
 26500  KDOM XInclude
-
-# KDOM OASIS XML Catalogs
+26550  KDOM XPointer
 26600  KDOM Catalog
-
-# KDOM kxmllint, the parser utility
 26650  KDOM kxmllint
 
 # libkscan / kooka
