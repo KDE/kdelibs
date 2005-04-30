@@ -669,7 +669,8 @@ class KSpeech : virtual public DCOPObject {
             mtPlain = 0,                 /**< Plain text */
             mtJsml = 1,                  /**< Java %Speech Markup Language */
             mtSsml = 2,                  /**< %Speech Synthesis Markup Language */
-            mtSable = 3                  /**< Sable 2.0 */
+            mtSable = 3,                 /**< Sable 2.0 */
+            mtHtml = 4                   /**< HTML */
         };
 
     k_dcop:
