@@ -530,6 +530,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Confirm:
     case Prompt:
     case Open:
+    case Close:
     case Focus:
     case Blur:
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
@@ -680,7 +681,6 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       return Value(new XMLHttpRequestConstructorImp(exec, part->document()));
     case XMLSerializer:
       return Value(new XMLSerializerConstructorImp(exec));
-    case Close:
     case Scroll: // compatibility
     case ScrollBy:
     case ScrollTo:
@@ -1492,6 +1492,62 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         return Null();
   case Window::Open:
     return window->openWindow(exec, args);
+  case Window::Close: {
+    /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
+       The close method closes only windows opened by JavaScript using the open method.
+       If you attempt to close any other window, a confirm is generated, which
+       lets the user choose whether the window closes.
+       This is a security feature to prevent "mail bombs" containing self.close().
+       However, if the window has only one document (the current one) in its
+       session history, the close is allowed without any confirm. This is a
+       special case for one-off windows that need to open other windows and
+       then dispose of themselves.
+    */
+    bool doClose = false;
+    if (!part->openedByJS())
+    {
+      // To conform to the SPEC, we only ask if the window
+      // has more than one entry in the history (NS does that too).
+      History history(exec,part);
+
+      if ( history.get( exec, "length" ).toInt32(exec) <= 1 )
+      {
+        doClose = true;
+      }
+      else
+      {
+        // Can we get this dialog with tabs??? Does it close the window or the tab in that case?
+        emit part->browserExtension()->requestFocus(part);
+        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") )
+             == KMessageBox::Yes )
+          doClose = true;
+      }
+    }
+    else
+      doClose = true;
+
+    if (doClose)
+    {
+      // If this is the current window (the one the interpreter runs in),
+      // then schedule a delayed close (so that the script terminates first).
+      // But otherwise, close immediately. This fixes w=window.open("","name");w.close();window.open("name");
+      if ( Window::retrieveActive(exec) == window ) {
+        if (widget) {
+          // quit all dialogs of this view
+          // this fixes 'setTimeout('self.close()',1000); alert("Hi");' crash
+          widget->closeChildDialogs();
+        }
+        //kdDebug() << "scheduling delayed close"  << endl;
+        // We'll close the window at the end of the script execution
+        Window* w = const_cast<Window*>(window);
+        w->m_delayed.append( Window::DelayedAction( Window::DelayedClose ) );
+      } else {
+        //kdDebug() << "closing NOW"  << endl;
+        (const_cast<Window*>(window))->closeNow();
+      }
+    }
+    return Undefined();
+  }
   case Window::Navigate:
     window->goURL(exec, args[0].toString(exec).qstring(), false /*don't lock history*/);
     return Undefined();
@@ -1631,62 +1687,6 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::ClearInterval:
     (const_cast<Window*>(window))->winq->clearTimeout(v.toInt32(exec));
     return Undefined();
-  case Window::Close: {
-    /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
-       The close method closes only windows opened by JavaScript using the open method.
-       If you attempt to close any other window, a confirm is generated, which
-       lets the user choose whether the window closes.
-       This is a security feature to prevent "mail bombs" containing self.close().
-       However, if the window has only one document (the current one) in its
-       session history, the close is allowed without any confirm. This is a
-       special case for one-off windows that need to open other windows and
-       then dispose of themselves.
-    */
-    bool doClose = false;
-    if (!part->openedByJS())
-    {
-      // To conform to the SPEC, we only ask if the window
-      // has more than one entry in the history (NS does that too).
-      History history(exec,part);
-
-      if ( history.get( exec, "length" ).toInt32(exec) <= 1 )
-      {
-        doClose = true;
-      }
-      else
-      {
-        // Can we get this dialog with tabs??? Does it close the window or the tab in that case?
-        emit part->browserExtension()->requestFocus(part);
-        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") )
-             == KMessageBox::Yes )
-          doClose = true;
-      }
-    }
-    else
-      doClose = true;
-
-    if (doClose)
-    {
-      // If this is the current window (the one the interpreter runs in),
-      // then schedule a delayed close (so that the script terminates first).
-      // But otherwise, close immediately. This fixes w=window.open("","name");w.close();window.open("name");
-      if ( Window::retrieveActive(exec) == window ) {
-        if (widget) {
-          // quit all dialogs of this view
-          // this fixes 'setTimeout('self.close()',1000); alert("Hi");' crash
-          widget->closeChildDialogs();
-        }
-        //kdDebug() << "scheduling delayed close"  << endl;
-        // We'll close the window at the end of the script execution
-        Window* w = const_cast<Window*>(window);
-        w->m_delayed.append( Window::DelayedAction( Window::DelayedClose ) );
-      } else {
-        //kdDebug() << "closing NOW"  << endl;
-        (const_cast<Window*>(window))->closeNow();
-      }
-    }
-    return Undefined();
-  }
   case Window::Print:
     if ( widget ) {
       // ### TODO emit onbeforeprint event
