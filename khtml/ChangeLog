@@ -1,6 +1,16 @@
 2005-05-01  Allan Sandfeld Jensen <kde@carewolf.com>
 
-        * renderer/render_box.{h,cpp}: Respect min/max width/height and box-sizing
+        The mergeable of Daves Acid2 patches.
+
+        * renderer/render_block.cpp:
+            - Make sure that percentages that go to auto don't mess up the self-collapsing block check.
+            - Fix floats to not grow if child floats overhang but the height of the outer float is auto.
+        * renderer/render_box.{h,cpp}:
+            - Add support for min/max-width/height for positioned elements.
+            - Make sure percentage min-height goes to 0 and not auto when the percentage does not apply.
+        * renderer/render_table.cpp:
+            - Make sure empty tables honor CSS-specified height in strict mode.
+            - Fix baseline alignment within table cells to use the bottom of empty blocks.
 
 2005-04-30  Harri Porten  <porten@kde.org>
 

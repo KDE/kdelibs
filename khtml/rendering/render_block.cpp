@@ -406,10 +406,18 @@ bool RenderBlock::isSelfCollapsingBlock() const
         style()->minHeight().value() > 0)
         return false;
 
+    bool hasAutoHeight = style()->height().isVariable();
+    if (style()->height().isPercent() && !style()->htmlHacks()) {
+        hasAutoHeight = true;
+        for (RenderBlock* cb = containingBlock(); !cb->isCanvas(); cb = cb->containingBlock()) {
+            if (cb->style()->height().isFixed() || cb->isTableCell())
+                hasAutoHeight = false;
+        }
+    }
+
     // If the height is 0 or auto, then whether or not we are a self-collapsing block depends
     // on whether we have content that is all self-collapsing or not.
-    if (style()->height().isVariable() ||
-        (style()->height().isFixed() && style()->height().value() == 0)) {
+    if (hasAutoHeight || ((style()->height().isFixed() || style()->height().isPercent()) && style()->height().value() == 0)) {
         // If the block has inline children, see if we generated any line boxes.  If we have any
         // line boxes, then we can't be self-collapsing, since we have content.
         if (childrenInline())
@@ -518,7 +526,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         // does painting or event handling.
         m_layer->moveScrollbarsAside();
     }
- 
+
     // A quirk that has become an unfortunate standard.  Positioned elements, floating elements
     // and table cells don't ever collapse their margins with either themselves or their
     // children.
@@ -533,7 +541,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     // Expand our intrinsic height to encompass floats.
     int toAdd = borderBottom() + paddingBottom();
     if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
-        toAdd += m_layer->horizontalScrollbarHeight();                
+        toAdd += m_layer->horizontalScrollbarHeight();
     if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
         m_height = floatBottom() + toAdd;
 
@@ -564,7 +572,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
             m_height = m_overflowHeight + borderBottom() + paddingBottom();
     }
 
-    if( hasOverhangingFloats() && (isFloating() || isTableCell())) {
+    if( hasOverhangingFloats() && ((isFloating() && style()->height().isVariable()) || isTableCell())) {
         m_height = floatBottom();
         m_height += borderBottom() + paddingBottom();
     }
@@ -598,7 +606,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     // we overflow or not.
     if (style()->hidesOverflow() && m_layer)
         m_layer->checkScrollbarsAfterLayout();
-    
+
     setNeedsLayout(false);
 }
 
@@ -1005,7 +1013,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 prevNegMargin = 0;
                 selfCollapsingBlockClearedFloat = true;
             }
-            
+
             if (topMarginContributor && canCollapseTopWithChildren) {
                 // We can no longer collapse with the top of the block since a clear
                 // occurred.  The empty blocks collapse into the cleared block.
@@ -2546,7 +2554,7 @@ void RenderBlock::calcBlockMinMaxWidth()
         w = child->maxWidth() + margin;
 
         if(m_maxWidth < w) m_maxWidth = w;
-        
+
         if (child->isFloating())
             floatWidths += w;
         else if (m_maxWidth < w)
