@@ -1159,29 +1159,19 @@ void RenderBox::setStaticY(int staticY)
 void RenderBox::calcAbsoluteHorizontal()
 {
     const int AUTO = -666666;
-    int l,r,w,ml,mr,cw;
+    int l, r, cw;
 
     RenderObject* cb = container();
-    int pab = borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
+    int pab = (style()->boxSizing() == BORDER_BOX) ? 0 :
+        borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
 
-    l=r=ml=mr=w=AUTO;
+    l = r = AUTO;
     cw = containingBlockWidth() + cb->paddingLeft() + cb->paddingRight();
 
-    if(!style()->left().isVariable())
+    if (!style()->left().isVariable())
         l = style()->left().width(cw);
-    if(!style()->right().isVariable())
+    if (!style()->right().isVariable())
         r = style()->right().width(cw);
-    if(!style()->width().isVariable())
-        w = style()->width().width(cw);
-    else if (isReplaced())
-        w = intrinsicWidth();
-    if(!style()->marginLeft().isVariable())
-        ml = style()->marginLeft().width(cw);
-    if(!style()->marginRight().isVariable())
-        mr = style()->marginRight().width(cw);
-
-
-    //qDebug("h1: w=%d, l=%d, r=%d, ml=%d, mr=%d",w,l,r,ml,mr);
 
     int static_distance=0;
     if ((parent()->style()->direction()==LTR && (l==AUTO && r==AUTO ))
@@ -1214,9 +1204,63 @@ void RenderBox::calcAbsoluteHorizontal()
             r = static_distance;
     }
 
+    int w = m_width, ml, mr, x;
+    calcAbsoluteHorizontalValues(Width, cb, cw, pab, static_distance, l, r, w, ml, mr, x);
 
-    if (l!=AUTO && w!=AUTO && r!=AUTO)
-    {
+    m_width = w;
+    m_marginLeft = ml;
+    m_marginRight = mr;
+    m_x = x;
+
+    // Avoid doing any work in the common case (where the values of min-width and max-width are their defaults).
+    int minW = m_width, minML, minMR, minX;
+    calcAbsoluteHorizontalValues(MinWidth, cb, cw, pab, static_distance, l, r, minW, minML, minMR, minX);
+
+    int maxW = m_width, maxML, maxMR, maxX;
+    if (style()->maxWidth().value() != UNDEFINED)
+        calcAbsoluteHorizontalValues(MaxWidth, cb, cw, static_distance, pab, l, r, maxW, maxML, maxMR, maxX);
+
+    if (m_width > maxW) {
+        m_width = maxW;
+        m_marginLeft = maxML;
+        m_marginRight = maxMR;
+        m_x = maxX;
+    }
+
+    if (m_width < minW) {
+        m_width = minW;
+        m_marginLeft = minML;
+        m_marginRight = minMR;
+        m_x = minX;
+    }
+}
+
+void RenderBox::calcAbsoluteHorizontalValues(WidthType widthType, RenderObject* cb, int cw, int pab, int static_distance,
+                                             int l, int r, int& _w, int& _ml, int& _mr, int& _x)
+{
+    const int AUTO = -666666;
+
+    w = ml = mr = AUTO;
+
+    if (!style()->marginLeft().isVariable())
+        ml = style()->marginLeft().width(cw);
+    if (!style()->marginRight().isVariable())
+        mr = style()->marginRight().width(cw);
+
+    Length width;
+    if (widthType == Width)
+        width = style()->width();
+    else if (widthType == MinWidth)
+        width = style()->minWidth();
+    else
+        width = style()->maxWidth();
+
+    if (!width.isVariable())
+        w = width.width(cw);
+    else if (isReplaced())
+        w = intrinsicWidth();
+
+    if (l != AUTO && w != AUTO && r != AUTO) {
         // left, width, right all given, play with margins
         int ot = l + w + r + pab;
 
@@ -1289,11 +1333,8 @@ void RenderBox::calcAbsoluteHorizontal()
             r = cw - ( l + w + ml + mr + pab);
     }
 
-    m_width = w + pab;
-    m_marginLeft = ml;
-    m_marginRight = mr;
-    m_x = l + ml + cb->borderLeft();
-    //qDebug("h: w=%d, l=%d, r=%d, ml=%d, mr=%d",w,l,r,ml,mr);
+    w += pab;
+    x = l + ml + cb->borderLeft();
 }
 
 
@@ -1311,7 +1352,8 @@ void RenderBox::calcAbsoluteVertical()
 
     t=b=h=mt=mb=AUTO;
 
-    int pab = borderTop()+borderBottom()+paddingTop()+paddingBottom();
+    int pab = (style()->boxSizing() == BORDER_BOX) ? 0 :
+        borderTop()+borderBottom()+paddingTop()+paddingBottom();
 
     RenderObject* cb = container();
 

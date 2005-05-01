@@ -1,3 +1,7 @@
+2005-05-01  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * renderer/render_box.{h,cpp}: Respect min/max width/height and box-sizing
+
 2005-04-30  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_window.cpp: unbreak calling close() on other
@@ -10,9 +14,9 @@
 
 2005-04-18  David Faure  <faure@kde.org>
 
-        Special scope entries for event handlers are based on the DOM node on 
-        which the handler is an attribute, not the event target, which also 
-        allows to set it up at the time the event handler is created, not at 
+        Special scope entries for event handlers are based on the DOM node on
+        which the handler is an attribute, not the event target, which also
+        allows to set it up at the time the event handler is created, not at
         the time it fires (Safari merge).
 
         Many files touched to simply pass the NodeImpl around.
