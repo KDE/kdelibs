@@ -87,7 +87,7 @@ bool SGIImage::getRow(uchar *dest)
 	int n, i;
 	if (!m_rle) {
 		for (i = 0; i < m_xsize; i++) {
-			if(m_pos >= m_data.end())
+			if (m_pos >= m_data.end())
 				return false;
 			dest[i] = uchar(*m_pos);
 			m_pos += m_bpc;
@@ -130,11 +130,11 @@ bool SGIImage::readData(QImage& img)
 		m_pos = m_data.begin();
 
 	for (y = 0; y < m_ysize; y++) {
-		c = (QRgb *) img.scanLine(m_ysize - y - 1);
 		if (m_rle)
 			m_pos = m_data.begin() + *start++;
 		if (!getRow(line))
 			return false;
+		c = (QRgb *)img.scanLine(m_ysize - y - 1);
 		for (x = 0; x < m_xsize; x++, c++)
 			*c = qRgb(line[x], line[x], line[x]);
 	}
@@ -144,21 +144,21 @@ bool SGIImage::readData(QImage& img)
 
 	if (m_zsize != 2) {
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 			if (m_rle)
 				m_pos = m_data.begin() + *start++;
 			if (!getRow(line))
 				return false;
+			c = (QRgb *)img.scanLine(m_ysize - y - 1);
 			for (x = 0; x < m_xsize; x++, c++)
 				*c = qRgb(qRed(*c), line[x], line[x]);
 		}
 
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 			if (m_rle)
 				m_pos = m_data.begin() + *start++;
 			if (!getRow(line))
 				return false;
+			c = (QRgb *)img.scanLine(m_ysize - y - 1);
 			for (x = 0; x < m_xsize; x++, c++)
 				*c = qRgb(qRed(*c), qGreen(*c), line[x]);
 		}
@@ -172,7 +172,7 @@ bool SGIImage::readData(QImage& img)
 			m_pos = m_data.begin() + *start++;
 		if (!getRow(line))
 			return false;
-		c = (QRgb*) img.scanLine(m_ysize - y - 1);
+		c = (QRgb *)img.scanLine(m_ysize - y - 1);
 		for (x = 0; x < m_xsize; x++, c++)
 			*c = qRgba(qRed(*c), qGreen(*c), qBlue(*c), line[x]);
 	}
@@ -269,10 +269,10 @@ bool SGIImage::readImage(QImage& img)
 
 	m_data = m_dev->readAll();
 
-	// sanity ckeck
+	// sanity check
 	if (m_rle)
 		for (uint o = 0; o < m_numrows; o++)
-			if (m_starttab[o] + m_lengthtab[o] >= m_data.size()) {
+			if (m_starttab[o] + m_lengthtab[o] > m_data.size()) {
 				kdDebug(399) << "image corrupt (sanity check failed)" << endl;
 				return false;
 			}
