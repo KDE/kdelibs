@@ -139,11 +139,12 @@ DOMString HTMLElement::innerHTML() const
 
 void HTMLElement::setInnerHTML( const DOMString &html )
 {
-    bool ok = false;
-    if( impl )
-	ok = ((HTMLElementImpl *)impl)->setInnerHTML( html );
-    if ( !ok )
-	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+    if( !impl )
+        return;
+    int exceptioncode = 0;
+    ((HTMLElementImpl *)impl)->setInnerHTML( html, exceptioncode );
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
 }
 
 DOMString HTMLElement::innerText() const
@@ -154,11 +155,12 @@ DOMString HTMLElement::innerText() const
 
 void HTMLElement::setInnerText( const DOMString &text )
 {
-    bool ok = false;
-    if( impl )
-	ok = ((HTMLElementImpl *)impl)->setInnerText( text );
-    if ( !ok )
-	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+    if( !impl )
+        return;
+    int exceptioncode = 0;
+    ((HTMLElementImpl *)impl)->setInnerText( text, exceptioncode );
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
 }
 
 HTMLCollection HTMLElement::children() const

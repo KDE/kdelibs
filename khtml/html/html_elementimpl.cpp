@@ -547,28 +547,30 @@ DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &htm
     return f;
 }
 
-bool HTMLElementImpl::setInnerHTML( const DOMString &html )
+void HTMLElementImpl::setInnerHTML( const DOMString &html, int &exceptioncode )
 {
     DocumentFragment fragment = createContextualFragment( html );
-    if ( fragment.isNull() )
-        return false;
+    if ( fragment.isNull() ) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
 
-    int ec = 0;
     // Make sure adding the new child is ok, before removing all children (#96187)
-    checkAddChild( fragment.handle(), ec);
-    if ( ec )
-        return false;
+    checkAddChild( fragment.handle(), exceptioncode );
+    if ( exceptioncode )
+        return;
 
     removeChildren();
-    appendChild( fragment.handle(), ec );
-    return !ec;
+    appendChild( fragment.handle(), exceptioncode );
 }
 
-bool HTMLElementImpl::setInnerText( const DOMString &text )
+void HTMLElementImpl::setInnerText( const DOMString &text, int& exceptioncode )
 {
     // following the IE specs.
-    if( endTag[id()] == FORBIDDEN )
-        return false;
+    if( endTag[id()] == FORBIDDEN ) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
     // IE disallows innerHTML on inline elements. I don't see why we should have this restriction, as our
     // dhtml engine can cope with it. Lars
     //if ( isInline() ) return false;
@@ -583,7 +585,8 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
         case ID_TFOOT:
         case ID_THEAD:
         case ID_TR:
-            return false;
+            exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+            return;
         default:
             break;
     }
@@ -591,11 +594,7 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
     removeChildren();
 
     TextImpl *t = new TextImpl( docPtr(), text.implementation() );
-    int ec = 0;
-    appendChild( t, ec );
-    if ( !ec )
-        return true;
-    return false;
+    appendChild( t, exceptioncode );
 }
 
 void HTMLElementImpl::addHTMLAlignment( DOMString alignment )

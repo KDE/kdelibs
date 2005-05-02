@@ -61,8 +61,8 @@ public:
     DOMString innerHTML() const;
     DOMString innerText() const;
     DocumentFragment createContextualFragment( const DOMString &html );
-    bool setInnerHTML( const DOMString &html );
-    bool setInnerText( const DOMString &text );
+    void setInnerHTML( const DOMString &html, int& exceptioncode );
+    void setInnerText( const DOMString &text, int& exceptioncode );
 
     virtual DOMString toString() const;
 
