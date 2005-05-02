@@ -684,7 +684,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
 			    //FIXME:   are src=  and href=  the only places that might have a password and need to be sanitized?
                             KURL safeURL(getDocument()->completeURL(attribute->value().string()));
                             safeURL.setPass(QString::null);
-			    result += safeURL.url();
+			    result += safeURL.htmlURL();
 			}
 		        else {
 		 	    kdWarning() << "getDocument() returned false";
