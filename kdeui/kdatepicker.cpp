@@ -74,16 +74,24 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
   // We show all week numbers for all weeks between first day of year to last day of year
   // This of course can be a list like 53,1,2..52
 
-  QDate day(date.year(), 1, 1);
+  QDate day;
+  int year = calendar->year(date);
+  calendar->setYMD(day, year, 1, 1);
   int lastMonth = calendar->monthsInYear(day);
-  QDate lastDay(date.year(), lastMonth, calendar->daysInMonth(QDate(date.year(), lastMonth, 1)));
+  QDate lastDay, firstDayOfLastMonth;
+  calendar->setYMD(firstDayOfLastMonth, year, lastMonth, 1);
+  calendar->setYMD(lastDay, year, lastMonth, calendar->daysInMonth(firstDayOfLastMonth));
 
-  for (; day <= lastDay; day = calendar->addDays(day, 7 /*calendar->daysOfWeek()*/) )
+  for (; day <= lastDay ; day = calendar->addDays(day, 7 /*calendar->daysOfWeek()*/) )
   {
-    int year = 0;
     QString week = i18n("Week %1").arg(calendar->weekNumber(day, &year));
-    if ( year != date.year() ) week += "*";  // show that this is a week from a different year
+    if ( year != calendar->year(day) ) week += "*";  // show that this is a week from a different year
     d->selectWeek->insertItem(week);
+
+    // make sure that the week of the lastDay is always inserted: in Chinese calendar
+    // system, this is not always the case
+    if(day < lastDay && day.daysTo(lastDay) < 7 && calendar->weekNumber(day) != calendar->weekNumber(lastDay))
+      day = lastDay.addDays(-7);
   }
 }
 
@@ -245,9 +253,9 @@ KDatePicker::dateChangedSlot(QDate date)
     fillWeeksCombo(date);
 
     // calculate the item num in the week combo box; normalize selected day so as if 1.1. is the first day of the week
-    QDate firstDay(date.year(), 1, 1);
+    QDate firstDay;
+    calendar->setYMD(firstDay, calendar->year(date), 1, 1);
     d->selectWeek->setCurrentItem((calendar->dayOfYear(date) + calendar->dayOfWeek(firstDay) - 2) / 7/*calendar->daysInWeek()*/);
-
     selectYear->setText(calendar->yearString(date, false));
 
     emit(dateChanged(date));
