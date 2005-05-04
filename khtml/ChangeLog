@@ -1,5 +1,10 @@
 2005-05-02  David Faure  <faure@kde.org>
 
+        * ecma/kjs_html.cpp (HTMLCollectionProtoFunc::tryCall): Support for
+        non-standard item('<name>').
+
+2005-05-02  David Faure  <faure@kde.org>
+
         Propagate correct DOM exception code from checkAddChild to setInnerHTML.
         * html/html_elementimpl.cpp (setInnerHTML, setInnerText)
         * dom/html_element.cpp (setInnerHTML, setInnerText)

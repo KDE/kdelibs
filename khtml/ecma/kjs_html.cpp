@@ -3275,7 +3275,18 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
 
   switch (id) {
   case KJS::HTMLCollection::Item:
-    return getDOMNode(exec,coll.item(args[0].toUInt32(exec)));
+  {
+    // support for item(<index>) (DOM)
+    bool ok;
+    UString s = args[0].toString(exec);
+    unsigned int u = s.toULong(&ok);
+    if (ok) {
+      return getDOMNode(exec,coll.item(u));
+    }
+    // support for item('<name>') (IE only)
+    kdWarning() << "non-standard HTMLCollection.item('" << s.ascii() << "') called, use namedItem instead" << endl;
+    return getDOMNode(exec,coll.namedItem(s.string()));
+  }
   case KJS::HTMLCollection::Tags:
   {
     DOM::DOMString tagName = args[0].toString(exec).string();
