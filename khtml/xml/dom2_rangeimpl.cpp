@@ -815,6 +815,49 @@ DOMString RangeImpl::toString( int &exceptioncode )
 
     DOMString text = "";
     NodeImpl *n = m_startContainer;
+
+    /* This function converts a dom range to the plain text string that the user would see in this
+     * portion of rendered html.
+     *
+     * There are several ways ranges can be used.
+     *
+     * The simplest is the start and endContainer is a text node.  The start and end offset is the
+     * number of characters into the text to remove/truncate.
+     *
+     * The next case is the start and endContainer is, well, a container, such a P tag or DIV tag.
+     * In this case the start and end offset is the number of children into the container to start
+     * from and end at.
+     *
+     * The other cases are different arrangements of the first two.
+     *
+     * psuedo code:
+     *
+     * if start container is not text:
+     *     count through the children to find where we start (m_startOffset children)
+     *
+     * loop from the start position:
+     *     if the current node is text, add the text to our variable 'text', truncating/removing if at the end/start.
+     *     
+     *     if the node has children, step to the first child.
+     *     if the node has no children but does have siblings, step to the next sibling
+     *     until we find a sibling, go to next the parent but:
+     *         make sure this sibling isn't past the end of where we are supposed to go. (position > endOffset and the parent is the endContainer)
+     *         
+     */
+
+    
+    if( m_startContainer == m_endContainer && m_startOffset >= m_endOffset)
+	return text;
+
+    
+    if(n->firstChild()) {
+	n = n->firstChild();
+   	int current_offset = m_startOffset;
+	while(current_offset-- && n) {
+	    n = n->nextSibling();
+	}
+    }
+    
     while(n) {
         if(n->nodeType() == DOM::Node::TEXT_NODE ||
            n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
@@ -829,21 +872,32 @@ DOMString RangeImpl::toString( int &exceptioncode )
             if (n == m_startContainer)
                 str.remove(0,m_startOffset);
 	    text += str;
-
 	    if (n == m_endContainer)
                 break;
         }
-        else if (n->parentNode() == m_endContainer && !n->nextSibling()) {
-            break;
-        }
-        //if (n == m_endContainer) break;
-        NodeImpl *next = n->firstChild();
-        if (!next) next = n->nextSibling();
+        
+
+	NodeImpl *next = n->firstChild();
+	if(!next)
+            next = n->nextSibling();
 
         while( !next && n->parentNode() ) {
+            if (n == m_endContainer) return text;
             n = n->parentNode();
+            if (n == m_endContainer) return text;
             next = n->nextSibling();
         }
+
+        if(n->parentNode() == m_endContainer) {
+            if(!next) break;
+	    int current_offset = 0;
+	    NodeImpl *it = n;
+	    while((it = it->previousSibling())) current_offset++;
+	    if(current_offset >= m_endOffset) {
+	        break;
+	    }
+	}
+
         n = next;
     }
     return text;
