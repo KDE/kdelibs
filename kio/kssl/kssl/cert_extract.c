@@ -1,6 +1,4 @@
 /*
-** TEST COMMIT
-**
 **  cert_extract.c -- Extract CA Certs out of Netscape certN.db files
 **
 **  Originally written and released under the GPL by 
