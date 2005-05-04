@@ -1,6 +1,6 @@
 
 all:
-	@echo "This Makefile is only for the CVS repository"
+	@echo "This Makefile is only for the SVN repository"
 	@echo ""
 	@if test ! -d admin; then \
 	   echo "Please recheckout this module!" ;\
