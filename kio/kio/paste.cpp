@@ -178,7 +178,7 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
   {
       QValueVector<QCString> formats;
       const char* fmt;
-      for ( int i = 0; fmt = data->format( i ); ++i ) {
+      for ( int i = 0; ( fmt = data->format( i ) ); ++i ) {
           if ( qstrcmp( fmt, "application/x-qiconlist" ) == 0 ) // see QIconDrag
               continue;
           if ( qstrcmp( fmt, "application/x-kde-cutselection" ) == 0 ) // see KonqDrag
