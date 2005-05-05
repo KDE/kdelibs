@@ -50,9 +50,9 @@ KLedTest::KLedTest(QWidget* parent)
   }
   else {
     y=Grid; index=0;
-    for((int)shape=0; (int)shape<2; shape=(KLed::Shape)(shape+1)) {
+    for( int shape=0; (int)shape<2; shape=(KLed::Shape)(shape+1)) {
       x=Grid;
-      for((int)look=0; (int)look<3; look=(KLed::Look)(look+1)) {
+      for( int look=0; (int)look<3; look=(KLed::Look)(look+1)) {
 	for(state=KLed::Off; (int)state<2; state=(KLed::State)(state+1))
 	    {
 	      leds[index]=new KLed(Qt::yellow, state,

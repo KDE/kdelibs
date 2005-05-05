@@ -4,7 +4,9 @@
 #define TEST9_H
 
 #include <kconfigskeleton.h>
+#include <kdebug.h>
 
+#include <qdir.h>
 class Test9 : public KConfigSkeleton
 {
   public:

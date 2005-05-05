@@ -6,6 +6,7 @@
 #include <myprefs.h>
 
 #include <kconfigskeleton.h>
+#include <kdebug.h>
 
 class Test2 : public MyPrefs
 {

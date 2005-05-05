@@ -4,6 +4,7 @@
 #define TEST6_H
 
 #include <kconfigskeleton.h>
+#include <kdebug.h>
 
 class Test6 : public KConfigSkeleton
 {
@@ -51,6 +52,18 @@ class Test6 : public KConfigSkeleton
     */
     void setAge( int v )
     {
+      if (v < 8)
+      {
+        kdDebug() << "setAge: value " << v << " is less than the minimum value of 8" << endl;
+        v = 8;
+      }
+
+      if (v > 88)
+      {
+        kdDebug() << "setAge: value " << v << " is greater than the maximum value of 88" << endl;
+        v = 88;
+      }
+
       if (!isImmutable( QString::fromLatin1( "Age" ) ))
         mAge = v;
     }

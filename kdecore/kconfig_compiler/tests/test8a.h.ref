@@ -5,6 +5,7 @@
 
 #include <kglobal.h>
 #include <kconfigskeleton.h>
+#include <kdebug.h>
 
 class Test8a : public KConfigSkeleton
 {

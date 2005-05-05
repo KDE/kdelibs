@@ -4,6 +4,7 @@
 #define TESTNAMESPACE_TEST3_H
 
 #include <kconfigskeleton.h>
+#include <kdebug.h>
 
 namespace TestNameSpace {
 
