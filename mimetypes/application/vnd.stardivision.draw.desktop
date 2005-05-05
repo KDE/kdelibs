@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.draw
 Patterns=*.sda;*.SDA;
 Icon=image
 Comment=StarOffice Drawing
+Comment[af]=StarOffice Tekening
 Comment[be]=Малюнак StarOffice
 Comment[bg]=Изображение на StarOffice Drawing
 Comment[bn]=স্টার-অফিস ড্রয়িং

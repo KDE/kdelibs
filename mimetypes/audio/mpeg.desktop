@@ -7,6 +7,7 @@ Type=MimeType
 MimeType=audio/mpeg
 Icon=sound
 Comment=MPEG Audio
+Comment[af]=MPEG Klank
 Comment[be]=MPEG аўдыё
 Comment[bg]=Аудио файл MPEG
 Comment[bn]=এমপেগ অডিও

@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.math
 Patterns=*.sdf;*.SDF;
 Icon=kformula_kfo
 Comment=StarOffice Math Document
+Comment[af]=StarOffice Wiskunde Dokument
 Comment[be]=Дакумэнт StarOffice Math
 Comment[bg]=Документ на StarOffice Math
 Comment[bn]=স্টার-অফিস ম্যাথ নথী

@@ -2,6 +2,7 @@
 Type=ICO
 Header=^\001\001[\001|\002]\001
 Name=Windows Icon
+Name[af]=Windows Ikoon
 Name[ar]=أيقونة ويندوز
 Name[az]=Windows Timsalı
 Name[be]=Піктаграма Windows

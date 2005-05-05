@@ -5,6 +5,7 @@ MimeType=application/x-arc
 Icon=tgz
 Patterns=*.arc;*.ARC;
 Comment=ARC Archive
+Comment[af]=ARC Argief
 Comment[ar]=أرشيف ARC
 Comment[az]=ARC Arxivi
 Comment[be]=Архіў ARC

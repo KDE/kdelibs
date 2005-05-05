@@ -5,6 +5,7 @@ MimeType=image/x-rgb
 Icon=image
 Patterns=*.rgb;*.RGB;*.rgba;*.RGBA;*.bw;*.BW;*.sgi;*.SGI
 Comment=SGI Image (RGB)
+Comment[af]=SGI Beeld (RGB)
 Comment[be]=Выява SGI (RGB)
 Comment[bg]=Изображение SGI (RGB)
 Comment[bn]=এস-জি-আই চিত্র (RGB)

@@ -5,6 +5,7 @@ MimeType=application/x-kcsrc
 Icon=colorscm
 Patterns=*.kcsrc;*.KCSRC
 Comment=KDE Color Theme
+Comment[af]=KDE Kleur Tema
 Comment[ar]=سمة الألوان لKDE
 Comment[az]=KDE Rəng Örtüyü
 Comment[be]=Тэма колераў KDE

@@ -1,5 +1,6 @@
 [Misc]
 Name=Motif Plus
+Name[af]=Motief Plus
 Name[bn]=মোটিফ প্লাস
 Name[br]=Motif Mui
 Name[cy]=Motif Plws
@@ -15,7 +16,7 @@ Name[ta]=மோடிஃப் ப்ளஸ்
 Name[th]=โมทีฟพลัส
 Name[xx]=xxMotif Plusxx
 Comment=Built-in enhanced Motif style
-Comment[af]=Ingeboude verbeterde Motif styl
+Comment[af]=Ingeboude verbeterde Motief styl
 Comment[ar]=مظهر مضمن محسّن مشابه لMotif
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[bg]=Допълнително разширен, вграден в библиотеката Qt стил без тема Motif
@@ -37,6 +38,7 @@ Comment[fr]=Style Motif amélioré d'origine
 Comment[fy]=Ynboude, ferbettere Motif-styl
 Comment[ga]=Stíl insuite méadaithe, cosúil le Motif
 Comment[gl]=Estilo incorporado Motif mellorado sen tema
+Comment[he]=ערכת נושא פנימית תואמת Motif משופרת
 Comment[hi]=अंतर्निर्मित एनहेंस्ड मोटिफ शैली
 Comment[hr]=Ugrađeni napredni Motif stil
 Comment[hu]=Beépített továbbfejlesztett Motif-stílus

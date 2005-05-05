@@ -1,5 +1,6 @@
 [Misc]
 Name=Motif
+Name[af]=Motief
 Name[bn]=মোটিফ
 Name[fa]=موتیف
 Name[hi]=यूटी मोटिफ़
@@ -9,7 +10,7 @@ Name[ta]=மோடிஃப்
 Name[th]=โมทีฟ
 Name[xx]=xxMotifxx
 Comment=Built-in unthemed Motif style
-Comment[af]=Ingeboude ongetemade Motif styl
+Comment[af]=Ingeboude ongetemade motief styl
 Comment[ar]=مظهر مضمن مشابه لMotif
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[be]=Убудаваны стыль Motif (бяз тэм)
@@ -32,6 +33,7 @@ Comment[fr]=Style Motif d'origine sans thème
 Comment[fy]=Ynboude, temaleaze Motif-styl
 Comment[ga]=Stíl insuite gan téama, cosúil le Motif
 Comment[gl]=Estilo incorporado Motif sen tema
+Comment[he]=ערכת נושא פנימית תואמת Motif
 Comment[hi]=अंतर्निर्मित अनथीम्ड मोटिफ शैली
 Comment[hr]=Ugrađeni napredni Motif stil
 Comment[hu]=Beépített Motif-stílus

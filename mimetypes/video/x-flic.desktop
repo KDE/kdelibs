@@ -5,6 +5,7 @@ MimeType=video/x-flic
 Icon=video
 Patterns=*.fli;*.flc;*.FLI;*.FLC;
 Comment=Autodesk's FLIC File
+Comment[af]=Autodesk se FLIC Lêer
 Comment[ar]=ملف FLIC لأوتوديسك
 Comment[az]=Autodesk FLIC Faylı
 Comment[be]=Autodesk FLIC файл

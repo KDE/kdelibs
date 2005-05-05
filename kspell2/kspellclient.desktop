@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=KSpell/Client
 X-KDE-Derived=KPluginInfo
 Comment=KSpell Client
+Comment[af]=KSpel Klient
 Comment[be]=Кліент KSpell
 Comment[bg]=Клиент на KSpell
 Comment[bn]=কে-স্পেল ক্লায়েন্ট

@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.chart
 Patterns=*.sds;*.SDS;
 Icon=kchart_chrt
 Comment=StarOffice Chart
+Comment[af]=StarOffice Kaart
 Comment[bg]=Документ на StarOffice Chart
 Comment[bn]=স্টার-অফিস চার্ট
 Comment[br]=Treser grafoù StarOffice

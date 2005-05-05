@@ -5,6 +5,7 @@ MimeType=application/x-hancomword
 Icon=wordprocessing
 Patterns=*.hwp;*.HWP;
 Comment=HancomWord Document
+Comment[af]=HancomWord Dokument
 Comment[ar]=مستند هانكوم وورد
 Comment[az]=HancomWord Sənədi
 Comment[be]=Дакумэнт HancomWord

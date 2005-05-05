@@ -2,6 +2,7 @@
 Type=PPM
 Header=
 Name=Portable Pixmap Image
+Name[af]='Portable Pixmap' Beeld
 Name[ar]=صورة Pixmap قابلة للنقل
 Name[az]=Portable Pixmap Rəsmi
 Name[bg]=Изображение Portable Pixmap Image

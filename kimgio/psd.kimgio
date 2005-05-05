@@ -2,6 +2,7 @@
 Type=PSD
 Header=^8BPS
 Name=PhotoShop Document
+Name[af]=Fotowinkel dokument
 Name[bg]=Документ PhotoShop
 Name[bn]=ফোটোশপ নথী
 Name[br]=Teul PhotoShop
@@ -15,6 +16,7 @@ Name[et]=PhotoShopi dokument
 Name[fr]=Document PhotoShop
 Name[fy]=PhotoShop-dokumint
 Name[ga]=Cáipéis PhotoShop
+Name[he]=מסמך PhotoShop
 Name[hi]=फ़ोटोशॉप दस्तावेज़
 Name[hu]=PhotoShop-dokumentum
 Name[is]=PhotoShop skjal

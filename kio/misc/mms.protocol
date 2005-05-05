@@ -9,6 +9,7 @@ reading=false
 Icon=www
 Class=:internet
 Description=Microsoft Media Server Protocol
+Description[af]=Microsoft Media Bediener Protokol
 Description[bn]=মাইক্রোসফ্‌ট মিডিয়া সার্ভার প্রোটোকল
 Description[ca]=Protocol Microsoft Media Server
 Description[cs]=Microsoft Media Server protokol

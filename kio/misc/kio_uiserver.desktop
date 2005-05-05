@@ -15,6 +15,7 @@ Name[ta]=kio_uiசேவையகம்
 Name[xx]=xxkio_uiserverxx
 Exec=kio_uiserver
 Comment=KDE's Progress Info UI server
+Comment[af]=KDE se vordering inligting UI bediener
 Comment[ar]=خادم معلومات تقدم واجهة كيدي
 Comment[az]=KDE'nin İrəliləmə Bilgisi İstifadaçi Ara Üz Vericisi
 Comment[bg]=Сървър за отчитане на прогреса (KDE's Progress Info UI server)

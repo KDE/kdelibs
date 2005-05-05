@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.calc
 Patterns=*.sdc;*.SDC;
 Icon=spreadsheet
 Comment=StarOffice Calc Spreadsheet
+Comment[af]=StarOffice Calc Spreiblad
 Comment[ar]=مستند StarOffice Calc
 Comment[az]=StarOffice Calc Sənədi
 Comment[be]=Электронная табліца StarOffice Calc

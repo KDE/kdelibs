@@ -5,6 +5,7 @@ MimeType=audio/mp4
 Icon=sound
 Patterns=*.m4a;*.M4A;
 Comment=MPEG-4 Audio
+Comment[af]=MPEG-4 Klank
 Comment[ar]=صوت MPEG-4
 Comment[be]=MPEG-4 аўдыё
 Comment[bg]=Аудио файл MPEG-4

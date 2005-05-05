@@ -5,6 +5,7 @@ MimeType=application/pgp-keys
 Icon=certificate
 Patterns=*.pgp;*.gpg;*.asc
 Comment=OpenPGP Key Bundle
+Comment[af]=OpenPGP Sleutel Bundel
 Comment[az]=OpenPGP Açar Düyünü
 Comment[bg]=Пакет с ключове за OpenPGP
 Comment[bn]=ওপেন-পি.জি.পি কী (Key) সংকলন

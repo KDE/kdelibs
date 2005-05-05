@@ -5,6 +5,7 @@ MimeType=image/x-exr
 Icon=image
 Patterns=*.exr;*.EXR;
 Comment=ILM EXR Image
+Comment[af]=ILM EXR Beeld
 Comment[be]=Выява ILM EXR
 Comment[bg]=Изображение ILM EXR
 Comment[bn]=ILM EXR ইমেজ

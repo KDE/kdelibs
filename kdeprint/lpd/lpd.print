@@ -1,7 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpd
 Comment=LPR (Standard BSD print system)
-Comment[af]= lpr  (Standaard Bsd druk stelsel)
+Comment[af]= Lpr  (Standaard Bsd druk stelsel)
 Comment[ar]=LPR (نظام طباعة BSD القياسي)
 Comment[az]=LPR (Standard BSD çap sistemi)
 Comment[be]=LPR (стандартная сыстэма друку BSD)

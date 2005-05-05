@@ -6,6 +6,7 @@ Icon=sound
 Patterns=*.mp2;*.MP2;
 X-KDE-IsAlso=audio/mpeg
 Comment=MPEG Layer 2 Audio
+Comment[af]=MPEG Vlak 2 Klank
 Comment[be]=MPEG Layer 2 аўдыё
 Comment[bg]=Аудио файл MP2
 Comment[bn]=এমপেগ লেয়ার ২ অডিও

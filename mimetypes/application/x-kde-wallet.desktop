@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-kde-wallet
 Comment=KDE Wallet File
+Comment[af]=KDE Beursie Lêer
 Comment[ar]=ملف محفظة KDE
 Comment[az]=KDE Wallet Faylı
 Comment[bg]=Файл на системата Портфейл

@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=Proxy Scout
+Name[af]=Proksie Verkenner
 Name[az]=Vəkil Skout
 Name[bg]=Проучване на прокси сървъри
 Name[bn]=প্রক্সি স্কাউট
@@ -41,6 +42,7 @@ Name[uz]=Прокси скаут
 Name[xx]=xxProxy Scoutxx
 Name[zh_CN]=代理搜索
 Comment=Automatic proxy configuration
+Comment[af]=Outomatiese proksie opstelling
 Comment[bg]=Автоматично конфигуриране на прокси сървъра
 Comment[bn]=স্বয়ংক্রিয় প্রক্সি কনফিগারেশন
 Comment[br]=Kefluniadur emgefreekh ar proksi

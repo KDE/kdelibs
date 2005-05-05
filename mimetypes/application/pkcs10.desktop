@@ -5,6 +5,7 @@ MimeType=application/pkcs10
 Icon=certificate
 Patterns=*.p10;*.P10
 Comment=S/MIME Certification Request
+Comment[af]=S/MIME Sertifikaat Aanvraag
 Comment[ar]=طلب شهادة S/MIME
 Comment[az]=S/MIME Vəsiqələndirmə İstəyi
 Comment[bg]=Заявка за удостоверение S/MIME

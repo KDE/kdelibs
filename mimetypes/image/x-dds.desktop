@@ -5,6 +5,7 @@ MimeType=image/x-dds
 Icon=image
 Patterns=*.dds;*.DDS;
 Comment=DirectDraw Surface
+Comment[af]=DirectDraw Oppervlakte
 Comment[be]=Паверхня DirectDraw
 Comment[bg]=Област с директно изчертаване
 Comment[bn]=ডায়রেক্ট-ড্র সারফেস

@@ -5,6 +5,7 @@ MimeType=image/x-pcx
 Icon=image
 Patterns=*.pcx;*.PCX;
 Comment=PCX Image
+Comment[af]=PCX Beeld
 Comment[ar]=صورة PNG
 Comment[az]=PCX Rəsmi
 Comment[be]=Выява PCX

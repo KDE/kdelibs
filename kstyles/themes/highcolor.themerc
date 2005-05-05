@@ -1,5 +1,6 @@
 [Misc]
 Name=HighColor Classic
+Name[af]=Hoë-kontras Klassiek
 Name[ar]=كلاسيكي عالي الألوان
 Name[az]=Zəngin Rəngli Klassik
 Name[bn]=হাই-কালার ক্লাসিক
@@ -58,6 +59,7 @@ Name[xx]=xxHighColor Classicxx
 Name[zh_CN]=高色彩经典
 Name[zh_TW]=預設的高彩
 Comment=Highcolor version of the classic style
+Comment[af]=Hoë-kontras weergawe van die klassieke styl
 Comment[ar]=نسخة عالية الألوان من المظهر الكلاسيكي
 Comment[az]=Klassik tərzin zəngin rəngli buraxılışı
 Comment[bg]=Класически стил на КДЕ с високо качество на цветовете

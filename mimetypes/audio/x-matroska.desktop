@@ -5,6 +5,7 @@ MimeType=audio/x-matroska
 Icon=sound
 Patterns=*.mka;*.MKA;
 Comment=Matroska Audio
+Comment[af]=Matroska Klank
 Comment[ar]=ملف ماتروسكا صوتي
 Comment[be]=Матрошка аўдыё
 Comment[bg]=Аудио файл Matroska

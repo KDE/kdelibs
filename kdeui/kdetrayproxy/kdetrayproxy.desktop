@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=KDE Tray Proxy Module
+Name[af]=KDE Skinkbord Proksie Module
 Name[bn]=কে.ডি.ই. ট্রে প্রক্সি মডিউল
 Name[bs]=KDE proxy modul za tray
 Name[ca]=Mòdul de safata d'intermediari del KDE
@@ -45,6 +46,7 @@ Name[uk]=Модуль посередника для програм в систе
 Name[xx]=xxKDE Tray Proxy Modulexx
 Name[zh_CN]=KDE 托盘代理模块
 Comment=Proxy enabling KDE systray applications to work without KWin
+Comment[af]=Proksie wat KDE 'systray' programme toelaat om sonder KWin te werk
 Comment[bg]=Модул, който позволява на програмите от КДЕ да работят в системния поднос с други мениджъри на прозорци
 Comment[bn]=কে.ডি.ই. সিস-ট্রে অ্যাপলিকেশন কে-উইন ছাড়াই কাজ করাবার জন্য প্রক্সি
 Comment[bs]=Proxy koji omogućuje KDE systray programima da rade izvan KWin-a

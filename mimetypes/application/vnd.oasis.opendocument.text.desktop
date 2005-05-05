@@ -5,6 +5,7 @@ MimeType=application/vnd.oasis.opendocument.text
 Patterns=*.odt;*.ODT
 Icon=wordprocessing
 Comment=OASIS OpenDocument Text
+Comment[af]=OASIS Oop Dokument Teks
 Comment[bg]=Текстов документ на OASIS OpenDocument
 Comment[bn]=OASIS ওপেন-ডকুমেন্ট টেক্সট নথী
 Comment[br]=Skrid OpenDocument OASIS

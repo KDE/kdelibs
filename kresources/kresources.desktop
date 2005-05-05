@@ -11,6 +11,7 @@ X-KDE-FactoryName=kresources
 X-KDE-HasReadOnlyMode=false
 
 Name=KDE Resources
+Name[af]=KDE Hulpbronne
 Name[bg]=Системни ресурси
 Name[bn]=কে.ডি.ই রিসোর্সসমূহ
 Name[ca]=Recursos KDE
@@ -23,6 +24,7 @@ Name[et]=KDE ressursid
 Name[fr]=Ressources de KDE
 Name[fy]=KDE Helpboarnen
 Name[ga]=Acmhainní KDE
+Name[he]=משאבים של KDE
 Name[hu]=KDE-erőforrások
 Name[is]=KDE auðlindir
 Name[it]=Risorse di KDE
@@ -41,11 +43,13 @@ Name[sl]=Viri KDE
 Name[sr]=KDE-ови ресурси
 Name[sr@Latn]=KDE-ovi resursi
 Name[sv]=KDE-resurser
+Name[ta]=KDE மூலங்கள்
 Name[uk]=Ресурси KDE
 Name[xx]=xxKDE Resourcesxx
 Name[zh_CN]=KDE 资源
 
 Comment=Configure KDE Resources
+Comment[af]=Stel KDE Hulpbronne op
 Comment[be]=Настроіць рэсурсы KDE
 Comment[bg]=Настройки на системните ресурсите
 Comment[bn]=কে.ডি.ই. রিসোর্সসমূহ কনফিগার করো
@@ -98,6 +102,7 @@ Comment[xx]=xxConfigure KDE Resourcesxx
 Comment[zh_CN]=配置 KDE 资源
 
 Keywords=resources,konnector resource,contact resource,calendar resource,notes resource,imap
+Keywords[af]=hulpbronne,konnector hulpbron,kontak hulpbron,kalender hulpbron, notas hulpbron, imap
 Keywords[bg]=ресурс, ресурси, настройки, бележки, адресна, адресник, книга, календар, resources, konnector resource, contact resource, calendar resource, notes resource, imap
 Keywords[bs]=resources,konnector resource,contact resource,calendar resource,notes resource,imap,resursi,konektor resurs,kontakt resurs,kalendar resurs,bilješke resurs
 Keywords[ca]=recursos,recurs konnector,recurs de contacte,recurs de calendari,recurs de notes,imap

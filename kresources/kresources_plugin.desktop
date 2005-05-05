@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KResources/Plugin
 Comment=KResource Framework Plugin
+Comment[af]=KHulpbron Raamwerk Inprop module
 Comment[az]=KResource Əlavəsi
 Comment[bg]=Приставка за ресурсната системата KResource Framework
 Comment[bn]=কে-রিসোর্স ফ্রেম-ওয়ার্ক প্লাগ-ইন

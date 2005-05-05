@@ -4,6 +4,7 @@ MimeType=application/vnd.palm
 Icon=wordprocessing
 Patterns=*.pdb;*.PDB;*.prc;*.PRC;
 Comment=Palm Document
+Comment[af]=Palm Dokument
 Comment[ar]=مستند Palm
 Comment[az]=Palm Sənədi
 Comment[be]=Дакумэнт Palm

@@ -1,6 +1,7 @@
 [!Global!]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[af]=Outomatiese Proksie Opstelling
 Comment[ar]=تهيئة آلية للخادم الوكيل
 Comment[az]=Avtomatik Vəkil Quraşdırılması
 Comment[bg]=Автоматично конфигуриране на прокси сървъра
@@ -64,6 +65,7 @@ Comment[zh_TW]=自動代理組態
 
 [script-error]
 Name=Invalid proxy script
+Name[af]=Ongeldige proksie skrip
 Name[ar]=نص برمجي غير صالح
 Name[az]=Hökmsüz vəkil skripti
 Name[bg]=Невалиден скрипт за прокси сървъра
@@ -124,6 +126,7 @@ Name[xx]=xxInvalid proxy scriptxx
 Name[zh_CN]=无效的代理脚本
 Name[zh_TW]=不合法 proxy 命令稿檔案
 Comment=The downloaded proxy configuration script is invalid
+Comment[af]=Die proksie skipt wat afgelaai was is ongeldig
 Comment[ar]=النص البرمجي الذي تم تنزيله غير صالح
 Comment[az]=Endirilən vəkil quraşdırma skripti kökmsüzdür
 Comment[bg]=Изтегленият скрипт за конфигуриране на прокси сървъра е невалиден
@@ -186,6 +189,7 @@ default_presentation=16
 
 [download-error]
 Name=Script download error
+Name[af]=Skrip aflaai fout
 Name[ar]=خطأ أثناء تنزيل النص البرمجي
 Name[az]=Skript endirmə xətası
 Name[bg]=Грешка при изтегляне на скрипта
@@ -247,6 +251,7 @@ Name[xx]=xxScript download errorxx
 Name[zh_CN]=脚本下载错误
 Name[zh_TW]=Script 下載錯誤
 Comment=The proxy configuration script could not be downloaded
+Comment[af]=Die proksie opstelling skrip kon nie afgelaai word nie
 Comment[ar]=تعذر تنزيل النص البرمجي لإعداد الخادم الوكيل
 Comment[az]=VƏkil qurğuları skripti endirilə bilmədi
 Comment[bg]=Скриптът за конфигуриране на прокси сървъра не може да бъде изтеглен
@@ -309,6 +314,7 @@ default_presentation=16
 
 [evaluation-error]
 Name=Script evaluation error
+Name[af]=Skrip evaluasie fout
 Name[ar]=خطأ في تقييم النص البرمجي
 Name[az]=Skript icra xətası
 Name[bg]=Грешка при обработка на скрипта
@@ -367,6 +373,7 @@ Name[xx]=xxScript evaluation errorxx
 Name[zh_CN]=脚本求值错误
 Name[zh_TW]=Script 執行錯誤
 Comment=There was an error executing the proxy configuration script
+Comment[af]=Daar was 'n fout met die uitvoer van die proksie opstell skrip
 Comment[ar]=لقد حصل خطأ كبير أدى الى خروج البرنامج
 Comment[az]=Vəkil qurğuları skripti işə salınırkən xəta baş verdi
 Comment[bg]=Грешка по време на изпълнение на скрипта за конфигуриране на прокси сървъра

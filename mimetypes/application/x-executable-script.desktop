@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Script (possibly executable)
+Comment[af]=Skrip (moontlik uitvoerbaar)
 Comment[bg]=Скрипт (вероятно изпълним)
 Comment[bn]=স্ক্রিপ্ট (সম্ভবত এক্সিকিউটেবল)
 Comment[bs]=Skripta (možda izvršiva)
@@ -16,6 +17,7 @@ Comment[fi]=Skripti (mahdollisesti suoritettava)
 Comment[fr]=Script (peut-être exécutable)
 Comment[fy]=Skript (Wierskynlik útfierber)
 Comment[ga]=Script (b'fhéidir inrite)
+Comment[he]=תסריט (כנראה כניתן להרצה)
 Comment[hi]=स्क्रिप्ट (संभवतया चलाने योग्य)
 Comment[hu]=Szkript (általában futtatható)
 Comment[is]=Skeljaforrit (sem er ef til vill keyranlegt)

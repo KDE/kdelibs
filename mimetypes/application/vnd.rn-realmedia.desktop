@@ -5,6 +5,7 @@ MimeType=application/vnd.rn-realmedia
 Icon=video
 Patterns=*.rm;*.RM;
 Comment=RealMedia File
+Comment[af]=RealMedia Lêer
 Comment[ar]=وسيط RealMedia
 Comment[az]=RealMedia Faylı
 Comment[be]=Файл RealMedia

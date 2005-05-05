@@ -1,5 +1,6 @@
 [Misc]
 Name=KDE Classic
+Name[af]=KDE Klassiek
 Name[ar]=كيدي كلاسيكي
 Name[az]=KDE Klassik
 Name[be]=Клясычны KDE
@@ -58,6 +59,7 @@ Name[xx]=xxKDE Classicxx
 Name[zh_CN]=KDE 经典
 Name[zh_TW]=KDE 預設
 Comment=Classic KDE style
+Comment[af]=Klassieke KDE styl
 Comment[ar]=مظهر كيدي الكلاسيكي
 Comment[az]=Klassik KDE tərzi
 Comment[be]=Клясычны стыль KDE

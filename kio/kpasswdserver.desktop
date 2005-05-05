@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=KDED Password Module
-Name[af]=Kded Wagwoord Module
+Name[af]=KDED Wagwoord Module
 Name[ar]=وحدة كلمة سر KDED
 Name[az]=KDED Şifrə Modulu
 Name[be]=Модуль пароляў KDED
@@ -72,6 +72,7 @@ Name[zh_CN]=KDED 密码模块
 Name[zh_TW]=KDED 密碼模組
 Name[zu]=Ingxenye Yegama lokudlula le-KDED
 Comment=Password caching support
+Comment[af]=Wagwoord kasberging ondersteuning
 Comment[bg]=Кеширане на пароли
 Comment[bn]=পাসওয়ার্ড ক্যাশ-এ রাখা সমর্থন করে
 Comment[bs]=Podrška za keširanje šifre

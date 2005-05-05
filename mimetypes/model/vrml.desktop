@@ -4,6 +4,7 @@ Type=MimeType
 Icon=multimedia
 MimeType=model/vrml
 Comment=VRML Model
+Comment[af]=VRML Module
 Comment[ar]=نمودج VRML
 Comment[az]=VRML Modeli
 Comment[be]=VRML мадэль

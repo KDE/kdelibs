@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Bash Shell Script Runner
+Name[af]=Bash Tolk Skrip Hardloper
 Name[az]=Bash Qabıq Skripti İcraçısı
 Name[bn]=ব্যাশ শেল স্ক্রিপ্ট চালক
 Name[bs]=Izvršavanje Bash shell skripti
@@ -20,6 +21,7 @@ Name[fr]=Lanceur de scripts shell Bash
 Name[fy]=Bash Flues Skript Rinner
 Name[ga]=Reathaí Script Bhlaoisce bash
 Name[gl]=Guión Executábel da Shell Bash
+Name[he]=הרצת תסריט מעטפת של Bash
 Name[hi]=बैश शेल स्क्रिप्ट चालक
 Name[hr]=Izvršivač skripti Bash shella
 Name[hu]=Bash parancsfájl futtatása
@@ -61,6 +63,7 @@ X-KDE-Library=libshellscript
 X-KDE-Script-Runner=ShellScript/bash
 ServiceTypes=KScriptRunner/KScriptRunner
 Comment=Runs bash shell scripts from inside the application.
+Comment[af]=Laai bash tolk skripte vanuit die program.
 Comment[ar]=يشغَل bash shell scripts من داخل التطبيق
 Comment[az]=Proqramın içindən bash qabıq skriptlərini icra edin
 Comment[bg]=Изпълнение на скриптове на bash от друга програма.

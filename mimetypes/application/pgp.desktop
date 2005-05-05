@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=application/pgp
 Icon=encrypted
 Comment=PGP Encrypted or Signed Message
+Comment[af]=PGP Geënkripteerde of Getekende Boodskap
 Comment[az]=PGP ilə Şifrələnmiş ya da İmzalanmış İsmarış
 Comment[be]=Зашыфраванае PGP ці падпісанае паведамленьне
 Comment[bg]=Шифровано или подписано съобщение PGP

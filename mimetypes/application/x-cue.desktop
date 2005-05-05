@@ -4,6 +4,7 @@ Patterns=*.cue;*.CUE
 MimeType=application/x-cue
 Icon=cdimage
 Comment=CDRWIN Cue-Sheet
+Comment[af]=CDRWIN Cue-Bladsy
 Comment[bg]=Документ CDRWIN
 Comment[bn]=CDRWIN কিউ-শিট
 Comment[bs]=CDRWIN cue-sheet
