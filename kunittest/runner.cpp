@@ -61,17 +61,21 @@ namespace KUnitTest
 
         // Get a list of all modules.
         QStringList modules = dir.entryList();
-        
+
         for ( uint i = 0; i < modules.count(); ++i )
         {
-            kdDebug() << "Module: " << dir.absPath() + "/" + modules[i] << endl;
+            QString module = modules[i];
+            kdDebug() << "Module: " << dir.absPath() + "/" + module << endl;
 
-            if ( reQuery.search(modules[i]) != -1 )
+            if ( reQuery.search(module) != -1 )
             {
                 // strip the .la extension
-                modules[i] = modules[i].left(modules[i].length()-3);
-                KLibFactory *factory = KLibLoader::self()->factory(modules[i].local8Bit());
-                if ( factory ) factory->create();
+                module.truncate(module.length()-3);
+                KLibFactory *factory = KLibLoader::self()->factory(module.local8Bit());
+                if ( factory )
+                    factory->create();
+                else
+                    kdWarning() << "\tError loading " << module << " : " << KLibLoader::self()->lastErrorMessage() << endl;
             }
             else
                 kdDebug() << "\tModule doesn't match." << endl;
