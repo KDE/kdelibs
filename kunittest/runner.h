@@ -35,6 +35,8 @@ using namespace std;
 #include <qasciidict.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 #include "tester.h"
 
 class QSocketNotifier;
@@ -87,7 +89,7 @@ namespace KUnitTest
      *
      * @see KUNITTEST_REGISTER_TESTER
      */
-    class Runner : public QObject
+    class KUNITTEST_EXPORT Runner : public QObject
     {
         Q_OBJECT
     
