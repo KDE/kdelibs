@@ -139,6 +139,9 @@ private slots:
   void slotFrameInWindow();
   void slotFrameInTop();
   void slotFrameInTab();
+  void slotBlockImage();
+  void slotBlockHost();
+
 private:
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate *d;

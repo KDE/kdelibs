@@ -27,6 +27,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qregexp.h>
+#include <qvaluevector.h>
 
 /**
  * @internal
@@ -79,6 +80,8 @@ public:
     bool m_follow_system_colors : 1;
     bool m_allowTabulation : 1;
     bool m_autoSpellCheck : 1;
+    bool m_adFilterEnabled : 1;
+    bool m_hideAdsEnabled : 1;
 
     // the virtual global "domain"
     KPerDomainSettings global;
@@ -99,7 +102,8 @@ public:
     PolicyMap domainPolicy;
     QStringList fonts;
     QStringList defaultFonts;
-    
+
+    QValueVector<QRegExp> adFilters;
     QValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
@@ -305,6 +309,32 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "BackRightClick" ) )
         d->m_bBackRightClick = config->readBoolEntry( "BackRightClick", false );
   }
+
+  if (reset || config->hasGroup("Filter Settings"))
+  {
+      config->setGroup( "Filter Settings" );
+      d->m_adFilterEnabled = config->readBoolEntry("Enabled", false);
+      d->m_hideAdsEnabled = config->readBoolEntry("Shrink", false);
+
+      d->adFilters.clear();
+
+      QMap<QString,QString> entryMap = config->entryMap("Filter Settings");
+      QMap<QString,QString>::ConstIterator it;
+      d->adFilters.reserve(entryMap.count());
+      for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it ) 
+      {
+          QString name = it.key();
+          QString value = it.data();
+
+          if (name.startsWith("Filter"))
+          {
+              QRegExp rx(value);
+              rx.setWildcard(TRUE);
+              d->adFilters.append(rx);
+          }
+      }
+  }
+
 
   if (reset || config->hasGroup("HTML Settings"))
   {
@@ -641,6 +671,48 @@ bool KHTMLSettings::isBackRightClickEnabled()
 {
   return d->m_bBackRightClick;
 }
+
+bool KHTMLSettings::isAdFilterEnabled() const
+{
+    return d->m_adFilterEnabled;
+}
+
+bool KHTMLSettings::isHideAdsEnabled() const
+{
+    return d->m_hideAdsEnabled;
+}
+
+bool KHTMLSettings::isAdFiltered( const QString &url ) const
+{
+    if (d->m_adFilterEnabled)
+    {
+        QValueVector<QRegExp>::iterator it;
+        for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
+        {
+            if ((*it).search(url) != -1)
+            {
+                kdDebug( 6080 ) << "Filtered: " << url << endl;
+                return true;
+            }
+        }        
+    }
+    return false;
+}
+void KHTMLSettings::addAdFilter( const QString &url )
+{   
+    KConfig config( "khtmlrc", false, false );
+    config.setGroup( "Filter Settings" );
+
+    int last=config.readNumEntry("Count",0);
+    QString key = "Filter-" + QString::number(last);
+    config.writeEntry(key, url);
+    config.writeEntry("Count",last+1);
+    config.sync();
+
+    QRegExp rx(url);
+    rx.setWildcard(TRUE);
+    d->adFilters.append(rx);
+}   
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {

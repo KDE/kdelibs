@@ -168,6 +168,13 @@ public:
     bool isJavaScriptDebugEnabled( const QString& hostname = QString::null );
     bool isJavaScriptErrorReportingEnabled( const QString& hostname = QString::null ) const;
     bool isPluginsEnabled( const QString& hostname = QString::null );
+
+    // AdBlocK Filtering
+    bool isAdFiltered( const QString &url ) const;
+    bool isAdFilterEnabled() const;
+    bool isHideAdsEnabled() const;
+    void addAdFilter( const QString &url );
+
     KJSWindowOpenPolicy windowOpenPolicy( const QString& hostname = QString::null ) const;
     KJSWindowMovePolicy windowMovePolicy( const QString& hostname = QString::null ) const;
     KJSWindowResizePolicy windowResizePolicy( const QString& hostname = QString::null ) const;

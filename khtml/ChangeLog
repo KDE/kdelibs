@@ -1,3 +1,15 @@
+2005-05-06  Ivor Hewitt <ivor@ivor.org>
+
+        fix #15848: First implementation of AdBlocK.
+
+        * khtml_ext.{cpp,h}: Add Blockimage to context popup menu
+        * khtml_popupmenu.rc: ditto
+        * khtml_settings.{cc,h}: Add adFilter settings and helper functions
+        * html/htmlparser.cpp: Strip blocked IMG tags
+        * misc/loader.{cpp,h}: Return replacement blocked images and refuse to load blocked scripts.
+        * misc/blocked_icon.{cpp,png}: Image for above
+        * xml/dom_docimpl.cpp: isURLAllowed returns false for blocked URL's
+
 2005-05-02  David Faure  <faure@kde.org>
 
         * ecma/kjs_html.cpp (HTMLCollectionProtoFunc::tryCall): Support for

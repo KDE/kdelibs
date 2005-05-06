@@ -78,6 +78,8 @@
 #include "css/css_stylesheetimpl.h"
 #include "xml/dom_docimpl.h"
 
+#include "blocked_icon.cpp"
+
 using namespace khtml;
 using namespace DOM;
 
@@ -214,6 +216,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     ah += "*/*;q=0.1";
     setAccept( ah );
     m_hadError = false;
+    m_wasBlocked = false;
     m_err = 0;
     // load the file
     Cache::loader()->load(dl, this, false);
@@ -447,6 +450,18 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     imgSource = 0;
     setAccept( acceptHeader );
     m_showAnimations = dl->showAnimations();
+
+
+    if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered(url.string()))
+    {
+        m_wasBlocked=true;
+        if ( !Cache::blockedPixmap )
+        {
+            Cache::blockedPixmap = new QPixmap();
+            Cache::blockedPixmap->loadFromData(blocked_icon_data, blocked_icon_len);
+        }
+        CachedObject::finish();
+    }
 }
 
 CachedImage::~CachedImage()
@@ -497,7 +512,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (r.isNull()) return r;
 
     // no error indication for background images
-    if(m_hadError) return *Cache::nullPixmap;
+    if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
 
     bool isvalid = newc.isValid();
     QSize s(pixmap_size());
@@ -588,6 +603,9 @@ const QPixmap &CachedImage::pixmap( ) const
     if(m_hadError)
         return *Cache::brokenPixmap;
 
+    if(m_wasBlocked)
+        return *Cache::blockedPixmap;
+
     if(m)
     {
         if(m->framePixmap().size() != m->getValidRect().size())
@@ -616,12 +634,14 @@ const QPixmap &CachedImage::pixmap( ) const
 
 QSize CachedImage::pixmap_size() const
 {
+    if (m_wasBlocked) return Cache::blockedPixmap->size();
     return (m_hadError ? Cache::brokenPixmap->size() : m ? m->framePixmap().size() : ( p ? p->size() : QSize()));
 }
 
 
 QRect CachedImage::valid_rect() const
 {
+    if (m_wasBlocked) return Cache::blockedPixmap->rect();
     return (m_hadError ? Cache::brokenPixmap->rect() : m ? m->getValidRect() : ( p ? p->rect() : QRect()) );
 }
 
@@ -980,7 +1000,8 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString& charset)
 {
     DOCLOADER_SECCHECK(true);
-    if ( ! KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(fullURL.host()) )
+    if ( ! KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(fullURL.host()) ||
+           KHTMLFactory::defaultHTMLSettings()->isAdFiltered(fullURL.url()))
 	return 0L;
 
     CachedScript* s = Cache::requestObject<CachedScript, CachedObject::Script>( this, fullURL, 0 );
@@ -1245,6 +1266,7 @@ int Cache::totalSizeOfLRU;
 
 QPixmap *Cache::nullPixmap;
 QPixmap *Cache::brokenPixmap;
+QPixmap *Cache::blockedPixmap;
 
 void Cache::init()
 {
@@ -1288,6 +1310,7 @@ void Cache::clear()
     delete cache; cache = 0;
     delete nullPixmap; nullPixmap = 0;
     delete brokenPixmap; brokenPixmap = 0;
+    delete blockedPixmap; blockedPixmap = 0;
     delete m_loader;  m_loader = 0;
     delete docloader; docloader = 0;
     delete freeList; freeList = 0;

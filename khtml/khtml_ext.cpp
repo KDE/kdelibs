@@ -61,6 +61,8 @@
 #include <kdesktopfile.h>
 #include <kmultipledrag.h>
 
+#include "khtml_factory.h"
+
 #include "dom/dom_element.h"
 #include "misc/htmltags.h"
 
@@ -555,6 +557,19 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
     new KAction( i18n( "View Image (%1)" ).arg(d->m_suggestedFilename.isEmpty() ? name.replace("&", "&&") : d->m_suggestedFilename.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
                  actionCollection(), "viewimage" );
+
+    if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
+    {
+      new KAction( i18n( "Block Image" ), 0, this, SLOT( slotBlockImage() ),
+                   actionCollection(), "blockimage" );
+      
+      if (!d->m_imageURL.host().isEmpty() &&
+          !d->m_imageURL.protocol().isEmpty())
+      {                
+        new KAction( i18n( "Block Images from (%1)" ).arg(d->m_imageURL.host()), 0, this, SLOT( slotBlockHost() ),
+                     actionCollection(), "blockhost" );
+      }
+    }
   }
 
   setXML( doc );
@@ -596,6 +611,17 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
   KIO::MetaData metaData;
   metaData["referrer"] = d->m_khtml->referrer();
   saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData, QString::null, 0, d->m_suggestedFilename );
+}
+
+void KHTMLPopupGUIClient::slotBlockHost()
+{
+    QString name=d->m_imageURL.protocol()+"://"+d->m_imageURL.host()+"/*";
+    KHTMLFactory::defaultHTMLSettings()->addAdFilter( name );
+}
+
+void KHTMLPopupGUIClient::slotBlockImage()
+{
+    KHTMLFactory::defaultHTMLSettings()->addAdFilter( d->m_imageURL.url() );
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()

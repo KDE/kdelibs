@@ -24,6 +24,8 @@
  <Action name="copyimage" />
  <Action name="copyimagelocation" />
  <Action name="viewimage" />
+ <Action name="blockimage" />
+ <Action name="blockhost" />
  <Separator weakSeparator="1" />
  <Action name="stopanimations" />
  <Separator weakSeparator="1" />

@@ -47,8 +47,10 @@
 #include "html/htmltokenizer.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtml_factory.h"
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
+#include "css/csshelper.h"
 
 #include "rendering/render_object.h"
 
@@ -935,8 +937,16 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // images
     case ID_IMG:
+        if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()&&
+            KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled())
+        {
+            QString url = doc()->completeURL( khtml::parseURL(t->attrs->getValue(ATTR_SRC)).string() );
+            if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered(url))
+                return 0;
+        }
         n = new HTMLImageElementImpl(document, form);
         break;
+
     case ID_MAP:
         map = new HTMLMapElementImpl(document);
         n = map;

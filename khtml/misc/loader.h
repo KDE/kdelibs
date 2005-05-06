@@ -110,6 +110,7 @@ namespace khtml
             m_deleted = false;
             m_free = false;
             m_hadError = false;
+            m_wasBlocked = false;
             m_prev = m_next = 0;
 	}
         virtual ~CachedObject();
@@ -171,6 +172,7 @@ namespace khtml
         bool m_loading : 1;
         bool m_free : 1;
 	bool m_hadError : 1;
+	bool m_wasBlocked : 1;
 
     private:
         bool allowInLRUList() const { return canDelete() && !m_free && status() != Persistent; }
@@ -265,6 +267,7 @@ namespace khtml
 
         bool isTransparent() const { return isFullyTransparent; }
         bool isErrorImage() const { return m_hadError; }
+        bool isBlockedImage() const { return m_wasBlocked; }
         const QString& suggestedFilename() const { return m_suggestedFilename; }
         void setSuggestedFilename( const QString& s ) { m_suggestedFilename = s;  }
 #ifdef IMAGE_TITLES
@@ -474,6 +477,7 @@ namespace khtml
 
     	static QPixmap *nullPixmap;
         static QPixmap *brokenPixmap;
+        static QPixmap *blockedPixmap;
         static int cacheSize;
 
         static void removeCacheEntry( CachedObject *object );

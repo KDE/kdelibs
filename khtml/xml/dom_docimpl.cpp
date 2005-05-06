@@ -2124,6 +2124,9 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     KURL newURL(completeURL(url));
     newURL.setRef(QString::null);
 
+    if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered(url))
+        return false;
+            
     // Prohibit non-file URLs if we are asked to.
     if (!thisPart || thisPart->onlyLocalReferences() && newURL.protocol() != "file" && newURL.protocol() != "data")
         return false;
