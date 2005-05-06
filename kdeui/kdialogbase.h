@@ -196,43 +196,27 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 
   public:
 
-    /**
-     *  @li @p Help -    Show Help button.
-     *  @li @p Default - Show Default button.
-     *  @li @p Details - Show Details button.
-     *  @li @p Ok -      Show Ok button.
-     *  @li @p Apply -   Show Apply button.
-     *  @li @p Try -     Show Try button.
-     *  @li @p Cancel -  Show Cancel button.
-     *  @li @p Close -   Show Close button.
-     *  @li @p User1 -   Show User-defined button 1.
-     *  @li @p User2 -   Show User-defined button 2.
-     *  @li @p User3 -   Show User-defined button 3.
-     *  @li @p No -      Show No button.
-     *  @li @p Yes -     Show Yes button.
-     *  @li @p Stretch - Used internally. Ignored when used in a constructor.
-     *  @li @p Filler  - Used internally. Ignored when used in a constructor.
-     *  @li @p NoDefault - Used when specifying a default button; indicates that
-     *                     no button should be marked by default.
-     */
     enum ButtonCode
     {
-      Help    = 0x00000001,
-      Default = 0x00000002,
-      Ok      = 0x00000004,
-      Apply   = 0x00000008,
-      Try     = 0x00000010,
-      Cancel  = 0x00000020,
-      Close   = 0x00000040,
-      User1   = 0x00000080,
-      User2   = 0x00000100,
-      User3   = 0x00000200,
-      No      = 0x00000080,
-      Yes     = 0x00000100,
-      Details = 0x00000400,
-      Filler  = 0x40000000,
-      Stretch = 0x80000000,
-      NoDefault             ///< @since 3.3
+      Help    = 0x00000001, ///< Show Help button. 
+      Default = 0x00000002, ///< Show Default button.
+      Ok      = 0x00000004, ///< Show Ok button.
+      Apply   = 0x00000008, ///< Show Apply button.
+      Try     = 0x00000010, ///< Show Try button.
+      Cancel  = 0x00000020, ///< Show Cancel-button.
+      Close   = 0x00000040, ///< Show Close-button.
+      User1   = 0x00000080, ///< Show User defined button 1.
+      User2   = 0x00000100, ///< Show User defined button 2.
+      User3   = 0x00000200, ///< Show User defined button 3.
+      No      = 0x00000080, ///< Show No button.
+      Yes     = 0x00000100, ///< Show Yes button.
+      Details = 0x00000400, ///< Show Details button.
+      Filler  = 0x40000000, ///< @intern Ignored when used in a constructor.
+      Stretch = 0x80000000, ///< @intern Ignored when used in a constructor.
+      NoDefault             ///< @since 3.3 \
+                                 Used when specifying a default button; \
+                                 indicates that no button should be marked \
+                                 by default.
     };
 
     enum ActionButtonStyle
