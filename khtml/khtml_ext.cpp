@@ -40,7 +40,7 @@
 #include <qpopupmenu.h>
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
-#include <qdragobject.h> 
+#include <qdragobject.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -269,7 +269,7 @@ void KHTMLPartBrowserExtension::searchProvider()
         KDesktopFile file("searchproviders/google.desktop", true, "services");
         data.setData(file.readEntry("Query").replace("\\{@}", m_part->selectedText()));
     }
-    
+
     KParts::URLArgs args;
     args.frameName = "_blank";
 
@@ -460,7 +460,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                      SLOT( searchProvider() ), actionCollection(), "searchProvider" );
 
       if ( selectedText.contains("://") && KURL(selectedText).isValid() )
-         new KAction( i18n( "Open '%1'" ).arg( selectedText ), "window_new", 0, 
+         new KAction( i18n( "Open '%1'" ).arg( selectedText ), "window_new", 0,
          d->m_khtml->browserExtension(), SLOT( openSelection() ), actionCollection(), "openSelection" );
     }
     else
@@ -545,10 +545,10 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
 
 #ifndef QT_NO_MIMECLIPBOARD
-    (new KAction( i18n( "Copy Image" ), 0, this, SLOT( slotCopyImage() ),   
+    (new KAction( i18n( "Copy Image" ), 0, this, SLOT( slotCopyImage() ),
                  actionCollection(), "copyimage" ))->setEnabled(!d->m_image.isNull());
 #endif
-    
+
     if(d->m_image.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
       new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                    actionCollection(), "copyimagelocation" );
@@ -562,11 +562,11 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     {
       new KAction( i18n( "Block Image" ), 0, this, SLOT( slotBlockImage() ),
                    actionCollection(), "blockimage" );
-      
+
       if (!d->m_imageURL.host().isEmpty() &&
           !d->m_imageURL.protocol().isEmpty())
-      {                
-        new KAction( i18n( "Block Images from (%1)" ).arg(d->m_imageURL.host()), 0, this, SLOT( slotBlockHost() ),
+      {
+        new KAction( i18n( "Block Images From %1" ).arg(d->m_imageURL.host()), 0, this, SLOT( slotBlockHost() ),
                      actionCollection(), "blockhost" );
       }
     }
