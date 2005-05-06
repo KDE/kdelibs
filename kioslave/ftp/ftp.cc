@@ -708,15 +708,14 @@ void Ftp::ftpAutoLoginMacro ()
 {
   QString macro = metaData( "autoLoginMacro" );
 
-  if ( !macro.isEmpty() )
-  {
+  if ( macro.isEmpty() )
+    return;
+
     QStringList list = QStringList::split('\n', macro);
 
-    if ( !list.isEmpty() )
-    {
       for(QStringList::Iterator it = list.begin() ; it != list.end() ; ++it )
       {
-        if ( (*it).find("init") == 0 )
+    if ( (*it).startsWith("init") )
         {
           list = QStringList::split( '\\', macro);
           it = list.begin();
@@ -733,8 +732,6 @@ void Ftp::ftpAutoLoginMacro ()
           break;
         }
       }
-    }
-  }
 }
 
 
