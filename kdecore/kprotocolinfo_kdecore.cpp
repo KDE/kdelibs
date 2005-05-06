@@ -84,7 +84,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_supportsListing = ( m_listing.count() > 0 );
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
   m_determineMimetypeFromExtension = config.readBoolEntry( "determineMimetypeFromExtension", true );
-  m_icon = config.readEntry( "Icon", "mime_empty" );
+  m_icon = config.readEntry( "Icon", "unknown" );
   m_config = config.readEntry( "config", m_name );
   m_maxSlaves = config.readNumEntry( "maxInstances", 1);
 
@@ -391,7 +391,7 @@ QString KProtocolInfo::icon( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::fromLatin1("mime_empty");
+    return QString::fromLatin1("unknown");
 
   return prot->m_icon;
 }

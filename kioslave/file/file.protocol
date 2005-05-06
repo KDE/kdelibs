@@ -10,7 +10,6 @@ makedir=true
 deleting=true
 linking=true
 moving=true
-Icon=mime_empty
 maxInstances=4
 DocPath=kioslave/file.html
 Class=:local
