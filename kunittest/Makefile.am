@@ -14,14 +14,12 @@ kunittestmodrunner_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kunittestmodrunner_LDADD = libkunittest.la $(LIB_KDECORE)
 kunittestmodrunner_SOURCES = modrunner.cpp
 
-#kde_module_LTLIBRARIES = kunittest_samplemodule.la
 check_LTLIBRARIES = kunittest_samplemodule.la
 kunittest_samplemodule_la_SOURCES = samplemodule.cpp
 kunittest_samplemodule_la_LIBADD = libkunittest.la
-kunittest_samplemodule_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
+kunittest_samplemodule_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries) -rpath $(libdir)
 
 # don't install the module, the KLibLoader will otherwise also pick up those
 # also, it is not a good idea to pollute our poor users' hd with test-cases
 
-check:
-	./kunittestmodrunner
+TESTS = kunittestmodrunner
