@@ -142,8 +142,8 @@ public:
      * Constants that represent the order in which KCompletion performs
      * completion-lookups.
      */
-    enum CompOrder { Sorted,    ///< Use order of insertion
-                     Insertion, ///< Use alphabetically sorted order
+    enum CompOrder { Sorted,    ///< Use alphabetically sorted order
+                     Insertion, ///< Use order of insertion
                      Weighted   ///< Use weighted order
     };
 
