@@ -296,6 +296,8 @@ using namespace std;
 #include <qstringlist.h>
 #include <qasciidict.h>
 
+#include <kdelibs_export.h>
+
 /*! @def CHECK(x,y)
  * Use this macro to perform a check. For example
  * 
@@ -326,7 +328,7 @@ namespace KUnitTest
      * has a single TestResults instance associated with it, however the SlotTester
      * class can have more TestResults instances (one for each test slot in fact).
      */
-    class TestResults
+    class KUNITTEST_EXPORT TestResults
     {
         friend class Tester;
 
@@ -416,7 +418,7 @@ namespace KUnitTest
      *
      * @see CHECK, XFAIL, SKIP
      */
-    class Tester : public QObject
+    class KUNITTEST_EXPORT Tester : public QObject
     {
     public:
         Tester(const char *name = 0L)
@@ -512,7 +514,7 @@ namespace KUnitTest
      * execute all slots that start with the string "test". The method
      * void allTests() is implemented and should not be overriden.
      */
-    class SlotTester : public Tester
+    class KUNITTEST_EXPORT SlotTester : public Tester
     {
         Q_OBJECT
 
