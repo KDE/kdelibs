@@ -1308,9 +1308,11 @@ private:
 
 /**
  * @internal
- *
  * Synchronous access to metadata of a local file. Usually, you don't want
- * to use this class. Use KFileMetaInfo directly.
+ * to use this class for getting metainfo from a file. Use KFileMetaInfo
+ *  directly. However, if you want to find out if a specific mimetype is
+ *  supported and which groups and items are provided for it, you can ask
+ *  the KFileMetainfoProvider for it.
  **/
 class KIO_EXPORT KFileMetaInfoProvider: private QObject
 {
