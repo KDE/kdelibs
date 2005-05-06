@@ -969,11 +969,16 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
 {
+ return userDefinedServices( path, cfg, bLocalFiles, KURL::List() );
+}
+
+QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KURL::List & file_list )
+{
   QValueList<Service> result;
 
   cfg.setDesktopGroup();
 
-  if ( !cfg.hasKey( "Actions" ) )
+  if ( !cfg.hasKey( "Actions" ) || !cfg.hasKey( "X-KDE-GetActionMenu") )
     return result;
 
   if ( cfg.hasKey( "TryExec" ) )
@@ -985,8 +990,35 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
       }
   }
 
-  QStringList keys = cfg.readListEntry( "Actions", ';' ); //the desktop standard defines ";" as separator!
+  QStringList keys;
+  
+  if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
+    QString dcopcall = cfg.readEntry( "X-KDE-GetActionMenu" );
+    const QCString app = dcopcall.section(' ', 0,0).utf8();
+    
+    QByteArray dataToSend;
+    QDataStream dataStream(dataToSend, IO_WriteOnly);
+    dataStream << file_list;
+    QCString replyType;
+    QByteArray replyData;
+    QCString object =    dcopcall.section(' ', 1,-2).utf8();
+    QString function =  dcopcall.section(' ', -1);
+    if(!function.endsWith("(KURL::List)")) {
+      kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KURL::List) and must be specified." << endl;
+    } else {
+      if(kapp->dcopClient()->call( app, object,
+                   function.utf8(),
+                   dataToSend, replyType, replyData, true, 100)
+	    && replyType == "QStringList" ) {
+	      
+        QDataStream dataStreamIn(replyData, IO_ReadOnly);
+        dataStreamIn >> keys;
+      }
+    }
+  }
 
+  keys += cfg.readListEntry( "Actions", ';' ); //the desktop standard defines ";" as separator!
+  
   if ( keys.count() == 0 )
     return result;
 

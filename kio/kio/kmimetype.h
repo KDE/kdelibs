@@ -566,6 +566,14 @@ public:
    * @since 3.4
    */
   static QValueList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles );
+  
+  /**
+   * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
+   * This allows for the menu to be changed depending on the exact files via
+   * the X-KDE-GetActionMenu extension.
+   * @since 3.5
+   */
+  static QValueList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KURL::List & file_list);
 
   /**
    * @param _path is the path of the desktop entry.
