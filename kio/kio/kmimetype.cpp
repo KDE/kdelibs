@@ -978,7 +978,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
   cfg.setDesktopGroup();
 
-  if ( !cfg.hasKey( "Actions" ) || !cfg.hasKey( "X-KDE-GetActionMenu") )
+  if ( !cfg.hasKey( "Actions" ) && !cfg.hasKey( "X-KDE-GetActionMenu") )
     return result;
 
   if ( cfg.hasKey( "TryExec" ) )
