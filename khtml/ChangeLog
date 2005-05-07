@@ -1,3 +1,8 @@
+2005-05-07  Harri Porten  <porten@kde.org>
+
+	* ecma/kjs_window.cpp: allow setting location.href on foreign
+	windows opened by window.open() again (bug #101178).
+
 2005-05-06  Ivor Hewitt <ivor@ivor.org>
 
         fix #15848: First implementation of AdBlocK.
