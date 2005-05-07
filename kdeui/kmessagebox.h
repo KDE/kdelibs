@@ -69,20 +69,17 @@ public:
    QuestionYesNoCancel = 9
  };
 
- /**
-  * @li Notify Emit a KNotifyClient event
-  * @li AllowLink The message may contain links.
-  * @li Dangerous The action to be confirmed by the dialog is a potentially destructive one
-  * @li PlainCaption Do not use KApplication::makeStdCaption()
-  * @li NoExec Do not call exec() in createKMessageBox()
-  */
  enum OptionsType
  {
-   Notify = 1,
-   AllowLink = 2,
-   Dangerous = 4,
-   PlainCaption = 8,  ///< @since 3.4
-   NoExec = 16        ///< @since 3.4
+   Notify = 1,        ///< Emit a KNotifyClient event
+   AllowLink = 2,     ///< The message may contain links.
+   Dangerous = 4,     ///< The action to be confirmed by the dialog is a potentially destructive one
+   PlainCaption = 8,  /**< Do not use KApplication::makeStdCaption()
+   		           @since 3.4
+		       */
+   NoExec = 16        /**< Do not call exec() in createKMessageBox()
+			   @since 3.4
+		       */
  };
 
  /**
