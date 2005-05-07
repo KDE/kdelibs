@@ -213,10 +213,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
       Details = 0x00000400, ///< Show Details button.
       Filler  = 0x40000000, ///< @intern Ignored when used in a constructor.
       Stretch = 0x80000000, ///< @intern Ignored when used in a constructor.
-      NoDefault             ///< @since 3.3 \
-                                 Used when specifying a default button; \
-                                 indicates that no button should be marked \
-                                 by default.
+      NoDefault             ///< @since 3.3 Used when specifying a default button; indicates that no button should be marked by default.
     };
 
     enum ActionButtonStyle
