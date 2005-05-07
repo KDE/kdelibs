@@ -208,9 +208,6 @@ QString KProtocolManager::noProxyFor()
 {
   KProtocolManager::ProxyType type = proxyType();
 
-  if ( (type != ManualProxy) && (type != EnvVarProxy) )
-    return QString::null;
-
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
 
@@ -350,9 +347,14 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
      if ((proxy != "DIRECT") && (!proxy.isEmpty()))
      {
         bool isRevMatch = false;
-        bool useRevProxy = ((proxyType() == ManualProxy) && useReverseProxy());
+        KProtocolManager::ProxyType type = proxyType();
+        bool useRevProxy = ((type == ManualProxy) && useReverseProxy());
 
-        QString noProxy = noProxyFor();
+        QString noProxy;
+        // Check no proxy information iff the proxy type is either
+        // manual or environment variable based...
+        if ( (type == ManualProxy) || (type == EnvVarProxy) )
+          noProxy = noProxyFor();
 
         if (!noProxy.isEmpty())
         {
