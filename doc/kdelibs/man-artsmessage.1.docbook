@@ -26,7 +26,7 @@
     <cmdsynopsis>
       <command>artsmessage</command>
       <group><option>&kde; generic options</option></group>
-      <group><option>&kde; generic options</option></group>
+      <group><option>&Qt; generic options</option></group>
       <group choice="opt">
       <option>-e, --error</option><option>-w,
       --warning</option><option>-i,--info</option>
