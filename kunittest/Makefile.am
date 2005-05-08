@@ -21,7 +21,7 @@ kunittestmodrunner_SOURCES = modrunner.cpp
 check_LTLIBRARIES = kunittest_samplemodule.la
 kunittest_samplemodule_la_SOURCES = samplemodule.cpp
 kunittest_samplemodule_la_LIBADD = libkunittest.la
-kunittest_samplemodule_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries) -rpath $(libdir)
+kunittest_samplemodule_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
 
 TESTS = kunittestmodrunner
 
