@@ -41,6 +41,7 @@
 #include <qtoolbar.h>
 #include <qpopupmenu.h>
 #include <qprogressbar.h>
+#include <qlistview.h>
 #include <qsettings.h>
 
 #include <kdrawutil.h>
@@ -1163,6 +1164,19 @@ void HighContrastStyle::drawControlMask (ControlElement element,
 	}
 }
 
+// Helper to find the next sibling that's not hidden
+// Lifted from kstyle.cpp
+static QListViewItem* nextVisibleSibling(QListViewItem* item)
+{
+    QListViewItem* sibling = item;
+    do
+    {
+        sibling = sibling->nextSibling();
+    }
+    while (sibling && !sibling->isVisible());
+    
+    return sibling;
+}
 
 void HighContrastStyle::drawComplexControl (ComplexControl control,
 									QPainter *p,
@@ -1287,6 +1301,163 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 			break;
 		}
 
+		// LISTVIEW
+		// -------------------------------------------------------------------
+		case CC_ListView: {
+			/*
+			 * Sigh... Lifted and modified from kstyle.cpp 
+			 */
+			/* 
+			 * Many thanks to TrollTech AS for donating CC_ListView from QWindowsStyle.
+			 * CC_ListView code is Copyright (C) 1998-2000 TrollTech AS.
+			 */
+
+			// Paint the icon and text.
+			if ( controls & SC_ListView )
+				QCommonStyle::drawComplexControl( control, p, widget, r, cg, flags, controls, active, opt );
+
+			// If we're have a branch or are expanded...
+			if ( controls & (SC_ListViewBranch | SC_ListViewExpand) )
+			{
+				// If no list view item was supplied, break
+				if (opt.isDefault())
+					break;
+
+				QListViewItem *item  = opt.listViewItem();
+				QListViewItem *child = item->firstChild();
+
+				int y = r.y();
+				int c;	// dotline vertice count
+				int dotoffset = 0;
+				QPointArray dotlines;
+
+				if ( active == SC_All && controls == SC_ListViewExpand ) {
+					// We only need to draw a vertical line
+					c = 2;
+					dotlines.resize(2);
+					dotlines[0] = QPoint( r.right(), r.top() );
+					dotlines[1] = QPoint( r.right(), r.bottom() );
+
+				} else {
+
+					int linetop = 0, linebot = 0;
+					// each branch needs at most two lines, ie. four end points
+					dotoffset = (item->itemPos() + item->height() - y) % 2;
+					dotlines.resize( item->childCount() * 4 );
+					c = 0;
+
+					// skip the stuff above the exposed rectangle
+					while ( child && y + child->height() <= 0 )
+					{
+						y += child->totalHeight();
+						child = nextVisibleSibling(child);
+					}
+
+					int bx = r.width() / 2;
+
+					// paint stuff in the magical area
+					QListView* v = item->listView();
+					int lh = QMAX( p->fontMetrics().height() + 2 * v->itemMargin(),
+								   QApplication::globalStrut().height() );
+					if ( lh % 2 > 0 )
+						lh++;
+
+					// Draw all the expand/close boxes...
+					QRect boxrect;
+					QStyle::StyleFlags boxflags;
+					while ( child && y < r.height() )
+					{
+						linebot = y + lh/2;
+						if ( (child->isExpandable() || child->childCount()) &&
+							 (child->height() > 0) )
+						{
+							int h = QMIN(lh, 24) - 4*basicLineWidth;
+							if (h < 10) 
+								h = 10;
+							else 
+								h &= ~1; // Force an even number of pixels
+			
+							// The primitive requires a rect.
+							boxrect = QRect( bx-h/2, linebot-h/2, h, h );
+							boxflags = child->isOpen() ? QStyle::Style_Off : QStyle::Style_On;
+
+							// KStyle extension: Draw the box and expand/collapse indicator
+							drawKStylePrimitive( KPE_ListViewExpander, p, NULL, boxrect, cg, boxflags, opt );
+
+							// dotlinery
+							p->setPen( cg.mid() );
+							dotlines[c++] = QPoint( bx, linetop );
+							dotlines[c++] = QPoint( bx, linebot - 5 );
+							dotlines[c++] = QPoint( bx + 5, linebot );
+							dotlines[c++] = QPoint( r.width(), linebot );
+							linetop = linebot + 5;
+						} else {
+							// just dotlinery
+							dotlines[c++] = QPoint( bx+1, linebot );
+							dotlines[c++] = QPoint( r.width(), linebot );
+						}
+
+						y += child->totalHeight();
+						child = nextVisibleSibling(child);
+					}
+
+					if ( child ) // there's a child to draw, so move linebot to edge of rectangle
+						linebot = r.height();
+
+					if ( linetop < linebot )
+					{
+						dotlines[c++] = QPoint( bx, linetop );
+						dotlines[c++] = QPoint( bx, linebot );
+					}
+				}
+
+				// Draw all the branches...
+				static int thickness = kPixelMetric( KPM_ListViewBranchThickness );
+				int line; // index into dotlines
+				QRect branchrect;
+				QStyle::StyleFlags branchflags;
+				for( line = 0; line < c; line += 2 )
+				{
+					// assumptions here: lines are horizontal or vertical.
+					// lines always start with the numerically lowest
+					// coordinate.
+
+					// point ... relevant coordinate of current point
+					// end ..... same coordinate of the end of the current line
+					// other ... the other coordinate of the current point/line
+					if ( dotlines[line].y() == dotlines[line+1].y() )
+					{
+						// Horizontal branch
+						int end = dotlines[line+1].x();
+						int point = dotlines[line].x();
+						int other = dotlines[line].y();
+
+						branchrect  = QRect( point, other-(thickness/2), end-point, thickness );
+						branchflags = QStyle::Style_Horizontal;
+
+						// KStyle extension: Draw the horizontal branch
+						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
+
+					} else {
+						// Vertical branch
+						int end = dotlines[line+1].y();
+						int point = dotlines[line].y();
+						int other = dotlines[line].x();
+						int pixmapoffset = ((point & 1) != dotoffset ) ? 1 : 0;
+
+						branchrect  = QRect( other-(thickness/2), point, thickness, end-point );
+						if (!pixmapoffset)	// ### Hackish - used to hint the offset
+							branchflags = QStyle::Style_NoChange;
+						else
+							branchflags = QStyle::Style_Default;
+
+						// KStyle extension: Draw the vertical branch
+						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
+					}
+				}
+			}
+			break;
+		}
 
 		default:
 			KStyle::drawComplexControl(control, p, widget,
@@ -1481,12 +1652,12 @@ int HighContrastStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 int HighContrastStyle::kPixelMetric( KStylePixelMetric kpm, const QWidget *widget ) const
 {
 	switch (kpm) {
-	case KPM_ListViewBranchThickness:
-		// XXX Proper support of thick branches requires reimplementation of
-		// the drawKStylePrimitive KPE_ListViewBranch case.
-		return basicLineWidth;
-	default:
-		return KStyle::kPixelMetric(kpm, widget);
+		case KPM_ListViewBranchThickness:
+			// XXX Proper support of thick branches requires reimplementation of
+			// the drawKStylePrimitive KPE_ListViewBranch case.
+			return basicLineWidth;
+		default:
+			return KStyle::kPixelMetric(kpm, widget);
 	}
 }
 
