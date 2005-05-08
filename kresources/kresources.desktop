@@ -11,6 +11,7 @@ X-KDE-FactoryName=kresources
 X-KDE-HasReadOnlyMode=false
 
 Name=KDE Resources
+Name[af]=KDE Hulpbronne
 Name[bg]=Системни ресурси
 Name[bn]=কে.ডি.ই রিসোর্সসমূহ
 Name[bs]=KDE resursi
@@ -31,6 +32,7 @@ Name[hi]=केडीई संसाधन
 Name[hu]=KDE-erőforrások
 Name[is]=KDE auðlindir
 Name[it]=Risorse di KDE
+Name[ja]=KDE リソース
 Name[lt]=KDE resursai
 Name[nb]=KDE-ressurser
 Name[nl]=KDE-hulpbronnen

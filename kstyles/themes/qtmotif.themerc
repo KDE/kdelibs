@@ -1,5 +1,6 @@
 [Misc]
 Name=Motif
+Name[af]=Motief
 Name[bn]=মোটিফ
 Name[fa]=موتیف
 Name[hi]=यूटी मोटिफ़
@@ -8,7 +9,7 @@ Name[pa]=ਮੋਟੀਫ
 Name[ta]=மோடிஃப்
 Name[th]=โมทีฟ
 Comment=Built-in unthemed Motif style
-Comment[af]=Ingeboude ongetemade Motif styl
+Comment[af]=Ingeboude ongetemade motief styl
 Comment[ar]=مظهر مضمن مشابه لMotif
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[be]=Убудаваны стыль Motif (бяз тэм)
