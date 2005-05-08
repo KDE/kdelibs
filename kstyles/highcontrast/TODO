@@ -1,0 +1,3 @@
+- QLineEdit are much taller than the other widgets. Check why.
+- ListViewExpanders should get their size from the item text height.
+- The QLineEdits background seem to bleed on the outside.
