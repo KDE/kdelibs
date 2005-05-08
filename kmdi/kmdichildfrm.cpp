@@ -1104,8 +1104,8 @@ bool KMdiChildFrm::eventFilter( QObject *obj, QEvent *e )
 				if ( !( ( ( obj == m_pWinIcon ) || ( obj == m_pUnixIcon ) ) && bIsSecondClick ) )
 				{
 					// in case we didn't click on the icon button
-					QFocusEvent* pFE = new QFocusEvent( QFocusEvent::FocusIn );
-					QApplication::sendEvent( qApp->mainWidget(), pFE );
+					QFocusEvent focusEvent( QFocusEvent::FocusIn );
+					QApplication::sendEvent( qApp->mainWidget(), &focusEvent );
 					if ( m_pClient )
 					{
 						m_pClient->updateTimeStamp();
