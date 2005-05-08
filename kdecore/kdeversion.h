@@ -22,8 +22,7 @@
 
 #include "kdelibs_export.h"
 
-// change this comment here (2005.05.08)
-#define KDE_VERSION_STRING "3.4.89 ($LastChangedRevision$)"
+#define KDE_VERSION_STRING "3.4.89 (>= 20050508)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 4
 #define KDE_VERSION_RELEASE 89
