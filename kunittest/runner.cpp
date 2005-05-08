@@ -118,7 +118,7 @@ namespace KUnitTest
 
     int Runner::numberOfFailedTests() const
     {
-        return globalFails;
+        return globalFails - globalXFails; // must return 0 when "all is well"
     }
 
     int Runner::numberOfSkippedTests() const
