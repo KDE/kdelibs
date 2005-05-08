@@ -83,6 +83,7 @@ KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f 
 	, m_bInterruptActivation( false )
 	, m_bMainframesActivateViewIsPending( false )
 	, m_bFocusInEventIsPending( false )
+	, m_trackChanges( 0 )
 {
 	setGeometry( 0, 0, 0, 0 );  // reset
 	m_szCaption = i18n( "Unnamed" );
