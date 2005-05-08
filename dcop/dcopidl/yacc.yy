@@ -35,7 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <assert.h>
 
-#include <qstring.h>
+#include <QtCore/qstring.h>
 
 #define AMP_ENTITY "&amp;"
 #define YYERROR_VERBOSE
