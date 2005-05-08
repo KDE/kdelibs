@@ -1,7 +1,7 @@
 
 INCLUDES = $(all_includes)
 AM_LDFLAGS   = $(all_libraries)
-AM_CPPFLAGS = -DYYDEBUG -DQT3_SUPPORT
+AM_CPPFLAGS = -DYYDEBUG
 
 ####### Files
 
