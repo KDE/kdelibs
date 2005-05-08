@@ -123,6 +123,9 @@ class HighContrastStyle : public KStyle
 		int pixelMetric( PixelMetric m,
 					const QWidget *widget = 0 ) const;
 
+		int kPixelMetric( KStylePixelMetric m,
+					const QWidget *widget = 0 ) const;
+
 		QSize sizeFromContents( ContentsType contents,
 					const QWidget *widget,
 					const QSize &contentSize,

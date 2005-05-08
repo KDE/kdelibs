@@ -700,6 +700,28 @@ void HighContrastStyle::drawKStylePrimitive (KStylePrimitive kpe,
 			break;
 		}
 
+		case KPE_ListViewExpander: {
+			// TODO There is no pixelMetric associated with the
+			// ListViewExpander in KStyle.
+			// To have a properly large expander, the CC_ListView case of
+			// drawComplexControl should be handled.
+			// Probably it would be better to add a KPM_ListViewExpander metric
+			// to the KStyle KStylePixelMetric enum, and have the KStyle
+			// drawComplexControl handle it.
+			PrimitiveElement direction;
+			if (flags & Style_On) { // Collapsed = On
+				direction = PE_ArrowRight;
+
+			} else {
+				direction = PE_ArrowDown;
+			}
+			setColorsText (p, cg, flags);
+			drawArrow (p, r, direction);
+			break;
+		}
+		case KPE_ListViewBranch: 
+			// TODO Draw (thick) dotted line. Check kstyle.cpp
+			// Fall down for now
 		default:
 			KStyle::drawKStylePrimitive( kpe, p, widget, r, cg, flags, opt);
 	}
@@ -1167,9 +1189,9 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 			if (flags & Style_HasFocus) {
 				QRect r3 (r);
 				if (r2.left() > 0)
-					r3.setRight (r2.left()+basicLineWidth);
+					r3.setRight (r2.left()+basicLineWidth-1);
 				else
-					r3.setLeft (r2.right()-basicLineWidth);
+					r3.setLeft (r2.right()-basicLineWidth+1);
 
 				drawPrimitive (PE_FocusRect, p, r3, cg, flags, QStyleOption (p->backgroundColor()));
 			}
@@ -1456,6 +1478,17 @@ int HighContrastStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 	}
 }
 
+int HighContrastStyle::kPixelMetric( KStylePixelMetric kpm, const QWidget *widget ) const
+{
+	switch (kpm) {
+	case KPM_ListViewBranchThickness:
+		// XXX Proper support of thick branches requires reimplementation of
+		// the drawKStylePrimitive KPE_ListViewBranch case.
+		return basicLineWidth;
+	default:
+		return KStyle::kPixelMetric(kpm, widget);
+	}
+}
 
 QSize HighContrastStyle::sizeFromContents( ContentsType contents,
 										const QWidget* widget,
@@ -1502,6 +1535,14 @@ QSize HighContrastStyle::sizeFromContents( ContentsType contents,
 			break;
 		}
 
+		// COMBOBOX SIZE
+		// -----------------------------------------------------------------
+		case CT_ComboBox: {
+			const QComboBox *cb = static_cast< const QComboBox* > (widget);
+			int borderSize =  (cb->editable() ? 4 : 2) * basicLineWidth;
+			int arrowSize = pixelMetric (PM_ScrollBarExtent, cb);
+			return QSize(borderSize + basicLineWidth + arrowSize, borderSize) + contentSize;
+		}
 
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
