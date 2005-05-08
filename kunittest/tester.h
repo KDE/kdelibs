@@ -53,6 +53,10 @@
  * You are responsible for what you do with it though. It
  * is licensed under a BSD license - read the top of each file.
  *
+ * All the GUI related stuff is in kdesdk/kunittest, the core libraries are in kdelibs/kunittest.
+ * A simple example modules is in kdelisbs/kunittest/samplemodule.{h,cpp}, however more examples
+ * can be found in kdesdk/kunittest/example.
+ *
  * There are roughly two ways to use the KUnitTest library. Either you create dynamically
  * loadable modules and use the kunittestmodrunner or kunittestguimodrunner programs to run 
  * the tests, or you use the kunittest/kunittestgui library to create your own test runner
@@ -62,8 +66,8 @@
  * @li runner.{h,cpp} - it is the tester runner, holds all tests and runs
  * them.
  * @li runnergui.{h,cpp} - the GUI wrapper around the runner. The GUI neatly organizes the
- *   test results. With the kunittest.sh helper script it can even add the debug output
- *   to the test results.
+ *   test results. With the kunittest helper script it can even add the debug output
+ *   to the test results. For this you need to have the kdesdk module installed.
  * @li tester.h - which holds the base of a pure test object (Tester).
  * @li module.h - defines macros to create a dynamically loadable module.
  *
@@ -135,7 +139,7 @@ SampleTest - 1 test passed, 1 test failed
  * #include <kcmdlineargs.h>
  * #include <kcmdlineargs.h>
  * #include <klocale.h>
- * #include "kunittest/runnergui.h"
+ * #include <kunittest/runnergui.h>
  *
  * static const char description[] = I18N_NOOP("SampleTests");
  * static const char version[] = "0.1";
@@ -143,7 +147,6 @@ SampleTest - 1 test passed, 1 test failed
  * 
  * int main( int argc, char** argv )
  * {
- *         
  *     KAboutData about("SampleTests", I18N_NOOP("SampleTests"), version, description,
  *                     KAboutData::License_BSD, "(C) 2005 You!", 0, 0, "mail@provider");
  * 
@@ -171,7 +174,7 @@ SampleTest - 1 test passed, 1 test failed
  * noinst_HEADERS = sampletest.h
  * 
  * check:
- *    kunittest.sh $(top_builddir)/src/sampletests SampleTests
+ *    kunittest $(top_builddir)/src/sampletests SampleTests
  * @endcode
  *
  * Most of this Makefile.am will be self-explanatory. After running
@@ -180,7 +183,7 @@ SampleTest - 1 test passed, 1 test failed
  * to rebuild the test suite everytime you run make. 
  * 
  * You can run the binary on its own, but you get more functionality if you use
- * the kunittest.sh helper script. The Makefile.am is set up in such
+ * the kunittest helper script. The Makefile.am is set up in such
  * a way that this helper script is automatically run after you do a
  * "make check". This scripts take two arguments, the first is the path
  * to the binary to run. The second the application name, in this case SampleTests.
@@ -190,7 +193,7 @@ SampleTest - 1 test passed, 1 test failed
  * @section module Creating test modules
  * 
  * If you think that writing your own test runner if too much work then you can also
- * use the kunittestermodrunner application or the kunitguimodrunner.sh script to run
+ * use the kunittestermodrunner application or the kunitguimodrunner script to run
  * the tests for you. You do have to put your tests in a dynamically loadable module though.
  * Fortunately KUnitTest comes with a few macros to help you do this.
  *
@@ -229,24 +232,24 @@ SampleTest - 1 test passed, 1 test failed
  * METASOURCES = AUTO
  * noinst_HEADERS = samplemodule.h
  * # Install this plugin in the KDE modules directory
- * kde_module_LTLIBRARIES = kunittest_samplemodule.la
+ * check_LTLIBRARIES = kunittest_samplemodule.la
  * kunittest_samplemodule_la_SOURCES = samplemodule.cpp
  * kunittest_samplemodule_la_LIBADD = -lkunittest
- * kunittest_samplemodule_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
+ * kunittest_samplemodule_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries) -rpath $(libdir)
  * @endcode
  *
  * After you have built the module you open a Konsole and cd into the build folder. Running
  * the tests in the module is now as easy as:
  *
  * @code
- * $ kunittestmodrunner 
+ * $ make check && kunittestmodrunner 
  * @endcode
  *
  * The kunittestmodrunner application loads all kunittest_*.la modules in the current
- * directory. If you want the GUI, you should use the kunittestmod.sh script:
+ * directory. If you want the GUI, you should use the kunittestmod script:
  *
  * @code
- * $ kunittestmod.sh
+ * $ make check && kunittestmod
  * @endcode
  *
  * This script starts kunittestguimodrunner application and a helper script to take
@@ -284,9 +287,11 @@ SampleTest - 1 test passed, 1 test failed
  *
  * The library comes with several helper scripts:
  *
- * @li kunittest.sh [app] [dcopobject] : Runs the application app and redirects all debug output to the dcopobject.
- * @li kunittestmod.sh --folder [folder] --query [query] : Loads and runs all modules in the folder matching the query. Use a GUI.
- * @li kunittest_debughelper.pl [dcopobject] : A PERL script that is able to redirect debug output to a RunnerGUI instance.
+ * @li kunittest [app] [dcopobject] : Runs the application app and redirects all debug output to the dcopobject.
+ * @li kunittestmod --folder [folder] --query [query] : Loads and runs all modules in the folder matching the query. Use a GUI.
+ * @li kunittest_debughelper [dcopobject] : A PERL script that is able to redirect debug output to a RunnerGUI instance.
+ *
+ * These scripts are part of the kdesdk/kunittest module.
  */
 
 #include <iostream>
