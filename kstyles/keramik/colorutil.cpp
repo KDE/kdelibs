@@ -30,7 +30,7 @@ namespace Keramik
 		if (factor > 100)
 		{
 			int h, s, v;
-			in.hsv(&h, &s, &v);
+			in.getHsv(&h, &s, &v);
 			
 			float mShare = v/230.0;
 			if (mShare > 1) mShare = 1;
@@ -43,9 +43,9 @@ namespace Keramik
 			
 			QColor wrk = in.light(100+hd);
 			
-			int r = wrk.Qt::red();
-			int g = wrk.Qt::green();
-			int b = wrk.Qt::blue();
+			int r = wrk.red();
+			int g = wrk.green();
+			int b = wrk.blue();
 
 			r+=delta;
 			g+=delta;

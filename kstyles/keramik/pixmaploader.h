@@ -1,5 +1,7 @@
 /*
+   Copyright (c) 2003-2005 Maksim Orlovich <maksim@kde.org>
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
+   
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,8 +24,7 @@
 #ifndef __pixmaploader_h__
 #define __pixmaploader_h__
 
-#include <q3intcache.h>
-#include <q3dict.h>
+#include <qcache.h>
 #include <qimage.h>
 
 class QPixmap;
@@ -82,7 +83,7 @@ namespace Keramik
 
 			int key()
 			{
-				return (int)m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<14) ^ (m_height<<24) ^ m_colorCode ^ (m_bgCode<<8);
+				return m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<14) ^ (m_height<<24) ^ m_colorCode ^ (m_bgCode<<8);
 			}
 
 			bool operator == (const KeramikCacheEntry& other)
@@ -106,7 +107,7 @@ namespace Keramik
 
 		QImage* getColored(int id, const QColor& color, const QColor& bg, bool blended);
 		QImage* getDisabled(int id, const QColor& color, const QColor& bg, bool blended);
-		Q3IntCache <KeramikCacheEntry>  m_pixmapCache;
+		QCache <int, KeramikCacheEntry>  m_pixmapCache;
 
 
 		unsigned char clamp[540];
@@ -202,18 +203,18 @@ namespace Keramik
 	class ScaledPainter : public TilePainter
 	{
 	public:
-		enum Qt::Orientation { Qt::Horizontal = 1, Qt::Vertical = 2, Both = Qt::Horizontal | Qt::Vertical };
-		ScaledPainter( int name, Qt::Orientation direction = Both )
+		enum Direction { Horizontal = 1, Vertical = 2, Both = Horizontal | Vertical };
+		ScaledPainter( int name, Direction direction = Both )
 			: TilePainter( name ), m_direction( direction )
 		{
-			colMde[0] =  ( m_direction & Qt::Horizontal ) ? Scaled : Tiled;
-			rowMde[0] =  ( m_direction & Qt::Vertical ) ? Scaled : Tiled;
+			colMde[0] =  ( m_direction & Horizontal ) ? Scaled : Tiled;
+			rowMde[0] =  ( m_direction & Vertical ) ? Scaled : Tiled;
 		}
 
 		virtual ~ScaledPainter() {};
 
 	private:
-		Qt::Orientation m_direction;
+		Direction m_direction;
 	};
 
 	class CenteredPainter : public TilePainter
