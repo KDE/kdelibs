@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <Q3MemArray>
+#include <Q3PointArray>
 #include <q3valuevector.h>
 #include <qstringlist.h>
 #include <qmatrix.h>
@@ -336,7 +338,7 @@ public:
 				QStringList dashList = QStringList::split(reg, m_dashes);
 
 				double *dashes = new double[dashList.count()];
-				for(unsigned int i = 0; i < dashList.count(); i++)
+				for(int i = 0; i < dashList.count(); i++)
 					dashes[i] = m_painter->toPixel(dashList[i], true);
 
 				ArtVpathDash dash;
@@ -1634,7 +1636,7 @@ void KSVGIconPainter::drawPolygon(Q3PointArray polyArray)
 	polygon[0].x = polyArray.point(0).x();
 	polygon[0].y = polyArray.point(0).y();
 
-	unsigned int index;
+	int index;
 	for(index = 1; index < polyArray.count(); index++)
 	{
 		QPoint point = polyArray.point(index);
@@ -2674,7 +2676,7 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 	const char *start = check.latin1();
 	const char *end = getCoord(start, value);
 
-	if(uint(end - start) < check.length())
+	if(int(end - start) < check.length())
 	{
 		if(check.endsWith("px"))
 			ret = value;

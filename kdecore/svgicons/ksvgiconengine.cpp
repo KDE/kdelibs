@@ -23,6 +23,9 @@
 #include <qcolor.h>
 #include <qimage.h>
 #include <qmatrix.h>
+#include <Q3MemArray>
+#include <Q3PointArray>
+#include <q3ptrlist.h>
 
 #include <kmdcodec.h>
 
