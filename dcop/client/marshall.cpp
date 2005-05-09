@@ -206,7 +206,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         result = r.url().local8Bit();
     } else if ( type.left( 11 ) == "QValueList<" )
     {
-        if ( (uint)type.find( '>', 11 ) != type.length() - 1 )
+        if ( type.find( '>', 11 ) != type.length() - 1 )
             return result;
 
         QString nestedType = type.mid( 11, type.length() - 12 );
@@ -233,7 +233,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         if ( commaPos == -1 )
             return result;
 
-        if ( (uint)type.find( '>', commaPos ) != type.length() - 1 )
+        if ( type.find( '>', commaPos ) != type.length() - 1 )
             return result;
 
         QString keyType = type.mid( 5, commaPos - 5 );
@@ -271,7 +271,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
 }
 
 #warning FIX the marshalled types
-void marshall( QDataStream &arg, Q3CStringList args, uint &i, QString type )
+void marshall( QDataStream &arg, Q3CStringList args, int &i, QString type )
 {
     if (type == "QStringList")
        type = "QValueList<QString>";
@@ -363,7 +363,7 @@ void marshall( QDataStream &arg, Q3CStringList args, uint &i, QString type )
 	QByteArray dummy_data;
 	QDataStream dummy_arg(&dummy_data, QIODevice::WriteOnly);
 
-	uint j = i;
+	int j = i;
 	uint count = 0;
 	// Parse list to get the count
 	while (true) {

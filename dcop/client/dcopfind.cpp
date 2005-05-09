@@ -128,11 +128,11 @@ bool findObject( const char* app, const char* obj, const char* func, Q3CStringLi
     QByteArray data;
     QDataStream arg(&data, QIODevice::WriteOnly);
 
-    uint i = 0;
+    int i = 0;
     for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
         marshall(arg, args, i, *it);
     }
-    if ( (uint) i != args.count() ) {
+    if ( i != args.count() ) {
 	qWarning( "arguments do not match" );
 	exit(1);
     }

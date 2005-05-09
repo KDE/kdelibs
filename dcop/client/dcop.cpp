@@ -196,7 +196,7 @@ int callFunction( const char* app, const char* obj, const char* func, const Q3CS
 	    if ( l > 0 && (*it).mid( s, l - s ) == func ) {
 		realfunc = (*it).mid( s );
 		const QString arguments = (*it).mid(l+1,(*it).find( ')' )-l-1);
-		uint a = arguments.count(',');
+		int a = arguments.count(',');
 		if ( (a==0 && !arguments.isEmpty()) || a>0)
 			a++;
 		if ( a == args.count()  )
@@ -288,7 +288,7 @@ int callFunction( const char* app, const char* obj, const char* func, const Q3CS
     Q3CString replyType;
     QDataStream arg(&data, QIODevice::WriteOnly);
 
-    uint i = 0;
+    int i = 0;
     for( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
         marshall( arg, args, i, *it );
 
@@ -424,7 +424,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 void sendUserTime( const char* app )
 {
 #if defined Q_WS_X11
-    static unsigned long time = 0;
+    static quint32 time = 0;
     if( time == 0 )
     {
         Display* dpy = XOpenDisplay( NULL );
