@@ -17,6 +17,7 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qstringlist.h>
+#include <qtextstream.h>
 #include <qtimer.h>
 
  //kde includes

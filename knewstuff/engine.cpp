@@ -21,6 +21,7 @@
 #include <q3cstring.h>
 #include <qdom.h>
 #include <qfileinfo.h>
+#include <qtextstream.h>
 
 #include <kapplication.h>
 #include <kdebug.h>

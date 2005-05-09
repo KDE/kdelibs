@@ -28,6 +28,7 @@
 class KLineEdit;
 class KComboBox;
 class QPushButton;
+class Q3StrList;
 
 class KEditListBoxPrivate;
 /**
