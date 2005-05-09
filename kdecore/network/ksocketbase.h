@@ -56,6 +56,7 @@
 #ifndef KSOCKETBASE_H
 #define KSOCKETBASE_H
 
+#include <qglobal.h>
 #include <qiodevice.h>
 #include <qstring.h>
 

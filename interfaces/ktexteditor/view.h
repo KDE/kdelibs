@@ -21,6 +21,7 @@
 
 #include <qwidget.h>
 #include <kxmlguiclient.h>
+#include <q3cstring.h>
 
 namespace KTextEditor
 {

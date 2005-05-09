@@ -26,6 +26,7 @@
 #include <q3dict.h>
 #include <qmap.h>
 #include <qdom.h>
+#include <qcolor.h>
 
 #include <math.h>
 

@@ -22,6 +22,7 @@
 #define KABC_PICTURE_H
 
 #include <qimage.h>
+#include <qstring.h>
 
 #include <kdelibs_export.h>
 

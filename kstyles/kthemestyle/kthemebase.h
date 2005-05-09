@@ -53,8 +53,8 @@ class QImage;
 class KThemePixmap : public KPixmap
 {
 public:
-    enum BorderType{Qt::DockTop = 0, Qt::DockBottom, Qt::DockLeft, Qt::DockRight, Qt::TopLeftCorner, Qt::TopRightCorner, Qt::BottomLeftCorner,
-                    Qt::BottomRightCorner};
+    enum BorderType{Top = 0, Bottom, Left, Right, TopLeft, TopRight, BottomLeft,
+                    BottomRight}
 
     KThemePixmap( bool timer = true );
     KThemePixmap( const KThemePixmap &p );

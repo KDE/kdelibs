@@ -29,7 +29,7 @@ class QDateTime;
 namespace KABC {
 
 class Agent;
-class Qt::Key;
+class Key;
 class Picture;
 class Secrecy;
 class Sound;
@@ -67,8 +67,8 @@ class KABC_EXPORT VCardTool
     Sound parseSound( const VCardLine &line );
     VCardLine createSound( const Sound &snd );
 
-    Qt::Key parseKey( const VCardLine &line );
-    VCardLine createKey( const Qt::Key &key );
+    Key parseKey( const VCardLine &line );
+    VCardLine createKey( const Key &key );
 
     Secrecy parseSecrecy( const VCardLine &line );
     VCardLine createSecrecy( const Secrecy &secrecy );

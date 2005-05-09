@@ -463,7 +463,7 @@ QImage KPixmapIO::convertFromXImage()
 		cmap, ncells);
 	image.setNumColors(ncells);
 	for (i=0; i<ncells; i++)
-	    image.setColor(i, qRgb(cmap[i].Qt::red, cmap[i].Qt::green, cmap[i].Qt::blue >> 8));
+	    image.setColor(i, qRgb(cmap[i].red, cmap[i].green, cmap[i].blue >> 8));
     } else
 	image.create(width, height, 32);
 

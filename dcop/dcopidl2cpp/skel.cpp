@@ -166,6 +166,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	}
     
 	str << "#include <kdatastream.h>" << endl;
+        str << "#include <q3cstring.h" << endl;
 
 	bool useHashing = functions.count() > 7;
 	if ( useHashing ) {
@@ -213,7 +214,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
     
 	// Write dispatcher
 	str << "bool " << className;
-	str << "::process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData)" << endl;
+	str << "::process(const Q3CString &fun, const QByteArray &data, Q3CString& replyType, QByteArray &replyData)" << endl;
 	str << "{" << endl;
 	if ( useHashing ) {
 	    str << "    static QAsciiDict<int>* fdict = 0;" << endl;
@@ -335,33 +336,33 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	// close the 'process' function
 	str << "}" << endl << endl;
     
-	str << "QCStringList " << className;
+	str << "Q3CStringList " << className;
 	str << "::interfaces()" << endl;
 	str << "{" << endl;
 	if (!DCOPParent.isEmpty()) {
-	    str << "    QCStringList ifaces = " << DCOPParent << "::interfaces();" << endl;
+	    str << "    Q3CStringList ifaces = " << DCOPParent << "::interfaces();" << endl;
 	} else {
-	    str << "    QCStringList ifaces;" << endl;
+	    str << "    Q3CStringList ifaces;" << endl;
 	}
 	str << "    ifaces += \"" << classNameFull << "\";" << endl;
 	str << "    return ifaces;" << endl;
 	str << "}" << endl << endl;
 	
 	
-	str << "QCStringList " << className;
+	str << "Q3CStringList " << className;
 	str << "::functions()" << endl;
 	str << "{" << endl;
 	if (!DCOPParent.isEmpty()) {
-	    str << "    QCStringList funcs = " << DCOPParent << "::functions();" << endl;
+	    str << "    Q3CStringList funcs = " << DCOPParent << "::functions();" << endl;
 	} else {
-	    str << "    QCStringList funcs;" << endl;
+	    str << "    Q3CStringList funcs;" << endl;
 	}
 	str << "    for ( int i = 0; " << className << "_ftable[i][2]; i++ ) {" << endl;
         if (functions.count() > 0) {
 	    str << "\tif (" << className << "_ftable_hiddens[i])" << endl;
 	    str << "\t    continue;" << endl;
         }
-	str << "\tQCString func = " << className << "_ftable[i][0];" << endl;
+	str << "\tQ3CString func = " << className << "_ftable[i][0];" << endl;
 	str << "\tfunc += ' ';" << endl;
 	str << "\tfunc += " << className << "_ftable[i][2];" << endl;
 	str << "\tfuncs << func;" << endl;

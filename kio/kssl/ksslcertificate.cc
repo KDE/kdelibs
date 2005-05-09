@@ -268,8 +268,8 @@ QString rc = "";
 	for (unsigned int j = 0; j < n; j++) {
 		if (j > 0)
 			rc += ":";
-		rc.append(hv[(md[j]&0xf0)>>4]);
-		rc.append(hv[md[j]&0x0f]);
+		rc.append(QChar(hv[(md[j]&0xf0)>>4]));
+		rc.append(QChar(hv[md[j]&0x0f]));
 	}
 
 #endif
