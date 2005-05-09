@@ -32,19 +32,19 @@
 /*! @mainpage KUnitTest - a UnitTest library for KDE
  *
  * @section contents Contents
- * @li @ref background 
- * @li @ref usage 
- * @li @ref integration 
- * @li @ref module 
- * @li @ref advanced 
- * @li @ref scripts 
+ * @li @ref background
+ * @li @ref usage
+ * @li @ref integration
+ * @li @ref module
+ * @li @ref advanced
+ * @li @ref scripts
  *
  * @section background Background
  *
  * KUnitTest is based on the "in reality no one wants to write tests and
  * if it takes a lot of code no one will. So the less code to write the
  * better" design principle.
- * 
+ *
  * Copyright and credits:
  * @li (C) 2004 Zack Rusin (original author)
  * @li Brad Hards (import into CVS)
@@ -58,7 +58,7 @@
  * can be found in kdesdk/kunittest/example.
  *
  * There are roughly two ways to use the KUnitTest library. Either you create dynamically
- * loadable modules and use the kunittestmodrunner or kunittestguimodrunner programs to run 
+ * loadable modules and use the kunittestmodrunner or kunittestguimodrunner programs to run
  * the tests, or you use the kunittest/kunittestgui library to create your own test runner
  * application.
  *
@@ -72,19 +72,19 @@
  * @li module.h - defines macros to create a dynamically loadable module.
  *
  * @section usage Example usage
- * 
+ *
  * This section describes how to use the library to create your own tests and runner
  * application.
  *
  * Now lets see how you would add a new test to KUnitTest. You do that by
  * writting a Tester derived class which has an "allTests()" method:
- * 
- * @code   
+ *
+ * @code
  * class SampleTest : public Tester
  * {
  * public:
  *    SampleTest();
- * 
+ *
  *    void allTests();
  * };
  * @endcode
@@ -103,18 +103,18 @@
  * CHECK is implemented using a template, so you get type safe
  * comparison. All that is needed is that the argument types have an
  * operator==() defined.
- * 
+ *
  * Now that you did that the only other thing to do is to tell the
  * framework to add this test case, by using the KUNITTEST_REGISTER_TESTER(x) macro. Just
  * put the following line in the implementation file:
- * 
+ *
  * @code KUNITTEST_REGISTER_TESTER( SampleTest ); @endcode
- * 
+ *
  * Note the ;, it is necessary.
  *
  * KUnitTest will do the rest. It will tell you which tests failed, how, what was the expected
  * result, what was the result it got, what was the code that failed and so on. For example for
- * the code above it would output: 
+ * the code above it would output:
  *
  * @verbatim
 SampleTest - 1 test passed, 1 test failed
@@ -127,7 +127,7 @@ SampleTest - 1 test passed, 1 test failed
  * test results.
  *
  * @section integration Integration
- * 
+ *
  * The KUnitTest library is easy to use. Let's say that you have the tests written in the
  * sampletest.h and sampletest.cpp files. Then all you need is a main.cpp file and a Makefile.am.
  * You can copy both from the example file provided with the library. A typical main.cpp file
@@ -144,20 +144,20 @@ SampleTest - 1 test passed, 1 test failed
  * static const char description[] = I18N_NOOP("SampleTests");
  * static const char version[] = "0.1";
  * static KCmdLineOptions options[] = { KCmdLineLastOption };
- * 
+ *
  * int main( int argc, char** argv )
  * {
  *     KAboutData about("SampleTests", I18N_NOOP("SampleTests"), version, description,
  *                     KAboutData::License_BSD, "(C) 2005 You!", 0, 0, "mail@provider");
- * 
+ *
  *     KCmdLineArgs::init(argc, argv, &about);
  *     KCmdLineArgs::addCmdLineOptions( options );
  *     KApplication app;
- * 
+ *
  *     KUnitTest::RunnerGUI runner(0);
  *     runner.show();
  *     app.setMainWidget(&runner);
- * 
+ *
  *     return app.exec();
  * }
  * @endcode
@@ -172,7 +172,7 @@ SampleTest - 1 test passed, 1 test failed
  * sampletests_LDFLAGS = $(KDE_RPATH) $(all_libraries)
  * sampletests_LDADD = -lkunittest
  * noinst_HEADERS = sampletest.h
- * 
+ *
  * check:
  *    kunittest $(top_builddir)/src/sampletests SampleTests
  * @endcode
@@ -180,8 +180,8 @@ SampleTest - 1 test passed, 1 test failed
  * Most of this Makefile.am will be self-explanatory. After running
  * "make check" the binary "sampletests" will be built. The reason for
  * adding the extra make target "check" is that you probably do not want
- * to rebuild the test suite everytime you run make. 
- * 
+ * to rebuild the test suite everytime you run make.
+ *
  * You can run the binary on its own, but you get more functionality if you use
  * the kunittest helper script. The Makefile.am is set up in such
  * a way that this helper script is automatically run after you do a
@@ -191,7 +191,7 @@ SampleTest - 1 test passed, 1 test failed
  * via DCOP. The helper scripts relies on the Perl DCOP bindings, so these need to be installed.
  *
  * @section module Creating test modules
- * 
+ *
  * If you think that writing your own test runner if too much work then you can also
  * use the kunittestermodrunner application or the kunitguimodrunner script to run
  * the tests for you. You do have to put your tests in a dynamically loadable module though.
@@ -199,16 +199,16 @@ SampleTest - 1 test passed, 1 test failed
  *
  * First the good news, you don't have to change the header file sampletest.h. However, we
  * will rename it to samplemodule.h, so we remember we are making a module. The
- * implementation file should be rename to samplemodule.cpp. This file requires some 
+ * implementation file should be rename to samplemodule.cpp. This file requires some
  * modifications. First we need to include the module.h header:
- * 
+ *
  * @code
  * #include <kunittest/module.h>
  * @endcode
  *
  * This header file is needed because it defines some macro you'll need. In fact this is
  * how you use them:
- * 
+ *
  * @code
  * KUNITTEST_MODULE( kunittest_samplemodule, SampleModule );
  * KUNITTEST_MODULE_REGISTER_TESTER( SampleModule , SimpleSampleTester );
@@ -242,7 +242,7 @@ SampleTest - 1 test passed, 1 test failed
  * the tests in the module is now as easy as:
  *
  * @code
- * $ make check && kunittestmodrunner 
+ * $ make check && kunittestmodrunner
  * @endcode
  *
  * The kunittestmodrunner application loads all kunittest_*.la modules in the current
@@ -254,9 +254,9 @@ SampleTest - 1 test passed, 1 test failed
  *
  * This script starts kunittestguimodrunner application and a helper script to take
  * care of dealing with debug output.
- * 
+ *
  * @section advanced Advanced usage
- * 
+ *
  * Normally you just want to use CHECK(). If you are developing some more
  * tests, and they are run (or not) based on some external dependency,
  * you may need to skip some tests. In this case, rather than doing
@@ -267,7 +267,7 @@ SampleTest - 1 test passed, 1 test failed
  * @code
  *     SKIP( "Test skipped because of lack of foo support." );
  * @endcode
- * 
+ *
  * Similarly, you may have a test step that you know will fail, but you
  * don't want to delete the test step (because it is showing a bug), but
  * equally you can't fix it right now (eg it would break binary
@@ -275,14 +275,14 @@ SampleTest - 1 test passed, 1 test failed
  * might help to use XFAIL(), for "expected failure". The test will still
  * be run, and recorded as a failure (assuming it does fail), but will
  * also be recorded separately. Usage might be as follows:
- * 
+ *
  * @code
  *     XFAIL( 2+1, 4 );
  * @endcode
  *
  * You can mix CHECK(), SKIP() and XFAIL() within a single Tester derived
  * class.
- * 
+ *
  * @section scripts Scripts
  *
  * The library comes with several helper scripts:
@@ -305,14 +305,14 @@ using namespace std;
 
 /*! @def CHECK(x,y)
  * Use this macro to perform a check. For example
- * 
+ *
  * @code CHECK( numerOfErrors(), 0 ); @endcode
  */
 #define CHECK( x, y ) check( __FILE__, __LINE__, #x, x, y, false )
 
 /*! @def XFAIL(x,y)
  * Use this macro to perform a check you expect to fail. For example
- * 
+ *
  * @code XFAIL( numerOfErrors(), 1 ); @endcode
  *
  * If the test fails, it will be counted as such, however it will
@@ -322,7 +322,7 @@ using namespace std;
 
 /*! @def SKIP(x)
  * Use this macro to indicate that a test is skipped.
- * 
+ *
  * @code CHECK("Test skipped because of lack of foo support."); @endcode
  */
 #define SKIP( x ) skip( __FILE__, __LINE__, #x )
@@ -358,9 +358,9 @@ namespace KUnitTest
         /*! Add some debug info that can be view later. Normally you do not need to call this.
          * @param debug The debug info.
          */
-        virtual void addDebugInfo(const QString &debug) 
+        virtual void addDebugInfo(const QString &debug)
         {
-            m_debug += debug; 
+            m_debug += debug;
         }
 
         /*! @returns The debug info that was added to this Tester object.
@@ -384,7 +384,7 @@ namespace KUnitTest
 
         /*! @returns The number of passed tests. */
         int passed() const { return m_successList.count(); }
-    
+
         /*! @returns Details about the failed tests. */
         QStringList errorList() const { return m_errorList; }
 
@@ -417,8 +417,8 @@ namespace KUnitTest
 
     /*! The abstract Tester class forms the base class for all test cases. Users must
      * implement the void Tester::allTests() method. This method contains the actual test.
-     *  
-     * Use the CHECK(x,y), XFAIL(x,y) and SKIP(x) macros in the allTests() method 
+     *
+     * Use the CHECK(x,y), XFAIL(x,y) and SKIP(x) macros in the allTests() method
      * to perform the tests.
      *
      * @see CHECK, XFAIL, SKIP
@@ -431,12 +431,12 @@ namespace KUnitTest
         {}
 
         virtual ~Tester() { delete m_results; }
-    
+
     public:
         /*! Implement this method with the tests and checks you want to perform.
          */
         virtual void allTests() = 0L;
-    
+
     public:
         /*! @return The TestResults instance.
          */
@@ -446,7 +446,7 @@ namespace KUnitTest
         /*! This is called when the SKIP(x) macro is used.
          * @param file A C-string containing the name of the file where the skipped tests resides. Typically the __FILE__ macro is used to retrieve the filename.
          * @param line The linenumber in the file @p file. Use the __LINE__ macro for this.
-         * @param msg The message that identifies the skipped test. 
+         * @param msg The message that identifies the skipped test.
          */
         void skip( const char *file, int line, QString msg )
         {
@@ -455,11 +455,11 @@ namespace KUnitTest
             ts << file << "["<< line <<"]: " << msg;
             m_results->m_skipList.append( skipEntry );
         }
-    
+
         /*! This is called when the CHECK or XFAIL macro is used.
          * @param file A C-string containing the name of the file where the skipped tests resides. Typically the __FILE__ macro is used to retrieve the filename.
          * @param line The linenumber in the file @p file. Use the __LINE__ macro for this.
-         * @param str The message that identifies the skipped test. 
+         * @param str The message that identifies the skipped test.
          * @param result The result of the test.
          * @param expectedResult The expected result.
          * @param expectedFailure Indicates whether or not a failure is expected.
@@ -471,24 +471,24 @@ namespace KUnitTest
         {
             cout << "check:" << file << "["<< line <<"]" << endl;
 
-            if ( result != expectedResult ) 
+            if ( result != expectedResult )
             {
                 QString error;
                 QTextStream ts( &error, IO_WriteOnly );
-                ts << file << "["<< line <<"]: failed on \"" <<  str 
-                   <<"\" result = '" << result << " expected = '" << expectedResult << "'";
-                    
-                if ( expectedFailure ) 
+                ts << file << "["<< line <<"]: failed on \"" <<  str
+                   <<"\" result = '" << result << "' expected = '" << expectedResult << "'";
+
+                if ( expectedFailure )
                     m_results->m_xfailList.append( error );
-                else 
+                else
                     m_results->m_errorList.append( error );
-                
+
             }
-            else 
+            else
             {
-                // then the test passed, but we want to record it if 
+                // then the test passed, but we want to record it if
                 // we were expecting a failure
-                if (expectedFailure) 
+                if (expectedFailure)
                 {
                     QString error;
                     QTextStream ts( &error, IO_WriteOnly );
@@ -510,7 +510,7 @@ namespace KUnitTest
 
             ++m_results->m_tests;
         }
-    
+
     protected:
         TestResults *m_results;
     };
