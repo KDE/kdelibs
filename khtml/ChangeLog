@@ -1,3 +1,10 @@
+2005-05-09  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Speed-up white-space collapsing by only allocating once.
+
+        * renderer/render_table.cpp: Remove static function cleanString
+        * xml/dom_stringimpl.cpp: Add collapseWhiteSpace function
+
 2005-05-07  Harri Porten  <porten@kde.org>
 
 	* html/html_tableimpl.cpp (cellIndex): return meaningful values

@@ -75,6 +75,7 @@ public:
     };
 
     DOMStringImpl *substring(unsigned int pos, unsigned int len);
+    DOMStringImpl *collapseWhiteSpace(bool preserveLF, bool preserveWS);
 
     const QChar &operator [] (int pos) { return s[pos]; }
     bool containsOnlyWhitespace() const;
