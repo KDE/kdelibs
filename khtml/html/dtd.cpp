@@ -147,7 +147,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     1, // ID_U
     5, // ID_UL
     1, // ID_VAR
-    4, // ID_WBR
+    1, // ID_WBR
     5, // ID_XMP
     0, // ID_TEXT
 };
@@ -254,7 +254,7 @@ const tagStatus DOM::endTag[] = {
     REQUIRED,  // ID_U
     REQUIRED,  // ID_UL
     REQUIRED,  // ID_VAR
-    REQUIRED,  // ID_WBR
+    OPTIONAL,  // ID_WBR
     REQUIRED,  // ID_XMP
     REQUIRED   // ID_TEXT
 };
@@ -650,8 +650,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_MAP:
 	// We accept SCRIPT in client-side image maps as an extension to the DTD.
         // MAP: ( _3 + | AREA + | SCRIPT + )
-        return check_array(childID, tag_list_3) || 
-            childID == ID_AREA || 
+        return check_array(childID, tag_list_3) ||
+            childID == ID_AREA ||
             childID == ID_SCRIPT;
     case ID_OBJECT:
     case ID_EMBED:
