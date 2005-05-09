@@ -32,6 +32,7 @@
 #include <qvariant.h>
 #include <qmap.h>
 #include <q3cstring.h>
+#include <q3valuelist.h>
 
 #include "kconfigdata.h"
 #include "kdelibs_export.h"

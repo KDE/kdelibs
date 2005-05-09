@@ -23,6 +23,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 
+#include <q3frame.h>
 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
                                  KStatusBar *parent, const char *name) :

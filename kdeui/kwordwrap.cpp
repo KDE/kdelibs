@@ -173,9 +173,9 @@ QString KWordWrap::truncatedString( bool dots ) const
 }
 
 static QColor mixColors(double p1, QColor c1, QColor c2) {
-  return QColor(int(c1.Qt::red() * p1 + c2.Qt::red() * (1.0-p1)),
-                int(c1.Qt::green() * p1 + c2.Qt::green() * (1.0-p1)),
-		int(c1.Qt::blue() * p1 + c2.Qt::blue() * (1.0-p1)));
+  return QColor(int(c1.red() * p1 + c2.red() * (1.0-p1)),
+                int(c1.green() * p1 + c2.green() * (1.0-p1)),
+		int(c1.blue() * p1 + c2.blue() * (1.0-p1)));
 }
 
 void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
@@ -185,7 +185,7 @@ void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
     QColor textColor = p->pen().color();
 
     if ( ( fm.boundingRect( t ).width() > maxW ) && ( t.length() > 1 ) ) {
-        unsigned int tl = 0;
+        int tl = 0;
         int w = 0;
         while ( tl < t.length() ) {
             w += fm.charWidth( t, tl );

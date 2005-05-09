@@ -37,7 +37,7 @@ public:
   KDateWidgetSpinBox(int min, int max, QWidget *parent)
     : QSpinBox(min, max, 1, parent)
   {
-     editor()->setAlignment(Qt::AlignRight);
+     lineEdit()->setAlignment(Qt::AlignRight);
   }
 };
 

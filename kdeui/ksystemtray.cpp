@@ -38,6 +38,7 @@
 #include <kconfig.h>
 
 #include <qapplication.h>
+#include <qevent.h>
 
 class KSystemTrayPrivate
 {

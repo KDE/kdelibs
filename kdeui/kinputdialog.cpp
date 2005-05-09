@@ -225,7 +225,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
     for ( QStringList::ConstIterator it=select.begin(); it!=select.end(); ++it )
     {
-      item = d->m_listBox->findItem( *it, Qt::CaseSensitive|ExactMatch );
+      item = d->m_listBox->findItem( *it, Qt::CaseSensitive|Q3ListBox::ExactMatch );
       if ( item )
         d->m_listBox->setSelected( item, true );
     }
@@ -238,7 +238,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
       SLOT( slotOk() ) );
 
     QString text = select.first();
-    item = d->m_listBox->findItem( text, Qt::CaseSensitive|ExactMatch );
+    item = d->m_listBox->findItem( text, Qt::CaseSensitive|Q3ListBox::ExactMatch );
     if ( item )
       d->m_listBox->setSelected( item, true );
   }

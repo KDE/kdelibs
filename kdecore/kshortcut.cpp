@@ -23,6 +23,7 @@
 
 #include <qevent.h>
 #include <qstringlist.h>
+#include <qtextstream.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -114,7 +115,7 @@ bool KKey::init( const QString& sSpec )
 		sKey = sKey.left( sKey.length() - 1 ) + "plus";
 	QStringList rgs = QStringList::split( '+', sKey, true );
 
-	uint i;
+	int i;
 	// Check for modifier keys first.
 	for( i = 0; i < rgs.size(); i++ ) {
 		QString s = rgs[i].lower();

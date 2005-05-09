@@ -34,7 +34,7 @@
 #include "ktabwidget.h"
 
 KTabBar::KTabBar( QWidget *parent, const char *name )
-    : QTabBar( parent, name ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
+    : QTabBar( parent ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
       mHoverCloseButtonTab( 0 ), mDragSwitchTab( 0 ), mHoverCloseButton( 0 ),
       mHoverCloseButtonEnabled( false ), mHoverCloseButtonDelayed( true ),
       mTabReorderingEnabled( false ), mTabCloseActivatePrevious( false )

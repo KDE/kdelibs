@@ -22,6 +22,7 @@
 #include "ksycocatype.h"
 
 #include <qstringlist.h>
+#include <q3valuelist.h>
 #include <ksharedptr.h>
 class QDataStream;
 

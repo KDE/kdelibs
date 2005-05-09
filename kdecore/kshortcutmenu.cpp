@@ -20,6 +20,7 @@
 #include <qkeysequence.h>
 #include <qlabel.h>
 #include <q3popupmenu.h>
+#include <q3frame.h>
 
 #include "kaccelaction.h"
 #include <kdebug.h>

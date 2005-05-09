@@ -22,6 +22,7 @@
 #define KTABBAR_H
 
 #include <qtabbar.h>
+#include <qmap.h>
 
 #include <kdelibs_export.h>
 

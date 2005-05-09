@@ -21,6 +21,7 @@
 
 #include <q3dragobject.h>
 #include <q3whatsthis.h>
+#include <qevent.h>
 
 #include "config.h"
 

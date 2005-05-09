@@ -179,7 +179,7 @@ public:
      * @param value Strength of the effect. 0 <= @p value <= 1
      * @since 3.4
      */
-    static void toMonochrome(QImage &image, const QColor &Qt::black, const QColor &Qt::white, float value);
+    static void toMonochrome(QImage &image, const QColor &black, const QColor &white, float value);
 
     /**
      * Desaturates an image.
