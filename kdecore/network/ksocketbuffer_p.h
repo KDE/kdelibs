@@ -153,7 +153,7 @@ public:
 protected:
   mutable QMutex m_mutex;
   Q3ValueList<QByteArray> m_list;
-  Q_LONGLONG m_offset;	///< offset of the start of data in the first element
+  qlonglong m_offset;	///< offset of the start of data in the first element
 
   Q_LONG m_size;		///< the maximum length of the buffer
   mutable Q_LONG m_length;

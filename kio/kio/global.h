@@ -34,9 +34,9 @@
 namespace KIO
 {
   /// 64-bit file offset
-  typedef Q_LONGLONG fileoffset_t;
+  typedef qlonglong fileoffset_t;
   /// 64-bit file size
-  typedef Q_ULONGLONG filesize_t;
+  typedef qulonglong filesize_t;
 
   /**
    * Converts @p size from bytes to the string representation.

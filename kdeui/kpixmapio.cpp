@@ -17,6 +17,7 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qglobal.h>
+#include <qvector.h>
 
 #include <kglobal.h>
 #include <kconfig.h>

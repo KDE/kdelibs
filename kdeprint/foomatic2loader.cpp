@@ -23,6 +23,7 @@
 #include <qfile.h>
 #include <qregexp.h>
 #include <qbuffer.h>
+#include <q3valuelist.h>
 #include <kdebug.h>
 #include <klocale.h>
 

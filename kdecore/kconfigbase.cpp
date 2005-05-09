@@ -26,6 +26,7 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qtextstream.h>
+#include <q3valuelist.h>
 
 #include <kapplication.h>
 #include <kglobal.h>

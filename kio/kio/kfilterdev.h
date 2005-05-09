@@ -77,13 +77,13 @@ public:
     void setSkipHeaders();
 
     // Not implemented
-    virtual Q_LONGLONG size() const;
+    virtual qlonglong size() const;
 
-    virtual Q_LONGLONG at() const;
+    virtual qlonglong at() const;
     /**
      * That one can be quite slow, when going back. Use with care.
      */
-    virtual bool at( Q_LONGLONG );
+    virtual bool at( qlonglong );
 
     virtual bool atEnd() const;
 

@@ -3092,7 +3092,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 	len = 1;
 	break;
 
-    case Qt::ToolBarDock:
+    case ToolBarDock:
 	data[0] = net_wm_window_type_dock;
 	data[1] = None;
 	len = 1;
