@@ -34,8 +34,8 @@ namespace khtml
     const int UNDEFINED = -1;
 
     // alignment
-    enum VAlign { VNone=0, Qt::DockBottom, VCenter, Qt::DockTop, Baseline };
-    enum HAlign { HDefault, Qt::DockLeft, HCenter, Qt::DockRight, HNone = 0 };
+    enum VAlign { VNone=0, Bottom, VCenter, Top, Baseline };
+    enum HAlign { HDefault, Left, HCenter, Right, HNone = 0 };
 
     /*
      * %multiLength and %Length

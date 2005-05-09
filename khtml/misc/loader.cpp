@@ -49,8 +49,8 @@
 #define DEFCACHESIZE 2096*1024
 #define MAX_JOB_COUNT 32
 
-#include <qasyncio.h>
-#include <qasyncimageio.h>
+//#include <qasyncio.h>
+//#include <qasyncimageio.h>
 #include <qpainter.h>
 #include <qbitmap.h>
 #include <qmovie.h>

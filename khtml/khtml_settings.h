@@ -26,6 +26,7 @@ class KConfig;
 #include <qstringlist.h>
 #include <qfont.h>
 #include <qmap.h>
+#include <qpair.h>
 
 #include <kdelibs_export.h>
 

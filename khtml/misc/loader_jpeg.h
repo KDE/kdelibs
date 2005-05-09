@@ -26,6 +26,8 @@
 #ifndef _khtml_loader_jpeg_h
 #define _khtml_loader_jpeg_h
 
+#if 0 // TODO wait
+
 #include <qasyncimageio.h>
 
 namespace khtml
@@ -44,6 +46,7 @@ namespace khtml
 
 }
 
+#endif
 
 // -----------------------------------------------------------------------------
 

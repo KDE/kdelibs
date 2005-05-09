@@ -417,7 +417,7 @@ namespace khtml
 	Q3PtrList<Request> m_requestsPending;
 	Q3PtrDict<Request> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
-        KJPEGFormatType m_jpegloader;
+        // TODO KJPEGFormatType m_jpegloader;
 #endif
         QTimer m_timer;
     };
