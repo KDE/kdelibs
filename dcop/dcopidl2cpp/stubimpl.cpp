@@ -205,7 +205,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	
 		str << "    QByteArray data;" << endl;
 		if ( !args.isEmpty() ) {
-		    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
+		    str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
 		    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 			str << "    arg << " << *args_count << ";" << endl;
 		    }
@@ -240,7 +240,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		str << "    QCString replyType;" << endl;
 	
 		if ( !args.isEmpty() ) {
-		    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
+		    str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
 		    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 			str << "    arg << " << *args_count << ";" << endl;
 		    }
@@ -249,7 +249,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		str << " data, replyType, replyData ) ) {" << endl;
 		if ( result != "void" ) {
 		    str << "\tif ( replyType == \"" << result << "\" ) {" << endl;
-		    str << "\t    QDataStream _reply_stream( replyData, IO_ReadOnly );"  << endl;
+		    str << "\t    QDataStream _reply_stream( replyData );"  << endl;
 		    str << "\t    _reply_stream >> result;" << endl;
 		    str << "\t    setStatus( CallSucceeded );" << endl;
 		    str << "\t} else {" << endl;

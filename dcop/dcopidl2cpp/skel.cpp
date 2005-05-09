@@ -279,7 +279,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    str << '\t'<< *ittypes << " " << *args_count << ";" <<  endl;
 		    ++ittypes;
 		}
-		str << "\tQDataStream arg( data, IO_ReadOnly );" << endl;
+		str << "\tQDataStream arg( data );" << endl;
 		for( args_count = args.begin(); args_count != args.end(); ++args_count ){
 		    str << "\tif (arg.atEnd()) return false;" << endl; // Basic error checking
 		    str << "\targ >> " << *args_count << ";" << endl;
@@ -290,7 +290,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    if ( funcType == "void" ) {
 		str << '\t' << plainFuncName << '(';
 	    } else {
-		str << "\tQDataStream _replyStream( replyData, IO_WriteOnly );"  << endl;
+		str << "\tQDataStream _replyStream( &replyData, IO_WriteOnly );"  << endl;
 		str << "\t_replyStream << " << plainFuncName << '(';
 	    }
 
@@ -424,7 +424,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	
 	    str << "    QByteArray data;" << endl;
 	    if ( !args.isEmpty() ) {
-		str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
+		str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
 		for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 		    str << "    arg << " << *args_count << ";" << endl;
 		}
