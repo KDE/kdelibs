@@ -2230,7 +2230,7 @@ void KDirLister::aboutToRefreshItem( const KFileItem *item )
   // The code here follows the logic in addNewItem
   if ( ( d->dirOnlyMode && !item->isDir() ) || !matchesFilter( item ) )
     d->refreshItemWasFiltered = true;
-  else if ( matchesMimeFilter( item ) )
+  else if ( !matchesMimeFilter( item ) )
     d->refreshItemWasFiltered = true;
   else
     d->refreshItemWasFiltered = false;
