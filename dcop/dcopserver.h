@@ -27,7 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef Q_OS_UNIX //not available yet for win32
 
 
-#include <Q3AsciiDict>
+#include <q3asciidict.h>
 #include <Q3CString>
 #include <Q3ValueList>
 #include <QTextStream>

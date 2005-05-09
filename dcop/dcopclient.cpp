@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <Q3CString>
 #include <Q3StrList>
 #include <Q3ValueList>
-#include <Q3AsciiDict>
+#include <q3asciidict.h>
 
 
 // qt <-> dcop integration

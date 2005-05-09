@@ -174,7 +174,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         QImage i;
         stream >> i;
         QByteArray ba;
-        QBuffer buf( ba );
+        QBuffer buf( &ba );
         buf.open( QIODevice::WriteOnly );
         i.save( &buf, "XPM" );
         result = ba;
