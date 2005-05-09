@@ -132,7 +132,7 @@ namespace KUnitTest
         /*! @returns The number of passed tests. */
         int numberOfPassedTests() const;
 
-        /*! @returns The number of failed tests. */
+        /*! @returns The number of failed tests, this includes the number of expected failures. */
         int numberOfFailedTests() const;
 
         /*! @returns The number of failed tests which were expected. */

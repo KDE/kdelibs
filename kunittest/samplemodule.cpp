@@ -36,5 +36,5 @@ KUNITTEST_MODULE_REGISTER_TESTER( SampleTester );
 void SampleTester::allTests()
 {
   int i = 2;
-  CHECK( i + 2, 4 );
+  CHECK( i + 2, 3 );
 }

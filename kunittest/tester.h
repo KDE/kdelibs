@@ -235,8 +235,11 @@ SampleTest - 1 test passed, 1 test failed
  * check_LTLIBRARIES = kunittest_samplemodule.la
  * kunittest_samplemodule_la_SOURCES = samplemodule.cpp
  * kunittest_samplemodule_la_LIBADD = -lkunittest
- * kunittest_samplemodule_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries) -rpath $(libdir)
+ * kunittest_samplemodule_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
  * @endcode
+ *
+ * The $(KDE_CHECK_PLUGIN) macro is there to make sure a dynamically loadable
+ * module is created.
  *
  * After you have built the module you open a Konsole and cd into the build folder. Running
  * the tests in the module is now as easy as:
@@ -246,7 +249,9 @@ SampleTest - 1 test passed, 1 test failed
  * @endcode
  *
  * The kunittestmodrunner application loads all kunittest_*.la modules in the current
- * directory. If you want the GUI, you should use the kunittestmod script:
+ * directory. The exit code of this console application is the number of unexpected failures.
+ *
+ * If you want the GUI, you should use the kunittestmod script:
  *
  * @code
  * $ make check && kunittestmod
