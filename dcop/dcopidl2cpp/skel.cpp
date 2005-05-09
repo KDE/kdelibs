@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qtextstream.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <q3valuelist.h>
 
 #include <string.h>
 #include <stdlib.h>
