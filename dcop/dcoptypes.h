@@ -52,7 +52,7 @@ class QSize; inline const char* dcopTypeName( const QSize& ) { return "QSize"; }
 class QColor; inline const char* dcopTypeName( const QColor& ) { return "QColor"; }
 class QPalette; inline const char* dcopTypeName( const QPalette& ) { return "QPalette"; }
 class QColorGroup; inline const char* dcopTypeName( const QColorGroup& ) { return "QColorGroup"; }
-class QIconSet; inline const char* dcopTypeName( const QIconSet& ) { return "QIconSet"; }
+class QIcon; inline const char* dcopTypeName( const QIcon& ) { return "QIcon"; }
 class QDataStream; inline const char* dcopTypeName( const QDataStream& ) { return "QDataStream"; }
 class QPointArray; inline const char* dcopTypeName( const QPointArray& ) { return "QPointArray"; }
 class QRegion; inline const char* dcopTypeName( const QRegion& ) { return "QRegion"; }
