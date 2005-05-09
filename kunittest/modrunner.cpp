@@ -62,5 +62,5 @@ int main( int argc, char **argv )
 
     KUnitTest::Runner::self()->runTests();
 
-    return KUnitTest::Runner::self()->numberOfFailedTests();
+    return KUnitTest::Runner::self()->numberOfFailedTests() - KUnitTest::Runner::self()->numberOfExpectedFailures();
 }

@@ -14,15 +14,14 @@ kunittestmodrunner_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kunittestmodrunner_LDADD = libkunittest.la $(LIB_KDECORE)
 kunittestmodrunner_SOURCES = modrunner.cpp
 
-# Don't install the module, the KLibLoader will otherwise also pick up those
-# also, it is not a good idea to pollute our poor users' hd with test-cases.
-# The check_ target makes sure we don't install the modules, the -rpath ($libdir)
-# flag assures a shared library is created.
+# The check_ target makes sure we don't install the modules,
+# $(KDE_CHECK_PLUGIN) assures a shared library is created.
 check_LTLIBRARIES = kunittest_samplemodule.la
 kunittest_samplemodule_la_SOURCES = samplemodule.cpp
 kunittest_samplemodule_la_LIBADD = libkunittest.la
 kunittest_samplemodule_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
 
-TESTS = kunittestmodrunner
+check-local:
+	./kunittestmodrunner
 
 include ../admin/Doxyfile.am

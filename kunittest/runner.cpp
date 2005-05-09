@@ -74,8 +74,10 @@ namespace KUnitTest
                 KLibFactory *factory = KLibLoader::self()->factory(module.local8Bit());
                 if ( factory )
                     factory->create();
-                else
+                else {
                     kdWarning() << "\tError loading " << module << " : " << KLibLoader::self()->lastErrorMessage() << endl;
+                    ::exit( 1 );
+                }
             }
             else
                 kdDebug() << "\tModule doesn't match." << endl;
@@ -118,7 +120,12 @@ namespace KUnitTest
 
     int Runner::numberOfFailedTests() const
     {
-        return globalFails - globalXFails; // must return 0 when "all is well"
+        return globalFails;
+    }
+
+    int Runner::numberOfExpectedFailures() const
+    {
+        return globalXFails;
     }
 
     int Runner::numberOfSkippedTests() const
@@ -144,13 +151,14 @@ namespace KUnitTest
         globalXFails = 0;
         globalXPasses = 0;
         globalSkipped = 0;
-        
+
         cout << "# Running normal tests... #" << endl << endl;
         RegistryIteratorType it(m_registry);
-    
-        for( ; it.current(); ++it ) 
+
+        for( ; it.current(); ++it )
             runTest(it.currentKey());
-    
+
+#if 0 // very thorough, but not very readable
         cout << "# Done with normal tests:" << endl;
         cout << "  Total test cases: " << m_registry.count() << endl;
         cout << "  Total test steps                                 : " << globalSteps << endl;
@@ -159,7 +167,24 @@ namespace KUnitTest
         cout << "    Total failed test steps (including expected)   :  " << globalFails << endl;
         cout << "      Total expected failed test steps             :  " << globalXFails << endl;
         cout << "    Total skipped test steps                       :  " << globalSkipped << endl;
-    
+#else
+        unsigned int numTests = m_registry.count(); // should this be globalSteps instead?
+        QString str;
+        if ( globalFails == 0 )
+            if ( globalXFails == 0 )
+                str = QString( "All %1 tests passed" ).arg( numTests );
+            else
+                str = QString( "All %1 tests behaved as expected (%2 expected failures)" ).arg( numTests ).arg( globalXFails );
+        else
+            if ( globalXPasses == 0 )
+                str = QString( "%1 of %2 tests failed" ).arg( globalFails ).arg( numTests );
+            else
+                str = QString( "%1 of %2 tests did not behave as expected (%1 unexpected passes)" ).arg( globalFails ).arg( numTests ).arg( globalXPasses );
+        if ( globalSkipped )
+            str += QString( " (%1 tests skipped)" ).arg( globalSkipped );
+        cout << str.local8Bit() << endl;
+#endif
+
         return m_registry.count();
     }
 
@@ -180,14 +205,14 @@ namespace KUnitTest
 
         test->results()->clear();
         test->allTests();
-    
+
         cout << "KUnitTest_Debug_End[" << name << "]" << endl << endl << flush;
 
-        int numPass = 0; 
-        int numFail = 0; 
+        int numPass = 0;
+        int numFail = 0;
         int numXFail = 0;
         int numXPass = 0;
-        int numSkip = 0; 
+        int numSkip = 0;
 
         if ( test->inherits("KUnitTest::SlotTester") )
         {
@@ -212,14 +237,14 @@ namespace KUnitTest
             numSkip= test->results()->skipped();
             globalSteps += test->results()->testsFinished();
         }
-    
-        
+
+
         globalPasses += numPass;
         globalFails += numFail;
         globalXFails += numXFail;
         globalXPasses += numXPass;
         globalSkipped += numSkip;
-    
+
         cout << name << " - ";
         cout << numPass << " test" << ( ( 1 == numPass )?"":"s") << " passed";
         if ( 0 < test->results()->xpassList().count() ) {
@@ -231,9 +256,9 @@ namespace KUnitTest
         }
         if ( 0 < numSkip ) {
             cout << "; also " << numSkip << " skipped";
-        }   
+        }
         cout  << endl;
-    
+
         if ( 0 < numXPass  ) {
         cout << "    Unexpected pass" << ( ( 1 == numXPass )?"":"es") << ":" << endl;
         QStringList list = test->results()->xpassList();
