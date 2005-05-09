@@ -3101,13 +3101,6 @@ bool KJS::HTMLCollection::toBoolean(ExecState *) const {
     return !hidden;
 }
 
-Type KJS::HTMLCollection::type() const {
-    if (hidden) // what, me? No, I do not exist..
-        return UndefinedType;
-    else
-        return ObjectImp::type();
-}
-
 // We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
 // ## this breaks "for (..in..)" though.
 bool KJS::HTMLCollection::hasProperty(ExecState *exec, const Identifier &p) const
