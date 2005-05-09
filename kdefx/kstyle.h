@@ -40,6 +40,8 @@
 
 struct QStyleOptionProgressBar;
 
+#include <kdelibs_export.h>
+
 /**
  ### ### TODO:Where does visualRect fit in? Probably should be done already before calling drawKStylePrimitive?
  ...
@@ -50,7 +52,7 @@ All the  basic PE_Primitive calls are also broken down to KStylePrimitive calls 
  
  Note that those not mentionned here are not redirected
 */
-class KStyle: public QCommonStyle
+class KDEFX_EXPORT KStyle: public QCommonStyle
 {
 public:
     KStyle();
