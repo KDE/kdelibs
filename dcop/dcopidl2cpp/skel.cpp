@@ -166,7 +166,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	}
     
 	str << "#include <kdatastream.h>" << endl;
-        str << "#include <q3cstring.h" << endl;
+        str << "#include <q3cstring.h>" << endl;
 
 	bool useHashing = functions.count() > 7;
 	if ( useHashing ) {
