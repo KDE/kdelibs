@@ -34,6 +34,7 @@ class KeyNameMap;
 #include <qsize.h>
 #include <qvariant.h>
 #include <qmap.h>
+#include <q3cstring.h>
 
 /**
  * The class KabKey is used to select entries out of the database file.

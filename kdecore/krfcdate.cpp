@@ -30,6 +30,7 @@
 #include <qstringlist.h>
 
 #include <krfcdate.h>
+#include <q3cstring.h>
 
 static unsigned int ymdhms_to_seconds(int year, int mon, int day, int hour, int minute, int second)
 {

@@ -24,6 +24,7 @@
 #include <qdir.h>
 #include <qtimer.h>
 #include <q3objectdict.h>
+#include <q3cstring.h>
 
 #include "kapplication.h"
 #include "klibloader.h"

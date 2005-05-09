@@ -16,6 +16,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <q3ptrlist.h>
+#include <q3valuelist.h>
 #include "kdelibs_export.h"
 
 class KConfig;

@@ -37,6 +37,7 @@ typedef void Display;
 
 #include <qapplication.h>
 #include <qpixmap.h>
+#include <q3cstring.h>
 #include <kinstance.h>
 
 struct _IceConn;

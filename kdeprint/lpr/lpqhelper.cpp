@@ -25,6 +25,7 @@
 #include <kstandarddirs.h>
 #include <kprocess.h>
 #include <kdebug.h>
+#include <qtextstream.h>
 
 LpqHelper::LpqHelper(QObject *parent, const char *name)
 : QObject(parent, name)

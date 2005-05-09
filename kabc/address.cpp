@@ -28,6 +28,7 @@
 #include <kstaticdeleter.h>
 
 #include <qfile.h>
+#include <qtextstream.h>
 
 using namespace KABC;
 

@@ -300,6 +300,7 @@ using namespace std;
 #include <qobject.h>
 #include <qstringlist.h>
 #include <q3asciidict.h>
+#include <qtextstream.h>
 
 #include <kdelibs_export.h>
 

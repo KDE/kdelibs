@@ -180,7 +180,7 @@ class KDECORE_EXPORT kdbgstream {
      * @param i the long long to print
      * @return this stream
      */
-    kdbgstream &operator<<(Q_LONGLONG i) {
+    kdbgstream &operator<<(qlonglong i) {
         if (!print) return *this;
         QString tmp; tmp.setNum(i); output += tmp;
         return *this;
@@ -190,7 +190,7 @@ class KDECORE_EXPORT kdbgstream {
      * @param i the unsigned long long to print
      * @return this stream
      */
-    kdbgstream &operator<<(Q_ULONGLONG i) {
+    kdbgstream &operator<<(qulonglong i) {
         if (!print) return *this;
         QString tmp; tmp.setNum(i); output += tmp;
         return *this;
@@ -533,12 +533,12 @@ class KDECORE_EXPORT kndbgstream {
      * Does nothing.
      * @return this stream
      */
-    kndbgstream& operator<<(Q_LONGLONG) { return *this; }
+    kndbgstream& operator<<(qlonglong) { return *this; }
     /**
      * Does nothing.
      * @return this stream
      */
-    kndbgstream& operator<<(Q_ULONGLONG) { return *this; }
+    kndbgstream& operator<<(qulonglong) { return *this; }
     /**
      * Does nothing.
      * @return this stream

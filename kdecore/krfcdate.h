@@ -21,6 +21,7 @@
 #define _KRFCDATE_H_
 
 #include <qstring.h>
+#include <q3cstring.h>
 #include <time.h>
 #include "kdelibs_export.h"
 

@@ -38,6 +38,7 @@
 
 #include <qglobal.h>
 #include <qstring.h>
+#include <q3cstring.h>
 #include <qiodevice.h>
 #include "kdelibs_export.h"
 

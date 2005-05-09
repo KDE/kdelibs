@@ -51,6 +51,7 @@
 #include "kresolver.h"
 #include "ksocketaddress.h"
 #include "kresolverstandardworkers_p.h"
+#include <qtextstream.h>
 
 struct hostent;
 struct addrinfo;

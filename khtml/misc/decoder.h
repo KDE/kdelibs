@@ -23,6 +23,7 @@
 #define KHTMLDECODER_H
 
 #include <qstring.h>
+#include <q3cstring.h>
 class QTextCodec;
 class QTextDecoder;
 

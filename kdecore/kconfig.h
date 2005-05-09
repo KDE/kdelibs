@@ -25,6 +25,7 @@
 class QTimer;
 
 #include <q3valuelist.h>
+#include <q3cstring.h>
 
 #include "kconfigbase.h"
 #include "klockfile.h"

@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <qfile.h>
+#include <q3cstring.h>
 
 #define BUFFER_SIZE 8*1024
 
