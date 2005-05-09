@@ -418,16 +418,6 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 	if ( fi.isReadable() )
 	    result.append( fi.fileName() );
     }
-#if 0
-    QFileInfo *fi;
-
-    while ( ( fi = it.current() ) != 0 )
-    {
-	if( fi->isReadable() )
-	    result.append( fi->fileName() );
-	++it;
-    }
-#endif
     return result;
 }
 
