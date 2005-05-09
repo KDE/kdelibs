@@ -52,7 +52,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kstyle.h>
+//#include <kstyle.h>
 #include <kiconloader.h>
 #include <kclipboard.h>
 #include <kconfig.h>
@@ -1901,7 +1901,7 @@ void KApplication::applyGUIStyle()
     if ( !useStyles ) return;
 
     KConfigGroup pConfig (KGlobal::config(), "General");
-    QString defaultStyle = KStyle::defaultStyle();
+    QString defaultStyle;// = KStyle::defaultStyle(); ### wait for KStyle4 
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
     if (d->overrideStyle.isEmpty()) {
