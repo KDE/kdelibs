@@ -29,7 +29,8 @@ class DCOPStubPrivate;
 
 #include <stdlib.h>
 
-#include <qstring.h>
+#include <Qt3Support/q3cstring.h>
+#include <Qt/qstring.h>
 #include "kdelibs_export.h"
 
 /**

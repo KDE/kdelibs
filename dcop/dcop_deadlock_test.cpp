@@ -39,7 +39,7 @@ MyDCOPObject::MyDCOPObject(const Q3CString &name, const Q3CString &remoteName)
 bool MyDCOPObject::process(const Q3CString &fun, const QByteArray &data,
 Q3CString& replyType, QByteArray &replyData)
 {
-  if (fun == "function(QCString)") {
+  if (fun == "function(Q3CString)") {
     QDataStream args( data, QIODevice::ReadOnly );
     args >>  m_remoteName;
 

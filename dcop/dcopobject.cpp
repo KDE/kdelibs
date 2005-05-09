@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 #include <dcopclient.h>
 
+
 QMap<Q3CString, DCOPObject *> *kde_dcopObjMap = 0;
 
 static inline QMap<Q3CString, DCOPObject *> *objMap()
@@ -167,13 +168,13 @@ bool DCOPObject::process(const Q3CString &fun, const QByteArray &data,
 			 Q3CString& replyType, QByteArray &replyData)
 {
     if ( fun == "interfaces()" ) {
-	replyType = "QCStringList";
-	QDataStream reply( replyData, QIODevice::WriteOnly );
+	replyType = "Q3CStringList";
+	QDataStream reply( &replyData, IO_WriteOnly );
 	reply << interfaces();
 	return true;
     } else  if ( fun == "functions()" ) {
-	replyType = "QCStringList";
-	QDataStream reply( replyData, QIODevice::WriteOnly );
+	replyType = "Q3CStringList";
+	QDataStream reply( &replyData, IO_WriteOnly );
 	reply << functions();
 	return true;
     }
@@ -184,29 +185,29 @@ bool DCOPObject::processDynamic( const Q3CString&, const QByteArray&, Q3CString&
 {
     return false;
 }
-QCStringList DCOPObject::interfacesDynamic()
+Q3CStringList DCOPObject::interfacesDynamic()
 {
-    QCStringList result;
+    Q3CStringList result;
     return result;
 }
 
-QCStringList DCOPObject::functionsDynamic()
+Q3CStringList DCOPObject::functionsDynamic()
 {
-    QCStringList result;
+    Q3CStringList result;
     return result;
 }
-QCStringList DCOPObject::interfaces()
+Q3CStringList DCOPObject::interfaces()
 {
-    QCStringList result = interfacesDynamic();
+    Q3CStringList result = interfacesDynamic();
     result << "DCOPObject";
     return result;
 }
 
-QCStringList DCOPObject::functions()
+Q3CStringList DCOPObject::functions()
 {
-    QCStringList result = functionsDynamic();
-    result.prepend("QCStringList functions()");
-    result.prepend("QCStringList interfaces()");
+    Q3CStringList result = functionsDynamic();
+    result.prepend("Q3CStringList functions()");
+    result.prepend("Q3CStringList interfaces()");
     return result;
 }
 

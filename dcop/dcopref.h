@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _DCOPREF_H
 #define _DCOPREF_H
 
-#include <q3cstring.h>
+#include <Qt/q3cstring.h>
 #include <dcoptypes.h>
 #include <kdatastream.h> // needed for proper bool marshalling
 #include "kdelibs_export.h"
@@ -55,7 +55,7 @@ public:
 	T t;
 	dcopTypeInit(t);
 	if ( typeCheck( dcopTypeName(t), true ) ) {
-	    QDataStream reply( data, QIODevice::ReadOnly );
+	    QDataStream reply( data, IO_ReadOnly );
 	    reply >> t;
 	}
 	return t;
@@ -69,7 +69,7 @@ public:
    */
     template <class T> bool get(  T& t, const char* tname ) {
 	if ( typeCheck( tname, false ) ) {
-	    QDataStream reply( data, QIODevice::ReadOnly );
+	    QDataStream reply( data, IO_ReadOnly );
 	    reply >> t;
 	    return true;
 	}
@@ -85,7 +85,7 @@ public:
    */
     template <class T> bool get(  T& t ) {
 	if ( typeCheck( dcopTypeName(t), false ) ) {
-	    QDataStream reply( data, QIODevice::ReadOnly );
+	    QDataStream reply( data, IO_ReadOnly );
 	    reply >> t;
 	    return true;
 	}
@@ -130,7 +130,7 @@ public:
     template <class T> DCOPArg( const T& t, const char* tname_arg )
 	: tname(tname_arg)
 	{
-	    QDataStream ds( data, QIODevice::WriteOnly );
+	    QDataStream ds( data, IO_WriteOnly );
 	    ds << t;
 	}
     /**
@@ -144,7 +144,7 @@ public:
     template <class T> DCOPArg( const T& t )
 	: tname( dcopTypeName(t) )
 	{
-	    QDataStream ds( data, QIODevice::WriteOnly );
+	    QDataStream ds( data, IO_WriteOnly );
 	    ds << t;
 	}
 
@@ -177,7 +177,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *	k_dcop:
  *	   DCOPRef giveMeAnotherObject();
  *	   int doSomething( QString, float, bool );
- *	   ASYNC pingMe( QCString message );
+ *	   ASYNC pingMe( Q3CString message );
  *	   UserType userFunction( UserType );
  *	};
  * \endcode
@@ -210,14 +210,14 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * \endcode
  *
  * Note that you must pass a QString for the first argument. If you use a
- * regular char pointer, it will be converted to a QCString.
+ * regular char pointer, it will be converted to a Q3CString.
  *
  * For curiosity, here is how you would achieve the exactly same
  * functionality by using DCOPClient::call() directly:
  *
  * \code
  *    QByteArray data, replyData;
- *    QCString replyType;
+ *    Q3CString replyType;
  *    QDataStream arg( data, IO_WriteOnly );
  *    arg << QString("hello world" ), (float) 2.5 << true;
  *    if ( DCOPClient::mainClient()->call( app, obj,
@@ -459,7 +459,7 @@ public:
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1;
 	return callInternal( fun, args, data );
     }
@@ -487,7 +487,7 @@ public:
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -518,7 +518,7 @@ public:
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2;
 	return callInternal( fun, args, data );
     }
@@ -550,7 +550,7 @@ public:
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -585,7 +585,7 @@ public:
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3;
 	return callInternal( fun, args, data );
     }
@@ -621,7 +621,7 @@ public:
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -660,7 +660,7 @@ public:
 		     dcopTypeName(t3),
 		     dcopTypeName(t4) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data );
     }
@@ -700,7 +700,7 @@ public:
 		     dcopTypeName(t3),
 		     dcopTypeName(t4) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -743,7 +743,7 @@ public:
 		     dcopTypeName(t4),
 		     dcopTypeName(t5) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data );
     }
@@ -787,7 +787,7 @@ public:
 		     dcopTypeName(t4),
 		     dcopTypeName(t5) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -834,7 +834,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return callInternal( fun, args, data );
     }
@@ -882,7 +882,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -932,7 +932,7 @@ public:
 		     dcopTypeName(t6),
 		     dcopTypeName(t7) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data );
     }
@@ -984,7 +984,7 @@ public:
 		     dcopTypeName(t6),
 		     dcopTypeName(t7) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -1039,7 +1039,7 @@ public:
 		     dcopTypeName(t7),
 		     dcopTypeName(t8) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return callInternal( fun, args, data );
     }
@@ -1095,7 +1095,7 @@ public:
 		     dcopTypeName(t7),
 		     dcopTypeName(t8) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -1140,7 +1140,7 @@ public:
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1;
 	return sendInternal( fun, args, data );
     }
@@ -1171,7 +1171,7 @@ public:
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2;
 	return sendInternal( fun, args, data );
     }
@@ -1206,7 +1206,7 @@ public:
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3;
 	return sendInternal( fun, args, data );
     }
@@ -1245,7 +1245,7 @@ public:
 		     dcopTypeName(t3),
 		     dcopTypeName(t4) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4;
 	return sendInternal( fun, args, data );
     }
@@ -1288,7 +1288,7 @@ public:
 		     dcopTypeName(t4),
 		     dcopTypeName(t5) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5;
 	return sendInternal( fun, args, data );
     }
@@ -1335,7 +1335,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return sendInternal( fun, args, data );
     }
@@ -1386,7 +1386,7 @@ public:
 		     dcopTypeName(t6),
 		     dcopTypeName(t7) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return sendInternal( fun, args, data );
     }
@@ -1441,7 +1441,7 @@ public:
 		     dcopTypeName(t7),
 		     dcopTypeName(t8) );
 	QByteArray data;
-	QDataStream ds( data, QIODevice::WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return sendInternal( fun, args, data );
     }

@@ -23,10 +23,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _DCOPCLIENT_H
 #define _DCOPCLIENT_H
 
-#include <qobject.h>
-#include <q3cstring.h>
-#include <q3valuelist.h>
-#include <qstring.h>
+#include <Qt/qobject.h>
+#include <Qt3Support/q3cstring.h>
+#include <Qt/qlist.h>
+#include <Qt/qstring.h>
 #include <kdatastream.h> // needed for proper bool marshalling
 #include <kdelibs_export.h>
 
@@ -34,7 +34,7 @@ class DCOPObjectProxy;
 class DCOPClientPrivate;
 class DCOPClientTransaction;
 
-typedef Q3ValueList<Q3CString> QCStringList;
+typedef QList<Q3CString> Q3CStringList;
 
 /**
  * Inter-process communication and remote procedure calls
@@ -319,7 +319,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    * slot that is called when an answer is received.
    *
    * The slot should have the following signature:
-   * callBackSlot(int callId, const QCString& replyType,
+   * callBackSlot(int callId, const Q3CString& replyType,
    *              const QByteArray &replyData);
    *
    *
@@ -525,7 +525,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    * from dcopserver.
    * @return a list of all regietered applications
    */
-  QCStringList registeredApplications();
+  Q3CStringList registeredApplications();
 
   /**
    * Retrieves the list of objects of the remote application @p remApp.
@@ -534,7 +534,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    *           and false if an error occurred
    * @return the list of object ids
    */
-  QCStringList remoteObjects( const Q3CString& remApp, bool *ok = 0 );
+  Q3CStringList remoteObjects( const Q3CString& remApp, bool *ok = 0 );
 
   /**
    * Retrieves the list of interfaces of the remote object @p remObj
@@ -545,7 +545,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    *           and false if an error occurred
    * @return the list of interfaces
   */
-  QCStringList remoteInterfaces( const Q3CString& remApp, const Q3CString& remObj , bool *ok = 0 );
+  Q3CStringList remoteInterfaces( const Q3CString& remApp, const Q3CString& remObj , bool *ok = 0 );
 
   /**
    * Retrieves the list of functions of the remote object @p remObj
@@ -556,7 +556,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    *           and false if an error occurred
    * @return the list of function ids
   */
-  QCStringList remoteFunctions( const Q3CString& remApp, const Q3CString& remObj , bool *ok = 0 );
+  Q3CStringList remoteFunctions( const Q3CString& remApp, const Q3CString& remObj , bool *ok = 0 );
 
   /**
    * @internal

@@ -22,6 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef DCOPSIGNALS_H
 #define DCOPSIGNALS_H "$Id$"
 
+#include <Q3CString>
 #include <q3dict.h>
 #include <q3asciidict.h>
 #include <q3ptrlist.h>

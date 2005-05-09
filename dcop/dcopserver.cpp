@@ -47,6 +47,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 
 #define QT_CLEAN_NAMESPACE 1
+#include <Q3CString>
+#include <QTextStream>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdatastream.h>
@@ -112,7 +114,7 @@ extern IceIOErrorHandler _kde_IceIOErrorHandler;
 void DCOPIceWriteChar(register IceConn iceConn, unsigned long nbytes, char *ptr);
 }
 
-static Q3CString readQCString(QDataStream &ds)
+static Q3CString readQ3CString(QDataStream &ds)
 {
    Q3CString result;
    Q_UINT32 len;
@@ -148,7 +150,7 @@ static QByteArray readQByteArray(QDataStream &ds)
    return result;
 }
 
-static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, char *ptr)
+static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, const char *ptr)
 {
     int fd = IceConnectionNumber(iceConn);
     unsigned long nleft = nbytes;
@@ -677,9 +679,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    CARD32 key = pMsg->key;
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
-	    QDataStream ds( ba, QIODevice::ReadOnly );
-	    Q3CString fromApp = readQCString(ds);
-            Q3CString toApp = readQCString(ds);
+	    QDataStream ds( &ba, QIODevice::ReadOnly );
+	    Q3CString fromApp = readQ3CString(ds);
+            Q3CString toApp = readQ3CString(ds);
 
 	    DCOPConnection* target = findApp( toApp );
 	    int datalen = ba.size();
@@ -697,8 +699,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 #ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
-   Q3CString obj = readQCString(obj);
-   Q3CString fun = readQCString(fun);
+   Q3CString obj = readQ3CString(obj);
+   Q3CString fun = readQ3CString(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
 }
 #endif
@@ -710,8 +712,8 @@ if (opcode == DCOPSend)
 		DCOPIceSendData(target->iceConn, ba);
                 _DCOPIceSendEnd();
 	    } else if ( toApp == "DCOPServer" ) {
-		Q3CString obj = readQCString(ds);
-		Q3CString fun = readQCString(ds);
+		Q3CString obj = readQ3CString(ds);
+		Q3CString fun = readQ3CString(ds);
 		QByteArray data = readQByteArray(ds);
 
 		Q3CString replyType;
@@ -723,8 +725,8 @@ if (opcode == DCOPSend)
 #ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
-   Q3CString obj = readQCString(obj);
-   Q3CString fun = readQCString(fun);
+   Q3CString obj = readQ3CString(obj);
+   Q3CString fun = readQ3CString(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
 }
 #endif
@@ -755,9 +757,9 @@ if (opcode == DCOPSend)
 	    CARD32 key = pMsg->key;
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
-	    QDataStream ds( ba, QIODevice::ReadOnly );
-	    Q3CString fromApp = readQCString(ds);
-	    Q3CString toApp = readQCString(ds);
+	    QDataStream ds( &ba, QIODevice::ReadOnly );
+	    Q3CString fromApp = readQ3CString(ds);
+	    Q3CString toApp = readQ3CString(ds);
 	    DCOPConnection* target = findApp( toApp );
 	    int datalen = ba.size();
 
@@ -765,8 +767,8 @@ if (opcode == DCOPSend)
 #ifdef DCOP_DEBUG
 if (opcode == DCOPCall)
 {
-   Q3CString obj = readQCString(obj);
-   Q3CString fun = readQCString(fun);
+   Q3CString obj = readQ3CString(obj);
+   Q3CString fun = readQ3CString(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPCall %s", length, fromApp.data(), toApp.data(), fun.data());
 }
 #endif
@@ -786,8 +788,8 @@ if (opcode == DCOPCall)
 		bool b = false;
 		// DCOPServer itself does not do DCOPFind.
 		if ( (opcode == DCOPCall) && (toApp == "DCOPServer") ) {
-   		    Q3CString obj = readQCString(ds);
-		    Q3CString fun = readQCString(ds);
+   		    Q3CString obj = readQ3CString(ds);
+		    Q3CString fun = readQ3CString(ds);
 		    QByteArray data = readQByteArray(ds);
 		    b = receive( toApp, obj, fun, data, replyType, replyData, iceConn );
 		    if ( !b )
@@ -796,7 +798,7 @@ if (opcode == DCOPCall)
 
 		if (b) {
 		    QByteArray reply;
-		    QDataStream replyStream( reply, QIODevice::WriteOnly );
+		    QDataStream replyStream( &reply, QIODevice::WriteOnly );
 		    replyStream << toApp << fromApp << replyType << replyData.size();
 		    int replylen = reply.size() + replyData.size();
 		    IceGetHeader( iceConn, majorOpcode, DCOPReply,
@@ -812,7 +814,7 @@ if (opcode == DCOPCall)
                     _DCOPIceSendEnd();
 		} else {
 		    QByteArray reply;
-		    QDataStream replyStream( reply, QIODevice::WriteOnly );
+		    QDataStream replyStream( &reply, QIODevice::WriteOnly );
 		    replyStream << toApp << fromApp;
 		    IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
 				  sizeof(DCOPMsg), DCOPMsg, pMsg );
@@ -837,9 +839,9 @@ if (opcode == DCOPCall)
 	    CARD32 key = pMsg->key;
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
-	    QDataStream ds( ba, QIODevice::ReadOnly );
-            Q3CString fromApp = readQCString(ds);
-            Q3CString toApp = readQCString(ds);
+	    QDataStream ds( &ba, QIODevice::ReadOnly );
+            Q3CString fromApp = readQ3CString(ds);
+            Q3CString toApp = readQ3CString(ds);
 
 	    DCOPConnection* connreply = findApp( toApp );
 	    int datalen = ba.size();
@@ -1202,7 +1204,7 @@ void DCOPServer::removeConnection( void* data )
 
 	appIds.remove( conn->appId );
 
-        broadcastApplicationRegistration( conn, "applicationRemoved(QCString)", conn->appId );
+        broadcastApplicationRegistration( conn, "applicationRemoved(Q3CString)", conn->appId );
     }
 
     delete conn;
@@ -1289,7 +1291,8 @@ bool DCOPServer::receive(const Q3CString &/*app*/, const Q3CString &obj,
         return true;
     }
     if ( fun == "setDaemonMode(bool)" ) {
-        QDataStream args( data, QIODevice::ReadOnly );
+        QByteArray dataCopy = data;
+        QDataStream args( &dataCopy, QIODevice::ReadOnly );
         if ( !args.atEnd() ) {
             Q_INT8 iDaemon;
             bool daemon;
@@ -1330,11 +1333,12 @@ bool DCOPServer::receive(const Q3CString &/*app*/, const Q3CString &obj,
             return true;
         }
     }
-    if ( fun == "registerAs(QCString)" ) {
-	QDataStream args( data, QIODevice::ReadOnly );
+    if ( fun == "registerAs(Q3CString)" ) {
+	QByteArray dataCopy = data;
+	QDataStream args( &dataCopy, QIODevice::ReadOnly );
 	if (!args.atEnd()) {
-	    Q3CString app2 = readQCString(args);
-	    QDataStream reply( replyData, QIODevice::WriteOnly );
+	    Q3CString app2 = readQ3CString(args);
+	    QDataStream reply( &replyData, QIODevice::WriteOnly );
 	    DCOPConnection* conn = clients.find( iceConn );
 	    if ( conn && !app2.isEmpty() ) {
 		if ( !conn->appId.isNull() &&
@@ -1383,37 +1387,39 @@ bool DCOPServer::receive(const Q3CString &/*app*/, const Q3CString &obj,
 
                 if( !oldAppId.isEmpty())
                     broadcastApplicationRegistration( conn,
-                        "applicationRemoved(QCString)", oldAppId );
-                broadcastApplicationRegistration( conn, "applicationRegistered(QCString)", conn->appId );
+                        "applicationRemoved(Q3CString)", oldAppId );
+                broadcastApplicationRegistration( conn, "applicationRegistered(Q3CString)", conn->appId );
 	    }
-	    replyType = "QCString";
+	    replyType = "Q3CString";
 	    reply << conn->appId;
 	    return true;
 	}
     }
     else if ( fun == "registeredApplications()" ) {
-	QDataStream reply( replyData, QIODevice::WriteOnly );
-	QCStringList applications;
+	QDataStream reply( &replyData, QIODevice::WriteOnly );
+	Q3CStringList applications;
 	Q3AsciiDictIterator<DCOPConnection> it( appIds );
 	while ( it.current() ) {
 	    applications << it.currentKey();
 	    ++it;
 	}
-	replyType = "QCStringList";
+	replyType = "Q3CStringList";
 	reply << applications;
 	return true;
-    } else if ( fun == "isApplicationRegistered(QCString)" ) {
-	QDataStream args( data, QIODevice::ReadOnly );
+    } else if ( fun == "isApplicationRegistered(Q3CString)" ) {
+	QByteArray dataCopy = data;
+	QDataStream args( &dataCopy, QIODevice::ReadOnly );
 	if (!args.atEnd()) {
-	    Q3CString s = readQCString(args);
-	    QDataStream reply( replyData, QIODevice::WriteOnly );
+	    Q3CString s = readQ3CString(args);
+	    QDataStream reply( &replyData, QIODevice::WriteOnly );
 	    int b = ( findApp( s ) != 0 );
 	    replyType = "bool";
 	    reply << b;
 	    return true;
 	}
     } else if ( fun == "setNotifications(bool)" ) {
-	QDataStream args( data, QIODevice::ReadOnly );
+	QByteArray dataCopy = data;
+	QDataStream args( &dataCopy, QIODevice::ReadOnly );
 	if (!args.atEnd()) {
 	    Q_INT8 notifyActive;
 	    args >> notifyActive;
@@ -1427,38 +1433,40 @@ bool DCOPServer::receive(const Q3CString &/*app*/, const Q3CString &obj,
 	    replyType = "void";
 	    return true;
 	}
-    } else if ( fun == "connectSignal(QCString,QCString,QCString,QCString,QCString,bool)") {
+    } else if ( fun == "connectSignal(Q3CString,Q3CString,Q3CString,Q3CString,Q3CString,bool)") {
         DCOPConnection* conn = clients.find( iceConn );
         if (!conn) return false;
-        QDataStream args(data, QIODevice::ReadOnly );
+        QByteArray dataCopy = data;
+        QDataStream args(&dataCopy, QIODevice::ReadOnly );
         if (args.atEnd()) return false;
-        Q3CString sender = readQCString(args);
-        Q3CString senderObj = readQCString(args);
-        Q3CString signal = readQCString(args);
-        Q3CString receiverObj = readQCString(args);
-        Q3CString slot = readQCString(args);
+        Q3CString sender = readQ3CString(args);
+        Q3CString senderObj = readQ3CString(args);
+        Q3CString signal = readQ3CString(args);
+        Q3CString receiverObj = readQ3CString(args);
+        Q3CString slot = readQ3CString(args);
         Q_INT8 Volatile;
         args >> Volatile;
         //qDebug("DCOPServer: connectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
         bool b = dcopSignals->connectSignal(sender, senderObj, signal, conn, receiverObj, slot, (Volatile != 0));
         replyType = "bool";
-        QDataStream reply( replyData, QIODevice::WriteOnly );
+        QDataStream reply( &replyData, QIODevice::WriteOnly );
         reply << (Q_INT8) (b?1:0);
         return true;
-    } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCString,QCString)") {
+    } else if ( fun == "disconnectSignal(Q3CString,Q3CString,Q3CString,Q3CString,Q3CString)") {
         DCOPConnection* conn = clients.find( iceConn );
         if (!conn) return false;
-        QDataStream args(data, QIODevice::ReadOnly );
+        QByteArray dataCopy = data;
+        QDataStream args(&dataCopy, QIODevice::ReadOnly );
         if (args.atEnd()) return false;
-        Q3CString sender = readQCString(args);
-        Q3CString senderObj = readQCString(args);
-        Q3CString signal = readQCString(args);
-        Q3CString receiverObj = readQCString(args);
-        Q3CString slot = readQCString(args);
+        Q3CString sender = readQ3CString(args);
+        Q3CString senderObj = readQ3CString(args);
+        Q3CString signal = readQ3CString(args);
+        Q3CString receiverObj = readQ3CString(args);
+        Q3CString slot = readQ3CString(args);
         //qDebug("DCOPServer: disconnectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
         bool b = dcopSignals->disconnectSignal(sender, senderObj, signal, conn, receiverObj, slot);
         replyType = "bool";
-        QDataStream reply( replyData, QIODevice::WriteOnly );
+        QDataStream reply( &replyData, QIODevice::WriteOnly );
         reply << (Q_INT8) (b?1:0);
         return true;
     }
@@ -1470,11 +1478,11 @@ void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const Q
     const QString& /*appId*/ )
 {
     QByteArray data;
-    QDataStream datas( data, QIODevice::WriteOnly );
+    QDataStream datas( &data, QIODevice::WriteOnly );
     datas << conn->appId;
     Q3PtrDictIterator<DCOPConnection> it( clients );
     QByteArray ba;
-    QDataStream ds( ba, QIODevice::WriteOnly );
+    QDataStream ds( &ba, QIODevice::WriteOnly );
     ds <<Q3CString("DCOPServer") <<  Q3CString("") << Q3CString("")
        << type << data;
     int datalen = ba.size();
@@ -1500,7 +1508,7 @@ DCOPServer::sendMessage(DCOPConnection *conn, const Q3CString &sApp,
                         const Q3CString &rFun,  const QByteArray &data)
 {
    QByteArray ba;
-   QDataStream ds( ba, QIODevice::WriteOnly );
+   QDataStream ds( &ba, QIODevice::WriteOnly );
    ds << sApp << rApp << rObj << rFun << data;
    int datalen = ba.size();
    DCOPMsg *pMsg = 0;
@@ -1535,7 +1543,7 @@ static bool isRunning(const Q3CString &fName, bool printNetworkId = false)
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
 	f.open(QIODevice::ReadOnly);
-	int size = QMIN( 1024, f.size() ); // protection against a huge file
+	int size = qMin( (qint64)1024, f.size() ); // protection against a huge file
 	Q3CString contents( size+1 );
 	bool ok = f.readBlock( contents.data(), size ) == size;
 	contents[size] = '\0';

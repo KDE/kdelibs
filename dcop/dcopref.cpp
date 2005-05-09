@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "dcopclient.h"
 #include "dcopobject.h"
 
-#include <qdatastream.h>
+#include <Qt/qdatastream.h>
 
 #define STR( s ) ( s.data() ? s.data() : "" )
 

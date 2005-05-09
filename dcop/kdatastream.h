@@ -1,7 +1,7 @@
 #ifndef __kdatastream__h
 #define __kdatastream__h
 
-#include <qdatastream.h>
+#include <Qt/qdatastream.h>
 
 inline QDataStream & operator << (QDataStream & str, bool b)
 {

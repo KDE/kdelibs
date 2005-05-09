@@ -34,14 +34,14 @@ inline const char* dcopTypeName( long ) { return "long int"; }
 inline const char* dcopTypeName( ulong ) { return "ulong"; }
 inline const char* dcopTypeName( double ) { return "double"; }
 inline const char* dcopTypeName( float ) { return "float"; }
-inline const char* dcopTypeName( const char* ) { return "QCString"; }
+inline const char* dcopTypeName( const char* ) { return "Q3CString"; }
 
 // dcop specialities
 class DCOPRef; inline const char* dcopTypeName( const DCOPRef& ) { return "DCOPRef"; }
 
 // Qt variant types
 class QString; inline const char* dcopTypeName( const QString& ) { return "QString"; }
-class Q3CString; inline const char* dcopTypeName( const Q3CString& ) { return "QCString"; }
+class Q3CString; inline const char* dcopTypeName( const Q3CString& ) { return "Q3CString"; }
 class QFont; inline const char* dcopTypeName( const QFont& ) { return "QFont"; }
 class QPixmap; inline const char* dcopTypeName( const QPixmap& ) { return "QPixmap"; }
 class QBrush; inline const char* dcopTypeName( const QBrush& ) { return "QBrush"; }
@@ -52,9 +52,9 @@ class QSize; inline const char* dcopTypeName( const QSize& ) { return "QSize"; }
 class QColor; inline const char* dcopTypeName( const QColor& ) { return "QColor"; }
 class QPalette; inline const char* dcopTypeName( const QPalette& ) { return "QPalette"; }
 class QColorGroup; inline const char* dcopTypeName( const QColorGroup& ) { return "QColorGroup"; }
-class QIcon; inline const char* dcopTypeName( const QIcon& ) { return "QIconSet"; }
+class QIconSet; inline const char* dcopTypeName( const QIconSet& ) { return "QIconSet"; }
 class QDataStream; inline const char* dcopTypeName( const QDataStream& ) { return "QDataStream"; }
-class Q3PointArray; inline const char* dcopTypeName( const Q3PointArray& ) { return "QPointArray"; }
+class QPointArray; inline const char* dcopTypeName( const QPointArray& ) { return "QPointArray"; }
 class QRegion; inline const char* dcopTypeName( const QRegion& ) { return "QRegion"; }
 class QBitmap; inline const char* dcopTypeName( const QBitmap& ) { return "QBitmap"; }
 class QCursor; inline const char* dcopTypeName( const QCursor& ) { return "QCursor"; }

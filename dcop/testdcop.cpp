@@ -1,3 +1,7 @@
+
+//Added by the Qt porting tool:
+#include <Q3CString>
+
 /*****************************************************************
 
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -133,9 +137,9 @@ void MyDCOPObject::slotTimeout2()
   }
 }
 
-QCStringList MyDCOPObject::functions()
+Q3CStringList MyDCOPObject::functions()
 {
-   QCStringList result = DCOPObject::functions();
+   Q3CStringList result = DCOPObject::functions();
    result << "QRect canLaunchRockets(QRect)";
    return result;
 }
@@ -204,11 +208,11 @@ int main(int argc, char **argv)
 
   QDataStream dataStream( data, QIODevice::WriteOnly );
   dataStream << (int) 43;
-  client->emitDCOPSignal("alive(int,QCString)", data);
+  client->emitDCOPSignal("alive(int,Q3CString)", data);
 
   MyDCOPObject *obj1 = new MyDCOPObject("object1");
 
-  bool connectResult = client->connectDCOPSignal("", "alive(int , QCString)", "object1", "isAliveSlot(int)", false);
+  bool connectResult = client->connectDCOPSignal("", "alive(int , Q3CString)", "object1", "isAliveSlot(int)", false);
   qDebug("connectDCOPSignal returns %s", connectResult ? "true" : "false");
 
   QDataStream ds(data, QIODevice::WriteOnly);

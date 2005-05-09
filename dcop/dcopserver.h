@@ -26,11 +26,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef Q_OS_UNIX //not available yet for win32
 
+
+#include <Q3AsciiDict>
+#include <Q3CString>
+#include <Q3ValueList>
+#include <QTextStream>
 #include <qstring.h>
 #include <qsocketnotifier.h>
 #include <q3ptrlist.h>
-#include <q3valuelist.h>
-#include <q3cstring.h>
 #include <q3dict.h>
 #include <q3ptrdict.h>
 #include <q3intdict.h>
@@ -63,7 +66,7 @@ class QTextStream;
 class QFile;
 #endif
 
-typedef Q3ValueList<Q3CString> QCStringList;
+typedef QList<Q3CString> Q3CStringList;
 
 /**
  * @internal

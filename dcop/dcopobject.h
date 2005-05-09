@@ -23,24 +23,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _DCOPOBJECT_H
 #define _DCOPOBJECT_H
 
-#include <qobject.h>
-#include <qmap.h>
-#include <qstring.h>
-#include <q3ptrlist.h>
-#include <q3valuelist.h>
+#include <Qt3Support/q3cstring.h>
+#include <Qt3Support/q3ptrlist.h>
+#include <Qt/qobject.h>
+#include <Qt/qmap.h>
+#include <Qt/qstring.h>
+#include <Qt/qlist.h>
 #include <kdatastream.h> // needed for proper bool marshalling
 #include "kdelibs_export.h"
 
 class DCOPClient;
-typedef Q3ValueList<Q3CString> QCStringList;
+typedef QList<Q3CString> Q3CStringList;
 
 // Makros for DCOP interfaces
 
 #define K_DCOP \
 public:        \
   virtual bool process(const Q3CString &fun, const QByteArray &data, Q3CString& replyType, QByteArray &replyData); \
-  QCStringList functions(); \
-  QCStringList interfaces(); \
+  Q3CStringList functions(); \
+  Q3CStringList interfaces(); \
 private:
 
 #define k_dcop_signals public
@@ -174,7 +175,7 @@ public:
    *
    * @see functions(),
    */
-  virtual QCStringList functionsDynamic();
+  virtual Q3CStringList functionsDynamic();
 
     /**
    * This function is of interest when you used an IDL compiler
@@ -187,7 +188,7 @@ public:
    *
    * @see interfaces(),
    */
-  virtual QCStringList interfacesDynamic();
+  virtual Q3CStringList interfacesDynamic();
 
   /**
    * Returns the names of the interfaces, specific ones last. The
@@ -198,7 +199,7 @@ public:
    * @return a list of interfaces
    * @see functions()
    */
-  virtual QCStringList interfaces();
+  virtual Q3CStringList interfaces();
 
   /**
    * Returns the list of functions understood by the object. It gets
@@ -218,7 +219,7 @@ public:
    * @see processDynamic()
    * @see DCOPClient::normalizeFunctionSignature()
    */
-  virtual QCStringList functions();
+  virtual Q3CStringList functions();
 
   /**
    * Emit @p signal as DCOP signal from this object with @p data as
