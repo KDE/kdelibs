@@ -666,7 +666,7 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
     int pixels = image.depth() > 8 ? image.width()*image.height() :
                  image.numColors();
     unsigned int *data = image.depth() > 8 ? (unsigned int *)image.bits() :
-                         (unsigned int *)image.colorTable();
+                         (unsigned int *)image.colorTable().data();
 
     bool brighten = (percent >= 0);
     if(percent < 0)
@@ -860,7 +860,7 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
     int pixels = image.depth() > 8 ? image.width()*image.height() :
         image.numColors();
     unsigned int *data = image.depth() > 8 ? (unsigned int *)image.bits() :
-        (unsigned int *)image.colorTable();
+        (unsigned int *)image.colorTable().data();
     bool brighten = (percent >= 0);
     if(percent < 0)
         percent = -percent;
@@ -960,7 +960,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
     if (modImage.depth()<8) modImage = modImage.convertDepth(8);
 
     unsigned int *colorTable2 = (modImage.depth()==8) ?
-				 modImage.colorTable():0;
+				 modImage.colorTable().data():0;
     unsigned int *data1, *data2;
     unsigned char *data2b;
     unsigned int color1, color2;
@@ -1790,7 +1790,7 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
     if (blendImage.depth()<8) blendImage = blendImage.convertDepth(8);
 
     unsigned int *colorTable3 = (blendImage.depth()==8) ?
-				 blendImage.colorTable():0;
+				 blendImage.colorTable().data():0;
 
     unsigned int *data1 =  (unsigned int *)image1.bits();
     unsigned int *data2 =  (unsigned int *)image2.bits();
@@ -2164,7 +2164,7 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
         int pixels = img.depth() > 8 ? img.width()*img.height() :
             img.numColors();
         unsigned int *data = img.depth() > 8 ? (unsigned int *)img.bits() :
-            (unsigned int *)img.colorTable();
+            (unsigned int *)img.colorTable().data();
         int val, i;
         for(i=0; i < pixels; ++i){
             val = qGray(data[i]);
@@ -2185,7 +2185,7 @@ QImage& KImageEffect::desaturate(QImage &img, float desat)
     int pixels = img.depth() > 8 ? img.width()*img.height() :
         img.numColors();
     unsigned int *data = img.depth() > 8 ? (unsigned int *)img.bits() :
-        (unsigned int *)img.colorTable();
+        (unsigned int *)img.colorTable().data();
     int h, s, v, i;
     QColor clr; // keep constructor out of loop (mosfet)
     for(i=0; i < pixels; ++i){
@@ -2210,7 +2210,7 @@ QImage& KImageEffect::contrast(QImage &img, int c)
     int pixels = img.depth() > 8 ? img.width()*img.height() :
         img.numColors();
     unsigned int *data = img.depth() > 8 ? (unsigned int *)img.bits() :
-        (unsigned int *)img.colorTable();
+        (unsigned int *)img.colorTable().data();
     int i, r, g, b;
     for(i=0; i < pixels; ++i){
         r = qRed(data[i]);
@@ -2398,7 +2398,8 @@ bool KImageEffect::blend(
 
   output = lower.copy();
 
-  register uchar *i, *o;
+  const uchar *i;
+  uchar *o;
   register int a;
   register int col;
   register int w = upper.width();
@@ -2480,15 +2481,16 @@ bool KImageEffect::blend(
 //  output.setAlphaBuffer(true); // I should do some benchmarks to see if
 	// this is worth the effort
 
-  register QRgb *i, *o, *b;
+  const QRgb *i, *b;
+  QRgb* o;
 
   register int a;
   register int j,k;
   for (j=0; j<ch; j++)
   {
-    b=reinterpret_cast<QRgb *>(&lower.scanLine(y+j) [ (x+cw) << 2 ]);
-    i=reinterpret_cast<QRgb *>(&upper.scanLine(cy+j)[ (cx+cw) << 2 ]);
-    o=reinterpret_cast<QRgb *>(&output.scanLine(j)  [ cw << 2 ]);
+    b=reinterpret_cast<const QRgb *>(&lower.scanLine(y+j) [ (x+cw) << 2 ]);
+    i=reinterpret_cast<const QRgb *>(&upper.scanLine(cy+j)[ (cx+cw) << 2 ]);
+    o=reinterpret_cast<QRgb *>      (&output.scanLine(j)  [ cw << 2 ]);
 
     k=cw-1;
     --b; --i; --o;
@@ -2539,13 +2541,14 @@ bool KImageEffect::blendOnLower(
     if ( cw <= 0 || ch <= 0 ) return true;
   }
 
-  register uchar *i, *b;
+  const uchar *i;
+  uchar *b;
   register int a;
   register int k;
 
   for (int j=0; j<ch; j++)
   {
-    b=&lower.scanLine(y+j) [ (x+cw) << 2 ];
+    b=(uchar*)&lower.scanLine(y+j) [ (x+cw) << 2 ];
     i=&upper.scanLine(cy+j)[ (cx+cw) << 2 ];
 
     k=cw-1;
@@ -2595,8 +2598,8 @@ void KImageEffect::blendOnLower(const QImage &upper, const QPoint &upperOffset,
     // blend
     for (int y = 0; y < lr.height(); y++) {
         for (int x = 0; x < lr.width(); x++) {
-            QRgb *b = reinterpret_cast<QRgb*>(lower.scanLine(lr.y() + y)+ (lr.x() + x) * sizeof(QRgb));
-            QRgb *d = reinterpret_cast<QRgb*>(upper.scanLine(upperOffset.y() + y) + (upperOffset.x() + x) * sizeof(QRgb));
+            QRgb *b       = reinterpret_cast<QRgb*>      (lower.scanLine(lr.y() + y)+ (lr.x() + x) * sizeof(QRgb));
+            const QRgb *d = reinterpret_cast<const QRgb*>(upper.scanLine(upperOffset.y() + y) + (upperOffset.x() + x) * sizeof(QRgb));
             int a = qAlpha(*d);
             *b = qRgb(qRed(*b) - (((qRed(*b) - qRed(*d)) * a) >> 8),
                       qGreen(*b) - (((qGreen(*b) - qGreen(*d)) * a) >> 8),
@@ -2617,8 +2620,8 @@ void KImageEffect::blendOnLower(const QImage &upper, const QPoint &upperOffset,
     // blend
     for (int y = 0; y < lr.height(); y++) {
         for (int x = 0; x < lr.width(); x++) {
-            QRgb *b = reinterpret_cast<QRgb*>(lower.scanLine(lr.y() + y)+ (lr.x() + x) * sizeof(QRgb));
-            QRgb *d = reinterpret_cast<QRgb*>(upper.scanLine(upperOffset.y() + y) + (upperOffset.x() + x) * sizeof(QRgb));
+            QRgb *b       = reinterpret_cast<QRgb*      >(lower.scanLine(lr.y() + y)+ (lr.x() + x) * sizeof(QRgb));
+            const QRgb *d = reinterpret_cast<const QRgb*>(upper.scanLine(upperOffset.y() + y) + (upperOffset.x() + x) * sizeof(QRgb));
             int a = qRound(opacity * qAlpha(*d));
             *b = qRgb(qRed(*b) - (((qRed(*b) - qRed(*d)) * a) >> 8),
                       qGreen(*b) - (((qGreen(*b) - qGreen(*d)) * a) >> 8),
@@ -2813,7 +2816,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
         }
         // copy colortable
         dest.setNumColors(src.numColors());
-        (void)memcpy(dest.colorTable(), src.colorTable(),
+        (void)memcpy(dest.colorTable().data(), src.colorTable().data(),
                      src.numColors()*sizeof(unsigned int));
 
         // sample image
@@ -2849,10 +2852,10 @@ void KImageEffect::threshold(QImage &img, unsigned int threshold)
     }
     else{ // PsudeoClass
         count = img.numColors();
-        data = (unsigned int *)img.colorTable();
+        data = (unsigned int *)img.colorTable().data();
     }
     for(i=0; i < count; ++i)
-        data[i] = intensityValue(data[i]) < threshold ? Qt::black.rgb() : Qt::white.rgb();
+        data[i] = intensityValue(data[i]) < threshold ? QColor(Qt::black).rgb() : QColor(Qt::white).rgb();
 }
 
 void KImageEffect::hull(const int x_offset, const int y_offset,
@@ -2983,7 +2986,7 @@ QImage KImageEffect::despeckle(QImage &src)
     }
     else{ // PsudeoClass source image
         unsigned char *srcData;
-        unsigned int *cTable = src.colorTable();
+        unsigned int *cTable = src.colorTable().data();
         unsigned int pixel;
         for(y=0; y < src.height(); ++y){
             srcData = (unsigned char *)src.scanLine(y);
@@ -3162,7 +3165,7 @@ QImage KImageEffect::addNoise(QImage &src, NoiseType noise_type)
     }
     else{ // PsudeoClass source image
         unsigned char *srcData;
-        unsigned int *cTable = src.colorTable();
+        unsigned int *cTable = src.colorTable().data();
         unsigned int pixel;
         for(y=0; y < src.height(); ++y){
             srcData = (unsigned char *)src.scanLine(y);
@@ -3224,7 +3227,7 @@ unsigned int KImageEffect::interpolateColor(QImage *image, double x_offset,
         }
     }
     else{
-        unsigned int *colorTable = (unsigned int *)image->colorTable();
+        unsigned int *colorTable = (unsigned int *)image->colorTable().data();
         if((x >= 0) && (y >= 0) && (x < (image->width()-1)) && (y < (image->height()-1)))    {
             unsigned char *t;
             t = (unsigned char *)image->scanLine(y);
@@ -3324,7 +3327,7 @@ QImage KImageEffect::implode(QImage &src, double factor,
     else{ // PsudeoClass source image
         unsigned char *srcData;
         unsigned char idx;
-        unsigned int *cTable = src.colorTable();
+        unsigned int *cTable = src.colorTable().data();
         for(y=0; y < src.height(); ++y){
             srcData = (unsigned char *)src.scanLine(y);
             destData = (unsigned int *)dest.scanLine(y);
@@ -3400,8 +3403,8 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
         case Rotate90:
             dest.create(img.height(), img.width(), img.depth());
             dest.setNumColors(img.numColors());
-            srcTable = (unsigned int *)img.colorTable();
-            destTable = (unsigned int *)dest.colorTable();
+            srcTable = (unsigned int *)img.colorTable().data();
+            destTable = (unsigned int *)dest.colorTable().data();
             for(x=0; x < img.numColors(); ++x)
                 destTable[x] = srcTable[x];
             for(y=0; y < img.height(); ++y){
@@ -3415,8 +3418,8 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
         case Rotate180:
             dest.create(img.width(), img.height(), img.depth());
             dest.setNumColors(img.numColors());
-            srcTable = (unsigned int *)img.colorTable();
-            destTable = (unsigned int *)dest.colorTable();
+            srcTable = (unsigned int *)img.colorTable().data();
+            destTable = (unsigned int *)dest.colorTable().data();
             for(x=0; x < img.numColors(); ++x)
                 destTable[x] = srcTable[x];
             for(y=0; y < img.height(); ++y){
@@ -3429,8 +3432,8 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
         case Rotate270:
             dest.create(img.height(), img.width(), img.depth());
             dest.setNumColors(img.numColors());
-            srcTable = (unsigned int *)img.colorTable();
-            destTable = (unsigned int *)dest.colorTable();
+            srcTable = (unsigned int *)img.colorTable().data();
+            destTable = (unsigned int *)dest.colorTable().data();
             for(x=0; x < img.numColors(); ++x)
                 destTable[x] = srcTable[x];
             for(y=0; y < img.height(); ++y){
@@ -3458,7 +3461,7 @@ void KImageEffect::solarize(QImage &img, double factor)
 
     threshold = (int)(factor*(MaxRGB+1)/100.0);
     if(img.depth() < 32){
-        data = (unsigned int *)img.colorTable();
+        data = (unsigned int *)img.colorTable().data();
         count = img.numColors();
     }
     else{
@@ -3573,7 +3576,7 @@ QImage KImageEffect::swirl(QImage &src, double degrees,
     }
     else{ // PsudeoClass source image
         unsigned char *p;
-        unsigned int *cTable = (unsigned int *)src.colorTable();
+        unsigned int *cTable = (unsigned int *)src.colorTable().data();
         for(y=0; y < src.height(); y++){
             p = (unsigned char *)src.scanLine(y);
             q = (unsigned int *)dest.scanLine(y);
@@ -4581,7 +4584,7 @@ QImage KImageEffect::shade(QImage &src, bool color_shading, double azimuth,
     else{ // PsudeoClass source image
         unsigned char *p, *s0, *s1, *s2;
         int scanLineIdx;
-        unsigned int *cTable = (unsigned int *)src.colorTable();
+        unsigned int *cTable = (unsigned int *)src.colorTable().data();
         for(y=0; y < src.height(); ++y){
             scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
             p = (unsigned char *)src.scanLine(scanLineIdx);
@@ -4659,7 +4662,7 @@ void KImageEffect::contrastHSV(QImage &img, bool sharpen)
     }
     else{
         count = img.numColors();
-        data = (unsigned int *)img.colorTable();
+        data = (unsigned int *)img.colorTable().data();
     }
     for(i=0; i < count; ++i){
         c.setRgb(data[i]);
