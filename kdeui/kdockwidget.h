@@ -73,7 +73,6 @@ class KDockWidgetPrivate;
 class KDockWidgetHeaderPrivate;
 class KDockArea;
 
-class QObjectList;
 class Q3PopupMenu;
 class QVBoxLayout;
 class QHBoxLayout;

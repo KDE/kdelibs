@@ -284,7 +284,7 @@ namespace KIO {
         virtual bool process(const Q3CString &fun, const QByteArray &data,
                              Q3CString& replyType, QByteArray &replyData);
 
-        virtual QCStringList functions();
+        virtual Q3CStringList functions();
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);

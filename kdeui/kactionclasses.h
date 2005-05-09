@@ -37,6 +37,7 @@
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
+#include <ktoolbar.h>
 
 class QMenuBar;
 class Q3PopupMenu;
@@ -52,7 +53,6 @@ class KConfig;
 class KConfigBase;
 class KURL;
 class KInstance;
-class KToolBar;
 class KActionCollection;
 class KPopupMenu;
 class KMainWindow;
@@ -1277,7 +1277,7 @@ public:
     /**
      * Returns the widget associated with this action.
      */
-    QWidget* widget() { return m_widget; }
+    QWidget* widget() { return (QWidget*)m_widget; }
 
     void setAutoSized( bool );
 
