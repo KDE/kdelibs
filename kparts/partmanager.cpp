@@ -186,8 +186,8 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
   QWidget *w = static_cast<QWidget *>( obj );
 
-  if ( ( w->testWFlags( Qt::WType_Dialog ) && w->isModal() ) ||
-       w->testWFlags( Qt::WType_Popup ) || w->testWFlags( Qt::WStyle_Tool ) )
+  if ( ( ( w->windowFlags() && Qt::WType_Dialog ) && w->isModal() ) ||
+       ( w->windowFlags() && Qt::WType_Popup ) || ( w->windowFlags() && Qt::WStyle_Tool ) )
     return false;
 
   QMouseEvent* mev = 0L;
@@ -290,8 +290,8 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
     w = w->parentWidget();
 
-    if ( w && ( ( w->testWFlags( Qt::WType_Dialog ) && w->isModal() ) ||
-                w->testWFlags( Qt::WType_Popup ) || w->testWFlags( Qt::WStyle_Tool ) ) )
+    if ( w && ( ( ( w->windowFlags() && Qt::WType_Dialog ) && w->isModal() ) ||
+                ( w->windowFlags() && Qt::WType_Popup ) || ( w->windowFlags() && Qt::WStyle_Tool ) ) )
     {
 #ifdef DEBUG_PARTMANAGER
       kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;

@@ -189,32 +189,29 @@ Q3PtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
   if (!parent )
     return objects;
 
-  QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
+  const QObjectList plugins = parent->queryList( "KParts::Plugin", 0, false, false );
 
-  QObjectListIt it( *plugins );
-  for ( ; it.current() ; ++it )
+  QObjectList::ConstIterator it = plugins.begin();
+  for ( ; it != plugins.end() ; ++it )
   {
-    objects.append( static_cast<Plugin *>( it.current() ) );
+    objects.append( static_cast<Plugin *>( *it ) );
   }
-
-  delete plugins;
 
   return objects;
 }
 
 bool Plugin::hasPlugin( QObject* parent, const QString& library )
 {
-  QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
-  QObjectListIt it( *plugins );
-  for ( ; it.current() ; ++it )
+  const QObjectList plugins = parent->queryList( "KParts::Plugin", 0, false, false );
+  
+  QObjectList::ConstIterator it = plugins.begin();
+  for ( ; it != plugins.end() ; ++it )
   {
-      if ( static_cast<Plugin *>( it.current() )->d->m_library == library )
+      if ( static_cast<Plugin *>( *it )->d->m_library == library )
       {
-          delete plugins;
           return true;
       }
   }
-  delete plugins;
   return false;
 }
 
@@ -268,12 +265,12 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         }
 
         // search through already present plugins
-        QObjectList *pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
-        QObjectListIt it( *pluginList );
+        QObjectList pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
+         
         bool pluginFound = false;
-        for ( ; it.current() ; ++it )
+        for ( QObjectList::ConstIterator it = pluginList.begin(); it != pluginList.end() ; ++it )
         {
-            Plugin * plugin = static_cast<Plugin *>( it.current() );
+            Plugin * plugin = static_cast<Plugin *>( *it );
             if( plugin->d->m_library == library )
             {
                 // delete and unload disabled plugins
@@ -290,7 +287,6 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
                 break;
             }
         }
-        delete pluginList;
 
         // if the plugin is already loaded or if it's disabled in the
         // configuration do nothing

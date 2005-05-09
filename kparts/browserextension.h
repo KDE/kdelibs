@@ -474,7 +474,7 @@ public:
 // KDE invents support for public signals...
 #undef signals
 #define signals public
-signals:
+public signals:
 #undef signals
 #define signals protected
   /**

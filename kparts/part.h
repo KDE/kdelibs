@@ -24,7 +24,7 @@
 #include <qdom.h>
 #include <qpointer.h>
 #include <kurl.h>
-
+#include <qcoreevent.h>
 #include <kxmlguiclient.h>
 
 class KInstance;
@@ -32,6 +32,7 @@ class QWidget;
 class KAction;
 class KActionCollection;
 class QEvent;
+class QPoint;
 struct QUnknownInterface;
 
 namespace KIO {

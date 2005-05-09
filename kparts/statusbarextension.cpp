@@ -88,16 +88,16 @@ StatusBarExtension::~StatusBarExtension()
 
 StatusBarExtension *StatusBarExtension::childObject( QObject *obj )
 {
-    if ( !obj || !obj->children() )
+    if ( !obj || obj->children().isEmpty() )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
-    const QObjectList *children = obj->children();
-    QObjectListIt it( *children );
-    for (; it.current(); ++it )
-        if ( it.current()->inherits( "KParts::StatusBarExtension" ) )
-            return static_cast<KParts::StatusBarExtension *>( it.current() );
+    const QObjectList &children = obj->children();
+    QObjectList::ConstIterator it = children.begin();
+    for (; it != children.end(); ++it )
+        if ( (*it)->inherits( "KParts::StatusBarExtension" ) )
+            return static_cast<KParts::StatusBarExtension *>( *it );
 
     return 0L;
 }
