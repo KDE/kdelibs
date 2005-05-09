@@ -146,6 +146,10 @@ typedef void* IceIOErrorHandler;
 #endif
 
 #include "kappdcopiface.h"
+#include <qevent.h>
+#include <QX11Info>
+#include <QDesktopWidget>
+#include <QMetaObject>
 
 // exported for kdm kfrontend
 KDE_EXPORT bool kde_have_kipc = true; // magic hook to disable kipc in kdm
@@ -456,7 +460,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if ((t == QEvent::ShortcutOverride) || (t == QEvent::KeyPress))
     {
        static const KShortcut& _selectAll = KStdAccel::selectAll();
-       QLineEdit *edit = ::qt_cast<QLineEdit *>(receiver);
+       QLineEdit *edit = ::qobject_cast<QLineEdit *>(receiver);
        if (edit)
        {
           // We have a keypress for a lineedit...
@@ -494,7 +498,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
           }
        }
-       Q3TextEdit *medit = ::qt_cast<Q3TextEdit *>(receiver);
+       Q3TextEdit *medit = ::qobject_cast<Q3TextEdit *>(receiver);
        if (medit)
        {
           // We have a keypress for a multilineedit...
@@ -520,7 +524,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
 #endif
-        if( w->isTopLevel() && !w->testWFlags( Qt::WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
+        if( w->isTopLevel() && !( w->windowFlags() & Qt::X11BypassWindowManagerHint ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
             {
@@ -815,7 +819,7 @@ void KApplication::init(bool GUIenabled)
       atoms[n] = &kde_xdnd_drop;
       names[n++] = (char *) "XdndDrop";
 
-      XInternAtoms( qt_xdisplay(), names, n, false, atoms_return );
+      XInternAtoms( QX11Info::display(), names, n, false, atoms_return );
 
       for (int i = 0; i < n; i++ )
 	  *atoms[i] = atoms_return[i];
@@ -856,7 +860,7 @@ void KApplication::init(bool GUIenabled)
   {
 #ifdef Q_WS_X11
     // this is important since we fork() to launch the help (Matthias)
-    fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);
+    fcntl(ConnectionNumber(QX11Info::display()), F_SETFD, FD_CLOEXEC);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
     d->oldXErrorHandler = XSetErrorHandler( kde_x_errhandler );
     d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
@@ -948,7 +952,7 @@ void KApplication::init(bool GUIenabled)
   {
     smw = new QWidget(0,0);
     long data = 1;
-    XChangeProperty(qt_xdisplay(), smw->winId(),
+    XChangeProperty(QX11Info::display(), smw->winId(),
 		    atom_DesktopWindow, atom_DesktopWindow,
 		    32, PropModeReplace, (unsigned char *)&data, 1);
   }
@@ -1117,7 +1121,7 @@ bool KApplication::requestShutDown(
          sdmode != ShutdownModeDefault )
     {
         QByteArray data;
-        QDataStream arg(data, QIODevice::WriteOnly);
+        QDataStream arg(&data, QIODevice::WriteOnly);
         arg << (int)confirm << (int)sdtype << (int)sdmode;
 	return dcopClient()->send( "ksmserver", "ksmserver",
                                    "logout(int,int,int)", data );
@@ -1173,7 +1177,7 @@ void KApplication::propagateSessionManager()
 {
 #ifdef Q_WS_X11
     Q3CString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
-    Q3CString display = ::getenv(DISPLAY);
+    QString display = ::getenv(DISPLAY);
     // strip the screen number from the display
     display.replace(QRegExp("\\.[0-9]+$"), "");
     int i;
@@ -1218,11 +1222,13 @@ void KApplication::commitData( QSessionManager& sm )
 
     if ( sm.allowsInteraction() ) {
         QWidgetList done;
-        QWidgetList *list = QApplication::topLevelWidgets();
+        QWidgetList list = QApplication::topLevelWidgets();
+#warning ho I was lame here, FIXME ( SM ) ...
+#if 0
         bool canceled = false;
-        QWidget* w = list->first();
+        QWidget* w = list.first();
         while ( !canceled && w ) {
-            if ( !w->testWState( WState_ForceHide ) && !w->inherits("KMainWindow") ) {
+            if ( !( w->testAttribute( Qt::WA_WState_Hidden )) && !w->inherits("KMainWindow") ) {
                 QCloseEvent e;
                 sendEvent( w, &e );
                 canceled = !e.isAccepted();
@@ -1230,16 +1236,16 @@ void KApplication::commitData( QSessionManager& sm )
                     done.append( w );
                 delete list; // one never knows...
                 list = QApplication::topLevelWidgets();
-                w = list->first();
+                w = list.first();
             } else {
-                w = list->next();
+                w = list.next();
             }
             while ( w && done.containsRef( w ) )
                 w = list->next();
         }
         delete list;
+#endif
     }
-
 
     if ( !bSessionManagement )
         sm.setRestartHint( QSessionManager::RestartNever );
@@ -1333,7 +1339,7 @@ void KApplication::saveState( QSessionManager& sm )
         discard  << "rm" << locateLocal("config", sessionConfigName());
         sm.setDiscardCommand( discard );
     } else {
-	sm.setDiscardCommand( "" );
+	sm.setDiscardCommand( QStringList( "" ) );
     }
 
     if ( canceled )
@@ -1546,13 +1552,13 @@ void KApplication::parseCommandLine( )
         int format;
         unsigned long length, after;
         unsigned char *data;
-        while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom_NetSupported,
+        while ( XGetWindowProperty( QX11Info::display(), QX11Info::appRootWindow(), atom_NetSupported,
 				    0, 1, false, AnyPropertyType, &type, &format,
                                     &length, &after, &data ) != Success || !length ) {
             if ( data )
                 XFree( data );
             XEvent event;
-            XWindowEvent( qt_xdisplay(), qt_xrootwin(), PropertyChangeMask, &event );
+            XWindowEvent( QX11Info::display(), QX11Info::appRootWindow(), PropertyChangeMask, &event );
         }
         if ( data )
             XFree( data );
@@ -1814,14 +1820,14 @@ void KApplication::updateUserTimestamp( unsigned long time )
 #if defined Q_WS_X11
     if( time == 0 )
     { // get current X timestamp
-        Window w = XCreateSimpleWindow( qt_xdisplay(), qt_xrootwin(), 0, 0, 1, 1, 0, 0, 0 );
-        XSelectInput( qt_xdisplay(), w, PropertyChangeMask );
+        Window w = XCreateSimpleWindow( QX11Info::display(), QX11Info::appRootWindow(), 0, 0, 1, 1, 0, 0, 0 );
+        XSelectInput( QX11Info::display(), w, PropertyChangeMask );
         unsigned char data[ 1 ];
-        XChangeProperty( qt_xdisplay(), w, XA_ATOM, XA_ATOM, 8, PropModeAppend, data, 1 );
+        XChangeProperty( QX11Info::display(), w, XA_ATOM, XA_ATOM, 8, PropModeAppend, data, 1 );
         XEvent ev;
-        XWindowEvent( qt_xdisplay(), w, PropertyChangeMask, &ev );
+        XWindowEvent( QX11Info::display(), w, PropertyChangeMask, &ev );
         time = ev.xproperty.time;
-        XDestroyWindow( qt_xdisplay(), w );
+        XDestroyWindow( QX11Info::display(), w );
     }
     if( qt_x_user_time == 0
         || time - qt_x_user_time < 1000000000U ) // check time > qt_x_user_time, handle wrapping
@@ -1853,7 +1859,7 @@ void KApplication::invokeEditSlot( const char *slot )
   if( !object )
     return;
 
-  QMetaObject *meta = object->metaObject();
+  const QMetaObject *meta = object->metaObject();
 
   int idx = meta->findSlot( slot + 1, true );
   if( idx < 0 )
@@ -2618,8 +2624,8 @@ startServiceInternal( const Q3CString &function,
    Q3CString _launcher = KApplication::launcher();
    Q3ValueList<Q3CString> envs;
 #ifdef Q_WS_X11
-   if (qt_xdisplay()) {
-       Q3CString dpystring(XDisplayString(qt_xdisplay()));
+   if (QX11Info::display()) {
+       Q3CString dpystring(XDisplayString(QX11Info::display()));
        envs.append( Q3CString("DISPLAY=") + dpystring );
    } else if( getenv( "DISPLAY" )) {
        Q3CString dpystring( getenv( "DISPLAY" ));
@@ -3119,7 +3125,7 @@ uint KApplication::keyboardModifiers()
     Window child;
     int root_x, root_y, win_x, win_y;
     uint keybstate;
-    XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+    XQueryPointer( QX11Info::display(), QX11Info::appRootWindow(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &keybstate );
     return keybstate & 0x00ff;
 #elif defined W_WS_MACX
@@ -3137,7 +3143,7 @@ uint KApplication::mouseState()
     Window root;
     Window child;
     int root_x, root_y, win_x, win_y;
-    XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+    XQueryPointer( QX11Info::display(), QX11Info::appRootWindow(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &mousestate );
 #elif defined(Q_WS_WIN)
     const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
@@ -3163,7 +3169,7 @@ Qt::ButtonState KApplication::keyboardMouseState()
     Window child;
     int root_x, root_y, win_x, win_y;
     uint state;
-    XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+    XQueryPointer( QX11Info::display(), QX11Info::appRootWindow(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &state );
     // transform the same way like Qt's qt_x11_translateButtonState()
     if( state & Button1Mask )

@@ -63,7 +63,7 @@ k_dcop:
 
 	void reparseConfiguration();
 
-	void updateUserTimestamp( ulong time );
+	void updateUserTimestamp( quint32 time );
 
 private:
 	KApplication *m_KApplication;
