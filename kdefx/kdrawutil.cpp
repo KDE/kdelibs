@@ -17,6 +17,7 @@
 */
 #include "kdrawutil.h"
 #include <qdrawutil.h>
+#include <q3pointarray.h>
 
 KDEFX_EXPORT void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
                      const QColorGroup &g, bool sunken,

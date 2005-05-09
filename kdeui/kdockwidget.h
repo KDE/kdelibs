@@ -459,14 +459,14 @@ public:
   enum DockPosition
   {
     DockNone   = 0,
-    Qt::DockTop    = 0x0001,
-    Qt::DockLeft   = 0x0002,
-    Qt::DockRight  = 0x0004,
-    Qt::DockBottom = 0x0008,
+    DockTop    = 0x0001,
+    DockLeft   = 0x0002,
+    DockRight  = 0x0004,
+    DockBottom = 0x0008,
     DockCenter = 0x0010,
     DockDesktop= 0x0020,
     DockToSpecialSites=0x0040, ///< @since 3.1
-    DockCorner = Qt::DockTop | Qt::DockLeft | Qt::DockRight | Qt::DockBottom,
+    DockCorner = DockTop | DockLeft | DockRight | DockBottom,
     DockFullSite = DockCorner | DockCenter,
     DockFullDocking = DockFullSite | DockDesktop
   };

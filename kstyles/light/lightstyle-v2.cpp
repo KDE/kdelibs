@@ -39,6 +39,7 @@
 #include "qcombobox.h"
 #include "qslider.h"
 #include "qstylefactory.h"
+#include <q3pointarray.h>
 
 
 class LightStyleV2Private

@@ -105,7 +105,7 @@ public:
     enum Type { Normal = 0, Stretch };
     // KDE4: Merge these with KPanelApplet's enums
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
-    enum Position { Qt::DockLeft = 0, Qt::DockRight, Qt::DockTop, Qt::DockBottom, Floating };
+    enum Position { DockLeft = 0, DockRight, DockTop, DockBottom, Floating };
     enum Alignment { LeftTop = 0, Center, RightBottom };
     /// @since 3.1
     enum Size { SizeTiny = 0, SizeSmall, SizeNormal, SizeLarge, SizeCustom };

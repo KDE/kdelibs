@@ -120,7 +120,7 @@ public:
     /**
    * Possible bar positions.
    */
-    enum BarPosition{ Qt::DockUnmanaged, Floating, Qt::DockTop, Qt::DockBottom, Qt::DockRight, Qt::DockLeft, Flat};
+    enum BarPosition{ DockUnmanaged, Floating, DockTop, DockBottom, DockRight, DockLeft, Flat};
 
   /**
    * Normal constructor.

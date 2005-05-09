@@ -20,6 +20,7 @@
 #include <qimage.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
+#include <q3pointarray.h>
 #include <kimageeffect.h>
 #include "kselect.h"
 
@@ -397,7 +398,7 @@ KGradientSelector::~KGradientSelector()
 
 void KGradientSelector::init()
 {
-    Qt::color1.setRgb( 0, 0, 0 );
+    color1.setRgb( 0, 0, 0 );
     color2.setRgb( 255, 255, 255 );
     
     text1 = text2 = "";
@@ -411,18 +412,18 @@ void KGradientSelector::drawContents( QPainter *painter )
 	QColor col;
 	float scale;
 
-	int redDiff   = color2.Qt::red() - Qt::color1.Qt::red();
-	int greenDiff = color2.Qt::green() - Qt::color1.Qt::green();
-	int blueDiff  = color2.Qt::blue() - Qt::color1.Qt::blue();
+	int redDiff   = color2.red() - color1.red();
+	int greenDiff = color2.green() - color1.green();
+	int blueDiff  = color2.blue() - color1.blue();
 
 	if ( orientation() == Qt::Vertical )
 	{
 		for ( int y = 0; y < image.height(); y++ )
 		{
 			scale = 1.0 * y / image.height();
-			col.setRgb( Qt::color1.Qt::red() + int(redDiff*scale),
-						Qt::color1.Qt::green() + int(greenDiff*scale),
-						Qt::color1.Qt::blue() + int(blueDiff*scale) );
+			col.setRgb( color1.red() + int(redDiff*scale),
+						color1.green() + int(greenDiff*scale),
+						color1.blue() + int(blueDiff*scale) );
 
 			unsigned int *p = (uint *) image.scanLine( y );
 			for ( int x = 0; x < image.width(); x++ )
@@ -436,9 +437,9 @@ void KGradientSelector::drawContents( QPainter *painter )
 		for ( int x = 0; x < image.width(); x++ )
 		{
 			scale = 1.0 * x / image.width();
-			col.setRgb( Qt::color1.Qt::red() + int(redDiff*scale),
-						Qt::color1.Qt::green() + int(greenDiff*scale),
-						Qt::color1.Qt::blue() + int(blueDiff*scale) );
+			col.setRgb( color1.red() + int(redDiff*scale),
+						color1.green() + int(greenDiff*scale),
+						color1.blue() + int(blueDiff*scale) );
 			*p++ = col.rgb();
 		}
 
@@ -450,9 +451,9 @@ void KGradientSelector::drawContents( QPainter *painter )
 	QColor ditherPalette[8];
 
 	for ( int s = 0; s < 8; s++ )
-		ditherPalette[s].setRgb( Qt::color1.Qt::red() + redDiff * s / 8,
-								Qt::color1.Qt::green() + greenDiff * s / 8,
-								Qt::color1.Qt::blue() + blueDiff * s / 8 );
+		ditherPalette[s].setRgb( color1.red() + redDiff * s / 8,
+								color1.green() + greenDiff * s / 8,
+								color1.blue() + blueDiff * s / 8 );
 
 	KImageEffect::dither( image, ditherPalette, 8 );
 
@@ -473,7 +474,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 		yPos = contentsRect().bottom() - painter->fontMetrics().descent() - 2;
 		xPos = contentsRect().left() + (contentsRect().width() - 
 			painter->fontMetrics().width( text1 )) / 2;
-		pen.setColor( Qt::color1 );
+		pen.setColor( color1 );
 		painter->setPen( pen );
 		painter->drawText( xPos, yPos, text1 );
 	}
@@ -485,7 +486,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 		painter->setPen( pen );
 		painter->drawText( contentsRect().left() + 2, yPos, text1 );
 
-		pen.setColor( Qt::color1 );
+		pen.setColor( color1 );
 		painter->setPen( pen );
 		painter->drawText( contentsRect().right() -
 			 painter->fontMetrics().width( text2 ) - 2, yPos, text2 );

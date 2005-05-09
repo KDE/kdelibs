@@ -46,6 +46,7 @@
 #include <qstylefactory.h>
 #include <qtabbar.h>
 #include <q3toolbar.h>
+#include <q3pointarray.h>
 
 #include <kpixmap.h>
 #include <kpixmapeffect.h>

@@ -318,7 +318,7 @@ public:
    * Sets the two colors which span the gradient.
    */
   void setColors( const QColor &col1, const QColor &col2 )
-  {	Qt::color1 = col1; color2 = col2; update();}
+  {	color1 = col1; color2 = col2; update();}
   void setText( const QString &t1, const QString &t2 )
   {	text1 = t1; text2 = t2; update(); }
 
@@ -326,7 +326,7 @@ public:
    * Set each color on its own.
    */
   void setFirstColor( const QColor &col )
-  { Qt::color1 = col; update(); }
+  { color1 = col; update(); }
   void setSecondColor( const QColor &col )
   { color2 = col; update(); }
 
@@ -339,7 +339,7 @@ public:
   { text2 = t; update(); }
 
   const QColor firstColor() const
-  { return Qt::color1; }
+  { return color1; }
   const QColor secondColor() const
   { return color2; }
 
@@ -356,7 +356,7 @@ protected:
 
 private:
   void init();
-  QColor Qt::color1;
+  QColor color1;
   QColor color2;
   QString text1;
   QString text2;

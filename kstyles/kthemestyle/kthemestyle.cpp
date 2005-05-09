@@ -69,6 +69,7 @@ Port version 0.9.7
 #include "kstyledirs.h"
 
 #include <qimage.h>
+#include <q3pointarray.h>
 
 #include <limits.h>
 

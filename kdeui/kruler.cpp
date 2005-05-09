@@ -22,6 +22,7 @@
 
 #include <qpainter.h>
 #include <qfont.h>
+#include <q3pointarray.h>
 
 #define INIT_VALUE 0
 #define INIT_MIN_VALUE 0

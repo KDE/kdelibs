@@ -24,6 +24,7 @@
 #include <qcursor.h>
 #include <qdrawutil.h>
 #include <qpainter.h>
+#include <q3pointarray.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kglobalaccel.h>

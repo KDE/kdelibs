@@ -40,6 +40,7 @@
 #include "qcombobox.h"
 #include "qslider.h"
 #include "qstylefactory.h"
+#include <q3pointarray.h>
 
 
 // The Light Style, 3rd revision
