@@ -111,7 +111,7 @@ namespace KJS {
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
-    enum { Parse, Qt::UTC };
+    enum { Parse, UTC };
   private:
     int id;
   };
