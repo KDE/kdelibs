@@ -149,7 +149,7 @@ VCard::_parse()
 
 	Q3StrList refolded;
 
-	QStrListIterator it(l);
+	Q3StrListIterator it(l);
 
 	Q3CString cur;
 
@@ -173,7 +173,7 @@ VCard::_parse()
 		refolded.append(cur);
 	}
 
-	QStrListIterator it2(refolded);
+	Q3StrListIterator it2(refolded);
 
 	for (; it2.current(); ++it2) {
 

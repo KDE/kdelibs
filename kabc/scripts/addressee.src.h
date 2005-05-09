@@ -206,13 +206,13 @@ class KABC_EXPORT Addressee
       Insert a key. If a key with the same id already exists
       in this addressee it is not duplicated.
      */
-    void insertKey( const Qt::Key &key );
+    void insertKey( const Key &key );
 
     /**
       Remove a key. If no key with the given id exists for this
       addresse nothing happens.
      */
-    void removeKey( const Qt::Key &key );
+    void removeKey( const Key &key );
 
     /**
       Return key, which matches the given type.
@@ -220,7 +220,7 @@ class KABC_EXPORT Addressee
       that should match. If you leave the string empty, the first
       key with a custom value is returned.
      */
-    Qt::Key key( int type, QString customTypeString = QString::null ) const;
+    Key key( int type, QString customTypeString = QString::null ) const;
 
     /**
       Return list of all keys.
@@ -244,7 +244,7 @@ class KABC_EXPORT Addressee
     /**
       Return key with the given id.
      */
-    Qt::Key findKey( const QString &id ) const;
+    Key findKey( const QString &id ) const;
 
     /**
       Insert an address. If an address with the same id already exists

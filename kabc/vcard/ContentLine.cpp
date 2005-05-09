@@ -140,7 +140,7 @@ ContentLine::_parse()
 	vDebug("parse");
 	
 	// Unqote newlines
-	strRep_ = strRep_.replace( QRegExp( "\\\\n" ), "\n" );
+	strRep_ = strRep_.replace( "\\\\n", "\n" );
 	
 	int split = strRep_.find(':');
 	
@@ -187,7 +187,7 @@ ContentLine::_parse()
 	
 	// For each parameter, create a new parameter of the correct type.
 
-	QStrListIterator it(l);
+	Q3StrListIterator it(l);
 	
 	for (; it.current(); ++it, i++) {
 
@@ -205,7 +205,7 @@ ContentLine::_parse()
 		Q3StrList paraValues;
 		RTokenise(paraValue, ",", paraValues);
 		
-		QStrListIterator it2( paraValues );
+		Q3StrListIterator it2( paraValues );
 		
 		for(; it2.current(); ++it2) {		
 		
@@ -274,11 +274,11 @@ ContentLine::_assemble()
 		vDebug("No value");
 
 	// Quote newlines
-	line = line.replace( QRegExp( "\n" ), "\\n" );
+	line = line.replace( "\n", "\\n" );
 		
 	// Fold lines longer than 72 chars
 	const int maxLen = 72;
-	uint cursor = 0;
+	int cursor = 0;
 	while( line.length() > ( cursor + 1 ) * maxLen ) {
 		strRep_ += line.mid( cursor * maxLen, maxLen );
 		strRep_ += "\r\n ";

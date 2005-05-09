@@ -91,10 +91,12 @@ LangValue::_assemble()
 {
 	strRep_ = primary_;
 	
-	QStrListIterator it(subtags_);
+	Q3StrListIterator it(subtags_);
 	
-	for (; it.current(); ++it)
-		strRep_ += Q3CString('-') + it.current();
+	for (; it.current(); ++it) {
+		strRep_ += Q3CString('-');
+                strRep_ += it.current();
+        }
 }
 
 	Q3CString

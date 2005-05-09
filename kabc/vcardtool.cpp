@@ -711,9 +711,9 @@ VCardLine VCardTool::createSound( const Sound &snd )
   return line;
 }
 
-Qt::Key VCardTool::parseKey( const VCardLine &line )
+Key VCardTool::parseKey( const VCardLine &line )
 {
-  Qt::Key key;
+  Key key;
 
   const QStringList params = line.parameterList();
   if ( params.findIndex( "encoding" ) != -1 )
@@ -735,7 +735,7 @@ Qt::Key VCardTool::parseKey( const VCardLine &line )
   return key;
 }
 
-VCardLine VCardTool::createKey( const Qt::Key &key )
+VCardLine VCardTool::createKey( const Key &key )
 {
   VCardLine line( "KEY" );
 

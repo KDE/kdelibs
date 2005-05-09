@@ -25,6 +25,7 @@
 #include <qradiobutton.h>
 #include <qcombobox.h>
 #include <q3dict.h>
+#include <q3buttongroup.h>
 
 #include <kdialogbase.h>
 #include <kresources/configwidget.h>

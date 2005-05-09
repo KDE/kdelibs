@@ -77,7 +77,7 @@ AdrParam::operator == (AdrParam & x)
 	if (x.adrTypeList().count() != adrTypeList_.count())
 		return false;
 	
-	QStrListIterator it(x.adrTypeList_);
+	Q3StrListIterator it(x.adrTypeList_);
 	
 	for (; it.current(); ++it)
 		if (!adrTypeList_.find(it.current()))
@@ -114,7 +114,7 @@ AdrParam::_assemble()
 		return;
 	}
 	
-	QStrListIterator it(adrTypeList_);
+	Q3StrListIterator it(adrTypeList_);
 	
 	for (; it.current(); ++it) {
 		

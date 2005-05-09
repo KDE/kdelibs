@@ -26,6 +26,7 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
+#include <qlist.h>
 
 #include "addresseehelper.h"
 #include "field.h"
@@ -40,6 +41,7 @@ static bool matchBinaryPattern( int value, int pattern );
 
 template <class L>
 static bool listEquals( const Q3ValueList<L>&, const Q3ValueList<L>& );
+static bool listEquals( const QStringList&, const QStringList& );
 static bool emailsEquals( const QStringList&, const QStringList& );
 
 KABC::SortMode *Addressee::mSortMode = 0;
@@ -493,7 +495,7 @@ PhoneNumber Addressee::findPhoneNumber( const QString &id ) const
   return PhoneNumber();
 }
 
-void Addressee::insertKey( const Qt::Key &key )
+void Addressee::insertKey( const Key &key )
 {
   detach();
   mData->empty = false;
@@ -508,7 +510,7 @@ void Addressee::insertKey( const Qt::Key &key )
   mData->keys.append( key );
 }
 
-void Addressee::removeKey( const Qt::Key &key )
+void Addressee::removeKey( const Key &key )
 {
   detach();
 
@@ -521,7 +523,7 @@ void Addressee::removeKey( const Qt::Key &key )
   }
 }
 
-Qt::Key Addressee::key( int type, QString customTypeString ) const
+Key Addressee::key( int type, QString customTypeString ) const
 {
   Key::List::ConstIterator it;
   for( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
@@ -538,7 +540,7 @@ Qt::Key Addressee::key( int type, QString customTypeString ) const
       }
     }
   }
-  return Qt::Key( QString(), type );
+  return Key( QString(), type );
 }
 
 void Addressee::setKeys( const Key::List& list )
@@ -574,7 +576,7 @@ Key::List Addressee::keys( int type, QString customTypeString ) const
   return list;
 }
 
-Qt::Key Addressee::findKey( const QString &id ) const
+Key Addressee::findKey( const QString &id ) const
 {
   Key::List::ConstIterator it;
   for( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
@@ -582,7 +584,7 @@ Qt::Key Addressee::findKey( const QString &id ) const
       return *it;
     }
   }
-  return Qt::Key();
+  return Key();
 }
 
 QString Addressee::asString() const
@@ -1062,7 +1064,19 @@ bool listEquals( const Q3ValueList<L> &list, const Q3ValueList<L> &pattern )
   if ( list.count() != pattern.count() )
     return false;
 
-  for ( uint i = 0; i < list.count(); ++i )
+  for ( int i = 0; i < list.count(); ++i )
+    if ( pattern.find( list[ i ] ) == pattern.end() )
+      return false;
+
+  return true;
+}
+
+bool listEquals( const QStringList &list, const QStringList &pattern )
+{
+  if ( list.count() != pattern.count() )
+    return false;
+
+  for ( int i = 0; i < list.count(); ++i )
     if ( pattern.find( list[ i ] ) == pattern.end() )
       return false;
 

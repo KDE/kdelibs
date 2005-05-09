@@ -82,7 +82,7 @@ OrgValue::_assemble()
 {
 	bool first(true);
 	
-	QStrListIterator it(valueList_);
+	Q3StrListIterator it(valueList_);
 	
 	for (; it.current(); ++it) {
 		if (!first) strRep_ += ';';

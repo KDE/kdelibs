@@ -173,7 +173,7 @@ DateValue::_parse()
 	
 	/////////////////////////////////////////////////////////////// DATE
 	
-	dateStr.replace(QRegExp("-"), "");
+	dateStr.replace("-", "");
 
 	kdDebug(5710) << "dateStr: " << dateStr << endl;
 
@@ -217,7 +217,7 @@ DateValue::_parse()
 	
 	/////////////////////////////////////////////////////////////// HMS
 
-	timeStr.replace(QRegExp(":"), "");
+	timeStr.replace(':', "");
 	
 	hour_	= timeStr.left(2).toInt();
 	minute_	= timeStr.mid(2, 2).toInt();
