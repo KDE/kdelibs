@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -88,7 +88,7 @@ class KSocketBasePrivate;
  *  @brief Basic socket functionality.
  *
  * This class provides the basic socket functionlity for descended classes.
- * Socket classes are thread-safe and provide a recursive mutex should it be 
+ * Socket classes are thread-safe and provide a recursive mutex should it be
  * needed.
  *
  * @note This class is abstract.
@@ -228,7 +228,7 @@ public:
    * socket options and calls @ref setSocketOptions.
    *
    * @param enable		whether to set this socket to blocking mode
-   * @returns whether setting this value was successful; it is NOT the 
+   * @returns whether setting this value was successful; it is NOT the
    *          final blocking mode.
    */
   virtual bool setBlocking(bool enable);
@@ -392,7 +392,7 @@ public:
    * problems regarding socket creation, connection and destruction in
    * multi-threaded programs. The classes are guaranteed to work while
    * the socket exists, but it's not wise to call connect in multiple
-   * threads. 
+   * threads.
    *
    * Also, this mutex must be unlocked before the object is destroyed, which
    * means you cannot use it to guard against other threads accessing the object
@@ -533,7 +533,7 @@ public:
    * Returns the number of bytes available for reading without
    * blocking.
    */
-  virtual Q_LONG bytesAvailable() const = 0;
+  virtual Q_LONGLONG bytesAvailable() const = 0;
 
   /**
    * Waits up to @p msecs for more data to be available on this socket.
@@ -546,7 +546,7 @@ public:
    *
    * @returns the number of bytes available
    */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L) = 0;
+  virtual Q_LONGLONG waitForMore(int msecs, bool *timeout = 0L) = 0;
 
   /**
    * Reads data from the socket.

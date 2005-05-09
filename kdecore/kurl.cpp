@@ -111,7 +111,7 @@ static QString encode( const QString& segment, int encoding_offset, int encoding
 
     }
     else
-      new_segment[ new_length++ ] = local[i];
+      new_segment[ new_length++ ] = QChar(local[i]);
   }
 
   QString result = QString(new_segment, new_length);
@@ -387,7 +387,7 @@ static QString cleanpath(const QString &_path, bool cleanDirSeparator, bool deco
   if ( result.isEmpty() )
     result = KURL_ROOTDIR_PATH;
   else if ( slash && result[result.length()-1] != '/' )
-       result.append('/');
+       result.append(QChar('/'));
 
   return result;
 }
@@ -659,13 +659,13 @@ void KURL::parse( const QString& _url, int encoding_hint )
 	parseURL( _url, encoding_hint );
 	return;
     }
-    if ( !isalpha( (int)x ) )
+    if ( !isalpha( (int)x.unicode() ) )
 	goto NodeErr;
 
     // Node 2: Accept any amount of (alpha|digit|'+'|'-')
     // '.' is not currently accepted, because current KURL may be confused.
     // Proceed with :// :/ or :
-    while( pos < len && (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
+    while( pos < len && (isalpha(buf[pos].unicode()) || isdigit(buf[pos].unicode()) ||
 			 buf[pos] == '+' || buf[pos] == '-')) pos++;
 
     if (pos < len && buf[pos] == ':' )
@@ -707,7 +707,7 @@ void KURL::parseRawURI( const QString& _url, int encoding_hint )
     // Accept any amount of (alpha|digit|'+'|'-')
     // '.' is not currently accepted, because current KURL may be confused.
     // Proceed with :
-    while( pos < len && (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
+    while( pos < len && (isalpha(buf[pos].unicode()) || isdigit(buf[pos].unicode()) ||
 			 buf[pos] == '+' || buf[pos] == '-')) pos++;
 
     // Note that m_strProtocol is already set here, so we just skip over the protocol.
@@ -774,13 +774,13 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
   if ( x == '/' )
 #endif
     goto Node9;
-  if ( !isalpha( (int)x ) )
+  if ( !isalpha( x.unicode() ) )
     goto NodeErr;
 
   // Node 2: Accept any amount of (alpha|digit|'+'|'-')
   // '.' is not currently accepted, because current KURL may be confused.
   // Proceed with :// :/ or :
-  while( pos < len && (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
+  while( pos < len && (isalpha(buf[pos].unicode()) || isdigit(buf[pos].unicode()) ||
           buf[pos] == '+' || buf[pos] == '-')) pos++;
 
   // Note that m_strProtocol is already set here, so we just skip over the protocol.
@@ -958,11 +958,11 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
   if ( pos == len )
     goto NodeErr;
   start = pos;
-  if ( !isdigit( buf[pos++] ) )
+  if ( !isdigit( buf[pos++].unicode() ) )
     goto NodeErr;
 
   // Node 8d: Accept any amount of digits
-  while( pos < len && isdigit( buf[pos] ) ) pos++;
+  while( pos < len && isdigit( buf[pos].unicode() ) ) pos++;
   port = QString( buf + start, pos - start );
   m_iPort = port.toUShort();
   if ( pos == len )

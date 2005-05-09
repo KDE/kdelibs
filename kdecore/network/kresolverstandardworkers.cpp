@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -113,7 +113,7 @@ void KBlacklistWorker::loadBlacklist()
 
       QTextStream stream(&f);
       stream.setEncoding(QTextStream::Latin1);
-      for (QString line = stream.readLine(); !line.isNull(); 
+      for (QString line = stream.readLine(); !line.isNull();
 	   line = stream.readLine())
 	{
 	  if (line.isEmpty())
@@ -123,8 +123,8 @@ void KBlacklistWorker::loadBlacklist()
 	  // and that it starts with .
 	  line = line.stripWhiteSpace();
 	  if (line[0] != '.')
-	    line.prepend('.');
-	  
+	    line.prepend(QChar( '.') );
+
 	  blacklist.append(line.lower());
 	}
     }
@@ -182,7 +182,7 @@ namespace
    * In all cases, we prefer to use the new getaddrinfo(3) call. That means
    * it will always be used if it is found.
    *
-   * If it's not found, we have the option to use gethostbyname2_r, 
+   * If it's not found, we have the option to use gethostbyname2_r,
    * gethostbyname_r, gethostbyname2 and gethostbyname. If gethostbyname2_r
    * is defined, we will use it.
    *
@@ -241,7 +241,7 @@ namespace
     int my_h_errno;
     char *buf = 0L;
 
-    // qDebug("ResolveThread::run(): started threaded gethostbyname for %s (af = %d)", 
+    // qDebug("ResolveThread::run(): started threaded gethostbyname for %s (af = %d)",
     //	   m_hostname.data(), m_af);
 
     ResolverLocker resLock( this );
@@ -251,7 +251,7 @@ namespace
 	my_h_errno = HOST_NOT_FOUND;
 
 	// check blacklist
-	if (m_af != AF_INET && 
+	if (m_af != AF_INET &&
 	    KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_hostname)))
 	  break;
 
@@ -404,7 +404,7 @@ namespace
   bool GetAddrInfoThread::run()
   {
     // check blacklist
-    if ((m_af != AF_INET && m_af != AF_UNSPEC) && 
+    if ((m_af != AF_INET && m_af != AF_UNSPEC) &&
 	KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_node)))
       {
 	results.setError(KResolver::NoName);
@@ -519,14 +519,14 @@ namespace
 	    // cache the last canon name to avoid doing the ToUnicode processing unnecessarily
 	    if ((previous_canon && !p->ai_canonname) ||
 		(!previous_canon && p->ai_canonname) ||
-		(p->ai_canonname != previous_canon && 
+		(p->ai_canonname != previous_canon &&
 		 strcmp(p->ai_canonname, previous_canon) != 0))
 	      {
 		canon = KResolver::domainToUnicode(QString::fromAscii(p->ai_canonname));
 		previous_canon = p->ai_canonname;
 	      }
 
-	    results.append(KResolverEntry(p->ai_addr, p->ai_addrlen, p->ai_socktype, 
+	    results.append(KResolverEntry(p->ai_addr, p->ai_addrlen, p->ai_socktype,
 					  p->ai_protocol, canon, m_node));
 	  }
 
@@ -688,7 +688,7 @@ KResolver::ErrorCodes KStandardWorker::addUnix()
 
   results.append(KResolverEntry(sa, socktype, 0));
   setError(KResolver::NoError);
- 
+
   return KResolver::NoError;
 }
 
@@ -714,7 +714,7 @@ bool KStandardWorker::resolveNumerically()
   KInetSocketAddress sa;
   setError(KResolver::NoError);
   sa.setHost(KIpAddress(QString::fromLatin1(m_encodedName)));
-  
+
   // if it failed, the length was reset to 0
   bool ok = sa.length() != 0;
 
@@ -784,7 +784,7 @@ bool KStandardWorker::resolveNumerically()
     }
   else
     {
-      // probably bad flags, since the address is not convertible without 
+      // probably bad flags, since the address is not convertible without
       // resolution
 
       setError(KResolver::BadFlags);
@@ -866,7 +866,7 @@ bool KStandardWorker::run()
     KResolver::SocketFamilies mask;
     int af;
   } families[] = { { KResolver::IPv4Family, AF_INET }
-#ifdef AF_INET6					  
+#ifdef AF_INET6
 		  , { KResolver::IPv6Family, AF_INET6 }
 #endif
   };
@@ -886,7 +886,7 @@ bool KStandardWorker::run()
 	KResolverResults *res = new KResolverResults;
 	resultList.append(res);
 #ifdef HAVE_GETADDRINFO
-	worker = new GetAddrInfoThread(m_encodedName, 
+	worker = new GetAddrInfoThread(m_encodedName,
 				       serviceName().latin1(),
 				       families[i].af, flags(), res);
 #else
@@ -957,7 +957,7 @@ bool KGetAddrinfoWorker::preprocess()
 bool KGetAddrinfoWorker::run()
 {
   // make an AF_UNSPEC getaddrinfo(3) call
-  GetAddrInfoThread worker(m_encodedName, serviceName().latin1(), 
+  GetAddrInfoThread worker(m_encodedName, serviceName().latin1(),
 			   AF_UNSPEC, flags(), &results);
 
   if (!worker.run())

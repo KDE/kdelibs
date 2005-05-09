@@ -105,8 +105,8 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 	b = dst->scanLine(y);
 	int endian = (QImage::systemBitOrder() == QImage::BigEndian);
 	int x;
-	uchar* q = src->scanLine(y);
-	uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
+	const uchar* q = src->scanLine(y);
+	const uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
 
 	for (int chan = 0; chan < 3; chan++) {
 	    b = dst->scanLine(y);
