@@ -32,7 +32,7 @@
 #include "cupsdsecuritypage.h"
 
 #include <qdir.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
@@ -40,7 +40,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <qstringlist.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <kio/passdlg.h>
 #include <kguiitem.h>
 #include <kprocess.h>
@@ -74,7 +74,7 @@ int getServerPid()
 	{
 		if (dir[i] == "." || dir[i] == ".." || dir[i] == "self") continue;
 		QFile	f("/proc/" + dir[i] + "/cmdline");
-		if (f.exists() && f.open(IO_ReadOnly))
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			QTextStream	t(&f);
 			QString	line;
@@ -141,7 +141,7 @@ void CupsdDialog::addConfPage(CupsdPage *page)
                                                                    KIcon::SizeMedium
 	                                                          );
 
-	QVBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);
+	Q3VBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);
 	page->reparent(box, QPoint(0,0));
 	pagelist_.append(page);
 }
@@ -177,7 +177,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	{
 		// there were some unknown options, warn the user
 		QString	msg;
-		for (QValueList< QPair<QString,QString> >::ConstIterator it=conf_->unknown_.begin(); it!=conf_->unknown_.end(); ++it)
+		for (Q3ValueList< QPair<QString,QString> >::ConstIterator it=conf_->unknown_.begin(); it!=conf_->unknown_.end(); ++it)
 			msg += ((*it).first + " = " + (*it).second + "<br>");
 		msg.prepend("<p>" + i18n("Some options were not recognized by this configuration tool. "
 		                          "They will be left untouched and you won't be able to change them.") + "</p>");
@@ -264,7 +264,7 @@ bool CupsdDialog::configure(const QString& filename, QWidget *parent, QString *m
 		CupsdDialog	dlg(parent);
 		if (dlg.setConfigFile(fn) && dlg.exec())
 		{
-			QCString	encodedFn = QFile::encodeName(fn);
+			Q3CString	encodedFn = QFile::encodeName(fn);
 			if (!needUpload)
 				KMessageBox::information(parent,
 					i18n("The config file has not been uploaded to the "
@@ -319,7 +319,7 @@ void CupsdDialog::slotOk()
 
 void CupsdDialog::slotUser1()
 {
-	QWhatsThis::enterWhatsThisMode();
+	Q3WhatsThis::enterWhatsThisMode();
 }
 
 int CupsdDialog::serverPid()
@@ -335,7 +335,7 @@ int CupsdDialog::serverOwner()
 		QString	str;
 		str.sprintf("/proc/%d/status",pid);
 		QFile	f(str);
-		if (f.exists() && f.open(IO_ReadOnly))
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			QTextStream	t(&f);
 			while (!t.eof())

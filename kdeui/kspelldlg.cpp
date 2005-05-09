@@ -87,10 +87,10 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
            SLOT(textChanged(const QString &)) );
 
   connect( d->ui->m_replacement, SIGNAL(returnPressed()),   SLOT(replace()) );
-  connect( d->ui->m_suggestions, SIGNAL(selectionChanged(QListViewItem*)),
-           SLOT(slotSelectionChanged(QListViewItem*)) );
+  connect( d->ui->m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
+           SLOT(slotSelectionChanged(Q3ListViewItem*)) );
 
-  connect( d->ui->m_suggestions, SIGNAL( doubleClicked ( QListViewItem *, const QPoint &, int ) ),
+  connect( d->ui->m_suggestions, SIGNAL( doubleClicked ( Q3ListViewItem *, const QPoint &, int ) ),
            SLOT( replace() ) );
   d->spellConfig = new KSpellConfig( 0, 0 ,0, false );
   d->spellConfig->fillDicts( d->ui->m_language );
@@ -118,7 +118,7 @@ KSpellDlg::init( const QString & _word, QStringList * _sugg )
   d->ui->m_suggestions->clear();
   d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
   for ( QStringList::Iterator it = _sugg->begin(); it != _sugg->end(); ++it ) {
-    QListViewItem *item = new QListViewItem( d->ui->m_suggestions,
+    Q3ListViewItem *item = new Q3ListViewItem( d->ui->m_suggestions,
                                              d->ui->m_suggestions->lastItem() );
     item->setText( 0, *it );
   }
@@ -152,7 +152,7 @@ KSpellDlg::init( const QString& _word, QStringList* _sugg,
   d->ui->m_suggestions->clear();
   d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
   for ( QStringList::Iterator it = _sugg->begin(); it != _sugg->end(); ++it ) {
-      QListViewItem *item = new QListViewItem( d->ui->m_suggestions,
+      Q3ListViewItem *item = new Q3ListViewItem( d->ui->m_suggestions,
                                                d->ui->m_suggestions->lastItem() );
       item->setText( 0, *it );
   }
@@ -196,7 +196,7 @@ KSpellDlg::textChanged( const QString & )
 }
 
 void
-KSpellDlg::slotSelectionChanged( QListViewItem* item )
+KSpellDlg::slotSelectionChanged( Q3ListViewItem* item )
 {
   if ( item )
     d->ui->m_replacement->setText( item->text( 0 ) );

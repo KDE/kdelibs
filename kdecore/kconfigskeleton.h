@@ -27,8 +27,8 @@
 #include <qdatetime.h>
 #include <qfont.h>
 #include <qpoint.h>
-#include <qptrlist.h>
-#include <qdict.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
 #include <qrect.h>
 #include <qsize.h>
 #include <qstringlist.h>
@@ -50,9 +50,9 @@
   class KDECORE_EXPORT KConfigSkeletonItem
   {
   public:
-    typedef QValueList < KConfigSkeletonItem * >List;
-    typedef QDict < KConfigSkeletonItem > Dict;
-    typedef QDictIterator < KConfigSkeletonItem > DictIterator;
+    typedef Q3ValueList < KConfigSkeletonItem * >List;
+    typedef Q3Dict < KConfigSkeletonItem > Dict;
+    typedef Q3DictIterator < KConfigSkeletonItem > DictIterator;
 
     /**
      * Constructor.
@@ -506,15 +506,15 @@ public:
     };
 
     ItemEnum(const QString & group, const QString & key, int &reference,
-             const QValueList<Choice> &choices, int defaultValue = 0);
+             const Q3ValueList<Choice> &choices, int defaultValue = 0);
 
-    QValueList<Choice> choices() const;
+    Q3ValueList<Choice> choices() const;
 
     void readConfig(KConfig * config);
     void writeConfig(KConfig * config);
 
   private:
-      QValueList<Choice> mChoices;
+      Q3ValueList<Choice> mChoices;
   };
 
 
@@ -773,12 +773,12 @@ public:
   /**
    * Class for handling an integer list preferences item.
    */
-  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QValueList < int > >
+  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < Q3ValueList < int > >
   {
   public:
     ItemIntList(const QString & group, const QString & key,
-                QValueList < int >&reference,
-                const QValueList < int >&defaultValue = QValueList < int >());
+                Q3ValueList < int >&reference,
+                const Q3ValueList < int >&defaultValue = Q3ValueList < int >());
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -1148,9 +1148,9 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemIntList *addItemIntList(const QString & name, QValueList < int >&reference,
-                              const QValueList < int >&defaultValue =
-                              QValueList < int >(),
+  ItemIntList *addItemIntList(const QString & name, Q3ValueList < int >&reference,
+                              const Q3ValueList < int >&defaultValue =
+                              Q3ValueList < int >(),
                               const QString & key = QString::null);
 
   /**

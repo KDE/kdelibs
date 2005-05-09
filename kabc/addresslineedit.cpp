@@ -27,10 +27,10 @@
 
 #include <qapplication.h>
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qregexp.h>
 #include <qevent.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 
 #include <kcompletionbox.h>
 #include <kconfig.h>
@@ -190,7 +190,7 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
 
 void AddressLineEdit::mouseReleaseEvent( QMouseEvent * e )
 {
-   if (m_useCompletion && (e->button() == MidButton))
+   if (m_useCompletion && (e->button() == Qt::MidButton))
    {
       m_smartPaste = true;
       KLineEdit::mouseReleaseEvent(e);

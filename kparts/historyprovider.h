@@ -20,7 +20,7 @@
 #ifndef KHISTORYPROVIDER_H
 #define KHISTORYPROVIDER_H
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qobject.h>
 
 #include <kdelibs_export.h>

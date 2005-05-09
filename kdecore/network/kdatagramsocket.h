@@ -25,7 +25,7 @@
 #ifndef KDATAGRAMSOCKET_H
 #define KDATAGRAMSOCKET_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include "ksocketaddress.h"
 #include "kclientsocketbase.h"

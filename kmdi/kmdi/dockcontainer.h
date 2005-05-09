@@ -29,7 +29,7 @@
 
 #include <qpushbutton.h>
 
-class QWidgetStack;
+class Q3WidgetStack;
 class KMultiTabBar;
 class KDockButton_Private;
 
@@ -110,7 +110,7 @@ class DockContainer: public QWidget, public KDockContainer
     void changeOverlapMode();
   private:
     QWidget *m_mainWin;
-    QWidgetStack *m_ws;
+    Q3WidgetStack *m_ws;
     KMultiTabBar *m_tb;
     int mTabCnt;
     int oldtab;

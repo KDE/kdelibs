@@ -22,11 +22,11 @@
 #include "kdelibs_export.h"
 #include <kurl.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
-typedef QValueList<QCString> QCStringList;
+typedef Q3ValueList<Q3CString> QCStringList;
 
 /**
  * @short Structure that holds command line options.
@@ -223,7 +223,7 @@ class KDECORE_EXPORT KCmdLineArgs
 {
   friend class KApplication;
   friend class KUniqueApplication;
-  friend class QPtrList<KCmdLineArgs>;
+  friend class Q3PtrList<KCmdLineArgs>;
 public:
   // Static functions:
 
@@ -430,7 +430,7 @@ public:
    *          If the option was present more than the value of the
    *          last occurrence is used.
    */
-  QCString getOption(const char *option) const;
+  Q3CString getOption(const char *option) const;
 
   /**
    *  Read out all occurrences of a string option.
@@ -571,7 +571,7 @@ private:
    *
    * Checks what to do with a single option
    */
-  static void findOption(const char *_opt, QCString opt, int &i, bool enabled, bool &moreOptions);
+  static void findOption(const char *_opt, Q3CString opt, int &i, bool enabled, bool &moreOptions);
 
   /**
    * @internal
@@ -617,14 +617,14 @@ private:
    *
    *  Set a boolean option
    */
-  void setOption(const QCString &option, bool enabled);
+  void setOption(const Q3CString &option, bool enabled);
 
   /**
    * @internal
    *
    *  Set a string option
    */
-  void setOption(const QCString &option, const char *value);
+  void setOption(const Q3CString &option, const char *value);
 
   /**
    * @internal

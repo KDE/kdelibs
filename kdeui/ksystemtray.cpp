@@ -57,7 +57,7 @@ public:
 };
 
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
-    : QLabel( parent, name, WType_TopLevel )
+    : QLabel( parent, name, Qt::WType_TopLevel )
 {
 #ifdef Q_WS_X11
     QXEmbed::initialize();
@@ -69,7 +69,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
 #ifdef Q_WS_X11
     KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
 #endif
-    setBackgroundMode(X11ParentRelative);
+    setBackgroundMode(Qt::X11ParentRelative);
     setBackgroundOrigin(WindowOrigin);
     hasQuit = 0;
     menu = new KPopupMenu( this );
@@ -142,12 +142,12 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 	return;
 
     switch ( e->button() ) {
-    case LeftButton:
+    case Qt::LeftButton:
         toggleActive();
 	break;
-    case MidButton:
+    case Qt::MidButton:
 	// fall through
-    case RightButton:
+    case Qt::RightButton:
 	if ( parentWidget() ) {
             KAction* action = d->actionCollection->action("minimizeRestore");
 	    if ( parentWidget()->isVisible() )
@@ -251,7 +251,7 @@ void KSystemTray::activateOrHide()
     else
     {
         KWinModule module;
-        for( QValueList< WId >::ConstIterator it = module.stackingOrder().fromLast();
+        for( Q3ValueList< WId >::ConstIterator it = module.stackingOrder().fromLast();
              it != module.stackingOrder().end() && (*it) != pw->winId();
              --it )
         {

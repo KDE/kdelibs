@@ -21,7 +21,7 @@
 #define	CUPSDDIALOG_H
 
 #include <kdialogbase.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class CupsdPage;
 struct CupsdConf;
@@ -50,7 +50,7 @@ protected:
 	void restartServer();
 
 private:
-	QPtrList<CupsdPage>	pagelist_;
+	Q3PtrList<CupsdPage>	pagelist_;
 	CupsdConf		*conf_;
 	QString			filename_;
 };

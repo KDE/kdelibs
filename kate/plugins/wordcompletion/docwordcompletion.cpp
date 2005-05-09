@@ -45,12 +45,12 @@
 
 #include <qregexp.h>
 #include <qstring.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qspinbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qhbox.h>
-#include <qwhatsthis.h>
+#include <q3hbox.h>
+#include <q3whatsthis.h>
 #include <qcheckbox.h>
 
 // #include <kdebug.h>
@@ -144,9 +144,9 @@ DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool au
   view->insertChildClient( this );
   setInstance( KGenericFactory<DocWordCompletionPlugin>::instance() );
 
-  (void) new KAction( i18n("Reuse Word Above"), CTRL+Key_8, this,
+  (void) new KAction( i18n("Reuse Word Above"), Qt::CTRL+Qt::Key_8, this,
     SLOT(completeBackwards()), actionCollection(), "doccomplete_bw" );
-  (void) new KAction( i18n("Reuse Word Below"), CTRL+Key_9, this,
+  (void) new KAction( i18n("Reuse Word Below"), Qt::CTRL+Qt::Key_9, this,
     SLOT(completeForwards()), actionCollection(), "doccomplete_fw" );
   (void) new KAction( i18n("Pop Up Completion List"), 0, this,
     SLOT(popupCompletionList()), actionCollection(), "doccomplete_pu" );
@@ -238,7 +238,7 @@ void DocWordCompletionPluginView::shellComplete()
   if (wrd.isEmpty())
     return;
 
-  QValueList < KTextEditor::CompletionEntry > matches = allMatches(wrd);
+  Q3ValueList < KTextEditor::CompletionEntry > matches = allMatches(wrd);
   if (matches.size() == 0)
     return;
   QString partial = findLongestUnique(matches);
@@ -377,10 +377,10 @@ void DocWordCompletionPluginView::complete( bool fw )
 }
 
 // Contributed by <brain@hdsnet.hu>
-QString DocWordCompletionPluginView::findLongestUnique(const QValueList < KTextEditor::CompletionEntry > &matches)
+QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KTextEditor::CompletionEntry > &matches)
 {
   QString partial = matches.front().text;
-  QValueList < KTextEditor::CompletionEntry >::const_iterator i = matches.begin();
+  Q3ValueList < KTextEditor::CompletionEntry >::const_iterator i = matches.begin();
   for (++i; i != matches.end(); ++i)
   {
     if (!(*i).text.startsWith(partial))
@@ -418,15 +418,15 @@ QString DocWordCompletionPluginView::word()
 
 // Scan throught the entire document for possible completions,
 // ignoring any dublets
-QValueList<KTextEditor::CompletionEntry> DocWordCompletionPluginView::allMatches( const QString &word )
+Q3ValueList<KTextEditor::CompletionEntry> DocWordCompletionPluginView::allMatches( const QString &word )
 {
-  QValueList<KTextEditor::CompletionEntry> l;
+  Q3ValueList<KTextEditor::CompletionEntry> l;
   uint i( 0 );
   int pos( 0 );
   d->re.setPattern( "\\b("+word+"\\w+)" );
   QString s, m;
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
-  QDict<int> seen; // maybe slow with > 17 matches
+  Q3Dict<int> seen; // maybe slow with > 17 matches
   int sawit(1);    // to ref for the dict
 
   while( i < ei->numLines() )
@@ -473,7 +473,7 @@ DocWordCompletionConfigPage::DocWordCompletionConfigPage( DocWordCompletionPlugi
   cbAutoPopup = new QCheckBox( i18n("Automatically &show completion list"), this );
   lo->addWidget( cbAutoPopup );
 
-  QHBox *hb = new QHBox( this );
+  Q3HBox *hb = new Q3HBox( this );
   hb->setSpacing( KDialog::spacingHint() );
   lo->addWidget( hb );
   QLabel *l = new QLabel( i18n(
@@ -491,10 +491,10 @@ DocWordCompletionConfigPage::DocWordCompletionConfigPage( DocWordCompletionPlugi
       "'Show completions when a word is at least N characters'",
       "characters long."), hb );
 
-  QWhatsThis::add( cbAutoPopup, i18n(
+  Q3WhatsThis::add( cbAutoPopup, i18n(
       "Enable the automatic completion list popup as default. The popup can "
       "be disabled on a view basis from the 'Tools' menu.") );
-  QWhatsThis::add( sbAutoPopup, i18n(
+  Q3WhatsThis::add( sbAutoPopup, i18n(
       "Define the length a word should have before the completion list "
       "is displayed.") );
 

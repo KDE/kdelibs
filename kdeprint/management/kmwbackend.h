@@ -24,7 +24,7 @@
 #include <kdelibs_export.h>
 #include <qmap.h>
 
-class QButtonGroup;
+class Q3ButtonGroup;
 class QVBoxLayout;
 
 class KDEPRINT_EXPORT KMWBackend : public KMWizardPage
@@ -41,7 +41,7 @@ public:
 	void enableBackend(int ID, bool on = true);
 
 private:
-	QButtonGroup	*m_buttons;
+	Q3ButtonGroup	*m_buttons;
 	QVBoxLayout	*m_layout;
 	// keep a map between button ID and the real next page to switch to. This enables
 	// to have different backends switching to the same page (like backends requiring

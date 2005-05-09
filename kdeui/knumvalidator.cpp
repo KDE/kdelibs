@@ -88,7 +88,7 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
   if (_max && _min >= 0 && val < 0)
     return QValidator::Invalid;
 
-  return QValidator::Valid;
+  return QValidator::Intermediate;
 }
 
 void KIntValidator::fixup ( QString &str ) const
@@ -239,7 +239,7 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
   if ( (_min || _max) && (val < _min || val > _max))
     return QValidator::Invalid;
 
-  return QValidator::Valid;
+  return QValidator::Intermediate;
 }
 
 void KFloatValidator::fixup ( QString &str ) const

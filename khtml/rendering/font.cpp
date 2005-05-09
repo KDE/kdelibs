@@ -37,7 +37,7 @@
 
 #include <qpainter.h>
 #include <qfontdatabase.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 
 using namespace khtml;
 
@@ -339,7 +339,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
 }
 
 
-void Font::update( QPaintDeviceMetrics* devMetrics ) const
+void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
 {
     f.setFamily( fontDef.family.isEmpty() ? KHTMLFactory::defaultHTMLSettings()->stdFontName() : fontDef.family );
     f.setItalic( fontDef.italic );
@@ -354,7 +354,7 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
     // all other font properties should be set before this one!!!!
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
     {
-        const QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
+        const Q3ValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         // kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
@@ -363,8 +363,8 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
         float diff = 1; // ### 100% deviation
         float bestSize = 0;
 
-        QValueList<int>::ConstIterator it = pointSizes.begin();
-        const QValueList<int>::ConstIterator itEnd = pointSizes.end();
+        Q3ValueList<int>::ConstIterator it = pointSizes.begin();
+        const Q3ValueList<int>::ConstIterator itEnd = pointSizes.end();
 
         for( ; it != itEnd; ++it )
         {

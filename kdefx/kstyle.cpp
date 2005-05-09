@@ -31,21 +31,21 @@
 
 #include <qapplication.h>
 #include <qbitmap.h>
-#include <qcleanuphandler.h>
+#include <q3cleanuphandler.h>
 #include <qmap.h>
 #include <qimage.h>
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qmenubar.h>
 #include <qpainter.h>
 #include <qpixmap.h>
-#include <qpopupmenu.h>
-#include <qprogressbar.h>
+#include <q3popupmenu.h>
+#include <q3progressbar.h>
 #include <qscrollbar.h>
 #include <qsettings.h>
 #include <qslider.h>
 #include <qstylefactory.h>
 #include <qtabbar.h>
-#include <qtoolbar.h>
+#include <q3toolbar.h>
 
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
@@ -79,9 +79,9 @@ namespace
 		QWidget* w1;
 		QWidget* w2;
 	};
-	typedef QMap<const QPopupMenu*,ShadowElements> ShadowMap;
+	typedef QMap<const Q3PopupMenu*,ShadowElements> ShadowMap;
         static ShadowMap *_shadowMap = 0;
-        QSingleCleanupHandler<ShadowMap> cleanupShadowMap;
+        Q3SingleCleanupHandler<ShadowMap> cleanupShadowMap;
         ShadowMap &shadowMap() {
 	    if ( !_shadowMap ) {
 		_shadowMap = new ShadowMap;
@@ -128,12 +128,12 @@ class TransparencyHandler : public QObject
 
 	protected:
 		void blendToColor(const QColor &col);
-		void blendToPixmap(const QColorGroup &cg, const QPopupMenu* p);
+		void blendToPixmap(const QColorGroup &cg, const Q3PopupMenu* p);
 #ifdef HAVE_XRENDER
-		void XRenderBlendToPixmap(const QPopupMenu* p);
+		void XRenderBlendToPixmap(const Q3PopupMenu* p);
 #endif
-		void createShadowWindows(const QPopupMenu* p);
-		void removeShadowWindows(const QPopupMenu* p);
+		void createShadowWindows(const Q3PopupMenu* p);
+		void removeShadowWindows(const Q3PopupMenu* p);
 		void rightShadow(QImage& dst);
 		void bottomShadow(QImage& dst);
 	private:
@@ -248,9 +248,9 @@ void KStyle::polish( QWidget* widget )
 {
 	if ( d->useFilledFrameWorkaround )
 	{
-		if ( QFrame *frame = ::qt_cast< QFrame* >( widget ) ) {
-			QFrame::Shape shape = frame->frameShape();
-			if (shape == QFrame::ToolBarPanel || shape == QFrame::MenuBarPanel)
+		if ( Q3Frame *frame = ::qt_cast< Q3Frame* >( widget ) ) {
+			Q3Frame::Shape shape = frame->frameShape();
+			if (shape == QFrame::StyledPanel || shape == QFrame::StyledPanel)
 				widget->installEventFilter(this);
 		} 
 	}
@@ -261,9 +261,9 @@ void KStyle::unPolish( QWidget* widget )
 {
 	if ( d->useFilledFrameWorkaround )
 	{
-		if ( QFrame *frame = ::qt_cast< QFrame* >( widget ) ) {
-			QFrame::Shape shape = frame->frameShape();
-			if (shape == QFrame::ToolBarPanel || shape == QFrame::MenuBarPanel)
+		if ( Q3Frame *frame = ::qt_cast< Q3Frame* >( widget ) ) {
+			Q3Frame::Shape shape = frame->frameShape();
+			if (shape == QFrame::StyledPanel || shape == QFrame::StyledPanel)
 				widget->removeEventFilter(this);
 		} 
 	}
@@ -271,7 +271,7 @@ void KStyle::unPolish( QWidget* widget )
 
 
 // Style changes (should) always re-polish popups.
-void KStyle::polishPopupMenu( QPopupMenu* p )
+void KStyle::polishPopupMenu( Q3PopupMenu* p )
 {
 	if (!p->testWState( WState_Polished ))
 		p->setCheckable(true);
@@ -298,7 +298,7 @@ KStyle::KStyleFlags KStyle::styleFlags() const
 }
 
 void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg,
-	const QPopupMenu* /* popup */ ) const
+	const Q3PopupMenu* /* popup */ ) const
 {
 	pix.fill(cg.button());	// Just tint as the default behavior
 }
@@ -353,7 +353,7 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			p2.fillRect(pix.rect(), cg.brush(QColorGroup::Highlight));
 			p2.setPen(cg.highlightedText());
 			p2.setFont(fnt);
-			p2.drawText(pix.rect(), AlignCenter, title);
+			p2.drawText(pix.rect(), Qt::AlignCenter, title);
 			p2.end();
 
 			// Draw a sunken bevel
@@ -365,7 +365,7 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			p->drawLine(x2, y+1, x2, y2);
 
 			if (horizontal) {
-				QWMatrix m;
+				QMatrix m;
 				m.rotate(-90.0);
 				QPixmap vpix = pix.xForm(m);
 				bitBlt(wid, r.x()+1, r.y()+1, &vpix);
@@ -410,14 +410,14 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 				// drawing the right sort of lines.
 				d->verticalLine   = new QBitmap( 1, 129, true );
 				d->horizontalLine = new QBitmap( 128, 1, true );
-				QPointArray a( 64 );
+				Q3PointArray a( 64 );
 				QPainter p2;
 				p2.begin( d->verticalLine );
 
 				int i;
 				for( i=0; i < 64; i++ )
 					a.setPoint( i, 0, i*2+1 );
-				p2.setPen( color1 );
+				p2.setPen( Qt::color1 );
 				p2.drawPoints( a );
 				p2.end();
 				QApplication::flushX();
@@ -426,7 +426,7 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 				p2.begin( d->horizontalLine );
 				for( i=0; i < 64; i++ )
 					a.setPoint( i, i*2+1, 0 );
-				p2.setPen( color1 );
+				p2.setPen( Qt::color1 );
 				p2.drawPoints( a );
 				p2.end();
 				QApplication::flushX();
@@ -580,7 +580,7 @@ void KStyle::drawControl( ControlElement element,
 
 			switch (tbs) {
 
-				case QTabBar::RoundedAbove: {
+				case QTabBar::RoundedNorth: {
 					if (!selected)
 						p->translate(0,1);
 					p->setPen(selected ? cg.light() : cg.shadow());
@@ -613,7 +613,7 @@ void KStyle::drawControl( ControlElement element,
 					break;
 				}
 
-				case QTabBar::RoundedBelow: {
+				case QTabBar:: RoundedSouth: {
 					if (!selected)
 						p->translate(0,-1);
 					p->setPen(selected ? cg.light() : cg.shadow());
@@ -647,7 +647,7 @@ void KStyle::drawControl( ControlElement element,
 					break;
 				}
 
-				case QTabBar::TriangularAbove: {
+				case QTabBar:: TriangularNorth: {
 					if (!selected)
 						p->translate(0,1);
 					p->setPen(selected ? cg.light() : cg.shadow());
@@ -668,7 +668,7 @@ void KStyle::drawControl( ControlElement element,
 					p->setPen(cg.mid());
 					p->drawLine(right-1, y+6, right-1, bottom);
 
-					QPointArray a(6);
+					Q3PointArray a(6);
 					a.setPoint(0, x+2, bottom);
 					a.setPoint(1, x+2, y+7);
 					a.setPoint(2, x+7, y+2);
@@ -678,7 +678,7 @@ void KStyle::drawControl( ControlElement element,
 					p->setPen  (selected ? cg.background() : cg.mid());
 					p->setBrush(selected ? cg.background() : cg.mid());
 					p->drawPolygon(a);
-					p->setBrush(NoBrush);
+					p->setBrush(Qt::NoBrush);
 					if (!selected) {
 						p->translate(0,-1);
 						p->setPen(cg.light());
@@ -711,7 +711,7 @@ void KStyle::drawControl( ControlElement element,
 					p->setPen(cg.mid());
 					p->drawLine(right-1, bottom-6, right-1, y);
 
-					QPointArray a(6);
+					Q3PointArray a(6);
 					a.setPoint(0, x+2, y);
 					a.setPoint(1, x+2, bottom-7);
 					a.setPoint(2, x+7, bottom-2);
@@ -721,7 +721,7 @@ void KStyle::drawControl( ControlElement element,
 					p->setPen  (selected ? cg.background() : cg.mid());
 					p->setBrush(selected ? cg.background() : cg.mid());
 					p->drawPolygon(a);
-					p->setBrush(NoBrush);
+					p->setBrush(Qt::NoBrush);
 					if (!selected) {
 						p->translate(0,1);
 						p->setPen(cg.dark());
@@ -754,7 +754,7 @@ void KStyle::drawControl( ControlElement element,
 
 		case CE_ProgressBarContents: {
 			// ### Take into account totalSteps() for busy indicator
-			const QProgressBar* pb = (const QProgressBar*)widget;
+			const Q3ProgressBar* pb = (const Q3ProgressBar*)widget;
 			QRect cr = subRect(SR_ProgressBarContents, widget);
 			double progress = pb->progress();
 			bool reverse = QApplication::reverseLayout();
@@ -818,7 +818,7 @@ void KStyle::drawControl( ControlElement element,
 		}
 
 		case CE_ProgressBarLabel: {
-			const QProgressBar* pb = (const QProgressBar*)widget;
+			const Q3ProgressBar* pb = (const Q3ProgressBar*)widget;
 			QRect cr = subRect(SR_ProgressBarContents, widget);
 			double progress = pb->progress();
 			bool reverse = QApplication::reverseLayout();
@@ -843,15 +843,15 @@ void KStyle::drawControl( ControlElement element,
 					
 				p->save();
 				p->setPen(pb->isEnabled() ? (reverse ? cg.text() : cg.highlightedText()) : cg.text());
-				p->drawText(r, AlignCenter, pb->progressString());
+				p->drawText(r, Qt::AlignCenter, pb->progressString());
 				p->setClipRect(crect);
 				p->setPen(reverse ? cg.highlightedText() : cg.text());
-				p->drawText(r, AlignCenter, pb->progressString());
+				p->drawText(r, Qt::AlignCenter, pb->progressString());
 				p->restore();
 
 			} else {
 				p->setPen(cg.text());
-				p->drawText(r, AlignCenter, pb->progressString());
+				p->drawText(r, Qt::AlignCenter, pb->progressString());
 			}
 
 			break;
@@ -916,8 +916,8 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 
 		case PM_TabBarTabVSpace: {
 			const QTabBar * tb = (const QTabBar *) widget;
-			if ( tb->shape() == QTabBar::RoundedAbove ||
-				 tb->shape() == QTabBar::RoundedBelow )
+			if ( tb->shape() == QTabBar::RoundedNorth ||
+				 tb->shape() == QTabBar:: RoundedSouth )
 				return 10;
 			else
 				return 4;
@@ -927,8 +927,8 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 			const QTabBar* tb = (const QTabBar*)widget;
 			QTabBar::Shape tbs = tb->shape();
 
-			if ( (tbs == QTabBar::RoundedAbove) ||
-				 (tbs == QTabBar::RoundedBelow) )
+			if ( (tbs == QTabBar::RoundedNorth) ||
+				 (tbs == QTabBar:: RoundedSouth) )
 				return 0;
 			else
 				return 2;
@@ -947,12 +947,12 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 		case PM_SliderControlThickness: {
 			const QSlider* slider   = (const QSlider*)widget;
 			QSlider::TickSetting ts = slider->tickmarks();
-			int thickness = (slider->orientation() == Horizontal) ?
+			int thickness = (slider->orientation() == Qt::Horizontal) ?
 							 slider->height() : slider->width();
 			switch (ts) {
-				case QSlider::NoMarks:				// Use total area.
+				case QSlider::NoTicks:				// Use total area.
 					break;
-				case QSlider::Both:
+				case QSlider::TicksBothSides:
 					thickness = (thickness/2) + 3;	// Use approx. 1/2 of area.
 					break;
 				default:							// Use approx. 2/3 of area
@@ -999,9 +999,9 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 }
 
 //Helper to find the next sibling that's not hidden
-static QListViewItem* nextVisibleSibling(QListViewItem* item)
+static Q3ListViewItem* nextVisibleSibling(Q3ListViewItem* item)
 {
-    QListViewItem* sibling = item;
+    Q3ListViewItem* sibling = item;
     do
     {
         sibling = sibling->nextSibling();
@@ -1169,13 +1169,13 @@ void KStyle::drawComplexControl( ComplexControl control,
 				if (opt.isDefault())
 					break;
 
-				QListViewItem *item  = opt.listViewItem();
-				QListViewItem *child = item->firstChild();
+				Q3ListViewItem *item  = opt.listViewItem();
+				Q3ListViewItem *child = item->firstChild();
 
 				int y = r.y();
 				int c;	// dotline vertice count
 				int dotoffset = 0;
-				QPointArray dotlines;
+				Q3PointArray dotlines;
 
 				if ( active == SC_All && controls == SC_ListViewExpand ) {
 					// We only need to draw a vertical line
@@ -1202,7 +1202,7 @@ void KStyle::drawComplexControl( ComplexControl control,
 					int bx = r.width() / 2;
 
 					// paint stuff in the magical area
-					QListView* v = item->listView();
+					Q3ListView* v = item->listView();
 					int lh = QMAX( p->fontMetrics().height() + 2 * v->itemMargin(),
 								   QApplication::globalStrut().height() );
 					if ( lh % 2 > 0 )
@@ -1219,7 +1219,7 @@ void KStyle::drawComplexControl( ComplexControl control,
 						{
 							// The primitive requires a rect.
 							boxrect = QRect( bx-4, linebot-4, 9, 9 );
-							boxflags = child->isOpen() ? QStyle::Style_Off : QStyle::Style_On;
+							boxflags = child->isOpen() ? QStyle::State_Off : QStyle::State_On;
 
 							// KStyle extension: Draw the box and expand/collapse indicator
 							drawKStylePrimitive( KPE_ListViewExpander, p, NULL, boxrect, cg, boxflags, opt );
@@ -1273,7 +1273,7 @@ void KStyle::drawComplexControl( ComplexControl control,
 						int other = dotlines[line].y();
 
 						branchrect  = QRect( point, other-(thickness/2), end-point, thickness );
-						branchflags = QStyle::Style_Horizontal;
+						branchflags = QStyle::State_Horizontal;
 
 						// KStyle extension: Draw the horizontal branch
 						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
@@ -1287,9 +1287,9 @@ void KStyle::drawComplexControl( ComplexControl control,
 
 						branchrect  = QRect( other-(thickness/2), point, thickness, end-point );
 						if (!pixmapoffset)	// ### Hackish - used to hint the offset
-							branchflags = QStyle::Style_NoChange;
+							branchflags = QStyle::State_NoChange;
 						else
-							branchflags = QStyle::Style_Default;
+							branchflags = QStyle::State_None;
 
 						// KStyle extension: Draw the vertical branch
 						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
@@ -1795,16 +1795,16 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 		// This is nasty, but I see no other way to properly repaint
 		// filled frames in all QMenuBars and QToolBars.
 		// -- Karol.
-		QFrame *frame = 0;
+		Q3Frame *frame = 0;
 		if ( event->type() == QEvent::Paint
-				&& (frame = ::qt_cast<QFrame*>(object)) )
+				&& (frame = ::qt_cast<Q3Frame*>(object)) )
 		{
-			if (frame->frameShape() != QFrame::ToolBarPanel && frame->frameShape() != QFrame::MenuBarPanel)
+			if (frame->frameShape() != QFrame::StyledPanel && frame->frameShape() != QFrame::StyledPanel)
 				return false;
 				
 			bool horizontal = true;
 			QPaintEvent* pe = (QPaintEvent*)event;
-			QToolBar *toolbar = ::qt_cast< QToolBar *>( frame );
+			Q3ToolBar *toolbar = ::qt_cast< Q3ToolBar *>( frame );
 			QRect r = pe->rect();
 
 			if (toolbar && toolbar->orientation() == Qt::Vertical)
@@ -1934,7 +1934,7 @@ void TransparencyHandler::bottomShadow(QImage& dst)
 }
 
 // Create a shadow of thickness 4.
-void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
+void TransparencyHandler::createShadowWindows(const Q3PopupMenu* p)
 {
 #ifdef Q_WS_X11
 	int x2 = p->x()+p->width();
@@ -1944,8 +1944,8 @@ void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 
 	// Create a fake drop-down shadow effect via blended Xwindows
 	ShadowElements se;
-	se.w1 = new QWidget(0, 0, WStyle_Customize | WType_Popup | WX11BypassWM );
-	se.w2 = new QWidget(0, 0, WStyle_Customize | WType_Popup | WX11BypassWM );
+	se.w1 = new QWidget(0, 0, Qt::WStyle_Customize | Qt::WType_Popup | Qt::WX11BypassWM );
+	se.w2 = new QWidget(0, 0, Qt::WStyle_Customize | Qt::WType_Popup | Qt::WX11BypassWM );
 	se.w1->setGeometry(shadow1);
 	se.w2->setGeometry(shadow2);
 	XSelectInput(qt_xdisplay(), se.w1->winId(), StructureNotifyMask );
@@ -1981,7 +1981,7 @@ void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 #endif
 }
 
-void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
+void TransparencyHandler::removeShadowWindows(const Q3PopupMenu* p)
 {
 #ifdef Q_WS_X11
 	ShadowMap::iterator it = shadowMap().find(p);
@@ -2007,7 +2007,7 @@ bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 	// Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
 
 	// Added 'fake' menu shadows <04-Jul-2002> -- Karol
-	QPopupMenu* p = (QPopupMenu*)object;
+	Q3PopupMenu* p = (Q3PopupMenu*)object;
 	QEvent::Type et = event->type();
 
 	if (et == QEvent::Show)
@@ -2077,7 +2077,7 @@ void TransparencyHandler::blendToColor(const QColor &col)
 }
 
 
-void TransparencyHandler::blendToPixmap(const QColorGroup &cg, const QPopupMenu* p)
+void TransparencyHandler::blendToPixmap(const QColorGroup &cg, const Q3PopupMenu* p)
 {
 	if (opacity < 0.0 || opacity > 1.0)
 		return;
@@ -2103,7 +2103,7 @@ void TransparencyHandler::blendToPixmap(const QColorGroup &cg, const QPopupMenu*
 // Here we go, use XRender in all its glory.
 // NOTE: This is actually a bit slower than the above routines
 // on non-accelerated displays. -- Karol.
-void TransparencyHandler::XRenderBlendToPixmap(const QPopupMenu* p)
+void TransparencyHandler::XRenderBlendToPixmap(const Q3PopupMenu* p)
 {
 	KPixmap renderPix;
 	renderPix.resize( pix.width(), pix.height() );

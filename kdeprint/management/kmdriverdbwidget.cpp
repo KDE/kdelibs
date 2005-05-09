@@ -31,7 +31,7 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 
 #include <klocale.h>
 #include <kcursor.h>
@@ -95,7 +95,7 @@ KMDriverDbWidget::~KMDriverDbWidget()
 
 void KMDriverDbWidget::setDriver(const QString& manu, const QString& model)
 {
-	QListBoxItem	*item = m_manu->findItem(manu);
+	Q3ListBoxItem	*item = m_manu->findItem(manu);
 	QString		model_(model);
 	if (item)
 	{
@@ -167,7 +167,7 @@ void KMDriverDbWidget::slotDbLoaded(bool reloaded)
 	{ // do something only if DB reloaded
 		m_manu->clear();
 		m_model->clear();
-		QDictIterator< QDict<KMDBEntryList> >	it(KMDriverDB::self()->manufacturers());
+		Q3DictIterator< Q3Dict<KMDBEntryList> >	it(KMDriverDB::self()->manufacturers());
 		for (;it.current();++it)
 			m_manu->insertItem(it.currentKey());
 		m_manu->sort();
@@ -186,11 +186,11 @@ void KMDriverDbWidget::slotError(const QString& msg)
 void KMDriverDbWidget::slotManufacturerSelected(const QString& name)
 {
 	m_model->clear();
-	QDict<KMDBEntryList>	*models = KMDriverDB::self()->findModels(name);
+	Q3Dict<KMDBEntryList>	*models = KMDriverDB::self()->findModels(name);
 	if (models)
 	{
-		QStrIList	ilist(true);
-		QDictIterator<KMDBEntryList>	it(*models);
+		Q3StrIList	ilist(true);
+		Q3DictIterator<KMDBEntryList>	it(*models);
 		for (;it.current();++it)
 			ilist.append(it.currentKey().latin1());
 		ilist.sort();
@@ -203,7 +203,7 @@ void KMDriverDbWidget::slotPostscriptToggled(bool on)
 {
 	if (on)
 	{
-		QListBoxItem	*item = m_manu->findItem("GENERIC");
+		Q3ListBoxItem	*item = m_manu->findItem("GENERIC");
 		if (item)
 		{
 			m_manu->setCurrentItem(item);

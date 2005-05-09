@@ -35,7 +35,7 @@
 void KOperaBookmarkImporter::parseOperaBookmarks( )
 {
    QFile file(m_fileName);
-   if(!file.open(IO_ReadOnly)) {
+   if(!file.open(QIODevice::ReadOnly)) {
       return;
    }
 
@@ -47,7 +47,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
    int lineno = 0;
    QString url, name, type;
    static const int g_lineLimit = 16*1024; 
-   QCString line(g_lineLimit);
+   Q3CString line(g_lineLimit);
 
    while ( file.readLine(line.data(), g_lineLimit) >=0 ) {
       lineno++;
@@ -128,7 +128,7 @@ private:
     QTextStream m_out;
 };
 
-OperaExporter::OperaExporter() : m_out(&m_string, IO_WriteOnly) {
+OperaExporter::OperaExporter() : m_out(&m_string, QIODevice::WriteOnly) {
     m_out << "Opera Hotlist version 2.0" << endl;
     m_out << "Options: encoding = utf8, version=3" << endl;
 }
@@ -158,7 +158,7 @@ void KOperaBookmarkExporterImpl::write(KBookmarkGroup parent) {
     OperaExporter exporter;
     QString content = exporter.generate( parent );
     QFile file(m_fileName);
-    if (!file.open(IO_WriteOnly)) {
+    if (!file.open(QIODevice::WriteOnly)) {
        kdError(7043) << "Can't write to file " << m_fileName << endl;
        return;
     }

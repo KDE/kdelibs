@@ -60,7 +60,7 @@ unsigned int PrintInterface::printInterfaceNumber () const
   return myPrintInterfaceNumber;
 }
 
-void PrintInterface::setPrintInterfaceDCOPSuffix (const QCString &suffix)
+void PrintInterface::setPrintInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("PrintInterface#"+suffix);
 }

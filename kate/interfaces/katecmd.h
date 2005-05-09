@@ -23,7 +23,7 @@
 
 #include <kcompletion.h>
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qstringlist.h>
 
 class KATEPARTINTERFACES_EXPORT KateCmd
@@ -47,7 +47,7 @@ class KATEPARTINTERFACES_EXPORT KateCmd
 
   private:
     static KateCmd *s_self;
-    QDict<Kate::Command> m_dict;
+    Q3Dict<Kate::Command> m_dict;
     QStringList m_cmds;
     QStringList m_history;
 };

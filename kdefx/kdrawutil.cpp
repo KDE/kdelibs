@@ -103,7 +103,7 @@ KDEFX_EXPORT void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGrou
     r.coords(&x, &y, &x2, &y2);
     if(r.width() > 16 && r.height() > 16){
         QPen oldPen = p->pen();
-        QPointArray hPntArray, lPntArray;
+        Q3PointArray hPntArray, lPntArray;
         hPntArray.putPoints(0, 12, x+4,y+1, x+5,y+1, // top left
                             x+3,y+2, x+2,y+3, x+1,y+4, x+1,y+5,
                             x+1,y2-5, x+1,y2-4, x+2,y2-3, // half corners
@@ -168,7 +168,7 @@ KDEFX_EXPORT void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool c
     if(w > 16 && h > 16){
         int x2 = x+w-1;
         int y2 = y+h-1;
-        QPointArray a(QCOORDARRLEN(top_left_fill), top_left_fill);
+        Q3PointArray a(QCOORDARRLEN(top_left_fill), top_left_fill);
         a.translate(1, 1);
         p->drawPoints(a);
         a.setPoints(QCOORDARRLEN(btm_left_fill), btm_left_fill);

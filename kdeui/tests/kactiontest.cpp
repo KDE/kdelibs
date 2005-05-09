@@ -1,5 +1,5 @@
 
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include <kapplication.h>
 #include <kaction.h>
@@ -12,13 +12,13 @@ int main( int argc, char **argv )
 
     KActionCollection coll( static_cast<QObject *>( 0 ) );
 
-    QGuardedPtr<KAction> action1 = new KRadioAction("test",0, &coll);
-    QGuardedPtr<KAction> action2 = new KRadioAction("test",0, &coll);
-    QGuardedPtr<KAction> action3 = new KRadioAction("test",0, &coll);
-    QGuardedPtr<KAction> action4 = new KRadioAction("test",0, &coll);
-    QGuardedPtr<KAction> action5 = new KRadioAction("test",0, &coll);
-    QGuardedPtr<KAction> action6 = new KRadioAction("test",0, &coll);
-    QGuardedPtr<KAction> action7 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action1 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action2 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action3 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action4 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action5 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action6 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action7 = new KRadioAction("test",0, &coll);
    
     coll.clear();
     assert( coll.isEmpty() );

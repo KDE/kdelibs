@@ -13,7 +13,7 @@
 #ifndef __SSH_h_Included__
 #define __SSH_h_Included__
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include "stub.h"
 
@@ -26,7 +26,7 @@
 class KDESU_EXPORT SshProcess: public StubProcess
 {
 public:
-    SshProcess(const QCString &host=0, const QCString &user=0, const QCString &command=0);
+    SshProcess(const Q3CString &host=0, const Q3CString &user=0, const Q3CString &command=0);
     ~SshProcess();
 
     enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };
@@ -34,12 +34,12 @@ public:
     /**
      * Sets the target host.
      */
-    void setHost(const QCString &host) { m_Host = host; }
+    void setHost(const Q3CString &host) { m_Host = host; }
 
     /**
      * Sets the localtion of the remote stub.
      */
-    void setStub(const QCString &stub);
+    void setStub(const Q3CString &stub);
 
     /** 
      * Checks if the current user@host needs a password. 
@@ -59,24 +59,24 @@ public:
      */
     int exec(const char *password, int check=0);
 
-    QCString prompt() { return m_Prompt; }
-    QCString error() { return m_Error; }
+    Q3CString prompt() { return m_Prompt; }
+    Q3CString error() { return m_Error; }
 
 protected:
-    virtual QCString display();
-    virtual QCString displayAuth();
-    virtual QCString dcopServer();
+    virtual Q3CString display();
+    virtual Q3CString displayAuth();
+    virtual Q3CString dcopServer();
 
 private:
-    QCString dcopForward();
+    Q3CString dcopForward();
     int ConverseSsh(const char *password, int check);
 
     int m_dcopPort;
     int  m_dcopSrv;
-    QCString m_Prompt;
-    QCString m_Host;
-    QCString m_Error;
-    QCString m_Stub;
+    Q3CString m_Prompt;
+    Q3CString m_Host;
+    Q3CString m_Error;
+    Q3CString m_Stub;
 
 protected:
     virtual void virtual_hook( int id, void* data );

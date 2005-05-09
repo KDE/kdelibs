@@ -24,10 +24,10 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include <qcstring.h>
-#include <qvaluelist.h>
+#include <q3cstring.h>
+#include <q3valuelist.h>
 
-typedef QValueList<QCString> QCStringList;
+typedef Q3ValueList<Q3CString> QCStringList;
 
 /**
  * A client class to access kdesud, the KDE su daemon. Kdesud can assist in 
@@ -62,7 +62,7 @@ public:
      * @param env Extra environment variables.
      * @return Zero on success, -1 on failure.
      */
-    int exec(const QCString &command, const QCString &user, const QCString &options=0, const QCStringList &env=QCStringList());
+    int exec(const Q3CString &command, const Q3CString &user, const Q3CString &options=0, const QCStringList &env=QCStringList());
 
     /**
      * Wait for the last command to exit and return the exit code.
@@ -82,7 +82,7 @@ public:
     /**
      * Set the target host (optional).
      */
-    int setHost(const QCString &host);
+    int setHost(const Q3CString &host);
 
     /**
      * Set the desired priority (optional), see StubProcess.
@@ -100,7 +100,7 @@ public:
      * @param user The user.
      * @return zero on success, -1 on an error
      */
-    int delCommand(const QCString &command, const QCString &user);
+    int delCommand(const Q3CString &command, const Q3CString &user);
 
     /**
      * Set a persistent variable.
@@ -111,21 +111,21 @@ public:
      * @param group Make the key part of a group. See delGroup.
      * @return zero on success, -1 on failure.
      */
-    int setVar(const QCString &key, const QCString &value, int timeout=0, const QCString &group=0);
+    int setVar(const Q3CString &key, const Q3CString &value, int timeout=0, const Q3CString &group=0);
 
     /**
      * Get a persistent variable.
      * @param key The name of the variable.
      * @return Its value.
      */
-    QCString getVar(const QCString &key);
+    Q3CString getVar(const Q3CString &key);
 
     /**
      * Gets all the keys that are membes of the given group.
      * @param group the group name of the variables.
      * @return a list of the keys in the group.
      */
-    QValueList<QCString> getKeys(const QCString &group);
+    Q3ValueList<Q3CString> getKeys(const Q3CString &group);
 
     /**
      * Returns true if the specified group exists is
@@ -134,14 +134,14 @@ public:
      * @param grpkey the group key
      * @return true if the group is found
      */
-    bool findGroup(const QCString &group);
+    bool findGroup(const Q3CString &group);
 
     /**
      * Delete a persistent variable.
      * @param key The name of the variable.
      * @return zero on success, -1 on failure.
      */
-    int delVar(const QCString &key);
+    int delVar(const Q3CString &key);
 
     /**
      * Delete all persistent variables with the given key.
@@ -158,7 +158,7 @@ public:
      * @param special_key the name of the variable.
      * @return zero on success, -1 on failure.
      */
-    int delVars(const QCString &special_key);
+    int delVars(const Q3CString &special_key);
 
     /**
      * Delete all persistent variables in a group.
@@ -166,7 +166,7 @@ public:
      * @param group the group name. See setVar.
      * @return
      */
-    int delGroup(const QCString &group);
+    int delGroup(const Q3CString &group);
 
     /**
      * Ping kdesud. This can be used for diagnostics.
@@ -193,10 +193,10 @@ private:
     int connect();
 
     int sockfd;
-    QCString sock;
+    Q3CString sock;
 
-    int command(const QCString &cmd, QCString *result=0L);
-    QCString escape(const QCString &str);
+    int command(const Q3CString &cmd, Q3CString *result=0L);
+    Q3CString escape(const Q3CString &str);
 
     class KDEsuClientPrivate;
     KDEsuClientPrivate *d;

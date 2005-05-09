@@ -29,7 +29,7 @@
 #include <qfontmetrics.h>
 #include <qpainter.h>
 
-class QPaintDeviceMetrics;
+class Q3PaintDeviceMetrics;
 
 
 namespace khtml
@@ -81,7 +81,7 @@ public:
 
     const FontDef& getFontDef() const { return fontDef; }
 
-    void update( QPaintDeviceMetrics *devMetrics ) const;
+    void update( Q3PaintDeviceMetrics *devMetrics ) const;
 
     /**
      * Draws a piece from the given piece of text.

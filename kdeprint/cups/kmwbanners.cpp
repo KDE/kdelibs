@@ -32,10 +32,10 @@
 QStringList defaultBanners()
 {
 	QStringList	bans;
-	QPtrList<KMPrinter>	*list = KMFactory::self()->manager()->printerList(false);
+	Q3PtrList<KMPrinter>	*list = KMFactory::self()->manager()->printerList(false);
 	if (list && list->count() > 0)
 	{
-		QPtrListIterator<KMPrinter>	it(*list);
+		Q3PtrListIterator<KMPrinter>	it(*list);
 		for (;it.current() && !it.current()->isPrinter(); ++it) ;
 		if (it.current() && KMFactory::self()->manager()->completePrinter(it.current()))
 		{

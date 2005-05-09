@@ -12,7 +12,7 @@
 #define KIMG_RGB_H
 
 #include <qmap.h>
-#include <qptrvector.h>
+#include <q3ptrvector.h>
 
 
 class QImage;
@@ -24,7 +24,7 @@ void kimgio_rgb_write(QImageIO *);
 }
 
 
-class RLEData : public QMemArray<uchar> {
+class RLEData : public Q3MemArray<uchar> {
 public:
 	RLEData() {}
 	RLEData(const uchar *d, uint l, uint o) : m_offset(o) { duplicate(d, l); }
@@ -41,7 +41,7 @@ class RLEMap : public QMap<RLEData, uint> {
 public:
 	RLEMap() : m_counter(0), m_offset(0) {}
 	uint insert(const uchar *d, uint l);
-	QPtrVector<RLEData> vector();
+	Q3PtrVector<RLEData> vector();
 	void setBaseOffset(uint o) { m_offset = o; }
 private:
 	uint			m_counter;
@@ -79,7 +79,7 @@ private:
 	QByteArray		m_data;
 	QByteArray::Iterator	m_pos;
 	RLEMap			m_rlemap;
-	QPtrVector<RLEData>	m_rlevector;
+	Q3PtrVector<RLEData>	m_rlevector;
 	uint			m_numrows;
 
 	bool readData(QImage&);

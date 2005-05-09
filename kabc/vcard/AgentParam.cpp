@@ -39,7 +39,7 @@ AgentParam::AgentParam(const AgentParam & x)
 {
 }
 
-AgentParam::AgentParam(const QCString & s)
+AgentParam::AgentParam(const Q3CString & s)
 	:	Param(s)
 {
 }
@@ -57,7 +57,7 @@ AgentParam::operator = (AgentParam & x)
 }
 
 	AgentParam &
-AgentParam::operator = (const QCString & s)
+AgentParam::operator = (const Q3CString & s)
 {
 	Param::operator = (s);
 	return *this;

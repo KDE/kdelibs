@@ -43,7 +43,7 @@ public:
 
 public:
   typedef KSharedPtr<KSycocaEntry> Ptr;
-  typedef QValueList<Ptr> List;
+  typedef Q3ValueList<Ptr> List;
 public: // KDoc seems to barf on those typedefs and generates no docs after them
    /**
     * Default constructor

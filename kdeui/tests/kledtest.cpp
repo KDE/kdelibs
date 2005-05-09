@@ -13,10 +13,10 @@ KLedTest::KLedTest(QWidget* parent)
     LedHeight(10),
     Grid(3),
     ledcolor(0),
-    red(QColor("red")),
-    blue(QColor("blue")),
-    green(QColor("green")),
-    yellow(QColor("yellow")),
+    Qt::red(QColor("red")),
+    Qt::blue(QColor("blue")),
+    Qt::green(QColor("green")),
+    Qt::yellow(QColor("yellow")),
     kled_round(true) // Switch HERE between rectangle and circular leds
 {
   if (kled_round) {
@@ -88,10 +88,10 @@ KLedTest::nextColor() {
 
   switch(ledcolor) {
   default:
-  case 0: l->setColor(green); break;
-  case 1: l->setColor(blue); break;
-  case 2: l->setColor(red); break;
-  case 3: l->setColor(yellow); break;
+  case 0: l->setColor(Qt::green); break;
+  case 1: l->setColor(Qt::blue); break;
+  case 2: l->setColor(Qt::red); break;
+  case 3: l->setColor(Qt::yellow); break;
   }
 }
 

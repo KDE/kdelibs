@@ -19,7 +19,7 @@
 
 #include "kiconselectaction.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <ktoolbar.h>
@@ -33,7 +33,7 @@ public:
 		m_menu = 0;
 	}
 	QStringList	m_iconlst;
-	QPopupMenu*	m_menu;
+	Q3PopupMenu*	m_menu;
 };
 
 KIconSelectAction::KIconSelectAction(const QString& text, int accel, QObject* parent, const char* name)

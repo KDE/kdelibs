@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 
 #include <kurl.h>
@@ -238,7 +238,7 @@ class Ftp : public KIO::SlaveBase
   // Ftp()	{}
 
 public:
-  Ftp( const QCString &pool, const QCString &app );
+  Ftp( const Q3CString &pool, const Q3CString &app );
   virtual ~Ftp();
 
   virtual void setHost( const QString& host, int port, const QString& user, const QString& pass );
@@ -337,7 +337,7 @@ private:
    *
    * return true if any response received, false on error
    */
-  bool ftpSendCmd( const QCString& cmd, int maxretries = 1 );
+  bool ftpSendCmd( const Q3CString& cmd, int maxretries = 1 );
 
   /**
    * Use the SIZE command to get the file size.

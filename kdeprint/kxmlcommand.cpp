@@ -28,7 +28,7 @@
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmap.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
@@ -242,7 +242,7 @@ void KXmlCommand::loadXml()
 {
 	QFile	f(locate("data", "kdeprint/filters/"+name()+".xml"));
 	QDomDocument	doc;
-	if (f.open(IO_ReadOnly) && doc.setContent(&f) && doc.documentElement().tagName() == "kprintfilter")
+	if (f.open(QIODevice::ReadOnly) && doc.setContent(&f) && doc.documentElement().tagName() == "kprintfilter")
 	{
 		QDomElement	e, docElem = doc.documentElement();
 		d->m_name = docElem.attribute("name");
@@ -426,7 +426,7 @@ void KXmlCommand::getOptions(QMap<QString,QString>& opts, bool incldef)
 void KXmlCommand::saveXml()
 {
 	QFile	f(locateLocal("data", "kdeprint/filters/"+name()+".xml"));
-	if (!f.open(IO_WriteOnly))
+	if (!f.open(QIODevice::WriteOnly))
 		return;
 
 	QDomDocument	doc("kprintfilter");
@@ -483,11 +483,11 @@ QDomElement KXmlCommand::createGroup(QDomDocument& doc, DrGroup *group)
 	elem.setAttribute("name", group->name());
 	elem.setAttribute("description", group->get("text"));
 
-	QPtrListIterator<DrGroup>	git(group->groups());
+	Q3PtrListIterator<DrGroup>	git(group->groups());
 	for (; git.current(); ++git)
 		elem.appendChild(createGroup(doc, git.current()));
 
-	QPtrListIterator<DrBase>	oit(group->options());
+	Q3PtrListIterator<DrBase>	oit(group->options());
 	for (; oit.current(); ++oit)
 		elem.appendChild(createElement(doc, oit.current()));
 
@@ -521,7 +521,7 @@ QDomElement KXmlCommand::createElement(QDomDocument& doc, DrBase *opt)
 		case DrBase::List:
 			elem.setAttribute("type", (opt->type() == DrBase::List ? "list" : "bool"));
 			{
-				QPtrListIterator<DrBase>	it(*(static_cast<DrListOption*>(opt)->choices()));
+				Q3PtrListIterator<DrBase>	it(*(static_cast<DrListOption*>(opt)->choices()));
 				for (; it.current(); ++it)
 				{
 					QDomElement	chElem = doc.createElement("value");
@@ -544,7 +544,7 @@ class KXmlCommandManager::KXmlCommandManagerPrivate
 {
 public:
 	QStringList	m_cmdlist;
-	QMap<QString, QValueList<KXmlCommand*> >	m_mimemap;
+	QMap<QString, Q3ValueList<KXmlCommand*> >	m_mimemap;
 	QMap<QString, KXmlCommand*>	m_cmdmap;
 };
 
@@ -730,8 +730,8 @@ QStringList KXmlCommandManager::autoConvert(const QString& mimesrc, const QStrin
 
 	if (d->m_mimemap.contains(mimesrc))
 	{
-		const QValueList<KXmlCommand*>	l = d->m_mimemap[mimesrc];
-		for (QValueList<KXmlCommand*>::ConstIterator it=l.begin(); it!=l.end(); ++it)
+		const Q3ValueList<KXmlCommand*>	l = d->m_mimemap[mimesrc];
+		for (Q3ValueList<KXmlCommand*>::ConstIterator it=l.begin(); it!=l.end(); ++it)
 		{
 			// check filter availability
 			if (!KdeprintChecker::check((*it)->requirements()))

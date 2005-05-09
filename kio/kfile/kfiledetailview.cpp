@@ -20,8 +20,8 @@
 */
 
 #include <qevent.h>
-#include <qkeycode.h>
-#include <qheader.h>
+#include <qnamespace.h>
+#include <q3header.h>
 #include <qpainter.h>
 #include <qpixmap.h>
 
@@ -77,32 +77,32 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
              SLOT(slotSortingChanged(int) ));
 
 
-    connect( this, SIGNAL( returnPressed(QListViewItem *) ),
-	     SLOT( slotActivate( QListViewItem *) ) );
+    connect( this, SIGNAL( returnPressed(Q3ListViewItem *) ),
+	     SLOT( slotActivate( Q3ListViewItem *) ) );
 
-    connect( this, SIGNAL( clicked(QListViewItem *, const QPoint&, int)),
-	     SLOT( selected( QListViewItem *) ) );
-    connect( this, SIGNAL( doubleClicked(QListViewItem *, const QPoint&, int)),
-	     SLOT( slotActivate( QListViewItem *) ) );
+    connect( this, SIGNAL( clicked(Q3ListViewItem *, const QPoint&, int)),
+	     SLOT( selected( Q3ListViewItem *) ) );
+    connect( this, SIGNAL( doubleClicked(Q3ListViewItem *, const QPoint&, int)),
+	     SLOT( slotActivate( Q3ListViewItem *) ) );
 
-    connect( this, SIGNAL(contextMenuRequested( QListViewItem *,
+    connect( this, SIGNAL(contextMenuRequested( Q3ListViewItem *,
                                                 const QPoint &, int )),
-	     this, SLOT( slotActivateMenu( QListViewItem *, const QPoint& )));
+	     this, SLOT( slotActivateMenu( Q3ListViewItem *, const QPoint& )));
 
     KFile::SelectionMode sm = KFileView::selectionMode();
     switch ( sm ) {
     case KFile::Multi:
-	QListView::setSelectionMode( QListView::Multi );
+	Q3ListView::setSelectionMode( Q3ListView::Multi );
 	break;
     case KFile::Extended:
-	QListView::setSelectionMode( QListView::Extended );
+	Q3ListView::setSelectionMode( Q3ListView::Extended );
 	break;
     case KFile::NoSelection:
-	QListView::setSelectionMode( QListView::NoSelection );
+	Q3ListView::setSelectionMode( Q3ListView::NoSelection );
 	break;
     default: // fall through
     case KFile::Single:
-	QListView::setSelectionMode( QListView::Single );
+	Q3ListView::setSelectionMode( Q3ListView::Single );
 	break;
     }
 
@@ -111,8 +111,8 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 	connect( this, SIGNAL( selectionChanged() ),
 		 SLOT( slotSelectionChanged() ));
     else
-	connect( this, SIGNAL( selectionChanged( QListViewItem * ) ),
-		 SLOT( highlighted( QListViewItem * ) ));
+	connect( this, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
+		 SLOT( highlighted( Q3ListViewItem * ) ));
 		
     // DND
     connect( &(d->autoOpenTimer), SIGNAL( timeout() ),
@@ -189,7 +189,7 @@ void KFileDetailView::invertSelection()
     KListView::invertSelection();
 }
 
-void KFileDetailView::slotActivateMenu (QListViewItem *item,const QPoint& pos )
+void KFileDetailView::slotActivateMenu (Q3ListViewItem *item,const QPoint& pos )
 {
     if ( !item ) {
         sig->activateMenu( 0, pos );
@@ -209,7 +209,7 @@ void KFileDetailView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    KFileListViewItem *item = new KFileListViewItem( (QListView*) this, i );
+    KFileListViewItem *item = new KFileListViewItem( (Q3ListView*) this, i );
 
     setSortingKey( item, i );
 
@@ -219,7 +219,7 @@ void KFileDetailView::insertItem( KFileItem *i )
         m_resolver->m_lstPendingMimeIconItems.append( item );
 }
 
-void KFileDetailView::slotActivate( QListViewItem *item )
+void KFileDetailView::slotActivate( Q3ListViewItem *item )
 {
     if ( !item )
         return;
@@ -229,7 +229,7 @@ void KFileDetailView::slotActivate( QListViewItem *item )
         sig->activate( fi );
 }
 
-void KFileDetailView::selected( QListViewItem *item )
+void KFileDetailView::selected( Q3ListViewItem *item )
 {
     if ( !item )
         return;
@@ -241,7 +241,7 @@ void KFileDetailView::selected( QListViewItem *item )
     }
 }
 
-void KFileDetailView::highlighted( QListViewItem *item )
+void KFileDetailView::highlighted( Q3ListViewItem *item )
 {
     if ( !item )
         return;
@@ -255,23 +255,23 @@ void KFileDetailView::highlighted( QListViewItem *item )
 void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
 {
     disconnect( this, SIGNAL( selectionChanged() ));
-    disconnect( this, SIGNAL( selectionChanged( QListViewItem * ) ));
+    disconnect( this, SIGNAL( selectionChanged( Q3ListViewItem * ) ));
 
     KFileView::setSelectionMode( sm );
 
     switch ( KFileView::selectionMode() ) {
     case KFile::Multi:
-        QListView::setSelectionMode( QListView::Multi );
+        Q3ListView::setSelectionMode( Q3ListView::Multi );
         break;
     case KFile::Extended:
-        QListView::setSelectionMode( QListView::Extended );
+        Q3ListView::setSelectionMode( Q3ListView::Extended );
         break;
     case KFile::NoSelection:
-        QListView::setSelectionMode( QListView::NoSelection );
+        Q3ListView::setSelectionMode( Q3ListView::NoSelection );
         break;
     default: // fall through
     case KFile::Single:
-        QListView::setSelectionMode( QListView::Single );
+        Q3ListView::setSelectionMode( Q3ListView::Single );
         break;
     }
 
@@ -279,8 +279,8 @@ void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
         connect( this, SIGNAL( selectionChanged() ),
                  SLOT( slotSelectionChanged() ));
     else
-        connect( this, SIGNAL( selectionChanged( QListViewItem * )),
-                 SLOT( highlighted( QListViewItem * )));
+        connect( this, SIGNAL( selectionChanged( Q3ListViewItem * )),
+                 SLOT( highlighted( Q3ListViewItem * )));
 }
 
 bool KFileDetailView::isSelected( const KFileItem *i ) const
@@ -298,7 +298,7 @@ void KFileDetailView::updateView( bool b )
     if ( !b )
         return;
 
-    QListViewItemIterator it( (QListView*)this );
+    Q3ListViewItemIterator it( (Q3ListView*)this );
     for ( ; it.current(); ++it ) {
         KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
         item->setPixmap( 0, item->fileInfo()->pixmap(KIcon::SizeSmall) );
@@ -506,8 +506,8 @@ void KFileDetailView::keyPressEvent( QKeyEvent *e )
 {
     KListView::keyPressEvent( e );
 
-    if ( e->key() == Key_Return || e->key() == Key_Enter ) {
-        if ( e->state() & ControlButton )
+    if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) {
+        if ( e->state() & Qt::ControlModifier )
             e->ignore();
         else
             e->accept();
@@ -533,7 +533,7 @@ void KFileDetailView::listingCompleted()
     m_resolver->start();
 }
 
-QDragObject *KFileDetailView::dragObject()
+Q3DragObject *KFileDetailView::dragObject()
 {
     // create a list of the URL:s that we want to drag
     KURL::List urls;
@@ -550,7 +550,7 @@ QDragObject *KFileDetailView::dragObject()
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );
     hotspot.setY( pixmap.height() / 2 );
-    QDragObject* myDragObject = new KURLDrag( urls, widget() );
+    Q3DragObject* myDragObject = new KURLDrag( urls, widget() );
     myDragObject->setPixmap( pixmap, hotspot );
     return myDragObject;
 }

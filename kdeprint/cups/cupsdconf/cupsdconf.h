@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtextstream.h>
 
 #include "cupsdcomment.h"
@@ -98,7 +98,7 @@ struct CupsdConf
 	QString	ripcache_;
 
 	// Network
-	QValueList<int>	port_;
+	Q3ValueList<int>	port_;
 	int	hostnamelookups_;
 	int	keepalive_;
 	int	keepalivetimeout_;
@@ -131,8 +131,8 @@ struct CupsdConf
 
 	// Security
 	QString	systemgroup_;
-	QPtrList<CupsLocation>	locations_;
-	QPtrList<CupsResource>	resources_;
+	Q3PtrList<CupsLocation>	locations_;
+	Q3PtrList<CupsResource>	resources_;
 
         // Encryption
         QString	servercertificate_;

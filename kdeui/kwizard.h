@@ -23,7 +23,7 @@
 #ifndef __KWIZARD_H
 #define __KWIZARD_H
 
-#include <qwizard.h>
+#include <q3wizard.h>
 
 #include <kdelibs_export.h>
 
@@ -43,14 +43,14 @@
 * @author Harri Porten <porten@kde.org>
 * @version 0.3 
 */
-class KDEUI_EXPORT KWizard : public QWizard
+class KDEUI_EXPORT KWizard : public Q3Wizard
 {
   Q_OBJECT
 public:
 /**
 * Constructor
 */
-  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0);
+  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, Qt::WFlags f = 0);
 /**
 * Destructor
 */

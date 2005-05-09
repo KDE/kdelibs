@@ -21,8 +21,8 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
-class QPopupMenu;
+class Q3CString;
+class Q3PopupMenu;
 
 namespace KTextEditor
 {
@@ -41,7 +41,7 @@ class KTEXTEDITOR_EXPORT PopupMenuInterface
     unsigned int popupMenuInterfaceNumber () const;
     
   protected:  
-    void setPopupMenuInterfaceDCOPSuffix (const QCString &suffix);  
+    void setPopupMenuInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   //
   // normal methodes
@@ -51,7 +51,7 @@ class KTEXTEDITOR_EXPORT PopupMenuInterface
       Install a Popup Menu. The Popup Menu will be activated on
       a right mouse button press event.
     */
-    virtual void installPopup (QPopupMenu *rmb_Menu) = 0;
+    virtual void installPopup (Q3PopupMenu *rmb_Menu) = 0;
 
   private:
     class PrivatePopupMenuInterface *d;    

@@ -20,7 +20,7 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kaction.h>
 
 #include <kmainwindow.h>
@@ -51,16 +51,16 @@ class KPARTS_EXPORT MainWindow : public KMainWindow, virtual public PartBase
   /**
    * Constructor, same signature as KMainWindow.
    */
-  MainWindow( QWidget* parent,  const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
+  MainWindow( QWidget* parent,  const char *name = 0L, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
   /**
    * Compatibility Constructor
    */
-  MainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
+  MainWindow( const char *name = 0L, Qt::WFlags f = Qt::WDestructiveClose );
   /**
    * Constructor with creation flags, see KMainWindow.
    * @since 3.2
    */
-  MainWindow( int cflags, QWidget* parent,  const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
+  MainWindow( int cflags, QWidget* parent,  const char *name = 0L, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
   /**
    * Destructor.
    */

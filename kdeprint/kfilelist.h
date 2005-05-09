@@ -21,12 +21,12 @@
 #define KFILELIST_H
 
 #include <qwidget.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kurl.h>
 
 class KListView;
 class QToolButton;
-class QListViewItem;
+class Q3ListViewItem;
 
 class KFileList : public QWidget
 {
@@ -51,7 +51,7 @@ protected:
 	void dragEnterEvent(QDragEnterEvent*);
 	void dropEvent(QDropEvent*);
 	void addFiles(const KURL::List&);
-	void selection(QPtrList<QListViewItem>&);
+	void selection(Q3PtrList<Q3ListViewItem>&);
 
 private:
 	KListView	*m_files;

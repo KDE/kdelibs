@@ -14,7 +14,7 @@ int main( int argc, char** argv )
     kdDebug() << "sending reparseConfiguration to object KonquerorIface in konqueror" << endl;
        QByteArray snd;
        QByteArray rcv;
-       QCString _type_;
+       Q3CString _type_;
        kapp->dcopClient()->call( "konqueror", "KonquerorIface", "reparseConfiguration()", snd, _type_, rcv );
        kdDebug() << _type_ << endl;
        if( _type_ != "void" ) kdDebug() << "void expected, " << _type_.data() << " returned" << endl;

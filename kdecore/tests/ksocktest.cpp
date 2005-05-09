@@ -73,7 +73,7 @@ main(int argc, char *argv[])
    printf( "resolve result: %d\n", result );
    check("KExtendedSocket::resolve() host=", host, "www.kde.org");
 //   check("KExtendedSocket::resolve() port=", port, "http");
-   QPtrList<KAddressInfo> list;
+   Q3PtrList<KAddressInfo> list;
    list = KExtendedSocket::lookup("www.kde.org", "http", KExtendedSocket::inetSocket);
    for(KAddressInfo *info = list.first(); info; info = list.next())
    {
@@ -88,7 +88,7 @@ main(int argc, char *argv[])
 
    int err;
 
-   QPtrList<KAddressInfo> cns = KExtendedSocket::lookup("www.kde.org", 0, KExtendedSocket::canonName, &err);
+   Q3PtrList<KAddressInfo> cns = KExtendedSocket::lookup("www.kde.org", 0, KExtendedSocket::canonName, &err);
    for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
         const char *canon = x->canonname();
         qWarning( "Lookup: %s", canon ? canon : "<Null>");

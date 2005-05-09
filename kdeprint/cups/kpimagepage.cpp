@@ -23,15 +23,15 @@
 #include "driver.h"
 
 #include <qcombobox.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qpushbutton.h>
 #include <qapplication.h>
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <klocale.h>
 #include <knuminput.h>
 #include <kseparator.h>
@@ -236,32 +236,32 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 
 	setTitle(i18n("Image"));
 
-	QGroupBox	*colorbox = new QGroupBox(0, Qt::Vertical, i18n("Color Settings"), this);
-	  QWhatsThis::add(this, whatsThisImagePage);
-	QGroupBox	*sizebox = new QGroupBox(0, Qt::Vertical, i18n("Image Size"), this);
-	  QWhatsThis::add(sizebox, whatsThisSizeImagePage);
-	QGroupBox	*positionbox = new QGroupBox(0, Qt::Vertical, i18n("Image Position"), this);
-	  QWhatsThis::add(positionbox, whatsThisPositionImagePage);
+	Q3GroupBox	*colorbox = new Q3GroupBox(0, Qt::Vertical, i18n("Color Settings"), this);
+	  Q3WhatsThis::add(this, whatsThisImagePage);
+	Q3GroupBox	*sizebox = new Q3GroupBox(0, Qt::Vertical, i18n("Image Size"), this);
+	  Q3WhatsThis::add(sizebox, whatsThisSizeImagePage);
+	Q3GroupBox	*positionbox = new Q3GroupBox(0, Qt::Vertical, i18n("Image Position"), this);
+	  Q3WhatsThis::add(positionbox, whatsThisPositionImagePage);
 
 	m_brightness = new KIntNumInput(100, colorbox);
 	m_brightness->setLabel(i18n("&Brightness:"));
 	m_brightness->setRange(0, 200, 20, true);
-	  QWhatsThis::add(m_brightness, whatsThisBrightnessImagePage);
+	  Q3WhatsThis::add(m_brightness, whatsThisBrightnessImagePage);
 
 	m_hue = new KIntNumInput(m_brightness, 0, colorbox);
 	m_hue->setLabel(i18n("&Hue (Color rotation):"));
 	m_hue->setRange(-360, 360, 36, true);
-	  QWhatsThis::add(m_hue, whatsThisHueImagePage);
+	  Q3WhatsThis::add(m_hue, whatsThisHueImagePage);
 
 	m_saturation = new KIntNumInput(m_brightness, 100, colorbox);
 	m_saturation->setLabel(i18n("&Saturation:"));
 	m_saturation->setRange(0, 200, 20, true);
-	  QWhatsThis::add(m_saturation, whatsThisSaturationImagePage);
+	  Q3WhatsThis::add(m_saturation, whatsThisSaturationImagePage);
 
 	m_gamma = new KIntNumInput(m_saturation, 1000, colorbox);
 	m_gamma->setLabel(i18n("&Gamma (Color correction):"));
 	m_gamma->setRange(1, 3000, 100, true);
-	  QWhatsThis::add(m_gamma, whatsThisGammaImagePage);
+	  Q3WhatsThis::add(m_gamma, whatsThisGammaImagePage);
 
 	connect(m_brightness, SIGNAL(valueChanged(int)), SLOT(slotImageSettingsChanged()));
 	connect(m_hue, SIGNAL(valueChanged(int)), SLOT(slotImageSettingsChanged()));
@@ -271,7 +271,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	m_preview = new ImagePreview(colorbox);
 	bool	useColor = (driver ? driver->get("colordevice") == "1" : true);
 	m_preview->setBlackAndWhite(!useColor);
-	  QWhatsThis::add(m_preview, whatsThisColorationPreviewImagePage);
+	  Q3WhatsThis::add(m_preview, whatsThisColorationPreviewImagePage);
 
 	m_hue->setEnabled(useColor);
 	m_saturation->setEnabled(useColor);
@@ -281,7 +281,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, colorbox);
 
 	QPushButton	*defbtn = new QPushButton(i18n("&Default Settings"), colorbox);
-	  QWhatsThis::add(defbtn, whatsThisResetButtonImagePage);
+	  Q3WhatsThis::add(defbtn, whatsThisResetButtonImagePage);
 	connect(defbtn, SIGNAL(clicked()), SLOT(slotDefaultClicked()));
 	slotDefaultClicked();
 
@@ -305,7 +305,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	lab->setBuddy(m_sizetype);
 
 	m_position = new ImagePosition(positionbox);
-	  QWhatsThis::add(m_position, whatsThisPreviewPositionImagePage);
+	  Q3WhatsThis::add(m_position, whatsThisPreviewPositionImagePage);
 
 	QRadioButton	*bottom = new QRadioButton(positionbox);
 	QRadioButton	*top = new QRadioButton(positionbox);
@@ -321,10 +321,10 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	hcenter->setFixedSize(sz);
 	right->setFixedSize(sz);
 
-	m_vertgrp = new QButtonGroup(positionbox);
+	m_vertgrp = new Q3ButtonGroup(positionbox);
 	m_vertgrp->hide();
 
-	m_horizgrp = new QButtonGroup(positionbox);
+	m_horizgrp = new Q3ButtonGroup(positionbox);
 	m_horizgrp->hide();
 
 	m_vertgrp->insert(top, 0);

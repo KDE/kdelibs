@@ -20,7 +20,7 @@
 
 #include <qapplication.h>
 #include <qpair.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
@@ -56,7 +56,7 @@ void DistributionList::insertEntry( const Addressee &a, const QString &email )
 {
   Entry e( a, email );
 
-  QValueList<Entry>::Iterator it;
+  Q3ValueList<Entry>::Iterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     if ( (*it).addressee.uid() == a.uid() ) {
       /**
@@ -76,7 +76,7 @@ void DistributionList::insertEntry( const Addressee &a, const QString &email )
 
 void DistributionList::removeEntry( const Addressee &a, const QString &email )
 {
-  QValueList<Entry>::Iterator it;
+  Q3ValueList<Entry>::Iterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     if ( (*it).addressee.uid() == a.uid() && (*it).email == email ) {
       mEntries.remove( it );
@@ -108,7 +108,7 @@ DistributionList::Entry::List DistributionList::entries() const
   return mEntries;
 }
 
-typedef QValueList< QPair<QString, QString> > MissingEntryList;
+typedef Q3ValueList< QPair<QString, QString> > MissingEntryList;
 
 class DistributionListManager::DistributionListManagerPrivate
 {

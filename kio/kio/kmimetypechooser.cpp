@@ -31,7 +31,7 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate
@@ -54,7 +54,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
                               int visuals,
                               QWidget *parent,
                               const char *name )
-    : QVBox( parent, name )
+    : Q3VBox( parent, name )
 {
   d = new KMimeTypeChooserPrivate();
   d->lvMimeTypes = 0;
@@ -78,7 +78,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
   if ( visuals & Comments )
   {
     d->lvMimeTypes->addColumn( i18n("Comment") );
-    d->lvMimeTypes->setColumnWidthMode( 1, QListView::Manual );
+    d->lvMimeTypes->setColumnWidthMode( 1, Q3ListView::Manual );
   }
   if ( visuals & Patterns )
     d->lvMimeTypes->addColumn( i18n("Patterns") );
@@ -89,18 +89,18 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
 
   if (visuals & KMimeTypeChooser::EditButton)
   {
-    QHBox *btns = new QHBox( this );
+    Q3HBox *btns = new Q3HBox( this );
     ((QBoxLayout*)btns->layout())->addStretch(1);
     d->btnEditMimeType = new QPushButton( i18n("&Edit..."), btns );
 
     connect( d->btnEditMimeType, SIGNAL(clicked()), this, SLOT(editMimeType()) );
     d->btnEditMimeType->setEnabled( false );
-    connect( d->lvMimeTypes, SIGNAL( doubleClicked ( QListViewItem * )),
+    connect( d->lvMimeTypes, SIGNAL( doubleClicked ( Q3ListViewItem * )),
              this, SLOT( editMimeType()));
-    connect( d->lvMimeTypes, SIGNAL(currentChanged(QListViewItem*)),
-             this, SLOT(slotCurrentChanged(QListViewItem*)) );
+    connect( d->lvMimeTypes, SIGNAL(currentChanged(Q3ListViewItem*)),
+             this, SLOT(slotCurrentChanged(Q3ListViewItem*)) );
 
-    QWhatsThis::add( d->btnEditMimeType, i18n(
+    Q3WhatsThis::add( d->btnEditMimeType, i18n(
         "Click this button to display the familiar KDE mime type editor.") );
   }
 }
@@ -121,15 +121,15 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
 
   d->lvMimeTypes->clear();
 
-  QMap<QString,QListViewItem*> groups;
+  QMap<QString,Q3ListViewItem*> groups;
   // thanks to kdebase/kcontrol/filetypes/filetypesview
   KMimeType::List mimetypes = KMimeType::allMimeTypes();
-  QValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
+  Q3ValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
 
-  QListViewItem *groupItem;
+  Q3ListViewItem *groupItem;
   bool agroupisopen = false;
-  QListViewItem *idefault = 0; //open this, if all other fails
-  QListViewItem *firstChecked = 0; // make this one visible after the loop
+  Q3ListViewItem *idefault = 0; //open this, if all other fails
+  Q3ListViewItem *firstChecked = 0; // make this one visible after the loop
 
   for (; it != mimetypes.end(); ++it)
   {
@@ -142,10 +142,10 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
 
     QString min = mimetype.right(mimetype.length() - (index+1));
 
-    QMapIterator<QString,QListViewItem*> mit = groups.find( maj );
+    QMapIterator<QString,Q3ListViewItem*> mit = groups.find( maj );
     if ( mit == groups.end() )
     {
-      groupItem = new QListViewItem( d->lvMimeTypes, maj );
+      groupItem = new Q3ListViewItem( d->lvMimeTypes, maj );
       groups.insert( maj, groupItem );
        if ( maj == d->defaultgroup )
          idefault = groupItem;
@@ -153,7 +153,7 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
     else
         groupItem = mit.data();
 
-    QCheckListItem *item = new QCheckListItem( groupItem, min, QCheckListItem::CheckBox );
+    Q3CheckListItem *item = new Q3CheckListItem( groupItem, min, Q3CheckListItem::CheckBox );
     item->setPixmap( 0, SmallIcon( (*it)->icon(QString::null,false) ) );
 
     int cl = 1;
@@ -202,7 +202,7 @@ void KMimeTypeChooser::editMimeType()
                     keditfiletype, keditfiletype /*unused*/);
 }
 
-void KMimeTypeChooser::slotCurrentChanged(QListViewItem* i)
+void KMimeTypeChooser::slotCurrentChanged(Q3ListViewItem* i)
 {
   if ( d->btnEditMimeType )
     d->btnEditMimeType->setEnabled( i->parent() );
@@ -217,10 +217,10 @@ void KMimeTypeChooser::slotSycocaDatabaseChanged()
 QStringList KMimeTypeChooser::mimeTypes() const
 {
   QStringList l;
-  QListViewItemIterator it( d->lvMimeTypes );
+  Q3ListViewItemIterator it( d->lvMimeTypes );
   for (; it.current(); ++it)
   {
-    if ( it.current()->parent() && ((QCheckListItem*)it.current())->isOn() )
+    if ( it.current()->parent() && ((Q3CheckListItem*)it.current())->isOn() )
       l << it.current()->parent()->text(0) + "/" + it.current()->text(0); // FIXME uncecked, should be Ok unless someone changes mimetypes during this!
   }
   return l;
@@ -231,10 +231,10 @@ QStringList KMimeTypeChooser::patterns() const
   QStringList l;
   KMimeType::Ptr p;
   QString defMT = KMimeType::defaultMimeType();
-  QListViewItemIterator it( d->lvMimeTypes );
+  Q3ListViewItemIterator it( d->lvMimeTypes );
   for (; it.current(); ++it)
   {
-    if ( it.current()->parent() && ((QCheckListItem*)it.current())->isOn() )
+    if ( it.current()->parent() && ((Q3CheckListItem*)it.current())->isOn() )
     {
       p = KMimeType::mimeType( it.current()->parent()->text(0) + "/" + it.current()->text(0) );
       if ( p->name() != defMT )

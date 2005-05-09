@@ -21,7 +21,7 @@
 
 #include <qapplication.h>
 #include <qclipboard.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 
 #include <ksyntaxhighlighter.h>
 #include <kspell.h>
@@ -53,14 +53,14 @@ public:
 
 KTextEdit::KTextEdit( const QString& text, const QString& context,
                       QWidget *parent, const char *name )
-    : QTextEdit ( text, context, parent, name )
+    : Q3TextEdit ( text, context, parent, name )
 {
     d = new KTextEditPrivate();
     KCursor::setAutoHideCursor( this, true, false );
 }
 
 KTextEdit::KTextEdit( QWidget *parent, const char *name )
-    : QTextEdit ( parent, name )
+    : Q3TextEdit ( parent, name )
 {
     d = new KTextEditPrivate();
     KCursor::setAutoHideCursor( this, true, false );
@@ -180,15 +180,15 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
     }
 
     // ignore Ctrl-Return so that KDialogs can close the dialog
-    else if ( e->state() == ControlButton &&
-              (e->key() == Key_Return || e->key() == Key_Enter) &&
+    else if ( e->state() == Qt::ControlModifier &&
+              (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) &&
               topLevelWidget()->inherits( "KDialog" ) )
     {
         e->ignore();
         return;
     }
     
-    QTextEdit::keyPressEvent( e );
+    Q3TextEdit::keyPressEvent( e );
 }
 
 void KTextEdit::deleteWordBack()
@@ -210,11 +210,11 @@ void KTextEdit::slotAllowTab()
 setTabChangesFocus(!tabChangesFocus());
 }
 
-QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
+Q3PopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
 {
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
-    QPopupMenu *menu = QTextEdit::createPopupMenu( pos );
+    Q3PopupMenu *menu = Q3TextEdit::createPopupMenu( pos );
 
     if ( isReadOnly() )
       menu->changeItem( menu->idAt(0), SmallIconSet("editcopy"), menu->text( menu->idAt(0) ) );
@@ -245,22 +245,22 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
     return menu;
 }
 
-QPopupMenu *KTextEdit::createPopupMenu()
+Q3PopupMenu *KTextEdit::createPopupMenu()
 {
-    return QTextEdit::createPopupMenu();
+    return Q3TextEdit::createPopupMenu();
 }
 
 void KTextEdit::contentsWheelEvent( QWheelEvent *e )
 {
     if ( KGlobalSettings::wheelMouseZooms() )
-        QTextEdit::contentsWheelEvent( e );
+        Q3TextEdit::contentsWheelEvent( e );
     else // thanks, we don't want to zoom, so skip QTextEdit's impl.
-        QScrollView::contentsWheelEvent( e );
+        Q3ScrollView::contentsWheelEvent( e );
 }
 
 void KTextEdit::setPalette( const QPalette& palette )
 {
-    QTextEdit::setPalette( palette );
+    Q3TextEdit::setPalette( palette );
     // unsetPalette() is not virtual and calls setPalette() as well
     // so we can use ownPalette() to find out about unsetting
     d->customPalette = ownPalette();
@@ -298,7 +298,7 @@ void KTextEdit::focusInEvent( QFocusEvent *e )
     if ( d->checkSpellingEnabled && !d->highlighter )
         d->highlighter = new KDictSpellingHighlighter( this );
 
-    QTextEdit::focusInEvent( e );
+    Q3TextEdit::focusInEvent( e );
 }
 
 bool KTextEdit::checkSpellingEnabled() const
@@ -335,7 +335,7 @@ void KTextEdit::setReadOnly(bool readOnly)
             unsetPalette();
     }
 
-    QTextEdit::setReadOnly (readOnly);
+    Q3TextEdit::setReadOnly (readOnly);
 }
 
 void KTextEdit::virtual_hook( int, void* )

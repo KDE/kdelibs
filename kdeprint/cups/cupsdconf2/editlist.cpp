@@ -81,7 +81,7 @@ void EditList::setText(int index, const QString& s)
 {
 	if (list_->text(index) != s)
 	{
-		QListBoxItem	*it = list_->findItem(s, Qt::ExactMatch);
+		Q3ListBoxItem	*it = list_->findItem(s, Qt::ExactMatch);
 		if (!it)
 			list_->changeItem(s, index);
 		else

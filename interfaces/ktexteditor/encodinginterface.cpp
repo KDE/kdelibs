@@ -62,7 +62,7 @@ unsigned int EncodingInterface::encodingInterfaceNumber () const
   return myEncodingInterfaceNumber;
 }
 
-void EncodingInterface::setEncodingInterfaceDCOPSuffix (const QCString &suffix)
+void EncodingInterface::setEncodingInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("EncodingInterface#"+suffix);
 }

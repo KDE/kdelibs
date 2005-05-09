@@ -22,7 +22,7 @@
 #include <qstringlist.h>
 #include <qtabwidget.h>
 #include <qtooltip.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
@@ -140,7 +140,7 @@ void KCModuleContainer::addModule( const QString& module )
 	KCModuleProxy* proxy = new KCModuleProxy( module, false, d->tabWidget, module.latin1());
 	allModules.append( proxy );
 
-	d->tabWidget->addTab( proxy, QIconSet(KGlobal::iconLoader()->loadIcon(
+	d->tabWidget->addTab( proxy, QIcon(KGlobal::iconLoader()->loadIcon(
 					proxy->moduleInfo().icon(), KIcon::Desktop)),
 			/* QT eats ampersands for dinner. But not this time. */
 			proxy->moduleInfo().moduleName().replace( "&", "&&" ));

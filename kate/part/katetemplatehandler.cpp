@@ -23,7 +23,7 @@
 #include "kateview.h"
 #include <qregexp.h>
 #include <kdebug.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 KateTemplateHandler::KateTemplateHandler(
   KateDocument *doc,
@@ -53,7 +53,7 @@ KateTemplateHandler::KateTemplateHandler(
   hlr->setUnderline(true);
   hlr->setOverline(true);
   l->append(hlr);*/
-  QValueList<KateTemplateHandlerPlaceHolderInfo> buildList;
+  Q3ValueList<KateTemplateHandlerPlaceHolderInfo> buildList;
   QRegExp rx( "([$%])\\{([^}\\s]+)\\}" );
   rx.setMinimal( true );
   int pos = 0;
@@ -146,13 +146,13 @@ KateTemplateHandler::~KateTemplateHandler()
 
 void KateTemplateHandler::slotDocumentDestroyed() {m_doc = 0;}
 
-void KateTemplateHandler::generateRangeTable( uint insertLine, uint insertCol, const QString& insertString, const QValueList<KateTemplateHandlerPlaceHolderInfo> &buildList )
+void KateTemplateHandler::generateRangeTable( uint insertLine, uint insertCol, const QString& insertString, const Q3ValueList<KateTemplateHandlerPlaceHolderInfo> &buildList )
 {
   uint line = insertLine;
   uint col = insertCol;
   uint colInText = 0;
 
-  for ( QValueList<KateTemplateHandlerPlaceHolderInfo>::const_iterator it = buildList.begin();it != buildList.end();++it )
+  for ( Q3ValueList<KateTemplateHandlerPlaceHolderInfo>::const_iterator it = buildList.begin();it != buildList.end();++it )
   {
     KateTemplatePlaceHolder *ph = m_dict[ ( *it ).placeholder ];
 

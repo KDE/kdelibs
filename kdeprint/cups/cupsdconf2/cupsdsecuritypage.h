@@ -21,7 +21,7 @@
 #define CUPSDSECURITYPAGE_H
 
 #include "cupsdpage.h"
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class QLineEdit;
 class EditList;
@@ -50,7 +50,7 @@ private:
 	QDirLineEdit	*encryptcert_, *encryptkey_;
 	EditList	*locations_;
 
-	QPtrList<CupsLocation>	locs_;
+	Q3PtrList<CupsLocation>	locs_;
 };
 
 #endif

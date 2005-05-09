@@ -22,7 +22,7 @@
 #include <qfile.h>
 #include <qcolor.h>
 #include <qimage.h>
-#include <qwmatrix.h>
+#include <qmatrix.h>
 
 #include <kmdcodec.h>
 
@@ -50,7 +50,7 @@ public:
 
 	ArtGradientStop *parseGradientStops(QDomElement element, int &offsets)
 	{
-		QMemArray<ArtGradientStop> *stopArray = new QMemArray<ArtGradientStop>();
+		Q3MemArray<ArtGradientStop> *stopArray = new Q3MemArray<ArtGradientStop>();
 
 		float oldOffset = -1, newOffset = -1;
 		for(QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling())
@@ -146,15 +146,15 @@ public:
 		return stopArray->data();
 	}
 
-	QPointArray parsePoints(QString points)
+	Q3PointArray parsePoints(QString points)
 	{
 		if(points.isEmpty())
-			return QPointArray();
+			return Q3PointArray();
 
 		points = points.simplifyWhiteSpace();
 
 		if(points.contains(",,") || points.contains(", ,"))
-			return QPointArray();
+			return Q3PointArray();
 
 		points.replace(',', ' ');
 		points.replace('\r', QString::null);
@@ -164,7 +164,7 @@ public:
 
 		QStringList pointList = QStringList::split(' ', points);
 
-		QPointArray array(pointList.count() / 2);
+		Q3PointArray array(pointList.count() / 2);
 		int i = 0;
 
 		for(QStringList::Iterator it = pointList.begin(); it != pointList.end(); it++)
@@ -182,9 +182,9 @@ public:
 	void parseTransform(const QString &transform)
 	{
 		// Combine new and old matrix
-		QWMatrix matrix = m_engine->painter()->parseTransform(transform);
+		QMatrix matrix = m_engine->painter()->parseTransform(transform);
 
-		QWMatrix *current = m_engine->painter()->worldMatrix();
+		QMatrix *current = m_engine->painter()->worldMatrix();
 		*current = matrix * *current;
 	}
 
@@ -201,7 +201,7 @@ public:
 	//	m_engine->painter()->setStrokeOpacity(255, true);
 
 		// Collect parent node's attributes
-		QPtrList<QDomNamedNodeMap> applyList;
+		Q3PtrList<QDomNamedNodeMap> applyList;
 		applyList.setAutoDelete(true);
 
 		QDomNode shape = node.parentNode();
@@ -311,7 +311,7 @@ public:
 			while(!iterate.isNull())
 			{
 				// Reset matrix
-				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+				m_engine->painter()->setWorldMatrix(new QMatrix(m_initialMatrix));
 
 				// Parse common attributes, style / transform
 				parseCommonAttributes(iterate);
@@ -329,7 +329,7 @@ public:
 			while(!iterate.isNull())
 			{
 				// Reset matrix
-				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+				m_engine->painter()->setWorldMatrix(new QMatrix(m_initialMatrix));
 
 				// Parse common attributes, style / transform
 				parseCommonAttributes(iterate);
@@ -372,13 +372,13 @@ public:
 		}
 		else if(element.tagName() == "polyline")
 		{
-			QPointArray polyline = parsePoints(element.attribute("points"));
+			Q3PointArray polyline = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolyline(polyline);
 			return true;
 		}
 		else if(element.tagName() == "polygon")
 		{
-			QPointArray polygon = parsePoints(element.attribute("points"));
+			Q3PointArray polygon = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolygon(polygon);
 			return true;
 		}
@@ -407,7 +407,7 @@ public:
 			if(href.startsWith("data:"))
 			{
 				// Get input
-				QCString input = href.mid(13).utf8();
+				Q3CString input = href.mid(13).utf8();
 
 				// Decode into 'output'
 				QByteArray output;
@@ -419,7 +419,7 @@ public:
 				// Scale, if needed
 				if(image.width() != (int) w || image.height() != (int) h)
 				{
-					QImage show = image.smoothScale((int) w, (int) h, QImage::ScaleMin);
+					QImage show = image.smoothScale((int) w, (int) h, Qt::KeepAspectRatio);
 					m_engine->painter()->drawImage(x, y, show);
 				}
 
@@ -484,7 +484,7 @@ private:
 	friend class KSVGIconEngine;
 
 	KSVGIconEngine *m_engine;
-	QWMatrix m_initialMatrix;
+	QMatrix m_initialMatrix;
 };
 
 struct KSVGIconEngine::Private
@@ -523,7 +523,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	if(path.right(3).upper() == "SVG")
 	{
 		// Open SVG Icon
-		if(!file.open(IO_ReadOnly))
+		if(!file.open(QIODevice::ReadOnly))
 			return false;
 
 		svgDocument.setContent(&file);
@@ -537,7 +537,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		QString data;
 		bool done = false;
 
-		QCString buffer(1024);
+		Q3CString buffer(1024);
 		int length = 0;
 
 		while(!done)
@@ -613,7 +613,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		d->painter->worldMatrix()->scale(ratiow, ratioh);
 	}
 
-	QWMatrix initialMatrix = *d->painter->worldMatrix();
+	QMatrix initialMatrix = *d->painter->worldMatrix();
 	d->helper->m_initialMatrix = initialMatrix;
 
 	// Apply transform
@@ -634,7 +634,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		svgNode = svgNode.nextSibling();
 
 		// Reset matrix
-		d->painter->setWorldMatrix(new QWMatrix(initialMatrix));
+		d->painter->setWorldMatrix(new QMatrix(initialMatrix));
 	}
 
 	d->painter->finish();

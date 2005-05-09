@@ -62,11 +62,11 @@ public:
     */
 
 protected:
-    virtual QDragObject *dragObject() {
+    virtual Q3DragObject *dragObject() {
 	if ( m_urls.isEmpty() )
 	    return 0L;
 
-	QDragObject *drag = new KURLDrag( m_urls, this, "url drag" );
+	Q3DragObject *drag = new KURLDrag( m_urls, this, "url drag" );
 	return drag;
     }
 
@@ -157,7 +157,7 @@ public:
 
 KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent,
 			      const char *name )
-  : QHBox( parent, name )
+  : Q3HBox( parent, name )
 {
     d = new KURLRequesterPrivate;
 
@@ -171,7 +171,7 @@ KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent,
 
 
 KURLRequester::KURLRequester( QWidget *parent, const char *name )
-  : QHBox( parent, name )
+  : Q3HBox( parent, name )
 {
     d = new KURLRequesterPrivate;
     init();
@@ -180,7 +180,7 @@ KURLRequester::KURLRequester( QWidget *parent, const char *name )
 
 KURLRequester::KURLRequester( const QString& url, QWidget *parent,
 			      const char *name )
-  : QHBox( parent, name )
+  : Q3HBox( parent, name )
 {
     d = new KURLRequesterPrivate;
     init();
@@ -205,8 +205,8 @@ void KURLRequester::init()
 	d->edit = new KLineEdit( this, "line edit" );
 
     myButton = new KURLDragPushButton( this, "kfile button");
-    QIconSet iconSet = SmallIconSet(QString::fromLatin1("fileopen"));
-    QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
+    QIcon iconSet = SmallIconSet(QString::fromLatin1("fileopen"));
+    QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
     myButton->setIconSet( iconSet );
     myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     QToolTip::add(myButton, i18n("Open file dialog"));

@@ -65,7 +65,7 @@ void KArrowButton::drawButton(QPainter *p)
         p->fillRect( rect(), colorGroup().brush( QColorGroup::Background ) );
 	style().drawPrimitive( QStyle::PE_Panel, p, QRect( 0, 0, width(), height() ),
 			       colorGroup(), 
-			       isDown() ? QStyle::Style_Sunken : QStyle::Style_Default,
+			       isDown() ? QStyle::State_Sunken : QStyle::State_None,
 			       QStyleOption( 2, 0 ) );
 
 	if (static_cast<unsigned int>(width()) < arrowSize + margin ||
@@ -73,13 +73,13 @@ void KArrowButton::drawButton(QPainter *p)
 		return; // don't draw arrows if we are too small
 
 	unsigned int x = 0, y = 0;
-	if (d->arrow == DownArrow) {
+	if (d->arrow == Qt::DownArrow) {
 		x = (width() - arrowSize) / 2;
 		y = height() - (arrowSize + margin);
-	} else if (d->arrow == UpArrow) {
+	} else if (d->arrow == Qt::UpArrow) {
 		x = (width() - arrowSize) / 2;
 		y = margin;
-	} else if (d->arrow == RightArrow) {
+	} else if (d->arrow == Qt::RightArrow) {
 		x = width() - (arrowSize + margin);
 		y = (height() - arrowSize) / 2;
 	} else { // arrowType == LeftArrow
@@ -100,9 +100,9 @@ void KArrowButton::drawButton(QPainter *p)
 		case Qt::UpArrow: e = QStyle::PE_ArrowUp; break;
 		case Qt::DownArrow: e = QStyle::PE_ArrowDown; break;
 	}
-	int flags = QStyle::Style_Enabled;
+	int flags = QStyle::State_Enabled;
 	if ( isDown() )
-		flags |= QStyle::Style_Down;
+		flags |= QStyle::State_Down;
 	style().drawPrimitive( e, p, QRect( QPoint( x, y ), QSize( arrowSize, arrowSize ) ),
 			       colorGroup(), flags );
 }

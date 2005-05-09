@@ -19,15 +19,15 @@
 #ifndef KWHATSTHISMANAGER_P_H
 #define KWHATSTHISMANAGER_P_H
 
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qapplication.h>
 
 #include <kdialogbase.h>
 
 class QToolButton;
-class QPopupMenu;
-class QStyleSheet;
-class QTextEdit;
+class Q3PopupMenu;
+class Q3StyleSheet;
+class Q3TextEdit;
 
 /**
  * This class is used automatically by KMainWindow and KDialog to attach a

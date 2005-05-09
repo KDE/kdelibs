@@ -37,7 +37,7 @@
 
 #include <qevent.h>
 #include <qobject.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 class DocWordCompletionPlugin
   : public KTextEditor::Plugin
@@ -72,7 +72,7 @@ class DocWordCompletionPlugin
 
 
   private:
-    QPtrList<class DocWordCompletionPluginView> m_views;
+    Q3PtrList<class DocWordCompletionPluginView> m_views;
     uint m_treshold;
     bool m_autopopup;
 
@@ -105,8 +105,8 @@ class DocWordCompletionPluginView
     void complete( bool fw=true );
 
     QString word();
-    QValueList<KTextEditor::CompletionEntry> allMatches( const QString &word );
-    QString findLongestUnique(const QValueList < KTextEditor::CompletionEntry > &matches);
+    Q3ValueList<KTextEditor::CompletionEntry> allMatches( const QString &word );
+    QString findLongestUnique(const Q3ValueList < KTextEditor::CompletionEntry > &matches);
     KTextEditor::View *m_view;
     struct DocWordCompletionPluginViewPrivate *d;
 };

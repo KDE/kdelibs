@@ -37,7 +37,7 @@ SoundValue::SoundValue(const SoundValue & x)
 {
 }
 
-SoundValue::SoundValue(const QCString & s)
+SoundValue::SoundValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -52,7 +52,7 @@ SoundValue::operator = (SoundValue & x)
 }
 
 	SoundValue &
-SoundValue::operator = (const QCString & s)
+SoundValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;

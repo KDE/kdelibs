@@ -17,8 +17,8 @@
 class KIO_EXPORT KDirNotify_stub : virtual public DCOPStub
 {
 public:
-    KDirNotify_stub( const QCString& app, const QCString& id );
-    KDirNotify_stub( DCOPClient* client, const QCString& app, const QCString& id );
+    KDirNotify_stub( const Q3CString& app, const Q3CString& id );
+    KDirNotify_stub( DCOPClient* client, const Q3CString& app, const Q3CString& id );
     explicit KDirNotify_stub( const DCOPRef& ref );
     virtual ASYNC FilesAdded( const KURL& directory );
     virtual ASYNC FilesRemoved( const KURL::List& fileList );

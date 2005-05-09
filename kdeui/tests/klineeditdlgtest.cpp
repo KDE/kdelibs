@@ -2,7 +2,7 @@
 #include <klineeditdlg.h>
 
 #include <qstring.h>
-#include <qtextview.h>
+#include <q3textview.h>
 
 int main(int argc, char** argv)
 {

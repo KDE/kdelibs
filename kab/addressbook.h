@@ -28,7 +28,7 @@ class QStringList;
 class KeyNameMap; 
 
 #include <list>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qsize.h>
@@ -49,16 +49,16 @@ public:
   /**
    * Get the key as a QCString
    */
-  QCString getKey() const;
+  Q3CString getKey() const;
   /**
    * Set this key
    */
-  void setKey(const QCString&);
+  void setKey(const Q3CString&);
 protected:
   /**
    * The key of the in this database
    */
-  QCString key;
+  Q3CString key;
 
   class KabKeyPrivate;
   KabKeyPrivate *d;
@@ -180,7 +180,7 @@ class CategoriesMap : public QMap<int, QString>
  *  displayed as transparent KURLLabels that react when the user clicks on it.
  *  These interactive parts have to be enabled by calling #setInteractiveMode.
  */
-class AddressBook : public QFrame
+class AddressBook : public Q3Frame
 {
   // ############################################################################
   Q_OBJECT

@@ -24,10 +24,10 @@
 #include <kurl.h>
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <qdom.h>
 
 #include <sys/types.h>

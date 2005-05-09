@@ -27,9 +27,9 @@
 
 #include <qapplication.h>
 #include <qtimer.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qlabel.h>
-#include <qheader.h>
+#include <q3header.h>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
@@ -49,7 +49,7 @@ public:
     bool keepParentsVisible;
     QString search;
     int queuedSearches;
-    QValueList<int> searchColumns;
+    Q3ValueList<int> searchColumns;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,8 +70,8 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent, KListView *listView, c
         connect(listView, SIGNAL(destroyed()),
                 this, SLOT(listViewDeleted()));
 
-        connect(listView, SIGNAL(itemAdded(QListViewItem *)),
-                this, SLOT(itemAdded(QListViewItem *)));
+        connect(listView, SIGNAL(itemAdded(Q3ListViewItem *)),
+                this, SLOT(itemAdded(Q3ListViewItem *)));
     }
     else
         setEnabled(false);
@@ -100,7 +100,7 @@ bool KListViewSearchLine::caseSensitive() const
     return d->caseSensitive;
 }
 
-QValueList<int> KListViewSearchLine::searchColumns() const
+Q3ValueList<int> KListViewSearchLine::searchColumns() const
 {
     return d->searchColumns;
 }
@@ -129,7 +129,7 @@ void KListViewSearchLine::updateSearch(const QString &s)
     // If there's a selected item that is visible, make sure that it's visible
     // when the search changes too (assuming that it still matches).
 
-    QListViewItem *currentItem = 0;
+    Q3ListViewItem *currentItem = 0;
 
     switch(d->listView->selectionMode())
     {
@@ -140,8 +140,8 @@ void KListViewSearchLine::updateSearch(const QString &s)
         break;
     default:
     {
-        int flags = QListViewItemIterator::Selected | QListViewItemIterator::Visible;
-        for(QListViewItemIterator it(d->listView, flags);
+        int flags = Q3ListViewItemIterator::Selected | Q3ListViewItemIterator::Visible;
+        for(Q3ListViewItemIterator it(d->listView, flags);
             it.current() && !currentItem;
             ++it)
         {
@@ -170,7 +170,7 @@ void KListViewSearchLine::setKeepParentsVisible(bool v)
     d->keepParentsVisible = v;
 }
 
-void KListViewSearchLine::setSearchColumns(const QValueList<int> &columns)
+void KListViewSearchLine::setSearchColumns(const Q3ValueList<int> &columns)
 {
     d->searchColumns = columns;
 }
@@ -181,8 +181,8 @@ void KListViewSearchLine::setListView(KListView *lv)
         disconnect(d->listView, SIGNAL(destroyed()),
                    this, SLOT(listViewDeleted()));
 
-        disconnect(d->listView, SIGNAL(itemAdded(QListViewItem *)),
-                   this, SLOT(itemAdded(QListViewItem *)));
+        disconnect(d->listView, SIGNAL(itemAdded(Q3ListViewItem *)),
+                   this, SLOT(itemAdded(Q3ListViewItem *)));
     }
 
     d->listView = lv;
@@ -191,8 +191,8 @@ void KListViewSearchLine::setListView(KListView *lv)
         connect(d->listView, SIGNAL(destroyed()),
                 this, SLOT(listViewDeleted()));
 
-        connect(d->listView, SIGNAL(itemAdded(QListViewItem *)),
-                this, SLOT(itemAdded(QListViewItem *)));
+        connect(d->listView, SIGNAL(itemAdded(Q3ListViewItem *)),
+                this, SLOT(itemAdded(Q3ListViewItem *)));
     }
 
     setEnabled(bool(lv));
@@ -202,7 +202,7 @@ void KListViewSearchLine::setListView(KListView *lv)
 // protected members
 ////////////////////////////////////////////////////////////////////////////////
 
-bool KListViewSearchLine::itemMatches(const QListViewItem *item, const QString &s) const
+bool KListViewSearchLine::itemMatches(const Q3ListViewItem *item, const QString &s) const
 {
     if(s.isEmpty())
         return true;
@@ -211,7 +211,7 @@ bool KListViewSearchLine::itemMatches(const QListViewItem *item, const QString &
     // specifified.  If it is empty default to searching all of the columns.
 
     if(!d->searchColumns.isEmpty()) {
-        QValueList<int>::ConstIterator it = d->searchColumns.begin();
+        Q3ValueList<int>::ConstIterator it = d->searchColumns.begin();
         for(; it != d->searchColumns.end(); ++it) {
             if(*it < item->listView()->columns() &&
                item->text(*it).find(s, 0, d->caseSensitive) >= 0)
@@ -231,12 +231,12 @@ bool KListViewSearchLine::itemMatches(const QListViewItem *item, const QString &
     return false;
 }
 
-QPopupMenu *KListViewSearchLine::createPopupMenu()
+Q3PopupMenu *KListViewSearchLine::createPopupMenu()
 {
-    QPopupMenu *popup = KLineEdit::createPopupMenu();
+    Q3PopupMenu *popup = KLineEdit::createPopupMenu();
 
     if (d->listView->columns()>1) {
-        QPopupMenu *subMenu = new QPopupMenu(popup);
+        Q3PopupMenu *subMenu = new Q3PopupMenu(popup);
         connect(subMenu, SIGNAL(activated(int)), this, SLOT(searchColumnsMenuActivated(int)));
 
         popup->insertSeparator();
@@ -247,7 +247,7 @@ QPopupMenu *KListViewSearchLine::createPopupMenu()
     
         bool allColumnsAreSearchColumns = true;
 	// TODO Make the entry order match the actual column order
-	QHeader* const header = d->listView->header();
+	Q3Header* const header = d->listView->header();
 	int visibleColumns = 0;
 	for(int i = 0; i < d->listView->columns(); i++) {
 	    if(d->listView->columnWidth(i)>0) {
@@ -300,7 +300,7 @@ void KListViewSearchLine::activateSearch()
 // private slots
 ////////////////////////////////////////////////////////////////////////////////
 
-void KListViewSearchLine::itemAdded(QListViewItem *item) const
+void KListViewSearchLine::itemAdded(Q3ListViewItem *item) const
 {
     item->setVisible(itemMatches(item, text()));
 }
@@ -342,10 +342,10 @@ void KListViewSearchLine::searchColumnsMenuActivated(int id)
 
 void KListViewSearchLine::checkItemParentsNotVisible()
 {
-    QListViewItemIterator it(d->listView);
+    Q3ListViewItemIterator it(d->listView);
     for(; it.current(); ++it)
     {
-        QListViewItem *item = it.current();
+        Q3ListViewItem *item = it.current();
         if(itemMatches(item, d->search))
             item->setVisible(true);
         else
@@ -353,7 +353,7 @@ void KListViewSearchLine::checkItemParentsNotVisible()
     }
 }
 
-bool KListViewSearchLine::checkItemParentsVisible(QListViewItem *item)
+bool KListViewSearchLine::checkItemParentsVisible(Q3ListViewItem *item)
 {
     bool visible = false;
     for(; item; item = item->nextSibling()) {
@@ -385,7 +385,7 @@ public:
 KListViewSearchLineWidget::KListViewSearchLineWidget(KListView *listView,
                                                      QWidget *parent,
                                                      const char *name) :
-    QHBox(parent, name)
+    Q3HBox(parent, name)
 {
     d = new KListViewSearchLineWidgetPrivate;
     d->listView = listView;
@@ -413,7 +413,7 @@ void KListViewSearchLineWidget::createWidgets()
 
     if(!d->clearButton) {
         d->clearButton = new QToolButton(this);
-        QIconSet icon = SmallIconSet(QApplication::reverseLayout() ? "clear_left" : "locationbar_erase");
+        QIcon icon = SmallIconSet(QApplication::reverseLayout() ? "clear_left" : "locationbar_erase");
         d->clearButton->setIconSet(icon);
     }
 

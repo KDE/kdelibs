@@ -21,7 +21,7 @@
 #define KMDBENTRY_H
 
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kdelibs_export.h>
 
@@ -46,7 +46,7 @@ struct KDEPRINT_EXPORT KMDBEntry
 	bool validate(bool checkIt = true);
 };
 
-typedef QPtrList<KMDBEntry>		KMDBEntryList;
-typedef QPtrListIterator<KMDBEntry>	KMDBEntryListIterator;
+typedef Q3PtrList<KMDBEntry>		KMDBEntryList;
+typedef Q3PtrListIterator<KMDBEntry>	KMDBEntryListIterator;
 
 #endif

@@ -123,7 +123,7 @@ KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
 
   pInfoLabel2 = new QLabel( this, "infolabel2" );
   pInfoLabel2->setGeometry( 100, 200, 300, 20 );
-  pInfoLabel2->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+  pInfoLabel2->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
 
   // Quit button
   pQuitButton = new QPushButton( this, "quitbutton" );

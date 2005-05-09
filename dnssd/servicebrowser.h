@@ -22,7 +22,7 @@
 #define DNSSDSERVICEBROWSER_H
 
 #include <qobject.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <dnssd/remoteservice.h>
 
 
@@ -117,7 +117,7 @@ public:
 	/**
 	Returns list of services 
 	 */
-	const QValueList<RemoteService::Ptr>& services() const;
+	const Q3ValueList<RemoteService::Ptr>& services() const;
 
 	/**
 	Starts browsing for services.
@@ -210,7 +210,7 @@ private:
 
 	bool allFinished();
 	void init(const QStringList&, DomainBrowser*, int);
-	QValueList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
+	Q3ValueList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
 private slots:
 	void serviceResolved(bool success);
 	void gotNewService(DNSSD::RemoteService::Ptr);

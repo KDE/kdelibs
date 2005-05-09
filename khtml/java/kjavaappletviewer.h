@@ -30,11 +30,11 @@
 #include <kurl.h>
 #include <qobject.h>
 #include <qstringlist.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include "kjavaappletwidget.h"
 
-class QTable;
+class Q3Table;
 class KJavaProcess;
 class KJavaAppletViewer;
 class KAboutData;
@@ -104,7 +104,7 @@ protected:
 private slots:
     void delayedCreateTimeOut ();
 private:
-    QGuardedPtr <CoverWidget> m_view;
+    QPointer <CoverWidget> m_view;
     KConfig * m_config;
     KJavaProcess * process;
     KJavaAppletViewerBrowserExtension * m_browserextension;
@@ -135,7 +135,7 @@ protected slots:
     void slotClose ();
 private:
     KJavaAppletWidget * m_appletWidget;
-    QTable * table;
+    Q3Table * table;
 };
 
 #endif

@@ -87,7 +87,7 @@ QString LprSettings::printcapFile()
 		{
 			// look into /etc/lpd/conf file
 			QFile cf(LPDCONF);
-			if (cf.open(IO_ReadOnly))
+			if (cf.open(QIODevice::ReadOnly))
 			{
 				QTextStream	t(&cf);
 				QString	line;
@@ -118,7 +118,7 @@ QString LprSettings::defaultRemoteHost()
 	{
 		m_defaultremotehost = "localhost";
 		QFile cf(LPDCONF);
-		if (cf.open(IO_ReadOnly))
+		if (cf.open(QIODevice::ReadOnly))
 		{
 			QTextStream	t(&cf);
 			QString	line;

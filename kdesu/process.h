@@ -15,15 +15,15 @@
 
 #include <sys/types.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kdelibs_export.h>
 
 class PTY;
-typedef QValueList<QCString> QCStringList;
+typedef Q3ValueList<Q3CString> QCStringList;
 
 /**
  * Synchronous communication with tty programs.
@@ -46,7 +46,7 @@ public:
      * @param command The command to execute.
      * @param args The arguments to the command.
      */
-    int exec(const QCString &command, const QCStringList &args);
+    int exec(const Q3CString &command, const QCStringList &args);
 
     /**
      * Reads a line from the program's standard out. Depending on the @em block 
@@ -54,27 +54,27 @@ public:
      * @param block Block until a full line is read?
      * @return The output string.
      */
-    QCString readLine(bool block=true);
+    Q3CString readLine(bool block=true);
 
     /**
      * Writes a line of text to the program's standard in.
      * @param line The text to write.
      * @param addNewline Adds a '\n' to the line.
      */
-    void writeLine(const QCString &line, bool addNewline=true);
+    void writeLine(const Q3CString &line, bool addNewline=true);
 
     /**
      * Puts back a line of input.
      * @param line The line to put back.
      * @param addNewline Adds a '\n' to the line.
      */
-    void unreadLine(const QCString &line, bool addNewline=true);
+    void unreadLine(const Q3CString &line, bool addNewline=true);
 
     /**
      * Sets the exit string. If a line of program output matches this,
      * waitForChild() will terminate the program and return.
      */
-    void setExitString(const QCString &exit) { m_Exit = exit; }
+    void setExitString(const Q3CString &exit) { m_Exit = exit; }
 
     /**
      * Waits for the child to exit. See also setExitString.
@@ -162,14 +162,14 @@ protected:
 
     bool m_bErase, m_bTerminal;
     int m_Pid, m_Fd;
-    QCString m_Command, m_Exit;
+    Q3CString m_Command, m_Exit;
 
 private:
     int init();
     int SetupTTY(int fd);
 
     PTY *m_pPTY;
-    QCString m_Inbuf, m_TTY;
+    Q3CString m_Inbuf, m_TTY;
 
 protected:
     virtual void virtual_hook( int id, void* data );

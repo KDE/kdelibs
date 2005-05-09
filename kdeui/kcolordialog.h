@@ -31,9 +31,9 @@
 #define KColorDialog QColorDialog
 #else //UNIX, WIN32
 #include <kdialogbase.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qpixmap.h>
-#include <qgridview.h>
+#include <q3gridview.h>
 
 #include "kselect.h"
 
@@ -111,7 +111,7 @@ public:
   /**
    * Constructs a widget for color selection with a given orientation
    */
-  KValueSelector( Orientation o, QWidget *parent = 0, const char *name = 0 );
+  KValueSelector( Qt::Orientation o, QWidget *parent = 0, const char *name = 0 );
 
   int hue() const
         { return _hue; }
@@ -226,7 +226,7 @@ protected:
   QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;
-  QScrollView *sv;
+  Q3ScrollView *sv;
   KListBox *mNamedColorList;
   KPalette *mPalette;
   int mMinWidth;
@@ -248,7 +248,7 @@ private:
 *
 * @author Martin Jones <mjones@kde.org>
 */
-class KDEUI_EXPORT KColorCells : public QGridView
+class KDEUI_EXPORT KColorCells : public Q3GridView
 {
   Q_OBJECT
 public:
@@ -306,7 +306,7 @@ private:
  * automatically handles drag and drop from and on the widget.
  *
  */
-class KDEUI_EXPORT KColorPatch : public QFrame
+class KDEUI_EXPORT KColorPatch : public Q3Frame
 {
   Q_OBJECT
 public:

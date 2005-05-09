@@ -6,7 +6,7 @@
 class KIconView;
 class KListView;
 class KListBox;
-class QButtonGroup;
+class Q3ButtonGroup;
 class QLabel;
 
 class TopLevel : public QWidget
@@ -23,20 +23,20 @@ public slots:
     //void slotSwitchView( int id );
     void slotSwitchMode( int id ); 
 
-    void slotIconViewExec( QIconViewItem* item );
-    void slotListViewExec( QListViewItem* item ); 
-    void slotListBoxExec( QListBoxItem* item );
+    void slotIconViewExec( Q3IconViewItem* item );
+    void slotListViewExec( Q3ListViewItem* item ); 
+    void slotListBoxExec( Q3ListBoxItem* item );
     void slotToggleSingleColumn( bool b );
 
-    void slotClicked( QIconViewItem* ) { qDebug("CLICK");}
-    void slotDoubleClicked( QIconViewItem* ) { qDebug("DOUBLE CLICK");}
+    void slotClicked( Q3IconViewItem* ) { qDebug("CLICK");}
+    void slotDoubleClicked( Q3IconViewItem* ) { qDebug("DOUBLE CLICK");}
 protected:
     KIconView* m_pIconView;
     KListView* m_pListView;
     KListBox* m_pListBox;
 
-    QButtonGroup* m_pbgView;
-    QButtonGroup* m_pbgMode;
+    Q3ButtonGroup* m_pbgView;
+    Q3ButtonGroup* m_pbgMode;
     QLabel* m_plblWidget;
     QLabel* m_plblSignal;
     QLabel* m_plblItem;

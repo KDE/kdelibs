@@ -145,7 +145,7 @@ namespace khtml {
         virtual void error( int, const QString& ) {
           delete this;
         }
-        QGuardedPtr<KHTMLPart> m_part;
+        QPointer<KHTMLPart> m_part;
         khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
 }
@@ -248,9 +248,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDebugScript = 0;
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
-  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), CTRL + Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
+  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), Qt::CTRL + Qt::Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
-  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), CTRL+Key_I, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
+  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), Qt::CTRL+Qt::Key_I, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
   d->m_paSaveDocument = KStdAction::saveAs( this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   if ( parentPart() )
@@ -306,7 +306,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( config->hasGroup( "HTML Settings" ) ) {
     config->setGroup( "HTML Settings" );
     khtml::Decoder::AutoDetectLanguage language;
-    QCString name = QTextCodec::codecForLocale()->name();
+    Q3CString name = QTextCodec::codecForLocale()->name();
     name = name.lower();
 
     if ( name == "cp1256" || name == "iso-8859-6" ) {
@@ -360,7 +360,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
       d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n(
-                  "Shrink Font" ), "viewmag-", CTRL + Key_Minus, this,
+                  "Shrink Font" ), "viewmag-", Qt::CTRL + Qt::Key_Minus, this,
               SLOT( slotDecZoomFast() ), actionCollection(), "decFontSizes" );
       d->m_paDecZoomFactor->setWhatsThis( i18n( "Shrink Font<p>"
                                                 "Make the font in this window smaller. "
@@ -405,7 +405,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
   d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"),
-  				Key_F7, this, SLOT(slotToggleCaretMode()),
+  				Qt::Key_F7, this, SLOT(slotToggleCaretMode()),
                                 actionCollection(), "caretMode");
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())
@@ -862,9 +862,9 @@ QString KHTMLPart::documentSource() const
   if ( !( m_url.isLocalFile() ) && KHTMLPageCache::self()->isComplete( d->m_cacheId ) )
   {
      QByteArray sourceArray;
-     QDataStream dataStream( sourceArray, IO_WriteOnly );
+     QDataStream dataStream( sourceArray, QIODevice::WriteOnly );
      KHTMLPageCache::self()->saveData( d->m_cacheId, &dataStream );
-     QTextStream stream( sourceArray, IO_ReadOnly );
+     QTextStream stream( sourceArray, QIODevice::ReadOnly );
      stream.setCodec( QTextCodec::codecForName( encoding().latin1() ) );
      sourceStr = stream.read();
   } else
@@ -873,7 +873,7 @@ QString KHTMLPart::documentSource() const
     if( KIO::NetAccess::download( m_url, tmpFile, NULL ) )
     {
       QFile f( tmpFile );
-      if ( f.open( IO_ReadOnly ) )
+      if ( f.open( QIODevice::ReadOnly ) )
       {
         QTextStream stream( &f );
         stream.setCodec( QTextCodec::codecForName( encoding().latin1() ) );
@@ -1339,7 +1339,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( d->m_paLoadImages ) {
-    QPtrList<KAction> lst;
+    Q3PtrList<KAction> lst;
     lst.append( d->m_paLoadImages );
     plugActionList( "loadImages", lst );
   }
@@ -1702,7 +1702,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
   errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
   errText += QString::fromLatin1( "</P>" );
-  errText += QStyleSheet::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
+  errText += Q3StyleSheet::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
   errText += QString::fromLatin1( "</BODY></HTML>" );
   write(errText);
   end();
@@ -1724,7 +1724,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   QStringList causes, solutions;
 
   QByteArray raw = KIO::rawErrorDetail( errorCode, text, &reqUrl );
-  QDataStream stream(raw, IO_ReadOnly);
+  QDataStream stream(raw, QIODevice::ReadOnly);
 
   stream >> errorName >> techName >> description >> causes >> solutions;
 
@@ -2556,8 +2556,8 @@ void KHTMLPartPrivate::setFlagRecursively(
 
   // descend into child frames recursively
   {
-    QValueList<khtml::ChildFrame*>::Iterator it = m_frames.begin();
-    const QValueList<khtml::ChildFrame*>::Iterator itEnd = m_frames.end();
+    Q3ValueList<khtml::ChildFrame*>::Iterator it = m_frames.begin();
+    const Q3ValueList<khtml::ChildFrame*>::Iterator itEnd = m_frames.end();
     for (; it != itEnd; ++it) {
       KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
       if (part->inherits("KHTMLPart"))
@@ -2566,8 +2566,8 @@ void KHTMLPartPrivate::setFlagRecursively(
   }
   // do the same again for objects
   {
-    QValueList<khtml::ChildFrame*>::Iterator it = m_objects.begin();
-    const QValueList<khtml::ChildFrame*>::Iterator itEnd = m_objects.end();
+    Q3ValueList<khtml::ChildFrame*>::Iterator it = m_objects.begin();
+    const Q3ValueList<khtml::ChildFrame*>::Iterator itEnd = m_objects.end();
     for (; it != itEnd; ++it) {
       KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
       if (part->inherits("KHTMLPart"))
@@ -3081,8 +3081,8 @@ bool KHTMLPart::findTextNext( bool reverse )
       {
         // Grab text from render object
         QString s;
-        bool renderAreaText = obj->parent() && (QCString(obj->parent()->renderName())== "RenderTextArea");
-        bool renderLineText = (QCString(obj->renderName())== "RenderLineEdit");
+        bool renderAreaText = obj->parent() && (Q3CString(obj->parent()->renderName())== "RenderTextArea");
+        bool renderLineText = (Q3CString(obj->renderName())== "RenderLineEdit");
         if ( renderAreaText )
         {
           khtml::RenderTextArea *parent= static_cast<khtml::RenderTextArea *>(obj->parent());
@@ -3143,7 +3143,7 @@ bool KHTMLPart::findTextNext( bool reverse )
           }
           else // KFind itself can search backwards, so str must not be built backwards
           {
-            for( QValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
+            for( Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
                  it != d->m_stringPortions.end();
                  ++it )
                 (*it).index += s.length();
@@ -3214,9 +3214,9 @@ bool KHTMLPart::findTextNext( bool reverse )
 void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
 {
   //kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
-  QValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
-  const QValueList<KHTMLPartPrivate::StringPortion>::Iterator itEnd = d->m_stringPortions.end();
-  QValueList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
+  Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
+  const Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator itEnd = d->m_stringPortions.end();
+  Q3ValueList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
   // We stop at the first portion whose index is 'greater than', and then use the previous one
   while ( it != itEnd && (*it).index <= index )
   {
@@ -3241,8 +3241,8 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   if ( obj )
   {
     int x = 0, y = 0;
-    renderAreaText = (QCString(obj->parent()->renderName())== "RenderTextArea");
-    renderLineText = (QCString(obj->renderName())== "RenderLineEdit");
+    renderAreaText = (Q3CString(obj->parent()->renderName())== "RenderTextArea");
+    renderLineText = (Q3CString(obj->renderName())== "RenderLineEdit");
 
 
     if( renderAreaText )
@@ -3650,7 +3650,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
       jscode += i18n(" (In new window)");
-    setStatusBarText( QStyleSheet::escape( jscode ), BarHoverText );
+    setStatusBarText( Q3StyleSheet::escape( jscode ), BarHoverText );
     return;
   }
 
@@ -3673,7 +3673,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   {
     // TODO : use KIO::stat() and create a KFileItem out of its result,
     // to use KFileItem::statusBarText()
-    QCString path = QFile::encodeName( u.path() );
+    Q3CString path = QFile::encodeName( u.path() );
 
     struct stat buff;
     bool ok = !stat( path.data(), &buff );
@@ -3765,7 +3765,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QString::fromLatin1("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      mailtoMsg = QStyleSheet::escape(mailtoMsg);
+      mailtoMsg = Q3StyleSheet::escape(mailtoMsg);
       mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString::null);
       setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
       return;
@@ -3828,14 +3828,14 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   kdDebug(6050) << this << " urlSelected: complete URL:" << cURL.url() << " target=" << target << endl;
 
-  if ( state & ControlButton )
+  if ( state & Qt::ControlModifier )
   {
     args.setNewTab(true);
     emit d->m_extension->createNewWindow( cURL, args );
     return;
   }
 
-  if ( button == LeftButton && ( state & ShiftButton ) )
+  if ( button == Qt::LeftButton && ( state & Qt::ShiftModifier ) )
   {
     KIO::MetaData metaData;
     metaData["referrer"] = d->m_referrer;
@@ -3876,13 +3876,13 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if (!d->m_referrer.isEmpty() && !args.metaData().contains("referrer"))
     args.metaData()["referrer"] = d->m_referrer;
 
-  if ( button == NoButton && (state & ShiftButton) && (state & ControlButton) )
+  if ( button == Qt::NoButton && (state & Qt::ShiftModifier) && (state & Qt::ControlModifier) )
   {
     emit d->m_extension->createNewWindow( cURL, args );
     return;
   }
 
-  if ( state & ShiftButton)
+  if ( state & Qt::ShiftModifier)
   {
     KParts::WindowArgs winArgs;
     winArgs.lowerWindow = true;
@@ -3916,7 +3916,7 @@ void KHTMLPart::slotViewDocumentSource()
 
 void KHTMLPart::slotViewPageInfo()
 {
-  KHTMLInfoDlg *dlg = new KHTMLInfoDlg(NULL, "KHTML Page Info Dialog", false, WDestructiveClose);
+  KHTMLInfoDlg *dlg = new KHTMLInfoDlg(NULL, "KHTML Page Info Dialog", false, Qt::WDestructiveClose);
   dlg->_close->setGuiItem(KStdGuiItem::close());
 
   if (d->m_doc)
@@ -3959,7 +3959,7 @@ void KHTMLPart::slotViewPageInfo()
     const QStringList header = QStringList::split(QRegExp(":[ ]+"), *it);
     if (header.count() != 2)
        continue;
-    new QListViewItem(dlg->_headers, header[0], header[1]);
+    new Q3ListViewItem(dlg->_headers, header[0], header[1]);
   }
 
   dlg->show();
@@ -4055,7 +4055,7 @@ void KHTMLPart::slotSecurity()
     if (x) {
        // Set the chain back onto the certificate
        const QStringList cl = QStringList::split(QString("\n"), d->m_ssl_peer_chain);
-       QPtrList<KSSLCertificate> ncl;
+       Q3PtrList<KSSLCertificate> ncl;
 
        ncl.setAutoDelete(true);
        QStringList::ConstIterator it = cl.begin();
@@ -4124,8 +4124,8 @@ void KHTMLPart::updateActions()
 {
   bool frames = false;
 
-  QValueList<khtml::ChildFrame*>::ConstIterator it = d->m_frames.begin();
-  const QValueList<khtml::ChildFrame*>::ConstIterator end = d->m_frames.end();
+  Q3ValueList<khtml::ChildFrame*>::ConstIterator it = d->m_frames.begin();
+  const Q3ValueList<khtml::ChildFrame*>::ConstIterator end = d->m_frames.end();
   for (; it != end; ++it )
       if ( (*it)->m_type == khtml::ChildFrame::Frame )
       {
@@ -4847,7 +4847,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   // Danger, Will Robinson. The Popup might stay around for a much
   // longer time than KHTMLPart. Deal with it.
   KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
-  QGuardedPtr<QObject> guard( client );
+  QPointer<QObject> guard( client );
 
   QString mimetype = QString::fromLatin1( "text/html" );
   args.metaData()["referrer"] = referrer;
@@ -5280,7 +5280,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
   KURL::List frameURLLst;
-  QValueList<QByteArray> frameStateBufferLst;
+  Q3ValueList<QByteArray> frameStateBufferLst;
 
   ConstFrameIt it = d->m_frames.begin();
   const ConstFrameIt end = d->m_frames.end();
@@ -5295,7 +5295,7 @@ void KHTMLPart::saveState( QDataStream &stream )
     frameURLLst << (*it)->m_part->url();
 
     QByteArray state;
-    QDataStream frameStream( state, IO_WriteOnly );
+    QDataStream frameStream( state, QIODevice::WriteOnly );
 
     if ( (*it)->m_extension )
       (*it)->m_extension->saveState( frameStream );
@@ -5318,8 +5318,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
   Q_UINT32 frameCount;
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
   KURL::List frameURLs;
-  QValueList<QByteArray> frameStateBuffers;
-  QValueList<int> fSizes;
+  Q3ValueList<QByteArray> frameStateBuffers;
+  Q3ValueList<int> fSizes;
   QString encoding, sheetUsed;
   long old_cacheId = d->m_cacheId;
 
@@ -5391,7 +5391,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KURL::List::ConstIterator fURLIt = frameURLs.begin();
-    QValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    Q3ValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
 
     for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
@@ -5411,7 +5411,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
         child->m_bCompleted = false;
         if ( child->m_extension && !(*fBufferIt).isEmpty() )
         {
-          QDataStream frameStream( *fBufferIt, IO_ReadOnly );
+          QDataStream frameStream( *fBufferIt, QIODevice::ReadOnly );
           child->m_extension->restoreState( frameStream );
         }
         else
@@ -5447,7 +5447,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KURL::List::ConstIterator fURLIt = frameURLs.begin();
-    QValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    Q3ValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
 
     for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
@@ -5469,7 +5469,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
         if ( (*childFrame)->m_extension )
         if ( (*childFrame)->m_extension && !(*fBufferIt).isEmpty() )
         {
-          QDataStream frameStream( *fBufferIt, IO_ReadOnly );
+          QDataStream frameStream( *fBufferIt, QIODevice::ReadOnly );
           (*childFrame)->m_extension->restoreState( frameStream );
         }
         else
@@ -5601,7 +5601,7 @@ void KHTMLPart::setZoomFactor (int percent)
   d->m_zoomFactor = percent;
 
   if(d->m_doc) {
-      QApplication::setOverrideCursor( waitCursor );
+      QApplication::setOverrideCursor( Qt::WaitCursor );
     if (d->m_doc->styleSelector())
       d->m_doc->styleSelector()->computeFontSizes(d->m_doc->paintDeviceMetrics(), d->m_zoomFactor);
     d->m_doc->recalcStyle( NodeImpl::Force );
@@ -5747,7 +5747,7 @@ void KHTMLPart::reparseConfiguration()
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 
-  QApplication::setOverrideCursor( waitCursor );
+  QApplication::setOverrideCursor( Qt::WaitCursor );
   khtml::CSSStyleSelector::reparseConfiguration();
   if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
@@ -5766,9 +5766,9 @@ QStringList KHTMLPart::frameNames() const
   return res;
 }
 
-QPtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
+Q3PtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 {
-  QPtrList<KParts::ReadOnlyPart> res;
+  Q3PtrList<KParts::ReadOnlyPart> res;
 
   ConstFrameIt it = d->m_frames.begin();
   const ConstFrameIt end = d->m_frames.end();
@@ -5927,13 +5927,13 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
    else
      d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
 
-  if ( _mouse->button() == LeftButton ||
-       _mouse->button() == MidButton )
+  if ( _mouse->button() == Qt::LeftButton ||
+       _mouse->button() == Qt::MidButton )
   {
     d->m_bMousePressed = true;
 
 #ifndef KHTML_NO_SELECTION
-    if ( _mouse->button() == LeftButton )
+    if ( _mouse->button() == Qt::LeftButton )
     {
       if ( (!d->m_strSelectedURL.isNull() && !isEditable())
 	        || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) )
@@ -5958,7 +5958,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
           d->m_endOffset = d->m_startOffset;
           d->m_doc->clearSelection();
 #else // KHTML_NO_CARET
-	  d->m_view->moveCaretTo(node, offset, (_mouse->state() & ShiftButton) == 0);
+	  d->m_view->moveCaretTo(node, offset, (_mouse->state() & Qt::ShiftModifier) == 0);
 #endif // KHTML_NO_CARET
 	  d->m_initialNode = d->m_selectionStart;
 	  d->m_initialOffset = d->m_startOffset;
@@ -5981,10 +5981,10 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #endif
   }
 
-  if ( _mouse->button() == RightButton && parentPart() != 0 && d->m_bBackRightClick )
+  if ( _mouse->button() == Qt::RightButton && parentPart() != 0 && d->m_bBackRightClick )
   {
     d->m_bRightMousePressed = true;
-  } else if ( _mouse->button() == RightButton )
+  } else if ( _mouse->button() == Qt::RightButton )
   {
     popupMenu( d->m_strSelectedURL );
     // might be deleted, don't touch "this"
@@ -5994,7 +5994,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event )
 {
   QMouseEvent *_mouse = event->qmouseEvent();
-  if ( _mouse->button() == LeftButton )
+  if ( _mouse->button() == Qt::LeftButton )
   {
     d->m_bMousePressed = true;
     DOM::Node innerNode = event->innerNode();
@@ -6016,7 +6016,7 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
         d->m_extendMode = selectLine ? d->ExtendByLine : d->ExtendByWord;
 
 	// Extend existing selection if Shift was pressed
-	if (_mouse->state() & ShiftButton) {
+	if (_mouse->state() & Qt::ShiftModifier) {
           d->caretNode() = node;
 	  d->caretOffset() = offset;
           d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
@@ -6265,7 +6265,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     QPixmap pix;
     HTMLImageElementImpl *img = 0L;
-    QDragObject *drag = 0;
+    Q3DragObject *drag = 0;
     KURL u;
 
     // qDebug("****************** Event URL: %s", url.string().latin1());
@@ -6293,7 +6293,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     if( img && img->complete()) {
       KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
-      mdrag->addDragObject( new QImageDrag( img->currentImage(), 0L ) );
+      mdrag->addDragObject( new Q3ImageDrag( img->currentImage(), 0L ) );
       mdrag->addDragObject( urlDrag );
       drag = mdrag;
     }
@@ -6320,7 +6320,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     // The mouse is over something
     if ( url.length() )
     {
-      bool shiftPressed = ( _mouse->state() & ShiftButton );
+      bool shiftPressed = ( _mouse->state() & Qt::ShiftModifier );
 
       // Image map
       if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG )
@@ -6363,7 +6363,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 #ifndef KHTML_NO_SELECTION
     // selection stuff
     if( d->m_bMousePressed && innerNode.handle() && innerNode.handle()->renderer() &&
-        ( (_mouse->state() & LeftButton) != 0 )) {
+        ( (_mouse->state() & Qt::LeftButton) != 0 )) {
       extendSelectionTo(event->x(), event->y(),
                         event->absX(), event->absY(), innerNode);
 #else
@@ -6395,7 +6395,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   d->m_bMousePressed = false;
 
   QMouseEvent *_mouse = event->qmouseEvent();
-  if ( _mouse->button() == RightButton && parentPart() != 0 && d->m_bBackRightClick )
+  if ( _mouse->button() == Qt::RightButton && parentPart() != 0 && d->m_bBackRightClick )
   {
     d->m_bRightMousePressed = false;
     KParts::BrowserInterface *tmp_iface = d->m_extension->browserInterface();
@@ -6404,7 +6404,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     }
   }
 #ifndef QT_NO_CLIPBOARD
-  if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull())) {
+  if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == Qt::MidButton) && (event->url().isNull())) {
     kdDebug( 6050 ) << "KHTMLPart::khtmlMouseReleaseEvent() MMB shouldOpen="
                     << d->m_bOpenMiddleClick << endl;
 
@@ -6507,7 +6507,7 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
-        QPtrList<KAction> lst;
+        Q3PtrList<KAction> lst;
         lst.append( d->m_paLoadImages );
         plugActionList( "loadImages", lst );
     }
@@ -6698,10 +6698,10 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 //    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged d->m_activeFrame=" << d->m_activeFrame << endl;
     if ( d->m_activeFrame && d->m_activeFrame->widget() && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
-        QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
-        if (frame->frameStyle() != QFrame::NoFrame)
+        Q3Frame *frame = static_cast<Q3Frame *>( d->m_activeFrame->widget() );
+        if (frame->frameStyle() != Q3Frame::NoFrame)
         {
-           frame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken);
+           frame->setFrameStyle( Q3Frame::StyledPanel | Q3Frame::Sunken);
            frame->repaint();
         }
     }
@@ -6726,10 +6726,10 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 
     if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
-        QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
-        if (frame->frameStyle() != QFrame::NoFrame)
+        Q3Frame *frame = static_cast<Q3Frame *>( d->m_activeFrame->widget() );
+        if (frame->frameStyle() != Q3Frame::NoFrame)
         {
-           frame->setFrameStyle( QFrame::StyledPanel | QFrame::Plain);
+           frame->setFrameStyle( Q3Frame::StyledPanel | Q3Frame::Plain);
            frame->repaint();
         }
         kdDebug(6050) << "new active frame " << d->m_activeFrame << endl;
@@ -6800,9 +6800,9 @@ void KHTMLPart::preloadScript(const QString &url, const QString &script)
     khtml::Cache::preloadScript(url, script);
 }
 
-QCString KHTMLPart::dcopObjectId() const
+Q3CString KHTMLPart::dcopObjectId() const
 {
-  QCString id;
+  Q3CString id;
   id.sprintf("html-widget%d", d->m_dcop_counter);
   return id;
 }
@@ -7167,7 +7167,7 @@ void KHTMLPart::setDebugScript( bool enable )
       d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
-    QPtrList<KAction> lst;
+    Q3PtrList<KAction> lst;
     lst.append( d->m_paDebugScript );
     plugActionList( "debugScriptList", lst );
   }

@@ -276,7 +276,7 @@ private:
     mutable QDomDocument m_toolbarDoc;
     mutable bool m_docIsLoaded;
     bool m_update;
-    static QPtrList<KBookmarkManager>* s_pSelf;
+    static Q3PtrList<KBookmarkManager>* s_pSelf;
     bool m_showNSBookmarks;
 
 private:
@@ -344,7 +344,7 @@ class KIO_EXPORT KExtendedBookmarkOwner : public QObject, virtual public KBookma
 {
     Q_OBJECT
 public:
-    typedef QValueList<QPair<QString,QString> > QStringPairList;
+    typedef Q3ValueList<QPair<QString,QString> > QStringPairList;
 public slots:
     void fillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list ) { emit signalFillBookmarksList( list ); };
 signals:

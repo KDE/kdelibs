@@ -23,8 +23,8 @@
 #include "kfileitem.h"
 
 #include <qmap.h>
-#include <qdict.h>
-#include <qcache.h>
+#include <q3dict.h>
+#include <q3cache.h>
 #include <qwidget.h>
 
 #include <kurl.h>
@@ -108,7 +108,7 @@ public:
   QWidget *window; // Main window ths lister is associated with
 
   QString nameFilter;
-  QPtrList<QRegExp> lstFilters, oldFilters;
+  Q3PtrList<QRegExp> lstFilters, oldFilters;
   QStringList mimeFilter, oldMimeFilter;
   QStringList mimeExcludeFilter, oldMimeExcludeFilter;
 };
@@ -207,7 +207,7 @@ private:
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the childs.
-  void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList * );
+  void deleteUnmarkedItems( Q3PtrList<KDirLister> *, KFileItemList * );
   void processPendingUpdates();
   // common for slotRedirection and FileRenamed
   void renameDir( const KURL &oldUrl, const KURL &url );
@@ -253,7 +253,7 @@ private:
       if ( !client )
         return;
       QByteArray data;
-      QDataStream arg( data, IO_WriteOnly );
+      QDataStream arg( data, QIODevice::WriteOnly );
       arg << url;
       client->emitDCOPSignal( "KDirNotify", entering ? "enteredDirectory(KURL)" : "leftDirectory(KURL)", data );
     }
@@ -320,8 +320,8 @@ private:
   QMap<KIO::ListJob *, KIO::UDSEntryList> jobs;
 
   // an item is a complete directory
-  QDict<DirItem> itemsInUse;
-  QCache<DirItem> itemsCached;
+  Q3Dict<DirItem> itemsInUse;
+  Q3Cache<DirItem> itemsCached;
 
   // A lister can be EITHER in urlsCurrentlyListed OR urlsCurrentlyHeld but NOT
   // in both at the same time.
@@ -333,13 +333,13 @@ private:
 
   // saves all urls that are currently being listed and maps them
   // to their KDirListers
-  QDict< QPtrList<KDirLister> > urlsCurrentlyListed;
+  Q3Dict< Q3PtrList<KDirLister> > urlsCurrentlyListed;
 
   // saves all KDirListers that are just holding url
-  QDict< QPtrList<KDirLister> > urlsCurrentlyHeld;
+  Q3Dict< Q3PtrList<KDirLister> > urlsCurrentlyHeld;
 
   // running timers for the delayed update
-  QDict<QTimer> pendingUpdates;
+  Q3Dict<QTimer> pendingUpdates;
 
   static KDirListerCache *s_pSelf;
 };

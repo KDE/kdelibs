@@ -20,7 +20,7 @@
 #ifndef _KTEXT_BROWSER_H_
 #define _KTEXT_BROWSER_H_
 
-#include <qtextbrowser.h>
+#include <q3textbrowser.h>
 
 #include <kdelibs_export.h>
 
@@ -39,7 +39,7 @@
  * @author Espen Sand (espensa@online.no)
  */
 
-class KDEUI_EXPORT KTextBrowser : public QTextBrowser
+class KDEUI_EXPORT KTextBrowser : public Q3TextBrowser
 {
   Q_OBJECT
   Q_PROPERTY( bool notifyClick READ isNotifyClick WRITE setNotifyClick )
@@ -100,7 +100,7 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
     *
     * See QLineEdit::createPopupMenu().
     */
-    virtual QPopupMenu *createPopupMenu( const QPoint &pos );
+    virtual Q3PopupMenu *createPopupMenu( const QPoint &pos );
 
   signals:
     /**

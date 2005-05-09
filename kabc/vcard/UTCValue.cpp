@@ -38,7 +38,7 @@ UTCValue::UTCValue(const UTCValue & x)
 {
 }
 
-UTCValue::UTCValue(const QCString & s)
+UTCValue::UTCValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -57,7 +57,7 @@ UTCValue::operator = (UTCValue & x)
 }
 
 	UTCValue &
-UTCValue::operator = (const QCString & s)
+UTCValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;

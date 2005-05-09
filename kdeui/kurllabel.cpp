@@ -33,7 +33,7 @@ class KURLLabel::Private
 public:
   Private (const QString& url, KURLLabel* label)
     : URL (url),
-      Underline (true),
+      Qt::TextUnderline (true),
       LinkColor (KGlobalSettings::linkColor()),
       HighlightedLinkColor (Qt::red),
       Tip(url),
@@ -55,7 +55,7 @@ public:
   QString URL;
   QPixmap AltPixmap;
 
-  bool Underline;
+  bool Qt::TextUnderline;
   QColor LinkColor;
   QColor HighlightedLinkColor;
 
@@ -104,17 +104,17 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 
   switch (e->button())
     {
-    case LeftButton:
+    case Qt::LeftButton:
       emit leftClickedURL ();
       emit leftClickedURL (d->URL);
       break;
 
-    case MidButton:
+    case Qt::MidButton:
       emit middleClickedURL ();
       emit middleClickedURL (d->URL);
       break;
 
-    case RightButton:
+    case Qt::RightButton:
       emit rightClickedURL ();
       emit rightClickedURL (d->URL);
       break;
@@ -127,14 +127,14 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 void KURLLabel::setFont (const QFont& f)
 {
   QFont newFont = f;
-  newFont.setUnderline (d->Underline);
+  newFont.setUnderline (d->Qt::TextUnderline);
 
   QLabel::setFont (newFont);
 }
 
 void KURLLabel::setUnderline (bool on)
 {
-  d->Underline = on;
+  d->Qt::TextUnderline = on;
 
   setFont (font());
 }
@@ -291,7 +291,7 @@ void KURLLabel::enterEvent (QEvent* e)
 
       setLinkColor (d->HighlightedLinkColor);
 
-      d->RealUnderline = d->Underline;
+      d->RealUnderline = d->Qt::TextUnderline;
 
       if (d->Float)
         setUnderline (true);

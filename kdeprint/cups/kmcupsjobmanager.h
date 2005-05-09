@@ -35,18 +35,18 @@ public:
 	virtual ~KMCupsJobManager();
 
 	int actions();
-	QValueList<KAction*> createPluginActions(KActionCollection*);
-	void validatePluginActions(KActionCollection*, const QPtrList<KMJob>&);
-	bool doPluginAction(int, const QPtrList<KMJob>&);
+	Q3ValueList<KAction*> createPluginActions(KActionCollection*);
+	void validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&);
+	bool doPluginAction(int, const Q3PtrList<KMJob>&);
 
 protected:
 	bool jobIppReport(KMJob*);
-	bool changePriority(const QPtrList<KMJob>&, bool);
+	bool changePriority(const Q3PtrList<KMJob>&, bool);
 	bool editJobAttributes(KMJob*);
 
 protected:
 	bool listJobs(const QString&, JobType, int = 0);
-	bool sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 	void parseListAnswer(IppRequest& req, KMPrinter *pr);
 };
 

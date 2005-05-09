@@ -32,7 +32,7 @@
 #include <ktexteditor/viewstatusmsginterface.h>
 #include <ktexteditor/texthintinterface.h>
 
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 class KateDocument;
 class KateBookmarks;
@@ -119,8 +119,8 @@ class KateView : public Kate::View,
   // KTextEditor::PopupMenuInterface
   //
   public:
-    void installPopup( QPopupMenu* menu ) { m_rmbMenu = menu; }
-    QPopupMenu* popup() const             { return m_rmbMenu; }
+    void installPopup( Q3PopupMenu* menu ) { m_rmbMenu = menu; }
+    Q3PopupMenu* popup() const             { return m_rmbMenu; }
 
   //
   // KTextEditor::ViewCursorInterface
@@ -150,7 +150,7 @@ class KateView : public Kate::View,
   //
   public slots:
     void showArgHint( QStringList arg1, const QString& arg2, const QString& arg3 );
-    void showCompletionBox( QValueList<KTextEditor::CompletionEntry> arg1, int offset = 0, bool cs = true );
+    void showCompletionBox( Q3ValueList<KTextEditor::CompletionEntry> arg1, int offset = 0, bool cs = true );
 
   signals:
     void completionAborted();
@@ -497,7 +497,7 @@ class KateView : public Kate::View,
     KateSearch*            m_search;
     KateSpell             *m_spell;
     KateBookmarks*         m_bookmarks;
-    QGuardedPtr<QPopupMenu>  m_rmbMenu;
+    QPointer<Q3PopupMenu>  m_rmbMenu;
     KateCodeCompletion*    m_codeCompletion;
 
     KateCmdLine *m_cmdLine;

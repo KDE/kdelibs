@@ -33,7 +33,7 @@ ImagePreview::ImagePreview(QWidget *parent, const char *name ) : QWidget(parent,
 	gamma_ = 1000;
 	bw_ = false;
 
-	setBackgroundMode(NoBackground);
+	setBackgroundMode(Qt::NoBackground);
 }
 
 ImagePreview::~ImagePreview(){

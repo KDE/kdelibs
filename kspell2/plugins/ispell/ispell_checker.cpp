@@ -237,7 +237,7 @@ ISpellChecker::checkWord( const QString& utf8Word )
 		return false;
 
 	bool retVal = false;
-	QCString out;
+	Q3CString out;
 	if (!m_translate_in)
 		return false;
 	else {
@@ -272,7 +272,7 @@ ISpellChecker::suggestWord(const QString& utf8Word)
 			utf8Word.length() == 0)
 		return QStringList();
 
-	QCString out;
+	Q3CString out;
 	if (!m_translate_in)
 		return QStringList();
 	else
@@ -319,7 +319,7 @@ s_buildHashNames (std::vector<std::string> & names, const char * dict)
 	names.clear ();
 
 	while ( (tmp = ispell_dirs[i++]) ) {
-		QCString maybeFile = QCString( tmp ) + '/';
+		Q3CString maybeFile = Q3CString( tmp ) + '/';
 		maybeFile += dict;
 		names.push_back( maybeFile.data() );
 	}
@@ -348,7 +348,7 @@ s_allDics()
 	}
 }
 
-QValueList<QString>
+Q3ValueList<QString>
 ISpellChecker::allDics()
 {
 	if ( ispell_dict_map.empty() )

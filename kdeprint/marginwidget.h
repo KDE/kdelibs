@@ -21,7 +21,7 @@
 #define MARGINWIDGET_H
 
 #include <qwidget.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 #include <kdelibs_export.h>
 
@@ -67,8 +67,8 @@ private:
 	QComboBox		*m_units;
 	QCheckBox		*m_custom;
 	bool			m_symetric, m_block;
-	QValueVector<float>	m_default;
-	QValueVector<float>	m_pagesize;
+	Q3ValueVector<float>	m_default;
+	Q3ValueVector<float>	m_pagesize;
 	bool			m_landscape;
 };
 

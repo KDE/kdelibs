@@ -21,10 +21,10 @@
 #include "kfinddialog.h"
 #include <qcheckbox.h>
 #include <qcursor.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qpushbutton.h>
 #include <qregexp.h>
 #include <kcombobox.h>
@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <assert.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kregexpeditorinterface.h>
 #include <kparts/componentfactory.h>
@@ -42,7 +42,7 @@ class KFindDialog::KFindDialogPrivate
 public:
     KFindDialogPrivate() : m_regexpDialog(0),
         m_regexpDialogQueryDone(false),
-        m_enabled(WholeWordsOnly | FromCursor | SelectedText | CaseSensitive | FindBackwards | RegularExpression), m_initialShowDone(false) {}
+        m_enabled(WholeWordsOnly | FromCursor | SelectedText | Qt::CaseSensitive | FindBackwards | RegularExpression), m_initialShowDone(false) {}
     QDialog* m_regexpDialog;
     bool m_regexpDialogQueryDone;
     long m_enabled; // uses Options to define which search options are enabled
@@ -116,7 +116,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     topLayout->setSpacing( KDialog::spacingHint() );
     topLayout->setMargin( 0 );
 
-    m_findGrp = new QGroupBox(0, Qt::Vertical, i18n("Find"), page);
+    m_findGrp = new Q3GroupBox(0, Qt::Vertical, i18n("Find"), page);
     m_findGrp->layout()->setSpacing( KDialog::spacingHint() );
    // m_findGrp->layout()->setMargin( KDialog::marginHint() );
     m_findLayout = new QGridLayout(m_findGrp->layout());
@@ -137,7 +137,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_findLayout->addWidget(m_regExpItem, 2, 1);
     topLayout->addWidget(m_findGrp);
 
-    m_replaceGrp = new QGroupBox(0, Qt::Vertical, i18n("Replace With"), page);
+    m_replaceGrp = new Q3GroupBox(0, Qt::Vertical, i18n("Replace With"), page);
     m_replaceGrp->layout()->setSpacing( KDialog::spacingHint() );
   //  m_replaceGrp->layout()->setMargin( KDialog::marginHint() );
     m_replaceLayout = new QGridLayout(m_replaceGrp->layout());
@@ -158,7 +158,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_replaceLayout->addWidget(m_backRefItem, 2, 1);
     topLayout->addWidget(m_replaceGrp);
 
-    m_optionGrp = new QGroupBox(0, Qt::Vertical, i18n("Options"), page);
+    m_optionGrp = new Q3GroupBox(0, Qt::Vertical, i18n("Options"), page);
     m_optionGrp->layout()->setSpacing(KDialog::spacingHint());
   //  m_optionGrp->layout()->setMargin(KDialog::marginHint());
     optionsLayout = new QGridLayout(m_optionGrp->layout());
@@ -243,36 +243,36 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     }
 
     // QWhatsthis texts
-    QWhatsThis::add ( m_find, i18n(
+    Q3WhatsThis::add ( m_find, i18n(
             "Enter a pattern to search for, or select a previous pattern from "
             "the list.") );
-    QWhatsThis::add ( m_regExp, i18n(
+    Q3WhatsThis::add ( m_regExp, i18n(
             "If enabled, search for a regular expression.") );
-    QWhatsThis::add ( m_regExpItem, i18n(
+    Q3WhatsThis::add ( m_regExpItem, i18n(
             "Click here to edit your regular expression using a graphical editor.") );
-    QWhatsThis::add ( m_replace, i18n(
+    Q3WhatsThis::add ( m_replace, i18n(
             "Enter a replacement string, or select a previous one from the list.") );
-    QWhatsThis::add( m_backRef, i18n(
+    Q3WhatsThis::add( m_backRef, i18n(
             "<qt>If enabled, any occurrence of <code><b>\\N</b></code>, where "
             "<code><b>N</b></code> is a integer number, will be replaced with "
             "the corresponding capture (\"parenthesized substring\") from the "
             "pattern.<p>To include (a literal <code><b>\\N</b></code> in your "
             "replacement, put an extra backslash in front of it, like "
             "<code><b>\\\\N</b></code>.</qt>") );
-    QWhatsThis::add ( m_backRefItem, i18n(
+    Q3WhatsThis::add ( m_backRefItem, i18n(
             "Click for a menu of available captures.") );
-    QWhatsThis::add ( m_wholeWordsOnly, i18n(
+    Q3WhatsThis::add ( m_wholeWordsOnly, i18n(
             "Require word boundaries in both ends of a match to succeed.") );
-    QWhatsThis::add ( m_fromCursor, i18n(
+    Q3WhatsThis::add ( m_fromCursor, i18n(
             "Start searching at the current cursor location rather than at the top.") );
-    QWhatsThis::add ( m_selectedText, i18n(
+    Q3WhatsThis::add ( m_selectedText, i18n(
             "Only search within the current selection.") );
-    QWhatsThis::add ( m_caseSensitive, i18n(
+    Q3WhatsThis::add ( m_caseSensitive, i18n(
             "Perform a case sensitive search: entering the pattern "
             "'Joe' will not match 'joe' or 'JOE', only 'Joe'.") );
-    QWhatsThis::add ( m_findBackwards, i18n(
+    Q3WhatsThis::add ( m_findBackwards, i18n(
             "Search backwards.") );
-    QWhatsThis::add ( m_promptOnReplace, i18n(
+    Q3WhatsThis::add ( m_promptOnReplace, i18n(
             "Ask before replacing each match found.") );
 }
 
@@ -304,7 +304,7 @@ long KFindDialog::options() const
     long options = 0;
 
     if (m_caseSensitive->isChecked())
-        options |= CaseSensitive;
+        options |= Qt::CaseSensitive;
     if (m_wholeWordsOnly->isChecked())
         options |= WholeWordsOnly;
     if (m_fromCursor->isChecked())
@@ -383,10 +383,10 @@ void KFindDialog::setSupportsBackwardsFind( bool supports )
 void KFindDialog::setSupportsCaseSensitiveFind( bool supports )
 {
     // ########## This should hide the checkbox instead
-    if (supports) d->m_enabled |= CaseSensitive;
-    else d->m_enabled &= ~CaseSensitive;
+    if (supports) d->m_enabled |= Qt::CaseSensitive;
+    else d->m_enabled &= ~Qt::CaseSensitive;
     m_caseSensitive->setEnabled( supports );
-    m_caseSensitive->setChecked( supports && (options() & CaseSensitive) );
+    m_caseSensitive->setChecked( supports && (options() & Qt::CaseSensitive) );
 }
 
 void KFindDialog::setSupportsWholeWordsFind( bool supports )
@@ -409,7 +409,7 @@ void KFindDialog::setSupportsRegularExpressionFind( bool supports )
 
 void KFindDialog::setOptions(long options)
 {
-    m_caseSensitive->setChecked((d->m_enabled & CaseSensitive) && (options & CaseSensitive));
+    m_caseSensitive->setChecked((d->m_enabled & Qt::CaseSensitive) && (options & Qt::CaseSensitive));
     m_wholeWordsOnly->setChecked((d->m_enabled & WholeWordsOnly) && (options & WholeWordsOnly));
     m_fromCursor->setChecked((d->m_enabled & FromCursor) && (options & FromCursor));
     m_findBackwards->setChecked((d->m_enabled & FindBackwards) && (options & FindBackwards));
@@ -465,7 +465,7 @@ void KFindDialog::showPatterns()
         // Populate the popup menu.
         if (!m_patterns)
         {
-            m_patterns = new QPopupMenu(this);
+            m_patterns = new Q3PopupMenu(this);
             for (i = 0; (unsigned)i < sizeof(items) / sizeof(items[0]); i++)
             {
                 m_patterns->insertItem(i18n(items[i].description), i, i);
@@ -491,7 +491,7 @@ void KFindDialog::showPlaceholders()
     // Populate the popup menu.
     if (!m_placeholders)
     {
-        m_placeholders = new QPopupMenu(this);
+        m_placeholders = new Q3PopupMenu(this);
         connect( m_placeholders, SIGNAL(aboutToShow()), this, SLOT(slotPlaceholdersAboutToShow()) );
     }
 
@@ -537,7 +537,7 @@ void KFindDialog::slotOk()
     }
     m_find->addToHistory(pattern());
     emit okClicked();
-    if ( testWFlags( WShowModal ) )
+    if ( testWFlags( Qt::WShowModal ) )
         accept();
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;

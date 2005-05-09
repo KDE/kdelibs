@@ -36,7 +36,7 @@ void KDualColorWidget::slotFgChanged(const QColor &c)
 void KDualColorWidget::slotBgChanged(const QColor &c)
 {
     QPalette p = lbl->palette();
-    QBrush b(c, SolidPattern);
+    QBrush b(c, Qt::SolidPattern);
     p.setBrush(QColorGroup::Background, b);
     setPalette(p);
 }

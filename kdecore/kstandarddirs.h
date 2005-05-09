@@ -24,7 +24,7 @@
 #define SSK_KSTDDIRS_H
 
 #include <qstring.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qstringlist.h>
 #include <kglobal.h>
 
@@ -610,11 +610,11 @@ public:
 	QStringList prefixes;
 
 	// Directory dictionaries
-	QDict<QStringList> absolutes;
-	QDict<QStringList> relatives;
+	Q3Dict<QStringList> absolutes;
+	Q3Dict<QStringList> relatives;
 
-	mutable QDict<QStringList> dircache;
-	mutable QDict<QString> savelocations;
+	mutable Q3Dict<QStringList> dircache;
+	mutable Q3Dict<QString> savelocations;
 
 	// Disallow assignment and copy-construction
 	KStandardDirs( const KStandardDirs& );

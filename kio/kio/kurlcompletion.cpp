@@ -30,13 +30,13 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qregexp.h>
 #include <qtimer.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qdeepcopy.h>
+#include <q3deepcopy.h>
 #include <qthread.h>
 
 #include <kapplication.h>
@@ -423,7 +423,7 @@ public:
 	                          dirListThread(0) {}
 	~KURLCompletionPrivate();
 
-	QValueList<KURL*> list_urls;
+	Q3ValueList<KURL*> list_urls;
 
 	bool onlyLocalProto;
 
@@ -665,7 +665,7 @@ void KURLCompletion::stop()
 	}
 
 	if ( !d->list_urls.isEmpty() ) {
-		QValueList<KURL*>::Iterator it = d->list_urls.begin();
+		Q3ValueList<KURL*>::Iterator it = d->list_urls.begin();
 		for ( ; it != d->list_urls.end(); it++ )
 			delete (*it);
 		d->list_urls.clear();
@@ -996,7 +996,7 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 
 		setListedURL( CTUrl, url_dir.prettyURL(), "" );
 
-		QValueList<KURL*> url_list;
+		Q3ValueList<KURL*> url_list;
 		url_list.append( new KURL( url_dir ) );
 
 		listURLs( url_list, "", false );
@@ -1092,7 +1092,7 @@ QString KURLCompletion::listDirectories(
 		// Use KIO
 		//kdDebug() << "Listing (listDirectories): " << dirList << " with KIO" << endl;
 
-		QValueList<KURL*> url_list;
+		Q3ValueList<KURL*> url_list;
 
 		QStringList::ConstIterator it = dirList.begin();
 
@@ -1115,7 +1115,7 @@ QString KURLCompletion::listDirectories(
  * finished() is called when the listing is done
  */
 void KURLCompletion::listURLs(
-		const QValueList<KURL *> &urls,
+		const Q3ValueList<KURL *> &urls,
 		const QString &filter,
 		bool only_exe,
 		bool no_hidden )
@@ -1294,7 +1294,7 @@ void KURLCompletion::postProcessMatch( QString *match ) const
 
 			KDE_struct_stat sbuff;
 
-			QCString file = QFile::encodeName( copy );
+			Q3CString file = QFile::encodeName( copy );
 
 			if ( KDE_stat( (const char*)file, &sbuff ) == 0 ) {
 				if ( S_ISDIR ( sbuff.st_mode ) )

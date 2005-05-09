@@ -21,7 +21,7 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <ctype.h>
 
 #include <VCardEnum.h>
@@ -29,7 +29,7 @@
 using namespace VCARD;
 
 // There are 31 possible types, not including extensions.
-	const QCString
+	const Q3CString
 VCARD::paramNames [] =
 {
 	"NAME",
@@ -222,7 +222,7 @@ VCARD::EntityTypeToValueType(EntityType e)
 	return t;
 }
 
-	QCString
+	Q3CString
 VCARD::EntityTypeToParamName(EntityType e)
 {
 	if ( e > EntityUnknown ) e = EntityUnknown;
@@ -230,7 +230,7 @@ VCARD::EntityTypeToParamName(EntityType e)
 }
 
 	EntityType
-VCARD::EntityNameToEntityType(const QCString & s)
+VCARD::EntityNameToEntityType(const Q3CString & s)
 {
 	if (s.isEmpty()) return EntityUnknown;
 	

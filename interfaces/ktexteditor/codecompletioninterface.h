@@ -94,7 +94,7 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
 	unsigned int codeCompletionInterfaceNumber () const;
 
   protected:
-    void setCodeCompletionInterfaceDCOPSuffix (const QCString &suffix);
+    void setCodeCompletionInterfaceDCOPSuffix (const Q3CString &suffix);
 
 
   public:
@@ -112,7 +112,7 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
      * position. if @p casesensitive is @p true, the popup will only contain completions
      * that match the input text regarding case.
      */
-    virtual void showCompletionBox (QValueList<CompletionEntry> complList,int offset=0, bool casesensitive=true)=0;
+    virtual void showCompletionBox (Q3ValueList<CompletionEntry> complList,int offset=0, bool casesensitive=true)=0;
 
 	//
 	// signals !!!

@@ -26,7 +26,7 @@
 #include <assert.h>
 
 #include <qfile.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qfileinfo.h>
 
 #include <klibloader.h>
@@ -86,12 +86,12 @@ QString Plugin::localXMLFile() const
 }
 
 //static
-QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
+Q3ValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
 {
   if ( !instance )
     kdError(1000) << "No instance ???" << endl;
 
-  QValueList<PluginInfo> plugins;
+  Q3ValueList<PluginInfo> plugins;
 
   // KDE4: change * into *.rc and remove test for .desktop from the for loop below.
   const QStringList pluginDocs = instance->dirs()->findAllResources(
@@ -143,10 +143,10 @@ void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
   loadPlugins( parent, pluginInfos( instance ), instance );
 }
 
-void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance *instance )
+void Plugin::loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos, const KInstance *instance )
 {
-   QValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
-   QValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
+   Q3ValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
+   Q3ValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
    for (; pIt != pEnd; ++pIt )
    {
      QString library = (*pIt).m_document.documentElement().attribute( "library" );
@@ -167,7 +167,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 
 }
 
-void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos )
+void Plugin::loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos )
 {
    loadPlugins(parent, pluginInfos, 0);
 }
@@ -182,9 +182,9 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     return plugin;
 }
 
-QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
+Q3PtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
 {
-  QPtrList<KParts::Plugin> objects;
+  Q3PtrList<KParts::Plugin> objects;
 
   if (!parent )
     return objects;
@@ -227,9 +227,9 @@ void Plugin::setInstance( KInstance *instance )
 void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault )
 {
     KConfigGroup cfgGroup( instance->config(), "KParts Plugins" );
-    QValueList<PluginInfo> plugins = pluginInfos( instance );
-    QValueList<PluginInfo>::ConstIterator pIt = plugins.begin();
-    QValueList<PluginInfo>::ConstIterator pEnd = plugins.end();
+    Q3ValueList<PluginInfo> plugins = pluginInfos( instance );
+    Q3ValueList<PluginInfo>::ConstIterator pIt = plugins.begin();
+    Q3ValueList<PluginInfo>::ConstIterator pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
     {
         QDomElement docElem = (*pIt).m_document.documentElement();

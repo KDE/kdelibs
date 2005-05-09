@@ -18,7 +18,7 @@
 #ifndef KLISTBOX_H
 #define KLISTBOX_H
 
-#include <qlistbox.h>
+#include <q3listbox.h>
 
 #include <kdelibs_export.h>
 
@@ -37,12 +37,12 @@
  * settings.  If you want to get informed when the user selects
  * something connect to the QListBox::selectionChanged() signal.
  **/
-class KDEUI_EXPORT KListBox : public QListBox
+class KDEUI_EXPORT KListBox : public Q3ListBox
 {
     Q_OBJECT
 
 public:
-  KListBox( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+  KListBox( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
 
 signals:
 
@@ -56,7 +56,7 @@ signals:
    * Note that you may not delete any QListBoxItem objects in slots
    * connected to this signal.
    */
-  void executed( QListBoxItem *item );
+  void executed( Q3ListBoxItem *item );
 
   /**
    * Emitted whenever the user executes an listbox item.
@@ -69,7 +69,7 @@ signals:
    * Note that you may not delete any QListBoxItem objects in slots
    * connected to this signal.
    */
-  void executed( QListBoxItem *item, const QPoint &pos );
+  void executed( Q3ListBoxItem *item, const QPoint &pos );
 
   /**
    * This signal gets emitted whenever the user double clicks into the
@@ -85,10 +85,10 @@ signals:
    * You should normally not need to use this. In most cases it's better
    * to use executed() instead.
    */
-  void doubleClicked( QListBoxItem *item, const QPoint &pos );
+  void doubleClicked( Q3ListBoxItem *item, const QPoint &pos );
 
 protected slots:
-  void slotOnItem( QListBoxItem *item );
+  void slotOnItem( Q3ListBoxItem *item );
   void slotOnViewport();
 
   void slotSettingsChanged(int);
@@ -99,7 +99,7 @@ protected slots:
   void slotAutoSelect();
 
 protected:
-  void emitExecute( QListBoxItem *item, const QPoint &pos );
+  void emitExecute( Q3ListBoxItem *item, const QPoint &pos );
 
   virtual void keyPressEvent(QKeyEvent *e);
   virtual void focusOutEvent( QFocusEvent *fe );
@@ -110,13 +110,13 @@ protected:
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;
 
-  QListBoxItem* m_pCurrentItem;
+  Q3ListBoxItem* m_pCurrentItem;
 
   QTimer* m_pAutoSelect;
   int m_autoSelectDelay;
 
 private slots:
-  void slotMouseButtonClicked( int btn, QListBoxItem *item, const QPoint &pos );
+  void slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoint &pos );
 
 protected:
   virtual void virtual_hook( int id, void* data );

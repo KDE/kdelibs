@@ -22,7 +22,7 @@
 #define _KSSLSETTINGS_H
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kconfig.h>
 
 class KSSLSettingsPrivate;
@@ -213,8 +213,8 @@ private:
 	bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
 	bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
 
-	QValueList<QString> v2ciphers, v2selectedciphers, v3ciphers, v3selectedciphers;
-	QValueList<int> v2bits, v3bits;
+	Q3ValueList<QString> v2ciphers, v2selectedciphers, v3ciphers, v3selectedciphers;
+	Q3ValueList<int> v2bits, v3bits;
 
 	KSSLSettingsPrivate *d;
 };

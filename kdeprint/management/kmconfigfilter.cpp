@@ -21,7 +21,7 @@
 #include "kmmanager.h"
 #include "kmfactory.h"
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlineedit.h>
 #include <qtoolbutton.h>
 #include <qlayout.h>
@@ -41,7 +41,7 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 	setPageHeader(i18n("Printer Filtering Settings"));
 	setPagePixmap("filter");
 
-	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Printer Filter"), this);
+	Q3GroupBox	*box = new Q3GroupBox(0, Qt::Vertical, i18n("Printer Filter"), this);
 
 	m_list1 = new KListBox(box);
 	m_list1->setSelectionMode(KListBox::Extended);
@@ -92,7 +92,7 @@ void KMConfigFilter::loadConfig(KConfig *conf)
 {
 	conf->setGroup("Filter");
 	QStringList	m_plist = conf->readListEntry("Printers");
-	QPtrListIterator<KMPrinter>	it(*(KMManager::self()->printerListComplete(false)));
+	Q3PtrListIterator<KMPrinter>	it(*(KMManager::self()->printerListComplete(false)));
 	for (; it.current(); ++it)
 	{
 		if (!it.current()->isSpecial() && !it.current()->isVirtual())

@@ -27,7 +27,7 @@
 #include <sys/types.h>
 
 #include <stdio.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
 
 class KSocket;
@@ -147,7 +147,7 @@ namespace KIO {
 	QSocketNotifier *notifier;
 	QObject *receiver;
 	const char *member;
-	QPtrList<Task> tasks;
+	Q3PtrList<Task> tasks;
         bool m_suspended;
     private:
 	class ConnectionPrivate* d;

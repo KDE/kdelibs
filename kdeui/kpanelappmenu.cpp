@@ -64,22 +64,22 @@ void KPanelAppMenu::init(const QPixmap &icon, const QString &title)
     if(!client->isAttached())
 	client->attach();
     QByteArray sendData, replyData;
-    QCString replyType;
+    Q3CString replyType;
     {
-	QDataStream stream(sendData, IO_WriteOnly);
+	QDataStream stream(sendData, QIODevice::WriteOnly);
 	stream << icon << title;
 	if ( client->call("kicker", "kickerMenuManager", "createMenu(QPixmap,QString)", sendData, replyType, replyData ) ) {
 	  if (replyType != "QCString")
 	    kdDebug() << "error! replyType for createMenu should be QCstring in KPanelAppMenu::init" << endl;
 	  else {
-	    QDataStream reply( replyData, IO_ReadOnly );
+	    QDataStream reply( replyData, QIODevice::ReadOnly );
 	    reply >> realObjId;
 	  }
 	}
     }
     {
-	QDataStream stream(sendData, IO_WriteOnly);
-	stream << QCString("activated(int)") << client->appId() << objId();
+	QDataStream stream(sendData, QIODevice::WriteOnly);
+	stream << Q3CString("activated(int)") << client->appId() << objId();
 	client->send("kicker", realObjId, "connectDCOPSignal(QCString,QCString,QCString)", sendData);
     }
 }
@@ -88,7 +88,7 @@ KPanelAppMenu::~KPanelAppMenu()
 {
     DCOPClient *client = kapp->dcopClient();
     QByteArray sendData;
-    QDataStream stream(sendData, IO_WriteOnly);
+    QDataStream stream(sendData, QIODevice::WriteOnly);
     stream << realObjId;
     client->send("kicker", "kickerMenuManager", "removeMenu", sendData );
 }
@@ -99,7 +99,7 @@ int KPanelAppMenu::insertItem(const QPixmap &icon, const QString &text, int id )
 	id = panelmenu_get_seq_id();
     DCOPClient *client = kapp->dcopClient();
     QByteArray sendData;
-    QDataStream stream(sendData, IO_WriteOnly);
+    QDataStream stream(sendData, QIODevice::WriteOnly);
     stream << icon << text << id;
     client->send("kicker", realObjId, "insertItem(QPixmap,QString,int)", sendData );
     return id;
@@ -112,19 +112,19 @@ KPanelAppMenu *KPanelAppMenu::insertMenu(const QPixmap &icon, const QString &tex
         id = panelmenu_get_seq_id();
     DCOPClient *client = kapp->dcopClient();
     QByteArray sendData, replyData;
-    QCString replyType;
-    QDataStream stream(sendData, IO_WriteOnly);
+    Q3CString replyType;
+    QDataStream stream(sendData, QIODevice::WriteOnly);
     stream << icon << text << id;
     client->call("kicker", realObjId, "insertMenu(QPixmap,QString,int)", sendData, replyType, replyData );
     if ( replyType != "QCString")
       return 0;
-    QDataStream ret(replyData, IO_ReadOnly);
-    QCString subid;
+    QDataStream ret(replyData, QIODevice::ReadOnly);
+    Q3CString subid;
     ret >> subid;
 
     QByteArray sendData2;
-    QDataStream stream2(sendData2, IO_WriteOnly);
-    stream2 << QCString("activated(int)") << client->appId() << subid;
+    QDataStream stream2(sendData2, QIODevice::WriteOnly);
+    stream2 << Q3CString("activated(int)") << client->appId() << subid;
     client->send("kicker", subid, "connectDCOPSignal(QCString,QCString,QCString)", sendData2);
 
     return new KPanelAppMenu(this, subid);
@@ -137,7 +137,7 @@ int KPanelAppMenu::insertItem(const QString &text, int id )
 	id = panelmenu_get_seq_id();
     DCOPClient *client = kapp->dcopClient();
     QByteArray sendData;
-    QDataStream stream(sendData, IO_WriteOnly);
+    QDataStream stream(sendData, QIODevice::WriteOnly);
     stream << text << id;
     client->send("kicker", realObjId, "insertItem(QString,int)", sendData );
     return id;
@@ -152,11 +152,11 @@ void KPanelAppMenu::clear()
 }
 
 
-bool KPanelAppMenu::process(const QCString &fun, const QByteArray &data,
-			 QCString &replyType, QByteArray &)
+bool KPanelAppMenu::process(const Q3CString &fun, const QByteArray &data,
+			 Q3CString &replyType, QByteArray &)
 {
     if ( fun == "activated(int)" ) {
-	QDataStream dataStream( data, IO_ReadOnly );
+	QDataStream dataStream( data, QIODevice::ReadOnly );
 	int id;
 	dataStream >> id;
 	emit activated( id );

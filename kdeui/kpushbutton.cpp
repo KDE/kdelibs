@@ -19,8 +19,8 @@
 
 #include "kpushbutton.h"
 
-#include <qdragobject.h>
-#include <qwhatsthis.h>
+#include <q3dragobject.h>
+#include <q3whatsthis.h>
 
 #include "config.h"
 
@@ -54,7 +54,7 @@ KPushButton::KPushButton( const QString &text, QWidget *parent,
     init( KGuiItem( text ) );
 }
 
-KPushButton::KPushButton( const QIconSet &icon, const QString &text,
+KPushButton::KPushButton( const QIcon &icon, const QString &text,
                           QWidget *parent, const char *name )
     : QPushButton( text, parent, name ),
       m_dragEnabled( false )
@@ -99,7 +99,7 @@ void KPushButton::init( const KGuiItem &item )
 
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
-    QWhatsThis::add( this, item.whatsThis() );
+    Q3WhatsThis::add( this, item.whatsThis() );
 
     if (kapp)
     {
@@ -147,14 +147,14 @@ void KPushButton::setText( const QString &text )
     d->item.setText(text);
 }
 
-void KPushButton::setIconSet( const QIconSet &iconSet )
+void KPushButton::setIconSet( const QIcon &iconSet )
 {
     d->item.setIconSet(iconSet);
 
     if ( s_useIcons || text().isEmpty() )
         QPushButton::setIconSet( iconSet );
     else
-        QPushButton::setIconSet( QIconSet() );
+        QPushButton::setIconSet( QIcon() );
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )
@@ -183,7 +183,7 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
         return;
     }
 
-    if ( (e->state() & LeftButton) &&
+    if ( (e->state() & Qt::LeftButton) &&
          (e->pos() - startPos).manhattanLength() >
          KGlobalSettings::dndEventDelay() )
     {
@@ -192,14 +192,14 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
     }
 }
 
-QDragObject * KPushButton::dragObject()
+Q3DragObject * KPushButton::dragObject()
 {
     return 0L;
 }
 
 void KPushButton::startDrag()
 {
-    QDragObject *d = dragObject();
+    Q3DragObject *d = dragObject();
     if ( d )
 	d->dragCopy();
 }

@@ -71,10 +71,10 @@ static QString processLocaleString( const QString& s )
 	return res;
 }
 
-static QValueList<float> splitNumberString( const QString& _s )
+static Q3ValueList<float> splitNumberString( const QString& _s )
 {
         QString s = _s.simplifyWhiteSpace();
-	QValueList<float> l;
+	Q3ValueList<float> l;
 	int p1 = 1, p2 = 0;
 	while ( true )
 	{
@@ -125,7 +125,7 @@ DrMain* PPDLoader::readFromFile( const QString& filename )
 	m_fonts.clear();
 	// Open driver file
 	QIODevice *d = KFilterDev::deviceForFile( filename );
-	if ( d && d->open( IO_ReadOnly ) )
+	if ( d && d->open( QIODevice::ReadOnly ) )
 	{
 		DrMain *driver = new DrMain;
 		bool result = true;
@@ -295,7 +295,7 @@ bool PPDLoader::putStatement( const QString& keyword, const QString& name, const
 				if ( m_option->type() == DrBase::List )
 				{
 					QStringList vals;
-					QPtrListIterator<DrBase> it( *( static_cast<DrListOption*>( m_option )->choices() ) );
+					Q3PtrListIterator<DrBase> it( *( static_cast<DrListOption*>( m_option )->choices() ) );
 					for ( ; it.current(); ++it )
 						vals.append( it.current()->name() );
 					opt->set( "fixedvals", vals.join( "|" ) );
@@ -408,7 +408,7 @@ bool PPDLoader::putFooProcessedData( const QVariant& var )
 					if ( old->type() == DrBase::List )
 					{
 						QStringList vals;
-						QPtrListIterator<DrBase> it( *( static_cast<DrListOption*>( old )->choices() ) );
+						Q3PtrListIterator<DrBase> it( *( static_cast<DrListOption*>( old )->choices() ) );
 						for ( ; it.current(); ++it )
 							vals.append( it.current()->name() );
 						o->set( "fixedvals", vals.join( "|" ) );
@@ -429,7 +429,7 @@ bool PPDLoader::putFooProcessedData( const QVariant& var )
 
 bool PPDLoader::putPaperDimension( const QString& name, const QString& s )
 {
-	QValueList<float> l = splitNumberString( s );
+	Q3ValueList<float> l = splitNumberString( s );
 
 	PS_private *ps = m_ps.find( name );
 	if ( !ps )
@@ -446,7 +446,7 @@ bool PPDLoader::putPaperDimension( const QString& name, const QString& s )
 
 bool PPDLoader::putImageableArea( const QString& name, const QString& s )
 {
-	QValueList<float> l = splitNumberString( s );
+	Q3ValueList<float> l = splitNumberString( s );
 
 	PS_private *ps = m_ps.find( name );
 	if ( !ps )
@@ -486,7 +486,7 @@ DrGroup* PPDLoader::findOrCreateGroupForOption( const QString& optname )
 		grpname = "Others";
 
 	DrGroup *grp = 0;
-	for ( QPtrListIterator<DrGroup> it( m_groups[ 0 ]->groups() ); it.current(); ++it )
+	for ( Q3PtrListIterator<DrGroup> it( m_groups[ 0 ]->groups() ); it.current(); ++it )
 		if ( it.current()->name() == grpname )
 		{
 			grp = it.current();
@@ -504,7 +504,7 @@ DrGroup* PPDLoader::findOrCreateGroupForOption( const QString& optname )
 
 void PPDLoader::processPageSizes( DrMain *driver )
 {
-	QDictIterator<PS_private> it( m_ps );
+	Q3DictIterator<PS_private> it( m_ps );
 	for ( ; it.current(); ++it )
 	{
 		//qDebug( "ADDING PAGESIZE: %16s, Size = ( %.2f, %.2f ),  Area = ( %.2f, %.2f, %.2f, %.2f )", it.current()->name.latin1(),

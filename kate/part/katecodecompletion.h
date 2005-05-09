@@ -30,19 +30,19 @@
 
 #include <ktexteditor/codecompletioninterface.h>
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstringlist.h>
 #include <qlabel.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qmap.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 
 class KateView;
 class KateArgHint;
 class KateCCListBox;
 
 class QLayout;
-class QVBox;
+class Q3VBox;
 
 class KateCodeCompletionCommentLabel : public QLabel
 {
@@ -50,14 +50,14 @@ class KateCodeCompletionCommentLabel : public QLabel
 
   public:
     KateCodeCompletionCommentLabel( QWidget* parent, const QString& text) : QLabel( parent, "toolTipTip",
-             WStyle_StaysOnTop | WStyle_Customize | WStyle_NoBorder | WStyle_Tool | WX11BypassWM )
+             Qt::WStyle_StaysOnTop | Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_Tool | Qt::WX11BypassWM )
     {
         setMargin(1);
         setIndent(0);
         setAutoMask( false );
-        setFrameStyle( QFrame::Plain | QFrame::Box );
+        setFrameStyle( Q3Frame::Plain | Q3Frame::Box );
         setLineWidth( 1 );
-        setAlignment( AlignAuto | AlignTop );
+        setAlignment( Qt::AlignLeft | Qt::AlignTop );
         polish();
         setText(text);
         adjustSize();
@@ -78,7 +78,7 @@ class KateCodeCompletion : public QObject
     void showArgHint(
         QStringList functionList, const QString& strWrapping, const QString& strDelimiter );
     void showCompletionBox(
-        QValueList<KTextEditor::CompletionEntry> entries, int offset = 0, bool casesensitive = true );
+        Q3ValueList<KTextEditor::CompletionEntry> entries, int offset = 0, bool casesensitive = true );
     bool eventFilter( QObject* o, QEvent* e );
 
     void handleKey (QKeyEvent *e);
@@ -103,9 +103,9 @@ class KateCodeCompletion : public QObject
 
     KateArgHint*    m_pArgHint;
     KateView*       m_view;
-    QVBox*          m_completionPopup;
+    Q3VBox*          m_completionPopup;
     KateCCListBox*       m_completionListBox;
-    QValueList<KTextEditor::CompletionEntry> m_complList;
+    Q3ValueList<KTextEditor::CompletionEntry> m_complList;
     uint            m_lineCursor;
     uint            m_colCursor;
     int             m_offset;
@@ -113,7 +113,7 @@ class KateCodeCompletion : public QObject
     KateCodeCompletionCommentLabel* m_commentLabel;
 };
 
-class KateArgHint: public QFrame
+class KateArgHint: public Q3Frame
 {
   Q_OBJECT
 
@@ -154,7 +154,7 @@ class KateArgHint: public QFrame
       int m_currentLine;
       int m_currentCol;
       KateView* editorView;
-      QIntDict<QLabel> labelDict;
+      Q3IntDict<QLabel> labelDict;
       QLayout* layout;
 };
 

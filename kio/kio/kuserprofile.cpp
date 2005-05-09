@@ -27,10 +27,10 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-#include <qtl.h>
+#include <q3tl.h>
 
-template class QPtrList<KServiceTypeProfile>;
-typedef QPtrList<KServiceTypeProfile> KServiceTypeProfileList;
+template class Q3PtrList<KServiceTypeProfile>;
+typedef Q3PtrList<KServiceTypeProfile> KServiceTypeProfileList;
 
 /*********************************************
  *
@@ -115,7 +115,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         initStatic();
         // We want all profiles for servicetype, if we have profiles.
         // ## Slow loop, if profilerc is big. We should use a map instead?
-        QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
+        Q3PtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
         for( ; it.current(); ++it )
             if ( it.current()->m_strServiceType == _servicetype )
             {
@@ -154,7 +154,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
     KService::List list = KServiceType::offers( _servicetype );
     //kdDebug(7014) << "Using KServiceType::offers, result: " << list.count() << " offers" << endl;
-    QValueListIterator<KService::Ptr> it = list.begin();
+    Q3ValueListIterator<KService::Ptr> it = list.begin();
     for( ; it != list.end(); ++it )
     {
         if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
@@ -236,7 +236,7 @@ KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _se
 
   const QString &_genservicetype  = ((!_genericServiceType.isEmpty()) ? _genericServiceType : app_str);
 
-  QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
+  Q3PtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
   for( ; it.current(); ++it )
     if (( it.current()->m_strServiceType == _servicetype ) &&
         ( it.current()->m_strGenericServiceType == _genservicetype))
@@ -252,7 +252,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 
   kdDebug(7014) << "KServiceTypeProfile::offers serviceType=" << m_strServiceType << " genericServiceType=" << m_strGenericServiceType << endl;
   KService::List list = KServiceType::offers( m_strServiceType );
-  QValueListIterator<KService::Ptr> it = list.begin();
+  Q3ValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
     //kdDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;

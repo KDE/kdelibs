@@ -62,7 +62,7 @@ int main( int argc, char **argv )
   QString inputFile( args->arg( 0 ) );
 
   QFile file( inputFile );
-  if ( !file.open( IO_ReadOnly ) ) {
+  if ( !file.open( QIODevice::ReadOnly ) ) {
     qDebug( "Unable to open file '%s' for reading!", file.name().latin1() );
     return 1;
   }

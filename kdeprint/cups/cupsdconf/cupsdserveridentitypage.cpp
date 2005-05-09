@@ -23,7 +23,7 @@
 #include <klocale.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -123,9 +123,9 @@ void CupsdServerIdentityPage::setDefaults()
 
 void CupsdServerIdentityPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(servername_, conf->comments_.toolTip(SERVERNAME_COMM));
-        QWhatsThis::add(serveradmin_, conf->comments_.toolTip(SERVERADMIN_COMM));
-        QWhatsThis::add(user_, conf->comments_.toolTip(USER_COMM));
-        QWhatsThis::add(group_, conf->comments_.toolTip(GROUP_COMM));
-        QWhatsThis::add(remroot_, conf->comments_.toolTip(REMOTEROOT_COMM));
+        Q3WhatsThis::add(servername_, conf->comments_.toolTip(SERVERNAME_COMM));
+        Q3WhatsThis::add(serveradmin_, conf->comments_.toolTip(SERVERADMIN_COMM));
+        Q3WhatsThis::add(user_, conf->comments_.toolTip(USER_COMM));
+        Q3WhatsThis::add(group_, conf->comments_.toolTip(GROUP_COMM));
+        Q3WhatsThis::add(remroot_, conf->comments_.toolTip(REMOTEROOT_COMM));
 }

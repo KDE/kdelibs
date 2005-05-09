@@ -22,8 +22,8 @@
 #define __KSMIMECRYPTO_H
 
 
-#include <qcstring.h>
-#include <qptrlist.h>
+#include <q3cstring.h>
+#include <q3ptrlist.h>
 #include "ksslpkcs12.h"
 #include "ksslcertificate.h"
 
@@ -60,10 +60,10 @@ class KIO_EXPORT KSMIMECrypto {
      * @param detached create detached or opaque signature
      * @return 0 on success
      */
-    rc signMessage(const QCString &clearText,
+    rc signMessage(const Q3CString &clearText,
 		   QByteArray &cipherText,
 		   const KSSLPKCS12 &privKey,
-		   const QPtrList<KSSLCertificate> &certs,
+		   const Q3PtrList<KSSLCertificate> &certs,
 		   bool detached);
 
     /**
@@ -75,9 +75,9 @@ class KIO_EXPORT KSMIMECrypto {
      * @param foundCerts certificates found in this message
      * @return 0 on success
      */
-    rc checkDetachedSignature(const QCString &clearText,
+    rc checkDetachedSignature(const Q3CString &clearText,
 			      const QByteArray &signature,
-			      QPtrList<KSSLCertificate> &foundCerts);
+			      Q3PtrList<KSSLCertificate> &foundCerts);
 
     /**
      * Check an opaque signed message
@@ -89,8 +89,8 @@ class KIO_EXPORT KSMIMECrypto {
      * @return 0 on success
      */
     rc checkOpaqueSignature(const QByteArray &signedText,
-			    QCString &clearText,
-			    QPtrList<KSSLCertificate> &foundCerts);
+			    Q3CString &clearText,
+			    Q3PtrList<KSSLCertificate> &foundCerts);
     
     /**
      * Encrypt a message
@@ -104,10 +104,10 @@ class KIO_EXPORT KSMIMECrypto {
      * @recip recipient certificates
      * @return 0 on success
      */
-    rc encryptMessage(const QCString &clearText,
+    rc encryptMessage(const Q3CString &clearText,
 		      QByteArray &cipherText,
 		      algo algorithm,
-		      const QPtrList<KSSLCertificate> &recip);
+		      const Q3PtrList<KSSLCertificate> &recip);
 
     /**
      * Decrypt a message
@@ -117,7 +117,7 @@ class KIO_EXPORT KSMIMECrypto {
      * @return 0 on success
      */
     rc decryptMessage(const QByteArray &cipherText,
-		      QCString &clearText,
+		      Q3CString &clearText,
 		      const KSSLPKCS12 &privKey);
 
  private:

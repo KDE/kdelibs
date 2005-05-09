@@ -18,9 +18,9 @@ int main(int argc, char * argv[])
 	
 	QFile f(argv[1]);
 	
-	QCString str;
+	Q3CString str;
 	
-	if (!f.open(IO_ReadOnly)) {
+	if (!f.open(QIODevice::ReadOnly)) {
 		cerr << "Couldn't open file \"" << argv[1] << endl;
 		exit(1);
 	}
@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
 		if (v.has(EntityEmail)) {
 			cerr << "Email parameter found" << endl;
 			
-			QCString s = v.contentLine(EntityEmail)->value()->asString();
+			Q3CString s = v.contentLine(EntityEmail)->value()->asString();
 			
 			cerr << "Email value == " << s << endl;
 		}

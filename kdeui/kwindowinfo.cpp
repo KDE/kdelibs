@@ -4,7 +4,7 @@
  *   email                : rich@kde.org
  */
 
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qpixmap.h>
 #include <qtimer.h>
 #include <qtooltip.h>

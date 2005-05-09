@@ -33,7 +33,7 @@ public:
 	~SmbView();
 
 	void setLoginInfos(const QString& login, const QString& password);
-	void setOpen(QListViewItem*, bool);
+	void setOpen(Q3ListViewItem*, bool);
 	void init();
 	void abort();
 
@@ -51,12 +51,12 @@ protected:
 protected slots:
 	void slotReceivedStdout(KProcess*, char*, int);
 	void slotProcessExited(KProcess*);
-	void slotSelectionChanged(QListViewItem*);
+	void slotSelectionChanged(Q3ListViewItem*);
 
 private:
 	enum State { GroupListing, ServerListing, ShareListing, Idle };
 	int 		m_state;
-	QListViewItem	*m_current;
+	Q3ListViewItem	*m_current;
 	KProcess	*m_proc;
 	QString		m_buffer;
 	QString		m_login, m_password;

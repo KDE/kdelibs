@@ -21,15 +21,15 @@
 
 #include <limits.h> // INT_MAX
 
-#include <qframe.h>
+#include <q3frame.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qvbuttongroup.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qhbox.h>
-#include <qpopupmenu.h>
+#include <q3hbox.h>
+#include <q3popupmenu.h>
 
 #include <kapplication.h>
 #include <kcombobox.h>
@@ -700,7 +700,7 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
 		modal ? User1|Cancel : User1|Close, User1, false, KGuiItem( i18n("&Find"), "find") )
 {
-  setWFlags( WType_TopLevel );
+  setWFlags( Qt::WType_TopLevel );
 
   QWidget *page = new QWidget( this );
   setMainWidget(page);
@@ -720,10 +720,10 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
 
   topLayout->addWidget(d->combo);
 
-  group = new QVButtonGroup( i18n("Options"), page );
+  group = new Q3VButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
-  QHBox* row1 = new QHBox( group );
+  Q3HBox* row1 = new Q3HBox( group );
 
   text = i18n("Case &sensitive");
   sensitive = new QCheckBox( text, row1, "case");
@@ -832,11 +832,11 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
                 User3, false,
 		i18n("Replace &All"), i18n("&Replace"), KGuiItem( i18n("&Find"), "find") )
 {
-  setWFlags( WType_TopLevel );
+  setWFlags( Qt::WType_TopLevel );
 
-  setButtonBoxOrientation( Vertical );
+  setButtonBoxOrientation( Qt::Vertical );
 
-  QFrame *page = makeMainWidget();
+  Q3Frame *page = makeMainWidget();
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
   d = new KEdReplacePrivate( page );
@@ -859,7 +859,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   connect(d->searchCombo, SIGNAL(textChanged ( const QString & )),
           this,SLOT(textSearchChanged ( const QString & )));
 
-  QButtonGroup *group = new QButtonGroup( i18n("Options"), page );
+  Q3ButtonGroup *group = new Q3ButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
   QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
@@ -981,7 +981,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
 
   lineNum = new KIntNumInput( 1, page);
   lineNum->setRange(1, 1000000, 1, false);
-  lineNum->setLabel(i18n("Go to line:"), AlignVCenter | AlignLeft);
+  lineNum->setLabel(i18n("Go to line:"), Qt::AlignVCenter | Qt::AlignLeft);
 //  lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget( lineNum );
 
@@ -1105,11 +1105,11 @@ QString KEdit::selectWordUnderCursor( )
     return txt.mid(start, end-start);
 }
 
-QPopupMenu *KEdit::createPopupMenu( const QPoint& pos )
+Q3PopupMenu *KEdit::createPopupMenu( const QPoint& pos )
 {
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
-    QPopupMenu *menu = QMultiLineEdit::createPopupMenu( pos );
+    Q3PopupMenu *menu = Q3MultiLineEdit::createPopupMenu( pos );
     
     if ( isReadOnly() )
       menu->changeItem( menu->idAt(0), SmallIconSet("editcopy"), menu->text( menu->idAt(0) ) );

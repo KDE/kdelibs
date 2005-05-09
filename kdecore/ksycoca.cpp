@@ -46,7 +46,7 @@
 #define MAP_FAILED ((void *) -1)
 #endif
 
-template class QPtrList<KSycocaFactory>;
+template class Q3PtrList<KSycocaFactory>;
 
 // The following limitations are in place:
 // Maximum length of a single string: 8192 bytes
@@ -104,7 +104,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    m_sycoca_mmap = 0;
    m_str = 0;
    QString path;
-   QCString ksycoca_env = getenv("KDESYCOCA");
+   Q3CString ksycoca_env = getenv("KDESYCOCA");
    if (ksycoca_env.isEmpty())
       path = KGlobal::dirs()->saveLocation("cache") + "ksycoca";
    else
@@ -112,7 +112,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 
    kdDebug(7011) << "Trying to open ksycoca from " << path << endl;
    QFile *database = new QFile(path);
-   bool bOpen = database->open( IO_ReadOnly );
+   bool bOpen = database->open( QIODevice::ReadOnly );
    if (!bOpen)
    {
      path = locate("services", "ksycoca");
@@ -121,7 +121,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
        kdDebug(7011) << "Trying to open global ksycoca from " << path << endl;
        delete database;
        database = new QFile(path);
-       bOpen = database->open( IO_ReadOnly );
+       bOpen = database->open( QIODevice::ReadOnly );
      }
    }
    
@@ -147,7 +147,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
         QByteArray b_array;
         b_array.setRawData(m_sycoca_mmap, m_sycoca_size);
         QBuffer *buffer = new QBuffer( b_array );
-        buffer->open(IO_ReadWrite);
+        buffer->open(QIODevice::ReadWrite);
         m_str = new QDataStream( buffer);
      }
 #endif
@@ -167,7 +167,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
         // We open a dummy database instead.
         //kdDebug(7011) << "No database, opening a dummy one." << endl;
         QBuffer *buffer = new QBuffer( QByteArray() );
-        buffer->open(IO_ReadWrite);
+        buffer->open(QIODevice::ReadWrite);
         m_str = new QDataStream( buffer);
         (*m_str) << (Q_INT32) KSYCOCA_VERSION;
         (*m_str) << (Q_INT32) 0;

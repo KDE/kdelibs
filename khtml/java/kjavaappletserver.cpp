@@ -39,9 +39,9 @@
 #include <kssl.h>
 
 #include <qtimer.h>
-#include <qguardedptr.h>
-#include <qvaluelist.h>
-#include <qptrlist.h>
+#include <qpointer.h>
+#include <q3valuelist.h>
+#include <q3ptrlist.h>
 #include <qdir.h>
 #include <qeventloop.h>
 #include <qapplication.h>
@@ -117,7 +117,7 @@ private:
        delete kssl;
    }
    int counter;
-   QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
+   QMap< int, QPointer<KJavaAppletContext> > contexts;
    QString appletLabel;
    JSStack jsstack;
    KIOJobMap kiojobs;
@@ -614,14 +614,14 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             if (KSSL::doesSSLWork() && !d->kssl)
                 d->kssl = new KSSL;
             QStringList sl;
-            QCString answer( "invalid" );
+            Q3CString answer( "invalid" );
 
             if (!d->kssl) {
                 answer = "nossl";
             } else if (args.size() > 2) {
                 const int certsnr = args[1].toInt();
                 QString text;
-                QPtrList<KSSLCertificate> certs;
+                Q3PtrList<KSSLCertificate> certs;
                 certs.setAutoDelete( true );
                 for (int i = certsnr; i >= 0; --i) {
                     KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].ascii());
@@ -774,8 +774,8 @@ PermissionDialog::PermissionDialog( QWidget* parent )
     : QObject(parent), m_button("no")
 {}
 
-QCString PermissionDialog::exec( const QString & cert, const QString & perm ) {
-    QGuardedPtr<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
+Q3CString PermissionDialog::exec( const QString & cert, const QString & perm ) {
+    QPointer<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
 
     dialog->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, 0, 0, dialog->sizePolicy().hasHeightForWidth() ) );
     dialog->setModal( true );

@@ -150,7 +150,7 @@ bool ResourceNet::load()
   }
 
   QFile file( mTempFile );
-  if ( !file.open( IO_ReadOnly ) ) {
+  if ( !file.open( QIODevice::ReadOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
     return false;
   }
@@ -186,7 +186,7 @@ bool ResourceNet::save( Ticket* )
 {
   QFile file( mTempFile );
 
-  if ( !file.open( IO_WriteOnly ) ) {
+  if ( !file.open( QIODevice::WriteOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
     return false;
   }
@@ -201,7 +201,7 @@ bool ResourceNet::asyncSave( Ticket* )
 {
   QFile file( mTempFile );
 
-  if ( !file.open( IO_WriteOnly ) ) {
+  if ( !file.open( QIODevice::WriteOnly ) ) {
     emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return false;
   }
@@ -254,7 +254,7 @@ void ResourceNet::downloadFinished( KIO::Job* )
     emit loadingError( this, i18n( "Download failed in some way!" ) );
 
   QFile file( mTempFile );
-  if ( !file.open( IO_ReadOnly ) ) {
+  if ( !file.open( QIODevice::ReadOnly ) ) {
     emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return;
   }

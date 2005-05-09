@@ -20,11 +20,11 @@
 #ifndef PPDLOADER_H
 #define PPDLOADER_H
 
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvariant.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kdelibs_export.h>
 
@@ -60,9 +60,9 @@ public:
 	static DrMain* loadDriver( const QString& filename, QString* msg = NULL );
 
 private:
-	QValueStack<DrGroup*> m_groups;
+	Q3ValueStack<DrGroup*> m_groups;
 	DrBase*               m_option;
-	QDict<PS_private>     m_ps;
+	Q3Dict<PS_private>     m_ps;
 	QStringList           m_fonts;
 	QString               m_errormsg;
 

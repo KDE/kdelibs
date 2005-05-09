@@ -20,18 +20,18 @@
 #ifndef JOBITEM_H
 #define JOBITEM_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include "kmobject.h"
 
 class KMJob;
 
-class JobItem : public QListViewItem, public KMObject
+class JobItem : public Q3ListViewItem, public KMObject
 {
 public:
-	JobItem(QListView *parent, KMJob *job = 0);
+	JobItem(Q3ListView *parent, KMJob *job = 0);
 	~JobItem();
 	void init(KMJob *job);
-	int compare(QListViewItem*, int, bool) const;
+	int compare(Q3ListViewItem*, int, bool) const;
 
 	int jobID() const;
 	QString jobUri() const;

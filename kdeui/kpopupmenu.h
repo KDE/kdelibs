@@ -20,7 +20,7 @@
 
 #define INCLUDE_MENUITEM_DEF
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
 #include <kdelibs_export.h>
@@ -120,7 +120,7 @@ private:
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KPopupMenu : public QPopupMenu {
+class KDEUI_EXPORT KPopupMenu : public Q3PopupMenu {
     Q_OBJECT
 public:
     /**
@@ -203,13 +203,13 @@ public:
      * Returns the context menu associated with this menu
      * @since 3.2
      */
-    QPopupMenu* contextMenu();
+    Q3PopupMenu* contextMenu();
 
     /**
      * Returns the context menu associated with this menu
      * @since 3.2
      */
-    const QPopupMenu* contextMenu() const;
+    const Q3PopupMenu* contextMenu() const;
 
     /**
      * Hides the context menu if shown
@@ -249,7 +249,7 @@ signals:
      * @param ctxMenu The context menu itself
      * @since 3.2
      */
-    void aboutToShowContextMenu(KPopupMenu* menu, int menuItem, QPopupMenu* ctxMenu);
+    void aboutToShowContextMenu(KPopupMenu* menu, int menuItem, Q3PopupMenu* ctxMenu);
 
 protected:
     virtual void closeEvent(QCloseEvent *);

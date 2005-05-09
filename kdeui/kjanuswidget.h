@@ -20,7 +20,7 @@
 #ifndef _KJANUS_WIDGET_H_
 #define _KJANUS_WIDGET_H_
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpixmap.h>
 #include <qsplitter.h>
 
@@ -30,14 +30,14 @@
 
 class KListView;
 
-class QGrid;
-class QHBox;
+class Q3Grid;
+class Q3HBox;
 class QLabel;
 class QTabWidget;
-class QVBox;
-class QWidgetStack;
+class Q3VBox;
+class Q3WidgetStack;
 class KSeparator;
-class QListViewItem;
+class Q3ListViewItem;
 class KGuiItem;
 
 /**
@@ -72,7 +72,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     class IconListBox : public KListBox
     {
       public:
-        IconListBox( QWidget *parent=0, const char *name=0, WFlags f=0 );
+        IconListBox( QWidget *parent=0, const char *name=0, Qt::WFlags f=0 );
 	void updateMinimumHeight();
 	void updateWidth();
 	void invalidateHeight();
@@ -194,7 +194,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @return The widget or 0 if the face in not Plain.
      */
-    virtual QFrame *plainPage();
+    virtual Q3Frame *plainPage();
 
     /**
      * Add a new page when the class is used in TreeList, IconList or Tabbed
@@ -215,7 +215,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.
      */
-    virtual QFrame *addPage(const QString &item,const QString &header=QString::null,
+    virtual Q3Frame *addPage(const QString &item,const QString &header=QString::null,
 		    const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -232,7 +232,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 	 * Deleting the returned frame will cause the listitem or tab to be
 	 * removed (you can re-add a page with the same name later.
      **/
-     virtual QFrame *addPage(const QStringList &items, const QString &header=QString::null,
+     virtual Q3Frame *addPage(const QStringList &items, const QString &header=QString::null,
 		    const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -254,7 +254,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.  */
-    virtual QVBox *addVBoxPage( const QString &item,
+    virtual Q3VBox *addVBoxPage( const QString &item,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -270,7 +270,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * Deleting the returned frame will cause the listitem or tab to be
      * removed (you can re-add a page with the same name later.
      **/
-    virtual QVBox *addVBoxPage( const QStringList &items,
+    virtual Q3VBox *addVBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -294,7 +294,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.
      */
-    virtual QHBox *addHBoxPage( const QString &itemName,
+    virtual Q3HBox *addHBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -310,7 +310,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * Deleting the returned frame will cause the listitem or tab to be
      * removed (you can re-add a page with the same name later.
      **/
-    virtual QHBox *addHBoxPage( const QStringList &items,
+    virtual Q3HBox *addHBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -337,7 +337,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.
      */
-    virtual QGrid *addGridPage( int n, Orientation dir,
+    virtual Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
@@ -354,7 +354,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * Deleting the returned frame will cause the listitem or tab to be
      * removed (you can re-add a page with the same name later.
      **/
-    virtual QGrid *addGridPage( int n, Orientation dir,
+    virtual Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
@@ -558,38 +558,38 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
   private slots:
     bool slotShowPage();
     void slotFontChanged();
-    void slotItemClicked(QListViewItem *it);
+    void slotItemClicked(Q3ListViewItem *it);
     void pageGone(QObject *obj); // signal from the added page's "destroyed" signal
-    void slotReopen(QListViewItem *item);
+    void slotReopen(Q3ListViewItem *item);
 
   protected:
     bool showPage( QWidget *w );
-    void addPageWidget( QFrame *page, const QStringList &items,
+    void addPageWidget( Q3Frame *page, const QStringList &items,
 			const QString &header, const QPixmap &pixmap );
-    void InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page);
+    void InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, Q3Frame *page);
     QWidget *FindParent();
 
   private:
     bool mValid;
 
     // Obsolete members. Remove in KDE 4.
-    QPtrList<QWidget> *mPageList;
+    Q3PtrList<QWidget> *mPageList;
     QStringList *mTitleList;
 
     int          mFace;
     KListView    *mTreeList;
     IconListBox  *mIconList;
-    QWidgetStack *mPageStack;
+    Q3WidgetStack *mPageStack;
     QLabel       *mTitleLabel;
     QTabWidget   *mTabControl;
-    QFrame       *mPlainPage;
+    Q3Frame       *mPlainPage;
     QWidget      *mSwallowPage;
     QWidget      *mActivePageWidget;
     KSeparator   *mTitleSep;
     QSplitter::ResizeMode mTreeListResizeMode;
     bool         mShowIconsInTreeList;
-    QMap<QListViewItem *, QWidget *> mTreeListToPageStack;
-    QMap<QListBoxItem *, QWidget *> mIconListToPageStack;
+    QMap<Q3ListViewItem *, QWidget *> mTreeListToPageStack;
+    QMap<Q3ListBoxItem *, QWidget *> mIconListToPageStack;
     QMap<QString, QPixmap> mFolderIconMap;
     QMap<QString, QStringList> mChildrenNames;
     QMap<QString, QWidget *> mChildPages;

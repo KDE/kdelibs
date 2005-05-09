@@ -26,10 +26,10 @@
 #include <kstaticdeleter.h>
 
 #include <qlayout.h>
-#include <qobjectlist.h>
-#include <qguardedptr.h>
+#include <qobject.h>
+#include <qpointer.h>
 #include <qlineedit.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qtimer.h>
 #include <qcursor.h>
 
@@ -41,9 +41,9 @@
 const int KDialog::mMarginSize = 11;
 const int KDialog::mSpacingSize = 6;
 
-template class QPtrList<QLayoutItem>;
+template class Q3PtrList<QLayoutItem>;
 
-KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
+KDialog::KDialog(QWidget *parent, const char *name, bool modal, Qt::WFlags f)
   : QDialog(parent, name, modal, f), d(0)
 {
     KWhatsThisManager::init ();
@@ -58,11 +58,11 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   {
     switch ( e->key() )
     {
-      case Key_Escape:
-      case Key_Enter:
-      case Key_Return:
+      case Qt::Key_Escape:
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
       {
-        if(testWFlags(WType_Dialog | WShowModal))
+        if(testWFlags(Qt::WType_Dialog | Qt::WShowModal))
 	{
           QDialog::keyPressEvent(e);
 	}
@@ -80,8 +80,8 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   else
   {
       // accept the dialog when Ctrl-Return is pressed
-      if ( e->state() == ControlButton &&
-           (e->key() == Key_Return || e->key() == Key_Enter) )
+      if ( e->state() == Qt::ControlModifier &&
+           (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) )
       {
           e->accept();
           accept();
@@ -257,7 +257,7 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
 class KDialogQueuePrivate
 {
 public:
-  QValueList< QGuardedPtr<QDialog> > queue;
+  Q3ValueList< QPointer<QDialog> > queue;
   bool busy;
 };
 

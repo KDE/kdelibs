@@ -22,7 +22,7 @@
 #define __KIO_AUTHINFO_H
 
 #include <qmap.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kurl.h>
 
 
@@ -308,7 +308,7 @@ private:
 private:
   bool isDirty;
 
-  typedef QValueList<AutoLogin> LoginList;
+  typedef Q3ValueList<AutoLogin> LoginList;
   typedef QMap<QString, LoginList> LoginMap;
   LoginMap loginMap;
 

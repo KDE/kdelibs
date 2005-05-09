@@ -40,9 +40,9 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
 
   setLineWidth  (0);
-  setFrameStyle (QFrame::NoFrame);
+  setFrameStyle (Q3Frame::NoFrame);
 
-  setAlignment( AlignHCenter | AlignVCenter | SingleLine );
+  setAlignment( Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextSingleLine );
 
   connect (this, SIGNAL(itemPressed(int)), parent, SIGNAL(pressed(int)));
   connect (this, SIGNAL(itemReleased(int)), parent, SIGNAL(released(int)));

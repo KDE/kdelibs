@@ -19,7 +19,7 @@
 #ifndef _KACTIVELABEL_H_
 #define _KACTIVELABEL_H_
 
-#include <qtextbrowser.h>
+#include <q3textbrowser.h>
 
 #include <kdelibs_export.h>
 
@@ -34,7 +34,7 @@ class KActiveLabelPrivate;
   * @author Waldo Bastian (bastian@kde.org)
   * @version $Id$
   */
-class KDEUI_EXPORT KActiveLabel : public QTextBrowser
+class KDEUI_EXPORT KActiveLabel : public Q3TextBrowser
 {
     Q_OBJECT
 public:

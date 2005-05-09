@@ -37,7 +37,7 @@ class QKeyEvent;
 class KIO_EXPORT KFileListViewItem : public KListViewItem
 {
 public:
-    KFileListViewItem( QListView *parent, const QString &text,
+    KFileListViewItem( Q3ListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi )
 	: KListViewItem( parent, text ), inf( fi ) {
         setPixmap( 0, icon );
@@ -47,14 +47,14 @@ public:
     /**
      * @since 3.1
      */
-    KFileListViewItem( QListView *parent, KFileItem *fi )
+    KFileListViewItem( Q3ListView *parent, KFileItem *fi )
         : KListViewItem( parent ), inf( fi ) {
         init();
     }
 
-    KFileListViewItem( QListView *parent, const QString &text,
+    KFileListViewItem( Q3ListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi,
-		       QListViewItem *after)
+		       Q3ListViewItem *after)
 	: KListViewItem( parent, after ), inf( fi ) {
         setPixmap( 0, icon );
         setText( 0, text );
@@ -147,7 +147,7 @@ public:
     // for KMimeTypeResolver
     void mimeTypeDeterminationFinished();
     void determineIcon( KFileListViewItem *item );
-    QScrollView *scrollWidget() const { return (QScrollView*) this; }
+    Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
 
     virtual void readConfig( KConfig *, const QString& group = QString::null );
     virtual void writeConfig( KConfig *, const QString& group = QString::null);
@@ -172,7 +172,7 @@ protected:
     virtual void keyPressEvent( QKeyEvent * );
 
     // DND support
-    virtual QDragObject *dragObject();
+    virtual Q3DragObject *dragObject();
     virtual void contentsDragEnterEvent( QDragEnterEvent *e );
     virtual void contentsDragMoveEvent( QDragMoveEvent *e );
     virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
@@ -186,16 +186,16 @@ protected slots:
 
 private slots:
     void slotSortingChanged( int );
-    void selected( QListViewItem *item );
-    void slotActivate( QListViewItem *item );
-    void highlighted( QListViewItem *item );
-    void slotActivateMenu ( QListViewItem *item, const QPoint& pos );
+    void selected( Q3ListViewItem *item );
+    void slotActivate( Q3ListViewItem *item );
+    void highlighted( Q3ListViewItem *item );
+    void slotActivateMenu ( Q3ListViewItem *item, const QPoint& pos );
     void slotAutoOpen();
 
 private:
-    virtual void insertItem(QListViewItem *i) { KListView::insertItem(i); }
+    virtual void insertItem(Q3ListViewItem *i) { KListView::insertItem(i); }
     virtual void setSorting(int i, bool b) { KListView::setSorting(i, b); }
-    virtual void setSelected(QListViewItem *i, bool b) { KListView::setSelected(i, b); }
+    virtual void setSelected(Q3ListViewItem *i, bool b) { KListView::setSelected(i, b); }
 
     inline KFileListViewItem * viewItem( const KFileItem *item ) const {
         if ( item )

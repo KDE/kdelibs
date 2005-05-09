@@ -24,7 +24,7 @@
 
 class QStringList;
 class QLabel;
-class QListViewItem;
+class Q3ListViewItem;
 class QPushButton;
 class KListBox;
 class KLineEdit;
@@ -108,7 +108,7 @@ protected slots:
 
   void textChanged( const QString & );
 
-  void slotSelectionChanged( QListViewItem* item );
+  void slotSelectionChanged( Q3ListViewItem* item );
 };
 
 #endif

@@ -28,7 +28,7 @@
 
 #include <qlayout.h>
 #include <qregexp.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qpushbutton.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
@@ -50,14 +50,14 @@ KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 	main_->addWidget(m_view);
 	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 0);
 	main_->addLayout(sub_);
-	for (QValueList<QButton*>::Iterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
+	for (Q3ValueList<Q3Button*>::Iterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
 		if (*it)
 			sub_->addWidget(*it);
 		else
 			sub_->addSpacing(10);
 	sub_->addStretch(1);
 
-	QWhatsThis::add(this,
+	Q3WhatsThis::add(this,
 		i18n("Define/Edit here instances for the current selected "
 		     "printer. An instance is a combination of a real "
 		     "(physical) printer and a set of predefined options. "
@@ -104,9 +104,9 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 	bool	ok = (p != 0);
 	if (ok)
 	{
-		QPtrList<KMPrinter>	list;
+		Q3PtrList<KMPrinter>	list;
 		KMFactory::self()->virtualManager()->virtualList(list,p->name());
-		QPtrListIterator<KMPrinter>	it(list);
+		Q3PtrListIterator<KMPrinter>	it(list);
 		for (;it.current();++it)
 		{
 			QStringList	pair = QStringList::split('/',it.current()->name(),false);
@@ -115,13 +115,13 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 		m_view->sort();
 	}
 
-	for (QValueList<QButton*>::ConstIterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
+	for (Q3ValueList<Q3Button*>::ConstIterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
 		if (*it)
 			(*it)->setEnabled(ok);
 
 	//iif (!oldText.isEmpty())
 	//{
-		QListBoxItem	*item = m_view->findItem(oldText);
+		Q3ListBoxItem	*item = m_view->findItem(oldText);
 		if (!item)
 			item = m_view->findItem(i18n("(Default)"));
 		if (item)

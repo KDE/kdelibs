@@ -154,7 +154,7 @@ namespace KParts {
     protected:
         KParts::URLArgs m_args;
         KParts::ReadOnlyPart *m_part; // QGuardedPtr?
-        QGuardedPtr<QWidget> m_window;
+        QPointer<QWidget> m_window;
         // Suggested filename given by the server (e.g. HTTP content-disposition)
         // When set, we should really be saving instead of embedding
         QString m_suggestedFilename;

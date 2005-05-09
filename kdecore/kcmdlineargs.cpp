@@ -32,8 +32,8 @@
 
 #include <qdir.h>
 #include <qfile.h>
-#include <qasciidict.h>
-#include <qstrlist.h>
+#include <q3asciidict.h>
+#include <q3strlist.h>
 
 #include "kcmdlineargs.h"
 #include <kaboutdata.h>
@@ -53,14 +53,14 @@
 #include <win32_utils.h>
 #endif
 
-template class QAsciiDict<QCString>;
-template class QPtrList<KCmdLineArgs>;
+template class Q3AsciiDict<Q3CString>;
+template class Q3PtrList<KCmdLineArgs>;
 
-class KCmdLineParsedOptions : public QAsciiDict<QCString>
+class KCmdLineParsedOptions : public Q3AsciiDict<Q3CString>
 {
 public:
    KCmdLineParsedOptions()
-     : QAsciiDict<QCString>( 7 ) { }
+     : Q3AsciiDict<Q3CString>( 7 ) { }
 
    // WABA: Huh?
    // The compiler doesn't find KCmdLineParsedOptions::write(s) by itself ???
@@ -68,22 +68,22 @@ public:
    // write function in the base class even though this function has a
    // different signature. (obscure C++ feature)
    QDataStream& save( QDataStream &s) const
-   { return QGDict::write(s); }
+   { return Q3GDict::write(s); }
 
    QDataStream& load( QDataStream &s)
-   { return QGDict::read(s); }
+   { return Q3GDict::read(s); }
 
 protected:
-   virtual QDataStream& write( QDataStream &s, QPtrCollection::Item data) const
+   virtual QDataStream& write( QDataStream &s, Q3PtrCollection::Item data) const
    {
-      QCString *str = (QCString *) data;
+      Q3CString *str = (Q3CString *) data;
       s << (*str);
       return s;
    }
 
-   virtual QDataStream& read( QDataStream &s, QPtrCollection::Item &item)
+   virtual QDataStream& read( QDataStream &s, Q3PtrCollection::Item &item)
    {
-      QCString *str = new QCString;
+      Q3CString *str = new Q3CString;
       s >> (*str);
       item = (void *)str;
       return s;
@@ -91,20 +91,20 @@ protected:
 
 };
 
-class KCmdLineParsedArgs : public QStrList
+class KCmdLineParsedArgs : public Q3StrList
 {
 public:
    KCmdLineParsedArgs()
-     : QStrList( true ) { }
+     : Q3StrList( true ) { }
    QDataStream& save( QDataStream &s) const
-   { return QGList::write(s); }
+   { return Q3GList::write(s); }
 
    QDataStream& load( QDataStream &s)
-   { return QGList::read(s); }
+   { return Q3GList::read(s); }
 };
 
 
-class KCmdLineArgsList: public QPtrList<KCmdLineArgs>
+class KCmdLineArgsList: public Q3PtrList<KCmdLineArgs>
 {
 public:
    KCmdLineArgsList() { }
@@ -193,7 +193,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
 
 QString KCmdLineArgs::cwd()
 {
-   return QFile::decodeName(QCString(mCwd));
+   return QFile::decodeName(Q3CString(mCwd));
 }
 
 const char * KCmdLineArgs::appName()
@@ -244,7 +244,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    removeArgs("qt");
    removeArgs("kde");
 
-   QCString qCwd = mCwd;
+   Q3CString qCwd = mCwd;
    ds << qCwd;
 
    uint count = argsList ? argsList->count() : 0;
@@ -255,7 +255,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    KCmdLineArgs *args;
    for(args = argsList->first(); args; args = argsList->next())
    {
-      ds << QCString(args->id);
+      ds << Q3CString(args->id);
       args->save(ds);
    }
 }
@@ -278,7 +278,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    if (ds.atEnd())
       return;
 
-   QCString qCwd;
+   Q3CString qCwd;
    ds >> qCwd;
    delete [] mCwd;
 
@@ -290,7 +290,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
    while(count--)
    {
-     QCString id;
+     Q3CString id;
      ds >> id;
      assert( argsList );
      for(args = argsList->first(); args; args = argsList->next())
@@ -350,7 +350,7 @@ void KCmdLineArgs::removeArgs(const char *id)
  *  +4 - no more options follow         // !fork
  */
 static int
-findOption(const KCmdLineOptions *options, QCString &opt,
+findOption(const KCmdLineOptions *options, Q3CString &opt,
            const char *&opt_name, const char *&def, bool &enabled)
 {
    int result;
@@ -390,7 +390,7 @@ findOption(const KCmdLineOptions *options, QCString &opt,
                options++;
                if (!options->name)
                   return result+0;
-               QCString nextOption = options->name;
+               Q3CString nextOption = options->name;
                int p = nextOption.find(' ');
                if (p > 0)
                   nextOption = nextOption.left(p);
@@ -422,12 +422,12 @@ findOption(const KCmdLineOptions *options, QCString &opt,
 
 
 void
-KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, bool &moreOptions)
+KCmdLineArgs::findOption(const char *_opt, Q3CString opt, int &i, bool _enabled, bool &moreOptions)
 {
    KCmdLineArgs *args = argsList->first();
    const char *opt_name;
    const char *def;
-   QCString argument;
+   Q3CString argument;
    int j = opt.find('=');
    if (j != -1)
    {
@@ -451,7 +451,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
       int p = 1;
       while (true)
       {
-         QCString singleCharOption = " ";
+         Q3CString singleCharOption = " ";
          singleCharOption[0] = _opt[p];
          args = argsList->first();
          while (args)
@@ -532,7 +532,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
 void
 KCmdLineArgs::printQ(const QString &msg)
 {
-   QCString localMsg = msg.local8Bit();
+   Q3CString localMsg = msg.local8Bit();
    fprintf(stdout, "%s", localMsg.data());
 }
 
@@ -603,10 +603,10 @@ KCmdLineArgs::parseAllArgs()
          } else if ( ::qstrcmp( option, "author") == 0 ) {
              enable_i18n();
 	     if ( about ) {
-		 const QValueList<KAboutPerson> authors = about->authors();
+		 const Q3ValueList<KAboutPerson> authors = about->authors();
 		 if ( !authors.isEmpty() ) {
                      QString authorlist;
-		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
+		     for (Q3ValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
 			 QString email;
 			 if ( !(*it).emailAddress().isEmpty() )
 				 email = " <" + (*it).emailAddress() + ">";
@@ -742,7 +742,7 @@ void
 KCmdLineArgs::usage(const QString &error)
 {
     assert(KGlobal::_locale);
-    QCString localError = error.local8Bit();
+    Q3CString localError = error.local8Bit();
     if (localError[error.length()-1] == '\n')
 	localError = localError.left(error.length()-1);
     fprintf(stderr, "%s: %s\n", argv[0], localError.data());
@@ -850,7 +850,7 @@ KCmdLineArgs::usage(const char *id)
      while (args)
      {
        const KCmdLineOptions *option = args->options;
-       QCString opt = "";
+       Q3CString opt = "";
 //
        while(option && option->name)
        {
@@ -894,7 +894,7 @@ KCmdLineArgs::usage(const char *id)
             description = dl.first();
             dl.remove( dl.begin() );
          }
-         QCString name = option->name;
+         Q3CString name = option->name;
          if (name[0] == '!')
              name = name.mid(1);
 
@@ -1049,12 +1049,12 @@ KCmdLineArgs::load( QDataStream &ds)
 }
 
 void
-KCmdLineArgs::setOption(const QCString &opt, bool enabled)
+KCmdLineArgs::setOption(const Q3CString &opt, bool enabled)
 {
    if (isQt)
    {
       // Qt does it own parsing.
-      QCString arg = "-";
+      Q3CString arg = "-";
       if( !enabled )
           arg += "no";
       arg += opt;
@@ -1066,18 +1066,18 @@ KCmdLineArgs::setOption(const QCString &opt, bool enabled)
    }
 
    if (enabled)
-      parsedOptionList->replace( opt, new QCString("t") );
+      parsedOptionList->replace( opt, new Q3CString("t") );
    else
-      parsedOptionList->replace( opt, new QCString("f") );
+      parsedOptionList->replace( opt, new Q3CString("f") );
 }
 
 void
-KCmdLineArgs::setOption(const QCString &opt, const char *value)
+KCmdLineArgs::setOption(const Q3CString &opt, const char *value)
 {
    if (isQt)
    {
       // Qt does it's own parsing.
-      QCString arg = "-";
+      Q3CString arg = "-";
       arg += opt;
       addArgument(arg);
       addArgument(value);
@@ -1095,13 +1095,13 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
 	parsedOptionList->setAutoDelete(true);
    }
 
-   parsedOptionList->insert( opt, new QCString(value) );
+   parsedOptionList->insert( opt, new Q3CString(value) );
 }
 
-QCString
+Q3CString
 KCmdLineArgs::getOption(const char *_opt) const
 {
-   QCString *value = 0;
+   Q3CString *value = 0;
    if (parsedOptionList)
    {
       value = parsedOptionList->find(_opt);
@@ -1114,7 +1114,7 @@ KCmdLineArgs::getOption(const char *_opt) const
    const char *opt_name;
    const char *def;
    bool dummy = true;
-   QCString opt = _opt;
+   Q3CString opt = _opt;
    int result = ::findOption( options, opt, opt_name, def, dummy) & ~4;
 
    if (result != 3)
@@ -1127,7 +1127,7 @@ KCmdLineArgs::getOption(const char *_opt) const
       assert( 0 );
       exit(255);
    }
-   return QCString(def);
+   return Q3CString(def);
 }
 
 QCStringList
@@ -1139,7 +1139,7 @@ KCmdLineArgs::getOptionList(const char *_opt) const
 
    while(true)
    {
-      QCString *value = parsedOptionList->take(_opt);
+      Q3CString *value = parsedOptionList->take(_opt);
       if (!value)
          break;
       result.prepend(*value);
@@ -1155,7 +1155,7 @@ KCmdLineArgs::getOptionList(const char *_opt) const
        it != result.end();
        ++it)
    {
-      parsedOptionList->insert(_opt, new QCString(*it));
+      parsedOptionList->insert(_opt, new Q3CString(*it));
    }
    return result;
 }
@@ -1167,7 +1167,7 @@ KCmdLineArgs::isSet(const char *_opt) const
    const char *opt_name;
    const char *def;
    bool dummy = true;
-   QCString opt = _opt;
+   Q3CString opt = _opt;
    int result = ::findOption( options, opt, opt_name, def, dummy) & ~4;
 
    if (result == 0)
@@ -1181,7 +1181,7 @@ KCmdLineArgs::isSet(const char *_opt) const
       exit(255);
    }
 
-   QCString *value = 0;
+   Q3CString *value = 0;
    if (parsedOptionList)
    {
       value = parsedOptionList->find(opt);

@@ -26,7 +26,7 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 
@@ -73,9 +73,9 @@ QString PortDialog::listenString()
 
 void PortDialog::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(address_, conf->comments_.toolTip("address"));
-	QWhatsThis::add(port_, conf->comments_.toolTip("port"));
-	QWhatsThis::add(usessl_, conf->comments_.toolTip("usessl"));
+	Q3WhatsThis::add(address_, conf->comments_.toolTip("address"));
+	Q3WhatsThis::add(port_, conf->comments_.toolTip("port"));
+	Q3WhatsThis::add(usessl_, conf->comments_.toolTip("usessl"));
 }
 
 QString PortDialog::newListen(QWidget *parent, CupsdConf *conf)

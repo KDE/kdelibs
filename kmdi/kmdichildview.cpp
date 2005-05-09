@@ -33,18 +33,18 @@
 #include "kmdichildview.moc"
 
 #include <qdatetime.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 
 #include "kmdimainfrm.h"
 #include "kmdichildfrm.h"
 #include "kmdidefines.h"
 #include <kdebug.h>
 #include <klocale.h>
-#include <qiconset.h>
+#include <qicon.h>
 
 //============ KMdiChildView ============//
 
-KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, const char* name, WFlags f )
+KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, const char* name, Qt::WFlags f )
 	: QWidget( parentWidget, name, f )
 	, m_focusedChildWidget( 0L )
 	, m_firstFocusableChildWidget( 0L )
@@ -63,7 +63,7 @@ KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, con
 		m_szCaption = i18n( "Unnamed" );
 	
 	m_sTabCaption = m_szCaption;
-	setFocusPolicy( ClickFocus );
+	setFocusPolicy( Qt::ClickFocus );
 	installEventFilter( this );
 	
 	// store the current time
@@ -73,7 +73,7 @@ KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, con
 
 //============ KMdiChildView ============//
 
-KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f )
+KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, Qt::WFlags f )
 	: QWidget( parentWidget, name, f )
 	, m_focusedChildWidget( 0L )
 	, m_firstFocusableChildWidget( 0L )
@@ -88,7 +88,7 @@ KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f 
 	setGeometry( 0, 0, 0, 0 );  // reset
 	m_szCaption = i18n( "Unnamed" );
 	m_sTabCaption = m_szCaption;
-	setFocusPolicy( ClickFocus );
+	setFocusPolicy( Qt::ClickFocus );
 	installEventFilter( this );
 
 	// store the current time
@@ -363,7 +363,7 @@ void KMdiChildView::youAreDetached()
 	if ( myIconPtr() )
 		setIcon( *( myIconPtr() ) );
 	
-	setFocusPolicy( QWidget::StrongFocus );
+	setFocusPolicy( Qt::StrongFocus );
 
 	emit isDetachedNow();
 }
@@ -527,8 +527,8 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 		if ( ke->key() == Qt::Key_Tab )
 		{
 			QWidget* w = ( QWidget* ) obj;
-			FocusPolicy wfp = w->focusPolicy();
-			if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || w->focusPolicy() == QWidget::WheelFocus )
+			Qt::FocusPolicy wfp = w->focusPolicy();
+			if ( wfp == Qt::StrongFocus || wfp == Qt::TabFocus || w->focusPolicy() == Qt::WheelFocus )
 			{
 				if ( m_lastFocusableChildWidget != 0 )
 				{
@@ -578,8 +578,8 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 				QWidget * widg = ( QWidget* ) o;
 				++it;
 				widg->removeEventFilter( this );
-				FocusPolicy wfp = widg->focusPolicy();
-				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || widg->focusPolicy() == QWidget::WheelFocus )
+				Qt::FocusPolicy wfp = widg->focusPolicy();
+				if ( wfp == Qt::StrongFocus || wfp == Qt::TabFocus || widg->focusPolicy() == Qt::WheelFocus )
 				{
 					if ( m_firstFocusableChildWidget == widg )
 						m_firstFocusableChildWidget = 0L;   // reset first widget
@@ -612,8 +612,8 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 				++it;
 				widg->installEventFilter( this );
 				connect( widg, SIGNAL( destroyed() ), this, SLOT( slot_childDestroyed() ) );
-				FocusPolicy wfp = widg->focusPolicy();
-				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || widg->focusPolicy() == QWidget::WheelFocus )
+				Qt::FocusPolicy wfp = widg->focusPolicy();
+				if ( wfp == Qt::StrongFocus || wfp == Qt::TabFocus || widg->focusPolicy() == Qt::WheelFocus )
 				{
 					if ( m_firstFocusableChildWidget == 0 )
 						m_firstFocusableChildWidget = widg;  // first widge
@@ -626,7 +626,7 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 	}
 	else
 	{
-		if ( e->type() == QEvent::IconChange )
+		if ( e->type() == QEvent::WindowIconChange )
 		{
 			//            qDebug("KMDiChildView:: QEvent:IconChange intercepted\n");
 			if ( obj == this )
@@ -634,7 +634,7 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 			else if ( obj == m_trackChanges )
 				setIcon( m_trackChanges->icon() ? ( *( m_trackChanges->icon() ) ) : QPixmap() );
 		}
-		if ( e->type() == QEvent::CaptionChange )
+		if ( e->type() == QEvent::WindowTitleChange )
 		{
 			if ( obj == this )
 				captionUpdated( this, caption() );

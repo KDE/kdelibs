@@ -46,7 +46,7 @@ public:
        @param app the application id
        @param obj the object id
      */
-    DCOPStub( const QCString& app, const QCString& obj );
+    DCOPStub( const Q3CString& app, const Q3CString& obj );
 
     /** 
       Creates a DCOPStub for application @p app and object @p obj
@@ -55,7 +55,7 @@ public:
        @param app the application id
        @param obj the object id
      */
-    DCOPStub( DCOPClient* client, const QCString& app, const QCString& obj );
+    DCOPStub( DCOPClient* client, const Q3CString& app, const Q3CString& obj );
     
     /**
        Creates a DCOPStub for application ref.app() and object ref.obj()
@@ -68,12 +68,12 @@ public:
        Return the application id.
        @return the application id
      */
-    QCString app() const;
+    Q3CString app() const;
     /**
        Return the object  id.
        @return the object id
      */
-    QCString obj() const;
+    Q3CString obj() const;
 
     enum Status{ CallSucceeded, CallFailed };
     /**
@@ -132,8 +132,8 @@ protected:
     DCOPStub( never_use_t ) { abort(); }
     
 private:
-    QCString m_app;
-    QCString m_obj;
+    Q3CString m_app;
+    Q3CString m_obj;
     Status m_status;
 
 protected:

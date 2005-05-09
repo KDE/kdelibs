@@ -28,8 +28,8 @@
 
 #include "kwizard.h"
 
-KWizard::KWizard( QWidget *parent, const char *name, bool modal, WFlags f )
-            : QWizard( parent, name, modal, f )
+KWizard::KWizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
+            : Q3Wizard( parent, name, modal, f )
 {
   bool useIcons = KGlobalSettings::showIconsOnPushButtons();
 

@@ -38,7 +38,7 @@ bool GsChecker::checkGsDriver(const QString& name)
 void GsChecker::loadDriverList()
 {
 	KPipeProcess	proc;
-	if (proc.open("gs -h",IO_ReadOnly))
+	if (proc.open("gs -h",QIODevice::ReadOnly))
 	{
 		QTextStream	t(&proc);
 		QString	buffer, line;

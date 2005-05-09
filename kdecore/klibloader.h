@@ -21,8 +21,8 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qasciidict.h>
-#include <qptrlist.h>
+#include <q3asciidict.h>
+#include <q3ptrlist.h>
 #include <kglobal.h>
 
 #include <stdlib.h> // For backwards compatibility
@@ -50,7 +50,7 @@ class KLibraryPrivate;
 class KDECORE_EXPORT KLibrary : public QObject
 {
     friend class KLibLoader;
-    friend class QAsciiDict<KLibrary>;
+    friend class Q3AsciiDict<KLibrary>;
 
     Q_OBJECT
 public:
@@ -122,7 +122,7 @@ private:
     QString m_filename;
     KLibFactory* m_factory;
     void * m_handle;
-    QPtrList<QObject> m_objs;
+    Q3PtrList<QObject> m_objs;
     QTimer *m_timer;
     KLibraryPrivate *d;
 };
@@ -282,7 +282,7 @@ private slots:
     void slotLibraryDestroyed();
 private:
     void close_pending( KLibWrapPrivate * );
-    QAsciiDict<KLibWrapPrivate> m_libs;
+    Q3AsciiDict<KLibWrapPrivate> m_libs;
 
     static KLibLoader* s_self;
 

@@ -23,7 +23,7 @@
 #include "kmwizardpage.h"
 
 class QLineEdit;
-class QButtonGroup;
+class Q3ButtonGroup;
 
 class KMWPassword : public KMWizardPage
 {
@@ -37,7 +37,7 @@ public:
 private:
 	QLineEdit    *m_login;
 	QLineEdit    *m_password;
-	QButtonGroup *m_btngroup;
+	Q3ButtonGroup *m_btngroup;
 };
 
 #endif

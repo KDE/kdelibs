@@ -20,7 +20,7 @@
 #include <kstatusbar.h>
 #include <kmenubar.h>
 #include <ktoolbar.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 static const char*folder[]={
 "16 16 9 1",
@@ -65,7 +65,7 @@ DockApplication::DockApplication( const char* name )
   dock->setCaption("Green");
   dock->setGeometry(50, 50, 100, 100);
   l = new QWidget(dock);
-  l->setBackgroundColor(green);
+  l->setBackgroundColor(Qt::green);
   l->setMinimumSize(100,100);
   dock->setWidget(l);
   /*****************************************************/
@@ -76,7 +76,7 @@ DockApplication::DockApplication( const char* name )
   setMainDockWidget( dock1 );
 
   mainW = new QWidget( dock1, "createdOnBlueDock" );
-  mainW->setBackgroundColor(blue);
+  mainW->setBackgroundColor(Qt::blue);
   mainW->setMinimumSize(300,150);
   dock1->setWidget( mainW );
   /*****************************************************/
@@ -89,7 +89,7 @@ DockApplication::DockApplication( const char* name )
 //  dock2->setHeader( new KDockWidgetHeader(dock2) );
 
   QWidget* l2 = new QWidget(dock2);
-  l2->setBackgroundColor(yellow);
+  l2->setBackgroundColor(Qt::yellow);
   dock2->setWidget( l2 );
   /*****************************************************/
 
@@ -98,7 +98,7 @@ DockApplication::DockApplication( const char* name )
   dock5->setCaption("Container");
   dock5->setGeometry(50, 50, 100, 100);
   l = new CTW(dock5);
-  l->setBackgroundColor(white);
+  l->setBackgroundColor(Qt::white);
   l->setMinimumSize(100,100);
   dock5->setWidget(l);
   if (l->qt_cast("KDockContainer")) qDebug("KDockContainer created for dock 5");
@@ -109,7 +109,7 @@ DockApplication::DockApplication( const char* name )
   dock6->setCaption("Container2");
   dock6->setGeometry(50, 50, 100, 100);
   l = new CTW(dock6);
-  l->setBackgroundColor(white);
+  l->setBackgroundColor(Qt::white);
   l->setMinimumSize(100,100);
   dock6->setWidget(l);
   if (l->qt_cast("KDockContainer")) qDebug("KDockContainer created for dock 6");
@@ -168,7 +168,7 @@ void DockApplication::wConfig()
 void DockApplication::initMenuBar()
 {
   QPixmap p(folder);
-  QPopupMenu *file_menu = new QPopupMenu();
+  Q3PopupMenu *file_menu = new Q3PopupMenu();
 
   file_menu->insertItem(p, "Change Green Widget Caption", this, SLOT(cap()) );
   file_menu->insertSeparator();

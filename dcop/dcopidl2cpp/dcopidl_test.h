@@ -21,7 +21,7 @@ k_dcop:
    void unNamedArgsTest( QString, QString );
 
    void constTest( QString, QString ) const;
-   QStringList writeTypeTest( const QString &, QPtrList<int> );
+   QStringList writeTypeTest( const QString &, Q3PtrList<int> );
 
    void voidReturnType( QString filename, QString url, QString text, QString address, QString icon );
    QString nonVoidReturnType( QString filename, QString text, QString address );
@@ -99,7 +99,7 @@ class SignalTest : virtual public DCOPObject
 {
    K_DCOP
 public:
-   SignalTest(QCString objId = "KBookmarkNotifier") : DCOPObject(objId) {}
+   SignalTest(Q3CString objId = "KBookmarkNotifier") : DCOPObject(objId) {}
 k_dcop_signals:
    void signal1( QString filename, QString url, QString text, QString address, QString icon );
    void signal2( QString filename, QString text, QString address );

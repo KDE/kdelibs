@@ -56,9 +56,9 @@ typedef QMap<QString, QString> UserList;
 
 static DCOPClient* dcop = 0;
 
-static QTextStream cin_ ( stdin,  IO_ReadOnly );
-static QTextStream cout_( stdout, IO_WriteOnly );
-static QTextStream cerr_( stderr, IO_WriteOnly );
+static QTextStream cin_ ( stdin,  QIODevice::ReadOnly );
+static QTextStream cout_( stdout, QIODevice::WriteOnly );
+static QTextStream cerr_( stderr, QIODevice::WriteOnly );
 
 /**
  * Session to send call to
@@ -71,12 +71,12 @@ static QTextStream cerr_( stderr, IO_WriteOnly );
  */
 enum Session { DefaultSession = 0, AllSessions, QuerySessions, CustomSession };
 
-bool startsWith(const QCString &id, const char *str, int n)
+bool startsWith(const Q3CString &id, const char *str, int n)
 {
   return !n || (strncmp(id.data(), str, n) == 0);
 }
 
-bool endsWith(QCString &id, char c)
+bool endsWith(Q3CString &id, char c)
 {
    if (id.length() && (id[id.length()-1] == c))
    {
@@ -86,13 +86,13 @@ bool endsWith(QCString &id, char c)
    return false;
 }
 
-void queryApplications(const QCString &filter)
+void queryApplications(const Q3CString &filter)
 {
     int filterLen = filter.length();
     QCStringList apps = dcop->registeredApplications();
     for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
     {
-        QCString &clientId = *it;
+        Q3CString &clientId = *it;
 	if ( (clientId != dcop->appId()) &&
              !startsWith(clientId, "anonymous",9) &&
              startsWith(clientId, filter, filterLen)
@@ -107,7 +107,7 @@ void queryApplications(const QCString &filter)
     }
 }
 
-void queryObjects( const QCString &app, const QCString &filter )
+void queryObjects( const Q3CString &app, const Q3CString &filter )
 {
     int filterLen = filter.length();
     bool ok = false;
@@ -115,7 +115,7 @@ void queryObjects( const QCString &app, const QCString &filter )
     QCStringList objs = dcop->remoteObjects( app, &ok );
     for ( QCStringList::Iterator it = objs.begin(); it != objs.end(); ++it )
     {
-        QCString &objId = *it;
+        Q3CString &objId = *it;
 
         if (objId == "default")
         {
@@ -172,7 +172,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 	// try to get the interface from the server
 	bool ok = false;
 	QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
-	QCString realfunc;
+	Q3CString realfunc;
 	if ( !ok && args.isEmpty() )
 	    goto doit;
 	if ( !ok )
@@ -285,8 +285,8 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
     }
 
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg(data, IO_WriteOnly);
+    Q3CString replyType;
+    QDataStream arg(data, QIODevice::WriteOnly);
 
     uint i = 0;
     for( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
@@ -302,11 +302,11 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 	qWarning( "call failed");
 	return( 1 );
     } else {
-	QDataStream reply(replyData, IO_ReadOnly);
+	QDataStream reply(replyData, QIODevice::ReadOnly);
 
         if ( replyType != "void" && replyType != "ASYNC" )
         {
-            QCString replyString = demarshal( reply, replyType );
+            Q3CString replyString = demarshal( reply, replyType );
             if ( !replyString.isEmpty() )
                 printf( "%s\n", replyString.data() );
             else
@@ -458,9 +458,9 @@ int runDCOP( QCStringList args, UserList users, Session session,
               const QString sessionName, bool readStdin, bool updateUserTime )
 {
     bool DCOPrefmode=false;
-    QCString app;
-    QCString objid;
-    QCString function;
+    Q3CString app;
+    Q3CString objid;
+    Q3CString function;
     QCStringList params;
     DCOPClient *client = 0L;
     int retval = 0;
@@ -645,7 +645,7 @@ int runDCOP( QCStringList args, UserList users, Session session,
 	    {
 		QString dcopFile = it.data() + "/" + *sIt;
 		QFile f( dcopFile );
-		if( !f.open( IO_ReadOnly ) )
+		if( !f.open( QIODevice::ReadOnly ) )
 		{
 		    cerr_ << "Can't open " << dcopFile << " for reading!" << endl;
 		    exit( -1 );
@@ -848,7 +848,7 @@ int main( int argc, char** argv )
 #ifdef DCOPQUIT
     if (argc > 1)
     {
-       QCString prog = argv[ numOptions + 1 ];
+       Q3CString prog = argv[ numOptions + 1 ];
        
        if (!prog.isEmpty())
        {

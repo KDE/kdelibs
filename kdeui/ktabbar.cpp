@@ -65,7 +65,7 @@ void KTabBar::setTabEnabled( int id, bool enabled )
             t->setEnabled( enabled );
             QRect r( t->rect() );
             if ( !enabled && id == currentTab() && count()>1 ) {
-                QPtrList<QTab> *tablist = tabList();
+                Q3PtrList<QTab> *tablist = tabList();
                 if ( mTabCloseActivatePrevious )
                     t = tablist->at( count()-2 );
                 else {
@@ -87,7 +87,7 @@ void KTabBar::setTabEnabled( int id, bool enabled )
 
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 {
-    if( e->button() != LeftButton )
+    if( e->button() != Qt::LeftButton )
         return;
 
     QTab *tab = selectTab( e->pos() );
@@ -100,11 +100,11 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 
 void KTabBar::mousePressEvent( QMouseEvent *e )
 {
-    if( e->button() == LeftButton ) {
+    if( e->button() == Qt::LeftButton ) {
         mEnableCloseButtonTimer->stop();
         mDragStart = e->pos();
     }
-    else if( e->button() == RightButton ) {
+    else if( e->button() == Qt::RightButton ) {
         QTab *tab = selectTab( e->pos() );
         if( tab ) {
             emit( contextMenu( indexOf( tab->identifier() ), mapToGlobal( e->pos() ) ) );
@@ -116,7 +116,7 @@ void KTabBar::mousePressEvent( QMouseEvent *e )
 
 void KTabBar::mouseMoveEvent( QMouseEvent *e )
 {
-    if ( e->state() == LeftButton ) {
+    if ( e->state() == Qt::LeftButton ) {
         QTab *tab = selectTab( e->pos() );
         if ( mDragSwitchTab && tab != mDragSwitchTab ) {
           mActivateDragSwitchTabTimer->stop();
@@ -134,7 +134,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
            }
        }
     }
-    else if ( e->state() == MidButton ) {
+    else if ( e->state() == Qt::MidButton ) {
         if (mReorderStartTab==-1) {
             int delay = KGlobalSettings::dndEventDelay();
             QPoint newPos = e->pos();
@@ -144,7 +144,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 QTab *tab = selectTab( e->pos() );
                 if( tab && mTabReorderingEnabled ) {
                     mReorderStartTab = indexOf( tab->identifier() );
-                    grabMouse( sizeAllCursor );
+                    grabMouse( Qt::SizeAllCursor );
                     return;
                 }
             }
@@ -166,7 +166,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
     if ( mHoverCloseButtonEnabled && mReorderStartTab==-1) {
         QTab *t = selectTab( e->pos() );
         if( t && t->iconSet() && t->isEnabled() ) {
-            QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
+            QPixmap pixmap = t->iconSet()->pixmap( QIcon::Small, QIcon::Normal );
             QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() +4);
 
             int xoff = 0, yoff = 0;
@@ -229,7 +229,7 @@ void KTabBar::activateDragSwitchTab()
 
 void KTabBar::mouseReleaseEvent( QMouseEvent *e )
 {
-    if( e->button() == MidButton ) {
+    if( e->button() == Qt::MidButton ) {
         if ( mReorderStartTab==-1 ) {
             QTab *tab = selectTab( e->pos() );
             if( tab ) {
@@ -239,7 +239,7 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *e )
         }
         else {
             releaseMouse();
-            setCursor( arrowCursor );
+            setCursor( Qt::ArrowCursor );
             mReorderStartTab=-1;
             mReorderPreviousTab=-1;
         }
@@ -281,7 +281,7 @@ void KTabBar::dropEvent( QDropEvent *e )
 #ifndef QT_NO_WHEELEVENT
 void KTabBar::wheelEvent( QWheelEvent *e )
 {
-    if ( e->orientation() == Horizontal )
+    if ( e->orientation() == Qt::Horizontal )
         return;
 
     emit( wheelDelta( e->delta() ) );
@@ -310,7 +310,7 @@ int KTabBar::insertTab( QTab *t, int index )
     int res = QTabBar::insertTab( t, index );
 
     if ( mTabCloseActivatePrevious && count() > 2 ) {
-        QPtrList<QTab> *tablist = tabList();
+        Q3PtrList<QTab> *tablist = tabList();
         tablist->insert( count()-2, tablist->take( tablist->findRef( t ) ) );
     }
 
@@ -330,11 +330,11 @@ void KTabBar::paintLabel( QPainter *p, const QRect& br,
     bool selected = currentTab() == t->identifier();
     if ( t->iconSet() ) {
         // the tab has an iconset, draw it in the right mode
-        QIconSet::Mode mode = ( t->isEnabled() && isEnabled() )
-                                 ? QIconSet::Normal : QIconSet::Disabled;
-        if ( mode == QIconSet::Normal && has_focus )
-            mode = QIconSet::Active;
-        QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, mode );
+        QIcon::Mode mode = ( t->isEnabled() && isEnabled() )
+                                 ? QIcon::Normal : QIcon::Disabled;
+        if ( mode == QIcon::Normal && has_focus )
+            mode = QIcon::Active;
+        QPixmap pixmap = t->iconSet()->pixmap( QIcon::Small, mode );
         int pixw = pixmap.width();
         int pixh = pixmap.height();
         r.setLeft( r.left() + pixw + 4 );
@@ -350,12 +350,12 @@ void KTabBar::paintLabel( QPainter *p, const QRect& br,
                        pixmap );
     }
 
-    QStyle::SFlags flags = QStyle::Style_Default;
+    QStyle::State flags = QStyle::State_None;
 
     if ( isEnabled() && t->isEnabled() )
-        flags |= QStyle::Style_Enabled;
+        flags |= QStyle::State_Enabled;
     if ( has_focus )
-        flags |= QStyle::Style_HasFocus;
+        flags |= QStyle::State_HasFocus;
 
     QColorGroup cg( colorGroup() );
     if ( mTabColors.contains( t->identifier() ) )

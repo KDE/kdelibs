@@ -42,14 +42,14 @@
 #endif
 
 extern "C" {
-    KDE_EXPORT KDEDModule *create_kpasswdserver(const QCString &name)
+    KDE_EXPORT KDEDModule *create_kpasswdserver(const Q3CString &name)
     {
        return new KPasswdServer(name);
     }
 }
 
 int
-KPasswdServer::AuthInfoList::compareItems(QPtrCollection::Item n1, QPtrCollection::Item n2)
+KPasswdServer::AuthInfoList::compareItems(Q3PtrCollection::Item n1, Q3PtrCollection::Item n2)
 {
    if (!n1 || !n2)
       return 0;
@@ -68,7 +68,7 @@ KPasswdServer::AuthInfoList::compareItems(QPtrCollection::Item n1, QPtrCollectio
 }
 
 
-KPasswdServer::KPasswdServer(const QCString &name)
+KPasswdServer::KPasswdServer(const Q3CString &name)
  : KDEDModule(name)
 {
     m_authDict.setAutoDelete(true);
@@ -307,10 +307,10 @@ KPasswdServer::processRequest()
         }
     }
 
-    QCString replyType;
+    Q3CString replyType;
     QByteArray replyData;
 
-    QDataStream stream2(replyData, IO_WriteOnly);
+    QDataStream stream2(replyData, QIODevice::WriteOnly);
     stream2 << info << m_seqNr;
     replyType = "KIO::AuthInfo";
     request->client->endTransaction( request->transaction,
@@ -350,10 +350,10 @@ KPasswdServer::processRequest()
        {
            const AuthInfo *result = findAuthInfoItem(waitRequest->key, waitRequest->info);
 
-           QCString replyType;
+           Q3CString replyType;
            QByteArray replyData;
 
-           QDataStream stream2(replyData, IO_WriteOnly);
+           QDataStream stream2(replyData, QIODevice::WriteOnly);
 
            if (!result || result->isCanceled)
            {

@@ -75,7 +75,7 @@ class KTEXTEDITOR_EXPORT ConfigInterfaceExtension
     unsigned int configInterfaceExtensionNumber () const;
     
   protected:  
-    void setConfigInterfaceExtensionDCOPSuffix (const QCString &suffix); 
+    void setConfigInterfaceExtensionDCOPSuffix (const Q3CString &suffix); 
 
   //
   // slots !!!

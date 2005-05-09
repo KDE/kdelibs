@@ -31,7 +31,7 @@
 #include <kxmlguifactory.h>
 
 #include <qregexp.h>
-#include <qmemarray.h>
+#include <q3memarray.h>
 #include <qevent.h>
 
 /**
@@ -41,7 +41,7 @@
    To sort the entire array: ssort( *array, array.size() -1 );
    This is only efficient if ran only once.
 */
-static void ssort( QMemArray<uint> &a, int max )
+static void ssort( Q3MemArray<uint> &a, int max )
 {
   uint tmp, j, maxpos;
   for ( uint h = max; h >= 1; h-- )
@@ -74,7 +74,7 @@ KateBookmarks::~KateBookmarks()
 void KateBookmarks::createActions( KActionCollection* ac )
 {
   m_bookmarkToggle = new KToggleAction(
-    i18n("Set &Bookmark"), "bookmark", CTRL+Key_B,
+    i18n("Set &Bookmark"), "bookmark", Qt::CTRL+Qt::Key_B,
     this, SLOT(toggleBookmark()),
     ac, "bookmarks_toggle" );
   m_bookmarkToggle->setWhatsThis(i18n("If a line has no bookmark then add one, otherwise remove it."));
@@ -87,13 +87,13 @@ void KateBookmarks::createActions( KActionCollection* ac )
   m_bookmarkClear->setWhatsThis(i18n("Remove all bookmarks of the current document."));
 
   m_goNext = new KAction(
-    i18n("Next Bookmark"), "next", ALT + Key_PageDown,
+    i18n("Next Bookmark"), "next", Qt::ALT + Qt::Key_PageDown,
     this, SLOT(goNext()),
     ac, "bookmarks_next");
   m_goNext->setWhatsThis(i18n("Go to the next bookmark."));
 
   m_goPrevious = new KAction(
-    i18n("Previous Bookmark"), "previous", ALT + Key_PageUp,
+    i18n("Previous Bookmark"), "previous", Qt::ALT + Qt::Key_PageUp,
     this, SLOT(goPrevious()),
     ac, "bookmarks_previous");
   m_goPrevious->setWhatsThis(i18n("Go to the previous bookmark."));
@@ -126,7 +126,7 @@ void KateBookmarks::toggleBookmark ()
 void KateBookmarks::clearBookmarks ()
 {
 
-  QPtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
   for (uint i=0; i < m.count(); i++)
     m_view->getDoc()->removeMark( m.at(i)->line, KTextEditor::MarkInterface::markType01 );
 
@@ -146,7 +146,7 @@ void KateBookmarks::slotViewLostFocus( Kate::View *v )
     m_bookmarksMenu->clear();
 }
 
-void KateBookmarks::insertBookmarks( QPopupMenu& menu )
+void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
 {
   uint line = m_view->cursorLine();
   const QRegExp re("&(?!&)");
@@ -155,9 +155,9 @@ void KateBookmarks::insertBookmarks( QPopupMenu& menu )
   KTextEditor::Mark *next = 0;
   KTextEditor::Mark *prev = 0;
 
-  QPtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
-  QMemArray<uint> sortArray( m.count() );
-  QPtrListIterator<KTextEditor::Mark> it( m );
+  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3MemArray<uint> sortArray( m.count() );
+  Q3PtrListIterator<KTextEditor::Mark> it( m );
 
   if ( it.count() > 0 )
     menu.insertSeparator();
@@ -220,7 +220,7 @@ void KateBookmarks::insertBookmarks( QPopupMenu& menu )
 void KateBookmarks::bookmarkMenuAboutToShow()
 {
 
-  QPtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
 
   m_bookmarksMenu->clear();
   m_bookmarkToggle->setChecked( m_view->getDoc()->mark( m_view->cursorLine() )
@@ -247,7 +247,7 @@ void KateBookmarks::bookmarkMenuAboutToHide()
 
 void KateBookmarks::goNext()
 {
-  QPtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
   if (m.isEmpty())
     return;
 
@@ -264,7 +264,7 @@ void KateBookmarks::goNext()
 
 void KateBookmarks::goPrevious()
 {
-  QPtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
   if (m.isEmpty())
     return;
 

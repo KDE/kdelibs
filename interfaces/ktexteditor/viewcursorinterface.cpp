@@ -60,7 +60,7 @@ unsigned int ViewCursorInterface::viewCursorInterfaceNumber () const
   return myViewCursorInterfaceNumber;
 }
 
-void ViewCursorInterface::setViewCursorInterfaceDCOPSuffix (const QCString &suffix)
+void ViewCursorInterface::setViewCursorInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("ViewCursorInterface#"+suffix);
 }

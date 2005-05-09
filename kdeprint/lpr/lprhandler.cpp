@@ -26,7 +26,7 @@
 
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 #include <klocale.h>
 
 #include <unistd.h>
@@ -172,10 +172,10 @@ void LprHandler::reset()
 DrMain* LprHandler::loadToolDriver(const QString& filename)
 {
 	QFile	f(filename);
-	if (f.open(IO_ReadOnly))
+	if (f.open(QIODevice::ReadOnly))
 	{
 		DrMain	*driver = new DrMain;
-		QValueStack<DrGroup*>	groups;
+		Q3ValueStack<DrGroup*>	groups;
 		QTextStream	t(&f);
 		QStringList	l;
 		DrListOption	*lopt(0);

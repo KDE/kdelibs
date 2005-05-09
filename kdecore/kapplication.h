@@ -40,8 +40,8 @@ typedef void Display;
 #include <kinstance.h>
 
 struct _IceConn;
-class QPopupMenu;
-class QStrList;
+class Q3PopupMenu;
+class Q3StrList;
 class KSessionManaged;
 class KStyle;
 class KURL;
@@ -164,7 +164,7 @@ public:
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
    */
-  KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
+  KApplication(Display *display, int& argc, char** argv, const Q3CString& rAppName,
                bool allowStyles=true, bool GUIenabled=true);
 #endif
 
@@ -193,7 +193,7 @@ public:
   // REMOVE FOR KDE 4.0 - using it only gives crashing applications because
   // KCmdLineArgs::init isn't called
  KApplication(int& argc, char** argv,
-              const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true) KDE_DEPRECATED;
+              const Q3CString& rAppName, bool allowStyles=true, bool GUIenabled=true) KDE_DEPRECATED;
 
   /**
     * Add Qt and KDE command line options to KCmdLineArgs.
@@ -439,7 +439,7 @@ public:
    */
   void invokeHelp( const QString& anchor,
                    const QString& appname,
-                   const QCString& startup_id ) const;
+                   const Q3CString& startup_id ) const;
 
   // KDE4 merge with above with startup_id = ""
   void invokeHelp( const QString& anchor = QString::null,
@@ -469,7 +469,7 @@ public:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
-  void invokeMailer( const QString &address, const QString &subject, const QCString& startup_id );
+  void invokeMailer( const QString &address, const QString &subject, const Q3CString& startup_id );
   // KDE4 merge with above with startup_id = ""
   void invokeMailer( const QString &address, const QString &subject );
 
@@ -482,9 +482,9 @@ public:
    * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
                The default is false; do not honour requests for attachments.
    */
-  void invokeMailer( const KURL &mailtoURL, const QCString& startup_id, bool allowAttachments );
+  void invokeMailer( const KURL &mailtoURL, const Q3CString& startup_id, bool allowAttachments );
   // KDE4 merge with above with allowAttachments = false
-  void invokeMailer( const KURL &mailtoURL, const QCString& startup_id );
+  void invokeMailer( const KURL &mailtoURL, const Q3CString& startup_id );
   // KDE4 merge with above with startup_id = ""
   void invokeMailer( const KURL &mailtoURL );
 
@@ -506,7 +506,7 @@ public:
   void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
                     const QString &messageFile, const QStringList &attachURLs,
-                    const QCString& startup_id );
+                    const Q3CString& startup_id );
   // KDE4 merge with above with startup_id = ""
   void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
@@ -523,7 +523,7 @@ public slots:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
-  void invokeBrowser( const QString &url, const QCString& startup_id );
+  void invokeBrowser( const QString &url, const Q3CString& startup_id );
   // KDE4 merge with above with startup_id = ""
   void invokeBrowser( const QString &url );
 
@@ -596,7 +596,7 @@ public:
    * klaucher_$host_$uid.
    * @return the name of the service launcher
    */
-  static QCString launcher();
+  static Q3CString launcher();
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -619,7 +619,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByName( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "", bool noWait = false );
+                QString *error=0, Q3CString *dcopService=0, int *pid=0, const Q3CString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -642,7 +642,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "", bool noWait = false );
+                QString *error=0, Q3CString *dcopService=0, int *pid=0, const Q3CString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -665,7 +665,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
+                QString *error=0, Q3CString *dcopService=0, int *pid = 0, const Q3CString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -688,7 +688,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
+                QString *error=0, Q3CString *dcopService=0, int *pid = 0, const Q3CString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -711,7 +711,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
+                QString *error=0, Q3CString *dcopService=0, int *pid = 0, const Q3CString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -734,7 +734,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
+                QString *error=0, Q3CString *dcopService=0, int *pid = 0, const Q3CString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a program via kdeinit.
@@ -756,7 +756,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int kdeinitExec( const QString& name, const QStringList &args,
-                QString *error, int *pid, const QCString& startup_id );
+                QString *error, int *pid, const Q3CString& startup_id );
   // KDE4 merge with above with startup_id = ""
   static int kdeinitExec( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0 );
@@ -779,7 +779,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int kdeinitExecWait( const QString& name, const QStringList &args,
-                QString *error, int *pid, const QCString& startup_id );
+                QString *error, int *pid, const Q3CString& startup_id );
   // KDE4 merge with above with startup_id = ""
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0 );
@@ -921,7 +921,7 @@ public:
    * application.
    * @return the startup notification identifier
    */
-  QCString startupId() const;
+  Q3CString startupId() const;
 
   /**
    * @internal
@@ -930,7 +930,7 @@ public:
    * @param startup_id the startup notification identifier
    * @see KStartupInfo::setNewStartupId
    */
-  void setStartupId( const QCString& startup_id );
+  void setStartupId( const Q3CString& startup_id );
 
   /**
    * Updates the last user action timestamp to the given time, or to the current time,
@@ -955,7 +955,7 @@ public:
    * Consult focus stealing prevention section in kdebase/kwin/README.
    * @since 3.3
    */
-  void updateRemoteUserTimestamp( const QCString& dcopId, unsigned long time = 0 );
+  void updateRemoteUserTimestamp( const Q3CString& dcopId, unsigned long time = 0 );
   
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
@@ -1040,7 +1040,7 @@ public:
    * @return the keyboard modifiers and mouse buttons state
    * @since 3.4
    */
-  static ButtonState keyboardMouseState();
+  static Qt::ButtonState keyboardMouseState();
 
   // Same values as ShiftMask etc. in X.h
   enum { ShiftModifier = 1<<0,

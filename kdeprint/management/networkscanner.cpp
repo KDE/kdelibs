@@ -21,7 +21,7 @@
 
 #include "networkscanner.h"
 
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
 #include <qtimer.h>
@@ -29,7 +29,7 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qregexp.h>
-#include <qsocket.h>
+#include <q3socket.h>
 #include <klocale.h>
 #include <kextendedsocket.h>
 #include <kmessagebox.h>
@@ -45,14 +45,14 @@ public:
 	int currentaddress;
 	int timeout;
 	bool scanning;
-	QPtrList<NetworkScanner::SocketInfo> printers;
+	Q3PtrList<NetworkScanner::SocketInfo> printers;
 
-	QProgressBar *bar;
+	Q3ProgressBar *bar;
 	KPushButton *scan, *settings;
 	QLabel *subnetlab;
 	QTimer *timer;
 #ifdef USE_QSOCKET
-	QSocket *socket;
+	Q3Socket *socket;
 #else
 	KExtendedSocket *socket;
 #endif
@@ -75,7 +75,7 @@ QString NetworkScanner::NetworkScannerPrivate::localPrefix()
 	buf[0] = '\0';
 	if (!gethostname(buf, sizeof(buf)))
 		buf[sizeof(buf)-1] = '\0';
-	QPtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
+	Q3PtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
 	infos.setAutoDelete(true);
 	if (infos.count() > 0)
 	{
@@ -99,12 +99,12 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
 	: QWidget( parent, name )
 {
 	d = new NetworkScannerPrivate( port );
-	d->bar = new QProgressBar( 256, this );
+	d->bar = new Q3ProgressBar( 256, this );
 	d->settings = new KPushButton( KGuiItem( i18n( "&Settings" ), "configure" ), this );
 	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "viewmag" ), this );
 	d->timer = new QTimer( this );
 #ifdef USE_QSOCKET
-	d->socket = new QSocket( this );
+	d->socket = new Q3Socket( this );
 #else
 	d->socket = new KExtendedSocket();
 #endif
@@ -273,7 +273,7 @@ void NetworkScanner::slotConnectionFailed( int )
 	next();
 }
 
-const QPtrList<NetworkScanner::SocketInfo>* NetworkScanner::printerList()
+const Q3PtrList<NetworkScanner::SocketInfo>* NetworkScanner::printerList()
 {
 	return &( d->printers );
 }
@@ -313,7 +313,7 @@ void NetworkScanner::setPort( int p )
 bool NetworkScanner::checkPrinter( const QString& host, int port )
 {
 	// try first to find it in the SocketInfo list
-	QPtrListIterator<NetworkScanner::SocketInfo> it( d->printers );
+	Q3PtrListIterator<NetworkScanner::SocketInfo> it( d->printers );
 	for ( ; it.current(); ++it )
 	{
 		if ( port == it.current()->Port && ( host == it.current()->IP ||

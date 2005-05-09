@@ -24,7 +24,7 @@
 #include <knotifyclient.h>
 #include <kglobal.h>
 
-#include <qptrvector.h>
+#include <q3ptrvector.h>
 
 #include "kcompletion.h"
 #include "kcompletion_private.h"
@@ -715,7 +715,7 @@ void KCompTreeNode::remove( const QString& str )
     QString string = str;
     string += QChar(0x0);
 
-    QPtrVector<KCompTreeNode> deletables( string.length() + 1 );
+    Q3PtrVector<KCompTreeNode> deletables( string.length() + 1 );
 
     KCompTreeNode *child = 0L;
     KCompTreeNode *parent = this;
@@ -751,7 +751,7 @@ QStringList KCompletionMatchesWrapper::list() const
         stringList.clear();
 
         // high weight == sorted last -> reverse the sorting here
-        QValueListConstIterator<KSortableItem<QString> > it;
+        Q3ValueListConstIterator<KSortableItem<QString> > it;
         for ( it = sortedList->begin(); it != sortedList->end(); ++it )
             stringList.prepend( (*it).value() );
     }

@@ -41,7 +41,7 @@ class KTEXTEDITOR_EXPORT EditInterface
     uint editInterfaceNumber () const;
 
   protected:  
-    void setEditInterfaceDCOPSuffix (const QCString &suffix);  
+    void setEditInterfaceDCOPSuffix (const Q3CString &suffix);  
     
   public:
   /**

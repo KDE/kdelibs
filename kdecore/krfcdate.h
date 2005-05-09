@@ -79,7 +79,7 @@ public:
    * @return the string representation of the date
    */
 
-   static QCString rfc2822DateString(time_t utcTime, int utcOffset);
+   static Q3CString rfc2822DateString(time_t utcTime, int utcOffset);
 
 
   /**
@@ -93,7 +93,7 @@ public:
    * @return the string representation of the date
    */
 
-   static QCString rfc2822DateString(time_t utcTime);
+   static Q3CString rfc2822DateString(time_t utcTime);
 
 };
 

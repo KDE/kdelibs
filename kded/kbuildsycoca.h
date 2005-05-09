@@ -22,7 +22,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kservice.h>
 #include <ksycoca.h>

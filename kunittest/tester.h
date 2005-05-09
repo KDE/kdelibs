@@ -299,7 +299,7 @@ using namespace std;
 
 #include <qobject.h>
 #include <qstringlist.h>
-#include <qasciidict.h>
+#include <q3asciidict.h>
 
 #include <kdelibs_export.h>
 
@@ -410,10 +410,10 @@ namespace KUnitTest
         int         m_tests;
     };
 
-    typedef QAsciiDict<TestResults> TestResultsListType;
+    typedef Q3AsciiDict<TestResults> TestResultsListType;
 
     /*! A type that can be used to iterate through the registry. */
-    typedef QAsciiDictIterator<TestResults> TestResultsListIteratorType;
+    typedef Q3AsciiDictIterator<TestResults> TestResultsListIteratorType;
 
     /*! The abstract Tester class forms the base class for all test cases. Users must
      * implement the void Tester::allTests() method. This method contains the actual test.
@@ -451,7 +451,7 @@ namespace KUnitTest
         void skip( const char *file, int line, QString msg )
         {
             QString skipEntry;
-            QTextStream ts( &skipEntry, IO_WriteOnly );
+            QTextStream ts( &skipEntry, QIODevice::WriteOnly );
             ts << file << "["<< line <<"]: " << msg;
             m_results->m_skipList.append( skipEntry );
         }
@@ -474,7 +474,7 @@ namespace KUnitTest
             if ( result != expectedResult ) 
             {
                 QString error;
-                QTextStream ts( &error, IO_WriteOnly );
+                QTextStream ts( &error, QIODevice::WriteOnly );
                 ts << file << "["<< line <<"]: failed on \"" <<  str 
                    <<"\" result = '" << result << " expected = '" << expectedResult << "'";
                     
@@ -491,7 +491,7 @@ namespace KUnitTest
                 if (expectedFailure) 
                 {
                     QString error;
-                    QTextStream ts( &error, IO_WriteOnly );
+                    QTextStream ts( &error, QIODevice::WriteOnly );
                     ts << file << "["<< line <<"]:"
                        <<" unexpectedly passed on \""
                        <<  str <<"\"";
@@ -500,7 +500,7 @@ namespace KUnitTest
                 else
                 {
                     QString success;
-                    QTextStream ts( &success, IO_WriteOnly );
+                    QTextStream ts( &success, QIODevice::WriteOnly );
                     ts << file << "["<< line <<"]:"
                        <<" passed \""
                        <<  str <<"\"";

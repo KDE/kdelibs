@@ -22,9 +22,9 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qmap.h>
-#include <qshared.h>
+#include <q3shared.h>
 
 #include <kservice.h>
 #include <kuserprofile.h>
@@ -107,7 +107,7 @@ public:
   int i;
   double f;
   bool b;
-  QValueList<QVariant> seq;
+  Q3ValueList<QVariant> seq;
   QStringList strSeq;
   Type type;
 

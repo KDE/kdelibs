@@ -23,10 +23,10 @@
 #undef Always
 #endif
 #include <qdir.h>
-#include <qtable.h>
+#include <q3table.h>
 #include <qpair.h>
 #include <qtimer.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include <klibloader.h>
 #include <kaboutdata.h>
@@ -78,7 +78,7 @@ private:
     typedef QMap <QPair <QObject*, QString>, QPair <KJavaAppletContext*, int> >
             ContextMap;
     ContextMap m_contextmap;
-    QGuardedPtr <KJavaAppletServer> server;
+    QPointer <KJavaAppletServer> server;
 };
 
 KJavaServerMaintainer::~KJavaServerMaintainer () {
@@ -120,31 +120,31 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
                    KDialogBase::Close, KDialogBase::Close, true),
       m_appletWidget (parent) {
     KJavaApplet* const applet = parent->applet ();
-    table = new QTable (30, 2, this);
+    table = new Q3Table (30, 2, this);
     table->setMinimumSize (QSize (600, 400));
     table->setColumnWidth (0, 200);
     table->setColumnWidth (1, 340);
-    QHeader* const header = table->horizontalHeader();
+    Q3Header* const header = table->horizontalHeader();
     header->setLabel (0, i18n ("Parameter"));
     header->setLabel (1, i18n ("Value"));
-    QTableItem * tit = new QTableItem (table, QTableItem::Never, i18n("Class"));
+    Q3TableItem * tit = new Q3TableItem (table, Q3TableItem::Never, i18n("Class"));
     table->setItem (0, 0, tit);
-    tit = new QTableItem(table, QTableItem::Always, applet->appletClass());
+    tit = new Q3TableItem(table, Q3TableItem::Always, applet->appletClass());
     table->setItem (0, 1, tit);
-    tit = new QTableItem (table, QTableItem::Never, i18n ("Base URL"));
+    tit = new Q3TableItem (table, Q3TableItem::Never, i18n ("Base URL"));
     table->setItem (1, 0, tit);
-    tit = new QTableItem(table, QTableItem::Always, applet->baseURL());
+    tit = new Q3TableItem(table, Q3TableItem::Always, applet->baseURL());
     table->setItem (1, 1, tit);
-    tit = new QTableItem (table, QTableItem::Never, i18n ("Archives"));
+    tit = new Q3TableItem (table, Q3TableItem::Never, i18n ("Archives"));
     table->setItem (2, 0, tit);
-    tit = new QTableItem(table, QTableItem::Always, applet->archives());
+    tit = new Q3TableItem(table, Q3TableItem::Always, applet->archives());
     table->setItem (2, 1, tit);
     QMap<QString,QString>::const_iterator it = applet->getParams().begin();
     const QMap<QString,QString>::const_iterator itEnd = applet->getParams().end();
     for (int count = 2; it != itEnd; ++it) {
-        tit = new QTableItem (table, QTableItem::Always, it.key ());
+        tit = new Q3TableItem (table, Q3TableItem::Always, it.key ());
         table->setItem (++count, 0, tit);
-        tit = new QTableItem(table, QTableItem::Always, it.data ());
+        tit = new Q3TableItem(table, Q3TableItem::Always, it.data ());
         table->setItem (count, 1, tit);
     }
     setMainWidget (table);
@@ -299,7 +299,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         /* if this page needs authentication */
         KIO::AuthInfo info;
         QString errorMsg;
-        QCString replyType;
+        Q3CString replyType;
         QByteArray params;
         QByteArray reply;
         KIO::AuthInfo authResult;
@@ -308,13 +308,13 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         info.url = baseurl;
         info.verifyPath = true;
 
-        QDataStream stream(params, IO_WriteOnly);
+        QDataStream stream(params, QIODevice::WriteOnly);
         stream << info << m_view->topLevelWidget()->winId();
 
         if (!kapp->dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
             kdWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
         } else if ( replyType == "KIO::AuthInfo" ) {
-            QDataStream stream2( reply, IO_ReadOnly );
+            QDataStream stream2( reply, QIODevice::ReadOnly );
             stream2 >> authResult;
             applet->setUser (authResult.username);
             applet->setPassword (authResult.password);

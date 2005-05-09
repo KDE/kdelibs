@@ -21,7 +21,7 @@
 #define LPQHELPER_H
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class KMJob;
 
@@ -31,7 +31,7 @@ public:
 	LpqHelper(QObject *parent = 0, const char *name = 0);
 	~LpqHelper();
 
-	void listJobs(QPtrList<KMJob>& jobs, const QString& prname, int limit = 0);
+	void listJobs(Q3PtrList<KMJob>& jobs, const QString& prname, int limit = 0);
 
 protected:
 	KMJob* parseLineLpr(const QString&);

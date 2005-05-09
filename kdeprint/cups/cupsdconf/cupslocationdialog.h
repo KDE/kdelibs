@@ -20,14 +20,14 @@
 #ifndef	CUPSLOCATIONDIALOG_H
 #define	CUPSLOCATIONDIALOG_H
 
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 
 class CupsLocationGeneral;
 class CupsLocationAccess;
 struct CupsLocation;
 struct CupsdConf;
 
-class CupsLocationDialog : public QTabDialog
+class CupsLocationDialog : public Q3TabDialog
 {
 	Q_OBJECT;
 public:

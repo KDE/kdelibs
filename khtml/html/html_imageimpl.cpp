@@ -43,9 +43,9 @@
 #include <qstring.h>
 #include <qpoint.h>
 #include <qregion.h>
-#include <qptrstack.h>
+#include <q3ptrstack.h>
 #include <qimage.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -278,7 +278,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 {
     //cout << "map:mapMouseEvent " << endl;
     //cout << x_ << " " << y_ <<" "<< width_ <<" "<< height_ << endl;
-    QPtrStack<NodeImpl> nodeStack;
+    Q3PtrStack<NodeImpl> nodeStack;
 
     NodeImpl *current = firstChild();
     while(1)
@@ -436,7 +436,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
     if ((shape==Poly || shape==Unknown) && m_coordsLen > 5) {
         // make sure its even
         int len = m_coordsLen >> 1;
-        QPointArray points(len);
+        Q3PointArray points(len);
         for (int i = 0; i < len; ++i)
             points.setPoint(i, m_coords[(i<<1)].minWidth(width_),
                             m_coords[(i<<1)+1].minWidth(height_));

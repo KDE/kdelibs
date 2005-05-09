@@ -38,9 +38,9 @@ KMWClass::KMWClass(QWidget *parent, const char *name)
 	m_nextpage = KMWizard::Name;
 
 	m_list1 = new KListBox(this);
-	m_list1->setSelectionMode(QListBox::Extended);
+	m_list1->setSelectionMode(Q3ListBox::Extended);
 	m_list2 = new KListBox(this);
-	m_list2->setSelectionMode(QListBox::Extended);
+	m_list2->setSelectionMode(Q3ListBox::Extended);
 
 	QToolButton	*add = new QToolButton(this);
 	QToolButton	*remove = new QToolButton(this);
@@ -88,11 +88,11 @@ void KMWClass::initPrinter(KMPrinter *p)
 	KMManager	*mgr = KMFactory::self()->manager();
 
 	// first load available printers
-	QPtrList<KMPrinter>	*list = mgr->printerList(false);
+	Q3PtrList<KMPrinter>	*list = mgr->printerList(false);
 	m_list1->clear();
 	if (list)
 	{
-		QPtrListIterator<KMPrinter>	it(*list);
+		Q3PtrListIterator<KMPrinter>	it(*list);
 		for (;it.current();++it)
 			if (it.current()->instanceName().isEmpty() && !it.current()->isClass(true) && !it.current()->isSpecial() && !members.contains(it.current()->name()))
 				m_list1->insertItem(SmallIcon(it.current()->pixmap()), it.current()->name());

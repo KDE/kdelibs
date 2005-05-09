@@ -33,7 +33,7 @@ class KIO_EXPORT KBookmarkNotifier : virtual public DCOPObject
   K_DCOP
 
 public:
-  KBookmarkNotifier(QCString objId = "KBookmarkNotifier") : DCOPObject(objId) {}
+  KBookmarkNotifier(Q3CString objId = "KBookmarkNotifier") : DCOPObject(objId) {}
 
 k_dcop_signals:
   void addedBookmark( QString filename, QString url, QString text, QString address, QString icon );

@@ -24,8 +24,8 @@
 #define _XML_Tokenizer_h_
 
 #include <qxml.h>
-#include <qptrlist.h>
-#include <qptrstack.h>
+#include <q3ptrlist.h>
+#include <q3ptrstack.h>
 #include <qobject.h>
 #include "misc/loader_client.h"
 #include "misc/stringit.h"
@@ -94,7 +94,7 @@ private:
     QString errorProt;
     DOM::DocumentPtr *m_doc;
     KHTMLView *m_view;
-    QPtrStack<DOM::NodeImpl> m_nodes;
+    Q3PtrStack<DOM::NodeImpl> m_nodes;
     DOM::NodeImpl *m_rootNode;
 
     enum State {
@@ -175,8 +175,8 @@ protected:
     void executeScripts();
     void addScripts(DOM::NodeImpl *n);
 
-    QPtrList<DOM::HTMLScriptElementImpl> m_scripts;
-    QPtrListIterator<DOM::HTMLScriptElementImpl> *m_scriptsIt;
+    Q3PtrList<DOM::HTMLScriptElementImpl> m_scripts;
+    Q3PtrListIterator<DOM::HTMLScriptElementImpl> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
 
     XMLHandler m_handler;

@@ -63,7 +63,7 @@ void KToolBarRadioGroup::slotToggled(int id)
 {
   if (buttons->find(id) && buttons->find(id)->isOn())
   {
-    QIntDictIterator<KToolBarButton> it(*buttons);
+    Q3IntDictIterator<KToolBarButton> it(*buttons);
     while (it.current())
     {
       if (it.currentKey() != id)

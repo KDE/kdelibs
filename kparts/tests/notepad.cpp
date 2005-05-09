@@ -6,7 +6,7 @@
 #include <qsplitter.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -25,7 +25,7 @@ NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
 {
   setInstance( NotepadFactory::instance() );
 
-  m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
+  m_edit = new Q3MultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
   setWidget( m_edit );
 
   (void)new KAction( "Search and replace", 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
@@ -59,7 +59,7 @@ bool NotepadPart::openFile()
   // Hehe this is from a tutorial I did some time ago :)
   QFile f(m_file);
   QString s;
-  if ( f.open(IO_ReadOnly) ) {
+  if ( f.open(QIODevice::ReadOnly) ) {
     QTextStream t( &f );
     while ( !t.eof() ) {
       s += t.readLine() + "\n";
@@ -79,7 +79,7 @@ bool NotepadPart::saveFile()
     return false;
   QFile f(m_file);
   QString s;
-  if ( f.open(IO_WriteOnly) ) {
+  if ( f.open(QIODevice::WriteOnly) ) {
     QTextStream t( &f );
     t << m_edit->text();
     f.close();

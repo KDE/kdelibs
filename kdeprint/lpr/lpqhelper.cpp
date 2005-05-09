@@ -80,7 +80,7 @@ KMJob* LpqHelper::parseLineLPRng(const QString& line)
 	return job;
 }
 
-void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname, int limit)
+void LpqHelper::listJobs(Q3PtrList<KMJob>& jobs, const QString& prname, int limit)
 {
 	KPipeProcess	proc;
 	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KProcess::quote(prname)))

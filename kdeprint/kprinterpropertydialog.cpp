@@ -69,7 +69,7 @@ bool KPrinterPropertyDialog::synchronize()
 {
 	if (m_current) m_current->getOptions(m_options,true);
 	QString	msg;
-	QPtrListIterator<KPrintDialogPage>	it(m_pages);
+	Q3PtrListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
 	{
 		it.current()->setOptions(m_options);
@@ -88,7 +88,7 @@ void KPrinterPropertyDialog::setOptions(const QMap<QString,QString>& opts)
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 		m_options[it.key()] = it.data();
 	// update all existing pages
-	QPtrListIterator<KPrintDialogPage>	it(m_pages);
+	Q3PtrListIterator<KPrintDialogPage>	it(m_pages);
 	for (; it.current(); ++it)
 		it.current()->setOptions(m_options);
 }
@@ -100,7 +100,7 @@ void KPrinterPropertyDialog::getOptions(QMap<QString,QString>& opts, bool inclde
 
 void KPrinterPropertyDialog::collectOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	QPtrListIterator<KPrintDialogPage>	it(m_pages);
+	Q3PtrListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->getOptions(opts,incldef);
 }

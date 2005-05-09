@@ -32,8 +32,8 @@ class KMJobManager;
 class KMJob;
 class KListView;
 class JobItem;
-class QPopupMenu;
-class QListViewItem;
+class Q3PopupMenu;
+class Q3ListViewItem;
 class KMPrinter;
 class QTimer;
 class QLineEdit;
@@ -74,7 +74,7 @@ protected slots:
 	void slotResume();
 	void slotRemove();
 	void slotRestart();
-	void slotRightClicked(QListViewItem*,const QPoint&,int);
+	void slotRightClicked(Q3ListViewItem*,const QPoint&,int);
 	void slotMove(int prID);
 	void slotPrinterSelected(int);
 	void slotShowCompleted(bool);
@@ -85,14 +85,14 @@ protected slots:
 	void slotUserOnly(bool);
 	void slotUserChanged();
 	void slotConfigure();
-	void slotDropped( QDropEvent*, QListViewItem* );
+	void slotDropped( QDropEvent*, Q3ListViewItem* );
 
 protected:
 	void init();
 	void updateJobs();
 	void initActions();
 	JobItem* findItem(const QString& uri);
-	void jobSelection(QPtrList<KMJob>& l);
+	void jobSelection(Q3PtrList<KMJob>& l);
 	void send(int cmd, const QString& name, const QString& arg = QString::null);
 	void loadPrinters();
 	void loadPluginActions();
@@ -103,16 +103,16 @@ protected:
 	void triggerRefresh();
 	void addToManager();
 	void removeFromManager();
-	void buildPrinterMenu(QPopupMenu *menu, bool use_all = false, bool use_specials = false);
+	void buildPrinterMenu(Q3PopupMenu *menu, bool use_all = false, bool use_specials = false);
 	void updateCaption();
 	void updateStatusBar();
 
 private:
 	KListView		*m_view;
-	QPtrList<KMJob>		m_jobs;
-	QPtrList<JobItem>		m_items;
-	QPopupMenu		*m_pop;
-	QPtrList<KMPrinter>	m_printers;
+	Q3PtrList<KMJob>		m_jobs;
+	Q3PtrList<JobItem>		m_items;
+	Q3PopupMenu		*m_pop;
+	Q3PtrList<KMPrinter>	m_printers;
 	QString	m_prname;
 	int	m_type;
 	QString	m_username;

@@ -159,7 +159,7 @@ void KDataToolPluginView::aboutToShow()
 
 	KInstance *inst=instance();
 
-	QValueList<KDataToolInfo> tools;
+	Q3ValueList<KDataToolInfo> tools;
 	tools += KDataToolInfo::query( "QString", "text/plain", inst );
 	if( m_singleWord )
 		tools += KDataToolInfo::query( "QString", "application/x-singleword", inst );

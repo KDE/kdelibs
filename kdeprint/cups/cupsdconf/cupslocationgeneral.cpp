@@ -25,7 +25,7 @@
 #include <qlabel.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 
@@ -151,9 +151,9 @@ bool CupsLocationGeneral::isValid()
 
 void CupsLocationGeneral::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(authtype_, conf->comments_.toolTip(LOCAUTHTYPE_COMM));
-	QWhatsThis::add(authclass_, conf->comments_.toolTip(LOCAUTHCLASS_COMM));
-	QWhatsThis::add(authgroupname_, conf->comments_.toolTip(LOCAUTHGROUPNAME_COMM));
-	QWhatsThis::add(encryption_, conf->comments_.toolTip(LOCENCRYPTION_COMM));
+	Q3WhatsThis::add(authtype_, conf->comments_.toolTip(LOCAUTHTYPE_COMM));
+	Q3WhatsThis::add(authclass_, conf->comments_.toolTip(LOCAUTHCLASS_COMM));
+	Q3WhatsThis::add(authgroupname_, conf->comments_.toolTip(LOCAUTHGROUPNAME_COMM));
+	Q3WhatsThis::add(encryption_, conf->comments_.toolTip(LOCENCRYPTION_COMM));
 }
 #include "cupslocationgeneral.moc"

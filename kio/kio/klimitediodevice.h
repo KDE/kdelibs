@@ -43,13 +43,13 @@ public:
     {
         //kdDebug(7005) << "KLimitedIODevice::KLimitedIODevice start=" << start << " length=" << length << endl;
         setType( IO_Direct ); // we support sequential too, but then atEnd() tries getch/ungetch !
-        open( IO_ReadOnly );
+        open( QIODevice::ReadOnly );
     }
     virtual ~KLimitedIODevice() {}
 
     virtual bool open( int m ) {
         //kdDebug(7005) << "KLimitedIODevice::open m=" << m << endl;
-        if ( m & IO_ReadOnly ) {
+        if ( m & QIODevice::ReadOnly ) {
             /*bool ok = false;
             if ( m_dev->isOpen() )
                 ok = ( m_dev->mode() == IO_ReadOnly );

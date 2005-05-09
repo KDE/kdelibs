@@ -35,8 +35,8 @@
 #include <qapplication.h>
 #include <qlineedit.h>
 #include <kglobalsettings.h>
-#include <qobjectlist.h>
-#include <qvaluevector.h>
+#include <qobject.h>
+#include <q3valuevector.h>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
@@ -205,11 +205,11 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->name(), "__khtml") && !::qt_cast<QFrame*>(m_widget))
-                m_widget->setBackgroundMode( QWidget::NoBackground );
+            if ( !strcmp(m_widget->name(), "__khtml") && !::qt_cast<Q3Frame*>(m_widget))
+                m_widget->setBackgroundMode( Qt::NoBackground );
 
-            if (m_widget->focusPolicy() > QWidget::StrongFocus)
-                m_widget->setFocusPolicy(QWidget::StrongFocus);
+            if (m_widget->focusPolicy() > Qt::StrongFocus)
+                m_widget->setFocusPolicy(Qt::StrongFocus);
             // if we've already received a layout, apply the calculated space to the
             // widget immediately, but we have to have really been full constructed (with a non-null
             // style pointer).
@@ -306,11 +306,11 @@ void RenderWidget::updateFromElement()
         else
             m_widget->unsetPalette();
         // Border:
-        QFrame* frame = ::qt_cast<QFrame*>(m_widget);
+        Q3Frame* frame = ::qt_cast<Q3Frame*>(m_widget);
         if (frame) {
             if (shouldPaintBackgroundOrBorder())
             {
-                frame->setFrameShape(QFrame::NoFrame);
+                frame->setFrameShape(Q3Frame::NoFrame);
             }
         }
 
@@ -503,8 +503,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     if (r.isNull() || r.isEmpty() )
         return;
     QRegion blit(r);
-    QValueVector<QWidget*> cw;
-    QValueVector<QRect> cr;
+    Q3ValueVector<QWidget*> cw;
+    Q3ValueVector<QRect> cr;
 
     if (widget->children()) {
         // build region
@@ -521,7 +521,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             }
         }
     }
-    QMemArray<QRect> br = blit.rects();
+    Q3MemArray<QRect> br = blit.rects();
 
     const int cnt = br.size();
     const bool external = p->device()->isExtDev();
@@ -565,9 +565,9 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     // cleanup and recurse
     PaintBuffer::release();
-    QValueVector<QWidget*>::iterator cwit = cw.begin();
-    QValueVector<QWidget*>::iterator cwitEnd = cw.end();
-    QValueVector<QRect>::const_iterator crit = cr.begin();
+    Q3ValueVector<QWidget*>::iterator cwit = cw.begin();
+    Q3ValueVector<QWidget*>::iterator cwitEnd = cw.end();
+    Q3ValueVector<QRect>::const_iterator crit = cr.begin();
     for (; cwit != cwitEnd; ++cwit, ++crit)
         copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y());
 }
@@ -630,7 +630,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
             // currently focused. this avoids accidentally changing a select box
             // or something while wheeling a webpage.
             if (qApp->focusWidget() != widget() &&
-                widget()->focusPolicy() <= QWidget::StrongFocus)  {
+                widget()->focusPolicy() <= Qt::StrongFocus)  {
                 static_cast<QWheelEvent*>(e)->ignore();
                 QApplication::sendEvent(view(), e);
                 filtered = true;
@@ -716,25 +716,25 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             }
             switch (me.button()) {
             case 0:
-                button = LeftButton;
+                button = Qt::LeftButton;
                 break;
             case 1:
-                button = MidButton;
+                button = Qt::MidButton;
                 break;
             case 2:
-                button = RightButton;
+                button = Qt::RightButton;
                 break;
             default:
                 break;
             }
             if (me.ctrlKey())
-                state |= ControlButton;
+                state |= Qt::ControlModifier;
             if (me.altKey())
-                state |= AltButton;
+                state |= Qt::AltModifier;
             if (me.shiftKey())
-                state |= ShiftButton;
+                state |= Qt::ShiftModifier;
             if (me.metaKey())
-                state |= MetaButton;
+                state |= Qt::MetaModifier;
         }
 
 //     kdDebug(6000) << "sending event to widget "

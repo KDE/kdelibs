@@ -23,8 +23,8 @@
 
 #include <qimage.h>
 #include <qiodevice.h>
-#include <qvaluestack.h>
-#include <qvaluevector.h>
+#include <q3valuestack.h>
+#include <q3valuevector.h>
 
 #include "gimp.h"
 
@@ -43,7 +43,7 @@ const float INCHESPERMETER = (100.0 / 2.54);
  * parallel processing on a tile-by-tile basis. Here, though,
  * we just read them in en-masse and store them in a matrix.
  */
-typedef QValueVector<QValueVector<QImage> > Tiles;
+typedef Q3ValueVector<Q3ValueVector<QImage> > Tiles;
 
 
 
@@ -85,7 +85,7 @@ private:
 			Q_UINT32 opacity;
 			Q_UINT32 visible;
 			Q_UINT32 show_masked;
-			uchar red, green, blue;
+			uchar Qt::red, Qt::green, Qt::blue;
 			Q_UINT32 tattoo;
 		} mask_channel;
 
@@ -132,7 +132,7 @@ private:
 		Q_INT32 tattoo;			//!< (unique identifier?)
 		Q_UINT32 unit;			//!< Units of The GIMP (inch, mm, pica, etc...)
 		Q_INT32 num_colors;		//!< number of colors in an indexed image
-		QValueVector<QRgb> palette;	//!< indexed image color palette
+		Q3ValueVector<QRgb> palette;	//!< indexed image color palette
 
 		int num_layers;			//!< number of layers
 		Layer layer;			//!< most recently read layer

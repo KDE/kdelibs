@@ -20,7 +20,7 @@
 #define kwordwrap_h
 
 #include <qfontmetrics.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qrect.h>
 #include <qstring.h>
 
@@ -101,7 +101,7 @@ public:
      *              does not fit (the @p painter's background must be set
      *              accordingly)
      */
-    void drawText( QPainter *painter, int x, int y, int flags = Qt::AlignAuto ) const;
+    void drawText( QPainter *painter, int x, int y, int flags = Qt::AlignLeft ) const;
 
     /**
      * Destructor.
@@ -138,8 +138,8 @@ public:
 
 private:
     KWordWrap( const QRect & r );
-    QValueList<int> m_breakPositions;
-    QValueList<int> m_lineWidths;
+    Q3ValueList<int> m_breakPositions;
+    Q3ValueList<int> m_lineWidths;
     QRect m_boundingRect;
     QString m_text;
 private:

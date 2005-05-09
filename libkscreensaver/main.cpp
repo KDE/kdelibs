@@ -138,7 +138,7 @@ KDE_EXPORT int main(int argc, char *argv[])
     if (saveWin == 0)
     {
         demoWidget = new DemoWindow();
-        demoWidget->setBackgroundMode(QWidget::NoBackground);
+        demoWidget->setBackgroundMode(Qt::NoBackground);
         saveWin = demoWidget->winId();
         app.setMainWidget(demoWidget);
         app.processEvents();

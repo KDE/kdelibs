@@ -23,7 +23,7 @@
 
 #include <qcolor.h>
 #include <qregexp.h>
-#include <qsyntaxhighlighter.h>
+#include <q3syntaxhighlighter.h>
 #include <qtimer.h>
 
 #include <klocale.h>
@@ -84,16 +84,16 @@ public:
 	delete spell;
     }
 
-    static QDict<int>* sDict()
+    static Q3Dict<int>* sDict()
     {
 	if (!statDict)
-	    statDict = new QDict<int>(50021);
+	    statDict = new Q3Dict<int>(50021);
 	return statDict;
     }
 
-    QDict<int>* mDict;
-    QDict<int> autoDict;
-    QDict<int> autoIgnoreDict;
+    Q3Dict<int>* mDict;
+    Q3Dict<int> autoDict;
+    Q3Dict<int> autoIgnoreDict;
     static QObject *sDictionaryMonitor;
     KSpell *spell;
     KSpellConfig *mSpellConfig;
@@ -106,21 +106,21 @@ public:
     bool active, automatic, autoReady;
     bool globalConfig, spellReady;
 private:
-    static QDict<int>* statDict;
+    static Q3Dict<int>* statDict;
 
 };
 
-QDict<int>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict = 0;
+Q3Dict<int>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict = 0;
 
 
-KSyntaxHighlighter::KSyntaxHighlighter( QTextEdit *textEdit,
+KSyntaxHighlighter::KSyntaxHighlighter( Q3TextEdit *textEdit,
 					  bool colorQuoting,
 					  const QColor& depth0,
 					  const QColor& depth1,
 					  const QColor& depth2,
 					  const QColor& depth3,
 					  SyntaxMode mode )
-    : QSyntaxHighlighter( textEdit )
+    : Q3SyntaxHighlighter( textEdit )
 {
     d = new KSyntaxHighlighterPrivate();
 
@@ -161,7 +161,7 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
     return 0;
 }
 
-KSpellingHighlighter::KSpellingHighlighter( QTextEdit *textEdit,
+KSpellingHighlighter::KSpellingHighlighter( Q3TextEdit *textEdit,
 					    const QColor& spellColor,
 					    bool colorQuoting,
 					    const QColor& depth0,
@@ -266,7 +266,7 @@ void KSpellingHighlighter::flushCurrentWord()
 
 QObject *KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDictionaryMonitor = 0;
 
-KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
+KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
 						    bool spellCheckingActive ,
 						    bool autoEnable,
 						    const QColor& spellColor,
@@ -312,7 +312,7 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
             d->sDictionaryMonitor = new QObject();
     }
     else {
-        d->mDict = new QDict<int>(4001);
+        d->mDict = new Q3Dict<int>(4001);
         connect( d->mSpellConfig, SIGNAL( configChanged() ),
                  this, SLOT( slotLocalSpellConfigChanged() ) );
     }
@@ -372,7 +372,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	d->autoIgnoreDict.replace( word, Ignore );
 
     // "dict" is used as a cache to store the results of KSpell
-    QDict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
+    Q3Dict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
     if ( !dict->isEmpty() && (*dict)[word] == NotOkay ) {
 	if ( d->autoReady && ( d->autoDict[word] != NotOkay )) {
 	    if ( !d->autoIgnoreDict[word] )
@@ -433,7 +433,7 @@ void KDictSpellingHighlighter::slotCorrected(const QString &word,
 					     unsigned int)
 
 {
-    QDict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
+    Q3Dict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
     if ( !dict->isEmpty() && (*dict)[word] == Unknown ) {
         dict->replace( word, Okay );
     }
@@ -616,22 +616,22 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 	d->autoReady = true;
 	if (d->rehighlightRequest->isActive()) // try to stay out of the users way
 	    d->rehighlightRequest->changeInterval( 500 );
-	if ( k->key() == Key_Enter ||
-	     k->key() == Key_Return ||
-	     k->key() == Key_Up ||
-	     k->key() == Key_Down ||
-	     k->key() == Key_Left ||
-	     k->key() == Key_Right ||
-	     k->key() == Key_PageUp ||
-	     k->key() == Key_PageDown ||
-	     k->key() == Key_Home ||
-	     k->key() == Key_End ||
-	     (( k->state() & ControlButton ) &&
-	      ((k->key() == Key_A) ||
-	       (k->key() == Key_B) ||
-	       (k->key() == Key_E) ||
-	       (k->key() == Key_N) ||
-	       (k->key() == Key_P))) ) {
+	if ( k->key() == Qt::Key_Enter ||
+	     k->key() == Qt::Key_Return ||
+	     k->key() == Qt::Key_Up ||
+	     k->key() == Qt::Key_Down ||
+	     k->key() == Qt::Key_Left ||
+	     k->key() == Qt::Key_Right ||
+	     k->key() == Qt::Key_PageUp ||
+	     k->key() == Qt::Key_PageDown ||
+	     k->key() == Qt::Key_Home ||
+	     k->key() == Qt::Key_End ||
+	     (( k->state() & Qt::ControlModifier ) &&
+	      ((k->key() == Qt::Key_A) ||
+	       (k->key() == Qt::Key_B) ||
+	       (k->key() == Qt::Key_E) ||
+	       (k->key() == Qt::Key_N) ||
+	       (k->key() == Qt::Key_P))) ) {
 	    if ( intraWordEditing() ) {
 		setIntraWordEditing( false );
 		d->completeRehighlightRequired = true;
@@ -646,9 +646,9 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 	} else {
 	    setIntraWordEditing( true );
 	}
-	if ( k->key() == Key_Space ||
-	     k->key() == Key_Enter ||
-	     k->key() == Key_Return ) {
+	if ( k->key() == Qt::Key_Space ||
+	     k->key() == Qt::Key_Enter ||
+	     k->key() == Qt::Key_Return ) {
 	    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
 	}
     }

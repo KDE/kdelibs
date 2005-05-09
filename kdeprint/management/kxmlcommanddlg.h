@@ -26,14 +26,14 @@
 #include <kdialogbase.h>
 
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 class QLineEdit;
 class QComboBox;
-class QWidgetStack;
+class Q3WidgetStack;
 class QToolButton;
 class KListBox;
-class QListBoxItem;
-class QTextEdit;
+class Q3ListBoxItem;
+class Q3TextEdit;
 class QCheckBox;
 
 class DrGroup;
@@ -51,14 +51,14 @@ public:
 	static bool editCommand(KXmlCommand *xmlcmd, QWidget *parent = 0);
 
 protected:
-	void parseGroupItem(DrGroup*, QListViewItem*);
+	void parseGroupItem(DrGroup*, Q3ListViewItem*);
 	void parseXmlCommand(KXmlCommand*);
-	void viewItem(QListViewItem*);
-	void removeItem(QListViewItem*);
-	void recreateGroup(QListViewItem*, DrGroup*);
+	void viewItem(Q3ListViewItem*);
+	void removeItem(Q3ListViewItem*);
+	void recreateGroup(Q3ListViewItem*, DrGroup*);
 
 protected slots:
-	void slotSelectionChanged(QListViewItem*);
+	void slotSelectionChanged(Q3ListViewItem*);
 	void slotTypeChanged(int);
 	void slotAddValue();
 	void slotRemoveValue();
@@ -69,8 +69,8 @@ protected slots:
 	void slotMoveUp();
 	void slotMoveDown();
 	void slotCommandChanged(const QString&);
-	void slotValueSelected(QListViewItem*);
-	void slotOptionRenamed(QListViewItem*, int);
+	void slotValueSelected(Q3ListViewItem*);
+	void slotOptionRenamed(Q3ListViewItem*, int);
 	void slotChanged();
 
 private:
@@ -80,11 +80,11 @@ private:
 	QWidget		*m_dummy;
 	KListView	*m_values;
 	QLineEdit	*m_edit1, *m_edit2;
-	QWidgetStack	*m_stack;
+	Q3WidgetStack	*m_stack;
 	QToolButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
 	QLineEdit	*m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
 	QToolButton	*m_addval, *m_delval;
-	QTextEdit *m_comment;
+	Q3TextEdit *m_comment;
 	QCheckBox *m_persistent;
 
 	KXmlCommand	*m_xmlcmd;
@@ -106,9 +106,9 @@ protected slots:
 	void slotEditCommand();
 	void slotAddReq();
 	void slotRemoveReq();
-	void slotReqSelected(QListViewItem*);
-	void slotAvailableSelected(QListBoxItem*);
-	void slotSelectedSelected(QListBoxItem*);
+	void slotReqSelected(Q3ListViewItem*);
+	void slotAvailableSelected(Q3ListBoxItem*);
+	void slotSelectedSelected(Q3ListBoxItem*);
 	void slotOk();
 
 private:

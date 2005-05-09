@@ -24,7 +24,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #undef Unsorted // Required for --enable-final (qdir.h)
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 
 #include <kbuttonbox.h>
 #include <klocale.h>
@@ -72,7 +72,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   QGridLayout *layout = new QGridLayout(this, 4, 3, 10);
 
   QLabel *label = new QLabel(_text, this);
-  layout->addWidget(label, 0, 0, AlignLeft);
+  layout->addWidget(label, 0, 0, Qt::AlignLeft);
 
   edit = new KLineEdit( this, 0L );
   edit->setMinimumWidth(edit->sizeHint().width() * 3);
@@ -90,13 +90,13 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 
   if (_file_mode) {
     QPushButton *browse = new QPushButton(i18n("&Browse..."), this);
-    layout->addWidget(browse, 1, 2, AlignCenter);
+    layout->addWidget(browse, 1, 2, Qt::AlignCenter);
     connect(browse, SIGNAL(clicked()),
 	    SLOT(slotBrowse()));
   }
 
-  QFrame *hLine = new QFrame(this);
-  hLine->setFrameStyle(QFrame::Sunken|QFrame::HLine);
+  Q3Frame *hLine = new Q3Frame(this);
+  hLine->setFrameStyle(Q3Frame::Sunken|Q3Frame::HLine);
   layout->addMultiCellWidget(hLine, 2, 2, 0, 2);
 
   KButtonBox *bBox = new KButtonBox(this);

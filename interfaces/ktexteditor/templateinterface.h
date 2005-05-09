@@ -57,7 +57,7 @@ class KTEXTEDITOR_EXPORT TemplateInterface //should be named AbstractTemplateInt
     uint templateInterfaceNumber () const;
 
   protected:
-    void setTemplateInterfaceDCOPSuffix (const QCString &suffix);
+    void setTemplateInterfaceDCOPSuffix (const Q3CString &suffix);
 
   public:
 

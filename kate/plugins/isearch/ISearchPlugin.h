@@ -28,7 +28,7 @@
 
 #include <kxmlguiclient.h>
 #include <qobject.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 class QLabel;
 
@@ -44,7 +44,7 @@ public:
 	void removeView (KTextEditor::View *view);
 	
 private:
-	QPtrList<class ISearchPluginView> m_views;
+	Q3PtrList<class ISearchPluginView> m_views;
 };
 
 class ISearchPluginView : public QObject, public KXMLGUIClient
@@ -71,7 +71,7 @@ private slots:
 	void slotSearchAction( bool reverse );
 	void slotTextChanged( const QString& text );
 	void slotReturnPressed( const QString& text );
-	void slotAddContextMenuItems( QPopupMenu *menu);
+	void slotAddContextMenuItems( Q3PopupMenu *menu);
 	
 private:
 	void readConfig();
@@ -95,8 +95,8 @@ private:
 	KAction*               m_searchForwardAction;
 	KAction*               m_searchBackwardAction;
 	KWidgetAction*         m_comboAction;
-	QGuardedPtr<QLabel>    m_label;
-	QGuardedPtr<KHistoryCombo> m_combo;
+	QPointer<QLabel>    m_label;
+	QPointer<KHistoryCombo> m_combo;
 	QString        m_lastString;
 	bool           m_searchBackward;
 	bool           m_caseSensitive;

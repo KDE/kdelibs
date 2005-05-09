@@ -351,7 +351,7 @@ Value DOMStyleSheetList::tryGet(ExecState *exec, const Identifier &p) const
   DOM::NameNodeListImpl namedList( m_doc.documentElement().handle(), p.string() );
   int len = namedList.length();
   if ( len ) {
-    QValueList<DOM::Node> styleSheets;
+    Q3ValueList<DOM::Node> styleSheets;
     for ( int i = 0 ; i < len ; ++i ) {
       DOM::HTMLStyleElement elem = DOM::Node(namedList.item(i));
       if (!elem.isNull())
@@ -1174,11 +1174,11 @@ Value DOMRGBColor::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Red:
-    return getDOMCSSValue(exec, rgbColor.red());
+    return getDOMCSSValue(exec, rgbColor.Qt::red());
   case Green:
-    return getDOMCSSValue(exec, rgbColor.green());
+    return getDOMCSSValue(exec, rgbColor.Qt::green());
   case Blue:
-    return getDOMCSSValue(exec, rgbColor.blue());
+    return getDOMCSSValue(exec, rgbColor.Qt::blue());
   default:
     return Value();
   }
@@ -1221,13 +1221,13 @@ Value DOMRect::tryGet(ExecState *exec, const Identifier &p) const
 Value DOMRect::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
-  case Top:
+  case Qt::DockTop:
     return getDOMCSSValue(exec, rect.top());
-  case Right:
+  case Qt::DockRight:
     return getDOMCSSValue(exec, rect.right());
-  case Bottom:
+  case Qt::DockBottom:
     return getDOMCSSValue(exec, rect.bottom());
-  case Left:
+  case Qt::DockLeft:
     return getDOMCSSValue(exec, rect.left());
   default:
     return Value();

@@ -123,7 +123,7 @@ int main( int argc, char **argv )
   QString txt = converter.createVCards( list );
 
   QFile file( "out.vcf" );
-  file.open( IO_WriteOnly );
+  file.open( QIODevice::WriteOnly );
 
   QTextStream s( &file );
   s.setEncoding( QTextStream::UnicodeUTF8 );

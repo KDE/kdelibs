@@ -24,7 +24,7 @@
 
 class QCheckBox;
 class QHBoxLayout;
-class QFrame;
+class Q3Frame;
 
 class CupsdOption : public QWidget
 {
@@ -47,7 +47,7 @@ private:
 	QCheckBox	*cb_;
 	QWidget		*cbw_;
 	QHBoxLayout		*layout_;
-	QFrame		*fr_;
+	Q3Frame		*fr_;
 
 	QWidget		*widget_;
 };

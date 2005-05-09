@@ -16,7 +16,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdatastream.h>
 
 #include <dcopclient.h>
@@ -30,7 +30,7 @@
 
 #include <qmessagebox.h>
 
-KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const QCString& name, 
+KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const Q3CString& name, 
 		KCModuleProxy* const client )
 	: DCOPObject( name ), QObject( 0, name ),
 		p( const_cast<KCModuleProxy *>( client ))
@@ -77,7 +77,7 @@ bool KCModuleProxyIfaceImpl::changed()
 void KCModuleProxyIfaceImpl::changedRelay( bool c )
 {
 	QByteArray data;
-	QDataStream stream(data, IO_WriteOnly);
+	QDataStream stream(data, QIODevice::WriteOnly);
 	stream << c;
 	emitDCOPSignal( "changed(bool)", data );
 }
@@ -95,7 +95,7 @@ void KCModuleProxyIfaceImpl::quickHelpRelay()
 
 /***************************************************************/
 KCModuleProxyRootCommunicatorImpl::KCModuleProxyRootCommunicatorImpl
-		( const QCString& name, KCModuleProxy* const client )
+		( const Q3CString& name, KCModuleProxy* const client )
 	: DCOPObject( name ), QObject( 0, name ), 
 		p( const_cast<KCModuleProxy *>( client ))
 { 

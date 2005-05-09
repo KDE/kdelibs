@@ -29,7 +29,7 @@
 
 // forward declarations
 class QString;
-template <class T> class QValueList;
+template <class T> class Q3ValueList;
 
 namespace KNetwork {
 
@@ -164,7 +164,7 @@ public:
   /**
    * gets the protocol name, if applicable
    */
-  QCString protocolName() const;
+  Q3CString protocolName() const;
 
   /**
    * Call this function to indicate that processing

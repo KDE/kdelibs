@@ -36,7 +36,7 @@ public:
   QTimer timer;
 };
 
-KDEDModule::KDEDModule(const QCString &name) : QObject(), DCOPObject(name)
+KDEDModule::KDEDModule(const Q3CString &name) : QObject(), DCOPObject(name)
 {
    d = new KDEDModulePrivate;
    d->objMap = 0;
@@ -62,7 +62,7 @@ void KDEDModule::resetIdle()
       d->timer.start(d->timeout, true);
 }
 
-void KDEDModule::insert(const QCString &app, const QCString &key, KShared *obj)
+void KDEDModule::insert(const Q3CString &app, const Q3CString &key, KShared *obj)
 {
    if (!d->objMap)
       d->objMap = new KDEDObjectMap;
@@ -80,7 +80,7 @@ void KDEDModule::insert(const QCString &app, const QCString &key, KShared *obj)
    resetIdle();
 }
 
-KShared * KDEDModule::find(const QCString &app, const QCString &key)
+KShared * KDEDModule::find(const Q3CString &app, const Q3CString &key)
 {
    if (!d->objMap)
       return 0;
@@ -93,7 +93,7 @@ KShared * KDEDModule::find(const QCString &app, const QCString &key)
    return it.data().data();
 }
   
-void KDEDModule::remove(const QCString &app, const QCString &key)
+void KDEDModule::remove(const Q3CString &app, const Q3CString &key)
 {
    if (!d->objMap)
       return;
@@ -103,7 +103,7 @@ void KDEDModule::remove(const QCString &app, const QCString &key)
    resetIdle();
 }
 
-void KDEDModule::removeAll(const QCString &app)
+void KDEDModule::removeAll(const Q3CString &app)
 {
    if (!d->objMap)
       return;

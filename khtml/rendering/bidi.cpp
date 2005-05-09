@@ -88,7 +88,7 @@ static bool sBuildingCompactRuns;
 // Midpoint globals.  The goal is not to do any allocation when dealing with
 // these midpoints, so we just keep an array around and never clear it.  We track
 // the number of items and position using the two other variables.
-static QMemArray<BidiIterator> *smidpoints;
+static Q3MemArray<BidiIterator> *smidpoints;
 static uint sNumMidpoints;
 static uint sCurrMidpoint;
 static bool betweenMidpoints;
@@ -1176,7 +1176,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "lineLow = " << (uint)levelLow << ", lineHigh = " << (uint)levelHigh << endl;
     kdDebug(6041) << "logical order is:" << endl;
-    QPtrListIterator<BidiRun> it2(runs);
+    Q3PtrListIterator<BidiRun> it2(runs);
     BidiRun *r2;
     for ( ; (r2 = it2.current()); ++it2 )
         kdDebug(6041) << "    " << r2 << "  start=" << r2->start << "  stop=" << r2->stop << "  level=" << (uint)r2->level << endl;
@@ -1328,7 +1328,7 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
         m_firstLine = true;
 
         if (!smidpoints)
-            smidpoints = new QMemArray<BidiIterator>;
+            smidpoints = new Q3MemArray<BidiIterator>;
 
         sNumMidpoints = 0;
         sCurrMidpoint = 0;

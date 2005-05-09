@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>
@@ -71,14 +71,14 @@ static KCmdLineOptions kunique_options[] =
 };
 
 struct DCOPRequest {
-   QCString fun;
+   Q3CString fun;
    QByteArray data;
    DCOPClientTransaction *transaction;
 };
 
 class KUniqueApplicationPrivate {
 public:
-   QPtrList <DCOPRequest> requestList;
+   Q3PtrList <DCOPRequest> requestList;
    bool processingRequest;
    bool firstInstance;
 };
@@ -104,13 +104,13 @@ KUniqueApplication::start()
   delete args;
 #endif
 
-  QCString appName = KCmdLineArgs::about->appName();
+  Q3CString appName = KCmdLineArgs::about->appName();
 
   if (s_nofork)
   {
      if (s_multipleInstances)
      {
-        QCString pid;
+        Q3CString pid;
         pid.setNum(getpid());
         appName = appName + "-" + pid;
      }
@@ -149,14 +149,14 @@ KUniqueApplication::start()
      // Child
      ::close(fd[0]);
      if (s_multipleInstances)
-        appName.append("-").append(QCString().setNum(getpid()));
+        appName.append("-").append(Q3CString().setNum(getpid()));
      dc = dcopClient();
      {
-        QCString regName = dc->registerAs(appName, false);
+        Q3CString regName = dc->registerAs(appName, false);
         if (regName.isEmpty())
         {
            // Check DISPLAY
-           if (QCString(getenv(DISPLAY)).isEmpty())
+           if (Q3CString(getenv(DISPLAY)).isEmpty())
            {
               kdError() << "KUniqueApplication: Can't determine DISPLAY. Aborting." << endl;
               result = -1; // Error
@@ -238,7 +238,7 @@ KUniqueApplication::start()
 //     DCOPClient::emergencyClose();
 //     dcopClient()->detach();
      if (s_multipleInstances)
-        appName.append("-").append(QCString().setNum(fork_result));
+        appName.append("-").append(Q3CString().setNum(fork_result));
      ::close(fd[1]);
      for(;;)
      {
@@ -271,7 +271,7 @@ KUniqueApplication::start()
         kdError() << "KUniqueApplication: Registering failed!" << endl;
      }
 
-     QCString new_asn_id;
+     Q3CString new_asn_id;
 #if defined Q_WS_X11
      KStartupInfoId id;
      if( kapp != NULL ) // KApplication constructor unsets the env. variable
@@ -283,13 +283,13 @@ KUniqueApplication::start()
 #endif
      
      QByteArray data, reply;
-     QDataStream ds(data, IO_WriteOnly);
+     QDataStream ds(data, QIODevice::WriteOnly);
 
      KCmdLineArgs::saveAppArgs(ds);
      ds << new_asn_id;
 
      dc->setPriorityCall(true);
-     QCString replyType;
+     Q3CString replyType;
      if (!dc->call(appName, KCmdLineArgs::about->appName(), "newInstance()", data, replyType, reply))
      {
         kdError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
@@ -303,7 +303,7 @@ KUniqueApplication::start()
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
-     QDataStream rs(reply, IO_ReadOnly);
+     QDataStream rs(reply, QIODevice::ReadOnly);
      int exitCode;
      rs >> exitCode;
      delete dc;	// Clean up DCOP commmunication
@@ -390,8 +390,8 @@ void KUniqueApplication::newInstanceNoFork()
   // What to do with the return value ?
 }
 
-bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
-				 QCString &replyType, QByteArray &replyData)
+bool KUniqueApplication::process(const Q3CString &fun, const QByteArray &data,
+				 Q3CString &replyType, QByteArray &replyData)
 {
   if (fun == "newInstance()")
   {
@@ -402,7 +402,7 @@ bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
 }
 
 void
-KUniqueApplication::delayRequest(const QCString &fun, const QByteArray &data)
+KUniqueApplication::delayRequest(const Q3CString &fun, const QByteArray &data)
 {
   DCOPRequest *request = new DCOPRequest;
   request->fun = fun;
@@ -429,14 +429,14 @@ KUniqueApplication::processDelayed()
   {
      DCOPRequest *request = d->requestList.take(0);
      QByteArray replyData;
-     QCString replyType;
+     Q3CString replyType;
      if (request->fun == "newInstance()") {
        dcopClient()->setPriorityCall(false);
-       QDataStream ds(request->data, IO_ReadOnly);
+       QDataStream ds(request->data, QIODevice::ReadOnly);
        KCmdLineArgs::loadAppArgs(ds);
        if( !ds.atEnd()) // backwards compatibility
        {
-           QCString asn_id;
+           Q3CString asn_id;
            ds >> asn_id;
            setStartupId( asn_id );
        }
@@ -447,7 +447,7 @@ KUniqueApplication::processDelayed()
        if( s_handleAutoStarted )
            KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
 #endif
-       QDataStream rs(replyData, IO_WriteOnly);
+       QDataStream rs(replyData, QIODevice::WriteOnly);
        rs << exitCode;
        replyType = "int";
      }

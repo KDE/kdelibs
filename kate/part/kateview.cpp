@@ -75,10 +75,10 @@
 #include <qfileinfo.h>
 #include <qstyle.h>
 #include <qevent.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qlayout.h>
 #include <qclipboard.h>
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 //END includes
 
 KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
@@ -131,7 +131,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   doc->addView( this );
 
   setFocusProxy( m_viewInternal );
-  setFocusPolicy( StrongFocus );
+  setFocusPolicy( Qt::StrongFocus );
 
   if (!doc->singleViewMode()) {
     setXMLFile( "katepartui.rc" );
@@ -251,12 +251,12 @@ void KateView::setupActions()
     a=new KAction(i18n("&Align"), 0, this, SLOT(align()), ac, "tools_align");
     a->setWhatsThis(i18n("Use this to align the current line or block of text to its proper indent level."));
 
-    a=new KAction(i18n("C&omment"), CTRL+Qt::Key_D, this, SLOT(comment()),
+    a=new KAction(i18n("C&omment"), Qt::CTRL+Qt::Key_D, this, SLOT(comment()),
         ac, "tools_comment");
     a->setWhatsThis(i18n("This command comments out the current line or a selected block of text.<BR><BR>"
         "The characters for single/multiple line comments are defined within the language's highlighting."));
 
-    a=new KAction(i18n("Unco&mment"), CTRL+SHIFT+Qt::Key_D, this, SLOT(uncomment()),
+    a=new KAction(i18n("Unco&mment"), Qt::CTRL+Qt::SHIFT+Qt::Key_D, this, SLOT(uncomment()),
                                  ac, "tools_uncomment");
     a->setWhatsThis(i18n("This command removes comments from the current line or a selected block of text.<BR><BR>"
     "The characters for single/multiple line comments are defined within the language's highlighting."));
@@ -266,22 +266,22 @@ void KateView::setupActions()
                 ac, "tools_toggle_write_lock" );
     a->setWhatsThis( i18n("Lock/unlock the document for writing") );
 
-    a = new KAction( i18n("Uppercase"), CTRL + Qt::Key_U, this,
+    a = new KAction( i18n("Uppercase"), Qt::CTRL + Qt::Key_U, this,
       SLOT(uppercase()), ac, "tools_uppercase" );
     a->setWhatsThis( i18n("Convert the selection to uppercase, or the character to the "
       "right of the cursor if no text is selected.") );
 
-    a = new KAction( i18n("Lowercase"), CTRL + SHIFT + Qt::Key_U, this,
+    a = new KAction( i18n("Lowercase"), Qt::CTRL + Qt::SHIFT + Qt::Key_U, this,
       SLOT(lowercase()), ac, "tools_lowercase" );
     a->setWhatsThis( i18n("Convert the selection to lowercase, or the character to the "
       "right of the cursor if no text is selected.") );
 
-    a = new KAction( i18n("Capitalize"), CTRL + ALT + Qt::Key_U, this,
+    a = new KAction( i18n("Capitalize"), Qt::CTRL + Qt::ALT + Qt::Key_U, this,
       SLOT(capitalize()), ac, "tools_capitalize" );
     a->setWhatsThis( i18n("Capitalize the selection, or the word under the "
       "cursor if no text is selected.") );
 
-    a = new KAction( i18n("Join Lines"), CTRL + Qt::Key_J, this,
+    a = new KAction( i18n("Join Lines"), Qt::CTRL + Qt::Key_J, this,
       SLOT( joinLines() ), ac, "tools_join_lines" );
   }
   else
@@ -338,20 +338,20 @@ void KateView::setupActions()
   a->setWhatsThis(i18n("This decreases the display font size."));
 
   a= m_toggleBlockSelection = new KToggleAction(
-    i18n("Bl&ock Selection Mode"), CTRL + SHIFT + Key_B,
+    i18n("Bl&ock Selection Mode"), Qt::CTRL + Qt::SHIFT + Qt::Key_B,
     this, SLOT(toggleBlockSelectionMode()),
     ac, "set_verticalSelect");
   a->setWhatsThis(i18n("This command allows switching between the normal (line based) selection mode and the block selection mode."));
 
   a= m_toggleInsert = new KToggleAction(
-    i18n("Overwr&ite Mode"), Key_Insert,
+    i18n("Overwr&ite Mode"), Qt::Key_Insert,
     this, SLOT(toggleInsert()),
     ac, "set_insert" );
   a->setWhatsThis(i18n("Choose whether you want the text you type to be inserted or to overwrite existing text."));
 
   KToggleAction *toggleAction;
    a= m_toggleDynWrap = toggleAction = new KToggleAction(
-    i18n("&Dynamic Word Wrap"), Key_F10,
+    i18n("&Dynamic Word Wrap"), Qt::Key_F10,
     this, SLOT(toggleDynWordWrap()),
     ac, "view_dynamic_word_wrap" );
   a->setWhatsThis(i18n("If this option is checked, the text lines will be wrapped at the view border on the screen."));
@@ -367,14 +367,14 @@ void KateView::setupActions()
   m_setDynWrapIndicators->setItems(list2);
 
   a= toggleAction=m_toggleFoldingMarkers = new KToggleAction(
-    i18n("Show Folding &Markers"), Key_F9,
+    i18n("Show Folding &Markers"), Qt::Key_F9,
     this, SLOT(toggleFoldingMarkers()),
     ac, "view_folding_markers" );
   a->setWhatsThis(i18n("You can choose if the codefolding marks should be shown, if codefolding is possible."));
   toggleAction->setCheckedState(i18n("Hide Folding &Markers"));
 
    a= m_toggleIconBar = toggleAction = new KToggleAction(
-    i18n("Show &Icon Border"), Key_F6,
+    i18n("Show &Icon Border"), Qt::Key_F6,
     this, SLOT(toggleIconBorder()),
     ac, "view_border");
   a=toggleAction;
@@ -382,7 +382,7 @@ void KateView::setupActions()
   toggleAction->setCheckedState(i18n("Hide &Icon Border"));
 
   a= toggleAction=m_toggleLineNumbers = new KToggleAction(
-     i18n("Show &Line Numbers"), Key_F11,
+     i18n("Show &Line Numbers"), Qt::Key_F11,
      this, SLOT(toggleLineNumbersOn()),
      ac, "view_line_numbers" );
   a->setWhatsThis(i18n("Show/hide the line numbers on the left hand side of the view."));
@@ -405,7 +405,7 @@ void KateView::setupActions()
   toggleAction->setCheckedState(i18n("Hide Static &Word Wrap Marker"));
 
   a= m_switchCmdLine = new KAction(
-     i18n("Switch to Command Line"), Key_F7,
+     i18n("Switch to Command Line"), Qt::Key_F7,
      this, SLOT(switchToCmdLine()),
      ac, "switch_to_cmd_line" );
   a->setWhatsThis(i18n("Show/hide the command line on the bottom of the view."));
@@ -438,33 +438,33 @@ void KateView::setupEditActions()
   KActionCollection* ac = m_editActions;
 
   new KAction(
-    i18n("Move Word Left"),                         CTRL + Key_Left,
+    i18n("Move Word Left"),                         Qt::CTRL + Qt::Key_Left,
     this,SLOT(wordLeft()),
     ac, "word_left" );
   new KAction(
-    i18n("Select Character Left"),          SHIFT +        Key_Left,
+    i18n("Select Character Left"),          Qt::SHIFT +        Qt::Key_Left,
     this,SLOT(shiftCursorLeft()),
     ac, "select_char_left" );
   new KAction(
-    i18n("Select Word Left"),               SHIFT + CTRL + Key_Left,
+    i18n("Select Word Left"),               Qt::SHIFT + Qt::CTRL + Qt::Key_Left,
     this, SLOT(shiftWordLeft()),
     ac, "select_word_left" );
 
   new KAction(
-    i18n("Move Word Right"),                        CTRL + Key_Right,
+    i18n("Move Word Right"),                        Qt::CTRL + Qt::Key_Right,
     this, SLOT(wordRight()),
     ac, "word_right" );
   new KAction(
-    i18n("Select Character Right"),         SHIFT        + Key_Right,
+    i18n("Select Character Right"),         Qt::SHIFT        + Qt::Key_Right,
     this, SLOT(shiftCursorRight()),
     ac, "select_char_right" );
   new KAction(
-    i18n("Select Word Right"),              SHIFT + CTRL + Key_Right,
+    i18n("Select Word Right"),              Qt::SHIFT + Qt::CTRL + Qt::Key_Right,
     this,SLOT(shiftWordRight()),
     ac, "select_word_right" );
 
   new KAction(
-    i18n("Move to Beginning of Line"),                      Key_Home,
+    i18n("Move to Beginning of Line"),                      Qt::Key_Home,
     this, SLOT(home()),
     ac, "beginning_of_line" );
   new KAction(
@@ -472,16 +472,16 @@ void KateView::setupEditActions()
     this, SLOT(top()),
     ac, "beginning_of_document" );
   new KAction(
-    i18n("Select to Beginning of Line"),     SHIFT +        Key_Home,
+    i18n("Select to Beginning of Line"),     Qt::SHIFT +        Qt::Key_Home,
     this, SLOT(shiftHome()),
     ac, "select_beginning_of_line" );
   new KAction(
-    i18n("Select to Beginning of Document"), SHIFT + CTRL + Key_Home,
+    i18n("Select to Beginning of Document"), Qt::SHIFT + Qt::CTRL + Qt::Key_Home,
     this, SLOT(shiftTop()),
     ac, "select_beginning_of_document" );
 
   new KAction(
-    i18n("Move to End of Line"),                            Key_End,
+    i18n("Move to End of Line"),                            Qt::Key_End,
     this, SLOT(end()),
     ac, "end_of_line" );
   new KAction(
@@ -489,41 +489,41 @@ void KateView::setupEditActions()
     this, SLOT(bottom()),
     ac, "end_of_document" );
   new KAction(
-    i18n("Select to End of Line"),           SHIFT +        Key_End,
+    i18n("Select to End of Line"),           Qt::SHIFT +        Qt::Key_End,
     this, SLOT(shiftEnd()),
     ac, "select_end_of_line" );
   new KAction(
-    i18n("Select to End of Document"),       SHIFT + CTRL + Key_End,
+    i18n("Select to End of Document"),       Qt::SHIFT + Qt::CTRL + Qt::Key_End,
     this, SLOT(shiftBottom()),
     ac, "select_end_of_document" );
 
   new KAction(
-    i18n("Select to Previous Line"),                SHIFT + Key_Up,
+    i18n("Select to Previous Line"),                Qt::SHIFT + Qt::Key_Up,
     this, SLOT(shiftUp()),
     ac, "select_line_up" );
   new KAction(
-    i18n("Scroll Line Up"),"",              CTRL +          Key_Up,
+    i18n("Scroll Line Up"),"",              Qt::CTRL +          Qt::Key_Up,
     this, SLOT(scrollUp()),
     ac, "scroll_line_up" );
 
-  new KAction(i18n("Move to Next Line"), Key_Down, this, SLOT(down()),
+  new KAction(i18n("Move to Next Line"), Qt::Key_Down, this, SLOT(down()),
 	      ac, "move_line_down");
 
-  new KAction(i18n("Move to Previous Line"), Key_Up, this, SLOT(up()),
+  new KAction(i18n("Move to Previous Line"), Qt::Key_Up, this, SLOT(up()),
 	      ac, "move_line_up");
 
-  new KAction(i18n("Move Character Right"), Key_Right, this,
+  new KAction(i18n("Move Character Right"), Qt::Key_Right, this,
 	      SLOT(cursorRight()), ac, "move_cursor_right");
 
-  new KAction(i18n("Move Character Left"), Key_Left, this, SLOT(cursorLeft()),
+  new KAction(i18n("Move Character Left"), Qt::Key_Left, this, SLOT(cursorLeft()),
 	      ac, "move_cusor_left");
 
   new KAction(
-    i18n("Select to Next Line"),                    SHIFT + Key_Down,
+    i18n("Select to Next Line"),                    Qt::SHIFT + Qt::Key_Down,
     this, SLOT(shiftDown()),
     ac, "select_line_down" );
   new KAction(
-    i18n("Scroll Line Down"),               CTRL +          Key_Down,
+    i18n("Scroll Line Down"),               Qt::CTRL +          Qt::Key_Down,
     this, SLOT(scrollDown()),
     ac, "scroll_line_down" );
 
@@ -532,15 +532,15 @@ void KateView::setupEditActions()
     this, SLOT(pageUp()),
     ac, "scroll_page_up" );
   new KAction(
-    i18n("Select Page Up"),                         SHIFT + Key_PageUp,
+    i18n("Select Page Up"),                         Qt::SHIFT + Qt::Key_PageUp,
     this, SLOT(shiftPageUp()),
     ac, "select_page_up" );
   new KAction(
-    i18n("Move to Top of View"),             CTRL +         Key_PageUp,
+    i18n("Move to Top of View"),             Qt::CTRL +         Qt::Key_PageUp,
     this, SLOT(topOfView()),
     ac, "move_top_of_view" );
   new KAction(
-    i18n("Select to Top of View"),             CTRL + SHIFT +  Key_PageUp,
+    i18n("Select to Top of View"),             Qt::CTRL + Qt::SHIFT +  Qt::Key_PageUp,
     this, SLOT(shiftTopOfView()),
     ac, "select_top_of_view" );
 
@@ -549,23 +549,23 @@ void KateView::setupEditActions()
     this, SLOT(pageDown()),
     ac, "scroll_page_down" );
   new KAction(
-    i18n("Select Page Down"),                       SHIFT + Key_PageDown,
+    i18n("Select Page Down"),                       Qt::SHIFT + Qt::Key_PageDown,
     this, SLOT(shiftPageDown()),
     ac, "select_page_down" );
   new KAction(
-    i18n("Move to Bottom of View"),          CTRL +         Key_PageDown,
+    i18n("Move to Bottom of View"),          Qt::CTRL +         Qt::Key_PageDown,
     this, SLOT(bottomOfView()),
     ac, "move_bottom_of_view" );
   new KAction(
-    i18n("Select to Bottom of View"),         CTRL + SHIFT + Key_PageDown,
+    i18n("Select to Bottom of View"),         Qt::CTRL + Qt::SHIFT + Qt::Key_PageDown,
     this, SLOT(shiftBottomOfView()),
     ac, "select_bottom_of_view" );
   new KAction(
-    i18n("Move to Matching Bracket"),               CTRL + Key_6,
+    i18n("Move to Matching Bracket"),               Qt::CTRL + Qt::Key_6,
     this, SLOT(toMatchingBracket()),
     ac, "to_matching_bracket" );
   new KAction(
-    i18n("Select to Matching Bracket"),      SHIFT + CTRL + Key_6,
+    i18n("Select to Matching Bracket"),      Qt::SHIFT + Qt::CTRL + Qt::Key_6,
     this, SLOT(shiftToMatchingBracket()),
     ac, "select_matching_bracket" );
 
@@ -573,12 +573,12 @@ void KateView::setupEditActions()
   if ( !m_doc->readOnly() )
   {
     new KAction(
-      i18n("Transpose Characters"),           CTRL + Key_T,
+      i18n("Transpose Characters"),           Qt::CTRL + Qt::Key_T,
       this, SLOT(transpose()),
       ac, "transpose_char" );
 
     new KAction(
-      i18n("Delete Line"),                    CTRL + Key_K,
+      i18n("Delete Line"),                    Qt::CTRL + Qt::Key_K,
       this, SLOT(killLine()),
       ac, "delete_line" );
 
@@ -592,11 +592,11 @@ void KateView::setupEditActions()
       this, SLOT(deleteWordRight()),
       ac, "delete_word_right" );
 
-    new KAction(i18n("Delete Next Character"), Key_Delete,
+    new KAction(i18n("Delete Next Character"), Qt::Key_Delete,
                 this, SLOT(keyDelete()),
                 ac, "delete_next_character");
 
-    new KAction(i18n("Backspace"), Key_Backspace,
+    new KAction(i18n("Backspace"), Qt::Key_Backspace,
                 this, SLOT(backspace()),
                 ac, "backspace");
   }
@@ -619,13 +619,13 @@ void KateView::setupEditActions()
 void KateView::setupCodeFolding()
 {
   KActionCollection *ac=this->actionCollection();
-  new KAction( i18n("Collapse Toplevel"), CTRL+SHIFT+Key_Minus,
+  new KAction( i18n("Collapse Toplevel"), Qt::CTRL+Qt::SHIFT+Qt::Key_Minus,
        m_doc->foldingTree(),SLOT(collapseToplevelNodes()),ac,"folding_toplevel");
-  new KAction( i18n("Expand Toplevel"), CTRL+SHIFT+Key_Plus,
+  new KAction( i18n("Expand Toplevel"), Qt::CTRL+Qt::SHIFT+Qt::Key_Plus,
        this,SLOT(slotExpandToplevel()),ac,"folding_expandtoplevel");
-  new KAction( i18n("Collapse One Local Level"), CTRL+Key_Minus,
+  new KAction( i18n("Collapse One Local Level"), Qt::CTRL+Qt::Key_Minus,
        this,SLOT(slotCollapseLocal()),ac,"folding_collapselocal");
-  new KAction( i18n("Expand One Local Level"), CTRL+Key_Plus,
+  new KAction( i18n("Expand One Local Level"), Qt::CTRL+Qt::Key_Plus,
        this,SLOT(slotExpandLocal()),ac,"folding_expandlocal");
 
 #ifdef DEBUGACCELS
@@ -1143,7 +1143,7 @@ void KateView::showArgHint( QStringList arg1, const QString& arg2, const QString
   m_codeCompletion->showArgHint( arg1, arg2, arg3 );
 }
 
-void KateView::showCompletionBox( QValueList<KTextEditor::CompletionEntry> arg1, int offset, bool cs )
+void KateView::showCompletionBox( Q3ValueList<KTextEditor::CompletionEntry> arg1, int offset, bool cs )
 {
   emit aboutToShowCompletionBox();
   m_codeCompletion->showCompletionBox( arg1, offset, cs );
@@ -1603,11 +1603,11 @@ void KateView::copyHTML()
 
   KMultipleDrag *drag = new KMultipleDrag();
 
-  QTextDrag *htmltextdrag = new QTextDrag(selectionAsHtml()) ;
+  Q3TextDrag *htmltextdrag = new Q3TextDrag(selectionAsHtml()) ;
   htmltextdrag->setSubtype("html");
 
   drag->addDragObject( htmltextdrag);
-  drag->addDragObject( new QTextDrag( selection()));
+  drag->addDragObject( new Q3TextDrag( selection()));
 
   QApplication::clipboard()->setData(drag);
 }
@@ -1637,7 +1637,7 @@ QString KateView::textAsHtml ( uint startLine, uint startCol, uint endLine, uint
     return QString ();
 
   QString s;
-  QTextStream ts( &s, IO_WriteOnly );
+  QTextStream ts( &s, QIODevice::WriteOnly );
   ts.setEncoding(QTextStream::UnicodeUTF8);
   ts << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">" << endl;
   ts << "<html xmlns=\"http://www.w3.org/1999/xhtml\">" << endl;
@@ -1735,17 +1735,17 @@ void KateView::lineAsHTML (KateTextLine::Ptr line, uint startCol, uint length, Q
   if(previousCharacterColor != blackColor)
           (*outputStream) << "</span>";
         // let's read that color :
-        int red, green, blue;
+        int Qt::red, Qt::green, Qt::blue;
         // getting the red, green, blue values of the color :
-        charAttributes->textColor().rgb(&red, &green, &blue);
-  if(!(red == 0 && green == 0 && blue == 0)) {
+        charAttributes->textColor().rgb(&Qt::red, &Qt::green, &Qt::blue);
+  if(!(Qt::red == 0 && Qt::green == 0 && Qt::blue == 0)) {
           (*outputStream) << "<span style='color: #"
-              << ( (red < 0x10)?"0":"")  // need to put 0f, NOT f for instance. don't touch 1f.
-              << QString::number(red, 16) // html wants the hex value here (hence the 16)
-              << ( (green < 0x10)?"0":"")
-              << QString::number(green, 16)
-              << ( (blue < 0x10)?"0":"")
-              << QString::number(blue, 16)
+              << ( (Qt::red < 0x10)?"0":"")  // need to put 0f, NOT f for instance. don't touch 1f.
+              << QString::number(Qt::red, 16) // html wants the hex value here (hence the 16)
+              << ( (Qt::green < 0x10)?"0":"")
+              << QString::number(Qt::green, 16)
+              << ( (Qt::blue < 0x10)?"0":"")
+              << QString::number(Qt::blue, 16)
               << "'>";
   }
         // we need to reinitialize the bold/italic status, since we closed all the tags
@@ -1770,7 +1770,7 @@ void KateView::lineAsHTML (KateTextLine::Ptr line, uint startCol, uint length, Q
         (*outputStream) << "</i>";
 
       // write the actual character :
-      (*outputStream) << QStyleSheet::escape(QString(line->getChar(curPos)));
+      (*outputStream) << Q3StyleSheet::escape(QString(line->getChar(curPos)));
 
       // save status for the next character :
       previousCharacterWasItalic = charAttributes->italic();

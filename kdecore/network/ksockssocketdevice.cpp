@@ -100,7 +100,7 @@ bool KSocksSocketDevice::listen(int backlog)
 	}
 
       resetError();
-      setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
+      setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
       setState(IO_Open);
       return true;
     }
@@ -156,7 +156,7 @@ bool KSocksSocketDevice::connect(const KResolverEntry& address)
       return false;
     }
 
-  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
+  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
   setState(IO_Open);
   return true;			// all is well
 }

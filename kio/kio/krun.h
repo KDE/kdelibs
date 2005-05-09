@@ -340,7 +340,7 @@ public:
     * @internal
     * @since 3.4
     */
-    static bool checkStartupNotify( const QString& binName, const KService* service, bool* silent_arg, QCString* wmclass_arg );
+    static bool checkStartupNotify( const QString& binName, const KService* service, bool* silent_arg, Q3CString* wmclass_arg );
 
 signals:
   /**

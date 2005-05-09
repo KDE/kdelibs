@@ -42,17 +42,17 @@
 #include <kurldrag.h>
 
 #include <qstyle.h>
-#include <qdragobject.h>
-#include <qpopupmenu.h>
-#include <qdropsite.h>
+#include <q3dragobject.h>
+#include <q3popupmenu.h>
+#include <q3dropsite.h>
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qclipboard.h>
 #include <qpixmap.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
-  : QWidget (view, "", Qt::WStaticContents | Qt::WRepaintNoErase | Qt::WResizeNoErase )
+  : QWidget (view, "", Qt::WStaticContents | Qt::WNoAutoErase | Qt::WResizeNoErase )
   , editSessionNumber (0)
   , editIsRunning (false)
   , m_view (view)
@@ -96,7 +96,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   //
   // scrollbar for lines
   //
-  m_lineScroll = new KateScrollBar(QScrollBar::Vertical, this);
+  m_lineScroll = new KateScrollBar(Qt::Vertical, this);
   m_lineScroll->show();
   m_lineScroll->setTracking (true);
 
@@ -131,7 +131,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   //
   // scrollbar for columns
   //
-  m_columnScroll = new QScrollBar(QScrollBar::Horizontal,m_view);
+  m_columnScroll = new QScrollBar(Qt::Horizontal,m_view);
   m_columnScroll->hide();
   m_columnScroll->setTracking(true);
   m_startX = 0;
@@ -159,7 +159,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   cXPos = 0;
 
   setAcceptDrops( true );
-  setBackgroundMode( NoBackground );
+  setBackgroundMode( Qt::NoBackground );
 
   // event filter
   installEventFilter(this);
@@ -2418,7 +2418,7 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
       {
         kdDebug (13030) << "hint around" << endl;
 
-        if( k->key() == Key_Escape )
+        if( k->key() == Qt::Key_Escape )
           m_view->m_codeCompletion->abortCompletion();
       }
 
@@ -2427,7 +2427,7 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
         m_view->clearSelection();
         return true;
       }
-      else if ( !((k->state() & ControlButton) || (k->state() & AltButton)) )
+      else if ( !((k->state() & Qt::ControlModifier) || (k->state() & Qt::AltModifier)) )
       {
         keyPressEvent( k );
         return k->isAccepted();
@@ -2481,8 +2481,8 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
   {
     kdDebug (13030) << "hint around" << endl;
 
-    if( e->key() == Key_Enter || e->key() == Key_Return  ||
-    (key == SHIFT + Qt::Key_Return) || (key == SHIFT + Qt::Key_Enter)) {
+    if( e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return  ||
+    (key == Qt::SHIFT + Qt::Key_Return) || (key == Qt::SHIFT + Qt::Key_Enter)) {
       m_view->m_codeCompletion->doComplete();
       e->accept();
       return;
@@ -2502,7 +2502,7 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
     return;
   }
 
-  if ((key == SHIFT + Qt::Key_Return) || (key == SHIFT + Qt::Key_Enter))
+  if ((key == Qt::SHIFT + Qt::Key_Return) || (key == Qt::SHIFT + Qt::Key_Enter))
   {
     uint ln = cursor.line();
     int col = cursor.col();
@@ -2530,7 +2530,7 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
     return;
   }
 
-  if (key == Qt::Key_Backspace || key == SHIFT + Qt::Key_Backspace)
+  if (key == Qt::Key_Backspace || key == Qt::SHIFT + Qt::Key_Backspace)
   {
     m_view->backspace();
     e->accept();
@@ -2541,7 +2541,7 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
     return;
   }
 
-  if  (key == Qt::Key_Tab || key == SHIFT+Qt::Key_Backtab || key == Qt::Key_Backtab)
+  if  (key == Qt::Key_Tab || key == Qt::SHIFT+Qt::Key_Backtab || key == Qt::Key_Backtab)
   {
     if (m_doc->invokeTabInterceptor(key)) {
       e->accept();
@@ -2566,7 +2566,7 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
         return;
       }
 
-      if (key == SHIFT+Qt::Key_Backtab || key == Qt::Key_Backtab)
+      if (key == Qt::SHIFT+Qt::Key_Backtab || key == Qt::Key_Backtab)
       {
         m_doc->indent( m_view, cursor.line(), -1 );
         e->accept();
@@ -2578,7 +2578,7 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
       }
     }
 }
-  if ( !(e->state() & ControlButton) && !(e->state() & AltButton)
+  if ( !(e->state() & Qt::ControlModifier) && !(e->state() & Qt::AltModifier)
        && m_doc->typeChars ( m_view, e->text() ) )
   {
     e->accept();
@@ -2596,7 +2596,7 @@ void KateViewInternal::keyReleaseEvent( QKeyEvent* e )
 {
   KKey key(e);
 
-  if (key == SHIFT)
+  if (key == Qt::SHIFT)
     m_shiftKeyPressed = true;
   else
   {
@@ -2650,7 +2650,7 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
 {
   switch (e->button())
   {
-    case LeftButton:
+    case Qt::LeftButton:
         m_selChangedByUser = false;
 
         if (possibleTripleClick)
@@ -2659,7 +2659,7 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
 
           m_selectionMode = Line;
 
-          if ( e->state() & Qt::ShiftButton )
+          if ( e->state() & Qt::ShiftModifier )
           {
             updateSelection( cursor, true );
           }
@@ -2680,7 +2680,7 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
           return;
         }
 
-        if ( e->state() & Qt::ShiftButton )
+        if ( e->state() & Qt::ShiftModifier )
         {
           selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
@@ -2697,7 +2697,7 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
         {
           dragInfo.state = diNone;
 
-          placeCursor( e->pos(), e->state() & ShiftButton );
+          placeCursor( e->pos(), e->state() & Qt::ShiftModifier );
 
           scrollX = 0;
           scrollY = 0;
@@ -2718,10 +2718,10 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
 {
   switch (e->button())
   {
-    case LeftButton:
+    case Qt::LeftButton:
       m_selectionMode = Word;
 
-      if ( e->state() & Qt::ShiftButton )
+      if ( e->state() & Qt::ShiftModifier )
       {
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
@@ -2770,7 +2770,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
 {
   switch (e->button())
   {
-    case LeftButton:
+    case Qt::LeftButton:
       m_selectionMode = Default;
 //       selStartCached.setLine( -1 );
 
@@ -2784,7 +2784,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
       }
 
       if (dragInfo.state == diPending)
-        placeCursor( e->pos(), e->state() & ShiftButton );
+        placeCursor( e->pos(), e->state() & Qt::ShiftModifier );
       else if (dragInfo.state == diNone)
         m_scrollTimer.stop ();
 
@@ -2793,7 +2793,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
       e->accept ();
       break;
 
-    case MidButton:
+    case Qt::MidButton:
       placeCursor( e->pos() );
 
       if( m_doc->isReadWrite() )
@@ -2814,7 +2814,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
 
 void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
 {
-  if( e->state() & LeftButton )
+  if( e->state() & Qt::LeftButton )
   {
     if (dragInfo.state == diPending)
     {
@@ -2862,9 +2862,9 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
     if (isTargetSelected( e->pos() ) ) {
       // mouse is over selected text. indicate that the text is draggable by setting
       // the arrow cursor as other Qt text editing widgets do
-      if (m_mouseCursor != ArrowCursor) {
+      if (m_mouseCursor != Qt::ArrowCursor) {
         setCursor( KCursor::arrowCursor() );
-        m_mouseCursor = ArrowCursor;
+        m_mouseCursor = Qt::ArrowCursor;
       }
     } else {
       // normal text cursor
@@ -3015,13 +3015,13 @@ void KateViewInternal::focusOutEvent (QFocusEvent *)
 void KateViewInternal::doDrag()
 {
   dragInfo.state = diDragging;
-  dragInfo.dragObject = new QTextDrag(m_view->selection(), this);
+  dragInfo.dragObject = new Q3TextDrag(m_view->selection(), this);
   dragInfo.dragObject->drag();
 }
 
 void KateViewInternal::dragEnterEvent( QDragEnterEvent* event )
 {
-  event->accept( (QTextDrag::canDecode(event) && m_doc->isReadWrite()) ||
+  event->accept( (Q3TextDrag::canDecode(event) && m_doc->isReadWrite()) ||
                   KURLDrag::canDecode(event) );
 }
 
@@ -3041,11 +3041,11 @@ void KateViewInternal::dropEvent( QDropEvent* event )
 
       emit dropEventPass(event);
 
-  } else if ( QTextDrag::canDecode(event) && m_doc->isReadWrite() ) {
+  } else if ( Q3TextDrag::canDecode(event) && m_doc->isReadWrite() ) {
 
     QString text;
 
-    if (!QTextDrag::decode(event, text))
+    if (!Q3TextDrag::decode(event, text))
       return;
 
     // is the source our own document?
@@ -3096,7 +3096,7 @@ void KateViewInternal::wheelEvent(QWheelEvent* e)
 {
   if (m_lineScroll->minValue() != m_lineScroll->maxValue() && e->orientation() != Qt::Horizontal) {
     // React to this as a vertical event
-    if ( ( e->state() & ControlButton ) || ( e->state() & ShiftButton ) ) {
+    if ( ( e->state() & Qt::ControlModifier ) || ( e->state() & Qt::ShiftModifier ) ) {
       if (e->delta() > 0)
         scrollPrevPage();
       else

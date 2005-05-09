@@ -22,10 +22,10 @@
 #include "kxmlcommand.h"
 
 #include <qtoolbutton.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -127,36 +127,36 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	m_valid = true;
 
 	m_view = new KListView(this);
-	  QWhatsThis::add(m_view, whatsThisFilterchainListView);
+	  Q3WhatsThis::add(m_view, whatsThisFilterchainListView);
 	m_view->addColumn("");
-	m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	m_view->setLineWidth(1);
 	m_view->setSorting(-1);
 	m_view->header()->hide();
-	connect(m_view,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotItemSelected(QListViewItem*)));
+	connect(m_view,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotItemSelected(Q3ListViewItem*)));
 
 	m_add = new QToolButton(this);
-	  QWhatsThis::add(m_add, whatsThisAddFilterButton);
+	  Q3WhatsThis::add(m_add, whatsThisAddFilterButton);
 	m_add->setIconSet(BarIconSet("filter"));
 	QToolTip::add(m_add, i18n("Add filter"));
 
 	m_remove = new QToolButton(this);
-	  QWhatsThis::add(m_remove, whatsThisRemoveFilterButton);
+	  Q3WhatsThis::add(m_remove, whatsThisRemoveFilterButton);
 	m_remove->setIconSet(BarIconSet("remove"));
 	QToolTip::add(m_remove, i18n("Remove filter"));
 
 	m_up = new QToolButton(this);
-	  QWhatsThis::add(m_up, whatsThisMoveFilterUpButton);
+	  Q3WhatsThis::add(m_up, whatsThisMoveFilterUpButton);
 	m_up->setIconSet(BarIconSet("up"));
 	QToolTip::add(m_up, i18n("Move filter up"));
 
 	m_down = new QToolButton(this);
-	  QWhatsThis::add(m_down, whatsThisMoveFilterDownButton);
+	  Q3WhatsThis::add(m_down, whatsThisMoveFilterDownButton);
 	m_down->setIconSet(BarIconSet("down"));
 	QToolTip::add(m_down, i18n("Move filter down"));
 
 	m_configure = new QToolButton(this);
-	  QWhatsThis::add(m_configure, whatsThisConfigureFilterButton);
+	  Q3WhatsThis::add(m_configure, whatsThisConfigureFilterButton);
 	m_configure->setIconSet(BarIconSet("configure"));
 	QToolTip::add(m_configure, i18n("Configure filter"));
 
@@ -165,13 +165,13 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	connect(m_up,SIGNAL(clicked()),SLOT(slotUpClicked()));
 	connect(m_down,SIGNAL(clicked()),SLOT(slotDownClicked()));
 	connect(m_configure,SIGNAL(clicked()),SLOT(slotConfigureClicked()));
-	connect(m_view,SIGNAL(doubleClicked(QListViewItem*)),SLOT(slotConfigureClicked()));
+	connect(m_view,SIGNAL(doubleClicked(Q3ListViewItem*)),SLOT(slotConfigureClicked()));
 
 	m_info = new KActiveLabel(this);
-	  QWhatsThis::add(m_info, whatsThisFilterInfoPane);
-	m_info->setVScrollBarMode( QScrollView::Auto );
-	m_info->setHScrollBarMode( QScrollView::Auto );
-	m_info->setFrameStyle( QFrame::Panel|QFrame::Sunken );
+	  Q3WhatsThis::add(m_info, whatsThisFilterInfoPane);
+	m_info->setVScrollBarMode( Q3ScrollView::Auto );
+	m_info->setHScrollBarMode( Q3ScrollView::Auto );
+	m_info->setFrameStyle( Q3Frame::Panel|Q3Frame::Sunken );
 	m_info->setMinimumSize( QSize( 240, 100 ) );
 
 	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, KDialog::spacingHint());
@@ -218,7 +218,7 @@ void KPFilterPage::slotAddClicked()
 		if (!cmd) return; // Error
 		QStringList	filters = activeList();
 		int		pos = KXmlCommandManager::self()->insertCommand(filters, cmd->name());
-		QListViewItem	*prev(0);
+		Q3ListViewItem	*prev(0);
 		if (pos > 0)
 		{
 			prev = m_view->firstChild();
@@ -226,7 +226,7 @@ void KPFilterPage::slotAddClicked()
 				prev = prev->nextSibling();
 		}
 		m_activefilters.insert(cmd->name(), cmd);
-		QListViewItem	*item = new QListViewItem(m_view, prev, cmd->description(), cmd->name());
+		Q3ListViewItem	*item = new Q3ListViewItem(m_view, prev, cmd->description(), cmd->name());
 		item->setPixmap(0, SmallIcon("filter"));
 		checkFilterChain();
 	}
@@ -248,10 +248,10 @@ void KPFilterPage::slotRemoveClicked()
 
 void KPFilterPage::slotUpClicked()
 {
-	QListViewItem	*item = m_view->selectedItem();
+	Q3ListViewItem	*item = m_view->selectedItem();
 	if (item && item->itemAbove())
 	{
-		QListViewItem	*clone = new QListViewItem(m_view,item->itemAbove()->itemAbove(),item->text(0),item->text(1));
+		Q3ListViewItem	*clone = new Q3ListViewItem(m_view,item->itemAbove()->itemAbove(),item->text(0),item->text(1));
 		clone->setPixmap(0, SmallIcon("filter"));
 		delete item;
 		m_view->setSelected(clone, true);
@@ -261,10 +261,10 @@ void KPFilterPage::slotUpClicked()
 
 void KPFilterPage::slotDownClicked()
 {
-	QListViewItem	*item = m_view->selectedItem();
+	Q3ListViewItem	*item = m_view->selectedItem();
 	if (item && item->itemBelow())
 	{
-		QListViewItem	*clone = new QListViewItem(m_view,item->itemBelow(),item->text(0),item->text(1));
+		Q3ListViewItem	*clone = new Q3ListViewItem(m_view,item->itemBelow(),item->text(0),item->text(1));
 		clone->setPixmap(0, SmallIcon("filter"));
 		delete item;
 		m_view->setSelected(clone, true);
@@ -279,7 +279,7 @@ void KPFilterPage::slotConfigureClicked()
 		KMessageBox::error(this,i18n("Internal error: unable to load filter."));
 }
 
-void KPFilterPage::slotItemSelected(QListViewItem *item)
+void KPFilterPage::slotItemSelected(Q3ListViewItem *item)
 {
 	m_remove->setEnabled((item != 0));
 	m_up->setEnabled((item != 0 && item->itemAbove() != 0));
@@ -292,7 +292,7 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 {
 	QStringList	filters = QStringList::split(',',opts["_kde-filters"],false);
 	// remove unneeded filters
-	QDictIterator<KXmlCommand>	dit(m_activefilters);
+	Q3DictIterator<KXmlCommand>	dit(m_activefilters);
 	for (;dit.current();)
 	{
 		if (filters.find(dit.currentKey()) == filters.end())
@@ -305,7 +305,7 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 	}
 	// add needed filters
 	m_view->clear();
-	QListViewItem	*item(0);
+	Q3ListViewItem	*item(0);
 	for (QStringList::ConstIterator sit=filters.begin(); sit!=filters.end(); ++sit)
 	{
 		KXmlCommand	*f(0);
@@ -319,7 +319,7 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 			}
 		}
 		if (f)
-			item = new QListViewItem(m_view,item,f->description(),f->name());
+			item = new Q3ListViewItem(m_view,item,f->description(),f->name());
 	}
 	checkFilterChain();
 }
@@ -342,7 +342,7 @@ void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 QStringList KPFilterPage::activeList()
 {
 	QStringList	list;
-	QListViewItem	*item = m_view->firstChild();
+	Q3ListViewItem	*item = m_view->firstChild();
 	while (item)
 	{
 		list.append(item->text(1));
@@ -361,7 +361,7 @@ KXmlCommand* KPFilterPage::currentFilter()
 
 void KPFilterPage::checkFilterChain()
 {
-	QListViewItem	*item = m_view->firstChild();
+	Q3ListViewItem	*item = m_view->firstChild();
 	bool		ok(true);
 	m_valid = true;
 	while (item)

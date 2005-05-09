@@ -23,7 +23,7 @@
 #include <qlayout.h>
 #include <qstringlist.h>
 #include <qregexp.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <klocale.h>
 #include <kiconloader.h>
 

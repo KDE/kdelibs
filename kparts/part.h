@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 #include <qdom.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kurl.h>
 
 #include <kxmlguiclient.h>
@@ -300,7 +300,7 @@ private slots:
     void slotWidgetDestroyed();
 
 private:
-    QGuardedPtr<QWidget> m_widget;
+    QPointer<QWidget> m_widget;
 
     PartManager * m_manager;
 

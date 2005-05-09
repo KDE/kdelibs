@@ -3,13 +3,13 @@
 public:
 AdrParam();
 AdrParam(const AdrParam&);
-AdrParam(const QCString&);
+AdrParam(const Q3CString&);
 AdrParam & operator = (AdrParam&);
-AdrParam & operator = (const QCString&);
+AdrParam & operator = (const Q3CString&);
 bool operator ==(AdrParam&);
 bool operator !=(AdrParam& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {AdrParam a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {AdrParam a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~AdrParam();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

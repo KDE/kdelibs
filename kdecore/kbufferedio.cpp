@@ -22,8 +22,8 @@
 
 #include <string.h>
 
-#include <qptrlist.h>
-#include <qcstring.h>
+#include <q3ptrlist.h>
+#include <q3cstring.h>
 #include "kbufferedio.h"
 
 /*
@@ -128,7 +128,7 @@ bool KBufferedIO::canReadLine() const
   QByteArray* buf;
 
   // scan each QByteArray for the occurrence of '\n'
-  QPtrList<QByteArray> &buflist = ((KBufferedIO*)this)->inBuf;
+  Q3PtrList<QByteArray> &buflist = ((KBufferedIO*)this)->inBuf;
   buf = buflist.first();
   char *p = buf->data() + inBufIndex;
   int n = buf->size() - inBufIndex;

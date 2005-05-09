@@ -167,9 +167,9 @@ KService::Ptr KDataToolInfo::service() const
     return m_service;
 }
 
-QValueList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QString& mimetype, KInstance* instance )
+Q3ValueList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QString& mimetype, KInstance* instance )
 {
-    QValueList<KDataToolInfo> lst;
+    Q3ValueList<KDataToolInfo> lst;
 
     QString constr;
 
@@ -236,14 +236,14 @@ void KDataToolAction::slotActivated()
     emit toolActivated( m_info, m_command );
 }
 
-QPtrList<KAction> KDataToolAction::dataToolActionList( const QValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot )
+Q3PtrList<KAction> KDataToolAction::dataToolActionList( const Q3ValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot )
 {
-    QPtrList<KAction> actionList;
+    Q3PtrList<KAction> actionList;
     if ( tools.isEmpty() )
         return actionList;
 
     actionList.append( new KActionSeparator() );
-    QValueList<KDataToolInfo>::ConstIterator entry = tools.begin();
+    Q3ValueList<KDataToolInfo>::ConstIterator entry = tools.begin();
     for( ; entry != tools.end(); ++entry )
     {
         QStringList userCommands = (*entry).userCommands();

@@ -658,7 +658,7 @@ VCardLine VCardTool::createPicture( const QString &identifier, const Picture &pi
   if ( pic.isIntern() ) {
     if ( !pic.data().isNull() ) {
       QByteArray input;
-      QDataStream s( input, IO_WriteOnly );
+      QDataStream s( input, QIODevice::WriteOnly );
       s.setVersion( 4 );
       s << pic.data();
       line.setValue( input );
@@ -711,9 +711,9 @@ VCardLine VCardTool::createSound( const Sound &snd )
   return line;
 }
 
-Key VCardTool::parseKey( const VCardLine &line )
+Qt::Key VCardTool::parseKey( const VCardLine &line )
 {
-  Key key;
+  Qt::Key key;
 
   const QStringList params = line.parameterList();
   if ( params.findIndex( "encoding" ) != -1 )
@@ -735,7 +735,7 @@ Key VCardTool::parseKey( const VCardLine &line )
   return key;
 }
 
-VCardLine VCardTool::createKey( const Key &key )
+VCardLine VCardTool::createKey( const Qt::Key &key )
 {
   VCardLine line( "KEY" );
 

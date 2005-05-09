@@ -20,12 +20,12 @@
 #ifndef __ktexteditor_markinterface_extension_h__
 #define __ktexteditor_markinterface_extension_h__
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpixmap.h>
 #include <qstring.h>
 #include "markinterface.h"
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -47,7 +47,7 @@ class KTEXTEDITOR_EXPORT MarkInterfaceExtension
     unsigned int markInterfaceExtensionNumber () const;
   
   protected:  
-    void setMarkInterfaceExtensionDCOPSuffix (const QCString &suffix);    
+    void setMarkInterfaceExtensionDCOPSuffix (const Q3CString &suffix);    
     
   public:
     virtual void setPixmap(MarkInterface::MarkTypes, const QPixmap &)=0;

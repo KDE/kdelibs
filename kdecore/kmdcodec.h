@@ -84,7 +84,7 @@ public:
    *                breaks, too.
    * @return        quoted-printable encoded string.
    */
-  static QCString quotedPrintableEncode(const QByteArray & in,
+  static Q3CString quotedPrintableEncode(const QByteArray & in,
                                         bool useCRLF = true);
 
   /**
@@ -99,7 +99,7 @@ public:
    *                breaks, too.
    * @return        quoted-printable encoded string.
    */
-  static QCString quotedPrintableEncode(const QCString & str,
+  static Q3CString quotedPrintableEncode(const Q3CString & str,
                                         bool useCRLF = true);
 
   /**
@@ -131,7 +131,7 @@ public:
    * @param in  data to be decoded.
    * @return    decoded string.
    */
-  static QCString quotedPrintableDecode(const QByteArray & in);
+  static Q3CString quotedPrintableDecode(const QByteArray & in);
 
   /**
    * @overload
@@ -142,7 +142,7 @@ public:
    * @param str  string to be decoded.
    * @return     decoded string.
    */
-  static QCString quotedPrintableDecode(const QCString & str);
+  static Q3CString quotedPrintableDecode(const Q3CString & str);
 
   /**
    * Decodes a quoted-printable encoded data.
@@ -175,7 +175,7 @@ public:
    * @param in   data to be uuencoded
    * @return     uuencoded string.
    */
-  static QCString uuencode( const QByteArray& in );
+  static Q3CString uuencode( const QByteArray& in );
 
   /**
    * @overload
@@ -186,7 +186,7 @@ public:
    * @param str   string to be uuencoded.
    * @return      encoded string.
    */
-  static QCString uuencode( const QCString& str );
+  static Q3CString uuencode( const Q3CString& str );
 
   /**
    * Encodes the given data using the uuencode algorithm.
@@ -215,7 +215,7 @@ public:
    * @param in   data to be decoded.
    * @return     decoded string.
    */
-  static QCString uudecode( const QByteArray& in );
+  static Q3CString uudecode( const QByteArray& in );
 
   /**
    * @overload
@@ -226,7 +226,7 @@ public:
    * @param str   string to be decoded.
    * @return      uudecoded string.
    */
-  static QCString uudecode( const QCString& str );
+  static Q3CString uudecode( const Q3CString& str );
 
   /**
    * Decodes the given data using the uudecode algorithm.
@@ -263,7 +263,7 @@ public:
    *
    * @return           base64 encoded string.
    */
-  static QCString base64Encode( const QByteArray& in, bool insertLFs = false);
+  static Q3CString base64Encode( const QByteArray& in, bool insertLFs = false);
 
   /**
    * @overload
@@ -275,7 +275,7 @@ public:
    * @param insertLFs limit the number of characters per line.
    * @return          decoded string.
    */
-  static QCString base64Encode( const QCString& str, bool insertLFs = false );
+  static Q3CString base64Encode( const Q3CString& str, bool insertLFs = false );
 
   /**
    * Encodes the given data using the base64 algorithm.
@@ -308,7 +308,7 @@ public:
    * @param in   data to be decoded.
    * @return     decoded string.
    */
-  static QCString base64Decode( const QByteArray& in );
+  static Q3CString base64Decode( const QByteArray& in );
 
   /**
    * @overload
@@ -319,7 +319,7 @@ public:
    * @param str  string to be decoded.
    * @return     decoded string.
    */
-  static QCString base64Decode( const QCString& str );
+  static Q3CString base64Decode( const Q3CString& str );
 
   /**
    * Decodes the given data that was encoded with the base64
@@ -429,7 +429,7 @@ public:
    *
    * Same as above except it accepts a QCString as its argument.
    */
-  KMD5(const QCString& a );
+  KMD5(const Q3CString& a );
 
   /**
    * Updates the message to be digested. Be sure to add all data
@@ -458,7 +458,7 @@ public:
    *
    * @param in     message to be added to the digest (QCString).
    */
-  void update(const QCString& in );
+  void update(const Q3CString& in );
 
   /**
    * @overload
@@ -500,18 +500,18 @@ public:
    * Returns the value of the calculated message digest in
    * a hexadecimal representation.
    */
-  QCString hexDigest ();
+  Q3CString hexDigest ();
 
   /**
    * @overload
    */
-  void hexDigest(QCString&);
+  void hexDigest(Q3CString&);
 
   /**
    * Returns the value of the calculated message digest in
    * a base64-encoded representation.
    */
-  QCString base64Digest ();
+  Q3CString base64Digest ();
 
   /**
    * returns true if the calculated digest for the given
@@ -522,7 +522,7 @@ public:
   /**
    * @overload
    */
-  bool verify(const QCString&);
+  bool verify(const Q3CString&);
 
 protected:
   /**
@@ -604,7 +604,7 @@ public:
    *
    * Same as above except it accepts a QCString as its argument.
    */
-  KMD4(const QCString& a );
+  KMD4(const Q3CString& a );
 
   /**
    * Updates the message to be digested. Be sure to add all data
@@ -633,7 +633,7 @@ public:
    *
    * @param in     message to be added to the digest (QCString).
    */
-  void update(const QCString& in );
+  void update(const Q3CString& in );
 
   /**
    * @overload
@@ -675,18 +675,18 @@ public:
    * Returns the value of the calculated message digest in
    * a hexadecimal representation.
    */
-  QCString hexDigest ();
+  Q3CString hexDigest ();
 
   /**
    * @overload
    */
-  void hexDigest(QCString&);
+  void hexDigest(Q3CString&);
 
   /**
    * Returns the value of the calculated message digest in
    * a base64-encoded representation.
    */
-  QCString base64Digest ();
+  Q3CString base64Digest ();
 
   /**
    * returns true if the calculated digest for the given
@@ -697,7 +697,7 @@ public:
   /**
    * @overload
    */
-  bool verify(const QCString&);
+  bool verify(const Q3CString&);
 
 protected:
   /**

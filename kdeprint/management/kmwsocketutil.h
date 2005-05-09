@@ -21,7 +21,7 @@
 #define	KMWSOCKETUTIL_H
 
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kdialogbase.h>
 
 struct SocketInfo
@@ -31,7 +31,7 @@ struct SocketInfo
 	int	Port;
 };
 
-class QProgressBar;
+class Q3ProgressBar;
 class QLineEdit;
 class QComboBox;
 class KMWSocketUtil;
@@ -61,13 +61,13 @@ public:
 
 	bool checkPrinter(const QString& host, int port, QString* hostname = 0);
 
-	const QPtrList<SocketInfo>* printerList() { return &printerlist_; }
-	bool scanNetwork(QProgressBar *bar = 0);
+	const Q3PtrList<SocketInfo>* printerList() { return &printerlist_; }
+	bool scanNetwork(Q3ProgressBar *bar = 0);
 	void configureScan(QWidget *parent = 0);
 	void setDefaultPort(int p) { port_ = p; }
 
 private:
-	QPtrList<SocketInfo>	printerlist_;
+	Q3PtrList<SocketInfo>	printerlist_;
 	QString			root_;
 	int			port_;
 	int			timeout_;	// in milliseconds

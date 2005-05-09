@@ -130,7 +130,7 @@ void InsertFilePluginView::insertFile()
     error = i18n("<p>The file <strong>%1</strong> does not exist or is not readable, aborting.").arg(_file.fileName());
 
   QFile f( _tmpfile );
-  if ( !f.open(IO_ReadOnly) )
+  if ( !f.open(QIODevice::ReadOnly) )
     error = i18n("<p>Unable to open file <strong>%1</strong>, aborting.").arg(_file.fileName());
 
   if ( ! error.isEmpty() ) {

@@ -23,9 +23,9 @@
 #include "kmwizardpage.h"
 
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 class QLineEdit;
-class QTextView;
+class Q3TextView;
 class QPushButton;
 class NetworkScanner;
 
@@ -42,14 +42,14 @@ public:
 protected slots:
 	void slotScanStarted();
 	void slotScanFinished();
-	void slotPrinterSelected(QListViewItem*);
+	void slotPrinterSelected(Q3ListViewItem*);
 	void slotIppReport();
 
 private:
 	KListView	*m_list;
 	NetworkScanner *m_scanner;
 	QLineEdit	*m_uri;
-	QTextView	*m_info;
+	Q3TextView	*m_info;
 	QPushButton	*m_ippreport;
 };
 

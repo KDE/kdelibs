@@ -39,7 +39,7 @@ KCookie::KCookie()
     setDcopTransport("local");
 }
 
-void KCookie::setDcopTransport(const QCString &dcopTransport)
+void KCookie::setDcopTransport(const Q3CString &dcopTransport)
 {
     m_dcopTransport = dcopTransport;
     m_bHaveDCOPCookies = false;
@@ -49,7 +49,7 @@ void KCookie::setDcopTransport(const QCString &dcopTransport)
     m_ICEAuth = "";
 }    
 
-QCStringList KCookie::split(const QCString &line, char ch)
+QCStringList KCookie::split(const Q3CString &line, char ch)
 {
     QCStringList result;
 
@@ -96,7 +96,7 @@ void KCookie::getXCookie()
 	return;
     }
 #ifdef Q_WS_X11 // No need to mess with X Auth stuff
-    QCString disp = m_Display;
+    Q3CString disp = m_Display;
     if (!memcmp(disp.data(), "localhost:", 10))
        disp.remove(0, 9);
 
@@ -108,7 +108,7 @@ void KCookie::getXCookie()
 	unblockSigChild();
 	return;
     }
-    QCString output = fgets(buf, 1024, f);
+    Q3CString output = fgets(buf, 1024, f);
     if (pclose(f) < 0) 
     {
 	kdError(900) << k_lineinfo << "Could not run xauth.\n";
@@ -137,10 +137,10 @@ void KCookie::getICECookie()
     FILE *f;
     char buf[1024];
 
-    QCString dcopsrv = getenv("DCOPSERVER");
+    Q3CString dcopsrv = getenv("DCOPSERVER");
     if (dcopsrv.isEmpty()) 
     {
-	QCString dcopFile = DCOPClient::dcopServerFile();
+	Q3CString dcopFile = DCOPClient::dcopServerFile();
 	if (!(f = fopen(dcopFile, "r"))) 
 	{
 	    kdWarning(900) << k_lineinfo << "Cannot open " << dcopFile << ".\n";
@@ -163,7 +163,7 @@ void KCookie::getICECookie()
         if (strncmp((*it).data(), m_dcopTransport.data(), m_dcopTransport.length()) != 0)
             continue;
         m_DCOPSrv = *it;
-	QCString cmd = DCOPClient::iceauthPath()+" list netid="+QFile::encodeName(KProcess::quote(m_DCOPSrv));
+	Q3CString cmd = DCOPClient::iceauthPath()+" list netid="+QFile::encodeName(KProcess::quote(m_DCOPSrv));
 	blockSigChild();
 	if (!(f = popen(cmd, "r")))
 	{
@@ -203,21 +203,21 @@ void KCookie::getICECookie()
     m_bHaveICECookies = true;
 }
 
-QCString KCookie::dcopServer() 
+Q3CString KCookie::dcopServer() 
 { 
    if (!m_bHaveDCOPCookies)
       getICECookie();
    return m_DCOPSrv; 
 }
 
-QCString KCookie::dcopAuth() 
+Q3CString KCookie::dcopAuth() 
 { 
    if (!m_bHaveDCOPCookies)
       getICECookie();
    return m_DCOPAuth; 
 }
 
-QCString KCookie::iceAuth() 
+Q3CString KCookie::iceAuth() 
 { 
    if (!m_bHaveICECookies)
       getICECookie(); 

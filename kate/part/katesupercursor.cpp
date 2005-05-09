@@ -23,7 +23,7 @@
 
 #include <kdebug.h>
 
-#include <qobjectlist.h>
+#include <qobject.h>
 
 KateSuperCursor::KateSuperCursor(KateDocument* doc, bool privateC, const KateTextCursor& cursor, QObject* parent, const char* name)
   : QObject(parent, name)
@@ -531,7 +531,7 @@ void KateSuperRange::evaluatePositionChanged()
     emit positionChanged();
 }
 
-int KateSuperCursorList::compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2)
+int KateSuperCursorList::compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
 {
   if (*(static_cast<KateSuperCursor*>(item1)) == *(static_cast<KateSuperCursor*>(item2)))
     return 0;
@@ -548,7 +548,7 @@ KateSuperRangeList::KateSuperRangeList(bool autoManage, QObject* parent, const c
   setAutoManage(autoManage);
 }
 
-KateSuperRangeList::KateSuperRangeList(const QPtrList<KateSuperRange>& rangeList, QObject* parent, const char* name)
+KateSuperRangeList::KateSuperRangeList(const Q3PtrList<KateSuperRange>& rangeList, QObject* parent, const char* name)
   : QObject(parent, name)
   , m_autoManage(false)
   , m_connect(false)
@@ -557,9 +557,9 @@ KateSuperRangeList::KateSuperRangeList(const QPtrList<KateSuperRange>& rangeList
   appendList(rangeList);
 }
 
-void KateSuperRangeList::appendList(const QPtrList<KateSuperRange>& rangeList)
+void KateSuperRangeList::appendList(const Q3PtrList<KateSuperRange>& rangeList)
 {
-  for (QPtrListIterator<KateSuperRange> it = rangeList; *it; ++it)
+  for (Q3PtrListIterator<KateSuperRange> it = rangeList; *it; ++it)
     append(*it);
 }
 
@@ -568,7 +568,7 @@ void KateSuperRangeList::clear()
   for (KateSuperRange* range = first(); range; range = next())
     emit rangeEliminated(range);
 
-  QPtrList<KateSuperRange>::clear();
+  Q3PtrList<KateSuperRange>::clear();
 }
 
 void KateSuperRangeList::connectAll()
@@ -593,11 +593,11 @@ void KateSuperRangeList::setAutoManage(bool autoManage)
   setAutoDelete(m_autoManage);
 }
 
-QPtrList<KateSuperRange> KateSuperRangeList::rangesIncluding(const KateTextCursor& cursor)
+Q3PtrList<KateSuperRange> KateSuperRangeList::rangesIncluding(const KateTextCursor& cursor)
 {
   sort();
 
-  QPtrList<KateSuperRange> ret;
+  Q3PtrList<KateSuperRange> ret;
 
   for (KateSuperRange* r = first(); r; r = next())
     if (r->includes(cursor))
@@ -606,11 +606,11 @@ QPtrList<KateSuperRange> KateSuperRangeList::rangesIncluding(const KateTextCurso
   return ret;
 }
 
-QPtrList<KateSuperRange> KateSuperRangeList::rangesIncluding(uint line)
+Q3PtrList<KateSuperRange> KateSuperRangeList::rangesIncluding(uint line)
 {
   sort();
 
-  QPtrList<KateSuperRange> ret;
+  Q3PtrList<KateSuperRange> ret;
 
   for (KateSuperRange* r = first(); r; r = next())
     if (r->includes(line))
@@ -706,7 +706,7 @@ KateSuperCursor* KateSuperRangeList::currentBoundary()
   return m_columnBoundaries.current();
 }
 
-int KateSuperRangeList::compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2)
+int KateSuperRangeList::compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
 {
   if (static_cast<KateSuperRange*>(item1)->superStart() == static_cast<KateSuperRange*>(item2)->superStart()) {
     if (static_cast<KateSuperRange*>(item1)->superEnd() == static_cast<KateSuperRange*>(item2)->superEnd()) {
@@ -719,7 +719,7 @@ int KateSuperRangeList::compareItems(QPtrCollection::Item item1, QPtrCollection:
   return static_cast<KateSuperRange*>(item1)->superStart() < static_cast<KateSuperRange*>(item2)->superStart() ? -1 : 1;
 }
 
-QPtrCollection::Item KateSuperRangeList::newItem(QPtrCollection::Item d)
+Q3PtrCollection::Item KateSuperRangeList::newItem(Q3PtrCollection::Item d)
 {
   if (m_connect) {
     connect(static_cast<KateSuperRange*>(d), SIGNAL(destroyed(QObject*)), SLOT(slotDeleted(QObject*)));
@@ -735,7 +735,7 @@ QPtrCollection::Item KateSuperRangeList::newItem(QPtrCollection::Item d)
     m_columnBoundaries.append(&(static_cast<KateSuperRange*>(d)->superEnd()));
   }
 
-  return QPtrList<KateSuperRange>::newItem(d);
+  return Q3PtrList<KateSuperRange>::newItem(d);
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

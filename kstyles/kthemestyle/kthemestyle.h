@@ -45,12 +45,12 @@ Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
 #include "kthemebase.h"
 #include <qwindowdefs.h>
 #include <qobject.h>
-#include <qbutton.h>
+#include <q3button.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
 #include <qtabbar.h>
 #include <qstring.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qmap.h>
 
 

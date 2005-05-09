@@ -23,10 +23,10 @@
 #include <kstandarddirs.h>
 
 SidePixmap::SidePixmap(QWidget *parent, const char *name)
-: QFrame(parent, name)
+: Q3Frame(parent, name)
 {
 	setLineWidth(1);
-	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 
 	m_side.load(locate("data", "kdeprint/side.png"));
 	m_tileup.load(locate("data", "kdeprint/tileup.png"));

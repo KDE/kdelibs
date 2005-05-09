@@ -63,12 +63,12 @@ void KURLCompletionTest::setup( bool setDirAsURL )
     m_dirURL.setPath( m_dir );
 
     QFile f1( m_dir + "/file1" );
-    bool ok = f1.open( IO_WriteOnly );
+    bool ok = f1.open( QIODevice::WriteOnly );
     assert( ok );
     f1.close();
 
     QFile f2( m_dir + "/file#a" );
-    ok = f2.open( IO_WriteOnly );
+    ok = f2.open( QIODevice::WriteOnly );
     assert( ok );
     f2.close();
 }

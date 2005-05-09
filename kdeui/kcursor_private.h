@@ -23,7 +23,7 @@
 
 #include <qcursor.h>
 #include <qobject.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 
 class QPoint;
 class QTimer;
@@ -91,7 +91,7 @@ private:
     bool enabled;
     static KCursorPrivate *s_self;
 
-    QPtrDict<KCursorPrivateAutoHideEventFilter> m_eventFilters;
+    Q3PtrDict<KCursorPrivateAutoHideEventFilter> m_eventFilters;
 };
 
 

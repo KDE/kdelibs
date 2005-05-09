@@ -25,10 +25,10 @@
 
 #include <kvmallocator.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
 #include <qtimer.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 class KateLineInfo;
 class KateDocument;
@@ -202,7 +202,7 @@ class KateBufBlock
     /**
      * list of textlines
      */
-    QValueVector<KateTextLine::Ptr> m_stringList;
+    Q3ValueVector<KateTextLine::Ptr> m_stringList;
 
     /**
      * parent buffer.
@@ -503,7 +503,7 @@ class KateBuffer : public QObject
      */
      KateTextLine::Ptr line_internal (KateBufBlock *buf, uint i);
 
-     inline void addIndentBasedFoldingInformation(QMemArray<uint> &foldingList,bool addindent,uint deindent);
+     inline void addIndentBasedFoldingInformation(Q3MemArray<uint> &foldingList,bool addindent,uint deindent);
      inline void updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,bool addindent,uint deindent);
   public:
     /**
@@ -640,7 +640,7 @@ class KateBuffer : public QObject
      * ALL blocks
      * in order of linenumbers
      */
-    QValueVector<KateBufBlock*> m_blocks;
+    Q3ValueVector<KateBufBlock*> m_blocks;
 
     /**
      * last block where the start/end line is in sync with real life

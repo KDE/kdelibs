@@ -20,15 +20,15 @@
 #ifndef KMPRINTERVIEW_H
 #define KMPRINTERVIEW_H
 
-#include <qwidgetstack.h>
-#include <qptrlist.h>
+#include <q3widgetstack.h>
+#include <q3ptrlist.h>
 
 class KMIconView;
 class KMListView;
 class KMPrinter;
-class QIconViewItem;
+class Q3IconViewItem;
 
-class KMPrinterView : public QWidgetStack
+class KMPrinterView : public Q3WidgetStack
 {
 	Q_OBJECT
 public:
@@ -37,7 +37,7 @@ public:
 	KMPrinterView(QWidget *parent = 0, const char *name = 0);
 	~KMPrinterView();
 
-	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinterList(Q3PtrList<KMPrinter> *list);
 	void setPrinter( KMPrinter* );
 	void setViewType(ViewType t);
 	ViewType viewType() const 	{ return m_type; }

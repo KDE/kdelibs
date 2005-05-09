@@ -650,7 +650,7 @@ int KMimeMagic::apprentice( const QString& magicfile )
 	int errs = 0;
 	int lineno;
 	int rule = 0;
-	QCString fname;
+	Q3CString fname;
 
 	if (magicfile.isEmpty())
 		return -1;
@@ -1355,7 +1355,7 @@ void process(struct config_rec* conf, const QString & fn)
 	KDE_struct_stat sb;
 	int nbytes = 0;         /* number of bytes read from a datafile */
         int tagbytes = 0;       /* size of prefixed tag */
-        QCString fileName = QFile::encodeName( fn );
+        Q3CString fileName = QFile::encodeName( fn );
 
 	/*
 	 * first try judging the file based on its filesystem status

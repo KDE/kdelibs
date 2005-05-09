@@ -54,7 +54,7 @@ KCTimeInfo::save(QDataStream &str)
   KSycocaFactory::save(str);
 
   m_dictOffset = str.device()->at();
-  QDictIterator<Q_UINT32> it(ctimeDict);
+  Q3DictIterator<Q_UINT32> it(ctimeDict);
   while( it.current())
   {
      str << it.currentKey() << *(it.current());
@@ -83,7 +83,7 @@ KCTimeInfo::ctime(const QString &path)
 }
 
 void
-KCTimeInfo::fillCTimeDict(QDict<Q_UINT32> &dict)
+KCTimeInfo::fillCTimeDict(Q3Dict<Q_UINT32> &dict)
 {
     assert(m_str);
     m_str->device()->at(m_dictOffset);

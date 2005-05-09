@@ -23,7 +23,7 @@
 #include "kmwizardpage.h"
 
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 class QLineEdit;
 class NetworkScanner;
 
@@ -38,7 +38,7 @@ public:
 	void updatePrinter(KMPrinter*);
 
 protected slots:
-	void slotPrinterSelected(QListViewItem*);
+	void slotPrinterSelected(Q3ListViewItem*);
 	void slotScanStarted();
 	void slotScanFinished();
 

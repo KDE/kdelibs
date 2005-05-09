@@ -189,7 +189,7 @@ void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 
   if ( data.size() == 0 ) return;
 
-  QCString str( data, data.size() + 1 );
+  Q3CString str( data, data.size() + 1 );
 
   mJobData.append( QString::fromUtf8( str ) );
 }

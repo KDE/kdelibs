@@ -24,7 +24,7 @@
 
 class QLineEdit;
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 
 class KMWOther : public KMWizardPage
 {
@@ -36,7 +36,7 @@ public:
 	void updatePrinter(KMPrinter*);
 
 protected slots:
-	void slotPressed( QListViewItem* );
+	void slotPressed( Q3ListViewItem* );
 
 private:
 	QLineEdit	*m_uri;

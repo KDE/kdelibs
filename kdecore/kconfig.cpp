@@ -114,7 +114,7 @@ QStringList KConfig::groupList() const
   {
     while(aIt.key().mKey.isEmpty())
     {
-      QCString group = aIt.key().mGroup;
+      Q3CString group = aIt.key().mGroup;
       ++aIt;
       while (true)
       {
@@ -140,7 +140,7 @@ QStringList KConfig::groupList() const
 
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
-  QCString pGroup_utf = pGroup.utf8();
+  Q3CString pGroup_utf = pGroup.utf8();
   KEntryKey groupKey( pGroup_utf, 0 );
   QMap<QString, QString> tmpMap;
 
@@ -177,7 +177,7 @@ void KConfig::reparseConfiguration()
 
 KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 {
-  QCString pGroup_utf = pGroup.utf8();
+  Q3CString pGroup_utf = pGroup.utf8();
   KEntry aEntry;
   KEntryMapConstIterator aIt;
   KEntryKey aKey(pGroup_utf, 0);
@@ -251,7 +251,7 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
   }
 }
 
-bool KConfig::internalHasGroup(const QCString &group) const
+bool KConfig::internalHasGroup(const Q3CString &group) const
 {
   KEntryKey groupKey( group, 0);
 
@@ -328,14 +328,14 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
-static KStaticDeleter< QValueList<KSharedConfig*> > sd;
-QValueList<KSharedConfig*> *KSharedConfig::s_list = 0;
+static KStaticDeleter< Q3ValueList<KSharedConfig*> > sd;
+Q3ValueList<KSharedConfig*> *KSharedConfig::s_list = 0;
 
 KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, bool useKDEGlobals )
 {
   if (s_list)
   {
-     for(QValueList<KSharedConfig*>::ConstIterator it = s_list->begin();
+     for(Q3ValueList<KSharedConfig*>::ConstIterator it = s_list->begin();
          it != s_list->end(); ++it)
      {
         if ((*it)->backEnd->fileName() == fileName &&
@@ -352,7 +352,7 @@ KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekd
 {
   if (!s_list)
   {
-    sd.setObject(s_list, new QValueList<KSharedConfig*>);
+    sd.setObject(s_list, new Q3ValueList<KSharedConfig*>);
   }
 
   s_list->append(this);

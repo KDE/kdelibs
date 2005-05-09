@@ -33,7 +33,7 @@
 #include <qlineedit.h>
 #include <kcompletion.h>
 
-class QPopupMenu;
+class Q3PopupMenu;
 
 class KCompletionBox;
 class KURL;
@@ -388,7 +388,7 @@ signals:
      *
      * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( QPopupMenu * p );
+    void aboutToShowContextMenu( Q3PopupMenu * p );
 
 public slots:
 
@@ -520,7 +520,7 @@ protected:
     *
     * See QLineEdit::createPopupMenu().
     */
-    virtual QPopupMenu *createPopupMenu();
+    virtual Q3PopupMenu *createPopupMenu();
 
     /**
     * Re-implemented to handle URI drops.

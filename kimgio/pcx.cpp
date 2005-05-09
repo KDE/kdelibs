@@ -95,7 +95,7 @@ PCXHEADER::PCXHEADER()
   // Initialize all data to zero
   QByteArray dummy( 128 );
   dummy.fill( 0 );
-  QDataStream s( dummy, IO_ReadOnly );
+  QDataStream s( dummy, QIODevice::ReadOnly );
   s >> *this;
 }
 

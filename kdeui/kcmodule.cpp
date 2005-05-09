@@ -48,7 +48,7 @@ public:
     QString _rootOnlyMsg;
     bool _useRootOnlyMsg;
     bool _hasOwnInstance;
-    QPtrList<KConfigDialogManager> managers;
+    Q3PtrList<KConfigDialogManager> managers;
     QString _quickHelp;
 
 };
@@ -184,7 +184,7 @@ QString KCModule::quickHelp() const
 }
 
 
-const QPtrList<KConfigDialogManager>& KCModule::configs() const
+const Q3PtrList<KConfigDialogManager>& KCModule::configs() const
 {
     return d->managers;
 }

@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 
 class KXMLGUIBuilderPrivate
 {
@@ -148,7 +148,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     while ( p && !::qt_cast<KMainWindow *>( p ) )
         p = p->parentWidget();
 
-    QCString name = element.attribute( d->attrName ).utf8();
+    Q3CString name = element.attribute( d->attrName ).utf8();
 
     if (!kapp->authorizeKAction(name))
        return 0;
@@ -159,8 +159,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QDomElement textElem = element.namedItem( d->attrText1 ).toElement();
     if ( textElem.isNull() ) // try with capital T
       textElem = element.namedItem( d->attrText2 ).toElement();
-    QCString text = textElem.text().utf8();
-    QCString context = textElem.attribute(d->attrContext).utf8();
+    Q3CString text = textElem.text().utf8();
+    Q3CString context = textElem.attribute(d->attrContext).utf8();
 
     if ( text.isEmpty() ) // still no luck
       i18nText = i18n( "No text!" );
@@ -170,7 +170,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       i18nText = i18n( context, text );
 
     QString icon = element.attribute( d->attrIcon );
-    QIconSet pix;
+    QIcon pix;
 
     if ( !icon.isEmpty() )
     {
@@ -188,12 +188,12 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       else
         id = static_cast<KMenuBar *>(parent)->insertItem( i18nText, popup, -1, index );
     }
-    else if ( parent && ::qt_cast<QPopupMenu *>( parent ) )
+    else if ( parent && ::qt_cast<Q3PopupMenu *>( parent ) )
     {
       if ( !icon.isEmpty() )
-        id = static_cast<QPopupMenu *>(parent)->insertItem( pix, i18nText, popup, -1, index );
+        id = static_cast<Q3PopupMenu *>(parent)->insertItem( pix, i18nText, popup, -1, index );
       else
-        id = static_cast<QPopupMenu *>(parent)->insertItem( i18nText, popup, -1, index );
+        id = static_cast<Q3PopupMenu *>(parent)->insertItem( i18nText, popup, -1, index );
     }
 
     return popup;
@@ -203,7 +203,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   {
     bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
-    QCString name = element.attribute( d->attrName ).utf8();
+    Q3CString name = element.attribute( d->attrName ).utf8();
 
     KToolBar *bar = static_cast<KToolBar*>(d->m_widget->child( name, "KToolBar" ));
     if( !bar )
@@ -241,14 +241,14 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
 {
   // Warning parent can be 0L
 
-  if ( ::qt_cast<QPopupMenu *>( container ) )
+  if ( ::qt_cast<Q3PopupMenu *>( container ) )
   {
     if ( parent )
     {
         if ( ::qt_cast<KMenuBar *>( parent ) )
             static_cast<KMenuBar *>(parent)->removeItem( id );
-        else if ( ::qt_cast<QPopupMenu *>( parent ) )
-            static_cast<QPopupMenu *>(parent)->removeItem( id );
+        else if ( ::qt_cast<Q3PopupMenu *>( parent ) )
+            static_cast<Q3PopupMenu *>(parent)->removeItem( id );
     }
 
     delete container;
@@ -291,10 +291,10 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
 {
   if ( element.tagName().lower() == d->tagSeparator )
   {
-    if ( ::qt_cast<QPopupMenu *>( parent ) )
+    if ( ::qt_cast<Q3PopupMenu *>( parent ) )
     {
       // Don't insert multiple separators in a row
-      QPopupMenu *menu = static_cast<QPopupMenu *>(parent);
+      Q3PopupMenu *menu = static_cast<Q3PopupMenu *>(parent);
       int count = menu->count();
       if (count)
       {
@@ -351,15 +351,15 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   }
   else if ( element.tagName().lower() == d->tagTearOffHandle )
   {
-    if ( ::qt_cast<QPopupMenu *>( parent )  && KGlobalSettings::insertTearOffHandle())
-      return static_cast<QPopupMenu *>(parent)->insertTearOffHandle( -1, index );
+    if ( ::qt_cast<Q3PopupMenu *>( parent )  && KGlobalSettings::insertTearOffHandle())
+      return static_cast<Q3PopupMenu *>(parent)->insertTearOffHandle( -1, index );
   }
   else if ( element.tagName().lower() == d->tagMenuTitle )
   {
     if ( ::qt_cast<KPopupMenu *>( parent ) )
     {
       QString i18nText;
-      QCString text = element.text().utf8();
+      Q3CString text = element.text().utf8();
 
       if ( text.isEmpty() )
         i18nText = i18n( "No text!" );
@@ -389,8 +389,8 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
 
 void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
 {
-  if ( ::qt_cast<QPopupMenu *>( parent ) )
-    static_cast<QPopupMenu *>(parent)->removeItem( id );
+  if ( ::qt_cast<Q3PopupMenu *>( parent ) )
+    static_cast<Q3PopupMenu *>(parent)->removeItem( id );
   else if ( ::qt_cast<QMenuBar *>( parent ) )
     static_cast<QMenuBar *>(parent)->removeItem( id );
   else if ( ::qt_cast<KToolBar *>( parent ) )

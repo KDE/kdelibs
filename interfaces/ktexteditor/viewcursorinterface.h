@@ -22,7 +22,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -41,7 +41,7 @@ class KTEXTEDITOR_EXPORT ViewCursorInterface
     unsigned int viewCursorInterfaceNumber () const;
     
   protected:  
-    void setViewCursorInterfaceDCOPSuffix (const QCString &suffix); 
+    void setViewCursorInterfaceDCOPSuffix (const Q3CString &suffix); 
 
   //
   // slots !!!

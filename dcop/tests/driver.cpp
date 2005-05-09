@@ -18,7 +18,7 @@ Driver::Driver(const char* app)
 
 }
 
-QTextStream output(  fopen( "driver.returns", "w" ) , IO_WriteOnly );	
+QTextStream output(  fopen( "driver.returns", "w" ) , QIODevice::WriteOnly );	
 #include <iostream>
 void Driver::test()
 {

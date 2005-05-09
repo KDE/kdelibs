@@ -179,7 +179,7 @@ class KDEFX_EXPORT KStyle: public QCommonStyle
 		 * the user in KDE's style control module.
 		 */
 		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
-						    const QPopupMenu* popup ) const;
+						    const Q3PopupMenu* popup ) const;
 
 		/**
 		 * KStyle Primitive Elements:
@@ -272,7 +272,7 @@ class KDEFX_EXPORT KStyle: public QCommonStyle
 
 		void polish( QWidget* widget );
 		void unPolish( QWidget* widget );
-		void polishPopupMenu( QPopupMenu* );
+		void polishPopupMenu( Q3PopupMenu* );
 
 		void drawPrimitive( PrimitiveElement pe,
 					QPainter* p,

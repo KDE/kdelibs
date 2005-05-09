@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 
 #include <kconfig.h>
 
@@ -39,16 +39,16 @@ public:
     {}
 
     KPanelExtension::Size _size;
-    QPopupMenu* _customMenu;
+    Q3PopupMenu* _customMenu;
     int _customSize;
     bool _reserveStrut;
 };
 
 KPanelExtension::KPanelExtension(const QString& configFile, Type type,
 				 int actions, QWidget *parent, const char *name)
-  : QFrame(parent, name)
+  : Q3Frame(parent, name)
   , _type(type)
-  , _position( Top )
+  , _position( Qt::DockTop )
   , _alignment( LeftTop )
   , _config(0)
   , _actions(actions)
@@ -100,10 +100,10 @@ void KPanelExtension::action( Action a )
 
 Qt::Orientation KPanelExtension::orientation()
 {
-    if (_position == Left || _position == Right)
-	return Vertical;
+    if (_position == Qt::DockLeft || _position == Qt::DockRight)
+	return Qt::Vertical;
     else
-	return Horizontal;
+	return Qt::Horizontal;
 }
 
 KPanelExtension::Size KPanelExtension::sizeSetting() const
@@ -138,12 +138,12 @@ int KPanelExtension::sizeInPixels() const
   return d->_customSize;
 }
 
-QPopupMenu* KPanelExtension::customMenu() const
+Q3PopupMenu* KPanelExtension::customMenu() const
 {
     return d->_customMenu;
 }
 
-void KPanelExtension::setCustomMenu(QPopupMenu* menu)
+void KPanelExtension::setCustomMenu(Q3PopupMenu* menu)
 {
     d->_customMenu = menu;
 }

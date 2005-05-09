@@ -260,7 +260,7 @@ static inline int getValueID(const char *tagStr, int len)
 typedef union YYSTYPE {
     CSSRuleImpl *rule;
     CSSSelector *selector;
-    QPtrList<CSSSelector> *selectorList;
+    Q3PtrList<CSSSelector> *selectorList;
     bool ok;
     MediaListImpl *mediaList;
     CSSMediaRuleImpl *mediaRule;
@@ -1016,10 +1016,10 @@ yy_stack_print (bottom, top)
   YYFPRINTF (stderr, "\n");
 }
 
-# define YY_STACK_PRINT(Bottom, Top)				\
+# define YY_STACK_PRINT(Qt::DockBottom, Qt::DockTop)				\
 do {								\
   if (yydebug)							\
-    yy_stack_print ((Bottom), (Top));				\
+    yy_stack_print ((Qt::DockBottom), (Qt::DockTop));				\
 } while (0)
 
 
@@ -1059,7 +1059,7 @@ int yydebug;
 # define YYDPRINTF(Args)
 # define YYDSYMPRINT(Args)
 # define YYDSYMPRINTF(Title, Token, Value, Location)
-# define YY_STACK_PRINT(Bottom, Top)
+# define YY_STACK_PRINT(Qt::DockBottom, Qt::DockTop)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
 
@@ -1823,7 +1823,7 @@ yyreduce:
 
     {
 	if ( yyvsp[0].selector ) {
-	    yyval.selectorList = new QPtrList<CSSSelector>;
+	    yyval.selectorList = new Q3PtrList<CSSSelector>;
             yyval.selectorList->setAutoDelete( true );
 #ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "   got simple selector:" << endl;

@@ -116,7 +116,7 @@ void JobTest::cleanup()
 static void createTestFile( const QString& path )
 {
     QFile f( path );
-    if ( !f.open( IO_WriteOnly ) )
+    if ( !f.open( QIODevice::WriteOnly ) )
         kdFatal() << "Can't create " << path << endl;
     f.writeBlock( "Hello world", 11 );
     f.close();
@@ -144,7 +144,7 @@ void JobTest::get()
     kapp->eventLoop()->enterLoop();
     assert( m_result == 0 ); // no error
     assert( m_data.size() == 11 );
-    assert( QCString( m_data ) == "Hello world" );
+    assert( Q3CString( m_data ) == "Hello world" );
 }
 
 void JobTest::slotGetResult( KIO::Job* job )

@@ -1,7 +1,7 @@
 #include <klistview.h>
 #include <kapplication.h>
 #include <kdialogbase.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 
 int main( int argc, char **argv )
@@ -17,20 +17,20 @@ int main( int argc, char **argv )
 	view->addColumn("Column 2");
 	view->addColumn("Column 3");
 
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 1");
+	new Q3ListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
 
 	view->restoreLayout( KGlobal::config(), "ListView" );
 
-	new QListViewItem( view, "Item 3" );
+	new Q3ListViewItem( view, "Item 3" );
 
 	dialog.exec();
 	view->saveLayout( KGlobal::config(), "ListView" );

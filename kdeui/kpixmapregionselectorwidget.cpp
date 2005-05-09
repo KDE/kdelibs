@@ -213,7 +213,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
       QMouseEvent *mev= (QMouseEvent *)(ev);
       //kdDebug() << QString("click at  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
 
-      if ( mev->button() == RightButton )
+      if ( mev->button() == Qt::RightButton )
       {
          KPopupMenu *popup = createPopupMenu( );
          popup->exec( mev->globalPos() );
@@ -426,7 +426,7 @@ void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
    {
          /* We have to resize the pixmap to get it complete on the screen */
          QImage image=m_originalPixmap.convertToImage();
-         m_originalPixmap.convertFromImage( image.smoothScale( width, height, QImage::ScaleMin ) );
+         m_originalPixmap.convertFromImage( image.smoothScale( width, height, Qt::KeepAspectRatio ) );
          double oldZoomFactor = m_zoomFactor;
          m_zoomFactor=m_originalPixmap.width()/(double)m_unzoomedPixmap.width();
 

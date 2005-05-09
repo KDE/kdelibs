@@ -19,7 +19,7 @@
 
 #include "kmconfigjobs.h"
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 
 #include <knuminput.h>
@@ -34,7 +34,7 @@ KMConfigJobs::KMConfigJobs(QWidget *parent, const char *name)
 	setPageHeader(i18n("Print Job Settings"));
 	setPagePixmap("exec");
 
-	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Jobs Shown"), this);
+	Q3GroupBox	*box = new Q3GroupBox(0, Qt::Vertical, i18n("Jobs Shown"), this);
 
 	m_limit = new KIntNumInput(box);
 	m_limit->setRange(0, 9999, 1, true);

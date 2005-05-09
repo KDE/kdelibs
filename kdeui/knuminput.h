@@ -84,7 +84,7 @@ public:
      *     @li @p AlignBottom  The label is placed below the edit/slider
      *
      */
-    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
 
     /**
      * @return the text of the label.
@@ -307,7 +307,7 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
 
     /**
      * This method returns the minimum size necessary to display the
@@ -595,7 +595,7 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
     virtual QSize minimumSizeHint() const;
     virtual bool eventFilter(QObject*, QEvent*);
 

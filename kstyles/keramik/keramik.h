@@ -32,12 +32,12 @@
 #ifndef __keramik_h__
 #define __keramik_h__
 
-#include <qframe.h>
+#include <q3frame.h>
 #include <kstyle.h>
 
 #include "pixmaploader.h"
 
-class QProgressBar;
+class Q3ProgressBar;
 
 class KeramikStyle : public KStyle
 {
@@ -47,7 +47,7 @@ public:
 	KeramikStyle();
 	virtual ~KeramikStyle();
 
-	void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg, const QPopupMenu* ) const;
+	void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg, const Q3PopupMenu* ) const;
 	QPixmap stylePixmap(StylePixmap stylepixmap, const QWidget* widget, const QStyleOption& opt) const;
 
 	void polish( QWidget* widget );
@@ -157,7 +157,7 @@ private:
 	bool firstComboPopupRelease;
 
 	//Animation support.
-	QMap<QProgressBar*, int> progAnimWidgets;
+	QMap<Q3ProgressBar*, int> progAnimWidgets;
 
 	bool eventFilter( QObject* object, QEvent* event );
 

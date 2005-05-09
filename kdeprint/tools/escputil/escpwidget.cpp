@@ -23,7 +23,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
-#include <qaccel.h>
+#include <q3accel.h>
 #include <kdemacros.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -96,26 +96,26 @@ EscpWidget::EscpWidget(QWidget *parent, const char *name)
 	connect(identbtn, SIGNAL(clicked()), SLOT(slotButtonClicked()));
 
 	QLabel	*printerlab = new QLabel(i18n("Printer:"), this);
-	printerlab->setAlignment(AlignRight|AlignVCenter);
+	printerlab->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*devicelab = new QLabel(i18n("Device:"), this);
-	devicelab->setAlignment(AlignRight|AlignVCenter);
+	devicelab->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*cleanlab = new QLabel(i18n("Clea&n print head"), this);
 	QLabel	*nozzlelab = new QLabel(i18n("&Print a nozzle test pattern"), this);
 	QLabel	*alignlab = new QLabel(i18n("&Align print head"), this);
 	QLabel	*inklab = new QLabel(i18n("&Ink level"), this);
 	QLabel	*identlab = new QLabel(i18n("P&rinter identification"), this);
 
-	cleanlab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
-	nozzlelab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
-	alignlab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
-	inklab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
-	identlab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
+	cleanlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
+	nozzlelab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
+	alignlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
+	inklab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
+	identlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
 
-	cleanbtn->setAccel(QAccel::shortcutKey(cleanlab->text()));
-	nozzlebtn->setAccel(QAccel::shortcutKey(nozzlelab->text()));
-	alignbtn->setAccel(QAccel::shortcutKey(alignlab->text()));
-	inkbtn->setAccel(QAccel::shortcutKey(inklab->text()));
-	identbtn->setAccel(QAccel::shortcutKey(identlab->text()));
+	cleanbtn->setAccel(Q3Accel::shortcutKey(cleanlab->text()));
+	nozzlebtn->setAccel(Q3Accel::shortcutKey(nozzlelab->text()));
+	alignbtn->setAccel(Q3Accel::shortcutKey(alignlab->text()));
+	inkbtn->setAccel(Q3Accel::shortcutKey(inklab->text()));
+	identbtn->setAccel(Q3Accel::shortcutKey(identlab->text()));
 
 	KSeparator	*sep = new KSeparator(this);
 	sep->setFixedHeight(10);
@@ -193,7 +193,7 @@ void EscpWidget::startCommand(const QString& arg)
 	m_proc << arg << "-q";
 	m_errorbuffer = m_outbuffer = QString::null;
 	m_hasoutput = ( arg == "-i" || arg == "-d" );
-	for ( QValueList<QCString>::ConstIterator it=m_proc.args().begin(); it!=m_proc.args().end(); ++it )
+	for ( Q3ValueList<Q3CString>::ConstIterator it=m_proc.args().begin(); it!=m_proc.args().end(); ++it )
 		kdDebug() << "ARG: " << *it << endl;
 	if (m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
 		setEnabled(false);
@@ -230,13 +230,13 @@ void EscpWidget::slotProcessExited(KProcess*)
 
 void EscpWidget::slotReceivedStdout(KProcess*, char *buf, int len)
 {
-	QString	bufstr = QCString(buf, len);
+	QString	bufstr = Q3CString(buf, len);
 	m_outbuffer.append(bufstr);
 }
 
 void EscpWidget::slotReceivedStderr(KProcess*, char *buf, int len)
 {
-	QString	bufstr = QCString(buf, len);
+	QString	bufstr = Q3CString(buf, len);
 	m_errorbuffer.append(bufstr);
 }
 

@@ -28,10 +28,10 @@
 #include "html/html_imageimpl.h"
 #include "dom/html_element.h"
 
-#include <qvaluelist.h>
-#include <qptrlist.h>
-#include <qcstring.h>
-#include <qmemarray.h>
+#include <q3valuelist.h>
+#include <q3ptrlist.h>
+#include <q3cstring.h>
+#include <q3memarray.h>
 
 class KHTMLView;
 class QTextCodec;
@@ -45,7 +45,7 @@ namespace khtml
     class RenderRadioButton;
     class RenderFileButton;
 
-    typedef QValueList<QCString> encodingList;
+    typedef Q3ValueList<Q3CString> encodingList;
 }
 
 namespace KWallet {
@@ -102,8 +102,8 @@ public:
 
 private:
     void gatherWalletData();
-    QPtrList<HTMLGenericFormElementImpl> formElements;
-    QPtrList<HTMLImageElementImpl> imgElements;
+    Q3PtrList<HTMLGenericFormElementImpl> formElements;
+    Q3PtrList<HTMLImageElementImpl> imgElements;
     DOMString m_target;
     DOMString m_enctype;
     QString m_boundary;
@@ -410,7 +410,7 @@ public:
 
     void setRecalcListItems();
 
-    QMemArray<HTMLGenericFormElementImpl*> listItems() const
+    Q3MemArray<HTMLGenericFormElementImpl*> listItems() const
      {
          if (m_recalcListItems) const_cast<HTMLSelectElementImpl*>(this)->recalcListItems();
          return m_listItems;
@@ -422,7 +422,7 @@ private:
     void recalcListItems();
 
 protected:
-    mutable QMemArray<HTMLGenericFormElementImpl*> m_listItems;
+    mutable Q3MemArray<HTMLGenericFormElementImpl*> m_listItems;
     short m_minwidth;
     signed short m_size : 15;
     bool m_multiple : 1;

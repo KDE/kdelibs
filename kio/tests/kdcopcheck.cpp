@@ -40,10 +40,10 @@ TestService::TestService(const QString &exec)
 
    proc.start();
 
-   connect(kapp->dcopClient(), SIGNAL( applicationRegistered(const QCString&)),
-           this, SLOT(newApp(const QCString&)));
-   connect(kapp->dcopClient(), SIGNAL( applicationRemoved(const QCString&)),
-           this, SLOT(endApp(const QCString&)));
+   connect(kapp->dcopClient(), SIGNAL( applicationRegistered(const Q3CString&)),
+           this, SLOT(newApp(const Q3CString&)));
+   connect(kapp->dcopClient(), SIGNAL( applicationRemoved(const Q3CString&)),
+           this, SLOT(endApp(const Q3CString&)));
    connect(&proc, SIGNAL(processExited(KProcess *)),
            this, SLOT(appExit()));
 
@@ -51,7 +51,7 @@ TestService::TestService(const QString &exec)
    result = KService::DCOP_None;
 }
 
-void TestService::newApp(const QCString &appId)
+void TestService::newApp(const Q3CString &appId)
 {
    QString id = appId;
    if (id == m_exec)
@@ -67,7 +67,7 @@ void TestService::newApp(const QCString &appId)
    qWarning("Register %s", appId.data());
 }
 
-void TestService::endApp(const QCString &appId)
+void TestService::endApp(const Q3CString &appId)
 {
    qWarning("Unegister %s", appId.data());
 }

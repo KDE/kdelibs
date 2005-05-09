@@ -172,7 +172,7 @@ void Security::slotDataArrived(KProcIO *procIO)
        case Sign:
          if (data.find("passphrase.enter") != -1)
          {
-           QCString password;
+           Q3CString password;
            KeyStruct key = m_keys[m_secretKey];
            int result = KPasswordDialog::getPassword(password, i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br><i>%2&lt;%3&gt;</i>:</qt>").arg(m_secretKey).arg(key.name).arg(key.mail));
            if (result == KPasswordDialog::Accepted)
@@ -223,7 +223,7 @@ void Security::slotCheckValidity()
   const char* c = "";
   KMD5 context(c);
   QFile file(m_fileName);
-  if (file.open(IO_ReadOnly))
+  if (file.open(QIODevice::ReadOnly))
   {
      context.reset();
      context.update(file);
@@ -231,7 +231,7 @@ void Security::slotCheckValidity()
      file.close();
   }
   file.setName(f.dirPath() + "/md5sum");
-  if (file.open(IO_ReadOnly))
+  if (file.open(QIODevice::ReadOnly))
   {
      QString md5sum_file;
      file.readLine(md5sum_file, 50);
@@ -295,7 +295,7 @@ void Security::slotSignFile()
   const char* c = "";
   KMD5 context(c);
   QFile file(m_fileName);
-  if (file.open(IO_ReadOnly))
+  if (file.open(QIODevice::ReadOnly))
   {
     context.reset();
     context.update(file);
@@ -303,7 +303,7 @@ void Security::slotSignFile()
     file.close();
   }
   file.setName(f.dirPath() + "/md5sum");
-  if (file.open(IO_WriteOnly))
+  if (file.open(QIODevice::WriteOnly))
   {
     QTextStream stream(&file);
     stream << md5sum;

@@ -24,8 +24,8 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
-#include <qframe.h>
-#include <qwhatsthis.h>
+#include <q3frame.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -120,7 +120,7 @@ void CupsdNetworkClientsPage::setDefaults()
 
 void CupsdNetworkClientsPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(keepalive_, conf->comments_.toolTip(KEEPALIVE_COMM));
-        QWhatsThis::add(keepalivetimeout_, conf->comments_.toolTip(KEEPALIVETIMEOUT_COMM));
-        QWhatsThis::add(maxclients_, conf->comments_.toolTip(MAXCLIENTS_COMM));
+        Q3WhatsThis::add(keepalive_, conf->comments_.toolTip(KEEPALIVE_COMM));
+        Q3WhatsThis::add(keepalivetimeout_, conf->comments_.toolTip(KEEPALIVETIMEOUT_COMM));
+        Q3WhatsThis::add(maxclients_, conf->comments_.toolTip(MAXCLIENTS_COMM));
 }

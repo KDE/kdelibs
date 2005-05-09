@@ -23,7 +23,7 @@
 #include <qlayout.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kseparator.h>
 
@@ -117,9 +117,9 @@ void CupsdBrowsingGeneralPage::setDefaults()
 
 void CupsdBrowsingGeneralPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(browsing_, conf->comments_.toolTip(BROWSING_COMM));
-        QWhatsThis::add(browseshortnames_, conf->comments_.toolTip(BROWSESHORTNAMES_COMM));
-        QWhatsThis::add(implicitclasses_, conf->comments_.toolTip(IMPLICITCLASSES_COMM));
-        QWhatsThis::add(implicitanyclasses_, conf->comments_.toolTip(IMPLICITANYCLASSES_COMM));
-        QWhatsThis::add(hideimplicitmembers_, conf->comments_.toolTip(HIDEIMPLICITMEMBERS_COMM));
+        Q3WhatsThis::add(browsing_, conf->comments_.toolTip(BROWSING_COMM));
+        Q3WhatsThis::add(browseshortnames_, conf->comments_.toolTip(BROWSESHORTNAMES_COMM));
+        Q3WhatsThis::add(implicitclasses_, conf->comments_.toolTip(IMPLICITCLASSES_COMM));
+        Q3WhatsThis::add(implicitanyclasses_, conf->comments_.toolTip(IMPLICITANYCLASSES_COMM));
+        Q3WhatsThis::add(hideimplicitmembers_, conf->comments_.toolTip(HIDEIMPLICITMEMBERS_COMM));
 }

@@ -3,13 +3,13 @@
 public:
 ImgParam();
 ImgParam(const ImgParam&);
-ImgParam(const QCString&);
+ImgParam(const Q3CString&);
 ImgParam & operator = (ImgParam&);
-ImgParam & operator = (const QCString&);
+ImgParam & operator = (const Q3CString&);
 bool operator ==(ImgParam&);
 bool operator !=(ImgParam& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {ImgParam a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {ImgParam a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~ImgParam();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

@@ -408,7 +408,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
         if (rend->style()->hidesOverflow())
             rend->layer()->scrollToYOffset(value.toInt32(exec));
         else if (rend->isRoot()) {
-            QScrollView* sview = node.ownerDocument().view();
+            Q3ScrollView* sview = node.ownerDocument().view();
             if (sview)
                 sview->setContentsPos(sview->contentsX(), value.toInt32(exec));
         }
@@ -422,7 +422,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
         if (rend->style()->hidesOverflow())
             rend->layer()->scrollToXOffset(value.toInt32(exec));
         else if (rend->isRoot()) {
-            QScrollView* sview = node.ownerDocument().view();
+            Q3ScrollView* sview = node.ownerDocument().view();
             if (sview)
                 sview->setContentsPos(value.toInt32(exec), sview->contentsY());
         }
@@ -1654,7 +1654,7 @@ const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection"
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const QValueList<DOM::Node>& nodes )
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const Q3ValueList<DOM::Node>& nodes )
   : DOMObject(exec->interpreter()->builtinObjectPrototype()),
   m_nodes(nodes)
 {

@@ -96,7 +96,7 @@ CupsdConf::~CupsdConf()
 bool CupsdConf::loadFromFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (!f.exists() || !f.open(IO_ReadOnly)) return false;
+	if (!f.exists() || !f.open(QIODevice::ReadOnly)) return false;
 	else
 	{
 		QTextStream	t(&f);
@@ -132,7 +132,7 @@ bool CupsdConf::loadFromFile(const QString& filename)
 bool CupsdConf::saveToFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (!f.open(IO_WriteOnly)) return false;
+	if (!f.open(QIODevice::WriteOnly)) return false;
 	else
 	{
 		QTextStream	t(&f);
@@ -211,7 +211,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << endl << comments_[RIPCACHE_COMM] << endl;
 		if (!ripcache_.isNull()) t << "RIPCache " << ripcache_ << endl;
 		t << endl << comments_[PORT_COMM] << endl;
-		QValueList<int>::Iterator	it;
+		Q3ValueList<int>::Iterator	it;
 		for (it=port_.begin();it!=port_.end();++it)
 			t << "Port " << (*it) << endl;
 		t << endl << comments_[HOSTNAMELOOKUPS_COMM] << endl;

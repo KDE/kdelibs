@@ -41,7 +41,7 @@ unsigned int SearchInterface::searchInterfaceNumber () const
   return mySearchInterfaceNumber;
 }
 
-void SearchInterface::setSearchInterfaceDCOPSuffix (const QCString &suffix)
+void SearchInterface::setSearchInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("SearchInterface#"+suffix);
 }

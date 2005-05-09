@@ -22,14 +22,14 @@
 
 #include "kprintdialogpage.h"
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qstringlist.h>
 
 class KListView;
 class KXmlCommand;
-class QListViewItem;
+class Q3ListViewItem;
 class QToolButton;
-class QTextBrowser;
+class Q3TextBrowser;
 
 class KPFilterPage : public KPrintDialogPage
 {
@@ -48,7 +48,7 @@ protected slots:
 	void slotUpClicked();
 	void slotDownClicked();
 	void slotConfigureClicked();
-	void slotItemSelected(QListViewItem*);
+	void slotItemSelected(Q3ListViewItem*);
 
 protected:
 	KXmlCommand* currentFilter();
@@ -59,10 +59,10 @@ protected:
 private:
 	KListView		*m_view;
 	QStringList		m_filters;	// <idname,description> pairs
-	QDict<KXmlCommand>	m_activefilters;
+	Q3Dict<KXmlCommand>	m_activefilters;
 	QToolButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
 	bool			m_valid;
-	QTextBrowser		*m_info;
+	Q3TextBrowser		*m_info;
 };
 
 #endif

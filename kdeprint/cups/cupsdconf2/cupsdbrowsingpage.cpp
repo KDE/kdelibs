@@ -26,7 +26,7 @@
 #include <qlayout.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <knuminput.h>
@@ -164,18 +164,18 @@ bool CupsdBrowsingPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdBrowsingPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(browsing_, conf->comments_.toolTip("browsing"));
-	QWhatsThis::add(cups_, conf->comments_.toolTip("browseprotocols"));
-	QWhatsThis::add(slp_, conf->comments_.toolTip("browseprotocols"));
-	QWhatsThis::add(browseinterval_, conf->comments_.toolTip("browseinterval"));
-	QWhatsThis::add(browseport_, conf->comments_.toolTip("browseport"));
-	QWhatsThis::add(browsetimeout_, conf->comments_.toolTip("browsetimeout"));
-	QWhatsThis::add(browseaddresses_, conf->comments_.toolTip("browseaddresses"));
-	QWhatsThis::add(browseorder_, conf->comments_.toolTip("browseorder"));
-	QWhatsThis::add(useimplicitclasses_, conf->comments_.toolTip("implicitclasses"));
-	QWhatsThis::add(useanyclasses_, conf->comments_.toolTip("implicitanyclasses"));
-	QWhatsThis::add(hideimplicitmembers_, conf->comments_.toolTip("hideimplicitmembers"));
-	QWhatsThis::add(useshortnames_, conf->comments_.toolTip("browseshortnames"));
+	Q3WhatsThis::add(browsing_, conf->comments_.toolTip("browsing"));
+	Q3WhatsThis::add(cups_, conf->comments_.toolTip("browseprotocols"));
+	Q3WhatsThis::add(slp_, conf->comments_.toolTip("browseprotocols"));
+	Q3WhatsThis::add(browseinterval_, conf->comments_.toolTip("browseinterval"));
+	Q3WhatsThis::add(browseport_, conf->comments_.toolTip("browseport"));
+	Q3WhatsThis::add(browsetimeout_, conf->comments_.toolTip("browsetimeout"));
+	Q3WhatsThis::add(browseaddresses_, conf->comments_.toolTip("browseaddresses"));
+	Q3WhatsThis::add(browseorder_, conf->comments_.toolTip("browseorder"));
+	Q3WhatsThis::add(useimplicitclasses_, conf->comments_.toolTip("implicitclasses"));
+	Q3WhatsThis::add(useanyclasses_, conf->comments_.toolTip("implicitanyclasses"));
+	Q3WhatsThis::add(hideimplicitmembers_, conf->comments_.toolTip("hideimplicitmembers"));
+	Q3WhatsThis::add(useshortnames_, conf->comments_.toolTip("browseshortnames"));
 }
 
 void CupsdBrowsingPage::slotAdd()

@@ -97,7 +97,7 @@ bool CupsdComment::loadComments()
         comments_.clear();
         QFile	f(locate("data", "kdeprint/cupsd.conf.template"));
         int     index(0);
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
                 Comment         *comm;
                 while (index <= LAST_COMM)

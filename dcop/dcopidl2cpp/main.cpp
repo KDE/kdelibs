@@ -92,7 +92,7 @@ int main( int argc, char** argv )
     }
 
     QFile in( QFile::decodeName(argv[argpos]) );
-    if ( !in.open( IO_ReadOnly ) )
+    if ( !in.open( QIODevice::ReadOnly ) )
 	qFatal("Could not read %s", argv[argpos] );
 
     QDomDocument doc;

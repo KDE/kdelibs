@@ -20,7 +20,7 @@
 #ifndef kfile_tree_view_item_h
 #define kfile_tree_view_item_h
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <klistview.h>
 
 #include <kfileitem.h>
@@ -94,12 +94,12 @@ private:
 /**
  * List of KFileTreeViewItems
  */
-typedef QPtrList<KFileTreeViewItem> KFileTreeViewItemList;
+typedef Q3PtrList<KFileTreeViewItem> KFileTreeViewItemList;
 
 /**
  * Iterator for KFileTreeViewItemList
  */
-typedef QPtrListIterator<KFileTreeViewItem> KFileTreeViewItemListIterator;
+typedef Q3PtrListIterator<KFileTreeViewItem> KFileTreeViewItemListIterator;
 
 
 #endif

@@ -29,7 +29,7 @@
 
 #include <math.h> // need ceil
 
-KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos)
+KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Qt::Orientation orient, int pos)
 : QWidget(parent, name)
 {
   m_dontRecalc=false;
@@ -56,15 +56,15 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
   setupMinMaxSize();
 
   if (divider) delete divider;
-  divider = new QFrame(this, "pannerdivider");
-  divider->setFrameStyle(QFrame::Panel | QFrame::Raised);
+  divider = new Q3Frame(this, "pannerdivider");
+  divider->setFrameStyle(Q3Frame::Panel | Q3Frame::Raised);
   divider->setLineWidth(1);
   divider->raise();
 
-  if (m_orientation == Horizontal)
-    divider->setCursor(QCursor(sizeVerCursor));
+  if (m_orientation == Qt::Horizontal)
+    divider->setCursor(QCursor(Qt::SizeVerCursor));
   else
-    divider->setCursor(QCursor(sizeHorCursor));
+    divider->setCursor(QCursor(Qt::SizeHorCursor));
   divider->installEventFilter(this);
 
   initialised= true;
@@ -173,7 +173,7 @@ void KDockSplitter::setupMinMaxSize()
 {
   // Set the minimum and maximum sizes for the KDockSplitter (this)
   int minx, maxx, miny, maxy;
-  if (m_orientation == Horizontal) {
+  if (m_orientation == Qt::Horizontal) {
     miny = child0->minimumHeight() + child1->minimumHeight() + 4;
     maxy = child0->maximumHeight() + child1->maximumHeight() + 4;
     minx = (child0->minimumWidth() > child1->minimumWidth()) ? child0->minimumWidth() : child1->minimumWidth();
@@ -272,7 +272,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
         // keep the splitter on a fixed position. This may be a bit inaccurate, because
         // xpos saves a proportional value, which means there might occur rounding errors.
         // However, this works surprising well!
-        if (m_orientation == Horizontal) {
+        if (m_orientation == Qt::Horizontal) {
           if (ev->oldSize().height() != ev->size().height()) {
             if( (c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))) {
               // dockwidget is on the bottom. move xpos so that the size from child1 stays
@@ -307,7 +307,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
       // values.
       //
       if ( isVisible()) {
-        if (m_orientation == Horizontal) {
+        if (m_orientation == Qt::Horizontal) {
           if (fixedHeight0!=-1)
             xpos = checkValue(fixedHeight0) * factor / height();
           else if (fixedHeight1!=-1)
@@ -346,8 +346,8 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
     //
     // handle overlapped widgets only.
     //
-    if( ( (m_orientation==Vertical) &&((fixedWidth0==-1) && (fixedWidth1==-1)) ) ||
-        ( (m_orientation==Horizontal)  &&((fixedHeight0==-1) && (fixedHeight1==-1)) ) ) {
+    if( ( (m_orientation==Qt::Vertical) &&((fixedWidth0==-1) && (fixedWidth1==-1)) ) ||
+        ( (m_orientation==Qt::Horizontal)  &&((fixedHeight0==-1) && (fixedHeight1==-1)) ) ) {
       if ((c0->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c0->getWidget()))
            && (dc->isOverlapMode())) {
         // child0 ist a KDockContainer
@@ -355,7 +355,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
         child0->show();
         child0->raise();
         divider->raise();
-        if (m_orientation == Horizontal) {
+        if (m_orientation == Qt::Horizontal) {
           position = checkValueOverlapped( height() * xpos / factor, child0 );
           child0->setGeometry(0, 0, width(), position);
           child1->setGeometry(0, dc->m_nonOverlapSize, width(), height()-dc->m_nonOverlapSize);
@@ -374,7 +374,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
           child1->show();
           child1->raise();
           divider->raise();
-          if (m_orientation == Horizontal) {
+          if (m_orientation == Qt::Horizontal) {
             position = checkValueOverlapped( height() * xpos / factor, child1 );
             child0->setGeometry(0, 0, width(), height()-dc->m_nonOverlapSize);
             child1->setGeometry(0, position+4, width(), height()-position-4);
@@ -399,10 +399,10 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
     // the child0 and child1 adjoin.
     //
     if (stdHandling) {
-      int position = checkValue( (m_orientation == Vertical ? width() : height()) * xpos / factor );
+      int position = checkValue( (m_orientation == Qt::Vertical ? width() : height()) * xpos / factor );
       int diff = 0;
 
-      if (m_orientation == Horizontal) {
+      if (m_orientation == Qt::Horizontal) {
         if ((c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))) {
           // bottom is dockcontainer
           if( divider->isVisible() ) {
@@ -442,7 +442,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 int KDockSplitter::checkValueOverlapped(int position, QWidget *overlappingWidget) const
 {
   if (initialised) {
-    if (m_orientation == Vertical) {
+    if (m_orientation == Qt::Vertical) {
       if (child0==overlappingWidget) {
         if (position < child0->minimumWidth() || position > width())
           position = child0->minimumWidth();
@@ -466,7 +466,7 @@ int KDockSplitter::checkValueOverlapped(int position, QWidget *overlappingWidget
 int KDockSplitter::checkValue( int position ) const
 {
   if (initialised) {
-    if (m_orientation == Vertical) {
+    if (m_orientation == Qt::Vertical) {
       if (position < child0->minimumWidth())
         position = child0->minimumWidth();
       if ((width()-4-position) < (child1->minimumWidth()))
@@ -481,9 +481,9 @@ int KDockSplitter::checkValue( int position ) const
 
   if (position < 0) position = 0;
 
-  if ((m_orientation == Vertical) && (position > width()))
+  if ((m_orientation == Qt::Vertical) && (position > width()))
     position = width();
-  if ((m_orientation == Horizontal) && (position > height()))
+  if ((m_orientation == Qt::Horizontal) && (position > height()))
     position = height();
 
   return position;
@@ -499,7 +499,7 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       mev= (QMouseEvent*)e;
       child0->setUpdatesEnabled(mOpaqueResize);
       child1->setUpdatesEnabled(mOpaqueResize);
-      if (m_orientation == Horizontal) {
+      if (m_orientation == Qt::Horizontal) {
         if ((fixedHeight0!=-1) || (fixedHeight1!=-1))
         {
           handled=true; break;
@@ -539,7 +539,7 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       child0->setUpdatesEnabled(true);
       child1->setUpdatesEnabled(true);
       mev= (QMouseEvent*)e;
-      if (m_orientation == Horizontal){
+      if (m_orientation == Qt::Horizontal){
         if ((fixedHeight0!=-1) || (fixedHeight1!=-1))
         {
           handled=true; break;
@@ -625,7 +625,7 @@ KDockButton_Private::KDockButton_Private( QWidget *parent, const char * name )
 :QPushButton( parent, name )
 {
   moveMouse = false;
-  setFocusPolicy( NoFocus );
+  setFocusPolicy( Qt::NoFocus );
 }
 
 KDockButton_Private::~KDockButton_Private()
@@ -637,7 +637,7 @@ void KDockButton_Private::drawButton( QPainter* p )
   p->fillRect( 0,0, width(), height(), QBrush(colorGroup().brush(QColorGroup::Background)) );
   p->drawPixmap( (width() - pixmap()->width()) / 2, (height() - pixmap()->height()) / 2, *pixmap() );
   if ( moveMouse && !isDown() ){
-    p->setPen( white );
+    p->setPen( Qt::white );
     p->moveTo( 0, height() - 1 );
     p->lineTo( 0, 0 );
     p->lineTo( width() - 1, 0 );
@@ -652,7 +652,7 @@ void KDockButton_Private::drawButton( QPainter* p )
     p->lineTo( 0, 0 );
     p->lineTo( width() - 1, 0 );
 
-    p->setPen( white );
+    p->setPen( Qt::white );
     p->lineTo( width() - 1, height() - 1 );
     p->lineTo( 0, height() - 1 );
   }
@@ -701,7 +701,7 @@ void KDockWidgetPrivate::slotFocusEmbeddedWidget(QWidget* w)
 {
    if (w) {
       QWidget* embeddedWdg = ((KDockWidget*)w)->getWidget();
-      if (embeddedWdg && ((embeddedWdg->focusPolicy() == QWidget::ClickFocus) || (embeddedWdg->focusPolicy() == QWidget::StrongFocus))) {
+      if (embeddedWdg && ((embeddedWdg->focusPolicy() == Qt::ClickFocus) || (embeddedWdg->focusPolicy() == Qt::StrongFocus))) {
          embeddedWdg->setFocus();
       }
    }

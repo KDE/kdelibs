@@ -53,8 +53,8 @@
 # define XK_Caps_Lock Qt::Key_CapsLock
 # define XK_Num_Lock Qt::Key_NumLock
 # define XK_Scroll_Lock Qt::Key_ScrollLock
-# define XK_Prior Qt::Key_Prior
-# define XK_Next Qt::Key_Next
+# define XK_Prior Qt::Key_PageUp
+# define XK_Next Qt::Key_PageDown
 #endif
 
 namespace KKeyServer
@@ -176,8 +176,8 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_Up,         XK_Up },
 	{ Qt::Key_Right,      XK_Right },
 	{ Qt::Key_Down,       XK_Down },
-	{ Qt::Key_Prior,      XK_Prior },
-	{ Qt::Key_Next,       XK_Next },
+	{ Qt::Key_PageUp,      XK_Prior },
+	{ Qt::Key_PageDown,       XK_Next },
 	//{ Qt::Key_Shift,      0 },
 	//{ Qt::Key_Control,    0 },
 	//{ Qt::Key_Meta,       0 },
@@ -285,7 +285,7 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_VolumeUp,   XF86XK_AudioRaiseVolume },
 	{ Qt::Key_MediaPlay,  XF86XK_AudioPlay },
 	{ Qt::Key_MediaStop,  XF86XK_AudioStop },
-	{ Qt::Key_MediaPrev,  XF86XK_AudioPrev },
+	{ Qt::Key_MediaPrevious,  XF86XK_AudioPrev },
 	{ Qt::Key_MediaNext,  XF86XK_AudioNext },
 	{ Qt::Key_HomePage,   XF86XK_HomePage },
 	{ Qt::Key_LaunchMail, XF86XK_Mail },
@@ -674,9 +674,9 @@ bool modXToModQt( uint modX, int& modQt )
 KDECORE_EXPORT int qtButtonStateToMod( Qt::ButtonState s )
 {
 	int modQt = 0;
-	if (s & Qt::ShiftButton) modQt |= KKey::SHIFT;
-	if (s & Qt::ControlButton) modQt |= KKey::CTRL;
-	if (s & Qt::AltButton) modQt |= KKey::ALT;
+	if (s & Qt::ShiftModifier) modQt |= KKey::SHIFT;
+	if (s & Qt::ControlModifier) modQt |= KKey::CTRL;
+	if (s & Qt::AltModifier) modQt |= KKey::ALT;
 	return modQt;
 }
 
@@ -949,13 +949,13 @@ KKey Key::key() const
 	}
 }
 
-Key& Key::operator =( const KKeyNative& key )
+Qt::Key& Key::operator =( const KKeyNative& key )
 {
 	m_code = key.code(); m_mod = key.mod(); m_sym = key.sym();
 	return *this;
 }
 
-int Key::compare( const Key& b ) const
+int Key::compare( const Qt::Key& b ) const
 {
 	if( m_code == CODE_FOR_QT )
 		return m_sym - b.m_sym;
@@ -1029,10 +1029,10 @@ void KKey::simplify()
 #ifdef Q_WS_X11
 	if( m_sym == XK_Sys_Req ) {
 		m_sym = XK_Print;
-		m_mod |= ALT;
+		m_mod |= Qt::ALT;
 	} else if( m_sym == XK_ISO_Left_Tab ) {
 		m_sym = XK_Tab;
-		m_mod |= SHIFT;
+		m_mod |= Qt::SHIFT;
 	} else {
 		// Shift+Equal => Shift+Plus (en)
 		m_sym = KKeyNative(*this).sym();

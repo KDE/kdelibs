@@ -23,7 +23,7 @@
 #include <kdelibs_export.h>
 
 class QString;
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -42,7 +42,7 @@ class KTEXTEDITOR_EXPORT HighlightingInterface
     unsigned int highlightingInterfaceNumber () const;
     
   protected:  
-    void setHighlightingInterfaceDCOPSuffix (const QCString &suffix);  
+    void setHighlightingInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   //
 	// slots !!!

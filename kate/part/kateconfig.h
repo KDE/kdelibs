@@ -24,7 +24,7 @@
 #include <qbitarray.h>
 #include <qcolor.h>
 #include <qobject.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 class KateView;
 class KateDocument;
@@ -510,7 +510,7 @@ class KateRendererConfig : public KateConfig
     QColor m_tabMarkerColor;
     QColor m_iconBarColor;
     QColor m_lineNumberColor;
-    QValueVector<QColor> m_lineMarkerColor;
+    Q3ValueVector<QColor> m_lineMarkerColor;
 
     bool m_schemaSet : 1;
     bool m_fontSet : 1;

@@ -24,10 +24,10 @@
 
 #include <sys/types.h>
 
-#include <qptrlist.h>
-#include <qptrstack.h>
+#include <q3ptrlist.h>
+#include <q3ptrstack.h>
 #include <qobject.h>
-#include <qlistview.h>
+#include <q3listview.h>
 
 #include <kdialogbase.h>
 #include <klocale.h>
@@ -37,9 +37,9 @@
 #include "kbookmarkmanager.h"
 
 class QString;
-class QPopupMenu;
+class Q3PopupMenu;
 class QPushButton;
-class QListView;
+class Q3ListView;
 class KLineEdit;
 class KBookmark;
 class KBookmarkGroup;
@@ -158,7 +158,7 @@ public:
   static QStringList dynamicBookmarksList();
 
 signals:
-  void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
+  void aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * );
   /**
    * @since 3.4
    */
@@ -169,7 +169,7 @@ public slots: // public for bookmark bar
 
 protected slots:
   void slotAboutToShow();
-  void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
+  void slotAboutToShowContextMenu( KPopupMenu *, int, Q3PopupMenu * );
   void slotActionHighlighted( KAction * );
 
   void slotRMBActionRemove( int );
@@ -200,7 +200,7 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
-  void fillContextMenu( QPopupMenu *, const QString &, int );
+  void fillContextMenu( Q3PopupMenu *, const QString &, int );
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;
@@ -218,12 +218,12 @@ protected:
   /**
    * List of our sub menus
    */
-  QPtrList<KBookmarkMenu> m_lstSubMenus;
+  Q3PtrList<KBookmarkMenu> m_lstSubMenus;
   KActionCollection * m_actionCollection;
   /**
    * List of our actions.
    */
-  QPtrList<KAction> m_actions;
+  Q3PtrList<KAction> m_actions;
   /**
    * Parent bookmark for this menu.
    */
@@ -250,13 +250,13 @@ public:
   void connectToImporter( const QObject &importer );
 
 protected slots:
-  void newBookmark( const QString & text, const QCString & url, const QString & );
+  void newBookmark( const QString & text, const Q3CString & url, const QString & );
   void newFolder( const QString & text, bool, const QString & );
   void newSeparator();
   void endFolder();
 
 protected:
-  QPtrStack<KBookmarkMenu> mstack;
+  Q3PtrStack<KBookmarkMenu> mstack;
   KBookmarkMenu * m_menu;
   KActionCollection * m_actionCollection;
   KBookmarkManager* m_pManager;

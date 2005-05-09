@@ -41,16 +41,16 @@
 
 #include <qclipboard.h>
 #include <qfile.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qpushbutton.h>
 
 #include <dptrtemplate.h>
 
-template class QPtrList<KBookmarkMenu>;
+template class Q3PtrList<KBookmarkMenu>;
 
 static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
@@ -112,8 +112,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     if ( KBookmarkSettings::self()->m_contextmenu )
     {
       (void) _parentMenu->contextMenu();
-      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
-               this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ));
+      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, Q3PopupMenu*) ),
+               this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, Q3PopupMenu*) ));
     }
 
     if ( m_bIsRoot )
@@ -142,7 +142,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
 KBookmarkMenu::~KBookmarkMenu()
 {
   //kdDebug(7043) << "KBookmarkMenu::~KBookmarkMenu() " << this << endl;
-  QPtrListIterator<KAction> it( m_actions );
+  Q3PtrListIterator<KAction> it( m_actions );
   for (; it.current(); ++it )
     it.current()->unplugAll();
 
@@ -194,7 +194,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
 /********************************************************************/
 
 class KBookmarkMenuRMBAssoc : public dPtrTemplate<KBookmarkMenu, RMB> { };
-template<> QPtrDict<RMB>* dPtrTemplate<KBookmarkMenu, RMB>::d_ptr = 0;
+template<> Q3PtrDict<RMB>* dPtrTemplate<KBookmarkMenu, RMB>::d_ptr = 0;
 
 static RMB* rmbSelf(KBookmarkMenu *m) { return KBookmarkMenuRMBAssoc::d(m); }
 
@@ -231,7 +231,7 @@ KBookmark RMB::atAddress(const QString & address)
   return bookmark;
 }
 
-void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
+void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, Q3PopupMenu* contextMenu )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
   if (s_highlightedAddress.isNull())
@@ -243,7 +243,7 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
   fillContextMenu( contextMenu, s_highlightedAddress, 0 );
 }
 
-void RMB::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
+void RMB::fillContextMenu( Q3PopupMenu* contextMenu, const QString & address, int val )
 {
   KBookmark bookmark = atAddress(address);
 
@@ -266,7 +266,7 @@ void RMB::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int
   }*/
 }
 
-void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, int val )
+void RMB::fillContextMenu2( Q3PopupMenu* contextMenu, const QString & address, int val )
 {
   KBookmark bookmark = atAddress(address);
 
@@ -418,7 +418,7 @@ void RMB::hidePopup() {
 /********************************************************************/
 /********************************************************************/
 
-void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
+void KBookmarkMenu::fillContextMenu( Q3PopupMenu* contextMenu, const QString & address, int val )
 {
   RMB::begin_rmb_action(this);
   rmbSelf(this)->fillContextMenu(contextMenu, address, val);
@@ -454,7 +454,7 @@ void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
   else
   {
     // Iterate recursively into child menus
-    QPtrListIterator<KBookmarkMenu> it( m_lstSubMenus );
+    Q3PtrListIterator<KBookmarkMenu> it( m_lstSubMenus );
     for (; it.current(); ++it )
     {
       it.current()->slotBookmarksChanged( groupAddress );
@@ -467,7 +467,7 @@ void KBookmarkMenu::refill()
   //kdDebug(7043) << "KBookmarkMenu::refill()" << endl;
   m_lstSubMenus.clear();
 
-  QPtrListIterator<KAction> it( m_actions );
+  Q3PtrListIterator<KAction> it( m_actions );
   for (; it.current(); ++it )
     it.current()->unplug( m_parentMenu );
 
@@ -581,8 +581,8 @@ void KBookmarkMenu::fillBookmarkMenu()
   {
     bool haveSep = false;
 
-    QValueList<QString> keys = KBookmarkMenu::dynamicBookmarksList();
-    QValueList<QString>::const_iterator it;
+    Q3ValueList<QString> keys = KBookmarkMenu::dynamicBookmarksList();
+    Q3ValueList<QString>::const_iterator it;
     for ( it = keys.begin(); it != keys.end(); ++it )
     {
        DynMenuInfo info;
@@ -669,8 +669,8 @@ void KBookmarkMenu::fillBookmarkMenu()
                                                   m_bAddBookmark,
                                                   bm.address() );
 
-      connect(subMenu, SIGNAL( aboutToShowContextMenu( const KBookmark &, QPopupMenu * ) ),
-                 this, SIGNAL( aboutToShowContextMenu( const KBookmark &, QPopupMenu * ) ));
+      connect(subMenu, SIGNAL( aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * ) ),
+                 this, SIGNAL( aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * ) ));
       connect(subMenu, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ),
                 this, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ));
       m_lstSubMenus.append( subMenu );
@@ -851,14 +851,14 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   if ( editType == InsertionMode )
   {
     m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name, m_address );
-    connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ),
-             this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
+    connect( m_folderTree, SIGNAL( doubleClicked(Q3ListViewItem*) ),
+             this,         SLOT( slotDoubleClicked(Q3ListViewItem*) ) );
     vbox->addWidget( m_folderTree );
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1() ) );
   }
 }
 
-void KBookmarkEditDialog::slotDoubleClicked( QListViewItem* item )
+void KBookmarkEditDialog::slotDoubleClicked( Q3ListViewItem* item )
 {
   Q_ASSERT( m_folderTree );
   m_folderTree->setCurrentItem( item );
@@ -915,7 +915,7 @@ void KBookmarkEditDialog::slotUser1()
 /********************************************************************/
 /********************************************************************/
 
-static void fillGroup( QListView* listview, KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group, bool expandOpenGroups = true, const QString& address = QString::null )
+static void fillGroup( Q3ListView* listview, KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group, bool expandOpenGroups = true, const QString& address = QString::null )
 {
   bool noSubGroups = true;
   KBookmarkFolderTreeItem * lastItem = 0L;
@@ -942,17 +942,17 @@ static void fillGroup( QListView* listview, KBookmarkFolderTreeItem * parentItem
   }
 }
 
-QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name, const QString& address )
+Q3ListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name, const QString& address )
 {
-  QListView *listview = new QListView( parent, name );
+  Q3ListView *listview = new Q3ListView( parent, name );
 
   listview->setRootIsDecorated( false );
   listview->header()->hide();
   listview->addColumn( i18n("Bookmark"), 200 );
   listview->setSorting( -1, false );
-  listview->setSelectionMode( QListView::Single );
+  listview->setSelectionMode( Q3ListView::Single );
   listview->setAllColumnsShowFocus( true );
-  listview->setResizeMode( QListView::AllColumns );
+  listview->setResizeMode( Q3ListView::AllColumns );
   listview->setMinimumSize( 60, 100 );
 
   fillTree( listview, mgr, address );
@@ -960,7 +960,7 @@ QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* pare
   return listview;
 }
 
-void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr, const QString& address )
+void KBookmarkFolderTree::fillTree( Q3ListView *listview, KBookmarkManager* mgr, const QString& address )
 {
   listview->clear();
 
@@ -972,12 +972,12 @@ void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr, 
   rootItem->setOpen( true );
 }
 
-static KBookmarkFolderTreeItem* ft_cast( QListViewItem *i )
+static KBookmarkFolderTreeItem* ft_cast( Q3ListViewItem *i )
 {
   return static_cast<KBookmarkFolderTreeItem*>( i );
 }
 
-QString KBookmarkFolderTree::selectedAddress( QListView *listview )
+QString KBookmarkFolderTree::selectedAddress( Q3ListView *listview )
 {
   if ( !listview)
     return QString::null;
@@ -985,7 +985,7 @@ QString KBookmarkFolderTree::selectedAddress( QListView *listview )
   return item ? item->m_bookmark.address() : QString::null;
 }
 
-void KBookmarkFolderTree::setAddress( QListView *listview, const QString & address )
+void KBookmarkFolderTree::setAddress( Q3ListView *listview, const QString & address )
 {
   KBookmarkFolderTreeItem* it = ft_cast( listview->firstChild() );
   while ( true ) {
@@ -1005,16 +1005,16 @@ void KBookmarkFolderTree::setAddress( QListView *listview, const QString & addre
 /********************************************************************/
 
 // toplevel item
-KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( QListView *parent, const KBookmark & gp )
-   : QListViewItem(parent, i18n("Bookmarks")), m_bookmark(gp)
+KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( Q3ListView *parent, const KBookmark & gp )
+   : Q3ListViewItem(parent, i18n("Bookmarks")), m_bookmark(gp)
 {
   setPixmap(0, SmallIcon("bookmark"));
   setExpandable(true);
 }
 
 // group
-KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *parent, QListViewItem *after, const KBookmarkGroup & gp )
-   : QListViewItem(parent, after, gp.fullText()), m_bookmark(gp)
+KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *parent, Q3ListViewItem *after, const KBookmarkGroup & gp )
+   : Q3ListViewItem(parent, after, gp.fullText()), m_bookmark(gp)
 {
   setPixmap(0, SmallIcon( gp.icon() ) );
   setExpandable(true);
@@ -1048,15 +1048,15 @@ void KBookmarkMenuNSImporter::openBookmarks( const QString &location, const QStr
 
 void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
 {
-  connect( &importer, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
-           SLOT( newBookmark( const QString &, const QCString &, const QString & ) ) );
+  connect( &importer, SIGNAL( newBookmark( const QString &, const Q3CString &, const QString & ) ),
+           SLOT( newBookmark( const QString &, const Q3CString &, const QString & ) ) );
   connect( &importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
            SLOT( newFolder( const QString &, bool, const QString & ) ) );
   connect( &importer, SIGNAL( newSeparator() ), SLOT( newSeparator() ) );
   connect( &importer, SIGNAL( endFolder() ), SLOT( endFolder() ) );
 }
 
-void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString & url, const QString & )
+void KBookmarkMenuNSImporter::newBookmark( const QString & text, const Q3CString & url, const QString & )
 {
   QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );

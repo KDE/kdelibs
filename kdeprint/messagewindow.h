@@ -21,7 +21,7 @@
 #define MESSAGEWINDOW_H
 
 #include <qwidget.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 
 #include <kdelibs_export.h>
 
@@ -49,7 +49,7 @@ protected:
 
 private:
 	QLabel *m_text;
-	static QPtrDict<MessageWindow> m_windows;
+	static Q3PtrDict<MessageWindow> m_windows;
 };
 
 #endif

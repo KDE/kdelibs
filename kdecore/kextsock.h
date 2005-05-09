@@ -27,7 +27,7 @@
 #include <sys/time.h>
 
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qiodevice.h>
 
 #include "kbufferedio.h"
@@ -617,7 +617,7 @@ public:
    * @return true if successful, false when an error occurred or the most was
    *         not correct
    */
-  virtual bool open(int mode = IO_Raw | IO_ReadWrite);
+  virtual bool open(int mode = IO_Raw | QIODevice::ReadWrite);
 
   /**
    * Closes the socket. If we have data still in the write buffer yet to be
@@ -966,7 +966,7 @@ public:
    * @param error	pointer to a variable holding the error code
    * @return a list of KAddressInfos
    */
-  static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0) KDE_DEPRECATED;
+  static Q3PtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0) KDE_DEPRECATED;
 
   /**
    * Returns the local socket address

@@ -22,7 +22,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -41,7 +41,7 @@ class KTEXTEDITOR_EXPORT WordWrapInterface
     unsigned int wordWrapInterfaceNumber () const;
     
   protected:  
-    void setWordWrapInterfaceDCOPSuffix (const QCString &suffix); 
+    void setWordWrapInterfaceDCOPSuffix (const Q3CString &suffix); 
 
   //
   // slots !!!

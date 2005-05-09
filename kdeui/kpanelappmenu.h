@@ -79,8 +79,8 @@ public:
     /**
      * @internal
      */
-    bool process(const QCString &fun, const QByteArray &data,
-		 QCString &replyType, QByteArray &reply);
+    bool process(const Q3CString &fun, const QByteArray &data,
+		 Q3CString &replyType, QByteArray &reply);
 
 signals:
     /**
@@ -92,7 +92,7 @@ protected:
     void init(const QPixmap &icon, const QString &title);
 
 private:
-    QCString realObjId;
+    Q3CString realObjId;
 };
 
 

@@ -28,8 +28,8 @@
 #include <sys/types.h>
 #include <netdb.h>
 
-#include <qptrlist.h>
-#include <qcstring.h>
+#include <q3ptrlist.h>
+#include <q3cstring.h>
 #include <qstringlist.h>
 
 #include "kresolver.h"
@@ -65,10 +65,10 @@ namespace KNetwork { namespace Internal
   class KStandardWorker: public KNetwork::KResolverWorkerBase
   {
   protected:
-    mutable QCString m_encodedName;
+    mutable Q3CString m_encodedName;
     Q_UINT16 port;
     int scopeid;
-    QPtrList<KNetwork::KResolverResults> resultList;
+    Q3PtrList<KNetwork::KResolverResults> resultList;
 
   public:
     bool sanityCheck();

@@ -20,7 +20,7 @@
 #define KBARHANDLER_H
 
 #include <qobject.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kxmlguiclient.h>
 
 class KMainWindow;
@@ -56,9 +56,9 @@ private:
     struct Data;
     Data *d;
 
-    QGuardedPtr<KMainWindow> m_mainWindow;
-    QPtrList<KAction> m_actions;
-    QPtrList<KToolBar> m_toolBars;
+    QPointer<KMainWindow> m_mainWindow;
+    Q3PtrList<KAction> m_actions;
+    Q3PtrList<KToolBar> m_toolBars;
 };
 
 } // namespace KDEPrivate

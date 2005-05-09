@@ -24,7 +24,7 @@
 #ifndef  FLOATVALUE_H
 #define  FLOATVALUE_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardValue.h>
 

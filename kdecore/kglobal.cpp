@@ -23,8 +23,8 @@
 */
 
 #include <qglobal.h>
-#include <qdict.h>
-#include <qptrlist.h>
+#include <q3dict.h>
+#include <q3ptrlist.h>
 #include "kglobal.h"
 
 #include <kapplication.h>
@@ -127,10 +127,10 @@ KGlobal::staticQString(const char *str)
    return staticQString(QString::fromLatin1(str));
 }
 
-class KStringDict : public QDict<QString>
+class KStringDict : public Q3Dict<QString>
 {
 public:
-   KStringDict() : QDict<QString>(139) { };
+   KStringDict() : Q3Dict<QString>(139) { };
 };
 
 /**
@@ -156,7 +156,7 @@ KGlobal::staticQString(const QString &str)
    return *result;
 }
 
-class KStaticDeleterList: public QPtrList<KStaticDeleterBase>
+class KStaticDeleterList: public Q3PtrList<KStaticDeleterBase>
 {
 public:
    KStaticDeleterList() { }

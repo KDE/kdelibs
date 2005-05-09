@@ -49,7 +49,7 @@ main(int argc, char *argv[])
    }   
    
    // Read the value of an option. 
-   QCString baudrate = args->getOption("baud"); // 9600 is the default value.
+   Q3CString baudrate = args->getOption("baud"); // 9600 is the default value.
    
    printf("Baudrate = %s\n", baudrate.data());
 

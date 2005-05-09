@@ -190,11 +190,11 @@ int KMUiManager::pluginPageCap()
 	return 0;
 }
 
-void KMUiManager::setupPrintDialogPages(QPtrList<KPrintDialogPage>*)
+void KMUiManager::setupPrintDialogPages(Q3PtrList<KPrintDialogPage>*)
 {
 }
 
-void KMUiManager::setupJobViewer(QListView*)
+void KMUiManager::setupJobViewer(Q3ListView*)
 {
 }
 

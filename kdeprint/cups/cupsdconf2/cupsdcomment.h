@@ -21,7 +21,7 @@
 #define	CUPSDCOMMENT_H
 
 #include <qstringlist.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 class QFile;
 
@@ -49,7 +49,7 @@ private:
 	bool loadComments();
 
 private:
-	QDict<Comment> comments_;
+	Q3Dict<Comment> comments_;
 };
 
 #endif

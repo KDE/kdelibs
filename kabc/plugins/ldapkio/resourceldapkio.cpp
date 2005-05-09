@@ -122,8 +122,8 @@ ResourceLDAPKIO::~ResourceLDAPKIO()
 
 void ResourceLDAPKIO::enter_loop()
 {
-  QWidget dummy(0,0,WType_Dialog | WShowModal);
-  dummy.setFocusPolicy( QWidget::NoFocus );
+  QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
+  dummy.setFocusPolicy( Qt::NoFocus );
   qt_enter_modal(&dummy);
   qApp->enter_loop();
   qt_leave_modal(&dummy);
@@ -182,9 +182,9 @@ QString ResourceLDAPKIO::findUid( const QString &uid )
   return d->mResultDn;
 }
 
-QCString ResourceLDAPKIO::addEntry( const QString &attr, const QString &value, bool mod )
+Q3CString ResourceLDAPKIO::addEntry( const QString &attr, const QString &value, bool mod )
 {
-  QCString tmp;
+  Q3CString tmp;
   if ( !attr.isEmpty() ) {
     if ( mod ) tmp += LDIF::assembleLine( "replace", attr ) + "\n";
     tmp += LDIF::assembleLine( attr, value ) + "\n";
@@ -196,7 +196,7 @@ QCString ResourceLDAPKIO::addEntry( const QString &attr, const QString &value, b
 bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr, 
   const QString &olddn )
 {
-  QCString tmp;
+  Q3CString tmp;
   QString dn;
   QByteArray data;
   bool mod = false;
@@ -298,7 +298,7 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   if ( !mAttributes[ "jpegPhoto" ].isEmpty() ) {
     QByteArray pic;
     QBuffer buffer( pic );
-    buffer.open( IO_WriteOnly );
+    buffer.open( QIODevice::WriteOnly );
     addr.photo().data().save( &buffer, "JPEG" );
     
     if ( mod ) tmp += 

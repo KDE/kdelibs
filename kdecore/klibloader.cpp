@@ -23,7 +23,7 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qtimer.h>
-#include <qobjectdict.h>
+#include <q3objectdict.h>
 
 #include "kapplication.h"
 #include "klibloader.h"
@@ -33,7 +33,7 @@
 
 #include "ltdl.h"
 
-template class QAsciiDict<KLibrary>;
+template class Q3AsciiDict<KLibrary>;
 
 #include <stdlib.h> //getenv
 
@@ -57,8 +57,8 @@ template class QAsciiDict<KLibrary>;
 class KLibLoaderPrivate
 {
 public:
-    QPtrList<KLibWrapPrivate> loaded_stack;
-    QPtrList<KLibWrapPrivate> pending_close;
+    Q3PtrList<KLibWrapPrivate> loaded_stack;
+    Q3PtrList<KLibWrapPrivate> pending_close;
     enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
 
     QString errorMessage;
@@ -115,7 +115,7 @@ KLibrary::~KLibrary()
     // If any object is remaining, delete
     if ( m_objs.count() > 0 )
 	{
-	    QPtrListIterator<QObject> it( m_objs );
+	    Q3PtrListIterator<QObject> it( m_objs );
 	    for ( ; it.current() ; ++it )
 		{
 		    kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << " Library = " << m_libname << endl;
@@ -148,7 +148,7 @@ KLibFactory* KLibrary::factory()
     if ( m_factory )
         return m_factory;
 
-    QCString symname;
+    Q3CString symname;
     symname.sprintf("init_%s", name().latin1() );
 
     void* sym = symbol( symname );
@@ -317,7 +317,7 @@ KLibLoader::~KLibLoader()
 {
 //    kdDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
 
-    QAsciiDictIterator<KLibWrapPrivate> it( m_libs );
+    Q3AsciiDictIterator<KLibWrapPrivate> it( m_libs );
     for (; it.current(); ++it )
     {
       kdDebug(150) << "The KLibLoader contains the library " << it.current()->name
@@ -331,9 +331,9 @@ KLibLoader::~KLibLoader()
     d = 0L;
 }
 
-static inline QCString makeLibName( const char* name )
+static inline Q3CString makeLibName( const char* name )
 {
-    QCString libname(name);
+    Q3CString libname(name);
     // only append ".la" if there is no extension
     // this allows to load non-libtool libraries as well
     // (mhk, 20000228)
@@ -348,7 +348,7 @@ static inline QCString makeLibName( const char* name )
 //static
 QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
 {
-    QCString libname = makeLibName( name );
+    Q3CString libname = makeLibName( name );
 
     // only look up the file if it is not an absolute filename
     // (mhk, 20000228)
@@ -401,7 +401,7 @@ KLibrary* KLibLoader::library( const char *name )
 
     /* Test if this library was loaded at some time, but got
        unloaded meanwhile, whithout being dlclose()'ed.  */
-    QPtrListIterator<KLibWrapPrivate> it(d->loaded_stack);
+    Q3PtrListIterator<KLibWrapPrivate> it(d->loaded_stack);
     for (; it.current(); ++it) {
       if (it.current()->name == name)
         wrap = it.current();
@@ -418,7 +418,7 @@ KLibrary* KLibLoader::library( const char *name )
       QString libfile = findLibrary( name );
       if ( libfile.isEmpty() )
       {
-        const QCString libname = makeLibName( name );
+        const Q3CString libname = makeLibName( name );
 #ifndef NDEBUG
         kdDebug(150) << "library=" << name << ": No file named " << libname << " found in paths." << endl;
 #endif
@@ -486,7 +486,7 @@ void KLibLoader::slotLibraryDestroyed()
 {
   const KLibrary *lib = static_cast<const KLibrary *>( sender() );
 
-  QAsciiDictIterator<KLibWrapPrivate> it( m_libs );
+  Q3AsciiDictIterator<KLibWrapPrivate> it( m_libs );
   for (; it.current(); ++it )
     if ( it.current()->lib == lib )
     {
@@ -505,7 +505,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
   /* First delete all KLibrary objects in pending_close, but _don't_ unload
      the DSO behind it.  */
-  QPtrListIterator<KLibWrapPrivate> it(d->pending_close);
+  Q3PtrListIterator<KLibWrapPrivate> it(d->pending_close);
   for (; it.current(); ++it) {
     wrap = it.current();
     if (wrap->lib) {

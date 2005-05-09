@@ -21,7 +21,7 @@
 #include <kdialogbase.h>
 
 class QPushButton;
-class QFrame;
+class Q3Frame;
 class KListBox;
 
 /**
@@ -203,7 +203,7 @@ protected slots:
    * Capture status messages from book.
    */
   void setStatusSlot(const QString&);
-  void slotDoubleClicked ( QListBoxItem * );
+  void slotDoubleClicked ( Q3ListBoxItem * );
   signals:
   /**
    * Send status messages.

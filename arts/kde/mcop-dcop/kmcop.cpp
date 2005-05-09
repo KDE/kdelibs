@@ -23,8 +23,8 @@
 #include <klocale.h>
 #include <dcopclient.h>
 
-#include <qvaluelist.h>
-#include <qcstring.h>
+#include <q3valuelist.h>
+#include <q3cstring.h>
 
 #include <kartsdispatcher.h>
 #include <soundserver.h>
@@ -43,7 +43,7 @@ class KMCOPPrivate
 {
 public:
 	MCOPInfo mcopInfo; 
-	QPtrList<MCOPDCOPObject> list;
+	Q3PtrList<MCOPDCOPObject> list;
 };
 
 int main(int argc, char **argv)
@@ -91,7 +91,7 @@ int KMCOP::objectCount()
 	return d->mcopInfo.objectCount();
 }
 
-QCString KMCOP::correctType(const QCString &str)
+Q3CString KMCOP::correctType(const Q3CString &str)
 {
 	if(str == "string")
 		return "QCString";
@@ -106,7 +106,7 @@ void KMCOP::addInterfacesHackHackHack()
 		
 		if(!obj.isNull())		
 		{
-			QCString interfaceName = obj._interfaceName().c_str();
+			Q3CString interfaceName = obj._interfaceName().c_str();
 
 			if(interfaceName != "Arts::TraderOffer")
 			{
@@ -121,21 +121,21 @@ void KMCOP::addInterfacesHackHackHack()
 				vector<MethodDef>::iterator ifaceMethodsIterator;
 				for(ifaceMethodsIterator = ifaceMethods.begin(); ifaceMethodsIterator != ifaceMethods.end(); ifaceMethodsIterator++)
 				{
-					QCString function, signature;
+					Q3CString function, signature;
 
 					MCOPEntryInfo *entry = new MCOPEntryInfo();
 					
 					MethodDef currentMethod = *ifaceMethodsIterator;
 					vector<ParamDef> currentParameters = currentMethod.signature;
 
-					QCString newType = correctType(QCString(currentMethod.type.c_str()));
+					Q3CString newType = correctType(Q3CString(currentMethod.type.c_str()));
 					
 					entry->setFunctionType(newType);
-					entry->setFunctionName(QCString(currentMethod.name.c_str()));
+					entry->setFunctionName(Q3CString(currentMethod.name.c_str()));
 					
-					function = entry->functionType() + QCString(" ") + entry->functionName() + QCString("(");
+					function = entry->functionType() + Q3CString(" ") + entry->functionName() + Q3CString("(");
 					
-					signature = QCString("(");
+					signature = Q3CString("(");
 
 					QCStringList signatureList;
 					
@@ -145,20 +145,20 @@ void KMCOP::addInterfacesHackHackHack()
 						ParamDef parameter = *methodParametersIterator;
 						if(methodParametersIterator != currentParameters.begin())
 						{
-							function += QCString(", ");						
-							signature += QCString(",");
+							function += Q3CString(", ");						
+							signature += Q3CString(",");
 						}
 						
-						QCString correctParameter = correctType(QCString(parameter.type.c_str()));
+						Q3CString correctParameter = correctType(Q3CString(parameter.type.c_str()));
 						
 						function += correctParameter;
 						signature += correctParameter;
 
-						signatureList.append(QCString(parameter.type.c_str()));
+						signatureList.append(Q3CString(parameter.type.c_str()));
 					}
 					
-					function += QCString(")");
-					signature += QCString(")");
+					function += Q3CString(")");
+					signature += Q3CString(")");
 
 					entry->setSignature(signature);
 					entry->setSignatureList(signatureList);

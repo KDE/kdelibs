@@ -233,9 +233,9 @@ KServiceType::Ptr KServiceType::serviceType( const QString& _name )
   return KServiceType::Ptr( p );
 }
 
-static void addUnique(KService::List &lst, QDict<KService> &dict, const KService::List &newLst, bool lowPrio)
+static void addUnique(KService::List &lst, Q3Dict<KService> &dict, const KService::List &newLst, bool lowPrio)
 {
-  QValueListConstIterator<KService::Ptr> it = newLst.begin();
+  Q3ValueListConstIterator<KService::Ptr> it = newLst.begin();
   for( ; it != newLst.end(); ++it )
   {
      KService *service = static_cast<KService*>(*it);
@@ -250,7 +250,7 @@ static void addUnique(KService::List &lst, QDict<KService> &dict, const KService
 
 KService::List KServiceType::offers( const QString& _servicetype )
 {
-  QDict<KService> dict(53);
+  Q3Dict<KService> dict(53);
   KService::List lst;
 
   // Services associated directly with this servicetype (the normal case)

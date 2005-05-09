@@ -72,8 +72,8 @@ void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
 
 void KBookmarkImporterBase::setupSignalForwards(QObject *src, QObject *dst)
 {
-  connect(src, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
-          dst, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ));
+  connect(src, SIGNAL( newBookmark( const QString &, const Q3CString &, const QString & ) ),
+          dst, SIGNAL( newBookmark( const QString &, const Q3CString &, const QString & ) ));
   connect(src, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
           dst, SIGNAL( newFolder( const QString &, bool, const QString & ) ));
   connect(src, SIGNAL( newSeparator() ),

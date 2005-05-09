@@ -18,12 +18,12 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 #include <qstringlist.h>
-#include <qwmatrix.h>
+#include <qmatrix.h>
 #include <qregexp.h>
 #include <qimage.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qmap.h>
 #include <qdom.h>
 
@@ -65,7 +65,7 @@ public:
 		m_useFillGradient = false;
 		m_useStrokeGradient = false;
 
-		m_worldMatrix = new QWMatrix();
+		m_worldMatrix = new QMatrix();
 
 		// Create new image with alpha support
 		m_image = new QImage(width, height, 32);
@@ -124,7 +124,7 @@ public:
 		return art_new(ArtBpath, number);
 	}
 
-	void ensureSpace(QMemArray<ArtBpath> &vec, int index)
+	void ensureSpace(Q3MemArray<ArtBpath> &vec, int index)
 	{
 		if(vec.size() == (unsigned int) index)
 			vec.resize(index + 1);
@@ -266,7 +266,7 @@ public:
 		// Filling
 		{
 			int index = -1;
-			QValueVector<int> toCorrect;
+			Q3ValueVector<int> toCorrect;
 			while(vec[++index].code != ART_END)
 			{
 				if(vec[index].code == ART_END2)
@@ -294,7 +294,7 @@ public:
 
 			art_svp_free(temp);
 
-			QValueVector<int>::iterator it;
+			Q3ValueVector<int>::iterator it;
 			for(it = toCorrect.begin(); it != toCorrect.end(); ++it)
 				vec[(*it)].code = (ArtPathcode)ART_END2;
 		}
@@ -451,7 +451,7 @@ public:
 				y2 = 0;
 
 			// Adjust to gradientTransform
-			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
+			QMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
 			m.map(x1, y1, &x1, &y1);
 			m.map(x2, y2, &x2, &y2);
 
@@ -522,7 +522,7 @@ public:
 			double aff1[6], aff2[6], gradTransform[6];
 
 			// Respect gradientTransform
-			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
+			QMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
 
 			gradTransform[0] = m.m11();
 			gradTransform[1] = m.m12();
@@ -565,7 +565,7 @@ public:
 				QDomElement newElement = m_linearGradientElementMap[linear];
 
 				// Saved 'old' attributes
-				QDict<QString> refattrs;
+				Q3Dict<QString> refattrs;
 				refattrs.setAutoDelete(true);
 
 				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
@@ -587,7 +587,7 @@ public:
 				applyGradient(svp, element.attribute("xlink:href").mid(1));
 
 				// Restore attributes
-				QDictIterator<QString> itr(refattrs);
+				Q3DictIterator<QString> itr(refattrs);
 				for(; itr.current(); ++itr)
 					newElement.setAttribute(itr.currentKey(), *(itr.current()));
 
@@ -611,7 +611,7 @@ public:
 				QDomElement newElement = m_radialGradientElementMap[radial];
 
 				// Saved 'old' attributes
-				QDict<QString> refattrs;
+				Q3Dict<QString> refattrs;
 				refattrs.setAutoDelete(true);
 
 				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
@@ -633,7 +633,7 @@ public:
 				applyGradient(svp, element.attribute("xlink:href").mid(1));
 
 				// Restore attributes
-				QDictIterator<QString> itr(refattrs);
+				Q3DictIterator<QString> itr(refattrs);
 				for(; itr.current(); ++itr)
 					newElement.setAttribute(itr.currentKey(), *(itr.current()));
 
@@ -674,7 +674,7 @@ public:
 		  }
 	}
 
-	void calculateArc(bool relative, QMemArray<ArtBpath> &vec, int &index, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
+	void calculateArc(bool relative, Q3MemArray<ArtBpath> &vec, int &index, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
 	{
 		double sin_th, cos_th;
 		double a00, a01, a10, a11;
@@ -1117,7 +1117,7 @@ private:
 	ArtSVP *m_clipSVP;
 
 	QImage *m_image;
-	QWMatrix *m_worldMatrix;
+	QMatrix *m_worldMatrix;
 
 	QString m_fillRule;
 	QString m_joinStyle;
@@ -1205,12 +1205,12 @@ QImage *KSVGIconPainter::image()
 	return new QImage(*d->helper->m_image);
 }
 
-QWMatrix *KSVGIconPainter::worldMatrix()
+QMatrix *KSVGIconPainter::worldMatrix()
 {
 	return d->helper->m_worldMatrix;
 }
 
-void KSVGIconPainter::setWorldMatrix(QWMatrix *matrix)
+void KSVGIconPainter::setWorldMatrix(QMatrix *matrix)
 {
 	if(d->helper->m_worldMatrix)
 		delete d->helper->m_worldMatrix;
@@ -1588,7 +1588,7 @@ void KSVGIconPainter::drawLine(double x1, double y1, double x2, double y2)
 	d->helper->drawVPath(vec);
 }
 
-void KSVGIconPainter::drawPolyline(QPointArray polyArray, int points)
+void KSVGIconPainter::drawPolyline(Q3PointArray polyArray, int points)
 {
 	if(polyArray.point(0).x() == -1 || polyArray.point(0).y() == -1)
 		return;
@@ -1624,7 +1624,7 @@ void KSVGIconPainter::drawPolyline(QPointArray polyArray, int points)
 	d->helper->drawVPath(polyline);
 }
 
-void KSVGIconPainter::drawPolygon(QPointArray polyArray)
+void KSVGIconPainter::drawPolygon(Q3PointArray polyArray)
 {
 	ArtVpath *polygon;
 
@@ -1724,7 +1724,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 	{
 	QString value = data;
 
-	QMemArray<ArtBpath> vec;
+	Q3MemArray<ArtBpath> vec;
 	int index = -1;
 
 	double curx = 0.0, cury = 0.0, contrlx = 0.0, contrly = 0.0, xc, yc;
@@ -2752,9 +2752,9 @@ Q_UINT32 KSVGIconPainter::toArtColor(const QColor &color)
 	return d->helper->toArtColor(color);
 }
 
-QWMatrix KSVGIconPainter::parseTransform(const QString &transform)
+QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 {
-	QWMatrix result;
+	QMatrix result;
 
 	// Split string for handling 1 transform statement at a time
 	QStringList subtransforms = QStringList::split(')', transform);

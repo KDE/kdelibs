@@ -24,8 +24,8 @@
 #include <qstringlist.h>
 
 class QPushButton;
-class QListView;
-class QListViewItem;
+class Q3ListView;
+class Q3ListViewItem;
 
 class CupsListBox : public QWidget
 {
@@ -51,10 +51,10 @@ protected:
 	void createLayout();
 	void createButtons();
 	void init(int columns);
-	QListViewItem* findItemAtIndex(int i) const;
+	Q3ListViewItem* findItemAtIndex(int i) const;
 
 private:
-	QListView	*list_;
+	Q3ListView	*list_;
 	QPushButton	*add_;
 	QPushButton	*remove_;
 	QStringList	addmsg_;

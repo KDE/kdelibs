@@ -37,7 +37,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qtimer.h>
-#include <qsocket.h>
+#include <q3socket.h>
 #include <qdatetime.h>
 
 #include <kdebug.h>
@@ -569,7 +569,7 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 	cmd += KProcess::quote(comps[2]);
 	cmd += " -p ";
 	cmd += KProcess::quote(comps[1]);
-	if (in.open(cmd) && out.open(IO_WriteOnly))
+	if (in.open(cmd) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line;
@@ -619,7 +619,7 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 	kdDebug( 500 ) << "Saving PPD file with template=" << driver->get( "template" ) << endl;
 	QIODevice *in = KFilterDev::deviceForFile( driver->get( "template" ) );
 	QFile	out(filename);
-	if (in && in->open(IO_ReadOnly) && out.open(IO_WriteOnly))
+	if (in && in->open(QIODevice::ReadOnly) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(in), tout(&out);
 		QString		line, keyword;
@@ -901,7 +901,7 @@ void KMCupsManager::checkUpdatePossibleInternal()
 	connect( m_socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
 	connect( m_socket, SIGNAL( connectionFailed( int ) ), SLOT( slotConnectionFailed( int ) ) );
 	m_socket->setTimeout( 1 );*/
-	m_socket = new QSocket( this );
+	m_socket = new Q3Socket( this );
 	connect( m_socket, SIGNAL( connected() ), SLOT( slotConnectionSuccess() ) );
 	connect( m_socket, SIGNAL( error( int ) ), SLOT( slotConnectionFailed( int ) ) );
 	trials = 5;
@@ -956,7 +956,7 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 	}
 
 	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-				"Error: %1." ).arg( errcode == QSocket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
+				"Error: %1." ).arg( errcode == Q3Socket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
 	setUpdatePossible( false );
 }
 
@@ -975,7 +975,7 @@ void KMCupsManager::hostPingFailedSlot() {
 void extractMaticData(QString& buf, const QString& filename)
 {
 	QFile	f(filename);
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString		line;

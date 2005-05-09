@@ -21,23 +21,23 @@
 
 #include <qlabel.h>
 #include <klistview.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qpushbutton.h>
-#include <qwidgetstack.h>
+#include <q3widgetstack.h>
 #include <qsplitter.h>
 #include <qlayout.h>
 #include <qpixmap.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qstringlist.h>
 
 #include <kseparator.h>
 #include <klocale.h>
 
-class MyPage : public QListViewItem
+class MyPage : public Q3ListViewItem
 {
 public:
-        MyPage(QListView *lv, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w);
-        MyPage(QListViewItem *item, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w);
+        MyPage(Q3ListView *lv, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w);
+        MyPage(Q3ListViewItem *item, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w);
         ~MyPage();
 
         QWidget* getPage() const { return widget_; }
@@ -48,14 +48,14 @@ private:
         QWidget *widget_;
 };
 
-MyPage::MyPage(QListView *lv, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w)
-        : QListViewItem(lv,txt), header_(hdr), widget_(w)
+MyPage::MyPage(Q3ListView *lv, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w)
+        : Q3ListViewItem(lv,txt), header_(hdr), widget_(w)
 {
         setPixmap(0, icon);
 }
 
-MyPage::MyPage(QListViewItem *item, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w)
-        : QListViewItem(item,txt), header_(hdr), widget_(w)
+MyPage::MyPage(Q3ListViewItem *item, const QString& hdr, const QString& txt, const QPixmap& icon, QWidget *w)
+        : Q3ListViewItem(item,txt), header_(hdr), widget_(w)
 {
         setPixmap(0, icon);
 }
@@ -73,10 +73,10 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
         tree_->addColumn("");
         tree_->setRootIsDecorated(false);
         tree_->header()->hide();
-        tree_->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+        tree_->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
         tree_->setLineWidth(1);
         tree_->setSorting(-1);
-        connect(tree_, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotItemSelected(QListViewItem*)));
+        connect(tree_, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotItemSelected(Q3ListViewItem*)));
 
         QWidget         *right_ = new QWidget(this);
 
@@ -85,7 +85,7 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
         KSeparator* sep1 = new KSeparator( KSeparator::HLine, right_);
         sep1->setFixedHeight(5);
 
-        stack_ = new QWidgetStack(right_);
+        stack_ = new Q3WidgetStack(right_);
 
         KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
         sep2->setFixedHeight(15);
@@ -137,7 +137,7 @@ void MyDialogBase::slotApply()
 {
 }
 
-void MyDialogBase::slotItemSelected(QListViewItem *item)
+void MyDialogBase::slotItemSelected(Q3ListViewItem *item)
 {
         if (!item) return;
         MyPage  *page = (MyPage*)item;
@@ -146,10 +146,10 @@ void MyDialogBase::slotItemSelected(QListViewItem *item)
         stack_->raiseWidget(page->getPage());
 }
 
-QListViewItem* MyDialogBase::findParent(const QStringList& path)
+Q3ListViewItem* MyDialogBase::findParent(const QStringList& path)
 {
         if (path.count() == 1) return 0;
-        QListViewItem   *item = tree_->firstChild();
+        Q3ListViewItem   *item = tree_->firstChild();
         uint            index(0);
         while (item && index < path.count()-1)
         {
@@ -172,7 +172,7 @@ void MyDialogBase::addPage(const QStringList& path, const QString& header, const
                 return;
         }
         MyPage  *page;
-        QListViewItem   *parent = findParent(path);
+        Q3ListViewItem   *parent = findParent(path);
         bool    first = (tree_->childCount() == 0);
         if (parent)
         {
@@ -190,6 +190,6 @@ void MyDialogBase::addPage(const QStringList& path, const QString& header, const
 
 void MyDialogBase::slotHelp()
 {
-        QWhatsThis::enterWhatsThisMode();
+        Q3WhatsThis::enterWhatsThisMode();
 }
 #include "mydialogbase.moc"

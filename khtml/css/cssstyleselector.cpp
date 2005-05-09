@@ -58,13 +58,13 @@ using namespace DOM;
 #include <kglobal.h>
 #include <kconfig.h>
 #include <qfile.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstring.h>
 #include <qtooltip.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <assert.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <stdlib.h>
 
 #define HANDLE_INHERIT(prop, Prop) \
@@ -150,7 +150,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     authorStyle = new CSSStyleSelectorList();
 
 
-    QPtrListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
+    Q3PtrListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
     for ( ; it.current(); ++it ) {
         if ( it.current()->isCSSStyleSheet() && !it.current()->disabled()) {
             authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), m_medium );
@@ -229,9 +229,9 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 
     {
 	QFile f(locate( "data", "khtml/css/html4.css" ) );
-	f.open(IO_ReadOnly);
+	f.open(QIODevice::ReadOnly);
 
-	QCString file( f.size()+1 );
+	Q3CString file( f.size()+1 );
 	int readbytes = f.readBlock( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
@@ -254,9 +254,9 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     }
     {
 	QFile f(locate( "data", "khtml/css/quirks.css" ) );
-	f.open(IO_ReadOnly);
+	f.open(QIODevice::ReadOnly);
 
-	QCString file( f.size()+1 );
+	Q3CString file( f.size()+1 );
 	int readbytes = f.readBlock( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
@@ -301,13 +301,13 @@ void CSSStyleSelector::reparseConfiguration()
 
 #define MAXFONTSIZES 8
 
-void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
+void CSSStyleSelector::computeFontSizes(Q3PaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
 {
     computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fontSizes, false);
     computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fixedFontSizes, true);
 }
 
-void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueVector<int>& fontSizes, bool isFixed)
+void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, Q3ValueVector<int>& fontSizes, bool isFixed)
 {
 #ifdef APPLE_CHANGES
     // We don't want to scale the settings by the dpi.
@@ -630,8 +630,8 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
     if (!decl && !addDecls)
         return numProps;
 
-    QPtrList<CSSProperty>* values = decl ? decl->values() : 0;
-    QPtrList<CSSProperty>* addValues = addDecls ? addDecls->values() : 0;
+    Q3PtrList<CSSProperty>* values = decl ? decl->values() : 0;
+    Q3PtrList<CSSProperty>* addValues = addDecls ? addDecls->values() : 0;
     if (!values && !addValues)
         return numProps;
 
@@ -1435,7 +1435,7 @@ void CSSStyleSelector::buildLists()
     clearLists();
     // collect all selectors and Properties in lists. Then transfer them to the array for faster lookup.
 
-    QPtrList<CSSSelector> selectorList;
+    Q3PtrList<CSSSelector> selectorList;
     CSSOrderedPropertyList propertyList;
 
     if(m_medium == "print" && defaultPrintStyle)
@@ -1557,7 +1557,7 @@ CSSOrderedRule::~CSSOrderedRule()
 // -----------------------------------------------------------------
 
 CSSStyleSelectorList::CSSStyleSelectorList()
-    : QPtrList<CSSOrderedRule>()
+    : Q3PtrList<CSSOrderedRule>()
 {
     setAutoDelete(true);
 }
@@ -1583,11 +1583,11 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
         if(item->isStyleRule())
         {
             CSSStyleRuleImpl *r = static_cast<CSSStyleRuleImpl *>(item);
-            QPtrList<CSSSelector> *s = r->selector();
+            Q3PtrList<CSSSelector> *s = r->selector();
             for(int j = 0; j < (int)s->count(); j++)
             {
                 CSSOrderedRule *rule = new CSSOrderedRule(r, s->at(j), count());
-		QPtrList<CSSOrderedRule>::append(rule);
+		Q3PtrList<CSSOrderedRule>::append(rule);
                 //kdDebug( 6080 ) << "appending StyleRule!" << endl;
             }
         }
@@ -1629,12 +1629,12 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                         CSSStyleRuleImpl *styleRule =
                                 static_cast<CSSStyleRuleImpl *>( childItem );
 
-                        QPtrList<CSSSelector> *s = styleRule->selector();
+                        Q3PtrList<CSSSelector> *s = styleRule->selector();
                         for( int j = 0; j < ( int ) s->count(); j++ )
                         {
                             CSSOrderedRule *orderedRule = new CSSOrderedRule(
                                             styleRule, s->at( j ), count() );
-                	    QPtrList<CSSOrderedRule>::append( orderedRule );
+                	    Q3PtrList<CSSOrderedRule>::append( orderedRule );
                         }
                     }
                     else
@@ -1655,7 +1655,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
 }
 
 
-void CSSStyleSelectorList::collect( QPtrList<CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+void CSSStyleSelectorList::collect( Q3PtrList<CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 				    Source regular, Source important )
 {
     CSSOrderedRule *r = first();
@@ -1679,7 +1679,7 @@ void CSSStyleSelectorList::collect( QPtrList<CSSSelector> *selectorList, CSSOrde
 
 // -------------------------------------------------------------------------
 
-int CSSOrderedPropertyList::compareItems(QPtrCollection::Item i1, QPtrCollection::Item i2)
+int CSSOrderedPropertyList::compareItems(Q3PtrCollection::Item i1, Q3PtrCollection::Item i2)
 {
     int diff =  static_cast<CSSOrderedProperty *>(i1)->priority
         - static_cast<CSSOrderedProperty *>(i2)->priority;
@@ -1690,7 +1690,7 @@ int CSSOrderedPropertyList::compareItems(QPtrCollection::Item i1, QPtrCollection
 void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
 				    Source regular, Source important )
 {
-    QPtrList<CSSProperty> *values = decl->values();
+    Q3PtrList<CSSProperty> *values = decl->values();
     if(!values) return;
     int len = values->count();
     for(int i = 0; i < len; i++)
@@ -1721,7 +1721,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
             break;
         }
 
-	QPtrList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, selector,
+	Q3PtrList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, selector,
 								 first, source, specificity,
 								 count() ));
     }
@@ -1730,7 +1730,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
 // -------------------------------------------------------------------------------------
 // this is mostly boring stuff on how to apply a certain rule to the renderstyle...
 
-static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyle *style, QPaintDeviceMetrics *paintDeviceMetrics, bool *ok = 0 )
+static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyle *style, Q3PaintDeviceMetrics *paintDeviceMetrics, bool *ok = 0 )
 {
     Length l;
     if ( !primitiveValue ) {
@@ -1901,7 +1901,7 @@ static QColor colorForCSSValue( int css_value )
     return c;
 }
 
-static inline int nextFontSize(const QValueVector<int>& a, int v, bool smaller)
+static inline int nextFontSize(const Q3ValueVector<int>& a, int v, bool smaller)
 {
     // return the nearest bigger/smaller value in scale a, when v is in range.
     // otherwise increase/decrease value using a 1.2 fixed ratio
@@ -2076,7 +2076,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     case CSS_PROP_DIRECTION:
     {
-        HANDLE_INHERIT_AND_INITIAL(direction, Direction)
+        HANDLE_INHERIT_AND_INITIAL(direction, Qt::Orientation)
         if(!primitiveValue) break;
         style->setDirection( (EDirection) (primitiveValue->getIdent() - CSS_VAL_LTR) );
         return;
@@ -2788,10 +2788,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         if (isInherit) {
             HANDLE_INHERIT_COND(CSS_PROP_MAX_WIDTH, maxWidth, MaxWidth)
-            HANDLE_INHERIT_COND(CSS_PROP_BOTTOM, bottom, Bottom)
-            HANDLE_INHERIT_COND(CSS_PROP_TOP, top, Top)
-            HANDLE_INHERIT_COND(CSS_PROP_LEFT, left, Left)
-            HANDLE_INHERIT_COND(CSS_PROP_RIGHT, right, Right)
+            HANDLE_INHERIT_COND(CSS_PROP_BOTTOM, bottom, Qt::DockBottom)
+            HANDLE_INHERIT_COND(CSS_PROP_TOP, top, Qt::DockTop)
+            HANDLE_INHERIT_COND(CSS_PROP_LEFT, left, Qt::DockLeft)
+            HANDLE_INHERIT_COND(CSS_PROP_RIGHT, right, Qt::DockRight)
             HANDLE_INHERIT_COND(CSS_PROP_WIDTH, width, Width)
             HANDLE_INHERIT_COND(CSS_PROP_MIN_WIDTH, minWidth, MinWidth)
             HANDLE_INHERIT_COND(CSS_PROP_PADDING_TOP, paddingTop, PaddingTop)
@@ -2806,10 +2806,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return;
         } else if (isInitial) {
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_MAX_WIDTH, MaxWidth, MaxSize)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_BOTTOM, Bottom, Offset)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_TOP, Top, Offset)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_LEFT, Left, Offset)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_RIGHT, Right, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_BOTTOM, Qt::DockBottom, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_TOP, Qt::DockTop, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_LEFT, Qt::DockLeft, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_RIGHT, Qt::DockRight, Offset)
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_WIDTH, Width, Size)
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_MIN_WIDTH, MinWidth, MinSize)
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_PADDING_TOP, PaddingTop, Padding)
@@ -2994,10 +2994,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    // keywords are being used.  Pick the correct default
 	    // based off the font family.
 #ifdef APPLE_CHANGES
-	    const QValueVector<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
+	    const Q3ValueVector<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
 					 m_fixedFontSizes : m_fontSizes;
 #else
-	    const QValueVector<int>& fontSizes = m_fontSizes;
+	    const Q3ValueVector<int>& fontSizes = m_fontSizes;
 #endif
             switch(primitiveValue->getIdent())
             {

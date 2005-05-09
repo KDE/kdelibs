@@ -41,7 +41,7 @@ class DCOPRef; inline const char* dcopTypeName( const DCOPRef& ) { return "DCOPR
 
 // Qt variant types
 class QString; inline const char* dcopTypeName( const QString& ) { return "QString"; }
-class QCString; inline const char* dcopTypeName( const QCString& ) { return "QCString"; }
+class Q3CString; inline const char* dcopTypeName( const Q3CString& ) { return "QCString"; }
 class QFont; inline const char* dcopTypeName( const QFont& ) { return "QFont"; }
 class QPixmap; inline const char* dcopTypeName( const QPixmap& ) { return "QPixmap"; }
 class QBrush; inline const char* dcopTypeName( const QBrush& ) { return "QBrush"; }
@@ -52,9 +52,9 @@ class QSize; inline const char* dcopTypeName( const QSize& ) { return "QSize"; }
 class QColor; inline const char* dcopTypeName( const QColor& ) { return "QColor"; }
 class QPalette; inline const char* dcopTypeName( const QPalette& ) { return "QPalette"; }
 class QColorGroup; inline const char* dcopTypeName( const QColorGroup& ) { return "QColorGroup"; }
-class QIconSet; inline const char* dcopTypeName( const QIconSet& ) { return "QIconSet"; }
+class QIcon; inline const char* dcopTypeName( const QIcon& ) { return "QIconSet"; }
 class QDataStream; inline const char* dcopTypeName( const QDataStream& ) { return "QDataStream"; }
-class QPointArray; inline const char* dcopTypeName( const QPointArray& ) { return "QPointArray"; }
+class Q3PointArray; inline const char* dcopTypeName( const Q3PointArray& ) { return "QPointArray"; }
 class QRegion; inline const char* dcopTypeName( const QRegion& ) { return "QRegion"; }
 class QBitmap; inline const char* dcopTypeName( const QBitmap& ) { return "QBitmap"; }
 class QCursor; inline const char* dcopTypeName( const QCursor& ) { return "QCursor"; }

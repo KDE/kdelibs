@@ -22,7 +22,7 @@
 
 #include <dcopobject.h>
 #include <qstringlist.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <dcopref.h>
 
 class KDCOPActionProxy;
@@ -55,7 +55,7 @@ public:
 	~KMainWindowInterface();
 
 	QCStringList functionsDynamic();
-	bool processDynamic(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData);
+	bool processDynamic(const Q3CString &fun, const QByteArray &data, Q3CString& replyType, QByteArray &replyData);
 
 
 k_dcop:
@@ -71,7 +71,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool activateAction( QCString action);
+	bool activateAction( Q3CString action);
 
 	/**
 	Disables the requested action.
@@ -79,7 +79,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool disableAction( QCString action);
+	bool disableAction( Q3CString action);
 
 	/**
 	Enables the requested action.
@@ -87,7 +87,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool enableAction( QCString action);
+	bool enableAction( Q3CString action);
 
 	/**
 	Returns the status of the requested action.
@@ -95,7 +95,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@returns The state of the action, true - enabled, false - disabled.
 	*/
-	bool actionIsEnabled( QCString action);
+	bool actionIsEnabled( Q3CString action);
 
 	/**
 	Returns the tool tip text of the requested action.
@@ -103,7 +103,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return A QCString containing the text of the action's tool tip.
 	*/
-	QCString actionToolTip( QCString action);
+	Q3CString actionToolTip( Q3CString action);
 
 	/**
 	Returns a dcop reference to the selected KAction
@@ -111,12 +111,12 @@ k_dcop:
 	actions can be found by calling actions().
 	@return A DCOPRef for the kaction.
 	**/
-	DCOPRef action( const QCString &name );
+	DCOPRef action( const Q3CString &name );
 
 	/**
 	Returns and action map
 	**/
-    	QMap<QCString,DCOPRef> actionMap();
+    	QMap<Q3CString,DCOPRef> actionMap();
 	/**
 	Returns the ID of the current main window.
 	This is useful for automated screen captures or other evil

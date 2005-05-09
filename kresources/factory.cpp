@@ -34,8 +34,8 @@
 
 using namespace KRES;
 
-QDict<Factory> *Factory::mSelves = 0;
-static KStaticDeleter< QDict<Factory> > staticDeleter;
+Q3Dict<Factory> *Factory::mSelves = 0;
+static KStaticDeleter< Q3Dict<Factory> > staticDeleter;
 
 Factory *Factory::self( const QString& resourceFamily )
 {
@@ -43,7 +43,7 @@ Factory *Factory::self( const QString& resourceFamily )
 
   Factory *factory = 0;
   if ( !mSelves )
-    staticDeleter.setObject( mSelves, new QDict<Factory> );
+    staticDeleter.setObject( mSelves, new Q3Dict<Factory> );
 
   factory = mSelves->find( resourceFamily );
 

@@ -60,7 +60,7 @@
 #endif
 
 #include <kopenssl.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <kdebug.h>
 #include "ksslx509v3.h"
 
@@ -141,7 +141,7 @@ return n;
 }
 
 
-KSSLCertificate *KSSLCertificate::fromString(QCString cert) {
+KSSLCertificate *KSSLCertificate::fromString(Q3CString cert) {
 KSSLCertificate *n = NULL;
 #ifdef KSSL_HAVE_SSL
 	if (cert.length() == 0)
@@ -1020,7 +1020,7 @@ KTempFile ktf;
 	ktf.close();
 
 	QFile qf(ktf.name());
-	qf.open(IO_ReadOnly);
+	qf.open(QIODevice::ReadOnly);
 	char *buf = new char[qf.size()];
 	qf.readBlock(buf, qf.size());
 	qba.duplicate(buf, qf.size());
@@ -1044,7 +1044,7 @@ KTempFile ktf;
 	ktf.close();
 
 	QFile qf(ktf.name());
-	qf.open(IO_ReadOnly);
+	qf.open(QIODevice::ReadOnly);
 	char *buf = new char[qf.size()+1];
 	qf.readBlock(buf, qf.size());
 	buf[qf.size()] = 0;
@@ -1113,7 +1113,7 @@ QStringList KSSLCertificate::subjAltNames() const {
 
 QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
 QStringList qsl;
-QPtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
+Q3PtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
 
 	for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
 		qsl << c->toString();

@@ -58,7 +58,7 @@ unsigned int SelectionInterfaceExt::selectionInterfaceExtNumber () const
   return mySelectionInterfaceExtNumber;
 }
 
-void SelectionInterfaceExt::setSelectionInterfaceExtDCOPSuffix (const QCString &suffix)
+void SelectionInterfaceExt::setSelectionInterfaceExtDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("SelectionInterfaceExt#"+suffix);
 }

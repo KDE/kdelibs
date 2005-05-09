@@ -222,7 +222,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
-  Q_PROPERTY( QCString dcopObjectId READ dcopObjectId )
+  Q_PROPERTY( Q3CString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
 
 public:
@@ -891,7 +891,7 @@ public:
    */
   QStringList frameNames() const;
 
-  QPtrList<KParts::ReadOnlyPart> frames() const;
+  Q3PtrList<KParts::ReadOnlyPart> frames() const;
 
   /**
    * Finds a frame by name. Returns 0L if frame can't be found.
@@ -1191,7 +1191,7 @@ public slots:
    */
   void stopAnimations();
 
-  QCString dcopObjectId() const;
+  Q3CString dcopObjectId() const;
 
   /**
    * Execute the specified snippet of JavaScript code.

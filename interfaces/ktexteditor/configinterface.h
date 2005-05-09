@@ -21,7 +21,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 class KConfig;
 
 namespace KTextEditor
@@ -42,7 +42,7 @@ class KTEXTEDITOR_EXPORT ConfigInterface
     unsigned int configInterfaceNumber () const;
     
   protected:  
-    void setConfigInterfaceDCOPSuffix (const QCString &suffix); 
+    void setConfigInterfaceDCOPSuffix (const Q3CString &suffix); 
 
   //
   // slots !!!

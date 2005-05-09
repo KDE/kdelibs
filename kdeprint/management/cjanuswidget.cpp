@@ -19,7 +19,7 @@
 
 #include "cjanuswidget.h"
 
-#include <qwidgetstack.h>
+#include <q3widgetstack.h>
 #include <qlabel.h>
 #include <qpainter.h>
 #include <klistbox.h>
@@ -38,12 +38,12 @@ public:
 
 //***********************************************************************************
 
-class CJanusWidget::CListBoxItem : public QListBoxItem
+class CJanusWidget::CListBoxItem : public Q3ListBoxItem
 {
 public:
-	CListBoxItem(QListBox *lb, QListBoxItem *after, const QPixmap& pix, const QString& text);
-	int height(const QListBox*) const;
-	int width(const QListBox*) const;
+	CListBoxItem(Q3ListBox *lb, Q3ListBoxItem *after, const QPixmap& pix, const QString& text);
+	int height(const Q3ListBox*) const;
+	int width(const Q3ListBox*) const;
 
 protected:
 	void paint(QPainter*);
@@ -52,18 +52,18 @@ private:
 	QPixmap	m_pix;
 };
 
-CJanusWidget::CListBoxItem::CListBoxItem(QListBox *lb, QListBoxItem *after, const QPixmap& pix, const QString& text)
-: QListBoxItem(lb, after), m_pix(pix)
+CJanusWidget::CListBoxItem::CListBoxItem(Q3ListBox *lb, Q3ListBoxItem *after, const QPixmap& pix, const QString& text)
+: Q3ListBoxItem(lb, after), m_pix(pix)
 {
 	setText(text);
 }
 
-int CJanusWidget::CListBoxItem::height(const QListBox *lb) const
+int CJanusWidget::CListBoxItem::height(const Q3ListBox *lb) const
 {
 	return (m_pix.height() + lb->fontMetrics().lineSpacing() + 12);
 }
 
-int CJanusWidget::CListBoxItem::width(const QListBox *lb) const
+int CJanusWidget::CListBoxItem::width(const Q3ListBox *lb) const
 {
 	int	w = QMAX(lb->fontMetrics().width(text()),m_pix.width());
 	return (w + 10);
@@ -110,7 +110,7 @@ bool CJanusWidget::CListBox::eventFilter(QObject *o, QEvent *e)
 
 void CJanusWidget::CListBox::computeWidth()
 {
-	QListBoxItem	*item = firstItem();
+	Q3ListBoxItem	*item = firstItem();
 	int	w(40);
 	while (item)
 	{
@@ -130,7 +130,7 @@ CJanusWidget::CJanusWidget(QWidget *parent, const char *name)
 {
 	m_pages.setAutoDelete(true);
 
-	m_stack = new QWidgetStack(this);
+	m_stack = new Q3WidgetStack(this);
 	m_header = new QLabel(this);
 	QFont	f(m_header->font());
 	f.setBold(true);
@@ -143,7 +143,7 @@ CJanusWidget::CJanusWidget(QWidget *parent, const char *name)
 	f = m_iconlist->font();
 	f.setBold(true);
 	m_iconlist->setFont(f);
-	connect(m_iconlist,SIGNAL(selectionChanged(QListBoxItem*)),SLOT(slotSelected(QListBoxItem*)));
+	connect(m_iconlist,SIGNAL(selectionChanged(Q3ListBoxItem*)),SLOT(slotSelected(Q3ListBoxItem*)));
 
 	m_empty = new QWidget(this, "Empty");
 	m_stack->addWidget(m_empty,0);
@@ -206,7 +206,7 @@ void CJanusWidget::disablePage(QWidget *w)
 	}
 }
 
-void CJanusWidget::slotSelected(QListBoxItem *item)
+void CJanusWidget::slotSelected(Q3ListBoxItem *item)
 {
 	CPage	*page = findPage(item);
 	if (page)
@@ -223,23 +223,23 @@ void CJanusWidget::slotSelected(QListBoxItem *item)
 
 CJanusWidget::CPage* CJanusWidget::findPage(QWidget *w)
 {
-	QPtrListIterator<CPage>	it(m_pages);
+	Q3PtrListIterator<CPage>	it(m_pages);
 	for (;it.current();++it)
 		if (it.current()->m_widget == w)
 			return it.current();
 	return 0;
 }
 
-CJanusWidget::CPage* CJanusWidget::findPage(QListBoxItem *i)
+CJanusWidget::CPage* CJanusWidget::findPage(Q3ListBoxItem *i)
 {
-	QPtrListIterator<CPage>	it(m_pages);
+	Q3PtrListIterator<CPage>	it(m_pages);
 	for (;it.current();++it)
 		if (it.current()->m_item == i)
 			return it.current();
 	return 0;
 }
 
-QListBoxItem* CJanusWidget::findPrevItem(CPage *p)
+Q3ListBoxItem* CJanusWidget::findPrevItem(CPage *p)
 {
 	if (m_pages.findRef(p) == -1)
 		m_pages.last();
@@ -253,7 +253,7 @@ QListBoxItem* CJanusWidget::findPrevItem(CPage *p)
 
 void CJanusWidget::clearPages()
 {
-	QPtrListIterator<CPage>	it(m_pages);
+	Q3PtrListIterator<CPage>	it(m_pages);
 	for (;it.current(); ++it)
 	{
 		delete it.current()->m_widget;

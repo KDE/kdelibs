@@ -35,11 +35,11 @@
 #include <kmenubar.h>
 #include <kpopupmenu.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qrect.h>
 #include <qapplication.h>
 #include <qdom.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include "kmditaskbar.h"
 #include "kmdichildarea.h"
@@ -50,7 +50,7 @@
 #include "kmditoolviewaccessor.h"
 
 class QTimer;
-class QPopupMenu;
+class Q3PopupMenu;
 class QMenuBar;
 
 
@@ -248,15 +248,15 @@ protected:
 	KMdi::MdiMode m_mdiMode;
 	KMdiChildArea *m_pMdi;
 	KMdiTaskBar *m_pTaskBar;
-	QPtrList<KMdiChildView> *m_pDocumentViews;
+	Q3PtrList<KMdiChildView> *m_pDocumentViews;
 	QMap<QWidget*, KMdiToolViewAccessor*> *m_pToolViews;
 	KMdiChildView *m_pCurrentWindow;
-	QPopupMenu *m_pWindowPopup;
-	QPopupMenu *m_pTaskBarPopup;
-	QPopupMenu *m_pWindowMenu;
-	QPopupMenu *m_pDockMenu;
-	QPopupMenu *m_pMdiModeMenu;
-	QPopupMenu *m_pPlacingMenu;
+	Q3PopupMenu *m_pWindowPopup;
+	Q3PopupMenu *m_pTaskBarPopup;
+	Q3PopupMenu *m_pWindowMenu;
+	Q3PopupMenu *m_pDockMenu;
+	Q3PopupMenu *m_pMdiModeMenu;
+	Q3PopupMenu *m_pPlacingMenu;
 	KMenuBar *m_pMainMenuBar;
 
 	QPixmap *m_pUndockButtonPixmap;
@@ -296,7 +296,7 @@ private:
 
 	// methods
 public:
-	KMdiMainFrm( QWidget* parentWidget, const char* name = "", KMdi::MdiMode mdiMode = KMdi::ChildframeMode, WFlags flags = WType_TopLevel | WDestructiveClose );
+	KMdiMainFrm( QWidget* parentWidget, const char* name = "", KMdi::MdiMode mdiMode = KMdi::ChildframeMode, Qt::WFlags flags = Qt::WType_TopLevel | Qt::WDestructiveClose );
 	virtual ~KMdiMainFrm();
 
 	/**
@@ -329,13 +329,13 @@ public:
 	 * Undock/Dock, Restore/Maximize/Minimize, Close and an empty sub-popup ( windowPopup() )
 	 * menu called Operations.
 	 */
-	virtual QPopupMenu * taskBarPopup( KMdiChildView *pWnd, bool bIncludeWindowPopup = false );
+	virtual Q3PopupMenu * taskBarPopup( KMdiChildView *pWnd, bool bIncludeWindowPopup = false );
 	
 	/**
 	 * Returns a popup menu with only a title "Window". You can fill it with own operations entries
 	 * on the MDI view. This popup menu is inserted as last menu item in taskBarPopup() .
 	 */
-	virtual QPopupMenu * windowPopup( KMdiChildView *pWnd, bool bIncludeTaskbarPopup = true );
+	virtual Q3PopupMenu * windowPopup( KMdiChildView *pWnd, bool bIncludeTaskbarPopup = true );
 	
 	/**
 	 * Called in the constructor (forces a resize of all MDI views)
@@ -414,7 +414,7 @@ public:
 	 * Additionally, this menu provides some placing actions for these views.
 	 * Usually, you insert this popup menu in your main menubar as "Window" menu.
 	 */
-	QPopupMenu* windowMenu() const  { return m_pWindowMenu; };
+	Q3PopupMenu* windowMenu() const  { return m_pWindowMenu; };
 	
 	/**
 	 * Sets a background color for the MDI view area widget.
@@ -473,7 +473,7 @@ public:
 	bool isFakingSDIApplication() const { return m_bSDIApplication; }
 	
 	virtual bool eventFilter( QObject *obj, QEvent *e );
-	void findRootDockWidgets( QPtrList<KDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList );
+	void findRootDockWidgets( Q3PtrList<KDockWidget>* pRootDockWidgetList, Q3ValueList<QRect>* pPositionList );
 	
 	/** We're switching something.*/
 	void setSwitching( const bool switching ) { m_bSwitching = switching; }
@@ -756,8 +756,8 @@ protected:
 	 */
 	void blockClearingOfWindowMenu( bool bBlocked ) { m_bClearingOfWindowMenuBlocked = bBlocked; }
 
-	void findToolViewsDockedToMain( QPtrList<KDockWidget>* list, KDockWidget::DockPosition dprtmw );
-	void dockToolViewsIntoContainers( QPtrList<KDockWidget>& widgetsToReparent, KDockWidget *container );
+	void findToolViewsDockedToMain( Q3PtrList<KDockWidget>* list, KDockWidget::DockPosition dprtmw );
+	void dockToolViewsIntoContainers( Q3PtrList<KDockWidget>& widgetsToReparent, KDockWidget *container );
 	QStringList prepareIdealToTabs( KDockWidget* container );
 	void idealToolViewsToStandardTabs( QStringList widgetNames, KDockWidget::DockPosition pos, int sizee );
 

@@ -24,8 +24,8 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qcombobox.h>
-#include <qgroupbox.h>
-#include <qwhatsthis.h>
+#include <q3groupbox.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -137,10 +137,10 @@ void CupsdServerDirPage::setDefaults()
 
 void CupsdServerDirPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(serverbin_, conf->comments_.toolTip(SERVERBIN_COMM));
-        QWhatsThis::add(serverroot_, conf->comments_.toolTip(SERVERROOT_COMM));
-        QWhatsThis::add(datadir_, conf->comments_.toolTip(DATADIR_COMM));
-        QWhatsThis::add(tempdir_, conf->comments_.toolTip(TEMPDIR_COMM));
-        QWhatsThis::add(requestroot_, conf->comments_.toolTip(REQUESTROOT_COMM));
-        QWhatsThis::add(fontpath_, conf->comments_.toolTip(FONTPATH_COMM));
+        Q3WhatsThis::add(serverbin_, conf->comments_.toolTip(SERVERBIN_COMM));
+        Q3WhatsThis::add(serverroot_, conf->comments_.toolTip(SERVERROOT_COMM));
+        Q3WhatsThis::add(datadir_, conf->comments_.toolTip(DATADIR_COMM));
+        Q3WhatsThis::add(tempdir_, conf->comments_.toolTip(TEMPDIR_COMM));
+        Q3WhatsThis::add(requestroot_, conf->comments_.toolTip(REQUESTROOT_COMM));
+        Q3WhatsThis::add(fontpath_, conf->comments_.toolTip(FONTPATH_COMM));
 }

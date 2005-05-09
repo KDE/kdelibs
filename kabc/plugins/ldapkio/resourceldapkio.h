@@ -156,7 +156,7 @@ protected slots:
     void createCache();
     void activateCache();
     void enter_loop();
-    QCString addEntry( const QString &attr, const QString &value, bool mod );
+    Q3CString addEntry( const QString &attr, const QString &value, bool mod );
     QString findUid( const QString &uid );
     bool AddresseeToLDIF( QByteArray &ldif, const Addressee &addr, 
       const QString &olddn );

@@ -21,8 +21,8 @@
 #ifndef __kmimetyperesolver_h
 #define __kmimetyperesolver_h
 
-#include <qscrollview.h>
-#include <qptrlist.h>
+#include <q3scrollview.h>
+#include <q3ptrlist.h>
 #include <qtimer.h>
 #include <kdebug.h>
 
@@ -52,7 +52,7 @@ class KIO_EXPORT KMimeTypeResolverHelper : public QObject
 
 public:
     KMimeTypeResolverHelper( KMimeTypeResolverBase *resolver,
-                             QScrollView *view )
+                             Q3ScrollView *view )
         : m_resolver( resolver ),
           m_timer( new QTimer( this ) )
     {
@@ -149,7 +149,7 @@ public:
      * clear it, insert new items into it, remove items, etc.
      * @return the list of items to process
      */
-    QPtrList<IconItem> m_lstPendingMimeIconItems;
+    Q3PtrList<IconItem> m_lstPendingMimeIconItems;
 
     /**
      * "Connected" to the viewportAdjusted signal of the scrollview
@@ -231,11 +231,11 @@ inline IconItem * KMimeTypeResolver<IconItem, Parent>::findVisibleIcon()
 {
     // Find an icon that's visible and whose mimetype we don't know.
 
-    QPtrListIterator<IconItem> it(m_lstPendingMimeIconItems);
+    Q3PtrListIterator<IconItem> it(m_lstPendingMimeIconItems);
     if ( m_lstPendingMimeIconItems.count()<20) // for few items, it's faster to not bother
         return m_lstPendingMimeIconItems.first();
 
-    QScrollView * view = m_parent->scrollWidget();
+    Q3ScrollView * view = m_parent->scrollWidget();
     QRect visibleContentsRect
         (
             view->viewportToContents(QPoint(0, 0)),

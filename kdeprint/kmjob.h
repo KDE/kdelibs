@@ -26,7 +26,7 @@
 #endif
 
 #include <qstring.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 #include <kdeprint/kmobject.h>
 #include <kdelibs_export.h>
 
@@ -124,7 +124,7 @@ protected:
 
 	// internal members
 	QString	m_uri;
-	QValueVector<QString>	m_attributes;
+	Q3ValueVector<QString>	m_attributes;
 };
 
 #endif

@@ -26,7 +26,7 @@
 #include <kprocess.h>
 
 class QWidget;
-class QProgressDialog;
+class Q3ProgressDialog;
 
 class KMDBCreator : public QObject
 {
@@ -50,7 +50,7 @@ signals:
 
 private:
 	KProcess	m_proc;
-	QProgressDialog	*m_dlg;
+	Q3ProgressDialog	*m_dlg;
 	bool		m_status;
 	bool		m_firstflag;
 };

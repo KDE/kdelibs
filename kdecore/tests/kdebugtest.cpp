@@ -16,7 +16,7 @@ public:
     kdDebug().form("mytest %s", "hello") << endl;
     QString test = "%20C this is a string";
     kdDebug(150) << test << endl;
-    QCString cstr = test.latin1();
+    Q3CString cstr = test.latin1();
     kdDebug(150) << test << endl;
     QChar ch = 'a';
     kdDebug() << "QChar a: " << ch << endl;
@@ -54,12 +54,12 @@ public:
     sl << "hi" << "this" << "list" << "is" << "short";
     kdDebug() << sl << endl;
 
-    QValueList<int> il;
+    Q3ValueList<int> il;
     kdDebug() << "Empty QValueList<int>: " << il << endl;
     il << 1 << 2 << 3 << 4 << 5;
     kdDebug() << "QValueList<int> filled: " << il << endl;
 
-    Q_LLONG big = 65536LL*65536*500;
+    Q_LONGLONG big = 65536LL*65536*500;
     kdDebug() << big << endl;
 
     QVariant v( 0.12345 );

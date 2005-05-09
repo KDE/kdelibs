@@ -46,7 +46,7 @@ class KTEXTEDITOR_EXPORT Document : public KTextEditor::Editor
     /**
      * Returns this document's DCOP suffix for identifiying its DCOP interface.
      */
-    QCString documentDCOPSuffix () const;
+    Q3CString documentDCOPSuffix () const;
 
     /**
     * Create a view that will display the document data. You can create as many
@@ -58,7 +58,7 @@ class KTEXTEDITOR_EXPORT Document : public KTextEditor::Editor
     /*
     * Returns a list of all views of this document.
     */
-    virtual QPtrList<class View> views () const = 0;
+    virtual Q3PtrList<class View> views () const = 0;
 
   private:
     class PrivateDocument *d;

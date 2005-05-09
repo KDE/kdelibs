@@ -19,7 +19,7 @@
 #define KICONVIEW_H
 
 #include <qcursor.h>
-#include <qiconview.h>
+#include <q3iconview.h>
 
 #include <kdelibs_export.h>
 
@@ -39,7 +39,7 @@
  * QIconView::selectionChanged() signal.
  *
  **/
-class KDEUI_EXPORT KIconView : public QIconView
+class KDEUI_EXPORT KIconView : public Q3IconView
 {
   friend class KIconViewItem;
   Q_OBJECT
@@ -47,7 +47,7 @@ class KDEUI_EXPORT KIconView : public QIconView
   Q_PROPERTY( Mode mode READ mode WRITE setMode )
 
 public:
-  KIconView( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+  KIconView( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
 
   ~KIconView();
 
@@ -100,7 +100,7 @@ public:
   /**
    * Reimplemented for held() signal behavior internal purposes
    */
-  virtual void takeItem( QIconViewItem * item );
+  virtual void takeItem( Q3IconViewItem * item );
 
 signals:
 
@@ -113,7 +113,7 @@ signals:
    * Note that you may not delete any QIconViewItem objects in slots
    * connected to this signal.
    */
-  void executed( QIconViewItem *item );
+  void executed( Q3IconViewItem *item );
 
   /**
    * This signal is emitted whenever the user executes an iconview item.
@@ -125,7 +125,7 @@ signals:
    * Note that you may not delete any QIconViewItem objects in slots
    * connected to this signal.
    */
-  void executed( QIconViewItem *item, const QPoint &pos );
+  void executed( Q3IconViewItem *item, const QPoint &pos );
 
   /**
    * This signal is emitted whenever the user hold something on an iconview
@@ -135,7 +135,7 @@ signals:
    * Note that you may not delete any QIconViewItem objects in slots
    * connected to this signal.
    */
-  void held( QIconViewItem *item );
+  void held( Q3IconViewItem *item );
 
   /**
    * This signal gets emitted whenever the user double clicks into the
@@ -150,10 +150,10 @@ signals:
    * You should normally not need to use this. In most cases it's better
    * to use executed() instead.
    */
-  void doubleClicked( QIconViewItem *item, const QPoint &pos );
+  void doubleClicked( Q3IconViewItem *item, const QPoint &pos );
 
 protected slots:
-  void slotOnItem( QIconViewItem *item );
+  void slotOnItem( Q3IconViewItem *item );
   void slotOnViewport();
   void slotSettingsChanged(int);
 
@@ -163,7 +163,7 @@ protected slots:
   void slotAutoSelect();
 
 protected:
-  void emitExecute( QIconViewItem *item, const QPoint &pos );
+  void emitExecute( Q3IconViewItem *item, const QPoint &pos );
 
   virtual void focusOutEvent( QFocusEvent *fe );
   virtual void leaveEvent( QEvent *e );
@@ -184,7 +184,7 @@ protected:
   void cancelPendingHeldSignal();
   
 private slots:
-  void slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos );
+  void slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos );
   void slotDragHoldTimeout();
 
 private:
@@ -200,7 +200,7 @@ private:
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;
 
-  QIconViewItem* m_pCurrentItem;
+  Q3IconViewItem* m_pCurrentItem;
 
   QTimer* m_pAutoSelect;
   int m_autoSelectDelay;
@@ -221,26 +221,26 @@ class KWordWrap;
  *
  * @author David Faure <david@mandrakesoft.com>
  */
-class KDEUI_EXPORT KIconViewItem : public QIconViewItem
+class KDEUI_EXPORT KIconViewItem : public Q3IconViewItem
 {
 public:
     // Need to redefine all the constructors - I want Java !
-    KIconViewItem( QIconView *parent )
-        : QIconViewItem( parent ) { init(); } // We need to call it because the parent ctor won't call our reimplementation :(((
-    KIconViewItem( QIconView *parent, QIconViewItem *after )
-        : QIconViewItem( parent, after ) { init(); }
-    KIconViewItem( QIconView *parent, const QString &text )
-        : QIconViewItem( parent, text ) { init(); }
-    KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text )
-        : QIconViewItem( parent, after, text ) { init(); }
-    KIconViewItem( QIconView *parent, const QString &text, const QPixmap &icon )
-        : QIconViewItem( parent, text, icon ) { init(); }
-    KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPixmap &icon )
-        : QIconViewItem( parent, after, text, icon ) { init(); }
-    KIconViewItem( QIconView *parent, const QString &text, const QPicture &picture )
-        : QIconViewItem( parent, text, picture ) { init(); }
-    KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPicture &picture )
-        : QIconViewItem( parent, after, text, picture ) { init(); }
+    KIconViewItem( Q3IconView *parent )
+        : Q3IconViewItem( parent ) { init(); } // We need to call it because the parent ctor won't call our reimplementation :(((
+    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after )
+        : Q3IconViewItem( parent, after ) { init(); }
+    KIconViewItem( Q3IconView *parent, const QString &text )
+        : Q3IconViewItem( parent, text ) { init(); }
+    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text )
+        : Q3IconViewItem( parent, after, text ) { init(); }
+    KIconViewItem( Q3IconView *parent, const QString &text, const QPixmap &icon )
+        : Q3IconViewItem( parent, text, icon ) { init(); }
+    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const QPixmap &icon )
+        : Q3IconViewItem( parent, after, text, icon ) { init(); }
+    KIconViewItem( Q3IconView *parent, const QString &text, const Q3Picture &picture )
+        : Q3IconViewItem( parent, text, picture ) { init(); }
+    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const Q3Picture &picture )
+        : Q3IconViewItem( parent, after, text, picture ) { init(); }
     virtual ~KIconViewItem();
 
    /**

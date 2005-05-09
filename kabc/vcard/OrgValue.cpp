@@ -39,7 +39,7 @@ OrgValue::OrgValue(const OrgValue & x)
 {
 }
 
-OrgValue::OrgValue(const QCString & s)
+OrgValue::OrgValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -54,7 +54,7 @@ OrgValue::operator = (OrgValue & x)
 }
 
 	OrgValue &
-OrgValue::operator = (const QCString & s)
+OrgValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;
@@ -98,7 +98,7 @@ OrgValue::numValues()
 	return valueList_.count();
 }
 
-	QCString
+	Q3CString
 OrgValue::value(unsigned int i)
 {
 	parse();

@@ -65,7 +65,7 @@ static bool isIntType( const QString& t )
 void generateStubImpl( const QString& idl, const QString& header, const QString& /*headerBase*/, const QString& filename, QDomElement de )
 {
     QFile impl( filename );
-    if ( !impl.open( IO_WriteOnly ) )
+    if ( !impl.open( QIODevice::WriteOnly ) )
 	qFatal("Could not write to %s", filename.latin1() );
 
     QTextStream str( &impl );

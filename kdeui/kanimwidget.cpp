@@ -42,7 +42,7 @@ public:
 
 KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
                           const char *name )
-  : QFrame( parent, name ),
+  : Q3Frame( parent, name ),
     d( new KAnimWidgetPrivate )
 {
   connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
@@ -113,40 +113,40 @@ void KAnimWidget::showEvent(QShowEvent* e)
      d->initDone = true;
      updateIcons();
   }
-  QFrame::showEvent(e);
+  Q3Frame::showEvent(e);
 }
 
 void KAnimWidget::hideEvent(QHideEvent* e)
 {
-  QFrame::hideEvent(e);
+  Q3Frame::hideEvent(e);
 }
 
 void KAnimWidget::enterEvent( QEvent *e )
 {
   setFrameStyle( WinPanel | Raised );
 
-  QFrame::enterEvent( e );
+  Q3Frame::enterEvent( e );
 }
 
 void KAnimWidget::leaveEvent( QEvent *e )
 {
   setFrameStyle( StyledPanel | Sunken );
 
-  QFrame::leaveEvent( e );
+  Q3Frame::leaveEvent( e );
 }
 
 void KAnimWidget::mousePressEvent( QMouseEvent *e )
 {
-  QFrame::mousePressEvent( e );
+  Q3Frame::mousePressEvent( e );
 }
 
 void KAnimWidget::mouseReleaseEvent( QMouseEvent *e )
 {
-  if ( e->button() == LeftButton &&
+  if ( e->button() == Qt::LeftButton &&
        rect().contains( e->pos() ) )
     emit clicked();
 
-  QFrame::mouseReleaseEvent( e );
+  Q3Frame::mouseReleaseEvent( e );
 }
 
 void KAnimWidget::slotTimerUpdate()

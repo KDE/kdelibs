@@ -24,7 +24,7 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 
@@ -99,11 +99,11 @@ bool CupsdDirPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdDirPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(datadir_, conf->comments_.toolTip("datadir"));
-	QWhatsThis::add(documentdir_, conf->comments_.toolTip("documentroot"));
-	QWhatsThis::add(fontpath_, conf->comments_.toolTip("fontpath"));
-	QWhatsThis::add(requestdir_, conf->comments_.toolTip("requestroot"));
-	QWhatsThis::add(serverbin_, conf->comments_.toolTip("serverbin"));
-	QWhatsThis::add(serverfiles_, conf->comments_.toolTip("serverroot"));
-	QWhatsThis::add(tmpfiles_, conf->comments_.toolTip("tempdir"));
+	Q3WhatsThis::add(datadir_, conf->comments_.toolTip("datadir"));
+	Q3WhatsThis::add(documentdir_, conf->comments_.toolTip("documentroot"));
+	Q3WhatsThis::add(fontpath_, conf->comments_.toolTip("fontpath"));
+	Q3WhatsThis::add(requestdir_, conf->comments_.toolTip("requestroot"));
+	Q3WhatsThis::add(serverbin_, conf->comments_.toolTip("serverbin"));
+	Q3WhatsThis::add(serverfiles_, conf->comments_.toolTip("serverroot"));
+	Q3WhatsThis::add(tmpfiles_, conf->comments_.toolTip("tempdir"));
 }

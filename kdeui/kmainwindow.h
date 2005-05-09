@@ -24,7 +24,7 @@
 #include "kxmlguifactory.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
 #include <qmetaobject.h>
 #include <ktoolbar.h>
 
@@ -41,7 +41,7 @@ class KAccel;
 class KToolBarMenuAction;
 class DCOPObject;
 
-#define KDE_DEFAULT_WINDOWFLAGS WType_TopLevel | WDestructiveClose
+#define KDE_DEFAULT_WINDOWFLAGS Qt::WType_TopLevel | Qt::WDestructiveClose
 
 
 /**
@@ -95,7 +95,7 @@ class DCOPObject;
 
  */
 
-class KDEUI_EXPORT KMainWindow : public QMainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
+class KDEUI_EXPORT KMainWindow : public Q3MainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
 {
     friend class KMWSessionManaged;
     Q_OBJECT
@@ -133,7 +133,7 @@ public:
      * KMainWindow *kmw = new KMainWindow (...);
      * \endcode
      **/
-    KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
+    KMainWindow( QWidget* parent = 0, const char *name = 0, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
 
     /**
      * Flags that can be passed in an argument to the constructor to
@@ -155,7 +155,7 @@ public:
      *
      * @since 3.2
      */
-    KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
+    KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
 
     /**
      * \brief Destructor.
@@ -382,14 +382,14 @@ public:
     /**
      * List of members of KMainWindow class.
      */
-    static QPtrList<KMainWindow>* memberList;
+    static Q3PtrList<KMainWindow>* memberList;
 
     //KDE4: replace with memberList() and make memberList member private
     /**
      * List of members of KMainWindow class.
      * @since 3.4
      */
-    static QPtrList<KMainWindow>* getMemberList();
+    static Q3PtrList<KMainWindow>* getMemberList();
 
     /**
      * Returns a pointer to the toolbar with the specified name.
@@ -406,7 +406,7 @@ public:
     /**
      * @return An iterator over the list of all toolbars for this window.
      */
-    QPtrListIterator<KToolBar> toolBarIterator();
+    Q3PtrListIterator<KToolBar> toolBarIterator();
 
     /**
      * @return A KAccel instance bound to this mainwindow. Used automatically
@@ -988,7 +988,7 @@ private:
     KStatusBar *internalStatusBar();
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
-    QPtrList<KToolBar> toolbarList;
+    Q3PtrList<KToolBar> toolbarList;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

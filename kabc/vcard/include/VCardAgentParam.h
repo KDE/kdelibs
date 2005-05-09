@@ -24,7 +24,7 @@
 #ifndef  AGENTPARAM_H
 #define  AGENTPARAM_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardParam.h>
 #include <VCardURIValue.h>
@@ -46,7 +46,7 @@ class KVCARD_EXPORT AgentParam : public Param
 	void setRefer(bool b)
 	{ refer_ = b; assembled_ = false; }
 
-	void setURI(const QCString & s)
+	void setURI(const Q3CString & s)
 	{ uri_ = s; assembled_ = false; }
 	
 	private:

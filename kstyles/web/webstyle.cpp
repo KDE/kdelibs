@@ -25,9 +25,9 @@
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qscrollbar.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qpushbutton.h>
 #include <qdrawutil.h>
 #include <qpainter.h>
@@ -41,10 +41,10 @@
 #include "webstyle.h"
 
 static const int  _indicatorSize = 13;
-static QButton *  _highlightedButton = 0;
+static Q3Button *  _highlightedButton = 0;
 static const int  _scrollBarExtent = 14;
 
-static QFrame *   _currentFrame = 0;
+static Q3Frame *   _currentFrame = 0;
 static int        _savedFrameLineWidth;
 static int        _savedFrameMidLineWidth;
 static ulong      _savedFrameStyle;
@@ -86,7 +86,7 @@ scrollBarControlsMetrics
  QRect & rSlider
  )
 {
-  bool horizontal = sb->orientation() == QScrollBar::Horizontal;
+  bool horizontal = sb->orientation() == Qt::Horizontal;
 
   int len     = horizontal ? sb->width()  : sb->height();
 
@@ -190,7 +190,7 @@ drawFunkyRect
           1,  h - 2
     };
 
-    p->drawPoints(QPointArray(4, pointList));
+    p->drawPoints(Q3PointArray(4, pointList));
   }
   else
   {
@@ -211,7 +211,7 @@ drawFunkyRect
           1,  h - 3
     };
 
-    p->drawPoints(QPointArray(8, pointList));
+    p->drawPoints(Q3PointArray(8, pointList));
   }
 
   p->translate(-x, -y);
@@ -255,9 +255,9 @@ WebStyle::polish(QWidget * w)
 
   else if (w->inherits("QGroupBox") || w->inherits("QFrame"))
   {
-    QFrame * f(static_cast<QFrame *>(w));
+    Q3Frame * f(static_cast<Q3Frame *>(w));
 
-    if (f->frameStyle() != QFrame::NoFrame)
+    if (f->frameStyle() != Q3Frame::NoFrame)
     {
       _currentFrame = f;
 
@@ -265,15 +265,15 @@ WebStyle::polish(QWidget * w)
       _savedFrameMidLineWidth = f->midLineWidth();
       _savedFrameStyle = f->frameStyle();
 
-      if (f->frameShape() == QFrame::HLine || f->frameShape() == QFrame::VLine)
+      if (f->frameShape() == Q3Frame::HLine || f->frameShape() == Q3Frame::VLine)
       {
         f->setMidLineWidth(1);
-        f->setFrameStyle(f->frameShape() | QFrame::Plain);
+        f->setFrameStyle(f->frameShape() | Q3Frame::Plain);
       }
       else
       {
         f->setLineWidth(1);
-        f->setFrameStyle(QFrame::Box | QFrame::Plain);
+        f->setFrameStyle(Q3Frame::Box | Q3Frame::Plain);
       }
     }
   }
@@ -287,7 +287,7 @@ WebStyle::unPolish(QWidget * w)
 
   else if (w == _currentFrame)
   {
-    QFrame * f(static_cast<QFrame *>(w));
+    Q3Frame * f(static_cast<Q3Frame *>(w));
 
     f->setLineWidth(_savedFrameLineWidth);
     f->setMidLineWidth(_savedFrameMidLineWidth);
@@ -334,7 +334,7 @@ WebStyle::drawButton
   else
     p->setPen(contrastingForeground(g.mid(), g.button()));
 
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(0 == fill ? Qt::NoBrush : *fill);
 
   drawFunkyRect(p, x, y, w, h, true);
 
@@ -472,7 +472,7 @@ WebStyle::drawScrollBarControls
     p->drawRect(rAdd);
 
     Qt::ArrowType t =
-      sb->orientation() == Horizontal ? Qt::RightArrow : Qt::DownArrow;
+      sb->orientation() == Qt::Horizontal ? Qt::RightArrow : Qt::DownArrow;
 
     // Is it me or is KStyle::drawArrow broken ?
 
@@ -501,7 +501,7 @@ WebStyle::drawScrollBarControls
     p->drawRect(rSub);
 
     Qt::ArrowType t =
-      sb->orientation() == Horizontal ? Qt::LeftArrow : Qt::UpArrow;
+      sb->orientation() == Qt::Horizontal ? Qt::LeftArrow : Qt::UpArrow;
 
     drawArrow
       (
@@ -544,7 +544,7 @@ WebStyle::drawScrollBarControls
     if (sliderLength > _scrollBarExtent * 2)
     {
       int ellipseSize = 
-        Horizontal == sb->orientation()
+        Qt::Horizontal == sb->orientation()
         ?
         rSlider.height() - 4
         :
@@ -553,7 +553,7 @@ WebStyle::drawScrollBarControls
 
       QPoint center(rSlider.center());
 
-      if (Horizontal == sb->orientation())
+      if (Qt::Horizontal == sb->orientation())
       {
         p->drawEllipse
           (
@@ -590,7 +590,7 @@ WebStyle::scrollBarPointOver
 
   scrollBarMetrics(sb, sliderMin, sliderMax, sliderLength, buttonDim);
 
-  if (sb->orientation() == QScrollBar::Horizontal)
+  if (sb->orientation() == Qt::Horizontal)
   {
     int x = point.x();
 
@@ -640,7 +640,7 @@ WebStyle::scrollBarMetrics
 {
   int maxlen;
 
-  bool horizontal = sb->orientation() == QScrollBar::Horizontal;
+  bool horizontal = sb->orientation() == Qt::Horizontal;
 
   int len = (horizontal) ? sb->width() : sb->height();
 
@@ -706,11 +706,11 @@ WebStyle::drawIndicator
 
   p->drawRect(x, y, w, h);
 
-  if (state != QButton::Off)
+  if (state != QCheckBox::Off)
   {
     p->fillRect(x + 2, y + 2, w - 4, h - 4, enabled ? g.highlight() : g.mid());
 
-    if (state == QButton::NoChange)
+    if (state == QCheckBox::NoChange)
     {
       p->fillRect(x + 4, y + 4, w - 8, h - 8, g.background());
     }
@@ -827,7 +827,7 @@ WebStyle::drawComboButton
 {
   p->save();
 
-  p->setPen(NoPen);
+  p->setPen(Qt::NoPen);
   p->setBrush(0 == fill ? g.brush(QColorGroup::Background) : *fill);
   p->drawRect(x, y, w, h);
 
@@ -899,7 +899,7 @@ WebStyle::drawSliderGroove
  int h,
  const QColorGroup & g,
  QCOORD /* c */,
- Orientation o
+ Qt::Orientation o
 )
 {
   p->save();
@@ -942,7 +942,7 @@ WebStyle::drawSlider
  int w,
  int h,
  const QColorGroup & g,
- Orientation o,
+ Qt::Orientation o,
  bool /* tickAbove */,
  bool /* tickBelow */
 )
@@ -1048,7 +1048,7 @@ WebStyle::drawKToolBarButton
 
   if (button->inherits("QButton"))
   {
-    QButton * b = static_cast<QButton *>(button);
+    Q3Button * b = static_cast<Q3Button *>(button);
     toggleAndOn = b->isToggleButton() && b->isOn();
   }
 
@@ -1132,7 +1132,7 @@ WebStyle::drawKToolBarButton
            y,
            w,
            h,
-           AlignCenter,
+           Qt::AlignCenter,
            btext
           );
       }
@@ -1166,7 +1166,7 @@ WebStyle::drawKToolBarButton
              y,
              w - textLeft,
              h,
-             AlignVCenter | AlignLeft,
+             Qt::AlignVCenter | Qt::AlignLeft,
              btext
             );
         }
@@ -1178,7 +1178,7 @@ WebStyle::drawKToolBarButton
              y,
              w,
              h,
-             AlignVCenter | AlignLeft,
+             Qt::AlignVCenter | Qt::AlignLeft,
              btext
             );
         }
@@ -1212,7 +1212,7 @@ WebStyle::drawKToolBarButton
              textTop,
              w - 4,
              h - x - textTop,
-             AlignCenter,
+             Qt::AlignCenter,
              btext
             );
         }
@@ -1224,7 +1224,7 @@ WebStyle::drawKToolBarButton
              y,
              w,
              h,
-             AlignCenter,
+             Qt::AlignCenter,
              btext
             );
         }
@@ -1278,7 +1278,7 @@ WebStyle::drawKMenuItem
      y,
      w,
      h,
-     AlignCenter | ShowPrefix | DontClip | SingleLine,
+     Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
      g,
      mi->isEnabled(),
      mi->pixmap(),
@@ -1325,7 +1325,7 @@ WebStyle::drawKProgressBlock
 {
   p->save();
 
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(0 == fill ? Qt::NoBrush : *fill);
 
   p->fillRect(x, y, w, h, g.highlight());
 
@@ -1346,7 +1346,7 @@ WebStyle::drawFocusRect
 
   if (0 != pen)
   p->setPen(0 == pen ? g.foreground() : *pen);
-  p->setBrush(NoBrush);
+  p->setBrush(Qt::NoBrush);
 
   if (atBorder)
   {
@@ -1378,7 +1378,7 @@ WebStyle::drawPanel
 
   p->setPen(g.dark());
 
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(0 == fill ? Qt::NoBrush : *fill);
 
   p->drawRect(x, y, w, h);
 
@@ -1402,7 +1402,7 @@ WebStyle::drawPopupPanel
 
   p->setPen(g.dark());
 
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(0 == fill ? Qt::NoBrush : *fill);
 
   p->drawRect(x, y, w, h);
 
@@ -1459,8 +1459,8 @@ WebStyle::drawTab
 
   switch (tabBar->shape())
   {
-    case QTabBar::RoundedAbove:
-    case QTabBar::TriangularAbove:
+    case QTabBar::RoundedNorth:
+    case QTabBar:: TriangularNorth:
       p->drawLine(r.left(), r.top(), r.left(), r.bottom());
       p->drawLine(r.left(), r.top(), r.right(), r.top());
       p->drawLine(r.right(), r.top(), r.right(), r.bottom());
@@ -1470,8 +1470,8 @@ WebStyle::drawTab
         p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
       }
       break;
-    case QTabBar::RoundedBelow:
-    case QTabBar::TriangularBelow:
+    case QTabBar:: RoundedSouth:
+    case QTabBar:: TriangularSouth:
       if (!selected)
       {
         p->setPen(g.dark());
@@ -1514,7 +1514,7 @@ WebStyle::drawKickerHandle
 
   p->setPen(g.mid());
 
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(0 == fill ? Qt::NoBrush : *fill);
 
   p->drawRect(x, y, w, h);
   
@@ -1537,7 +1537,7 @@ WebStyle::drawKickerAppletHandle
 
   p->setPen(g.mid());
 
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(0 == fill ? Qt::NoBrush : *fill);
 
   p->drawRect(x, y, w, h);
   
@@ -1649,7 +1649,7 @@ WebStyle::drawKickerTaskButton
        -1,
        w - textPos,
        h,
-       AlignLeft | AlignVCenter,
+       Qt::AlignLeft | Qt::AlignVCenter,
        s
       );
   }
@@ -1675,7 +1675,7 @@ WebStyle::popupMenuItemHeight(bool, QMenuItem * i, const QFontMetrics & fm)
   {
     h = QMAX
       (
-       i->iconSet()->pixmap(QIconSet::Small, QIconSet::Normal).height(),
+       i->iconSet()->pixmap(QIcon::Small, QIcon::Normal).height(),
        h
       );
   }

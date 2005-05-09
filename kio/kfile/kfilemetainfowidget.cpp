@@ -31,7 +31,7 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
-#include <qdatetimeedit.h>
+#include <q3datetimeedit.h>
 #include <qpixmap.h>
 #include <qimage.h>
 #include <qlayout.h>
@@ -150,7 +150,7 @@ QWidget* KFileMetaInfoWidget::makeWidget()
         case QVariant::Color:       // a QColor
         case QVariant::Palette:     // a QPalette
         case QVariant::ColorGroup:  // a QColorGroup
-        case QVariant::IconSet:     // a QIconSet
+        case QCoreVariant::Icon:     // a QIconSet
         case QVariant::Point:       // a QPoint
         case QVariant::Image:       // a QImage
         case QVariant::CString:     // a QCString
@@ -272,7 +272,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
 
 QWidget* KFileMetaInfoWidget::makeDateWidget()
 {
-  QWidget *e = new QDateEdit(m_item.value().toDate(), this);
+  QWidget *e = new Q3DateEdit(m_item.value().toDate(), this);
   connect(e,    SIGNAL(valueChanged(const QDate&)),
           this, SLOT(slotDateChanged(const QDate&)));
   return e;
@@ -280,12 +280,12 @@ QWidget* KFileMetaInfoWidget::makeDateWidget()
 
 QWidget* KFileMetaInfoWidget::makeTimeWidget()
 {
-  return new QTimeEdit(m_item.value().toTime(), this);
+  return new Q3TimeEdit(m_item.value().toTime(), this);
 }
 
 QWidget* KFileMetaInfoWidget::makeDateTimeWidget()
 {
-  return new QDateTimeEdit(m_item.value().toDateTime(), this);
+  return new Q3DateTimeEdit(m_item.value().toDateTime(), this);
 }
 
 void KFileMetaInfoWidget::reparentValidator( QWidget *widget,
@@ -343,7 +343,7 @@ void KFileMetaInfoWidget::slotLineEditChanged(const QString& value)
 void KFileMetaInfoWidget::slotMultiLineEditChanged()
 {
     Q_ASSERT(m_widget->inherits("QTextEdit"));
-    m_value = QVariant( static_cast<const QTextEdit*>( sender() )->text() );
+    m_value = QVariant( static_cast<const Q3TextEdit*>( sender() )->text() );
     emit valueChanged(m_value);
     m_dirty = true;
 }

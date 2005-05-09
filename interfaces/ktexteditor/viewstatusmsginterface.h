@@ -22,7 +22,7 @@
 #include <kdelibs_export.h>
 
 class QString;
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -41,7 +41,7 @@ class KTEXTEDITOR_EXPORT ViewStatusMsgInterface
     unsigned int viewStatusMsgInterfaceNumber () const;
     
   protected:  
-    void setViewStatusMsgInterfaceDCOPSuffix (const QCString &suffix); 
+    void setViewStatusMsgInterfaceDCOPSuffix (const Q3CString &suffix); 
 
   //
   // signals !!!

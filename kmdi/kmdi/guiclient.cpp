@@ -21,7 +21,7 @@
 #include "guiclient.h"
 #include "guiclient.moc"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
@@ -79,18 +79,18 @@ GUIClient::GUIClient (KMDI::MainWindow* mdiMainFrm,const char* name)
   m_toolMenu=new KActionMenu(i18n("Tool &Views"),actionCollection(),"kmdi_toolview_menu");
 
   m_gotoToolDockMenu=new KActionMenu(i18n("Tool &Docks"),actionCollection(),"kmdi_tooldock_menu");
-  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Top Dock"),ALT+CTRL+SHIFT+Key_T,this,SIGNAL(toggleTop()),
+  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Top Dock"),Qt::ALT+Qt::CTRL+Qt::SHIFT+Qt::Key_T,this,SIGNAL(toggleTop()),
   actionCollection(),"kmdi_activate_top"));
-  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Left Dock"),ALT+CTRL+SHIFT+Key_L,this,SIGNAL(toggleLeft()),
+  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Left Dock"),Qt::ALT+Qt::CTRL+Qt::SHIFT+Qt::Key_L,this,SIGNAL(toggleLeft()),
   actionCollection(),"kmdi_activate_left"));
-  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Right Dock"),ALT+CTRL+SHIFT+Key_R,this,SIGNAL(toggleRight()),
+  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Right Dock"),Qt::ALT+Qt::CTRL+Qt::SHIFT+Qt::Key_R,this,SIGNAL(toggleRight()),
   actionCollection(),"kmdi_activate_right"));
-  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Bottom Dock"),ALT+CTRL+SHIFT+Key_B,this,SIGNAL(toggleBottom()),
+  m_gotoToolDockMenu->insert(new KAction(i18n("Switch Bottom Dock"),Qt::ALT+Qt::CTRL+Qt::SHIFT+Qt::Key_B,this,SIGNAL(toggleBottom()),
   actionCollection(),"kmdi_activate_bottom"));
   m_gotoToolDockMenu->insert(new KActionSeparator(actionCollection(),"kmdi_goto_menu_separator"));
-  m_gotoToolDockMenu->insert(new KAction(i18n("Previous Tool View"),ALT+CTRL+Key_Left,m_mdiMainFrm,SLOT(prevToolViewInDock()),
+  m_gotoToolDockMenu->insert(new KAction(i18n("Previous Tool View"),Qt::ALT+Qt::CTRL+Qt::Key_Left,m_mdiMainFrm,SLOT(prevToolViewInDock()),
   actionCollection(),"kmdi_prev_toolview"));
-  m_gotoToolDockMenu->insert(new KAction(i18n("Next Tool View"),ALT+CTRL+Key_Right,m_mdiMainFrm,SLOT(nextToolViewInDock()),
+  m_gotoToolDockMenu->insert(new KAction(i18n("Next Tool View"),Qt::ALT+Qt::CTRL+Qt::Key_Right,m_mdiMainFrm,SLOT(nextToolViewInDock()),
   actionCollection(),"kmdi_next_toolview"));
 
   actionCollection()->readShortcutSettings( "Shortcuts", kapp->config() );
@@ -115,7 +115,7 @@ void GUIClient::setupActions()
 
   unplugActionList( actionListName );
 
-  QPtrList<KAction> addList;
+  Q3PtrList<KAction> addList;
   if (m_toolViewActions.count()<3)
   {
     for (uint i=0;i<m_toolViewActions.count();i++)

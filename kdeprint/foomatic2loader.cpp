@@ -52,17 +52,17 @@ bool Foomatic2Loader::readFromFile( const QString& filename )
 {
 	QFile f( filename );
 	m_foodata.clear();
-	if ( f.open( IO_ReadOnly ) )
+	if ( f.open( QIODevice::ReadOnly ) )
 		return read( &f );
 	return false;
 }
 
 bool Foomatic2Loader::readFromBuffer( const QString& buffer )
 {
-	QCString buf = buffer.utf8();
+	Q3CString buf = buffer.utf8();
 	QBuffer d( buf );
 	m_foodata.clear();
-	if ( d.open( IO_ReadOnly ) )
+	if ( d.open( QIODevice::ReadOnly ) )
 		return read( &d );
 	return false;
 }
@@ -156,7 +156,7 @@ DrMain* Foomatic2Loader::buildDriver() const
 		v = v.mapFind( "args" ).data();
 		if ( !v.isNull() && v.type() == QVariant::List )
 		{
-			QValueList<QVariant>::ConstIterator it = v.listBegin();
+			Q3ValueList<QVariant>::ConstIterator it = v.listBegin();
 			for ( ; it!=v.listEnd(); ++it )
 			{
 				if ( ( *it ).type() != QVariant::Map )
@@ -208,7 +208,7 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 {
 	if ( !m_foodata.isEmpty() )
 	{
-		QValueList<DrBase*> optList;
+		Q3ValueList<DrBase*> optList;
 		DrGroup *grp = NULL;
 
 		QVariant V = m_foodata.find( "VAR" ).data();
@@ -217,7 +217,7 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 			QVariant v = V.mapFind( "args" ).data();
 			if ( !v.isNull() && v.type() == QVariant::List )
 			{
-				QValueList<QVariant>::ConstIterator it = v.listBegin();
+				Q3ValueList<QVariant>::ConstIterator it = v.listBegin();
 				for ( ; it!=v.listEnd(); ++it )
 				{
 					if ( ( *it ).type() != QVariant::Map )
@@ -249,7 +249,7 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 			}
 		}
 
-		for ( QValueList<DrBase*>::ConstIterator it=optList.begin(); it!=optList.end(); ++it )
+		for ( Q3ValueList<DrBase*>::ConstIterator it=optList.begin(); it!=optList.end(); ++it )
 		{
 			DrBase *opt = ( *it );
 			if ( opt )
@@ -271,7 +271,7 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 							DrBase *oldOpt = driver->findOption( opt->name() );
 							if ( oldOpt && oldOpt->type() == DrBase::List )
 							{
-								QPtrListIterator<DrBase> it( *( static_cast<DrListOption*>( oldOpt )->choices() ) );
+								Q3PtrListIterator<DrBase> it( *( static_cast<DrListOption*>( oldOpt )->choices() ) );
 								QString fixedvals;
 								for ( ; it.current(); ++it )
 								{

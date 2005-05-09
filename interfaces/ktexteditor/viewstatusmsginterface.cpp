@@ -62,7 +62,7 @@ unsigned int ViewStatusMsgInterface::viewStatusMsgInterfaceNumber () const
   return myViewStatusMsgInterfaceNumber;
 }
 
-void ViewStatusMsgInterface::setViewStatusMsgInterfaceDCOPSuffix (const QCString &suffix)
+void ViewStatusMsgInterface::setViewStatusMsgInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("ViewStatusMsgInterface#"+suffix);
 }

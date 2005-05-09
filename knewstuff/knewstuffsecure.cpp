@@ -54,7 +54,7 @@ bool KNewStuffSecure::install(const QString &fileName)
   m_tempDir = new KTempDir();
   m_tempDir->setAutoDelete(true);
   KTar tar(fileName, "application/x-gzip");
-  if (tar.open(IO_ReadOnly))
+  if (tar.open(QIODevice::ReadOnly))
   {
       const KArchiveDirectory *directory = tar.directory();
       directory->copyTo(m_tempDir->name(), true);
@@ -200,7 +200,7 @@ void KNewStuffSecure::slotFileSigned(int result)
       }
     } 
     KTar tar(m_signedFileName + ".signed", "application/x-gzip");
-    tar.open(IO_WriteOnly);
+    tar.open(QIODevice::WriteOnly);
     QStringList files;
     files << m_signedFileName;
     files << m_tempDir->name() + "/md5sum";
@@ -209,7 +209,7 @@ void KNewStuffSecure::slotFileSigned(int result)
     for (QStringList::Iterator it_f = files.begin(); it_f != files.end(); ++it_f)
     {
       QFile file(*it_f);
-      file.open(IO_ReadOnly);
+      file.open(QIODevice::ReadOnly);
       QByteArray bArray = file.readAll();
       tar.writeFile(QFileInfo(file).fileName(), "user", "group", bArray.size(), bArray.data());
       file.close();

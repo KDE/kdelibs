@@ -28,7 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "config.h"
 #include <qpainter.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kwin.h> 
 #include <kwinmodule.h> 
@@ -48,17 +48,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // helper class
 namespace
 {
-class NameSortedInfoList : public QPtrList<KWin::WindowInfo>
+class NameSortedInfoList : public Q3PtrList<KWin::WindowInfo>
 {
 public:
     NameSortedInfoList() { setAutoDelete(true); };
     ~NameSortedInfoList() {};
 
 private:
-    int compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 );
+    int compareItems( Q3PtrCollection::Item s1, Q3PtrCollection::Item s2 );
 };
 
-int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 )
+int NameSortedInfoList::compareItems( Q3PtrCollection::Item s1, Q3PtrCollection::Item s2 )
 {
     KWin::WindowInfo *i1 = static_cast<KWin::WindowInfo *>(s1);
     KWin::WindowInfo *i2 = static_cast<KWin::WindowInfo *>(s2);
@@ -92,7 +92,7 @@ static bool standaloneDialog( const KWin::WindowInfo* info, const NameSortedInfo
     {
         return info->transientFor() == qt_xrootwin();
     }
-    for( QPtrListIterator< KWin::WindowInfo > it( list );
+    for( Q3PtrListIterator< KWin::WindowInfo > it( list );
          it.current() != NULL;
          ++it )
         if( (*it)->groupLeader() == group )
@@ -128,8 +128,8 @@ void KWindowListMenu::init()
     }
 
 
-    QValueList<KWin::WindowInfo> windows;
-    for (QValueList<WId>::ConstIterator it = kwin_module->windows().begin();
+    Q3ValueList<KWin::WindowInfo> windows;
+    for (Q3ValueList<WId>::ConstIterator it = kwin_module->windows().begin();
          it != kwin_module->windows().end(); ++it) {
          windows.append( KWin::windowInfo( *it, NET::WMDesktop ));
     }
@@ -144,7 +144,7 @@ void KWindowListMenu::init()
         NameSortedInfoList list;
         list.setAutoDelete(true);
 
-	for (QValueList<KWin::WindowInfo>::ConstIterator it = windows.begin();
+	for (Q3ValueList<KWin::WindowInfo>::ConstIterator it = windows.begin();
              it != windows.end(); ++it) {
 	    if (((*it).desktop() == d) || (on_all_desktops && (*it).onAllDesktops())
                 || (!show_all_desktops_group && (*it).onAllDesktops())) {

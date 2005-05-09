@@ -46,13 +46,13 @@ KateAttribute& KateAttribute::operator+=(const KateAttribute& a)
   if (a.itemSet(Italic))
     setItalic(a.italic());
 
-  if (a.itemSet(Underline))
+  if (a.itemSet(Qt::TextUnderline))
     setUnderline(a.underline());
 
-  if (a.itemSet(Overline))
+  if (a.itemSet(Qt::TextOverline))
     setOverline(a.overline());
 
-  if (a.itemSet(StrikeOut))
+  if (a.itemSet(Qt::TextStrikeOut))
     setStrikeOut(a.strikeOut());
 
   if (a.itemSet(Outline))
@@ -81,11 +81,11 @@ QFont KateAttribute::font(const QFont& ref)
     ret.setWeight(weight());
   if (itemSet(Italic))
     ret.setItalic(italic());
-  if (itemSet(Underline))
+  if (itemSet(Qt::TextUnderline))
     ret.setUnderline(underline());
-   if (itemSet(Overline))
+   if (itemSet(Qt::TextOverline))
     ret.setOverline(overline());
-  if (itemSet(StrikeOut))
+  if (itemSet(Qt::TextStrikeOut))
     ret.setStrikeOut(strikeOut());
 
   return ret;
@@ -122,9 +122,9 @@ void KateAttribute::setItalic(bool enable)
 
 void KateAttribute::setUnderline(bool enable)
 {
-  if (!(m_itemsSet & Underline) || m_underline != enable)
+  if (!(m_itemsSet & Qt::TextUnderline) || m_underline != enable)
   {
-    m_itemsSet |= Underline;
+    m_itemsSet |= Qt::TextUnderline;
 
     m_underline = enable;
 
@@ -134,9 +134,9 @@ void KateAttribute::setUnderline(bool enable)
 
 void KateAttribute::setOverline(bool enable)
 {
-  if (!(m_itemsSet & Overline) || m_overline != enable)
+  if (!(m_itemsSet & Qt::TextOverline) || m_overline != enable)
   {
-    m_itemsSet |= Overline;
+    m_itemsSet |= Qt::TextOverline;
 
     m_overline = enable;
 
@@ -146,9 +146,9 @@ void KateAttribute::setOverline(bool enable)
 
 void KateAttribute::setStrikeOut(bool enable)
 {
-  if (!(m_itemsSet & StrikeOut) || m_strikeout != enable)
+  if (!(m_itemsSet & Qt::TextStrikeOut) || m_strikeout != enable)
   {
-    m_itemsSet |= StrikeOut;
+    m_itemsSet |= Qt::TextStrikeOut;
 
     m_strikeout = enable;
 

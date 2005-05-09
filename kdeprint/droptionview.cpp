@@ -28,7 +28,7 @@
 #include <klistbox.h>
 #include <qvbuttongroup.h>
 #include <qradiobutton.h>
-#include <qwidgetstack.h>
+#include <q3widgetstack.h>
 #include <qlayout.h>
 #include <qapplication.h>
 
@@ -57,7 +57,7 @@ OptionNumericView::OptionNumericView(QWidget *parent, const char *name)
 {
 	m_edit = new QLineEdit(this);
 	m_slider = new QSlider(Qt::Horizontal,this);
-	m_slider->setTickmarks(QSlider::Below);
+	m_slider->setTickmarks(QSlider::TicksBelow);
 	QLabel	*lab = new QLabel(i18n("Value:"),this);
 	m_minval = new QLabel(this);
 	m_maxval = new QLabel(this);
@@ -206,7 +206,7 @@ void OptionListView::setOption(DrBase *opt)
 		blockSS = true;
 		m_list->clear();
 		m_choices.clear();
-		QPtrListIterator<DrBase>	it(*(((DrListOption*)opt)->choices()));
+		Q3PtrListIterator<DrBase>	it(*(((DrListOption*)opt)->choices()));
 		for (;it.current();++it)
 		{
 			m_list->insertItem(it.current()->get("text"));
@@ -235,8 +235,8 @@ void OptionListView::slotSelectionChanged()
 OptionBooleanView::OptionBooleanView(QWidget *parent, const char *name)
 : OptionBaseView(parent,name)
 {
-	m_group = new QVButtonGroup(this);
-	m_group->setFrameStyle(QFrame::NoFrame);
+	m_group = new Q3VButtonGroup(this);
+	m_group->setFrameStyle(Q3Frame::NoFrame);
 
 	QRadioButton	*btn = new QRadioButton(m_group);
 	btn->setCursor(KCursor::handCursor());
@@ -253,7 +253,7 @@ void OptionBooleanView::setOption(DrBase *opt)
 {
 	if (opt->type() == DrBase::Boolean)
 	{
-		QPtrListIterator<DrBase>	it(*(((DrBooleanOption*)opt)->choices()));
+		Q3PtrListIterator<DrBase>	it(*(((DrBooleanOption*)opt)->choices()));
 		m_choices.clear();
 		m_group->find(0)->setText(it.toFirst()->get("text"));
 		m_choices.append(it.toFirst()->name());
@@ -278,9 +278,9 @@ void OptionBooleanView::slotSelected(int ID)
 //******************************************************************************************************
 
 DrOptionView::DrOptionView(QWidget *parent, const char *name)
-: QGroupBox(parent,name)
+: Q3GroupBox(parent,name)
 {
-	m_stack = new QWidgetStack(this);
+	m_stack = new Q3WidgetStack(this);
 
 	OptionBaseView	*w = new OptionListView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
@@ -316,7 +316,7 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	m_allowfixed = true;
 }
 
-void DrOptionView::slotItemSelected(QListViewItem *i)
+void DrOptionView::slotItemSelected(Q3ListViewItem *i)
 {
 	m_item = (DriverItem*)i;
 	if (m_item && !m_item->drItem()->isOption())

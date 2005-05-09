@@ -30,17 +30,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdlib.h>
 
-MyDCOPObject::MyDCOPObject(const QCString &name, const QCString &remoteName) 
+MyDCOPObject::MyDCOPObject(const Q3CString &name, const Q3CString &remoteName) 
 : QObject(0, name), DCOPObject(name), m_remoteName(remoteName)
 {
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
 }
 
-bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
-QCString& replyType, QByteArray &replyData)
+bool MyDCOPObject::process(const Q3CString &fun, const QByteArray &data,
+Q3CString& replyType, QByteArray &replyData)
 {
   if (fun == "function(QCString)") {
-    QDataStream args( data, IO_ReadOnly );
+    QDataStream args( data, QIODevice::ReadOnly );
     args >>  m_remoteName;
 
     struct timeval tv;
@@ -48,7 +48,7 @@ QCString& replyType, QByteArray &replyData)
 qWarning("%s: function('%s') %d:%06d", name(), m_remoteName.data(), tv.tv_sec % 100, tv.tv_usec);
 
     replyType = "QString";
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( replyData, QIODevice::WriteOnly );
     reply << QString("Hey");
     m_timer.start(1000, true);
     return true;
@@ -64,14 +64,14 @@ qWarning("%s: slotTimeout() %d:%06d", name(), tv.tv_sec % 100, tv.tv_usec);
 
   m_timer.start(1000, true);
   QString result;
-  DCOPRef(m_remoteName, m_remoteName).call("function", QCString(name())).get(result);
+  DCOPRef(m_remoteName, m_remoteName).call("function", Q3CString(name())).get(result);
     gettimeofday(&tv, 0);
 qWarning("%s: Got result '%s' %d:%06d", name(), result.latin1(), tv.tv_sec % 100, tv.tv_usec);
 }
 
 int main(int argc, char **argv)
 {
-  QCString myName = KApplication::dcopClient()->registerAs("testdcop", false);
+  Q3CString myName = KApplication::dcopClient()->registerAs("testdcop", false);
   KApplication app(argc, argv, "testdcop");
 
   qWarning("%d:I am '%s'", getpid(), app.dcopClient()->appId().data());
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
       system("./dcop_deadlock_test testdcop&");
   }
 
-  QCString remoteApp;
+  Q3CString remoteApp;
   if (argc == 2)
   {
       remoteApp = argv[1];

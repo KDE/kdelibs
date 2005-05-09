@@ -27,7 +27,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -113,17 +113,17 @@ void LocationDialog::setInfos(CupsdConf *conf)
 {
 	conf_ = conf;
 
-	QPtrListIterator<CupsResource>	it(conf->resources_);
+	Q3PtrListIterator<CupsResource>	it(conf->resources_);
 	for (; it.current(); ++it)
 		resource_->insertItem(SmallIcon(it.current()->typeToIconName(it.current()->type_)), it.current()->text_);
 
-	QWhatsThis::add(encryption_, conf_->comments_.toolTip("encryption"));
-	QWhatsThis::add(order_, conf_->comments_.toolTip("order"));
-	QWhatsThis::add(authclass_, conf_->comments_.toolTip("authclass"));
-	QWhatsThis::add(authtype_, conf_->comments_.toolTip("authtype"));
-	QWhatsThis::add(authname_, conf_->comments_.toolTip("authname"));
-	QWhatsThis::add(satisfy_, conf_->comments_.toolTip("satisfy"));
-	QWhatsThis::add(addresses_, conf_->comments_.toolTip("allowdeny"));
+	Q3WhatsThis::add(encryption_, conf_->comments_.toolTip("encryption"));
+	Q3WhatsThis::add(order_, conf_->comments_.toolTip("order"));
+	Q3WhatsThis::add(authclass_, conf_->comments_.toolTip("authclass"));
+	Q3WhatsThis::add(authtype_, conf_->comments_.toolTip("authtype"));
+	Q3WhatsThis::add(authname_, conf_->comments_.toolTip("authname"));
+	Q3WhatsThis::add(satisfy_, conf_->comments_.toolTip("satisfy"));
+	Q3WhatsThis::add(addresses_, conf_->comments_.toolTip("allowdeny"));
 }
 
 void LocationDialog::fillLocation(CupsLocation *loc)

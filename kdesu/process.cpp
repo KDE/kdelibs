@@ -45,7 +45,7 @@
 #endif
 
 #include <qglobal.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 
 #include <kdebug.h>
@@ -163,10 +163,10 @@ const QCStringList& PtyProcess::environment() const
  * one time.
  */
 
-QCString PtyProcess::readLine(bool block)
+Q3CString PtyProcess::readLine(bool block)
 {
     int pos;
-    QCString ret;
+    Q3CString ret;
 
     if (!m_Inbuf.isEmpty()) 
     {
@@ -236,7 +236,7 @@ QCString PtyProcess::readLine(bool block)
 }
 
 
-void PtyProcess::writeLine(const QCString &line, bool addnl)
+void PtyProcess::writeLine(const Q3CString &line, bool addnl)
 {
     if (!line.isEmpty())
         write(m_Fd, line, line.length());
@@ -245,9 +245,9 @@ void PtyProcess::writeLine(const QCString &line, bool addnl)
 }
 
 
-void PtyProcess::unreadLine(const QCString &line, bool addnl)
+void PtyProcess::unreadLine(const Q3CString &line, bool addnl)
 {
-    QCString tmp = line;
+    Q3CString tmp = line;
     if (addnl)
         tmp += '\n';
     if (!tmp.isEmpty())
@@ -258,7 +258,7 @@ void PtyProcess::unreadLine(const QCString &line, bool addnl)
  * Fork and execute the command. This returns in the parent.
  */
 
-int PtyProcess::exec(const QCString &command, const QCStringList &args)
+int PtyProcess::exec(const Q3CString &command, const QCStringList &args)
 {
     kdDebug(900) << k_lineinfo << "Running `" << command << "'\n";
 
@@ -299,7 +299,7 @@ int PtyProcess::exec(const QCString &command, const QCStringList &args)
 
     // From now on, terminal output goes through the tty.
 
-    QCString path;
+    Q3CString path;
     if (command.contains('/'))
         path = command;
     else 
@@ -435,7 +435,7 @@ int PtyProcess::waitForChild()
 
         if (ret) 
         {
-            QCString line = readLine(false);
+            Q3CString line = readLine(false);
             while (!line.isNull()) 
             {
                 if (!m_Exit.isEmpty() && !qstrnicmp(line, m_Exit, m_Exit.length()))

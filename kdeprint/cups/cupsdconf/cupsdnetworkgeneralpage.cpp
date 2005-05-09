@@ -24,7 +24,7 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -68,7 +68,7 @@ CupsdNetworkGeneralPage::~CupsdNetworkGeneralPage()
 bool CupsdNetworkGeneralPage::loadConfig(CupsdConf *conf, QString&)
 {
 	conf_ = conf;
-	QValueList<int>::Iterator	it;
+	Q3ValueList<int>::Iterator	it;
 	if (conf->port_.count() > 0)
 	{
 		opt_[0]->setDefault(false);
@@ -144,8 +144,8 @@ void CupsdNetworkGeneralPage::setDefaults()
 
 void CupsdNetworkGeneralPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(hostnamelookups_, conf->comments_.toolTip(HOSTNAMELOOKUPS_COMM));
-        QWhatsThis::add(maxrequestsize_, conf->comments_.toolTip(MAXREQUESTSIZE_COMM));
-        QWhatsThis::add(timeout_, conf->comments_.toolTip(TIMEOUT_COMM));
-        QWhatsThis::add(port_, conf->comments_.toolTip(PORT_COMM));
+        Q3WhatsThis::add(hostnamelookups_, conf->comments_.toolTip(HOSTNAMELOOKUPS_COMM));
+        Q3WhatsThis::add(maxrequestsize_, conf->comments_.toolTip(MAXREQUESTSIZE_COMM));
+        Q3WhatsThis::add(timeout_, conf->comments_.toolTip(TIMEOUT_COMM));
+        Q3WhatsThis::add(port_, conf->comments_.toolTip(PORT_COMM));
 }

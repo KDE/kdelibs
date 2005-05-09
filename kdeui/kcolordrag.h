@@ -22,7 +22,7 @@
 #ifndef _KCOLORDRAG_H
 #define _KCOLORDRAG_H
 
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qcolor.h>
 #include <kdelibs_export.h>
 
@@ -33,7 +33,7 @@ class KColorDragPrivate;
  *
  * See the Qt drag'n'drop documentation.
  */
-class KDEUI_EXPORT KColorDrag : public QStoredDrag {
+class KDEUI_EXPORT KColorDrag : public Q3StoredDrag {
     Q_OBJECT
 
 public:

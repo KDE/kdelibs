@@ -26,8 +26,8 @@
 
 #include "config.h"
 #include <qevent.h>
-#include <qobjectlist.h>
-#include <qaccel.h>
+#include <qobject.h>
+#include <q3accel.h>
 #include <qpainter.h>
 #include <qstyle.h>
 #include <qtimer.h>
@@ -187,7 +187,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       d->margin = margin();
       d->fallback_mode = false;
       bool wasShown = !isHidden();
-      reparent( parentWidget(), WType_TopLevel | WStyle_Tool | WStyle_Customize | WStyle_NoBorder, QPoint(0,0), false );
+      reparent( parentWidget(), Qt::WType_TopLevel | Qt::WStyle_Tool | Qt::WStyle_Customize | Qt::WStyle_NoBorder, QPoint(0,0), false );
 #ifdef Q_WS_X11
       KWin::setType( winId(), NET::TopMenu );
       if( parentWidget())
@@ -208,7 +208,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       delete d->selection;
       d->selection = NULL;
 #endif
-      setBackgroundMode( PaletteButton );
+      setBackgroundMode( Qt::PaletteButton );
       setFrameStyle( d->frameStyle );
       setLineWidth( d->lineWidth );
       setMargin( d->margin );
@@ -505,11 +505,11 @@ void KMenuBar::drawContents( QPainter* p )
     else
     {
         bool up_enabled = isUpdatesEnabled();
-        BackgroundMode bg_mode = backgroundMode();
+        Qt::BackgroundMode bg_mode = backgroundMode();
         BackgroundOrigin bg_origin = backgroundOrigin();
         
         setUpdatesEnabled(false);
-        setBackgroundMode(X11ParentRelative);
+        setBackgroundMode(Qt::X11ParentRelative);
         setBackgroundOrigin(WindowOrigin);
 
 	p->eraseRect( rect() );
@@ -541,21 +541,21 @@ void KMenuBar::drawContents( QPainter* p )
 
                 if( item_active )
                 {
-                    QStyle::SFlags flags = QStyle::Style_Default;
+                    QStyle::State flags = QStyle::State_None;
                     if (isEnabled() && e)
-                        flags |= QStyle::Style_Enabled;
+                        flags |= QStyle::State_Enabled;
                     if ( item_active )
-                        flags |= QStyle::Style_Active;
+                        flags |= QStyle::State_Active;
                     if ( item_active && actItemDown )
-                        flags |= QStyle::Style_Down;
-                    flags |= QStyle::Style_HasFocus;
+                        flags |= QStyle::State_Down;
+                    flags |= QStyle::State_HasFocus;
 
                     style().drawControl(QStyle::CE_MenuBarItem, p, this,
                                         r, g, flags, QStyleOption(mi));
                 }
                 else
                 {
-                    style().drawItem(p, r, AlignCenter | AlignVCenter | ShowPrefix,
+                    style().drawItem(p, r, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic,
                                      g, e, mi->pixmap(), mi->text());
                 }
             }

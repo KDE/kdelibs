@@ -3,13 +3,13 @@
 public:
 UTCValue();
 UTCValue(const UTCValue&);
-UTCValue(const QCString&);
+UTCValue(const Q3CString&);
 UTCValue & operator = (UTCValue&);
-UTCValue & operator = (const QCString&);
+UTCValue & operator = (const Q3CString&);
 bool operator ==(UTCValue&);
 bool operator !=(UTCValue& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {UTCValue a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {UTCValue a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~UTCValue();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

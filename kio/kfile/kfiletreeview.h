@@ -24,7 +24,7 @@
 #include <qmap.h>
 #include <qpoint.h>
 #include <qpixmap.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qtooltip.h>
 
 #include <klistview.h>
@@ -40,13 +40,13 @@ class QTimer;
 class KIO_EXPORT KFileTreeViewToolTip : public QToolTip
 {
 public:
-    KFileTreeViewToolTip( QListView *view ) : QToolTip( view ), m_view( view ) {}
+    KFileTreeViewToolTip( Q3ListView *view ) : QToolTip( view ), m_view( view ) {}
 
 protected:
     virtual void maybeTip( const QPoint & );
 
 private:
-    QListView *m_view;
+    Q3ListView *m_view;
 };
 
 
@@ -169,7 +169,7 @@ protected:
     */
 
    virtual bool acceptDrag(QDropEvent* event) const;
-    virtual QDragObject * dragObject();
+    virtual Q3DragObject * dragObject();
 
     virtual void startAnimation( KFileTreeViewItem* item, const char * iconBaseName = "kde", uint iconCount = 6 );
     virtual void stopAnimation( KFileTreeViewItem* item );
@@ -188,9 +188,9 @@ protected slots:
     virtual QPixmap itemIcon( KFileTreeViewItem*, int gap = 0 ) const;
 
 private slots:
-    void slotExecuted( QListViewItem * );
-    void slotExpanded( QListViewItem * );
-    void slotCollapsed( QListViewItem *item );
+    void slotExecuted( Q3ListViewItem * );
+    void slotExpanded( Q3ListViewItem * );
+    void slotCollapsed( Q3ListViewItem *item );
 
     void slotSelectionChanged();
 
@@ -198,8 +198,8 @@ private slots:
 
     void slotAutoOpenFolder();
 
-    void slotOnItem( QListViewItem * );
-    void slotItemRenamed(QListViewItem*, const QString &, int);
+    void slotOnItem( Q3ListViewItem * );
+    void slotItemRenamed(Q3ListViewItem*, const QString &, int);
 
    void slotPopulateFinished( KFileTreeViewItem* );
 
@@ -214,10 +214,10 @@ signals:
    // The drop event allows to differentiate between move and copy
    void dropped( QWidget*, QDropEvent*, KURL::List&, KURL& );
 
-   void dropped( QDropEvent *, QListViewItem * );
-   void dropped(KFileTreeView *, QDropEvent *, QListViewItem *);
-   void dropped(QDropEvent *, QListViewItem *, QListViewItem *);
-   void dropped(KFileTreeView *, QDropEvent *, QListViewItem *, QListViewItem *);
+   void dropped( QDropEvent *, Q3ListViewItem * );
+   void dropped(KFileTreeView *, QDropEvent *, Q3ListViewItem *);
+   void dropped(QDropEvent *, Q3ListViewItem *, Q3ListViewItem *);
+   void dropped(KFileTreeView *, QDropEvent *, Q3ListViewItem *, Q3ListViewItem *);
 
 protected:
    KURL m_nextUrlToSelect;
@@ -225,7 +225,7 @@ protected:
 
 private:
     // Returns whether item is still a valid item in the tree
-    bool isValidItem( QListViewItem *item);
+    bool isValidItem( Q3ListViewItem *item);
     void clearTree();
 
 
@@ -238,7 +238,7 @@ private:
         AnimationInfo( const char * _iconBaseName, uint _iconCount, const QPixmap & _originalPixmap )
             : iconBaseName(_iconBaseName), iconCount(_iconCount), iconNumber(1), originalPixmap(_originalPixmap) {}
         AnimationInfo() : iconCount(0) {}
-        QCString iconBaseName;
+        Q3CString iconBaseName;
         uint iconCount;
         uint iconNumber;
         QPixmap originalPixmap;
@@ -254,9 +254,9 @@ private:
 
    bool m_wantOpenFolderPixmaps; // Flag weather the folder should have open-folder pixmaps
 
-    QListViewItem *m_currentBeforeDropItem; // The item that was current before the drag-enter event happened
-    QListViewItem *m_dropItem; // The item we are moving the mouse over (during a drag)
-    QStrList m_lstDropFormats;
+    Q3ListViewItem *m_currentBeforeDropItem; // The item that was current before the drag-enter event happened
+    Q3ListViewItem *m_dropItem; // The item we are moving the mouse over (during a drag)
+    Q3StrList m_lstDropFormats;
    QPixmap  m_openFolderPixmap;
     QTimer *m_autoOpenTimer;
 

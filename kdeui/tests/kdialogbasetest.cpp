@@ -2,7 +2,7 @@
 #include <kdialogbase.h>
 
 #include <qstring.h>
-#include <qtextview.h>
+#include <q3textview.h>
 
 int main(int argc, char** argv)
 {
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
      It is important that your main widget is created with the dialog object
      as its parent! */
-  QTextView view(text, QString::null, &dialog);
+  Q3TextView view(text, QString::null, &dialog);
   //view.setMinimumSize(400, view.heightForWidth(400)+20);
   view.setMinimumSize( 250, 300 );
   dialog.setMainWidget(&view);

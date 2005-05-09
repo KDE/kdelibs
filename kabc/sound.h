@@ -21,7 +21,7 @@
 #ifndef KABC_SOUND_H
 #define KABC_SOUND_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 
 #include <kdelibs_export.h>

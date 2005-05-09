@@ -22,7 +22,7 @@
 #include "kmwizard.h"
 #include "util.h"
 
-#include <qtextview.h>
+#include <q3textview.h>
 #include <klocale.h>
 #include <qlayout.h>
 
@@ -33,7 +33,7 @@ KMWEnd::KMWEnd(QWidget *parent, const char *name)
 	m_title = i18n("Confirmation");
 	m_nextpage = KMWizard::Error;
 
-	m_view = new QTextView(this);
+	m_view = new Q3TextView(this);
 
 	QVBoxLayout	*lay = new QVBoxLayout(this, 0, 0);
 	lay->addWidget(m_view,1);

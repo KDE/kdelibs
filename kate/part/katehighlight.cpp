@@ -91,7 +91,7 @@ class KateHlItem
 
     static void dynamicSubstitute(QString& str, const QStringList *args);
 
-    QMemArray<KateHlItem*> subItems;
+    Q3MemArray<KateHlItem*> subItems;
     int attr;
     int ctx;
     signed char region;
@@ -119,7 +119,7 @@ class KateHlContext
     virtual ~KateHlContext();
     KateHlContext *clone(const QStringList *args);
 
-    QValueVector<KateHlItem*> items;
+    Q3ValueVector<KateHlItem*> items;
     QString hlId; ///< A unique highlight identifier. Used to look up correct properties.
     int attr;
     int ctx;
@@ -231,7 +231,7 @@ class KateHlKeyword : public KateHlItem
     virtual int checkHgl(const QString& text, int offset, int len);
 
   private:
-    QMemArray< QDict<bool>* > dict;
+    Q3MemArray< Q3Dict<bool>* > dict;
     bool _caseSensitive;
     const QString& deliminators;
     int minLen;
@@ -638,7 +638,7 @@ void KateHlKeyword::addList(const QStringList& list)
     }
 
     if (!dict[len])
-      dict[len] = new QDict<bool> (17, _caseSensitive);
+      dict[len] = new Q3Dict<bool> (17, _caseSensitive);
 
     dict[len]->insert(list[i], &trueBool);
   }
@@ -1223,7 +1223,7 @@ KateHighlighting::~KateHighlighting()
   m_contexts.clear ();
 }
 
-void KateHighlighting::generateContextStack(int *ctxNum, int ctx, QMemArray<short>* ctxs, int *prevLine)
+void KateHighlighting::generateContextStack(int *ctxNum, int ctx, Q3MemArray<short>* ctxs, int *prevLine)
 {
   //kdDebug(13010)<<QString("Entering generateContextStack with %1").arg(ctx)<<endl;
   while (true)
@@ -1232,7 +1232,7 @@ void KateHighlighting::generateContextStack(int *ctxNum, int ctx, QMemArray<shor
     {
       (*ctxNum) = ctx;
 
-      ctxs->resize (ctxs->size()+1, QGArray::SpeedOptim);
+      ctxs->resize (ctxs->size()+1, Q3GArray::SpeedOptim);
       (*ctxs)[ctxs->size()-1]=(*ctxNum);
 
       return;
@@ -1249,12 +1249,12 @@ void KateHighlighting::generateContextStack(int *ctxNum, int ctx, QMemArray<shor
 
         if (size > 0)
         {
-          ctxs->resize (size, QGArray::SpeedOptim);
+          ctxs->resize (size, Q3GArray::SpeedOptim);
           (*ctxNum)=(*ctxs)[size-1];
         }
         else
         {
-          ctxs->resize (0, QGArray::SpeedOptim);
+          ctxs->resize (0, Q3GArray::SpeedOptim);
           (*ctxNum)=0;
         }
 
@@ -1336,7 +1336,7 @@ void KateHighlighting::dropDynamicContexts()
  */
 void KateHighlighting::doHighlight ( KateTextLine *prevLine,
                                      KateTextLine *textLine,
-                                     QMemArray<uint>* foldingList,
+                                     Q3MemArray<uint>* foldingList,
                                      bool *ctxChanged )
 {
   if (!textLine)
@@ -1351,7 +1351,7 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
   }
 
   // duplicate the ctx stack, only once !
-  QMemArray<short> ctx;
+  Q3MemArray<short> ctx;
   ctx.duplicate (prevLine->ctxArray());
 
   int ctxNum = 0;
@@ -1456,11 +1456,11 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
         // kdDebug(13010)<<QString("Region mark 2 detected: %1").arg(item->region2)<<endl;
         if ( !foldingList->isEmpty() && ((item->region2 < 0) && (*foldingList)[foldingList->size()-2] == -item->region2 ) )
         {
-          foldingList->resize (foldingList->size()-2, QGArray::SpeedOptim);
+          foldingList->resize (foldingList->size()-2, Q3GArray::SpeedOptim);
         }
         else
         {
-          foldingList->resize (foldingList->size()+2, QGArray::SpeedOptim);
+          foldingList->resize (foldingList->size()+2, Q3GArray::SpeedOptim);
           (*foldingList)[foldingList->size()-2] = (uint)item->region2;
           if (item->region2<0) //check not really needed yet
             (*foldingList)[foldingList->size()-1] = offset2;
@@ -1480,7 +1480,7 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
         }
         else*/
         {
-          foldingList->resize (foldingList->size()+2, QGArray::SpeedOptim);
+          foldingList->resize (foldingList->size()+2, Q3GArray::SpeedOptim);
           (*foldingList)[foldingList->size()-2] = item->region;
           if (item->region<0) //check not really needed yet
             (*foldingList)[foldingList->size()-1] = offset2;
@@ -1618,7 +1618,7 @@ void KateHighlighting::loadWildcards()
   }
 }
 
-QValueList<QRegExp>& KateHighlighting::getRegexpExtensions()
+Q3ValueList<QRegExp>& KateHighlighting::getRegexpExtensions()
 {
   return regexpExtensions;
 }
@@ -2843,7 +2843,7 @@ int KateHighlighting::addToContextList(const QString &ident, int ctx0)
 
 void KateHighlighting::clearAttributeArrays ()
 {
-  for ( QIntDictIterator< QMemArray<KateAttribute> > it( m_attributeArrays ); it.current(); ++it )
+  for ( Q3IntDictIterator< Q3MemArray<KateAttribute> > it( m_attributeArrays ); it.current(); ++it )
   {
     // k, schema correct, let create the data
     KateAttributeList defaultStyleList;
@@ -2854,7 +2854,7 @@ void KateHighlighting::clearAttributeArrays ()
     getKateHlItemDataList(it.currentKey(), itemDataList);
 
     uint nAttribs = itemDataList.count();
-    QMemArray<KateAttribute> *array = it.current();
+    Q3MemArray<KateAttribute> *array = it.current();
     array->resize (nAttribs);
 
     for (uint z = 0; z < nAttribs; z++)
@@ -2870,9 +2870,9 @@ void KateHighlighting::clearAttributeArrays ()
   }
 }
 
-QMemArray<KateAttribute> *KateHighlighting::attributes (uint schema)
+Q3MemArray<KateAttribute> *KateHighlighting::attributes (uint schema)
 {
-  QMemArray<KateAttribute> *array;
+  Q3MemArray<KateAttribute> *array;
 
   // found it, allready floating around
   if ((array = m_attributeArrays[schema]))
@@ -2894,7 +2894,7 @@ QMemArray<KateAttribute> *KateHighlighting::attributes (uint schema)
   getKateHlItemDataList(schema, itemDataList);
 
   uint nAttribs = itemDataList.count();
-  array = new QMemArray<KateAttribute> (nAttribs);
+  array = new Q3MemArray<KateAttribute> (nAttribs);
 
   for (uint z = 0; z < nAttribs; z++)
   {
@@ -3034,7 +3034,7 @@ int KateHlManager::realWildcardFind(const QString &fileName)
 {
   static QRegExp sep("\\s*;\\s*");
 
-  QPtrList<KateHighlighting> highlights;
+  Q3PtrList<KateHighlighting> highlights;
 
   for (KateHighlighting *highlight = hlList.first(); highlight != 0L; highlight = hlList.next()) {
     highlight->loadWildcards();
@@ -3075,7 +3075,7 @@ int KateHlManager::mimeFind( KateDocument *doc )
 
   KMimeType::Ptr mt = doc->mimeTypeForContent();
 
-  QPtrList<KateHighlighting> highlights;
+  Q3PtrList<KateHighlighting> highlights;
 
   for (KateHighlighting *highlight = hlList.first(); highlight != 0L; highlight = hlList.next())
   {
@@ -3400,7 +3400,7 @@ void KateViewHighlightAction::slotAboutToShow()
         if (subMenusName.contains(hlSection) < 1)
         {
           subMenusName << hlSection;
-          QPopupMenu *menu = new QPopupMenu ();
+          Q3PopupMenu *menu = new Q3PopupMenu ();
           subMenus.append(menu);
           popupMenu()->insertItem ( '&' + hlSection, menu);
         }

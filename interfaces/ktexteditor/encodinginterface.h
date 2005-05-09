@@ -22,7 +22,7 @@
 #include <kdelibs_export.h>
 
 class QString;
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -41,7 +41,7 @@ class KTEXTEDITOR_EXPORT EncodingInterface
     unsigned int encodingInterfaceNumber () const;
     
   protected:  
-    void setEncodingInterfaceDCOPSuffix (const QCString &suffix);  
+    void setEncodingInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   //
   // slots !!!

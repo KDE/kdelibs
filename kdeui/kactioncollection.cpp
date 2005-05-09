@@ -34,8 +34,8 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
-#include <qpopupmenu.h>
-#include <qptrdict.h>
+#include <q3popupmenu.h>
+#include <q3ptrdict.h>
 #include <qvariant.h>
 
 class KActionCollection::KActionCollectionPrivate
@@ -63,13 +63,13 @@ public:
   //int m_iWidgetCurrent;
   //QValueList<QWidget*> m_widgetList;
   //QValueList<KAccel*> m_kaccelList;
-  QValueList<KActionCollection*> m_docList;
+  Q3ValueList<KActionCollection*> m_docList;
   QWidget *m_widget;
   KAccel *m_kaccel;
   KAccel *m_builderKAccel;
 
-  QAsciiDict<KAction> m_actionDict;
-  QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
+  Q3AsciiDict<KAction> m_actionDict;
+  Q3PtrDict< Q3PtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
@@ -138,7 +138,7 @@ KActionCollection::KActionCollection( const char *name, const KXMLGUIClient *par
 KActionCollection::~KActionCollection()
 {
   kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
-  for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
+  for ( Q3AsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
     KAction* pAction = it.current();
     if ( pAction->m_parentCollection == this )
       pAction->m_parentCollection = 0L;
@@ -209,7 +209,7 @@ void KActionCollection::prepareXMLUnplug()
 
 void KActionCollection::unplugShortcuts( KAccel* kaccel )
 {
-  for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
+  for ( Q3AsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
     KAction* pAction = it.current();
     pAction->removeKAccel( kaccel );
   }
@@ -357,7 +357,7 @@ KAction* KActionCollection::_take( KAction* action )
 
 void KActionCollection::_clear()
 {
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
   while ( it.current() )
     _remove( it.current() );
 }
@@ -378,7 +378,7 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
     pAction = d->m_actionDict[ name ];
 
   else {
-    QAsciiDictIterator<KAction> it( d->m_actionDict );
+    Q3AsciiDictIterator<KAction> it( d->m_actionDict );
     for( ; it.current(); ++it )
     {
       if ( ( !name || !strcmp( it.current()->name(), name ) ) &&
@@ -399,7 +399,7 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
 
 KAction* KActionCollection::action( int index ) const
 {
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
   it += index;
   return it.current();
 //  return d->m_actions.at( index );
@@ -424,7 +424,7 @@ QStringList KActionCollection::groups() const
 {
   QStringList lst;
 
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
     if ( !it.current()->group().isEmpty() && !lst.contains( it.current()->group() ) )
       lst.append( it.current()->group() );
@@ -436,7 +436,7 @@ KActionPtrList KActionCollection::actions( const QString& group ) const
 {
   KActionPtrList lst;
 
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
     if ( it.current()->group() == group )
       lst.append( it.current() );
@@ -450,7 +450,7 @@ KActionPtrList KActionCollection::actions() const
 {
   KActionPtrList lst;
 
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
     lst.append( it.current() );
 
@@ -495,13 +495,13 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   if ( !d->m_highlight )
     return;
 
-  QPtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
 
   if ( !actionList )
   {
-    actionList = new QPtrList<KAction>;
+    actionList = new Q3PtrList<KAction>;
 
-    if ( ::qt_cast<QPopupMenu *>( container ) )
+    if ( ::qt_cast<Q3PopupMenu *>( container ) )
     {
       connect( container, SIGNAL( highlighted( int ) ),
                this, SLOT( slotMenuItemHighlighted( int ) ) );
@@ -528,7 +528,7 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
   if ( !d->m_highlight )
     return;
 
-  QPtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
 
   if ( !actionList )
     return;
@@ -611,12 +611,12 @@ void KActionCollection::slotDestroyed()
 
 KAction *KActionCollection::findAction( QWidget *container, int id )
 {
-  QPtrList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
+  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
 
   if ( !actionList )
     return 0;
 
-  QPtrListIterator<KAction> it( *actionList );
+  Q3PtrListIterator<KAction> it( *actionList );
   for (; it.current(); ++it )
     if ( it.current()->isPlugged( container, id ) )
       return it.current();
@@ -636,9 +636,9 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
   kdWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;
   KActionCollection ret( *this );
 
-  QValueList<KAction *> actions = c.actions();
-  QValueList<KAction *>::ConstIterator it = actions.begin();
-  QValueList<KAction *>::ConstIterator end = actions.end();
+  Q3ValueList<KAction *> actions = c.actions();
+  Q3ValueList<KAction *>::ConstIterator it = actions.begin();
+  Q3ValueList<KAction *>::ConstIterator end = actions.end();
   for (; it != end; ++it )
     ret.insert( *it );
 
@@ -662,7 +662,7 @@ KActionCollection &KActionCollection::operator=( const KActionCollection &copy )
 KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
   kdWarning(129) << "KActionCollection::operator+=(): function is severely deprecated." << endl;
-  QAsciiDictIterator<KAction> it(c.d->m_actionDict);
+  Q3AsciiDictIterator<KAction> it(c.d->m_actionDict);
   for ( ; it.current(); ++it )
     insert( it.current() );
 

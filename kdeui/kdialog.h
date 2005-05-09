@@ -61,7 +61,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Takes the same arguments as QDialog.
      */
     KDialog(QWidget *parent = 0, const char *name = 0,
-	    bool modal = false, WFlags f = 0);
+	    bool modal = false, Qt::WFlags f = 0);
 
     /**
      * Return the number of pixels you shall use between a

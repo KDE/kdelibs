@@ -37,7 +37,7 @@ TelParam::TelParam(const TelParam & x)
 {
 }
 
-TelParam::TelParam(const QCString & s)
+TelParam::TelParam(const Q3CString & s)
 	:	Param(s)
 {
 }
@@ -52,7 +52,7 @@ TelParam::operator = (TelParam & x)
 }
 
 	TelParam &
-TelParam::operator = (const QCString & s)
+TelParam::operator = (const Q3CString & s)
 {
 	Param::operator = (s);
 	return *this;

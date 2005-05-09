@@ -51,7 +51,7 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qbitmap.h>
 
 using namespace khtml;
@@ -240,7 +240,7 @@ void RenderSubmitButton::calcMinMaxWidth()
     if ( empty )
         raw = QString::fromLatin1("X");
     QFontMetrics fm = pb->fontMetrics();
-    QSize ts = fm.size( ShowPrefix, raw);
+    QSize ts = fm.size( Qt::TextShowMnemonic, raw);
     QSize s(pb->style().sizeFromContents( QStyle::CT_PushButton, pb, ts )
             .expandedTo(QApplication::globalStrut()));
     int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb) +
@@ -366,9 +366,9 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
 }
 
 
-QPopupMenu *LineEditWidget::createPopupMenu()
+Q3PopupMenu *LineEditWidget::createPopupMenu()
 {
-    QPopupMenu *popup = KLineEdit::createPopupMenu();
+    Q3PopupMenu *popup = KLineEdit::createPopupMenu();
 
     if ( !popup ) {
         return 0L;
@@ -415,14 +415,14 @@ bool LineEditWidget::event( QEvent *e )
 
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
-        if ( ke->state() & ControlButton ) {
+        if ( ke->state() & Qt::ControlModifier ) {
             switch ( ke->key() ) {
-                case Key_Left:
-                case Key_Right:
-                case Key_Up:
-                case Key_Down:
-                case Key_Home:
-                case Key_End:
+                case Qt::Key_Left:
+                case Qt::Key_Right:
+                case Qt::Key_Up:
+                case Qt::Key_Down:
+                case Qt::Key_Home:
+                case Qt::Key_End:
                     ke->accept();
                 default:
                 break;
@@ -837,8 +837,8 @@ bool ComboBoxWidget::event(QEvent *e)
 	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
 	switch(ke->key())
 	{
-	case Key_Return:
-	case Key_Enter:
+	case Qt::Key_Return:
+	case Qt::Key_Enter:
 	    popup();
 	    ke->accept();
 	    return true;
@@ -857,12 +857,12 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 	bool forward = false;
 	switch(ke->key())
 	{
-	case Key_Tab:
+	case Qt::Key_Tab:
 	    forward=true;
-	case Key_BackTab:
+	case Qt::Key_Backtab:
 	    // ugly hack. emulate popdownlistbox() (private in QComboBox)
 	    // we re-use ke here to store the reference to the generated event.
-	    ke = new QKeyEvent(QEvent::KeyPress, Key_Escape, 0, 0);
+	    ke = new QKeyEvent(QEvent::KeyPress, Qt::Key_Escape, 0, 0);
 	    QApplication::sendEvent(dest,ke);
 	    focusNextPrevChild(forward);
 	    delete ke;
@@ -915,7 +915,7 @@ void RenderSelect::updateFromElement()
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
-            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
+            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
         }
         m_selectionChanged = true;
         m_optionsChanged = true;
@@ -925,7 +925,7 @@ void RenderSelect::updateFromElement()
     if ( m_optionsChanged ) {
         if (element()->m_recalcListItems)
             element()->recalcListItems();
-        QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+        Q3MemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
         int listIndex;
 
         if(m_useListBox) {
@@ -942,7 +942,7 @@ void RenderSelect::updateFromElement()
                     text = "";
 
                 if(m_useListBox) {
-                    QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
+                    Q3ListBoxText *item = new Q3ListBoxText(QString(text.implementation()->s, text.implementation()->l));
                     static_cast<KListBox*>(m_widget)
                         ->insertItem(item, listIndex);
                     item->setSelectable(false);
@@ -1029,7 +1029,7 @@ void RenderSelect::layout( )
     if(m_useListBox) {
         KListBox* w = static_cast<KListBox*>(m_widget);
 
-        QListBoxItem* p = w->firstItem();
+        Q3ListBoxItem* p = w->firstItem();
         int width = 0;
         int height = 0;
         while(p) {
@@ -1068,7 +1068,7 @@ void RenderSelect::layout( )
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    Q3MemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
 
     bool foundOption = false;
     for (uint i = 0; i < listItems.size() && !foundOption; i++)
@@ -1083,7 +1083,7 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
 
     KHTMLAssert( !m_useListBox );
 
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    Q3MemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     if(index >= 0 && index < int(listItems.size()))
     {
         bool found = ( listItems[index]->id() == ID_OPTION );
@@ -1146,7 +1146,7 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
 
     // don't use listItems() here as we have to avoid recalculations - changing the
     // option list will make use update options not in the way the user expects them
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
+    Q3MemArray<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
     for ( unsigned i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
@@ -1167,7 +1167,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 KListBox* RenderSelect::createListBox()
 {
     KListBox *lb = new KListBox(view()->viewport(), "__khtml");
-    lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
+    lb->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
@@ -1187,7 +1187,7 @@ ComboBoxWidget *RenderSelect::createComboBox()
 
 void RenderSelect::updateSelection()
 {
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    Q3MemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index
@@ -1224,17 +1224,17 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent, "__khtml"), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
-        setWordWrap(QTextEdit::WidgetWidth);
+        setWordWrap(Q3TextEdit::WidgetWidth);
         setHScrollBarMode( AlwaysOff );
         setVScrollBarMode( AlwaysOn );
     }
     else {
-        setWordWrap(QTextEdit::NoWrap);
+        setWordWrap(Q3TextEdit::NoWrap);
         setHScrollBarMode( Auto );
         setVScrollBarMode( Auto );
     }
     KCursor::setAutoHideCursor(viewport(), true);
-    setTextFormat(QTextEdit::PlainText);
+    setTextFormat(Qt::PlainText);
     setAutoMask(true);
     setMouseTracking(true);
 
@@ -1258,9 +1258,9 @@ TextAreaWidget::~TextAreaWidget()
 }
 
 
-QPopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
+Q3PopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
 {
-    QPopupMenu *popup = KTextEdit::createPopupMenu(pos);
+    Q3PopupMenu *popup = KTextEdit::createPopupMenu(pos);
 
     if ( !popup ) {
         return 0L;
@@ -1532,14 +1532,14 @@ bool TextAreaWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
-        if ( ke->state() & ControlButton ) {
+        if ( ke->state() & Qt::ControlModifier ) {
             switch ( ke->key() ) {
-                case Key_Left:
-                case Key_Right:
-                case Key_Up:
-                case Key_Down:
-                case Key_Home:
-                case Key_End:
+                case Qt::Key_Left:
+                case Qt::Key_Right:
+                case Qt::Key_Up:
+                case Qt::Key_Down:
+                case Qt::Key_Home:
+                case Qt::Key_End:
                     ke->accept();
                 default:
                 break;
@@ -1593,7 +1593,7 @@ void RenderTextArea::calcMinMaxWidth()
     QSize size( kMax(element()->cols(), 1L)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
                 kMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 +
-                (w->wordWrap() == QTextEdit::NoWrap ?
+                (w->wordWrap() == Q3TextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );
 

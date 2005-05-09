@@ -21,7 +21,7 @@
 #define __KURLDRAG_H
 
 #include <qstringlist.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <kurl.h>
 #include "kdelibs_export.h"
 class QMimeSource;
@@ -41,7 +41,7 @@ class KURLDragPrivate;
  * To create a drag object, use the KURLDrag constructor.
  * To handle drops, use QUriDrag::canDecode() and KURLDrag::decode()
  */
-class KDECORE_EXPORT KURLDrag : public QUriDrag
+class KDECORE_EXPORT KURLDrag : public Q3UriDrag
 {
 public:
   /**
@@ -131,7 +131,7 @@ public:
    * Converts a string used for dragging to a URL.
    * @since 3.2
    */
-  static KURL stringToUrl(const QCString &s);
+  static KURL stringToUrl(const Q3CString &s);
 
 #ifdef Q_WS_QWS
   /**
@@ -146,7 +146,7 @@ protected:
   /**
    * @deprecated Use a KURLDrag constructor with a KURL::List
    */
-  KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
+  KURLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
             QWidget * dragSource, const char* name ) KDE_DEPRECATED;
 
   virtual const char * format( int i ) const;
@@ -155,7 +155,7 @@ protected:
 private:
   void init(const KURL::List &urls);
 
-  QStrList m_urls;
+  Q3StrList m_urls;
   QMap<QString,QString> m_metaData;
   KURLDragPrivate* d;
 };

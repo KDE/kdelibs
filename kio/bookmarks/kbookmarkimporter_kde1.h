@@ -22,7 +22,7 @@
 #define __kbookmarkimporter_kde1_h
 
 #include <qdom.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
@@ -40,7 +40,7 @@ public:
 
 private:
     void scanIntern( QDomElement & parentElem, const QString & _path );
-    void parseBookmark( QDomElement & parentElem, QCString _text,
+    void parseBookmark( QDomElement & parentElem, Q3CString _text,
                         KSimpleConfig& _cfg, const QString &_group );
     QDomDocument * m_pDoc;
     QStringList m_lstParsedDirs;

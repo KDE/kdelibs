@@ -40,7 +40,7 @@
 #include <qstring.h>
 #include <qiodevice.h>
 #include <qsocketnotifier.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include "kresolver.h"
 
@@ -883,7 +883,7 @@ int KExtendedSocket::listen(int N)
     }
 
   d->status = bound;
-  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
+  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
 
   int retval = KSocks::self()->listen(sockfd, N);
   if (retval == -1)
@@ -959,7 +959,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
   sock = new KExtendedSocket;
   sock->d->status = connected;
   sock->sockfd = newfd;
-  sock->setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+  sock->setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
   sock->setBufferSize(0, 0);	// always unbuffered here. User can change that later
 
   return 0;
@@ -1150,7 +1150,7 @@ int KExtendedSocket::connect()
 	  // setBufferSize() takes care of creating the socket notifiers
 	  setBlockingMode(true);
 	  d->status = connected;
-	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+	  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 			d->flags & outputBufferedSocket ? -1 : 0);
 	  emit connectionSuccess();
@@ -1171,7 +1171,7 @@ int KExtendedSocket::connect()
 	    }
 
 	  d->status = connected;
-	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+	  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 			d->flags & outputBufferedSocket ? -1 : 0);
 	  emit connectionSuccess();
@@ -1212,7 +1212,7 @@ int KExtendedSocket::startAsyncConnect()
   // here we have d->status >= lookupDone and <= connecting
   // we can do our connection
   d->status = connecting;
-  QGuardedPtr<QObject> p = this;
+  QPointer<QObject> p = this;
   connectionEvent();
   if (!p) 
     return -1; // We have been deleted.
@@ -1243,7 +1243,7 @@ void KExtendedSocket::cancelAsyncConnect()
 
 bool KExtendedSocket::open(int mode)
 {
-  if (mode != IO_Raw | IO_ReadWrite)
+  if (mode != IO_Raw | QIODevice::ReadWrite)
     return false;		// invalid open mode
 
   if (d->flags & passiveSocket)
@@ -1810,7 +1810,7 @@ void KExtendedSocket::connectionEvent()
 	  cleanError();
 	  d->status = connected;
 	  setBlockingMode(true);
-	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+	  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 			d->flags & outputBufferedSocket ? -1 : 0);
 	  emit connectionSuccess();
@@ -1908,7 +1908,7 @@ void KExtendedSocket::connectionEvent()
       cleanError();
       d->status = connected;
       setBlockingMode(true);
-      setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+      setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
       setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 		    d->flags & outputBufferedSocket ? -1 : 0);
       emit connectionSuccess();
@@ -1982,14 +1982,14 @@ int KExtendedSocket::resolve(::KSocketAddress *sock, QString &host, QString &por
   return resolve(sock->data, sock->datasize, host, port, flags);
 }
 
-QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
+Q3PtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
 					    int userflags, int *error)
 {
   kdDebug(170) << "Deprecated function called:" << k_funcinfo << endl;
 
   int socktype, familyMask, flags;
   unsigned i;
-  QPtrList<KAddressInfo> l;
+  Q3PtrList<KAddressInfo> l;
 
   /* check socket type flags */
   if (!process_flags(userflags, socktype, familyMask, flags))

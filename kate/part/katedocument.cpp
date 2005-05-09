@@ -356,7 +356,7 @@ KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
   return newView;
 }
 
-QPtrList<KTextEditor::View> KateDocument::views () const
+Q3PtrList<KTextEditor::View> KateDocument::views () const
 {
   return m_textEditViews;
 }
@@ -631,8 +631,8 @@ bool KateDocument::setText(const QString &s)
   if (!isReadWrite())
     return false;
 
-  QPtrList<KTextEditor::Mark> m = marks ();
-  QValueList<KTextEditor::Mark> msave;
+  Q3PtrList<KTextEditor::Mark> m = marks ();
+  Q3ValueList<KTextEditor::Mark> msave;
 
   for (uint i=0; i < m.count(); i++)
     msave.append (*m.at(i));
@@ -1185,7 +1185,7 @@ bool KateDocument::editInsertText ( uint line, uint col, const QString &str )
 
   m_buffer->changeLine(line);
 
-  for( QPtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
+  for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editTextInserted (line, col, s.length());
 
   editEnd ();
@@ -1212,7 +1212,7 @@ bool KateDocument::editRemoveText ( uint line, uint col, uint len )
 
   m_buffer->changeLine(line);
 
-  for( QPtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
+  for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editTextRemoved (line, col, len);
 
   editEnd ();
@@ -1274,8 +1274,8 @@ bool KateDocument::editWrapLine ( uint line, uint col, bool newLine, bool *newLi
     m_buffer->insertLine (line+1, textLine);
     m_buffer->changeLine(line);
 
-    QPtrList<KTextEditor::Mark> list;
-    for( QIntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
+    Q3PtrList<KTextEditor::Mark> list;
+    for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
     {
       if( it.current()->line >= line )
       {
@@ -1284,7 +1284,7 @@ bool KateDocument::editWrapLine ( uint line, uint col, bool newLine, bool *newLi
       }
     }
 
-    for( QPtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
+    for( Q3PtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
     {
       KTextEditor::Mark* mark = m_marks.take( it.current()->line );
       mark->line++;
@@ -1311,7 +1311,7 @@ bool KateDocument::editWrapLine ( uint line, uint col, bool newLine, bool *newLi
       (*newLineAdded) = false;
   }
 
-  for( QPtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
+  for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineWrapped (line, col, !nextLine || newLine);
 
   editEnd ();
@@ -1353,8 +1353,8 @@ bool KateDocument::editUnWrapLine ( uint line, bool removeLine, uint length )
     m_buffer->changeLine(line+1);
   }
 
-  QPtrList<KTextEditor::Mark> list;
-  for( QIntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
+  Q3PtrList<KTextEditor::Mark> list;
+  for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
   {
     if( it.current()->line >= line+1 )
       list.append( it.current() );
@@ -1370,7 +1370,7 @@ bool KateDocument::editUnWrapLine ( uint line, bool removeLine, uint length )
     }
   }
 
-  for( QPtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
+  for( Q3PtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
   {
     KTextEditor::Mark* mark = m_marks.take( it.current()->line );
     mark->line--;
@@ -1380,7 +1380,7 @@ bool KateDocument::editUnWrapLine ( uint line, bool removeLine, uint length )
   if( !list.isEmpty() )
     emit marksChanged();
 
-  for( QPtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
+  for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineUnWrapped (line, col, removeLine, length);
 
   editEnd ();
@@ -1409,14 +1409,14 @@ bool KateDocument::editInsertLine ( uint line, const QString &s )
 
   removeTrailingSpace( line ); // new line
 
-  QPtrList<KTextEditor::Mark> list;
-  for( QIntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
+  Q3PtrList<KTextEditor::Mark> list;
+  for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
   {
     if( it.current()->line >= line )
       list.append( it.current() );
   }
 
-  for( QPtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
+  for( Q3PtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
   {
     KTextEditor::Mark* mark = m_marks.take( it.current()->line );
     mark->line++;
@@ -1426,7 +1426,7 @@ bool KateDocument::editInsertLine ( uint line, const QString &s )
   if( !list.isEmpty() )
     emit marksChanged();
 
-  for( QPtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
+  for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineInserted (line);
 
   editEnd ();
@@ -1451,9 +1451,9 @@ bool KateDocument::editRemoveLine ( uint line )
 
   m_buffer->removeLine(line);
 
-  QPtrList<KTextEditor::Mark> list;
+  Q3PtrList<KTextEditor::Mark> list;
   KTextEditor::Mark* rmark = 0;
-  for( QIntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
+  for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
   {
     if ( (it.current()->line > line) )
       list.append( it.current() );
@@ -1464,7 +1464,7 @@ bool KateDocument::editRemoveLine ( uint line )
   if (rmark)
     delete (m_marks.take (rmark->line));
 
-  for( QPtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
+  for( Q3PtrListIterator<KTextEditor::Mark> it( list ); it.current(); ++it )
   {
     KTextEditor::Mark* mark = m_marks.take( it.current()->line );
     mark->line--;
@@ -1474,7 +1474,7 @@ bool KateDocument::editRemoveLine ( uint line )
   if( !list.isEmpty() )
     emit marksChanged();
 
-  for( QPtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
+  for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineRemoved (line);
 
   editEnd();
@@ -1568,7 +1568,7 @@ void KateDocument::clearRedo()
   emit undoChanged ();
 }
 
-QPtrList<KTextEditor::Cursor> KateDocument::cursors () const
+Q3PtrList<KTextEditor::Cursor> KateDocument::cursors () const
 {
   return myCursors;
 }
@@ -1874,7 +1874,7 @@ void KateDocument::readSessionConfig(KConfig *kconfig)
   config()->setIndentationMode( (uint)kconfig->readNumEntry("Indentation Mode", config()->indentationMode() ) );
 
   // Restore Bookmarks
-  QValueList<int> marks = kconfig->readIntListEntry("Bookmarks");
+  Q3ValueList<int> marks = kconfig->readIntListEntry("Bookmarks");
   for( uint i = 0; i < marks.count(); i++ )
     addMark( marks[i], KateDocument::markType01 );
 }
@@ -1893,8 +1893,8 @@ void KateDocument::writeSessionConfig(KConfig *kconfig)
   kconfig->writeEntry("Indentation Mode", config()->indentationMode() );
 
   // Save Bookmarks
-  QValueList<int> marks;
-  for( QIntDictIterator<KTextEditor::Mark> it( m_marks );
+  Q3ValueList<int> marks;
+  for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks );
        it.current() && it.current()->type & KTextEditor::MarkInterface::markType01;
        ++it )
      marks << it.current()->line;
@@ -1914,14 +1914,14 @@ void KateDocument::configDialog()
   KWin::setIcons( kd->winId(), kapp->icon(), kapp->miniIcon() );
 #endif
 
-  QPtrList<KTextEditor::ConfigPage> editorPages;
+  Q3PtrList<KTextEditor::ConfigPage> editorPages;
 
   for (uint i = 0; i < KTextEditor::configInterfaceExtension (this)->configPages (); i++)
   {
     QStringList path;
     path.clear();
     path << KTextEditor::configInterfaceExtension (this)->configPageName (i);
-    QVBox *page = kd->addVBoxPage(path, KTextEditor::configInterfaceExtension (this)->configPageFullName (i),
+    Q3VBox *page = kd->addVBoxPage(path, KTextEditor::configInterfaceExtension (this)->configPageFullName (i),
                               KTextEditor::configInterfaceExtension (this)->configPagePixmap(i, KIcon::SizeMedium) );
 
     editorPages.append (KTextEditor::configInterfaceExtension (this)->configPage(i, page));
@@ -2046,11 +2046,11 @@ void KateDocument::removeMark( uint line, uint markType )
   repaintViews(true);
 }
 
-QPtrList<KTextEditor::Mark> KateDocument::marks()
+Q3PtrList<KTextEditor::Mark> KateDocument::marks()
 {
-  QPtrList<KTextEditor::Mark> list;
+  Q3PtrList<KTextEditor::Mark> list;
 
-  for( QIntDictIterator<KTextEditor::Mark> it( m_marks );
+  for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks );
        it.current(); ++it ) {
     list.append( it.current() );
   }
@@ -2060,7 +2060,7 @@ QPtrList<KTextEditor::Mark> KateDocument::marks()
 
 void KateDocument::clearMarks()
 {
-  for( QIntDictIterator<KTextEditor::Mark> it( m_marks );
+  for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks );
        it.current(); ++it ) {
     KTextEditor::Mark* mark = it.current();
     emit markChanged( *mark, MarkRemoved );
@@ -2591,7 +2591,7 @@ void KateDocument::readDirConfig ()
       // try to open config file in this dir
       QFile f (currentDir + "/.kateconfig");
 
-      if (f.open (IO_ReadOnly))
+      if (f.open (QIODevice::ReadOnly))
       {
         QTextStream stream (&f);
 
@@ -4275,9 +4275,9 @@ void KateDocument::reloadFile()
       }
     }
 
-    QValueList<KateDocumentTmpMark> tmp;
+    Q3ValueList<KateDocumentTmpMark> tmp;
 
-    for( QIntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
+    for( Q3IntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
     {
       KateDocumentTmpMark m;
 
@@ -4699,7 +4699,7 @@ void KateDocument::slotModOnHdDirty (const QString &path)
     // compare md5 with the one we have (if we have one)
     if ( ! m_digest.isEmpty() )
     {
-      QCString tmp;
+      Q3CString tmp;
       if ( createDigest( tmp ) && tmp == m_digest )
         return;
     }
@@ -4745,14 +4745,14 @@ void KateDocument::slotModOnHdDeleted (const QString &path)
   }
 }
 
-bool KateDocument::createDigest( QCString &result )
+bool KateDocument::createDigest( Q3CString &result )
 {
   bool ret = false;
   result = "";
   if ( url().isLocalFile() )
   {
     QFile f ( url().path() );
-    if ( f.open( IO_ReadOnly) )
+    if ( f.open( QIODevice::ReadOnly) )
     {
       KMD5 md5;
       ret = md5.update( f );

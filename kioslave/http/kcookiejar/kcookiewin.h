@@ -27,17 +27,17 @@
 #ifndef _KCOOKIEWIN_H_
 #define _KCOOKIEWIN_H_
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 
 #include <kdialog.h>
 #include "kcookiejar.h"
 
 class KLineEdit;
 class QPushButton;
-class QVButtonGroup;
+class Q3VButtonGroup;
 class KURLLabel;
 
-class KCookieDetail : public QGroupBox
+class KCookieDetail : public Q3GroupBox
 {
     Q_OBJECT
 
@@ -74,7 +74,7 @@ public :
 
 private :
     QPushButton*   m_button;
-    QVButtonGroup* m_btnGrp;
+    Q3VButtonGroup* m_btnGrp;
     KCookieDetail* m_detailView;
     bool m_showDetails;
 

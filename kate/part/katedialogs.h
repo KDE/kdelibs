@@ -35,8 +35,8 @@
 
 #include <qstringlist.h>
 #include <qcolor.h>
-#include <qintdict.h>
-#include <qvbox.h>
+#include <q3intdict.h>
+#include <q3vbox.h>
 #include <qtabwidget.h>
 
 class KatePartPluginListItem;
@@ -63,7 +63,7 @@ class KPushButton;
 class KRegExpDialog;
 class KIntNumInput;
 
-class QButtonGroup;
+class Q3ButtonGroup;
 class QCheckBox;
 class QHBoxLayout;
 class QLabel;
@@ -71,10 +71,10 @@ class QLineEdit;
 class QPushButton;
 class QRadioButton;
 class QSpinBox;
-class QListBoxItem;
-class QWidgetStack;
-class QVBox;
-class QListViewItem;
+class Q3ListBoxItem;
+class Q3WidgetStack;
+class Q3VBox;
+class Q3ListViewItem;
 class QCheckBox;
 
 class KateConfigPage : public Kate::ConfigPage
@@ -126,7 +126,7 @@ class KateIndentConfigTab : public KateConfigPage
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
     KIntNumInput *indentationWidth;
-    QButtonGroup *m_tabs;
+    Q3ButtonGroup *m_tabs;
     KComboBox *m_indentMode;
     QPushButton *m_configPage;
 
@@ -151,7 +151,7 @@ class KateSelectConfigTab : public KateConfigPage
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
 
-    QButtonGroup *m_tabs;
+    Q3ButtonGroup *m_tabs;
     KIntNumInput *e4;
     QCheckBox *e6;
 
@@ -206,7 +206,7 @@ class KateViewDefaultsConfig : public KateConfigPage
     KIntNumInput *m_dynwrapAlignLevel;
     QLabel *m_dynwrapIndicatorsLabel;
     KComboBox *m_dynwrapIndicatorsCombo;
-    QButtonGroup *m_bmSort;
+    Q3ButtonGroup *m_bmSort;
 
   public slots:
   void apply ();
@@ -279,7 +279,7 @@ class KatePartPluginListView : public KListView
     void stateChanged(KatePartPluginListItem *, bool);
 };
 
-class QListViewItem;
+class Q3ListViewItem;
 class KatePartPluginConfigPage : public KateConfigPage
 {
   Q_OBJECT
@@ -295,13 +295,13 @@ class KatePartPluginConfigPage : public KateConfigPage
     void defaults () {};
 
   private slots:
-    void slotCurrentChanged( QListViewItem * );
+    void slotCurrentChanged( Q3ListViewItem * );
     void slotConfigure();
     void slotStateChanged( KatePartPluginListItem *, bool );
 
   private:
     KatePartPluginListView *listView;
-    QPtrList<KatePartPluginListItem> m_items;
+    Q3PtrList<KatePartPluginListItem> m_items;
     class QPushButton *btnConfigure;
 };
 
@@ -333,7 +333,7 @@ class KateHlConfigPage : public KateConfigPage
     class KIntNumInput *priority;
     class QLabel *author, *license;
 
-    QIntDict<KateHlData> hlDataDict;
+    Q3IntDict<KateHlData> hlDataDict;
     KateHlData *hlData;
 };
 
@@ -346,7 +346,7 @@ class KateHlDownloadDialog: public KDialogBase
     ~KateHlDownloadDialog();
 
   private:
-    class QListView  *list;
+    class Q3ListView  *list;
     class QString listData;
     KIO::TransferJob *transferJob;
 

@@ -33,7 +33,7 @@ KRemoteEncoding::~KRemoteEncoding()
   // delete d;		// not necessary yet
 }
 
-QString KRemoteEncoding::decode(const QCString& name) const
+QString KRemoteEncoding::decode(const Q3CString& name) const
 {
 #ifdef CHECK_UTF8
   if (codec->mibEnum() == 106 && !KStringHandler::isUtf8(name))
@@ -48,28 +48,28 @@ QString KRemoteEncoding::decode(const QCString& name) const
   return result;
 }
 
-QCString KRemoteEncoding::encode(const QString& name) const
+Q3CString KRemoteEncoding::encode(const QString& name) const
 {
-  QCString result = codec->fromUnicode(name);
+  Q3CString result = codec->fromUnicode(name);
   if (codec->toUnicode(result) != name)
     return name.latin1();
  
   return result;
 }
 
-QCString KRemoteEncoding::encode(const KURL& url) const
+Q3CString KRemoteEncoding::encode(const KURL& url) const
 {
   return encode(url.path());
 }
 
-QCString KRemoteEncoding::directory(const KURL& url, bool ignore_trailing_slash) const
+Q3CString KRemoteEncoding::directory(const KURL& url, bool ignore_trailing_slash) const
 {
   QString dir = url.directory(true, ignore_trailing_slash);
 
   return encode(dir);
 }
 
-QCString KRemoteEncoding::fileName(const KURL& url) const
+Q3CString KRemoteEncoding::fileName(const KURL& url) const
 {
   return encode(url.fileName());
 }

@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <qsocketnotifier.h>
-#include <qsignal.h>
+#include <q3signal.h>
 #include <config.h>
 #ifdef HAVE_DNSSD
 #include <dns_sd.h>
@@ -68,7 +68,7 @@ protected:
 
 bool domainIsLocal(const QString& domain);
 // Encodes domain name using utf8() or IDN 
-QCString domainToDNS(const QString &domain);
+Q3CString domainToDNS(const QString &domain);
 QString DNSToDomain(const char* domain);
 
 }

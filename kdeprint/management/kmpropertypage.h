@@ -24,7 +24,7 @@
 #include "kmprinterpage.h"
 #include <kdeprint/kpreloadobject.h>
 #include <kdelibs_export.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class KMPropWidget;
 class KMPrinter;
@@ -47,7 +47,7 @@ protected:
 	void reload();
 
 private:
-	QPtrList<KMPropWidget>	m_widgets;
+	Q3PtrList<KMPropWidget>	m_widgets;
 };
 
 #endif

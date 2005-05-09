@@ -23,7 +23,7 @@
 #define KRESOURCES_RESOURCE_H
 
 #include <qmutex.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qwidget.h>
 
 #include <klibloader.h>
@@ -259,7 +259,7 @@ class KRESOURCES_EXPORT Resource : public QObject
 
     Q_OBJECT
   public:
-    typedef QValueList<Resource *> List;
+    typedef Q3ValueList<Resource *> List;
 
     /**
      * Constructor. Construct resource from config.

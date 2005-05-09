@@ -23,7 +23,7 @@
 // KDE4: rename this file to kdatetable.h
 
 #include <qvalidator.h>
-#include <qgridview.h>
+#include <q3gridview.h>
 #include <qlineedit.h>
 #include <qdatetime.h>
 #include <qcolor.h>
@@ -64,7 +64,7 @@ private:
 * @version $Id$
 * @author Tim Gilman, Mirko Boehm
 */
-class KDEUI_EXPORT KDateInternalMonthPicker : public QGridView
+class KDEUI_EXPORT KDateInternalMonthPicker : public Q3GridView
 {
   Q_OBJECT
 protected:
@@ -163,7 +163,7 @@ private:
  * @author Tim Gilman, Mirko Boehm
  * @version $Id$
  */
-class KDEUI_EXPORT KPopupFrame : public QFrame
+class KDEUI_EXPORT KPopupFrame : public Q3Frame
 {
   Q_OBJECT
 protected:
@@ -218,7 +218,7 @@ public:
 
 private:
 
-  virtual bool close(bool alsoDelete) { return QFrame::close(alsoDelete); }
+  virtual bool close(bool alsoDelete) { return Q3Frame::close(alsoDelete); }
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
@@ -251,7 +251,7 @@ public:
  * @version $Id$
  * @author Tim Gilman, Mirko Boehm
  */
-class KDEUI_EXPORT KDateTable : public QGridView
+class KDEUI_EXPORT KDateTable : public Q3GridView
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ getDate WRITE setDate )
@@ -262,13 +262,13 @@ public:
      * The constructor.
      */
     KDateTable(QWidget *parent=0, QDate date=QDate::currentDate(),
-	       const char* name=0, WFlags f=0);
+	       const char* name=0, Qt::WFlags f=0);
 
     /**
      * The constructor.
      * @since 3.4
      */
-    KDateTable(QWidget *parent, const char* name, WFlags f=0);
+    KDateTable(QWidget *parent, const char* name, Qt::WFlags f=0);
 
     /**
      * The destructor.
@@ -309,7 +309,7 @@ public:
      */
     bool popupMenuEnabled() const;
 
-    enum BackgroundMode { NoBgMode=0, RectangleMode, CircleMode };
+    enum Qt::BackgroundMode { NoBgMode=0, RectangleMode, CircleMode };
 
     /**
      * Makes a given date be painted with a given foregroundColor, and background
@@ -317,7 +317,7 @@ public:
      *
      * @since 3.2
      */
-    void setCustomDatePainting( const QDate &date, const QColor &fgColor, BackgroundMode bgMode=NoBgMode, const QColor &bgColor=QColor());
+    void setCustomDatePainting( const QDate &date, const QColor &fgColor, Qt::BackgroundMode bgMode=NoBgMode, const QColor &bgColor=QColor());
 
     /**
      * Unsets the custom painting of a date so that the date is painted as usual.

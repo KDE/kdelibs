@@ -20,7 +20,7 @@
 */
 
 #include "kbookmark.h"
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
@@ -243,9 +243,9 @@ QDomElement KBookmarkGroup::findToolbar() const
     return QDomElement();
 }
 
-QValueList<KURL> KBookmarkGroup::groupUrlList() const
+Q3ValueList<KURL> KBookmarkGroup::groupUrlList() const
 {
-    QValueList<KURL> urlList;
+    Q3ValueList<KURL> urlList;
     for ( KBookmark bm = first(); !bm.isNull(); bm = next(bm) )
     {
         if ( bm.isSeparator() || bm.isGroup() )
@@ -463,7 +463,7 @@ void KBookmark::setMetaDataItem( const QString &key, const QString &value, MetaD
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
 {
     // non-recursive bookmark iterator
-    QValueStack<KBookmarkGroup> stack;
+    Q3ValueStack<KBookmarkGroup> stack;
     stack.push(root);
     KBookmark bk = stack.top().first();
     for (;;) {

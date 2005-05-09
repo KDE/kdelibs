@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 
 #include <qglobal.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 
 #include <kdebug.h>
@@ -43,7 +43,7 @@
 #endif
 
 
-SuProcess::SuProcess(const QCString &user, const QCString &command)
+SuProcess::SuProcess(const Q3CString &user, const Q3CString &command)
 {
     m_User = user;
     m_Command = command;
@@ -81,10 +81,10 @@ int SuProcess::exec(const char *password, int check)
         args += m_User;
     
     args += "-c";
-    args += QCString(__KDE_BINDIR) + "/kdesu_stub";
+    args += Q3CString(__KDE_BINDIR) + "/kdesu_stub";
     args += "-";
 
-    QCString command = __PATH_SU;
+    Q3CString command = __PATH_SU;
     if (::access(__PATH_SU, X_OK) != 0)
     {
         command = QFile::encodeName(KGlobal::dirs()->findExe("su"));
@@ -177,7 +177,7 @@ int SuProcess::ConverseSU(const char *password)
     unsigned i, j;
     // kdDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
 
-    QCString line;
+    Q3CString line;
     while (true)
     {
         line = readLine(); 
@@ -203,7 +203,7 @@ int SuProcess::ConverseSU(const char *password)
                     // couldn't have been a password prompt (the definition
                     // of prompt being that  there's a line of output followed 
                     // by a colon, and then the process waits).
-                    QCString more = readLine();
+                    Q3CString more = readLine();
                     if (more.isEmpty())
                         break;
     
@@ -248,7 +248,7 @@ int SuProcess::ConverseSU(const char *password)
             //////////////////////////////////////////////////////////////////////////
             case CheckStar:
             {
-                QCString s = line.stripWhiteSpace();
+                Q3CString s = line.stripWhiteSpace();
                 if (s.isEmpty()) 
                 {
                     state=HandleStub;

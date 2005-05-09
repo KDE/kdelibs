@@ -20,7 +20,7 @@
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 #include <qdatetime.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <kdelibs_export.h>
 
 class QLineEdit;
@@ -48,7 +48,7 @@ class KDateTable;
  *     @author Tim Gilman, Mirko Boehm
  *
  **/
-class KDEUI_EXPORT KDatePicker: public QFrame
+class KDEUI_EXPORT KDatePicker: public Q3Frame
 {
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate)
@@ -70,7 +70,7 @@ public:
   KDatePicker(QWidget *parent,
 	      QDate,
 	      const char *name,
-	      WFlags f); // ### KDE 4.0: Merge
+	      Qt::WFlags f); // ### KDE 4.0: Merge
 
   /**
    * Standard qt widget constructor. The initial date will be the

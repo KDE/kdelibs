@@ -19,7 +19,7 @@
 
 #include <qkeysequence.h>
 #include <qlabel.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 
 #include "kaccelaction.h"
 #include <kdebug.h>
@@ -28,7 +28,7 @@
 //#include <kkeynative.h>
 
 KShortcutMenu::KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq )
-:	QPopupMenu( pParent ),
+:	Q3PopupMenu( pParent ),
 	m_pActions( pActions ),
 	m_seq( seq )
 {
@@ -39,7 +39,7 @@ KShortcutMenu::KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySeq
 	
 	pTitle = new QLabel( "", (QWidget*)0 );
 	pTitle->setFont( fontTitle );
-	pTitle->setFrameShape( QFrame::Panel );	
+	pTitle->setFrameShape( Q3Frame::Panel );	
 	
 	insertItem( pTitle );
 }
@@ -84,14 +84,14 @@ void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 	KKey key( pEvent );
 	
 	switch( pEvent->key() ) {
-	 case Key_Shift:
-	 case Key_Control:
-	 case Key_Alt:
-	 case Key_Meta:
-	 case Key_Super_L:
-	 case Key_Super_R:
-	 case Key_Hyper_L:
-	 case Key_Hyper_R:
+	 case Qt::Key_Shift:
+	 case Qt::Key_Control:
+	 case Qt::Key_Alt:
+	 case Qt::Key_Meta:
+	 case Qt::Key_Super_L:
+	 case Qt::Key_Super_R:
+	 case Qt::Key_Hyper_L:
+	 case Qt::Key_Hyper_R:
 		break;
 	 default:
 		int iItem = searchForKey( key );
@@ -106,7 +106,7 @@ void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 			// And permit Enter, Return to select the item.
 			if( pEvent->key() == Qt::Key_Up    || pEvent->key() == Qt::Key_Down ||
 			    pEvent->key() == Qt::Key_Enter || pEvent->key() == Qt::Key_Return )
-				QPopupMenu::keyPressEvent( pEvent );
+				Q3PopupMenu::keyPressEvent( pEvent );
 			else
 				close();
 		}

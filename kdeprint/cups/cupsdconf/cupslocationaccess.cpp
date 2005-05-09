@@ -23,7 +23,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <klocale.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupslist.h"
@@ -80,7 +80,7 @@ void CupsLocationAccess::saveLocation(CupsLocation *loc)
 
 void CupsLocationAccess::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(allow_, conf->comments_.toolTip(LOCAUTHALLOW_COMM));
-	QWhatsThis::add(deny_, conf->comments_.toolTip(LOCAUTHDENY_COMM));
-	QWhatsThis::add(order_, conf->comments_.toolTip(LOCAUTHORDER_COMM));
+	Q3WhatsThis::add(allow_, conf->comments_.toolTip(LOCAUTHALLOW_COMM));
+	Q3WhatsThis::add(deny_, conf->comments_.toolTip(LOCAUTHDENY_COMM));
+	Q3WhatsThis::add(order_, conf->comments_.toolTip(LOCAUTHORDER_COMM));
 }

@@ -20,7 +20,7 @@
 #define __ktexteditor_documentinfointerface_h__
 
 class QString;
-class QCString;
+class Q3CString;
 
 #include <kdelibs_export.h>
 
@@ -46,7 +46,7 @@ class KTEXTEDITOR_EXPORT DocumentInfoInterface
     unsigned int documentInfoInterfaceNumber () const;
     
   protected:  
-    void setDocumentInfoInterfaceDCOPSuffix (const QCString &suffix);  
+    void setDocumentInfoInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   private:
     class PrivateDocumentInfoInterface *d;

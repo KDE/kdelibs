@@ -22,7 +22,7 @@
 #include "sidepixmap.h"
 
 #include <qtimer.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
@@ -34,7 +34,7 @@
 #include <kdebug.h>
 #include <kseparator.h>
 #include <kactivelabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <kpushbutton.h>
 #include <kstdguiitem.h>
 
@@ -56,7 +56,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
 	connect(m_cancel, SIGNAL(clicked()), SLOT(reject()));
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
-	m_bar = new QProgressBar(this);
+	m_bar = new Q3ProgressBar(this);
 	m_text = new KActiveLabel(this);
 	QLabel	*m_title = new QLabel(i18n("Export Printer Driver to Windows Clients"), this);
 	setCaption(m_title->text());
@@ -82,23 +82,23 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 						"the source CUPS server, use the <nobr><i>Configure Manager -> CUPS server</i></nobr> first). "
 						"The <tt>[print$]</tt> share must exist on the Samba side prior to clicking the "
 						"<b>Export</b> button below." );
-	QWhatsThis::add( m_serverlab, txt );
-	QWhatsThis::add( m_servered, txt );
+	Q3WhatsThis::add( m_serverlab, txt );
+	Q3WhatsThis::add( m_servered, txt );
 
 	txt = i18n( "<p><b>Samba username</b></p>"
 				"User needs to have write access to the <tt>[print$]</tt> share on the Samba server. "
 				"<tt>[print$]</tt> holds printer drivers prepared for download to Windows clients. "
 				"This dialog does not work for Samba servers configured with <tt>security = share</tt> "
 				"(but works fine with <tt>security = user</tt>)." );
-	QWhatsThis::add( m_loginlab, txt );
-	QWhatsThis::add( m_logined, txt );
+	Q3WhatsThis::add( m_loginlab, txt );
+	Q3WhatsThis::add( m_logined, txt );
 
 	txt = i18n( "<p><b>Samba password</b></p>"
 				"The Samba setting <tt>encrypt passwords = yes</tt> "
 				"(default) requires prior use of <tt>smbpasswd -a [username]</tt> command, "
 				"to create an encrypted Samba password and have Samba recognize it." );
-	QWhatsThis::add( m_passwdlab, txt );
-	QWhatsThis::add( m_passwded, txt );
+	Q3WhatsThis::add( m_passwdlab, txt );
+	Q3WhatsThis::add( m_passwded, txt );
 
 	QHBoxLayout	*l0 = new QHBoxLayout(this, 10, 10);
 	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 10);
@@ -253,7 +253,7 @@ void CupsAddSmb::doNextAction()
 	m_state = None;
 	if (m_proc.isRunning())
 	{
-		QCString	s = m_actions[m_actionindex++].latin1();
+		Q3CString	s = m_actions[m_actionindex++].latin1();
 		m_bar->setProgress(m_bar->progress()+1);
 		kdDebug(500) << "NEXT ACTION = " << s << endl;
 		if (s == "quit")
@@ -289,7 +289,7 @@ void CupsAddSmb::doNextAction()
 			m_state = AddPrinter;
 			//m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
 			m_textinfo->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
-			QCString	dest = m_actions[m_actionindex].local8Bit();
+			Q3CString	dest = m_actions[m_actionindex].local8Bit();
 			if (s == "addprinter")
 				s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
 			else

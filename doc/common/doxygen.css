@@ -13,8 +13,8 @@
  
 body {
         margin: 0px;
-        color: black;
-        background-color: white;
+        color: Qt::black;
+        background-color: Qt::white;
 }
 
 a {
@@ -31,7 +31,7 @@ div.header table {
         margin: 0px
 }
 div.header table tr td h1 {
-        color: white;
+        color: Qt::white;
         font: bold 20pt courier;
         padding-top: 0.5em;
 }
@@ -43,13 +43,13 @@ table.links {
         padding-left:1px
 }
 table.links td a {
-        color: white
+        color: Qt::white
 }
 table.links td:hover {
         background-color:#0C4293;
 }
 table.links td a:hover {
-        color: white;
+        color: Qt::white;
         background-color:#0C4293
 }
 table.links td {
@@ -92,12 +92,12 @@ TD.mdname { font-weight: bold; color: #602020; width: 600px; }
 DIV.groupHeader { margin-left: 16px; margin-top: 12px; margin-bottom: 6px; font-weight: bold }
 DIV.groupText { margin-left: 16px; font-style: italic; font-size: smaller }
 
-BODY { background: white }
+BODY { background: Qt::white }
 
 TD.memItemLeft {
    padding: 1px 0px 0px 8px;
    margin: 4px;
-   border: solid .1em white;
+   border: solid .1em Qt::white;
    border-right-style: none;
    border-bottom-style: none;
    border-left-style: none;
@@ -106,7 +106,7 @@ TD.memItemLeft {
 TD.memItemRight {
    padding: 1px 0px 0px 8px;
    margin: 4px;
-   border: solid .1em white;
+   border: solid .1em Qt::white;
    border-right-style: none;
    border-bottom-style: none;
    border-left-style: none;

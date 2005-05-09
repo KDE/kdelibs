@@ -31,7 +31,7 @@ namespace KMail {
  * blah di blah
  **/
 class KDEUI_EXPORT Test : public MyNamespace::MyParentClass, virtual public DCOPObject,
-             public QValueList<QString>
+             public Q3ValueList<QString>
 {
     K_DCOP
 
@@ -67,7 +67,7 @@ k_dcop:
      **/
     int getPageOfObj( int obj );
     void setCell( const int& point = 3 );
-    QValueList<DCOPRef> getWindows();
+    Q3ValueList<DCOPRef> getWindows();
 
 k_dcop_signals:
     void blah_signal();

@@ -211,7 +211,7 @@ protected:
      * Creates a new instance with the given name.
      * @param instanceName the name of the instance
      */
-    void setName( const QCString& instanceName ) {
+    void setName( const Q3CString& instanceName ) {
 	delete m_instance;
 	m_instance = new KInstance( instanceName );
     }
@@ -347,7 +347,7 @@ protected:
      * Creates a new instance with the given name.
      * @param instanceName the name of the instance
      */
-    void setName( const QCString& instanceName ) {
+    void setName( const Q3CString& instanceName ) {
 	delete m_instance;
 	m_instance = new KInstance( instanceName );
     }

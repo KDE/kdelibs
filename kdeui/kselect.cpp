@@ -199,7 +199,7 @@ void KXYSelector::drawContents( QPainter * )
 
 void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
 {
-	p->setPen( QPen( white ) );
+	p->setPen( QPen( Qt::white ) );
 
 	p->drawLine( xp - 6, yp - 6, xp - 2, yp - 2 );
 	p->drawLine( xp - 6, yp + 6, xp - 2, yp + 2 );
@@ -215,14 +215,14 @@ void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
 
 
 KSelector::KSelector( QWidget *parent, const char *name )
-	: QWidget( parent, name ), QRangeControl()
+	: QWidget( parent, name ), Q3RangeControl()
 {
-	_orientation = Horizontal;
+	_orientation = Qt::Horizontal;
 	_indent = true;
 }
 
-KSelector::KSelector( Orientation o, QWidget *parent, const char *name )
-	: QWidget( parent, name ), QRangeControl()
+KSelector::KSelector( Qt::Orientation o, QWidget *parent, const char *name )
+	: QWidget( parent, name ), Q3RangeControl()
 {
 	_orientation = o;
 	_indent = true;
@@ -235,7 +235,7 @@ KSelector::~KSelector()
 
 QRect KSelector::contentsRect() const
 {
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 		return QRect( 2, 5, width()-9, height()-10 );
 	else
 		return QRect( 5, 2, width()-10, height()-9 );
@@ -253,7 +253,7 @@ void KSelector::paintEvent( QPaintEvent * )
 
 	if ( indent() )
 	{
-		if ( orientation() == Vertical )
+		if ( orientation() == Qt::Vertical )
 			qDrawShadePanel( &painter, 0, 3, width()-5, height()-6,
 				colorGroup(), true, 2, &brush );
 		else
@@ -305,7 +305,7 @@ void KSelector::moveArrow( const QPoint &pos )
 {
 	int val;
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 		val = ( maxValue() - minValue() ) * (height()-pos.y()-3)
 				/ (height()-10) + minValue();
 	else
@@ -319,7 +319,7 @@ QPoint KSelector::calcArrowPos( int val )
 {
 	QPoint p;
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 	{
 		p.setY( height() - ( (height()-10) * val
 				/ ( maxValue() - minValue() ) + 5 ) );
@@ -342,11 +342,11 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 {
   if ( show )
   {
-    QPointArray array(3);
+    Q3PointArray array(3);
 
     painter->setPen( QPen() );
     painter->setBrush( QBrush( colorGroup().buttonText() ) );
-    if ( orientation() == Vertical )
+    if ( orientation() == Qt::Vertical )
     {
       array.setPoint( 0, pos.x()+0, pos.y()+0 );
       array.setPoint( 1, pos.x()+5, pos.y()+5 );
@@ -363,7 +363,7 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
   } 
   else 
   {
-    if ( orientation() == Vertical )
+    if ( orientation() == Qt::Vertical )
     {
        repaint(pos.x(), pos.y()-5, 6, 11, true);
     }
@@ -383,7 +383,7 @@ KGradientSelector::KGradientSelector( QWidget *parent, const char *name )
 }
 
 
-KGradientSelector::KGradientSelector( Orientation o, QWidget *parent,
+KGradientSelector::KGradientSelector( Qt::Orientation o, QWidget *parent,
 		const char *name )
 	: KSelector( o, parent, name )
 {
@@ -397,7 +397,7 @@ KGradientSelector::~KGradientSelector()
 
 void KGradientSelector::init()
 {
-    color1.setRgb( 0, 0, 0 );
+    Qt::color1.setRgb( 0, 0, 0 );
     color2.setRgb( 255, 255, 255 );
     
     text1 = text2 = "";
@@ -411,18 +411,18 @@ void KGradientSelector::drawContents( QPainter *painter )
 	QColor col;
 	float scale;
 
-	int redDiff   = color2.red() - color1.red();
-	int greenDiff = color2.green() - color1.green();
-	int blueDiff  = color2.blue() - color1.blue();
+	int redDiff   = color2.Qt::red() - Qt::color1.Qt::red();
+	int greenDiff = color2.Qt::green() - Qt::color1.Qt::green();
+	int blueDiff  = color2.Qt::blue() - Qt::color1.Qt::blue();
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 	{
 		for ( int y = 0; y < image.height(); y++ )
 		{
 			scale = 1.0 * y / image.height();
-			col.setRgb( color1.red() + int(redDiff*scale),
-						color1.green() + int(greenDiff*scale),
-						color1.blue() + int(blueDiff*scale) );
+			col.setRgb( Qt::color1.Qt::red() + int(redDiff*scale),
+						Qt::color1.Qt::green() + int(greenDiff*scale),
+						Qt::color1.Qt::blue() + int(blueDiff*scale) );
 
 			unsigned int *p = (uint *) image.scanLine( y );
 			for ( int x = 0; x < image.width(); x++ )
@@ -436,9 +436,9 @@ void KGradientSelector::drawContents( QPainter *painter )
 		for ( int x = 0; x < image.width(); x++ )
 		{
 			scale = 1.0 * x / image.width();
-			col.setRgb( color1.red() + int(redDiff*scale),
-						color1.green() + int(greenDiff*scale),
-						color1.blue() + int(blueDiff*scale) );
+			col.setRgb( Qt::color1.Qt::red() + int(redDiff*scale),
+						Qt::color1.Qt::green() + int(greenDiff*scale),
+						Qt::color1.Qt::blue() + int(blueDiff*scale) );
 			*p++ = col.rgb();
 		}
 
@@ -450,9 +450,9 @@ void KGradientSelector::drawContents( QPainter *painter )
 	QColor ditherPalette[8];
 
 	for ( int s = 0; s < 8; s++ )
-		ditherPalette[s].setRgb( color1.red() + redDiff * s / 8,
-								color1.green() + greenDiff * s / 8,
-								color1.blue() + blueDiff * s / 8 );
+		ditherPalette[s].setRgb( Qt::color1.Qt::red() + redDiff * s / 8,
+								Qt::color1.Qt::green() + greenDiff * s / 8,
+								Qt::color1.Qt::blue() + blueDiff * s / 8 );
 
 	KImageEffect::dither( image, ditherPalette, 8 );
 
@@ -461,7 +461,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 
 	painter->drawPixmap( contentsRect().x(), contentsRect().y(), p );
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 	{
 		int yPos = contentsRect().top() + painter->fontMetrics().ascent() + 2;
 		int xPos = contentsRect().left() + (contentsRect().width() -
@@ -473,7 +473,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 		yPos = contentsRect().bottom() - painter->fontMetrics().descent() - 2;
 		xPos = contentsRect().left() + (contentsRect().width() - 
 			painter->fontMetrics().width( text1 )) / 2;
-		pen.setColor( color1 );
+		pen.setColor( Qt::color1 );
 		painter->setPen( pen );
 		painter->drawText( xPos, yPos, text1 );
 	}
@@ -485,7 +485,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 		painter->setPen( pen );
 		painter->drawText( contentsRect().left() + 2, yPos, text1 );
 
-		pen.setColor( color1 );
+		pen.setColor( Qt::color1 );
 		painter->setPen( pen );
 		painter->drawText( contentsRect().right() -
 			 painter->fontMetrics().width( text2 ) - 2, yPos, text2 );

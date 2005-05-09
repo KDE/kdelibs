@@ -49,7 +49,7 @@ class KDECORE_EXPORT KInstance
      *  Constructor.
      *  @param instanceName the name of the instance
      */
-    KInstance( const QCString& instanceName) ;
+    KInstance( const Q3CString& instanceName) ;
 
     /**
      *  Constructor.
@@ -118,7 +118,7 @@ class KDECORE_EXPORT KInstance
      * @return the instance name, can be null if the KInstance has been 
      *         created with a null name
      */
-    QCString          instanceName() const;
+    Q3CString          instanceName() const;
 
     /**
      * Returns the KMimeSourceFactory of the instance.
@@ -146,7 +146,7 @@ private:
     mutable KConfig             *_config;
     mutable KIconLoader         *_iconLoader;
 
-    QCString                     _name;
+    Q3CString                     _name;
     const KAboutData            *_aboutData;
 
 protected:

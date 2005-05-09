@@ -63,13 +63,13 @@ class KMDI_EXPORT TabWidget : public KTabWidget
 
     virtual void addTab ( QWidget * child, const QString & label );
 
-    virtual void addTab ( QWidget * child, const QIconSet & iconset, const QString & label );
+    virtual void addTab ( QWidget * child, const QIcon & iconset, const QString & label );
 
     virtual void addTab ( QWidget * child, QTab * tab );
 
     virtual void insertTab ( QWidget * child, const QString & label, int index = -1 );
 
-    virtual void insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index = -1 );
+    virtual void insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index = -1 );
 
     virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
 

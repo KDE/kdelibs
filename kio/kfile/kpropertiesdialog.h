@@ -29,7 +29,7 @@
 #define __propsdlg_h
 
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kdemacros.h>
 #include <kurl.h>
@@ -41,7 +41,7 @@ class QCheckBox;
 class QPushButton;
 class KLineEdit;
 class KURLRequester;
-class QButton;
+class Q3Button;
 class KIconButton;
 class KPropsDlgPlugin;
 class QComboBox;
@@ -409,7 +409,7 @@ private:
   /**
    * List of all plugins inserted ( first one first )
    */
-  QPtrList<KPropsDlgPlugin> m_pageList;
+  Q3PtrList<KPropsDlgPlugin> m_pageList;
 
 private slots:
   void slotStatResult( KIO::Job * ); // No longer used
@@ -854,7 +854,7 @@ private:
     KLineEdit *suidEdit;
     KLineEdit *swallowExecEdit;
     KLineEdit *swallowTitleEdit;
-    QButton *execBrowse;
+    Q3Button *execBrowse;
 
     QString execStr;
     QString swallowExecStr;
@@ -905,8 +905,8 @@ private:
   QLineEdit *commentEdit;
   QLineEdit *genNameEdit;
   QLineEdit *nameEdit;
-  QListBox  *extensionsList;
-  QListBox  *availableExtensionsList;
+  Q3ListBox  *extensionsList;
+  Q3ListBox  *availableExtensionsList;
   QPushButton *addExtensionButton;
   QPushButton *delExtensionButton;
 

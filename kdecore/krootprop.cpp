@@ -272,7 +272,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
 
 QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
 {
-  QString aValue = QString( "%1,%2,%3").arg(rColor.red()).arg(rColor.green()).arg(rColor.blue() );
+  QString aValue = QString( "%1,%2,%3").arg(rColor.Qt::red()).arg(rColor.Qt::green()).arg(rColor.Qt::blue() );
 
   return writeEntry( rKey, aValue );
 }

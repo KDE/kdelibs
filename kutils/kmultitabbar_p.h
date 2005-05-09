@@ -24,10 +24,10 @@
 
 #ifndef K_MULTI_TAB_BAR_P_H
 #define K_MULTI_TAB_BAR_P_H
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <kmultitabbar.h>
 
-class KMultiTabBarInternal: public QScrollView
+class KMultiTabBarInternal: public Q3ScrollView
 {
         Q_OBJECT
 public:
@@ -38,12 +38,12 @@ public:
         void setPosition(enum KMultiTabBar::KMultiTabBarPosition pos);
         void setStyle(enum KMultiTabBar::KMultiTabBarStyle style);
         void showActiveTabTexts(bool show);
-        QPtrList<KMultiTabBarTab>* tabs(){return &m_tabs;}
+        Q3PtrList<KMultiTabBarTab>* tabs(){return &m_tabs;}
 private:
         friend class KMultiTabBar;
         QWidget *box;
 	QBoxLayout *mainLayout;
-        QPtrList<KMultiTabBarTab> m_tabs;
+        Q3PtrList<KMultiTabBarTab> m_tabs;
         enum KMultiTabBar::KMultiTabBarPosition m_position;
         bool m_showActiveTabTexts;
         enum  KMultiTabBar::KMultiTabBarStyle m_style;

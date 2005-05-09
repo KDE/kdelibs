@@ -23,7 +23,7 @@
 #include "katesupercursor.h"
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qmap.h>
 
 class KateDocument;
@@ -42,7 +42,7 @@ public:
 
   virtual void changed() { slotTagRange(); };
 
-  static KateAttribute merge(QPtrList<KateSuperRange> ranges);
+  static KateAttribute merge(Q3PtrList<KateSuperRange> ranges);
 };
 
 /**
@@ -78,8 +78,8 @@ private slots:
 private:
   KateView* viewForRange(KateSuperRange* range);
 
-  QMap<KateView*, QPtrList<KateSuperRangeList>* > m_viewHLs;
-  QPtrList<KateSuperRangeList> m_docHLs;
+  QMap<KateView*, Q3PtrList<KateSuperRangeList>* > m_viewHLs;
+  Q3PtrList<KateSuperRangeList> m_docHLs;
 };
 
 #endif

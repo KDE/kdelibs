@@ -64,7 +64,7 @@ public:
   /**
    * Create a DCOPObject named @p name
    */
-  KDEDModule(const QCString &name);
+  KDEDModule(const Q3CString &name);
   
   virtual ~KDEDModule();
   
@@ -91,24 +91,24 @@ public:
    * Any previous object inserted with the same values for @p app 
    * and @p key will be removed.
    */
-  void insert(const QCString &app, const QCString &key, KShared *obj);
+  void insert(const Q3CString &app, const Q3CString &key, KShared *obj);
 
   /**
    * Lookup object indexed with @p app and @p key
    */
-  KShared *find(const QCString &app, const QCString &key);
+  KShared *find(const Q3CString &app, const Q3CString &key);
   
   /**
    * remove object indexed with @p app and @p key.
    * The object will be deleted when it is no more referenced.
    */
-  void remove(const QCString &app, const QCString &key);
+  void remove(const Q3CString &app, const Q3CString &key);
 
   /**
    * remove all objects indexed with @p app. 
    * The objects will be deleted when they are no more referenced.
    */
-  void removeAll(const QCString &app);
+  void removeAll(const Q3CString &app);
 
   /**
    * Returns whether a certain mainwindow has registered itself with KDED

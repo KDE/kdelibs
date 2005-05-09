@@ -37,7 +37,7 @@ TextBinParam::TextBinParam(const TextBinParam & x)
 {
 }
 
-TextBinParam::TextBinParam(const QCString & s)
+TextBinParam::TextBinParam(const Q3CString & s)
 	:	Param(s)
 {
 }
@@ -52,7 +52,7 @@ TextBinParam::operator = (TextBinParam & x)
 }
 
 	TextBinParam &
-TextBinParam::operator = (const QCString & s)
+TextBinParam::operator = (const Q3CString & s)
 {
 	Param::operator = (s);
 	return *this;

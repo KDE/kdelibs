@@ -38,7 +38,7 @@ AdrParam::AdrParam(const AdrParam & x)
 {
 }
 
-AdrParam::AdrParam(const QCString & s)
+AdrParam::AdrParam(const Q3CString & s)
 	:	Param(s)
 {
 }
@@ -56,7 +56,7 @@ AdrParam::operator = (AdrParam & x)
 }
 
 	AdrParam &
-AdrParam::operator = (const QCString & s)
+AdrParam::operator = (const Q3CString & s)
 {
 	Param::operator = (s);
 	

@@ -32,7 +32,7 @@
 
 #include <kglobal.h>
 #include <kconfig.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 
 #include "kcursor_private.h"
 
@@ -75,7 +75,7 @@ QCursor KCursor::handCursor()
                 }
                 else
 #endif //! Q_WS_WIN
-                        hand_cursor = new QCursor(PointingHandCursor);
+                        hand_cursor = new QCursor(Qt::PointingHandCursor);
         }
 
         Q_CHECK_PTR(hand_cursor);
@@ -145,72 +145,72 @@ QCursor KCursor::workingCursor()
  */
 QCursor KCursor::arrowCursor()
 {
-    return Qt::arrowCursor;
+    return Qt::ArrowCursor;
 }
 
 
 QCursor KCursor::upArrowCursor()
 {
-    return Qt::upArrowCursor;
+    return Qt::UpArrowCursor;
 }
 
 
 QCursor KCursor::crossCursor()
 {
-    return Qt::crossCursor;
+    return Qt::CrossCursor;
 }
 
 
 QCursor KCursor::waitCursor()
 {
-    return Qt::waitCursor;
+    return Qt::WaitCursor;
 }
 
 
 QCursor KCursor::ibeamCursor()
 {
-    return Qt::ibeamCursor;
+    return Qt::IBeamCursor;
 }
 
 
 QCursor KCursor::sizeVerCursor()
 {
-    return Qt::sizeVerCursor;
+    return Qt::SizeVerCursor;
 }
 
 
 QCursor KCursor::sizeHorCursor()
 {
-    return Qt::sizeHorCursor;
+    return Qt::SizeHorCursor;
 }
 
 
 QCursor KCursor::sizeBDiagCursor()
 {
-    return Qt::sizeBDiagCursor;
+    return Qt::SizeBDiagCursor;
 }
 
 
 QCursor KCursor::sizeFDiagCursor()
 {
-    return Qt::sizeFDiagCursor;
+    return Qt::SizeFDiagCursor;
 }
 
 
 QCursor KCursor::sizeAllCursor()
 {
-    return Qt::sizeAllCursor;
+    return Qt::SizeAllCursor;
 }
 
 
 QCursor KCursor::blankCursor()
 {
-    return Qt::blankCursor;
+    return Qt::BlankCursor;
 }
 
 QCursor KCursor::whatsThisCursor()
 {
-    return Qt::whatsThisCursor;
+    return Qt::WhatsThisCursor;
 }
 
 // auto-hide cursor stuff
@@ -305,7 +305,7 @@ QWidget* KCursorPrivateAutoHideEventFilter::actualWidget() const
     QWidget* w = m_widget;
 
     // Is w a scrollview ? Call setCursor on the viewport in that case.
-    QScrollView * sv = dynamic_cast<QScrollView *>( w );
+    Q3ScrollView * sv = dynamic_cast<Q3ScrollView *>( w );
     if ( sv )
         w = sv->viewport();
 
@@ -328,7 +328,7 @@ bool KCursorPrivateAutoHideEventFilter::eventFilter( QObject *o, QEvent *e )
         unhideCursor();
         break;
     case QEvent::KeyPress:
-    case QEvent::AccelOverride:
+    case QEvent::ShortcutOverride:
         hideCursor();
         break;
     case QEvent::Enter:

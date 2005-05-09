@@ -23,7 +23,7 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <klocale.h>
 #include <kconfig.h>
 
@@ -34,7 +34,7 @@ KMConfigLpr::KMConfigLpr(QWidget *parent, const char *name)
 	setPageHeader(i18n("Spooler Settings"));
 	setPagePixmap("gear");
 
-	QGroupBox	*m_modebox = new QGroupBox(1, Qt::Vertical, i18n("Spooler"), this);
+	Q3GroupBox	*m_modebox = new Q3GroupBox(1, Qt::Vertical, i18n("Spooler"), this);
 
 	m_mode = new QComboBox(m_modebox);
 	m_mode->insertItem("LPR (BSD compatible)");

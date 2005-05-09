@@ -524,7 +524,7 @@ QString Address::countryToISO( const QString &cname )
           QString::fromLatin1( "kabc/countrytransl.map" ) );
 
   QFile file( mapfile );
-  if ( file.open( IO_ReadOnly ) ) {
+  if ( file.open( QIODevice::ReadOnly ) ) {
     QTextStream s( &file );
     QString strbuf = s.readLine();
     while( !strbuf.isEmpty() ) {
@@ -554,7 +554,7 @@ QString Address::ISOtoCountry( const QString &ISOname )
           QString::fromLatin1( "kabc/countrytransl.map" ) );
 
   QFile file( mapfile );
-  if ( file.open( IO_ReadOnly ) ) {
+  if ( file.open( QIODevice::ReadOnly ) ) {
     QTextStream s( &file );
     QString searchStr = "\t" + ISOname.simplifyWhiteSpace().lower();
     QString strbuf = s.readLine();

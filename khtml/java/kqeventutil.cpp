@@ -124,10 +124,10 @@ QString KQEventUtil::getQtEventName( QEvent* e )
         case QEvent::AccelAvailable:
             s = "AccelAvailable";
             break;
-        case QEvent::CaptionChange:
+        case QEvent::WindowTitleChange:
             s = "CaptionChange";
             break;
-        case QEvent::IconChange:
+        case QEvent::WindowIconChange:
             s = "IconChange";
             break;
         case QEvent::ParentFontChange:
@@ -151,7 +151,7 @@ QString KQEventUtil::getQtEventName( QEvent* e )
         case QEvent::SockAct:
             s = "SockAct";
             break;
-        case QEvent::AccelOverride:
+        case QEvent::ShortcutOverride:
             s = "AccelOverride";
             break;
         case QEvent::DragEnter:

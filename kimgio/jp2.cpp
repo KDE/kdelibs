@@ -14,7 +14,7 @@
 #endif
 #include <ktempfile.h>
 #include <qcolor.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qimage.h>
 
@@ -443,7 +443,7 @@ kimgio_jp2_write( QImageIO* io )
 	// - rate=0.0 .. 1.0 => the resulting file size is about the factor times
 	//                      the uncompressed size
 	QString rate;
-	QTextStream ts( &rate, IO_WriteOnly );
+	QTextStream ts( &rate, QIODevice::WriteOnly );
 	ts << "rate="
 		<< ( (io->quality() < 0) ? DEFAULT_RATE : io->quality() / 100.0F );
 	int i = jp2_encode( ji, stream, rate.utf8().data() );

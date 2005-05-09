@@ -171,17 +171,17 @@ bool ResourceFile::doOpen()
 
   if ( !file.exists() ) {
     // try to create the file
-    bool ok = file.open( IO_WriteOnly );
+    bool ok = file.open( QIODevice::WriteOnly );
     if ( ok )
       file.close();
 
     return ok;
   } else {
     if ( readOnly() ) {
-      if ( !file.open( IO_ReadOnly ) )
+      if ( !file.open( QIODevice::ReadOnly ) )
         return false;
     } else {
-      if ( !file.open( IO_ReadWrite ) )
+      if ( !file.open( QIODevice::ReadWrite ) )
         return false;
     }
 
@@ -208,7 +208,7 @@ bool ResourceFile::load()
   mAsynchronous = false;
 
   QFile file( mFileName );
-  if ( !file.open( IO_ReadOnly ) ) {
+  if ( !file.open( QIODevice::ReadOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );
     return false;
   }
@@ -271,7 +271,7 @@ bool ResourceFile::asyncSave( Ticket * )
 {
   QFile file( mTempFile );
 
-  if ( !file.open( IO_WriteOnly ) ) {
+  if ( !file.open( QIODevice::WriteOnly ) ) {
     emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return false;
   }
@@ -356,7 +356,7 @@ void ResourceFile::downloadFinished( KIO::Job* )
     emit loadingError( this, i18n( "Download failed in some way!" ) );
 
   QFile file( mTempFile );
-  if ( !file.open( IO_ReadOnly ) ) {
+  if ( !file.open( QIODevice::ReadOnly ) ) {
     emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return;
   }

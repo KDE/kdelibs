@@ -37,11 +37,11 @@ bool KPipeProcess::open(const QString& cmd, int mode)
 	// close first if needed
 	close();
 	// check supported modes
-	if (mode != IO_ReadOnly && mode != IO_WriteOnly)
+	if (mode != QIODevice::ReadOnly && mode != QIODevice::WriteOnly)
 		return false;
 
 	// create the pipe
-	m_pipe = popen(cmd.latin1(),(mode == IO_WriteOnly ? "w" : "r"));
+	m_pipe = popen(cmd.latin1(),(mode == QIODevice::WriteOnly ? "w" : "r"));
 	if (m_pipe)
 		if (!QFile::open(mode,m_pipe))
 			close();

@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qregexp.h>
 #include <qimage.h>
 #include <qpushbutton.h>
@@ -35,18 +35,18 @@
 
 #include "kcustommenueditor.h"
 
-class KCustomMenuEditor::Item : public QListViewItem
+class KCustomMenuEditor::Item : public Q3ListViewItem
 {
 public:
-   Item(QListView *parent, KService::Ptr service)
-     : QListViewItem(parent),
+   Item(Q3ListView *parent, KService::Ptr service)
+     : Q3ListViewItem(parent),
        s(service)
    {
       init();
    }
 
-   Item(QListViewItem *parent, KService::Ptr service)
-     : QListViewItem(parent),
+   Item(Q3ListViewItem *parent, KService::Ptr service)
+     : Q3ListViewItem(parent),
        s(service)
    {
       init();
@@ -89,12 +89,12 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
     m_listView(0)
 {
     d = new KCustomMenuEditorPrivate;
-   QHBox *page = makeHBoxMainWidget();
+   Q3HBox *page = makeHBoxMainWidget();
    m_listView = new KListView(page);
    m_listView->addColumn(i18n("Menu"));
    m_listView->setFullWidth(true);
    m_listView->setSorting(-1);
-   KButtonBox *buttonBox = new KButtonBox(page, Vertical);
+   KButtonBox *buttonBox = new KButtonBox(page, Qt::Vertical);
    buttonBox->addButton(i18n("New..."), this, SLOT(slotNewItem()));
    d->pbRemove=buttonBox->addButton(i18n("Remove"), this, SLOT(slotRemoveItem()));
    d->pbMoveUp=buttonBox->addButton(i18n("Move Up"), this, SLOT(slotMoveUp()));
@@ -112,7 +112,7 @@ KCustomMenuEditor::~KCustomMenuEditor()
 
 void KCustomMenuEditor::refreshButton()
 {
-    QListViewItem *item = m_listView->currentItem();
+    Q3ListViewItem *item = m_listView->currentItem();
     d->pbRemove->setEnabled( item );
     d->pbMoveUp->setEnabled( item && item->itemAbove() );
     d->pbMoveDown->setEnabled( item && item->itemBelow() );
@@ -123,7 +123,7 @@ KCustomMenuEditor::load(KConfigBase *cfg)
 {
    cfg->setGroup(QString::null);
    int count = cfg->readNumEntry("NrOfItems");
-   QListViewItem *last = 0;
+   Q3ListViewItem *last = 0;
    for(int i = 0; i < count; i++)
    {
       QString entry = cfg->readPathEntry(QString("Item%1").arg(i+1));
@@ -140,7 +140,7 @@ KCustomMenuEditor::load(KConfigBase *cfg)
       if (!menuItem->isValid())
          continue;
 
-      QListViewItem *item = new Item(m_listView, menuItem);
+      Q3ListViewItem *item = new Item(m_listView, menuItem);
       item->moveItem(last);
       last = item;
    }
@@ -175,7 +175,7 @@ KCustomMenuEditor::save(KConfigBase *cfg)
 void
 KCustomMenuEditor::slotNewItem()
 {
-   QListViewItem *item = m_listView->currentItem();
+   Q3ListViewItem *item = m_listView->currentItem();
 
    KOpenWithDlg dlg(this);
    dlg.setSaveNewApplications(true);
@@ -195,7 +195,7 @@ KCustomMenuEditor::slotNewItem()
 void
 KCustomMenuEditor::slotRemoveItem()
 {
-   QListViewItem *item = m_listView->currentItem();
+   Q3ListViewItem *item = m_listView->currentItem();
    if (!item)
       return;
 
@@ -206,14 +206,14 @@ KCustomMenuEditor::slotRemoveItem()
 void
 KCustomMenuEditor::slotMoveUp()
 {
-   QListViewItem *item = m_listView->currentItem();
+   Q3ListViewItem *item = m_listView->currentItem();
    if (!item)
       return;
 
-   QListViewItem *searchItem = m_listView->firstChild();
+   Q3ListViewItem *searchItem = m_listView->firstChild();
    while(searchItem)
    {
-      QListViewItem *next = searchItem->nextSibling();
+      Q3ListViewItem *next = searchItem->nextSibling();
       if (next == item)
       {
          searchItem->moveItem(item);
@@ -227,11 +227,11 @@ KCustomMenuEditor::slotMoveUp()
 void
 KCustomMenuEditor::slotMoveDown()
 {
-   QListViewItem *item = m_listView->currentItem();
+   Q3ListViewItem *item = m_listView->currentItem();
    if (!item)
       return;
 
-   QListViewItem *after = item->nextSibling();
+   Q3ListViewItem *after = item->nextSibling();
    if (!after)
       return;
 

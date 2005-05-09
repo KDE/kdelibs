@@ -21,7 +21,7 @@
 #include "kxmlcommandselector.h"
 
 #include <qlabel.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 
 #include <klocale.h>
@@ -34,7 +34,7 @@ KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
 	setPageHeader(i18n("Command Settings"));
 	setPagePixmap("exec");
 
-	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Edit/Create Commands"), this);
+	Q3GroupBox	*gb = new Q3GroupBox(0, Qt::Horizontal, i18n("Edit/Create Commands"), this);
 	QLabel	*lab = new QLabel(i18n(
 				"<p>Command objects perform a conversion from input to output.<br>"
                 "They are used as the basis to build both print filters "

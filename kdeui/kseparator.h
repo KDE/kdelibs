@@ -20,7 +20,7 @@
 #ifndef __KSEPARATOR_H__
 #define __KSEPARATOR_H__
 
-#include <qframe.h>
+#include <q3frame.h>
 
 #include <kdelibs_export.h>
 
@@ -30,7 +30,7 @@
  * @author Michael Roth <mroth@wirlweb.de>
  * @version $Id$
 */
-class KDEUI_EXPORT KSeparator : public QFrame
+class KDEUI_EXPORT KSeparator : public Q3Frame
 {
   Q_OBJECT
   Q_PROPERTY( int orientation READ orientation WRITE setOrientation )
@@ -41,7 +41,7 @@ class KDEUI_EXPORT KSeparator : public QFrame
    * @param name name of the new object.
    * @param f extra QWidget flags.
    **/
-  KSeparator(QWidget* parent=0, const char* name=0, WFlags f=0);
+  KSeparator(QWidget* parent=0, const char* name=0, Qt::WFlags f=0);
 
   /**
    * Constructor.
@@ -52,7 +52,7 @@ class KDEUI_EXPORT KSeparator : public QFrame
    * @param f extra QWidget flags.
    **/
   KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
-	     WFlags f=0);
+	     Qt::WFlags f=0);
   
   /**
    * Returns the orientation of the separator.

@@ -21,7 +21,7 @@
 #include "kdelibs_export.h"
 
 class KRandomSequencePrivate;
-class QGList;
+class Q3GList;
 /**
  * A class to create a pseudo-random sequence
  *
@@ -104,7 +104,7 @@ public:
    *
    * @param list the list whose order will be modified
    */
-  void randomize(QGList *list);
+  void randomize(Q3GList *list);
 
   /**
    * Modulate the random sequence. 

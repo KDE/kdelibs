@@ -43,7 +43,7 @@
 #include <kdebug.h>
 #include <qregexp.h>
 #include <qpaintdevice.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 
 // Hack for debugging purposes
 extern DOM::DOMString getPropertyName(unsigned short id);
@@ -59,7 +59,7 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     m_node = 0;
 }
 
-CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QPtrList<CSSProperty> *lstValues)
+CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, Q3PtrList<CSSProperty> *lstValues)
     : StyleBaseImpl(parent)
 {
     m_lstValues = lstValues;
@@ -72,10 +72,10 @@ CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDecl
     delete m_lstValues;
     m_lstValues = 0;
     if (o.m_lstValues) {
-        m_lstValues = new QPtrList<CSSProperty>;
+        m_lstValues = new Q3PtrList<CSSProperty>;
         m_lstValues->setAutoDelete( true );
 
-        QPtrListIterator<CSSProperty> lstValuesIt(*o.m_lstValues);
+        Q3PtrListIterator<CSSProperty> lstValuesIt(*o.m_lstValues);
         for (lstValuesIt.toFirst(); lstValuesIt.current(); ++lstValuesIt)
             m_lstValues->append(new CSSProperty(*lstValuesIt.current()));
     }
@@ -222,7 +222,7 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
 {
     if(!m_lstValues) return 0;
 
-    QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+    Q3PtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
     CSSProperty *current;
     for ( lstValuesIt.toLast(); (current = lstValuesIt.current()); --lstValuesIt )
         if (current->m_id == propertyID && !current->nonCSSHint)
@@ -235,7 +235,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
     if(!m_lstValues) return DOMString();
     DOMString value;
 
-    QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+    Q3PtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
      CSSProperty *current;
      for ( lstValuesIt.toLast(); (current = lstValuesIt.current()); --lstValuesIt )  {
          if (current->m_id == propertyID && NonCSSHint == current->nonCSSHint) {
@@ -278,7 +278,7 @@ void CSSStyleDeclarationImpl::removeCSSHints()
 bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
 {
     if ( m_lstValues) {
-	QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+	Q3PtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
 	CSSProperty *current;
 	for ( lstValuesIt.toFirst(); (current = lstValuesIt.current()); ++lstValuesIt ) {
 	    if( propertyID == current->m_id )
@@ -291,7 +291,7 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
 bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
     if(!m_lstValues) {
-	m_lstValues = new QPtrList<CSSProperty>;
+	m_lstValues = new Q3PtrList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
 
@@ -308,7 +308,7 @@ bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, bool nonCSSHint)
 {
     if(!m_lstValues) {
-	m_lstValues = new QPtrList<CSSProperty>;
+	m_lstValues = new Q3PtrList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
     removeProperty(id, nonCSSHint );
@@ -331,7 +331,7 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &va
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 {
     if(!m_lstValues) {
-	m_lstValues = new QPtrList<CSSProperty>;
+	m_lstValues = new Q3PtrList<CSSProperty>;
 	m_lstValues->setAutoDelete( true );
     }
 
@@ -363,7 +363,7 @@ DOM::DOMString CSSStyleDeclarationImpl::cssText() const
     DOMString result;
 
     if ( m_lstValues) {
-	QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+	Q3PtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
 	CSSProperty *current;
 	for ( lstValuesIt.toFirst(); (current = lstValuesIt.current()); ++lstValuesIt ) {
 	    result += current->cssText();
@@ -378,7 +378,7 @@ void CSSStyleDeclarationImpl::setCssText(DOM::DOMString text)
     if (m_lstValues) {
 	m_lstValues->clear();
     } else {
-	m_lstValues = new QPtrList<CSSProperty>;
+	m_lstValues = new Q3PtrList<CSSProperty>;
 	m_lstValues->setAutoDelete( true );
     }
 
@@ -443,7 +443,7 @@ DOM::DOMString CSSValueListImpl::cssText() const
 {
     DOMString result = "";
 
-    for (QPtrListIterator<CSSValueImpl> iterator(m_values); iterator.current(); ++iterator) {
+    for (Q3PtrListIterator<CSSValueImpl> iterator(m_values); iterator.current(); ++iterator) {
 	result += iterator.current()->cssText();
     }
 
@@ -525,7 +525,7 @@ void CSSPrimitiveValueImpl::cleanup()
     m_type = 0;
 }
 
-int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
+int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics )
 {
     double result = computeLengthFloat( style, devMetrics );
     int intResult = (int)result;
@@ -540,7 +540,7 @@ int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, QPaintDevic
     return intResult;
 }
 
-double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
+double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics )
 {
     unsigned short type = primitiveType();
 

@@ -26,8 +26,8 @@
 #include <qevent.h>
 #include <qfont.h>
 #include <qfontdatabase.h>
-#include <qhbox.h>
-#include <qkeycode.h>
+#include <q3hbox.h>
+#include <qnamespace.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpainter.h>
@@ -63,7 +63,7 @@ void KCharSelect::cleanupFontDatabase()
 //==================================================================
 KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QString &_font,
 				    const QChar &_chr, int _tableNum )
-    : QGridView( parent, name ), vFont( _font ), vChr( _chr ),
+    : Q3GridView( parent, name ), vFont( _font ), vChr( _chr ),
       vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 ), d(0)
 {
     setBackgroundColor( colorGroup().base() );
@@ -78,8 +78,8 @@ KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QSt
     
     setToolTips();
 
-    setFocusPolicy( QWidget::StrongFocus );
-    setBackgroundMode( QWidget::NoBackground );
+    setFocusPolicy( Qt::StrongFocus );
+    setBackgroundMode( Qt::NoBackground );
 }
 
 //==================================================================
@@ -157,7 +157,7 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 
     if ( c == vChr.unicode() ) {
 	p->setBrush( QBrush( colorGroup().highlight() ) );
-	p->setPen( NoPen );
+	p->setPen( Qt::NoPen );
 	p->drawRect( 0, 0, w, h );
 	p->setPen( colorGroup().highlightedText() );
 	vPos = QPoint( col, row );
@@ -167,7 +167,7 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 		p->setBrush( QBrush( colorGroup().base() ) );
 	else
 		p->setBrush( QBrush( colorGroup().button() ) );
-	p->setPen( NoPen );
+	p->setPen( Qt::NoPen );
 	p->drawRect( 0, 0, w, h );
 	p->setPen( colorGroup().text() );
     }
@@ -180,7 +180,7 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 
     p->setFont( font );
 
-    p->drawText( 0, 0, x2, y2, AlignHCenter | AlignVCenter, QString( QChar( c ) ) );
+    p->drawText( 0, 0, x2, y2, Qt::AlignHCenter | Qt::AlignVCenter, QString( QChar( c ) ) );
 
     p->setPen( colorGroup().text() );
     p->drawLine( x2, 0, x2, y2 );
@@ -226,31 +226,31 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 {
     switch ( e->key() ) {
-    case Key_Left:
+    case Qt::Key_Left:
 	gotoLeft();
 	break;
-    case Key_Right:
+    case Qt::Key_Right:
 	gotoRight();
 	break;
-    case Key_Up:
+    case Qt::Key_Up:
 	gotoUp();
 	break;
-    case Key_Down:
+    case Qt::Key_Down:
 	gotoDown();
 	break;
-    case Key_Next:
+    case Qt::Key_PageDown:
 	emit tableDown();
 	break;
-    case Key_Prior:
+    case Qt::Key_PageUp:
 	emit tableUp();
 	break;
-    case Key_Space:
+    case Qt::Key_Space:
 	emit activated( ' ' );
 	emit activated();
 	emit highlighted( ' ' );
 	emit highlighted();
         break;
-    case Key_Enter: case Key_Return: {
+    case Qt::Key_Enter: case Qt::Key_Return: {
 	const QPoint oldPos = vPos;
 
 	vPos = focusPos;
@@ -364,10 +364,10 @@ void KCharSelectTable::setToolTips()
 
 //==================================================================
 KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum )
-  : QVBox( parent, name ), d(new KCharSelectPrivate)
+  : Q3VBox( parent, name ), d(new KCharSelectPrivate)
 {
     setSpacing( KDialog::spacingHint() );
-    QHBox* const bar = new QHBox( this );
+    Q3HBox* const bar = new Q3HBox( this );
     bar->setSpacing( KDialog::spacingHint() );
 
     QLabel* const lFont = new QLabel( i18n( "Font:" ), bar );
@@ -407,16 +407,16 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
 
-    charTable = new KCharSelectTable( this, name, _font.isEmpty() ? QVBox::font().family() : _font, _chr, _tableNum );
+    charTable = new KCharSelectTable( this, name, _font.isEmpty() ? Q3VBox::font().family() : _font, _chr, _tableNum );
     const QSize sz( charTable->contentsWidth()  +  4 ,
                     charTable->contentsHeight() +  4 );
     charTable->resize( sz );
     //charTable->setMaximumSize( sz );
     charTable->setMinimumSize( sz );
-    charTable->setHScrollBarMode( QScrollView::AlwaysOff );
-    charTable->setVScrollBarMode( QScrollView::AlwaysOff );
+    charTable->setHScrollBarMode( Q3ScrollView::AlwaysOff );
+    charTable->setVScrollBarMode( Q3ScrollView::AlwaysOff );
 
-    setFont( _font.isEmpty() ? QVBox::font().family() : _font );
+    setFont( _font.isEmpty() ? Q3VBox::font().family() : _font );
     setTableNum( _tableNum );
 
     connect( charTable, SIGNAL( highlighted( const QChar & ) ), this, SLOT( slotUpdateUnicode( const QChar & ) ) );
@@ -432,7 +432,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( charTable, SIGNAL(doubleClicked()),this,SLOT(slotDoubleClicked()));
 
-    setFocusPolicy( QWidget::StrongFocus );
+    setFocusPolicy( Qt::StrongFocus );
     setFocusProxy( charTable );
 }
 
@@ -444,15 +444,15 @@ KCharSelect::~KCharSelect()
 //==================================================================
 QSize KCharSelect::sizeHint() const
 {
-    return QVBox::sizeHint();
+    return Q3VBox::sizeHint();
 }
 
 //==================================================================
 void KCharSelect::setFont( const QString &_font )
 {
-    const QValueList<QString>::Iterator it = fontList.find( _font );
+    const Q3ValueList<QString>::Iterator it = fontList.find( _font );
     if ( it != fontList.end() ) {
-	QValueList<QString>::Iterator it2 = fontList.begin();
+	Q3ValueList<QString>::Iterator it2 = fontList.begin();
 	int pos = 0;
 	for ( ; it != it2; ++it2, ++pos);
 	fontCombo->setCurrentItem( pos );

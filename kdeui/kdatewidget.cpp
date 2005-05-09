@@ -17,7 +17,7 @@
 */
 
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qcombobox.h>
 #include <qlayout.h>
 #include <qlineedit.h>
@@ -37,7 +37,7 @@ public:
   KDateWidgetSpinBox(int min, int max, QWidget *parent)
     : QSpinBox(min, max, 1, parent)
   {
-     editor()->setAlignment(AlignRight);
+     editor()->setAlignment(Qt::AlignRight);
   }
 };
 

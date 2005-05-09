@@ -297,9 +297,9 @@ Resource::List *ManagerImpl::resourceList()
   return &mResources;
 }
 
-QPtrList<Resource> ManagerImpl::resources()
+Q3PtrList<Resource> ManagerImpl::resources()
 {
-  QPtrList<Resource> result;
+  Q3PtrList<Resource> result;
 
   Resource::List::ConstIterator it;
   for ( it = mResources.begin(); it != mResources.end(); ++it ) {
@@ -308,9 +308,9 @@ QPtrList<Resource> ManagerImpl::resources()
   return result;
 }
 
-QPtrList<Resource> ManagerImpl::resources( bool active )
+Q3PtrList<Resource> ManagerImpl::resources( bool active )
 {
-  QPtrList<Resource> result;
+  Q3PtrList<Resource> result;
 
   Resource::List::ConstIterator it;
   for ( it = mResources.begin(); it != mResources.end(); ++it ) {

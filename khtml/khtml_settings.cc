@@ -27,7 +27,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qregexp.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 /**
  * @internal
@@ -103,8 +103,8 @@ public:
     QStringList fonts;
     QStringList defaultFonts;
 
-    QValueVector<QRegExp> adFilters;
-    QValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
+    Q3ValueVector<QRegExp> adFilters;
+    Q3ValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
 
@@ -578,8 +578,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         PolicyMap::Iterator it;
         for( it = d->javaDomainPolicy.begin(); it != d->javaDomainPolicy.end(); ++it )
         {
-          QCString javaPolicy = adviceToStr( it.data() );
-          QCString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
+          Q3CString javaPolicy = adviceToStr( it.data() );
+          Q3CString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
         config->writeEntry( "JavaDomainSettings", domainConfig );
@@ -591,8 +591,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         PolicyMap::Iterator it;
         for( it = d->javaScriptDomainPolicy.begin(); it != d->javaScriptDomainPolicy.end(); ++it )
         {
-          QCString javaPolicy = adviceToStr( KJavaScriptDunno );
-          QCString javaScriptPolicy = adviceToStr( it.data() );
+          Q3CString javaPolicy = adviceToStr( KJavaScriptDunno );
+          Q3CString javaScriptPolicy = adviceToStr( it.data() );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
         config->writeEntry( "ECMADomainSettings", domainConfig );
@@ -686,7 +686,7 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
 {
     if (d->m_adFilterEnabled)
     {
-        QValueVector<QRegExp>::iterator it;
+        Q3ValueVector<QRegExp>::iterator it;
         for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
         {
             if ((*it).search(url) != -1)
@@ -977,7 +977,7 @@ bool KHTMLSettings::autoSpellCheck() const
     return d->m_autoSpellCheck;
 }
 
-QValueList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
+Q3ValueList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
 {
     return d->m_fallbackAccessKeysAssignments;
 }

@@ -24,7 +24,7 @@
 #include "kstringhandler.h"
 #include "kglobal.h"
 
-static void parsePythonRange( const QCString &range, uint &start, uint &end )
+static void parsePythonRange( const Q3CString &range, uint &start, uint &end )
 {
     const int colon = range.find( ':' );
     if ( colon == -1 ) {

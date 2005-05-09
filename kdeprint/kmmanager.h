@@ -28,7 +28,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class DrMain;
 class KMDBEntry;
@@ -106,8 +106,8 @@ public:
 
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
-	QPtrList<KMPrinter>* printerList(bool reload = true);
-	QPtrList<KMPrinter>* printerListComplete(bool reload = true);
+	Q3PtrList<KMPrinter>* printerList(bool reload = true);
+	Q3PtrList<KMPrinter>* printerListComplete(bool reload = true);
 	KMPrinter* defaultPrinter();
 	void enableFilter(bool on);
 	bool isFilterEnabled() const;

@@ -37,14 +37,14 @@ class ServiceBrowserPrivate
 public:	
 	ServiceBrowserPrivate() : m_running(false) 
 	{}
-	QValueList<RemoteService::Ptr> m_services;
-	QValueList<RemoteService::Ptr> m_duringResolve;
+	Q3ValueList<RemoteService::Ptr> m_services;
+	Q3ValueList<RemoteService::Ptr> m_duringResolve;
 	QStringList m_types;
 	DomainBrowser* m_domains;
 	int m_flags;
 	bool m_running;
 	bool m_finished;
-	QDict<Query> resolvers;
+	Q3Dict<Query> resolvers;
 };
 
 ServiceBrowser::ServiceBrowser(const QString& type,DomainBrowser* domains,bool autoResolve)
@@ -106,8 +106,8 @@ void ServiceBrowser::serviceResolved(bool success)
 	QObject* sender_obj = const_cast<QObject*>(sender());
 	RemoteService* svr = static_cast<RemoteService*>(sender_obj);
 	disconnect(svr,SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
-	QValueList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
-	QValueList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
+	Q3ValueList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
+	Q3ValueList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
 	while ( it!= itEnd && svr!= (*it)) ++it;
 	if (it != itEnd) {
 		if (success) {
@@ -146,7 +146,7 @@ void ServiceBrowser::gotNewService(RemoteService::Ptr svr)
 
 void ServiceBrowser::gotRemoveService(RemoteService::Ptr svr)
 {
-	QValueList<RemoteService::Ptr>::Iterator it = findDuplicate(svr);
+	Q3ValueList<RemoteService::Ptr>::Iterator it = findDuplicate(svr);
 	if (it!=(d->m_services.end())) {
 		emit serviceRemoved(*it);
 		d->m_services.remove(it);
@@ -157,7 +157,7 @@ void ServiceBrowser::gotRemoveService(RemoteService::Ptr svr)
 void ServiceBrowser::removeDomain(const QString& domain)
 {
 	while (d->resolvers[domain]) d->resolvers.remove(domain);
-	QValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin();
+	Q3ValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin();
 	while (it!=d->m_services.end()) 
 		// use section to skip possible trailing dot
 		if ((*it)->domain().section('.',0) == domain.section('.',0)) {
@@ -193,12 +193,12 @@ bool ServiceBrowser::allFinished()
 {
 	if  (d->m_duringResolve.count()) return false;
 	bool all = true;
-	QDictIterator<Query> it(d->resolvers);
+	Q3DictIterator<Query> it(d->resolvers);
 	for ( ; it.current(); ++it) all&=(*it)->isFinished();
 	return all;
 }
 
-const QValueList<RemoteService::Ptr>& ServiceBrowser::services() const
+const Q3ValueList<RemoteService::Ptr>& ServiceBrowser::services() const
 {
 	return d->m_services;
 }
@@ -206,10 +206,10 @@ const QValueList<RemoteService::Ptr>& ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
-QValueList<RemoteService::Ptr>::Iterator ServiceBrowser::findDuplicate(RemoteService::Ptr src)
+Q3ValueList<RemoteService::Ptr>::Iterator ServiceBrowser::findDuplicate(RemoteService::Ptr src)
 {
-	QValueList<RemoteService::Ptr>::Iterator itEnd = d->m_services.end();
-	for (QValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); it!=itEnd; ++it) 
+	Q3ValueList<RemoteService::Ptr>::Iterator itEnd = d->m_services.end();
+	for (Q3ValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); it!=itEnd; ++it) 
 		if ((src->type()==(*it)->type()) && (src->serviceName()==(*it)->serviceName()) &&
 				   (src->domain() == (*it)->domain())) return it;
 	return itEnd;

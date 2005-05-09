@@ -25,7 +25,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qcombobox.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -143,9 +143,9 @@ void CupsdServerLogPage::setDefaults()
 
 void CupsdServerLogPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(accesslog_, conf->comments_.toolTip(ACCESSLOG_COMM));
-        QWhatsThis::add(errorlog_, conf->comments_.toolTip(ERRORLOG_COMM));
-        QWhatsThis::add(pagelog_, conf->comments_.toolTip(PAGELOG_COMM));
-        QWhatsThis::add(maxlogsize_, conf->comments_.toolTip(MAXLOGSIZE_COMM));
-        QWhatsThis::add(loglevel_, conf->comments_.toolTip(LOGLEVEL_COMM));
+        Q3WhatsThis::add(accesslog_, conf->comments_.toolTip(ACCESSLOG_COMM));
+        Q3WhatsThis::add(errorlog_, conf->comments_.toolTip(ERRORLOG_COMM));
+        Q3WhatsThis::add(pagelog_, conf->comments_.toolTip(PAGELOG_COMM));
+        Q3WhatsThis::add(maxlogsize_, conf->comments_.toolTip(MAXLOGSIZE_COMM));
+        Q3WhatsThis::add(loglevel_, conf->comments_.toolTip(LOGLEVEL_COMM));
 }

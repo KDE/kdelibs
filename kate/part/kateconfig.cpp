@@ -37,7 +37,7 @@
 #include <kinstance.h>
 #include <kstaticdeleter.h>
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qtextcodec.h>
 
 #include <kdebug.h>

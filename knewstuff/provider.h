@@ -20,10 +20,10 @@
 #ifndef KNEWSTUFF_PROVIDER_H
 #define KNEWSTUFF_PROVIDER_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdom.h>
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 
 #include <kurl.h>
@@ -46,7 +46,7 @@ namespace KNS {
 class KDE_EXPORT Provider
 {
   public:
-    typedef QPtrList<Provider> List;
+    typedef Q3PtrList<Provider> List;
 
     /**
      * Constructor.

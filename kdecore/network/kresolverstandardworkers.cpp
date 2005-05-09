@@ -40,7 +40,7 @@
 
 #include <qthread.h>
 #include <qmutex.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qfile.h>
 
 #include "kdebug.h"
@@ -107,7 +107,7 @@ void KBlacklistWorker::loadBlacklist()
     {
       // for each file, each line is a domainname to be blacklisted
       QFile f(*it);
-      if (!f.open(IO_ReadOnly))
+      if (!f.open(QIODevice::ReadOnly))
 	continue;
 
       QTextStream stream(&f);
@@ -207,7 +207,7 @@ namespace
   class GetHostByNameThread: public KResolverWorkerBase
   {
   public:
-    QCString m_hostname;	// might be different!
+    Q3CString m_hostname;	// might be different!
     Q_UINT16 m_port;
     int m_scopeid;
     int m_af;
@@ -378,8 +378,8 @@ namespace
   class GetAddrInfoThread: public KResolverWorkerBase
   {
   public:
-    QCString m_node;
-    QCString m_serv;
+    Q3CString m_node;
+    Q3CString m_serv;
     int m_af;
     int m_flags;
     KResolverResults& results;
@@ -621,7 +621,7 @@ bool KStandardWorker::resolveService()
       else
 	{
 	  // it's a name. We need the protocol name in order to lookup.
-	  QCString protoname = protocolName();
+	  Q3CString protoname = protocolName();
 
 	  if (protoname.isEmpty() && protocol())
 	    {

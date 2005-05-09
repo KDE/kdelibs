@@ -19,7 +19,7 @@
  *
  */
 #include <qwidget.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include "kcmenumngr.h"
 #include "kglobal.h"
 #include "kconfig.h"
@@ -28,7 +28,7 @@
 #undef KeyPress
 #undef None
 
-template class QPtrDict<QPopupMenu>;
+template class Q3PtrDict<Q3PopupMenu>;
 
 KContextMenuManager* KContextMenuManager::manager = 0;
 
@@ -54,7 +54,7 @@ bool KContextMenuManager::showOnButtonPress( void )
 }
 
 
-void KContextMenuManager::insert( QWidget* widget, QPopupMenu* popup )
+void KContextMenuManager::insert( QWidget* widget, Q3PopupMenu* popup )
 {
     if ( !manager )
 	manager = new KContextMenuManager;
@@ -66,11 +66,11 @@ void KContextMenuManager::insert( QWidget* widget, QPopupMenu* popup )
 
 bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
 {
-    QPopupMenu* popup = 0;
+    Q3PopupMenu* popup = 0;
     QPoint pos;
     switch ( e->type() ) {
     case QEvent::MouseButtonPress:
-	if (((QMouseEvent*) e )->button() != RightButton )
+	if (((QMouseEvent*) e )->button() != Qt::RightButton )
 	    break;
 	if ( !showOnPress )
 	    return true; // eat event for safety
@@ -78,7 +78,7 @@ bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
 	pos = ((QMouseEvent*) e )->globalPos();
 	break;
     case QEvent::MouseButtonRelease:
-	if ( showOnPress  || ((QMouseEvent*) e )->button() != RightButton )
+	if ( showOnPress  || ((QMouseEvent*) e )->button() != Qt::RightButton )
 	    break;
 	popup = menus[o];	
 	pos = ((QMouseEvent*) e )->globalPos();
@@ -89,12 +89,12 @@ bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
 		break;
 	    QKeyEvent *k = (QKeyEvent *)e;
 	    int key = k->key();
-	    if ( k->state() & ShiftButton )
-		key |= SHIFT;
-	    if ( k->state() & ControlButton )
-		key |= CTRL;
-	    if ( k->state() & AltButton )
-		key |= ALT;
+	    if ( k->state() & Qt::ShiftModifier )
+		key |= Qt::SHIFT;
+	    if ( k->state() & Qt::ControlModifier )
+		key |= Qt::CTRL;
+	    if ( k->state() & Qt::AltModifier )
+		key |= Qt::ALT;
 	    if ( key != menuKey )
 		break;
 	    popup = menus[o];

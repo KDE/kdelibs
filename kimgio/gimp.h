@@ -188,7 +188,7 @@ inline int MAX ( int a, int b )
  * \param green the green component (modified in place).
  * \param blue the blue component (modified in place).
  */
-void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
+void RGBTOHSV ( uchar& Qt::red, uchar& Qt::green, uchar& Qt::blue )
 {
   int r, g, b;
   double h, s, v;
@@ -196,9 +196,9 @@ void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
 
   h = 0.;
 
-  r = red;
-  g = green;
-  b = blue;
+  r = Qt::red;
+  g = Qt::green;
+  b = Qt::blue;
 
   if ( r > g ) {
     max = MAX( r, b );
@@ -234,9 +234,9 @@ void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
       h -= 255;
   }
 
-  red   = (uchar)h;
-  green = (uchar)s;
-  blue  = (uchar)v;
+  Qt::red   = (uchar)h;
+  Qt::green = (uchar)s;
+  Qt::blue  = (uchar)v;
 }
 
 /*!
@@ -305,11 +305,11 @@ void HSVTORGB ( uchar& hue, uchar& saturation, uchar& value )
  * \param green the green component (modified in place).
  * \param blue the blue component (modified in place).
  */
-void RGBTOHLS ( uchar& red, uchar& green, uchar& blue )
+void RGBTOHLS ( uchar& Qt::red, uchar& Qt::green, uchar& Qt::blue )
 {
-  int r = red;
-  int g = green;
-  int b = blue;
+  int r = Qt::red;
+  int g = Qt::green;
+  int b = Qt::blue;
 
   int min, max;
 
@@ -353,9 +353,9 @@ void RGBTOHLS ( uchar& red, uchar& green, uchar& blue )
       h -= 255;
   }
 
-  red   = (uchar)h;
-  green = (uchar)l;
-  blue  = (uchar)s;
+  Qt::red   = (uchar)h;
+  Qt::green = (uchar)l;
+  Qt::blue  = (uchar)s;
 }
 
 /*!

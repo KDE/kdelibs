@@ -24,7 +24,7 @@
 #ifndef  DATEVALUE_H
 #define  DATEVALUE_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdatetime.h>
 
 #include <VCardValue.h>

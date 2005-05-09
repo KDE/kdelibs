@@ -41,7 +41,7 @@
 #include <qpushbutton.h>
 #include <qdom.h>
 #include <qlabel.h>
-#include <qtextbrowser.h>
+#include <q3textbrowser.h>
 #include <qtimer.h> // hack
 
 using namespace KNS;
@@ -55,7 +55,7 @@ struct DownloadDialog::Private
 class NumSortListViewItem : public KListViewItem
 {
   public:
-  NumSortListViewItem( QListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
+  NumSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
   KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
   {
   }
@@ -74,7 +74,7 @@ class NumSortListViewItem : public KListViewItem
 class DateSortListViewItem : public KListViewItem
 {
   public:
-  DateSortListViewItem( QListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
+  DateSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
   KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
   {
   }
@@ -163,10 +163,10 @@ void DownloadDialog::load(QString providerList)
 
 void DownloadDialog::clear()
 {
-  QMap<QWidget*, QValueList<KListView*>* >::Iterator it;
+  QMap<QWidget*, Q3ValueList<KListView*>* >::Iterator it;
   for(it = m_map.begin(); it != m_map.end(); it++)
   {
-    QValueList<KListView*> *v = it.data();
+    Q3ValueList<KListView*> *v = it.data();
     kdDebug() << "clear listviews in " << v << endl;
     if(v)
     {
@@ -202,12 +202,12 @@ void DownloadDialog::slotProviders(Provider::List *list)
 
 void DownloadDialog::addProvider(Provider *p)
 {
-  QFrame *frame;
+  Q3Frame *frame;
   KTabCtl *ctl;
   QWidget *w_d, *w_r, *w_l;
   QWidget *w2;
   KListView *lvtmp_r, *lvtmp_d, *lvtmp_l;
-  QTextBrowser *rt;
+  Q3TextBrowser *rt;
   QString tmp;
   int ret;
   QPixmap pix;
@@ -277,7 +277,7 @@ void DownloadDialog::addProvider(Provider *p)
   connect(lvtmp_d, SIGNAL(selectionChanged()), SLOT(slotSelected()));
   connect(lvtmp_l, SIGNAL(selectionChanged()), SLOT(slotSelected()));
 
-  rt = new QTextBrowser(frame);
+  rt = new Q3TextBrowser(frame);
   rt->setMinimumWidth(150);
 
   QPushButton *in = new QPushButton(i18n("Install"), frame);
@@ -302,11 +302,11 @@ void DownloadDialog::addProvider(Provider *p)
   QVBoxLayout *box4 = new QVBoxLayout(w_l);
   box4->add(lvtmp_l);
 
-  QValueList<KListView*> *v = new QValueList<KListView*>;
+  Q3ValueList<KListView*> *v = new Q3ValueList<KListView*>;
   *v << lvtmp_r << lvtmp_d << lvtmp_l;
   m_map[frame] = v;
   m_rts[frame] = rt;
-  QValueList<QPushButton*> *vb = new QValueList<QPushButton*>;
+  Q3ValueList<QPushButton*> *vb = new Q3ValueList<QPushButton*>;
   *vb << in << de;
   m_buttons[frame] = vb;
   m_providers[frame] = p;
@@ -419,7 +419,7 @@ void DownloadDialog::addEntry(Entry *entry)
 
 void DownloadDialog::slotData(KIO::Job *job, const QByteArray &a)
 {
-  QCString tmp(a, a.size() + 1);
+  Q3CString tmp(a, a.size() + 1);
   m_data[job].append(QString::fromUtf8(tmp));
 }
 

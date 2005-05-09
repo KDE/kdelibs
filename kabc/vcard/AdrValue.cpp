@@ -45,7 +45,7 @@ AdrValue::AdrValue(const AdrValue & x)
 {
 }
 
-AdrValue::AdrValue(const QCString & s)
+AdrValue::AdrValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -68,7 +68,7 @@ AdrValue::operator = (AdrValue & x)
 }
 
 	AdrValue &
-AdrValue::operator = (const QCString & s)
+AdrValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;
@@ -105,7 +105,7 @@ AdrValue::_parse()
 {
 	vDebug("AdrValue::_parse()");
 
-	QStrList l;
+	Q3StrList l;
 	RTokenise(strRep_, ";", l);
 	
 	for (unsigned int i = 0; i < l.count(); i++) {

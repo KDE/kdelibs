@@ -27,7 +27,7 @@
 #include <kjanuswidget.h>
 #include <kguiitem.h>
 #include <kstdguiitem.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class QPushButton;
 class KSeparator;
@@ -340,7 +340,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @since: 3.2
      */
 
-    KDialogBase( KDialogBase::DialogType dialogFace, WFlags f,
+    KDialogBase( KDialogBase::DialogType dialogFace, Qt::WFlags f,
 		 QWidget *parent=0, const char *name=0, bool modal=true,
 		 const QString &caption=QString::null,
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
@@ -441,7 +441,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The widget or 0 if the predefined layout mode is not @p Plain
      *         or if you don't use any predefined layout.
      */
-    QFrame *plainPage();
+    Q3Frame *plainPage();
 
     /**
      * Add a page to the dialog when the class is used in @p TreeList ,
@@ -470,7 +470,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QFrame  *addPage( const QString &itemName,
+    Q3Frame  *addPage( const QString &itemName,
 		      const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
@@ -485,7 +485,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QFrame  *addPage( const QStringList &items,
+    Q3Frame  *addPage( const QStringList &items,
 		      const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
@@ -513,7 +513,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QVBox *addVBoxPage( const QString &itemName,
+    Q3VBox *addVBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -528,7 +528,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QVBox *addVBoxPage( const QStringList &items,
+    Q3VBox *addVBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -550,7 +550,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QHBox *addHBoxPage( const QString &itemName,
+    Q3HBox *addHBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -565,7 +565,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QHBox *addHBoxPage( const QStringList &items,
+    Q3HBox *addHBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -589,7 +589,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QGrid *addGridPage( int n, Orientation dir,
+    Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
@@ -606,7 +606,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QGrid *addGridPage( int n, Orientation dir,
+    Q3Grid *addGridPage( int n, Qt::Orientation dir,
 			const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
@@ -633,7 +633,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
-    QFrame *makeMainWidget();
+    Q3Frame *makeMainWidget();
 
     /**
      * Make a main widget.
@@ -648,7 +648,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
-    QVBox *makeVBoxMainWidget();
+    Q3VBox *makeVBoxMainWidget();
 
     /**
      * Make a main widget.
@@ -663,7 +663,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
-    QHBox *makeHBoxMainWidget();
+    Q3HBox *makeHBoxMainWidget();
 
     /**
      * Make a main widget.
@@ -682,7 +682,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
-    QGrid *makeGridMainWidget( int n, Orientation dir );
+    Q3Grid *makeGridMainWidget( int n, Qt::Orientation dir );
 
 
     /**

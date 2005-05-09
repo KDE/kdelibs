@@ -158,7 +158,7 @@ void KBlankEffect::timeout()
 void KBlankEffect::blankNormal()
 {
     QPainter p( d->widget );
-    p.fillRect( 0, 0, d->widget->width(), d->widget->height(), black );
+    p.fillRect( 0, 0, d->widget->width(), d->widget->height(), Qt::black );
     finished();
 }
 
@@ -166,7 +166,7 @@ void KBlankEffect::blankNormal()
 void KBlankEffect::blankSweepRight()
 {
     QPainter p( d->widget );
-    p.fillRect( d->effectProgress, 0, 50, d->widget->height(), black );
+    p.fillRect( d->effectProgress, 0, 50, d->widget->height(), Qt::black );
     kapp->flushX();
     d->effectProgress += 50;
     if ( d->effectProgress >= d->widget->width() )
@@ -177,7 +177,7 @@ void KBlankEffect::blankSweepRight()
 void KBlankEffect::blankSweepDown()
 {
     QPainter p( d->widget );
-    p.fillRect( 0, d->effectProgress, d->widget->width(), 50, black );
+    p.fillRect( 0, d->effectProgress, d->widget->width(), 50, Qt::black );
     kapp->flushX();
     d->effectProgress += 50;
     if ( d->effectProgress >= d->widget->height() )
@@ -211,7 +211,7 @@ void KBlankEffect::blankBlocks()
     for ( int i = 0; i < 2 && d->effectProgress < bx*by; i++ ) {
         int x = block[d->effectProgress]%bx;
         int y = block[d->effectProgress]/bx;
-        p.fillRect( x*64, y*64, 64, 64, black );
+        p.fillRect( x*64, y*64, 64, 64, Qt::black );
         d->effectProgress++;
     }
 

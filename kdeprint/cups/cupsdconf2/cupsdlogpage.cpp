@@ -25,7 +25,7 @@
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <kfiledialog.h>
@@ -103,9 +103,9 @@ bool CupsdLogPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdLogPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(accesslog_, conf->comments_.toolTip("accesslog"));
-	QWhatsThis::add(errorlog_, conf->comments_.toolTip("errorlog"));
-	QWhatsThis::add(pagelog_, conf->comments_.toolTip("pagelog"));
-	QWhatsThis::add(maxlogsize_, conf->comments_.toolTip("maxlogsize"));
-	QWhatsThis::add(loglevel_, conf->comments_.toolTip("loglevel"));
+	Q3WhatsThis::add(accesslog_, conf->comments_.toolTip("accesslog"));
+	Q3WhatsThis::add(errorlog_, conf->comments_.toolTip("errorlog"));
+	Q3WhatsThis::add(pagelog_, conf->comments_.toolTip("pagelog"));
+	Q3WhatsThis::add(maxlogsize_, conf->comments_.toolTip("maxlogsize"));
+	Q3WhatsThis::add(loglevel_, conf->comments_.toolTip("loglevel"));
 }

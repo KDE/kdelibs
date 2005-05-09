@@ -3,13 +3,13 @@
 public:
 VCardEntity();
 VCardEntity(const VCardEntity&);
-VCardEntity(const QCString&);
+VCardEntity(const Q3CString&);
 VCardEntity & operator = (VCardEntity&);
-VCardEntity & operator = (const QCString&);
+VCardEntity & operator = (const Q3CString&);
 bool operator ==(VCardEntity&);
 bool operator !=(VCardEntity& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {VCardEntity a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {VCardEntity a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~VCardEntity();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

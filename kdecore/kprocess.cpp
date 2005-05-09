@@ -109,8 +109,8 @@ public:
 
    QMap<QString,QString> env;
    QString wd;
-   QCString shell;
-   QCString executable;
+   Q3CString shell;
+   Q3CString executable;
 };
 
 /////////////////////////////
@@ -273,7 +273,7 @@ KProcess &KProcess::operator<<(const QStringList& args)
   return *this;
 }
 
-KProcess &KProcess::operator<<(const QCString& arg)
+KProcess &KProcess::operator<<(const Q3CString& arg)
 {
   return operator<< (arg.data());
 }
@@ -309,7 +309,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   }
 #ifdef Q_OS_UNIX
   char **arglist;
-  QCString shellCmd;
+  Q3CString shellCmd;
   if (d->useShell)
   {
       if (d->shell.isEmpty()) {

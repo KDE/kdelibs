@@ -42,7 +42,7 @@ uint EditInterface::editInterfaceNumber () const
   return myEditInterfaceNumber;
 }
 
-void EditInterface::setEditInterfaceDCOPSuffix (const QCString &suffix)
+void EditInterface::setEditInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("EditInterface#"+suffix);
 }

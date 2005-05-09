@@ -20,8 +20,8 @@
 #ifndef KEDITLISTBOX_H
 #define KEDITLISTBOX_H
 
-#include <qgroupbox.h>
-#include <qlistbox.h>
+#include <q3groupbox.h>
+#include <q3listbox.h>
 
 #include <kdelibs_export.h>
 
@@ -41,7 +41,7 @@ class KEditListBoxPrivate;
  * \image html keditlistbox.png "KDE Edit List Box Widget"
  *
  */
-class KDEUI_EXPORT KEditListBox : public QGroupBox
+class KDEUI_EXPORT KEditListBox : public Q3GroupBox
 {
    Q_OBJECT
 
@@ -141,7 +141,7 @@ public:
       /**
        * Return a pointer to the embedded QListBox.
        */
-      QListBox* listBox() const     { return m_listBox; }
+      Q3ListBox* listBox() const     { return m_listBox; }
       /**
        * Return a pointer to the embedded QLineEdit.
        */
@@ -174,11 +174,11 @@ public:
       /**
        * See QListBox::insertStringList()
        */
-      void insertStrList(const QStrList* list, int index=-1);
+      void insertStrList(const Q3StrList* list, int index=-1);
       /**
        * See QListBox::insertStrList()
        */
-      void insertStrList(const QStrList& list, int index=-1);
+      void insertStrList(const Q3StrList& list, int index=-1);
       /**
        * See QListBox::insertStrList()
        */
@@ -253,7 +253,7 @@ public:
       void typedSomething(const QString& text);
 
    private:
-      QListBox *m_listBox;
+      Q3ListBox *m_listBox;
       QPushButton *servUpButton, *servDownButton;
       QPushButton *servNewButton, *servRemoveButton;
       KLineEdit *m_lineEdit;

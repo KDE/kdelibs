@@ -21,7 +21,7 @@
 
 #include <kprocess.h>
 #include <ktempfile.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qapplication.h>
 
 #include <kiconloader.h>
@@ -37,7 +37,7 @@ SmbView::SmbView(QWidget *parent, const char *name)
 {
 	addColumn(i18n("Printer"));
 	addColumn(i18n("Comment"));
-	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	setLineWidth(1);
 	setAllColumnsShowFocus(true);
 	setRootIsDecorated(true);
@@ -49,7 +49,7 @@ SmbView::SmbView(QWidget *parent, const char *name)
 	m_passwdFile = 0;
 	connect(m_proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
 	connect(m_proc,SIGNAL(receivedStdout(KProcess*,char*,int)),SLOT(slotReceivedStdout(KProcess*,char*,int)));
-	connect(this,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotSelectionChanged(QListViewItem*)));
+	connect(this,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotSelectionChanged(Q3ListViewItem*)));
 }
 
 SmbView::~SmbView()
@@ -130,7 +130,7 @@ void SmbView::init()
 	startProcess(GroupListing);
 }
 
-void SmbView::setOpen(QListViewItem *item, bool on)
+void SmbView::setOpen(Q3ListViewItem *item, bool on)
 {
 	if (on && item->childCount() == 0)
 	{
@@ -157,7 +157,7 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 			startProcess(ShareListing);
 		}
 	}
-	QListView::setOpen(item,on);
+	Q3ListView::setOpen(item,on);
 }
 
 void SmbView::processGroups()
@@ -169,7 +169,7 @@ void SmbView::processGroups()
 		int	p = (*it).find("<1d>");
 		if (p == -1)
 			continue;
-		QListViewItem	*item = new QListViewItem(this,(*it).left(p).stripWhiteSpace());
+		Q3ListViewItem	*item = new Q3ListViewItem(this,(*it).left(p).stripWhiteSpace());
 		item->setExpandable(true);
 		item->setPixmap(0,SmallIcon("network"));
 	}
@@ -190,7 +190,7 @@ void SmbView::processServers()
 		if (line.isEmpty())
 			break;
 		QStringList	words = QStringList::split(' ',line,false);
-		QListViewItem	*item = new QListViewItem(m_current,words[0]);
+		Q3ListViewItem	*item = new Q3ListViewItem(m_current,words[0]);
 		item->setExpandable(true);
 		item->setPixmap(0,SmallIcon("kdeprint_computer"));
 	}
@@ -224,13 +224,13 @@ void SmbView::processShares()
 			//for (uint i=2; i<words.count(); i++)
 			//	comm += (words[i]+" ");
 			//QListViewItem	*item = new QListViewItem(m_current,words[0],comm);
-			QListViewItem	*item = new QListViewItem(m_current,sharen,comm);
+			Q3ListViewItem	*item = new Q3ListViewItem(m_current,sharen,comm);
 			item->setPixmap(0,SmallIcon("kdeprint_printer"));
 		}
 	}
 }
 
-void SmbView::slotSelectionChanged(QListViewItem *item)
+void SmbView::slotSelectionChanged(Q3ListViewItem *item)
 {
 	if (item && item->depth() == 2)
 		emit printerSelected(item->parent()->parent()->text(0),item->parent()->text(0),item->text(0));

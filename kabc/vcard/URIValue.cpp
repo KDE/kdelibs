@@ -32,7 +32,7 @@ URIValue::URIValue()
 {
 }
 
-URIValue::URIValue(const QCString & scheme, const QCString & schemeSpecificPart)
+URIValue::URIValue(const Q3CString & scheme, const Q3CString & schemeSpecificPart)
 	:	Value(),
 		scheme_				(scheme),
 		schemeSpecificPart_	(schemeSpecificPart)
@@ -47,7 +47,7 @@ URIValue::URIValue(const URIValue & x)
 {
 }
 
-URIValue::URIValue(const QCString & s)
+URIValue::URIValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -65,7 +65,7 @@ URIValue::operator = (URIValue & x)
 }
 
 	URIValue &
-URIValue::operator = (const QCString & s)
+URIValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;
@@ -103,14 +103,14 @@ URIValue::_assemble()
 	strRep_ = scheme_ + ':' + schemeSpecificPart_;
 }
 
-	QCString
+	Q3CString
 URIValue::scheme()
 {
 	parse();
 	return scheme_;
 }
 
-	QCString
+	Q3CString
 URIValue::schemeSpecificPart()
 {
 	parse();
@@ -118,14 +118,14 @@ URIValue::schemeSpecificPart()
 }
 
 	void
-URIValue::setScheme(const QCString & s)
+URIValue::setScheme(const Q3CString & s)
 {
 	parse();
 	scheme_ = s;
 }
 
 	void
-URIValue::setSchemeSpecificPart(const QCString & s)
+URIValue::setSchemeSpecificPart(const Q3CString & s)
 {
 	parse();
 	schemeSpecificPart_ = s;

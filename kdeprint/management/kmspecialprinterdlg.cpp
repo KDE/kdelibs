@@ -32,8 +32,8 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
-#include <qgroupbox.h>
+#include <q3whatsthis.h>
+#include <q3groupbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kicondialog.h>
@@ -63,16 +63,16 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, dummy);
 
 	sep->setFixedHeight(10);
-	QGroupBox	*m_gb = new QGroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
+	Q3GroupBox	*m_gb = new Q3GroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
 	m_command = new KXmlCommandSelector(true, m_gb, "CommandSelector", this);
 
-	QGroupBox *m_outfile_gb = new QGroupBox( 0, Qt::Horizontal, i18n( "Outp&ut File" ), dummy );
+	Q3GroupBox *m_outfile_gb = new Q3GroupBox( 0, Qt::Horizontal, i18n( "Outp&ut File" ), dummy );
 
 	m_usefile = new QCheckBox( i18n("&Enable output file"), m_outfile_gb);
 
 	m_mimetype = new QComboBox(m_outfile_gb);
 	KMimeType::List	list = KMimeType::allMimeTypes();
-	for (QValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	for (Q3ValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		QString	mimetype = (*it)->name();
 		m_mimelist << mimetype;
@@ -101,10 +101,10 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_extensionlabel->setEnabled( false );
 	m_extension->setEnabled( false );
 
-	QWhatsThis::add(m_usefile,
+	Q3WhatsThis::add(m_usefile,
 		i18n("<p>The command will use an output file. If checked, make sure the "
 		     "command contains an output tag.</p>"));
-	QWhatsThis::add(m_command,
+	Q3WhatsThis::add(m_command,
 		i18n("<p>The command to execute when printing on this special printer. Either enter "
 			 "the command to execute directly, or associate/create a command object with/for "
 			 "this special printer. The command object is the preferred method as it provides "
@@ -116,11 +116,11 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 			 "<li><b>%psl</b>: the paper size in lower case.</li>"
 			 "<li><b>%psu</b>: the paper size with the first letter in upper case.</li></ul>"));
 	QString mimetypeWhatsThis = i18n("<p>The default mimetype for the output file (e.g. application/postscript).</p>");
-	QWhatsThis::add(m_mimetypelabel, mimetypeWhatsThis);
-	QWhatsThis::add(m_mimetype, mimetypeWhatsThis);
+	Q3WhatsThis::add(m_mimetypelabel, mimetypeWhatsThis);
+	Q3WhatsThis::add(m_mimetype, mimetypeWhatsThis);
 	QString extensionWhatsThis = i18n("<p>The default extension for the output file (e.g. ps, pdf, ps.gz).</p>");
-	QWhatsThis::add(m_extensionlabel, extensionWhatsThis);
-	QWhatsThis::add(m_extension, extensionWhatsThis);
+	Q3WhatsThis::add(m_extensionlabel, extensionWhatsThis);
+	Q3WhatsThis::add(m_extension, extensionWhatsThis);
 
 	// layout creation
 	QVBoxLayout	*l0 = new QVBoxLayout(dummy, 0, 10);

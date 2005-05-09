@@ -22,10 +22,10 @@
 
 #include "cupsdpage.h"
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class QLineEdit;
-class QListView;
+class Q3ListView;
 class CupsdOption;
 class CupsLocation;
 
@@ -51,10 +51,10 @@ protected slots:
 
 private:
 	QLineEdit	*systemgroup_;
-	QListView	*locations_;
+	Q3ListView	*locations_;
 
 	CupsdOption	*opt_[1];
-	QPtrList<CupsLocation>	loclist_;
+	Q3PtrList<CupsLocation>	loclist_;
 };
 
 #endif

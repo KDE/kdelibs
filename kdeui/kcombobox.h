@@ -27,8 +27,8 @@
 
 #include <kcompletion.h>
 
-class QListBoxItem;
-class QPopupMenu;
+class Q3ListBoxItem;
+class Q3PopupMenu;
 class QLineEdit;
 
 class KCompletionBox;
@@ -403,7 +403,7 @@ signals:
      *
      * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( QPopupMenu * p );
+    void aboutToShowContextMenu( Q3PopupMenu * p );
 
 public slots:
 
@@ -457,7 +457,7 @@ protected slots:
     /**
     * @deprecated
     */
-    virtual void itemSelected( QListBoxItem* ) {};
+    virtual void itemSelected( Q3ListBoxItem* ) {};
 
     /**
     * Completes text according to the completion mode.
@@ -743,7 +743,7 @@ private slots:
     /**
      * Appends our own context menu entry.
      */
-    void addContextMenuItems( QPopupMenu* );
+    void addContextMenuItems( Q3PopupMenu* );
 
 private:
     void init( bool useCompletion );

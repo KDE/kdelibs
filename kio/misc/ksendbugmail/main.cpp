@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
     KApplication a(false, false);
 
-    QCString recipient = args->getOption("recipient");
+    Q3CString recipient = args->getOption("recipient");
     if (recipient.isEmpty())
         recipient = "submit@bugs.kde.org";
     else {
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     }
     kdDebug() << "recp \"" << recipient << "\"\n";
 
-    QCString subject = args->getOption("subject");
+    Q3CString subject = args->getOption("subject");
     if (subject.isEmpty())
         subject = "(no subject)";
     else {

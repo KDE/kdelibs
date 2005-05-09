@@ -24,7 +24,7 @@
 #define __KSELECT_H__
 
 #include <qwidget.h>
-#include <qrangecontrol.h>
+#include <q3rangecontrol.h>
 #include <qpixmap.h>
 
 #include <kdelibs_export.h>
@@ -156,7 +156,7 @@ private:
  * A custom drawing routine for the widget surface has
  * to be provided by the subclass.
  */
-class KDEUI_EXPORT KSelector : public QWidget, public QRangeControl
+class KDEUI_EXPORT KSelector : public QWidget, public Q3RangeControl
 {
   Q_OBJECT
   Q_PROPERTY( int value READ value WRITE setValue )
@@ -172,7 +172,7 @@ public:
    * Constructs a one-dimensional selection widget with
    * a given orientation.
    */
-  KSelector( Orientation o, QWidget *parent = 0L, const char *name = 0L );
+  KSelector( Qt::Orientation o, QWidget *parent = 0L, const char *name = 0L );
   /*
    * Destructs the widget.
    */
@@ -181,7 +181,7 @@ public:
   /**
    * @return the orientation of the widget.
    */
-  Orientation orientation() const
+  Qt::Orientation orientation() const
   {	return _orientation; }
 
   /**
@@ -205,37 +205,37 @@ public:
    * Sets the value.
    */
   void setValue(int value)
-  { QRangeControl::setValue(value); }
+  { Q3RangeControl::setValue(value); }
 
   /**
    * @returns the value.
    */
   int value() const
-  { return QRangeControl::value(); }
+  { return Q3RangeControl::value(); }
 
   /**
    * Sets the min value.
    */
   void setMinValue(int value)
-  { QRangeControl::setMinValue(value); }
+  { Q3RangeControl::setMinValue(value); }
 
   /**
    * @return the min value.
    */
   int minValue() const
-  { return QRangeControl::minValue(); }
+  { return Q3RangeControl::minValue(); }
 
   /**
    * Sets the max value.
    */
   void setMaxValue(int value)
-  { QRangeControl::setMaxValue(value); }
+  { Q3RangeControl::setMaxValue(value); }
 
   /**
    * @return the max value.
    */
   int maxValue() const
-  { return QRangeControl::maxValue(); }
+  { return Q3RangeControl::maxValue(); }
 
 signals:
   /**
@@ -271,7 +271,7 @@ private:
   QPoint calcArrowPos( int val );
   void moveArrow( const QPoint &pos );
 
-  Orientation _orientation;
+  Qt::Orientation _orientation;
   bool _indent;
 
 protected:
@@ -309,7 +309,7 @@ public:
    * Constructs a colors selector with orientation o which
    * contains a gradient between white and black.
    */
-  KGradientSelector( Orientation o, QWidget *parent=0, const char *name=0 );
+  KGradientSelector( Qt::Orientation o, QWidget *parent=0, const char *name=0 );
   /**
    * Destructs the widget.
    */
@@ -318,7 +318,7 @@ public:
    * Sets the two colors which span the gradient.
    */
   void setColors( const QColor &col1, const QColor &col2 )
-  {	color1 = col1; color2 = col2; update();}
+  {	Qt::color1 = col1; color2 = col2; update();}
   void setText( const QString &t1, const QString &t2 )
   {	text1 = t1; text2 = t2; update(); }
 
@@ -326,7 +326,7 @@ public:
    * Set each color on its own.
    */
   void setFirstColor( const QColor &col )
-  { color1 = col; update(); }
+  { Qt::color1 = col; update(); }
   void setSecondColor( const QColor &col )
   { color2 = col; update(); }
 
@@ -339,7 +339,7 @@ public:
   { text2 = t; update(); }
 
   const QColor firstColor() const
-  { return color1; }
+  { return Qt::color1; }
   const QColor secondColor() const
   { return color2; }
 
@@ -356,7 +356,7 @@ protected:
 
 private:
   void init();
-  QColor color1;
+  QColor Qt::color1;
   QColor color2;
   QString text1;
   QString text2;

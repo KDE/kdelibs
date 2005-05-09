@@ -18,7 +18,7 @@
 
 #include "kmdifocuslist.h"
 #include "kmdifocuslist.moc"
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <kdebug.h>
 
 KMdiFocusList::KMdiFocusList( QObject *parent ) : QObject( parent )
@@ -31,7 +31,7 @@ void KMdiFocusList::addWidgetTree( QWidget* w )
 {
 	//this method should never be called twice on the same hierarchy
 	m_list.insert( w, w->focusPolicy() );
-	w->setFocusPolicy( QWidget::ClickFocus );
+	w->setFocusPolicy( Qt::ClickFocus );
 	kdDebug( 760 ) << "KMdiFocusList::addWidgetTree: adding toplevel" << endl;
 	connect( w, SIGNAL( destroyed( QObject * ) ), this, SLOT( objectHasBeenDestroyed( QObject* ) ) );
 	QObjectList *l = w->queryList( "QWidget" );
@@ -41,7 +41,7 @@ void KMdiFocusList::addWidgetTree( QWidget* w )
 	{
 		QWidget * wid = ( QWidget* ) obj;
 		m_list.insert( wid, wid->focusPolicy() );
-		wid->setFocusPolicy( QWidget::ClickFocus );
+		wid->setFocusPolicy( Qt::ClickFocus );
 		kdDebug( 760 ) << "KMdiFocusList::addWidgetTree: adding widget" << endl;
 		connect( wid, SIGNAL( destroyed( QObject * ) ), this, SLOT( objectHasBeenDestroyed( QObject* ) ) );
 		++it;
@@ -52,10 +52,10 @@ void KMdiFocusList::addWidgetTree( QWidget* w )
 void KMdiFocusList::restore()
 {
 #if (QT_VERSION-0 >= 0x030200)
-	for ( QMap<QWidget*, QWidget::FocusPolicy>::const_iterator it = m_list.constBegin();it != m_list.constEnd();++it )
+	for ( QMap<QWidget*, Qt::FocusPolicy>::const_iterator it = m_list.constBegin();it != m_list.constEnd();++it )
 	{
 #else
-	for ( QMap<QWidget*, QWidget::FocusPolicy>::iterator it = m_list.begin();it != m_list.end();++it )
+	for ( QMap<QWidget*, Qt::FocusPolicy>::iterator it = m_list.begin();it != m_list.end();++it )
 	{
 #endif
 		it.key() ->setFocusPolicy( it.data() );

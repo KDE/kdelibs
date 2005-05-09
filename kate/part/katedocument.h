@@ -40,7 +40,7 @@
 #include <kmimetype.h>
 #include <klocale.h>
 
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qmap.h>
 #include <qdatetime.h>
 
@@ -115,7 +115,7 @@ class KateDocument : public Kate::Document,
     void disablePluginGUI (KTextEditor::Plugin *plugin);
 
   private:
-     QMemArray<KTextEditor::Plugin *> m_plugins;
+     Q3MemArray<KTextEditor::Plugin *> m_plugins;
 
   public:
     bool readOnly () const { return m_bReadOnly; }
@@ -135,13 +135,13 @@ class KateDocument : public Kate::Document,
   //
   public:
     KTextEditor::View *createView( QWidget *parent, const char *name );
-    QPtrList<KTextEditor::View> views () const;
+    Q3PtrList<KTextEditor::View> views () const;
 
     inline KateView *activeView () const { return m_activeView; }
 
   private:
-    QPtrList<KateView> m_views;
-    QPtrList<KTextEditor::View> m_textEditViews;
+    Q3PtrList<KateView> m_views;
+    Q3PtrList<KTextEditor::View> m_textEditViews;
     KateView *m_activeView;
 
     /**
@@ -356,13 +356,13 @@ class KateDocument : public Kate::Document,
     friend class KateTemplateHandler;
 
   private:
-    QPtrList<KateSuperCursor> m_superCursors;
+    Q3PtrList<KateSuperCursor> m_superCursors;
 
     //
     // some internals for undo/redo
     //
-    QPtrList<KateUndoGroup> undoItems;
-    QPtrList<KateUndoGroup> redoItems;
+    Q3PtrList<KateUndoGroup> undoItems;
+    Q3PtrList<KateUndoGroup> redoItems;
     bool m_undoDontMerge; //create a setter later on and remove the friend declaration
     bool m_undoIgnoreCancel;
     QTimer* m_undoMergeTimer;
@@ -383,10 +383,10 @@ class KateDocument : public Kate::Document,
   //
   public slots:
     KTextEditor::Cursor *createCursor ();
-    QPtrList<KTextEditor::Cursor> cursors () const;
+    Q3PtrList<KTextEditor::Cursor> cursors () const;
 
   private:
-    QPtrList<KTextEditor::Cursor> myCursors;
+    Q3PtrList<KTextEditor::Cursor> myCursors;
 
   //
   // KTextEditor::SearchInterface stuff
@@ -451,7 +451,7 @@ class KateDocument : public Kate::Document,
     void addMark( uint line, uint markType );
     void removeMark( uint line, uint markType );
 
-    QPtrList<KTextEditor::Mark> marks();
+    Q3PtrList<KTextEditor::Mark> marks();
     void clearMarks();
 
     void setPixmap( MarkInterface::MarkTypes, const QPixmap& );
@@ -468,9 +468,9 @@ class KateDocument : public Kate::Document,
     void markChanged( KTextEditor::Mark, KTextEditor::MarkInterfaceExtension::MarkChangeAction );
 
   private:
-    QIntDict<KTextEditor::Mark> m_marks;
-    QIntDict<QPixmap>           m_markPixmaps;
-    QIntDict<QString>           m_markDescriptions;
+    Q3IntDict<KTextEditor::Mark> m_marks;
+    Q3IntDict<QPixmap>           m_markPixmaps;
+    Q3IntDict<QString>           m_markDescriptions;
     uint                        m_editableMarks;
 
   //
@@ -869,7 +869,7 @@ class KateDocument : public Kate::Document,
      *
      * @since 3.3
      */
-    bool createDigest ( QCString &result );
+    bool createDigest ( Q3CString &result );
 
     /**
      * create a string for the modonhd warnings, giving the reason.
@@ -908,7 +908,7 @@ class KateDocument : public Kate::Document,
 
     bool m_modOnHd;
     unsigned char m_modOnHdReason;
-    QCString m_digest; // MD5 digest, updated on load/save
+    Q3CString m_digest; // MD5 digest, updated on load/save
 
     QString m_docName;
     int m_docNameNumber;

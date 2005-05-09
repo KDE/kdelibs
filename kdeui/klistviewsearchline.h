@@ -20,10 +20,10 @@
 #define KLISTVIEWSEARCHLINE_H
 
 #include <klineedit.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 class QToolButton;
 
 /**
@@ -75,7 +75,7 @@ public:
      *
      * @see setSearchColumns
      */
-    QValueList<int> searchColumns() const;
+    Q3ValueList<int> searchColumns() const;
 
     /**
      * If this is true (the default) then the parents of matched items will also
@@ -125,7 +125,7 @@ public slots:
      *
      * @see searchColumns
      */
-    void setSearchColumns(const QValueList<int> &columns);
+    void setSearchColumns(const Q3ValueList<int> &columns);
 
     /**
      * Sets the KListView that is filtered by this search line.  If \a lv is null
@@ -142,14 +142,14 @@ protected:
      * based on the value of caseSensitive().  This can be overridden in
      * subclasses to implement more complicated matching schemes.
      */
-    virtual bool itemMatches(const QListViewItem *item, const QString &s) const;
+    virtual bool itemMatches(const Q3ListViewItem *item, const QString &s) const;
 
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
     * See QLineEdit::mousePressEvent().
     */
-    virtual QPopupMenu *createPopupMenu();
+    virtual Q3PopupMenu *createPopupMenu();
 
 protected slots:
     /**
@@ -190,10 +190,10 @@ private:
      * It makes a recursive call to all children.  It returns true if at least
      * one item in the subtree with the given root item is visible.
      */
-    bool checkItemParentsVisible(QListViewItem *item);
+    bool checkItemParentsVisible(Q3ListViewItem *item);
 
 private slots:
-    void itemAdded(QListViewItem *item) const;
+    void itemAdded(Q3ListViewItem *item) const;
     void listViewDeleted();
     void searchColumnsMenuActivated(int);
 
@@ -208,7 +208,7 @@ private:
  *
  * @since 3.4
  */
-class KDEUI_EXPORT KListViewSearchLineWidget : public QHBox
+class KDEUI_EXPORT KListViewSearchLineWidget : public Q3HBox
 {
     Q_OBJECT
 

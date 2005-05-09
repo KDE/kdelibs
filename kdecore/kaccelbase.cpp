@@ -22,9 +22,9 @@
 
 #include "kaccelbase.h"
 
-#include <qkeycode.h>
+#include <qnamespace.h>
 #include <qlabel.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 
 #include <kconfig.h>
 #include "kckey.h"
@@ -313,7 +313,7 @@ bool KAccelBase::updateConnections()
 	kdDebug(125) << "KAccelBase::updateConnections()  this = " << this << endl;
 	// Retrieve the list of keys to be connected, sorted by priority.
 	//  (key, variation, seq)
-	QValueVector<X> rgKeys;
+	Q3ValueVector<X> rgKeys;
 	createKeyList( rgKeys );
 	m_rgActionsNonUnique.clear();
 
@@ -414,7 +414,7 @@ bool KAccelBase::updateConnections()
 
 #ifdef Q_WS_X11
 // Construct a list of keys to be connected, sorted highest priority first.
-void KAccelBase::createKeyList( QValueVector<struct X>& rgKeys )
+void KAccelBase::createKeyList( Q3ValueVector<struct X>& rgKeys )
 {
 	//kdDebug(125) << "KAccelBase::createKeyList()" << endl;
 	if( !m_bEnabled )
@@ -571,7 +571,7 @@ void KAccelBase::writeSettings( KConfigBase* pConfig ) const
 	m_rgActions.writeActions( m_sConfigGroup, pConfig, m_bConfigIsGlobal, m_bConfigIsGlobal );
 }
 
-QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
+Q3PopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
 {
 	KShortcutMenu* pMenu = new KShortcutMenu( pParent, &actions(), seq );
 

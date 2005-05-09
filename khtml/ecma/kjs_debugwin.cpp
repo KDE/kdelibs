@@ -27,17 +27,17 @@
 #include <stdlib.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qtextedit.h>
-#include <qlistbox.h>
-#include <qmultilineedit.h>
+#include <q3textedit.h>
+#include <q3listbox.h>
+#include <q3multilineedit.h>
 #include <qapplication.h>
 #include <qsplitter.h>
 #include <qcombobox.h>
 #include <qbitmap.h>
-#include <qwidgetlist.h>
+#include <qwidget.h>
 #include <qlabel.h>
 #include <qdatastream.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qpainter.h>
 #include <qscrollbar.h>
 
@@ -76,7 +76,7 @@ using namespace KJS;
 using namespace khtml;
 
 SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char *name)
-  : QScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin),
+  : Q3ScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin),
     m_font(KGlobalSettings::fixedFont())
 {
   verticalScrollBar()->setLineStep(QFontMetrics(m_font).height());
@@ -168,7 +168,7 @@ void SourceDisplay::setCurrentLine(int lineno, bool doCenter)
 
 void SourceDisplay::contentsMousePressEvent(QMouseEvent *e)
 {
-  QScrollView::mouseDoubleClickEvent(e);
+  Q3ScrollView::mouseDoubleClickEvent(e);
   QFontMetrics metrics(m_font);
   int lineno = e->y()/metrics.height();
   emit lineDoubleClicked(lineno+1); // line numbers start from 1
@@ -253,7 +253,7 @@ QString SourceFile::getCode()
     if (part && url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
       Decoder *decoder = part->createDecoder();
       QByteArray data;
-      QDataStream stream(data,IO_WriteOnly);
+      QDataStream stream(data,QIODevice::WriteOnly);
       KHTMLPageCache::self()->saveData(part->cacheId(),&stream);
       QString str;
       if (data.size() == 0)
@@ -328,7 +328,7 @@ void KJSErrorDialog::slotUser1()
 
 //-------------------------------------------------------------------------
 EvalMultiLineEdit::EvalMultiLineEdit(QWidget *parent)
-    : QMultiLineEdit(parent) {
+    : Q3MultiLineEdit(parent) {
 }
 
 void EvalMultiLineEdit::keyPressEvent(QKeyEvent * e)
@@ -343,11 +343,11 @@ void EvalMultiLineEdit::keyPressEvent(QKeyEvent * e)
         }
         end();
     }
-    QMultiLineEdit::keyPressEvent(e);
+    Q3MultiLineEdit::keyPressEvent(e);
 }
 //-------------------------------------------------------------------------
 KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
-  : KMainWindow(parent, name, WType_TopLevel), KInstance("kjs_debugger")
+  : KMainWindow(parent, name, Qt::WType_TopLevel), KInstance("kjs_debugger")
 {
   m_breakpoints = 0;
   m_breakpointCount = 0;
@@ -382,7 +382,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   QLabel *contextLabel = new QLabel(i18n("Call stack"),contextContainer);
   QWidget *contextListContainer = new QWidget(contextContainer);
-  m_contextList = new QListBox(contextListContainer);
+  m_contextList = new Q3ListBox(contextListContainer);
   m_contextList->setMinimumSize(100,200);
   connect(m_contextList,SIGNAL(highlighted(int)),this,SLOT(slotShowFrame(int)));
 
@@ -406,7 +406,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   ssdvl->addWidget(m_sourceDisplay);
   connect(m_sourceDisplay,SIGNAL(lineDoubleClicked(int)),SLOT(slotToggleBreakpoint(int)));
 
-  QValueList<int> vsplitSizes;
+  Q3ValueList<int> vsplitSizes;
   vsplitSizes.insert(vsplitSizes.end(),120);
   vsplitSizes.insert(vsplitSizes.end(),480);
   vsplitter->setSizes(vsplitSizes);
@@ -417,7 +417,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   QLabel *evalLabel = new QLabel(i18n("JavaScript console"),evalContainer);
   m_evalEdit = new EvalMultiLineEdit(evalContainer);
-  m_evalEdit->setWordWrap(QMultiLineEdit::NoWrap);
+  m_evalEdit->setWordWrap(Q3MultiLineEdit::NoWrap);
   m_evalEdit->setFont(font);
   connect(m_evalEdit,SIGNAL(returnPressed()),SLOT(slotEval()));
   m_evalDepth = 0;
@@ -428,7 +428,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   evalLayout->addSpacing(KDialog::spacingHint());
   evalLayout->addWidget(m_evalEdit);
 
-  QValueList<int> hsplitSizes;
+  Q3ValueList<int> hsplitSizes;
   hsplitSizes.insert(hsplitSizes.end(),400);
   hsplitSizes.insert(hsplitSizes.end(),200);
   hsplitter->setSizes(hsplitSizes);

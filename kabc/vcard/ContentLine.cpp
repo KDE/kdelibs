@@ -21,8 +21,8 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <qcstring.h>
-#include <qstrlist.h>
+#include <q3cstring.h>
+#include <q3strlist.h>
 #include <qregexp.h>
 
 #include <kdebug.h>
@@ -85,7 +85,7 @@ ContentLine::ContentLine(const ContentLine & x)
 {
 }
 
-ContentLine::ContentLine(const QCString & s)
+ContentLine::ContentLine(const Q3CString & s)
 	:	Entity(s),
 		value_(0),
 		paramType_( ParamUnknown ),
@@ -107,7 +107,7 @@ ContentLine::operator = (ContentLine & x)
 }
 
 	ContentLine &
-ContentLine::operator = (const QCString & s)
+ContentLine::operator = (const Q3CString & s)
 {
 	Entity::operator = (s);
 	delete value_;
@@ -120,7 +120,7 @@ ContentLine::operator == (ContentLine & x)
 {
 	x.parse();
 	
-	QPtrListIterator<Param> it(x.paramList());
+	Q3PtrListIterator<Param> it(x.paramList());
 	
 	if (!paramList_.find(it.current()))
 		return false;
@@ -149,8 +149,8 @@ ContentLine::_parse()
 		return;
 	}
 	
-	QCString firstPart(strRep_.left(split));
-	QCString valuePart(strRep_.mid(split + 1));
+	Q3CString firstPart(strRep_.left(split));
+	Q3CString valuePart(strRep_.mid(split + 1));
 	
 	split = firstPart.find('.');
 	
@@ -165,7 +165,7 @@ ContentLine::_parse()
 	
 	// Now we have the group, the name and param list together and the value.
 	
-	QStrList l;
+	Q3StrList l;
 	
 	RTokenise(firstPart, ";", l);
 	
@@ -191,7 +191,7 @@ ContentLine::_parse()
 	
 	for (; it.current(); ++it, i++) {
 
-		QCString str = *it;
+		Q3CString str = *it;
 
 		split = str.find("=");
 		if (split < 0 ) {
@@ -199,10 +199,10 @@ ContentLine::_parse()
 			continue;
 		}
 		
-		QCString paraName = str.left(split);
-		QCString paraValue = str.mid(split + 1);
+		Q3CString paraName = str.left(split);
+		Q3CString paraValue = str.mid(split + 1);
 		
-		QStrList paraValues;
+		Q3StrList paraValues;
 		RTokenise(paraValue, ",", paraValues);
 		
 		QStrListIterator it2( paraValues );
@@ -254,7 +254,7 @@ ContentLine::_assemble()
 	vDebug("Assemble (argl) - my name is \"" + name_ + "\"");
 	strRep_.truncate(0);
 
-	QCString line;
+	Q3CString line;
 	
 	if (!group_.isEmpty())
 		line += group_ + '.';

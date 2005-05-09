@@ -85,5 +85,5 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
   addTextPage( i18n("&Join the KDE Team"), text3, true );
   addTextPage( i18n("&Support KDE"), text4, true );
   setImage( locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
-  setImageBackgroundColor( white );
+  setImageBackgroundColor( Qt::white );
 }

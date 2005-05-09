@@ -21,7 +21,7 @@
 #define KMDI_TOOLVIEW_ACCESSOR_PRIVATE_H_
 
 #include <kdockwidget.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kaction.h>
 
 namespace KMDIPrivate
@@ -46,9 +46,9 @@ class ToolViewAccessorPrivate
       delete (KDockWidget*)widgetContainer;
     }
 
-    QGuardedPtr<KDockWidget> widgetContainer;
+    QPointer<KDockWidget> widgetContainer;
     QWidget *widget;
-    QGuardedPtr<KAction> action;
+    QPointer<KAction> action;
 };
 
 }

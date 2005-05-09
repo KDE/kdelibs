@@ -20,7 +20,7 @@
 #ifndef KURLREQUESTER_H
 #define KURLREQUESTER_H
 
-#include <qhbox.h>
+#include <q3hbox.h>
 
 #include <keditlistbox.h>
 #include <kfile.h>
@@ -53,7 +53,7 @@ class QTimer;
  * @short A widget to request a filename/url from the user
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KURLRequester : public QHBox
+class KIO_EXPORT KURLRequester : public Q3HBox
 {
     Q_OBJECT
     Q_PROPERTY( QString url READ url WRITE setURL )

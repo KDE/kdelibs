@@ -3,13 +3,13 @@
 public:
 TextListValue();
 TextListValue(const TextListValue&);
-TextListValue(const QCString&);
+TextListValue(const Q3CString&);
 TextListValue & operator = (TextListValue&);
-TextListValue & operator = (const QCString&);
+TextListValue & operator = (const Q3CString&);
 bool operator ==(TextListValue&);
 bool operator !=(TextListValue& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {TextListValue a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {TextListValue a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~TextListValue();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

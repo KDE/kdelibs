@@ -3,13 +3,13 @@
 public:
 DateParam();
 DateParam(const DateParam&);
-DateParam(const QCString&);
+DateParam(const Q3CString&);
 DateParam & operator = (DateParam&);
-DateParam & operator = (const QCString&);
+DateParam & operator = (const Q3CString&);
 bool operator ==(DateParam&);
 bool operator !=(DateParam& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {DateParam a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {DateParam a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~DateParam();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

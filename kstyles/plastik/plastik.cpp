@@ -40,25 +40,25 @@
 
 #include <qimage.h>
 #include <qstylefactory.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qpainter.h>
 #include <qtabbar.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qcleanuphandler.h>
-#include <qheader.h>
+#include <q3cleanuphandler.h>
+#include <q3header.h>
 #include <qlineedit.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qscrollbar.h>
 #include <qstyleplugin.h>
 #include <qpushbutton.h>
 #include <qtabwidget.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
-#include <qtoolbar.h>
+#include <q3toolbar.h>
 #include <qmenubar.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qdrawutil.h>
 #include <qapplication.h>
 #include <qvariant.h>
@@ -184,7 +184,7 @@ PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollB
     settings.endGroup();
 
     // setup pixmap cache...
-    pixmapCache = new QIntCache<CacheEntry>(150000, 499);
+    pixmapCache = new Q3IntCache<CacheEntry>(150000, 499);
     pixmapCache->setAutoDelete(true);
 
     if ( _animateProgressBar )
@@ -197,16 +197,16 @@ PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollB
 
 void PlastikStyle::updateProgressPos()
 {
-    QProgressBar* pb;
+    Q3ProgressBar* pb;
     //Update the registered progressbars.
     QMap<QWidget*, int>::iterator iter;
     bool visible = false;
     for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
     {   
-        if ( !::qt_cast<QProgressBar*>(iter.key()) )
+        if ( !::qt_cast<Q3ProgressBar*>(iter.key()) )
             continue;
         
-        pb = dynamic_cast<QProgressBar*>(iter.key());
+        pb = dynamic_cast<Q3ProgressBar*>(iter.key());
         if ( iter.key() -> isEnabled() && 
              pb -> progress() != pb->totalSteps() )
         {
@@ -249,7 +249,7 @@ void PlastikStyle::polish(QWidget* widget)
     // use qt_cast where possible to check if the widget inheits one of the classes. might improve
     // performance compared to QObject::inherits()
     if ( ::qt_cast<QPushButton*>(widget) || ::qt_cast<QComboBox*>(widget) ||
-            ::qt_cast<QSpinWidget*>(widget) || ::qt_cast<QSlider*>(widget) ||
+            ::qt_cast<Q3SpinWidget*>(widget) || ::qt_cast<QSlider*>(widget) ||
             ::qt_cast<QCheckBox*>(widget) || ::qt_cast<QRadioButton*>(widget) ||
             ::qt_cast<QToolButton*>(widget) || widget->inherits("QSplitterHandle") )
     {
@@ -260,13 +260,13 @@ void PlastikStyle::polish(QWidget* widget)
     } else if (::qt_cast<QTabBar*>(widget)) {
         widget->setMouseTracking(true);
         widget->installEventFilter(this);
-    } else if (::qt_cast<QPopupMenu*>(widget)) {
-        widget->setBackgroundMode( NoBackground );
+    } else if (::qt_cast<Q3PopupMenu*>(widget)) {
+        widget->setBackgroundMode( Qt::NoBackground );
     } else if ( !qstrcmp(widget->name(), "kde toolbar widget") ) {
         widget->installEventFilter(this);
     }
 
-    if( _animateProgressBar && ::qt_cast<QProgressBar*>(widget) )
+    if( _animateProgressBar && ::qt_cast<Q3ProgressBar*>(widget) )
     {
         widget->installEventFilter(this);
         progAnimWidgets[widget] = 0;
@@ -286,7 +286,7 @@ void PlastikStyle::unPolish(QWidget* widget)
 
     // use qt_cast to check if the widget inheits one of the classes.
     if ( ::qt_cast<QPushButton*>(widget) || ::qt_cast<QComboBox*>(widget) ||
-            ::qt_cast<QSpinWidget*>(widget) || ::qt_cast<QSlider*>(widget) ||
+            ::qt_cast<Q3SpinWidget*>(widget) || ::qt_cast<QSlider*>(widget) ||
             ::qt_cast<QCheckBox*>(widget) || ::qt_cast<QRadioButton*>(widget) ||
             ::qt_cast<QToolButton*>(widget) || ::qt_cast<QLineEdit*>(widget) ||
             widget->inherits("QSplitterHandle") )
@@ -296,13 +296,13 @@ void PlastikStyle::unPolish(QWidget* widget)
     else if (::qt_cast<QTabBar*>(widget)) {
         widget->setMouseTracking(false);
         widget->removeEventFilter(this);
-    } else if (::qt_cast<QPopupMenu*>(widget)) {
-        widget->setBackgroundMode( PaletteBackground );
+    } else if (::qt_cast<Q3PopupMenu*>(widget)) {
+        widget->setBackgroundMode( Qt::PaletteBackground );
     } else if ( !qstrcmp(widget->name(), "kde toolbar widget") ) {
         widget->removeEventFilter(this);
     }
 
-    if ( ::qt_cast<QProgressBar*>(widget) )
+    if ( ::qt_cast<Q3ProgressBar*>(widget) )
     {
         progAnimWidgets.remove(widget);
     }
@@ -830,9 +830,9 @@ void PlastikStyle::renderGradient(QPainter *painter,
 
     register int x, y;
 
-    rDiff = ( c2.red())   - (rc = c1.red());
-    gDiff = ( c2.green()) - (gc = c1.green());
-    bDiff = ( c2.blue())  - (bc = c1.blue());
+    rDiff = ( c2.Qt::red())   - (rc = c1.Qt::red());
+    gDiff = ( c2.Qt::green()) - (gc = c1.Qt::green());
+    bDiff = ( c2.Qt::blue())  - (bc = c1.Qt::blue());
 
     register int rl = rc << 16;
     register int gl = gc << 16;
@@ -890,20 +890,20 @@ void PlastikStyle::renderPanel(QPainter *p,
 
     if (kickerMode &&
             p->device() && p->device()->devType() == QInternal::Widget &&
-            QCString(static_cast<QWidget*>(p->device())->className()) == "FittsLawFrame") {
+            Q3CString(static_cast<QWidget*>(p->device())->className()) == "FittsLawFrame") {
     //  Stolen wholesale from Keramik. I don't like it, but oh well.
         if (sunken) {
             const QCOORD corners[] = { x2, y, x2, y2, x, y2, x, y };
             p->setPen(g.background().dark());
-            p->drawConvexPolygon(QPointArray(4, corners));
+            p->drawConvexPolygon(Q3PointArray(4, corners));
             p->setPen(g.background().light());
-            p->drawPolyline(QPointArray(4, corners), 0, 3);
+            p->drawPolyline(Q3PointArray(4, corners), 0, 3);
         } else {
             const QCOORD corners[] = { x, y2, x, y, x2, y, x2, y2 };
             p->setPen(g.background().dark());
-            p->drawPolygon(QPointArray(4, corners));
+            p->drawPolygon(Q3PointArray(4, corners));
             p->setPen(g.background().light());
-            p->drawPolyline(QPointArray(4, corners), 0, 3);
+            p->drawPolyline(Q3PointArray(4, corners), 0, 3);
         }
     } else {
         renderContour(p, r, g.background(), getColor(g, PanelContour) );
@@ -928,7 +928,7 @@ void PlastikStyle::renderPanel(QPainter *p,
 }
 
 void PlastikStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg,
-    const QPopupMenu* /* popup */ ) const
+    const Q3PopupMenu* /* popup */ ) const
 {
     pix.fill( cg.background().light(105) );
 }
@@ -1210,7 +1210,7 @@ void PlastikStyle::drawKStylePrimitive(KStylePrimitive kpe,
     switch( kpe ) {
         case KPE_SliderGroove: {
             const QSlider* slider = (const QSlider*)widget;
-            bool horizontal = slider->orientation() == Horizontal;
+            bool horizontal = slider->orientation() == Qt::Horizontal;
 
             if (horizontal) {
                 int center = r.y()+r.height()/2;
@@ -1228,7 +1228,7 @@ void PlastikStyle::drawKStylePrimitive(KStylePrimitive kpe,
 
         case KPE_SliderHandle: {
                 const QSlider* slider = (const QSlider*)widget;
-                bool horizontal = slider->orientation() == Horizontal;
+                bool horizontal = slider->orientation() == Qt::Horizontal;
 
                 const bool pressed = (flags&Style_Active);
                 const WidgetState s = enabled?(pressed?IsPressed:IsEnabled):IsDisabled;
@@ -1380,14 +1380,14 @@ void PlastikStyle::drawKStylePrimitive(KStylePrimitive kpe,
             // drawing the right sort of lines.
             verticalLine   = new QBitmap( 1, 129, true );
             horizontalLine = new QBitmap( 128, 1, true );
-            QPointArray a( 64 );
+            Q3PointArray a( 64 );
             QPainter p2;
             p2.begin( verticalLine );
 
             int i;
             for( i=0; i < 64; i++ )
                 a.setPoint( i, 0, i*2+1 );
-            p2.setPen( color1 );
+            p2.setPen( Qt::color1 );
             p2.drawPoints( a );
             p2.end();
             QApplication::flushX();
@@ -1396,7 +1396,7 @@ void PlastikStyle::drawKStylePrimitive(KStylePrimitive kpe,
             p2.begin( horizontalLine );
             for( i=0; i < 64; i++ )
                 a.setPoint( i, i*2+1, 0 );
-            p2.setPen( color1 );
+            p2.setPen( Qt::color1 );
             p2.drawPoints( a );
             p2.end();
             QApplication::flushX();
@@ -1486,7 +1486,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
             if(!kickerMode) {
                 // detect if this is the left most header item
                 bool isFirst = false;
-                QHeader *header = dynamic_cast<QHeader*>(p->device() );
+                Q3Header *header = dynamic_cast<Q3Header*>(p->device() );
                 if (header) {
                     isFirst = header->mapToIndex(header->sectionAt(r.x() ) ) == 0;
                 }
@@ -1632,7 +1632,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
                 }
             }
 
-            bp.fillRect(br, QBrush(cg.background().light(), Dense4Pattern));
+            bp.fillRect(br, QBrush(cg.background().light(), Qt::Dense4Pattern));
 
             bp.end();
 
@@ -1725,7 +1725,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
         }
 
         case PE_IndicatorMask: {
-            p->fillRect (r, color1);
+            p->fillRect (r, Qt::color1);
             break;
         }
 
@@ -1785,12 +1785,12 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
         }
 
         case PE_ExclusiveIndicatorMask: {
-            p->fillRect(r, color0);
+            p->fillRect(r, Qt::color0);
 
             QBitmap bmp;
             bmp = QBitmap(13, 13, radiobutton_mask_bits, true);
             bmp.setMask(bmp);
-            p->setPen(color1);
+            p->setPen(Qt::color1);
             p->drawPixmap(x, y, bmp);
 
             break;
@@ -1924,8 +1924,8 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
         case PE_PanelDockWindow: {
             // fix for toolbar lag (from Mosfet Liquid) 
             QWidget* w = dynamic_cast<QWidget*>(p->device());
-            if(w && w->backgroundMode() == PaletteButton) 
-                w->setBackgroundMode(PaletteBackground);
+            if(w && w->backgroundMode() == Qt::PaletteButton) 
+                w->setBackgroundMode(Qt::PaletteBackground);
             p->fillRect(r, cg.brush(QColorGroup::Background));
 
             if ( _drawToolBarSeparator ) {
@@ -2046,7 +2046,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
         case PE_ArrowDown:
         case PE_ArrowLeft:
         case PE_ArrowRight: {
-            QPointArray a;
+            Q3PointArray a;
 
             switch (pe) {
                 case PE_SpinWidgetUp:
@@ -2076,7 +2076,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
                 }
             }
 
-            const QWMatrix oldMatrix( p->worldMatrix() );
+            const QMatrix oldMatrix( p->worldMatrix() );
 
             if (flags & Style_Down) {
                 p->translate(pixelMetric(PM_ButtonShiftHorizontal),
@@ -2098,7 +2098,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
                     a.translate(0, 0);
             }
 
-            if (p->pen() == QPen::NoPen) {
+            if (p->pen() == Qt::NoPen) {
                 if (flags & Style_Enabled) {
                     p->setPen(cg.buttonText());
                 } else {
@@ -2149,7 +2149,7 @@ void PlastikStyle::drawControl(ControlElement element,
         }
 
         case CE_ProgressBarContents: {
-            const QProgressBar *pb = dynamic_cast<const QProgressBar*>(widget);
+            const Q3ProgressBar *pb = dynamic_cast<const Q3ProgressBar*>(widget);
             int steps = pb->totalSteps();
 
             const QColor bg = enabled?cg.base():cg.background(); // background
@@ -2309,7 +2309,7 @@ void PlastikStyle::drawControl(ControlElement element,
             if( ::qt_cast<QTabWidget*>(tb->parent()) ) {
                 const QTabWidget *tw = (const QTabWidget*)tb->parent();
                 // is there a corner widget in the (top) left edge?
-                QWidget *cw = tw->cornerWidget(Qt::TopLeft);
+                QWidget *cw = tw->cornerWidget(Qt::TopLeftCorner);
                 if(cw)
                     cornerWidget = true;
             }
@@ -2334,18 +2334,18 @@ void PlastikStyle::drawControl(ControlElement element,
             }
 
             switch (tbs) {
-                case QTabBar::TriangularAbove:
+                case QTabBar:: TriangularNorth:
 //                     renderTriangularTab(p, r, cg, (flags & Style_MouseOver), selected, false, pos);
                     renderTab(p, r, cg, mouseOver, selected, false, pos, true, cornerWidget);
                     break;
-                case QTabBar::RoundedAbove:
+                case QTabBar::RoundedNorth:
                     renderTab(p, r, cg, mouseOver, selected, false, pos, false, cornerWidget);
                     break;
-                case QTabBar::TriangularBelow:
+                case QTabBar:: TriangularSouth:
 //                     renderTriangularTab(p, r, cg, (flags & Style_MouseOver), selected, true, pos);
                     renderTab(p, r, cg, mouseOver, selected, true, pos, true, cornerWidget);
                     break;
-                case QTabBar::RoundedBelow:
+                case QTabBar:: RoundedSouth:
                     renderTab(p, r, cg, mouseOver, selected, true, pos, false, cornerWidget);
                     break;
                     default:
@@ -2402,7 +2402,7 @@ void PlastikStyle::drawControl(ControlElement element,
             {
                 int dx = pixelMetric( PM_MenuButtonIndicator, widget );
                 if ( button->iconSet() && !button->iconSet()->isNull()  &&
-                    (dx + button->iconSet()->pixmap (QIconSet::Small, QIconSet::Normal, QIconSet::Off ).width()) >= w )
+                    (dx + button->iconSet()->pixmap (QIcon::Small, QIcon::Normal, QIcon::Off ).width()) >= w )
                 {
                     cornArrow = true; //To little room. Draw the arrow in the corner, don't adjust the widget
                 }
@@ -2417,15 +2417,15 @@ void PlastikStyle::drawControl(ControlElement element,
             // Draw the icon if there is one
             if ( button->iconSet() && !button->iconSet()->isNull() )
             {
-                QIconSet::Mode  mode  = QIconSet::Disabled;
-                QIconSet::State state = QIconSet::Off;
+                QIcon::Mode  mode  = QIcon::Disabled;
+                QIcon::State state = QIcon::Off;
 
                 if (button->isEnabled())
-                    mode = button->hasFocus() ? QIconSet::Active : QIconSet::Normal;
+                    mode = button->hasFocus() ? QIcon::Active : QIcon::Normal;
                 if (button->isToggleButton() && button->isOn())
-                    state = QIconSet::On;
+                    state = QIcon::On;
 
-                QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode, state );
+                QPixmap pixmap = button->iconSet()->pixmap( QIcon::Small, mode, state );
 
                 if (button->text().isEmpty() && !button->pixmap())
                     p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2,
@@ -2444,7 +2444,7 @@ void PlastikStyle::drawControl(ControlElement element,
             }
 
             // Make the label indicate if the button is a default button or not
-            drawItem( p, QRect(x, y, w, h), AlignCenter|ShowPrefix, button->colorGroup(),
+            drawItem( p, QRect(x, y, w, h), Qt::AlignCenter|Qt::TextShowMnemonic, button->colorGroup(),
                         button->isEnabled(), button->pixmap(), button->text(), -1,
                         &button->colorGroup().buttonText() );
 
@@ -2464,7 +2464,7 @@ void PlastikStyle::drawControl(ControlElement element,
             bool focused = flags & Style_HasFocus;
             bool down = flags & Style_Down;
             const int text_flags =
-                AlignVCenter | AlignHCenter | ShowPrefix | DontClip | SingleLine;
+                Qt::AlignVCenter | Qt::AlignHCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
 
             p->fillRect(r, cg.background());
 
@@ -2484,7 +2484,7 @@ void PlastikStyle::drawControl(ControlElement element,
     // POPUPMENU ITEM (highlighted on mouseover)
     // ------------------------------------------
         case CE_PopupMenuItem: {
-            const QPopupMenu *popupmenu = static_cast< const QPopupMenu * >( widget );
+            const Q3PopupMenu *popupmenu = static_cast< const Q3PopupMenu * >( widget );
             QMenuItem *mi = opt.menuItem();
 
             if ( !mi )
@@ -2540,13 +2540,13 @@ void PlastikStyle::drawControl(ControlElement element,
             // Do we have an icon?
             if ( mi->iconSet() )
             {
-                QIconSet::Mode mode;
+                QIcon::Mode mode;
 
                 // Select the correct icon from the iconset
                 if (active)
-                    mode = enabled?QIconSet::Active:QIconSet::Disabled;
+                    mode = enabled?QIcon::Active:QIcon::Disabled;
                 else
-                    mode = enabled?QIconSet::Normal:QIconSet::Disabled;
+                    mode = enabled?QIcon::Normal:QIcon::Disabled;
 
                 // Do we have an icon and are checked at the same time?
                 // Then draw a "pressed" background behind the icon
@@ -2554,7 +2554,7 @@ void PlastikStyle::drawControl(ControlElement element,
                     qDrawShadePanel( p, cr.x(), cr.y(), cr.width(), cr.height(),
                                         cg, true, 1, &cg.brush(QColorGroup::Midlight) );
                 // Draw the icon
-                QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
+                QPixmap pixmap = mi->iconSet()->pixmap(QIcon::Small, mode);
                 QRect pmr( 0, 0, pixmap.width(), pixmap.height() );
                 pmr.moveCenter( cr.center() );
                 p->drawPixmap( pmr.topLeft(), pixmap );
@@ -2619,8 +2619,8 @@ void PlastikStyle::drawControl(ControlElement element,
                 if ( !s.isNull() ) {
                     int t = s.find( '\t' );
                     int m = 2;
-                    int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
-                    text_flags |= reverse ? AlignRight : AlignLeft;
+                    int text_flags = Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
+                    text_flags |= reverse ? Qt::AlignRight : Qt::AlignLeft;
 
                     //QColor draw = cg.text();
                     QColor draw = (active && enabled) ? cg.highlightedText () : cg.foreground();
@@ -2666,14 +2666,14 @@ void PlastikStyle::drawControl(ControlElement element,
 
                     // Draw the pixmap
                     if ( pixmap->depth() == 1 )
-                        p->setBackgroundMode( OpaqueMode );
+                        p->setBackgroundMode( Qt::OpaqueMode );
 
                     int diffw = ( ( r.width() - pixmap->width() ) / 2 )
                                     + ( ( r.width() - pixmap->width() ) % 2 );
                     p->drawPixmap( r.x()+diffw, r.y()+1, *pixmap );
 
                     if ( pixmap->depth() == 1 )
-                        p->setBackgroundMode( TransparentMode );
+                        p->setBackgroundMode( Qt::TransparentMode );
                 }
             }
 
@@ -2689,8 +2689,8 @@ void PlastikStyle::drawControl(ControlElement element,
                     if ( enabled )
                         discol = cg.buttonText();
 
-                    QColorGroup g2( discol, cg.highlight(), white, white,
-                                    enabled ? white : discol, discol, white );
+                    QColorGroup g2( discol, cg.highlight(), Qt::white, Qt::white,
+                                    enabled ? Qt::white : discol, discol, Qt::white );
 
                     drawPrimitive( arrow, p, vr, g2, Style_Enabled );
                 } else
@@ -2729,8 +2729,8 @@ void PlastikStyle::drawControlMask(ControlElement element,
 {
     switch (element) {
         case CE_PushButton: {
-                    p->fillRect (r, color0);
-                    renderMask(p, r, color1,
+                    p->fillRect (r, Qt::color0);
+                    renderMask(p, r, Qt::color1,
                             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight);
                     break;
         }
@@ -2751,8 +2751,8 @@ void PlastikStyle::drawComplexControlMask(ComplexControl c,
         case CC_SpinWidget:
         case CC_ListView:
         case CC_ComboBox: {
-                p->fillRect (r, color0);
-                renderMask(p, r, color1,
+                p->fillRect (r, Qt::color0);
+                renderMask(p, r, Qt::color1,
                         Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight);
             break;
         }
@@ -2996,7 +2996,7 @@ void PlastikStyle::drawComplexControl(ComplexControl control,
         case CC_SpinWidget: {
             static const unsigned int handleWidth = 15;
 
-            const QSpinWidget *sw = dynamic_cast<const QSpinWidget *>(widget);
+            const Q3SpinWidget *sw = dynamic_cast<const Q3SpinWidget *>(widget);
             SFlags sflags = flags;
             PrimitiveElement pe;
 
@@ -3101,7 +3101,7 @@ void PlastikStyle::drawComplexControl(ComplexControl control,
                 sflags |= Style_Sunken;
             } else
                 sflags |= Style_Raised;
-            if (sw->buttonSymbols() == QSpinWidget::PlusMinus)
+            if (sw->buttonSymbols() == Q3SpinWidget::PlusMinus)
                 pe = PE_SpinWidgetPlus;
             else
                 pe = PE_SpinWidgetUp;
@@ -3114,7 +3114,7 @@ void PlastikStyle::drawComplexControl(ComplexControl control,
                 sflags |= Style_Sunken;
             } else
                 sflags |= Style_Raised;
-            if (sw->buttonSymbols() == QSpinWidget::PlusMinus)
+            if (sw->buttonSymbols() == Q3SpinWidget::PlusMinus)
                 pe = PE_SpinWidgetMinus;
             else
                 pe = PE_SpinWidgetDown;
@@ -3264,8 +3264,8 @@ int PlastikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
     // ----
         case PM_TabBarTabVSpace: {
             const QTabBar * tb = (const QTabBar *) widget;
-            if (tb->shape() == QTabBar::RoundedAbove ||
-                tb->shape() == QTabBar::RoundedBelow)
+            if (tb->shape() == QTabBar::RoundedNorth ||
+                tb->shape() == QTabBar:: RoundedSouth)
                 return 12;
             else
                 return 4;
@@ -3338,7 +3338,7 @@ int PlastikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
             return 1;
 
         case PM_DefaultFrameWidth: {
-            if(widget && ::qt_cast<QPopupMenu*>(widget))
+            if(widget && ::qt_cast<Q3PopupMenu*>(widget))
                 return 1;
             else
                 return 2;
@@ -3373,7 +3373,7 @@ QSize PlastikStyle::sizeFromContents(ContentsType t,
             if (!widget || opt.isDefault())
                 return s;
 
-            const QPopupMenu *popup = dynamic_cast<const QPopupMenu *>(widget);
+            const Q3PopupMenu *popup = dynamic_cast<const Q3PopupMenu *>(widget);
             QMenuItem *mi = opt.menuItem();
             int maxpmw = opt.maxIconWidth();
             int w = s.width(), h = s.height();
@@ -3398,7 +3398,7 @@ QSize PlastikStyle::sizeFromContents(ContentsType t,
                 }
 
                 if (mi->iconSet()) {
-                    h = QMAX(h, mi->iconSet()->pixmap(QIconSet::Small, QIconSet::Normal).height() + 2);
+                    h = QMAX(h, mi->iconSet()->pixmap(QIcon::Small, QIcon::Normal).height() + 2);
                 }
             }
 
@@ -3436,7 +3436,7 @@ QSize PlastikStyle::sizeFromContents(ContentsType t,
 
         case CT_ToolButton:
         {
-            if(widget->parent() && ::qt_cast<QToolBar*>(widget->parent()) )
+            if(widget->parent() && ::qt_cast<Q3ToolBar*>(widget->parent()) )
                 return QSize( s.width()+2*4, s.height()+2*4 );
             else
                 return KStyle::sizeFromContents (t, widget, s, opt);
@@ -3474,7 +3474,7 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
     if ( ::qt_cast<QLineEdit*>(obj) ) {
         QWidget* widget = static_cast<QWidget*>(obj);
 
-        if ( ::qt_cast<QSpinWidget*>(widget->parentWidget()) )
+        if ( ::qt_cast<Q3SpinWidget*>(widget->parentWidget()) )
         {
             QWidget* spinbox = widget->parentWidget();
             if ((ev->type() == QEvent::FocusIn) || (ev->type() == QEvent::FocusOut))
@@ -3493,7 +3493,7 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
     
     //Hover highlight... use qt_cast to check if the widget inheits one of the classes.
     if ( ::qt_cast<QPushButton*>(obj) || ::qt_cast<QComboBox*>(obj) ||
-            ::qt_cast<QSpinWidget*>(obj) || ::qt_cast<QCheckBox*>(obj) ||
+            ::qt_cast<Q3SpinWidget*>(obj) || ::qt_cast<QCheckBox*>(obj) ||
             ::qt_cast<QRadioButton*>(obj) || ::qt_cast<QToolButton*>(obj) || obj->inherits("QSplitterHandle") )
     {
         if ((ev->type() == QEvent::Enter) && static_cast<QWidget*>(obj)->isEnabled())
@@ -3548,7 +3548,7 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
         return false;
     }
     // Track show events for progress bars
-    if ( _animateProgressBar && ::qt_cast<QProgressBar*>(obj) )
+    if ( _animateProgressBar && ::qt_cast<Q3ProgressBar*>(obj) )
     {
         if ((ev->type() == QEvent::Show) && !animationTimer->isActive())
         {

@@ -21,9 +21,9 @@
 #include <qstringlist.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
-#include <qgroupbox.h>
-#include <qlistbox.h>
-#include <qwhatsthis.h>
+#include <q3groupbox.h>
+#include <q3listbox.h>
+#include <q3whatsthis.h>
 #include <qlabel.h>
 
 #include <kcombobox.h>
@@ -47,14 +47,14 @@ public:
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
 			   bool checkAtEntering, int buttons )
-    :QGroupBox(parent, name ), d(new KEditListBoxPrivate)
+    :Q3GroupBox(parent, name ), d(new KEditListBoxPrivate)
 {
     init( checkAtEntering, buttons );
 }
 
 KEditListBox::KEditListBox(const QString& title, QWidget *parent,
 			   const char *name, bool checkAtEntering, int buttons)
-    :QGroupBox(title, parent, name ), d(new KEditListBoxPrivate)
+    :Q3GroupBox(title, parent, name ), d(new KEditListBoxPrivate)
 {
     init( checkAtEntering, buttons );
 }
@@ -62,7 +62,7 @@ KEditListBox::KEditListBox(const QString& title, QWidget *parent,
 KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
                            QWidget *parent, const char *name,
                            bool checkAtEntering, int buttons)
-    :QGroupBox(title, parent, name ), d(new KEditListBoxPrivate)
+    :Q3GroupBox(title, parent, name ), d(new KEditListBoxPrivate)
 {
     m_lineEdit = custom.lineEdit();
     init( checkAtEntering, buttons, custom.representationWidget() );
@@ -95,7 +95,7 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
     else
         m_lineEdit=new KLineEdit(this);
 
-    m_listBox = new QListBox(this);
+    m_listBox = new Q3ListBox(this);
 
     QWidget *editingWidget = representationWidget ?
                              representationWidget : m_lineEdit;
@@ -193,7 +193,7 @@ void KEditListBox::typedSomething(const QString& text)
         }
         else
         {
-            StringComparisonMode mode = (StringComparisonMode) (ExactMatch | CaseSensitive );
+            StringComparisonMode mode = (StringComparisonMode) (ExactMatch | Qt::CaseSensitive );
             bool enable = (!m_listBox->findItem( text, mode ));
             servNewButton->setEnabled( enable );
         }
@@ -215,7 +215,7 @@ void KEditListBox::moveItemUp()
         return;
     }
 
-    QListBoxItem *selItem = m_listBox->item(selIndex);
+    Q3ListBoxItem *selItem = m_listBox->item(selIndex);
     m_listBox->takeItem(selItem);
     m_listBox->insertItem(selItem, selIndex-1);
     m_listBox->setCurrentItem(selIndex - 1);
@@ -238,7 +238,7 @@ void KEditListBox::moveItemDown()
         return;
     }
 
-    QListBoxItem *selItem = m_listBox->item(selIndex);
+    Q3ListBoxItem *selItem = m_listBox->item(selIndex);
     m_listBox->takeItem(selItem);
     m_listBox->insertItem(selItem, selIndex+1);
     m_listBox->setCurrentItem(selIndex + 1);
@@ -264,7 +264,7 @@ void KEditListBox::addItem()
             alreadyInList = true;
         else
         {
-            StringComparisonMode mode = (StringComparisonMode) (ExactMatch | CaseSensitive );
+            StringComparisonMode mode = (StringComparisonMode) (ExactMatch | Qt::CaseSensitive );
             alreadyInList =(m_listBox->findItem(currentTextLE, mode) );
         }
     }
@@ -365,12 +365,12 @@ void KEditListBox::insertStringList(const QStringList& list, int index)
     m_listBox->insertStringList(list,index);
 }
 
-void KEditListBox::insertStrList(const QStrList* list, int index)
+void KEditListBox::insertStrList(const Q3StrList* list, int index)
 {
     m_listBox->insertStrList(list,index);
 }
 
-void KEditListBox::insertStrList(const QStrList& list, int index)
+void KEditListBox::insertStrList(const Q3StrList& list, int index)
 {
     m_listBox->insertStrList(list,index);
 }
@@ -383,7 +383,7 @@ void KEditListBox::insertStrList(const char ** list, int numStrings, int index)
 QStringList KEditListBox::items() const
 {
     QStringList list;
-    for (QListBoxItem const * i = m_listBox->firstItem(); i != 0; i = i->next() )
+    for (Q3ListBoxItem const * i = m_listBox->firstItem(); i != 0; i = i->next() )
 	list.append( i->text());
 
     return list;

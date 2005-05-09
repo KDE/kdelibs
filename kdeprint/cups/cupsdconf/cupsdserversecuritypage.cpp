@@ -23,13 +23,13 @@
 #include <klocale.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qlistview.h>
-#include <qframe.h>
+#include <q3listview.h>
+#include <q3frame.h>
 #include <qpushbutton.h>
 #include <kmessagebox.h>
 #include <kiconloader.h>
 #include <kseparator.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -58,8 +58,8 @@ CupsdServerSecurityPage::CupsdServerSecurityPage(QWidget *parent, const char *na
 	sep->setFixedHeight(20);
 	main_->addWidget(sep);
 
-	locations_ = new QListView(this);
-	locations_->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	locations_ = new Q3ListView(this);
+	locations_->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	locations_->setLineWidth(1);
 	locations_->addColumn(i18n("Resource"));
 	locations_->addColumn(i18n("Path"));
@@ -96,7 +96,7 @@ void CupsdServerSecurityPage::updateLocations()
 	locations_->clear();
 	for (loclist_.first();loclist_.current();loclist_.next())
 	{
-		QListViewItem	*item = new QListViewItem(locations_, (loclist_.current()->resource_ ? loclist_.current()->resource_->text_ : i18n("<Unmatched resource>")), loclist_.current()->resourcename_);
+		Q3ListViewItem	*item = new Q3ListViewItem(locations_, (loclist_.current()->resource_ ? loclist_.current()->resource_->text_ : i18n("<Unmatched resource>")), loclist_.current()->resourcename_);
 		if (loclist_.current()->resource_) item->setPixmap(0, SmallIcon(CupsResource::typeToIconName(loclist_.current()->resource_->type_)));
 		else item->setPixmap(0, SmallIcon(""));
 	}
@@ -181,7 +181,7 @@ void CupsdServerSecurityPage::removeClicked()
 
 void CupsdServerSecurityPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(systemgroup_, conf->comments_.toolTip(SYSTEMGROUP_COMM));
-        QWhatsThis::add(locations_, conf->comments_.toolTip(LOCATIONS_COMM));
+        Q3WhatsThis::add(systemgroup_, conf->comments_.toolTip(SYSTEMGROUP_COMM));
+        Q3WhatsThis::add(locations_, conf->comments_.toolTip(LOCATIONS_COMM));
 }
 #include "cupsdserversecuritypage.moc"

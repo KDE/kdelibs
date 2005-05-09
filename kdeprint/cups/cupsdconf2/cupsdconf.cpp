@@ -140,7 +140,7 @@ CupsdConf::~CupsdConf()
 bool CupsdConf::loadFromFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (!f.exists() || !f.open(IO_ReadOnly)) return false;
+	if (!f.exists() || !f.open(QIODevice::ReadOnly)) return false;
 	else
 	{
 		QTextStream	t(&f);
@@ -176,7 +176,7 @@ bool CupsdConf::loadFromFile(const QString& filename)
 bool CupsdConf::saveToFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (!f.open(IO_WriteOnly))
+	if (!f.open(QIODevice::WriteOnly))
 		return false;
 	else
 	{
@@ -448,7 +448,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 		if (browsing_) t << "BrowseShortNames " << (useshortnames_ ? "Yes" : "No") << endl;
 		
 		t << endl << "# Unknown" << endl;
-		for (QValueList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
+		for (Q3ValueList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
 			t << (*it).first << " " << (*it).second << endl;
 
 		return true;

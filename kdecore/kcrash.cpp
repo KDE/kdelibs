@@ -189,7 +189,7 @@ KCrash::defaultCrashHandler (int sig)
           }
 
           // signal number -- will never be NULL
-          QCString tmp;
+          Q3CString tmp;
           tmp.setNum(sig);
           argv[i++] = qstrdup("--signal");
           argv[i++] = qstrdup(tmp.data());

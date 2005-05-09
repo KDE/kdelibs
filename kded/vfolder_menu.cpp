@@ -106,25 +106,25 @@ QStringList VFolderMenu::allDirectories()
 }
 
 static void
-track(const QString &menuId, const QString &menuName, QDict<KService> *includeList, QDict<KService> *excludeList, QDict<KService> *itemList, const QString &comment)
+track(const QString &menuId, const QString &menuName, Q3Dict<KService> *includeList, Q3Dict<KService> *excludeList, Q3Dict<KService> *itemList, const QString &comment)
 {
    if (itemList->find(menuId))
       printf("%s: %s INCL %d EXCL %d\n", menuName.latin1(), comment.latin1(), includeList->find(menuId) ? 1 : 0, excludeList->find(menuId) ? 1 : 0);
 }
 
 void
-VFolderMenu::includeItems(QDict<KService> *items1, QDict<KService> *items2)
+VFolderMenu::includeItems(Q3Dict<KService> *items1, Q3Dict<KService> *items2)
 {
-   for(QDictIterator<KService> it(*items2); it.current(); ++it)
+   for(Q3DictIterator<KService> it(*items2); it.current(); ++it)
    {
        items1->replace(it.current()->menuId(), it.current());
    }
 }
 
 void
-VFolderMenu::matchItems(QDict<KService> *items1, QDict<KService> *items2)
+VFolderMenu::matchItems(Q3Dict<KService> *items1, Q3Dict<KService> *items2)
 {
-   for(QDictIterator<KService> it(*items1); it.current(); )
+   for(Q3DictIterator<KService> it(*items1); it.current(); )
    {
        QString id = it.current()->menuId();
        ++it;
@@ -134,9 +134,9 @@ VFolderMenu::matchItems(QDict<KService> *items1, QDict<KService> *items2)
 }
 
 void
-VFolderMenu::excludeItems(QDict<KService> *items1, QDict<KService> *items2)
+VFolderMenu::excludeItems(Q3Dict<KService> *items1, Q3Dict<KService> *items2)
 {
-   for(QDictIterator<KService> it(*items2); it.current(); ++it)
+   for(Q3DictIterator<KService> it(*items2); it.current(); ++it)
    {
        items1->remove(it.current()->menuId());
    }
@@ -315,7 +315,7 @@ VFolderMenu::~VFolderMenu()
    for(appsInfo *info = m_appsInfoStack.first(); \
        info; info = m_appsInfoStack.next()) \
    { \
-      for(QDictIterator<KService> it( info->applications ); \
+      for(Q3DictIterator<KService> it( info->applications ); \
           it.current(); ++it ) \
       {
 #define FOR_ALL_APPLICATIONS_END } }
@@ -353,16 +353,16 @@ VFolderMenu::addApplication(const QString &id, KService *service)
 void
 VFolderMenu::buildApplicationIndex(bool unusedOnly)
 {
-   QPtrList<appsInfo>::ConstIterator appsInfo_it =  m_appsInfoList.begin();
+   Q3PtrList<appsInfo>::ConstIterator appsInfo_it =  m_appsInfoList.begin();
    for( ; appsInfo_it != m_appsInfoList.end(); ++appsInfo_it )
    {
       appsInfo *info = *appsInfo_it;
       info->dictCategories.clear();
-      for(QDictIterator<KService> it( info->applications );
+      for(Q3DictIterator<KService> it( info->applications );
           it.current(); )
       {
          KService *s = it.current();
-         QDictIterator<KService> tmpIt = it;
+         Q3DictIterator<KService> tmpIt = it;
          ++it;
          if (unusedOnly && m_usedAppsDict.find(s->menuId()))
          {
@@ -480,7 +480,7 @@ VFolderMenu::loadDoc()
       return doc;
    }
    QFile file( m_docInfo.path );
-   if ( !file.open( IO_ReadOnly ) )
+   if ( !file.open( QIODevice::ReadOnly ) )
    {
       kdWarning(7021) << "Could not open " << m_docInfo.path << endl;
       return doc;
@@ -842,7 +842,7 @@ VFolderMenu::loadMenu(const QString &fileName)
 }
 
 void
-VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
+VFolderMenu::processCondition(QDomElement &domElem, Q3Dict<KService> *items)
 {
    if (domElem.tagName() == "And")
    {
@@ -854,7 +854,7 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
          n = n.nextSibling();
       }
 
-      QDict<KService> andItems;
+      Q3Dict<KService> andItems;
       while( !n.isNull() ) {
          QDomElement e = n.toElement();
          if (e.tagName() == "Not")
@@ -888,7 +888,7 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
          n = n.nextSibling();
       }
 
-      QDict<KService> orItems;
+      Q3Dict<KService> orItems;
       while( !n.isNull() ) {
          QDomElement e = n.toElement();
          orItems.clear();
@@ -906,7 +906,7 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
       }
       FOR_ALL_APPLICATIONS_END
 
-      QDict<KService> notItems;
+      Q3Dict<KService> notItems;
       QDomNode n = domElem.firstChild();
       while( !n.isNull() ) {
          QDomElement e = n.toElement();
@@ -994,7 +994,7 @@ VFolderMenu::processKDELegacyDirs()
 {
 kdDebug(7021) << "processKDELegacyDirs()" << endl;
 
-   QDict<KService> items;
+   Q3Dict<KService> items;
    QString prefix = "kde-";
 
    QStringList relFiles;
@@ -1058,7 +1058,7 @@ VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const Q
 {
 kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")" << endl;
 
-   QDict<KService> items;
+   Q3Dict<KService> items;
    // We look for a set of files.
    DIR *dp = opendir( QFile::encodeName(dir));
    if (!dp)
@@ -1324,7 +1324,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
          QDomElement e = n.toElement(); // try to convert the node to an element.
          if (e.tagName() == "Include")
          {
-            QDict<KService> items;
+            Q3Dict<KService> items;
 
             QDomNode n2 = e.firstChild();
             while( !n2.isNull() ) {
@@ -1346,7 +1346,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
 
          else if (e.tagName() == "Exclude")
          {
-            QDict<KService> items;
+            Q3Dict<KService> items;
 
             QDomNode n2 = e.firstChild();
             while( !n2.isNull() ) {
@@ -1577,9 +1577,9 @@ VFolderMenu::layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout)
 }
 
 void
-VFolderMenu::markUsedApplications(QDict<KService> *items)
+VFolderMenu::markUsedApplications(Q3Dict<KService> *items)
 {
-   for(QDictIterator<KService> it(*items); it.current(); ++it)
+   for(Q3DictIterator<KService> it(*items); it.current(); ++it)
    {
       m_usedAppsDict.replace(it.current()->menuId(), it.current());
    }

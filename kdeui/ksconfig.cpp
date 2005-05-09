@@ -108,7 +108,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   glay->addMultiCellWidget( cb2, 1, 1, 0, 2 );
 
   dictcombo = new QComboBox( this, "DictFromList" );
-  dictcombo->setInsertionPolicy( QComboBox::NoInsertion );
+  dictcombo->setInsertionPolicy( QComboBox::NoInsert );
   connect( dictcombo, SIGNAL (activated(int)),
 	   this, SLOT (sSetDictionary(int)) );
   glay->addMultiCellWidget( dictcombo, 2, 2, 1, 2 );

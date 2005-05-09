@@ -36,14 +36,14 @@ public:
     Weight = 0x1,
     Bold = 0x2,
     Italic = 0x4,
-    Underline = 0x8,
-    StrikeOut = 0x10,
+    Qt::TextUnderline = 0x8,
+    Qt::TextStrikeOut = 0x10,
     Outline = 0x20,
     TextColor = 0x40,
     SelectedTextColor = 0x80,
     BGColor = 0x100,
     SelectedBGColor = 0x200,
-    Overline = 0x400
+    Qt::TextOverline = 0x400
   };
 
   KateAttribute();

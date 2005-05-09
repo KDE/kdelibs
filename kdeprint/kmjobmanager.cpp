@@ -45,7 +45,7 @@ KMJobManager* KMJobManager::self()
 
 void KMJobManager::discardAllJobs()
 {
-	QPtrListIterator<KMJob>	it(m_jobs);
+	Q3PtrListIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 		it.current()->setDiscarded(true);
 }
@@ -71,7 +71,7 @@ void KMJobManager::removeDiscardedJobs()
 
 KMJob* KMJobManager::findJob(const QString& uri)
 {
-	QPtrListIterator<KMJob>	it(m_jobs);
+	Q3PtrListIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 		if (it.current()->uri() == uri)
 			return it.current();
@@ -117,7 +117,7 @@ bool KMJobManager::sendCommand(const QString& uri, int action, const QString& ar
 	KMJob	*job = findJob(uri);
 	if (job)
 	{
-		QPtrList<KMJob>	l;
+		Q3PtrList<KMJob>	l;
 		l.setAutoDelete(false);
 		l.append(job);
 		return sendCommand(l,action,arg);
@@ -125,13 +125,13 @@ bool KMJobManager::sendCommand(const QString& uri, int action, const QString& ar
 	return false;
 }
 
-bool KMJobManager::sendCommand(const QPtrList<KMJob>& jobs, int action, const QString& args)
+bool KMJobManager::sendCommand(const Q3PtrList<KMJob>& jobs, int action, const QString& args)
 {
 	// split jobs in 2 classes
-	QPtrList<KMJob>	csystem, cthread;
+	Q3PtrList<KMJob>	csystem, cthread;
 	csystem.setAutoDelete(false);
 	cthread.setAutoDelete(false);
-	QPtrListIterator<KMJob>	it(jobs);
+	Q3PtrListIterator<KMJob>	it(jobs);
 	for (;it.current();++it)
 		if (it.current()->type() == KMJob::Threaded) cthread.append(it.current());
 		else csystem.append(it.current());
@@ -144,17 +144,17 @@ bool KMJobManager::sendCommand(const QPtrList<KMJob>& jobs, int action, const QS
 	return true;
 }
 
-bool KMJobManager::sendCommandSystemJob(const QPtrList<KMJob>&, int, const QString&)
+bool KMJobManager::sendCommandSystemJob(const Q3PtrList<KMJob>&, int, const QString&)
 {
 	return false;
 }
 
-bool KMJobManager::sendCommandThreadJob(const QPtrList<KMJob>& jobs, int action, const QString&)
+bool KMJobManager::sendCommandThreadJob(const Q3PtrList<KMJob>& jobs, int action, const QString&)
 {
 	if (action != KMJob::Remove)
 		return false;
 
-	QPtrListIterator<KMJob>	it(jobs);
+	Q3PtrListIterator<KMJob>	it(jobs);
 	bool	result(true);
 	for (;it.current() && result; ++it)
 		result = m_threadjob->removeJob(it.current()->id());
@@ -166,12 +166,12 @@ bool KMJobManager::listJobs(const QString&, KMJobManager::JobType, int)
 	return true;
 }
 
-const QPtrList<KMJob>& KMJobManager::jobList(bool reload)
+const Q3PtrList<KMJob>& KMJobManager::jobList(bool reload)
 {
 	if (reload || m_jobs.count() == 0)
 	{
 		discardAllJobs();
-		QDictIterator<JobFilter>	it(m_filter);
+		Q3DictIterator<JobFilter>	it(m_filter);
 		int	joblimit = limit();
 		bool threadjobs_updated = false;
 		for (; it.current(); ++it)
@@ -203,12 +203,12 @@ int KMJobManager::actions()
 	return 0;
 }
 
-QValueList<KAction*> KMJobManager::createPluginActions(KActionCollection*)
+Q3ValueList<KAction*> KMJobManager::createPluginActions(KActionCollection*)
 {
-	return QValueList<KAction*>();
+	return Q3ValueList<KAction*>();
 }
 
-void KMJobManager::validatePluginActions(KActionCollection*, const QPtrList<KMJob>&)
+void KMJobManager::validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&)
 {
 }
 
@@ -235,7 +235,7 @@ void KMJobManager::removePrinter(const QString& pr, KMJobManager::JobType type)
 	}
 }
 
-bool KMJobManager::doPluginAction(int, const QPtrList<KMJob>&)
+bool KMJobManager::doPluginAction(int, const Q3PtrList<KMJob>&)
 {
 	return true;
 }

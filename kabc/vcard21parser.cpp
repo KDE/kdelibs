@@ -262,7 +262,7 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   addressee.setBirthday(VCardStringToDate(tmpStr));
 
   //set the addressee's phone numbers
-  for ( QValueListIterator<VCardLineX> i = mVCard->_vcdata->begin();i != mVCard->_vcdata->end(); ++i ) {
+  for ( Q3ValueListIterator<VCardLineX> i = mVCard->_vcdata->begin();i != mVCard->_vcdata->end(); ++i ) {
     if ( (*i).name == VCARD_TEL ) {
       int type = 0;
       if ( (*i).qualified ) {
@@ -300,7 +300,7 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   }
 
   //set the addressee's addresses
-  for ( QValueListIterator<VCardLineX> i = mVCard->_vcdata->begin();i != mVCard->_vcdata->end(); ++i ) {
+  for ( Q3ValueListIterator<VCardLineX> i = mVCard->_vcdata->begin();i != mVCard->_vcdata->end(); ++i ) {
     if ( (*i).name == VCARD_ADR ) {
       int type = 0;
       if ( (*i).qualified ) {
@@ -396,10 +396,10 @@ VCard21ParserImpl *VCard21ParserImpl::parseVCard( const QString& vc, int *err )
   int _err = 0;
   int _state = VC_STATE_BEGIN;
 
-  QValueList<VCardLineX> *_vcdata;
-  QValueList<QString> lines;
+  Q3ValueList<VCardLineX> *_vcdata;
+  Q3ValueList<QString> lines;
 
-  _vcdata = new QValueList<VCardLineX>;
+  _vcdata = new Q3ValueList<VCardLineX>;
 
   lines = QStringList::split( QRegExp( "[\x0d\x0a]" ), vc );
 
@@ -531,7 +531,7 @@ VCard21ParserImpl *VCard21ParserImpl::parseVCard( const QString& vc, int *err )
   return new VCard21ParserImpl( _vcdata );
 }
 
-VCard21ParserImpl::VCard21ParserImpl(QValueList<VCardLineX> *_vcd) : _vcdata(_vcd)
+VCard21ParserImpl::VCard21ParserImpl(Q3ValueList<VCardLineX> *_vcd) : _vcdata(_vcd)
 {
 }
 
@@ -542,7 +542,7 @@ QString VCard21ParserImpl::getValue(const QString& name, const QString& qualifie
   const QString lowname = name.lower();
   const QString lowqualifier = qualifier.lower();
 
-  for (QValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
+  for (Q3ValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
    if ((*i).name == lowname && (*i).qualified && (*i).qualifiers.contains(lowqualifier)) {
     if ((*i).parameters.count() > 0)
      return (*i).parameters[0];
@@ -558,7 +558,7 @@ QString VCard21ParserImpl::getValue(const QString& name)
   QString failed;
   const QString lowname = name.lower();
 
-  for (QValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
+  for (Q3ValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
     if ((*i).name == lowname && !(*i).qualified) {
       if ((*i).parameters.count() > 0)
         return (*i).parameters[0];
@@ -572,7 +572,7 @@ QString VCard21ParserImpl::getValue(const QString& name)
 QStringList VCard21ParserImpl::getValues(const QString& name)
 {
   const QString lowname = name.lower();
-  for (QValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
+  for (Q3ValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
     if ((*i).name == lowname && !(*i).qualified)
       return (*i).parameters;
   }
@@ -584,7 +584,7 @@ QStringList VCard21ParserImpl::getValues(const QString& name, const QString& qua
 {
   const QString lowname = name.lower();
   const QString lowqualifier = qualifier.lower();
-  for (QValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
+  for (Q3ValueListIterator<VCardLineX> i = _vcdata->begin();i != _vcdata->end();++i) {
     if ((*i).name == lowname && (*i).qualified && (*i).qualifiers.contains(lowqualifier))
        return (*i).parameters;
   }

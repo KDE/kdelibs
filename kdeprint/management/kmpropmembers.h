@@ -22,7 +22,7 @@
 
 #include "kmpropwidget.h"
 
-class QTextView;
+class Q3TextView;
 
 class KDEPRINT_EXPORT KMPropMembers : public KMPropWidget
 {
@@ -36,7 +36,7 @@ protected:
 	void configureWizard(KMWizard*);
 
 private:
-	QTextView	*m_members;
+	Q3TextView	*m_members;
 };
 
 #endif

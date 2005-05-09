@@ -88,7 +88,7 @@ public:
       *
       * @param libraryName name of the library to query the instance from
       */
-     static const KInstance *partInstanceFromLibrary( const QCString &libraryName );
+     static const KInstance *partInstanceFromLibrary( const Q3CString &libraryName );
 
 protected:
 

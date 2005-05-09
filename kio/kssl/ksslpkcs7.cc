@@ -65,7 +65,7 @@ KSSLPKCS7* KSSLPKCS7::fromString(QString base64) {
 KTempFile ktf;
 
     if (base64.isEmpty()) return NULL;
-    QByteArray qba, qbb = QCString(base64.latin1()).copy();
+    QByteArray qba, qbb = Q3CString(base64.latin1()).copy();
     KCodecs::base64Decode(qbb, qba);
     ktf.file()->writeBlock(qba);
     ktf.close();
@@ -83,7 +83,7 @@ KSSLPKCS7* KSSLPKCS7::loadCertFile(QString filename) {
 QFile qf(filename);
 PKCS7 *newpkcs = NULL;
 
-  if (!qf.open(IO_ReadOnly))
+  if (!qf.open(QIODevice::ReadOnly))
     return NULL;
 
   FILE *fp = fdopen(qf.handle(), "r");
@@ -147,7 +147,7 @@ bool KSSLPKCS7::toFile(QString filename) {
 #ifdef KSSL_HAVE_SSL
 QFile out(filename);
 
-   if (!out.open(IO_WriteOnly)) return false;
+   if (!out.open(QIODevice::WriteOnly)) return false;
 
    int fd = out.handle();
    FILE *fp = fdopen(fd, "w");

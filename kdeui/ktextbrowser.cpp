@@ -18,7 +18,7 @@
  */
 
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kapplication.h>
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>
@@ -28,7 +28,7 @@
 
 KTextBrowser::KTextBrowser( QWidget *parent, const char *name,
 			    bool notifyClick )
-  : QTextBrowser( parent, name ), mNotifyClick(notifyClick)
+  : Q3TextBrowser( parent, name ), mNotifyClick(notifyClick)
 {
   //
   //1999-10-04 Espen Sand: Not required anymore ?
@@ -87,42 +87,42 @@ void KTextBrowser::setSource( const QString& name )
 
 void KTextBrowser::keyPressEvent(QKeyEvent *e)
 {
-  if( e->key() == Key_Escape )
+  if( e->key() == Qt::Key_Escape )
   {
     e->ignore();
   }
-  else if( e->key() == Key_F1 )
+  else if( e->key() == Qt::Key_F1 )
   {
     e->ignore();
   }
   else
   {
-    QTextBrowser::keyPressEvent(e);
+    Q3TextBrowser::keyPressEvent(e);
   }
 }
 
 void KTextBrowser::viewportMouseMoveEvent( QMouseEvent* e)
 {
   // do this first so we get the right type of cursor
-  QTextBrowser::viewportMouseMoveEvent(e);
+  Q3TextBrowser::viewportMouseMoveEvent(e);
 
-  if ( viewport()->cursor().shape() == PointingHandCursor )
+  if ( viewport()->cursor().shape() == Qt::PointingHandCursor )
     viewport()->setCursor( KCursor::handCursor() );
 }
 
 void KTextBrowser::contentsWheelEvent( QWheelEvent *e )
 {
     if ( KGlobalSettings::wheelMouseZooms() )
-        QTextBrowser::contentsWheelEvent( e );
+        Q3TextBrowser::contentsWheelEvent( e );
     else // thanks, we don't want to zoom, so skip QTextEdit's impl.
-        QScrollView::contentsWheelEvent( e );
+        Q3ScrollView::contentsWheelEvent( e );
 }
 
-QPopupMenu *KTextBrowser::createPopupMenu( const QPoint & pos )
+Q3PopupMenu *KTextBrowser::createPopupMenu( const QPoint & pos )
 {
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
-    QPopupMenu *popup = QTextBrowser::createPopupMenu( pos );
+    Q3PopupMenu *popup = Q3TextBrowser::createPopupMenu( pos );
 
     if ( isReadOnly() )
       popup->changeItem( popup->idAt(0), SmallIconSet("editcopy"), popup->text( popup->idAt(0) ) );

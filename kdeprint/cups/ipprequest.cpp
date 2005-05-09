@@ -34,8 +34,8 @@
 #endif
 
 #ifdef HAVE_CUPS_NO_PWD_CACHE
-#include <qcstring.h>
-static QCString cups_authstring = "";
+#include <q3cstring.h>
+static Q3CString cups_authstring = "";
 #endif
 
 void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::null)
@@ -155,7 +155,7 @@ void IppRequest::init()
 	}
 	request_ = ippNew();
 	//kdDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
-        QCString langstr = KGlobal::locale()->language().latin1();
+        Q3CString langstr = KGlobal::locale()->language().latin1();
 	cups_lang_t*	lang = cupsLangGet(langstr.data());
 	// default charset to UTF-8 (ugly hack)
 	lang->encoding = CUPS_UTF8;
@@ -186,13 +186,13 @@ void IppRequest::addInteger_p(int group, int type, const QString& name, int valu
 	if (!name.isEmpty()) ippAddInteger(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),value);
 }
 
-void IppRequest::addIntegerList_p(int group, int type, const QString& name, const QValueList<int>& values)
+void IppRequest::addIntegerList_p(int group, int type, const QString& name, const Q3ValueList<int>& values)
 {
 	if (!name.isEmpty())
 	{
 		ipp_attribute_t	*attr = ippAddIntegers(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),(int)(values.count()),NULL);
 		int	i(0);
-		for (QValueList<int>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
+		for (Q3ValueList<int>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
 			attr->values[i].integer = *it;
 	}
 }
@@ -202,13 +202,13 @@ void IppRequest::addBoolean(int group, const QString& name, bool value)
 	if (!name.isEmpty()) ippAddBoolean(request_,(ipp_tag_t)group,name.latin1(),(char)value);
 }
 
-void IppRequest::addBoolean(int group, const QString& name, const QValueList<bool>& values)
+void IppRequest::addBoolean(int group, const QString& name, const Q3ValueList<bool>& values)
 {
 	if (!name.isEmpty())
 	{
 		ipp_attribute_t	*attr = ippAddBooleans(request_,(ipp_tag_t)group,name.latin1(),(int)(values.count()),NULL);
 		int	i(0);
-		for (QValueList<bool>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
+		for (Q3ValueList<bool>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
 			attr->values[i].boolean = (char)(*it);
 	}
 }
@@ -349,7 +349,7 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 		attr = attr->next;
 	// print each attribute
 	ipp_uchar_t	*d;
-	QCString	dateStr;
+	Q3CString	dateStr;
 	QDateTime	dt;
 	bool	bg(false);
 	while (attr && attr->group_tag == group)

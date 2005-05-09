@@ -26,7 +26,7 @@
 #ifndef _KPROGRESS_H
 #define _KPROGRESS_H "$Id$"
 
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <kdialogbase.h>
 
 /**
@@ -43,7 +43,7 @@
  *
  * @author Aaron Seigo
  */
-class KDEUI_EXPORT KProgress : public QProgressBar
+class KDEUI_EXPORT KProgress : public Q3ProgressBar
 {
   Q_OBJECT
 
@@ -51,7 +51,7 @@ public:
   /**
    * Construct a progress bar.
    */
-  KProgress(QWidget *parent=0, const char *name=0, WFlags f = 0);
+  KProgress(QWidget *parent=0, const char *name=0, Qt::WFlags f = 0);
 
   /**
    * Construct a progress bar with a total number of steps.
@@ -59,7 +59,7 @@ public:
    * bar represents. For example, if the operation is to examine 50 files, this value would be 50. Before examining
    * the first file, call setProgress(0); call setProgress(50) after examining the last file.
    */
-  KProgress(int totalSteps, QWidget *parent=0, const char *name=0, WFlags f = 0);
+  KProgress(int totalSteps, QWidget *parent=0, const char *name=0, Qt::WFlags f = 0);
 
   /**
    * Destruct the progress bar.

@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
 
-  KURL u2( QCString("/home/dfaure/") );
+  KURL u2( Q3CString("/home/dfaure/") );
   printf("\n* URL is %s\n",u2.url().ascii());
   // not ignoring trailing slash
   check("KURL::directory(false,false)", u2.directory(false,false), "/home/dfaure/");
@@ -587,13 +587,13 @@ int main(int argc, char *argv[])
   waba1 = "http://[::ffff:129.144.52.38]:81?query";
   QByteArray buffer;
   {
-      QDataStream stream( buffer, IO_WriteOnly );
+      QDataStream stream( buffer, QIODevice::WriteOnly );
       stream << origURL
              << KURL( "file:" ) // an invalid one
              << waba1; // the IPv6 one
   }
   {
-      QDataStream stream( buffer, IO_ReadOnly );
+      QDataStream stream( buffer, QIODevice::ReadOnly );
       KURL restoredURL;
       stream >> restoredURL;
       check( "Streaming valid URL", origURL.url(), restoredURL.url() );

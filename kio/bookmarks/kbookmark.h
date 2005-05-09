@@ -21,7 +21,7 @@
 #define __kbookmark_h
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qdom.h>
 #include <kurl.h>
 
@@ -290,7 +290,7 @@ public:
      * @return the list of urls of bookmarks at top level of the group
      * @since 3.2
      */
-    QValueList<KURL> groupUrlList() const;
+    Q3ValueList<KURL> groupUrlList() const;
 
 protected:
     QDomElement nextKnownTag( QDomElement start, bool goNext ) const;

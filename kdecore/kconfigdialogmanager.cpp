@@ -21,14 +21,14 @@
 
 #include "kconfigdialogmanager.h"
 
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qmetaobject.h>
-#include <qobjectlist.h>
-#include <qsqlpropertymap.h>
+#include <qobject.h>
+#include <q3sqlpropertymap.h>
 #include <qtimer.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kapplication.h>
 #include <kconfigskeleton.h>
@@ -43,8 +43,8 @@ public:
   Private() : insideGroupBox(false) { }
 
 public:
-  QDict<QWidget> knownWidget;
-  QDict<QWidget> buddyWidget;
+  Q3Dict<QWidget> knownWidget;
+  Q3Dict<QWidget> buddyWidget;
   bool insideGroupBox;
 };
 
@@ -54,7 +54,7 @@ KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *con
   d = new Private();
 
   kapp->installKDEPropertyMap();
-  propertyMap = QSqlPropertyMap::defaultMap();
+  propertyMap = Q3SqlPropertyMap::defaultMap();
 
   init(true);
 }
@@ -140,12 +140,12 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
     if (widget->metaObject()->findProperty("maxValue", true) != -1)
        widget->setProperty("maxValue", maxValue);
   }
-  if (QWhatsThis::textFor( widget ).isEmpty())
+  if (Q3WhatsThis::textFor( widget ).isEmpty())
   {
     QString whatsThis = item->whatsThis();
     if ( !whatsThis.isEmpty() )
     {
-      QWhatsThis::add( widget, whatsThis );
+      Q3WhatsThis::add( widget, whatsThis );
     }
   }
 }
@@ -158,7 +158,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
     return valueChanged;
 
   QObject *object;
-  for( QPtrListIterator<QObject> it( *listOfChildren );
+  for( Q3PtrListIterator<QObject> it( *listOfChildren );
        (object = it.current()); ++it )
   {
     if(!object->isWidgetType())
@@ -181,7 +181,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
         setupWidget(childWidget, item);
 
-        QMap<QString, QCString>::const_iterator changedIt = changedMap.find(childWidget->className());
+        QMap<QString, Q3CString>::const_iterator changedIt = changedMap.find(childWidget->className());
 
         if (changedIt == changedMap.end())
         {
@@ -201,7 +201,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
           connect(childWidget, *changedIt,
                   this, SIGNAL(widgetModified()));
 
-          QGroupBox *gb = dynamic_cast<QGroupBox *>(childWidget);
+          Q3GroupBox *gb = dynamic_cast<Q3GroupBox *>(childWidget);
           if (!gb)
             bParseChildren = false;
           else
@@ -236,7 +236,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 #ifndef NDEBUG
     else if (widgetName)
     {
-      QMap<QString, QCString>::const_iterator changedIt = changedMap.find(childWidget->className());
+      QMap<QString, Q3CString>::const_iterator changedIt = changedMap.find(childWidget->className());
       if (changedIt != changedMap.end())
       {
         if ((!d->insideGroupBox || !childWidget->inherits("QRadioButton")) && 
@@ -264,7 +264,7 @@ void KConfigDialogManager::updateWidgets()
   blockSignals(true);
 
   QWidget *widget;
-  for( QDictIterator<QWidget> it( d->knownWidget );
+  for( Q3DictIterator<QWidget> it( d->knownWidget );
        (widget = it.current()); ++it )
   {
      KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
@@ -307,7 +307,7 @@ void KConfigDialogManager::updateSettings()
   bool changed = false;
 
   QWidget *widget;
-  for( QDictIterator<QWidget> it( d->knownWidget );
+  for( Q3DictIterator<QWidget> it( d->knownWidget );
        (widget = it.current()); ++it )
   {
      KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
@@ -333,7 +333,7 @@ void KConfigDialogManager::updateSettings()
 
 void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 {
-  QButtonGroup *bg = dynamic_cast<QButtonGroup *>(w);
+  Q3ButtonGroup *bg = dynamic_cast<Q3ButtonGroup *>(w);
   if (bg)
   {
     bg->setButton(v.toInt());
@@ -352,7 +352,7 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 
 QVariant KConfigDialogManager::property(QWidget *w)
 {
-  QButtonGroup *bg = dynamic_cast<QButtonGroup *>(w);
+  Q3ButtonGroup *bg = dynamic_cast<Q3ButtonGroup *>(w);
   if (bg)
     return QVariant(bg->selectedId());
 
@@ -367,7 +367,7 @@ bool KConfigDialogManager::hasChanged()
 {
 
   QWidget *widget;
-  for( QDictIterator<QWidget> it( d->knownWidget );
+  for( Q3DictIterator<QWidget> it( d->knownWidget );
        (widget = it.current()); ++it )
   {
      KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());

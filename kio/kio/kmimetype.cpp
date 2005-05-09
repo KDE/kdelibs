@@ -60,7 +60,7 @@
 #include <kde_file.h>
 
 template class KSharedPtr<KMimeType>;
-template class QValueList<KMimeType::Ptr>;
+template class Q3ValueList<KMimeType::Ptr>;
 
 KMimeType::Ptr KMimeType::s_pDefaultType = 0L;
 bool KMimeType::s_bChecked = false;
@@ -344,7 +344,7 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
      return result;
 
   QFile f(fileName);
-  if (f.open(IO_ReadOnly))
+  if (f.open(QIODevice::ReadOnly))
   {
      unsigned char buf[10+1];
      int l = f.readBlock((char *)buf, 10);
@@ -619,7 +619,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
       dp = opendir( QFile::encodeName(_url.path()) );
       if ( dp )
       {
-        QValueList<QCString> entries;
+        Q3ValueList<Q3CString> entries;
         // Note that readdir isn't guaranteed to return "." and ".." first (#79826)
         ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
         ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
@@ -908,9 +908,9 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   return p.pid();
 }
 
-QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
+Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
 {
-  QValueList<Service> result;
+  Q3ValueList<Service> result;
 
   if ( !_url.isLocalFile() )
     return result;
@@ -961,20 +961,20 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
   return result;
 }
 
-QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
+Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
 {
   KSimpleConfig cfg( path, true );
   return userDefinedServices( path, cfg, bLocalFiles );
 }
 
-QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
+Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
 {
  return userDefinedServices( path, cfg, bLocalFiles, KURL::List() );
 }
 
-QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KURL::List & file_list )
+Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KURL::List & file_list )
 {
-  QValueList<Service> result;
+  Q3ValueList<Service> result;
 
   cfg.setDesktopGroup();
 
@@ -994,14 +994,14 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
   
   if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
     QString dcopcall = cfg.readEntry( "X-KDE-GetActionMenu" );
-    const QCString app = dcopcall.section(' ', 0,0).utf8();
+    const Q3CString app = dcopcall.section(' ', 0,0).utf8();
     
     QByteArray dataToSend;
-    QDataStream dataStream(dataToSend, IO_WriteOnly);
+    QDataStream dataStream(dataToSend, QIODevice::WriteOnly);
     dataStream << file_list;
-    QCString replyType;
+    Q3CString replyType;
     QByteArray replyData;
-    QCString object =    dcopcall.section(' ', 1,-2).utf8();
+    Q3CString object =    dcopcall.section(' ', 1,-2).utf8();
     QString function =  dcopcall.section(' ', -1);
     if(!function.endsWith("(KURL::List)")) {
       kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KURL::List) and must be specified." << endl;
@@ -1011,7 +1011,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
                    dataToSend, replyType, replyData, true, 100)
 	    && replyType == "QStringList" ) {
 	      
-        QDataStream dataStreamIn(replyData, IO_ReadOnly);
+        QDataStream dataStreamIn(replyData, QIODevice::ReadOnly);
         dataStreamIn >> keys;
       }
     }

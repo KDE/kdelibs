@@ -20,10 +20,10 @@
 #include "kmconfiggeneral.h"
 
 #include <qlayout.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kpushbutton.h>
 #include <klocale.h>
@@ -45,16 +45,16 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	setPageHeader(i18n("General Settings"));
 	setPagePixmap("fileprint");
 
-	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Refresh Interval"), this);
+	Q3GroupBox	*m_timerbox = new Q3GroupBox(0, Qt::Vertical, i18n("Refresh Interval"), this);
 	m_timer = new KIntNumInput(m_timerbox,"Timer");
 	m_timer->setRange(0,30);
     m_timer->setSuffix( i18n( " sec" ) );
 	m_timer->setSpecialValueText(i18n("Disabled"));
-	QWhatsThis::add(m_timer, i18n("This time setting controls the refresh rate of various "
+	Q3WhatsThis::add(m_timer, i18n("This time setting controls the refresh rate of various "
 			              "<b>KDE Print</b> components like the print manager "
 				      "and the job viewer."));
 
-	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test Page"), this);
+	Q3GroupBox	*m_testpagebox = new Q3GroupBox(0, Qt::Vertical, i18n("Test Page"), this);
 	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page"), m_testpagebox, "TestPageCheck");
 	m_testpage = new KURLRequester(m_testpagebox,"TestPage");
 	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
@@ -66,7 +66,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_preview->setDisabled(true);
 	m_defaulttestpage->setCursor(KCursor::handCursor());
 
-	QGroupBox	*m_statusbox = new QGroupBox(0, Qt::Vertical, i18n("Miscellaneous"), this);
+	Q3GroupBox	*m_statusbox = new Q3GroupBox(0, Qt::Vertical, i18n("Miscellaneous"), this);
 	m_statusmsg = new QCheckBox(i18n("Sho&w printing status message box"), m_statusbox);
 	m_uselast = new QCheckBox(i18n("De&faults to the last printer used in the application"), m_statusbox);
 

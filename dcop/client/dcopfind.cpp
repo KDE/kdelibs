@@ -126,7 +126,7 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
     }
 
     QByteArray data;
-    QDataStream arg(data, IO_WriteOnly);
+    QDataStream arg(data, QIODevice::WriteOnly);
 
     uint i = 0;
     for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
@@ -137,8 +137,8 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
 	exit(1);
     }
 
-    QCString foundApp;
-    QCString foundObj;
+    Q3CString foundApp;
+    Q3CString foundObj;
     if ( dcop->findObject( app, obj, f.latin1(),  data, foundApp, foundObj) )
     {
        if (bAppIdOnly)
@@ -162,8 +162,8 @@ bool launchApp(QString app)
 
     QStringList URLs;
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg(data, IO_WriteOnly);
+    Q3CString replyType;
+    QDataStream arg(data, QIODevice::WriteOnly);
     arg << app << URLs;
 
     if ( !dcop->call( "klauncher", "klauncher", "start_service_by_desktop_name(QString,QStringList)",
@@ -171,7 +171,7 @@ bool launchApp(QString app)
 	qWarning( "call to klauncher failed.");
         return false;
     }
-    QDataStream reply(replyData, IO_ReadOnly);
+    QDataStream reply(replyData, QIODevice::ReadOnly);
 
     if ( replyType != "serviceResult" )
     {
@@ -179,7 +179,7 @@ bool launchApp(QString app)
         return false;
     }
     int result;
-    QCString dcopName;
+    Q3CString dcopName;
     QString error;
     reply >> result >> dcopName >> error;
     if (result != 0)
@@ -223,9 +223,9 @@ int main( int argc, char** argv )
     client.attach();
     dcop = &client;
 
-    QCString app;
-    QCString objid;
-    QCString function;
+    Q3CString app;
+    Q3CString objid;
+    Q3CString function;
     char **args = 0;
     if ((argc > argi) && (strncmp(argv[argi], "DCOPRef(", 8)) == 0)
     {

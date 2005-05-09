@@ -150,7 +150,7 @@ QString KWordWrap::wrappedString() const
     // We use the calculated break positions to insert '\n' into the string
     QString ws;
     int start = 0;
-    QValueList<int>::ConstIterator it = m_breakPositions.begin();
+    Q3ValueList<int>::ConstIterator it = m_breakPositions.begin();
     for ( ; it != m_breakPositions.end() ; ++it )
     {
         int end = (*it);
@@ -173,9 +173,9 @@ QString KWordWrap::truncatedString( bool dots ) const
 }
 
 static QColor mixColors(double p1, QColor c1, QColor c2) {
-  return QColor(int(c1.red() * p1 + c2.red() * (1.0-p1)),
-                int(c1.green() * p1 + c2.green() * (1.0-p1)),
-		int(c1.blue() * p1 + c2.blue() * (1.0-p1)));
+  return QColor(int(c1.Qt::red() * p1 + c2.Qt::red() * (1.0-p1)),
+                int(c1.Qt::green() * p1 + c2.Qt::green() * (1.0-p1)),
+		int(c1.Qt::blue() * p1 + c2.Qt::blue() * (1.0-p1)));
 }
 
 void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
@@ -226,8 +226,8 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) c
     int height = fm.height(); // line height
     int ascent = fm.ascent();
     int maxwidth = m_boundingRect.width();
-    QValueList<int>::ConstIterator it = m_breakPositions.begin();
-    QValueList<int>::ConstIterator itw = m_lineWidths.begin();
+    Q3ValueList<int>::ConstIterator it = m_breakPositions.begin();
+    Q3ValueList<int>::ConstIterator itw = m_lineWidths.begin();
     for ( ; it != m_breakPositions.end() ; ++it, ++itw )
     {
         // if this is the last line, leave the loop

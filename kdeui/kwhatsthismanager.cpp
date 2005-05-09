@@ -17,16 +17,16 @@
  *  Boston, MA 02111-1307, USA.
  */
 #include "kwhatsthismanager_p.h"
-#include "qwhatsthis.h"
+#include "q3whatsthis.h"
 #include <qvariant.h>
 #include <kdebug.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <klocale.h>
 #include <kapplication.h>
 
 KWhatsThisManager *KWhatsThisManager::s_instance = 0;
 
-class KWhatsThisUndefined : public QWhatsThis
+class KWhatsThisUndefined : public Q3WhatsThis
 {
     public:
         KWhatsThisUndefined (QWidget *);
@@ -38,7 +38,7 @@ class KWhatsThisUndefined : public QWhatsThis
 };
 
 KWhatsThisUndefined::KWhatsThisUndefined (QWidget *w)
-    : QWhatsThis (w)
+    : Q3WhatsThis (w)
 {
     m_widget = w;
 }
@@ -53,7 +53,7 @@ QString KWhatsThisUndefined::text (const QPoint &)
             "-whatsthis\">send us \"What's This\" help</a> for it.");
     QString parent;
     if (m_widget -> parentWidget ())
-        parent = QWhatsThis::textFor (m_widget -> parentWidget ());
+        parent = Q3WhatsThis::textFor (m_widget -> parentWidget ());
         if (parent != txt)
             if (! parent . isEmpty ())
                 return parent;
@@ -110,7 +110,7 @@ bool KWhatsThisManager::eventFilter (QObject * /*o*/, QEvent *e)
         if (ce -> child () -> isWidgetType ()) {
             QWidget *w = (QWidget *) (ce -> child ());
             // kdDebug () << "new qwidget:" << w << endl;
-            if (QWhatsThis::textFor (w) . isEmpty ())
+            if (Q3WhatsThis::textFor (w) . isEmpty ())
                 new KWhatsThisUndefined (w);
         }
     }

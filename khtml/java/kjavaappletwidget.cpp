@@ -50,8 +50,8 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
 
     d->tmplabel = new QLabel( this );
     d->tmplabel->setText( KJavaAppletServer::getAppletLabel() );
-    d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
-    d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+    d->tmplabel->setAlignment( Qt::AlignCenter | Qt::TextWordWrap );
+    d->tmplabel->setFrameStyle( Q3Frame::StyledPanel | Q3Frame::Sunken );
     d->tmplabel->show();
 
     m_swallowTitle.sprintf( "KJAS Applet - Ticket number %u", appletCount++ );

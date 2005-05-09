@@ -18,7 +18,7 @@
 #ifndef _KANIMWIDGET_H
 #define _KANIMWIDGET_H
 
-#include <qframe.h>
+#include <q3frame.h>
 
 #include <kdelibs_export.h>
 
@@ -52,7 +52,7 @@ class KAnimWidgetPrivate;
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KAnimWidget : public QFrame
+class KDEUI_EXPORT KAnimWidget : public Q3Frame
 {
   Q_OBJECT
   Q_PROPERTY( int size READ size WRITE setSize )

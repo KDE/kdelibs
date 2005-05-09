@@ -152,7 +152,7 @@ QString getPrintcapFileName()
 	// check if LPRng system
 	QString	printcap("/etc/printcap");
 	QFile	f("/etc/lpd.conf");
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		kdDebug() << "/etc/lpd.conf found: probably LPRng system" << endl;
 		QTextStream	t(&f);
@@ -184,7 +184,7 @@ QString getPrintcapFileName()
 void KMLpdUnixManager::parseEtcPrintcap()
 {
 	QFile	f(getPrintcapFileName());
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		KTextBuffer	t(&f);
 		QMap<QString,QString>	entry;
@@ -245,7 +245,7 @@ QString getEtcPrintersConfName()
 void KMLpdUnixManager::parseEtcPrintersConf()
 {
 	QFile	f(getEtcPrintersConfName());
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		KTextBuffer	t(&f);
 		QMap<QString,QString>	entry;
@@ -295,7 +295,7 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 		if (it.current()->fileName() == "." || it.current()->fileName() == "..")
 			continue;
 		QFile	f(it.current()->absFilePath() + "/configuration");
-		if (f.exists() && f.open(IO_ReadOnly))
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);
 			QString		line, remote;
@@ -356,7 +356,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 	for (;it.current();++it)
 	{
 		QFile	f(it.current()->absFilePath());
-		if (f.exists() && f.open(IO_ReadOnly))
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);
 			QString		line, remote;

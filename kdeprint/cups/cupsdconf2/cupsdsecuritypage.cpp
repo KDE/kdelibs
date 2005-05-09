@@ -26,7 +26,7 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -80,7 +80,7 @@ bool CupsdSecurityPage::loadConfig(CupsdConf *conf, QString&)
 	encryptcert_->setURL(conf_->encryptcert_);
 	encryptkey_->setURL(conf_->encryptkey_);
 	locs_.clear();
-	QPtrListIterator<CupsLocation>	it(conf_->locations_);
+	Q3PtrListIterator<CupsLocation>	it(conf_->locations_);
 	for (;it.current();++it)
 	{
 		locs_.append(new CupsLocation(*(it.current())));
@@ -100,7 +100,7 @@ bool CupsdSecurityPage::saveConfig(CupsdConf *conf, QString&)
 	conf->encryptcert_ = encryptcert_->url();
 	conf->encryptkey_ = encryptkey_->url();
 	conf->locations_.clear();
-	QPtrListIterator<CupsLocation>	it(locs_);
+	Q3PtrListIterator<CupsLocation>	it(locs_);
 	for (;it.current();++it)
 		conf->locations_.append(new CupsLocation(*(it.current())));
 
@@ -109,11 +109,11 @@ bool CupsdSecurityPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdSecurityPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(remoteroot_, conf->comments_.toolTip("remoteroot"));
-	QWhatsThis::add(systemgroup_, conf->comments_.toolTip("systemgroup"));
-	QWhatsThis::add(encryptcert_, conf->comments_.toolTip("servercertificate"));
-	QWhatsThis::add(encryptkey_, conf->comments_.toolTip("serverkey"));
-	QWhatsThis::add(locations_, conf->comments_.toolTip("locationsshort"));
+	Q3WhatsThis::add(remoteroot_, conf->comments_.toolTip("remoteroot"));
+	Q3WhatsThis::add(systemgroup_, conf->comments_.toolTip("systemgroup"));
+	Q3WhatsThis::add(encryptcert_, conf->comments_.toolTip("servercertificate"));
+	Q3WhatsThis::add(encryptkey_, conf->comments_.toolTip("serverkey"));
+	Q3WhatsThis::add(locations_, conf->comments_.toolTip("locationsshort"));
 }
 
 void CupsdSecurityPage::slotAdd()

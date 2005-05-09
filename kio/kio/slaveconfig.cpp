@@ -22,7 +22,7 @@
 
 #include <assert.h>
 
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kconfig.h>
 #include <kstaticdeleter.h>
@@ -46,7 +46,7 @@ public:
 
 public:
   MetaData global;
-  QDict<MetaData> host;
+  Q3Dict<MetaData> host;
   KConfig *configFile;
 };
 
@@ -64,7 +64,7 @@ class SlaveConfigPrivate
      void readConfigProtocolHost(const QString &_protocol, SlaveConfigProtocol *scp, const QString &host);
   public:
      MetaData global;
-     QDict<SlaveConfigProtocol> protocol;
+     Q3Dict<SlaveConfigProtocol> protocol;
 };
 
 void SlaveConfigPrivate::readGlobalConfig()

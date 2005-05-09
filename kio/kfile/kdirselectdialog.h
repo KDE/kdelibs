@@ -23,7 +23,7 @@
 #include <kdialogbase.h>
 #include <kurl.h>
 
-class QPopupMenu;
+class Q3PopupMenu;
 class QVBoxLayout;
 class KConfig;
 class KFileTreeBranch;
@@ -102,7 +102,7 @@ private slots:
     void slotURLActivated( const QString& );
     void slotNextDirToList( KFileTreeViewItem *dirItem );
     void slotComboTextChanged( const QString& text );
-    void slotContextMenu( KListView *, QListViewItem *, const QPoint & );
+    void slotContextMenu( KListView *, Q3ListViewItem *, const QPoint & );
     void slotShowHiddenFoldersToggled();
     void slotMkdir();
 
@@ -113,7 +113,7 @@ private:
     KFileTreeBranch * createBranch( const KURL& url );
 
     KFileTreeView *m_treeView;
-    QPopupMenu *m_contextMenu;
+    Q3PopupMenu *m_contextMenu;
     KToggleAction *m_showHiddenFolders;
     bool m_localOnly;
 

@@ -126,7 +126,7 @@ ContainerNode *ContainerNode::findContainer( const QString &_name, bool tag )
  * belongs to currClient.
  */
 ContainerNode *ContainerNode::findContainer( const QString &name, const QString &tagName,
-                                             const QPtrList<QWidget> *excludeList,
+                                             const Q3PtrList<QWidget> *excludeList,
                                              KXMLGUIClient * /*currClient*/ )
 {
     ContainerNode *res = 0L;
@@ -213,7 +213,7 @@ void ContainerNode::plugActionList( BuildState &state )
     for (; mIt != mEnd; ++mIt )
         plugActionList( state, mIt );
 
-    QPtrListIterator<ContainerNode> childIt( children );
+    Q3PtrListIterator<ContainerNode> childIt( children );
     for (; childIt.current(); ++childIt )
         childIt.current()->plugActionList( state );
 }
@@ -255,7 +255,7 @@ void ContainerNode::unplugActionList( BuildState &state )
     for (; mIt != mEnd; ++mIt )
         unplugActionList( state, mIt );
 
-    QPtrListIterator<ContainerNode> childIt( children );
+    Q3PtrListIterator<ContainerNode> childIt( children );
     for (; childIt.current(); ++childIt )
         childIt.current()->unplugActionList( state );
 }
@@ -347,7 +347,7 @@ bool ContainerNode::destruct( QDomElement element, BuildState &state )
 
 void ContainerNode::destructChildren( const QDomElement &element, BuildState &state )
 {
-    QPtrListIterator<ContainerNode> childIt( children );
+    Q3PtrListIterator<ContainerNode> childIt( children );
     while ( childIt.current() )
     {
         ContainerNode *childNode = childIt.current();
@@ -418,8 +418,8 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
     // now quickly remove all custom elements (i.e. separators) and unplug all actions
 
-    QValueList<int>::ConstIterator custIt = client->customElements.begin();
-    QValueList<int>::ConstIterator custEnd = client->customElements.end();
+    Q3ValueList<int>::ConstIterator custIt = client->customElements.begin();
+    Q3ValueList<int>::ConstIterator custEnd = client->customElements.end();
     for (; custIt != custEnd; ++custIt )
         builder->removeCustomElement( container, *custIt );
 
@@ -460,7 +460,7 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
 void ContainerNode::reset()
 {
-    QPtrListIterator<ContainerNode> childIt( children );
+    Q3PtrListIterator<ContainerNode> childIt( children );
     for (; childIt.current(); ++childIt )
         childIt.current()->reset();
 

@@ -89,9 +89,9 @@ class KIO_EXPORT ForwardingSlaveBase : public QObject, public SlaveBase
 {
 Q_OBJECT
 public:
-    ForwardingSlaveBase(const QCString &protocol,
-                        const QCString &poolSocket,
-                        const QCString &appSocket);
+    ForwardingSlaveBase(const Q3CString &protocol,
+                        const Q3CString &poolSocket,
+                        const Q3CString &appSocket);
     virtual ~ForwardingSlaveBase();
 
     virtual void get(const KURL &url);

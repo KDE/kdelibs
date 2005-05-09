@@ -56,17 +56,17 @@ extern "C" {
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qcombobox.h>
-#include <qgroupbox.h>
-#include <qwhatsthis.h>
+#include <q3groupbox.h>
+#include <q3whatsthis.h>
 #include <qtooltip.h>
 #include <qstyle.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -522,7 +522,7 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
   assert(!m_singleUrl.isEmpty());
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
-  for ( QPtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
+  for ( Q3PtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
    if ( it.current()->isA("KExecPropsPlugin") || // KDE4 remove me
         it.current()->isA("KURLPropsPlugin") ||
         it.current()->isA("KDesktopPropsPlugin"))
@@ -649,7 +649,7 @@ public:
 
   KDirSize * dirSizeJob;
   QTimer *dirSizeUpdateTimer;
-  QFrame *m_frame;
+  Q3Frame *m_frame;
   bool bMultiple;
   bool bIconChanged;
   bool bKDesktopMode;
@@ -666,7 +666,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   d = new KFilePropsPluginPrivate;
   d->bMultiple = (properties->items().count() > 1);
   d->bIconChanged = false;
-  d->bKDesktopMode = (QCString(qApp->name()) == "kdesktop"); // nasty heh?
+  d->bKDesktopMode = (Q3CString(qApp->name()) == "kdesktop"); // nasty heh?
   d->bDesktopFile = KDesktopPropsPlugin::supports(properties->items());
   kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
@@ -849,7 +849,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     iconLabel->setPixmap( KGlobal::iconLoader()->loadIcon( iconStr, KIcon::Desktop, 48) );
     iconArea = iconLabel;
   }
-  grid->addWidget(iconArea, curRow, 0, AlignLeft);
+  grid->addWidget(iconArea, curRow, 0, Qt::AlignLeft);
 
   if (d->bMultiple || isTrash || isDevice || hasRoot)
   {
@@ -895,7 +895,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     grid->addWidget(l, curRow, 0);
 
-    QHBox *box = new QHBox(d->m_frame);
+    Q3HBox *box = new Q3HBox(d->m_frame);
     box->setSpacing(20);
     l = new QLabel(mimeComment, box );
 
@@ -903,8 +903,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     //TODO: wrap for win32 or mac?
     QPushButton *button = new QPushButton(box);
 
-    QIconSet iconSet = SmallIconSet(QString::fromLatin1("configure"));
-    QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
+    QIcon iconSet = SmallIconSet(QString::fromLatin1("configure"));
+    QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
     button->setIconSet( iconSet );
     button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     QToolTip::add(button, i18n("Edit file type"));
@@ -1285,7 +1285,7 @@ void KFilePropsPlugin::applyChanges()
       connect( job, SIGNAL( renamed( KIO::Job *, const KURL &, const KURL & ) ),
                SLOT( slotFileRenamed( KIO::Job *, const KURL &, const KURL & ) ) );
       // wait for job
-      QWidget dummy(0,0,WType_Dialog|WShowModal);
+      QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
       qt_enter_modal(&dummy);
       qApp->enter_loop();
       qt_leave_modal(&dummy);
@@ -1381,7 +1381,7 @@ void KFilePropsPlugin::applyIconChanges()
     // If default icon and no .directory file -> don't create one
     if ( !sIcon.isEmpty() || f.exists() )
     {
-        if ( !f.open( IO_ReadWrite ) ) {
+        if ( !f.open( QIODevice::ReadWrite ) ) {
           KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
 				      "have sufficient access to write to <b>%1</b>.</qt>").arg(path));
           return;
@@ -1427,7 +1427,7 @@ public:
   {
   }
 
-  QFrame *m_frame;
+  Q3Frame *m_frame;
   QCheckBox *cbRecursive;
   QLabel *explanationLabel;
   QComboBox *ownerPermCombo, *groupPermCombo, *othersPermCombo;
@@ -1558,12 +1558,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   QWidget *l;
   QLabel *lbl;
-  QGroupBox *gb;
+  Q3GroupBox *gb;
   QGridLayout *gl;
   QPushButton* pbAdvancedPerm = 0;
 
   /* Group: Access Permissions */
-  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), d->m_frame );
+  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), d->m_frame );
   gb->layout()->setSpacing(KDialog::spacingHint());
   gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
@@ -1586,7 +1586,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   lbl->setBuddy(l);
   gl->addWidget(l, 1, 1);
   connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
-  QWhatsThis::add(l, i18n("Specifies the actions that the owner is allowed to do."));
+  Q3WhatsThis::add(l, i18n("Specifies the actions that the owner is allowed to do."));
 
   lbl = new QLabel( i18n("Gro&up:"), gb);
   gl->addWidget(lbl, 2, 0);
@@ -1594,7 +1594,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   lbl->setBuddy(l);
   gl->addWidget(l, 2, 1);
   connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
-  QWhatsThis::add(l, i18n("Specifies the actions that the members of the group are allowed to do."));
+  Q3WhatsThis::add(l, i18n("Specifies the actions that the members of the group are allowed to do."));
 
   lbl = new QLabel( i18n("O&thers:"), gb);
   gl->addWidget(lbl, 3, 0);
@@ -1602,7 +1602,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   lbl->setBuddy(l);
   gl->addWidget(l, 3, 1);
   connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
-  QWhatsThis::add(l, i18n("Specifies the actions that all users, who are neither "
+  Q3WhatsThis::add(l, i18n("Specifies the actions that all users, who are neither "
 			  "owner nor in the group, are allowed to do."));
 
   if (!isLink) {
@@ -1612,7 +1612,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 					 gb );
     connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
     gl->addWidget(l, 4, 1);
-    QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the folder's owner to "
+    Q3WhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the folder's owner to "
 				     "delete or rename the contained files and folders. Other "
 				     "users can only add new files, which requires the 'Modify "
 				     "Content' permission.")
@@ -1624,7 +1624,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     gl->addMultiCell(spacer, 5, 5, 0, 1);
 
     pbAdvancedPerm = new QPushButton(i18n("A&dvanced Permissions"), gb);
-    gl->addMultiCellWidget(pbAdvancedPerm, 6, 6, 0, 1, AlignRight);
+    gl->addMultiCellWidget(pbAdvancedPerm, 6, 6, 0, 1, Qt::AlignRight);
     connect(pbAdvancedPerm, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
   }
   else
@@ -1632,7 +1632,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
 
   /**** Group: Ownership ****/
-  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Ownership"), d->m_frame );
+  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Ownership"), d->m_frame );
   gb->layout()->setSpacing(KDialog::spacingHint());
   gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
@@ -1681,7 +1681,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   /*** Set Group ***/
 
   QStringList groupList;
-  QCString strUser;
+  Q3CString strUser;
   user = getpwuid(geteuid());
   if (user != 0L)
     strUser = user->pw_name;
@@ -1795,11 +1795,11 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 		  KDialogBase::Ok|KDialogBase::Cancel);
 
   QLabel *l, *cl[3];
-  QGroupBox *gb;
+  Q3GroupBox *gb;
   QGridLayout *gl;
 
   // Group: Access Permissions
-  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), &dlg );
+  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), &dlg );
   gb->layout()->setSpacing(KDialog::spacingHint());
   gb->layout()->setMargin(KDialog::marginHint());
   dlg.setMainWidget(gb);
@@ -1820,7 +1820,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     readWhatsThis = i18n("This flag allows viewing the content of the folder.");
   else
     readWhatsThis = i18n("The Read flag allows viewing the content of the file.");
-  QWhatsThis::add(l, readWhatsThis);
+  Q3WhatsThis::add(l, readWhatsThis);
 
   if (isDir)
     l = new QLabel( i18n("Write\nEntries"), gb );
@@ -1833,7 +1833,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 			  "Note that deleting and renaming can be limited using the Sticky flag.");
   else
     writeWhatsThis = i18n("The Write flag allows modifying the content of the file.");
-  QWhatsThis::add(l, writeWhatsThis);
+  Q3WhatsThis::add(l, writeWhatsThis);
 
   QString execWhatsThis;
   if (isDir) {
@@ -1844,7 +1844,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     l = new QLabel( i18n("Exec"), gb );
     execWhatsThis = i18n("Enable this flag to allow executing the file as a program.");
   }
-  QWhatsThis::add(l, execWhatsThis);
+  Q3WhatsThis::add(l, execWhatsThis);
   // GJ: Add space between normal and special modes
   QSize size = l->sizeHint();
   size.setWidth(size.width() + 15);
@@ -1860,7 +1860,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen "
 			    "in the right hand column.");
-  QWhatsThis::add(l, specialWhatsThis);
+  Q3WhatsThis::add(l, specialWhatsThis);
 
   cl[0] = new QLabel( i18n("User"), gb );
   gl->addWidget (cl[0], 2, 0);
@@ -1880,7 +1880,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     setUidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
 			   "be executed with the permissions of the owner.");
-  QWhatsThis::add(l, setUidWhatsThis);
+  Q3WhatsThis::add(l, setUidWhatsThis);
 
   l = new QLabel(i18n("Set GID"), gb);
   gl->addWidget(l, 3, 5);
@@ -1891,7 +1891,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     setGidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
 			   "be executed with the permissions of the group.");
-  QWhatsThis::add(l, setGidWhatsThis);
+  Q3WhatsThis::add(l, setGidWhatsThis);
 
   l = new QLabel(i18n("File permission", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
@@ -1903,7 +1903,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     stickyWhatsThis = i18n("The Sticky flag on a file is ignored on Linux, but may "
 			   "be used on some systems");
-  QWhatsThis::add(l, stickyWhatsThis);
+  Q3WhatsThis::add(l, stickyWhatsThis);
 
   mode_t aPermissions, aPartialPermissions;
   mode_t dummy1, dummy2;
@@ -1953,24 +1953,24 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
       gl->addWidget (cb, row+2, col+1);
       switch(col) {
       case 0:
-	QWhatsThis::add(cb, readWhatsThis);
+	Q3WhatsThis::add(cb, readWhatsThis);
 	break;
       case 1:
-	QWhatsThis::add(cb, writeWhatsThis);
+	Q3WhatsThis::add(cb, writeWhatsThis);
 	break;
       case 2:
-	QWhatsThis::add(cb, execWhatsThis);
+	Q3WhatsThis::add(cb, execWhatsThis);
 	break;
       case 3:
 	switch(row) {
 	case 0:
-	  QWhatsThis::add(cb, setUidWhatsThis);
+	  Q3WhatsThis::add(cb, setUidWhatsThis);
 	  break;
 	case 1:
-	  QWhatsThis::add(cb, setGidWhatsThis);
+	  Q3WhatsThis::add(cb, setGidWhatsThis);
 	  break;
 	case 2:
-	  QWhatsThis::add(cb, stickyWhatsThis);
+	  Q3WhatsThis::add(cb, stickyWhatsThis);
 	  break;
 	}
 	break;
@@ -2213,11 +2213,11 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
     orFilePermissions |= m & UniOwner;
     if ((m & UniOwner) &&
 	((d->pmode == PermissionsMixed) ||
-	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QButton::NoChange))))
+	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QCheckBox::NoChange))))
       andFilePermissions &= ~(S_IRUSR | S_IWUSR);
     else {
       andFilePermissions &= ~(S_IRUSR | S_IWUSR | S_IXUSR);
-      if ((m & S_IRUSR) && (d->extraCheckbox->state() == QButton::On))
+      if ((m & S_IRUSR) && (d->extraCheckbox->state() == QCheckBox::On))
 	orFilePermissions |= S_IXUSR;
     }
 
@@ -2232,11 +2232,11 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
     orFilePermissions |= m & UniGroup;
     if ((m & UniGroup) &&
 	((d->pmode == PermissionsMixed) ||
-	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QButton::NoChange))))
+	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QCheckBox::NoChange))))
       andFilePermissions &= ~(S_IRGRP | S_IWGRP);
     else {
       andFilePermissions &= ~(S_IRGRP | S_IWGRP | S_IXGRP);
-      if ((m & S_IRGRP) && (d->extraCheckbox->state() == QButton::On))
+      if ((m & S_IRGRP) && (d->extraCheckbox->state() == QCheckBox::On))
 	orFilePermissions |= S_IXGRP;
     }
 
@@ -2251,11 +2251,11 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
     orFilePermissions |= m & UniOthers;
     if ((m & UniOthers) &&
 	((d->pmode == PermissionsMixed) ||
-	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QButton::NoChange))))
+	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QCheckBox::NoChange))))
       andFilePermissions &= ~(S_IROTH | S_IWOTH);
     else {
       andFilePermissions &= ~(S_IROTH | S_IWOTH | S_IXOTH);
-      if ((m & S_IROTH) && (d->extraCheckbox->state() == QButton::On))
+      if ((m & S_IROTH) && (d->extraCheckbox->state() == QCheckBox::On))
 	orFilePermissions |= S_IXOTH;
     }
 
@@ -2266,9 +2266,9 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
   }
 
   if (((d->pmode == PermissionsMixed) || (d->pmode == PermissionsOnlyDirs)) &&
-      (d->extraCheckbox->state() != QButton::NoChange)) {
+      (d->extraCheckbox->state() != QCheckBox::NoChange)) {
     andDirPermissions &= ~S_ISVTX;
-    if (d->extraCheckbox->state() == QButton::On)
+    if (d->extraCheckbox->state() == QCheckBox::On)
       orDirPermissions |= S_ISVTX;
   }
 }
@@ -2336,7 +2336,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
       connect( job, SIGNAL( result( KIO::Job * ) ),
 	       SLOT( slotChmodResult( KIO::Job * ) ) );
       // Wait for job
-      QWidget dummy(0,0,WType_Dialog|WShowModal);
+      QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
       qt_enter_modal(&dummy);
       qApp->enter_loop();
       qt_leave_modal(&dummy);
@@ -2347,7 +2347,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
       connect( job, SIGNAL( result( KIO::Job * ) ),
 	       SLOT( slotChmodResult( KIO::Job * ) ) );
       // Wait for job
-      QWidget dummy(0,0,WType_Dialog|WShowModal);
+      QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
       qt_enter_modal(&dummy);
       qApp->enter_loop();
       qt_leave_modal(&dummy);
@@ -2377,7 +2377,7 @@ public:
   {
   }
 
-  QFrame *m_frame;
+  Q3Frame *m_frame;
 };
 
 KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
@@ -2398,7 +2398,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
   QString path = properties->kurl().path();
 
   QFile f( path );
-  if ( !f.open( IO_ReadOnly ) )
+  if ( !f.open( QIODevice::ReadOnly ) )
     return;
   f.close();
 
@@ -2444,7 +2444,7 @@ void KURLPropsPlugin::applyChanges()
   QString path = properties->kurl().path();
 
   QFile f( path );
-  if ( !f.open( IO_ReadWrite ) ) {
+  if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
 				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
@@ -2483,7 +2483,7 @@ public:
   {
   }
 
-  QFrame *m_frame;
+  Q3Frame *m_frame;
 };
 
 KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
@@ -2538,7 +2538,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   mainlayout->activate();
 
   QFile f( _props->kurl().path() );
-  if ( !f.open( IO_ReadOnly ) )
+  if ( !f.open( QIODevice::ReadOnly ) )
     return;
   f.close();
 
@@ -2600,7 +2600,7 @@ void KBindingPropsPlugin::applyChanges()
   QString path = properties->kurl().path();
   QFile f( path );
 
-  if ( !f.open( IO_ReadWrite ) )
+  if ( !f.open( QIODevice::ReadWrite ) )
   {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
 				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
@@ -2617,7 +2617,7 @@ void KBindingPropsPlugin::applyChanges()
   config.writeEntry( "Comment",
 		     commentEdit->text(), true, false, true ); // for compat
   config.writeEntry( "MimeType", mimeEdit->text() );
-  if ( cbAutoEmbed->state() == QButton::NoChange )
+  if ( cbAutoEmbed->state() == QCheckBox::NoChange )
       config.deleteEntry( "X-KDE-AutoEmbed", false );
   else
       config.writeEntry( "X-KDE-AutoEmbed", cbAutoEmbed->isChecked() );
@@ -2640,11 +2640,11 @@ public:
   {
   }
 
-  QFrame *m_frame;
+  Q3Frame *m_frame;
   QStringList mountpointlist;
   QLabel *m_freeSpaceText;
   QLabel *m_freeSpaceLabel;
-  QProgressBar *m_freeSpaceBar;
+  Q3ProgressBar *m_freeSpaceBar;
 };
 
 KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
@@ -2718,7 +2718,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   d->m_freeSpaceLabel = new QLabel( d->m_frame );
   layout->addWidget( d->m_freeSpaceLabel, 4, 1 );
 
-  d->m_freeSpaceBar = new QProgressBar( d->m_frame, "freeSpaceBar" );
+  d->m_freeSpaceBar = new Q3ProgressBar( d->m_frame, "freeSpaceBar" );
   layout->addMultiCellWidget(d->m_freeSpaceBar, 5, 5, 0, 1);
 
   // we show it in the slot when we know the values
@@ -2743,7 +2743,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   QString path( _props->kurl().path() );
 
   QFile f( path );
-  if ( !f.open( IO_ReadOnly ) )
+  if ( !f.open( QIODevice::ReadOnly ) )
     return;
   f.close();
 
@@ -2880,7 +2880,7 @@ void KDevicePropsPlugin::applyChanges()
 {
   QString path = properties->kurl().path();
   QFile f( path );
-  if ( !f.open( IO_ReadWrite ) )
+  if ( !f.open( QIODevice::ReadWrite ) )
   {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient "
 				"access to write to <b>%1</b>.</qt>").arg(path));
@@ -2914,13 +2914,13 @@ void KDevicePropsPlugin::applyChanges()
 KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
-  QFrame *frame = properties->addPage(i18n("&Application"));
+  Q3Frame *frame = properties->addPage(i18n("&Application"));
   QVBoxLayout *mainlayout = new QVBoxLayout( frame, 0, KDialog::spacingHint() );
 
   w = new KPropertiesDesktopBase(frame);
   mainlayout->addWidget(w);
 
-  bool bKDesktopMode = (QCString(qApp->name()) == "kdesktop"); // nasty heh?
+  bool bKDesktopMode = (Q3CString(qApp->name()) == "kdesktop"); // nasty heh?
 
   if (bKDesktopMode)
   {
@@ -2946,7 +2946,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   // now populate the page
   QString path = _props->kurl().path();
   QFile f( path );
-  if ( !f.open( IO_ReadOnly ) )
+  if ( !f.open( QIODevice::ReadOnly ) )
     return;
   f.close();
 
@@ -3013,7 +3013,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     }
     if (p && (p != defaultMimetype))
     {
-       new QListViewItem(w->filetypeList, p->name(), p->comment(), preference);
+       new Q3ListViewItem(w->filetypeList, p->name(), p->comment(), preference);
     }
   }
 
@@ -3025,8 +3025,8 @@ KDesktopPropsPlugin::~KDesktopPropsPlugin()
 
 void KDesktopPropsPlugin::slotSelectMimetype()
 {
-  QListView *w = (QListView*)sender();
-  QListViewItem *item = w->firstChild();
+  Q3ListView *w = (Q3ListView*)sender();
+  Q3ListViewItem *item = w->firstChild();
   while(item)
   {
      if (item->isSelected())
@@ -3052,20 +3052,20 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
   {
      mw->listView->setRootIsDecorated(true);
-     mw->listView->setSelectionMode(QListView::Extended);
+     mw->listView->setSelectionMode(Q3ListView::Extended);
      mw->listView->setAllColumnsShowFocus(true);
      mw->listView->setFullWidth(true);
      mw->listView->setMinimumSize(500,400);
 
      connect(mw->listView, SIGNAL(selectionChanged()),
              this, SLOT(slotSelectMimetype()));
-     connect(mw->listView, SIGNAL(doubleClicked( QListViewItem *, const QPoint &, int )),
+     connect(mw->listView, SIGNAL(doubleClicked( Q3ListViewItem *, const QPoint &, int )),
              &dlg, SLOT( slotOk()));
 
-     QMap<QString,QListViewItem*> majorMap;
-     QListViewItem *majorGroup;
+     QMap<QString,Q3ListViewItem*> majorMap;
+     Q3ListViewItem *majorGroup;
      KMimeType::List mimetypes = KMimeType::allMimeTypes();
-     QValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
+     Q3ValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
      for (; it != mimetypes.end(); ++it) {
         QString mimetype = (*it)->name();
         if (mimetype == "application/octet-stream")
@@ -3074,9 +3074,9 @@ void KDesktopPropsPlugin::slotAddFiletype()
         QString maj = mimetype.left(index);
         QString min = mimetype.mid(index+1);
 
-        QMapIterator<QString,QListViewItem*> mit = majorMap.find( maj );
+        QMapIterator<QString,Q3ListViewItem*> mit = majorMap.find( maj );
         if ( mit == majorMap.end() ) {
-           majorGroup = new QListViewItem( mw->listView, maj );
+           majorGroup = new Q3ListViewItem( mw->listView, maj );
            majorGroup->setExpandable(true);
            mw->listView->setOpen(majorGroup, true);
            majorMap.insert( maj, majorGroup );
@@ -3086,10 +3086,10 @@ void KDesktopPropsPlugin::slotAddFiletype()
            majorGroup = mit.data();
         }
 
-        QListViewItem *item = new QListViewItem(majorGroup, min, (*it)->comment());
+        Q3ListViewItem *item = new Q3ListViewItem(majorGroup, min, (*it)->comment());
         item->setPixmap(0, (*it)->pixmap(KIcon::Small, IconSize(KIcon::Small)));
      }
-     QMapIterator<QString,QListViewItem*> mit = majorMap.find( "all" );
+     QMapIterator<QString,Q3ListViewItem*> mit = majorMap.find( "all" );
      if ( mit != majorMap.end())
      {
         mw->listView->setCurrentItem(mit.data());
@@ -3100,12 +3100,12 @@ void KDesktopPropsPlugin::slotAddFiletype()
   if (dlg.exec() == KDialogBase::Accepted)
   {
      KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
-     QListViewItem *majorItem = mw->listView->firstChild();
+     Q3ListViewItem *majorItem = mw->listView->firstChild();
      while(majorItem)
      {
         QString major = majorItem->text(0);
 
-        QListViewItem *minorItem = majorItem->firstChild();
+        Q3ListViewItem *minorItem = majorItem->firstChild();
         while(minorItem)
         {
            if (minorItem->isSelected())
@@ -3116,7 +3116,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
               {
                  mimetype = p->name();
                  bool found = false;
-                 QListViewItem *item = w->filetypeList->firstChild();
+                 Q3ListViewItem *item = w->filetypeList->firstChild();
                  while (item)
                  {
                     if (mimetype == item->text(0))
@@ -3127,7 +3127,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
                     item = item->nextSibling();
                  }
                  if (!found)
-                    new QListViewItem(w->filetypeList, p->name(), p->comment());
+                    new Q3ListViewItem(w->filetypeList, p->name(), p->comment());
               }
            }
            minorItem = minorItem->nextSibling();
@@ -3161,7 +3161,7 @@ void KDesktopPropsPlugin::applyChanges()
 
   QFile f( path );
 
-  if ( !f.open( IO_ReadWrite ) ) {
+  if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
 				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
@@ -3188,7 +3188,7 @@ void KDesktopPropsPlugin::applyChanges()
 
   // Write mimeTypes
   QStringList mimeTypes;
-  for( QListViewItem *item = w->filetypeList->firstChild();
+  for( Q3ListViewItem *item = w->filetypeList->firstChild();
        item; item = item->nextSibling() )
   {
     QString preference = item->text(2);
@@ -3397,7 +3397,7 @@ public:
   {
   }
 
-  QFrame *m_frame;
+  Q3Frame *m_frame;
   QCheckBox *nocloseonexitCheck;
 };
 
@@ -3420,7 +3420,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   mainlayout->addLayout(hlayout);
 
   execEdit = new KLineEdit( d->m_frame );
-  QWhatsThis::add(execEdit,i18n(
+  Q3WhatsThis::add(execEdit,i18n(
     "Following the command, you can have several place holders which will be replaced "
     "with the actual values when the actual program is run:\n"
     "%f - a single file name\n"
@@ -3441,8 +3441,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   hlayout->addWidget(execBrowse);
 
   // The groupbox about swallowing
-  QGroupBox* tmpQGroupBox;
-  tmpQGroupBox = new QGroupBox( i18n("Panel Embedding"), d->m_frame );
+  Q3GroupBox* tmpQGroupBox;
+  tmpQGroupBox = new Q3GroupBox( i18n("Panel Embedding"), d->m_frame );
   tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
 
   mainlayout->addWidget(tmpQGroupBox);
@@ -3469,7 +3469,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   // The groupbox about run in terminal
 
-  tmpQGroupBox = new QGroupBox( d->m_frame );
+  tmpQGroupBox = new Q3GroupBox( d->m_frame );
   tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
 
   mainlayout->addWidget(tmpQGroupBox);
@@ -3508,7 +3508,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   // The groupbox about run with substituted uid.
 
-  tmpQGroupBox = new QGroupBox( d->m_frame );
+  tmpQGroupBox = new Q3GroupBox( d->m_frame );
   tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
 
   mainlayout->addWidget(tmpQGroupBox);
@@ -3534,7 +3534,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   // now populate the page
   QString path = _props->kurl().path();
   QFile f( path );
-  if ( !f.open( IO_ReadOnly ) )
+  if ( !f.open( QIODevice::ReadOnly ) )
     return;
   f.close();
 
@@ -3657,7 +3657,7 @@ void KExecPropsPlugin::applyChanges()
 
   QFile f( path );
 
-  if ( !f.open( IO_ReadWrite ) ) {
+  if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
 				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
@@ -3704,13 +3704,13 @@ class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
 public:
   KApplicationPropsPluginPrivate()
   {
-      m_kdesktopMode = QCString(qApp->name()) == "kdesktop"; // nasty heh?
+      m_kdesktopMode = Q3CString(qApp->name()) == "kdesktop"; // nasty heh?
   }
   ~KApplicationPropsPluginPrivate()
   {
   }
 
-  QFrame *m_frame;
+  Q3Frame *m_frame;
   bool m_kdesktopMode;
 };
 
@@ -3721,13 +3721,13 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   d->m_frame = properties->addPage(i18n("&Application"));
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, 0, KDialog::spacingHint());
 
-  QIconSet iconSet;
+  QIcon iconSet;
   QPixmap pixMap;
 
   addExtensionButton = new QPushButton( QString::null, d->m_frame );
   iconSet = SmallIconSet( "back" );
   addExtensionButton->setIconSet( iconSet );
-  pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
+  pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
   addExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   connect( addExtensionButton, SIGNAL( clicked() ),
             SLOT( slotAddExtension() ) );
@@ -3772,7 +3772,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   grid->addWidget(commentEdit, 2, 1);
 
   l = new QLabel(i18n("File types:"), d->m_frame);
-  toplayout->addWidget(l, 0, AlignLeft);
+  toplayout->addWidget(l, 0, Qt::AlignLeft);
 
   grid = new QGridLayout(4, 3);
   grid->setColStretch(0, 1);
@@ -3781,20 +3781,20 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   grid->setRowStretch( 3, 1 );
   toplayout->addLayout(grid, 2);
 
-  extensionsList = new QListBox( d->m_frame );
-  extensionsList->setSelectionMode( QListBox::Extended );
+  extensionsList = new Q3ListBox( d->m_frame );
+  extensionsList->setSelectionMode( Q3ListBox::Extended );
   grid->addMultiCellWidget(extensionsList, 0, 3, 0, 0);
 
   grid->addWidget(addExtensionButton, 1, 1);
   grid->addWidget(delExtensionButton, 2, 1);
 
-  availableExtensionsList = new QListBox( d->m_frame );
-  availableExtensionsList->setSelectionMode( QListBox::Extended );
+  availableExtensionsList = new Q3ListBox( d->m_frame );
+  availableExtensionsList->setSelectionMode( Q3ListBox::Extended );
   grid->addMultiCellWidget(availableExtensionsList, 0, 3, 2, 2);
 
   QString path = properties->kurl().path() ;
   QFile f( path );
-  if ( !f.open( IO_ReadOnly ) )
+  if ( !f.open( QIODevice::ReadOnly ) )
     return;
   f.close();
 
@@ -3828,7 +3828,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   }
 
   KMimeType::List mimeTypes = KMimeType::allMimeTypes();
-  QValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
+  Q3ValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
   for ( ; it2 != mimeTypes.end(); ++it2 )
     addMimeType ( (*it2)->name() );
 
@@ -3901,7 +3901,7 @@ void KApplicationPropsPlugin::applyChanges()
 
   QFile f( path );
 
-  if ( !f.open( IO_ReadWrite ) ) {
+  if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
 				"have sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
@@ -3936,8 +3936,8 @@ void KApplicationPropsPlugin::applyChanges()
 
 void KApplicationPropsPlugin::slotAddExtension()
 {
-  QListBoxItem *item = availableExtensionsList->firstItem();
-  QListBoxItem *nextItem;
+  Q3ListBoxItem *item = availableExtensionsList->firstItem();
+  Q3ListBoxItem *nextItem;
 
   while ( item )
   {
@@ -3958,8 +3958,8 @@ void KApplicationPropsPlugin::slotAddExtension()
 
 void KApplicationPropsPlugin::slotDelExtension()
 {
-  QListBoxItem *item = extensionsList->firstItem();
-  QListBoxItem *nextItem;
+  Q3ListBoxItem *item = extensionsList->firstItem();
+  Q3ListBoxItem *nextItem;
 
   while ( item )
   {

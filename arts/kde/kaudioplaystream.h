@@ -22,7 +22,7 @@
 
 #include <qobject.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <stdsynthmodule.h>
 
 #include <kdelibs_export.h>

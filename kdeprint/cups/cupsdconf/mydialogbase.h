@@ -22,9 +22,9 @@
 
 #include <kdialog.h>
 
-class QListView;
-class QListViewItem;
-class QWidgetStack;
+class Q3ListView;
+class Q3ListViewItem;
+class Q3WidgetStack;
 class QLabel;
 class MyPage;
 
@@ -41,15 +41,15 @@ protected slots:
         virtual void slotOk();
         virtual void slotCancel();
         virtual void slotApply();
-        void slotItemSelected(QListViewItem*);
+        void slotItemSelected(Q3ListViewItem*);
         virtual void slotHelp();
 
 private:
-        QListViewItem* findParent(const QStringList& path);
+        Q3ListViewItem* findParent(const QStringList& path);
 
 private:
-        QListView       *tree_;
-        QWidgetStack    *stack_;
+        Q3ListView       *tree_;
+        Q3WidgetStack    *stack_;
         QLabel          *title_;
 };
 

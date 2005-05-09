@@ -23,7 +23,7 @@
 #include <klistbox.h>
 #include <kstdguiitem.h>
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 
 #include "resource.h"
@@ -42,7 +42,7 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( marginHint() );
 
-  QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
+  Q3GroupBox *groupBox = new Q3GroupBox( 2, Qt::Horizontal,  this );
   groupBox->setTitle( i18n( "Resources" ) );
 
   mResourceId = new KListBox( groupBox );
@@ -62,7 +62,7 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
 
   // setup listbox
   uint counter = 0;
-  QPtrList<Resource> list = ab->resources();
+  Q3PtrList<Resource> list = ab->resources();
   for ( uint i = 0; i < list.count(); ++i ) {
     Resource *resource = list.at( i );
     if ( resource && !resource->readOnly() ) {
@@ -85,7 +85,7 @@ Resource *ResourceSelectDialog::resource()
 
 Resource *ResourceSelectDialog::getResource( AddressBook *ab, QWidget *parent )
 {
-  QPtrList<Resource> resources = ab->resources();
+  Q3PtrList<Resource> resources = ab->resources();
   if ( resources.count() == 1 ) return resources.first();
 
   Resource *found = 0;

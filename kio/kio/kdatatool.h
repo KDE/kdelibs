@@ -22,7 +22,7 @@
 #define KDATATOOL_H
 
 #include <qobject.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kaction.h>
 #include <kservice.h>
@@ -171,7 +171,7 @@ public:
      * and also used if the tool wants to read its configuration in the app's config file).
      * @return the list of results
      */
-    static QValueList<KDataToolInfo> query( const QString& datatype, const QString& mimetype, KInstance * instance );
+    static Q3ValueList<KDataToolInfo> query( const QString& datatype, const QString& mimetype, KInstance * instance );
 
 private:
     KService::Ptr m_service;
@@ -216,7 +216,7 @@ public:
      * @param slot the slot that will receive the toolActivated() signals
      * @return the KActions
      */
-    static QPtrList<KAction> dataToolActionList( const QValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );
+    static Q3PtrList<KAction> dataToolActionList( const Q3ValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );
 
 signals:
     /**

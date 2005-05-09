@@ -128,8 +128,8 @@ extern "C" {
 #include <kstandarddirs.h>	// locate
 
 // not defined on HP-UX for example
-#ifndef CTRL
-# define CTRL(x) ((x) & 037)
+#ifndef Qt::CTRL
+# define Qt::CTRL(x) ((x) & 037)
 #endif
 
 #define TTY_GROUP "tty"
@@ -177,7 +177,7 @@ struct KPtyPrivate {
    int slaveFd;
    struct winsize winSize;
 
-   QCString ttyName;
+   Q3CString ttyName;
 };
 
 /////////////////////////////
@@ -200,7 +200,7 @@ bool KPty::open()
   if (d->masterFd >= 0)
     return true;
 
-  QCString ptyName;
+  Q3CString ptyName;
 
   // Find a master pty that we can open ////////////////////////////////
 
@@ -333,8 +333,8 @@ bool KPty::open()
     ttmode.c_iflag |= IUTF8;
 #endif
 
-  ttmode.c_cc[VINTR] = CTRL('C' - '@');
-  ttmode.c_cc[VQUIT] = CTRL('\\' - '@');
+  ttmode.c_cc[VINTR] = Qt::CTRL('C' - '@');
+  ttmode.c_cc[VQUIT] = Qt::CTRL('\\' - '@');
   ttmode.c_cc[VERASE] = 0177;
 
   _tcsetattr(d->slaveFd, &ttmode);

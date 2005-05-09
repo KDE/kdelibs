@@ -24,7 +24,7 @@
 #ifndef  TELVALUE_H
 #define  TELVALUE_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardValue.h>
 

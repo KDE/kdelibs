@@ -31,7 +31,7 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlabel.h>
 #include "kcmoduleinfo.h"
 
@@ -54,7 +54,7 @@ struct GroupInfo
 class PageNode
 {
 	private:
-		typedef QValueList<PageNode*> List;
+		typedef Q3ValueList<PageNode*> List;
 		enum Type { KCM, Group, Root };
 		union Value
 		{
@@ -222,7 +222,7 @@ class PageNode
 				if( ! m_value.group->icon.isNull() )
 					icon = SmallIcon( m_value.group->icon,
 							IconSize( KIcon::Small ) );
-				QVBox * page = dlg->addVBoxPage( m_value.group->name,
+				Q3VBox * page = dlg->addVBoxPage( m_value.group->name,
 						QString::null, icon );
 				QLabel * comment = new QLabel( m_value.group->comment, page );
 				comment->setTextFormat( Qt::RichText );
@@ -351,7 +351,7 @@ class Dialog::DialogPrivate
 		PageNode pagetree;
 		QWidget * parentwidget;
 		QStringList registeredComponents;
-		QValueList<KService::Ptr> services;
+		Q3ValueList<KService::Ptr> services;
 		QMap<QString, KPluginInfo*> plugininfomap;
 };
 
@@ -399,9 +399,9 @@ Dialog::~Dialog()
 	delete d;
 }
 
-void Dialog::addPluginInfos( const QValueList<KPluginInfo*> & plugininfos )
+void Dialog::addPluginInfos( const Q3ValueList<KPluginInfo*> & plugininfos )
 {
-	for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
+	for( Q3ValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
 			it != plugininfos.end(); ++it )
 	{
 		d->registeredComponents.append( ( *it )->pluginName() );
@@ -425,7 +425,7 @@ KCMultiDialog * Dialog::dialog()
 	return d->dlg;
 }
 
-QValueList<KService::Ptr> Dialog::instanceServices() const
+Q3ValueList<KService::Ptr> Dialog::instanceServices() const
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
 	QString instanceName = KGlobal::instance()->instanceName();
@@ -434,7 +434,7 @@ QValueList<KService::Ptr> Dialog::instanceServices() const
 		<< " )" << endl;
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( instanceName );
 
-	QValueList<KService::Ptr> ret;
+	Q3ValueList<KService::Ptr> ret;
 
 	if( service && service->isValid() )
 	{
@@ -458,7 +458,7 @@ QValueList<KService::Ptr> Dialog::instanceServices() const
 	return ret;
 }
 
-QValueList<KService::Ptr> Dialog::parentComponentsServices(
+Q3ValueList<KService::Ptr> Dialog::parentComponentsServices(
 		const QStringList & kcdparents ) const
 {
 	d->registeredComponents += kcdparents;
@@ -544,7 +544,7 @@ void Dialog::createDialogFromServices()
 			parseGroupFile( *it );
 
 	// now we process the KCModule services
-	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin();
+	for( Q3ValueList<KService::Ptr>::ConstIterator it = d->services.begin();
 			it != d->services.end(); ++it )
 	{
 		// we create the KCModuleInfo
@@ -594,8 +594,8 @@ void Dialog::createDialogFromServices()
 		SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(),
 		SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ),
-		Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
+	connect( d->dlg, SIGNAL( configCommitted( const Q3CString & ) ),
+		Dispatcher::self(), SLOT( reparseConfiguration( const Q3CString & ) ) );
 
 	d->pagetree.addToDialog( d->dlg );
 

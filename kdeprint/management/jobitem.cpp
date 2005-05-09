@@ -22,8 +22,8 @@
 
 #include <kiconloader.h>
 
-JobItem::JobItem(QListView *parent, KMJob *job)
-: QListViewItem(parent)
+JobItem::JobItem(Q3ListView *parent, KMJob *job)
+: Q3ListViewItem(parent)
 {
 	m_job = new KMJob;
 	init(job);
@@ -56,7 +56,7 @@ void JobItem::init(KMJob *job)
 	widthChanged();
 }
 
-int JobItem::compare(QListViewItem *item, int col, bool asc) const
+int JobItem::compare(Q3ListViewItem *item, int col, bool asc) const
 {
 	switch (col)
 	{
@@ -69,6 +69,6 @@ int JobItem::compare(QListViewItem *item, int col, bool asc) const
 				break;
 			}
 		default:
-			return QListViewItem::compare(item, col, asc);
+			return Q3ListViewItem::compare(item, col, asc);
 	}
 }

@@ -51,7 +51,7 @@ public:
     * addButton() are laid out from top to bottom, otherwise they
     * are laid out from left to right.
     */
-  KButtonBox(QWidget *parent, Orientation _orientation = Horizontal,
+  KButtonBox(QWidget *parent, Qt::Orientation _orientation = Qt::Horizontal,
 	     int border = 0, int _autoborder = 6);
 
   /**

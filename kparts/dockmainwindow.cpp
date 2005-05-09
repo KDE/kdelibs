@@ -52,13 +52,13 @@ public:
   {
   }
 
-  QGuardedPtr<Part> m_activePart;
+  QPointer<Part> m_activePart;
   bool m_bShellGUIActivated;
   KHelpMenu *m_helpMenu;
 };
 }
 
-DockMainWindow::DockMainWindow( QWidget* parent, const char *name, WFlags f )
+DockMainWindow::DockMainWindow( QWidget* parent, const char *name, Qt::WFlags f )
   : KDockMainWindow( parent, name, f )
 {
   d = new DockMainWindowPrivate();
@@ -78,7 +78,7 @@ void DockMainWindow::createGUI( Part * part )
 
   setUpdatesEnabled( false );
 
-  QPtrList<Plugin> plugins;
+  Q3PtrList<Plugin> plugins;
 
   if ( d->m_activePart )
   {

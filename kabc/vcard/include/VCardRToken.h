@@ -25,14 +25,14 @@
 #ifndef RTOKEN_H
 #define RTOKEN_H
 
-#include <qstrlist.h>
+#include <q3strlist.h>
 
 #include <kdelibs_export.h>
 
 namespace VCARD
 {
 
-KVCARD_EXPORT Q_UINT32 RTokenise(const char * str, const char * delim, QStrList & l);
+KVCARD_EXPORT Q_UINT32 RTokenise(const char * str, const char * delim, Q3StrList & l);
 
 }
 

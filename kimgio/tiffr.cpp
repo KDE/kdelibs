@@ -105,10 +105,10 @@ KDE_EXPORT void kimgio_tiff_read( QImageIO *io )
 	// reverse red and blue
 	for( unsigned i = 0; i < width * height; ++i )
 	{
-		uint32 red = ( 0x00FF0000 & data[i] ) >> 16;
-		uint32 blue = ( 0x000000FF & data[i] ) << 16;
+		uint32 Qt::red = ( 0x00FF0000 & data[i] ) >> 16;
+		uint32 Qt::blue = ( 0x000000FF & data[i] ) << 16;
 		data[i] &= 0xFF00FF00;
-		data[i] += red + blue;
+		data[i] += Qt::red + Qt::blue;
 	}
 
 	// reverse image (it's upside down)

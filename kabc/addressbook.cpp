@@ -43,22 +43,22 @@ struct AddressBook::AddressBookData
   ErrorHandler *mErrorHandler;
   KConfig *mConfig;
   KRES::Manager<Resource> *mManager;
-  QPtrList<Resource> mPendingLoadResources;
-  QPtrList<Resource> mPendingSaveResources;
+  Q3PtrList<Resource> mPendingLoadResources;
+  Q3PtrList<Resource> mPendingSaveResources;
   Iterator end;
 };
 
 struct AddressBook::Iterator::IteratorData
 {
   Resource::Iterator mIt;
-  QValueList<Resource*> mResources;
+  Q3ValueList<Resource*> mResources;
   int mCurrRes;
 };
 
 struct AddressBook::ConstIterator::ConstIteratorData
 {
   Resource::ConstIterator mIt;
-  QValueList<Resource*> mResources;
+  Q3ValueList<Resource*> mResources;
   int mCurrRes;
 };
 
@@ -307,7 +307,7 @@ AddressBook::AddressBook()
   d->mErrorHandler = 0;
   d->mConfig = 0;
   d->mManager = new KRES::Manager<Resource>( "contact" );
-  d->end.d->mResources = QValueList<Resource*>();
+  d->end.d->mResources = Q3ValueList<Resource*>();
   d->end.d->mCurrRes = -1;
 }
 
@@ -321,7 +321,7 @@ AddressBook::AddressBook( const QString &config )
     d->mConfig = new KConfig( config );
   d->mManager = new KRES::Manager<Resource>( "contact" );
   d->mManager->readConfig( d->mConfig );
-  d->end.d->mResources = QValueList<Resource*>();
+  d->end.d->mResources = Q3ValueList<Resource*>();
   d->end.d->mCurrRes = -1;
 }
 
@@ -400,7 +400,7 @@ bool AddressBook::asyncSave( Ticket *ticket )
 
 AddressBook::Iterator AddressBook::begin()
 {
-  QValueList<Resource*> list;
+  Q3ValueList<Resource*> list;
   KRES::Manager<Resource>::ActiveIterator resIt;
   for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
     list.append( *resIt );
@@ -427,7 +427,7 @@ AddressBook::Iterator AddressBook::begin()
 
 AddressBook::ConstIterator AddressBook::begin() const
 {
-  QValueList<Resource*> list;
+  Q3ValueList<Resource*> list;
   KRES::Manager<Resource>::ActiveIterator resIt;
   for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
     list.append( *resIt );
@@ -748,9 +748,9 @@ bool AddressBook::removeResource( Resource *resource )
   return true;
 }
 
-QPtrList<Resource> AddressBook::resources()
+Q3PtrList<Resource> AddressBook::resources()
 {
-  QPtrList<Resource> list;
+  Q3PtrList<Resource> list;
 
   KRES::Manager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {

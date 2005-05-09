@@ -32,7 +32,7 @@
 using namespace std;
 
 #include <qobject.h>
-#include <qasciidict.h>
+#include <q3asciidict.h>
 #include <qstring.h>
 
 #include <kdelibs_export.h>
@@ -67,10 +67,10 @@ namespace KUnitTest
     static TesterAutoregister tester##Autoregister( QString(s_kunittest_suite + QString("::") + QString::fromLocal8Bit(name)).local8Bit() , new tester ())
 
     /*! The type of the registry. */
-    typedef QAsciiDict<Tester> RegistryType;
+    typedef Q3AsciiDict<Tester> RegistryType;
 
     /*! A type that can be used to iterate through the registry. */
-    typedef QAsciiDictIterator<Tester> RegistryIteratorType;
+    typedef Q3AsciiDictIterator<Tester> RegistryIteratorType;
     
     /*! The Runner class holds a list of registered Tester classes and is able
      * to run those test cases. The Runner class follows the singleton design

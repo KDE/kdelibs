@@ -31,8 +31,8 @@
 #include <qcursor.h>
 #include <qclipboard.h>
 #include <qfontdatabase.h>
-#include <qobjectlist.h>
-#include <qwhatsthis.h>
+#include <qobject.h>
+#include <q3whatsthis.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>
@@ -83,7 +83,7 @@ KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
   d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
+KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               QObject* parent, const char* name )
   : KAction( text, pix, cut, parent, name )
@@ -99,7 +99,7 @@ KToggleAction::KToggleAction( const QString& text, const QString& pix,
   d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
+KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, QObject* parent,
@@ -133,7 +133,7 @@ KToggleAction::~KToggleAction()
 
 int KToggleAction::plug( QWidget* widget, int index )
 {
-  if ( !::qt_cast<QPopupMenu *>( widget ) && !::qt_cast<KToolBar *>( widget ) )
+  if ( !::qt_cast<Q3PopupMenu *>( widget ) && !::qt_cast<KToolBar *>( widget ) )
   {
     kdWarning() << "Can not plug KToggleAction in " << widget->className() << endl;
     return -1;
@@ -193,8 +193,8 @@ void KToggleAction::updateChecked( int id )
 {
   QWidget *w = container( id );
 
-  if ( ::qt_cast<QPopupMenu *>( w ) ) {
-    QPopupMenu* pm = static_cast<QPopupMenu*>(w);
+  if ( ::qt_cast<Q3PopupMenu *>( w ) ) {
+    Q3PopupMenu* pm = static_cast<Q3PopupMenu*>(w);
     int itemId_ = itemId( id );
     if ( !d->m_checkedGuiItem )
       pm->setItemChecked( itemId_, d->m_checked );
@@ -273,7 +273,7 @@ KRadioAction::KRadioAction( const QString& text, const KShortcut& cut,
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, const QIconSet& pix,
+KRadioAction::KRadioAction( const QString& text, const QIcon& pix,
                             const KShortcut& cut,
                             QObject* parent, const char* name )
 : KToggleAction( text, pix, cut, parent, name )
@@ -287,7 +287,7 @@ KRadioAction::KRadioAction( const QString& text, const QString& pix,
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, const QIconSet& pix,
+KRadioAction::KRadioAction( const QString& text, const QIcon& pix,
                             const KShortcut& cut,
                             const QObject* receiver, const char* slot,
                             QObject* parent, const char* name )
@@ -338,7 +338,7 @@ public:
   }
   bool m_edit;
   bool m_menuAccelsEnabled;
-  QPopupMenu *m_menu;
+  Q3PopupMenu *m_menu;
   int m_current;
   int m_comboWidth;
   QStringList m_list;
@@ -376,7 +376,7 @@ KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
   d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
+KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               QObject* parent, const char* name )
   : KAction( text, pix, cut, parent, name )
@@ -392,7 +392,7 @@ KSelectAction::KSelectAction( const QString& text, const QString& pix,
   d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
+KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, QObject* parent,
@@ -465,7 +465,7 @@ void KSelectAction::setComboWidth( int width )
     updateComboWidth( i );
 
 }
-QPopupMenu* KSelectAction::popupMenu() const
+Q3PopupMenu* KSelectAction::popupMenu() const
 {
 	kdDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
@@ -623,12 +623,12 @@ int KSelectAction::plug( QWidget *widget, int index )
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( ::qt_cast<QPopupMenu *>( widget) )
+  if ( ::qt_cast<Q3PopupMenu *>( widget) )
   {
     // Create the PopupMenu and store it in m_menu
     (void)popupMenu();
 
-    QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
+    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
     int id;
     if ( hasIcon() )
       id = menu->insertItem( iconSet(), text(), d->m_menu, -1, index );
@@ -659,15 +659,15 @@ int KSelectAction::plug( QWidget *widget, int index )
     QComboBox *cb = bar->getCombo( id_ );
     if ( cb )
     {
-      if (!isEditable()) cb->setFocusPolicy(QWidget::NoFocus);
+      if (!isEditable()) cb->setFocusPolicy(Qt::NoFocus);
       cb->setMinimumWidth( cb->sizeHint().width() );
       if ( d->m_comboWidth > 0 )
       {
         cb->setMinimumWidth( d->m_comboWidth );
         cb->setMaximumWidth( d->m_comboWidth );
       }
-      cb->setInsertionPolicy( QComboBox::NoInsertion );
-      QWhatsThis::add( cb, whatsThis() );
+      cb->setInsertionPolicy( QComboBox::NoInsert );
+      Q3WhatsThis::add( cb, whatsThis() );
     }
 
     addContainer( bar, id_ );
@@ -842,7 +842,7 @@ KListAction::KListAction( const QString& text, const KShortcut& cut,
     connect( this, SIGNAL( activated( int ) ), receiver, slot );
 }
 
-KListAction::KListAction( const QString& text, const QIconSet& pix,
+KListAction::KListAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut,
                           QObject* parent, const char* name )
   : KSelectAction( text, pix, cut, parent, name )
@@ -858,7 +858,7 @@ KListAction::KListAction( const QString& text, const QString& pix,
   d = new KListActionPrivate;
 }
 
-KListAction::KListAction( const QString& text, const QIconSet& pix,
+KListAction::KListAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut, const QObject* receiver,
                           const char* slot, QObject* parent,
                           const char* name )
@@ -957,7 +957,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QIconSet& pix,
+                                        const QIcon& pix,
                                         const KShortcut& cut,
                                         QObject* parent, const char* name,
                                         uint maxItems )
@@ -983,7 +983,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QIconSet& pix,
+                                        const QIcon& pix,
                                         const KShortcut& cut,
                                         const QObject* receiver,
                                         const char* slot,
@@ -1215,7 +1215,7 @@ int KRecentFilesAction::plug( QWidget *widget, int index )
     bar->setDelayedPopup( id_, d->m_popup, true);
 
     if ( !whatsThis().isEmpty() )
-        QWhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+        Q3WhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
 
     return containerCount() - 1;
   }
@@ -1278,7 +1278,7 @@ KFontAction::KFontAction( const QString& text, const KShortcut& cut,
     setEditable( true );
 }
 
-KFontAction::KFontAction( const QString& text, const QIconSet& pix,
+KFontAction::KFontAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut,
                           QObject* parent, const char* name )
     : KSelectAction( text, pix, cut, parent, name )
@@ -1300,7 +1300,7 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
     setEditable( true );
 }
 
-KFontAction::KFontAction( const QString& text, const QIconSet& pix,
+KFontAction::KFontAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
@@ -1455,7 +1455,7 @@ KFontSizeAction::KFontSizeAction( const QString& text,
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
+KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
                                   const KShortcut& cut,
                                   QObject* parent, const char* name )
   : KSelectAction( text, pix, cut, parent, name )
@@ -1471,7 +1471,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
+KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
                                   const KShortcut& cut,
                                   const QObject* receiver,
                                   const char* slot, QObject* parent,
@@ -1509,9 +1509,9 @@ void KFontSizeAction::init()
 
     setEditable( true );
     QFontDatabase fontDB;
-    QValueList<int> sizes = fontDB.standardSizes();
+    Q3ValueList<int> sizes = fontDB.standardSizes();
     QStringList lst;
-    for ( QValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
+    for ( Q3ValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
         lst.append( QString::number( *it ) );
 
     setItems( lst );
@@ -1532,7 +1532,7 @@ void KFontSizeAction::setFontSize( int size )
     int index = items().findIndex( QString::number( size ) );
     if ( index == -1 ) {
         // Insert at the correct position in the list (to keep sorting)
-        QValueList<int> lst;
+        Q3ValueList<int> lst;
         // Convert to list of ints
         QStringList itemsList = items();
         for (QStringList::Iterator it = itemsList.begin() ; it != itemsList.end() ; ++it)
@@ -1543,7 +1543,7 @@ void KFontSizeAction::setFontSize( int size )
         qHeapSort( lst );
         // Convert back to string list
         QStringList strLst;
-        for (QValueList<int>::Iterator it = lst.begin() ; it != lst.end() ; ++it)
+        for (Q3ValueList<int>::Iterator it = lst.begin() ; it != lst.end() ; ++it)
             strLst.append( QString::number(*it) );
         KSelectAction::setItems( strLst );
         // Find new current item
@@ -1612,7 +1612,7 @@ KActionMenu::KActionMenu( const QString& text, QObject* parent,
   setShortcutConfigurable( false );
 }
 
-KActionMenu::KActionMenu( const QString& text, const QIconSet& icon,
+KActionMenu::KActionMenu( const QString& text, const QIcon& icon,
                           QObject* parent, const char* name )
   : KAction( text, icon, 0, parent, name )
 {
@@ -1678,9 +1678,9 @@ int KActionMenu::plug( QWidget* widget, int index )
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( ::qt_cast<QPopupMenu *>( widget ) )
+  if ( ::qt_cast<Q3PopupMenu *>( widget ) )
   {
-    QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
+    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
     int id;
     if ( hasIcon() )
       id = menu->insertItem( iconSet(), text(), d->m_popup, -1, index );
@@ -1725,7 +1725,7 @@ int KActionMenu::plug( QWidget* widget, int index )
     addContainer( bar, id_ );
 
     if (!whatsThis().isEmpty())
-      QWhatsThis::add( bar->getButton(id_), whatsThis() );
+      Q3WhatsThis::add( bar->getButton(id_), whatsThis() );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
@@ -1860,7 +1860,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
     }
 
     if ( !whatsThis().isEmpty() )
-        QWhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+        Q3WhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
 
     return containerCount() - 1;
   }
@@ -1936,7 +1936,7 @@ void KToggleToolBarAction::setChecked( bool c )
     } else {
       m_toolBar->hide();
     }
-    QMainWindow* mw = m_toolBar->mainWindow();
+    Q3MainWindow* mw = m_toolBar->mainWindow();
     if ( mw && ::qt_cast<KMainWindow *>( mw ) )
       static_cast<KMainWindow *>( mw )->setSettingsDirty();
   }
@@ -2057,7 +2057,7 @@ int KWidgetAction::plug( QWidget* w, int index )
   toolBar->insertWidget( id, 0, m_widget, index );
   toolBar->setItemAutoSized( id, m_autoSized );
 
-  QWhatsThis::add( m_widget, whatsThis() );
+  Q3WhatsThis::add( m_widget, whatsThis() );
   addContainer( toolBar, id );
 
   connect( toolBar, SIGNAL( toolbarDestroyed() ), this, SLOT( slotToolbarDestroyed() ) );
@@ -2104,9 +2104,9 @@ KActionSeparator::~KActionSeparator()
 
 int KActionSeparator::plug( QWidget *widget, int index )
 {
-  if ( ::qt_cast<QPopupMenu *>( widget) )
+  if ( ::qt_cast<Q3PopupMenu *>( widget) )
   {
-    QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
+    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
 
     int id = menu->insertSeparator( index );
 
@@ -2195,7 +2195,7 @@ int KPasteTextAction::plug( QWidget *widget, int index )
     bar->setDelayedPopup( id_, m_popup, true );
 
     if ( !whatsThis().isEmpty() )
-        QWhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+        Q3WhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
 
     return containerCount() - 1;
   }

@@ -57,7 +57,7 @@
 #include <string.h>
 #endif
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qregexp.h>
 
 #include <kshred.h>
@@ -68,7 +68,7 @@
 #include <ktempfile.h>
 #include <klocale.h>
 #include <qfile.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include "file.h"
 #include <limits.h>
 #include <kprocess.h>
@@ -116,7 +116,7 @@ int kdemain( int argc, char **argv )
 }
 
 
-FileProtocol::FileProtocol( const QCString &pool, const QCString &app ) : SlaveBase( "file", pool, app )
+FileProtocol::FileProtocol( const Q3CString &pool, const Q3CString &app ) : SlaveBase( "file", pool, app )
 {
     usercache.setAutoDelete( true );
     groupcache.setAutoDelete( true );
@@ -124,7 +124,7 @@ FileProtocol::FileProtocol( const QCString &pool, const QCString &app ) : SlaveB
 
 void FileProtocol::chmod( const KURL& url, int permissions )
 {
-    QCString _path( QFile::encodeName(url.path()));
+    Q3CString _path( QFile::encodeName(url.path()));
     if ( ::chmod( _path.data(), permissions ) == -1 )
         error( KIO::ERR_CANNOT_CHMOD, url.path() );
     else
@@ -133,7 +133,7 @@ void FileProtocol::chmod( const KURL& url, int permissions )
 
 void FileProtocol::mkdir( const KURL& url, int permissions )
 {
-    QCString _path( QFile::encodeName(url.path()));
+    Q3CString _path( QFile::encodeName(url.path()));
 
     kdDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions << endl;
 
@@ -178,7 +178,7 @@ void FileProtocol::get( const KURL& url )
 	return;
     }
 
-    QCString _path( QFile::encodeName(url.path()));
+    Q3CString _path( QFile::encodeName(url.path()));
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
@@ -288,13 +288,13 @@ write_all(int fd, const char *buf, size_t len)
 void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resume )
 {
     QString dest_orig = url.path();
-    QCString _dest_orig( QFile::encodeName(dest_orig));
+    Q3CString _dest_orig( QFile::encodeName(dest_orig));
 
     kdDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode << endl;
 
     QString dest_part( dest_orig );
     dest_part += QString::fromLatin1(".part");
-    QCString _dest_part( QFile::encodeName(dest_part));
+    Q3CString _dest_part( QFile::encodeName(dest_part));
 
     KDE_struct_stat buff_orig;
     bool bOrigExists = (KDE_lstat( _dest_orig.data(), &buff_orig ) != -1);
@@ -331,7 +331,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 
     int result;
     QString dest;
-    QCString _dest;
+    Q3CString _dest;
 
     int fd = -1;
 
@@ -490,8 +490,8 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 {
     kdDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode << endl;
 
-    QCString _src( QFile::encodeName(src.path()));
-    QCString _dest( QFile::encodeName(dest.path()));
+    Q3CString _src( QFile::encodeName(src.path()));
+    Q3CString _dest( QFile::encodeName(dest.path()));
     KDE_struct_stat buff_src;
     if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
@@ -670,8 +670,8 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 void FileProtocol::rename( const KURL &src, const KURL &dest,
                            bool _overwrite )
 {
-    QCString _src( QFile::encodeName(src.path()));
-    QCString _dest( QFile::encodeName(dest.path()));
+    Q3CString _src( QFile::encodeName(src.path()));
+    Q3CString _dest( QFile::encodeName(dest.path()));
     KDE_struct_stat buff_src;
     if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
@@ -760,7 +760,7 @@ void FileProtocol::symlink( const QString &target, const KURL &dest, bool overwr
 
 void FileProtocol::del( const KURL& url, bool isfile)
 {
-    QCString _path( QFile::encodeName(url.path()));
+    Q3CString _path( QFile::encodeName(url.path()));
     /*****
      * Delete files
      *****/
@@ -801,7 +801,7 @@ void FileProtocol::del( const KURL& url, bool isfile)
     finished();
 }
 
-bool FileProtocol::createUDSEntry( const QString & filename, const QCString & path, UDSEntry & entry, short int details )
+bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & path, UDSEntry & entry, short int details )
 {
     assert(entry.count() == 0); // by contract :-)
     // Note: details = 0 (only "file or directory or symlink or doesn't exist") isn't implemented
@@ -939,7 +939,7 @@ void FileProtocol::stat( const KURL & url )
      * stat("/is/unaccessible/") -> EPERM            H.Z.
      * This is the reason for the -1
      */
-    QCString _path( QFile::encodeName(url.path(-1)));
+    Q3CString _path( QFile::encodeName(url.path(-1)));
 
     QString sDetails = metaData(QString::fromLatin1("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
@@ -1002,7 +1002,7 @@ void FileProtocol::listDir( const KURL& url)
 	return;
     }
 
-    QCString _path( QFile::encodeName(url.path()));
+    Q3CString _path( QFile::encodeName(url.path()));
 
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
@@ -1038,7 +1038,7 @@ void FileProtocol::listDir( const KURL& url)
     // Don't make this a QStringList. The locale file name we get here
     // should be passed intact to createUDSEntry to avoid problems with
     // files where QFile::encodeName(QFile::decodeName(a)) != a.
-    QStrList entryNames;
+    Q3StrList entryNames;
 
     while ( ( ep = KDE_readdir( dp ) ) != 0L )
 	entryNames.append( ep->d_name );
@@ -1106,7 +1106,7 @@ void FileProtocol::testDir( const QString& path )
 void FileProtocol::special( const QByteArray &data)
 {
     int tmp;
-    QDataStream stream(data, IO_ReadOnly);
+    QDataStream stream(data, QIODevice::ReadOnly);
 
     stream >> tmp;
     switch (tmp) {
@@ -1177,14 +1177,14 @@ void FileProtocol::slotInfoMessage( const QString & msg )
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
-    QCString buffer;
+    Q3CString buffer;
 
 #ifdef HAVE_VOLMGT
 	/*
 	 *  support for Solaris volume management
 	 */
 	QString err;
-	QCString devname = QFile::encodeName( _dev );
+	Q3CString devname = QFile::encodeName( _dev );
 
 	if( volmgt_running() ) {
 //		kdDebug(7101) << "VOLMGT: vold ok." << endl;
@@ -1210,9 +1210,9 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
 
     KTempFile tmpFile;
-    QCString tmpFileC = QFile::encodeName(tmpFile.name());
+    Q3CString tmpFileC = QFile::encodeName(tmpFile.name());
     const char *tmp = tmpFileC.data();
-    QCString dev;
+    Q3CString dev;
     if ( _dev.startsWith( "LABEL=" ) ) { // turn LABEL=foo into -L foo (#71430)
         QString labelName = _dev.mid( 6 );
         dev = "-L ";
@@ -1225,10 +1225,10 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     else
         dev = QFile::encodeName( KProcess::quote(_dev) ); // get those ready to be given to a shell
 
-    QCString point = QFile::encodeName( KProcess::quote(_point) );
+    Q3CString point = QFile::encodeName( KProcess::quote(_point) );
     bool fstype_empty = !_fstype || !*_fstype;
-    QCString fstype = KProcess::quote(_fstype).latin1(); // good guess
-    QCString readonly = _ro ? "-r" : "";
+    Q3CString fstype = KProcess::quote(_fstype).latin1(); // good guess
+    Q3CString readonly = _ro ? "-r" : "";
     QString epath = QString::fromLatin1(getenv("PATH"));
     QString path = QString::fromLatin1("/sbin:/bin");
     if(!epath.isEmpty())
@@ -1321,10 +1321,10 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
 void FileProtocol::unmount( const QString& _point )
 {
-    QCString buffer;
+    Q3CString buffer;
 
     KTempFile tmpFile;
-    QCString tmpFileC = QFile::encodeName(tmpFile.name());
+    Q3CString tmpFileC = QFile::encodeName(tmpFile.name());
     QString err;
     const char *tmp = tmpFileC.data();
 
@@ -1380,7 +1380,7 @@ void FileProtocol::unmount( const QString& _point )
 		 */
 		ptr = strrchr( devname, '/' );
 		*ptr = '\0';
-                QCString qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(QCString(devname)))).data());
+                Q3CString qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(Q3CString(devname)))).data());
 		buffer.sprintf( "/usr/bin/eject %s 2>%s", qdevname.data(), tmp );
 		kdDebug(7101) << "VOLMGT: eject " << qdevname << endl;
 
@@ -1447,7 +1447,7 @@ bool FileProtocol::pmount(const QString &dev)
     if (pmountProg.isEmpty())
         pmountProg = "pmount";
 
-    QCString buffer;
+    Q3CString buffer;
     buffer.sprintf( "%s %s", QFile::encodeName(pmountProg).data(),
                     QFile::encodeName(KProcess::quote(dev)).data() );
 
@@ -1488,7 +1488,7 @@ bool FileProtocol::pumount(const QString &point)
     if (pumountProg.isEmpty())
         pumountProg = "pumount";
 
-    QCString buffer;
+    Q3CString buffer;
     buffer.sprintf( "%s %s", QFile::encodeName(pumountProg).data(),
                     QFile::encodeName(KProcess::quote(dev)).data() );
 

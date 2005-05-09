@@ -345,7 +345,7 @@ void KStreamSocket::connectionSucceeded(const KResolverEntry& peer)
   QObject::disconnect(socketDevice()->writeNotifier(), 0, this, SLOT(connectionEvent()));
 
   resetError();
-  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
   setState(Connected);
   socketDevice()->setSocketOptions(socketOptions());
   d->timer.stop();

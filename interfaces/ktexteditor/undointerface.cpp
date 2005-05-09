@@ -60,7 +60,7 @@ unsigned int UndoInterface::undoInterfaceNumber () const
   return myUndoInterfaceNumber;
 }
 
-void UndoInterface::setUndoInterfaceDCOPSuffix (const QCString &suffix)
+void UndoInterface::setUndoInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("UndoInterface#"+suffix);
 }

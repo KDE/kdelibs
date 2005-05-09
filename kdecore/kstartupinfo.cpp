@@ -73,7 +73,7 @@ static bool auto_app_started_sending = true;
 static long get_num( const QString& item_P );
 static unsigned long get_unum( const QString& item_P );
 static QString get_str( const QString& item_P );
-static QCString get_cstr( const QString& item_P );
+static Q3CString get_cstr( const QString& item_P );
 static QStringList get_fields( const QString& txt_P );
 static QString escape_str( const QString& str_P );
 
@@ -367,7 +367,7 @@ void KStartupInfo::remove_startup_pids( const KStartupInfoId& id_P,
         data = &d->uninited_startups[ id_P ];
     else
 	return;
-    for( QValueList< pid_t >::ConstIterator it2 = data_P.pids().begin();
+    for( Q3ValueList< pid_t >::ConstIterator it2 = data_P.pids().begin();
          it2 != data_P.pids().end();
          ++it2 )
 	data->remove_pid( *it2 ); // remove all pids from the info
@@ -499,7 +499,7 @@ void KStartupInfo::appStarted()
         appStarted( KStartupInfo::currentStartupIdEnv().id());
     }
 
-void KStartupInfo::appStarted( const QCString& startup_id )
+void KStartupInfo::appStarted( const Q3CString& startup_id )
     {
     KStartupInfoId id;
     id.initId( startup_id );
@@ -542,7 +542,7 @@ void KStartupInfo::handleAutoAppStartedSending()
         appStarted();
     }
 
-void KStartupInfo::setNewStartupId( QWidget* window, const QCString& startup_id )
+void KStartupInfo::setNewStartupId( QWidget* window, const Q3CString& startup_id )
     {
     long activate = true;
     kapp->setStartupId( startup_id );
@@ -603,7 +603,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     //           - Yes - test for pid match
     //           - No - test for WM_CLASS match
     kdDebug( 172 ) << "check_startup" << endl;
-    QCString id = windowStartupId( w_P );
+    Q3CString id = windowStartupId( w_P );
     if( !id.isNull())
         {
         if( id.isEmpty() || id == "0" ) // means ignore this window
@@ -619,7 +619,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     pid_t pid = info.pid();
     if( pid > 0 )
         {
-        QCString hostname = get_window_hostname( w_P );
+        Q3CString hostname = get_window_hostname( w_P );
         if( !hostname.isEmpty()
             && find_pid( pid, hostname, id_O, data_O ))
             return Match;
@@ -628,8 +628,8 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     XClassHint hint;
     if( XGetClassHint( qt_xdisplay(), w_P, &hint ) != 0 )
         { // We managed to read the class hint
-        QCString res_name = hint.res_name;
-        QCString res_class = hint.res_class;
+        Q3CString res_name = hint.res_name;
+        Q3CString res_class = hint.res_class;
         XFree( hint.res_name );
         XFree( hint.res_class );
         if( find_wclass( res_name, res_class, id_O, data_O ))
@@ -657,7 +657,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     return CantDetect;
     }
 
-bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
+bool KStartupInfo::find_id( const Q3CString& id_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O )
     {
     if( d == NULL )
@@ -677,7 +677,7 @@ bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
     return false;
     }
 
-bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P,
+bool KStartupInfo::find_pid( pid_t pid_P, const Q3CString& hostname_P,
     KStartupInfoId* id_O, KStartupInfoData* data_O )
     {
     if( d == NULL )
@@ -702,7 +702,7 @@ bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P,
     return false;
     }
 
-bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
+bool KStartupInfo::find_wclass( Q3CString res_name, Q3CString res_class,
     KStartupInfoId* id_O, KStartupInfoData* data_O )
     {
     if( d == NULL )
@@ -714,7 +714,7 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
          it != d->startups.end();
          ++it )
         {
-        const QCString wmclass = ( *it ).findWMClass();
+        const Q3CString wmclass = ( *it ).findWMClass();
         if( wmclass.lower() == res_name || wmclass.lower() == res_class )
             { // Found it !
             if( id_O != NULL )
@@ -733,9 +733,9 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
 #ifdef Q_WS_X11
 static Atom net_startup_atom = None;
 
-static QCString read_startup_id_property( WId w_P )
+static Q3CString read_startup_id_property( WId w_P )
     {
-    QCString ret;
+    Q3CString ret;
     unsigned char *name_ret;
     Atom type_ret;
     int format_ret;
@@ -754,14 +754,14 @@ static QCString read_startup_id_property( WId w_P )
 
 #endif
 
-QCString KStartupInfo::windowStartupId( WId w_P )
+Q3CString KStartupInfo::windowStartupId( WId w_P )
     {
 #ifdef Q_WS_X11
     if( net_startup_atom == None )
         net_startup_atom = XInternAtom( qt_xdisplay(), NET_STARTUP_WINDOW, False );
     if( utf8_string_atom == None )
         utf8_string_atom = XInternAtom( qt_xdisplay(), "UTF8_STRING", False );
-    QCString ret = read_startup_id_property( w_P );
+    Q3CString ret = read_startup_id_property( w_P );
     if( ret.isEmpty())
         { // retry with window group leader, as the spec says
         XWMHints* hints = XGetWMHints( qt_xdisplay(), w_P );
@@ -772,11 +772,11 @@ QCString KStartupInfo::windowStartupId( WId w_P )
         }
     return ret;
 #else
-    return QCString();
+    return Q3CString();
 #endif
     }
 
-void KStartupInfo::setWindowStartupId( WId w_P, const QCString& id_P )
+void KStartupInfo::setWindowStartupId( WId w_P, const Q3CString& id_P )
     {
 #ifdef Q_WS_X11
     if( id_P.isNull())
@@ -790,7 +790,7 @@ void KStartupInfo::setWindowStartupId( WId w_P, const QCString& id_P )
 #endif
     }
 
-QCString KStartupInfo::get_window_hostname( WId w_P )
+Q3CString KStartupInfo::get_window_hostname( WId w_P )
     {
 #ifdef Q_WS_X11
     XTextProperty tp;
@@ -801,7 +801,7 @@ QCString KStartupInfo::get_window_hostname( WId w_P )
         {
         if( cnt == 1 )
             {
-            QCString hostname = hh[ 0 ];
+            Q3CString hostname = hh[ 0 ];
             XFreeStringList( hh );
             return hostname;
             }
@@ -809,7 +809,7 @@ QCString KStartupInfo::get_window_hostname( WId w_P )
         }
 #endif
     // no hostname
-    return QCString();
+    return Q3CString();
     }
 
 void KStartupInfo::setTimeout( unsigned int secs_P )
@@ -920,7 +920,7 @@ void KStartupInfo::clean_all_noncompliant()
         }
     }
 
-QCString KStartupInfo::createNewStartupId()
+Q3CString KStartupInfo::createNewStartupId()
     {
     // Assign a unique id, use hostname+time+pid, that should be 200% unique.
     // Also append the user timestamp (for focus stealing prevention).
@@ -935,7 +935,7 @@ QCString KStartupInfo::createNewStartupId()
 #else
     long qt_x_user_time = 0;
 #endif
-    QCString id = QString( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
+    Q3CString id = QString( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
         .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).utf8();
     kdDebug( 172 ) << "creating: " << id << ":" << qAppName() << endl;
     return id;
@@ -945,10 +945,10 @@ QCString KStartupInfo::createNewStartupId()
 struct KStartupInfoIdPrivate
     {
     KStartupInfoIdPrivate() : id( "" ) {};
-    QCString id; // id
+    Q3CString id; // id
     };
 
-const QCString& KStartupInfoId::id() const
+const Q3CString& KStartupInfoId::id() const
     {
     return d->id;
     }
@@ -973,7 +973,7 @@ KStartupInfoId::KStartupInfoId( const QString& txt_P )
         }
     }
 
-void KStartupInfoId::initId( const QCString& id_P )
+void KStartupInfoId::initId( const Q3CString& id_P )
     {
     if( !id_P.isEmpty())
         {
@@ -1107,9 +1107,9 @@ struct KStartupInfoDataPrivate
     QString description;
     QString icon;
     int desktop;
-    QValueList< pid_t > pids;
-    QCString wmclass;
-    QCString hostname;
+    Q3ValueList< pid_t > pids;
+    Q3CString wmclass;
+    Q3CString hostname;
     KStartupInfoData::TriState silent;
     unsigned long timestamp;
     int screen;
@@ -1133,7 +1133,7 @@ QString KStartupInfoData::to_text() const
         ret += QString::fromLatin1( " WMCLASS=\"%1\"" ).arg( d->wmclass );
     if( !d->hostname.isEmpty())
         ret += QString::fromLatin1( " HOSTNAME=%1" ).arg( d->hostname );
-    for( QValueList< pid_t >::ConstIterator it = d->pids.begin();
+    for( Q3ValueList< pid_t >::ConstIterator it = d->pids.begin();
          it != d->pids.end();
          ++it )
         ret += QString::fromLatin1( " PID=%1" ).arg( *it );
@@ -1224,7 +1224,7 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
         d->wmclass = data_P.d->wmclass;
     if( !data_P.d->hostname.isEmpty())
         d->hostname = data_P.d->hostname;
-    for( QValueList< pid_t >::ConstIterator it = data_P.d->pids.begin();
+    for( Q3ValueList< pid_t >::ConstIterator it = data_P.d->pids.begin();
          it != data_P.d->pids.end();
          ++it )
         addPid( *it );
@@ -1317,24 +1317,24 @@ int KStartupInfoData::desktop() const
     return d->desktop;
     }
 
-void KStartupInfoData::setWMClass( const QCString& wmclass_P )
+void KStartupInfoData::setWMClass( const Q3CString& wmclass_P )
     {
     d->wmclass = wmclass_P;
     }
 
-const QCString KStartupInfoData::findWMClass() const
+const Q3CString KStartupInfoData::findWMClass() const
     {
     if( !WMClass().isEmpty() && WMClass() != "0" )
         return WMClass();
     return bin().utf8();
     }
 
-const QCString& KStartupInfoData::WMClass() const
+const Q3CString& KStartupInfoData::WMClass() const
     {
     return d->wmclass;
     }
 
-void KStartupInfoData::setHostname( const QCString& hostname_P )
+void KStartupInfoData::setHostname( const Q3CString& hostname_P )
     {
     if( !hostname_P.isNull())
         d->hostname = hostname_P;
@@ -1348,7 +1348,7 @@ void KStartupInfoData::setHostname( const QCString& hostname_P )
         }
     }
 
-const QCString& KStartupInfoData::hostname() const
+const Q3CString& KStartupInfoData::hostname() const
     {
     return d->hostname;
     }
@@ -1364,7 +1364,7 @@ void KStartupInfoData::remove_pid( pid_t pid_P )
     d->pids.remove( pid_P );
     }
 
-const QValueList< pid_t >& KStartupInfoData::pids() const
+const Q3ValueList< pid_t >& KStartupInfoData::pids() const
     {
     return d->pids;
     }
@@ -1433,7 +1433,7 @@ QString get_str( const QString& item_P )
     }
 
 static
-QCString get_cstr( const QString& item_P )
+Q3CString get_cstr( const QString& item_P )
     {
     return get_str( item_P ).utf8();
     }

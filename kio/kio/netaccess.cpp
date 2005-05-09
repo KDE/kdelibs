@@ -370,7 +370,7 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
     tempPathUrl.setPath( remoteTempFileName );
     bJobOK = true; // success unless further error occurs
     QByteArray packedArgs;
-    QDataStream stream( packedArgs, IO_WriteOnly );
+    QDataStream stream( packedArgs, QIODevice::WriteOnly );
 
     stream << int('X') << tempPathUrl << command;
 
@@ -385,7 +385,7 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
     {
       QFile resultFile( target );
 
-      if (resultFile.open( IO_ReadOnly ))
+      if (resultFile.open( QIODevice::ReadOnly ))
       {
         QTextStream ts( &resultFile );
         ts.setEncoding( QTextStream::Locale ); // Locale??
@@ -454,8 +454,8 @@ void qt_leave_modal( QWidget *widget );
 
 void NetAccess::enter_loop()
 {
-  QWidget dummy(0,0,WType_Dialog | WShowModal);
-  dummy.setFocusPolicy( QWidget::NoFocus );
+  QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
+  dummy.setFocusPolicy( Qt::NoFocus );
   qt_enter_modal(&dummy);
   qApp->enter_loop();
   qt_leave_modal(&dummy);

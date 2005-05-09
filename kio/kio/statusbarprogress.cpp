@@ -18,7 +18,7 @@
 
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <qwidgetstack.h>
+#include <q3widgetstack.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 
@@ -47,20 +47,20 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
 
   m_pButton = new QPushButton( "X", this );
   box->addWidget( m_pButton  );
-  stack = new QWidgetStack( this );
+  stack = new Q3WidgetStack( this );
   box->addWidget( stack );
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( slotStop() ) );
 
   m_pProgressBar = new KProgress( this );
-  m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
+  m_pProgressBar->setFrameStyle( Q3Frame::Box | Q3Frame::Raised );
   m_pProgressBar->setLineWidth( 1 );
-  m_pProgressBar->setBackgroundMode( QWidget::PaletteBackground );
+  m_pProgressBar->setBackgroundMode( Qt::PaletteBackground );
   m_pProgressBar->installEventFilter( this );
   m_pProgressBar->setMinimumWidth( w );
   stack->addWidget( m_pProgressBar, 1 );
 
   m_pLabel = new QLabel( "", this );
-  m_pLabel->setAlignment( AlignHCenter | AlignVCenter );
+  m_pLabel->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
   m_pLabel->installEventFilter( this );
   m_pLabel->setMinimumWidth( w );
   stack->addWidget( m_pLabel, 2 );
@@ -144,7 +144,7 @@ bool StatusbarProgress::eventFilter( QObject *, QEvent *ev ) {
   if ( ev->type() == QEvent::MouseButtonPress ) {
     QMouseEvent *e = (QMouseEvent*)ev;
 
-    if ( e->button() == LeftButton ) {    // toggle view on left mouse button
+    if ( e->button() == Qt::LeftButton ) {    // toggle view on left mouse button
       if ( mode == Label ) {
 	mode = Progress;
       } else if ( mode == Progress ) {

@@ -21,7 +21,7 @@
 #ifndef KABC_KEY_H
 #define KABC_KEY_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kdelibs_export.h>
 
@@ -30,14 +30,14 @@ namespace KABC {
 /**
  * @short A class to store an encryption key.
  */
-class KABC_EXPORT Key
+class KABC_EXPORT Qt::Key
 {
-  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Key & );
-  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Key & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Qt::Key & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Qt::Key & );
 
 public:
-  typedef QValueList<Key> List;
-  typedef QValueList<int> TypeList;  
+  typedef Q3ValueList<Qt::Key> List;
+  typedef Q3ValueList<int> TypeList;  
 
   /**
    * Key types
@@ -58,15 +58,15 @@ public:
    * @param text  The text data.
    * @param type  The key type, @see Types.
    */
-  Key( const QString &text = QString::null, int type = PGP );
+  Qt::Key( const QString &text = QString::null, int type = PGP );
 
   /**
    * Destructor.
    */
-  ~Key();
+  ~Qt::Key();
     
-  bool operator==( const Key & ) const;
-  bool operator!=( const Key & ) const;
+  bool operator==( const Qt::Key & ) const;
+  bool operator!=( const Qt::Key & ) const;
 
   /**
    * Sets the unique identifier.
@@ -143,8 +143,8 @@ private:
   int mType;
 };
 
-KABC_EXPORT QDataStream &operator<<( QDataStream &, const Key & );
-KABC_EXPORT QDataStream &operator>>( QDataStream &, Key & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Qt::Key & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Qt::Key & );
 
 }
 #endif

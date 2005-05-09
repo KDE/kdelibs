@@ -21,7 +21,7 @@
 #ifndef KABC_FORMATFACTORY_H
 #define KABC_FORMATFACTORY_H
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qstring.h>
 
 #include <kconfig.h>
@@ -94,7 +94,7 @@ class KABC_EXPORT FormatFactory
 
     static FormatFactory *mSelf;
 
-    QDict<FormatInfo> mFormatList;
+    Q3Dict<FormatInfo> mFormatList;
 };
 
 }

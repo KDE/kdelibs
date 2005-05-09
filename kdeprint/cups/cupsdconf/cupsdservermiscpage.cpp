@@ -24,7 +24,7 @@
 #include <klocale.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -90,6 +90,6 @@ void CupsdServerMiscPage::setDefaults()
 
 void CupsdServerMiscPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(printcap_, conf->comments_.toolTip(PRINTCAP_COMM));
-        QWhatsThis::add(ripcache_, conf->comments_.toolTip(RIPCACHE_COMM));
+        Q3WhatsThis::add(printcap_, conf->comments_.toolTip(PRINTCAP_COMM));
+        Q3WhatsThis::add(ripcache_, conf->comments_.toolTip(RIPCACHE_COMM));
 }

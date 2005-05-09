@@ -32,7 +32,7 @@
 
 #include <qpoint.h>
 #include <qtimer.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 
 class KateView;
 class KateIconBorder;
@@ -238,7 +238,7 @@ class KateViewInternal : public QWidget
     struct _dragInfo {
       DragState    state;
       QPoint       start;
-      QTextDrag*   dragObject;
+      Q3TextDrag*   dragObject;
     } dragInfo;
 
     uint iconBorderHeight;
@@ -287,7 +287,7 @@ class KateViewInternal : public QWidget
     //
     // lines Ranges, mostly useful to speedup + dyn. word wrap
     //
-    QMemArray<KateLineRange> lineRanges;
+    Q3MemArray<KateLineRange> lineRanges;
 
     // Used to determine if the scrollbar will appear/disappear in non-wrapped mode
     bool scrollbarVisible(uint startLine);

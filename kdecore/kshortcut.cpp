@@ -88,10 +88,10 @@ bool KKey::init( const QKeySequence& key )
 bool KKey::init( const QKeyEvent* pEvent )
 {
 	int keyQt = pEvent->key();
-	if( pEvent->state() & Qt::ShiftButton )   keyQt |= Qt::SHIFT;
-	if( pEvent->state() & Qt::ControlButton ) keyQt |= Qt::CTRL;
-	if( pEvent->state() & Qt::AltButton )     keyQt |= Qt::ALT;
-	if( pEvent->state() & Qt::MetaButton )     keyQt |= Qt::META;
+	if( pEvent->state() & Qt::ShiftModifier )   keyQt |= Qt::SHIFT;
+	if( pEvent->state() & Qt::ControlModifier ) keyQt |= Qt::CTRL;
+	if( pEvent->state() & Qt::AltModifier )     keyQt |= Qt::ALT;
+	if( pEvent->state() & Qt::MetaModifier )     keyQt |= Qt::META;
 	return init( keyQt );
 }
 
@@ -495,7 +495,7 @@ bool KShortcut::init( const QString& s )
 
 	if( !s.isEmpty() ) {
 		QString sDebug;
-		QTextStream os( &sDebug, IO_WriteOnly );
+		QTextStream os( &sDebug, QIODevice::WriteOnly );
 		os << "KShortcut::init( \"" << s << "\" ): ";
 		for( uint i = 0; i < m_nSeqs; i++ ) {
 			os << " m_rgseq[" << i << "]: ";

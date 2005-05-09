@@ -21,10 +21,10 @@
 #define KICONVIEWSEARCHLINE_H
 
 #include <klineedit.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
-class QIconView;
-class QIconViewItem;
+class Q3IconView;
+class Q3IconViewItem;
 
 /**
  * This class makes it easy to add a search line for filtering the items in a
@@ -49,7 +49,7 @@ public:
    * is set with setIconView().
    */
   KIconViewSearchLine( QWidget *parent = 0,
-		       QIconView *iconView = 0,
+		       Q3IconView *iconView = 0,
 		       const char *name = 0 );
 
   /**
@@ -75,7 +75,7 @@ public:
    *
    * @see setIconView()
    */
-  QIconView *iconView() const;
+  Q3IconView *iconView() const;
 
 
 public slots:
@@ -98,7 +98,7 @@ public slots:
    *
    * @see iconView()
    */
-  void setIconView( QIconView *iv );
+  void setIconView( Q3IconView *iv );
 
 
   /**
@@ -113,19 +113,19 @@ protected:
    * based on the value of caseSensitive().  This can be overridden in
    * subclasses to implement more complicated matching schemes.
    */
-  virtual bool itemMatches( const QIconViewItem *item,
+  virtual bool itemMatches( const Q3IconViewItem *item,
 			    const QString &s ) const;
 
 
   /**
    * Do initialization common to both constructors.
    */
-  void init( QIconView *iconView = 0 );
+  void init( Q3IconView *iconView = 0 );
 
   /**
    * Hide item.
    */
-  void hideItem( QIconViewItem *item );
+  void hideItem( Q3IconViewItem *item );
 
   /**
    * Show item.
@@ -133,7 +133,7 @@ protected:
    * Just unhide it, doesn't necessary show it on screen, for that use
    * iconView->ensureItemVisible()
    */
-  void showItem( QIconViewItem *item );
+  void showItem( Q3IconViewItem *item );
 
 
 protected slots:

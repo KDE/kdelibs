@@ -32,9 +32,9 @@ KPixmap& KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
 
         register int x, y;
 
-        rDiff = (/*rcb = */ cb.red())   - (rca = ca.red());
-        gDiff = (/*gcb = */ cb.green()) - (gca = ca.green());
-        bDiff = (/*bcb = */ cb.blue())  - (bca = ca.blue());
+        rDiff = (/*rcb = */ cb.Qt::red())   - (rca = ca.Qt::red());
+        gDiff = (/*gcb = */ cb.Qt::green()) - (gca = ca.Qt::green());
+        bDiff = (/*bcb = */ cb.Qt::blue())  - (bca = ca.Qt::blue());
 
         register int rl = rca << 16;
         register int gl = gca << 16;

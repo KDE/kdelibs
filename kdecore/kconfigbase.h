@@ -27,7 +27,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qdatetime.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qstringlist.h>
 #include <qvariant.h>
 #include <qmap.h>
@@ -230,7 +230,7 @@ public:
    * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
-  int readListEntry( const QString& pKey, QStrList &list, char sep = ',' ) const;
+  int readListEntry( const QString& pKey, Q3StrList &list, char sep = ',' ) const;
 
   /**
    * Reads a list of strings.
@@ -242,7 +242,7 @@ public:
    * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
-  int readListEntry( const char *pKey, QStrList &list, char sep = ',' ) const;
+  int readListEntry( const char *pKey, Q3StrList &list, char sep = ',' ) const;
 
   /**
    * Reads a list of strings.
@@ -280,7 +280,7 @@ public:
    * @param pKey The key to search for.
    * @return The list. Empty if the entry does not exist.
    */
-  QValueList<int> readIntListEntry( const QString& pKey ) const;
+  Q3ValueList<int> readIntListEntry( const QString& pKey ) const;
 
   /**
    * Reads a list of Integers.
@@ -288,7 +288,7 @@ public:
    * @param pKey The key to search for.
    * @return The list. Empty if the entry does not exist.
    */
-  QValueList<int> readIntListEntry( const char *pKey ) const;
+  Q3ValueList<int> readIntListEntry( const char *pKey ) const;
 
   /**
    * Reads a path.
@@ -844,7 +844,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const QString& pKey, const QStrList &rValue,
+  void writeEntry( const QString& pKey, const Q3StrList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
   /**
    * writeEntry() overridden to accept a list of strings.
@@ -866,7 +866,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const char *pKey, const QStrList &rValue,
+  void writeEntry( const char *pKey, const Q3StrList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
@@ -934,7 +934,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const QString& pKey, const QValueList<int>& rValue,
+  void writeEntry( const QString& pKey, const Q3ValueList<int>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
  /**
    * writeEntry() overridden to accept a list of Integers.
@@ -955,7 +955,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const char *pKey, const QValueList<int>& rValue,
+  void writeEntry( const char *pKey, const Q3ValueList<int>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
@@ -1967,7 +1967,7 @@ protected:
    */
   virtual KEntry lookupData(const KEntryKey &_key) const = 0;
 
-  virtual bool internalHasGroup(const QCString &group) const = 0;
+  virtual bool internalHasGroup(const Q3CString &group) const = 0;
 
   /**
    * A back end for loading/saving to disk in a particular format.
@@ -1977,22 +1977,22 @@ public:
   /**
    * Overloaded public methods:
    */
-  void setGroup( const QCString &pGroup );
+  void setGroup( const Q3CString &pGroup );
   void setGroup( const char *pGroup );
-  bool hasGroup(const QCString &_pGroup) const;
+  bool hasGroup(const Q3CString &_pGroup) const;
   bool hasGroup(const char *_pGroup) const;
   bool hasKey( const char *pKey ) const;
 
 protected:
-  QCString readEntryUtf8( const char *pKey) const;
+  Q3CString readEntryUtf8( const char *pKey) const;
 
   /**
    * The currently selected group. */
-  QCString mGroup;
+  Q3CString mGroup;
 
   /**
    * The locale to retrieve keys under if possible, i.e en_US or fr.  */
-  QCString aLocaleString;
+  Q3CString aLocaleString;
 
   /**
    * Indicates whether there are any dirty entries in the config object
@@ -2069,7 +2069,7 @@ public:
       : _config(config), _oldgroup(config->group())
         { _config->setGroup( group ); }
 
-  KConfigGroupSaver( KConfigBase* config, const QCString &group )
+  KConfigGroupSaver( KConfigBase* config, const Q3CString &group )
       : _config(config), _oldgroup(config->group())
         { _config->setGroup( group ); }
 
@@ -2099,7 +2099,7 @@ public:
     * Construct a config group corresponding to @p group in @p master.
     * @p group is the group name encoded in UTF-8.
     */
-   KConfigGroup(KConfigBase *master, const QCString &group);
+   KConfigGroup(KConfigBase *master, const Q3CString &group);
    /**
     * This is an overloaded constructor provided for convenience.
     * It behaves essentially like the above function.
@@ -2157,7 +2157,7 @@ private:
     { return KEntryMap(); }
    virtual KEntryMap internalEntryMap() const
     { return KEntryMap(); }
-   virtual bool internalHasGroup(const QCString &) const
+   virtual bool internalHasGroup(const Q3CString &) const
     { return false; }
 
    void getConfigState() { }

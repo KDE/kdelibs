@@ -30,10 +30,10 @@ protected:
   int ledcolor;
   KLed::Look  ledlook;
 
-  const QColor red;
-  const QColor blue;
-  const QColor green;
-  const QColor yellow;
+  const QColor Qt::red;
+  const QColor Qt::blue;
+  const QColor Qt::green;
+  const QColor Qt::yellow;
 
 public:
 

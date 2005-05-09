@@ -66,7 +66,7 @@ public:
      * set the name of the original file, to be used in the gzip header.
      * @param fileName the name of the original file
      */
-    void setOrigFileName( const QCString & fileName );
+    void setOrigFileName( const Q3CString & fileName );
 
     /**
      * Call this let this device skip the gzip headers when reading/writing.
@@ -77,13 +77,13 @@ public:
     void setSkipHeaders();
 
     // Not implemented
-    virtual QIODevice::Offset size() const;
+    virtual Q_LONGLONG size() const;
 
-    virtual QIODevice::Offset at() const;
+    virtual Q_LONGLONG at() const;
     /**
      * That one can be quite slow, when going back. Use with care.
      */
-    virtual bool at( QIODevice::Offset );
+    virtual bool at( Q_LONGLONG );
 
     virtual bool atEnd() const;
 

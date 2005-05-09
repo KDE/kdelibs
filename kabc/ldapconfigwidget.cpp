@@ -19,7 +19,7 @@
 */
 #include <qapplication.h>
 
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -45,7 +45,7 @@
 using namespace KABC;
 
 LdapConfigWidget::LdapConfigWidget( QWidget* parent,
-  const char* name, WFlags fl ) : QWidget( parent, name, fl )
+  const char* name, Qt::WFlags fl ) : QWidget( parent, name, fl )
 {
   mProg = 0;
   mFlags = 0;
@@ -54,7 +54,7 @@ LdapConfigWidget::LdapConfigWidget( QWidget* parent,
 }
 
 LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
-  const char* name, WFlags fl ) : QWidget( parent, name, fl )
+  const char* name, Qt::WFlags fl ) : QWidget( parent, name, fl )
 {
   mFlags = flags;
   mProg = 0;
@@ -196,7 +196,7 @@ void LdapConfigWidget::initWidget()
   }
 
   if ( mFlags & W_SECBOX ) {
-    QHButtonGroup *btgroup = new QHButtonGroup( i18n( "Security" ), this );
+    Q3HButtonGroup *btgroup = new Q3HButtonGroup( i18n( "Security" ), this );
     mSecNO = new QRadioButton( i18n( "No" ), btgroup, "kcfg_ldapnosec" );
     mSecTLS = new QRadioButton( i18n( "TLS" ), btgroup, "kcfg_ldaptls" );
     mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup, "kcfg_ldapssl" );
@@ -212,8 +212,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_AUTHBOX ) {
 
-    QButtonGroup *authbox =
-      new QButtonGroup( 3, Qt::Horizontal, i18n( "Authentication" ), this );
+    Q3ButtonGroup *authbox =
+      new Q3ButtonGroup( 3, Qt::Horizontal, i18n( "Authentication" ), this );
 
     mAnonymous = new QRadioButton( i18n( "Anonymous" ), authbox, "kcfg_ldapanon" );
     mSimple = new QRadioButton( i18n( "Simple" ), authbox, "kcfg_ldapsimple" );
@@ -333,7 +333,7 @@ void LdapConfigWidget::mQueryDNClicked()
 
 void LdapConfigWidget::setAnonymous( int state )
 {
-  if ( state == QButton::Off ) return;
+  if ( state == QCheckBox::Off ) return;
   if ( mUser ) mUser->setEnabled(false);
   if ( mPassword ) mPassword->setEnabled(false);
   if ( mBindDN ) mBindDN->setEnabled(false);
@@ -344,7 +344,7 @@ void LdapConfigWidget::setAnonymous( int state )
 
 void LdapConfigWidget::setSimple( int state )
 {
-  if ( state == QButton::Off ) return;
+  if ( state == QCheckBox::Off ) return;
   if ( mUser ) mUser->setEnabled(true);
   if ( mPassword ) mPassword->setEnabled(true);
   if ( mBindDN ) mBindDN->setEnabled(false);
@@ -355,7 +355,7 @@ void LdapConfigWidget::setSimple( int state )
 
 void LdapConfigWidget::setSASL( int state )
 {
-  if ( state == QButton::Off ) return;
+  if ( state == QCheckBox::Off ) return;
   if ( mUser ) mUser->setEnabled(true);
   if ( mPassword ) mPassword->setEnabled(true);
   if ( mBindDN ) mBindDN->setEnabled(true);

@@ -21,12 +21,12 @@
 #define KMWIZARD_H
 
 #include <qdialog.h>
-#include <qintdict.h>
-#include <qvaluestack.h>
+#include <q3intdict.h>
+#include <q3valuestack.h>
 
 #include <kdelibs_export.h>
 
-class QWidgetStack;
+class Q3WidgetStack;
 class QLabel;
 class QPushButton;
 class KMWizardPage;
@@ -81,10 +81,10 @@ protected slots:
 	void slotHelp();
 
 private:
-	QIntDict<KMWizardPage>	m_pagepool;
-	QValueStack<int>	m_pagestack;
+	Q3IntDict<KMWizardPage>	m_pagepool;
+	Q3ValueStack<int>	m_pagestack;
 
-	QWidgetStack		*m_stack;
+	Q3WidgetStack		*m_stack;
 	QLabel			*m_title;
 	QPushButton		*m_next, *m_prev;
 	int			m_start, m_end;

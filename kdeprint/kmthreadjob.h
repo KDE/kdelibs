@@ -20,7 +20,7 @@
 #ifndef KMTHREADJOB_H
 #define KMTHREADJOB_H
 
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qobject.h>
 
 class KMJob;
@@ -47,7 +47,7 @@ protected:
 	bool checkJob(int ID);
 
 private:
-	QIntDict<KMJob>	m_jobs;
+	Q3IntDict<KMJob>	m_jobs;
 };
 
 #endif

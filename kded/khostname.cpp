@@ -53,14 +53,14 @@ public:
 
    void changeX();
    void changeDcop();
-   void changeStdDirs(const QCString &type);
+   void changeStdDirs(const Q3CString &type);
    void changeSessionManager();
 
 protected:
-   QCString oldName;
-   QCString newName;
-   QCString display;
-   QCString home;
+   Q3CString oldName;
+   Q3CString newName;
+   Q3CString display;
+   Q3CString home;
 };
 
 KHostName::KHostName()
@@ -90,7 +90,7 @@ KHostName::KHostName()
    }
 }
 
-static QCStringList split(const QCString &str)
+static QCStringList split(const Q3CString &str)
 {
    const char *s = str.data();
    QCStringList result;
@@ -99,10 +99,10 @@ static QCStringList split(const QCString &str)
       const char *i = strchr(s, ' ');
       if (!i)
       {
-         result.append(QCString(s));
+         result.append(Q3CString(s));
          return result;
       }
-      result.append(QCString(s, i-s+1));
+      result.append(Q3CString(s, i-s+1));
       s = i;
       while (*s == ' ') s++;
    }
@@ -123,7 +123,7 @@ void KHostName::changeX()
       char buf[1024+1];
       while (!feof(xFile))
       {
-         QCString line = fgets(buf, 1024, xFile);
+         Q3CString line = fgets(buf, 1024, xFile);
          if (line.length())
             line.truncate(line.length()-1); // Strip LF.
          if (!line.isEmpty())
@@ -139,14 +139,14 @@ void KHostName::changeX()
       if (entries.count() != 3)
          continue;
 
-      QCString netId = entries[0];
-      QCString authName = entries[1];
-      QCString authKey = entries[2];
+      Q3CString netId = entries[0];
+      Q3CString authName = entries[1];
+      Q3CString authKey = entries[2];
 
       int i = netId.findRev(':');
       if (i == -1)
          continue;
-      QCString netDisplay = netId.mid(i);
+      Q3CString netDisplay = netId.mid(i);
       if (netDisplay != display)
          continue;
 
@@ -154,7 +154,7 @@ void KHostName::changeX()
       if (i == -1)
          continue;
 
-      QCString newNetId = newName+netId.mid(i);
+      Q3CString newNetId = newName+netId.mid(i);
 
       cmd = "xauth remove "+KProcess::quote(netId);
       system(QFile::encodeName(cmd));
@@ -170,9 +170,9 @@ void KHostName::changeX()
 
 void KHostName::changeDcop()
 {
-   QCString origFNameOld = DCOPClient::dcopServerFileOld(oldName);
-   QCString fname = DCOPClient::dcopServerFile(oldName);
-   QCString origFName = fname;
+   Q3CString origFNameOld = DCOPClient::dcopServerFileOld(oldName);
+   Q3CString fname = DCOPClient::dcopServerFile(oldName);
+   Q3CString origFName = fname;
    FILE *dcopFile = fopen(fname.data(), "r");
    if (!dcopFile)
    {
@@ -180,7 +180,7 @@ void KHostName::changeDcop()
       return;
    }
 
-   QCString line1, line2;
+   Q3CString line1, line2;
    {
      char buf[1024+1];
      line1 = fgets(buf, 1024, dcopFile);
@@ -193,7 +193,7 @@ void KHostName::changeDcop()
    }
    fclose(dcopFile);
 
-   QCString oldNetId = line1;
+   Q3CString oldNetId = line1;
 
    if (!newName.isEmpty())
    {
@@ -204,7 +204,7 @@ void KHostName::changeDcop()
          return;
       }
       line1 = "local/"+newName+line1.mid(i);
-      QCString newNetId = line1;
+      Q3CString newNetId = line1;
       fname = DCOPClient::dcopServerFile(newName);
       unlink(fname.data());
       dcopFile = fopen(fname.data(), "w");
@@ -221,7 +221,7 @@ void KHostName::changeDcop()
 
       fclose(dcopFile);
 
-      QCString compatLink = DCOPClient::dcopServerFileOld(newName);
+      Q3CString compatLink = DCOPClient::dcopServerFileOld(newName);
       ::symlink(fname.data(), compatLink.data()); // Compatibility link
 
       // Update .ICEauthority
@@ -237,7 +237,7 @@ void KHostName::changeDcop()
          char buf[1024+1];
          while (!feof(iceFile))
          {
-            QCString line = fgets(buf, 1024, iceFile);
+            Q3CString line = fgets(buf, 1024, iceFile);
             if (line.length())
                line.truncate(line.length()-1); // Strip LF.
             if (!line.isEmpty())
@@ -253,10 +253,10 @@ void KHostName::changeDcop()
          if (entries.count() != 5)
             continue;
 
-         QCString protName = entries[0];
-         QCString netId = entries[2];
-         QCString authName = entries[3];
-         QCString authKey = entries[4];
+         Q3CString protName = entries[0];
+         Q3CString netId = entries[2];
+         Q3CString authName = entries[3];
+         Q3CString authKey = entries[4];
          if (netId != oldNetId)
             continue;
 
@@ -282,11 +282,11 @@ void KHostName::changeDcop()
    }
 }
 
-void KHostName::changeStdDirs(const QCString &type)
+void KHostName::changeStdDirs(const Q3CString &type)
 {
    // We make links to the old dirs cause we can't delete the old dirs.
-   QCString oldDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(oldName));
-   QCString newDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(newName));
+   Q3CString oldDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(oldName));
+   Q3CString newDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(newName));
 
    KDE_struct_stat st_buf;
 
@@ -320,7 +320,7 @@ void KHostName::changeStdDirs(const QCString &type)
 
 void KHostName::changeSessionManager()
 {
-   QCString sm = ::getenv("SESSION_MANAGER");
+   Q3CString sm = ::getenv("SESSION_MANAGER");
    if (sm.isEmpty())
    {
       fprintf(stderr, "Warning: No session management specified.\n");
@@ -333,9 +333,9 @@ void KHostName::changeSessionManager()
       return;
    }
    sm = "local/"+newName+sm.mid(i);
-   QCString name = "SESSION_MANAGER";
+   Q3CString name = "SESSION_MANAGER";
    QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
+   QDataStream stream(params, QIODevice::WriteOnly);
    stream << name << sm;
    DCOPClient *client = new DCOPClient();
    if (!client->attach())
@@ -344,7 +344,7 @@ void KHostName::changeSessionManager()
       delete client;
       return;
    }
-   QCString launcher = KApplication::launcher();
+   Q3CString launcher = KApplication::launcher();
    client->send(launcher, launcher, "setLaunchEnv(QCString,QCString)", params);
    delete client;
 }

@@ -27,7 +27,7 @@ int main( int argc, char *argv[] )
 	QColor color;
 
 	KLocale::setMainCatalogue("kdelibs");
-	QApplication::setColorMode( QApplication::CustomColors );
+	QApplication::setColorMode( QApplication::CustomColor );
 	KApplication a( argc, argv, "KColorDialogTest" );
         KConfig aConfig;
         aConfig.setGroup( "KColorDialog-test" );

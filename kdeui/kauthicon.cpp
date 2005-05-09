@@ -100,12 +100,12 @@ KAuthIcon::KAuthIcon(QWidget *parent, const char *name)
   openLockText = i18n("Editing enabled");
 
   lockBox = new QLabel(this);
-  lockBox->setFrameStyle(QFrame::WinPanel|QFrame::Raised);
+  lockBox->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Raised);
   lockBox->setPixmap(lockPM);
   lockBox->setFixedSize(lockBox->sizeHint());
 
   lockLabel = new QLabel(this);
-  lockLabel->setFrameStyle(QFrame::NoFrame);
+  lockLabel->setFrameStyle(Q3Frame::NoFrame);
 
   // set fixed size of this frame to whichever phrase is longer
   if (lockLabel->fontMetrics().boundingRect(lockText).width() >
@@ -113,15 +113,15 @@ KAuthIcon::KAuthIcon(QWidget *parent, const char *name)
     lockLabel->setText(lockText);
   else
     lockLabel->setText(openLockText);
-  lockLabel->setAlignment(AlignCenter);
+  lockLabel->setAlignment(Qt::AlignCenter);
   lockLabel->setMinimumSize(lockLabel->sizeHint());
   lockLabel->setText(lockText);
 
   layout = new QHBoxLayout(this);
 
-  layout->addWidget(lockBox, 0, AlignLeft|AlignVCenter);
+  layout->addWidget(lockBox, 0, Qt::AlignLeft|Qt::AlignVCenter);
   layout->addSpacing(5);
-  layout->addWidget(lockLabel, 0, AlignRight|AlignVCenter);
+  layout->addWidget(lockLabel, 0, Qt::AlignRight|Qt::AlignVCenter);
 
   layout->activate();
   resize(sizeHint());

@@ -24,7 +24,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -46,7 +46,7 @@ class KTEXTEDITOR_EXPORT SelectionInterfaceExt
     unsigned int selectionInterfaceExtNumber () const;
     
   protected:  
-    void setSelectionInterfaceExtDCOPSuffix (const QCString &suffix);  
+    void setSelectionInterfaceExtDCOPSuffix (const Q3CString &suffix);  
     
   public:
     /** The selection start line number */

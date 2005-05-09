@@ -19,7 +19,7 @@
 #ifndef _KMIMETYPE_CHOOSER_H_
 #define _KMIMETYPE_CHOOSER_H_
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <kdialogbase.h>
 
 
@@ -31,7 +31,7 @@
  *
  * @author Anders Lund (anders at alweb dk), jan 23, 2002
  */
-class KIO_EXPORT KMimeTypeChooser : public QVBox
+class KIO_EXPORT KMimeTypeChooser : public Q3VBox
 {
   Q_OBJECT
 
@@ -88,7 +88,7 @@ class KIO_EXPORT KMimeTypeChooser : public QVBox
     /**
      * @internal disables the "edit" button for groups
      */
-    void slotCurrentChanged(QListViewItem* i);
+    void slotCurrentChanged(Q3ListViewItem* i);
 
     /**
      *  @internal called when the sycoca database has changed after

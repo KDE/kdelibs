@@ -34,7 +34,7 @@
 #include <qstring.h>
 #include <qfile.h>
 #include <qdir.h>
-#include <qtl.h>
+#include <q3tl.h>
 
 #include <ksimpleconfig.h>
 #include <kapplication.h>
@@ -440,10 +440,10 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
 class KServiceReadProperty : public KConfigBase
 {
 public:
-   KServiceReadProperty(const QString &_key, const QCString &_value)
+   KServiceReadProperty(const QString &_key, const Q3CString &_value)
 	: key(_key), value(_value) { }
 
-   bool internalHasGroup(const QCString &) const { /*qDebug("hasGroup(const QCString &)");*/ return false; }
+   bool internalHasGroup(const Q3CString &) const { /*qDebug("hasGroup(const QCString &)");*/ return false; }
 
    QStringList groupList() const { return QStringList(); }
 
@@ -462,7 +462,7 @@ public:
    { KEntry entry; entry.mValue = value; return entry; }
 protected:
    QString key;
-   QCString value;
+   Q3CString value;
 };
 
 QVariant KService::property( const QString& _name) const

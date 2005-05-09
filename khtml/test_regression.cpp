@@ -56,10 +56,10 @@
 #include <qdir.h>
 #include <qobject.h>
 #include <qpushbutton.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <qstring.h>
 #include <qtextstream.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qwidget.h>
 #include <qfileinfo.h>
 #include <qtimer.h>
@@ -318,13 +318,13 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             QString filename = args[0].toString(exec).qstring();
             QString url = args[1].toString(exec).qstring();
             QFile file(RegressionTest::curr->m_currentBase+"/"+filename);
-	    if (!file.open(IO_ReadOnly)) {
+	    if (!file.open(QIODevice::ReadOnly)) {
 		exec->setException(Error::create(exec, GeneralError,
 						 QString("Error reading " + filename).latin1()));
 	    }
 	    else {
 		QByteArray fileData;
-		QDataStream stream(fileData,IO_WriteOnly);
+		QDataStream stream(fileData,QIODevice::WriteOnly);
 		char buf[1024];
 		int bytesread;
 		while (!file.atEnd()) {
@@ -423,7 +423,7 @@ int main(int argc, char *argv[])
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
 
-    QCString baseDir = args->getOption("base");
+    Q3CString baseDir = args->getOption("base");
 
     if ( args->count() < 1 && baseDir.isEmpty() ) {
 	KCmdLineArgs::usage();
@@ -547,7 +547,7 @@ int main(int argc, char *argv[])
     for (; testcase_index < args->count(); testcase_index++)
         tests << args->arg(testcase_index);
     if (tests.count() > 0)
-        for (QValueListConstIterator<QCString> it = tests.begin(); it != tests.end(); ++it) {
+        for (Q3ValueListConstIterator<Q3CString> it = tests.begin(); it != tests.end(); ++it) {
 	    result = regressionTest->runTests(*it,true);
             if (!result) break;
         }
@@ -580,7 +580,7 @@ int main(int argc, char *argv[])
                 printf("Errors:   %d\n",regressionTest->m_errors);
 
             QFile list( regressionTest->m_outputDir + "/links.html" );
-            list.open( IO_WriteOnly|IO_Append );
+            list.open( QIODevice::WriteOnly|QIODevice::Append );
             QString link, cl;
             link = QString( "<hr>%1 failures. (%2 expected failures)" )
                    .arg(regressionTest->m_failures_work )
@@ -638,12 +638,12 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
     ::unlink( QFile::encodeName( m_outputDir + "/links.html" ) );
     QFile f( m_outputDir + "/empty.html" );
     QString s;
-    f.open( IO_WriteOnly | IO_Truncate );
+    f.open( QIODevice::WriteOnly | QIODevice::Truncate );
     s = "<html><body>Follow the white rabbit";
     f.writeBlock( s.latin1(), s.length() );
     f.close();
     f.setName( m_outputDir + "/index.html" );
-    f.open( IO_WriteOnly | IO_Truncate );
+    f.open( QIODevice::WriteOnly | QIODevice::Truncate );
     s = "<html><frameset cols=150,*><frame src=links.html><frame name=content src=empty.html>";
     f.writeBlock( s.latin1(), s.length() );
     f.close();
@@ -653,7 +653,7 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
     curr = this;
 }
 
-#include <qobjectlist.h>
+#include <qobject.h>
 
 static QStringList readListFile( const QString &filename )
 {
@@ -663,7 +663,7 @@ static QStringList readListFile( const QString &filename )
     QStringList ignoreFiles;
     if (ignoreInfo.exists()) {
         QFile ignoreFile(ignoreFilename);
-        if (!ignoreFile.open(IO_ReadOnly)) {
+        if (!ignoreFile.open(QIODevice::ReadOnly)) {
             fprintf(stderr,"Can't open %s\n",ignoreFilename.latin1());
             exit(1);
         }
@@ -877,7 +877,7 @@ QString RegressionTest::getPartOutput( OutputType type)
 {
     // dump out the contents of the rendering & DOM trees
     QString dump;
-    QTextStream outputStream(dump,IO_WriteOnly);
+    QTextStream outputStream(dump,QIODevice::WriteOnly);
 
     if ( type == RenderTree ) {
         dumpRenderTree( outputStream, m_part );
@@ -961,7 +961,7 @@ void RegressionTest::createLink( const QString& test, int failures )
     createMissingDirs( m_outputDir + "/" + test + "-compare.html" );
 
     QFile list( m_outputDir + "/links.html" );
-    list.open( IO_WriteOnly|IO_Append );
+    list.open( QIODevice::WriteOnly|QIODevice::Append );
     QString link;
     link = QString( "<a href=\"%1\" target=\"content\" title=\"%2\">" )
            .arg( test + "-compare.html" )
@@ -982,7 +982,7 @@ void RegressionTest::createLink( const QString& test, int failures )
 void RegressionTest::doJavascriptReport( const QString &test )
 {
     QFile compare( m_outputDir + "/" + test + "-compare.html" );
-    if ( !compare.open( IO_WriteOnly|IO_Truncate ) )
+    if ( !compare.open( QIODevice::WriteOnly|QIODevice::Truncate ) )
         kdDebug() << "failed to open " << m_outputDir + "/" + test + "-compare.html" << endl;
     QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
@@ -1117,7 +1117,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
     QString relpath = makeRelativePath(m_outputDir + "/"
         + QFileInfo(test).dirPath(), m_baseDir);
 
-    compare.open( IO_WriteOnly|IO_Truncate );
+    compare.open( QIODevice::WriteOnly|QIODevice::Truncate );
     QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
     cl += QString( "<script>\n"
@@ -1295,7 +1295,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
     QString fullSourceName = filename;
     QFile sourceFile(fullSourceName);
 
-    if (!sourceFile.open(IO_ReadOnly)) {
+    if (!sourceFile.open(QIODevice::ReadOnly)) {
         fprintf(stderr,"Error reading file %s\n",fullSourceName.latin1());
         exit(1);
     }
@@ -1420,7 +1420,7 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
         outputFilename = absFilename;
 
     QFile file(absFilename);
-    if (file.open(IO_ReadOnly)) {
+    if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream ( &file );
         stream.setEncoding( QTextStream::UnicodeUTF8 );
 
@@ -1436,7 +1436,7 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     // generate result file
     createMissingDirs( outputFilename );
     QFile file2(outputFilename);
-    if (!file2.open(IO_WriteOnly)) {
+    if (!file2.open(QIODevice::WriteOnly)) {
         fprintf(stderr,"Error writing to file %s\n",outputFilename.latin1());
         exit(1);
     }
@@ -1548,7 +1548,7 @@ bool RegressionTest::cvsIgnored( const QString &filename )
     QFileInfo fi( filename );
     QString ignoreFilename = fi.dirPath() + "/.cvsignore";
     QFile ignoreFile(ignoreFilename);
-    if (!ignoreFile.open(IO_ReadOnly))
+    if (!ignoreFile.open(QIODevice::ReadOnly))
         return false;
 
     QTextStream ignoreStream(&ignoreFile);

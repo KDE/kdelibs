@@ -43,7 +43,7 @@ public:
      *
      * @param rootMode true if the kcmshell is embedding
      */
-    void setDCOPName(const QCString &dcopName, bool rootMode );
+    void setDCOPName(const Q3CString &dcopName, bool rootMode );
 
     /**
      * Waits until the last instance of kcmshell with the same 
@@ -59,7 +59,7 @@ private slots:
 
     /**
      */
-    void appExit( const QCString &appId );
+    void appExit( const Q3CString &appId );
 
 private:
 
@@ -67,7 +67,7 @@ private:
      * The DCOP name which actually is registered. 
      * For example "kcmshell_mouse".
      */
-    QCString m_dcopName;
+    Q3CString m_dcopName;
 
 };
 
@@ -95,7 +95,7 @@ k_dcop:
 
     /**
      */
-    virtual void activate( QCString asn_id );
+    virtual void activate( Q3CString asn_id );
 
 };
 

@@ -55,7 +55,7 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include <stdlib.h>
-#include <qptrstack.h>
+#include <q3ptrstack.h>
 
 // Turn off inlining to avoid warning with newer gcc.
 #undef __inline
@@ -63,7 +63,7 @@
 #include "doctypes.cpp"
 #undef __inline
 
-template class QPtrStack<DOM::NodeImpl>;
+template class Q3PtrStack<DOM::NodeImpl>;
 
 using namespace DOM;
 using namespace khtml;
@@ -113,9 +113,9 @@ DOMString HTMLDocumentImpl::cookie() const
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    QCString replyType;
+    Q3CString replyType;
     QByteArray params, reply;
-    QDataStream stream(params, IO_WriteOnly);
+    QDataStream stream(params, QIODevice::WriteOnly);
     stream << URL().url() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
                                   "findDOMCookies(QString,long int)", params,
@@ -125,7 +125,7 @@ DOMString HTMLDocumentImpl::cookie() const
        return DOMString();
     }
 
-    QDataStream stream2(reply, IO_ReadOnly);
+    QDataStream stream2(reply, QIODevice::ReadOnly);
     if(replyType != "QString") {
          kdError(6010) << "DCOP function findDOMCookies(...) returns "
                        << replyType << ", expected QString" << endl;
@@ -146,8 +146,8 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
       windowId = v->topLevelWidget()->winId();
 
     QByteArray params;
-    QDataStream stream(params, IO_WriteOnly);
-    QCString fake_header("Set-Cookie: ");
+    QDataStream stream(params, QIODevice::WriteOnly);
+    Q3CString fake_header("Set-Cookie: ");
     fake_header.append(value.string().latin1());
     fake_header.append("\n");
     stream << URL().url() << fake_header << windowId;

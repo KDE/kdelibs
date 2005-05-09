@@ -35,7 +35,7 @@ public:
 };
 
 KMimeSourceFactory::KMimeSourceFactory (KIconLoader* loader)
-  : QMimeSourceFactory (),
+  : Q3MimeSourceFactory (),
 	d (new KMimeSourceFactoryPrivate (loader))
 {
 }
@@ -81,7 +81,7 @@ QString KMimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QSt
 	}
 
   if (result.isEmpty())
-	result = QMimeSourceFactory::makeAbsolute (absOrRelName, context);
+	result = Q3MimeSourceFactory::makeAbsolute (absOrRelName, context);
   
   return result;
 }

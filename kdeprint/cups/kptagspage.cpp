@@ -19,12 +19,12 @@
 
 #include "kptagspage.h"
 
-#include <qtable.h>
-#include <qheader.h>
+#include <q3table.h>
+#include <q3header.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qregexp.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 
@@ -77,12 +77,12 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
 	setTitle(i18n("Additional Tags"));
 	setOnlyRealPrinters(true);
 
-	m_tags = new QTable(10, 2, this);
+	m_tags = new Q3Table(10, 2, this);
 	m_tags->horizontalHeader()->setStretchEnabled(true);
 	m_tags->horizontalHeader()->setLabel(0, i18n("Name"));
 	m_tags->horizontalHeader()->setLabel(1, i18n("Value"));
 	m_tags->setReadOnly(ro);
-	QWhatsThis::add(m_tags, whatsThisAdditionalTagsTable);
+	Q3WhatsThis::add(m_tags, whatsThisAdditionalTagsTable);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 5);
 	l0->addWidget(m_tags);
@@ -93,7 +93,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
 		QFont	f = lab->font();
 		f.setBold(true);
 		lab->setFont(f);
-		lab->setAlignment(AlignVCenter|AlignRight);
+		lab->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 		l0->addWidget(lab);
 	}
 }

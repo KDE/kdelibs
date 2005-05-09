@@ -52,7 +52,7 @@
 
 typedef QMap<QString, QString> Prop;
 
-template class QIntCache<KThemePixmap>
+template class Q3IntCache<KThemePixmap>
 ;
 
 /*
@@ -473,7 +473,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
 
     if ( pixmaps[ RotSliderGroove ] )
     {
-        QWMatrix r270; //TODO: 90 if reverse?
+        QMatrix r270; //TODO: 90 if reverse?
         r270.rotate( 270 );
         KThemePixmap* bf = new KThemePixmap( pixmaps[ RotSliderGroove ], pixmaps[ RotSliderGroove ] ->xForm( r270 ) ); //
         pixmaps[ RotSliderGroove ] = bf;
@@ -486,7 +486,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
 
     if ( pixmaps[ RotActiveTab ] )
     {
-        QWMatrix r180; 
+        QMatrix r180; 
         r180.rotate( 180 );
         KThemePixmap* bf = new KThemePixmap( pixmaps[ RotActiveTab ], pixmaps[ RotActiveTab ] ->xForm( r180 ) );
         
@@ -500,7 +500,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
     
     if ( pixmaps[ RotInactiveTab ] )
     {
-        QWMatrix r180; 
+        QMatrix r180; 
         r180.rotate( 180 );
         KThemePixmap* bf = new KThemePixmap( pixmaps[ RotInactiveTab ], pixmaps[ RotInactiveTab ] ->xForm( r180 ) );
         
@@ -803,7 +803,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
         pixmap->resize( w, h );
         QBitmap mask;
         mask.resize( w, h );
-        mask.fill( color0 );
+        mask.fill( Qt::color0 );
         QPainter mPainter;
         mPainter.begin( &mask );
 
@@ -817,7 +817,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
             bitBlt( &mask, 0, 0, srcMask, 0, 0, bdWidth, bdWidth,
                     Qt::CopyROP, false );
         else
-            mPainter.fillRect( 0, 0, bdWidth, bdWidth, color1 );
+            mPainter.fillRect( 0, 0, bdWidth, bdWidth, Qt::color1 );
 
 
         tmp = borderPixmap( widget ) ->border( KThemePixmap::TopRight );
@@ -828,7 +828,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
             bitBlt( &mask, w - bdWidth, 0, srcMask, 0, 0, bdWidth,
                     bdWidth, Qt::CopyROP, false );
         else
-            mPainter.fillRect( w - bdWidth, 0, bdWidth, bdWidth, color1 );
+            mPainter.fillRect( w - bdWidth, 0, bdWidth, bdWidth, Qt::color1 );
 
         tmp = borderPixmap( widget ) ->border( KThemePixmap::BottomLeft );
         srcMask = tmp->mask();
@@ -838,7 +838,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
             bitBlt( &mask, 0, h - bdWidth, srcMask, 0, 0, bdWidth,
                     bdWidth, Qt::CopyROP, false );
         else
-            mPainter.fillRect( 0, h - bdWidth, bdWidth, bdWidth, color1 );
+            mPainter.fillRect( 0, h - bdWidth, bdWidth, bdWidth, Qt::color1 );
 
         tmp = borderPixmap( widget ) ->border( KThemePixmap::BottomRight );
         srcMask = tmp->mask();
@@ -848,7 +848,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
             bitBlt( &mask, w - bdWidth, h - bdWidth, srcMask, 0, 0,
                     bdWidth, bdWidth, Qt::CopyROP, false );
         else
-            mPainter.fillRect( w - bdWidth, h - bdWidth, bdWidth, bdWidth, color1 );
+            mPainter.fillRect( w - bdWidth, h - bdWidth, bdWidth, bdWidth, Qt::color1 );
 
         QPainter p;
         p.begin( pixmap );
@@ -861,7 +861,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
                 bitBlt( &mask, bdWidth, 0, srcMask, 0, 0,
                         w - bdWidth * 2, bdWidth, Qt::CopyROP, false );
             else
-                mPainter.fillRect( bdWidth, 0, w - bdWidth * 2, bdWidth, color1 );
+                mPainter.fillRect( bdWidth, 0, w - bdWidth * 2, bdWidth, Qt::color1 );
 
             tmp = borderPixmap( widget ) ->border( KThemePixmap::Bottom );
             srcMask = tmp->mask();
@@ -872,7 +872,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
                         w - bdWidth * 2, bdWidth, Qt::CopyROP, false );
             else
                 mPainter.fillRect( bdWidth, h - bdWidth, w - bdWidth * 2, bdWidth,
-                                   color1 );
+                                   Qt::color1 );
         }
         if ( h - bdWidth * 2 > 0 )
         {
@@ -883,7 +883,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
                 bitBlt( &mask, 0, bdWidth, srcMask, 0, 0,
                         bdWidth, h - bdWidth * 2, Qt::CopyROP, false );
             else
-                mPainter.fillRect( 0, bdWidth, bdWidth, h - bdWidth * 2, color1 );
+                mPainter.fillRect( 0, bdWidth, bdWidth, h - bdWidth * 2, Qt::color1 );
 
             tmp = borderPixmap( widget ) ->border( KThemePixmap::Right );
             srcMask = tmp->mask();
@@ -893,7 +893,7 @@ KThemePixmap* KThemeBase::scaleBorder( int w, int h, WidgetType widget ) const
                 bitBlt( &mask, w - bdWidth, bdWidth, srcMask, 0, 0,
                         bdWidth, h - bdWidth * 2, Qt::CopyROP, false );
             else
-                mPainter.fillRect( w - bdWidth, bdWidth, bdWidth, h - bdWidth * 2, color1 );
+                mPainter.fillRect( w - bdWidth, bdWidth, bdWidth, h - bdWidth * 2, Qt::color1 );
         }
         p.end();
         mPainter.end();
@@ -1020,8 +1020,8 @@ KThemePixmap* KThemeBase::gradient( int w, int h, WidgetType widget ) const
                 {
                     int bc = bevelContrast( widget );
                     // want single increments, not factors like light()/dark()
-                    lc.setRgb( lc.red() - bc, lc.green() - bc, lc.blue() - bc );
-                    hc.setRgb( hc.red() + bc, hc.green() + bc, hc.blue() + bc );
+                    lc.setRgb( lc.Qt::red() - bc, lc.Qt::green() - bc, lc.Qt::blue() - bc );
+                    hc.setRgb( hc.Qt::red() + bc, hc.Qt::green() + bc, hc.Qt::blue() + bc );
                 }
                 KPixmapEffect::gradient( *pixmaps[ widget ],
                                          lc, hc,
@@ -1629,7 +1629,7 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
     if ( v > 128 )
         // dark bg, light fg - need a darker disabled fg
         disfg = disfg.dark( lowlightVal );
-    else if ( disfg != black )
+    else if ( disfg != Qt::black )
         // light bg, dark fg - need a lighter disabled fg - but only if !black
         disfg = disfg.light( highlightVal );
     else
@@ -1741,7 +1741,7 @@ KThemeCache::KThemeCache( int maxSize, QObject *parent, const char *name )
 
 void KThemeCache::flushTimeout()
 {
-    QIntCacheIterator<KThemePixmap> it( cache );
+    Q3IntCacheIterator<KThemePixmap> it( cache );
     while ( it.current() )
     {
         if ( it.current() ->isOld() )

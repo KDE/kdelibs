@@ -3,13 +3,13 @@
 public:
 DateValue();
 DateValue(const DateValue&);
-DateValue(const QCString&);
+DateValue(const Q3CString&);
 DateValue & operator = (DateValue&);
-DateValue & operator = (const QCString&);
+DateValue & operator = (const Q3CString&);
 bool operator ==(DateValue&);
 bool operator !=(DateValue& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {DateValue a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {DateValue a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~DateValue();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

@@ -19,7 +19,7 @@
 #ifndef __ktexteditor_cursorinterface_h__
 #define __ktexteditor_cursorinterface_h__
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 
 #include <kdelibs_export.h>
@@ -58,7 +58,7 @@ class KTEXTEDITOR_EXPORT CursorInterface
     unsigned int cursorInterfaceNumber () const;
     
   protected:  
-    void setCursorInterfaceDCOPSuffix (const QCString &suffix);  
+    void setCursorInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   public:
     /**
@@ -69,7 +69,7 @@ class KTEXTEDITOR_EXPORT CursorInterface
     /*
     * Accessor to the list of cursors.
     */
-    virtual QPtrList<Cursor> cursors () const = 0;
+    virtual Q3PtrList<Cursor> cursors () const = 0;
 
     private:
       class PrivateCursorInterface *d;

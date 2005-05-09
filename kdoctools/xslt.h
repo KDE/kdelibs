@@ -2,15 +2,15 @@
 #define _MEIN_XSLT_H_
 
 #include <libxml/parser.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 QString transform(const QString &file, const QString& stylesheet,
-                  const QValueVector<const char *> &params = QValueVector<const char *>());
+                  const Q3ValueVector<const char *> &params = Q3ValueVector<const char *>());
 QString splitOut(const QString &parsed, int index);
 void fillInstance(KInstance &ins, const QString &srcdir = QString::null );
 bool saveToCache( const QString &contents, const QString &filename );
 QString lookForCache( const QString &filename );
-QCString fromUnicode( const QString &data );
+Q3CString fromUnicode( const QString &data );
 void replaceCharsetHeader( QString &output );
 
 extern bool warnings_exist;

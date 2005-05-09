@@ -105,7 +105,7 @@ DateValue::DateValue(const DateValue & x)
 	hasTime_ = x.hasTime_;
 }
 
-DateValue::DateValue(const QCString & s)
+DateValue::DateValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -120,7 +120,7 @@ DateValue::operator = (DateValue & x)
 }
 
 	DateValue &
-DateValue::operator = (const QCString & s)
+DateValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;
@@ -154,8 +154,8 @@ DateValue::_parse()
 	
 	int timeSep = strRep_.find('T');
 	
-	QCString dateStr;
-	QCString timeStr;
+	Q3CString dateStr;
+	Q3CString timeStr;
 	
 	if (timeSep == -1) {
 		
@@ -196,7 +196,7 @@ DateValue::_parse()
 	
 	if (zoneSep != -1 && timeStr.length() - zoneSep > 3) {
 		
-		QCString zoneStr(timeStr.mid(zoneSep + 1));
+		Q3CString zoneStr(timeStr.mid(zoneSep + 1));
 		vDebug("zoneStr == " + zoneStr);
 
 		zonePositive_	= (zoneStr[0] == '+');
@@ -211,7 +211,7 @@ DateValue::_parse()
 	int secFracSep = timeStr.findRev(',');
 	
 	if (secFracSep != -1 && zoneSep != -1) { // zoneSep checked to avoid errors.
-		QCString quirkafleeg = "0." + timeStr.mid(secFracSep + 1, zoneSep);
+		Q3CString quirkafleeg = "0." + timeStr.mid(secFracSep + 1, zoneSep);
 		secFrac_ = quirkafleeg.toDouble();
 	}
 	
@@ -229,9 +229,9 @@ DateValue::_assemble()
 {
 	vDebug("DateValue::_assemble");
 
-	QCString year;
-	QCString month;
-	QCString day;
+	Q3CString year;
+	Q3CString month;
+	Q3CString day;
 	
 	year.setNum( year_ );
 	month.setNum( month_ );
@@ -243,9 +243,9 @@ DateValue::_assemble()
 	strRep_ = year + '-' + month + '-' + day;
 
 	if ( hasTime_ ) {
-	    QCString hour;
-	    QCString minute;
-	    QCString second;
+	    Q3CString hour;
+	    Q3CString minute;
+	    Q3CString second;
 
 	    hour.setNum( hour_ );
 	    minute.setNum( minute_ );

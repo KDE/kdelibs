@@ -28,18 +28,18 @@
 
 #include <qkeysequence.h>
 #include <qobject.h>
-#include <qvaluelist.h>
-#include <qguardedptr.h>
+#include <q3valuelist.h>
+#include <qpointer.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
 
 class QMenuBar;
-class QPopupMenu;
+class Q3PopupMenu;
 class QComboBox;
 class QPoint;
-class QIconSet;
+class QIcon;
 class QString;
 class KToolBar;
 
@@ -256,7 +256,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+    KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name );
 
@@ -311,7 +311,7 @@ public:
 	/**
 	 * @obsolete
 	 */
-	KAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+	KAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
 		QObject* parent = 0, const char* name = 0 );
 	/**
 	 * @obsolete
@@ -321,7 +321,7 @@ public:
 	/**
 	 * @obsolete
 	 */
-	KAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+	KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
 		const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 	/**
 	 * @obsolete
@@ -469,11 +469,11 @@ public:
      * In KDE4 set group default to KIcon::Small while removing the other
      * iconSet() function.
      */
-    virtual QIconSet iconSet( KIcon::Group group, int size=0 ) const;
+    virtual QIcon iconSet( KIcon::Group group, int size=0 ) const;
     /**
      * Remove in KDE4
      */
-    QIconSet iconSet() const { return iconSet( KIcon::Small ); }
+    QIcon iconSet() const { return iconSet( KIcon::Small ); }
 
     virtual QString icon() const;
 
@@ -536,7 +536,7 @@ public slots:
      * Sets the QIconSet from which the icons used to display this action will
      * be chosen.
      */
-    virtual void setIconSet( const QIconSet &iconSet );
+    virtual void setIconSet( const QIcon &iconSet );
 
     virtual void setIcon( const QString& icon );
 
@@ -568,7 +568,7 @@ protected slots:
 
 protected:
     KToolBar* toolBar( int index ) const;
-    QPopupMenu* popupMenu( int index ) const;
+    Q3PopupMenu* popupMenu( int index ) const;
     void removeContainer( int index );
     int findContainer( const QWidget* widget ) const;
     int findContainer( int id ) const;
@@ -578,7 +578,7 @@ protected:
     void addContainer( QWidget* parent, QWidget* representative );
 
     virtual void updateShortcut( int i );
-    virtual void updateShortcut( QPopupMenu* menu, int id );
+    virtual void updateShortcut( Q3PopupMenu* menu, int id );
     virtual void updateGroup( int id );
     virtual void updateText(int i );
     virtual void updateEnabled(int i);

@@ -22,7 +22,7 @@
  */
 
 #define INCLUDE_MENUITEM_DEF
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 
@@ -31,7 +31,7 @@
 
 #include <kdebug.h>
 
-static void checkInsertPos( QPopupMenu *popup, const QString & str,
+static void checkInsertPos( Q3PopupMenu *popup, const QString & str,
                             int &index )
 {
   if ( index == -1 )
@@ -57,12 +57,12 @@ static void checkInsertPos( QPopupMenu *popup, const QString & str,
   Q_ASSERT( a == b );
 }
 
-static QPopupMenu * checkInsertIndex( QPopupMenu *popup,
+static Q3PopupMenu * checkInsertIndex( Q3PopupMenu *popup,
                                       const QStringList *tags, const QString &submenu )
 {
   int pos = tags->findIndex( submenu );
 
-  QPopupMenu *pi = 0;
+  Q3PopupMenu *pi = 0;
   if ( pos != -1 )
   {
     QMenuItem *p = popup->findItem( pos );
@@ -99,7 +99,7 @@ void KLanguageButton::setText(const QString & text)
 {
   d->staticText = true;
   d->button->setText(text);
-  d->button->setIconSet(QIconSet()); // remove the icon
+  d->button->setIconSet(QIcon()); // remove the icon
 }
 
 void KLanguageButton::init(const char * name)
@@ -141,10 +141,10 @@ void KLanguageButton::insertLanguage( const QString& path, const QString& name,
   insertItem( output, path, submenu, index );
 }
 
-void KLanguageButton::insertItem( const QIconSet& icon, const QString &text,
+void KLanguageButton::insertItem( const QIcon& icon, const QString &text,
                                   const QString & id, const QString &submenu, int index )
 {
-  QPopupMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
+  Q3PopupMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
   checkInsertPos( pi, text, index );
   pi->insertItem( icon, text, count(), index );
   m_ids->append( id );
@@ -153,22 +153,22 @@ void KLanguageButton::insertItem( const QIconSet& icon, const QString &text,
 void KLanguageButton::insertItem( const QString &text, const QString & id,
                                   const QString &submenu, int index )
 {
-  insertItem( QIconSet(), text, id, submenu, index );
+  insertItem( QIcon(), text, id, submenu, index );
 }
 
 void KLanguageButton::insertSeparator( const QString &submenu, int index )
 {
-  QPopupMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
+  Q3PopupMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
   pi->insertSeparator( index );
   m_ids->append( QString::null );
 }
 
-void KLanguageButton::insertSubmenu( const QIconSet & icon,
+void KLanguageButton::insertSubmenu( const QIcon & icon,
                                      const QString &text, const QString &id,
                                      const QString &submenu, int index )
 {
-  QPopupMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
-  QPopupMenu *p = new QPopupMenu( pi );
+  Q3PopupMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
+  Q3PopupMenu *p = new Q3PopupMenu( pi );
   checkInsertPos( pi, text, index );
   pi->insertItem( icon, text, p, count(), index );
   m_ids->append( id );
@@ -181,7 +181,7 @@ void KLanguageButton::insertSubmenu( const QIconSet & icon,
 void KLanguageButton::insertSubmenu( const QString &text, const QString &id,
                                      const QString &submenu, int index )
 {
-  insertSubmenu(QIconSet(), text, id, submenu, index);
+  insertSubmenu(QIcon(), text, id, submenu, index);
 }
 
 void KLanguageButton::slotActivated( int index )
@@ -214,7 +214,7 @@ void KLanguageButton::clear()
 
   delete m_oldPopup;
   m_oldPopup = m_popup;
-  m_popup = new QPopupMenu( this );
+  m_popup = new Q3PopupMenu( this );
 
   d->button->setPopup( m_popup );
 
@@ -226,7 +226,7 @@ void KLanguageButton::clear()
   if ( !d->staticText )
   {
     d->button->setText( QString::null );
-    d->button->setIconSet( QIconSet() );
+    d->button->setIconSet( QIcon() );
   }
 }
 
@@ -266,11 +266,11 @@ void KLanguageButton::setCurrentItem( int i )
   if ( !d->staticText )
   {
     d->button->setText( m_popup->text( m_current ) );
-    QIconSet *icon = m_popup->iconSet( m_current );
+    QIcon *icon = m_popup->iconSet( m_current );
     if ( icon )
       d->button->setIconSet( *icon );
     else
-      d->button->setIconSet( QIconSet() );
+      d->button->setIconSet( QIcon() );
   }
 }
 

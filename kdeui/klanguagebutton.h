@@ -32,8 +32,8 @@
 #include <kdelibs_export.h>
 
 class KLanguageButtonPrivate;
-class QIconSet;
-class QPopupMenu;
+class QIcon;
+class Q3PopupMenu;
 
 /**
  * KLanguageButton provides a combobox with a 2-D dataset. It also supports icons.
@@ -80,7 +80,7 @@ public:
    * @param submenu The place where the item should be placed.
    * @param index The visual position in the submenu.
    */
-  void insertItem( const QIconSet& icon, const QString &text,
+  void insertItem( const QIcon& icon, const QString &text,
                    const QString & id, const QString &submenu = QString::null,
                    int index = -1 );
   /**
@@ -110,7 +110,7 @@ public:
    * @param submenu The place where the item should be placed.
    * @param index The visual position in the submenu.
    */
-  void insertSubmenu( const QIconSet & icon, const QString &text,
+  void insertSubmenu( const QIcon & icon, const QString &text,
                       const QString & id, const QString &submenu = QString::null,
                       int index = -1);
   /**
@@ -173,7 +173,7 @@ private:
 
   // work space for the new class
   QStringList *m_ids;
-  QPopupMenu *m_popup, *m_oldPopup;
+  Q3PopupMenu *m_popup, *m_oldPopup;
   int m_current;
 
   KLanguageButtonPrivate * d;

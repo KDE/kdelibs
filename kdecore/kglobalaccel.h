@@ -23,7 +23,7 @@
 #include <qobject.h>
 #include <kshortcut.h>
 
-class QPopupMenu;
+class Q3PopupMenu;
 class QWidget;
 class KAccelAction;
 class KAccelActions;

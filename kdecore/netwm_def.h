@@ -283,7 +283,7 @@ public:
 	Unknown  = -1,
 	Normal   = 0,
 	Desktop  = 1,
-	Dock     = 2,
+	Qt::ToolBarDock     = 2,
 	Toolbar  = 3,
        	Menu     = 4,
 	Dialog   = 5,
@@ -398,15 +398,15 @@ public:
        @li KeyboardMove (movement via keyboard)
     **/
 
-    enum Direction {
-	TopLeft      = 0,
-	Top          = 1,
-	TopRight     = 2,
-	Right        = 3,
-	BottomRight  = 4,
-	Bottom       = 5,
-	BottomLeft   = 6,
-	Left         = 7,
+    enum Qt::Orientation {
+	Qt::TopLeftCorner      = 0,
+	Qt::DockTop          = 1,
+	Qt::TopRightCorner     = 2,
+	Qt::DockRight        = 3,
+	Qt::BottomRightCorner  = 4,
+	Qt::DockBottom       = 5,
+	Qt::BottomLeftCorner   = 6,
+	Qt::DockLeft         = 7,
 	Move         = 8,  // movement only
     /**
        @since 3.2

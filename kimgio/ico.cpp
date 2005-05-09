@@ -16,8 +16,8 @@
 #include <qimage.h>
 #include <qbitmap.h>
 #include <qapplication.h>
-#include <qmemarray.h>
-#include <qpaintdevicemetrics.h>
+#include <q3memarray.h>
+#include <q3paintdevicemetrics.h>
 
 #include <kdelibs_export.h>
 
@@ -169,7 +169,7 @@ namespace
         if ( icon.isNull() ) return false;
         icon.setAlphaBuffer( true );
 
-        QMemArray< QRgb > colorTable( paletteSize );
+        Q3MemArray< QRgb > colorTable( paletteSize );
         
         colorTable.fill( QRgb( 0 ) );
         for ( unsigned i = 0; i < paletteEntries; ++i )
@@ -243,7 +243,7 @@ namespace
 
 extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
 {
-    QIODevice::Offset offset = io->ioDevice()->at();
+    Q_LONGLONG offset = io->ioDevice()->at();
 
     QDataStream stream( io->ioDevice() );
     stream.setByteOrder( QDataStream::LittleEndian );
@@ -253,7 +253,7 @@ extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
          ( header.type != IcoHeader::Icon && header.type != IcoHeader::Cursor) )
         return;
 
-    QPaintDeviceMetrics metrics( QApplication::desktop() );
+    Q3PaintDeviceMetrics metrics( QApplication::desktop() );
     unsigned requestedSize = 32;
     unsigned requestedColors = metrics.depth() > 8 ? 0 : metrics.depth();
     int requestedIndex = -1;
@@ -317,7 +317,7 @@ void kimgio_ico_write(QImageIO *io)
         return;
 
     QByteArray dibData;
-    QDataStream dib(dibData, IO_ReadWrite);
+    QDataStream dib(dibData, QIODevice::ReadWrite);
     dib.setByteOrder(QDataStream::LittleEndian);
 
     QImage pixels = io->image();

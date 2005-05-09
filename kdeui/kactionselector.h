@@ -23,11 +23,11 @@
 
 #include <kdelibs_export.h>
 
-class QListBox;
-class QListBoxItem;
+class Q3ListBox;
+class Q3ListBoxItem;
 class QKeyEvent;
 class QEvent;
-class QIconSet;
+class QIcon;
 
 class KActionSelectorPrivate;
 
@@ -95,12 +95,12 @@ public:
   /**
      @return The QListBox holding the available actions
   */
-  QListBox *availableListBox() const;
+  Q3ListBox *availableListBox() const;
 
   /**
      @return The QListBox holding the selected actions
   */
-  QListBox *selectedListBox() const;
+  Q3ListBox *selectedListBox() const;
 
   /**
     This enum indentifies the moving buttons
@@ -276,7 +276,7 @@ public:
     created by @ref QIconSet, or use the application instance of
     @ref KIconLoader (recommended).
   */
-  void setButtonIconSet( const QIconSet &iconset, MoveButton button );
+  void setButtonIconSet( const QIcon &iconset, MoveButton button );
 
   /**
     Sets the tooltip for the button @p button to @p tip.
@@ -301,22 +301,22 @@ signals:
   /**
     Emitted when an item is moved to the "selected" listbox.
   */
-  void added( QListBoxItem *item );
+  void added( Q3ListBoxItem *item );
 
   /**
     Emitted when an item is moved out of the "selected" listbox.
   */
-  void removed( QListBoxItem *item );
+  void removed( Q3ListBoxItem *item );
 
   /**
     Emitted when an item is moved upwards in the "selected" listbox.
   */
-  void movedUp( QListBoxItem *item );
+  void movedUp( Q3ListBoxItem *item );
 
   /**
     Emitted when an item is moved downwards in the "selected" listbox.
   */
-  void movedDown( QListBoxItem *item );
+  void movedDown( Q3ListBoxItem *item );
 
   /**
     Emitted when an item is moved to the "selected" listbox.
@@ -365,19 +365,19 @@ private slots:
   /**
     Moves the item @p item to the other listbox if moveOnDoubleClick is enabled.
   */
-  void  itemDoubleClicked( QListBoxItem *item );
+  void  itemDoubleClicked( Q3ListBoxItem *item );
 
   /**
     connected to both list boxes to set the buttons enabled
   */
-  void slotCurrentChanged( QListBoxItem * ) { setButtonsEnabled(); };
+  void slotCurrentChanged( Q3ListBoxItem * ) { setButtonsEnabled(); };
 
 private:
 
   /**
     Move item @p item to the other listbox
   */
-  void moveItem( QListBoxItem *item );
+  void moveItem( Q3ListBoxItem *item );
 
   /**
     loads the icons for the move buttons.
@@ -391,7 +391,7 @@ private:
     Note that if policy is Sorted, this will return -1.
     Sort the listbox after inserting the item in that case.
   */
-  int insertionIndex( QListBox *lb, InsertionPolicy policy );
+  int insertionIndex( Q3ListBox *lb, InsertionPolicy policy );
 
   /** @private
     Private data storage

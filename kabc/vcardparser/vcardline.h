@@ -22,7 +22,7 @@
 #define VCARDLINE_H
 
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qvariant.h>
 #include <qmap.h>
 #include <qstring.h>
@@ -32,7 +32,7 @@ namespace KABC {
 class VCardLine
 {
   public:
-    typedef QValueList<VCardLine> List;
+    typedef Q3ValueList<VCardLine> List;
     typedef QMap<QString, QStringList> ParamMap;
 
     VCardLine();

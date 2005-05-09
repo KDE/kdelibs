@@ -60,7 +60,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   le_dest->setText( dest );
 
   // Operation groupbox & buttons
-  opButtons = new QButtonGroup( "Operation", main_widget );
+  opButtons = new Q3ButtonGroup( "Operation", main_widget );
   topLayout->addWidget( opButtons, 10 );
   connect( opButtons, SIGNAL(clicked(int)), SLOT(changeOperation(int)) );
 
@@ -114,7 +114,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   changeOperation( op );
 
   // Progress groupbox & buttons
-  progressButtons = new QButtonGroup( "Progress dialog mode", main_widget );
+  progressButtons = new Q3ButtonGroup( "Progress dialog mode", main_widget );
   topLayout->addWidget( progressButtons, 10 );
   connect( progressButtons, SIGNAL(clicked(int)), SLOT(changeProgressMode(int)) );
 
@@ -418,7 +418,7 @@ void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
     }
     else
     {
-       kdDebug(0) << "Data: \"" << QCString(data, data.size()+1) << "\"" << endl;
+       kdDebug(0) << "Data: \"" << Q3CString(data, data.size()+1) << "\"" << endl;
     }
 }
 

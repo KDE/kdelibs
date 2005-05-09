@@ -22,7 +22,7 @@
 #define KPRINTERPROPERTYDIALOG_H
 
 #include <kdialogbase.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qmap.h>
 
 class KMPrinter;
@@ -59,7 +59,7 @@ protected slots:
 protected:
 	KMPrinter		*m_printer;
 	DrMain			*m_driver;
-	QPtrList<KPrintDialogPage>	m_pages;
+	Q3PtrList<KPrintDialogPage>	m_pages;
 	KPrintDialogPage	*m_current;
 	QMap<QString,QString>	m_options;
 	QTabWidget		*m_tw;

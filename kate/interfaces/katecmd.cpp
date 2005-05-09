@@ -55,7 +55,7 @@ bool KateCmd::registerCommand (Kate::Command *cmd)
 bool KateCmd::unregisterCommand (Kate::Command *cmd)
 {
   QStringList l;
-  QDictIterator<Kate::Command> it(m_dict);
+  Q3DictIterator<Kate::Command> it(m_dict);
   for( ; it.current(); ++it )
     if (it.current()==cmd) l<<it.currentKey();
   for ( QStringList::Iterator it1 = l.begin(); it1 != l.end(); ++it1 ) {

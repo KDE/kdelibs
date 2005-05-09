@@ -20,7 +20,7 @@
 */
 
 #include <qfontmetrics.h>
-#include <qkeycode.h>
+#include <qnamespace.h>
 #include <qlabel.h>
 #include <qpainter.h>
 #include <qpixmap.h>
@@ -133,36 +133,36 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     slotSmallColumns();
     d->smallColumns->setChecked( true );
 
-    connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
-	     SLOT( slotActivate( QIconViewItem *) ) );
+    connect( this, SIGNAL( returnPressed(Q3IconViewItem *) ),
+	     SLOT( slotActivate( Q3IconViewItem *) ) );
 
     // we want single click _and_ double click (as convenience)
-    connect( this, SIGNAL( clicked(QIconViewItem *, const QPoint&) ),
-	     SLOT( selected( QIconViewItem *) ) );
-    connect( this, SIGNAL( doubleClicked(QIconViewItem *, const QPoint&) ),
-	     SLOT( slotActivate( QIconViewItem *) ) );
+    connect( this, SIGNAL( clicked(Q3IconViewItem *, const QPoint&) ),
+	     SLOT( selected( Q3IconViewItem *) ) );
+    connect( this, SIGNAL( doubleClicked(Q3IconViewItem *, const QPoint&) ),
+	     SLOT( slotActivate( Q3IconViewItem *) ) );
 
-    connect( this, SIGNAL( onItem( QIconViewItem * ) ),
-	     SLOT( showToolTip( QIconViewItem * ) ) );
+    connect( this, SIGNAL( onItem( Q3IconViewItem * ) ),
+	     SLOT( showToolTip( Q3IconViewItem * ) ) );
     connect( this, SIGNAL( onViewport() ),
 	     SLOT( removeToolTip() ) );
-    connect( this, SIGNAL( contextMenuRequested(QIconViewItem*,const QPoint&)),
-	     SLOT( slotActivateMenu( QIconViewItem*, const QPoint& ) ) );
+    connect( this, SIGNAL( contextMenuRequested(Q3IconViewItem*,const QPoint&)),
+	     SLOT( slotActivateMenu( Q3IconViewItem*, const QPoint& ) ) );
 
     KFile::SelectionMode sm = KFileView::selectionMode();
     switch ( sm ) {
     case KFile::Multi:
-	QIconView::setSelectionMode( QIconView::Multi );
+	Q3IconView::setSelectionMode( Q3IconView::Multi );
 	break;
     case KFile::Extended:
-	QIconView::setSelectionMode( QIconView::Extended );
+	Q3IconView::setSelectionMode( Q3IconView::Extended );
 	break;
     case KFile::NoSelection:
-	QIconView::setSelectionMode( QIconView::NoSelection );
+	Q3IconView::setSelectionMode( Q3IconView::NoSelection );
 	break;
     default: // fall through
     case KFile::Single:
-	QIconView::setSelectionMode( QIconView::Single );
+	Q3IconView::setSelectionMode( Q3IconView::Single );
 	break;
     }
 
@@ -170,8 +170,8 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	connect( this, SIGNAL( selectionChanged() ),
 		 SLOT( slotSelectionChanged() ));
     else
-	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
-		 SLOT( highlighted( QIconViewItem * )));
+	connect( this, SIGNAL( selectionChanged( Q3IconViewItem * )),
+		 SLOT( highlighted( Q3IconViewItem * )));
 
     viewport()->installEventFilter( this );
 
@@ -239,7 +239,7 @@ void KFileIconView::removeToolTip()
     toolTip = 0;
 }
 
-void KFileIconView::showToolTip( QIconViewItem *item )
+void KFileIconView::showToolTip( Q3IconViewItem *item )
 {
     delete toolTip;
     toolTip = 0;
@@ -247,15 +247,15 @@ void KFileIconView::showToolTip( QIconViewItem *item )
     if ( !item )
 	return;
 
-    int w = maxItemWidth() - ( itemTextPos() == QIconView::Bottom ? 0 :
+    int w = maxItemWidth() - ( itemTextPos() == Qt::DockBottom ? 0 :
 			       item->pixmapRect().width() ) - 4;
     if ( fontMetrics().width( item->text() ) >= w ) {
 	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0,
 			      "myToolTip",
-			      WStyle_StaysOnTop | WStyle_Customize | WStyle_NoBorder | WStyle_Tool | WX11BypassWM );
-	toolTip->setFrameStyle( QFrame::Plain | QFrame::Box );
+			      Qt::WStyle_StaysOnTop | Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_Tool | Qt::WX11BypassWM );
+	toolTip->setFrameStyle( Q3Frame::Plain | Q3Frame::Box );
 	toolTip->setLineWidth( 1 );
-	toolTip->setAlignment( AlignLeft | AlignTop );
+	toolTip->setAlignment( Qt::AlignLeft | Qt::AlignTop );
 	toolTip->move( QCursor::pos() + QPoint( 14, 14 ) );
 	toolTip->adjustSize();
 	QRect screen = QApplication::desktop()->screenGeometry(
@@ -272,7 +272,7 @@ void KFileIconView::showToolTip( QIconViewItem *item )
     }
 }
 
-void KFileIconView::slotActivateMenu( QIconViewItem* item, const QPoint& pos )
+void KFileIconView::slotActivateMenu( Q3IconViewItem* item, const QPoint& pos )
 {
     if ( !item ) {
 	sig->activateMenu( 0, pos );
@@ -293,8 +293,8 @@ void KFileIconView::keyPressEvent( QKeyEvent *e )
     KIconView::keyPressEvent( e );
 
     // ignore Ctrl-Return so that the dialog can catch it.
-    if ( (e->state() & ControlButton) &&
-         (e->key() == Key_Return || e->key() == Key_Enter) )
+    if ( (e->state() & Qt::ControlModifier) &&
+         (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) )
         e->ignore();
 }
 
@@ -336,7 +336,7 @@ void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    QIconView* qview = static_cast<QIconView*>( this );
+    Q3IconView* qview = static_cast<Q3IconView*>( this );
     // Since creating and initializing an item leads to a repaint,
     // we disable updates on the IconView for a while.
     qview->setUpdatesEnabled( false );
@@ -350,7 +350,7 @@ void KFileIconView::insertItem( KFileItem *i )
     i->setExtraData( this, item );
 }
 
-void KFileIconView::slotActivate( QIconViewItem *item )
+void KFileIconView::slotActivate( Q3IconViewItem *item )
 {
     if ( !item )
 	return;
@@ -359,9 +359,9 @@ void KFileIconView::slotActivate( QIconViewItem *item )
 	sig->activate( fi );
 }
 
-void KFileIconView::selected( QIconViewItem *item )
+void KFileIconView::selected( Q3IconViewItem *item )
 {
-    if ( !item || (KApplication::keyboardMouseState() & (ShiftButton | ControlButton)) != 0 )
+    if ( !item || (KApplication::keyboardMouseState() & (Qt::ShiftModifier | Qt::ControlModifier)) != 0 )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
@@ -387,7 +387,7 @@ KFileItem * KFileIconView::currentFileItem() const
     return 0L;
 }
 
-void KFileIconView::highlighted( QIconViewItem *item )
+void KFileIconView::highlighted( Q3IconViewItem *item )
 {
     if ( !item )
 	return;
@@ -399,22 +399,22 @@ void KFileIconView::highlighted( QIconViewItem *item )
 void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 {
     disconnect( SIGNAL( selectionChanged() ), this );
-    disconnect( SIGNAL( selectionChanged( QIconViewItem * )), this );
+    disconnect( SIGNAL( selectionChanged( Q3IconViewItem * )), this );
 
     KFileView::setSelectionMode( sm );
     switch ( KFileView::selectionMode() ) {
     case KFile::Multi:
-	QIconView::setSelectionMode( QIconView::Multi );
+	Q3IconView::setSelectionMode( Q3IconView::Multi );
 	break;
     case KFile::Extended:
-	QIconView::setSelectionMode( QIconView::Extended );
+	Q3IconView::setSelectionMode( Q3IconView::Extended );
 	break;
     case KFile::NoSelection:
-	QIconView::setSelectionMode( QIconView::NoSelection );
+	Q3IconView::setSelectionMode( Q3IconView::NoSelection );
 	break;
     default: // fall through
     case KFile::Single:
-	QIconView::setSelectionMode( QIconView::Single );
+	Q3IconView::setSelectionMode( Q3IconView::Single );
 	break;
     }
 
@@ -422,8 +422,8 @@ void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 	connect( this, SIGNAL( selectionChanged() ),
 		 SLOT( slotSelectionChanged() ));
     else
-	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
-		 SLOT( highlighted( QIconViewItem * )));
+	connect( this, SIGNAL( selectionChanged( Q3IconViewItem * )),
+		 SLOT( highlighted( Q3IconViewItem * )));
 }
 
 bool KFileIconView::isSelected( const KFileItem *i ) const
@@ -437,7 +437,7 @@ void KFileIconView::updateView( bool b )
     if ( !b )
         return; // eh?
 
-    KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
+    KFileIconViewItem *item = static_cast<KFileIconViewItem*>(Q3IconView::firstItem());
     if ( item ) {
         do {
             if ( d->previews->isChecked() ) {
@@ -531,7 +531,7 @@ void KFileIconView::slotSmallColumns()
     }
     setGridX( -1 );
     setMaxItemWidth( 300 );
-    setItemTextPos( Right );
+    setItemTextPos( Qt::DockRight );
     setArrangement( TopToBottom );
     setWordWrapIconText( false );
     setSpacing( 0 );
@@ -547,7 +547,7 @@ void KFileIconView::slotLargeRows()
     d->noArrangement = true; // stop arrangeItemsInGrid()!
 
     setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
-    setItemTextPos( Bottom );
+    setItemTextPos( Qt::DockBottom );
     setArrangement( LeftToRight );
     setWordWrapIconText( true );
     setSpacing( 5 ); // default in QIconView
@@ -723,7 +723,7 @@ void KFileIconView::listingCompleted()
     if ( !currentItem() ) {
         bool block = signalsBlocked();
         blockSignals( true );
-        QIconViewItem *item = viewItem( firstFileItem() );
+        Q3IconViewItem *item = viewItem( firstFileItem() );
         KIconView::setCurrentItem( item );
         KIconView::setSelected( item, false );
         blockSignals( block );
@@ -806,7 +806,7 @@ void KFileIconView::zoomOut()
     setPreviewSize( d->previewIconSize - 30 );
 }
 
-QDragObject *KFileIconView::dragObject()
+Q3DragObject *KFileIconView::dragObject()
 {
     // create a list of the URL:s that we want to drag
     KURL::List urls;
@@ -823,7 +823,7 @@ QDragObject *KFileIconView::dragObject()
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );
     hotspot.setY( pixmap.height() / 2 );
-    QDragObject* myDragObject = new KURLDrag( urls, widget() );
+    Q3DragObject* myDragObject = new KURLDrag( urls, widget() );
     myDragObject->setPixmap( pixmap, hotspot );
     return myDragObject;
 }

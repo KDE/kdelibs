@@ -273,10 +273,10 @@ void KRootPixmap::enableExports()
     if (!client->isAttached())
 	client->attach();
     QByteArray data;
-    QDataStream args( data, IO_WriteOnly );
+    QDataStream args( data, QIODevice::WriteOnly );
     args << 1;
 
-    QCString appname( "kdesktop" );
+    Q3CString appname( "kdesktop" );
     int screen_number = DefaultScreen(qt_xdisplay());
     if ( screen_number )
         appname.sprintf("kdesktop-screen-%d", screen_number );

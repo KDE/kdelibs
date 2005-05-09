@@ -35,12 +35,12 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
-#include <qcstring.h>
-#include <qvaluelist.h>
+#include <q3cstring.h>
+#include <q3valuelist.h>
 
 class QString;
 class QStringList;
-class QCString;
+class Q3CString;
 class KSSL;
 class KSSLCertificatePrivate;
 class QDateTime;
@@ -95,7 +95,7 @@ public:
 	 *  @param cert the certificate in base64 form
 	 *  @return the X.509 certificate, or NULL
 	 */
-	static KSSLCertificate *fromString(QCString cert);
+	static KSSLCertificate *fromString(Q3CString cert);
 
 	/**
 	 *  Create an X.509 certificate from the internal representation.
@@ -121,7 +121,7 @@ public:
 	enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2, 
 				SMIMESign=3, SMIMEEncrypt=4, Any=5 };
 
-        typedef QValueList<KSSLValidation> KSSLValidationList;
+        typedef Q3ValueList<KSSLValidation> KSSLValidationList;
 
 	/**
 	 *  Convert this certificate to a string.

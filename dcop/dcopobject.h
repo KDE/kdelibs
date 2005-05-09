@@ -26,19 +26,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qobject.h>
 #include <qmap.h>
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qvaluelist.h>
+#include <q3ptrlist.h>
+#include <q3valuelist.h>
 #include <kdatastream.h> // needed for proper bool marshalling
 #include "kdelibs_export.h"
 
 class DCOPClient;
-typedef QValueList<QCString> QCStringList;
+typedef Q3ValueList<Q3CString> QCStringList;
 
 // Makros for DCOP interfaces
 
 #define K_DCOP \
 public:        \
-  virtual bool process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData); \
+  virtual bool process(const Q3CString &fun, const QByteArray &data, Q3CString& replyType, QByteArray &replyData); \
   QCStringList functions(); \
   QCStringList interfaces(); \
 private:
@@ -82,7 +82,7 @@ public:
    * Creates a DCOPObject with object Id @p objId.
    * @param objId the object id of the DCOP object
    */
-  DCOPObject(const QCString &objId);
+  DCOPObject(const Q3CString &objId);
   /**
    * Destroys the DCOPObject and removes it from the map
    * of known objects.
@@ -93,7 +93,7 @@ public:
    * Returns the object id of the DCOPObject.
    * @return the object's id
    */
-  QCString objId() const;
+  Q3CString objId() const;
 
   /**
    * Renames a dcop object, if no other with the same name exists
@@ -101,7 +101,7 @@ public:
    * 
    * @param objId the new object id
    **/
-  bool setObjId(const QCString &objId);
+  bool setObjId(const Q3CString &objId);
 
   /**
    * Dispatches a message.
@@ -134,8 +134,8 @@ public:
    * @see functions()
    * @see DCOPClient::process()
    */
-  virtual bool process(const QCString &fun, const QByteArray &data,
-		       QCString& replyType, QByteArray &replyData);
+  virtual bool process(const Q3CString &fun, const QByteArray &data,
+		       Q3CString& replyType, QByteArray &replyData);
 
 
   /**
@@ -160,8 +160,8 @@ public:
    * @see functions(),
    * @see DCOPClient::process()
    */
-  virtual bool processDynamic(const QCString &fun, const QByteArray &data,
-			      QCString& replyType, QByteArray &replyData);
+  virtual bool processDynamic(const Q3CString &fun, const QByteArray &data,
+			      Q3CString& replyType, QByteArray &replyData);
 
    /**
    * This function is of interest when you used an IDL compiler
@@ -226,7 +226,7 @@ public:
    * @param signal the signal to emit
    * @param data the data to send
    */
-  void emitDCOPSignal( const QCString &signal, const QByteArray &data);
+  void emitDCOPSignal( const Q3CString &signal, const QByteArray &data);
 
   /**
    * Connects to a DCOP signal.
@@ -247,9 +247,9 @@ public:
    * @li @p Volatile is true and @p sender  does not exist.
    * @li @p signal and @p slot do not have matching arguments.
    */
-  bool connectDCOPSignal( const QCString &sender, const QCString &senderObj,
-                          const QCString &signal,
-                          const QCString &slot,
+  bool connectDCOPSignal( const Q3CString &sender, const Q3CString &senderObj,
+                          const Q3CString &signal,
+                          const Q3CString &slot,
                           bool Volatile);
 
   /**
@@ -269,9 +269,9 @@ public:
    *
    * @return false if no connection(s) where removed.
    */
-  bool disconnectDCOPSignal( const QCString &sender, const QCString &senderObj,
-                             const QCString &signal,
-                             const QCString &slot);
+  bool disconnectDCOPSignal( const Q3CString &sender, const Q3CString &senderObj,
+                             const Q3CString &signal,
+                             const Q3CString &slot);
 
   /**
    * Returns the DCOPClient responsible for making the call. 
@@ -296,7 +296,7 @@ public:
    *
    * DCOPObjectProxy
    */
-  static bool hasObject(const QCString &objId);
+  static bool hasObject(const Q3CString &objId);
 
   /**
    * Try to find a dcop object with the given id.
@@ -304,7 +304,7 @@ public:
    * @param objId the object id to search
    * @return the  DCOPObject for the id @p objId.
    */
-  static DCOPObject *find(const QCString &objId);
+  static DCOPObject *find(const Q3CString &objId);
 
 
   /**
@@ -316,7 +316,7 @@ public:
    * @return a list of DCOPObjects beginning with the string
    * contained in @p partialId.
    */
-  static QPtrList<DCOPObject> match(const QCString &partialId);
+  static Q3PtrList<DCOPObject> match(const Q3CString &partialId);
 
   /**
    * Creates an object id for the QObject @p obj. This is done
@@ -324,13 +324,13 @@ public:
    * @param obj the object whose name will be used
    * @return the created object id
    */
-  static QCString objectName( QObject* obj );
+  static Q3CString objectName( QObject* obj );
 
 private:
   /**
    * The object id of this DCOPObject.
    */
-  QCString ident;
+  Q3CString ident;
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -391,14 +391,14 @@ public:
      * @return true if successful, false otherwise. The default implementation
      *         returns always false.
      */
-    virtual bool process( const QCString& obj, const QCString& fun,
+    virtual bool process( const Q3CString& obj, const Q3CString& fun,
 			  const QByteArray& data,
-			  QCString& replyType, QByteArray &replyData );
+			  Q3CString& replyType, QByteArray &replyData );
 private:
     void* unused;
     void* unused_too;
     friend class DCOPClient;
-    static QPtrList<DCOPObjectProxy>* proxies;
+    static Q3PtrList<DCOPObjectProxy>* proxies;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

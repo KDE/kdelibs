@@ -60,7 +60,7 @@ unsigned int BlockSelectionInterface::blockSelectionInterfaceNumber () const
   return myBlockSelectionInterfaceNumber;
 }
 
-void BlockSelectionInterface::setBlockSelectionInterfaceDCOPSuffix (const QCString &suffix)
+void BlockSelectionInterface::setBlockSelectionInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("BlockSelectionInterface#"+suffix);
 }

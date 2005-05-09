@@ -24,25 +24,25 @@
 #include <qtranslator.h>
 #define QT_NO_TRANSLATION
 #include <qdir.h>
-#include <qptrcollection.h>
-#include <qwidgetlist.h>
-#include <qstrlist.h>
+#include <q3ptrcollection.h>
+#include <qwidget.h>
+#include <q3strlist.h>
 #include <qfile.h>
 #include <qmessagebox.h>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qlineedit.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qsessionmanager.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtimer.h>
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 #include <qpixmapcache.h>
 #include <qtooltip.h>
 #include <qstylefactory.h>
 #include <qmetaobject.h>
 #ifndef QT_NO_SQL
-#include <qsqlpropertymap.h>
+#include <q3sqlpropertymap.h>
 #endif
 
 #undef QT_NO_TRANSLATION
@@ -67,7 +67,7 @@
 #include <kstdaccel.h>
 #include <kaccel.h>
 #include "kcheckaccelerators.h"
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <kprotocolinfo.h>
@@ -169,7 +169,7 @@ static Atom kde_xdnd_drop;
 // replaced by unpatched one
 KDECORE_EXPORT bool qt_qclipboard_bailout_hack = false;
 
-template class QPtrList<KSessionManaged>;
+template class Q3PtrList<KSessionManaged>;
 
 #ifdef Q_WS_X11
 extern "C" {
@@ -247,7 +247,7 @@ public:
   KCheckAccelerators* checkAccelerators;
   QString overrideStyle;
   QString geometry_arg;
-  QCString startup_id;
+  Q3CString startup_id;
   QTimer* app_started_timer;
   KAppDCOPInterface *m_KAppDCOPInterface;
   bool session_save;
@@ -395,14 +395,14 @@ public:
      bool destHostEqual    : 1;
      bool permission;
   };
-  QPtrList<URLActionRule> urlActionRestrictions;
+  Q3PtrList<URLActionRule> urlActionRestrictions;
 
     QString sessionKey;
     QString pSessionConfigFile;
 };
 
 
-static QPtrList<QWidget>*x11Filter = 0;
+static Q3PtrList<QWidget>*x11Filter = 0;
 static bool autoDcopRegistration = true;
 
 void KApplication::installX11EventFilter( QWidget* filter )
@@ -410,7 +410,7 @@ void KApplication::installX11EventFilter( QWidget* filter )
     if ( !filter )
         return;
     if (!x11Filter)
-        x11Filter = new QPtrList<QWidget>;
+        x11Filter = new Q3PtrList<QWidget>;
     connect ( filter, SIGNAL( destroyed() ), this, SLOT( x11FilterDestroyed() ) );
     x11Filter->append( filter );
 }
@@ -444,7 +444,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     {
        kde_g_bKillAccelOverride = false;
        // Indicate that the accelerator has been overridden.
-       if (t == QEvent::AccelOverride)
+       if (t == QEvent::ShortcutOverride)
        {
           static_cast<QKeyEvent *>(event)->accept();
           return true;
@@ -453,7 +453,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
           kdWarning(125) << "kde_g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
     }
 
-    if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
+    if ((t == QEvent::ShortcutOverride) || (t == QEvent::KeyPress))
     {
        static const KShortcut& _selectAll = KStdAccel::selectAll();
        QLineEdit *edit = ::qt_cast<QLineEdit *>(receiver);
@@ -494,7 +494,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
           }
        }
-       QTextEdit *medit = ::qt_cast<QTextEdit *>(receiver);
+       Q3TextEdit *medit = ::qt_cast<Q3TextEdit *>(receiver);
        if (medit)
        {
           // We have a keypress for a multilineedit...
@@ -520,7 +520,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
 #endif
-        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
+        if( w->isTopLevel() && !w->testWFlags( Qt::WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
             {
@@ -557,11 +557,11 @@ void KApplication::checkAppStartedSlot()
 }
 
 // the help class for session management communication
-static QPtrList<KSessionManaged>* sessionClients()
+static Q3PtrList<KSessionManaged>* sessionClients()
 {
-    static QPtrList<KSessionManaged>* session_clients = 0L;
+    static Q3PtrList<KSessionManaged>* session_clients = 0L;
     if ( !session_clients )
-        session_clients = new QPtrList<KSessionManaged>;
+        session_clients = new Q3PtrList<KSessionManaged>;
     return session_clients;
 }
 
@@ -591,7 +591,7 @@ static SmcConn tmpSmcConnection = 0;
 #endif
 static QTime* smModificationTime = 0;
 
-KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
+KApplication::KApplication( int& argc, char** argv, const Q3CString& rAppName,
                             bool allowStyles, bool GUIenabled ) :
   QApplication( argc, argv, GUIenabled ), KInstance(rAppName),
 #ifdef Q_WS_X11
@@ -698,7 +698,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
 }
 
 #ifdef Q_WS_X11
-KApplication::KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
+KApplication::KApplication(Display *display, int& argc, char** argv, const Q3CString& rAppName,
                            bool allowStyles, bool GUIenabled ) :
   QApplication( display ), KInstance(rAppName),
   display(0L),
@@ -844,7 +844,7 @@ void KApplication::init(bool GUIenabled)
   // * We use kdialog to warn the user, so we better not generate warnings from
   //   kdialog itself.
   // * Don't warn if we run with a read-only $HOME
-  QCString readOnly = getenv("KDE_HOME_READONLY");
+  Q3CString readOnly = getenv("KDE_HOME_READONLY");
   if (readOnly.isEmpty() && (qstrcmp(name(), "kdialog") != 0))
   {
     KConfigGroupSaver saver(config, "KDE Action Restrictions");
@@ -890,10 +890,10 @@ void KApplication::init(bool GUIenabled)
     // a default factory (which happens when using an image library using uic),
     // we prefer KDE's factory and so we put that old default factory in the
     // list and use KDE as the default. This may speed up things as well.
-    QMimeSourceFactory* oldDefaultFactory = QMimeSourceFactory::takeDefaultFactory();
-    QMimeSourceFactory::setDefaultFactory( mimeSourceFactory() );
+    Q3MimeSourceFactory* oldDefaultFactory = Q3MimeSourceFactory::takeDefaultFactory();
+    Q3MimeSourceFactory::setDefaultFactory( mimeSourceFactory() );
     if ( oldDefaultFactory ) {
-        QMimeSourceFactory::addFactory( oldDefaultFactory );
+        Q3MimeSourceFactory::addFactory( oldDefaultFactory );
     }
 
     d->checkAccelerators = new KCheckAccelerators( this );
@@ -1117,7 +1117,7 @@ bool KApplication::requestShutDown(
          sdmode != ShutdownModeDefault )
     {
         QByteArray data;
-        QDataStream arg(data, IO_WriteOnly);
+        QDataStream arg(data, QIODevice::WriteOnly);
         arg << (int)confirm << (int)sdtype << (int)sdmode;
 	return dcopClient()->send( "ksmserver", "ksmserver",
                                    "logout(int,int,int)", data );
@@ -1137,7 +1137,7 @@ bool KApplication::requestShutDown(
     // open a temporary connection, if possible
 
     propagateSessionManager();
-    QCString smEnv = ::getenv("SESSION_MANAGER");
+    Q3CString smEnv = ::getenv("SESSION_MANAGER");
     if (smEnv.isEmpty())
         return false;
 
@@ -1172,8 +1172,8 @@ bool KApplication::requestShutDown(
 void KApplication::propagateSessionManager()
 {
 #ifdef Q_WS_X11
-    QCString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
-    QCString display = ::getenv(DISPLAY);
+    Q3CString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
+    Q3CString display = ::getenv(DISPLAY);
     // strip the screen number from the display
     display.replace(QRegExp("\\.[0-9]+$"), "");
     int i;
@@ -1181,7 +1181,7 @@ void KApplication::propagateSessionManager()
        display[i] = '_';
 
     fName += "_"+display;
-    QCString smEnv = ::getenv("SESSION_MANAGER");
+    Q3CString smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
     if ( !check && smModificationTime ) {
          QFileInfo info( fName );
@@ -1191,7 +1191,7 @@ void KApplication::propagateSessionManager()
     if ( check ) {
         delete smModificationTime;
         QFile f( fName );
-        if ( !f.open( IO_ReadOnly ) )
+        if ( !f.open( QIODevice::ReadOnly ) )
             return;
         QFileInfo info ( f );
         smModificationTime = new QTime( info.lastModified().time() );
@@ -1298,7 +1298,7 @@ void KApplication::saveState( QSessionManager& sm )
 #endif
 
 
-    QCString multiHead = getenv("KDE_MULTIHEAD");
+    Q3CString multiHead = getenv("KDE_MULTIHEAD");
     if (multiHead.lower() == "true") {
         // if multihead is enabled, we save our -display argument so that
         // we are restored onto the correct head... one problem with this
@@ -1306,7 +1306,7 @@ void KApplication::saveState( QSessionManager& sm )
         // to a different display (ie. if we are in a university lab and try,
         // try to restore a multihead session, our apps could be started on
         // someone else's display instead of our own)
-        QCString displayname = getenv(DISPLAY);
+        Q3CString displayname = getenv(DISPLAY);
         if (! displayname.isNull()) {
             // only store the command if we actually have a DISPLAY
             // environment variable
@@ -1359,7 +1359,7 @@ void KApplication::startKdeinit()
   if (srv.isEmpty())
      return;
   if (kapp && (Tty != kapp->type()))
-    setOverrideCursor( Qt::waitCursor );
+    setOverrideCursor( Qt::WaitCursor );
   my_system(QFile::encodeName(srv)+" --suicide");
   if (kapp && (Tty != kapp->type()))
     restoreOverrideCursor();
@@ -1838,7 +1838,7 @@ unsigned long KApplication::userTimestamp() const
 #endif
 }
 
-void KApplication::updateRemoteUserTimestamp( const QCString& dcopId, unsigned long time )
+void KApplication::updateRemoteUserTimestamp( const Q3CString& dcopId, unsigned long time )
 {
 #if defined Q_WS_X11
     if( time == 0 )
@@ -1983,13 +1983,13 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
     QColor kde34VisitedLink( 82, 24, 139 );
 
     QColor background = config->readColorEntry( "background", &kde34Background );
-    QColor foreground = config->readColorEntry( "foreground", &black );
+    QColor foreground = config->readColorEntry( "foreground", &Qt::black );
     QColor button = config->readColorEntry( "buttonBackground", &kde34Button );
-    QColor buttonText = config->readColorEntry( "buttonForeground", &black );
+    QColor buttonText = config->readColorEntry( "buttonForeground", &Qt::black );
     QColor highlight = config->readColorEntry( "selectBackground", &kde34Blue );
-    QColor highlightedText = config->readColorEntry( "selectForeground", &white );
-    QColor base = config->readColorEntry( "windowBackground", &white );
-    QColor baseText = config->readColorEntry( "windowForeground", &black );
+    QColor highlightedText = config->readColorEntry( "selectForeground", &Qt::white );
+    QColor base = config->readColorEntry( "windowBackground", &Qt::white );
+    QColor baseText = config->readColorEntry( "windowForeground", &Qt::black );
     QColor link = config->readColorEntry( "linkColor", &kde34Link );
     QColor visitedLink = config->readColorEntry( "visitedLinkColor", &kde34VisitedLink );
 
@@ -2004,7 +2004,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
     if (v > 128)
 	// dark bg, light fg - need a darker disabled fg
 	disfg = disfg.dark(lowlightVal);
-    else if (disfg != black)
+    else if (disfg != Qt::black)
 	// light bg, dark fg - need a lighter disabled fg - but only if !black
 	disfg = disfg.light(highlightVal);
     else
@@ -2042,7 +2042,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
     if (v > 128)
 	// dark button, light buttonText - need a darker disabled buttonText
 	disbtntext = disbtntext.dark(lowlightVal);
-    else if (disbtntext != black)
+    else if (disbtntext != Qt::black)
 	// light buttonText, dark button - need a lighter disabled buttonText - but only if !black
 	disbtntext = disbtntext.light(highlightVal);
     else
@@ -2085,7 +2085,7 @@ void KApplication::kdisplaySetFont()
     QApplication::setFont(KGlobalSettings::menuFont(), true, "KPopupTitle");
 
     // "patch" standard QStyleSheet to follow our fonts
-    QStyleSheet* sheet = QStyleSheet::defaultSheet();
+    Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
     sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
     sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
     sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
@@ -2155,7 +2155,7 @@ void KApplication::installKDEPropertyMap()
      * Thanks.
      */
     // QSqlPropertyMap takes ownership of the new default map.
-    QSqlPropertyMap *kdeMap = new QSqlPropertyMap;
+    Q3SqlPropertyMap *kdeMap = new Q3SqlPropertyMap;
     kdeMap->insert( "KColorButton", "color" );
     kdeMap->insert( "KComboBox", "currentItem" );
     kdeMap->insert( "KDatePicker", "date" );
@@ -2185,7 +2185,7 @@ void KApplication::installKDEPropertyMap()
       kdeMap->insert( "QGroupBox", "checked" );
       kdeMap->insert( "QTabWidget", "currentPage" );
     //#endif
-    QSqlPropertyMap::installDefaultMap( kdeMap );
+    Q3SqlPropertyMap::installDefaultMap( kdeMap );
 #endif
 }
 
@@ -2200,7 +2200,7 @@ void KApplication::invokeHelp( const QString& anchor,
 // see kapplication_win.cpp
 void KApplication::invokeHelp( const QString& anchor,
                                const QString& _appname,
-                               const QCString& startup_id ) const
+                               const Q3CString& startup_id ) const
 {
    QString url;
    QString appname;
@@ -2272,7 +2272,7 @@ void KApplication::invokeMailer(const QString &address, const QString &subject)
     return invokeMailer(address,subject,"");
 }
 
-void KApplication::invokeMailer(const QString &address, const QString &subject, const QCString& startup_id)
+void KApplication::invokeMailer(const QString &address, const QString &subject, const Q3CString& startup_id)
 {
    invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
        QStringList(), startup_id );
@@ -2283,12 +2283,12 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
     return invokeMailer( mailtoURL, "" );
 }
 
-void KApplication::invokeMailer(const KURL &mailtoURL, const QCString& startup_id )
+void KApplication::invokeMailer(const KURL &mailtoURL, const Q3CString& startup_id )
 {
     return invokeMailer( mailtoURL, startup_id, false);
 }
 
-void KApplication::invokeMailer(const KURL &mailtoURL, const QCString& startup_id, bool allowAttachments )
+void KApplication::invokeMailer(const KURL &mailtoURL, const Q3CString& startup_id, bool allowAttachments )
 {
    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
@@ -2406,7 +2406,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
 void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
-                                const QCString& startup_id )
+                                const Q3CString& startup_id )
 {
    KConfig config("emaildefaults");
 
@@ -2534,7 +2534,7 @@ void KApplication::invokeBrowser( const QString &url )
 #ifndef Q_WS_WIN
 // on win32, for invoking browser we're using win32 API
 // see kapplication_win.cpp
-void KApplication::invokeBrowser( const QString &url, const QCString& startup_id )
+void KApplication::invokeBrowser( const QString &url, const Q3CString& startup_id )
 {
    QString error;
 
@@ -2575,21 +2575,21 @@ void KApplication::selectAll()
   invokeEditSlot( SLOT( selectAll() ) );
 }
 
-QCString
+Q3CString
 KApplication::launcher()
 {
    return "klauncher";
 }
 
 static int
-startServiceInternal( const QCString &function,
+startServiceInternal( const Q3CString &function,
               const QString& _name, const QStringList &URLs,
-              QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
+              QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
 {
    struct serviceResult
    {
       int result;
-      QCString dcopName;
+      Q3CString dcopName;
       QString error;
       pid_t pid;
    };
@@ -2611,19 +2611,19 @@ startServiceInternal( const QCString &function,
       }
    }
    QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
+   QDataStream stream(params, QIODevice::WriteOnly);
    stream << _name << URLs;
-   QCString replyType;
+   Q3CString replyType;
    QByteArray replyData;
-   QCString _launcher = KApplication::launcher();
-   QValueList<QCString> envs;
+   Q3CString _launcher = KApplication::launcher();
+   Q3ValueList<Q3CString> envs;
 #ifdef Q_WS_X11
    if (qt_xdisplay()) {
-       QCString dpystring(XDisplayString(qt_xdisplay()));
-       envs.append( QCString("DISPLAY=") + dpystring );
+       Q3CString dpystring(XDisplayString(qt_xdisplay()));
+       envs.append( Q3CString("DISPLAY=") + dpystring );
    } else if( getenv( "DISPLAY" )) {
-       QCString dpystring( getenv( "DISPLAY" ));
-       envs.append( QCString("DISPLAY=") + dpystring );
+       Q3CString dpystring( getenv( "DISPLAY" ));
+       envs.append( Q3CString("DISPLAY=") + dpystring );
    }
 #endif
    stream << envs;
@@ -2649,7 +2649,7 @@ startServiceInternal( const QCString &function,
    if (noWait)
       return 0;
 
-   QDataStream stream2(replyData, IO_ReadOnly);
+   QDataStream stream2(replyData, QIODevice::ReadOnly);
    serviceResult result;
    stream2 >> result.result >> result.dcopName >> result.error >> result.pid;
    if (dcopService)
@@ -2663,7 +2663,7 @@ startServiceInternal( const QCString &function,
 
 int
 KApplication::startServiceByName( const QString& _name, const QString &URL,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
+                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
@@ -2675,7 +2675,7 @@ KApplication::startServiceByName( const QString& _name, const QString &URL,
 
 int
 KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
+                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
 {
    return startServiceInternal(
                       "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
@@ -2684,7 +2684,7 @@ KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
 
 int
 KApplication::startServiceByDesktopPath( const QString& _name, const QString &URL,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
+                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
@@ -2696,7 +2696,7 @@ KApplication::startServiceByDesktopPath( const QString& _name, const QString &UR
 
 int
 KApplication::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
+                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
 {
    return startServiceInternal(
                       "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
@@ -2705,7 +2705,7 @@ KApplication::startServiceByDesktopPath( const QString& _name, const QStringList
 
 int
 KApplication::startServiceByDesktopName( const QString& _name, const QString &URL,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
+                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
@@ -2717,7 +2717,7 @@ KApplication::startServiceByDesktopName( const QString& _name, const QString &UR
 
 int
 KApplication::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
+                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
 {
    return startServiceInternal(
                       "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
@@ -2733,7 +2733,7 @@ KApplication::kdeinitExec( const QString& name, const QStringList &args,
 
 int
 KApplication::kdeinitExec( const QString& name, const QStringList &args,
-                           QString *error, int *pid, const QCString& startup_id )
+                           QString *error, int *pid, const Q3CString& startup_id )
 {
    return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
@@ -2748,7 +2748,7 @@ KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
 
 int
 KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
-                           QString *error, int *pid, const QCString& startup_id )
+                           QString *error, int *pid, const Q3CString& startup_id )
 {
    return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
@@ -2875,12 +2875,12 @@ void KApplication::setTopWidget( QWidget *topWidget )
 #endif
 }
 
-QCString KApplication::startupId() const
+Q3CString KApplication::startupId() const
 {
     return d->startup_id;
 }
 
-void KApplication::setStartupId( const QCString& startup_id )
+void KApplication::setStartupId( const Q3CString& startup_id )
 {
     if( startup_id == d->startup_id )
         return;
@@ -3167,39 +3167,39 @@ Qt::ButtonState KApplication::keyboardMouseState()
                    &root_x, &root_y, &win_x, &win_y, &state );
     // transform the same way like Qt's qt_x11_translateButtonState()
     if( state & Button1Mask )
-        ret |= LeftButton;
+        ret |= Qt::LeftButton;
     if( state & Button2Mask )
-        ret |= MidButton;
+        ret |= Qt::MidButton;
     if( state & Button3Mask )
-        ret |= RightButton;
+        ret |= Qt::RightButton;
     if( state & ShiftMask )
-        ret |= ShiftButton;
+        ret |= Qt::ShiftModifier;
     if( state & ControlMask )
-        ret |= ControlButton;
+        ret |= Qt::ControlModifier;
     if( state & KKeyNative::modX( KKey::ALT ))
-        ret |= AltButton;
+        ret |= Qt::AltModifier;
     if( state & KKeyNative::modX( KKey::WIN ))
-        ret |= MetaButton;
+        ret |= Qt::MetaModifier;
 #elif defined(Q_WS_WIN)
     const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
     if (GetAsyncKeyState(VK_LBUTTON))
-        ret |= (mousebtn_swapped ? RightButton : LeftButton);
+        ret |= (mousebtn_swapped ? Qt::RightButton : Qt::LeftButton);
     if (GetAsyncKeyState(VK_MBUTTON))
-        ret |= MidButton;
+        ret |= Qt::MidButton;
     if (GetAsyncKeyState(VK_RBUTTON))
-        ret |= (mousebtn_swapped ? LeftButton : RightButton);
+        ret |= (mousebtn_swapped ? Qt::LeftButton : Qt::RightButton);
     if (GetAsyncKeyState(VK_SHIFT))
-        ret |= ShiftButton;
+        ret |= Qt::ShiftModifier;
     if (GetAsyncKeyState(VK_CONTROL))
-        ret |= ControlButton;
+        ret |= Qt::ControlModifier;
     if (GetAsyncKeyState(VK_MENU))
-        ret |= AltButton;
+        ret |= Qt::AltModifier;
     if (GetAsyncKeyState(VK_LWIN) || GetAsyncKeyState(VK_RWIN))
-        ret |= MetaButton;
+        ret |= Qt::MetaModifier;
 #else
     //TODO: other platforms
 #endif
-    return static_cast< ButtonState >( ret );
+    return static_cast< Qt::ButtonState >( ret );
 }
 
 void KApplication::installSigpipeHandler()

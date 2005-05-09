@@ -18,16 +18,16 @@
 */
 
 #include <qcheckbox.h>
-#include <qguardedptr.h>
-#include <qhbox.h>
+#include <qpointer.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
 #include <qstringlist.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qvgroupbox.h>
-#include <qstylesheet.h>
-#include <qsimplerichtext.h>
+#include <q3stylesheet.h>
+#include <q3simplerichtext.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
 
@@ -133,7 +133,7 @@ static QString qrichtextify( const QString& text )
   QStringList lines = QStringList::split('\n', text);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
-    *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
+    *it = Q3StyleSheet::convertFromPlainText( *it, Q3StyleSheetItem::WhiteSpaceNormal );
   }
 
   return lines.join(QString::null);
@@ -153,7 +153,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
                              const QString &ask, bool *checkboxReturn, int options,
                              const QString &details, QMessageBox::Icon notifyType)
 {
-    QVBox *topcontents = new QVBox (dialog);
+    Q3VBox *topcontents = new Q3VBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
     topcontents->setMargin(KDialog::marginHint());
 
@@ -175,7 +175,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
     int pref_height = 0;
     // Calculate a proper size for the text.
     {
-       QSimpleRichText rt(qt_text, dialog->font());
+       Q3SimpleRichText rt(qt_text, dialog->font());
        QRect d = KGlobalSettings::desktopGeometry(dialog);
 
        pref_width = d.width() / 3;
@@ -231,11 +231,11 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
     {
        listbox=new KListBox( topcontents );
        listbox->insertStringList( strlist );
-       listbox->setSelectionMode( QListBox::NoSelection );
+       listbox->setSelectionMode( Q3ListBox::NoSelection );
        topcontents->setStretchFactor(listbox, 1);
     }
 
-    QGuardedPtr<QCheckBox> checkbox = 0;
+    QPointer<QCheckBox> checkbox = 0;
     if (!ask.isEmpty())
     {
        checkbox = new QCheckBox(ask, topcontents);
@@ -256,7 +256,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
                                label3, SLOT(openLink(const QString &)));
          }
        } else {
-         QTextEdit* te = new QTextEdit(details, QString::null, detailsGroup);
+         Q3TextEdit* te = new Q3TextEdit(details, QString::null, detailsGroup);
          te->setReadOnly( true );
          te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
        }
@@ -306,7 +306,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
     // We use a QGuardedPtr because the dialog may get deleted
     // during exec() if the parent of the dialog gets deleted.
     // In that case the guarded ptr will reset to 0.
-    QGuardedPtr<KDialogBase> guardedDialog = dialog;
+    QPointer<KDialogBase> guardedDialog = dialog;
 
     int result = guardedDialog->exec();
     if (checkbox && checkboxReturn)

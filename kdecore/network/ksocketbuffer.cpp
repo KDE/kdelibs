@@ -68,9 +68,9 @@ bool KSocketBuffer::canReadLine() const
 {
   QMutexLocker locker(&m_mutex);
 
-  QValueListConstIterator<QByteArray> it = m_list.constBegin(),
+  Q3ValueListConstIterator<QByteArray> it = m_list.constBegin(),
     end = m_list.constEnd();
-  QIODevice::Offset offset = m_offset;
+  Q_LONGLONG offset = m_offset;
 
   // walk the buffer
   for ( ; it != end; ++it)
@@ -85,18 +85,18 @@ bool KSocketBuffer::canReadLine() const
   return false;			// not found
 }
 
-QCString KSocketBuffer::readLine()
+Q3CString KSocketBuffer::readLine()
 {
   if (!canReadLine())
-    return QCString();		// empty
+    return Q3CString();		// empty
 
   QMutexLocker locker(&m_mutex);
 
   // find the offset of the newline in the buffer
   int newline = 0;
-  QValueListConstIterator<QByteArray> it = m_list.constBegin(),
+  Q3ValueListConstIterator<QByteArray> it = m_list.constBegin(),
     end = m_list.constEnd();
-  QIODevice::Offset offset = m_offset;
+  Q_LONGLONG offset = m_offset;
 
   // walk the buffer
   for ( ; it != end; ++it)
@@ -115,7 +115,7 @@ QCString KSocketBuffer::readLine()
       break;
     }
 
-  QCString result(newline + 2 - m_offset);
+  Q3CString result(newline + 2 - m_offset);
   consumeBuffer(result.data(), newline + 1 - m_offset);
   return result;
 }
@@ -173,9 +173,9 @@ Q_LONG KSocketBuffer::consumeBuffer(char *destbuffer, Q_LONG maxlen, bool discar
   if (maxlen == 0 || isEmpty())
     return 0;
 
-  QValueListIterator<QByteArray> it = m_list.begin(),
+  Q3ValueListIterator<QByteArray> it = m_list.begin(),
     end = m_list.end();
-  QIODevice::Offset offset = m_offset;
+  Q_LONGLONG offset = m_offset;
   Q_LONG copied = 0;
 
   // walk the buffer
@@ -235,9 +235,9 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
 
   QMutexLocker locker(&m_mutex);
   
-  QValueListIterator<QByteArray> it = m_list.begin(),
+  Q3ValueListIterator<QByteArray> it = m_list.begin(),
     end = m_list.end();
-  QIODevice::Offset offset = m_offset;
+  Q_LONGLONG offset = m_offset;
   Q_LONG written = 0;
   
   // walk the buffer

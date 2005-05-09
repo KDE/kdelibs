@@ -26,9 +26,9 @@
 #include <kmessagebox.h>
 #include <qlabel.h>
 #include <qregexp.h>
-#include <qstylesheet.h>
-#include <qguardedptr.h>
-#include <qptrvector.h>
+#include <q3stylesheet.h>
+#include <qpointer.h>
+#include <q3ptrvector.h>
 #include <kdebug.h>
 
 //#define DEBUG_FIND
@@ -103,12 +103,12 @@ struct KFind::Private
         bool    dirty;
     };
 
-    QGuardedPtr<QWidget>  findDialog;
+    QPointer<QWidget>  findDialog;
     bool                  patternChanged;
     QString               matchedPattern;
-    QDict<Match>          incrementalPath;
+    Q3Dict<Match>          incrementalPath;
     Match *               emptyMatch;
-    QPtrVector<Data>      data;
+    Q3PtrVector<Data>      data;
     int                   currentId;
     bool                  customIds;
 };
@@ -623,7 +623,7 @@ void KFind::displayFinalDialog() const
     if ( numMatches() )
         message = i18n( "1 match found.", "%n matches found.", numMatches() );
     else
-        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(QStyleSheet::escape(m_pattern));
+        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(Q3StyleSheet::escape(m_pattern));
     KMessageBox::information(dialogsParent(), message);
 }
 
@@ -643,7 +643,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         if ( numMatches() )
             message = i18n( "1 match found.", "%n matches found.", numMatches() );
         else
-            message = i18n("No matches found for '<b>%1</b>'.").arg(QStyleSheet::escape(m_pattern));
+            message = i18n("No matches found for '<b>%1</b>'.").arg(Q3StyleSheet::escape(m_pattern));
     }
     else
     {

@@ -19,7 +19,7 @@
 */
 
 #include <qlayout.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qpainter.h>
 #include <qdialog.h>
 #include <qstyle.h>
@@ -28,7 +28,7 @@
 #include <qtooltip.h>
 #include <qfont.h>
 #include <qvalidator.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 
 #include "kdatepicker.h"
 #include <kglobal.h>
@@ -96,19 +96,19 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
 }
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
-  : QFrame(parent,name)
+  : Q3Frame(parent,name)
 {
   init( dt );
 }
 
-KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, WFlags f)
-  : QFrame(parent,name, f)
+KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, Qt::WFlags f)
+  : Q3Frame(parent,name, f)
 {
   init( dt );
 }
 
 KDatePicker::KDatePicker( QWidget *parent, const char *name )
-  : QFrame(parent,name)
+  : Q3Frame(parent,name)
 {
   init( QDate::currentDate() );
 }
@@ -222,8 +222,8 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
    if ( e->type() == QEvent::KeyPress ) {
       QKeyEvent *k = (QKeyEvent *)e;
 
-      if ( (k->key() == Qt::Key_Prior) ||
-           (k->key() == Qt::Key_Next)  ||
+      if ( (k->key() == Qt::Key_PageUp) ||
+           (k->key() == Qt::Key_PageDown)  ||
            (k->key() == Qt::Key_Up)    ||
            (k->key() == Qt::Key_Down) )
        {
@@ -232,7 +232,7 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
           return true; // eat event
        }
    }
-   return QFrame::eventFilter( o, e );
+   return Q3Frame::eventFilter( o, e );
 }
 
 void
@@ -358,7 +358,7 @@ KDatePicker::selectMonthClicked()
   QDate date = table->getDate();
   int i, month, months = calendar->monthsInYear(date);
 
-  QPopupMenu popup(selectMonth);
+  Q3PopupMenu popup(selectMonth);
 
   for (i = 1; i <= months; i++)
     popup.insertItem(calendar->monthName(i, calendar->year(date)), i);
@@ -382,7 +382,7 @@ KDatePicker::selectYearClicked()
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  if (selectYear->state() == QButton::Off)
+  if (selectYear->state() == QCheckBox::Off)
   {
     return;
   }

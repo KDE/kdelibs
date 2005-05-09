@@ -67,7 +67,7 @@ class CfgEntry
     CfgEntry( const QString &group, const QString &type, const QString &key,
               const QString &name, const QString &label,
               const QString &whatsThis, const QString &code,
-              const QString &defaultValue, const QValueList<Choice> &choices,
+              const QString &defaultValue, const Q3ValueList<Choice> &choices,
               bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
         mLabel( label ), mWhatsThis( whatsThis ), mCode( code ),
@@ -115,8 +115,8 @@ class CfgEntry
     void setParamType( const QString &d ) { mParamType = d; }
     QString paramType() const { return mParamType; }
 
-    void setChoices( const QValueList<Choice> &d ) { mChoices = d; }
-    QValueList<Choice> choices() const { return mChoices; }
+    void setChoices( const Q3ValueList<Choice> &d ) { mChoices = d; }
+    Q3ValueList<Choice> choices() const { return mChoices; }
 
     void setParamValues( const QStringList &d ) { mParamValues = d; }
     QStringList paramValues() const { return mParamValues; }
@@ -166,7 +166,7 @@ class CfgEntry
     QString mParam;
     QString mParamName;
     QString mParamType;
-    QValueList<Choice> mChoices;
+    Q3ValueList<Choice> mChoices;
     QStringList mParamValues;
     QStringList mParamDefaultValues;
     int mParamMax;
@@ -242,7 +242,7 @@ static QString literalString( const QString &s )
 static QString dumpNode(const QDomNode &node)
 {
   QString msg;
-  QTextStream s(&msg, IO_WriteOnly );
+  QTextStream s(&msg, QIODevice::WriteOnly );
   node.save(s, 0);
 
   msg = msg.simplifyWhiteSpace();
@@ -261,7 +261,7 @@ static QString filenameOnly(QString path)
 
 static void preProcessDefault( QString &defaultValue, const QString &name,
                                const QString &type,
-                               const QValueList<CfgEntry::Choice> &choices,
+                               const Q3ValueList<CfgEntry::Choice> &choices,
                                QString &code )
 {
     if ( type == "String" && !defaultValue.isEmpty() ) {
@@ -271,7 +271,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       defaultValue = literalString( defaultValue );
 
     } else if ( (type == "StringList" || type == "PathList") && !defaultValue.isEmpty() ) {
-      QTextStream cpp( &code, IO_WriteOnly | IO_Append );
+      QTextStream cpp( &code, QIODevice::WriteOnly | QIODevice::Append );
       if (!code.isEmpty())
          cpp << endl;
 
@@ -297,7 +297,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
 
     } else if ( type == "Enum" ) {
       if ( !globalEnums ) {
-        QValueList<CfgEntry::Choice>::ConstIterator it;
+        Q3ValueList<CfgEntry::Choice>::ConstIterator it;
         for( it = choices.begin(); it != choices.end(); ++it ) {
           if ( (*it).name == defaultValue ) {
             defaultValue.prepend( enumName(name) + "::");
@@ -307,7 +307,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       }
 
     } else if ( type == "IntList" ) {
-      QTextStream cpp( &code, IO_WriteOnly | IO_Append );
+      QTextStream cpp( &code, QIODevice::WriteOnly | QIODevice::Append );
       if (!code.isEmpty())
          cpp << endl;
 
@@ -337,7 +337,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString param;
   QString paramName;
   QString paramType;
-  QValueList<CfgEntry::Choice> choices;
+  Q3ValueList<CfgEntry::Choice> choices;
   QStringList paramValues;
   QStringList paramDefaultValues;
   QString minValue;
@@ -725,12 +725,12 @@ QString paramString(const QString &s, const CfgEntry *e, int i)
   return result;
 }
 
-QString paramString(const QString &group, const QValueList<Param> &parameters)
+QString paramString(const QString &group, const Q3ValueList<Param> &parameters)
 {
   QString paramString = group;
   QString arguments;
   int i = 1;
-  for (QValueList<Param>::ConstIterator it = parameters.begin();
+  for (Q3ValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
      if (paramString.contains("$("+(*it).name+")"))
@@ -856,10 +856,10 @@ int main( int argc, char **argv )
 
   QString cfgFileName;
   bool cfgFileNameArg = false;
-  QValueList<Param> parameters;
+  Q3ValueList<Param> parameters;
   QStringList includes;
 
-  QPtrList<CfgEntry> entries;
+  Q3PtrList<CfgEntry> entries;
   entries.setAutoDelete( true );
 
   QDomNode n;
@@ -943,7 +943,7 @@ int main( int argc, char **argv )
   QString cppPreamble; // code to be inserted at the beginnin of the cpp file, e.g. initialization of static values
 
   QFile header( baseDir + headerFileName );
-  if ( !header.open( IO_WriteOnly ) ) {
+  if ( !header.open( QIODevice::WriteOnly ) ) {
     kdError() << "Can't open '" << headerFileName << "for writing." << endl;
     return 1;
   }
@@ -989,10 +989,10 @@ int main( int argc, char **argv )
   // enums
   CfgEntry *e;
   for( e = entries.first(); e; e = entries.next() ) {
-    QValueList<CfgEntry::Choice> choices = e->choices();
+    Q3ValueList<CfgEntry::Choice> choices = e->choices();
     if ( !choices.isEmpty() ) {
       QStringList values;
-      QValueList<CfgEntry::Choice>::ConstIterator itChoice;
+      Q3ValueList<CfgEntry::Choice>::ConstIterator itChoice;
       for( itChoice = choices.begin(); itChoice != choices.end(); ++itChoice ) {
         values.append( (*itChoice).name );
       }
@@ -1033,7 +1033,7 @@ int main( int argc, char **argv )
     h << "    " << className << "(";
     if (cfgFileNameArg)
        h << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " = KGlobal::sharedConfig()" : ", ");
-    for (QValueList<Param>::ConstIterator it = parameters.begin();
+    for (Q3ValueList<Param>::ConstIterator it = parameters.begin();
          it != parameters.end(); ++it)
     {
        if (it != parameters.begin())
@@ -1186,7 +1186,7 @@ int main( int argc, char **argv )
   }
 
   // Class Parameters
-  for (QValueList<Param>::ConstIterator it = parameters.begin();
+  for (Q3ValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
      h << "    " << cppType((*it).type) << " mParam" << (*it).name << ";" << endl;
@@ -1232,7 +1232,7 @@ int main( int argc, char **argv )
   header.close();
 
   QFile implementation( baseDir + implementationFileName );
-  if ( !implementation.open( IO_WriteOnly ) ) {
+  if ( !implementation.open( QIODevice::WriteOnly ) ) {
     kdError() << "Can't open '" << implementationFileName << "for writing."
               << endl;
     return 1;
@@ -1302,7 +1302,7 @@ int main( int argc, char **argv )
     cpp << (parameters.isEmpty() ? " " : ", ");
   }
 
-  for (QValueList<Param>::ConstIterator it = parameters.begin();
+  for (Q3ValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
      if (it != parameters.begin())
@@ -1318,7 +1318,7 @@ int main( int argc, char **argv )
   cpp << ")" << endl;
 
   // Store parameters
-  for (QValueList<Param>::ConstIterator it = parameters.begin();
+  for (Q3ValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
      cpp << "  , mParam" << (*it).name << "(" << (*it).name << ")" << endl;
@@ -1347,8 +1347,8 @@ int main( int argc, char **argv )
     if ( e->type() == "Enum" ) {
       cpp << "  QValueList<KConfigSkeleton::ItemEnum::Choice> values"
           << e->name() << ";" << endl;
-      QValueList<CfgEntry::Choice> choices = e->choices();
-      QValueList<CfgEntry::Choice>::ConstIterator it;
+      Q3ValueList<CfgEntry::Choice> choices = e->choices();
+      Q3ValueList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.begin(); it != choices.end(); ++it ) {
         cpp << "  {" << endl;
         cpp << "    KConfigSkeleton::ItemEnum::Choice choice;" << endl;

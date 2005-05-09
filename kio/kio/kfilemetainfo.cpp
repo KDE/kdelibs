@@ -22,8 +22,8 @@
 
 #include <assert.h>
 
-#include <qshared.h>
-#include <qdict.h>
+#include <q3shared.h>
+#include <q3dict.h>
 
 #include <ktrader.h>
 #include <kstaticdeleter.h>
@@ -38,12 +38,12 @@
 #include "kfilemetainfo.h"
 
 // shared data of a KFileMetaInfoItem
-class KFileMetaInfoItem::Data : public QShared
+class KFileMetaInfoItem::Data : public Q3Shared
 {
 public:
     Data( const KFileMimeTypeInfo::ItemInfo* mti, const QString& _key,
           const QVariant& _value )
-        : QShared(),
+        : Q3Shared(),
           mimeTypeInfo( mti ),
           key( _key ),
           value( _value ),
@@ -270,11 +270,11 @@ void KFileMetaInfoItem::deref()
 ///////////////////////////////////////////////////////////////////
 
 // shared data of a KFileMetaInfo
-class KFileMetaInfo::Data : public QShared
+class KFileMetaInfo::Data : public Q3Shared
 {
 public:
     Data(const KURL& _url, uint _what)
-        : QShared(),
+        : Q3Shared(),
           url(_url),
           what(_what),
           mimeTypeInfo( 0L )
@@ -963,7 +963,7 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
     } else {
         // Mimetype-metainfo: the plugin can register itself for multiple mimetypes, remember them all
         bool first = true;
-        QDictIterator<KFileMimeTypeInfo> it( m_pendingMimetypeInfos );
+        Q3DictIterator<KFileMimeTypeInfo> it( m_pendingMimetypeInfos );
         for( ; it.current(); ++it ) {
             KFileMimeTypeInfo* info = it.current();
             m_plugins.insert( it.currentKey(), new CachedPluginInfo( plugin, info, first ) );
@@ -1008,7 +1008,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
 #if 0
     kdDebug(7033) << "currently loaded plugins:\n";
 
-    QDictIterator<CachedPluginInfo> it( m_plugins );
+    Q3DictIterator<CachedPluginInfo> it( m_plugins );
     for( ; it.current(); ++it ) {
         CachedPluginInfo* cache = it.current();
         kdDebug(7033)
@@ -1128,11 +1128,11 @@ QStringList KFileMetaInfoProvider::supportedMimeTypes() const
 
 
 // shared data of a KFileMetaInfoGroup
-class KFileMetaInfoGroup::Data : public QShared
+class KFileMetaInfoGroup::Data : public Q3Shared
 {
 public:
     Data(const QString& _name)
-        : QShared(),
+        : Q3Shared(),
           name(_name),
           mimeTypeInfo(0L),
           dirty( false ),
@@ -1480,7 +1480,7 @@ KFileMimeTypeInfo::GroupInfo * KFileMimeTypeInfo::addGroupInfo(
 QStringList KFileMimeTypeInfo::supportedGroups() const
 {
     QStringList list;
-    QDictIterator<GroupInfo> it( m_groups );
+    Q3DictIterator<GroupInfo> it( m_groups );
     for ( ; it.current(); ++it )
         list.append( it.current()->name() );
 
@@ -1490,7 +1490,7 @@ QStringList KFileMimeTypeInfo::supportedGroups() const
 QStringList KFileMimeTypeInfo::translatedGroups() const
 {
     QStringList list;
-    QDictIterator<GroupInfo> it( m_groups );
+    Q3DictIterator<GroupInfo> it( m_groups );
     for ( ; it.current(); ++it )
         list.append( it.current()->translatedName() );
 
@@ -1503,7 +1503,7 @@ QStringList KFileMimeTypeInfo::supportedKeys() const
     // maybe cache the result?
     QStringList keys;
     QStringList::ConstIterator lit;
-    QDictIterator<GroupInfo> it( m_groups );
+    Q3DictIterator<GroupInfo> it( m_groups );
     for ( ; it.current(); ++it ) { // need to nuke dupes
         QStringList list = it.current()->supportedKeys();
         for ( lit = list.begin(); lit != list.end(); ++lit ) {

@@ -22,7 +22,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -42,7 +42,7 @@ class KTEXTEDITOR_EXPORT DynWordWrapInterface
     unsigned int dynWordWrapInterfaceNumber () const;
     
   protected:  
-    void setDynWordWrapInterfaceDCOPSuffix (const QCString &suffix);  
+    void setDynWordWrapInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   //
   // slots !!!

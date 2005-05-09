@@ -23,7 +23,7 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <knuminput.h>
@@ -106,12 +106,12 @@ bool CupsdJobsPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdJobsPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(keepjobhistory_, conf->comments_.toolTip("preservejobhistory"));
-	QWhatsThis::add(keepjobfiles_, conf->comments_.toolTip("preservejobfiles"));
-	QWhatsThis::add(autopurgejobs_, conf->comments_.toolTip("autopurgejobs"));
-	QWhatsThis::add(maxjobs_, conf->comments_.toolTip("maxjobs"));
-	QWhatsThis::add(maxjobsperprinter_, conf->comments_.toolTip("maxjobsperprinter"));
-	QWhatsThis::add(maxjobsperuser_, conf->comments_.toolTip("maxjobsperuser"));
+	Q3WhatsThis::add(keepjobhistory_, conf->comments_.toolTip("preservejobhistory"));
+	Q3WhatsThis::add(keepjobfiles_, conf->comments_.toolTip("preservejobfiles"));
+	Q3WhatsThis::add(autopurgejobs_, conf->comments_.toolTip("autopurgejobs"));
+	Q3WhatsThis::add(maxjobs_, conf->comments_.toolTip("maxjobs"));
+	Q3WhatsThis::add(maxjobsperprinter_, conf->comments_.toolTip("maxjobsperprinter"));
+	Q3WhatsThis::add(maxjobsperuser_, conf->comments_.toolTip("maxjobsperuser"));
 }
 
 void CupsdJobsPage::historyChanged(bool on)

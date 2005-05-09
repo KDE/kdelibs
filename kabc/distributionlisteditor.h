@@ -24,9 +24,9 @@
 
 #include <kdialogbase.h>
 
-class QListView;
+class Q3ListView;
 class QComboBox;
-class QButtonGroup;
+class Q3ButtonGroup;
 
 namespace KABC {
 
@@ -45,7 +45,7 @@ class KABC_EXPORT EmailSelectDialog : public KDialogBase
                              QWidget *parent );
 
   private:
-    QButtonGroup *mButtonGroup;
+    Q3ButtonGroup *mButtonGroup;
 };
 
 /**
@@ -72,8 +72,8 @@ class DistributionListEditor : public QWidget
 
   private:
     QComboBox *mNameCombo;  
-    QListView *mEntryView;
-    QListView *mAddresseeView;
+    Q3ListView *mEntryView;
+    Q3ListView *mAddresseeView;
 
     AddressBook *mAddressBook;
     DistributionListManager *mManager;

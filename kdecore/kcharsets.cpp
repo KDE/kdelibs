@@ -26,13 +26,13 @@
 #include <kconfig.h>
 
 #include <qfontinfo.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qfontdatabase.h>
 #include <kdebug.h>
 
 #include <qtextcodec.h>
 #include <qmap.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <assert.h>
 
@@ -363,7 +363,7 @@ public:
         delete db;
     }
     QFontDatabase *db;
-    QAsciiDict<QTextCodec> codecForNameDict;
+    Q3AsciiDict<QTextCodec> codecForNameDict;
     KCharsets* kc;
 };
 
@@ -381,7 +381,7 @@ KCharsets::~KCharsets()
 
 QChar KCharsets::fromEntity(const QString &str)
 {
-    QChar res = QChar::null;
+    QChar res = QChar::Null;
 
     int pos = 0;
     if(str[pos] == '&') pos++;
@@ -408,7 +408,7 @@ QChar KCharsets::fromEntity(const QString &str)
     if(!e)
     {
         //kdDebug( 0 ) << "unknown entity " << str <<", len = " << str.length() << endl;
-        return QChar::null;
+        return QChar::Null;
     }
     //kdDebug() << "got entity " << str << " = " << e->code << endl;
 
@@ -424,10 +424,10 @@ QChar KCharsets::fromEntity(const QString &str, int &len)
     {
         QString tmp = str.left(len);
         QChar res = fromEntity(tmp);
-        if( res != QChar::null ) return res;
+        if( res != QChar::Null ) return res;
         len--;
     }
-    return QChar::null;
+    return QChar::Null;
 }
 
 
@@ -571,8 +571,8 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
-    QCString name = n.lower().latin1();
-    QCString key = name;
+    Q3CString name = n.lower().latin1();
+    Q3CString key = name;
     if (name.right(8) == "_charset")
        name.truncate(name.length()-8);
 
@@ -590,7 +590,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     // these codecs are built into Qt, but the name given for the codec is different,
     // so QTextCodec did not recognize it.
-    QCString cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
+    Q3CString cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
 
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);

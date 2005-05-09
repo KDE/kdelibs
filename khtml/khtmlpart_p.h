@@ -35,10 +35,10 @@
 #include <kparts/browserextension.h>
 #include <kwallet.h>
 
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <qmap.h>
 #include <qtimer.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include "html/html_formimpl.h"
 #include "khtml_run.h"
@@ -90,10 +90,10 @@ namespace khtml
               m_kjs_lib->unload();
       }
 
-    QGuardedPtr<khtml::RenderPart> m_frame;
-    QGuardedPtr<KParts::ReadOnlyPart> m_part;
-    QGuardedPtr<KParts::BrowserExtension> m_extension;
-    QGuardedPtr<KParts::LiveConnectExtension> m_liveconnect;
+    QPointer<khtml::RenderPart> m_frame;
+    QPointer<KParts::ReadOnlyPart> m_part;
+    QPointer<KParts::BrowserExtension> m_extension;
+    QPointer<KParts::LiveConnectExtension> m_liveconnect;
     QString m_serviceName;
     QString m_serviceType;
     KJSProxy *m_jscript;
@@ -101,7 +101,7 @@ namespace khtml
     bool m_bCompleted;
     QString m_name;
     KParts::URLArgs m_args;
-    QGuardedPtr<KHTMLRun> m_run;
+    QPointer<KHTMLRun> m_run;
     bool m_bPreloaded;
     KURL m_workingURL;
     Type m_type;
@@ -114,7 +114,7 @@ namespace khtml
 
 }
 
-struct KHTMLFrameList : public QValueList<khtml::ChildFrame*>
+struct KHTMLFrameList : public Q3ValueList<khtml::ChildFrame*>
 {
     Iterator find( const QString &name ) KDE_NO_EXPORT;
 };
@@ -139,10 +139,10 @@ class KHTMLWalletQueue : public QObject
     }
 
     KWallet::Wallet *wallet;
-    typedef QPair<DOM::HTMLFormElementImpl*, QGuardedPtr<DOM::DocumentImpl> > Caller;
-    typedef QValueList<Caller> CallerList;
+    typedef QPair<DOM::HTMLFormElementImpl*, QPointer<DOM::DocumentImpl> > Caller;
+    typedef Q3ValueList<Caller> CallerList;
     CallerList callers;
-    QValueList<QPair<QString, QMap<QString, QString> > > savers;
+    Q3ValueList<QPair<QString, QMap<QString, QString> > > savers;
 
   signals:
     void walletOpened(KWallet::Wallet*);
@@ -164,7 +164,7 @@ class KHTMLWalletQueue : public QObject
           }
         }
         wallet->setFolder(KWallet::Wallet::FormDataFolder());
-        for (QValueList<QPair<QString, QMap<QString, QString> > >::Iterator i = savers.begin(); i != savers.end(); ++i) {
+        for (Q3ValueList<QPair<QString, QMap<QString, QString> > >::Iterator i = savers.begin(); i != savers.end(); ++i) {
           wallet->writeMap((*i).first, (*i).second);
         }
       }
@@ -292,11 +292,11 @@ public:
 #endif
   }
 
-  QGuardedPtr<khtml::ChildFrame> m_frame;
+  QPointer<khtml::ChildFrame> m_frame;
   KHTMLFrameList m_frames;
   KHTMLFrameList m_objects;
 
-  QGuardedPtr<KHTMLView> m_view;
+  QPointer<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
@@ -498,7 +498,7 @@ public:
       int index;
       DOM::NodeImpl *node;
   };
-  QValueList<StringPortion> m_stringPortions;
+  Q3ValueList<StringPortion> m_stringPortions;
 
   KFind *m_find;
   KFindDialog *m_findDialog;
@@ -527,7 +527,7 @@ public:
 
   //QGuardedPtr<KParts::Part> m_activeFrame;
   KParts::Part * m_activeFrame;
-  QGuardedPtr<KHTMLPart> m_opener;
+  QPointer<KHTMLPart> m_opener;
   bool m_openedByJS;
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
 

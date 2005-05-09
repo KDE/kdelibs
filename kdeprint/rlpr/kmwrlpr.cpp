@@ -27,14 +27,14 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kiconloader.h>
 
-static QListViewItem* findChild(QListViewItem *c, const QString& txt)
+static Q3ListViewItem* findChild(Q3ListViewItem *c, const QString& txt)
 {
-	QListViewItem	*item(c);
+	Q3ListViewItem	*item(c);
 	while (item)
 		if (item->text(0) == txt) return item;
 		else item = item->nextSibling();
@@ -51,7 +51,7 @@ KMWRlpr::KMWRlpr(QWidget *parent, const char *name)
 	m_nextpage = KMWizard::Name;
 
 	m_view = new KListView(this);
-	m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	m_view->setLineWidth(1);
 	m_view->addColumn(QString::fromLatin1(""));
 	m_view->header()->hide();
@@ -63,7 +63,7 @@ KMWRlpr::KMWRlpr(QWidget *parent, const char *name)
 	QLabel	*m_queuelabel = new QLabel(i18n("Queue:"), this);
 	m_hostlabel->setBuddy(m_host);
 	m_queuelabel->setBuddy(m_queue);
-	connect(m_view,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotPrinterSelected(QListViewItem*)));
+	connect(m_view,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotPrinterSelected(Q3ListViewItem*)));
 
 	QHBoxLayout	*lay0 = new QHBoxLayout(this, 0, 10);
 	QVBoxLayout	*lay1 = new QVBoxLayout(0, 0, 5);
@@ -94,7 +94,7 @@ void KMWRlpr::initPrinter(KMPrinter *p)
 {
 	m_host->setText(p->option("host"));
 	m_queue->setText(p->option("queue"));
-	QListViewItem	*item = findChild(m_view->firstChild(),m_host->text());
+	Q3ListViewItem	*item = findChild(m_view->firstChild(),m_host->text());
 	if (item)
 	{
 		item = findChild(item->firstChild(),m_queue->text());
@@ -130,7 +130,7 @@ void KMWRlpr::initialize()
 	m_view->clear();
 	QFile	f(QDir::homeDirPath()+"/.rlprrc");
 	if (!f.exists()) f.setName("/etc/rlprrc");
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString		line, host;
@@ -143,12 +143,12 @@ void KMWRlpr::initialize()
 			if ((p=line.find(':')) != -1)
 			{
 				host = line.left(p).stripWhiteSpace();
-				QListViewItem	*hitem = new QListViewItem(m_view,host);
+				Q3ListViewItem	*hitem = new Q3ListViewItem(m_view,host);
 				hitem->setPixmap(0,SmallIcon("kdeprint_computer"));
 				QStringList	prs = QStringList::split(' ',line.right(line.length()-p-1),false);
 				for (QStringList::ConstIterator it=prs.begin(); it!=prs.end(); ++it)
 				{
-					QListViewItem	*pitem = new QListViewItem(hitem,*it);
+					Q3ListViewItem	*pitem = new Q3ListViewItem(hitem,*it);
 					pitem->setPixmap(0,SmallIcon("kdeprint_printer"));
 				}
 			}
@@ -158,11 +158,11 @@ void KMWRlpr::initialize()
 
 	// parse printcap file for local printers
 	f.setName("/etc/printcap");
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString		line, buffer;
-		QListViewItem	*hitem(m_view->firstChild());
+		Q3ListViewItem	*hitem(m_view->firstChild());
 		while (hitem) if (hitem->text(0) == "localhost") break; else hitem = hitem->nextSibling();
 		while (!t.eof())
 		{
@@ -186,20 +186,20 @@ void KMWRlpr::initialize()
 				QString	name = buffer.left(p);
 				if (!hitem)
 				{
-					hitem = new QListViewItem(m_view,"localhost");
+					hitem = new Q3ListViewItem(m_view,"localhost");
 					hitem->setPixmap(0,SmallIcon("kdeprint_computer"));
 				}
-				QListViewItem	*pitem = new QListViewItem(hitem,name);
+				Q3ListViewItem	*pitem = new Q3ListViewItem(hitem,name);
 				pitem->setPixmap(0,SmallIcon("kdeprint_printer"));
 			}
 		}
 	}
 
 	if (m_view->childCount() == 0)
-		new QListViewItem(m_view,i18n("No Predefined Printers"));
+		new Q3ListViewItem(m_view,i18n("No Predefined Printers"));
 }
 
-void KMWRlpr::slotPrinterSelected(QListViewItem *item)
+void KMWRlpr::slotPrinterSelected(Q3ListViewItem *item)
 {
 	if (item && item->depth() == 1)
 	{

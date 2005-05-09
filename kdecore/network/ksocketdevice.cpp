@@ -85,7 +85,7 @@ KSocketDevice::KSocketDevice(int fd)
   : m_sockfd(fd), d(new KSocketDevicePrivate)
 {
   setState(IO_Open);
-  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
+  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
   setSocketDevice(this);
 }
 
@@ -256,7 +256,7 @@ bool KSocketDevice::listen(int backlog)
 	}
 
       resetError();
-      setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
+      setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
       setState(IO_Open);
       return true;
     }
@@ -296,7 +296,7 @@ bool KSocketDevice::connect(const KResolverEntry& address)
       return false;
     }
 
-  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
+  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
   setState(IO_Open);
   return true;			// all is well
 }
@@ -354,7 +354,7 @@ bool KSocketDevice::disconnect()
       return false;
     }
 
-  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
+  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
   setState(IO_Open);
   return true;			// all is well
 }

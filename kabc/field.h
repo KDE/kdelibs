@@ -22,7 +22,7 @@
 #define KABC_FIELD_H
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include "addressee.h"
 
@@ -36,7 +36,7 @@ class KABC_EXPORT Field
   friend class FieldImpl;
 
 public:
-  typedef QValueList<Field *> List;
+  typedef Q3ValueList<Field *> List;
 
   /**
    * @li @p All -

@@ -20,13 +20,13 @@
 #ifndef KMPROXYWIDGET_H
 #define KMPROXYWIDGET_H
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 
 class KConfig;
 class QLineEdit;
 class QCheckBox;
 
-class KMProxyWidget : public QGroupBox
+class KMProxyWidget : public Q3GroupBox
 {
 public:
 	KMProxyWidget(QWidget *parent = 0, const char *name = 0);

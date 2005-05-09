@@ -519,7 +519,7 @@ void RenderPart::setWidget( QWidget *widget )
 #endif
 
     setQWidget( widget );
-    widget->setFocusPolicy(QWidget::WheelFocus);
+    widget->setFocusPolicy(Qt::WheelFocus);
     if(widget->inherits("KHTMLView"))
         connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
 
@@ -563,9 +563,9 @@ void RenderFrame::slotViewCleared()
 #ifdef DEBUG_LAYOUT
         kdDebug(6031) << "frame is a scrollview!" << endl;
 #endif
-        QScrollView *view = static_cast<QScrollView *>(m_widget);
+        Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
         if(!element()->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(element()->parentNode()))->frameBorder()))
-            view->setFrameStyle(QFrame::NoFrame);
+            view->setFrameStyle(Q3Frame::NoFrame);
 	    view->setVScrollBarMode(element()->scrolling );
 	    view->setHScrollBarMode(element()->scrolling );
         if(view->inherits("KHTMLView")) {
@@ -858,15 +858,15 @@ void RenderPartObject::slotViewCleared()
 #ifdef DEBUG_LAYOUT
       kdDebug(6031) << "iframe is a scrollview!" << endl;
 #endif
-      QScrollView *view = static_cast<QScrollView *>(m_widget);
-      int frameStyle = QFrame::NoFrame;
-      QScrollView::ScrollBarMode scroll = QScrollView::Auto;
+      Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
+      int frameStyle = Q3Frame::NoFrame;
+      Q3ScrollView::ScrollBarMode scroll = Q3ScrollView::Auto;
       int marginw = -1;
       int marginh = -1;
       if ( element()->id() == ID_IFRAME) {
 	  HTMLIFrameElementImpl *frame = static_cast<HTMLIFrameElementImpl *>(element());
 	  if(frame->frameBorder)
-	      frameStyle = QFrame::Box;
+	      frameStyle = Q3Frame::Box;
 	  scroll = frame->scrolling;
 	  marginw = frame->marginWidth;
 	  marginh = frame->marginHeight;

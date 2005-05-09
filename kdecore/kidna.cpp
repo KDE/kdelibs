@@ -30,12 +30,12 @@
 using namespace KNetwork;
 #endif
 
-QCString KIDNA::toAsciiCString(const QString &idna)
+Q3CString KIDNA::toAsciiCString(const QString &idna)
 {
 #ifndef Q_WS_WIN //TODO kresolver not ported
 	return KResolver::domainToAscii(idna);
 #else
-	return QCString();
+	return Q3CString();
 #endif
 }
 

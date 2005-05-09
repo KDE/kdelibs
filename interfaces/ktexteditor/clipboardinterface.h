@@ -21,7 +21,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -40,7 +40,7 @@ class KTEXTEDITOR_EXPORT ClipboardInterface
     unsigned int clipboardInterfaceNumber () const;
     
   protected:  
-    void setClipboardInterfaceDCOPSuffix (const QCString &suffix); 
+    void setClipboardInterfaceDCOPSuffix (const Q3CString &suffix); 
         
   /**
   * slots !!!

@@ -42,14 +42,14 @@ void KMacroCommand::addCommand(KCommand *command)
 
 void KMacroCommand::execute()
 {
-    QPtrListIterator<KCommand> it(m_commands);
+    Q3PtrListIterator<KCommand> it(m_commands);
     for ( ; it.current() ; ++it )
         it.current()->execute();
 }
 
 void KMacroCommand::unexecute()
 {
-    QPtrListIterator<KCommand> it(m_commands);
+    Q3PtrListIterator<KCommand> it(m_commands);
     it.toLast();
     for ( ; it.current() ; --it )
         it.current()->unexecute();

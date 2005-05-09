@@ -66,7 +66,7 @@ signals:
 
 private slots:
     void slotLoadFiles();
-    void slotCurrentChanged(QIconViewItem *item);
+    void slotCurrentChanged(Q3IconViewItem *item);
 
 private:
     QStringList mFiles;

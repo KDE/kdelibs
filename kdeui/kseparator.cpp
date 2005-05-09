@@ -25,8 +25,8 @@
 #include "kseparator.moc"
 
 
-KSeparator::KSeparator(QWidget* parent, const char* name, WFlags f)
-   : QFrame(parent, name, f)
+KSeparator::KSeparator(QWidget* parent, const char* name, Qt::WFlags f)
+   : Q3Frame(parent, name, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);
@@ -35,8 +35,8 @@ KSeparator::KSeparator(QWidget* parent, const char* name, WFlags f)
 
 
 
-KSeparator::KSeparator(int orientation, QWidget* parent, const char* name, WFlags f)
-   : QFrame(parent, name, f)
+KSeparator::KSeparator(int orientation, QWidget* parent, const char* name, Qt::WFlags f)
+   : Q3Frame(parent, name, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);
@@ -49,18 +49,18 @@ void KSeparator::setOrientation(int orientation)
 {
    switch(orientation)
    {
-      case Vertical:
+      case Qt::Vertical:
       case VLine:
-         setFrameStyle( QFrame::VLine | QFrame::Sunken );
+         setFrameStyle( Q3Frame::VLine | Q3Frame::Sunken );
          setMinimumSize(2, 0);
          break;
       
       default:
          kdWarning() << "KSeparator::setOrientation(): invalid orientation, using default orientation HLine" << endl;
          
-      case Horizontal:
+      case Qt::Horizontal:
       case HLine:
-         setFrameStyle( QFrame::HLine | QFrame::Sunken );
+         setFrameStyle( Q3Frame::HLine | Q3Frame::Sunken );
          setMinimumSize(0, 2);
          break;
    }
@@ -96,7 +96,7 @@ void KSeparator::drawFrame(QPainter *p)
 
    QStyleOption opt( lineWidth(), midLineWidth() );
    style().drawPrimitive( QStyle::PE_Separator, p, QRect( p1, p2 ), g,
-		          QStyle::Style_Sunken, opt );
+		          QStyle::State_Sunken, opt );
 }
 
 

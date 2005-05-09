@@ -20,7 +20,7 @@
 #ifndef KTEXTEDIT_H
 #define KTEXTEDIT_H
 
-#include <qtextedit.h>
+#include <q3textedit.h>
 
 #include <kdelibs_export.h>
 
@@ -40,7 +40,7 @@ class KSpell;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @since 3.1
  */
-class KDEUI_EXPORT KTextEdit : public QTextEdit
+class KDEUI_EXPORT KTextEdit : public Q3TextEdit
 {
     Q_OBJECT
 
@@ -135,7 +135,7 @@ protected:
      * Reimplemented from QTextEdit to add spelling related items
      * when appropriate.
      */
-    virtual QPopupMenu *createPopupMenu( const QPoint &pos );
+    virtual Q3PopupMenu *createPopupMenu( const QPoint &pos );
 
     /**
      * This is just a reimplementation of a deprecated method from QTextEdit and
@@ -145,7 +145,7 @@ protected:
      *
      * @deprecated
      */
-    virtual QPopupMenu *createPopupMenu();
+    virtual Q3PopupMenu *createPopupMenu();
 
 protected:
     virtual void virtual_hook( int id, void* data );

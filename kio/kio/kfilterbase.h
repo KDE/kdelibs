@@ -67,7 +67,7 @@ public:
     /** \internal */
     virtual bool readHeader() = 0;
     /** \internal */
-    virtual bool writeHeader( const QCString & filename ) = 0;
+    virtual bool writeHeader( const Q3CString & filename ) = 0;
     /** \internal */
     virtual void setOutBuffer( char * data, uint maxlen ) = 0;
     /** \internal */

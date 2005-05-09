@@ -24,7 +24,7 @@
 
 class KIntNumInput;
 class QComboBox;
-class QButtonGroup;
+class Q3ButtonGroup;
 class ImagePreview;
 class ImagePosition;
 
@@ -48,7 +48,7 @@ private:
 	KIntNumInput	*m_brightness, *m_hue, *m_saturation, *m_gamma;
 	QComboBox		*m_sizetype;
 	KIntNumInput	*m_size;
-	QButtonGroup	*m_vertgrp, *m_horizgrp;
+	Q3ButtonGroup	*m_vertgrp, *m_horizgrp;
 	ImagePreview	*m_preview;
 	ImagePosition	*m_position;
 };

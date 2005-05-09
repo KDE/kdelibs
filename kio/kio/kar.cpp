@@ -21,7 +21,7 @@
 #include <qdir.h>
 #include <time.h>
 #include <kdebug.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kmimetype.h>
 #include <qregexp.h>
 
@@ -72,9 +72,9 @@ bool KAr::openArchive( int mode )
 
     //kdDebug(7042) << "openarchive reached." << endl;
 
-    if ( mode == IO_WriteOnly )
+    if ( mode == QIODevice::WriteOnly )
         return true;
-    if ( mode != IO_ReadOnly && mode != IO_ReadWrite )
+    if ( mode != QIODevice::ReadOnly && mode != QIODevice::ReadWrite )
     {
         kdWarning(7042) << "Unsupported mode " << mode << endl;
         return false;
@@ -93,9 +93,9 @@ bool KAr::openArchive( int mode )
 
     char *ar_longnames = 0;
     while (! dev->atEnd()) {
-        QCString ar_header;
+        Q3CString ar_header;
         ar_header.resize(61);
-        QCString name;
+        Q3CString name;
         int date, uid, gid, mode, size;
 
         dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundary

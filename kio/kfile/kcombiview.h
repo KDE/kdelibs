@@ -30,7 +30,7 @@
 
 class KFileIconView;
 class QEvent;
-class QIconViewItem;
+class Q3IconViewItem;
 
 /**
  * This view is designed to combine two KFileViews into one widget, to show

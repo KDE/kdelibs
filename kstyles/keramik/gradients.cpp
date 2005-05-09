@@ -27,7 +27,7 @@
 #include "colorutil.h"
 
 #include <qimage.h>
-#include <qintcache.h>
+#include <q3intcache.h>
 #include <kimageeffect.h>
 
 namespace
@@ -65,7 +65,7 @@ namespace
 	};
 	
 	
-	QIntCache<GradientCacheEntry> cache(65636, 17);
+	Q3IntCache<GradientCacheEntry> cache(65636, 17);
 	
 }
 

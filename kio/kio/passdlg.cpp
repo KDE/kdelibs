@@ -20,11 +20,11 @@
 
 #include <qapplication.h>
 #include <qcheckbox.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qsimplerichtext.h>
-#include <qstylesheet.h>
+#include <q3simplerichtext.h>
+#include <q3stylesheet.h>
 
 #include <kcombobox.h>
 #include <kconfig.h>
@@ -45,7 +45,7 @@ struct PasswordDialog::PasswordDialogPrivate
     QCheckBox* keepCheckBox;
     QMap<QString,QString> knownLogins;
     KComboBox* userEditCombo;
-    QHBox* userNameHBox;
+    Q3HBox* userNameHBox;
 
     bool keep;
     short unsigned int nRow;
@@ -92,7 +92,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         d->layout->addWidget( lbl, 0, 0, Qt::AlignLeft );
     }
     d->prompt = new QLabel( main );
-    d->prompt->setAlignment( Qt::AlignLeft|Qt::AlignVCenter|Qt::WordBreak );
+    d->prompt->setAlignment( Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap );
     d->layout->addWidget( d->prompt, 0, 2, Qt::AlignLeft );
     if ( prompt.isEmpty() )
         setPrompt( i18n( "You need to supply a username and a password" ) );
@@ -108,7 +108,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     d->userNameLabel = new QLabel( i18n("&Username:"), main );
     d->userNameLabel->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     d->userNameLabel->setFixedSize( d->userNameLabel->sizeHint() );
-    d->userNameHBox = new QHBox( main );
+    d->userNameHBox = new Q3HBox( main );
 
     d->userEdit = new KLineEdit( d->userNameHBox );
     QSize s = d->userEdit->sizeHint();
@@ -125,7 +125,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     lbl = new QLabel( i18n("&Password:"), main );
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
-    QHBox* hbox = new QHBox( main );
+    Q3HBox* hbox = new Q3HBox( main );
     d->passEdit = new KLineEdit( hbox );
     if ( cfg->readEntry("EchoMode", "OneStar") == "NoEcho" )
         d->passEdit->setEchoMode( QLineEdit::NoEcho );
@@ -143,7 +143,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         // Row 7: Add spacer
         d->layout->addRowSpacing( 7, 4 );
         // Row 8: Keep Password
-        hbox = new QHBox( main );
+        hbox = new Q3HBox( main );
         d->keepCheckBox = new QCheckBox( i18n("&Keep password"), hbox );
         d->keepCheckBox->setFixedSize( d->keepCheckBox->sizeHint() );
         d->keep = cfg->readBoolEntry("Keep", false );
@@ -197,7 +197,7 @@ static void calculateLabelSize(QLabel *label)
    int pref_height = 0;
    // Calculate a proper size for the text.
    {
-       QSimpleRichText rt(qt_text, label->font());
+       Q3SimpleRichText rt(qt_text, label->font());
        QRect d = KGlobalSettings::desktopGeometry(label->topLevelWidget());
 
        pref_width = d.width() / 4;
@@ -243,7 +243,7 @@ void PasswordDialog::addCommentLine( const QString& label,
     lbl->setFixedSize( lbl->sizeHint() );
     d->layout->addWidget( lbl, d->nRow+2, 0, Qt::AlignLeft );
     lbl = new QLabel( comment, main);
-    lbl->setAlignment( Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak );
+    lbl->setAlignment( Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap );
     calculateLabelSize(lbl);
     d->layout->addWidget( lbl, d->nRow+2, 2, Qt::AlignLeft );
     d->layout->addRowSpacing( 3, 10 ); // Add a spacer
@@ -263,7 +263,7 @@ static QString qrichtextify( const QString& text )
   QStringList lines = QStringList::split('\n', text);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
-    *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
+    *it = Q3StyleSheet::convertFromPlainText( *it, Q3StyleSheetItem::WhiteSpaceNormal );
   }
 
   return lines.join(QString::null);

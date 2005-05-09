@@ -69,7 +69,7 @@ static void ldif_out( QTextStream &t, QString formatStr, QString value )
   if ( value.isEmpty() )
     return;
 
-  QCString txt = LDIF::assembleLine( formatStr, value, 72 );
+  Q3CString txt = LDIF::assembleLine( formatStr, value, 72 );
 
   // write the string
   t << QString::fromUtf8(txt) << "\n";
@@ -80,7 +80,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   if ( addr.isEmpty() )
       return false;
 
-  QTextStream t( str, IO_WriteOnly|IO_Append );
+  QTextStream t( str, QIODevice::WriteOnly|QIODevice::Append );
   t.setEncoding( QTextStream::UnicodeUTF8 );
 
   const Address homeAddr = addr.address( Address::Home );
@@ -548,7 +548,7 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
   }
 
   // generate the new string and split it to 72 chars/line
-  QCString txt = (formatStr.arg(value)).utf8();
+  Q3CString txt = (formatStr.arg(value)).utf8();
 
   if (allowEncode) {
     len = txt.length();

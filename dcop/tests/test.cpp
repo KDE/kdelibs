@@ -16,7 +16,7 @@ using namespace std;
 
 void batch()
 {
-	QTextStream output(  fopen( "batch.returns", "w" ) , IO_WriteOnly );	
+	QTextStream output(  fopen( "batch.returns", "w" ) , QIODevice::WriteOnly );	
 	Test* object = new Test;
 #include "batch.generated"
 }

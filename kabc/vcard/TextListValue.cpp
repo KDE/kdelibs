@@ -39,7 +39,7 @@ TextListValue::TextListValue(const TextListValue & x)
 {
 }
 
-TextListValue::TextListValue(const QCString & s)
+TextListValue::TextListValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -54,7 +54,7 @@ TextListValue::operator = (TextListValue & x)
 }
 
 	TextListValue &
-TextListValue::operator = (const QCString & s)
+TextListValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;
@@ -98,7 +98,7 @@ TextListValue::numValues()
 	return valueList_.count();
 }
 
-	QCString
+	Q3CString
 TextListValue::value(unsigned int i)
 {
 	parse();

@@ -152,7 +152,7 @@ static struct {
   int (*launcher_func)(int);
   bool debug_wait;
   int lt_dlopen_flag;
-  QCString errorMsg;
+  Q3CString errorMsg;
   bool launcher_ok;
   bool suicide;
 } d;
@@ -237,7 +237,7 @@ static void close_fds()
 
 static void exitWithErrorMsg(const QString &errorMsg)
 {
-   QCString utf8ErrorMsg = errorMsg.utf8();
+   Q3CString utf8ErrorMsg = errorMsg.utf8();
    d.result = 3; // Error with msg
    write(d.fd[1], &d.result, 1);
    int l = utf8ErrorMsg.length();
@@ -351,7 +351,7 @@ static void complete_startup_info( KStartupInfoId& id, pid_t pid )
 }
 #endif
 
-QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs, bool avoid_loops )
+Q3CString execpath_avoid_loops( const Q3CString& exec, int envc, const char* envs, bool avoid_loops )
 {
      QStringList paths;
      if( envc > 0 ) /* use the passed environment */
@@ -362,7 +362,7 @@ QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs,
      }
      else
          paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
-     QCString execpath = QFile::encodeName(
+     Q3CString execpath = QFile::encodeName(
          s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
      if( avoid_loops && !execpath.isEmpty())
      {
@@ -389,9 +389,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
                     const char* startup_id_str = "0" )
 {
   int launcher = 0;
-  QCString lib;
-  QCString name;
-  QCString exec;
+  Q3CString lib;
+  Q3CString name;
+  Q3CString exec;
 
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
@@ -405,8 +405,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
      launcher = 1;
   }
 
-  QCString libpath;
-  QCString execpath;
+  Q3CString libpath;
+  Q3CString execpath;
   if (_name[0] != '/')
   {
      /* Relative name without '.la' */
@@ -477,7 +477,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if( reset_env ) // KWRAPPER/SHELL
      {
 
-         QStrList unset_envs;
+         Q3StrList unset_envs;
          for( int tmp_env_count = 0;
               environ[tmp_env_count];
               tmp_env_count++)
@@ -486,7 +486,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
               it.current() != NULL ;
               ++it )
          {
-             QCString tmp( it.current());
+             Q3CString tmp( it.current());
              int pos = tmp.find( '=' );
              if( pos >= 0 )
                  unsetenv( tmp.left( pos ));
@@ -509,7 +509,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #endif
      {
        int r;
-       QCString procTitle;
+       Q3CString procTitle;
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
        d.argv[0] = (char *) _name;
        for (int i = 1;  i < argc; i++)
@@ -653,7 +653,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
              d.n = read(d.fd[0], &l, sizeof(int));
              if (d.n == sizeof(int))
              {
-                QCString tmp;
+                Q3CString tmp;
                 tmp.resize(l+1);
                 d.n = read(d.fd[0], tmp.data(), l);
                 tmp[l] = 0;
@@ -789,8 +789,8 @@ static void init_kdeinit_socket()
   chdir(home_dir);
 
   {
-     QCString path = home_dir;
-     QCString readOnly = getenv("KDE_HOME_READONLY");
+     Q3CString path = home_dir;
+     Q3CString readOnly = getenv("KDE_HOME_READONLY");
      if (access(path.data(), R_OK|W_OK))
      {
        if (errno == ENOENT)
@@ -1177,8 +1177,8 @@ static void handle_launcher_request(int sock = -1)
      }
 
       // support for the old a bit broken way of setting DISPLAY for multihead
-      QCString olddisplay = getenv(DISPLAY);
-      QCString kdedisplay = getenv("KDE_DISPLAY");
+      Q3CString olddisplay = getenv(DISPLAY);
+      Q3CString kdedisplay = getenv("KDE_DISPLAY");
       bool reset_display = (! olddisplay.isEmpty() &&
                             ! kdedisplay.isEmpty() &&
                             olddisplay != kdedisplay);
@@ -1419,7 +1419,7 @@ static void kdeinit_library_path()
    QStringList ld_library_path =
      QStringList::split(':', QFile::decodeName(getenv("LD_LIBRARY_PATH")));
 
-   QCString extra_path;
+   Q3CString extra_path;
    QStringList candidates = s_instance->dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
@@ -1441,7 +1441,7 @@ static void kdeinit_library_path()
       if ((d == "/lib") || (d == "/usr/lib"))
          continue;
 
-      QCString dir = QFile::encodeName(d);
+      Q3CString dir = QFile::encodeName(d);
 
       if (access(dir, R_OK))
           continue;
@@ -1459,7 +1459,7 @@ static void kdeinit_library_path()
    if (!extra_path.isEmpty())
       lt_dlsetsearchpath(extra_path.data());
 
-   QCString display = getenv(DISPLAY);
+   Q3CString display = getenv(DISPLAY);
    if (display.isEmpty())
    {
      fprintf(stderr, "kdeinit: Aborting. $"DISPLAY" is not set.\n");
@@ -1469,7 +1469,7 @@ static void kdeinit_library_path()
    if((i = display.findRev('.')) > display.findRev(':') && i >= 0)
      display.truncate(i);
 
-   QCString socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(display), s_instance));
+   Q3CString socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(display), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit: Aborting. Socket name will be too long:\n");

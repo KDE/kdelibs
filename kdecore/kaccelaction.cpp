@@ -23,7 +23,7 @@
 #include "kaccelaction.h"
 #include "kaccelbase.h"   // for KAccelBase::slotRemoveAction() & emitSignal()
 
-#include <qkeycode.h>
+#include <qnamespace.h>
 
 #include <kconfig.h>
 #include "kckey.h"

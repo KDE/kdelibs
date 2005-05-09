@@ -24,7 +24,7 @@
 #ifndef  ENTITY_H
 #define  ENTITY_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <kdelibs_export.h>
 
 namespace VCARD
@@ -36,19 +36,19 @@ class KVCARD_EXPORT Entity
 		
 		Entity();
 		Entity(const Entity & e);
-		Entity(const QCString & s);
+		Entity(const Q3CString & s);
 		
 		virtual Entity & operator = (const Entity & e);
-		virtual Entity & operator = (const QCString & s);
+		virtual Entity & operator = (const Q3CString & s);
 		
 		virtual bool operator == (Entity & e);
 		virtual bool operator != (Entity & e);
-		virtual bool operator == (const QCString & s);
-		virtual bool operator != (const QCString & s);
+		virtual bool operator == (const Q3CString & s);
+		virtual bool operator != (const Q3CString & s);
 		
 		virtual ~Entity();
 		
-		QCString asString();
+		Q3CString asString();
 		
 		virtual void parse();
 		virtual void assemble();
@@ -58,7 +58,7 @@ class KVCARD_EXPORT Entity
 	
 	protected:
 		
-		QCString strRep_;
+		Q3CString strRep_;
 		bool parsed_;
 		bool assembled_;
 };

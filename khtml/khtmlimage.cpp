@@ -26,7 +26,7 @@
 #include "rendering/render_image.h"
 #include "misc/loader.h"
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qtimer.h>
 
 #include <kio/job.h>
@@ -65,7 +65,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     KHTMLPart* parentPart = ::qt_cast<KHTMLPart *>( parent );
     setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
-    QVBox *box = new QVBox( parentWidget, widgetName );
+    Q3VBox *box = new Q3VBox( parentWidget, widgetName );
 
     m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", prof );
     m_khtml->setAutoloadImages( true );

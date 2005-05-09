@@ -26,7 +26,7 @@
 #define KSOCKETADDRESS_H
 
 #include <qstring.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 

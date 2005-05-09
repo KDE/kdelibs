@@ -24,8 +24,8 @@
 #include "kprintdialogpage.h"
 
 class QComboBox;
-class QButtonGroup;
-class QGroupBox;
+class Q3ButtonGroup;
+class Q3GroupBox;
 class QLabel;
 
 class KDEPRINT_EXPORT KPGeneralPage : public KPrintDialogPage
@@ -49,8 +49,8 @@ protected slots:
 protected:
 	QComboBox	*m_pagesize, *m_papertype, *m_inputslot;
 	QComboBox	*m_startbanner, *m_endbanner;
-	QButtonGroup	*m_orientbox, *m_duplexbox, *m_nupbox;
-	QGroupBox	*m_bannerbox;
+	Q3ButtonGroup	*m_orientbox, *m_duplexbox, *m_nupbox;
+	Q3GroupBox	*m_bannerbox;
 	QLabel		*m_orientpix, *m_duplexpix, *m_nuppix;
 };
 

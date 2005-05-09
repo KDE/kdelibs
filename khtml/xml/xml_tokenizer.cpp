@@ -507,7 +507,7 @@ void XMLTokenizer::finish()
         // Parsing was successful. Now locate all html <script> tags in the document and execute them
         // one by one
         addScripts(m_doc->document());
-        m_scriptsIt = new QPtrListIterator<HTMLScriptElementImpl>(m_scripts);
+        m_scriptsIt = new Q3PtrListIterator<HTMLScriptElementImpl>(m_scripts);
         executeScripts();
     }
 

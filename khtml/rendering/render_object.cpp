@@ -631,15 +631,15 @@ bool RenderObject::sizesToMaxWidth() const
 }
 
 // from Mozilla's nsCSSColorUtils.cpp
-static int brightness(int red, int green, int blue)
+static int brightness(int Qt::red, int Qt::green, int Qt::blue)
 {
 
-  int intensity = (red + green + blue) / 3;
+  int intensity = (Qt::red + Qt::green + Qt::blue) / 3;
 
   int luminosity =
-    ((RED_LUMINOSITY * red) / 100) +
-    ((GREEN_LUMINOSITY * green) / 100) +
-    ((BLUE_LUMINOSITY * blue) / 100);
+    ((RED_LUMINOSITY * Qt::red) / 100) +
+    ((GREEN_LUMINOSITY * Qt::green) / 100) +
+    ((BLUE_LUMINOSITY * Qt::blue) / 100);
 
   return ((intensity * INTENSITY_FACTOR) +
           (luminosity * LUMINOSITY_FACTOR)) / 100;
@@ -647,9 +647,9 @@ static int brightness(int red, int green, int blue)
 
 static void calc3DColor(QColor &color, bool darken)
 {
-  int rb = color.red();
-  int gb = color.green();
-  int bb = color.blue();
+  int rb = color.Qt::red();
+  int gb = color.Qt::green();
+  int bb = color.Qt::blue();
 
   int brightness_ = brightness(rb,gb,bb);
 
@@ -881,7 +881,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             p->drawRect(x1,y1,x2-x1,y2-y1);
             return;
         }
-        QPointArray quad(4);
+        Q3PointArray quad(4);
         switch(s) {
         case BSTop:
             quad.setPoints(4,
@@ -1066,7 +1066,7 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, 
 QString RenderObject::information() const
 {
     QString str;
-    QTextStream ts( &str, IO_WriteOnly );
+    QTextStream ts( &str, QIODevice::WriteOnly );
     ts << renderName()
         << "(" << (style() ? style()->refCount() : 0) << ")"
        << ": " << (void*)this << "  ";
@@ -1920,7 +1920,7 @@ int RenderObject::maximalOutlineSize(PaintAction p) const
     return static_cast<RenderCanvas*>(document()->renderer())->maximalOutlineSize();
 }
 
-void RenderObject::collectBorders(QValueList<CollapsedBorderValue>& borderStyles)
+void RenderObject::collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles)
 {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
         curr->collectBorders(borderStyles);
@@ -2090,7 +2090,7 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
 
 CounterNode* RenderObject::lookupCounter(const QString& counter) const
 {
-    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
     if (counters)
         return counters->find(counter);
     else
@@ -2099,10 +2099,10 @@ CounterNode* RenderObject::lookupCounter(const QString& counter) const
 
 void RenderObject::detachCounters()
 {
-    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
     if (!counters) return;
 
-    QDictIterator<khtml::CounterNode> i(*counters);
+    Q3DictIterator<khtml::CounterNode> i(*counters);
 
     while (i.current()) {
         (*i)->remove();
@@ -2114,10 +2114,10 @@ void RenderObject::detachCounters()
 
 void RenderObject::insertCounter(const QString& counter, CounterNode* val)
 {
-    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
 
     if (!counters) {
-        counters = new QDict<khtml::CounterNode>(11);
+        counters = new Q3Dict<khtml::CounterNode>(11);
         document()->setCounters(this, counters);
     }
 

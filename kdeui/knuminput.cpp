@@ -108,11 +108,11 @@ void KNumInput::setLabel(const QString & label, int a)
     else {
         if (m_label) m_label->setText(label);
         else m_label = new QLabel(label, this, "KNumInput::QLabel");
-        m_label->setAlignment((a & (~(AlignTop|AlignBottom|AlignVCenter)))
-                              | AlignVCenter);
+        m_label->setAlignment((a & (~(Qt::AlignTop|Qt::AlignBottom|Qt::AlignVCenter)))
+                              | Qt::AlignVCenter);
         // if no vertical alignment set, use Top alignment
-        if(!(a & (AlignTop|AlignBottom|AlignVCenter)))
-           a |= AlignTop;
+        if(!(a & (Qt::AlignTop|Qt::AlignBottom|Qt::AlignVCenter)))
+           a |= Qt::AlignTop;
         m_alignment = a;
     }
 
@@ -133,7 +133,7 @@ void KNumInput::layout(bool deep)
     // label sizeHint
     m_sizeLabel = (m_label ? m_label->sizeHint() : QSize(0,0));
 
-    if(m_label && (m_alignment & AlignVCenter))
+    if(m_label && (m_alignment & Qt::AlignVCenter))
         m_colw1 = m_sizeLabel.width() + 4;
     else
         m_colw1 = 0;
@@ -204,7 +204,7 @@ void KNumInput::setSteps(int minor, int major)
 KIntSpinBox::KIntSpinBox(QWidget *parent, const char *name)
     : QSpinBox(0, 99, 1, parent, name)
 {
-    editor()->setAlignment(AlignRight);
+    editor()->setAlignment(Qt::AlignRight);
     val_base = 10;
     setValue(0);
 }
@@ -217,7 +217,7 @@ KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
                          QWidget* parent, const char* name)
     : QSpinBox(lower, upper, step, parent, name)
 {
-    editor()->setAlignment(AlignRight);
+    editor()->setAlignment(Qt::AlignRight);
     val_base = base;
     setValue(value);
 }
@@ -339,8 +339,8 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 	    m_slider->setRange(lower, upper);
 	else {
 	    m_slider = new QSlider(lower, upper, step, m_spin->value(),
-				   QSlider::Horizontal, this);
-	    m_slider->setTickmarks(QSlider::Below);
+				   Qt::Horizontal, this);
+	    m_slider->setTickmarks(QSlider::TicksBelow);
 	    connect(m_slider, SIGNAL(valueChanged(int)),
 		    m_spin, SLOT(setValue(int)));
 	}
@@ -422,7 +422,7 @@ QSize KIntNumInput::minimumSizeHint() const
     h = 2 + QMAX(m_sizeSpin.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
-    if(m_label && (m_alignment & (AlignBottom|AlignTop)))
+    if(m_label && (m_alignment & (Qt::AlignBottom|Qt::AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
         // label is in the same row as the other widgets
@@ -431,7 +431,7 @@ QSize KIntNumInput::minimumSizeHint() const
     w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
-    if(m_alignment & (AlignTop|AlignBottom))
+    if(m_alignment & (Qt::AlignTop|Qt::AlignBottom))
         w = QMAX(w, m_sizeLabel.width() + 4);
 
     return QSize(w, h);
@@ -451,12 +451,12 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
     int w = m_colw1;
     int h = 0;
 
-    if(m_label && (m_alignment & AlignTop)) {
+    if(m_label && (m_alignment & Qt::AlignTop)) {
         m_label->setGeometry(0, 0, e->size().width(), m_sizeLabel.height());
         h += m_sizeLabel.height() + KDialog::spacingHint();
     }
 
-    if(m_label && (m_alignment & AlignVCenter))
+    if(m_label && (m_alignment & Qt::AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeSpin.height());
 
     if (qApp->reverseLayout())
@@ -477,7 +477,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
 
     h += m_sizeSpin.height() + 2;
 
-    if(m_label && (m_alignment & AlignBottom))
+    if(m_label && (m_alignment & Qt::AlignBottom))
         m_label->setGeometry(0, h, m_sizeLabel.width(), m_sizeLabel.height());
 }
 
@@ -663,7 +663,7 @@ QSize KDoubleNumInput::minimumSizeHint() const
     h = 2 + QMAX(m_sizeEdit.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
-    if(m_label && (m_alignment & (AlignBottom|AlignTop)))
+    if(m_label && (m_alignment & (Qt::AlignBottom|Qt::AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
         // label is in the same row as the other widgets
@@ -672,7 +672,7 @@ QSize KDoubleNumInput::minimumSizeHint() const
     w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
-    if(m_alignment & (AlignTop|AlignBottom))
+    if(m_alignment & (Qt::AlignTop|Qt::AlignBottom))
         w = QMAX(w, m_sizeLabel.width() + 4);
 
     return QSize(w, h);
@@ -683,12 +683,12 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     int w = m_colw1;
     int h = 0;
 
-    if(m_label && (m_alignment & AlignTop)) {
+    if(m_label && (m_alignment & Qt::AlignTop)) {
         m_label->setGeometry(0, 0, e->size().width(), m_sizeLabel.height());
         h += m_sizeLabel.height() + 4;
     }
 
-    if(m_label && (m_alignment & AlignVCenter))
+    if(m_label && (m_alignment & Qt::AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeEdit.height());
 
     if (qApp->reverseLayout())
@@ -713,7 +713,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
 
     h += m_sizeEdit.height() + 2;
 
-    if(m_label && (m_alignment & AlignBottom))
+    if(m_label && (m_alignment & Qt::AlignBottom))
         m_label->setGeometry(0, h, m_sizeLabel.width(), m_sizeLabel.height());
 }
 
@@ -767,8 +767,8 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
             m_slider->setValue(slvalue);
         } else {
             m_slider = new QSlider(slmin, slmax, slstep, slvalue,
-                                   QSlider::Horizontal, this);
-            m_slider->setTickmarks(QSlider::Below);
+                                   Qt::Horizontal, this);
+            m_slider->setTickmarks(QSlider::TicksBelow);
 	    // feedback line: when one moves, the other moves, too:
             connect(m_slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)) );

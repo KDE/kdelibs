@@ -21,7 +21,7 @@
 #ifndef __DOCKMAINWINDOW_H
 #define __DOCKMAINWINDOW_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kaction.h>
 
 #include <kdockwidget.h>
@@ -51,7 +51,7 @@ class KPARTS_EXPORT DockMainWindow : public KDockMainWindow, virtual public Part
   /**
    * Constructor, same signature as KDockMainWindow.
    */
-  DockMainWindow( QWidget* parent = 0L, const char *name = 0L, WFlags f = WDestructiveClose );
+  DockMainWindow( QWidget* parent = 0L, const char *name = 0L, Qt::WFlags f = Qt::WDestructiveClose );
   /**
    * Destructor.
    */

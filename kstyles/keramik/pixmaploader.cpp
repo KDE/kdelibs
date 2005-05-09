@@ -71,11 +71,11 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	//OK, now, fill it in, using the color..
 	Q_UINT32 r, g,b;
 	Q_UINT32 i = qGray(color.rgb());
-	r = (3*color.red()+i)>>2;
-	g = (3*color.green()+i)>>2;
-	b = (3*color.blue()+i)>>2;
+	r = (3*color.Qt::red()+i)>>2;
+	g = (3*color.Qt::green()+i)>>2;
+	b = (3*color.Qt::blue()+i)>>2;
 
-	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
+	Q_UINT32 br = back.Qt::red(), bg = back.Qt::green(), bb = back.Qt::blue();
 
 
 	if (edata->haveAlpha)
@@ -159,13 +159,13 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 
 	//OK, now, fill it in, using the color..
 	Q_UINT32 r, g,b;
-	r = color.red() + 2;
-	g = color.green() + 2;
-	b = color.blue() + 2;
+	r = color.Qt::red() + 2;
+	g = color.Qt::green() + 2;
+	b = color.Qt::blue() + 2;
 
 //	int i = qGray(color.rgb());
 
-	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
+	Q_UINT32 br = back.Qt::red(), bg = back.Qt::green(), bb = back.Qt::blue();
 
 	if (edata->haveAlpha)
 	{

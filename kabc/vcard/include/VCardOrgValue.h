@@ -24,8 +24,8 @@
 #ifndef  ORGVALUE_H
 #define  ORGVALUE_H
 
-#include <qcstring.h>
-#include <qstrlist.h>
+#include <q3cstring.h>
+#include <q3strlist.h>
 
 #include <VCardValue.h>
 
@@ -38,11 +38,11 @@ class KVCARD_EXPORT OrgValue : public Value
 #include "OrgValue-generated.h"
 	
 	unsigned int numValues();
-	QCString value(unsigned int);
+	Q3CString value(unsigned int);
 	
 	private:
 		
-		QStrList valueList_;
+		Q3StrList valueList_;
 };
 
 }

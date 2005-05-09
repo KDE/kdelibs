@@ -21,7 +21,7 @@
 
 #include "../interfaces/document.h"
 
-#include <qdict.h>
+#include <q3dict.h>
 
 /**
  * Some common stuff
@@ -181,7 +181,7 @@ class KateJScriptManager : public Kate::Command
     /**
      * we need to know somewhere which scripts are around
      */
-    QDict<KateJScriptManager::Script> m_scripts;
+    Q3Dict<KateJScriptManager::Script> m_scripts;
 };
 
 #endif

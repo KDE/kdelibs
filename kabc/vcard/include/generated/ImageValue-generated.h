@@ -3,13 +3,13 @@
 public:
 ImageValue();
 ImageValue(const ImageValue&);
-ImageValue(const QCString&);
+ImageValue(const Q3CString&);
 ImageValue & operator = (ImageValue&);
-ImageValue & operator = (const QCString&);
+ImageValue & operator = (const Q3CString&);
 bool operator ==(ImageValue&);
 bool operator !=(ImageValue& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {ImageValue a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {ImageValue a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~ImageValue();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

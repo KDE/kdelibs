@@ -280,7 +280,7 @@ void KConfigSkeleton::ItemInt64::setMaxValue(Q_INT64 v)
 
 KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &key,
                                      int &reference,
-                                     const QValueList<Choice> &choices,
+                                     const Q3ValueList<Choice> &choices,
                                      int defaultValue )
   : ItemInt( group, key, reference, defaultValue ), mChoices( choices )
 {
@@ -298,7 +298,7 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
     int i = 0;
     mReference = -1;
     QString tmp = config->readEntry( mKey ).lower();
-    for(QValueList<Choice>::ConstIterator it = mChoices.begin();
+    for(Q3ValueList<Choice>::ConstIterator it = mChoices.begin();
         it != mChoices.end(); ++it, ++i)
     {
       if ((*it).name.lower() == tmp)
@@ -329,7 +329,7 @@ void KConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
   }
 }
 
-QValueList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() const
+Q3ValueList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() const
 {
   return mChoices;
 }
@@ -476,20 +476,20 @@ void KConfigSkeleton::ItemLong::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemLong::property() const
 {
-  return QVariant((Q_LLONG) mReference);
+  return QVariant((Q_LONGLONG) mReference);
 }
 
 QVariant KConfigSkeleton::ItemLong::minValue() const
 {
   if (mHasMin)
-    return QVariant((Q_LLONG) mMin);
+    return QVariant((Q_LONGLONG) mMin);
   return QVariant();
 }
 
 QVariant KConfigSkeleton::ItemLong::maxValue() const
 {
   if (mHasMax)
-    return QVariant((Q_LLONG) mMax);
+    return QVariant((Q_LONGLONG) mMax);
   return QVariant();
 }
 
@@ -534,20 +534,20 @@ void KConfigSkeleton::ItemULong::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemULong::property() const
 {
-  return QVariant((Q_ULLONG) mReference);
+  return QVariant((Q_ULONGLONG) mReference);
 }
 
 QVariant KConfigSkeleton::ItemULong::minValue() const
 {
   if (mHasMin)
-    return QVariant((Q_ULLONG) mMin);
+    return QVariant((Q_ULONGLONG) mMin);
   return QVariant();
 }
 
 QVariant KConfigSkeleton::ItemULong::maxValue() const
 {
   if (mHasMax)
-    return QVariant((Q_ULLONG) mMax);
+    return QVariant((Q_ULONGLONG) mMax);
   return QVariant();
 }
 
@@ -848,9 +848,9 @@ void KConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
 
 
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &group, const QString &key,
-                                      QValueList<int> &reference,
-                                      const QValueList<int> &defaultValue )
-  : KConfigSkeletonGenericItem<QValueList<int> >( group, key, reference, defaultValue )
+                                      Q3ValueList<int> &reference,
+                                      const Q3ValueList<int> &defaultValue )
+  : KConfigSkeletonGenericItem<Q3ValueList<int> >( group, key, reference, defaultValue )
 {
 }
 
@@ -1184,8 +1184,8 @@ KConfigSkeleton::ItemStringList *KConfigSkeleton::addItemStringList( const QStri
   return item;
 }
 
-KConfigSkeleton::ItemIntList *KConfigSkeleton::addItemIntList( const QString &name, QValueList<int> &reference,
-                                      const QValueList<int> &defaultValue, const QString &key )
+KConfigSkeleton::ItemIntList *KConfigSkeleton::addItemIntList( const QString &name, Q3ValueList<int> &reference,
+                                      const Q3ValueList<int> &defaultValue, const QString &key )
 {
   KConfigSkeleton::ItemIntList *item;
   item = new KConfigSkeleton::ItemIntList( mCurrentGroup, key.isNull() ? name : key,

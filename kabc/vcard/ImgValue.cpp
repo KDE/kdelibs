@@ -37,7 +37,7 @@ ImgValue::ImgValue(const ImgValue & x)
 {
 }
 
-ImgValue::ImgValue(const QCString & s)
+ImgValue::ImgValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -52,7 +52,7 @@ ImgValue::operator = (ImgValue & x)
 }
 
 	ImgValue &
-ImgValue::operator = (const QCString & s)
+ImgValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;

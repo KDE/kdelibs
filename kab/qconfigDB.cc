@@ -40,7 +40,7 @@ extern "C" {
 
 #define KAB_KDEBUG_AREA 800
 
-static bool isComment(QCString line)
+static bool isComment(Q3CString line)
 {
   // ############################################################################
   line=line.stripWhiteSpace();
@@ -53,13 +53,13 @@ static bool isComment(QCString line)
   // ############################################################################
 }
 
-static void tokenize(list<QCString>& res, const QCString& text, char tr, bool strict=false)
+static void tokenize(list<Q3CString>& res, const Q3CString& text, char tr, bool strict=false)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "tokenize: called." << endl;
   int eins=0, zwei=0;
-  QCString teil;
+  Q3CString teil;
   // -----
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "tokenize: partening -->%" << text.data() << "<--." << endl;
   res.erase(res.begin(), res.end());
@@ -97,12 +97,12 @@ static void tokenize(list<QCString>& res, const QCString& text, char tr, bool st
 
 // QCString AuthorEmailAddress; // assign your email address to this string
 
-static QCString ReadLineFromStream(QTextStream& stream)
+static Q3CString ReadLineFromStream(QTextStream& stream)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "ReadLineFromStream:: reading line." << endl;
-  QCString line;
+  Q3CString line;
   // -----
   while(!stream.eof())
     {
@@ -194,9 +194,9 @@ KeyValueMap::fill(const QString& filename, bool force, bool relax)
   register bool GUARD; GUARD=false;
   // ###########################################################################
   QFile file(filename);
-  QCString line;
+  Q3CString line;
   // -----
-  if(file.open(IO_ReadOnly))
+  if(file.open(QIODevice::ReadOnly))
     {
       QTextStream stream(&file);
       // We read/write utf8 strings, so we don't want that QTextStream uses local8bit
@@ -248,7 +248,7 @@ KeyValueMap::save(const QString& filename, bool force)
 	  return false;
 	}
     }
-  if(file.open(IO_WriteOnly))
+  if(file.open(QIODevice::WriteOnly))
     {
       QTextStream stream(&file);
       stream.setEncoding(QTextStream::Latin1); // no conversion
@@ -293,7 +293,7 @@ KeyValueMap::save(QTextStream& file, int count)
 
 
 bool
-KeyValueMap::erase(const QCString& key)
+KeyValueMap::erase(const Q3CString& key)
 {
   // ###########################################################################
   bool rc=(data->erase(key)>0);
@@ -312,17 +312,17 @@ KeyValueMap::empty()
 
 bool
 KeyValueMap::parseComplexString
-(const QCString& orig,
+(const Q3CString& orig,
  int index, // first char to parse
- QCString& result, // string without leading and trailing ".."
+ Q3CString& result, // string without leading and trailing ".."
  int& noOfChars) // no of chars that represented the
  const           // complex string in the original
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   int first;
-  QCString temp(2*orig.length());
-  QCString mod;
+  Q3CString temp(2*orig.length());
+  Q3CString mod;
   int count=1;
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
     "KeyValueMap::parseComplexString: parsing the string -->"
@@ -412,8 +412,8 @@ KeyValueMap::parseComplexString
   return true;
 }
 
-QCString
-KeyValueMap::makeComplexString(const QCString& orig)
+Q3CString
+KeyValueMap::makeComplexString(const Q3CString& orig)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -421,7 +421,7 @@ KeyValueMap::makeComplexString(const QCString& orig)
       "KeyValueMap::makeComplexString: coding the string\n           -->"
 				  << orig <<
       "<--\n                                into a complex string.\n";
-  QCString temp(2*orig.length());
+  Q3CString temp(2*orig.length());
   unsigned int count;
   // -----
   temp+='"'; // opening bracket
@@ -466,7 +466,7 @@ KeyValueMap::makeComplexString(const QCString& orig)
 }
 
 bool
-KeyValueMap::getRaw(const QCString& key, QCString& value) const
+KeyValueMap::getRaw(const Q3CString& key, Q3CString& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -488,7 +488,7 @@ KeyValueMap::getRaw(const QCString& key, QCString& value) const
 }
 
 bool
-KeyValueMap::insertRaw(const QCString& key, const QCString& value, bool force)
+KeyValueMap::insertRaw(const Q3CString& key, const Q3CString& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -533,7 +533,7 @@ KeyValueMap::insertRaw(const QCString& key, const QCString& value, bool force)
 // ascii strings:
 
 bool
-KeyValueMap::insert(const QCString& key, const QCString& value, bool force)
+KeyValueMap::insert(const Q3CString& key, const Q3CString& value, bool force)
 {
     register bool GUARD; GUARD=false;
     // ###########################################################################
@@ -554,15 +554,15 @@ KeyValueMap::insert(const QCString& key, const QCString& value, bool force)
  */
 
 bool
-KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
+KeyValueMap::insertLine(Q3CString line, bool force, bool relax, bool encode)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
       "KeyValueMap::insertLine: inserting line -->"<<line<<"<--.\n";
   int index;
-  QCString key;
-  QCString value;
+  Q3CString key;
+  Q3CString value;
   // ----- is the line empty or does it contain only whitespaces?
   uint len = line.length();
   for(index=0; isspace(line[index]) && (unsigned)index<len; ++index);
@@ -609,14 +609,14 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
 }
 
 bool
-KeyValueMap::get(const QCString& key, QCString& value) const
+KeyValueMap::get(const Q3CString& key, Q3CString& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[string]: "
       "trying to get value for key \"" << key << "\" ... " << endl;
-  QCString raw;
-  QCString temp;
+  Q3CString raw;
+  Q3CString temp;
   // -----
   if(!getRaw(key, raw))
     {
@@ -649,11 +649,11 @@ KeyValueMap::get(const QCString& key, QCString& value) const
 // UNICODE strings:
 
 bool
-KeyValueMap::insert(const QCString& key, const QString& value, bool force)
+KeyValueMap::insert(const Q3CString& key, const QString& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  QCString v;
+  Q3CString v;
   // -----
   v=value.utf8();
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[QString]: trying to "
@@ -666,13 +666,13 @@ KeyValueMap::insert(const QCString& key, const QString& value, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, QString& value) const
+KeyValueMap::get(const Q3CString& key, QString& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QString]: trying to get "
       "a QString value for key " << key << endl;
-  QCString v;
+  Q3CString v;
   // ----- get string representation:
   if(!get(key, v))
     {
@@ -692,7 +692,7 @@ KeyValueMap::get(const QCString& key, QString& value) const
 // bool:
 
 bool
-KeyValueMap::insert(const QCString& key, const bool& value, bool force)
+KeyValueMap::insert(const Q3CString& key, const bool& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -707,13 +707,13 @@ KeyValueMap::insert(const QCString& key, const bool& value, bool force)
 
 
 bool
-KeyValueMap::get(const QCString& key, bool& value) const
+KeyValueMap::get(const Q3CString& key, bool& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[bool]: trying to get "
       "BOOL value for key " << key << endl;
-  QCString v;
+  Q3CString v;
   // ----- get string representation:
   if(!get(key, v))
     {
@@ -748,13 +748,13 @@ KeyValueMap::get(const QCString& key, bool& value) const
 // long:
 
 bool
-KeyValueMap::insert(const QCString& key, const long& value, bool force)
+KeyValueMap::insert(const Q3CString& key, const long& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[int]: trying to "
       "insert value \""<<value << "\" for key\n           -->"<<key<<"<--.\n";
-  QCString temp;
+  Q3CString temp;
   // -----
   temp.setNum(value);
   return insert(key, temp, force);
@@ -762,13 +762,13 @@ KeyValueMap::insert(const QCString& key, const long& value, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, long& value) const
+KeyValueMap::get(const Q3CString& key, long& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[int]: trying to get "
       "INTEGER value for key " << key << endl;
-  QCString v;
+  Q3CString v;
   bool ok;
   long temp;
   // -----
@@ -794,14 +794,14 @@ KeyValueMap::get(const QCString& key, long& value) const
 // long int lists:
 
 bool
-KeyValueMap::insert(const QCString& key, const list<long>& values, bool force)
+KeyValueMap::insert(const Q3CString& key, const list<long>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[long int list]: "
 	     "trying to insert long int list into map." << endl;
-  QCString temp;
-  QCString value;
+  Q3CString temp;
+  Q3CString value;
   list<long>::const_iterator pos;
   // -----
   for(pos=values.begin(); pos!=values.end(); pos++)
@@ -821,7 +821,7 @@ KeyValueMap::insert(const QCString& key, const list<long>& values, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, list<long>& values) const
+KeyValueMap::get(const Q3CString& key, list<long>& values) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -829,9 +829,9 @@ KeyValueMap::get(const QCString& key, list<long>& values) const
       "to decode int list for key " << key << endl;
   kdDebug(!values.empty(), KAB_KDEBUG_AREA) << "KeyValueMap::get[long int list]"
       ": attention - list should be empty but is not.\n";
-  QCString value;
-  list<QCString> tokens;
-  list<QCString>::iterator pos;
+  Q3CString value;
+  list<Q3CString> tokens;
+  list<Q3CString>::iterator pos;
   long temp;
   bool ok;
   // -----
@@ -869,14 +869,14 @@ KeyValueMap::get(const QCString& key, list<long>& values) const
 // int lists:
 
 bool
-KeyValueMap::insert(const QCString& key, const list<int>& values, bool force)
+KeyValueMap::insert(const Q3CString& key, const list<int>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[int list]: trying to "
 	     "insert int list into map." << endl;
-  QCString temp;
-  QCString value;
+  Q3CString temp;
+  Q3CString value;
   list<int>::const_iterator pos;
   // -----
   for(pos=values.begin(); pos!=values.end(); pos++)
@@ -896,7 +896,7 @@ KeyValueMap::insert(const QCString& key, const list<int>& values, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, list<int>& values) const
+KeyValueMap::get(const Q3CString& key, list<int>& values) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -904,9 +904,9 @@ KeyValueMap::get(const QCString& key, list<int>& values) const
       "decode int list for key " << key << endl;
   kdDebug(!values.empty(), KAB_KDEBUG_AREA) << "KeyValueMap::get[int list]: "
 	     "attention - list should be empty but is not.\n";
-  QCString value;
-  list<QCString> tokens;
-  list<QCString>::iterator pos;
+  Q3CString value;
+  list<Q3CString> tokens;
+  list<Q3CString>::iterator pos;
   int temp;
   bool ok;
   // -----
@@ -944,13 +944,13 @@ KeyValueMap::get(const QCString& key, list<int>& values) const
 // doubles:
 
 bool
-KeyValueMap::insert(const QCString& key, const double& value, bool force)
+KeyValueMap::insert(const Q3CString& key, const double& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA).form("KeyValueMap::insert[double]: trying to "
 				       "insert value \"%f\" for key\n           -->", value) << key << "<--.\n";
-  QCString temp;
+  Q3CString temp;
   // -----
   temp.setNum(value);
   return insert(key, temp, force);
@@ -958,13 +958,13 @@ KeyValueMap::insert(const QCString& key, const double& value, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, double& value) const
+KeyValueMap::get(const Q3CString& key, double& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[double]: trying to get "
       "FLOAT value for key " << key << endl;
-  QCString v;
+  Q3CString v;
   bool ok;
   double temp;
   // -----
@@ -991,7 +991,7 @@ KeyValueMap::get(const QCString& key, double& value) const
 // lists of strings:
 
 bool
-KeyValueMap::get(const QCString& key, list<QCString>& values) const
+KeyValueMap::get(const Q3CString& key, list<Q3CString>& values) const
 {
   register bool GUARD; GUARD=false;
   kdDebug(!values.empty(), KAB_KDEBUG_AREA) << "KeyValueMap::get[string list]: "
@@ -1000,7 +1000,7 @@ KeyValueMap::get(const QCString& key, list<QCString>& values) const
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[string list]: trying to "
       "decode string list for key " << key << endl;
-  QCString raw, part, value;
+  Q3CString raw, part, value;
   int first=1, second=1, i;
   // ----- get the string value as a whole:
   if(!getRaw(key, raw))
@@ -1068,15 +1068,15 @@ KeyValueMap::get(const QCString& key, list<QCString>& values) const
 }
 
 bool
-KeyValueMap::insert(const QCString& key, const list<QCString>& values, bool force)
+KeyValueMap::insert(const Q3CString& key, const list<Q3CString>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[string list]: "
 	     "coding string list." << endl;
-  QCString value="\"";
-  QCString temp;
-  list<QCString>::const_iterator pos;
+  Q3CString value="\"";
+  Q3CString temp;
+  list<Q3CString>::const_iterator pos;
   // ----- create coded string list:
   for(pos=values.begin();
       pos!=values.end();
@@ -1100,7 +1100,7 @@ KeyValueMap::insert(const QCString& key, const list<QCString>& values, bool forc
 // QStrList-s:
 
 bool
-KeyValueMap::get(const QCString& key, QStrList& values) const
+KeyValueMap::get(const Q3CString& key, Q3StrList& values) const
 {
   register bool GUARD; GUARD=false;
   kdDebug(!values.isEmpty(), KAB_KDEBUG_AREA) << "KeyValueMap::get[QStrList]: "
@@ -1109,7 +1109,7 @@ KeyValueMap::get(const QCString& key, QStrList& values) const
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QStrList]: trying to "
       "decode string list for key " << key << endl;
-  QCString raw, part, value;
+  Q3CString raw, part, value;
   int first=1, second=1, i;
   // ----- get the string value as a whole:
   if(!getRaw(key, raw))
@@ -1176,19 +1176,19 @@ KeyValueMap::get(const QCString& key, QStrList& values) const
 }
 
 bool
-KeyValueMap::insert(const QCString& key, const QStrList& values, bool force)
+KeyValueMap::insert(const Q3CString& key, const Q3StrList& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	     "KeyValueMap::insert[QStrList]: coding string list." << endl;
-  QCString value="\"";
-  QCString temp;
+  Q3CString value="\"";
+  Q3CString temp;
   unsigned int count;
   // ----- create coded string list:
   for(count=0; count<values.count(); ++count)
     { // create strings like "abc\efgh\eijk":
-      temp=makeComplexString(((QStrList)values).at(count));
+      temp=makeComplexString(((Q3StrList)values).at(count));
       temp.remove(0, 1); // remove the leading "\""
       temp.remove(temp.length()-1, 1); // the trailing "\""
       value+=temp;
@@ -1207,7 +1207,7 @@ KeyValueMap::insert(const QCString& key, const QStrList& values, bool force)
 // QStringList-s:
 
 bool
-KeyValueMap::get(const QCString& key, QStringList& values) const
+KeyValueMap::get(const Q3CString& key, QStringList& values) const
 {
   register bool GUARD; GUARD=false;
   kdDebug(!values.isEmpty(), KAB_KDEBUG_AREA) << "KeyValueMap::get"
@@ -1218,7 +1218,7 @@ KeyValueMap::get(const QCString& key, QStringList& values) const
      This list is retrieved and converted back to Unicode strings. */
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[QStringList]: trying to "
       "decode QStringList for key " << key << endl;
-  QStrList temp;
+  Q3StrList temp;
   unsigned int count;
   // ----- get the plain C strings:
   if(!get(key, temp))
@@ -1240,14 +1240,14 @@ KeyValueMap::get(const QCString& key, QStringList& values) const
 }
 
 bool
-KeyValueMap::insert(const QCString& key, const QStringList& values, bool force)
+KeyValueMap::insert(const Q3CString& key, const QStringList& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	     "KeyValueMap::insert[QStringList]: coding QStringList." << endl;
   // The method simply creates a list of utf8-coded strings and inserts it.
-  QStrList utf8strings;
+  Q3StrList utf8strings;
   unsigned int count;
   // ----- create QCString list:
   for(count=0; count<values.count(); ++count)
@@ -1263,15 +1263,15 @@ KeyValueMap::insert(const QCString& key, const QStringList& values, bool force)
 // lists of doubles:
 
 bool
-KeyValueMap::insert(const QCString& key, const list<double>& values, bool force)
+KeyValueMap::insert(const Q3CString& key, const list<double>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[double list]: trying "
 	     "to insert double list into map." << endl;
-  QCString buffer;
+  Q3CString buffer;
   // QCString value(30*values.size()); // not usable with Qt 2
-  QCString value; // WORK_TO_DO: how to reserve enough space to avoid growing?
+  Q3CString value; // WORK_TO_DO: how to reserve enough space to avoid growing?
   list<double>::const_iterator pos;
   // -----
   for(pos=values.begin(); pos!=values.end(); pos++)
@@ -1291,7 +1291,7 @@ KeyValueMap::insert(const QCString& key, const list<double>& values, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, list<double>& values) const
+KeyValueMap::get(const Q3CString& key, list<double>& values) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1299,9 +1299,9 @@ KeyValueMap::get(const QCString& key, list<double>& values) const
       "decode double list for key " << key << endl;
   kdDebug(!values.empty(), KAB_KDEBUG_AREA) << "KeyValueMap::get[double list]: "
       "attention - list should be empty but is not." << endl;
-  QCString value;
-  list<QCString> tokens;
-  list<QCString>::iterator pos;
+  Q3CString value;
+  list<Q3CString> tokens;
+  list<Q3CString>::iterator pos;
   double temp;
   bool ok;
   // -----
@@ -1334,7 +1334,7 @@ KeyValueMap::get(const QCString& key, list<double>& values) const
 // QDates:
 
 bool
-KeyValueMap::insert(const QCString& key, const QDate& value, bool force)
+KeyValueMap::insert(const Q3CString& key, const QDate& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1358,7 +1358,7 @@ KeyValueMap::insert(const QCString& key, const QDate& value, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, QDate& date) const
+KeyValueMap::get(const Q3CString& key, QDate& date) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1418,7 +1418,7 @@ Section::Section(const KeyValueMap& contents)
 }
 
 bool
-Section::add(const QCString& name)
+Section::add(const Q3CString& name)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1453,7 +1453,7 @@ Section::add(const QCString& name)
 }
 
 bool
-Section::add(const QCString& name, Section* section)
+Section::add(const Q3CString& name, Section* section)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1471,7 +1471,7 @@ Section::add(const QCString& name, Section* section)
 }
 
 bool
-Section::find(const QCString& name, StringSectionMap::iterator& result)
+Section::find(const Q3CString& name, StringSectionMap::iterator& result)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1493,7 +1493,7 @@ Section::find(const QCString& name, StringSectionMap::iterator& result)
 }
 
 bool
-Section::remove(const QCString& name)
+Section::remove(const Q3CString& name)
 {
   // ###########################################################################
   StringSectionMap::iterator pos;
@@ -1509,7 +1509,7 @@ Section::remove(const QCString& name)
 }
 
 bool
-Section::find(const QCString& name, Section*& section)
+Section::find(const Q3CString& name, Section*& section)
 {
   // ###########################################################################
   StringSectionMap::iterator pos;
@@ -1595,8 +1595,8 @@ Section::readSection(QTextStream& file, bool finish)
   register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "Section::readSection: reading section." << endl;
-  QCString line;
-  QCString name;
+  Q3CString line;
+  Q3CString name;
   Section* temp;
   // -----
   for(;;)
@@ -1659,7 +1659,7 @@ Section::readSection(QTextStream& file, bool finish)
 }
 
 bool
-Section::isBeginOfSection(QCString line)
+Section::isBeginOfSection(Q3CString line)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1685,7 +1685,7 @@ Section::isBeginOfSection(QCString line)
 }
 
 bool
-Section::isEndOfSection(QCString line)
+Section::isEndOfSection(Q3CString line)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
@@ -1693,7 +1693,7 @@ Section::isEndOfSection(QCString line)
 				  << line <<" the end of"
 	     " a section?" << endl;
   int first=1, second;
-  QCString temp;
+  Q3CString temp;
   // -----
   line=line.simplifyWhiteSpace();
   if(line.isEmpty() || line.length()<2)
@@ -1725,13 +1725,13 @@ Section::isEndOfSection(QCString line)
   // ###########################################################################
 }
 
-QCString
-Section::nameOfSection(const QCString& line)
+Q3CString
+Section::nameOfSection(const Q3CString& line)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
   int first=1, second;
-  QCString temp;
+  Q3CString temp;
   // -----
   temp=line.simplifyWhiteSpace();
   if(temp.isEmpty() || temp.length()<=2)
@@ -1847,13 +1847,13 @@ bool QConfigDB::invariant()
 }
 
 bool
-QConfigDB::get(const list<QCString>& key, KeyValueMap*& map)
+QConfigDB::get(const list<Q3CString>& key, KeyValueMap*& map)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::get: trying to get keys ... " << endl;
   Section* section=&top;
-  list<QCString>::const_iterator pos;
+  list<Q3CString>::const_iterator pos;
   // -----
   if(key.empty())
     {
@@ -1890,12 +1890,12 @@ QConfigDB::get()
 }
 
 bool
-QConfigDB::createSection(const list<QCString>& key)
+QConfigDB::createSection(const list<Q3CString>& key)
 {
   // ############################################################################
   Section* section=&top;
   unsigned int index;
-  list<QCString>::const_iterator pos;
+  list<Q3CString>::const_iterator pos;
   Section* thenewone;
   bool rc;
   // -----
@@ -1942,7 +1942,7 @@ QConfigDB::empty()
 }
 
 bool
-QConfigDB::createSection(const QCString& desc)
+QConfigDB::createSection(const Q3CString& desc)
 {
   // ############################################################################
   return createSection(stringToKeylist(desc));
@@ -1950,22 +1950,22 @@ QConfigDB::createSection(const QCString& desc)
 }
 
 bool
-QConfigDB::get(const QCString& key, KeyValueMap*& map)
+QConfigDB::get(const Q3CString& key, KeyValueMap*& map)
 {
   // ############################################################################
   return get(stringToKeylist(key), map);
   // ############################################################################
 }
 
-list<QCString>
-QConfigDB::stringToKeylist(const QCString& desc)
+list<Q3CString>
+QConfigDB::stringToKeylist(const Q3CString& desc)
 {
   register bool GUARD; GUARD=false;
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::stringToKeylist: parsing path " << desc << endl;
   // ############################################################################
-  list<QCString> key;
+  list<Q3CString> key;
   int first=0, second;
-  QCString temp;
+  Q3CString temp;
   // -----
   if(desc.isEmpty())
     {
@@ -2002,7 +2002,7 @@ QConfigDB::stringToKeylist(const QCString& desc)
 
 
 bool
-QConfigDB::get(const QCString& key, Section*& section)
+QConfigDB::get(const Q3CString& key, Section*& section)
 {
   // ############################################################################
   return get(stringToKeylist(key), section);
@@ -2010,13 +2010,13 @@ QConfigDB::get(const QCString& key, Section*& section)
 }
 
 bool
-QConfigDB::get(const list<QCString>& key, Section*& section)
+QConfigDB::get(const list<Q3CString>& key, Section*& section)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::get: searching section ... " << endl;
   Section* temp=&top;
-  list<QCString>::const_iterator pos;
+  list<Q3CString>::const_iterator pos;
   // -----
   for(pos=key.begin(); pos!=key.end(); pos++)
     {
@@ -2056,7 +2056,7 @@ QConfigDB::IsLocked(const QString& file)
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::IsLocked: the file\n"
 				      << file <<
 	  "\nhas a lockfile.\n";
-      if(f.open(IO_ReadOnly))
+      if(f.open(QIODevice::ReadOnly))
 	{
 	  QTextStream stream(&f);
 	  stream.setEncoding(QTextStream::Latin1); // no conversion
@@ -2121,7 +2121,7 @@ QConfigDB::lock(const QString& file)
 		 " another process." << endl;
       return false;
     } else {
-      if(f.open(IO_WriteOnly))
+      if(f.open(QIODevice::WriteOnly))
 	{
 	  QTextStream stream(&f);
 	  stream.setEncoding(QTextStream::Latin1); // no conversion
@@ -2473,7 +2473,7 @@ QConfigDB::save(const char* header, bool force)
   if(!isRO())
     {
       QFile file(filename);
-      if(file.open(IO_WriteOnly))
+      if(file.open(QIODevice::WriteOnly))
 	{
 	  QTextStream stream(&file);
 	  stream.setEncoding(QTextStream::Latin1); // no conversion
@@ -2526,7 +2526,7 @@ QConfigDB::load()
   // ############################################################################
   QFile file(filename);
   // -----
-  if(file.open(IO_ReadOnly))
+  if(file.open(QIODevice::ReadOnly))
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::load: file access OK." << endl;
       QTextStream stream(&file);

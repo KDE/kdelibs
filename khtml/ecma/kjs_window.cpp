@@ -21,9 +21,9 @@
  */
 #include "config.h"
 
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 #include <qtimer.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qapplication.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
@@ -41,7 +41,7 @@
 #include <kglobalsettings.h>
 #include <assert.h>
 #include <qstyle.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <kstringhandler.h>
 
 #include "kjs_proxy.h"
@@ -81,7 +81,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { Back, Forward, Go, Length };
   private:
-    QGuardedPtr<KHTMLPart> part;
+    QPointer<KHTMLPart> part;
   };
 
   class External : public ObjectImp {
@@ -94,7 +94,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { AddFavorite };
   private:
-    QGuardedPtr<KHTMLPart> part;
+    QPointer<KHTMLPart> part;
   };
 
   class FrameArray : public ObjectImp {
@@ -103,7 +103,7 @@ namespace KJS {
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
   private:
-    QGuardedPtr<KHTMLPart> part;
+    QPointer<KHTMLPart> part;
   };
 
 #ifdef Q_WS_QWS
@@ -115,7 +115,7 @@ namespace KJS {
 
   private:
     const Konqueror* konqueror;
-    QCString m_name;
+    Q3CString m_name;
   };
 #endif
 } // namespace KJS
@@ -168,7 +168,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
     return Number(sg.width());
   case ColorDepth:
   case PixelDepth: {
-    QPaintDeviceMetrics m(QApplication::desktop());
+    Q3PaintDeviceMetrics m(QApplication::desktop());
     return Number(m.depth());
   }
   case AvailLeft: {
@@ -445,7 +445,7 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
   bool ok;
   unsigned int i = p.toArrayIndex(&ok);
   if (ok) {
-    QPtrList<KParts::ReadOnlyPart> frames = part->frames();
+    Q3PtrList<KParts::ReadOnlyPart> frames = part->frames();
     unsigned int len = frames.count();
     if (i < len)
       return true;
@@ -524,7 +524,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
         return retrieve(part->opener());
     case Parent:
       return retrieve(part->parentPart() ? part->parentPart() : (KHTMLPart*)part);
-    case Top: {
+    case Qt::DockTop: {
       KHTMLPart *p = part;
       while (p->parentPart())
         p = p->parentPart();
@@ -772,7 +772,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   bool ok;
   unsigned int i = p.toArrayIndex(&ok);
   if (ok) {
-    QPtrList<KParts::ReadOnlyPart> frames = part->frames();
+    Q3PtrList<KParts::ReadOnlyPart> frames = part->frames();
     unsigned int len = frames.count();
     if (i < len) {
       KParts::ReadOnlyPart* frame = frames.at(i);
@@ -999,9 +999,9 @@ void Window::closeNow()
 void Window::afterScriptExecution()
 {
   DOM::DocumentImpl::updateDocumentsRendering();
-  QValueList<DelayedAction> delayedActions = m_delayed;
+  Q3ValueList<DelayedAction> delayedActions = m_delayed;
   m_delayed.clear();
-  QValueList<DelayedAction>::Iterator it = delayedActions.begin();
+  Q3ValueList<DelayedAction>::Iterator it = delayedActions.begin();
   for ( ; it != delayedActions.end() ; ++it )
   {
     switch ((*it).actionId) {
@@ -1145,7 +1145,7 @@ void Window::clear( ExecState *exec )
   deleteAllProperties( exec );
 
   // Break the dependency between the listeners and their object
-  QPtrDictIterator<JSEventListener> it(jsEventListeners);
+  Q3PtrDictIterator<JSEventListener> it(jsEventListeners);
   for (; it.current(); ++it)
     it.current()->clear();
   // Forget about the listeners (the DOM::NodeImpls will delete them)
@@ -1496,11 +1496,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     bool ok;
     if (args.size() >= 2)
       str2 = KInputDialog::getText(caption,
-                                   QStyleSheet::convertFromPlainText(str),
+                                   Q3StyleSheet::convertFromPlainText(str),
                                    args[1].toString(exec).qstring(), &ok, widget);
     else
       str2 = KInputDialog::getText(caption,
-                                   QStyleSheet::convertFromPlainText(str),
+                                   Q3StyleSheet::convertFromPlainText(str),
                                    QString::null, &ok, widget);
     if ( ok )
         return String(str2);
@@ -1860,7 +1860,7 @@ void WindowQObject::parentDestroyed()
 {
   killTimers();
 
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it)
     delete it.current();
   scheduledActions.clear();
@@ -1893,7 +1893,7 @@ int WindowQObject::installTimeout(const Value &func, List args, int t, bool sing
 
 void WindowQObject::clearTimeout(int timerId)
 {
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it) {
     ScheduledAction *action = it.current();
     if (action->timerId == timerId) {
@@ -1912,7 +1912,7 @@ bool WindowQObject::hasTimers() const
 
 void WindowQObject::mark()
 {
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it)
     it.current()->mark();
 }
@@ -1929,14 +1929,14 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
-  QPtrList<ScheduledAction> toExecute;
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrList<ScheduledAction> toExecute;
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it)
     if (currentAdjusted >= it.current()->nextTime)
       toExecute.append(it.current());
 
   // ### verify that the window can't be closed (and action deleted) during execution
-  it = QPtrListIterator<ScheduledAction>(toExecute);
+  it = Q3PtrListIterator<ScheduledAction>(toExecute);
   for (; it.current(); ++it) {
     ScheduledAction *action = it.current();
     if (!scheduledActions.containsRef(action)) // removed by clearTimeout()
@@ -1971,7 +1971,7 @@ void WindowQObject::setNextTimer()
   if (scheduledActions.isEmpty())
     return;
 
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   QTime nextTime = it.current()->nextTime;
   for (++it; it.current(); ++it)
     if (nextTime > it.current()->nextTime)
@@ -1997,7 +1997,7 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
   if (part.isNull())
     return Undefined();
 
-  QPtrList<KParts::ReadOnlyPart> frames = part->frames();
+  Q3PtrList<KParts::ReadOnlyPart> frames = part->frames();
   unsigned int len = frames.count();
   if (p == lengthPropertyName)
     return Number(len);
@@ -2464,7 +2464,7 @@ Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
   if ( !iface )
     return Undefined();
 
-  QCString n = m_name.data();
+  Q3CString n = m_name.data();
   n += "()";
   iface->callMethod( n.data(), QVariant() );
 

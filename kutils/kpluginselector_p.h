@@ -25,7 +25,7 @@
 #include <kdelibs_export.h>
 
 class KConfigGroup;
-class QListViewItem;
+class Q3ListViewItem;
 class KPluginInfo;
 class KCModuleInfo;
 
@@ -59,7 +59,7 @@ class KPluginSelectionWidget : public QWidget
          *
          * @internal
          */
-        KPluginSelectionWidget( const QValueList<KPluginInfo*> & plugininfos,
+        KPluginSelectionWidget( const Q3ValueList<KPluginInfo*> & plugininfos,
                 KPluginSelector * kps, QWidget * parent, const QString & catname,
                 const QString & category, KConfigGroup * config = 0,
                 const char * name = 0 );
@@ -103,7 +103,7 @@ class KPluginSelectionWidget : public QWidget
          * argument is the name of the parent component that needs to reload
          * its config
          */
-        void configCommitted( const QCString & instanceName );
+        void configCommitted( const Q3CString & instanceName );
 
     protected:
         /**
@@ -123,7 +123,7 @@ class KPluginSelectionWidget : public QWidget
          *
          * @internal
          */
-        void executed( QListViewItem * );
+        void executed( Q3ListViewItem * );
 
         /**
          * Called whenever the visible config page should change (plugin
@@ -177,7 +177,7 @@ class KPluginSelectionWidget : public QWidget
          */
         void embeddPluginKCMs( KPluginInfo *, bool );
 
-        void init( const QValueList<KPluginInfo*> & plugininfos, const QString & );
+        void init( const Q3ValueList<KPluginInfo*> & plugininfos, const QString & );
         void checkDependencies( const KPluginInfo * );
 
         struct KPluginSelectionWidgetPrivate;

@@ -129,9 +129,9 @@ void testLocalFile( const QString& filename )
 {
     QFile tmpFile( filename ); // Yeah, I know, security risk blah blah. This is a test prog!
 
-    if ( tmpFile.open( IO_ReadWrite ) )
+    if ( tmpFile.open( QIODevice::ReadWrite ) )
     {
-        QCString fname = QFile::encodeName( tmpFile.name() );
+        Q3CString fname = QFile::encodeName( tmpFile.name() );
         filter(fname, fname, KURIFilterData::LOCAL_FILE);
         tmpFile.close();
         tmpFile.remove();
@@ -284,13 +284,13 @@ int main(int argc, char **argv)
     setenv( "SOMEVAR", "/somevar", 0 );
     setenv( "ETC", "/etc", 0 );
 
-    QCString qtdir=getenv("QTDIR");
-    QCString home = getenv("HOME");
-    QCString kdehome = getenv("KDEHOME");
+    Q3CString qtdir=getenv("QTDIR");
+    Q3CString home = getenv("HOME");
+    Q3CString kdehome = getenv("KDEHOME");
 
     filter( "$SOMEVAR/kdelibs/kio", 0, KURIFilterData::ERROR ); // note: this dir doesn't exist...
     filter( "$ETC/passwd", "/etc/passwd", KURIFilterData::LOCAL_FILE );
-    filter( "$QTDIR/doc/html/functions.html#s", QCString("file://")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
+    filter( "$QTDIR/doc/html/functions.html#s", Q3CString("file://")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
     filter( "http://www.kde.org/$USER", "http://www.kde.org/$USER", KURIFilterData::NET_PROTOCOL ); // no expansion
 
     // Assume the default (~/.kde) if
@@ -335,7 +335,7 @@ int main(int argc, char **argv)
     // Search Engine tests
     char delimiter = KCmdLineArgs::parsedArgs()->isSet("s") ? ' ' : ':';
 
-    QCString sc;
+    Q3CString sc;
     filter( sc.sprintf("gg%cfoo bar",delimiter), "http://www.google.com/search?q=foo+bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( sc.sprintf("bug%c55798", delimiter), "http://bugs.kde.org/show_bug.cgi?id=55798", KURIFilterData::NET_PROTOCOL );
 

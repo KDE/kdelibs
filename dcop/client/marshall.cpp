@@ -91,16 +91,16 @@ QColor mkColor( const QString& s )
     return c;
 }
 
-const char *qStringToC(const QCString &s)
+const char *qStringToC(const Q3CString &s)
 {
    if (s.isEmpty())
       return "";
    return s.data();
 }
 
-QCString demarshal( QDataStream &stream, const QString &type )
+Q3CString demarshal( QDataStream &stream, const QString &type )
 {
-    QCString result;
+    Q3CString result;
 
     if ( type == "int" || type == "Q_INT32" )
     {
@@ -175,7 +175,7 @@ QCString demarshal( QDataStream &stream, const QString &type )
         stream >> i;
         QByteArray ba;
         QBuffer buf( ba );
-        buf.open( IO_WriteOnly );
+        buf.open( QIODevice::WriteOnly );
         i.save( &buf, "XPM" );
         result = ba;
     } else if ( type == "QPoint" )
@@ -219,7 +219,7 @@ QCString demarshal( QDataStream &stream, const QString &type )
         Q_UINT32 i = 0;
         for (; i < count; ++i )
         {
-            QCString arg = demarshal( stream, nestedType );
+            Q3CString arg = demarshal( stream, nestedType );
             result += arg;
 
             if ( i < count - 1 )
@@ -244,12 +244,12 @@ QCString demarshal( QDataStream &stream, const QString &type )
         Q_UINT32 i = 0;
         for (; i < count; ++i )
         {
-            QCString key = demarshal( stream, keyType );
+            Q3CString key = demarshal( stream, keyType );
 
             if ( key.isEmpty() )
                 continue;
 
-            QCString value = demarshal( stream, valueType );
+            Q3CString value = demarshal( stream, valueType );
 
             if ( value.isEmpty() )
                 continue;
@@ -319,7 +319,7 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
     else if ( type == "QString" )
 	arg << s;
     else if ( type == "QCString" )
-	arg << QCString( args[ i ] );
+	arg << Q3CString( args[ i ] );
     else if ( type == "QColor" )
 	arg << mkColor( s );
     else if ( type == "QPoint" )
@@ -359,7 +359,7 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	   delim = ")";
 	i++;
 	QByteArray dummy_data;
-	QDataStream dummy_arg(dummy_data, IO_WriteOnly);
+	QDataStream dummy_arg(dummy_data, QIODevice::WriteOnly);
 
 	uint j = i;
 	uint count = 0;

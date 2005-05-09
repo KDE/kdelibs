@@ -42,7 +42,7 @@ unsigned int ClipboardInterface::clipboardInterfaceNumber () const
   return myClipboardInterfaceNumber;
 }
 
-void ClipboardInterface::setClipboardInterfaceDCOPSuffix (const QCString &suffix)
+void ClipboardInterface::setClipboardInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("ClipboardInterface#"+suffix);
 }

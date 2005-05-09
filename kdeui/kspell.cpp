@@ -76,7 +76,7 @@ public:
   SpellerType type;
   KSpell* suggestSpell;
   bool checking;
-  QValueList<BufferedWord> unchecked;
+  Q3ValueList<BufferedWord> unchecked;
   QTimer *checkNextTimer;
   bool aspellV6;
 };
@@ -134,7 +134,7 @@ static bool determineASpellV6()
   {
     // Close textstream before we close fs
     {
-      QTextStream ts(fs, IO_ReadOnly);
+      QTextStream ts(fs, QIODevice::ReadOnly);
       result = ts.read().stripWhiteSpace();
     }
     pclose(fs);

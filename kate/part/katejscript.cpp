@@ -42,7 +42,7 @@
 
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qregexp.h>
 #include <qtextstream.h>
 
@@ -727,7 +727,7 @@ bool KateJScriptManager::exec( Kate::View *view, const QString &_cmd, QString &e
 
   QFile file (m_scripts[cmd]->filename);
 
-  if ( !file.open( IO_ReadOnly ) )
+  if ( !file.open( QIODevice::ReadOnly ) )
     {
     errorMsg = i18n("JavaScript file not found");
     return false;
@@ -763,7 +763,7 @@ QStringList KateJScriptManager::cmds()
 {
    QStringList l;
 
-   QDictIterator<KateJScriptManager::Script> it( m_scripts );
+   Q3DictIterator<KateJScriptManager::Script> it( m_scripts );
    for( ; it.current(); ++it )
      l << it.current()->name;
 

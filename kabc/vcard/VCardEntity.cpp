@@ -38,7 +38,7 @@ VCardEntity::VCardEntity(const VCardEntity & x)
 {
 }
 
-VCardEntity::VCardEntity(const QCString & s)
+VCardEntity::VCardEntity(const Q3CString & s)
 	:	Entity(s)
 {
 }
@@ -53,7 +53,7 @@ VCardEntity::operator = (VCardEntity & x)
 }
 
 	VCardEntity &
-VCardEntity::operator = (const QCString & s)
+VCardEntity::operator = (const Q3CString & s)
 {
 	Entity::operator = (s);
 	return *this;
@@ -74,7 +74,7 @@ VCardEntity::~VCardEntity()
 VCardEntity::_parse()
 {
 	vDebug("parse");
-	QCString s(strRep_);
+	Q3CString s(strRep_);
 	
 	int i = s.find(QRegExp("BEGIN:VCARD", false));
 	
@@ -82,7 +82,7 @@ VCardEntity::_parse()
 		
 		i = s.find(QRegExp("BEGIN:VCARD", false), 11);
 		
-		QCString cardStr(s.left(i));
+		Q3CString cardStr(s.left(i));
 		
 		VCard * v = new VCard(cardStr);
 		

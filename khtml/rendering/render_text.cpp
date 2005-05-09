@@ -129,8 +129,8 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
 	// It may happen that the contrast is -- well -- virtually non existent.
 	// In this case, simply invert the colors
 	if (!khtml::hasSufficientContrast(hbg, bg)) {
-	    hc = QColor(0xff-hc.red(),0xff-hc.green(),0xff-hc.blue());
-	    hbg = QColor(0xff-hbg.red(),0xff-hbg.green(),0xff-hbg.blue());
+	    hc = QColor(0xff-hc.Qt::red(),0xff-hc.Qt::green(),0xff-hc.Qt::blue());
+	    hbg = QColor(0xff-hbg.Qt::red(),0xff-hbg.Qt::green(),0xff-hbg.Qt::blue());
 	}/*end if*/
     }
 
@@ -191,8 +191,8 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         const int w = m_width+2*thickness;
         const int h = m_height+2*thickness;
         const QRgb color = shadow->color.rgb();
-        const int gray = qGray(color);
-        const bool inverse = (gray < 100);
+        const int Qt::gray = qGray(color);
+        const bool inverse = (Qt::gray < 100);
         const QRgb bgColor = (inverse) ? qRgb(255,255,255) : qRgb(0,0,0);
         QPixmap pixmap(w, h);
         pixmap.fill(bgColor);
@@ -238,9 +238,9 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                 if (col == bgColor) continue;
                 float g = qGray(col);
                 if (inverse)
-                    g = (255-g)/(255-gray);
+                    g = (255-g)/(255-Qt::gray);
                 else
-                    g = g/gray;
+                    g = g/Qt::gray;
                 for(int n=-thickness; n<=thickness; n++) {
                     for(int m=-thickness; m<=thickness; m++) {
                         int d = n*n+m*m;
@@ -483,7 +483,7 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
 	if ( (*this)[mid] == 0 )			// null item greater
 	    res = -1;
 	else
-	    res = ((QGVector*)this)->compareItems( d, (*this)[mid] );
+	    res = ((Q3GVector*)this)->compareItems( d, (*this)[mid] );
 	if ( res < 0 )
 	    n2 = mid - 1;
 	else if ( res > 0 )
@@ -496,7 +496,7 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
     /* if ( !found )
 	return -1; */
     // search to first one equal or bigger
-    while ( found && (mid > 0) && !((QGVector*)this)->compareItems(d, (*this)[mid-1]) )
+    while ( found && (mid > 0) && !((Q3GVector*)this)->compareItems(d, (*this)[mid-1]) )
 	mid--;
     return mid;
 }

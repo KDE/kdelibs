@@ -26,8 +26,8 @@
 #define KBUFFEREDSOCKET_H
 
 #include <qobject.h>
-#include <qcstring.h>
-#include <qvaluelist.h>
+#include <q3cstring.h>
+#include <q3valuelist.h>
 #include "kstreamsocket.h"
 #include <kdelibs_export.h>
 
@@ -189,7 +189,7 @@ public:
   /**
    * Reads a line of data from the socket buffers.
    */
-  QCString readLine();
+  Q3CString readLine();
 
 protected:
   /**

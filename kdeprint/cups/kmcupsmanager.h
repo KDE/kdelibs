@@ -25,7 +25,7 @@
 class IppRequest;
 class KLibrary;
 class KExtendedSocket;
-class QSocket;
+class Q3Socket;
 
 class KMCupsManager : public KMManager
 {
@@ -95,7 +95,7 @@ protected:
 private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
-	QSocket *m_socket;
+	Q3Socket *m_socket;
 	bool m_hostSuccess;
 	bool m_lookupDone;
 };

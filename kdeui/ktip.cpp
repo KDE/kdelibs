@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qcheckbox.h>
 #include <qfile.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
@@ -104,7 +104,7 @@ void KTipDatabase::addTips(const QString& tipFile )
     }
 
     QFile file(fileName);
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
 	kdDebug() << "KTipDatabase::addTips: can't open '" << fileName << "' for reading" << endl;
 	return;
@@ -223,34 +223,34 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 	titlePane->setBackgroundPixmap(locate("data", "kdeui/pics/ktip-background.png"));
 	titlePane->setText(i18n("Did you know...?\n"));
 	titlePane->setFont(QFont(KGlobalSettings::generalFont().family(), 20, QFont::Bold));
-	titlePane->setAlignment(QLabel::AlignCenter);
+	titlePane->setAlignment(Qt::AlignCenter);
 	pl->addWidget(titlePane, 100);
     }
 
-    QHBox *hbox = new QHBox(this);
+    Q3HBox *hbox = new Q3HBox(this);
     hbox->setSpacing(0);
-    hbox->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    hbox->setFrameStyle(Q3Frame::Panel | Q3Frame::Sunken);
     vbox->addWidget(hbox);
 
-    QHBox *tl = new QHBox(hbox);
+    Q3HBox *tl = new Q3HBox(hbox);
     tl->setMargin(7);
     tl->setBackgroundColor(mBlendedColor);
 
-    QHBox *topLeft = new QHBox(tl);
+    Q3HBox *topLeft = new Q3HBox(tl);
     topLeft->setMargin(15);
     topLeft->setBackgroundColor(mBaseColor);
 
     mTipText = new KTextBrowser(topLeft);
 
-    mTipText->setWrapPolicy( QTextEdit::AtWordOrDocumentBoundary );
+    mTipText->setWrapPolicy( Q3TextEdit::AtWordOrDocumentBoundary );
     mTipText->mimeSourceFactory()->addFilePath(
 	KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
-    mTipText->setFrameStyle(QFrame::NoFrame | QFrame::Plain);
-    mTipText->setHScrollBarMode(QScrollView::AlwaysOff);
+    mTipText->setFrameStyle(Q3Frame::NoFrame | Q3Frame::Plain);
+    mTipText->setHScrollBarMode(Q3ScrollView::AlwaysOff);
     mTipText->setLinkUnderline(false);
 
-    QStyleSheet *sheet = mTipText->styleSheet();
-    QStyleSheetItem *item = sheet->item("a");
+    Q3StyleSheet *sheet = mTipText->styleSheet();
+    Q3StyleSheetItem *item = sheet->item("a");
     item->setFontWeight(QFont::Bold);
     mTipText->setStyleSheet(sheet);
     QPalette pal = mTipText->palette();
@@ -403,8 +403,8 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
   bool KTipDialog::eventFilter(QObject *o, QEvent *e)
   {
     if (o == mTipText && e->type()== QEvent::KeyPress &&
-		(((QKeyEvent *)e)->key() == Key_Return ||
-		((QKeyEvent *)e)->key() == Key_Space ))
+		(((QKeyEvent *)e)->key() == Qt::Key_Return ||
+		((QKeyEvent *)e)->key() == Qt::Key_Space ))
 		accept();
 
 	// If the user presses Return or Space, we close the dialog as if the

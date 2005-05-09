@@ -21,8 +21,8 @@
 
 #include <qpainter.h>
 
-TreeListBoxItem::TreeListBoxItem(QListBox *lb, const QPixmap& pix, const QString& txt, bool oneBlock)
-	: QListBoxPixmap(pix, txt)
+TreeListBoxItem::TreeListBoxItem(Q3ListBox *lb, const QPixmap& pix, const QString& txt, bool oneBlock)
+	: Q3ListBoxPixmap(pix, txt)
 {
 	if (oneBlock)
 		m_path = QStringList(txt);
@@ -75,21 +75,21 @@ TreeListBoxItem::TreeListBoxItem(QListBox *lb, const QPixmap& pix, const QString
 	}
 }
 
-int TreeListBoxItem::width(const QListBox *lb) const
+int TreeListBoxItem::width(const Q3ListBox *lb) const
 {
 	int	w = m_depth * stepSize() + 2;
 	if (pixmap())
 		w += (pixmap()->width() + 2);
 	if (!m_path[m_depth].isEmpty())
 		w += (lb->fontMetrics().width(m_path[m_depth]) + 2);
-	return QMAX(w, QListBoxPixmap::width(lb));
+	return QMAX(w, Q3ListBoxPixmap::width(lb));
 }
 
 void TreeListBoxItem::paint(QPainter *p)
 {
 	if(!static_cast<TreeListBox*>(listBox())->m_painting)
 	{
-		QListBoxPixmap::paint(p);
+		Q3ListBoxPixmap::paint(p);
 		return;
 	}
 
@@ -129,7 +129,7 @@ void TreeListBoxItem::paint(QPainter *p)
 //-----------------------------------------------------------------------------------------
 
 TreeListBox::TreeListBox(QWidget *parent, const char *name)
-	: QListBox(parent, name)
+	: Q3ListBox(parent, name)
 {
 	m_painting = false;
 }
@@ -137,7 +137,7 @@ TreeListBox::TreeListBox(QWidget *parent, const char *name)
 void TreeListBox::paintCell(QPainter *p, int row, int col)
 {
 	m_painting = true;
-	QListBox::paintCell(p, row, col);
+	Q3ListBox::paintCell(p, row, col);
 	m_painting = false;
 }
 

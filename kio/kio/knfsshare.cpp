@@ -16,7 +16,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qfile.h>
 #include <qtextstream.h>
 
@@ -35,7 +35,7 @@ public:
   bool readExportsFile();
   bool findExportsFile();
   
-  QDict<bool> sharedPaths;
+  Q3Dict<bool> sharedPaths;
   QString exportsFile;
 };
 
@@ -79,7 +79,7 @@ bool KNFSSharePrivate::readExportsFile() {
 
   kdDebug(7000) << "KNFSShare::readExportsFile " << exportsFile << endl;
   
-  if (!f.open(IO_ReadOnly)) {
+  if (!f.open(QIODevice::ReadOnly)) {
     kdError() << "KNFSShare: Could not open " << exportsFile << endl;
     return false;
   }
@@ -182,7 +182,7 @@ bool KNFSShare::isDirectoryShared( const QString & path ) const {
 
 QStringList KNFSShare::sharedDirectories() const {
   QStringList result;
-  QDictIterator<bool> it(d->sharedPaths);
+  Q3DictIterator<bool> it(d->sharedPaths);
   for( ; it.current(); ++it )
       result << it.currentKey();
       

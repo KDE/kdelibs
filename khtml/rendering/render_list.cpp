@@ -36,7 +36,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 //#define BOX_DEBUG
 
@@ -341,7 +341,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
         return;
     case LDIAMOND: {
-        static QPointArray diamond(4);
+        static Q3PointArray diamond(4);
         int x = _tx + xoff;
         int y = _ty + (3 * yoff)/2 - 1;
         int s = (offset>>2)+1;
@@ -359,25 +359,25 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         if (!m_item.isEmpty()) {
             if(listPositionInside()) {
             	if( style()->direction() == LTR) {
-                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
-                    p->drawText(_tx + fm.width(m_item), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip,
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
+                    p->drawText(_tx + fm.width(m_item), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip,
                                 QString::fromLatin1(". "));
                 }
             	else {
                     const QString& punct(QString::fromLatin1(" ."));
-                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, punct);
-            	    p->drawText(_tx + fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
+            	    p->drawText(_tx + fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
             } else {
                 if (style()->direction() == LTR) {
                     const QString& punct(QString::fromLatin1(". "));
-                    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, punct);
-                    p->drawText(_tx-offset/2-fm.width(punct), _ty, 0, 0, Qt::AlignRight|Qt::DontClip, m_item);
+                    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::TextDontClip, punct);
+                    p->drawText(_tx-offset/2-fm.width(punct), _ty, 0, 0, Qt::AlignRight|Qt::TextDontClip, m_item);
                 }
             	else {
                     const QString& punct(QString::fromLatin1(" ."));
-            	    p->drawText(_tx+offset/2, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, punct);
-                    p->drawText(_tx+offset/2+fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+            	    p->drawText(_tx+offset/2, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
+                    p->drawText(_tx+offset/2+fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
 	    }
         }

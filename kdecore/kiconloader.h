@@ -14,7 +14,7 @@
 
 #include <qstring.h>
 #include <qpixmap.h>
-#include <qiconset.h>
+#include <qicon.h>
 
 // Grmbl, X headers.....
 #ifdef Status
@@ -146,7 +146,7 @@ public:
      *          @p canReturnNull.
      * @since 3.1
      */
-    QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
+    QIcon loadIconSet(const QString& name, KIcon::Group group, int size,
                          bool canReturnNull);
 
     // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false);
@@ -161,7 +161,7 @@ public:
      *             See KIcon::StdSizes.
      * @return the icon set. Can be null when not found
      */
-    QIconSet loadIconSet(const QString& name, KIcon::Group group, int size=0);
+    QIcon loadIconSet(const QString& name, KIcon::Group group, int size=0);
 
     /**
      * Returns the path of an icon.
@@ -386,7 +386,7 @@ public:
     /**
      * Loads all the different sizes for an iconset.
      */
-    QIconSet loadIconSetNonDelayed( const QString& name, KIcon::Group group,
+    QIcon loadIconSetNonDelayed( const QString& name, KIcon::Group group,
                                     int size, bool canReturnNull );
 
     // @internal the data object
@@ -411,7 +411,7 @@ KDECORE_EXPORT QPixmap DesktopIcon(const QString& name, KInstance *instance);
  * \relates KIconLoader
  * Load a desktop icon, and apply the necessary effects to get an IconSet.
  */
-KDECORE_EXPORT QIconSet DesktopIconSet(const QString& name, int size=0,
+KDECORE_EXPORT QIcon DesktopIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
@@ -431,7 +431,7 @@ KDECORE_EXPORT QPixmap BarIcon(const QString& name, KInstance *instance);
  * \relates KIconLoader
  * Load a toolbar icon, and apply the necessary effects to get an IconSet.
  */
-KDECORE_EXPORT QIconSet BarIconSet(const QString& name, int size=0,
+KDECORE_EXPORT QIcon BarIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
@@ -452,7 +452,7 @@ KDECORE_EXPORT QPixmap SmallIcon(const QString& name, KInstance *instance);
  * \relates KIconLoader
  * Load a small icon, and apply the necessary effects to get an IconSet.
  */
-KDECORE_EXPORT QIconSet SmallIconSet(const QString& name, int size=0,
+KDECORE_EXPORT QIcon SmallIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
@@ -473,7 +473,7 @@ KDECORE_EXPORT QPixmap MainBarIcon(const QString& name, KInstance *instance);
  * \relates KIconLoader
  * Load a main toolbar icon, and apply the effects to get an IconSet.
  */
-KDECORE_EXPORT QIconSet MainBarIconSet(const QString& name, int size=0,
+KDECORE_EXPORT QIcon MainBarIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
@@ -493,7 +493,7 @@ KDECORE_EXPORT QPixmap UserIcon(const QString& name, KInstance *instance);
  * \relates KIconLoader
  * Load a user icon, and apply the effects to get an IconSet.
  */
-KDECORE_EXPORT QIconSet UserIconSet(const QString& name,
+KDECORE_EXPORT QIcon UserIconSet(const QString& name,
 	KInstance *instance=KGlobal::instance());
 
 /**

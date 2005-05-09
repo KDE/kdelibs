@@ -22,7 +22,7 @@
 
 #include <kmacroexpander.h>
 
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 #include <qregexp.h>
 
 KMacroExpanderBase::KMacroExpanderBase( QChar c )
@@ -102,8 +102,8 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
     uint pos2;
     QChar ec( escapechar );
     State state = { noquote, false };
-    QValueStack<State> sstack;
-    QValueStack<Save> ostack;
+    Q3ValueStack<State> sstack;
+    Q3ValueStack<Save> ostack;
     QStringList rst;
     QString rsts;
 

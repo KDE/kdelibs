@@ -25,10 +25,10 @@
 #include "driver.h"
 #include "marginwidget.h"
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 #include <qprinter.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -42,7 +42,7 @@ KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent, const
 	setTitle(i18n("Margins"));
 	m_usedriver = true;
 
-	QGroupBox	*box = new QGroupBox(1, Qt::Vertical, i18n("Margins"), this);
+	Q3GroupBox	*box = new Q3GroupBox(1, Qt::Vertical, i18n("Margins"), this);
 	m_margin = new MarginWidget(box, "MarginWidget", (m_printer != 0));
 	//m_margin->setSymetricMargins(true);
 	//if (m_printer)
@@ -63,7 +63,7 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 	QPrinter	prt(QPrinter::PrinterResolution);
 	prt.setFullPage(true);
 	prt.setPageSize((QPrinter::PageSize)(ps.isEmpty() ? KGlobal::locale()->pageSize() : ps.toInt()));
-	QPaintDeviceMetrics	metrics(&prt);
+	Q3PaintDeviceMetrics	metrics(&prt);
 	float	w = metrics.width();
 	float	h = metrics.height();
 	unsigned int	it, il, ib, ir;

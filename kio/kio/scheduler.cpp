@@ -22,8 +22,8 @@
 #include "kio/scheduler.h"
 #include "kio/authinfo.h"
 #include "kio/slave.h"
-#include <qptrlist.h>
-#include <qdict.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
 
 #include <dcopclient.h>
 
@@ -42,11 +42,11 @@
 
 using namespace KIO;
 
-template class QDict<KIO::Scheduler::ProtocolInfo>;
+template class Q3Dict<KIO::Scheduler::ProtocolInfo>;
 
 Scheduler *Scheduler::instance = 0;
 
-class KIO::SlaveList: public QPtrList<Slave>
+class KIO::SlaveList: public Q3PtrList<Slave>
 {
    public:
       SlaveList() { }
@@ -78,7 +78,7 @@ public:
     bool checkOnHold;
 };
 
-class KIO::Scheduler::ExtraJobData: public QPtrDict<KIO::Scheduler::JobData>
+class KIO::Scheduler::ExtraJobData: public Q3PtrDict<KIO::Scheduler::JobData>
 {
 public:
     ExtraJobData() { setAutoDelete(true); }
@@ -92,14 +92,14 @@ public:
        joblist.setAutoDelete(false);
     }
 
-    QPtrList<SimpleJob> joblist;
+    Q3PtrList<SimpleJob> joblist;
     SlaveList activeSlaves;
     int maxSlaves;
     int skipCount;
     QString protocol;
 };
 
-class KIO::Scheduler::ProtocolInfoDict : public QDict<KIO::Scheduler::ProtocolInfo>
+class KIO::Scheduler::ProtocolInfoDict : public Q3Dict<KIO::Scheduler::ProtocolInfo>
 {
   public:
     ProtocolInfoDict() { }
@@ -163,14 +163,14 @@ Scheduler::debug_info()
 {
 }
 
-bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData )
+bool Scheduler::process(const Q3CString &fun, const QByteArray &data, Q3CString &replyType, QByteArray &replyData )
 {
     if ( fun != "reparseSlaveConfiguration(QString)" )
         return DCOPObject::process( fun, data, replyType, replyData );
 
     slaveConfig = SlaveConfig::self();
     replyType = "void";
-    QDataStream stream( data, IO_ReadOnly );
+    QDataStream stream( data, QIODevice::ReadOnly );
     QString proto;
     stream >> proto;
 
@@ -272,7 +272,7 @@ void Scheduler::startStep()
     {
        (void) startJobDirect();
     }
-    QDictIterator<KIO::Scheduler::ProtocolInfo> it(*protInfoDict);
+    Q3DictIterator<KIO::Scheduler::ProtocolInfo> it(*protInfoDict);
     while(it.current())
     {
        if (startJobScheduled(it.current())) return;
@@ -543,13 +543,13 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
       idleSlaves->append(slave);
       connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
                 SLOT(slotSlaveDied(KIO::Slave *)));
-      connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
-                SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
+      connect(slave, SIGNAL(slaveStatus(pid_t,const Q3CString &,const QString &, bool)),
+                SLOT(slotSlaveStatus(pid_t,const Q3CString &, const QString &, bool)));
 
-      connect(slave,SIGNAL(authorizationKey(const QCString&, const QCString&, bool)),
-              sessionData,SLOT(slotAuthData(const QCString&, const QCString&, bool)));
-      connect(slave,SIGNAL(delAuthorization(const QCString&)), sessionData,
-              SLOT(slotDelAuthData(const QCString&)));
+      connect(slave,SIGNAL(authorizationKey(const Q3CString&, const Q3CString&, bool)),
+              sessionData,SLOT(slotAuthData(const Q3CString&, const Q3CString&, bool)));
+      connect(slave,SIGNAL(delAuthorization(const Q3CString&)), sessionData,
+              SLOT(slotDelAuthData(const Q3CString&)));
    }
    else
    {
@@ -564,7 +564,7 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
    return slave;
 }
 
-void Scheduler::slotSlaveStatus(pid_t, const QCString &, const QString &, bool)
+void Scheduler::slotSlaveStatus(pid_t, const Q3CString &, const QString &, bool)
 {
 }
 
@@ -717,7 +717,7 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
     connect(slave, SIGNAL(error(int, const QString &)),
                 SLOT(slotSlaveError(int, const QString &)));
 
-    coSlaves.insert(slave, new QPtrList<SimpleJob>());
+    coSlaves.insert(slave, new Q3PtrList<SimpleJob>());
 //    kdDebug(7006) << "_getConnectedSlave( " << slave << ")" << endl;
     return slave;
 }
@@ -875,7 +875,7 @@ Scheduler::_registerWindow(QWidget *wid)
       connect(wid, SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
       QByteArray params;
-      QDataStream stream(params, IO_WriteOnly);
+      QDataStream stream(params, QIODevice::WriteOnly);
       stream << windowId;
       if( !kapp->dcopClient()->send( "kded", "kded",
                     "registerWindowId(long int)", params ) )
@@ -899,7 +899,7 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    if (kapp)
    {
       QByteArray params;
-      QDataStream stream(params, IO_WriteOnly);
+      QDataStream stream(params, QIODevice::WriteOnly);
       stream << windowId;
       kapp->dcopClient()->send( "kded", "kded",
                     "unregisterWindowId(long int)", params );

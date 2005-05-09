@@ -55,7 +55,7 @@ unsigned int PopupMenuInterface::popupMenuInterfaceNumber () const
   return myPopupMenuInterfaceNumber;
 }
 
-void PopupMenuInterface::setPopupMenuInterfaceDCOPSuffix (const QCString &/*suffix*/)
+void PopupMenuInterface::setPopupMenuInterfaceDCOPSuffix (const Q3CString &/*suffix*/)
 {
   //d->interface->setObjId ("PopupMenuInterface#"+suffix);
 }

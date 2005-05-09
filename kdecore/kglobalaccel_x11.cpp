@@ -26,7 +26,7 @@
 #include "kglobalaccel.h"
 #include "kkeyserver_x11.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qregexp.h>
 #include <qwidget.h>
 #include <qmetaobject.h>
@@ -289,7 +289,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
                 static bool recursion_block = false;
                 if( !recursion_block ) {
                         recursion_block = true;
-		        QPopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
+		        Q3PopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
 		        connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
 		        pMenu->exec( QPoint( 0, 0 ) );
 		        disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));

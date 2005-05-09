@@ -263,7 +263,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 	cmd += KProcess::quote(comps[2]);
 	cmd += " -p ";
 	cmd += KProcess::quote(comps[1]);
-	if (in.open(cmd) && out.open(IO_WriteOnly))
+	if (in.open(cmd) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line;
@@ -297,7 +297,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 	bool	result(false);
 	QString	postpipe = createPostpipe(prt->device());
 
-	if (inFile.open(IO_ReadOnly) && tmpFile.open(IO_WriteOnly))
+	if (inFile.open(QIODevice::ReadOnly) && tmpFile.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&inFile), tout(&tmpFile);
 		QString	line, optname;
@@ -362,7 +362,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 
 	KPipeProcess	in;
 	QFile		out(filename);
-	if (in.open(exe + " -t cups -d " + mdriver + " -p " + mprinter) && out.open(IO_WriteOnly))
+	if (in.open(exe + " -t cups -d " + mdriver + " -p " + mprinter) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line, optname;

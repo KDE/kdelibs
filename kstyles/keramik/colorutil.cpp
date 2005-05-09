@@ -43,9 +43,9 @@ namespace Keramik
 			
 			QColor wrk = in.light(100+hd);
 			
-			int r = wrk.red();
-			int g = wrk.green();
-			int b = wrk.blue();
+			int r = wrk.Qt::red();
+			int g = wrk.Qt::green();
+			int b = wrk.Qt::blue();
 
 			r+=delta;
 			g+=delta;

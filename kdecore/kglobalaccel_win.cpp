@@ -26,7 +26,7 @@
 #include "kglobalaccel.h"
 #include "kkeyserver_x11.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qregexp.h>
 #include <qwidget.h>
 #include <qmetaobject.h>

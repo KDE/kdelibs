@@ -21,7 +21,7 @@
 #include "knotifyclient.h"
 
 #include <qdatastream.h>
-#include <qptrstack.h>
+#include <q3ptrstack.h>
 
 #include <kapplication.h>
 #include <kstandarddirs.h>
@@ -89,7 +89,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
     winId = (int)widget->topLevelWidget()->winId();
 
   QByteArray data;
-  QDataStream ds(data, IO_WriteOnly);
+  QDataStream ds(data, QIODevice::WriteOnly);
   ds << message << appname << text << sound << file << present << level
      << winId << uniqueId;
 
@@ -300,7 +300,7 @@ public:
 	}
 
 private:
-	QPtrStack<Instance> m_instances;
+	Q3PtrStack<Instance> m_instances;
 	Instance *m_defaultInstance;
 };
 

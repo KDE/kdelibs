@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtextstream.h>
 #include <qpair.h>
 
@@ -79,8 +79,8 @@ struct CupsdConf
 	QString systemgroup_;
 	QString encryptcert_;
 	QString encryptkey_;
-	QPtrList<CupsLocation> locations_;
-	QPtrList<CupsResource> resources_;
+	Q3PtrList<CupsLocation> locations_;
+	Q3PtrList<CupsResource> resources_;
 
 	// Network
 	int hostnamelookup_;
@@ -138,7 +138,7 @@ struct CupsdConf
 	CupsdComment	comments_;
 	
 	// unrecognized options
-	QValueList< QPair<QString,QString> >	unknown_;
+	Q3ValueList< QPair<QString,QString> >	unknown_;
 };
 
 struct CupsLocation

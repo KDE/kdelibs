@@ -43,7 +43,7 @@
 
 using namespace KIO;
 
-template class QIntDict<KIO::Job>;
+template class Q3IntDict<KIO::Job>;
 
 Observer * Observer::s_pObserver = 0L;
 
@@ -297,7 +297,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             break;
         case KIO::SlaveBase::SSLMessageBox:
         {
-            QCString observerAppId = caption.utf8(); // hack, see slaveinterface.cpp
+            Q3CString observerAppId = caption.utf8(); // hack, see slaveinterface.cpp
             // Contact the object "KIO::Observer" in the application <appId>
             // Yes, this could be the same application we are, but not necessarily.
             Observer_stub observer( observerAppId, "KIO::Observer" );
@@ -309,7 +309,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
                // Set the chain back onto the certificate
                QStringList cl =
                       QStringList::split(QString("\n"), meta["ssl_peer_chain"]);
-               QPtrList<KSSLCertificate> ncl;
+               Q3PtrList<KSSLCertificate> ncl;
 
                ncl.setAutoDelete(true);
                for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
@@ -351,8 +351,8 @@ int Observer::messageBox( int progressId, int type, const QString &text,
     return result;
 #if 0
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg( data, IO_WriteOnly );
+    Q3CString replyType;
+    QDataStream arg( data, QIODevice::WriteOnly );
     arg << progressId;
     arg << type;
     arg << text;
@@ -363,7 +363,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
         && replyType == "int" )
     {
         int result;
-        QDataStream _reply_stream( replyData, IO_ReadOnly );
+        QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
         _reply_stream >> result;
         kdDebug(KDEBUG_OBSERVER) << "Observer::messageBox got result " << result << endl;
         return result;

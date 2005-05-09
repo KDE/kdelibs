@@ -568,10 +568,10 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *vi
   case Qt::Key_Down:
       m_virtKeyVal = DOM_VK_DOWN;
       break;
-  case Qt::Key_Next:
+  case Qt::Key_PageDown:
       m_virtKeyVal = DOM_VK_PAGE_DOWN;
       break;
-  case Qt::Key_Prior:
+  case Qt::Key_PageUp:
       m_virtKeyVal = DOM_VK_PAGE_UP;
       break;
   case Qt::Key_F1:

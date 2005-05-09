@@ -22,7 +22,7 @@
 #define KPARTS_STATUSBAREXTENSION_H
 
 #include <qwidget.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kdelibs_export.h>
 
@@ -112,7 +112,7 @@ namespace KParts
 
     private:
 
-     QValueList<StatusBarItem> m_statusBarItems; // Our statusbar items
+     Q3ValueList<StatusBarItem> m_statusBarItems; // Our statusbar items
      mutable KStatusBar* m_statusBar;
 
      // for future extensions

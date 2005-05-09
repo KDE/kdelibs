@@ -28,10 +28,10 @@
 class KDEPRINT_EXPORT KPipeProcess : public QFile
 {
 public:
-	KPipeProcess(const QString& cmd = QString::null, int mode = IO_ReadOnly);
+	KPipeProcess(const QString& cmd = QString::null, int mode = QIODevice::ReadOnly);
 	~KPipeProcess();
 
-	bool open(const QString& cmd, int mode = IO_ReadOnly);
+	bool open(const QString& cmd, int mode = QIODevice::ReadOnly);
 	void close();
 
 private:

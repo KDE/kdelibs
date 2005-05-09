@@ -19,8 +19,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qdragobject.h>
-#include <qpopupmenu.h>
+#include <q3dragobject.h>
+#include <q3popupmenu.h>
 #include <qtextstream.h>
 #include <qtimer.h>
 
@@ -47,7 +47,7 @@ public:
 
 
 KEdit::KEdit(QWidget *_parent, const char *name)
-   : QMultiLineEdit(_parent, name)
+   : Q3MultiLineEdit(_parent, name)
 {
     d = new KEditPrivate;
     d->overwriteEnabled = false;
@@ -208,7 +208,7 @@ KEdit::cleanWhiteSpace()
       // If wordwrap is off, we have to do some line-wrapping ourselves now
       // We use another QMultiLineEdit for this, so that we get nice undo
       // behavior.
-      QMultiLineEdit *we = new QMultiLineEdit();
+      Q3MultiLineEdit *we = new Q3MultiLineEdit();
       we->setWordWrap(FixedColumnWidth);
       we->setWrapColumnOrWidth(78);
       we->setText(newText);
@@ -383,7 +383,7 @@ void KEdit::computePosition()
 void KEdit::keyPressEvent ( QKeyEvent *e)
 {
   // ignore Ctrl-Return so that KDialogBase can catch them
-  if ( e->key() == Key_Return && e->state() == ControlButton ) {
+  if ( e->key() == Qt::Key_Return && e->state() == Qt::ControlModifier ) {
       e->ignore();
       return;
   }
@@ -391,7 +391,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
   KKey key(e);
   int keyQt = key.keyCodeQt();
 
-  if ( keyQt == CTRL+Key_K ){
+  if ( keyQt == Qt::CTRL+Qt::Key_K ){
 
     int line = 0;
     int col  = 0;
@@ -442,11 +442,11 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
 
     killing = true;
 
-    QMultiLineEdit::keyPressEvent(e);
+    Q3MultiLineEdit::keyPressEvent(e);
     setModified(true);
     return;
   }
-  else if ( keyQt == CTRL+Key_Y ){
+  else if ( keyQt == Qt::CTRL+Qt::Key_Y ){
 
     int line = 0;
     int col  = 0;
@@ -469,10 +469,10 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
   if ( KStdAccel::copy().contains( key ) )
     copy();
   else if ( isReadOnly() )
-    QMultiLineEdit::keyPressEvent( e );
+    Q3MultiLineEdit::keyPressEvent( e );
   // If this is an unmodified printable key, send it directly to QMultiLineEdit.
-  else if ( !(key.keyCodeQt() & (CTRL | ALT)) && !e->text().isEmpty() && e->text().unicode()->isPrint() )
-    QMultiLineEdit::keyPressEvent( e );
+  else if ( !(key.keyCodeQt() & (Qt::CTRL | Qt::ALT)) && !e->text().isEmpty() && e->text().unicode()->isPrint() )
+    Q3MultiLineEdit::keyPressEvent( e );
   else if ( KStdAccel::paste().contains( key ) ) {
     paste();
     setModified(true);
@@ -539,7 +539,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
     moveCursor( MoveLineEnd, false);
     slotCursorPositionChanged();
   }
-  else if ( key == Key_Insert ) {
+  else if ( key == Qt::Key_Insert ) {
     if (d->overwriteEnabled)
     {
       this->setOverwriteMode(!this->isOverwriteMode());
@@ -547,10 +547,10 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
     }
   }
   else
-    QMultiLineEdit::keyPressEvent(e);
+    Q3MultiLineEdit::keyPressEvent(e);
 }
 
-void KEdit::installRBPopup(QPopupMenu *p) {
+void KEdit::installRBPopup(Q3PopupMenu *p) {
   KContextMenuManager::insert( this, p );
 }
 
@@ -610,28 +610,28 @@ void  KEdit::dragMoveEvent(QDragMoveEvent* e) {
 
   if(KURLDrag::canDecode(e))
     e->accept();
-  else if(QTextDrag::canDecode(e))
-    QMultiLineEdit::dragMoveEvent(e);
+  else if(Q3TextDrag::canDecode(e))
+    Q3MultiLineEdit::dragMoveEvent(e);
 }
 
 void  KEdit::contentsDragMoveEvent(QDragMoveEvent* e) {
 
   if(KURLDrag::canDecode(e))
     e->accept();
-  else if(QTextDrag::canDecode(e))
-    QMultiLineEdit::contentsDragMoveEvent(e);
+  else if(Q3TextDrag::canDecode(e))
+    Q3MultiLineEdit::contentsDragMoveEvent(e);
 }
 
 void  KEdit::dragEnterEvent(QDragEnterEvent* e) {
 
   kdDebug() << "KEdit::dragEnterEvent()" << endl;
-  e->accept(KURLDrag::canDecode(e) || QTextDrag::canDecode(e));
+  e->accept(KURLDrag::canDecode(e) || Q3TextDrag::canDecode(e));
 }
 
 void  KEdit::contentsDragEnterEvent(QDragEnterEvent* e) {
 
   kdDebug() << "KEdit::contentsDragEnterEvent()" << endl;
-  e->accept(KURLDrag::canDecode(e) || QTextDrag::canDecode(e));
+  e->accept(KURLDrag::canDecode(e) || Q3TextDrag::canDecode(e));
 }
 
 
@@ -642,8 +642,8 @@ void  KEdit::dropEvent(QDropEvent* e) {
   if(KURLDrag::canDecode(e)) {
    emit gotUrlDrop(e);
   }
-  else if(QTextDrag::canDecode(e))
-    QMultiLineEdit::dropEvent(e);
+  else if(Q3TextDrag::canDecode(e))
+    Q3MultiLineEdit::dropEvent(e);
 }
 
 void  KEdit::contentsDropEvent(QDropEvent* e) {
@@ -653,8 +653,8 @@ void  KEdit::contentsDropEvent(QDropEvent* e) {
   if(KURLDrag::canDecode(e)) {
    emit gotUrlDrop(e);
   }
-  else if(QTextDrag::canDecode(e))
-    QMultiLineEdit::contentsDropEvent(e);
+  else if(Q3TextDrag::canDecode(e))
+    Q3MultiLineEdit::contentsDropEvent(e);
 }
 
 void KEdit::setOverwriteEnabled(bool b)
@@ -665,7 +665,7 @@ void KEdit::setOverwriteEnabled(bool b)
 // QWidget::create() turns off mouse-Tracking which would break auto-hiding
 void KEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
-  QMultiLineEdit::create( id, initializeWindow, destroyOldWindow );
+  Q3MultiLineEdit::create( id, initializeWindow, destroyOldWindow );
   KCursor::setAutoHideCursor( this, true );
 }
 
@@ -674,7 +674,7 @@ void KEdit::ensureCursorVisible()
   if (!d->autoUpdate)
     return;
 
-  QMultiLineEdit::ensureCursorVisible();
+  Q3MultiLineEdit::ensureCursorVisible();
 }
 
 void KEdit::setCursor( const QCursor &c )
@@ -682,7 +682,7 @@ void KEdit::setCursor( const QCursor &c )
   if (!d->autoUpdate)
     return;
 
-  QMultiLineEdit::setCursor(c);
+  Q3MultiLineEdit::setCursor(c);
 }
 
 void KEdit::viewportPaintEvent( QPaintEvent*pe )
@@ -690,7 +690,7 @@ void KEdit::viewportPaintEvent( QPaintEvent*pe )
   if (!d->autoUpdate)
     return;
 
-  QMultiLineEdit::viewportPaintEvent(pe);
+  Q3MultiLineEdit::viewportPaintEvent(pe);
 }
 
 

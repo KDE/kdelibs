@@ -19,7 +19,7 @@
 #include "kstdaction.h"
 
 #include <qtoolbutton.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kaboutdata.h>
 #include <kaction.h>

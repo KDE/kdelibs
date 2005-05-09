@@ -25,7 +25,7 @@
 #endif
 
 #include <kdialog.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kdeprint/kpreloadobject.h>
 
 class KPrinter;
@@ -46,7 +46,7 @@ public:
 	~KPrintDialog();
 
 	void setFlags(int f);
-	void setDialogPages(QPtrList<KPrintDialogPage> *pages);
+	void setDialogPages(Q3PtrList<KPrintDialogPage> *pages);
 	void enableDialogPage( int index, bool flag = true );
 	KPrinter* printer() const;
 

@@ -21,18 +21,18 @@
 
 #include <kapplication.h>
 #include <qregexp.h>
-#include <qwhatsthis.h>
-#include <qsimplerichtext.h>
+#include <q3whatsthis.h>
+#include <q3simplerichtext.h>
 #include <kdebug.h>
 
 KActiveLabel::KActiveLabel(QWidget * parent, const char * name)
- : QTextBrowser(parent, name)
+ : Q3TextBrowser(parent, name)
 {
    init();
 }
 
 KActiveLabel::KActiveLabel(const QString &text, QWidget * parent, const char * name)
- : QTextBrowser(parent, name)
+ : Q3TextBrowser(parent, name)
 {
    init();
    setText(text);
@@ -41,10 +41,10 @@ KActiveLabel::KActiveLabel(const QString &text, QWidget * parent, const char * n
 void KActiveLabel::init()
 {
    setTextFormat(Qt::RichText);
-   setVScrollBarMode(QScrollView::AlwaysOff);
-   setHScrollBarMode(QScrollView::AlwaysOff);
-   setFrameStyle(QFrame::NoFrame);
-   setFocusPolicy( QWidget::TabFocus );
+   setVScrollBarMode(Q3ScrollView::AlwaysOff);
+   setHScrollBarMode(Q3ScrollView::AlwaysOff);
+   setFrameStyle(Q3Frame::NoFrame);
+   setFocusPolicy( Qt::TabFocus );
    paletteChanged();
 
    connect(this, SIGNAL(linkClicked(const QString &)),
@@ -68,7 +68,7 @@ void KActiveLabel::openLink(const QString & link)
 {
    QRegExp whatsthis("whatsthis:/*([^/].*)");
    if (whatsthis.exactMatch(link)) {
-      QWhatsThis::display(whatsthis.cap(1));
+      Q3WhatsThis::display(whatsthis.cap(1));
       return;
    }
 
@@ -82,14 +82,14 @@ void KActiveLabel::virtual_hook( int, void* )
 
 void KActiveLabel::focusInEvent( QFocusEvent* fe )
 {
-   QTextBrowser::focusInEvent(fe);
+   Q3TextBrowser::focusInEvent(fe);
    if(fe->reason() == QFocusEvent::Tab || fe->reason() == QFocusEvent::Backtab)
       selectAll(true);
 }
 
 void KActiveLabel::focusOutEvent( QFocusEvent* fe )
 {
-   QTextBrowser::focusOutEvent(fe);
+   Q3TextBrowser::focusOutEvent(fe);
    if(fe->reason() == QFocusEvent::Tab || fe->reason() == QFocusEvent::Backtab)
       selectAll(false);
 }
@@ -98,16 +98,16 @@ void KActiveLabel::keyPressEvent( QKeyEvent *e )
 {
     switch ( e->key() )
     {
-    case Key_Down:
-    case Key_Up:
-    case Key_Left:
-    case Key_Right:
+    case Qt::Key_Down:
+    case Qt::Key_Up:
+    case Qt::Key_Left:
+    case Qt::Key_Right:
         // jump over QTextEdit's key navigation breakage.
         // we're not interested in keyboard navigation within the text
         QWidget::keyPressEvent( e );
         break;
     default:
-        QTextBrowser::keyPressEvent( e );
+        Q3TextBrowser::keyPressEvent( e );
     }
 }
 
@@ -122,7 +122,7 @@ QSize KActiveLabel::minimumSizeHint() const
       w = ms.width();
 
    QString txt = text();
-   QSimpleRichText rt(txt, font());
+   Q3SimpleRichText rt(txt, font());
    rt.setWidth(w - 2*frameWidth() - 10);
    w = 10 + rt.widthUsed() + 2*frameWidth();
    if (w < ms.width())

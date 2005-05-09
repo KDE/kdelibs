@@ -300,7 +300,7 @@ bool KBufferedSocket::canReadLine() const
   return d->input->canReadLine();
 }
 
-QCString KBufferedSocket::readLine()
+Q3CString KBufferedSocket::readLine()
 {
   return d->input->readLine();
 }

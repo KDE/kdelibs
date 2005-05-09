@@ -19,11 +19,11 @@
 
 #include "cupslist.h"
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qpushbutton.h>
 #include <klocale.h>
 #include <qlayout.h>
-#include <qheader.h>
+#include <q3header.h>
 
 #include "qinputbox.h"
 
@@ -58,8 +58,8 @@ void CupsListBox::createView(int columns)
 {
 	if (list_ == 0)
 	{
-		list_ = new QListView(this);
-		list_->setFrameStyle(QFrame::Sunken|QFrame::WinPanel);
+		list_ = new Q3ListView(this);
+		list_->setFrameStyle(Q3Frame::Sunken|Q3Frame::WinPanel);
 		list_->setLineWidth(1);
 		list_->setAllColumnsShowFocus(true);
 		columns_ = columns;
@@ -99,11 +99,11 @@ void CupsListBox::createButtons()
 	}
 }
 
-QListViewItem* CupsListBox::findItemAtIndex(int i) const
+Q3ListViewItem* CupsListBox::findItemAtIndex(int i) const
 {
 	if (!list_ || i < 0 || i >= count()) return 0;
 
-	QListViewItem	*item(list_->firstChild());
+	Q3ListViewItem	*item(list_->firstChild());
 	int	j(0);
 	while (item)
 	{
@@ -129,7 +129,7 @@ void CupsListBox::setColumnText(int column, const QString& txt)
 
 QString CupsListBox::text(int index, int column) const
 {
-	QListViewItem	*item = findItemAtIndex(index);
+	Q3ListViewItem	*item = findItemAtIndex(index);
 	if (item)
 	{
 		return item->text(column);
@@ -140,21 +140,21 @@ QString CupsListBox::text(int index, int column) const
 void CupsListBox::insertItem(const QString& str, int index)
 {
 	if (index == -1) index = count()-1;
-	QListViewItem	*after = findItemAtIndex(index);
+	Q3ListViewItem	*after = findItemAtIndex(index);
 	if (after)
-		new QListViewItem(list_, after, str);
+		new Q3ListViewItem(list_, after, str);
 	else
-		new QListViewItem(list_, str);
+		new Q3ListViewItem(list_, str);
 }
 
 void CupsListBox::insertItem(const QStringList& strs, int index)
 {
 	if (index == -1) index = count()-1;
-	QListViewItem	*after = findItemAtIndex(index), *item;
+	Q3ListViewItem	*after = findItemAtIndex(index), *item;
 	if (after)
-		item = new QListViewItem(list_, after);
+		item = new Q3ListViewItem(list_, after);
 	else
-		item = new QListViewItem(list_);
+		item = new Q3ListViewItem(list_);
 	for (uint i=0;i<strs.count();i++)
 		item->setText(i, *(strs.at(i)));
 }

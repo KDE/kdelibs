@@ -27,7 +27,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kdelibs_export.h>
 
@@ -626,7 +626,7 @@ public:
      void copyTo(const QString& dest, bool recursive = true) const;
 
 private:
-    QDict<KArchiveEntry> m_entries;
+    Q3Dict<KArchiveEntry> m_entries;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

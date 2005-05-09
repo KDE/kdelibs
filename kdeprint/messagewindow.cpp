@@ -23,18 +23,18 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qpixmap.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kdebug.h>
 
-QPtrDict<MessageWindow> MessageWindow::m_windows;
+Q3PtrDict<MessageWindow> MessageWindow::m_windows;
 
 MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent, const char *name )
-	: QWidget( parent, name, WStyle_Customize|WStyle_NoBorder|WShowModal|WType_Dialog|WDestructiveClose )
+	: QWidget( parent, name, Qt::WStyle_Customize|Qt::WStyle_NoBorder|Qt::WShowModal|Qt::WType_Dialog|Qt::WDestructiveClose )
 {
-	QHBox *box = new QHBox( this );
-	box->setFrameStyle( QFrame::Panel|QFrame::Raised );
+	Q3HBox *box = new Q3HBox( this );
+	box->setFrameStyle( Q3Frame::Panel|Q3Frame::Raised );
 	box->setLineWidth( 1 );
 	box->setSpacing( 10 );
 	box->setMargin( 5 );
@@ -113,7 +113,7 @@ void MessageWindow::change( QWidget *parent, const QString& txt )
 
 void MessageWindow::removeAll()
 {
-	QPtrDictIterator<MessageWindow> it( m_windows );
+	Q3PtrDictIterator<MessageWindow> it( m_windows );
 	while ( it.current() )
 		delete it.current();
 }

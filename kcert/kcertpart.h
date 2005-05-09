@@ -25,21 +25,21 @@
 #endif
 
 #include <kparts/part.h>
-#include <qptrlist.h>
-#include <qlistview.h>
+#include <q3ptrlist.h>
+#include <q3listview.h>
 #include <klistview.h>
 
 class KSSLCertBox;
-class QFrame;
+class Q3Frame;
 class QLabel;
 class KCertPartPrivate;
 class KComboBox;
-class QButton;
+class Q3Button;
 class KSSLSigners;
 class KSSLPKCS12;
 class KSSLCertificate;
 class QTabWidget;
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 class KAboutData;
 class QGridLayout;
 
@@ -83,7 +83,7 @@ protected slots:
   void slotSave();
   void slotDone();
   void slotLaunch();
-  void slotSelectionChanged(QListViewItem *x);
+  void slotSelectionChanged(Q3ListViewItem *x);
   void slotImportAll();
 
 protected:
@@ -96,27 +96,27 @@ protected:
 
   KListView *_sideList;
   KListViewItem *_parentCA, *_parentP12;
-  QFrame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
+  Q3Frame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
 
   // for the PKCS12 widget
   QLabel *_p12_filenameLabel, *_p12_validFrom, *_p12_validUntil, 
          *_p12_serialNum, *_p12_certState;
   QLabel *_p12_digest;
   KComboBox *_p12_chain;
-  QMultiLineEdit *_p12_pubkey, *_p12_sig;
+  Q3MultiLineEdit *_p12_pubkey, *_p12_sig;
   KSSLCertBox *_p12_subject, *_p12_issuer;
 
   // for the CA widget
   QLabel *_ca_filenameLabel, *_ca_validFrom, *_ca_validUntil, 
          *_ca_serialNum, *_ca_certState;
   QLabel *_ca_digest;
-  QMultiLineEdit *_ca_pubkey, *_ca_sig;
+  Q3MultiLineEdit *_ca_pubkey, *_ca_sig;
   KSSLCertBox *_ca_subject, *_ca_issuer;
 
 
   // The rest
   KInstance *_instance;
-  QButton *_import, *_save, *_done, *_launch, *_importAll;
+  Q3Button *_import, *_save, *_done, *_launch, *_importAll;
   // Store the pointer to the current item
   KSSLPKCS12 *_p12;
   KSSLCertificate *_ca;

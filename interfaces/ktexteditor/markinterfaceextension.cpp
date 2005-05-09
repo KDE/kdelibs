@@ -55,7 +55,7 @@ unsigned int MarkInterfaceExtension::markInterfaceExtensionNumber () const
   return myMarkInterfaceExtensionNumber;
 }
 
-void MarkInterfaceExtension::setMarkInterfaceExtensionDCOPSuffix (const QCString &/*suffix*/)
+void MarkInterfaceExtension::setMarkInterfaceExtensionDCOPSuffix (const Q3CString &/*suffix*/)
 {
   //d->interface->setObjId ("MarkInterfaceExtension#"+suffix);
 }

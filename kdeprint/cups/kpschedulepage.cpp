@@ -23,10 +23,10 @@
 #include <qlayout.h>
 #include <qcombobox.h>
 #include <qregexp.h>
-#include <qdatetimeedit.h>
+#include <q3datetimeedit.h>
 #include <qdatetime.h>
 #include <qlineedit.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <klocale.h>
 #include <kseparator.h>
 #include <knuminput.h>
@@ -143,31 +143,31 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_time->insertItem(i18n("Second Shift (4 pm - 12 am)"));
 	m_time->insertItem(i18n("Third Shift (12 am - 8 am)"));
 	m_time->insertItem(i18n("Specified Time"));
-        QWhatsThis::add(m_time, whatsThisScheduledPrinting);
-	m_tedit = new QTimeEdit(this);
+        Q3WhatsThis::add(m_time, whatsThisScheduledPrinting);
+	m_tedit = new Q3TimeEdit(this);
 	m_tedit->setAutoAdvance(true);
 	m_tedit->setTime(QTime::currentTime());
 	m_tedit->setEnabled(false);
-        QWhatsThis::add(m_tedit, whatsThisScheduledPrinting);
+        Q3WhatsThis::add(m_tedit, whatsThisScheduledPrinting);
 	m_billing = new QLineEdit(this);
-        QWhatsThis::add(m_billing, whatsThisBillingInfo);
+        Q3WhatsThis::add(m_billing, whatsThisBillingInfo);
 	m_pagelabel = new QLineEdit(this);
-        QWhatsThis::add(m_pagelabel, whatsThisPageLabel);
+        Q3WhatsThis::add(m_pagelabel, whatsThisPageLabel);
 	m_priority = new KIntNumInput(50, this);
-        QWhatsThis::add(m_priority, whatsThisJobPriority);
+        Q3WhatsThis::add(m_priority, whatsThisJobPriority);
 	m_priority->setRange(1, 100, 10, true);
 
 	QLabel	*lab = new QLabel(i18n("&Scheduled printing:"), this);
 	lab->setBuddy(m_time);
-        QWhatsThis::add(lab, whatsThisScheduledPrinting);
+        Q3WhatsThis::add(lab, whatsThisScheduledPrinting);
 	QLabel	*lab1 = new QLabel(i18n("&Billing information:"), this);
-        QWhatsThis::add(lab1, whatsThisBillingInfo);
+        Q3WhatsThis::add(lab1, whatsThisBillingInfo);
 	lab1->setBuddy(m_billing);
 	QLabel	*lab2 = new QLabel(i18n("T&op/Bottom page label:"), this);
-        QWhatsThis::add(lab2, whatsThisPageLabel);
+        Q3WhatsThis::add(lab2, whatsThisPageLabel);
 	lab2->setBuddy(m_pagelabel);
 	m_priority->setLabel(i18n("&Job priority:"), Qt::AlignVCenter|Qt::AlignLeft);
-        QWhatsThis::add(m_priority, whatsThisJobPriority);
+        Q3WhatsThis::add(m_priority, whatsThisJobPriority);
 
 	KSeparator	*sep0 = new KSeparator(this);
 	sep0->setFixedHeight(10);

@@ -24,7 +24,7 @@
 #ifndef  VALUE_H
 #define  VALUE_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <VCardEntity.h>
 
@@ -38,8 +38,8 @@ class KVCARD_EXPORT Value : public Entity
 	virtual Value *clone() { return new Value( *this ); }
 };
 
-typedef QPtrList<Value> ValueList;
-typedef QPtrListIterator<Value> ValueListIterator;
+typedef Q3PtrList<Value> ValueList;
+typedef Q3PtrListIterator<Value> ValueListIterator;
 
 }
 

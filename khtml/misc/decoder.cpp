@@ -163,7 +163,7 @@ static void skipComment(const char *&ptr, const char *pEnd)
 }
 
 // Returns the position of the encoding string.
-static int findXMLEncoding(const QCString &str, int &encodingLength)
+static int findXMLEncoding(const Q3CString &str, int &encodingLength)
 {
     int len = str.length();
 
@@ -292,7 +292,7 @@ QString Decoder::decode(const char *data, int len)
                     i--;
                 }
             }
-            buffer += QCString(data, len+1);
+            buffer += Q3CString(data, len+1);
 #endif
             // we still don't have an encoding, and are in the head
             // the following tags are allowed in <head>:
@@ -324,7 +324,7 @@ QString Decoder::decode(const char *data, int len)
                         while (*end != '>' && *end != '\0') end++;
                         if (*end == '\0')
                             break;
-                        QCString str(ptr, end - ptr + 1); //+1 as it must include the \0 terminator
+                        Q3CString str(ptr, end - ptr + 1); //+1 as it must include the \0 terminator
                         int len;
                         int pos = findXMLEncoding(str, len);
                         if (pos != -1) {
@@ -359,7 +359,7 @@ QString Decoder::decode(const char *data, int len)
                         const char * end = ptr;
                         while(*end != '>' && *end != '\0') end++;
                         if ( *end == '\0' ) break;
-                        QCString str( ptr, (end-ptr)+1);
+                        Q3CString str( ptr, (end-ptr)+1);
                         str = str.lower();
                         int pos = 0;
                         //if( (pos = str.find("http-equiv", pos)) == -1) break;
@@ -539,7 +539,7 @@ QString Decoder::flush() const
     return m_decoder->toUnicode(buffer, buffer.length());
 }
 
-QCString Decoder::automaticDetectionForArabic( const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForArabic( const unsigned char* ptr, int size )
 {
     for ( int i = 0; i < size; ++i ) {
         if ( ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F ) || ptr[ i ] == 0xA1 || ptr[ i ] == 0xA2 || ptr[ i ] == 0xA3
@@ -553,7 +553,7 @@ QCString Decoder::automaticDetectionForArabic( const unsigned char* ptr, int siz
     return "iso-8859-6";
 }
 
-QCString Decoder::automaticDetectionForBaltic( const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForBaltic( const unsigned char* ptr, int size )
 {
     for ( int i = 0; i < size; ++i ) {
         if ( ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9E ) )
@@ -566,9 +566,9 @@ QCString Decoder::automaticDetectionForBaltic( const unsigned char* ptr, int siz
     return "iso-8859-13";
 }
 
-QCString Decoder::automaticDetectionForCentralEuropean(const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForCentralEuropean(const unsigned char* ptr, int size )
 {
-    QCString charset = QCString();
+    Q3CString charset = Q3CString();
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F ) {
             if ( ptr[ i ] == 0x81 || ptr[ i ] == 0x83 || ptr[ i ] == 0x90 || ptr[ i ] == 0x98 )
@@ -598,9 +598,9 @@ QCString Decoder::automaticDetectionForCentralEuropean(const unsigned char* ptr,
     return charset.data();
 }
 
-QCString Decoder::automaticDetectionForCyrillic( const unsigned char* ptr, int size, AutoDetectLanguage _language )
+Q3CString Decoder::automaticDetectionForCyrillic( const unsigned char* ptr, int size, AutoDetectLanguage _language )
 {
-    QCString charset = QCString();
+    Q3CString charset = Q3CString();
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F ) {
             if ( ptr[ i ] == 0x98 ) {
@@ -634,7 +634,7 @@ QCString Decoder::automaticDetectionForCyrillic( const unsigned char* ptr, int s
     return charset.data();
 }
 
-QCString Decoder::automaticDetectionForGreek( const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForGreek( const unsigned char* ptr, int size )
 {
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] == 0x80 || ( ptr[ i ] >= 0x82 && ptr[ i ] <= 0x87 ) || ptr[ i ] == 0x89 || ptr[ i ] == 0x8B
@@ -647,7 +647,7 @@ QCString Decoder::automaticDetectionForGreek( const unsigned char* ptr, int size
     return "iso-8859-7";
 }
 
-QCString Decoder::automaticDetectionForHebrew( const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForHebrew( const unsigned char* ptr, int size )
 {
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] == 0x80 || ( ptr[ i ] >= 0x82 && ptr[ i ] <= 0x89 ) || ptr[ i ] == 0x8B
@@ -663,7 +663,7 @@ QCString Decoder::automaticDetectionForHebrew( const unsigned char* ptr, int siz
     return "iso-8859-8-i";
 }
 
-QCString Decoder::automaticDetectionForJapanese( const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForJapanese( const unsigned char* ptr, int size )
 {
     if (!kc)
         kc = new JapaneseCode();
@@ -684,7 +684,7 @@ QCString Decoder::automaticDetectionForJapanese( const unsigned char* ptr, int s
     return "";
 }
 
-QCString Decoder::automaticDetectionForTurkish( const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForTurkish( const unsigned char* ptr, int size )
 {
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] == 0x80 || ( ptr[ i ] >= 0x82 && ptr[ i ] <= 0x8C ) || ( ptr[ i ] >= 0x91 && ptr[ i ] <= 0x9C ) || ptr[ i ] == 0x9F ) {
@@ -695,7 +695,7 @@ QCString Decoder::automaticDetectionForTurkish( const unsigned char* ptr, int si
     return "iso-8859-9";
 }
 
-QCString Decoder::automaticDetectionForWesternEuropean( const unsigned char* ptr, int size )
+Q3CString Decoder::automaticDetectionForWesternEuropean( const unsigned char* ptr, int size )
 {
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F )

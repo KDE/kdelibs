@@ -27,7 +27,7 @@
 #include <qregexp.h>
 #include <qstring.h>
 #include <kurl.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include "addressee.h"
 #include "addressbook.h"
@@ -191,8 +191,8 @@ class KABC_EXPORT VCardLineX
 public:
   QString name;
   bool qualified;
-  QValueList<QString> qualifiers;
-  QValueList<QString> parameters;
+  Q3ValueList<QString> qualifiers;
+  Q3ValueList<QString> parameters;
   bool isValid() const;
 };
 
@@ -212,10 +212,10 @@ public:
   QStringList getValues(const QString& name, const QString& qualifier);
   QStringList getValues(const QString& name);
 
-  QValueList<VCardLineX> *_vcdata;
+  Q3ValueList<VCardLineX> *_vcdata;
 
 private:
-  VCard21ParserImpl (QValueList<VCardLineX> *_vcd);
+  VCard21ParserImpl (Q3ValueList<VCardLineX> *_vcd);
 };
 
 #endif

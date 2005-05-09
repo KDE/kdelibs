@@ -21,9 +21,9 @@
 
 #include <kdialogbase.h>
 
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 class QLineEdit;
-class QHButtonGroup;
+class Q3HButtonGroup;
 class KProcess;
 class KAboutData;
 class KBugReportPrivate;
@@ -103,12 +103,12 @@ protected:
   KProcess * m_process;
   const KAboutData * m_aboutData;
 
-  QMultiLineEdit * m_lineedit;
+  Q3MultiLineEdit * m_lineedit;
   QLineEdit * m_subject;
   QLabel * m_from;
   QLabel * m_version;
   QString m_strVersion;
-  QHButtonGroup * m_bgSeverity;
+  Q3HButtonGroup * m_bgSeverity;
   QPushButton * m_configureEmail;
 
 protected:

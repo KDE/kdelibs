@@ -469,13 +469,13 @@ static const char * const month_names[] = {
 };
 
 
-QCString KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
+Q3CString KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
 {
     utcTime += utcOffset * 60;
     tm *tM = gmtime(&utcTime);
     char sgn = (utcOffset < 0) ? '-' : '+';
     int z = (utcOffset < 0) ? -utcOffset : utcOffset;
-    QCString dateStr;
+    Q3CString dateStr;
 
     dateStr.sprintf("%s, %02d %s %04d %02d:%02d:%02d %c%02d%02d",
                     day_names[tM->tm_wday], tM->tm_mday,
@@ -487,7 +487,7 @@ QCString KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
 }
 
 
-QCString KRFCDate::rfc2822DateString(time_t utcTime)
+Q3CString KRFCDate::rfc2822DateString(time_t utcTime)
 {
     return rfc2822DateString(utcTime, localUTCOffset());
 }

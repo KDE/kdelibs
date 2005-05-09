@@ -24,11 +24,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __kpanelextension_h__
 #define __kpanelextension_h__
 
-class QPopupMenu;
+class Q3PopupMenu;
 class KConfig;
 class KPanelExtensionPrivate;
 
-#include <qframe.h>
+#include <q3frame.h>
 
 #include <kdelibs_export.h>
 
@@ -95,7 +95,7 @@ class KPanelExtensionPrivate;
  *
  * @author Matthias Elter <elter@kde.org>
  **/
-class KDEUI_EXPORT KPanelExtension : public QFrame
+class KDEUI_EXPORT KPanelExtension : public Q3Frame
 {
     Q_OBJECT
 
@@ -105,7 +105,7 @@ public:
     enum Type { Normal = 0, Stretch };
     // KDE4: Merge these with KPanelApplet's enums
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
-    enum Position { Left = 0, Right, Top, Bottom, Floating };
+    enum Position { Qt::DockLeft = 0, Qt::DockRight, Qt::DockTop, Qt::DockBottom, Floating };
     enum Alignment { LeftTop = 0, Center, RightBottom };
     /// @since 3.1
     enum Size { SizeTiny = 0, SizeSmall, SizeNormal, SizeLarge, SizeCustom };
@@ -180,7 +180,7 @@ public:
      * to this setting.
      * @return Position
      **/
-    virtual Position preferedPosition() const { return Bottom; }
+    virtual Position preferedPosition() const { return Qt::DockBottom; }
 
     /**
      * @internal
@@ -213,7 +213,7 @@ public:
      * @see setCustomMenu(QPopupMenu*)
      * @since 3.4
      */
-    QPopupMenu* customMenu() const;
+    Q3PopupMenu* customMenu() const;
 
     /**
      * @return whether or not to set a desktop geometry claiming strut for this panel
@@ -289,7 +289,7 @@ protected:
     /**
      * @return the extensions orientation. (horizontal or vertical)
      **/
-    Orientation orientation();
+    Qt::Orientation orientation();
 
     /**
      * @return the appropriate size in pixels for the panel
@@ -321,7 +321,7 @@ protected:
      * with the new menu (or 0) to avoid crashes
      * @since 3.4
      */
-    void setCustomMenu(QPopupMenu*);
+    void setCustomMenu(Q3PopupMenu*);
 
     /**
      * Use this method to set the return value for reserveStrut

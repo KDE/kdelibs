@@ -21,7 +21,7 @@
 #ifndef __k_build_service_factory_h__
 #define __k_build_service_factory_h__
 
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <qstringlist.h>
 
 #include <kservicefactory.h>
@@ -78,8 +78,8 @@ private:
   void saveOfferList(QDataStream &str);
   void saveInitList(QDataStream &str);
 
-  QDict<KService> m_serviceDict;
-  QPtrDict<KService> m_dupeDict;
+  Q3Dict<KService> m_serviceDict;
+  Q3PtrDict<KService> m_dupeDict;
   KSycocaFactory *m_serviceTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;
 };

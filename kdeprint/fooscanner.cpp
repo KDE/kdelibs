@@ -776,12 +776,12 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 64 "./fooscanner.l"
-{ yylval = QCString(yytext+1, strlen(yytext)-1); return STRING; }
+{ yylval = Q3CString(yytext+1, strlen(yytext)-1); return STRING; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 65 "./fooscanner.l"
-{ yylval = QCString(yytext+1, strlen(yytext)-1); return QUOTED; }
+{ yylval = Q3CString(yytext+1, strlen(yytext)-1); return QUOTED; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP

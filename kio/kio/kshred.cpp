@@ -39,7 +39,7 @@ KShred::KShred(QString fileName)
   {
     file = new QFile();
     file->setName(fileName);
-    if (!file->open(IO_ReadWrite))
+    if (!file->open(QIODevice::ReadWrite))
     {
       kdError() << "KShred: cannot open file '" << fileName.local8Bit().data() << "' for writing\n" << endl;
       file = 0L;

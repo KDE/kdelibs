@@ -21,14 +21,14 @@
 
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupslocationgeneral.h"
 #include "cupslocationaccess.h"
 #include "cupsdconf.h"
 
 CupsLocationDialog::CupsLocationDialog(CupsdConf *conf, QWidget *parent, const char *name)
-	: QTabDialog(parent, name, true)
+	: Q3TabDialog(parent, name, true)
 {
 	conf_ = conf;
 
@@ -82,11 +82,11 @@ void CupsLocationDialog::done(int result)
 			return;
 		}
 	}
-	QTabDialog::done(result);
+	Q3TabDialog::done(result);
 }
 
 void CupsLocationDialog::slotHelp()
 {
-	QWhatsThis::enterWhatsThisMode();
+	Q3WhatsThis::enterWhatsThisMode();
 }
 #include "cupslocationdialog.moc"

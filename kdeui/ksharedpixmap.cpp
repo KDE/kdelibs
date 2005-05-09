@@ -78,7 +78,7 @@ KSharedPixmap::~KSharedPixmap()
 void KSharedPixmap::init()
 {
     d->pixmap = XInternAtom(qt_xdisplay(), "PIXMAP", false);
-    QCString atom;
+    Q3CString atom;
     atom.sprintf("target prop for window %lx", static_cast<unsigned long int>(winId()));
     d->target = XInternAtom(qt_xdisplay(), atom.data(), false);
     d->selection = None;

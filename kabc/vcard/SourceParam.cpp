@@ -41,7 +41,7 @@ SourceParam::SourceParam(const SourceParam & x)
 {
 }
 
-SourceParam::SourceParam(const QCString & s)
+SourceParam::SourceParam(const Q3CString & s)
 	:	Param(s),
 		type_(SourceParam::TypeUnknown)
 {
@@ -60,7 +60,7 @@ SourceParam::operator = (SourceParam & x)
 }
 
 	SourceParam &
-SourceParam::operator = (const QCString & s)
+SourceParam::operator = (const Q3CString & s)
 {
 	Param::operator = (s);
 	return *this;

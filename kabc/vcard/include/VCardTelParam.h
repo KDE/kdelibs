@@ -24,7 +24,7 @@
 #ifndef  TELPARAM_H
 #define  TELPARAM_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardParam.h>
 
@@ -43,7 +43,7 @@ class KVCARD_EXPORT TelParam : public Param
 	
 	private:
 		
-		QPtrList<TelType> types_;
+		Q3PtrList<TelType> types_;
 };
 
 }

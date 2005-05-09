@@ -18,7 +18,7 @@
 #ifndef KSCROLLVIEW_H
 #define KSCROLLVIEW_H
 
-#include <qscrollview.h>
+#include <q3scrollview.h>
 
 #include <kdelibs_export.h>
 
@@ -27,7 +27,7 @@
  *
  *
  **/
-class KDEUI_EXPORT KScrollView : public QScrollView
+class KDEUI_EXPORT KScrollView : public Q3ScrollView
 {
   Q_OBJECT
 

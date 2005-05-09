@@ -584,10 +584,10 @@ yy_stack_print (bottom, top)
   YYFPRINTF (stderr, "\n");
 }
 
-# define YY_STACK_PRINT(Bottom, Top)				\
+# define YY_STACK_PRINT(Qt::DockBottom, Qt::DockTop)				\
 do {								\
   if (yydebug)							\
-    yy_stack_print ((Bottom), (Top));				\
+    yy_stack_print ((Qt::DockBottom), (Qt::DockTop));				\
 } while (0)
 
 
@@ -627,7 +627,7 @@ int yydebug;
 # define YYDPRINTF(Args)
 # define YYDSYMPRINT(Args)
 # define YYDSYMPRINTF(Title, Token, Value, Location)
-# define YY_STACK_PRINT(Bottom, Top)
+# define YY_STACK_PRINT(Qt::DockBottom, Qt::DockTop)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
 

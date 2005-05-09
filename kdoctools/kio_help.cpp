@@ -21,7 +21,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qfileinfo.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -111,11 +111,11 @@ QString HelpProtocol::lookupFile(const QString &fname,
         result = langLookup(path+"/index.html");
         if (!result.isEmpty())
 	{
-            KURL red( "help:/" );
-            red.setPath( path + "/index.html" );
-            red.setQuery( query );
-            redirection(red);
-            kdDebug( 7119 ) << "redirect to " << red.url() << endl;
+            KURL Qt::red( "help:/" );
+            Qt::red.setPath( path + "/index.html" );
+            Qt::red.setQuery( query );
+            redirection(Qt::red);
+            kdDebug( 7119 ) << "redirect to " << Qt::red.url() << endl;
             redirect = true;
 	}
         else
@@ -140,7 +140,7 @@ void HelpProtocol::unicodeError( const QString &t )
 
 HelpProtocol *slave = 0;
 
-HelpProtocol::HelpProtocol( bool ghelp, const QCString &pool, const QCString &app )
+HelpProtocol::HelpProtocol( bool ghelp, const Q3CString &pool, const Q3CString &app )
   : SlaveBase( ghelp ? "ghelp" : "help", pool, app ), mGhelp( ghelp )
 {
     slave = this;
@@ -349,7 +349,7 @@ void HelpProtocol::get_file( const KURL& url )
 {
     kdDebug( 7119 ) << "get_file " << url.url() << endl;
 
-    QCString _path( QFile::encodeName(url.path()));
+    Q3CString _path( QFile::encodeName(url.path()));
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )

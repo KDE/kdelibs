@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     //QTextCodec *codec = QTextCodec::codecForName("ISO 8859-3");
 
     // test UTF-8 (need dictionary "esperanto" and "UTF-8" in config)  
-   QCString ctext( "sed jen: e\304\245oŝanĝo ĉiuĵaŭde e\304\245uŝunĝo ĝiun fendredon kaj dimanĝon");
+   Q3CString ctext( "sed jen: e\304\245oŝanĝo ĉiuĵaŭde e\304\245uŝunĝo ĝiun fendredon kaj dimanĝon");
    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     
     QString text = codec->toUnicode(ctext.data());

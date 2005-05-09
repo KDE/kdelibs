@@ -226,13 +226,13 @@ protected slots:
      * Called when an item was activated. Emits
      * activated() with the item.
      */
-    virtual void slotActivated( QListBoxItem * );
+    virtual void slotActivated( Q3ListBoxItem * );
 
 private slots:
-    void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
+    void slotSetCurrentItem( Q3ListBoxItem *i ) { setCurrentItem( i ); } // grrr
     void slotCurrentChanged();
     void canceled();
-    void slotItemClicked( QListBoxItem * );
+    void slotItemClicked( Q3ListBoxItem * );
 
 protected:
     virtual void virtual_hook( int id, void* data );

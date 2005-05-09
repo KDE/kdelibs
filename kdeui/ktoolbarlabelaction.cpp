@@ -86,7 +86,7 @@ void KToolBarLabelAction::init()
   d->m_label->setBackgroundMode(Qt::PaletteButton);
   d->m_label->setAlignment((QApplication::reverseLayout()
 			 ? Qt::AlignRight : Qt::AlignLeft) |
- 			Qt::AlignVCenter | Qt::ShowPrefix );
+ 			Qt::AlignVCenter | Qt::TextShowMnemonic );
   d->m_label->adjustSize();
 }
 

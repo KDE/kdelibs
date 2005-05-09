@@ -29,7 +29,7 @@
 #include <assert.h>
 #include <kdesktopfile.h>
 
-template class QDict<KMimeType>;
+template class Q3Dict<KMimeType>;
 
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
   KServiceTypeFactory()
@@ -161,10 +161,10 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    // Store each patterns in one of the 2 string lists (for sorting)
    QStringList fastPatterns;  // for *.a to *.abcd
    QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
-   QDict<KMimeType> dict;
+   Q3Dict<KMimeType> dict;
 
    // For each mimetype in servicetypeFactory
-   for(QDictIterator<KSycocaEntry::Ptr> it ( *m_entryDict );
+   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *m_entryDict );
        it.current();
        ++it)
    {

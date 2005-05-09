@@ -26,7 +26,7 @@
 
 #include <assert.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 
 #include "kresolver.h"
@@ -87,9 +87,9 @@ int KResolverWorkerBase::protocol() const
   return 0;
 }
 
-QCString KResolverWorkerBase::protocolName() const
+Q3CString KResolverWorkerBase::protocolName() const
 {
-  QCString res;
+  Q3CString res;
   if (input)
     res = input->protocolName;
   return res;

@@ -10,7 +10,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qtimer.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 #include <kdebug.h>
 #include <kdialog.h>
@@ -31,16 +31,16 @@ static const int POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt
                              | Qt::WStyle_StaysOnTop | Qt::WStyle_Tool | Qt::WStyle_NoBorder;
 
 
-KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
-    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
+KPassivePopup::KPassivePopup( QWidget *parent, const char *name, Qt::WFlags f )
+    : Q3Frame( 0, name, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
     init();
 }
 
-KPassivePopup::KPassivePopup( WId win, const char *name, WFlags f )
-    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
+KPassivePopup::KPassivePopup( WId win, const char *name, Qt::WFlags f )
+    : Q3Frame( 0, name, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
@@ -49,7 +49,7 @@ KPassivePopup::KPassivePopup( WId win, const char *name, WFlags f )
 
 void KPassivePopup::init()
 {
-    setFrameStyle( QFrame::Box| QFrame::Plain );
+    setFrameStyle( Q3Frame::Box| Q3Frame::Plain );
     setLineWidth( 2 );
     connect( hideTimer, SIGNAL( timeout() ), SLOT( hide() ) );
     connect( this, SIGNAL( clicked() ), SLOT( hide() ) );
@@ -77,22 +77,22 @@ void KPassivePopup::setView( const QString &caption, const QString &text,
     setView( standardView( caption, text, icon, this ) );
 }
 
-QVBox * KPassivePopup::standardView( const QString& caption,
+Q3VBox * KPassivePopup::standardView( const QString& caption,
                                      const QString& text,
                                      const QPixmap& icon,
                                      QWidget *parent )
 {
-    QVBox *vb = new QVBox( parent ? parent : this );
+    Q3VBox *vb = new Q3VBox( parent ? parent : this );
     vb->setSpacing( KDialog::spacingHint() );
 
-    QHBox *hb=0;
+    Q3HBox *hb=0;
     if ( !icon.isNull() ) {
-	hb = new QHBox( vb );
+	hb = new Q3HBox( vb );
 	hb->setMargin( 0 );
 	hb->setSpacing( KDialog::spacingHint() );
 	ttlIcon = new QLabel( hb, "title_icon" );
 	ttlIcon->setPixmap( icon );
-        ttlIcon->setAlignment( AlignLeft );
+        ttlIcon->setAlignment( Qt::AlignLeft );
     }
 
     if ( !caption.isEmpty() ) {
@@ -107,7 +107,7 @@ QVBox * KPassivePopup::standardView( const QString& caption,
 
     if ( !text.isEmpty() ) {
         msg = new QLabel( text, vb, "msg_label" );
-        msg->setAlignment( AlignLeft );
+        msg->setAlignment( Qt::AlignLeft );
     }
 
     return vb;
@@ -146,7 +146,7 @@ void KPassivePopup::show()
 	resize( sizeHint() );
 
     positionSelf();
-    QFrame::show();
+    Q3Frame::show();
 
     int delay = hideDelay;
     if ( delay < 0 )

@@ -24,7 +24,7 @@
 #include "kmjob.h"
 #include "lprsettings.h"
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <klocale.h>
 
 KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
@@ -35,10 +35,10 @@ KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStrin
 
 bool KMLprJobManager::listJobs(const QString& prname, JobType, int limit)
 {
-	QPtrList<KMJob>	jobList;
+	Q3PtrList<KMJob>	jobList;
 	jobList.setAutoDelete(false);
 	m_lpqhelper->listJobs(jobList, prname, limit);
-	QPtrListIterator<KMJob>	it(jobList);
+	Q3PtrListIterator<KMJob>	it(jobList);
 	for (; it.current(); ++it)
 		addJob(it.current());
 	return false;
@@ -58,10 +58,10 @@ int KMLprJobManager::actions()
 		return (KMJob::Remove | KMJob::Hold | KMJob::Resume);
 }
 
-bool KMLprJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg)
+bool KMLprJobManager::sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg)
 {
 	QString	msg;
-	QPtrListIterator<KMJob>	it(jobs);
+	Q3PtrListIterator<KMJob>	it(jobs);
 	bool	status(true);
 	LpcHelper	*helper = lpcHelper();
 

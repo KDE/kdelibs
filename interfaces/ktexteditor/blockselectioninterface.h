@@ -21,7 +21,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -42,7 +42,7 @@ class KTEXTEDITOR_EXPORT BlockSelectionInterface
     unsigned int blockSelectionInterfaceNumber () const;
     
   protected:  
-    void setBlockSelectionInterfaceDCOPSuffix (const QCString &suffix);  
+    void setBlockSelectionInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   /**
   *  slots !!!

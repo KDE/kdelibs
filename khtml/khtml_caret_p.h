@@ -23,7 +23,7 @@
 
 #include "rendering/render_table.h"
 
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 #define DEBUG_CARETMODE 0
 
@@ -112,13 +112,13 @@ class LinearDocument;
  * @since 3.3
  * @internal
  */
-template<class T> class MassDeleter : public QValueVector<T *> {
+template<class T> class MassDeleter : public Q3ValueVector<T *> {
 public:
   MassDeleter(size_t reserved = 1) { this->reserve(reserved); }
   ~MassDeleter()
   {
-    typename QValueVector<T *>::Iterator nd = this->end();
-    for (typename QValueVector<T *>::Iterator it = this->begin(); it != nd; ++it)
+    typename Q3ValueVector<T *>::Iterator nd = this->end();
+    for (typename Q3ValueVector<T *>::Iterator it = this->begin(); it != nd; ++it)
       delete *it;
   }
 };
@@ -402,7 +402,7 @@ public:
   QString information() const
   {
     QString result;
-    QTextStream ts(&result, IO_WriteOnly);
+    QTextStream ts(&result, QIODevice::WriteOnly);
     dump(ts, QString::null);
     return result;
   }

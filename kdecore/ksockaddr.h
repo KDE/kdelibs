@@ -21,7 +21,7 @@
 #define KSOCKADDR_H
 
 #include <qobject.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 #include "kdelibs_export.h"
 
@@ -601,7 +601,7 @@ public:
    * Constructor from pathname.
    * @param pathname	pathname
    */
-  KUnixSocketAddress(QCString pathname);
+  KUnixSocketAddress(Q3CString pathname);
 
   /**
    * Destructor
@@ -621,14 +621,14 @@ public:
    * @param path	pathname
    * @return true if successful, false otherwise
    */
-  bool setAddress(QCString path);
+  bool setAddress(Q3CString path);
 
   /**
    * Returns the pathname.
    * @return the pathname, can be QCString::null if uninitialized, or
    *         "" if unknown
    */
-  QCString pathname() const;
+  Q3CString pathname() const;
 
   /**
    * Returns pretty representation of this socket.

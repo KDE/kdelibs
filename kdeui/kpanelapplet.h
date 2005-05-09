@@ -25,9 +25,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __kpanelapplet_h__
 
 class KConfig;
-class QPopupMenu;
+class Q3PopupMenu;
 
-#include <qframe.h>
+#include <q3frame.h>
 #include <kconfig.h>
 
 /**
@@ -94,7 +94,7 @@ class QPopupMenu;
  *
  * @author Matthias Elter <elter@kde.org>
  **/
-class KDEUI_EXPORT KPanelApplet : public QFrame
+class KDEUI_EXPORT KPanelApplet : public Q3Frame
 {
     Q_OBJECT
 
@@ -112,7 +112,7 @@ public:
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { pLeft = 0, pRight, pTop, pBottom };
     enum Alignment { LeftTop = 0, Center, RightBottom };
-    enum Direction { Up = 0, Down, Left, Right };
+    enum Qt::Orientation { Up = 0, Down, Qt::DockLeft, Qt::DockRight };
 
     /**
      * Constructs a KPanelApplet just like any other widget.
@@ -126,7 +126,7 @@ public:
      **/
     KPanelApplet(const QString& configFile, Type t = Normal,
                  int actions = 0, QWidget *parent = 0, const char *name = 0,
-                 WFlags f = 0);
+                 Qt::WFlags f = 0);
 
     /**
      * Destructor.
@@ -215,7 +215,7 @@ public:
      * @return the applet's custom menu, usually the same as the context menu, or 0 if none
      * see setCustomMenu(QPopupMenu*)
      */
-    const QPopupMenu* customMenu() const;
+    const Q3PopupMenu* customMenu() const;
 
     /**
      * @internal
@@ -302,7 +302,7 @@ protected:
     /**
      * @return the applet's orientation. (horizontal or vertical)
      **/
-    Orientation orientation() const;
+    Qt::Orientation orientation() const;
     /**
      * @return the applet's position. (top, left, bottom, or right)
      **/
@@ -335,7 +335,7 @@ protected:
      * If the menu is deleted during the life of the applet, be sure to call this method again
      * with the new menu (or 0) to avoid crashes
      */
-    void setCustomMenu(const QPopupMenu*);
+    void setCustomMenu(const Q3PopupMenu*);
 
     /**
      * Register widgets that can receive keyboard focus with this this method
@@ -361,13 +361,13 @@ protected:
      * @deprecated Reimplement positionChange instead.
      **/
     // FIXME: Remove for KDE 4
-    virtual KDE_DEPRECATED void orientationChange( Orientation /* orientation*/) {}
+    virtual KDE_DEPRECATED void orientationChange( Qt::Orientation /* orientation*/) {}
 
     /**
      * A convenience method that translates the position of the applet into which
      * direction to show a popup.
      **/
-    Direction popupDirection();
+    Qt::Orientation popupDirection();
 
     /**
      * The popup direction changed to @p direction. Reimplement this
@@ -376,7 +376,7 @@ protected:
      * @deprecated Reimplement positionChange instead.
      **/
     // FIXME: Remove for KDE 4
-    virtual KDE_DEPRECATED void popupDirectionChange( Direction /*direction*/ ) {}
+    virtual KDE_DEPRECATED void popupDirectionChange( Qt::Orientation /*direction*/ ) {}
 
     bool eventFilter(QObject *, QEvent *);
 

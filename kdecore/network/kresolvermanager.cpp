@@ -37,13 +37,13 @@
 
 #include <qapplication.h>
 #include <qstring.h>
-#include <qcstring.h>
-#include <qptrlist.h>
+#include <q3cstring.h>
+#include <q3ptrlist.h>
 #include <qtimer.h>
 #include <qmutex.h>
 #include <qthread.h>
 #include <qwaitcondition.h>
-#include <qsemaphore.h>
+#include <q3semaphore.h>
 
 #include <kde_file.h>
 #include <kdebug.h>
@@ -422,7 +422,7 @@ void KResolverManager::releaseData(KResolverThread *, RequestData* data)
 void KResolverManager::handleFinished()
 {  
   bool redo = false;
-  QPtrQueue<RequestData> doneRequests;
+  Q3PtrQueue<RequestData> doneRequests;
 
   mutex.lock();
 

@@ -25,7 +25,7 @@
 #include "render_block.h"
 
 class KHTMLView;
-class QScrollView;
+class Q3ScrollView;
 
 namespace khtml {
 
@@ -114,7 +114,7 @@ protected:
     int m_truncatedAt;
 
     int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
-    QValueList<RenderObject*> m_dirtyChildren;
+    Q3ValueList<RenderObject*> m_dirtyChildren;
 };
 
 inline RenderCanvas* RenderObject::canvas() const

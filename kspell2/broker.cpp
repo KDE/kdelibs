@@ -34,7 +34,7 @@
 
 #include <kdebug.h>
 
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <qmap.h>
 
 #define DEFAULT_CONFIG_FILE   "kspellrc"
@@ -49,12 +49,12 @@ public:
     Settings *settings;
 
     // <language, Clients with that language >
-    QMap<QString, QPtrList<Client> > languageClients;
+    QMap<QString, Q3PtrList<Client> > languageClients;
     QStringList clients;
     DefaultDictionary *defaultDictionary;
 };
 
-QPtrDict<Broker> *Broker::s_brokers = 0;
+Q3PtrDict<Broker> *Broker::s_brokers = 0;
 
 Broker *Broker::openBroker( KSharedConfig *config )
 {
@@ -80,7 +80,7 @@ Broker::Broker( KSharedConfig *config )
     Q_UNUSED( preventDeletion );
 
     if ( !s_brokers )
-        s_brokers = new QPtrDict<Broker>;
+        s_brokers = new Q3PtrDict<Broker>;
     s_brokers->insert( config, this );
 
     d = new Private;
@@ -125,14 +125,14 @@ Dictionary* Broker::dictionary( const QString& language, const QString& clientNa
         ddefault = true;
     }
 
-    QPtrList<Client> lClients = d->languageClients[ plang ];
+    Q3PtrList<Client> lClients = d->languageClients[ plang ];
 
     if ( lClients.isEmpty() ) {
         kdError()<<"No language dictionaries for the language : "<< plang <<endl;
         return 0;
     }
 
-    QPtrListIterator<Client> itr( lClients );
+    Q3PtrListIterator<Client> itr( lClients );
     while ( itr.current() ) {
         if ( !pclient.isEmpty() ) {
             if ( pclient == itr.current()->name() ) {

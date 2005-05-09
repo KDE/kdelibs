@@ -34,14 +34,14 @@
 
 #if 0
 #ifndef NDEBUG
-#	include <qcstring.h>
+#	include <q3cstring.h>
 #	include <iostream>
 #	ifdef __GNUG__
 #		define vDebug(a) cerr << className() << ":" << __FUNCTION__ << " (" \
-						<< __LINE__ << "): " << QCString((a)).data() << endl;
+						<< __LINE__ << "): " << Q3CString((a)).data() << endl;
 #	else
 #		define vDebug(a) cerr << className() << ": " \
-						<< QCString((a)).data() << endl;
+						<< Q3CString((a)).data() << endl;
 #	endif
 #else
 #	define vDebug(a)

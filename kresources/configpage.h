@@ -32,7 +32,7 @@
 class KComboBox;
 class KListView;
 
-class QListViewItem;
+class Q3ListViewItem;
 class QPushButton;
 
 namespace KRES {
@@ -79,7 +79,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     ConfigViewItem *findItem( Resource *resource );
 
   protected slots:
-    void slotItemClicked( QListViewItem * );
+    void slotItemClicked( Q3ListViewItem * );
 
   signals:
     void changed( bool );
@@ -93,7 +93,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     KConfig* mConfig;
     QString mFamily;
     QStringList mFamilyMap;
-    QValueList<KSharedPtr<ResourcePageInfo> > mInfoMap;
+    Q3ValueList<KSharedPtr<ResourcePageInfo> > mInfoMap;
 
     KComboBox* mFamilyCombo;
     KListView* mListView;
@@ -102,7 +102,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     QPushButton* mEditButton;
     QPushButton* mStandardButton;
 
-    QListViewItem* mLastItem;
+    Q3ListViewItem* mLastItem;
 };
 
 }

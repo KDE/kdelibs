@@ -29,7 +29,7 @@
 #include <qcolor.h>
 #include <qrect.h>
 #include <assert.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -585,7 +585,7 @@ public:
                     int adjbw1, int adjbw2, bool invalidisInvert = false);
 
     // Used by collapsed border tables.
-    virtual void collectBorders(QValueList<CollapsedBorderValue>& borderStyles);
+    virtual void collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles);
 
     // force a complete repaint
     virtual void repaint(bool immediate = false) { if(m_parent) m_parent->repaint(immediate); }

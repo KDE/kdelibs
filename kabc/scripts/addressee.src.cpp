@@ -39,7 +39,7 @@ using namespace KABC;
 static bool matchBinaryPattern( int value, int pattern );
 
 template <class L>
-static bool listEquals( const QValueList<L>&, const QValueList<L>& );
+static bool listEquals( const Q3ValueList<L>&, const Q3ValueList<L>& );
 static bool emailsEquals( const QStringList&, const QStringList& );
 
 KABC::SortMode *Addressee::mSortMode = 0;
@@ -493,7 +493,7 @@ PhoneNumber Addressee::findPhoneNumber( const QString &id ) const
   return PhoneNumber();
 }
 
-void Addressee::insertKey( const Key &key )
+void Addressee::insertKey( const Qt::Key &key )
 {
   detach();
   mData->empty = false;
@@ -508,7 +508,7 @@ void Addressee::insertKey( const Key &key )
   mData->keys.append( key );
 }
 
-void Addressee::removeKey( const Key &key )
+void Addressee::removeKey( const Qt::Key &key )
 {
   detach();
 
@@ -521,7 +521,7 @@ void Addressee::removeKey( const Key &key )
   }
 }
 
-Key Addressee::key( int type, QString customTypeString ) const
+Qt::Key Addressee::key( int type, QString customTypeString ) const
 {
   Key::List::ConstIterator it;
   for( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
@@ -538,7 +538,7 @@ Key Addressee::key( int type, QString customTypeString ) const
       }
     }
   }
-  return Key( QString(), type );
+  return Qt::Key( QString(), type );
 }
 
 void Addressee::setKeys( const Key::List& list )
@@ -574,7 +574,7 @@ Key::List Addressee::keys( int type, QString customTypeString ) const
   return list;
 }
 
-Key Addressee::findKey( const QString &id ) const
+Qt::Key Addressee::findKey( const QString &id ) const
 {
   Key::List::ConstIterator it;
   for( it = mData->keys.constBegin(); it != mData->keys.constEnd(); ++it ) {
@@ -582,7 +582,7 @@ Key Addressee::findKey( const QString &id ) const
       return *it;
     }
   }
-  return Key();
+  return Qt::Key();
 }
 
 QString Addressee::asString() const
@@ -826,11 +826,11 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     return; // KPIM::AddressEmpty;
 
   // The code works on 8-bit strings, so convert the input to UTF-8.
-  QCString address = rawEmail.utf8();
+  Q3CString address = rawEmail.utf8();
 
-  QCString displayName;
-  QCString addrSpec;
-  QCString comment;
+  Q3CString displayName;
+  Q3CString addrSpec;
+  Q3CString comment;
 
   // The following is a primitive parser for a mailbox-list (cf. RFC 2822).
   // The purpose is to extract a displayable string from the mailboxes.
@@ -1057,7 +1057,7 @@ bool matchBinaryPattern( int value, int pattern )
 }
 
 template <class L>
-bool listEquals( const QValueList<L> &list, const QValueList<L> &pattern )
+bool listEquals( const Q3ValueList<L> &list, const Q3ValueList<L> &pattern )
 {
   if ( list.count() != pattern.count() )
     return false;

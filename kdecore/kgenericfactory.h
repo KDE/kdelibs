@@ -85,7 +85,7 @@ protected:
     }
 
 private:
-    QCString m_instanceName;
+    Q3CString m_instanceName;
     const KAboutData *m_aboutData;
     bool m_catalogueInitialized;
 

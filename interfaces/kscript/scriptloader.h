@@ -18,7 +18,7 @@
 */
 #ifndef _script_loader_h
 #define _script_loader_h
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kmainwindow.h>
 #include <kaction.h>
 #include <kscript/scriptinterface.h>
@@ -48,7 +48,7 @@ class ScriptLoader : virtual public QObject
 		virtual void output(QString messages);
 		virtual void done(int errorCode);
 	private:
-		QPtrList<KScriptInterface> m_scripts;
+		Q3PtrList<KScriptInterface> m_scripts;
 		KSelectAction *m_theAction;
 		int m_currentSelection;
 		KMainWindow *m_parent;

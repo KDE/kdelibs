@@ -26,7 +26,7 @@
 class MetaInfoProtocol : public KIO::SlaveBase
 {
 public:
-    MetaInfoProtocol(const QCString &pool, const QCString &app);
+    MetaInfoProtocol(const Q3CString &pool, const Q3CString &app);
     virtual ~MetaInfoProtocol();
 
     virtual void get(const KURL &url);

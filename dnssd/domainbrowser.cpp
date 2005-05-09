@@ -31,7 +31,7 @@ namespace DNSSD
 class DomainBrowserPrivate 
 {
 public:
-	QDict<Query> resolvers;
+	Q3Dict<Query> resolvers;
 	QStringList m_domains;
 	bool m_recursive;
 	bool m_running;

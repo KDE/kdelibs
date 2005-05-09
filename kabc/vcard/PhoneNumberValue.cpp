@@ -37,7 +37,7 @@ PhoneNumberValue::PhoneNumberValue(const PhoneNumberValue & x)
 {
 }
 
-PhoneNumberValue::PhoneNumberValue(const QCString & s)
+PhoneNumberValue::PhoneNumberValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -52,7 +52,7 @@ PhoneNumberValue::operator = (PhoneNumberValue & x)
 }
 
 	PhoneNumberValue &
-PhoneNumberValue::operator = (const QCString & s)
+PhoneNumberValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;

@@ -27,7 +27,7 @@
 
 //////////////////
 // Needed includes
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qobject.h>
 #include "ksocketaddress.h"
 
@@ -36,8 +36,8 @@
 // Forward declarations
 struct sockaddr;
 class QString;
-class QCString;
-class QStrList;
+class Q3CString;
+class Q3StrList;
 
 //////////////////
 // Our definitions
@@ -86,7 +86,7 @@ public:
    */
   KResolverEntry(const KSocketAddress& addr, int socktype, int protocol,
 		const QString& canonName = QString::null,
-		const QCString& encodedName = QCString());
+		const Q3CString& encodedName = Q3CString());
 
   /**
    * Constructs a new KResolverEntry from raw forms of
@@ -103,7 +103,7 @@ public:
    */
   KResolverEntry(const struct sockaddr *sa, Q_UINT16 salen, int socktype,
 		int protocol, const QString& canonName = QString::null,
-		const QCString& encodedName = QCString());
+		const Q3CString& encodedName = Q3CString());
 
   /**
    * Copy constructor.
@@ -151,7 +151,7 @@ public:
    * Please note that this information is NOT to be presented to the user,
    * unless requested.
    */
-  QCString encodedName() const;
+  Q3CString encodedName() const;
 
   /**
    * Retrieves the socket type associated with this entry.
@@ -194,7 +194,7 @@ class KResolverResultsPrivate;
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KDECORE_EXPORT KResolverResults: public QValueList<KResolverEntry>
+class KDECORE_EXPORT KResolverResults: public Q3ValueList<KResolverEntry>
 {
 public:
   /**
@@ -797,7 +797,7 @@ public:
    * @return the ACE-encoded suitable for DNS queries if successful, a null
    *	     QCString if failure.
    */
-  static QCString domainToAscii(const QString& unicodeDomain);
+  static Q3CString domainToAscii(const QString& unicodeDomain);
 
   /**
    * Does the inverse of @ref domainToAscii and return an Unicode domain
@@ -817,7 +817,7 @@ public:
    * if successful, the original string if not
    * @note ACE = ASCII-Compatible Encoding, i.e., 7-bit
    */
-  static QString domainToUnicode(const QCString& asciiDomain);
+  static QString domainToUnicode(const Q3CString& asciiDomain);
 
   /**
    * The same as above, but taking a QString argument.
@@ -862,7 +862,7 @@ public:
    * @return all the protocol names in a list. The first is the "proper"
    *		name.
    */
-  static QStrList protocolName(int protonum);
+  static Q3StrList protocolName(int protonum);
 
   /**
    * Finds all aliases for a given protocol name
@@ -871,7 +871,7 @@ public:
    * @return all the protocol names in a list. The first is the "proper"
    *		name.
    */
-  static QStrList protocolName(const char *protoname);
+  static Q3StrList protocolName(const char *protoname);
 
   /**
    * Resolves a protocol name to its number
@@ -900,7 +900,7 @@ public:
    * @return all the service names in a list. The first is the "proper"
    *		name.
    */
-  static QStrList serviceName(const char *servname, const char *protoname);
+  static Q3StrList serviceName(const char *servname, const char *protoname);
 
   /**
    * Resolves a port number to its names
@@ -912,7 +912,7 @@ public:
    * @return all the service names in a list. The first is the "proper"
    *		name.
    */
-  static QStrList serviceName(int port, const char *protoname);
+  static Q3StrList serviceName(int port, const char *protoname);
 
 protected:
 

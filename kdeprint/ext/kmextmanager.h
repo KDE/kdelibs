@@ -21,7 +21,7 @@
 #define KMEXTMANAGER_H
 
 #include "kmmanager.h"
-#include <qdict.h>
+#include <q3dict.h>
 #include <qdatetime.h>
 
 class KMExtManager : public KMManager

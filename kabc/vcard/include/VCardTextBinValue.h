@@ -24,7 +24,7 @@
 #ifndef  TEXTBINVALUE_H
 #define  TEXTBINVALUE_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardValue.h>
 

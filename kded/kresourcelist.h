@@ -18,7 +18,7 @@
 #ifndef __kresourcelist_h__
 #define __kresourcelist_h__ 
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstring.h>
 #include <qregexp.h>
 
@@ -31,7 +31,7 @@ struct KSycocaResource
    QString extension; 
 };
 
-class KSycocaResourceList : public QValueList<KSycocaResource>
+class KSycocaResourceList : public Q3ValueList<KSycocaResource>
 {
 public:
    KSycocaResourceList() { };

@@ -30,7 +30,7 @@
 #include "misc/loader_client.h"
 #include "misc/shared.h"
 
-#include <qintdict.h>
+#include <q3intdict.h>
 
 namespace khtml {
     class RenderStyle;
@@ -49,7 +49,7 @@ class CSSStyleDeclarationImpl : public StyleBaseImpl
 {
 public:
     CSSStyleDeclarationImpl(CSSRuleImpl *parentRule);
-    CSSStyleDeclarationImpl(CSSRuleImpl *parentRule, QPtrList<CSSProperty> *lstValues);
+    CSSStyleDeclarationImpl(CSSRuleImpl *parentRule, Q3PtrList<CSSProperty> *lstValues);
     virtual ~CSSStyleDeclarationImpl();
 
     CSSStyleDeclarationImpl& operator=( const CSSStyleDeclarationImpl&);
@@ -77,7 +77,7 @@ public:
     virtual DOMString getPropertyValue( int propertyID ) const;
     virtual bool getPropertyPriority( int propertyID ) const;
 
-    QPtrList<CSSProperty> *values() const { return m_lstValues; }
+    Q3PtrList<CSSProperty> *values() const { return m_lstValues; }
     void setNode(NodeImpl *_node) { m_node = _node; }
 
     void setChanged();
@@ -88,7 +88,7 @@ protected:
     DOMString getShortHandValue( const int* properties, int number ) const;
     DOMString get4Values( const int* properties ) const;
 
-    QPtrList<CSSProperty> *m_lstValues;
+    Q3PtrList<CSSProperty> *m_lstValues;
     NodeImpl *m_node;
 
 private:
@@ -144,7 +144,7 @@ public:
     virtual DOM::DOMString cssText() const;
 
 protected:
-    QPtrList<CSSValueImpl> m_values;
+    Q3PtrList<CSSValueImpl> m_values;
 };
 
 
@@ -179,9 +179,9 @@ public:
      * this is screen/printer dependent, so we probably need a config option for this,
      * and some tool to calibrate.
      */
-    int computeLength( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
+    int computeLength( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics );
 
-    double computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
+    double computeLengthFloat( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics );
 
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }

@@ -54,7 +54,7 @@ int main( int argc, char** argv )
   {
     KTarGz tar( argv[2] );
 
-    if ( !tar.open( IO_ReadOnly ) )
+    if ( !tar.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
@@ -74,7 +74,7 @@ int main( int argc, char** argv )
   {
     KTarGz tar( argv[2] );
 
-    if ( !tar.open( IO_WriteOnly ) )
+    if ( !tar.open( QIODevice::WriteOnly ) )
     {
       printf("Could not open %s for writing\n", argv[1]);
       return 1;
@@ -105,7 +105,7 @@ int main( int argc, char** argv )
 
     printf("-----------------------\n");
 
-    if ( !tar.open( IO_ReadOnly ) )
+    if ( !tar.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[1] );
       return 1;
@@ -131,7 +131,7 @@ int main( int argc, char** argv )
   {
     KTarGz tar( argv[2] );
 
-    if ( !tar.open( IO_WriteOnly ) )
+    if ( !tar.open( QIODevice::WriteOnly ) )
     {
       printf("Could not open %s for writing\n", argv[1]);
       return 1;
@@ -156,7 +156,7 @@ int main( int argc, char** argv )
   else if ( command == "iodevice" )
   {
     KTarGz tar( argv[2] );
-    if ( !tar.open( IO_ReadOnly ) )
+    if ( !tar.open( QIODevice::ReadOnly ) )
       return 1;
     const KTarDirectory* dir = tar.directory();
     assert(dir);
@@ -165,7 +165,7 @@ int main( int argc, char** argv )
     {
         QIODevice *dev = static_cast<const KTarFile *>(entry)->device();
         QByteArray contents = dev->readAll();
-        printf("contents='%s'\n", QCString(contents, contents.size()+1 ).data());
+        printf("contents='%s'\n", Q3CString(contents, contents.size()+1 ).data());
     } else
         printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
     return 0;

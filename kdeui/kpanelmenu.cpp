@@ -103,7 +103,7 @@ void KPanelMenu::hideEvent(QHideEvent *ev)
         connect(&(d->t), SIGNAL(timeout()), this, SLOT(slotClear()));
         d->t.start(d->clearDelay, true);
     }
-    QPopupMenu::hideEvent(ev);
+    Q3PopupMenu::hideEvent(ev);
 }
 
 void KPanelMenu::disableAutoClear()

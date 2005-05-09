@@ -24,7 +24,7 @@
    m_unit is a define in <sys/sysmacros.h> */
 #define m_unit outouftheway_m_unit
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qvariant.h>
 #include <qobject.h>
 #include <qstring.h>
@@ -233,7 +233,7 @@ public:
         QStringList     m_supportedKeys;
         uint            m_attr;
         ItemInfo*       m_variableItemInfo;
-        QDict<ItemInfo> m_itemDict;
+        Q3Dict<ItemInfo> m_itemDict;
 
     };
 
@@ -466,14 +466,14 @@ public:
     QStringList     m_supportedKeys;
     uint            m_attr;
     //        bool            m_supportsVariableKeys : 1;
-    QDict<ItemInfo> m_itemDict;
+    Q3Dict<ItemInfo> m_itemDict;
 
 // ### this should be made private instead, but this would be BIC
 protected:
     /** @internal */
     KFileMimeTypeInfo( const QString& mimeType );
 
-    QDict<GroupInfo> m_groups;
+    Q3Dict<GroupInfo> m_groups;
     QString     m_mimeType;
     QStringList m_preferredKeys;   // same as KFileMetaInfoProvider::preferredKeys()
     QStringList m_preferredGroups; // same as KFileMetaInfoProvider::preferredKeys()
@@ -1376,13 +1376,13 @@ private:
 
     // The key is either a mimetype or a protocol. Those things don't look the same
     // so there's no need for two QDicts.
-    QDict<CachedPluginInfo> m_plugins;
+    Q3Dict<CachedPluginInfo> m_plugins;
 
     // This data is aggregated during the creation of a plugin,
     // before being moved to the appropriate CachedPluginInfo(s)
     // At any other time than during the loading of a plugin, this dict is EMPTY.
     // Same key as in m_plugins: mimetype or protocol
-    QDict<KFileMimeTypeInfo> m_pendingMimetypeInfos;
+    Q3Dict<KFileMimeTypeInfo> m_pendingMimetypeInfos;
 
 private:
     static KFileMetaInfoProvider * s_self;

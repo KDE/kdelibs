@@ -24,12 +24,12 @@
 #include "kdialogbase.h"
 #include <stdlib.h>
 
-#include <qgrid.h>
-#include <qhbox.h>
+#include <q3grid.h>
+#include <q3hbox.h>
 #include <qlayout.h>
 #include <qtooltip.h>
-#include <qvbox.h>
-#include <qwhatsthis.h>
+#include <q3vbox.h>
+#include <q3whatsthis.h>
 #include <qtimer.h>
 #include <qfocusdata.h>
 
@@ -53,7 +53,7 @@ int KDialogBaseButton::id()
     return mKey;
 }
 
-template class QPtrList<KDialogBaseButton>;
+template class Q3PtrList<KDialogBaseButton>;
 
 /**
  * @internal
@@ -78,7 +78,7 @@ struct SButton : public Qt
   QWidget *box;
   int mask;
   int style;
-  QPtrList<KDialogBaseButton> list;
+  Q3PtrList<KDialogBaseButton> list;
 };
 }// namespace
 
@@ -101,10 +101,10 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  ButtonCode defaultButton, bool separator,
 			  const KGuiItem &user1, const KGuiItem &user2,
 			  const KGuiItem &user3 )
-  :KDialog( parent, name, modal, WStyle_DialogBorder ),
+  :KDialog( parent, name, modal, Qt::WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
-   mButtonOrientation(Horizontal), d(new KDialogBasePrivate)
+   mButtonOrientation(Qt::Horizontal), d(new KDialogBasePrivate)
 {
   setCaption( caption );
 
@@ -123,10 +123,10 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 			  QWidget *parent, const char *name, bool modal,
 			  bool separator, const KGuiItem &user1,
 			  const KGuiItem &user2, const KGuiItem &user3 )
-  :KDialog( parent, name, modal, WStyle_DialogBorder ),
+  :KDialog( parent, name, modal, Qt::WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
-   mButtonOrientation(Horizontal), d(new KDialogBasePrivate)
+   mButtonOrientation(Qt::Horizontal), d(new KDialogBasePrivate)
 {
   setCaption( caption );
 
@@ -146,7 +146,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   setupLayout();
 }
 
-KDialogBase::KDialogBase(  KDialogBase::DialogType dialogFace, WFlags f, QWidget *parent, const char *name,
+KDialogBase::KDialogBase(  KDialogBase::DialogType dialogFace, Qt::WFlags f, QWidget *parent, const char *name,
 		          bool modal,
 			  const QString &caption, int buttonMask,
 			  ButtonCode defaultButton, bool separator,
@@ -155,7 +155,7 @@ KDialogBase::KDialogBase(  KDialogBase::DialogType dialogFace, WFlags f, QWidget
   :KDialog( parent, name, modal, f ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
-   mButtonOrientation(Horizontal), d(new KDialogBasePrivate)
+   mButtonOrientation(Qt::Horizontal), d(new KDialogBasePrivate)
 {
   setCaption( caption );
 
@@ -180,10 +180,10 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 			  QWidget *parent, const char *name, bool modal,
 			  bool separator, const KGuiItem &yes,
 			  const KGuiItem &no, const KGuiItem &cancel )
-  :KDialog( parent, name, modal, WStyle_DialogBorder ),
+  :KDialog( parent, name, modal, Qt::WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
-   mButtonOrientation(Horizontal),mEscapeButton(escapeButton),
+   mButtonOrientation(Qt::Horizontal),mEscapeButton(escapeButton),
    d(new KDialogBasePrivate)
 {
   setCaption( caption );
@@ -235,7 +235,7 @@ void SButton::resize( bool sameWidth, int margin,
     if( s.width() > w ) { w = s.width(); }
   }
 
-  if( orientation == Horizontal )
+  if( orientation == Qt::Horizontal )
   {
     for( p = list.first(); p; p =  list.next() )
     {
@@ -299,7 +299,7 @@ void KDialogBase::setupLayout()
   // mTopLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
 
 
-  if( mButtonOrientation == Horizontal )
+  if( mButtonOrientation == Qt::Horizontal )
   {
     mTopLayout = new QBoxLayout( this, QBoxLayout::TopToBottom,
 				 marginHint(), spacingHint() );
@@ -312,7 +312,7 @@ void KDialogBase::setupLayout()
 
   if( mUrlHelp )
   {
-    mTopLayout->addWidget( mUrlHelp, 0, AlignRight );
+    mTopLayout->addWidget( mUrlHelp, 0, Qt::AlignRight );
   }
 
   if( mJanus )
@@ -349,10 +349,10 @@ void KDialogBase::setButtonBoxOrientation( int orientation )
     mButtonOrientation = orientation;
     if( mActionSep )
     {
-      mActionSep->setOrientation( mButtonOrientation == Horizontal ?
-				  QFrame::HLine : QFrame::VLine );
+      mActionSep->setOrientation( mButtonOrientation == Qt::Horizontal ?
+				  Q3Frame::HLine : Q3Frame::VLine );
     }
-    if( mButtonOrientation == Vertical )
+    if( mButtonOrientation == Qt::Vertical )
     {
       enableLinkedHelp(false); // 2000-06-18 Espen: No support for this yet.
     }
@@ -395,9 +395,9 @@ void KDialogBase::enableButtonSeparator( bool state )
       return;
     }
     mActionSep = new KSeparator( this );
-    mActionSep->setFocusPolicy(QWidget::NoFocus);
-    mActionSep->setOrientation( mButtonOrientation == Horizontal ?
-				QFrame::HLine : QFrame::VLine );
+    mActionSep->setFocusPolicy(Qt::NoFocus);
+    mActionSep->setOrientation( mButtonOrientation == Qt::Horizontal ?
+				Q3Frame::HLine : Q3Frame::VLine );
     mActionSep->show();
   }
   else
@@ -417,7 +417,7 @@ void KDialogBase::enableButtonSeparator( bool state )
 
 
 
-QFrame *KDialogBase::plainPage()
+Q3Frame *KDialogBase::plainPage()
 {
 	return ( mJanus ? mJanus->plainPage() : 0 );
 }
@@ -506,7 +506,7 @@ QSize KDialogBase::minimumSizeHint() const
   if( d->mButton.box )
   {
     s2 = d->mButton.box->minimumSize();
-    if( mButtonOrientation == Horizontal )
+    if( mButtonOrientation == Qt::Horizontal )
     {
       s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
       s1.rheight() += s2.rheight();
@@ -686,7 +686,7 @@ void KDialogBase::setButtonStyle( int style )
     layoutMax = 6;
     layout = layoutRule[ d->mButton.style ];
   }
-  else if (mButtonOrientation == Horizontal)
+  else if (mButtonOrientation == Qt::Horizontal)
   {
     static const int layoutRule[5][10] =
     {
@@ -720,7 +720,7 @@ void KDialogBase::setButtonStyle( int style )
   }
 
   QBoxLayout *lay;
-  if( mButtonOrientation == Horizontal )
+  if( mButtonOrientation == Qt::Horizontal )
   {
     lay = new QBoxLayout( d->mButton.box, QBoxLayout::LeftToRight, 0,
 			  spacingHint());
@@ -909,7 +909,7 @@ void KDialogBase::setButtonOKText( const QString &text,
   d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip.isEmpty() ? i18n("Accept settings") : tooltip );
-  QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
+  Q3WhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
 }
 
 
@@ -939,7 +939,7 @@ void KDialogBase::setButtonApplyText( const QString &text,
   d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip.isEmpty() ? i18n("Apply settings") : tooltip );
-  QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
+  Q3WhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
 }
 
 
@@ -963,7 +963,7 @@ void KDialogBase::setButtonCancelText( const QString& text,
   d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip );
-  QWhatsThis::add( pb, quickhelp );
+  Q3WhatsThis::add( pb, quickhelp );
 }
 
 
@@ -1019,9 +1019,9 @@ void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
   if( pb )
   {
     if (text.isEmpty())
-      QWhatsThis::remove( pb );
+      Q3WhatsThis::remove( pb );
     else
-      QWhatsThis::add( pb, text );
+      Q3WhatsThis::add( pb, text );
   }
 }
 
@@ -1293,40 +1293,40 @@ void KDialogBase::setHelpLinkText( const QString &text )
 }
 
 
-QFrame *KDialogBase::addPage( const QString &itemName, const QString &header,
+Q3Frame *KDialogBase::addPage( const QString &itemName, const QString &header,
 			      const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addPage( itemName, header, pixmap ) : 0);
 }
 
-QFrame *KDialogBase::addPage( const QStringList &items, const QString &header,
+Q3Frame *KDialogBase::addPage( const QStringList &items, const QString &header,
 			      const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addPage( items, header, pixmap ) : 0);
 }
 
 
-QVBox *KDialogBase::addVBoxPage( const QString &itemName,
+Q3VBox *KDialogBase::addVBoxPage( const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addVBoxPage( itemName, header, pixmap) : 0);
 }
 
-QVBox *KDialogBase::addVBoxPage( const QStringList &items,
+Q3VBox *KDialogBase::addVBoxPage( const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addVBoxPage( items, header, pixmap) : 0);
 }
 
 
-QHBox *KDialogBase::addHBoxPage( const QString &itemName,
+Q3HBox *KDialogBase::addHBoxPage( const QString &itemName,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addHBoxPage( itemName, header, pixmap ) : 0);
 }
 
-QHBox *KDialogBase::addHBoxPage( const QStringList &items,
+Q3HBox *KDialogBase::addHBoxPage( const QStringList &items,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
@@ -1334,14 +1334,14 @@ QHBox *KDialogBase::addHBoxPage( const QStringList &items,
 }
 
 
-QGrid *KDialogBase::addGridPage( int n, Orientation dir,
+Q3Grid *KDialogBase::addGridPage( int n, Qt::Orientation dir,
 				 const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addGridPage( n, dir, itemName, header, pixmap) : 0);
 }
 
-QGrid *KDialogBase::addGridPage( int n, Orientation dir,
+Q3Grid *KDialogBase::addGridPage( int n, Qt::Orientation dir,
 				 const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
@@ -1356,7 +1356,7 @@ void KDialogBase::setFolderIcon(const QStringList &path, const QPixmap &pixmap)
   mJanus->setFolderIcon(path,pixmap);
 }
 
-QFrame *KDialogBase::makeMainWidget()
+Q3Frame *KDialogBase::makeMainWidget()
 {
   if( mJanus || mMainWidget )
   {
@@ -1364,13 +1364,13 @@ QFrame *KDialogBase::makeMainWidget()
     return 0;
   }
 
-  QFrame *mainWidget = new QFrame( this );
+  Q3Frame *mainWidget = new Q3Frame( this );
   setMainWidget( mainWidget );
   return mainWidget;
 }
 
 
-QVBox *KDialogBase::makeVBoxMainWidget()
+Q3VBox *KDialogBase::makeVBoxMainWidget()
 {
   if( mJanus || mMainWidget )
   {
@@ -1378,14 +1378,14 @@ QVBox *KDialogBase::makeVBoxMainWidget()
     return 0;
   }
 
-  QVBox *mainWidget = new QVBox( this );
+  Q3VBox *mainWidget = new Q3VBox( this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
   return mainWidget;
 }
 
 
-QHBox *KDialogBase::makeHBoxMainWidget()
+Q3HBox *KDialogBase::makeHBoxMainWidget()
 {
   if( mJanus || mMainWidget )
   {
@@ -1393,14 +1393,14 @@ QHBox *KDialogBase::makeHBoxMainWidget()
     return 0;
   }
 
-  QHBox *mainWidget = new QHBox( this );
+  Q3HBox *mainWidget = new Q3HBox( this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
   return mainWidget;
 }
 
 
-QGrid *KDialogBase::makeGridMainWidget( int n, Orientation dir )
+Q3Grid *KDialogBase::makeGridMainWidget( int n, Qt::Orientation dir )
 {
   if( mJanus || mMainWidget )
   {
@@ -1408,7 +1408,7 @@ QGrid *KDialogBase::makeGridMainWidget( int n, Orientation dir )
     return 0;
   }
 
-  QGrid *mainWidget = new QGrid( n, dir, this );
+  Q3Grid *mainWidget = new Q3Grid( n, dir, this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
   return mainWidget;
@@ -1449,7 +1449,7 @@ void KDialogBase::setMainWidget( QWidget *widget )
   {
     QFocusData* fd = focusData();
     QWidget* prev = fd->last();
-    for( QPtrListIterator<KDialogBaseButton> it( d->mButton.list );
+    for( Q3PtrListIterator<KDialogBaseButton> it( d->mButton.list );
 	 it != NULL;
 	 ++it )
     {
@@ -1558,7 +1558,7 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
   //
   if( e->state() == 0 )
   {
-    if( e->key() == Key_F1 )
+    if( e->key() == Qt::Key_F1 )
     {
       QPushButton *pb = actionButton( Help );
       if( pb )
@@ -1568,7 +1568,7 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
 	return;
       }
     }
-    if( e->key() == Key_Escape )
+    if( e->key() == Qt::Key_Escape )
     {
       QPushButton *pb = actionButton( mEscapeButton );
       if( pb )
@@ -1580,16 +1580,16 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
 
     }
   }
-  else if( e->key() == Key_F1 && e->state() == ShiftButton )
+  else if( e->key() == Qt::Key_F1 && e->state() == Qt::ShiftModifier )
   {
-    QWhatsThis::enterWhatsThisMode();
+    Q3WhatsThis::enterWhatsThisMode();
     e->accept();
     return;
   }
 
   // accept the dialog when Ctrl-Return is pressed
-  else if ( e->state() == ControlButton &&
-            (e->key() == Key_Return || e->key() == Key_Enter) )
+  else if ( e->state() == Qt::ControlModifier &&
+            (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) )
   {
     QPushButton *pb = actionButton( Ok );
     if ( pb )
@@ -1691,9 +1691,9 @@ void KDialogBase::updateBackground()
     if( d->mButton.box )
     {
       d->mButton.box->setBackgroundPixmap(nullPixmap);
-      d->mButton.box->setBackgroundMode(PaletteBackground);
+      d->mButton.box->setBackgroundMode(Qt::PaletteBackground);
     }
-    setBackgroundMode(PaletteBackground);
+    setBackgroundMode(Qt::PaletteBackground);
   }
   else
   {
@@ -1713,14 +1713,14 @@ void KDialogBase::showTile( bool state )
   mShowTile = state;
   if( !mShowTile || !mTile || !mTile->get() )
   {
-    setBackgroundMode(PaletteBackground);
+    setBackgroundMode(Qt::PaletteBackground);
     if( d->mButton.box )
     {
-      d->mButton.box->setBackgroundMode(PaletteBackground);
+      d->mButton.box->setBackgroundMode(Qt::PaletteBackground);
     }
     if( mUrlHelp )
     {
-      mUrlHelp->setBackgroundMode(PaletteBackground);
+      mUrlHelp->setBackgroundMode(Qt::PaletteBackground);
     }
   }
   else

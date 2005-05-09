@@ -21,11 +21,11 @@
 #define KDEPRINTD_H
 
 #include <kdedmodule.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstringlist.h>
-#include <qptrdict.h>
-#include <qguardedptr.h>
-#include <qintdict.h>
+#include <q3ptrdict.h>
+#include <qpointer.h>
+#include <q3intdict.h>
 
 class KPrintProcess;
 class KProcess;
@@ -37,7 +37,7 @@ class KDEPrintd : public KDEDModule
 	K_DCOP
 
 public:
-	KDEPrintd(const QCString& obj);
+	KDEPrintd(const Q3CString& obj);
 	~KDEPrintd();
 
 k_dcop:
@@ -58,9 +58,9 @@ protected:
 
 private:
 	class Request;
-	QPtrList<KPrintProcess>	m_processpool;
-	QIntDict<StatusWindow>	m_windows;
-	QPtrList<Request>       m_requestsPending;
+	Q3PtrList<KPrintProcess>	m_processpool;
+	Q3IntDict<StatusWindow>	m_windows;
+	Q3PtrList<Request>       m_requestsPending;
 };
 
 #endif

@@ -16,7 +16,7 @@
 #include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qwidget.h>
 
 #include <kmainwindow.h>
@@ -51,7 +51,7 @@ protected:
   QLineEdit *le_dest;
 
   // operation stuff
-  QButtonGroup *opButtons;
+  Q3ButtonGroup *opButtons;
 
   QRadioButton *rbList;
   QRadioButton *rbListRecursive;
@@ -66,7 +66,7 @@ protected:
   QRadioButton *rbMimetype;
 
   // progress stuff
-  QButtonGroup *progressButtons;
+  Q3ButtonGroup *progressButtons;
 
   QRadioButton *rbProgressNone;
   QRadioButton *rbProgressDefault;

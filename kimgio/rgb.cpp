@@ -332,9 +332,9 @@ uint RLEMap::insert(const uchar *d, uint l)
 }
 
 
-QPtrVector<RLEData> RLEMap::vector()
+Q3PtrVector<RLEData> RLEMap::vector()
 {
-	QPtrVector<RLEData> v(size());
+	Q3PtrVector<RLEData> v(size());
 	for (Iterator it = begin(); it != end(); it++)
 		v.insert(it.data(), &it.key());
 
@@ -390,8 +390,8 @@ uint SGIImage::compact(uchar *d, uchar *s)
 bool SGIImage::scanData(const QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
-	QCString lineguard(m_xsize * 2);
-	QCString bufguard(m_xsize);
+	Q3CString lineguard(m_xsize * 2);
+	Q3CString bufguard(m_xsize);
 	uchar *line = (uchar *)lineguard.data();
 	uchar *buf = (uchar *)bufguard.data();
 	QRgb *c;

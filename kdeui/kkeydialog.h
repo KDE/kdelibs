@@ -21,13 +21,13 @@
 #ifndef __KKEYDIALOG_H__
 #define __KKEYDIALOG_H__
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <kdialogbase.h>
 #include <klistview.h>
 
-class QButtonGroup;
+class Q3ButtonGroup;
 class QCheckBox;
-class QGroupBox;
+class Q3GroupBox;
 class QLabel;
 class QLineEdit;
 class QRadioButton;
@@ -187,10 +187,10 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	void slotNoKey();
 	void slotDefaultKey();
 	void slotCustomKey();
-	void slotListItemSelected( QListViewItem *item );
+	void slotListItemSelected( Q3ListViewItem *item );
 	void capturedShortcut( const KShortcut& cut );
         void slotSettingsChanged( int );
-        void slotListItemDoubleClicked ( QListViewItem * ipoQListViewItem, const QPoint & ipoQPoint, int c );
+        void slotListItemDoubleClicked ( Q3ListViewItem * ipoQListViewItem, const QPoint & ipoQPoint, int c );
 
  protected:
 	ActionType m_type;

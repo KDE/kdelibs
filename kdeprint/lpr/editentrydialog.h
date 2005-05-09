@@ -27,9 +27,9 @@ class QLineEdit;
 class QCheckBox;
 class QSpinBox;
 class QComboBox;
-class QListView;
+class Q3ListView;
 class QListviewItem;
-class QWidgetStack;
+class Q3WidgetStack;
 
 class EditEntryDialog : public KDialogBase
 {
@@ -40,7 +40,7 @@ public:
 	void fillEntry(PrintcapEntry *entry);
 
 protected slots:
-	void slotItemSelected(QListViewItem*);
+	void slotItemSelected(Q3ListViewItem*);
 	void slotChanged();
 	void slotTypeChanged(int);
 
@@ -53,8 +53,8 @@ private:
 	QCheckBox	*m_boolean;
 	QComboBox	*m_type;
 	QSpinBox	*m_number;
-	QListView	*m_view;
-	QWidgetStack	*m_stack;
+	Q3ListView	*m_view;
+	Q3WidgetStack	*m_stack;
 	QString		m_current;
 	bool		m_block;
 };

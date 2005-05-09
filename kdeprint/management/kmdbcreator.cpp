@@ -21,7 +21,7 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-#include <qprogressdialog.h>
+#include <q3progressdialog.h>
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <klocale.h>
@@ -109,7 +109,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	{
 		if (!m_dlg)
 		{
-			m_dlg = new QProgressDialog(parent->topLevelWidget(),"progress-dialog",true);
+			m_dlg = new Q3ProgressDialog(parent->topLevelWidget(),"progress-dialog",true);
 			m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
 			m_dlg->setCaption(i18n("Driver Database"));
 			connect(m_dlg,SIGNAL(canceled()),SLOT(slotCancelled()));
@@ -127,7 +127,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 void KMDBCreator::slotReceivedStdout(KProcess*, char *buf, int len)
 {
 	// save buffer
-	QString	str( QCString(buf, len) );
+	QString	str( Q3CString(buf, len) );
 
 	// get the number, cut the string at the first '\n' otherwise
 	// the toInt() will return 0. If that occurs for the first number,

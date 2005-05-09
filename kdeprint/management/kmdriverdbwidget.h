@@ -23,7 +23,7 @@
 #include <qwidget.h>
 #include "kmdbentry.h"
 
-class QListBox;
+class Q3ListBox;
 class QCheckBox;
 class QPushButton;
 
@@ -55,8 +55,8 @@ protected slots:
 	void slotError(const QString&);
 
 private:
-	QListBox	*m_manu;
-	QListBox	*m_model;
+	Q3ListBox	*m_manu;
+	Q3ListBox	*m_model;
 	QCheckBox	*m_postscript;
 	QCheckBox	*m_raw;
 	QPushButton	*m_other;

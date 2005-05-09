@@ -19,7 +19,7 @@
 #include <iostream>
 
 #include <qfile.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -317,7 +317,7 @@ static void printList( const QStringList& list )
     cout << endl;
 }
 
-static void processMetaDataOptions( const QPtrList<FileProps> propList,
+static void processMetaDataOptions( const Q3PtrList<FileProps> propList,
                                     KCmdLineArgs *args )
 {
 // kfile --mimetype --supportedMimetypes --listsupported --listavailable --listpreferred --listwritable --getValue "key" --setValue "key=value" --allValues --preferredValues --dialog --quiet file [file...]
@@ -325,7 +325,7 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
 
     QString line("-- -------------------------------------------------------");
     FileProps *props;
-    QPtrListIterator<FileProps> it( propList );
+    Q3PtrListIterator<FileProps> it( propList );
     for ( ; (props = it.current()); ++it )
     {
         QString file = props->fileName() + " ";
@@ -425,7 +425,7 @@ int main( int argc, char **argv )
 
     KApplication app( useGUI, useGUI );
 
-    QPtrList<FileProps> m_props;
+    Q3PtrList<FileProps> m_props;
     m_props.setAutoDelete( true );
 
     bool quiet = args->isSet( "quiet" );

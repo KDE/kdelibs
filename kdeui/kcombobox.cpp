@@ -21,8 +21,8 @@
 */
 
 #include <qclipboard.h>
-#include <qlistbox.h>
-#include <qpopupmenu.h>
+#include <q3listbox.h>
+#include <q3popupmenu.h>
 #include <qapplication.h>
 
 #include <kcompletionbox.h>
@@ -293,8 +293,8 @@ void KComboBox::setLineEdit( QLineEdit *edit )
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
 
         connect( d->klineEdit,
-                 SIGNAL( aboutToShowContextMenu( QPopupMenu * )),
-                 SIGNAL( aboutToShowContextMenu( QPopupMenu * )) );
+                 SIGNAL( aboutToShowContextMenu( Q3PopupMenu * )),
+                 SIGNAL( aboutToShowContextMenu( Q3PopupMenu * )) );
 
         connect( d->klineEdit,
                  SIGNAL( completionBoxActivated( const QString& )),
@@ -370,12 +370,12 @@ void KHistoryCombo::init( bool useCompletion )
     myPixProvider = 0L;
 
     // obey HISTCONTROL setting
-    QCString histControl = getenv("HISTCONTROL");
+    Q3CString histControl = getenv("HISTCONTROL");
     if ( histControl == "ignoredups" || histControl == "ignoreboth" )
         setDuplicatesEnabled( false );
 
-    connect( this, SIGNAL(aboutToShowContextMenu(QPopupMenu*)),
-             SLOT(addContextMenuItems(QPopupMenu*)) );
+    connect( this, SIGNAL(aboutToShowContextMenu(Q3PopupMenu*)),
+             SLOT(addContextMenuItems(Q3PopupMenu*)) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
 }
@@ -433,7 +433,7 @@ void KHistoryCombo::clearHistory()
     setEditText( temp );
 }
 
-void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
+void KHistoryCombo::addContextMenuItems( Q3PopupMenu* menu )
 {
     if ( menu )
     {
@@ -610,7 +610,7 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 void KHistoryCombo::wheelEvent( QWheelEvent *ev )
 {
     // Pass to poppable listbox if it's up
-    QListBox* const lb = listBox();
+    Q3ListBox* const lb = listBox();
     if ( lb && lb->isVisible() )
     {
         QApplication::sendEvent( lb, ev );

@@ -56,7 +56,7 @@ bool KateSyntaxDocument::setIdentifier(const QString& identifier)
     // let's open the new file
     QFile f( identifier );
 
-    if ( f.open(IO_ReadOnly) )
+    if ( f.open(QIODevice::ReadOnly) )
     {
       // Let's parse the contets of the xml file
       /* The result of this function should be check for robustness,
@@ -389,7 +389,7 @@ void KateSyntaxDocument::setupModeList (bool force)
       // We're forced to read the xml files or the mode doesn't exist in the katesyntax...rc
       QFile f(*it);
 
-      if (f.open(IO_ReadOnly))
+      if (f.open(QIODevice::ReadOnly))
       {
         // Ok we opened the file, let's read the contents and close the file
         /* the return of setContent should be checked because a false return shows a parsing error */

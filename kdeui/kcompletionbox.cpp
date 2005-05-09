@@ -45,7 +45,7 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
- :KListBox( parent, name, WType_Popup ), d(new KCompletionBoxPrivate)
+ :KListBox( parent, name, Qt::WType_Popup ), d(new KCompletionBoxPrivate)
 {
 
     d->m_parent        = parent;
@@ -56,24 +56,24 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 
     setColumnMode( 1 );
     setLineWidth( 1 );
-    setFrameStyle( QFrame::Box | QFrame::Plain );
+    setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
 
     if ( parent )
         setFocusProxy( parent );
     else
-        setFocusPolicy( NoFocus );
+        setFocusPolicy( Qt::NoFocus );
 
     setVScrollBarMode( Auto );
     setHScrollBarMode( AlwaysOff );
 
-    connect( this, SIGNAL( doubleClicked( QListBoxItem * )),
-             SLOT( slotActivated( QListBoxItem * )) );
+    connect( this, SIGNAL( doubleClicked( Q3ListBoxItem * )),
+             SLOT( slotActivated( Q3ListBoxItem * )) );
 
     // grmbl, just QListBox workarounds :[ Thanks Volker.
-    connect( this, SIGNAL( currentChanged( QListBoxItem * )),
+    connect( this, SIGNAL( currentChanged( Q3ListBoxItem * )),
              SLOT( slotCurrentChanged() ));
-    connect( this, SIGNAL( clicked( QListBoxItem * )),
-             SLOT( slotItemClicked( QListBoxItem * )) );
+    connect( this, SIGNAL( clicked( Q3ListBoxItem * )),
+             SLOT( slotItemClicked( Q3ListBoxItem * )) );
 }
 
 KCompletionBox::~KCompletionBox()
@@ -86,7 +86,7 @@ QStringList KCompletionBox::items() const
 {
     QStringList list;
 
-    const QListBoxItem* currItem = firstItem();
+    const Q3ListBoxItem* currItem = firstItem();
 
     while (currItem) {
         list.append(currItem->text());
@@ -96,7 +96,7 @@ QStringList KCompletionBox::items() const
     return list;
 }
 
-void KCompletionBox::slotActivated( QListBoxItem *item )
+void KCompletionBox::slotActivated( Q3ListBoxItem *item )
 {
     if ( !item )
         return;
@@ -114,26 +114,26 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
-                    case Key_BackTab:
-                        if ( d->tabHandling && (ev->state() == NoButton ||
-                             (ev->state() & ShiftButton)) ) {
+                    case Qt::Key_Backtab:
+                        if ( d->tabHandling && (ev->state() == Qt::NoButton ||
+                             (ev->state() & Qt::ShiftModifier)) ) {
                             up();
                             ev->accept();
                             return true;
                         }
                         break;
-                    case Key_Tab:
-                        if ( d->tabHandling && (ev->state() == NoButton) ) {
+                    case Qt::Key_Tab:
+                        if ( d->tabHandling && (ev->state() == Qt::NoButton) ) {
                             down(); // Only on TAB!!
                             ev->accept();
                             return true;
                         }
                         break;
-                    case Key_Down:
+                    case Qt::Key_Down:
                         down();
                         ev->accept();
                         return true;
-                    case Key_Up:
+                    case Qt::Key_Up:
                         // If there is no selected item and we've popped up above
                         // our parent, select the first item when they press up.
                         if ( selectedItem() ||
@@ -144,35 +144,35 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                             down();
                         ev->accept();
                         return true;
-                    case Key_Prior:
+                    case Qt::Key_PageUp:
                         pageUp();
                         ev->accept();
                         return true;
-                    case Key_Next:
+                    case Qt::Key_PageDown:
                         pageDown();
                         ev->accept();
                         return true;
-                    case Key_Escape:
+                    case Qt::Key_Escape:
                         canceled();
                         ev->accept();
                         return true;
-                    case Key_Enter:
-                    case Key_Return:
-                        if ( ev->state() & ShiftButton ) {
+                    case Qt::Key_Enter:
+                    case Qt::Key_Return:
+                        if ( ev->state() & Qt::ShiftModifier ) {
                             hide();
                             ev->accept();  // Consume the Enter event
                             return true;
                         }
                         break;
-                    case Key_End:
-                        if ( ev->state() & ControlButton )
+                    case Qt::Key_End:
+                        if ( ev->state() & Qt::ControlModifier )
                         {
                             end();
                             ev->accept();
                             return true;
                         }
-                    case Key_Home:
-                        if ( ev->state() & ControlButton )
+                    case Qt::Key_Home:
+                        if ( ev->state() & Qt::ControlModifier )
                         {
                             home();
                             ev->accept();
@@ -182,33 +182,33 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         break;
                 }
             }
-            else if ( type == QEvent::AccelOverride ) {
+            else if ( type == QEvent::ShortcutOverride ) {
                 // Override any acceleartors that match
                 // the key sequences we use here...
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
-                    case Key_Down:
-                    case Key_Up:
-                    case Key_Prior:
-                    case Key_Next:
-                    case Key_Escape:
-                    case Key_Enter:
-                    case Key_Return:
+                    case Qt::Key_Down:
+                    case Qt::Key_Up:
+                    case Qt::Key_PageUp:
+                    case Qt::Key_PageDown:
+                    case Qt::Key_Escape:
+                    case Qt::Key_Enter:
+                    case Qt::Key_Return:
                       ev->accept();
                       return true;
                       break;
-                    case Key_Tab:
-                    case Key_BackTab:
-                        if ( ev->state() == NoButton ||
-                            (ev->state() & ShiftButton))
+                    case Qt::Key_Tab:
+                    case Qt::Key_Backtab:
+                        if ( ev->state() == Qt::NoButton ||
+                            (ev->state() & Qt::ShiftModifier))
                         {
                             ev->accept();
                             return true;
                         }
                         break;
-                    case Key_Home:
-                    case Key_End:
-                        if ( ev->state() & ControlButton )
+                    case Qt::Key_Home:
+                    case Qt::Key_End:
+                        if ( ev->state() & Qt::ControlModifier )
                         {
                             ev->accept();
                             return true;
@@ -451,7 +451,7 @@ void KCompletionBox::canceled()
         hide();
 }
 
-class KCompletionBoxItem : public QListBoxItem
+class KCompletionBoxItem : public Q3ListBoxItem
 {
 public:
     //Returns true if dirty.
@@ -479,7 +479,7 @@ void KCompletionBox::setItems( const QStringList& items )
     bool block = signalsBlocked();
     blockSignals( true );
 
-    QListBoxItem* item = firstItem();
+    Q3ListBoxItem* item = firstItem();
     if ( !item ) {
         insertStringList( items );
     }
@@ -501,7 +501,7 @@ void KCompletionBox::setItems( const QStringList& items )
             else {
                 dirty = true;
                 //Inserting an item is a way of making this dirty
-                insertItem( new QListBoxText( *it ) );
+                insertItem( new Q3ListBoxText( *it ) );
             }
         }
 
@@ -510,7 +510,7 @@ void KCompletionBox::setItems( const QStringList& items )
             dirty = true;
         }
 
-        QListBoxItem* tmp = item;
+        Q3ListBoxItem* tmp = item;
         while ( (item = tmp ) ) {
             tmp = item->next();
             delete item;
@@ -532,7 +532,7 @@ void KCompletionBox::slotCurrentChanged()
     d->down_workaround = false;
 }
 
-void KCompletionBox::slotItemClicked( QListBoxItem *item )
+void KCompletionBox::slotItemClicked( Q3ListBoxItem *item )
 {
     if ( item )
     {

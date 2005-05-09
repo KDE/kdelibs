@@ -43,7 +43,7 @@ const QByteArray& Entry::value() const {
 
 QString Entry::password() const {
 QString x;
-	QDataStream qds(_value, IO_ReadOnly);
+	QDataStream qds(_value, QIODevice::ReadOnly);
 	qds >> x;
 	return x;
 }
@@ -59,7 +59,7 @@ void Entry::setValue(const QByteArray& val) {
 
 void Entry::setValue(const QString& val) {
 	_value.fill(0);
-	QDataStream qds(_value, IO_WriteOnly);
+	QDataStream qds(_value, QIODevice::WriteOnly);
 	qds << val;
 }
 

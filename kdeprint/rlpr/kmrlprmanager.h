@@ -21,7 +21,7 @@
 #define KMRLPRMANAGER_H
 
 #include "kmmanager.h"
-#include <qdict.h>
+#include <q3dict.h>
 #include <qdatetime.h>
 
 class KMRlprManager : public KMManager

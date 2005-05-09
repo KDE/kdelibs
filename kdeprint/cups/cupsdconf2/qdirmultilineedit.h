@@ -23,7 +23,7 @@
 #include <qwidget.h>
 
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 class QPushButton;
 
 class QDirMultiLineEdit : public QWidget
@@ -43,7 +43,7 @@ protected:
 private slots:
 	void slotAddClicked();
 	void slotRemoveClicked();
-	void slotSelected(QListViewItem*);
+	void slotSelected(Q3ListViewItem*);
 
 private:
 	KListView	*m_view;

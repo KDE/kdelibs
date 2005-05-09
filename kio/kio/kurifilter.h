@@ -25,7 +25,7 @@
 #ifndef __kurifilter_h__
 #define __kurifilter_h__
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
 #include <qstringlist.h>
 
@@ -440,7 +440,7 @@ private:
 /**
  * A list of filter plugins.
  */
-class KIO_EXPORT KURIFilterPluginList : public QPtrList<KURIFilterPlugin>
+class KIO_EXPORT KURIFilterPluginList : public Q3PtrList<KURIFilterPlugin>
 {
 public:
     virtual int compareItems(Item a, Item b)
@@ -609,7 +609,7 @@ public:
      *
      * @return a plugin iterator.
      */
-    QPtrListIterator<KURIFilterPlugin> pluginsIterator() const;
+    Q3PtrListIterator<KURIFilterPlugin> pluginsIterator() const;
 
     /**
      * Return a list of the names of all loaded plugins.

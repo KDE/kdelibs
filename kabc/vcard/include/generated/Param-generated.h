@@ -3,13 +3,13 @@
 public:
 Param();
 Param(const Param&);
-Param(const QCString&);
+Param(const Q3CString&);
 Param & operator = (Param&);
-Param & operator = (const QCString&);
+Param & operator = (const Q3CString&);
 bool operator ==(Param&);
 bool operator !=(Param& x) {return !(*this==x);}
-bool operator ==(const QCString& s) {Param a(s);return(*this==a);} 
-bool operator != (const QCString& s) {return !(*this == s);}
+bool operator ==(const Q3CString& s) {Param a(s);return(*this==a);} 
+bool operator != (const Q3CString& s) {return !(*this == s);}
 
 virtual ~Param();
 void parse() {if(!parsed_) _parse();parsed_=true;assembled_=false;}

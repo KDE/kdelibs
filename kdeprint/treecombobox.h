@@ -20,19 +20,19 @@
 #ifndef TREECOMBOBOX_H
 #define TREECOMBOBOX_H
 
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qcombobox.h>
 #include <qstringlist.h>
 
 /**
  * Class that represents a single object in the tree
  */
-class TreeListBoxItem : public QListBoxPixmap
+class TreeListBoxItem : public Q3ListBoxPixmap
 {
 public:
-	TreeListBoxItem(QListBox *lb, const QPixmap& pix, const QString& txt, bool oneBlock = false);
+	TreeListBoxItem(Q3ListBox *lb, const QPixmap& pix, const QString& txt, bool oneBlock = false);
 
-	virtual int width(const QListBox *lb) const;
+	virtual int width(const Q3ListBox *lb) const;
 
 protected:
 	virtual void paint(QPainter *p);
@@ -47,7 +47,7 @@ private:
 /**
  * Class for the listbox shown on popup
  */
-class TreeListBox : public QListBox
+class TreeListBox : public Q3ListBox
 {
 	friend class TreeListBoxItem;
 public:
@@ -70,7 +70,7 @@ public:
 	void insertItem(const QPixmap& pix, const QString& txt, bool oneBlock = false);
 
 private:
-	QListBox	*m_listbox;
+	Q3ListBox	*m_listbox;
 };
 
 #endif

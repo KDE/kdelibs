@@ -253,7 +253,7 @@ DrMain* PrinttoolEntry::createDriver()
 			lopt->setName("RESOLUTION");
 			lopt->set("text",i18n("Resolution"));
 			gr->addOption(lopt);
-			QPtrListIterator<Resolution>	it(m_resolutions);
+			Q3PtrListIterator<Resolution>	it(m_resolutions);
 			for (int i=0;it.current();++it,i++)
 			{
 				ch = new DrBase;
@@ -276,7 +276,7 @@ DrMain* PrinttoolEntry::createDriver()
 			lopt->setName("COLOR");
 			lopt->set("text",i18n("Color depth"));
 			gr->addOption(lopt);
-			QPtrListIterator<BitsPerPixel>	it(m_depths);
+			Q3PtrListIterator<BitsPerPixel>	it(m_depths);
 			for (int i=0;it.current();++it,i++)
 			{
 				ch = new DrBase;

@@ -26,7 +26,7 @@ Shell::Shell()
   m_part1 = new Part1(this, m_splitter);
   m_part2 = new Part2(this, m_splitter);
 
-  QPopupMenu * pFile = new QPopupMenu( this );
+  Q3PopupMenu * pFile = new Q3PopupMenu( this );
   menuBar()->insertItem( "File", pFile );
   QObject * coll = this;
   KAction * paLocal = new KAction( "&View local file", 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
@@ -44,7 +44,7 @@ Shell::Shell()
   m_paCloseEditor->plug( pFile );
 
   KAction * paQuit = new KAction( "&Quit", 0, this, SLOT( close() ), coll, "shell_quit" );
-  paQuit->setIconSet(QIconSet(BarIcon("exit")));
+  paQuit->setIconSet(QIcon(BarIcon("exit")));
   paQuit->plug( pFile );
 
   setCentralWidget( m_splitter );

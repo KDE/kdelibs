@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 
 #include "resource.h"
@@ -35,7 +35,7 @@
 
 using namespace KRES;
 
-SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
+SelectDialog::SelectDialog( Q3PtrList<Resource> list, QWidget *parent,
                             const char *name )
   : KDialog( parent, name, true )
 {
@@ -45,7 +45,7 @@ SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( marginHint() );
 
-  QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
+  Q3GroupBox *groupBox = new Q3GroupBox( 2, Qt::Horizontal,  this );
   groupBox->setTitle( i18n( "Resources" ) );
 
   mResourceId = new KListBox( groupBox );
@@ -75,9 +75,9 @@ SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
   }
 
   mResourceId->setCurrentItem( 0 );
-  connect( mResourceId, SIGNAL(returnPressed(QListBoxItem*)),
+  connect( mResourceId, SIGNAL(returnPressed(Q3ListBoxItem*)),
            SLOT(accept()) );
-  connect( mResourceId, SIGNAL( executed( QListBoxItem* ) ),
+  connect( mResourceId, SIGNAL( executed( Q3ListBoxItem* ) ),
            SLOT( accept() ) );
 }
 
@@ -89,7 +89,7 @@ Resource *SelectDialog::resource()
     return 0;
 }
 
-Resource *SelectDialog::getResource( QPtrList<Resource> list, QWidget *parent )
+Resource *SelectDialog::getResource( Q3PtrList<Resource> list, QWidget *parent )
 {
   if ( list.count() == 0 ) {
     KMessageBox::error( parent, i18n( "There is no resource available!" ) );

@@ -20,7 +20,7 @@
 #ifndef _KMOUNTPOINT_H_
 #define _KMOUNTPOINT_H_
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstringlist.h>
 
 #include <ksharedptr.h>
@@ -37,7 +37,7 @@ class KDECORE_EXPORT KMountPoint : public KShared
    typedef signed long long int filesize_t;
 public:
   typedef KSharedPtr<KMountPoint> Ptr;
-  typedef QValueList<Ptr> List;
+  typedef Q3ValueList<Ptr> List;
 public:
    enum { NeedMountOptions = 1, NeedRealDeviceName = 2 };
 

@@ -34,9 +34,9 @@
 
 #include <kdebug.h>
 
-#include <qwhatsthis.h>
-#include <qvbox.h>
-#include <qlistbox.h>
+#include <q3whatsthis.h>
+#include <q3vbox.h>
+#include <q3listbox.h>
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qapplication.h>
@@ -51,14 +51,14 @@
  *@short Listbox showing codecompletion
  *@author Jonas B. Jacobi <j.jacobi@gmx.de>
  */
-class KateCCListBox : public QListBox
+class KateCCListBox : public Q3ListBox
 {
   public:
     /**
       @short Create a new CCListBox
       @param view The KateView, CCListBox is displayed in
     */
-    KateCCListBox (QWidget* parent = 0, const char* name = 0, WFlags f = 0):QListBox(parent, name, f)
+    KateCCListBox (QWidget* parent = 0, const char* name = 0, Qt::WFlags f = 0):Q3ListBox(parent, name, f)
     {
     }
 
@@ -91,11 +91,11 @@ class KateCCListBox : public QListBox
     }
 };
 
-class KateCompletionItem : public QListBoxText
+class KateCompletionItem : public Q3ListBoxText
 {
   public:
-    KateCompletionItem( QListBox* lb, KTextEditor::CompletionEntry entry )
-      : QListBoxText( lb )
+    KateCompletionItem( Q3ListBox* lb, KTextEditor::CompletionEntry entry )
+      : Q3ListBoxText( lb )
       , m_entry( entry )
     {
       if( entry.postfix == "()" ) { // should be configurable
@@ -114,12 +114,12 @@ KateCodeCompletion::KateCodeCompletion( KateView* view )
   , m_view( view )
   , m_commentLabel( 0 )
 {
-  m_completionPopup = new QVBox( 0, 0, WType_Popup );
-  m_completionPopup->setFrameStyle( QFrame::Box | QFrame::Plain );
+  m_completionPopup = new Q3VBox( 0, 0, Qt::WType_Popup );
+  m_completionPopup->setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
   m_completionPopup->setLineWidth( 1 );
 
   m_completionListBox = new KateCCListBox( m_completionPopup );
-  m_completionListBox->setFrameStyle( QFrame::NoFrame );
+  m_completionListBox->setFrameStyle( Q3Frame::NoFrame );
   //m_completionListBox->setCornerWidget( new QSizeGrip( m_completionListBox) );
   m_completionListBox->setFocusProxy( m_view->m_viewInternal );
 
@@ -142,7 +142,7 @@ bool KateCodeCompletion::codeCompletionVisible () {
 }
 
 void KateCodeCompletion::showCompletionBox(
-    QValueList<KTextEditor::CompletionEntry> complList, int offset, bool casesensitive )
+    Q3ValueList<KTextEditor::CompletionEntry> complList, int offset, bool casesensitive )
 {
   kdDebug(13035) << "showCompletionBox " << endl;
 
@@ -186,7 +186,7 @@ bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
 void KateCodeCompletion::handleKey (QKeyEvent *e)
 {
   // close completion if you move out of range
-  if ((e->key() == Key_Up) && (m_completionListBox->currentItem() == 0))
+  if ((e->key() == Qt::Key_Up) && (m_completionListBox->currentItem() == 0))
   {
     abortCompletion();
     m_view->setFocus();
@@ -194,9 +194,9 @@ void KateCodeCompletion::handleKey (QKeyEvent *e)
   }
 
   // keyboard movement
-  if( (e->key() == Key_Up)    || (e->key() == Key_Down ) ||
-        (e->key() == Key_Home ) || (e->key() == Key_End)   ||
-        (e->key() == Key_Prior) || (e->key() == Key_Next ))
+  if( (e->key() == Qt::Key_Up)    || (e->key() == Qt::Key_Down ) ||
+        (e->key() == Qt::Key_Home ) || (e->key() == Qt::Key_End)   ||
+        (e->key() == Qt::Key_PageUp) || (e->key() == Qt::Key_PageDown ))
   {
     QTimer::singleShot(0,this,SLOT(showComment()));
     QApplication::sendEvent( m_completionListBox, (QEvent*)e );
@@ -271,7 +271,7 @@ void KateCodeCompletion::updateBox( bool )
   kdDebug(13035) << "Text: '" << currentComplText << "'" << endl;
   kdDebug(13035) << "Count: " << m_complList.count() << endl;
 */
-  QValueList<KTextEditor::CompletionEntry>::Iterator it;
+  Q3ValueList<KTextEditor::CompletionEntry>::Iterator it;
   if( m_caseSensitive ) {
     for( it = m_complList.begin(); it != m_complList.end(); ++it ) {
       if( (*it).text.startsWith(currentComplText) ) {
@@ -382,9 +382,9 @@ void KateCodeCompletion::showComment()
 }
 
 KateArgHint::KateArgHint( KateView* parent, const char* name )
-    : QFrame( parent, name, WType_Popup )
+    : Q3Frame( parent, name, Qt::WType_Popup )
 {
-    setBackgroundColor( black );
+    setBackgroundColor( Qt::black );
     setPaletteForegroundColor( Qt::black );
 
     labelDict.setAutoDelete( true );
@@ -394,7 +394,7 @@ KateArgHint::KateArgHint( KateView* parent, const char* name )
 
     m_markCurrentFunction = true;
 
-    setFocusPolicy( StrongFocus );
+    setFocusPolicy( Qt::StrongFocus );
     setFocusProxy( parent );
 
     reset( -1, -1 );
@@ -516,7 +516,7 @@ void KateArgHint::setCurrentFunction( int currentFunction )
 
 void KateArgHint::show()
 {
-    QFrame::show();
+    Q3Frame::show();
     adjustSize();
 }
 
@@ -524,14 +524,14 @@ bool KateArgHint::eventFilter( QObject*, QEvent* e )
 {
     if( isVisible() && e->type() == QEvent::KeyPress ){
         QKeyEvent* ke = static_cast<QKeyEvent*>( e );
-        if( (ke->state() & ControlButton) && ke->key() == Key_Left ){
+        if( (ke->state() & Qt::ControlModifier) && ke->key() == Qt::Key_Left ){
             setCurrentFunction( currentFunction() - 1 );
             ke->accept();
             return true;
-        } else if( ke->key() == Key_Escape ){
+        } else if( ke->key() == Qt::Key_Escape ){
             slotDone(false);
             return false;
-        } else if( (ke->state() & ControlButton) && ke->key() == Key_Right ){
+        } else if( (ke->state() & Qt::ControlModifier) && ke->key() == Qt::Key_Right ){
             setCurrentFunction( currentFunction() + 1 );
             ke->accept();
             return true;
@@ -545,7 +545,7 @@ void KateArgHint::adjustSize( )
 {
     QRect screen = QApplication::desktop()->screenGeometry( pos() );
 
-    QFrame::adjustSize();
+    Q3Frame::adjustSize();
     if( width() > screen.width() )
         resize( screen.width(), height() );
 

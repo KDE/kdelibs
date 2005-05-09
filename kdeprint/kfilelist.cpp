@@ -23,8 +23,8 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qtooltip.h>
-#include <qheader.h>
-#include <qwhatsthis.h>
+#include <q3header.h>
+#include <q3whatsthis.h>
 
 #include <kio/netaccess.h>
 #include <kurldrag.h>
@@ -104,43 +104,43 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	m_files->setAllColumnsShowFocus(true);
 	m_files->setSorting(-1);
 	m_files->setAcceptDrops(false);
-	m_files->setSelectionMode(QListView::Extended);
+	m_files->setSelectionMode(Q3ListView::Extended);
 	m_files->header()->setStretchEnabled(true, 2);
-	QWhatsThis::add(m_files, whatsThisFileSelectionListview);
+	Q3WhatsThis::add(m_files, whatsThisFileSelectionListview);
 	connect(m_files, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
 
 	m_add = new QToolButton(this);
 	m_add->setIconSet(SmallIconSet("fileopen"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
 	QToolTip::add(m_add, i18n("Add file"));
-	QWhatsThis::add(m_add, whatsThisAddFileButton);
+	Q3WhatsThis::add(m_add, whatsThisAddFileButton);
 
 	m_remove = new QToolButton(this);
 	m_remove->setIconSet(SmallIconSet("remove"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
 	QToolTip::add(m_remove, i18n("Remove file"));
-	QWhatsThis::add(m_remove, whatsThisRemoveFileButton);
+	Q3WhatsThis::add(m_remove, whatsThisRemoveFileButton);
 	m_remove->setEnabled(false);
 
 	m_open = new QToolButton(this);
 	m_open->setIconSet(SmallIconSet("filefind"));
 	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
 	QToolTip::add(m_open, i18n("Open file"));
-	QWhatsThis::add(m_open, whatsThisOpenFileButton);
+	Q3WhatsThis::add(m_open, whatsThisOpenFileButton);
 	m_open->setEnabled(false);
 
 	m_up = new QToolButton(this);
 	m_up->setIconSet(SmallIconSet("up"));
 	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
 	QToolTip::add(m_up, i18n("Move up"));
-	QWhatsThis::add(m_up, whatsThisMoveFileUpButton);
+	Q3WhatsThis::add(m_up, whatsThisMoveFileUpButton);
 	m_up->setEnabled(false);
 
 	m_down = new QToolButton(this);
 	m_down->setIconSet(SmallIconSet("down"));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
 	QToolTip::add(m_down, i18n("Move down"));
-	QWhatsThis::add(m_down, whatsThisMoveFileDownButton);
+	Q3WhatsThis::add(m_down, whatsThisMoveFileDownButton);
 	m_down->setEnabled(false);
 
 	setAcceptDrops(true);
@@ -185,7 +185,7 @@ void KFileList::addFiles(const KURL::List& files)
 	if (files.count() > 0)
 	{
 		// search last item in current list, to add new ones at the end
-		QListViewItem	*item = m_files->firstChild();
+		Q3ListViewItem	*item = m_files->firstChild();
 		while (item && item->nextSibling())
 			item = item->nextSibling();
 
@@ -197,7 +197,7 @@ void KFileList::addFiles(const KURL::List& files)
 				KURL	url;
 				url.setPath(downloaded);
 				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
-				item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
+				item = new Q3ListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
 				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
 			}
 
@@ -217,13 +217,13 @@ void KFileList::addFiles(const KURL::List& files)
 void KFileList::setFileList(const QStringList& files)
 {
 	m_files->clear();
-	QListViewItem *item = 0;
+	Q3ListViewItem *item = 0;
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
 		KURL	url;
 		url.setPath(*it);
 		KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
-		item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), *it);
+		item = new Q3ListViewItem(m_files, item, url.fileName(), mime->comment(), *it);
 		item->setPixmap(0, mime->pixmap(url, KIcon::Small));
 	}
 	slotSelectionChanged();
@@ -232,7 +232,7 @@ void KFileList::setFileList(const QStringList& files)
 QStringList KFileList::fileList() const
 {
 	QStringList	l;
-	QListViewItem	*item = m_files->firstChild();
+	Q3ListViewItem	*item = m_files->firstChild();
 	while (item)
 	{
 		l << item->text(2);
@@ -250,7 +250,7 @@ void KFileList::slotAddFile()
 
 void KFileList::slotRemoveFile()
 {
-	QPtrList<QListViewItem>	l;
+	Q3PtrList<Q3ListViewItem>	l;
 	selection(l);
 	l.setAutoDelete(true);
 	m_block = true;
@@ -261,7 +261,7 @@ void KFileList::slotRemoveFile()
 
 void KFileList::slotOpenFile()
 {
-	QListViewItem	*item = m_files->currentItem();
+	Q3ListViewItem	*item = m_files->currentItem();
 	if (item)
 	{
 		KURL url( item->text( 2 ) );
@@ -274,10 +274,10 @@ QSize KFileList::sizeHint() const
 	return QSize(100, 100);
 }
 
-void KFileList::selection(QPtrList<QListViewItem>& l)
+void KFileList::selection(Q3PtrList<Q3ListViewItem>& l)
 {
 	l.setAutoDelete(false);
-	QListViewItem	*item = m_files->firstChild();
+	Q3ListViewItem	*item = m_files->firstChild();
 	while (item)
 	{
 		if (item->isSelected())
@@ -291,7 +291,7 @@ void KFileList::slotSelectionChanged()
 	if (m_block)
 		return;
 
-	QPtrList<QListViewItem>	l;
+	Q3PtrList<Q3ListViewItem>	l;
 	selection(l);
 	m_remove->setEnabled(l.count() > 0);
 	m_open->setEnabled(l.count() == 1);
@@ -301,12 +301,12 @@ void KFileList::slotSelectionChanged()
 
 void KFileList::slotUp()
 {
-	QPtrList<QListViewItem>	l;
+	Q3PtrList<Q3ListViewItem>	l;
 	selection(l);
 	if (l.count() == 1 && l.first()->itemAbove())
 	{
-		QListViewItem	*item(l.first()), *clone;
-		clone = new QListViewItem(m_files, item->itemAbove()->itemAbove(), item->text(0), item->text(1), item->text(2));
+		Q3ListViewItem	*item(l.first()), *clone;
+		clone = new Q3ListViewItem(m_files, item->itemAbove()->itemAbove(), item->text(0), item->text(1), item->text(2));
 		clone->setPixmap(0, *(item->pixmap(0)));
 		delete item;
 		m_files->setCurrentItem(clone);
@@ -316,12 +316,12 @@ void KFileList::slotUp()
 
 void KFileList::slotDown()
 {
-	QPtrList<QListViewItem>	l;
+	Q3PtrList<Q3ListViewItem>	l;
 	selection(l);
 	if (l.count() == 1 && l.first()->itemBelow())
 	{
-		QListViewItem	*item(l.first()), *clone;
-		clone = new QListViewItem(m_files, item->itemBelow(), item->text(0), item->text(1), item->text(2));
+		Q3ListViewItem	*item(l.first()), *clone;
+		clone = new Q3ListViewItem(m_files, item->itemBelow(), item->text(0), item->text(1), item->text(2));
 		clone->setPixmap(0, *(item->pixmap(0)));
 		delete item;
 		m_files->setCurrentItem(clone);

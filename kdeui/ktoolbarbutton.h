@@ -25,7 +25,7 @@
 
 #include <qpixmap.h>
 #include <qtoolbutton.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qstring.h>
 #include <kglobal.h>
 
@@ -33,7 +33,7 @@ class KToolBar;
 class KToolBarButtonPrivate;
 class KInstance;
 class QEvent;
-class QPopupMenu;
+class Q3PopupMenu;
 class QPainter;
 
 /**
@@ -147,7 +147,7 @@ public:
    * that set icons or pixmaps.
    * @param iconset  The iconset to use
    */
-  virtual void setIconSet( const QIconSet &iconset );
+  virtual void setIconSet( const QIcon &iconset );
 
 #ifndef KDE_NO_COMPAT
   /**
@@ -206,7 +206,7 @@ public:
   /**
    * Return a pointer to this button's popup menu (if it exists)
    */
-  QPopupMenu *popup();
+  Q3PopupMenu *popup();
 
   /**
    * Returns the button's id.
@@ -222,7 +222,7 @@ public:
    * @param p The new popup menu
    * @param unused Has no effect - ignore it.
    */
-  void setPopup (QPopupMenu *p, bool unused = false);
+  void setPopup (Q3PopupMenu *p, bool unused = false);
 
   /**
    * Gives this button a delayed popup menu.
@@ -234,7 +234,7 @@ public:
    * @param p the new popup menu
    * @param unused Has no effect - ignore it.
    */
-  void setDelayedPopup(QPopupMenu *p, bool unused = false);
+  void setDelayedPopup(Q3PopupMenu *p, bool unused = false);
 
   /**
    * Turn this button into a radio button
@@ -320,7 +320,7 @@ private:
 * @internal
 * @version $Id$
 */
-class KDEUI_EXPORT KToolBarButtonList : public QIntDict<KToolBarButton>
+class KDEUI_EXPORT KToolBarButtonList : public Q3IntDict<KToolBarButton>
 {
 public:
    KToolBarButtonList();

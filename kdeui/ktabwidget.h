@@ -43,7 +43,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     Q_PROPERTY( bool automaticResizeTabs READ automaticResizeTabs WRITE setAutomaticResizeTabs )
 
 public:
-    KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+    KTabWidget( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
     /**
      * Destructor.
      */
@@ -110,7 +110,7 @@ public:
     /*!
       Reimplemented for internal reasons.
      */
-    virtual void insertTab( QWidget *child, const QIconSet& iconset,
+    virtual void insertTab( QWidget *child, const QIcon& iconset,
                             const QString &label, int index = -1 );
     /*!
       Reimplemented for internal reasons.
@@ -125,7 +125,7 @@ public:
     /*!
       Reimplemented for internal reasons.
     */
-    void changeTab( QWidget *child, const QIconSet& iconset, const QString &label );
+    void changeTab( QWidget *child, const QIcon& iconset, const QString &label );
 
     /*!
       Reimplemented for internal reasons.

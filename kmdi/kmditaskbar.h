@@ -29,7 +29,7 @@
 #define _KMDITASKBAR_H_
 
 #include <ktoolbar.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -133,7 +133,7 @@ public:
 	/**
 	* Constructor (NoFocus, minimum width = 1, an internal QPtrList of taskbar buttons (autodelete))
 	*/
-	KMdiTaskBar( KMdiMainFrm *parent, QMainWindow::ToolBarDock dock );
+	KMdiTaskBar( KMdiMainFrm *parent, Qt::ToolBarDock dock );
 	/**
 	* Destructor (deletes the taskbar button list)
 	*/
@@ -194,7 +194,7 @@ protected:
 	* A list of taskbar buttons.
 	* Note: Each button stands for one MDI view (toolviews doesn't have got a taskbar button).
 	*/
-	QPtrList<KMdiTaskBarButton>* m_pButtonList;
+	Q3PtrList<KMdiTaskBarButton>* m_pButtonList;
 	/**
 	* The belonging MDI mainframe (parent widget of this)
 	*/

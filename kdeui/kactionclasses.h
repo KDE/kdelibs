@@ -31,18 +31,18 @@
 
 #include <qkeysequence.h>
 #include <qobject.h>
-#include <qvaluelist.h>
-#include <qguardedptr.h>
+#include <q3valuelist.h>
+#include <qpointer.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
 
 class QMenuBar;
-class QPopupMenu;
+class Q3PopupMenu;
 class QComboBox;
 class QPoint;
-class QIconSet;
+class QIcon;
 class QString;
 class KToolBar;
 
@@ -102,7 +102,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+    KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
              QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -124,7 +124,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+    KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -261,7 +261,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+    KRadioAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
                   QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -283,7 +283,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KRadioAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+    KRadioAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -367,7 +367,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+    KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
              QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -389,7 +389,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KSelectAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+    KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
@@ -466,7 +466,7 @@ public:
     /**
      * Returns a pointer to the popup menu used by this action.
      */
-    QPopupMenu* popupMenu() const;
+    Q3PopupMenu* popupMenu() const;
 
     /**
      * @deprecated See setMenuAccelsEnabled .
@@ -603,7 +603,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+    KListAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
                       QObject* parent = 0, const char* name = 0 );
 
     /**
@@ -625,7 +625,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KListAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+    KListAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                           const QObject* receiver, const char* slot, QObject* parent,
                   const char* name = 0 );
 
@@ -722,7 +722,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+  KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
 
@@ -749,7 +749,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KRecentFilesAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+  KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
                       uint maxItems = 10 );
@@ -876,11 +876,11 @@ public:
     KFontAction( const QString& text, const KShortcut& cut,
                  const QObject* receiver, const char* slot, QObject* parent,
                  const char* name = 0 );
-    KFontAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+    KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
                  QObject* parent = 0, const char* name = 0 );
     KFontAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
                  QObject* parent = 0, const char* name = 0 );
-    KFontAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+    KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                  const QObject* receiver, const char* slot, QObject* parent,
                  const char* name = 0 );
     KFontAction( const QString& text, const QString& pix, const KShortcut& cut,
@@ -925,11 +925,11 @@ public:
                      const char* name = 0 );
     KFontSizeAction( const QString& text, const KShortcut& cut, const QObject* receiver,
                      const char* slot, QObject* parent, const char* name = 0 );
-    KFontSizeAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+    KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
                      QObject* parent = 0, const char* name = 0 );
     KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
                      QObject* parent = 0, const char* name = 0 );
-    KFontSizeAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+    KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                      const QObject* receiver, const char* slot,
                      QObject* parent, const char* name = 0 );
     KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut,
@@ -983,7 +983,7 @@ class KDEUI_EXPORT KActionMenu : public KAction
 public:
     KActionMenu( const QString& text, QObject* parent = 0,
                  const char* name = 0 );
-    KActionMenu( const QString& text, const QIconSet& icon,
+    KActionMenu( const QString& text, const QIcon& icon,
                  QObject* parent = 0, const char* name = 0 );
     KActionMenu( const QString& text, const QString& icon,
                  QObject* parent = 0, const char* name = 0 );
@@ -1193,8 +1193,8 @@ public slots:
     virtual void setChecked( bool );
 
 private:
-    QCString               m_toolBarName;
-    QGuardedPtr<KToolBar>  m_toolBar;
+    Q3CString               m_toolBarName;
+    QPointer<KToolBar>  m_toolBar;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
@@ -1294,7 +1294,7 @@ public:
 protected slots:
     void slotToolbarDestroyed();
 private:
-    QGuardedPtr<QWidget> m_widget;
+    QPointer<QWidget> m_widget;
     bool                 m_autoSized;
 protected:
     virtual void virtual_hook( int id, void* data );

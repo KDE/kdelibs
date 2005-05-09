@@ -51,10 +51,10 @@ QString KMThreadJob::jobFile()
 bool KMThreadJob::saveJobs()
 {
 	QFile	f(jobFile());
-	if (f.open(IO_WriteOnly))
+	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		QIntDictIterator<KMJob>	it(m_jobs);
+		Q3IntDictIterator<KMJob>	it(m_jobs);
 		for (;it.current();++it)
 			t << it.current()->id() << CHARSEP << it.current()->name() << CHARSEP << it.current()->printer() << CHARSEP << it.current()->owner() << CHARSEP << it.current()->size() << endl;
 		return true;
@@ -65,7 +65,7 @@ bool KMThreadJob::saveJobs()
 bool KMThreadJob::loadJobs()
 {
 	QFile	f(jobFile());
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString		line;
@@ -161,7 +161,7 @@ void KMThreadJob::createJob(KMJob *job)
 void KMThreadJob::updateManager(KMJobManager *mgr)
 {
 	loadJobs();
-	QIntDictIterator<KMJob>	it(m_jobs);
+	Q3IntDictIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 	{
 		KMJob	*job = new KMJob(*(it.current()));

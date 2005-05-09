@@ -37,7 +37,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 KCombiView::KCombiView( QWidget *parent, const char *name)
   : QSplitter( parent, name),
@@ -51,7 +51,7 @@ KCombiView::KCombiView( QWidget *parent, const char *name)
     left->viewport()->setAcceptDrops(false);
     left->setGridX( 160 );
     left->KFileView::setViewMode( Directories );
-    left->setArrangement( QIconView::LeftToRight );
+    left->setArrangement( Q3IconView::LeftToRight );
     left->setParentView( this );
     left->setAcceptDrops(false);
     left->installEventFilter( this );
@@ -72,7 +72,7 @@ void KCombiView::setRight(KFileView *view)
     right->KFileView::setViewMode( Files );
     setViewName( right->viewName() );
 
-    QValueList<int> lst;
+    Q3ValueList<int> lst;
     lst << left->gridX() + 2 * left->spacing();
     setSizes( lst );
     setResizeMode( left, QSplitter::KeepSize );

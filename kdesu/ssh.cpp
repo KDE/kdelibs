@@ -29,7 +29,7 @@
 #include <sys/stat.h>
 
 #include <qglobal.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -39,7 +39,7 @@
 #include "kcookie.h"
 
 
-SshProcess::SshProcess(const QCString &host, const QCString &user, const QCString &command)
+SshProcess::SshProcess(const Q3CString &host, const Q3CString &user, const Q3CString &command)
 {
     m_Host = host;
     m_User = user;
@@ -54,7 +54,7 @@ SshProcess::~SshProcess()
 }
 
 
-void SshProcess::setStub(const QCString &stub)
+void SshProcess::setStub(const Q3CString &stub)
 {
     m_Stub = stub;
 }
@@ -146,13 +146,13 @@ int SshProcess::exec(const char *password, int check)
 * 14/SEP/2000: DCOP forwarding is not used anymore.
 */
 
-QCString SshProcess::dcopForward()
+Q3CString SshProcess::dcopForward()
 {
-    QCString result;
+    Q3CString result;
 
     setDcopTransport("tcp");
 
-    QCString srv = StubProcess::dcopServer();
+    Q3CString srv = StubProcess::dcopServer();
     if (srv.isEmpty())
         return result;
 
@@ -164,7 +164,7 @@ QCString SshProcess::dcopForward()
     int j = srv.find(':', ++i);
     if (j == -1)
         return result;
-    QCString host = srv.mid(i, j-i);
+    Q3CString host = srv.mid(i, j-i);
     bool ok;
     int port = srv.mid(++j).toInt(&ok);
     if (!ok)
@@ -193,7 +193,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
 {
     unsigned i, j, colon;
 
-    QCString line;
+    Q3CString line;
     int state = 0;
 
     while (state < 2)
@@ -257,22 +257,22 @@ int SshProcess::ConverseSsh(const char *password, int check)
 
 
 // Display redirection is handled by ssh natively.
-QCString SshProcess::display()
+Q3CString SshProcess::display()
 {
     return "no";
 }
 
 
-QCString SshProcess::displayAuth()
+Q3CString SshProcess::displayAuth()
 {
     return "no";
 }
 
 
 // Return the remote end of the forwarded connection.
-QCString SshProcess::dcopServer()
+Q3CString SshProcess::dcopServer()
 {
-    return QCString().sprintf("tcp/localhost:%d", m_dcopPort);
+    return Q3CString().sprintf("tcp/localhost:%d", m_dcopPort);
 }
 
 void SshProcess::virtual_hook( int id, void* data )

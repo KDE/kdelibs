@@ -292,22 +292,22 @@ KAboutData::bugAddress() const
    return QString::fromLatin1(mBugEmailAddress);
 }
 
-const QValueList<KAboutPerson>
+const Q3ValueList<KAboutPerson>
 KAboutData::authors() const
 {
    return mAuthorList;
 }
 
-const QValueList<KAboutPerson>
+const Q3ValueList<KAboutPerson>
 KAboutData::credits() const
 {
    return mCreditList;
 }
 
-const QValueList<KAboutTranslator>
+const Q3ValueList<KAboutTranslator>
 KAboutData::translators() const
 {
-    QValueList<KAboutTranslator> personList;
+    Q3ValueList<KAboutTranslator> personList;
 
     if(d->translatorName == 0)
         return personList;
@@ -424,7 +424,7 @@ KAboutData::license() const
   if (!f.isEmpty())
   {
      QFile file(f);
-     if (file.open(IO_ReadOnly))
+     if (file.open(QIODevice::ReadOnly))
      {
         result += '\n';
         result += '\n';

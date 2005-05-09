@@ -26,7 +26,7 @@
 #include <kparts/browserextension.h>
 
 #include <qstringlist.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 class KateDocument;
 

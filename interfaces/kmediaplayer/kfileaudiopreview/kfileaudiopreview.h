@@ -19,7 +19,7 @@
 #ifndef KFILEAUDIOPREVIEW_H
 #define KFILEAUDIOPREVIEW_H
 
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kurl.h>
 #include <kpreviewwidgetbase.h>
@@ -50,7 +50,7 @@ private slots:
     void toggleAuto(bool);
 
 private:
-    QDict<void> m_supportedFormats;
+    Q3Dict<void> m_supportedFormats;
     KURL m_currentURL;
     QCheckBox *m_autoPlay;
 

@@ -21,7 +21,7 @@
 
 #include <qstring.h>
 #include <qmap.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtextstream.h>
 
 class KMLpdManager;
@@ -65,8 +65,8 @@ public:
 	DrMain* createDriver();
 private:
 	QString			m_name, m_gsdriver, m_description, m_about;
-	QPtrList<Resolution>	m_resolutions;
-	QPtrList<BitsPerPixel>	m_depths;
+	Q3PtrList<Resolution>	m_resolutions;
+	Q3PtrList<BitsPerPixel>	m_depths;
 };
 
 //*****************************************************************************************************

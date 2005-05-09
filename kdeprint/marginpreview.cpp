@@ -132,14 +132,14 @@ void MarginPreview::paintEvent(QPaintEvent *)
 
 	if (nopreview_)
 	{
-		p.drawText(pagebox,AlignCenter,i18n("No preview available"));
+		p.drawText(pagebox,Qt::AlignCenter,i18n("No preview available"));
 	}
 	else
 	{
 		draw3DPage(&p,pagebox);
 
 		// draw margins
-		p.setPen(DotLine);
+		p.setPen(Qt::DotLine);
 		int	m = box_.left()+SCALE(left_,zoom_);
 		margbox_.setLeft(m+1);
 		p.drawLine(m,box_.top(),m,box_.bottom());
@@ -228,7 +228,7 @@ void MarginPreview::mouseMoveEvent(QMouseEvent *e)
 		{
 			QPainter	p(this);
 			p.setRasterOp(Qt::XorROP);
-			p.setPen(gray);
+			p.setPen(Qt::gray);
 			for (int i=0; i<2; i++, oldpos_ = newpos)
 			{
 				if (oldpos_ >= 0)
@@ -277,7 +277,7 @@ void MarginPreview::mouseReleaseEvent(QMouseEvent *e)
 	{
 		QPainter	p(this);
 		p.setRasterOp(Qt::XorROP);
-		p.setPen(gray);
+		p.setPen(Qt::gray);
 		if (oldpos_ >= 0)
 		{
 			drawTempLine(&p);

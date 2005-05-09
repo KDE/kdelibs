@@ -69,7 +69,7 @@ KKeyButton::KKeyButton(QWidget *parent, const char *name)
 :	QPushButton( parent, name )
 {
 	d = new KKeyButtonPrivate;
-	setFocusPolicy( QWidget::StrongFocus );
+	setFocusPolicy( Qt::StrongFocus );
 	m_bEditing = false;
 	connect( this, SIGNAL(clicked()), this, SLOT(captureShortcut()) );
 	setShortcut( KShortcut(), true );
@@ -122,7 +122,7 @@ void KKeyButton::captureShortcut()
 
 void KKeyButton::drawButton( QPainter *painter )
 {
-  QPointArray a( 4 );
+  Q3PointArray a( 4 );
   a.setPoint( 0, 0, 0) ;
   a.setPoint( 1, width(), 0 );
   a.setPoint( 2, 0, height() );
@@ -163,7 +163,7 @@ void KKeyButton::drawButton( QPainter *painter )
   drawButtonLabel( painter );
 
   painter->setPen( colorGroup().text() );
-  painter->setBrush( NoBrush );
+  painter->setBrush( Qt::NoBrush );
   if( hasFocus() || m_bEditing )
   {
     if( width() > 16 && height() > 12 )

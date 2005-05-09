@@ -55,7 +55,7 @@ public:
         }
     }
 
-    QGuardedPtr<KActionCollection> actions;
+    QPointer<KActionCollection> actions;
     int dropOptions;
 };
 

@@ -116,7 +116,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         // we have an alt and the user meant it (its not a text we invented)
         if ( element() && !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
             const QFontMetrics &fm = style()->fontMetrics();
-            QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
+            QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignLeft|Qt::TextWordWrap, alt.string() );
             if ( br.width() > iw )
                 iw = br.width();
             if ( br.height() > ih )
@@ -282,7 +282,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
                 int ay = _ty + topBorder + topPad + 2;
                 const QFontMetrics &fm = style()->fontMetrics();
                 if (cWidth>5 && cHeight>=fm.height())
-                    paintInfo.p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::WordBreak, text );
+                    paintInfo.p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::TextWordWrap, text );
             }
         }
     }
@@ -300,7 +300,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 //                  kdDebug( 6040 ) << "have to scale: " << endl;
 //                  qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
 //                          cWidth, cHeight, intrinsicWidth(), intrinsicHeight(), resizeCache.width(), resizeCache.height());
-                QWMatrix matrix;
+                QMatrix matrix;
                 matrix.scale( (float)(cWidth)/intrinsicWidth(),
                               (float)(cHeight)/intrinsicHeight() );
                 resizeCache = pix.xForm( matrix );

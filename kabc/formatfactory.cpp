@@ -90,7 +90,7 @@ QStringList FormatFactory::formats()
   // make sure 'vcard' is the first entry
   retval << "vcard";
 
-  QDictIterator<FormatInfo> it( mFormatList );
+  Q3DictIterator<FormatInfo> it( mFormatList );
   for ( ; it.current(); ++it )
     if ( it.currentKey() != "vcard" )
       retval << it.currentKey();

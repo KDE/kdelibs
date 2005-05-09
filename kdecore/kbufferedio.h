@@ -21,8 +21,8 @@
 #ifndef KBUFFEREDIO_H
 #define KBUFFEREDIO_H
 
-#include <qcstring.h>
-#include <qptrlist.h>
+#include <q3cstring.h>
+#include <q3ptrlist.h>
 #include "kasyncio.h"
 
 class KBufferedIOPrivate;
@@ -209,13 +209,13 @@ protected:
    * For an explanation on how this buffer work, please refer to the comments
    * at the top of kbufferedio.cpp
    */
-  QPtrList<QByteArray> inBuf;
+  Q3PtrList<QByteArray> inBuf;
 
   /**
    * For an explanation on how this buffer work, please refer to the comments
    * at the top of kbufferedio.cpp
    */
-  QPtrList<QByteArray> outBuf;
+  Q3PtrList<QByteArray> outBuf;
 
   unsigned inBufIndex, outBufIndex;
 

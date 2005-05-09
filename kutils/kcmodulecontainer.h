@@ -20,7 +20,7 @@
 #ifndef KCMODULECONTAINER_H
 #define KCMODULECONTAINER_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 
@@ -123,7 +123,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 */
 		void finalize();
 
-		typedef QValueList<KCModuleProxy*> ModuleList;
+		typedef Q3ValueList<KCModuleProxy*> ModuleList;
 
 		/**
 		 * A list containing KCModuleProxy objects which 

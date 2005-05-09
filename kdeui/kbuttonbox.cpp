@@ -53,7 +53,7 @@
 #include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kpushbutton.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <assert.h>
 
 #define minButtonWidth 50
@@ -68,7 +68,7 @@ public:
   Item(KPushButton* const _button) : button(_button) {};
 };
 
-template class QPtrList<KButtonBox::Item>;
+template class Q3PtrList<KButtonBox::Item>;
 
 class KButtonBoxPrivate {
 public:
@@ -76,10 +76,10 @@ public:
   unsigned short autoborder;
   unsigned short orientation;
   bool activated;
-  QPtrList<KButtonBox::Item> buttons;
+  Q3PtrList<KButtonBox::Item> buttons;
 };
 
-KButtonBox::KButtonBox(QWidget *parent, Orientation _orientation,
+KButtonBox::KButtonBox(QWidget *parent, Qt::Orientation _orientation,
 		       int border, int autoborder)
   :  QWidget(parent), data(new KButtonBoxPrivate)
 {
@@ -164,7 +164,7 @@ void KButtonBox::layout() {
   // resize all buttons
   const QSize bs = bestButtonSize();
 
-  QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+  Q3PtrListIterator<KButtonBox::Item> itr(data->buttons);
   Item* item;
 
   while ( (item = itr.current()) != 0 ) {
@@ -183,12 +183,12 @@ void KButtonBox::layout() {
 
 void KButtonBox::placeButtons() {
 
-  if(data->orientation == Horizontal) {
+  if(data->orientation == Qt::Horizontal) {
     // calculate free size and stretches
     int fs = width() - 2 * data->border;
     int stretch = 0;
     {
-      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Q3PtrListIterator<KButtonBox::Item> itr(data->buttons);
       Item *item;
 
       while ( (item = itr.current()) != 0 ) {
@@ -210,7 +210,7 @@ void KButtonBox::placeButtons() {
     // distribute buttons
     int x_pos = data->border;
     {
-      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Q3PtrListIterator<KButtonBox::Item> itr(data->buttons);
       Item *item;
 
       while ( (item = itr.current()) != 0 ) {
@@ -232,7 +232,7 @@ void KButtonBox::placeButtons() {
     int fs = height() - 2 * data->border;
     int stretch = 0;
     {
-      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Q3PtrListIterator<KButtonBox::Item> itr(data->buttons);
       Item *item;
 
       while ( (item = itr.current()) != 0 ) {
@@ -250,7 +250,7 @@ void KButtonBox::placeButtons() {
     // distribute buttons
     int y_pos = data->border;
     {
-      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Q3PtrListIterator<KButtonBox::Item> itr(data->buttons);
       Item *item;
 
       while ( (item = itr.current()) != 0 ) {
@@ -277,7 +277,7 @@ QSize KButtonBox::bestButtonSize() const {
   QSize s(0, 0);
 
   // calculate optimal size
-  QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+  Q3PtrListIterator<KButtonBox::Item> itr(data->buttons);
   Item *item;
 
   while ( (item = itr.current()) != 0 ) {
@@ -310,7 +310,7 @@ QSize KButtonBox::sizeHint() const {
 
     const QSize bs = bestButtonSize();
 
-    QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+    Q3PtrListIterator<KButtonBox::Item> itr(data->buttons);
     Item *item;
 
     while ( (item = itr.current()) != 0 ) {
@@ -323,7 +323,7 @@ QSize KButtonBox::sizeHint() const {
 	else
 	  s = bs;
 
-	if(data->orientation == Horizontal)
+	if(data->orientation == Qt::Horizontal)
 	  dw += s.width();
 	else
 	  dw += s.height();
@@ -335,7 +335,7 @@ QSize KButtonBox::sizeHint() const {
       ++itr;
     }
 
-    if(data->orientation == Horizontal)
+    if(data->orientation == Qt::Horizontal)
 	return QSize(dw, bs.height() + 2 * data->border);
     else
 	return QSize(bs.width() + 2 * data->border, dw);
@@ -344,7 +344,7 @@ QSize KButtonBox::sizeHint() const {
 
 QSizePolicy KButtonBox::sizePolicy() const
 {
-    return data->orientation == Horizontal?
+    return data->orientation == Qt::Horizontal?
         QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) :
         QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum );
 }

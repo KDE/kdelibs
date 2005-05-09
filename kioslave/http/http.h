@@ -30,8 +30,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <qptrlist.h>
-#include <qstrlist.h>
+#include <q3ptrlist.h>
+#include <q3strlist.h>
 #include <qstringlist.h>
 
 #include <kurl.h>
@@ -50,8 +50,8 @@ class HTTPProtocol : public QObject, public KIO::TCPSlaveBase
 {
   Q_OBJECT
 public:
-  HTTPProtocol( const QCString &protocol, const QCString &pool,
-                const QCString &app );
+  HTTPProtocol( const Q3CString &protocol, const Q3CString &pool,
+                const Q3CString &app );
   virtual ~HTTPProtocol();
 
   /** HTTP version **/
@@ -170,17 +170,17 @@ public:
 
   struct DigestAuthInfo
   {
-    QCString nc;
-    QCString qop;
-    QCString realm;
-    QCString nonce;
-    QCString method;
-    QCString cnonce;
-    QCString username;
-    QCString password;
-    QStrList digestURI;
-    QCString algorithm;
-    QCString entityBody;
+    Q3CString nc;
+    Q3CString qop;
+    Q3CString realm;
+    Q3CString nonce;
+    Q3CString method;
+    Q3CString cnonce;
+    Q3CString username;
+    Q3CString password;
+    Q3StrList digestURI;
+    Q3CString algorithm;
+    Q3CString entityBody;
   };
 
 //---------------------- Re-implemented methods ----------------
@@ -305,7 +305,7 @@ protected:
   /**
    * Performs a WebDAV stat or list
    */
-  void davSetRequest( const QCString& requestXML );
+  void davSetRequest( const Q3CString& requestXML );
   void davStatList( const KURL& url, bool stat = true );
   void davParsePropstats( const QDomNodeList& propstats, KIO::UDSEntry& entry );
   void davParseActiveLocks( const QDomNodeList& activeLocks,
@@ -330,7 +330,7 @@ protected:
   /**
    * Send a cookie to the cookiejar
    */
-  void addCookies( const QString &url, const QCString &cookieHeader);
+  void addCookies( const QString &url, const Q3CString &cookieHeader);
 
   /**
    * Look for cookies in the cookiejar
@@ -448,12 +448,12 @@ protected:
   /**
    * create GSS error string
    */
-  QCString gssError( int major_status, int minor_status );
+  Q3CString gssError( int major_status, int minor_status );
 
   /**
    * Calcualtes the message digest response based on RFC 2617.
    */
-  void calculateResponse( DigestAuthInfo &info, QCString &Response );
+  void calculateResponse( DigestAuthInfo &info, Q3CString &Response );
 
   /**
    * Prompts the user for authorization retry.
@@ -468,7 +468,7 @@ protected:
 protected:
   HTTPState m_state;
   HTTPRequest m_request;
-  QPtrList<HTTPRequest> m_requestQueue;
+  Q3PtrList<HTTPRequest> m_requestQueue;
 
   bool m_bBusy; // Busy handling request queue.
   bool m_bEOF;
@@ -536,7 +536,7 @@ protected:
   QString m_strProxyRealm;
 
   // Operation mode
-  QCString m_protocol;
+  Q3CString m_protocol;
 
   // Authentication
   QString m_strRealm;

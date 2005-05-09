@@ -141,7 +141,7 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
   }
 }
 
-typedef QPtrList<ScriptInterpreter> InterpreterList;
+typedef Q3PtrList<ScriptInterpreter> InterpreterList;
 static InterpreterList *interpreterList;
 
 ScriptInterpreter::ScriptInterpreter( const Object &global, khtml::ChildFrame* frame )
@@ -173,7 +173,7 @@ void ScriptInterpreter::forgetDOMObject( void* objectHandle )
 {
   if( !interpreterList ) return;
 
-  QPtrListIterator<ScriptInterpreter> it( *interpreterList );
+  Q3PtrListIterator<ScriptInterpreter> it( *interpreterList );
   while ( it.current() ) {
     (*it)->deleteDOMObject( objectHandle );
     ++it;
@@ -186,7 +186,7 @@ void ScriptInterpreter::mark()
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.count() << " DOM objects" << endl;
 #endif
-  QPtrDictIterator<DOMObject> it( m_domObjects );
+  Q3PtrDictIterator<DOMObject> it( m_domObjects );
   for( ; it.current(); ++it )
     it.current()->mark();
 }
@@ -328,7 +328,7 @@ public:
 
 private:
   EmbedLiveConnect(const EmbedLiveConnect &);
-  QGuardedPtr<KParts::LiveConnectExtension> m_liveconnect;
+  QPointer<KParts::LiveConnectExtension> m_liveconnect;
   UString name;
   KParts::LiveConnectExtension::Type objtype;
   unsigned long objid;

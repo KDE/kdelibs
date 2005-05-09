@@ -43,7 +43,7 @@
 #include <kpopupmenu.h>
 #include <kdebug.h>
 
-#include <qobjectlist.h>
+#include <qobject.h>
 
 #include "tabwidget.h"
 #include "tabwidget.moc"
@@ -163,7 +163,7 @@ void TabWidget::addTab ( QWidget * child, const QString & label )
   maybeShow();
 }
 
-void TabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
+void TabWidget::addTab ( QWidget * child, const QIcon & iconset, const QString & label )
 {
   KTabWidget::addTab(child,iconset,label);
   showPage(child);
@@ -185,7 +185,7 @@ void TabWidget::insertTab ( QWidget * child, const QString & label, int index)
   tabBar()->repaint();
 }
 
-void TabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
+void TabWidget::insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index )
 {
   KTabWidget::insertTab(child,iconset,label,index);
   showPage(child);
@@ -253,18 +253,18 @@ void TabWidget::maybeShow()
 void TabWidget::setCornerWidgetVisibility(bool visible) {
   // there are two corner widgets: on TopLeft and on TopTight!
 
-  if (cornerWidget(Qt::TopLeft) ) {
+  if (cornerWidget(Qt::TopLeftCorner) ) {
     if (visible)
-      cornerWidget(Qt::TopLeft)->show();
+      cornerWidget(Qt::TopLeftCorner)->show();
     else
-      cornerWidget(Qt::TopLeft)->hide();
+      cornerWidget(Qt::TopLeftCorner)->hide();
   }
 
-  if (cornerWidget(Qt::TopRight) ) {
+  if (cornerWidget(Qt::TopRightCorner) ) {
     if (visible)
-      cornerWidget(Qt::TopRight)->show();
+      cornerWidget(Qt::TopRightCorner)->show();
     else
-      cornerWidget(Qt::TopRight)->hide();
+      cornerWidget(Qt::TopRightCorner)->hide();
   }
 }
 

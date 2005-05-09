@@ -16,7 +16,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "krandomsequence.h"
 #include "kapplication.h"
@@ -56,7 +56,7 @@ main(int argc, char *argv[])
 
    seq.setSeed(kapp->random());
 
-   QPtrList<QString> list;
+   Q3PtrList<QString> list;
    list.append(new QString("A"));
    list.append(new QString("B"));
    list.append(new QString("C"));

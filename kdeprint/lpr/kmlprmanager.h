@@ -22,8 +22,8 @@
 
 #include "kmmanager.h"
 
-#include <qdict.h>
-#include <qptrlist.h>
+#include <q3dict.h>
+#include <q3ptrlist.h>
 #include <qdatetime.h>
 #include <kurl.h>
 
@@ -71,9 +71,9 @@ protected:
 	bool savePrintcapFile();
 
 private:
-	QDict<LprHandler>	m_handlers;
-	QPtrList<LprHandler>    m_handlerlist;
-	QDict<PrintcapEntry>	m_entries;
+	Q3Dict<LprHandler>	m_handlers;
+	Q3PtrList<LprHandler>    m_handlerlist;
+	Q3Dict<PrintcapEntry>	m_entries;
 	QDateTime		m_updtime;
 	LpcHelper		*m_lpchelper;
 	KMPrinter		*m_currentprinter;

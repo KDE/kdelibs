@@ -85,8 +85,8 @@ class KABC_EXPORT_DEPRECATED VCardFormatImpl
     void addClassValue( VCARD::VCard *, const Secrecy & );
     Secrecy readClassValue( VCARD::ContentLine * );
 
-    void addKeyValue( VCARD::VCard *, const Key & );
-    Key readKeyValue( VCARD::ContentLine * );
+    void addKeyValue( VCARD::VCard *, const Qt::Key & );
+    Qt::Key readKeyValue( VCARD::ContentLine * );
 
     void addPictureValue( VCARD::VCard *, VCARD::EntityType, const Picture &, const Addressee &, bool );
     Picture readPictureValue( VCARD::ContentLine *, VCARD::EntityType, const Addressee &addr );

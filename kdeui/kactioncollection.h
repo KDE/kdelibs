@@ -29,18 +29,18 @@
 
 #include <qkeysequence.h>
 #include <qobject.h>
-#include <qvaluelist.h>
-#include <qguardedptr.h>
+#include <q3valuelist.h>
+#include <qpointer.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
 
 class QMenuBar;
-class QPopupMenu;
+class Q3PopupMenu;
 class QComboBox;
 class QPoint;
-class QIconSet;
+class QIcon;
 class QString;
 class KToolBar;
 
@@ -56,7 +56,7 @@ class KPopupMenu;
 class KMainWindow;
 class KXMLGUIClient;
 
-typedef QValueList<KAction *> KActionPtrList;
+typedef Q3ValueList<KAction *> KActionPtrList;
 
 /**
  * A managed set of KAction objects.

@@ -24,7 +24,7 @@
 
 class QTimer;
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include "kconfigbase.h"
 #include "klockfile.h"
@@ -186,7 +186,7 @@ protected:
    * @param group The group to search for.
    * @returns true if the group exists.
    */
-  virtual bool internalHasGroup(const QCString &group) const;
+  virtual bool internalHasGroup(const Q3CString &group) const;
 
   /**
    * @internal
@@ -272,7 +272,7 @@ private:
  */
 class KDECORE_EXPORT KSharedConfig : public KConfig, public KShared
 {
-  friend class QValueList<KSharedConfig*>;
+  friend class Q3ValueList<KSharedConfig*>;
 public:
   typedef KSharedPtr<KSharedConfig> Ptr;
 
@@ -290,7 +290,7 @@ private:
   KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals );
   ~KSharedConfig();
 
-  static QValueList<KSharedConfig*> *s_list;
+  static Q3ValueList<KSharedConfig*> *s_list;
 };
 
 #endif

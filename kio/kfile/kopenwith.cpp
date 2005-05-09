@@ -32,7 +32,7 @@
 #include <qcheckbox.h>
 #include <qtooltip.h>
 #include <qstyle.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kapplication.h>
 #include <kbuttonbox.h>
@@ -64,7 +64,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-template class QPtrList<QString>;
+template class Q3PtrList<QString>;
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
@@ -73,7 +73,7 @@ template class QPtrList<QString>;
 
 KAppTreeListItem::KAppTreeListItem( KListView* parent, const QString & name,
                                     const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
-    : QListViewItem( parent, name )
+    : Q3ListViewItem( parent, name )
 {
     init(pixmap, parse, dir, p, c);
 }
@@ -81,9 +81,9 @@ KAppTreeListItem::KAppTreeListItem( KListView* parent, const QString & name,
 
 // ----------------------------------------------------------------------
 
-KAppTreeListItem::KAppTreeListItem( QListViewItem* parent, const QString & name,
+KAppTreeListItem::KAppTreeListItem( Q3ListViewItem* parent, const QString & name,
                                     const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
-    : QListViewItem( parent, name )
+    : Q3ListViewItem( parent, name )
 {
     init(pixmap, parse, dir, p, c);
 }
@@ -102,7 +102,7 @@ void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, const Q
 
 
 /* Ensures that directories sort before non-directories */
-int KAppTreeListItem::compare(QListViewItem *i, int col, bool ascending) const
+int KAppTreeListItem::compare(Q3ListViewItem *i, int col, bool ascending) const
 {
 	KAppTreeListItem *other = dynamic_cast<KAppTreeListItem *>(i);
 
@@ -114,7 +114,7 @@ int KAppTreeListItem::compare(QListViewItem *i, int col, bool ascending) const
 		return 1;
 
 	else // both directories or both not
-		return QListViewItem::compare(i, col, ascending);
+		return Q3ListViewItem::compare(i, col, ascending);
 }
 
 // ----------------------------------------------------------------------
@@ -136,7 +136,7 @@ void KAppTreeListItem::setOpen( bool o )
         ((KApplicationTree *) parent())->addDesktopGroup( path, this );
         parsed = true;
     }
-    QListViewItem::setOpen( o );
+    Q3ListViewItem::setOpen( o );
 }
 
 bool KAppTreeListItem::isDirectory()
@@ -155,10 +155,10 @@ KApplicationTree::KApplicationTree( QWidget *parent )
     addDesktopGroup( QString::null );
 	cleanupTree();
 
-    connect( this, SIGNAL( currentChanged(QListViewItem*) ),
-            SLOT( slotItemHighlighted(QListViewItem*) ) );
-    connect( this, SIGNAL( selectionChanged(QListViewItem*) ),
-            SLOT( slotSelectionChanged(QListViewItem*) ) );
+    connect( this, SIGNAL( currentChanged(Q3ListViewItem*) ),
+            SLOT( slotItemHighlighted(Q3ListViewItem*) ) );
+    connect( this, SIGNAL( selectionChanged(Q3ListViewItem*) ),
+            SLOT( slotSelectionChanged(Q3ListViewItem*) ) );
 }
 
 // ----------------------------------------------------------------------
@@ -246,7 +246,7 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
 
 // ----------------------------------------------------------------------
 
-void KApplicationTree::slotItemHighlighted(QListViewItem* i)
+void KApplicationTree::slotItemHighlighted(Q3ListViewItem* i)
 {
     // i may be 0 (see documentation)
     if(!i)
@@ -263,7 +263,7 @@ void KApplicationTree::slotItemHighlighted(QListViewItem* i)
 
 // ----------------------------------------------------------------------
 
-void KApplicationTree::slotSelectionChanged(QListViewItem* i)
+void KApplicationTree::slotSelectionChanged(Q3ListViewItem* i)
 {
     // i may be 0 (see documentation)
     if(!i)
@@ -289,14 +289,14 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 // Prune empty directories from the tree
 void KApplicationTree::cleanupTree()
 {
-	QListViewItem *item=firstChild();
+	Q3ListViewItem *item=firstChild();
 	while(item!=0)
 	{
 		if(item->isExpandable())
 		{
 			item->setOpen(true);
 			if(item->childCount()==0) {
-				QListViewItem *current=item;
+				Q3ListViewItem *current=item;
 				item=item->itemBelow();
 				delete current;
 				continue;
@@ -311,7 +311,7 @@ void KApplicationTree::cleanupTree()
 	{
 		if(item->isExpandable())
 		{
-			QListViewItem *temp=item->itemBelow();
+			Q3ListViewItem *temp=item->itemBelow();
 			if(item->text(0)!=i18n("Applications"))
 				item->setOpen(false);
 			item=temp;
@@ -451,7 +451,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   }
 
   edit->setURL( _value );
-  QWhatsThis::add(edit,i18n(
+  Q3WhatsThis::add(edit,i18n(
     "Following the command, you can have several place holders which will be replaced "
     "with the actual values when the actual program is run:\n"
     "%f - a single file name\n"
@@ -482,7 +482,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
            SLOT( slotSelected( const QString&, const QString& ) ) );
   connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ),
            SLOT( slotHighlighted( const QString&, const QString& ) ) );
-  connect( m_pTree, SIGNAL( doubleClicked(QListViewItem*) ),
+  connect( m_pTree, SIGNAL( doubleClicked(Q3ListViewItem*) ),
            SLOT( slotDbClick() ) );
 
   terminal = new QCheckBox( i18n("Run in &terminal"), this );

@@ -12,7 +12,7 @@ int main( int argc, char **argv )
     list.insert( 2,  "I was here :) (2)" );
     list.insert( 4,  "Yeehaa...     (4)" );
     
-    QValueListIterator<KSortableItem<QString> > it = list.begin();
+    Q3ValueListIterator<KSortableItem<QString> > it = list.begin();
 
     qDebug("Insertion order:");
     qDebug("================");

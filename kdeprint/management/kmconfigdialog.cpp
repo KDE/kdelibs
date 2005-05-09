@@ -48,7 +48,7 @@ KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 
 	// initialize pages
 	KConfig	*conf = KMFactory::self()->printConfig();
-	QPtrListIterator<KMConfigPage>	it(m_pages);
+	Q3PtrListIterator<KMConfigPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->loadConfig(conf);
 
@@ -66,7 +66,7 @@ void KMConfigDialog::addConfigPage(KMConfigPage *page)
                         	                                           KIcon::SizeMedium
 		                                                          );
 
-		QFrame	*frame = addPage(page->pageName(),page->pageHeader(),icon);
+		Q3Frame	*frame = addPage(page->pageName(),page->pageHeader(),icon);
 		page->reparent(frame,QPoint(0,0));
 		QVBoxLayout	*lay = new QVBoxLayout(frame, 0, 0);
 		lay->addWidget(page);
@@ -78,7 +78,7 @@ void KMConfigDialog::slotOk()
 {
 	// save configuration
 	KConfig	*conf = KMFactory::self()->printConfig();
-	QPtrListIterator<KMConfigPage>	it(m_pages);
+	Q3PtrListIterator<KMConfigPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->saveConfig(conf);
 	KMFactory::self()->saveConfig();

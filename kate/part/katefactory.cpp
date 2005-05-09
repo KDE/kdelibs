@@ -152,7 +152,7 @@ KateFactory::KateFactory ()
   m_cmds.push_back (new KateCommands::Date ());
   m_cmds.push_back (new SearchCommand());
 
-  for ( QValueList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
+  for ( Q3ValueList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
     KateCmd::self()->registerCommand (*it);
 }
 
@@ -181,7 +181,7 @@ KateFactory::~KateFactory()
 
   delete m_vm;
 
-  for ( QValueList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
+  for ( Q3ValueList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
     delete *it;
 
   // cu manager
@@ -203,7 +203,7 @@ KateFactory *KateFactory::self ()
 
 KParts::Part *KateFactory::createPartObject ( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *_classname, const QStringList & )
 {
-  QCString classname( _classname );
+  Q3CString classname( _classname );
   bool bWantSingleView = ( classname != "KTextEditor::Document" && classname != "Kate::Document" );
   bool bWantBrowserView = ( classname == "Browser/View" );
   bool bWantReadOnly = (bWantBrowserView || ( classname == "KParts::ReadOnlyPart" ));

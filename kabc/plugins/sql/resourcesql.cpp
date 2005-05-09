@@ -19,7 +19,7 @@
 */
 
 #include <qsqldatabase.h>
-#include <qsqlcursor.h>
+#include <q3sqlcursor.h>
 
 #include <kdebug.h>
 #include <kglobal.h>

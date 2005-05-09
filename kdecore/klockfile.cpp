@@ -99,7 +99,7 @@ static bool statResultIsEqual(KDE_struct_stat &st_buf1, KDE_struct_stat &st_buf2
 
 static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf)
 {
-  QCString lockFileName = QFile::encodeName( lockFile );
+  Q3CString lockFileName = QFile::encodeName( lockFile );
   int result = KDE_lstat( lockFileName, &st_buf );
   if (result == 0)
      return KLockFile::LockFail;
@@ -113,14 +113,14 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   hostname[0] = 0;
   gethostname(hostname, 255);
   hostname[255] = 0;
-  QCString instanceName = KCmdLineArgs::appName();
+  Q3CString instanceName = KCmdLineArgs::appName();
 
   (*(uniqueFile.textStream())) << QString::number(getpid()) << endl
       << instanceName << endl
       << hostname << endl;
   uniqueFile.close();
   
-  QCString uniqueName = QFile::encodeName( uniqueFile.name() );
+  Q3CString uniqueName = QFile::encodeName( uniqueFile.name() );
       
 #ifdef Q_OS_UNIX
   // Create lock file
@@ -158,8 +158,8 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
    if (ktmpFile.status() != 0)
       return KLockFile::LockError;
               
-   QCString lckFile = QFile::encodeName( lockFile );
-   QCString tmpFile = QFile::encodeName(ktmpFile.name());
+   Q3CString lckFile = QFile::encodeName( lockFile );
+   Q3CString tmpFile = QFile::encodeName(ktmpFile.name());
    ktmpFile.close();
    ktmpFile.unlink();
               
@@ -277,7 +277,7 @@ KLockFile::LockResult KLockFile::lock(int options)
            d->instance = QString::null;
         
            QFile file(d->file);
-           if (file.open(IO_ReadOnly))
+           if (file.open(QIODevice::ReadOnly))
            {
               QTextStream ts(&file);
               if (!ts.atEnd())

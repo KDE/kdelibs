@@ -20,11 +20,11 @@
  */
 
 // I (espen) prefer that header files are included alphabetically
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qwidget.h>
 
 #include <kaboutapplication.h>
@@ -130,11 +130,11 @@ KPopupMenu* KHelpMenu::menu()
 
     if( mShowWhatsThis && kapp->authorizeKAction("help_whats_this") )
     {
-      QToolButton* wtb = QWhatsThis::whatsThisButton(0);
+      QToolButton* wtb = Q3WhatsThis::whatsThisButton(0);
       mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ), menuWhatsThis);
       mMenu->connectItem( menuWhatsThis, this, SLOT(contextHelpActivated()) );
       delete wtb;
-      mMenu->setAccel( SHIFT + Key_F1, menuWhatsThis );
+      mMenu->setAccel( Qt::SHIFT + Qt::Key_F1, menuWhatsThis );
       need_separator = true;
     }
 
@@ -200,7 +200,7 @@ void KHelpMenu::aboutApplication()
 				   false, true, KStdGuiItem::ok() );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
 
-      QHBox *hbox = new QHBox( mAboutApp );
+      Q3HBox *hbox = new Q3HBox( mAboutApp );
       mAboutApp->setMainWidget( hbox );
       hbox->setSpacing(KDialog::spacingHint()*3);
       hbox->setMargin(KDialog::marginHint()*1);
@@ -274,7 +274,7 @@ void KHelpMenu::menuDestroyed()
 
 void KHelpMenu::contextHelpActivated()
 {
-  QWhatsThis::enterWhatsThisMode();
+  Q3WhatsThis::enterWhatsThisMode();
   QWidget* w = QApplication::widgetAt( QCursor::pos(), true );
   while ( w && !w->isTopLevel() && !w->inherits("QXEmbed")  )
       w = w->parentWidget();

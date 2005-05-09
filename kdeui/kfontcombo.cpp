@@ -18,7 +18,7 @@
 
 
 #include <qfontdatabase.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qpainter.h>
 
 #include <kcharsets.h>
@@ -53,14 +53,14 @@ struct KFontComboPrivate
     QString defaultFamily;
 };
 
-class KFontListItem : public QListBoxItem
+class KFontListItem : public Q3ListBoxItem
 {
 public:
     KFontListItem(const QString &fontName, KFontCombo *combo);
     virtual ~KFontListItem();
 
-    virtual int width(const QListBox *) const;
-    virtual int height(const QListBox *) const;
+    virtual int width(const Q3ListBox *) const;
+    virtual int height(const Q3ListBox *) const;
 
     void updateFont();
 
@@ -78,7 +78,7 @@ private:
 };
 
 KFontListItem::KFontListItem(const QString &fontName, KFontCombo *combo)
-    : QListBoxItem(combo->listBox()),
+    : Q3ListBoxItem(combo->listBox()),
       m_combo(combo),
       m_fontName(fontName),
       m_font(0),
@@ -92,14 +92,14 @@ KFontListItem::~KFontListItem()
     delete m_font;
 }
 
-int KFontListItem::width(const QListBox *lb) const
+int KFontListItem::width(const Q3ListBox *lb) const
 {
     if (m_font)
        return QFontMetrics(*m_font).width(text()) + 6;
     return lb->fontMetrics().width(text()) + 6;
 }
 
-int KFontListItem::height(const QListBox *lb) const
+int KFontListItem::height(const Q3ListBox *lb) const
 {
     if (m_combo->d->displayFonts)
         return m_combo->d->lineSpacing + 2;

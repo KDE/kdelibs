@@ -23,11 +23,11 @@
 
 
 #include <qstring.h>
-#include <qmemarray.h>
-#include <qvaluelist.h>
+#include <q3memarray.h>
+#include <q3valuelist.h>
 #include <qobject.h>
 
-class QWidgetStack;
+class Q3WidgetStack;
 
 /**
  * A string class handling accelerators.
@@ -72,12 +72,12 @@ private:
 
   QString        m_pureText,  m_origText;
   int            m_accel, m_orig_accel;
-  QMemArray<int> m_weight;
+  Q3MemArray<int> m_weight;
 
 };
 
 
-typedef QValueList<KAccelString> KAccelStringList;
+typedef Q3ValueList<KAccelString> KAccelStringList;
 
 
 /**
@@ -117,7 +117,7 @@ public:
 };
 
 
-class QPopupMenu;
+class Q3PopupMenu;
 
 
 /**
@@ -135,12 +135,12 @@ class KPopupAccelManager : public QObject
 
 public:
 
-  static void manage(QPopupMenu *popup);
+  static void manage(Q3PopupMenu *popup);
 
 
 protected:
 
-  KPopupAccelManager(QPopupMenu *popup);
+  KPopupAccelManager(Q3PopupMenu *popup);
 
 
 private slots:
@@ -155,7 +155,7 @@ private:
   void findMenuEntries(KAccelStringList &list);
   void setMenuEntries(const KAccelStringList &list);
 
-  QPopupMenu       *m_popup;
+  Q3PopupMenu       *m_popup;
   KAccelStringList m_entries;
   int              m_count;
 
@@ -168,12 +168,12 @@ class QWidgetStackAccelManager : public QObject
 
 public:
 
-  static void manage(QWidgetStack *popup);
+  static void manage(Q3WidgetStack *popup);
 
 
 protected:
 
-  QWidgetStackAccelManager(QWidgetStack *popup);
+  QWidgetStackAccelManager(Q3WidgetStack *popup);
 
 
 private slots:
@@ -185,7 +185,7 @@ private:
 
   void calculateAccelerators();
 
-  QWidgetStack     *m_stack;
+  Q3WidgetStack     *m_stack;
   KAccelStringList m_entries;
 
 };

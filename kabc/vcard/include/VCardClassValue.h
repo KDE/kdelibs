@@ -24,7 +24,7 @@
 #ifndef  CLASSVALUE_H
 #define  CLASSVALUE_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardValue.h>
 

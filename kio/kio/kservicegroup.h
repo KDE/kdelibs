@@ -19,9 +19,9 @@
 #ifndef __kservicegroup_h__
 #define __kservicegroup_h__
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
-#include <qshared.h>
+#include <q3shared.h>
 #include <qdatastream.h>
 #include <qvariant.h>
 
@@ -72,7 +72,7 @@ class KIO_EXPORT KServiceGroup : public KSycocaEntry
 public:
   typedef KSharedPtr<KServiceGroup> Ptr;
   typedef KSharedPtr<KSycocaEntry> SPtr;
-  typedef QValueList<SPtr> List;
+  typedef Q3ValueList<SPtr> List;
 public:
   /**
    * Construct a dummy servicegroup indexed with @p name.

@@ -29,14 +29,14 @@
 #include <sys/types.h>
 
 #include <qstring.h>
-#include <qcstring.h>
-#include <qvaluelist.h>
-#include <qptrlist.h>
-#include <qptrqueue.h>
+#include <q3cstring.h>
+#include <q3valuelist.h>
+#include <q3ptrlist.h>
+#include <q3ptrqueue.h>
 #include <qthread.h>
 #include <qmutex.h>
 #include <qwaitcondition.h>
-#include <qsemaphore.h>
+#include <q3semaphore.h>
 #include <qevent.h>
 
 #include "kresolver.h"
@@ -91,7 +91,7 @@ namespace KNetwork
     struct InputData
     {
       QString node, service;
-      QCString protocolName;
+      Q3CString protocolName;
       int flags;
       int familyMask;
       int socktype;
@@ -191,16 +191,16 @@ namespace KNetwork
       QMutex mutex;
 
       // hold a list of all the current threads we have
-      QPtrList<KResolverThread> workers;
+      Q3PtrList<KResolverThread> workers;
 
       // hold a list of all the new requests we have
-      QPtrList<RequestData> newRequests;
+      Q3PtrList<RequestData> newRequests;
 
       // hold a list of all the requests in progress we have
-      QPtrList<RequestData> currentRequests;
+      Q3PtrList<RequestData> currentRequests;
 
       // hold a list of all the workers we have
-      QPtrList<KNetwork::KResolverWorkerFactoryBase> workerFactories;
+      Q3PtrList<KNetwork::KResolverWorkerFactoryBase> workerFactories;
 
       // private constructor
       KResolverManager();

@@ -27,7 +27,7 @@
 #include <qapplication.h>
 #include <qfile.h>
 #include <qpoint.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qpainter.h>
 #include <qtextstream.h>
 #include <qfileinfo.h>
@@ -46,7 +46,7 @@
 #include <assert.h>
 #include <kdebug.h>
 
-template class QPtrList<KXMLGUIClient>;
+template class Q3PtrList<KXMLGUIClient>;
 
 using namespace KParts;
 
@@ -681,8 +681,8 @@ bool ReadWritePart::waitSaveComplete()
 
   d->m_waitForSave = true;
 
-  QWidget dummy(0,0,WType_Dialog | WShowModal);
-  dummy.setFocusPolicy( QWidget::NoFocus );
+  QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
+  dummy.setFocusPolicy( Qt::NoFocus );
   qt_enter_modal(&dummy);
   qApp->enter_loop();
   qt_leave_modal(&dummy);

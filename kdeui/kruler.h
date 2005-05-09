@@ -21,8 +21,8 @@
 #ifndef KRULER_H
 #define KRULER_H
 
-#include <qframe.h>
-#include <qrangecontrol.h>
+#include <q3frame.h>
+#include <q3rangecontrol.h>
 #include <kdelibs_export.h>
 
 /**
@@ -68,7 +68,7 @@
  * @short A ruler widget.
  * @author Jörg Habenicht
  */
-class KDEUI_EXPORT KRuler : public QFrame
+class KDEUI_EXPORT KRuler : public Q3Frame
 {
   Q_OBJECT
   Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
@@ -125,8 +125,8 @@ public:
    * @param f          Will be handed over to QFrame.
    *
    **/
-  KRuler(Orientation orient, QWidget *parent=0, const char *name=0,
-	 WFlags f=0);
+  KRuler(Qt::Orientation orient, QWidget *parent=0, const char *name=0,
+	 Qt::WFlags f=0);
 
   /**
    * Constructs a ruler with orientation @p orient and initial width @p widgetWidth.
@@ -143,8 +143,8 @@ public:
    * @param f           Will be handed over to QFrame.
    *
    */
-  KRuler(Orientation orient, int widgetWidth, QWidget *parent=0,
-	 const char *name=0, WFlags f=0);
+  KRuler(Qt::Orientation orient, int widgetWidth, QWidget *parent=0,
+	 const char *name=0, Qt::WFlags f=0);
 
   /**
    * Destructor.
@@ -448,8 +448,8 @@ protected:
 private:
   void init();
 
-  QRangeControl range;
-  Orientation dir;
+  Q3RangeControl range;
+  Qt::Orientation dir;
   int tmDist;
   int lmDist;
   int mmDist;

@@ -33,7 +33,7 @@
 #include <kdialogbase.h>
 #include <qstring.h>
 
-class QFrame;
+class Q3Frame;
 class QLabel;
 class QVBoxLayout;
 class QTabWidget;
@@ -47,24 +47,24 @@ class KAboutContainerPrivate;
 /**
  *  KAboutContainer can be used to make a application specific AboutDialog.
  */
-class KDEUI_EXPORT KAboutContainer : public QFrame
+class KDEUI_EXPORT KAboutContainer : public Q3Frame
 {
   Q_OBJECT
 
   public:
     KAboutContainer( QWidget *parent=0, const char *name=0,
 		     int margin=0, int spacing=0,
-		     int childAlignment = AlignCenter,
-		     int innerAlignment = AlignCenter );
+		     int childAlignment = Qt::AlignCenter,
+		     int innerAlignment = Qt::AlignCenter );
 
     void addWidget( QWidget *widget );
     void addPerson( const QString &name, const QString &email,
 		    const QString &url, const QString &task,
 		    bool showHeader = false, bool showframe = false,
 		    bool showBold = false );
-    void addTitle(  const QString &title, int alignment=AlignLeft,
+    void addTitle(  const QString &title, int alignment=Qt::AlignLeft,
 		    bool showframe = false, bool showBold = false );
-    void addImage( const QString &fileName, int alignment=AlignLeft );
+    void addImage( const QString &fileName, int alignment=Qt::AlignLeft );
 
     virtual QSize sizeHint( void ) const;
     virtual QSize minimumSizeHint( void ) const;
@@ -89,7 +89,7 @@ class KAboutContributorPrivate;
  * Used internally by KAboutWidget
  * @internal
  */
-class KDEUI_EXPORT KAboutContributor : public QFrame
+class KDEUI_EXPORT KAboutContributor : public Q3Frame
 {
   Q_OBJECT
 
@@ -139,7 +139,7 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
 
     KAboutContributorPrivate* const d;
 
-	virtual void setName(const char *_name) { QFrame::setName(_name); }
+	virtual void setName(const char *_name) { Q3Frame::setName(_name); }
 };
 
 /**
@@ -241,7 +241,7 @@ protected:
   /**
    * A set of people who contributed to the application.
    */
-  QPtrList<KAboutContributor> contributors;
+  Q3PtrList<KAboutContributor> contributors;
   // #########################################################################
   //
 private:
@@ -469,7 +469,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    *        is the minimum number of lines of text that are visible.
    * @return The frame that contains the page.
    */
-  QFrame *addTextPage( const QString &title, const QString &text,
+  Q3Frame *addTextPage( const QString &title, const QString &text,
                        bool richText=false, int numLines=10 );
 
   /**
@@ -482,7 +482,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    *        is the minimum number of lines of text that are visible.
    * @return The frame that contains the page.
    */
-  QFrame *addLicensePage( const QString &title, const QString &text,
+  Q3Frame *addLicensePage( const QString &title, const QString &text,
                           int numLines=10 );
 
   /**
@@ -498,7 +498,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    * @return The new container.
    */
   KAboutContainer *addContainerPage( const QString &title,
-    int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
+    int childAlignment = Qt::AlignCenter, int innerAlignment = Qt::AlignCenter );
 
   /**
    * (Constructor II only)
@@ -513,7 +513,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    * @return The new container.
    */
   KAboutContainer *addScrolledContainerPage( const QString &title,
-    int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
+    int childAlignment = Qt::AlignCenter, int innerAlignment = Qt::AlignCenter );
 
   /**
    * (Constructor II only)
@@ -534,7 +534,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    * @param title Tab name
    * @return The new page.
    */
-  QFrame *addPage( const QString &title );
+  Q3Frame *addPage( const QString &title );
 
 
   /**

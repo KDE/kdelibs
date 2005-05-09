@@ -329,7 +329,7 @@ KActiveSocketBase* KServerSocket::accept()
   // when KStreamSocket can find out the state of the socket passed through
   // setSocketDevice, this will probably be unnecessary:
   streamsocket->setState(KStreamSocket::Connected);
-  streamsocket->setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+  streamsocket->setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
 
   return streamsocket;
 }

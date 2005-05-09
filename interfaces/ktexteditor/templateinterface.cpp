@@ -48,7 +48,7 @@ uint TemplateInterface::templateInterfaceNumber () const
   return myTemplateInterfaceNumber;
 }
 
-void TemplateInterface::setTemplateInterfaceDCOPSuffix ( const QCString &suffix )
+void TemplateInterface::setTemplateInterfaceDCOPSuffix ( const Q3CString &suffix )
 {}
 
 #define INITKABC do { \

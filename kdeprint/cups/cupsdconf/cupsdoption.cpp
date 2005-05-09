@@ -21,7 +21,7 @@
 
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <klocale.h>
 #include <qtooltip.h>
 
@@ -35,8 +35,8 @@ CupsdOption::CupsdOption(QWidget *parent, const char *name)
 
 	int	w = (fontMetrics().width(i18n("Default")) - cb_->sizeHint().width()) / 2;
 
-	fr_ = new QFrame(this);
-	fr_->setFrameStyle(QFrame::VLine|QFrame::Sunken);
+	fr_ = new Q3Frame(this);
+	fr_->setFrameStyle(Q3Frame::VLine|Q3Frame::Sunken);
 	fr_->setLineWidth(1);
 
 	layout_ = new QHBoxLayout(this, 0, 10);

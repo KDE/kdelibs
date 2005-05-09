@@ -1,6 +1,6 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -10,7 +10,7 @@
 #include "ktabwidgettest.h"
 
 Test::Test( QWidget* parent, const char *name )
-  :QVBox( parent, name ), mChange(0), mLeftWidget(0), mRightWidget(0),
+  :Q3VBox( parent, name ), mChange(0), mLeftWidget(0), mRightWidget(0),
   mLeftPopup( false ), mRightPopup( false ), mTabbarContextPopup( false ), mContextPopup( false )
 
 {
@@ -109,14 +109,14 @@ void Test::addTab()
 
 void Test::testCanDecode(const QDragMoveEvent *e, bool &accept /* result */)
 {
-  if ( QTextDrag::canDecode(e) )    // don't accept=false if it cannot be decoded!
+  if ( Q3TextDrag::canDecode(e) )    // don't accept=false if it cannot be decoded!
     accept = true;
 }
 
 void Test::receivedDropEvent( QDropEvent *e )
 {
   QString dropText;
-  if (QTextDrag::decode(e, dropText)) {
+  if (Q3TextDrag::decode(e, dropText)) {
     mWidget->addTab( new QWidget( mWidget), dropText );
   }
 }
@@ -124,14 +124,14 @@ void Test::receivedDropEvent( QDropEvent *e )
 void Test::receivedDropEvent( QWidget *w, QDropEvent *e )
 {
   QString dropText;
-  if (QTextDrag::decode(e, dropText)) {
+  if (Q3TextDrag::decode(e, dropText)) {
     mWidget->changeTab( w, dropText );
   }
 }
 
 void Test::initiateDrag( QWidget *w )
 {
-   QDragObject *d = new QTextDrag( mWidget->label( mWidget->indexOf( w ) ), this );
+   Q3DragObject *d = new Q3TextDrag( mWidget->label( mWidget->indexOf( w ) ), this );
    d->dragCopy(); // do NOT delete d.
 }
 
@@ -150,12 +150,12 @@ void Test::toggleLeftButton(bool state)
       connect( mLeftWidget, SIGNAL( clicked() ), SLOT( addTab() ) );
       mLeftWidget->setIconSet( SmallIcon( "tab_new" ) );
       mLeftWidget->setTextLabel("New");
-      mLeftWidget->setTextPosition(QToolButton::Right);
+      mLeftWidget->setTextPosition(QToolButton::BesideIcon);
       mLeftWidget->adjustSize();
     //mLeftWidget->setGeometry( 0, 0, h, h );
       mLeftWidget->setPopup(mLeftPopup);
 #if QT_VERSION >= 0x030200
-      mWidget->setCornerWidget( mLeftWidget, TopLeft );
+      mWidget->setCornerWidget( mLeftWidget, Qt::TopLeftCorner );
     }
     mLeftWidget->show();
 #else
@@ -171,7 +171,7 @@ void Test::toggleLeftPopup(bool state)
 {
   if (state) {
     if (!mLeftPopup) {
-      mLeftPopup = new QPopupMenu(this);
+      mLeftPopup = new Q3PopupMenu(this);
       mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Empty Tab", 0);
       mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Empty Tab After First", 3);
       mLeftPopup->insertSeparator();
@@ -206,12 +206,12 @@ if (state) {
       QObject::connect( mRightWidget, SIGNAL( clicked() ), SLOT( removeCurrentTab() ) );
       mRightWidget->setIconSet( SmallIcon( "tab_remove" ) );
       mRightWidget->setTextLabel("Close");
-      mRightWidget->setTextPosition(QToolButton::Right);
+      mRightWidget->setTextPosition(QToolButton::BesideIcon);
       mRightWidget->adjustSize();
     //mRightButton->setGeometry( 0, 0, h, h );
       mRightWidget->setPopup(mRightPopup);
 #if QT_VERSION >= 0x030200
-      mWidget->setCornerWidget( mRightWidget, TopRight );
+      mWidget->setCornerWidget( mRightWidget, Qt::TopRightCorner );
     }
     mRightWidget->show();
 #else
@@ -227,7 +227,7 @@ void Test::toggleRightPopup(bool state)
 {
   if (state) {
     if (!mRightPopup) {
-      mRightPopup = new QPopupMenu(this);
+      mRightPopup = new Q3PopupMenu(this);
       mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Current Tab", 1);
       mRightPopup->insertSeparator();
       mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Most Left Tab", 0);
@@ -258,7 +258,7 @@ void Test::rightPopupActivated(int item)
 
 void Test::toggleTabPosition(bool state)
 {
-  mWidget->setTabPosition(state ? QTabWidget::Bottom : QTabWidget::Top);
+  mWidget->setTabPosition(state ? Qt::DockBottom : Qt::DockTop);
 }
 
 void Test::toggleTabShape(bool state)
@@ -276,7 +276,7 @@ void Test::contextMenu(QWidget *w, const QPoint &p)
   if (mContextPopup)
       delete mContextPopup;
 
-  mContextPopup = new QPopupMenu(this);
+  mContextPopup = new Q3PopupMenu(this);
   mContextPopup->insertItem( "Activate Tab", 4);
   mContextPopup->insertSeparator();
   mContextPopup->insertItem(SmallIcon( "konsole" ), "Set This Icon", 0);
@@ -315,13 +315,13 @@ void Test::tabbarContextMenu(const QPoint &p)
   if (mTabbarContextPopup)
       delete mTabbarContextPopup;
 
-  mTabbarContextPopup = new QPopupMenu(this);
+  mTabbarContextPopup = new Q3PopupMenu(this);
 #if QT_VERSION >= 0x030200
   mTabbarContextPopup->insertItem(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button", 0);
   mTabbarContextPopup->insertItem(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button", 1);
   mTabbarContextPopup->insertSeparator();
 #endif
-  mTabbarContextPopup->insertItem(mWidget->tabPosition()==QTabWidget::Top ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
+  mTabbarContextPopup->insertItem(mWidget->tabPosition()==Qt::DockTop ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
   connect(mTabbarContextPopup, SIGNAL(activated(int)), SLOT(tabbarContextMenuActivated(int)));
 
   mTabbarContextPopup->popup(p);

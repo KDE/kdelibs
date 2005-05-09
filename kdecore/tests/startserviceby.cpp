@@ -33,7 +33,7 @@ main(int argc, char *argv[])
    KApplication a;
 
    QString error;
-   QCString dcopService;
+   Q3CString dcopService;
    int pid;
    a.startServiceByDesktopName( "kaddressbook", QString::null, &error, &dcopService, &pid );
    kdDebug() << "Started. error=" << error << " dcopService=" << dcopService << " pid=" << pid << endl;

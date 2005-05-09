@@ -24,7 +24,7 @@
 #include <ktempfile.h>
 #include <kstandarddirs.h>
 
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qtimer.h>
 
 #include <sys/types.h>
@@ -36,7 +36,7 @@
 #define KHTML_PAGE_CACHE_SIZE 12
 #endif
 
-template class QPtrList<KHTMLPageCacheDelivery>;
+template class Q3PtrList<KHTMLPageCacheDelivery>;
 class KHTMLPageCacheEntry
 {
   friend class KHTMLPageCache;
@@ -56,7 +56,7 @@ public:
 private:
   long m_id;
   bool m_complete;
-  QValueList<QByteArray> m_data;
+  Q3ValueList<QByteArray> m_data;
   KTempFile *m_file;
 };
 
@@ -64,9 +64,9 @@ class KHTMLPageCachePrivate
 {
 public:
   long newId;
-  QIntDict<KHTMLPageCacheEntry> dict;
-  QPtrList<KHTMLPageCacheDelivery> delivery;
-  QPtrList<KHTMLPageCacheEntry> expireQueue;
+  Q3IntDict<KHTMLPageCacheEntry> dict;
+  Q3PtrList<KHTMLPageCacheDelivery> delivery;
+  Q3PtrList<KHTMLPageCacheEntry> expireQueue;
   bool deliveryActive;
 };
 

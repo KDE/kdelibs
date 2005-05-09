@@ -39,8 +39,8 @@
 #include <grp.h>
 
 #include <qregexp.h>
-#include <qasciidict.h>
-#include <qdict.h>
+#include <q3asciidict.h>
+#include <q3dict.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qstring.h>
@@ -56,7 +56,7 @@
 #include "kstaticdeleter.h"
 #include <kde_file.h>
 
-template class QDict<QStringList>;
+template class Q3Dict<QStringList>;
 
 class KStandardDirs::KStandardDirsPrivate
 {
@@ -70,7 +70,7 @@ public:
    bool restrictionsActive;
    bool dataRestrictionActive;
    bool checkRestrictions;
-   QAsciiDict<bool> restrictions;
+   Q3AsciiDict<bool> restrictions;
    QStringList xdgdata_prefixes;
    QStringList xdgconf_prefixes;
 };
@@ -338,7 +338,7 @@ for (QStringList::ConstIterator pit = prefixes.begin();
 
 static Q_UINT32 updateHash(const QString &file, Q_UINT32 hash)
 {
-    QCString cFile = QFile::encodeName(file);
+    Q3CString cFile = QFile::encodeName(file);
     KDE_struct_stat buff;
     if ((access(cFile, R_OK) == 0) &&
         (KDE_stat( cFile, &buff ) == 0) &&
@@ -1169,7 +1169,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
         KDE_struct_stat st;
         int pos = target.find('/', i);
         base += target.mid(i - 1, pos - i + 1);
-        QCString baseEncoded = QFile::encodeName(base);
+        Q3CString baseEncoded = QFile::encodeName(base);
         // bail out if we encountered a problem
         if (KDE_stat(baseEncoded, &st) != 0)
         {
@@ -1191,7 +1191,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
 
 static QString readEnvPath(const char *env)
 {
-   QCString c_path = getenv(env);
+   Q3CString c_path = getenv(env);
    if (c_path.isEmpty())
       return QString::null;
 #ifdef Q_OS_WIN
@@ -1441,7 +1441,7 @@ static QStringList lookupProfiles(const QString &mapFile)
         return profiles; // Not good
     }
 
-    QCString user = pw->pw_name;
+    Q3CString user = pw->pw_name;
 
     gid_t sup_gids[512];
     int sup_gids_nr = getgroups(512, sup_gids);
@@ -1462,7 +1462,7 @@ static QStringList lookupProfiles(const QString &mapFile)
     for( QStringList::ConstIterator it = groups.begin();
          it != groups.end(); ++it )
     {
-        QCString grp = (*it).utf8();
+        Q3CString grp = (*it).utf8();
         // Check if user is in this group
         struct group *grp_ent = getgrnam(grp);
         if (!grp_ent) continue;
@@ -1536,7 +1536,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
         bool readProfiles = true;
 
-        if (kde_kiosk_admin && !QCString(getenv("KDE_KIOSK_NO_PROFILES")).isEmpty())
+        if (kde_kiosk_admin && !Q3CString(getenv("KDE_KIOSK_NO_PROFILES")).isEmpty())
             readProfiles = false;
 
         QString userMapFile = config->readEntry("userProfileMapFile");
@@ -1598,7 +1598,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
     }
 
     // Process KIOSK restrictions.
-    if (!kde_kiosk_admin || QCString(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
+    if (!kde_kiosk_admin || Q3CString(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
     {
         config->setGroup("KDE Resource Restrictions");
         QMap<QString, QString> entries = config->entryMap("KDE Resource Restrictions");

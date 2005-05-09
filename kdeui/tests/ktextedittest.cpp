@@ -28,7 +28,7 @@ int main( int argc, char **argv )
     KTextEdit *edit = new KTextEdit();
 
     QFile file( "ktextedittest.cpp" );
-    if ( file.open( IO_ReadOnly ) )
+    if ( file.open( QIODevice::ReadOnly ) )
     {
         edit->setText( file.readAll() );
         file.close();

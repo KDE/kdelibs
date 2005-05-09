@@ -27,12 +27,12 @@
 
 #include "kcheckaccelerators.h"
 #include "kaccelmanager.h"
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qapplication.h>
 #include <qdialog.h>
 #include <qlayout.h>
-#include <qtextview.h>
-#include <qobjectlist.h>
+#include <q3textview.h>
+#include <qobject.h>
 #include <qmenubar.h>
 #include <qtabbar.h>
 #include <qpushbutton.h>
@@ -151,7 +151,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     drklash->resize( 500, 460 );
     QVBoxLayout* layout = new QVBoxLayout( drklash, 11, 6 );
     layout->setAutoAdd( true );
-    drklash_view = new QTextView( drklash );
+    drklash_view = new Q3TextView( drklash );
     QCheckBox* disableAutoCheck = NULL;
     if( automatic )  {
         disableAutoCheck = new QCheckBox( i18n( "&Disable automatic checking" ), drklash );

@@ -41,14 +41,14 @@ public:
 protected:
 	QMap<QString,QString> parseXferOptions(const QString&);
 	void loadAuthFile(const QString&, QString&, QString&);
-	QValueList< QPair<QString,QStringList> > loadChoiceDict(const QString&);
+	Q3ValueList< QPair<QString,QStringList> > loadChoiceDict(const QString&);
 	QMap<QString,QString> parseZOptions(const QString&);
 	QString filterDir();
 	QString driverDirInternal();
 
 
 private:
-	QValueList< QPair<QString,QStringList> >	m_dict;
+	Q3ValueList< QPair<QString,QStringList> >	m_dict;
 };
 
 #endif

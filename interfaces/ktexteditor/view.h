@@ -50,7 +50,7 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
     /**
      * Returns the DCOP suffix to allow identification of this view's DCOP interface.
      */
-    QCString viewDCOPSuffix () const;
+    Q3CString viewDCOPSuffix () const;
 
     /**
     * Acess the parent Document.

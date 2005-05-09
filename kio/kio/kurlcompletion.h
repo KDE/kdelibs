@@ -204,7 +204,7 @@ private:
 	                        bool no_hidden = false,
 	                        bool stat_files = true);
 
-	void listURLs( const QValueList<KURL *> &urls,
+	void listURLs( const Q3ValueList<KURL *> &urls,
 	               const QString &filter = QString::null,
 	               bool only_exe = false,
 	               bool no_hidden = false );

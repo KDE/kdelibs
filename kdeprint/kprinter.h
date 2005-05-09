@@ -26,7 +26,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kdemacros.h>
 #include <kdelibs_export.h>
 
@@ -154,7 +154,7 @@ public:
 	 * Defines the orientation of the paper
 	 * @see QPrinter::Orientation
 	 */
-	enum Orientation { Portrait = QPrinter::Portrait, Landscape = QPrinter::Landscape };
+	enum Qt::Orientation { Portrait = QPrinter::Portrait, Landscape = QPrinter::Landscape };
 	/**
 	 * Defines the page order of the print job
 	 * @see QPrinter::PageOrder
@@ -285,11 +285,11 @@ public:
 	/**
 	 * See QPrinter::orientation().
 	 */
-	Orientation orientation() const;
+	Qt::Orientation orientation() const;
 	/**
 	 * See QPrinter::setOrientation().
 	 */
-	void setOrientation(Orientation);
+	void setOrientation(Qt::Orientation);
 	/**
 	 * See QPrinter::pageOrder().
 	 */
@@ -488,7 +488,7 @@ public:
 	 * application does page selection itself.
 	 * @see setCurrentPage()
 	 */
-	QValueList<int> pageList() const;
+	Q3ValueList<int> pageList() const;
 	/**
 	 * Sets the KPrinter object to preview mode if @p on is true. In this mode, nothing will be
 	 * printed but only a preview dialog will be popped up with the single "Close" action. Using

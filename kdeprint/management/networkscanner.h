@@ -22,7 +22,7 @@
 
 #include <qwidget.h>
 #include <kdialogbase.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 
 class KDEPRINT_EXPORT NetworkScanner : public QWidget
@@ -40,7 +40,7 @@ public:
 		int Port;
 	};
 
-	const QPtrList<NetworkScanner::SocketInfo>* printerList();
+	const Q3PtrList<NetworkScanner::SocketInfo>* printerList();
 
 	int timeout() const;
 	void setTimeout( int to );

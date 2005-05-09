@@ -21,7 +21,7 @@
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -40,7 +40,7 @@ class KTEXTEDITOR_EXPORT UndoInterface
     unsigned int undoInterfaceNumber () const;
     
   protected:  
-    void setUndoInterfaceDCOPSuffix (const QCString &suffix); 
+    void setUndoInterfaceDCOPSuffix (const Q3CString &suffix); 
 
   //
   // slots !!!

@@ -30,7 +30,7 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class KJavaProcessPrivate
 {
@@ -41,7 +41,7 @@ private:
     QString mainClass;
     QString extraArgs;
     QString classArgs;
-    QPtrList<QByteArray> BufferList;
+    Q3PtrList<QByteArray> BufferList;
     QMap<QString, QString> systemProps;
     bool processKilled;
 };
@@ -132,7 +132,7 @@ QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
     const char sep = 0;
 
     //make space for the command size: 8 characters...
-    const QCString space( "        " );
+    const Q3CString space( "        " );
     output << space;
 
     //write command code
@@ -299,8 +299,8 @@ bool KJavaProcess::invokeJVM()
     kdDebug(6100) << "Invoking JVM now...with arguments = " << endl;
     QString argStr;
     QTextOStream stream( &argStr );
-    const QValueList<QCString> args = javaProcess->args();
-    qCopy( args.begin(), args.end(), QTextOStreamIterator<QCString>( stream, " " ) );
+    const Q3ValueList<Q3CString> args = javaProcess->args();
+    qCopy( args.begin(), args.end(), QTextOStreamIterator<Q3CString>( stream, " " ) );
     kdDebug(6100) << argStr << endl;
 
     KProcess::Communication flags =  (KProcess::Communication)

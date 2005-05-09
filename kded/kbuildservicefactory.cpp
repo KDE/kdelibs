@@ -141,7 +141,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    m_offerListOffset = str.device()->at();
 
    bool isNumber;
-   for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
+   for(Q3DictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
        itserv.current();
        ++itserv)
    {
@@ -178,7 +178,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    }
 
    // For each entry in servicetypeFactory
-   for(QDictIterator<KSycocaEntry::Ptr> it ( *(m_serviceTypeFactory->entryDict()) );
+   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *(m_serviceTypeFactory->entryDict()) );
        it.current();
        ++it)
    {
@@ -205,7 +205,7 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
 
    KService::List initList;
 
-   for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
+   for(Q3DictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
        itserv.current();
        ++itserv)
    {

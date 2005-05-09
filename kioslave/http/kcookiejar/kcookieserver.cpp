@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 
 #include <qtimer.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qfile.h>
 
 #include <dcopclient.h>
@@ -46,7 +46,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookieserver.h"
 
 extern "C" {
-    KDE_EXPORT KDEDModule *create_kcookiejar(const QCString &name)
+    KDE_EXPORT KDEDModule *create_kcookiejar(const Q3CString &name)
     {
        return new KCookieServer(name);
     }
@@ -67,15 +67,15 @@ public:
    long windowId;
 };
 
-template class  QPtrList<CookieRequest>;
+template class  Q3PtrList<CookieRequest>;
 
-class RequestList : public QPtrList<CookieRequest>
+class RequestList : public Q3PtrList<CookieRequest>
 {
 public:
-   RequestList() : QPtrList<CookieRequest>() { }
+   RequestList() : Q3PtrList<CookieRequest>() { }
 };
 
-KCookieServer::KCookieServer(const QCString &name)
+KCookieServer::KCookieServer(const Q3CString &name)
               :KDEDModule(name)
 {
    mOldCookieServer = new DCOPClient(); // backwards compatibility.
@@ -149,7 +149,7 @@ bool KCookieServer::cookiesPending( const QString &url, KHttpCookieList *cookieL
   return cookieList->isEmpty();
 }
 
-void KCookieServer::addCookies( const QString &url, const QCString &cookieHeader,
+void KCookieServer::addCookies( const QString &url, const Q3CString &cookieHeader,
                                long windowId, bool useDOMFormat )
 {
     KHttpCookieList cookieList;
@@ -273,11 +273,11 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     {
         if (!cookiesPending( request->url ))
         {
-           QCString replyType;
+           Q3CString replyType;
            QByteArray replyData;
            QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
-           QDataStream stream2(replyData, IO_WriteOnly);
+           QDataStream stream2(replyData, QIODevice::WriteOnly);
            stream2 << res;
            replyType = "QString";
            request->client->endTransaction( request->transaction,
@@ -315,9 +315,9 @@ void KCookieServer::saveCookieJar()
 }
 
 void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
-                               const QValueList<int>& fields )
+                               const Q3ValueList<int>& fields )
 {
-    QValueList<int>::ConstIterator i = fields.begin();
+    Q3ValueList<int>::ConstIterator i = fields.begin();
     for ( ; i != fields.end(); ++i )
     {
         switch(*i)
@@ -420,7 +420,7 @@ KCookieServer::findDomains()
 
 // DCOP function
 QStringList
-KCookieServer::findCookies(QValueList<int> fields,
+KCookieServer::findCookies(Q3ValueList<int> fields,
                            QString domain,
                            QString fqdn,
                            QString path,
@@ -432,7 +432,7 @@ KCookieServer::findCookies(QValueList<int> fields,
    const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
    if ( list && !list->isEmpty() )
    {
-      QPtrListIterator<KHttpCookie>it( *list );
+      Q3PtrListIterator<KHttpCookie>it( *list );
       for ( ; it.current(); ++it )
       {
          if ( !allDomCookies )
@@ -472,7 +472,7 @@ KCookieServer::findDOMCookies(QString url, long windowId)
 
 // DCOP function
 void
-KCookieServer::addCookies(QString arg1, QCString arg2, long arg3)
+KCookieServer::addCookies(QString arg1, Q3CString arg2, long arg3)
 {
    addCookies(arg1, arg2, arg3, false);
 }
@@ -485,7 +485,7 @@ KCookieServer::deleteCookie(QString domain, QString fqdn,
    const KHttpCookieList* list = mCookieJar->getCookieList( domain, fqdn );
    if ( list && !list->isEmpty() )
    {
-      QPtrListIterator<KHttpCookie>it (*list);
+      Q3PtrListIterator<KHttpCookie>it (*list);
       for ( ; it.current(); ++it )
       {
          if( cookieMatches(it.current(), domain, fqdn, path, name) )
@@ -544,7 +544,7 @@ KCookieServer::deleteAllCookies()
 
 // DCOP function
 void
-KCookieServer::addDOMCookies(QString arg1, QCString arg2, long arg3)
+KCookieServer::addDOMCookies(QString arg1, Q3CString arg2, long arg3)
 {
    addCookies(arg1, arg2, arg3, true);
 }

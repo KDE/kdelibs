@@ -198,7 +198,7 @@ void KMVirtualManager::refresh()
         else
         { // parse printers looking for instances -> undiscarded them, real printers
           // are undiscarded by the manager itself. Also update printer status.
-                QPtrListIterator<KMPrinter>        it(m_manager->m_printers);
+                Q3PtrListIterator<KMPrinter>        it(m_manager->m_printers);
                 for (;it.current();++it)
                         if (!it.current()->instanceName().isEmpty())
 			{
@@ -229,7 +229,7 @@ QString KMVirtualManager::defaultPrinterName()
         return m_defaultprinter;
 }
 
-void KMVirtualManager::virtualList(QPtrList<KMPrinter>& list, const QString& prname)
+void KMVirtualManager::virtualList(Q3PtrList<KMPrinter>& list, const QString& prname)
 {
 	// load printers if necessary
 	refresh();
@@ -238,7 +238,7 @@ void KMVirtualManager::virtualList(QPtrList<KMPrinter>& list, const QString& prn
 	list.setAutoDelete(false);
 	list.clear();
 	kdDebug(500) << "KMVirtualManager::virtualList() prname=" << prname << endl;
-	QPtrListIterator<KMPrinter>	it(m_manager->m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_manager->m_printers);
 	for (;it.current();++it)
 		if (it.current()->printerName() == prname)
 			list.append(it.current());
@@ -247,7 +247,7 @@ void KMVirtualManager::virtualList(QPtrList<KMPrinter>& list, const QString& prn
 void KMVirtualManager::loadFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 
@@ -312,10 +312,10 @@ void KMVirtualManager::triggerSave()
 void KMVirtualManager::saveFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (f.open(IO_WriteOnly))
+	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		QPtrListIterator<KMPrinter>	it(m_manager->m_printers);
+		Q3PtrListIterator<KMPrinter>	it(m_manager->m_printers);
 		for (;it.current();++it)
 		{
 			if (it.current()->isSpecial())

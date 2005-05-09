@@ -38,7 +38,7 @@
 #endif
 
 #include <qglobal.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -292,7 +292,7 @@ int PTY::unlockpt()
  * Return the slave side name.
  */
 
-QCString PTY::ptsname()
+Q3CString PTY::ptsname()
 {
     if (ptyfd < 0)
 	return 0;

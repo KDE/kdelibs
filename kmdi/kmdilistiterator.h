@@ -30,17 +30,17 @@
 #include <kmdiiterator.h>
 
 template <class I>
-class QPtrList;
+class Q3PtrList;
 template <class I>
-class QPtrListIterator;
+class Q3PtrListIterator;
 
 template <class Item>
 class KMdiListIterator : public KMdiIterator<Item*>
 {
 public:
-	KMdiListIterator( QPtrList<Item>& list )
+	KMdiListIterator( Q3PtrList<Item>& list )
 	{
-		m_iterator = new QPtrListIterator<Item>( list );
+		m_iterator = new Q3PtrListIterator<Item>( list );
 	}
 
 	virtual void first() { m_iterator->toFirst(); }
@@ -53,7 +53,7 @@ public:
 	virtual ~KMdiListIterator() { delete m_iterator; }
 
 private:
-	QPtrListIterator<Item> *m_iterator;
+	Q3PtrListIterator<Item> *m_iterator;
 };
 
 #endif // _KMDILISTITERATOR_H_ 

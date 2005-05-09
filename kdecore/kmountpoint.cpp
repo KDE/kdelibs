@@ -166,7 +166,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
    ENDMNTENT(fstab);
 #else
    QFile f(FSTAB);
-   if ( !f.open(IO_ReadOnly) )
+   if ( !f.open(QIODevice::ReadOnly) )
       return result;
      
    QTextStream t (&f);

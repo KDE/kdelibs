@@ -19,7 +19,7 @@
 
 #include "ksettings/dispatcher.h"
 
-#include <qsignal.h>
+#include <q3signal.h>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>
@@ -63,17 +63,17 @@ void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const c
     assert( instance != 0 );
     // keep the KInstance around and call
     // instance->config()->reparseConfiguration when the app should reparse
-    QCString instanceName = instance->instanceName();
+    Q3CString instanceName = instance->instanceName();
     kdDebug( 701 ) << k_funcinfo << instanceName << endl;
     m_instanceName[ recv ] = instanceName;
-    QSignal * sig;
+    Q3Signal * sig;
     if( m_instanceInfo.contains( instanceName ) )
     {
         sig = m_instanceInfo[ instanceName ].signal;
     }
     else
     {
-        sig = new QSignal( this, "signal dispatcher" );
+        sig = new Q3Signal( this, "signal dispatcher" );
         m_instanceInfo[ instanceName ].signal = sig;
         m_instanceInfo[ instanceName ].instance = instance;
     }
@@ -83,7 +83,7 @@ void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const c
     connect( recv, SIGNAL( destroyed( QObject * ) ), this, SLOT( unregisterInstance( QObject * ) ) );
 }
 
-KConfig * Dispatcher::configForInstanceName( const QCString & instanceName )
+KConfig * Dispatcher::configForInstanceName( const Q3CString & instanceName )
 {
     kdDebug( 701 ) << k_funcinfo << endl;
     if( m_instanceInfo.contains( instanceName ) )
@@ -97,17 +97,17 @@ KConfig * Dispatcher::configForInstanceName( const QCString & instanceName )
     return 0;
 }
 
-QStrList Dispatcher::instanceNames() const
+Q3StrList Dispatcher::instanceNames() const
 {
     kdDebug( 701 ) << k_funcinfo << endl;
-    QStrList names;
-    for( QMap<QCString, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
+    Q3StrList names;
+    for( QMap<Q3CString, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
         if( ( *it ).count > 0 )
             names.append( it.key() );
     return names;
 }
 
-void Dispatcher::reparseConfiguration( const QCString & instanceName )
+void Dispatcher::reparseConfiguration( const Q3CString & instanceName )
 {
     kdDebug( 701 ) << k_funcinfo << instanceName << endl;
     // check if the instanceName is valid:
@@ -116,7 +116,7 @@ void Dispatcher::reparseConfiguration( const QCString & instanceName )
     // first we reparse the config of the instance so that the KConfig object
     // will be up to date
     m_instanceInfo[ instanceName ].instance->config()->reparseConfiguration();
-    QSignal * sig = m_instanceInfo[ instanceName ].signal;
+    Q3Signal * sig = m_instanceInfo[ instanceName ].signal;
     if( sig )
     {
         kdDebug( 701 ) << "emit signal to instance" << endl;
@@ -126,7 +126,7 @@ void Dispatcher::reparseConfiguration( const QCString & instanceName )
 
 void Dispatcher::syncConfiguration()
 {
-    for( QMap<QCString, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
+    for( QMap<Q3CString, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
     {
         ( *it ).instance->config()->sync();
     }
@@ -135,7 +135,7 @@ void Dispatcher::syncConfiguration()
 void Dispatcher::unregisterInstance( QObject * obj )
 {
     kdDebug( 701 ) << k_funcinfo << endl;
-    QCString name = m_instanceName[ obj ];
+    Q3CString name = m_instanceName[ obj ];
     m_instanceName.remove( obj ); //obj will be destroyed when we return, so we better remove this entry
     --m_instanceInfo[ name ].count;
     if( m_instanceInfo[ name ].count == 0 )

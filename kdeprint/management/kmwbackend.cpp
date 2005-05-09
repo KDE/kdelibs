@@ -23,9 +23,9 @@
 
 #include <qlayout.h>
 #include <qregexp.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kcursor.h>
 #include <klocale.h>
@@ -53,7 +53,7 @@ KMWBackend::KMWBackend(QWidget *parent, const char *name)
 	m_ID = KMWizard::Backend;
 	m_title = i18n("Backend Selection");
 
-	m_buttons = new QButtonGroup(this);
+	m_buttons = new Q3ButtonGroup(this);
 	m_buttons->hide();
 
 	m_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
@@ -161,7 +161,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& 
 		KRadioButton	*btn = new KRadioButton(txt, this);
 		btn->setEnabled(on);
 		if ( !whatsThis.isEmpty() )
-			QWhatsThis::add( btn, whatsThis );
+			Q3WhatsThis::add( btn, whatsThis );
 		m_buttons->insert(btn, ID);
 		m_map[ID] = (nextpage == -1 ? ID : nextpage);	// use nextpage if specified, default to ID
 		m_layout->insertWidget(m_count, btn);
@@ -171,7 +171,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& 
 
 void KMWBackend::enableBackend(int ID, bool on)
 {
-	QButton	*btn = m_buttons->find(ID);
+	Q3Button	*btn = m_buttons->find(ID);
 	if (btn)
 		btn->setEnabled(on);
 }

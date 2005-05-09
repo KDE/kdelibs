@@ -28,11 +28,11 @@
 #include "kmmanager.h"
 #include "driver.h"
 
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qfile.h>
-#include <qtl.h>
+#include <q3tl.h>
 #include <qdir.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
@@ -97,7 +97,7 @@ int KPrinterWrapper::qprinterMetric(int m) const
 class KPrinterPrivate
 {
 public:
-	QGuardedPtr<KPrinterImpl>	m_impl;
+	QPointer<KPrinterImpl>	m_impl;
 	bool		m_restore;
 	bool		m_previewonly;
 	WId		m_parentId;
@@ -467,9 +467,9 @@ void KPrinter::finishPrinting()
 	d->m_impl->statusMessage(QString::null, this);
 }
 
-QValueList<int> KPrinter::pageList() const
+Q3ValueList<int> KPrinter::pageList() const
 {
-	QValueList<int>	list;
+	Q3ValueList<int>	list;
 	int	mp(minPage()), MP(maxPage());
 	if (mp > 0 && MP > 0 && MP >= mp)
 	{ // do something only if bounds specified
@@ -526,7 +526,7 @@ QValueList<int> KPrinter::pageList() const
 			if (pageSet() != AllPages)
 			{
 				bool	keepEven = (pageSet() == EvenPages);
-				for (QValueList<int>::Iterator it=list.begin();it!=list.end();)
+				for (Q3ValueList<int>::Iterator it=list.begin();it!=list.end();)
 					if ((((*it) % 2) != 0 && keepEven) ||
 					    (((*it) % 2) == 0 && !keepEven)) it = list.remove(it);
 					else ++it;
@@ -568,26 +568,26 @@ int KPrinter::metric(int m) const
 	margins( &top, &left, &bottom, &right );
 	switch ( m )
 	{
-		case QPaintDeviceMetrics::PdmWidth:
+		case Q3PaintDeviceMetrics::PdmWidth:
 			val = (land ? ( int )d->m_pagesize->pageHeight() : ( int )d->m_pagesize->pageWidth());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= ( left + right );
 			break;
-		case QPaintDeviceMetrics::PdmHeight:
+		case Q3PaintDeviceMetrics::PdmHeight:
 			val = (land ? ( int )d->m_pagesize->pageWidth() : ( int )d->m_pagesize->pageHeight());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= ( top + bottom );
 			break;
-		case QPaintDeviceMetrics::PdmWidthMM:
-			val = metric( QPaintDeviceMetrics::PdmWidth );
+		case Q3PaintDeviceMetrics::PdmWidthMM:
+			val = metric( Q3PaintDeviceMetrics::PdmWidth );
 			val = (val * 254 + 5*res) / (10*res); // +360 to get the right rounding
 			break;
-		case QPaintDeviceMetrics::PdmHeightMM:
-			val = metric( QPaintDeviceMetrics::PdmHeight );
+		case Q3PaintDeviceMetrics::PdmHeightMM:
+			val = metric( Q3PaintDeviceMetrics::PdmHeight );
 			val = (val * 254 + 5*res) / (10*res);
 			break;
 		default:
@@ -597,7 +597,7 @@ int KPrinter::metric(int m) const
 	return val;
 }
 
-void KPrinter::setOrientation(Orientation o)
+void KPrinter::setOrientation(Qt::Orientation o)
 {
 	KMFactory::self()->settings()->orientation = o;
 	setOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));

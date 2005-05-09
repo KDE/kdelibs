@@ -134,7 +134,7 @@ namespace KKeyServer
 	 * Represents a key press.
 	 * @see KKey
 	 */
-	struct KDECORE_EXPORT Key
+	struct KDECORE_EXPORT Qt::Key
 	{
 		/// Code for native Keys in Qt
 		enum { CODE_FOR_QT = 256 };
@@ -202,7 +202,7 @@ namespace KKeyServer
 		 * Initializes this key with a KKeyNative.
 		 * @return this key
 		 */
-		Key& operator =( const KKeyNative& key );
+		Qt::Key& operator =( const KKeyNative& key );
 
 		/**
 		 * Compares this key with the given Key object. Returns a
@@ -215,20 +215,20 @@ namespace KKeyServer
 		 * @return a negative number if the given Key is larger, 0 if
 		 * they are equal and a positive number this Key is larger
 		 */
-		int compare( const Key& key ) const;
+		int compare( const Qt::Key& key ) const;
 
 		/**
 		 * Compares the symbol, modifiers and code of both keys.
 		 * @see compare()
 		 */
-		bool operator ==( const Key& b ) const
+		bool operator ==( const Qt::Key& b ) const
 			{ return compare( b ) == 0; }
 
 		/**
 		 * Compares the symbol, modifiers and code of both keys.
 		 * @see compare()
 		 */
-		bool operator <( const Key& b ) const
+		bool operator <( const Qt::Key& b ) const
 			{ return compare( b ) < 0; }
 
 		/**
@@ -245,7 +245,7 @@ namespace KKeyServer
 	{
 		enum { MAX_VARIATIONS = 4 };
 
-		Key m_rgkey[MAX_VARIATIONS];
+		Qt::Key m_rgkey[MAX_VARIATIONS];
 		uint m_nVariations;
 
 		Variations() { m_nVariations = 0; }
@@ -253,7 +253,7 @@ namespace KKeyServer
 		void init( const KKey&, bool bQt );
 
 		uint count() const { return m_nVariations; }
-		const Key& key( uint i ) const { return m_rgkey[i]; }
+		const Qt::Key& key( uint i ) const { return m_rgkey[i]; }
 	};
 
 	/// TODO: please document

@@ -84,8 +84,8 @@ public:
     }
 
 private:
-    mutable QStrList m_formats;
-    mutable QPtrList<QByteArray> m_data;
+    mutable Q3StrList m_formats;
+    mutable Q3PtrList<QByteArray> m_data;
 };
 
 

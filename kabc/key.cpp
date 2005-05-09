@@ -31,11 +31,11 @@ Key::Key( const QString &text, int type )
   mId = KApplication::randomString(8);
 }
 
-Key::~Key()
+Key::~Qt::Key()
 {
 }
 
-bool Key::operator==( const Key &k ) const
+bool Key::operator==( const Qt::Key &k ) const
 {
   if ( mIsBinary != k.mIsBinary ) return false;
   if ( mIsBinary )
@@ -48,7 +48,7 @@ bool Key::operator==( const Key &k ) const
   return true;
 }
 
-bool Key::operator!=( const Key &k ) const
+bool Key::operator!=( const Qt::Key &k ) const
 {
   return !( k == *this );
 }
@@ -138,13 +138,13 @@ QString Key::typeLabel( int type )
   }
 }
 
-QDataStream &KABC::operator<<( QDataStream &s, const Key &key )
+QDataStream &KABC::operator<<( QDataStream &s, const Qt::Key &key )
 {
     return s << key.mId << key.mIsBinary << key.mTextData << key.mBinaryData <<
              key.mCustomTypeString << key.mType;
 }
 
-QDataStream &KABC::operator>>( QDataStream &s, Key &key )
+QDataStream &KABC::operator>>( QDataStream &s, Qt::Key &key )
 {
     s >> key.mId >> key.mIsBinary >> key.mTextData >> key.mBinaryData >>
     key.mCustomTypeString >> key.mType;

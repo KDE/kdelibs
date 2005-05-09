@@ -19,7 +19,7 @@
  *
  */
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstring.h>
 #include <qimage.h>
 #include <klocale.h>
@@ -499,19 +499,19 @@ class KDECORE_EXPORT KAboutData
      * Returns a list of authors.
      * @return author information (list of persons).
      */
-    const QValueList<KAboutPerson> authors() const;
+    const Q3ValueList<KAboutPerson> authors() const;
 
     /**
      * Returns a list of persons who contributed.
      * @return credit information (list of persons).
      */
-    const QValueList<KAboutPerson> credits() const;
+    const Q3ValueList<KAboutPerson> credits() const;
 
     /**
      * Returns a list of translators.
      * @return translators information (list of persons)
      */
-    const QValueList<KAboutTranslator> translators() const;
+    const Q3ValueList<KAboutTranslator> translators() const;
 
     /**
      * Returns a message about the translation team.
@@ -550,8 +550,8 @@ class KDECORE_EXPORT KAboutData
     const char *mOtherText;
     const char *mHomepageAddress;
     const char *mBugEmailAddress;
-    QValueList<KAboutPerson> mAuthorList;
-    QValueList<KAboutPerson> mCreditList;
+    Q3ValueList<KAboutPerson> mAuthorList;
+    Q3ValueList<KAboutPerson> mCreditList;
     const char *mLicenseText;
 
     KAboutDataPrivate *d;

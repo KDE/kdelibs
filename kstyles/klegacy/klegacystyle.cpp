@@ -30,57 +30,57 @@
 #define INCLUDE_MENUITEM_DEF
 #include <qapplication.h>
 #include <qbitmap.h>
-#include <qbuttongroup.h>
-#include <qcanvas.h>
+#include <q3buttongroup.h>
+#include <q3canvas.h>
 #include <qcheckbox.h>
 #include <qcolor.h>
 #include <qcolordialog.h>
 #include <qcombobox.h>
 #include <qdial.h>
 #include <qdialog.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qfile.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qfileinfo.h>
 #include <qfont.h>
 #include <qfontdialog.h>
-#include <qframe.h>
-#include <qguardedptr.h>
-#include <qgrid.h>
-#include <qgroupbox.h>
-#include <qhbox.h>
+#include <q3frame.h>
+#include <qpointer.h>
+#include <q3grid.h>
+#include <q3groupbox.h>
+#include <q3hbox.h>
 #include <qhbuttongroup.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qhgroupbox.h>
-#include <qiconview.h>
+#include <q3iconview.h>
 #include <qimage.h>
 #include <qinputdialog.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlcdnumber.h>
 #include <qlineedit.h>
-#include <qptrlist.h>
-#include <qlistbox.h>
-#include <qlistview.h>
-#include <qmainwindow.h>
+#include <q3ptrlist.h>
+#include <q3listbox.h>
+#include <q3listview.h>
+#include <q3mainwindow.h>
 #include <qmenubar.h>
 #include <qmenudata.h>
 #include <qmessagebox.h>
-#include <qmultilineedit.h>
-#include <qobjectlist.h>
+#include <q3multilineedit.h>
+#include <qobject.h>
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qprintdialog.h>
-#include <qprogressbar.h>
-#include <qprogressdialog.h>
+#include <q3progressbar.h>
+#include <q3progressdialog.h>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qregexp.h>
 #include <qscrollbar.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <qsemimodal.h>
 #include <qsizegrip.h>
 #include <qslider.h>
@@ -89,21 +89,21 @@
 #include <qstatusbar.h>
 #include <qstring.h>
 #include <qtabbar.h>
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include <qtableview.h>
 #include <qtabwidget.h>
-#include <qtextbrowser.h>
+#include <q3textbrowser.h>
 #include <qtextstream.h>
-#include <qtextview.h>
-#include <qtoolbar.h>
+#include <q3textview.h>
+#include <q3toolbar.h>
 #include <qtoolbutton.h>
 #include <qtooltip.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qvbuttongroup.h>
 #include <qvgroupbox.h>
 #include <qwidget.h>
-#include <qwidgetstack.h>
-#include <qwizard.h>
+#include <q3widgetstack.h>
+#include <q3wizard.h>
 #include <qworkspace.h>
 
 #include <stdlib.h>
@@ -138,7 +138,7 @@ static int eventbox_ptr       = 8;
 // will cache them, to save the overhead of loading the image from disk each
 // time it's needed
 static const int imageCacheSize = 61;
-static QDict<QImage> *imageCache = 0;
+static Q3Dict<QImage> *imageCache = 0;
 
 
 class KLegacy {
@@ -147,7 +147,7 @@ public:
 		    HLine, VLine, BoxGap, Slider, Tab, Arrow, Handle, FShadow, Focus };
     enum State    { Normal = 1, Prelight, Active, Insensitive, Selected };
     enum Shadow   { NoShadow = 0, In, Out, EtchedIn, EtchedOut };
-    enum GapSide  { Left = 1, Right, Top, Bottom };
+    enum GapSide  { Qt::DockLeft = 1, Qt::DockRight, Qt::DockTop, Qt::DockBottom };
 };
 
 
@@ -439,7 +439,7 @@ static QPixmap *drawImage(QImage *image, int width, int height,
 
 // Generate an object tree for all the known Gtk widgets...
 // returns a pointer to the bottom of the tree
-static GtkObject *initialize(QPtrDict<GtkObject> &dict) {
+static GtkObject *initialize(Q3PtrDict<GtkObject> &dict) {
     //
     // auto generated stuff from :
     // --
@@ -670,43 +670,43 @@ static GtkObject *initialize(QPtrDict<GtkObject> &dict) {
     //    sort | uniq > meta
     //--
 
-    dict.insert(QButton::staticMetaObject(), myGtkButton);
-    dict.insert(QButtonGroup::staticMetaObject(), myGtkButtonBox);
-    dict.insert(QCanvas::staticMetaObject(), myGtkDrawingArea);
-    dict.insert(QCanvasView::staticMetaObject(), myGtkDrawingArea);
+    dict.insert(Q3Button::staticMetaObject(), myGtkButton);
+    dict.insert(Q3ButtonGroup::staticMetaObject(), myGtkButtonBox);
+    dict.insert(Q3Canvas::staticMetaObject(), myGtkDrawingArea);
+    dict.insert(Q3CanvasView::staticMetaObject(), myGtkDrawingArea);
     dict.insert(QCheckBox::staticMetaObject(), myGtkCheckButton);
     dict.insert(QColorDialog::staticMetaObject(), myGtkColorSelectionDialog);
     dict.insert(QComboBox::staticMetaObject(), myGtkCombo);
     dict.insert(QDial::staticMetaObject(), myGtkWidget);
     dict.insert(QDialog::staticMetaObject(), myGtkDialog);
-    dict.insert(QFileDialog::staticMetaObject(), myGtkFileSelection);
+    dict.insert(Q3FileDialog::staticMetaObject(), myGtkFileSelection);
     dict.insert(QFontDialog::staticMetaObject(), myGtkFontSelectionDialog);
-    dict.insert(QFrame::staticMetaObject(), myGtkFrame);
-    dict.insert(QGrid::staticMetaObject(), myGtkFrame);
-    dict.insert(QGroupBox::staticMetaObject(), myGtkBox);
-    dict.insert(QHBox::staticMetaObject(), myGtkHBox);
-    dict.insert(QHButtonGroup::staticMetaObject(), myGtkHButtonBox);
+    dict.insert(Q3Frame::staticMetaObject(), myGtkFrame);
+    dict.insert(Q3Grid::staticMetaObject(), myGtkFrame);
+    dict.insert(Q3GroupBox::staticMetaObject(), myGtkBox);
+    dict.insert(Q3HBox::staticMetaObject(), myGtkHBox);
+    dict.insert(Q3HButtonGroup::staticMetaObject(), myGtkHButtonBox);
     dict.insert(QHGroupBox::staticMetaObject(), myGtkHBox);
-    dict.insert(QHeader::staticMetaObject(), myGtkRuler);
-    dict.insert(QIconView::staticMetaObject(), myGtkCTree);
+    dict.insert(Q3Header::staticMetaObject(), myGtkRuler);
+    dict.insert(Q3IconView::staticMetaObject(), myGtkCTree);
     dict.insert(QInputDialog::staticMetaObject(), myGtkInputDialog);
     dict.insert(QLCDNumber::staticMetaObject(), myGtkFrame);
     dict.insert(QLabel::staticMetaObject(), myGtkLabel);
     dict.insert(QLineEdit::staticMetaObject(), myGtkEntry);
-    dict.insert(QListBox::staticMetaObject(), myGtkCList);
-    dict.insert(QListView::staticMetaObject(), myGtkCTree);
-    dict.insert(QMainWindow::staticMetaObject(), myGtkWindow);
+    dict.insert(Q3ListBox::staticMetaObject(), myGtkCList);
+    dict.insert(Q3ListView::staticMetaObject(), myGtkCTree);
+    dict.insert(Q3MainWindow::staticMetaObject(), myGtkWindow);
     dict.insert(QMenuBar::staticMetaObject(), myGtkMenuBar);
     dict.insert(QMessageBox::staticMetaObject(), myGtkDialog);
-    dict.insert(QMultiLineEdit::staticMetaObject(), myGtkText);
-    dict.insert(QPopupMenu::staticMetaObject(), myGtkMenu);
+    dict.insert(Q3MultiLineEdit::staticMetaObject(), myGtkText);
+    dict.insert(Q3PopupMenu::staticMetaObject(), myGtkMenu);
     dict.insert(QPrintDialog::staticMetaObject(), myGtkDialog);
-    dict.insert(QProgressBar::staticMetaObject(), myGtkProgressBar);
-    dict.insert(QProgressDialog::staticMetaObject(), myGtkDialog);
+    dict.insert(Q3ProgressBar::staticMetaObject(), myGtkProgressBar);
+    dict.insert(Q3ProgressDialog::staticMetaObject(), myGtkDialog);
     dict.insert(QPushButton::staticMetaObject(), myGtkButton);
     dict.insert(QRadioButton::staticMetaObject(), myGtkRadioButton);
     dict.insert(QScrollBar::staticMetaObject(), myGtkScrollbar);
-    dict.insert(QScrollView::staticMetaObject(), myGtkViewport);
+    dict.insert(Q3ScrollView::staticMetaObject(), myGtkViewport);
     dict.insert(QSemiModal::staticMetaObject(), myGtkDialog);
     dict.insert(QSizeGrip::staticMetaObject(), myGtkWidget);
     dict.insert(QSlider::staticMetaObject(), myGtkScale);
@@ -714,19 +714,19 @@ static GtkObject *initialize(QPtrDict<GtkObject> &dict) {
     dict.insert(QSplitter::staticMetaObject(), myGtkPaned);
     dict.insert(QStatusBar::staticMetaObject(), myGtkStatusbar);
     dict.insert(QTabBar::staticMetaObject(), myGtkNotebook);
-    dict.insert(QTabDialog::staticMetaObject(), myGtkNotebook);
+    dict.insert(Q3TabDialog::staticMetaObject(), myGtkNotebook);
     dict.insert(QTabWidget::staticMetaObject(), myGtkNotebook);
     dict.insert(QTableView::staticMetaObject(), myGtkTable);
-    dict.insert(QTextBrowser::staticMetaObject(), myGtkText);
-    dict.insert(QTextView::staticMetaObject(), myGtkText);
-    dict.insert(QToolBar::staticMetaObject(), myGtkToolbar);
+    dict.insert(Q3TextBrowser::staticMetaObject(), myGtkText);
+    dict.insert(Q3TextView::staticMetaObject(), myGtkText);
+    dict.insert(Q3ToolBar::staticMetaObject(), myGtkToolbar);
     dict.insert(QToolButton::staticMetaObject(), myGtkButton);
-    dict.insert(QVBox::staticMetaObject(), myGtkVBox);
-    dict.insert(QVButtonGroup::staticMetaObject(), myGtkVButtonBox);
+    dict.insert(Q3VBox::staticMetaObject(), myGtkVBox);
+    dict.insert(Q3VButtonGroup::staticMetaObject(), myGtkVButtonBox);
     dict.insert(QVGroupBox::staticMetaObject(), myGtkVBox);
     dict.insert(QWidget::staticMetaObject(), myGtkWidget);
-    dict.insert(QWidgetStack::staticMetaObject(), myGtkWidget);
-    dict.insert(QWizard::staticMetaObject(), myGtkWindow);
+    dict.insert(Q3WidgetStack::staticMetaObject(), myGtkWidget);
+    dict.insert(Q3Wizard::staticMetaObject(), myGtkWindow);
     dict.insert(QWorkspace::staticMetaObject(), myGtkWindow);
 
     // stuff that we don't have meta data for, but want to know about
@@ -811,7 +811,7 @@ QColor GtkObject::backColor(KLegacy::State s) {
     if (styleData()->back[s].isValid())
 	return  styleData()->back[s];
 
-    return white;
+    return Qt::white;
 }
 
 
@@ -823,7 +823,7 @@ QColor GtkObject::baseColor(KLegacy::State s) {
     if (styleData()->base[s].isValid())
 	return styleData()->base[s];
 
-    return white;
+    return Qt::white;
 }
 
 
@@ -835,7 +835,7 @@ QColor GtkObject::foreColor(KLegacy::State s) {
     if (styleData()->fore[s].isValid())
 	return styleData()->fore[s];
 
-    return black;
+    return Qt::black;
 }
 
 
@@ -1024,7 +1024,7 @@ QPixmap *GtkObject::draw(KLegacyImageData *imagedata, int width, int height) {
 
 class KLegacyStylePrivate : public KLegacy {
 private:
-    QDict<KLegacyStyleData> styleDict;
+    Q3Dict<KLegacyStyleData> styleDict;
     QStringList pixmapPath;
     QTextStream filestream;
 
@@ -1032,13 +1032,13 @@ private:
     QPalette oldpalette;
 
     // pointer to the widget under the pointer
-    QGuardedPtr<QWidget> lastWidget;
+    QPointer<QWidget> lastWidget;
 
     // current position of the mouse
     QPoint mousePos;
     bool hovering;
 
-    QPtrDict<GtkObject> gtkDict;
+    Q3PtrDict<GtkObject> gtkDict;
     GtkObject *gtktree;
 
     friend class KLegacyStyle;
@@ -1065,7 +1065,7 @@ KLegacyStylePrivate::KLegacyStylePrivate()
     QPixmapCache::setCacheLimit(8192);
 
     if (! imageCache) {
-	imageCache = new QDict<QImage>(imageCacheSize);
+	imageCache = new Q3Dict<QImage>(imageCacheSize);
 	CHECK_PTR(imageCache);
 
 	imageCache->setAutoDelete(true);
@@ -1087,7 +1087,7 @@ KLegacyStylePrivate::KLegacyStylePrivate()
 
     QFile gtkrc(gtkrcFilename);
 
-    if (gtkrc.open(IO_ReadOnly)) {
+    if (gtkrc.open(QIODevice::ReadOnly)) {
 	filestream.setDevice(&gtkrc);
 
 	while (! filestream.atEnd()) {
@@ -1613,10 +1613,10 @@ bool KLegacyStylePrivate::parseStyle() {
 		gi = color.mid(rp + 1, gp - rp - 1).toFloat();
 		bi = color.mid(gp + 1, bp - gp - 1).toFloat();
 
-		int red   = (int) (255 * ri);
-		int green = (int) (255 * gi);
-		int blue  = (int) (255 * bi);
-		styledata->base[state].setRgb(red, green, blue);
+		int Qt::red   = (int) (255 * ri);
+		int Qt::green = (int) (255 * gi);
+		int Qt::blue  = (int) (255 * bi);
+		styledata->base[state].setRgb(Qt::red, Qt::green, Qt::blue);
 	    }
 	} else if (next.left(3) == "bg[") {
 	    int l = next.find('['), r = next.find(']'), state;
@@ -1659,10 +1659,10 @@ bool KLegacyStylePrivate::parseStyle() {
 		gi = color.mid(rp + 1, gp - rp - 1).toFloat();
 		bi = color.mid(gp + 1, bp - gp - 1).toFloat();
 
-		int red   = (int) (255 * ri);
-		int green = (int) (255 * gi);
-		int blue  = (int) (255 * bi);
-		styledata->back[state].setRgb(red, green, blue);
+		int Qt::red   = (int) (255 * ri);
+		int Qt::green = (int) (255 * gi);
+		int Qt::blue  = (int) (255 * bi);
+		styledata->back[state].setRgb(Qt::red, Qt::green, Qt::blue);
 	    }
 	} else if (next == "engine") {
 	    if (! parseEngine(styledata))
@@ -1708,10 +1708,10 @@ bool KLegacyStylePrivate::parseStyle() {
 		gi = color.mid(rp + 1, gp - rp - 1).toFloat();
 		bi = color.mid(gp + 1, bp - gp - 1).toFloat();
 
-		int red   = (int) (255 * ri);
-		int green = (int) (255 * gi);
-		int blue  = (int) (255 * bi);
-		styledata->fore[state].setRgb(red, green, blue);
+		int Qt::red   = (int) (255 * ri);
+		int Qt::green = (int) (255 * gi);
+		int Qt::blue  = (int) (255 * bi);
+		styledata->fore[state].setRgb(Qt::red, Qt::green, Qt::blue);
 	    }
 	} else if (next == "font") {
 	    filestream >> next;
@@ -1767,7 +1767,7 @@ void KLegacyStyle::polish(QApplication *app) {
     priv->oldfont = app->font();
     priv->oldpalette = app->palette();
 
-    GtkObject *gobj = priv->gtkDict.find(QMainWindow::staticMetaObject());
+    GtkObject *gobj = priv->gtkDict.find(Q3MainWindow::staticMetaObject());
 
     if (gobj) {
 	if (gobj->font()) {
@@ -1879,14 +1879,14 @@ void KLegacyStyle::polish(QApplication *app) {
 
 void KLegacyStyle::polish(QWidget *widget) {
     if (qstrcmp(widget->name(), "qt_viewport") == 0 ||
-	widget->testWFlags(WType_Popup) ||
+	widget->testWFlags(Qt::WType_Popup) ||
 	widget->inherits("KDesktop"))
 	return;
 
-    if (widget->backgroundMode() == QWidget::PaletteBackground ||
-	widget->backgroundMode() == QWidget::PaletteButton &&
+    if (widget->backgroundMode() == Qt::PaletteBackground ||
+	widget->backgroundMode() == Qt::PaletteButton &&
 	(! widget->ownPalette()))
-	widget->setBackgroundMode(QWidget::X11ParentRelative);
+	widget->setBackgroundMode(Qt::X11ParentRelative);
 
     QMetaObject *metaobject = 0;
     QString detail;
@@ -1899,7 +1899,7 @@ void KLegacyStyle::polish(QWidget *widget) {
     bool bgPixmap = false;
 
     if (widget->inherits("QButton")) {
-	metaobject = QButton::staticMetaObject();
+	metaobject = Q3Button::staticMetaObject();
 	eventFilter = true;
     }
 
@@ -1925,13 +1925,13 @@ void KLegacyStyle::polish(QWidget *widget) {
 	key.data.shadow = KLegacy::Out;
 	key.data.state = KLegacy::Normal;
 
-	((QMenuBar *) widget)->setFrameShape(QFrame::StyledPanel);
+	((QMenuBar *) widget)->setFrameShape(Q3Frame::StyledPanel);
 	((QMenuBar *) widget)->setLineWidth(0);
-	widget->setBackgroundMode(QWidget::PaletteBackground);
+	widget->setBackgroundMode(Qt::PaletteBackground);
     }
 
     if (widget->inherits("QToolBar")) {
-	metaobject = QToolBar::staticMetaObject();
+	metaobject = Q3ToolBar::staticMetaObject();
 
 	eventFilter = true;
 	immediateRender = true;
@@ -1941,7 +1941,7 @@ void KLegacyStyle::polish(QWidget *widget) {
 	key.data.shadow = KLegacy::Out;
 	key.data.state = KLegacy::Normal;
 
-	widget->setBackgroundMode(QWidget::PaletteBackground);
+	widget->setBackgroundMode(Qt::PaletteBackground);
     }
 
     if (widget->inherits("QLineEdit")) {
@@ -1955,14 +1955,14 @@ void KLegacyStyle::polish(QWidget *widget) {
 	key.data.shadow = KLegacy::NoShadow;
 	key.data.state = (widget->isEnabled()) ? KLegacy::Normal : KLegacy::Insensitive;
 
-	widget->setBackgroundMode(QWidget::PaletteBase);
+	widget->setBackgroundMode(Qt::PaletteBase);
     }
 
     if (widget->isTopLevel() || widget->inherits("QWorkspaceChild")) {
 	immediateRender = true;
 
 	bgPixmap = true;
-	metaobject = QMainWindow::staticMetaObject();
+	metaobject = Q3MainWindow::staticMetaObject();
 	key.cachekey = 0;
 	key.data.function = KLegacy::FlatBox;
 	detail = "base";
@@ -1970,8 +1970,8 @@ void KLegacyStyle::polish(QWidget *widget) {
 
     if (widget->inherits("QPopupMenu")) {
 	qDebug("polishing popup '%s'", widget->className());
-	metaobject = QPopupMenu::staticMetaObject();
-	widget->setBackgroundMode(QWidget::PaletteBackground);
+	metaobject = Q3PopupMenu::staticMetaObject();
+	widget->setBackgroundMode(Qt::PaletteBackground);
     }
 
     GtkObject *gobj = gobj = priv->gtkDict.find(((metaobject) ? metaobject :
@@ -2070,7 +2070,7 @@ void KLegacyStyle::polish(QWidget *widget) {
 }
 
 
-void KLegacyStyle::polishPopupMenu(QPopupMenu *popup) {
+void KLegacyStyle::polishPopupMenu(Q3PopupMenu *popup) {
     KStyle::polishPopupMenu(popup);
 
     popup->setMouseTracking(true);
@@ -2131,7 +2131,7 @@ void KLegacyStyle::drawMenuBarItem(QPainter *p, int x, int y, int w, int h, QMen
 	}
     }
 
-    drawItem(p, x, y, w, h, AlignCenter|ShowPrefix|DontClip|SingleLine,
+    drawItem(p, x, y, w, h, Qt::AlignCenter|Qt::TextShowMnemonic|Qt::TextDontClip|Qt::TextSingleLine,
 	     g, enabled, mi->pixmap(), mi->text(), -1, &g.buttonText());
 }
 
@@ -2147,7 +2147,7 @@ void KLegacyStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
 				const QColorGroup & g, bool sunken,
 				const QBrush *fill)
 {
-    GtkObject *gobj = priv->gtkDict.find(QButton::staticMetaObject());
+    GtkObject *gobj = priv->gtkDict.find(Q3Button::staticMetaObject());
 
     if (! gobj) {
 	KStyle::drawBevelButton(p, x, y, w, h, g, sunken, fill);
@@ -2248,7 +2248,7 @@ void KLegacyStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
     key.cachekey = 0;
     key.data.function = KLegacy::Check;
     key.data.state = KLegacy::Normal;
-    key.data.shadow = ((state != QButton::Off) || down) ? KLegacy::In : KLegacy::Out;
+    key.data.shadow = ((state != QCheckBox::Off) || down) ? KLegacy::In : KLegacy::Out;
 
     QPixmap *pix = gobj->draw(key, w, h, "checkbutton");
 
@@ -2271,7 +2271,7 @@ void KLegacyStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, in
     key.cachekey = 0;
     key.data.function = KLegacy::Check;
     key.data.state = KLegacy::Normal;
-    key.data.shadow = (state != QButton::Off) ? KLegacy::In : KLegacy::Out;
+    key.data.shadow = (state != QCheckBox::Off) ? KLegacy::In : KLegacy::Out;
 
     QPixmap *pix = gobj->draw(key, w, h, "checkbutton");
 
@@ -2458,12 +2458,12 @@ void KLegacyStyle::drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw, in
     }
 
     if ( mi->iconSet() ) {		// draw iconset
-	QIconSet::Mode mode = (enabled) ? QIconSet::Normal : QIconSet::Disabled;
+	QIcon::Mode mode = (enabled) ? QIcon::Normal : QIcon::Disabled;
 
 	if (act && enabled)
-	    mode = QIconSet::Active;
+	    mode = QIcon::Active;
 
-	QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
+	QPixmap pixmap = mi->iconSet()->pixmap(QIcon::Small, mode);
 
 	int pixw = pixmap.width();
 	int pixh = pixmap.height();
@@ -2503,7 +2503,7 @@ void KLegacyStyle::drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw, in
     if ( !s.isNull() ) {			// draw text
 	int t = s.find( '\t' );
 	int m = 2;
-	const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
+	const int text_flags = Qt::AlignVCenter|Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
 	if ( t >= 0 ) {				// draw tab text
 	    p->drawText( x+w-tab-2-2,
 			 y+m, tab, h-2*m, text_flags, s.mid( t+1 ) );
@@ -2513,15 +2513,15 @@ void KLegacyStyle::drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw, in
     } else if (mi->pixmap()) {
 	QPixmap *pixmap = mi->pixmap();
 
-	if (pixmap->depth() == 1) p->setBackgroundMode(OpaqueMode);
+	if (pixmap->depth() == 1) p->setBackgroundMode(Qt::OpaqueMode);
 	p->drawPixmap(x + checkcol + 2, y + 2, *pixmap);
-	if (pixmap->depth() == 1) p->setBackgroundMode(TransparentMode);
+	if (pixmap->depth() == 1) p->setBackgroundMode(Qt::TransparentMode);
     }
 
     if (mi->popup()) {
 	int hh = h / 2;
 
-	drawMenuArrow(p, RightArrow, (act) ? mi->isEnabled() : false,
+	drawMenuArrow(p, Qt::RightArrow, (act) ? mi->isEnabled() : false,
 		      x + w - hh - 6, y + (hh / 2), hh, hh, g, mi->isEnabled());
     }
 }
@@ -2609,9 +2609,9 @@ void KLegacyStyle::scrollBarMetrics(const QScrollBar *scrollbar, int &sliderMin,
 {
     int maxLength;
     int b = defaultFrameWidth();
-    int length = ((scrollbar->orientation() == QScrollBar::Horizontal) ?
+    int length = ((scrollbar->orientation() == Qt::Horizontal) ?
 		  scrollbar->width() : scrollbar->height());
-    int extent = ((scrollbar->orientation() == QScrollBar::Horizontal) ?
+    int extent = ((scrollbar->orientation() == Qt::Horizontal) ?
 		  scrollbar->height() : scrollbar->width());
 
     if (length > ((extent - (b * 2) - 1) * 2) + (b * 2))
@@ -2676,19 +2676,19 @@ void KLegacyStyle::drawScrollBarControls(QPainter *p, const QScrollBar *scrollba
     // the rectangle for the slider
     QRect slider(
 		 // x
-		 ((scrollbar->orientation() == Vertical) ?
+		 ((scrollbar->orientation() == Qt::Vertical) ?
 		  defaultFrameWidth() : start),
 
 		 // y
-		 ((scrollbar->orientation() == Vertical) ?
+		 ((scrollbar->orientation() == Qt::Vertical) ?
 		  start : defaultFrameWidth()),
 
 		 // w
-		 ((scrollbar->orientation() == Vertical) ?
+		 ((scrollbar->orientation() == Qt::Vertical) ?
 		  buttonDim : sliderLen),
 
 		 // h
-		 ((scrollbar->orientation() == Vertical) ?
+		 ((scrollbar->orientation() == Qt::Vertical) ?
 		  sliderLen : buttonDim));
 
     KLegacyImageDataKey skey;
@@ -2736,20 +2736,20 @@ void KLegacyStyle::drawScrollBarControls(QPainter *p, const QScrollBar *scrollba
 	int x, y;
 	x = y = defaultFrameWidth();
 
-	drawArrow(&p2, ((scrollbar->orientation() == Vertical) ?
-			UpArrow : LeftArrow),
+	drawArrow(&p2, ((scrollbar->orientation() == Qt::Vertical) ?
+			Qt::UpArrow : Qt::LeftArrow),
 		  (active & SubLine), x, y,
 		  buttonDim,
 		  buttonDim,
 		  scrollbar->colorGroup(), true);
 
-	if  (scrollbar->orientation() == Vertical)
+	if  (scrollbar->orientation() == Qt::Vertical)
 	    y = scrollbar->height() - buttonDim - defaultFrameWidth();
 	else
 	    x = scrollbar->width()  - buttonDim - defaultFrameWidth();
 
-	drawArrow(&p2, ((scrollbar->orientation() == Vertical) ?
-			DownArrow : RightArrow),
+	drawArrow(&p2, ((scrollbar->orientation() == Qt::Vertical) ?
+			Qt::DownArrow : Qt::RightArrow),
 		  (active & AddLine), x, y,
 		  buttonDim,
 		  buttonDim,
@@ -2760,7 +2760,7 @@ void KLegacyStyle::drawScrollBarControls(QPainter *p, const QScrollBar *scrollba
 
 
 void KLegacyStyle::drawSlider(QPainter *p, int x, int y, int w, int h, const QColorGroup &g,
-			   Orientation orientation, bool tickAbove, bool tickBelow)
+			   Qt::Orientation orientation, bool tickAbove, bool tickBelow)
 {
     GtkObject *gobj = priv->gtkDict.find(QSlider::staticMetaObject());
 
@@ -2787,7 +2787,7 @@ void KLegacyStyle::drawSlider(QPainter *p, int x, int y, int w, int h, const QCo
 
 
 void KLegacyStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
-				const QColorGroup &g, QCOORD c, Orientation o)
+				const QColorGroup &g, QCOORD c, Qt::Orientation o)
 {
     GtkObject *gobj = priv->gtkDict.find(QSlider::staticMetaObject());
 
@@ -2812,7 +2812,7 @@ void KLegacyStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
 }
 
 
-void KLegacyStyle::drawArrow(QPainter *p, ArrowType type, bool down,
+void KLegacyStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down,
 			 int x, int y, int w, int h,
 			 const QColorGroup &g, bool enabled, const QBrush *b)
 {
@@ -2844,7 +2844,7 @@ void KLegacyStyle::drawArrow(QPainter *p, ArrowType type, bool down,
 }
 
 
-void KLegacyStyle::drawMenuArrow(QPainter *p, ArrowType type, bool down,
+void KLegacyStyle::drawMenuArrow(QPainter *p, Qt::ArrowType type, bool down,
 			 int x, int y, int w, int h,
 			 const QColorGroup &g, bool enabled, const QBrush *b)
 {
@@ -2916,9 +2916,9 @@ void KLegacyStyle::drawCheckMark(QPainter *p, int x, int y, int w, int h,
 
 
 void KLegacyStyle::drawSplitter(QPainter *p, int x, int y, int w, int h,
-			     const QColorGroup &g, Orientation orientation)
+			     const QColorGroup &g, Qt::Orientation orientation)
 {
-    if (orientation == Horizontal) {
+    if (orientation == Qt::Horizontal) {
 	int xpos = x + (w / 2);
 	int kpos = 10;
 	int ksize = splitterWidth() - 2;
@@ -2954,8 +2954,8 @@ void KLegacyStyle::drawTab(QPainter *p, const QTabBar *tabbar, QTab *tab, bool s
     key.data.function = KLegacy::Extension;
     key.data.state = (! selected) ? KLegacy::Active : KLegacy::Normal;
     key.data.shadow = KLegacy::Out;
-    key.data.gapSide = (tabbar->shape() == QTabBar::RoundedAbove ||
-			tabbar->shape() == QTabBar::TriangularAbove) ?
+    key.data.gapSide = (tabbar->shape() == QTabBar::RoundedNorth ||
+			tabbar->shape() == QTabBar:: TriangularNorth) ?
 		       KLegacy::Bottom : KLegacy::Top;
 
     int ry = tab->r.top(), rh = tab->r.height();
@@ -2963,8 +2963,8 @@ void KLegacyStyle::drawTab(QPainter *p, const QTabBar *tabbar, QTab *tab, bool s
     if (! selected) {
 	rh -= 2;
 
-	if (tabbar->shape() == QTabBar::RoundedAbove ||
-	    tabbar->shape() == QTabBar::TriangularAbove)
+	if (tabbar->shape() == QTabBar::RoundedNorth ||
+	    tabbar->shape() == QTabBar:: TriangularNorth)
 	    ry += 2;
     }
 
@@ -2981,7 +2981,7 @@ void KLegacyStyle::drawTab(QPainter *p, const QTabBar *tabbar, QTab *tab, bool s
 void KLegacyStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 				  const QColorGroup &g, KToolBarPos type, QBrush *fill)
 {
-    GtkObject *gobj = priv->gtkDict.find(QToolBar::staticMetaObject());
+    GtkObject *gobj = priv->gtkDict.find(Q3ToolBar::staticMetaObject());
 
     if (! gobj) {
 	KStyle::drawKBarHandle(p, x, y, w, h, g, type, fill);
@@ -2993,8 +2993,8 @@ void KLegacyStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
     key.data.function = KLegacy::Handle;
     key.data.state = KLegacy::Normal;
     key.data.shadow = KLegacy::Out;
-    key.data.orientation = (type == Left || type == Right) ?
-			   Vertical + 1: Horizontal + 1;
+    key.data.orientation = (type == Qt::DockLeft || type == Qt::DockRight) ?
+			   Qt::Vertical + 1: Qt::Horizontal + 1;
 
     QPixmap *pix = gobj->draw(key, w, h, "handle");
 
@@ -3006,14 +3006,14 @@ void KLegacyStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 void KLegacyStyle::drawKickerHandle(QPainter *p, int x, int y, int w, int h,
 				    const QColorGroup &g, QBrush *fill)
 {
-    drawKBarHandle(p, x, y, w, h, g, Left, fill);
+    drawKBarHandle(p, x, y, w, h, g, Qt::DockLeft, fill);
 }
 
 
 void KLegacyStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
 					  const QColorGroup &g, QBrush *fill)
 {
-    drawKBarHandle(p, x, y, w, h, g, Left, fill);
+    drawKBarHandle(p, x, y, w, h, g, Qt::DockLeft, fill);
 }
 
 
@@ -3070,7 +3070,7 @@ void KLegacyStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 
 	p->setPen((active) ? g.foreground() : g.buttonText());
 
-	p->drawText(br.x() + textPos, -1, w - textPos, h, AlignVCenter | AlignLeft, s);
+	p->drawText(br.x() + textPos, -1, w - textPos, h, Qt::AlignVCenter | Qt::AlignLeft, s);
     }
 }
 
@@ -3082,7 +3082,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 	    QWidget *w = (QWidget *) obj;
 
 	    if (w->inherits("QPopupMenu") && w->width() < 700) {
-		GtkObject *gobj = priv->gtkDict.find(QPopupMenu::staticMetaObject());
+		GtkObject *gobj = priv->gtkDict.find(Q3PopupMenu::staticMetaObject());
 
 		if (gobj) {
 		    KLegacyImageDataKey key;
@@ -3139,7 +3139,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 		    }
 		}
 	    } else if (w->isTopLevel() || w->inherits("QWorkspaceChild")) {
-		GtkObject *gobj = priv->gtkDict.find(QMainWindow::staticMetaObject());
+		GtkObject *gobj = priv->gtkDict.find(Q3MainWindow::staticMetaObject());
 
 		if (gobj) {
 		    KLegacyImageDataKey key;
@@ -3285,7 +3285,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 					 QColorGroup::Background, brush);
 
 			    w->setPalette(pal);
-			    w->setBackgroundMode(QWidget::PaletteBackground);
+			    w->setBackgroundMode(Qt::PaletteBackground);
 			    w->setBackgroundOrigin(QWidget::WidgetOrigin);
 			}
 		    }
@@ -3313,7 +3313,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 					 QColorGroup::Background, brush);
 
 			    w->setPalette(pal);
-			    w->setBackgroundMode(QWidget::PaletteBackground);
+			    w->setBackgroundMode(Qt::PaletteBackground);
 			    w->setBackgroundOrigin(QWidget::WidgetOrigin);
 			}
 		    }
@@ -3333,7 +3333,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 		QWidget *w = (QWidget *) obj;
 
 		if (! w->isTopLevel()) {
-		    w->setBackgroundMode(QWidget::X11ParentRelative);
+		    w->setBackgroundMode(Qt::X11ParentRelative);
 		    w->setBackgroundOrigin(QWidget::WidgetOrigin);
 		    w->repaint(true);
 		}
@@ -3347,7 +3347,7 @@ bool KLegacyStyle::eventFilter(QObject *obj, QEvent *e) {
 	    QMouseEvent *me = (QMouseEvent *) e;
 	    priv->mousePos = me->pos();
 	    if (obj->inherits("QScrollBar") &&
-		(! (me->state() & (LeftButton | MidButton | RightButton)))) {
+		(! (me->state() & (Qt::LeftButton | Qt::MidButton | Qt::RightButton)))) {
 		priv->hovering = true;
 		((QWidget *) obj)->repaint(false);
 		priv->hovering = false;

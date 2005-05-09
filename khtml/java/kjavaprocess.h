@@ -25,7 +25,7 @@
 #define KJAVAPROCESS_H
 
 #include <kprocess.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 /**
  * @short A class for invoking a Java VM

@@ -25,7 +25,7 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qregexp.h>
 
 #include <klocale.h>
@@ -93,7 +93,7 @@ QString BrowseDialog::addressString()
 
 void BrowseDialog::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(type_, conf->comments_.toolTip("browsetype"));
+	Q3WhatsThis::add(type_, conf->comments_.toolTip("browsetype"));
 }
 
 QString BrowseDialog::newAddress(QWidget *parent, CupsdConf *conf)

@@ -41,7 +41,7 @@ class KTEXTEDITOR_EXPORT SelectionInterface
     unsigned int selectionInterfaceNumber () const;
     
   protected:  
-    void setSelectionInterfaceDCOPSuffix (const QCString &suffix);  
+    void setSelectionInterfaceDCOPSuffix (const Q3CString &suffix);  
     
   /*
   *  slots !!!

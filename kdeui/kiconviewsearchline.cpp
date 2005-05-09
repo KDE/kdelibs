@@ -25,14 +25,14 @@
 
 #include "kiconviewsearchline.h"
 
-#include <qiconview.h>
+#include <q3iconview.h>
 #include <klocale.h>
 #include <qtimer.h>
 #include <kdebug.h>
 
 #define DEFAULT_CASESENSITIVE false
 
-typedef QValueList <QIconViewItem *> QIconViewItemList;
+typedef Q3ValueList <Q3IconViewItem *> QIconViewItemList;
 
 class KIconViewSearchLine::KIconViewSearchLinePrivate
 {
@@ -43,7 +43,7 @@ public:
     activeSearch( false ),
     queuedSearches( 0 ) {}
 
-  QIconView *iconView;
+  Q3IconView *iconView;
   bool caseSensitive;
   bool activeSearch;
   QString search;
@@ -55,7 +55,7 @@ public:
  * Public Methods                                                             *
  *****************************************************************************/
 KIconViewSearchLine::KIconViewSearchLine( QWidget *parent,
-					  QIconView *iconView,
+					  Q3IconView *iconView,
 					  const char *name ) :
   KLineEdit( parent, name )
 {
@@ -81,7 +81,7 @@ bool KIconViewSearchLine::caseSensitive() const
   return d->caseSensitive;
 }
 
-QIconView *KIconViewSearchLine::iconView() const
+Q3IconView *KIconViewSearchLine::iconView() const
 {
   return d->iconView;
 }
@@ -91,7 +91,7 @@ QIconView *KIconViewSearchLine::iconView() const
  *****************************************************************************/
 void KIconViewSearchLine::updateSearch( const QString &s )
 {
-  QIconView *iv = d->iconView;
+  Q3IconView *iv = d->iconView;
   if( ! iv )
     return; // disabled
 
@@ -99,12 +99,12 @@ void KIconViewSearchLine::updateSearch( const QString &s )
 
   QIconViewItemList *hi = &(d->hiddenItems);
 
-  QIconViewItem *currentItem = iv->currentItem();
+  Q3IconViewItem *currentItem = iv->currentItem();
 
-  QIconViewItem *item = NULL;
+  Q3IconViewItem *item = NULL;
 
   // Remove Non-Matching items, add them them to hidden list
-  QIconViewItem *i = iv->firstItem();
+  Q3IconViewItem *i = iv->firstItem();
   while ( i != NULL )
     {
       item = i;
@@ -137,7 +137,7 @@ void KIconViewSearchLine::updateSearch( const QString &s )
 void KIconViewSearchLine::clear()
 {
   // Clear hidden list, give items back to QIconView, if it still exists
-  QIconViewItem *item = NULL;
+  Q3IconViewItem *item = NULL;
   QIconViewItemList::iterator it = d->hiddenItems.begin();
   while ( it != d->hiddenItems.end() )
     {
@@ -166,7 +166,7 @@ void KIconViewSearchLine::setCaseSensitive( bool cs )
   d->caseSensitive = cs;
 }
 
-void KIconViewSearchLine::setIconView( QIconView *iv )
+void KIconViewSearchLine::setIconView( Q3IconView *iv )
 {
   if ( d->iconView != NULL )
     disconnect( d->iconView, SIGNAL( destroyed() ),
@@ -187,7 +187,7 @@ void KIconViewSearchLine::setIconView( QIconView *iv )
 /******************************************************************************
  * Protected Methods                                                          *
  *****************************************************************************/
-bool KIconViewSearchLine::itemMatches( const QIconViewItem *item,
+bool KIconViewSearchLine::itemMatches( const Q3IconViewItem *item,
 				       const QString &s ) const
 {
   if ( s.isEmpty() )
@@ -199,7 +199,7 @@ bool KIconViewSearchLine::itemMatches( const QIconViewItem *item,
   return ( item->text().find( s, 0, caseSensitive() ) >= 0 );
 }
 
-void KIconViewSearchLine::init( QIconView *iconView )
+void KIconViewSearchLine::init( Q3IconView *iconView )
 {
   delete d;
   d = new KIconViewSearchLinePrivate;
@@ -219,7 +219,7 @@ void KIconViewSearchLine::init( QIconView *iconView )
     setEnabled( false );
 }
 
-void KIconViewSearchLine::hideItem( QIconViewItem *item )
+void KIconViewSearchLine::hideItem( Q3IconViewItem *item )
 {
   if ( ( item == NULL ) || ( d->iconView == NULL ) )
     return;
@@ -228,7 +228,7 @@ void KIconViewSearchLine::hideItem( QIconViewItem *item )
   d->iconView->takeItem( item );
 }
 
-void KIconViewSearchLine::showItem( QIconViewItem *item )
+void KIconViewSearchLine::showItem( Q3IconViewItem *item )
 {
   if ( d->iconView == NULL )
     {

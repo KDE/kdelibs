@@ -68,7 +68,7 @@ void KColorWidget::doIntensityLoop()
 	image = original; image.detach();
 	start = t.elapsed();
 	for(count=0; count < max; ++count){
-	  KImageEffect::fade(image, 1./max, black);
+	  KImageEffect::fade(image, 1./max, Qt::black);
 	  pixmap.convertFromImage(image);
 	  bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
 		 Qt::CopyROP, true);

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-static QCString
+static Q3CString
 ps(const QString &s)
 {
   if (s.isNull())

@@ -23,10 +23,10 @@
 #define __kio_jobclasses_h__
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -462,13 +462,13 @@ namespace KIO {
                EF_ListJobUnrestricted = (1 << 3) };
         int &extraFlags();
 
-        QPtrList<Job> subjobs;
+        Q3PtrList<Job> subjobs;
         int m_error;
         QString m_errorText;
         unsigned long m_percent;
         int m_progressId; // for uiserver
         QTimer *m_speedTimer;
-        QGuardedPtr<QWidget> m_window;
+        QPointer<QWidget> m_window;
         MetaData m_outgoingMetaData;
         MetaData m_incomingMetaData;
     protected:
@@ -1146,10 +1146,10 @@ namespace KIO {
            MetaData metaData;
         };
         bool findCurrentEntry();
-        void flushQueue(QPtrList<GetRequest> &queue);
+        void flushQueue(Q3PtrList<GetRequest> &queue);
 
-        QPtrList<GetRequest> m_waitQueue;
-        QPtrList<GetRequest> m_activeQueue;
+        Q3PtrList<GetRequest> m_waitQueue;
+        Q3PtrList<GetRequest> m_activeQueue;
         bool b_multiGetActive;
         GetRequest *m_currentEntry;
     protected:
@@ -1531,7 +1531,7 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param files a list of items that are about to be created.
 	 */
-        void aboutToCreate( KIO::Job *job, const QValueList<KIO::CopyInfo> &files);
+        void aboutToCreate( KIO::Job *job, const Q3ValueList<KIO::CopyInfo> &files);
 
         /**
 	 * Sends the number of processed files.
@@ -1659,8 +1659,8 @@ namespace KIO {
         KIO::filesize_t m_fileProcessedSize;
         int m_processedFiles;
         int m_processedDirs;
-        QValueList<CopyInfo> files;
-        QValueList<CopyInfo> dirs;
+        Q3ValueList<CopyInfo> files;
+        Q3ValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
         KURL::List m_srcList;
         KURL::List::Iterator m_currentStatSrc;

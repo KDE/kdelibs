@@ -21,15 +21,15 @@
 #ifndef DRIVERITEM_H
 #define DRIVERITEM_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 
 class DrBase;
 
-class DriverItem : public QListViewItem
+class DriverItem : public Q3ListViewItem
 {
 public:
-	DriverItem(QListView *parent, DrBase *item);
-	DriverItem(QListViewItem *parent, QListViewItem *after, DrBase *item);
+	DriverItem(Q3ListView *parent, DrBase *item);
+	DriverItem(Q3ListViewItem *parent, Q3ListViewItem *after, DrBase *item);
 
 	void updateText();
 	void updateTextRecursive();

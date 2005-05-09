@@ -32,7 +32,7 @@ public:
     virtual void terminate();
     virtual void reset();
     virtual bool readHeader();
-    virtual bool writeHeader( const QCString & fileName );
+    virtual bool writeHeader( const Q3CString & fileName );
     void writeFooter();
     virtual void setOutBuffer( char * data, uint maxlen );
     virtual void setInBuffer( const char * data, uint size );

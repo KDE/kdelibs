@@ -148,13 +148,13 @@ int main( int argc, char **argv ) {
 
     if ( args->isSet( "o" ) ) {
         QFile output( outputFile );
-        if ( output.open( IO_WriteOnly ) ) {
+        if ( output.open( QIODevice::WriteOnly ) ) {
             QTextStream ts( &output );
             buildFile( ts, group, fileName , pluginName, iconPath );
         }
         output.close();
     } else {
-        QTextStream ts( stdout, IO_WriteOnly );
+        QTextStream ts( stdout, QIODevice::WriteOnly );
         buildFile( ts, group, fileName , pluginName, iconPath );
     }
 }
@@ -230,9 +230,9 @@ QString buildPixmap( const QString &name, KConfig &input, const QString &iconPat
 
     QFileInfo fi( iconPath + "/" + iconName );
     QImage pix( fi.absFilePath() );
-    QCString xpm;
+    Q3CString xpm;
     QBuffer buff( xpm );
-    buff.open( IO_WriteOnly );
+    buff.open( QIODevice::WriteOnly );
     QImageIO io( &buff, "XPM" );
     io.setFileName( cleanName + "_xpm" );
     io.setImage( pix );

@@ -236,7 +236,7 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   if (domain != PF_INET)
     return false;
 
-  QPtrList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
+  Q3PtrList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
                                                         KExtendedSocket::ipv4Socket);
   list.setAutoDelete(true);
 
@@ -274,7 +274,7 @@ class KServerSocketPrivate
 {
 public:
    bool bind;
-   QCString path;
+   Q3CString path;
    unsigned short int port;
    KExtendedSocket *ks;
 };

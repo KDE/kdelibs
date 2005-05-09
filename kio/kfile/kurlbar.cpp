@@ -23,12 +23,12 @@
 #include <qdrawutil.h>
 #include <qfontmetrics.h>
 #include <qlabel.h>
-#include <qgrid.h>
+#include <q3grid.h>
 #include <qpainter.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qstyle.h>
-#include <qvbox.h>
-#include <qwhatsthis.h>
+#include <q3vbox.h>
+#include <q3whatsthis.h>
 
 #include <kaboutdata.h>
 #include <kconfig.h>
@@ -54,11 +54,11 @@
 class KURLBarToolTip : public QToolTip
 {
 public:
-    KURLBarToolTip( QListBox *view ) : QToolTip( view ), m_view( view ) {}
+    KURLBarToolTip( Q3ListBox *view ) : QToolTip( view ), m_view( view ) {}
 
 protected:
     virtual void maybeTip( const QPoint& point ) {
-        QListBoxItem *item = m_view->itemAt( point );
+        Q3ListBoxItem *item = m_view->itemAt( point );
         if ( item ) {
             QString text = static_cast<KURLBarItem*>( item )->toolTip();
             if ( !text.isEmpty() )
@@ -67,7 +67,7 @@ protected:
     }
 
 private:
-    QListBox *m_view;
+    Q3ListBox *m_view;
 };
 
 
@@ -88,7 +88,7 @@ public:
 KURLBarItem::KURLBarItem( KURLBar *parent,
                           const KURL& url, bool persistent, const QString& description,
                           const QString& icon, KIcon::Group group )
-    : QListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
+    : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap( 0L ),
       m_parent( parent ),
@@ -100,7 +100,7 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
 KURLBarItem::KURLBarItem( KURLBar *parent,
                           const KURL& url, const QString& description,
                           const QString& icon, KIcon::Group group )
-    : QListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
+    : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap( 0L ),
       m_parent( parent ),
@@ -178,7 +178,7 @@ int KURLBarItem::iconSize() const
 
 void KURLBarItem::paint( QPainter *p )
 {
-    QListBox *box = listBox();
+    Q3ListBox *box = listBox();
     int w = width( box );
     static const int margin = KDialog::spacingHint();
 
@@ -273,8 +273,8 @@ QSize KURLBarItem::sizeHint() const
     const KURLBarListBox *lb =static_cast<const KURLBarListBox*>(listBox());
 
     if ( m_parent->iconSize() < KIcon::SizeMedium ) {
-        wmin = QListBoxPixmap::width( lb ) + KDialog::spacingHint() * 2;
-        hmin = QListBoxPixmap::height( lb ) + KDialog::spacingHint() * 2;
+        wmin = Q3ListBoxPixmap::width( lb ) + KDialog::spacingHint() * 2;
+        hmin = Q3ListBoxPixmap::height( lb ) + KDialog::spacingHint() * 2;
     }
     else {
         wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + KDialog::spacingHint() * 2;
@@ -289,7 +289,7 @@ QSize KURLBarItem::sizeHint() const
     return QSize( wmin, hmin );
 }
 
-int KURLBarItem::width( const QListBox *lb ) const
+int KURLBarItem::width( const Q3ListBox *lb ) const
 {
     if ( static_cast<const KURLBarListBox *>( lb )->isVertical() )
         return QMAX( sizeHint().width(), lb->viewport()->width() );
@@ -297,7 +297,7 @@ int KURLBarItem::width( const QListBox *lb ) const
         return sizeHint().width();
 }
 
-int KURLBarItem::height( const QListBox *lb ) const
+int KURLBarItem::height( const Q3ListBox *lb ) const
 {
     if ( static_cast<const KURLBarListBox *>( lb )->isVertical() )
         return sizeHint().height();
@@ -327,8 +327,8 @@ public:
 };
 
 
-KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags f )
-    : QFrame( parent, name, f ),
+KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WFlags f )
+    : Q3Frame( parent, name, f ),
       m_activeItem( 0L ),
       m_useGlobal( useGlobalItems ),
       m_isModified( false ),
@@ -345,7 +345,7 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
                                 isVertical() ?
                                 QSizePolicy::Preferred :
                                 QSizePolicy::Maximum ));
-    QWhatsThis::add(this, i18n("<qt>The <b>Quick Access</b> panel provides easy access to commonly used file locations.<p>"
+    Q3WhatsThis::add(this, i18n("<qt>The <b>Quick Access</b> panel provides easy access to commonly used file locations.<p>"
                                "Clicking on one of the shortcut entries will take you to that location.<p>"
                                "By right clicking on an entry you can add, edit and remove shortcuts.</qt>"));
 }
@@ -395,7 +395,7 @@ void KURLBar::setListBox( KURLBarListBox *view )
 
     if ( !view ) {
         m_listBox = new KURLBarListBox( this, "urlbar listbox" );
-        setOrientation( Vertical );
+        setOrientation( Qt::Vertical );
     }
     else {
         m_listBox = view;
@@ -406,17 +406,17 @@ void KURLBar::setListBox( KURLBarListBox *view )
 
     m_listBox->setSelectionMode( KListBox::Single );
     paletteChange( palette() );
-    m_listBox->setFocusPolicy( TabFocus );
+    m_listBox->setFocusPolicy( Qt::TabFocus );
 
-    connect( m_listBox, SIGNAL( mouseButtonClicked( int, QListBoxItem *, const QPoint & ) ),
-             SLOT( slotSelected( int, QListBoxItem * )));
+    connect( m_listBox, SIGNAL( mouseButtonClicked( int, Q3ListBoxItem *, const QPoint & ) ),
+             SLOT( slotSelected( int, Q3ListBoxItem * )));
     connect( m_listBox, SIGNAL( dropped( QDropEvent * )),
              this, SLOT( slotDropped( QDropEvent * )));
-    connect( m_listBox, SIGNAL( contextMenuRequested( QListBoxItem *,
+    connect( m_listBox, SIGNAL( contextMenuRequested( Q3ListBoxItem *,
                                                       const QPoint& )),
-             SLOT( slotContextMenuRequested( QListBoxItem *, const QPoint& )));
-    connect( m_listBox, SIGNAL( returnPressed( QListBoxItem * ) ),
-             SLOT( slotSelected( QListBoxItem * ) ));
+             SLOT( slotContextMenuRequested( Q3ListBoxItem *, const QPoint& )));
+    connect( m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
+             SLOT( slotSelected( Q3ListBoxItem * ) ));
 }
 
 void KURLBar::setIconSize( int size )
@@ -444,20 +444,20 @@ void KURLBar::clear()
 
 void KURLBar::resizeEvent( QResizeEvent *e )
 {
-    QFrame::resizeEvent( e );
+    Q3Frame::resizeEvent( e );
     m_listBox->resize( width(), height() );
 }
 
 void KURLBar::paletteChange( const QPalette & )
 {
     QPalette pal = palette();
-    QColor gray = pal.color( QPalette::Normal, QColorGroup::Background );
+    QColor Qt::gray = pal.color( QPalette::Normal, QColorGroup::Background );
     QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
     QColor foreground = pal.color( QPalette::Normal, QColorGroup::Foreground );
-    pal.setColor( QPalette::Normal,   QColorGroup::Base, gray );
+    pal.setColor( QPalette::Normal,   QColorGroup::Base, Qt::gray );
     pal.setColor( QPalette::Normal,   QColorGroup::HighlightedText, selectedTextColor );
     pal.setColor( QPalette::Normal,   QColorGroup::Text, foreground );
-    pal.setColor( QPalette::Inactive, QColorGroup::Base, gray );
+    pal.setColor( QPalette::Inactive, QColorGroup::Base, Qt::gray );
     pal.setColor( QPalette::Inactive, QColorGroup::HighlightedText, selectedTextColor );
     pal.setColor( QPalette::Inactive, QColorGroup::Text, foreground );
 
@@ -514,7 +514,7 @@ QSize KURLBar::minimumSizeHint() const
     return QSize( w, h );
 }
 
-void KURLBar::slotSelected( int button, QListBoxItem *item )
+void KURLBar::slotSelected( int button, Q3ListBoxItem *item )
 {
     if ( button != Qt::LeftButton )
         return;
@@ -522,7 +522,7 @@ void KURLBar::slotSelected( int button, QListBoxItem *item )
     slotSelected( item );
 }
 
-void KURLBar::slotSelected( QListBoxItem *item )
+void KURLBar::slotSelected( Q3ListBoxItem *item )
 {
     if ( item && item != m_activeItem )
         m_activeItem = static_cast<KURLBarItem*>( item );
@@ -543,7 +543,7 @@ void KURLBar::setCurrentItem( const KURL& url )
         return;
 
     bool hasURL = false;
-    QListBoxItem *item = m_listBox->firstItem();
+    Q3ListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
         if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
             m_activeItem = static_cast<KURLBarItem*>( item );
@@ -563,7 +563,7 @@ void KURLBar::setCurrentItem( const KURL& url )
 
 KURLBarItem * KURLBar::currentItem() const
 {
-    QListBoxItem *item = m_listBox->item( m_listBox->currentItem() );
+    Q3ListBoxItem *item = m_listBox->item( m_listBox->currentItem() );
     if ( item )
         return static_cast<KURLBarItem *>( item );
     return 0L;
@@ -710,7 +710,7 @@ void KURLBar::slotDropped( QDropEvent *e )
     }
 }
 
-void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
+void KURLBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos )
 {
     if (m_isImmutable)
         return;
@@ -725,7 +725,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
     KURL lastURL = m_activeItem ? m_activeItem->url() : KURL();
 
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
-    QPopupMenu *popup = new QPopupMenu();
+    Q3PopupMenu *popup = new Q3PopupMenu();
     popup->insertItem( smallIcons ?
                        i18n("&Large Icons") : i18n("&Small Icons"),
                        IconSize );
@@ -835,7 +835,7 @@ void KURLBarListBox::paintEvent( QPaintEvent* )
     p.drawRect( 0, 0, width(), height() );
 }
 
-QDragObject * KURLBarListBox::dragObject()
+Q3DragObject * KURLBarListBox::dragObject()
 {
     KURL::List urls;
     KURLBarItem *item = static_cast<KURLBarItem*>( firstItem() );
@@ -873,7 +873,7 @@ void KURLBarListBox::contextMenuEvent( QContextMenuEvent *e )
 
 void KURLBarListBox::setOrientation( Qt::Orientation orient )
 {
-    if ( orient == Vertical ) {
+    if ( orient == Qt::Vertical ) {
         setColumnMode( 1 );
         setRowMode( Variable );
     }
@@ -921,12 +921,12 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     : KDialogBase( parent, name, true,
                    i18n("Edit Quick Access Entry"), Ok | Cancel, Ok, true )
 {
-    QVBox *box = new QVBox( this );
+    Q3VBox *box = new Q3VBox( this );
     QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
     QLabel *label = new QLabel( text, box );
     box->setSpacing( spacingHint() );
 
-    QGrid *grid = new QGrid( 2, box );
+    Q3Grid *grid = new Q3Grid( 2, box );
     grid->setSpacing( spacingHint() );
 
     QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access panel.<p>"
@@ -936,8 +936,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     m_edit = new KLineEdit( grid, "description edit" );
     m_edit->setText( description.isEmpty() ? url.fileName() : description );
     label->setBuddy( m_edit );
-    QWhatsThis::add( label, whatsThisText );
-    QWhatsThis::add( m_edit, whatsThisText );
+    Q3WhatsThis::add( label, whatsThisText );
+    Q3WhatsThis::add( m_edit, whatsThisText );
 
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
                          "%1<br>http://www.kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
@@ -947,8 +947,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     m_urlEdit = new KURLRequester( url.prettyURL(), grid );
     m_urlEdit->setMode( KFile::Directory );
     label->setBuddy( m_urlEdit );
-    QWhatsThis::add( label, whatsThisText );
-    QWhatsThis::add( m_urlEdit, whatsThisText );
+    Q3WhatsThis::add( label, whatsThisText );
+    Q3WhatsThis::add( m_urlEdit, whatsThisText );
 
     whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<p>"
                          "Click on the button to select a different icon.</qt>");
@@ -959,8 +959,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         icon = KMimeType::iconForURL( url );
     m_iconButton->setIcon( icon );
     label->setBuddy( m_iconButton );
-    QWhatsThis::add( label, whatsThisText );
-    QWhatsThis::add( m_iconButton, whatsThisText );
+    Q3WhatsThis::add( label, whatsThisText );
+    Q3WhatsThis::add( m_iconButton, whatsThisText );
 
     if ( allowGlobal ) {
         QString appName;
@@ -970,7 +970,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
             appName = QString::fromLatin1( KGlobal::instance()->instanceName() );
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)").arg( appName ), box );
         m_appLocal->setChecked( appLocal );
-        QWhatsThis::add( m_appLocal,
+        Q3WhatsThis::add( m_appLocal,
                          i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<p>"
                               "If this setting is not selected, the entry will be available in all "

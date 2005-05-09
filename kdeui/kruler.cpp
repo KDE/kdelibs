@@ -92,38 +92,38 @@ public:
 
 
 KRuler::KRuler(QWidget *parent, const char *name)
-  : QFrame(parent, name),
+  : Q3Frame(parent, name),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
-    dir(Horizontal)
+    dir(Qt::Horizontal)
 {
   init();
   setFixedHeight(FIX_WIDTH);
 }
 
 
-KRuler::KRuler(Orientation orient,
-               QWidget *parent, const char *name, WFlags f)
-  : QFrame(parent, name, f),
+KRuler::KRuler(Qt::Orientation orient,
+               QWidget *parent, const char *name, Qt::WFlags f)
+  : Q3Frame(parent, name, f),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {
   init();
-  if (orient == Horizontal)
+  if (orient == Qt::Horizontal)
     setFixedHeight(FIX_WIDTH);
   else
     setFixedWidth(FIX_WIDTH);
 }
 
 
-KRuler::KRuler(Orientation orient, int widgetWidth,
-               QWidget *parent, const char *name, WFlags f)
-  : QFrame(parent, name, f),
+KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
+               QWidget *parent, const char *name, Qt::WFlags f)
+  : Q3Frame(parent, name, f),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {
   init();
 
-  if (orient == Horizontal)
+  if (orient == Qt::Horizontal)
     setFixedHeight(widgetWidth);
   else
     setFixedWidth(widgetWidth);
@@ -362,7 +362,7 @@ KRuler::setEndLabel(const QString& label)
   endlabel = label;
 
   // premeasure the fontwidth and save it
-  if (dir == Vertical) {
+  if (dir == Qt::Vertical) {
     QFont font = this->font();
     font.setPointSize(LABEL_SIZE);
     QFontMetrics fm(font);
@@ -551,7 +551,7 @@ KRuler::slotNewValue(int _value)
   }
   // get the rectangular of the old and the new ruler pointer
   // and repaint only him
-  if (dir == Horizontal) {
+  if (dir == Qt::Horizontal) {
     QRect oldrec(-5+oldvalue,10, 11,6);
     QRect newrec(-5+_value,10, 11,6);
     repaint( oldrec.unite(newrec) );
@@ -604,7 +604,7 @@ KRuler::drawContents(QPainter *p)
   int value  = range.value(),
     minval = range.minValue(),
     maxval;
-    if (dir == Horizontal) {
+    if (dir == Qt::Horizontal) {
     maxval = range.maxValue()
     + offset_
     - (d->lengthFix?(height()-d->endOffset_length):d->endOffset_length);
@@ -636,7 +636,7 @@ KRuler::drawContents(QPainter *p)
 
   // draw endlabel
   if (d->showEndL) {
-    if (dir == Horizontal) {
+    if (dir == Qt::Horizontal) {
       p->translate( fontOffset, 0 );
       p->drawText( END_LABEL_X, END_LABEL_Y, endlabel );
     }
@@ -659,7 +659,7 @@ KRuler::drawContents(QPainter *p)
   if (showtm) {
     fend = ppm*tmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
+      if (dir == Qt::Horizontal) {
         p->drawLine((int)f, BASE_MARK_X1, (int)f, BASE_MARK_X2);
       }
       else {
@@ -671,7 +671,7 @@ KRuler::drawContents(QPainter *p)
     // draw the little marks
     fend = ppm*lmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
+      if (dir == Qt::Horizontal) {
         p->drawLine((int)f, LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2);
       }
       else {
@@ -683,7 +683,7 @@ KRuler::drawContents(QPainter *p)
     // draw medium marks
     fend = ppm*mmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
+      if (dir == Qt::Horizontal) {
         p->drawLine((int)f, MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2);
       }
       else {
@@ -695,7 +695,7 @@ KRuler::drawContents(QPainter *p)
     // draw big marks
     fend = ppm*bmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
+      if (dir == Qt::Horizontal) {
         p->drawLine((int)f, BIG_MARK_X1, (int)f, BIG_MARK_X2);
       }
       else {
@@ -705,7 +705,7 @@ KRuler::drawContents(QPainter *p)
   }
   if (showem) {
     // draw end marks
-    if (dir == Horizontal) {
+    if (dir == Qt::Horizontal) {
       p->drawLine(minval-offset_, END_MARK_X1, minval-offset_, END_MARK_X2);
       p->drawLine(maxval-offset_, END_MARK_X1, maxval-offset_, END_MARK_X2);
     }
@@ -717,8 +717,8 @@ KRuler::drawContents(QPainter *p)
 
   // draw pointer
   if (d->showpointer) {
-    QPointArray pa(4);
-    if (dir == Horizontal) {
+    Q3PointArray pa(4);
+    if (dir == Qt::Horizontal) {
       pa.setPoints(3, value-5, 10, value+5, 10, value/*+0*/,15);
     }
     else {

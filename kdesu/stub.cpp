@@ -17,7 +17,7 @@
 #include <unistd.h>
 
 #include <qglobal.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <kdatastream.h>
 
 #include <kapplication.h>
@@ -56,13 +56,13 @@ void StubProcess::setPriority(int prio)
 }
 
 
-QCString StubProcess::commaSeparatedList(QCStringList lst)
+Q3CString StubProcess::commaSeparatedList(QCStringList lst)
 {
     if (lst.count() == 0)
-	return QCString("");
+	return Q3CString("");
 
     QCStringList::Iterator it = lst.begin();
-    QCString str = *it;
+    Q3CString str = *it;
     for (it++; it!=lst.end(); it++) 
     {
 	str += ',';
@@ -79,7 +79,7 @@ QCString StubProcess::commaSeparatedList(QCStringList lst)
 
 int StubProcess::ConverseStub(int check)
 {
-    QCString line, tmp;
+    Q3CString line, tmp;
     while (1) 
     {
 	line = readLine();
@@ -118,7 +118,7 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "command") {
 	    writeLine(m_Command);
 	} else if (line == "path") {
-	    QCString path = getenv("PATH");
+	    Q3CString path = getenv("PATH");
 	    if (m_User == "root") 
 		if (!path.isEmpty())
 		    path = "/sbin:/usr/sbin:" + path;
@@ -138,7 +138,7 @@ int StubProcess::ConverseStub(int check)
 	    else writeLine("yes");
 	} else if (line == "app_startup_id") {
 	    QCStringList env = environment();
-	    QCString tmp;
+	    Q3CString tmp;
 	    for( QCStringList::ConstIterator it = env.begin();
 		 it != env.end();
 		 ++it )

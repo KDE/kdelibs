@@ -25,7 +25,7 @@
 
 #include <qwidget.h>
 #include <qtabbar.h>
-#include <qmemarray.h>
+#include <q3memarray.h>
 
 #include <kdelibs_export.h>
 
@@ -79,7 +79,7 @@ protected:
     QRect getChildRect() const;
 
     QTabBar * tabs;
-    QMemArray<QWidget *> pages;
+    Q3MemArray<QWidget *> pages;
     int bh;
     bool blBorder;
 protected:

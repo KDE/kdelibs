@@ -21,7 +21,7 @@
 
 #include "progressbase.h"
 
-class QWidgetStack;
+class Q3WidgetStack;
 class QBoxLayout;
 class QPushButton;
 class QLabel;
@@ -100,7 +100,7 @@ protected:
 
   virtual bool eventFilter( QObject *, QEvent * );
   QBoxLayout *box;
-  QWidgetStack *stack;
+  Q3WidgetStack *stack;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

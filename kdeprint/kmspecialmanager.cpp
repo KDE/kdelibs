@@ -70,7 +70,7 @@ bool KMSpecialManager::savePrinters()
 
 	// then add printers
 	n = 0;
-	QPtrListIterator<KMPrinter>	it(m_mgr->m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_mgr->m_printers);
 	for (;it.current();++it)
 	{
 		if (!it.current()->isSpecial() || it.current()->isVirtual()) continue;
@@ -172,7 +172,7 @@ void KMSpecialManager::refresh()
 		loadPrinters();
 	else
 	{
-		QPtrListIterator<KMPrinter>	it(m_mgr->m_printers);
+		Q3PtrListIterator<KMPrinter>	it(m_mgr->m_printers);
 		for (;it.current();++it)
 			if (it.current()->isSpecial())
 			{

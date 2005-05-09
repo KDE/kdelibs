@@ -45,15 +45,15 @@ void startApp(const char *_app, int argc, const char **args)
     }
 
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg(data, IO_WriteOnly);
+    Q3CString replyType;
+    QDataStream arg(data, QIODevice::WriteOnly);
     arg << app << URLs;
 
     if ( !dcop->call( "klauncher", "klauncher", function,  data, replyType, replyData) ) {
 	qWarning( "call failed");
         exit(1);
     } else {
-	QDataStream reply(replyData, IO_ReadOnly);
+	QDataStream reply(replyData, QIODevice::ReadOnly);
 
         if ( replyType != "serviceResult" )
         {
@@ -61,7 +61,7 @@ void startApp(const char *_app, int argc, const char **args)
             exit(1);
         }
         int result;
-        QCString dcopName;
+        Q3CString dcopName;
         QString error;
         reply >> result >> dcopName >> error;
         if (result != 0)
@@ -87,9 +87,9 @@ int main( int argc, char** argv )
     client.attach();
     dcop = &client;
 
-    QCString app;
-    QCString objid;
-    QCString function;
+    Q3CString app;
+    Q3CString objid;
+    Q3CString function;
     /*char **args = 0;*/
     startApp( argv[1], argc - 2, (const char**)&argv[2] );
 

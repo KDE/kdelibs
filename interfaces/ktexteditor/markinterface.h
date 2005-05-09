@@ -20,11 +20,11 @@
 #ifndef __ktexteditor_markinterface_h__
 #define __ktexteditor_markinterface_h__
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kdelibs_export.h>
 
-class QCString;
+class Q3CString;
 
 namespace KTextEditor
 {
@@ -50,7 +50,7 @@ class KTEXTEDITOR_EXPORT MarkInterface
     unsigned int markInterfaceNumber () const;
     
   protected:  
-    void setMarkInterfaceDCOPSuffix (const QCString &suffix);  
+    void setMarkInterfaceDCOPSuffix (const Q3CString &suffix);  
 
   //
   // slots !!!
@@ -80,7 +80,7 @@ class KTEXTEDITOR_EXPORT MarkInterface
     /**
     * @return a list of all marks in the document
     */
-    virtual QPtrList<KTextEditor::Mark> marks () = 0;
+    virtual Q3PtrList<KTextEditor::Mark> marks () = 0;
     /**
     * Clears all marks in the document.
     */ 

@@ -133,7 +133,7 @@ void importKMailAddressBook( KABC::AddressBook *ab )
   }
 
   QFile f( fileName );
-  if ( !f.open(IO_ReadOnly) ) {
+  if ( !f.open(QIODevice::ReadOnly) ) {
     kdDebug(5700) << "Couldn't open file '" << fileName << "'" << endl;
     return;
   }

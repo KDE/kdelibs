@@ -24,10 +24,10 @@
 #include <kdialogbase.h>
 class KHistoryCombo;
 class QPushButton;
-class QPopupMenu;
+class Q3PopupMenu;
 class QGridLayout;
 class QLabel;
-class QGroupBox;
+class Q3GroupBox;
 class QCheckBox;
 
 /**
@@ -84,7 +84,7 @@ public:
         WholeWordsOnly = 1,     // Match whole words only.
         FromCursor = 2,         // Start from current cursor position.
         SelectedText = 4,       // Only search selected area.
-        CaseSensitive = 8,      // Consider case when matching.
+        Qt::CaseSensitive = 8,      // Consider case when matching.
         FindBackwards = 16,     // Go backwards.
         RegularExpression = 32, // Interpret the pattern as a regular expression.
         FindIncremental = 64,   // Find incremental.
@@ -253,7 +253,7 @@ private slots:
 
 private:
 
-    QGroupBox *m_findGrp;
+    Q3GroupBox *m_findGrp;
     QLabel *m_findLabel;
     KHistoryCombo *m_find;
     QCheckBox *m_regExp;
@@ -261,14 +261,14 @@ private:
     QGridLayout *m_findLayout;
     QWidget *m_findExtension;
 
-    QGroupBox *m_optionGrp;
+    Q3GroupBox *m_optionGrp;
     QCheckBox *m_wholeWordsOnly;
     QCheckBox *m_fromCursor;
     QCheckBox *m_selectedText;
     QCheckBox *m_caseSensitive;
     QCheckBox *m_findBackwards;
 
-    QPopupMenu *m_patterns;
+    Q3PopupMenu *m_patterns;
 
     // Our dirty little secret is that we also implement the "replace" dialog. But we
     // keep that fact hidden from all but our friends.
@@ -284,7 +284,7 @@ private:
     KFindDialog( QWidget *parent, const char *name, bool forReplace );
     void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
 
-    QGroupBox *m_replaceGrp;
+    Q3GroupBox *m_replaceGrp;
     QLabel *m_replaceLabel;
     KHistoryCombo *m_replace;
     QCheckBox* m_backRef;
@@ -294,7 +294,7 @@ private:
 
     QCheckBox* m_promptOnReplace;
 
-    QPopupMenu *m_placeholders;
+    Q3PopupMenu *m_placeholders;
 
     // Binary compatible extensibility.
     class KFindDialogPrivate;

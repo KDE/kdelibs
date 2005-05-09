@@ -15,7 +15,7 @@
 #include <kstandarddirs.h>
 #include <qstring.h>
 #include <qregexp.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <ltdl.h>
 #include "kimageio.h"

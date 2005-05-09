@@ -25,7 +25,7 @@
 #include <kdeversion.h>
 #include <dcopclient.h>
 #include <dcopref.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qapplication.h>
 
 #include <assert.h>
@@ -67,9 +67,9 @@ Wallet::Wallet(int handle, const QString& name)
 
 	_dcopRef->dcopClient()->setNotifications(true);
 	connect(_dcopRef->dcopClient(),
-			SIGNAL(applicationRemoved(const QCString&)),
+			SIGNAL(applicationRemoved(const Q3CString&)),
 			this,
-			SLOT(slotAppUnregistered(const QCString&)));
+			SLOT(slotAppUnregistered(const Q3CString&)));
 
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "folderListUpdated(QString)", "slotFolderListUpdated(QString)", false);
@@ -191,7 +191,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 }
 
 
-bool Wallet::disconnectApplication(const QString& wallet, const QCString& app) {
+bool Wallet::disconnectApplication(const QString& wallet, const Q3CString& app) {
 	DCOPReply r = DCOPRef("kded", "kwalletd").call("disconnectApplication", wallet, app);
 	bool rc = false;
 	if (r.isValid()) {
@@ -444,7 +444,7 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 		QByteArray v;
 		r.get(v);
 		if (!v.isEmpty()) {
-			QDataStream ds(v, IO_ReadOnly);
+			QDataStream ds(v, QIODevice::ReadOnly);
 			ds >> value;
 		}
 		rc = 0;
@@ -467,7 +467,7 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
 		r.get(unparsed);
 		for (QMap<QString,QByteArray>::ConstIterator i = unparsed.begin(); i != unparsed.end(); ++i) {
 			if (!i.data().isEmpty()) {
-				QDataStream ds(i.data(), IO_ReadOnly);
+				QDataStream ds(i.data(), QIODevice::ReadOnly);
 				QMap<QString,QString> v;
 				ds >> v;
 				value.insert(i.key(), v);
@@ -554,7 +554,7 @@ int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
 	}
 
 	QByteArray a;
-	QDataStream ds(a, IO_WriteOnly);
+	QDataStream ds(a, QIODevice::WriteOnly);
 	ds << value;
 	DCOPReply r = _dcopRef->call("writeMap", _handle, _folder, key, a);
 	if (r.isValid()) {
@@ -629,7 +629,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 }
 
 
-void Wallet::slotAppUnregistered(const QCString& app) {
+void Wallet::slotAppUnregistered(const Q3CString& app) {
 	if (_handle >= 0 && app == "kded") {
 		slotWalletClosed(_handle);
 	}
@@ -650,7 +650,7 @@ void Wallet::slotFolderListUpdated(const QString& wallet) {
 }
 
 
-void Wallet::slotApplicationDisconnected(const QString& wallet, const QCString& application) {
+void Wallet::slotApplicationDisconnected(const QString& wallet, const Q3CString& application) {
 	if (_handle >= 0
 			&& _name == wallet
 			&& application == _dcopRef->dcopClient()->appId()) {

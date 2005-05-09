@@ -208,7 +208,7 @@ public:
     // Meta refresh/redirect (http-equiv)
     bool isAutoDelayedActionsEnabled () const;
     
-    QValueList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
+    Q3ValueList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
 
 private:
     friend class KHTMLFactory;

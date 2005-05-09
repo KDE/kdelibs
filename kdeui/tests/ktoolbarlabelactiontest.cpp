@@ -16,7 +16,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include <kapplication.h>
 #include <kmainwindow.h>
@@ -26,7 +26,7 @@
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h> 
 #include <kdebug.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 #include <assert.h>
 
@@ -35,7 +35,7 @@ class MainWindow : public KMainWindow
 public:
   MainWindow()
   {
-    QVBox* main = new QVBox(this);
+    Q3VBox* main = new Q3VBox(this);
     setCentralWidget(main);
 
     KSqueezedTextLabel* accel = new KSqueezedTextLabel

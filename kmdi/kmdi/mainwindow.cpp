@@ -47,8 +47,8 @@
 
 #include <qcursor.h>
 #include <qclipboard.h>
-#include <qobjectlist.h>
-#include <qpopupmenu.h>
+#include <qobject.h>
+#include <q3popupmenu.h>
 #include <qmenubar.h>
 
 #include <kmenubar.h>
@@ -67,7 +67,7 @@
 #include <qlayout.h>
 #include <qstring.h>
 #include <qmap.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include "mainwindow.h"
 #include "dockcontainer.h"
@@ -156,10 +156,10 @@ void MainWindow::setupToolViews ()
     w=static_cast<KDockWidget*>(mainDock->parentDockTabGroup()->parent());
   }
 
-  QPtrList<KDockWidget> leftReparentWidgets;
-  QPtrList<KDockWidget> rightReparentWidgets;
-  QPtrList<KDockWidget> bottomReparentWidgets;
-  QPtrList<KDockWidget> topReparentWidgets;
+  Q3PtrList<KDockWidget> leftReparentWidgets;
+  Q3PtrList<KDockWidget> rightReparentWidgets;
+  Q3PtrList<KDockWidget> bottomReparentWidgets;
+  Q3PtrList<KDockWidget> topReparentWidgets;
 
   if (mainDock->parentDockTabGroup()) {
     mainDock=static_cast<KDockWidget*>(mainDock->parentDockTabGroup()->parent());
@@ -362,7 +362,7 @@ void MainWindow::setToolViewStyle(int flag)
   }
 }
 
-void MainWindow::dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container) {
+void MainWindow::dockToolViewsIntoContainers(Q3PtrList<KDockWidget>& widgetsToReparent,KDockWidget *container) {
   for ( KDockWidget *dw = widgetsToReparent.first(); dw;
       dw=widgetsToReparent.next()){
     dw->manualDock(container,KDockWidget::DockCenter,20);
@@ -370,7 +370,7 @@ void MainWindow::dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToRep
   }
 }
 
-void MainWindow::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw) {
+void MainWindow::findToolViewsDockedToMain(Q3PtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw) {
   KDockWidget *mainDock=getMainDockWidget();
   if (mainDock->parentDockTabGroup()) {
     mainDock=dynamic_cast<KDockWidget*>(mainDock->parentDockTabGroup()->parent());

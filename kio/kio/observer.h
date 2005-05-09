@@ -21,7 +21,7 @@
 
 #include <qobject.h>
 #include <dcopobject.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 
 #include <kio/global.h>
 #include <kio/authinfo.h>
@@ -174,7 +174,7 @@ protected:
 
   UIServer_stub * m_uiserver;
 
-  QIntDict< KIO::Job > m_dctJobs;
+  Q3IntDict< KIO::Job > m_dctJobs;
 
 public slots:
 

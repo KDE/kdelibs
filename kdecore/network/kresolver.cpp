@@ -37,14 +37,14 @@
 // Qt includes
 #include <qapplication.h>
 #include <qstring.h>
-#include <qcstring.h>
-#include <qstrlist.h>
+#include <q3cstring.h>
+#include <q3strlist.h>
 #include <qstringlist.h>
-#include <qshared.h>
+#include <q3shared.h>
 #include <qdatetime.h>
 #include <qtimer.h>
 #include <qmutex.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 // IDN
 #ifdef HAVE_IDNA_H
@@ -70,14 +70,14 @@ using namespace KNetwork::Internal;
 /////////////////////////////////////////////
 // class KResolverEntry
 
-class KNetwork::KResolverEntryPrivate: public QShared
+class KNetwork::KResolverEntryPrivate: public Q3Shared
 {
 public:
   KSocketAddress addr;
   int socktype;
   int protocol;
   QString canonName;
-  QCString encodedName;
+  Q3CString encodedName;
 
   inline KResolverEntryPrivate() :
     socktype(0), protocol(0)
@@ -92,7 +92,7 @@ KResolverEntry::KResolverEntry() :
 
 // constructor with stuff
 KResolverEntry::KResolverEntry(const KSocketAddress& addr, int socktype, int protocol,
-			       const QString& canonName, const QCString& encodedName) :
+			       const QString& canonName, const Q3CString& encodedName) :
   d(new KResolverEntryPrivate)
 {
   d->addr = addr;
@@ -105,7 +105,7 @@ KResolverEntry::KResolverEntry(const KSocketAddress& addr, int socktype, int pro
 // constructor with even more stuff
 KResolverEntry::KResolverEntry(const struct sockaddr* sa, Q_UINT16 salen, int socktype,
 			       int protocol, const QString& canonName,
-			       const QCString& encodedName) :
+			       const Q3CString& encodedName) :
   d(new KResolverEntryPrivate)
 {
   d->addr = KSocketAddress(sa, salen);
@@ -157,9 +157,9 @@ QString KResolverEntry::canonicalName() const
 }
 
 // returns the encoded name
-QCString KResolverEntry::encodedName() const
+Q3CString KResolverEntry::encodedName() const
 {
-  return d ? d->encodedName : QCString();
+  return d ? d->encodedName : Q3CString();
 }
 
 // returns the socket type
@@ -210,7 +210,7 @@ KResolverResults::KResolverResults()
 
 // copy constructor
 KResolverResults::KResolverResults(const KResolverResults& other)
-  : QValueList<KResolverEntry>(other), d(new KResolverResultsPrivate)
+  : Q3ValueList<KResolverEntry>(other), d(new KResolverResultsPrivate)
 {
   *d = *other.d;
 }
@@ -232,7 +232,7 @@ KResolverResults::operator= (const KResolverResults& other)
   *d = *other.d;
 
   // now let QValueList do the rest of the work
-  QValueList<KResolverEntry>::operator =(other);
+  Q3ValueList<KResolverEntry>::operator =(other);
 
   return *this;
 }
@@ -531,7 +531,7 @@ void KResolver::emitFinished()
   if (isRunning())
     d->status = KResolver::Success;
 
-  QGuardedPtr<QObject> p = this; // guard against deletion
+  QPointer<QObject> p = this; // guard against deletion
 
   emit finished(d->results);
 
@@ -597,7 +597,7 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
   return qres->start();
 }
 
-QStrList KResolver::protocolName(int protonum)
+Q3StrList KResolver::protocolName(int protonum)
 {
   struct protoent *pe;
 #ifndef HAVE_GETPROTOBYNAME_R
@@ -628,7 +628,7 @@ QStrList KResolver::protocolName(int protonum)
 #endif
 
   // Do common processing
-  QStrList lst(true);	// use deep copies
+  Q3StrList lst(true);	// use deep copies
   if (pe != NULL)
     {
       lst.append(pe->p_name);
@@ -643,7 +643,7 @@ QStrList KResolver::protocolName(int protonum)
   return lst;
 }
 
-QStrList KResolver::protocolName(const char *protoname)
+Q3StrList KResolver::protocolName(const char *protoname)
 {
   struct protoent *pe;
 #ifndef HAVE_GETPROTOBYNAME_R
@@ -674,7 +674,7 @@ QStrList KResolver::protocolName(const char *protoname)
 #endif
 
   // Do common processing
-  QStrList lst(true);	// use deep copies
+  Q3StrList lst(true);	// use deep copies
   if (pe != NULL)
     {
       lst.append(pe->p_name);
@@ -773,7 +773,7 @@ int KResolver::servicePort(const char *servname, const char *protoname)
   return servport;
 }
 
-QStrList KResolver::serviceName(const char* servname, const char *protoname)
+Q3StrList KResolver::serviceName(const char* servname, const char *protoname)
 {
   struct servent *se;
 #ifndef HAVE_GETSERVBYNAME_R
@@ -804,7 +804,7 @@ QStrList KResolver::serviceName(const char* servname, const char *protoname)
 #endif
 
   // Do common processing
-  QStrList lst(true);	// use deep copies
+  Q3StrList lst(true);	// use deep copies
   if (se != NULL)
     {
       lst.append(se->s_name);
@@ -819,7 +819,7 @@ QStrList KResolver::serviceName(const char* servname, const char *protoname)
   return lst;
 }
 
-QStrList KResolver::serviceName(int port, const char *protoname)
+Q3StrList KResolver::serviceName(int port, const char *protoname)
 {
   struct servent *se;
 #ifndef HAVE_GETSERVBYPORT_R
@@ -850,7 +850,7 @@ QStrList KResolver::serviceName(int port, const char *protoname)
 #endif
 
   // Do common processing
-  QStrList lst(true);	// use deep copies
+  Q3StrList lst(true);	// use deep copies
   if (se != NULL)
     {
       lst.append(se->s_name);
@@ -867,7 +867,7 @@ QStrList KResolver::serviceName(int port, const char *protoname)
 
 // forward declaration
 static QStringList splitLabels(const QString& unicodeDomain);
-static QCString ToASCII(const QString& label);
+static Q3CString ToASCII(const QString& label);
 static QString ToUnicode(const QString& label);
 
 static QStringList *KResolver_initIdnDomains()
@@ -879,12 +879,12 @@ static QStringList *KResolver_initIdnDomains()
 }
 
 // implement the ToAscii function, as described by IDN documents
-QCString KResolver::domainToAscii(const QString& unicodeDomain)
+Q3CString KResolver::domainToAscii(const QString& unicodeDomain)
 {
   if (!idnDomains)
     idnDomains = KResolver_initIdnDomains();
 
-  QCString retval;
+  Q3CString retval;
   // RFC 3490, section 4 describes the operation:
   // 1) this is a query, so don't allow unassigned
 
@@ -904,9 +904,9 @@ QCString KResolver::domainToAscii(const QString& unicodeDomain)
   const QStringList::Iterator end = input.end();
   for ( ; it != end; ++it)
     {
-      QCString cs = ToASCII(*it);
+      Q3CString cs = ToASCII(*it);
       if (cs.isNull())
-	return QCString();	// error!
+	return Q3CString();	// error!
 
       // no, all is Ok.
       if (!retval.isEmpty())
@@ -917,7 +917,7 @@ QCString KResolver::domainToAscii(const QString& unicodeDomain)
   return retval;
 }
 
-QString KResolver::domainToUnicode(const QCString& asciiDomain)
+QString KResolver::domainToUnicode(const Q3CString& asciiDomain)
 {
   return domainToUnicode(QString::fromLatin1(asciiDomain));
 }
@@ -1013,7 +1013,7 @@ static QStringList splitLabels(const QString& unicodeDomain)
   return lst;
 }
 
-static QCString ToASCII(const QString& label)
+static Q3CString ToASCII(const QString& label)
 {
 #ifdef HAVE_IDNA_H
   // We have idna.h, so we can use the idna_to_ascii
@@ -1024,9 +1024,9 @@ static QCString ToASCII(const QString& label)
 
   if (label.length() == 0)
     // this is allowed
-    return QCString("");	// empty, not null
+    return Q3CString("");	// empty, not null
 
-  QCString retval;
+  Q3CString retval;
   char buf[65];
 
   Q_UINT32* ucs4 = new Q_UINT32[label.length() + 1];

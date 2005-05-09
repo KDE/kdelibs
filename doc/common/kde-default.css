@@ -30,8 +30,8 @@
    Yuck.  */
 
 body {
-  background: white none;
-  color: black;
+  background: Qt::white none;
+  color: Qt::black;
   font-family: sans-serif;
   padding: 0;
   margin: 0; 
@@ -79,7 +79,7 @@ body {
 
 .navLeft a:link, .navCenter a:link, .navRight a:link, .header a:link, .header a:visited, .bottom-nav a:link, .bottom-nav a:visited {
   color: #41597A;
-  background: white none;
+  background: Qt::white none;
   font-weight: bold;
 }
 
@@ -88,12 +88,12 @@ body {
 
 :link { 
   color: #41597A;
-  background: white none; /* should be inherit */
+  background: Qt::white none; /* should be inherit */
 }
 
 :visited { 
   color: #597ba8;
-  background: white none; /* should be inherit */ 
+  background: Qt::white none; /* should be inherit */ 
 }
 
 .navLeft {
@@ -122,8 +122,8 @@ body {
 .header {
   background: #3E91EB none;
   border-bottom: 1px solid #206dcd;
-  border-top: 1px solid white;
-  color: white;
+  border-top: 1px solid Qt::white;
+  color: Qt::white;
   font-size: small;
   height: 1.7em;
   line-height: 1em;
@@ -138,8 +138,8 @@ body {
 .bottom-nav { 
   background-color: #3E91EB; 
   border-bottom: 1px solid #206dcd; 
-  border-top: 1px solid white;
-  color: white; 
+  border-top: 1px solid Qt::white;
+  color: Qt::white; 
   font-size: small; 
   height: 1.7em; 
   line-height: 1em; 

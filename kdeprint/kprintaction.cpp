@@ -46,7 +46,7 @@ KPrintAction::KPrintAction(const QString& text, PrinterType type, QWidget *paren
 	initialize(type, parentWidget);
 }
 
-KPrintAction::KPrintAction(const QString& text, const QIconSet& icon, PrinterType type, QWidget *parentWidget, QObject *parent, const char *name)
+KPrintAction::KPrintAction(const QString& text, const QIcon& icon, PrinterType type, QWidget *parentWidget, QObject *parent, const char *name)
 : KActionMenu(text, icon, parent, name)
 {
 	d = new KPrintActionPrivate();
@@ -78,10 +78,10 @@ void KPrintAction::slotAboutToShow()
 {
 	popupMenu()->clear();
 	d->printers.clear();
-	QPtrList<KMPrinter>	*prts = KMManager::self()->printerList();
+	Q3PtrList<KMPrinter>	*prts = KMManager::self()->printerList();
 	if (prts && !prts->isEmpty())
 	{
-		QPtrListIterator<KMPrinter>	it(*prts);
+		Q3PtrListIterator<KMPrinter>	it(*prts);
 		bool	first(false);
 		int	ID(0);
 		for (; it.current(); ++it)

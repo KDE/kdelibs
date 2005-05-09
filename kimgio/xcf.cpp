@@ -22,8 +22,8 @@
 #include <stdlib.h>
 #include <qimage.h>
 #include <qiodevice.h>
-#include <qvaluestack.h>
-#include <qvaluevector.h>
+#include <q3valuestack.h>
+#include <q3valuevector.h>
 
 #include <kdebug.h>
 #include "xcf.h"
@@ -145,7 +145,7 @@ kdDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " << 
 	// all the data of all layers before beginning to construct the
 	// merged image).
 
-	QValueStack<Q_INT32> layer_offsets;
+	Q3ValueStack<Q_INT32> layer_offsets;
 
 	while (true) {
 		Q_INT32 layer_offset;
@@ -208,7 +208,7 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
 			return false;
 		}
 
-		QDataStream property(bytes, IO_ReadOnly);
+		QDataStream property(bytes, QIODevice::ReadOnly);
 
 		switch (type) {
 			case PROP_END:
@@ -463,7 +463,7 @@ bool XCFImageFormat::loadLayerProperties(QDataStream& xcf_io, Layer& layer)
 			return false;
 		}
 
-		QDataStream property(bytes, IO_ReadOnly);
+		QDataStream property(bytes, QIODevice::ReadOnly);
 
 		switch (type) {
 			case PROP_END:
@@ -754,7 +754,7 @@ bool XCFImageFormat::loadHierarchy(QDataStream& xcf_io, Layer& layer)
 		}
 	} while (junk != 0);
 
-	QIODevice::Offset saved_pos = xcf_io.device()->at();
+	Q_LONGLONG saved_pos = xcf_io.device()->at();
 
 	xcf_io.device()->at(offset);
 	if (!loadLevel(xcf_io, layer, bpp))
@@ -797,7 +797,7 @@ bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, Q_INT32 bpp)
 				return false;
 			}
 
-			QIODevice::Offset saved_pos = xcf_io.device()->at();
+			Q_LONGLONG saved_pos = xcf_io.device()->at();
 			Q_UINT32 offset2;
 			xcf_io >> offset2;
 
@@ -1019,7 +1019,7 @@ bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
 			return false;
 		}
 
-		QDataStream property(bytes, IO_ReadOnly);
+		QDataStream property(bytes, QIODevice::ReadOnly);
 
 		switch (type) {
 			case PROP_END:
@@ -1038,8 +1038,8 @@ bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
 				break;
 
 			case PROP_COLOR:
-				property >> layer.mask_channel.red >> layer.mask_channel.green
-						>> layer.mask_channel.blue;
+				property >> layer.mask_channel.Qt::red >> layer.mask_channel.Qt::green
+						>> layer.mask_channel.Qt::blue;
 				break;
 
 			case PROP_TATTOO:

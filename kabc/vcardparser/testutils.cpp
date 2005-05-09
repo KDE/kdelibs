@@ -66,7 +66,7 @@ vcardAsText( const QString& location )
 {
     QString line;
     QFile file( location );
-    if ( file.open( IO_ReadOnly ) ) {
+    if ( file.open( QIODevice::ReadOnly ) ) {
         QTextStream stream( &file );
         if ( !stream.eof() ) {
             line = stream.read();

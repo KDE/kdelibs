@@ -18,7 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdom.h>
 #include <qfileinfo.h>
 
@@ -123,7 +123,7 @@ void Engine::slotNewStuffJobData( KIO::Job *job, const QByteArray &data )
 
   kdDebug(5850) << "Engine:slotNewStuffJobData()" << endl;
 
-  QCString str( data, data.size() + 1 );
+  Q3CString str( data, data.size() + 1 );
 
   mNewStuffJobData[ job ].append( QString::fromUtf8( str ) );
 }
@@ -353,7 +353,7 @@ bool Engine::createMetaFile( Entry *entry )
   }
 
   QFile f( mUploadMetaFile );
-  if ( !f.open( IO_WriteOnly ) ) {
+  if ( !f.open( QIODevice::WriteOnly ) ) {
     mUploadMetaFile = QString::null;
     return false;
   }

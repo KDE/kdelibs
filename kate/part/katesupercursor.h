@@ -330,13 +330,13 @@ private:
   bool m_allowZeroLength;
 };
 
-class KateSuperCursorList : public QPtrList<KateSuperCursor>
+class KateSuperCursorList : public Q3PtrList<KateSuperCursor>
 {
 protected:
-  virtual int compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2);
+  virtual int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
 };
 
-class KateSuperRangeList : public QObject, public QPtrList<KateSuperRange>
+class KateSuperRangeList : public QObject, public Q3PtrList<KateSuperRange>
 {
   Q_OBJECT
 
@@ -355,7 +355,7 @@ public:
    * Also, does not connect signals and slots to save time, as this is mainly
    * used by the document itself while drawing (call connectAll() to re-constitute)
    */
-  KateSuperRangeList(const QPtrList<KateSuperRange>& rangeList, QObject* parent = 0L, const char* name = 0L);
+  KateSuperRangeList(const Q3PtrList<KateSuperRange>& rangeList, QObject* parent = 0L, const char* name = 0L);
 
   virtual ~KateSuperRangeList() {}
   /**
@@ -363,7 +363,7 @@ public:
    * If this object was created by the semi-copy constructor, it may not connect items
    * (unless connectAll() has already been called), call connectAll().
    */
-  void appendList(const QPtrList<KateSuperRange>& rangeList);
+  void appendList(const Q3PtrList<KateSuperRange>& rangeList);
 
   /**
    * Connect items that are not connected. This only needs to be called once,
@@ -391,8 +391,8 @@ public:
    * This is just a straight-forward list so that there is no confusion about whether
    * this list should be auto-managed (ie. it shouldn't, to avoid double deletions).
    */
-  QPtrList<KateSuperRange> rangesIncluding(const KateTextCursor& cursor);
-  QPtrList<KateSuperRange> rangesIncluding(uint line);
+  Q3PtrList<KateSuperRange> rangesIncluding(const KateTextCursor& cursor);
+  Q3PtrList<KateSuperRange> rangesIncluding(uint line);
 
   /**
    * @retval true if one of the ranges in the list includes @p cursor
@@ -439,12 +439,12 @@ protected:
   /**
    * internal reimplementation
    */
-  virtual int compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2);
+  virtual int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
 
   /**
    * internal reimplementation
    */
-  virtual QPtrCollection::Item newItem(QPtrCollection::Item d);
+  virtual Q3PtrCollection::Item newItem(Q3PtrCollection::Item d);
 
 private slots:
   void slotEliminated();

@@ -21,7 +21,7 @@
 #define KMPAGES_H
 
 #include <qtabwidget.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class KMPrinter;
 class KMPrinterPage;
@@ -38,7 +38,7 @@ protected:
 	void initialize();
 
 private:
-	QPtrList<KMPrinterPage>	m_pages;
+	Q3PtrList<KMPrinterPage>	m_pages;
 };
 
 #endif

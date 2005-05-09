@@ -21,10 +21,10 @@
 #define __kurl_h__
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include "kdelibs_export.h"
 
-class QUrl;
+class Q3Url;
 class QStringList;
 template <typename K, typename V> class QMap;
 
@@ -166,7 +166,7 @@ public:
    * @see KURL
    * @see QValueList
    */
-  class KDECORE_EXPORT List : public QValueList<KURL>
+  class KDECORE_EXPORT List : public Q3ValueList<KURL>
   {
   public:
     /**
@@ -237,7 +237,7 @@ public:
    * @param encoding_hint MIB of original encoding of URL.
    * @see QTextCodec::mibEnum()
    */
-  KURL( const QCString& url, int encoding_hint = 0 );
+  KURL( const Q3CString& url, int encoding_hint = 0 );
 
   /**
    * Copy constructor.
@@ -248,7 +248,7 @@ public:
    * Converts from a QUrl.
    * @param u the QUrl
    */
-  KURL( const QUrl &u );
+  KURL( const Q3Url &u );
   /**
    * Constructor allowing relative URLs.
    *
@@ -796,7 +796,7 @@ public:
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
   KURL& operator=( const char * _url );
-  KURL& operator=( const QUrl & u );
+  KURL& operator=( const Q3Url & u );
 
   bool operator==( const KURL& _u ) const;
   bool operator==( const QString& _u ) const;

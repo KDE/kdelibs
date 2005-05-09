@@ -62,7 +62,7 @@ class KPluginInfo::KPluginInfoPrivate
         KConfig * config;
         QString configgroup;
         KService::Ptr service;
-        QValueList<KService::Ptr> kcmservices;
+        Q3ValueList<KService::Ptr> kcmservices;
         bool kcmservicesCached;
 };
 
@@ -150,9 +150,9 @@ KPluginInfo::~KPluginInfo()
     delete d;
 }
 
-QValueList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & services, KConfig * config, const QString & group )
+Q3ValueList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & services, KConfig * config, const QString & group )
 {
-    QValueList<KPluginInfo*> infolist;
+    Q3ValueList<KPluginInfo*> infolist;
     KPluginInfo * info;
     for( KService::List::ConstIterator it = services.begin();
             it != services.end(); ++it )
@@ -164,9 +164,9 @@ QValueList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & servi
     return infolist;
 }
 
-QValueList<KPluginInfo*> KPluginInfo::fromFiles( const QStringList & files, KConfig * config, const QString & group )
+Q3ValueList<KPluginInfo*> KPluginInfo::fromFiles( const QStringList & files, KConfig * config, const QString & group )
 {
-    QValueList<KPluginInfo*> infolist;
+    Q3ValueList<KPluginInfo*> infolist;
     for( QStringList::ConstIterator it = files.begin(); it != files.end(); ++it )
     {
         KPluginInfo * info = new KPluginInfo( *it );
@@ -176,7 +176,7 @@ QValueList<KPluginInfo*> KPluginInfo::fromFiles( const QStringList & files, KCon
     return infolist;
 }
 
-QValueList<KPluginInfo*> KPluginInfo::fromKPartsInstanceName( const QString & name, KConfig * config, const QString & group )
+Q3ValueList<KPluginInfo*> KPluginInfo::fromKPartsInstanceName( const QString & name, KConfig * config, const QString & group )
 {
     QStringList files = KGlobal::dirs()->findAllResources( "data", name +
             "/kpartplugins/*.desktop", true, false );
@@ -271,7 +271,7 @@ KService::Ptr KPluginInfo::service() const
     return d->service;
 }
 
-const QValueList<KService::Ptr> & KPluginInfo::kcmServices() const
+const Q3ValueList<KService::Ptr> & KPluginInfo::kcmServices() const
 {
     if ( !d->kcmservicesCached )
     {

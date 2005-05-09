@@ -129,19 +129,19 @@ class KateFactory
      * return a list of all registered docs
      * @return all known documents
      */
-    inline QPtrList<KateDocument> *documents () { return &m_documents; };
+    inline Q3PtrList<KateDocument> *documents () { return &m_documents; };
 
     /**
      * return a list of all registered views
      * @return all known views
      */
-    inline QPtrList<KateView> *views () { return &m_views; };
+    inline Q3PtrList<KateView> *views () { return &m_views; };
 
     /**
      * return a list of all registered renderers
      * @return all known renderers
      */
-    inline QPtrList<KateRenderer> *renderers () { return &m_renderers; };
+    inline Q3PtrList<KateRenderer> *renderers () { return &m_renderers; };
 
     /**
      * on start detected plugins
@@ -221,17 +221,17 @@ class KateFactory
     /**
      * registered docs
      */
-    QPtrList<KateDocument> m_documents;
+    Q3PtrList<KateDocument> m_documents;
 
     /**
      * registered views
      */
-    QPtrList<KateView> m_views;
+    Q3PtrList<KateView> m_views;
 
     /**
      * registered renderers
      */
-    QPtrList<KateRenderer> m_renderers;
+    Q3PtrList<KateRenderer> m_renderers;
 
     /**
      * global dirwatch object
@@ -276,7 +276,7 @@ class KateFactory
     /**
      * internal commands
      */
-    QValueList<Kate::Command *> m_cmds;
+    Q3ValueList<Kate::Command *> m_cmds;
 
     /**
      * js interpreter

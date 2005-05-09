@@ -6,7 +6,7 @@
 #include <kparts/part.h>
 
 class KAboutData;
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 
 /**
  * Who said writing a part should be complex ? :-)
@@ -34,7 +34,7 @@ protected slots:
   void slotSearchReplace();
 
 protected:
-  QMultiLineEdit * m_edit;
+  Q3MultiLineEdit * m_edit;
 };
 
 typedef KParts::GenericFactory<NotepadPart> NotepadFactory;

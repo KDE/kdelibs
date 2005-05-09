@@ -58,7 +58,7 @@ unsigned int SessionConfigInterface::configInterfaceNumber () const
   return mySessionConfigInterfaceNumber;
 }
 
-void SessionConfigInterface::setSessionConfigInterfaceDCOPSuffix (const QCString &/*suffix*/)
+void SessionConfigInterface::setSessionConfigInterfaceDCOPSuffix (const Q3CString &/*suffix*/)
 {
   //d->interface->setObjId ("SessionConfigInterface#"+suffix);
 }

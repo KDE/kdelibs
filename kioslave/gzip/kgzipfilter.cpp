@@ -72,13 +72,13 @@ void KGzipFilter::init( int mode )
 {
     d->zStream.next_in = Z_NULL;
     d->zStream.avail_in = 0;
-    if ( mode == IO_ReadOnly )
+    if ( mode == QIODevice::ReadOnly )
     {
         int result = inflateInit2(&d->zStream, -MAX_WBITS); // windowBits is passed < 0 to suppress zlib header
         if ( result != Z_OK )
             kdDebug(7005) << "inflateInit returned " << result << endl;
         // No idea what to do with result :)
-    } else if ( mode == IO_WriteOnly )
+    } else if ( mode == QIODevice::WriteOnly )
     {
         int result = deflateInit2(&d->zStream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY); // same here
         if ( result != Z_OK )
@@ -93,12 +93,12 @@ void KGzipFilter::init( int mode )
 
 void KGzipFilter::terminate()
 {
-    if ( m_mode == IO_ReadOnly )
+    if ( m_mode == QIODevice::ReadOnly )
     {
         int result = inflateEnd(&d->zStream);
         if ( result != Z_OK )
             kdDebug(7005) << "inflateEnd returned " << result << endl;
-    } else if ( m_mode == IO_WriteOnly )
+    } else if ( m_mode == QIODevice::WriteOnly )
     {
         int result = deflateEnd(&d->zStream);
         if ( result != Z_OK )
@@ -109,12 +109,12 @@ void KGzipFilter::terminate()
 
 void KGzipFilter::reset()
 {
-    if ( m_mode == IO_ReadOnly )
+    if ( m_mode == QIODevice::ReadOnly )
     {
         int result = inflateReset(&d->zStream);
         if ( result != Z_OK )
             kdDebug(7005) << "inflateReset returned " << result << endl;
-    } else if ( m_mode == IO_WriteOnly ) {
+    } else if ( m_mode == QIODevice::WriteOnly ) {
         int result = deflateReset(&d->zStream);
         if ( result != Z_OK )
             kdDebug(7005) << "deflateReset returned " << result << endl;
@@ -202,7 +202,7 @@ bool KGzipFilter::readHeader()
     put_short((n) & 0xffff); \
     put_short(((ulong)(n)) >> 16);
 
-bool KGzipFilter::writeHeader( const QCString & fileName )
+bool KGzipFilter::writeHeader( const Q3CString & fileName )
 {
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;
@@ -284,7 +284,7 @@ KGzipFilter::Result KGzipFilter::uncompress_noop()
 
 KGzipFilter::Result KGzipFilter::uncompress()
 {
-    Q_ASSERT ( m_mode == IO_ReadOnly );
+    Q_ASSERT ( m_mode == QIODevice::ReadOnly );
     if ( d->bCompressed )
     {
 #ifdef DEBUG_GZIP
@@ -308,7 +308,7 @@ KGzipFilter::Result KGzipFilter::uncompress()
 KGzipFilter::Result KGzipFilter::compress( bool finish )
 {
     Q_ASSERT ( d->bCompressed );
-    Q_ASSERT ( m_mode == IO_WriteOnly );
+    Q_ASSERT ( m_mode == QIODevice::WriteOnly );
 
     Bytef* p = d->zStream.next_in;
     ulong len = d->zStream.avail_in;

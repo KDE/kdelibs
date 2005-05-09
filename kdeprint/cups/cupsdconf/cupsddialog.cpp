@@ -39,7 +39,7 @@
 #include "cupsdserverencryptpage.h"
 
 #include <qdir.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
@@ -70,7 +70,7 @@ int getServerPid()
 	{
 		if (dir[i] == "." || dir[i] == ".." || dir[i] == "self") continue;
 		QFile	f("/proc/" + dir[i] + "/cmdline");
-		if (f.exists() && f.open(IO_ReadOnly))
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			QTextStream	t(&f);
 			QString	line;
@@ -288,7 +288,7 @@ int CupsdDialog::serverOwner()
 		QString	str;
 		str.sprintf("/proc/%d/status",pid);
 		QFile	f(str);
-		if (f.exists() && f.open(IO_ReadOnly))
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			QTextStream	t(&f);
 			while (!t.eof())

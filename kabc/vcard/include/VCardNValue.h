@@ -34,21 +34,21 @@ class KVCARD_EXPORT NValue : public Value
 #include "NValue-generated.h"
 	NValue *clone();
 
-	QCString family()	{ parse(); return family_;	}
-	QCString given()	{ parse(); return given_;	}
-	QCString middle()	{ parse(); return middle_;	}
-	QCString prefix()	{ parse(); return prefix_;	}
-	QCString suffix()	{ parse(); return suffix_;	}
+	Q3CString family()	{ parse(); return family_;	}
+	Q3CString given()	{ parse(); return given_;	}
+	Q3CString middle()	{ parse(); return middle_;	}
+	Q3CString prefix()	{ parse(); return prefix_;	}
+	Q3CString suffix()	{ parse(); return suffix_;	}
 
-	void setFamily	(const QCString & s) { family_	= s; assembled_ = false; }
-	void setGiven	(const QCString & s) { given_	= s; assembled_ = false; }
-	void setMiddle	(const QCString & s) { middle_	= s; assembled_ = false; }
-	void setPrefix	(const QCString & s) { prefix_	= s; assembled_ = false; }
-	void setSuffix	(const QCString & s) { suffix_	= s; assembled_ = false; }
+	void setFamily	(const Q3CString & s) { family_	= s; assembled_ = false; }
+	void setGiven	(const Q3CString & s) { given_	= s; assembled_ = false; }
+	void setMiddle	(const Q3CString & s) { middle_	= s; assembled_ = false; }
+	void setPrefix	(const Q3CString & s) { prefix_	= s; assembled_ = false; }
+	void setSuffix	(const Q3CString & s) { suffix_	= s; assembled_ = false; }
 	
 	private:
 	
-	QCString family_, given_, middle_, prefix_, suffix_;
+	Q3CString family_, given_, middle_, prefix_, suffix_;
 };
 
 }

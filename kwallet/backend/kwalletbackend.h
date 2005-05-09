@@ -79,7 +79,7 @@ class KDE_EXPORT Backend {
 		
 		// Look up a list of entries.  Supports wildcards.
 		// You delete the list.
-		QPtrList<Entry> readEntryList(const QString& key);
+		Q3PtrList<Entry> readEntryList(const QString& key);
 
 		// Store an entry.
 		void writeEntry(Entry *e);
@@ -125,7 +125,7 @@ class KDE_EXPORT Backend {
 		typedef QMap< QString, Entry* > EntryMap;
 		typedef QMap< QString, EntryMap > FolderMap;
 		FolderMap _entries;
-		typedef QMap<MD5Digest, QValueList<MD5Digest> > HashMap;
+		typedef QMap<MD5Digest, Q3ValueList<MD5Digest> > HashMap;
 		HashMap _hashes;
 };
 

@@ -89,7 +89,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 	// First try /dev/urandom
 	if (QFile::exists("/dev/urandom")) {
 		QFile devrand("/dev/urandom");
-		if (devrand.open(IO_ReadOnly)) {
+		if (devrand.open(QIODevice::ReadOnly)) {
 			unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
 
 			if (rc != randBlock.size()) {
@@ -104,7 +104,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 	// FIXME: open in noblocking mode!
 	if (QFile::exists("/dev/random")) {
 		QFile devrand("/dev/random");
-		if (devrand.open(IO_ReadOnly)) {
+		if (devrand.open(QIODevice::ReadOnly)) {
 		unsigned int rc = 0;
 		unsigned int cnt = 0;
 
@@ -131,7 +131,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 	if ((randFilename = getenv("RANDFILE"))) {
 		if (QFile::exists(randFilename)) {
 			QFile devrand(randFilename);
-			if (devrand.open(IO_ReadOnly)) {
+			if (devrand.open(QIODevice::ReadOnly)) {
 				unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
 				if (rc != randBlock.size()) {
 					return -3;      // not enough data read
@@ -287,7 +287,7 @@ int Backend::open(const QByteArray& password) {
 	//       Anything smaller is junk and should be deleted.
 	if (!QFile::exists(_path) || QFileInfo(_path).size() < 60) {
 		QFile newfile(_path);
-		if (!newfile.open(IO_ReadWrite)) {
+		if (!newfile.open(QIODevice::ReadWrite)) {
 			return -2;   // error opening file
 		}
 		newfile.close();
@@ -298,7 +298,7 @@ int Backend::open(const QByteArray& password) {
 
 	QFile db(_path);
 
-	if (!db.open(IO_ReadOnly)) {
+	if (!db.open(QIODevice::ReadOnly)) {
 		return -2;         // error opening file
 	}
 
@@ -339,13 +339,13 @@ int Backend::open(const QByteArray& password) {
 	for (size_t i = 0; i < n; ++i) {
 		KMD5::Digest d, d2; // judgment day
 		MD5Digest ba;
-		QMap<MD5Digest,QValueList<MD5Digest> >::iterator it;
+		QMap<MD5Digest,Q3ValueList<MD5Digest> >::iterator it;
 		Q_UINT32 fsz;
 		if (hds.atEnd()) return -43;
 		hds.readRawBytes(reinterpret_cast<char *>(d), 16);
 		hds >> fsz;
 		ba.duplicate(reinterpret_cast<char *>(d), 16);
-		it = _hashes.insert(ba, QValueList<MD5Digest>());
+		it = _hashes.insert(ba, Q3ValueList<MD5Digest>());
 		for (size_t j = 0; j < fsz; ++j) {
 			hds.readRawBytes(reinterpret_cast<char *>(d2), 16);
 			ba.duplicate(reinterpret_cast<char *>(d2), 16);
@@ -433,7 +433,7 @@ int Backend::open(const QByteArray& password) {
 	tmpenc.fill(0);
 
 	// Load the data structures up
-	QDataStream eStream(encrypted, IO_ReadOnly);
+	QDataStream eStream(encrypted, QIODevice::ReadOnly);
 
 	while (!eStream.atEnd()) {
 		QString folder;
@@ -503,7 +503,7 @@ int Backend::sync(const QByteArray& password) {
 
 	// Holds the hashes we write out
 	QByteArray hashes;
-	QDataStream hashStream(hashes, IO_WriteOnly);
+	QDataStream hashStream(hashes, QIODevice::WriteOnly);
 	KMD5 md5;
 	hashStream << static_cast<Q_UINT32>(_entries.count());
 
@@ -515,7 +515,7 @@ int Backend::sync(const QByteArray& password) {
 	// resizes.
 
 	// populate decrypted
-	QDataStream dStream(decrypted, IO_WriteOnly);
+	QDataStream dStream(decrypted, QIODevice::WriteOnly);
 	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
 		dStream << i.key();
 		dStream << static_cast<Q_UINT32>(i.data().count());
@@ -667,8 +667,8 @@ return rc;
 }
 
 
-QPtrList<Entry> Backend::readEntryList(const QString& key) {
-	QPtrList<Entry> rc;
+Q3PtrList<Entry> Backend::readEntryList(const QString& key) {
+	Q3PtrList<Entry> rc;
 
 	if (!_open) {
 		return rc;
@@ -695,7 +695,7 @@ bool Backend::createFolder(const QString& f) {
 
 	KMD5 folderMd5;
 	folderMd5.update(f.utf8());
-	_hashes.insert(MD5Digest(folderMd5.rawDigest()), QValueList<MD5Digest>());
+	_hashes.insert(MD5Digest(folderMd5.rawDigest()), Q3ValueList<MD5Digest>());
 
 return true;
 }

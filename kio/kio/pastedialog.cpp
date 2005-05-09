@@ -34,7 +34,7 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
                                bool clipboard )
     : KDialogBase( parent, 0 /*name*/, true, caption, Ok|Cancel, Ok, true )
 {
-    QFrame *frame = makeMainWidget();
+    Q3Frame *frame = makeMainWidget();
     QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
     m_label = new QLabel( label, frame );

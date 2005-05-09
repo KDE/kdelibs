@@ -100,7 +100,7 @@ void testCodec (const char* msg, Codec type, bool isFile)
           return;
         }
 
-        if (!f.open(IO_ReadOnly))
+        if (!f.open(QIODevice::ReadOnly))
         {
           f.close ();
           kdError() << "Could not open: " << f.name() << endl;
@@ -147,12 +147,12 @@ void testCodec (const char* msg, Codec type, bool isFile)
                 break;
         }
 
-        QCString result (output.data(), output.size()+1);
+        Q3CString result (output.data(), output.size()+1);
         cout << "Result: " << endl << result << endl;
     }
     else
     {
-        QCString result;
+        Q3CString result;
 
         memcpy (output.data(), msg, strlen(msg));
 
@@ -244,7 +244,7 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
 
   if ( !isFile )
   {
-    context.update (QCString(input));
+    context.update (Q3CString(input));
     result = context.verify( digest );
     cout << "Input string: " << input << endl;
   }
@@ -252,7 +252,7 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
   {
     QFile f (input);
 
-    if (!f.open (IO_ReadOnly))
+    if (!f.open (QIODevice::ReadOnly))
     {
       f.close ();
       kdFatal() << "Cannot open file for reading!"  << endl;
@@ -273,7 +273,7 @@ void MD5_file (const char *filename, bool rawOutput )
 {
   QFile f (QFile::encodeName(filename));
 
-  if (!f.open(IO_ReadOnly))
+  if (!f.open(QIODevice::ReadOnly))
   {
     f.close();
     kdError() << "(" << filename << ") cannot be opened!" << endl;
@@ -294,7 +294,7 @@ void MD5_file (const char *filename, bool rawOutput )
 void MD5_string (const char *input, const char* expected, bool rawOutput )
 {
   KMD5 context;
-  context.update (QCString(input));
+  context.update (Q3CString(input));
 
   cout << "Checking MD5 for: " << input << endl;
 
@@ -370,7 +370,7 @@ int main (int argc, char *argv[])
        {
           const char* opt = args->getOption( "c" ).data();
           for ( int i=0 ; i < count; i++ )
-            MD5_verify ( QCString(args->arg(i)), opt, (isString || !isFile) );
+            MD5_verify ( Q3CString(args->arg(i)), opt, (isString || !isFile) );
        }
        else
        {

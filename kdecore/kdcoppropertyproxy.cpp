@@ -19,14 +19,14 @@
 
 #include "kdcoppropertyproxy.h"
 
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qmetaobject.h>
 #include <qvariant.h>
 #include <qcursor.h>
 #include <qbitmap.h>
 #include <qregion.h>
-#include <qpointarray.h>
-#include <qiconset.h>
+#include <q3pointarray.h>
+#include <qicon.h>
 #include <qfont.h>
 #include <qimage.h>
 #include <qbrush.h>
@@ -59,23 +59,23 @@ KDCOPPropertyProxy::~KDCOPPropertyProxy()
   delete d;
 }
 
-bool KDCOPPropertyProxy::isPropertyRequest( const QCString &fun )
+bool KDCOPPropertyProxy::isPropertyRequest( const Q3CString &fun )
 {
   return isPropertyRequest( fun, d->m_object );
 }
 
-bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByteArray &data,
-                                                 QCString &replyType, QByteArray &replyData )
+bool KDCOPPropertyProxy::processPropertyRequest( const Q3CString &fun, const QByteArray &data,
+                                                 Q3CString &replyType, QByteArray &replyData )
 {
   return processPropertyRequest( fun, data, replyType, replyData, d->m_object );
 }
 
-QValueList<QCString> KDCOPPropertyProxy::functions()
+Q3ValueList<Q3CString> KDCOPPropertyProxy::functions()
 {
   return functions( d->m_object );
 }
 
-bool KDCOPPropertyProxy::isPropertyRequest( const QCString &fun, QObject *object )
+bool KDCOPPropertyProxy::isPropertyRequest( const Q3CString &fun, QObject *object )
 {
   if ( fun == "property(QCString)" ||
        fun == "setProperty(QCString,QVariant)" ||
@@ -83,19 +83,19 @@ bool KDCOPPropertyProxy::isPropertyRequest( const QCString &fun, QObject *object
     return true;
 
   bool set;
-  QCString propName, arg;
+  Q3CString propName, arg;
   return decodePropertyRequestInternal( fun, object, set, propName, arg );
 }
 
-QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
+Q3ValueList<Q3CString> KDCOPPropertyProxy::functions( QObject *object )
 {
-  QValueList<QCString> res;
+  Q3ValueList<Q3CString> res;
   res << "QVariant property(QCString property)";
   res << "bool setProperty(QCString name,QVariant property)";
   res << "QValueList<QCString> propertyNames(bool super)";
 
   QMetaObject *metaObj = object->metaObject();
-  QStrList properties = metaObj->propertyNames( true );
+  Q3StrList properties = metaObj->propertyNames( true );
   QStrListIterator it( properties );
   for (; it.current(); ++it )
   {
@@ -103,7 +103,7 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
 
     assert( metaProp );
 
-    QCString name = it.current();
+    Q3CString name = it.current();
     name.prepend( " " );
     name.prepend( metaProp->type() );
     name.append( "()" );
@@ -111,7 +111,7 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
 
     if ( metaProp->writable() )
     {
-      QCString setName = it.current();
+      Q3CString setName = it.current();
       setName[ 0 ] = toupper( setName[ 0 ] );
       setName = "void set" + setName + "(" + metaProp->type() + " " + it.current() + ")";
       res << setName;
@@ -121,31 +121,31 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
   return res;
 }
 
-bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByteArray &data,
-                                                 QCString &replyType, QByteArray &replyData,
+bool KDCOPPropertyProxy::processPropertyRequest( const Q3CString &fun, const QByteArray &data,
+                                                 Q3CString &replyType, QByteArray &replyData,
                                                  QObject *object )
 {
   if ( fun == "property(QCString)" )
   {
-    QCString propName;
-    QDataStream stream( data, IO_ReadOnly );
+    Q3CString propName;
+    QDataStream stream( data, QIODevice::ReadOnly );
     stream >> propName;
 
     replyType = "QVariant";
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( replyData, QIODevice::WriteOnly );
     reply << object->property( propName );
     return true;
   }
 
   if ( fun == "setProperty(QCString,QVariant)" )
   {
-    QCString propName;
+    Q3CString propName;
     QVariant propValue;
-    QDataStream stream( data, IO_ReadOnly );
+    QDataStream stream( data, QIODevice::ReadOnly );
     stream >> propName >> propValue;
 
     replyType = "bool";
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( replyData, QIODevice::WriteOnly );
     reply << (Q_INT8)object->setProperty( propName, propValue );
     return true;
   }
@@ -153,23 +153,23 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
   if ( fun == "propertyNames(bool)" )
   {
     Q_INT8 b;
-    QDataStream stream( data, IO_ReadOnly );
+    QDataStream stream( data, QIODevice::ReadOnly );
     stream >> b;
 
-    QValueList<QCString> res;
-    QStrList props = object->metaObject()->propertyNames( static_cast<bool>( b ) );
+    Q3ValueList<Q3CString> res;
+    Q3StrList props = object->metaObject()->propertyNames( static_cast<bool>( b ) );
     QStrListIterator it( props );
     for (; it.current(); ++it )
       res.append( it.current() );
 
     replyType = "QValueList<QCString>";
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( replyData, QIODevice::WriteOnly );
     reply << res;
     return true;
   }
 
   bool set;
-  QCString propName, arg;
+  Q3CString propName, arg;
 
   bool res = decodePropertyRequestInternal( fun, object, set, propName, arg );
   if ( !res )
@@ -178,7 +178,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
   if ( set )
   {
     QVariant prop;
-    QDataStream stream( data, IO_ReadOnly );
+    QDataStream stream( data, QIODevice::ReadOnly );
 
     QVariant::Type type = QVariant::nameToType( arg );
     if ( type == QVariant::Invalid )
@@ -193,19 +193,19 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
     } \
     break;
 
-    typedef QValueList<QVariant> ListType;
+    typedef Q3ValueList<QVariant> ListType;
     typedef QMap<QString,QVariant> MapType;
 
     switch ( type )
     {
       DEMARSHAL( Cursor, QCursor )
       DEMARSHAL( Bitmap, QBitmap )
-      DEMARSHAL( PointArray, QPointArray )
+      DEMARSHAL( PointArray, Q3PointArray )
       DEMARSHAL( Region, QRegion )
       DEMARSHAL( List, ListType )
       DEMARSHAL( Map, MapType )
       DEMARSHAL( String, QString )
-      DEMARSHAL( CString, QCString )
+      DEMARSHAL( CString, Q3CString )
       DEMARSHAL( StringList, QStringList )
       DEMARSHAL( Font, QFont )
       DEMARSHAL( Pixmap, QPixmap )
@@ -217,11 +217,11 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
       DEMARSHAL( Color, QColor )
       DEMARSHAL( Palette, QPalette )
       DEMARSHAL( ColorGroup, QColorGroup )
-      case QVariant::IconSet:
+      case QCoreVariant::Icon:
       {
         QPixmap val;
         stream >> val;
-        prop = QVariant( QIconSet( val ) );
+        prop = QVariant( QIcon( val ) );
       }
       break;
       DEMARSHAL( Int, int )
@@ -249,7 +249,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
       return false;
 
     replyType = prop.typeName();
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( replyData, QIODevice::WriteOnly );
 
 #define MARSHAL( type ) \
   case QVariant::type: \
@@ -277,7 +277,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
       MARSHAL( Color )
       MARSHAL( Palette )
       MARSHAL( ColorGroup )
-      case QVariant::IconSet:
+      case QCoreVariant::Icon:
         reply << prop.toIconSet().pixmap();
         break;
       MARSHAL( Int )
@@ -299,8 +299,8 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
   return false;
 }
 
-bool KDCOPPropertyProxy::decodePropertyRequestInternal( const QCString &fun, QObject *object, bool &set,
-                                                        QCString &propName, QCString &arg )
+bool KDCOPPropertyProxy::decodePropertyRequestInternal( const Q3CString &fun, QObject *object, bool &set,
+                                                        Q3CString &propName, Q3CString &arg )
 {
   if ( fun.length() < 3 )
     return false;

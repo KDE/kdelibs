@@ -6,19 +6,19 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qobject.h>
-#include <qlistbox.h>
-#include <qgroupbox.h>
+#include <q3listbox.h>
+#include <q3groupbox.h>
 #include <qevent.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qcheckbox.h>
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include <qtooltip.h>
 #include <qmessagebox.h>
 #include <qtabbar.h>
 #include <qpalette.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,7 +52,7 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
     test->addTab(w, "Seite 1");
     pages[0] = w;
     w = new QWidget(test, "_page2");
-    e = new QMultiLineEdit(w, "_editor");
+    e = new Q3MultiLineEdit(w, "_editor");
     e->setText("Write some usesless stuff here :-)");
     w->resize(width(), height());
     test->addTab(w, "Seite 2");

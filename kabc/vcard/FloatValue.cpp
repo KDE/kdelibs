@@ -45,7 +45,7 @@ FloatValue::FloatValue(const FloatValue & x)
 	value_ = x.value_;
 }
 
-FloatValue::FloatValue(const QCString & s)
+FloatValue::FloatValue(const Q3CString & s)
 	:	Value(s)
 {
 }
@@ -63,7 +63,7 @@ FloatValue::operator = (FloatValue & x)
 }
 
 	FloatValue &
-FloatValue::operator = (const QCString & s)
+FloatValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;
@@ -101,7 +101,7 @@ FloatValue::_parse()
 	void
 FloatValue::_assemble()
 {
-	strRep_ = QCString().setNum(value_);
+	strRep_ = Q3CString().setNum(value_);
 }
 
 	float

@@ -22,7 +22,7 @@
 #define _KMDI_GUICLIENT_H_
 
 #include <qobject.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kxmlguiclient.h>
 #include <kaction.h>
 
@@ -66,9 +66,9 @@ class GUIClient : public QObject, public KXMLGUIClient
   private:
     GUIClientPrivate *d;
 
-    QGuardedPtr<KMDI::MainWindow> m_mdiMainFrm;
-    QPtrList<KAction> m_toolViewActions;
-    QPtrList<KAction> m_documentViewActions;
+    QPointer<KMDI::MainWindow> m_mdiMainFrm;
+    Q3PtrList<KAction> m_toolViewActions;
+    Q3PtrList<KAction> m_documentViewActions;
 
     KActionMenu *m_docMenu;
     KActionMenu *m_toolMenu;

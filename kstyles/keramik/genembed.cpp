@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qmap.h>
 #include <qregexp.h>
 #include <qtextstream.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 #include <kimageeffect.h>
 
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 	if (argc < 2)
 		return 0;
 
-	QValueVector<KeramikEmbedImage> images;
+	Q3ValueVector<KeramikEmbedImage> images;
 
 	cout<<"#include <qintdict.h>\n\n";
 	cout<<"#include \"keramikimage.h\"\n\n";
@@ -364,7 +364,7 @@ int main(int argc, char** argv)
 
 
 	QFile file("keramikrc.h");
-	file.open(IO_WriteOnly);
+	file.open(QIODevice::WriteOnly);
 	QTextStream ts( &file);
 	ts<<"#ifndef KERAMIK_RC_H\n";
 	ts<<"#define KERAMIK_RC_H\n";

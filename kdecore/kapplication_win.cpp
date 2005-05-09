@@ -67,7 +67,7 @@ public:
   KCheckAccelerators* checkAccelerators;
   QString overrideStyle;
   QString geometry_arg;
-  QCString startup_id;
+  Q3CString startup_id;
   QTimer* app_started_timer;
   KAppDCOPInterface *m_KAppDCOPInterface;
   bool session_save;
@@ -75,7 +75,7 @@ public:
 };
 
 void KApplication::invokeHelp( const QString& anchor,
-	const QString& _appname, const QCString& startup_id ) const
+	const QString& _appname, const Q3CString& startup_id ) const
 {
 	if (!d->qassistantclient) {
 		d->qassistantclient = new QAssistantClient(
@@ -90,9 +90,9 @@ void KApplication::invokeHelp( const QString& anchor,
 
 // on win32, for invoking browser we're using win32 API
 // see kapplication_win.cpp
-void KApplication::invokeBrowser( const QString &url, const QCString& startup_id )
+void KApplication::invokeBrowser( const QString &url, const Q3CString& startup_id )
 {
-	QCString s = url.latin1();
+	Q3CString s = url.latin1();
 	const unsigned short *l = (const unsigned short *)s.data();
 	ShellExecuteA(0, "open", s.data(), 0, 0, SW_NORMAL);
 }
@@ -100,7 +100,7 @@ void KApplication::invokeBrowser( const QString &url, const QCString& startup_id
 void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
-                                const QCString& startup_id )
+                                const Q3CString& startup_id )
 {
 	KURL url("mailto:"+to);
 	url.setQuery("?subject="+subject);
@@ -110,7 +110,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
 	for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
 		url.addQueryItem("attach", KURL::encode_string(*it));
 
-	QCString s = url.url().latin1();
+	Q3CString s = url.url().latin1();
 	const unsigned short *l = (const unsigned short *)s.data();
 	ShellExecuteA(0, "open", s.data(), 0, 0, SW_NORMAL);
 }

@@ -78,7 +78,7 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
     // that would break the compatibility of the wire-protocol with KDE 2.
     // We do the same on 64-bit platforms in case we run in a mixed 32/64bit
     // environment.
-    Q_LLONG msb = 0;
+    Q_LONGLONG msb = 0;
     for(Q_UINT32 i = 0; i < size; i++)
     {
        KIO::UDSAtom a;
@@ -92,7 +92,7 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
           if (a.m_uds == KIO::UDS_SIZE)
           {
              if (a.m_long < 0)
-                a.m_long += (Q_LLONG) 1 << 32;
+                a.m_long += (Q_LONGLONG) 1 << 32;
              a.m_long += msb << 32;
           }
           e.append(a);
@@ -222,7 +222,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
     //kdDebug(7007) << "dispatch " << _cmd << endl;
 
-    QDataStream stream( rawdata, IO_ReadOnly );
+    QDataStream stream( rawdata, QIODevice::ReadOnly );
 
     QString str1;
     Q_INT32 i;
@@ -282,7 +282,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case MSG_SLAVE_STATUS:
         {
            pid_t pid;
-           QCString protocol;
+           Q3CString protocol;
            stream >> pid >> protocol >> str1 >> b;
            emit slaveStatus(pid, protocol, str1, (b != 0));
         }
@@ -395,7 +395,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
     case MSG_AUTH_KEY: {
         bool keep;
-        QCString key, group;
+        Q3CString key, group;
         stream >> key >> group >> keep;
         kdDebug(7007) << "Got auth-key:      " << key << endl
                       << "    group-key:     " << group << endl
@@ -404,7 +404,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     }
     case MSG_DEL_AUTH_KEY: {
-        QCString key;
+        Q3CString key;
         stream >> key;
         kdDebug(7007) << "Delete auth-key: " << key << endl;
         emit delAuthorization( key );
@@ -427,7 +427,7 @@ void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {
     kdDebug(7007) << "requestNetwork " << host << slaveid << endl;
     QByteArray packedArgs;
-    QDataStream stream( packedArgs, IO_WriteOnly );
+    QDataStream stream( packedArgs, QIODevice::WriteOnly );
     stream << true;
     m_pConnection->sendnow( INF_NETWORK_STATUS, packedArgs );
 }
@@ -475,7 +475,7 @@ void SlaveInterface::openPassDlg( AuthInfo& info )
     if ( m_pConnection )
     {
         QByteArray data;
-        QDataStream stream( data, IO_WriteOnly );
+        QDataStream stream( data, QIODevice::WriteOnly );
         if ( result )
         {
             stream << info;
@@ -500,7 +500,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 {
     kdDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << " " << dontAskAgainName << endl;
     QByteArray packedArgs;
-    QDataStream stream( packedArgs, IO_WriteOnly );
+    QDataStream stream( packedArgs, QIODevice::WriteOnly );
 
     QString caption( _caption );
     if ( type == KIO::SlaveBase::SSLMessageBox )
@@ -508,7 +508,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
     emit needProgressId();
     kdDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
-    QGuardedPtr<SlaveInterface> me = this;
+    QPointer<SlaveInterface> me = this;
     m_pConnection->suspend();
     int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
     if ( me && m_pConnection ) // Don't do anything if deleted meanwhile

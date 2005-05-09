@@ -25,7 +25,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qcombobox.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -101,7 +101,7 @@ void CupsdServerHTTPPage::setDefaults()
 
 void CupsdServerHTTPPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(defaultcharset_, conf->comments_.toolTip(DEFAULTCHARSET_COMM));
-        QWhatsThis::add(defaultlanguage_, conf->comments_.toolTip(DEFAULTLANG_COMM));
-        QWhatsThis::add(documentroot_, conf->comments_.toolTip(DOCUMENTROOT_COMM));
+        Q3WhatsThis::add(defaultcharset_, conf->comments_.toolTip(DEFAULTCHARSET_COMM));
+        Q3WhatsThis::add(defaultlanguage_, conf->comments_.toolTip(DEFAULTLANG_COMM));
+        Q3WhatsThis::add(documentroot_, conf->comments_.toolTip(DOCUMENTROOT_COMM));
 }

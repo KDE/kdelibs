@@ -22,7 +22,7 @@
 #include <klocale.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -93,5 +93,5 @@ void CupsdBrowsingRelayPage::setDefaults()
 
 void CupsdBrowsingRelayPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(browserelay_, conf->comments_.toolTip(BROWSERELAY_COMM));
+        Q3WhatsThis::add(browserelay_, conf->comments_.toolTip(BROWSERELAY_COMM));
 }

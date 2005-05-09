@@ -50,7 +50,7 @@
 
 #include <klocale.h>
 #include <dcopclient.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdatastream.h>
 
 #include <kapplication.h>
@@ -92,9 +92,9 @@ public:
 
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
-                           const QCString &protocol,
-                           const QCString &poolSocket,
-                           const QCString &appSocket)
+                           const Q3CString &protocol,
+                           const Q3CString &poolSocket,
+                           const Q3CString &appSocket)
              :SlaveBase (protocol, poolSocket, appSocket),
               m_iSock(-1),
               m_iDefaultPort(defaultPort),
@@ -108,9 +108,9 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
 }
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
-                           const QCString &protocol,
-                           const QCString &poolSocket,
-                           const QCString &appSocket,
+                           const Q3CString &protocol,
+                           const Q3CString &poolSocket,
+                           const Q3CString &appSocket,
                            bool useSSL)
              :SlaveBase (protocol, poolSocket, appSocket),
               m_iSock(-1),
@@ -636,8 +636,8 @@ KSSLCertificateHome::KSSLAuthAction aa;
     }
 
      QByteArray data, retval;
-     QCString rettype;
-     QDataStream arg(data, IO_WriteOnly);
+     Q3CString rettype;
+     QDataStream arg(data, QIODevice::WriteOnly);
      arg << ourHost;
      arg << certs;
      arg << metaData("window-id").toInt();
@@ -646,7 +646,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
                                data, rettype, retval);
 
      if (rc && rettype == "KSSLCertDlgRet") {
-        QDataStream retStream(retval, IO_ReadOnly);
+        QDataStream retStream(retval, QIODevice::ReadOnly);
         KSSLCertDlgRet drc;
         retStream >> drc;
         if (drc.ok) {
@@ -675,8 +675,8 @@ KSSLCertificateHome::KSSLAuthAction aa;
      do {
         QString pass;
         QByteArray authdata, authval;
-        QCString rettype;
-        QDataStream qds(authdata, IO_WriteOnly);
+        Q3CString rettype;
+        QDataStream qds(authdata, QIODevice::WriteOnly);
         ai.prompt = i18n("Enter the certificate password:");
         ai.caption = i18n("SSL Certificate Password");
         ai.setModified(true);
@@ -704,10 +704,10 @@ KSSLCertificateHome::KSSLAuthAction aa;
              continue;
            }
 
-           QDataStream qdret(authval, IO_ReadOnly);
+           QDataStream qdret(authval, QIODevice::ReadOnly);
            QByteArray authdecode;
            qdret >> authdecode;
-           QDataStream qdtoo(authdecode, IO_ReadOnly);
+           QDataStream qdtoo(authdecode, QIODevice::ReadOnly);
            qdtoo >> ai;
            if (!ai.isModified()) {
              break;
@@ -848,7 +848,7 @@ int TCPSlaveBase::verifyCertificate()
 
     if (pc.chain().isValid() && pc.chain().depth() > 1) {
        QString theChain;
-       QPtrList<KSSLCertificate> chain = pc.chain().getChain();
+       Q3PtrList<KSSLCertificate> chain = pc.chain().getChain();
        for (KSSLCertificate *c = chain.first(); c; c = chain.next()) {
           theChain += c->toString();
           theChain += "\n";
@@ -934,8 +934,8 @@ int TCPSlaveBase::verifyCertificate()
 
                    }
                    QByteArray data, ignore;
-                   QCString ignoretype;
-                   QDataStream arg(data, IO_WriteOnly);
+                   Q3CString ignoretype;
+                   QDataStream arg(data, QIODevice::WriteOnly);
                    arg << theurl << mOutgoingMetaData;
                    arg << metaData("window-id").toInt();
                         d->dcc->call("kio_uiserver", "UIServer",
@@ -1061,8 +1061,8 @@ int TCPSlaveBase::verifyCertificate()
                       }
                    }
                    QByteArray data, ignore;
-                   QCString ignoretype;
-                   QDataStream arg(data, IO_WriteOnly);
+                   Q3CString ignoretype;
+                   QDataStream arg(data, QIODevice::WriteOnly);
                    arg << theurl << mOutgoingMetaData;
                    arg << metaData("window-id").toInt();
                         d->dcc->call("kio_uiserver", "UIServer",
@@ -1145,8 +1145,8 @@ int TCPSlaveBase::verifyCertificate()
              }
           }
           QByteArray data, ignore;
-          QCString ignoretype;
-          QDataStream arg(data, IO_WriteOnly);
+          Q3CString ignoretype;
+          QDataStream arg(data, QIODevice::WriteOnly);
           arg << theurl << mOutgoingMetaData;
           arg << metaData("window-id").toInt();
           d->dcc->call("kio_uiserver", "UIServer",

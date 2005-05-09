@@ -72,7 +72,7 @@ namespace
         {
             int flags = KExtendedSocket::ipv4Socket;
             if ( numeric ) flags |= KExtendedSocket::noResolve;
-            QPtrList< KAddressInfo > addresses =
+            Q3PtrList< KAddressInfo > addresses =
                 KExtendedSocket::lookup( host, QString::null, flags );
             if ( addresses.isEmpty() ) throw Error();
             addresses.setAutoDelete( true );

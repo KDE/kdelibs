@@ -22,7 +22,7 @@
 */
 
 #include <qcursor.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 
@@ -245,7 +245,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     if( !KCModuleLoader::testModule( moduleinfo ))
             return;
 
-    QFrame* page = 0;
+    Q3Frame* page = 0;
     if (!moduleinfo.service()->noDisplay())
         switch( dialogface )
         {

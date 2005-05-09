@@ -24,7 +24,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qmap.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kdelibs_export.h>
 

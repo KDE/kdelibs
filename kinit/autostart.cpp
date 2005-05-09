@@ -36,7 +36,7 @@ public:
    int     phase;
 };
 
-class AutoStartList: public QPtrList<AutoStartItem>
+class AutoStartList: public Q3PtrList<AutoStartItem>
 {
 public:
    AutoStartList() { }

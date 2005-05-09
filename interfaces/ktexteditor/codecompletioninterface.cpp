@@ -35,7 +35,7 @@ unsigned int CodeCompletionInterface::codeCompletionInterfaceNumber () const
   return myCodeCompletionInterfaceNumber;
 }
 
-void CodeCompletionInterface::setCodeCompletionInterfaceDCOPSuffix (const QCString &/*suffix*/)
+void CodeCompletionInterface::setCodeCompletionInterfaceDCOPSuffix (const Q3CString &/*suffix*/)
 {
   //d->interface->setObjId ("CodeCompletionInterface#"+suffix);
 }

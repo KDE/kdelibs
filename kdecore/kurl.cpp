@@ -37,11 +37,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qurl.h>
+#include <q3url.h>
 #include <qdir.h>
 #include <qstringlist.h>
 #include <qregexp.h>
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 #include <qmap.h>
 #include <qtextcodec.h>
 #include <qmutex.h>
@@ -68,7 +68,7 @@ static QString encode( const QString& segment, int encoding_offset, int encoding
   const char *encode_string = "/@<>#\"&%?={}|^~[]\'`\\:+";
   encode_string += encoding_offset;
 
-  QCString local;
+  Q3CString local;
   if (encoding_hint==0)
     local = segment.local8Bit();
   else
@@ -219,7 +219,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   if (!textCodec)
       textCodec = QTextCodec::codecForLocale();
 
-  QCString csegment = textCodec->fromUnicode(segment);
+  Q3CString csegment = textCodec->fromUnicode(segment);
   // Check if everything went ok
   if (textCodec->toUnicode(csegment) != segment)
   {
@@ -292,7 +292,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
      array.setRawData(new_segment, new_length);
      decoded = textCodec->toUnicode( array, new_length );
      array.resetRawData(new_segment, new_length);
-     QCString validate = textCodec->fromUnicode(decoded);
+     Q3CString validate = textCodec->fromUnicode(decoded);
 
      if (strcmp(validate.data(), new_segment) != 0)
      {
@@ -466,7 +466,7 @@ KURL::KURL( const char * url, int encoding_hint )
   parse( QString::fromLatin1(url), encoding_hint );
 }
 
-KURL::KURL( const QCString& url, int encoding_hint )
+KURL::KURL( const Q3CString& url, int encoding_hint )
 {
   reset();
   parse( QString::fromLatin1(url), encoding_hint );
@@ -511,7 +511,7 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
 }
 
 #ifndef QT_NO_NETWORKPROTOCOL
-KURL::KURL( const QUrl &u )
+KURL::KURL( const Q3Url &u )
 {
   *this = u;
 }
@@ -1039,7 +1039,7 @@ KURL& KURL::operator=( const char * _url )
 }
 
 #ifndef QT_NO_NETWORKPROTOCOL
-KURL& KURL::operator=( const QUrl & u )
+KURL& KURL::operator=( const Q3Url & u )
 {
   m_strProtocol = u.protocol();
   m_iUriMode = Auto;
@@ -1601,7 +1601,7 @@ QString KURL::pathOrURL() const
 
 QString KURL::htmlURL() const
 {
-  return QStyleSheet::escape(prettyURL());
+  return Q3StyleSheet::escape(prettyURL());
 }
 
 KURL::List KURL::split( const KURL& _url )

@@ -25,7 +25,7 @@
 #ifndef KIOBUFFER_H
 #define KIOBUFFER_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -77,7 +77,7 @@ public:
   /**
    * Reads a line from the buffer and discards it.
    */
-  virtual QCString readLine() = 0;
+  virtual Q3CString readLine() = 0;
 
   /**
    * Returns the number of bytes in the buffer. Note that this is not

@@ -58,7 +58,7 @@ bool KNewStuffGeneric::install( const QString &fileName )
   if ( !uncompress.isEmpty() ) {
     kdDebug(5850) << "Uncompression method: " << uncompress << endl;
     KTar tar(fileName, uncompress);
-    tar.open(IO_ReadOnly);
+    tar.open(QIODevice::ReadOnly);
     const KArchiveDirectory *dir = tar.directory();
     dir->copyTo(destinationPath(0));
     tar.close();

@@ -24,9 +24,9 @@
 #include <qmap.h>
 #include <kdelibs_export.h>
 
-class QCString;
-class QSignal;
-class QStrList;
+class Q3CString;
+class Q3Signal;
+class Q3StrList;
 template<class T> class KStaticDeleter;
 class KInstance;
 class KConfig;
@@ -75,13 +75,13 @@ class KUTILS_EXPORT Dispatcher : public QObject
         /**
          * @return the KConfig object that belongs to the instanceName
          */
-        KConfig * configForInstanceName( const QCString & instanceName );
+        KConfig * configForInstanceName( const Q3CString & instanceName );
 
         /**
          * @return a list of all the instance names that are currently
          * registered
          */
-        QStrList instanceNames() const;
+        Q3StrList instanceNames() const;
 
 //X         /**
 //X          * @return The KInstance object belonging to the instance name you pass
@@ -96,7 +96,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
          *
          * @param instanceName The value of X-KDE-ParentComponents.
          */
-        void reparseConfiguration( const QCString & instanceName );
+        void reparseConfiguration( const Q3CString & instanceName );
 
         /**
          * When this slot is called the KConfig objects of all the registered
@@ -116,11 +116,11 @@ class KUTILS_EXPORT Dispatcher : public QObject
 
         struct InstanceInfo {
             KInstance * instance;
-            QSignal * signal;
+            Q3Signal * signal;
             int count;
         };
-        QMap<QCString, InstanceInfo> m_instanceInfo;
-        QMap<QObject *, QCString> m_instanceName;
+        QMap<Q3CString, InstanceInfo> m_instanceInfo;
+        QMap<QObject *, Q3CString> m_instanceName;
 
         class DispatcherPrivate;
         DispatcherPrivate * d;

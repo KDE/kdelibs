@@ -23,8 +23,8 @@ class KDE_ARTS_EXPORT KVideoWidget : public QWidget, virtual public KXMLGUIClien
 Q_OBJECT
 
 public:
-    KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
-    KVideoWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+    KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+    KVideoWidget( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
     virtual ~KVideoWidget();
 
     void embed( Arts::VideoPlayObject vpo );

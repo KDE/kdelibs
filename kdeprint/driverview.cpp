@@ -22,10 +22,10 @@
 #include "driveritem.h"
 #include "driver.h"
 
-#include <qlistview.h>
-#include <qheader.h>
+#include <q3listview.h>
+#include <q3header.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <klocale.h>
 
 DrListView::DrListView(QWidget *parent, const char *name)
@@ -33,7 +33,7 @@ DrListView::DrListView(QWidget *parent, const char *name)
 {
 	addColumn("");
 	header()->hide();
-	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	setSorting(-1);
 }
 
@@ -94,15 +94,15 @@ DriverView::DriverView(QWidget *parent, const char *name)
 	m_driver = 0;
 
 	m_view = new DrListView(this);
-	  QWhatsThis::add(m_view, whatsThisPPDOptionsDriverPage);
+	  Q3WhatsThis::add(m_view, whatsThisPPDOptionsDriverPage);
 	m_optview = new DrOptionView(this);
-	  QWhatsThis::add(m_optview, whatsThisOptionSettingsDriverPage);
+	  Q3WhatsThis::add(m_optview, whatsThisOptionSettingsDriverPage);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
 	main_->addWidget(m_view,1);
 	main_->addWidget(m_optview,0);
 
-	connect(m_view,SIGNAL(selectionChanged(QListViewItem*)),m_optview,SLOT(slotItemSelected(QListViewItem*)));
+	connect(m_view,SIGNAL(selectionChanged(Q3ListViewItem*)),m_optview,SLOT(slotItemSelected(Q3ListViewItem*)));
 	connect(m_optview,SIGNAL(changed()),SLOT(slotChanged()));
 }
 

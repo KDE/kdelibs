@@ -28,7 +28,7 @@
 #include <sys/socket.h>
 
 #include <qsocketnotifier.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include "kresolver.h"
 #include "ksocketaddress.h"
@@ -43,8 +43,8 @@ class KNetwork::KHttpProxySocketDevicePrivate
 {
 public:
   KResolverEntry proxy;
-  QCString request;
-  QCString reply;
+  Q3CString request;
+  Q3CString reply;
   KSocketAddress peer;
 
   KHttpProxySocketDevicePrivate()
@@ -89,7 +89,7 @@ void KHttpProxySocketDevice::setProxyServer(const KResolverEntry& proxy)
 
 void KHttpProxySocketDevice::close()
 {
-  d->reply = d->request = QCString();
+  d->reply = d->request = Q3CString();
   d->peer = KSocketAddress();
   KSocketDevice::close();
 }
@@ -220,7 +220,7 @@ bool KHttpProxySocketDevice::parseServerReply()
       if (peekBlock(buf.data(), avail) < 0)
 	return false;		// error!
 
-      QCString fullHeaders = d->reply + buf.data();
+      Q3CString fullHeaders = d->reply + buf.data();
       // search for the end of the headers
       index = fullHeaders.find("\r\n\r\n");
       if (index == -1)

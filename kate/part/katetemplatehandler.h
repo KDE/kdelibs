@@ -22,8 +22,8 @@
 #include "katekeyinterceptorfunctor.h"
 #include <qobject.h>
 #include <qmap.h>
-#include <qdict.h>
-#include <qptrlist.h>
+#include <q3dict.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 
 class KateDocument;
@@ -51,9 +51,9 @@ class KateTemplateHandler: public QObject, public KateKeyInterceptorFunctor {
 		};
 		class KateSuperRangeList *m_ranges;
 		class KateDocument *m_doc;
-		QPtrList<KateTemplatePlaceHolder> m_tabOrder;
-		QDict<KateTemplatePlaceHolder> m_dict;
-		void generateRangeTable(uint insertLine,uint insertCol, const QString& insertString, const QValueList<KateTemplateHandlerPlaceHolderInfo> &buildList);
+		Q3PtrList<KateTemplatePlaceHolder> m_tabOrder;
+		Q3Dict<KateTemplatePlaceHolder> m_dict;
+		void generateRangeTable(uint insertLine,uint insertCol, const QString& insertString, const Q3ValueList<KateTemplateHandlerPlaceHolderInfo> &buildList);
 		int m_currentTabStop;
 		KateSuperRange *m_currentRange;
 		void locateRange(const KateTextCursor &cursor );

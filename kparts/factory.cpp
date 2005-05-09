@@ -55,7 +55,7 @@ const KInstance *Factory::partInstance()
     return params.instance;
 }
 
-const KInstance *Factory::partInstanceFromLibrary( const QCString &libraryName )
+const KInstance *Factory::partInstanceFromLibrary( const Q3CString &libraryName )
 {
     KLibrary *library = KLibLoader::self()->library( libraryName );
     if ( !library )

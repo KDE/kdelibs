@@ -28,16 +28,16 @@
 
 #include <kconfig.h>
 
-#include <qptrlist.h>
-#include <qvaluelist.h>
-#include <qvaluevector.h>
+#include <q3ptrlist.h>
+#include <q3valuelist.h>
+#include <q3valuevector.h>
 #include <qregexp.h>
-#include <qdict.h>
-#include <qintdict.h>
+#include <q3dict.h>
+#include <q3intdict.h>
 #include <qmap.h>
 #include <qobject.h>
 #include <qstringlist.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <qdatetime.h>
 
 class KateHlContext;
@@ -51,16 +51,16 @@ class KateTextLine;
 class KateSyntaxModeListItem;
 class KateSyntaxContextData;
 
-class QPopupMenu;
+class Q3PopupMenu;
 
 // some typedefs
-typedef QPtrList<KateAttribute> KateAttributeList;
-typedef QValueList<KateHlIncludeRule*> KateHlIncludeRules;
-typedef QPtrList<KateHlItemData> KateHlItemDataList;
-typedef QPtrList<KateHlData> KateHlDataList;
+typedef Q3PtrList<KateAttribute> KateAttributeList;
+typedef Q3ValueList<KateHlIncludeRule*> KateHlIncludeRules;
+typedef Q3PtrList<KateHlItemData> KateHlItemDataList;
+typedef Q3PtrList<KateHlData> KateHlDataList;
 typedef QMap<QString,KateEmbeddedHlInfo> KateEmbeddedHlInfos;
 typedef QMap<int*,QString> KateHlUnresolvedCtxRefs;
-typedef QValueList<int> IntList;
+typedef Q3ValueList<int> IntList;
 
 //Item Properties: name, Item Style, Item Font
 class KateHlItemData : public KateAttribute
@@ -110,11 +110,11 @@ class KateHighlighting
   public:
     void doHighlight ( KateTextLine *prevLine,
                        KateTextLine *textLine,
-                       QMemArray<uint> *foldingList,
+                       Q3MemArray<uint> *foldingList,
                        bool *ctxChanged );
 
     void loadWildcards();
-    QValueList<QRegExp>& getRegexpExtensions();
+    Q3ValueList<QRegExp>& getRegexpExtensions();
     QStringList& getPlainExtensions();
 
     QString getMimetypes();
@@ -203,7 +203,7 @@ class KateHighlighting
 
     void clearAttributeArrays ();
 
-    QMemArray<KateAttribute> *attributes (uint schema);
+    Q3MemArray<KateAttribute> *attributes (uint schema);
 
     inline bool noHighlighting () const { return noHl; };
 
@@ -232,7 +232,7 @@ class KateHighlighting
     void readFoldingConfig ();
 
     // manipulates the ctxs array directly ;)
-    void generateContextStack(int *ctxNum, int ctx, QMemArray<short> *ctxs, int *posPrevLine);
+    void generateContextStack(int *ctxNum, int ctx, Q3MemArray<short> *ctxs, int *posPrevLine);
 
     KateHlItem *createKateHlItem(KateSyntaxContextData *data, KateHlItemDataList &iDl, QStringList *RegionList, QStringList *ContextList);
     int lookupAttrName(const QString& name, KateHlItemDataList &iDl);
@@ -247,7 +247,7 @@ class KateHighlighting
 
     KateHlItemDataList internalIDList;
 
-    QValueVector<KateHlContext*> m_contexts;
+    Q3ValueVector<KateHlContext*> m_contexts;
     inline KateHlContext *contextNum (uint n) { if (n < m_contexts.size()) return m_contexts[n]; return 0; }
 
     QMap< QPair<KateHlContext *, QString>, short> dynamicCtxs;
@@ -288,7 +288,7 @@ class KateHighlighting
     KateHlIncludeRules includeRules;
     bool m_foldingIndentationSensitive;
 
-    QIntDict< QMemArray<KateAttribute> > m_attributeArrays;
+    Q3IntDict< Q3MemArray<KateAttribute> > m_attributeArrays;
 
 
     /**
@@ -318,7 +318,7 @@ class KateHighlighting
      * Highlight properties for each included highlight definition.
      * The key is the identifier
      */
-    QDict<HighlightPropertyBag> m_additionalData;
+    Q3Dict<HighlightPropertyBag> m_additionalData;
 
     /**
      * Fast lookup of hl properties, based on attribute index
@@ -329,7 +329,7 @@ class KateHighlighting
 
 
     QString extensionSource;
-    QValueList<QRegExp> regexpExtensions;
+    Q3ValueList<QRegExp> regexpExtensions;
     QStringList plainExtensions;
 
   public:
@@ -390,8 +390,8 @@ class KateHlManager : public QObject
   private:
     friend class KateHighlighting;
 
-    QPtrList<KateHighlighting> hlList;
-    QDict<KateHighlighting> hlDict;
+    Q3PtrList<KateHighlighting> hlList;
+    Q3Dict<KateHighlighting> hlDict;
 
     static KateHlManager *s_self;
 
@@ -420,10 +420,10 @@ class KateViewHighlightAction: public Kate::ActionMenu
   private:
     void init();
 
-    QGuardedPtr<Kate::Document> m_doc;
+    QPointer<Kate::Document> m_doc;
     QStringList subMenusName;
     QStringList names;
-    QPtrList<QPopupMenu> subMenus;
+    Q3PtrList<Q3PopupMenu> subMenus;
 
   public  slots:
     void slotAboutToShow();

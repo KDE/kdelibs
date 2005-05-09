@@ -19,7 +19,7 @@
 #include "ktrader.h"
 #include "ktraderparsetree.h"
 
-#include <qtl.h>
+#include <q3tl.h>
 #include <qbuffer.h>
 
 #include <kuserprofile.h>
@@ -147,7 +147,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
 
   if ( !!prefs )
   {
-    QValueList<KTraderSorter> sorter;
+    Q3ValueList<KTraderSorter> sorter;
     KServiceTypeProfile::OfferList::Iterator it = lst.begin();
     for( ; it != lst.end(); ++it )
     {
@@ -157,7 +157,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
     }
     qBubbleSort( sorter );
 
-    QValueList<KTraderSorter>::Iterator it2 = sorter.begin();
+    Q3ValueList<KTraderSorter>::Iterator it2 = sorter.begin();
     for( ; it2 != sorter.end(); ++it2 )
       ret.prepend( (*it2).service() );
   }

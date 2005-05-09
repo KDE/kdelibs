@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "kpanelapplet.h"
 #include "kpanelapplet.moc"
@@ -36,15 +36,15 @@ public:
       hasFocus(false)
       {}
 
-  const QPopupMenu* customMenu;
+  const Q3PopupMenu* customMenu;
   KSharedConfig::Ptr sharedConfig;
-  QPtrList<QObject> watchedForFocus;
+  Q3PtrList<QObject> watchedForFocus;
   bool hasFocus;
 };
 
 KPanelApplet::KPanelApplet(const QString& configFile, Type type,
-                           int actions, QWidget *parent, const char *name, WFlags f)
-  : QFrame(parent, name, f)
+                           int actions, QWidget *parent, const char *name, Qt::WFlags f)
+  : Q3Frame(parent, name, f)
   , _type(type)
   , _position( pBottom )
   , _alignment( LeftTop )
@@ -97,9 +97,9 @@ void KPanelApplet::positionChange( Position )
 Qt::Orientation KPanelApplet::orientation() const
 {
   if( _position == pTop || _position == pBottom ) {
-    return Horizontal;
+    return Qt::Horizontal;
   } else {
-    return Vertical;
+    return Qt::Vertical;
   }
 }
 
@@ -108,8 +108,8 @@ KPanelApplet::Direction KPanelApplet::popupDirection()
 {
     switch( _position ) {
     case pTop:     return Down;
-    case pRight:   return Left;
-    case pLeft:    return Right;
+    case pRight:   return Qt::DockLeft;
+    case pLeft:    return Qt::DockRight;
     default:
     case pBottom:  return Up;
     }
@@ -127,12 +127,12 @@ void KPanelApplet::action( Action a )
     reportBug();
 }
 
-const QPopupMenu* KPanelApplet::customMenu() const
+const Q3PopupMenu* KPanelApplet::customMenu() const
 {
     return d->customMenu;
 }
 
-void KPanelApplet::setCustomMenu(const QPopupMenu* menu)
+void KPanelApplet::setCustomMenu(const Q3PopupMenu* menu)
 {
     d->customMenu = menu;
 }
@@ -185,7 +185,7 @@ bool KPanelApplet::eventFilter(QObject *o, QEvent * e)
         }
     }
 
-    return QFrame::eventFilter(o, e);
+    return Q3Frame::eventFilter(o, e);
 }
 
 KSharedConfig::Ptr KPanelApplet::sharedConfig() const

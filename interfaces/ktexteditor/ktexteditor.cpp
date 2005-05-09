@@ -121,9 +121,9 @@ unsigned int Document::documentNumber () const
   return myDocumentNumber;
 }
 
-QCString Document::documentDCOPSuffix () const
+Q3CString Document::documentDCOPSuffix () const
 {
-  QCString num;
+  Q3CString num;
   num.setNum (documentNumber());
   
   return num;
@@ -144,9 +144,9 @@ unsigned int View::viewNumber () const
   return myViewNumber;
 }
 
-QCString View::viewDCOPSuffix () const
+Q3CString View::viewDCOPSuffix () const
 {
-  QCString num1, num2;
+  Q3CString num1, num2;
   num1.setNum (viewNumber());
   num2.setNum (document()->documentNumber());
   

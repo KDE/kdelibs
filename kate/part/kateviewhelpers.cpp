@@ -42,10 +42,10 @@
 
 #include <qcursor.h>
 #include <qpainter.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qstyle.h>
 #include <qtimer.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
 
@@ -54,7 +54,7 @@
 #include <kdebug.h>
 
 //BEGIN KateScrollBar
-KateScrollBar::KateScrollBar (Orientation orientation, KateViewInternal* parent, const char* name)
+KateScrollBar::KateScrollBar (Qt::Orientation orientation, KateViewInternal* parent, const char* name)
   : QScrollBar (orientation, parent->m_view, name)
   , m_middleMouseDown (false)
   , m_view(parent->m_view)
@@ -73,7 +73,7 @@ KateScrollBar::KateScrollBar (Orientation orientation, KateViewInternal* parent,
 
 void KateScrollBar::mousePressEvent(QMouseEvent* e)
 {
-  if (e->button() == MidButton)
+  if (e->button() == Qt::MidButton)
     m_middleMouseDown = true;
 
   QScrollBar::mousePressEvent(e);
@@ -94,7 +94,7 @@ void KateScrollBar::mouseMoveEvent(QMouseEvent* e)
 {
   QScrollBar::mouseMoveEvent(e);
 
-  if (e->state() | LeftButton)
+  if (e->state() | Qt::LeftButton)
     redrawMarks();
 }
 
@@ -141,7 +141,7 @@ void KateScrollBar::redrawMarks()
 
   QPainter painter(this);
   QRect rect = sliderRect();
-  for (QIntDictIterator<QColor> it(m_lines); it.current(); ++it)
+  for (Q3IntDictIterator<QColor> it(m_lines); it.current(); ++it)
   {
     if (it.currentKey() < rect.top() || it.currentKey() > rect.bottom())
     {
@@ -161,7 +161,7 @@ void KateScrollBar::recomputeMarksPositions(bool forceFullUpdate)
 
   int realHeight = frameGeometry().height() - m_topMargin - m_bottomMargin;
 
-  QPtrList<KTextEditor::Mark> marks = m_doc->marks();
+  Q3PtrList<KTextEditor::Mark> marks = m_doc->marks();
   KateCodeFoldingTree *tree = m_doc->foldingTree();
 
   for (KTextEditor::Mark *mark = marks.first(); mark; mark = marks.next())
@@ -212,11 +212,11 @@ void KateScrollBar::sliderMaybeMoved(int value)
 //END
 
 //BEGIN KateCmdLnWhatsThis
-class KateCmdLnWhatsThis : public QWhatsThis
+class KateCmdLnWhatsThis : public Q3WhatsThis
 {
   public:
     KateCmdLnWhatsThis( KateCmdLine *parent )
-  : QWhatsThis( parent )
+  : Q3WhatsThis( parent )
   , m_parent( parent ) {;}
 
     QString text( const QPoint & )
@@ -399,14 +399,14 @@ void KateCmdLine::focusInEvent ( QFocusEvent *ev )
 
 void KateCmdLine::keyPressEvent( QKeyEvent *ev )
 {
-  if (ev->key() == Key_Escape)
+  if (ev->key() == Qt::Key_Escape)
   {
     m_view->setFocus ();
     hideMe();
   }
-  else if ( ev->key() == Key_Up )
+  else if ( ev->key() == Qt::Key_Up )
     fromHistory( true );
-  else if ( ev->key() == Key_Down )
+  else if ( ev->key() == Qt::Key_Down )
     fromHistory( false );
 
   uint cursorpos = cursorPosition();
@@ -688,7 +688,7 @@ static QPixmap minus_px ((const char**)minus_xpm);
 static QPixmap plus_px ((const char**)plus_xpm);
 
 KateIconBorder::KateIconBorder ( KateViewInternal* internalView, QWidget *parent )
-  : QWidget(parent, "", Qt::WStaticContents | Qt::WRepaintNoErase | Qt::WResizeNoErase )
+  : QWidget(parent, "", Qt::WStaticContents | Qt::WNoAutoErase | Qt::WResizeNoErase )
   , m_view( internalView->m_view )
   , m_doc( internalView->m_doc )
   , m_viewInternal( internalView )
@@ -702,7 +702,7 @@ KateIconBorder::KateIconBorder ( KateViewInternal* internalView, QWidget *parent
 {
   setSizePolicy( QSizePolicy(  QSizePolicy::Fixed, QSizePolicy::Minimum ) );
 
-  setBackgroundMode( NoBackground );
+  setBackgroundMode( Qt::NoBackground );
 
   m_doc->setDescription( MarkInterface::markType01, i18n("Bookmark") );
   m_doc->setPixmap( MarkInterface::markType01, QPixmap((const char**)bookmark_xpm) );
@@ -1069,7 +1069,7 @@ void KateIconBorder::mouseReleaseEvent( QMouseEvent* e )
   {
     BorderArea area = positionToArea( e->pos() );
     if( area == IconBorder) {
-      if (e->button() == LeftButton) {
+      if (e->button() == Qt::LeftButton) {
         if( m_doc->editableMarks() & KateViewConfig::global()->defaultMarkType() ) {
           if( m_doc->mark( cursorOnLine ) & KateViewConfig::global()->defaultMarkType() )
             m_doc->removeMark( cursorOnLine, KateViewConfig::global()->defaultMarkType() );
@@ -1080,7 +1080,7 @@ void KateIconBorder::mouseReleaseEvent( QMouseEvent* e )
           }
         }
         else
-        if (e->button() == RightButton) {
+        if (e->button() == Qt::RightButton) {
           showMarkMenu( cursorOnLine, QCursor::pos() );
         }
     }
@@ -1108,10 +1108,10 @@ void KateIconBorder::mouseDoubleClickEvent( QMouseEvent* e )
 
 void KateIconBorder::showMarkMenu( uint line, const QPoint& pos )
 {
-  QPopupMenu markMenu;
-  QPopupMenu selectDefaultMark;
+  Q3PopupMenu markMenu;
+  Q3PopupMenu selectDefaultMark;
 
-  typedef QValueVector<int> MarkTypeVector;
+  typedef Q3ValueVector<int> MarkTypeVector;
   MarkTypeVector vec( 33 );
   int i=1;
 

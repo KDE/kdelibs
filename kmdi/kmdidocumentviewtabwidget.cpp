@@ -33,7 +33,7 @@ void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QString & label 
 	maybeShow();
 }
 
-void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
+void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QIcon & iconset, const QString & label )
 {
 	KTabWidget::addTab( child, iconset, label );
 	showPage( child );
@@ -55,7 +55,7 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & lab
 	tabBar() ->repaint();
 }
 
-void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
+void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index )
 {
 	KTabWidget::insertTab( child, iconset, label, index );
 	showPage( child );

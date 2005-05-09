@@ -11,7 +11,7 @@
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qtimer.h>
 
 #include <kapplication.h>
@@ -43,7 +43,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     vb->addItem( new QSpacerItem(KDialog::marginHint(), 0, QSizePolicy::Fixed), 0, 0 );
 
     imageLabel = new QLabel( this );
-    imageLabel->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+    imageLabel->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
     imageLabel->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
     imageLabel->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred ) );
     vb->addWidget( imageLabel, 0, 1 );

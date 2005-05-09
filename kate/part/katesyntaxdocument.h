@@ -45,7 +45,7 @@ class KateSyntaxModeListItem
 /**
  * List of the KateSyntaxModeListItems holding all the syntax mode list items
  */
-typedef QValueList<KateSyntaxModeListItem*> KateSyntaxModeList;
+typedef Q3ValueList<KateSyntaxModeListItem*> KateSyntaxModeList;
 
 /**
  * Class holding the data around the current QDomElement

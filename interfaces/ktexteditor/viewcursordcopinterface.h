@@ -4,7 +4,7 @@
 #include <dcopobject.h>
 #include <dcopref.h>
 #include <qstringlist.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 //#include "editdcopinterface.moc"
 namespace KTextEditor
 {

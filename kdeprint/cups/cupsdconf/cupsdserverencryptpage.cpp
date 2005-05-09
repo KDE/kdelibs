@@ -23,7 +23,7 @@
 #include <klocale.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -88,6 +88,6 @@ void CupsdServerEncryptPage::setDefaults()
 
 void CupsdServerEncryptPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(servercertificate_, conf->comments_.toolTip(SERVERCERTIFICATE_COMM));
-        QWhatsThis::add(serverkey_, conf->comments_.toolTip(SERVERKEY_COMM));
+        Q3WhatsThis::add(servercertificate_, conf->comments_.toolTip(SERVERCERTIFICATE_COMM));
+        Q3WhatsThis::add(serverkey_, conf->comments_.toolTip(SERVERKEY_COMM));
 }

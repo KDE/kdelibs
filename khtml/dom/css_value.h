@@ -606,19 +606,19 @@ public:
      * This attribute is used for the red value of the RGB color.
      *
      */
-    CSSPrimitiveValue red() const;
+    CSSPrimitiveValue Qt::red() const;
 
     /**
      * This attribute is used for the green value of the RGB color.
      *
      */
-    CSSPrimitiveValue green() const;
+    CSSPrimitiveValue Qt::green() const;
 
     /**
      * This attribute is used for the blue value of the RGB color.
      *
      */
-    CSSPrimitiveValue blue() const;
+    CSSPrimitiveValue Qt::blue() const;
 
     /**
      * @internal

@@ -26,7 +26,7 @@
 
 #include "kmpropgeneral.h"
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <kiconloader.h>
 
 KMPropertyPage::KMPropertyPage(QWidget *parent, const char *name)
@@ -43,7 +43,7 @@ KMPropertyPage::~KMPropertyPage()
 
 void KMPropertyPage::setPrinter(KMPrinter *p)
 {
-	QPtrListIterator<KMPropWidget>	it(m_widgets);
+	Q3PtrListIterator<KMPropWidget>	it(m_widgets);
 	for (;it.current();++it)
 		it.current()->setPrinterBase(p);
 }

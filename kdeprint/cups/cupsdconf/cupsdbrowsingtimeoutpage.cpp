@@ -23,7 +23,7 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -114,6 +114,6 @@ void CupsdBrowsingTimeoutPage::setDefaults()
 
 void CupsdBrowsingTimeoutPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(browseinterval_, conf->comments_.toolTip(BROWSEINTERVAL_COMM));
-        QWhatsThis::add(browsetimeout_, conf->comments_.toolTip(BROWSETIMEOUT_COMM));
+        Q3WhatsThis::add(browseinterval_, conf->comments_.toolTip(BROWSEINTERVAL_COMM));
+        Q3WhatsThis::add(browsetimeout_, conf->comments_.toolTip(BROWSETIMEOUT_COMM));
 }

@@ -28,20 +28,20 @@
 #ifdef KJS_DEBUGGER
 
 #include <qwidget.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qpixmap.h>
-#include <qptrlist.h>
-#include <qptrstack.h>
+#include <q3ptrlist.h>
+#include <q3ptrstack.h>
 #include <qcheckbox.h>
 #include <kdialogbase.h>
 #include <kmainwindow.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 
 #include <kjs/debugger.h>
 
 #include "dom/dom_misc.h"
 
-class QListBox;
+class Q3ListBox;
 class QComboBox;
 class KActionCollection;
 class KAction;
@@ -107,7 +107,7 @@ namespace KJS {
     bool m_debugSelected;
   };
 
-  class EvalMultiLineEdit : public QMultiLineEdit {
+  class EvalMultiLineEdit : public Q3MultiLineEdit {
     Q_OBJECT
   public:
       EvalMultiLineEdit(QWidget *parent);
@@ -118,7 +118,7 @@ namespace KJS {
       QString m_code;
   };
 
-  class SourceDisplay : public QScrollView {
+  class SourceDisplay : public Q3ScrollView {
     Q_OBJECT
   public:
     SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char *name = 0);
@@ -246,7 +246,7 @@ namespace KJS {
     Mode m_mode;
     QString m_nextSourceUrl;
     int m_nextSourceBaseLine;
-    QPtrStack<ExecState> m_execStates;
+    Q3PtrStack<ExecState> m_execStates;
     ExecState **m_execs;
     int m_execsCount;
     int m_execsAlloc;
@@ -254,13 +254,13 @@ namespace KJS {
 
     QMap<QString,SourceFile*> m_sourceFiles; /* maps url->SourceFile */
     QMap<int,SourceFragment*> m_sourceFragments; /* maps SourceId->SourceFragment */
-    QPtrList<SourceFile> m_sourceSelFiles; /* maps combobox index->SourceFile */
+    Q3PtrList<SourceFile> m_sourceSelFiles; /* maps combobox index->SourceFile */
 
     KActionCollection *m_actionCollection;
     QPixmap m_stopIcon;
     QPixmap m_emptyIcon;
     SourceDisplay *m_sourceDisplay;
-    QListBox *m_contextList;
+    Q3ListBox *m_contextList;
 
     KAction *m_stepAction;
     KAction *m_nextAction;

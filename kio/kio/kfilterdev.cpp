@@ -38,8 +38,8 @@ public:
     bool bOpenedUnderlyingDevice;
     bool bIgnoreData;
     QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
-    QCString ungetchBuffer;
-    QCString origFileName;
+    Q3CString ungetchBuffer;
+    Q3CString origFileName;
     KFilterBase::Result result;
 };
 
@@ -119,7 +119,7 @@ QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, b
 bool KFilterDev::open( int mode )
 {
     //kdDebug(7005) << "KFilterDev::open " << mode << endl;
-    if ( mode == IO_ReadOnly )
+    if ( mode == QIODevice::ReadOnly )
     {
         d->buffer.resize(0);
         d->ungetchBuffer.resize(0);
@@ -151,7 +151,7 @@ void KFilterDev::close()
     if ( !isOpen() )
         return;
     //kdDebug(7005) << "KFilterDev::close" << endl;
-    if ( filter->mode() == IO_WriteOnly )
+    if ( filter->mode() == QIODevice::WriteOnly )
         writeBlock( 0L, 0 ); // finish writing
     //kdDebug(7005) << "KFilterDev::close. Calling terminate()." << endl;
 
@@ -169,7 +169,7 @@ void KFilterDev::flush()
     // Hmm, might not be enough...
 }
 
-QIODevice::Offset KFilterDev::size() const
+Q_LONGLONG KFilterDev::size() const
 {
     // Well, hmm, Houston, we have a problem.
     // We can't know the size of the uncompressed data
@@ -182,19 +182,19 @@ QIODevice::Offset KFilterDev::size() const
     return (uint)-1;
 }
 
-QIODevice::Offset KFilterDev::at() const
+Q_LONGLONG KFilterDev::at() const
 {
     return ioIndex;
 }
 
-bool KFilterDev::at( QIODevice::Offset pos )
+bool KFilterDev::at( Q_LONGLONG pos )
 {
     //kdDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
 
     if ( ioIndex == pos )
         return true;
 
-    Q_ASSERT ( filter->mode() == IO_ReadOnly );
+    Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
 
     if ( pos == 0 )
     {
@@ -221,7 +221,7 @@ bool KFilterDev::at( QIODevice::Offset pos )
     //kdDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
     QByteArray dummy( QMIN( pos, 3*BUFFER_SIZE ) );
     d->bIgnoreData = true;
-    bool result = ( (QIODevice::Offset)readBlock( dummy.data(), pos ) == pos );
+    bool result = ( (Q_LONGLONG)readBlock( dummy.data(), pos ) == pos );
     d->bIgnoreData = false;
     return result;
 }
@@ -234,7 +234,7 @@ bool KFilterDev::atEnd() const
 
 Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
 {
-    Q_ASSERT ( filter->mode() == IO_ReadOnly );
+    Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
     //kdDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
 
     uint dataReceived = 0;
@@ -353,7 +353,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
 
 Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
 {
-    Q_ASSERT ( filter->mode() == IO_WriteOnly );
+    Q_ASSERT ( filter->mode() == QIODevice::WriteOnly );
     // If we had an error, return 0.
     if ( d->result != KFilterBase::OK )
         return 0;
@@ -433,7 +433,7 @@ Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
 
 int KFilterDev::getch()
 {
-    Q_ASSERT ( filter->mode() == IO_ReadOnly );
+    Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
     //kdDebug(7005) << "KFilterDev::getch" << endl;
     if ( !d->ungetchBuffer.isEmpty() ) {
         int len = d->ungetchBuffer.length();
@@ -469,7 +469,7 @@ int KFilterDev::ungetch( int ch )
     return ch;
 }
 
-void KFilterDev::setOrigFileName( const QCString & fileName )
+void KFilterDev::setOrigFileName( const Q3CString & fileName )
 {
     d->origFileName = fileName;
 }

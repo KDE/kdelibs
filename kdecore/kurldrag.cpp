@@ -18,8 +18,8 @@
 */
 
 #include "kurldrag.h"
-#include <qstrlist.h>
-#include <qdragobject.h>
+#include <q3strlist.h>
+#include <q3dragobject.h>
 #include <qfont.h>
 #include <unistd.h>
 
@@ -35,14 +35,14 @@ public:
 };
 
 KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
-    : QUriDrag(dragSource, name), m_metaData(), d( 0 )
+    : Q3UriDrag(dragSource, name), m_metaData(), d( 0 )
 {
     init(urls);
 }
 
 KURLDrag::KURLDrag( const KURL::List &urls, const QMap<QString,QString>& metaData,
                     QWidget* dragSource, const char * name )
-    : QUriDrag(dragSource, name), m_metaData(metaData), d( 0 )
+    : Q3UriDrag(dragSource, name), m_metaData(metaData), d( 0 )
 {
     init(urls);
 }
@@ -86,8 +86,8 @@ KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QStrin
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
 {
-    QStrList lst;
-    QUriDrag::decode( e, lst );
+    Q3StrList lst;
+    Q3UriDrag::decode( e, lst );
     for (QStrListIterator it(lst); *it; ++it)
     {
       KURL url = stringToUrl( *it );
@@ -166,16 +166,16 @@ const char * KURLDrag::format( int i ) const
 QByteArray KURLDrag::encodedData( const char* mime ) const
 {
     QByteArray a;
-    QCString mimetype( mime );
+    Q3CString mimetype( mime );
     if ( mimetype == "text/uri-list" )
-        return QUriDrag::encodedData( mime );
+        return Q3UriDrag::encodedData( mime );
     else if ( mimetype == "text/plain" )
     {
 	QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
-        QCString s = uris.join( "\n" ).local8Bit();
+        Q3CString s = uris.join( "\n" ).local8Bit();
         if( uris.count() > 1 ) // terminate last line, unless it's the only line
             s.append( "\n" );
         a.resize( s.length());
@@ -188,7 +188,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         for (QStrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).url(0, 4)); // 4 is mib for latin1
 
-        QCString s = uris.join( "\n" ).latin1();
+        Q3CString s = uris.join( "\n" ).latin1();
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
@@ -200,7 +200,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         for (QStrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
-        QCString s = uris.join( "\n" ).utf8();
+        Q3CString s = uris.join( "\n" ).utf8();
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
@@ -226,7 +226,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     return a;
 }
 
-KURL KURLDrag::stringToUrl(const QCString &s)
+KURL KURLDrag::stringToUrl(const Q3CString &s)
 {
     if (strncmp(s.data(), "file:", 5) == 0)
        return KURL(s, KGlobal::locale()->fileEncodingMib());
@@ -265,6 +265,6 @@ QString KURLDrag::urlToString(const KURL &url)
 }
 
 // deprecated ctor
-KURLDrag::KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
+KURLDrag::KURLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
                     QWidget * dragSource, const char* name ) :
-QUriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ), d( 0 ) {}
+Q3UriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ), d( 0 ) {}

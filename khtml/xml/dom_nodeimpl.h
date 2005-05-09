@@ -35,7 +35,7 @@
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
 
 class QPainter;
-template <class type> class QPtrList;
+template <class type> class Q3PtrList;
 class KHTMLView;
 class QRect;
 class QMouseEvent;
@@ -405,7 +405,7 @@ private: // members
     NodeImpl *m_next;
 protected:
     khtml::RenderObject *m_render;
-    QPtrList<RegisteredEventListener> *m_regdListeners;
+    Q3PtrList<RegisteredEventListener> *m_regdListeners;
 
     unsigned short m_tabIndex : 15;
     bool m_hasTabIndex  : 1;
@@ -641,7 +641,7 @@ public:
 
 protected:
     DocumentImpl* m_doc;
-    QPtrList<NodeImpl> *m_contents;
+    Q3PtrList<NodeImpl> *m_contents;
 };
 
 } //namespace

@@ -424,7 +424,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
         // have all the styles sorted, we then do individual passes, painting each style of border
         // from lowest precedence to highest precedence.
         pI.phase = PaintActionCollapsedTableBorders;
-        QValueList<CollapsedBorderValue> borderStyles;
+        Q3ValueList<CollapsedBorderValue> borderStyles;
         collectBorders(borderStyles);
 #if 0
        QString m;
@@ -432,8 +432,8 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
          m += QString("%1 ").arg((*borderStyles.at(i)).width());
        kdDebug(6040) << m << endl;
 #endif
-        QValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
-        QValueListIterator<CollapsedBorderValue> end = borderStyles.end();
+        Q3ValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
+        Q3ValueListIterator<CollapsedBorderValue> end = borderStyles.end();
         for (; it != end; ++it) {
             m_currentBorder = &*it;
             for (RenderObject *child = firstChild(); child; child = child->nextSibling()) {
@@ -1004,7 +1004,7 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 {
     int rSpan = cell->rowSpan();
     int cSpan = cell->colSpan();
-    QMemArray<RenderTable::ColumnStruct> &columns = table()->columns;
+    Q3MemArray<RenderTable::ColumnStruct> &columns = table()->columns;
     int nCols = columns.size();
 
     // ### mozilla still seems to do the old HTML way, even for strict DTD
@@ -1110,7 +1110,7 @@ void RenderTableSection::setCellWidths()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table, this=0x" << this << ")::setCellWidths()" << endl;
 #endif
-    QMemArray<int> &columnPos = table()->columnPos;
+    Q3MemArray<int> &columnPos = table()->columnPos;
 
 	int rows = grid.size();
     for ( int i = 0; i < rows; i++ ) {
@@ -2430,13 +2430,13 @@ public:
     int count;
 };
 
-static void addBorderStyle(QValueList<CollapsedBorderValue>& borderStyles, CollapsedBorderValue borderValue)
+static void addBorderStyle(Q3ValueList<CollapsedBorderValue>& borderStyles, CollapsedBorderValue borderValue)
 {
     if (!borderValue.exists() || borderStyles.contains(borderValue))
         return;
 
-    QValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
-    QValueListIterator<CollapsedBorderValue> end = borderStyles.end();
+    Q3ValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
+    Q3ValueListIterator<CollapsedBorderValue> end = borderStyles.end();
     for (; it != end; ++it) {
         CollapsedBorderValue result = compareBorders(*it, borderValue);
         if (result == *it) {
@@ -2448,7 +2448,7 @@ static void addBorderStyle(QValueList<CollapsedBorderValue>& borderStyles, Colla
     borderStyles.append(borderValue);
 }
 
-void RenderTableCell::collectBorders(QValueList<CollapsedBorderValue>& borderStyles)
+void RenderTableCell::collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles)
 {
     addBorderStyle(borderStyles, collapsedLeftBorder());
     addBorderStyle(borderStyles, collapsedRightBorder());

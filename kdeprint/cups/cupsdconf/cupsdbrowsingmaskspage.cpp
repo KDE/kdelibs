@@ -23,7 +23,7 @@
 #include <qlayout.h>
 #include <qcombobox.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -113,7 +113,7 @@ void CupsdBrowsingMasksPage::setDefaults()
 
 void CupsdBrowsingMasksPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(browseorder_, conf->comments_.toolTip(BROWSEORDER_COMM));
-        QWhatsThis::add(browseallow_, conf->comments_.toolTip(BROWSEALLOWDENY_COMM));
-        QWhatsThis::add(browsedeny_, conf->comments_.toolTip(BROWSEALLOWDENY_COMM));
+        Q3WhatsThis::add(browseorder_, conf->comments_.toolTip(BROWSEORDER_COMM));
+        Q3WhatsThis::add(browseallow_, conf->comments_.toolTip(BROWSEALLOWDENY_COMM));
+        Q3WhatsThis::add(browsedeny_, conf->comments_.toolTip(BROWSEALLOWDENY_COMM));
 }

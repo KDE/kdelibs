@@ -180,10 +180,10 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 {
 	// force printer listing if not done yet (or reload needed)
-	QPtrList<KMPrinter>	*printers = KMFactory::self()->manager()->printerListComplete(false);
+	Q3PtrList<KMPrinter>	*printers = KMFactory::self()->manager()->printerListComplete(false);
 	if (printers)
 	{
-		QPtrListIterator<KMPrinter>	it(*printers);
+		Q3PtrListIterator<KMPrinter>	it(*printers);
 		for (;it.current();++it)
 		{
 			initEditPrinter(it.current());
@@ -204,8 +204,8 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	}
 
 	QByteArray data, replyData;
-	QCString replyType;
-	QDataStream arg( data, IO_WriteOnly );
+	Q3CString replyType;
+	QDataStream arg( data, QIODevice::WriteOnly );
 	arg << cmd;
 	arg << files;
 	arg << removeflag;
@@ -213,7 +213,7 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	{
 		if (replyType == "int")
 		{
-			QDataStream _reply_stream( replyData, IO_ReadOnly );
+			QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 			_reply_stream >> result;
 		}
 	}
@@ -239,7 +239,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	}
 
 	QByteArray data;
-	QDataStream arg( data, IO_WriteOnly );
+	QDataStream arg( data, QIODevice::WriteOnly );
 	arg << message;
 	arg << (int)getpid();
 	arg << kapp->caption();

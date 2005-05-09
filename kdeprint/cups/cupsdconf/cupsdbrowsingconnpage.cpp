@@ -24,7 +24,7 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qcombobox.h>
 
 #include "cupsdconf.h"
@@ -143,8 +143,8 @@ void CupsdBrowsingConnPage::setDefaults()
 
 void CupsdBrowsingConnPage::setInfos(CupsdConf *conf)
 {
-        QWhatsThis::add(browseport_, conf->comments_.toolTip(BROWSEPORT_COMM));
-        QWhatsThis::add(browseaddress_, conf->comments_.toolTip(BROWSEADDRESS_COMM));
-        QWhatsThis::add(browsepoll_, conf->comments_.toolTip(BROWSEPOLL_COMM));
-        QWhatsThis::add(browseprotocols_, conf->comments_.toolTip(BROWSEPROTOCOLS_COMM));
+        Q3WhatsThis::add(browseport_, conf->comments_.toolTip(BROWSEPORT_COMM));
+        Q3WhatsThis::add(browseaddress_, conf->comments_.toolTip(BROWSEADDRESS_COMM));
+        Q3WhatsThis::add(browsepoll_, conf->comments_.toolTip(BROWSEPOLL_COMM));
+        Q3WhatsThis::add(browseprotocols_, conf->comments_.toolTip(BROWSEPROTOCOLS_COMM));
 }

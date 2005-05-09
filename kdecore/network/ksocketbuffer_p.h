@@ -26,8 +26,8 @@
 #define KSOCKETBUFFER_P_H
 
 #include <qmutex.h>
-#include <qcstring.h>
-#include <qvaluelist.h>
+#include <q3cstring.h>
+#include <q3valuelist.h>
 #include "kiobuffer.h"
 
 namespace KNetwork {
@@ -78,7 +78,7 @@ public:
   /**
    * Reads a line from the buffer and discard it from the buffer.
    */
-  virtual QCString readLine();
+  virtual Q3CString readLine();
 
   /**
    * Returns the number of bytes in the buffer. Note that this is not
@@ -152,8 +152,8 @@ public:
 
 protected:
   mutable QMutex m_mutex;
-  QValueList<QByteArray> m_list;
-  QIODevice::Offset m_offset;	///< offset of the start of data in the first element
+  Q3ValueList<QByteArray> m_list;
+  Q_LONGLONG m_offset;	///< offset of the start of data in the first element
 
   Q_LONG m_size;		///< the maximum length of the buffer
   mutable Q_LONG m_length;

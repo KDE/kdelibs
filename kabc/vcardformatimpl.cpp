@@ -38,7 +38,7 @@ bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
   kdDebug(5700) << "VCardFormat::load()" << endl;
 
   QByteArray fdata = file->readAll();
-  QCString data(fdata.data(), fdata.size()+1);
+  Q3CString data(fdata.data(), fdata.size()+1);
 
   VCardEntity e( data );
 
@@ -58,7 +58,7 @@ bool VCardFormatImpl::loadAll( AddressBook *addressBook, Resource *resource, QFi
   kdDebug(5700) << "VCardFormat::loadAll()" << endl;
 
   QByteArray fdata = file->readAll();
-  QCString data(fdata.data(), fdata.size()+1);
+  Q3CString data(fdata.data(), fdata.size()+1);
 
   VCardEntity e( data );
 
@@ -88,7 +88,7 @@ void VCardFormatImpl::save( const Addressee &addressee, QFile *file )
   vcardlist.append( v );
   vcards.setCardList( vcardlist );
 
-  QCString vcardData = vcards.asString();
+  Q3CString vcardData = vcards.asString();
   file->writeBlock( (const char*)vcardData, vcardData.length() );
 }
 
@@ -110,17 +110,17 @@ void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file 
 
   vcards.setCardList( vcardlist );
 
-  QCString vcardData = vcards.asString();
+  Q3CString vcardData = vcards.asString();
   file->writeBlock( (const char*)vcardData, vcardData.length() );
 }
 
 bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCARD::VCard &v )
 {
-  QPtrList<ContentLine> contentLines = v.contentLineList();
+  Q3PtrList<ContentLine> contentLines = v.contentLineList();
   ContentLine *cl;
 
   for( cl = contentLines.first(); cl; cl = contentLines.next() ) {
-    QCString n = cl->name();
+    Q3CString n = cl->name();
     if ( n.left( 2 ) == "X-" ) {
       n = n.mid( 2 );
       int posDash = n.find( "-" );
@@ -688,7 +688,7 @@ Secrecy VCardFormatImpl::readClassValue( ContentLine *cl )
     return Secrecy();
 }
 
-void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Key &key )
+void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Qt::Key &key )
 {
   ContentLine cl;
   cl.setName( EntityTypeToParamName( EntityKey ) );
@@ -717,9 +717,9 @@ void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Key &key )
   vcard->add( cl );
 }
 
-Key VCardFormatImpl::readKeyValue( VCARD::ContentLine *cl )
+Qt::Key VCardFormatImpl::readKeyValue( VCARD::ContentLine *cl )
 {
-  Key key;
+  Qt::Key key;
   bool isBinary = false;
   TextValue *v = (TextValue *)cl->value();
 
@@ -833,7 +833,7 @@ void VCardFormatImpl::addPictureValue( VCARD::VCard *vcard, VCARD::EntityType ty
     QImage img = pic.data();
     if ( intern ) { // only for vCard export we really write the data inline
       QByteArray data;
-      QDataStream s( data, IO_WriteOnly );
+      QDataStream s( data, QIODevice::WriteOnly );
       s.setVersion( 4 ); // to produce valid png files
       s << img;
       cl.setValue( new TextValue( KCodecs::base64Encode( data ) ) );
@@ -917,7 +917,7 @@ void VCardFormatImpl::addSoundValue( VCARD::VCard *vcard, const Sound &sound, co
         cl.setValue( new TextValue( KCodecs::base64Encode( data ) ) );
     } else { // save sound in cache
       QFile file( locateLocal( "data", "kabc/sounds/" + addr.uid() ) );
-      if ( file.open( IO_WriteOnly ) ) {
+      if ( file.open( QIODevice::WriteOnly ) ) {
         file.writeBlock( data );
       }
       cl.setValue( new TextValue( "<dummy>" ) );
@@ -949,7 +949,7 @@ Sound VCardFormatImpl::readSoundValue( VCARD::ContentLine *cl, const Addressee &
     QByteArray data;
     if ( v->asString() == "<dummy>" ) { // no sound inline stored => sound is in cache
       QFile file( locateLocal( "data", "kabc/sounds/" + addr.uid() ) );
-      if ( file.open( IO_ReadOnly ) ) {
+      if ( file.open( QIODevice::ReadOnly ) ) {
         data = file.readAll();
         file.close();
       }

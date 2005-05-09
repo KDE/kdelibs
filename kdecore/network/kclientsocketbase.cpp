@@ -231,7 +231,7 @@ bool KClientSocketBase::connect(const KResolverEntry& address)
 	  emit stateChanged(newstate);
 	  if (error() == NoError)
 	    {
-	      setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+	      setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
 	      emit connected(address);
 	    }
 	}

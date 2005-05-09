@@ -66,13 +66,13 @@ int main()
     kdDebug() << "Running kdostartupconfig." << endl;
     QString keysname = locateLocal( "config", "startupconfigkeys" );
     QFile keys( keysname );
-    if( !keys.open( IO_ReadOnly ))
+    if( !keys.open( QIODevice::ReadOnly ))
         return 3;
     QFile f1( locateLocal( "config", "startupconfig" ));
-    if( !f1.open( IO_WriteOnly ))
+    if( !f1.open( QIODevice::WriteOnly ))
         return 4;
     QFile f2( locateLocal( "config", "startupconfigfiles" ));
-    if( !f2.open( IO_WriteOnly ))
+    if( !f2.open( QIODevice::WriteOnly ))
         return 5;
     QTextStream startupconfig( &f1 );
     QTextStream startupconfigfiles( &f2 );

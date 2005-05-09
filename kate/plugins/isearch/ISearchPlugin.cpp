@@ -19,7 +19,7 @@
 #include <qlabel.h>
 #include <qregexp.h>
 #include <qstyle.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kgenericfactory.h>
 #include <klocale.h>
 #include <kaction.h>
@@ -65,11 +65,11 @@ ISearchPluginView::ISearchPluginView( KTextEditor::View *view )
 	setInstance( KGenericFactory<ISearchPlugin>::instance() );
 
 	m_searchForwardAction = new KAction(
-		i18n("Search Incrementally"), CTRL+ALT+Key_F,
+		i18n("Search Incrementally"), Qt::CTRL+Qt::ALT+Qt::Key_F,
 		this, SLOT(slotSearchForwardAction()),
 		actionCollection(), "edit_isearch" );
 	m_searchBackwardAction = new KAction(
-		i18n("Search Incrementally Backwards"), CTRL+ALT+SHIFT+Key_F,
+		i18n("Search Incrementally Backwards"), Qt::CTRL+Qt::ALT+Qt::SHIFT+Qt::Key_F,
 		this, SLOT(slotSearchBackwardAction()),
 		actionCollection(), "edit_isearch_reverse" );
 
@@ -88,8 +88,8 @@ ISearchPluginView::ISearchPluginView( KTextEditor::View *view )
 	         this, SLOT(slotTextChanged(const QString&)) );
 	connect( m_combo, SIGNAL(returnPressed(const QString&)),
 	         this, SLOT(slotReturnPressed(const QString&)) );
-	connect( m_combo, SIGNAL(aboutToShowContextMenu(QPopupMenu*)),
-		 this, SLOT(slotAddContextMenuItems(QPopupMenu*)) );
+	connect( m_combo, SIGNAL(aboutToShowContextMenu(Q3PopupMenu*)),
+		 this, SLOT(slotAddContextMenuItems(Q3PopupMenu*)) );
 	m_comboAction = new KWidgetAction(
 		m_combo,
 		i18n("Search"), 0, 0, 0,
@@ -410,7 +410,7 @@ void ISearchPluginView::slotReturnPressed( const QString& text )
 	quitToView( text );
 }
 
-void ISearchPluginView::slotAddContextMenuItems( QPopupMenu *menu )
+void ISearchPluginView::slotAddContextMenuItems( Q3PopupMenu *menu )
 {
 	if( menu ) {
 		menu->insertSeparator();

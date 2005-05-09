@@ -141,7 +141,7 @@ void ToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap, const QString& tab
 
 
 bool ToolViewAccessor::eventFilter(QObject *o, QEvent *e) {
-	if (e->type()==QEvent::IconChange) {
+	if (e->type()==QEvent::WindowIconChange) {
 		d->widgetContainer->setPixmap(d->widget->icon()?(*d->widget->icon()):QPixmap());
 	}
 	return false;

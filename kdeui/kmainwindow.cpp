@@ -28,10 +28,10 @@
 #include "ktoolbarhandler.h"
 #include "kwhatsthismanager_p.h"
 #include <qsessionmanager.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qstyle.h>
 #include <qlayout.h>
-#include <qwidgetlist.h>
+#include <qwidget.h>
 #include <qtimer.h>
 
 #include <kaccel.h>
@@ -73,10 +73,10 @@ public:
     QTimer* settingsTimer;
     KToggleAction *showStatusBarAction;
     QRect defaultWindowSize;
-    QPtrList<QDockWindow> hiddenDockWindows;
+    Q3PtrList<Q3DockWindow> hiddenDockWindows;
 };
 
-QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
+Q3PtrList<KMainWindow>* KMainWindow::memberList = 0L;
 static bool no_query_exit = false;
 static KMWSessionManaged* ksm = 0;
 static KStaticDeleter<KMWSessionManaged> ksmd;
@@ -99,7 +99,7 @@ public:
             KMainWindow::memberList->first()->saveGlobalProperties(config);
         }
 
-        QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
+        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList);
         int n = 0;
         for (it.toFirst(); it.current(); ++it){
             n++;
@@ -115,7 +115,7 @@ public:
         // not really a fast method but the only compatible one
         if ( sm.allowsInteraction() ) {
             bool canceled = false;
-            QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
+            Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList);
             ::no_query_exit = true;
             for (it.toFirst(); it.current() && !canceled;){
                 KMainWindow *window = *it;
@@ -164,14 +164,14 @@ public:
 
 static bool being_first = true;
 
-KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
-    : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+KMainWindow::KMainWindow( QWidget* parent, const char *name, Qt::WFlags f )
+    : Q3MainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
     initKMainWindow(name, 0);
 }
 
-KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, WFlags f )
-    : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, Qt::WFlags f )
+    : Q3MainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
     initKMainWindow(name, cflags);
 }
@@ -185,13 +185,13 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     actionCollection()->setWidget( this );
     connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
     if( !memberList )
-        memberList = new QPtrList<KMainWindow>;
+        memberList = new Q3PtrList<KMainWindow>;
 
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManaged());
     // set a unique object name. Required by session management.
-    QCString objname;
-    QCString s;
+    Q3CString objname;
+    Q3CString s;
     int unusedNumber;
     if ( !name )
         { // no name given
@@ -380,9 +380,9 @@ const QString KMainWindow::classNameOfToplevel( int number )
 
 void KMainWindow::show()
 {
-    QMainWindow::show();
+    Q3MainWindow::show();
 
-    for ( QPtrListIterator<QDockWindow> it( d->hiddenDockWindows ); it.current(); ++it )
+    for ( Q3PtrListIterator<Q3DockWindow> it( d->hiddenDockWindows ); it.current(); ++it )
 	it.current()->show();
 
     d->hiddenDockWindows.clear();
@@ -396,7 +396,7 @@ void KMainWindow::hide()
 
         QObjectList *list = queryList( "QDockWindow" );
         for( QObjectListIt it( *list ); it.current(); ++it ) {
-            QDockWindow *dw = (QDockWindow*)it.current();
+            Q3DockWindow *dw = (Q3DockWindow*)it.current();
             if ( dw->isTopLevel() && dw->isVisible() ) {
                 d->hiddenDockWindows.append( dw );
                 dw->hide();
@@ -590,7 +590,7 @@ void KMainWindow::setCaption( const QString &caption, bool modified )
 
 void KMainWindow::setPlainCaption( const QString &caption )
 {
-    QMainWindow::setCaption( caption );
+    Q3MainWindow::setCaption( caption );
 #if defined Q_WS_X11
     NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
     info.setName( caption.utf8().data() );
@@ -641,7 +641,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         e->accept();
 
         int not_withdrawn = 0;
-        QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
+        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList);
         for (it.toFirst(); it.current(); ++it){
             if ( !it.current()->isHidden() && it.current()->isTopLevel() && it.current() != this )
                 not_withdrawn++;
@@ -747,7 +747,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar = 0;
-    QPtrListIterator<KToolBar> it( toolBarIterator() );
+    Q3PtrListIterator<KToolBar> it( toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
         ++it;
         QString group;
@@ -861,7 +861,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar;
-    QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
+    Q3PtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
 
     for ( ; it.current(); ++it) {
         toolbar= it.current();
@@ -891,7 +891,7 @@ void KMainWindow::finalizeGUI( bool force )
     // we call positionYourself again for each of them, but this time
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    QPtrListIterator<KToolBar> it( toolBarIterator() );
+    Q3PtrListIterator<KToolBar> it( toolBarIterator() );
     for ( ; it.current() ; ++it ) {
         it.current()->positionYourself( force );
     }
@@ -969,7 +969,7 @@ void KMainWindow::restoreWindowSize( KConfig * config )
             KWin::setState( winId(), state );
 #else
             if (size.width() > desk.width() || size.height() > desk.height())
-              setWindowState( WindowMaximized );
+              setWindowState( Qt::WindowMaximized );
             else
               resize( size );
 #endif
@@ -1020,9 +1020,9 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
     // Get notified when the user moves a toolbar around
-    disconnect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
+    disconnect( this, SIGNAL( dockWindowPositionChanged( Q3DockWindow * ) ),
                 this, SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
+    connect( this, SIGNAL( dockWindowPositionChanged( Q3DockWindow * ) ),
              this, SLOT( setSettingsDirty() ) );
 
     // Now read the previously saved settings
@@ -1075,7 +1075,7 @@ KMenuBar *KMainWindow::menuBar()
         mb = new KMenuBar( this );
         // trigger a re-layout and trigger a call to the private
         // setMenuBar method.
-        QMainWindow::menuBar();
+        Q3MainWindow::menuBar();
     }
     return mb;
 }
@@ -1087,7 +1087,7 @@ KStatusBar *KMainWindow::statusBar()
         sb = new KStatusBar( this );
         // trigger a re-layout and trigger a call to the private
         // setStatusBar method.
-        QMainWindow::statusBar();
+        Q3MainWindow::statusBar();
     }
     return sb;
 }
@@ -1135,7 +1135,7 @@ KStatusBar *KMainWindow::internalStatusBar()
 
 void KMainWindow::childEvent( QChildEvent* e)
 {
-    QMainWindow::childEvent( e );
+    Q3MainWindow::childEvent( e );
 }
 
 KToolBar *KMainWindow::toolBar( const char * name )
@@ -1150,22 +1150,22 @@ KToolBar *KMainWindow::toolBar( const char * name )
     if ( builderClient() )
         return new KToolBar(this, name, honor_mode); // XMLGUI constructor
     else
-        return new KToolBar(this, DockTop, false, name, honor_mode ); // non-XMLGUI
+        return new KToolBar(this, Qt::DockTop, false, name, honor_mode ); // non-XMLGUI
 }
 
-QPtrListIterator<KToolBar> KMainWindow::toolBarIterator()
+Q3PtrListIterator<KToolBar> KMainWindow::toolBarIterator()
 {
     toolbarList.clear();
-    QPtrList<QToolBar> lst;
-    for ( int i = (int)QMainWindow::DockUnmanaged; i <= (int)DockMinimized; ++i ) {
-        lst = toolBars( (ToolBarDock)i );
-        for ( QToolBar *tb = lst.first(); tb; tb = lst.next() ) {
+    Q3PtrList<Q3ToolBar> lst;
+    for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
+        lst = toolBars( (Qt::ToolBarDock)i );
+        for ( Q3ToolBar *tb = lst.first(); tb; tb = lst.next() ) {
             if ( !tb->inherits( "KToolBar" ) )
                 continue;
             toolbarList.append( (KToolBar*)tb );
         }
     }
-    return QPtrListIterator<KToolBar>( toolbarList );
+    return Q3PtrListIterator<KToolBar>( toolbarList );
 }
 
 KAccel * KMainWindow::accel()
@@ -1177,7 +1177,7 @@ KAccel * KMainWindow::accel()
 
 void KMainWindow::paintEvent( QPaintEvent * pe )
 {
-    QMainWindow::paintEvent(pe); //Upcall to handle SH_MainWindow_SpaceBelowMenuBar rendering
+    Q3MainWindow::paintEvent(pe); //Upcall to handle SH_MainWindow_SpaceBelowMenuBar rendering
 }
 
 QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
@@ -1224,7 +1224,7 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 #endif
 void KMainWindow::setIcon( const QPixmap& p )
 {
-    QMainWindow::setIcon( p );
+    Q3MainWindow::setIcon( p );
 #ifdef Q_WS_X11 
     // Qt3 doesn't support _NET_WM_ICON, but KApplication::setTopWidget(), which
     // is used by KMainWindow, sets it
@@ -1232,7 +1232,7 @@ void KMainWindow::setIcon( const QPixmap& p )
 #endif
 }
 
-QPtrList<KMainWindow>* KMainWindow::getMemberList() { return memberList; }
+Q3PtrList<KMainWindow>* KMainWindow::getMemberList() { return memberList; }
 
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
 // DF: because they compile KDE much faster :)

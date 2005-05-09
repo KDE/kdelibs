@@ -448,7 +448,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
   QStringList causes, solutions, ret;
 
   QByteArray raw = rawErrorDetail( m_error, m_errorText, reqUrl, method );
-  QDataStream stream(raw, IO_ReadOnly);
+  QDataStream stream(raw, QIODevice::ReadOnly);
 
   stream >> errorName >> techName >> description >> causes >> solutions;
 
@@ -1228,7 +1228,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   }
 
   QByteArray ret;
-  QDataStream stream(ret, IO_WriteOnly);
+  QDataStream stream(ret, QIODevice::WriteOnly);
   stream << errorName << techName << description << causes << solutions;
   return ret;
 }
@@ -1359,7 +1359,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	FILE *mnttab;
 	struct mnttab mnt;
 	int len;
-	QCString devname;
+	Q3CString devname;
 
 	if( (volpath = volmgt_root()) == NULL ) {
 		kdDebug( 7007 ) << "findDeviceMountPoint: "
@@ -1408,7 +1408,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 #else
 
     char    realpath_buffer[MAXPATHLEN];
-    QCString realname;
+    Q3CString realname;
 
     realname = QFile::encodeName(filename);
     /* If the path contains symlinks, get the real name */
@@ -1426,7 +1426,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
     for (int i=0;i<num_fs;i++) {
 
-        QCString device_name = mounted[i].f_mntfromname;
+        Q3CString device_name = mounted[i].f_mntfromname;
 
         // If the path contains symlinks, get
         // the real name
@@ -1487,7 +1487,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	    mountedfrom[fsname_len] = '\0';
             strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
 
-            QCString device_name = mountedfrom;
+            Q3CString device_name = mountedfrom;
 
             if (realpath(device_name, realpath_buffer) != 0)
                 // success, use result from realpath
@@ -1537,7 +1537,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     {
       // There may be symbolic links into the /etc/mnttab
       // So we have to find the real device name here as well!
-      QCString device_name = FSNAME(me);
+      Q3CString device_name = FSNAME(me);
       if (device_name.isEmpty() || (device_name == "none"))
          continue;
 
@@ -1581,7 +1581,7 @@ static bool is_my_mountpoint( const char *mountpoint, const char *realname, int 
     return false;
 }
 
-typedef enum { Unseen, Right, Wrong } MountState;
+typedef enum { Unseen, Qt::DockRight, Wrong } MountState;
 
 /**
  * Idea and code base by Olaf Kirch <okir@caldera.de>
@@ -1595,14 +1595,14 @@ static void check_mount_point(const char *mounttype,
     bool pid = (strstr(fsname, ":(pid") != 0);
 
     if (nfs && !pid)
-        isslow = Right;
-    else if (isslow == Right)
+        isslow = Qt::DockRight;
+    else if (isslow == Qt::DockRight)
         isslow = Wrong;
 
     /* Does this look like automounted? */
     if (autofs || (nfs && pid)) {
-        isautofs = Right;
-        isslow = Right;
+        isautofs = Qt::DockRight;
+        isslow = Qt::DockRight;
     }
 }
 
@@ -1693,7 +1693,7 @@ static QString get_mount_info(const QString& filename,
 
     for (int i=0;i<num_fs;i++) {
 
-        QCString device_name = mounted[i].f_mntfromname;
+        Q3CString device_name = mounted[i].f_mntfromname;
 
         // If the path contains symlinks, get
         // the real name
@@ -1717,7 +1717,7 @@ static QString get_mount_info(const QString& filename,
             {
                 struct fstab *ft = getfsfile(mounted[i].f_mntonname);
                 if (!ft || strstr(ft->fs_mntops, "noauto"))
-                  ismanual = Right;
+                  ismanual = Qt::DockRight;
             }
         }
     }
@@ -1760,7 +1760,7 @@ static QString get_mount_info(const QString& filename,
             strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
 
             /* get the mount-from information: */
-            QCString device_name = mountedfrom;
+            Q3CString device_name = mountedfrom;
 
             if (realpath(device_name, realpath_buffer) != 0)
                 // success, use result from realpath
@@ -1825,8 +1825,8 @@ static QString get_mount_info(const QString& filename,
             {
                 // The next GETMNTENT call may destroy 'me'
                 // Copy out the info that we need
-                QCString fsname_me = FSNAME(me);
-                QCString mounttype_me = MOUNTTYPE(me);
+                Q3CString fsname_me = FSNAME(me);
+                Q3CString mounttype_me = MOUNTTYPE(me);
 
                 STRUCT_SETMNTENT fstab;
                 if ((fstab = SETMNTENT(FSTAB, "r")) == 0) {
@@ -1842,12 +1842,12 @@ static QString get_mount_info(const QString& filename,
                         found = true;
                         if (HASMNTOPT(fe, "noauto") ||
                             !strcmp(MOUNTTYPE(fe), "supermount"))
-                            ismanual = Right;
+                            ismanual = Qt::DockRight;
                         break;
                     }
                 }
                 if (!found || (mounttype_me == "supermount"))
-                  ismanual = Right;
+                  ismanual = Qt::DockRight;
 
                 ENDMNTENT(fstab);
             }
@@ -1858,8 +1858,8 @@ static QString get_mount_info(const QString& filename,
 
 #endif
 
-    if (isautofs == Right && isslow == Unseen)
-        isslow = Right;
+    if (isautofs == Qt::DockRight && isslow == Unseen)
+        isslow = Qt::DockRight;
 
     if (gotDevice)
     {
@@ -1902,7 +1902,7 @@ bool KIO::manually_mounted(const QString& filename)
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
-  return !mountPoint.isNull() && (ismanual == Right);
+  return !mountPoint.isNull() && (ismanual == Qt::DockRight);
 #else //!Q_OS_UNIX
   return false;
 #endif 
@@ -1914,7 +1914,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
-  return !mountPoint.isNull() && (isslow == Right);
+  return !mountPoint.isNull() && (isslow == Qt::DockRight);
 #else //!Q_OS_UNIX
   return false;
 #endif 

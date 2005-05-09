@@ -21,7 +21,7 @@
 #define KMWINFOBASE_H
 
 #include "kmwizardpage.h"
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class QLabel;
 class QLineEdit;
@@ -42,8 +42,8 @@ protected:
 	QLineEdit* lineEdit( int );
 
 private:
-	QPtrList<QLabel>		m_labels;
-	QPtrList<QLineEdit>	m_edits;
+	Q3PtrList<QLabel>		m_labels;
+	Q3PtrList<QLineEdit>	m_edits;
 	QLabel			*m_info;
 	int			m_nlines;
 };

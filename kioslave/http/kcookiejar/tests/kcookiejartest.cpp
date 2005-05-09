@@ -34,8 +34,8 @@
 static const char *description = "KCookiejar regression test";
 
 static KCookieJar *jar;
-static QCString *lastYear;
-static QCString *nextYear;
+static Q3CString *lastYear;
+static Q3CString *nextYear;
 static KConfig *config = 0;
 
 
@@ -51,7 +51,7 @@ static void FAIL(const QString &msg)
    exit(1);
 }
 
-static void popArg(QCString &command, QCString & line)
+static void popArg(Q3CString &command, Q3CString & line)
 {
    int i = line.find(' ');
    if (i != -1)
@@ -67,7 +67,7 @@ static void popArg(QCString &command, QCString & line)
 }
 
 
-static void popArg(QString &command, QCString & line)
+static void popArg(QString &command, Q3CString & line)
 {
    int i = line.find(' ');
    if (i != -1)
@@ -112,7 +112,7 @@ static void saveCookies()
    jar->loadCookies(file);
 }
 
-static void processCookie(QCString &line)
+static void processCookie(Q3CString &line)
 {
    QString policy;
    popArg(policy, line);
@@ -148,7 +148,7 @@ static void processCookie(QCString &line)
    }
 }
 
-static void processCheck(QCString &line)
+static void processCheck(Q3CString &line)
 {
    QString urlStr;
    popArg(urlStr, line);
@@ -166,7 +166,7 @@ static void processCheck(QCString &line)
               .arg(cookies, expectedCookies));
 }
 
-static void processClear(QCString &line)
+static void processClear(Q3CString &line)
 {
    if (line == "CONFIG")
       clearConfig();
@@ -176,9 +176,9 @@ static void processClear(QCString &line)
       FAIL(QString("Unknown command 'CLEAR %1'").arg(line));
 }
 
-static void processConfig(QCString &line)
+static void processConfig(Q3CString &line)
 {
-   QCString key;
+   Q3CString key;
    popArg(key, line);
 
    if (key.isEmpty())
@@ -189,7 +189,7 @@ static void processConfig(QCString &line)
    jar->loadConfig(config, false);
 }
 
-static void processLine(QCString line)
+static void processLine(Q3CString line)
 {
    if (line.isEmpty())
       return;
@@ -201,7 +201,7 @@ static void processLine(QCString line)
       return;
    }
 
-   QCString command;
+   Q3CString command;
    popArg(command, line);
    if (command.isEmpty())
       return;
@@ -243,11 +243,11 @@ static void runRegression(const QString &filename)
 int main(int argc, char *argv[])
 {
    QString arg1;
-   QCString arg2;
+   Q3CString arg2;
    QString result;
 
-   lastYear = new QCString(QString("Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()-1).utf8());
-   nextYear = new QCString(QString(" expires=Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()+1).utf8());
+   lastYear = new Q3CString(QString("Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()-1).utf8());
+   nextYear = new Q3CString(QString(" expires=Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()+1).utf8());
 
    KAboutData about("kcookietest", "kcookietest", "1.0", description, KAboutData::License_GPL, "(C) 2004 Waldo Bastian");
    KCmdLineArgs::init( argc, argv, &about);

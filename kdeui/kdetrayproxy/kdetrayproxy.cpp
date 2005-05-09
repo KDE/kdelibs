@@ -35,7 +35,7 @@ KDETrayProxy::KDETrayProxy()
     connect( &selection, SIGNAL( newOwner( Window )), SLOT( newOwner( Window )));
     connect( &module, SIGNAL( windowAdded( WId )), SLOT( windowAdded( WId )));
     selection.owner();
-    for( QValueList< WId >::ConstIterator it = module.windows().begin();
+    for( Q3ValueList< WId >::ConstIterator it = module.windows().begin();
          it != module.windows().end();
          ++it )
         windowAdded( *it );
@@ -45,7 +45,7 @@ KDETrayProxy::KDETrayProxy()
 
 Atom KDETrayProxy::makeSelectionAtom()
     {
-    return XInternAtom( qt_xdisplay(), "_NET_SYSTEM_TRAY_S" + QCString().setNum( qt_xscreen()), False );
+    return XInternAtom( qt_xdisplay(), "_NET_SYSTEM_TRAY_S" + Q3CString().setNum( qt_xscreen()), False );
     }
 
 extern Time qt_x_time;
@@ -76,7 +76,7 @@ void KDETrayProxy::windowAdded( WId w )
 void KDETrayProxy::newOwner( Window owner )
     {
 //    kdDebug() << "New owner:" << owner << endl;
-    for( QValueList< Window >::ConstIterator it = pending_windows.begin();
+    for( Q3ValueList< Window >::ConstIterator it = pending_windows.begin();
          it != pending_windows.end();
          ++it )
         dockWindow( *it, owner );

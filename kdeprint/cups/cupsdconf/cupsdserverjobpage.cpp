@@ -25,7 +25,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <kseparator.h>
 
@@ -163,11 +163,11 @@ void CupsdServerJobPage::setDefaults()
 
 void CupsdServerJobPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(preservejobhistory_, conf->comments_.toolTip(PRESERVEJOBHIST_COMM));
-        QWhatsThis::add(preservejobfiles_, conf->comments_.toolTip(PRESERVEJOBFILE_COMM));
-        QWhatsThis::add(autopurgejobs_, conf->comments_.toolTip(AUTOPURGEJOBS_COMM));
-        QWhatsThis::add(maxjobs_, conf->comments_.toolTip(MAXJOBS_COMM));
-        QWhatsThis::add(filterlimit_, conf->comments_.toolTip(FILTERLIMIT_COMM));
-        QWhatsThis::add(classification_, conf->comments_.toolTip(CLASSIFICATION_COMM));
-        QWhatsThis::add(classifyoverride_, conf->comments_.toolTip(CLASSIFYOVERRIDE_COMM));
+	Q3WhatsThis::add(preservejobhistory_, conf->comments_.toolTip(PRESERVEJOBHIST_COMM));
+        Q3WhatsThis::add(preservejobfiles_, conf->comments_.toolTip(PRESERVEJOBFILE_COMM));
+        Q3WhatsThis::add(autopurgejobs_, conf->comments_.toolTip(AUTOPURGEJOBS_COMM));
+        Q3WhatsThis::add(maxjobs_, conf->comments_.toolTip(MAXJOBS_COMM));
+        Q3WhatsThis::add(filterlimit_, conf->comments_.toolTip(FILTERLIMIT_COMM));
+        Q3WhatsThis::add(classification_, conf->comments_.toolTip(CLASSIFICATION_COMM));
+        Q3WhatsThis::add(classifyoverride_, conf->comments_.toolTip(CLASSIFYOVERRIDE_COMM));
 }

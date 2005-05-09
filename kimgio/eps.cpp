@@ -273,7 +273,7 @@ KDE_EXPORT void kimgio_eps_write( QImageIO *imageio )
 
   // Copy file to imageio struct
   QFile inFile(tmpFile.name());
-  inFile.open( IO_ReadOnly );
+  inFile.open( QIODevice::ReadOnly );
 
   QTextStream in( &inFile );
   in.setEncoding( QTextStream::Latin1 );

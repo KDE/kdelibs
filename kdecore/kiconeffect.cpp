@@ -308,7 +308,7 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
     unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
 	    : (unsigned int *) img.colorTable();
     int rval, gval, bval, val, alpha, i;
-    float rcol = col.red(), gcol = col.green(), bcol = col.blue();
+    float rcol = col.Qt::red(), gcol = col.Qt::green(), bcol = col.Qt::blue();
     for (i=0; i<pixels; i++)
     {
         val = qGray(data[i]);
@@ -342,13 +342,13 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
     }
 }
 
-void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &white, float value) {
+void KIconEffect::toMonochrome(QImage &img, const QColor &Qt::black, const QColor &Qt::white, float value) {
    int pixels = (img.depth() > 8) ? img.width()*img.height() : img.numColors();
    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
          : (unsigned int *) img.colorTable();
    int rval, gval, bval, alpha, i;
-   int rw = white.red(), gw = white.green(), bw = white.blue();
-   int rb = black.red(), gb = black.green(), bb = black.blue();
+   int rw = Qt::white.Qt::red(), gw = Qt::white.Qt::green(), bw = Qt::white.Qt::blue();
+   int rb = Qt::black.Qt::red(), gb = Qt::black.Qt::green(), bb = Qt::black.Qt::blue();
    
    double values = 0, sum = 0;
    bool grayscale = true;
@@ -405,7 +405,7 @@ void KIconEffect::deSaturate(QImage &img, float value)
         color.setRgb(data[i]);
         color.hsv(&h, &s, &v);
         color.setHsv(h, (int) (s * (1.0 - value) + 0.5), v);
-	data[i] = qRgba(color.red(), color.green(), color.blue(),
+	data[i] = qRgba(color.Qt::red(), color.Qt::green(), color.Qt::blue(),
 		qAlpha(data[i]));
     }
 }

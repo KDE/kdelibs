@@ -21,12 +21,12 @@
 #define KMINSTANCEPAGE_H
 
 #include "kmprinterpage.h"
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qwidget.h>
 
 class KListBox;
 class KMPrinter;
-class QButton;
+class Q3Button;
 
 class KMInstancePage : public QWidget, public KMPrinterPage
 {
@@ -51,7 +51,7 @@ protected:
 
 private:
 	KListBox		*m_view;
-	QValueList<QButton*>	m_buttons;
+	Q3ValueList<Q3Button*>	m_buttons;
 	KMPrinter		*m_printer;
 };
 

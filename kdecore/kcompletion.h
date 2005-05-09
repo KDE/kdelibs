@@ -21,11 +21,11 @@
 #define KCOMPLETION_H
 
 #include <qmap.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include "kdelibs_export.h"
 #include <kglobalsettings.h>
@@ -37,7 +37,7 @@ class KCompletionPrivate;
 class KCompletionBasePrivate;
 class KCompletionMatchesWrapper;
 class KCompletionMatches;
-class QPopupMenu;
+class Q3PopupMenu;
 
 /**
  * @short A generic class for completing QStrings
@@ -994,7 +994,7 @@ private:
     // Stores the completion mode locally.
     KGlobalSettings::Completion m_iCompletionMode;
     // Pointer to Completion object.
-    QGuardedPtr<KCompletion> m_pCompObj;
+    QPointer<KCompletion> m_pCompObj;
     // Keybindings
     KeyBindingMap m_keyMap;
     // we may act as a proxy to another KCompletionBase object

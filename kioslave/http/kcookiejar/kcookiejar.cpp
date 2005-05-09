@@ -56,9 +56,9 @@
 //#include <arpa/inet.h>
 
 #include <qstring.h>
-#include <qstrlist.h>
-#include <qptrlist.h>
-#include <qptrdict.h>
+#include <q3strlist.h>
+#include <q3ptrlist.h>
+#include <q3ptrdict.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qregexp.h>
@@ -90,8 +90,8 @@
 // L1 is used to indicate latin1 constants
 #define L1(x) QString::fromLatin1(x)
 
-template class QPtrList<KHttpCookie>;
-template class QPtrDict<KHttpCookieList>;
+template class Q3PtrList<KHttpCookie>;
+template class Q3PtrDict<KHttpCookieList>;
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
@@ -109,7 +109,7 @@ KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
     if (_str.isEmpty())
         return KCookieDunno;
 
-    QCString advice = _str.lower().latin1();
+    Q3CString advice = _str.lower().latin1();
 
     if (advice == "accept")
         return KCookieAccept;
@@ -296,7 +296,7 @@ static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePt
        {
           if (updateWindowId)
           {
-            for(QValueList<long>::ConstIterator it = cookie->windowIds().begin();
+            for(Q3ValueList<long>::ConstIterator it = cookie->windowIds().begin();
                 it != cookie->windowIds().end(); ++it)
             {
                long windowId = *it;
@@ -662,7 +662,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 
           // Catch some TLDs that we miss with the previous check
           // e.g. com.au, org.uk, mil.co
-          QCString t = partList[0].lower().utf8();
+          Q3CString t = partList[0].lower().utf8();
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int"))
               break;
        }
@@ -688,7 +688,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 // which start with "Set-Cookie". The lines should be separated by '\n's.
 //
 KHttpCookieList KCookieJar::makeCookies(const QString &_url,
-                                       const QCString &cookie_headers,
+                                       const Q3CString &cookie_headers,
                                        long windowId)
 {
     KHttpCookieList cookieList;
@@ -777,7 +777,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             // Name-Value pair follows
             cookieStr = parseNameValue(cookieStr, Name, Value);
 
-            QCString cName = Name.lower().latin1();
+            Q3CString cName = Name.lower().latin1();
             if (cName == "domain")
             {
                 lastCookie->mDomain = Value.lower();
@@ -843,7 +843,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 * If no cookies are found, 0 is returned.
 */
 KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
-                                          const QCString &cookie_domstring,
+                                          const Q3CString &cookie_domstring,
                                           long windowId)
 {
     // A lot copied from above
@@ -1230,7 +1230,7 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
                continue;
             }
 
-            QValueList<long> &ids = cookie->windowIds();
+            Q3ValueList<long> &ids = cookie->windowIds();
             if (!ids.remove(windowId) || !ids.isEmpty())
             {
                cookie = cookieList->next();

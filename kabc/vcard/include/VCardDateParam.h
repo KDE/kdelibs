@@ -24,7 +24,7 @@
 #ifndef  DATEPARAM_H
 #define  DATEPARAM_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardParam.h>
 

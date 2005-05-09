@@ -207,10 +207,10 @@ bool KPixmap::load( const QString& fileName, const char *format,
     int conversion_flags = 0;
     switch (mode) {
     case Color:
-	conversion_flags |= ColorOnly;
+	conversion_flags |= Qt::ColorOnly;
 	break;
     case Mono:
-	conversion_flags |= MonoOnly;
+	conversion_flags |= Qt::MonoOnly;
 	break;
     case LowColor:
 	conversion_flags |= LowOnly;
@@ -229,10 +229,10 @@ bool KPixmap::convertFromImage( const QImage &img, ColorMode mode )
     int conversion_flags = 0;
     switch (mode) {
     case Color:
-	conversion_flags |= ColorOnly;
+	conversion_flags |= Qt::ColorOnly;
 	break;
     case Mono:
-	conversion_flags |= MonoOnly;
+	conversion_flags |= Qt::MonoOnly;
 	break;
     case LowColor:
 	conversion_flags |= LowOnly;
@@ -307,7 +307,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
     } else {
 	QImage  image = img.convertDepth( 32 );
 	image.setAlphaBuffer( img.hasAlphaBuffer() );
-	conversion_flags = (conversion_flags & ~ColorMode_Mask) | Auto;
+	conversion_flags = (conversion_flags & ~Qt::ColorMode_Mask) | Auto;
 	return QPixmap::convertFromImage ( image, conversion_flags );
     }
 }
@@ -322,23 +322,23 @@ bool KPixmap::checkColorTable( const QImage &image )
 	kpixmap_iconPalette = new QColor[40];
 	
 	// Standard palette
-	kpixmap_iconPalette[i++] = red;
-	kpixmap_iconPalette[i++] = green;
-	kpixmap_iconPalette[i++] = blue;
-	kpixmap_iconPalette[i++] = cyan;
-	kpixmap_iconPalette[i++] = magenta;
-	kpixmap_iconPalette[i++] = yellow;
-	kpixmap_iconPalette[i++] = darkRed;
-	kpixmap_iconPalette[i++] = darkGreen;
-	kpixmap_iconPalette[i++] = darkBlue;
-	kpixmap_iconPalette[i++] = darkCyan;
-	kpixmap_iconPalette[i++] = darkMagenta;
-	kpixmap_iconPalette[i++] = darkYellow;
-	kpixmap_iconPalette[i++] = white;
-	kpixmap_iconPalette[i++] = lightGray;
-	kpixmap_iconPalette[i++] = gray;
-	kpixmap_iconPalette[i++] = darkGray;
-	kpixmap_iconPalette[i++] = black;
+	kpixmap_iconPalette[i++] = Qt::red;
+	kpixmap_iconPalette[i++] = Qt::green;
+	kpixmap_iconPalette[i++] = Qt::blue;
+	kpixmap_iconPalette[i++] = Qt::cyan;
+	kpixmap_iconPalette[i++] = Qt::magenta;
+	kpixmap_iconPalette[i++] = Qt::yellow;
+	kpixmap_iconPalette[i++] = Qt::darkRed;
+	kpixmap_iconPalette[i++] = Qt::darkGreen;
+	kpixmap_iconPalette[i++] = Qt::darkBlue;
+	kpixmap_iconPalette[i++] = Qt::darkCyan;
+	kpixmap_iconPalette[i++] = Qt::darkMagenta;
+	kpixmap_iconPalette[i++] = Qt::darkYellow;
+	kpixmap_iconPalette[i++] = Qt::white;
+	kpixmap_iconPalette[i++] = Qt::lightGray;
+	kpixmap_iconPalette[i++] = Qt::gray;
+	kpixmap_iconPalette[i++] = Qt::darkGray;
+	kpixmap_iconPalette[i++] = Qt::black;
 	
 	// Pastels
 	kpixmap_iconPalette[i++] = QColor( 255, 192, 192 );
@@ -393,9 +393,9 @@ bool KPixmap::checkColorTable( const QImage &image )
 
     for ( i=0; i<ncols; i++ ) {
 	for ( j=0; j<40; j++ ) {
-	    if ( kpixmap_iconPalette[j].red() == qRed( ctable[i] ) &&
-		 kpixmap_iconPalette[j].green() == qGreen( ctable[i] ) &&
-		 kpixmap_iconPalette[j].blue() == qBlue( ctable[i] ) ) {
+	    if ( kpixmap_iconPalette[j].Qt::red() == qRed( ctable[i] ) &&
+		 kpixmap_iconPalette[j].Qt::green() == qGreen( ctable[i] ) &&
+		 kpixmap_iconPalette[j].Qt::blue() == qBlue( ctable[i] ) ) {
 		break;
 	    }
 	}

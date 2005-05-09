@@ -56,8 +56,8 @@ void KTabCtl::resizeEvent(QResizeEvent *)
         for (i=0; i<(int)pages.size(); i++) {
             pages[i]->setGeometry(r);
         }
-        if( ( tabs->shape() == QTabBar::RoundedBelow ) ||
-            ( tabs->shape() == QTabBar::TriangularBelow ) ) {
+        if( ( tabs->shape() == QTabBar:: RoundedSouth ) ||
+            ( tabs->shape() == QTabBar:: TriangularSouth ) ) {
             tabs->move( 0, height()-tabs->height()-4 );
         }
     }
@@ -257,7 +257,7 @@ void KTabCtl::paintEvent(QPaintEvent *)
     p.drawLine(x0, y0, x1 - 1, y0);      /* 2nd top line */
     p.setPen(colorGroup().light());
     p.drawLine(x0, y0 + 1, x0, y1);      /* left line */
-    p.setPen(black);
+    p.setPen(Qt::black);
     p.drawLine(x1, y1, x0, y1);          /* bottom line */
     p.drawLine(x1, y1 - 1, x1, y0);
     p.setPen(colorGroup().dark());
@@ -273,8 +273,8 @@ void KTabCtl::paintEvent(QPaintEvent *)
 
 QRect KTabCtl::getChildRect() const
 {
-    if( ( tabs->shape() == QTabBar::RoundedBelow ) ||
-        ( tabs->shape() == QTabBar::TriangularBelow ) ) {
+    if( ( tabs->shape() == QTabBar:: RoundedSouth ) ||
+        ( tabs->shape() == QTabBar:: TriangularSouth ) ) {
     	return QRect(2, 1, width() - 4,
 		     height() - tabs->height() - 4);
     } else {

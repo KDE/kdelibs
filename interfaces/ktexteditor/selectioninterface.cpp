@@ -42,7 +42,7 @@ unsigned int SelectionInterface::selectionInterfaceNumber () const
   return mySelectionInterfaceNumber;
 }
 
-void SelectionInterface::setSelectionInterfaceDCOPSuffix (const QCString &suffix)
+void SelectionInterface::setSelectionInterfaceDCOPSuffix (const Q3CString &suffix)
 {
   d->interface->setObjId ("SelectionInterface#"+suffix);
 }

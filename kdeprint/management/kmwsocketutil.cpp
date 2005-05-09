@@ -22,7 +22,7 @@
 
 #include "kmwsocketutil.h"
 
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -156,7 +156,7 @@ bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostna
 	return result;
 }
 
-bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
+bool KMWSocketUtil::scanNetwork(Q3ProgressBar *bar)
 {
 	printerlist_.setAutoDelete(true);
 	printerlist_.clear();
@@ -204,7 +204,7 @@ QString localRootIP()
 	buf[0] = '\0';
 	if (!gethostname(buf, sizeof(buf)))
 		buf[sizeof(buf)-1] = '\0';
-	QPtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
+	Q3PtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
 	infos.setAutoDelete(true);
 	if (infos.count() > 0)
 	{

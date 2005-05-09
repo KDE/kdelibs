@@ -45,8 +45,8 @@
 #include <assert.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <qintdict.h>
-#include <qptrlist.h>
+#include <q3intdict.h>
+#include <q3ptrlist.h>
 #include <qsocketnotifier.h>
 #include <qstringlist.h>
 #include <qtimer.h>
@@ -176,7 +176,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   delayRemove = false;
   m_ref = 0;
 
-  KConfigGroup config(KGlobal::config(), QCString("DirWatch"));
+  KConfigGroup config(KGlobal::config(), Q3CString("DirWatch"));
   m_nfsPollInterval = config.readNumEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readNumEntry("PollInterval", 500);
 
@@ -594,7 +594,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // we have a new path to watch
 
   KDE_struct_stat stat_buf;
-  QCString tpath = QFile::encodeName(path);
+  Q3CString tpath = QFile::encodeName(path);
   bool exists = (KDE_stat(tpath, &stat_buf) == 0);
 
   Entry newEntry;
@@ -741,7 +741,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
  */
 void KDirWatchPrivate::removeEntries( KDirWatch* instance )
 {
-  QPtrList<Entry> list;
+  Q3PtrList<Entry> list;
   int minfreq = 3600000;
 
   // put all entries where instance is a client in list
@@ -1024,7 +1024,7 @@ void KDirWatchPrivate::slotRescan()
   delayRemove = true;
 
 #ifdef HAVE_DNOTIFY
-  QPtrList<Entry> dList, cList;
+  Q3PtrList<Entry> dList, cList;
 #endif
 
   if (rescan_all)

@@ -25,7 +25,7 @@ class KConfig;
 class KConfigSkeleton;
 class KConfigDialogManager;
 #include <kdialogbase.h>
-#include <qasciidict.h>
+#include <q3asciidict.h>
 
 /**
  * \short Standard %KDE configuration dialog class
@@ -266,7 +266,7 @@ private:
   /**
    * The list of existing dialogs.
    */
-  static QAsciiDict<KConfigDialog> openDialogs;
+  static Q3AsciiDict<KConfigDialog> openDialogs;
 
   class KConfigDialogPrivate;
   /**

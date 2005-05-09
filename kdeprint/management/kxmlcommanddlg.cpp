@@ -22,19 +22,19 @@
 #include "kxmlcommand.h"
 
 #include <qlayout.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
-#include <qgroupbox.h>
-#include <qwidgetstack.h>
+#include <q3groupbox.h>
+#include <q3widgetstack.h>
 #include <qtoolbutton.h>
 #include <kpushbutton.h>
 #include <qtooltip.h>
 #include <qcheckbox.h>
 #include <ktextedit.h>
 #include <qregexp.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 #include <qapplication.h>
 
 #include <klistview.h>
@@ -56,9 +56,9 @@ QString generateId(const QMap<QString, DrBase*>& map)
 	return QString::fromLatin1("item%1").arg(index);
 }
 
-QListViewItem* findPrev(QListViewItem *item)
+Q3ListViewItem* findPrev(Q3ListViewItem *item)
 {
-	QListViewItem	*prev = item->itemAbove();
+	Q3ListViewItem	*prev = item->itemAbove();
 	while (prev && prev->depth() > item->depth())
 		prev = prev->itemAbove();
 	if (prev && prev->depth() == item->depth())
@@ -67,9 +67,9 @@ QListViewItem* findPrev(QListViewItem *item)
 		return 0;
 }
 
-QListViewItem* findNext(QListViewItem *item)
+Q3ListViewItem* findNext(Q3ListViewItem *item)
 {
-	QListViewItem	*next = item->itemBelow();
+	Q3ListViewItem	*next = item->itemBelow();
 	while (next && next->depth() > item->depth())
 		next = next->itemBelow();
 	if (next && next->depth() == item->depth())
@@ -125,8 +125,8 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_commandlab->setBuddy(m_command);
 	m_persistent = new QCheckBox( i18n( "&Persistent option" ), m_dummy );
 
-	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Va&lues"), m_dummy);
-	m_stack = new QWidgetStack(gb);
+	Q3GroupBox	*gb = new Q3GroupBox(0, Qt::Horizontal, i18n("Va&lues"), m_dummy);
+	m_stack = new Q3WidgetStack(gb);
 	QWidget	*w1 = new QWidget(m_stack), *w2 = new QWidget(m_stack), *w3 = new QWidget(m_stack);
 	m_stack->addWidget(w1, 1);
 	m_stack->addWidget(w2, 2);
@@ -159,8 +159,8 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 
 	KSeparator	*sep1 = new KSeparator(KSeparator::HLine, m_dummy);
 
-	QGroupBox	*gb_input = new QGroupBox(0, Qt::Horizontal, i18n("&Input From"), this);
-	QGroupBox	*gb_output = new QGroupBox(0, Qt::Horizontal, i18n("O&utput To"), this);
+	Q3GroupBox	*gb_input = new Q3GroupBox(0, Qt::Horizontal, i18n("&Input From"), this);
+	Q3GroupBox	*gb_output = new Q3GroupBox(0, Qt::Horizontal, i18n("O&utput To"), this);
 	QLabel	*m_inputfilelab = new QLabel(i18n("File:"), gb_input);
 	QLabel	*m_inputpipelab = new QLabel(i18n("Pipe:"), gb_input);
 	QLabel	*m_outputfilelab = new QLabel(i18n("File:"), gb_output);
@@ -251,8 +251,8 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	l12->addWidget( m_commentlab );
 	l12->addWidget( m_comment );
 
-	connect(m_view, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotSelectionChanged(QListViewItem*)));
-	connect(m_values, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotValueSelected(QListViewItem*)));
+	connect(m_view, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotSelectionChanged(Q3ListViewItem*)));
+	connect(m_values, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotValueSelected(Q3ListViewItem*)));
 	connect(m_type, SIGNAL(activated(int)), SLOT(slotTypeChanged(int)));
 	connect(m_addval, SIGNAL(clicked()), SLOT(slotAddValue()));
 	connect(m_delval, SIGNAL(clicked()), SLOT(slotRemoveValue()));
@@ -263,7 +263,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	connect(m_up, SIGNAL(clicked()), SLOT(slotMoveUp()));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotMoveDown()));
 	connect(m_command, SIGNAL(textChanged(const QString&)), SLOT(slotCommandChanged(const QString&)));
-	connect(m_view, SIGNAL(itemRenamed(QListViewItem*,int)), SLOT(slotOptionRenamed(QListViewItem*,int)));
+	connect(m_view, SIGNAL(itemRenamed(Q3ListViewItem*,int)), SLOT(slotOptionRenamed(Q3ListViewItem*,int)));
 	connect(m_desc, SIGNAL(textChanged(const QString&)), SLOT(slotChanged()));
 	connect(m_name, SIGNAL(textChanged(const QString&)), SLOT(slotChanged()));
 	connect(m_format, SIGNAL(textChanged(const QString&)), SLOT(slotChanged()));
@@ -280,35 +280,35 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	/**
 	 * Add some short help for the normal (non expert) user
 	 */
-	QWhatsThis::add( m_name, i18n(
+	Q3WhatsThis::add( m_name, i18n(
 				"An identification string. Use only alphanumeric characters except spaces. "
 				"The string <b>__root__</b> is reserved for internal use." ) );
-	QWhatsThis::add( m_namelab, QWhatsThis::textFor( m_name ) );
-	QWhatsThis::add( m_desc, i18n(
+	Q3WhatsThis::add( m_namelab, Q3WhatsThis::textFor( m_name ) );
+	Q3WhatsThis::add( m_desc, i18n(
 				"A description string. This string is shown in the interface, and should "
 				"be explicit enough about the role of the corresponding option." ) );
-	QWhatsThis::add( m_desclab, QWhatsThis::textFor( m_desc ) );
-	QWhatsThis::add( m_type, i18n(
+	Q3WhatsThis::add( m_desclab, Q3WhatsThis::textFor( m_desc ) );
+	Q3WhatsThis::add( m_type, i18n(
 				"The type of the option. This determines how the option is presented "
 				"graphically to the user." ) );
-	QWhatsThis::add( m_typelab, QWhatsThis::textFor( m_type ) );
-	QWhatsThis::add( m_format, i18n(
+	Q3WhatsThis::add( m_typelab, Q3WhatsThis::textFor( m_type ) );
+	Q3WhatsThis::add( m_format, i18n(
 				"The format of the option. This determines how the option is formatted "
 				"for inclusion in the global command line. The tag <b>%value</b> can be used "
 				"to represent the user selection. This tag will be replaced at run-time by a "
 				"string representation of the option value." ) );
-	QWhatsThis::add( m_formatlab, QWhatsThis::textFor( m_format ) );
-	QWhatsThis::add( m_default, i18n(
+	Q3WhatsThis::add( m_formatlab, Q3WhatsThis::textFor( m_format ) );
+	Q3WhatsThis::add( m_default, i18n(
 				"The default value of the option. For non persistent options, nothing is "
 				"added to the command line if the option has that default value. If this "
 				"value does not correspond to the actual default value of the underlying "
 				"utility, make the option persistent to avoid unwanted effects." ) );
-	QWhatsThis::add( m_defaultlab, QWhatsThis::textFor( m_default ) );
-	QWhatsThis::add( m_persistent, i18n(
+	Q3WhatsThis::add( m_defaultlab, Q3WhatsThis::textFor( m_default ) );
+	Q3WhatsThis::add( m_persistent, i18n(
 				"Make the option persistent. A persistent option is always written to the "
 				"command line, whatever its value. This is useful when the chosen default "
 				"value does not match with the actual default value of the underlying utility." ) );
-	QWhatsThis::add( m_command, i18n(
+	Q3WhatsThis::add( m_command, i18n(
 				"The full command line to execute the associated underlying utility. This "
 				"command line is based on a mechanism of tags that are replaced at run-time. "
 				"The supported tags are:<ul>"
@@ -317,28 +317,28 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 				"<li><b>%filteroutput</b>: output specification</li>"
 				"<li><b>%psu</b>: the page size in upper case</li>"
 				"<li><b>%psl</b>: the page size in lower case</li></ul>" ) );
-	QWhatsThis::add( m_commandlab, QWhatsThis::textFor( m_command ) );
-	QWhatsThis::add( m_inputfile, i18n(
+	Q3WhatsThis::add( m_commandlab, Q3WhatsThis::textFor( m_command ) );
+	Q3WhatsThis::add( m_inputfile, i18n(
 				"Input specification when the underlying utility reads input data from a file. Use "
 				"the tag <b>%in</b> to represent the input filename." ) );
-	QWhatsThis::add( m_inputfilelab, QWhatsThis::textFor( m_inputfile ) );
-	QWhatsThis::add( m_outputfile, i18n(
+	Q3WhatsThis::add( m_inputfilelab, Q3WhatsThis::textFor( m_inputfile ) );
+	Q3WhatsThis::add( m_outputfile, i18n(
 				"Output specification when the underlying utility writes output data to a file. Use "
 				"the tag <b>%out</b> to represent the output filename." ) );
-	QWhatsThis::add( m_outputfilelab, QWhatsThis::textFor( m_outputfile ) );
-	QWhatsThis::add( m_inputpipe, i18n(
+	Q3WhatsThis::add( m_outputfilelab, Q3WhatsThis::textFor( m_outputfile ) );
+	Q3WhatsThis::add( m_inputpipe, i18n(
 				"Input specification when the underlying utility reads input data from its "
 				"standard input." ) );
-	QWhatsThis::add( m_inputpipelab, QWhatsThis::textFor( m_inputpipe ) );
-	QWhatsThis::add( m_outputpipe, i18n(
+	Q3WhatsThis::add( m_inputpipelab, Q3WhatsThis::textFor( m_inputpipe ) );
+	Q3WhatsThis::add( m_outputpipe, i18n(
 				"Output specification when the underlying utility writes output data to its "
 				"standard output." ) );
-	QWhatsThis::add( m_outputpipelab, QWhatsThis::textFor( m_outputpipe ) );
-	QWhatsThis::add( m_comment, i18n(
+	Q3WhatsThis::add( m_outputpipelab, Q3WhatsThis::textFor( m_outputpipe ) );
+	Q3WhatsThis::add( m_comment, i18n(
 				"A comment about the underlying utility, which can be viewed by the user "
 				"from the interface. This comment string supports basic HTML tags like "
 				"&lt;a&gt;, &lt;b&gt; or &lt;i&gt;." ) );
-	QWhatsThis::add( m_commentlab, QWhatsThis::textFor( m_comment ) );
+	Q3WhatsThis::add( m_commentlab, Q3WhatsThis::textFor( m_comment ) );
 
 	resize(660, 200);
 }
@@ -366,7 +366,7 @@ void KXmlCommandAdvancedDlg::setCommand(KXmlCommand *xmlcmd)
 void KXmlCommandAdvancedDlg::parseXmlCommand(KXmlCommand *xmlcmd)
 {
 	m_view->clear();
-	QListViewItem	*root = new QListViewItem(m_view, xmlcmd->name(), xmlcmd->name());
+	Q3ListViewItem	*root = new Q3ListViewItem(m_view, xmlcmd->name(), xmlcmd->name());
 	DrMain	*driver = xmlcmd->driver();
 
 	root->setPixmap(0, SmallIcon("fileprint"));
@@ -392,11 +392,11 @@ void KXmlCommandAdvancedDlg::parseXmlCommand(KXmlCommand *xmlcmd)
 	viewItem(0);
 }
 
-void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, QListViewItem *parent)
+void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, Q3ListViewItem *parent)
 {
-	QListViewItem	*item(0);
+	Q3ListViewItem	*item(0);
 
-	QPtrListIterator<DrGroup>	git(grp->groups());
+	Q3PtrListIterator<DrGroup>	git(grp->groups());
 	for (; git.current(); ++git)
 	{
 		QString	namestr = git.current()->name();
@@ -405,7 +405,7 @@ void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, QListViewItem *parent)
 			namestr = "group_"+kapp->randomString(4);
 		}
 		git.current()->setName(namestr);
-		item = new QListViewItem(parent, item, git.current()->get("text"), git.current()->name());
+		item = new Q3ListViewItem(parent, item, git.current()->get("text"), git.current()->name());
 		item->setPixmap(0, SmallIcon("folder"));
 		item->setOpen(true);
 		item->setRenameEnabled(0, true);
@@ -413,7 +413,7 @@ void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, QListViewItem *parent)
 		m_opts[namestr] = git.current();
 	}
 
-	QPtrListIterator<DrBase>	oit(grp->options());
+	Q3PtrListIterator<DrBase>	oit(grp->options());
 	for (; oit.current(); ++oit)
 	{
 		QString	namestr = oit.current()->name().mid(m_xmlcmd->name().length()+6);
@@ -422,21 +422,21 @@ void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, QListViewItem *parent)
 			namestr = "option_"+kapp->randomString(4);
 		}
 		oit.current()->setName(namestr);
-		item = new QListViewItem(parent, item, oit.current()->get("text"), namestr);
+		item = new Q3ListViewItem(parent, item, oit.current()->get("text"), namestr);
 		item->setPixmap(0, SmallIcon("document"));
 		item->setRenameEnabled(0, true);
 		m_opts[namestr] = oit.current();
 	}
 }
 
-void KXmlCommandAdvancedDlg::slotSelectionChanged(QListViewItem *item)
+void KXmlCommandAdvancedDlg::slotSelectionChanged(Q3ListViewItem *item)
 {
 	if (item && item->depth() == 0)
 		item = 0;
 	viewItem(item);
 }
 
-void KXmlCommandAdvancedDlg::viewItem(QListViewItem *item)
+void KXmlCommandAdvancedDlg::viewItem(Q3ListViewItem *item)
 {
 	m_dummy->setEnabled((item != 0));
 	m_name->setText("");
@@ -479,11 +479,11 @@ void KXmlCommandAdvancedDlg::viewItem(QListViewItem *item)
 				case DrBase::Boolean:
 				case DrBase::List:
 					{
-						QPtrListIterator<DrBase>	it(*(static_cast<DrListOption*>(opt)->choices()));
-						QListViewItem	*item(0);
+						Q3PtrListIterator<DrBase>	it(*(static_cast<DrListOption*>(opt)->choices()));
+						Q3ListViewItem	*item(0);
 						for (; it.current(); ++it)
 						{
-							item = new QListViewItem(m_values, item, it.current()->name(), it.current()->get("text"));
+							item = new Q3ListViewItem(m_values, item, it.current()->name(), it.current()->get("text"));
 							item->setRenameEnabled(0, true);
 							item->setRenameEnabled(1, true);
 						}
@@ -496,7 +496,7 @@ void KXmlCommandAdvancedDlg::viewItem(QListViewItem *item)
 			m_addgrp->setEnabled(isgroup);
 			m_addopt->setEnabled(isgroup);
 
-			QListViewItem	*prevItem = findPrev(item), *nextItem = findNext(item);
+			Q3ListViewItem	*prevItem = findPrev(item), *nextItem = findNext(item);
 			DrBase	*prevOpt = (prevItem && m_opts.contains(prevItem->text(1)) ? m_opts[prevItem->text(1)] : 0);
 			DrBase	*nextOpt = (nextItem && m_opts.contains(nextItem->text(1)) ? m_opts[nextItem->text(1)] : 0);
 			m_up->setEnabled(prevOpt && !(prevOpt->type() < DrBase::String && opt->type() >= DrBase::String));
@@ -541,7 +541,7 @@ void KXmlCommandAdvancedDlg::slotTypeChanged(int ID)
 
 void KXmlCommandAdvancedDlg::slotAddValue()
 {
-	QListViewItem	*item = new QListViewItem(m_values, m_values->lastItem(), i18n("Name"), i18n("Description"));
+	Q3ListViewItem	*item = new Q3ListViewItem(m_values, m_values->lastItem(), i18n("Name"), i18n("Description"));
 	item->setRenameEnabled(0, true);
 	item->setRenameEnabled(1, true);
 	m_values->ensureItemVisible(item);
@@ -551,7 +551,7 @@ void KXmlCommandAdvancedDlg::slotAddValue()
 
 void KXmlCommandAdvancedDlg::slotRemoveValue()
 {
-	QListViewItem	*item = m_values->currentItem();
+	Q3ListViewItem	*item = m_values->currentItem();
 	if (item)
 		delete item;
 	slotValueSelected(m_values->currentItem());
@@ -559,7 +559,7 @@ void KXmlCommandAdvancedDlg::slotRemoveValue()
 
 void KXmlCommandAdvancedDlg::slotApplyChanges()
 {
-	QListViewItem	*item = m_view->currentItem();
+	Q3ListViewItem	*item = m_view->currentItem();
 	if (item)
 	{
 		if (m_name->text().isEmpty() || m_name->text() == "__root__")
@@ -601,7 +601,7 @@ void KXmlCommandAdvancedDlg::slotApplyChanges()
 						else
 							opt = new DrBooleanOption;
 						DrListOption	*lopt = static_cast<DrListOption*>(opt);
-						QListViewItem	*item = m_values->firstChild();
+						Q3ListViewItem	*item = m_values->firstChild();
 						while (item)
 						{
 							DrBase	*choice = new DrBase;
@@ -648,7 +648,7 @@ void KXmlCommandAdvancedDlg::slotAddGroup()
 		grp->set("text", i18n("New Group"));
 		m_opts[ID] = grp;
 
-		QListViewItem	*item = new QListViewItem(m_view->currentItem(), i18n("New Group"), ID);
+		Q3ListViewItem	*item = new Q3ListViewItem(m_view->currentItem(), i18n("New Group"), ID);
 		item->setRenameEnabled(0, true);
 		item->setPixmap(0, SmallIcon("folder"));
 		m_view->ensureItemVisible(item);
@@ -667,7 +667,7 @@ void KXmlCommandAdvancedDlg::slotAddOption()
 		opt->set("text", i18n("New Option"));
 		m_opts[ID] = opt;
 
-		QListViewItem	*item = new QListViewItem(m_view->currentItem(), i18n("New Option"), ID);
+		Q3ListViewItem	*item = new Q3ListViewItem(m_view->currentItem(), i18n("New Option"), ID);
 		item->setRenameEnabled(0, true);
 		item->setPixmap(0, SmallIcon("document"));
 		m_view->ensureItemVisible(item);
@@ -677,10 +677,10 @@ void KXmlCommandAdvancedDlg::slotAddOption()
 
 void KXmlCommandAdvancedDlg::slotRemoveItem()
 {
-	QListViewItem	*item = m_view->currentItem();
+	Q3ListViewItem	*item = m_view->currentItem();
 	if (item)
 	{
-		QListViewItem	*newCurrent(item->nextSibling());
+		Q3ListViewItem	*newCurrent(item->nextSibling());
 		if (!newCurrent)
 			newCurrent = item->parent();
 		removeItem(item);
@@ -689,11 +689,11 @@ void KXmlCommandAdvancedDlg::slotRemoveItem()
 	}
 }
 
-void KXmlCommandAdvancedDlg::removeItem(QListViewItem *item)
+void KXmlCommandAdvancedDlg::removeItem(Q3ListViewItem *item)
 {
 	delete m_opts[item->text(1)];
 	m_opts.remove(item->text(1));
-	QListViewItem	*child = item->firstChild();
+	Q3ListViewItem	*child = item->firstChild();
 	while (child && item)
 	{
 		removeItem(child);
@@ -704,15 +704,15 @@ void KXmlCommandAdvancedDlg::removeItem(QListViewItem *item)
 
 void KXmlCommandAdvancedDlg::slotMoveUp()
 {
-	QListViewItem	*item = m_view->currentItem(), *prev = 0;
+	Q3ListViewItem	*item = m_view->currentItem(), *prev = 0;
 	if (item && (prev=findPrev(item)))
 	{
-		QListViewItem	*after(0);
+		Q3ListViewItem	*after(0);
 		if ((after=findPrev(prev)) != 0)
 			item->moveItem(after);
 		else
 		{
-			QListViewItem	*parent = item->parent();
+			Q3ListViewItem	*parent = item->parent();
 			parent->takeItem(item);
 			parent->insertItem(item);
 		}
@@ -723,7 +723,7 @@ void KXmlCommandAdvancedDlg::slotMoveUp()
 
 void KXmlCommandAdvancedDlg::slotMoveDown()
 {
-	QListViewItem	*item = m_view->currentItem(), *next = 0;
+	Q3ListViewItem	*item = m_view->currentItem(), *next = 0;
 	if (item && (next=findNext(item)))
 	{
 		item->moveItem(next);
@@ -742,13 +742,13 @@ void KXmlCommandAdvancedDlg::slotCommandChanged(const QString& cmd)
 	m_view->setOpen(m_view->firstChild(), m_view->isEnabled());
 }
 
-void KXmlCommandAdvancedDlg::slotValueSelected(QListViewItem *item)
+void KXmlCommandAdvancedDlg::slotValueSelected(Q3ListViewItem *item)
 {
 	m_addval->setEnabled(m_type->currentItem() != 4 || m_values->childCount() < 2);
 	m_delval->setEnabled(item != 0);
 }
 
-void KXmlCommandAdvancedDlg::slotOptionRenamed(QListViewItem *item, int)
+void KXmlCommandAdvancedDlg::slotOptionRenamed(Q3ListViewItem *item, int)
 {
 	if (item && m_opts.contains(item->text(1)))
 	{
@@ -758,12 +758,12 @@ void KXmlCommandAdvancedDlg::slotOptionRenamed(QListViewItem *item, int)
 	}
 }
 
-void KXmlCommandAdvancedDlg::recreateGroup(QListViewItem *item, DrGroup *grp)
+void KXmlCommandAdvancedDlg::recreateGroup(Q3ListViewItem *item, DrGroup *grp)
 {
 	if (!item)
 		return;
 
-	QListViewItem	*child = item->firstChild();
+	Q3ListViewItem	*child = item->firstChild();
 	while (child)
 	{
 		DrBase	*opt = (m_opts.contains(child->text(1)) ? m_opts[child->text(1)] : 0);
@@ -835,8 +835,8 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	QWidget	*dummy = new QWidget(this, "TopDetail");
 	QWidget	*topmain = new QWidget(this, "TopMain");
 
-	QGroupBox	*m_gb1 = new QGroupBox(0, Qt::Horizontal, i18n("Supported &Input Formats"), dummy);
-	QGroupBox	*m_gb2 = new QGroupBox(0, Qt::Horizontal, i18n("Requirements"), topmain);
+	Q3GroupBox	*m_gb1 = new Q3GroupBox(0, Qt::Horizontal, i18n("Supported &Input Formats"), dummy);
+	Q3GroupBox	*m_gb2 = new Q3GroupBox(0, Qt::Horizontal, i18n("Requirements"), topmain);
 
 	m_description = new QLineEdit(topmain);
 	m_idname = new QLabel(topmain);
@@ -872,7 +872,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	f.setBold(true);
 	m_idname->setFont(f);
 
-	KSeparator	*sep1 = new KSeparator(QFrame::HLine, dummy);
+	KSeparator	*sep1 = new KSeparator(Q3Frame::HLine, dummy);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(topmain, 0, 10);
 	QGridLayout	*l5 = new QGridLayout(0, 2, 2, 0, 5);
@@ -912,14 +912,14 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	connect(m_addmime, SIGNAL(clicked()), SLOT(slotAddMime()));
 	connect(m_removemime, SIGNAL(clicked()), SLOT(slotRemoveMime()));
 	connect(m_edit, SIGNAL(clicked()), SLOT(slotEditCommand()));
-	connect(m_requirements, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotReqSelected(QListViewItem*)));
-	connect(m_availablemime, SIGNAL(selectionChanged(QListBoxItem*)), SLOT(slotAvailableSelected(QListBoxItem*)));
-	connect(m_selectedmime, SIGNAL(selectionChanged(QListBoxItem*)), SLOT(slotSelectedSelected(QListBoxItem*)));
+	connect(m_requirements, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotReqSelected(Q3ListViewItem*)));
+	connect(m_availablemime, SIGNAL(selectionChanged(Q3ListBoxItem*)), SLOT(slotAvailableSelected(Q3ListBoxItem*)));
+	connect(m_selectedmime, SIGNAL(selectionChanged(Q3ListBoxItem*)), SLOT(slotSelectedSelected(Q3ListBoxItem*)));
 	connect(m_addreq, SIGNAL(clicked()), SLOT(slotAddReq()));
 	connect(m_removereq, SIGNAL(clicked()), SLOT(slotRemoveReq()));
 
 	KMimeType::List	list = KMimeType::allMimeTypes();
-	for (QValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	for (Q3ValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		QString	mimetype = (*it)->name();
 		m_mimelist << mimetype;
@@ -943,10 +943,10 @@ void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
 
 	m_requirements->clear();
 	QStringList	list = xmlCmd->requirements();
-	QListViewItem	*item(0);
+	Q3ListViewItem	*item(0);
 	for (QStringList::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
-		item = new QListViewItem(m_requirements, item, *it);
+		item = new Q3ListViewItem(m_requirements, item, *it);
 		item->setRenameEnabled(0, true);
 	}
 
@@ -974,7 +974,7 @@ void KXmlCommandDlg::slotOk()
 		m_cmd->setMimeType((m_mimetype->currentText() == "all/all" ? QString::null : m_mimetype->currentText()));
 		m_cmd->setDescription(m_description->text());
 		QStringList	l;
-		QListViewItem	*item = m_requirements->firstChild();
+		Q3ListViewItem	*item = m_requirements->firstChild();
 		while (item)
 		{
 			l << item->text(0);
@@ -1029,7 +1029,7 @@ void KXmlCommandDlg::slotEditCommand()
 
 void KXmlCommandDlg::slotAddReq()
 {
-	QListViewItem	*item = new QListViewItem(m_requirements, m_requirements->lastItem(), i18n("exec:/"));
+	Q3ListViewItem	*item = new Q3ListViewItem(m_requirements, m_requirements->lastItem(), i18n("exec:/"));
 	item->setRenameEnabled(0, true);
 	m_requirements->ensureItemVisible(item);
 	item->startRename(0);
@@ -1040,17 +1040,17 @@ void KXmlCommandDlg::slotRemoveReq()
 	delete m_requirements->currentItem();
 }
 
-void KXmlCommandDlg::slotReqSelected(QListViewItem *item)
+void KXmlCommandDlg::slotReqSelected(Q3ListViewItem *item)
 {
 	m_removereq->setEnabled(item);
 }
 
-void KXmlCommandDlg::slotAvailableSelected(QListBoxItem *item)
+void KXmlCommandDlg::slotAvailableSelected(Q3ListBoxItem *item)
 {
 	m_addmime->setEnabled(item);
 }
 
-void KXmlCommandDlg::slotSelectedSelected(QListBoxItem *item)
+void KXmlCommandDlg::slotSelectedSelected(Q3ListBoxItem *item)
 {
 	m_removemime->setEnabled(item);
 }

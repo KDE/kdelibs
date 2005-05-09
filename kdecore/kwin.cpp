@@ -29,8 +29,8 @@
 #include <kuniqueapplication.h>
 #include <qbitmap.h>
 #include <qimage.h>
-#include <qwhatsthis.h>
-#include <qcstring.h>
+#include <q3whatsthis.h>
+#include <q3cstring.h>
 #include <qdialog.h>
 
 #include "config.h"
@@ -152,9 +152,9 @@ ContextWidget::ContextWidget()
     {
 	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );
-	QWhatsThis::enterWhatsThisMode();
+	Q3WhatsThis::enterWhatsThisMode();
 	QCursor c = *QApplication::overrideCursor();
-	QWhatsThis::leaveWhatsThisMode();
+	Q3WhatsThis::leaveWhatsThisMode();
 	XGrabPointer( qt_xdisplay(), qt_xrootwin(), true,
 		      (uint)( ButtonPressMask | ButtonReleaseMask |
 			      PointerMotionMask | EnterWindowMask |
@@ -212,7 +212,7 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
     NETRootInfo rootinfo( qt_xdisplay(), NET::Supported );
     if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
         DCOPRef ref( "kded", "kded" );
-        if( !ref.send( "loadModule", QCString( "kdetrayproxy" )))
+        if( !ref.send( "loadModule", Q3CString( "kdetrayproxy" )))
             kdWarning( 176 ) << "Loading of kdetrayproxy failed." << endl;
     }
 #endif
@@ -1084,7 +1084,7 @@ WId KWin::WindowInfo::groupLeader() const
 #endif
 }
 
-QCString KWin::WindowInfo::windowClassClass() const
+Q3CString KWin::WindowInfo::windowClassClass() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
@@ -1095,7 +1095,7 @@ QCString KWin::WindowInfo::windowClassClass() const
 #endif
 }
 
-QCString KWin::WindowInfo::windowClassName() const
+Q3CString KWin::WindowInfo::windowClassName() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
@@ -1106,7 +1106,7 @@ QCString KWin::WindowInfo::windowClassName() const
 #endif
 }
 
-QCString KWin::WindowInfo::windowRole() const
+Q3CString KWin::WindowInfo::windowRole() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
@@ -1117,7 +1117,7 @@ QCString KWin::WindowInfo::windowRole() const
 #endif
 }
 
-QCString KWin::WindowInfo::clientMachine() const
+Q3CString KWin::WindowInfo::clientMachine() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )

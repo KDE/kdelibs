@@ -24,7 +24,7 @@
 #ifndef  UTCVALUE_H
 #define  UTCVALUE_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include <VCardValue.h>
 

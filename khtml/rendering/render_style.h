@@ -37,7 +37,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpalette.h>
 #include <qapplication.h>
 

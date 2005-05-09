@@ -193,7 +193,7 @@ int main( int argc, char **argv )
 
     KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-    QCString ov;
+    Q3CString ov;
     ov = args->getOption("mimetypeinfo");
     if (ov)
     {

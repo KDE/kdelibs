@@ -150,7 +150,7 @@ bool DBWrapper::find( const QString& _key,  QString& _val ) {
     ::memset(&key, 0, sizeof(key) );
     ::memset(&val, 0, sizeof(val) );
 
-    QCString db_key = _key.local8Bit();
+    Q3CString db_key = _key.local8Bit();
     key.data = db_key.data();
     key.size = db_key.size();
 
@@ -163,8 +163,8 @@ bool DBWrapper::find( const QString& _key,  QString& _val ) {
     return false;
 }
 bool DBWrapper::add( const QString& _key, const QString& _val ) {
-    QCString db_key = _key.local8Bit();
-    QCString db_val = _val.local8Bit();
+    Q3CString db_key = _key.local8Bit();
+    Q3CString db_val = _val.local8Bit();
     DBT key, val;
     ::memset(&key, 0, sizeof(key) );
     ::memset(&val, 0, sizeof(val) );
@@ -177,7 +177,7 @@ bool DBWrapper::add( const QString& _key, const QString& _val ) {
     return !data->db->put(data->db, NULL, &key, &val, 0 );
 }
 bool DBWrapper::remove( const QString& _key ) {
-    QCString db_key = _key.local8Bit();
+    Q3CString db_key = _key.local8Bit();
     DBT key;
     memset(&key, 0, sizeof(key) );
     key.data = db_key.data();

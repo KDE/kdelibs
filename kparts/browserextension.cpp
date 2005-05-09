@@ -22,11 +22,11 @@
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qtimer.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qmetaobject.h>
 #include <qregexp.h>
-#include <qstrlist.h>
-#include <qstylesheet.h>
+#include <q3strlist.h>
+#include <q3stylesheet.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -333,7 +333,7 @@ public:
     KURL m_delayedURL;
     KParts::URLArgs m_delayedArgs;
   };
-  QValueList<DelayedRequest> m_requests;
+  Q3ValueList<DelayedRequest> m_requests;
   bool m_urlDropHandlingEnabled;
   KBitArray m_actionStatus;
   QMap<int, QString> m_actionText;
@@ -363,7 +363,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
   // they're supported or not
   ActionSlotMap::ConstIterator it = s_actionSlotMap->begin();
   ActionSlotMap::ConstIterator itEnd = s_actionSlotMap->end();
-  QStrList slotNames = metaObject()->slotNames();
+  Q3StrList slotNames = metaObject()->slotNames();
   for ( int i=0 ; it != itEnd ; ++it, ++i )
   {
       // Does the extension have a slot with the name of this action ?
@@ -444,7 +444,7 @@ void BrowserExtension::slotCompleted()
 
 void BrowserExtension::pasteRequest()
 {
-    QCString plain( "plain" );
+    Q3CString plain( "plain" );
     QString url = QApplication::clipboard()->text(plain, QClipboard::Selection).stripWhiteSpace();
     // Remove linefeeds and any whitespace surrounding it.
     url.remove(QRegExp("[\\ ]*\\n+[\\ ]*"));
@@ -475,7 +475,7 @@ void BrowserExtension::pasteRequest()
     else if ( KURIFilter::self()->filterURI( filterData, "kuriikwsfilter" ) && url.length() < 250 )
     {
         if ( KMessageBox::questionYesNo( m_part->widget(),
-		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( QStyleSheet::escape(url) ),
+		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( Q3StyleSheet::escape(url) ),
 		    i18n( "Internet Search" ), KGuiItem( i18n( "&Search" ), "find"),
 		    KStdGuiItem::cancel(), "MiddleClickSearch" ) == KMessageBox::Yes)
           slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
@@ -647,9 +647,9 @@ QStringList BrowserHostExtension::frameNames() const
   return QStringList();
 }
 
-const QPtrList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
+const Q3PtrList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
 {
-  return QPtrList<KParts::ReadOnlyPart>();
+  return Q3PtrList<KParts::ReadOnlyPart>();
 }
 
 bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs & )

@@ -21,7 +21,7 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <qstrlist.h>
+#include <q3strlist.h>
 
 #include <VCardRToken.h>
 #include <VCardNValue.h>
@@ -46,7 +46,7 @@ NValue::NValue(const NValue & x)
 {
 }
 
-NValue::NValue(const QCString & s)
+NValue::NValue(const Q3CString & s)
 	:	Value(s)
 {
 	vDebug("ctor");
@@ -68,7 +68,7 @@ NValue::operator = (NValue & x)
 }
 
 	NValue &
-NValue::operator = (const QCString & s)
+NValue::operator = (const Q3CString & s)
 {
 	Value::operator = (s);
 	return *this;
@@ -100,7 +100,7 @@ NValue::clone()
 	void
 NValue::_parse()
 {
-	QStrList l;
+	Q3StrList l;
 	RTokenise(strRep_, ";", l);
 	
 	for (unsigned int i = 0; i < l.count(); i++) {

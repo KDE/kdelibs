@@ -20,7 +20,7 @@
 
 #include <qstring.h>
 #include <kprocess.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include "kdelibs_export.h"
 
 class KProcIOPrivate;
@@ -101,7 +101,7 @@ public:
    * @param appendnewline if true, a newline '\\n' is appended.
    * @return true if successful, false otherwise
    **/
-  bool writeStdin(const QCString &line, bool appendnewline);
+  bool writeStdin(const Q3CString &line, bool appendnewline);
 
   /**
    * Writes data to stdin of the process.
@@ -195,8 +195,8 @@ signals:
   void readReady(KProcIO *pio);
 
 protected:
-  QPtrList<QByteArray> outbuffer;
-  QCString recvbuffer;
+  Q3PtrList<QByteArray> outbuffer;
+  Q3CString recvbuffer;
   QTextCodec *codec;
   int rbi;
   bool needreadsignal, readsignalon, writeready;

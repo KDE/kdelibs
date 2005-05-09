@@ -744,7 +744,7 @@ Value DOMTextEvent::getValueProperty(ExecState *, int token) const
   // ### KDE 4: use const reference
   DOM::TextEvent tevent = static_cast<DOM::TextEvent>(event);
   switch (token) {
-  case Key:
+  case Qt::Key:
     return Number(tevent.keyVal());
   case VirtKey:
     return Number(tevent.virtKeyVal());
@@ -756,13 +756,13 @@ Value DOMTextEvent::getValueProperty(ExecState *, int token) const
     return Boolean(tevent.numPad());
   // these modifier attributes actually belong into a KeyboardEvent interface
   case CtrlKey:
-    return Boolean(tevent.checkModifier(Qt::ControlButton));
+    return Boolean(tevent.checkModifier(Qt::ControlModifier));
   case ShiftKey:
-    return Boolean(tevent.checkModifier(Qt::ShiftButton));
+    return Boolean(tevent.checkModifier(Qt::ShiftModifier));
   case AltKey:
-    return Boolean(tevent.checkModifier(Qt::AltButton));
+    return Boolean(tevent.checkModifier(Qt::AltModifier));
   case MetaKey:
-    return Boolean(tevent.checkModifier(Qt::MetaButton));
+    return Boolean(tevent.checkModifier(Qt::MetaModifier));
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
     return KJS::Undefined();

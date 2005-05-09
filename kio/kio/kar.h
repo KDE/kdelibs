@@ -24,7 +24,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <karchive.h>
 

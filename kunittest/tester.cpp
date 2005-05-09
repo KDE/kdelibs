@@ -48,7 +48,7 @@ namespace KUnitTest
     
     void SlotTester::allTests()
     {
-        QStrList allSlots = metaObject()->slotNames();
+        Q3StrList allSlots = metaObject()->slotNames();
         
         if ( allSlots.contains("setUp()") > 0 ) invokeMember("setUp()");
 

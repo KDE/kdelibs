@@ -169,8 +169,8 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
 
 /************************************** HTTPProtocol **********************************************/
 
-HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
-                            const QCString &app )
+HTTPProtocol::HTTPProtocol( const Q3CString &protocol, const Q3CString &pool,
+                            const Q3CString &app )
              :TCPSlaveBase( 0, protocol , pool, app,
                             (protocol == "https" || protocol == "webdavs") )
 {
@@ -622,7 +622,7 @@ void HTTPProtocol::listDir( const KURL& url )
   davStatList( url, false );
 }
 
-void HTTPProtocol::davSetRequest( const QCString& requestXML )
+void HTTPProtocol::davSetRequest( const Q3CString& requestXML )
 {
   // insert the document into the POST buffer, kill trailing zero byte
   m_bufPOST = requestXML;
@@ -644,7 +644,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   QString query = metaData("davSearchQuery");
   if ( !query.isEmpty() )
   {
-    QCString request = "<?xml version=\"1.0\"?>\r\n";
+    Q3CString request = "<?xml version=\"1.0\"?>\r\n";
     request.append( "<D:searchrequest xmlns:D=\"DAV:\">\r\n" );
     request.append( query.utf8() );
     request.append( "</D:searchrequest>\r\n" );
@@ -652,7 +652,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     davSetRequest( request );
   } else {
     // We are only after certain features...
-    QCString request;
+    Q3CString request;
     request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
     "<D:propfind xmlns:D=\"DAV:\">";
 
@@ -1708,18 +1708,18 @@ bool HTTPProtocol::isOffline(const KURL &url)
 {
   const int NetWorkStatusUnknown = 1;
   const int NetWorkStatusOnline = 8;
-  QCString replyType;
+  Q3CString replyType;
   QByteArray params;
   QByteArray reply;
 
-  QDataStream stream(params, IO_WriteOnly);
+  QDataStream stream(params, QIODevice::WriteOnly);
   stream << url.url();
 
   if ( dcopClient()->call( "kded", "networkstatus", "status(QString)",
                            params, replyType, reply ) && (replyType == "int") )
   {
      int result;
-     QDataStream stream2( reply, IO_ReadOnly );
+     QDataStream stream2( reply, QIODevice::ReadOnly );
      stream2 >> result;
      kdDebug(7113) << "(" << m_pid << ") networkstatus status = " << result << endl;
      return (result != NetWorkStatusUnknown) && (result != NetWorkStatusOnline);
@@ -1730,7 +1730,7 @@ bool HTTPProtocol::isOffline(const KURL &url)
 
 void HTTPProtocol::multiGet(const QByteArray &data)
 {
-  QDataStream stream(data, IO_ReadOnly);
+  QDataStream stream(data, QIODevice::ReadOnly);
   Q_UINT32 n;
   stream >> n;
 
@@ -2619,8 +2619,8 @@ try_again:
      return true;
   }
 
-  QCString locationStr; // In case we get a redirect.
-  QCString cookieStr; // In case we get a cookie.
+  Q3CString locationStr; // In case we get a redirect.
+  Q3CString cookieStr; // In case we get a cookie.
 
   QString disposition; // Incase we get a Content-Disposition
   QString mediaValue;
@@ -3068,7 +3068,7 @@ try_again:
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buf, "Pragma:", 7) == 0) {
-      QCString pragma = QCString(trimLead(buf+7)).stripWhiteSpace().lower();
+      Q3CString pragma = Q3CString(trimLead(buf+7)).stripWhiteSpace().lower();
       if (pragma == "no-cache")
       {
          m_request.bCachedWrite = false; // Don't put in cache
@@ -3087,7 +3087,7 @@ try_again:
     else if (strncasecmp(buf, "Location:", 9) == 0) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
-        locationStr = QCString(trimLead(buf+9)).stripWhiteSpace();
+        locationStr = Q3CString(trimLead(buf+9)).stripWhiteSpace();
     }
 
     // Check for cookies
@@ -3858,7 +3858,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
 
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive (" << m_keepAliveTimeout << ")" << endl;
     QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
+    QDataStream stream( data, QIODevice::WriteOnly );
     stream << int(99); // special: Close connection
     setTimeoutSpecialCommand(m_keepAliveTimeout, data);
     return;
@@ -3917,7 +3917,7 @@ void HTTPProtocol::special( const QByteArray &data )
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::special" << endl;
 
   int tmp;
-  QDataStream stream(data, IO_ReadOnly);
+  QDataStream stream(data, QIODevice::ReadOnly);
 
   stream >> tmp;
   switch (tmp) {
@@ -4436,11 +4436,11 @@ void HTTPProtocol::error( int _err, const QString &_text )
 }
 
 
-void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
+void HTTPProtocol::addCookies( const QString &url, const Q3CString &cookieHeader )
 {
    long windowId = m_request.window.toLong();
    QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
+   QDataStream stream(params, QIODevice::WriteOnly);
    stream << url << cookieHeader << windowId;
 
    kdDebug(7113) << "(" << m_pid << ") " << cookieHeader << endl;
@@ -4455,14 +4455,14 @@ void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader 
 
 QString HTTPProtocol::findCookies( const QString &url)
 {
-  QCString replyType;
+  Q3CString replyType;
   QByteArray params;
   QByteArray reply;
   QString result;
 
   long windowId = m_request.window.toLong();
   result = QString::null;
-  QDataStream stream(params, IO_WriteOnly);
+  QDataStream stream(params, QIODevice::WriteOnly);
   stream << url << windowId;
 
   if ( !dcopClient()->call( "kded", "kcookiejar", "findCookies(QString,long int)",
@@ -4473,7 +4473,7 @@ QString HTTPProtocol::findCookies( const QString &url)
   }
   if ( replyType == "QString" )
   {
-     QDataStream stream2( reply, IO_ReadOnly );
+     QDataStream stream2( reply, QIODevice::ReadOnly );
      stream2 >> result;
   }
   else
@@ -4552,7 +4552,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   QCString u = m_request.url.url().latin1();
+   Q3CString u = m_request.url.url().latin1();
    for(int i = u.length(); i--;)
    {
       hash = (hash * 12211 + u[i]) % 2147483563;
@@ -5292,14 +5292,14 @@ void HTTPProtocol::saveAuthorization()
 }
 
 #ifdef HAVE_LIBGSSAPI
-QCString HTTPProtocol::gssError( int major_status, int minor_status )
+Q3CString HTTPProtocol::gssError( int major_status, int minor_status )
 {
   OM_uint32 new_status;
   OM_uint32 msg_ctx = 0;
   gss_buffer_desc major_string;
   gss_buffer_desc minor_string;
   OM_uint32 ret;
-  QCString errorstr;
+  Q3CString errorstr;
 
   errorstr = "";
 
@@ -5318,7 +5318,7 @@ QCString HTTPProtocol::gssError( int major_status, int minor_status )
 QString HTTPProtocol::createNegotiateAuth()
 {
   QString auth;
-  QCString servicename;
+  Q3CString servicename;
   QByteArray input;
   OM_uint32 major_status, minor_status;
   OM_uint32 req_flags = 0;
@@ -5413,7 +5413,7 @@ QString HTTPProtocol::createNegotiateAuth()
 #else
 
 // Dummy
-QCString HTTPProtocol::gssError( int, int )
+Q3CString HTTPProtocol::gssError( int, int )
 {
   return "";
 }
@@ -5429,7 +5429,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 {
   uint len;
   QString auth, user, domain, passwd;
-  QCString strauth;
+  Q3CString strauth;
   QByteArray buf;
 
   if ( isForProxy )
@@ -5484,7 +5484,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 QString HTTPProtocol::createBasicAuth( bool isForProxy )
 {
   QString auth;
-  QCString user, passwd;
+  Q3CString user, passwd;
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: Basic ";
@@ -5511,14 +5511,14 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   return auth;
 }
 
-void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QCString& Response )
+void HTTPProtocol::calculateResponse( DigestAuthInfo& info, Q3CString& Response )
 {
   KMD5 md;
-  QCString HA1;
-  QCString HA2;
+  Q3CString HA1;
+  Q3CString HA2;
 
   // Calculate H(A1)
-  QCString authStr = info.username;
+  Q3CString authStr = info.username;
   authStr += ':';
   authStr += info.realm;
   authStr += ':';
@@ -5583,8 +5583,8 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   const char *p;
 
   QString auth;
-  QCString opaque;
-  QCString Response;
+  Q3CString opaque;
+  Q3CString Response;
 
   DigestAuthInfo info;
 
@@ -5689,21 +5689,21 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=6;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.realm = QCString( p, i+1 );
+      info.realm = Q3CString( p, i+1 );
     }
     else if (strncasecmp(p, "algorith=", 9)==0)
     {
       p+=9;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = QCString(p, i+1);
+      info.algorithm = Q3CString(p, i+1);
     }
     else if (strncasecmp(p, "algorithm=", 10)==0)
     {
       p+=10;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = QCString(p,i+1);
+      info.algorithm = Q3CString(p,i+1);
     }
     else if (strncasecmp(p, "domain=", 7)==0)
     {
@@ -5712,7 +5712,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
       int pos;
       int idx = 0;
-      QCString uri = QCString(p,i+1);
+      Q3CString uri = Q3CString(p,i+1);
       do
       {
         pos = uri.find( ' ', idx );
@@ -5736,21 +5736,21 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=6;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.nonce = QCString(p,i+1);
+      info.nonce = Q3CString(p,i+1);
     }
     else if (strncasecmp(p, "opaque=", 7)==0)
     {
       p+=7;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      opaque = QCString(p,i+1);
+      opaque = Q3CString(p,i+1);
     }
     else if (strncasecmp(p, "qop=", 4)==0)
     {
       p+=4;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.qop = QCString(p,i+1);
+      info.qop = Q3CString(p,i+1);
     }
     p+=(i+1);
   }

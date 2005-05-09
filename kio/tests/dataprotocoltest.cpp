@@ -18,7 +18,7 @@
 
 #include <kio/global.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 
 #include <iostream.h>

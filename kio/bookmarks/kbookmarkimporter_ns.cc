@@ -29,7 +29,7 @@
 #include <kdebug.h>
 #include <kcharsets.h>
 #include <qtextcodec.h>
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -45,10 +45,10 @@ void KNSBookmarkImporterImpl::parse()
     if (!codec)
         return;
 
-    if(f.open(IO_ReadOnly)) {
+    if(f.open(QIODevice::ReadOnly)) {
 
         static const int g_lineLimit = 16*1024;
-        QCString s(g_lineLimit);
+        Q3CString s(g_lineLimit);
         // skip header
         while(f.readLine(s.data(), g_lineLimit) >= 0 && !s.contains("<DL>"));
 
@@ -58,21 +58,21 @@ void KNSBookmarkImporterImpl::parse()
                kdWarning() << "Netscape bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
                continue;
             }
-            QCString t = s.stripWhiteSpace();
+            Q3CString t = s.stripWhiteSpace();
             if(t.left(12).upper() == "<DT><A HREF=" ||
                t.left(16).upper() == "<DT><H3><A HREF=") {
               int firstQuotes = t.find('"')+1;
               int secondQuotes = t.find('"', firstQuotes);
               if (firstQuotes != -1 && secondQuotes != -1)
               {
-                QCString link = t.mid(firstQuotes, secondQuotes-firstQuotes);
+                Q3CString link = t.mid(firstQuotes, secondQuotes-firstQuotes);
                 int endTag = t.find('>', secondQuotes+1);
-                QCString name = t.mid(endTag+1);
+                Q3CString name = t.mid(endTag+1);
                 name = name.left(name.findRev('<'));
                 if ( name.right(4) == "</A>" )
                     name = name.left( name.length() - 4 );
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
-                QCString additionalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
+                Q3CString additionalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
 
                 emit newBookmark( qname,
                                   link, codec->toUnicode(additionalInfo) );
@@ -80,10 +80,10 @@ void KNSBookmarkImporterImpl::parse()
             }
             else if(t.left(7).upper() == "<DT><H3") {
                 int endTag = t.find('>', 7);
-                QCString name = t.mid(endTag+1);
+                Q3CString name = t.mid(endTag+1);
                 name = name.left(name.findRev('<'));
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
-                QCString additionalInfo = t.mid( 8, endTag-8 );
+                Q3CString additionalInfo = t.mid( 8, endTag-8 );
                 bool folded = (additionalInfo.left(6) == "FOLDED");
                 if (folded) additionalInfo.remove(0,7);
 
@@ -182,7 +182,7 @@ void KNSBookmarkExporterImpl::write(KBookmarkGroup parent) {
 
    QFile file(m_fileName);
 
-   if (!file.open(IO_WriteOnly)) {
+   if (!file.open(QIODevice::WriteOnly)) {
       kdError(7043) << "Can't write to file " << m_fileName << endl;
       return;
    }
@@ -206,7 +206,7 @@ void KNSBookmarkExporterImpl::write(KBookmarkGroup parent) {
 
 QString KNSBookmarkExporterImpl::folderAsString(KBookmarkGroup parent) const {
    QString str;
-   QTextStream fstream(&str, IO_WriteOnly);
+   QTextStream fstream(&str, QIODevice::WriteOnly);
 
    for (KBookmark bk = parent.first(); !bk.isNull(); bk = parent.next(bk)) {
       if (bk.isSeparator()) {
@@ -214,7 +214,7 @@ QString KNSBookmarkExporterImpl::folderAsString(KBookmarkGroup parent) const {
          continue;
       }
 
-      QString text = QStyleSheet::escape(bk.fullText());
+      QString text = Q3StyleSheet::escape(bk.fullText());
 
       if (bk.isGroup() ) {
          fstream << "<DT><H3 " 

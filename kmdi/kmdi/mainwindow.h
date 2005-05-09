@@ -46,14 +46,14 @@
 #include <kmenubar.h>
 #include <kpopupmenu.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qrect.h>
 #include <qapplication.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include <kmdi/global.h>
 
-class QPopupMenu;
+class Q3PopupMenu;
 class QMenuBar;
 
 #include <kmdi/toolviewaccessor.h>
@@ -137,8 +137,8 @@ class KMDI_EXPORT MainWindow : public KParts::DockMainWindow
     void collapseOverlapContainers();
 
   protected:
-    void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
-    void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
+    void findToolViewsDockedToMain(Q3PtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
+    void dockToolViewsIntoContainers(Q3PtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
 
   private:
     /**

@@ -21,18 +21,18 @@
 #include "kpluginselector_p.h"
 
 #include <qtooltip.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlabel.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qfile.h>
 #include <qstring.h>
 #include <qlayout.h>
-#include <qptrlist.h>
-#include <qwidgetstack.h>
+#include <q3ptrlist.h>
+#include <q3widgetstack.h>
 #include <qcursor.h>
 #include <qapplication.h>
-#include <qobjectlist.h>
-#include <qcstring.h>
+#include <qobject.h>
+#include <q3cstring.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -44,7 +44,7 @@
 #include <kstandarddirs.h>
 #include <ktabctl.h>
 #include <kcmoduleinfo.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kservice.h>
 #include <ktrader.h>
 #include <ktabwidget.h>
@@ -53,10 +53,10 @@
 #include "kcmoduleinfo.h"
 #include "kcmoduleloader.h"
 #include <qsplitter.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include "kplugininfo.h"
 #include <kinstance.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <qstringlist.h>
 #include "kcmoduleproxy.h"
 
@@ -64,11 +64,11 @@
     QCheckListViewItem that holds a pointer to the KPluginInfo object.
     Used in the tooltip code to access additional fields
 */
-class KPluginInfoLVI : public QCheckListItem
+class KPluginInfoLVI : public Q3CheckListItem
 {
 public:
     KPluginInfoLVI( KPluginInfo *pluginInfo, KListView *parent )
-    : QCheckListItem( parent, pluginInfo->name(), QCheckListItem::CheckBox ), m_pluginInfo( pluginInfo )
+    : Q3CheckListItem( parent, pluginInfo->name(), Q3CheckListItem::CheckBox ), m_pluginInfo( pluginInfo )
     {
     }
 
@@ -142,19 +142,19 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
         delete config;
     }
 
-    QMap<QCheckListItem*, KPluginInfo*> pluginInfoMap;
+    QMap<Q3CheckListItem*, KPluginInfo*> pluginInfoMap;
 
-    QWidgetStack * widgetstack;
+    Q3WidgetStack * widgetstack;
     KPluginSelector * kps;
     KConfigGroup * config;
     KPluginListViewToolTip *tooltip;
 
-    QDict<KCModuleInfo> pluginconfigmodules;
+    Q3Dict<KCModuleInfo> pluginconfigmodules;
     QMap<QString, int> widgetIDs;
     QMap<KPluginInfo*, bool> plugincheckedchanged;
     QString catname;
-    QValueList<KCModuleProxy*> modulelist;
-    QPtrDict<QStringList> moduleParentComponents;
+    Q3ValueList<KCModuleProxy*> modulelist;
+    Q3PtrDict<QStringList> moduleParentComponents;
 
     KPluginInfo * currentplugininfo;
     bool visible;
@@ -163,7 +163,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 };
 
 KPluginSelectionWidget::KPluginSelectionWidget(
-        const QValueList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
+        const Q3ValueList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
         QWidget * parent, const QString & catname, const QString & category,
         KConfigGroup * config, const char * name )
     : QWidget( parent, name )
@@ -177,35 +177,35 @@ inline QString KPluginSelectionWidget::catName() const
     return d->catname;
 }
 
-void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
+void KPluginSelectionWidget::init( const Q3ValueList<KPluginInfo*> & plugininfos,
         const QString & category )
 {
     // setup Widgets
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     KListView * listview = new KListView( this );
     d->tooltip = new KPluginListViewToolTip( listview->viewport(), listview );
-    connect( listview, SIGNAL( pressed( QListViewItem * ) ), this,
-            SLOT( executed( QListViewItem * ) ) );
-    connect( listview, SIGNAL( spacePressed( QListViewItem * ) ), this,
-            SLOT( executed( QListViewItem * ) ) );
-    connect( listview, SIGNAL( returnPressed( QListViewItem * ) ), this,
-            SLOT( executed( QListViewItem * ) ) );
-    connect( listview, SIGNAL( selectionChanged( QListViewItem * ) ), this,
-            SLOT( executed( QListViewItem * ) ) );
+    connect( listview, SIGNAL( pressed( Q3ListViewItem * ) ), this,
+            SLOT( executed( Q3ListViewItem * ) ) );
+    connect( listview, SIGNAL( spacePressed( Q3ListViewItem * ) ), this,
+            SLOT( executed( Q3ListViewItem * ) ) );
+    connect( listview, SIGNAL( returnPressed( Q3ListViewItem * ) ), this,
+            SLOT( executed( Q3ListViewItem * ) ) );
+    connect( listview, SIGNAL( selectionChanged( Q3ListViewItem * ) ), this,
+            SLOT( executed( Q3ListViewItem * ) ) );
     listview->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Preferred );
     listview->setAcceptDrops( false );
     listview->setFullWidth( true );
     listview->setSelectionModeExt( KListView::Single );
     listview->setAllColumnsShowFocus( true );
     listview->addColumn( i18n( "Name" ) );
-    for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
+    for( Q3ValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
             it != plugininfos.end(); ++it )
     {
         d->plugincheckedchanged[ *it ] = false;
         if( !( *it )->isHidden() &&
                 ( category.isNull() || ( *it )->category() == category ) )
         {
-            QCheckListItem * item = new KPluginInfoLVI( *it, listview );
+            Q3CheckListItem * item = new KPluginInfoLVI( *it, listview );
             if( ! ( *it )->icon().isEmpty() )
                 item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
             item->setOn( ( *it )->isPluginEnabled() );
@@ -229,7 +229,7 @@ KPluginSelectionWidget::~KPluginSelectionWidget()
 
 bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginName ) const
 {
-    for( QMap<QCheckListItem*, KPluginInfo*>::ConstIterator it =
+    for( QMap<Q3CheckListItem*, KPluginInfo*>::ConstIterator it =
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
         if( it.data()->pluginName() == pluginName )
             return it.data()->isPluginEnabled();
@@ -275,7 +275,7 @@ void KPluginSelectionWidget::embeddPluginKCMs( KPluginInfo * plugininfo, bool ch
         d->kps->configPage( id );
         d->widgetIDs[ plugininfo->pluginName() ] = id;
 
-        for( QValueList<KService::Ptr>::ConstIterator it =
+        for( Q3ValueList<KService::Ptr>::ConstIterator it =
                 plugininfo->kcmServices().begin();
                 it != plugininfo->kcmServices().end(); ++it )
         {
@@ -368,7 +368,7 @@ void KPluginSelectionWidget::tabWidgetChanged( QWidget * widget )
         d->visible = false;
 }
 
-void KPluginSelectionWidget::executed( QListViewItem * item )
+void KPluginSelectionWidget::executed( Q3ListViewItem * item )
 {
     kdDebug( 702 ) << k_funcinfo << endl;
     if( item == 0 )
@@ -380,7 +380,7 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
     if( item->rtti() != 1 ) //check for a QCheckListItem
         return;
 
-    QCheckListItem * citem = static_cast<QCheckListItem *>( item );
+    Q3CheckListItem * citem = static_cast<Q3CheckListItem *>( item );
     bool checked = citem->isOn();
     //kdDebug( 702 ) << "it's a " << ( checked ? "checked" : "unchecked" )
     //    << " QCheckListItem" << endl;
@@ -421,7 +421,7 @@ void KPluginSelectionWidget::load()
 {
     //kdDebug( 702 ) << k_funcinfo << endl;
 
-    for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
+    for( QMap<Q3CheckListItem*, KPluginInfo*>::Iterator it =
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
     {
         KPluginInfo * info = it.data();
@@ -431,7 +431,7 @@ void KPluginSelectionWidget::load()
             d->currentchecked = info->isPluginEnabled();
     }
 
-    for( QValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
+    for( Q3ValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
             it != d->modulelist.end(); ++it )
         if( ( *it )->changed() )
             ( *it )->load();
@@ -444,7 +444,7 @@ void KPluginSelectionWidget::save()
 {
     kdDebug( 702 ) << k_funcinfo << endl;
 
-    for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
+    for( QMap<Q3CheckListItem*, KPluginInfo*>::Iterator it =
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
     {
         KPluginInfo * info = it.data();
@@ -454,7 +454,7 @@ void KPluginSelectionWidget::save()
         d->plugincheckedchanged[ info ] = false;
     }
     QStringList updatedModules;
-    for( QValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
+    for( Q3ValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
             it != d->modulelist.end(); ++it )
         if( ( *it )->changed() )
         {
@@ -484,7 +484,7 @@ void KPluginSelectionWidget::checkDependencies( const KPluginInfo * info )
 
     for( QStringList::ConstIterator it = info->dependencies().begin();
             it != info->dependencies().end(); ++it )
-        for( QMap<QCheckListItem*,
+        for( QMap<Q3CheckListItem*,
                 KPluginInfo*>::Iterator infoIt = d->pluginInfoMap.begin();
                 infoIt != d->pluginInfoMap.end(); ++infoIt )
             if( infoIt.data()->pluginName() == *it )
@@ -509,10 +509,10 @@ class KPluginSelector::KPluginSelectorPrivate
             {
             }
 
-        QFrame * frame;
+        Q3Frame * frame;
         KTabWidget * tabwidget;
-        QWidgetStack * widgetstack;
-        QValueList<KPluginSelectionWidget *> pswidgets;
+        Q3WidgetStack * widgetstack;
+        Q3ValueList<KPluginSelectionWidget *> pswidgets;
         bool hideconfigpage;
 };
 
@@ -523,14 +523,14 @@ KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
     QBoxLayout * hbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
     hbox->setAutoAdd( true );
 
-    QSplitter* splitter = new QSplitter( QSplitter::Horizontal, this );
-    d->frame = new QFrame( splitter, "KPluginSelector left frame" );
-    d->frame->setFrameStyle( QFrame::NoFrame );
+    QSplitter* splitter = new QSplitter( Qt::Horizontal, this );
+    d->frame = new Q3Frame( splitter, "KPluginSelector left frame" );
+    d->frame->setFrameStyle( Q3Frame::NoFrame );
     ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
 
     // widgetstack
-    d->widgetstack = new QWidgetStack( splitter, "KPluginSelector Config Pages" );
-    d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+    d->widgetstack = new Q3WidgetStack( splitter, "KPluginSelector Config Pages" );
+    d->widgetstack->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
     d->widgetstack->setMinimumSize( 200, 200 );
 
     QLabel * label = new QLabel( i18n( "(This plugin is not configurable)" ),
@@ -570,10 +570,10 @@ void KPluginSelector::checkNeedForTabWidget()
     }
 }
 
-static QValueList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
+static Q3ValueList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
 {
     if( instanceName.isNull() )
-        return QValueList<KPluginInfo*>(); //nothing
+        return Q3ValueList<KPluginInfo*>(); //nothing
 
     const QStringList desktopfilenames = KGlobal::dirs()->findAllResources( "data",
             instanceName + "/kpartplugins/*.desktop", true, false );
@@ -583,7 +583,7 @@ static QValueList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
 void KPluginSelector::addPlugins( const QString & instanceName,
         const QString & catname, const QString & category, KConfig * config )
 {
-    const QValueList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
+    const Q3ValueList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
     if ( plugininfos.isEmpty() )
         return;
     checkNeedForTabWidget();
@@ -595,7 +595,7 @@ void KPluginSelector::addPlugins( const QString & instanceName,
     addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
-void KPluginSelector::addPluginsInternal( const QValueList<KPluginInfo*> plugininfos,
+void KPluginSelector::addPluginsInternal( const Q3ValueList<KPluginInfo*> plugininfos,
                                           const QString & catname, const QString & category,
                                           KConfigGroup* cfgGroup )
 {
@@ -613,8 +613,8 @@ void KPluginSelector::addPluginsInternal( const QValueList<KPluginInfo*> plugini
                 catname, category, cfgGroup );
     w->setMinimumSize( 200, 200 );
     connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
-    connect( w, SIGNAL( configCommitted( const QCString & ) ), this,
-            SIGNAL( configCommitted( const QCString & ) ) );
+    connect( w, SIGNAL( configCommitted( const Q3CString & ) ), this,
+            SIGNAL( configCommitted( const Q3CString & ) ) );
     d->pswidgets += w;
 }
 
@@ -626,7 +626,7 @@ void KPluginSelector::addPlugins( const KInstance * instance, const QString &
     addPlugins( instance->instanceName(), catname, category, config );
 }
 
-void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
+void KPluginSelector::addPlugins( const Q3ValueList<KPluginInfo*> & plugininfos,
         const QString & catname, const QString & category, KConfig * config )
 {
     checkNeedForTabWidget();
@@ -636,7 +636,7 @@ void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
     addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
-QWidgetStack * KPluginSelector::widgetStack()
+Q3WidgetStack * KPluginSelector::widgetStack()
 {
     return d->widgetstack;
 }
@@ -668,7 +668,7 @@ void KPluginSelector::setShowEmptyConfigPage( bool show )
 
 void KPluginSelector::load()
 {
-    for( QValueList<KPluginSelectionWidget *>::Iterator it =
+    for( Q3ValueList<KPluginSelectionWidget *>::Iterator it =
             d->pswidgets.begin(); it != d->pswidgets.end(); ++it )
     {
         ( *it )->load();
@@ -677,7 +677,7 @@ void KPluginSelector::load()
 
 void KPluginSelector::save()
 {
-    for( QValueList<KPluginSelectionWidget *>::Iterator it =
+    for( Q3ValueList<KPluginSelectionWidget *>::Iterator it =
             d->pswidgets.begin(); it != d->pswidgets.end(); ++it )
     {
         ( *it )->save();

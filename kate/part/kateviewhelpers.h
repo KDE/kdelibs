@@ -28,7 +28,7 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qscrollbar.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 
 class KateDocument;
 class KateView;
@@ -50,7 +50,7 @@ class KateScrollBar : public QScrollBar
   Q_OBJECT
 
   public:
-    KateScrollBar(Orientation orientation, class KateViewInternal *parent, const char* name = 0L);
+    KateScrollBar(Qt::Orientation orientation, class KateViewInternal *parent, const char* name = 0L);
 
     inline bool showMarks() { return m_showMarks; };
     inline void setShowMarks(bool b) { m_showMarks = b; update(); };
@@ -87,7 +87,7 @@ class KateScrollBar : public QScrollBar
     int m_bottomMargin;
     uint m_savVisibleLines;
 
-    QIntDict<QColor> m_lines;
+    Q3IntDict<QColor> m_lines;
 
     bool m_showMarks;
 };

@@ -73,7 +73,7 @@ public:
     QString externalPlayer;
     KProcess *externalPlayerProc;
 
-    QPtrList<KDE::PlayObject> playObjects;
+    Q3PtrList<KDE::PlayObject> playObjects;
     QMap<KDE::PlayObject*,int> playObjectEventMap;
     int externalPlayerEventId;
 
@@ -406,7 +406,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyByMessagebox( text, level, checkWinId( fromApp, winId ));
 
     QByteArray qbd;
-    QDataStream ds(qbd, IO_WriteOnly);
+    QDataStream ds(qbd, QIODevice::WriteOnly);
     ds << event << fromApp << text << sound << file << present << level
         << winId << eventId;
     emitDCOPSignal("notifySignal(QString,QString,QString,QString,QString,int,int,int,int)", qbd);
@@ -612,7 +612,7 @@ bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 
     // open file in append mode
     QFile logFile(file);
-    if ( !logFile.open(IO_WriteOnly | IO_Append) )
+    if ( !logFile.open(QIODevice::WriteOnly | QIODevice::Append) )
         return false;
 
     // append msg
@@ -632,7 +632,7 @@ bool KNotify::notifyByStderr(const QString &text)
         return true;
 
     // open stderr for output
-    QTextStream strm( stderr, IO_WriteOnly );
+    QTextStream strm( stderr, QIODevice::WriteOnly );
 
     // output msg
     strm << "KNotify " << QDateTime::currentDateTime().toString() << ": ";
@@ -663,9 +663,9 @@ void KNotify::setVolume( int volume )
 
 void KNotify::playTimeout()
 {
-    for ( QPtrListIterator< KDE::PlayObject > it(d->playObjects); *it;)
+    for ( Q3PtrListIterator< KDE::PlayObject > it(d->playObjects); *it;)
     {
-        QPtrListIterator< KDE::PlayObject > current = it;
+        Q3PtrListIterator< KDE::PlayObject > current = it;
         ++it;
         if ( (*current)->state() != Arts::posPlaying )
         {
@@ -684,7 +684,7 @@ void KNotify::playTimeout()
 
 bool KNotify::isPlaying( const QString& soundFile ) const
 {
-    for ( QPtrListIterator< KDE::PlayObject > it(d->playObjects); *it; ++it)
+    for ( Q3PtrListIterator< KDE::PlayObject > it(d->playObjects); *it; ++it)
     {
         if ( (*it)->mediaName() == soundFile )
             return true;
@@ -713,7 +713,7 @@ void KNotify::abortFirstPlayObject()
 void KNotify::soundFinished( int eventId, PlayingFinishedStatus reason )
 {
     QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
+    QDataStream stream( data, QIODevice::WriteOnly );
     stream << eventId << (int) reason;
 
     DCOPClient::mainClient()->emitDCOPSignal( "KNotify", "playingFinished(int,int)", data );
@@ -723,21 +723,21 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
 {
     if ( senderWinId == 0 )
     {
-        QCString senderId = kapp->dcopClient()->senderId();
-        QCString compare = (appName + "-mainwindow").latin1();
+        Q3CString senderId = kapp->dcopClient()->senderId();
+        Q3CString compare = (appName + "-mainwindow").latin1();
         int len = compare.length();
         // kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
 
         QCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
         for (QCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
-            QCString obj( *it );
+            Q3CString obj( *it );
             if ( obj.left(len) == compare) {
                 // kdDebug( ) << "found " << obj << endl;
-                QCString replyType;
+                Q3CString replyType;
                 QByteArray data, replyData;
 
                 if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
-                    QDataStream answer(replyData, IO_ReadOnly);
+                    QDataStream answer(replyData, QIODevice::ReadOnly);
                     if (replyType == "int") {
                         answer >> senderWinId;
                         // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)

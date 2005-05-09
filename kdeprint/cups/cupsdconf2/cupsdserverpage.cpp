@@ -25,7 +25,7 @@
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
+#include <q3whatsthis.h>
 
 #include <klocale.h>
 
@@ -162,14 +162,14 @@ bool CupsdServerPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdServerPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(servername_, conf->comments_.toolTip("servername"));
-	QWhatsThis::add(serveradmin_, conf->comments_.toolTip("serveradmin"));
-	QWhatsThis::add(classification_, conf->comments_.toolTip("classification"));
-	QWhatsThis::add(classoverride_, conf->comments_.toolTip("classifyoverride"));
-	QWhatsThis::add(charset_, conf->comments_.toolTip("defaultcharset"));
-	QWhatsThis::add(language_, conf->comments_.toolTip("defaultlanguage"));
-	QWhatsThis::add(printcap_, conf->comments_.toolTip("printcap"));
-	QWhatsThis::add(printcapformat_, conf->comments_.toolTip("printcapformat"));
+	Q3WhatsThis::add(servername_, conf->comments_.toolTip("servername"));
+	Q3WhatsThis::add(serveradmin_, conf->comments_.toolTip("serveradmin"));
+	Q3WhatsThis::add(classification_, conf->comments_.toolTip("classification"));
+	Q3WhatsThis::add(classoverride_, conf->comments_.toolTip("classifyoverride"));
+	Q3WhatsThis::add(charset_, conf->comments_.toolTip("defaultcharset"));
+	Q3WhatsThis::add(language_, conf->comments_.toolTip("defaultlanguage"));
+	Q3WhatsThis::add(printcap_, conf->comments_.toolTip("printcap"));
+	Q3WhatsThis::add(printcapformat_, conf->comments_.toolTip("printcapformat"));
 }
 
 void CupsdServerPage::classChanged(int index)

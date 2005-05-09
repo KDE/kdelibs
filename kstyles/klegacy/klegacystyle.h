@@ -41,7 +41,7 @@ public:
 
     virtual void polish(QApplication *);
     virtual void polish(QWidget *);
-    virtual void polishPopupMenu(QPopupMenu *);
+    virtual void polishPopupMenu(Q3PopupMenu *);
     virtual void unPolish(QWidget *);
     virtual void unPolish(QApplication *);
 
@@ -70,7 +70,7 @@ public:
                                       QPixmap *icon = 0, QBrush *fill = 0);
 
     // arrows
-    virtual void drawArrow(QPainter *, ArrowType, bool, int, int, int, int,
+    virtual void drawArrow(QPainter *, Qt::ArrowType, bool, int, int, int, int,
 			   const QColorGroup &, bool, const QBrush * = 0);
 
     // button stuffs
@@ -111,9 +111,9 @@ public:
 
     // sliders
     virtual void drawSlider(QPainter *, int , int , int , int ,
-			    const QColorGroup &, Orientation, bool, bool);
+			    const QColorGroup &, Qt::Orientation, bool, bool);
     virtual void drawSliderGroove(QPainter *, int, int, int, int, const QColorGroup &,
-				  QCOORD, Orientation);
+				  QCOORD, Qt::Orientation);
 
     // panel
     virtual void drawPanel(QPainter *, int, int, int, int, const QColorGroup &,
@@ -121,7 +121,7 @@ public:
 
     // splitters
     virtual void drawSplitter(QPainter *, int, int, int, int,
-			      const QColorGroup &, Orientation);
+			      const QColorGroup &, Qt::Orientation);
 
     // tabs
     virtual void drawTab(QPainter *, const QTabBar *, QTab *, bool);
@@ -130,7 +130,7 @@ public:
 protected:
     bool eventFilter(QObject *, QEvent *);
 
-    void drawMenuArrow(QPainter *, ArrowType, bool, int, int, int, int,
+    void drawMenuArrow(QPainter *, Qt::ArrowType, bool, int, int, int, int,
 		       const QColorGroup &, bool, const QBrush * = 0);
 
 

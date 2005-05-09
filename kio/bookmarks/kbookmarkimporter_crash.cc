@@ -52,10 +52,10 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
     QFile f( filename );
     ViewMap views;
 
-    if ( !f.open( IO_ReadOnly ) )
+    if ( !f.open( QIODevice::ReadOnly ) )
         return views;
 
-    QCString s( g_lineLimit );
+    Q3CString s( g_lineLimit );
 
     QTextCodec * codec = QTextCodec::codecForName( "UTF-8" );
     Q_ASSERT( codec );
@@ -102,14 +102,14 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     QCStringList apps = dcop->registeredApplications();
     for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it ) 
     {
-        QCString &clientId = *it;
+        Q3CString &clientId = *it;
 
         if ( qstrncmp(clientId, "konqueror", 9) != 0 ) 
             continue;
 
         QByteArray data, replyData;
-        QCString replyType;
-        QDataStream arg( data, IO_WriteOnly );
+        Q3CString replyType;
+        QDataStream arg( data, QIODevice::WriteOnly );
 
         if ( !dcop->call( clientId.data(), "KonquerorIface", 
                           "crashLogFile()", data, replyType, replyData) ) 
@@ -121,7 +121,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
         if ( replyType != "QString" ) 
             continue;
 
-        QDataStream reply( replyData, IO_ReadOnly );
+        QDataStream reply( replyData, QIODevice::ReadOnly );
         QString ret;
         reply >> ret;
         activeLogs[ret] = true;
@@ -156,7 +156,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 
 void KCrashBookmarkImporterImpl::parse() 
 {
-    QDict<bool> signatureMap;
+    Q3Dict<bool> signatureMap;
     QStringList crashFiles = KCrashBookmarkImporterImpl::getCrashLogs();
     int count = 1;
     for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) 

@@ -41,8 +41,8 @@
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_binding.h"
 
-#include <qptrstack.h>
-#include <qpaintdevicemetrics.h>
+#include <q3ptrstack.h>
+#include <q3paintdevicemetrics.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstaticdeleter.h>
@@ -216,8 +216,8 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
-static KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
-QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
+static KStaticDeleter< Q3PtrList<DocumentImpl> > s_changedDocumentsDeleter;
+Q3PtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
@@ -539,7 +539,7 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
 
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 {
-    QPtrStack<NodeImpl> nodeStack;
+    Q3PtrStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;
 
     while(1)
@@ -887,7 +887,7 @@ QString DocumentImpl::nextState()
 QStringList DocumentImpl::docState()
 {
     QStringList s;
-    for (QPtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
+    for (Q3PtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
         s.append(it.current()->state());
 
     return s;
@@ -895,7 +895,7 @@ QStringList DocumentImpl::docState()
 
 bool DocumentImpl::unsubmittedFormChanges()
 {
-    for (QPtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
+    for (Q3PtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
         if (it.current()->state().right(1)=="M")
             return true;
 
@@ -933,7 +933,7 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(NodeImpl *root, unsigned long wha
 void DocumentImpl::setDocumentChanged(bool b)
 {
     if (!changedDocuments)
-        changedDocuments = s_changedDocumentsDeleter.setObject( changedDocuments, new QPtrList<DocumentImpl>() );
+        changedDocuments = s_changedDocumentsDeleter.setObject( changedDocuments, new Q3PtrList<DocumentImpl>() );
 
     if (b && !m_docChanged)
         changedDocuments->append(this);
@@ -1139,7 +1139,7 @@ void DocumentImpl::setPaintDevice( QPaintDevice *dev )
     if (m_paintDevice != dev) {
         m_paintDevice = dev;
         delete m_paintDeviceMetrics;
-        m_paintDeviceMetrics = new QPaintDeviceMetrics( dev );
+        m_paintDeviceMetrics = new Q3PaintDeviceMetrics( dev );
     }
 }
 
@@ -1166,7 +1166,7 @@ void DocumentImpl::open( bool clearEventListeners )
         attach();
 
     if (clearEventListeners) {
-        QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+        Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
         for (; it.current();)
             m_windowEventListeners.removeRef(it.current());
     }
@@ -1883,7 +1883,7 @@ void DocumentImpl::recalcStyleSelector()
 
     assert(m_pendingStylesheets==0);
 
-    QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
+    Q3PtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed.replace("&&", "&") : QString();
     bool autoselect = sheetUsed.isEmpty();
@@ -2005,7 +2005,7 @@ void DocumentImpl::recalcStyleSelector()
 
     // Include programmatically added style sheets
     if (m_addedStyleSheets) {
-        QPtrListIterator<StyleSheetImpl> it = m_addedStyleSheets->styleSheets;
+        Q3PtrListIterator<StyleSheetImpl> it = m_addedStyleSheets->styleSheets;
         for (; *it; ++it) {
             if ((*it)->isCSSStyleSheet() && !(*it)->disabled())
                 m_styleSheets->add(*it);
@@ -2013,7 +2013,7 @@ void DocumentImpl::recalcStyleSelector()
     }
 
     // De-reference all the stylesheets in the old list
-    QPtrListIterator<StyleSheetImpl> it(oldStyleSheets);
+    Q3PtrListIterator<StyleSheetImpl> it(oldStyleSheets);
     for (; it.current(); ++it)
 	it.current()->deref();
 
@@ -2112,7 +2112,7 @@ void DocumentImpl::detachNodeIterator(NodeIteratorImpl *ni)
 
 void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
 {
-    QPtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
+    Q3PtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
     for (; it.current(); ++it)
         it.current()->notifyBeforeNodeRemoval(n);
 }
@@ -2286,7 +2286,7 @@ void DocumentImpl::error(int err, const QString &text)
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     Event ev(evt);
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id()) {
@@ -2313,7 +2313,7 @@ void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 
 EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
 	if (it.current()->id == id &&
             it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
@@ -2326,7 +2326,7 @@ EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
 
 void DocumentImpl::removeHTMLWindowEventListener(int id)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
 	if (it.current()->id == id &&
             it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
@@ -2354,7 +2354,7 @@ void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bo
 {
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
 
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it)
         if (*(it.current()) == rl) {
             m_windowEventListeners.removeRef(it.current());
@@ -2364,7 +2364,7 @@ void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bo
 
 bool DocumentImpl::hasWindowEventListener(int id)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
 	if (it.current()->id == id) {
 	    return true;

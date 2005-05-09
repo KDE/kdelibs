@@ -45,11 +45,11 @@ namespace KIO {
 class KIO_EXPORT TCPSlaveBase : public SlaveBase
 {
 public:
-    TCPSlaveBase(unsigned short int defaultPort, const QCString &protocol,
-                 const QCString &poolSocket, const QCString &appSocket);
+    TCPSlaveBase(unsigned short int defaultPort, const Q3CString &protocol,
+                 const Q3CString &poolSocket, const Q3CString &appSocket);
 
-    TCPSlaveBase(unsigned short int defaultPort, const QCString &protocol,
-                 const QCString &poolSocket, const QCString &appSocket,
+    TCPSlaveBase(unsigned short int defaultPort, const Q3CString &protocol,
+                 const Q3CString &poolSocket, const Q3CString &appSocket,
                  bool useSSL);
 
     virtual ~TCPSlaveBase();
@@ -371,7 +371,7 @@ protected:
     bool m_bIsSSL;
     unsigned short int m_iPort;
     unsigned short int m_iDefaultPort;
-    QCString m_sServiceName;
+    Q3CString m_sServiceName;
     FILE *fp;
 
 private:

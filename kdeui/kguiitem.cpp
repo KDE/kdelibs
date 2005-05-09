@@ -20,7 +20,7 @@
 
 #include <qregexp.h>
 #include <qstring.h>
-#include <qiconset.h>
+#include <qicon.h>
 #include <qpixmap.h>
 
 #include <assert.h>
@@ -62,7 +62,7 @@ public:
     QString m_whatsThis;
     QString m_statusText;
     QString m_iconName;
-    QIconSet m_iconSet;
+    QIcon m_iconSet;
     bool m_hasIcon : 1;
     bool m_enabled : 1;
 };
@@ -82,7 +82,7 @@ KGuiItem::KGuiItem( const QString &text,    const QString &iconName,
     setIconName( iconName );
 }
 
-KGuiItem::KGuiItem( const QString &text,    const QIconSet &iconSet,
+KGuiItem::KGuiItem( const QString &text,    const QIcon &iconSet,
                     const QString &toolTip, const QString &whatsThis )
 {
     d = new KGuiItemPrivate;
@@ -149,7 +149,7 @@ QString KGuiItem::plainText() const
     return stripped;
 }
 
-QIconSet KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) const
+QIcon KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) const
 {
     if( d->m_hasIcon )
     {
@@ -172,7 +172,7 @@ QIconSet KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) 
         }
     }
     else
-        return QIconSet();
+        return QIcon();
 }
 
 QString KGuiItem::iconName() const
@@ -204,7 +204,7 @@ void KGuiItem::setText( const QString &text ) {
     d->m_text=text;
 }
 
-void KGuiItem::setIconSet( const QIconSet &iconset )
+void KGuiItem::setIconSet( const QIcon &iconset )
 {
     d->m_iconSet = iconset;
     d->m_iconName = QString::null;
@@ -214,7 +214,7 @@ void KGuiItem::setIconSet( const QIconSet &iconset )
 void KGuiItem::setIconName( const QString &iconName )
 {
     d->m_iconName = iconName;
-    d->m_iconSet = QIconSet();
+    d->m_iconSet = QIcon();
     d->m_hasIcon = !iconName.isEmpty();
 }
 
