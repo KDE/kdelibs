@@ -668,7 +668,7 @@ KResolver::ErrorCodes KStandardWorker::addUnix()
   if (!m_encodedName.isEmpty())
     return KResolver::AddrFamily; // non local hostname
 
-  if (protocol() || protocolName())
+  if (protocol() || !protocolName().isNull())
     return KResolver::BadFlags;	// cannot have Unix sockets with protocols
 
   QString pathname = serviceName();

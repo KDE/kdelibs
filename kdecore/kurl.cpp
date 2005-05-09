@@ -1652,7 +1652,7 @@ KURL KURL::join( const KURL::List & lst )
      KURL u(*it);
      if (it != first)
      {
-        if (!u.m_strRef_encoded) u.m_strRef_encoded = tmp.url();
+        if (u.m_strRef_encoded.isNull()) u.m_strRef_encoded = tmp.url();
         else u.m_strRef_encoded += "#" + tmp.url(); // Support more than one suburl thingy
      }
      tmp = u;
@@ -1696,7 +1696,7 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
      // unencoded one.
      int i = m_strPath_encoded.findRev( '/', len - 1 );
      QString fileName_encoded = m_strPath_encoded.mid(i+1);
-     n += fileName_encoded.contains("%2f", false);
+     n += fileName_encoded.count("%2f", Qt::CaseInsensitive);
   }
   int i = len;
   do {
@@ -2095,7 +2095,7 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
   if ( list1.isEmpty() || list2.isEmpty() )
     return false;
 
-  unsigned int size = list1.count();
+  int size = list1.count();
   if ( list2.count() != size )
     return false;
 
@@ -2161,7 +2161,7 @@ QString KURL::queryItem( const QString& _item, int encoding_hint ) const
     return QString::null;
 
   QStringList items = QStringList::split( '&', m_strQuery_encoded );
-  unsigned int _len = item.length();
+  int _len = item.length();
   for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it )
   {
     if ( (*it).startsWith( item ) )
@@ -2237,23 +2237,23 @@ static QString _relativePath(const QString &base_dir, const QString &path, bool 
       return _path;
 
    if (_base_dir[_base_dir.length()-1] != '/')
-      _base_dir.append('/');
+      _base_dir.append(QChar( '/') );
 
    QStringList list1 = QStringList::split('/', _base_dir);
    QStringList list2 = QStringList::split('/', _path);
 
    // Find where they meet
-   uint level = 0;
-   uint maxLevel = QMIN(list1.count(), list2.count());
+   int level = 0;
+   int maxLevel = QMIN(list1.count(), list2.count());
    while((level < maxLevel) && (list1[level] == list2[level])) level++;
 
    QString result;
    // Need to go down out of the first path to the common branch.
-   for(uint i = level; i < list1.count(); i++)
+   for(int i = level; i < list1.count(); i++)
       result.append("../");
 
    // Now up up from the common branch to the second path.
-   for(uint i = level; i < list2.count(); i++)
+   for(int i = level; i < list2.count(); i++)
       result.append(list2[i]).append("/");
 
    if ((level < list2.count()) && (path[path.length()-1] != '/'))

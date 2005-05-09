@@ -3,20 +3,6 @@
 
 #include <Qt/qdatastream.h>
 
-inline QDataStream & operator << (QDataStream & str, bool b)
-{
-  str << Q_INT8(b);
-  return str;
-}
-
-inline QDataStream & operator >> (QDataStream & str, bool & b)
-{
-  Q_INT8 l;
-  str >> l;
-  b = bool(l);
-  return str;
-}
-
 #if QT_VERSION < 0x030200 && !defined(Q_WS_WIN) && !defined(Q_WS_MAC)
 inline QDataStream & operator << (QDataStream & str, long long int ll)
 {

@@ -533,7 +533,7 @@ public:
    * Returns the number of bytes available for reading without
    * blocking.
    */
-  virtual Q_LONGLONG bytesAvailable() const = 0;
+  virtual qlonglong bytesAvailable() const = 0;
 
   /**
    * Waits up to @p msecs for more data to be available on this socket.
@@ -546,7 +546,7 @@ public:
    *
    * @returns the number of bytes available
    */
-  virtual Q_LONGLONG waitForMore(int msecs, bool *timeout = 0L) = 0;
+  virtual qlonglong waitForMore(int msecs, bool *timeout = 0L) = 0;
 
   /**
    * Reads data from the socket.

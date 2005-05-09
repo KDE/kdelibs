@@ -289,7 +289,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
     QDataStream arg(data, QIODevice::WriteOnly);
 
     uint i = 0;
-    for( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
+    for( Q3StringList::Iterator it = types.begin(); it != types.end(); ++it )
         marshall( arg, args, i, *it );
 
     if ( i != args.count() )
@@ -461,7 +461,7 @@ int runDCOP( QCStringList args, UserList users, Session session,
     Q3CString app;
     Q3CString objid;
     Q3CString function;
-    QCStringList params;
+    Q3CStringList params;
     DCOPClient *client = 0L;
     int retval = 0;
     if ( !args.isEmpty() && args[ 0 ].find( "DCOPRef(" ) == 0 )
@@ -843,17 +843,17 @@ int main( int argc, char** argv )
 
     argc -= numOptions;
 
-    QCStringList args;
-    
+    Q3CStringList args;
+
 #ifdef DCOPQUIT
     if (argc > 1)
     {
        Q3CString prog = argv[ numOptions + 1 ];
-       
+
        if (!prog.isEmpty())
        {
           args.append( prog );
-       
+
           // Pass as-is if it ends with a wildcard
           if (prog[prog.length()-1] != '*')
           {
@@ -861,9 +861,9 @@ int main( int argc, char** argv )
              int i = prog.findRev('-');
              if ((i >= 0) && prog.mid(i+1).toLong())
              {
-                prog = prog.left(i);      
+                prog = prog.left(i);
              }
-             args.append( "qt/"+prog ); 
+             args.append( "qt/"+prog );
              args.append( "quit()" );
           }
        }

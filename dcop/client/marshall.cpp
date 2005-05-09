@@ -114,12 +114,12 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         result.setNum( i );
     } else if ( type == "long" || type == "long int" )
     {
-        long l;
+        qint32 l; // TODO: this is long in kde3!
         stream >> l;
         result.setNum( l );
     } else if ( type == "unsigned long" || type == "unsigned long int" )
     {
-        unsigned long l;
+        quint32 l; // TODO: this is ulong in kde3!
         stream >> l;
         result.setNum( l );
     } else if ( type == "float" )
@@ -169,7 +169,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         QSize s;
         stream >> s;
         result.sprintf( "%dx%d", s.width(), s.height() );
-    } else if ( type == "QPixmap" || type == "QImage" ) 
+    } else if ( type == "QPixmap" || type == "QImage" )
     {
         QImage i;
         stream >> i;
@@ -269,7 +269,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
 
 }
 
-void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
+void marshall( QDataStream &arg, Q3CStringList args, uint &i, QString type )
 {
     if (type == "QStringList")
        type = "QValueList<QString>";
