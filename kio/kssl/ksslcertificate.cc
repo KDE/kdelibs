@@ -209,8 +209,8 @@ int n, i;
 	for (i = 0; i < n; i++) {
 		if (i%20 != 0) rc += ":";
 		else rc += "\n";
-		rc.append(hv[(s[i]&0xf0)>>4]);
-		rc.append(hv[s[i]&0x0f]);
+		rc.append(QChar(hv[(s[i]&0xf0)>>4]));
+		rc.append(QChar(hv[s[i]&0x0f]));
 	}
 
 #endif

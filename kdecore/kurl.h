@@ -21,6 +21,7 @@
 #define __kurl_h__
 
 #include <qstring.h>
+#include <q3cstring.h>
 #include <q3valuelist.h>
 #include "kdelibs_export.h"
 

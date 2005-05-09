@@ -1902,7 +1902,7 @@ bool KIO::manually_mounted(const QString& filename)
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
-  return !mountPoint.isNull() && (ismanual == Qt::DockRight);
+  return !mountPoint.isNull() && (ismanual == Right);
 #else //!Q_OS_UNIX
   return false;
 #endif 
@@ -1914,7 +1914,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
-  return !mountPoint.isNull() && (isslow == Qt::DockRight);
+  return !mountPoint.isNull() && (isslow == Right);
 #else //!Q_OS_UNIX
   return false;
 #endif 

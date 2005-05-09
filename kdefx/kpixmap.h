@@ -70,8 +70,8 @@ public:
 	/**
 	 * This enumeration provides a gradient mode specification
 	 */
-        enum GradientMode { Qt::Horizontal,
-			    Qt::Vertical,
+        enum GradientMode { Horizontal,
+			    Vertical,
 			    Diagonal,
 			    CrossDiagonal
 	};

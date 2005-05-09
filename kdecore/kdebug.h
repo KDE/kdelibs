@@ -23,6 +23,7 @@
 #define _KDEBUG_H_
 
 #include <qstring.h>
+#include <q3cstring.h>
 #include "kdelibs_export.h"
 
 class QWidget;
@@ -41,7 +42,6 @@ class QBrush;
 class QVariant;
 template <class T>
 class Q3ValueList;
-class QCString;
 
 class kdbgstream;
 class kndbgstream;

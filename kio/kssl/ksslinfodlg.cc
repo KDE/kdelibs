@@ -325,7 +325,7 @@ void KSSLInfoDlg::displayCert(KSSLCertificate *x) {
     for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();
             it != ksvl.end(); ++it) {
         if (!errorStr.isEmpty())
-            errorStr.append('\n');
+            errorStr.append(QChar('\n'));
         errorStr += KSSLCertificate::verifyText(*it);
     }
 
