@@ -33,7 +33,7 @@
 using namespace KNetwork;
 using namespace KNetwork::Internal;
 
-KSocketBuffer::KSocketBuffer(Q_LONG size)
+KSocketBuffer::KSocketBuffer(qint64 size)
   : m_mutex(true), m_offset(0), m_size(size), m_length(0)
 {
 }
@@ -70,7 +70,7 @@ bool KSocketBuffer::canReadLine() const
 
   Q3ValueListConstIterator<QByteArray> it = m_list.constBegin(),
     end = m_list.constEnd();
-  Q_LONGLONG offset = m_offset;
+  qint64LONG offset = m_offset;
 
   // walk the buffer
   for ( ; it != end; ++it)
@@ -96,7 +96,7 @@ Q3CString KSocketBuffer::readLine()
   int newline = 0;
   Q3ValueListConstIterator<QByteArray> it = m_list.constBegin(),
     end = m_list.constEnd();
-  Q_LONGLONG offset = m_offset;
+  qint64LONG offset = m_offset;
 
   // walk the buffer
   for ( ; it != end; ++it)
@@ -120,17 +120,17 @@ Q3CString KSocketBuffer::readLine()
   return result;
 }
 
-Q_LONG KSocketBuffer::length() const
+qint64 KSocketBuffer::length() const
 {
   return m_length;
 }
 
-Q_LONG KSocketBuffer::size() const
+qint64 KSocketBuffer::size() const
 {
   return m_size;
 }
 
-bool KSocketBuffer::setSize(Q_LONG size)
+bool KSocketBuffer::setSize(qint64 size)
 {
   m_size = size;
   if (size == -1 || m_length < m_size)
@@ -147,7 +147,7 @@ bool KSocketBuffer::setSize(Q_LONG size)
   return (m_length - m_size) == consumeBuffer(0L, m_length - m_size, true);
 }
 
-Q_LONG KSocketBuffer::feedBuffer(const char *data, Q_LONG len)
+qint64 KSocketBuffer::feedBuffer(const char *data, Q_LONG len)
 {
   if (data == 0L || len == 0)
     return 0;			// nothing to write
@@ -168,15 +168,15 @@ Q_LONG KSocketBuffer::feedBuffer(const char *data, Q_LONG len)
   return len;
 }
 
-Q_LONG KSocketBuffer::consumeBuffer(char *destbuffer, Q_LONG maxlen, bool discard)
+qint64 KSocketBuffer::consumeBuffer(char *destbuffer, Q_LONG maxlen, bool discard)
 {
   if (maxlen == 0 || isEmpty())
     return 0;
 
   Q3ValueListIterator<QByteArray> it = m_list.begin(),
     end = m_list.end();
-  Q_LONGLONG offset = m_offset;
-  Q_LONG copied = 0;
+  qint64LONG offset = m_offset;
+  qint64 copied = 0;
 
   // walk the buffer
   while (it != end && maxlen)
@@ -228,7 +228,7 @@ void KSocketBuffer::clear()
   m_length = 0;
 }
 
-Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
+qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
 {
   if (len == 0 || isEmpty())
     return 0;
@@ -237,8 +237,8 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
   
   Q3ValueListIterator<QByteArray> it = m_list.begin(),
     end = m_list.end();
-  Q_LONGLONG offset = m_offset;
-  Q_LONG written = 0;
+  qint64LONG offset = m_offset;
+  qint64 written = 0;
   
   // walk the buffer
   while (it != end && (len || len == -1))
@@ -252,7 +252,7 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
       if (len != -1 && len < bufsize)
 	bufsize = len;
       QByteArray buf(bufsize);
-      Q_LONG count = 0;
+      qint64 count = 0;
 
       while (it != end && count + ((*it).size() - offset) <= bufsize)
 	{
@@ -273,7 +273,7 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
 	}
 
       // now try to write those bytes
-      Q_LONG wrote = dev->writeBlock(buf, count);
+      qint64 wrote = dev->writeData(buf, count);
 
       if (wrote == -1)
 	// error?
@@ -293,7 +293,7 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
   return written;
 }
 
-Q_LONG KSocketBuffer::receiveFrom(KActiveSocketBase* dev, Q_LONG len)
+qint64 KSocketBuffer::receiveFrom(KActiveSocketBase* dev, Q_LONG len)
 {
   if (len == 0 || isFull())
     return 0;

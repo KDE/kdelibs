@@ -85,7 +85,7 @@ public:
    *
    * @sa size
    */
-  virtual Q_LONG length() const = 0;
+  virtual qint64 length() const = 0;
 
   /**
    * Returns true if the buffer is empty of data.
@@ -99,7 +99,7 @@ public:
    *
    * @sa length for the length of the data stored
    */
-  virtual Q_LONG size() const = 0;
+  virtual qint64 size() const = 0;
 
   /**
    * Returns true if the buffer is full (i.e., cannot receive more data)
@@ -114,7 +114,7 @@ public:
    * @returns true on success, false if an error occurred.
    * @note if the new size is less than length(), the buffer will be truncated
    */
-  virtual bool setSize(Q_LONG size) = 0;
+  virtual bool setSize(qint64 size) = 0;
 
   /**
    * Adds data to the end of the buffer.
@@ -123,7 +123,7 @@ public:
    * @param len		the data length, in bytes
    * @returns the number of bytes added to the end of the buffer.
    */
-  virtual Q_LONG feedBuffer(const char *data, Q_LONG len) = 0;
+  virtual qint64 feedBuffer(const char *data, Q_LONG len) = 0;
 
   /**
    * Consumes data from the beginning of the buffer.
@@ -133,7 +133,7 @@ public:
    * @param discard	if true, the bytes copied will be discarded
    * @returns the number of bytes copied from the buffer
    */
-  virtual Q_LONG consumeBuffer(char *data, Q_LONG maxlen, bool discard = true) = 0;
+  virtual qint64 consumeBuffer(char *data, Q_LONG maxlen, bool discard = true) = 0;
 
   /**
    * Clears the buffer.

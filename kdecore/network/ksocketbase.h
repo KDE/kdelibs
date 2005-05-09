@@ -512,14 +512,14 @@ public:
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual Offset at() const
+  virtual Offset pos() const
   { return 0; }
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return false.
    */
-  virtual bool at(Offset)
+  virtual bool pos(Offset)
   { return false; }
 
   /**
@@ -554,7 +554,7 @@ public:
    * Reimplemented from QIODevice. See QIODevice::readBlock for
    * more information.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG len) = 0;
+  virtual qint64 readData(char *data, qint64 len) = 0;
 
   /** @overload
    * Receives data and the source address.
@@ -567,7 +567,7 @@ public:
    * @param from		the address of the sender will be stored here
    * @returns the actual number of bytes read
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from) = 0;
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from) = 0;
 
   /**
    * Peeks the data in the socket.
@@ -580,7 +580,7 @@ public:
    * @param maxlen		the maximum number of bytes to peek
    * @returns the actual number of bytes copied into @p data
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen) = 0;
+  virtual qint64 peekData(char *data, qint64 maxlen) = 0;
 
   /** @overload
    * Peeks the data in the socket and the source address.
@@ -594,15 +594,15 @@ public:
    * @param from		the address of the sender will be stored here
    * @returns the actual number of bytes copied into @p data
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from) = 0;
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress& from) = 0;
 
   /**
    * Writes the given data to the socket.
    *
-   * Reimplemented from QIODevice. See QIODevice::writeBlock for
+   * Reimplemented from QIODevice. See QIODevice::writeData for
    * more information.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len) = 0;
+  virtual qint64 writeData(const char *data, qint64 len) = 0;
 
   /** @overload
    * Writes the given data to the destination address.
@@ -615,7 +615,7 @@ public:
    * @param to			the address to send to
    * @returns the number of bytes actually sent
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to) = 0;
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to) = 0;
 
   /**
    * Reads one character from the socket.

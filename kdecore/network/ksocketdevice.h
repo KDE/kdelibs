@@ -154,8 +154,7 @@ public:
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    */
-  virtual void flush()
-  { }
+  virtual bool flush() { return false; }
 
   /**
    * Creates a socket but don't connect or bind anywhere.
@@ -198,7 +197,7 @@ public:
   /**
    * Returns the number of bytes available for reading without blocking.
    */
-  virtual Q_LONG bytesAvailable() const;
+  virtual qint64 bytesAvailable() const;
 
   /**
    * Waits up to @p msecs for more data to be available on this socket.
@@ -206,37 +205,37 @@ public:
    * This function is a wrapper against @ref poll. This function will wait
    * for any read events.
    */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
 
   /**
    * Reads data from this socket.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 readData(char *data, qint64 maxlen);
 
   /**
    * Reads data and the source address from this socket.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
    * Peeks data in the socket.
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 peekData(char *data, qint64 maxlen);
 
   /**
    * Peeks the data in the socket and the source address.
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
    * Writes data to the socket.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
+  virtual qint64 writeData(const char *data, qint64 len);
 
   /**
    * Writes the given data to the given destination address.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to);
 
   /**
    * Returns this socket's local address.
@@ -323,6 +322,12 @@ public:
    * @return true if the poll call succeeded and false if an error occurred
    */
   bool poll(int timeout = -1, bool* timedout = 0L);
+
+
+  /**
+   * @reimp
+   */
+  bool isSequential() const { return true; }
 
 protected:
   /**

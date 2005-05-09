@@ -291,7 +291,7 @@ KActiveSocketBase::~KActiveSocketBase()
 int KActiveSocketBase::getch()
 {
   unsigned char c;
-  if (readBlock((char*)&c, 1) != 1)
+  if (readData((char*)&c, 1) != 1)
     return -1;
 
   return c;
@@ -300,7 +300,7 @@ int KActiveSocketBase::getch()
 int KActiveSocketBase::putch(int ch)
 {
   unsigned char c = (unsigned char)ch;
-  if (writeBlock((char*)&c, 1) != 1)
+  if (writeData((char*)&c, 1) != 1)
     return -1;
 
   return c;
@@ -309,13 +309,13 @@ int KActiveSocketBase::putch(int ch)
 void KActiveSocketBase::setError(int status, SocketError error)
 {
   KSocketBase::setError(error);
-  setStatus(status);
+  //setStatus(status); ###
 }
 
 void KActiveSocketBase::resetError()
 {
   KSocketBase::setError(NoError);
-  resetStatus();
+  //resetStatus(); ###
 }
 
 KPassiveSocketBase::KPassiveSocketBase()

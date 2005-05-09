@@ -83,20 +83,20 @@ public:
   /**
    * Overrides reading.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 readBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
 
   /**
    * Overrides peeking.
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 peekData(char *data, Q_ULONG maxlen);
+  virtual qint64 peekData(char *data, Q_ULONG maxlen, KSocketAddress& from);
 
   /**
    * Overrides writing.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 writeData(const char *data, Q_ULONG len);
+  virtual qint64 writeData(const char *data, Q_ULONG len, const KSocketAddress& to);
 
   /**
    * Overrides getting socket address.

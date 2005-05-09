@@ -94,7 +94,7 @@ class KServerSocketPrivate;
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KDECORE_EXPORT KServerSocket: public QObject, public KPassiveSocketBase
+class KDECORE_EXPORT KServerSocket: public KPassiveSocketBase
 {
   Q_OBJECT
 public:

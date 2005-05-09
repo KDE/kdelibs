@@ -48,7 +48,7 @@ public:
 };
 
 KClientSocketBase::KClientSocketBase(QObject *parent, const char *name)
-  : QObject(parent, name), d(new KClientSocketBasePrivate)
+  : d(new KClientSocketBasePrivate)
 {
   d->state = Idle;
   d->enableRead = true;
@@ -231,7 +231,7 @@ bool KClientSocketBase::connect(const KResolverEntry& address)
 	  emit stateChanged(newstate);
 	  if (error() == NoError)
 	    {
-	      setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite | IO_Open | IO_Async);
+	      open(QIODevice::ReadWrite);
 	      emit connected(address);
 	    }
 	}
@@ -278,7 +278,7 @@ void KClientSocketBase::close()
 }
 
 // This function is unlike all the others because it is const
-Q_LONG KClientSocketBase::bytesAvailable() const
+qint64 KClientSocketBase::bytesAvailable() const
 {
   return socketDevice()->bytesAvailable();
 }
@@ -286,10 +286,10 @@ Q_LONG KClientSocketBase::bytesAvailable() const
 // All the functions below look really alike
 // Should I use a macro to define them?
 
-Q_LONG KClientSocketBase::waitForMore(int msecs, bool *timeout)
+qint64 KClientSocketBase::waitForMore(int msecs, bool *timeout)
 {
   resetError();
-  Q_LONG retval = socketDevice()->waitForMore(msecs, timeout);
+  qint64 retval = socketDevice()->waitForMore(msecs, timeout);
   if (retval == -1)
     {
       copyError();
@@ -298,10 +298,10 @@ Q_LONG KClientSocketBase::waitForMore(int msecs, bool *timeout)
   return retval;
 }
 
-Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
+qint64 KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
 {
   resetError();
-  Q_LONG retval = socketDevice()->readBlock(data, maxlen);
+  qint64 retval = socketDevice()->readBlock(data, maxlen);
   if (retval == -1)
     {
       copyError();
@@ -310,10 +310,10 @@ Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
 {
   resetError();
-  Q_LONG retval = socketDevice()->readBlock(data, maxlen, from);
+  qint64 retval = socketDevice()->readData(data, maxlen, from);
   if (retval == -1)
     {
       copyError();
@@ -322,10 +322,10 @@ Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& 
   return retval;
 }
 
-Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen)
+qint64 KClientSocketBase::peekData(char *data, Q_ULONG maxlen)
 {
   resetError();
-  Q_LONG retval = socketDevice()->peekBlock(data, maxlen);
+  qint64 retval = socketDevice()->peekData(data, maxlen);
   if (retval == -1)
     {
       copyError();
@@ -334,10 +334,10 @@ Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KClientSocketBase::peekData(char *data, Q_ULONG maxlen, KSocketAddress& from)
 {
   resetError();
-  Q_LONG retval = socketDevice()->peekBlock(data, maxlen, from);
+  qint64 retval = socketDevice()->peekData(data, maxlen, from);
   if (retval == -1)
     {
       copyError();
@@ -346,10 +346,10 @@ Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& 
   return retval;
 }
 
-Q_LONG KClientSocketBase::writeBlock(const char *data, Q_ULONG len)
+qint64 KClientSocketBase::writeData(const char *data, Q_ULONG len)
 {
   resetError();
-  Q_LONG retval = socketDevice()->writeBlock(data, len);
+  qint64 retval = socketDevice()->writeData(data, len);
   if (retval == -1)
     {
       copyError();
@@ -358,10 +358,10 @@ Q_LONG KClientSocketBase::writeBlock(const char *data, Q_ULONG len)
   return retval;
 }
 
-Q_LONG KClientSocketBase::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
+qint64 KClientSocketBase::writeData(const char *data, Q_ULONG len, const KSocketAddress& to)
 {
   resetError();
-  Q_LONG retval = socketDevice()->writeBlock(data, len, to);
+  qint64 retval = socketDevice()->writeData(data, len, to);
   if (retval == -1)
     {
       copyError();

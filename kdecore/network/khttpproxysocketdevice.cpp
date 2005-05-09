@@ -43,8 +43,8 @@ class KNetwork::KHttpProxySocketDevicePrivate
 {
 public:
   KResolverEntry proxy;
-  Q3CString request;
-  Q3CString reply;
+  QByteArray request;
+  QByteArray reply;
   KSocketAddress peer;
 
   KHttpProxySocketDevicePrivate()
@@ -150,7 +150,7 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
       // must create the socket
       if (!KSocketDevice::connect(d->proxy))
 	return false;		// also unable to contact proxy server
-      setState(0);		// unset open flag
+      close();		// unset open flag
 
       // prepare the request
       QString request = QString::fromLatin1("CONNECT %1:%2 HTTP/1.1\r\n"
@@ -179,7 +179,7 @@ bool KHttpProxySocketDevice::parseServerReply()
   if (!d->request.isEmpty())
     {
       // send request
-      Q_LONG written = writeBlock(d->request, d->request.length());
+      qint64 written = writeData(d->request, d->request.length());
       if (written < 0)
 	{
 	  qDebug("KHttpProxySocketDevice: would block writing request!");
@@ -205,9 +205,9 @@ bool KHttpProxySocketDevice::parseServerReply()
   int index;
   if (!blocking())
     {
-      Q_LONG avail = bytesAvailable();
-      qDebug("KHttpProxySocketDevice: %ld bytes available", avail);
-      setState(0);
+      qint64 avail = bytesAvailable();
+      qDebug( "KHttpProxySocketDevice: %qi bytes available", avail );
+      close();
       if (avail == 0)
 	{
 	  setError(IO_ConnectError, InProgress);
@@ -217,10 +217,10 @@ bool KHttpProxySocketDevice::parseServerReply()
 	return false;		// error!
 
       QByteArray buf(avail);
-      if (peekBlock(buf.data(), avail) < 0)
+      if (peekData(buf.data(), avail) < 0)
 	return false;		// error!
 
-      Q3CString fullHeaders = d->reply + buf.data();
+      QByteArray fullHeaders = d->reply + buf;
       // search for the end of the headers
       index = fullHeaders.find("\r\n\r\n");
       if (index == -1)
@@ -276,6 +276,6 @@ bool KHttpProxySocketDevice::parseServerReply()
 
   // we've got it
   resetError();
-  setState(IO_Open);
+  open(QIODevice::ReadWrite);
   return true;
 }

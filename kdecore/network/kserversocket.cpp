@@ -59,14 +59,14 @@ public:
 };
 
 KServerSocket::KServerSocket(QObject* parent, const char *name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+  : d(new KServerSocketPrivate)
 {
   QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
 }
 
 KServerSocket::KServerSocket(const QString& service, QObject* parent, const char *name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+  : d(new KServerSocketPrivate)
 {
   QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));

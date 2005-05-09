@@ -83,7 +83,7 @@ protected:
 public:
   /**
    * Closes the socket for new data, but allow data that had been buffered
-   * for output with @ref writeBlock to be still be written.
+   * for output with @ref writeData to be still be written.
    *
    * @sa closeNow
    */
@@ -92,17 +92,17 @@ public:
   /**
    * Make use of the buffers.
    */
-  virtual Q_LONG bytesAvailable() const;
+  virtual qint64 bytesAvailable() const;
 
   /**
    * Make use of buffers.
    */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
 
   /**
    * Reads data from the socket. Make use of buffers.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 readData(char *data, qint64 maxlen);
 
   /**
    * @overload
@@ -110,12 +110,12 @@ public:
    *
    * The @p from parameter is always set to @ref peerAddress()
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
    * Peeks data from the socket.
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 peekData(char *data, qint64 maxlen);
 
   /**
    * @overload
@@ -123,12 +123,12 @@ public:
    *
    * The @p from parameter is always set to @ref peerAddress()
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress &from);
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress &from);
 
   /**
    * Writes data to the socket.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
+  virtual qint64 writeData(const char *data, qint64 len);
 
   /**
    * @overload
@@ -136,7 +136,7 @@ public:
    *
    * The @p to parameter is discarded.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to);
 
   /**
    * Catch changes.
@@ -171,11 +171,11 @@ public:
   /**
    * Returns the length of the output buffer.
    */
-  virtual Q_ULONG bytesToWrite() const;
+  virtual qint64 bytesToWrite() const;
 
   /**
    * Closes the socket and discards any output data that had been buffered
-   * with @ref writeBlock but that had not yet been written.
+   * with @ref writeData but that had not yet been written.
    *
    * @sa close
    */
@@ -219,19 +219,6 @@ private:
   KBufferedSocket& operator=(const KBufferedSocket&);
 
   KBufferedSocketPrivate *d;
-
-public:
-  // KDE4: remove this function
-  /**
-   * @deprecated
-   * Closes the socket.
-   *
-   * This function is provided to ease porting from KExtendedSocket,
-   * which required a call to reset() in order to be able to connect again
-   * using the same device. This is not necessary in KBufferedSocket any more.
-   */
-  inline void reset()
-  { closeNow(); }
 };
 
 }				// namespace KNetwork

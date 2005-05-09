@@ -84,8 +84,7 @@ KSocketDevice::KSocketDevice(const KSocketBase* parent)
 KSocketDevice::KSocketDevice(int fd)
   : m_sockfd(fd), d(new KSocketDevicePrivate)
 {
-  setState(IO_Open);
-  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
+  open(QIODevice::Unbuffered||QIODevice::ReadWrite);
   setSocketDevice(this);
 }
 
@@ -187,7 +186,7 @@ void KSocketDevice::close()
 
       ::close(m_sockfd);
     }
-  setState(0);
+  QIODevice::close();
 
   m_sockfd = -1;
 }
@@ -256,8 +255,7 @@ bool KSocketDevice::listen(int backlog)
 	}
 
       resetError();
-      setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
-      setState(IO_Open);
+      open(QIODevice::Unbuffered||QIODevice::ReadWrite);
       return true;
     }
 
@@ -296,8 +294,7 @@ bool KSocketDevice::connect(const KResolverEntry& address)
       return false;
     }
 
-  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
-  setState(IO_Open);
+  open(QIODevice::Unbuffered||QIODevice::ReadWrite);
   return true;			// all is well
 }
 
@@ -354,12 +351,11 @@ bool KSocketDevice::disconnect()
       return false;
     }
 
-  setFlags(IO_Sequential | IO_Raw | QIODevice::ReadWrite);
-  setState(IO_Open);
+  open(QIODevice::Unbuffered||QIODevice::ReadWrite);
   return true;			// all is well
 }
 
-Q_LONG KSocketDevice::bytesAvailable() const
+qint64 KSocketDevice::bytesAvailable() const
 {
   if (m_sockfd == -1)
     return -1;			// there's nothing to read in a closed socket
@@ -371,7 +367,7 @@ Q_LONG KSocketDevice::bytesAvailable() const
   return nchars;
 }
 
-Q_LONG KSocketDevice::waitForMore(int msecs, bool *timeout)
+qint64 KSocketDevice::waitForMore(int msecs, bool *timeout)
 {
   if (m_sockfd == -1)
     return -1;			// there won't ever be anything to read...
@@ -383,7 +379,7 @@ Q_LONG KSocketDevice::waitForMore(int msecs, bool *timeout)
   return bytesAvailable();
 }
 
-static int do_read_common(int sockfd, char *data, Q_ULONG maxlen, KSocketAddress* from, ssize_t &retval, bool peek = false)
+static int do_read_common(int sockfd, char *data, qint64 maxlen, KSocketAddress* from, ssize_t &retval, bool peek = false)
 {
   socklen_t len;
   if (from)
@@ -409,7 +405,7 @@ static int do_read_common(int sockfd, char *data, Q_ULONG maxlen, KSocketAddress
   return 0;
 }
 
-Q_LONG KSocketDevice::readBlock(char *data, Q_ULONG maxlen)
+qint64 KSocketDevice::readData(char *data, qint64 maxlen)
 {
   resetError();
   if (m_sockfd == -1)
@@ -430,7 +426,7 @@ Q_LONG KSocketDevice::readBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-Q_LONG KSocketDevice::readBlock(char *data, Q_ULONG maxlen, KSocketAddress &from)
+qint64 KSocketDevice::readData(char *data, qint64 maxlen, KSocketAddress &from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -451,7 +447,7 @@ Q_LONG KSocketDevice::readBlock(char *data, Q_ULONG maxlen, KSocketAddress &from
   return retval;
 }
 
-Q_LONG KSocketDevice::peekBlock(char *data, Q_ULONG maxlen)
+qint64 KSocketDevice::peekData(char *data, qint64 maxlen)
 {
   resetError();
   if (m_sockfd == -1)
@@ -472,7 +468,7 @@ Q_LONG KSocketDevice::peekBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-Q_LONG KSocketDevice::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KSocketDevice::peekData(char *data, qint64 maxlen, KSocketAddress& from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -493,12 +489,12 @@ Q_LONG KSocketDevice::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from
   return retval;
 }
 
-Q_LONG KSocketDevice::writeBlock(const char *data, Q_ULONG len)
+qint64 KSocketDevice::writeData(const char *data, qint64 len)
 {
-  return writeBlock(data, len, KSocketAddress());
+  return writeData(data, len, KSocketAddress());
 }
 
-Q_LONG KSocketDevice::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
+qint64 KSocketDevice::writeData(const char *data, qint64 len, const KSocketAddress& to)
 {
   resetError();
   if (m_sockfd == -1)

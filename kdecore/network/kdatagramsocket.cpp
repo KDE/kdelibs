@@ -133,7 +133,7 @@ bool KDatagramSocket::connect(const QString& node, const QString& service)
 
 KDatagramPacket KDatagramSocket::receive()
 {
-  Q_LONG size = bytesAvailable();
+  qint64 size = bytesAvailable();
   if (size == 0)
     {
       // nothing available yet to read
@@ -165,9 +165,9 @@ KDatagramPacket KDatagramSocket::receive()
   return KDatagramPacket(data, address);
 }
 
-Q_LONG KDatagramSocket::send(const KDatagramPacket& packet)
+qint64 KDatagramSocket::send(const KDatagramPacket& packet)
 {
-  return writeBlock(packet.data(), packet.size(), packet.address());
+  return writeData(packet.data(), packet.size(), packet.address());
 }
 
 void KDatagramSocket::lookupFinishedLocal()

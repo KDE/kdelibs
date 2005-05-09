@@ -222,7 +222,7 @@ public:
    *
    * Connecting means only to designate the given address as the default
    * destination address for datagrams sent without destination addresses
-   * (@ref writeBlock(const char*, Q_LONG).
+   * (@ref writeData(const char*, qint64).
    *
    * @note Calling connect will not cause the socket to be bound. You have
    *       to call @ref bind explicitly.
@@ -255,7 +255,7 @@ public:
    *
    * @returns the number of bytes written or -1 in case of error.
    */
-  virtual Q_LONG send(const KDatagramPacket& packet);
+  virtual qint64 send(const KDatagramPacket& packet);
 
 private slots:
   void lookupFinishedLocal();

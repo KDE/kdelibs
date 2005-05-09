@@ -46,7 +46,7 @@ class KClientSocketBasePrivate;
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KDECORE_EXPORT KClientSocketBase : public QObject, public KActiveSocketBase
+class KDECORE_EXPORT KClientSocketBase : public KActiveSocketBase
 {
   Q_OBJECT
 
@@ -285,52 +285,51 @@ public:
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    */
-  virtual void flush()
-  { }
+  virtual bool flush() { return false; }
 
   /**
    * Returns the number of bytes available on this socket.
    * Reimplemented from KSocketBase.
    */
-  virtual Q_LONG bytesAvailable() const;
+  virtual qint64 bytesAvailable() const;
 
   /**
    * Waits for more data. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
 
   /**
    * Reads data from a socket. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 readBlock(char *data, Q_ULONG maxlen);
 
   /**
    * @overload
    * Reads data from a socket. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
 
   /**
    * Peeks data from the socket. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 peekData(char *data, Q_ULONG maxlen);
 
   /**
    * @overload
    * Peeks data from the socket. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress &from);
+  virtual qint64 peekData(char *data, Q_ULONG maxlen, KSocketAddress &from);
 
   /**
    * Writes data to the socket. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
+  virtual qint64 writeData(const char *data, Q_ULONG len);
 
   /**
    * @overload
    * Writes data to the socket. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 writeData(const char *data, Q_ULONG len, const KSocketAddress& to);
 
   /**
    * Returns the local socket address. Reimplemented from KSocketBase.
@@ -367,6 +366,11 @@ public:
    * @param enable	whether to enable the signal
    */
   virtual void enableWrite(bool enable);
+
+  /**
+   * @reimp
+   */
+  bool isSequential() const { return true; }
 
 protected slots:
   // protected slots

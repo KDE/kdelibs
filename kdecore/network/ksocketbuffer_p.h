@@ -53,7 +53,7 @@ public:
    *
    * @param size	the maximum size of the buffer
    */
-  KSocketBuffer(Q_LONG size = -1);
+  KSocketBuffer(qint64 size = -1);
 
   /**
    * Copy constructor.
@@ -86,7 +86,7 @@ public:
    *
    * @sa size
    */
-  virtual Q_LONG length() const;
+  virtual qint64 length() const;
 
   /**
    * Retrieves the buffer size. The value of -1 indicates that
@@ -94,7 +94,7 @@ public:
    *
    * @sa length for the length of the data stored
    */
-  virtual Q_LONG size() const;
+  virtual qint64 size() const;
 
   /**
    * Sets the size of the buffer, if allowed.
@@ -103,7 +103,7 @@ public:
    * @returns true on success, false if an error occurred.
    * @note if the new size is less than length(), the buffer will be truncated
    */
-  virtual bool setSize(Q_LONG size);
+  virtual bool setSize(qint64 size);
 
   /**
    * Adds data to the end of the buffer.
@@ -112,7 +112,7 @@ public:
    * @param len		the data length, in bytes
    * @returns the number of bytes added to the end of the buffer.
    */
-  virtual Q_LONG feedBuffer(const char *data, Q_LONG len);
+  virtual qint64 feedBuffer(const char *data, Q_LONG len);
 
   /**
    * Clears the buffer.
@@ -127,7 +127,7 @@ public:
    * @param discard	if true, the bytes copied will be discarded
    * @returns the number of bytes copied from the buffer
    */
-  virtual Q_LONG consumeBuffer(char *data, Q_LONG maxlen, bool discard = true);
+  virtual qint64 consumeBuffer(char *data, Q_LONG maxlen, bool discard = true);
 
   /**
    * Sends at most @p len bytes of data to the I/O Device.
@@ -137,7 +137,7 @@ public:
    * @returns the number of bytes sent and discarded from the buffer, -1
    *          indicates an error.
    */
-  virtual Q_LONG sendTo(KActiveSocketBase* device, Q_LONG len = -1);
+  virtual qint64 sendTo(KActiveSocketBase* device, Q_LONG len = -1);
 
   /**
    * Tries to receive @p len bytes of data from the I/O device.
@@ -148,15 +148,15 @@ public:
    * @returns the number of bytes received and copied into the buffer,
    *	      -1 indicates an error.
    */
-  virtual Q_LONG receiveFrom(KActiveSocketBase* device, Q_LONG len = -1);
+  virtual qint64 receiveFrom(KActiveSocketBase* device, Q_LONG len = -1);
 
 protected:
   mutable QMutex m_mutex;
   Q3ValueList<QByteArray> m_list;
   qlonglong m_offset;	///< offset of the start of data in the first element
 
-  Q_LONG m_size;		///< the maximum length of the buffer
-  mutable Q_LONG m_length;
+  qint64 m_size;		///< the maximum length of the buffer
+  mutable qint64 m_length;
 };
 
 } }			// namespace KNetwork::Internal
