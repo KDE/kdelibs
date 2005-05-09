@@ -44,7 +44,7 @@ TreeListBoxItem::TreeListBoxItem(Q3ListBox *lb, const QPixmap& pix, const QStrin
 	else
 	{
 		QString	parentStr = txt.left(txt.length()-m_path[m_depth].length()-1);
-		TreeListBoxItem	*parentItem = static_cast<TreeListBoxItem*>(lb->findItem(parentStr, Qt::ExactMatch));
+		TreeListBoxItem	*parentItem = static_cast<TreeListBoxItem*>(lb->findItem(parentStr, ExactMatch));
 		if (!parentItem)
 		{
 			// parent not found, add parent first into QListBox

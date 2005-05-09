@@ -146,7 +146,7 @@ public:
 	bool ownSoftDefault() const	{ return m_ownsoftdefault; }
 	void setOwnSoftDefault(bool on)	{ m_ownsoftdefault = on; }
 	static int compare(KMPrinter *p1, KMPrinter *p2);
-	const QString& option(const QString& key) const 		{ return m_options[key]; }
+	QString option(const QString& key) const 		{ return m_options[key]; }
 	bool hasOption(const QString& key) const 			{ return m_options.contains(key); }
 	void setOption(const QString& key, const QString& value)	{ if (!key.isEmpty()) m_options[key] = value; }
 	void removeOption(const QString& key) 				{ m_options.remove(key); }
@@ -160,12 +160,12 @@ public:
 	bool autoConfigure(KPrinter *prt, QWidget *parent = 0);
 
 	// default options
-	const QString& defaultOption(const QString& key) const 		{ return m_defaultoptions[key]; }
+	QString defaultOption(const QString& key) const 		{ return m_defaultoptions[key]; }
 	void setDefaultOption(const QString& key, const QString& value)	{ if (!key.isEmpty()) m_defaultoptions[key] = value; }
 	QMap<QString,QString> defaultOptions() const 			{ return m_defaultoptions; }
 	void setDefaultOptions(const QMap<QString,QString>& opts)	{ m_defaultoptions = opts; }
 	// edited options
-	const QString& editedOption(const QString& key) const 		{ return m_editedoptions[key]; }
+	QString editedOption(const QString& key) const 		{ return m_editedoptions[key]; }
 	void setEditedOption(const QString& key, const QString& value)	{ if (!key.isEmpty()) m_editedoptions[key] = value; }
 	QMap<QString,QString> editedOptions() const 			{ return m_editedoptions; }
 	void setEditedOptions(const QMap<QString,QString>& opts)	{ m_editedoptions = opts; }

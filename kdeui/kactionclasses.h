@@ -1187,7 +1187,7 @@ public:
 
     virtual int plug( QWidget * widget, int index = -1 );
 
-    KToolBar *toolBar() { return m_toolBar; }
+    KToolBar *toolBar() { return (KToolBar*)m_toolBar; }
 
 public slots:
     virtual void setChecked( bool );

@@ -154,7 +154,7 @@ public:
 	 * Defines the orientation of the paper
 	 * @see QPrinter::Orientation
 	 */
-	enum Qt::Orientation { Portrait = QPrinter::Portrait, Landscape = QPrinter::Landscape };
+	enum Orientation { Portrait = QPrinter::Portrait, Landscape = QPrinter::Landscape };
 	/**
 	 * Defines the page order of the print job
 	 * @see QPrinter::PageOrder
