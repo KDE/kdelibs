@@ -459,7 +459,7 @@ public:
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1;
 	return callInternal( fun, args, data );
     }

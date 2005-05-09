@@ -98,6 +98,7 @@ const char *qStringToC(const Q3CString &s)
    return s.data();
 }
 
+#warning FIX the marshalled types
 Q3CString demarshal( QDataStream &stream, const QString &type )
 {
     Q3CString result;
@@ -269,6 +270,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
 
 }
 
+#warning FIX the marshalled types
 void marshall( QDataStream &arg, Q3CStringList args, uint &i, QString type )
 {
     if (type == "QStringList")
@@ -303,13 +305,13 @@ void marshall( QDataStream &arg, Q3CStringList args, uint &i, QString type )
 	arg << qv.toULongLong();
     }
     else if ( type == "long" )
-	arg << s.toLong();
+	arg << ( qint32 )s.toLong();
     else if ( type == "long int" )
-	arg << s.toLong();
+	arg << ( qint32 )s.toLong();
     else if ( type == "unsigned long" )
-	arg << s.toULong();
+	arg << ( quint32 )s.toULong();
     else if ( type == "unsigned long int" )
-	arg << s.toULong();
+	arg << ( quint32 )s.toULong();
     else if ( type == "float" )
 	arg << s.toFloat();
     else if ( type == "double" )
@@ -359,7 +361,7 @@ void marshall( QDataStream &arg, Q3CStringList args, uint &i, QString type )
 	   delim = ")";
 	i++;
 	QByteArray dummy_data;
-	QDataStream dummy_arg(dummy_data, QIODevice::WriteOnly);
+	QDataStream dummy_arg(&dummy_data, QIODevice::WriteOnly);
 
 	uint j = i;
 	uint count = 0;

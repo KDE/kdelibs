@@ -89,8 +89,8 @@ bool endsWith(Q3CString &id, char c)
 void queryApplications(const Q3CString &filter)
 {
     int filterLen = filter.length();
-    QCStringList apps = dcop->registeredApplications();
-    for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
+    Q3CStringList apps = dcop->registeredApplications();
+    for ( Q3CStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
     {
         Q3CString &clientId = *it;
 	if ( (clientId != dcop->appId()) &&
@@ -112,8 +112,8 @@ void queryObjects( const Q3CString &app, const Q3CString &filter )
     int filterLen = filter.length();
     bool ok = false;
     bool isDefault = false;
-    QCStringList objs = dcop->remoteObjects( app, &ok );
-    for ( QCStringList::Iterator it = objs.begin(); it != objs.end(); ++it )
+    Q3CStringList objs = dcop->remoteObjects( app, &ok );
+    for ( Q3CStringList::Iterator it = objs.begin(); it != objs.end(); ++it )
     {
         Q3CString &objId = *it;
 
@@ -145,8 +145,8 @@ void queryObjects( const Q3CString &app, const Q3CString &filter )
 void queryFunctions( const char* app, const char* obj )
 {
     bool ok = false;
-    QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
-    for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
+    Q3CStringList funcs = dcop->remoteFunctions( app, obj, &ok );
+    for ( Q3CStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
 	printf( "%s\n", (*it).data() );
     }
     if ( !ok )
@@ -156,7 +156,7 @@ void queryFunctions( const char* app, const char* obj )
     }
 }
 
-int callFunction( const char* app, const char* obj, const char* func, const QCStringList args )
+int callFunction( const char* app, const char* obj, const char* func, const Q3CStringList args )
 {
     QString f = func; // Qt is better with unicode strings, so use one.
     int left = f.find( '(' );
@@ -171,7 +171,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
     if ( left < 0 ) {
 	// try to get the interface from the server
 	bool ok = false;
-	QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
+	Q3CStringList funcs = dcop->remoteFunctions( app, obj, &ok );
 	Q3CString realfunc;
 	if ( !ok && args.isEmpty() )
 	    goto doit;
@@ -180,7 +180,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 	    qWarning( "object not accessible" );
 	    return( 1 );
 	}
-	for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
+	for ( Q3CStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
 	    int l = (*it).find( '(' );
 	    int s;
 	    if (l > 0)
@@ -196,7 +196,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 	    if ( l > 0 && (*it).mid( s, l - s ) == func ) {
 		realfunc = (*it).mid( s );
 		const QString arguments = (*it).mid(l+1,(*it).find( ')' )-l-1);
-		uint a = arguments.contains(',');
+		uint a = arguments.count(',');
 		if ( (a==0 && !arguments.isEmpty()) || a>0)
 			a++;
 		if ( a == args.count()  )
@@ -286,10 +286,10 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 
     QByteArray data, replyData;
     Q3CString replyType;
-    QDataStream arg(data, QIODevice::WriteOnly);
+    QDataStream arg(&data, QIODevice::WriteOnly);
 
     uint i = 0;
-    for( Q3StringList::Iterator it = types.begin(); it != types.end(); ++it )
+    for( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
         marshall( arg, args, i, *it );
 
     if ( i != args.count() )
@@ -302,7 +302,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 	qWarning( "call failed");
 	return( 1 );
     } else {
-	QDataStream reply(replyData, QIODevice::ReadOnly);
+	QDataStream reply(&replyData, QIODevice::ReadOnly);
 
         if ( replyType != "void" && replyType != "ASYNC" )
         {
@@ -410,11 +410,15 @@ QStringList dcopSessionList( const QString &user, const QString &home )
     d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
     d.setNameFilter( ".DCOPserver*" );
 
-    const QFileInfoList *list = d.entryInfoList();
-    if( !list )
+    const QList<QFileInfo> list = d.entryInfoList();
+    if( !list.count() )
 	return result;
 
-    QFileInfoListIterator it( *list );
+    foreach ( QFileInfo fi, list ) {
+	if ( fi.isReadable() )
+	    result.append( fi.fileName() );
+    }
+#if 0
     QFileInfo *fi;
 
     while ( ( fi = it.current() ) != 0 )
@@ -423,6 +427,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 	    result.append( fi->fileName() );
 	++it;
     }
+#endif
     return result;
 }
 
@@ -454,7 +459,7 @@ void sendUserTime( const char* app )
 /**
  * Do the actual DCOP call
  */
-int runDCOP( QCStringList args, UserList users, Session session,
+int runDCOP( Q3CStringList args, UserList users, Session session,
               const QString sessionName, bool readStdin, bool updateUserTime )
 {
     bool DCOPrefmode=false;
@@ -706,9 +711,9 @@ int runDCOP( QCStringList args, UserList users, Session session,
                     sendUserTime( app );
 		if( readStdin )
 		{
-		    QCStringList::Iterator replaceArg = params.end();
+		    Q3CStringList::Iterator replaceArg = params.end();
 
-		    QCStringList::Iterator it = params.begin();
+		    Q3CStringList::Iterator it = params.begin();
 		    for( ; it != params.end(); ++it )
 			if( *it == "%1" )
 			    replaceArg = it;
