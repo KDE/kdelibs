@@ -56,7 +56,16 @@ static bool isIntType( const QString& t )
        || (t == "ulong")
        || (t == "char")
        || (t == "signed char")
-       || (t == "unsigned char"));
+       || (t == "unsigned char")
+       || (t == "qint8")
+       || (t == "qint16")
+       || (t == "qint32")
+       || (t == "qint64")
+       || (t == "quint8")
+       || (t == "quint16")
+       || (t == "quint32")
+       || (t == "quint64")
+      );
 }
 
 /*
