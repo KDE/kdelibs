@@ -28,6 +28,7 @@
 #include "kmultitabbar_p.moc"
 #include <q3button.h>
 #include <q3popupmenu.h>
+#include <qevent.h>
 #include <qlayout.h>
 #include <qpainter.h>
 #include <qtooltip.h>
@@ -472,7 +473,7 @@ QSize KMultiTabBarButton::sizeHint() const
     }
 #endif
     if ( isMenuButton() )
-        w += style().pixelMetric(QStyle::PM_MenuButtonIndicator, this);
+        w += style()->pixelMetric(QStyle::PM_MenuButtonIndicator, this);
 
     if ( pixmap() ) {
         QPixmap *pm = (QPixmap *)pixmap();
@@ -491,7 +492,7 @@ QSize KMultiTabBarButton::sizeHint() const
             h = QMAX(h, sz.height());
     }
 
-    return (style().sizeFromContents(QStyle::CT_ToolButton, this, QSize(w, h)).
+    return (style()->sizeFromContents(QStyle::CT_ToolButton, this, QSize(w, h)).
             expandedTo(QApplication::globalStrut()));
 }
 
@@ -650,8 +651,8 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 
 	if (isOn()) st|=QStyle::State_On;
 
-	style().drawControl(QStyle::CE_PushButton,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
-	style().drawControl(QStyle::CE_PushButtonLabel,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
+	style()->drawControl(QStyle::CE_PushButton,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
+	style()->drawControl(QStyle::CE_PushButtonLabel,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
 
 	switch (m_position) {
 		case KMultiTabBar::Left:

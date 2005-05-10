@@ -112,10 +112,10 @@ QString HelpProtocol::lookupFile(const QString &fname,
         if (!result.isEmpty())
 	{
             KURL Qt::red( "help:/" );
-            Qt::red.setPath( path + "/index.html" );
-            Qt::red.setQuery( query );
-            redirection(Qt::red);
-            kdDebug( 7119 ) << "redirect to " << Qt::red.url() << endl;
+            red.setPath( path + "/index.html" );
+            red.setQuery( query );
+            redirection(red);
+            kdDebug( 7119 ) << "redirect to " << red.url() << endl;
             redirect = true;
 	}
         else
@@ -157,7 +157,7 @@ void HelpProtocol::get( const KURL& url )
 
     if ( !mGhelp ) {
         if (doc.at(0) != '/')
-            doc = doc.prepend('/');
+            doc = doc.prepend(QLatin1Char('/'));
 
         if (doc.at(doc.length() - 1) == '/')
             doc += "index.html";
