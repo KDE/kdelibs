@@ -40,6 +40,7 @@
 #include <sys/wait.h>
 
 #include <qwindowdefs.h>
+#include <qx11info_x11.h>
 #include <kglobal.h>
 #include <kinstance.h>
 #include <kaboutdata.h>

@@ -34,6 +34,7 @@
 
 #include <dcopclient.h>
 #include <qxembed.h>
+#include <qx11info_x11.h>
 
 #include <kapplication.h>
 #include <kaboutdata.h>

@@ -32,6 +32,7 @@
 #include <q3valuelist.h>
 #include <qtimer.h>
 #include <qcursor.h>
+#include <qx11info_x11.h>
 
 #include "config.h"
 #ifdef Q_WS_X11

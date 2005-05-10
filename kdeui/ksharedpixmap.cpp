@@ -19,6 +19,7 @@
 #include <qpixmap.h>
 #include <qwindowdefs.h>
 #include <qwidget.h>
+#include <qx11info_x11.h>
 
 #ifdef Q_WS_X11
 

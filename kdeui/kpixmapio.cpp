@@ -18,6 +18,7 @@
 #include <qcolor.h>
 #include <qglobal.h>
 #include <qvector.h>
+#include <qx11info_x11.h>
 
 #include <kglobal.h>
 #include <kconfig.h>

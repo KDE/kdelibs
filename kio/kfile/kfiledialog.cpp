@@ -41,6 +41,7 @@
 #include <qtimer.h>
 #include <q3whatsthis.h>
 #include <q3filedialog.h>
+#include <qx11info_x11.h>
 
 #include <kaccel.h>
 #include <kaction.h>

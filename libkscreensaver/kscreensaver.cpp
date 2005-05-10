@@ -20,6 +20,7 @@
 
 #include <qpainter.h>
 #include <qtimer.h>
+#include <qx11info_x11.h>
 #include <kapplication.h>
 #include "kscreensaver.h"
 #ifdef Q_WS_X11

@@ -32,6 +32,7 @@
 
 #include <qfile.h>
 #include <qtimer.h>
+#include <qx11info_x11.h>
 
 #include <dcopclient.h>
 

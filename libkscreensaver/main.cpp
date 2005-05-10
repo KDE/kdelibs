@@ -24,6 +24,7 @@
 #include <signal.h>
 
 #include <qdialog.h>
+#include <qx11info_x11.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>

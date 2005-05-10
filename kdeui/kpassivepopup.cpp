@@ -11,6 +11,7 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <q3vbox.h>
+#include <qx11info_x11.h>
 
 #include <kdebug.h>
 #include <kdialog.h>

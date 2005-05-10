@@ -51,6 +51,7 @@
 #else
 #include <q3toolbar.h>
 #include <q3popupmenu.h>
+#include <qx11info_x11.h>
 #endif
 
 #include <stdlib.h>

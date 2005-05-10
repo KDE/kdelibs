@@ -30,6 +30,7 @@
 
 #include "khtml_part.h"
 #include "khtml_events.h"
+#include <qx11info_x11.h>
 
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"

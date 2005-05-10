@@ -33,6 +33,7 @@
 #include <qlayout.h>
 #include <qwidget.h>
 #include <qtimer.h>
+#include <qx11info_x11.h>
 
 #include <kaccel.h>
 #include <kaction.h>

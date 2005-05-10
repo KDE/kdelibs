@@ -19,6 +19,7 @@
 
 #include "kdetrayproxy.h"
 
+#include <qx11info_x11.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <netwm.h>
