@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
  */
 
 #include <config.h>
-#include <qmutex.h>
+#include <QMutex>
 #include "klocale.h"
 
 #include "ksocketbase.h"
@@ -157,6 +157,11 @@ void KSocketBase::setError(SocketError error)
   d->socketError = error;
 }
 
+void KSocketBase::resetError()
+{
+  d->socketError = NoError;
+}
+
 KSocketBase::SocketError KSocketBase::error() const
 {
   return static_cast<KSocketBase::SocketError>(d->socketError);
@@ -248,7 +253,7 @@ QString KSocketBase::errorString(KSocketBase::SocketError code)
       break;
 
     default:
-      reason = QString::null;
+      reason = QString();
       break;
     }
 
@@ -280,7 +285,8 @@ QMutex* KSocketBase::mutex() const
   return &d->mutex;
 }
 
-KActiveSocketBase::KActiveSocketBase()
+KActiveSocketBase::KActiveSocketBase(QObject* parent)
+  : QIODevice(parent)
 {
 }
 
@@ -291,7 +297,7 @@ KActiveSocketBase::~KActiveSocketBase()
 int KActiveSocketBase::getch()
 {
   unsigned char c;
-  if (readData((char*)&c, 1) != 1)
+  if (readBlock((char*)&c, 1) != 1)
     return -1;
 
   return c;
@@ -300,22 +306,22 @@ int KActiveSocketBase::getch()
 int KActiveSocketBase::putch(int ch)
 {
   unsigned char c = (unsigned char)ch;
-  if (writeData((char*)&c, 1) != 1)
+  if (writeBlock((char*)&c, 1) != 1)
     return -1;
 
   return c;
 }
 
-void KActiveSocketBase::setError(int status, SocketError error)
+void KActiveSocketBase::setError(SocketError error)
 {
   KSocketBase::setError(error);
-  //setStatus(status); ###
+  setErrorString(KSocketBase::errorString());
 }
 
 void KActiveSocketBase::resetError()
 {
   KSocketBase::setError(NoError);
-  //resetStatus(); ###
+  setErrorString(QString());
 }
 
 KPassiveSocketBase::KPassiveSocketBase()

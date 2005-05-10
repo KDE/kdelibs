@@ -1,5 +1,5 @@
 /*  -*- mode: C++; coding: utf-8; -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -27,8 +27,9 @@
 
 //////////////////
 // Needed includes
-#include <q3valuelist.h>
-#include <qobject.h>
+#include <QList>
+#include <QObject>
+#include <QSharedDataPointer>
 #include "ksocketaddress.h"
 
 
@@ -36,8 +37,7 @@
 // Forward declarations
 struct sockaddr;
 class QString;
-class Q3CString;
-class Q3StrList;
+class QByteArray;
 
 //////////////////
 // Our definitions
@@ -61,7 +61,7 @@ class KResolverEntryPrivate;
  * KResolverEntry objects implicitly share data, so copying them
  * is quite efficient.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KResolverEntry
 {
@@ -85,8 +85,8 @@ public:
    * @param encodedName	the ASCII-compatible encoding of the hostname
    */
   KResolverEntry(const KSocketAddress& addr, int socktype, int protocol,
-		const QString& canonName = QString::null,
-		const Q3CString& encodedName = Q3CString());
+		const QString& canonName = QString(),
+		const QByteArray& encodedName = QByteArray());
 
   /**
    * Constructs a new KResolverEntry from raw forms of
@@ -101,9 +101,9 @@ public:
    * @param canonName	the canonical name of the resolved hostname
    * @param encodedName	the ASCII-compatible encoding of the hostname
    */
-  KResolverEntry(const struct sockaddr *sa, Q_UINT16 salen, int socktype,
-		int protocol, const QString& canonName = QString::null,
-		const Q3CString& encodedName = Q3CString());
+  KResolverEntry(const struct sockaddr *sa, quint16 salen, int socktype,
+		int protocol, const QString& canonName = QString(),
+		const QByteArray& encodedName = QByteArray());
 
   /**
    * Copy constructor.
@@ -128,7 +128,7 @@ public:
   /**
    * Retrieves the length of the socket address structure.
    */
-  Q_UINT16 length() const;
+  quint16 length() const;
 
   /**
    * Retrieves the family associated with this socket address.
@@ -137,7 +137,7 @@ public:
 
   /**
    * Retrieves the canonical name associated with this entry, if there is any.
-   * If the canonical name was not found, this function returns QString::null.
+   * If the canonical name was not found, this function returns QString().
    */
   QString canonicalName() const;
 
@@ -146,12 +146,12 @@ public:
    * any. If this domain has been resolved through DNS, this will be the
    * the ACE-encoded hostname.
    *
-   * Returns a null QCString if such information is not available.
+   * Returns a null QByteArray if such information is not available.
    *
    * Please note that this information is NOT to be presented to the user,
    * unless requested.
    */
-  Q3CString encodedName() const;
+  QByteArray encodedName() const;
 
   /**
    * Retrieves the socket type associated with this entry.
@@ -172,7 +172,7 @@ public:
   KResolverEntry& operator=(const KResolverEntry& other);
 
 private:
-  KResolverEntryPrivate* d;
+  QSharedDataPointer<KResolverEntryPrivate> d;
 };
 
 class KResolverResultsPrivate;
@@ -192,9 +192,9 @@ class KResolverResultsPrivate;
  * Note Resolver also uses KResolverResults objects to indicate failure, so
  * you should test for failure.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KResolverResults: public Q3ValueList<KResolverEntry>
+class KDECORE_EXPORT KResolverResults: public QList<KResolverEntry>
 {
 public:
   /**
@@ -265,7 +265,7 @@ public:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KResolverResultsPrivate* d;
+  QSharedDataPointer<KResolverResultsPrivate> d;
 };
 
 class KResolverPrivate;
@@ -290,7 +290,7 @@ class KResolverPrivate;
  * @li protocol: implementation-defined. Generally, TCP
  * @li host and service: unset
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KResolver: public QObject
 {
@@ -445,7 +445,7 @@ public:
    * @param nodename	The host name we want resolved.
    * @param servicename	The service name associated, like "http".
    */
-  KResolver(const QString& nodename, const QString& servicename = QString::null,
+  KResolver(const QString& nodename, const QString& servicename = QString(),
 	    QObject * = 0L, const char * = 0L);
 
   /**
@@ -509,7 +509,7 @@ public:
   /**
    * Sets the nodename for the resolution.
    *
-   * Set the nodename to QString::null to unset it.
+   * Set the nodename to QString() to unset it.
    * @param nodename		The nodename to be resolved.
    */
   void setNodeName(const QString& nodename);
@@ -517,7 +517,7 @@ public:
   /**
    * Sets the service name to be resolved.
    *
-   * Set it to QString::null to unset it.
+   * Set it to QString() to unset it.
    * @param service		The service to be resolved.
    */
   void setServiceName(const QString& service);
@@ -525,7 +525,7 @@ public:
   /**
    * Sets both the host and the service names.
    *
-   * Setting either value to QString::null will unset them.
+   * Setting either value to QString() will unset them.
    * @param node		The nodename
    * @param service		The service name
    */
@@ -787,7 +787,7 @@ public:
    * over the Internet.
    *
    * Note this function may fail, in which case it'll return a null 
-   * QCString. Reasons for failure include use of unknown code
+   * QByteArray. Reasons for failure include use of unknown code
    * points (Unicode characters).
    *
    * Note that the encoding is illegible and, thus, should not be presented
@@ -795,9 +795,9 @@ public:
    *
    * @param unicodeDomain	the domain name to be encoded
    * @return the ACE-encoded suitable for DNS queries if successful, a null
-   *	     QCString if failure.
+   *	     QByteArray if failure.
    */
-  static Q3CString domainToAscii(const QString& unicodeDomain);
+  static QByteArray domainToAscii(const QString& unicodeDomain);
 
   /**
    * Does the inverse of @ref domainToAscii and return an Unicode domain
@@ -817,14 +817,14 @@ public:
    * if successful, the original string if not
    * @note ACE = ASCII-Compatible Encoding, i.e., 7-bit
    */
-  static QString domainToUnicode(const Q3CString& asciiDomain);
+  static QString domainToUnicode(const QByteArray& asciiDomain);
 
   /**
    * The same as above, but taking a QString argument.
    *
    * @param asciiDomain	the ACE-encoded domain name to be decoded
    * @return the Unicode representation of the given domain name
-   * if successful, QString::null if not.
+   * if successful, QString() if not.
    */
   static QString domainToUnicode(const QString& asciiDomain);
 
@@ -848,7 +848,7 @@ public:
    * hostname.
    *
    * @param domain		a domain to be normalised
-   * @return the normalised domain, or QString::null if the domain is
+   * @return the normalised domain, or QString() if the domain is
    * invalid.
    */
   static QString normalizeDomain(const QString& domain);
@@ -862,7 +862,7 @@ public:
    * @return all the protocol names in a list. The first is the "proper"
    *		name.
    */
-  static Q3StrList protocolName(int protonum);
+  static QList<QByteArray> protocolName(int protonum);
 
   /**
    * Finds all aliases for a given protocol name
@@ -871,7 +871,7 @@ public:
    * @return all the protocol names in a list. The first is the "proper"
    *		name.
    */
-  static Q3StrList protocolName(const char *protoname);
+  static QList<QByteArray> protocolName(const char *protoname);
 
   /**
    * Resolves a protocol name to its number
@@ -893,26 +893,26 @@ public:
   /**
    * Finds all the aliases for a given service name
    *
-   * Note: the returned QStrList operates on deep-copies.
+   * Note: the returned QList<QByteArray> operates on deep-copies.
    *
    * @param servname		the service alias to be looked for
    * @param protoname		the protocol it is associated with
    * @return all the service names in a list. The first is the "proper"
    *		name.
    */
-  static Q3StrList serviceName(const char *servname, const char *protoname);
+  static QList<QByteArray> serviceName(const char *servname, const char *protoname);
 
   /**
    * Resolves a port number to its names
    *
-   * Note: the returned QStrList operates on deep copies.
+   * Note: the returned QList<QByteArray> operates on deep copies.
    *
    * @param port		the port number, in host byte-order
    * @param protoname		the protocol it is associated with
    * @return all the service names in a list. The first is the "proper"
    *		name.
    */
-  static Q3StrList serviceName(int port, const char *protoname);
+  static QList<QByteArray> serviceName(int port, const char *protoname);
 
 protected:
 

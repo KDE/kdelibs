@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,9 +25,9 @@
 #ifndef KSOCKETBUFFER_P_H
 #define KSOCKETBUFFER_P_H
 
-#include <qmutex.h>
-#include <q3cstring.h>
-#include <q3valuelist.h>
+#include <QMutex>
+#include <QByteArray>
+#include <QList>
 #include "kiobuffer.h"
 
 namespace KNetwork {
@@ -43,7 +43,7 @@ class KActiveSocketBase;
  *
  * This class implements generic buffering used by @ref KBufferedSocket.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KSocketBuffer: public KIOBufferBase
 {
@@ -78,7 +78,7 @@ public:
   /**
    * Reads a line from the buffer and discard it from the buffer.
    */
-  virtual Q3CString readLine();
+  virtual QByteArray readLine();
 
   /**
    * Returns the number of bytes in the buffer. Note that this is not
@@ -112,7 +112,7 @@ public:
    * @param len		the data length, in bytes
    * @returns the number of bytes added to the end of the buffer.
    */
-  virtual qint64 feedBuffer(const char *data, Q_LONG len);
+  virtual qint64 feedBuffer(const char *data, qint64 len);
 
   /**
    * Clears the buffer.
@@ -127,7 +127,7 @@ public:
    * @param discard	if true, the bytes copied will be discarded
    * @returns the number of bytes copied from the buffer
    */
-  virtual qint64 consumeBuffer(char *data, Q_LONG maxlen, bool discard = true);
+  virtual qint64 consumeBuffer(char *data, qint64 maxlen, bool discard = true);
 
   /**
    * Sends at most @p len bytes of data to the I/O Device.
@@ -137,7 +137,7 @@ public:
    * @returns the number of bytes sent and discarded from the buffer, -1
    *          indicates an error.
    */
-  virtual qint64 sendTo(KActiveSocketBase* device, Q_LONG len = -1);
+  virtual qint64 sendTo(KActiveSocketBase* device, qint64 len = -1);
 
   /**
    * Tries to receive @p len bytes of data from the I/O device.
@@ -148,11 +148,11 @@ public:
    * @returns the number of bytes received and copied into the buffer,
    *	      -1 indicates an error.
    */
-  virtual qint64 receiveFrom(KActiveSocketBase* device, Q_LONG len = -1);
+  virtual qint64 receiveFrom(KActiveSocketBase* device, qint64 len = -1);
 
 protected:
   mutable QMutex m_mutex;
-  Q3ValueList<QByteArray> m_list;
+  QList<QByteArray> m_list;
   qlonglong m_offset;	///< offset of the start of data in the first element
 
   qint64 m_size;		///< the maximum length of the buffer

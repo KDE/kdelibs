@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -26,8 +26,8 @@
 
 #include <assert.h>
 
-#include <q3cstring.h>
-#include <qstring.h>
+#include <QByteArray>
+#include <QString>
 
 #include "kresolver.h"
 #include "kresolver_p.h"
@@ -49,14 +49,14 @@ QString KResolverWorkerBase::nodeName() const
 {
   if (input)
     return input->node;
-  return QString::null;
+  return QString();
 }
 
 QString KResolverWorkerBase::serviceName() const
 {
   if (input)
     return input->service;
-  return QString::null;
+  return QString();
 }
 
 int KResolverWorkerBase::flags() const
@@ -87,9 +87,9 @@ int KResolverWorkerBase::protocol() const
   return 0;
 }
 
-Q3CString KResolverWorkerBase::protocolName() const
+QByteArray KResolverWorkerBase::protocolName() const
 {
-  Q3CString res;
+  QByteArray res;
   if (input)
     res = input->protocolName;
   return res;

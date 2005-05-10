@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -24,9 +24,9 @@
 
 #include <config.h>
 
-#include <qsocketnotifier.h>
-#include <qtimer.h>
-#include <qmutex.h>
+#include <QSocketNotifier>
+#include <QTimer>
+#include <QMutex>
 
 #include "ksocketaddress.h"
 #include "kresolver.h"
@@ -47,8 +47,8 @@ public:
   bool enableRead : 1, enableWrite : 1;
 };
 
-KClientSocketBase::KClientSocketBase(QObject *parent, const char *name)
-  : d(new KClientSocketBasePrivate)
+KClientSocketBase::KClientSocketBase(QObject *parent)
+  : KActiveSocketBase(parent), d(new KClientSocketBasePrivate)
 {
   d->state = Idle;
   d->enableRead = true;
@@ -231,7 +231,7 @@ bool KClientSocketBase::connect(const KResolverEntry& address)
 	  emit stateChanged(newstate);
 	  if (error() == NoError)
 	    {
-	      open(QIODevice::ReadWrite);
+	      setOpenMode(ReadWrite | Unbuffered);
 	      emit connected(address);
 	    }
 	}
@@ -298,10 +298,10 @@ qint64 KClientSocketBase::waitForMore(int msecs, bool *timeout)
   return retval;
 }
 
-qint64 KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
+qint64 KClientSocketBase::readData(char *data, qint64 maxlen)
 {
   resetError();
-  qint64 retval = socketDevice()->readBlock(data, maxlen);
+  qint64 retval = socketDevice()->readData(data, maxlen);
   if (retval == -1)
     {
       copyError();
@@ -310,7 +310,7 @@ qint64 KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-qint64 KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KClientSocketBase::readData(char *data, qint64 maxlen, KSocketAddress& from)
 {
   resetError();
   qint64 retval = socketDevice()->readData(data, maxlen, from);
@@ -322,7 +322,7 @@ qint64 KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& 
   return retval;
 }
 
-qint64 KClientSocketBase::peekData(char *data, Q_ULONG maxlen)
+qint64 KClientSocketBase::peekData(char *data, qint64 maxlen)
 {
   resetError();
   qint64 retval = socketDevice()->peekData(data, maxlen);
@@ -334,7 +334,7 @@ qint64 KClientSocketBase::peekData(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-qint64 KClientSocketBase::peekData(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KClientSocketBase::peekData(char *data, qint64 maxlen, KSocketAddress& from)
 {
   resetError();
   qint64 retval = socketDevice()->peekData(data, maxlen, from);
@@ -346,7 +346,7 @@ qint64 KClientSocketBase::peekData(char *data, Q_ULONG maxlen, KSocketAddress& f
   return retval;
 }
 
-qint64 KClientSocketBase::writeData(const char *data, Q_ULONG len)
+qint64 KClientSocketBase::writeData(const char *data, qint64 len)
 {
   resetError();
   qint64 retval = socketDevice()->writeData(data, len);
@@ -358,7 +358,7 @@ qint64 KClientSocketBase::writeData(const char *data, Q_ULONG len)
   return retval;
 }
 
-qint64 KClientSocketBase::writeData(const char *data, Q_ULONG len, const KSocketAddress& to)
+qint64 KClientSocketBase::writeData(const char *data, qint64 len, const KSocketAddress& to)
 {
   resetError();
   qint64 retval = socketDevice()->writeData(data, len, to);
@@ -432,7 +432,7 @@ void KClientSocketBase::lookupFinishedSlot()
   if (d->peerResolver.status() < 0 || d->localResolver.status() < 0)
     {
       setState(Idle);		// backtrack
-      setError(IO_LookupError, LookupFailure);
+      setError(LookupFailure);
       emit stateChanged(Idle);
       emit gotError(LookupFailure);
       return;
@@ -471,7 +471,7 @@ void KClientSocketBase::stateChanging(SocketState newState)
 
 void KClientSocketBase::copyError()
 {
-  setError(socketDevice()->status(), socketDevice()->error());
+  setError(socketDevice()->error());
 }
 
 #include "kclientsocketbase.moc"

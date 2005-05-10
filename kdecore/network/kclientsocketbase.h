@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,8 +25,8 @@
 #ifndef KCLIENTSOCKETBASE_H
 #define KCLIENTSOCKETBASE_H
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QObject>
+#include <QString>
 
 #include "ksocketbase.h"
 #include "kresolver.h"
@@ -44,7 +44,7 @@ class KClientSocketBasePrivate;
  * @note This class is abstract. If you're looking for a normal,
  *       client socket class, see @ref KStreamSocket and KBufferedSocket
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KClientSocketBase : public KActiveSocketBase
 {
@@ -90,7 +90,7 @@ public:
    * @param parent	the parent QObject object
    * @param name	the name of this object
    */
-  KClientSocketBase(QObject* parent, const char *name);
+  KClientSocketBase(QObject* parent);
 
   /**
    * Destructor.
@@ -202,8 +202,8 @@ public:
    * @param node	the nodename
    * @param service	the service
    */
-  virtual bool bind(const QString& node = QString::null,
-		    const QString& service = QString::null) = 0;
+  virtual bool bind(const QString& node = QString(),
+		    const QString& service = QString()) = 0;
 
   /**
    * Reimplemented from KSocketBase. Connect this socket to this
@@ -243,8 +243,8 @@ public:
    * @param node	the nodename
    * @param service	the service
    */
-  virtual bool connect(const QString& node = QString::null,
-		       const QString& service = QString::null) = 0;
+  virtual bool connect(const QString& node = QString(),
+		       const QString& service = QString()) = 0;
 
   /**
    * @overload
@@ -257,7 +257,7 @@ public:
    * This is a convenience function provided to ease migrating from
    * Qt 3.x's QSocket class.
    */
-  inline void connectToHost(const QString& host, Q_UINT16 port)
+  inline void connectToHost(const QString& host, quint16 port)
   { connect(host, QString::number(port)); }
 
   /**
@@ -285,7 +285,8 @@ public:
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    */
-  virtual bool flush() { return false; }
+  virtual bool flush()
+  { return false; }
 
   /**
    * Returns the number of bytes available on this socket.
@@ -301,35 +302,35 @@ public:
   /**
    * Reads data from a socket. Reimplemented from KSocketBase.
    */
-  virtual qint64 readBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 readData(char *data, qint64 maxlen);
 
   /**
    * @overload
    * Reads data from a socket. Reimplemented from KSocketBase.
    */
-  virtual qint64 readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
    * Peeks data from the socket. Reimplemented from KSocketBase.
    */
-  virtual qint64 peekData(char *data, Q_ULONG maxlen);
+  virtual qint64 peekData(char *data, qint64 maxlen);
 
   /**
    * @overload
    * Peeks data from the socket. Reimplemented from KSocketBase.
    */
-  virtual qint64 peekData(char *data, Q_ULONG maxlen, KSocketAddress &from);
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress &from);
 
   /**
    * Writes data to the socket. Reimplemented from KSocketBase.
    */
-  virtual qint64 writeData(const char *data, Q_ULONG len);
+  virtual qint64 writeData(const char *data, qint64 len);
 
   /**
    * @overload
    * Writes data to the socket. Reimplemented from KSocketBase.
    */
-  virtual qint64 writeData(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to);
 
   /**
    * Returns the local socket address. Reimplemented from KSocketBase.
@@ -366,11 +367,6 @@ public:
    * @param enable	whether to enable the signal
    */
   virtual void enableWrite(bool enable);
-
-  /**
-   * @reimp
-   */
-  bool isSequential() const { return true; }
 
 protected slots:
   // protected slots

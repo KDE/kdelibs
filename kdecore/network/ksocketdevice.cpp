@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 
 #include <config.h>
 
-#include <qmap.h>
+#include <QMap>
 
 #ifdef USE_SOLARIS
 # include <sys/filio.h>
@@ -49,8 +49,8 @@
 // Include syssocket before our local includes
 #include "syssocket.h"
 
-#include <qmutex.h>
-#include <qsocketnotifier.h>
+#include <QMutex>
+#include <QSocketNotifier>
 
 #include "kresolver.h"
 #include "ksocketaddress.h"
@@ -73,8 +73,9 @@ public:
 };
 
 
-KSocketDevice::KSocketDevice(const KSocketBase* parent)
-  : m_sockfd(-1), d(new KSocketDevicePrivate)
+KSocketDevice::KSocketDevice(const KSocketBase* parent, QObject* objparent)
+  : KActiveSocketBase(objparent), m_sockfd(-1), 
+    d(new KSocketDevicePrivate)
 {
   setSocketDevice(this);
   if (parent)
@@ -82,14 +83,20 @@ KSocketDevice::KSocketDevice(const KSocketBase* parent)
 }
 
 KSocketDevice::KSocketDevice(int fd)
-  : m_sockfd(fd), d(new KSocketDevicePrivate)
+  : KActiveSocketBase(0L), m_sockfd(fd), d(new KSocketDevicePrivate)
 {
-  open(QIODevice::Unbuffered||QIODevice::ReadWrite);
+  setOpenMode(QIODevice::Unbuffered | QIODevice::ReadWrite);
+  setSocketDevice(this);
+}
+
+KSocketDevice::KSocketDevice(QObject* parent)
+  : KActiveSocketBase(parent), m_sockfd(-1), d(new KSocketDevicePrivate)
+{
   setSocketDevice(this);
 }
 
 KSocketDevice::KSocketDevice(bool, const KSocketBase* parent)
-  : m_sockfd(-1), d(new KSocketDevicePrivate)
+  : KActiveSocketBase(0L), m_sockfd(-1), d(new KSocketDevicePrivate)
 {
   // do not set parent
   if (parent)
@@ -116,7 +123,7 @@ bool KSocketDevice::setSocketOptions(int opts)
       int fdflags = fcntl(m_sockfd, F_GETFL, 0);
       if (fdflags == -1)
 	{
-	  setError(IO_UnspecifiedError, UnknownError);
+	  setError(UnknownError);
 	  return false;		// error
 	}
 
@@ -127,7 +134,7 @@ bool KSocketDevice::setSocketOptions(int opts)
 
       if (fcntl(m_sockfd, F_SETFL, fdflags) == -1)
 	{
-	  setError(IO_UnspecifiedError, UnknownError);
+	  setError(UnknownError);
 	  return false;		// error
 	}
     }
@@ -136,7 +143,7 @@ bool KSocketDevice::setSocketOptions(int opts)
       int on = opts & AddressReuseable ? 1 : 0;
       if (setsockopt(m_sockfd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) == -1)
 	{
-	  setError(IO_UnspecifiedError, UnknownError);
+	  setError(UnknownError);
 	  return false;		// error
 	}
     }
@@ -149,7 +156,7 @@ bool KSocketDevice::setSocketOptions(int opts)
       int on = opts & IPv6Only ? 1 : 0;
       if (setsockopt(m_sockfd, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&on, sizeof(on)) == -1)
 	{
-	  setError(IO_UnspecifiedError, UnknownError);
+	  setError(UnknownError);
 	  return false;		// error
 	}
     }
@@ -159,7 +166,7 @@ bool KSocketDevice::setSocketOptions(int opts)
      int on = opts & Broadcast ? 1 : 0;
      if (setsockopt(m_sockfd, SOL_SOCKET, SO_BROADCAST, (char*)&on, sizeof(on)) == -1)
        {
-	 setError(IO_UnspecifiedError, UnknownError);
+	 setError(UnknownError);
 	 return false;		// error
        }
    }
@@ -186,7 +193,7 @@ void KSocketDevice::close()
 
       ::close(m_sockfd);
     }
-  QIODevice::close();
+  setOpenMode(0);		// closed
 
   m_sockfd = -1;
 }
@@ -198,7 +205,7 @@ bool KSocketDevice::create(int family, int type, int protocol)
   if (m_sockfd != -1)
     {
       // it's already created!
-      setError(IO_SocketCreateError, AlreadyCreated);
+      setError(AlreadyCreated);
       return false;
     }
 
@@ -207,7 +214,7 @@ bool KSocketDevice::create(int family, int type, int protocol)
 
   if (m_sockfd == -1)
     {
-      setError(IO_SocketCreateError, NotSupported);
+      setError(NotSupported);
       return false;
     }
 
@@ -232,12 +239,12 @@ bool KSocketDevice::bind(const KResolverEntry& address)
   if (kde_bind(m_sockfd, address.address(), address.length()) == -1)
     {
       if (errno == EADDRINUSE)
-	setError(IO_BindError, AddressInUse);
+	setError(AddressInUse);
       else if (errno == EINVAL)
-	setError(IO_BindError, AlreadyBound);
+	setError(AlreadyBound);
       else
 	// assume the address is the cause
-	setError(IO_BindError, NotSupported);
+	setError(NotSupported);
       return false;
     }
 
@@ -250,18 +257,18 @@ bool KSocketDevice::listen(int backlog)
     {
       if (kde_listen(m_sockfd, backlog) == -1)
 	{
-	  setError(IO_ListenError, NotSupported);
+	  setError(NotSupported);
 	  return false;
 	}
 
       resetError();
-      open(QIODevice::Unbuffered||QIODevice::ReadWrite);
+      setOpenMode(QIODevice::Unbuffered | QIODevice::ReadWrite);
       return true;
     }
 
   // we don't have a socket
   // can't listen
-  setError(IO_ListenError, NotCreated);
+  setError(NotCreated);
   return false;
 }
 
@@ -278,23 +285,23 @@ bool KSocketDevice::connect(const KResolverEntry& address)
 	return true;		// we're already connected
       else if (errno == EALREADY || errno == EINPROGRESS)
 	{
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;
 	}
       else if (errno == ECONNREFUSED)
-	setError(IO_ConnectError, ConnectionRefused);
+	setError(ConnectionRefused);
       else if (errno == ENETDOWN || errno == ENETUNREACH ||
 	       errno == ENETRESET || errno == ECONNABORTED ||
 	       errno == ECONNRESET || errno == EHOSTDOWN ||
 	       errno == EHOSTUNREACH)
-	setError(IO_ConnectError, NetFailure);
+	setError(NetFailure);
       else
-	setError(IO_ConnectError, NotSupported);
+	setError(NotSupported);
 
       return false;
     }
 
-  open(QIODevice::Unbuffered||QIODevice::ReadWrite);
+  setOpenMode(QIODevice::Unbuffered | QIODevice::ReadWrite);
   return true;			// all is well
 }
 
@@ -303,7 +310,7 @@ KSocketDevice* KSocketDevice::accept()
   if (m_sockfd == -1)
     {
       // can't accept without a socket
-      setError(IO_AcceptError, NotCreated);
+      setError(NotCreated);
       return 0L;
     }
 
@@ -313,9 +320,9 @@ KSocketDevice* KSocketDevice::accept()
   if (newfd == -1)
     {
       if (errno == EAGAIN || errno == EWOULDBLOCK)
-	setError(IO_AcceptError, WouldBlock);
+	setError(WouldBlock);
       else
-	setError(IO_AcceptError, UnknownError);
+	setError(UnknownError);
       return NULL;
     }
 
@@ -335,23 +342,23 @@ bool KSocketDevice::disconnect()
     {
       if (errno == EALREADY || errno == EINPROGRESS)
 	{
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return false;
 	}
       else if (errno == ECONNREFUSED)
-	setError(IO_ConnectError, ConnectionRefused);
+	setError(ConnectionRefused);
       else if (errno == ENETDOWN || errno == ENETUNREACH ||
 	       errno == ENETRESET || errno == ECONNABORTED ||
 	       errno == ECONNRESET || errno == EHOSTDOWN ||
 	       errno == EHOSTUNREACH)
-	setError(IO_ConnectError, NetFailure);
+	setError(NetFailure);
       else
-	setError(IO_ConnectError, NotSupported);
+	setError(NotSupported);
 
       return false;
     }
 
-  open(QIODevice::Unbuffered||QIODevice::ReadWrite);
+  setOpenMode(QIODevice::Unbuffered | QIODevice::ReadWrite);
   return true;			// all is well
 }
 
@@ -419,7 +426,7 @@ qint64 KSocketDevice::readData(char *data, qint64 maxlen)
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
@@ -440,7 +447,7 @@ qint64 KSocketDevice::readData(char *data, qint64 maxlen, KSocketAddress &from)
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
@@ -461,7 +468,7 @@ qint64 KSocketDevice::peekData(char *data, qint64 maxlen)
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
@@ -482,7 +489,7 @@ qint64 KSocketDevice::peekData(char *data, qint64 maxlen, KSocketAddress& from)
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
@@ -507,13 +514,13 @@ qint64 KSocketDevice::writeData(const char *data, qint64 len, const KSocketAddre
   if (retval == -1)
     {
       if (errno == EAGAIN || errno == EWOULDBLOCK)
-	setError(IO_WriteError, WouldBlock);
+	setError(WouldBlock);
       else
-	setError(IO_WriteError, UnknownError);
+	setError(UnknownError);
       return -1;		// nothing written
     }
   else if (retval == 0)
-    setError(IO_WriteError, RemotelyDisconnected);
+    setError(RemotelyDisconnected);
 
   return retval;
 }
@@ -642,7 +649,7 @@ bool KSocketDevice::poll(bool *input, bool *output, bool *exception,
 {
   if (m_sockfd == -1)
     {
-      setError(IO_UnspecifiedError, NotCreated);
+      setError(NotCreated);
       return false;
     }
 
@@ -671,7 +678,7 @@ bool KSocketDevice::poll(bool *input, bool *output, bool *exception,
   int retval = ::poll(&fds, 1, timeout);
   if (retval == -1)
     {
-      setError(IO_UnspecifiedError, UnknownError);
+      setError(UnknownError);
       return false;
     }
   if (retval == 0)
@@ -735,7 +742,7 @@ bool KSocketDevice::poll(bool *input, bool *output, bool *exception,
 
   if (retval == -1)
     {
-      setError(IO_UnspecifiedError, UnknownError);
+      setError(UnknownError);
       return false;
     }
   if (retval == 0)

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,7 +25,7 @@
 #ifndef KIOBUFFER_H
 #define KIOBUFFER_H
 
-#include <q3cstring.h>
+#include <QByteArray>
 
 #include <kdelibs_export.h>
 
@@ -40,7 +40,7 @@ class QIODevice;
  * it is all handled by @ref KNetwork::KBufferedSocket and other buffering
  * classes.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KIOBufferBase
 {
@@ -77,7 +77,7 @@ public:
   /**
    * Reads a line from the buffer and discards it.
    */
-  virtual Q3CString readLine() = 0;
+  virtual QByteArray readLine() = 0;
 
   /**
    * Returns the number of bytes in the buffer. Note that this is not
@@ -123,7 +123,7 @@ public:
    * @param len		the data length, in bytes
    * @returns the number of bytes added to the end of the buffer.
    */
-  virtual qint64 feedBuffer(const char *data, Q_LONG len) = 0;
+  virtual qint64 feedBuffer(const char *data, qint64 len) = 0;
 
   /**
    * Consumes data from the beginning of the buffer.
@@ -133,7 +133,7 @@ public:
    * @param discard	if true, the bytes copied will be discarded
    * @returns the number of bytes copied from the buffer
    */
-  virtual qint64 consumeBuffer(char *data, Q_LONG maxlen, bool discard = true) = 0;
+  virtual qint64 consumeBuffer(char *data, qint64 maxlen, bool discard = true) = 0;
 
   /**
    * Clears the buffer.

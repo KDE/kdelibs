@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,8 @@
 
 #include <assert.h>
 #include <string.h>
+
+#include <QMutableListIterator>
 
 #include "ksocketbase.h"
 #include "ksocketbuffer_p.h"
@@ -68,16 +70,14 @@ bool KSocketBuffer::canReadLine() const
 {
   QMutexLocker locker(&m_mutex);
 
-  Q3ValueListConstIterator<QByteArray> it = m_list.constBegin(),
-    end = m_list.constEnd();
-  qint64LONG offset = m_offset;
+  QIODevice::Offset offset = m_offset;
 
   // walk the buffer
-  for ( ; it != end; ++it)
+  for (int i = 0; i < m_list.size(); ++i)
     {
-      if ((*it).find('\n', offset) != -1)
+      if (m_list.at(i).find('\n', offset) != -1)
 	return true;
-      if ((*it).find('\r', offset) != -1)
+      if (m_list.at(i).find('\r', offset) != -1)
 	return true;
       offset = 0;
     }
@@ -85,27 +85,25 @@ bool KSocketBuffer::canReadLine() const
   return false;			// not found
 }
 
-Q3CString KSocketBuffer::readLine()
+QByteArray KSocketBuffer::readLine()
 {
   if (!canReadLine())
-    return Q3CString();		// empty
+    return QByteArray();		// empty
 
   QMutexLocker locker(&m_mutex);
 
   // find the offset of the newline in the buffer
   int newline = 0;
-  Q3ValueListConstIterator<QByteArray> it = m_list.constBegin(),
-    end = m_list.constEnd();
-  qint64LONG offset = m_offset;
+  QIODevice::Offset offset = m_offset;
 
   // walk the buffer
-  for ( ; it != end; ++it)
+  for (int i = 0; i < m_list.size(); ++i)
     {
-      int posnl = (*it).find('\n', offset);
+      int posnl = m_list.at(i).find('\n', offset);
       if (posnl == -1)
 	{
 	  // not found in this one
-	  newline += (*it).size();
+	  newline += m_list.at(i).size();
 	  offset = 0;
 	  continue;
 	}
@@ -115,7 +113,7 @@ Q3CString KSocketBuffer::readLine()
       break;
     }
 
-  Q3CString result(newline + 2 - m_offset);
+  QByteArray result(newline + 2 - m_offset);
   consumeBuffer(result.data(), newline + 1 - m_offset);
   return result;
 }
@@ -147,7 +145,7 @@ bool KSocketBuffer::setSize(qint64 size)
   return (m_length - m_size) == consumeBuffer(0L, m_length - m_size, true);
 }
 
-qint64 KSocketBuffer::feedBuffer(const char *data, Q_LONG len)
+qint64 KSocketBuffer::feedBuffer(const char *data, qint64 len)
 {
   if (data == 0L || len == 0)
     return 0;			// nothing to write
@@ -168,31 +166,31 @@ qint64 KSocketBuffer::feedBuffer(const char *data, Q_LONG len)
   return len;
 }
 
-qint64 KSocketBuffer::consumeBuffer(char *destbuffer, Q_LONG maxlen, bool discard)
+qint64 KSocketBuffer::consumeBuffer(char *destbuffer, qint64 maxlen, bool discard)
 {
   if (maxlen == 0 || isEmpty())
     return 0;
 
-  Q3ValueListIterator<QByteArray> it = m_list.begin(),
-    end = m_list.end();
-  qint64LONG offset = m_offset;
+  QMutableListIterator<QByteArray> it(m_list);
+  QIODevice::Offset offset = m_offset;
   qint64 copied = 0;
 
   // walk the buffer
-  while (it != end && maxlen)
+  while (it.hasNext() && maxlen)
     {
+      QByteArray& item = it.next();
       // calculate how much we'll copy
-      size_t to_copy = (*it).size() - offset;
+      size_t to_copy = item.size() - offset;
       if (to_copy > maxlen)
 	to_copy = maxlen;
 
       // do the copying
       if (destbuffer)
-	memcpy(destbuffer + copied, (*it).data() + offset, to_copy);
+	memcpy(destbuffer + copied, item.data() + offset, to_copy);
       maxlen -= to_copy;
       copied += to_copy;
 
-      if ((*it).size() - offset > to_copy)
+      if (item.size() - offset > to_copy)
 	{
 	  // we did not copy everything
 	  offset += to_copy;
@@ -204,9 +202,7 @@ qint64 KSocketBuffer::consumeBuffer(char *destbuffer, Q_LONG maxlen, bool discar
 	  // discard this element;
 	  offset = 0;
 	  if (discard)
-	    it = m_list.remove(it);
-	  else
-	    ++it;
+	    it.remove();
 	}
     }
 
@@ -228,20 +224,19 @@ void KSocketBuffer::clear()
   m_length = 0;
 }
 
-qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
+qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, qint64 len)
 {
   if (len == 0 || isEmpty())
     return 0;
 
   QMutexLocker locker(&m_mutex);
   
-  Q3ValueListIterator<QByteArray> it = m_list.begin(),
-    end = m_list.end();
-  qint64LONG offset = m_offset;
+  QMutableListIterator<QByteArray> it(m_list);
+  QIODevice::Offset offset = m_offset;
   qint64 written = 0;
   
   // walk the buffer
-  while (it != end && (len || len == -1))
+  while (it.hasNext() && (len || len == -1))
     {
       // we have to write each element up to len bytes
       // but since we can have several very small buffers, we can make things
@@ -254,26 +249,27 @@ qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
       QByteArray buf(bufsize);
       qint64 count = 0;
 
-      while (it != end && count + ((*it).size() - offset) <= bufsize)
+      while (it.hasNext() && count + (it.peekNext().size() - offset) <= bufsize)
 	{
-	  memcpy(buf.data() + count, (*it).data() + offset, (*it).size() - offset);
-	  count += (*it).size() - offset;
+	  QByteArray& item = it.next();
+	  memcpy(buf.data() + count, item.data() + offset, item.size() - offset);
+	  count += item.size() - offset;
 	  offset = 0;
-	  ++it;
 	}
 
       // see if we can still fit more
-      if (count < bufsize && it != end)
+      if (count < bufsize && it.hasNext())
 	{
-	  // getting here means this buffer (*it) is larger than
+	  // getting here means this buffer (peekNext) is larger than
 	  // (bufsize - count) (even for count == 0).
-	  memcpy(buf.data() + count, (*it).data() + offset, bufsize - count);
+	  QByteArray& item = it.next();
+	  memcpy(buf.data() + count, item.data() + offset, bufsize - count);
 	  offset += bufsize - count;
 	  count = bufsize;
 	}
 
       // now try to write those bytes
-      qint64 wrote = dev->writeData(buf, count);
+      qint64 wrote = dev->writeBlock(buf, count);
 
       if (wrote == -1)
 	// error?
@@ -293,7 +289,7 @@ qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
   return written;
 }
 
-qint64 KSocketBuffer::receiveFrom(KActiveSocketBase* dev, Q_LONG len)
+qint64 KSocketBuffer::receiveFrom(KActiveSocketBase* dev, qint64 len)
 {
   if (len == 0 || isFull())
     return 0;

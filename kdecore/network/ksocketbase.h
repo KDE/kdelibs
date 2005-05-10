@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -56,9 +56,8 @@
 #ifndef KSOCKETBASE_H
 #define KSOCKETBASE_H
 
-#include <qglobal.h>
-#include <qiodevice.h>
-#include <qstring.h>
+#include <QIODevice>
+#include <QString>
 
 #include "ksocketaddress.h"
 #include <kdelibs_export.h>
@@ -93,7 +92,7 @@ class KSocketBasePrivate;
  *
  * @note This class is abstract.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KSocketBase
 {
@@ -371,6 +370,11 @@ protected:
    */
   void setError(SocketError error);
 
+  /**
+   * Resets the socket error code and the I/O Device's status.
+   */
+  void resetError();
+
 public:
   /**
    * Retrieves the socket error code.
@@ -439,7 +443,7 @@ private:
  * This class provides the standard interfaces for active sockets, i.e.,
  * sockets that are used to connect to external addresses.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KActiveSocketBase: public QIODevice, virtual public KSocketBase
 {
@@ -447,7 +451,7 @@ public:
   /**
    * Constructor.
    */
-  KActiveSocketBase();
+  KActiveSocketBase(QObject* parent);
 
   /**
    * Destructor.
@@ -512,14 +516,14 @@ public:
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual Offset pos() const
+  virtual Offset at() const
   { return 0; }
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return false.
    */
-  virtual bool pos(Offset)
+  virtual bool at(Offset)
   { return false; }
 
   /**
@@ -551,7 +555,7 @@ public:
   /**
    * Reads data from the socket.
    *
-   * Reimplemented from QIODevice. See QIODevice::readBlock for
+   * Reimplemented from QIODevice. See QIODevice::readData for
    * more information.
    */
   virtual qint64 readData(char *data, qint64 len) = 0;
@@ -659,12 +663,11 @@ public:
 
 protected:
   /**
-   * Sets the socket's error code and the I/O Device's status.
+   * Sets the socket's error code.
    *
-   * @param status		the I/O Device status
    * @param error		the error code
    */
-  void setError(int status, SocketError error);
+  void setError(SocketError error);
 
   /**
    * Resets the socket error code and the I/O Device's status.
@@ -679,7 +682,7 @@ protected:
  * This socket provides the initial functionality for passive sockets,
  * i.e., sockets that accept incoming connections.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KPassiveSocketBase: virtual public KSocketBase
 {

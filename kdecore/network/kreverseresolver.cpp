@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -31,9 +31,9 @@
 #include <signal.h>
 
 // Qt
-#include <qevent.h>
-#include <qmutex.h>
-#include <qapplication.h>
+#include <QEvent>
+#include <QMutex>
+#include <QCoreApplication>
 
 // Us
 #include "kreverseresolver.h"
@@ -203,7 +203,7 @@ bool KReverseResolver::resolve(const KSocketAddress& addr, QString& node,
   return false;
 }
 
-bool KReverseResolver::resolve(const struct sockaddr* sa, Q_UINT16 salen,
+bool KReverseResolver::resolve(const struct sockaddr* sa, quint16 salen,
 			       QString& node, QString& serv, int flags)
 {
   return resolve(KSocketAddress(sa, salen), node, serv, flags);
@@ -244,7 +244,7 @@ bool ReverseThread::run()
     }
   else
     {
-      node = service = QString::null;
+      node = service = QString();
       success = false;
     }
 
@@ -255,8 +255,8 @@ bool ReverseThread::postprocess()
 {
   // post an event
   if (m_parent)
-    QApplication::postEvent(m_parent,
-			    new KReverseResolverEvent(node, service, success));
+    QCoreApplication::postEvent(m_parent,
+				new KReverseResolverEvent(node, service, success));
   return true;
 }
 

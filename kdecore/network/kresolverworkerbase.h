@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -29,7 +29,7 @@
 
 // forward declarations
 class QString;
-template <class T> class Q3ValueList;
+template <class T> class QValueList;
 
 namespace KNetwork {
 
@@ -164,7 +164,7 @@ public:
   /**
    * gets the protocol name, if applicable
    */
-  Q3CString protocolName() const;
+  QByteArray protocolName() const;
 
   /**
    * Call this function to indicate that processing

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -27,8 +27,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <qsocketnotifier.h>
-#include <q3cstring.h>
+#include <QSocketNotifier>
+#include <QByteArray>
 
 #include "kresolver.h"
 #include "ksocketaddress.h"
@@ -89,7 +89,7 @@ void KHttpProxySocketDevice::setProxyServer(const KResolverEntry& proxy)
 
 void KHttpProxySocketDevice::close()
 {
-  d->reply = d->request = Q3CString();
+  d->reply = d->request = QByteArray();
   d->peer = KSocketAddress();
   KSocketDevice::close();
 }
@@ -135,7 +135,7 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
 			 node.isEmpty() || service.isEmpty()))
     {
       // no proxy server set !
-      setError(IO_ConnectError, NotSupported);
+      setError(NotSupported);
       return false;
     }
 
@@ -150,7 +150,7 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
       // must create the socket
       if (!KSocketDevice::connect(d->proxy))
 	return false;		// also unable to contact proxy server
-      close();		// unset open flag
+      setOpenMode(0);		// unset open flag
 
       // prepare the request
       QString request = QString::fromLatin1("CONNECT %1:%2 HTTP/1.1\r\n"
@@ -184,7 +184,7 @@ bool KHttpProxySocketDevice::parseServerReply()
 	{
 	  qDebug("KHttpProxySocketDevice: would block writing request!");
 	  if (error() == WouldBlock)
-	    setError(IO_ConnectError, InProgress);
+	    setError(InProgress);
 	  return error() == WouldBlock; // error
 	}
       qDebug("KHttpProxySocketDevice: request written");
@@ -193,7 +193,7 @@ bool KHttpProxySocketDevice::parseServerReply()
 
       if (!d->request.isEmpty())
 	{
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;		// still in progress
 	}
     }
@@ -206,11 +206,11 @@ bool KHttpProxySocketDevice::parseServerReply()
   if (!blocking())
     {
       qint64 avail = bytesAvailable();
-      qDebug( "KHttpProxySocketDevice: %qi bytes available", avail );
-      close();
+      qDebug("KHttpProxySocketDevice: %lld bytes available", avail);
+      setOpenMode(0);
       if (avail == 0)
 	{
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;
 	}
       else if (avail < 0)
@@ -227,9 +227,9 @@ bool KHttpProxySocketDevice::parseServerReply()
 	{
 	  // no, headers not yet finished...
 	  // consume data from socket
-	  readBlock(buf.data(), avail);
+	  readData(buf.data(), avail);
 	  d->reply += buf.data();
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;
 	}
 
@@ -238,7 +238,7 @@ bool KHttpProxySocketDevice::parseServerReply()
       d->reply += fullHeaders.mid(d->reply.length(), index + 4);
 
       // consume from socket
-      readBlock(buf.data(), index + 4);
+      readData(buf.data(), index + 4);
     }
   else
     {
@@ -270,12 +270,12 @@ bool KHttpProxySocketDevice::parseServerReply()
       (index = d->reply.find(' ')) == -1 ||
       d->reply[index + 1] != '2')
     {
-      setError(IO_ConnectError, NetFailure);
+      setError(NetFailure);
       return false;
     }
 
   // we've got it
   resetError();
-  open(QIODevice::ReadWrite);
+  setOpenMode(ReadOnly);
   return true;
 }

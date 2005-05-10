@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -41,8 +41,8 @@ using namespace KNetwork;
  *
  */
 
-KDatagramSocket::KDatagramSocket(QObject* parent, const char *name)
-  : KClientSocketBase(parent, name), d(0L)
+KDatagramSocket::KDatagramSocket(QObject* parent)
+  : KClientSocketBase(parent), d(0L)
 {
   peerResolver().setFamily(KResolver::KnownFamily);
   localResolver().setFamily(KResolver::KnownFamily);
@@ -143,7 +143,7 @@ KDatagramPacket KDatagramSocket::receive()
       else
 	{
 	  // mimic error
-	  setError(IO_ReadError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return KDatagramPacket();
 	}
@@ -156,7 +156,7 @@ KDatagramPacket KDatagramSocket::receive()
   KSocketAddress address;
   
   // now do the reading
-  size = readBlock(data.data(), size, address);
+  size = readData(data.data(), size, address);
   if (size < 0)
     // error has been set
     return KDatagramPacket();

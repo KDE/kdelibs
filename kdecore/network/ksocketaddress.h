@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,9 +25,7 @@
 #ifndef KSOCKETADDRESS_H
 #define KSOCKETADDRESS_H
 
-#include <qstring.h>
-#include <q3cstring.h>
-
+#include <QByteArray>
 #include <kdelibs_export.h>
 
 struct sockaddr;
@@ -57,7 +55,7 @@ class KUnixSocketAddress;
  * there are no virtual functions. This object's size should be less than 20
  * bytes. Also note that there is no sharing of data.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KIpAddress
 {
@@ -119,7 +117,7 @@ public:
    *
    * @param ip4addr		the IPv4 address
    */
-  inline KIpAddress(Q_UINT32 ip4addr)
+  inline KIpAddress(quint32 ip4addr)
   { setAddress(&ip4addr, 4); }
 
   /**
@@ -233,7 +231,7 @@ public:
    *
    * @bug Check if byte ordering is done right
    */
-  inline Q_UINT32 IPv4Addr(bool convertMapped = true) const
+  inline quint32 IPv4Addr(bool convertMapped = true) const
   {
     return (convertMapped && isV4Mapped()) ? m_data[3] : m_data[0];
   }
@@ -338,10 +336,10 @@ public:
   inline bool isV4Mapped() const
   {
     if (version() != 6) return false;
-    Q_UINT32* addr = (Q_UINT32*)this->addr();
+    quint32* addr = (quint32*)this->addr();
     return addr[0] == 0 && addr[1] == 0 &&
-      ((Q_UINT16*)&addr[2])[0] == 0 &&
-      ((Q_UINT16*)&addr[2])[1] == 0xffff;
+      ((quint16*)&addr[2])[0] == 0 &&
+      ((quint16*)&addr[2])[1] == 0xffff;
   }
 
   /**
@@ -350,7 +348,7 @@ public:
   inline bool isV4Compat() const
   {
     if (version() != 6 || isLocalhost()) return false;
-    Q_UINT32* addr = (Q_UINT32*)this->addr();
+    quint32* addr = (quint32*)this->addr();
     return addr[0] == 0 && addr[1] == 0 && addr[2] == 0 && addr[3] != 0;
   }
 
@@ -358,34 +356,34 @@ public:
    * Returns true if this is an IPv6 node-local multicast address.
    */
   inline bool isMulticastNodeLocal() const
-  { return version() == 6 && isMulticast() && (((Q_UINT32*)addr())[0] & 0xf) == 0x1; }
+  { return version() == 6 && isMulticast() && (((quint32*)addr())[0] & 0xf) == 0x1; }
 
   /**
    * Returns true if this is an IPv6 link-local multicast address.
    */
   inline bool isMulticastLinkLocal() const
-  { return version() == 6 && isMulticast() && (((Q_UINT32*)addr())[0] & 0xf) == 0x2; }
+  { return version() == 6 && isMulticast() && (((quint32*)addr())[0] & 0xf) == 0x2; }
       
   /**
    * Returns true if this is an IPv6 site-local multicast address.
    */
   inline bool isMulticastSiteLocal() const
-  { return version() == 6 && isMulticast() && (((Q_UINT32*)addr())[0] & 0xf) == 0x5; }
+  { return version() == 6 && isMulticast() && (((quint32*)addr())[0] & 0xf) == 0x5; }
 
   /**
    * Returns true if this is an IPv6 organisational-local multicast address.
    */
   inline bool isMulticastOrgLocal() const
-  { return version() == 6 && isMulticast() && (((Q_UINT32*)addr())[0] & 0xf) == 0x8; }
+  { return version() == 6 && isMulticast() && (((quint32*)addr())[0] & 0xf) == 0x8; }
 
   /**
    * Returns true if this is an IPv6 global multicast address.
    */
   inline bool isMulticastGlobal() const
-  { return version() == 6 && isMulticast() && (((Q_UINT32*)addr())[0] & 0xf) == 0xe; }
+  { return version() == 6 && isMulticast() && (((quint32*)addr())[0] & 0xf) == 0xe; }
 
 protected:
-  Q_UINT32 m_data[4];	       // 16 bytes, needed for an IPv6 address
+  quint32 m_data[4];	       // 16 bytes, needed for an IPv6 address
 
   char m_version;
 
@@ -408,7 +406,7 @@ class KSocketAddressData;
  *
  * This class holds one generic socket address.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KSocketAddress
 {
@@ -427,7 +425,7 @@ public:
    * @param sa		the socket address structure
    * @param len		the socket address length
    */
-  KSocketAddress(const sockaddr* sa, Q_UINT16 len);
+  KSocketAddress(const sockaddr* sa, quint16 len);
 
   /**
    * Copy constructor. This creates a copy of the other
@@ -480,7 +478,7 @@ public:
    * @param sa		the socket address structure
    * @param len		the socket address length
    */
-  KSocketAddress& setAddress(const sockaddr *sa, Q_UINT16 len);
+  KSocketAddress& setAddress(const sockaddr *sa, quint16 len);
 
   /**
    * Returns the socket address structure, to be passed down to
@@ -492,7 +490,7 @@ public:
   /**
    * Returns the length of this socket address structure.
    */
-  Q_UINT16 length() const;
+  quint16 length() const;
 
   /**
    * Sets the length of this socket structure.
@@ -514,7 +512,7 @@ public:
    *
    * @param len		the new length
    */
-  KSocketAddress& setLength(Q_UINT16 len);
+  KSocketAddress& setLength(quint16 len);
 
   /**
    * Returns the family of this address.
@@ -554,9 +552,9 @@ public:
    * Returns the node name of this socket.
    *
    * In the case of Internet sockets, this is string representation of the IP address.
-   * The default implementation returns QString::null.
+   * The default implementation returns QString().
    *
-   * @return the node name, can be QString::null
+   * @return the node name, can be QString()
    * @bug use KResolver to resolve unknown families
    */
   virtual QString nodeName() const;
@@ -565,9 +563,9 @@ public:
    * Returns the service name for this socket.
    *
    * In the case of Internet sockets, this is the port number.
-   * The default implementation returns QString::null.
+   * The default implementation returns QString().
    *
-   * @return the service name, can be QString::null
+   * @return the service name, can be QString()
    * @bug use KResolver to resolve unknown families
    */
   virtual QString serviceName() const;
@@ -636,7 +634,7 @@ public:				// static
  *
  * This is an IPv4 or IPv6 address of the Internet.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KInetSocketAddress: public KSocketAddress
 {
@@ -656,7 +654,7 @@ public:
    * @param sa		the sockaddr structure
    * @param len		the structure's length
    */
-  KInetSocketAddress(const sockaddr* sa, Q_UINT16 len);
+  KInetSocketAddress(const sockaddr* sa, quint16 len);
 
   /**
    * Creates an object from an IP address and port.
@@ -664,7 +662,7 @@ public:
    * @param host	the IP address
    * @param port	the port number
    */
-  KInetSocketAddress(const KIpAddress& host, Q_UINT16 port);
+  KInetSocketAddress(const KIpAddress& host, quint16 port);
 
   /**
    * Copy constructor.
@@ -740,7 +738,7 @@ public:
    * @return a port number in the range 0 to 65535, inclusive. An empty or 
    * invalid object will have a port number of 0.
    */
-  Q_UINT16 port() const;
+  quint16 port() const;
 
   /**
    * Sets the port number. If this object is empty, this function will default to
@@ -749,7 +747,7 @@ public:
    * @param port	the port number to set
    * @return a reference to itself
    */
-  KInetSocketAddress& setPort(Q_UINT16 port);
+  KInetSocketAddress& setPort(quint16 port);
 
   /**
    * Converts this object to an IPv4 socket address. It has no effect if the object
@@ -777,7 +775,7 @@ public:
    *
    * @return the flowinfo information or 0 if this object is empty or IPv4
    */
-  Q_UINT32 flowinfo() const;
+  quint32 flowinfo() const;
 
   /**
    * Sets the flowinfo information for an IPv6 socket address. If this is not
@@ -786,7 +784,7 @@ public:
    * @param flowinfo		the flowinfo to set
    * @return a reference to itself
    */
-  KInetSocketAddress& setFlowinfo(Q_UINT32 flowinfo);
+  KInetSocketAddress& setFlowinfo(quint32 flowinfo);
 
   /**
    * Returns the scope id this IPv6 socket is bound to.
@@ -825,7 +823,7 @@ private:
  * Note that this class uses QStrings to represent filenames, which means
  * the proper encoding is used to translate into valid filesystem file names.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KUnixSocketAddress: public KSocketAddress
 {
@@ -844,7 +842,7 @@ public:
    * @param sa		the socket address structure
    * @param len		the structure's length
    */
-  KUnixSocketAddress(const sockaddr* sa, Q_UINT16 len);
+  KUnixSocketAddress(const sockaddr* sa, quint16 len);
 
   /**
    * Copy constructor. Creates a copy of the other object,
@@ -880,7 +878,7 @@ public:
 
   /**
    * Returns the pathname associated with this object. Will return
-   * QString::null if this object is empty.
+   * QString() if this object is empty.
    */
   QString pathname() const;
 

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,9 +25,9 @@
 #ifndef KBUFFEREDSOCKET_H
 #define KBUFFEREDSOCKET_H
 
-#include <qobject.h>
-#include <q3cstring.h>
-#include <q3valuelist.h>
+#include <QObject>
+#include <QByteArray>
+#include <QList>
 #include "kstreamsocket.h"
 #include <kdelibs_export.h>
 
@@ -47,7 +47,7 @@ class KBufferedSocketPrivate;
  * Objects of this type operate only in non-blocking mode. A call to
  * setBlocking(true) will result in an error.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KBufferedSocket: public KStreamSocket
 {
@@ -61,8 +61,8 @@ public:
    * @param parent      the parent object for this object
    * @param name        the internal name for this object
    */
-  KBufferedSocket(const QString& node = QString::null, const QString& service = QString::null,
-		  QObject* parent = 0L, const char *name = 0L);
+  KBufferedSocket(const QString& node = QString(), const QString& service = QString(),
+		  QObject* parent = 0L);
 
   /**
    * Destructor.
@@ -189,7 +189,7 @@ public:
   /**
    * Reads a line of data from the socket buffers.
    */
-  Q3CString readLine();
+  QByteArray readLine();
 
 protected:
   /**

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -24,9 +24,9 @@
 
 #include <config.h>
 
-#include <qsocketnotifier.h>
-#include <qdatetime.h>
-#include <qtimer.h>
+#include <QSocketNotifier>
+#include <QDateTime>
+#include <QTimer>
 
 #include "ksocketaddress.h"
 #include "kresolver.h"
@@ -50,8 +50,8 @@ public:
 };
 
 KStreamSocket::KStreamSocket(const QString& node, const QString& service,
-			     QObject* parent, const char *name)
-  : KClientSocketBase(parent, name), d(new KStreamSocketPrivate)
+			     QObject* parent)
+  : KClientSocketBase(parent), d(new KStreamSocketPrivate)
 {
   peerResolver().setNodeName(node);
   peerResolver().setServiceName(service);
@@ -119,7 +119,7 @@ bool KStreamSocket::connect(const QString& node, const QString& service)
 
   if (state() == Connecting && !blocking())
     {
-      setError(IO_ConnectError, InProgress);
+      setError(InProgress);
       emit gotError(InProgress);
       return true;		// we're already connecting
     }
@@ -301,7 +301,7 @@ void KStreamSocket::timeoutSlot()
   // halt the connections
   socketDevice()->close();	// this also kills the notifiers
 
-  setError(IO_TimeOutError, Timeout);
+  setError(Timeout);
   setState(HostFound);
   emit stateChanged(HostFound);
   emit gotError(Timeout);
@@ -331,7 +331,7 @@ bool KStreamSocket::bindLocallyFor(const KResolverEntry& peer)
   if (!foundone)
     {
       // found nothing
-      setError(IO_BindError, NotSupported);
+      setError(NotSupported);
       emit gotError(NotSupported);
     }
   else
@@ -345,7 +345,7 @@ void KStreamSocket::connectionSucceeded(const KResolverEntry& peer)
   QObject::disconnect(socketDevice()->writeNotifier(), 0, this, SLOT(connectionEvent()));
 
   resetError();
-  open(QIODevice::ReadWrite);
+  setOpenMode(ReadWrite | Unbuffered);
   setState(Connected);
   socketDevice()->setSocketOptions(socketOptions());
   d->timer.stop();

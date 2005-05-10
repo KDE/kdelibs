@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,7 +25,7 @@
 #ifndef KDATAGRAMSOCKET_H
 #define KDATAGRAMSOCKET_H
 
-#include <q3cstring.h>
+#include <QByteArray>
 
 #include "ksocketaddress.h"
 #include "kclientsocketbase.h"
@@ -46,7 +46,7 @@ class KResolverEntry;
  * This is a lightweight class. Data is stored in a @ref QByteArray, which means
  * that it is explicitly shared.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KDatagramPacket
 {
@@ -175,7 +175,7 @@ class KDatagramSocketPrivate;
  * This class in specific provides easy access to the system's connectionless
  * SOCK_DGRAM sockets. 
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KDatagramSocket: public KClientSocketBase
 {
@@ -185,7 +185,7 @@ public:
   /**
    * Default constructor.
    */
-  KDatagramSocket(QObject* parent = 0L, const char *name = 0L);
+  KDatagramSocket(QObject* parent = 0L);
 
   /**
    * Destructor. This closes the socket.
@@ -205,8 +205,8 @@ public:
    * Some protocol families will use anonymous source addresses, while others
    * will allocate an address automatically.
    */
-  virtual bool bind(const QString& node = QString::null,
-		    const QString& service = QString::null);
+  virtual bool bind(const QString& node = QString(),
+		    const QString& service = QString());
 
   /**
    * @overload
@@ -222,13 +222,13 @@ public:
    *
    * Connecting means only to designate the given address as the default
    * destination address for datagrams sent without destination addresses
-   * (@ref writeData(const char*, qint64).
+   * (@ref writeBlock(const char*, qint64).
    *
    * @note Calling connect will not cause the socket to be bound. You have
    *       to call @ref bind explicitly.
    */
-  virtual bool connect(const QString& node = QString::null,
-		       const QString& service = QString::null);
+  virtual bool connect(const QString& node = QString(),
+		       const QString& service = QString());
 
   /**
    * @overload

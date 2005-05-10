@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,7 +25,7 @@
 #ifndef KSOCKETDEVICE_H
 #define KSOCKETDEVICE_H
 
-#include <qsocketnotifier.h>
+#include <QSocketNotifier>
 #include "ksocketbase.h"
 
 namespace KNetwork {
@@ -45,7 +45,7 @@ class KSocketDevicePrivate;
  * Descended classes from this one provide some other kinds of socket functionality,
  * like proxying or specific socket types.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
 {
@@ -101,7 +101,7 @@ public:
    * The parameter is used to specify which socket this object is used as
    * a device for.
    */
-  explicit KSocketDevice(const KSocketBase* = 0L);
+  explicit KSocketDevice(const KSocketBase* = 0L, QObject* objparent = 0L);
 
   /**
    * Constructs a new object around an already-open socket.
@@ -110,6 +110,11 @@ public:
    * the classes whenever possible.
    */
   explicit KSocketDevice(int fd);
+
+  /**
+   * QObject constructor
+   */
+  KSocketDevice(QObject* parent);
 
   /**
    * Destructor. This closes the socket if it's open.
@@ -154,7 +159,8 @@ public:
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    */
-  virtual bool flush() { return false; }
+  virtual bool flush()
+  { return false; }
 
   /**
    * Creates a socket but don't connect or bind anywhere.
@@ -322,12 +328,6 @@ public:
    * @return true if the poll call succeeded and false if an error occurred
    */
   bool poll(int timeout = -1, bool* timedout = 0L);
-
-
-  /**
-   * @reimp
-   */
-  bool isSequential() const { return true; }
 
 protected:
   /**

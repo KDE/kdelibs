@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -24,8 +24,8 @@
 
 #include <config.h>
 
-#include <qmutex.h>
-#include <qtimer.h>
+#include <QMutex>
+#include <QTimer>
 
 #include "ksocketdevice.h"
 #include "ksocketaddress.h"
@@ -48,8 +48,8 @@ public:
 };
 
 KBufferedSocket::KBufferedSocket(const QString& host, const QString& service,
-				 QObject *parent, const char *name)
-  : KStreamSocket(host, service, parent, name),
+				 QObject *parent)
+  : KStreamSocket(host, service, parent),
     d(new KBufferedSocketPrivate)
 {
   setInputBuffering(true);
@@ -119,7 +119,7 @@ qint64 KBufferedSocket::readData(char *data, qint64 maxlen)
     {
       if (d->input->isEmpty())
 	{
-	  setError(IO_ReadError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return -1;
 	}
@@ -141,7 +141,7 @@ qint64 KBufferedSocket::peekData(char *data, qint64 maxlen)
     {
       if (d->input->isEmpty())
 	{
-	  setError(IO_ReadError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return -1;
 	}
@@ -162,7 +162,7 @@ qint64 KBufferedSocket::writeData(const char *data, qint64 len)
   if (state() != Connected)
     {
       // cannot write now!
-      setError(IO_WriteError, NotConnected);
+      setError(NotConnected);
       return -1;
     }
 
@@ -170,7 +170,7 @@ qint64 KBufferedSocket::writeData(const char *data, qint64 len)
     {
       if (d->output->isFull())
 	{
-	  setError(IO_WriteError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return -1;
 	}
@@ -300,7 +300,7 @@ bool KBufferedSocket::canReadLine() const
   return d->input->canReadLine();
 }
 
-Q3CString KBufferedSocket::readLine()
+QByteArray KBufferedSocket::readLine()
 {
   return d->input->readLine();
 }
@@ -327,7 +327,7 @@ void KBufferedSocket::slotReadActivity()
       else if (len == 0)
 	{
 	  // remotely closed
-	  setError(IO_ReadError, RemotelyDisconnected);
+	  setError(RemotelyDisconnected);
 	  mutex()->unlock();
 	  emit gotError(error());
 	  closeNow();		// emits closed
@@ -375,7 +375,7 @@ void KBufferedSocket::slotWriteActivity()
       else if (len == 0)
 	{
 	  // remotely closed
-	  setError(IO_ReadError, RemotelyDisconnected);
+	  setError(RemotelyDisconnected);
 	  mutex()->unlock();
 	  emit gotError(error());
 	  closeNow();

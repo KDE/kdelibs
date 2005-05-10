@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,7 +25,7 @@
 #ifndef KSERVERSOCKET_H
 #define KSERVERSOCKET_H
 
-#include <qobject.h>
+#include <QObject>
 #include "ksocketbase.h"
 
 namespace KNetwork {
@@ -92,9 +92,9 @@ class KServerSocketPrivate;
  * The called slot slotReadyAccept() is responsible for calling
  * @ref accept.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KServerSocket: public KPassiveSocketBase
+class KDECORE_EXPORT KServerSocket: public QObject, public KPassiveSocketBase
 {
   Q_OBJECT
 public:
