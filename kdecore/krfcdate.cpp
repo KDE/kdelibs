@@ -363,7 +363,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
   // If there is no time, no month or no day specified, fill those missing
   // fields so that 'input' matches YYYY-MM-DDTHH:MM:SS
   if (-1 == tPos) {
-    const int dashes = input.contains('-');
+    const int dashes = input.count('-');
     if (0 == dashes) {
       input += "-01-01";
     } else if (1 == dashes) {

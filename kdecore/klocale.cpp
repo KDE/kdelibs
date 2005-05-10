@@ -431,7 +431,7 @@ bool KLocale::setLanguage(const QStringList & languages)
   {
     // kdDebug() << "checking " << (*it) << endl;
     bool bIsTranslated = isApplicationTranslatedInto( *it );
-    if ( languageList.contains(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
+    if ( languageList.count(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
       // kdDebug() << "removing " << (*it) << endl;
       it = languageList.remove( it );
     }
@@ -1086,7 +1086,7 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
 
 static inline void put_it_in( QChar *buffer, uint& index, const QString &s )
 {
-  for ( uint l = 0; l < s.length(); l++ )
+  for ( int l = 0; l < s.length(); l++ )
     buffer[index++] = s.at( l );
 }
 
@@ -1127,8 +1127,8 @@ QString KLocale::formatMoney(double num,
   switch (signpos)
     {
     case ParensAround:
-      res.prepend('(');
-      res.append (')');
+      res.prepend(QChar('('));
+      res.append (QChar(')'));
       break;
     case BeforeQuantityMoney:
       res.prepend(sign);
@@ -1147,10 +1147,10 @@ QString KLocale::formatMoney(double num,
   if (neg?negativePrefixCurrencySymbol():
       positivePrefixCurrencySymbol())
     {
-      res.prepend(' ');
+      res.prepend(QChar(' '));
       res.prepend(currency);
     } else {
-      res.append (' ');
+      res.append (QChar(' '));
       res.append (currency);
     }
 
@@ -1203,7 +1203,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
   int year = calendar()->year(pDate);
   int month = calendar()->month(pDate);
 
-  for ( uint format_index = 0; format_index < rst.length(); ++format_index )
+  for ( int format_index = 0; format_index < rst.length(); ++format_index )
     {
       if ( !escape )
 	{
@@ -1217,7 +1217,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	  switch ( rst.at( format_index ).unicode() )
 	    {
 	    case '%':
-	      buffer.append('%');
+	      buffer.append(QChar('%'));
 	      break;
 	    case 'Y':
 	      buffer.append(calendar()->yearString(pDate, false));
@@ -1469,8 +1469,8 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
   int year = calendar()->year(QDate::currentDate());
-  uint strpos = 0;
-  uint fmtpos = 0;
+  int strpos = 0;
+  int fmtpos = 0;
 
   int iLength; // Temporary variable used when reading input
 
@@ -1495,7 +1495,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
         strpos++;
 
       c = fmt.at(fmtpos++);
-      switch (c)
+      switch (c.toAscii())
       {
 	case 'a':
 	case 'A':
@@ -1613,7 +1613,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
   bool g_12h = false;
   bool pm = false;
   uint strpos = 0;
-  uint Formatpos = 0;
+  int Formatpos = 0;
 
   while (Format.length() > Formatpos || str.length() > strpos)
     {
@@ -1635,7 +1635,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
 	strpos++;
 
       c = Format.at(Formatpos++);
-      switch (c)
+      switch (c.toAscii())
 	{
 	case 'p':
 	  {
@@ -1726,7 +1726,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
   bool escape = false;
   int number = 0;
 
-  for ( uint format_index = 0; format_index < rst.length(); format_index++ )
+  for ( int format_index = 0; format_index < rst.length(); format_index++ )
     {
       if ( !escape )
 	{
