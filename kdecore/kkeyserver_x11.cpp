@@ -26,6 +26,7 @@
 #include <qwindowdefs.h>
 
 #if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
+#include <QX11Info>
 
 #include "kkeyserver_x11.h"
 #include "kkeynative.h"
@@ -406,7 +407,7 @@ bool Sym::initQt( int keyQt )
 	int symQt = keyQt & 0xffff;
 
 	if( (keyQt & Qt::UNICODE_ACCEL) || symQt < 0x1000 ) {
-		m_sym = QChar(symQt).lower().unicode();
+		m_sym = QChar(symQt).toLower().unicode();
 		return true;
 	}
 
@@ -436,7 +437,7 @@ bool Sym::init( const QString& s )
 {
 	// If it's a single character, get unicode value.
 	if( s.length() == 1 ) {
-		m_sym = s[0].lower().unicode();
+		m_sym = s[0].toLower().unicode();
 		return true;
 	}
 
@@ -461,7 +462,7 @@ bool Sym::init( const QString& s )
 	// search X list: 's' as is, all lower, first letter in caps
 	m_sym = XStringToKeysym( s.latin1() );
 	if( !m_sym ) {
-		m_sym = XStringToKeysym( s.lower().latin1() );
+		m_sym = XStringToKeysym( s.toLower().latin1() );
 		if( !m_sym ) {
 			QString s2 = s;
 			s2[0] = s2[0].upper();
@@ -476,7 +477,7 @@ int Sym::qt() const
 {
 	if( m_sym < 0x1000 ) {
 		if( m_sym >= 'a' && m_sym <= 'z' )
-			return QChar(m_sym).upper();
+			return QChar(m_sym).toUpper().unicode();
 		return m_sym;
 	}
 #ifdef Q_WS_WIN
@@ -504,12 +505,12 @@ QString Sym::toString( bool bUserSpace ) const
 #else
 	else if( m_sym < 0x3000 ) {
 #endif
-		QChar c = QChar(m_sym).upper();
+		QChar c = QChar(m_sym).toUpper();
 		// Print all non-space characters directly when output is user-visible.
 		// Otherwise only print alphanumeric latin1 characters directly (A,B,C,1,2,3).
 		if( (c.latin1() && c.isLetterOrNumber())
 		    || (bUserSpace && !c.isSpace()) )
-				return c;
+				return QString( c );
 	}
 
 	// Look up in special names list
@@ -542,7 +543,7 @@ uint Sym::getModsRequired() const
 
 	if( m_sym < 0x3000 ) {
 		QChar c(m_sym);
-		if( c.isLetter() && c.lower() != c.upper() && m_sym == c.upper().unicode() )
+		if( c.isLetter() && c.toLower() != c.toUpper() && m_sym == c.toUpper().unicode() )
 			return KKey::SHIFT;
 	}
 
@@ -800,7 +801,7 @@ uint stringUserToMod( const QString& mod )
 
 	QString s;
 	for( int i = KKey::MOD_FLAG_COUNT-1; i >= 0; i-- ) {
-		if( mod.lower() == g_rgModInfo[i].sLabel.lower())
+		if( mod.toLower() == g_rgModInfo[i].sLabel.toLower())
 			return g_rgModInfo[i].mod;
 	}
 	return 0;
@@ -1040,7 +1041,7 @@ void KKey::simplify()
 
 	// If this is a letter, don't remove any modifiers.
 	if( m_sym < 0x3000 && QChar(m_sym).isLetter() )
-		m_sym = QChar(m_sym).lower().unicode();
+		m_sym = QChar(m_sym).toLower().unicode();
 
 	// Remove modifers from modifier list which are implicit in the symbol.
 	// Ex. Shift+Plus => Plus (en)

@@ -318,7 +318,7 @@ bool KAccelBase::updateConnections()
 	m_rgActionsNonUnique.clear();
 
 	KKeyToActionMap mapKeyToAction;
-	for( uint i = 0; i < rgKeys.size(); i++ ) {
+	for( int i = 0; i < rgKeys.size(); i++ ) {
 		X& x = rgKeys[i];
 		KKeyServer::Key& key = x.key;
 		ActionInfo info;

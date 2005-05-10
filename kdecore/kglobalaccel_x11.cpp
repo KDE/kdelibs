@@ -30,7 +30,6 @@
 #include <qregexp.h>
 #include <qwidget.h>
 #include <qmetaobject.h>
-#include <private/qucomextra_p.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kkeynative.h>
@@ -144,7 +143,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 #endif
 	// We'll have to grab 8 key modifier combinations in order to cover all
 	//  combinations of CapsLock, NumLock, ScrollLock.
-	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
+	// Does anyone with more X-savvy know how to set a mask on QX11Info::appRootWindow so that
 	//  the irrelevant bits are always ignored and we can just make one XGrabKey
 	//  call per accelerator? -- ellis
 #ifndef NDEBUG
@@ -158,9 +157,9 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 #endif
 			if( bGrab )
 				XGrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask,
-					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
+					QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeSync );
 			else
-				XUngrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
+				XUngrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask, QX11Info::appRootWindow() );
 		}
 	}
 #ifndef NDEBUG
@@ -177,7 +176,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 			kdDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
 				if( m & keyModMaskX == 0 )
-					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, qt_xrootwin() );
+					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, QX11Info::appRootWindow() );
 				}
                 }
 	}

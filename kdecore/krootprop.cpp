@@ -66,7 +66,7 @@ void KRootProp::sync()
     }
   }
 
-  XChangeProperty( QX11Info::display(), qt_xrootwin(), atom,
+  XChangeProperty( QX11Info::display(), QX11Info::appRootWindow(), atom,
                   XA_STRING, 8, PropModeReplace,
                   (const unsigned char *)propString.utf8().data(),
                   propString.length());
@@ -98,7 +98,7 @@ void KRootProp::setProp( const QString& rProp )
   offset = 0; bytes_after = 1;
   while (bytes_after != 0)
   {
-    XGetWindowProperty( QX11Info::display(), qt_xrootwin(), atom, offset, 256,
+    XGetWindowProperty( QX11Info::display(), QX11Info::appRootWindow(), atom, offset, 256,
                         False, XA_STRING, &type, &format, &nitems, &bytes_after,
                         (unsigned char **)&buf);
     s += QString::fromUtf8(buf);
@@ -153,7 +153,7 @@ void KRootProp::destroy()
     dirty = false;
     propDict.clear();
     if( atom ) {
-	XDeleteProperty( QX11Info::display(), qt_xrootwin(), atom );
+	XDeleteProperty( QX11Info::display(), QX11Info::appRootWindow(), atom );
 	atom = 0;
     }
 }
@@ -274,7 +274,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
 
 QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
 {
-  QString aValue = QString( "%1,%2,%3").arg(rColor.Qt::red()).arg(rColor.Qt::green()).arg(rColor.Qt::blue() );
+  QString aValue = QString( "%1,%2,%3").arg(rColor.red()).arg(rColor.green()).arg(rColor.blue() );
 
   return writeEntry( rKey, aValue );
 }

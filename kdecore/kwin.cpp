@@ -112,7 +112,7 @@ static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z
   ev.xclient.data.l[1] = y;
   ev.xclient.data.l[2] = z;
   mask = SubstructureRedirectMask;
-  XSendEvent(QX11Info::display(), qt_xrootwin(), False, mask, &ev);
+  XSendEvent(QX11Info::display(), QX11Info::appRootWindow(), False, mask, &ev);
 }
 #endif
 
@@ -132,7 +132,7 @@ static void sendClientMessage(Window w, Atom a, long x){
   ev.xclient.data.l[0] = x;
   ev.xclient.data.l[1] = CurrentTime;
   mask = 0L;
-  if (w == qt_xrootwin())
+  if (w == QX11Info::appRootWindow())
     mask = SubstructureRedirectMask;        /* magic! */
   XSendEvent(QX11Info::display(), w, False, mask, &ev);
 }
@@ -156,7 +156,7 @@ ContextWidget::ContextWidget()
 	Q3WhatsThis::enterWhatsThisMode();
 	QCursor c = *QApplication::overrideCursor();
 	Q3WhatsThis::leaveWhatsThisMode();
-	XGrabPointer( QX11Info::display(), qt_xrootwin(), true,
+	XGrabPointer( QX11Info::display(), QX11Info::appRootWindow(), true,
 		      (uint)( ButtonPressMask | ButtonReleaseMask |
 			      PointerMotionMask | EnterWindowMask |
 			      LeaveWindowMask ),
@@ -171,7 +171,7 @@ bool ContextWidget::x11Event( XEvent * ev)
 	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
 	    XUngrabPointer( QX11Info::display(), ev->xbutton.time );
 	    Window root;
-	    Window child = qt_xrootwin();
+	    Window child = QX11Info::appRootWindow();
 	    int root_x, root_y, lx, ly;
 	    uint state;
 	    Window w;
@@ -206,9 +206,9 @@ void KWin::invokeContextHelp()
 void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), trayWin, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), trayWin, QX11Info::appRootWindow(), 0 );
     if ( !forWin )
-	forWin = qt_xrootwin();
+	forWin = QX11Info::appRootWindow();
     info.setKDESystemTrayWinFor( forWin );
     NETRootInfo rootinfo( QX11Info::display(), NET::Supported );
     if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
@@ -254,7 +254,7 @@ void KWin::setActiveWindow( WId win )
 void KWin::demandAttention( WId win, bool set )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     info.setState( set ? NET::DemandsAttention : 0, NET::DemandsAttention );
 #endif
 }
@@ -262,7 +262,7 @@ void KWin::demandAttention( WId win, bool set )
 void KWin::setUserTime( WId win, long time )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     info.setUserTime( time );
 #endif
 }
@@ -295,7 +295,7 @@ void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
         /*
          Grmbl. See QDialog::show(). That should get fixed in Qt somehow.
         */
-        if( qt_cast< QDialog* >( subwindow ) != NULL
+        if( qobject_cast< QDialog* >( subwindow ) != NULL
             && subwindow->parentWidget() == NULL
             && kapp->mainWidget() != NULL )
         {
@@ -333,7 +333,7 @@ KWin::Info KWin::info( WId win )
 {
     Info w;
 #ifdef Q_WS_X11
-    NETWinInfo inf( QX11Info::display(), win, qt_xrootwin(),
+    NETWinInfo inf( QX11Info::display(), win, QX11Info::appRootWindow(),
 		    NET::WMState |
 		    NET::WMStrut |
 		    NET::WMWindowType |
@@ -389,7 +389,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
     QPixmap result;
 #ifdef Q_WS_X11
     if( flags & NETWM ) {
-        NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMIcon );
+        NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMIcon );
         NETIcon ni = info.icon( width, height );
         if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
     	    QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
@@ -502,7 +502,7 @@ void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
 #ifdef Q_WS_X11
     if ( icon.isNull() )
 	return;
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     QImage img = icon.convertToImage().convertDepth( 32 );
     NETIcon ni;
     ni.size.width = img.size().width();
@@ -522,7 +522,7 @@ void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
 void KWin::setType( WId win, NET::WindowType windowType )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     info.setWindowType( windowType );
 #endif
 }
@@ -530,7 +530,7 @@ void KWin::setType( WId win, NET::WindowType windowType )
 void KWin::setState( WId win, unsigned long state )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMState );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( state, state );
 #endif
 }
@@ -538,7 +538,7 @@ void KWin::setState( WId win, unsigned long state )
 void KWin::clearState( WId win, unsigned long state )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMState );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( 0, state );
 #endif
 }
@@ -569,7 +569,7 @@ void KWin::setShadowSize( WId win, uint percent )
 void KWin::setOnAllDesktops( WId win, bool b )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMDesktop );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
     if ( b )
 	info.setDesktop( NETWinInfo::OnAllDesktops );
     else if ( info.desktop()  == NETWinInfo::OnAllDesktops ) {
@@ -582,7 +582,7 @@ void KWin::setOnAllDesktops( WId win, bool b )
 void KWin::setOnDesktop( WId win, int desktop )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMDesktop );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
     info.setDesktop( desktop );
 #endif
 }
@@ -592,7 +592,7 @@ void KWin::setExtendedStrut( WId win, int left_width, int left_start, int left_e
     int bottom_width, int bottom_start, int bottom_end )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     NETExtendedStrut strut;
     strut.left_width = left_width;
     strut.right_width = right_width;
@@ -613,7 +613,7 @@ void KWin::setExtendedStrut( WId win, int left_width, int left_start, int left_e
 void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     NETStrut strut;
     strut.left = left;
     strut.right = right;
@@ -762,7 +762,7 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
         properties |= NET::WMStrut; // will be used as fallback
     properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
-    d->info = new NETWinInfo( QX11Info::display(), win, qt_xrootwin(), props, 2 );
+    d->info = new NETWinInfo( QX11Info::display(), win, QX11Info::appRootWindow(), props, 2 );
     d->win_ = win;
     if( properties & NET::WMName ) {
         if( d->info->name() && d->info->name()[ 0 ] != '\0' )
@@ -870,22 +870,22 @@ NETExtendedStrut KWin::WindowInfo::extendedStrut() const
         if( str.left != 0 ) {
             ext.left_width = str.left;
             ext.left_start = 0;
-            ext.left_end = XDisplayHeight( QX11Info::display(), DefaultScreen( qt_xdisplay()));
+            ext.left_end = XDisplayHeight( QX11Info::display(), DefaultScreen( QX11Info::display()));
         }
         if( str.right != 0 ) {
             ext.right_width = str.right;
             ext.right_start = 0;
-            ext.right_end = XDisplayHeight( QX11Info::display(), DefaultScreen( qt_xdisplay()));
+            ext.right_end = XDisplayHeight( QX11Info::display(), DefaultScreen( QX11Info::display()));
         }
         if( str.top != 0 ) {
             ext.top_width = str.top;
             ext.top_start = 0;
-            ext.top_end = XDisplayWidth( QX11Info::display(), DefaultScreen( qt_xdisplay()));
+            ext.top_end = XDisplayWidth( QX11Info::display(), DefaultScreen( QX11Info::display()));
         }
         if( str.bottom != 0 ) {
             ext.bottom_width = str.bottom;
             ext.bottom_start = 0;
-            ext.bottom_end = XDisplayWidth( QX11Info::display(), DefaultScreen( qt_xdisplay()));
+            ext.bottom_end = XDisplayWidth( QX11Info::display(), DefaultScreen( QX11Info::display()));
         }
     }
     return ext;
