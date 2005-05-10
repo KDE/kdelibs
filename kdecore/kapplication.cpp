@@ -25,6 +25,7 @@
 #define QT_NO_TRANSLATION
 #include <qdir.h>
 #include <q3ptrcollection.h>
+#include <q3memarray.h>
 #include <qwidget.h>
 #include <q3strlist.h>
 #include <qfile.h>
@@ -1815,7 +1816,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 }
 #endif // Q_WS_X11
 
-void KApplication::updateUserTimestamp( unsigned long time )
+void KApplication::updateUserTimestamp( quint32 time )
 {
 #if defined Q_WS_X11
     if( time == 0 )
@@ -1844,7 +1845,7 @@ unsigned long KApplication::userTimestamp() const
 #endif
 }
 
-void KApplication::updateRemoteUserTimestamp( const Q3CString& dcopId, unsigned long time )
+void KApplication::updateRemoteUserTimestamp( const Q3CString& dcopId, quint32 time )
 {
 #if defined Q_WS_X11
     if( time == 0 )
@@ -1855,17 +1856,8 @@ void KApplication::updateRemoteUserTimestamp( const Q3CString& dcopId, unsigned 
 
 void KApplication::invokeEditSlot( const char *slot )
 {
-  QObject *object = focusWidget();
-  if( !object )
-    return;
-
-  const QMetaObject *meta = object->metaObject();
-
-  int idx = meta->findSlot( slot + 1, true );
-  if( idx < 0 )
-    return;
-
-  object->qt_invoke( idx, 0 );
+  if ( focusWidget() );
+    QMetaObject::invokeMember( focusWidget(), slot );
 }
 
 void KApplication::addKipcEventMask(int id)
@@ -1989,13 +1981,13 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
     QColor kde34VisitedLink( 82, 24, 139 );
 
     QColor background = config->readColorEntry( "background", &kde34Background );
-    QColor foreground = config->readColorEntry( "foreground", &Qt::black );
+    QColor foreground = config->readColorEntry( "foreground", new QColor( Qt::black ) );
     QColor button = config->readColorEntry( "buttonBackground", &kde34Button );
-    QColor buttonText = config->readColorEntry( "buttonForeground", &Qt::black );
+    QColor buttonText = config->readColorEntry( "buttonForeground", new QColor( Qt::black ) );
     QColor highlight = config->readColorEntry( "selectBackground", &kde34Blue );
-    QColor highlightedText = config->readColorEntry( "selectForeground", &Qt::white );
-    QColor base = config->readColorEntry( "windowBackground", &Qt::white );
-    QColor baseText = config->readColorEntry( "windowForeground", &Qt::black );
+    QColor highlightedText = config->readColorEntry( "selectForeground", new QColor( Qt::white ) );
+    QColor base = config->readColorEntry( "windowBackground", new QColor( Qt::white ) );
+    QColor baseText = config->readColorEntry( "windowForeground", new QColor( Qt::black ) );
     QColor link = config->readColorEntry( "linkColor", &kde34Link );
     QColor visitedLink = config->readColorEntry( "visitedLinkColor", &kde34VisitedLink );
 
@@ -2143,7 +2135,7 @@ void KApplication::propagateSettings(SettingsCategory arg)
     b = config->readBoolEntry("EffectFadeTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
     b = !config->readBoolEntry("EffectNoTooltip", false);
-    QToolTip::setGloballyEnabled( b );
+    //QToolTip::setGloballyEnabled( b ); ###
 
     emit settingsChanged(arg);
 }
@@ -2234,7 +2226,7 @@ void KApplication::invokeHelp( const QString& anchor,
        }
    }
    else
-       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openUrl", url, startup_id );
+       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openUrl", url, (const char*)startup_id );
 }
 #endif
 
@@ -2359,7 +2351,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
   int commentlevel = 0;
   bool insidequote = false;
 
-  for (uint index=0; index<aStr.length(); index++) {
+  for (int index=0; index<aStr.length(); index++) {
     // the following conversion to latin1 is o.k. because
     // we can safely ignore all non-latin1 characters
     switch (aStr[index].latin1()) {
@@ -2432,14 +2424,14 @@ void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QS
        // put the whole address lists into RFC2047 encoded blobs; technically
        // this isn't correct, but KMail understands it nonetheless
        to = QString( "=?utf8?b?%1?=" )
-            .arg( KCodecs::base64Encode( _to.utf8(), false ) );
+            .arg( (const char*)KCodecs::base64Encode( _to.utf8(), false ) );
      }
      if ( !_cc.isEmpty() )
        cc = QString( "=?utf8?b?%1?=" )
-            .arg( KCodecs::base64Encode( _cc.utf8(), false ) );
+            .arg( (const char*)KCodecs::base64Encode( _cc.utf8(), false ) );
      if ( !_bcc.isEmpty() )
        bcc = QString( "=?utf8?b?%1?=" )
-             .arg( KCodecs::base64Encode( _bcc.utf8(), false ) );
+             .arg( (const char*)KCodecs::base64Encode( _bcc.utf8(), false ) );
    } else {
      to = _to;
      cc = _cc;
@@ -2617,7 +2609,7 @@ startServiceInternal( const Q3CString &function,
       }
    }
    QByteArray params;
-   QDataStream stream(params, QIODevice::WriteOnly);
+   QDataStream stream(&params, QIODevice::WriteOnly);
    stream << _name << URLs;
    Q3CString replyType;
    QByteArray replyData;
@@ -2655,7 +2647,7 @@ startServiceInternal( const Q3CString &function,
    if (noWait)
       return 0;
 
-   QDataStream stream2(replyData, QIODevice::ReadOnly);
+   QDataStream stream2(&replyData, QIODevice::ReadOnly);
    serviceResult result;
    stream2 >> result.result >> result.dcopName >> result.error >> result.pid;
    if (dcopService)

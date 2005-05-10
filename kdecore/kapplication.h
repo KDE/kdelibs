@@ -939,7 +939,7 @@ public:
    * Consult focus stealing prevention section in kdebase/kwin/README.
    * @since 3.2
    */
-  void updateUserTimestamp( unsigned long time = 0 );
+  void updateUserTimestamp( quint32 time = 0 );
   
   /**
    * Returns the last user action timestamp or 0 if no user activity has taken place yet.
@@ -956,7 +956,7 @@ public:
    * Consult focus stealing prevention section in kdebase/kwin/README.
    * @since 3.3
    */
-  void updateRemoteUserTimestamp( const Q3CString& dcopId, unsigned long time = 0 );
+  void updateRemoteUserTimestamp( const Q3CString& dcopId, quint32 time = 0 );
   
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
