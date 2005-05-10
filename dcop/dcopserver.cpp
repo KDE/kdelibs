@@ -119,6 +119,9 @@ static QByteArray readQByteArray(QDataStream &ds)
    QByteArray result;
    Q_UINT32 len;
    ds >> len;
+   if (len == 0xffffffff)
+      len = 0; //### M.O.: we shouldn't use this revision of marshalling format!
+
    QIODevice *device = ds.device();
    int bytesLeft = device->size()-device->at();
    if ((bytesLeft < 0 ) || (len > (uint) bytesLeft))
