@@ -169,7 +169,7 @@ static void priorityAdd(QStringList &prefixes, const QString& dir, bool priority
         // Add in front but behind $KDEHOME
         QStringList::iterator it = prefixes.begin();
         it++;
-        prefixes.insert(it, 1, dir);
+        prefixes.insert(it, dir);
     }
     else
     {
@@ -239,17 +239,17 @@ void KStandardDirs::addXdgDataPrefix( const QString& _dir, bool priority )
 
 QString KStandardDirs::kfsstnd_prefixes()
 {
-   return prefixes.join(QChar(KPATH_SEPARATOR));
+   return prefixes.join(QString(QChar(KPATH_SEPARATOR)));
 }
 
 QString KStandardDirs::kfsstnd_xdg_conf_prefixes()
 {
-   return d->xdgconf_prefixes.join(QChar(KPATH_SEPARATOR));
+   return d->xdgconf_prefixes.join(QString(QChar(KPATH_SEPARATOR)));
 }
 
 QString KStandardDirs::kfsstnd_xdg_data_prefixes()
 {
-   return d->xdgdata_prefixes.join(QChar(KPATH_SEPARATOR));
+   return d->xdgdata_prefixes.join(QString(QChar(KPATH_SEPARATOR)));
 }
 
 bool KStandardDirs::addResourceType( const char *type,
@@ -883,7 +883,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     QStringList exePaths;
 
     // split path using : or \b as delimiters
-    for( unsigned i = 0; i < tokens.count(); i++ )
+    for( int i = 0; i < tokens.count(); i++ )
     {
 	p = tokens[ i ];
 
@@ -1273,7 +1273,7 @@ void KStandardDirs::addKDEDefaults()
     QString kdedirs = readEnvPath("KDEDIRS");
     if (!kdedirs.isEmpty())
     {
-        tokenize(kdedirList, kdedirs, QChar(KPATH_SEPARATOR));
+        tokenize(kdedirList, kdedirs, QString(QChar(KPATH_SEPARATOR)));
     }
     else
     {
@@ -1329,7 +1329,7 @@ void KStandardDirs::addKDEDefaults()
     QString xdgdirs = readEnvPath("XDG_CONFIG_DIRS");
     if (!xdgdirs.isEmpty())
     {
-	tokenize(xdgdirList, xdgdirs, QChar(KPATH_SEPARATOR));
+	tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
     }
     else
     {
@@ -1368,7 +1368,7 @@ void KStandardDirs::addKDEDefaults()
     xdgdirs = readEnvPath("XDG_DATA_DIRS");
     if (!xdgdirs.isEmpty())
     {
-	tokenize(xdgdirList, xdgdirs, QChar(KPATH_SEPARATOR));
+	tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
     }
     else
     {
@@ -1500,7 +1500,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
     // save the numbers of config directories. If this changes,
     // we will return true to give KConfig a chance to reparse
-    uint configdirs = resourceDirs("config").count();
+    int configdirs = resourceDirs("config").count();
 
     // Remember original group
     QString oldGroup = config->group();
@@ -1542,7 +1542,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         QString userMapFile = config->readEntry("userProfileMapFile");
         QString profileDirsPrefix = config->readEntry("profileDirsPrefix");
         if (!profileDirsPrefix.isEmpty() && !profileDirsPrefix.endsWith("/"))
-            profileDirsPrefix.append('/');
+            profileDirsPrefix.append("/");
 
         QStringList profiles;
         if (readProfiles)
