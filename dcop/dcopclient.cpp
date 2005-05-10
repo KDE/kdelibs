@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //Added by the Qt porting tool:
 #include <QByteArray>
 #include <Q3StrList>
-#include <Q3ValueList>
+#include <QList>
 #include <q3asciidict.h>
 
 
@@ -968,7 +968,7 @@ QByteArray DCOPClient::registerAs( const QByteArray &appId, bool addPID )
 
     if (addPID) {
         QByteArray pid;
-        qvsnprintf(pid.data(), pid.size(), "-%d", (char*)getpid() );
+        pid = QString().sprintf("-%d", (char*)getpid()).toAscii();
         _appId = _appId + pid;
     }
 
@@ -1363,7 +1363,7 @@ static void fillQtObjects( QByteArrayList& l, QObject* o, QByteArray path )
       QByteArray n = (*it)->name();
       if ( n == "unnamed" || n.isEmpty() )
       {
-          qvsnprintf(n.data(), n.size(), "%p", (char*)(*it) );
+          n = QString().sprintf("%p", (char*)(*it) ).toAscii();
           n = QString("unnamed%1(%2, %3)").arg(++unnamed).arg((*it)->className()).arg(QLatin1String( n ));
       }
       QByteArray fn = path + n;
@@ -1385,7 +1385,7 @@ struct O
 };
 } // namespace
 
-static void fillQtObjectsEx( Q3ValueList<O>& l, QObject* o, QByteArray path )
+static void fillQtObjectsEx( QList<O>& l, QObject* o, QByteArray path )
 {
     if ( !path.isEmpty() )
         path += '/';
@@ -1399,8 +1399,8 @@ static void fillQtObjectsEx( Q3ValueList<O>& l, QObject* o, QByteArray path )
       QByteArray n = (*it)->name();
       if ( n == "unnamed" || n.isEmpty() )
       {
-          qvsnprintf(n.data(), n.size(), "%p", (char*)(*it) );
-          n = QString("unnamed%1(%2, %3)").arg(++unnamed).arg((*it)->className()).arg(QLatin1String( n ));
+          QString ptr = QString().sprintf("%p", (char*)(*it) );
+          n = QString("unnamed%1(%2, %3)").arg(++unnamed).arg((*it)->className()).arg(QLatin1String( ptr ));
       }
       QByteArray fn = path + n;
       QObject *obj = *it;
@@ -1414,11 +1414,11 @@ static void fillQtObjectsEx( Q3ValueList<O>& l, QObject* o, QByteArray path )
 static QObject* findQtObject( QByteArray id )
 {
     QRegExp expr( id );
-    Q3ValueList<O> l;
+    QList<O> l;
     fillQtObjectsEx( l, 0, "qt" );
     // Prefer an exact match, but fall-back on the first that contains the substring
     QObject* firstContains = 0L;
-    for ( Q3ValueList<O>::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+    for ( QList<O>::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         if ( (*it).s == id ) // exact match
             return (*it).o;
         if ( !firstContains && QString::fromUtf8((*it).s).contains( expr ) ) {
@@ -1431,10 +1431,10 @@ static QObject* findQtObject( QByteArray id )
 static QByteArrayList  findQtObjects( QByteArray id )
 {
     QRegExp expr( id );
-    Q3ValueList<O> l;
+    QList<O> l;
     fillQtObjectsEx( l, 0, "qt" );
     QByteArrayList result;
-    for ( Q3ValueList<O>::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+    for ( QList<O>::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         if ( QString::fromUtf8((*it).s).contains( expr ) )
             result << (*it).s;
     }

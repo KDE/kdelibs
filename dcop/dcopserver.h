@@ -29,7 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <q3asciidict.h>
 #include <QByteArray>
-#include <Q3ValueList>
+#include <QList>
 #include <QTextStream>
 #include <qstring.h>
 #include <qsocketnotifier.h>
@@ -108,7 +108,7 @@ public:
     DCOPSignalConnectionList *_signalConnectionList;
     bool daemon;
     bool outputBlocked;
-    Q3ValueList <QByteArray> outputBuffer;
+    QList <QByteArray> outputBuffer;
     unsigned long outputBufferStart;
     QSocketNotifier *outputBufferNotifier;
 };
