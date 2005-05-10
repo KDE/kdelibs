@@ -343,7 +343,7 @@ kdbgstream &kdbgstream::form(const char *format, ...)
     char buf[4096];
     va_list arguments;
     va_start( arguments, format );
-    vsnprintf( buf, sizeof(buf), format, arguments );
+    qvsnprintf( buf, sizeof(buf), format, arguments );
     va_end(arguments);
     *this << buf;
     return *this;

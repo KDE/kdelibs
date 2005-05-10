@@ -208,7 +208,7 @@ setproctitle(const char *fmt, ...)
 
 	/* print the argument string */
 	va_start(ap, fmt);
-	(void) vsnprintf(p, SPACELEFT(buf, p), fmt, ap);
+	(void) qvsnprintf(p, SPACELEFT(buf, p), fmt, ap);
 	va_end(ap);
 
 	i = strlen(buf);
@@ -284,7 +284,7 @@ kdeinit_setproctitle(const char *fmt, ...)
 	va_list ap;
 	/* print the argument string */
 	va_start(ap, fmt);
-	(void) vsnprintf(buf, SPT_BUFSIZE, fmt, ap);
+	(void) qvsnprintf(buf, SPT_BUFSIZE, fmt, ap);
 	va_end(ap);
 
 	setproctitle("%s", buf);

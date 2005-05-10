@@ -62,19 +62,15 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kdemacros.h kde_file.h
 #  kextsock.h kextendedsocket.h ksockaddr.h 
 
-libkdefakes_la_SOURCES = fakes.c vsnprintf.c
+libkdefakes_la_SOURCES = fakes.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
 libkdefakes_la_LIBADD  = $(LIBSOCKET)
 
-libkdefakes_nonpic_a_SOURCES = fakes_nonpic.c vsnprintf_nonpic.c
+libkdefakes_nonpic_a_SOURCES = fakes_nonpic.c
 
 fakes_nonpic.c:$(srcdir)/fakes.c
 	-rm -f fakes_nonpic.c
 	$(LN_S) $(srcdir)/fakes.c fakes_nonpic.c
-
-vsnprintf_nonpic.c:  $(srcdir)/vsnprintf.c
-	-rm -f vsnprintf_nonpic.c
-	$(LN_S) $(srcdir)/vsnprintf.c vsnprintf_nonpic.c
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h netwm_p.h \
@@ -102,7 +98,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
 	netsupp.cpp kprocio.cpp kbufferedio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
-	kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
+	kmdcodec.cpp ksocks.cpp fakes.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
 	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp kasyncio.cpp \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \

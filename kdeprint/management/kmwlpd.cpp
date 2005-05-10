@@ -80,7 +80,7 @@ bool checkLpdQueue(const char *host, const char *queue)
 		return false;
 
 	char	res[64] = {0};
-	snprintf(res,64,"%c%s\n",(char)4,queue);
+	qsnprintf(res,64,"%c%s\n",(char)4,queue);
 	if (sock.writeBlock(res, strlen(res)) != (Q_LONG)(strlen(res)))
 		return false;
 

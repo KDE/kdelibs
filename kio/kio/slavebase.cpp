@@ -713,7 +713,7 @@ void SlaveBase::sigsegv_handler(int sig)
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
     char buffer[120];
-    snprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### protocol = %s pid = %d signal = %d\n", s_protocol, getpid(), sig);
+    qsnprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### protocol = %s pid = %d signal = %d\n", s_protocol, getpid(), sig);
     write(2, buffer, strlen(buffer));
 #ifndef NDEBUG
 #ifdef HAVE_BACKTRACE

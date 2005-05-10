@@ -1080,7 +1080,7 @@ unsigned long KStartupInfoId::timestamp() const
             return time;
         }
     // libstartup-notification style :
-    // snprintf (s, len, "%s/%s/%lu/%d-%d-%s",
+    // qsnprintf (s, len, "%s/%s/%lu/%d-%d-%s",
     //   canonicalized_launcher, canonicalized_launchee, (unsigned long) timestamp,
     //  (int) getpid (), (int) sequence_number, hostbuf);
     int pos1 = d->id.findRev( '/' );

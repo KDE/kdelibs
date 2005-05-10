@@ -929,7 +929,7 @@ static void findport(unsigned short port, char *serv, size_t servlen, int flags)
 	}
     }
 
-  snprintf(serv, servlen, "%u", ntohs(port));
+  qsnprintf(serv, servlen, "%u", ntohs(port));
 }
 
 int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,

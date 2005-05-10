@@ -1561,7 +1561,7 @@ static bool receiveQtObject( const QByteArray &objId, const QByteArray &fun, con
             int slot = o->metaObject()->indexOfSlot( fun );
             if ( slot != -1 ) {
                 replyType = "void";
-                QMetaObject::invokeMember(o, fun );
+                QMetaObject::invokeMethod(o, fun );
                 return true;
             }
         }
