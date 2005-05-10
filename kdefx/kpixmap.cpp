@@ -103,7 +103,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     for ( y=0; y < src->height(); y++ ) {
 	// p = (QRgb *)src->scanLine(y);
 	b = dst->scanLine(y);
-	int endian = (QImage::systemBitOrder() == QImage::BigEndian);
+	int endian = (QImage::systemByteOrder() == QImage::BigEndian);
 	int x;
 	const uchar* q = src->scanLine(y);
 	const uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
@@ -190,13 +190,13 @@ KPixmap::~KPixmap()
 bool KPixmap::load( const QString& fileName, const char *format,
 		    int conversion_flags )
 {
-    QImageIO io( fileName, format );
+    QImage image;
 
-    bool result = io.read();
+    bool result = image.load( fileName, format );
 	
     if ( result ) {
 	detach();
-	result = convertFromImage( io.image(), conversion_flags );
+	result = convertFromImage( image, conversion_flags );
     }
     return result;
 }
@@ -246,6 +246,17 @@ bool KPixmap::convertFromImage( const QImage &img, ColorMode mode )
     return convertFromImage( img, conversion_flags );
 }
 
+static Qt::ImageConversionFlags intToQtFlags(int conversion_flags)
+{
+    //### An evil hack to convert types. This needs redesign, or to be killed
+    conversion_flags = conversion_flags & ~ KColorMode_Mask;
+
+    Qt::ImageConversionFlags flags;
+    flags  = ~flags;            //Now flags has all bits set.
+    flags &= conversion_flags;  //..which means this now puts conversion_flags into flags
+    return flags;
+}
+
 bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 {
     if ( img.isNull() ) {
@@ -261,7 +272,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
     // If color mode not one of KPixmaps extra modes nothing to do
     if ( ( conversion_flags & KColorMode_Mask ) != LowOnly &&
 	 ( conversion_flags & KColorMode_Mask ) != WebOnly ) {
-	    return QPixmap::convertFromImage ( img, conversion_flags );
+	    return QPixmap::convertFromImage ( img, intToQtFlags(conversion_flags) );
     }
 
     // If the default pixmap depth is not 8bpp, KPixmap color modes have no
@@ -270,7 +281,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 	if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ||
 	     ( conversion_flags & KColorMode_Mask ) == WebOnly )
 	    conversion_flags = (conversion_flags & ~KColorMode_Mask) | Auto;
-	return QPixmap::convertFromImage ( img, conversion_flags );
+	return QPixmap::convertFromImage ( img, intToQtFlags(conversion_flags) );
     }
 	
     if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ) {
@@ -308,7 +319,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 	QImage  image = img.convertDepth( 32 );
 	image.setAlphaBuffer( img.hasAlphaBuffer() );
 	conversion_flags = (conversion_flags & ~Qt::ColorMode_Mask) | Auto;
-	return QPixmap::convertFromImage ( image, conversion_flags );
+	return QPixmap::convertFromImage ( image, intToQtFlags(conversion_flags) );
     }
 }
 
@@ -383,7 +394,7 @@ bool KPixmap::checkColorTable( const QImage &image )
 	
     }
 
-    QRgb* ctable = image.colorTable();
+    QRgb* ctable = image.colorTable().data();
 
     int ncols = image.numColors();
     int j;
@@ -393,9 +404,9 @@ bool KPixmap::checkColorTable( const QImage &image )
 
     for ( i=0; i<ncols; i++ ) {
 	for ( j=0; j<40; j++ ) {
-	    if ( kpixmap_iconPalette[j].Qt::red() == qRed( ctable[i] ) &&
-		 kpixmap_iconPalette[j].Qt::green() == qGreen( ctable[i] ) &&
-		 kpixmap_iconPalette[j].Qt::blue() == qBlue( ctable[i] ) ) {
+	    if ( kpixmap_iconPalette[j].red() == qRed( ctable[i] ) &&
+		 kpixmap_iconPalette[j].green() == qGreen( ctable[i] ) &&
+		 kpixmap_iconPalette[j].blue() == qBlue( ctable[i] ) ) {
 		break;
 	    }
 	}
