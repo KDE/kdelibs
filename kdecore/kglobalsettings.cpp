@@ -22,6 +22,7 @@
 #include <qpixmap.h>
 #include <qfontdatabase.h>
 #include <qcursor.h>
+#include <qdesktopwidget.h>
 
 #include <kconfig.h>
 #include <ksimpleconfig.h>
@@ -449,7 +450,7 @@ QFont KGlobalSettings::largeFont(const QString &text)
                 continue;
 
             bool ok = true;
-            for(unsigned int i = 0; i < text.length(); i++)
+            for(int i = 0; i < text.length(); i++)
             {
                 if (!metrics.inFont(text[i]))
                 {
@@ -487,14 +488,14 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     *s_desktopPath = g.readPathEntry( "Desktop", *s_desktopPath);
     *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
     if ( !s_desktopPath->endsWith("/") )
-      s_desktopPath->append('/');
+      s_desktopPath->append(QLatin1Char('/'));
 
     // Trash Path - TODO remove in KDE4 (kio_trash can't use it for interoperability reasons)
     *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
     *s_trashPath = g.readPathEntry( "Trash" , *s_trashPath);
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( !s_trashPath->endsWith("/") )
-      s_trashPath->append('/');
+      s_trashPath->append(QLatin1Char('/'));
     // We need to save it in any case, in case the language changes later on,
     if ( !g.hasKey( "Trash" ) )
     {
@@ -507,13 +508,13 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     *s_autostartPath = g.readPathEntry( "Autostart" , *s_autostartPath);
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
     if ( !s_autostartPath->endsWith("/") )
-      s_autostartPath->append('/');
+      s_autostartPath->append(QLatin1Char('/'));
 
     // Document Path
     *s_documentPath = g.readPathEntry( "Documents", QDir::homeDirPath() );
     *s_documentPath = QDir::cleanDirPath( *s_documentPath );
     if ( !s_documentPath->endsWith("/"))
-      s_documentPath->append('/');
+      s_documentPath->append(QLatin1Char('/'));
 
     // Make sure this app gets the notifications about those paths
     if (kapp)

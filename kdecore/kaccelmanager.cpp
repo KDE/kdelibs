@@ -26,6 +26,7 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qmenubar.h>
+#include <qmenudata.h>
 #include <q3memarray.h>
 #include <qmetaobject.h>
 #include <q3mainwindow.h>
@@ -215,7 +216,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         if (tabBar)
         {
             if (checkChange(contents[cnt]))
-                tabBar->tabAt(it->m_index)->setText(contents[cnt].accelerated());
+                tabBar->setTabText(it->m_index, contents[cnt].accelerated());
             continue;
         }
         QMenuBar *menuBar = dynamic_cast<QMenuBar*>(it->m_widget);
@@ -390,7 +391,7 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 {
   for (int i=0; i<bar->count(); i++)
   {
-    QString content = bar->tabAt(i)->text();
+    QString content = bar->tabText(i);
     if (content.isEmpty())
       continue;
 
@@ -545,7 +546,7 @@ void KAccelString::calculateWeights(int initialWeight)
 {
   m_weight.resize(m_pureText.length());
 
-  uint pos = 0;
+  int pos = 0;
   bool start_character = true;
 
   while (pos<m_pureText.length())
@@ -626,7 +627,7 @@ int KAccelString::maxWeight(int &index, const QString &used)
   int max = 0;
   index = -1;
 
-  for (uint pos=0; pos<m_pureText.length(); ++pos)
+  for (int pos=0; pos<m_pureText.length(); ++pos)
     if (used.find(m_pureText[pos], 0, FALSE) == -1 && m_pureText[pos].latin1() != 0)
       if (m_weight[pos] > max)
       {
@@ -692,13 +693,13 @@ void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString 
   }
 
   // pick the highest bids
-  for (uint cnt=0; cnt<accel_strings.count(); ++cnt)
+  for (int cnt=0; cnt<accel_strings.count(); ++cnt)
   {
       kdDebug(125) << "cnt " << accel_strings[cnt].pure() << endl;
     int max = 0, index = -1, accel = -1;
 
     // find maximum weight
-    for (uint i=0; i<accel_strings.count(); ++i)
+    for (int i=0; i<accel_strings.count(); ++i)
     {
       int a;
       int m = accel_strings[i].maxWeight(a, used);

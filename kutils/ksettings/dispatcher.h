@@ -20,11 +20,11 @@
 #ifndef KSETTINGS_DISPATCHER_H
 #define KSETTINGS_DISPATCHER_H
 
+#include <q3cstring.h>
 #include <qobject.h>
 #include <qmap.h>
 #include <kdelibs_export.h>
 
-class Q3CString;
 class Q3Signal;
 class Q3StrList;
 template<class T> class KStaticDeleter;

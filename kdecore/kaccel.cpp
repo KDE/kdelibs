@@ -20,6 +20,7 @@
 #include "kaccel.h"
 
 #include <q3accel.h>
+#include <qevent.h>
 #include <qpointer.h>
 #include <q3popupmenu.h>
 #include <qstring.h>
@@ -579,11 +580,11 @@ void KAccel::changeMenuAccel( Q3PopupMenu *menu, int id, const QString& action )
 		s += k;
 	}
 
-	QPixmap *pp = menu->pixmap(id);
-	if( pp && !pp->isNull() )
-		menu->changeItem( *pp, s, id );
+	QPixmap pp = menu->pixmap(id);
+	if( !pp.isNull() )
+		menu->changeItem( id, pp, s );
 	else
-		menu->changeItem( s, id );
+		menu->changeItem( id, s );
 }
 
 void KAccel::changeMenuAccel( Q3PopupMenu *menu, int id, KStdAccel::StdAccel accel )

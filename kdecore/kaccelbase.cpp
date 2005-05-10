@@ -250,7 +250,7 @@ struct KAccelBase::X
 	X( uint _iAction, uint _iSeq, uint _iVari, const KKeyServer::Key& _key )
 		{ iAction = _iAction; iSeq = _iSeq; iVari = _iVari; key = _key; }
 
-	int compare( const X& x )
+	int compare( const X& x ) const
 	{
 		int n = key.compare( x.key );
 		if( n != 0 )           return n;
@@ -259,9 +259,9 @@ struct KAccelBase::X
 		return 0;
 	}
 
-	bool operator <( const X& x )  { return compare( x ) < 0; }
-	bool operator >( const X& x )  { return compare( x ) > 0; }
-	bool operator <=( const X& x ) { return compare( x ) <= 0; }
+	bool operator <( const X& x ) const  { return compare( x ) < 0; }
+	bool operator >( const X& x ) const  { return compare( x ) > 0; }
+	bool operator <=( const X& x ) const { return compare( x ) <= 0; }
 };
 #endif //Q_WS_X11
 
@@ -444,7 +444,7 @@ void KAccelBase::createKeyList( Q3ValueVector<struct X>& rgKeys )
 	}
 
 	// sort by priority: iVariation[of first key], iSequence, iAction
-	qHeapSort( rgKeys.begin(), rgKeys.end() );
+	qSort( rgKeys.begin(), rgKeys.end() );
 }
 #endif //Q_WS_X11
 
