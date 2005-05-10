@@ -53,7 +53,7 @@
  *
  * \code
   #include<qpixmap.h>
-  #include<kimgio.h>
+  #include<kimageio.h>
 
   int main( int argc, char **argv )
   {
