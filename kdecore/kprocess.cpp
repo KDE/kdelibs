@@ -72,6 +72,7 @@
 #include <pwd.h>
 #include <grp.h>
 
+#include <qmap.h>
 #include <qfile.h>
 #include <qsocketnotifier.h>
 #include <qapplication.h>
