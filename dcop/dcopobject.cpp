@@ -48,7 +48,7 @@ public:
 DCOPObject::DCOPObject()
 {
     d = new DCOPObjectPrivate;
-    qvsnprintf(ident.data(), ident.size(), "%p", (char *)this );
+    qsnprintf(ident.data(), ident.size(), "%p", this );
     objMap()->insert(ident, this );
 }
 
@@ -72,7 +72,7 @@ DCOPObject::DCOPObject(const QByteArray &_objId)
 {
     d = new DCOPObjectPrivate;
     if ( ident.isEmpty() )
-        qvsnprintf(ident.data(), ident.size(), "%p", (char *)this );
+        qsnprintf(ident.data(), ident.size(), "%p", this );
     objMap()->insert(ident, this);
 }
 
