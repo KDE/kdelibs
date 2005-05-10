@@ -83,23 +83,23 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
 	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
 	kstandarddirs.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
-	klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
-	kiconloader.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
-	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
-	kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp \
-	kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp \
-	kcrash.cpp kurl.cpp kregexp.cpp kglobal.cpp kglobalsettings.cpp \
+	klocale.cpp krfcdate.cpp kicontheme.cpp \
+	kwinmodule.cpp krootprop.cpp \
+	kckey.cpp kshortcut.cpp kkeynative_x11.cpp \
+	kaccelaction.cpp \
+	kstdaccel.cpp kshortcutlist.cpp \
+	kcrash.cpp kurl.cpp kregexp.cpp kglobal.cpp \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
-	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
-	kuniqueapplication.cpp kaccelmanager.cpp \
-	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
-	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
-	kaudioplayer.cpp kdcoppropertyproxy.cpp \
+	kinstance.cpp kipc.cpp  ktempfile.cpp \
+	kuniqueapplication.cpp \
+	ksavefile.cpp krandomsequence.cpp kcompletion.cpp \
+	kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
+	kaudioplayer.cpp \
 	netsupp.cpp kprocio.cpp kbufferedio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
 	kmdcodec.cpp ksocks.cpp fakes.c \
-	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
-	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp kasyncio.cpp \
+	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
+	 kstartupinfo.cpp kcatalogue.cpp kasyncio.cpp \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \
 	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp \
 	kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel \

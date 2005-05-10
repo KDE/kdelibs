@@ -383,7 +383,8 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
     KXMessages msgs;
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
-    msg = check_required_startup_fields( msg, data_P, QX11Info::screen());
+	QX11Info inf;
+    msg = check_required_startup_fields( msg, data_P, inf.screen());
     kdDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( NET_STARTUP_MSG, msg, -1, false );
     return true;
@@ -615,7 +616,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         return find_id( id, id_O, data_O ) ? Match : NoMatch;
         }
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(),  w_P, qt_xrootwin(),
+    NETWinInfo info( QX11Info::display(),  w_P, QX11Info::appRootWindow(),
         NET::WMWindowType | NET::WMPid | NET::WMState );
     pid_t pid = info.pid();
     if( pid > 0 )
@@ -650,7 +651,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     // lets see if this is a transient
     Window transient_for;
     if( XGetTransientForHint( QX11Info::display(), static_cast< Window >( w_P ), &transient_for )
-        && static_cast< WId >( transient_for ) != qt_xrootwin()
+        && static_cast< WId >( transient_for ) != QX11Info::appRootWindow()
         && transient_for != None )
 	return NoMatch;
 #endif

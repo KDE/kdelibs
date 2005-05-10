@@ -127,7 +127,8 @@ KDE_EXPORT int main(int argc, char *argv[])
 #ifdef Q_WS_X11 //FIXME
     if (args->isSet("root"))
     {
-        saveWin = RootWindow(QX11Info::display(), QX11Info::screen());
+		QX11Info inf;
+        saveWin = RootWindow(QX11Info::display(), inf.screen());
     }
 #endif
 

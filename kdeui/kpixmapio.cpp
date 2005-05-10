@@ -227,7 +227,8 @@ void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
 	if( initXImage(src->width(), src->height()))
 	{
 	    convertToXImage(*src);
-	    XShmPutImage(QX11Info::display(), dst->handle(), qt_xget_temp_gc(QX11Info::screen(), false), d->ximage,
+	    QX11Info inf;
+	    XShmPutImage(QX11Info::display(), dst->handle(), qt_xget_temp_gc(inf.screen(), false), d->ximage,
 		    dx, dy, 0, 0, src->width(), src->height(), false);
             // coolo: do we really need this here? I see no good for it
 	    XSync(QX11Info::display(), false);
