@@ -35,7 +35,7 @@
 #include <q3cstring.h>
 
 #include <assert.h>
-#include <Q3AsciiDict>
+#include <q3asciidict.h>
 
 #define CHARSETS_COUNT 33
 

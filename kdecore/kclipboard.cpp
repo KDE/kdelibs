@@ -56,7 +56,7 @@ public:
             while ( (format = src->format( i++ )) )
             {
                 byteArray = new QByteArray();
-                *byteArray = src->encodedData( format ).copy();
+                *byteArray = src->encodedData( format );
                 m_data.append( byteArray );
                 m_formats.append( format );
             }
