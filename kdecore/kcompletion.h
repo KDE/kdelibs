@@ -581,7 +581,7 @@ private:
     bool            myBeep;
     bool            myIgnoreCase;
     bool            myHasMultipleMatches;
-    uint            myRotationIndex;
+    int            myRotationIndex;
 
 
 protected:
@@ -899,7 +899,7 @@ public:
      * @return the key-binding used for the feature given by @p item.
      * @see setKeyBinding
      */
-    const KShortcut& getKeyBinding( KeyBindingType item ) const {
+    KShortcut getKeyBinding( KeyBindingType item ) const {
         return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ];
     }
 
