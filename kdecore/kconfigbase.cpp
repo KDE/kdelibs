@@ -27,6 +27,7 @@
 #include <qdir.h>
 #include <qtextstream.h>
 #include <q3valuelist.h>
+#include <qvariant.h>
 
 #include <kapplication.h>
 #include <kglobal.h>
@@ -260,7 +261,7 @@ QString KConfigBase::readEntry( const char *pKey,
       while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length())) {
         // there is at least one $
         if( (aValue)[nDollarPos+1] == '(' ) {
-          uint nEndPos = nDollarPos+1;
+          int nEndPos = nDollarPos+1;
           // the next character is no $
           while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=')') )
               nEndPos++;
@@ -277,7 +278,7 @@ QString KConfigBase::readEntry( const char *pKey,
           }
           aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
         } else if( (aValue)[nDollarPos+1] != '$' ) {
-          uint nEndPos = nDollarPos+1;
+          int nEndPos = nDollarPos+1;
           // the next character is no $
           QString aVarName;
           if (aValue[nEndPos]=='{')
@@ -380,7 +381,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           return QVariant( list );
       }
       case QVariant::Font:
-          return QVariant( readFontEntry( pKey, &tmp.asFont() ) );
+          return QVariant( readFontEntry( pKey, &qvariant_cast<QFont>( tmp ) ) );
       case QVariant::Point:
           return QVariant( readPointEntry( pKey, &tmp.asPoint() ) );
       case QVariant::Rect:
@@ -388,7 +389,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::Size:
           return QVariant( readSizeEntry( pKey, &tmp.asSize() ) );
       case QVariant::Color:
-          return QVariant( readColorEntry( pKey, &tmp.asColor() ) );
+          return QVariant( readColorEntry( pKey, &qvariant_cast<QColor>( tmp ) ) );
       case QVariant::Int:
           return QVariant( readNumEntry( pKey, aDefault.toInt() ) );
       case QVariant::UInt:
@@ -412,7 +413,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::Palette:
       case QVariant::ColorGroup:
       case QVariant::Map:
-      case QCoreVariant::Icon:
+      case QVariant::Icon:
       case QVariant::CString:
       case QVariant::PointArray:
       case QVariant::Region:
@@ -420,7 +421,6 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::Cursor:
       case QVariant::SizePolicy:
       case QVariant::Time:
-      case QVariant::ByteArray:
       case QVariant::BitArray:
       case QVariant::KeySequence:
       case QVariant::Pen:
@@ -749,7 +749,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
   QString aValue = readEntry( pKey );
   if( !aValue.isNull() ) {
-    if ( aValue.contains( ',' ) > 5 ) {
+    if ( aValue.indexOf( ',' ) > 5 ) {
       // KDE3 and upwards entry
       if ( !aRetFont.fromString( aValue ) && pDefault )
         aRetFont = *pDefault;
@@ -758,7 +758,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
       // backward compatibility with older font formats
       // ### remove KDE 3.1 ?
       // find first part (font family)
-      int nIndex = aValue.find( ',' );
+      int nIndex = aValue.indexOf( ',' );
       if( nIndex == -1 ){
         if( pDefault )
           aRetFont = *pDefault;
@@ -768,7 +768,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
       // find second part (point size)
       int nOldIndex = nIndex;
-      nIndex = aValue.find( ',', nOldIndex+1 );
+      nIndex = aValue.indexOf( ',', nOldIndex+1 );
       if( nIndex == -1 ){
         if( pDefault )
           aRetFont = *pDefault;
@@ -792,7 +792,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
       // find fourth part (char set)
       nOldIndex = nIndex;
-      nIndex = aValue.find( ',', nOldIndex+1 );
+      nIndex = aValue.indexOf( ',', nOldIndex+1 );
 
       if( nIndex == -1 ){
         if( pDefault )
@@ -804,7 +804,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
                                 nIndex-nOldIndex-1 );
       // find fifth part (weight)
       nOldIndex = nIndex;
-      nIndex = aValue.find( ',', nOldIndex+1 );
+      nIndex = aValue.indexOf( ',', nOldIndex+1 );
 
       if( nIndex == -1 ){
         if( pDefault )
@@ -1064,7 +1064,7 @@ static bool cleanHomeDirPath( QString &path, const QString &homeDir )
         return false;
 #endif
 
-   unsigned int len = homeDir.length();
+   int len = homeDir.length();
    // replace by "$HOME" if possible
    if (path.length() == len || path[len] == '/') {
         path.replace(0, len, QString::fromLatin1("$HOME"));
@@ -1248,7 +1248,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
         return;
     }
     case QVariant::Font:
-      writeEntry( pKey, prop.toFont(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, QFont(prop.toString()), bPersistent, bGlobal, bNLS );
       return;
     case QVariant::Point:
       writeEntry( pKey, prop.toPoint(), bPersistent, bGlobal, bNLS );
@@ -1260,7 +1260,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
       writeEntry( pKey, prop.toSize(), bPersistent, bGlobal, bNLS );
       return;
     case QVariant::Color:
-      writeEntry( pKey, prop.toColor(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, QColor(prop.toString()), bPersistent, bGlobal, bNLS );
       return;
     case QVariant::Int:
       writeEntry( pKey, prop.toInt(), bPersistent, bGlobal, bNLS );
@@ -1293,8 +1293,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Palette:
     case QVariant::ColorGroup:
     case QVariant::Map:
-    case QCoreVariant::Icon:
-    case QVariant::CString:
+    case QVariant::Icon:
     case QVariant::PointArray:
     case QVariant::Region:
     case QVariant::Bitmap:
@@ -1328,10 +1327,10 @@ void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
       return;
     }
   QString str_list;
-  QStrListIterator it( list );
+  Q3StrListIterator it( list );
   for( ; it.current(); ++it )
     {
-      uint i;
+      int i;
       QString value;
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // A QStrList may contain values in 8bit locale cpecified
@@ -1372,8 +1371,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
   for( ; it != list.end(); ++it )
     {
       QString value = *it;
-      uint i;
-      for( i = 0; i < value.length(); i++ )
+      for( int i = 0; i < value.length(); i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
             str_list += '\\';
@@ -1624,7 +1622,7 @@ void KConfigBase::writeEntry( const char *pKey, const QColor& rColor,
 {
   QString aValue;
   if (rColor.isValid())
-      aValue.sprintf( "%d,%d,%d", rColor.Qt::red(), rColor.Qt::green(), rColor.Qt::blue() );
+      aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
   else
       aValue = "invalid";
 
