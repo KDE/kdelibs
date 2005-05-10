@@ -107,7 +107,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   d->docPath = config.readPathEntry( "DocPath" );
   d->protClass = config.readEntry( "Class" ).lower();
   if (d->protClass[0] != ':')
-     d->protClass.prepend(':');
+     d->protClass.prepend(QLatin1Char(':'));
 
   QStringList extraNames = config.readListEntry( "ExtraNames" );
   QStringList extraTypes = config.readListEntry( "ExtraTypes" );

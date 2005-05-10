@@ -22,6 +22,7 @@
 #define KCONFIGDIALOGMANAGER_H
 
 #include <qobject.h>
+#include <qmap.h>
 #include <q3ptrlist.h>
 #include "kdelibs_export.h"
 

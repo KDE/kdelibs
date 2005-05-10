@@ -309,7 +309,7 @@ public:
      */
     bool popupMenuEnabled() const;
 
-    enum Qt::BackgroundMode { NoBgMode=0, RectangleMode, CircleMode };
+    enum BackgroundMode { NoBgMode=0, RectangleMode, CircleMode };
 
     /**
      * Makes a given date be painted with a given foregroundColor, and background
@@ -317,7 +317,7 @@ public:
      *
      * @since 3.2
      */
-    void setCustomDatePainting( const QDate &date, const QColor &fgColor, Qt::BackgroundMode bgMode=NoBgMode, const QColor &bgColor=QColor());
+    void setCustomDatePainting( const QDate &date, const QColor &fgColor, BackgroundMode bgMode=NoBgMode, const QColor &bgColor=QColor());
 
     /**
      * Unsets the custom painting of a date so that the date is painted as usual.
