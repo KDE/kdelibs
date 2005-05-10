@@ -101,7 +101,7 @@ public:
    * @param appendnewline if true, a newline '\\n' is appended.
    * @return true if successful, false otherwise
    **/
-  bool writeStdin(const Q3CString &line, bool appendnewline);
+  bool writeStdin(const QByteArray &line, bool appendnewline);
 
   /**
    * Writes data to stdin of the process.
@@ -196,7 +196,7 @@ signals:
 
 protected:
   Q3PtrList<QByteArray> outbuffer;
-  Q3CString recvbuffer;
+  QByteArray recvbuffer;
   QTextCodec *codec;
   int rbi;
   bool needreadsignal, readsignalon, writeready;

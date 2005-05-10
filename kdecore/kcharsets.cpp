@@ -571,8 +571,8 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
-    Q3CString name = n.lower().latin1();
-    Q3CString key = name;
+    QByteArray name = n.lower().latin1();
+    QByteArray key = name;
     if (name.right(8) == "_charset")
        name.truncate(name.length()-8);
 
@@ -590,7 +590,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     // these codecs are built into Qt, but the name given for the codec is different,
     // so QTextCodec did not recognize it.
-    Q3CString cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
+    QByteArray cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
 
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);

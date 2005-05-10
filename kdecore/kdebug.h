@@ -23,7 +23,6 @@
 #define _KDEBUG_H_
 
 #include <qstring.h>
-#include <q3cstring.h>
 #include "kdelibs_export.h"
 
 class QWidget;
@@ -41,7 +40,7 @@ class QPen;
 class QBrush;
 class QVariant;
 template <class T>
-class Q3ValueList;
+class QList;
 
 class kdbgstream;
 class kndbgstream;
@@ -235,15 +234,6 @@ class KDECORE_EXPORT kdbgstream {
     }
     /**
      * Prints the given value.
-     * @param string the string to print
-     * @return this stream
-     */
-    kdbgstream &operator<<(const Q3CString& string) {
-        *this << string.data();
-        return *this;
-    }
-    /**
-     * Prints the given value.
      * @param p a pointer to print (in number form)
      * @return this stream
      */
@@ -398,7 +388,7 @@ class KDECORE_EXPORT kdbgstream {
      * @since 3.3
      */
     template <class T>
-    kdbgstream& operator << ( const Q3ValueList<T> &list );
+    kdbgstream& operator << ( const QList<T> &list );
 
  private:
     QString output;
@@ -408,10 +398,10 @@ class KDECORE_EXPORT kdbgstream {
 };
 
 template <class T>
-kdbgstream &kdbgstream::operator<<( const Q3ValueList<T> &list )
+kdbgstream &kdbgstream::operator<<( const QList<T> &list )
 {
     *this << "(";
-    typename Q3ValueList<T>::ConstIterator it = list.begin();
+    typename QList<T>::ConstIterator it = list.begin();
     if ( !list.isEmpty() ) {
       *this << *it++;
     }
@@ -499,7 +489,7 @@ class KDECORE_EXPORT kndbgstream {
      * Does nothing.
      * @return this stream
      */
-    kndbgstream &operator<<(const Q3CString& ) { return *this; }
+    kndbgstream &operator<<(const QByteArray& ) { return *this; }
     /**
      * Does nothing.
      * @return this stream
@@ -570,10 +560,9 @@ class KDECORE_EXPORT kndbgstream {
     kndbgstream& operator<<( const QPen & ) { return *this; }
     kndbgstream& operator<<( const QBrush & ) { return *this; }
     kndbgstream& operator<<( const QVariant & ) { return *this; }
-    kndbgstream& operator<<( const QByteArray & ) { return *this; }
 
     template <class T>
-    kndbgstream& operator<<( const Q3ValueList<T> & ) { return *this; }
+    kndbgstream& operator<<( const QList<T> & ) { return *this; }
 };
 
 /**

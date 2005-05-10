@@ -166,7 +166,7 @@ const char * KURLDrag::format( int i ) const
 QByteArray KURLDrag::encodedData( const char* mime ) const
 {
     QByteArray a;
-    Q3CString mimetype( mime );
+    QByteArray mimetype( mime );
     if ( mimetype == "text/uri-list" )
         return Q3UriDrag::encodedData( mime );
     else if ( mimetype == "text/plain" )
@@ -175,7 +175,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         for (QStrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
-        Q3CString s = uris.join( "\n" ).local8Bit();
+        QByteArray s = uris.join( "\n" ).local8Bit();
         if( uris.count() > 1 ) // terminate last line, unless it's the only line
             s.append( "\n" );
         a.resize( s.length());
@@ -188,7 +188,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         for (QStrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).url(0, 4)); // 4 is mib for latin1
 
-        Q3CString s = uris.join( "\n" ).latin1();
+        QByteArray s = uris.join( "\n" ).latin1();
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
@@ -200,7 +200,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         for (QStrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
-        Q3CString s = uris.join( "\n" ).utf8();
+        QByteArray s = uris.join( "\n" ).utf8();
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
@@ -226,7 +226,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     return a;
 }
 
-KURL KURLDrag::stringToUrl(const Q3CString &s)
+KURL KURLDrag::stringToUrl(const QByteArray &s)
 {
     if (strncmp(s.data(), "file:", 5) == 0)
        return KURL(s, KGlobal::locale()->fileEncodingMib());

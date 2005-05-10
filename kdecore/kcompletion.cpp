@@ -751,7 +751,7 @@ QStringList KCompletionMatchesWrapper::list() const
         stringList.clear();
 
         // high weight == sorted last -> reverse the sorting here
-        Q3ValueListConstIterator<KSortableItem<QString> > it;
+        QListConstIterator<KSortableItem<QString> > it;
         for ( it = sortedList->begin(); it != sortedList->end(); ++it )
             stringList.prepend( (*it).value() );
     }

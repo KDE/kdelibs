@@ -177,7 +177,7 @@ struct KPtyPrivate {
    int slaveFd;
    struct winsize winSize;
 
-   Q3CString ttyName;
+   QByteArray ttyName;
 };
 
 /////////////////////////////
@@ -200,7 +200,7 @@ bool KPty::open()
   if (d->masterFd >= 0)
     return true;
 
-  Q3CString ptyName;
+  QByteArray ptyName;
 
   // Find a master pty that we can open ////////////////////////////////
 

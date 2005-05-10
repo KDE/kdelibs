@@ -110,7 +110,7 @@ public:
 
 protected:
     class MemBlock;
-    typedef Q3ValueList<MemBlock *> MemList;
+    typedef QList<MemBlock *> MemList;
     void addBlock(MemBlock *b);
     void delBlock(MemBlock *b);
     void insertHash(MemBlock *b);

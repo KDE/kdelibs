@@ -107,9 +107,9 @@ bool KProcIO::writeStdin (const QString &line, bool appendnewline)
   return writeStdin(codec->fromUnicode(line), appendnewline);
 }
 
-bool KProcIO::writeStdin (const Q3CString &line, bool appendnewline)
+bool KProcIO::writeStdin (const QByteArray &line, bool appendnewline)
 {
-  Q3CString *qs = new Q3CString(line);
+  QByteArray *qs = new QByteArray(line);
   
   if (appendnewline)
   {
@@ -188,7 +188,7 @@ void KProcIO::sent(KProcess *)
 
 void KProcIO::received (KProcess *, char *buffer, int buflen)
 {
-  recvbuffer += Q3CString(buffer, buflen+1);
+  recvbuffer += QByteArray(buffer, buflen+1);
 
   controlledEmission();
 }

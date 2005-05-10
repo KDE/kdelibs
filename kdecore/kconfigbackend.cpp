@@ -52,7 +52,7 @@
 
 extern bool checkAccess(const QString& pathname, int mode);
 /* translate escaped escape sequences to their actual values. */
-static Q3CString printableToString(const char *str, int l)
+static QByteArray printableToString(const char *str, int l)
 {
   // Strip leading white-space.
   while((l>0) &&
@@ -68,7 +68,7 @@ static Q3CString printableToString(const char *str, int l)
      l--;
   }
 
-  Q3CString result(l + 1);
+  QByteArray result(l + 1);
   char *r = result.data();
 
   for(int i = 0; i < l;i++, str++)
@@ -112,12 +112,12 @@ static Q3CString printableToString(const char *str, int l)
   return result;
 }
 
-static Q3CString stringToPrintable(const Q3CString& str){
-  Q3CString result(str.length()*2); // Maximum 2x as long as source string
+static QByteArray stringToPrintable(const QByteArray& str){
+  QByteArray result(str.length()*2); // Maximum 2x as long as source string
   register char *r = result.data();
   register char *s = str.data();
 
-  if (!s) return Q3CString("");
+  if (!s) return QByteArray("");
 
   // Escape leading space
   if (*s == ' ')
@@ -163,9 +163,9 @@ static Q3CString stringToPrintable(const Q3CString& str){
   return result;
 }
 
-static Q3CString decodeGroup(const char*s, int l)
+static QByteArray decodeGroup(const char*s, int l)
 {
-  Q3CString result(l);
+  QByteArray result(l);
   register char *r = result.data();
 
   l--; // Correct for trailing \0
@@ -194,10 +194,10 @@ static Q3CString decodeGroup(const char*s, int l)
   return result;
 }
 
-static Q3CString encodeGroup(const Q3CString &str)
+static QByteArray encodeGroup(const QByteArray &str)
 {
   int l = str.length();
-  Q3CString result(l*2+1);
+  QByteArray result(l*2+1);
   register char *r = result.data();
   register char *s = str.data();
   while(l)
@@ -330,7 +330,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
       findAllResources("config", QString::fromLatin1("kdeglobals"));
 
 #ifdef Q_WS_WIN
-    QString etc_kderc = QFile::decodeName( Q3CString(getenv("WINDIR")) + "\\kderc" );
+    QString etc_kderc = QFile::decodeName( QByteArray(getenv("WINDIR")) + "\\kderc" );
 #else
     QString etc_kderc = QString::fromLatin1("/etc/kderc");
 #endif
@@ -439,7 +439,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    //qWarning("Parsing %s, global = %s default = %s",
    //           rFile.name().latin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
 
-   Q3CString aCurrentGroup("<default>");
+   QByteArray aCurrentGroup("<default>");
 
    unsigned int ll = localeString.length();
 
@@ -659,7 +659,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
           {
               // backward compatibility. C == en_US
               if ( cl != 1 || ll != 5 || *locale != 'C' || memcmp(localeString.data(), "en_US", 5)) {
-                  //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
+                  //cout<<"mismatched locale '"<<QByteArray(locale, elocale-locale +1)<<"'"<<endl;
                   // We can ignore this one
                   if (!pWriteBackMap)
                       continue; // We just ignore it
@@ -671,8 +671,8 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
       }
 
       // insert the key/value line
-      Q3CString key(startLine, endOfKey - startLine + 2);
-      Q3CString val = printableToString(st, s - st);
+      QByteArray key(startLine, endOfKey - startLine + 2);
+      QByteArray val = printableToString(st, s - st);
       //qDebug("found key '%s' with value '%s'", key.data(), val.data());
 
       KEntryKey aEntryKey(aCurrentGroup, key);
@@ -814,10 +814,10 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
 }
 
-static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const Q3CString &localeString)
+static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QByteArray &localeString)
 {
   // now write out all other groups.
-  Q3CString currentGroup;
+  QByteArray currentGroup;
   for (KEntryMapConstIterator aIt = entryMap.begin();
        aIt != entryMap.end(); ++aIt)
   {

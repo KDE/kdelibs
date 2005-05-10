@@ -187,7 +187,7 @@ protected:
    * @param group The group to search for.
    * @returns true if the group exists.
    */
-  virtual bool internalHasGroup(const Q3CString &group) const;
+  virtual bool internalHasGroup(const QByteArray &group) const;
 
   /**
    * @internal
@@ -273,7 +273,7 @@ private:
  */
 class KDECORE_EXPORT KSharedConfig : public KConfig, public KShared
 {
-  friend class Q3ValueList<KSharedConfig*>;
+  friend class QList<KSharedConfig*>;
 public:
   typedef KSharedPtr<KSharedConfig> Ptr;
 
@@ -291,7 +291,7 @@ private:
   KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals );
   ~KSharedConfig();
 
-  static Q3ValueList<KSharedConfig*> *s_list;
+  static QList<KSharedConfig*> *s_list;
 };
 
 #endif

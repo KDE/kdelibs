@@ -499,19 +499,19 @@ class KDECORE_EXPORT KAboutData
      * Returns a list of authors.
      * @return author information (list of persons).
      */
-    const Q3ValueList<KAboutPerson> authors() const;
+    const QList<KAboutPerson> authors() const;
 
     /**
      * Returns a list of persons who contributed.
      * @return credit information (list of persons).
      */
-    const Q3ValueList<KAboutPerson> credits() const;
+    const QList<KAboutPerson> credits() const;
 
     /**
      * Returns a list of translators.
      * @return translators information (list of persons)
      */
-    const Q3ValueList<KAboutTranslator> translators() const;
+    const QList<KAboutTranslator> translators() const;
 
     /**
      * Returns a message about the translation team.
@@ -550,8 +550,8 @@ class KDECORE_EXPORT KAboutData
     const char *mOtherText;
     const char *mHomepageAddress;
     const char *mBugEmailAddress;
-    Q3ValueList<KAboutPerson> mAuthorList;
-    Q3ValueList<KAboutPerson> mCreditList;
+    QList<KAboutPerson> mAuthorList;
+    QList<KAboutPerson> mCreditList;
     const char *mLicenseText;
 
     KAboutDataPrivate *d;

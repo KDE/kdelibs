@@ -178,12 +178,12 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     // Expand available sizes for scalable icons to their full range
     int i;
-    QMap<int,Q3ValueList<int> > scIcons;
+    QMap<int,QList<int> > scIcons;
     for (KIconThemeDir *dir=mDirs.first(); dir!=0L; dir=mDirs.next())
     {
         if ((dir->type() == KIcon::Scalable) && !scIcons.contains(dir->size()))
         {
-            Q3ValueList<int> lst;
+            QList<int> lst;
             for (i=dir->minSize(); i<=dir->maxSize(); i++)
                 lst += i;
             scIcons[dir->size()] = lst;
@@ -201,8 +201,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {
         mDefSize[i] = cfg.readNumEntry(*it + "Default", defDefSizes[i]);
-        Q3ValueList<int> exp, lst = cfg.readIntListEntry(*it + "Sizes");
-        Q3ValueList<int>::ConstIterator it2;
+        QList<int> exp, lst = cfg.readIntListEntry(*it + "Sizes");
+        QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
             if (scIcons.contains(*it2))
@@ -247,9 +247,9 @@ int KIconTheme::defaultSize(KIcon::Group group) const
     return mDefSize[group];
 }
 
-Q3ValueList<int> KIconTheme::querySizes(KIcon::Group group) const
+QList<int> KIconTheme::querySizes(KIcon::Group group) const
 {
-    Q3ValueList<int> empty;
+    QList<int> empty;
     if ((group < 0) || (group >= KIcon::LastGroup))
     {
         kdDebug(264) << "Illegal icon group: " << group << "\n";

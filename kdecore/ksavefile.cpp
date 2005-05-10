@@ -145,7 +145,7 @@ write_all(int fd, const char *buf, size_t len)
 bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
                             const QString& backupExtension)
 {
-   Q3CString cFilename = QFile::encodeName(qFilename);
+   QByteArray cFilename = QFile::encodeName(qFilename);
    const char *filename = cFilename.data();
 
    int fd = KDE_open( filename, O_RDONLY );
@@ -159,12 +159,12 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
       return false;
    }
 
-   Q3CString cBackup;
+   QByteArray cBackup;
    if ( backupDir.isEmpty() )
        cBackup = cFilename;
    else
    {
-       Q3CString nameOnly;
+       QByteArray nameOnly;
        int slash = cFilename.findRev('/');
        if (slash < 0)
 	   nameOnly = cFilename;

@@ -212,7 +212,7 @@ class KDECORE_EXPORT KAccelBase
 
 	KAccelActions m_rgActions;
 	KKeyToActionMap m_mapKeyToAction;
-	Q3ValueList<KAccelAction*> m_rgActionsNonUnique;
+	QList<KAccelAction*> m_rgActionsNonUnique;
 	bool m_bNativeKeys; // Use native key codes instead of Qt codes
 	bool m_bEnabled;
 	bool m_bConfigIsGlobal;

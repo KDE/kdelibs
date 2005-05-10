@@ -116,7 +116,7 @@ public:
      * \endcode
      * @return the list of all toplevel windows
      */
-    const Q3ValueList<WId>& windows() const;
+    const QList<WId>& windows() const;
 
     /**
      * Returns the list of all toplevel windows currently managed by the
@@ -124,7 +124,7 @@ public:
      * higher). May be useful for pagers.
      * @return the list of all toplevel windows in stacking order
      */
-    const Q3ValueList<WId>& stackingOrder() const;
+    const QList<WId>& stackingOrder() const;
 
     /**
      * Test to see if @p id still managed at present.
@@ -137,7 +137,7 @@ public:
      * Returns a list of the system tray windows.
      * @return a list of all system tray windows
      **/
-    const Q3ValueList<WId>& systemTrayWindows() const;
+    const QList<WId>& systemTrayWindows() const;
 
     /**
      * Returns the current virtual desktop.
@@ -178,7 +178,7 @@ public:
      *        current desktop
      * @return the size and position of the desktop
      **/
-    QRect workArea( const Q3ValueList<WId> &excludes, int desktop = -1) const;
+    QRect workArea( const QList<WId> &excludes, int desktop = -1) const;
 
     /**
      * Returns the name of the specified desktop.

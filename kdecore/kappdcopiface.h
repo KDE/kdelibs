@@ -56,8 +56,8 @@ k_dcop:
 	**/
 	void disableSessionManagement();
 	
-	Q3CString startupId();
-	Q3CString caption();
+	QByteArray startupId();
+	QByteArray caption();
 	
 	void quit();
 

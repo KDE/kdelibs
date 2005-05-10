@@ -53,14 +53,14 @@
 #include <win32_utils.h>
 #endif
 
-template class Q3AsciiDict<Q3CString>;
+template class Q3AsciiDict<QByteArray>;
 template class Q3PtrList<KCmdLineArgs>;
 
-class KCmdLineParsedOptions : public Q3AsciiDict<Q3CString>
+class KCmdLineParsedOptions : public Q3AsciiDict<QByteArray>
 {
 public:
    KCmdLineParsedOptions()
-     : Q3AsciiDict<Q3CString>( 7 ) { }
+     : Q3AsciiDict<QByteArray>( 7 ) { }
 
    // WABA: Huh?
    // The compiler doesn't find KCmdLineParsedOptions::write(s) by itself ???
@@ -76,14 +76,14 @@ public:
 protected:
    virtual QDataStream& write( QDataStream &s, Q3PtrCollection::Item data) const
    {
-      Q3CString *str = (Q3CString *) data;
+      QByteArray *str = (QByteArray *) data;
       s << (*str);
       return s;
    }
 
    virtual QDataStream& read( QDataStream &s, Q3PtrCollection::Item &item)
    {
-      Q3CString *str = new Q3CString;
+      QByteArray *str = new QByteArray;
       s >> (*str);
       item = (void *)str;
       return s;
@@ -193,7 +193,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
 
 QString KCmdLineArgs::cwd()
 {
-   return QFile::decodeName(Q3CString(mCwd));
+   return QFile::decodeName(QByteArray(mCwd));
 }
 
 const char * KCmdLineArgs::appName()
@@ -244,7 +244,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    removeArgs("qt");
    removeArgs("kde");
 
-   Q3CString qCwd = mCwd;
+   QByteArray qCwd = mCwd;
    ds << qCwd;
 
    uint count = argsList ? argsList->count() : 0;
@@ -255,7 +255,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    KCmdLineArgs *args;
    for(args = argsList->first(); args; args = argsList->next())
    {
-      ds << Q3CString(args->id);
+      ds << QByteArray(args->id);
       args->save(ds);
    }
 }
@@ -278,7 +278,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    if (ds.atEnd())
       return;
 
-   Q3CString qCwd;
+   QByteArray qCwd;
    ds >> qCwd;
    delete [] mCwd;
 
@@ -290,7 +290,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
    while(count--)
    {
-     Q3CString id;
+     QByteArray id;
      ds >> id;
      assert( argsList );
      for(args = argsList->first(); args; args = argsList->next())
@@ -350,7 +350,7 @@ void KCmdLineArgs::removeArgs(const char *id)
  *  +4 - no more options follow         // !fork
  */
 static int
-findOption(const KCmdLineOptions *options, Q3CString &opt,
+findOption(const KCmdLineOptions *options, QByteArray &opt,
            const char *&opt_name, const char *&def, bool &enabled)
 {
    int result;
@@ -390,7 +390,7 @@ findOption(const KCmdLineOptions *options, Q3CString &opt,
                options++;
                if (!options->name)
                   return result+0;
-               Q3CString nextOption = options->name;
+               QByteArray nextOption = options->name;
                int p = nextOption.find(' ');
                if (p > 0)
                   nextOption = nextOption.left(p);
@@ -422,12 +422,12 @@ findOption(const KCmdLineOptions *options, Q3CString &opt,
 
 
 void
-KCmdLineArgs::findOption(const char *_opt, Q3CString opt, int &i, bool _enabled, bool &moreOptions)
+KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled, bool &moreOptions)
 {
    KCmdLineArgs *args = argsList->first();
    const char *opt_name;
    const char *def;
-   Q3CString argument;
+   QByteArray argument;
    int j = opt.find('=');
    if (j != -1)
    {
@@ -451,7 +451,7 @@ KCmdLineArgs::findOption(const char *_opt, Q3CString opt, int &i, bool _enabled,
       int p = 1;
       while (true)
       {
-         Q3CString singleCharOption = " ";
+         QByteArray singleCharOption = " ";
          singleCharOption[0] = _opt[p];
          args = argsList->first();
          while (args)
@@ -532,7 +532,7 @@ KCmdLineArgs::findOption(const char *_opt, Q3CString opt, int &i, bool _enabled,
 void
 KCmdLineArgs::printQ(const QString &msg)
 {
-   Q3CString localMsg = msg.local8Bit();
+   QByteArray localMsg = msg.local8Bit();
    fprintf(stdout, "%s", localMsg.data());
 }
 
@@ -603,10 +603,10 @@ KCmdLineArgs::parseAllArgs()
          } else if ( ::qstrcmp( option, "author") == 0 ) {
              enable_i18n();
 	     if ( about ) {
-		 const Q3ValueList<KAboutPerson> authors = about->authors();
+		 const QList<KAboutPerson> authors = about->authors();
 		 if ( !authors.isEmpty() ) {
                      QString authorlist;
-		     for (Q3ValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
+		     for (QList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
 			 QString email;
 			 if ( !(*it).emailAddress().isEmpty() )
 				 email = " <" + (*it).emailAddress() + ">";
@@ -742,7 +742,7 @@ void
 KCmdLineArgs::usage(const QString &error)
 {
     assert(KGlobal::_locale);
-    Q3CString localError = error.local8Bit();
+    QByteArray localError = error.local8Bit();
     if (localError[error.length()-1] == '\n')
 	localError = localError.left(error.length()-1);
     fprintf(stderr, "%s: %s\n", argv[0], localError.data());
@@ -850,7 +850,7 @@ KCmdLineArgs::usage(const char *id)
      while (args)
      {
        const KCmdLineOptions *option = args->options;
-       Q3CString opt = "";
+       QByteArray opt = "";
 //
        while(option && option->name)
        {
@@ -894,7 +894,7 @@ KCmdLineArgs::usage(const char *id)
             description = dl.first();
             dl.remove( dl.begin() );
          }
-         Q3CString name = option->name;
+         QByteArray name = option->name;
          if (name[0] == '!')
              name = name.mid(1);
 
@@ -1049,12 +1049,12 @@ KCmdLineArgs::load( QDataStream &ds)
 }
 
 void
-KCmdLineArgs::setOption(const Q3CString &opt, bool enabled)
+KCmdLineArgs::setOption(const QByteArray &opt, bool enabled)
 {
    if (isQt)
    {
       // Qt does it own parsing.
-      Q3CString arg = "-";
+      QByteArray arg = "-";
       if( !enabled )
           arg += "no";
       arg += opt;
@@ -1066,18 +1066,18 @@ KCmdLineArgs::setOption(const Q3CString &opt, bool enabled)
    }
 
    if (enabled)
-      parsedOptionList->replace( opt, new Q3CString("t") );
+      parsedOptionList->replace( opt, new QByteArray("t") );
    else
-      parsedOptionList->replace( opt, new Q3CString("f") );
+      parsedOptionList->replace( opt, new QByteArray("f") );
 }
 
 void
-KCmdLineArgs::setOption(const Q3CString &opt, const char *value)
+KCmdLineArgs::setOption(const QByteArray &opt, const char *value)
 {
    if (isQt)
    {
       // Qt does it's own parsing.
-      Q3CString arg = "-";
+      QByteArray arg = "-";
       arg += opt;
       addArgument(arg);
       addArgument(value);
@@ -1095,13 +1095,13 @@ KCmdLineArgs::setOption(const Q3CString &opt, const char *value)
 	parsedOptionList->setAutoDelete(true);
    }
 
-   parsedOptionList->insert( opt, new Q3CString(value) );
+   parsedOptionList->insert( opt, new QByteArray(value) );
 }
 
-Q3CString
+QByteArray
 KCmdLineArgs::getOption(const char *_opt) const
 {
-   Q3CString *value = 0;
+   QByteArray *value = 0;
    if (parsedOptionList)
    {
       value = parsedOptionList->find(_opt);
@@ -1114,7 +1114,7 @@ KCmdLineArgs::getOption(const char *_opt) const
    const char *opt_name;
    const char *def;
    bool dummy = true;
-   Q3CString opt = _opt;
+   QByteArray opt = _opt;
    int result = ::findOption( options, opt, opt_name, def, dummy) & ~4;
 
    if (result != 3)
@@ -1127,19 +1127,19 @@ KCmdLineArgs::getOption(const char *_opt) const
       assert( 0 );
       exit(255);
    }
-   return Q3CString(def);
+   return QByteArray(def);
 }
 
-QCStringList
+QByteArrayList
 KCmdLineArgs::getOptionList(const char *_opt) const
 {
-   QCStringList result;
+   QByteArrayList result;
    if (!parsedOptionList)
       return result;
 
    while(true)
    {
-      Q3CString *value = parsedOptionList->take(_opt);
+      QByteArray *value = parsedOptionList->take(_opt);
       if (!value)
          break;
       result.prepend(*value);
@@ -1151,11 +1151,11 @@ KCmdLineArgs::getOptionList(const char *_opt) const
    // to the API like "you can only call this function once".
    // I can't access all items without taking them out of the list.
    // So taking them out and then putting them back is the only way.
-   for(QCStringList::ConstIterator it=result.begin();
+   for(QByteArrayList::ConstIterator it=result.begin();
        it != result.end();
        ++it)
    {
-      parsedOptionList->insert(_opt, new Q3CString(*it));
+      parsedOptionList->insert(_opt, new QByteArray(*it));
    }
    return result;
 }
@@ -1167,7 +1167,7 @@ KCmdLineArgs::isSet(const char *_opt) const
    const char *opt_name;
    const char *def;
    bool dummy = true;
-   Q3CString opt = _opt;
+   QByteArray opt = _opt;
    int result = ::findOption( options, opt, opt_name, def, dummy) & ~4;
 
    if (result == 0)
@@ -1181,7 +1181,7 @@ KCmdLineArgs::isSet(const char *_opt) const
       exit(255);
    }
 
-   Q3CString *value = 0;
+   QByteArray *value = 0;
    if (parsedOptionList)
    {
       value = parsedOptionList->find(opt);

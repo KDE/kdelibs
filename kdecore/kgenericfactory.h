@@ -85,7 +85,7 @@ protected:
     }
 
 private:
-    Q3CString m_instanceName;
+    QByteArray m_instanceName;
     const KAboutData *m_aboutData;
     bool m_catalogueInitialized;
 

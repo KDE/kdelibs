@@ -212,7 +212,7 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
     NETRootInfo rootinfo( qt_xdisplay(), NET::Supported );
     if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
         DCOPRef ref( "kded", "kded" );
-        if( !ref.send( "loadModule", Q3CString( "kdetrayproxy" )))
+        if( !ref.send( "loadModule", QByteArray( "kdetrayproxy" )))
             kdWarning( 176 ) << "Loading of kdetrayproxy failed." << endl;
     }
 #endif
@@ -1084,7 +1084,7 @@ WId KWin::WindowInfo::groupLeader() const
 #endif
 }
 
-Q3CString KWin::WindowInfo::windowClassClass() const
+QByteArray KWin::WindowInfo::windowClassClass() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
@@ -1095,7 +1095,7 @@ Q3CString KWin::WindowInfo::windowClassClass() const
 #endif
 }
 
-Q3CString KWin::WindowInfo::windowClassName() const
+QByteArray KWin::WindowInfo::windowClassName() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
@@ -1106,7 +1106,7 @@ Q3CString KWin::WindowInfo::windowClassName() const
 #endif
 }
 
-Q3CString KWin::WindowInfo::windowRole() const
+QByteArray KWin::WindowInfo::windowRole() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
@@ -1117,7 +1117,7 @@ Q3CString KWin::WindowInfo::windowRole() const
 #endif
 }
 
-Q3CString KWin::WindowInfo::clientMachine() const
+QByteArray KWin::WindowInfo::clientMachine() const
 {
 #ifdef Q_WS_X11
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )

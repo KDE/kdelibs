@@ -91,7 +91,7 @@ protected:
 
 // KDE4: make private
     Q3PtrList<Q3DragObject> m_dragObjects;
-    Q3ValueList<int> m_numberFormats;
+    QList<int> m_numberFormats;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

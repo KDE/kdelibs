@@ -50,7 +50,7 @@
   class KDECORE_EXPORT KConfigSkeletonItem
   {
   public:
-    typedef Q3ValueList < KConfigSkeletonItem * >List;
+    typedef QList < KConfigSkeletonItem * >List;
     typedef Q3Dict < KConfigSkeletonItem > Dict;
     typedef Q3DictIterator < KConfigSkeletonItem > DictIterator;
 
@@ -506,15 +506,15 @@ public:
     };
 
     ItemEnum(const QString & group, const QString & key, int &reference,
-             const Q3ValueList<Choice> &choices, int defaultValue = 0);
+             const QList<Choice> &choices, int defaultValue = 0);
 
-    Q3ValueList<Choice> choices() const;
+    QList<Choice> choices() const;
 
     void readConfig(KConfig * config);
     void writeConfig(KConfig * config);
 
   private:
-      Q3ValueList<Choice> mChoices;
+      QList<Choice> mChoices;
   };
 
 
@@ -773,12 +773,12 @@ public:
   /**
    * Class for handling an integer list preferences item.
    */
-  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < Q3ValueList < int > >
+  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QList < int > >
   {
   public:
     ItemIntList(const QString & group, const QString & key,
-                Q3ValueList < int >&reference,
-                const Q3ValueList < int >&defaultValue = Q3ValueList < int >());
+                QList < int >&reference,
+                const QList < int >&defaultValue = QList < int >());
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -1148,9 +1148,9 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemIntList *addItemIntList(const QString & name, Q3ValueList < int >&reference,
-                              const Q3ValueList < int >&defaultValue =
-                              Q3ValueList < int >(),
+  ItemIntList *addItemIntList(const QString & name, QList < int >&reference,
+                              const QList < int >&defaultValue =
+                              QList < int >(),
                               const QString & key = QString::null);
 
   /**

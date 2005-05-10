@@ -280,7 +280,7 @@ void KConfigSkeleton::ItemInt64::setMaxValue(Q_INT64 v)
 
 KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &key,
                                      int &reference,
-                                     const Q3ValueList<Choice> &choices,
+                                     const QList<Choice> &choices,
                                      int defaultValue )
   : ItemInt( group, key, reference, defaultValue ), mChoices( choices )
 {
@@ -298,7 +298,7 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
     int i = 0;
     mReference = -1;
     QString tmp = config->readEntry( mKey ).lower();
-    for(Q3ValueList<Choice>::ConstIterator it = mChoices.begin();
+    for(QList<Choice>::ConstIterator it = mChoices.begin();
         it != mChoices.end(); ++it, ++i)
     {
       if ((*it).name.lower() == tmp)
@@ -329,7 +329,7 @@ void KConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
   }
 }
 
-Q3ValueList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() const
+QList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() const
 {
   return mChoices;
 }
@@ -848,9 +848,9 @@ void KConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
 
 
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &group, const QString &key,
-                                      Q3ValueList<int> &reference,
-                                      const Q3ValueList<int> &defaultValue )
-  : KConfigSkeletonGenericItem<Q3ValueList<int> >( group, key, reference, defaultValue )
+                                      QList<int> &reference,
+                                      const QList<int> &defaultValue )
+  : KConfigSkeletonGenericItem<QList<int> >( group, key, reference, defaultValue )
 {
 }
 
@@ -1184,8 +1184,8 @@ KConfigSkeleton::ItemStringList *KConfigSkeleton::addItemStringList( const QStri
   return item;
 }
 
-KConfigSkeleton::ItemIntList *KConfigSkeleton::addItemIntList( const QString &name, Q3ValueList<int> &reference,
-                                      const Q3ValueList<int> &defaultValue, const QString &key )
+KConfigSkeleton::ItemIntList *KConfigSkeleton::addItemIntList( const QString &name, QList<int> &reference,
+                                      const QList<int> &defaultValue, const QString &key )
 {
   KConfigSkeleton::ItemIntList *item;
   item = new KConfigSkeleton::ItemIntList( mCurrentGroup, key.isNull() ? name : key,

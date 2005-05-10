@@ -68,7 +68,7 @@ static QString encode( const QString& segment, int encoding_offset, int encoding
   const char *encode_string = "/@<>#\"&%?={}|^~[]\'`\\:+";
   encode_string += encoding_offset;
 
-  Q3CString local;
+  QByteArray local;
   if (encoding_hint==0)
     local = segment.local8Bit();
   else
@@ -219,7 +219,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   if (!textCodec)
       textCodec = QTextCodec::codecForLocale();
 
-  Q3CString csegment = textCodec->fromUnicode(segment);
+  QByteArray csegment = textCodec->fromUnicode(segment);
   // Check if everything went ok
   if (textCodec->toUnicode(csegment) != segment)
   {
@@ -292,7 +292,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
      array.setRawData(new_segment, new_length);
      decoded = textCodec->toUnicode( array, new_length );
      array.resetRawData(new_segment, new_length);
-     Q3CString validate = textCodec->fromUnicode(decoded);
+     QByteArray validate = textCodec->fromUnicode(decoded);
 
      if (strcmp(validate.data(), new_segment) != 0)
      {
@@ -466,7 +466,7 @@ KURL::KURL( const char * url, int encoding_hint )
   parse( QString::fromLatin1(url), encoding_hint );
 }
 
-KURL::KURL( const Q3CString& url, int encoding_hint )
+KURL::KURL( const QByteArray& url, int encoding_hint )
 {
   reset();
   parse( QString::fromLatin1(url), encoding_hint );

@@ -131,7 +131,7 @@ public:
    * Converts a string used for dragging to a URL.
    * @since 3.2
    */
-  static KURL stringToUrl(const Q3CString &s);
+  static KURL stringToUrl(const QByteArray &s);
 
 #ifdef Q_WS_QWS
   /**

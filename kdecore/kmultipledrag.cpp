@@ -64,8 +64,8 @@ const char* KMultipleDrag::format( int i ) const
     // i=1 -> textdrag->format( 0 )
     // i=2 -> textdrag->format( 1 )
     // etc.
-    Q3ValueList<int>::ConstIterator nit = m_numberFormats.begin();
-    Q3ValueList<int>::ConstIterator nend = m_numberFormats.end();
+    QList<int>::ConstIterator nit = m_numberFormats.begin();
+    QList<int>::ConstIterator nend = m_numberFormats.end();
     Q3PtrListIterator<Q3DragObject> it( m_dragObjects );
     for ( ; nit != nend && i >= *nit ; ++nit, ++it )
         i -= *nit;

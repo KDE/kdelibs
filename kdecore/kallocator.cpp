@@ -88,7 +88,7 @@ void KZoneAllocator::insertHash(MemBlock *b)
     unsigned long key = adr >> log2;
     key = key & (hashSize - 1);
     if (!hashList[key])
-      hashList[key] = new Q3ValueList<MemBlock *>;
+      hashList[key] = new QList<MemBlock *>;
     hashList[key]->append(b);
     adr += blockSize;
   }
@@ -128,8 +128,8 @@ void KZoneAllocator::initHash()
     hashSize = 1024;
   if (hashSize > 64*1024)
     hashSize = 64*1024;
-  hashList = new Q3ValueList<MemBlock *> *[hashSize];
-  memset (hashList, 0, sizeof(Q3ValueList<MemBlock*> *) * hashSize);
+  hashList = new QList<MemBlock *> *[hashSize];
+  memset (hashList, 0, sizeof(QList<MemBlock*> *) * hashSize);
   hashDirty = false;
   for (MemBlock *b = currentBlock; b; b = b->older)
     insertHash(b);
@@ -146,9 +146,9 @@ void KZoneAllocator::delBlock(MemBlock *b)
       unsigned long key = adr >> log2;
       key = key & (hashSize - 1);
       if (hashList[key]) {
-	Q3ValueList<MemBlock *> *list = hashList[key];
-	Q3ValueList<MemBlock *>::Iterator it = list->begin();
-	Q3ValueList<MemBlock *>::Iterator endit = list->end();
+	QList<MemBlock *> *list = hashList[key];
+	QList<MemBlock *>::Iterator it = list->begin();
+	QList<MemBlock *>::Iterator endit = list->end();
 	for (; it != endit; ++it)
 	  if (*it == b) {
 	    list->remove(it);
@@ -200,15 +200,15 @@ KZoneAllocator::deallocate(void *ptr)
     initHash();
 
   unsigned long key = (((unsigned long)ptr) >> log2) & (hashSize - 1);
-  Q3ValueList<MemBlock *> *list = hashList[key];
+  QList<MemBlock *> *list = hashList[key];
   if (!list) {
     /* Can happen with certain usage pattern of intermixed free_since()
        and deallocate().  */
     //qDebug("Uhoh");
     return;
   }
-  Q3ValueList<MemBlock*>::ConstIterator it = list->begin();
-  Q3ValueList<MemBlock*>::ConstIterator endit = list->end();
+  QList<MemBlock*>::ConstIterator it = list->begin();
+  QList<MemBlock*>::ConstIterator endit = list->end();
   for (; it != endit; ++it) {
     MemBlock *cur = *it;
     if (cur->is_in(ptr)) {

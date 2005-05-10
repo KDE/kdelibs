@@ -36,6 +36,7 @@
 #include <klocale.h>
 #include <qfile.h>
 #include <q3intdict.h>
+#include <q3memarray.h>
 #include <qstring.h>
 #include <qdatetime.h>
 #include <qpoint.h>
@@ -68,16 +69,16 @@ class KDebugEntry;
 class KDebugEntry
 {
 public:
-    KDebugEntry (int n, const Q3CString& d) {number=n; descr=d;}
+    KDebugEntry (int n, const QByteArray& d) {number=n; descr=d;}
     unsigned int number;
-    Q3CString descr;
+    QByteArray descr;
 };
 
 static Q3IntDict<KDebugEntry> *KDebugCache;
 
 static KStaticDeleter< Q3IntDict<KDebugEntry> > kdd;
 
-static Q3CString getDescrFromNum(unsigned int _num)
+static QByteArray getDescrFromNum(unsigned int _num)
 {
   if (!KDebugCache) {
     kdd.setObject(KDebugCache, new Q3IntDict<KDebugEntry>( 601 ));
@@ -91,21 +92,21 @@ static Q3CString getDescrFromNum(unsigned int _num)
     return ent->descr;
 
   if ( !KDebugCache->isEmpty() ) // areas already loaded
-    return Q3CString();
+    return QByteArray();
 
   QString filename(locate("config","kdebug.areas"));
   if (filename.isEmpty())
-      return Q3CString();
+      return QByteArray();
 
   QFile file(filename);
   if (!file.open(QIODevice::ReadOnly)) {
     qWarning("Couldn't open %s", filename.local8Bit().data());
     file.close();
-    return Q3CString();
+    return QByteArray();
   }
 
   uint lineNumber=0;
-  Q3CString line(1024);
+  QByteArray line(1024);
   int len;
 
   while (( len = file.readLine(line.data(),line.size()-1) ) > 0) {
@@ -143,7 +144,7 @@ static Q3CString getDescrFromNum(unsigned int _num)
   if ( ent )
       return ent->descr;
 
-  return Q3CString();
+  return QByteArray();
 }
 
 enum DebugLevels {
@@ -160,7 +161,7 @@ struct kDebugPrivate {
 
   ~kDebugPrivate() { delete config; }
 
-  Q3CString aAreaName;
+  QByteArray aAreaName;
   unsigned int oldarea;
   KConfig *config;
 };
@@ -291,7 +292,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       // Since we are in kdecore here, we cannot use KMsgBox and use
       // QMessageBox instead
       if ( !kDebug_data->aAreaName.isEmpty() )
-          aCaption += QString("(%1)").arg( kDebug_data->aAreaName );
+          aCaption += QString("(%1)").arg( ( const char* ) kDebug_data->aAreaName );
       QMessageBox::warning( 0L, aCaption, data, i18n("&OK") );
       break;
   }

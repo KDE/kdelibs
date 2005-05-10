@@ -88,10 +88,10 @@ void KConfigBase::setGroup( const QString& group )
 
 void KConfigBase::setGroup( const char *pGroup )
 {
-  setGroup(Q3CString(pGroup));
+  setGroup(QByteArray(pGroup));
 }
 
-void KConfigBase::setGroup( const Q3CString &group )
+void KConfigBase::setGroup( const QByteArray &group )
 {
   if ( group.isEmpty() )
     mGroup = "<default>";
@@ -140,10 +140,10 @@ bool KConfigBase::hasGroup(const QString &group) const
 
 bool KConfigBase::hasGroup(const char *_pGroup) const
 {
-  return internalHasGroup( Q3CString(_pGroup));
+  return internalHasGroup( QByteArray(_pGroup));
 }
 
-bool KConfigBase::hasGroup(const Q3CString &_pGroup) const
+bool KConfigBase::hasGroup(const QByteArray &_pGroup) const
 {
   return internalHasGroup( _pGroup);
 }
@@ -173,7 +173,7 @@ bool KConfigBase::entryIsImmutable(const QString &key) const
   if (aEntryData.bImmutable)
     return true;
 
-  Q3CString utf8_key = key.utf8();
+  QByteArray utf8_key = key.utf8();
   entryKey.c_key = utf8_key.data();
   aEntryData = lookupData(entryKey); // Normal entry
   if (aEntryData.bImmutable)
@@ -195,7 +195,7 @@ QString KConfigBase::readEntryUntranslated( const QString& pKey,
 QString KConfigBase::readEntryUntranslated( const char *pKey,
                                 const QString& aDefault ) const
 {
-   Q3CString result = readEntryUtf8(pKey);
+   QByteArray result = readEntryUtf8(pKey);
    if (result.isNull())
       return aDefault;
    return QString::fromUtf8(result);
@@ -317,7 +317,7 @@ QString KConfigBase::readEntry( const char *pKey,
   return aValue;
 }
 
-Q3CString KConfigBase::readEntryUtf8( const char *pKey) const
+QByteArray KConfigBase::readEntryUtf8( const char *pKey) const
 {
   // We don't try the localized key
   KEntryKey entryKey(mGroup, 0);
@@ -372,7 +372,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           QStringList strList = readListEntry( pKey );
           QStringList::ConstIterator it = strList.begin();
           QStringList::ConstIterator end = strList.end();
-          Q3ValueList<QVariant> list;
+          QList<QVariant> list;
 
           for (; it != end; ++it ) {
               tmp = *it;
@@ -443,12 +443,12 @@ int KConfigBase::readListEntry( const char *pKey,
   if( !hasKey( pKey ) )
     return 0;
 
-  Q3CString str_list = readEntryUtf8( pKey );
+  QByteArray str_list = readEntryUtf8( pKey );
   if (str_list.isEmpty())
     return 0;
 
   list.clear();
-  Q3CString value = "";
+  QByteArray value = "";
   int len = str_list.length();
 
   for (int i = 0; i < len; i++) {
@@ -531,15 +531,15 @@ QStringList KConfigBase::readListEntry( const char* pKey, const QStringList& aDe
 		return readListEntry( pKey, sep );
 }
 
-Q3ValueList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
+QList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
 {
   return readIntListEntry(pKey.utf8().data());
 }
 
-Q3ValueList<int> KConfigBase::readIntListEntry( const char *pKey ) const
+QList<int> KConfigBase::readIntListEntry( const char *pKey ) const
 {
   QStringList strlist = readListEntry(pKey);
-  Q3ValueList<int> list;
+  QList<int> list;
   for (QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); it++)
     // I do not check if the toInt failed because I consider the number of items
     // more important than their value
@@ -583,7 +583,7 @@ int KConfigBase::readNumEntry( const QString& pKey, int nDefault) const
 
 int KConfigBase::readNumEntry( const char *pKey, int nDefault) const
 {
-  Q3CString aValue = readEntryUtf8( pKey );
+  QByteArray aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else if( aValue == "true" || aValue == "on" || aValue == "yes" )
@@ -604,7 +604,7 @@ unsigned int KConfigBase::readUnsignedNumEntry( const QString& pKey, unsigned in
 
 unsigned int KConfigBase::readUnsignedNumEntry( const char *pKey, unsigned int nDefault) const
 {
-  Q3CString aValue = readEntryUtf8( pKey );
+  QByteArray aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -623,7 +623,7 @@ long KConfigBase::readLongNumEntry( const QString& pKey, long nDefault) const
 
 long KConfigBase::readLongNumEntry( const char *pKey, long nDefault) const
 {
-  Q3CString aValue = readEntryUtf8( pKey );
+  QByteArray aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -642,7 +642,7 @@ unsigned long KConfigBase::readUnsignedLongNumEntry( const QString& pKey, unsign
 
 unsigned long KConfigBase::readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault) const
 {
-  Q3CString aValue = readEntryUtf8( pKey );
+  QByteArray aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -660,7 +660,7 @@ Q_INT64 KConfigBase::readNum64Entry( const QString& pKey, Q_INT64 nDefault) cons
 
 Q_INT64 KConfigBase::readNum64Entry( const char *pKey, Q_INT64 nDefault) const
 {
-  // Note that QCString::toLongLong() is missing, we muse use a QString instead.
+  // Note that QByteArray::toLongLong() is missing, we muse use a QString instead.
   QString aValue = readEntry( pKey );
   if( aValue.isNull() )
     return nDefault;
@@ -680,7 +680,7 @@ Q_UINT64 KConfigBase::readUnsignedNum64Entry( const QString& pKey, Q_UINT64 nDef
 
 Q_UINT64 KConfigBase::readUnsignedNum64Entry( const char *pKey, Q_UINT64 nDefault) const
 {
-  // Note that QCString::toULongLong() is missing, we muse use a QString instead.
+  // Note that QByteArray::toULongLong() is missing, we muse use a QString instead.
   QString aValue = readEntry( pKey );
   if( aValue.isNull() )
     return nDefault;
@@ -699,7 +699,7 @@ double KConfigBase::readDoubleNumEntry( const QString& pKey, double nDefault) co
 
 double KConfigBase::readDoubleNumEntry( const char *pKey, double nDefault) const
 {
-  Q3CString aValue = readEntryUtf8( pKey );
+  QByteArray aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -718,7 +718,7 @@ bool KConfigBase::readBoolEntry( const QString& pKey, bool bDefault ) const
 
 bool KConfigBase::readBoolEntry( const char *pKey, bool bDefault ) const
 {
-  Q3CString aValue = readEntryUtf8( pKey );
+  QByteArray aValue = readEntryUtf8( pKey );
 
   if( aValue.isNull() )
     return bDefault;
@@ -842,7 +842,7 @@ QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) c
 
 QRect KConfigBase::readRectEntry( const char *pKey, const QRect* pDefault ) const
 {
-  Q3CString aValue = readEntryUtf8(pKey);
+  QByteArray aValue = readEntryUtf8(pKey);
 
   if (!aValue.isEmpty())
   {
@@ -868,7 +868,7 @@ QPoint KConfigBase::readPointEntry( const QString& pKey,
 QPoint KConfigBase::readPointEntry( const char *pKey,
                                     const QPoint* pDefault ) const
 {
-  Q3CString aValue = readEntryUtf8(pKey);
+  QByteArray aValue = readEntryUtf8(pKey);
 
   if (!aValue.isEmpty())
   {
@@ -893,7 +893,7 @@ QSize KConfigBase::readSizeEntry( const QString& pKey,
 QSize KConfigBase::readSizeEntry( const char *pKey,
                                   const QSize* pDefault ) const
 {
-  Q3CString aValue = readEntryUtf8(pKey);
+  QByteArray aValue = readEntryUtf8(pKey);
 
   if (!aValue.isEmpty())
   {
@@ -1235,9 +1235,9 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
       writeEntry( pKey, prop.toStringList(), ',', bPersistent, bGlobal, bNLS );
       return;
     case QVariant::List: {
-        Q3ValueList<QVariant> list = prop.toList();
-        Q3ValueList<QVariant>::ConstIterator it = list.begin();
-        Q3ValueList<QVariant>::ConstIterator end = list.end();
+        QList<QVariant> list = prop.toList();
+        QList<QVariant>::ConstIterator it = list.begin();
+        QList<QVariant>::ConstIterator end = list.end();
         QStringList strList;
 
         for (; it != end; ++it )
@@ -1384,18 +1384,18 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
 }
 
-void KConfigBase::writeEntry ( const QString& pKey, const Q3ValueList<int> &list,
+void KConfigBase::writeEntry ( const QString& pKey, const QList<int> &list,
                                bool bPersistent, bool bGlobal, bool bNLS )
 {
   writeEntry(pKey.utf8().data(), list, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigBase::writeEntry ( const char *pKey, const Q3ValueList<int> &list,
+void KConfigBase::writeEntry ( const char *pKey, const QList<int> &list,
                                bool bPersistent, bool bGlobal, bool bNLS )
 {
     QStringList strlist;
-    Q3ValueList<int>::ConstIterator end = list.end();
-    for (Q3ValueList<int>::ConstIterator it = list.begin(); it != end; it++)
+    QList<int>::ConstIterator end = list.end();
+    for (QList<int>::ConstIterator it = list.begin(); it != end; it++)
         strlist << QString::number(*it);
     writeEntry(pKey, strlist, ',', bPersistent, bGlobal, bNLS );
 }
@@ -1558,7 +1558,7 @@ void KConfigBase::writeEntry( const char *pKey, const QRect& rRect,
                               bool bNLS )
 {
   Q3StrList list;
-  Q3CString tempstr;
+  QByteArray tempstr;
   list.insert( 0, tempstr.setNum( rRect.left() ) );
   list.insert( 1, tempstr.setNum( rRect.top() ) );
   list.insert( 2, tempstr.setNum( rRect.width() ) );
@@ -1580,7 +1580,7 @@ void KConfigBase::writeEntry( const char *pKey, const QPoint& rPoint,
                               bool bNLS )
 {
   Q3StrList list;
-  Q3CString tempstr;
+  QByteArray tempstr;
   list.insert( 0, tempstr.setNum( rPoint.x() ) );
   list.insert( 1, tempstr.setNum( rPoint.y() ) );
 
@@ -1600,7 +1600,7 @@ void KConfigBase::writeEntry( const char *pKey, const QSize& rSize,
                               bool bNLS )
 {
   Q3StrList list;
-  Q3CString tempstr;
+  QByteArray tempstr;
   list.insert( 0, tempstr.setNum( rSize.width() ) );
   list.insert( 1, tempstr.setNum( rSize.height() ) );
 
@@ -1641,7 +1641,7 @@ void KConfigBase::writeEntry( const char *pKey, const QDateTime& rDateTime,
                               bool bNLS )
 {
   Q3StrList list;
-  Q3CString tempstr;
+  QByteArray tempstr;
 
   QTime time = rDateTime.time();
   QDate date = rDateTime.date();
@@ -1773,7 +1773,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const QString &group)
   setReadDefaults(mMaster->readDefaults());
 }
 
-KConfigGroup::KConfigGroup(KConfigBase *master, const Q3CString &group)
+KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &group)
 {
   mMaster = master;
   backEnd = mMaster->backEnd; // Needed for getConfigState()

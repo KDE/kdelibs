@@ -149,7 +149,7 @@ KLibFactory* KLibrary::factory()
     if ( m_factory )
         return m_factory;
 
-    Q3CString symname;
+    QByteArray symname;
     symname.sprintf("init_%s", name().latin1() );
 
     void* sym = symbol( symname );
@@ -332,9 +332,9 @@ KLibLoader::~KLibLoader()
     d = 0L;
 }
 
-static inline Q3CString makeLibName( const char* name )
+static inline QByteArray makeLibName( const char* name )
 {
-    Q3CString libname(name);
+    QByteArray libname(name);
     // only append ".la" if there is no extension
     // this allows to load non-libtool libraries as well
     // (mhk, 20000228)
@@ -349,7 +349,7 @@ static inline Q3CString makeLibName( const char* name )
 //static
 QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
 {
-    Q3CString libname = makeLibName( name );
+    QByteArray libname = makeLibName( name );
 
     // only look up the file if it is not an absolute filename
     // (mhk, 20000228)
@@ -419,7 +419,7 @@ KLibrary* KLibLoader::library( const char *name )
       QString libfile = findLibrary( name );
       if ( libfile.isEmpty() )
       {
-        const Q3CString libname = makeLibName( name );
+        const QByteArray libname = makeLibName( name );
 #ifndef NDEBUG
         kdDebug(150) << "library=" << name << ": No file named " << libname << " found in paths." << endl;
 #endif

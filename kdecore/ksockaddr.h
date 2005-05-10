@@ -574,7 +574,7 @@ class KUnixSocketAddressPrivate;
  *
  * This is a Unix socket address.
  *
- * This class expects QCString instead of QString values, which means the
+ * This class expects QByteArray instead of QString values, which means the
  * filenames should be encoded in whatever form locale/system deems necessary
  * before passing down to the function
  *
@@ -601,7 +601,7 @@ public:
    * Constructor from pathname.
    * @param pathname	pathname
    */
-  KUnixSocketAddress(Q3CString pathname);
+  KUnixSocketAddress(QByteArray pathname);
 
   /**
    * Destructor
@@ -621,14 +621,14 @@ public:
    * @param path	pathname
    * @return true if successful, false otherwise
    */
-  bool setAddress(Q3CString path);
+  bool setAddress(QByteArray path);
 
   /**
    * Returns the pathname.
-   * @return the pathname, can be QCString::null if uninitialized, or
+   * @return the pathname, can be QByteArray::null if uninitialized, or
    *         "" if unknown
    */
-  Q3CString pathname() const;
+  QByteArray pathname() const;
 
   /**
    * Returns pretty representation of this socket.

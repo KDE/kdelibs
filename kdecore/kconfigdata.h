@@ -35,7 +35,7 @@ struct KDECORE_EXPORT KEntry
   KEntry()
     : mValue(0), bDirty(false), bNLS(false), 
       bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
-  Q3CString mValue;
+  QByteArray mValue;
   /**
    * Must the entry be written back to disk?
    */
@@ -69,18 +69,18 @@ struct KDECORE_EXPORT KEntry
  */
 struct KDECORE_EXPORT KEntryKey
 {
-  KEntryKey(const Q3CString& _group = 0,
-	    const Q3CString& _key = 0)
+  KEntryKey(const QByteArray& _group = 0,
+	    const QByteArray& _key = 0)
       : mGroup(_group), mKey(_key), bLocal(false), bDefault(false),
         c_key(_key.data()) {}
   /**
    * The "group" to which this EntryKey belongs
    */ 
-  Q3CString mGroup;
+  QByteArray mGroup;
   /**
    * The _actual_ key of the entry in question
    */ 
-  Q3CString mKey;
+  QByteArray mKey;
   /**
    * Entry is localised or not
    */ 

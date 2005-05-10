@@ -152,7 +152,7 @@ struct KIconLoaderDebug
     QString delete_bt;
     };
 
-static Q3ValueList< KIconLoaderDebug > *kiconloaders;
+static QList< KIconLoaderDebug > *kiconloaders;
 #endif
 
 /*** KIconLoader: the icon loader ***/
@@ -161,10 +161,10 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
 {
 #ifdef KICONLOADER_CHECKS
     if( kiconloaders == NULL )
-        kiconloaders = new Q3ValueList< KIconLoaderDebug>();
+        kiconloaders = new QList< KIconLoaderDebug>();
     // check for the (very unlikely case) that new KIconLoader gets allocated
     // at exactly same address like some previous one
-    for( Q3ValueList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
+    for( QList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
          it != kiconloaders->end();
          )
         {
@@ -276,7 +276,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 KIconLoader::~KIconLoader()
 {
 #ifdef KICONLOADER_CHECKS
-    for( Q3ValueList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
+    for( QList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
          it != kiconloaders->end();
          ++it )
         {
@@ -1217,7 +1217,7 @@ QPixmap* KIconFactory::createPixmap( const QIcon&, QIcon::Size, QIcon::Mode mode
     {
 #ifdef KICONLOADER_CHECKS
     bool found = false;
-    for( Q3ValueList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
+    for( QList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
          it != kiconloaders->end();
          ++it )
         {

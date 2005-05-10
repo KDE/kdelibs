@@ -125,8 +125,8 @@ private:
   int fd[2];
   bool needcheck;
   QSocketNotifier *notifier;
-  Q3ValueList<KProcess*> kProcessList;
-  Q3ValueList<int> unixProcessList;
+  QList<KProcess*> kProcessList;
+  QList<int> unixProcessList;
 
   static void setupHandlers();
   static void resetHandlers();

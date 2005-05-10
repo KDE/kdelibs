@@ -1193,12 +1193,12 @@ private:
   /**
    * @internal A QFile filename encoding function (QFile::encodeFn).
    */
-  static Q3CString encodeFileNameUTF8( const QString & fileName );
+  static QByteArray encodeFileNameUTF8( const QString & fileName );
 
   /**
    * @internal QFile filename decoding function (QFile::decodeFn).
    */
-  static QString decodeFileNameUTF8( const Q3CString & localFileName );
+  static QString decodeFileNameUTF8( const QByteArray & localFileName );
 
   /**
    * @internal Changes the file name of the catalog to the correct

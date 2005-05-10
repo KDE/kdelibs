@@ -95,12 +95,12 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    // make sure the random seed is randomized
    (void) KApplication::random();
 
-   Q3CString ext = QFile::encodeName(fileExtension);
-   Q3CString nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
+   QByteArray ext = QFile::encodeName(fileExtension);
+   QByteArray nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
    if((mFd = mkstemps(nme.data(), ext.length())) < 0)
    {
        // Recreate it for the warning, mkstemps emptied it
-       Q3CString nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
+       QByteArray nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
        kdWarning() << "KTempFile: Error trying to create " << nme << ": " << strerror(errno) << endl;
        mError = errno;
        mTmpName = QString::null;

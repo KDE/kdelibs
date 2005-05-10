@@ -55,7 +55,7 @@ public:
   bool dateMonthNamePossessive;
   QStringList languageList;
   QStringList catalogNames; // list of all catalogs (regardless of language)
-  Q3ValueList<KCatalogue> catalogues; // list of all loaded catalogs, contains one instance per catalog name and language
+  QList<KCatalogue> catalogues; // list of all loaded catalogs, contains one instance per catalog name and language
   QString encoding;
   QTextCodec * codecForEncoding;
   KConfig * config;
@@ -179,7 +179,7 @@ void KLocale::initLanguageList(KConfig * config, bool useEnv)
 
 void KLocale::initPluralTypes()
 {
-  for ( Q3ValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::Iterator it = d->catalogues.begin();
     it != d->catalogues.end();
     ++it )
   {
@@ -192,7 +192,7 @@ void KLocale::initPluralTypes()
 
 int KLocale::pluralType( const QString & language )
 {
-  for ( Q3ValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::ConstIterator it = d->catalogues.begin();
     it != d->catalogues.end();
     ++it )
   {
@@ -642,7 +642,7 @@ void KLocale::updateCatalogues( )
   // 3.2) else create a new catalog.
   // but we will do this later.
 
-  for ( Q3ValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::Iterator it = d->catalogues.begin();
 	it != d->catalogues.end(); )
   {
      it = d->catalogues.remove(it);
@@ -713,7 +713,7 @@ QString KLocale::translate_priv(const char *msgid,
     return QString::fromUtf8( fallback );
   }
 
-  for ( Q3ValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::ConstIterator it = d->catalogues.begin();
 	it != d->catalogues.end();
 	++it )
     {
@@ -1938,12 +1938,12 @@ void KLocale::initFileNameEncoding(KConfig *)
   // which, on Unix platforms, use the locale's codec.
 }
 
-Q3CString KLocale::encodeFileNameUTF8( const QString & fileName )
+QByteArray KLocale::encodeFileNameUTF8( const QString & fileName )
 {
   return fileName.utf8();
 }
 
-QString KLocale::decodeFileNameUTF8( const Q3CString & localFileName )
+QString KLocale::decodeFileNameUTF8( const QByteArray & localFileName )
 {
   return QString::fromUtf8(localFileName);
 }

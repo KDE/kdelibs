@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <q3valuelist.h>
 
-typedef Q3ValueList<Q3CString> QCStringList;
+typedef QList<QByteArray> QByteArrayList;
 
 /**
  * @short Structure that holds command line options.
@@ -118,7 +118,7 @@ class KCmdLineArgsPrivate;
  *        ....
  *
  *     // An option which takes an additional argument
- *     QCString anotherOptionArg = args->getOption("another-option");
+ *     QByteArray anotherOptionArg = args->getOption("another-option");
  *
  *     // Arguments (e.g. files to open)
  *     for(int i = 0; i < args->count(); i++) // Counting start at 0!
@@ -430,7 +430,7 @@ public:
    *          If the option was present more than the value of the
    *          last occurrence is used.
    */
-  Q3CString getOption(const char *option) const;
+  QByteArray getOption(const char *option) const;
 
   /**
    *  Read out all occurrences of a string option.
@@ -448,7 +448,7 @@ public:
    *  @return A list of all option values. If no option was present
    *          on the command line, an empty list is returned.
    */
-  QCStringList getOptionList(const char *option) const;
+  QByteArrayList getOptionList(const char *option) const;
 
   /**
    *  Read out a boolean option or check for the presence of string option.
@@ -571,7 +571,7 @@ private:
    *
    * Checks what to do with a single option
    */
-  static void findOption(const char *_opt, Q3CString opt, int &i, bool enabled, bool &moreOptions);
+  static void findOption(const char *_opt, QByteArray opt, int &i, bool enabled, bool &moreOptions);
 
   /**
    * @internal
@@ -617,14 +617,14 @@ private:
    *
    *  Set a boolean option
    */
-  void setOption(const Q3CString &option, bool enabled);
+  void setOption(const QByteArray &option, bool enabled);
 
   /**
    * @internal
    *
    *  Set a string option
    */
-  void setOption(const Q3CString &option, const char *value);
+  void setOption(const QByteArray &option, const char *value);
 
   /**
    * @internal

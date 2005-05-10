@@ -252,7 +252,7 @@ public:
   KCheckAccelerators* checkAccelerators;
   QString overrideStyle;
   QString geometry_arg;
-  Q3CString startup_id;
+  QByteArray startup_id;
   QTimer* app_started_timer;
   KAppDCOPInterface *m_KAppDCOPInterface;
   bool session_save;
@@ -596,7 +596,7 @@ static SmcConn tmpSmcConnection = 0;
 #endif
 static QTime* smModificationTime = 0;
 
-KApplication::KApplication( int& argc, char** argv, const Q3CString& rAppName,
+KApplication::KApplication( int& argc, char** argv, const QByteArray& rAppName,
                             bool allowStyles, bool GUIenabled ) :
   QApplication( argc, argv, GUIenabled ), KInstance(rAppName),
 #ifdef Q_WS_X11
@@ -703,7 +703,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
 }
 
 #ifdef Q_WS_X11
-KApplication::KApplication(Display *display, int& argc, char** argv, const Q3CString& rAppName,
+KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
                            bool allowStyles, bool GUIenabled ) :
   QApplication( display ), KInstance(rAppName),
   display(0L),
@@ -849,7 +849,7 @@ void KApplication::init(bool GUIenabled)
   // * We use kdialog to warn the user, so we better not generate warnings from
   //   kdialog itself.
   // * Don't warn if we run with a read-only $HOME
-  Q3CString readOnly = getenv("KDE_HOME_READONLY");
+  QByteArray readOnly = getenv("KDE_HOME_READONLY");
   if (readOnly.isEmpty() && (qstrcmp(name(), "kdialog") != 0))
   {
     KConfigGroupSaver saver(config, "KDE Action Restrictions");
@@ -1142,7 +1142,7 @@ bool KApplication::requestShutDown(
     // open a temporary connection, if possible
 
     propagateSessionManager();
-    Q3CString smEnv = ::getenv("SESSION_MANAGER");
+    QByteArray smEnv = ::getenv("SESSION_MANAGER");
     if (smEnv.isEmpty())
         return false;
 
@@ -1177,7 +1177,7 @@ bool KApplication::requestShutDown(
 void KApplication::propagateSessionManager()
 {
 #ifdef Q_WS_X11
-    Q3CString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
+    QByteArray fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
     QString display = ::getenv(DISPLAY);
     // strip the screen number from the display
     display.replace(QRegExp("\\.[0-9]+$"), "");
@@ -1186,7 +1186,7 @@ void KApplication::propagateSessionManager()
        display[i] = '_';
 
     fName += "_"+display;
-    Q3CString smEnv = ::getenv("SESSION_MANAGER");
+    QByteArray smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
     if ( !check && smModificationTime ) {
          QFileInfo info( fName );
@@ -1305,7 +1305,7 @@ void KApplication::saveState( QSessionManager& sm )
 #endif
 
 
-    Q3CString multiHead = getenv("KDE_MULTIHEAD");
+    QByteArray multiHead = getenv("KDE_MULTIHEAD");
     if (multiHead.lower() == "true") {
         // if multihead is enabled, we save our -display argument so that
         // we are restored onto the correct head... one problem with this
@@ -1313,7 +1313,7 @@ void KApplication::saveState( QSessionManager& sm )
         // to a different display (ie. if we are in a university lab and try,
         // try to restore a multihead session, our apps could be started on
         // someone else's display instead of our own)
-        Q3CString displayname = getenv(DISPLAY);
+        QByteArray displayname = getenv(DISPLAY);
         if (! displayname.isNull()) {
             // only store the command if we actually have a DISPLAY
             // environment variable
@@ -1845,7 +1845,7 @@ unsigned long KApplication::userTimestamp() const
 #endif
 }
 
-void KApplication::updateRemoteUserTimestamp( const Q3CString& dcopId, quint32 time )
+void KApplication::updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 time )
 {
 #if defined Q_WS_X11
     if( time == 0 )
@@ -2198,7 +2198,7 @@ void KApplication::invokeHelp( const QString& anchor,
 // see kapplication_win.cpp
 void KApplication::invokeHelp( const QString& anchor,
                                const QString& _appname,
-                               const Q3CString& startup_id ) const
+                               const QByteArray& startup_id ) const
 {
    QString url;
    QString appname;
@@ -2270,7 +2270,7 @@ void KApplication::invokeMailer(const QString &address, const QString &subject)
     return invokeMailer(address,subject,"");
 }
 
-void KApplication::invokeMailer(const QString &address, const QString &subject, const Q3CString& startup_id)
+void KApplication::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
 {
    invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
        QStringList(), startup_id );
@@ -2281,12 +2281,12 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
     return invokeMailer( mailtoURL, "" );
 }
 
-void KApplication::invokeMailer(const KURL &mailtoURL, const Q3CString& startup_id )
+void KApplication::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id )
 {
     return invokeMailer( mailtoURL, startup_id, false);
 }
 
-void KApplication::invokeMailer(const KURL &mailtoURL, const Q3CString& startup_id, bool allowAttachments )
+void KApplication::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
@@ -2404,7 +2404,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
 void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
-                                const Q3CString& startup_id )
+                                const QByteArray& startup_id )
 {
    KConfig config("emaildefaults");
 
@@ -2532,7 +2532,7 @@ void KApplication::invokeBrowser( const QString &url )
 #ifndef Q_WS_WIN
 // on win32, for invoking browser we're using win32 API
 // see kapplication_win.cpp
-void KApplication::invokeBrowser( const QString &url, const Q3CString& startup_id )
+void KApplication::invokeBrowser( const QString &url, const QByteArray& startup_id )
 {
    QString error;
 
@@ -2573,21 +2573,21 @@ void KApplication::selectAll()
   invokeEditSlot( SLOT( selectAll() ) );
 }
 
-Q3CString
+QByteArray
 KApplication::launcher()
 {
    return "klauncher";
 }
 
 static int
-startServiceInternal( const Q3CString &function,
+startServiceInternal( const QByteArray &function,
               const QString& _name, const QStringList &URLs,
-              QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
+              QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    struct serviceResult
    {
       int result;
-      Q3CString dcopName;
+      QByteArray dcopName;
       QString error;
       pid_t pid;
    };
@@ -2611,17 +2611,17 @@ startServiceInternal( const Q3CString &function,
    QByteArray params;
    QDataStream stream(&params, QIODevice::WriteOnly);
    stream << _name << URLs;
-   Q3CString replyType;
+   QByteArray replyType;
    QByteArray replyData;
-   Q3CString _launcher = KApplication::launcher();
-   Q3ValueList<Q3CString> envs;
+   QByteArray _launcher = KApplication::launcher();
+   QList<QByteArray> envs;
 #ifdef Q_WS_X11
    if (QX11Info::display()) {
-       Q3CString dpystring(XDisplayString(QX11Info::display()));
-       envs.append( Q3CString("DISPLAY=") + dpystring );
+       QByteArray dpystring(XDisplayString(QX11Info::display()));
+       envs.append( QByteArray("DISPLAY=") + dpystring );
    } else if( getenv( "DISPLAY" )) {
-       Q3CString dpystring( getenv( "DISPLAY" ));
-       envs.append( Q3CString("DISPLAY=") + dpystring );
+       QByteArray dpystring( getenv( "DISPLAY" ));
+       envs.append( QByteArray("DISPLAY=") + dpystring );
    }
 #endif
    stream << envs;
@@ -2661,64 +2661,64 @@ startServiceInternal( const Q3CString &function,
 
 int
 KApplication::startServiceByName( const QString& _name, const QString &URL,
-                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      "start_service_by_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
-                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      "start_service_by_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopPath( const QString& _name, const QString &URL,
-                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
-                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopName( const QString& _name, const QString &URL,
-                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
-                  QString *error, Q3CString *dcopService, int *pid, const Q3CString& startup_id, bool noWait )
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
@@ -2731,9 +2731,9 @@ KApplication::kdeinitExec( const QString& name, const QStringList &args,
 
 int
 KApplication::kdeinitExec( const QString& name, const QStringList &args,
-                           QString *error, int *pid, const Q3CString& startup_id )
+                           QString *error, int *pid, const QByteArray& startup_id )
 {
-   return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
+   return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QByteArray>,QByteArray)",
         name, args, error, 0, pid, startup_id, false);
 }
 
@@ -2746,9 +2746,9 @@ KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
 
 int
 KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
-                           QString *error, int *pid, const Q3CString& startup_id )
+                           QString *error, int *pid, const QByteArray& startup_id )
 {
-   return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
+   return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QByteArray>,QByteArray)",
         name, args, error, 0, pid, startup_id, false);
 }
 
@@ -2873,12 +2873,12 @@ void KApplication::setTopWidget( QWidget *topWidget )
 #endif
 }
 
-Q3CString KApplication::startupId() const
+QByteArray KApplication::startupId() const
 {
     return d->startup_id;
 }
 
-void KApplication::setStartupId( const Q3CString& startup_id )
+void KApplication::setStartupId( const QByteArray& startup_id )
 {
     if( startup_id == d->startup_id )
         return;

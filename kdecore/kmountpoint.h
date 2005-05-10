@@ -37,7 +37,7 @@ class KDECORE_EXPORT KMountPoint : public KShared
    typedef signed long long int filesize_t;
 public:
   typedef KSharedPtr<KMountPoint> Ptr;
-  typedef Q3ValueList<Ptr> List;
+  typedef QList<Ptr> List;
 public:
    enum { NeedMountOptions = 1, NeedRealDeviceName = 2 };
 

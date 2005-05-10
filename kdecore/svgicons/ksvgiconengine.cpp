@@ -410,7 +410,7 @@ public:
 			if(href.startsWith("data:"))
 			{
 				// Get input
-				Q3CString input = href.mid(13).utf8();
+				QByteArray input = href.mid(13).utf8();
 
 				// Decode into 'output'
 				QByteArray output;
@@ -540,7 +540,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		QString data;
 		bool done = false;
 
-		Q3CString buffer(1024);
+		QByteArray buffer(1024);
 		int length = 0;
 
 		while(!done)

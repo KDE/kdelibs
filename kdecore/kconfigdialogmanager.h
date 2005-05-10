@@ -221,7 +221,7 @@ protected:
   /**
    * Map of the classes and the signals that they emit when changed.
    */
-  QMap<QString, Q3CString> changedMap;
+  QMap<QString, QByteArray> changedMap;
 
 private:
   class Private;

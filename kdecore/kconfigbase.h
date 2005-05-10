@@ -282,7 +282,7 @@ public:
    * @param pKey The key to search for.
    * @return The list. Empty if the entry does not exist.
    */
-  Q3ValueList<int> readIntListEntry( const QString& pKey ) const;
+  QList<int> readIntListEntry( const QString& pKey ) const;
 
   /**
    * Reads a list of Integers.
@@ -290,7 +290,7 @@ public:
    * @param pKey The key to search for.
    * @return The list. Empty if the entry does not exist.
    */
-  Q3ValueList<int> readIntListEntry( const char *pKey ) const;
+  QList<int> readIntListEntry( const char *pKey ) const;
 
   /**
    * Reads a path.
@@ -936,7 +936,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const QString& pKey, const Q3ValueList<int>& rValue,
+  void writeEntry( const QString& pKey, const QList<int>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
  /**
    * writeEntry() overridden to accept a list of Integers.
@@ -957,7 +957,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const char *pKey, const Q3ValueList<int>& rValue,
+  void writeEntry( const char *pKey, const QList<int>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
@@ -1969,7 +1969,7 @@ protected:
    */
   virtual KEntry lookupData(const KEntryKey &_key) const = 0;
 
-  virtual bool internalHasGroup(const Q3CString &group) const = 0;
+  virtual bool internalHasGroup(const QByteArray &group) const = 0;
 
   /**
    * A back end for loading/saving to disk in a particular format.
@@ -1979,22 +1979,22 @@ public:
   /**
    * Overloaded public methods:
    */
-  void setGroup( const Q3CString &pGroup );
+  void setGroup( const QByteArray &pGroup );
   void setGroup( const char *pGroup );
-  bool hasGroup(const Q3CString &_pGroup) const;
+  bool hasGroup(const QByteArray &_pGroup) const;
   bool hasGroup(const char *_pGroup) const;
   bool hasKey( const char *pKey ) const;
 
 protected:
-  Q3CString readEntryUtf8( const char *pKey) const;
+  QByteArray readEntryUtf8( const char *pKey) const;
 
   /**
    * The currently selected group. */
-  Q3CString mGroup;
+  QByteArray mGroup;
 
   /**
    * The locale to retrieve keys under if possible, i.e en_US or fr.  */
-  Q3CString aLocaleString;
+  QByteArray aLocaleString;
 
   /**
    * Indicates whether there are any dirty entries in the config object
@@ -2071,7 +2071,7 @@ public:
       : _config(config), _oldgroup(config->group())
         { _config->setGroup( group ); }
 
-  KConfigGroupSaver( KConfigBase* config, const Q3CString &group )
+  KConfigGroupSaver( KConfigBase* config, const QByteArray &group )
       : _config(config), _oldgroup(config->group())
         { _config->setGroup( group ); }
 
@@ -2101,7 +2101,7 @@ public:
     * Construct a config group corresponding to @p group in @p master.
     * @p group is the group name encoded in UTF-8.
     */
-   KConfigGroup(KConfigBase *master, const Q3CString &group);
+   KConfigGroup(KConfigBase *master, const QByteArray &group);
    /**
     * This is an overloaded constructor provided for convenience.
     * It behaves essentially like the above function.
@@ -2159,7 +2159,7 @@ private:
     { return KEntryMap(); }
    virtual KEntryMap internalEntryMap() const
     { return KEntryMap(); }
-   virtual bool internalHasGroup(const Q3CString &) const
+   virtual bool internalHasGroup(const QByteArray &) const
     { return false; }
 
    void getConfigState() { }

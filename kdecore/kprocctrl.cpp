@@ -192,8 +192,8 @@ void KProcessController::slotDoHousekeeping()
 
   int status;
  again:
-  Q3ValueListIterator<KProcess*> it( kProcessList.begin() );
-  Q3ValueListIterator<KProcess*> eit( kProcessList.end() );
+  QListIterator<KProcess*> it( kProcessList.begin() );
+  QListIterator<KProcess*> eit( kProcessList.end() );
   while( it != eit )
   {
     KProcess *prc = *it;
@@ -207,8 +207,8 @@ void KProcessController::slotDoHousekeeping()
     }
     ++it;
   }
-  Q3ValueListIterator<int> uit( unixProcessList.begin() );
-  Q3ValueListIterator<int> ueit( unixProcessList.end() );
+  QListIterator<int> uit( unixProcessList.begin() );
+  QListIterator<int> ueit( unixProcessList.end() );
   while( uit != ueit )
   {
     if( waitpid( *uit, 0, WNOHANG ) > 0 )

@@ -274,7 +274,7 @@ class KServerSocketPrivate
 {
 public:
    bool bind;
-   Q3CString path;
+   QByteArray path;
    unsigned short int port;
    KExtendedSocket *ks;
 };

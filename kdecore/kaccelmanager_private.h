@@ -77,7 +77,7 @@ private:
 };
 
 
-typedef Q3ValueList<KAccelString> KAccelStringList;
+typedef QList<KAccelString> KAccelStringList;
 
 
 /**

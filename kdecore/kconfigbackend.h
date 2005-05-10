@@ -130,7 +130,7 @@ public:
    * @param _localeString the identifier of the language
    * @see KLocale
    */
-  void setLocaleString(const Q3CString &_localeString) { localeString = _localeString; }
+  void setLocaleString(const QByteArray &_localeString) { localeString = _localeString; }
 
   /**
    * Set the file mode for newly created files.
@@ -165,10 +165,10 @@ protected:
   KConfigBase *pConfig;
 
   QString mfileName;
-  Q3CString resType;
+  QByteArray resType;
   bool useKDEGlobals : 1;
   bool bFileImmutable : 1;
-  Q3CString localeString;
+  QByteArray localeString;
   QString mLocalFileName;
   QString mGlobalFileName;
   KConfigBase::ConfigState mConfigState;

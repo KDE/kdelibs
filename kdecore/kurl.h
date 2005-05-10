@@ -167,7 +167,7 @@ public:
    * @see KURL
    * @see QValueList
    */
-  class KDECORE_EXPORT List : public Q3ValueList<KURL>
+  class KDECORE_EXPORT List : public QList<KURL>
   {
   public:
     /**
@@ -230,7 +230,7 @@ public:
    */
   KURL( const char * url, int encoding_hint = 0 );
   /**
-   * Constructor taking a QCString @p url, which is an _encoded_ representation
+   * Constructor taking a QByteArray @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
    * @param url A encoded URL. If the URL does not have a protocol part,
@@ -238,7 +238,7 @@ public:
    * @param encoding_hint MIB of original encoding of URL.
    * @see QTextCodec::mibEnum()
    */
-  KURL( const Q3CString& url, int encoding_hint = 0 );
+  KURL( const QByteArray& url, int encoding_hint = 0 );
 
   /**
    * Copy constructor.

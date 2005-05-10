@@ -749,7 +749,7 @@ KUnixSocketAddress::KUnixSocketAddress(const sockaddr_un* _sun, ksocklen_t size)
   setAddress(_sun, size);
 }
 
-KUnixSocketAddress::KUnixSocketAddress(Q3CString pathname) :
+KUnixSocketAddress::KUnixSocketAddress(QByteArray pathname) :
   d(new KUnixSocketAddressPrivate)
 {
   setAddress(pathname);
@@ -799,7 +799,7 @@ bool KUnixSocketAddress::setAddress(const sockaddr_un* _sun, ksocklen_t _size)
   return 1;
 }
 
-bool KUnixSocketAddress::setAddress(Q3CString path)
+bool KUnixSocketAddress::setAddress(QByteArray path)
 {
   // the +1 is necessary for the ending zero
   ksocklen_t newsize = offsetof(sockaddr_un, sun_path) + path.length() + 1;
@@ -835,7 +835,7 @@ bool KUnixSocketAddress::setAddress(Q3CString path)
   return 1;
 }
 
-Q3CString KUnixSocketAddress::pathname() const
+QByteArray KUnixSocketAddress::pathname() const
 {
   if (d->m_sun != NULL)
     {
@@ -843,12 +843,12 @@ Q3CString KUnixSocketAddress::pathname() const
 	return d->m_sun->sun_path;
       return "";
     }
-  return Q3CString(0);
+  return QByteArray(0);
 }
 
 QString KUnixSocketAddress::pretty() const
 {
-  Q3CString pname = pathname();
+  QByteArray pname = pathname();
   if (pname.isEmpty())
     return i18n("<empty UNIX socket>");
   return QFile::decodeName(pathname());

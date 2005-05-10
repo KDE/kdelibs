@@ -80,7 +80,7 @@ public:
    * @return the string representation of the date
    */
 
-   static Q3CString rfc2822DateString(time_t utcTime, int utcOffset);
+   static QByteArray rfc2822DateString(time_t utcTime, int utcOffset);
 
 
   /**
@@ -94,7 +94,7 @@ public:
    * @return the string representation of the date
    */
 
-   static Q3CString rfc2822DateString(time_t utcTime);
+   static QByteArray rfc2822DateString(time_t utcTime);
 
 };
 

@@ -284,7 +284,7 @@ public:
      * @param group The icon group. See KIcon::Group.
      * @return a list of available sized for the given group
      */
-    Q3ValueList<int> querySizes(KIcon::Group group) const;
+    QList<int> querySizes(KIcon::Group group) const;
 
     /**
      * Query available icons for a size and context.
@@ -341,7 +341,7 @@ public:
 
 private:
     int mDefSize[8];
-    Q3ValueList<int> mSizes[8];
+    QList<int> mSizes[8];
 
     int mDepth;
     QString mDir, mName, mDesc;

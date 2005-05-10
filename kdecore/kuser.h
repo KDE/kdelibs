@@ -29,7 +29,7 @@ class QString;
 class QStringList;
 class KUserPrivate;
 struct passwd;
-template <class T> class Q3ValueList;
+template <class T> class QList;
 
 /**
  * @short Represents a user on your system
@@ -206,7 +206,7 @@ public:
    * Returns all groups of the user
    * @return all groups of the user
    */
-  Q3ValueList<KUserGroup> groups() const;
+  QList<KUserGroup> groups() const;
   
   /**
    * Returns all group names of the user
@@ -224,7 +224,7 @@ public:
    * Returns all users of the system.
    * @return all users of the system.
    */
-  static Q3ValueList<KUser> allUsers();
+  static QList<KUser> allUsers();
 
   /** 
    * Returns all user names of the system.
@@ -350,7 +350,7 @@ public:
    * Returns a list of all users of the group.
    * @return a list of all users of the group
    */
-  const Q3ValueList<KUser>& users() const;
+  const QList<KUser>& users() const;
   
   /**
    * Returns a list of all user login names of the group.
@@ -367,7 +367,7 @@ public:
   /**
    * Returns a list of all groups on this system
    */
-  static Q3ValueList<KUserGroup> allGroups();
+  static QList<KUserGroup> allGroups();
   
   /**
    * Returns a list of all group names on this system

@@ -39,12 +39,12 @@ void KAppDCOPInterface::disableSessionManagement()
 
 }
 
-Q3CString KAppDCOPInterface::startupId()
+QByteArray KAppDCOPInterface::startupId()
 {
 	return "";
 }
 
-Q3CString KAppDCOPInterface::caption()
+QByteArray KAppDCOPInterface::caption()
 {
 	return "";
 }
@@ -54,7 +54,7 @@ void KAppDCOPInterface::quit()
 	m_KApplication->quit();
 }
 
-void KAppDCOPInterface::updateUserTimestamp( ulong time )
+void KAppDCOPInterface::updateUserTimestamp( quint32 time )
 {
 	m_KApplication->updateUserTimestamp( time );
 }

@@ -117,7 +117,7 @@ private:
    QDataStream *mStr;
    Q_INT32 mOffset;
    Q_UINT32 mHashTableSize;
-   Q3ValueList<Q_INT32> mHashList;
+   QList<Q_INT32> mHashList;
 };
 
 #endif

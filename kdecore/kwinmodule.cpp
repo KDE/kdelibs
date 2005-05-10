@@ -66,9 +66,9 @@ public:
     }
     Q3PtrList<KWinModule> modules;
 
-    Q3ValueList<WId> windows;
-    Q3ValueList<WId> stackingOrder;
-    Q3ValueList<WId> systemTrayWindows;
+    QList<WId> windows;
+    QList<WId> stackingOrder;
+    QList<WId> systemTrayWindows;
 
     struct StrutData
     {
@@ -79,8 +79,8 @@ public:
         NETStrut strut;
         int desktop;
     };
-    Q3ValueList<StrutData> strutWindows;
-    Q3ValueList<WId> possibleStrutWindows;
+    QList<StrutData> strutWindows;
+    QList<WId> possibleStrutWindows;
     bool strutSignalConnected;
     int what;
 
@@ -142,12 +142,12 @@ KWinModule::~KWinModule()
     }
 }
 
-const Q3ValueList<WId>& KWinModule::windows() const
+const QList<WId>& KWinModule::windows() const
 {
     return d->windows;
 }
 
-const Q3ValueList<WId>& KWinModule::stackingOrder() const
+const QList<WId>& KWinModule::stackingOrder() const
 {
     return d->stackingOrder;
 }
@@ -158,7 +158,7 @@ bool KWinModule::hasWId(WId w) const
     return d->windows.findIndex( w ) != -1;
 }
 
-const Q3ValueList<WId>& KWinModule::systemTrayWindows() const
+const QList<WId>& KWinModule::systemTrayWindows() const
 {
     return d->systemTrayWindows;
 }
@@ -224,7 +224,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 
 bool KWinModulePrivate::removeStrutWindow( WId w )
 {
-    for( Q3ValueList< StrutData >::Iterator it = strutWindows.begin();
+    for( QList< StrutData >::Iterator it = strutWindows.begin();
          it != strutWindows.end();
          ++it )
         if( (*it).window == w ) {
@@ -322,7 +322,7 @@ QRect KWinModule::workArea( int desktop ) const
     return QRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
 }
 
-QRect KWinModule::workArea( const Q3ValueList<WId>& exclude, int desktop ) const
+QRect KWinModule::workArea( const QList<WId>& exclude, int desktop ) const
 {
     QRect all = QApplication::desktop()->geometry();
     QRect a = all;
@@ -330,7 +330,7 @@ QRect KWinModule::workArea( const Q3ValueList<WId>& exclude, int desktop ) const
     if (desktop == -1)
 	desktop = d->currentDesktop();
 
-    Q3ValueList<WId>::ConstIterator it1;
+    QList<WId>::ConstIterator it1;
     for( it1 = d->windows.begin(); it1 != d->windows.end(); ++it1 ) {
 
 	if(exclude.findIndex(*it1) != -1) continue;
@@ -339,7 +339,7 @@ QRect KWinModule::workArea( const Q3ValueList<WId>& exclude, int desktop ) const
 // to repeatedly find out struts of all windows. Therefore strut values for strut
 // windows are cached here.
         NETStrut strut;
-        Q3ValueList< KWinModulePrivate::StrutData >::Iterator it2 = d->strutWindows.begin();
+        QList< KWinModulePrivate::StrutData >::Iterator it2 = d->strutWindows.begin();
         for( ;
              it2 != d->strutWindows.end();
              ++it2 )
@@ -402,7 +402,7 @@ void KWinModule::doNotManage( const QString& title )
     if ( !kapp->dcopClient()->isAttached() )
 	kapp->dcopClient()->attach();
     QByteArray data, replyData;
-    Q3CString replyType;
+    QByteArray replyType;
     QDataStream arg(data, QIODevice::WriteOnly);
     arg << title;
     kapp->dcopClient()->call("kwin", "", "doNotManage(QString)",

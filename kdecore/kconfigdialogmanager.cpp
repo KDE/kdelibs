@@ -181,7 +181,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
         setupWidget(childWidget, item);
 
-        QMap<QString, Q3CString>::const_iterator changedIt = changedMap.find(childWidget->className());
+        QMap<QString, QByteArray>::const_iterator changedIt = changedMap.find(childWidget->className());
 
         if (changedIt == changedMap.end())
         {
@@ -236,7 +236,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 #ifndef NDEBUG
     else if (widgetName)
     {
-      QMap<QString, Q3CString>::const_iterator changedIt = changedMap.find(childWidget->className());
+      QMap<QString, QByteArray>::const_iterator changedIt = changedMap.find(childWidget->className());
       if (changedIt != changedMap.end())
       {
         if ((!d->insideGroupBox || !childWidget->inherits("QRadioButton")) && 
