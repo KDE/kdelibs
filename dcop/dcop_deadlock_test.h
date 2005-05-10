@@ -38,14 +38,14 @@ class MyDCOPObject : public QObject, public DCOPObject
 {
   Q_OBJECT
 public:
-  MyDCOPObject(const Q3CString &name, const Q3CString &remoteName);
-  bool process(const Q3CString &fun, const QByteArray &data,
-	       Q3CString& replyType, QByteArray &replyData);
+  MyDCOPObject(const QByteArray &name, const QByteArray &remoteName);
+  bool process(const QByteArray &fun, const QByteArray &data,
+	       QByteArray& replyType, QByteArray &replyData);
 public slots:
   void slotTimeout();
 
 private:
-  Q3CString m_remoteName;
+  QByteArray m_remoteName;
   QTimer m_timer;
 };
 #endif

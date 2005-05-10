@@ -30,16 +30,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdlib.h>
 
-MyDCOPObject::MyDCOPObject(const Q3CString &name, const Q3CString &remoteName) 
+MyDCOPObject::MyDCOPObject(const QByteArray &name, const QByteArray &remoteName) 
 : QObject(0, name), DCOPObject(name), m_remoteName(remoteName)
 {
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
 }
 
-bool MyDCOPObject::process(const Q3CString &fun, const QByteArray &data,
-Q3CString& replyType, QByteArray &replyData)
+bool MyDCOPObject::process(const QByteArray &fun, const QByteArray &data,
+QByteArray& replyType, QByteArray &replyData)
 {
-  if (fun == "function(Q3CString)") {
+  if (fun == "function(QByteArray)") {
     QDataStream args( data, QIODevice::ReadOnly );
     args >>  m_remoteName;
 
@@ -64,14 +64,14 @@ qWarning("%s: slotTimeout() %d:%06d", name(), tv.tv_sec % 100, tv.tv_usec);
 
   m_timer.start(1000, true);
   QString result;
-  DCOPRef(m_remoteName, m_remoteName).call("function", Q3CString(name())).get(result);
+  DCOPRef(m_remoteName, m_remoteName).call("function", QByteArray(name())).get(result);
     gettimeofday(&tv, 0);
 qWarning("%s: Got result '%s' %d:%06d", name(), result.latin1(), tv.tv_sec % 100, tv.tv_usec);
 }
 
 int main(int argc, char **argv)
 {
-  Q3CString myName = KApplication::dcopClient()->registerAs("testdcop", false);
+  QByteArray myName = KApplication::dcopClient()->registerAs("testdcop", false);
   KApplication app(argc, argv, "testdcop");
 
   qWarning("%d:I am '%s'", getpid(), app.dcopClient()->appId().data());
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
       system("./dcop_deadlock_test testdcop&");
   }
 
-  Q3CString remoteApp;
+  QByteArray remoteApp;
   if (argc == 2)
   {
       remoteApp = argv[1];

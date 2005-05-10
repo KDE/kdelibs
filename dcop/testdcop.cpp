@@ -1,6 +1,6 @@
 
 //Added by the Qt porting tool:
-#include <Q3CString>
+#include <QByteArray>
 
 /*****************************************************************
 
@@ -36,8 +36,8 @@ int countDownCount = 0;
 DCOPClientTransaction *countDownAction2 = 0;
 int countDownCount2 = 0;
 
-bool MyDCOPObject::process(const Q3CString &fun, const QByteArray &data,
-			   Q3CString& replyType, QByteArray &replyData)
+bool MyDCOPObject::process(const QByteArray &fun, const QByteArray &data,
+			   QByteArray& replyType, QByteArray &replyData)
 {
   qDebug("in MyDCOPObject::process, fun = %s", fun.data());
   
@@ -105,7 +105,7 @@ void MyDCOPObject::slotTimeout()
   countDownCount--;
   if (countDownCount == 0)
   {
-     Q3CString replyType = "QString";
+     QByteArray replyType = "QString";
      QByteArray replyData;
      QDataStream reply( replyData, QIODevice::WriteOnly );
      reply << QString("Hello World");
@@ -124,7 +124,7 @@ void MyDCOPObject::slotTimeout2()
   countDownCount2--;
   if (countDownCount2 == 0)
   {
-     Q3CString replyType = "QString";
+     QByteArray replyType = "QString";
      QByteArray replyData;
      QDataStream reply( replyData, QIODevice::WriteOnly );
      reply << QString("Hello World");
@@ -137,14 +137,14 @@ void MyDCOPObject::slotTimeout2()
   }
 }
 
-Q3CStringList MyDCOPObject::functions()
+QByteArrayList MyDCOPObject::functions()
 {
-   Q3CStringList result = DCOPObject::functions();
+   QByteArrayList result = DCOPObject::functions();
    result << "QRect canLaunchRockets(QRect)";
    return result;
 }
 
-TestObject::TestObject(const Q3CString& app)
+TestObject::TestObject(const QByteArray& app)
  :  m_app(app)
 {
    QTimer::singleShot(2500, this, SLOT(slotTimeout()));
@@ -152,7 +152,7 @@ TestObject::TestObject(const Q3CString& app)
 
 void TestObject::slotTimeout()
 {
-   Q3CString replyType;
+   QByteArray replyType;
    QByteArray data, reply;
    qWarning("#3 Calling countDown");
 
@@ -163,7 +163,7 @@ void TestObject::slotTimeout()
    
 }
 
-void TestObject::slotCallBack(int callId, const Q3CString &replyType, const QByteArray &replyData)
+void TestObject::slotCallBack(int callId, const QByteArray &replyType, const QByteArray &replyData)
 {
    qWarning("Call Back! callId = %d", callId);
    qWarning("Type = %s", replyType.data());
@@ -179,19 +179,19 @@ int main(int argc, char **argv)
 {
   KApplication app(argc, argv, "testdcop");
 
-  Q3CString replyType;
+  QByteArray replyType;
   QByteArray data, reply;
   DCOPClient *client; client = app.dcopClient();
 
   if (argc == 2)
   {
-      Q3CString app = argv[1];
+      QByteArray app = argv[1];
       TestObject obj(app);
       qWarning("#1 Calling countDown");
-      int result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const Q3CString&, const QByteArray&)));
+      int result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QByteArray&, const QByteArray&)));
       qDebug("#1 countDown() call id = %d", result);
       qWarning("#2 Calling countDown");
-      result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const Q3CString&, const QByteArray&)));
+      result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QByteArray&, const QByteArray&)));
       qDebug("#2 countDown() call id = %d", result);
       kapp->exec();
     
@@ -208,11 +208,11 @@ int main(int argc, char **argv)
 
   QDataStream dataStream( data, QIODevice::WriteOnly );
   dataStream << (int) 43;
-  client->emitDCOPSignal("alive(int,Q3CString)", data);
+  client->emitDCOPSignal("alive(int,QByteArray)", data);
 
   MyDCOPObject *obj1 = new MyDCOPObject("object1");
 
-  bool connectResult = client->connectDCOPSignal("", "alive(int , Q3CString)", "object1", "isAliveSlot(int)", false);
+  bool connectResult = client->connectDCOPSignal("", "alive(int , QByteArray)", "object1", "isAliveSlot(int)", false);
   qDebug("connectDCOPSignal returns %s", connectResult ? "true" : "false");
 
   QDataStream ds(data, QIODevice::WriteOnly);
@@ -227,17 +227,17 @@ int main(int argc, char **argv)
   int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );
 
-  QObject::connect( client, SIGNAL( applicationRegistered( const Q3CString&)),
-                    obj1, SLOT( registered( const Q3CString& )));
+  QObject::connect( client, SIGNAL( applicationRegistered( const QByteArray&)),
+                    obj1, SLOT( registered( const QByteArray& )));
 
-  QObject::connect( client, SIGNAL( applicationRemoved( const Q3CString&)),
-                    obj1, SLOT( unregistered( const Q3CString& )));
+  QObject::connect( client, SIGNAL( applicationRemoved( const QByteArray&)),
+                    obj1, SLOT( unregistered( const QByteArray& )));
 
   // Enable the above signals
   client->setNotifications( true );
 
-  Q3CString foundApp;
-  Q3CString foundObj;
+  QByteArray foundApp;
+  QByteArray foundObj;
 
   // Find a object called "object1" in any application that
   // meets the criteria "canLaunchRockets()"

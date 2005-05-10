@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef DCOPSIGNALS_H
 #define DCOPSIGNALS_H "$Id$"
 
-#include <Q3CString>
+#include <QByteArray>
 #include <q3dict.h>
 #include <q3asciidict.h>
 #include <q3ptrlist.h>
@@ -38,14 +38,14 @@ class DCOPConnection;
 class DCOP_EXPORT DCOPSignalConnection
 {
 public:
-   Q3CString sender;      // Sender client, empty means any client
+   QByteArray sender;      // Sender client, empty means any client
    DCOPConnection *senderConn; //Sender client.
-   Q3CString senderObj;   // Object that sends the signal.
-   Q3CString signal;      // Signal name. Connections are sorted on signal name.
+   QByteArray senderObj;   // Object that sends the signal.
+   QByteArray signal;      // Signal name. Connections are sorted on signal name.
 
    DCOPConnection *recvConn; // Client that wants to receive the signal
-   Q3CString recvObj;     // Object that wants to receive the signal
-   Q3CString slot;        // Function to send to in the object.
+   QByteArray recvObj;     // Object that wants to receive the signal
+   QByteArray slot;        // Function to send to in the object.
 };
 
 /** \internal */
@@ -71,7 +71,7 @@ public:
     *
     * If "excludeSelf" is true, signal is never send to "conn" itself.
     */
-   void emitSignal( DCOPConnection *conn, const Q3CString &fun, const QByteArray &data, bool excludeSelf);
+   void emitSignal( DCOPConnection *conn, const QByteArray &fun, const QByteArray &data, bool excludeSelf);
 
    /**
     * Connects "signal" of the client named "sender" with the "slot" of
@@ -87,10 +87,10 @@ public:
     * An attempt to create a Volatile connection to a non-existing client
     * results in a failure.
     */
-   bool connectSignal( const Q3CString &sender, const Q3CString &senderObj,
-                       const Q3CString &signal,
-                       DCOPConnection *conn, const Q3CString &receiverObj,
-                       const Q3CString &slot, bool Volatile);
+   bool connectSignal( const QByteArray &sender, const QByteArray &senderObj,
+                       const QByteArray &signal,
+                       DCOPConnection *conn, const QByteArray &receiverObj,
+                       const QByteArray &slot, bool Volatile);
 
    /**
     * Disconnects "signal" of the client named "sender" from the "slot" of
@@ -101,10 +101,10 @@ public:
     *
     * Returns true if successful, false if no connection was found.
     */
-   bool disconnectSignal( const Q3CString &sender, const Q3CString &senderObj,
-                       const Q3CString &signal,
-                       DCOPConnection *conn, const Q3CString &receiverObj,
-                       const Q3CString &slot);
+   bool disconnectSignal( const QByteArray &sender, const QByteArray &senderObj,
+                       const QByteArray &signal,
+                       DCOPConnection *conn, const QByteArray &receiverObj,
+                       const QByteArray &slot);
 
    /**
     * Removes all connections related to the "conn" client.
@@ -112,7 +112,7 @@ public:
     *   All connections for which "conn" is the receiver.
     *   All volatile connections for which "conn" is the sender.
     */
-   void removeConnections(DCOPConnection *conn, const Q3CString &obj=0);
+   void removeConnections(DCOPConnection *conn, const QByteArray &obj=0);
 
 
    /*

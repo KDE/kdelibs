@@ -35,11 +35,11 @@ DCOPSignals::DCOPSignals()
  * If "excludeSelf" is true, signal is never sent to "conn" itself.
  */
 void
-DCOPSignals::emitSignal( DCOPConnection *conn, const Q3CString &_fun, const QByteArray &data, bool excludeSelf)
+DCOPSignals::emitSignal( DCOPConnection *conn, const QByteArray &_fun, const QByteArray &data, bool excludeSelf)
 {
 #ifdef Q_OS_UNIX
-   Q3CString senderObj;
-   Q3CString fun = _fun;
+   QByteArray senderObj;
+   QByteArray fun = _fun;
    int i = fun.find('#');
    if (i > -1)
    {
@@ -77,7 +77,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const Q3CString &_fun, const QByt
          doSend = false;
       if (doSend)
       {
-         the_server->sendMessage(current->recvConn, conn ? conn->appId : Q3CString("DCOPServer"),
+         the_server->sendMessage(current->recvConn, conn ? conn->appId : QByteArray("DCOPServer"),
                                  current->recvConn->appId, current->recvObj,
                                  current->slot, data);
       }
@@ -96,14 +96,14 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const Q3CString &_fun, const QByt
  * "conn" unregisters.
  */
 bool
-DCOPSignals::connectSignal( const Q3CString &sender, const Q3CString &senderObj,
-                       const Q3CString &signal,
-                       DCOPConnection *conn, const Q3CString &receiverObj,
-                       const Q3CString &slot, bool Volatile)
+DCOPSignals::connectSignal( const QByteArray &sender, const QByteArray &senderObj,
+                       const QByteArray &signal,
+                       DCOPConnection *conn, const QByteArray &receiverObj,
+                       const QByteArray &slot, bool Volatile)
 {
 #ifdef Q_OS_UNIX
    // TODO: Check if signal and slot match
-   Q3CString signalArgs, slotArgs;
+   QByteArray signalArgs, slotArgs;
    int i,j;
    i = signal.find('(');
    if (i < 0) return false;
@@ -172,10 +172,10 @@ DCOPSignals::connectSignal( const Q3CString &sender, const Q3CString &senderObj,
  *   are disconnected.
  */
 bool
-DCOPSignals::disconnectSignal( const Q3CString &sender, const Q3CString &senderObj,
-                       const Q3CString &signal,
-                       DCOPConnection *conn, const Q3CString &receiverObj,
-                       const Q3CString &slot)
+DCOPSignals::disconnectSignal( const QByteArray &sender, const QByteArray &senderObj,
+                       const QByteArray &signal,
+                       DCOPConnection *conn, const QByteArray &receiverObj,
+                       const QByteArray &slot)
 {
    if (sender.isEmpty() && signal.isEmpty())
    {
@@ -236,7 +236,7 @@ DCOPSignals::disconnectSignal( const Q3CString &sender, const Q3CString &senderO
  *   All volatile connections for which "conn"/"obj" is the sender.
  */
 void
-DCOPSignals::removeConnections(DCOPConnection *conn, const Q3CString &obj)
+DCOPSignals::removeConnections(DCOPConnection *conn, const QByteArray &obj)
 {
 #ifdef Q_OS_UNIX
    DCOPSignalConnectionList *list = conn->_signalConnectionList;

@@ -91,7 +91,7 @@ QColor mkColor( const QString& s )
     return c;
 }
 
-const char *qStringToC(const Q3CString &s)
+const char *qStringToC(const QByteArray &s)
 {
    if (s.isEmpty())
       return "";
@@ -99,9 +99,9 @@ const char *qStringToC(const Q3CString &s)
 }
 
 #warning FIX the marshalled types
-Q3CString demarshal( QDataStream &stream, const QString &type )
+QByteArray demarshal( QDataStream &stream, const QString &type )
 {
-    Q3CString result;
+    QByteArray result;
 
     if ( type == "int" || type == "Q_INT32" )
     {
@@ -136,11 +136,11 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
     } else if ( type == "Q_INT64" ) {
         Q_INT64 i;
         stream >> i;
-        result.sprintf( "%lld", i );
+        result = QString().sprintf( "%lld", i ).toAscii();
     } else if ( type == "Q_UINT64" ) {
         Q_UINT64 i;
         stream >> i;
-        result.sprintf( "%llu", i );
+        result = QString().sprintf( "%llu", i ).toAscii();
     } else if ( type == "bool" )
     {
         bool b;
@@ -151,15 +151,15 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         QString s;
         stream >> s;
         result = s.local8Bit();
-    } else if ( type == "QCString" )
+    } else if ( type == "QByteArray" )
     {
         stream >> result;
-    } else if ( type == "QCStringList" )
+    } else if ( type == "QByteArrayList" )
     {
-        return demarshal( stream, "QValueList<QCString>" );
+        return demarshal( stream, "QList<QByteArray>" );
     } else if ( type == "QStringList" )
     {
-        return demarshal( stream, "QValueList<QString>" );
+        return demarshal( stream, "QList<QString>" );
     } else if ( type == "QColor" )
     {
         QColor c;
@@ -169,7 +169,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
     {
         QSize s;
         stream >> s;
-        result.sprintf( "%dx%d", s.width(), s.height() );
+        result = QString().sprintf( "%dx%d", s.width(), s.height() ).toAscii();
     } else if ( type == "QPixmap" || type == "QImage" )
     {
         QImage i;
@@ -183,12 +183,12 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
     {
         QPoint p;
         stream >> p;
-        result.sprintf( "+%d+%d", p.x(), p.y() );
+        result = QString().sprintf( "+%d+%d", p.x(), p.y() ).toAscii();
     } else if ( type == "QRect" )
     {
         QRect r;
         stream >> r;
-        result.sprintf( "%dx%d+%d+%d", r.width(), r.height(), r.x(), r.y() );
+        result = QString().sprintf( "%dx%d+%d+%d", r.width(), r.height(), r.x(), r.y() ).toAscii();
     } else if ( type == "QVariant" )
     {
         Q_INT32 type;
@@ -198,13 +198,13 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
     {
         DCOPRef r;
         stream >> r;
-        result.sprintf( "DCOPRef(%s,%s)", qStringToC(r.app()), qStringToC(r.object()) );
+        result = QString().sprintf( "DCOPRef(%s,%s)", qStringToC(r.app()), qStringToC(r.object()) ).toAscii();
     } else if ( type == "KURL" )
     {
         KURL r;
         stream >> r;
         result = r.url().local8Bit();
-    } else if ( type.left( 11 ) == "QValueList<" )
+    } else if ( type.left( 11 ) == "QList<" )
     {
         if ( type.find( '>', 11 ) != type.length() - 1 )
             return result;
@@ -220,7 +220,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         Q_UINT32 i = 0;
         for (; i < count; ++i )
         {
-            Q3CString arg = demarshal( stream, nestedType );
+            QByteArray arg = demarshal( stream, nestedType );
             result += arg;
 
             if ( i < count - 1 )
@@ -245,12 +245,12 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
         Q_UINT32 i = 0;
         for (; i < count; ++i )
         {
-            Q3CString key = demarshal( stream, keyType );
+            QByteArray key = demarshal( stream, keyType );
 
             if ( key.isEmpty() )
                 continue;
 
-            Q3CString value = demarshal( stream, valueType );
+            QByteArray value = demarshal( stream, valueType );
 
             if ( value.isEmpty() )
                 continue;
@@ -263,7 +263,7 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
     }
     else
     {
-       result.sprintf( "<%s>", type.latin1());
+       result = QString().sprintf( "<%s>", type.latin1()).toAscii();
     }
 
     return result;
@@ -271,12 +271,12 @@ Q3CString demarshal( QDataStream &stream, const QString &type )
 }
 
 #warning FIX the marshalled types
-void marshall( QDataStream &arg, Q3CStringList args, int &i, QString type )
+void marshall( QDataStream &arg, QByteArrayList args, int &i, QString type )
 {
     if (type == "QStringList")
-       type = "QValueList<QString>";
-    if (type == "QCStringList")
-       type = "QValueList<QCString>";
+       type = "QList<QString>";
+    if (type == "QByteArrayList")
+       type = "QList<QByteArray>";
     if( i >= args.count() )
     {
 	qWarning("Not enough arguments.");
@@ -320,8 +320,8 @@ void marshall( QDataStream &arg, Q3CStringList args, int &i, QString type )
 	arg << mkBool( s );
     else if ( type == "QString" )
 	arg << s;
-    else if ( type == "QCString" )
-	arg << Q3CString( args[ i ] );
+    else if ( type == "QByteArray" )
+	arg << QByteArray( args[ i ] );
     else if ( type == "QColor" )
 	arg << mkColor( s );
     else if ( type == "QPoint" )
@@ -347,7 +347,7 @@ void marshall( QDataStream &arg, Q3CStringList args, int &i, QString type )
 	    arg << QVariant( mkColor( s.mid(7, s.length()-8) ) );
 	else
 	    arg << QVariant( s );
-    } else if ( type.startsWith("QValueList<") ||
+    } else if ( type.startsWith("QList<") ||
 	        type == "KURL::List" ) {
 	if ( type == "KURL::List" )
             type = "KURL";

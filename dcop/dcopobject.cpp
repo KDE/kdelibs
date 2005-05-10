@@ -26,12 +26,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopclient.h>
 
 
-QMap<Q3CString, DCOPObject *> *kde_dcopObjMap = 0;
+QMap<QByteArray, DCOPObject *> *kde_dcopObjMap = 0;
 
-static inline QMap<Q3CString, DCOPObject *> *objMap()
+static inline QMap<QByteArray, DCOPObject *> *objMap()
 {
   if (!kde_dcopObjMap)
-    kde_dcopObjMap = new QMap<Q3CString, DCOPObject *>;
+    kde_dcopObjMap = new QMap<QByteArray, DCOPObject *>;
   return kde_dcopObjMap;
 }
 
@@ -48,7 +48,7 @@ public:
 DCOPObject::DCOPObject()
 {
     d = new DCOPObjectPrivate;
-    ident.sprintf("%p", (void *)this );
+    qvsnprintf(ident.data(), ident.size(), "%p", (char *)this );
     objMap()->insert(ident, this );
 }
 
@@ -67,12 +67,12 @@ DCOPObject::DCOPObject(QObject *obj)
     objMap()->insert(ident, this);
 }
 
-DCOPObject::DCOPObject(const Q3CString &_objId)
+DCOPObject::DCOPObject(const QByteArray &_objId)
   : ident(_objId)
 {
     d = new DCOPObjectPrivate;
     if ( ident.isEmpty() )
-        ident.sprintf("%p", (void *)this );
+        qvsnprintf(ident.data(), ident.size(), "%p", (char *)this );
     objMap()->insert(ident, this);
 }
 
@@ -96,7 +96,7 @@ void DCOPObject::setCallingDcopClient(DCOPClient *client)
     d->m_dcopClient = client;
 }
 
-bool DCOPObject::setObjId(const Q3CString &objId)
+bool DCOPObject::setObjId(const QByteArray &objId)
 {
   if (objMap()->find(objId)!=objMap()->end()) return false;
 
@@ -110,12 +110,12 @@ bool DCOPObject::setObjId(const Q3CString &objId)
     return true;
 }
 
-Q3CString DCOPObject::objId() const
+QByteArray DCOPObject::objId() const
 {
   return ident;
 }
 
-bool DCOPObject::hasObject(const Q3CString &_objId)
+bool DCOPObject::hasObject(const QByteArray &_objId)
 {
   if (objMap()->contains(_objId))
     return true;
@@ -123,9 +123,9 @@ bool DCOPObject::hasObject(const Q3CString &_objId)
     return false;
 }
 
-DCOPObject *DCOPObject::find(const Q3CString &_objId)
+DCOPObject *DCOPObject::find(const QByteArray &_objId)
 {
-  QMap<Q3CString, DCOPObject *>::ConstIterator it;
+  QMap<QByteArray, DCOPObject *>::ConstIterator it;
   it = objMap()->find(_objId);
   if (it != objMap()->end())
     return *it;
@@ -133,10 +133,10 @@ DCOPObject *DCOPObject::find(const Q3CString &_objId)
     return 0L;
 }
 
-Q3PtrList<DCOPObject> DCOPObject::match(const Q3CString &partialId)
+Q3PtrList<DCOPObject> DCOPObject::match(const QByteArray &partialId)
 {
     Q3PtrList<DCOPObject> mlist;
-    QMap<Q3CString, DCOPObject *>::ConstIterator it(objMap()->begin());
+    QMap<QByteArray, DCOPObject *>::ConstIterator it(objMap()->begin());
     for (; it != objMap()->end(); ++it)
 	if (it.key().left(partialId.length()) == partialId) // found it?
 	    mlist.append(it.data());
@@ -144,12 +144,12 @@ Q3PtrList<DCOPObject> DCOPObject::match(const Q3CString &partialId)
 }
 
 
-Q3CString DCOPObject::objectName( QObject* obj )
+QByteArray DCOPObject::objectName( QObject* obj )
 {
     if ( obj == 0 )
-	return Q3CString();
+	return QByteArray();
 
-    Q3CString identity;
+    QByteArray identity;
 
     QObject *currentObj = obj;
     while (currentObj != 0 )
@@ -164,16 +164,16 @@ Q3CString DCOPObject::objectName( QObject* obj )
     return identity;
 }
 
-bool DCOPObject::process(const Q3CString &fun, const QByteArray &data,
-			 Q3CString& replyType, QByteArray &replyData)
+bool DCOPObject::process(const QByteArray &fun, const QByteArray &data,
+			 QByteArray& replyType, QByteArray &replyData)
 {
     if ( fun == "interfaces()" ) {
-	replyType = "Q3CStringList";
+	replyType = "QByteArrayList";
 	QDataStream reply( &replyData, IO_WriteOnly );
 	reply << interfaces();
 	return true;
     } else  if ( fun == "functions()" ) {
-	replyType = "Q3CStringList";
+	replyType = "QByteArrayList";
 	QDataStream reply( &replyData, IO_WriteOnly );
 	reply << functions();
 	return true;
@@ -181,46 +181,46 @@ bool DCOPObject::process(const Q3CString &fun, const QByteArray &data,
     return processDynamic( fun, data, replyType, replyData );
 }
 
-bool DCOPObject::processDynamic( const Q3CString&, const QByteArray&, Q3CString&, QByteArray& )
+bool DCOPObject::processDynamic( const QByteArray&, const QByteArray&, QByteArray&, QByteArray& )
 {
     return false;
 }
-Q3CStringList DCOPObject::interfacesDynamic()
+QByteArrayList DCOPObject::interfacesDynamic()
 {
-    Q3CStringList result;
+    QByteArrayList result;
     return result;
 }
 
-Q3CStringList DCOPObject::functionsDynamic()
+QByteArrayList DCOPObject::functionsDynamic()
 {
-    Q3CStringList result;
+    QByteArrayList result;
     return result;
 }
-Q3CStringList DCOPObject::interfaces()
+QByteArrayList DCOPObject::interfaces()
 {
-    Q3CStringList result = interfacesDynamic();
+    QByteArrayList result = interfacesDynamic();
     result << "DCOPObject";
     return result;
 }
 
-Q3CStringList DCOPObject::functions()
+QByteArrayList DCOPObject::functions()
 {
-    Q3CStringList result = functionsDynamic();
-    result.prepend("Q3CStringList functions()");
-    result.prepend("Q3CStringList interfaces()");
+    QByteArrayList result = functionsDynamic();
+    result.prepend("QByteArrayList functions()");
+    result.prepend("QByteArrayList interfaces()");
     return result;
 }
 
-void DCOPObject::emitDCOPSignal( const Q3CString &signal, const QByteArray &data)
+void DCOPObject::emitDCOPSignal( const QByteArray &signal, const QByteArray &data)
 {
     DCOPClient *client = DCOPClient::mainClient();
     if ( client )
         client->emitDCOPSignal( objId(), signal, data );
 }
 
-bool DCOPObject::connectDCOPSignal( const Q3CString &sender, const Q3CString &senderObj,
-                                    const Q3CString &signal,
-                                    const Q3CString &slot,
+bool DCOPObject::connectDCOPSignal( const QByteArray &sender, const QByteArray &senderObj,
+                                    const QByteArray &signal,
+                                    const QByteArray &slot,
                                     bool Volatile)
 {
     DCOPClient *client = DCOPClient::mainClient();
@@ -232,9 +232,9 @@ bool DCOPObject::connectDCOPSignal( const Q3CString &sender, const Q3CString &se
     return client->connectDCOPSignal( sender, senderObj, signal, objId(), slot, Volatile );
 }
 
-bool DCOPObject::disconnectDCOPSignal( const Q3CString &sender, const Q3CString &senderObj,
-                                       const Q3CString &signal,
-                                       const Q3CString &slot)
+bool DCOPObject::disconnectDCOPSignal( const QByteArray &sender, const QByteArray &senderObj,
+                                       const QByteArray &signal,
+                                       const QByteArray &slot)
 {
     DCOPClient *client = DCOPClient::mainClient();
 
@@ -268,10 +268,10 @@ DCOPObjectProxy:: ~DCOPObjectProxy()
 	proxies->removeRef( this );
 }
 
-bool DCOPObjectProxy::process( const Q3CString& /*obj*/,
-			       const Q3CString& /*fun*/,
+bool DCOPObjectProxy::process( const QByteArray& /*obj*/,
+			       const QByteArray& /*fun*/,
 			       const QByteArray& /*data*/,
-			       Q3CString& /*replyType*/,
+			       QByteArray& /*replyType*/,
 			       QByteArray &/*replyData*/ )
 {
     return false;

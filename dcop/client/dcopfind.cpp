@@ -38,7 +38,7 @@ static DCOPClient* dcop = 0;
 static bool bAppIdOnly = 0;
 static bool bLaunchApp = 0;
 
-bool findObject( const char* app, const char* obj, const char* func, Q3CStringList args )
+bool findObject( const char* app, const char* obj, const char* func, QByteArrayList args )
 {
     QString f = func; // Qt is better with unicode strings, so use one.
     int left = f.find( '(' );
@@ -137,8 +137,8 @@ bool findObject( const char* app, const char* obj, const char* func, Q3CStringLi
 	exit(1);
     }
 
-    Q3CString foundApp;
-    Q3CString foundObj;
+    QByteArray foundApp;
+    QByteArray foundObj;
     if ( dcop->findObject( app, obj, f.latin1(),  data, foundApp, foundObj) )
     {
        if (bAppIdOnly)
@@ -162,7 +162,7 @@ bool launchApp(QString app)
 
     QStringList URLs;
     QByteArray data, replyData;
-    Q3CString replyType;
+    QByteArray replyType;
     QDataStream arg(&data, QIODevice::WriteOnly);
     arg << app << URLs;
 
@@ -179,7 +179,7 @@ bool launchApp(QString app)
         return false;
     }
     int result;
-    Q3CString dcopName;
+    QByteArray dcopName;
     QString error;
     reply >> result >> dcopName >> error;
     if (result != 0)
@@ -223,9 +223,9 @@ int main( int argc, char** argv )
     client.attach();
     dcop = &client;
 
-    Q3CString app;
-    Q3CString objid;
-    Q3CString function;
+    QByteArray app;
+    QByteArray objid;
+    QByteArray function;
     char **args = 0;
     if ((argc > argi) && (strncmp(argv[argi], "DCOPRef(", 8)) == 0)
     {
@@ -261,7 +261,7 @@ int main( int argc, char** argv )
        argc = 0;
     }
 
-    Q3CStringList params;
+    QByteArrayList params;
     for( int i = 0; i < argc; i++ )
         params.append( args[ i ] );
     bool ok = findObject( app, objid, function, params );

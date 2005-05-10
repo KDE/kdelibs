@@ -34,14 +34,14 @@ inline const char* dcopTypeName( long ) { return "long int"; }
 inline const char* dcopTypeName( ulong ) { return "ulong"; }
 inline const char* dcopTypeName( double ) { return "double"; }
 inline const char* dcopTypeName( float ) { return "float"; }
-inline const char* dcopTypeName( const char* ) { return "Q3CString"; }
+inline const char* dcopTypeName( const char* ) { return "QByteArray"; }
 
 // dcop specialities
 class DCOPRef; inline const char* dcopTypeName( const DCOPRef& ) { return "DCOPRef"; }
 
 // Qt variant types
 class QString; inline const char* dcopTypeName( const QString& ) { return "QString"; }
-class Q3CString; inline const char* dcopTypeName( const Q3CString& ) { return "Q3CString"; }
+class QByteArray; inline const char* dcopTypeName( const QByteArray& ) { return "QByteArray"; }
 class QFont; inline const char* dcopTypeName( const QFont& ) { return "QFont"; }
 class QPixmap; inline const char* dcopTypeName( const QPixmap& ) { return "QPixmap"; }
 class QBrush; inline const char* dcopTypeName( const QBrush& ) { return "QBrush"; }

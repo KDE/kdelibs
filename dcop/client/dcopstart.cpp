@@ -45,7 +45,7 @@ void startApp(const char *_app, int argc, const char **args)
     }
 
     QByteArray data, replyData;
-    Q3CString replyType;
+    QByteArray replyType;
     QDataStream arg(&data, QIODevice::WriteOnly);
     arg << app << URLs;
 
@@ -61,7 +61,7 @@ void startApp(const char *_app, int argc, const char **args)
             exit(1);
         }
         int result;
-        Q3CString dcopName;
+        QByteArray dcopName;
         QString error;
         reply >> result >> dcopName >> error;
         if (result != 0)
@@ -87,9 +87,9 @@ int main( int argc, char** argv )
     client.attach();
     dcop = &client;
 
-    Q3CString app;
-    Q3CString objid;
-    Q3CString function;
+    QByteArray app;
+    QByteArray objid;
+    QByteArray function;
     /*char **args = 0;*/
     startApp( argv[1], argc - 2, (const char**)&argv[2] );
 

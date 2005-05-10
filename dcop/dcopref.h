@@ -101,7 +101,7 @@ public:
     /// The serialized data.
     QByteArray data;
     /// The name of the type, or 0 if unknown.
-    Q3CString type;
+    QByteArray type;
 private:
     bool typeCheck( const char* t );
     bool typeCheck( const char* t, bool warn );
@@ -177,7 +177,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *	k_dcop:
  *	   DCOPRef giveMeAnotherObject();
  *	   int doSomething( QString, float, bool );
- *	   ASYNC pingMe( Q3CString message );
+ *	   ASYNC pingMe( QByteArray message );
  *	   UserType userFunction( UserType );
  *	};
  * \endcode
@@ -210,14 +210,14 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * \endcode
  *
  * Note that you must pass a QString for the first argument. If you use a
- * regular char pointer, it will be converted to a Q3CString.
+ * regular char pointer, it will be converted to a QByteArray.
  *
  * For curiosity, here is how you would achieve the exactly same
  * functionality by using DCOPClient::call() directly:
  *
  * \code
  *    QByteArray data, replyData;
- *    Q3CString replyType;
+ *    QByteArray replyType;
  *    QDataStream arg( data, IO_WriteOnly );
  *    arg << QString("hello world" ), (float) 2.5 << true;
  *    if ( DCOPClient::mainClient()->call( app, obj,
@@ -295,7 +295,7 @@ public:
      *            by the dcopserver.
      * @param obj The name of the dcop object.
      */
-    DCOPRef( const Q3CString& app, const Q3CString& obj = "" );
+    DCOPRef( const QByteArray& app, const QByteArray& obj = "" );
 
     /**
      * Creates a reference to an existing dcop object
@@ -313,7 +313,7 @@ public:
      * @param obj The name of the dcop object
      * @param type The object's type
      */
-    DCOPRef( const Q3CString& app, const Q3CString& obj, const Q3CString& type );
+    DCOPRef( const QByteArray& app, const QByteArray& obj, const QByteArray& type );
 
     /**
      * Tests whether this is a null reference.
@@ -326,25 +326,25 @@ public:
      * Name of the application in which the object resides.
      * @return the application's id. Can be null or empty if not set.
      */
-    Q3CString app() const;
+    QByteArray app() const;
 
     /**
      * Object ID of the referenced object.
      * @return the id of the referenced object. Can be null or empty if not set.
      * @since 3.1
      */
-    Q3CString obj() const;
+    QByteArray obj() const;
 
     /**
      * @obsolete
      */
-    Q3CString object() const;
+    QByteArray object() const;
 
     /**
      * Type of the referenced object. May be null (i.e. unknown).
      * @return the type of the referenced object, or null if unknown
      */
-    Q3CString type() const;
+    QByteArray type() const;
 
 
     /**
@@ -358,7 +358,7 @@ public:
      * @param app the application id.
      * @param obj the object id
      */
-    void setRef( const Q3CString& app, const Q3CString& obj = "" );
+    void setRef( const QByteArray& app, const QByteArray& obj = "" );
 
     /**
      * Changes the referenced object.
@@ -366,7 +366,7 @@ public:
      * @param obj the object id
      * @param type the object's type
      */
-    void setRef( const Q3CString& app, const Q3CString& obj, const Q3CString& type );
+    void setRef( const QByteArray& app, const QByteArray& obj, const QByteArray& type );
 
 
     /**
@@ -414,7 +414,7 @@ public:
      * @see DCOPArg
      * @since 3.1
      */
-    DCOPReply call( const Q3CString& fun ) {
+    DCOPReply call( const QByteArray& fun ) {
 	QByteArray data;
 	return callInternal( fun, "()", data );
     }
@@ -432,7 +432,7 @@ public:
      *            the arguments
      * @since 3.2
      */
-    DCOPReply callExt( const Q3CString& fun, EventLoopFlag useEventLoop=NoEventLoop,
+    DCOPReply callExt( const QByteArray& fun, EventLoopFlag useEventLoop=NoEventLoop,
 		    int timeout=-1 ) {
 	QByteArray data;
 	return callInternal( fun, "()", data, useEventLoop, timeout );
@@ -454,10 +454,10 @@ public:
      * @since 3.1
      */
     template <class T1>
-    DCOPReply call( const Q3CString& fun, const T1& t1 ) {
-	Q3CString args;
-	args.sprintf( "(%s)",
-		     dcopTypeName(t1) );
+    DCOPReply call( const QByteArray& fun, const T1& t1 ) {
+	QByteArray args;
+	args = QString().sprintf( "(%s)",
+		     dcopTypeName(t1) ).toAscii();
 	QByteArray data;
 	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1;
@@ -480,10 +480,10 @@ public:
      * @since 3.2
      */
     template <class T1>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
 	QByteArray data;
@@ -510,10 +510,10 @@ public:
      * @since 3.1
      */
     template <class T1, class T2>
-    DCOPReply call( const Q3CString& fun,
+    DCOPReply call( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) );
@@ -541,11 +541,11 @@ public:
      * @since 3.2
      */
     template <class T1, class T2>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) );
@@ -575,11 +575,11 @@ public:
      * @since 3.1
      */
     template <class T1, class T2, class T3>
-    DCOPReply call( const Q3CString& fun,
+    DCOPReply call( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -610,12 +610,12 @@ public:
      * @since 3.2
      */
     template <class T1, class T2, class T3>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -648,12 +648,12 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4>
-    DCOPReply call( const Q3CString& fun,
+    DCOPReply call( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -687,13 +687,13 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -729,13 +729,13 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5>
-    DCOPReply call( const Q3CString& fun,
+    DCOPReply call( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -772,14 +772,14 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -818,14 +818,14 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
-    DCOPReply call( const Q3CString& fun,
+    DCOPReply call( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -865,7 +865,7 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
@@ -873,7 +873,7 @@ public:
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -914,7 +914,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
-    DCOPReply call( const Q3CString& fun,
+    DCOPReply call( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -922,7 +922,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -965,7 +965,7 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
@@ -974,7 +974,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1019,7 +1019,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-    DCOPReply call( const Q3CString& fun,
+    DCOPReply call( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -1028,7 +1028,7 @@ public:
 		    const T6& t6,
 		    const T7& t7,
 		    const T8& t8 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1074,7 +1074,7 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-    DCOPReply callExt( const Q3CString& fun,
+    DCOPReply callExt( const QByteArray& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
@@ -1084,7 +1084,7 @@ public:
 		    const T6& t6,
 		    const T7& t7,
 		    const T8& t8) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1113,7 +1113,7 @@ public:
      * @see call()
      * @since 3.1
      */
-    bool send( const Q3CString& fun ) {
+    bool send( const QByteArray& fun ) {
 	QByteArray data;
 	return sendInternal( fun, "()", data );
     }
@@ -1135,8 +1135,8 @@ public:
      * @since 3.1
      */
     template <class T1>
-    bool send( const Q3CString& fun, const T1& t1 ) {
-	Q3CString args;
+    bool send( const QByteArray& fun, const T1& t1 ) {
+	QByteArray args;
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
 	QByteArray data;
@@ -1163,10 +1163,10 @@ public:
      * @since 3.1
      */
     template <class T1, class T2>
-    bool send( const Q3CString& fun,
+    bool send( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) );
@@ -1196,11 +1196,11 @@ public:
      * @since 3.1
      */
     template <class T1, class T2, class T3>
-    bool send( const Q3CString& fun,
+    bool send( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1233,12 +1233,12 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4>
-    bool send( const Q3CString& fun,
+    bool send( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1274,13 +1274,13 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5>
-    bool send( const Q3CString& fun,
+    bool send( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1319,14 +1319,14 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
-    bool send( const Q3CString& fun,
+    bool send( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1368,7 +1368,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
-    bool send( const Q3CString& fun,
+    bool send( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -1376,7 +1376,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1421,7 +1421,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-    bool send( const Q3CString& fun,
+    bool send( const QByteArray& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -1430,7 +1430,7 @@ public:
 		    const T6& t6,
 		    const T7& t7,
 		    const T8& t8 ) {
-	Q3CString args;
+	QByteArray args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1449,14 +1449,14 @@ public:
 
 
 private:
-    DCOPReply callInternal( const Q3CString& fun, const Q3CString& args, const QByteArray& data,
+    DCOPReply callInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data,
 			    EventLoopFlag useEventLoop, int timeout );
-    DCOPReply callInternal( const Q3CString& fun, const Q3CString& args, const QByteArray& data );
-    bool sendInternal( const Q3CString& fun, const Q3CString& args, const QByteArray& data );
+    DCOPReply callInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data );
+    bool sendInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data );
 
-    Q3CString m_app;
-    Q3CString m_obj;
-    Q3CString m_type;
+    QByteArray m_app;
+    QByteArray m_obj;
+    QByteArray m_type;
 
     class DCOPRefPrivate;
     DCOPRefPrivate *d;

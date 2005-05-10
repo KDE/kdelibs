@@ -33,15 +33,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kdelibs_export.h"
 
 class DCOPClient;
-typedef QList<Q3CString> Q3CStringList;
+typedef QList<QByteArray> QByteArrayList;
 
 // Makros for DCOP interfaces
 
 #define K_DCOP \
 public:        \
-  virtual bool process(const Q3CString &fun, const QByteArray &data, Q3CString& replyType, QByteArray &replyData); \
-  Q3CStringList functions(); \
-  Q3CStringList interfaces(); \
+  virtual bool process(const QByteArray &fun, const QByteArray &data, QByteArray& replyType, QByteArray &replyData); \
+  QByteArrayList functions(); \
+  QByteArrayList interfaces(); \
 private:
 
 #define k_dcop_signals public
@@ -83,7 +83,7 @@ public:
    * Creates a DCOPObject with object Id @p objId.
    * @param objId the object id of the DCOP object
    */
-  DCOPObject(const Q3CString &objId);
+  DCOPObject(const QByteArray &objId);
   /**
    * Destroys the DCOPObject and removes it from the map
    * of known objects.
@@ -94,7 +94,7 @@ public:
    * Returns the object id of the DCOPObject.
    * @return the object's id
    */
-  Q3CString objId() const;
+  QByteArray objId() const;
 
   /**
    * Renames a dcop object, if no other with the same name exists
@@ -102,7 +102,7 @@ public:
    * 
    * @param objId the new object id
    **/
-  bool setObjId(const Q3CString &objId);
+  bool setObjId(const QByteArray &objId);
 
   /**
    * Dispatches a message.
@@ -135,8 +135,8 @@ public:
    * @see functions()
    * @see DCOPClient::process()
    */
-  virtual bool process(const Q3CString &fun, const QByteArray &data,
-		       Q3CString& replyType, QByteArray &replyData);
+  virtual bool process(const QByteArray &fun, const QByteArray &data,
+		       QByteArray& replyType, QByteArray &replyData);
 
 
   /**
@@ -161,8 +161,8 @@ public:
    * @see functions(),
    * @see DCOPClient::process()
    */
-  virtual bool processDynamic(const Q3CString &fun, const QByteArray &data,
-			      Q3CString& replyType, QByteArray &replyData);
+  virtual bool processDynamic(const QByteArray &fun, const QByteArray &data,
+			      QByteArray& replyType, QByteArray &replyData);
 
    /**
    * This function is of interest when you used an IDL compiler
@@ -175,7 +175,7 @@ public:
    *
    * @see functions(),
    */
-  virtual Q3CStringList functionsDynamic();
+  virtual QByteArrayList functionsDynamic();
 
     /**
    * This function is of interest when you used an IDL compiler
@@ -188,7 +188,7 @@ public:
    *
    * @see interfaces(),
    */
-  virtual Q3CStringList interfacesDynamic();
+  virtual QByteArrayList interfacesDynamic();
 
   /**
    * Returns the names of the interfaces, specific ones last. The
@@ -199,7 +199,7 @@ public:
    * @return a list of interfaces
    * @see functions()
    */
-  virtual Q3CStringList interfaces();
+  virtual QByteArrayList interfaces();
 
   /**
    * Returns the list of functions understood by the object. It gets
@@ -219,7 +219,7 @@ public:
    * @see processDynamic()
    * @see DCOPClient::normalizeFunctionSignature()
    */
-  virtual Q3CStringList functions();
+  virtual QByteArrayList functions();
 
   /**
    * Emit @p signal as DCOP signal from this object with @p data as
@@ -227,7 +227,7 @@ public:
    * @param signal the signal to emit
    * @param data the data to send
    */
-  void emitDCOPSignal( const Q3CString &signal, const QByteArray &data);
+  void emitDCOPSignal( const QByteArray &signal, const QByteArray &data);
 
   /**
    * Connects to a DCOP signal.
@@ -248,9 +248,9 @@ public:
    * @li @p Volatile is true and @p sender  does not exist.
    * @li @p signal and @p slot do not have matching arguments.
    */
-  bool connectDCOPSignal( const Q3CString &sender, const Q3CString &senderObj,
-                          const Q3CString &signal,
-                          const Q3CString &slot,
+  bool connectDCOPSignal( const QByteArray &sender, const QByteArray &senderObj,
+                          const QByteArray &signal,
+                          const QByteArray &slot,
                           bool Volatile);
 
   /**
@@ -270,9 +270,9 @@ public:
    *
    * @return false if no connection(s) where removed.
    */
-  bool disconnectDCOPSignal( const Q3CString &sender, const Q3CString &senderObj,
-                             const Q3CString &signal,
-                             const Q3CString &slot);
+  bool disconnectDCOPSignal( const QByteArray &sender, const QByteArray &senderObj,
+                             const QByteArray &signal,
+                             const QByteArray &slot);
 
   /**
    * Returns the DCOPClient responsible for making the call. 
@@ -297,7 +297,7 @@ public:
    *
    * DCOPObjectProxy
    */
-  static bool hasObject(const Q3CString &objId);
+  static bool hasObject(const QByteArray &objId);
 
   /**
    * Try to find a dcop object with the given id.
@@ -305,7 +305,7 @@ public:
    * @param objId the object id to search
    * @return the  DCOPObject for the id @p objId.
    */
-  static DCOPObject *find(const Q3CString &objId);
+  static DCOPObject *find(const QByteArray &objId);
 
 
   /**
@@ -317,7 +317,7 @@ public:
    * @return a list of DCOPObjects beginning with the string
    * contained in @p partialId.
    */
-  static Q3PtrList<DCOPObject> match(const Q3CString &partialId);
+  static Q3PtrList<DCOPObject> match(const QByteArray &partialId);
 
   /**
    * Creates an object id for the QObject @p obj. This is done
@@ -325,13 +325,13 @@ public:
    * @param obj the object whose name will be used
    * @return the created object id
    */
-  static Q3CString objectName( QObject* obj );
+  static QByteArray objectName( QObject* obj );
 
 private:
   /**
    * The object id of this DCOPObject.
    */
-  Q3CString ident;
+  QByteArray ident;
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -392,9 +392,9 @@ public:
      * @return true if successful, false otherwise. The default implementation
      *         returns always false.
      */
-    virtual bool process( const Q3CString& obj, const Q3CString& fun,
+    virtual bool process( const QByteArray& obj, const QByteArray& fun,
 			  const QByteArray& data,
-			  Q3CString& replyType, QByteArray &replyData );
+			  QByteArray& replyType, QByteArray &replyData );
 private:
     void* unused;
     void* unused_too;
