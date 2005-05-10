@@ -59,7 +59,10 @@ inline QDataStream & operator >> (QDataStream & str, DCOPCString& s)
     s.resize(length);
 
     if (length)
+    {
         str.readRawBytes(s.data(), s.length());
+        s.resize(length - 1); //Drop the null
+    }
         
     return str;
 }

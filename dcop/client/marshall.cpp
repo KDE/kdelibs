@@ -204,12 +204,13 @@ QByteArray demarshal( QDataStream &stream, const QString &type )
         KURL r;
         stream >> r;
         result = r.url().local8Bit();
-    } else if ( type.left( 11 ) == "QList<" )
+    } else if ( type.startsWith("QList<") )
     {
-        if ( type.find( '>', 11 ) != type.length() - 1 )
+        if ( type.find( '>' ) != type.length() - 1 )
             return result;
 
-        QString nestedType = type.mid( 11, type.length() - 12 );
+        QString nestedType = type.mid( strlen("QList<") );
+        nestedType.truncate(nestedType.length() - 1);
 
         if ( nestedType.isEmpty() )
             return result;
@@ -320,7 +321,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	arg << mkBool( s );
     else if ( type == "QString" )
 	arg << s;
-    else if ( type == "QByteArray" || type == "QCStringList" )
+    else if ( type == "QByteArray" || type == "QCString" )
 	arg << QByteArray( args[ i ] );
     else if ( type == "QColor" )
 	arg << mkColor( s );

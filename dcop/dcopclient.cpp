@@ -273,7 +273,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
             disp[i] = '_';
     }
 
-    fName += "/.DCOPserver4_";
+    fName += "/.DCOPserver_";
     if (hostname.isEmpty())
     {
         char hostName[256];
