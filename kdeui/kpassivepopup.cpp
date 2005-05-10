@@ -167,7 +167,7 @@ void KPassivePopup::hideEvent( QHideEvent * )
 QRect KPassivePopup::defaultArea() const
 {
 #ifdef Q_WS_X11
-    NETRootInfo info( qt_xdisplay(),
+    NETRootInfo info( QX11Info::display()(),
                       NET::NumberOfDesktops |
                       NET::CurrentDesktop |
                       NET::WorkArea,
@@ -194,7 +194,7 @@ void KPassivePopup::positionSelf()
     }
 
     else {
-        NETWinInfo ni( qt_xdisplay(), window, qt_xrootwin(),
+        NETWinInfo ni( QX11Info::display()(), window, qt_xrootwin(),
                        NET::WMIconGeometry | NET::WMKDESystemTrayWinFor );
 
         // Figure out where to put the popup. Note that we must handle

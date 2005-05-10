@@ -166,8 +166,8 @@ KCrash::defaultCrashHandler (int sig)
 #if defined Q_WS_X11
           // start up on the correct display
           argv[i++] = qstrdup("-display");
-          if ( qt_xdisplay() )
-            argv[i++] = XDisplayString(qt_xdisplay());
+          if ( QX11Info::display()() )
+            argv[i++] = XDisplayString(QX11Info::display()());
           else
             argv[i++] = getenv("DISPLAY");
 #elif defined(Q_WS_QWS)

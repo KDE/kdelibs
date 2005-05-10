@@ -40,7 +40,7 @@ class KWinModulePrivate : public QWidget, public NETRootInfo
 {
 public:
     KWinModulePrivate(int _what)
-	: QWidget(0,0), NETRootInfo( qt_xdisplay(),
+	: QWidget(0,0), NETRootInfo( QX11Info::display()(),
 				     ( _what >= KWinModule::INFO_WINDOWS ? 
 				       (ClientList | ClientListStacking) : 0
 				     ) |
@@ -192,7 +192,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 		emit (*mit)->stackingOrderChanged();
 	}
     } else  if ( windows.findIndex( ev->xany.window ) != -1 ){
-	NETWinInfo ni( qt_xdisplay(), ev->xany.window, qt_xrootwin(), 0 );
+	NETWinInfo ni( QX11Info::display()(), ev->xany.window, qt_xrootwin(), 0 );
         unsigned long dirty[ 2 ];
 	ni.event( ev, dirty, 2 );
 	if ( ev->type ==PropertyNotify ) {
@@ -244,10 +244,10 @@ void KWinModulePrivate::updateStackingOrder()
 void KWinModulePrivate::addClient(Window w)
 {
     if ( (what >= KWinModule::INFO_WINDOWS) && !QWidget::find( w ) )
-	XSelectInput( qt_xdisplay(), w, PropertyChangeMask | StructureNotifyMask );
+	XSelectInput( QX11Info::display()(), w, PropertyChangeMask | StructureNotifyMask );
     bool emit_strutChanged = false;
     if( strutSignalConnected && modules.count() > 0 ) {
-        NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut | NET::WMDesktop );
+        NETWinInfo info( QX11Info::display()(), w, qt_xrootwin(), NET::WMStrut | NET::WMDesktop );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             strutWindows.append( StrutData( w, strut, info.desktop()));
@@ -267,7 +267,7 @@ void KWinModulePrivate::removeClient(Window w)
 {
     bool emit_strutChanged = removeStrutWindow( w );
     if( strutSignalConnected && possibleStrutWindows.findIndex( w ) != -1 && modules.count() > 0 ) {
-        NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
+        NETWinInfo info( QX11Info::display()(), w, qt_xrootwin(), NET::WMStrut );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             emit_strutChanged = true;
@@ -350,7 +350,7 @@ QRect KWinModule::workArea( const QList<WId>& exclude, int desktop ) const
                 continue;
             strut = (*it2).strut;
         } else if( d->possibleStrutWindows.findIndex( *it1 ) != -1 ) {
-            NETWinInfo info( qt_xdisplay(), (*it1), qt_xrootwin(), NET::WMStrut | NET::WMDesktop);
+            NETWinInfo info( QX11Info::display()(), (*it1), qt_xrootwin(), NET::WMStrut | NET::WMDesktop);
 	    strut = info.strut();
             d->possibleStrutWindows.remove( *it1 );
             d->strutWindows.append( KWinModulePrivate::StrutData( *it1, info.strut(), info.desktop()));

@@ -267,7 +267,7 @@ KPasswdServer::processRequest()
                 dlg.setKeepPassword( true );
 
 #ifdef Q_WS_X11
-            XSetTransientForHint( qt_xdisplay(), dlg.winId(), request->windowId);
+            XSetTransientForHint( QX11Info::display()(), dlg.winId(), request->windowId);
 #endif
 
             dlgResult = dlg.exec();

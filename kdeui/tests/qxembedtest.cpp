@@ -84,5 +84,5 @@ Window Window_With_Name(Display *dpy, Window top, const char *name)
 
 WId windowWithName(const char *name)
 {
-  return Window_With_Name(qt_xdisplay(), qt_xrootwin(), name);
+  return Window_With_Name(QX11Info::display()(), qt_xrootwin(), name);
 }

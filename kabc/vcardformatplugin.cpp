@@ -19,6 +19,7 @@
 */
 
 #include <qfile.h>
+#include <qtextstream.h>
 
 #include "address.h"
 #include "addressee.h"
