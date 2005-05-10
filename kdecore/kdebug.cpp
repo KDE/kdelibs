@@ -131,7 +131,7 @@ static QByteArray getDescrFromNum(unsigned int _num)
           ch=line[++i];
       } while ( ch >= '0' && ch <= '9');
 
-      const Q_ULONG number =line.mid(numStart,i).toULong();
+      const Q_ULONG number = QString( line.mid(numStart,i) ).toULong(); // ###
 
       while (line[i] && line[i] <= ' ')
         i++;
@@ -538,8 +538,8 @@ kdbgstream& kdbgstream::operator<<( const QVariant& v) {
 kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     if (!print) return *this;
     output += '[';
-    unsigned int i = 0;
-    unsigned int sz = QMIN( data.size(), 64 );
+    int i = 0;
+    int sz = QMIN( data.size(), 64 );
     for ( ; i < sz ; ++i ) {
         output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, '0');
         if ( i < sz )

@@ -629,7 +629,7 @@ long KConfigBase::readLongNumEntry( const char *pKey, long nDefault) const
   else
     {
       bool ok;
-      long rc = aValue.toLong( &ok );
+      long rc = QString( aValue ).toLong( &ok ); // ###
       return( ok ? rc : nDefault );
     }
 }
@@ -648,7 +648,7 @@ unsigned long KConfigBase::readUnsignedLongNumEntry( const char *pKey, unsigned 
   else
     {
       bool ok;
-      unsigned long rc = aValue.toULong( &ok );
+      unsigned long rc = QString( aValue ).toULong( &ok ); // ###
       return( ok ? rc : nDefault );
     }
 }

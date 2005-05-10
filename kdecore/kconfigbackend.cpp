@@ -115,7 +115,7 @@ static QByteArray printableToString(const char *str, int l)
 static QByteArray stringToPrintable(const QByteArray& str){
   QByteArray result(str.length()*2); // Maximum 2x as long as source string
   register char *r = result.data();
-  register char *s = str.data();
+  register const char *s = str.data();
 
   if (!s) return QByteArray("");
 
@@ -199,7 +199,7 @@ static QByteArray encodeGroup(const QByteArray &str)
   int l = str.length();
   QByteArray result(l*2+1);
   register char *r = result.data();
-  register char *s = str.data();
+  register const char *s = str.data();
   while(l)
   {
     if ((*s == '[') || (*s == ']'))
