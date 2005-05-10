@@ -149,8 +149,8 @@ KLibFactory* KLibrary::factory()
     if ( m_factory )
         return m_factory;
 
-    QByteArray symname;
-    symname.sprintf("init_%s", name().latin1() );
+    QString symname;
+    symname.sprintf("init_%s", name().toLatin1().data() );
 
     void* sym = symbol( symname );
     if ( !sym )
@@ -423,7 +423,7 @@ KLibrary* KLibLoader::library( const char *name )
 #ifndef NDEBUG
         kdDebug(150) << "library=" << name << ": No file named " << libname << " found in paths." << endl;
 #endif
-        d->errorMessage = i18n("Library files for \"%1\" not found in paths.").arg(libname);
+        d->errorMessage = i18n("Library files for \"%1\" not found in paths.").arg(QString( libname ));
         return 0;
       }
 
