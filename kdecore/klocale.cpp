@@ -1127,8 +1127,8 @@ QString KLocale::formatMoney(double num,
   switch (signpos)
     {
     case ParensAround:
-      res.prepend(QChar('('));
-      res.prepend(QChar(')'));
+      res.prepend(QLatin1Char('('));
+      res.append (QLatin1Char(')'));
       break;
     case BeforeQuantityMoney:
       res.prepend(sign);
@@ -1147,10 +1147,10 @@ QString KLocale::formatMoney(double num,
   if (neg?negativePrefixCurrencySymbol():
       positivePrefixCurrencySymbol())
     {
-      res.prepend(QChar(' '));
+      res.prepend(QLatin1Char(' '));
       res.prepend(currency);
     } else {
-      res.append (QChar(' '));
+      res.append (QLatin1Char(' '));
       res.append (currency);
     }
 
@@ -1217,7 +1217,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	  switch ( rst.at( format_index ).unicode() )
 	    {
 	    case '%':
-	      buffer.append(QChar('%'));
+	      buffer.append(QLatin1Char('%'));
 	      break;
 	    case 'Y':
 	      buffer.append(calendar()->yearString(pDate, false));
