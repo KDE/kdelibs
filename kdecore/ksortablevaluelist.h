@@ -160,7 +160,7 @@ public:
      * Sorts the KSortableItems.
      */
     void sort() {
-        qHeapSort( *this );
+        qSort( *this );
     }
 };
 

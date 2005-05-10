@@ -342,7 +342,7 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
     }
 }
 
-void KIconEffect::toMonochrome(QImage &img, const QColor black, const QColor white, float value) {
+void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &white, float value) {
    int pixels = (img.depth() > 8) ? img.width()*img.height() : img.numColors();
    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
          : (unsigned int *) img.colorTable();

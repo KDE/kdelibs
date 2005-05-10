@@ -850,12 +850,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         QPixmap favIcon(name, "PNG");
         int x = pix.width() - favIcon.width() - 1,
             y = pix.height() - favIcon.height() - 1;
-        if (pix.mask())
+        if (!pix.mask().isNull())
         {
-            QBitmap mask = *pix.mask();
+            QBitmap mask = pix.mask();
             QBitmap fmask;
-            if (favIcon.mask())
-		fmask = *favIcon.mask();
+            if (!favIcon.mask().isNull())
+		fmask = favIcon.mask();
 	    else {
 		// expensive, but works
 		fmask = favIcon.createHeuristicMask();
