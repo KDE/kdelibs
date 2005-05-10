@@ -950,13 +950,13 @@ KKey Key::key() const
 	}
 }
 
-Qt::Key& Key::operator =( const KKeyNative& key )
+Key& Key::operator =( const KKeyNative& key )
 {
 	m_code = key.code(); m_mod = key.mod(); m_sym = key.sym();
 	return *this;
 }
 
-int Key::compare( const Qt::Key& b ) const
+int Key::compare( const Key& b ) const
 {
 	if( m_code == CODE_FOR_QT )
 		return m_sym - b.m_sym;
