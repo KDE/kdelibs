@@ -931,7 +931,7 @@ KDockWidget *KDockWidget::findNearestDockWidget(DockPosition pos)
 			if (neighbor==this)
 			return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));
 			else
-			if (neighbor->getWidget() && (neighbor->getWidget()->qt_cast("KDockTabGroup")))
+			if (neighbor->getWidget() && (qobject_cast<KDockTabGroup*>(neighbor->getWidget()))
 				return (KDockWidget*)(((KDockTabGroup*)neighbor->getWidget())->page(0));
 			else
 			return neighbor;
@@ -1237,7 +1237,7 @@ void KDockWidget::setForcedFixedWidth(int w)
 	setFixedWidth(w);
 	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
-		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->setForcedFixedWidth(this,w);
+		qobject_cast<KDockSplitter*>(parent())->setForcedFixedWidth(this,w);
 }
 
 void KDockWidget::setForcedFixedHeight(int h)
@@ -1246,7 +1246,7 @@ void KDockWidget::setForcedFixedHeight(int h)
 	setFixedHeight(h);
 	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
-		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->setForcedFixedHeight(this,h);
+		qobject_cast<KDockSplitter*>(parent())->setForcedFixedHeight(this,h);
 }
 
 int KDockWidget::forcedFixedWidth()
@@ -1269,7 +1269,7 @@ void KDockWidget::restoreFromForcedFixedSize()
 	setMaximumHeight(32000);
 	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
-		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->restoreFromForcedFixedSize(this);
+		qobject_cast<KDockSplitter*>(parent())->restoreFromForcedFixedSize(this);
 }
 
 void KDockWidget::toDesktop()
@@ -1902,7 +1902,7 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
 
 void KDockManager::findChildDockWidget( QWidget*& ww, const QWidget* p, const QPoint& pos )
 {
-  if ( p->children() ) {
+  if ( !p->children().isNull() ) {
     QWidget *w;
     QObjectListIt it( *p->children() );
     it.toLast();
@@ -1923,7 +1923,7 @@ void KDockManager::findChildDockWidget( QWidget*& ww, const QWidget* p, const QP
 
 void KDockManager::findChildDockWidget( const QWidget* p, QWidgetList*& list )
 {
-  if ( p->children() ) {
+  if ( !p->children().isNull() ) {
     QWidget *w;
     QObjectListIt it( *p->children() );
     it.toLast();
@@ -3100,7 +3100,7 @@ void KDockArea::slotDockWidgetUndocked()
 void KDockArea::resizeEvent(QResizeEvent *rsize)
 {
   QWidget::resizeEvent(rsize);
-  if (children()){
+  if (!children().isNull()){
 #ifndef NO_KDE2
 //    kdDebug(282)<<"KDockArea::resize"<<endl;
 #endif
@@ -3178,8 +3178,7 @@ void KDockContainer::activateOverlapMode(int nonOverlapSize) {
 	m_overlapMode=true;
 	if (parentDockWidget() && parentDockWidget()->parent()) {
 		kdDebug(282)<<"KDockContainer::activateOverlapMode: recalculating sizes"<<endl;
-		KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
-			parent()->qt_cast("KDockSplitter"));
+		KDockSplitter *sp= qobject_cast<KDockSplitter*>(parentDockWidget()->parent());
 		if (sp)
 			sp->resizeEvent(0);
 	}
@@ -3190,8 +3189,7 @@ void KDockContainer::deactivateOverlapMode() {
 	m_overlapMode=false;
 	if (parentDockWidget() && parentDockWidget()->parent()) {
 		kdDebug(282)<<"KDockContainer::deactivateOverlapMode: recalculating sizes"<<endl;
-		KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
-			parent()->qt_cast("KDockSplitter"));
+		KDockSplitter *sp= qobject_cast<KDockSplitter*>(parentDockWidget()->parent());
 		if (sp)
 			sp->resizeEvent(0);
 		}
@@ -3279,7 +3277,7 @@ void KDockContainer::prepareSave(QStringList &names)
 QWidget *KDockTabGroup::transientTo() {
 	QWidget *tT=0;
 	for (int i=0;i<count();i++) {
-		KDockWidget *dw=static_cast<KDockWidget*>(page(i)->qt_cast("KDockWidget"));
+		KDockWidget *dw=qobject_cast<KDockWidget*>(page(i));
 		QWidget *tmp;
 		if ((tmp=dw->transientTo())) {
 			if (!tT) tT=tmp;

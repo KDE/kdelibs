@@ -24,6 +24,7 @@
 #define KCMODULE_H
 
 #include <qwidget.h>
+#include <q3ptrlist.h>
 
 #include <kdelibs_export.h>
 

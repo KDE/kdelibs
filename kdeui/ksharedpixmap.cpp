@@ -161,10 +161,12 @@ bool KSharedPixmap::x11Event(XEvent *event)
     XGetGeometry(QX11Info::display(), *pixmap_id, &root, &dummy, &dummy, &width,
 	    &height, &udummy, &udummy);
 
+    QX11Info inf;
+
     if (d->rect.isEmpty())
     {
 	QPixmap::resize(width, height);
-	XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(QX11Info::screen(), false),
+	XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(inf.screen(), false),
 		0, 0, width, height, 0, 0);
 
         XFree(pixmap_id);
@@ -202,13 +204,13 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     QPixmap::resize( tw+origin.x(), th+origin.y() );
 
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(QX11Info::screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(inf.screen(), false),
             xa, ya, t1w+origin.x(), t1h+origin.y(), origin.x(), origin.y() );
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(QX11Info::screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(inf.screen(), false),
 	    0, ya, tw-t1w, t1h, t1w, 0);
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(QX11Info::screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(inf.screen(), false),
 	    xa, 0, t1w, th-t1h, 0, t1h);
-    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(QX11Info::screen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(inf.screen(), false),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
 
     XFree(pixmap_id);

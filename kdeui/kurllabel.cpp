@@ -22,6 +22,7 @@
 #include <qtooltip.h>
 #include <qpixmap.h>
 #include <qapplication.h>
+#include <QMouseEvent>
 
 #include <kcursor.h>
 #include <kglobalsettings.h>
@@ -33,7 +34,7 @@ class KURLLabel::Private
 public:
   Private (const QString& url, KURLLabel* label)
     : URL (url),
-      Qt::TextUnderline (true),
+      TextUnderline (true),
       LinkColor (KGlobalSettings::linkColor()),
       HighlightedLinkColor (Qt::red),
       Tip(url),
@@ -55,7 +56,7 @@ public:
   QString URL;
   QPixmap AltPixmap;
 
-  bool Qt::TextUnderline;
+  bool TextUnderline;
   QColor LinkColor;
   QColor HighlightedLinkColor;
 
@@ -127,14 +128,14 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 void KURLLabel::setFont (const QFont& f)
 {
   QFont newFont = f;
-  newFont.setUnderline (d->Qt::TextUnderline);
+  newFont.setUnderline (d->TextUnderline);
 
   QLabel::setFont (newFont);
 }
 
 void KURLLabel::setUnderline (bool on)
 {
-  d->Qt::TextUnderline = on;
+  d->TextUnderline = on;
 
   setFont (font());
 }
@@ -291,7 +292,7 @@ void KURLLabel::enterEvent (QEvent* e)
 
       setLinkColor (d->HighlightedLinkColor);
 
-      d->RealUnderline = d->Qt::TextUnderline;
+      d->RealUnderline = d->TextUnderline;
 
       if (d->Float)
         setUnderline (true);
@@ -319,7 +320,7 @@ void KURLLabel::leaveEvent (QEvent* e)
 
 bool KURLLabel::event (QEvent *e)
 {
-  if (e && e->type() == QEvent::ParentPaletteChange)
+  if (e && e->type() == QEvent::PaletteChange)
   {
     // use parentWidget() unless you are a toplevel widget, then try qAapp
     QPalette p = parentWidget() ? parentWidget()->palette() : qApp->palette();
