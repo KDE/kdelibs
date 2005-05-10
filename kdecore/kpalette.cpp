@@ -65,13 +65,12 @@ KPalette::KPalette(const QString &name)
 
   // Read first line
   // Expected "GIMP Palette"
-  if (paletteFile.readLine(line, maxLength) == -1) return;
+  line = QString::fromLocal8Bit(paletteFile.readLine());
   if (line.find(" Palette") == -1) return;
 
-  char *buffer = new char[maxLength];
-
-  while( paletteFile.readLine(line, maxLength) != -1)
+  while( paletteFile.canReadLine() )
   {
+     line = QString::fromLocal8Bit(paletteFile.readLine());
      if (line[0] == '#') 
      {
         // This is a comment line
@@ -87,26 +86,24 @@ KPalette::KPalette(const QString &name)
         // This is a color line, hopefully
         line = line.stripWhiteSpace();
         if (line.isEmpty()) continue;
-        int Qt::red, Qt::green, Qt::blue;
+        int red, green, blue;
         int pos = 0;
-        buffer[0] = '\0'; // Make string empty
-        if (sscanf(line.ascii(), "%d %d %d%n", &Qt::red, &Qt::green, &Qt::blue, &pos) >= 3)
+        if (sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos) >= 3)
         {
-           if (Qt::red > 255) Qt::red = 255;
-           if (Qt::red < 0) Qt::red = 0;	
-           if (Qt::green > 255) Qt::green = 255;
-           if (Qt::green < 0) Qt::green = 0;	
-           if (Qt::blue > 255) Qt::blue = 255;
-           if (Qt::blue < 0) Qt::blue = 0;	
+           if (red > 255)   red = 255;
+           if (red < 0)     red = 0;
+           if (green > 255) green = 255;
+           if (green < 0)   green = 0;
+           if (blue > 255) blue = 255;
+           if (blue < 0)  blue = 0;
            kolor *node = new kolor();
-           node->color.setRgb(Qt::red, Qt::green, Qt::blue);
+           node->color.setRgb(red, green, blue);
            node->name = line.mid(pos).stripWhiteSpace();
            if (node->name.isNull()) node->name = "";
            mKolorList.append( node );
         }
      }
   }
-  delete [] buffer;
 }
 
 KPalette::KPalette(const KPalette &p)

@@ -205,7 +205,8 @@ QColor KGlobalSettings::activeTextColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_CAPTIONTEXT));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readColorEntry( "activeForeground", &Qt::white );
+    QColor white(Qt::white);
+    return g.readColorEntry( "activeForeground", &white );
 #endif
 }
 
@@ -226,7 +227,8 @@ QColor KGlobalSettings::buttonBackground()
 QColor KGlobalSettings::buttonTextColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "buttonForeground", &Qt::black );
+    QColor black(Qt::black);
+    return g.readColorEntry( "buttonForeground", &black );
 }
 
 // IMPORTANT:
@@ -235,7 +237,8 @@ QColor KGlobalSettings::buttonTextColor()
 QColor KGlobalSettings::baseColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "windowBackground", &Qt::white );
+    QColor white(Qt::white);
+    return g.readColorEntry( "windowBackground", &white );
 }
 
 // IMPORTANT:
@@ -244,7 +247,8 @@ QColor KGlobalSettings::baseColor()
 QColor KGlobalSettings::textColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "windowForeground", &Qt::black );
+    QColor black(Qt::black);
+    return g.readColorEntry( "windowForeground", &black );
 }
 
 // IMPORTANT:
@@ -253,7 +257,8 @@ QColor KGlobalSettings::textColor()
 QColor KGlobalSettings::highlightedTextColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readColorEntry( "selectForeground", &Qt::white );
+    QColor white(Qt::white);
+    return g.readColorEntry( "selectForeground", &white );
 }
 
 // IMPORTANT:
