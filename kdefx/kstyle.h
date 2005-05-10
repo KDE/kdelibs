@@ -89,7 +89,7 @@ protected:
      A representation for colors. This marshals to and from integers
      to be able to be stored as a widget layout property.
     */
-    class ColorMode
+    class KDEFX_EXPORT ColorMode
     {
     public:
         /**
@@ -151,7 +151,7 @@ protected:
      When implementing the actual types, just implement the default ctor,
      filling in defaults, and you're set.
     */
-    struct Option
+    struct KDEFX_EXPORT Option
     {
         virtual ~Option() {}; //So dynamic_cast works, and g++ shuts up
     };
@@ -166,13 +166,13 @@ protected:
      BaseType        --- the type of option from which this should inherit
      */
     template<typename EventualSubtype, typename BaseType>
-    struct OptionBase: public BaseType
+    struct KDEFX_EXPORT OptionBase: public BaseType
     {
         static EventualSubtype* defaultOption()
         {
             static EventualSubtype* theDefault = 0; //### function static, not very nice,
             //but avoids need for explicit instantiation.
-            
+
             if (!theDefault)
                 theDefault = new EventualSubtype;
                 
@@ -202,17 +202,37 @@ protected:
      Option representing the color of the thing to draw. Used for arrows, and for text
      (the latter actually uses TextOption)
     */
-    struct ColorOption: public OptionBase<ColorOption, Option>
+    struct KDEFX_EXPORT ColorOption: public OptionBase<ColorOption, Option>
     {
         ColorMode color;
 
         ColorOption(): color(QPalette::ButtonText)
         {}
     };
+
+    struct KDEFX_EXPORT DoubleButtonOption: public OptionBase<DoubleButtonOption, Option>
+    {
+        enum ActiveButton
+        {
+            None,
+            Top,
+            Left,
+            Right,
+            Bottom
+        };
+
+        ActiveButton activeButton;
+
+        DoubleButtonOption(): activeButton(None)
+        {}
+
+        DoubleButtonOption(ActiveButton ab): activeButton(ab)
+        {}
+    };
     
     
     ///Option representing text drawing info. For Generic::Text. 
-    struct TextOption: public OptionBase<TextOption, ColorOption>
+    struct KDEFX_EXPORT TextOption: public OptionBase<TextOption, ColorOption>
     {
         Qt::Alignment        hAlign; //The horizontal alignment
         QString              text;   //The text to draw
@@ -533,9 +553,11 @@ protected:
             //the active subcontrol inside the QStyleOption, to determine
             //which half is active.
             SingleButtonVert = Generic::WidgetSpecificBase, //Used to draw a 1-button bevel, vertical
-            DoubleButtonVert,                               //Used to draw a 2-button bevel, vertical
             SingleButtonHor,                                //Used to draw a 1-button bevel, horizontal
+            DoubleButtonVert,                               //Used to draw a 2-button bevel, vertical
             DoubleButtonHor,                                //Used to draw a 2-button bevel, horizontal
+                                                            //The above 2 are passed a DoubleButtonOption,
+                                                            // to say which button is pressed
             GrooveAreaVert,                                 //### is this enough, or also provide split version?
             GrooveAreaHor,
             SliderVert,
@@ -603,6 +625,9 @@ public:
 
     SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
                                              const QPoint& pt, const QWidget* w) const;
+
+    void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
+                                             QPainter *p,      const QWidget* w) const;
 };
 
 template<typename T>

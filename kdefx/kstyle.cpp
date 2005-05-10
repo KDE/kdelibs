@@ -872,8 +872,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             {
                 if (flags & State_Horizontal)
                 {
-                    drawKStylePrimitive(WT_ScrollBar, ScrollBar::DoubleButtonHor,
-                                        option, r, pal, flags, p, widget);
+                    DoubleButtonOption::ActiveButton ab = DoubleButtonOption::None;
 
                     //Depending on RTL direction, the one on the left is either up or down.
                     bool leftAdds, rightAdds;
@@ -888,14 +887,25 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                         rightAdds = false;
                     }
 
-                    ColorOption colOpt;
-                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    //Determine whether any of the buttons is active
+                    if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && leftAdds) ||
+                        ((slOpt->activeSubControls & SC_ScrollBarSubLine) && !leftAdds))
+                        ab = DoubleButtonOption::Left;
 
-                    //Split the button in half, to know where to place the arrows.
+                    if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && rightAdds) ||
+                        ((slOpt->activeSubControls & SC_ScrollBarSubLine) && !rightAdds))
+                        ab = DoubleButtonOption::Right;
+
+                    DoubleButtonOption bOpt(ab);
+                    drawKStylePrimitive(WT_ScrollBar, ScrollBar::DoubleButtonHor,
+                                        option, r, pal, flags, p, widget, &bOpt);
+
+                    //Draw the left arrow..
                     QRect leftSubButton = QRect(r.x(), r.y(), r.width()/2, r.height());
 
-                    if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && leftAdds) ||
-                        ((slOpt->activeSubControls & SC_ScrollBarSubPage) && !leftAdds))
+                    ColorOption colOpt;
+                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    if (ab == DoubleButtonOption::Left)
                         colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
 
                     drawKStylePrimitive(WT_ScrollBar, Generic::ArrowLeft, option, leftSubButton, pal,
@@ -909,8 +919,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                     //Chose proper color
                     colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
-                    if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && rightAdds) ||
-                        ((slOpt->activeSubControls & SC_ScrollBarSubPage) && !rightAdds))
+                    if (ab == DoubleButtonOption::Right)
                         colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
 
                     drawKStylePrimitive(WT_ScrollBar, Generic::ArrowRight, option, rightSubButton, pal,
@@ -918,21 +927,33 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 }
                 else
                 {
-                    drawKStylePrimitive(WT_ScrollBar, ScrollBar::DoubleButtonVert,
-                                        option, r, pal, flags, p, widget);
+                    DoubleButtonOption::ActiveButton ab = DoubleButtonOption::None;
 
+                    //Determine whether any of the buttons is active
+                    if (slOpt->activeSubControls & SC_ScrollBarSubLine)
+                        ab = DoubleButtonOption::Top;
+
+                    if (slOpt->activeSubControls & SC_ScrollBarAddLine)
+                        ab = DoubleButtonOption::Bottom;
+
+                    //Paint the bevel
+                    DoubleButtonOption bOpt(ab);
+                    drawKStylePrimitive(WT_ScrollBar, ScrollBar::DoubleButtonVert,
+                                        option, r, pal, flags, p, widget, &bOpt);
+
+                    //Paint top button.
                     ColorOption colOpt;
                     colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
 
-                    //Split the button in half, to know where to place the arrows.
-                    QRect topSubButton = QRect(r.x(), r.y(), r.width(), r.height()/2);
-
-                    if (slOpt->activeSubControls & SC_ScrollBarSubLine)
+                    if (ab == DoubleButtonOption::Top)
                         colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
 
+
+                    QRect topSubButton = QRect(r.x(), r.y(), r.width(), r.height()/2);
                     drawKStylePrimitive(WT_ScrollBar, Generic::ArrowUp, option, topSubButton, pal,
                                         flags, p, widget, &colOpt);
 
+                    //Paint bot button
                     QRect botSubButton;
                     botSubButton.setBottomRight(r.bottomRight());
                     botSubButton.setLeft       (r.left());
@@ -940,12 +961,11 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                     colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
 
-                    if (slOpt->activeSubControls & SC_ScrollBarAddLine)
+                    if (ab == DoubleButtonOption::Bottom)
                         colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
 
                     drawKStylePrimitive(WT_ScrollBar, Generic::ArrowDown, option, botSubButton, pal,
                                         flags, p, widget, &colOpt);
-
                 }
             }
             else 
@@ -1290,6 +1310,23 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
     
     return QCommonStyle::subElementRect(sr, option, widget);
 }
+
+void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* opt,
+                                   QPainter *p,      const QWidget* w) const
+{
+    if (cc == CC_ScrollBar)
+    {
+        QStyleOptionComplex* mutableOpt = const_cast<QStyleOptionComplex*>(opt);
+        if ((mutableOpt->subControls & SC_ScrollBarSubLine) || (mutableOpt->subControls & SC_ScrollBarAddLine))
+        {
+            //If we paint one of the buttons, must paint both!
+            mutableOpt->subControls |= SC_ScrollBarSubPage | SC_ScrollBarAddLine;
+        }
+    }
+
+    QCommonStyle::drawComplexControl(cc, opt, p, w);
+}
+
 
 QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* option,
                                 SubControl subControl, const QWidget* widget) const

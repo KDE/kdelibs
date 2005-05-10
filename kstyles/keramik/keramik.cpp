@@ -109,6 +109,13 @@ public:
 		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight,
 						loader.size( keramik_scrollbar_vbar + KeramikSlider1 ).height() +
 						loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height());
+
+
+		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor,
+							ColorMode(ColorMode::BWAutoContrastMode, QPalette::Button));
+
+		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor,
+							ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText));
 		
 		//### HACK,for now.
 		//setWidgetLayoutProp(WT_DockWidgetTitle, DockWidgetTitle::Margin, 8);
@@ -398,82 +405,69 @@ public:
 
 					case ScrollBar::DoubleButtonHor:
 					{
-						//### FIXME: Wrong for RTL!
-						const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(opt);
-						if (!slOpt) return;
-					
+						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
+
+						//Drop clipping to force both bevels to paint
+						p->setClipping(false);
+
 						//Draw the entire, unselected bevel.
 						Keramik::CenteredPainter painter(keramik_scrollbar_hbar_arrow2);
 						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
 
-						//Check whether any of the buttons is down
-						if (slOpt->activeSubControls & SC_ScrollBarAddLine)
-						{	//down
-							p->setClipRect(r.x() + r.width()/2, r.y(), r.width()/2, r.height());
-							painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
+ 						//Check whether we need to draw any of the buttons
+ 						if (bOpt->activeButton != DoubleButtonOption::None)
+ 						{
+							if (bOpt->activeButton == DoubleButtonOption::Right)
+							{
+								p->setClipRect(r.x() + r.width()/2, r.y(), r.width()/2, r.height());
+								painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
+												!(flags & State_Enabled));
+							}
+							else
+							{ //Left
+								p->setClipRect(r.x(), r.y(), r.width()/2, r.height());
+								painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
 										!(flags & State_Enabled));
-						}
+							}
 
-						if (slOpt->activeSubControls & SC_ScrollBarSubLine)
-						{	//up.
-							p->setClipRect(r.x(), r.y(), r.width()/2, r.height());
-							painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
-										!(flags & State_Enabled));
-						}
+							p->setClipping(false);
+ 						}
 
 						return;
 					}
 
 					case ScrollBar::DoubleButtonVert:
 					{
-						const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(opt);
-						if (!slOpt) return;
+						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
+
+						//Drop clipping to force both bevels to paint
+						p->setClipping(false);
 					
 						//Draw the entire, unselected bevel.
 						Keramik::CenteredPainter painter(keramik_scrollbar_vbar_arrow2);
 						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
 
-						//Check whether any of the buttons is down
-						if (slOpt->activeSubControls & SC_ScrollBarAddLine)
-						{	//down
-							p->setClipRect(r.x(), r.y() + r.height()/2, r.width(), r.height()/2);
-							painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
-										!(flags & State_Enabled));
-						}
+ 						//Check whether any of the buttons is down
+ 						if (bOpt->activeButton != DoubleButtonOption::None)
+ 						{
+							if (bOpt->activeButton == DoubleButtonOption::Bottom)
+							{	//down
+								p->setClipRect(r.x(), r.y() + r.height()/2, r.width(), r.height()/2);
+								painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
+											!(flags & State_Enabled));
+							}
+							else
+							{	//up.
+								p->setClipRect(r.x(), r.y(), r.width(), r.height()/2);
+								painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
+											!(flags & State_Enabled));
+							}
 
-						if (slOpt->activeSubControls & SC_ScrollBarSubLine)
-						{	//up.
-							p->setClipRect(r.x(), r.y(), r.width(), r.height()/2);
-							painter.draw(p, r, pal.buttonText().color(), pal.background().color(),
-										!(flags & State_Enabled));
+							p->setClipping(false);
 						}
 
 						return;
 					}
-								/*if ( flags & Style_Horizontal )
-			{
-				
-				painter.draw( p, r, down? cg.buttonText() : cg.button(), cg.background(), disabled, pmode() );
-
-				p->setPen( cg.buttonText() );
-				p->drawLine(r.x()+r.width()/2 - 1, r.y() + r.height()/2 - 3,
-				            r.x()+r.width()/2 - 1, r.y() + r.height()/2 + 3);
-
-
-				drawKeramikArrow(p, cg, QRect(r.x(), r.y(), r.width()/2, r.height()), PE_ArrowLeft, down, !disabled);
-
-				drawKeramikArrow(p, cg, QRect(r.x()+r.width()/2, r.y(), r.width() - r.width()/2, r.height()),
-									PE_ArrowRight, down, !disabled);
-			}
-			else
-			{
-				Keramik::CenteredPainter painter(  keramik_scrollbar_vbar_arrow2 );
-				painter.draw( p, r, down? cg.buttonText() : cg.button(), cg.background(), disabled, pmode() );
-
-				p->setPen( cg.buttonText() );
-				p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2,
-				            r.x()+r.width()/2 + 2, r.y()+r.height()/2);
-*/
 
 					case ScrollBar::SingleButtonHor:
 					{
