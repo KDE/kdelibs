@@ -326,8 +326,10 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	arg << mkBool( s );
     else if ( type == "QString" )
 	arg << s;
-    else if ( type == "QByteArray" || type == "QCString" )
+    else if ( type == "QByteArray")
 	arg << QByteArray( args[ i ] );
+    else if ( type == "QCString" )
+        arg << DCOPCString( args[ i ] );
     else if ( type == "QColor" )
 	arg << mkColor( s );
     else if ( type == "QPoint" )
