@@ -78,7 +78,7 @@ public:
       * @return the word, or an empty string if not found
       * @deprecated use QString::section instead
       */
-    static QString        word( const QString &text , uint pos ) KDE_DEPRECATED;
+    static QString        word( const QString &text , int pos ) KDE_DEPRECATED;
 
     /** Returns a range of words from that string.
       * Ie:
@@ -103,7 +103,7 @@ public:
       * @param pos the position (in words) for the new word
       * @return the resulting string
       */
-    static QString        insword( const QString &text , const QString &word , uint pos );
+    static QString        insword( const QString &text , const QString &word , int pos );
 
     /** Replaces a word in the string, and returns
       * a new string with the word included. the first
@@ -114,7 +114,7 @@ public:
       * @param pos the position (in words) for the new word
       * @return the resulting string
       */
-    static QString        setword( const QString &text , const QString &word , uint pos );
+    static QString        setword( const QString &text , const QString &word , int pos );
 
     /** Removes a word or ranges of words from the string,
       * and returns a new string. The ranges definitions
@@ -137,7 +137,7 @@ public:
       * @param pos the position (in words) of thw word to delete
       * @return the resulting string
       */
-    static QString        remword( const QString &text , uint pos );
+    static QString        remword( const QString &text , int pos );
 
     /** Removes a matching word from the string, and returns
       * a new string. Note that only ONE match is removed.
@@ -184,7 +184,7 @@ public:
       * @return the resulting string
       * @deprecated use QString::leftJustify instead
       */
-    static QString        ljust( const QString &text , uint width ) KDE_DEPRECATED;
+    static QString        ljust( const QString &text , int width ) KDE_DEPRECATED;
 
     /** Right-justifies a string and returns a string at least 'width' characters
       * wide.
@@ -195,7 +195,7 @@ public:
       * @return the resulting string
       * @deprecated use QString::rightJustify instead
       */
-    static QString        rjust( const QString &text , uint width ) KDE_DEPRECATED;
+    static QString        rjust( const QString &text , int width ) KDE_DEPRECATED;
 
     /** Centers a string and returns a string at least 'width' characters
       * wide.
@@ -205,7 +205,7 @@ public:
       * @param width the desired width of the new string
       * @return the resulting string
       */
-    static QString        center( const QString &text , uint width );
+    static QString        center( const QString &text , int width );
 
     /** Substitute characters at the beginning of a string by "...".
      * @param str is the string to modify
@@ -213,7 +213,7 @@ public:
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    static QString        lsqueeze( const QString & str, uint maxlen = 40 );
+    static QString        lsqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters at the beginning of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
@@ -227,7 +227,7 @@ public:
      */
     static QString lEmSqueeze( const QString & name,
                                const QFontMetrics& fontMetrics,
-                               uint maxlen = 30 );
+                               int maxlen = 30 );
 
     /** Substitute characters at the beginning of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -240,7 +240,7 @@ public:
      */
     static QString lPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
-                                  uint maxPixels );
+                                  int maxPixels );
 
     /** Substitute characters at the middle of a string by "...".
      * @param str is the string to modify
@@ -248,7 +248,7 @@ public:
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    static QString        csqueeze( const QString & str, uint maxlen = 40 );
+    static QString        csqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters in the middle of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
@@ -262,7 +262,7 @@ public:
      */
     static QString cEmSqueeze( const QString & name,
                                const QFontMetrics& fontMetrics,
-                               uint maxlen = 30 );
+                               int maxlen = 30 );
 
     /** Substitute characters in the middle of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -275,7 +275,7 @@ public:
      */
     static QString cPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
-                                  uint maxPixels );
+                                  int maxPixels );
 
     /** Substitute characters at the end of a string by "...".
      * @param str is the string to modify
@@ -283,7 +283,7 @@ public:
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    static QString        rsqueeze( const QString & str, uint maxlen = 40 );
+    static QString        rsqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters at the end of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
@@ -297,7 +297,7 @@ public:
      */
     static QString rEmSqueeze( const QString & name,
                                const QFontMetrics& fontMetrics,
-                               uint maxlen = 30 );
+                               int maxlen = 30 );
 
     /** Substitute characters at the end of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -310,7 +310,7 @@ public:
      */
     static QString rPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
-                                  uint maxPixels );
+                                  int maxPixels );
 
     /**
      * Match a filename.
@@ -341,7 +341,7 @@ public:
      * @return A QStringList containing tokens extracted from s.
      */
     static QStringList perlSplit
-      (const QString & sep, const QString & s, uint max = 0);
+      (const QString & sep, const QString & s, int max = 0);
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -361,7 +361,7 @@ public:
      * @return A QStringList containing tokens extracted from s.
      */
     static QStringList perlSplit
-      (const QChar & sep, const QString & s, uint max = 0);
+      (const QChar & sep, const QString & s, int max = 0);
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -381,7 +381,7 @@ public:
      * @return A QStringList containing tokens extracted from s.
      */
     static QStringList perlSplit
-      (const QRegExp & sep, const QString & s, uint max = 0);
+      (const QRegExp & sep, const QString & s, int max = 0);
 
     /**
      * This method auto-detects URLs in strings, and adds HTML markup to them
