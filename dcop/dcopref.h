@@ -486,8 +486,8 @@ public:
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1) {
 	QByteArray args;
-	args.sprintf( "(%s)",
-		     dcopTypeName(t1) );
+	args = QString().sprintf( "(%s)",
+		     dcopTypeName(t1) ).toAscii();
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1;
@@ -516,9 +516,9 @@ public:
 		    const T1& t1,
 		    const T2& t2 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s)",
+	args = QString().sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
-		     dcopTypeName(t2) );
+		     dcopTypeName(t2) ).toAscii();
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2;
@@ -548,9 +548,9 @@ public:
 		    const T1& t1,
 		    const T2& t2) {
 	QByteArray args;
-	args.sprintf( "(%s,%s)",
+	args = QString().sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
-		     dcopTypeName(t2) );
+		     dcopTypeName(t2) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2;
@@ -582,10 +582,10 @@ public:
 		    const T2& t2,
 		    const T3& t3 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
-		     dcopTypeName(t3) );
+		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3;
@@ -618,10 +618,10 @@ public:
 		    const T2& t2,
 		    const T3& t3) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
-		     dcopTypeName(t3) );
+		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3;
@@ -656,11 +656,11 @@ public:
 		    const T3& t3,
 		    const T4& t4 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
-		     dcopTypeName(t4) );
+		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4;
@@ -696,11 +696,11 @@ public:
 		    const T3& t3,
 		    const T4& t4) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
-		     dcopTypeName(t4) );
+		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4;
@@ -738,12 +738,12 @@ public:
 		    const T4& t4,
 		    const T5& t5 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
-		     dcopTypeName(t5) );
+		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5;
@@ -782,12 +782,12 @@ public:
 		    const T4& t4,
 		    const T5& t5 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
-		     dcopTypeName(t5) );
+		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5;
@@ -828,13 +828,13 @@ public:
 		    const T5& t5,
 		    const T6& t6 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
-		     dcopTypeName(t6) );
+		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
@@ -876,13 +876,13 @@ public:
 		    const T5& t5,
 		    const T6& t6) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
-		     dcopTypeName(t6) );
+		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
@@ -925,14 +925,14 @@ public:
 		    const T6& t6,
 		    const T7& t7 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
-		     dcopTypeName(t7) );
+		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
@@ -977,14 +977,14 @@ public:
 		    const T6& t6,
 		    const T7& t7) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
-		     dcopTypeName(t7) );
+		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
@@ -1031,7 +1031,7 @@ public:
 		    const T7& t7,
 		    const T8& t8 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
@@ -1039,7 +1039,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
 		     dcopTypeName(t7),
-		     dcopTypeName(t8) );
+		     dcopTypeName(t8) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
@@ -1087,7 +1087,7 @@ public:
 		    const T7& t7,
 		    const T8& t8) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
@@ -1095,7 +1095,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
 		     dcopTypeName(t7),
-		     dcopTypeName(t8) );
+		     dcopTypeName(t8) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
