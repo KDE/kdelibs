@@ -128,11 +128,11 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   if ( fun == "property(QByteArray)" )
   {
     QByteArray propName;
-    QDataStream stream( data, QIODevice::ReadOnly );
+    QDataStream stream( data );
     stream >> propName;
 
     replyType = "QVariant";
-    QDataStream reply( replyData, QIODevice::WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
     reply << object->property( propName );
     return true;
   }
@@ -141,11 +141,11 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   {
     QByteArray propName;
     QVariant propValue;
-    QDataStream stream( data, QIODevice::ReadOnly );
+    QDataStream stream( data );
     stream >> propName >> propValue;
 
     replyType = "bool";
-    QDataStream reply( replyData, QIODevice::WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
     reply << (Q_INT8)object->setProperty( propName, propValue );
     return true;
   }
@@ -153,7 +153,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   if ( fun == "propertyNames(bool)" )
   {
     Q_INT8 b;
-    QDataStream stream( data, QIODevice::ReadOnly );
+    QDataStream stream( data );
     stream >> b;
 
     QList<QByteArray> res;
@@ -163,7 +163,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
       res.append( it.current() );
 
     replyType = "QValueList<QByteArray>";
-    QDataStream reply( replyData, QIODevice::WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
     reply << res;
     return true;
   }
@@ -178,7 +178,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   if ( set )
   {
     QVariant prop;
-    QDataStream stream( data, QIODevice::ReadOnly );
+    QDataStream stream( &data );
 
     QVariant::Type type = QVariant::nameToType( arg );
     if ( type == QVariant::Invalid )
@@ -249,7 +249,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
       return false;
 
     replyType = prop.typeName();
-    QDataStream reply( replyData, QIODevice::WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
 
 #define MARSHAL( type ) \
   case QVariant::type: \

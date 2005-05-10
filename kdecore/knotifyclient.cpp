@@ -89,7 +89,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
     winId = (int)widget->topLevelWidget()->winId();
 
   QByteArray data;
-  QDataStream ds(data, QIODevice::WriteOnly);
+  QDataStream ds(&data, QIODevice::WriteOnly);
   ds << message << appname << text << sound << file << present << level
      << winId << uniqueId;
 

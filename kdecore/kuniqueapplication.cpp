@@ -283,7 +283,7 @@ KUniqueApplication::start()
 #endif
      
      QByteArray data, reply;
-     QDataStream ds(data, QIODevice::WriteOnly);
+     QDataStream ds(&data, QIODevice::WriteOnly);
 
      KCmdLineArgs::saveAppArgs(ds);
      ds << new_asn_id;
@@ -303,7 +303,7 @@ KUniqueApplication::start()
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
-     QDataStream rs(reply, QIODevice::ReadOnly);
+     QDataStream rs(reply);
      int exitCode;
      rs >> exitCode;
      delete dc;	// Clean up DCOP commmunication
@@ -432,7 +432,7 @@ KUniqueApplication::processDelayed()
      QByteArray replyType;
      if (request->fun == "newInstance()") {
        dcopClient()->setPriorityCall(false);
-       QDataStream ds(request->data, QIODevice::ReadOnly);
+       QDataStream ds(request->data);
        KCmdLineArgs::loadAppArgs(ds);
        if( !ds.atEnd()) // backwards compatibility
        {
@@ -447,7 +447,7 @@ KUniqueApplication::processDelayed()
        if( s_handleAutoStarted )
            KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
 #endif
-       QDataStream rs(replyData, QIODevice::WriteOnly);
+       QDataStream rs(&replyData, QIODevice::WriteOnly);
        rs << exitCode;
        replyType = "int";
      }

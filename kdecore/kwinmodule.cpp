@@ -404,7 +404,7 @@ void KWinModule::doNotManage( const QString& title )
 	kapp->dcopClient()->attach();
     QByteArray data, replyData;
     QByteArray replyType;
-    QDataStream arg(data, QIODevice::WriteOnly);
+    QDataStream arg(&data, QIODevice::WriteOnly);
     arg << title;
     kapp->dcopClient()->call("kwin", "", "doNotManage(QString)",
 			     data, replyType, replyData);
