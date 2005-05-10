@@ -92,8 +92,8 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   dcop_file[ n - 1 ] = '\0';
   n -= strlen(home_dir);
   
-  strncat(dcop_file, "/.DCOPserver_", n);
-  n -= strlen("/.DCOPserver_");
+  strncat(dcop_file, "/.DCOP4server_", n);
+  n -= strlen("/.DCOP4server_");
 
   if (gethostname(dcop_file+strlen(dcop_file), n) != 0)
   {

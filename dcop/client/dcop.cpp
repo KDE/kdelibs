@@ -408,7 +408,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 
     QDir d( home );
     d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
-    d.setNameFilter( ".DCOPserver*" );
+    d.setNameFilter( ".DCOP4server*" );
 
     const QList<QFileInfo> list = d.entryInfoList();
     if( !list.count() )

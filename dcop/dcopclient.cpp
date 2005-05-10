@@ -279,7 +279,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
             disp[i] = '_';
     }
 
-    fName += "/.DCOPserver_";
+    fName += "/.DCOP4server_";
     if (hostname.isEmpty())
     {
         char hostName[256];
@@ -1038,8 +1038,8 @@ QByteArray DCOPClient::normalizeFunctionSignature( const QByteArray& fun ) {
     if ( fun.isEmpty() )                                // nothing to do
         return fun;
     QByteArray result( fun.size() );
-    char *from        = strdup( fun.data() );
-    char *to        = strdup( result.data() );
+    const char *from = fun.data();
+    char       *to   = result.data();
     char *first = to;
     char last = 0;
     while ( true ) {
