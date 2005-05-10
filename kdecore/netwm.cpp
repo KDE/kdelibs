@@ -1590,7 +1590,7 @@ void NETRootInfo::closeWindowRequest(Window window) {
 
 
 void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
-				    Qt::Orientation direction)
+				    Direction direction)
 {
 
 #ifdef    NETWMDEBUG
@@ -3092,7 +3092,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 	len = 1;
 	break;
 
-    case ToolBarDock:
+    case Dock:
 	data[0] = net_wm_window_type_dock;
 	data[1] = None;
 	len = 1;
@@ -3831,7 +3831,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		    else if ((Atom) types[count] == net_wm_window_type_desktop)
 			p->types[ pos++ ] = Desktop;
 		    else if ((Atom) types[count] == net_wm_window_type_dock)
-			p->types[ pos++ ] = Qt::ToolBarDock;
+			p->types[ pos++ ] = Dock;
 		    else if ((Atom) types[count] == net_wm_window_type_toolbar)
 			p->types[ pos++ ] = Tool;
 		    else if ((Atom) types[count] == net_wm_window_type_menu)
@@ -4144,7 +4144,7 @@ bool NET::typeMatchesMask( WindowType type, unsigned long mask ) {
 	    break;
         CHECK_TYPE_MASK( Normal )
         CHECK_TYPE_MASK( Desktop )
-        CHECK_TYPE_MASK( Qt::ToolBarDock )
+        CHECK_TYPE_MASK( Dock )
         CHECK_TYPE_MASK( Toolbar )
         CHECK_TYPE_MASK( Menu )
         CHECK_TYPE_MASK( Dialog )

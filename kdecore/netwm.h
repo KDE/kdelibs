@@ -548,7 +548,7 @@ public:
        a description of the different directions).
     **/
     void moveResizeRequest(Window window, int x_root, int y_root,
-			   Qt::Orientation direction);
+			   Direction direction);
 
     /**
        Clients (such as pagers/taskbars) that wish to move/resize a window

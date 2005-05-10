@@ -283,7 +283,7 @@ public:
 	Unknown  = -1,
 	Normal   = 0,
 	Desktop  = 1,
-	ToolBarDock     = 2,
+	Dock     = 2,
 	Toolbar  = 3,
        	Menu     = 4,
 	Dialog   = 5,
@@ -398,7 +398,7 @@ public:
        @li KeyboardMove (movement via keyboard)
     **/
 
-    enum Orientation {
+    enum Direction {
 	TopLeftCorner      = 0,
 	DockTop          = 1,
 	TopRightCorner     = 2,
