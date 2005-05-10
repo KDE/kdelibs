@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include <q3dragobject.h>
+#include <qevent.h>
 #include <qtimer.h>
 #include <q3header.h>
 #include <qcursor.h>

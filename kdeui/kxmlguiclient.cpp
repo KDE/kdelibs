@@ -723,7 +723,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
 {
   enum { ST_START, ST_AFTER_OPEN, ST_AFTER_GUI,
                ST_EXPECT_VERSION, ST_VERSION_NUM} state = ST_START;
-  for (unsigned int pos = 0; pos < xml.length(); pos++)
+  for (int pos = 0; pos < xml.length(); pos++)
   {
     switch (state)
     {
@@ -757,7 +757,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
       }
       case ST_VERSION_NUM:
       {
-        unsigned int endpos;
+        int endpos;
         for (endpos = pos; endpos <  xml.length(); endpos++)
         {
           if (xml[endpos].unicode() >= '0' && xml[endpos].unicode() <= '9')

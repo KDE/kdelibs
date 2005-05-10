@@ -25,11 +25,12 @@
 #include <qmessagebox.h>
 #include <qstringlist.h>
 #include <q3vbox.h>
-#include <qvgroupbox.h>
+#include <q3groupbox.h>
 #include <q3stylesheet.h>
 #include <q3simplerichtext.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
+#include <qx11info_x11.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -245,7 +246,8 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
 
     if (!details.isEmpty())
     {
-       QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details"), dialog);
+       Q3GroupBox *detailsGroup = new Q3GroupBox( i18n("Details"), dialog);
+       detailsGroup->setOrientation(Qt::Vertical);
        if ( details.length() < 512 ) {
          KActiveLabel *label3 = new KActiveLabel(qrichtextify(details),
                                                  detailsGroup);

@@ -37,6 +37,7 @@
 #include <algorithm>
 
 #include <qapplication.h>
+#include <qevent.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qsize.h>
@@ -204,7 +205,7 @@ void KNumInput::setSteps(int minor, int major)
 KIntSpinBox::KIntSpinBox(QWidget *parent, const char *name)
     : QSpinBox(0, 99, 1, parent, name)
 {
-    editor()->setAlignment(Qt::AlignRight);
+    lineEdit()->setAlignment(Qt::AlignRight);
     val_base = 10;
     setValue(0);
 }
@@ -217,7 +218,7 @@ KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
                          QWidget* parent, const char* name)
     : QSpinBox(lower, upper, step, parent, name)
 {
-    editor()->setAlignment(Qt::AlignRight);
+    lineEdit()->setAlignment(Qt::AlignRight);
     val_base = base;
     setValue(value);
 }
@@ -245,9 +246,9 @@ int KIntSpinBox::mapTextToValue(bool* ok)
 
 void KIntSpinBox::setEditFocus(bool mark)
 {
-    editor()->setFocus();
+    lineEdit()->setFocus();
     if(mark)
-        editor()->selectAll();
+        lineEdit()->selectAll();
 }
 
 
@@ -899,7 +900,7 @@ QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) co
     QString pref = spinBox->prefix();
     QString suff = spinBox->suffix();
     QString suffStriped = suff.stripWhiteSpace();
-    uint overhead = pref.length() + suff.length();
+    int overhead = pref.length() + suff.length();
     State state = Invalid;
 
     if ( overhead == 0 ) {
@@ -996,7 +997,7 @@ public:
 KDoubleSpinBox::KDoubleSpinBox( QWidget * parent, const char * name )
   : QSpinBox( parent, name )
 {
-  editor()->setAlignment( Qt::AlignRight );
+  lineEdit()->setAlignment( Qt::AlignRight );
   d = new Private();
   updateValidator();
   connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
@@ -1007,7 +1008,7 @@ KDoubleSpinBox::KDoubleSpinBox( double lower, double upper, double step,
 				QWidget * parent, const char * name )
   : QSpinBox( parent, name )
 {
-  editor()->setAlignment( Qt::AlignRight );
+  lineEdit()->setAlignment( Qt::AlignRight );
   d = new Private();
   setRange( lower, upper, step, precision );
   setValue( value );
