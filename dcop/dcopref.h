@@ -1,3 +1,5 @@
+#ifndef DCOPREF_H
+#define DCOPREF_H
 /*
 Copyright (c) 2002 Matthias Ettrich <ettrich@kde.org>
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -1137,8 +1139,8 @@ public:
     template <class T1>
     bool send( const QByteArray& fun, const T1& t1 ) {
 	QByteArray args;
-	args.sprintf( "(%s)",
-		     dcopTypeName(t1) );
+	args = QString().sprintf( "(%s)",
+		     dcopTypeName(t1) ).toAscii();
 	QByteArray data;
 	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1;
@@ -1167,9 +1169,9 @@ public:
 		    const T1& t1,
 		    const T2& t2 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s)",
+	args = QString().sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
-		     dcopTypeName(t2) );
+		     dcopTypeName(t2) ).toAscii();
 	QByteArray data;
 	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2;
@@ -1201,12 +1203,12 @@ public:
 		    const T2& t2,
 		    const T3& t3 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
-		     dcopTypeName(t3) );
+		     dcopTypeName(t3) ).toAscii();
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2 << t3;
 	return sendInternal( fun, args, data );
     }
@@ -1239,13 +1241,13 @@ public:
 		    const T3& t3,
 		    const T4& t4 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
-		     dcopTypeName(t4) );
+		     dcopTypeName(t4) ).toAscii();
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4;
 	return sendInternal( fun, args, data );
     }
@@ -1281,14 +1283,14 @@ public:
 		    const T4& t4,
 		    const T5& t5 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
-		     dcopTypeName(t5) );
+		     dcopTypeName(t5) ).toAscii();
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5;
 	return sendInternal( fun, args, data );
     }
@@ -1327,15 +1329,15 @@ public:
 		    const T5& t5,
 		    const T6& t6 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
-		     dcopTypeName(t6) );
+		     dcopTypeName(t6) ).toAscii();
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return sendInternal( fun, args, data );
     }
@@ -1377,16 +1379,16 @@ public:
 		    const T6& t6,
 		    const T7& t7 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
-		     dcopTypeName(t7) );
+		     dcopTypeName(t7) ).toAscii();
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return sendInternal( fun, args, data );
     }
@@ -1431,7 +1433,7 @@ public:
 		    const T7& t7,
 		    const T8& t8 ) {
 	QByteArray args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
+	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
@@ -1439,9 +1441,9 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
 		     dcopTypeName(t7),
-		     dcopTypeName(t8) );
+		     dcopTypeName(t8) ).toAscii();
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return sendInternal( fun, args, data );
     }
@@ -1472,3 +1474,4 @@ DCOP_EXPORT QDataStream& operator<<( QDataStream&, const DCOPRef& ref );
 DCOP_EXPORT QDataStream& operator>>( QDataStream&, DCOPRef& ref );
 
 #endif
+#endif // DCOPREF_H
