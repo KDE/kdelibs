@@ -1646,11 +1646,13 @@ KURL KURL::join( const KURL::List & lst )
   if (lst.isEmpty()) return KURL();
   KURL tmp;
 
-  KURL::List::ConstIterator first = lst.fromLast();
-  for( KURL::List::ConstIterator it = first; it != lst.end(); --it )
+  
+  QListIterator<KURL> it(lst);
+  it.toBack();
+  while (it.hasPrevious())
   {
-     KURL u(*it);
-     if (it != first)
+     KURL u(it.previous());
+     if (it.hasPrevious())
      {
         if (u.m_strRef_encoded.isNull()) u.m_strRef_encoded = tmp.url();
         else u.m_strRef_encoded += "#" + tmp.url(); // Support more than one suburl thingy
@@ -1666,8 +1668,7 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
   QString fname;
   if (hasSubURL()) { // If we have a suburl, then return the filename from there
     KURL::List list = KURL::split(*this);
-    KURL::List::Iterator it = list.fromLast();
-    return (*it).fileName(_strip_trailing_slash);
+    return list.last().fileName(_strip_trailing_slash);
   }
   const QString &path = m_strPath;
 
@@ -1868,7 +1869,7 @@ KURL KURL::upURL( ) const
          break; // Finshed.
      if (lst.count() == 1)
          break; // Finished.
-     lst.remove(lst.fromLast());
+     lst.removeLast();
   }
   return join( lst );
 }
