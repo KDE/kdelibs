@@ -203,7 +203,7 @@ void PlastikStyle::updateProgressPos()
     bool visible = false;
     for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
     {   
-        if ( !::qt_cast<Q3ProgressBar*>(iter.key()) )
+        if ( !qobject_cast<Q3ProgressBar>(iter.key()) )
             continue;
         
         pb = dynamic_cast<Q3ProgressBar*>(iter.key());
@@ -248,25 +248,25 @@ void PlastikStyle::polish(QWidget* widget)
 
     // use qt_cast where possible to check if the widget inheits one of the classes. might improve
     // performance compared to QObject::inherits()
-    if ( ::qt_cast<QPushButton*>(widget) || ::qt_cast<QComboBox*>(widget) ||
-            ::qt_cast<Q3SpinWidget*>(widget) || ::qt_cast<QSlider*>(widget) ||
-            ::qt_cast<QCheckBox*>(widget) || ::qt_cast<QRadioButton*>(widget) ||
-            ::qt_cast<QToolButton*>(widget) || widget->inherits("QSplitterHandle") )
+    if ( qobject_cast<QPushButton>(widget) || qobject_cast<QComboBox>(widget) ||
+            qobject_cast<Q3SpinWidget>(widget) || qobject_cast<QSlider>(widget) ||
+            qobject_cast<QCheckBox>(widget) || qobject_cast<QRadioButton>(widget) ||
+            qobject_cast<QToolButton>(widget) || widget->inherits("QSplitterHandle") )
     {
 //         widget->setBackgroundMode(PaletteBackground);
         widget->installEventFilter(this);
-    } else if (::qt_cast<QLineEdit*>(widget)) {
+    } else if (qobject_cast<QLineEdit>(widget)) {
         widget->installEventFilter(this);
-    } else if (::qt_cast<QTabBar*>(widget)) {
+    } else if (qobject_cast<QTabBar>(widget)) {
         widget->setMouseTracking(true);
         widget->installEventFilter(this);
-    } else if (::qt_cast<Q3PopupMenu*>(widget)) {
+    } else if (qobject_cast<Q3PopupMenu>(widget)) {
         widget->setBackgroundMode( Qt::NoBackground );
     } else if ( !qstrcmp(widget->name(), "kde toolbar widget") ) {
         widget->installEventFilter(this);
     }
 
-    if( _animateProgressBar && ::qt_cast<Q3ProgressBar*>(widget) )
+    if( _animateProgressBar && qobject_cast<Q3ProgressBar>(widget) )
     {
         widget->installEventFilter(this);
         progAnimWidgets[widget] = 0;
@@ -285,24 +285,24 @@ void PlastikStyle::unPolish(QWidget* widget)
     }
 
     // use qt_cast to check if the widget inheits one of the classes.
-    if ( ::qt_cast<QPushButton*>(widget) || ::qt_cast<QComboBox*>(widget) ||
-            ::qt_cast<Q3SpinWidget*>(widget) || ::qt_cast<QSlider*>(widget) ||
-            ::qt_cast<QCheckBox*>(widget) || ::qt_cast<QRadioButton*>(widget) ||
-            ::qt_cast<QToolButton*>(widget) || ::qt_cast<QLineEdit*>(widget) ||
+    if ( qobject_cast<QPushButton>(widget) || qobject_cast<QComboBox>(widget) ||
+            qobject_cast<Q3SpinWidget>(widget) || qobject_cast<QSlider>(widget) ||
+            qobject_cast<QCheckBox>(widget) || qobject_cast<QRadioButton>(widget) ||
+            qobject_cast<QToolButton>(widget) || qobject_cast<QLineEdit>(widget) ||
             widget->inherits("QSplitterHandle") )
     {
         widget->removeEventFilter(this);
     }
-    else if (::qt_cast<QTabBar*>(widget)) {
+    else if (qobject_cast<QTabBar>(widget)) {
         widget->setMouseTracking(false);
         widget->removeEventFilter(this);
-    } else if (::qt_cast<Q3PopupMenu*>(widget)) {
+    } else if (qobject_cast<Q3PopupMenu>(widget)) {
         widget->setBackgroundMode( Qt::PaletteBackground );
     } else if ( !qstrcmp(widget->name(), "kde toolbar widget") ) {
         widget->removeEventFilter(this);
     }
 
-    if ( ::qt_cast<Q3ProgressBar*>(widget) )
+    if ( qobject_cast<Q3ProgressBar>(widget) )
     {
         progAnimWidgets.remove(widget);
     }
@@ -2306,7 +2306,7 @@ void PlastikStyle::drawControl(ControlElement element,
         case CE_TabBarTab: {
             const QTabBar * tb = (const QTabBar *) widget;
             bool cornerWidget = false;
-            if( ::qt_cast<QTabWidget*>(tb->parent()) ) {
+            if( qobject_cast<QTabWidget>(tb->parent()) ) {
                 const QTabWidget *tw = (const QTabWidget*)tb->parent();
                 // is there a corner widget in the (top) left edge?
                 QWidget *cw = tw->cornerWidget(Qt::TopLeftCorner);
@@ -3338,7 +3338,7 @@ int PlastikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
             return 1;
 
         case PM_DefaultFrameWidth: {
-            if(widget && ::qt_cast<Q3PopupMenu*>(widget))
+            if(widget && qobject_cast<Q3PopupMenu>(widget))
                 return 1;
             else
                 return 2;
@@ -3436,7 +3436,7 @@ QSize PlastikStyle::sizeFromContents(ContentsType t,
 
         case CT_ToolButton:
         {
-            if(widget->parent() && ::qt_cast<Q3ToolBar*>(widget->parent()) )
+            if(widget->parent() && qobject_cast<Q3ToolBar>(widget->parent()) )
                 return QSize( s.width()+2*4, s.height()+2*4 );
             else
                 return KStyle::sizeFromContents (t, widget, s, opt);
@@ -3471,10 +3471,10 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
     if (!obj->isWidgetType() ) return false;
  
     // focus highlight
-    if ( ::qt_cast<QLineEdit*>(obj) ) {
+    if ( qobject_cast<QLineEdit>(obj) ) {
         QWidget* widget = static_cast<QWidget*>(obj);
 
-        if ( ::qt_cast<Q3SpinWidget*>(widget->parentWidget()) )
+        if ( qobject_cast<Q3SpinWidget>(widget->parentWidget()) )
         {
             QWidget* spinbox = widget->parentWidget();
             if ((ev->type() == QEvent::FocusIn) || (ev->type() == QEvent::FocusOut))
@@ -3492,9 +3492,9 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
     }
     
     //Hover highlight... use qt_cast to check if the widget inheits one of the classes.
-    if ( ::qt_cast<QPushButton*>(obj) || ::qt_cast<QComboBox*>(obj) ||
-            ::qt_cast<Q3SpinWidget*>(obj) || ::qt_cast<QCheckBox*>(obj) ||
-            ::qt_cast<QRadioButton*>(obj) || ::qt_cast<QToolButton*>(obj) || obj->inherits("QSplitterHandle") )
+    if ( qobject_cast<QPushButton>(obj) || qobject_cast<QComboBox>(obj) ||
+            qobject_cast<Q3SpinWidget>(obj) || qobject_cast<QCheckBox>(obj) ||
+            qobject_cast<QRadioButton>(obj) || qobject_cast<QToolButton>(obj) || obj->inherits("QSplitterHandle") )
     {
         if ((ev->type() == QEvent::Enter) && static_cast<QWidget*>(obj)->isEnabled())
         {
@@ -3510,7 +3510,7 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
         }
         return false;
     }
-    if ( ::qt_cast<QTabBar*>(obj) ) {
+    if ( qobject_cast<QTabBar>(obj) ) {
         if ((ev->type() == QEvent::Enter) && static_cast<QWidget*>(obj)->isEnabled())
         {
             QWidget* tabbar = static_cast<QWidget*>(obj);
@@ -3548,7 +3548,7 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
         return false;
     }
     // Track show events for progress bars
-    if ( _animateProgressBar && ::qt_cast<Q3ProgressBar*>(obj) )
+    if ( _animateProgressBar && qobject_cast<Q3ProgressBar>(obj) )
     {
         if ((ev->type() == QEvent::Show) && !animationTimer->isActive())
         {

@@ -133,7 +133,7 @@ KToggleAction::~KToggleAction()
 
 int KToggleAction::plug( QWidget* widget, int index )
 {
-  if ( !::qt_cast<Q3PopupMenu *>( widget ) && !::qt_cast<KToolBar *>( widget ) )
+  if ( !qobject_cast<Q3PopupMenu >( widget ) && !qobject_cast<KToolBar >( widget ) )
   {
     kdWarning() << "Can not plug KToggleAction in " << widget->className() << endl;
     return -1;
@@ -145,7 +145,7 @@ int KToggleAction::plug( QWidget* widget, int index )
   if ( _index == -1 )
     return _index;
 
-  if ( ::qt_cast<KToolBar *>( widget ) ) {
+  if ( qobject_cast<KToolBar >( widget ) ) {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
     bar->setToggle( itemId( _index ), true );
@@ -176,7 +176,7 @@ void KToggleAction::setChecked( bool c )
     if ( list ) {
       QObjectListIt it( *list );
       for( ; it.current(); ++it ) {
-          if ( ::qt_cast<KToggleAction *>( it.current() ) && it.current() != this &&
+          if ( qobject_cast<KToggleAction >( it.current() ) && it.current() != this &&
             static_cast<KToggleAction*>(it.current())->exclusiveGroup() == exclusiveGroup() ) {
 	  KToggleAction *a = static_cast<KToggleAction*>(it.current());
 	  if( a->isChecked() ) {
@@ -193,7 +193,7 @@ void KToggleAction::updateChecked( int id )
 {
   QWidget *w = container( id );
 
-  if ( ::qt_cast<Q3PopupMenu *>( w ) ) {
+  if ( qobject_cast<Q3PopupMenu >( w ) ) {
     Q3PopupMenu* pm = static_cast<Q3PopupMenu*>(w);
     int itemId_ = itemId( id );
     if ( !d->m_checkedGuiItem )
@@ -209,12 +209,12 @@ void KToggleAction::updateChecked( int id )
       updateShortcut( pm, itemId_ );
     }
   }
-  else if ( ::qt_cast<QMenuBar *>( w ) ) // not handled in plug...
+  else if ( qobject_cast<QMenuBar >( w ) ) // not handled in plug...
     static_cast<QMenuBar*>(w)->setItemChecked( itemId( id ), d->m_checked );
-  else if ( ::qt_cast<KToolBar *>( w ) )
+  else if ( qobject_cast<KToolBar >( w ) )
   {
     QWidget* r = static_cast<KToolBar*>( w )->getButton( itemId( id ) );
-    if ( r && ::qt_cast<KToolBarButton *>( r ) ) {
+    if ( r && qobject_cast<KToolBarButton >( r ) ) {
       static_cast<KToolBar*>( w )->setButton( itemId( id ), d->m_checked );
       if ( d->m_checkedGuiItem && d->m_checkedGuiItem->hasIcon() ) {
         const KGuiItem* gui = d->m_checked ? d->m_checkedGuiItem : &guiItem();
@@ -314,7 +314,7 @@ void KRadioAction::slotActivated()
   {
     const QObject *senderObj = sender();
 
-    if ( !senderObj || !::qt_cast<const KToolBarButton *>( senderObj ) )
+    if ( !senderObj || !qobject_cast<const KToolBarButton >( senderObj ) )
       return;
 
     const_cast<KToolBarButton *>( static_cast<const KToolBarButton *>( senderObj ) )->on( true );
@@ -519,10 +519,10 @@ void KSelectAction::changeItem( int id, int index, const QString& text)
         return;
 
   QWidget* w = container( id );
-  if ( ::qt_cast<KToolBar *>( w ) )
+  if ( qobject_cast<KToolBar >( w ) )
   {
      QWidget* r = (static_cast<KToolBar*>( w ))->getWidget( itemId( id ) );
-     if ( ::qt_cast<QComboBox *>( r ) )
+     if ( qobject_cast<QComboBox >( r ) )
      {
         QComboBox *b = static_cast<QComboBox*>( r );
         b->changeItem(text, index );
@@ -569,9 +569,9 @@ void KSelectAction::updateCurrentItem( int id )
         return;
 
   QWidget* w = container( id );
-  if ( ::qt_cast<KToolBar *>( w ) ) {
+  if ( qobject_cast<KToolBar >( w ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
-    if ( ::qt_cast<QComboBox *>( r ) ) {
+    if ( qobject_cast<QComboBox >( r ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
       b->setCurrentItem( d->m_current );
     }
@@ -586,9 +586,9 @@ int KSelectAction::comboWidth() const
 void KSelectAction::updateComboWidth( int id )
 {
   QWidget* w = container( id );
-  if ( ::qt_cast<KToolBar *>( w ) ) {
+  if ( qobject_cast<KToolBar >( w ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
-    if ( ::qt_cast<QComboBox *>( r ) ) {
+    if ( qobject_cast<QComboBox >( r ) ) {
       QComboBox *cb = static_cast<QComboBox*>( r );
       cb->setMinimumWidth( d->m_comboWidth );
       cb->setMaximumWidth( d->m_comboWidth );
@@ -600,9 +600,9 @@ void KSelectAction::updateItems( int id )
 {
   kdDebug(129) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
   QWidget* w = container( id );
-  if ( ::qt_cast<KToolBar *>( w ) ) {
+  if ( qobject_cast<KToolBar >( w ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
-    if ( ::qt_cast<QComboBox *>( r ) ) {
+    if ( qobject_cast<QComboBox >( r ) ) {
       QComboBox *cb = static_cast<QComboBox*>( r );
       cb->clear();
       QStringList lst = comboItems();
@@ -623,7 +623,7 @@ int KSelectAction::plug( QWidget *widget, int index )
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( ::qt_cast<Q3PopupMenu *>( widget) )
+  if ( qobject_cast<Q3PopupMenu >( widget) )
   {
     // Create the PopupMenu and store it in m_menu
     (void)popupMenu();
@@ -647,7 +647,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( ::qt_cast<KToolBar *>( widget ) )
+  else if ( qobject_cast<KToolBar >( widget ) )
   {
     KToolBar* bar = static_cast<KToolBar*>( widget );
     int id_ = KAction::getToolButtonID();
@@ -678,7 +678,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( ::qt_cast<QMenuBar *>( widget ) )
+  else if ( qobject_cast<QMenuBar >( widget ) )
   {
     // Create the PopupMenu and store it in m_menu
     (void)popupMenu();
@@ -735,9 +735,9 @@ void KSelectAction::clear()
 void KSelectAction::updateClear( int id )
 {
   QWidget* w = container( id );
-  if ( ::qt_cast<KToolBar *>( w ) ) {
+  if ( qobject_cast<KToolBar >( w ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
-    if ( ::qt_cast<QComboBox *>( r ) ) {
+    if ( qobject_cast<QComboBox >( r ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
       b->clear();
     }
@@ -1192,7 +1192,7 @@ int KRecentFilesAction::plug( QWidget *widget, int index )
     return -1;
   // This is very related to KActionMenu::plug.
   // In fact this class could be an interesting base class for KActionMenu
-  if ( ::qt_cast<KToolBar *>( widget ) )
+  if ( qobject_cast<KToolBar >( widget ) )
   {
     KToolBar *bar = (KToolBar *)widget;
 
@@ -1408,7 +1408,7 @@ int KFontAction::plug( QWidget *w, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
-  if ( ::qt_cast<KToolBar *>( w ) )
+  if ( qobject_cast<KToolBar >( w ) )
   {
     KToolBar* bar = static_cast<KToolBar*>( w );
     int id_ = KAction::getToolButtonID();
@@ -1678,7 +1678,7 @@ int KActionMenu::plug( QWidget* widget, int index )
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( ::qt_cast<Q3PopupMenu *>( widget ) )
+  if ( qobject_cast<Q3PopupMenu >( widget ) )
   {
     Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
     int id;
@@ -1698,7 +1698,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( ::qt_cast<KToolBar *>( widget ) )
+  else if ( qobject_cast<KToolBar >( widget ) )
   {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
@@ -1740,7 +1740,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( ::qt_cast<QMenuBar *>( widget ) )
+  else if ( qobject_cast<QMenuBar >( widget ) )
   {
     QMenuBar *bar = static_cast<QMenuBar *>( widget );
 
@@ -1825,7 +1825,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
     return -1;
   // This is very related to KActionMenu::plug.
   // In fact this class could be an interesting base class for KActionMenu
-  if ( ::qt_cast<KToolBar *>( widget ) )
+  if ( qobject_cast<KToolBar >( widget ) )
   {
     KToolBar *bar = (KToolBar *)widget;
 
@@ -1937,7 +1937,7 @@ void KToggleToolBarAction::setChecked( bool c )
       m_toolBar->hide();
     }
     Q3MainWindow* mw = m_toolBar->mainWindow();
-    if ( mw && ::qt_cast<KMainWindow *>( mw ) )
+    if ( mw && qobject_cast<KMainWindow >( mw ) )
       static_cast<KMainWindow *>( mw )->setSettingsDirty();
   }
   KToggleAction::setChecked( c );
@@ -2040,7 +2040,7 @@ int KWidgetAction::plug( QWidget* w, int index )
   if (kapp && !kapp->authorizeKAction(name()))
       return -1;
 
-  if ( !::qt_cast<KToolBar *>( w ) ) {
+  if ( !qobject_cast<KToolBar >( w ) ) {
     kdError() << "KWidgetAction::plug: KWidgetAction must be plugged into KToolBar." << endl;
     return -1;
   }
@@ -2104,7 +2104,7 @@ KActionSeparator::~KActionSeparator()
 
 int KActionSeparator::plug( QWidget *widget, int index )
 {
-  if ( ::qt_cast<Q3PopupMenu *>( widget) )
+  if ( qobject_cast<Q3PopupMenu >( widget) )
   {
     Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
 
@@ -2115,7 +2115,7 @@ int KActionSeparator::plug( QWidget *widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( ::qt_cast<QMenuBar *>( widget ) )
+  else if ( qobject_cast<QMenuBar >( widget ) )
   {
     QMenuBar *menuBar = static_cast<QMenuBar *>( widget );
 
@@ -2127,7 +2127,7 @@ int KActionSeparator::plug( QWidget *widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( ::qt_cast<KToolBar *>( widget ) )
+  else if ( qobject_cast<KToolBar >( widget ) )
   {
     KToolBar *toolBar = static_cast<KToolBar *>( widget );
 
@@ -2172,7 +2172,7 @@ int KPasteTextAction::plug( QWidget *widget, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
-  if ( ::qt_cast<KToolBar *>( widget ) )
+  if ( qobject_cast<KToolBar >( widget ) )
   {
     KToolBar *bar = (KToolBar *)widget;
 

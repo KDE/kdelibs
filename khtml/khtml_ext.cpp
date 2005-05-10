@@ -335,9 +335,9 @@ void KHTMLPartBrowserExtension::updateEditActions()
     bool hasSelection = false;
 
     if( m_editableFormWidget) {
-        if ( ::qt_cast<QLineEdit*>(m_editableFormWidget))
+        if ( qobject_cast<QLineEdit>(m_editableFormWidget))
             hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
-        else if(::qt_cast<Q3TextEdit*>(m_editableFormWidget))
+        else if(qobject_cast<Q3TextEdit>(m_editableFormWidget))
             hasSelection = static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
     }
 

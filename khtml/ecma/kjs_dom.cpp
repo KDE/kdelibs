@@ -974,7 +974,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     Window* active = Window::retrieveActive(exec);
     // Complete the URL using the "active part" (running interpreter). We do this for the security
     // check and to make sure we load exactly the same url as we have verified to be safe
-    KHTMLPart *khtmlpart = ::qt_cast<KHTMLPart *>(active->part());
+    KHTMLPart *khtmlpart = qobject_cast<KHTMLPart >(active->part());
     if (khtmlpart) {
       // Security: only allow documents to be loaded from the same host
       QString dstUrl = khtmlpart->htmlDocument().completeURL(s).string();
@@ -1156,7 +1156,7 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
   case DOMDOMImplementation::CreateDocument: { // DOM2
     // Initially set the URL to document of the creator... this is so that it resides in the same
     // host/domain for security checks. The URL will be updated if Document.load() is called.
-    KHTMLPart *part = ::qt_cast<KHTMLPart*>(static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part());
+    KHTMLPart *part = qobject_cast<KHTMLPart>(static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part());
     if (part) {
       Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
       KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();

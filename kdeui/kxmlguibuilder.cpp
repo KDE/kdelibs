@@ -117,7 +117,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   if ( element.tagName().lower() == d->tagMainWindow )
   {
     KMainWindow *mainwindow = 0;
-    if ( ::qt_cast<KMainWindow *>( d->m_widget ) )
+    if ( qobject_cast<KMainWindow >( d->m_widget ) )
       mainwindow = static_cast<KMainWindow *>(d->m_widget);
 
     return mainwindow;
@@ -127,7 +127,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   {
     KMenuBar *bar;
 
-    if ( ::qt_cast<KMainWindow *>( d->m_widget ) )
+    if ( qobject_cast<KMainWindow >( d->m_widget ) )
       bar = static_cast<KMainWindow *>(d->m_widget)->menuBar();
     else
       bar = new KMenuBar( d->m_widget );
@@ -145,7 +145,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     // And we don't want to set the parent for a standalone popupmenu,
     // otherwise its shortcuts appear.
     QWidget* p = parent;
-    while ( p && !::qt_cast<KMainWindow *>( p ) )
+    while ( p && !qobject_cast<KMainWindow >( p ) )
         p = p->parentWidget();
 
     Q3CString name = element.attribute( d->attrName ).utf8();
@@ -181,14 +181,14 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       pix = SmallIconSet( icon, 16, instance );
     }
 
-    if ( parent && ::qt_cast<KMenuBar *>( parent ) )
+    if ( parent && qobject_cast<KMenuBar >( parent ) )
     {
       if ( !icon.isEmpty() )
         id = static_cast<KMenuBar *>(parent)->insertItem( pix, i18nText, popup, -1, index );
       else
         id = static_cast<KMenuBar *>(parent)->insertItem( i18nText, popup, -1, index );
     }
-    else if ( parent && ::qt_cast<Q3PopupMenu *>( parent ) )
+    else if ( parent && qobject_cast<Q3PopupMenu >( parent ) )
     {
       if ( !icon.isEmpty() )
         id = static_cast<Q3PopupMenu *>(parent)->insertItem( pix, i18nText, popup, -1, index );
@@ -211,7 +211,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
        bar = new KToolBar( d->m_widget, name, honor, false );
     }
 
-    if ( ::qt_cast<KMainWindow *>( d->m_widget ) )
+    if ( qobject_cast<KMainWindow >( d->m_widget ) )
     {
         if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
             bar->setXMLGUIClient( d->m_client );
@@ -224,7 +224,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
   if ( element.tagName().lower() == d->tagStatusBar )
   {
-      if ( ::qt_cast<KMainWindow *>( d->m_widget ) )
+      if ( qobject_cast<KMainWindow >( d->m_widget ) )
     {
       KMainWindow *mainWin = static_cast<KMainWindow *>(d->m_widget);
       mainWin->statusBar()->show();
@@ -241,26 +241,26 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
 {
   // Warning parent can be 0L
 
-  if ( ::qt_cast<Q3PopupMenu *>( container ) )
+  if ( qobject_cast<Q3PopupMenu >( container ) )
   {
     if ( parent )
     {
-        if ( ::qt_cast<KMenuBar *>( parent ) )
+        if ( qobject_cast<KMenuBar >( parent ) )
             static_cast<KMenuBar *>(parent)->removeItem( id );
-        else if ( ::qt_cast<Q3PopupMenu *>( parent ) )
+        else if ( qobject_cast<Q3PopupMenu >( parent ) )
             static_cast<Q3PopupMenu *>(parent)->removeItem( id );
     }
 
     delete container;
   }
-  else if ( ::qt_cast<KToolBar *>( container ) )
+  else if ( qobject_cast<KToolBar >( container ) )
   {
     KToolBar *tb = static_cast<KToolBar *>( container );
 
     tb->saveState( element );
     delete tb;
   }
-  else if ( ::qt_cast<KMenuBar *>( container ) )
+  else if ( qobject_cast<KMenuBar >( container ) )
   {
     KMenuBar *mb = static_cast<KMenuBar *>( container );
     mb->hide();
@@ -269,9 +269,9 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
     // sure that QMainWindow::d->mb does not point to a deleted
     // menubar object.
   }
-  else if ( ::qt_cast<KStatusBar *>( container ) )
+  else if ( qobject_cast<KStatusBar >( container ) )
   {
-    if ( ::qt_cast<KMainWindow *>( d->m_widget ) )
+    if ( qobject_cast<KMainWindow >( d->m_widget ) )
         container->hide();
     else
       delete static_cast<KStatusBar *>(container);
@@ -291,7 +291,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
 {
   if ( element.tagName().lower() == d->tagSeparator )
   {
-    if ( ::qt_cast<Q3PopupMenu *>( parent ) )
+    if ( qobject_cast<Q3PopupMenu >( parent ) )
     {
       // Don't insert multiple separators in a row
       Q3PopupMenu *menu = static_cast<Q3PopupMenu *>(parent);
@@ -317,9 +317,9 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
       else
         return menu->insertSeparator( index );
     }
-    else if ( ::qt_cast<QMenuBar *>( parent ) )
+    else if ( qobject_cast<QMenuBar >( parent ) )
        return static_cast<QMenuBar *>(parent)->insertSeparator( index );
-    else if ( ::qt_cast<KToolBar *>( parent ) )
+    else if ( qobject_cast<KToolBar >( parent ) )
     {
       KToolBar *bar = static_cast<KToolBar *>( parent );
 
@@ -351,12 +351,12 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   }
   else if ( element.tagName().lower() == d->tagTearOffHandle )
   {
-    if ( ::qt_cast<Q3PopupMenu *>( parent )  && KGlobalSettings::insertTearOffHandle())
+    if ( qobject_cast<Q3PopupMenu >( parent )  && KGlobalSettings::insertTearOffHandle())
       return static_cast<Q3PopupMenu *>(parent)->insertTearOffHandle( -1, index );
   }
   else if ( element.tagName().lower() == d->tagMenuTitle )
   {
-    if ( ::qt_cast<KPopupMenu *>( parent ) )
+    if ( qobject_cast<KPopupMenu >( parent ) )
     {
       QString i18nText;
       Q3CString text = element.text().utf8();
@@ -389,11 +389,11 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
 
 void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
 {
-  if ( ::qt_cast<Q3PopupMenu *>( parent ) )
+  if ( qobject_cast<Q3PopupMenu >( parent ) )
     static_cast<Q3PopupMenu *>(parent)->removeItem( id );
-  else if ( ::qt_cast<QMenuBar *>( parent ) )
+  else if ( qobject_cast<QMenuBar >( parent ) )
     static_cast<QMenuBar *>(parent)->removeItem( id );
-  else if ( ::qt_cast<KToolBar *>( parent ) )
+  else if ( qobject_cast<KToolBar >( parent ) )
     static_cast<KToolBar *>(parent)->removeItemDelayed( id );
 }
 
@@ -421,7 +421,7 @@ void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
-    if ( !d->m_widget || !::qt_cast<KMainWindow *>( d->m_widget ) )
+    if ( !d->m_widget || !qobject_cast<KMainWindow >( d->m_widget ) )
         return;
 #if 0
     KToolBar *toolbar = 0;

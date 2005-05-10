@@ -180,7 +180,7 @@ bool RenderWidget::event( QEvent *e )
         repaint();
     }
     // eat all events - except if this is a frame (in which case KHTMLView handles it all)
-    if ( ::qt_cast<KHTMLView *>( m_widget ) )
+    if ( qobject_cast<KHTMLView >( m_widget ) )
         return QObject::event( e );
     return true;
 }
@@ -205,7 +205,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->name(), "__khtml") && !::qt_cast<Q3Frame*>(m_widget))
+            if ( !strcmp(m_widget->name(), "__khtml") && !qobject_cast<Q3Frame>(m_widget))
                 m_widget->setBackgroundMode( Qt::NoBackground );
 
             if (m_widget->focusPolicy() > Qt::StrongFocus)
@@ -306,7 +306,7 @@ void RenderWidget::updateFromElement()
         else
             m_widget->unsetPalette();
         // Border:
-        Q3Frame* frame = ::qt_cast<Q3Frame*>(m_widget);
+        Q3Frame* frame = qobject_cast<Q3Frame>(m_widget);
         if (frame) {
             if (shouldPaintBackgroundOrBorder())
             {
@@ -510,7 +510,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         // build region
         QObjectListIterator it = *widget->children();
         for (; it.current(); ++it) {
-            QWidget* const w = ::qt_cast<QWidget *>(it.current());
+            QWidget* const w = qobject_cast<QWidget >(it.current());
 	    if ( w && !w->isTopLevel() && !w->isHidden()) {
 	        QRect r2 = w->geometry();
 	        blit.subtract( r2 );
@@ -591,7 +591,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
 bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 {
     // no special event processing if this is a frame (in which case KHTMLView handles it all)
-    if ( ::qt_cast<KHTMLView *>( m_widget ) )
+    if ( qobject_cast<KHTMLView >( m_widget ) )
         return false;
     if ( !element() ) return true;
 

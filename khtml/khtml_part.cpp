@@ -176,7 +176,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
     script += ")";
     kdDebug(6050) << "khtml::ChildFrame::liveConnectEvent " << script << endl;
 
-    KHTMLPart * part = ::qt_cast<KHTMLPart *>(m_part->parent());
+    KHTMLPart * part = qobject_cast<KHTMLPart >(m_part->parent());
     if (!part)
         return;
     if (!m_jscript)
@@ -4363,7 +4363,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     //CRITICAL STUFF
     if ( child->m_part )
     {
-      if (!::qt_cast<KHTMLPart*>(child->m_part) && child->m_jscript)
+      if (!qobject_cast<KHTMLPart>(child->m_part) && child->m_jscript)
           child->m_jscript->clear();
       partManager()->removePart( (KParts::ReadOnlyPart *)child->m_part );
       delete (KParts::ReadOnlyPart *)child->m_part;
@@ -4384,7 +4384,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
     child->m_part = part;
 
-    if (::qt_cast<KHTMLPart*>(part)) {
+    if (qobject_cast<KHTMLPart>(part)) {
       static_cast<KHTMLPart*>(part)->d->m_frame = child;
     } else if (child->m_frame) {
       child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
@@ -5172,7 +5172,7 @@ bool KHTMLPart::frameExists( const QString &frameName )
 
 KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
 {
-  KHTMLPart* const kp = ::qt_cast<KHTMLPart*>(framePart);
+  KHTMLPart* const kp = qobject_cast<KHTMLPart>(framePart);
   if (kp)
     return kp->jScript();
 
@@ -5190,7 +5190,7 @@ KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
 
 KHTMLPart *KHTMLPart::parentPart()
 {
-  return ::qt_cast<KHTMLPart *>( parent() );
+  return qobject_cast<KHTMLPart >( parent() );
 }
 
 khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url,

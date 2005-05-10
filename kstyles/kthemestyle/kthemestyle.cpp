@@ -502,10 +502,10 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
 
 void KThemeStyle::polish( QWidget *w )
 {
-    if (::qt_cast<QStatusBar*>(w))
+    if (qobject_cast<QStatusBar>(w))
          w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
          
-    if (::qt_cast<QLabel*>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
+    if (qobject_cast<QLabel>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
          w->installEventFilter(this);
 
     if (w->backgroundPixmap() && !w->isTopLevel() && 
@@ -544,7 +544,7 @@ void KThemeStyle::polish( QWidget *w )
         return ;
     }
 
-    if ( ::qt_cast<QMenuBar*>(w) )
+    if ( qobject_cast<QMenuBar>(w) )
     {
         w->setBackgroundMode( Qt::NoBackground );
     }
@@ -552,7 +552,7 @@ void KThemeStyle::polish( QWidget *w )
     {
         w->setBackgroundMode( Qt::PaletteBackground );
     }
-    else if ( ::qt_cast<Q3PopupMenu*>(w) )
+    else if ( qobject_cast<Q3PopupMenu>(w) )
     {
         popupPalette = w->palette();
         if ( isColor( MenuItem ) || isColor( MenuItemDown ) )
@@ -572,7 +572,7 @@ void KThemeStyle::polish( QWidget *w )
 
         w->setBackgroundMode( Qt::NoBackground );
     }
-    else if ( ::qt_cast<QCheckBox*>(w) )
+    else if ( qobject_cast<QCheckBox>(w) )
     {
         if ( isColor( IndicatorOff ) || isColor( IndicatorOn ) )
         {
@@ -587,7 +587,7 @@ void KThemeStyle::polish( QWidget *w )
             w->setPalette( newPal );
         }
     }
-    else if ( ::qt_cast<QRadioButton*>(w) )
+    else if ( qobject_cast<QRadioButton>(w) )
     {
         if ( isColor( ExIndicatorOff ) || isColor( ExIndicatorOn ) )
         {
@@ -619,11 +619,11 @@ void KThemeStyle::unPolish( QWidget* w )
     }
 
     //Toolbar labels should nornally be PaletteButton
-    if ( ::qt_cast<QLabel*>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
+    if ( qobject_cast<QLabel>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
         w->setBackgroundMode( Qt::PaletteButton );
         
     //The same for menu bars, popup menus
-    else if ( ::qt_cast<QMenuBar*>(w) || ::qt_cast<Q3PopupMenu*>(w) )
+    else if ( qobject_cast<QMenuBar>(w) || qobject_cast<Q3PopupMenu>(w) )
         w->setBackgroundMode( Qt::PaletteButton );
         
     //For toolbar internal separators, return to button, too (can't use qt_cast here since don't have access to the class)
@@ -633,7 +633,7 @@ void KThemeStyle::unPolish( QWidget* w )
     //For scrollbars, we don't do much, since the widget queries the style on the switch
 
     //Drop some custom palettes. ### this really should check the serial number to be 100% correct.
-    if ( ::qt_cast<Q3PopupMenu*>(w) || ::qt_cast<QCheckBox*>(w) || ::qt_cast<QRadioButton*>(w) || ::qt_cast<QStatusBar*>(w) )
+    if ( qobject_cast<Q3PopupMenu>(w) || qobject_cast<QCheckBox>(w) || qobject_cast<QRadioButton>(w) || qobject_cast<QStatusBar>(w) )
         w->unsetPalette();
 
     KStyle::unPolish( w );

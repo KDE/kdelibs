@@ -501,14 +501,14 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   {
     actionList = new Q3PtrList<KAction>;
 
-    if ( ::qt_cast<Q3PopupMenu *>( container ) )
+    if ( qobject_cast<Q3PopupMenu >( container ) )
     {
       connect( container, SIGNAL( highlighted( int ) ),
                this, SLOT( slotMenuItemHighlighted( int ) ) );
       connect( container, SIGNAL( aboutToHide() ),
                this, SLOT( slotMenuAboutToHide() ) );
     }
-    else if ( ::qt_cast<KToolBar *>( container ) )
+    else if ( qobject_cast<KToolBar >( container ) )
     {
       connect( container, SIGNAL( highlighted( int, bool ) ),
                this, SLOT( slotToolBarButtonHighlighted( int, bool ) ) );

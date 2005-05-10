@@ -1795,15 +1795,15 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    if (!strcmp(w->name(), "__khtml")) {
 			w->installEventFilter(this);
 			w->unsetCursor();
-			if (!::qt_cast<Q3Frame*>(w))
+			if (!qobject_cast<Q3Frame>(w))
 			    w->setBackgroundMode( Qt::NoBackground );
 			static_cast<HackWidget *>(w)->setNoErase();
 			if (w->children()) {
 			    QObjectListIterator it(*w->children());
 			    for (; it.current(); ++it) {
-				QWidget *widget = ::qt_cast<QWidget *>(it.current());
+				QWidget *widget = qobject_cast<QWidget >(it.current());
 				if (widget && !widget->isTopLevel()) {
-				    if (!::qt_cast<Q3Frame*>(w))
+				    if (!qobject_cast<Q3Frame>(w))
 				        widget->setBackgroundMode( Qt::NoBackground );
 				    static_cast<HackWidget *>(widget)->setNoErase();
 				    widget->installEventFilter(this);
@@ -1840,7 +1840,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    }
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
-		    bool asap = !d->contentsMoving && ::qt_cast<Q3ScrollView *>(c);
+		    bool asap = !d->contentsMoving && qobject_cast<Q3ScrollView >(c);
 
 		    // QScrollView needs fast repaints
 		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
@@ -1857,7 +1857,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (w->parentWidget() == view && !::qt_cast<QScrollBar *>(w)) {
+		if (w->parentWidget() == view && !qobject_cast<QScrollBar >(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = (me->pos() + w->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
@@ -1876,7 +1876,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    }
 	    case QEvent::KeyPress:
 	    case QEvent::KeyRelease:
-		if (w->parentWidget() == view && !::qt_cast<QScrollBar *>(w)) {
+		if (w->parentWidget() == view && !qobject_cast<QScrollBar >(w)) {
 		    QKeyEvent *ke = static_cast<QKeyEvent *>(e);
 		    if (e->type() == QEvent::KeyPress)
 			keyPressEvent(ke);

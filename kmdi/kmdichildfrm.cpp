@@ -1177,7 +1177,7 @@ bool KMdiChildFrm::eventFilter( QObject *obj, QEvent *e )
 			// child and its children (as we did when we got our client).
 			// XXX see linkChildren() and focus policy stuff
 			QObject* pNewChild = ( ( QChildEvent* ) e ) ->child();
-			if ( ( pNewChild != 0L ) && ::qt_cast<QWidget*>( pNewChild ) )
+			if ( ( pNewChild != 0L ) && qobject_cast<QWidget>( pNewChild ) )
 			{
 				QWidget * pNewWidget = static_cast<QWidget*>( pNewChild );
 				QObjectList *list = pNewWidget->queryList( "QWidget" );
@@ -1188,7 +1188,7 @@ bool KMdiChildFrm::eventFilter( QObject *obj, QEvent *e )
 				{ // for each found object...
 					QWidget * widg = ( QWidget* ) obj;
 					++it;
-					if ( !::qt_cast<Q3PopupMenu*>( widg ) )
+					if ( !qobject_cast<Q3PopupMenu>( widg ) )
 					{
 						widg->installEventFilter( this );
 					}

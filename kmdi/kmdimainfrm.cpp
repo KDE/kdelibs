@@ -1300,7 +1300,7 @@ void KMdiMainFrm::findRootDockWidgets( Q3PtrList<KDockWidget>* rootDockWidgetLis
 		// find the oldest ancestor of the current dockwidget that can be undocked
 		while ( !pW->isTopLevel() )
 		{
-			if ( ::qt_cast<KDockWidget*>( pW ) ||  pW->inherits( "KDockWidget_Compat::KDockWidget" ) )
+			if ( qobject_cast<KDockWidget>( pW ) ||  pW->inherits( "KDockWidget_Compat::KDockWidget" ) )
 			{
 				undockCandidate = static_cast<KDockWidget*>( pW );
 				if ( undockCandidate->enableDocking() != KDockWidget::DockNone )
