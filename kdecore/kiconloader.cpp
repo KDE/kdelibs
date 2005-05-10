@@ -25,6 +25,7 @@
 #include <qicon.h>
 #include <qmovie.h>
 #include <qbitmap.h>
+#include <QPainter>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -860,10 +861,28 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 		// expensive, but works
 		fmask = favIcon.createHeuristicMask();
 	    }
+#ifdef __GNUC__
+    #warning "Check this by going to a site with a favicon. I almost always get masks backwards! - Maks"
+#endif
+            //### I probably screwed it up, and it looked buggy already! 
 
-            bitBlt(&mask, x, y, &fmask,
-                   0, 0, favIcon.width(), favIcon.height(),
-                   favIcon.mask() ? Qt::OrROP : Qt::SetROP);
+            //Merge in favicon mask and the icon mask.
+            if (!fmask.isNull())
+            {
+                //Use the favicon mask as a clip region, then fill
+                QPainter p(&mask);
+                QRegion clipMask(fmask);
+                clipMask.translate(x, y);
+                p.setClipRegion(clipMask);
+                p.fillRect(x, y, favIcon.width(), favIcon.height(), Qt::color1);
+            }
+            else
+            {
+                //Just fill in the rectangle...
+                QPainter p(&mask);
+                p.fillRect(x, y, favIcon.width(), favIcon.height(), Qt::color1);
+            }
+	    
             pix.setMask(mask);
         }
         bitBlt(&pix, x, y, &favIcon);
