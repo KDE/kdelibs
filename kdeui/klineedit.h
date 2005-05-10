@@ -388,7 +388,7 @@ signals:
      *
      * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( Q3PopupMenu * p );
+    void aboutToShowContextMenu( QMenu * p );
 
 public slots:
 
@@ -514,13 +514,6 @@ protected:
     * See QLineEdit::contextMenuEvent().
     */
     virtual void contextMenuEvent( QContextMenuEvent * );
-
-    /**
-    * Re-implemented for internal reasons.  API not affected.
-    *
-    * See QLineEdit::createPopupMenu().
-    */
-    virtual Q3PopupMenu *createPopupMenu();
 
     /**
     * Re-implemented to handle URI drops.

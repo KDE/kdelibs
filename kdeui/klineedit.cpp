@@ -27,6 +27,8 @@
 
 #include <qclipboard.h>
 #include <qtimer.h>
+#include <qevent.h>
+#include <qstyle.h>
 
 #include <kconfig.h>
 #include <qtooltip.h>
@@ -319,7 +321,7 @@ void KLineEdit::setSqueezedText()
     d->squeezedEnd = 0;
     QString fullText = d->squeezedText;
     QFontMetrics fm(fontMetrics());
-    int labelWidth = size().width() - 2*frameWidth() - 2;
+    int labelWidth = size().width() - 2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth) - 2;
     int textWidth = fm.width(fullText);
 
     if (textWidth > labelWidth)
@@ -379,7 +381,7 @@ void KLineEdit::setSqueezedText()
       QLineEdit::setText(fullText);
 
           QToolTip::remove( this );
-          QToolTip::hide();
+          QToolTip::showText(pos(), QString()); // hide
        }
 
        setCursorPosition(0);
@@ -828,18 +830,16 @@ void KLineEdit::tripleClickTimeout()
     possibleTripleClick=false;
 }
 
-void KLineEdit::contextMenuEvent( QContextMenuEvent * e )
+void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
 {
-    if ( m_bEnableMenu )
-        QLineEdit::contextMenuEvent( e );
-}
+    if (!m_bEnableMenu)
+        return;
 
-Q3PopupMenu *KLineEdit::createPopupMenu()
-{
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
-    Q3PopupMenu *popup = QLineEdit::createPopupMenu();
+    QMenu *popup = createStandardContextMenu();
 
+    /* ###### QT4
       int id = popup->idAt(0);
       popup->changeItem( id - IdUndo, SmallIconSet("undo"), popup->text( id - IdUndo) );
       popup->changeItem( id - IdRedo, SmallIconSet("redo"), popup->text( id - IdRedo) );
@@ -847,13 +847,14 @@ Q3PopupMenu *KLineEdit::createPopupMenu()
       popup->changeItem( id - IdCopy, SmallIconSet("editcopy"), popup->text( id - IdCopy) );
       popup->changeItem( id - IdPaste, SmallIconSet("editpaste"), popup->text( id - IdPaste) );
       popup->changeItem( id - IdClear, SmallIconSet("editclear"), popup->text( id - IdClear) );
+      */
 
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
     // menu item.
     if ( compObj() && !isReadOnly() && kapp->authorize("lineedit_text_completion") )
     {
-        Q3PopupMenu *subMenu = new Q3PopupMenu( popup );
+        QMenu *subMenu = new QMenu( popup );
         connect( subMenu, SIGNAL( activated( int ) ),
                  this, SLOT( completionMenuActivated( int ) ) );
 
@@ -895,7 +896,8 @@ Q3PopupMenu *KLineEdit::createPopupMenu()
     // inherit from this class! (DA)
     emit aboutToShowContextMenu( popup );
 
-    return popup;
+    popup->exec(e->globalPos());
+    delete popup;
 }
 
 void KLineEdit::completionMenuActivated( int id )
@@ -1175,7 +1177,7 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
             bool wasSelected = d->completionBox->isSelected( d->completionBox->currentItem() );
             const QString currentSelection = d->completionBox->currentText();
             d->completionBox->setItems( items );
-            Q3ListBoxItem* item = d->completionBox->findItem( currentSelection, Qt::ExactMatch );
+            Q3ListBoxItem* item = d->completionBox->findItem( currentSelection, Q3ListBox::ExactMatch );
             // If no item is selected, that means the listbox hasn't been manipulated by the user yet,
             // because it's not possible otherwise to have no selected item. In such case make
             // always the first item current and unselected, so that the current item doesn't jump.
