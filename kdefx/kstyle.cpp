@@ -806,7 +806,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     mode = QIcon::Disabled;
                 
                 QPixmap icon = miOpt->icon.pixmap(pixelMetric(PM_SmallIconSize), mode);
-                p->drawPixmap(centerRect(leftColRect, icon.size()), icon);
+                p->drawPixmap(handleRTL(option, centerRect(leftColRect, icon.size())), icon);
             }
 
             //Now include the spacing when calculating the next columns
@@ -876,9 +876,13 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                                         option, r, pal, flags, p, widget);
 
                     //Depending on RTL direction, the one on the left is either up or down.
-                    bool  leftAdds  = false;
-                    bool  rightAdds = true;
+                    bool leftAdds, rightAdds;
                     if (slOpt->direction == Qt::LeftToRight)
+                    {
+                        leftAdds  = false;
+                        rightAdds = true;
+                    }
+                    else
                     {
                         leftAdds  = true;
                         rightAdds = false;
@@ -954,16 +958,23 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     int  primitive;
                     bool active   = false;
 
-                    //### RTL check!
                     if (element == CE_ScrollBarAddLine)
                     {
-                        primitive = Generic::ArrowRight;
+                        if (slOpt->direction == Qt::LeftToRight)
+                            primitive = Generic::ArrowRight;
+                        else
+                            primitive = Generic::ArrowLeft;
+                            
                         if (slOpt->activeSubControls & SC_ScrollBarAddLine)
                             active = true;
                     }
                     else
                     {
-                        primitive = Generic::ArrowLeft;
+                        if (slOpt->direction == Qt::LeftToRight)
+                            primitive = Generic::ArrowLeft;
+                        else
+                            primitive = Generic::ArrowRight;
+
                         if (slOpt->activeSubControls & SC_ScrollBarSubLine)
                             active = true;
                     }
@@ -1299,9 +1310,9 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                     majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight);
 
                 if (option->state & State_Horizontal)
-                    return QRect(r.x(), r.y(), majorSize, r.height());
+                    return handleRTL(option, QRect(r.x(), r.y(), majorSize, r.height()));
                 else
-                    return QRect(r.x(), r.y(), r.width(), majorSize);
+                    return handleRTL(option, QRect(r.x(), r.y(), r.width(), majorSize));
                     
             }
 
@@ -1315,16 +1326,16 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                     majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight);
 
                 if (option->state & State_Horizontal)
-                    return QRect(r.right() - majorSize + 1, r.y(), majorSize, r.height());
+                    return handleRTL(option, QRect(r.right() - majorSize + 1, r.y(), majorSize, r.height()));
                 else
-                    return QRect(r.x(), r.bottom() - majorSize + 1, r.width(), majorSize);
+                    return handleRTL(option, QRect(r.x(), r.bottom() - majorSize + 1, r.width(), majorSize));
             }
 
             //The main groove area. This is used to compute the others...
             case SC_ScrollBarGroove:
             {
-                QRect top = subControlRect(control, option, SC_ScrollBarSubLine, widget);
-                QRect bot = subControlRect(control, option, SC_ScrollBarAddLine, widget);
+                QRect top = handleRTL(option, subControlRect(control, option, SC_ScrollBarSubLine, widget));
+                QRect bot = handleRTL(option, subControlRect(control, option, SC_ScrollBarAddLine, widget));
 
                 QPoint topLeftCorner, botRightCorner;
                 if (option->state & State_Horizontal)
@@ -1338,12 +1349,7 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                     botRightCorner = QPoint(top.right(), bot.top()    - 1);
                 }
 
-                qDebug("%d,%d -> %d, %d", topLeftCorner.x(), topLeftCorner.y(),
-                                          botRightCorner.x(), botRightCorner.y());
-
-                return QRect(topLeftCorner.x(), topLeftCorner.y(),
-                             botRightCorner.x() - topLeftCorner.x() + 1,
-                             botRightCorner.y() - topLeftCorner.y() + 1);
+                return handleRTL(option, QRect(topLeftCorner, botRightCorner));
             }
 
             case SC_ScrollBarFirst:
@@ -1353,7 +1359,9 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
             case SC_ScrollBarSlider:
             {
                 const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(option);
-                QRect groove = subControlRect(control, option, SC_ScrollBarGroove, widget);
+
+                //We do handleRTL here to unreflect things if need be
+                QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
 
                 if (slOpt->minimum == slOpt->maximum)
                     return groove;
@@ -1365,17 +1373,18 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                 else
                     space = groove.height();
 
-                qDebug("original space:%d", space);
-
                 //Calculate the portion of this space that the slider should take up.
-                int sliderSize = int(space * float(slOpt->pageStep) / (slOpt->maximum - slOpt->minimum));
+                int sliderSize = int(space * float(slOpt->pageStep) /
+                                        (slOpt->maximum - slOpt->minimum + slOpt->pageStep));
 
-                //### TODO: enforce slider size!
+                if (sliderSize < widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight))
+                    sliderSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight);
+
+                if (sliderSize > space)
+                    sliderSize = space;
 
                 //What do we have remaining?
                 space = space - sliderSize;
-
-                printf("space:%d, sliderSize:%d\n", space, sliderSize);
 
                 //uhm, yeah, nothing much
                 if (space <= 0)
@@ -1383,44 +1392,132 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
 
                 int pos = qRound(float(slOpt->sliderPosition - slOpt->minimum)/
                                         (slOpt->maximum - slOpt->minimum)*space);
-
-                printf("space:%d, sliderSize:%d, pos:%d\n", space, sliderSize, pos);
-
                 if (option->state & State_Horizontal)
-                    return QRect(groove.x() + pos, groove.y(), sliderSize, groove.height());
+                    return handleRTL(option, QRect(groove.x() + pos, groove.y(), sliderSize, groove.height()));
                 else
-                    return QRect(groove.x(), groove.y() + pos, groove.width(), sliderSize);
+                    return handleRTL(option, QRect(groove.x(), groove.y() + pos, groove.width(), sliderSize));
             }
 
             case SC_ScrollBarSubPage:
             {
-                QRect slider = subControlRect(control, option, SC_ScrollBarSlider, widget);
-                QRect groove = subControlRect(control, option, SC_ScrollBarGroove, widget);
+                //We do handleRTL here to unreflect things if need be
+                QRect slider = handleRTL(option, subControlRect(control, option, SC_ScrollBarSlider, widget));
+                QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
 
                 //We're above the slider in the groove.
                 if (option->state & State_Horizontal)
-                    return QRect(groove.x(), groove.y(), slider.x() - groove.x(), groove.height());
+                    return handleRTL(option, QRect(groove.x(), groove.y(), slider.x() - groove.x(), groove.height()));
                 else
-                    return QRect(groove.x(), groove.y(), groove.width(), slider.y() - groove.y());
+                    return handleRTL(option, QRect(groove.x(), groove.y(), groove.width(), slider.y() - groove.y()));
             }
-
 
             case SC_ScrollBarAddPage:
             {
-                QRect slider = subControlRect(control, option, SC_ScrollBarSlider, widget);
-                QRect groove = subControlRect(control, option, SC_ScrollBarGroove, widget);
+                //We do handleRTL here to unreflect things if need be
+                QRect slider = handleRTL(option, subControlRect(control, option, SC_ScrollBarSlider, widget));
+                QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
 
                 //We're below the slider in the groove.
                 if (option->state & State_Horizontal)
-                    return QRect(slider.right() + 1, groove.y(), groove.right() - slider.right(), groove.height());
+                    return handleRTL(option,
+                            QRect(slider.right() + 1, groove.y(), groove.right() - slider.right(), groove.height()));
                 else
-                    return QRect(groove.x(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom());
+                    return handleRTL(option,
+                            QRect(groove.x(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom()));
             }
-
         }
     }
     return QCommonStyle::subControlRect(control, option, subControl, widget);
 }
+
+/*
+ Checks whether the point is before the bound rect for
+ bound of given orientation
+*/
+static bool preceeds(QPoint pt, QRect bound, const QStyleOption* opt)
+{
+    if (opt->state & QStyle::State_Horizontal)
+    {
+        //What's earlier depends on RTL or not
+        if (opt->direction == Qt::LeftToRight)
+            return pt.x() < bound.right();
+        else
+            return pt.x() > bound.x();
+    }
+    else
+    {
+        return pt.y() < bound.y();
+    }
+}
+
+static QStyle::SubControl buttonPortion(QRect totalRect, QPoint pt, const QStyleOption* opt)
+{
+   if (opt->state & QStyle::State_Horizontal)
+   {
+        //What's earlier depends on RTL or not
+        if (opt->direction == Qt::LeftToRight)
+            return pt.x() < totalRect.center().x() ? QStyle::SC_ScrollBarSubLine : QStyle::SC_ScrollBarAddLine;
+        else
+            return pt.x() > totalRect.center().x() ? QStyle::SC_ScrollBarSubLine : QStyle::SC_ScrollBarAddLine;
+    }
+    else
+    {
+        return pt.y() < totalRect.center().y() ? QStyle::SC_ScrollBarSubLine : QStyle::SC_ScrollBarAddLine;
+    }
+}
+
+QStyle::SubControl KStyle::hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
+                                             const QPoint& pt, const QWidget* w) const
+{
+    if (cc == CC_ScrollBar)
+    {
+        //First, check whether we're inside the groove or not...
+        QRect groove = subControlRect(CC_ScrollBar, opt, SC_ScrollBarGroove, w);
+
+        if (groove.contains(pt))
+        {
+            //Must be either page up/page down, or just click on the slider.
+            //Grab the slider to compare
+            QRect slider = subControlRect(CC_ScrollBar, opt, SC_ScrollBarSlider, w);
+
+            if (slider.contains(pt))
+                return SC_ScrollBarSlider;
+            else if (preceeds(pt, slider, opt))
+                return SC_ScrollBarSubPage;
+            else
+                return SC_ScrollBarAddPage;
+        }
+        else
+        {
+            //This is one of the up/down buttons. First, decide which one it is.
+            if (preceeds(pt, groove, opt))
+            {
+                //"Upper" button
+                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton))
+                {
+                    QRect buttonRect = subControlRect(CC_ScrollBar, opt, SC_ScrollBarSubLine, w);
+                    return buttonPortion(buttonRect, pt, opt);
+                }
+                else
+                    return SC_ScrollBarSubLine; //Easy one!
+            }
+            else
+            {
+                //"Bottom" button
+                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton))
+                {
+                    QRect buttonRect = subControlRect(CC_ScrollBar, opt, SC_ScrollBarAddLine, w);
+                    return buttonPortion(buttonRect, pt, opt);
+                }
+                else
+                    return SC_ScrollBarAddLine; //Easy one!
+            }
+        }
+    }
+
+    return QCommonStyle::hitTestComplexControl(cc, opt, pt, w);
+}
+
 
 QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& contentsSize, const QWidget* widget) const
 {

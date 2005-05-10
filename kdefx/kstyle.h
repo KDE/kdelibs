@@ -597,8 +597,12 @@ public:
     
     int   styleHint       (StyleHint        hint, const QStyleOption* opt, const QWidget* w,
                                                                QStyleHintReturn* returnData) const;
+                                                               
     QRect subControlRect (ComplexControl control, const QStyleOptionComplex* opt,
                                                     SubControl subControl, const QWidget* w) const;
+
+    SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
+                                             const QPoint& pt, const QWidget* w) const;
 };
 
 template<typename T>
