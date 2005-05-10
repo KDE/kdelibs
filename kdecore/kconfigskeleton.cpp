@@ -476,20 +476,20 @@ void KConfigSkeleton::ItemLong::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemLong::property() const
 {
-  return QVariant((Q_LONGLONG) mReference);
+  return QVariant((qint64) mReference);
 }
 
 QVariant KConfigSkeleton::ItemLong::minValue() const
 {
   if (mHasMin)
-    return QVariant((Q_LONGLONG) mMin);
+    return QVariant((qint64) mMin);
   return QVariant();
 }
 
 QVariant KConfigSkeleton::ItemLong::maxValue() const
 {
   if (mHasMax)
-    return QVariant((Q_LONGLONG) mMax);
+    return QVariant((qint64) mMax);
   return QVariant();
 }
 
@@ -534,20 +534,20 @@ void KConfigSkeleton::ItemULong::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemULong::property() const
 {
-  return QVariant((Q_ULONGLONG) mReference);
+  return QVariant((quint64) mReference);
 }
 
 QVariant KConfigSkeleton::ItemULong::minValue() const
 {
   if (mHasMin)
-    return QVariant((Q_ULONGLONG) mMin);
+    return QVariant((quint64) mMin);
   return QVariant();
 }
 
 QVariant KConfigSkeleton::ItemULong::maxValue() const
 {
   if (mHasMax)
-    return QVariant((Q_ULONGLONG) mMax);
+    return QVariant((quint64) mMax);
   return QVariant();
 }
 
@@ -639,7 +639,7 @@ void KConfigSkeleton::ItemColor::readConfig( KConfig *config )
 
 void KConfigSkeleton::ItemColor::setProperty(const QVariant & p)
 {
-  mReference = p.toColor();
+  mReference = qvariant_cast<QColor>(p);
 }
 
 QVariant KConfigSkeleton::ItemColor::property() const
@@ -666,7 +666,7 @@ void KConfigSkeleton::ItemFont::readConfig( KConfig *config )
 
 void KConfigSkeleton::ItemFont::setProperty(const QVariant & p)
 {
-  mReference = p.toFont();
+  mReference = qvariant_cast<QFont>(p);
 }
 
 QVariant KConfigSkeleton::ItemFont::property() const
