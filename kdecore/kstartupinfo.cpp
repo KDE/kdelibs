@@ -1132,9 +1132,9 @@ QString KStartupInfoData::to_text() const
         ret += QString::fromLatin1( " DESKTOP=%1" )
             .arg( d->desktop == NET::OnAllDesktops ? NET::OnAllDesktops : d->desktop - 1 ); // spec counts from 0
     if( !d->wmclass.isEmpty())
-        ret += QString::fromLatin1( " WMCLASS=\"%1\"" ).arg( d->wmclass );
+        ret += QString::fromLatin1( " WMCLASS=\"%1\"" ).arg( QString( d->wmclass ) );
     if( !d->hostname.isEmpty())
-        ret += QString::fromLatin1( " HOSTNAME=%1" ).arg( d->hostname );
+        ret += QString::fromLatin1( " HOSTNAME=%1" ).arg( QString( d->hostname ) );
     for( QList< pid_t >::ConstIterator it = d->pids.begin();
          it != d->pids.end();
          ++it )
@@ -1423,7 +1423,7 @@ unsigned long get_unum( const QString& item_P )
 static
 QString get_str( const QString& item_P )
     {
-    unsigned int pos = item_P.find( '=' );
+    int pos = item_P.find( '=' );
     if( item_P.length() > pos + 2 && item_P[ pos + 1 ] == '\"' )
         {
         int pos2 = item_P.left( pos + 2 ).find( '\"' );
@@ -1448,7 +1448,7 @@ QStringList get_fields( const QString& txt_P )
     QString item = "";
     bool in = false;
     bool escape = false;
-    for( unsigned int pos = 0;
+    for( int pos = 0;
          pos < txt.length();
          ++pos )
         {
@@ -1476,7 +1476,7 @@ QStringList get_fields( const QString& txt_P )
 static QString escape_str( const QString& str_P )
     {
     QString ret = "";
-    for( unsigned int pos = 0;
+    for( int pos = 0;
 	 pos < str_P.length();
 	 ++pos )
 	{

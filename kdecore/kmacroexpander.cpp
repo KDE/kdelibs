@@ -48,7 +48,7 @@ KMacroExpanderBase::escapeChar() const
 
 void KMacroExpanderBase::expandMacros( QString &str )
 {
-    uint pos;
+    int pos;
     int len;
     QChar ec( escapechar );
     QStringList rst;
@@ -96,10 +96,10 @@ namespace KMacroExpander {
 
 using namespace KMacroExpander;
 
-bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
+bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
 {
     int len;
-    uint pos2;
+    int pos2;
     QChar ec( escapechar );
     State state = { noquote, false };
     Q3ValueStack<State> sstack;
@@ -279,7 +279,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
 
 bool KMacroExpanderBase::expandMacrosShellQuote( QString &str )
 {
-  uint pos = 0;
+  int pos = 0;
   return expandMacrosShellQuote( str, pos ) && pos == str.length();
 }
 

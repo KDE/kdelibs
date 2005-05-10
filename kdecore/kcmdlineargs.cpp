@@ -479,7 +479,7 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
             {
                argument = _opt+p;
             }
-            args->setOption(singleCharOption, argument);
+            args->setOption(singleCharOption, argument.data());
             return;
          }
          break; // Unknown argument
@@ -521,7 +521,7 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
          }
          argument = argv[i];
       }
-      args->setOption(opt, argument);
+      args->setOption(opt, argument.data());
    }
    else
    {
@@ -909,7 +909,7 @@ KCmdLineArgs::usage(const char *id)
             name = name.mid(1);
             if ((name[0] == '[') && (name[name.length()-1] == ']'))
 	       name = name.mid(1, name.length()-2);
-            printQ(optionFormatString.arg(name, -25)
+            printQ(optionFormatString.arg(QString( name ), -25)
 		 .arg(description));
          }
          else
@@ -933,12 +933,12 @@ KCmdLineArgs::usage(const char *id)
                opt = opt + name;
                if (!option->def)
                {
-                  printQ(optionFormatString.arg(opt, -25)
+                  printQ(optionFormatString.arg(QString( opt ), -25)
                          .arg(description));
                }
                else
                {
-                  printQ(optionFormatStringDef.arg(opt, -25)
+                  printQ(optionFormatStringDef.arg(QString( opt ), -25)
                          .arg(description).arg(option->def));
                }
                opt = "";

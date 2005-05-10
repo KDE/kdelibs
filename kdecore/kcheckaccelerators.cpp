@@ -38,6 +38,7 @@
 #include <qpushbutton.h>
 #include <qmetaobject.h>
 #include <qcheckbox.h>
+#include <QKeyEvent>
 
 #include <kconfig.h>
 #include <kdebug.h>

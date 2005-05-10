@@ -83,7 +83,7 @@ public:
      *  or brace outside any shell construct is @em not an error (unlike in
      *  the function below), but still prematurely terminates processing.
      */
-    bool expandMacrosShellQuote( QString &str, uint &pos );
+    bool expandMacrosShellQuote( QString &str, int &pos );
 
     /**
      * Same as above, but always starts at position 0, and unmatched closing
