@@ -167,6 +167,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
     
 	str << "#include <kdatastream.h>" << endl;
         str << "#include <q3cstring.h>" << endl;
+        str << "#include <q3strlist.h>" << endl;
 
 	bool useHashing = functions.count() > 7;
 	if ( useHashing ) {
@@ -336,26 +337,26 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	// close the 'process' function
 	str << "}" << endl << endl;
     
-	str << "Q3CStringList " << className;
+	str << "Q3StrList " << className;
 	str << "::interfaces()" << endl;
 	str << "{" << endl;
 	if (!DCOPParent.isEmpty()) {
-	    str << "    Q3CStringList ifaces = " << DCOPParent << "::interfaces();" << endl;
+	    str << "    Q3StrList ifaces = " << DCOPParent << "::interfaces();" << endl;
 	} else {
-	    str << "    Q3CStringList ifaces;" << endl;
+	    str << "    Q3StrList ifaces;" << endl;
 	}
 	str << "    ifaces += \"" << classNameFull << "\";" << endl;
 	str << "    return ifaces;" << endl;
 	str << "}" << endl << endl;
 	
 	
-	str << "Q3CStringList " << className;
+	str << "Q3StrList " << className;
 	str << "::functions()" << endl;
 	str << "{" << endl;
 	if (!DCOPParent.isEmpty()) {
-	    str << "    Q3CStringList funcs = " << DCOPParent << "::functions();" << endl;
+	    str << "    Q3StrList funcs = " << DCOPParent << "::functions();" << endl;
 	} else {
-	    str << "    Q3CStringList funcs;" << endl;
+	    str << "    Q3StrList funcs;" << endl;
 	}
 	str << "    for ( int i = 0; " << className << "_ftable[i][2]; i++ ) {" << endl;
         if (functions.count() > 0) {

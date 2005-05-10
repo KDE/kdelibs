@@ -120,7 +120,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	str << endl;
 
 	// Write constructors
-	str << className_stub << "::" << className_stub << "( const QCString& app, const QCString& obj )" << endl;
+	str << className_stub << "::" << className_stub << "( const Q3CString& app, const Q3CString& obj )" << endl;
 	str << "  : ";
 
 	// Always explicitly call DCOPStub constructor, because it's virtual base class.           
@@ -130,7 +130,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	str << "{" << endl;
 	str << "}" << endl << endl;
 
-	str << className_stub << "::" << className_stub << "( DCOPClient* client, const QCString& app, const QCString& obj )" << endl;
+	str << className_stub << "::" << className_stub << "( DCOPClient* client, const Q3CString& app, const Q3CString& obj )" << endl;
 	str << "  : ";
     
 	str << "DCOPStub( client, app, obj )" << endl;
@@ -246,7 +246,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		str << "    }" << endl;
 
 		str << "    QByteArray data, replyData;" << endl;
-		str << "    QCString replyType;" << endl;
+		str << "    Q3CString replyType;" << endl;
 	
 		if ( !args.isEmpty() ) {
 		    str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
