@@ -407,12 +407,13 @@ public:
 					{
 						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
 
-						//Drop clipping to force both bevels to paint
-						p->setClipping(false);
-
 						//Draw the entire, unselected bevel.
 						Keramik::CenteredPainter painter(keramik_scrollbar_hbar_arrow2);
 						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
+
+						p->setPen(pal.buttonText());
+						p->drawLine(r.x()+r.width()/2 - 1, r.y() + r.height()/2 - 3,
+									r.x()+r.width()/2 - 1, r.y() + r.height()/2 + 3);
 
  						//Check whether we need to draw any of the buttons
  						if (bOpt->activeButton != DoubleButtonOption::None)
@@ -440,12 +441,14 @@ public:
 					{
 						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
 
-						//Drop clipping to force both bevels to paint
-						p->setClipping(false);
-					
 						//Draw the entire, unselected bevel.
 						Keramik::CenteredPainter painter(keramik_scrollbar_vbar_arrow2);
 						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
+
+						p->setPen(pal.buttonText());
+						p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2,
+									r.x()+r.width()/2 + 2, r.y()+r.height()/2);
+
 
  						//Check whether any of the buttons is down
  						if (bOpt->activeButton != DoubleButtonOption::None)

@@ -602,6 +602,11 @@ private:
     ///from the outside
     QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric) const;
 
+    ///Internal subrect calculations, for e.g. scrollbar arrows,
+    ///where we fake our output to get Qt to do what we want
+    QRect internalSubControlRect (ComplexControl control, const QStyleOptionComplex* opt,
+                                                    SubControl subControl, const QWidget* w) const;
+
 public:
     /*
      The methods below implement the QStyle interface

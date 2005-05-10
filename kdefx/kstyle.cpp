@@ -35,6 +35,8 @@
 #include <qicon.h>
 #include <qpainter.h>
 #include <qstyleoption.h>
+#include <QEvent>
+#include <QScrollBar>
 //#include <QStyleOptionButton>
 
 #include <stdio.h> //###debug
@@ -860,6 +862,12 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(option);
             if (!slOpt) return;
 
+            //Fix up the rectangle to be what we want
+            r = internalSubControlRect(CC_ScrollBar, slOpt,
+                element == CE_ScrollBarAddLine ? SC_ScrollBarAddLine : SC_ScrollBarSubLine, widget);
+            const_cast<QStyleOption*>(option)->rect = r;
+
+
             bool doubleButton = false;
             
             //See whether we're a double-button...
@@ -1328,8 +1336,8 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
 }
 
 
-QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* option,
-                                SubControl subControl, const QWidget* widget) const
+QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOptionComplex* option,
+                                       SubControl subControl, const QWidget* w) const
 {
     QRect r = option->rect;
     
@@ -1367,12 +1375,34 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                 else
                     return handleRTL(option, QRect(r.x(), r.bottom() - majorSize + 1, r.width(), majorSize));
             }
+        }
+    }
+    
+    return QRect();
+}
+
+
+QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* option,
+                                SubControl subControl, const QWidget* widget) const
+{
+    QRect r = option->rect;
+    
+    if (control == CC_ScrollBar)
+    {
+        switch (subControl)
+        {
+            //For both arrows, we return -everything-,
+            //to get stuff to repaint right. See internalSubControlRect
+            //for the real thing
+            case SC_ScrollBarSubLine:
+            case SC_ScrollBarAddLine:
+                return r;
 
             //The main groove area. This is used to compute the others...
             case SC_ScrollBarGroove:
             {
-                QRect top = handleRTL(option, subControlRect(control, option, SC_ScrollBarSubLine, widget));
-                QRect bot = handleRTL(option, subControlRect(control, option, SC_ScrollBarAddLine, widget));
+                QRect top = handleRTL(option, internalSubControlRect(control, option, SC_ScrollBarSubLine, widget));
+                QRect bot = handleRTL(option, internalSubControlRect(control, option, SC_ScrollBarAddLine, widget));
 
                 QPoint topLeftCorner, botRightCorner;
                 if (option->state & State_Horizontal)
@@ -1532,7 +1562,7 @@ QStyle::SubControl KStyle::hitTestComplexControl(ComplexControl cc, const QStyle
                 //"Upper" button
                 if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton))
                 {
-                    QRect buttonRect = subControlRect(CC_ScrollBar, opt, SC_ScrollBarSubLine, w);
+                    QRect buttonRect = internalSubControlRect(CC_ScrollBar, opt, SC_ScrollBarSubLine, w);
                     return buttonPortion(buttonRect, pt, opt);
                 }
                 else
@@ -1543,7 +1573,7 @@ QStyle::SubControl KStyle::hitTestComplexControl(ComplexControl cc, const QStyle
                 //"Bottom" button
                 if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton))
                 {
-                    QRect buttonRect = subControlRect(CC_ScrollBar, opt, SC_ScrollBarAddLine, w);
+                    QRect buttonRect = internalSubControlRect(CC_ScrollBar, opt, SC_ScrollBarAddLine, w);
                     return buttonPortion(buttonRect, pt, opt);
                 }
                 else
@@ -1719,5 +1749,6 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
     
     return QCommonStyle::sizeFromContents(type, option, contentsSize, widget);
 }
+
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
