@@ -308,7 +308,7 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
     unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
 	    : (unsigned int *) img.colorTable();
     int rval, gval, bval, val, alpha, i;
-    float rcol = col.Qt::red(), gcol = col.Qt::green(), bcol = col.Qt::blue();
+    float rcol = col.red(), gcol = col.green(), bcol = col.blue();
     for (i=0; i<pixels; i++)
     {
         val = qGray(data[i]);
@@ -342,13 +342,13 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
     }
 }
 
-void KIconEffect::toMonochrome(QImage &img, const QColor &Qt::black, const QColor &Qt::white, float value) {
+void KIconEffect::toMonochrome(QImage &img, const QColor black, const QColor white, float value) {
    int pixels = (img.depth() > 8) ? img.width()*img.height() : img.numColors();
    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
          : (unsigned int *) img.colorTable();
    int rval, gval, bval, alpha, i;
-   int rw = Qt::white.Qt::red(), gw = Qt::white.Qt::green(), bw = Qt::white.Qt::blue();
-   int rb = Qt::black.Qt::red(), gb = Qt::black.Qt::green(), bb = Qt::black.Qt::blue();
+   int rw = white.red(), gw = white.green(), bw = white.blue();
+   int rb = black.red(), gb = black.green(), bb = black.blue();
    
    double values = 0, sum = 0;
    bool grayscale = true;
@@ -405,7 +405,7 @@ void KIconEffect::deSaturate(QImage &img, float value)
         color.setRgb(data[i]);
         color.hsv(&h, &s, &v);
         color.setHsv(h, (int) (s * (1.0 - value) + 0.5), v);
-	data[i] = qRgba(color.Qt::red(), color.Qt::green(), color.Qt::blue(),
+	data[i] = qRgba(color.red(), color.green(), color.blue(),
 		qAlpha(data[i]));
     }
 }
@@ -459,7 +459,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	else
 	  for (y=0; y<height; y++)
 	  {
-	    QRgb *line = (QRgb *) img.scanLine(y);
+	    QVector<QRgb> line = img.scanLine(y);
 	    for (x=(y%2); x<width; x+=2)
 		line[x] &= 0x00ffffff;
 	  }
@@ -527,7 +527,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
 
     for (int y=0; y<img.height(); y++)
     {
-	QRgb *line = (QRgb *) img.scanLine(y);
+	QVector<QRgb> line = img.scanLine(y);
 	QRgb pattern = (y % 2) ? 0x55555555 : 0xaaaaaaaa;
 	for (int x=0; x<(img.width()+31)/32; x++)
 	    line[x] &= pattern;
@@ -554,11 +554,11 @@ QImage KIconEffect::doublePixels(QImage src) const
     int x, y;
     if (src.depth() == 32)
     {
-	QRgb *l1, *l2;
+	QVector<QRgb> l1, l2;
 	for (y=0; y<h; y++)
 	{
-	    l1 = (QRgb *) src.scanLine(y);
-	    l2 = (QRgb *) dst.scanLine(y*2);
+	    l1 = src.scanLine(y);
+	    l2 = dst.scanLine(y*2);
 	    for (x=0; x<w; x++)
 	    {
 		l2[x*2] = l2[x*2+1] = l1[x];
@@ -666,14 +666,14 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
     if (src.depth() == 32)
     {
-	QRgb *oline, *sline;
+	QVector<QRgb> oline, sline;
 	int r1, g1, b1, a1;
 	int r2, g2, b2, a2;
 
 	for (i=0; i<src.height(); i++)
 	{
-	    oline = (QRgb *) overlay.scanLine(i);
-	    sline = (QRgb *) src.scanLine(i);
+	    oline = overlay.scanLine(i);
+	    sline = src.scanLine(i);
 
 	    for (j=0; j<src.width(); j++)
 	    {

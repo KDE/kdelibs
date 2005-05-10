@@ -478,11 +478,11 @@ QByteArray KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
     int z = (utcOffset < 0) ? -utcOffset : utcOffset;
     QByteArray dateStr;
 
-    dateStr.sprintf("%s, %02d %s %04d %02d:%02d:%02d %c%02d%02d",
+    dateStr = QString().sprintf("%s, %02d %s %04d %02d:%02d:%02d %c%02d%02d",
                     day_names[tM->tm_wday], tM->tm_mday,
                     month_names[tM->tm_mon], tM->tm_year+1900,
                     tM->tm_hour, tM->tm_min, tM->tm_sec,
-                    sgn, z/60%24, z%60);
+                    sgn, z/60%24, z%60).toAscii();
 
     return dateStr;
 }

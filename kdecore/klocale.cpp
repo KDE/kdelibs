@@ -1084,13 +1084,13 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return m_negativeMonetarySignPosition;
 }
 
-static inline void put_it_in( QChar *buffer, uint& index, const QString &s )
+static inline void put_it_in( QChar *buffer, int& index, const QString &s )
 {
   for ( int l = 0; l < s.length(); l++ )
     buffer[index++] = s.at( l );
 }
 
-static inline void put_it_in( QChar *buffer, uint& index, int number )
+static inline void put_it_in( QChar *buffer, int& index, int number )
 {
   buffer[index++] = number / 10 + '0';
   buffer[index++] = number % 10 + '0';
@@ -1128,7 +1128,7 @@ QString KLocale::formatMoney(double num,
     {
     case ParensAround:
       res.prepend(QChar('('));
-      res.append (QChar(')'));
+      res.prepend(QChar(')'));
       break;
     case BeforeQuantityMoney:
       res.prepend(sign);
@@ -1435,7 +1435,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
  * @param pos the position to start at. It will be updated when we parse it.
  * @return the integer read in the string, or -1 if no string
  */
-static int readInt(const QString &str, uint &pos)
+static int readInt(const QString &str, int &pos)
 {
   if (!str.at(pos).isDigit()) return -1;
   int result = 0;
@@ -1495,125 +1495,125 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
         strpos++;
 
       c = fmt.at(fmtpos++);
-      switch (c.toAscii())
-      {
-	case 'a':
-	case 'A':
+      switch (c.unicode())
+          {
+    case 'a':
+    case 'A':
 
-          error = true;
-	  j = 1;
-	  while (error && (j < 8)) {
-	    QString s = calendar()->weekDayName(j, c == 'a').lower();
-	    int len = s.length();
-	    if (str.mid(strpos, len) == s)
-            {
-	      strpos += len;
-              error = false;
-            }
-	    j++;
-	  }
-	  break;
-	case 'b':
-	case 'B':
-
-          error = true;
-	  if (d->nounDeclension && d->dateMonthNamePossessive) {
-	    j = 1;
-	    while (error && (j < 13)) {
-	      QString s = calendar()->monthNamePossessive(j, year, c == 'b').lower();
-	      int len = s.length();
-	      if (str.mid(strpos, len) == s) {
-	        month = j;
-	        strpos += len;
+            error = true;
+      j = 1;
+      while (error && (j < 8)) {
+        QString s = calendar()->weekDayName(j, c == 'a').lower();
+        int len = s.length();
+        if (str.mid(strpos, len) == s)
+              {
+          strpos += len;
                 error = false;
-	      }
-	      j++;
-	    }
-	  }
-	  j = 1;
-	  while (error && (j < 13)) {
-	    QString s = calendar()->monthName(j, year, c == 'b').lower();
-	    int len = s.length();
-	    if (str.mid(strpos, len) == s) {
-	      month = j;
-	      strpos += len;
-              error = false;
-	    }
-	    j++;
-	  }
-	  break;
-	case 'd':
-	case 'e':
-	  day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
-	  strpos += iLength;
-
-	  error = iLength <= 0;
-	  break;
-
-	case 'n':
-	case 'm':
-	  month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
-	  strpos += iLength;
-
-	  error = iLength <= 0;
-	  break;
-
-	case 'Y':
-	case 'y':
-	  year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
-	  strpos += iLength;
-
-	  error = iLength <= 0;
-	  break;
+              }
+        j++;
       }
+      break;
+    case 'b':
+    case 'B':
+
+            error = true;
+      if (d->nounDeclension && d->dateMonthNamePossessive) {
+        j = 1;
+        while (error && (j < 13)) {
+          QString s = calendar()->monthNamePossessive(j, year, c == 'b').lower();
+          int len = s.length();
+          if (str.mid(strpos, len) == s) {
+            month = j;
+            strpos += len;
+                  error = false;
+          }
+          j++;
+        }
+      }
+      j = 1;
+      while (error && (j < 13)) {
+        QString s = calendar()->monthName(j, year, c == 'b').lower();
+        int len = s.length();
+        if (str.mid(strpos, len) == s) {
+          month = j;
+          strpos += len;
+                error = false;
+        }
+        j++;
+      }
+      break;
+    case 'd':
+    case 'e':
+      day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
+      strpos += iLength;
+
+      error = iLength <= 0;
+      break;
+
+    case 'n':
+    case 'm':
+      month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
+      strpos += iLength;
+
+      error = iLength <= 0;
+      break;
+
+    case 'Y':
+    case 'y':
+      year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
+      strpos += iLength;
+
+      error = iLength <= 0;
+      break;
+        }
+      }
+    }
+
+    /* for a match, we should reach the end of both strings, not just one of
+       them */
+    if ( fmt.length() > fmtpos || str.length() > strpos )
+    {
+      error = true;
+    }
+
+    //kdDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
+    if ( year != -1 && month != -1 && day != -1 && !error)
+    {
+      if (ok) *ok = true;
+
+      QDate result;
+      calendar()->setYMD(result, year, month, day);
+
+      return result;
+    }
+    else
+    {
+      if (ok) *ok = false;
+      return QDate(); // invalid date
     }
   }
 
-  /* for a match, we should reach the end of both strings, not just one of
-     them */
-  if ( fmt.length() > fmtpos || str.length() > strpos )
+  QTime KLocale::readTime(const QString &intstr, bool *ok) const
   {
-    error = true;
+    QTime _time;
+    _time = readTime(intstr, WithSeconds, ok);
+    if (_time.isValid()) return _time;
+    return readTime(intstr, WithoutSeconds, ok);
   }
 
-  //kdDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
-  if ( year != -1 && month != -1 && day != -1 && !error)
+  QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
   {
-    if (ok) *ok = true;
+    QString str = intstr.simplifyWhiteSpace().lower();
+    QString Format = timeFormat().simplifyWhiteSpace();
+    if (flags & WithoutSeconds)
+      Format.remove(QRegExp(".%S"));
 
-    QDate result;
-    calendar()->setYMD(result, year, month, day);
-
-    return result;
-  }
-  else
-  {
-    if (ok) *ok = false;
-    return QDate(); // invalid date
-  }
-}
-
-QTime KLocale::readTime(const QString &intstr, bool *ok) const
-{
-  QTime _time;
-  _time = readTime(intstr, WithSeconds, ok);
-  if (_time.isValid()) return _time;
-  return readTime(intstr, WithoutSeconds, ok);
-}
-
-QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
-{
-  QString str = intstr.simplifyWhiteSpace().lower();
-  QString Format = timeFormat().simplifyWhiteSpace();
-  if (flags & WithoutSeconds)
-    Format.remove(QRegExp(".%S"));
-
-  int hour = -1, minute = -1;
-  int second = ( (flags & WithoutSeconds) == 0 ) ? -1 : 0; // don't require seconds
-  bool g_12h = false;
-  bool pm = false;
-  uint strpos = 0;
-  int Formatpos = 0;
+    int hour = -1, minute = -1;
+    int second = ( (flags & WithoutSeconds) == 0 ) ? -1 : 0; // don't require seconds
+    bool g_12h = false;
+    bool pm = false;
+    int strpos = 0;
+    int Formatpos = 0;
 
   while (Format.length() > Formatpos || str.length() > strpos)
     {
@@ -1635,7 +1635,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
 	strpos++;
 
       c = Format.at(Formatpos++);
-      switch (c.toAscii())
+      switch (c.unicode())
 	{
 	case 'p':
 	  {
@@ -1722,7 +1722,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
   // I'm rather safe than sorry
   QChar *buffer = new QChar[rst.length() * 3 / 2 + 30];
 
-  uint index = 0;
+  int index = 0;
   bool escape = false;
   int number = 0;
 
