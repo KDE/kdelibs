@@ -24,6 +24,7 @@
 #include <qrect.h>
 #include <qlabel.h>
 #include <kimageeffect.h>
+#include <QRubberBand>
 
 class KPopupMenu;
 
@@ -44,6 +45,7 @@ class KPopupMenu;
 class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {
    Q_OBJECT
+   struct Private;
 public:
    /**
     * Constructor for a KPixmapRegionSelectorWidget.
@@ -164,6 +166,10 @@ private:
 
    int m_maxWidth, m_maxHeight;
    double m_zoomFactor;
+
+   QRubberBand *m_rubberBand;
+
+   Private* d;
 };
 
 #endif

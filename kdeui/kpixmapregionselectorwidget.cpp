@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <qcursor.h>
 #include <qapplication.h>
+#include <QMouseEvent>
 
 KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent, 
       const char *name) : QWidget( parent, name)
@@ -58,6 +59,8 @@ KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent,
    m_forcedAspectRatio=0;
 
    m_zoomFactor=1.0;
+   m_rubberBand = new QRubberBand(QRubberBand::Rectangle, m_label);
+   m_rubberBand->hide();
 }
 
 KPixmapRegionSelectorWidget::~KPixmapRegionSelectorWidget()
@@ -76,6 +79,7 @@ void KPixmapRegionSelectorWidget::setPixmap( const QPixmap &pixmap )
 void KPixmapRegionSelectorWidget::resetSelection()
 {
    m_selectedRegion = m_originalPixmap.rect();
+   m_rubberBand->hide();
    updatePixmap();
 }
 
@@ -107,16 +111,10 @@ void KPixmapRegionSelectorWidget::updatePixmap()
    {
      m_linedPixmap = m_originalPixmap;
 
-     painter.begin(&m_linedPixmap);
-     painter.setRasterOp( Qt::XorROP );
-     painter.fillRect(0,0,m_linedPixmap.width(), m_linedPixmap.height(), 
-                  QBrush( QColor(255,255,255), Qt::BDiagPattern) );
-     painter.end();
-
      QImage image=m_linedPixmap.convertToImage();
      image=KImageEffect::fade(image, (float)0.4, QColor(0,0,0));
      m_linedPixmap.convertFromImage(image);
-   } 
+   }
 
    QPixmap pixmap = m_linedPixmap;
 
@@ -124,10 +122,13 @@ void KPixmapRegionSelectorWidget::updatePixmap()
    painter.drawPixmap( m_selectedRegion.topLeft(), 
         m_originalPixmap, m_selectedRegion );
 
-   painter.setPen( QColor(255,255,255) );
-   painter.setRasterOp( Qt::XorROP );
-
-   painter.drawRect( m_selectedRegion );
+   if (m_selectedRegion == m_label->rect()) //### CHECK!
+        m_rubberBand->hide();
+   else
+   {
+        m_rubberBand->setGeometry(m_selectedRegion);
+        m_rubberBand->show();
+   }
 
    painter.end();
 
