@@ -38,6 +38,7 @@
 class QPixmap;
 class QPainter;
 class Q3Frame;
+class Q3PopupMenu;
 
 class KMultiTabBarPrivate;
 class KMultiTabBarTabPrivate;
@@ -55,8 +56,8 @@ class KUTILS_EXPORT KMultiTabBar: public QWidget
 {
 	Q_OBJECT
 public:
-	enum KMultiTabBarMode{Qt::Horizontal, Qt::Vertical};
-	enum KMultiTabBarPosition{Qt::DockLeft, Qt::DockRight, Qt::DockTop, Qt::DockBottom};
+       enum KMultiTabBarMode{Horizontal, Vertical};
+       enum KMultiTabBarPosition{Left, Right, Top, Bottom};
 
 	/**
 	 * VSNET == Visual Studio .Net like (only show the text of active tabs

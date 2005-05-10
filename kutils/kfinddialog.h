@@ -84,7 +84,7 @@ public:
         WholeWordsOnly = 1,     // Match whole words only.
         FromCursor = 2,         // Start from current cursor position.
         SelectedText = 4,       // Only search selected area.
-        Qt::CaseSensitive = 8,      // Consider case when matching.
+        CaseSensitive = 8,      // Consider case when matching.
         FindBackwards = 16,     // Go backwards.
         RegularExpression = 32, // Interpret the pattern as a regular expression.
         FindIncremental = 64,   // Find incremental.

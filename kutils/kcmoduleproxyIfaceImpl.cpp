@@ -77,7 +77,7 @@ bool KCModuleProxyIfaceImpl::changed()
 void KCModuleProxyIfaceImpl::changedRelay( bool c )
 {
 	QByteArray data;
-	QDataStream stream(data, QIODevice::WriteOnly);
+	QDataStream stream(&data, QIODevice::WriteOnly);
 	stream << c;
 	emitDCOPSignal( "changed(bool)", data );
 }

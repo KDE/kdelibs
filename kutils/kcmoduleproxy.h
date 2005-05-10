@@ -23,6 +23,7 @@
 
 #include <qwidget.h>
 #include <qstringlist.h>
+#include <q3cstring.h>
 
 #include <kservice.h>
 #include <kdelibs_export.h>

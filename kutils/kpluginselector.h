@@ -22,6 +22,8 @@
 
 #include <qwidget.h>
 #include <qstring.h>
+#include <q3valuelist.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
