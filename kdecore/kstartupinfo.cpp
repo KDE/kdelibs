@@ -788,7 +788,7 @@ void KStartupInfo::setWindowStartupId( WId w_P, const QByteArray& id_P )
     if( utf8_string_atom == None )
         utf8_string_atom = XInternAtom( QX11Info::display(), "UTF8_STRING", False );
     XChangeProperty( QX11Info::display(), w_P, net_startup_atom, utf8_string_atom, 8,
-        PropModeReplace, reinterpret_cast< unsigned char* >( id_P.data()), id_P.length());
+        PropModeReplace, reinterpret_cast< const unsigned char* >( id_P.data()), id_P.length());
 #endif
     }
 
@@ -1076,7 +1076,7 @@ unsigned long KStartupInfoId::timestamp() const
     if( pos >= 0 )
         {
         bool ok;
-        long time = d->id.mid( pos + 5 ).toLong( &ok );
+        long time = QString( d->id.mid( pos + 5 ) ).toLong( &ok );
         if( ok )
             return time;
         }
@@ -1091,7 +1091,7 @@ unsigned long KStartupInfoId::timestamp() const
         if( pos2 >= 0 )
             {
             bool ok;
-            long time = d->id.mid( pos2 + 1, pos1 - pos2 - 1 ).toLong( &ok );
+            long time = QString( d->id.mid( pos2 + 1, pos1 - pos2 - 1 ) ).toLong( &ok );
             if( ok )
                 return time;
             }

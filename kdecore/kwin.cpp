@@ -428,14 +428,13 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	        QPixmap pm(w, h, depth);
 	        // Always detach before doing something behind QPixmap's back.
 	        pm.detach();
-			QX11Info inf;
 	        XCopyArea(QX11Info::display(), p, pm.handle(),
-		          qt_xget_temp_gc(inf.screen(), depth==1),
+		          qt_xget_temp_gc(pm.x11Info().screen(), depth==1),
 		          0, 0, w, h, 0, 0);
 	        if (p_mask != None){
 	    	    QBitmap bm(w, h);
 		    XCopyArea(QX11Info::display(), p_mask, bm.handle(),
-			      qt_xget_temp_gc(inf.screen(), true),
+			      qt_xget_temp_gc(pm.x11Info().screen(), true),
 			      0, 0, w, h, 0, 0);
 		    pm.setMask(bm);
 	        }
