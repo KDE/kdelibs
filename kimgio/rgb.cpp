@@ -272,7 +272,8 @@ bool SGIImage::readImage(QImage& img)
 	// sanity ckeck
 	if (m_rle)
 		for (uint o = 0; o < m_numrows; o++)
-			if (m_starttab[o] + m_lengthtab[o] >= m_data.size()) {
+			// do not convert to >=
+			if (m_starttab[o] + m_lengthtab[o] > m_data.size()) {
 				kdDebug(399) << "image corrupt (sanity check failed)" << endl;
 				return false;
 			}
