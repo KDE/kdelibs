@@ -4,12 +4,12 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * This file contains code from TEShell.C of the KDE konsole. 
- * Copyright (c) 1997,1998 by Lars Doelle <lars.doelle@on-line.de> 
  *
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ * This file contains code from TEShell.C of the KDE konsole.
+ * Copyright (c) 1997,1998 by Lars Doelle <lars.doelle@on-line.de>
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * process.cpp: Functionality to build a front end to password asking
@@ -45,7 +45,6 @@
 #endif
 
 #include <qglobal.h>
-#include <q3cstring.h>
 #include <qfile.h>
 
 #include <kdebug.h>
@@ -58,7 +57,7 @@
 int PtyProcess::waitMS(int fd,int ms)
 {
 	struct timeval tv;
-	tv.tv_sec = 0; 
+	tv.tv_sec = 0;
 	tv.tv_usec = 1000*ms;
 
 	fd_set fds;
@@ -89,12 +88,12 @@ int PtyProcess::checkPidExited(pid_t pid)
 	int state, ret;
 	ret = waitpid(pid, &state, WNOHANG);
 
-	if (ret < 0) 
+	if (ret < 0)
 	{
 		kdError(900) << k_lineinfo << "waitpid(): " << perror << "\n";
 		return Error;
 	}
-	if (ret == pid) 
+	if (ret == pid)
 	{
 		if (WIFEXITED(state))
 			return WEXITSTATUS(state);
@@ -108,7 +107,7 @@ int PtyProcess::checkPidExited(pid_t pid)
 class PtyProcess::PtyProcessPrivate
 {
 public:
-    QCStringList env;
+    QList<QByteArray> env;
 };
 
 
@@ -128,7 +127,7 @@ int PtyProcess::init()
     m_Fd = m_pPTY->getpt();
     if (m_Fd < 0)
         return -1;
-    if ((m_pPTY->grantpt() < 0) || (m_pPTY->unlockpt() < 0)) 
+    if ((m_pPTY->grantpt() < 0) || (m_pPTY->unlockpt() < 0))
     {
         kdError(900) << k_lineinfo << "Master setup failed.\n";
         m_Fd = -1;
@@ -147,12 +146,12 @@ PtyProcess::~PtyProcess()
 }
 
 /** Set additinal environment variables. */
-void PtyProcess::setEnvironment( const QCStringList &env )
+void PtyProcess::setEnvironment( const QList<QByteArray> &env )
 {
     d->env = env;
 }
 
-const QCStringList& PtyProcess::environment() const
+QList<QByteArray> PtyProcess::environment() const
 {
     return d->env;
 }
@@ -163,15 +162,15 @@ const QCStringList& PtyProcess::environment() const
  * one time.
  */
 
-Q3CString PtyProcess::readLine(bool block)
+QByteArray PtyProcess::readLine(bool block)
 {
     int pos;
-    Q3CString ret;
+    QByteArray ret;
 
-    if (!m_Inbuf.isEmpty()) 
+    if (!m_Inbuf.isEmpty())
     {
-        pos = m_Inbuf.find('\n');
-        if (pos == -1) 
+        pos = m_Inbuf.indexOf('\n');
+        if (pos == -1)
         {
             ret = m_Inbuf;
             m_Inbuf.resize(0);
@@ -184,7 +183,7 @@ Q3CString PtyProcess::readLine(bool block)
     }
 
     int flags = fcntl(m_Fd, F_GETFL);
-    if (flags < 0) 
+    if (flags < 0)
     {
         kdError(900) << k_lineinfo << "fcntl(F_GETFL): " << perror << "\n";
         return ret;
@@ -204,10 +203,10 @@ Q3CString PtyProcess::readLine(bool block)
 
     int nbytes;
     char buf[256];
-    while (1) 
+    while (1)
     {
         nbytes = read(m_Fd, buf, 255);
-        if (nbytes == -1) 
+        if (nbytes == -1)
         {
             if (errno == EINTR)
                 continue;
@@ -219,12 +218,12 @@ Q3CString PtyProcess::readLine(bool block)
         buf[nbytes] = '\000';
         m_Inbuf += buf;
 
-        pos = m_Inbuf.find('\n');
-        if (pos == -1) 
+        pos = m_Inbuf.indexOf('\n');
+        if (pos == -1)
         {
             ret = m_Inbuf;
             m_Inbuf.resize(0);
-        } else 
+        } else
         {
             ret = m_Inbuf.left(pos);
             m_Inbuf = m_Inbuf.mid(pos+1);
@@ -236,7 +235,7 @@ Q3CString PtyProcess::readLine(bool block)
 }
 
 
-void PtyProcess::writeLine(const Q3CString &line, bool addnl)
+void PtyProcess::writeLine(const QByteArray &line, bool addnl)
 {
     if (!line.isEmpty())
         write(m_Fd, line, line.length());
@@ -245,9 +244,9 @@ void PtyProcess::writeLine(const Q3CString &line, bool addnl)
 }
 
 
-void PtyProcess::unreadLine(const Q3CString &line, bool addnl)
+void PtyProcess::unreadLine(const QByteArray &line, bool addnl)
 {
-    Q3CString tmp = line;
+    QByteArray tmp = line;
     if (addnl)
         tmp += '\n';
     if (!tmp.isEmpty())
@@ -258,29 +257,30 @@ void PtyProcess::unreadLine(const Q3CString &line, bool addnl)
  * Fork and execute the command. This returns in the parent.
  */
 
-int PtyProcess::exec(const Q3CString &command, const QCStringList &args)
+int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 {
     kdDebug(900) << k_lineinfo << "Running `" << command << "'\n";
+    int i;
 
     if (init() < 0)
         return -1;
 
     // Open the pty slave before forking. See SetupTTY()
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) 
+    if (slave < 0)
     {
         kdError(900) << k_lineinfo << "Could not open slave pty.\n";
         return -1;
-    } 
+    }
 
-    if ((m_Pid = fork()) == -1) 
+    if ((m_Pid = fork()) == -1)
     {
         kdError(900) << k_lineinfo << "fork(): " << perror << "\n";
         return -1;
-    } 
+    }
 
     // Parent
-    if (m_Pid) 
+    if (m_Pid)
     {
         close(slave);
         return 0;
@@ -290,38 +290,36 @@ int PtyProcess::exec(const Q3CString &command, const QCStringList &args)
     if (SetupTTY(slave) < 0)
         _exit(1);
 
-    for(QCStringList::ConstIterator it = d->env.begin();
-        it != d->env.end(); it++)
+    for (i = 0; i < d->env.count(); ++i)
     {
-        putenv((*it).data());
+        putenv(const_cast<char *>(d->env.at(i).constData()));
     }
     unsetenv("KDE_FULL_SESSION");
 
     // From now on, terminal output goes through the tty.
 
-    Q3CString path;
+    QByteArray path;
     if (command.contains('/'))
         path = command;
-    else 
+    else
     {
         QString file = KStandardDirs::findExe(command);
-        if (file.isEmpty()) 
+        if (file.isEmpty())
         {
-            kdError(900) << k_lineinfo << command << " not found\n"; 
+            kdError(900) << k_lineinfo << command << " not found\n";
             _exit(1);
-        } 
+        }
         path = QFile::encodeName(file);
     }
 
-    const char **argp = (const char **)malloc((args.count()+2)*sizeof(char *));
-    int i = 0;
-    argp[i++] = path;
-    for (QCStringList::ConstIterator it=args.begin(); it!=args.end(); it++)
-        argp[i++] = *it;
+    const char **argp = static_cast<const char **>(malloc((args.count()+2)*sizeof(char *)));
+    argp[1] = path;
+    for (i = 0; i < args.count(); ++i)
+        argp[i + 2] = args.at(i).constData();
 
-    argp[i] = 0L;
-        
-    execv(path, (char * const *)argp);
+    argp[i + 2] = 0;
+
+    execv(path, const_cast<char **>(argp));
     kdError(900) << k_lineinfo << "execv(\"" << path << "\"): " << perror << "\n";
     _exit(1);
     return -1; // Shut up compiler. Never reached.
@@ -329,10 +327,10 @@ int PtyProcess::exec(const Q3CString &command, const QCStringList &args)
 
 
 /*
- * Wait until the terminal is set into no echo mode. At least one su 
- * (RH6 w/ Linux-PAM patches) sets noecho mode AFTER writing the Password: 
- * prompt, using TCSAFLUSH. This flushes the terminal I/O queues, possibly 
- * taking the password  with it. So we wait until no echo mode is set 
+ * Wait until the terminal is set into no echo mode. At least one su
+ * (RH6 w/ Linux-PAM patches) sets noecho mode AFTER writing the Password:
+ * prompt, using TCSAFLUSH. This flushes the terminal I/O queues, possibly
+ * taking the password  with it. So we wait until no echo mode is set
  * before writing the password.
  * Note that this is done on the slave fd. While Linux allows tcgetattr() on
  * the master side, Solaris doesn't.
@@ -341,29 +339,29 @@ int PtyProcess::exec(const Q3CString &command, const QCStringList &args)
 int PtyProcess::WaitSlave()
 {
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) 
+    if (slave < 0)
     {
         kdError(900) << k_lineinfo << "Could not open slave tty.\n";
         return -1;
     }
 
     kdDebug(900) << k_lineinfo << "Child pid " << m_Pid << endl;
-    
+
     struct termios tio;
-    while (1) 
+    while (1)
     {
 	if (!checkPid(m_Pid))
 	{
 		close(slave);
 		return -1;
 	}
-        if (tcgetattr(slave, &tio) < 0) 
+        if (tcgetattr(slave, &tio) < 0)
         {
             kdError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
             close(slave);
             return -1;
         }
-        if (tio.c_lflag & ECHO) 
+        if (tio.c_lflag & ECHO)
         {
             kdDebug(900) << k_lineinfo << "Echo mode still on.\n";
 	    waitMS(slave,100);
@@ -379,13 +377,13 @@ int PtyProcess::WaitSlave()
 int PtyProcess::enableLocalEcho(bool enable)
 {
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) 
+    if (slave < 0)
     {
         kdError(900) << k_lineinfo << "Could not open slave tty.\n";
         return -1;
     }
     struct termios tio;
-    if (tcgetattr(slave, &tio) < 0) 
+    if (tcgetattr(slave, &tio) < 0)
     {
         kdError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
         close(slave); return -1;
@@ -394,7 +392,7 @@ int PtyProcess::enableLocalEcho(bool enable)
         tio.c_lflag |= ECHO;
     else
         tio.c_lflag &= ~ECHO;
-    if (tcsetattr(slave, TCSANOW, &tio) < 0) 
+    if (tcsetattr(slave, TCSANOW, &tio) < 0)
     {
         kdError(900) << k_lineinfo << "tcsetattr(): " << perror << "\n";
         close(slave); return -1;
@@ -419,13 +417,13 @@ int PtyProcess::waitForChild()
     fd_set fds;
     FD_ZERO(&fds);
 
-    while (1) 
+    while (1)
     {
         FD_SET(m_Fd, &fds);
         int ret = select(m_Fd+1, &fds, 0L, 0L, 0L);
-        if (ret == -1) 
+        if (ret == -1)
         {
-            if (errno != EINTR) 
+            if (errno != EINTR)
             {
                 kdError(900) << k_lineinfo << "select(): " << perror << "\n";
                 return -1;
@@ -433,14 +431,14 @@ int PtyProcess::waitForChild()
             ret = 0;
         }
 
-        if (ret) 
+        if (ret)
         {
-            Q3CString line = readLine(false);
-            while (!line.isNull()) 
+            QByteArray line = readLine(false);
+            while (!line.isNull())
             {
-                if (!m_Exit.isEmpty() && !qstrnicmp(line, m_Exit, m_Exit.length()))
+                if (!m_Exit.isEmpty() && !qstrnicmp(line.constData(), m_Exit, m_Exit.length()))
                     kill(m_Pid, SIGTERM);
-                if (m_bTerminal) 
+                if (m_bTerminal)
                 {
                     fputs(line, stdout);
                     fputc('\n', stdout);
@@ -473,7 +471,7 @@ int PtyProcess::waitForChild()
     }
     return retval;
 }
-   
+
 /*
  * SetupTTY: Creates a new session. The filedescriptor "fd" should be
  * connected to the tty. It is closed after the tty is reopened to make it
@@ -482,7 +480,7 @@ int PtyProcess::waitForChild()
  */
 
 int PtyProcess::SetupTTY(int fd)
-{    
+{
     // Reset signal handlers
     for (int sig = 1; sig < NSIG; sig++)
         signal(sig, SIG_DFL);
@@ -492,14 +490,14 @@ int PtyProcess::SetupTTY(int fd)
     struct rlimit rlp;
     getrlimit(RLIMIT_NOFILE, &rlp);
     for (int i = 0; i < (int)rlp.rlim_cur; i++)
-        if (i != fd) close(i); 
+        if (i != fd) close(i);
 
     // Create a new session.
     setsid();
 
     // Open slave. This will make it our controlling terminal
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) 
+    if (slave < 0)
     {
         kdError(900) << k_lineinfo << "Could not open slave side: " << perror << "\n";
         return -1;
@@ -521,19 +519,19 @@ int PtyProcess::SetupTTY(int fd)
 
     // Connect stdin, stdout and stderr
     dup2(slave, 0); dup2(slave, 1); dup2(slave, 2);
-    if (slave > 2) 
+    if (slave > 2)
         close(slave);
 
     // Disable OPOST processing. Otherwise, '\n' are (on Linux at least)
     // translated to '\r\n'.
     struct termios tio;
-    if (tcgetattr(0, &tio) < 0) 
+    if (tcgetattr(0, &tio) < 0)
     {
         kdError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
         return -1;
     }
     tio.c_oflag &= ~OPOST;
-    if (tcsetattr(0, TCSANOW, &tio) < 0) 
+    if (tcsetattr(0, TCSANOW, &tio) < 0)
     {
         kdError(900) << k_lineinfo << "tcsetattr(): " << perror << "\n";
         return -1;

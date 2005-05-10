@@ -4,9 +4,9 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * stub.cpp: Conversation with kdesu_stub.
@@ -17,7 +17,6 @@
 #include <unistd.h>
 
 #include <qglobal.h>
-#include <q3cstring.h>
 #include <kdatastream.h>
 
 #include <kapplication.h>
@@ -56,21 +55,16 @@ void StubProcess::setPriority(int prio)
 }
 
 
-Q3CString StubProcess::commaSeparatedList(QCStringList lst)
+QByteArray StubProcess::commaSeparatedList(const QList<QByteArray> &lst)
 {
-    if (lst.count() == 0)
-	return Q3CString("");
-
-    QCStringList::Iterator it = lst.begin();
-    Q3CString str = *it;
-    for (it++; it!=lst.end(); it++) 
-    {
-	str += ',';
-	str += *it;
+    QByteArray str;
+    for (int i = 0; i < lst.count(); ++i) {
+        str += ',';
+        str += lst.at(i);
     }
     return str;
 }
-    
+
 /*
  * Conversation with kdesu_stub. This is how we pass the authentication
  * tokens (X11, DCOP) and other stuff to kdesu_stub.
@@ -79,14 +73,14 @@ Q3CString StubProcess::commaSeparatedList(QCStringList lst)
 
 int StubProcess::ConverseStub(int check)
 {
-    Q3CString line, tmp;
-    while (1) 
+    QByteArray line, tmp;
+    while (1)
     {
 	line = readLine();
 	if (line.isNull())
 	    return -1;
 
-	if (line == "kdesu_stub") 
+	if (line == "kdesu_stub")
 	{
 	    // This makes parsing a lot easier.
 	    enableLocalEcho(false);
@@ -118,8 +112,8 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "command") {
 	    writeLine(m_Command);
 	} else if (line == "path") {
-	    Q3CString path = getenv("PATH");
-	    if (m_User == "root") 
+	    QByteArray path = getenv("PATH");
+	    if (m_User == "root")
 		if (!path.isEmpty())
 		    path = "/sbin:/usr/sbin:" + path;
 		else
@@ -137,14 +131,13 @@ int StubProcess::ConverseStub(int check)
 	    if (m_bXOnly) writeLine("no");
 	    else writeLine("yes");
 	} else if (line == "app_startup_id") {
-	    QCStringList env = environment();
-	    Q3CString tmp;
-	    for( QCStringList::ConstIterator it = env.begin();
-		 it != env.end();
-		 ++it )
+	    QList<QByteArray> env = environment();
+	    QByteArray tmp;
+	    for(int i = 0; i < env.count(); ++i)
 	    {
-		if( (*it).find( "KDE_STARTUP_ENV=" ) == 0 )
-		    tmp = (*it).mid( strlen( "KDE_STARTUP_ENV=" ));
+                const char startup_env[] = "KDE_STARTUP_ENV=";
+                if (env.at(i).startsWith(startup_env))
+                    tmp = env.at(i).mid(sizeof(startup_env) - 1);
 	    }
 	    if( tmp.isEmpty())
 		tmp = "0";
@@ -153,15 +146,13 @@ int StubProcess::ConverseStub(int check)
 	    tmp.setNum(getpid());
 	    writeLine(tmp);
 	} else if (line == "environment") { // additional env vars
-	    QCStringList env = environment();
-	    for( QCStringList::ConstIterator it = env.begin();
-		 it != env.end();
-		 ++it )
-		writeLine( *it );
+	    QList<QByteArray> env = environment();
+            for (int i = 0; i < env.count(); ++i)
+                writeLine(env.at(i));
 	    writeLine( "" );
 	} else if (line == "end") {
 	    return 0;
-	} else 
+	} else
 	{
 	    kdWarning(900) << k_lineinfo << "Unknown request: -->" << line 
 		           << "<--\n";

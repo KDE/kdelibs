@@ -4,16 +4,14 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
 #ifndef __SSH_h_Included__
 #define __SSH_h_Included__
-
-#include <q3cstring.h>
 
 #include "stub.h"
 
@@ -26,7 +24,8 @@
 class KDESU_EXPORT SshProcess: public StubProcess
 {
 public:
-    SshProcess(const Q3CString &host=0, const Q3CString &user=0, const Q3CString &command=0);
+    SshProcess(const QByteArray &host = QByteArray(), const QByteArray &user = QByteArray(),
+               const QByteArray &command = QByteArray());
     ~SshProcess();
 
     enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };
@@ -34,15 +33,15 @@ public:
     /**
      * Sets the target host.
      */
-    void setHost(const Q3CString &host) { m_Host = host; }
+    void setHost(const QByteArray &host) { m_Host = host; }
 
     /**
      * Sets the localtion of the remote stub.
      */
-    void setStub(const Q3CString &stub);
+    void setStub(const QByteArray &stub);
 
-    /** 
-     * Checks if the current user@host needs a password. 
+    /**
+     * Checks if the current user@host needs a password.
      * @return The prompt for the password if a password is required. A null
      * string otherwise.
      */
@@ -59,24 +58,24 @@ public:
      */
     int exec(const char *password, int check=0);
 
-    Q3CString prompt() { return m_Prompt; }
-    Q3CString error() { return m_Error; }
+    QByteArray prompt() const  { return m_Prompt; }
+    QByteArray error() const { return m_Error; }
 
 protected:
-    virtual Q3CString display();
-    virtual Q3CString displayAuth();
-    virtual Q3CString dcopServer();
+    virtual QByteArray display();
+    virtual QByteArray displayAuth();
+    virtual QByteArray dcopServer();
 
 private:
-    Q3CString dcopForward();
+    QByteArray dcopForward();
     int ConverseSsh(const char *password, int check);
 
     int m_dcopPort;
     int  m_dcopSrv;
-    Q3CString m_Prompt;
-    Q3CString m_Host;
-    Q3CString m_Error;
-    Q3CString m_Stub;
+    QByteArray m_Prompt;
+    QByteArray m_Host;
+    QByteArray m_Error;
+    QByteArray m_Stub;
 
 protected:
     virtual void virtual_hook( int id, void* data );

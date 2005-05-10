@@ -5,8 +5,8 @@
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
@@ -18,7 +18,7 @@
 #ifndef __PTY_h_Included__
 #define __PTY_h_Included__
 
-#include <q3cstring.h>
+#include <qbytearray.h>
 
 #include <kdelibs_export.h>
 
@@ -57,15 +57,15 @@ public:
      * Get the slave name.
      * @return The slave name.
      */
-    Q3CString ptsname();
-    
+    QByteArray ptsname();
+
 private:
 
     int ptyfd;
-    Q3CString ptyname, ttyname;
+    QByteArray ptyname, ttyname;
 
     class PTYPrivate;
     PTYPrivate *d;
 };
-    
+
 #endif  // __PTY_h_Included__

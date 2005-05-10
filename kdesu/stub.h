@@ -13,15 +13,13 @@
 #ifndef __Stub_h_Included__
 #define __Stub_h_Included__
 
-#include <q3cstring.h>
-#include <q3valuelist.h>
+#include <qbytearray.h>
+#include <qlist.h>
 
 #include "process.h"
 #include "kcookie.h"
 
 #include <kdelibs_export.h>
-
-typedef Q3ValueList<Q3CString> QCStringList;
 
 /**
  * Chat with kdesu_stub.
@@ -38,18 +36,18 @@ public:
     /**
      * Specify dcop transport
      */
-    void setDcopTransport(const Q3CString &dcopTransport) 
+    void setDcopTransport(const QByteArray &dcopTransport)
        { m_pCookie->setDcopTransport(dcopTransport); }
 
     /**
      * Set the command.
      */
-    void setCommand(const Q3CString &command) { m_Command = command; }
+    void setCommand(const QByteArray &command) { m_Command = command; }
 
     /**
      * Set the target user.
      */
-    void setUser(const Q3CString &user) { m_User = user; }
+    void setUser(const QByteArray &user) { m_User = user; }
 
     /**
      * Set to "X only mode": Sycoca is not built and kdeinit is not launched.
@@ -75,7 +73,7 @@ public:
     enum Scheduler { SchedNormal, SchedRealtime };
 
     /**
-     * Set the scheduler type. 
+     * Set the scheduler type.
      */
     void setScheduler(int sched) { m_Scheduler = sched; }
 
@@ -93,41 +91,41 @@ protected:
     // KDE4 remove
     void notifyTaskbar(const QString &suffix);
 
-    /** 
+    /**
      * This virtual function can be overloaded when special behavior is
      * desired. By default, it returns the value returned by KCookie.
      */
-    virtual Q3CString display() { return m_pCookie->display(); }
+    virtual QByteArray display() { return m_pCookie->display(); }
 #ifdef Q_WS_X11
     /**
      * See display.
      */
-    virtual Q3CString displayAuth() { return m_pCookie->displayAuth(); }
+    virtual QByteArray displayAuth() { return m_pCookie->displayAuth(); }
 #endif
     /**
      * See display.
      */
-    virtual Q3CString dcopServer() { return m_pCookie->dcopServer(); }
+    virtual QByteArray dcopServer() { return m_pCookie->dcopServer(); }
     /**
      * See display.
      */
-    virtual Q3CString dcopAuth() { return m_pCookie->dcopAuth(); }
+    virtual QByteArray dcopAuth() { return m_pCookie->dcopAuth(); }
     /**
      * See display.
      */
-    virtual Q3CString iceAuth() { return m_pCookie->iceAuth(); }
+    virtual QByteArray iceAuth() { return m_pCookie->iceAuth(); }
 
     bool m_bXOnly;
     bool m_bDCOPForwarding;
     int m_Priority;
     int  m_Scheduler;
-    Q3CString m_dcopTransport;
-    Q3CString m_Command;
-    Q3CString m_User;
+    QByteArray m_dcopTransport;
+    QByteArray m_Command;
+    QByteArray m_User;
     KCookie *m_pCookie;
-    
+
 private:
-    Q3CString commaSeparatedList(QCStringList);
+    QByteArray commaSeparatedList(const QList<QByteArray> &);
 
 protected:
     virtual void virtual_hook( int id, void* data );
