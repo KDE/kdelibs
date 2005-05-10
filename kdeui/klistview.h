@@ -633,14 +633,6 @@ public slots:
   virtual void setDropHighlighter(bool b);
 
   /**
-   * For future expansions.
-   *
-   * Do not use.
-   * @deprecated
-   */
-  virtual void setCreateChildren(bool b) KDE_DEPRECATED;
-
-  /**
    * Set the selection mode.
    *
    * A different name was chosen to avoid API-clashes with QListView::setSelectionMode().
