@@ -105,6 +105,10 @@ public:
 
 		setWidgetLayoutProp(WT_MenuBarItem, MenuBarItem::Margin + Left,  2);
 		setWidgetLayoutProp(WT_MenuBarItem, MenuBarItem::Margin + Right, 2);
+
+		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight,
+						loader.size( keramik_scrollbar_vbar + KeramikSlider1 ).height() +
+						loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height());
 		
 		//### HACK,for now.
 		//setWidgetLayoutProp(WT_DockWidgetTitle, DockWidgetTitle::Margin, 8);
