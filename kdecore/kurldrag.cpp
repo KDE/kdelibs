@@ -88,7 +88,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
 {
     Q3StrList lst;
     Q3UriDrag::decode( e, lst );
-    for (QStrListIterator it(lst); *it; ++it)
+    for (Q3StrListIterator it(lst); *it; ++it)
     {
       KURL url = stringToUrl( *it );
       if ( !url.isValid() )
@@ -172,7 +172,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     else if ( mimetype == "text/plain" )
     {
 	QStringList uris;
-        for (QStrListIterator it(m_urls); *it; ++it)
+        for (Q3StrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
         QByteArray s = uris.join( "\n" ).local8Bit();
@@ -184,8 +184,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     else if ( mimetype.lower() == "text/plain;charset=iso-8859-1")
     {
         QStringList uris;
-        for (QStrListIterator it(m_urls); *it; ++it)
-        for (QStrListIterator it(m_urls); *it; ++it)
+        for (Q3StrListIterator it(m_urls); *it; ++it)
+        for (Q3StrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).url(0, 4)); // 4 is mib for latin1
 
         QByteArray s = uris.join( "\n" ).latin1();
@@ -197,7 +197,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     else if ( mimetype.lower() == "text/plain;charset=utf-8")
     {
         QStringList uris;
-        for (QStrListIterator it(m_urls); *it; ++it)
+        for (Q3StrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
         QByteArray s = uris.join( "\n" ).utf8();

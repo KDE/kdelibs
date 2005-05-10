@@ -109,12 +109,12 @@ bool KBufferedIO::setBufferSize(int rsize, int wsize /* = -2 */)
   return true;
 }
 
-int KBufferedIO::bytesAvailable() const
+qint64 KBufferedIO::bytesAvailable() const
 {
   return readBufferSize();
 }
 
-int KBufferedIO::bytesToWrite() const
+qint64 KBufferedIO::bytesToWrite() const
 {
   return writeBufferSize();
 }
@@ -209,7 +209,7 @@ unsigned KBufferedIO::consumeReadBuffer(unsigned nbytes, char *destbuffer, bool 
   return copied;
 }
 
-void KBufferedIO::consumeWriteBuffer(unsigned nbytes)
+void KBufferedIO::consumeWriteBuffer(int nbytes)
 {
   QByteArray *buf = outBuf.first();
   if (buf == NULL)

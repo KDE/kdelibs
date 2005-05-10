@@ -184,7 +184,7 @@ KSycocaDict::hashKey( const QString &key)
    int l = key.length();
    register uint h = 0;
   
-   for(uint i = 0; i < mHashList.count(); i++)
+   for(int i = 0; i < mHashList.count(); i++)
    {
       int pos = mHashList[i];
       if (pos < 0)

@@ -117,7 +117,7 @@ public:
    * Returns the number of bytes available for reading in the read buffer
    * @return the number of bytes available for reading
    */
-  virtual int bytesAvailable() const;
+  virtual qint64 bytesAvailable() const;
 
   /**
    * Waits for more data to be available and returns the amount of available data then.
@@ -131,7 +131,7 @@ public:
    * Returns the number of bytes yet to write, still in the write buffer
    * @return the number of unwritten bytes in the write buffer
    */
-  virtual int bytesToWrite() const;
+  virtual qint64 bytesToWrite() const;
 
   /**
    * Checks whether there is enough data in the buffer to read a line
@@ -217,7 +217,7 @@ protected:
    */
   Q3PtrList<QByteArray> outBuf;
 
-  unsigned inBufIndex, outBufIndex;
+  signed inBufIndex, outBufIndex;
 
   /**
    * Consumes data from the input buffer.
@@ -242,7 +242,7 @@ protected:
    * wrong nbytes values.
    * @param nbytes	the amount of bytes to discard
    */
-  virtual void consumeWriteBuffer(unsigned nbytes);
+  virtual void consumeWriteBuffer(int nbytes);
 
   /**
    * Feeds data into the input buffer.

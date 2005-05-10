@@ -35,7 +35,7 @@ class KAsyncIOPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short Asynchronous I/O support
  */
-class KDECORE_EXPORT KAsyncIO: public QObject, public QIODevice
+class KDECORE_EXPORT KAsyncIO: public QIODevice
 {
   Q_OBJECT
 protected:

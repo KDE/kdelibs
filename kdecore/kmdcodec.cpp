@@ -356,7 +356,7 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
         return;
 
     unsigned int sidx = 0;
-    unsigned int didx = 0;
+    int didx = 0;
     const char* data = in.data();
     const unsigned int len = in.size();
 
@@ -432,8 +432,8 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
     if ( in.isEmpty() )
         return;
 
-    unsigned int count = 0;
-    unsigned int len = in.size(), tail = len;
+    int count = 0;
+    int len = in.size(), tail = len;
     const char* data = in.data();
 
     // Deal with possible *nix "BEGIN" marker!!
@@ -462,7 +462,7 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
 
     unsigned int outIdx = 0;
     out.resize( (count=len) );
-    for (unsigned int idx = 0; idx < count; idx++)
+    for (int idx = 0; idx < count; idx++)
     {
         // Adhere to RFC 2045 and ignore characters
         // that are not part of the encoding table.
@@ -483,7 +483,7 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
 
     // 4-byte to 3-byte conversion
     len = (tail>(len/4)) ? tail-(len/4) : 0;
-    unsigned int sidx = 0, didx = 0;
+    int sidx = 0, didx = 0;
     if ( len > 1 )
     {
       while (didx < len-2)
@@ -521,7 +521,7 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
         return;
 
     unsigned int sidx = 0;
-    unsigned int didx = 0;
+    int didx = 0;
     unsigned int line_len = 45;
 
     const char nl[] = "\n";
@@ -606,14 +606,14 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     if( in.isEmpty() )
         return;
 
-    unsigned int sidx = 0;
-    unsigned int didx = 0;
-    unsigned int len = in.size();
-    unsigned int line_len, end;
+    int sidx = 0;
+    int didx = 0;
+    int len = in.size();
+    int line_len, end;
     const char* data = in.data();
 
     // Deal with *nix "BEGIN"/"END" separators!!
-    unsigned int count = 0;
+    int count = 0;
     while ( count < len && (data[count] == '\n' || data[count] == '\r' ||
             data[count] == '\t' || data[count] == ' ') )
         count ++;
@@ -707,11 +707,6 @@ KMD5::KMD5(const QByteArray& in)
 void KMD5::update(const QByteArray& in)
 {
     update(in.data(), int(in.size()));
-}
-
-void KMD5::update(const QByteArray& in)
-{
-    update(in.data(), int(in.length()));
 }
 
 void KMD5::update(const unsigned char* in, int len)

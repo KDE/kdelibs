@@ -146,7 +146,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      {
         QByteArray b_array;
         b_array.setRawData(m_sycoca_mmap, m_sycoca_size);
-        QBuffer *buffer = new QBuffer( b_array );
+        QBuffer *buffer = new QBuffer( &b_array );
         buffer->open(QIODevice::ReadWrite);
         m_str = new QDataStream( buffer);
      }
@@ -166,7 +166,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      {
         // We open a dummy database instead.
         //kdDebug(7011) << "No database, opening a dummy one." << endl;
-        QBuffer *buffer = new QBuffer( QByteArray() );
+        QBuffer *buffer = new QBuffer( new QByteArray() );
         buffer->open(QIODevice::ReadWrite);
         m_str = new QDataStream( buffer);
         (*m_str) << (Q_INT32) KSYCOCA_VERSION;
