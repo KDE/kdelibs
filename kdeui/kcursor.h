@@ -26,6 +26,7 @@
 #include <qcursor.h>
 #include <kdelibs_export.h>
 
+class QEvent;
 class QWidget;
 
 /**
@@ -42,7 +43,7 @@ class QWidget;
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KCursor : public Qt
+class KDEUI_EXPORT KCursor 
 {
 public:
     /**
@@ -68,71 +69,71 @@ public:
      * Returns the proper arrow cursor according to
      * the current GUI style (static function).
      */
-    static QCursor Qt::ArrowCursor();
+    static QCursor arrowCursor();
 
     /**
      * Returns the proper up arrow cursor according to
      * the current GUI style (static function).
      */
-    static QCursor Qt::UpArrowCursor();
+    static QCursor upArrowCursor();
 
     /**
      * Returns the proper cross-hair cursor according to
      * the current GUI style (static function).
      */
-    static QCursor Qt::CrossCursor();
+    static QCursor crossCursor();
 
     /**
      * Returns the proper hourglass cursor according to
      * the current GUI style (static function).
      */
-    static QCursor Qt::WaitCursor();
+    static QCursor waitCursor();
 
     /**
      * Returns the proper text cursor according to
      * the current GUI style (static function).
      */
-    static QCursor Qt::IBeamCursor();
+    static QCursor ibeamCursor();
 
     /**
      * Returns the proper vertical resize cursor
      * according to the current GUI style (static function).
      */
-    static QCursor Qt::SizeVerCursor();
+    static QCursor sizeVerCursor();
 
     /**
      * Returns the proper horizontal resize cursor
      * according to the current GUI style (static function).
      */
-    static QCursor Qt::SizeHorCursor();
+    static QCursor sizeHorCursor();
 
     /**
      * Returns the proper diagonal resize (/) cursor
      * according to the current GUI style (static function).
      */
-    static QCursor Qt::SizeBDiagCursor();
+    static QCursor sizeBDiagCursor();
 
     /**
      * Returns the proper diagonal resize (\) cursor
      * according to the current GUI style (static function).
      */
-    static QCursor Qt::SizeFDiagCursor();
+    static QCursor sizeFDiagCursor();
 
     /**
      * Returns the proper all-directions resize cursor
      * according to the current GUI style (static function).
      */
-    static QCursor Qt::SizeAllCursor();
+    static QCursor sizeAllCursor();
 
     /**
      * Returns a blank or invisible cursor (static function).
      */
-    static QCursor Qt::BlankCursor();
+    static QCursor blankCursor();
 
     /**
      * Returns a WhatsThis cursor (static function).
      */
-    static QCursor Qt::WhatsThisCursor();
+    static QCursor whatsThisCursor();
 
     /**
      * Sets auto-hiding the cursor for widget @p w. Enabling it will result in
