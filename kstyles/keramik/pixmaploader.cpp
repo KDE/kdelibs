@@ -238,7 +238,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 			quint32 rb = clamp[((b*scale+127)>>8) + add];
 
 
-			*write =qRgb(rr, rg, rb);
+			*write = qRgb(rr, rg, rb);
 			write++;
 		}
 	}
@@ -259,12 +259,10 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 
 	int key = entry.key();
 
-	if ((cacheEntry = m_pixmapCache.object(key)))
+	if ((cacheEntry = m_pixmapCache.take(key)))
 	{
 		if (entry == *cacheEntry) //True match!
 			return *cacheEntry->m_pixmap;
-		else //Remove old entry in case of a conflict!
-			m_pixmapCache.remove(key);
 	}
 
 
@@ -287,10 +285,10 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 	if (width == 0 && height == 0)
 		result = new QPixmap(*img);
 	else
-		result = new QPixmap(img->scaled( width ? width : img->width(),
-										height ? height: img->height(),
-										Qt::IgnoreAspectRatio,
-										Qt::SmoothTransformation));
+		result = new QPixmap(img->scaled(width  ? width  : img->width(),
+										 height ? height : img->height()));//,
+										//Qt::IgnoreAspectRatio,
+										//Qt::SmoothTransformation));
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
