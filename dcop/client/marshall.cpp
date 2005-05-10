@@ -196,9 +196,24 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         result = QString().sprintf( "%dx%d+%d+%d", r.width(), r.height(), r.x(), r.y() ).toAscii();
     } else if ( type == "QVariant" )
     {
-        Q_INT32 type;
-        stream >> type;
-        return demarshal( stream, QVariant::typeToName( (QVariant::Type)type ) );
+        //OK, this is more than a bit eeky. Since we're in a compat mode,
+        //we can't get the name of the variant without unmarshalling it,
+        //via QVariant, but we also want to unmarshal it ourselves...
+        //So we unmarshal and remarshal via QVariant, and then do it
+        //ourselves with type known. Icky, isn't it?
+        QVariant var;
+        stream >> var;
+
+        QByteArray  buf;
+        QDataStream redump( &buf, QIODevice::WriteOnly );
+        redump.setVersion(QDataStream::Qt_3_1);
+        redump << var;
+
+        QDataStream replayed( buf );
+        Q_UINT32 id; replayed >> id; //Don't care about this anymore
+        
+
+        return demarshal( replayed, var.typeName() );
     } else if ( type == "DCOPRef" )
     {
         DCOPRef r;
