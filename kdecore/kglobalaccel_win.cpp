@@ -113,10 +113,10 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 			sDebug += QString("0x%3, ").arg(irrelevantBitsMask, 0, 16);
 #endif
 			if( bGrab )
-				XGrabKey( QX11Info::display()(), keyCodeX, keyModX | irrelevantBitsMask,
+				XGrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask,
 					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
 			else
-				XUngrabKey( QX11Info::display()(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
+				XUngrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
 		}
 	}
 #ifndef NDEBUG
@@ -133,7 +133,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 			kdDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
 				if( m & keyModMaskX == 0 )
-					XUngrabKey( QX11Info::display()(), keyCodeX, keyModX | m, qt_xrootwin() );
+					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, qt_xrootwin() );
 				}
                 }
 	}
@@ -186,8 +186,8 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
 	// do not change this line unless you really really know what you are doing (Matthias)
 	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() ) {
-		XUngrabKeyboard( QX11Info::display()(), pEvent->xkey.time );
-                XFlush( QX11Info::display()()); // avoid X(?) bug
+		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
+                XFlush( QX11Info::display()); // avoid X(?) bug
         }
 
 	if( !m_bEnabled )
@@ -201,7 +201,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
 	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
 		// TODO: what's the xor operator in c++?
-		uint sym = XKeycodeToKeysym( QX11Info::display()(), codemod.code, 0 );
+		uint sym = XKeycodeToKeysym( QX11Info::display(), codemod.code, 0 );
 		// If this is a keypad key,
 		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
 			switch( sym ) {

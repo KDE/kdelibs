@@ -1173,7 +1173,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             d->cursor_icon_widget = new QWidget( NULL, NULL, Qt::WX11BypassWM );
             XSetWindowAttributes attr;
             attr.save_under = True;
-            XChangeWindowAttributes( QX11Info::display()(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
+            XChangeWindowAttributes( QX11Info::display(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
             d->cursor_icon_widget->resize( icon_pixmap.width(), icon_pixmap.height());
             if( icon_pixmap.mask() )
                 d->cursor_icon_widget->setMask( *icon_pixmap.mask());
@@ -1184,7 +1184,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
         QPoint c_pos = QCursor::pos();
         d->cursor_icon_widget->move( c_pos.x() + 15, c_pos.y() + 15 );
-        XRaiseWindow( QX11Info::display()(), d->cursor_icon_widget->winId());
+        XRaiseWindow( QX11Info::display(), d->cursor_icon_widget->winId());
         QApplication::flushX();
         d->cursor_icon_widget->show();
     }

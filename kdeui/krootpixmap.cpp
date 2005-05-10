@@ -90,7 +90,7 @@ KRootPixmap::~KRootPixmap()
 int KRootPixmap::currentDesktop() const
 {
 #ifdef Q_WS_X11
-    NETRootInfo rinfo( QX11Info::display()(), NET::CurrentDesktop );
+    NETRootInfo rinfo( QX11Info::display(), NET::CurrentDesktop );
     rinfo.activate();
     return rinfo.currentDesktop();
 #else
@@ -256,7 +256,7 @@ bool KRootPixmap::isAvailable() const
 QString KRootPixmap::pixmapName(int desk) {
     QString pattern = QString("DESKTOP%1");
 #ifdef Q_WS_X11
-    int screen_number = DefaultScreen(QX11Info::display()());
+    int screen_number = DefaultScreen(QX11Info::display());
     if (screen_number) {
         pattern = QString("SCREEN%1-DESKTOP").arg(screen_number) + "%1";
     }
@@ -277,7 +277,7 @@ void KRootPixmap::enableExports()
     args << 1;
 
     Q3CString appname( "kdesktop" );
-    int screen_number = DefaultScreen(QX11Info::display()());
+    int screen_number = DefaultScreen(QX11Info::display());
     if ( screen_number )
         appname.sprintf("kdesktop-screen-%d", screen_number );
 

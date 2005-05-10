@@ -328,14 +328,14 @@ static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch;
 
 bool initializeMods()
 {
-	XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display()() );
+	XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display() );
 
 	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0; 
 
         int min_keycode, max_keycode;
         int keysyms_per_keycode = 0;
-        XDisplayKeycodes( QX11Info::display()(), &min_keycode, &max_keycode );
-        XFree( XGetKeyboardMapping( QX11Info::display()(), min_keycode, 1, &keysyms_per_keycode ));
+        XDisplayKeycodes( QX11Info::display(), &min_keycode, &max_keycode );
+        XFree( XGetKeyboardMapping( QX11Info::display(), min_keycode, 1, &keysyms_per_keycode ));
 	// Qt assumes that Alt is always Mod1Mask, so start at Mod2Mask.
 	for( int i = Mod2MapIndex; i < 8; i++ ) {
 		uint mask = (1 << i);
@@ -346,7 +346,7 @@ bool initializeMods()
                 // found fixes the problem.
                 for( int j = 0; j < xmk->max_keypermod && keySymX == NoSymbol; ++j )
                     for( int k = 0; k < keysyms_per_keycode && keySymX == NoSymbol; ++k )
-                        keySymX = XKeycodeToKeysym( QX11Info::display()(), xmk->modifiermap[xmk->max_keypermod * i + j], k );
+                        keySymX = XKeycodeToKeysym( QX11Info::display(), xmk->modifiermap[xmk->max_keypermod * i + j], k );
 		switch( keySymX ) {
 			case XK_Num_Lock:    g_modXNumLock = mask; break;     // Normally Mod2Mask
 			case XK_Super_L:
@@ -372,7 +372,7 @@ bool initializeMods()
 static void initializeVariations()
 {
 	for( int i = 0; g_rgSymVariation[i].sym != 0; i++ )
-		g_rgSymVariation[i].bActive = (XKeysymToKeycode( QX11Info::display()(), g_rgSymVariation[i].symVariation ) != 0);
+		g_rgSymVariation[i].bActive = (XKeysymToKeycode( QX11Info::display(), g_rgSymVariation[i].symVariation ) != 0);
 	g_bInitializedVariations = true;
 }
 #endif //Q_WS_X11
@@ -546,18 +546,18 @@ uint Sym::getModsRequired() const
 			return KKey::SHIFT;
 	}
 
-	uchar code = XKeysymToKeycode( QX11Info::display()(), m_sym );
+	uchar code = XKeysymToKeycode( QX11Info::display(), m_sym );
 	if( code ) {
 		// need to check index 0 before the others, so that a null-mod
 		//  can take precedence over the others, in case the modified
 		//  key produces the same symbol.
-		if( m_sym == XKeycodeToKeysym( QX11Info::display()(), code, 0 ) )
+		if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 0 ) )
 			;
-		else if( m_sym == XKeycodeToKeysym( QX11Info::display()(), code, 1 ) )
+		else if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 1 ) )
 			mod = KKey::SHIFT;
-		else if( m_sym == XKeycodeToKeysym( QX11Info::display()(), code, 2 ) )
+		else if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 2 ) )
 			mod = KKeyServer::MODE_SWITCH;
-		else if( m_sym == XKeycodeToKeysym( QX11Info::display()(), code, 3 ) )
+		else if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 3 ) )
 			mod = KKey::SHIFT | KKeyServer::MODE_SWITCH;
 	}
 #endif
@@ -762,7 +762,7 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 	XKeyPressedEvent event;
 
 	event.type = KeyPress;
-	event.display = QX11Info::display()();
+	event.display = QX11Info::display();
 	event.state = modX;
 	event.keycode = codeX;
 
@@ -857,7 +857,7 @@ uint stringUserToMod( const QString& mod )
 
 	if( keySymX != 0 ) {
 		// Get X keyboard code
-		keyCodeX = XKeysymToKeycode( QX11Info::display()(), keySymX );
+		keyCodeX = XKeysymToKeycode( QX11Info::display(), keySymX );
 		// Add ModeSwitch modifier bit, if necessary
 		keySymXMods( keySymX, 0, &keyModX );
 
@@ -886,8 +886,8 @@ uint stringUserToMod( const QString& mod )
 	//  keycode 111 & 92:  Print Sys_Req -> Sys_Req = Alt+Print
 	//  keycode 110 & 114: Pause Break   -> Break = Ctrl+Pause
 	if( (keyCodeX == 92 || keyCodeX == 111) &&
-	    XKeycodeToKeysym( QX11Info::display()(), 92, 0 ) == XK_Print &&
-	    XKeycodeToKeysym( QX11Info::display()(), 111, 0 ) == XK_Print )
+	    XKeycodeToKeysym( QX11Info::display(), 92, 0 ) == XK_Print &&
+	    XKeycodeToKeysym( QX11Info::display(), 111, 0 ) == XK_Print )
 	{
 		// If Alt is pressed, then we need keycode 92, keysym XK_Sys_Req
 		if( keyModX & keyModXAlt() ) {
@@ -901,8 +901,8 @@ uint stringUserToMod( const QString& mod )
 		}
 	}
 	else if( (keyCodeX == 110 || keyCodeX == 114) &&
-	    XKeycodeToKeysym( QX11Info::display()(), 110, 0 ) == XK_Pause &&
-	    XKeycodeToKeysym( QX11Info::display()(), 114, 0 ) == XK_Pause )
+	    XKeycodeToKeysym( QX11Info::display(), 110, 0 ) == XK_Pause &&
+	    XKeycodeToKeysym( QX11Info::display(), 114, 0 ) == XK_Pause )
 	{
 		if( keyModX & keyModXCtrl() ) {
 			keyCodeX = 114;

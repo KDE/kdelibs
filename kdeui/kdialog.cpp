@@ -124,7 +124,7 @@ void KDialog::setPlainCaption( const QString &caption )
   QDialog::setCaption( caption );
 
 #ifdef Q_WS_X11
-  NETWinInfo info( QX11Info::display()(), winId(), qt_xrootwin(), 0 );
+  NETWinInfo info( QX11Info::display(), winId(), qt_xrootwin(), 0 );
   info.setName( caption.utf8().data() );
 #endif
 }

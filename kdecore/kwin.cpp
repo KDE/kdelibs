@@ -86,7 +86,7 @@ static void kwin_net_create_atoms() {
         names[n++] = (char*) "_KDE_WM_WINDOW_SHADOW";
 
 	// we need a const_cast for the shitty X API
-	XInternAtoms( QX11Info::display()(), const_cast<char**>(names), n, false, atoms_return );
+	XInternAtoms( QX11Info::display(), const_cast<char**>(names), n, false, atoms_return );
 	for (int i = 0; i < n; i++ )
 	    *atoms[i] = atoms_return[i];
 
@@ -112,7 +112,7 @@ static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z
   ev.xclient.data.l[1] = y;
   ev.xclient.data.l[2] = z;
   mask = SubstructureRedirectMask;
-  XSendEvent(QX11Info::display()(), qt_xrootwin(), False, mask, &ev);
+  XSendEvent(QX11Info::display(), qt_xrootwin(), False, mask, &ev);
 }
 #endif
 
@@ -134,7 +134,7 @@ static void sendClientMessage(Window w, Atom a, long x){
   mask = 0L;
   if (w == qt_xrootwin())
     mask = SubstructureRedirectMask;        /* magic! */
-  XSendEvent(QX11Info::display()(), w, False, mask, &ev);
+  XSendEvent(QX11Info::display(), w, False, mask, &ev);
 }
 #endif
 
@@ -156,7 +156,7 @@ ContextWidget::ContextWidget()
 	Q3WhatsThis::enterWhatsThisMode();
 	QCursor c = *QApplication::overrideCursor();
 	Q3WhatsThis::leaveWhatsThisMode();
-	XGrabPointer( QX11Info::display()(), qt_xrootwin(), true,
+	XGrabPointer( QX11Info::display(), qt_xrootwin(), true,
 		      (uint)( ButtonPressMask | ButtonReleaseMask |
 			      PointerMotionMask | EnterWindowMask |
 			      LeaveWindowMask ),
@@ -169,7 +169,7 @@ ContextWidget::ContextWidget()
 bool ContextWidget::x11Event( XEvent * ev)
     {
 	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
-	    XUngrabPointer( QX11Info::display()(), ev->xbutton.time );
+	    XUngrabPointer( QX11Info::display(), ev->xbutton.time );
 	    Window root;
 	    Window child = qt_xrootwin();
 	    int root_x, root_y, lx, ly;
@@ -177,7 +177,7 @@ bool ContextWidget::x11Event( XEvent * ev)
 	    Window w;
 	    do {
 		w = child;
-		XQueryPointer( QX11Info::display()(), w, &root, &child,
+		XQueryPointer( QX11Info::display(), w, &root, &child,
 			       &root_x, &root_y, &lx, &ly, &state );
 	    } while  ( child != None && child != w );
 
@@ -187,7 +187,7 @@ bool ContextWidget::x11Event( XEvent * ev)
 	    e.xbutton.subwindow = w;
 	    e.xbutton.x = lx;
 	    e.xbutton.y = ly;
-	    XSendEvent( QX11Info::display()(), w, true, ButtonPressMask, &e );
+	    XSendEvent( QX11Info::display(), w, true, ButtonPressMask, &e );
 	    qApp->exit_loop();
 	    return true;
 	}
@@ -206,11 +206,11 @@ void KWin::invokeContextHelp()
 void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), trayWin, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), trayWin, qt_xrootwin(), 0 );
     if ( !forWin )
 	forWin = qt_xrootwin();
     info.setKDESystemTrayWinFor( forWin );
-    NETRootInfo rootinfo( QX11Info::display()(), NET::Supported );
+    NETRootInfo rootinfo( QX11Info::display(), NET::Supported );
     if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
         DCOPRef ref( "kded", "kded" );
         if( !ref.send( "loadModule", QByteArray( "kdetrayproxy" )))
@@ -222,7 +222,7 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
 void KWin::activateWindow( WId win, long time )
 {
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), 0 );
+    NETRootInfo info( QX11Info::display(), 0 );
     if( time == 0 )
         time = qt_x_user_time;
     info.setActiveWindow( win, NET::FromApplication, time,
@@ -234,7 +234,7 @@ void KWin::activateWindow( WId win, long time )
 void KWin::forceActiveWindow( WId win, long time )
 {
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), 0 );
+    NETRootInfo info( QX11Info::display(), 0 );
     if( time == 0 )
         time = qt_x_time;
     info.setActiveWindow( win, NET::FromTool, time, 0 );
@@ -245,7 +245,7 @@ void KWin::forceActiveWindow( WId win, long time )
 void KWin::setActiveWindow( WId win )
 {
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), 0 );
+    NETRootInfo info( QX11Info::display(), 0 );
     info.setActiveWindow( win, NET::FromUnknown, 0, 0 );
 #endif
     KUniqueApplication::setHandleAutoStarted();
@@ -254,7 +254,7 @@ void KWin::setActiveWindow( WId win )
 void KWin::demandAttention( WId win, bool set )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
     info.setState( set ? NET::DemandsAttention : 0, NET::DemandsAttention );
 #endif
 }
@@ -262,7 +262,7 @@ void KWin::demandAttention( WId win, bool set )
 void KWin::setUserTime( WId win, long time )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
     info.setUserTime( time );
 #endif
 }
@@ -278,7 +278,7 @@ WId KWin::transientFor( WId win )
 #ifdef Q_WS_X11
     KXErrorHandler handler; // ignore badwindow
     Window transient_for = None;
-    if( XGetTransientForHint( QX11Info::display()(), win, &transient_for ))
+    if( XGetTransientForHint( QX11Info::display(), win, &transient_for ))
         return transient_for;
     // XGetTransientForHint() did sync
     return None;
@@ -302,10 +302,10 @@ void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
             kdWarning() << "KWin::setMainWindow(): There either mustn't be kapp->mainWidget(),"
                 " or the dialog must have a non-NULL parent, otherwise Qt will reset the change. Bummer." << endl;
         }
-        XSetTransientForHint( QX11Info::display()(), subwindow->winId(), mainwindow );
+        XSetTransientForHint( QX11Info::display(), subwindow->winId(), mainwindow );
     }
     else
-        XDeleteProperty( QX11Info::display()(), subwindow->winId(), XA_WM_TRANSIENT_FOR );
+        XDeleteProperty( QX11Info::display(), subwindow->winId(), XA_WM_TRANSIENT_FOR );
 #endif
 }
 
@@ -313,7 +313,7 @@ WId KWin::groupLeader( WId win )
 {
 #ifdef Q_WS_X11
     KXErrorHandler handler; // ignore badwindow
-    XWMHints *hints = XGetWMHints( QX11Info::display()(), win );
+    XWMHints *hints = XGetWMHints( QX11Info::display(), win );
     Window window_group = None;
     if ( hints )
     {
@@ -333,7 +333,7 @@ KWin::Info KWin::info( WId win )
 {
     Info w;
 #ifdef Q_WS_X11
-    NETWinInfo inf( QX11Info::display()(), win, qt_xrootwin(),
+    NETWinInfo inf( QX11Info::display(), win, qt_xrootwin(),
 		    NET::WMState |
 		    NET::WMStrut |
 		    NET::WMWindowType |
@@ -354,7 +354,7 @@ KWin::Info KWin::info( WId win )
 	w.name = QString::fromUtf8( inf.name() );
     } else {
 	char* c = 0;
-	if ( XFetchName( QX11Info::display()(), win, &c ) != 0 ) {
+	if ( XFetchName( QX11Info::display(), win, &c ) != 0 ) {
 	    w.name = QString::fromLocal8Bit( c );
 	    XFree( c );
 	}
@@ -389,7 +389,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
     QPixmap result;
 #ifdef Q_WS_X11
     if( flags & NETWM ) {
-        NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), NET::WMIcon );
+        NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMIcon );
         NETIcon ni = info.icon( width, height );
         if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
     	    QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
@@ -406,7 +406,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
         Pixmap p = None;
         Pixmap p_mask = None;
 
-        XWMHints *hints = XGetWMHints(QX11Info::display()(), win );
+        XWMHints *hints = XGetWMHints(QX11Info::display(), win );
         if (hints && (hints->flags & IconPixmapHint)){
     	    p = hints->icon_pixmap;
         }
@@ -422,18 +422,18 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	    unsigned int w = 0;
 	    unsigned int h = 0;
             unsigned int border_w, depth;
-	    XGetGeometry(QX11Info::display()(), p, &root,
+	    XGetGeometry(QX11Info::display(), p, &root,
 		         &x, &y, &w, &h, &border_w, &depth);
 	    if (w > 0 && h > 0){
 	        QPixmap pm(w, h, depth);
 	        // Always detach before doing something behind QPixmap's back.
 	        pm.detach();
-	        XCopyArea(QX11Info::display()(), p, pm.handle(),
+	        XCopyArea(QX11Info::display(), p, pm.handle(),
 		          qt_xget_temp_gc(qt_xscreen(), depth==1),
 		          0, 0, w, h, 0, 0);
 	        if (p_mask != None){
 	    	    QBitmap bm(w, h);
-		    XCopyArea(QX11Info::display()(), p_mask, bm.handle(),
+		    XCopyArea(QX11Info::display(), p_mask, bm.handle(),
 			      qt_xget_temp_gc(qt_xscreen(), true),
 			      0, 0, w, h, 0, 0);
 		    pm.setMask(bm);
@@ -465,7 +465,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
         if( result.isNull() ) {
 
 	    XClassHint	hint;
-	    if( XGetClassHint( QX11Info::display()(), win, &hint ) ) {
+	    if( XGetClassHint( QX11Info::display(), win, &hint ) ) {
 	        QString className = hint.res_class;
 
 	        QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.lower(), KIcon::Small, iconWidth,
@@ -502,7 +502,7 @@ void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
 #ifdef Q_WS_X11
     if ( icon.isNull() )
 	return;
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
     QImage img = icon.convertToImage().convertDepth( 32 );
     NETIcon ni;
     ni.size.width = img.size().width();
@@ -522,7 +522,7 @@ void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
 void KWin::setType( WId win, NET::WindowType windowType )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
     info.setWindowType( windowType );
 #endif
 }
@@ -530,7 +530,7 @@ void KWin::setType( WId win, NET::WindowType windowType )
 void KWin::setState( WId win, unsigned long state )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), NET::WMState );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMState );
     info.setState( state, state );
 #endif
 }
@@ -538,7 +538,7 @@ void KWin::setState( WId win, unsigned long state )
 void KWin::clearState( WId win, unsigned long state )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), NET::WMState );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMState );
     info.setState( 0, state );
 #endif
 }
@@ -548,11 +548,11 @@ void KWin::setOpacity( WId win, uint percent )
 #ifdef Q_WS_X11
     kwin_net_create_atoms();
     if (percent > 99)
-        XDeleteProperty (QX11Info::display()(), win, kde_wm_window_opacity);
+        XDeleteProperty (QX11Info::display(), win, kde_wm_window_opacity);
     else
     {
         long opacity = long(0xFFFFFFFF/100.0*percent);
-        XChangeProperty(QX11Info::display()(), win, kde_wm_window_opacity, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1L);
+        XChangeProperty(QX11Info::display(), win, kde_wm_window_opacity, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1L);
     }
 #endif
 }
@@ -562,18 +562,18 @@ void KWin::setShadowSize( WId win, uint percent )
 #ifdef Q_WS_X11
     kwin_net_create_atoms();
     long shadowSize = long(0xFFFFFFFF/100.0*percent);
-    XChangeProperty(QX11Info::display()(), win, kde_wm_window_shadow, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &shadowSize, 1L);
+    XChangeProperty(QX11Info::display(), win, kde_wm_window_shadow, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &shadowSize, 1L);
 #endif
 }
 
 void KWin::setOnAllDesktops( WId win, bool b )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), NET::WMDesktop );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMDesktop );
     if ( b )
 	info.setDesktop( NETWinInfo::OnAllDesktops );
     else if ( info.desktop()  == NETWinInfo::OnAllDesktops ) {
-	NETRootInfo rinfo( QX11Info::display()(), NET::CurrentDesktop );
+	NETRootInfo rinfo( QX11Info::display(), NET::CurrentDesktop );
 	info.setDesktop( rinfo.currentDesktop() );
     }
 #endif
@@ -582,7 +582,7 @@ void KWin::setOnAllDesktops( WId win, bool b )
 void KWin::setOnDesktop( WId win, int desktop )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), NET::WMDesktop );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), NET::WMDesktop );
     info.setDesktop( desktop );
 #endif
 }
@@ -592,7 +592,7 @@ void KWin::setExtendedStrut( WId win, int left_width, int left_start, int left_e
     int bottom_width, int bottom_start, int bottom_end )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
     NETExtendedStrut strut;
     strut.left_width = left_width;
     strut.right_width = right_width;
@@ -613,7 +613,7 @@ void KWin::setExtendedStrut( WId win, int left_width, int left_start, int left_e
 void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display()(), win, qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), win, qt_xrootwin(), 0 );
     NETStrut strut;
     strut.left = left;
     strut.right = right;
@@ -626,11 +626,11 @@ void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 int KWin::currentDesktop()
 {
 #ifdef Q_WS_X11
-    if (!QX11Info::display()())
+    if (!QX11Info::display())
 #endif
       return 1;
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), NET::CurrentDesktop );
+    NETRootInfo info( QX11Info::display(), NET::CurrentDesktop );
     return info.currentDesktop();
 #endif
 }
@@ -638,11 +638,11 @@ int KWin::currentDesktop()
 int KWin::numberOfDesktops()
 {
 #ifdef Q_WS_X11
-    if (!QX11Info::display()())
+    if (!QX11Info::display())
 #endif
       return 0;
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), NET::NumberOfDesktops );
+    NETRootInfo info( QX11Info::display(), NET::NumberOfDesktops );
     return info.numberOfDesktops();
 #endif
 }
@@ -650,7 +650,7 @@ int KWin::numberOfDesktops()
 void KWin::setCurrentDesktop( int desktop )
 {
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), NET::CurrentDesktop );
+    NETRootInfo info( QX11Info::display(), NET::CurrentDesktop );
     info.setCurrentDesktop( desktop );
 #endif
 }
@@ -664,7 +664,7 @@ void KWin::iconifyWindow( WId win, bool animation)
         kwin_net_create_atoms();
 	sendClientMessageToRoot( win, kde_wm_change_state, IconicState, 1 );
     }
-    XIconifyWindow( QX11Info::display()(), win, qt_xscreen() );
+    XIconifyWindow( QX11Info::display(), win, qt_xscreen() );
 #endif
 }
 
@@ -677,29 +677,29 @@ void KWin::deIconifyWindow( WId win, bool animation )
         kwin_net_create_atoms();
 	sendClientMessageToRoot( win, kde_wm_change_state, NormalState, 1 );
     }
-    XMapWindow( QX11Info::display()(), win );
+    XMapWindow( QX11Info::display(), win );
 #endif
 }
 
 void KWin::raiseWindow( WId win )
 {
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), NET::Supported );
+    NETRootInfo info( QX11Info::display(), NET::Supported );
     if( info.isSupported( NET::WM2RestackWindow ))
         info.restackRequest( win, None, Above );
     else
-        XRaiseWindow( QX11Info::display()(), win );
+        XRaiseWindow( QX11Info::display(), win );
 #endif
 }
 
 void KWin::lowerWindow( WId win )
 {
 #ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display()(), NET::Supported );
+    NETRootInfo info( QX11Info::display(), NET::Supported );
     if( info.isSupported( NET::WM2RestackWindow ))
         info.restackRequest( win, None, Below );
     else
-        XLowerWindow( QX11Info::display()(), win );
+        XLowerWindow( QX11Info::display(), win );
 #endif
 }
 
@@ -762,7 +762,7 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
         properties |= NET::WMStrut; // will be used as fallback
     properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
-    d->info = new NETWinInfo( QX11Info::display()(), win, qt_xrootwin(), props, 2 );
+    d->info = new NETWinInfo( QX11Info::display(), win, qt_xrootwin(), props, 2 );
     d->win_ = win;
     if( properties & NET::WMName ) {
         if( d->info->name() && d->info->name()[ 0 ] != '\0' )
@@ -870,22 +870,22 @@ NETExtendedStrut KWin::WindowInfo::extendedStrut() const
         if( str.left != 0 ) {
             ext.left_width = str.left;
             ext.left_start = 0;
-            ext.left_end = XDisplayHeight( QX11Info::display()(), DefaultScreen( qt_xdisplay()));
+            ext.left_end = XDisplayHeight( QX11Info::display(), DefaultScreen( qt_xdisplay()));
         }
         if( str.right != 0 ) {
             ext.right_width = str.right;
             ext.right_start = 0;
-            ext.right_end = XDisplayHeight( QX11Info::display()(), DefaultScreen( qt_xdisplay()));
+            ext.right_end = XDisplayHeight( QX11Info::display(), DefaultScreen( qt_xdisplay()));
         }
         if( str.top != 0 ) {
             ext.top_width = str.top;
             ext.top_start = 0;
-            ext.top_end = XDisplayWidth( QX11Info::display()(), DefaultScreen( qt_xdisplay()));
+            ext.top_end = XDisplayWidth( QX11Info::display(), DefaultScreen( qt_xdisplay()));
         }
         if( str.bottom != 0 ) {
             ext.bottom_width = str.bottom;
             ext.bottom_start = 0;
-            ext.bottom_end = XDisplayWidth( QX11Info::display()(), DefaultScreen( qt_xdisplay()));
+            ext.bottom_end = XDisplayWidth( QX11Info::display(), DefaultScreen( qt_xdisplay()));
         }
     }
     return ext;
@@ -1186,7 +1186,7 @@ bool KWin::icccmCompliantMappingState()
 #ifdef Q_WS_X11
     static enum { noidea, yes, no } wm_is_1_2_compliant = noidea;
     if( wm_is_1_2_compliant == noidea ) {
-        NETRootInfo info( QX11Info::display()(), NET::Supported );
+        NETRootInfo info( QX11Info::display(), NET::Supported );
         wm_is_1_2_compliant = info.isSupported( NET::Hidden ) ? yes : no;
     }
     return wm_is_1_2_compliant == yes;
@@ -1200,7 +1200,7 @@ bool KWin::allowedActionsSupported()
 #ifdef Q_WS_X11
     static enum { noidea, yes, no } wm_supports_allowed_actions = noidea;
     if( wm_supports_allowed_actions == noidea ) {
-        NETRootInfo info( QX11Info::display()(), NET::Supported );
+        NETRootInfo info( QX11Info::display(), NET::Supported );
         wm_supports_allowed_actions = info.isSupported( NET::WM2AllowedActions ) ? yes : no;
     }
     return wm_supports_allowed_actions == yes;
@@ -1218,8 +1218,8 @@ QString KWin::readNameProperty( WId win, unsigned long atom )
 #endif
     QString result;
 #ifdef Q_WS_X11
-    if ( XGetTextProperty( QX11Info::display()(), win, &tp, atom ) != 0 && tp.value != NULL ) {
-        if ( XmbTextPropertyToTextList( QX11Info::display()(), &tp, &text, &count) == Success &&
+    if ( XGetTextProperty( QX11Info::display(), win, &tp, atom ) != 0 && tp.value != NULL ) {
+        if ( XmbTextPropertyToTextList( QX11Info::display(), &tp, &text, &count) == Success &&
                   text != NULL && count > 0 ) {
             result = QString::fromLocal8Bit( text[0] );
         } else if ( tp.encoding == XA_STRING )

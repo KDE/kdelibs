@@ -105,11 +105,11 @@ static
 void initAtoms()
 {
     char nm[ 100 ];
-    sprintf( nm, "_KDE_TOPMENU_OWNER_S%d", DefaultScreen( QX11Info::display()()));
+    sprintf( nm, "_KDE_TOPMENU_OWNER_S%d", DefaultScreen( QX11Info::display()));
     char nm2[] = "_KDE_TOPMENU_MINSIZE";
     char* names[ 2 ] = { nm, nm2 };
     Atom atoms[ 2 ];
-    XInternAtoms( QX11Info::display()(), names, 2, False, atoms );
+    XInternAtoms( QX11Info::display(), names, 2, False, atoms );
     selection_atom = atoms[ 0 ];
     msg_type_atom = atoms[ 1 ];
 }
@@ -176,7 +176,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
   {
 #ifdef Q_WS_X11
       d->selection = new KSelectionWatcher( KMenuBarPrivate::makeSelectionAtom(),
-          DefaultScreen( QX11Info::display()()));
+          DefaultScreen( QX11Info::display()));
       connect( d->selection, SIGNAL( newOwner( Window )),
           this, SLOT( updateFallbackSize()));
       connect( d->selection, SIGNAL( lostOwner()),
@@ -191,7 +191,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
 #ifdef Q_WS_X11
       KWin::setType( winId(), NET::TopMenu );
       if( parentWidget())
-          XSetTransientForHint( QX11Info::display()(), winId(), parentWidget()->topLevelWidget()->winId());
+          XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #endif
       QMenuBar::setFrameStyle( NoFrame );
       QMenuBar::setLineWidth( 0 );
@@ -258,7 +258,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
         if( parentWidget() && obj == parentWidget() && ev->type() == QEvent::Reparent )
             {
 #ifdef Q_WS_X11
-            XSetTransientForHint( QX11Info::display()(), winId(), parentWidget()->topLevelWidget()->winId());
+            XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #else
             //TODO: WIN32?
 #endif
@@ -269,7 +269,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
             if( ev->type() == QEvent::Show )
                 {
 #ifdef Q_WS_X11
-                XSetTransientForHint( QX11Info::display()(), winId(), parentWidget()->topLevelWidget()->winId());
+                XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #else
                 //TODO: WIN32?
 #endif

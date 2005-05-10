@@ -77,10 +77,10 @@ KSharedPixmap::~KSharedPixmap()
 
 void KSharedPixmap::init()
 {
-    d->pixmap = XInternAtom(QX11Info::display()(), "PIXMAP", false);
+    d->pixmap = XInternAtom(QX11Info::display(), "PIXMAP", false);
     Q3CString atom;
     atom.sprintf("target prop for window %lx", static_cast<unsigned long int>(winId()));
-    d->target = XInternAtom(QX11Info::display()(), atom.data(), false);
+    d->target = XInternAtom(QX11Info::display(), atom.data(), false);
     d->selection = None;
 }
 
@@ -88,10 +88,10 @@ void KSharedPixmap::init()
 bool KSharedPixmap::isAvailable(const QString & name) const
 {
     QString str = QString("KDESHPIXMAP:%1").arg(name);
-    Atom sel = XInternAtom(QX11Info::display()(), str.latin1(), true);
+    Atom sel = XInternAtom(QX11Info::display(), str.latin1(), true);
     if (sel == None)
 	return false;
-    return XGetSelectionOwner(QX11Info::display()(), sel) != None;
+    return XGetSelectionOwner(QX11Info::display(), sel) != None;
 }
 
 
@@ -105,16 +105,16 @@ bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
     QPixmap::resize(0, 0); // invalidate
 
     QString str = QString("KDESHPIXMAP:%1").arg(name);
-    d->selection = XInternAtom(QX11Info::display()(), str.latin1(), true);
+    d->selection = XInternAtom(QX11Info::display(), str.latin1(), true);
     if (d->selection == None)
 	return false;
-    if (XGetSelectionOwner(QX11Info::display()(), d->selection) == None)
+    if (XGetSelectionOwner(QX11Info::display(), d->selection) == None)
     {
 	d->selection = None;
 	return false;
     }
 
-    XConvertSelection(QX11Info::display()(), d->selection, d->pixmap, d->target,
+    XConvertSelection(QX11Info::display(), d->selection, d->pixmap, d->target,
 	    winId(), CurrentTime);
     return true;
 }
@@ -144,7 +144,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
     Drawable *pixmap_id;
     Atom type;
 
-    XGetWindowProperty(QX11Info::display()(), winId(), ev->property, 0, 1, false,
+    XGetWindowProperty(QX11Info::display(), winId(), ev->property, 0, 1, false,
 	    d->pixmap, &type, &format, &nitems, &ldummy,
 	    (unsigned char **) &pixmap_id);
 
@@ -157,17 +157,17 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     Window root;
     unsigned int width, height, udummy;
-    XGetGeometry(QX11Info::display()(), *pixmap_id, &root, &dummy, &dummy, &width,
+    XGetGeometry(QX11Info::display(), *pixmap_id, &root, &dummy, &dummy, &width,
 	    &height, &udummy, &udummy);
 
     if (d->rect.isEmpty())
     {
 	QPixmap::resize(width, height);
-	XCopyArea(QX11Info::display()(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+	XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 		0, 0, width, height, 0, 0);
 
         XFree(pixmap_id);
-	XDeleteProperty(QX11Info::display()(), winId(), ev->property);
+	XDeleteProperty(QX11Info::display(), winId(), ev->property);
 	d->selection = None;
 	emit done(true);
 	return true;
@@ -201,19 +201,19 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     QPixmap::resize( tw+origin.x(), th+origin.y() );
 
-    XCopyArea(QX11Info::display()(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
             xa, ya, t1w+origin.x(), t1h+origin.y(), origin.x(), origin.y() );
-    XCopyArea(QX11Info::display()(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 	    0, ya, tw-t1w, t1h, t1w, 0);
-    XCopyArea(QX11Info::display()(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 	    xa, 0, t1w, th-t1h, 0, t1h);
-    XCopyArea(QX11Info::display()(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+    XCopyArea(QX11Info::display(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
 
     XFree(pixmap_id);
 
     d->selection = None;
-    XDeleteProperty(QX11Info::display()(), winId(), ev->property);
+    XDeleteProperty(QX11Info::display(), winId(), ev->property);
     emit done(true);
     return true;
 }

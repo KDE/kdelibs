@@ -44,7 +44,7 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QWidget* parent_P )
         {
         ( void ) kapp->desktop(); //trigger desktop widget creation to select root window events
         kapp->installX11EventFilter( this ); // i.e. PropertyChangeMask
-        accept_atom1 = XInternAtom( QX11Info::display()(), accept_broadcast_P, false );
+        accept_atom1 = XInternAtom( QX11Info::display(), accept_broadcast_P, false );
         accept_atom2 = accept_atom1;
         }
     else
@@ -61,9 +61,9 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QWidget* parent_P, bool 
         {
         ( void ) kapp->desktop(); //trigger desktop widget creation to select root window events
         kapp->installX11EventFilter( this ); // i.e. PropertyChangeMask
-        accept_atom2 = XInternAtom( QX11Info::display()(), accept_broadcast_P, false );
+        accept_atom2 = XInternAtom( QX11Info::display(), accept_broadcast_P, false );
         accept_atom1 = obsolete_P ? accept_atom2
-            : XInternAtom( QX11Info::display()(), QByteArray( accept_broadcast_P ) + "_BEGIN", false );
+            : XInternAtom( QX11Info::display(), QByteArray( accept_broadcast_P ) + "_BEGIN", false );
         }
     else
         {
@@ -86,10 +86,10 @@ void KXMessages::broadcastMessage( const char* msg_type_P, const QString& messag
 void KXMessages::broadcastMessage( const char* msg_type_P, const QString& message_P,
     int screen_P, bool obsolete_P )
     {
-    Atom a2 = XInternAtom( QX11Info::display()(), msg_type_P, false );
-    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display()(), QByteArray( msg_type_P ) + "_BEGIN", false );
+    Atom a2 = XInternAtom( QX11Info::display(), msg_type_P, false );
+    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display(), QByteArray( msg_type_P ) + "_BEGIN", false );
     Window root = screen_P == -1 ? qt_xrootwin() : qt_xrootwin( screen_P );
-    send_message_internal( root, message_P, BROADCAST_MASK, QX11Info::display()(),
+    send_message_internal( root, message_P, BROADCAST_MASK, QX11Info::display(),
         a1, a2, handle->winId());
     }
 
@@ -101,9 +101,9 @@ void KXMessages::sendMessage( WId w_P, const char* msg_type_P, const QString& me
 void KXMessages::sendMessage( WId w_P, const char* msg_type_P, const QString& message_P,
     bool obsolete_P )
     {
-    Atom a2 = XInternAtom( QX11Info::display()(), msg_type_P, false );
-    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display()(), QByteArray( msg_type_P ) + "_BEGIN", false );
-    send_message_internal( w_P, message_P, 0, QX11Info::display()(), a1, a2, handle->winId());
+    Atom a2 = XInternAtom( QX11Info::display(), msg_type_P, false );
+    Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display(), QByteArray( msg_type_P ) + "_BEGIN", false );
+    send_message_internal( w_P, message_P, 0, QX11Info::display(), a1, a2, handle->winId());
     }
     
 bool KXMessages::broadcastMessageX( Display* disp, const char* msg_type_P,

@@ -83,7 +83,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 # ifdef Q_WS_X11
     if( cookieList.first()->windowIds().count() > 0 )
     {
-        XSetTransientForHint( QX11Info::display()(), winId(), cookieList.first()->windowIds().first());
+        XSetTransientForHint( QX11Info::display(), winId(), cookieList.first()->windowIds().first());
     }
     else
     {

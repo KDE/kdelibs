@@ -46,7 +46,7 @@ static long getSimpleProperty(Window w, Atom a)
     int status;
 
     res = 0;
-    status = XGetWindowProperty(QX11Info::display()(), w, a, 0L, 1L, False, a,
+    status = XGetWindowProperty(QX11Info::display(), w, a, 0L, 1L, False, a,
             &real_type, &format, &n, &extra, (unsigned char **) &p);
     if ((status == Success) && (n == 1) && (format == 32))
 	res = p[0];
@@ -60,24 +60,24 @@ void KIPC::sendMessage(Message msg, WId w, int data)
 #if defined Q_WS_X11
     static Atom a = 0;
     if (a == 0)
-	a = XInternAtom(QX11Info::display()(), "KIPC_COMM_ATOM", False);
+	a = XInternAtom(QX11Info::display(), "KIPC_COMM_ATOM", False);
     XEvent ev;
     ev.xclient.type = ClientMessage;
-    ev.xclient.display = QX11Info::display()();
+    ev.xclient.display = QX11Info::display();
     ev.xclient.window = (Window) w;
     ev.xclient.message_type = a;
     ev.xclient.format = 32;
     ev.xclient.data.l[0] = msg;
     ev.xclient.data.l[1] = data;
-    XSendEvent(QX11Info::display()(), (Window) w, False, 0L, &ev);
+    XSendEvent(QX11Info::display(), (Window) w, False, 0L, &ev);
 
     // KDE 1 support
     static Atom kde1 = 0;
     if ( msg == PaletteChanged || msg == FontChanged ) {
 	if ( kde1 == 0 )
-	    kde1 = XInternAtom(QX11Info::display()(), "KDEChangeGeneral", False );
+	    kde1 = XInternAtom(QX11Info::display(), "KDEChangeGeneral", False );
 	ev.xclient.message_type = kde1;
-	XSendEvent(QX11Info::display()(), (Window) w, False, 0L, &ev);
+	XSendEvent(QX11Info::display(), (Window) w, False, 0L, &ev);
     }
 
 #endif
@@ -89,7 +89,7 @@ void KIPC::sendMessageAll(Message msg, int data)
 #if defined Q_WS_X11
     unsigned int i, nrootwins;
     Window dw1, dw2, *rootwins = 0;
-    Display *dpy = QX11Info::display()();
+    Display *dpy = QX11Info::display();
     int screen_count = ScreenCount(dpy);
 
     KXErrorHandler handler;
@@ -97,7 +97,7 @@ void KIPC::sendMessageAll(Message msg, int data)
 	Window root = RootWindow(dpy, s);
 
 	XQueryTree(dpy, root, &dw1, &dw2, &rootwins, &nrootwins);
-	Atom a = XInternAtom(QX11Info::display()(), "KDE_DESKTOP_WINDOW", False);
+	Atom a = XInternAtom(QX11Info::display(), "KDE_DESKTOP_WINDOW", False);
 	for (i = 0; i < nrootwins; i++)
 	    {
 		if (getSimpleProperty(rootwins[i], a) != 0L)

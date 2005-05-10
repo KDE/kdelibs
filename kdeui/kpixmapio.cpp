@@ -93,9 +93,9 @@ KPixmapIO::KPixmapIO()
 	return;
 
     int ignore;
-    if (XQueryExtension(QX11Info::display()(), "MIT-SHM", &ignore, &ignore, &ignore))
+    if (XQueryExtension(QX11Info::display(), "MIT-SHM", &ignore, &ignore, &ignore))
     {
-	if (XShmQueryExtension(QX11Info::display()()))
+	if (XShmQueryExtension(QX11Info::display()))
 	    m_bShm = true;
     }
     if (!m_bShm)
@@ -109,7 +109,7 @@ KPixmapIO::KPixmapIO()
 
     // Sort out bit format. Create a temporary XImage for this.
     d->shminfo = new XShmSegmentInfo;
-    d->ximage = XShmCreateImage(QX11Info::display()(), (Visual *) QPaintDevice::x11AppVisual(),
+    d->ximage = XShmCreateImage(QX11Info::display(), (Visual *) QPaintDevice::x11AppVisual(),
 	    QPaintDevice::x11AppDepth(), ZPixmap, 0L, d->shminfo, 10, 10);
     d->bpp = d->ximage->bits_per_pixel;
     d->first_try = true;
@@ -226,10 +226,10 @@ void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
 	if( initXImage(src->width(), src->height()))
 	{
 	    convertToXImage(*src);
-	    XShmPutImage(QX11Info::display()(), dst->handle(), qt_xget_temp_gc(qt_xscreen(), false), d->ximage,
+	    XShmPutImage(QX11Info::display(), dst->handle(), qt_xget_temp_gc(qt_xscreen(), false), d->ximage,
 		    dx, dy, 0, 0, src->width(), src->height(), false);
             // coolo: do we really need this here? I see no good for it
-	    XSync(QX11Info::display()(), false);
+	    XSync(QX11Info::display(), false);
 	    doneXImage();
 	    fallback  = false;
 	}
@@ -260,7 +260,7 @@ QImage KPixmapIO::getImage(const QPixmap *src, int sx, int sy, int sw, int sh)
 #ifdef HAVE_MITSHM
 	if( initXImage(sw, sh))
 	{
-	    XShmGetImage(QX11Info::display()(), src->handle(), d->ximage, sx, sy, AllPlanes);
+	    XShmGetImage(QX11Info::display(), src->handle(), d->ximage, sx, sy, AllPlanes);
 	    image = convertFromXImage();
 	    doneXImage();
 	    fallback = false;
@@ -348,7 +348,7 @@ void KPixmapIO::destroyXImage()
 bool KPixmapIO::createXImage(int w, int h)
 {
     destroyXImage();
-    d->ximage = XShmCreateImage(QX11Info::display()(), (Visual *) QPaintDevice::x11AppVisual(),
+    d->ximage = XShmCreateImage(QX11Info::display(), (Visual *) QPaintDevice::x11AppVisual(),
 	    QPaintDevice::x11AppDepth(), ZPixmap, 0L, d->shminfo, w, h);
     return d->ximage != None;
 }
@@ -358,7 +358,7 @@ void KPixmapIO::destroyShmSegment()
 {
     if (d->shmsize)
     {
-	XShmDetach(QX11Info::display()(), d->shminfo);
+	XShmDetach(QX11Info::display(), d->shminfo);
 	shmdt(d->shminfo->shmaddr);
         shmctl(d->shminfo->shmid, IPC_RMID, 0);
 	d->shmsize = 0;
@@ -407,12 +407,12 @@ bool KPixmapIO::createShmSegment(int size)
 
     if (d->first_try) {
         // make sure that we don't get errors of old stuff
-        XSync(QX11Info::display()(), False);
+        XSync(QX11Info::display(), False);
         old_errhandler = XSetErrorHandler(kpixmapio_errorhandler);
-        kpixmapio_serial = NextRequest(QX11Info::display()());
+        kpixmapio_serial = NextRequest(QX11Info::display());
     }
 
-    if ( !XShmAttach(QX11Info::display()(), d->shminfo))
+    if ( !XShmAttach(QX11Info::display(), d->shminfo))
     {
 	kdWarning() << "X-Server could not attach shared memory segment.\n";
 	m_bShm = false;
@@ -421,7 +421,7 @@ bool KPixmapIO::createShmSegment(int size)
     }
 
     if (d->first_try) {
-        XSync(QX11Info::display()(), false);
+        XSync(QX11Info::display(), false);
 
         if (!use_xshm)
             m_bShm = false;
@@ -459,7 +459,7 @@ QImage KPixmapIO::convertFromXImage()
 	XColor *cmap = new XColor[ncells];
 	for (i=0; i<ncells; i++)
 	    cmap[i].pixel = i;
-	XQueryColors(QX11Info::display()(), QPaintDevice::x11AppColormap(),
+	XQueryColors(QX11Info::display(), QPaintDevice::x11AppColormap(),
 		cmap, ncells);
 	image.setNumColors(ncells);
 	for (i=0; i<ncells; i++)
