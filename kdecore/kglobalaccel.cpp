@@ -54,10 +54,10 @@ void KGlobalAccel::clear()
 	{ d->clearActions(); }
 */
 KAccelActions& KGlobalAccel::actions()
-	{ return d->actions(); }
+	{ return ( ( KAccelBase* ) d )->actions(); }
 
 const KAccelActions& KGlobalAccel::actions() const
-	{ return d->actions(); }
+	{ return ( ( KAccelBase* ) d )->actions(); }
 
 bool KGlobalAccel::isEnabled()
 	{ return ((KAccelBase*)d)->isEnabled(); }
@@ -86,7 +86,7 @@ bool KGlobalAccel::remove( const QString& sAction )
 
 const KShortcut& KGlobalAccel::shortcut( const QString& sAction ) const
 {
-	const KAccelAction* pAction = d->actions().actionPtr( sAction );
+	const KAccelAction* pAction = ( ( KAccelBase* ) d )->actions().actionPtr( sAction );
 	return (pAction) ? pAction->shortcut() : KShortcut::null();
 }
 
@@ -96,7 +96,7 @@ bool KGlobalAccel::setSlot( const QString& sAction, const QObject* pObjSlot, con
 	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
 QString KGlobalAccel::label( const QString& sAction ) const
 {
-	const KAccelAction* pAction = d->actions().actionPtr( sAction );
+	const KAccelAction* pAction = ( ( KAccelBase* ) d )->actions().actionPtr( sAction );
 	return (pAction) ? pAction->label() : QString();
 }
 bool KGlobalAccel::setActionEnabled( const QString& sAction, bool bEnable )
