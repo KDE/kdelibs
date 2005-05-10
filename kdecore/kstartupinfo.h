@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <q3cstring.h>
 #include <qstring.h>
 #include <q3valuelist.h>
+#include <qcoreevent.h>
 #include "kdelibs_export.h"
 
 class KStartupInfoId;
