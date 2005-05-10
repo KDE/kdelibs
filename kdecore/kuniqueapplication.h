@@ -152,8 +152,8 @@ public:
    * @param replyData the reply
    * @see DCOPObject
    */
-  bool process(const QByteArray &fun, const QByteArray &data,
-	       QByteArray &replyType, QByteArray &replyData);
+  bool process(const DCOPCString &fun, const QByteArray &data,
+	       DCOPCString &replyType, QByteArray &replyData);
 
   /**
    * Creates a new "instance" of the application.

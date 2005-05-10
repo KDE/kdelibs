@@ -284,13 +284,14 @@ KUniqueApplication::start()
      
      QByteArray data, reply;
      QDataStream ds(&data, QIODevice::WriteOnly);
+	 ds.setVersion( QDataStream::Qt_3_1 );
 
      KCmdLineArgs::saveAppArgs(ds);
      ds << new_asn_id;
 
      dc->setPriorityCall(true);
-     QByteArray replyType;
-     if (!dc->call(appName, KCmdLineArgs::about->appName(), "newInstance()", data, replyType, reply))
+     DCOPCString replyType;
+     if (!dc->call( DCOPCString( appName ), DCOPCString( KCmdLineArgs::about->appName() ), "newInstance()", data, replyType, reply))
      {
         kdError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
         delete dc;	// Clean up DCOP commmunication
@@ -390,8 +391,8 @@ void KUniqueApplication::newInstanceNoFork()
   // What to do with the return value ?
 }
 
-bool KUniqueApplication::process(const QByteArray &fun, const QByteArray &data,
-				 QByteArray &replyType, QByteArray &replyData)
+bool KUniqueApplication::process(const DCOPCString &fun, const QByteArray &data,
+				 DCOPCString &replyType, QByteArray &replyData)
 {
   if (fun == "newInstance()")
   {
@@ -429,7 +430,7 @@ KUniqueApplication::processDelayed()
   {
      DCOPRequest *request = d->requestList.take(0);
      QByteArray replyData;
-     QByteArray replyType;
+     DCOPCString replyType;
      if (request->fun == "newInstance()") {
        dcopClient()->setPriorityCall(false);
        QDataStream ds(request->data);
