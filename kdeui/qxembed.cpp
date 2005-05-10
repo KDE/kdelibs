@@ -970,7 +970,7 @@ void QXEmbed::embed(WId w)
         //        This makes sure that the window manager will
         //        no longer try to manage this window.
         if ( !wstate_withdrawn(window) ) {
-            XWithdrawWindow(QX11Info::display(), window, qt_xscreen());
+            XWithdrawWindow(QX11Info::display(), window, QX11Info::screen());
             QApplication::flushX();
             // L1711: See L1610
             while (!wstate_withdrawn(window))

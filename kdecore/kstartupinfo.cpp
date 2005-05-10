@@ -383,7 +383,7 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
     KXMessages msgs;
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
-    msg = check_required_startup_fields( msg, data_P, qt_xscreen());
+    msg = check_required_startup_fields( msg, data_P, QX11Info::screen());
     kdDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( NET_STARTUP_MSG, msg, -1, false );
     return true;

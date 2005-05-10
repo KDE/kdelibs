@@ -429,12 +429,12 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	        // Always detach before doing something behind QPixmap's back.
 	        pm.detach();
 	        XCopyArea(QX11Info::display(), p, pm.handle(),
-		          qt_xget_temp_gc(qt_xscreen(), depth==1),
+		          qt_xget_temp_gc(QX11Info::screen(), depth==1),
 		          0, 0, w, h, 0, 0);
 	        if (p_mask != None){
 	    	    QBitmap bm(w, h);
 		    XCopyArea(QX11Info::display(), p_mask, bm.handle(),
-			      qt_xget_temp_gc(qt_xscreen(), true),
+			      qt_xget_temp_gc(QX11Info::screen(), true),
 			      0, 0, w, h, 0, 0);
 		    pm.setMask(bm);
 	        }
@@ -664,7 +664,7 @@ void KWin::iconifyWindow( WId win, bool animation)
         kwin_net_create_atoms();
 	sendClientMessageToRoot( win, kde_wm_change_state, IconicState, 1 );
     }
-    XIconifyWindow( QX11Info::display(), win, qt_xscreen() );
+    XIconifyWindow( QX11Info::display(), win, QX11Info::screen() );
 #endif
 }
 

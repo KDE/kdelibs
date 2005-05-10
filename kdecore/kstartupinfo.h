@@ -633,7 +633,7 @@ class KDECORE_EXPORT KStartupInfoData
         
         /**
          * Sets the X11 screen on which the startup notification should happen.
-         * This is usually not necessary to set, as it's set by default to qt_xscreen().
+         * This is usually not necessary to set, as it's set by default to QX11Info::screen().
          */
         void setScreen( int screen );
 

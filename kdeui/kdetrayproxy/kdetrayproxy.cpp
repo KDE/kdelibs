@@ -46,7 +46,7 @@ KDETrayProxy::KDETrayProxy()
 
 Atom KDETrayProxy::makeSelectionAtom()
     {
-    return XInternAtom( QX11Info::display(), "_NET_SYSTEM_TRAY_S" + Q3CString().setNum( qt_xscreen()), False );
+    return XInternAtom( QX11Info::display(), "_NET_SYSTEM_TRAY_S" + Q3CString().setNum( QX11Info::screen()), False );
     }
 
 extern Time qt_x_time;
@@ -156,7 +156,7 @@ void KDETrayProxy::dockWindow( Window w, Window owner )
 
 void KDETrayProxy::withdrawWindow( Window w )
     {
-    XWithdrawWindow( QX11Info::display(), w, qt_xscreen());
+    XWithdrawWindow( QX11Info::display(), w, QX11Info::screen());
     static Atom wm_state = XInternAtom( QX11Info::display(), "WM_STATE", False );
     for(;;)
         {
