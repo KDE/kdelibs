@@ -1171,7 +1171,7 @@ public:
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) );
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds << t1 << t2;
 	return sendInternal( fun, args, data );
     }
