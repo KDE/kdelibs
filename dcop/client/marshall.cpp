@@ -99,9 +99,9 @@ const char *qStringToC(const QByteArray &s)
 }
 
 #warning FIX the marshalled types
-QByteArray demarshal( QDataStream &stream, const QString &type )
+DCOPCString demarshal( QDataStream &stream, const QString &type )
 {
-    QByteArray result;
+    DCOPCString result;
 
     if ( type == "int" || type == "Q_INT32" )
     {
@@ -151,12 +151,17 @@ QByteArray demarshal( QDataStream &stream, const QString &type )
         QString s;
         stream >> s;
         result = s.local8Bit();
-    } else if ( type == "QByteArray" || type == "QCString" )
+    } else if ( type == "QByteArray") 
+    {
+        QByteArray ba;
+        stream >> ba;
+        result  = ba;
+    } else if ( type == "QCString" )
     {
         stream >> result;
     } else if ( type == "QCStringList" )
     {
-        return demarshal( stream, "QList<QByteArray>" );
+        return demarshal( stream, "QList<QCString>" );
     } else if ( type == "QStringList" )
     {
         return demarshal( stream, "QList<QString>" );
@@ -277,7 +282,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
     if (type == "QStringList")
        type = "QList<QString>";
     if (type == "QCStringList")
-       type = "QList<QByteArray>";
+       type = "QList<QCString>";
     if( i >= args.count() )
     {
 	qWarning("Not enough arguments.");
