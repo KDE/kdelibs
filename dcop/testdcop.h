@@ -45,14 +45,14 @@ class TestObject : public QObject
 {
   Q_OBJECT
 public:
-  TestObject(const QByteArray &app);
+  TestObject(const QCString &app);
 
 public slots:
   void slotTimeout();
-  void slotCallBack(int, const QByteArray&, const QByteArray&);
+  void slotCallBack(int, const QCString&, const QByteArray&);
 private:
 
-  QByteArray m_app;
+  QCString m_app;
 };
 
 
@@ -60,18 +60,18 @@ class MyDCOPObject : public QObject, public DCOPObject
 {
   Q_OBJECT
 public:
-  MyDCOPObject(const QByteArray &name) : DCOPObject(name) {}
-  bool process(const QByteArray &fun, const QByteArray &data,
-	       QByteArray& replyType, QByteArray &replyData);
+  MyDCOPObject(const QCString &name) : DCOPObject(name) {}
+  bool process(const QCString &fun, const QByteArray &data,
+	       QCString& replyType, QByteArray &replyData);
   void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d", arg1.utf8().data(), arg2); }
 public slots:
   void slotTimeout();
   void slotTimeout2();
-  void registered(const QByteArray &appName)
+  void registered(const QCString &appName)
      { printf("REGISTER: %s\n", appName.data()); }
 
-  void unregistered(const QByteArray &appName)
+  void unregistered(const QCString &appName)
      { printf("UNREGISTER: %s\n", appName.data()); }
-  QByteArrayList functions();
+  QCStringList functions();
 };
 #endif

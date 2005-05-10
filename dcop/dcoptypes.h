@@ -19,9 +19,12 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <kdatastream.h>
+
 #ifndef DCOPTYPES_H
 #define DCOPTYPES_H
 
+#include <qglobal.h>
 #include <dcopref.h>
 
 // standard c/c++ types
@@ -34,12 +37,13 @@ inline const char* dcopTypeName( long ) { return "long int"; }
 inline const char* dcopTypeName( ulong ) { return "ulong"; }
 inline const char* dcopTypeName( double ) { return "double"; }
 inline const char* dcopTypeName( float ) { return "float"; }
-inline const char* dcopTypeName( const char* ) { return "QByteArray"; }
+inline const char* dcopTypeName( const char* ) { return "QCString"; }
 
 // dcop specialities
 class DCOPRef; inline const char* dcopTypeName( const DCOPRef& ) { return "DCOPRef"; }
 
 // Qt variant types
+
 class QString; inline const char* dcopTypeName( const QString& ) { return "QString"; }
 class QByteArray; inline const char* dcopTypeName( const QByteArray& ) { return "QByteArray"; }
 class QFont; inline const char* dcopTypeName( const QFont& ) { return "QFont"; }
@@ -52,7 +56,7 @@ class QSize; inline const char* dcopTypeName( const QSize& ) { return "QSize"; }
 class QColor; inline const char* dcopTypeName( const QColor& ) { return "QColor"; }
 class QPalette; inline const char* dcopTypeName( const QPalette& ) { return "QPalette"; }
 class QColorGroup; inline const char* dcopTypeName( const QColorGroup& ) { return "QColorGroup"; }
-class QIcon; inline const char* dcopTypeName( const QIcon& ) { return "QIcon"; }
+class QIcon; inline const char* dcopTypeName( const QIcon& ) { return "QIconSet"; }
 class QDataStream; inline const char* dcopTypeName( const QDataStream& ) { return "QDataStream"; }
 class QPointArray; inline const char* dcopTypeName( const QPointArray& ) { return "QPointArray"; }
 class QRegion; inline const char* dcopTypeName( const QRegion& ) { return "QRegion"; }

@@ -29,8 +29,8 @@ class DCOPStubPrivate;
 
 #include <stdlib.h>
 
-#include <Qt3Support/q3cstring.h>
-#include <Qt/qstring.h>
+#include <qstring.h>
+#include <dcoptypes.h>
 #include "kdelibs_export.h"
 
 /**
@@ -47,7 +47,7 @@ public:
        @param app the application id
        @param obj the object id
      */
-    DCOPStub( const QByteArray& app, const QByteArray& obj );
+    DCOPStub( const DCOPCString& app, const DCOPCString& obj );
 
     /** 
       Creates a DCOPStub for application @p app and object @p obj
@@ -56,7 +56,7 @@ public:
        @param app the application id
        @param obj the object id
      */
-    DCOPStub( DCOPClient* client, const QByteArray& app, const QByteArray& obj );
+    DCOPStub( DCOPClient* client, const DCOPCString& app, const DCOPCString& obj );
     
     /**
        Creates a DCOPStub for application ref.app() and object ref.obj()
@@ -69,12 +69,12 @@ public:
        Return the application id.
        @return the application id
      */
-    QByteArray app() const;
+    DCOPCString app() const;
     /**
        Return the object  id.
        @return the object id
      */
-    QByteArray obj() const;
+    DCOPCString obj() const;
 
     enum Status{ CallSucceeded, CallFailed };
     /**
@@ -133,8 +133,8 @@ protected:
     DCOPStub( never_use_t ) { abort(); }
     
 private:
-    QByteArray m_app;
-    QByteArray m_obj;
+    DCOPCString m_app;
+    DCOPCString m_obj;
     Status m_status;
 
 protected:

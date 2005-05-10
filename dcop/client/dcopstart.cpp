@@ -45,8 +45,9 @@ void startApp(const char *_app, int argc, const char **args)
     }
 
     QByteArray data, replyData;
-    QByteArray replyType;
+    DCOPCString replyType;
     QDataStream arg(&data, QIODevice::WriteOnly);
+    arg.setVersion(QDataStream::Qt_3_1);
     arg << app << URLs;
 
     if ( !dcop->call( "klauncher", "klauncher", function,  data, replyType, replyData) ) {
@@ -54,6 +55,7 @@ void startApp(const char *_app, int argc, const char **args)
         exit(1);
     } else {
 	QDataStream reply(&replyData, QIODevice::ReadOnly);
+	reply.setVersion(QDataStream::Qt_3_1);
 
         if ( replyType != "serviceResult" )
         {

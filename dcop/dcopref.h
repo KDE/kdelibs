@@ -1,5 +1,3 @@
-#ifndef DCOPREF_H
-#define DCOPREF_H
 /*
 Copyright (c) 2002 Matthias Ettrich <ettrich@kde.org>
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -25,9 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _DCOPREF_H
 #define _DCOPREF_H
 
-#include <Qt/q3cstring.h>
-#include <dcoptypes.h>
 #include <kdatastream.h> // needed for proper bool marshalling
+#include <dcoptypes.h>
 #include "kdelibs_export.h"
 
 class QDataStream;
@@ -58,6 +55,7 @@ public:
 	dcopTypeInit(t);
 	if ( typeCheck( dcopTypeName(t), true ) ) {
 	    QDataStream reply( data, IO_ReadOnly );
+	    reply.setVersion(QDataStream::Qt_3_1);
 	    reply >> t;
 	}
 	return t;
@@ -72,6 +70,7 @@ public:
     template <class T> bool get(  T& t, const char* tname ) {
 	if ( typeCheck( tname, false ) ) {
 	    QDataStream reply( data, IO_ReadOnly );
+	    reply.setVersion(QDataStream::Qt_3_1);
 	    reply >> t;
 	    return true;
 	}
@@ -88,6 +87,7 @@ public:
     template <class T> bool get(  T& t ) {
 	if ( typeCheck( dcopTypeName(t), false ) ) {
 	    QDataStream reply( data, IO_ReadOnly );
+	    reply.setVersion(QDataStream::Qt_3_1);
 	    reply >> t;
 	    return true;
 	}
@@ -103,7 +103,7 @@ public:
     /// The serialized data.
     QByteArray data;
     /// The name of the type, or 0 if unknown.
-    QByteArray type;
+    DCOPCString type;
 private:
     bool typeCheck( const char* t );
     bool typeCheck( const char* t, bool warn );
@@ -133,6 +133,7 @@ public:
 	: tname(tname_arg)
 	{
 	    QDataStream ds( data, IO_WriteOnly );
+	    ds.setVersion(QDataStream::Qt_3_1);
 	    ds << t;
 	}
     /**
@@ -147,6 +148,7 @@ public:
 	: tname( dcopTypeName(t) )
 	{
 	    QDataStream ds( data, IO_WriteOnly );
+	    ds.setVersion(QDataStream::Qt_3_1);
 	    ds << t;
 	}
 
@@ -179,7 +181,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *	k_dcop:
  *	   DCOPRef giveMeAnotherObject();
  *	   int doSomething( QString, float, bool );
- *	   ASYNC pingMe( QByteArray message );
+ *	   ASYNC pingMe( DCOPCString message );
  *	   UserType userFunction( UserType );
  *	};
  * \endcode
@@ -212,14 +214,14 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * \endcode
  *
  * Note that you must pass a QString for the first argument. If you use a
- * regular char pointer, it will be converted to a QByteArray.
+ * regular char pointer, it will be converted to a DCOPCString.
  *
  * For curiosity, here is how you would achieve the exactly same
  * functionality by using DCOPClient::call() directly:
  *
  * \code
  *    QByteArray data, replyData;
- *    QByteArray replyType;
+ *    DCOPCString replyType;
  *    QDataStream arg( data, IO_WriteOnly );
  *    arg << QString("hello world" ), (float) 2.5 << true;
  *    if ( DCOPClient::mainClient()->call( app, obj,
@@ -297,7 +299,7 @@ public:
      *            by the dcopserver.
      * @param obj The name of the dcop object.
      */
-    DCOPRef( const QByteArray& app, const QByteArray& obj = "" );
+    DCOPRef( const DCOPCString& app, const DCOPCString& obj = "" );
 
     /**
      * Creates a reference to an existing dcop object
@@ -315,7 +317,7 @@ public:
      * @param obj The name of the dcop object
      * @param type The object's type
      */
-    DCOPRef( const QByteArray& app, const QByteArray& obj, const QByteArray& type );
+    DCOPRef( const DCOPCString& app, const DCOPCString& obj, const DCOPCString& type );
 
     /**
      * Tests whether this is a null reference.
@@ -328,25 +330,25 @@ public:
      * Name of the application in which the object resides.
      * @return the application's id. Can be null or empty if not set.
      */
-    QByteArray app() const;
+    DCOPCString app() const;
 
     /**
      * Object ID of the referenced object.
      * @return the id of the referenced object. Can be null or empty if not set.
      * @since 3.1
      */
-    QByteArray obj() const;
+    DCOPCString obj() const;
 
     /**
      * @obsolete
      */
-    QByteArray object() const;
+    DCOPCString object() const;
 
     /**
      * Type of the referenced object. May be null (i.e. unknown).
      * @return the type of the referenced object, or null if unknown
      */
-    QByteArray type() const;
+    DCOPCString type() const;
 
 
     /**
@@ -360,7 +362,7 @@ public:
      * @param app the application id.
      * @param obj the object id
      */
-    void setRef( const QByteArray& app, const QByteArray& obj = "" );
+    void setRef( const DCOPCString& app, const DCOPCString& obj = "" );
 
     /**
      * Changes the referenced object.
@@ -368,7 +370,7 @@ public:
      * @param obj the object id
      * @param type the object's type
      */
-    void setRef( const QByteArray& app, const QByteArray& obj, const QByteArray& type );
+    void setRef( const DCOPCString& app, const DCOPCString& obj, const DCOPCString& type );
 
 
     /**
@@ -416,7 +418,7 @@ public:
      * @see DCOPArg
      * @since 3.1
      */
-    DCOPReply call( const QByteArray& fun ) {
+    DCOPReply call( const DCOPCString& fun ) {
 	QByteArray data;
 	return callInternal( fun, "()", data );
     }
@@ -434,7 +436,7 @@ public:
      *            the arguments
      * @since 3.2
      */
-    DCOPReply callExt( const QByteArray& fun, EventLoopFlag useEventLoop=NoEventLoop,
+    DCOPReply callExt( const DCOPCString& fun, EventLoopFlag useEventLoop=NoEventLoop,
 		    int timeout=-1 ) {
 	QByteArray data;
 	return callInternal( fun, "()", data, useEventLoop, timeout );
@@ -456,12 +458,13 @@ public:
      * @since 3.1
      */
     template <class T1>
-    DCOPReply call( const QByteArray& fun, const T1& t1 ) {
-	QByteArray args;
+    DCOPReply call( const DCOPCString& fun, const T1& t1 ) {
+	DCOPCString args;
 	args = QString().sprintf( "(%s)",
-		     dcopTypeName(t1) ).toAscii();
+		     dcopTypeName(t1) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( &data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1;
 	return callInternal( fun, args, data );
     }
@@ -482,14 +485,15 @@ public:
      * @since 3.2
      */
     template <class T1>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s)",
-		     dcopTypeName(t1) ).toAscii();
+		     dcopTypeName(t1) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -512,15 +516,16 @@ public:
      * @since 3.1
      */
     template <class T1, class T2>
-    DCOPReply call( const QByteArray& fun,
+    DCOPReply call( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
-		     dcopTypeName(t2) ).toAscii();
+		     dcopTypeName(t2) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2;
 	return callInternal( fun, args, data );
     }
@@ -543,16 +548,17 @@ public:
      * @since 3.2
      */
     template <class T1, class T2>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -577,17 +583,18 @@ public:
      * @since 3.1
      */
     template <class T1, class T2, class T3>
-    DCOPReply call( const QByteArray& fun,
+    DCOPReply call( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3;
 	return callInternal( fun, args, data );
     }
@@ -612,18 +619,19 @@ public:
      * @since 3.2
      */
     template <class T1, class T2, class T3>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -650,12 +658,12 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4>
-    DCOPReply call( const QByteArray& fun,
+    DCOPReply call( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -663,6 +671,7 @@ public:
 		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data );
     }
@@ -689,13 +698,13 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -703,6 +712,7 @@ public:
 		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -731,13 +741,13 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5>
-    DCOPReply call( const QByteArray& fun,
+    DCOPReply call( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -746,6 +756,7 @@ public:
 		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data );
     }
@@ -774,14 +785,14 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -790,6 +801,7 @@ public:
 		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -820,14 +832,14 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
-    DCOPReply call( const QByteArray& fun,
+    DCOPReply call( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -837,6 +849,7 @@ public:
 		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return callInternal( fun, args, data );
     }
@@ -867,7 +880,7 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
@@ -875,7 +888,7 @@ public:
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -885,6 +898,7 @@ public:
 		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -916,7 +930,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
-    DCOPReply call( const QByteArray& fun,
+    DCOPReply call( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -924,7 +938,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -935,6 +949,7 @@ public:
 		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data );
     }
@@ -967,7 +982,7 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
@@ -976,7 +991,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -987,6 +1002,7 @@ public:
 		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -1021,7 +1037,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-    DCOPReply call( const QByteArray& fun,
+    DCOPReply call( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -1030,7 +1046,7 @@ public:
 		    const T6& t6,
 		    const T7& t7,
 		    const T8& t8 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1042,6 +1058,7 @@ public:
 		     dcopTypeName(t8) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return callInternal( fun, args, data );
     }
@@ -1076,7 +1093,7 @@ public:
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-    DCOPReply callExt( const QByteArray& fun,
+    DCOPReply callExt( const DCOPCString& fun,
 		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
@@ -1086,7 +1103,7 @@ public:
 		    const T6& t6,
 		    const T7& t7,
 		    const T8& t8) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1098,6 +1115,7 @@ public:
 		     dcopTypeName(t8) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return callInternal( fun, args, data, useEventLoop, timeout );
     }
@@ -1115,7 +1133,7 @@ public:
      * @see call()
      * @since 3.1
      */
-    bool send( const QByteArray& fun ) {
+    bool send( const DCOPCString& fun ) {
 	QByteArray data;
 	return sendInternal( fun, "()", data );
     }
@@ -1137,12 +1155,13 @@ public:
      * @since 3.1
      */
     template <class T1>
-    bool send( const QByteArray& fun, const T1& t1 ) {
-	QByteArray args;
+    bool send( const DCOPCString& fun, const T1& t1 ) {
+	DCOPCString args;
 	args = QString().sprintf( "(%s)",
-		     dcopTypeName(t1) ).toAscii();
+		     dcopTypeName(t1) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( &data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1;
 	return sendInternal( fun, args, data );
     }
@@ -1165,15 +1184,16 @@ public:
      * @since 3.1
      */
     template <class T1, class T2>
-    bool send( const QByteArray& fun,
+    bool send( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
-		     dcopTypeName(t2) ).toAscii();
+		     dcopTypeName(t2) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( &data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2;
 	return sendInternal( fun, args, data );
     }
@@ -1198,17 +1218,18 @@ public:
      * @since 3.1
      */
     template <class T1, class T2, class T3>
-    bool send( const QByteArray& fun,
+    bool send( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
-		     dcopTypeName(t3) ).toAscii();
+		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( &data, IO_WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3;
 	return sendInternal( fun, args, data );
     }
@@ -1235,19 +1256,20 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4>
-    bool send( const QByteArray& fun,
+    bool send( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
-		     dcopTypeName(t4) ).toAscii();
+		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( &data, IO_WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4;
 	return sendInternal( fun, args, data );
     }
@@ -1276,21 +1298,22 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5>
-    bool send( const QByteArray& fun,
+    bool send( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
-		     dcopTypeName(t5) ).toAscii();
+		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( &data, IO_WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5;
 	return sendInternal( fun, args, data );
     }
@@ -1321,23 +1344,24 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
-    bool send( const QByteArray& fun,
+    bool send( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
 		     dcopTypeName(t3),
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
-		     dcopTypeName(t6) ).toAscii();
+		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( &data, IO_WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return sendInternal( fun, args, data );
     }
@@ -1370,7 +1394,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
-    bool send( const QByteArray& fun,
+    bool send( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -1378,7 +1402,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1386,9 +1410,10 @@ public:
 		     dcopTypeName(t4),
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
-		     dcopTypeName(t7) ).toAscii();
+		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( &data, IO_WriteOnly );
+	QDataStream ds( data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return sendInternal( fun, args, data );
     }
@@ -1423,7 +1448,7 @@ public:
      * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-    bool send( const QByteArray& fun,
+    bool send( const DCOPCString& fun,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -1432,7 +1457,7 @@ public:
 		    const T6& t6,
 		    const T7& t7,
 		    const T8& t8 ) {
-	QByteArray args;
+	DCOPCString args;
 	args = QString().sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
 		     dcopTypeName(t2),
@@ -1441,9 +1466,10 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6),
 		     dcopTypeName(t7),
-		     dcopTypeName(t8) ).toAscii();
+		     dcopTypeName(t8) ).toAscii();;
 	QByteArray data;
 	QDataStream ds( &data, IO_WriteOnly );
+	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return sendInternal( fun, args, data );
     }
@@ -1451,14 +1477,14 @@ public:
 
 
 private:
-    DCOPReply callInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data,
+    DCOPReply callInternal( const DCOPCString& fun, const DCOPCString& args, const QByteArray& data,
 			    EventLoopFlag useEventLoop, int timeout );
-    DCOPReply callInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data );
-    bool sendInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data );
+    DCOPReply callInternal( const DCOPCString& fun, const DCOPCString& args, const QByteArray& data );
+    bool sendInternal( const DCOPCString& fun, const DCOPCString& args, const QByteArray& data );
 
-    QByteArray m_app;
-    QByteArray m_obj;
-    QByteArray m_type;
+    DCOPCString m_app;
+    DCOPCString m_obj;
+    DCOPCString m_type;
 
     class DCOPRefPrivate;
     DCOPRefPrivate *d;
@@ -1474,4 +1500,3 @@ DCOP_EXPORT QDataStream& operator<<( QDataStream&, const DCOPRef& ref );
 DCOP_EXPORT QDataStream& operator>>( QDataStream&, DCOPRef& ref );
 
 #endif
-#endif // DCOPREF_H

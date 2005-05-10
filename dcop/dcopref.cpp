@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "dcopclient.h"
 #include "dcopobject.h"
 
-#include <Qt/qdatastream.h>
+#include <qdatastream.h>
 
 #define STR( s ) ( s.data() ? s.data() : "" )
 
@@ -47,12 +47,12 @@ bool DCOPReply::typeCheck( const char* t, bool warn )
 }
 
 // this has to stay BC too even if private, because it's called from inlines
-DCOPReply DCOPRef::callInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data )
+DCOPReply DCOPRef::callInternal( const DCOPCString& fun, const DCOPCString& args, const QByteArray& data )
 {
     return callInternal( fun, args, data, NoEventLoop, -1 );
 }
 
-DCOPReply DCOPRef::callInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data,
+DCOPReply DCOPRef::callInternal( const DCOPCString& fun, const DCOPCString& args, const QByteArray& data,
 				 EventLoopFlag useEventLoop, int timeout )
 {
     DCOPReply reply;
@@ -61,7 +61,7 @@ DCOPReply DCOPRef::callInternal( const QByteArray& fun, const QByteArray& args, 
 		  STR( fun ) );
 	return reply;
     }
-    QByteArray sig = fun;
+    DCOPCString sig = fun;
     if ( fun.find('(') == -1 ) {
 	sig += args;
 	if( args.find( "<unknown" ) != -1 )
@@ -78,7 +78,7 @@ DCOPReply DCOPRef::callInternal( const QByteArray& fun, const QByteArray& args, 
     return reply;
 }
 
-bool DCOPRef::sendInternal( const QByteArray& fun, const QByteArray& args, const QByteArray& data )
+bool DCOPRef::sendInternal( const DCOPCString& fun, const DCOPCString& args, const QByteArray& data )
 {
     if ( isNull() ) {
 	qWarning( "DCOPRef: send '%s' on null reference error",
@@ -86,7 +86,7 @@ bool DCOPRef::sendInternal( const QByteArray& fun, const QByteArray& args, const
 	return false;
     }
     Q_UNUSED( data );
-    QByteArray sig = fun;
+    DCOPCString sig = fun;
     if ( fun.find('(') == -1 ) {
 	sig += args;
 	if( args.find( "<unknown" ) != -1 )
@@ -116,18 +116,18 @@ DCOPRef::DCOPRef( const DCOPRef& ref )
 }
 
 DCOPRef::DCOPRef( DCOPObject *o )
-    : m_app( DCOPClient::mainClient() ? DCOPClient::mainClient()->appId() : QByteArray() ),
+    : m_app( DCOPClient::mainClient() ? DCOPClient::mainClient()->appId() : DCOPCString() ),
     m_obj( o->objId() ), m_type( o->interfaces().last() ), d(0)
 
 {
 }
 
-DCOPRef::DCOPRef( const QByteArray& _app, const QByteArray& obj )
+DCOPRef::DCOPRef( const DCOPCString& _app, const DCOPCString& obj )
     : m_app( _app ), m_obj( obj ), d(0)
 {
 }
 
-DCOPRef::DCOPRef( const QByteArray& _app, const QByteArray& _obj, const QByteArray& _type )
+DCOPRef::DCOPRef( const DCOPCString& _app, const DCOPCString& _obj, const DCOPCString& _type )
     : m_app( _app ), m_obj( _obj ), m_type( _type ), d(0)
 {
 }
@@ -137,23 +137,23 @@ bool DCOPRef::isNull() const
     return ( m_app.isNull() || m_obj.isNull() );
 }
 
-QByteArray DCOPRef::app() const
+DCOPCString DCOPRef::app() const
 {
     return m_app;
 }
 
-QByteArray DCOPRef::obj() const
+DCOPCString DCOPRef::obj() const
 {
     return m_obj;
 }
 
-QByteArray DCOPRef::object() const
+DCOPCString DCOPRef::object() const
 {
     return m_obj;
 }
 
 
-QByteArray DCOPRef::type() const
+DCOPCString DCOPRef::type() const
 {
     return m_type;
 }
@@ -177,14 +177,14 @@ DCOPRef& DCOPRef::operator=( const DCOPRef& ref )
     return *this;
 }
 
-void DCOPRef::setRef( const QByteArray& _app, const QByteArray& _obj )
+void DCOPRef::setRef( const DCOPCString& _app, const DCOPCString& _obj )
 {
     m_app = _app;
     m_obj = _obj;
     m_type = 0;
 }
 
-void DCOPRef::setRef( const QByteArray& _app, const QByteArray& _obj, const QByteArray& _type )
+void DCOPRef::setRef( const DCOPCString& _app, const DCOPCString& _obj, const DCOPCString& _type )
 {
     m_app = _app;
     m_obj = _obj;
@@ -209,7 +209,7 @@ QDataStream& operator<<( QDataStream& str, const DCOPRef& ref )
 
 QDataStream& operator>>( QDataStream& str, DCOPRef& ref )
 {
-    QByteArray a, o, t;
+    DCOPCString a, o, t;
     str >> a >> o >> t;
 
     ref.setRef( a, o, t );

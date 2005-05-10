@@ -33,12 +33,12 @@ public:
     DCOPClient* dcopClient;
 };
 
-DCOPStub::DCOPStub( const QByteArray& app, const QByteArray& obj )
+DCOPStub::DCOPStub( const DCOPCString& app, const DCOPCString& obj )
     : m_app( app ), m_obj( obj ), m_status( CallSucceeded ),d(0)
 {
 }
 
-DCOPStub::DCOPStub( DCOPClient* client, const QByteArray& app, const QByteArray& obj )
+DCOPStub::DCOPStub( DCOPClient* client, const DCOPCString& app, const DCOPCString& obj )
     : m_app( app ), m_obj( obj ), m_status( CallSucceeded ),d(0)
 {
     if ( client ) {
@@ -84,12 +84,12 @@ void DCOPStub::callFailed()
     setStatus( CallFailed );
 }
 
-QByteArray DCOPStub::app() const
+DCOPCString DCOPStub::app() const
 {
     return m_app;
 }
 
-QByteArray DCOPStub::obj() const
+DCOPCString DCOPStub::obj() const
 {
     return m_obj;
 }

@@ -38,6 +38,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <q3ptrdict.h>
 #include <q3intdict.h>
 #include <qapplication.h>
+#include <kdatastream.h>
 
 #define INT32 QINT32
 #ifdef Q_WS_X11
@@ -66,8 +67,6 @@ class QTextStream;
 class QFile;
 #endif
 
-typedef QList<QByteArray> QByteArrayList;
-
 /**
  * @internal
  */
@@ -87,8 +86,8 @@ public:
     // Flush the output buffer.
     void slotOutputReady();
 
-    QByteArray appId;
-    QByteArray plainAppId;
+    DCOPCString appId;
+    DCOPCString plainAppId;
     IceConn iceConn;
     int notifyRegister;
     /**
@@ -129,17 +128,17 @@ public:
     void processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap);
     void ioError( IceConn iceConn );
 
-    bool receive(const QByteArray &app, const QByteArray &obj,
-                 const QByteArray &fun, const QByteArray& data,
-                 QByteArray& replyType, QByteArray &replyData, IceConn iceConn);
+    bool receive(const DCOPCString &app, const DCOPCString &obj,
+                 const DCOPCString &fun, const QByteArray& data,
+                 DCOPCString& replyType, QByteArray &replyData, IceConn iceConn);
 
-    DCOPConnection *findApp(const QByteArray &appId);
+    DCOPConnection *findApp(const DCOPCString &appId);
     DCOPConnection *findConn(IceConn iceConn)
        { return clients.find(iceConn); }
 
-    void sendMessage(DCOPConnection *conn, const QByteArray &sApp,
-                     const QByteArray &rApp, const QByteArray &rObj,
-                     const QByteArray &rFun, const QByteArray &data);
+    void sendMessage(DCOPConnection *conn, const DCOPCString &sApp,
+                     const DCOPCString &rApp, const DCOPCString &rObj,
+                     const DCOPCString &rFun, const QByteArray &data);
 
 private slots:
     void newClient( int socket );
@@ -152,7 +151,7 @@ private slots:
     void slotOutputReady(int socket );
 
 private:
-    void broadcastApplicationRegistration( DCOPConnection* conn, const QByteArray type,
+    void broadcastApplicationRegistration( DCOPConnection* conn, const DCOPCString type,
         const QString& data );
     bool suicide;
     bool shutdown;

@@ -71,7 +71,7 @@ static QTextStream cerr_( stderr, QIODevice::WriteOnly );
  */
 enum Session { DefaultSession = 0, AllSessions, QuerySessions, CustomSession };
 
-bool startsWith(const QByteArray &id, const char *str, int n)
+bool startsWith(const DCOPCString &id, const char *str, int n)
 {
   return !n || (strncmp(id.data(), str, n) == 0);
 }
@@ -89,10 +89,9 @@ bool endsWith(QByteArray &id, char c)
 void queryApplications(const QByteArray &filter)
 {
     int filterLen = filter.length();
-    QByteArrayList apps = dcop->registeredApplications();
-    for ( QByteArrayList::Iterator it = apps.begin(); it != apps.end(); ++it )
+    DCOPCStringList apps = dcop->registeredApplications();
+    foreach(DCOPCString clientId, apps)
     {
-        QByteArray &clientId = *it;
 	if ( (clientId != dcop->appId()) &&
              !startsWith(clientId, "anonymous",9) &&
              startsWith(clientId, filter, filterLen)
@@ -112,11 +111,9 @@ void queryObjects( const QByteArray &app, const QByteArray &filter )
     int filterLen = filter.length();
     bool ok = false;
     bool isDefault = false;
-    QByteArrayList objs = dcop->remoteObjects( app, &ok );
-    for ( QByteArrayList::Iterator it = objs.begin(); it != objs.end(); ++it )
+    DCOPCStringList objs = dcop->remoteObjects( app, &ok );
+    foreach (DCOPCString objId, objs)
     {
-        QByteArray &objId = *it;
-
         if (objId == "default")
         {
            isDefault = true;
@@ -145,8 +142,8 @@ void queryObjects( const QByteArray &app, const QByteArray &filter )
 void queryFunctions( const char* app, const char* obj )
 {
     bool ok = false;
-    QByteArrayList funcs = dcop->remoteFunctions( app, obj, &ok );
-    for ( QByteArrayList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
+    DCOPCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
+    for ( DCOPCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
 	printf( "%s\n", (*it).data() );
     }
     if ( !ok )
@@ -156,7 +153,7 @@ void queryFunctions( const char* app, const char* obj )
     }
 }
 
-int callFunction( const char* app, const char* obj, const char* func, const QByteArrayList args )
+int callFunction( const char* app, const char* obj, const char* func, const DCOPCStringList args )
 {
     QString f = func; // Qt is better with unicode strings, so use one.
     int left = f.find( '(' );
@@ -171,8 +168,8 @@ int callFunction( const char* app, const char* obj, const char* func, const QByt
     if ( left < 0 ) {
 	// try to get the interface from the server
 	bool ok = false;
-	QByteArrayList funcs = dcop->remoteFunctions( app, obj, &ok );
-	QByteArray realfunc;
+	DCOPCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
+	DCOPCString     realfunc;
 	if ( !ok && args.isEmpty() )
 	    goto doit;
 	if ( !ok )
@@ -180,7 +177,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QByt
 	    qWarning( "object not accessible" );
 	    return( 1 );
 	}
-	for ( QByteArrayList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
+	for ( DCOPCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
 	    int l = (*it).find( '(' );
 	    int s;
 	    if (l > 0)
@@ -285,8 +282,9 @@ int callFunction( const char* app, const char* obj, const char* func, const QByt
     }
 
     QByteArray data, replyData;
-    QByteArray replyType;
+    DCOPCString replyType;
     QDataStream arg(&data, QIODevice::WriteOnly);
+    arg.setVersion(QDataStream::Qt_3_1);
 
     int i = 0;
     for( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
@@ -303,6 +301,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QByt
 	return( 1 );
     } else {
 	QDataStream reply(&replyData, QIODevice::ReadOnly);
+	reply.setVersion(QDataStream::Qt_3_1);
 
         if ( replyType != "void" && replyType != "ASYNC" )
         {
@@ -449,14 +448,14 @@ void sendUserTime( const char* app )
 /**
  * Do the actual DCOP call
  */
-int runDCOP( QByteArrayList args, UserList users, Session session,
+int runDCOP( DCOPCStringList args, UserList users, Session session,
               const QString sessionName, bool readStdin, bool updateUserTime )
 {
     bool DCOPrefmode=false;
-    QByteArray app;
-    QByteArray objid;
-    QByteArray function;
-    QByteArrayList params;
+    DCOPCString app;
+    DCOPCString objid;
+    DCOPCString function;
+    DCOPCStringList params;
     DCOPClient *client = 0L;
     int retval = 0;
     if ( !args.isEmpty() && args[ 0 ].find( "DCOPRef(" ) == 0 )
@@ -701,9 +700,9 @@ int runDCOP( QByteArrayList args, UserList users, Session session,
                     sendUserTime( app );
 		if( readStdin )
 		{
-		    QByteArrayList::Iterator replaceArg = params.end();
+		    DCOPCStringList::Iterator replaceArg = params.end();
 
-		    QByteArrayList::Iterator it = params.begin();
+		    DCOPCStringList::Iterator it = params.begin();
 		    for( ; it != params.end(); ++it )
 			if( *it == "%1" )
 			    replaceArg = it;
@@ -838,7 +837,7 @@ int main( int argc, char** argv )
 
     argc -= numOptions;
 
-    QByteArrayList args;
+    DCOPCStringList args;
 
 #ifdef DCOPQUIT
     if (argc > 1)

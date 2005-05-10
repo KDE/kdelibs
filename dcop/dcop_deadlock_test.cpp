@@ -30,17 +30,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdlib.h>
 
-MyDCOPObject::MyDCOPObject(const QByteArray &name, const QByteArray &remoteName) 
+MyDCOPObject::MyDCOPObject(const QCString &name, const QCString &remoteName) 
 : QObject(0, name), DCOPObject(name), m_remoteName(remoteName)
 {
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
 }
 
-bool MyDCOPObject::process(const QByteArray &fun, const QByteArray &data,
-QByteArray& replyType, QByteArray &replyData)
+bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
+QCString& replyType, QByteArray &replyData)
 {
-  if (fun == "function(QByteArray)") {
-    QDataStream args( data, QIODevice::ReadOnly );
+  if (fun == "function(QCString)") {
+    QDataStream args( data, IO_ReadOnly );
     args >>  m_remoteName;
 
     struct timeval tv;
@@ -48,7 +48,7 @@ QByteArray& replyType, QByteArray &replyData)
 qWarning("%s: function('%s') %d:%06d", name(), m_remoteName.data(), tv.tv_sec % 100, tv.tv_usec);
 
     replyType = "QString";
-    QDataStream reply( replyData, QIODevice::WriteOnly );
+    QDataStream reply( replyData, IO_WriteOnly );
     reply << QString("Hey");
     m_timer.start(1000, true);
     return true;
@@ -64,14 +64,14 @@ qWarning("%s: slotTimeout() %d:%06d", name(), tv.tv_sec % 100, tv.tv_usec);
 
   m_timer.start(1000, true);
   QString result;
-  DCOPRef(m_remoteName, m_remoteName).call("function", QByteArray(name())).get(result);
+  DCOPRef(m_remoteName, m_remoteName).call("function", QCString(name())).get(result);
     gettimeofday(&tv, 0);
 qWarning("%s: Got result '%s' %d:%06d", name(), result.latin1(), tv.tv_sec % 100, tv.tv_usec);
 }
 
 int main(int argc, char **argv)
 {
-  QByteArray myName = KApplication::dcopClient()->registerAs("testdcop", false);
+  QCString myName = KApplication::dcopClient()->registerAs("testdcop", false);
   KApplication app(argc, argv, "testdcop");
 
   qWarning("%d:I am '%s'", getpid(), app.dcopClient()->appId().data());
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
       system("./dcop_deadlock_test testdcop&");
   }
 
-  QByteArray remoteApp;
+  QCString remoteApp;
   if (argc == 2)
   {
       remoteApp = argv[1];

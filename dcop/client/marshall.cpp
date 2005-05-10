@@ -151,10 +151,10 @@ QByteArray demarshal( QDataStream &stream, const QString &type )
         QString s;
         stream >> s;
         result = s.local8Bit();
-    } else if ( type == "QByteArray" )
+    } else if ( type == "QByteArray" || type == "QCString" )
     {
         stream >> result;
-    } else if ( type == "QByteArrayList" )
+    } else if ( type == "QCStringList" )
     {
         return demarshal( stream, "QList<QByteArray>" );
     } else if ( type == "QStringList" )
@@ -271,11 +271,11 @@ QByteArray demarshal( QDataStream &stream, const QString &type )
 }
 
 #warning FIX the marshalled types
-void marshall( QDataStream &arg, QByteArrayList args, int &i, QString type )
+void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 {
     if (type == "QStringList")
        type = "QList<QString>";
-    if (type == "QByteArrayList")
+    if (type == "QCStringList")
        type = "QList<QByteArray>";
     if( i >= args.count() )
     {
@@ -320,7 +320,7 @@ void marshall( QDataStream &arg, QByteArrayList args, int &i, QString type )
 	arg << mkBool( s );
     else if ( type == "QString" )
 	arg << s;
-    else if ( type == "QByteArray" )
+    else if ( type == "QByteArray" || type == "QCStringList" )
 	arg << QByteArray( args[ i ] );
     else if ( type == "QColor" )
 	arg << mkColor( s );
