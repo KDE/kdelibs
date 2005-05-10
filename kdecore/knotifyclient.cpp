@@ -88,15 +88,11 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   if( widget )
     winId = (int)widget->topLevelWidget()->winId();
 
-  QByteArray data;
-  QDataStream ds(&data, QIODevice::WriteOnly);
-  ds << message << appname << text << sound << file << present << level
-     << winId << uniqueId;
-
   if ( !KNotifyClient::startDaemon() )
       return 0;
 
-  if ( client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int,int,int)", data) )
+  if ( DCOPRef(daemonName, "Notify").send("notify", message, appname, text, sound, file,
+                present, winId, uniqueId) )
   {
       return uniqueId;
   }

@@ -2610,9 +2610,10 @@ startServiceInternal( const QByteArray &function,
    }
    QByteArray params;
    QDataStream stream(&params, QIODevice::WriteOnly);
+   stream.setVersion(QDataStream::Qt_3_1);
    stream << _name << URLs;
-   QByteArray replyType;
-   QByteArray replyData;
+   DCOPCString replyType;
+   QByteArray  replyData;
    QByteArray _launcher = KApplication::launcher();
    QList<QByteArray> envs;
 #ifdef Q_WS_X11

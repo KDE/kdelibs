@@ -403,12 +403,8 @@ void KWinModule::doNotManage( const QString& title )
 {
     if ( !kapp->dcopClient()->isAttached() )
 	kapp->dcopClient()->attach();
-    QByteArray data, replyData;
-    QByteArray replyType;
-    QDataStream arg(&data, QIODevice::WriteOnly);
-    arg << title;
-    kapp->dcopClient()->call("kwin", "", "doNotManage(QString)",
-			     data, replyType, replyData);
+
+    DCOPRef("kwin", "").call("doNotManage", title);
 }
 
 #include "kwinmodule.moc"
