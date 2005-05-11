@@ -658,7 +658,7 @@ VCardLine VCardTool::createPicture( const QString &identifier, const Picture &pi
   if ( pic.isIntern() ) {
     if ( !pic.data().isNull() ) {
       QByteArray input;
-      QDataStream s( input, QIODevice::WriteOnly );
+      QDataStream s( &input, QIODevice::WriteOnly );
       s.setVersion( 4 );
       s << pic.data();
       line.setValue( input );

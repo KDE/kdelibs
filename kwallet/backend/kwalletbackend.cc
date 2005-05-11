@@ -433,7 +433,7 @@ int Backend::open(const QByteArray& password) {
 	tmpenc.fill(0);
 
 	// Load the data structures up
-	QDataStream eStream(encrypted, QIODevice::ReadOnly);
+	QDataStream eStream(encrypted);
 
 	while (!eStream.atEnd()) {
 		QString folder;
@@ -503,7 +503,7 @@ int Backend::sync(const QByteArray& password) {
 
 	// Holds the hashes we write out
 	QByteArray hashes;
-	QDataStream hashStream(hashes, QIODevice::WriteOnly);
+	QDataStream hashStream(&hashes, QIODevice::WriteOnly);
 	KMD5 md5;
 	hashStream << static_cast<Q_UINT32>(_entries.count());
 
@@ -515,7 +515,7 @@ int Backend::sync(const QByteArray& password) {
 	// resizes.
 
 	// populate decrypted
-	QDataStream dStream(decrypted, QIODevice::WriteOnly);
+	QDataStream dStream(&decrypted, QIODevice::WriteOnly);
 	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
 		dStream << i.key();
 		dStream << static_cast<Q_UINT32>(i.data().count());

@@ -311,7 +311,7 @@ KPasswdServer::processRequest()
     Q3CString replyType;
     QByteArray replyData;
 
-    QDataStream stream2(replyData, QIODevice::WriteOnly);
+    QDataStream stream2(&replyData, QIODevice::WriteOnly);
     stream2 << info << m_seqNr;
     replyType = "KIO::AuthInfo";
     request->client->endTransaction( request->transaction,
@@ -354,7 +354,7 @@ KPasswdServer::processRequest()
            Q3CString replyType;
            QByteArray replyData;
 
-           QDataStream stream2(replyData, QIODevice::WriteOnly);
+           QDataStream stream2(&replyData, QIODevice::WriteOnly);
 
            if (!result || result->isCanceled)
            {

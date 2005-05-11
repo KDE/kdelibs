@@ -335,7 +335,7 @@ void KHostName::changeSessionManager()
    sm = "local/"+newName+sm.mid(i);
    Q3CString name = "SESSION_MANAGER";
    QByteArray params;
-   QDataStream stream(params, QIODevice::WriteOnly);
+   QDataStream stream(&params, QIODevice::WriteOnly);
    stream << name << sm;
    DCOPClient *client = new DCOPClient();
    if (!client->attach())

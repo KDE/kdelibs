@@ -324,7 +324,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 	    }
 	    else {
 		QByteArray fileData;
-		QDataStream stream(fileData,QIODevice::WriteOnly);
+		QDataStream stream(&fileData,QIODevice::WriteOnly);
 		char buf[1024];
 		int bytesread;
 		while (!file.atEnd()) {

@@ -68,7 +68,7 @@ void KSSLCertificateCache::loadDefaultPolicies() {
 void KSSLCertificateCache::reload() {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      d->dcc->call("kded", "kssld",
                   "cacheReload()",
                   data, rettype, retval);
@@ -79,7 +79,7 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
                        KSSLCertificatePolicy policy, bool permanent) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
      arg << policy;
      arg << permanent;
@@ -93,14 +93,14 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
 KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(QString& cn) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cn;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheGetPolicyByCN(QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "KSSLCertificateCache::KSSLCertificatePolicy") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         KSSLCertificateCache::KSSLCertificatePolicy drc;
         retStream >> drc;
 	return drc;
@@ -112,14 +112,14 @@ return KSSLCertificateCache::Ambiguous;
 KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCertificate(KSSLCertificate& cert) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheGetPolicyByCertificate(KSSLCertificate)",
                             data, rettype, retval);
 
      if (rc && rettype == "KSSLCertificateCache::KSSLCertificatePolicy") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         KSSLCertificateCache::KSSLCertificatePolicy drc;
         retStream >> drc;
 	return drc;
@@ -132,14 +132,14 @@ return KSSLCertificateCache::Ambiguous;
 bool KSSLCertificateCache::seenCN(QString& cn) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cn;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheSeenCN(QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
 	return drc;
@@ -152,14 +152,14 @@ return false;
 bool KSSLCertificateCache::seenCertificate(KSSLCertificate& cert) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheSeenCertificate(KSSLCertificate)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
 	return drc;
@@ -172,14 +172,14 @@ return false;
 bool KSSLCertificateCache::isPermanent(KSSLCertificate& cert) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheIsPermanent(KSSLCertificate)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
 	return drc;
@@ -193,14 +193,14 @@ return false;
 bool KSSLCertificateCache::removeByCN(QString& cn) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cn;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheRemoveByCN(QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
 	return drc;
@@ -213,14 +213,14 @@ return false;
 bool KSSLCertificateCache::removeByCertificate(KSSLCertificate& cert) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheRemoveByCertificate(KSSLCertificate)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
 	return drc;
@@ -237,14 +237,14 @@ bool KSSLCertificateCache::modifyByCN(QString& cn,
                   QDateTime& expires) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cn << policy << permanent << expires;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheModifyByCN(QString,KSSLCertificateCache::KSSLCertificatePolicy,bool,QDateTime)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
         return drc;
@@ -260,14 +260,14 @@ bool KSSLCertificateCache::modifyByCertificate(KSSLCertificate& cert,
                            QDateTime& expires) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert << policy << permanent << expires;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheModifyByCertificate(KSSLCertificate,KSSLCertificateCache::KSSLCertificatePolicy,bool,QDateTime)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
         return drc;
@@ -280,14 +280,14 @@ return false;
 QStringList KSSLCertificateCache::getHostList(KSSLCertificate& cert) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheGetHostList(KSSLCertificate)",
                             data, rettype, retval);
 
      if (rc && rettype == "QStringList") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         QStringList drc;
         retStream >> drc;
 	return drc;
@@ -300,14 +300,14 @@ return QStringList();
 bool KSSLCertificateCache::addHost(KSSLCertificate& cert, QString& host) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert << host;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheAddHost(KSSLCertificate,QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
         return drc;
@@ -321,14 +321,14 @@ return false;
 bool KSSLCertificateCache::removeHost(KSSLCertificate& cert, QString& host) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert << host;
      bool rc = d->dcc->call("kded", "kssld",
                             "cacheRemoveHost(KSSLCertificate,QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "bool") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         bool drc;
         retStream >> drc;
         return drc;
@@ -341,14 +341,14 @@ return false;
 QStringList KSSLCertificateCache::getKDEKeyByEmail(const QString &email) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << email;
      bool rc = d->dcc->call("kded", "kssld",
                             "getKDEKeyByEmail(QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "QStringList") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         QStringList drc;
         retStream >> drc;
         return drc;
@@ -361,14 +361,14 @@ QStringList KSSLCertificateCache::getKDEKeyByEmail(const QString &email) {
 KSSLCertificate *KSSLCertificateCache::getCertByMD5Digest(const QString &key) {
      QByteArray data, retval;
      Q3CString rettype;
-     QDataStream arg(data, QIODevice::WriteOnly);
+     QDataStream arg(&data, QIODevice::WriteOnly);
      arg << key;
      bool rc = d->dcc->call("kded", "kssld",
                             "getCertByMD5Digest(QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "KSSLCertificate") {
-        QDataStream retStream(retval, QIODevice::ReadOnly);
+        QDataStream retStream(retval);
         KSSLCertificate *drc = new KSSLCertificate;
         retStream >> *drc;
 	if (drc->getCert())

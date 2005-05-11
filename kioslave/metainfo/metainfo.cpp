@@ -71,7 +71,7 @@ void MetaInfoProtocol::get(const KURL &url)
     KFileMetaInfo info(url.path(), mimeType);
     
     QByteArray arr;
-    QDataStream stream(arr, QIODevice::WriteOnly);
+    QDataStream stream(&arr, QIODevice::WriteOnly);
 
     stream << info;
 
@@ -86,7 +86,7 @@ void MetaInfoProtocol::put(const KURL& url, int, bool, bool)
     
     QByteArray arr;
     readData(arr);
-    QDataStream stream(arr, QIODevice::ReadOnly);
+    QDataStream stream(arr);
     
     stream >> info;
 

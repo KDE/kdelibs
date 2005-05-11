@@ -129,7 +129,7 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 	if(m_finished)
 	    m_finished = false;
 
-	QDataStream dataStream(m_data, QIODevice::WriteOnly | QIODevice::Append);
+	QDataStream dataStream(&m_data, QIODevice::WriteOnly | QIODevice::Append);
 	dataStream.writeRawBytes(data.data(), data.size());
 	//kdDebug( 400 ) << "STREAMING: buffersize = " << m_data.size() << " bytes" << endl;
 	

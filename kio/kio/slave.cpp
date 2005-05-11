@@ -225,7 +225,7 @@ void Slave::hold(const KURL &url)
    ref();
    {
       QByteArray data;
-      QDataStream stream( data, QIODevice::WriteOnly );
+      QDataStream stream( &data, QIODevice::WriteOnly );
       stream << url;
       slaveconn.send( CMD_SLAVE_HOLD, data );
       slaveconn.close();
@@ -241,7 +241,7 @@ void Slave::hold(const KURL &url)
 
       QByteArray params, reply;
       Q3CString replyType;
-      QDataStream stream(params, QIODevice::WriteOnly);
+      QDataStream stream(&params, QIODevice::WriteOnly);
       pid_t pid = m_pid;
       stream << pid;
 
@@ -334,7 +334,7 @@ void Slave::setHost( const QString &host, int port,
     m_passwd = passwd;
 
     QByteArray data;
-    QDataStream stream( data, QIODevice::WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << m_host << m_port << m_user << m_passwd;
     slaveconn.send( CMD_HOST, data );
 }
@@ -347,7 +347,7 @@ void Slave::resetHost()
 void Slave::setConfig(const MetaData &config)
 {
     QByteArray data;
-    QDataStream stream( data, QIODevice::WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << config;
     slaveconn.send( CMD_CONFIG, data );
 }
@@ -423,7 +423,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
     QByteArray params, reply;
     Q3CString replyType;
-    QDataStream stream(params, QIODevice::WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
     stream << protocol << url.host() << socketfile.name();
 
     Q3CString launcher = KApplication::launcher();
@@ -434,7 +434,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
         delete slave;
         return 0;
     }
-    QDataStream stream2(reply, QIODevice::ReadOnly);
+    QDataStream stream2(reply);
     QString errorStr;
     pid_t pid;
     stream2 >> pid >> errorStr;
@@ -478,7 +478,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 
     QByteArray params, reply;
     Q3CString replyType;
-    QDataStream stream(params, QIODevice::WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
     stream << url << socketfile.name();
 
     Q3CString launcher = KApplication::launcher();
@@ -487,7 +487,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
         delete slave;
         return 0;
     }
-    QDataStream stream2(reply, QIODevice::ReadOnly);
+    QDataStream stream2(reply);
     pid_t pid;
     stream2 >> pid;
     if (!pid)

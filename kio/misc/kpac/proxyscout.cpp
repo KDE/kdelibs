@@ -132,7 +132,7 @@ namespace KPAC
         {
             Q3CString type = "QString";
             QByteArray data;
-            QDataStream ds( data, QIODevice::WriteOnly );
+            QDataStream ds( &data, QIODevice::WriteOnly );
             if ( success ) ds << handleRequest( ( *it ).url );
             else ds << QString( "DIRECT" );
             kapp->dcopClient()->endTransaction( ( *it ).transaction, type, data );

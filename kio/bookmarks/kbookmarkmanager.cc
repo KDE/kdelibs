@@ -537,7 +537,7 @@ void KBookmarkManager::emitChanged( KBookmarkGroup & group )
     // kdDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
 
     QByteArray data;
-    QDataStream ds( data, QIODevice::WriteOnly );
+    QDataStream ds( &data, QIODevice::WriteOnly );
     ds << group.address();
 
     emitDCOPSignal("bookmarksChanged(QString)", data);

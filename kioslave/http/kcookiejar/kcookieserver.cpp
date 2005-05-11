@@ -277,7 +277,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
            QByteArray replyData;
            QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
-           QDataStream stream2(replyData, QIODevice::WriteOnly);
+           QDataStream stream2(&replyData, QIODevice::WriteOnly);
            stream2 << res;
            replyType = "QString";
            request->client->endTransaction( request->transaction,

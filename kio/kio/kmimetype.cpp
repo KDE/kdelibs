@@ -997,7 +997,7 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
     const Q3CString app = dcopcall.section(' ', 0,0).utf8();
     
     QByteArray dataToSend;
-    QDataStream dataStream(dataToSend, QIODevice::WriteOnly);
+    QDataStream dataStream(&dataToSend, QIODevice::WriteOnly);
     dataStream << file_list;
     Q3CString replyType;
     QByteArray replyData;
@@ -1011,7 +1011,7 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
                    dataToSend, replyType, replyData, true, 100)
 	    && replyType == "QStringList" ) {
 	      
-        QDataStream dataStreamIn(replyData, QIODevice::ReadOnly);
+        QDataStream dataStreamIn(replyData);
         dataStreamIn >> keys;
       }
     }

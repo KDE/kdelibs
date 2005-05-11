@@ -135,7 +135,7 @@ public:
   {
     if (toolbarItem) {
       QByteArray data;
-      QDataStream out(data, QIODevice::WriteOnly);
+      QDataStream out(&data, QIODevice::WriteOnly);
       out << toolbarItem->internalTag();
       out << toolbarItem->internalName();
       out << toolbarItem->statusText();
@@ -159,7 +159,7 @@ public:
       return false;
 
     QString internalTag, internalName, statusText, text;
-    QDataStream in(data, QIODevice::ReadOnly);
+    QDataStream in(data);
     in >> internalTag;
     in >> internalName;
     in >> statusText;

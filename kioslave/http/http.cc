@@ -1712,14 +1712,14 @@ bool HTTPProtocol::isOffline(const KURL &url)
   QByteArray params;
   QByteArray reply;
 
-  QDataStream stream(params, QIODevice::WriteOnly);
+  QDataStream stream(&params, QIODevice::WriteOnly);
   stream << url.url();
 
   if ( dcopClient()->call( "kded", "networkstatus", "status(QString)",
                            params, replyType, reply ) && (replyType == "int") )
   {
      int result;
-     QDataStream stream2( reply, QIODevice::ReadOnly );
+     QDataStream stream2( reply );
      stream2 >> result;
      kdDebug(7113) << "(" << m_pid << ") networkstatus status = " << result << endl;
      return (result != NetWorkStatusUnknown) && (result != NetWorkStatusOnline);
@@ -1730,7 +1730,7 @@ bool HTTPProtocol::isOffline(const KURL &url)
 
 void HTTPProtocol::multiGet(const QByteArray &data)
 {
-  QDataStream stream(data, QIODevice::ReadOnly);
+  QDataStream stream(data);
   Q_UINT32 n;
   stream >> n;
 
@@ -3858,7 +3858,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
 
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive (" << m_keepAliveTimeout << ")" << endl;
     QByteArray data;
-    QDataStream stream( data, QIODevice::WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << int(99); // special: Close connection
     setTimeoutSpecialCommand(m_keepAliveTimeout, data);
     return;
@@ -3917,7 +3917,7 @@ void HTTPProtocol::special( const QByteArray &data )
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::special" << endl;
 
   int tmp;
-  QDataStream stream(data, QIODevice::ReadOnly);
+  QDataStream stream(data);
 
   stream >> tmp;
   switch (tmp) {
@@ -4440,7 +4440,7 @@ void HTTPProtocol::addCookies( const QString &url, const Q3CString &cookieHeader
 {
    long windowId = m_request.window.toLong();
    QByteArray params;
-   QDataStream stream(params, QIODevice::WriteOnly);
+   QDataStream stream(&params, QIODevice::WriteOnly);
    stream << url << cookieHeader << windowId;
 
    kdDebug(7113) << "(" << m_pid << ") " << cookieHeader << endl;
@@ -4462,7 +4462,7 @@ QString HTTPProtocol::findCookies( const QString &url)
 
   long windowId = m_request.window.toLong();
   result = QString::null;
-  QDataStream stream(params, QIODevice::WriteOnly);
+  QDataStream stream(&params, QIODevice::WriteOnly);
   stream << url << windowId;
 
   if ( !dcopClient()->call( "kded", "kcookiejar", "findCookies(QString,long int)",
@@ -4473,7 +4473,7 @@ QString HTTPProtocol::findCookies( const QString &url)
   }
   if ( replyType == "QString" )
   {
-     QDataStream stream2( reply, QIODevice::ReadOnly );
+     QDataStream stream2( reply );
      stream2 >> result;
   }
   else

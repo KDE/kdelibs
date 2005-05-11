@@ -75,7 +75,7 @@ Arts::Buffer *MCOPDCOPObject::callFunction(MCOPEntryInfo *entry, Q3CString iface
 
 			kdDebug() << "PARAM: " << param << endl;
 			
-			QDataStream argStream(data, QIODevice::ReadOnly);
+			QDataStream argStream(data);
 
 			if(param == "long")
 				request.param(MCOPDCOPTools::getLong(argStream));
@@ -118,7 +118,7 @@ bool MCOPDCOPObject::processDynamic(const Q3CString &fun, const QByteArray &data
 			{
 				replyType = "QCString";
 				
-				QDataStream reply(replyData, QIODevice::WriteOnly);
+				QDataStream reply(&replyData, QIODevice::WriteOnly);
 				reply << "fooo!";
 			}
 			else if(type == "long")
@@ -135,7 +135,7 @@ bool MCOPDCOPObject::processDynamic(const Q3CString &fun, const QByteArray &data
 					delete result;
 				}
 				
-				QDataStream reply(replyData, QIODevice::WriteOnly);
+				QDataStream reply(&replyData, QIODevice::WriteOnly);
 				reply << returnCode;
 			}
 			

@@ -833,7 +833,7 @@ void VCardFormatImpl::addPictureValue( VCARD::VCard *vcard, VCARD::EntityType ty
     QImage img = pic.data();
     if ( intern ) { // only for vCard export we really write the data inline
       QByteArray data;
-      QDataStream s( data, QIODevice::WriteOnly );
+      QDataStream s( &data, QIODevice::WriteOnly );
       s.setVersion( 4 ); // to produce valid png files
       s << img;
       cl.setValue( new TextValue( KCodecs::base64Encode( data ) ) );

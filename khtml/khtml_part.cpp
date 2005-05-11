@@ -862,7 +862,7 @@ QString KHTMLPart::documentSource() const
   if ( !( m_url.isLocalFile() ) && KHTMLPageCache::self()->isComplete( d->m_cacheId ) )
   {
      QByteArray sourceArray;
-     QDataStream dataStream( sourceArray, QIODevice::WriteOnly );
+     QDataStream dataStream( &sourceArray, QIODevice::WriteOnly );
      KHTMLPageCache::self()->saveData( d->m_cacheId, &dataStream );
      QTextStream stream( sourceArray, QIODevice::ReadOnly );
      stream.setCodec( QTextCodec::codecForName( encoding().latin1() ) );
@@ -1724,7 +1724,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   QStringList causes, solutions;
 
   QByteArray raw = KIO::rawErrorDetail( errorCode, text, &reqUrl );
-  QDataStream stream(raw, QIODevice::ReadOnly);
+  QDataStream stream(raw);
 
   stream >> errorName >> techName >> description >> causes >> solutions;
 
@@ -5295,7 +5295,7 @@ void KHTMLPart::saveState( QDataStream &stream )
     frameURLLst << (*it)->m_part->url();
 
     QByteArray state;
-    QDataStream frameStream( state, QIODevice::WriteOnly );
+    QDataStream frameStream( &state, QIODevice::WriteOnly );
 
     if ( (*it)->m_extension )
       (*it)->m_extension->saveState( frameStream );
@@ -5411,7 +5411,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
         child->m_bCompleted = false;
         if ( child->m_extension && !(*fBufferIt).isEmpty() )
         {
-          QDataStream frameStream( *fBufferIt, QIODevice::ReadOnly );
+          QDataStream frameStream( *fBufferIt );
           child->m_extension->restoreState( frameStream );
         }
         else
@@ -5469,7 +5469,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
         if ( (*childFrame)->m_extension )
         if ( (*childFrame)->m_extension && !(*fBufferIt).isEmpty() )
         {
-          QDataStream frameStream( *fBufferIt, QIODevice::ReadOnly );
+          QDataStream frameStream( *fBufferIt );
           (*childFrame)->m_extension->restoreState( frameStream );
         }
         else

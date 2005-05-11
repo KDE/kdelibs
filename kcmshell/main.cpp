@@ -123,7 +123,7 @@ bool KCMShell::isRunning()
     dcopClient()->setNotifications(true);
 
     QByteArray data;
-    QDataStream str( data, QIODevice::WriteOnly );
+    QDataStream str( &data, QIODevice::WriteOnly );
     str << kapp->startupId();
     Q3CString replyType;
     QByteArray replyData;

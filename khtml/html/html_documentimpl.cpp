@@ -115,7 +115,7 @@ DOMString HTMLDocumentImpl::cookie() const
 
     Q3CString replyType;
     QByteArray params, reply;
-    QDataStream stream(params, QIODevice::WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
     stream << URL().url() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
                                   "findDOMCookies(QString,long int)", params,
@@ -125,7 +125,7 @@ DOMString HTMLDocumentImpl::cookie() const
        return DOMString();
     }
 
-    QDataStream stream2(reply, QIODevice::ReadOnly);
+    QDataStream stream2(reply);
     if(replyType != "QString") {
          kdError(6010) << "DCOP function findDOMCookies(...) returns "
                        << replyType << ", expected QString" << endl;
@@ -146,7 +146,7 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
       windowId = v->topLevelWidget()->winId();
 
     QByteArray params;
-    QDataStream stream(params, QIODevice::WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
     Q3CString fake_header("Set-Cookie: ");
     fake_header.append(value.string().latin1());
     fake_header.append("\n");

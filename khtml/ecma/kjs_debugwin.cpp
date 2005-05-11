@@ -253,7 +253,7 @@ QString SourceFile::getCode()
     if (part && url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
       Decoder *decoder = part->createDecoder();
       QByteArray data;
-      QDataStream stream(data,QIODevice::WriteOnly);
+      QDataStream stream(&data,QIODevice::WriteOnly);
       KHTMLPageCache::self()->saveData(part->cacheId(),&stream);
       QString str;
       if (data.size() == 0)

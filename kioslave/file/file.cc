@@ -1106,7 +1106,7 @@ void FileProtocol::testDir( const QString& path )
 void FileProtocol::special( const QByteArray &data)
 {
     int tmp;
-    QDataStream stream(data, QIODevice::ReadOnly);
+    QDataStream stream(data);
 
     stream >> tmp;
     switch (tmp) {

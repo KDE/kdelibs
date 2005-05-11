@@ -406,7 +406,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyByMessagebox( text, level, checkWinId( fromApp, winId ));
 
     QByteArray qbd;
-    QDataStream ds(qbd, QIODevice::WriteOnly);
+    QDataStream ds(&qbd, QIODevice::WriteOnly);
     ds << event << fromApp << text << sound << file << present << level
         << winId << eventId;
     emitDCOPSignal("notifySignal(QString,QString,QString,QString,QString,int,int,int,int)", qbd);
@@ -713,7 +713,7 @@ void KNotify::abortFirstPlayObject()
 void KNotify::soundFinished( int eventId, PlayingFinishedStatus reason )
 {
     QByteArray data;
-    QDataStream stream( data, QIODevice::WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << eventId << (int) reason;
 
     DCOPClient::mainClient()->emitDCOPSignal( "KNotify", "playingFinished(int,int)", data );
@@ -737,7 +737,7 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
                 QByteArray data, replyData;
 
                 if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
-                    QDataStream answer(replyData, QIODevice::ReadOnly);
+                    QDataStream answer(replyData);
                     if (replyType == "int") {
                         answer >> senderWinId;
                         // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)

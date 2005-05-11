@@ -308,13 +308,13 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         info.url = baseurl;
         info.verifyPath = true;
 
-        QDataStream stream(params, QIODevice::WriteOnly);
+        QDataStream stream(&params, QIODevice::WriteOnly);
         stream << info << m_view->topLevelWidget()->winId();
 
         if (!kapp->dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
             kdWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
         } else if ( replyType == "KIO::AuthInfo" ) {
-            QDataStream stream2( reply, QIODevice::ReadOnly );
+            QDataStream stream2( reply );
             stream2 >> authResult;
             applet->setUser (authResult.username);
             applet->setPassword (authResult.password);

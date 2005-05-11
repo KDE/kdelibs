@@ -72,7 +72,7 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    if (callBackObj)
    {
       QByteArray data;
-      QDataStream dataStream( data, QIODevice::WriteOnly );
+      QDataStream dataStream( &data, QIODevice::WriteOnly );
       dataStream << QString("kbuildsycoca") << args;
       Q3CString _launcher = KApplication::launcher();
 
@@ -732,27 +732,27 @@ public:
   {
     if (fun == "loadModule(QCString)") {
       Q3CString module;
-      QDataStream arg( data, QIODevice::ReadOnly );
+      QDataStream arg( data );
       arg >> module;
       bool result = (Kded::self()->loadModule(module, false) != 0);
       replyType = "bool";
-      QDataStream _replyStream( replyData, QIODevice::WriteOnly );
+      QDataStream _replyStream( &replyData, QIODevice::WriteOnly );
       _replyStream << result;
       return true;
     }
     else if (fun == "unloadModule(QCString)") {
       Q3CString module;
-      QDataStream arg( data, QIODevice::ReadOnly );
+      QDataStream arg( data );
       arg >> module;
       bool result = Kded::self()->unloadModule(module);
       replyType = "bool";
-      QDataStream _replyStream( replyData, QIODevice::WriteOnly );
+      QDataStream _replyStream( &replyData, QIODevice::WriteOnly );
       _replyStream << result;
       return true;
     }
     else if (fun == "registerWindowId(long int)") {
       long windowId;
-      QDataStream arg( data, QIODevice::ReadOnly );
+      QDataStream arg( data );
       arg >> windowId;
       Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->registerWindowId(windowId);
@@ -761,7 +761,7 @@ public:
     }
      else if (fun == "unregisterWindowId(long int)") {
       long windowId;
-      QDataStream arg( data, QIODevice::ReadOnly );
+      QDataStream arg( data );
       arg >> windowId;
       Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->unregisterWindowId(windowId);
@@ -770,7 +770,7 @@ public:
     }
     else if (fun == "loadedModules()") {
       replyType = "QCStringList";
-      QDataStream _replyStream(replyData, QIODevice::WriteOnly);
+      QDataStream _replyStream(&replyData, QIODevice::WriteOnly);
       _replyStream << Kded::self()->loadedModules();
       return true;
     }

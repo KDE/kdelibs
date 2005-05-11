@@ -67,7 +67,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
    {
       QString domain = args->getOption("remove");
       QByteArray params;
-      QDataStream stream(params, QIODevice::WriteOnly);
+      QDataStream stream(&params, QIODevice::WriteOnly);
       stream << domain;
       kapp->dcopClient()->call( "kded", "kcookiejar", "deleteCookiesFromDomain(QString)", params, replyType, replyData);
    }
@@ -75,7 +75,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
    {
       Q3CString module = "kcookiejar";
       QByteArray params;
-      QDataStream stream(params, QIODevice::WriteOnly);
+      QDataStream stream(&params, QIODevice::WriteOnly);
       stream << module;
       kapp->dcopClient()->call( "kded", "kded", "unloadModule(QCString)", params, replyType, replyData);
    }
@@ -87,7 +87,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
    {
       Q3CString module = "kcookiejar";
       QByteArray params;
-      QDataStream stream(params, QIODevice::WriteOnly);
+      QDataStream stream(&params, QIODevice::WriteOnly);
       stream << module;
       kapp->dcopClient()->call( "kded", "kded", "loadModule(QCString)", params, replyType, replyData);
    }

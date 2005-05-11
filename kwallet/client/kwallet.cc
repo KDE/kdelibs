@@ -444,7 +444,7 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 		QByteArray v;
 		r.get(v);
 		if (!v.isEmpty()) {
-			QDataStream ds(v, QIODevice::ReadOnly);
+			QDataStream ds(v);
 			ds >> value;
 		}
 		rc = 0;
@@ -467,7 +467,7 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
 		r.get(unparsed);
 		for (QMap<QString,QByteArray>::ConstIterator i = unparsed.begin(); i != unparsed.end(); ++i) {
 			if (!i.data().isEmpty()) {
-				QDataStream ds(i.data(), QIODevice::ReadOnly);
+				QDataStream ds(i.data());
 				QMap<QString,QString> v;
 				ds >> v;
 				value.insert(i.key(), v);
@@ -554,7 +554,7 @@ int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
 	}
 
 	QByteArray a;
-	QDataStream ds(a, QIODevice::WriteOnly);
+	QDataStream ds(&a, QIODevice::WriteOnly);
 	ds << value;
 	DCOPReply r = _dcopRef->call("writeMap", _handle, _folder, key, a);
 	if (r.isValid()) {

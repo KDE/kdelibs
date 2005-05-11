@@ -76,7 +76,7 @@ template class Q3PtrList<KIO::Job>;
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
 
-#define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, QIODevice::WriteOnly ); stream
+#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 
 class Job::JobPrivate
 {
@@ -542,7 +542,7 @@ void SimpleJob::slotFinished( )
             else /*if ( m_command == CMD_RENAME )*/
             {
                 KURL src, dst;
-                QDataStream str( m_packedArgs, QIODevice::ReadOnly );
+                QDataStream str( m_packedArgs );
                 str >> src >> dst;
                 if ( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
                     allDirNotify.FileRenamed( src, dst );
@@ -678,13 +678,13 @@ void MkdirJob::slotFinished()
             emit permanentRedirection(this, m_url, m_redirectionURL);
         KURL dummyUrl;
         int permissions;
-        QDataStream istream( m_packedArgs, QIODevice::ReadOnly );
+        QDataStream istream( m_packedArgs );
         istream >> dummyUrl >> permissions;
 
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url << permissions;
 
         // Return slave to the scheduler
@@ -814,7 +814,7 @@ void StatJob::slotFinished()
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
 
         // Return slave to the scheduler
@@ -932,11 +932,11 @@ void TransferJob::slotFinished()
         // The very tricky part is the packed arguments business
         QString dummyStr;
         KURL dummyUrl;
-        QDataStream istream( m_packedArgs, QIODevice::ReadOnly );
+        QDataStream istream( m_packedArgs );
         switch( m_command ) {
             case CMD_GET: {
                 m_packedArgs.truncate(0);
-                QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+                QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
                 stream << m_url;
                 break;
             }
@@ -945,7 +945,7 @@ void TransferJob::slotFinished()
                 Q_INT8 iOverwrite, iResume;
                 istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
                 m_packedArgs.truncate(0);
-                QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+                QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
                 stream << m_url << iOverwrite << iResume << permissions;
                 break;
             }
@@ -956,7 +956,7 @@ void TransferJob::slotFinished()
                 {
                    addMetaData("cache","reload");
                    m_packedArgs.truncate(0);
-                   QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+                   QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
                    stream << m_url;
                    m_command = CMD_GET;
                 }
@@ -1442,7 +1442,7 @@ void MimetypeJob::slotFinished( )
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
 
         // Return slave to the scheduler
@@ -1914,7 +1914,7 @@ ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString 
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
-    QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+    QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
     stream << u;
 }
 
@@ -2062,7 +2062,7 @@ void ListJob::slotFinished()
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
 
         // Return slave to the scheduler
@@ -3259,13 +3259,13 @@ void CopyJob::copyNextFile()
                        QByteArray data;
                        QByteArray param;
                        Q3CString retType;
-                       QDataStream streamout(param,QIODevice::WriteOnly);
+                       QDataStream streamout(&param,QIODevice::WriteOnly);
                        streamout<<(*it).uSource;
                        streamout<<(*it).uDest;
                        if ( kapp->dcopClient()->call( "kded",
                             "mountwatcher", "createLink(KURL, KURL)", param,retType,data,false ) )
                        {
-                          QDataStream streamin(data,QIODevice::ReadOnly);
+                          QDataStream streamin(data);
                           streamin>>devicesOk;
                        }
                        if (devicesOk)

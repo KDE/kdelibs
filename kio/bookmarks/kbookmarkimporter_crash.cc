@@ -109,7 +109,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 
         QByteArray data, replyData;
         Q3CString replyType;
-        QDataStream arg( data, QIODevice::WriteOnly );
+        QDataStream arg( &data, QIODevice::WriteOnly );
 
         if ( !dcop->call( clientId.data(), "KonquerorIface", 
                           "crashLogFile()", data, replyType, replyData) ) 
@@ -121,7 +121,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
         if ( replyType != "QString" ) 
             continue;
 
-        QDataStream reply( replyData, QIODevice::ReadOnly );
+        QDataStream reply( replyData );
         QString ret;
         reply >> ret;
         activeLogs[ret] = true;

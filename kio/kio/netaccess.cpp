@@ -370,7 +370,7 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
     tempPathUrl.setPath( remoteTempFileName );
     bJobOK = true; // success unless further error occurs
     QByteArray packedArgs;
-    QDataStream stream( packedArgs, QIODevice::WriteOnly );
+    QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
     stream << int('X') << tempPathUrl << command;
 

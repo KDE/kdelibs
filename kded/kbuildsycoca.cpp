@@ -953,7 +953,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
      // Notify ALL applications that have a ksycoca object, using a broadcast
      QByteArray data;
-     QDataStream stream(data, QIODevice::WriteOnly);
+     QDataStream stream(&data, QIODevice::WriteOnly);
      stream << *g_changeList;
      dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged(QStringList)", data );
    }

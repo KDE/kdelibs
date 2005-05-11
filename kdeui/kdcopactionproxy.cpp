@@ -131,7 +131,7 @@ bool KDCOPActionProxy::processAction( const Q3CString &, const Q3CString &fun, c
   if ( fun == "isPlugged()" )
   {
     replyType = "bool";
-    QDataStream reply( replyData, QIODevice::WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
     reply << (Q_INT8)action->isPlugged();
     return true;
   }
@@ -146,7 +146,7 @@ bool KDCOPActionProxy::processAction( const Q3CString &, const Q3CString &fun, c
     res += KDCOPPropertyProxy::functions( action );
 
     replyType = "QCStringList";
-    QDataStream reply( replyData, QIODevice::WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
     reply << res;
     return true;
   }

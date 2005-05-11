@@ -448,7 +448,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
   QStringList causes, solutions, ret;
 
   QByteArray raw = rawErrorDetail( m_error, m_errorText, reqUrl, method );
-  QDataStream stream(raw, QIODevice::ReadOnly);
+  QDataStream stream(raw);
 
   stream >> errorName >> techName >> description >> causes >> solutions;
 
@@ -1228,7 +1228,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   }
 
   QByteArray ret;
-  QDataStream stream(ret, QIODevice::WriteOnly);
+  QDataStream stream(&ret, QIODevice::WriteOnly);
   stream << errorName << techName << description << causes << solutions;
   return ret;
 }

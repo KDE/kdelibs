@@ -274,7 +274,7 @@ void KRootPixmap::enableExports()
     if (!client->isAttached())
 	client->attach();
     QByteArray data;
-    QDataStream args( data, QIODevice::WriteOnly );
+    QDataStream args( &data, QIODevice::WriteOnly );
     args << 1;
 
     Q3CString appname( "kdesktop" );

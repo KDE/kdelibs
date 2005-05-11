@@ -44,6 +44,8 @@ extern "C" int XShmQueryExtension(Display *display);
 #undef HAVE_MITSHM
 #endif
 
+extern GC kde_xget_temp_gc( int scrn, bool monochrome );		// get temporary GC
+
 // d pointer
 
 struct KPixmapIOPrivate
@@ -227,7 +229,7 @@ void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
 	if( initXImage(src->width(), src->height()))
 	{
 	    convertToXImage(*src);
-	    XShmPutImage(QX11Info::display(), dst->handle(), qt_xget_temp_gc(dst->x11Info().screen(), false), d->ximage,
+	    XShmPutImage(QX11Info::display(), dst->handle(), kde_xget_temp_gc(dst->x11Info().screen(), false), d->ximage,
 		    dx, dy, 0, 0, src->width(), src->height(), false);
             // coolo: do we really need this here? I see no good for it
 	    XSync(QX11Info::display(), false);
@@ -658,12 +660,12 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	    }
 	} else
 	{
-	    uchar *src;
 	    Q_INT32 val, *dst;
-	    QRgb pixel, *clut = img.colorTable();
+	    QRgb pixel; 
+	    QVector<QRgb> clut = img.colorTable();
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
+		const uchar *src = img.scanLine(y);
 		dst = (Q_INT32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++)
 		{
@@ -715,12 +717,12 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	    }
 	} else
 	{
-	    uchar *src;
 	    Q_INT32 val, *dst;
-	    QRgb pixel, *clut = img.colorTable();
+	    QRgb pixel;
+	    QVector<QRgb> clut = img.colorTable();
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
+		const uchar *src = img.scanLine(y);
 		dst = (Q_INT32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++)
 		{
@@ -774,13 +776,13 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	    }
 	} else
 	{
-	    uchar *src, *dst;
 	    int w1 = width/4;
-	    QRgb *clut = img.colorTable(), d1, d2, d3, d4;
+	    QVector<QRgb> clut = img.colorTable();
+	    QRgb d1, d2, d3, d4;
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
-		dst = (uchar *) data + y*bpl;
+		const uchar* src = img.scanLine(y);
+		uchar* dst = (uchar *) data + y*bpl;
 		for (x=0; x<w1; x++)
 		{
 		    d1 = (clut[*src++] & 0xffffff);
@@ -835,13 +837,13 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	    }
 	} else
 	{
-	    uchar *src, *dst;
 	    int w1 = width/4;
-	    QRgb *clut = img.colorTable(), d1, d2, d3, d4;
+	    QVector<QRgb> clut = img.colorTable();
+	    QRgb d1, d2, d3, d4;
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
-		dst = (uchar *) data + y*bpl;
+		const uchar *src = img.scanLine(y);
+		uchar* dst = (uchar *) data + y*bpl;
 		for (x=0; x<w1; x++)
 		{
 		    d1 = (clut[*src++] & 0xffffff);
@@ -873,11 +875,11 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		memcpy(data + y*bpl, img.scanLine(y), width*4);
 	} else
 	{
-	    uchar *src;
-	    QRgb *dst, *clut = img.colorTable();
+	    QRgb *dst;
+	    QVector<QRgb> clut = img.colorTable();
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
+		const uchar *src = img.scanLine(y);
 		dst = (QRgb *) (data + y*bpl);
 		for (x=0; x<width; x++)
 		    *dst++ = clut[*src++];

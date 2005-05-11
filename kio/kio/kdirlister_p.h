@@ -253,7 +253,7 @@ private:
       if ( !client )
         return;
       QByteArray data;
-      QDataStream arg( data, QIODevice::WriteOnly );
+      QDataStream arg( &data, QIODevice::WriteOnly );
       arg << url;
       client->emitDCOPSignal( "KDirNotify", entering ? "enteredDirectory(KURL)" : "leftDirectory(KURL)", data );
     }

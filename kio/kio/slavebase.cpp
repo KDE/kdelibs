@@ -69,7 +69,7 @@ using namespace KIO;
 template class Q3PtrList<Q3ValueList<UDSAtom> >;
 typedef Q3ValueList<Q3CString> AuthKeysList;
 typedef QMap<QString,Q3CString> AuthKeysMap;
-#define KIO_DATA QByteArray data; QDataStream stream( data, QIODevice::WriteOnly ); stream
+#define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
 #define KIO_FILESIZE_T(x) (unsigned long)(x & 0xffffffff) << (unsigned long)(x >> 32)
 
 namespace KIO {
@@ -611,7 +611,7 @@ bool SlaveBase::requestNetwork(const QString& host)
     if ( waitForAnswer( INF_NETWORK_STATUS, 0, data ) != -1 )
     {
         bool status;
-        QDataStream stream( data, QIODevice::ReadOnly );
+        QDataStream stream( data );
         stream >> status;
         return status;
     } else
@@ -816,7 +816,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
-    QDataStream stream(params, QIODevice::WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
 
     if (metaData("no-auth-prompt").lower() == "true")
        stream << info << QString("<NoAuthPrompt>") << windowId << s_seqNr;
@@ -832,7 +832,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     if ( replyType == "KIO::AuthInfo" )
     {
-       QDataStream stream2( reply, QIODevice::ReadOnly );
+       QDataStream stream2( reply );
        stream2 >> authResult >> s_seqNr;
     }
     else
@@ -867,7 +867,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
     m_pConnection->send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
-        QDataStream stream( data, QIODevice::ReadOnly );
+        QDataStream stream( data );
         int answer;
         stream >> answer;
         kdDebug(7019) << "got messagebox answer" << answer << endl;
@@ -947,7 +947,7 @@ void SlaveBase::setTimeoutSpecialCommand(int timeout, const QByteArray &data)
 
 void SlaveBase::dispatch( int command, const QByteArray &data )
 {
-    QDataStream stream( data, QIODevice::ReadOnly );
+    QDataStream stream( data );
 
     KURL url;
     int i;
@@ -975,7 +975,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     {
         d->onHold = false;
         QString app_socket;
-        QDataStream stream( data, QIODevice::ReadOnly);
+        QDataStream stream( data );
         stream >> app_socket;
         appconn->send( MSG_SLAVE_ACK );
         disconnectSlave();
@@ -985,7 +985,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_SLAVE_HOLD:
     {
         KURL url;
-        QDataStream stream( data, QIODevice::ReadOnly);
+        QDataStream stream( data );
         stream >> url;
         d->onHoldUrl = url;
         d->onHold = true;
@@ -1153,7 +1153,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
-    QDataStream stream(params, QIODevice::WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
     stream << info << windowId;
 
     if ( !d->dcopClient->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)",
@@ -1165,7 +1165,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     if ( replyType == "KIO::AuthInfo" )
     {
-       QDataStream stream2( reply, QIODevice::ReadOnly );
+       QDataStream stream2( reply );
        stream2 >> authResult;
     }
     else
@@ -1190,7 +1190,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
-    QDataStream stream(params, QIODevice::WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
     stream << info << windowId;
 
     d->dcopClient->send( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo, long int)", params );

@@ -142,7 +142,7 @@ void MetaInfoJob::getMetaInfo()
 void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
 {
     KFileMetaInfo info;
-    QDataStream s(data, QIODevice::ReadOnly);
+    QDataStream s(data);
 
     s >> info;
 

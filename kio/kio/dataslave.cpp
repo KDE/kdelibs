@@ -116,7 +116,7 @@ void DataSlave::dispatchNext() {
 }
 
 void DataSlave::send(int cmd, const QByteArray &arr) {
-  QDataStream stream(arr, QIODevice::ReadOnly);
+  QDataStream stream(arr);
 
   KURL url;
 

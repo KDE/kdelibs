@@ -449,7 +449,7 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 #ifdef Q_OS_UNIX
     if (d->shmaddr)
     {
-        QDataStream str(data, QIODevice::ReadOnly);
+        QDataStream str(data);
         int width, height, depth;
         bool alpha;
         str >> width >> height >> depth >> alpha;

@@ -222,7 +222,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
     //kdDebug(7007) << "dispatch " << _cmd << endl;
 
-    QDataStream stream( rawdata, QIODevice::ReadOnly );
+    QDataStream stream( rawdata );
 
     QString str1;
     Q_INT32 i;
@@ -427,7 +427,7 @@ void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {
     kdDebug(7007) << "requestNetwork " << host << slaveid << endl;
     QByteArray packedArgs;
-    QDataStream stream( packedArgs, QIODevice::WriteOnly );
+    QDataStream stream( &packedArgs, QIODevice::WriteOnly );
     stream << true;
     m_pConnection->sendnow( INF_NETWORK_STATUS, packedArgs );
 }
@@ -475,7 +475,7 @@ void SlaveInterface::openPassDlg( AuthInfo& info )
     if ( m_pConnection )
     {
         QByteArray data;
-        QDataStream stream( data, QIODevice::WriteOnly );
+        QDataStream stream( &data, QIODevice::WriteOnly );
         if ( result )
         {
             stream << info;
@@ -500,7 +500,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 {
     kdDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << " " << dontAskAgainName << endl;
     QByteArray packedArgs;
-    QDataStream stream( packedArgs, QIODevice::WriteOnly );
+    QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
     QString caption( _caption );
     if ( type == KIO::SlaveBase::SSLMessageBox )

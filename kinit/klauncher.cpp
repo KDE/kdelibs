@@ -98,7 +98,7 @@ IdleSlave::gotInput()
    }
    else
    {
-      QDataStream stream( data, QIODevice::ReadOnly );
+      QDataStream stream( data );
       pid_t pid;
       Q3CString protocol;
       QString host;
@@ -125,7 +125,7 @@ void
 IdleSlave::connect(const QString &app_socket)
 {
    QByteArray data;
-   QDataStream stream( data, QIODevice::WriteOnly);
+   QDataStream stream( &data, QIODevice::WriteOnly);
    stream << app_socket;
    mConn.send( CMD_SLAVE_CONNECT, data );
    // Timeout!
@@ -252,7 +252,7 @@ KLauncher::process(const Q3CString &fun, const QByteArray &data,
    if ((fun == "exec_blind(QCString,QValueList<QCString>)")
        || (fun == "exec_blind(QCString,QValueList<QCString>,QValueList<QCString>,QCString)"))
    {
-      QDataStream stream(data, QIODevice::ReadOnly);
+      QDataStream stream(data);
       replyType = "void";
       Q3CString name;
       Q3ValueList<Q3CString> arg_list;
@@ -281,7 +281,7 @@ KLauncher::process(const Q3CString &fun, const QByteArray &data,
        (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)") ||
        (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)"))
    {
-      QDataStream stream(data, QIODevice::ReadOnly);
+      QDataStream stream(data);
       bool bNoWait = false;
       QString serviceName;
       QStringList urls;
@@ -337,14 +337,14 @@ KLauncher::process(const Q3CString &fun, const QByteArray &data,
       if (!finished)
       {
          replyType = "serviceResult";
-         QDataStream stream2(replyData, QIODevice::WriteOnly);
+         QDataStream stream2(&replyData, QIODevice::WriteOnly);
          stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error << DCOPresult.pid;
       }
       return true;
    }
    else if (fun == "requestSlave(QString,QString,QString)")
    {
-      QDataStream stream(data, QIODevice::ReadOnly);
+      QDataStream stream(data);
       QString protocol;
       QString host;
       QString app_socket;
@@ -352,25 +352,25 @@ KLauncher::process(const Q3CString &fun, const QByteArray &data,
       replyType = "QString";
       QString error;
       pid_t pid = requestSlave(protocol, host, app_socket, error);
-      QDataStream stream2(replyData, QIODevice::WriteOnly);
+      QDataStream stream2(&replyData, QIODevice::WriteOnly);
       stream2 << pid << error;
       return true;
    }
    else if (fun == "requestHoldSlave(KURL,QString)")
    {
-      QDataStream stream(data, QIODevice::ReadOnly);
+      QDataStream stream(data);
       KURL url;
       QString app_socket;
       stream >> url >> app_socket;
       replyType = "pid_t";
       pid_t pid = requestHoldSlave(url, app_socket);
-      QDataStream stream2(replyData, QIODevice::WriteOnly);
+      QDataStream stream2(&replyData, QIODevice::WriteOnly);
       stream2 << pid;
       return true;
    }
    else if (fun == "waitForSlave(pid_t)")
    {
-      QDataStream stream(data, QIODevice::ReadOnly);
+      QDataStream stream(data);
       pid_t pid;
       stream >> pid;
       waitForSlave(pid);
@@ -380,7 +380,7 @@ KLauncher::process(const Q3CString &fun, const QByteArray &data,
    }
    else if (fun == "setLaunchEnv(QCString,QCString)")
    {
-      QDataStream stream(data, QIODevice::ReadOnly);
+      QDataStream stream(data);
       Q3CString name;
       Q3CString value;
       stream >> name >> value;
@@ -420,7 +420,7 @@ KLauncher::process(const Q3CString &fun, const QByteArray &data,
    else if (fun == "autoStart(int)")
    {
       kdDebug() << "KLauncher::process ---> autoStart(int)" << endl;
-      QDataStream stream(data, QIODevice::ReadOnly);
+      QDataStream stream(data);
       int phase;
       stream >> phase;
       autoStart(phase);
@@ -756,7 +756,7 @@ KLauncher::requestDone(KLaunchRequest *request)
       QByteArray replyData;
       Q3CString replyType;
       replyType = "serviceResult";
-      QDataStream stream2(replyData, QIODevice::WriteOnly);
+      QDataStream stream2(&replyData, QIODevice::WriteOnly);
       stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error << DCOPresult.pid;
       dcopClient()->endTransaction( request->transaction,
                                     replyType, replyData);

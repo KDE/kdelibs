@@ -38,7 +38,7 @@
 #include <kio/job.h>
 #include <kio/slaveinterface.h>
 
-#define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, QIODevice::WriteOnly ); stream
+#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 
 using namespace KIO;
 
@@ -55,7 +55,7 @@ DavJob::DavJob( const KURL& url, int method, const QString& request, bool showPr
   d = new DavJobPrivate;
   // We couldn't set the args when calling the parent constructor,
   // so do it now.
-  QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+  QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
   stream << (int) 7 << url << method;
   // Same for static data
   if ( ! request.isEmpty() && ! request.isNull() ) {
@@ -79,7 +79,7 @@ void DavJob::slotFinished()
   // kdDebug(7113) << "DavJob::slotFinished()" << endl;
   // kdDebug(7113) << d->str_response << endl;
 	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
-		QDataStream istream( m_packedArgs, QIODevice::ReadOnly );
+		QDataStream istream( m_packedArgs );
 		int s_cmd, s_method;
 		KURL s_url;
 		istream >> s_cmd;
@@ -88,7 +88,7 @@ void DavJob::slotFinished()
 		// PROPFIND
 		if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
 			m_packedArgs.truncate(0);
-			QDataStream stream( m_packedArgs, QIODevice::WriteOnly );
+			QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
 			stream << (int)7 << m_redirectionURL << (int)KIO::DAV_PROPFIND;
 		}
   } else if ( ! m_response.setContent( d->str_response, true ) ) {

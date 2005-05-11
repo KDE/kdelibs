@@ -208,7 +208,7 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
 			return false;
 		}
 
-		QDataStream property(bytes, QIODevice::ReadOnly);
+		QDataStream property(bytes);
 
 		switch (type) {
 			case PROP_END:
@@ -463,7 +463,7 @@ bool XCFImageFormat::loadLayerProperties(QDataStream& xcf_io, Layer& layer)
 			return false;
 		}
 
-		QDataStream property(bytes, QIODevice::ReadOnly);
+		QDataStream property(bytes);
 
 		switch (type) {
 			case PROP_END:
@@ -1019,7 +1019,7 @@ bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
 			return false;
 		}
 
-		QDataStream property(bytes, QIODevice::ReadOnly);
+		QDataStream property(bytes);
 
 		switch (type) {
 			case PROP_END:

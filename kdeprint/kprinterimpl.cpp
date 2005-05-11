@@ -205,7 +205,7 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 
 	QByteArray data, replyData;
 	Q3CString replyType;
-	QDataStream arg( data, QIODevice::WriteOnly );
+	QDataStream arg( &data, QIODevice::WriteOnly );
 	arg << cmd;
 	arg << files;
 	arg << removeflag;
@@ -213,7 +213,7 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	{
 		if (replyType == "int")
 		{
-			QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
+			QDataStream _reply_stream( replyData );
 			_reply_stream >> result;
 		}
 	}
@@ -239,7 +239,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	}
 
 	QByteArray data;
-	QDataStream arg( data, QIODevice::WriteOnly );
+	QDataStream arg( &data, QIODevice::WriteOnly );
 	arg << message;
 	arg << (int)getpid();
 	arg << kapp->caption();

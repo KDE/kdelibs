@@ -170,7 +170,7 @@ bool Scheduler::process(const Q3CString &fun, const QByteArray &data, Q3CString 
 
     slaveConfig = SlaveConfig::self();
     replyType = "void";
-    QDataStream stream( data, QIODevice::ReadOnly );
+    QDataStream stream( data );
     QString proto;
     stream >> proto;
 
@@ -875,7 +875,7 @@ Scheduler::_registerWindow(QWidget *wid)
       connect(wid, SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
       QByteArray params;
-      QDataStream stream(params, QIODevice::WriteOnly);
+      QDataStream stream(&params, QIODevice::WriteOnly);
       stream << windowId;
       if( !kapp->dcopClient()->send( "kded", "kded",
                     "registerWindowId(long int)", params ) )
@@ -899,7 +899,7 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    if (kapp)
    {
       QByteArray params;
-      QDataStream stream(params, QIODevice::WriteOnly);
+      QDataStream stream(&params, QIODevice::WriteOnly);
       stream << windowId;
       kapp->dcopClient()->send( "kded", "kded",
                     "unregisterWindowId(long int)", params );

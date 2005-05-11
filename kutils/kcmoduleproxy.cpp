@@ -241,7 +241,7 @@ KCModule * KCModuleProxy::realModule() const
 		QByteArray replyData, data;
 		Q3CString replyType;
 		QString result;
-		QDataStream arg, stream( replyData, QIODevice::ReadOnly );
+		QDataStream arg, stream( replyData );
 
 		if( d->dcopClient->call( d->dcopName, d->dcopName, "applicationName()", 
 					data, replyType, replyData ))
@@ -572,7 +572,7 @@ QString KCModuleProxy::quickHelp() const
 			kdDebug(711) << "Calling DCOP function bool changed() failed." << endl;
 		else
 		{
-			QDataStream reply(replyData, QIODevice::ReadOnly);
+			QDataStream reply(replyData);
 			if (replyType == "QString")
 			{
 				QString result;

@@ -192,7 +192,7 @@ void KWalletD::processTransactions() {
 
 		if (xact->returnObject.isEmpty() && xact->tType != KWalletTransaction::ChangePassword) {
 			QByteArray replyData;
-			QDataStream stream(replyData, QIODevice::WriteOnly);
+			QDataStream stream(&replyData, QIODevice::WriteOnly);
 			stream << res;
 			xact->client->endTransaction(xact->transaction, replyType, replyData);
 		}
@@ -467,7 +467,7 @@ int KWalletD::internalOpen(const Q3CString& appid, const QString& wallet, bool i
 			_timeouts->addTimer(rc, _idleTime);
 		}
 		QByteArray data;
-		QDataStream ds(data, QIODevice::WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << wallet;
 		if (brandNew) {
 			emitDCOPSignal("walletCreated(QString)", data);
@@ -552,7 +552,7 @@ int KWalletD::deleteWallet(const QString& wallet) {
 		close(wallet, true);
 		QFile::remove(path);
 		QByteArray data;
-		QDataStream ds(data, QIODevice::WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << wallet;
 		emitDCOPSignal("walletDeleted(QString)", data);
 		return 0;
@@ -822,7 +822,7 @@ bool KWalletD::removeFolder(int handle, const QString& f) {
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		bool rc = b->removeFolder(f);
 		QByteArray data;
-		QDataStream ds(data, QIODevice::WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << b->walletName();
 		emitDCOPSignal("folderListUpdated(QString)", data);
 		return rc;
@@ -838,7 +838,7 @@ bool KWalletD::createFolder(int handle, const QString& f) {
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		bool rc = b->createFolder(f);
 		QByteArray data;
-		QDataStream ds(data, QIODevice::WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << b->walletName();
 		emitDCOPSignal("folderListUpdated(QString)", data);
 		return rc;
@@ -1154,12 +1154,12 @@ void KWalletD::notifyFailures() {
 
 void KWalletD::doCloseSignals(int handle, const QString& wallet) {
 	QByteArray data;
-	QDataStream ds(data, QIODevice::WriteOnly);
+	QDataStream ds(&data, QIODevice::WriteOnly);
 	ds << handle;
 	emitDCOPSignal("walletClosed(int)", data);
 
 	QByteArray data2;
-	QDataStream ds2(data2, QIODevice::WriteOnly);
+	QDataStream ds2(&data2, QIODevice::WriteOnly);
 	ds2 << wallet;
 	emitDCOPSignal("walletClosed(QString)", data2);
 
@@ -1220,7 +1220,7 @@ bool KWalletD::disconnectApplication(const QString& wallet, const Q3CString& app
 				}
 
 				QByteArray data;
-				QDataStream ds(data, QIODevice::WriteOnly);
+				QDataStream ds(&data, QIODevice::WriteOnly);
 				ds << wallet;
 				ds << application;
 				emitDCOPSignal("applicationDisconnected(QString,QCString)", data);
@@ -1236,7 +1236,7 @@ bool KWalletD::disconnectApplication(const QString& wallet, const Q3CString& app
 
 void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
 	QByteArray data;
-	QDataStream ds(data, QIODevice::WriteOnly);
+	QDataStream ds(&data, QIODevice::WriteOnly);
 	ds << wallet;
 	ds << folder;
 	emitDCOPSignal("folderUpdated(QString,QString)", data);

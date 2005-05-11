@@ -1155,7 +1155,7 @@ QByteArray UIServer::openPassDlg( const KIO::AuthInfo &info )
                                                           inf.readOnly, inf.caption,
                                                           inf.comment, inf.commentLabel );
     QByteArray data;
-    QDataStream stream( data, QIODevice::WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     if ( result == QDialog::Accepted )
         inf.setModified( true );
     else
@@ -1290,7 +1290,7 @@ QByteArray UIServer::open_RenameDlg64( int id,
                                                       (time_t)mtimeSrc, (time_t)mtimeDest );
   kdDebug(7024) << "KIO::open_RenameDlg done" << endl;
   QByteArray data;
-  QDataStream stream( data, QIODevice::WriteOnly );
+  QDataStream stream( &data, QIODevice::WriteOnly );
   stream << Q_UINT8(result) << newDest;
   if ( item && result != KIO::R_CANCEL )
     setItemVisible( item, true );
