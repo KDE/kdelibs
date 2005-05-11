@@ -404,8 +404,7 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
     if (m_url.hasSubURL())
     {
        KURL::List list = KURL::split(m_url);
-       KURL::List::Iterator it = list.fromLast();
-       list.remove(it);
+       list.removeLast();
        m_subUrl = KURL::join(list);
        //kdDebug(7007) << "New URL = "  << m_url.url() << endl;
        //kdDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
@@ -3398,7 +3397,7 @@ void CopyJob::deleteNextDir()
         state = STATE_DELETING_DIRS;
         d->m_bURLDirty = true;
         // Take first dir to delete out of list - last ones first !
-        KURL::List::Iterator it = dirsToRemove.fromLast();
+        KURL::List::Iterator it = --dirsToRemove.end();
         SimpleJob *job = KIO::rmdir( *it );
         Scheduler::scheduleJob(job);
         dirsToRemove.remove(it);
@@ -4010,7 +4009,7 @@ void DeleteJob::deleteNextDir()
     {
         do {
             // Take first dir to delete out of list - last ones first !
-            KURL::List::Iterator it = dirs.fromLast();
+            KURL::List::Iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
             if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
 

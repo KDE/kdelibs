@@ -164,7 +164,8 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
        on that, so call it Overload (capital 'O').  (matz) */
     int Overload = urls.count() - myMaximum + defaultList.count();
     while ( Overload > 0 ) {
-        urls.remove((remove == RemoveBottom) ? urls.fromLast() : urls.begin());
+        if (remove == RemoveBottom) urls.removeLast();
+	else removeFirst();
         Overload--;
     }
 
