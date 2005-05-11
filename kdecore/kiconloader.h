@@ -187,8 +187,9 @@ public:
      * @param size Override the default size for @p group.
      *             See KIcon::StdSizes.
      * @return A QMovie object. Can be null if not found.
+     *         Ownership is passed to the caller.
      */
-    QMovie loadMovie(const QString& name, KIcon::Group group, int size=0) const;
+    QMovie *loadMovie(const QString& name, KIcon::Group group, int size=0) const;
 
     /**
      * Returns the path to an animated icon.

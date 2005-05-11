@@ -916,16 +916,16 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 
 
 
-QMovie KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size) const
+QMovie *KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size) const
 {
     QString file = moviePath( name, group, size );
     if (file.isEmpty())
-	return QMovie();
+	return 0;
     int dirLen = file.findRev('/');
     QString icon = iconPath(name, size ? -size : group, true);
     if (!icon.isEmpty() && file.left(dirLen) != icon.left(dirLen))
-	return QMovie();
-    return QMovie(file);
+	return 0;
+    return new QMovie(file);
 }
 
 QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size) const
