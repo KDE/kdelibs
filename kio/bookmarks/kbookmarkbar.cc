@@ -21,6 +21,7 @@
 */
 #include <qregexp.h>
 #include <qfile.h>
+#include <qevent.h>
 
 #include <kbookmarkbar.h>
 #include <kbookmarkdrag.h>

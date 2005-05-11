@@ -350,8 +350,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     if ( file.status() == 0 )
     {
         file.backupFile( file.name(), QString::null, ".bak" );
-        Q3CString cstr;
-        cstr = internalDocument().toCString(); // is in UTF8
+        QByteArray cstr = internalDocument().toByteArray(); // is in UTF8
         file.file()->writeBlock( cstr.data(), cstr.length() );
         if ( file.close() )
             return true;

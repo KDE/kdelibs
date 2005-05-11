@@ -99,19 +99,17 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 
     DCOPClient* dcop = kapp->dcopClient();
 
-    QCStringList apps = dcop->registeredApplications();
-    for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it ) 
+    DCOPCStringList apps = dcop->registeredApplications();
+    foreach ( DCOPCString clientId, apps )
     {
-        Q3CString &clientId = *it;
-
         if ( qstrncmp(clientId, "konqueror", 9) != 0 ) 
             continue;
 
         QByteArray data, replyData;
-        Q3CString replyType;
+        DCOPCString replyType;
         QDataStream arg( &data, QIODevice::WriteOnly );
 
-        if ( !dcop->call( clientId.data(), "KonquerorIface", 
+        if ( !dcop->call( clientId, "KonquerorIface", 
                           "crashLogFile()", data, replyType, replyData) ) 
         {
             kdWarning() << "can't find dcop function KonquerorIface::crashLogFile()" << endl;
@@ -132,23 +130,24 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     d.setFilter( QDir::Files );
     d.setNameFilter( "konqueror-crash-*.log" );
 
-    const QFileInfoList *list = d.entryInfoList();
-    QFileInfoListIterator it( *list );
+    QFileInfoList list = d.entryInfoList();
+    QListIterator<QFileInfo> it( list );
 
-    QFileInfo *fi;
     QStringList crashFiles;
 
     int count = 0;
-    for ( ; (( fi = it.current() ) != 0) && (count < 20); ++it, ++count ) 
+    while ( it.hasNext() && count < 20 )
     {
-        bool stillAlive = activeLogs.contains( fi->absFilePath() );
+        count++;
+        QString path = it.next().absoluteFilePath();
+        bool stillAlive = activeLogs.contains( path );
         if ( !stillAlive )
-            crashFiles << fi->absFilePath();
+            crashFiles << path;
     }
     // Delete remaining ones
-    for ( ; ( fi = it.current() ) != 0; ++it ) 
+    while ( it.hasNext() )
     {
-        QFile::remove( fi->absFilePath() );
+        QFile::remove( it.next().absoluteFilePath() );
     }
 
     return crashFiles;

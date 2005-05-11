@@ -24,6 +24,8 @@
 #include <qstringlist.h>
 #include <qobject.h>
 #include <qdom.h>
+#include <qpair.h>
+#include <q3ptrlist.h>
 #include <dcopobject.h>
 #include "kbookmark.h"
 #include "kbookmarknotifier.h"

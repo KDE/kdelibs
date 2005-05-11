@@ -84,7 +84,7 @@ QByteArray KBookmarkDrag::encodedData( const char* mime ) const
         return Q3UriDrag::encodedData( mime );
     else if ( mimetype == "application/x-xbel" )
     {
-        a = m_doc.toCString();
+        a = m_doc.toByteArray();
         //kdDebug(7043) << "KBookmarkDrag::encodedData " << m_doc.toCString() << endl;
     }
     else if ( mimetype == "text/plain" )

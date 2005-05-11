@@ -1178,7 +1178,7 @@ void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &ne
 
   // make sure list includes type
   config.setGroup("Bookmarks");
-  if (elist.contains(id) < 1) {
+  if (!elist.contains(id)) {
     elist << id;
     config.writeEntry("DynamicMenus", elist);
   }
