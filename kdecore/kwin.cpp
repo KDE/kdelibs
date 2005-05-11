@@ -56,6 +56,8 @@
 
 #include "netwm.h"
 
+extern  GC kde_xget_temp_gc( int scrn, bool monochrome );		// get temporary GC
+
 static bool atoms_created = false;
 extern Atom qt_wm_protocols;
 extern Time qt_x_time;
@@ -425,16 +427,16 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	    XGetGeometry(QX11Info::display(), p, &root,
 		         &x, &y, &w, &h, &border_w, &depth);
 	    if (w > 0 && h > 0){
-	        QPixmap pm(w, h, depth);
+	        QPixmap pm(w, h);
 	        // Always detach before doing something behind QPixmap's back.
 	        pm.detach();
 	        XCopyArea(QX11Info::display(), p, pm.handle(),
-		          qt_xget_temp_gc(pm.x11Info().screen(), depth==1),
+		          kde_xget_temp_gc(pm.x11Info().screen(), depth==1),
 		          0, 0, w, h, 0, 0);
 	        if (p_mask != None){
 	    	    QBitmap bm(w, h);
 		    XCopyArea(QX11Info::display(), p_mask, bm.handle(),
-			      qt_xget_temp_gc(pm.x11Info().screen(), true),
+			      kde_xget_temp_gc(pm.x11Info().screen(), true),
 			      0, 0, w, h, 0, 0);
 		    pm.setMask(bm);
 	        }
@@ -923,8 +925,8 @@ QString KWin::WindowInfo::visibleNameWithState() const
 {
     QString s = visibleName();
     if ( isMinimized() ) {
-	s.prepend('(');
-	s.append(')');
+	s.prepend(QLatin1Char('('));
+	s.append(QLatin1Char(')'));
     }
     return s;
 }
@@ -933,8 +935,8 @@ QString KWin::Info::visibleNameWithState() const
 {
     QString s = visibleName;
     if ( isMinimized() ) {
-	s.prepend('(');
-	s.append(')');
+	s.prepend(QLatin1Char('('));
+	s.append(QLatin1Char(')'));
     }
     return s;
 }
@@ -966,8 +968,8 @@ QString KWin::WindowInfo::visibleIconNameWithState() const
 {
     QString s = visibleIconName();
     if ( isMinimized() ) {
-	s.prepend('(');
-	s.append(')');
+	s.prepend(QLatin1Char('('));
+	s.append(QLatin1Char(')'));
     }
     return s;
 }
