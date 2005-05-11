@@ -131,15 +131,17 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
   QVariant minValue = item->minValue();
   if (minValue.isValid())
   {
-    if (widget->metaObject()->findProperty("minValue", true) != -1)
+    if (widget->metaObject()->indexOfProperty("minValue") != -1)
        widget->setProperty("minValue", minValue);
   }
   QVariant maxValue = item->maxValue();
   if (maxValue.isValid())
   {
-    if (widget->metaObject()->findProperty("maxValue", true) != -1)
+    if (widget->metaObject()->indexOfProperty("maxValue") != -1)
        widget->setProperty("maxValue", maxValue);
   }
+#warning fixme qt4 port qwhatsthis
+#if 0
   if (Q3WhatsThis::textFor( widget ).isEmpty())
   {
     QString whatsThis = item->whatsThis();
@@ -148,18 +150,17 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
       Q3WhatsThis::add( widget, whatsThis );
     }
   }
+#endif
 }
 
 bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChanges)
 {
   bool valueChanged = false;
-  const QObjectList *listOfChildren = widget->children();
-  if(!listOfChildren)
+  const QList<QObject*> listOfChildren = widget->children();
+  if(listOfChildren.count()==0) //?? XXX
     return valueChanged;
 
-  QObject *object;
-  for( Q3PtrListIterator<QObject> it( *listOfChildren );
-       (object = it.current()); ++it )
+  foreach ( QObject *object, listOfChildren )
   {
     if(!object->isWidgetType())
       continue; // Skip non-widgets
