@@ -156,6 +156,71 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
   return new DOMStringImpl(s + pos, len);
 }
 
+// Collapses white-space according to CSS 2.1 rules
+DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveWS)
+{
+    if (preserveLF && preserveWS) return this;
+
+    // Notice we are likely allocating more space than needed (worst case)
+    QChar *n = QT_ALLOC_QCHAR_VEC(l);
+
+    unsigned int pos = 0;
+    bool collapsing = false;   // collapsing white-space
+    bool collapsingLF = false; // collapsing around linefeed
+    bool changedLF = false;
+    for(unsigned int i=0; i<l; i++) {
+        QChar ch = s[i];
+        if (!preserveLF && (ch == '\n' || ch == '\r')) {
+            // ### Not strictly correct according to CSS3 text-module.
+            // - In ideographic languages linefeed should be ignored
+            // - and in Thai and Khmer it should be treated as a zero-width space
+            ch = ' '; // Treat as space
+            changedLF = true;
+        }
+
+        if (collapsing) {
+            if (ch == ' ')
+                continue;
+            // We act on \r as we would on \n because CSS uses it to indicate new-line
+            if (ch == '\n' || ch == '\r') {
+                collapsingLF = true;
+                continue;
+            }
+
+            n[pos++] = (collapsingLF) ? '\n' : ' ';
+            collapsing = false;
+            collapsingLF = false;
+        }
+        else
+        if (!preserveWS && ch == ' ') {
+            collapsing = true;
+            continue;
+        }
+        else
+        if (!preserveWS && (ch == '\n' || ch == '\r')) {
+            collapsing = true;
+            collapsingLF = true;
+            continue;
+        }
+
+        n[pos++] = ch;
+    }
+    if (collapsing)
+        n[pos++] = ((collapsingLF) ? '\n' : ' ');
+
+    if (pos == l && !changedLF) {
+        QT_DELETE_QCHAR_VEC(n);
+        return this;
+    }
+    else {
+        DOMStringImpl* out = new DOMStringImpl();
+        out->s = n;
+        out->l = pos;
+
+        return out;
+    }
+}
+
 static Length parseLength(const QChar *s, unsigned int l)
 {
     const QChar* last = s+l-1;

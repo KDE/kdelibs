@@ -39,7 +39,7 @@ static const char version[] = "0.1";
 
 static KCmdLineOptions options[] =
 {
-    {"query [regexp]", I18N_NOOP("Only run modules which filename match the regexp."), "^kunittest_.*\\.la$"},
+    {"query [regexp]", I18N_NOOP("Only run modules whose filenames match the regexp."), "^kunittest_.*\\.la$"},
     {"folder [folder]", I18N_NOOP("Only run tests modules which are found in the folder. Use the query option to select modules."), "."},
 //    { "+[URL]", I18N_NOOP( "Document to open" ), 0 },
     KCmdLineLastOption
@@ -62,5 +62,5 @@ int main( int argc, char **argv )
 
     KUnitTest::Runner::self()->runTests();
 
-    return KUnitTest::Runner::self()->numberOfFailedTests();
+    return KUnitTest::Runner::self()->numberOfFailedTests() - KUnitTest::Runner::self()->numberOfExpectedFailures();
 }
