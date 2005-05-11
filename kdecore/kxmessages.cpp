@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
+#include <qevent.h>
 #include "kxmessages.h"
 
 #include <qx11info_x11.h>
