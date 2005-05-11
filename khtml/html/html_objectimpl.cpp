@@ -126,7 +126,24 @@ void HTMLObjectBaseElementImpl::attach() {
     assert(!attached());
     assert(!m_render);
 
-    if (m_renderAlternative) {
+    if (serviceType.isEmpty() && url.startsWith("data:")) {
+        // Extract the MIME type from the data URL.
+        int index = url.find(';');
+        if (index == -1)
+            index = url.find(',');
+        if (index != -1) {
+            int len = index - 5;
+            if (len > 0)
+                serviceType = url.mid(5, len);
+            else
+                serviceType = "text/plain"; // Data URLs with no MIME type are considered text/plain.
+        }
+    }
+
+    bool imagelike = serviceType.startsWith("image/") &&
+                   !KImageIO::typeForMime(serviceType).isNull();
+
+    if (m_renderAlternative && !imagelike) {
         // render alternative content
         ElementImpl::attach();
         return;
@@ -144,8 +161,7 @@ void HTMLObjectBaseElementImpl::attach() {
         _style->display() != NONE)
     {
         needWidgetUpdate = false;
-        bool imagelike = serviceType.startsWith("image/") &&
-                         !KImageIO::typeForMime(serviceType).isNull();
+
         if (imagelike) {
             m_render = new (getDocument()->renderArena()) RenderImage(this);
             // make sure we don't attach the inner contents
