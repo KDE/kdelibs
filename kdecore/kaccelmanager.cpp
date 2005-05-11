@@ -319,7 +319,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
   if (dynamic_cast<QComboBox*>(w) || dynamic_cast<QLineEdit*>(w) ||
       dynamic_cast<Q3TextEdit*>(w) || dynamic_cast<Q3TextView*>(w) ||
-      dynamic_cast<QSpinBox*>(w) || w->qt_cast( "KMultiTabBar" ) )
+      dynamic_cast<QSpinBox*>(w) || w->inherits( "KMultiTabBar" ) )
       return;
 
   // now treat 'ordinary' widgets
@@ -341,8 +341,8 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
     QVariant variant;
     int tprop = w->metaObject()->indexOfProperty("text");
     if (tprop != -1)  {
-        const QMetaProperty* p = w->metaObject()->property( tprop );
-        if ( p && p->isValid() )
+        QMetaProperty p = w->metaObject()->property( tprop );
+        if ( p.isValid() )
             w->qt_property( tprop, 1, &variant );
         else
             tprop = -1;
@@ -351,8 +351,8 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
     if (tprop == -1)  {
         tprop = w->metaObject()->indexOfProperty("title");
         if (tprop != -1)  {
-            const QMetaProperty* p = w->metaObject()->property( tprop );
-            if ( p && p->isValid() )
+            QMetaProperty p = w->metaObject()->property( tprop );
+            if ( p.isValid() )
                 w->qt_property( tprop, 1, &variant );
         }
     }
