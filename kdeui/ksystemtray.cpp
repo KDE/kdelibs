@@ -32,6 +32,7 @@
 #include <kwin.h> 
 #include <kwinmodule.h> 
 #include <qxembed.h> 
+#include <QX11Info>
 #endif
 
 #include <kiconloader.h>
@@ -68,7 +69,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     d->actionCollection = new KActionCollection(this);
 
 #ifdef Q_WS_X11
-    KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
+    KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): QX11Info::appRootWindow() );
 #endif
     setBackgroundMode(Qt::X11ParentRelative);
     setBackgroundOrigin(WindowOrigin);

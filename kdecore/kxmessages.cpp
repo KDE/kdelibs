@@ -89,7 +89,7 @@ void KXMessages::broadcastMessage( const char* msg_type_P, const QString& messag
     {
     Atom a2 = XInternAtom( QX11Info::display(), msg_type_P, false );
     Atom a1 = obsolete_P ? a2 : XInternAtom( QX11Info::display(), QByteArray( msg_type_P ) + "_BEGIN", false );
-    Window root = screen_P == -1 ? qt_xrootwin() : qt_xrootwin( screen_P );
+    Window root = screen_P == -1 ? QX11Info::appRootWindow() : QX11Info::appRootWindow( screen_P );
     send_message_internal( root, message_P, BROADCAST_MASK, QX11Info::display(),
         a1, a2, handle->winId());
     }

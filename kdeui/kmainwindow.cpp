@@ -593,7 +593,7 @@ void KMainWindow::setPlainCaption( const QString &caption )
 {
     Q3MainWindow::setCaption( caption );
 #if defined Q_WS_X11
-    NETWinInfo info( QX11Info::display(), winId(), qt_xrootwin(), 0 );
+    NETWinInfo info( QX11Info::display(), winId(), QX11Info::appRootWindow(), 0 );
     info.setName( caption.utf8().data() );
 #endif
 }

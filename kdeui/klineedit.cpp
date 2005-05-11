@@ -654,7 +654,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 cursorNotAtEnd=true;
             }
 
-            uint selectedLength=selectedText().length();
+            int selectedLength=selectedText().length();
 
             d->disableRestoreSelection = true;
             QLineEdit::keyPressEvent ( e );
@@ -794,7 +794,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
     }
 
-    uint selectedLength = selectedText().length();
+    int selectedLength = selectedText().length();
 
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
@@ -1297,7 +1297,7 @@ QString KLineEdit::originalText() const
 void KLineEdit::focusInEvent( QFocusEvent* ev)
 {
     // Don't selectAll() in QLineEdit::focusInEvent if selection exists
-    if ( ev->reason() == QFocusEvent::Tab && inputMask().isNull() && hasSelectedText() )
+    if ( ev->reason() == Qt::TabFocusReason && inputMask().isNull() && hasSelectedText() )
         return;
     
     QLineEdit::focusInEvent(ev);

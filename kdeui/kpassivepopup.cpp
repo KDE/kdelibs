@@ -195,7 +195,7 @@ void KPassivePopup::positionSelf()
     }
 
     else {
-        NETWinInfo ni( QX11Info::display(), window, qt_xrootwin(),
+        NETWinInfo ni( QX11Info::display(), window, QX11Info::appRootWindow(),
                        NET::WMIconGeometry | NET::WMKDESystemTrayWinFor );
 
         // Figure out where to put the popup. Note that we must handle

@@ -22,6 +22,7 @@
  */
 
 #include <qnamespace.h>
+#include <QKeyEvent>
 
 #include "krestrictedline.h"
 

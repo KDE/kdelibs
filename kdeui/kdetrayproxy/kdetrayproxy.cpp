@@ -54,7 +54,7 @@ extern Time qt_x_time;
 
 void KDETrayProxy::windowAdded( WId w )
     {
-    NETWinInfo ni( QX11Info::display(), w, qt_xrootwin(), NET::WMKDESystemTrayWinFor );
+    NETWinInfo ni( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMKDESystemTrayWinFor );
     WId trayWinFor = ni.kdeSystemTrayWinFor();
     if ( !trayWinFor ) // not a KDE tray window
         return;
@@ -97,7 +97,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
         }
     if( e->type == ReparentNotify && tray_windows.contains( e->xreparent.window ))
         {
-        if( e->xreparent.parent == qt_xrootwin())
+        if( e->xreparent.parent == QX11Info::appRootWindow())
             {
             if( !docked_windows.contains( e->xreparent.window ) || e->xreparent.serial >= docked_windows[ e->xreparent.window ] )
                 {
@@ -118,7 +118,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
         if( docked_windows.contains( e->xunmap.window ) && e->xunmap.serial >= docked_windows[ e->xunmap.window ] )
             {
 //            kdDebug() << "Window unmapped:" << e->xunmap.window << endl;
-            XReparentWindow( QX11Info::display(), e->xunmap.window, qt_xrootwin(), 0, 0 );
+            XReparentWindow( QX11Info::display(), e->xunmap.window, QX11Info::appRootWindow(), 0, 0 );
             // ReparentNotify will take care of the rest
             }
         }

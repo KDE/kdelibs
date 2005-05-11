@@ -37,6 +37,7 @@
 #include <q3popupmenu.h>
 #include <q3ptrdict.h>
 #include <qvariant.h>
+#include <Q3AsciiDict>
 
 class KActionCollection::KActionCollectionPrivate
 {
@@ -214,7 +215,7 @@ void KActionCollection::unplugShortcuts( KAccel* kaccel )
     pAction->removeKAccel( kaccel );
   }
 
-  for( uint i = 0; i < d->m_docList.count(); i++ )
+  for( int i = 0; i < d->m_docList.count(); i++ )
     d->m_docList[i]->unplugShortcuts( kaccel );
 }
 
@@ -390,7 +391,7 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
   }
 
   if( !pAction ) {
-    for( uint i = 0; i < d->m_docList.count() && !pAction; i++ )
+    for( int i = 0; i < d->m_docList.count() && !pAction; i++ )
       pAction = d->m_docList[i]->action( name, classname );
   }
 
@@ -501,14 +502,14 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   {
     actionList = new Q3PtrList<KAction>;
 
-    if ( qobject_cast<Q3PopupMenu >( container ) )
+    if ( qobject_cast<Q3PopupMenu*>( container ) )
     {
       connect( container, SIGNAL( highlighted( int ) ),
                this, SLOT( slotMenuItemHighlighted( int ) ) );
       connect( container, SIGNAL( aboutToHide() ),
                this, SLOT( slotMenuAboutToHide() ) );
     }
-    else if ( qobject_cast<KToolBar >( container ) )
+    else if ( qobject_cast<KToolBar*>( container ) )
     {
       connect( container, SIGNAL( highlighted( int, bool ) ),
                this, SLOT( slotToolBarButtonHighlighted( int, bool ) ) );

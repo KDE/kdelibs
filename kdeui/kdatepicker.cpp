@@ -42,6 +42,7 @@
 #include <kdebug.h>
 #include <knotifyclient.h>
 #include <kcalendarsystem.h>
+#include <QKeyEvent>
 
 #include "kdatetbl.h"
 #include "kdatepicker.moc"

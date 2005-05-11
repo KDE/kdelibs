@@ -28,6 +28,7 @@
 
 #include <qlineedit.h>
 #include <q3button.h>
+#include <QCheckBox>
 #include <kdialogbase.h>
 
 class QComboBox;

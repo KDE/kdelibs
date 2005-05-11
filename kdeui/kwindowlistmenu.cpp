@@ -90,7 +90,7 @@ static bool standaloneDialog( const KWin::WindowInfo* info, const NameSortedInfo
     WId group = info->groupLeader();
     if( group == 0 )
     {
-        return info->transientFor() == qt_xrootwin();
+        return info->transientFor() == QX11Info::appRootWindow();
     }
     for( Q3PtrListIterator< KWin::WindowInfo > it( list );
          it.current() != NULL;
