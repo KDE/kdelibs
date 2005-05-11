@@ -32,6 +32,8 @@
 #include <kglobal.h>
 #include <kspell.h>
 #include <kapplication.h>
+#include <q3dict.h>
+#include <QKeyEvent>
 
 #include "ksyntaxhighlighter.h"
 
@@ -208,7 +210,7 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
 	    if ( !text[i].isLetter() && (!(text[i] == '\'')) ) {
 		if ( ( para != paraNo ) ||
 		    !intraWordEditing() ||
-		    ( i - d->currentWord.length() > (uint)index ) ||
+		    ( i - d->currentWord.length() > index ) ||
 		    ( i < index ) ) {
 		    flushCurrentWord();
 		} else {
@@ -220,7 +222,7 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
 	    }
 	}
 	if ( !text[len - 1].isLetter() ||
-	     (uint)( index + 1 ) != text.length() ||
+	     ( index + 1 ) != text.length() ||
 	     para != paraNo )
 	    flushCurrentWord();
     }

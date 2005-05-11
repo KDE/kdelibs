@@ -44,6 +44,7 @@
 #include <kstdaction.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
+#include <kmultitabbar.h>
 
 
 #include "kaccelmanager_private.h"
@@ -239,12 +240,12 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
         kdDebug(125) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
 
-        int tprop = it->m_widget->metaObject()->findProperty("text", true);
+        int tprop = it->m_widget->metaObject()->indexOfProperty("text");
         if (tprop != -1)  {
             if (checkChange(contents[cnt]))
                 it->m_widget->setProperty("text", contents[cnt].accelerated());
         } else {
-            tprop = it->m_widget->metaObject()->findProperty("title", true);
+            tprop = it->m_widget->metaObject()->indexOfProperty("title");
             if (tprop != -1 && checkChange(contents[cnt]))
                 it->m_widget->setProperty("title", contents[cnt].accelerated());
         }
@@ -263,11 +264,10 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
 void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 {
-  QObjectList *childList = widget->queryList("QWidget", 0, false, false);
-  for ( QObject *it = childList->first(); it; it = childList->next() )
-  {
-    QWidget *w = static_cast<QWidget*>(it);
-
+  QList<QObject*> childList = widget->queryList("QWidget", 0, false, false);
+  foreach ( QObject*o , childList ) {
+    QWidget *w = static_cast<QWidget*>(o);
+	
     if ( !w->isVisibleTo( widget ) || w->isTopLevel() )
         continue;
 
@@ -276,7 +276,6 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 
     manageWidget(w, item);
   }
-  delete childList;
 }
 
 void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
@@ -321,7 +320,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
   if (dynamic_cast<QComboBox*>(w) || dynamic_cast<QLineEdit*>(w) ||
       dynamic_cast<Q3TextEdit*>(w) || dynamic_cast<Q3TextView*>(w) ||
-      dynamic_cast<QSpinBox*>(w) || w->qt_cast( "KMultiTabBar" ))
+      dynamic_cast<QSpinBox*>(w) || qobject_cast<KMultiTabBar*>( w ) )
       return;
 
   // now treat 'ordinary' widgets
@@ -337,13 +336,13 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       }
   }
 
-  if (w->isFocusEnabled() || label || dynamic_cast<Q3GroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
+  if (w->focusPolicy() != Qt::NoFocus || label || dynamic_cast<Q3GroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
   {
     QString content;
     QVariant variant;
-    int tprop = w->metaObject()->findProperty("text", true);
+    int tprop = w->metaObject()->indexOfProperty("text");
     if (tprop != -1)  {
-        const QMetaProperty* p = w->metaObject()->property( tprop, true );
+        const QMetaProperty* p = w->metaObject()->property( tprop );
         if ( p && p->isValid() )
             w->qt_property( tprop, 1, &variant );
         else
@@ -351,9 +350,9 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
     }
 
     if (tprop == -1)  {
-        tprop = w->metaObject()->findProperty("title", true);
+        tprop = w->metaObject()->indexOfProperty("title");
         if (tprop != -1)  {
-            const QMetaProperty* p = w->metaObject()->property( tprop, true );
+            const QMetaProperty* p = w->metaObject()->property( tprop );
             if ( p && p->isValid() )
                 w->qt_property( tprop, 1, &variant );
         }
