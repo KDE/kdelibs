@@ -24,6 +24,7 @@
 #include "kglobal.h"
 #include "kconfig.h"
 #include "kshortcut.h"
+#include <QMouseEvent>
 
 #undef KeyPress
 #undef None

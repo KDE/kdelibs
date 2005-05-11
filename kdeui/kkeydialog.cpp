@@ -225,7 +225,7 @@ KKeyChooser::~KKeyChooser()
 {
         allChoosers->remove( this );
 	// Delete allocated KShortcutLists
-	for( uint i = 0; i < d->rgpListsAllocated.count(); i++ )
+	for( int i = 0; i < d->rgpListsAllocated.count(); i++ )
 		delete d->rgpListsAllocated[i];
 	delete d;
 }
@@ -285,7 +285,7 @@ void KKeyChooser::commitChanges()
 void KKeyChooser::save()
 {
 	commitChanges();
-	for( uint i = 0; i < d->rgpLists.count(); i++ )
+	for( int i = 0; i < d->rgpLists.count(); i++ )
 		d->rgpLists[i]->save();
 }
 
@@ -1023,7 +1023,7 @@ QString KKeyChooserItem::text( int iCol ) const
 		// Quick HACK to get rid of '&'s.
 		QString s = m_pList->label(m_iAction);
 		QString s2;
-		for( uint i = 0; i < s.length(); i++ )
+		for( int i = 0; i < s.length(); i++ )
 			if( s[i] != '&' || ( i+1<s.length() && s[i+1] == '&' ) )
 				s2 += s[i];
 		return s2;

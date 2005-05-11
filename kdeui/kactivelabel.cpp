@@ -24,6 +24,7 @@
 #include <q3whatsthis.h>
 #include <q3simplerichtext.h>
 #include <kdebug.h>
+#include <QFocusEvent>
 
 KActiveLabel::KActiveLabel(QWidget * parent, const char * name)
  : Q3TextBrowser(parent, name)
@@ -83,14 +84,14 @@ void KActiveLabel::virtual_hook( int, void* )
 void KActiveLabel::focusInEvent( QFocusEvent* fe )
 {
    Q3TextBrowser::focusInEvent(fe);
-   if(fe->reason() == QFocusEvent::Tab || fe->reason() == QFocusEvent::Backtab)
+   if(fe->reason() == Qt::TabFocusReason || fe->reason() == Qt::BacktabFocusReason)
       selectAll(true);
 }
 
 void KActiveLabel::focusOutEvent( QFocusEvent* fe )
 {
    Q3TextBrowser::focusOutEvent(fe);
-   if(fe->reason() == QFocusEvent::Tab || fe->reason() == QFocusEvent::Backtab)
+   if(fe->reason() == Qt::TabFocusReason || fe->reason() == Qt::BacktabFocusReason)
       selectAll(false);
 }
 

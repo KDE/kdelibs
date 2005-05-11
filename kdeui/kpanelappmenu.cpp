@@ -39,7 +39,7 @@ KPanelAppMenu::KPanelAppMenu(const QString &title, QObject *parent,
                        const char *name)
     : QObject(parent, name), DCOPObject()
 {
-    init(QString::null, title);
+    init(QPixmap(), title);
 }
 
 KPanelAppMenu::KPanelAppMenu(const QPixmap &icon, const QString &title,
@@ -64,7 +64,7 @@ void KPanelAppMenu::init(const QPixmap &icon, const QString &title)
     if(!client->isAttached())
 	client->attach();
     QByteArray sendData, replyData;
-    Q3CString replyType;
+    DCOPCString replyType;
     {
 	QDataStream stream(&sendData, QIODevice::WriteOnly);
 	stream << icon << title;
@@ -112,14 +112,14 @@ KPanelAppMenu *KPanelAppMenu::insertMenu(const QPixmap &icon, const QString &tex
         id = panelmenu_get_seq_id();
     DCOPClient *client = kapp->dcopClient();
     QByteArray sendData, replyData;
-    Q3CString replyType;
+    DCOPCString replyType;
     QDataStream stream(&sendData, QIODevice::WriteOnly);
     stream << icon << text << id;
     client->call("kicker", realObjId, "insertMenu(QPixmap,QString,int)", sendData, replyType, replyData );
     if ( replyType != "QCString")
       return 0;
     QDataStream ret(replyData);
-    Q3CString subid;
+    QByteArray subid;
     ret >> subid;
 
     QByteArray sendData2;
@@ -152,8 +152,8 @@ void KPanelAppMenu::clear()
 }
 
 
-bool KPanelAppMenu::process(const Q3CString &fun, const QByteArray &data,
-			 Q3CString &replyType, QByteArray &)
+bool KPanelAppMenu::process(const DCOPCString &fun, const QByteArray &data,
+			 DCOPCString &replyType, QByteArray &)
 {
     if ( fun == "activated(int)" ) {
 	QDataStream dataStream( data );

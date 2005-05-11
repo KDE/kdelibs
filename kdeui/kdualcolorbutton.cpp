@@ -25,6 +25,7 @@
 #include <qpainter.h>
 #include <qbitmap.h>
 #include <qdrawutil.h>
+#include <QDragEnterEvent>
 
 class KDualColorButton::KDualColorPrivate
 {

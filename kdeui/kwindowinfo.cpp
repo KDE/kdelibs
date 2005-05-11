@@ -85,17 +85,11 @@ void KWindowInfo::permanent( const QString &text )
 void KWindowInfo::permanent( const QString &text, const QPixmap &pix )
 {
     if ( !oldText.isNull() ) {
-	QObjectList *l = queryList( "QTimer" );
-	QObjectListIt it( *l );
-	QObject *obj;
-
-	while ( (obj = it.current()) != 0 ) {
-	    ++it;
-	    delete obj;
+	QList<QObject*> l = queryList( "QTimer" );
+		foreach ( QObject*o , l ) {
+			delete o;
+		}
 	}
-	delete l;
-    }
-
     oldText = QString::null;
     display( text, pix );
 }

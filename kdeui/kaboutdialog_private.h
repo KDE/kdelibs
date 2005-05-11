@@ -24,6 +24,7 @@
 #define _KABOUTDIALOG_PRIVATE_H_
 
 #include <qlabel.h>
+#include <Q3MemArray>
 class Q3Frame;
 class QTabWidget;
 class QVBoxLayout;

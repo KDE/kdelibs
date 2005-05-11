@@ -33,6 +33,7 @@
 #include <kmessagebox.h>
 #include <kstdaccel.h>
 #include <kurldrag.h>
+#include <QKeyEvent>
 
 #include "keditcl.h"
 #include "keditcl.moc"

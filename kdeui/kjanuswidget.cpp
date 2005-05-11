@@ -353,7 +353,7 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
 {
   bool isTop = true;
   Q3ListViewItem *curTop = 0, *child, *last, *newChild;
-  unsigned int index = 1;
+  int index = 1;
   QStringList curPath;
 
   for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it, index++ ) {
@@ -511,16 +511,13 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
   //
   // Hide old children
   //
-  QObjectList *l = (QObjectList*)mSwallowPage->children(); // silence please
-  for( uint i=0; i < l->count(); i++ )
-  {
-    QObject *o = l->at(i);
-    if( o->isWidgetType() )
-    {
-      ((QWidget*)o)->hide();
-    }
+  QList<QObject*> l = mSwallowPage->children(); // silence please
+  foreach ( QObject* o, l ) {
+	  if ( o->isWidgetType() )
+	  {
+		( ( QWidget* )o )->hide();
+	  }
   }
-
   //
   // Add new child or make default size
   //

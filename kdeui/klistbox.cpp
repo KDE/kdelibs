@@ -26,6 +26,7 @@
 #include <kdebug.h>
 
 #include "klistbox.h"
+#include <QKeyEvent>
 
 KListBox::KListBox( QWidget *parent, const char *name, Qt::WFlags f )
     : Q3ListBox( parent, name, f ), d(0)

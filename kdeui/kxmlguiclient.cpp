@@ -290,8 +290,8 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
     // not implemented, then we remove the element
     if ( tag == tagAction )
     {
-      Q3CString name =  e.attribute( attrName ).utf8(); // WABA
-      if ( !actionCollection->action( name ) ||
+      QByteArray name =  e.attribute( attrName ).utf8(); // WABA
+      if ( !actionCollection->action( name.data() ) ||
            (kapp && !kapp->authorizeKAction(name)))
       {
         // remove this child as we aren't using it
@@ -452,7 +452,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
       // if base contains an implemented action, then we must not get
       // deleted (note that the actionCollection contains both,
       // "global" and "local" actions
-      if ( actionCollection->action( e.attribute( attrName ).utf8() ) )
+      if ( actionCollection->action( e.attribute( attrName ).utf8().data() ) )
       {
         deleteMe = false;
         break;

@@ -30,6 +30,7 @@
 #include <kstdaccel.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <QKeyEvent>
 
 class KTextEdit::KTextEditPrivate
 {

@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __PANELAPPMENU_H "$Id$"
 
 #include <dcopobject.h>
+#include <QPixmap>
 
 
 /**
@@ -79,8 +80,8 @@ public:
     /**
      * @internal
      */
-    bool process(const Q3CString &fun, const QByteArray &data,
-		 Q3CString &replyType, QByteArray &reply);
+    bool process(const DCOPCString &fun, const QByteArray &data,
+		 DCOPCString &replyType, QByteArray &reply);
 
 signals:
     /**
@@ -92,7 +93,7 @@ protected:
     void init(const QPixmap &icon, const QString &title);
 
 private:
-    Q3CString realObjId;
+    QByteArray realObjId;
 };
 
 

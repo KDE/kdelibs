@@ -26,6 +26,7 @@
 #include <kdebug.h>
 #include <qtimer.h>
 #include <qapplication.h>
+#include <QResizeEvent>
 
 #include <math.h> // need ceil
 

@@ -25,6 +25,7 @@
 #include <ktoolbar.h>
 #include <kdebug.h>
 #include <kiconloader.h>
+#include <QMouseEvent>
 
 class KAnimWidgetPrivate
 {
