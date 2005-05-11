@@ -39,6 +39,7 @@
 #include <qstyleplugin.h>
 
 struct QStyleOptionProgressBar;
+struct QStyleOptionTab;
 
 #include <kdelibs_export.h>
 
@@ -271,6 +272,7 @@ protected:
         WT_Menu,
         WT_MenuItem,
         WT_ScrollBar,
+        WT_Tab,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -297,6 +299,7 @@ protected:
         {
             Bevel,
             Text,
+            Icon,
             FocusIndicator,
             ArrowUp,    //Note: the arrows are centering primitives
             ArrowDown,
@@ -564,6 +567,38 @@ protected:
             SliderHor
         };
     };
+
+    struct Tab
+    {
+        /**
+         Each tab is basically built hiearchically out of the following areas:
+
+         Content area:
+            Icon <- TextToIconSpace -> Text
+            -or- Icon -or- Text
+         Bevel:
+            ContentsMargin outside of the content area
+         Focus indicator is placed FocusMargin inside the bevel
+
+         The side tabs just have those rotated, bottom tabs have
+         the margins reversed
+        */
+        enum LayoutProp
+        {
+            ContentsMargin,
+            FocusMargin     = ContentsMargin + MarginInc,
+            TextToIconSpace = FocusMargin    + MarginInc
+        };
+    
+        /**
+         From generic primitives, Text, FocusIndicator, Icon are also used
+        */
+        enum Primitive
+        {
+            EastText, //Special rotated text for east tabs.
+            WestText, //Special rotated text for west tabs.
+        };
+    };
    
     ///Interface for the style to configure various metrics that KStyle has customizable.
     void setWidgetLayoutProp(WidgetType widget, int metric, int value);
@@ -585,6 +620,15 @@ private:
     ///Should we use a side text here?
     bool useSideText(const QStyleOptionProgressBar* opt)     const;
     int  sideTextWidth(const QStyleOptionProgressBar* pbOpt) const;
+
+    ///Returns true if the tab is vertical
+    bool isVerticalTab (const QStyleOptionTab* tbOpt) const;
+
+    ///Returns true if the tab has reflected layout
+    bool isReflectedTab(const QStyleOptionTab* tbOpt) const;
+
+    ///Returns the tab rectangle adjusted for the tab direction
+    QRect marginAdjustedTab(const QStyleOptionTab* tbOpt, int property) const;
 
     ///Wrapper around visualRect for easier use
     QRect  handleRTL(const QStyleOption* opt, const QRect& subRect) const;

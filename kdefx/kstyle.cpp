@@ -32,6 +32,7 @@
  */
 
 #include "kstyle.h"
+#include <qalgorithms.h>
 #include <qicon.h>
 #include <qpainter.h>
 #include <qstyleoption.h>
@@ -104,6 +105,12 @@ KStyle::KStyle()
                             ColorMode(ColorMode::BWAutoContrastMode, QPalette::Button));
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor,
                             ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText));
+
+    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin, 5);
+    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin + Top,  10);
+    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin + Left, 5);
+
+    setWidgetLayoutProp(WT_Tab, Tab::FocusMargin, 3);
 }
 
 
@@ -1064,6 +1071,44 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                                                     ScrollBar::SliderVert,
                                 option, r, pal, flags, p, widget);
             return;
+
+        //QCS's CE_TabBarTab is perfectly fine, so we just handle the subbits
+        
+        case CE_TabBarTabShape:
+        {
+            const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
+            if (!tabOpt) return;
+
+            //The bevel is pretty easy to draw, we just route the direction
+            //To the appropriate primitive.
+            //Note that we handle triangular tabs just as around ones.
+            //### 
+            break;
+        }
+            
+        case CE_TabBarTabLabel:
+        {
+            const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
+            if (!tabOpt) return;
+
+            //First, we split this thing into the content region, and the bevel.
+            p->setPen(Qt::red);
+            drawInsideRect(p, r);
+
+            QRect labelRect = marginAdjustedTab(tabOpt, Tab::ContentsMargin);
+            p->setPen(Qt::yellow);
+            drawInsideRect(p, labelRect);
+
+
+            //If need be, draw focus rect
+            if (tabOpt->state & State_HasFocus)
+            {
+                QRect focusRect = marginAdjustedTab(tabOpt, Tab::FocusMargin);
+                drawKStylePrimitive(WT_Tab, Generic::FocusIndicator, option, focusRect,
+                                pal, flags, p, widget);
+            }
+            return;
+        }
     }
     
     QCommonStyle::drawControl(element, option, p, widget);
@@ -1164,9 +1209,99 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
         case PM_MenuTearoffHeight:
             return widgetLayoutProp(WT_Menu, Menu::TearOffHeight);
+
+        case PM_TabBarTabHSpace:
+            const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
+            if (tabOpt)
+            {
+                //Perhaps we can avoid the extra margin...
+                if (tabOpt->text.isNull() && !tabOpt->icon.isNull())
+                    return 0;
+                if (tabOpt->icon.isNull() && !tabOpt->text.isNull());
+                    return 0;
+            }
+            
+            return widgetLayoutProp(WT_Tab, Tab::TextToIconSpace);
+
+        case PM_TabBarTabVSpace:
+            return 0;
     }
 
     return QCommonStyle::pixelMetric(metric, option, widget);
+}
+
+bool KStyle::isVerticalTab(const QStyleOptionTab* tbOpt) const
+{
+    switch (tbOpt->shape)
+    {
+    case QTabBar::RoundedWest:
+    case QTabBar::RoundedEast:
+    case QTabBar::TriangularWest:
+    case QTabBar::TriangularEast:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool KStyle::isReflectedTab(const QStyleOptionTab* tbOpt) const
+{
+    switch (tbOpt->shape)
+    {
+    case QTabBar::RoundedEast:
+    case QTabBar::TriangularEast:
+    case QTabBar::RoundedSouth:
+    case QTabBar::TriangularSouth:
+        return true;
+    default:
+        return false;
+    }
+}
+
+QRect KStyle::marginAdjustedTab(const QStyleOptionTab* tabOpt, int property) const
+{
+    QRect r = tabOpt->rect;
+    
+    //For region, we first figure out the geometry if it was normal, and adjust.
+    //this takes some rotating
+    bool vertical = isVerticalTab (tabOpt);
+    bool flip     = isReflectedTab(tabOpt);
+
+    QRect idializedGeometry = vertical ? QRect(0, 0, r.height(), r.width())
+                                        : QRect(0, 0, r.width(),  r.height());
+
+    QRect contentArea = insideMargin(idializedGeometry, WT_Tab, property);
+
+    int leftMargin  = contentArea.x();
+    int rightMargin = idializedGeometry.width() - 1 - contentArea.right();
+    int topMargin   = contentArea.y();
+    int botMargin   = idializedGeometry.height() - 1 - contentArea.bottom();
+
+    if (vertical)
+    {
+        int t       = rightMargin;
+        rightMargin = topMargin;
+        topMargin   = leftMargin;
+        leftMargin  = botMargin;
+        botMargin   = t;
+
+        if (flip)
+            qSwap(leftMargin, rightMargin);
+    }
+    else if (flip)
+    {
+        qSwap(topMargin, botMargin);
+        //For horizontal tabs, we also want to reverse stuff for RTL!
+        if (tabOpt->direction == Qt::RightToLeft)
+            qSwap(leftMargin, rightMargin);
+    }
+
+    QRect geom =
+        QRect(QPoint(leftMargin, topMargin),
+                QPoint(r.width()  - 1 - rightMargin,
+                        r.height() - 1 - botMargin));
+    geom.translate(r.topLeft());
+    return geom;
 }
 
 bool KStyle::useSideText(const QStyleOptionProgressBar* pbOpt) const
@@ -1745,6 +1880,12 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
         case CT_MenuBarItem:
             return expandDim(contentsSize, WT_MenuBarItem, MenuBarItem::Margin);
+
+        case CT_TabBarTab:
+            //With our PM_TabBarTabHSpace/VSpace, Qt should give us what we want for
+            //contentsSize, so we just expand that. Qt also takes care of
+            //the vertical thing.
+            return expandDim(contentsSize, WT_Tab, Tab::ContentsMargin);
     }
     
     return QCommonStyle::sizeFromContents(type, option, contentsSize, widget);
