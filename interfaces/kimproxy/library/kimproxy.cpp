@@ -86,7 +86,7 @@ bool ContactPresenceListCurrent::update( AppPresenceCurrent ap )
 	{
 		if ( (*it).presence > best.presence )
 			best = (*it);
-		if ( (*it).appId = ap.appId )
+		if ( (*it).appId == ap.appId )
 			existing = it;
 		++it;
 	}
