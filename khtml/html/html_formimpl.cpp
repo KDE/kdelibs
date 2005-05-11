@@ -961,8 +961,6 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 
 	if (!evt->defaultHandled() && m_render && m_render->isWidget()) {
 	    // handle tabbing out, either from a single or repeated key event.
-	    // ### FIXME this is needlessly complicated by our internal KHTML_KEYPRESS_EVENT.
-	    // What is it good for? It should be renamed and only emitted in case of a repeat. -gg
 	    if ( evt->id() == EventImpl::KEYDOWN_EVENT || evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) {
 	        QKeyEvent* const k = static_cast<TextEventImpl *>(evt)->qKeyEvent();
 	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) &&
