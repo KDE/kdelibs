@@ -44,7 +44,6 @@
 #include <kstdaction.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
-#include <kmultitabbar.h>
 
 
 #include "kaccelmanager_private.h"
@@ -320,7 +319,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
   if (dynamic_cast<QComboBox*>(w) || dynamic_cast<QLineEdit*>(w) ||
       dynamic_cast<Q3TextEdit*>(w) || dynamic_cast<Q3TextView*>(w) ||
-      dynamic_cast<QSpinBox*>(w) || qobject_cast<KMultiTabBar*>( w ) )
+      dynamic_cast<QSpinBox*>(w) || w->qt_cast( "KMultiTabBar" ) )
       return;
 
   // now treat 'ordinary' widgets
