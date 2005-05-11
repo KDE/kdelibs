@@ -21,6 +21,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 

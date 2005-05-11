@@ -168,23 +168,23 @@ KIO_EXPORT QString KIO::decodeFileName( const QString & _str )
 {
   QString str;
 
-  unsigned int i = 0;
+  int i = 0;
   for ( ; i < _str.length() ; ++i )
   {
     if ( _str[i]=='%' )
     {
       if ( _str[i+1]=='%' ) // %% -> %
       {
-        str.append('%');
+        str.append(QLatin1Char('%'));
         ++i;
       }
       else if ( _str[i+1]=='2' && (i+2<_str.length()) && _str[i+2].lower()=='f' ) // %2f -> /
       {
-        str.append('/');
+        str.append(QLatin1Char('/'));
         i += 2;
       }
       else
-        str.append('%');
+        str.append(QLatin1Char('%'));
     } else
       str.append(_str[i]);
   }
@@ -1581,7 +1581,7 @@ static bool is_my_mountpoint( const char *mountpoint, const char *realname, int 
     return false;
 }
 
-typedef enum { Unseen, Qt::DockRight, Wrong } MountState;
+typedef enum { Unseen, Right, Wrong } MountState;
 
 /**
  * Idea and code base by Olaf Kirch <okir@caldera.de>
@@ -1595,14 +1595,14 @@ static void check_mount_point(const char *mounttype,
     bool pid = (strstr(fsname, ":(pid") != 0);
 
     if (nfs && !pid)
-        isslow = Qt::DockRight;
-    else if (isslow == Qt::DockRight)
+        isslow = Right;
+    else if (isslow == Right)
         isslow = Wrong;
 
     /* Does this look like automounted? */
     if (autofs || (nfs && pid)) {
-        isautofs = Qt::DockRight;
-        isslow = Qt::DockRight;
+        isautofs = Right;
+        isslow = Right;
     }
 }
 
@@ -1717,7 +1717,7 @@ static QString get_mount_info(const QString& filename,
             {
                 struct fstab *ft = getfsfile(mounted[i].f_mntonname);
                 if (!ft || strstr(ft->fs_mntops, "noauto"))
-                  ismanual = Qt::DockRight;
+                  ismanual = Right;
             }
         }
     }
@@ -1842,12 +1842,12 @@ static QString get_mount_info(const QString& filename,
                         found = true;
                         if (HASMNTOPT(fe, "noauto") ||
                             !strcmp(MOUNTTYPE(fe), "supermount"))
-                            ismanual = Qt::DockRight;
+                            ismanual = Right;
                         break;
                     }
                 }
                 if (!found || (mounttype_me == "supermount"))
-                  ismanual = Qt::DockRight;
+                  ismanual = Right;
 
                 ENDMNTENT(fstab);
             }
@@ -1858,8 +1858,8 @@ static QString get_mount_info(const QString& filename,
 
 #endif
 
-    if (isautofs == Qt::DockRight && isslow == Unseen)
-        isslow = Qt::DockRight;
+    if (isautofs == Right && isslow == Unseen)
+        isslow = Right;
 
     if (gotDevice)
     {

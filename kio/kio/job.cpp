@@ -369,14 +369,14 @@ void Job::addMetaData( const QString &key, const QString &value)
 
 void Job::addMetaData( const QMap<QString,QString> &values)
 {
-    QMapConstIterator<QString,QString> it = values.begin();
+    QMap<QString,QString>::const_iterator it = values.begin();
     for(;it != values.end(); ++it)
       m_outgoingMetaData.insert(it.key(), it.data());
 }
 
 void Job::mergeMetaData( const QMap<QString,QString> &values)
 {
-    QMapConstIterator<QString,QString> it = values.begin();
+    QMap<QString,QString>::const_iterator it = values.begin();
     for(;it != values.end(); ++it)
       m_outgoingMetaData.insert(it.key(), it.data(), false);
 }
