@@ -40,7 +40,7 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   bool safe = false;
   bool isDn;
   Q3CString result;
-  uint i;
+  int i;
 
   if ( url ) {
     result = fieldname.utf8() + ":< " + Q3CString( value.data(), value.size()+1 );
@@ -121,7 +121,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
     linelen = str.length();
     data = str.data();
     tmp.setRawData( data, linelen );
-    value = tmp.copy();
+    value = tmp;
     tmp.resetRawData( data, linelen );
 //    kdDebug(5700) << "value : " << value[0] << endl;
     return false;
@@ -154,7 +154,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
     }
     data = &line.data()[ position + 3];
     tmp.setRawData( data, linelen - position - 3 );
-    value = tmp.copy();
+    value = tmp;
     tmp.resetRawData( data, linelen - position - 3 );
     return true;
   }
@@ -166,7 +166,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
   }
   data = &line.data()[ position + 2 ];
   tmp.setRawData( data, linelen - position - 2 );
-  value = tmp.copy();
+  value = tmp;
   tmp.resetRawData( data, linelen - position - 2 );
   return false;
 }

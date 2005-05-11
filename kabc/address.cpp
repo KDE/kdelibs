@@ -495,7 +495,7 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
 int Address::findBalancedBracket( const QString &tsection, int pos ) const
 {
   int balancecounter = 0;
-  for( unsigned int i = pos + 1; i < tsection.length(); i++ ) {
+  for( int i = pos + 1; i < tsection.length(); i++ ) {
     if ( ')' == tsection[i] && 0 == balancecounter ) {
       // found end of brackets
       return i;

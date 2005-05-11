@@ -25,8 +25,6 @@
 #include <qpushbutton.h>
 #include <qspinbox.h>
 #include <q3vbox.h>
-#include <qvgroupbox.h>
-#include <qhbuttongroup.h>
 #include <qradiobutton.h>
 
 #include <kaccelmanager.h>

@@ -141,7 +141,7 @@ void importKMailAddressBook( KABC::AddressBook *ab )
   QStringList kmailEntries;
 
   QTextStream t( &f );
-  while ( !t.eof() ) {
+  while ( !t.atEnd() ) {
     kmailEntries.append( t.readLine() );
   }
   f.close();

@@ -254,7 +254,7 @@ QString VCardParser::createVCards( const VCard::List& list )
           }
 
           if ( textLine.length() > FOLD_WIDTH ) { // we have to fold the line
-            for ( uint i = 0; i <= ( textLine.length() / FOLD_WIDTH ); ++i )
+            for ( int i = 0; i <= ( textLine.length() / FOLD_WIDTH ); ++i )
               text.append( ( i == 0 ? "" : " " ) + textLine.mid( i * FOLD_WIDTH, FOLD_WIDTH ) + "\r\n" );
           } else
             text.append( textLine + "\r\n" );

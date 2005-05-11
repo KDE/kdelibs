@@ -76,7 +76,7 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
   if ( config ) {
     QMap<QString, QString> attrList;
     QStringList attributes = config->readListEntry( "LdapAttributes" );
-    for ( uint pos = 0; pos < attributes.count(); pos += 2 )
+    for ( int pos = 0; pos < attributes.count(); pos += 2 )
       mAttributes.insert( attributes[ pos ], attributes[ pos + 1 ] );
 
     mUser = config->readEntry( "LdapUser" );

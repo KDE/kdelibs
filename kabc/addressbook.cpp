@@ -115,7 +115,7 @@ AddressBook::Iterator &AddressBook::Iterator::operator++()
   do {
     bool jumped = false;
     while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      if ( d->mCurrRes == d->mResources.count() - 1 ) {
         return *this;
       }
 
@@ -138,7 +138,7 @@ AddressBook::Iterator &AddressBook::Iterator::operator++( int )
   do {
     bool jumped = false;
     while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      if ( d->mCurrRes == d->mResources.count() - 1 ) {
         return *this;
       }
 
@@ -237,7 +237,7 @@ AddressBook::ConstIterator &AddressBook::ConstIterator::operator++()
   do {
     bool jumped = false;
     while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      if ( d->mCurrRes == d->mResources.count() - 1 ) {
         return *this;
       }
 
@@ -260,7 +260,7 @@ AddressBook::ConstIterator &AddressBook::ConstIterator::operator++(int)
   do {
     bool jumped = false;
     while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      if ( d->mCurrRes == d->mResources.count() - 1 ) {
         return *this;
       }
 
@@ -414,7 +414,7 @@ AddressBook::Iterator AddressBook::begin()
   it.d->mIt = (it.d->mResources[ it.d->mCurrRes ])->begin();
 
   while ( it.d->mIt == (it.d->mResources[ it.d->mCurrRes ])->end() ) {
-    if ( (uint)it.d->mCurrRes == it.d->mResources.count() - 1 )
+    if ( it.d->mCurrRes == it.d->mResources.count() - 1 )
       return end();
 
     it.d->mCurrRes++;
@@ -441,7 +441,7 @@ AddressBook::ConstIterator AddressBook::begin() const
   it.d->mIt = (it.d->mResources[ it.d->mCurrRes ])->begin();
 
   while ( it.d->mIt == (it.d->mResources[ it.d->mCurrRes ])->end() ) {
-    if ( (uint)it.d->mCurrRes == it.d->mResources.count() - 1 )
+    if ( it.d->mCurrRes == it.d->mResources.count() - 1 )
       return end();
 
     it.d->mCurrRes++;

@@ -62,7 +62,7 @@ EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &
 
 QString EmailSelectDialog::selected()
 {
-  Q3Button *button = mButtonGroup->selected();
+  QAbstractButton *button = mButtonGroup->selected();
   if ( button ) return button->text();
   return QString::null;
 }

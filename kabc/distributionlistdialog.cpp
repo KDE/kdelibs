@@ -82,7 +82,7 @@ EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
 
 QString EmailSelector::selected()
 {
-  Q3Button *button = mButtonGroup->selected();
+  QAbstractButton *button = mButtonGroup->selected();
   if ( button ) return (*sEmailMap)[button];
   return QString::null;
 }

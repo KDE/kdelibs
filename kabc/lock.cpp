@@ -27,6 +27,7 @@
 #include <ktempfile.h>
 
 #include <qfile.h>
+#include <qtextstream.h>
 
 #include <signal.h>
 #include <sys/types.h>
