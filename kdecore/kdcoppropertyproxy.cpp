@@ -94,8 +94,30 @@ QList<QByteArray> KDCOPPropertyProxy::functions( QObject *object )
   res << "bool setProperty(QByteArray name,QVariant property)";
   res << "QValueList<QByteArray> propertyNames(bool super)";
 
-  QMetaObject *metaObj = object->metaObject();
-  Q3StrList properties = metaObj->propertyNames( true );
+  const QMetaObject *metaObj = object->metaObject();
+  for ( int i = 0; i < metaObj->propertyCount(); i++ ) {
+    QMetaProperty metaProp = metaObj->property( i );
+	QByteArray name = metaProp.name();
+	name.prepend( " " );
+	name.prepend( metaProp.type() );
+	name.append( "()" );
+	res<<name;
+    if ( metaProp.isWritable() )
+    {
+      QByteArray setName = metaProp.name();
+      setName[ 0 ] = toupper( setName[ 0 ] );
+      setName = "void set";
+	  setName.append( setName + QByteArray( "(" ) );
+	  setName.append( metaProp.type() );
+	  setName.append( QByteArray( " " ) + metaProp.name() + QByteArray( ")" ) );
+      res << setName;
+    }
+  }
+  return res;
+
+  //Qt3 code
+#if 0
+  Q3StrList properties = metaObj->propertyNames( true ); //inherited classes also
   QStrListIterator it( properties );
   for (; it.current(); ++it )
   {
@@ -119,6 +141,7 @@ QList<QByteArray> KDCOPPropertyProxy::functions( QObject *object )
   }
 
   return res;
+#endif
 }
 
 bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QByteArray &data,
@@ -157,10 +180,16 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
     stream >> b;
 
     QList<QByteArray> res;
+	for ( int i = 0 ; i < object->metaObject()->propertyCount(); i++ ) {
+		res << object->metaObject()->property( i ).name();
+	}
+	//Qt3 code
+#if 0
     Q3StrList props = object->metaObject()->propertyNames( static_cast<bool>( b ) );
     QStrListIterator it( props );
     for (; it.current(); ++it )
       res.append( it.current() );
+#endif
 
     replyType = "QValueList<QByteArray>";
     QDataStream reply( &replyData, QIODevice::WriteOnly );
@@ -178,7 +207,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   if ( set )
   {
     QVariant prop;
-    QDataStream stream( &data );
+    QDataStream stream( data );
 
     QVariant::Type type = QVariant::nameToType( arg );
     if ( type == QVariant::Invalid )
@@ -328,7 +357,7 @@ bool KDCOPPropertyProxy::decodePropertyRequestInternal( const QByteArray &fun, Q
   else
     propName.truncate( propName.length() - 2 );
 
-  if ( !object->metaObject()->propertyNames( true ).contains( propName ) )
+  if ( object->metaObject()->indexOfProperty( propName ) == -1 )
     return false;
 
   return true;
