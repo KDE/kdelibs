@@ -104,7 +104,7 @@ static Q3CString ReadLineFromStream(QTextStream& stream)
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "ReadLineFromStream:: reading line." << endl;
   Q3CString line;
   // -----
-  while(!stream.eof())
+  while(!stream.atEnd())
     {
       line=stream.readLine().ascii();
       if(!line.isEmpty())
@@ -203,7 +203,7 @@ KeyValueMap::fill(const QString& filename, bool force, bool relax)
       // Latin1 means : no conversion, when giving char*s to a QTextStream. (DF)
       stream.setEncoding(QTextStream::Latin1);
       // -----
-      while(!stream.eof())
+      while(!stream.atEnd())
 	{
 	  line=stream.readLine().ascii();
 	  if(!line.isEmpty() /* && !stream.eof() */ && !isComment(line))
@@ -360,7 +360,7 @@ KeyValueMap::parseComplexString
 	  ++first;
 	  kdDebug(GUARD, KAB_KDEBUG_AREA).form("KeyValueMap::parseComplexString: found "
 					       "a special character \"%c\".", mod[first]) << endl;
-	  if((unsigned)first==mod.length())
+	  if(first==mod.length())
 	    {
 		kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		    "KeyValueMap::parseComplexString: "
@@ -394,7 +394,7 @@ KeyValueMap::parseComplexString
 	  temp+=mod[first];
 	  ++first;
 	}
-      if((unsigned)first>=mod.length())
+      if(first>=mod.length())
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::parseComplexString: "
 	    "string lacks the closing \".\n              "
@@ -422,7 +422,7 @@ KeyValueMap::makeComplexString(const Q3CString& orig)
 				  << orig <<
       "<--\n                                into a complex string.\n";
   Q3CString temp(2*orig.length());
-  unsigned int count;
+  int count;
   // -----
   temp+='"'; // opening bracket
   for(count=0; count<orig.length(); count++)
@@ -1049,7 +1049,7 @@ KeyValueMap::get(const Q3CString& key, list<Q3CString>& values) const
 	      kdDebug() << "KeyValueMap::get[list<string>]: parse error." << endl;
 	      return false;
 	    }
-	  if((unsigned)second<raw.length()-3)
+	  if(second<raw.length()-3)
 	    { // ----- there may be another string
 	      first=second+2;
 	    } else { // ----- we are completely finished
@@ -1157,7 +1157,7 @@ KeyValueMap::get(const Q3CString& key, Q3StrList& values) const
 		kdDebug() << "KeyValueMap::get[QStrList]: parse error." << endl;
 	      return false;
 	    }
-	  if((unsigned)second<raw.length()-3)
+	  if(second<raw.length()-3)
 	    { // ----- there may be another string
 	      first=second+2;
 	    } else { // ----- we are completely finished
@@ -1248,7 +1248,7 @@ KeyValueMap::insert(const Q3CString& key, const QStringList& values, bool force)
 	     "KeyValueMap::insert[QStringList]: coding QStringList." << endl;
   // The method simply creates a list of utf8-coded strings and inserts it.
   Q3StrList utf8strings;
-  unsigned int count;
+  int count;
   // ----- create QCString list:
   for(count=0; count<values.count(); ++count)
     {
@@ -1607,7 +1607,7 @@ Section::readSection(QTextStream& file, bool finish)
 	{ // ----- eof does not matter:
 	  return true;
 	} else { // ----- verify it:
-	  if(file.eof())
+	  if(file.atEnd())
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		  "Section::readSection: EOF, line is \""<<line<<"\".\n";
@@ -1978,7 +1978,7 @@ QConfigDB::stringToKeylist(const Q3CString& desc)
       second=desc.find('/', first);
       if(second==-1)
 	{
-	  if((unsigned)first<desc.length()+1)
+	  if(first<desc.length()+1)
 	    {
 	      temp=desc.mid(first, desc.length()-first);
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
