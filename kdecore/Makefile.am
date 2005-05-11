@@ -95,11 +95,11 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
-	netsupp.cpp kprocio.cpp kbufferedio.cpp \
+	netsupp.cpp kprocio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
 	kmdcodec.cpp ksocks.cpp fakes.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
-	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp kasyncio.cpp \
+	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \
 	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp \
 	kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel \
