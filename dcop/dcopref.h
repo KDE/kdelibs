@@ -69,7 +69,7 @@ public:
    */
     template <class T> bool get(  T& t, const char* tname ) {
 	if ( typeCheck( tname, false ) ) {
-	    QDataStream reply( data, IO_ReadOnly );
+	    QDataStream reply( data );
 	    reply.setVersion(QDataStream::Qt_3_1);
 	    reply >> t;
 	    return true;
@@ -86,7 +86,7 @@ public:
    */
     template <class T> bool get(  T& t ) {
 	if ( typeCheck( dcopTypeName(t), false ) ) {
-	    QDataStream reply( data, IO_ReadOnly );
+	    QDataStream reply( data );
 	    reply.setVersion(QDataStream::Qt_3_1);
 	    reply >> t;
 	    return true;
@@ -229,7 +229,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *			     data, replyType, replyData ) ) {
  *	if ( replyType == "int" ) {
  *	    int result;
- *	    QDataStream reply( replyData, IO_ReadOnly );
+ *	    QDataStream reply( replyData );
  *	    reply >> result;
  *	    // ...
  *	}
