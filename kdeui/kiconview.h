@@ -237,9 +237,9 @@ public:
         : Q3IconViewItem( parent, text, icon ) { init(); }
     KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const QPixmap &icon )
         : Q3IconViewItem( parent, after, text, icon ) { init(); }
-    KIconViewItem( Q3IconView *parent, const QString &text, const Q3Picture &picture )
+    KIconViewItem( Q3IconView *parent, const QString &text, const QPicture &picture )
         : Q3IconViewItem( parent, text, picture ) { init(); }
-    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const Q3Picture &picture )
+    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const QPicture &picture )
         : Q3IconViewItem( parent, after, text, picture ) { init(); }
     virtual ~KIconViewItem();
 

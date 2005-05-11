@@ -21,6 +21,7 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qpixmapcache.h>
+#include <qevent.h>
 #include <q3cleanuphandler.h>
 
 #include "kiconview.h"
@@ -513,10 +514,10 @@ void KIconViewItem::calcRect( const QString& text_ )
 
     int tw = 0;
     if ( d && !d->m_pixmapSize.isNull() )
-        tw = view->maxItemWidth() - ( view->itemTextPos() == Qt::DockBottom ? 0 :
+        tw = view->maxItemWidth() - ( view->itemTextPos() == Q3IconView::Bottom ? 0 :
                                       d->m_pixmapSize.width() + 2 );
     else
-        tw = view->maxItemWidth() - ( view->itemTextPos() == Qt::DockBottom ? 0 :
+        tw = view->maxItemWidth() - ( view->itemTextPos() == Q3IconView::Bottom ? 0 :
                                       itemIconRect.width() );
     
     QFontMetrics *fm = view->itemFontMetrics();
@@ -531,7 +532,7 @@ void KIconViewItem::calcRect( const QString& text_ )
     int height = nbLines > 0 ? fm->height() * nbLines : 0xFFFFFFFF;
     
     // Should not be higher than pixmap if text is alongside icons
-    if ( view->itemTextPos() != Qt::DockBottom ) {
+    if ( view->itemTextPos() != Q3IconView::Bottom ) {
         if ( d && !d->m_pixmapSize.isNull() )
             height = QMIN( d->m_pixmapSize.height() + 2, height );
         else
@@ -549,7 +550,7 @@ void KIconViewItem::calcRect( const QString& text_ )
     itemTextRect.setHeight( r.height() );
 
     int w = 0;    int h = 0;    int y = 0;
-    if ( view->itemTextPos() == Qt::DockBottom ) {
+    if ( view->itemTextPos() == Q3IconView::Bottom ) {
         // If the pixmap size has been specified, use it
         if ( d && !d->m_pixmapSize.isNull() )
         {
@@ -654,7 +655,7 @@ void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
 
 #ifndef QT_NO_PICTURE
     if ( picture() ) {
-	Q3Picture *pic = picture();
+	QPicture *pic = picture();
 	if ( isSelected() ) {
             // TODO something as nice as selectedIconPixmap if possible ;)
 	    p->fillRect( pixmapRect( false ), QBrush( cg.highlight(), Qt::Dense4Pattern) );
@@ -677,7 +678,7 @@ void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
         if ( d && !d->m_pixmapSize.isNull() )
         {
             int offset = 0;
-            if ( kview->itemTextPos() == Qt::DockBottom )
+            if ( kview->itemTextPos() == Q3IconView::Bottom )
                 offset = d->m_pixmapSize.height() - pix->height();
             else
                 offset = ( d->m_pixmapSize.height() - pix->height() ) / 2;
@@ -708,7 +709,7 @@ void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
         p->setPen( cg.text() );
     }
 
-    int align = iconView()->itemTextPos() == Qt::DockBottom ? Qt::AlignHCenter : Qt::AlignLeft;
+    int align = iconView()->itemTextPos() == Q3IconView::Bottom ? Qt::AlignHCenter : Qt::AlignLeft;
     m_wordWrap->drawText( p, textX, textY, align | KWordWrap::Truncate );
 }
 
