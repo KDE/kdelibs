@@ -54,7 +54,7 @@ public:
 	T t;
 	dcopTypeInit(t);
 	if ( typeCheck( dcopTypeName(t), true ) ) {
-	    QDataStream reply( data, IO_ReadOnly );
+	    QDataStream reply( data );
 	    reply.setVersion(QDataStream::Qt_3_1);
 	    reply >> t;
 	}
