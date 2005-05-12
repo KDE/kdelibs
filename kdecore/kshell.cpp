@@ -27,8 +27,10 @@
 #include <pwd.h>
 #include <sys/types.h>
 
-static int fromHex( QChar c )
+static int fromHex( QChar cUnicode )
 {
+    char c = cUnicode.toAscii ();
+
     if (c >= '0' && c <= '9')
         return c - '0';
     else if (c >= 'A' && c <= 'F')
@@ -38,7 +40,7 @@ static int fromHex( QChar c )
     return -1;
 }
 
-inline static bool isQuoteMeta( uint c )
+inline static bool isQuoteMeta( QChar cUnicode )
 {
 #if 0 // it's not worth it, especially after seeing gcc's asm output ...
     static const uchar iqm[] = {
@@ -48,16 +50,19 @@ inline static bool isQuoteMeta( uint c )
     
     return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
 #else
+    char c = cUnicode.toAscii();
     return c == '\\' || c == '\'' || c == '"' || c == '$';
 #endif
 }
 
-inline static bool isMeta( uint c )
+inline static bool isMeta( QChar cUnicode )
 {
     static const uchar iqm[] = {
         0x00, 0x00, 0x00, 0x00, 0xdc, 0x07, 0x00, 0xd8,
         0x00, 0x00, 0x00, 0x10, 0x01, 0x00, 0x00, 0x38
     }; // \'"$`<>|;&(){}*?#
+    
+    uint c = cUnicode.unicode ();
     
     return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
 }
@@ -162,7 +167,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
                         if (pos >= args.length())
                             goto quoteerr;
                         c = args.unicode()[pos++];
-                        switch (c) {
+                        switch (c.toAscii()) {
                         case 'a': cret += '\a'; break;
                         case 'b': cret += '\b'; break;
                         case 'e': cret += '\033'; break;
@@ -172,7 +177,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
                         case 't': cret += '\t'; break;
                         case '\\': cret += '\\'; break;
                         case '\'': cret += '\''; break;
-                        case 'c': cret += args[pos++] & 31; break;
+                        case 'c': cret += args[pos++].toAscii() & 31; break;
                         case 'x':
                           {
                             int hv = fromHex( args[pos] );
@@ -189,13 +194,14 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
                             break;
                           }
                         default:
-                            if (c >= '0' && c <= '7') {
-                                int hv = c - '0';
+                            if (c.toAscii() >= '0' && c.toAscii() <= '7') {
+                                char cAscii = c.toAscii();
+                                int hv = cAscii - '0';
                                 for (int i = 0; i < 2; i++) {
                                     c = args[pos];
-                                    if (c < '0' || c > '7')
+                                    if (c.toAscii() < '0' || c.toAscii() > '7')
                                         break;
-                                    hv = hv * 8 + (c - '0');
+                                    hv = hv * 8 + (c.toAscii() - '0');
                                     pos++;
                                 }
                                 cret += QChar( hv );
@@ -244,13 +250,14 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
    return QStringList();
 }
 
-inline static bool isSpecial( uint c )
+inline static bool isSpecial( QChar cUnicode )
 {
     static const uchar iqm[] = {
         0xff, 0xff, 0xff, 0xff, 0xdd, 0x07, 0x00, 0xd8,
         0x00, 0x00, 0x00, 0x10, 0x01, 0x00, 0x00, 0x38
     }; // 0-32 \'"$`<>|;&(){}*?#
     
+    uint c = cUnicode.unicode ();
     return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
 }
 
@@ -320,9 +327,9 @@ QString KShell::joinArgsDQ( const QStringList &args )
         else {
             for (uint i = 0; i < (*it).length(); i++)
                 if (isSpecial((*it).unicode()[i])) {
-                    ret.append( '$' ).append( q );
+                    ret.append( QChar::fromAscii('$') ).append( q );
                     for (uint pos = 0; pos < (*it).length(); pos++) {
-                        int c = (*it).unicode()[pos];
+                        int c = (*it).unicode()[pos].unicode();
                         if (c < 32) {
                             ret += bs;
                             switch (c) {
