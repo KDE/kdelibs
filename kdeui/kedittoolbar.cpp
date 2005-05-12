@@ -44,6 +44,7 @@
 #include <kdebug.h>
 #include <kpushbutton.h>
 #include <kprocio.h>
+#include <QDropEvent>
 
 static const char * const lineseparatorstring = I18N_NOOP("--- line separator ---");
 static const char * const separatorstring = I18N_NOOP("--- separator ---");

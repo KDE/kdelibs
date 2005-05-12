@@ -466,7 +466,7 @@ public:
 
   QPointer<KDockWidget> mainDockWidget;
 
-  QObjectList containerDocks;
+  QList<QObject*> containerDocks;
 
   QPointer<KDockWidget> leftContainer;
   QPointer<KDockWidget> topContainer;
@@ -1577,16 +1577,14 @@ void KDockWidget::dockBack()
   if( formerBrotherDockWidget) {
     // search all children if it tries to dock back to a child
     bool found = false;
-    QObjectList* cl = queryList("KDockWidget");
-    QObjectListIt it( *cl );
-    QObject * obj;
-    while ( !found && (obj=it.current()) != 0 ) {
-      ++it;
-      QWidget* widg = (QWidget*)obj;
-      if( widg == formerBrotherDockWidget)
-        found = true;
-    }
-    delete cl;
+    QList<QObject*> cl = queryList("KDockWidget");
+	foreach ( QObject*obj, cl ) {
+		while ( !found && obj!= 0 ) {
+			QWidget* widg = (QWidget*)obj;
+			if( widg == formerBrotherDockWidget)
+				found = true;
+		}
+	}
 
     if( !found) {
       // can dock back to the former brother dockwidget
@@ -1660,8 +1658,7 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
   connect( menu, SIGNAL(aboutToShow()), SLOT(slotMenuPopup()) );
   connect( menu, SIGNAL(activated(int)), SLOT(slotMenuActivated(int)) );
 
-  childDock = new QObjectList();
-  childDock->setAutoDelete( false );
+  childDock = new QList<QObject*>();
 }
 
 
@@ -1675,12 +1672,12 @@ KDockManager::~KDockManager()
   delete menuData;
   delete menu;
 
-  QObjectListIt it( *childDock );
   KDockWidget * obj;
-
-  while ( (obj=(KDockWidget*)it.current()) ) {
+  foreach ( QObject *o, *childDock ) {
+  	obj=(KDockWidget*)o;
     delete obj;
   }
+
   delete childDock;
   delete d;
   d=0;
@@ -1688,11 +1685,9 @@ KDockManager::~KDockManager()
 
 void KDockManager::activate()
 {
-  QObjectListIt it( *childDock );
   KDockWidget * obj;
-
-  while ( (obj=(KDockWidget*)it.current()) ) {
-    ++it;
+  foreach ( QObject *o, *childDock ) {
+  	obj=(KDockWidget*)o;
     if ( obj->widget ) obj->widget->show();
     if ( !obj->parentDockTabGroup() ){
         obj->show();

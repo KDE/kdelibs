@@ -65,7 +65,7 @@ void KDialog::keyPressEvent(QKeyEvent *e)
       case Qt::Key_Enter:
       case Qt::Key_Return:
       {
-        if(testWFlags(Qt::WType_Dialog | Qt::WShowModal))
+        if(testAttribute(Qt::WA_ShowModal) && ( windowFlags() & Qt::Dialog ) )
 	{
           QDialog::keyPressEvent(e);
 	}
@@ -140,18 +140,15 @@ void KDialog::resizeLayout( QWidget *w, int margin, int spacing )
     resizeLayout( w->layout(), margin, spacing );
   }
 
-  if( w->children() )
+  if ( w->children().count() > 0 )
   {
-    const QObjectList * const l = w->children();
-    QObjectListIterator itr(*l);
-    QObject *o;
-    while ((o = itr.current()) != 0) {
-      if( o->isWidgetType() )
-      {
-	resizeLayout( (QWidget*)o, margin, spacing );
-      }
-      ++itr;
-    }
+	  QList<QObject*> l = w->children();
+	  foreach ( QObject *o, l ) {
+		  if( o->isWidgetType() )
+		  {
+			  resizeLayout( (QWidget*)o, margin, spacing );
+		  }
+	  }
   }
 }
 

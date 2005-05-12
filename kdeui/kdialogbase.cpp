@@ -31,7 +31,9 @@
 #include <q3vbox.h>
 #include <q3whatsthis.h>
 #include <qtimer.h>
-#include <qfocusdata.h>
+#include <QKeyEvent>
+#include <QHideEvent>
+#include <QDesktopWidget>
 
 #include <kapplication.h>
 #include <klocale.h>
