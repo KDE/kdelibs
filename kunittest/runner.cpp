@@ -62,7 +62,7 @@ namespace KUnitTest
         // Get a list of all modules.
         QStringList modules = dir.entryList();
 
-        for ( uint i = 0; i < modules.count(); ++i )
+        for ( int i = 0; i < modules.count(); ++i )
         {
             QString module = modules[i];
             kdDebug() << "Module: " << dir.absPath() + "/" + module << endl;
@@ -182,7 +182,7 @@ namespace KUnitTest
                 str = QString( "%1 of %2 tests did not behave as expected (%1 unexpected passes)" ).arg( globalFails ).arg( numTests ).arg( globalXPasses );
         if ( globalSkipped )
             str += QString( " (%1 tests skipped)" ).arg( globalSkipped );
-        cout << str.local8Bit() << endl;
+        cout << str.toLocal8Bit().constData() << endl;
 #endif
 
         return m_registry.count();
