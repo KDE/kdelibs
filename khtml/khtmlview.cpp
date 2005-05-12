@@ -1280,7 +1280,8 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
         if( !_ke->isAutoRepeat())
         {
             bool ret = dispatchKeyEventHelper( _ke, false ); // keydown
-            if( dispatchKeyEventHelper( _ke, true )) // keypress
+            // don't send keypress even if keydown was blocked, like IE (and unlike Mozilla)
+            if( !ret && dispatchKeyEventHelper( _ke, true )) // keypress
                 ret = true;
             return ret;
         }

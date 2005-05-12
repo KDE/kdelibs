@@ -1,5 +1,8 @@
 2005-05-12  David Faure  <faure@kde.org>
 
+        * khtmlview.cpp (dispatchKeyEvent): Don't send DOM keypress if
+        the DOM keydown that precedes it was blocked by javascript, as in IE.
+
         * rendering/render_replaced.cpp (handleEvent): send Qt::KeyPress to the
         widget for DOM keypress and not DOM keydown to allow sites to block a key
         with onkeypress, #99749.
