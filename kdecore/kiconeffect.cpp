@@ -32,7 +32,12 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
-#if defined(Q_WS_WIN) || defined(Q_WS_MACX)
+
+#ifdef __GNUC__
+    #warning "qt_use_xrender && qt_use_xft replacements for qt 4 missing - cullmann"
+#endif
+
+#if defined(Q_WS_WIN) || defined(Q_WS_MACX) || !defined(HACK_FOR_QT_4)
 static bool qt_use_xrender=true;
 static bool qt_has_xft=true;
 #else
