@@ -25,8 +25,6 @@
 
 #include "kshortcut.h"
 
-class QLabel;
-
 class KAccelActions;
 
 /**
@@ -54,7 +52,6 @@ class KDECORE_EXPORT KShortcutMenu : public Q3PopupMenu
 	
 	KAccelActions* m_pActions;
 	KKeySequence m_seq;
-	QLabel* pTitle;
 	IndexToKKeySequence m_seqs;
 };
 

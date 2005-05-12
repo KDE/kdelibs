@@ -18,7 +18,6 @@
 */
 
 #include <qkeysequence.h>
-#include <qlabel.h>
 #include <q3popupmenu.h>
 #include <q3frame.h>
 
@@ -34,15 +33,6 @@ KShortcutMenu::KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySeq
 	m_seq( seq )
 {
 	kdDebug() << seq.toStringInternal() << endl;
-	
-	QFont fontTitle = KGlobalSettings::menuFont();
-	fontTitle.setBold( true );
-	
-	pTitle = new QLabel( "", (QWidget*)0 );
-	pTitle->setFont( fontTitle );
-	pTitle->setFrameShape( Q3Frame::Panel );	
-	
-	insertItem( pTitle );
 }
 
 bool KShortcutMenu::insertAction( uint iAction, KKeySequence seq )
@@ -60,7 +50,7 @@ bool KShortcutMenu::insertAction( uint iAction, KKeySequence seq )
 
 void KShortcutMenu::updateShortcuts()
 {
-	pTitle->setText( m_seq.toString() + ",..." );
+	setTitle( m_seq.toString() + ",..." );
 	
 	for( uint iItem = 1; iItem < count(); iItem++ ) {
 		int iAction = idAt( iItem );
