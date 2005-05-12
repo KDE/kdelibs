@@ -610,6 +610,10 @@ protected:
         {
             EastText  = Generic::WidgetSpecificBase, //Special rotated text for east tabs.
             WestText,                                //Special rotated text for west tabs.
+            NorthTab,
+            EastTab,
+            WestTab,
+            SouthTab
         };
     };
    

@@ -28,6 +28,7 @@
 #include "gradients.h"
 #include "keramikimage.h"
 #include <qpolygon.h>
+#include <QStyleOptionTab>
 
 #define loader Keramik::PixmapLoader::the()
 
@@ -500,6 +501,64 @@ public:
 					
 				}
 			}
+
+			case WT_Tab:
+			{
+				const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
+				switch (primitive)
+				{
+					case Tab::NorthTab:
+					case Tab::SouthTab:
+					{
+						QStyleOptionTab::TabPosition pos = tabOpt->position;
+						//Adjust for RTL
+						if (tabOpt->direction == Qt::RightToLeft)
+						{
+							if (pos == QStyleOptionTab::End)
+								pos = QStyleOptionTab::Beginning;
+							else if (pos == QStyleOptionTab::Beginning)
+								pos = QStyleOptionTab::End;
+						}
+					
+						if ( flags & State_Selected )
+						{
+							QRect tabRect = r;
+							//If not the right-most tab, readjust the painting to be one pixel wider
+							//to avoid a doubled line
+							if (pos != QStyleOptionTab::End)
+									tabRect.setWidth( tabRect.width() + 1);
+	
+							Keramik::ActiveTabPainter(primitive == Tab::SouthTab).draw(p, tabRect,
+									pal.button().color().light(110), pal.background().color(),
+									disabled);
+						}
+						else
+						{
+							int x, y, w, h;
+							r.getRect(&x, &y, &w, &h);
+							if (primitive == Tab::SouthTab)
+							{
+								Keramik::InactiveTabPainter(pos, true).draw(
+									p, x, y, w, h - 3, pal.button().color(), pal.background().color(),
+									disabled);
+								p->setPen  (pal.dark());
+								p->drawLine(x, y, x + w, y);
+							}
+							else
+							{
+								Keramik::InactiveTabPainter(pos, false).draw(
+									p, x, y + 3, w, h - 3, pal.button().color(), pal.background().color(), disabled);
+								p->setPen  (pal.light());
+								p->drawLine(x, y + h - 1, x + w, y + h - 1);
+							}
+						}
+					}
+					return;
+				//### TODO: Handle east, west tabs
+				};
+				
+			}
+			break;
 		}
 
 		//Handle default fallbacks

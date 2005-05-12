@@ -26,6 +26,7 @@
 
 #include <qcache.h>
 #include <qimage.h>
+#include <QStyleOptionTab>
 
 class QPixmap;
 class QImage;
@@ -318,15 +319,14 @@ namespace Keramik
 	class InactiveTabPainter : public RectTilePainter
 	{
 	public:
-		enum Mode { First, Middle, Last };
-		InactiveTabPainter( Mode mode, bool bottom );
+		InactiveTabPainter( QStyleOptionTab::TabPosition mode, bool bottom );
 		virtual ~InactiveTabPainter() {};
 
 	protected:
 		virtual int tileName( unsigned int column, unsigned int row ) const;
 
 	private:
-		Mode m_mode;
+		QStyleOptionTab::TabPosition m_mode;
 		bool m_bottom;
 	};
 

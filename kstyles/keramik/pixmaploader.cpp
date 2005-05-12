@@ -519,8 +519,8 @@ int ActiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 	return RectTilePainter::tileName( column, row );
 }
 
-#if 0
-InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
+
+InactiveTabPainter::InactiveTabPainter( QStyleOptionTab::TabPosition mode, bool bottom )
 	: RectTilePainter( bottom? keramik_tab_bottom_inactive: keramik_tab_top_inactive, false),
 	  m_mode( mode ), m_bottom( bottom )
 {
@@ -566,23 +566,25 @@ InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
 	tile.
     */
 
-	Mode rightMost = QApplication::reverseLayout() ? First : Last;
-	m_columns = (m_mode == rightMost ? 3 : 2);
+	//Mode rightMost = QApplication::reverseLayout() ? First : Last;
+	//### RTL?
+	m_columns = (m_mode == QStyleOptionTab::End ? 3 : 2);
 }
 
 
 
 int InactiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 {
-	Mode leftMost = QApplication::reverseLayout() ? Last : First;
-	if ( column == 0 && m_mode != leftMost )
+	//### RTL?
+	//Mode leftMost = QApplication::reverseLayout() ? Last : First;
+	if ( column == 0 && m_mode != QStyleOptionTab::Beginning)
 		return KeramikTileSeparator;
 	if ( m_bottom )
 		return RectTilePainter::tileName( column, row + 1 );
 	return RectTilePainter::tileName( column, row );
 }
 
-#endif
+
 ScrollBarPainter::ScrollBarPainter( int type, int count, bool horizontal )
 	: TilePainter( name( horizontal ) ),
 	  m_type( type ),

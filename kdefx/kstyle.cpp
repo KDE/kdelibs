@@ -106,9 +106,7 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor,
                             ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText));
 
-    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin, 5);
-    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin + Top,  10);
-    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin + Left, 5);
+    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin, 6);
 
     setWidgetLayoutProp(WT_Tab, Tab::FocusMargin, 3);
 }
@@ -170,7 +168,10 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
     }
     else if (primitive == Generic::FocusIndicator)
     {
-        p->setPen(Qt::blue);
+        QPen pen;
+        pen.setWidth(0);
+        pen.setStyle(Qt::DotLine);
+        p->setPen(pen);
         drawInsideRect(p, r);
     }
     else
@@ -1090,12 +1091,20 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
             if (!tabOpt) return;
 
-            //The bevel is pretty easy to draw, we just route the direction
-            //To the appropriate primitive.
-            //Note that we handle triangular tabs just as around ones.
-            //###
-            p->setPen(Qt::red);
-            drawInsideRect(p, r);
+            int prim;
+            switch (tabSide(tabOpt))
+            {
+            case North:
+                prim = Tab::NorthTab; break;
+            case South:
+                prim = Tab::SouthTab; break;
+            case East:
+                prim = Tab::EastTab; break;
+            default:
+                prim = Tab::WestTab; break;
+            }
+
+            drawKStylePrimitive(WT_Tab, prim, option, r, pal, flags, p, widget);
 
             break;
         }
