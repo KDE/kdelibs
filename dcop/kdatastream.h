@@ -1,6 +1,7 @@
 #ifndef __kdatastream__h
 #define __kdatastream__h
 
+#include <QSysInfo>
 #include <qdatastream.h>
 
 //Compatibility classes for QCString, QCStringArray, that provide marshalling,
@@ -42,6 +43,57 @@ typedef QList<DCOPCString> DCOPCStringList; //Marshalls appropriately..
 inline const char* dcopTypeName( const DCOPCStringList& ) { return "QCStringList"; }
 inline const char* dcopTypeName( const DCOPCString&     ) { return "QCString";     }
 
+/**
+ Compatibility with Qt/KDE3: unfortunately, the size varies between platforms.
+ To make things even more fun, the encoding on 64-bit platforms is -different-
+ from the long encoding. Whee!
+*/
+inline QDataStream & operator << (QDataStream & str, unsigned long val)
+{
+    QByteArray buf(sizeof(unsigned long), '\0');
+    qMemCopy(buf.data(), (unsigned char*)&val, sizeof(unsigned long));
+
+    //Swap if need be
+    if ((int)str.byteOrder() != QSysInfo::ByteOrder)
+    {
+        for (int low = 0; low <= (buf.size()/2 - 1); ++low)
+            qSwap(buf.data()[low], buf.data()[buf.size() - 1 - low]);
+    }
+
+    //Write out.
+    return str.writeRawBytes(buf.data(), buf.size());
+}
+
+inline QDataStream & operator >> (QDataStream & str, unsigned long& val)
+{
+    QByteArray buf(sizeof(unsigned long), '\0');
+    str.readRawBytes(buf.data(), buf.size());
+
+    //Swap if need be
+    if ((int)str.byteOrder() != QSysInfo::ByteOrder)
+    {
+        for (int low = 0; low <= (buf.size()/2 - 1); ++low)
+            qSwap(buf.data()[low], buf.data()[buf.size() - 1 - low]);
+    }
+
+    //Store in the val
+    qMemCopy((unsigned char*)&val, buf.data(), sizeof(unsigned long));
+
+    return str;
+}
+
+inline QDataStream & operator << (QDataStream & str, long val)
+{
+    return str << (unsigned long)val;
+}
+
+inline QDataStream & operator >> (QDataStream & str, long& val)
+{
+    unsigned long tmp;
+    (str >> tmp);
+    val = (long)tmp;
+    return str;
+}
 
 inline QDataStream & operator << (QDataStream & str, const DCOPCString& s)
 {
