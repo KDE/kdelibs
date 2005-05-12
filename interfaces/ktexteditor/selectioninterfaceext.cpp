@@ -15,7 +15,7 @@
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-   
+
    $Id$
 */
 
@@ -32,7 +32,7 @@ class KTextEditor::PrivateSelectionInterfaceExt {
   public:
     PrivateSelectionInterfaceExt() : interface( 0 ) {};
     ~PrivateSelectionInterfaceExt() {};
-    
+
     SelectionExtDCOPInterface *interface;
 };
 
@@ -68,7 +68,7 @@ SelectionInterfaceExt *KTextEditor::selectionInterfaceExt (Document *doc)
   if (!doc)
     return 0;
 
-  return static_cast<SelectionInterfaceExt*>(doc->qt_cast("KTextEditor::SelectionInterfaceExt"));
+  return qobject_cast<SelectionInterfaceExt*>( doc );
 }
 
 SelectionInterfaceExt *KTextEditor::selectionInterfaceExt (View *view)
@@ -76,7 +76,7 @@ SelectionInterfaceExt *KTextEditor::selectionInterfaceExt (View *view)
   if (!view)
     return 0;
 
-  return static_cast<SelectionInterfaceExt*>(view->qt_cast("KTextEditor::SelectionInterfaceExt"));
+  return qobject_cast<SelectionInterfaceExt*>( view );
 }
 
 //END KTextEditor::SelectionInterfaceExt

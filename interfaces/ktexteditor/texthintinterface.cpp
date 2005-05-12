@@ -54,11 +54,11 @@ unsigned int TextHintInterface::textHintInterfaceNumber () const
 
 
 TextHintInterface *textHintInterface (View *view)
-{                
+{
   if (!view)
     return 0;
 
-  return static_cast<TextHintInterface*>(view->qt_cast("KTextEditor::TextHintInterface"));
+  return qobject_cast<TextHintInterface*>( view );
 }
 
 

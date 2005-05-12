@@ -61,9 +61,9 @@ void PopupMenuInterface::setPopupMenuInterfaceDCOPSuffix (const Q3CString &/*suf
 }
 
 PopupMenuInterface *KTextEditor::popupMenuInterface (View *view)
-{        
+{
   if (!view)
     return 0;
 
-  return static_cast<PopupMenuInterface*>(view->qt_cast("KTextEditor::PopupMenuInterface"));
+  return qobject_cast<PopupMenuInterface*>( view );
 }

@@ -68,9 +68,9 @@ void EncodingInterface::setEncodingInterfaceDCOPSuffix (const Q3CString &suffix)
 }
 
 EncodingInterface *KTextEditor::encodingInterface (Document *doc)
-{         
+{
   if (!doc)
     return 0;
 
-  return static_cast<EncodingInterface*>(doc->qt_cast("KTextEditor::EncodingInterface"));
+  return qobject_cast<EncodingInterface*>( doc );
 }

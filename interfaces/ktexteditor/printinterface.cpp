@@ -66,9 +66,9 @@ void PrintInterface::setPrintInterfaceDCOPSuffix (const Q3CString &suffix)
 }
 
 PrintInterface *KTextEditor::printInterface (Document *doc)
-{           
+{
   if (!doc)
     return 0;
 
-  return static_cast<PrintInterface*>(doc->qt_cast("KTextEditor::PrintInterface"));
+  return qobject_cast<PrintInterface*>( doc );
 }

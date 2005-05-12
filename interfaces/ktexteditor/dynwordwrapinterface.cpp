@@ -61,9 +61,9 @@ void DynWordWrapInterface::setDynWordWrapInterfaceDCOPSuffix (const Q3CString &/
 }
 
 DynWordWrapInterface *KTextEditor::dynWordWrapInterface (View *view)
-{           
+{
   if (!view)
     return 0;
 
-  return static_cast<DynWordWrapInterface*>(view->qt_cast("KTextEditor::DynWordWrapInterface"));
+  return qobject_cast<KTextEditor::DynWordWrapInterface*>( view );
 }

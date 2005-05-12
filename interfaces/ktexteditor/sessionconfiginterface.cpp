@@ -64,25 +64,25 @@ void SessionConfigInterface::setSessionConfigInterfaceDCOPSuffix (const Q3CStrin
 }
 
 SessionConfigInterface *KTextEditor::sessionConfigInterface (Document *doc)
-{                       
+{
   if (!doc)
     return 0;
 
-  return static_cast<SessionConfigInterface*>(doc->qt_cast("KTextEditor::SessionConfigInterface"));
-}      
+  return qobject_cast<SessionConfigInterface*>( doc );
+}
 
 SessionConfigInterface *KTextEditor::sessionConfigInterface (View *view)
-{                       
+{
   if (!view)
     return 0;
 
-  return static_cast<SessionConfigInterface*>(view->qt_cast("KTextEditor::SessionConfigInterface"));
+  return qobject_cast<SessionConfigInterface*>( view );
 }
 
 SessionConfigInterface *KTextEditor::sessionConfigInterface (Plugin *plugin)
-{                       
+{
   if (!plugin)
     return 0;
 
-  return static_cast<SessionConfigInterface*>(plugin->qt_cast("KTextEditor::SessionConfigInterface"));
+  return qobject_cast<SessionConfigInterface*>( plugin );
 }

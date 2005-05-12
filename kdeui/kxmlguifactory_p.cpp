@@ -636,7 +636,7 @@ void BuildHelper::processStateElement( const QDomElement &element )
 {
     QString stateName = element.attribute( "name" );
 
-    if ( !stateName || !stateName.length() ) return;
+    if ( stateName.isNull() || !stateName.length() ) return;
 
     for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling() )
     {

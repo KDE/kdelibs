@@ -18,8 +18,8 @@
 
 // $Id$
 
-#include "viewstatusmsginterface.h"       
-#include "viewstatusmsgdcopinterface.h" 
+#include "viewstatusmsginterface.h"
+#include "viewstatusmsgdcopinterface.h"
 #include "view.h"
 
 #include <qstring.h>
@@ -68,9 +68,9 @@ void ViewStatusMsgInterface::setViewStatusMsgInterfaceDCOPSuffix (const Q3CStrin
 }
 
 ViewStatusMsgInterface *KTextEditor::viewStatusMsgInterface (View *view)
-{           
+{
   if (!view)
     return 0;
 
-  return static_cast<ViewStatusMsgInterface*>(view->qt_cast("KTextEditor::ViewStatusMsgInterface"));
+  return qobject_cast<ViewStatusMsgInterface*>( view );
 }

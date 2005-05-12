@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
+#include <Q3ValueList>
 #include <qmap.h>
 
 #include <cups/ipp.h>

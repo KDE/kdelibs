@@ -22,6 +22,7 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <qwidget.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -46,7 +47,7 @@ class KTEXTEDITOR_EXPORT TemplateInterface //should be named AbstractTemplateInt
      * Parses @p templateString for macros in the form [$%]{NAME} and finds
      * the value corresponding to NAME if any. The NAME string may contain
      * any non-whitespace character execpt '}'
-     * @param initialValues a map with the keys for the macros to expand. 
+     * @param initialValues a map with the keys for the macros to expand.
      * keys with a value are ignored.
      * @param parentWindow is used if dialogs have to be shown
      * @return true if all macros was sucessfully expanded

@@ -3,11 +3,12 @@
 #include "q3cstring.h"
 #include <qtextcodec.h>
 #include <q3cleanuphandler.h>
+#include <stdio.h>
 #include <config.h>
 
 
-/* If HAVE_LIBTHAI is defined, libkhtml will link against 
- * libthai since compile time. Otherwise it will try to 
+/* If HAVE_LIBTHAI is defined, libkhtml will link against
+ * libthai since compile time. Otherwise it will try to
  * dlopen at run-time
  *
  * Ott Pattara Nov 14, 2004
@@ -62,7 +63,7 @@ namespace khtml {
 	//printf("Entering isBreakableThai with pos = %d\n", pos);
 
 #ifndef HAVE_LIBTHAI
-	
+
 	KLibrary *lib = 0;
 
         /* load libthai dynamically */

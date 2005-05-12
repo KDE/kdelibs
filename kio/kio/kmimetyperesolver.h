@@ -25,6 +25,7 @@
 #include <q3ptrlist.h>
 #include <qtimer.h>
 #include <kdebug.h>
+#include <QEvent>
 
 /**
  * @internal

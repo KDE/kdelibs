@@ -47,9 +47,9 @@ void SearchInterface::setSearchInterfaceDCOPSuffix (const Q3CString &suffix)
 }
 
 SearchInterface *KTextEditor::searchInterface (Document *doc)
-{  
+{
   if (!doc)
     return 0;
 
-  return static_cast<SearchInterface*>(doc->qt_cast("KTextEditor::SearchInterface"));
+  return qobject_cast<KTextEditor::SearchInterface*>( doc );
 }

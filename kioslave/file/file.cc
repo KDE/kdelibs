@@ -1064,7 +1064,7 @@ void FileProtocol::listDir( const KURL& url)
     }
 
     UDSEntry entry;
-    QStrListIterator it(entryNames);
+    Q3StrListIterator it(entryNames);
     for (; it.current(); ++it) {
         entry.clear();
         if ( createUDSEntry( QFile::decodeName(*it), *it /* we can use the filename as relative path*/, entry, 2 ) )

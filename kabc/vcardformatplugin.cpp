@@ -110,7 +110,7 @@ void VCardFormatPlugin::saveAll( AddressBook*, Resource *resource, QFile *file )
 
 bool VCardFormatPlugin::checkFormat( QFile *file ) const
 {
-  QString line;
+  QCString line;
 
   file->readLine( line, 1024 );
   line = line.stripWhiteSpace();

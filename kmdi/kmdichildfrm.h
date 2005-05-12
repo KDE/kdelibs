@@ -34,7 +34,7 @@
 #include <qlabel.h>
 #include <qdatetime.h>
 #include <qlayout.h>
-
+#include <Q3Frame>
 #include <q3dict.h>
 
 #include "kmdichildfrmcaption.h"

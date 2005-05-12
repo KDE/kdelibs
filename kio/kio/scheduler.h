@@ -27,6 +27,7 @@
 #include <qtimer.h>
 #include <q3ptrdict.h>
 #include <qmap.h>
+#include <Q3CStringList>
 
 #include <dcopobject.h>
 

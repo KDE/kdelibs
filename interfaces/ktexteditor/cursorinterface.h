@@ -21,6 +21,7 @@
 
 #include <q3ptrlist.h>
 #include <qstring.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -56,9 +57,9 @@ class KTEXTEDITOR_EXPORT CursorInterface
     virtual ~CursorInterface ();
 
     unsigned int cursorInterfaceNumber () const;
-    
-  protected:  
-    void setCursorInterfaceDCOPSuffix (const Q3CString &suffix);  
+
+  protected:
+    void setCursorInterfaceDCOPSuffix (const Q3CString &suffix);
 
   public:
     /**

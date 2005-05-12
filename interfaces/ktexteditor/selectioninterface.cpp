@@ -52,7 +52,7 @@ SelectionInterface *KTextEditor::selectionInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return static_cast<SelectionInterface*>(doc->qt_cast("KTextEditor::SelectionInterface"));
+  return qobject_cast<KTextEditor::SelectionInterface*>( doc );
 }
 
 SelectionInterface *KTextEditor::selectionInterface (View *view)
@@ -60,6 +60,6 @@ SelectionInterface *KTextEditor::selectionInterface (View *view)
   if (!view)
     return 0;
 
-  return static_cast<SelectionInterface*>(view->qt_cast("KTextEditor::SelectionInterface"));
+  return qobject_cast<KTextEditor::SelectionInterface*>( view );
 }
 

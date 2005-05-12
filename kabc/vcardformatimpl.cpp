@@ -688,7 +688,7 @@ Secrecy VCardFormatImpl::readClassValue( ContentLine *cl )
     return Secrecy();
 }
 
-void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Qt::Key &key )
+void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Key &key )
 {
   ContentLine cl;
   cl.setName( EntityTypeToParamName( EntityKey ) );
@@ -717,9 +717,9 @@ void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Qt::Key &key )
   vcard->add( cl );
 }
 
-Qt::Key VCardFormatImpl::readKeyValue( VCARD::ContentLine *cl )
+Key VCardFormatImpl::readKeyValue( VCARD::ContentLine *cl )
 {
-  Qt::Key key;
+  Key key;
   bool isBinary = false;
   TextValue *v = (TextValue *)cl->value();
 

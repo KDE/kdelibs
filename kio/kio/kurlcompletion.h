@@ -30,6 +30,7 @@
 
 class KURL;
 class KURLCompletionPrivate;
+class QCustomEvent;
 
 /**
  * This class does completion of URLs including user directories (~user)

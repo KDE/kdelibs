@@ -25,6 +25,7 @@
 
 #include <q3ptrlist.h>
 #include <q3valuevector.h>
+#include <Q3MemArray>
 
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"

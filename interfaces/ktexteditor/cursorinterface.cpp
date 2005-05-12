@@ -61,9 +61,9 @@ void CursorInterface::setCursorInterfaceDCOPSuffix (const Q3CString &/*suffix*/)
 }
 
 CursorInterface *KTextEditor::cursorInterface (Document *doc)
-{               
+{
   if (!doc)
     return 0;
 
-  return static_cast<CursorInterface*>(doc->qt_cast("KTextEditor::CursorInterface"));
+  return qobject_cast<KTextEditor::CursorInterface*>( doc );
 }

@@ -70,5 +70,5 @@ ViewCursorInterface *KTextEditor::viewCursorInterface (View *view)
   if (!view)
     return 0;
 
-  return static_cast<ViewCursorInterface*>(view->qt_cast("KTextEditor::ViewCursorInterface"));
+  return qobject_cast<KTextEditor::ViewCursorInterface*>(view);
 }

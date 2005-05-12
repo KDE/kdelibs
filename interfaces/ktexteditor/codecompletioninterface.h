@@ -21,7 +21,8 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-
+#include <Q3ValueList>
+#include <q3cstring.h>
 #include <kdelibs_export.h>
 
 namespace KTextEditor

@@ -61,7 +61,7 @@ DavJob::DavJob( const KURL& url, int method, const QString& request, bool showPr
   if ( ! request.isEmpty() && ! request.isNull() ) {
     staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.utf8();
     staticData.truncate( staticData.size() - 1 );
-    d->savedStaticData = staticData.copy();
+    d->savedStaticData = staticData;
   }
 }
 
@@ -108,7 +108,7 @@ void DavJob::slotFinished()
 	}
   // kdDebug(7113) << m_response.toString() << endl;
 	TransferJob::slotFinished();
-	if( d ) staticData = d->savedStaticData.copy(); // Need to send DAV request to this host too
+	if( d ) staticData = d->savedStaticData; // Need to send DAV request to this host too
 }
 
 /* Convenience methods */

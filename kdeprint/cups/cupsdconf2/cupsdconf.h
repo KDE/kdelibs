@@ -25,6 +25,7 @@
 #include <q3ptrlist.h>
 #include <qtextstream.h>
 #include <qpair.h>
+#include <Q3ValueList>
 
 #include "cupsdcomment.h"
 

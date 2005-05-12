@@ -486,9 +486,9 @@ void PreviewJob::emitPreview(const QImage &thumb)
         double imgRatio = (double)thumb.height() / (double)thumb.width();
         if (imgRatio > (double)d->height / (double)d->width)
             pix.convertFromImage(
-                thumb.smoothScale((int)QMAX((double)d->height / imgRatio, 1), d->height));
+                thumb.smoothScale(QMAX(int((double)d->height / imgRatio), 1), d->height));
         else pix.convertFromImage(
-            thumb.smoothScale(d->width, (int)QMAX((double)d->width * imgRatio, 1)));
+            thumb.smoothScale(d->width, QMAX(int((double)d->width * imgRatio), 1)));
     }
     else pix.convertFromImage(thumb);
     emit gotPreview(d->currentItem.item, pix);

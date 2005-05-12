@@ -18,7 +18,7 @@
 
 // $Id$
 
-#include "wordwrapinterface.h"  
+#include "wordwrapinterface.h"
 #include "document.h"
 
 
@@ -60,11 +60,11 @@ void WordWrapInterface::setWordWrapInterfaceDCOPSuffix (const Q3CString &/*suffi
 {
   //d->interface->setObjId ("WordWrapInterface#"+suffix);
 }
-  
+
 WordWrapInterface *KTextEditor::wordWrapInterface (Document *doc)
-{          
+{
   if (!doc)
     return 0;
 
-  return static_cast<WordWrapInterface*>(doc->qt_cast("KTextEditor::WordWrapInterface"));
+  return qobject_cast<KTextEditor::WordWrapInterface*>(doc );
 }

@@ -48,10 +48,10 @@ void EditInterface::setEditInterfaceDCOPSuffix (const Q3CString &suffix)
 }
 
 EditInterface *KTextEditor::editInterface (Document *doc)
-{                    
+{
   if (!doc)
     return 0;
 
-  return static_cast<EditInterface*>(doc->qt_cast("KTextEditor::EditInterface"));
+  return qobject_cast<KTextEditor::EditInterface*>( doc );
 }
-         
+

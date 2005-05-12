@@ -21,6 +21,7 @@
 #define __ktexteditor_selectioninterface_h__
 
 #include <qstring.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -37,12 +38,12 @@ class KTEXTEDITOR_EXPORT SelectionInterface
   public:
     SelectionInterface();
     virtual ~SelectionInterface();
-        
+
     unsigned int selectionInterfaceNumber () const;
-    
-  protected:  
-    void setSelectionInterfaceDCOPSuffix (const Q3CString &suffix);  
-    
+
+  protected:
+    void setSelectionInterfaceDCOPSuffix (const Q3CString &suffix);
+
   /*
   *  slots !!!
   */
@@ -82,7 +83,7 @@ class KTEXTEDITOR_EXPORT SelectionInterface
 	//
 	public:
 	  virtual void selectionChanged () = 0;
-  
+
   private:
     class PrivateSelectionInterface *d;
     static unsigned int globalSelectionInterfaceNumber;

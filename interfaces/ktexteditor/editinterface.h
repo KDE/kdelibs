@@ -20,7 +20,7 @@
 #define __ktexteditor_editinterface_h__
 
 #include <qstring.h>
-
+#include <Q3CString>
 #include <kdelibs_export.h>
 
 namespace KTextEditor
@@ -40,9 +40,9 @@ class KTEXTEDITOR_EXPORT EditInterface
 
     uint editInterfaceNumber () const;
 
-  protected:  
-    void setEditInterfaceDCOPSuffix (const Q3CString &suffix);  
-    
+  protected:
+    void setEditInterfaceDCOPSuffix (const Q3CString &suffix);
+
   public:
   /**
   * slots !!!
@@ -103,7 +103,7 @@ class KTEXTEDITOR_EXPORT EditInterface
     virtual bool removeText ( uint startLine, uint startCol, uint endLine, uint endCol ) = 0;
 
     /**
-    * Insert line(s) at the given line number. 
+    * Insert line(s) at the given line number.
     * Use insertLine(numLines(), text) to append line at end of document
     */
     virtual bool insertLine ( uint line, const QString &text ) = 0;
