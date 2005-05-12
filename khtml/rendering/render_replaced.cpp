@@ -746,10 +746,11 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         break;
     }
     case EventImpl::KEYDOWN_EVENT:
+        // do nothing; see the mapping table below
+        break;
     case EventImpl::KEYUP_EVENT: {
         QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent();
-        if (ke)
-            static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+        static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
         ret = ke->isAccepted();
         break;
     }
@@ -762,18 +763,20 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         // because the matching Qt keypress event was already sent from DOM keydown event.
 
         // Reverse drawing as the one in KHTMLView:
-        //  DOM:   Down     Press   |       Press                             |     Up
-        //  Qt:    Press  (nothing) | Release(autorepeat) + Press(autorepeat) |   Release
+        //  DOM:   Down      Press   |       Press                             |     Up
+        //  Qt:    (nothing) Press   | Release(autorepeat) + Press(autorepeat) |   Release
+        //
+        // Qt::KeyPress is sent for DOM keypress and not DOM keydown to allow
+        // sites to block a key with onkeypress, #99749
 
         QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent();
-        if (ke && ke->isAutoRepeat()) {
+        if (ke->isAutoRepeat()) {
             QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
                                ke->text(), ke->isAutoRepeat(), ke->count() );
             static_cast<EventPropagator *>(m_widget)->sendEvent(&releaseEv);
-            static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
-            ret = ke->isAccepted();
         }
-
+        static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+        ret = ke->isAccepted();
 	break;
     }
     case EventImpl::MOUSEOUT_EVENT: {

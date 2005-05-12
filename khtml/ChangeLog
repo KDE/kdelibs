@@ -1,3 +1,9 @@
+2005-05-12  David Faure  <faure@kde.org>
+
+        * rendering/render_replaced.cpp (handleEvent): send Qt::KeyPress to the
+        widget for DOM keypress and not DOM keydown to allow sites to block a key
+        with onkeypress, #99749.
+
 2005-05-11  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * html/html_objectimpl.cpp: Extract service-type from "data:" url and create
