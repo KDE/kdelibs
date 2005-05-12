@@ -307,6 +307,7 @@ static struct Builtin
     { "mac", "apple roman" },
     { 0, 0 }};
 
+#if 0
 // some different names for the encodings defined in the charmaps files.
 // even though the charmap file names are all uppercase, the names are all lowercase here.
 static struct Aliases
@@ -334,7 +335,7 @@ static struct ConversionHints
     { "koi8-r", "iso-8859-5" },
     { "koi8-u", "koi8-r" },
     { 0, 0 }};
-
+#endif
 
 // search an array of items index/data, index is const char*, data is T, find first matching index
 // and return data, or return 0
@@ -602,6 +603,11 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
+#warning is it still usefull with Qt4 ?
+	//dont forget to remove the #if 0 on the 2 structs at the top also if you reenable that;)
+	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not 
+	//know how to convert a charmap to a QTextCodec and the real big question is whether we need that at all ...  (mikmak)
+#if 0
     // ### TODO: charmaps have changed a little since this code was written. The default dir should be changed and KFilterDev should be used for reading gzipped files.
     QString dir;
     {
@@ -637,6 +643,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         d->codecForNameDict.replace(key, codec);
         return codec;
     }
+#endif
 
     // could not assign a codec, let's return Latin1
     ok = false;
