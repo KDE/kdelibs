@@ -21,6 +21,8 @@
 #include <q3popupmenu.h>
 #include <q3frame.h>
 
+#include <QKeyEvent>
+
 #include "kaccelaction.h"
 #include <kdebug.h>
 #include <kglobalsettings.h>
