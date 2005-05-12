@@ -246,7 +246,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
       DEMARSHAL( Color, QColor )
       DEMARSHAL( Palette, QPalette )
       DEMARSHAL( ColorGroup, QColorGroup )
-      case QCoreVariant::Icon:
+      case QVariant::Icon:
       {
         QPixmap val;
         stream >> val;
@@ -282,19 +282,24 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
 
 #define MARSHAL( type ) \
   case QVariant::type: \
-    reply << prop.to##type(); \
+    reply << qvariant_cast<Q##type>(prop); \
+    break;
+
+#define MARSHAL2( type ) \
+  case QVariant::type: \
+    reply << prop.to##type (); \
     break;
 
     switch ( prop.type() )
     {
       MARSHAL( Cursor )
       MARSHAL( Bitmap )
-      MARSHAL( PointArray )
+//      MARSHAL( PointArray )
       MARSHAL( Region )
-      MARSHAL( List )
-      MARSHAL( Map )
+      MARSHAL2( List )
+      MARSHAL2( Map )
       MARSHAL( String )
-      MARSHAL( CString )
+      MARSHAL( ByteArray )
       MARSHAL( StringList )
       MARSHAL( Font )
       MARSHAL( Pixmap )
@@ -306,15 +311,13 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
       MARSHAL( Color )
       MARSHAL( Palette )
       MARSHAL( ColorGroup )
-      case QCoreVariant::Icon:
-        reply << prop.toIconSet().pixmap();
-        break;
-      MARSHAL( Int )
-      MARSHAL( UInt )
+      MARSHAL( Icon )
+      MARSHAL2( Int )
+      MARSHAL2( UInt )
       case QVariant::Bool:
         reply << (Q_INT8)prop.toBool();
         break;
-      MARSHAL( Double )
+      MARSHAL2( Double )
       default:
         return false;
     }
