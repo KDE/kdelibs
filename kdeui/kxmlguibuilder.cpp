@@ -306,8 +306,8 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
          if (previousId != -1)
          {
             if (menu->text(previousId).isEmpty() &&
-                !menu->iconSet(previousId) &&
-                !menu->pixmap(previousId))
+                menu->iconSet(previousId).isNull() &&
+                menu->pixmap(previousId).isNull())
                return 0;
          }
       }
