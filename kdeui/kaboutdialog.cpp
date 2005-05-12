@@ -42,7 +42,6 @@
 #include <kdebug.h>
 
 //MOC_SKIP_BEGIN
-template class QMemArray<QWidget*>;
 template class QPtrList<KAboutContributor>;
 //MOC_SKIP_END
 
@@ -526,11 +525,6 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
 						  innerAlignment );
   mPageTab->addTab( container, title );
 
-  if( mContainerList.resize( mContainerList.size() + 1) )
-  {
-    mContainerList[ mContainerList.size()-1 ]=container;
-  }
-
   connect(container, SIGNAL(urlClick(const QString &)),
 	  SLOT(slotUrlClick(const QString &)));
   connect(container, SIGNAL(mailClick(const QString &,const QString &)),
@@ -594,11 +588,6 @@ KAboutContainer *KAboutContainerBase::addContainer( int childAlignment,
   KAboutContainer* const container = new KAboutContainer( this, "container",
     0, KDialog::spacingHint(), childAlignment, innerAlignment );
   mTopLayout->addWidget( container, 0, childAlignment );
-
-  if( mContainerList.resize( mContainerList.size() + 1) )
-  {
-    mContainerList[ mContainerList.size()-1 ]=container;
-  }
 
   connect(container, SIGNAL(urlClick(const QString &)),
 	  SLOT(slotUrlClick(const QString &)));
