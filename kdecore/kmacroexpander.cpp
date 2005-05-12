@@ -89,7 +89,7 @@ namespace KMacroExpander {
     } State;
     typedef struct {
         QString str;
-        uint pos;
+        int pos;
     } Save;
 
 }
@@ -283,10 +283,10 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str )
   return expandMacrosShellQuote( str, pos ) && pos == str.length();
 }
 
-int KMacroExpanderBase::expandPlainMacro( const QString &, uint, QStringList & )
+int KMacroExpanderBase::expandPlainMacro( const QString &, int, QStringList & )
 { qFatal( "KMacroExpanderBase::expandPlainMacro called!" ); return 0; }
 
-int KMacroExpanderBase::expandEscapedMacro( const QString &, uint, QStringList & )
+int KMacroExpanderBase::expandEscapedMacro( const QString &, int, QStringList & )
 { qFatal( "KMacroExpanderBase::expandEscapedMacro called!" ); return 0; }
 
 
@@ -300,8 +300,8 @@ public:
         KMacroExpanderBase( c ), macromap( map ) {}
 
 protected:
-    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     QMap<KT,VT> macromap;
@@ -312,9 +312,12 @@ static QStringList &operator+=( QStringList &s, const QString &n) { s << n; retu
 ////////
 
 static bool
-isIdentifier( uint c )
+isIdentifier( QChar c )
 {
-    return c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+    return c == QLatin1Char('_') || 
+          (c >= QLatin1Char('A') && c <= QLatin1Char('Z')) || 
+          (c >= QLatin1Char('a') && c <= QLatin1Char('z')) || 
+          (c >= QLatin1Char('0') && c <= QLatin1Char('9'));
 }
 
 ////////
@@ -327,8 +330,8 @@ public:
         KMacroExpanderBase( c ), macromap( map ) {}
 
 protected:
-    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     QMap<QChar,VT> macromap;
@@ -336,9 +339,10 @@ private:
 
 template<class VT>
 int
-KMacroMapExpander<QChar,VT>::expandPlainMacro( const QString &str, uint pos, QStringList &ret )
+KMacroMapExpander<QChar,VT>::expandPlainMacro( const QString &str, int pos, QStringList &ret )
 {
-    QMapConstIterator<QChar,VT> it = macromap.find(str[pos]);
+    const KMacroMapExpander<QChar,VT> *const_this = this;
+    typename QMap<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
     if (it != macromap.end()) {
        ret += it.data();
        return 1;
@@ -348,13 +352,14 @@ KMacroMapExpander<QChar,VT>::expandPlainMacro( const QString &str, uint pos, QSt
 
 template<class VT>
 int
-KMacroMapExpander<QChar,VT>::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KMacroMapExpander<QChar,VT>::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
     if (str[pos + 1] == escapeChar()) {
         ret += QString( escapeChar() );
         return 2;
     }
-    QMapConstIterator<QChar,VT> it = macromap.find(str[pos+1]);
+    const KMacroMapExpander<QChar,VT> *const_this = this;
+    typename QMap<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
     if (it != macromap.end()) {
        ret += it.data();
        return 2;
@@ -371,8 +376,8 @@ public:
         KMacroExpanderBase( c ), macromap( map ) {}
 
 protected:
-    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     QMap<QString,VT> macromap;
@@ -380,16 +385,17 @@ private:
 
 template<class VT>
 int
-KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, uint pos, QStringList &ret )
+KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, int pos, QStringList &ret )
 {
-    if (isIdentifier( str[pos - 1].unicode() ))
+    if (isIdentifier( str[pos - 1] ))
         return 0;
-    uint sl;
-    for (sl = 0; isIdentifier( str[pos + sl].unicode() ); sl++);
+    int sl;
+    for (sl = 0; isIdentifier( str[pos + sl] ); sl++);
     if (!sl)
         return 0;
-    QMapConstIterator<QString,VT> it =
-        macromap.find( QConstString( str.unicode() + pos, sl ).string() );
+    const KMacroMapExpander<QString,VT> *const_this = this;
+    typename QMap<QString,VT>::const_iterator it = 
+        const_this->macromap.find( QConstString( str.unicode() + pos, sl ).string() );
     if (it != macromap.end()) {
         ret += it.data();
         return sl;
@@ -399,13 +405,13 @@ KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, uint pos, Q
 
 template<class VT>
 int
-KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
     if (str[pos + 1] == escapeChar()) {
         ret += QString( escapeChar() );
         return 2;
     }
-    uint sl, rsl, rpos;
+    int sl, rsl, rpos;
     if (str[pos + 1] == '{') {
         rpos = pos + 2;
         for (sl = 0; str[rpos + sl] != '}'; sl++)
@@ -414,13 +420,14 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, uint pos,
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
-        for (sl = 0; isIdentifier( str[rpos + sl].unicode() ); sl++);
+        for (sl = 0; isIdentifier( str[rpos + sl] ); sl++);
         rsl = sl + 1;
     }
     if (!sl)
         return 0;
-    QMapConstIterator<QString,VT> it =
-        macromap.find( QConstString( str.unicode() + rpos, sl ).string() );
+    const KMacroMapExpander<QString,VT> *const_this = this;
+    typename QMap<QString,VT>::const_iterator it =
+        const_this->macromap.find( QConstString( str.unicode() + rpos, sl ).string() );
     if (it != macromap.end()) {
         ret += it.data();
         return rsl;
@@ -431,7 +438,7 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, uint pos,
 ////////////
 
 int
-KCharMacroExpander::expandPlainMacro( const QString &str, uint pos, QStringList &ret )
+KCharMacroExpander::expandPlainMacro( const QString &str, int pos, QStringList &ret )
 {
     if (expandMacro( str[pos], ret ))
         return 1;
@@ -439,7 +446,7 @@ KCharMacroExpander::expandPlainMacro( const QString &str, uint pos, QStringList 
 }
 
 int
-KCharMacroExpander::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KCharMacroExpander::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
     if (str[pos + 1] == escapeChar()) {
         ret += QString( escapeChar() );
@@ -451,12 +458,12 @@ KCharMacroExpander::expandEscapedMacro( const QString &str, uint pos, QStringLis
 }
 
 int
-KWordMacroExpander::expandPlainMacro( const QString &str, uint pos, QStringList &ret )
+KWordMacroExpander::expandPlainMacro( const QString &str, int pos, QStringList &ret )
 {
-    if (isIdentifier( str[pos - 1].unicode() ))
+    if (isIdentifier( str[pos - 1] ))
         return 0;
-    uint sl;
-    for (sl = 0; isIdentifier( str[pos + sl].unicode() ); sl++);
+    int sl;
+    for (sl = 0; isIdentifier( str[pos + sl] ); sl++);
     if (!sl)
         return 0;
     if (expandMacro( QConstString( str.unicode() + pos, sl ).string(), ret ))
@@ -465,13 +472,13 @@ KWordMacroExpander::expandPlainMacro( const QString &str, uint pos, QStringList 
 }
 
 int
-KWordMacroExpander::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KWordMacroExpander::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
     if (str[pos + 1] == escapeChar()) {
         ret += QString( escapeChar() );
         return 2;
     }
-    uint sl, rsl, rpos;
+    int sl, rsl, rpos;
     if (str[pos + 1] == '{') {
         rpos = pos + 2;
         for (sl = 0; str[rpos + sl] != '}'; sl++)
@@ -480,7 +487,7 @@ KWordMacroExpander::expandEscapedMacro( const QString &str, uint pos, QStringLis
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
-        for (sl = 0; isIdentifier( str[rpos + sl].unicode() ); sl++);
+        for (sl = 0; isIdentifier( str[rpos + sl] ); sl++);
         rsl = sl + 1;
     }
     if (!sl)

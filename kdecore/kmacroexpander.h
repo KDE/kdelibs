@@ -117,7 +117,7 @@ protected:
      *  than zero, subtract this value from @p pos (to skip a macro, i.e.,
      *  substitute it with itself). zero requests no special action.
      */
-    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
 
     /**
      * This function is called every time the escape char is found if it is
@@ -133,7 +133,7 @@ protected:
      *  than zero, subtract this value from @p pos (to skip a macro, i.e.,
      *  substitute it with itself). zero requests no special action.
      */
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     QChar escapechar;
@@ -198,8 +198,8 @@ public:
     KWordMacroExpander( QChar c = '%' ) : KMacroExpanderBase( c ) {}
 
 protected:
-    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
     /**
      * Return substitution list @p ret for string macro @p str.
@@ -231,8 +231,8 @@ public:
     KCharMacroExpander( QChar c = '%' ) : KMacroExpanderBase( c ) {}
 
 protected:
-    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
     /**
      * Return substitution list @p ret for single-character macro @p chr.
