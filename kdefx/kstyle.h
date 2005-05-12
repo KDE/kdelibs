@@ -640,6 +640,16 @@ private:
     ///Returns true if the tab has reflected layout
     bool isReflectedTab(const QStyleOptionTab* tbOpt) const;
 
+    enum Side
+    {
+        North,
+        East,
+        West,
+        South
+    };
+
+    Side tabSide(const QStyleOptionTab* tbOpt) const;
+
     ///Returns the tab rectangle adjusted for the tab direction
     QRect marginAdjustedTab(const QStyleOptionTab* tbOpt, int property) const;
 

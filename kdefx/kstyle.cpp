@@ -1093,7 +1093,10 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //The bevel is pretty easy to draw, we just route the direction
             //To the appropriate primitive.
             //Note that we handle triangular tabs just as around ones.
-            //### 
+            //###
+            p->setPen(Qt::red);
+            drawInsideRect(p, r);
+
             break;
         }
             
@@ -1104,32 +1107,102 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //First, we get our content region.
             QRect labelRect = marginAdjustedTab(tabOpt, Tab::ContentsMargin);
+
+            Side tabSd = tabSide(tabOpt);
             
             //Now, what we do, depends on rotation, LTR vs. RTL, and text/icon combinations.
             //First, figure out if we have to deal with icons, and place them if need be.
             if (!tabOpt->icon.isNull())
             {
                 int iconSize = pixelMetric(PM_SmallIconSize);
+                IconOption icoOpt;
+                icoOpt.icon   = tabOpt->icon;
+                icoOpt.active = flags & State_Selected;
+
                 if (tabOpt->text.isNull())
                 {
                     //Icon only. Easy.
-                    IconOption icoOpt;
-                    icoOpt.icon   = tabOpt->icon;
-                    icoOpt.active = flags & State_Selected;
                     drawKStylePrimitive(WT_Tab, Generic::Icon, option, labelRect,
                                         pal, flags, p, widget, &icoOpt);
                     return;
                 }
 
-                //OK, we have to stuff both icon and text.
+                //OK, we have to stuff both icon and text. So we figure out where to stick the icon.
+                QRect iconRect;
+                
+                if (tabSd == North || tabSd == South)
+                {
+                    //OK, this is simple affair, we just pick a side for the icon
+                    //based on layout direction. (Actually, I guess text
+                    //would be more accurate, but I am -so- not doing BIDI here)
+                    if (tabOpt->direction == Qt::LeftToRight)
+                    {
+                        //We place icon on the left.
+                        iconRect = QRect(labelRect.x(), labelRect.y(), iconSize, labelRect.height());
+
+                        //Adjust the text rect.
+                        labelRect.setLeft(labelRect.x() + iconSize +
+                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                    }
+                    else
+                    {
+                        //We place icon on the right
+                        iconRect = QRect(labelRect.width() - iconSize, labelRect.y(),
+                                         iconSize, labelRect.height());
+
+                        //Adjust the text rect
+                        labelRect.setWidth(labelRect.width() - iconSize -
+                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                    }
+                }
+                else
+                {
+                    bool aboveIcon = false;
+                    if (tabSd == West && tabOpt->direction == Qt::RightToLeft)
+                        aboveIcon = true;
+                    if (tabSd == East && tabOpt->direction == Qt::LeftToRight)
+                        aboveIcon = true;
+
+                    if (aboveIcon)
+                    {
+                        iconRect = QRect(labelRect.x(), labelRect.y(),
+                                         labelRect.width(), iconSize);
+                        labelRect.setTop(labelRect.x() + iconSize +
+                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                    }
+                    else
+                    {
+                        iconRect = QRect(labelRect.x(), labelRect.height() - iconSize,
+                                         labelRect.width(), iconSize);
+                        labelRect.setHeight(labelRect.height() - iconSize -
+                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                    }
+                }
+
+                //Draw the thing
+                drawKStylePrimitive(WT_Tab, Generic::Icon, option, iconRect,
+                                    pal, flags, p, widget, &icoOpt);
+            } //if have icon.
+
+            //Draw text
+            if (!tabOpt->text.isNull())
+            {
+                switch (tabSd)
+                {
+                    case North:
+                    case South:
+                    {
+                        TextOption lbOpt(tabOpt->text);
+                        drawKStylePrimitive(WT_Tab, Generic::Text, option, labelRect,
+                                            pal, flags, p, widget, &lbOpt);
+                        break;
+                    }
+                    default:
+                        //### TODO
+                        p->setPen(Qt::yellow);
+                        drawInsideRect(p, labelRect);
+                };
             }
-            p->setPen(Qt::red);
-            drawInsideRect(p, r);
-
-            
-            p->setPen(Qt::yellow);
-            drawInsideRect(p, labelRect);
-
 
             //If need be, draw focus rect
             if (tabOpt->state & State_HasFocus)
@@ -1286,6 +1359,24 @@ bool KStyle::isReflectedTab(const QStyleOptionTab* tbOpt) const
         return true;
     default:
         return false;
+    }
+}
+
+KStyle::Side KStyle::tabSide(const QStyleOptionTab* tbOpt) const
+{
+    switch (tbOpt->shape)
+    {
+    case QTabBar::RoundedEast:
+    case QTabBar::TriangularEast:
+        return East;
+    case QTabBar::RoundedWest:
+    case QTabBar::TriangularWest:
+        return West;
+    case QTabBar::RoundedNorth:
+    case QTabBar::TriangularNorth:
+        return North;
+    default:
+        return South;
     }
 }
 
