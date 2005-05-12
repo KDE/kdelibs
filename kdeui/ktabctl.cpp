@@ -28,6 +28,7 @@
 #include <qpushbutton.h>
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <QResizeEvent>
 
 #include "ktabctl.h"
 

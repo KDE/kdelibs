@@ -54,8 +54,8 @@ public:
 	**/
 	~KMainWindowInterface();
 
-	QCStringList functionsDynamic();
-	bool processDynamic(const Q3CString &fun, const QByteArray &data, Q3CString& replyType, QByteArray &replyData);
+	DCOPCStringList functionsDynamic();
+	bool processDynamic(const DCOPCString &fun, const QByteArray &data, DCOPCString& replyType, QByteArray &replyData);
 
 
 k_dcop:
@@ -63,7 +63,7 @@ k_dcop:
 	Return a list of actions available to the application's window.
 	@return A QCStringList containing valid names actions.
 	*/
-	QCStringList actions();
+	QList<QByteArray> actions();
 
 	/**
 	Activates the requested action.

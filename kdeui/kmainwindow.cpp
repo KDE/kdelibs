@@ -34,6 +34,8 @@
 #include <qwidget.h>
 #include <qtimer.h>
 #include <qx11info_x11.h>
+#include <QCloseEvent>
+#include <QDesktopWidget>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -121,7 +123,7 @@ public:
             for (it.toFirst(); it.current() && !canceled;){
                 KMainWindow *window = *it;
                 ++it; // Update now, the current window might get deleted
-                if ( !window->testWState( Qt::WState_ForceHide ) ) {
+                if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
                     QCloseEvent e;
                     QApplication::sendEvent( window, &e );
                     canceled = !e.isAccepted();
@@ -148,7 +150,7 @@ public:
             KMainWindow* last = 0;
             for (it.toFirst(); it.current() && !canceled; ++it){
                 KMainWindow *window = *it;
-                if ( !window->testWState( Qt::WState_ForceHide ) ) {
+                if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
                     last = window;
                 }
             }
@@ -213,18 +215,15 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
         unusedNumber = 0; // add numbers only when needed
         }
     for(;;) {
-        QWidgetList* list = kapp->topLevelWidgets();
-        QWidgetListIt it( *list );
+        QList<QWidget*> list = kapp->topLevelWidgets();
         bool found = false;
-        for( QWidget* w = it.current();
-             w != NULL;
-             ++it, w = it.current())
-            if( w != this && w->name() == s )
-                {
-                found = true;
-                break;
-                }
-        delete list;
+		foreach ( QWidget* w, list ) {
+			if( w != this && w->name() == s )
+			{
+				found = true;
+				break;
+			}
+		}
         if( !found )
             break;
         s.setNum( ++unusedNumber );
@@ -395,15 +394,14 @@ void KMainWindow::hide()
 
         d->hiddenDockWindows.clear();
 
-        QObjectList *list = queryList( "QDockWindow" );
-        for( QObjectListIt it( *list ); it.current(); ++it ) {
-            Q3DockWindow *dw = (Q3DockWindow*)it.current();
+        QList<QObject*> list = queryList( "QDockWindow" );
+		foreach ( QObject* o, list ) {
+            Q3DockWindow *dw = (Q3DockWindow*)o;
             if ( dw->isTopLevel() && dw->isVisible() ) {
                 d->hiddenDockWindows.append( dw );
                 dw->hide();
             }
-        }
-        delete list;
+		}
     }
 
     QWidget::hide();
@@ -1110,27 +1108,21 @@ void KMainWindow::shuttingDown()
 
 KMenuBar *KMainWindow::internalMenuBar()
 {
-    QObjectList *l = queryList( "KMenuBar", 0, false, false );
-    if ( !l || !l->first() ) {
-        delete l;
+    QList<QObject*> l = queryList( "KMenuBar", 0, false, false );
+    if ( !l.first() ) //empty list
         return 0;
-    }
 
-    KMenuBar *m = (KMenuBar*)l->first();
-    delete l;
+    KMenuBar *m = (KMenuBar*)l.first();
     return m;
 }
 
 KStatusBar *KMainWindow::internalStatusBar()
 {
-    QObjectList *l = queryList( "KStatusBar", 0, false, false );
-    if ( !l || !l->first() ) {
-        delete l;
+    QList<QObject*> l = queryList( "KStatusBar", 0, false, false );
+    if ( !l.first() )
         return 0;
-    }
 
-    KStatusBar *s = (KStatusBar*)l->first();
-    delete l;
+    KStatusBar *s = (KStatusBar*)l.first();
     return s;
 }
 
