@@ -657,7 +657,7 @@ void BuildHelper::processStateElement( const QDomElement &element )
             if ( actionEl.tagName().lower() != "action" ) continue;
 
             QString actionName = actionEl.attribute( "name" );
-            if ( actionName.isEmpty() || !actionName.length() ) return;
+            if ( actionName.isEmpty() ) return;
 
             if ( processingActionsToEnable )
                 m_state.guiClient->addStateActionEnabled( stateName, actionName );
