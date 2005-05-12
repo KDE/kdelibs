@@ -472,11 +472,12 @@ public:
   void pasteRequest();
 
 // KDE invents support for public signals...
-#undef signals
-#define signals public
-public signals:
-#undef signals
-#define signals protected
+//#undef signals
+//#define signals public
+signals:
+//public signals: // TODO
+//#undef signals
+//#define signals protected
   /**
    * Enables or disable a standard action held by the browser.
    *

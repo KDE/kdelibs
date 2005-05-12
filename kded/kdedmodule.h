@@ -25,6 +25,7 @@
 #include <qobject.h>
 #include <dcopobject.h>
 #include <ksharedptr.h>
+#include <Q3CString>
 
 class KDEDModulePrivate;
 class Kded;

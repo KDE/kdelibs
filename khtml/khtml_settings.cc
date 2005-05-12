@@ -132,7 +132,7 @@ KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
 {
   KJavaScriptAdvice ret = KJavaScriptDunno;
 
-  if (!_str)
+  if (_str.isNull())
         ret = KJavaScriptDunno;
 
   if (_str.lower() == QString::fromLatin1("accept"))
