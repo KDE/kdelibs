@@ -628,7 +628,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         cname = name;
     cname = cname.upper();
 
-    codec = QTextCodec::loadCharmapFile((QString)(dir + cname.data()));
+    codec = QTextCodec::loadCharmapFile(dir+cname); ###
 
     if(codec) {
         d->codecForNameDict.replace(key, codec);

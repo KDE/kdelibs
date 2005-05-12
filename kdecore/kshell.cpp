@@ -62,7 +62,7 @@ inline static bool isMeta( QChar cUnicode )
         0x00, 0x00, 0x00, 0x10, 0x01, 0x00, 0x00, 0x38
     }; // \'"$`<>|;&(){}*?#
     
-    uint c = cUnicode.unicode ();
+    uint c = cUnicode.unicode();
     
     return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
 }
@@ -72,7 +72,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
     QStringList ret;
     bool firstword = flags & AbortOnMeta;
 
-    for (uint pos = 0; ; ) {
+    for (int pos = 0; ; ) {
         QChar c;
         do {
             if (pos >= args.length())
@@ -81,7 +81,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
         } while (c.isSpace());
         QString cret;
         if ((flags & TildeExpand) && c == '~') {
-            uint opos = pos;
+            int opos = pos;
             for (; ; pos++) {
                 if (pos >= args.length())
                     break;
@@ -117,7 +117,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
         // before the notilde label, as a tilde does not match anyway
         if (firstword) {
             if (c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-                uint pos2 = pos;
+                int pos2 = pos;
                 QChar cc;
                 do
                   cc = args[pos2++];
@@ -130,7 +130,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
       notilde:
         do {
             if (c == '\'') {
-                uint spos = pos;
+                int spos = pos;
                 do {
                     if (pos >= args.length())
                         goto quoteerr;
@@ -271,7 +271,7 @@ QString KShell::joinArgs( const QStringList &args )
         if (!(*it).length())
             ret.append( q ).append( q );
         else {
-            for (uint i = 0; i < (*it).length(); i++)
+            for (int i = 0; i < (*it).length(); i++)
                 if (isSpecial((*it).unicode()[i])) {
                     QString tmp(*it);
                     tmp.replace( q, "'\\''" );
@@ -300,7 +300,7 @@ QString KShell::joinArgs( const char * const *args, int nargs )
             ret.append( q ).append( q );
         else {
             QString tmp( QFile::decodeName( *argp ) );
-            for (uint i = 0; i < tmp.length(); i++)
+            for (int i = 0; i < tmp.length(); i++)
                 if (isSpecial(tmp.unicode()[i])) {
                     tmp.replace( q, "'\\''" );
                     ret += q;
@@ -325,10 +325,10 @@ QString KShell::joinArgsDQ( const QStringList &args )
         if (!(*it).length())
             ret.append( q ).append( q );
         else {
-            for (uint i = 0; i < (*it).length(); i++)
+            for (int i = 0; i < (*it).length(); i++)
                 if (isSpecial((*it).unicode()[i])) {
                     ret.append( QChar::fromAscii('$') ).append( q );
-                    for (uint pos = 0; pos < (*it).length(); pos++) {
+                    for (int pos = 0; pos < (*it).length(); pos++) {
                         int c = (*it).unicode()[pos].unicode();
                         if (c < 32) {
                             ret += bs;
