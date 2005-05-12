@@ -807,7 +807,7 @@ signals:
   /**
    * notify a event from the part of object objid
    */
-  virtual void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
+  void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
 };
 
 }

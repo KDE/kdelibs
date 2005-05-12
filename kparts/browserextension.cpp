@@ -359,11 +359,21 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
       // Create the action-slot map
       createActionSlotMap();
 
+  // Build list with this extension's slot names.
+  Q3StrList slotNames;
+  int methodCount = metaObject()->methodCount(); 
+  int methodOffset = metaObject()->methodOffset(); 
+  for ( int i=0 ; i < methodCount; ++i )
+  {
+      QMetaMethod method = metaObject()->method( methodOffset + i );
+      if ( method.methodType() == QMetaMethod::Slot )
+          slotNames.append( method.signature() );
+  }
+  
   // Set the initial status of the actions depending on whether
   // they're supported or not
   ActionSlotMap::ConstIterator it = s_actionSlotMap->begin();
   ActionSlotMap::ConstIterator itEnd = s_actionSlotMap->end();
-  Q3StrList slotNames = metaObject()->slotNames();
   for ( int i=0 ; it != itEnd ; ++it, ++i )
   {
       // Does the extension have a slot with the name of this action ?
@@ -444,7 +454,7 @@ void BrowserExtension::slotCompleted()
 
 void BrowserExtension::pasteRequest()
 {
-    Q3CString plain( "plain" );
+    QString plain( "plain" );
     QString url = QApplication::clipboard()->text(plain, QClipboard::Selection).stripWhiteSpace();
     // Remove linefeeds and any whitespace surrounding it.
     url.remove(QRegExp("[\\ ]*\\n+[\\ ]*"));
@@ -472,7 +482,9 @@ void BrowserExtension::pasteRequest()
 		break;
 	}
     }
-    else if ( KURIFilter::self()->filterURI( filterData, "kuriikwsfilter" ) && url.length() < 250 )
+    else if ( KURIFilter::self()->filterURI( filterData, 
+                    QStringList( QLatin1String( "kuriikwsfilter" ) ) ) && 
+              url.length() < 250 )
     {
         if ( KMessageBox::questionYesNo( m_part->widget(),
 		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( Q3StyleSheet::escape(url) ),
@@ -598,18 +610,19 @@ void BrowserExtension::createActionSlotMap()
 
 BrowserExtension *BrowserExtension::childObject( QObject *obj )
 {
-    if ( !obj || !obj->children() )
+    if ( !obj )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
-    const QObjectList *children = obj->children();
-    QObjectListIt it( *children );
-    for (; it.current(); ++it )
-        if ( it.current()->inherits( "KParts::BrowserExtension" ) )
-            return static_cast<KParts::BrowserExtension *>( it.current() );
+    foreach ( QObject * child, obj->children() )
+        if ( child->inherits( "KParts::BrowserExtension" ) )
+            return static_cast<KParts::BrowserExtension *>( child );
 
     return 0L;
+    
+    // The following would probably work as well
+    // return obj->findChild<KParts::BrowserExtension *>();
 }
 
 namespace KParts
@@ -659,16 +672,14 @@ bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs &
 
 BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
 {
-    if ( !obj || !obj->children() )
+    if ( !obj )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
-    const QObjectList *children = obj->children();
-    QObjectListIt it( *children );
-    for (; it.current(); ++it )
-        if ( it.current()->inherits( "KParts::BrowserHostExtension" ) )
-            return static_cast<KParts::BrowserHostExtension *>( it.current() );
+    foreach ( QObject * child, obj->children() )
+        if ( child->inherits( "KParts::BrowserHostExtension" ) )
+            return static_cast<KParts::BrowserHostExtension *>( child );
 
     return 0L;
 }
@@ -708,16 +719,14 @@ void LiveConnectExtension::unregister( const unsigned long ) {}
 
 LiveConnectExtension *LiveConnectExtension::childObject( QObject *obj )
 {
-    if ( !obj || !obj->children() )
+    if ( !obj )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
-    const QObjectList *children = obj->children();
-    QObjectListIt it( *children );
-    for (; it.current(); ++it )
-        if ( it.current()->inherits( "KParts::LiveConnectExtension" ) )
-            return static_cast<KParts::LiveConnectExtension *>( it.current() );
+    foreach ( QObject * child, obj->children() )
+        if ( child->inherits( "KParts::LiveConnectExtension" ) )
+            return static_cast<KParts::LiveConnectExtension *>( child );
 
     return 0L;
 }
