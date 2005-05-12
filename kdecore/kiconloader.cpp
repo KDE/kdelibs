@@ -1164,6 +1164,12 @@ QIcon KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int size
 
 /*** class for delayed icon loading for QIconSet ***/
 
+#ifdef __GNUC__
+    #warning "Delayed loading not ported - cullmann"
+#endif
+
+#ifdef DELAYED_LOADING_PORTED
+   
 class KIconFactory
     : public QIconFactory
     {
@@ -1178,13 +1184,17 @@ class KIconFactory
         KIconLoader* loader;
     };
 
+#endif
 
 QIcon KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
     bool canReturnNull)
 {
+#ifdef DELAYED_LOADING_PORTED
     if ( !d->delayedLoading )
+#endif
         return loadIconSetNonDelayed( name, g, s, canReturnNull );
 
+#ifdef DELAYED_LOADING_PORTED
     if (g < -1 || g > 6) {
         kdDebug() << "KIconLoader::loadIconSet " << name << " " << (int)g << " " << s << endl;
         qDebug("%s", kdBacktrace().latin1());
@@ -1205,6 +1215,7 @@ QIcon KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
     QIcon ret;
     ret.installIconFactory( new KIconFactory( name, g, s, this ));
     return ret;
+#endif
 }
 
 QIcon KIconLoader::loadIconSetNonDelayed( const QString& name,
@@ -1224,6 +1235,8 @@ QIcon KIconLoader::loadIconSetNonDelayed( const QString& name,
     iconset.setPixmap( tmp, QIcon::Large, QIcon::Normal );
     return iconset;
 }
+
+#ifdef DELAYED_LOADING_PORTED
 
 KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
     int size_P, KIconLoader* loader_P )
@@ -1292,6 +1305,8 @@ QPixmap* KIconFactory::createPixmap( const QIcon&, QIcon::Size, QIcon::Mode mode
     QPixmap pm = loader->loadIcon( iconName, group, size, state );
     return new QPixmap( pm );
     }
+
+#endif
 
 // Easy access functions
 
