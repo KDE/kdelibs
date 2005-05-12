@@ -487,7 +487,7 @@ bool KBuildSycoca::recreate()
   if (database->status() == EACCES && QFile::exists(path))
   {
     QFile::remove( path );
-    database = std::auto_ptr<KSaveFile>( new KSaveFile(path) ); // try again
+    database.reset( new KSaveFile(path) ); // try again
   }
   if (database->status() != 0)
   {
