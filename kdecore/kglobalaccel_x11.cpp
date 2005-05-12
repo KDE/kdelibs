@@ -317,31 +317,29 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.search( pAction->name() ) >= 0 ) {
 		int n = rexIndex.cap(1).toInt();
 		kdDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 ) {
-                    QUObject o[2];
-                    static_QUType_int.set(o+1,n);
-                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, Q_ARG(int, n));
                 }
 	} else if( rexPassInfo.search( pAction->methodSlotPtr() ) ) {
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 ) {
-                    QUObject o[4];
-                    static_QUType_QString.set(o+1,pAction->name());
-                    static_QUType_QString.set(o+2,pAction->label());
-                    static_QUType_ptr.set(o+3,&seq);
-                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1
+                         ,Q_ARG(QString, pAction->name())
+                         ,Q_ARG(QString, pAction->label())
+                         ,Q_ARG(const KKeySequence *, &seq)
+                         );
                 }
 	} else {
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 )
-                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, 0 );
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1);
 	}
 }
 
 void KGlobalAccelPrivate::slotActivated( int iAction )
 {
-	KAccelAction* pAction = actions().actionPtr( iAction );
+	KAccelAction* pAction = KAccelBase::actions().actionPtr( iAction );
 	if( pAction )
 		activate( pAction, KKeySequence() );
 }
