@@ -7,8 +7,6 @@ This is a test case for the dcop family of utils.
 HOW TO USE IT
 =============
 
-IMPORTANT: Add "tests" to ../Makefile.am in the SUBDIRS entry.
-
 testcases is the important file, the rest is build system.
 It details what functions we should generate and with what arguments to call them
 

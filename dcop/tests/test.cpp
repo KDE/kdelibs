@@ -1,8 +1,8 @@
 #include "test.h"
-#include <kapplication.h>
+#include <qapplication.h>
 #include <iostream>
 #include <dcopclient.h>
-#include <kcmdlineargs.h>
+#include <qtextstream.h>
 
 
 
@@ -27,10 +27,10 @@ int main(int argc, char** argv)
 		batch();
 		return 0;
 	}
-	KCmdLineArgs::init( argc, argv, "TestApp", "Tests the dcop familly of tools + libraries", "1.0" ); // FIXME
-	KApplication app;
-	app.dcopClient()->attach(  );
-	app.dcopClient()->registerAs( "TestApp" );
+	QApplication app( argc, argv );
+        DCOPClient* dcopClient = new DCOPClient;
+	dcopClient->attach();
+	dcopClient->registerAs( "TestApp" );
 	new Test;
 	return app.exec();
 }

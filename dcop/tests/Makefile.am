@@ -9,15 +9,14 @@ METASOURCES = AUTO
 
 ####### Files
 
-noinst_PROGRAMS = dcop_test driver
+check_PROGRAMS = dcop_test driver
 
 dcop_test_SOURCES = test.cpp test.skel
-BUILT_SOURCES = test.h
-dcop_test_LDADD = $(LIB_KDECORE)
+dcop_test_LDADD = $(LIB_DCOP)
 dcop_test_LDFLAGS = $(KDE_RPATH)
 
 driver_SOURCES = driver.cpp test.stub
-driver_LDADD = $(LIB_KDECORE)
+driver_LDADD = $(LIB_DCOP)
 driver_LDFLAGS = $(KDE_RPATH)
 
 CLEANFILES = batch.generated definitions.generated driver.generated shell.generated
@@ -25,14 +24,10 @@ CLEANFILES = batch.generated definitions.generated driver.generated shell.genera
 test-clean:
 	rm batch.returns driver.returns shell.returns batch.stdout driver.stdout shell.stdout
 
-test.h: generate
+test.h: shell.generated
 
-generate: shell.generated
+shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
+	perl $(srcdir)/generate.pl < $(srcdir)/testcases
 
-shell.generated: testcases generate.pl
-	perl ./generate.pl < testcases
-
-doit: dcop_test driver
-	sh run-tests.sh
-
-.PHONY: generate
+check-local:
+	sh $(srcdir)/run-tests.sh
