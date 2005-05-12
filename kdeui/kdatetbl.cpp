@@ -52,6 +52,7 @@
 #include <qpainter.h>
 #include <qdialog.h>
 #include <q3dict.h>
+#include <qevent.h>
 #include <assert.h>
 
 
@@ -75,7 +76,7 @@ public:
    {
      QColor fgColor;
      QColor bgColor;
-     Qt::BackgroundMode bgMode;
+     BackgroundMode bgMode;
    };
    Q3Dict <DatePaintingMode> customPaintingModes;
 
@@ -235,8 +236,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       painter->drawText(0, 0, w, h-1, Qt::AlignCenter,
                         calendar->weekDayName(daynum, true), -1, &rect);
       painter->setPen(colorGroup().text());
-      painter->moveTo(0, h-1);
-      painter->lineTo(w-1, h-1);
+      painter->drawLine(0, h-1, w-1, h-1);
       // ----- draw the weekday:
     } else {
       bool paintRect=true;
@@ -567,7 +567,7 @@ bool KDateTable::popupMenuEnabled() const
    return d->popupMenuEnabled;
 }
 
-void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor, Qt::BackgroundMode bgMode, const QColor &bgColor)
+void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor, BackgroundMode bgMode, const QColor &bgColor)
 {
     if (!fgColor.isValid())
     {
@@ -600,7 +600,7 @@ KDateInternalWeekSelector::KDateInternalWeekSelector
   // -----
   font=KGlobalSettings::generalFont();
   setFont(font);
-  setFrameStyle(Q3Frame::NoFrame);
+  setFrame(false);
   setValidator(val);
   connect(this, SIGNAL(returnPressed()), SLOT(weekEnteredSlot()));
 }
@@ -673,7 +673,7 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   setFont(font);
   setHScrollBarMode(AlwaysOff);
   setVScrollBarMode(AlwaysOff);
-  setFrameStyle(Q3Frame::NoFrame);
+  setFrameStyle(QFrame::NoFrame);
   setNumCols(3);
   d = new KDateInternalMonthPrivate(date.year(), date.month(), date.day());
   // For monthsInYear != 12
@@ -839,7 +839,7 @@ KDateInternalYearSelector::KDateInternalYearSelector
   // -----
   font=KGlobalSettings::generalFont();
   setFont(font);
-  setFrameStyle(Q3Frame::NoFrame);
+  setFrame(false);
   // we have to respect the limits of QDate here, I fear:
   val->setRange(0, 8000);
   setValidator(val);
@@ -890,7 +890,7 @@ KPopupFrame::KPopupFrame(QWidget* parent, const char*  name)
     result(0), // rejected
     main(0)
 {
-  setFrameStyle(Q3Frame::Box|Q3Frame::Raised);
+  setFrameStyle(QFrame::Box|QFrame::Raised);
   setMidLineWidth(2);
 }
 
