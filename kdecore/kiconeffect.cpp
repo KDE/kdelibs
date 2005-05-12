@@ -745,7 +745,7 @@ KIconEffect::visualActivate(QWidget * widget, QRect rect)
 
     // Use NotROP to avoid having to repaint the pixmap each time.
     p.setPen(QPen(Qt::black, 2, Qt::DotLine));
-    p.setRasterOp(Qt::NotROP);
+    // p.setRasterOp(Qt::NotROP); ###
 
     // The spacing between the rects we draw.
     // Use the minimum of width and height to avoid painting outside the
@@ -764,7 +764,7 @@ KIconEffect::visualActivate(QWidget * widget, QRect rect)
         rect.setRect(c.x() - w / 2, c.y() - h / 2, w, h);
 
         p.drawRect(rect);
-        p.flush();
+        //p.flush();
 
         usleep(actDelay);
 

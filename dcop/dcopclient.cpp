@@ -1592,7 +1592,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             int slot = o->metaObject()->indexOfSlot( fun );
             if ( slot != -1 ) {
                 replyType = "void";
-                QMetaObject::invokeMember(o, fun );
+                QMetaObject::invokeMethod( o, fun );
                 return true;
             }
         }

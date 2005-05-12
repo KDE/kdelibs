@@ -169,27 +169,27 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
     MainMap.insert( "Destroy", input.readEntry( "Destroy", "" ) );
     ts << classHeader << endl;
     QStringList includes = input.readListEntry( "Includes", ',' );
-    for ( uint idx = 0; idx < includes.count(); ++idx )
+    for ( int idx = 0; idx < includes.count(); ++idx )
         ts << "#include <" << includes[ idx ] << ">" << endl;
     QStringList classes = input.groupList();
     classes.remove( classes.find( "Global" ) );
     // Autogenerate widget includes here
-    for ( uint idx = 0; idx < classes.count(); ++idx )
+    for ( int idx = 0; idx < classes.count(); ++idx )
         ts << buildWidgetInclude( classes[ idx ], input ) << endl;
     // Generate embedded icons
     if ( !iconPath.isEmpty() ) {
-        for ( uint idx = 0; idx < classes.count(); ++idx )
+        for ( int idx = 0; idx < classes.count(); ++idx )
             ts << buildPixmap( classes[ idx ], input, iconPath ) << endl;
         ts << "#define EMBED_IMAGES" << endl;
     }
     // Generate the main class code.
     ts << KMacroExpander::expandMacros( classDef, MainMap ) << endl;
     // Autogenerate widget defs here
-    for ( uint idx = 0; idx < classes.count(); ++idx )
+    for ( int idx = 0; idx < classes.count(); ++idx )
         ts << buildWidgetDef( classes[ idx ], input, group ) << endl;
     ts << KMacroExpander::expandMacros( endCtor, MainMap ) << endl;
     // Autogenerate create code here...
-    for ( uint idx = 0; idx < classes.count(); ++idx )
+    for ( int idx = 0; idx < classes.count(); ++idx )
         ts << buildWidgetCreate( classes[ idx ], input ) << endl;
     ts << KMacroExpander::expandMacros( endCreate, MainMap ) << endl;
 
@@ -224,19 +224,22 @@ QString buildWidgetInclude( const QString &name, KConfig &input ) {
 }
 
 QString buildPixmap( const QString &name, KConfig &input, const QString &iconPath ) {
+#if 0
     input.setGroup( name );
     QString cleanName = name.lower().replace( ":", "_" );
     QString iconName = input.readEntry( "IconSet", cleanName + ".png" );
 
     QFileInfo fi( iconPath + "/" + iconName );
     QImage pix( fi.absFilePath() );
-    Q3CString xpm;
-    QBuffer buff( xpm );
+    QByteArray xpm;
+    QBuffer buff( &xpm, 0 );
     buff.open( QIODevice::WriteOnly );
-    QImageIO io( &buff, "XPM" );
-    io.setFileName( cleanName + "_xpm" );
-    io.setImage( pix );
-    io.write();
+    QImageReader reader( &buff, "XPM" );
+    reader.setFileName( cleanName + "_xpm" );
+    reader.setImage( pix );
+    reader.write();
     buff.close();
     return xpm;
+#endif
+    return QString();
 }

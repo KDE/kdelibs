@@ -770,13 +770,11 @@ class KDETranslator : public QTranslator
 {
 public:
   KDETranslator(QObject *parent) : QTranslator(parent, "kdetranslator") {}
-  virtual QTranslatorMessage findMessage(const char* context,
+  virtual QString translate(const char* context,
 					 const char *sourceText,
 					 const char* message) const
   {
-    QTranslatorMessage res;
-    res.setTranslation(KGlobal::locale()->translateQt(context, sourceText, message));
-    return res;
+    return KGlobal::locale()->translateQt(context, sourceText, message);
   }
 };
 
@@ -1857,7 +1855,7 @@ void KApplication::updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 
 void KApplication::invokeEditSlot( const char *slot )
 {
   if ( focusWidget() );
-    QMetaObject::invokeMember( focusWidget(), slot );
+    QMetaObject::invokeMethod( focusWidget(), slot );
 }
 
 void KApplication::addKipcEventMask(int id)
