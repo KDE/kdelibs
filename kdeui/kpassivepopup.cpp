@@ -122,7 +122,13 @@ void KPassivePopup::setTimeout( int delay )
 {
     hideDelay = delay;
     if( hideTimer->isActive() )
-        hideTimer->changeInterval( delay );
+    {
+        if( delay ) {
+            hideTimer->changeInterval( delay );
+        } else {
+            hideTimer->stop();
+        }
+    }
 }
 
 void KPassivePopup::setAutoDelete( bool autoDelete )
