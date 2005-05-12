@@ -511,8 +511,8 @@ Q3Frame *KAboutContainerBase::addLicensePage( const QString &title,
 
 
 KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
-							int childAlignment,
-							int innerAlignment )
+							Qt::Alignment childAlignment,
+							Qt::Alignment innerAlignment )
 {
   if( !mPageTab )
   {
@@ -536,8 +536,8 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
 
 KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
 				      const QString &title,
-				      int childAlignment,
-				      int innerAlignment )
+				      Qt::Alignment childAlignment,
+				      Qt::Alignment innerAlignment )
 {
   if( !mPageTab )
   {
@@ -581,8 +581,8 @@ Q3Frame *KAboutContainerBase::addEmptyPage( const QString &title )
 }
 
 
-KAboutContainer *KAboutContainerBase::addContainer( int childAlignment,
-						    int innerAlignment )
+KAboutContainer *KAboutContainerBase::addContainer( Qt::Alignment childAlignment,
+						    Qt::Alignment innerAlignment )
 {
   KAboutContainer* const container = new KAboutContainer( this, "container",
     0, KDialog::spacingHint(), childAlignment, innerAlignment );
@@ -738,7 +738,7 @@ void KAboutContainerBase::slotMailClick( const QString &_name,
 
 KAboutContainer::KAboutContainer( QWidget *_parent, const char *_name,
 				  int _margin, int _spacing,
-				  int childAlignment, int innerAlignment )
+				  Qt::Alignment childAlignment, Qt::Alignment innerAlignment )
   : Q3Frame( _parent, _name ), d(0)
 {
   mAlignment = innerAlignment;
@@ -790,15 +790,12 @@ void KAboutContainer::childEvent( QChildEvent *e )
   const QSize s( sizeHint() );
   setMinimumSize( s );
 
-  QObjectList* const l = const_cast<QObjectList *>(children()); // silence please
-  QObjectListIterator itr( *l );
-  QObject * o;
-  while ( (o = itr.current()) ) {
-    ++itr;
-    if( o->isWidgetType() )
-    {
+  const QList<QObject*> l = children(); // silence please
+  foreach ( QObject *o, l ) {
+	if ( o->isWidgetType() )
+	{
         static_cast<QWidget *>(o)->setMinimumWidth( s.width() );
-    }
+	}
   }
 }
 
@@ -814,33 +811,29 @@ QSize KAboutContainer::sizeHint( void ) const
   QSize total_size;
 
   int numChild = 0;
-  QObjectList* const l = const_cast<QObjectList *>(children()); // silence please
-
-  QObjectListIterator itr( *l );
-  QObject * o;
-  while ( (o = itr.current()) ) {
-    ++itr;
-    if( o->isWidgetType() )
-    {
-      ++numChild;
-      QWidget* const w= static_cast<QWidget *>(o);
-
-      QSize s = w->minimumSize();
-      if( s.isEmpty() )
-      {
-	s = w->minimumSizeHint();
-	if( s.isEmpty() )
-	{
-	  s = w->sizeHint();
-	  if( s.isEmpty() )
+  const QList<QObject*> l = children(); // silence please
+  foreach ( QObject *o, l ) {
+	  if ( o->isWidgetType() )
 	  {
-	    s = QSize( 100, 100 ); // Default size
+		  ++numChild;
+		  QWidget* const w= static_cast<QWidget *>(o);
+
+		  QSize s = w->minimumSize();
+		  if( s.isEmpty() )
+		  {
+			  s = w->minimumSizeHint();
+			  if( s.isEmpty() )
+			  {
+				  s = w->sizeHint();
+				  if( s.isEmpty() )
+				  {
+					  s = QSize( 100, 100 ); // Default size
+				  }
+			  }
+		  }
+		  total_size.setHeight( total_size.height() + s.height() );
+		  if( s.width() > total_size.width() ) { total_size.setWidth( s.width() ); }
 	  }
-	}
-      }
-      total_size.setHeight( total_size.height() + s.height() );
-      if( s.width() > total_size.width() ) { total_size.setWidth( s.width() ); }
-    }
   }
 
   if( numChild > 0 )
@@ -887,7 +880,7 @@ void KAboutContainer::addPerson( const QString &_name, const QString &_email,
 }
 
 
-void KAboutContainer::addTitle( const QString &title, int alignment,
+void KAboutContainer::addTitle( const QString &title, Qt::Alignment alignment,
 				bool showFrame, bool showBold )
 {
 
@@ -906,7 +899,7 @@ void KAboutContainer::addTitle( const QString &title, int alignment,
 }
 
 
-void KAboutContainer::addImage( const QString &fileName, int alignment )
+void KAboutContainer::addImage( const QString &fileName, Qt::Alignment alignment )
 {
   if( fileName.isNull() )
   {
@@ -1652,7 +1645,7 @@ Q3Frame *KAboutDialog::addLicensePage( const QString &title, const QString &text
 
 
 KAboutContainer *KAboutDialog::addContainerPage( const QString &title,
-				  int childAlignment, int innerAlignment )
+				  Qt::Alignment childAlignment, Qt::Alignment innerAlignment )
 {
   if( !mContainerBase ) { return 0; }
   return mContainerBase->addContainerPage( title, childAlignment,
@@ -1661,7 +1654,7 @@ KAboutContainer *KAboutDialog::addContainerPage( const QString &title,
 
 
 KAboutContainer *KAboutDialog::addScrolledContainerPage( const QString &title,
-				  int childAlignment, int innerAlignment )
+				  Qt::Alignment childAlignment, Qt::Alignment innerAlignment )
 {
   if( !mContainerBase ) { return 0; }
   return mContainerBase->addScrolledContainerPage( title, childAlignment,
@@ -1677,8 +1670,8 @@ Q3Frame *KAboutDialog::addPage( const QString &title )
 }
 
 
-KAboutContainer *KAboutDialog::addContainer( int childAlignment,
-					     int innerAlignment )
+KAboutContainer *KAboutDialog::addContainer( Qt::Alignment childAlignment,
+					     Qt::Alignment innerAlignment )
 {
   if( !mContainerBase ) { return 0; }
   return mContainerBase->addContainer( childAlignment, innerAlignment );
@@ -1696,13 +1689,6 @@ void KAboutDialog::setImage( const QString &fileName )
 {
   if( !mContainerBase ) { return; }
   mContainerBase->setImage( fileName );
-}
-
-// KDE4: remove
-void KAboutDialog::setIcon( const QString &fileName )
-{
-  if( !mContainerBase ) { return; }
-  mContainerBase->setProgramLogo( fileName );
 }
 
 void KAboutDialog::setProgramLogo( const QString &fileName )

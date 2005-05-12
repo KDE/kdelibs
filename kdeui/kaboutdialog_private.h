@@ -105,13 +105,13 @@ class KAboutContainerBase : public QWidget
     Q3Frame *addLicensePage( const QString &title, const QString &text,
 			 int numLines=10 );
     KAboutContainer *addContainerPage( const QString &title,
-      int childAlignment = Qt::AlignCenter, int innerAlignment = Qt::AlignCenter );
+      Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
     KAboutContainer *addScrolledContainerPage( const QString &title,
-      int childAlignment = Qt::AlignCenter, int innerAlignment = Qt::AlignCenter );
+      Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
 
     Q3Frame *addEmptyPage( const QString &title );
 
-    KAboutContainer *addContainer( int childAlignment, int innerAlignment );
+    KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
   public slots:
     virtual void slotMouseTrack( int mode, const QMouseEvent *e );

@@ -686,7 +686,7 @@ private:
 class KDEUI_EXPORT KRecentFilesAction : public KListAction  // TODO public KSelectAction
 {
   Q_OBJECT
-  Q_PROPERTY( uint maxItems READ maxItems WRITE setMaxItems )
+  Q_PROPERTY( int maxItems READ maxItems WRITE setMaxItems )
 public:
   /**
    *  @param text The text that will be displayed.
@@ -697,7 +697,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const KShortcut& cut,
                       QObject* parent, const char* name = 0,
-                      uint maxItems = 10 );
+                      int maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -712,7 +712,7 @@ public:
   KRecentFilesAction( const QString& text, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
-                      uint maxItems = 10 );
+                      int maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -724,7 +724,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       QObject* parent, const char* name = 0,
-                      uint maxItems = 10 );
+                      int maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -736,7 +736,7 @@ public:
    */
   KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
                       QObject* parent, const char* name = 0,
-                      uint maxItems = 10 );
+                      int maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -752,7 +752,7 @@ public:
   KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
-                      uint maxItems = 10 );
+                      int maxItems = 10 );
 
   /**
    *  @param text The text that will be displayed.
@@ -768,7 +768,7 @@ public:
   KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
                       QObject* parent, const char* name = 0,
-                      uint maxItems = 10 );
+                      int maxItems = 10 );
 
   /**
    *  @param parent This action's parent.
@@ -776,7 +776,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KRecentFilesAction( QObject* parent = 0, const char* name = 0,
-                      uint maxItems = 10 );
+                      int maxItems = 10 );
 
   /**
    *  Destructor.
@@ -788,7 +788,7 @@ public:
   /**
    *  Returns the maximum of items in the recent files list.
    */
-  uint maxItems() const;
+  int maxItems() const;
 
 public slots:
   /**
@@ -799,7 +799,7 @@ public slots:
    *  in the recent files list the last items are deleted until
    *  the number of items are equal to the new maximum.
    */
-  void setMaxItems( uint maxItems );
+  void setMaxItems( int maxItems );
 
   /**
    *  Loads the recent files entries from a given KConfig object.

@@ -54,17 +54,17 @@ class KDEUI_EXPORT KAboutContainer : public Q3Frame
   public:
     KAboutContainer( QWidget *parent=0, const char *name=0,
 		     int margin=0, int spacing=0,
-		     int childAlignment = Qt::AlignCenter,
-		     int innerAlignment = Qt::AlignCenter );
+		     Qt::Alignment childAlignment = Qt::AlignCenter,
+		     Qt::Alignment innerAlignment = Qt::AlignCenter );
 
     void addWidget( QWidget *widget );
     void addPerson( const QString &name, const QString &email,
 		    const QString &url, const QString &task,
 		    bool showHeader = false, bool showframe = false,
 		    bool showBold = false );
-    void addTitle(  const QString &title, int alignment=Qt::AlignLeft,
+    void addTitle(  const QString &title, Qt::Alignment alignment=Qt::AlignLeft,
 		    bool showframe = false, bool showBold = false );
-    void addImage( const QString &fileName, int alignment=Qt::AlignLeft );
+    void addImage( const QString &fileName, Qt::Alignment alignment=Qt::AlignLeft );
 
     virtual QSize sizeHint( void ) const;
     virtual QSize minimumSizeHint( void ) const;
@@ -79,7 +79,7 @@ class KDEUI_EXPORT KAboutContainer : public Q3Frame
 
   private:
     QVBoxLayout *mVbox;
-    int mAlignment;
+	Qt::Alignment mAlignment;
     KAboutContainerPrivate* const d;
 };
 
@@ -391,20 +391,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
   void setImage( const QString &fileName );
 
   /**
-   * (Constructor II only)
-   * Define the program logo to be shown in the dialog.  Use this to override the
-   * default program logo.  For example, use this function if the 
-   * KAboutDialog is for a panel applet and you want to override the
-   * appletproxy logo with your own pixmap.
-   *
-   * @param fileName Path to file containing logo data in a format that 
-   *        can be loaded by QPixmap.
-   *
-   * @since 3.3
-   */
-  void setIcon( const QString &fileName ) KDE_DEPRECATED; // KDE4: remove
-
-  /**
    * Overloaded version of setProgramLogo(const QPixmap& pixmap).
    *
    * @since 3.4
@@ -498,7 +484,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    * @return The new container.
    */
   KAboutContainer *addContainerPage( const QString &title,
-    int childAlignment = Qt::AlignCenter, int innerAlignment = Qt::AlignCenter );
+    Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
 
   /**
    * (Constructor II only)
@@ -513,7 +499,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    * @return The new container.
    */
   KAboutContainer *addScrolledContainerPage( const QString &title,
-    int childAlignment = Qt::AlignCenter, int innerAlignment = Qt::AlignCenter );
+    Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
 
   /**
    * (Constructor II only)
@@ -525,7 +511,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
    *        respect to each other.
    * @return The new container.
    */
-  KAboutContainer *addContainer( int childAlignment, int innerAlignment );
+  KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
   /**
    * (Constructor II only)
