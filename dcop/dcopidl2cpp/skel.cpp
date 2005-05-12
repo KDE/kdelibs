@@ -61,6 +61,19 @@ struct Function
     bool hidden;
 };
 
+/**
+ Adjust type for proper prototype
+*/
+QString remapType( const QString& type )
+{
+    if ( type == "DCOPCString" )
+	return QString::fromLatin1("QCString");
+    else if ( type == "DCOPCStringList" )
+	return QString::fromLatin1("QCStringList");
+    else
+	return type;
+}
+
 
 /*
  * Writes the skeleton
@@ -140,7 +153,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    fullFuncName += ',';
 		}
 		first = false;
-		funcName += *ittype;
+		funcName += remapType(*ittype);
 		fullFuncName += *ittype;
 		if ( ! (*itname).isEmpty() ) {
 		    fullFuncName += ' ';
@@ -169,7 +182,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 
 	bool useHashing = functions.count() > 7;
 	if ( useHashing ) {
-	    str << "#include <qasciidict.h>" << endl;
+	    str << "#include <QByteArray>" << endl;
+	    str << "#include <QHash>" << endl;
 	}
 
 	QString classNameFull = className; // class name with possible namespaces prepended
@@ -216,16 +230,18 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	str << "::process(const DCOPCString &fun, const QByteArray &data, DCOPCString& replyType, QByteArray &replyData)" << endl;
 	str << "{" << endl;
 	if ( useHashing ) {
-	    str << "    static QAsciiDict<int>* fdict = 0;" << endl;
+	    str << "    static QHash<QByteArray, int*>* fdict = 0;" << endl;
     
 	    str << "    if ( !fdict ) {" << endl;
-	    str << "\tfdict = new QAsciiDict<int>( " << className << "_fhash, true, false );" << endl;
+	    str << "\tfdict = new QHash<QByteArray, int*>(); " << endl;
+	    str << "\tfdict->reserve( " << className << "_fhash );" << endl;
+	    
 	    str << "\tfor ( int i = 0; " << className << "_ftable[i][1]; i++ )" << endl;
 	    str << "\t    fdict->insert( " << className << "_ftable[i][1],  new int( i ) );" << endl;
 	    str << "    }" << endl;
     
-	    str << "    int* fp = fdict->find( fun );" << endl;
-	    str << "    switch ( fp?*fp:-1) {" << endl;
+	    str << "    QHash<QByteArray, int*>::iterator fp = fdict->find( fun );" << endl;
+	    str << "    switch ( fp != fdict->end() ? **fp : -1 ) {" << endl;
 	}
 	s = n.nextSibling().toElement();
 	int fcount = 0; // counter of written functions
@@ -279,6 +295,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    ++ittypes;
 		}
 		str << "\tQDataStream arg( data );" << endl;
+		str << "\targ.setVersion( QDataStream::Qt_3_1 );" << endl;
 		for( args_count = args.begin(); args_count != args.end(); ++args_count ){
 		    str << "\tif (arg.atEnd()) return false;" << endl; // Basic error checking
 		    str << "\targ >> " << *args_count << ";" << endl;
@@ -290,6 +307,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		str << '\t' << plainFuncName << '(';
 	    } else {
 		str << "\tQDataStream _replyStream( &replyData, IO_WriteOnly );"  << endl;
+		str << "\t_replyStream.setVersion( QDataStream::Qt_3_1 );" << endl;
 		str << "\t_replyStream << " << plainFuncName << '(';
 	    }
 
@@ -424,6 +442,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "    QByteArray data;" << endl;
 	    if ( !args.isEmpty() ) {
 		str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
+		str << "    arg.setVersion( QDataStream::Qt_3_1 );" << endl;
 		for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 		    str << "    arg << " << *args_count << ";" << endl;
 		}
