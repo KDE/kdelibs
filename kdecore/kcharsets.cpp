@@ -35,7 +35,7 @@
 #include <q3cstring.h>
 
 #include <assert.h>
-#include <q3asciidict.h>
+#include <QHash>
 
 #define CHARSETS_COUNT 33
 
@@ -355,17 +355,17 @@ class KCharsetsPrivate
 {
 public:
     KCharsetsPrivate(KCharsets* _kc)
-        : codecForNameDict(43, false) // case insensitive
     {
         db = 0;
         kc = _kc;
+		codecForNameDict.reserve( 43 );
     }
     ~KCharsetsPrivate()
     {
         delete db;
     }
     QFontDatabase *db;
-    Q3AsciiDict<QTextCodec> codecForNameDict;
+    QHash<QByteArray,QTextCodec*> codecForNameDict;
     KCharsets* kc;
 };
 
@@ -563,13 +563,17 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     ok = true;
 
     QTextCodec* codec = 0;
+	QString l = "->locale<-";
     // dict lookup is case insensitive anyway
-    if((codec = d->codecForNameDict[n.isEmpty() ? "->locale<-" : n.latin1()]))
-        return codec; // cache hit, return
+	if ( !n.isEmpty() && d->codecForNameDict.contains( n.toLower().toLatin1() ) ) {
+		return d->codecForNameDict.value( n.toLower().toLatin1() );
+	} else if ( n.isEmpty() && d->codecForNameDict.contains( l.toLatin1() ) ) {
+		return d->codecForNameDict.value( l.toLatin1() );
+	}
 
     if (n.isEmpty()) {
         codec = KGlobal::locale()->codecForEncoding();
-        d->codecForNameDict.replace("->locale<-", codec);
+        d->codecForNameDict.insert("->locale<-", codec);
         return codec;
     }
 
@@ -586,7 +590,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     codec = QTextCodec::codecForName(name);
 
     if(codec) {
-        d->codecForNameDict.replace(key, codec);
+        d->codecForNameDict.insert(key.toLower(), codec);
         return codec;
     }
 
@@ -599,7 +603,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     if(codec)
     {
-        d->codecForNameDict.replace(key, codec);
+        d->codecForNameDict.insert(key.toLower(), codec);
         return codec;
     }
 
