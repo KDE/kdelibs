@@ -328,7 +328,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
   if (url.hasSubURL()) // We don't want the suburl's protocol
   {
      KURL::List list = KURL::split(url);
-     KURL::List l = list.last();
+     KURL l = list.last();
      return slaveProtocol(l, proxy);
   }
 

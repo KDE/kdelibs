@@ -33,7 +33,7 @@ KRemoteEncoding::~KRemoteEncoding()
   // delete d;		// not necessary yet
 }
 
-QString KRemoteEncoding::decode(const Q3CString& name) const
+QString KRemoteEncoding::decode(const QByteArray& name) const
 {
 #ifdef CHECK_UTF8
   if (codec->mibEnum() == 106 && !KStringHandler::isUtf8(name))
@@ -48,7 +48,7 @@ QString KRemoteEncoding::decode(const Q3CString& name) const
   return result;
 }
 
-Q3CString KRemoteEncoding::encode(const QString& name) const
+QByteArray KRemoteEncoding::encode(const QString& name) const
 {
   Q3CString result = codec->fromUnicode(name);
   if (codec->toUnicode(result) != name)

@@ -23,6 +23,7 @@
 
 #include <qmap.h>
 #include <q3valuelist.h>
+#include <qstringlist.h>
 #include <kurl.h>
 
 

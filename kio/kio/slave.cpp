@@ -40,7 +40,6 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktempfile.h>
-#include <ksock.h>
 #include <kprocess.h>
 #include <klibloader.h>
 
@@ -50,6 +49,10 @@
 #include <kio/global.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
+
+#include <network/kserversocket.h>
+
+using namespace KNetwork;
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -240,12 +243,12 @@ void Slave::hold(const KURL &url)
          client->attach();
 
       QByteArray params, reply;
-      Q3CString replyType;
+      DCOPCString replyType;
       QDataStream stream(&params, QIODevice::WriteOnly);
       pid_t pid = m_pid;
       stream << pid;
 
-      Q3CString launcher = KApplication::launcher();
+      DCOPCString launcher = KApplication::launcher();
       client->call(launcher, launcher, "waitForSlave(pid_t)",
 	    params, replyType, reply);
    }
@@ -422,11 +425,11 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
 
     QByteArray params, reply;
-    Q3CString replyType;
+    DCOPCString replyType;
     QDataStream stream(&params, QIODevice::WriteOnly);
     stream << protocol << url.host() << socketfile.name();
 
-    Q3CString launcher = KApplication::launcher();
+    DCOPCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",
 	    params, replyType, reply)) {
 	error_text = i18n("Cannot talk to klauncher");
@@ -477,11 +480,11 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 #endif
 
     QByteArray params, reply;
-    Q3CString replyType;
+    DCOPCString replyType;
     QDataStream stream(&params, QIODevice::WriteOnly);
     stream << url << socketfile.name();
 
-    Q3CString launcher = KApplication::launcher();
+    DCOPCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestHoldSlave(KURL,QString)",
         params, replyType, reply)) {
         delete slave;

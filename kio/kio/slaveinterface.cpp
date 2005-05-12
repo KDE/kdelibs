@@ -78,7 +78,7 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
     // that would break the compatibility of the wire-protocol with KDE 2.
     // We do the same on 64-bit platforms in case we run in a mixed 32/64bit
     // environment.
-    Q_LONGLONG msb = 0;
+    qint64 msb = 0;
     for(Q_UINT32 i = 0; i < size; i++)
     {
        KIO::UDSAtom a;
@@ -92,7 +92,7 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
           if (a.m_uds == KIO::UDS_SIZE)
           {
              if (a.m_long < 0)
-                a.m_long += (Q_LONGLONG) 1 << 32;
+                a.m_long += (qint64) 1 << 32;
              a.m_long += msb << 32;
           }
           e.append(a);
@@ -149,7 +149,7 @@ SlaveInterface::~SlaveInterface()
 static KIO::filesize_t readFilesize_t(QDataStream &stream)
 {
    KIO::filesize_t result;
-   unsigned long ul;
+   quint32 ul; // TODO: this was a long and possibly it was meant to be
    stream >> ul;
    result = ul;
    if (stream.atEnd())

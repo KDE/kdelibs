@@ -27,7 +27,7 @@
 #include <qtimer.h>
 #include <q3ptrdict.h>
 #include <qmap.h>
-#include <Q3CStringList>
+#include <Q3CStrList>
 
 #include <dcopobject.h>
 
@@ -285,7 +285,7 @@ namespace KIO {
         virtual bool process(const Q3CString &fun, const QByteArray &data,
                              Q3CString& replyType, QByteArray &replyData);
 
-        virtual Q3CStringList functions();
+        virtual Q3CStrList functions();
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);

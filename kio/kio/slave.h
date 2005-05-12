@@ -32,8 +32,10 @@
 #include "kio/slaveinterface.h"
 #include "kio/connection.h"
 
+namespace KNetwork {
 class KServerSocket;
 class KSocket;
+}
 
 namespace KIO {
 
@@ -51,11 +53,11 @@ namespace KIO {
 	 * @internal
 	 * @since 3.2
 	 */
-	Slave(bool derived, KServerSocket *unixdomain, const QString &protocol,
+	Slave(bool derived, KNetwork::KServerSocket *unixdomain, const QString &protocol,
 		const QString &socketname);	// TODO(BIC): Remove in KDE 4
 
     public:
-	Slave(KServerSocket *unixdomain,
+	Slave(KNetwork::KServerSocket *unixdomain,
 	      const QString &protocol, const QString &socketname);
 
         virtual ~Slave();
@@ -206,7 +208,7 @@ namespace KIO {
         void deref() { m_refCount--; if (!m_refCount) delete this; }
 
     public slots:
-        void accept(KSocket *socket);
+        void accept(KNetwork::KSocket *socket);
 	void gotInput();
 	void timeout();
     signals:
@@ -222,7 +224,7 @@ namespace KIO {
         int m_port;
         QString m_user;
         QString m_passwd;
-	KServerSocket *serv;
+	KNetwork::KServerSocket *serv;
 	QString m_socket;
 	pid_t m_pid;
 	bool contacted;
