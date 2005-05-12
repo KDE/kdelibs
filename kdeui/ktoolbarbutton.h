@@ -33,8 +33,9 @@ class KToolBar;
 class KToolBarButtonPrivate;
 class KInstance;
 class QEvent;
-class Q3PopupMenu;
+class QMenu;
 class QPainter;
+class QStyleOptionToolButton;
 
 /**
  * A toolbar button. This is used internally by KToolBar, use the
@@ -204,11 +205,6 @@ public:
   void setToggle(bool toggle = true);
 
   /**
-   * Return a pointer to this button's popup menu (if it exists)
-   */
-  Q3PopupMenu *popup();
-
-  /**
    * Returns the button's id.
    * @since 3.2
    */
@@ -222,7 +218,7 @@ public:
    * @param p The new popup menu
    * @param unused Has no effect - ignore it.
    */
-  void setPopup (Q3PopupMenu *p, bool unused = false);
+  void setPopup (QMenu *p, bool unused = false);
 
   /**
    * Gives this button a delayed popup menu.
@@ -234,7 +230,7 @@ public:
    * @param p the new popup menu
    * @param unused Has no effect - ignore it.
    */
-  void setDelayedPopup(Q3PopupMenu *p, bool unused = false);
+  void setDelayedPopup(QMenu *p, bool unused = false);
 
   /**
    * Turn this button into a radio button
@@ -280,8 +276,7 @@ public slots:
    virtual void setTextLabel(const QString&, bool tipToo);
 
 protected:
-  bool event(QEvent *e);
-  void paletteChange(const QPalette &);
+  void changeEvent(QEvent* e);
   void leaveEvent(QEvent *e);
   void enterEvent(QEvent *e);
   void drawButton(QPainter *p);
@@ -290,7 +285,7 @@ protected:
   void mousePressEvent( QMouseEvent * );
   /// @since 3.4
   void mouseReleaseEvent( QMouseEvent * );
-  void showMenu();
+
   QSize sizeHint() const;
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
@@ -302,12 +297,14 @@ protected:
   /// @since 3.1
   int iconTextMode() const;
 
+  ///Sets up option for this button
+  void initStyleOption(QStyleOptionToolButton* opt) const;
+
 protected slots:
   void slotClicked();
   void slotPressed();
   void slotReleased();
   void slotToggled();
-  void slotDelayTimeout();
 
 protected:
   virtual void virtual_hook( int id, void* data );

@@ -27,13 +27,14 @@
 #include "ktoolbarbutton.h"
 #include "ktoolbar.h"
 
+#include <qevent.h>
 #include <qstyle.h>
 #include <qimage.h>
 #include <qtimer.h>
 #include <qdrawutil.h>
 #include <qtooltip.h>
 #include <qbitmap.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qcursor.h>
 #include <qpainter.h>
 #include <qlayout.h>
@@ -178,6 +179,18 @@ KToolBarButton::~KToolBarButton()
   delete d; d = 0;
 }
 
+void KToolBarButton::initStyleOption(QStyleOptionToolButton* opt) const
+{
+  opt->init(this);
+  opt->font      = KGlobalSettings::toolBarFont();
+  opt->icon      = icon();
+  opt->iconSize  = QSize(d->m_iconSize, d->m_iconSize);
+  opt->text      = textLabel();
+  opt->features  = menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
+  opt->subControls       = QStyle::SC_All;
+  opt->activeSubControls = 0; //### FIXME: !!
+}
+
 void KToolBarButton::modeChange()
 {
   QSize mysize;
@@ -246,7 +259,9 @@ void KToolBarButton::modeChange()
     break;
   }
 
-  mysize = style().sizeFromContents(QStyle::CT_ToolButton, this, mysize).
+  QStyleOptionToolButton opt;
+  initStyleOption(&opt);
+  mysize = style()->sizeFromContents(QStyle::CT_ToolButton, &opt,  mysize, this).
                expandedTo(QApplication::globalStrut());
 
   // make sure that this isn't taller then it is wide
@@ -350,21 +365,15 @@ void KToolBarButton::setDisabledIcon( const QString& icon )
   QToolButton::setIconSet( set );
 }
 
-Q3PopupMenu *KToolBarButton::popup()
-{
-  // obsolete
-  // KDE4: remove me
-  return QToolButton::popup();
-}
 
-void KToolBarButton::setPopup(Q3PopupMenu *p, bool)
+void KToolBarButton::setPopup(QMenu *p, bool)
 {
   QToolButton::setPopup(p);
   QToolButton::setPopupDelay(-1);
 }
 
 
-void KToolBarButton::setDelayedPopup (Q3PopupMenu *p, bool)
+void KToolBarButton::setDelayedPopup (QMenu *p, bool)
 {
   QToolButton::setPopup(p);
   QToolButton::setPopupDelay(QApplication::startDragTime());
@@ -481,11 +490,14 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
 
 void KToolBarButton::drawButton( QPainter *_painter )
 {
+#ifdef __GNUC__
+    #warning "KDE4 port: Most of this can be removed, Qt can do this stuff now! -- Maks"
+#endif
   QStyle::State flags   = QStyle::State_None;
   QStyle::SubControls active = QStyle::SC_None;
 
   if (isDown()) {
-    flags  |= QStyle::State_Down;
+    flags  |= QStyle::State_Sunken;
     active |= QStyle::SC_ToolButton;
   }
   if (isEnabled()) 	flags |= QStyle::State_Enabled;
@@ -494,8 +506,12 @@ void KToolBarButton::drawButton( QPainter *_painter )
   if (hasFocus())	flags |= QStyle::State_HasFocus;
 
   // Draw a styled toolbutton
-  style().drawComplexControl(QStyle::CC_ToolButton, _painter, this, rect(),
-	colorGroup(), flags, QStyle::SC_ToolButton, active, QStyleOption());
+  QStyleOptionToolButton opt;
+  initStyleOption(&opt);
+  opt.state             = flags;
+  opt.activeSubControls = active;
+
+  style()->drawComplexControl(QStyle::CC_ToolButton, &opt, _painter, this);
 
   int dx, dy;
   QFont tmp_font(KGlobalSettings::toolBarFont());
@@ -513,7 +529,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = ( width() - pixmap.width() ) / 2;
       dy = ( height() - pixmap.height() ) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -531,7 +547,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = 4;
       dy = ( height() - pixmap.height() ) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -547,7 +563,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       else
         dx = 4;
       dy = 0;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -562,7 +578,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       textFlags = Qt::AlignVCenter|Qt::AlignLeft;
       dx = (width() - fm.width(textLabel())) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -580,7 +596,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = (width() - pixmap.width()) / 2;
       dy = (height() - fm.lineSpacing() - pixmap.height()) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -594,7 +610,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       dx = (width() - fm.width(textLabel())) / 2;
       dy = height() - fm.lineSpacing() - 4;
 
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -620,48 +636,35 @@ void KToolBarButton::drawButton( QPainter *_painter )
   {
     QStyle::State arrowFlags = QStyle::State_None;
 
-    if (isDown())	arrowFlags |= QStyle::State_Down;
+    if (isDown())	arrowFlags |= QStyle::State_Sunken;
     if (isEnabled()) 	arrowFlags |= QStyle::State_Enabled;
 
-      style().drawPrimitive(QStyle::PE_ArrowDown, _painter,
-          QRect(width()-7, height()-7, 7, 7), colorGroup(),
-	  arrowFlags, QStyleOption() );
+    QStyleOption opt;
+    opt.init(this);
+    opt.rect  = QRect(width()-7, height()-7, 7, 7);
+    opt.state = arrowFlags;
+    style()->drawPrimitive(QStyle::PE_IndicatorArrowDown, &opt, _painter);
   }
 }
 
-void KToolBarButton::paletteChange(const QPalette &)
+void KToolBarButton::changeEvent(QEvent* e)
 {
-  if(!d->m_isSeparator)
+  switch (e->type())
   {
-    modeChange();
-    repaint(false); // no need to delete it first therefore only false
+    case QEvent::PaletteChange:
+    case QEvent::ApplicationPaletteChange:
+      if(!d->m_isSeparator)
+      {
+        modeChange();
+        repaint(false); // no need to delete it first therefore only false
+      }
+      break;
+    case QEvent::FontChange:
+    case QEvent::ApplicationFontChange:
+      if (d->m_iconText != KToolBar::IconOnly)
+        modeChange();
+    default: ; //Shadup!
   }
-}
-
-bool KToolBarButton::event(QEvent *e)
-{
-  if (e->type() == QEvent::ParentFontChange || e->type() == QEvent::ApplicationFontChange)
-  {
-     //If we use toolbar text, apply the settings again, to relayout...
-     if (d->m_iconText != KToolBar::IconOnly)
-       modeChange();
-     return true;
-  }
-
-  return QToolButton::event(e);
-}
-
-
-void KToolBarButton::showMenu()
-{
-  // obsolete
-  // KDE4: remove me
-}
-
-void KToolBarButton::slotDelayTimeout()
-{
-  // obsolete
-  // KDE4: remove me
 }
 
 void KToolBarButton::slotClicked()
