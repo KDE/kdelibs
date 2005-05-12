@@ -338,6 +338,8 @@ QRect KCompletionBox::calculateGeometry() const
     int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
     w = QMAX( KListBox::minimumSizeHint().width(), w );
 
+  //### M.O.: Qt4 doesn't actually honor SC_ComboBoxListBoxPopup ???
+#if 0
     //If we're inside a combox, Qt by default makes the dropdown
     // as wide as the combo, and gives the style a chance
     // to adjust it. Do that here as well, for consistency
@@ -370,6 +372,7 @@ QRect KCompletionBox::calculateGeometry() const
             return styleAdj;
 
     }
+#endif
     return QRect(x, y, w, h);
 }
 

@@ -225,14 +225,12 @@ bool KPasswordEdit::event(QEvent *e) {
       case QEvent::MouseButtonRelease:
       case QEvent::MouseButtonDblClick:
       case QEvent::MouseMove:
-      case QEvent::InputMethodStart:
-      case QEvent::InputMethodCompose:
         return true; //Ignore
-
-      case QEvent::InputMethodEnd:
+      case QEvent::InputMethod:
       {
-        QIMEvent* const ie = (QIMEvent*) e;
-        insert( ie->text() );
+        QInputMethodEvent* const ie = (QInputMethodEvent*) e;
+        if (!ie->commitString().isNull())
+            insert( ie->commitString() );
         return true;
       }
 
@@ -628,15 +626,15 @@ void KPasswordDialog::enableOkBtn()
       if (pwlength > 5) pwlength = 5;
 
       const QRegExp numRxp("[0-9]", true, false);
-      int numeric = (int) (pass.contains(numRxp) / lengthFactor);
+      int numeric = (int) (pass.count(numRxp) / lengthFactor);
       if (numeric > 3) numeric = 3;
 
       const QRegExp symbRxp("\\W", false, false);
-      int numsymbols = (int) (pass.contains(symbRxp) / lengthFactor);
+      int numsymbols = (int) (pass.count(symbRxp) / lengthFactor);
       if (numsymbols > 3) numsymbols = 3;
 
       const QRegExp upperRxp("[A-Z]", true, false);
-      int upper = (int) (pass.contains(upperRxp) / lengthFactor);
+      int upper = (int) (pass.count(upperRxp) / lengthFactor);
       if (upper > 3) upper = 3;
 
       int pwstrength=((pwlength*10)-20) + (numeric*10) + (numsymbols*15) + (upper*10);
