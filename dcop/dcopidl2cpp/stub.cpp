@@ -63,7 +63,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
     str << "#define __" << ifdefstring << ifdefsuffix << endl << endl;
 
     str << "#include <dcopstub.h>" << endl;
-    str << "#include <q3cstring.h>" << endl;
+    str << "#include <kdatastream.h>" << endl;
 
     QStringList includeslist, all_includes;
     QDomElement e = de.firstChild().toElement();
@@ -157,8 +157,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	str << "public:" << endl;
     
 	// Constructors
-	str << "    " << className << "( const Q3CString& app, const Q3CString& id );" << endl;
-	str << "    " << className << "( DCOPClient* client, const Q3CString& app, const Q3CString& id );" << endl;
+	str << "    " << className << "( const DCOPCString& app, const DCOPCString& id );" << endl;
+	str << "    " << className << "( DCOPClient* client, const DCOPCString& app, const DCOPCString& id );" << endl;
 	str << "    explicit " << className << "( const DCOPRef& ref );" << endl;
 
 	n = e.firstChild().toElement();

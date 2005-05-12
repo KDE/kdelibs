@@ -19,4 +19,17 @@ static QString writeType( QTextStream& str, const QDomElement& r )
   return t;
 }
 
+/**
+ Adjust type for proper prototype
+*/
+inline QString remapType( const QString& type )
+{
+    if ( type == "DCOPCString" )
+	return QString::fromLatin1("QCString");
+    else if ( type == "DCOPCStringList" )
+	return QString::fromLatin1("QCStringList");
+    else
+	return type;
+}
+
 #endif

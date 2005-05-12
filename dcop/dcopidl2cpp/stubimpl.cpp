@@ -120,7 +120,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	str << endl;
 
 	// Write constructors
-	str << className_stub << "::" << className_stub << "( const Q3CString& app, const Q3CString& obj )" << endl;
+	str << className_stub << "::" << className_stub << "( const DCOPCString& app, const DCOPCString& obj )" << endl;
 	str << "  : ";
 
 	// Always explicitly call DCOPStub constructor, because it's virtual base class.           
@@ -130,7 +130,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	str << "{" << endl;
 	str << "}" << endl << endl;
 
-	str << className_stub << "::" << className_stub << "( DCOPClient* client, const Q3CString& app, const Q3CString& obj )" << endl;
+	str << className_stub << "::" << className_stub << "( DCOPClient* client, const DCOPCString& app, const DCOPCString& obj )" << endl;
 	str << "  : ";
     
 	str << "DCOPStub( client, app, obj )" << endl;
@@ -179,7 +179,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		Q_ASSERT( r.tagName() == "ARG" );
 		QDomElement a = r.firstChild().toElement();
 		QString type = writeType( str, a );
-		argtypes.append( type );
+		argtypes.append( remapType(type) );
 		args.append( QString("arg" ) + QString::number( args.count() ) ) ;
 		str << args.last();
 	    }
@@ -215,6 +215,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		str << "    QByteArray data;" << endl;
 		if ( !args.isEmpty() ) {
 		    str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
+		    str << "    arg.setVersion( QDataStream::Qt_3_1 );" << endl;
 		    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 			str << "    arg << " << *args_count << ";" << endl;
 		    }
@@ -246,10 +247,11 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		str << "    }" << endl;
 
 		str << "    QByteArray data, replyData;" << endl;
-		str << "    Q3CString replyType;" << endl;
+		str << "    DCOPCString replyType;" << endl;
 	
 		if ( !args.isEmpty() ) {
 		    str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
+		    str << "    arg.setVersion( QDataStream::Qt_3_1 );" << endl;
 		    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 			str << "    arg << " << *args_count << ";" << endl;
 		    }
@@ -259,6 +261,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		if ( result != "void" ) {
 		    str << "\tif ( replyType == \"" << result << "\" ) {" << endl;
 		    str << "\t    QDataStream _reply_stream( replyData );"  << endl;
+		    str << "\t    _reply_stream.setVersion( QDataStream::Qt_3_1 );" << endl;
 		    str << "\t    _reply_stream >> result;" << endl;
 		    str << "\t    setStatus( CallSucceeded );" << endl;
 		    str << "\t} else {" << endl;

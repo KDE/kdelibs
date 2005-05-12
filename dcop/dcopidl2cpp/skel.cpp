@@ -61,19 +61,6 @@ struct Function
     bool hidden;
 };
 
-/**
- Adjust type for proper prototype
-*/
-QString remapType( const QString& type )
-{
-    if ( type == "DCOPCString" )
-	return QString::fromLatin1("QCString");
-    else if ( type == "DCOPCStringList" )
-	return QString::fromLatin1("QCStringList");
-    else
-	return type;
-}
-
 
 /*
  * Writes the skeleton
