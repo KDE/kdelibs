@@ -66,7 +66,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xmd.h> 
+#include <X11/Xmd.h>
 #endif
 extern "C" {
 #ifdef Q_OS_UNIX
@@ -190,7 +190,7 @@ public:
     // 2 : Priority
     // >= 42: Normal
     CARD32 key;
-    CARD32 currentKey; 
+    CARD32 currentKey;
     CARD32 currentKeySaved;
 #endif
 
@@ -200,14 +200,14 @@ public:
     QList<DCOPClient::ReplyStruct*> pendingReplies;
     QList<DCOPClient::ReplyStruct*> asyncReplyQueue;
 
-    struct LocalTransactionResult 
+    struct LocalTransactionResult
     {
         DCOPCString replyType;
         QByteArray replyData;
     };
 
     QHash<int, LocalTransactionResult*> localTransActionList;
-    
+
     QTimer eventLoopTimer;
 };
 
@@ -235,7 +235,7 @@ QByteArray DCOPClient::iceauthPath()
         {
             return fPath;
         }
-   
+
         fPath = strtok(NULL, ":\b");
     }
     return 0;
@@ -246,7 +246,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
     QByteArray fName = ::getenv("DCOPAUTHORITY");
     if (!old && !fName.isEmpty())
         return fName;
-    
+
     fName = ::getenv("HOME");
     if (fName.isEmpty())
     {
@@ -282,7 +282,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
         {
             fName += "localhost";
         }
-        else 
+        else
         {
             hostName[sizeof(hostName)-1] = '\0';
             fName += hostName;
@@ -451,7 +451,7 @@ void DCOPClient::processPostedMessagesInternal()
     DCOPClientMessage* msg;
 
     while (it.hasNext()) {
-        msg = it.next(); 
+        msg = it.next();
         if ( d->currentKey && msg->key != d->currentKey )
             continue;
         it.remove();
@@ -651,7 +651,7 @@ DCOPClient::~DCOPClient()
 
         DCOPCString fromApp, app, objId, fun;
         ds >> fromApp >> app >> objId >> fun;
-        qWarning("         from = %s", fromApp.data()); 
+        qWarning("         from = %s", fromApp.data());
         qWarning("         to = %s / %s / %s", app.data(), objId.data(), fun.data());
         delete msg;
     }
@@ -1430,7 +1430,7 @@ static void fillQtObjectsEx( QList<O>& l, QObject* o, DCOPCString path )
           fillQtObjectsEx( l, obj , fn );
    }
 }
- 
+
 
 static QObject* findQtObject( DCOPCString id )
 {
@@ -1812,7 +1812,7 @@ bool DCOPClient::call(const DCOPCString &remApp, const DCOPCString &remObjId,
 
         d->senderId = 0; // Local call
         bool b = localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
-        
+
         Q_INT32 id = localClient->transactionId();
         if (id) {
            // Call delayed. We have to wait till it has been processed.
@@ -2008,7 +2008,7 @@ bool DCOPClient::callInternal(const DCOPCString &remApp, const DCOPCString &remO
                 return false;
             }
         }
-    
+
         if( replyStruct->transactionId != -1 )
         {
             if (replyStruct->transactionId == 0)
@@ -2032,7 +2032,7 @@ bool DCOPClient::callInternal(const DCOPCString &remApp, const DCOPCString &remO
                 time_left = 0;
                 useEventLoop = false;
                 continue;
-             } 
+             }
              *(replyStruct->replyType) = DCOPCString();
              *(replyStruct->replyData) = QByteArray();
              replyStruct->status = ReplyStruct::Failed;
@@ -2110,7 +2110,7 @@ DCOPClient::isLocalTransactionFinished(Q_INT32 id, DCOPCString &replyType, QByte
     DCOPClientPrivate::LocalTransactionResult *result = d->localTransActionList.take(id);
     if (!result)
         return false;
-    
+
     replyType = result->replyType;
     replyData = result->replyData;
     delete result;
@@ -2170,15 +2170,15 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, DCOPCString& replyType
         return; // Transaction
     }
 
-    if (trans->senderId.isEmpty()) 
+    if (trans->senderId.isEmpty())
     {
         // Local transaction
         DCOPClientPrivate::LocalTransactionResult *result = new DCOPClientPrivate::LocalTransactionResult();
         result->replyType = replyType;
         result->replyData = replyData;
-        
+
         d->localTransActionList.insert(trans->id, result);
-        
+
         delete trans;
 
         return;

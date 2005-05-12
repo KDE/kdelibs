@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _TESTDCOP_H_
 #define _TESTDCOP_H_
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <qbitarray.h>
 #include <dcopclient.h>
 #include <dcopobject.h>
@@ -36,7 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 /**
  $QTDIR/bin/moc testdcop.cpp -o testdcop.moc
- g++ -o testdcop testdcop.cpp -I$KDEDIR/include -I$QTDIR/include -L$KDEDIR/lib -L$QTDIR/lib -lkdecore -ldl
+ g++ -o testdcop testdcop.cpp -I$QTDIR/include -L$QTDIR/lib
  @internal
 
 **/
@@ -45,14 +45,14 @@ class TestObject : public QObject
 {
   Q_OBJECT
 public:
-  TestObject(const QCString &app);
+  TestObject(const DCOPCString &app);
 
 public slots:
   void slotTimeout();
-  void slotCallBack(int, const QCString&, const QByteArray&);
+  void slotCallBack(int, const DCOPCString&, const QByteArray&);
 private:
 
-  QCString m_app;
+  DCOPCString m_app;
 };
 
 
@@ -60,18 +60,26 @@ class MyDCOPObject : public QObject, public DCOPObject
 {
   Q_OBJECT
 public:
-  MyDCOPObject(const QCString &name) : DCOPObject(name) {}
-  bool process(const QCString &fun, const QByteArray &data,
-	       QCString& replyType, QByteArray &replyData);
+  MyDCOPObject(const DCOPCString &name) : DCOPObject(name) {}
+  bool process(const DCOPCString &fun, const QByteArray &data,
+	       DCOPCString& replyType, QByteArray &replyData);
   void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d", arg1.utf8().data(), arg2); }
+  bool gotRegister( const QByteArray& appName ) const {
+    return m_registerReceived.find( appName ) != m_registerReceived.end();
+  }
 public slots:
   void slotTimeout();
   void slotTimeout2();
-  void registered(const QCString &appName)
-     { printf("REGISTER: %s\n", appName.data()); }
+  void registered(const QByteArray &appName) {
+      printf("REGISTER: %s\n", appName.data());
+      m_registerReceived.append( appName );
+  }
 
-  void unregistered(const QCString &appName)
-     { printf("UNREGISTER: %s\n", appName.data()); }
-  QCStringList functions();
+  void unregistered(const QByteArray &appName) {
+      printf("UNREGISTER: %s\n", appName.data());
+  }
+  DCOPCStringList functions();
+private:
+  QList<QByteArray> m_registerReceived;
 };
 #endif

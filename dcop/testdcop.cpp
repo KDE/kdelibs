@@ -2,44 +2,48 @@
 
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
- 
+
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
- 
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 ******************************************************************
 */
 
 #include <testdcop.h>
 #include <qtimer.h>
+#include <assert.h>
 
 DCOPClientTransaction *countDownAction = 0;
 int countDownCount = 0;
 
 DCOPClientTransaction *countDownAction2 = 0;
 int countDownCount2 = 0;
+DCOPClient *client = 0;
 
-bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
-			   QCString& replyType, QByteArray &replyData)
+bool MyDCOPObject::process(const DCOPCString &fun, const QByteArray &data,
+			   DCOPCString& replyType, QByteArray &replyData)
 {
   qDebug("in MyDCOPObject::process, fun = %s", fun.data());
-  
+
   // note "fun" is normlized here (i.e. whitespace clean)
   if (fun == "aFunction(QString,int)") {
-    QDataStream args(data, IO_ReadOnly);
+    QByteArray dataCopy = data;
+    QDataStream args(&dataCopy, QIODevice::ReadOnly);
+    args.setVersion( QDataStream::Qt_3_1 );
     QString arg1;
     int arg2;
     args >> arg1 >> arg2;
@@ -48,22 +52,25 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
     return true;
   }
   if (fun == "canLaunchRockets(QRect)") {
-    QDataStream args(data, IO_ReadOnly);
+    QByteArray dataCopy = data;
+    QDataStream args(&dataCopy, QIODevice::ReadOnly);
+    args.setVersion( QDataStream::Qt_3_1 );
     QRect arg1;
     args >> arg1;
 
     printf("Rect x = %d, y = %d, w = %d, h = %d\n", arg1.x(), arg1.y(), arg1.width(), arg1.height());
 
     replyType = "QRect";
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
+    reply.setVersion( QDataStream::Qt_3_1 );
     QRect r(10,20,100,200);
     reply << r;
     return true;
   }
   if (fun == "isAliveSlot(int)") {
-    
+
     qDebug("isAliveSlot(int)");
-    bool connectResult = kapp->dcopClient()->disconnectDCOPSignal("", objId(), "", objId(), "" );
+    bool connectResult = client->disconnectDCOPSignal("", objId(), "", objId(), "" );
     qDebug("disconnectDCOPSignal returns %s", connectResult ? "true" : "false");
     return true;
   }
@@ -72,22 +79,23 @@ qDebug("countDown() countDownAction = %p", countDownAction);
     if (countDownAction2)
     {
        replyType = "QString";
-       QDataStream reply( replyData, IO_WriteOnly );
+       QDataStream reply( &replyData, QIODevice::WriteOnly );
+       reply.setVersion( QDataStream::Qt_3_1 );
        reply << QString("Hey");
        return true;
     }
 
     if (countDownAction == 0)
     {
-       countDownCount = 10;       
-       countDownAction = kapp->dcopClient()->beginTransaction();
-       QTimer::singleShot(1000, this, SLOT(slotTimeout()));
+       countDownCount = 10;
+       countDownAction = client->beginTransaction();
+       QTimer::singleShot(100, this, SLOT(slotTimeout()));
     }
     else
     {
-       countDownCount2 = 10;       
-       countDownAction2 = kapp->dcopClient()->beginTransaction();
-       QTimer::singleShot(1000, this, SLOT(slotTimeout2()));
+       countDownCount2 = 10;
+       countDownAction2 = client->beginTransaction();
+       QTimer::singleShot(100, this, SLOT(slotTimeout2()));
     }
     return true;
   }
@@ -101,16 +109,17 @@ void MyDCOPObject::slotTimeout()
   countDownCount--;
   if (countDownCount == 0)
   {
-     QCString replyType = "QString";
+     DCOPCString replyType = "QString";
      QByteArray replyData;
-     QDataStream reply( replyData, IO_WriteOnly );
+     QDataStream reply( &replyData, QIODevice::WriteOnly );
+     reply.setVersion( QDataStream::Qt_3_1 );
      reply << QString("Hello World");
-     kapp->dcopClient()->endTransaction(countDownAction, replyType, replyData);
+     client->endTransaction(countDownAction, replyType, replyData);
      countDownAction = 0;
   }
   else
   {
-     QTimer::singleShot(1000, this, SLOT(slotTimeout()));
+     QTimer::singleShot(100, this, SLOT(slotTimeout()));
   }
 }
 
@@ -120,77 +129,80 @@ void MyDCOPObject::slotTimeout2()
   countDownCount2--;
   if (countDownCount2 == 0)
   {
-     QCString replyType = "QString";
+     DCOPCString replyType = "QString";
      QByteArray replyData;
-     QDataStream reply( replyData, IO_WriteOnly );
+     QDataStream reply( &replyData, QIODevice::WriteOnly );
+     reply.setVersion( QDataStream::Qt_3_1 );
      reply << QString("Hello World");
-     kapp->dcopClient()->endTransaction(countDownAction2, replyType, replyData);
+     client->endTransaction(countDownAction2, replyType, replyData);
      countDownAction2 = 0;
   }
   else
   {
-     QTimer::singleShot(1000, this, SLOT(slotTimeout2()));
+     QTimer::singleShot(100, this, SLOT(slotTimeout2()));
   }
 }
 
-QCStringList MyDCOPObject::functions()
+DCOPCStringList MyDCOPObject::functions()
 {
-   QCStringList result = DCOPObject::functions();
+   DCOPCStringList result = DCOPObject::functions();
    result << "QRect canLaunchRockets(QRect)";
    return result;
 }
 
-TestObject::TestObject(const QCString& app)
+TestObject::TestObject(const DCOPCString& app)
  :  m_app(app)
 {
-   QTimer::singleShot(2500, this, SLOT(slotTimeout()));
+   QTimer::singleShot(250, this, SLOT(slotTimeout()));
 }
 
 void TestObject::slotTimeout()
 {
-   QCString replyType;
+   DCOPCString replyType;
    QByteArray data, reply;
    qWarning("#3 Calling countDown");
 
-   if (!kapp->dcopClient()->call(m_app, "object1", "countDown()", data, replyType, reply))
+   if (!client->call(m_app, "object1", "countDown()", data, replyType, reply))
       qDebug("#3 I couldn't call countDown");
    else
-      qDebug("#3 countDown() return type was '%s'", replyType.data() ); 
-   
+      qDebug("#3 countDown() return type was '%s'", replyType.data() );
+
 }
 
-void TestObject::slotCallBack(int callId, const QCString &replyType, const QByteArray &replyData)
+void TestObject::slotCallBack(int callId, const DCOPCString &replyType, const QByteArray &replyData)
 {
    qWarning("Call Back! callId = %d", callId);
    qWarning("Type = %s", replyType.data());
-   
-   QDataStream args(replyData, IO_ReadOnly);
+
+   QByteArray dataCopy = replyData;
+   QDataStream args(&dataCopy, QIODevice::ReadOnly);
+   args.setVersion( QDataStream::Qt_3_1 );
    QString arg1;
    args >> arg1;
-   
+
    qWarning("Value = %s", arg1.latin1());
 }
 
 int main(int argc, char **argv)
 {
-  KApplication app(argc, argv, "testdcop");
+  QApplication app(argc, argv, "testdcop");
 
-  QCString replyType;
+  DCOPCString replyType;
   QByteArray data, reply;
-  DCOPClient *client; client = app.dcopClient();
+  client = new DCOPClient();
 
   if (argc == 2)
   {
-      QCString app = argv[1];
-      TestObject obj(app);
+      DCOPCString appId = argv[1];
+      TestObject obj(appId);
       qWarning("#1 Calling countDown");
-      int result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
+      int result = client->callAsync(appId, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const DCOPCString&, const QByteArray&)));
       qDebug("#1 countDown() call id = %d", result);
       qWarning("#2 Calling countDown");
-      result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
+      result = client->callAsync(appId, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const DCOPCString&, const QByteArray&)));
       qDebug("#2 countDown() call id = %d", result);
-      kapp->exec();
-    
+      app.exec();
+
       return 0;
   }
 
@@ -202,38 +214,46 @@ int main(int argc, char **argv)
   if ( client->isApplicationRegistered( app.name() ) )
       qDebug("indeed, we are registered!");
 
-  QDataStream dataStream( data, IO_WriteOnly );
+  QDataStream dataStream( &data, QIODevice::WriteOnly );
+  dataStream.setVersion( QDataStream::Qt_3_1 );
+
   dataStream << (int) 43;
-  client->emitDCOPSignal("alive(int,QCString)", data);
+  client->emitDCOPSignal("alive(int,DCOPCString)", data);
 
   MyDCOPObject *obj1 = new MyDCOPObject("object1");
 
-  bool connectResult = client->connectDCOPSignal("", "alive(int , QCString)", "object1", "isAliveSlot(int)", false);
+  bool connectResult = client->connectDCOPSignal("", "alive(int , DCOPCString)", "object1", "isAliveSlot(int)", false);
   qDebug("connectDCOPSignal returns %s", connectResult ? "true" : "false");
 
-  QDataStream ds(data, IO_WriteOnly);
+  QDataStream ds(&data, QIODevice::WriteOnly);
+  ds.setVersion( QDataStream::Qt_3_1 );
+
   ds << QString("fourty-two") << 42;
-  if (!client->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply))
+  if (!client->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply)) {
     qDebug("I couldn't call myself");
-  else
-      qDebug("return type was '%s'", replyType.data() ); 
+    assert( 0 );
+  }
+  else {
+    qDebug("return type was '%s'", replyType.data() );
+    assert( replyType == "void" );
+  }
 
   client->send(app.name(), "object1", "aFunction(QString,int)", data );
 
   int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );
 
-  QObject::connect( client, SIGNAL( applicationRegistered( const QCString&)),
-                    obj1, SLOT( registered( const QCString& )));
+  QObject::connect( client, SIGNAL( applicationRegistered( const QByteArray&)),
+                    obj1, SLOT( registered( const QByteArray& )));
 
-  QObject::connect( client, SIGNAL( applicationRemoved( const QCString&)),
-                    obj1, SLOT( unregistered( const QCString& )));
+  QObject::connect( client, SIGNAL( applicationRemoved( const QByteArray&)),
+                    obj1, SLOT( unregistered( const QByteArray& )));
 
   // Enable the above signals
   client->setNotifications( true );
 
-  QCString foundApp;
-  QCString foundObj;
+  DCOPCString foundApp;
+  DCOPCString foundObj;
 
   // Find a object called "object1" in any application that
   // meets the criteria "canLaunchRockets()"
@@ -266,22 +286,28 @@ qDebug("Sending to object1");
 qDebug("Calling object1");
   if (!client2->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply))
     qDebug("I couldn't call myself");
-  else
-      qDebug("return type was '%s'", replyType.data() ); 
+  else {
+      qDebug("return type was '%s'", replyType.data() );
+      assert( replyType == "void" );
+  }
 
 qDebug("Calling countDown() in object1");
   if (!client2->call(app.name(), "object1", "countDown()", data, replyType, reply))
     qDebug("I couldn't call myself");
-  else
-      qDebug("return type was '%s'", replyType.data() ); 
+  else {
+      qDebug("return type was '%s'", replyType.data() );
+      assert( replyType == "QString" );
+  }
+
+  // Meanwhile, check that registered() got called for the second dcopclient
+  bool gotTestDcop2 = obj1->gotRegister( "testdcop-2" );
+  bool gotLtTestDcop2 = obj1->gotRegister( "lt-testdcop-2" );
+  assert( gotTestDcop2 || gotLtTestDcop2 );
 
   // Find ourselves in any application.
   boolResult = client2->findObject( "testdcop", "object1", "", data, foundApp, foundObj);
   qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
 	foundApp.data(), foundObj.data());
-
-
-  return app.exec();
 
   client->detach();
 }

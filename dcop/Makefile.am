@@ -52,7 +52,7 @@ dcopserver_shutdown_SOURCES = dcopserver_shutdown.c
 
 testdcop_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcop_SOURCES = testdcop.cpp
-testdcop_LDADD = ../kdecore/libkdecore.la
+testdcop_LDADD = libDCOP.la
 
 dcop_deadlock_test_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 dcop_deadlock_test_SOURCES = dcop_deadlock_test.cpp
