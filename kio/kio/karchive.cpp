@@ -88,7 +88,7 @@ KArchive::~KArchive()
     delete d;
 }
 
-bool KArchive::open( int mode )
+bool KArchive::open( QIODevice::OpenMode mode )
 {
     if ( m_dev && !m_dev->open( mode ) )
         return false;

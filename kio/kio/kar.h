@@ -89,7 +89,7 @@ protected:
      * and creates the KArchiveDirectory/KArchiveFile entries.
      *
      */
-    virtual bool openArchive( int mode );
+    virtual bool openArchive( QIODevice::OpenMode mode );
     virtual bool closeArchive();
 
 protected:

@@ -366,7 +366,7 @@ KZip::~KZip()
     delete d;
 }
 
-bool KZip::openArchive( int mode )
+bool KZip::openArchive( QIODevice::OpenMode mode )
 {
     //kdDebug(7040) << "openarchive reached." << endl;
     d->m_fileList.clear();

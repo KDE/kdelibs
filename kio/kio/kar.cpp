@@ -66,7 +66,7 @@ KAr::~KAr()
     delete d;
 }
 
-bool KAr::openArchive( int mode )
+bool KAr::openArchive( QIODevice::OpenMode mode )
 {
     // Open archive
 

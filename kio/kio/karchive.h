@@ -58,7 +58,7 @@ public:
      * @param mode may be IO_ReadOnly or IO_WriteOnly
      * @see close
      */
-    virtual bool open( int mode );
+    virtual bool open( QIODevice::OpenMode mode );
 
     /**
      * Closes the archive.
@@ -278,7 +278,7 @@ protected:
      * Called by open.
      * @param mode may be IO_ReadOnly or IO_WriteOnly
      */
-    virtual bool openArchive( int mode ) = 0;
+    virtual bool openArchive( QIODevice::OpenMode mode ) = 0;
 
     /**
      * Closes the archive.
