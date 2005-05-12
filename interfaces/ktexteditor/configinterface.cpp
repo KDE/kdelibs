@@ -18,7 +18,7 @@
 
 // $Id$
 
-#include "configinterface.h"    
+#include "configinterface.h"
 
 #include "document.h"
 #include "plugin.h"
@@ -63,17 +63,17 @@ void ConfigInterface::setConfigInterfaceDCOPSuffix (const Q3CString &/*suffix*/)
 }
 
 ConfigInterface *KTextEditor::configInterface (Document *doc)
-{                       
+{
   if (!doc)
     return 0;
 
-  return static_cast<ConfigInterface*>(doc->qt_cast("KTextEditor::ConfigInterface"));
-}      
+  return qobject_cast<KTextEditor::ConfigInterface*>( doc );
+}
 
 ConfigInterface *KTextEditor::configInterface (Plugin *plugin)
-{                       
+{
   if (!plugin)
     return 0;
 
-  return static_cast<ConfigInterface*>(plugin->qt_cast("KTextEditor::ConfigInterface"));
+  return qobject_cast<KTextEditor::ConfigInterface*>( plugin );
 }

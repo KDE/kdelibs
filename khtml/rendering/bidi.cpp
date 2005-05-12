@@ -27,10 +27,13 @@
 #include "rendering/render_arena.h"
 #include "rendering/render_layer.h"
 #include "xml/dom_docimpl.h"
+#include <Q3MemArray>
 
 #include "kdebug.h"
 #include "qdatetime.h"
 #include "qfontmetrics.h"
+
+#include <limits.h>
 
 #define BIDI_DEBUG 0
 //#define DEBUG_LINEBREAKS

@@ -44,7 +44,7 @@ UndoInterface::UndoInterface()
   globalUndoInterfaceNumber++;
   myUndoInterfaceNumber = globalUndoInterfaceNumber++;
 
-  d = new PrivateUndoInterface();   
+  d = new PrivateUndoInterface();
   QString name = "UndoInterface#" + QString::number(myUndoInterfaceNumber);
   d->interface = new UndoDCOPInterface(this, name.latin1());
 }
@@ -66,9 +66,9 @@ void UndoInterface::setUndoInterfaceDCOPSuffix (const Q3CString &suffix)
 }
 
 UndoInterface *KTextEditor::undoInterface (Document *doc)
-{  
+{
   if (!doc)
     return 0;
 
-  return static_cast<UndoInterface*>(doc->qt_cast("KTextEditor::UndoInterface"));
+  return qobject_cast<UndoInterface*>( doc );
 }

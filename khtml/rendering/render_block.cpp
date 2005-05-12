@@ -2685,24 +2685,24 @@ void RenderBlock::dump(QTextStream &stream, const QString &ind) const
 {
     RenderFlow::dump(stream,ind);
 
-    if (m_childrenInline) { stream << " childrenInline"; }
-    if (m_pre) { stream << " pre"; }
-    if (m_firstLine) { stream << " firstLine"; }
+    if (m_childrenInline) { stream << QLatin1String(" childrenInline"); }
+    if (m_pre) { stream << (" pre"); }
+    if (m_firstLine) { stream << QLatin1String(" firstLine"); }
 
     if (m_floatingObjects && !m_floatingObjects->isEmpty())
     {
-        stream << " special(";
+        stream << QLatin1String(" special(");
         Q3PtrListIterator<FloatingObject> it(*m_floatingObjects);
         FloatingObject *r;
         bool first = true;
         for ( ; (r = it.current()); ++it )
         {
             if (!first)
-                stream << ",";
+                stream << QLatin1Char(',');
             stream << r->node->renderName();
             first = false;
         }
-        stream << ")";
+        stream << QLatin1Char(')');
     }
 
     // ### EClear m_clearStatus

@@ -21,6 +21,7 @@
 #include <qiodevice.h>
 #include <qstring.h>
 #include <kdelibs_export.h>
+#include <Q3CString>
 
 class QFile;
 class KFilterBase;
@@ -59,7 +60,7 @@ public:
      * If the KFilterBase's device was opened by open(), it will be closed.
      */
     virtual void close();
-    virtual void flush();
+    virtual bool flush();
 
     /**
      * For writing gzip compressed files only:

@@ -75,27 +75,27 @@ inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int po
  *	will be set to wordEnd after function
  * @param wordEnd relative index pointing one position after the word ended
  */
-inline void closeAndDrawWord(QPainter *p, QPainter::TextDirection d,
+inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
 	int &x, int y, const short widths[], const QChar *str, int pos,
 	int &wordStart, int wordEnd)
 {
     if (wordEnd <= wordStart) return;
 
     int width = widths[wordStart];
-    if (d == QPainter::RTL)
+    if (d == Qt::RightToLeft)
       x -= width;
 
     QConstString s(str + pos + wordStart, wordEnd - wordStart);
     p->drawText(x, y, s.string(), -1, d);
 
-    if (d != QPainter::RTL)
+    if (d != Qt::RightToLeft)
       x += width;
 
     wordStart = wordEnd;
 }
 
 void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
-        int toAdd, QPainter::TextDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
+        int toAdd, Qt::LayoutDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
     if (!str) return;
     QConstString cstr = QConstString(str, slen);
@@ -123,7 +123,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	}
 
 	const int totWidth = width( str, slen, pos, len );
-	if ( d == QPainter::RTL ) {
+	if ( d == Qt::RightToLeft ) {
 	    x += totWidth + toAdd;
 	}
 	QString upper = qstr;
@@ -154,7 +154,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    const QConstString segStr(str + pos + from, to - from);
 	    const int preSegmentWidth = fm.width(cstr.string(), from);
 	    const int segmentWidth = fm.width(segStr.string());
-	    const int eff_x = d == QPainter::RTL ? x - preSegmentWidth - segmentWidth
+	    const int eff_x = d == Qt::RightToLeft ? x - preSegmentWidth - segmentWidth
 					: x + preSegmentWidth;
 
 	    // draw whole string segment, with optional background
@@ -235,10 +235,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    widthList[lastWordBegin] = (short)width;
 	}
 
-        if (d == QPainter::RTL) x -= preSegmentWidth;
+        if (d == Qt::RightToLeft) x -= preSegmentWidth;
 	else x += preSegmentWidth;
 
-        const int startx = d == QPainter::RTL ? x-segmentWidth : x;
+        const int startx = d == Qt::RightToLeft ? x-segmentWidth : x;
 
 	// optionally draw background
 	if ( bg.isValid() )
@@ -258,14 +258,14 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    }
 	    if (is_space || mode == CharacterWise) {
 	        const int chw = widthList[i];
-	        if (d == QPainter::RTL)
+	        if (d == Qt::RightToLeft)
 		    x -= chw;
 
 		if ( scFont )
 		    p->setFont( lowercase ? *scFont : f );
 		p->drawText( x, y, (lowercase ? upper : qstr), pos+i, 1, d );
 
-	        if (d != QPainter::RTL)
+	        if (d != Qt::RightToLeft)
 		    x += chw;
 	    }
 

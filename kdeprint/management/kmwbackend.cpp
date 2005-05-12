@@ -26,6 +26,7 @@
 #include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <q3whatsthis.h>
+#include <q3button.h>
 
 #include <kcursor.h>
 #include <klocale.h>

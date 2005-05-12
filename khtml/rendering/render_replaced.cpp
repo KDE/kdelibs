@@ -180,7 +180,7 @@ bool RenderWidget::event( QEvent *e )
         repaint();
     }
     // eat all events - except if this is a frame (in which case KHTMLView handles it all)
-    if ( qobject_cast<KHTMLView >( m_widget ) )
+    if ( qobject_cast<KHTMLView*>( m_widget ) )
         return QObject::event( e );
     return true;
 }

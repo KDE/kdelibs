@@ -29,6 +29,7 @@
 
 #include <qcolor.h>
 #include <q3ptrvector.h>
+#include <Q3MemArray>
 
 #include "rendering/render_box.h"
 #include "rendering/render_block.h"

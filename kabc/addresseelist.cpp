@@ -233,7 +233,7 @@ void AddresseeList::sortByField( Field *field )
   KABC::FieldSortMode *mode = new KABC::FieldSortMode( sActiveField, !mReverseSorting );
 
   KABC::Addressee::setSortMode( mode );
-  qHeapSort( *this );
+  qSort( *this );
   KABC::Addressee::setSortMode( 0 );
 
   delete mode;
@@ -245,7 +245,7 @@ void AddresseeList::sortByMode( SortMode *mode )
     return;
 
   KABC::Addressee::setSortMode( mode );
-  qHeapSort( *this );
+  qSort( *this );
   KABC::Addressee::setSortMode( 0 );
 }
 
