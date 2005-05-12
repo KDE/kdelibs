@@ -2139,15 +2139,17 @@ void Location::put(ExecState *exec, const Identifier &p, const Value &v, int att
   if ( !window )
     return;
 
+  KURL url = m_frame->m_part->url();
+
   const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
 
-  // XSS check. Only new hrefs can be set from other sites
-  if (entry->value != Href && !window->isSafeScript(exec))
-    return;
+  if (entry) {
 
-  QString str = v.toString(exec).qstring();
-  KURL url = m_frame->m_part->url();
-  if (entry)
+    // XSS check. Only new hrefs can be set from other sites
+    if (entry->value != Href && !window->isSafeScript(exec))
+      return;
+
+    QString str = v.toString(exec).qstring();
     switch (entry->value) {
     case Href: {
       KHTMLPart* p =::qt_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
@@ -2185,7 +2187,7 @@ void Location::put(ExecState *exec, const Identifier &p, const Value &v, int att
       url.setQuery(str);
       break;
     }
-  else {
+  } else {
     ObjectImp::put(exec, p, v, attr);
     return;
   }
