@@ -1530,7 +1530,7 @@ void KFontSizeAction::setFontSize( int size )
     int index = items().findIndex( QString::number( size ) );
     if ( index == -1 ) {
         // Insert at the correct position in the list (to keep sorting)
-        Q3ValueList<int> lst;
+        QList<int> lst;
         // Convert to list of ints
         QStringList itemsList = items();
         for (QStringList::Iterator it = itemsList.begin() ; it != itemsList.end() ; ++it)
@@ -1541,8 +1541,9 @@ void KFontSizeAction::setFontSize( int size )
         qSort( lst );
         // Convert back to string list
         QStringList strLst;
-        for (Q3ValueList<int>::Iterator it = lst.begin() ; it != lst.end() ; ++it)
-            strLst.append( QString::number(*it) );
+        foreach ( int it, lst ) {
+            strLst.append( QString::number(it) );
+        }
         KSelectAction::setItems( strLst );
         // Find new current item
         index = lst.findIndex( size );
