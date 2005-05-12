@@ -135,12 +135,12 @@ class KPopupAccelManager : public QObject
 
 public:
 
-  static void manage(Q3PopupMenu *popup);
+  static void manage(QMenu *popup);
 
 
 protected:
 
-  KPopupAccelManager(Q3PopupMenu *popup);
+  KPopupAccelManager(QMenu *popup);
 
 
 private slots:
@@ -155,7 +155,7 @@ private:
   void findMenuEntries(KAccelStringList &list);
   void setMenuEntries(const KAccelStringList &list);
 
-  Q3PopupMenu       *m_popup;
+  QMenu       *m_popup;
   KAccelStringList m_entries;
   int              m_count;
 

@@ -172,10 +172,10 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
         return;
     }
 
-    if (dynamic_cast<Q3PopupMenu*>(widget))
+    if (dynamic_cast<QMenu*>(widget))
     {
         // create a popup accel manager that can deal with dynamic menus
-        KPopupAccelManager::manage(static_cast<Q3PopupMenu*>(widget));
+        KPopupAccelManager::manage(static_cast<QMenu*>(widget));
         return;
     }
 
@@ -295,7 +295,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       // return;
   }
 
-  Q3PopupMenu *popupMenu = dynamic_cast<Q3PopupMenu*>(w);
+  QMenu *popupMenu = dynamic_cast<QMenu*>(w);
   if (popupMenu)
   {
       // create a popup accel manager that can deal with dynamic menus
@@ -343,7 +343,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
     if (tprop != -1)  {
         QMetaProperty p = w->metaObject()->property( tprop );
         if ( p.isValid() )
-            w->qt_property( tprop, 1, &variant );
+            variant = p.read (w);
         else
             tprop = -1;
     }
@@ -353,7 +353,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
         if (tprop != -1)  {
             QMetaProperty p = w->metaObject()->property( tprop );
             if ( p.isValid() )
-                w->qt_property( tprop, 1, &variant );
+                variant = p.read (w);
         }
     }
 
@@ -431,8 +431,8 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
         }
 
         // have a look at the popup as well, if present
-        if (mitem->popup())
-            KPopupAccelManager::manage(mitem->popup());
+        if (mitem->menu ())
+            KPopupAccelManager::manage(mitem->menu ());
     }
 }
 
@@ -732,7 +732,7 @@ void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString 
 
  *********************************************************************/
 
-KPopupAccelManager::KPopupAccelManager(Q3PopupMenu *popup)
+KPopupAccelManager::KPopupAccelManager(QMenu *popup)
   : QObject(popup), m_popup(popup), m_count(-1)
 {
     aboutToShow(); // do one check and then connect to show
@@ -801,8 +801,8 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
     list.append(KAccelString(s, weight));
 
     // have a look at the popup as well, if present
-    if (mitem->popup())
-        KPopupAccelManager::manage(mitem->popup());
+    if (mitem->menu())
+        KPopupAccelManager::manage(mitem->menu());
   }
 }
 
@@ -825,7 +825,7 @@ void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
 }
 
 
-void KPopupAccelManager::manage(Q3PopupMenu *popup)
+void KPopupAccelManager::manage(QMenu *popup)
 {
   // don't add more than one manager to a popup
   if (popup->child(0, "KPopupAccelManager", false) == 0 )
