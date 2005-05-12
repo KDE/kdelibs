@@ -120,7 +120,7 @@ public:
     /**
    * Possible bar positions.
    */
-    enum BarPosition{ DockUnmanaged, Floating, DockTop, DockBottom, DockRight, DockLeft, Flat};
+    enum BarPosition{ Unmanaged, Floating, Top, Bottom, Right, Left, Flat};
 
   /**
    * Normal constructor.
