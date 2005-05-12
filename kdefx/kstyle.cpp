@@ -135,11 +135,11 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         //drawInsideRect(p, r);
 
         QColor col = textOpts->color.color(pal);
-	QPen   old = p->pen();
-	p->setPen(col);
+        QPen   old = p->pen();
+        p->setPen(col);
         drawItemText(p, r, Qt::AlignVCenter | Qt::TextShowMnemonic | textOpts->hAlign, pal, flags & State_Enabled,
                         textOpts->text);
-	p->setPen(old);
+        p->setPen(old);
     }
     else if (primitive == Generic::Bevel)
     {
@@ -150,6 +150,23 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         p->fillRect(r, pal.button());
         //p->drawRect(r);
         
+    }
+    else if (primitive == Generic::Icon)
+    {
+        KStyle::IconOption* iconOpts = extractOption<KStyle::IconOption*>(kOpt);
+        QIcon::Mode mode;
+
+        // Select the correct icon from the iconset
+        if (flags & State_Enabled)
+            if (iconOpts->active)
+                mode = QIcon::Active;
+            else
+                mode = QIcon::Normal;
+        else
+            mode = QIcon::Disabled;
+        
+        QPixmap icon = iconOpts->icon.pixmap(pixelMetric(PM_SmallIconSize), mode);
+        p->drawPixmap(centerRect(r, icon.size()), icon);
     }
     else if (primitive == Generic::FocusIndicator)
     {
@@ -389,41 +406,41 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             // Draw the icon if there is one
             if (!bOpt->icon.isNull())
             {
-                QIcon::Mode  mode  = QIcon::Disabled;
-                QIcon::State state = QIcon::Off;
+                int iconSize = pixelMetric(PM_SmallIconSize);
+                IconOption icoOpt;
+                icoOpt.icon   = bOpt->icon;
+                icoOpt.active = flags & State_HasFocus;
 
-                if (flags & State_Enabled)
-                    mode = (flags & State_HasFocus) ? QIcon::Active : QIcon::Normal;
-                if (flags & State_On)
-                    state = QIcon::On;
-
-                QPixmap icon = bOpt->icon.pixmap(pixelMetric(PM_SmallIconSize), mode, state);
-
+                
                 if (!bOpt->text.isEmpty())
                 {
                     int margin = widgetLayoutProp(WT_PushButton, PushButton::TextToIconSpace);
                     //Center text + icon w/margin in between..
                     
                     //Calculate length of both.
-                    int length = icon.width() + margin
+                    int length = iconSize + margin
                                   + p->fontMetrics().size(Qt::TextShowMnemonic, bOpt->text).width();
                     
                     //Calculate offset.
                     int offset = (w - length)/2;
                     
                     //draw icon
-                    p->drawPixmap(handleRTL(bOpt, QPoint(x + offset, y + h/2 - icon.height()/2)), icon);
+                    QRect rect = QRect(x + offset, y + h/2 - iconSize/2, iconSize, iconSize);
+                    drawKStylePrimitive(WT_PushButton, Generic::Icon, option,
+                                        handleRTL(bOpt, rect),
+                                        pal, flags, p, widget, &icoOpt);
                     
                     //new bounding rect for the text
-                    x += offset + icon.width() + margin;
-                    w =  length - icon.width() - margin;
+                    x += offset + iconSize + margin;
+                    w =  length - iconSize - margin;
                 }
                 else
                 {
                     //Icon only. Center it. (Thankfully, they killed the icon + pixmap insanity in Qt4. Whee!                  
                     //(no need to do anything for RTL here, it's symmetric)
-                    p->drawPixmap( x + w/2 - icon.width()/2, y + h / 2 - icon.height() / 2,
-                                        icon );
+                    drawKStylePrimitive(WT_PushButton, Generic::Icon, option,
+                                        QRect(x, y, w, h),
+                                        pal, flags, p, widget, &icoOpt);
                 }
             }
             else
@@ -803,19 +820,13 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //### render checkbox, etc. properly
             if (!miOpt->icon.isNull())
             {
-                QIcon::Mode mode;
-
-                // Select the correct icon from the iconset
-                if (flags & State_Enabled)
-                    if (flags & State_Selected)
-                        mode = QIcon::Active;
-                    else
-                        mode = QIcon::Normal;
-                else
-                    mode = QIcon::Disabled;
-                
-                QPixmap icon = miOpt->icon.pixmap(pixelMetric(PM_SmallIconSize), mode);
-                p->drawPixmap(handleRTL(option, centerRect(leftColRect, icon.size())), icon);
+                int iconSize = pixelMetric(PM_SmallIconSize);
+                IconOption icoOpt;
+                icoOpt.icon   = miOpt->icon;
+                icoOpt.active = flags & State_Selected;
+                drawKStylePrimitive(WT_MenuItem, Generic::Icon, option,
+                                    handleRTL(option, centerRect(leftColRect, iconSize, iconSize)),
+                                    pal, flags, p, widget, &icoOpt);
             }
 
             //Now include the spacing when calculating the next columns
@@ -1091,11 +1102,31 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
             if (!tabOpt) return;
 
-            //First, we split this thing into the content region, and the bevel.
+            //First, we get our content region.
+            QRect labelRect = marginAdjustedTab(tabOpt, Tab::ContentsMargin);
+            
+            //Now, what we do, depends on rotation, LTR vs. RTL, and text/icon combinations.
+            //First, figure out if we have to deal with icons, and place them if need be.
+            if (!tabOpt->icon.isNull())
+            {
+                int iconSize = pixelMetric(PM_SmallIconSize);
+                if (tabOpt->text.isNull())
+                {
+                    //Icon only. Easy.
+                    IconOption icoOpt;
+                    icoOpt.icon   = tabOpt->icon;
+                    icoOpt.active = flags & State_Selected;
+                    drawKStylePrimitive(WT_Tab, Generic::Icon, option, labelRect,
+                                        pal, flags, p, widget, &icoOpt);
+                    return;
+                }
+
+                //OK, we have to stuff both icon and text.
+            }
             p->setPen(Qt::red);
             drawInsideRect(p, r);
 
-            QRect labelRect = marginAdjustedTab(tabOpt, Tab::ContentsMargin);
+            
             p->setPen(Qt::yellow);
             drawInsideRect(p, labelRect);
 
@@ -1105,7 +1136,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             {
                 QRect focusRect = marginAdjustedTab(tabOpt, Tab::FocusMargin);
                 drawKStylePrimitive(WT_Tab, Generic::FocusIndicator, option, focusRect,
-                                pal, flags, p, widget);
+                                    pal, flags, p, widget);
             }
             return;
         }

@@ -211,6 +211,19 @@ protected:
         {}
     };
 
+    /**
+     Option for drawing icons: represents whether the icon should be active or not.
+     The implementation is responsible for all other flags
+    */
+    struct KDEFX_EXPORT IconOption: public OptionBase<IconOption, Option>
+    {
+        bool  active;
+        QIcon icon;
+
+        IconOption(): active(false)
+        {}
+    };
+
     struct KDEFX_EXPORT DoubleButtonOption: public OptionBase<DoubleButtonOption, Option>
     {
         enum ActiveButton
@@ -298,8 +311,8 @@ protected:
         enum Primitive
         {
             Bevel,
-            Text,
-            Icon,
+            Text,        //Passes in TextOption
+            Icon,        //Passes in IconOption
             FocusIndicator,
             ArrowUp,    //Note: the arrows are centering primitives
             ArrowDown,
@@ -595,8 +608,8 @@ protected:
         */
         enum Primitive
         {
-            EastText, //Special rotated text for east tabs.
-            WestText, //Special rotated text for west tabs.
+            EastText  = Generic::WidgetSpecificBase, //Special rotated text for east tabs.
+            WestText,                                //Special rotated text for west tabs.
         };
     };
    
