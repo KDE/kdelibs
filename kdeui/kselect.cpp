@@ -23,6 +23,8 @@
 #include <q3pointarray.h>
 #include <kimageeffect.h>
 #include "kselect.h"
+#include <QPaintEvent>
+
 
 #define STORE_W 8
 #define STORE_W2 STORE_W * 2
@@ -42,7 +44,6 @@ KXYSelector::KXYSelector( QWidget *parent, const char *name )
 	minY = 0;
 	maxX = 100;
 	maxY = 100;
-	store.setOptimization( QPixmap::BestOptim );
 	store.resize( STORE_W2, STORE_W2 );
 }
 
@@ -113,7 +114,7 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
 	if (paintRect.contains(cursorRect))
 	{
 	   bitBlt( &store, 0, 0, this, px - STORE_W, py - STORE_W,
-		STORE_W2, STORE_W2, CopyROP );
+		STORE_W2, STORE_W2 );
 	   drawCursor( &painter, px, py );
         }
         else if (paintRect.intersects(cursorRect))
@@ -184,9 +185,9 @@ void KXYSelector::setPosition( int xp, int yp )
 	painter.begin( this );
 
 	bitBlt( this, px - STORE_W, py - STORE_W, &store, 0, 0,
-			STORE_W2, STORE_W2, CopyROP );
+			STORE_W2, STORE_W2 );
 	bitBlt( &store, 0, 0, this, xp - STORE_W, yp - STORE_W,
-			STORE_W2, STORE_W2, CopyROP );
+			STORE_W2, STORE_W2 );
 	drawCursor( &painter, xp, yp );
 	px = xp;
 	py = yp;
