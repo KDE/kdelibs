@@ -31,6 +31,7 @@ int countDownCount = 0;
 
 DCOPClientTransaction *countDownAction2 = 0;
 int countDownCount2 = 0;
+DCOPClient *client = 0;
 
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 			   QCString& replyType, QByteArray &replyData)
@@ -63,7 +64,7 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
   if (fun == "isAliveSlot(int)") {
     
     qDebug("isAliveSlot(int)");
-    bool connectResult = kapp->dcopClient()->disconnectDCOPSignal("", objId(), "", objId(), "" );
+    bool connectResult = client->disconnectDCOPSignal("", objId(), "", objId(), "" );
     qDebug("disconnectDCOPSignal returns %s", connectResult ? "true" : "false");
     return true;
   }
@@ -80,13 +81,13 @@ qDebug("countDown() countDownAction = %p", countDownAction);
     if (countDownAction == 0)
     {
        countDownCount = 10;       
-       countDownAction = kapp->dcopClient()->beginTransaction();
+       countDownAction = client->beginTransaction();
        QTimer::singleShot(1000, this, SLOT(slotTimeout()));
     }
     else
     {
        countDownCount2 = 10;       
-       countDownAction2 = kapp->dcopClient()->beginTransaction();
+       countDownAction2 = client->beginTransaction();
        QTimer::singleShot(1000, this, SLOT(slotTimeout2()));
     }
     return true;
@@ -105,7 +106,7 @@ void MyDCOPObject::slotTimeout()
      QByteArray replyData;
      QDataStream reply( replyData, IO_WriteOnly );
      reply << QString("Hello World");
-     kapp->dcopClient()->endTransaction(countDownAction, replyType, replyData);
+     client->endTransaction(countDownAction, replyType, replyData);
      countDownAction = 0;
   }
   else
@@ -124,7 +125,7 @@ void MyDCOPObject::slotTimeout2()
      QByteArray replyData;
      QDataStream reply( replyData, IO_WriteOnly );
      reply << QString("Hello World");
-     kapp->dcopClient()->endTransaction(countDownAction2, replyType, replyData);
+     client->endTransaction(countDownAction2, replyType, replyData);
      countDownAction2 = 0;
   }
   else
@@ -152,7 +153,7 @@ void TestObject::slotTimeout()
    QByteArray data, reply;
    qWarning("#3 Calling countDown");
 
-   if (!kapp->dcopClient()->call(m_app, "object1", "countDown()", data, replyType, reply))
+   if (!client->call(m_app, "object1", "countDown()", data, replyType, reply))
       qDebug("#3 I couldn't call countDown");
    else
       qDebug("#3 countDown() return type was '%s'", replyType.data() ); 
@@ -173,24 +174,24 @@ void TestObject::slotCallBack(int callId, const QCString &replyType, const QByte
 
 int main(int argc, char **argv)
 {
-  KApplication app(argc, argv, "testdcop");
+  QApplication app(argc, argv, "testdcop");
 
   QCString replyType;
   QByteArray data, reply;
-  DCOPClient *client; client = app.dcopClient();
+  client = new DCOPClient();
 
   if (argc == 2)
   {
-      QCString app = argv[1];
-      TestObject obj(app);
+      QCString appId = argv[1];
+      TestObject obj(appId);
       qWarning("#1 Calling countDown");
-      int result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
+      int result = client->callAsync(appId, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
       qDebug("#1 countDown() call id = %d", result);
       qWarning("#2 Calling countDown");
-      result = kapp->dcopClient()->callAsync(app, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
+      result = client->callAsync(appId, "object1", "countDown()", data, &obj, SLOT(slotCallBack(int, const QCString&, const QByteArray&)));
       qDebug("#2 countDown() call id = %d", result);
-      kapp->exec();
-    
+      app.exec();
+
       return 0;
   }
 
@@ -213,10 +214,14 @@ int main(int argc, char **argv)
 
   QDataStream ds(data, IO_WriteOnly);
   ds << QString("fourty-two") << 42;
-  if (!client->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply))
+  if (!client->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply)) {
     qDebug("I couldn't call myself");
-  else
-      qDebug("return type was '%s'", replyType.data() ); 
+    assert( 0 );
+  }
+  else {
+    qDebug("return type was '%s'", replyType.data() ); 
+    assert( replyType == "void" );
+  }
 
   client->send(app.name(), "object1", "aFunction(QString,int)", data );
 
@@ -279,9 +284,6 @@ qDebug("Calling countDown() in object1");
   boolResult = client2->findObject( "testdcop", "object1", "", data, foundApp, foundObj);
   qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
 	foundApp.data(), foundObj.data());
-
-
-  return app.exec();
 
   client->detach();
 }

@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _TESTDCOP_H_
 #define _TESTDCOP_H_
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <qbitarray.h>
 #include <dcopclient.h>
 #include <dcopobject.h>
@@ -36,7 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 /**
  $QTDIR/bin/moc testdcop.cpp -o testdcop.moc
- g++ -o testdcop testdcop.cpp -I$KDEDIR/include -I$QTDIR/include -L$KDEDIR/lib -L$QTDIR/lib -lkdecore -ldl
+ g++ -o testdcop testdcop.cpp -I$QTDIR/include -L$QTDIR/lib
  @internal
 
 **/
