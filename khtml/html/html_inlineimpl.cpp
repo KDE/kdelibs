@@ -146,6 +146,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::AltButton;
 	      if ( k->checkModifier(Qt::ControlButton) )
                 state |= Qt::ControlButton;
+	      click();
 	    }
 
 	    // ### also check if focused node is editable if not in designmode,

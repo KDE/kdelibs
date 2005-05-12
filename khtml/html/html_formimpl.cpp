@@ -1657,6 +1657,8 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 		TextEventImpl* const te = static_cast<TextEventImpl *>(evt);
 		if (te->keyVal() == ' ')
 		    check = true;
+		else if (te->keyVal() == '\r' && (m_type == BUTTON || m_type == RESET || m_type == SUBMIT))
+		    check = true;
 	    }
 	    if (check) {
 	        if (evt->id() == EventImpl::KEYUP_EVENT)
