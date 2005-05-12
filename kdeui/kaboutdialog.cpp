@@ -42,7 +42,6 @@
 #include <kdebug.h>
 
 //MOC_SKIP_BEGIN
-template class Q3MemArray<QWidget*>;
 template class Q3PtrList<KAboutContributor>;
 //MOC_SKIP_END
 
@@ -526,11 +525,6 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
 						  innerAlignment );
   mPageTab->addTab( container, title );
 
-  if( mContainerList.resize( mContainerList.size() + 1) )
-  {
-    mContainerList[ mContainerList.size()-1 ]=container;
-  }
-
   connect(container, SIGNAL(urlClick(const QString &)),
 	  SLOT(slotUrlClick(const QString &)));
   connect(container, SIGNAL(mailClick(const QString &,const QString &)),
@@ -561,7 +555,6 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
     innerAlignment );
   scrollView->addChild( container );
-
 
   connect(container, SIGNAL(urlClick(const QString &)),
 	  SLOT(slotUrlClick(const QString &)));
@@ -594,11 +587,6 @@ KAboutContainer *KAboutContainerBase::addContainer( int childAlignment,
   KAboutContainer* const container = new KAboutContainer( this, "container",
     0, KDialog::spacingHint(), childAlignment, innerAlignment );
   mTopLayout->addWidget( container, 0, childAlignment );
-
-  if( mContainerList.resize( mContainerList.size() + 1) )
-  {
-    mContainerList[ mContainerList.size()-1 ]=container;
-  }
 
   connect(container, SIGNAL(urlClick(const QString &)),
 	  SLOT(slotUrlClick(const QString &)));
