@@ -67,9 +67,9 @@ Wallet::Wallet(int handle, const QString& name)
 
 	_dcopRef->dcopClient()->setNotifications(true);
 	connect(_dcopRef->dcopClient(),
-			SIGNAL(applicationRemoved(const Q3CString&)),
+			SIGNAL(applicationRemoved(const DCOPCString&)),
 			this,
-			SLOT(slotAppUnregistered(const Q3CString&)));
+			SLOT(slotAppUnregistered(const DCOPCString&)));
 
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "folderListUpdated(QString)", "slotFolderListUpdated(QString)", false);
@@ -191,7 +191,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 }
 
 
-bool Wallet::disconnectApplication(const QString& wallet, const Q3CString& app) {
+bool Wallet::disconnectApplication(const QString& wallet, const DCOPCString& app) {
 	DCOPReply r = DCOPRef("kded", "kwalletd").call("disconnectApplication", wallet, app);
 	bool rc = false;
 	if (r.isValid()) {
@@ -629,7 +629,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 }
 
 
-void Wallet::slotAppUnregistered(const Q3CString& app) {
+void Wallet::slotAppUnregistered(const DCOPCString& app) {
 	if (_handle >= 0 && app == "kded") {
 		slotWalletClosed(_handle);
 	}
@@ -650,7 +650,7 @@ void Wallet::slotFolderListUpdated(const QString& wallet) {
 }
 
 
-void Wallet::slotApplicationDisconnected(const QString& wallet, const Q3CString& application) {
+void Wallet::slotApplicationDisconnected(const QString& wallet, const DCOPCString& application) {
 	if (_handle >= 0
 			&& _name == wallet
 			&& application == _dcopRef->dcopClient()->appId()) {

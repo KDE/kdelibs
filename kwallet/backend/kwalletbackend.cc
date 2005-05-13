@@ -339,13 +339,13 @@ int Backend::open(const QByteArray& password) {
 	for (size_t i = 0; i < n; ++i) {
 		KMD5::Digest d, d2; // judgment day
 		MD5Digest ba;
-		QMap<MD5Digest,Q3ValueList<MD5Digest> >::iterator it;
+		QMap<MD5Digest,QList<MD5Digest> >::iterator it;
 		Q_UINT32 fsz;
 		if (hds.atEnd()) return -43;
 		hds.readRawBytes(reinterpret_cast<char *>(d), 16);
 		hds >> fsz;
 		ba.duplicate(reinterpret_cast<char *>(d), 16);
-		it = _hashes.insert(ba, Q3ValueList<MD5Digest>());
+		it = _hashes.insert(ba, QList<MD5Digest>());
 		for (size_t j = 0; j < fsz; ++j) {
 			hds.readRawBytes(reinterpret_cast<char *>(d2), 16);
 			ba.duplicate(reinterpret_cast<char *>(d2), 16);
@@ -667,8 +667,8 @@ return rc;
 }
 
 
-Q3PtrList<Entry> Backend::readEntryList(const QString& key) {
-	Q3PtrList<Entry> rc;
+QList<Entry*> Backend::readEntryList(const QString& key) {
+	QList<Entry*> rc;
 
 	if (!_open) {
 		return rc;
@@ -695,7 +695,7 @@ bool Backend::createFolder(const QString& f) {
 
 	KMD5 folderMd5;
 	folderMd5.update(f.utf8());
-	_hashes.insert(MD5Digest(folderMd5.rawDigest()), Q3ValueList<MD5Digest>());
+	_hashes.insert(MD5Digest(folderMd5.rawDigest()), QList<MD5Digest>());
 
 return true;
 }

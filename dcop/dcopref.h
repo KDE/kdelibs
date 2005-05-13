@@ -132,7 +132,7 @@ public:
     template <class T> DCOPArg( const T& t, const char* tname_arg )
 	: tname(tname_arg)
 	{
-	    QDataStream ds( data, IO_WriteOnly );
+	    QDataStream ds( &data, IO_WriteOnly );
 	    ds.setVersion(QDataStream::Qt_3_1);
 	    ds << t;
 	}
@@ -147,7 +147,7 @@ public:
     template <class T> DCOPArg( const T& t )
 	: tname( dcopTypeName(t) )
 	{
-	    QDataStream ds( data, IO_WriteOnly );
+	    QDataStream ds( &data, IO_WriteOnly );
 	    ds.setVersion(QDataStream::Qt_3_1);
 	    ds << t;
 	}
@@ -492,7 +492,7 @@ public:
 	args = QString().sprintf( "(%s)",
 		     dcopTypeName(t1) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -524,7 +524,7 @@ public:
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2;
 	return callInternal( fun, args, data );
@@ -557,7 +557,7 @@ public:
 		     dcopTypeName(t1),
 		     dcopTypeName(t2) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -593,7 +593,7 @@ public:
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3;
 	return callInternal( fun, args, data );
@@ -630,7 +630,7 @@ public:
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -670,7 +670,7 @@ public:
 		     dcopTypeName(t3),
 		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data );
@@ -711,7 +711,7 @@ public:
 		     dcopTypeName(t3),
 		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -755,7 +755,7 @@ public:
 		     dcopTypeName(t4),
 		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data );
@@ -800,7 +800,7 @@ public:
 		     dcopTypeName(t4),
 		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -848,7 +848,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return callInternal( fun, args, data );
@@ -897,7 +897,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -948,7 +948,7 @@ public:
 		     dcopTypeName(t6),
 		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data );
@@ -1001,7 +1001,7 @@ public:
 		     dcopTypeName(t6),
 		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -1057,7 +1057,7 @@ public:
 		     dcopTypeName(t7),
 		     dcopTypeName(t8) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return callInternal( fun, args, data );
@@ -1114,7 +1114,7 @@ public:
 		     dcopTypeName(t7),
 		     dcopTypeName(t8) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
 	return callInternal( fun, args, data, useEventLoop, timeout );
@@ -1228,7 +1228,7 @@ public:
 		     dcopTypeName(t2),
 		     dcopTypeName(t3) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3;
 	return sendInternal( fun, args, data );
@@ -1268,7 +1268,7 @@ public:
 		     dcopTypeName(t3),
 		     dcopTypeName(t4) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4;
 	return sendInternal( fun, args, data );
@@ -1312,7 +1312,7 @@ public:
 		     dcopTypeName(t4),
 		     dcopTypeName(t5) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5;
 	return sendInternal( fun, args, data );
@@ -1360,7 +1360,7 @@ public:
 		     dcopTypeName(t5),
 		     dcopTypeName(t6) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return sendInternal( fun, args, data );
@@ -1412,7 +1412,7 @@ public:
 		     dcopTypeName(t6),
 		     dcopTypeName(t7) ).toAscii();;
 	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
+	QDataStream ds( &data, IO_WriteOnly );
 	ds.setVersion(QDataStream::Qt_3_1);
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return sendInternal( fun, args, data );
