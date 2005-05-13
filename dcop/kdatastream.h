@@ -24,8 +24,9 @@ public:
 
     DCOPCString& operator=(const QByteArray& ba)
     {
-        QByteArray::operator=(ba); return *this;
+        QByteArray::operator=(ba);
         squeezeTrailNulls();
+        return *this;
     }
 
     DCOPCString& operator=(const char* data)
