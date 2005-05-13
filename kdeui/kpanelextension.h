@@ -180,7 +180,7 @@ public:
      * to this setting.
      * @return Position
      **/
-    virtual Position preferedPosition() const { return Qt::DockBottom; }
+    virtual Position preferedPosition() const { return DockBottom; }
 
     /**
      * @internal
