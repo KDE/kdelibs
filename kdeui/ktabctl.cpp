@@ -35,7 +35,7 @@
 KTabCtl::KTabCtl(QWidget *parent, const char *name)
     : QWidget(parent, name)
 {
-    tabs = new QTabBar(this, "_tabbar");
+    tabs = new QTabBar(this);
     connect(tabs, SIGNAL(selected(int)), this, SLOT(showTab(int)));
     tabs->move(2, 1);
 
@@ -319,10 +319,11 @@ void KTabCtl::showTab(int i)
 
 void KTabCtl::addTab(QWidget *w, const QString& name)
 {
-    QTab *t = new QTab();
+/*    QTab *t = new QTab();
     t->setText( name );
-    t->setEnabled( true );
-    int id = tabs->addTab(t);   /* add the tab itself to the tabbar */
+    t->setEnabled( true );*/
+    int id = tabs->addTab(name);   /* add the tab itself to the tabbar */
+	tabs->setTabEnabled( id, true );
     if (id == (int)pages.size()) {
 	pages.resize(id + 1);
         pages[id] = w;          /* remember the widget to manage by this tab */
