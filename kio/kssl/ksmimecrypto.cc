@@ -237,7 +237,7 @@ KSMIMECrypto::rc KSMIMECryptoPrivate::decryptMessage(BIO *cipherText,
 void KSMIMECryptoPrivate::MemBIOToQByteArray(BIO *src, QByteArray &dest) {
     char *buf;
     long len = BIO_get_mem_data(src, &buf);
-    dest.assign(buf, len);
+    dest = QByteArray(buf, len);
     /* Now this goes quite a bit into openssl internals.
        We assume that openssl uses malloc() (it does in
        default config) and rip out the buffer.

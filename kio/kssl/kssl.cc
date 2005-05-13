@@ -41,8 +41,6 @@
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include <ksock.h>
-#include <ksockaddr.h>
 
 #include <kopenssl.h>
 #include <ksslx509v3.h>
