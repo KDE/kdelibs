@@ -59,117 +59,94 @@ KDCOPPropertyProxy::~KDCOPPropertyProxy()
   delete d;
 }
 
-bool KDCOPPropertyProxy::isPropertyRequest( const QByteArray &fun )
+bool KDCOPPropertyProxy::isPropertyRequest( const DCOPCString &fun )
 {
   return isPropertyRequest( fun, d->m_object );
 }
 
-bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QByteArray &data,
-                                                 QByteArray &replyType, QByteArray &replyData )
+bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const QByteArray &data,
+                                                 DCOPCString &replyType, QByteArray &replyData )
 {
   return processPropertyRequest( fun, data, replyType, replyData, d->m_object );
 }
 
-QList<QByteArray> KDCOPPropertyProxy::functions()
+DCOPCStringList KDCOPPropertyProxy::functions()
 {
   return functions( d->m_object );
 }
 
-bool KDCOPPropertyProxy::isPropertyRequest( const QByteArray &fun, QObject *object )
+bool KDCOPPropertyProxy::isPropertyRequest( const DCOPCString &fun, QObject *object )
 {
-  if ( fun == "property(QByteArray)" ||
-       fun == "setProperty(QByteArray,QVariant)" ||
+  if ( fun == "property(QCString)" ||
+       fun == "setProperty(QCString,QVariant)" ||
        fun == "propertyNames(bool)" )
     return true;
 
   bool set;
-  QByteArray propName, arg;
+  DCOPCString propName, arg;
   return decodePropertyRequestInternal( fun, object, set, propName, arg );
 }
 
-QList<QByteArray> KDCOPPropertyProxy::functions( QObject *object )
+DCOPCStringList KDCOPPropertyProxy::functions( QObject *object )
 {
-  QList<QByteArray> res;
-  res << "QVariant property(QByteArray property)";
-  res << "bool setProperty(QByteArray name,QVariant property)";
-  res << "QValueList<QByteArray> propertyNames(bool super)";
+  DCOPCStringList res;
+  res << "QVariant property(QCString property)";
+  res << "bool setProperty(QCString name,QVariant property)";
+  res << "QValueList<QCString> propertyNames(bool super)";
 
   const QMetaObject *metaObj = object->metaObject();
   for ( int i = 0; i < metaObj->propertyCount(); i++ ) {
     QMetaProperty metaProp = metaObj->property( i );
-	QByteArray name = metaProp.name();
+	DCOPCString name = metaProp.name();
 	name.prepend( " " );
 	name.prepend( metaProp.type() );
 	name.append( "()" );
 	res<<name;
     if ( metaProp.isWritable() )
     {
-      QByteArray setName = metaProp.name();
+      DCOPCString setName = metaProp.name();
       setName[ 0 ] = toupper( setName[ 0 ] );
       setName = "void set";
-	  setName.append( setName + QByteArray( "(" ) );
+	  setName.append( setName + DCOPCString( "(" ) );
 	  setName.append( metaProp.type() );
-	  setName.append( QByteArray( " " ) + metaProp.name() + QByteArray( ")" ) );
+	  setName.append( DCOPCString( " " ) + metaProp.name() + DCOPCString( ")" ) );
       res << setName;
     }
   }
   return res;
 
-  //Qt3 code
-#if 0
-  Q3StrList properties = metaObj->propertyNames( true ); //inherited classes also
-  QStrListIterator it( properties );
-  for (; it.current(); ++it )
-  {
-    const QMetaProperty *metaProp = metaObj->property( metaObj->findProperty( it.current(), true ), true );
-
-    assert( metaProp );
-
-    QByteArray name = it.current();
-    name.prepend( " " );
-    name.prepend( metaProp->type() );
-    name.append( "()" );
-    res << name;
-
-    if ( metaProp->writable() )
-    {
-      QByteArray setName = it.current();
-      setName[ 0 ] = toupper( setName[ 0 ] );
-      setName = "void set" + setName + "(" + metaProp->type() + " " + it.current() + ")";
-      res << setName;
-    }
-  }
-
-  return res;
-#endif
 }
 
-bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QByteArray &data,
-                                                 QByteArray &replyType, QByteArray &replyData,
+bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const QByteArray &data,
+                                                 DCOPCString &replyType, QByteArray &replyData,
                                                  QObject *object )
 {
-  if ( fun == "property(QByteArray)" )
+  if ( fun == "property(QCString)" )
   {
-    QByteArray propName;
+    DCOPCString propName;
     QDataStream stream( data );
+	stream.setVersion(QDataStream::Qt_3_1 );
     stream >> propName;
 
     replyType = "QVariant";
     QDataStream reply( &replyData, QIODevice::WriteOnly );
+	reply.setVersion(QDataStream::Qt_3_1 );
     reply << object->property( propName );
     return true;
   }
 
-  if ( fun == "setProperty(QByteArray,QVariant)" )
+  if ( fun == "setProperty(QCString,QVariant)" )
   {
-    QByteArray propName;
+    DCOPCString propName;
     QVariant propValue;
     QDataStream stream( data );
+	stream.setVersion(QDataStream::Qt_3_1 );
     stream >> propName >> propValue;
 
     replyType = "bool";
     QDataStream reply( &replyData, QIODevice::WriteOnly );
     reply << (Q_INT8)object->setProperty( propName, propValue );
+	reply.setVersion(QDataStream::Qt_3_1 );
     return true;
   }
 
@@ -177,28 +154,23 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   {
     Q_INT8 b;
     QDataStream stream( data );
+	stream.setVersion(QDataStream::Qt_3_1 );
     stream >> b;
 
-    QList<QByteArray> res;
+    QList<DCOPCString> res;
 	for ( int i = 0 ; i < object->metaObject()->propertyCount(); i++ ) {
 		res << object->metaObject()->property( i ).name();
 	}
-	//Qt3 code
-#if 0
-    Q3StrList props = object->metaObject()->propertyNames( static_cast<bool>( b ) );
-    QStrListIterator it( props );
-    for (; it.current(); ++it )
-      res.append( it.current() );
-#endif
 
-    replyType = "QValueList<QByteArray>";
+    replyType = "QValueList<QCString>";
     QDataStream reply( &replyData, QIODevice::WriteOnly );
+	reply.setVersion(QDataStream::Qt_3_1 );
     reply << res;
     return true;
   }
 
   bool set;
-  QByteArray propName, arg;
+  DCOPCString propName, arg;
 
   bool res = decodePropertyRequestInternal( fun, object, set, propName, arg );
   if ( !res )
@@ -208,6 +180,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   {
     QVariant prop;
     QDataStream stream( data );
+	stream.setVersion(QDataStream::Qt_3_1 );
 
     QVariant::Type type = QVariant::nameToType( arg );
     if ( type == QVariant::Invalid )
@@ -279,6 +252,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
 
     replyType = prop.typeName();
     QDataStream reply( &replyData, QIODevice::WriteOnly );
+	reply.setVersion(QDataStream::Qt_3_1 );
 
 #define MARSHAL( type ) \
   case QVariant::type: \
@@ -331,8 +305,8 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QByteArray &fun, const QB
   return false;
 }
 
-bool KDCOPPropertyProxy::decodePropertyRequestInternal( const QByteArray &fun, QObject *object, bool &set,
-                                                        QByteArray &propName, QByteArray &arg )
+bool KDCOPPropertyProxy::decodePropertyRequestInternal( const DCOPCString &fun, QObject *object, bool &set,
+                                                        DCOPCString &propName, DCOPCString &arg )
 {
   if ( fun.length() < 3 )
     return false;

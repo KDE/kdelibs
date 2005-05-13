@@ -23,6 +23,7 @@
 #include <q3cstring.h>
 #include <q3valuelist.h>
 #include "kdelibs_export.h"
+#include <dcopobject.h>
 
 class KDCOPPropertyProxyPrivate;
 /**
@@ -54,20 +55,20 @@ public:
    * Convenience method, when using this class as object. See documentation of the constructor and
    * static isPropertyRequest method.
    */
-  bool isPropertyRequest( const QByteArray &fun );
+  bool isPropertyRequest( const DCOPCString &fun );
 
   /**
    * Convenience method, when using this class as object. See documentation of the constructor and
    * static processPropertyRequest method.
    */
-  bool processPropertyRequest( const QByteArray &fun, const QByteArray &data, QByteArray &replyType,
+  bool processPropertyRequest( const DCOPCString &fun, const QByteArray &data, DCOPCString &replyType,
                                QByteArray &replyData );
 
   /**
    * Convenience method, when using this class as object. See documentation of the constructor and
    * static functions method.
    */
-  QList<QByteArray> functions();
+  DCOPCStringList functions();
 
   /**
    * Returns a semicolon-separated list of functions understood by the PropertyProxy for the given
@@ -78,7 +79,7 @@ public:
    *
    * @see DCOPObject::functions()
    */
-  static QList<QByteArray> functions( QObject *object );
+  static DCOPCStringList functions( QObject *object );
 
   /**
    * Returns true if the method request in the fun argument matches the signature of the three standard
@@ -87,18 +88,18 @@ public:
    * Use this method in your own DCOPObject dispatcher to check if the DCOP request is a property
    * request which can be handled by this class.
    */
-  static bool isPropertyRequest( const QByteArray &fun, QObject *object );
+  static bool isPropertyRequest( const DCOPCString &fun, QObject *object );
 
   /**
    * Processes the given DCOP method request by translating the request into a setProperty/property call
    * on the given QObject argument.
    */
-  static bool processPropertyRequest( const QByteArray &fun, const QByteArray &data, QByteArray &replyType,
+  static bool processPropertyRequest( const DCOPCString &fun, const QByteArray &data, DCOPCString &replyType,
                                       QByteArray &replyData, QObject *object );
 
 private:
-  static bool decodePropertyRequestInternal( const QByteArray &fun, QObject *object, bool &set,
-                                             QByteArray &propName, QByteArray &arg );
+  static bool decodePropertyRequestInternal( const DCOPCString &fun, QObject *object, bool &set,
+                                             DCOPCString &propName, DCOPCString &arg );
 
   KDCOPPropertyProxyPrivate *d;
 };
