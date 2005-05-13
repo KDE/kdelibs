@@ -500,10 +500,12 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     if ( mb )
         mb->clear();
 
+	//is that any usefull these days ? //mikmak => KDE4
     (void)toolBarIterator(); // make sure toolbarList is most-up-to-date
-    toolbarList.setAutoDelete( true );
+	foreach( KToolBar*b , toolbarList ) {
+		delete b;
+	}
     toolbarList.clear();
-    toolbarList.setAutoDelete( false );
 
     // don't build a help menu unless the user ask for it
     if (d->showHelpMenu) {
@@ -745,10 +747,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-    KToolBar *toolbar = 0;
-    Q3PtrListIterator<KToolBar> it( toolBarIterator() );
-    while ( ( toolbar = it.current() ) ) {
-        ++it;
+	foreach ( KToolBar*toolbar, toolbarList ) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -859,11 +858,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-    KToolBar *toolbar;
-    Q3PtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
-
-    for ( ; it.current(); ++it) {
-        toolbar= it.current();
+	foreach ( KToolBar*toolbar, toolbarList ) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -890,9 +885,8 @@ void KMainWindow::finalizeGUI( bool force )
     // we call positionYourself again for each of them, but this time
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    Q3PtrListIterator<KToolBar> it( toolBarIterator() );
-    for ( ; it.current() ; ++it ) {
-        it.current()->positionYourself( force );
+	foreach ( KToolBar*toolbar, toolbarList ) {
+        toolbar->positionYourself( force );
     }
 
     d->settingsDirty = false;
@@ -1146,19 +1140,18 @@ KToolBar *KMainWindow::toolBar( const char * name )
         return new KToolBar(this, Qt::DockTop, false, name, honor_mode ); // non-XMLGUI
 }
 
-Q3PtrListIterator<KToolBar> KMainWindow::toolBarIterator()
+QList<KToolBar*>::iterator KMainWindow::toolBarIterator()
 {
     toolbarList.clear();
-    Q3PtrList<Q3ToolBar> lst;
+    QList<Q3ToolBar*> lst;
     for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
         lst = toolBars( (Qt::ToolBarDock)i );
-        for ( Q3ToolBar *tb = lst.first(); tb; tb = lst.next() ) {
-            if ( !tb->inherits( "KToolBar" ) )
-                continue;
-            toolbarList.append( (KToolBar*)tb );
+		foreach ( Q3ToolBar* tb, lst ) {
+            if ( tb->inherits( "KToolBar" ) )
+            	toolbarList.append( (KToolBar*)tb );
         }
     }
-    return Q3PtrListIterator<KToolBar>( toolbarList );
+    return toolbarList.begin();
 }
 
 KAccel * KMainWindow::accel()

@@ -406,7 +406,7 @@ public:
     /**
      * @return An iterator over the list of all toolbars for this window.
      */
-    Q3PtrListIterator<KToolBar> toolBarIterator();
+	QList<KToolBar*>::iterator toolBarIterator();
 
     /**
      * @return A KAccel instance bound to this mainwindow. Used automatically
@@ -988,7 +988,7 @@ private:
     KStatusBar *internalStatusBar();
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
-    Q3PtrList<KToolBar> toolbarList;
+    QList<KToolBar*> toolbarList;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
