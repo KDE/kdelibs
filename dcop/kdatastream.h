@@ -17,14 +17,15 @@ public:
 
 
     DCOPCString(const char* str): QByteArray(str)
-    {}
+    { squeezeTrailNulls(); }
 
     DCOPCString(const QByteArray& array): QByteArray(array)
-    {}
+    { squeezeTrailNulls(); }
 
     DCOPCString& operator=(const QByteArray& ba)
     {
         QByteArray::operator=(ba); return *this;
+        squeezeTrailNulls();
     }
 
     DCOPCString& operator=(const char* data)
@@ -35,6 +36,12 @@ public:
     DCOPCString& operator=(const DCOPCString& ds)
     {
         QByteArray::operator=(ds); return *this;
+    }
+private:
+    void squeezeTrailNulls()
+    {
+        while (length() && data()[length() - 1] == '\0')
+            truncate(length() - 1);
     }
 };
 
@@ -95,12 +102,12 @@ inline QDataStream & operator >> (QDataStream & str, long& val)
     return str;
 }
 
+
 inline QDataStream & operator << (QDataStream & str, const DCOPCString& s)
 {
-    str << s.length() + 1;
-    str.writeRawBytes(s.data(), s.length());
-    str.writeRawBytes("\0",     1);
-
+    int len = strlen(s.data());
+    str << len + 1;
+    str.writeRawBytes(s.data(), len + 1);
     return str;
 }
 
