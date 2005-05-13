@@ -24,12 +24,12 @@
 #include <q3frame.h>
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <qvbuttongroup.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <q3hbox.h>
 #include <q3popupmenu.h>
+#include <Q3VButtonGroup>
 
 #include <kapplication.h>
 #include <kcombobox.h>
@@ -700,7 +700,8 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
 		modal ? User1|Cancel : User1|Close, User1, false, KGuiItem( i18n("&Find"), "find") )
 {
-  setWFlags( Qt::WType_TopLevel );
+// is this really needed at all ?
+//  setWFlags( Qt::WType_TopLevel );
 
   QWidget *page = new QWidget( this );
   setMainWidget(page);
@@ -832,7 +833,8 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
                 User3, false,
 		i18n("Replace &All"), i18n("&Replace"), KGuiItem( i18n("&Find"), "find") )
 {
-  setWFlags( Qt::WType_TopLevel );
+// is this really needed at all ?
+//  setWFlags( Qt::WType_TopLevel );
 
   setButtonBoxOrientation( Qt::Vertical );
 
