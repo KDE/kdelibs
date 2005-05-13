@@ -508,7 +508,7 @@ KDatePicker::setFontSize(int s)
   
   // stolen from KToolBarButton
   opt.init(this);
-  opt.font      = KGlobalSettings::toolBarFont();
+  opt.font      = selectMonth->font();
   opt.icon      = selectMonth->icon();
   opt.text      = selectMonth->textLabel();
   opt.features  = selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
