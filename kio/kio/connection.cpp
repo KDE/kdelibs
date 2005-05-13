@@ -23,7 +23,6 @@
 #include <config.h>
 
 #include <kde_file.h>
-#include <ksock.h>
 #include <qtimer.h>
 
 #include <sys/types.h>
@@ -37,6 +36,7 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
+#include <network/kstreamsocket.h>
 
 #include "kio/connection.h"
 
@@ -121,7 +121,7 @@ void Connection::dequeue()
     }
 }
 
-void Connection::init(KSocket *sock)
+void Connection::init(KNetwork::KStreamSocket *sock)
 {
     delete notifier;
     notifier = 0;

@@ -27,7 +27,7 @@
 #include <qtimer.h>
 #include <q3ptrdict.h>
 #include <qmap.h>
-#include <Q3CStrList>
+#include <qwindowdefs.h>
 
 #include <dcopobject.h>
 
@@ -282,14 +282,14 @@ namespace KIO {
 
         void debug_info();
 
-        virtual bool process(const Q3CString &fun, const QByteArray &data,
-                             Q3CString& replyType, QByteArray &replyData);
+        virtual bool process(const DCOPCString &fun, const QByteArray &data,
+                             DCOPCString& replyType, QByteArray &replyData);
 
-        virtual Q3CStrList functions();
+        virtual DCOPCStringList functions();
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
-        void slotSlaveStatus(pid_t pid, const Q3CString &protocol,
+        void slotSlaveStatus(pid_t pid, const QString &protocol,
                              const QString &host, bool connected);
     signals:
         void slaveConnected(KIO::Slave *slave);

@@ -90,7 +90,7 @@ namespace KIO {
   };
 }
 
-void Slave::accept(KSocket *socket)
+void Slave::accept(KStreamSocket *socket)
 {
 #ifndef Q_WS_WIN
     slaveconn.init(socket);

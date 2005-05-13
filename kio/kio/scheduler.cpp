@@ -163,7 +163,7 @@ Scheduler::debug_info()
 {
 }
 
-bool Scheduler::process(const Q3CString &fun, const QByteArray &data, Q3CString &replyType, QByteArray &replyData )
+bool Scheduler::process(const DCOPCString &fun, const QByteArray &data, DCOPCString &replyType, QByteArray &replyData )
 {
     if ( fun != "reparseSlaveConfiguration(QString)" )
         return DCOPObject::process( fun, data, replyType, replyData );
@@ -190,9 +190,9 @@ bool Scheduler::process(const Q3CString &fun, const QByteArray &data, Q3CString 
     return true;
 }
 
-QCStringList Scheduler::functions()
+DCOPCStringList Scheduler::functions()
 {
-    QCStringList funcs = DCOPObject::functions();
+    DCOPCStringList funcs = DCOPObject::functions();
     funcs << "void reparseSlaveConfiguration(QString)";
     return funcs;
 }
@@ -564,7 +564,7 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
    return slave;
 }
 
-void Scheduler::slotSlaveStatus(pid_t, const Q3CString &, const QString &, bool)
+void Scheduler::slotSlaveStatus(pid_t, const QString &, const QString &, bool)
 {
 }
 

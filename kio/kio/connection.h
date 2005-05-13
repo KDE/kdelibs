@@ -30,7 +30,7 @@
 #include <q3ptrlist.h>
 #include <qobject.h>
 
-namespace KNetwork { class KSocket; }
+namespace KNetwork { class KStreamSocket; }
 class QSocketNotifier;
 
 namespace KIO {
@@ -62,7 +62,7 @@ namespace KIO {
 	 * @param sock the socket to use
 	 * @see inited()
 	 */
-	void init(KNetwork::KSocket *sock);
+	void init(KNetwork::KStreamSocket *sock);
         /**
 	 * Initialize the connection to use the given file
 	 * descriptors.
@@ -143,7 +143,7 @@ namespace KIO {
     private:
 	int fd_in;
 	FILE *f_out;
-	KNetwork::KSocket *socket;
+	KNetwork::KStreamSocket *socket;
 	QSocketNotifier *notifier;
 	QObject *receiver;
 	const char *member;

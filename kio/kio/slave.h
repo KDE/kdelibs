@@ -34,7 +34,7 @@
 
 namespace KNetwork {
 class KServerSocket;
-class KSocket;
+class KStreamSocket;
 }
 
 namespace KIO {
@@ -208,7 +208,7 @@ namespace KIO {
         void deref() { m_refCount--; if (!m_refCount) delete this; }
 
     public slots:
-        void accept(KNetwork::KSocket *socket);
+        void accept(KNetwork::KStreamSocket *socket);
 	void gotInput();
 	void timeout();
     signals:
