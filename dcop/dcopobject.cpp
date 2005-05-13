@@ -167,13 +167,13 @@ bool DCOPObject::process(const DCOPCString &fun, const QByteArray &data,
 			 DCOPCString& replyType, QByteArray &replyData)
 {
     if ( fun == "interfaces()" ) {
-	replyType = "DCOPCStringList";
+	replyType = "QCStringList";
 	QDataStream reply( &replyData, IO_WriteOnly );
 	reply.setVersion(QDataStream::Qt_3_1);
 	reply << interfaces();
 	return true;
     } else  if ( fun == "functions()" ) {
-	replyType = "DCOPCStringList";
+	replyType = "QCStringList";
 	QDataStream reply( &replyData, IO_WriteOnly );
 	reply.setVersion(QDataStream::Qt_3_1);
 	reply << functions();
@@ -207,8 +207,8 @@ DCOPCStringList DCOPObject::interfaces()
 DCOPCStringList DCOPObject::functions()
 {
     DCOPCStringList result = functionsDynamic();
-    result.prepend("DCOPCStringList functions()");
-    result.prepend("DCOPCStringList interfaces()");
+    result.prepend("QCStringList functions()");
+    result.prepend("QCStringList interfaces()");
     return result;
 }
 
