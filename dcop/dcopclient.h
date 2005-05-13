@@ -154,8 +154,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @return true if Qt objects are accessible over DCOP
    * @since 3.0.2
    */
-  bool qtBridgeEnabled(); // ### KDE 4.0: make const
-
+  bool qtBridgeEnabled() const; 
   /**
    * Specify whether Qt objects of the application should be accessible
    * via DCOP.

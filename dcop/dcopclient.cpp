@@ -955,7 +955,7 @@ void DCOPClient::setAcceptCalls(bool b)
     d->accept_calls_override = true;
 }
 
-bool DCOPClient::qtBridgeEnabled()
+bool DCOPClient::qtBridgeEnabled() const
 {
     return d->qt_bridge_enabled;
 }
