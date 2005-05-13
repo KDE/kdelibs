@@ -41,6 +41,7 @@
 #include <qtimer.h>
 #include <qstyle.h>
 #include <qlayout.h>
+#include <QMouseEvent>
 
 #include <ktoolbar.h>
 #include <kmainwindow.h>
@@ -436,22 +437,17 @@ KAnimWidget *KToolBar::animatedWidget( int id )
     KAnimWidget *aw = dynamic_cast<KAnimWidget *>(*it);
     if ( aw )
         return aw;
-    QObjectList *l = queryList( "KAnimWidget" );
-    if ( !l || !l->first() ) {
-        delete l;
+    QList<QObject*> l = queryList( "KAnimWidget" );
+    if ( !l.first() )
         return 0;
-    }
 
-    for ( QObject *o = l->first(); o; o = l->next() ) {
+	foreach ( QObject *o, l ) {
         KAnimWidget *aw = dynamic_cast<KAnimWidget *>(o);
         if ( aw )
         {
-            delete l;
             return aw;
         }
-    }
-
-    delete l;
+	}
     return 0;
 }
 
@@ -1095,18 +1091,16 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     // Don't use kmw->toolBarIterator() because you might
     // mess up someone else's iterator.  Make the list on your own
-    Q3PtrList<KToolBar> toolbarList;
-    Q3PtrList<Q3ToolBar> lst;
+    QList<KToolBar*> toolbarList;
+    QList<Q3ToolBar*> lst;
     for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
         lst = kmw->toolBars( (Qt::ToolBarDock)i );
-        for ( Q3ToolBar *tb = lst.first(); tb; tb = lst.next() ) {
-            if ( !tb->inherits( "KToolBar" ) )
-                continue;
-            toolbarList.append( (KToolBar*)tb );
-        }
+		foreach ( Q3ToolBar *tb, lst ) {
+            if ( tb->inherits( "KToolBar" ) )
+            	toolbarList.append( (KToolBar*)tb );
+		}
     }
-    Q3PtrListIterator<KToolBar> toolbarIterator( toolbarList );
-    if ( !kmw || toolbarIterator.count() > 1 )
+    if ( !kmw || toolbarList.count() > 1 )
         config->writeEntry("Index", index);
     else
         config->revertToDefault("Index");
@@ -1748,22 +1742,22 @@ void KToolBar::toolBarPosChanged( Q3ToolBar *tb )
         kmw->setSettingsDirty();
 }
 
-static KToolBar::Dock stringToDock( const QString& attrPosition )
+static Qt::ToolBarDock stringToDock( const QString& attrPosition )
 {
-    KToolBar::Dock dock = KToolBar::DockTop;
+    Qt::ToolBarDock dock = Qt::DockTop;
     if ( !attrPosition.isEmpty() ) {
         if ( attrPosition == "top" )
-            dock = KToolBar::DockTop;
+            dock = Qt::DockTop;
         else if ( attrPosition == "left" )
-            dock = KToolBar::DockLeft;
+            dock = Qt::DockLeft;
         else if ( attrPosition == "right" )
-            dock = KToolBar::DockRight;
+            dock = Qt::DockRight;
         else if ( attrPosition == "bottom" )
-            dock = KToolBar::DockBottom;
+            dock = Qt::DockBottom;
         else if ( attrPosition == "floating" )
-            dock = KToolBar::DockTornOff;
+            dock = Qt::DockTornOff;
         else if ( attrPosition == "flat" )
-            dock = KToolBar::DockMinimized;
+            dock = Qt::DockMinimized;
     }
     return dock;
 }
@@ -2056,7 +2050,7 @@ KPopupMenu *KToolBar::contextMenu()
   size->insertItem( i18n("Default"), CONTEXT_ICONSIZES );
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
-  Q3ValueList<int> avSizes;
+  QList<int> avSizes;
   if (theme)
   {
       if (!::qstrcmp(QObject::name(), "mainToolBar"))
@@ -2066,44 +2060,42 @@ KPopupMenu *KToolBar::contextMenu()
   }
 
   d->iconSizes = avSizes;
-  qHeapSort(avSizes);
+  qSort(avSizes);
 
-  Q3ValueList<int>::Iterator it;
   if (avSizes.count() < 10) {
       // Fixed or threshold type icons
-      for (it=avSizes.begin(); it!=avSizes.end(); it++) {
+	  foreach ( int it, avSizes ) {
           QString text;
-          if ( *it < 19 )
-              text = i18n("Small (%1x%2)").arg(*it).arg(*it);
-          else if (*it < 25)
-              text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
-          else if (*it < 35)
-              text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+          if ( it < 19 )
+              text = i18n("Small (%1x%2)").arg(it).arg(it);
+          else if (it < 25)
+              text = i18n("Medium (%1x%2)").arg(it).arg(it);
+          else if (it < 35)
+              text = i18n("Large (%1x%2)").arg(it).arg(it);
           else
-              text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
+              text = i18n("Huge (%1x%2)").arg(it).arg(it);
           //we use the size as an id, with an offset
-          size->insertItem( text, CONTEXT_ICONSIZES + *it );
+          size->insertItem( text, CONTEXT_ICONSIZES + it );
       }
   }
   else {
       // Scalable icons.
       const int progression[] = {16, 22, 32, 48, 64, 96, 128, 192, 256};
 
-      it = avSizes.begin();
       for (uint i = 0; i < 9; i++) {
-          while (it++ != avSizes.end()) {
-              if (*it >= progression[i]) {
+		  foreach ( int it, avSizes ) {
+              if (it >= progression[i]) {
                   QString text;
-                  if ( *it < 19 )
-                      text = i18n("Small (%1x%2)").arg(*it).arg(*it);
-                  else if (*it < 25)
-                      text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
-                  else if (*it < 35)
-                      text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+                  if ( it < 19 )
+                      text = i18n("Small (%1x%2)").arg(it).arg(it);
+                  else if (it < 25)
+                      text = i18n("Medium (%1x%2)").arg(it).arg(it);
+                  else if (it < 35)
+                      text = i18n("Large (%1x%2)").arg(it).arg(it);
                   else
-                      text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
+                      text = i18n("Huge (%1x%2)").arg(it).arg(it);
                   //we use the size as an id, with an offset
-                  size->insertItem( text, CONTEXT_ICONSIZES + *it );
+                  size->insertItem( text, CONTEXT_ICONSIZES + it );
                   break;
               }
           }
