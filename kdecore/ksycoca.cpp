@@ -144,11 +144,12 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      }
      else
      {
-        QByteArray b_array;
-        b_array.setRawData(m_sycoca_mmap, m_sycoca_size);
-        QBuffer *buffer = new QBuffer( &b_array );
+        QByteArray* b_array = new QByteArray();
+        b_array->setRawData(m_sycoca_mmap, m_sycoca_size);
+        QBuffer *buffer = new QBuffer( b_array );
         buffer->open(QIODevice::ReadWrite);
         m_str = new QDataStream( buffer);
+        //### FIXME: cleanup the array?
      }
 #endif
      bNoDatabase = false;
