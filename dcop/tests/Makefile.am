@@ -12,11 +12,11 @@ METASOURCES = AUTO
 check_PROGRAMS = dcop_test driver
 
 dcop_test_SOURCES = test.cpp test.skel
-dcop_test_LDADD = $(LIB_DCOP)
+dcop_test_LDADD = ../libDCOP.la
 dcop_test_LDFLAGS = $(KDE_RPATH)
 
 driver_SOURCES = driver.cpp test.stub
-driver_LDADD = $(LIB_DCOP)
+driver_LDADD = ../libDCOP.la
 driver_LDFLAGS = $(KDE_RPATH)
 
 CLEANFILES = batch.generated definitions.generated driver.generated shell.generated
