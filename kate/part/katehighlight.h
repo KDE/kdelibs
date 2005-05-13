@@ -44,7 +44,6 @@ class KateHlContext;
 class KateHlItem;
 class KateHlItemData;
 class KateHlData;
-class KateEmbeddedHlInfo;
 class KateHlIncludeRule;
 class KateSyntaxDocument;
 class KateTextLine;
@@ -52,6 +51,18 @@ class KateSyntaxModeListItem;
 class KateSyntaxContextData;
 
 class Q3PopupMenu;
+
+class KateEmbeddedHlInfo
+{
+  public:
+    KateEmbeddedHlInfo() {loaded=false;context0=-1;}
+    KateEmbeddedHlInfo(bool l, int ctx0) {loaded=l;context0=ctx0;}
+
+  public:
+    bool loaded;
+    int context0;
+};
+
 
 // some typedefs
 typedef Q3PtrList<KateAttribute> KateAttributeList;
@@ -248,7 +259,7 @@ class KateHighlighting
     KateHlItemDataList internalIDList;
 
     Q3ValueVector<KateHlContext*> m_contexts;
-    inline KateHlContext *contextNum (uint n) { if (n < m_contexts.size()) return m_contexts[n]; return 0; }
+    inline KateHlContext *contextNum (int n) { if (n >= 0 && n < m_contexts.size()) return m_contexts[n]; return 0; }
 
     QMap< QPair<KateHlContext *, QString>, short> dynamicCtxs;
 

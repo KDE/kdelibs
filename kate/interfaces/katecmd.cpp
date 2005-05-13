@@ -38,11 +38,11 @@ bool KateCmd::registerCommand (Kate::Command *cmd)
 {
   QStringList l = cmd->cmds ();
 
-  for (uint z=0; z<l.count(); z++)
+  for (int z=0; z<l.count(); z++)
     if (m_dict[l[z]])
       return false;
 
-  for (uint z=0; z<l.count(); z++) {
+  for (int z=0; z<l.count(); z++) {
     m_dict.insert (l[z], cmd);
     kdDebug()<<"Inserted command:"<<l[z]<<endl;
   }
@@ -69,7 +69,7 @@ Kate::Command *KateCmd::queryCommand (const QString &cmd)
 {
   // a command can be named ".*[\w\-]+" with the constrain that it must
   // contain at least one letter.
-  uint f = 0;
+  int f = 0;
   bool b = false;
   for ( ; f < cmd.length(); f++ )
   {

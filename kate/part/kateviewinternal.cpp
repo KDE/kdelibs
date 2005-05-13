@@ -3235,6 +3235,7 @@ void KateViewInternal::viewSelectionChanged ()
     selectAnchor.setPos (-1, -1);
 }
 
+#if 0
 //BEGIN IM INPUT STUFF
 void KateViewInternal::imStartEvent( QIMEvent *e )
 {
@@ -3317,5 +3318,6 @@ void KateViewInternal::imEndEvent( QIMEvent *e )
   m_imPreeditSelStart = 0;
 }
 //END IM INPUT STUFF
+#endif
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

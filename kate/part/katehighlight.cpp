@@ -137,17 +137,6 @@ class KateHlContext
     bool noIndentationBasedFolding;
 };
 
-class KateEmbeddedHlInfo
-{
-  public:
-    KateEmbeddedHlInfo() {loaded=false;context0=-1;}
-    KateEmbeddedHlInfo(bool l, int ctx0) {loaded=l;context0=ctx0;}
-
-  public:
-    bool loaded;
-    int context0;
-};
-
 class KateHlIncludeRule
 {
   public:

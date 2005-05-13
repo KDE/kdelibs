@@ -78,13 +78,11 @@ void KateSearch::createActions( KActionCollection* ac )
 
 void KateSearch::addToList( QStringList& list, const QString& s )
 {
-  if( list.count() > 0 ) {
-    QStringList::Iterator it = list.find( s );
-    if( *it != 0L )
-      list.remove( it );
-    if( list.count() >= 16 )
-      list.remove( list.fromLast() );
-  }
+  list.removeAll (s);
+    
+  if( list.count() >= 16 )
+    list.removeLast();
+
   list.prepend( s );
 }
 

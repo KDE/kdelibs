@@ -191,9 +191,9 @@ bool KateRenderer::paintTextLineBackground(QPainter& paint, int line, bool isCur
 
           if (markColor.isValid()) {
             markCount++;
-            markRed += markColor.Qt::red();
-            markGreen += markColor.Qt::green();
-            markBlue += markColor.Qt::blue();
+            markRed += markColor.red();
+            markGreen += markColor.green();
+            markBlue += markColor.blue();
           }
         }
       } // for
@@ -204,9 +204,9 @@ bool KateRenderer::paintTextLineBackground(QPainter& paint, int line, bool isCur
       markGreen /= markCount;
       markBlue /= markCount;
       backgroundColor.setRgb(
-        int((backgroundColor.Qt::red() * 0.9) + (markRed * 0.1)),
-        int((backgroundColor.Qt::green() * 0.9) + (markGreen * 0.1)),
-        int((backgroundColor.Qt::blue() * 0.9) + (markBlue * 0.1))
+        int((backgroundColor.red() * 0.9) + (markRed * 0.1)),
+        int((backgroundColor.green() * 0.9) + (markGreen * 0.1)),
+        int((backgroundColor.blue() * 0.9) + (markBlue * 0.1))
       );
     }
   } // background preprocessing

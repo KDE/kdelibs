@@ -100,15 +100,15 @@ Document *document (KTextEditor::Document *doc)
   if (!doc)
     return 0;
 
-  return static_cast<Document*>(doc->qt_cast("Kate::Document"));
+  return qobject_cast<Document*>(doc);
 }
 
 DocumentExt *documentExt (KTextEditor::Document *doc)
 {
-  if (!doc)
+  if (!doc || !doc->inherits("Kate::DocumentExt"))
     return 0;
 
-  return static_cast<DocumentExt*>(doc->qt_cast("Kate::DocumentExt"));
+  return (Kate::DocumentExt*)doc;
 }
 
 Document *createDocument ( QObject *parent, const char *name )
@@ -121,7 +121,7 @@ View *view (KTextEditor::View *view)
   if (!view)
     return 0;
 
-  return static_cast<View*>(view->qt_cast("Kate::View"));
+  return qobject_cast<View*>(view);
 }
 
 }

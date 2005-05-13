@@ -33,6 +33,7 @@
 #include <qpoint.h>
 #include <qtimer.h>
 #include <q3intdict.h>
+#include <Q3TextDrag>
 
 class KateView;
 class KateIconBorder;
@@ -41,13 +42,6 @@ class KateScrollBar;
 class QHBoxLayout;
 class QVBoxLayout;
 class QScrollBar;
-
-enum Bias
-{
-    left  = -1,
-    none  =  0,
-    right =  1
-};
 
 class KateViewInternal : public QWidget
 {
@@ -59,6 +53,14 @@ class KateViewInternal : public QWidget
     friend class CalculatingCursor;
     friend class BoundedCursor;
     friend class WrappingCursor;
+
+  public:
+    enum Bias
+    {
+        left  = -1,
+        none  =  0,
+        right =  1
+    };
 
   public:
     KateViewInternal ( KateView *view, KateDocument *doc );
@@ -381,6 +383,7 @@ class KateViewInternal : public QWidget
    int m_textHintMouseX;
    int m_textHintMouseY;
 
+#if 0
   /**
    * IM input stuff
    */
@@ -388,6 +391,7 @@ class KateViewInternal : public QWidget
     void imStartEvent( QIMEvent *e );
     void imComposeEvent( QIMEvent *e );
     void imEndEvent( QIMEvent *e );
+#endif
 
   private:
     int m_imPreeditStartLine;

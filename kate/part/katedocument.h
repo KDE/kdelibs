@@ -1029,11 +1029,7 @@ class KateDocument : public Kate::Document,
 
 
   // hack, only there to still support the deprecated stuff, will be removed for KDE 4.x
-  #undef signals
-  #define signals public
   signals:
-  #undef signals
-  #define signals protected
     void selectionChanged ();
 
   //
