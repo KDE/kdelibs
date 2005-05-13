@@ -578,7 +578,8 @@ public:
         WM2KDETemporaryRules   = 1<<9,  // NOT STANDARD
         WM2WindowClass         = 1<<10, ///< @since 3.3
         WM2WindowRole          = 1<<11, ///< @since 3.3
-        WM2ClientMachine       = 1<<12  ///< @since 3.3
+        WM2ClientMachine       = 1<<12, ///< @since 3.3
+        WM2ShowingDesktop      = 1<<13  ///< @since 3.5
     };
 
     /**

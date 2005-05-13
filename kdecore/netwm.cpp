@@ -55,6 +55,7 @@ static Atom net_active_window        = 0;
 static Atom net_workarea             = 0;
 static Atom net_supporting_wm_check  = 0;
 static Atom net_virtual_roots        = 0;
+static Atom net_showing_desktop      = 0;
 
 // root window messages
 static Atom net_close_window         = 0;
@@ -227,7 +228,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 75;
+static const int netAtomCount = 76;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -244,6 +245,7 @@ static void create_atoms(Display *d) {
 	    "_NET_ACTIVE_WINDOW",
 	    "_NET_WORKAREA",
 	    "_NET_VIRTUAL_ROOTS",
+            "_NET_SHOWING_DESKTOP",
 	    "_NET_CLOSE_WINDOW",
             "_NET_RESTACK_WINDOW",
 
@@ -330,6 +332,7 @@ static void create_atoms(Display *d) {
 	    &net_active_window,
 	    &net_workarea,
 	    &net_virtual_roots,
+            &net_showing_desktop,
 	    &net_close_window,
             &net_restack_window,
 
@@ -588,6 +591,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
+    p->showing_desktop = false;
     setDefaultProperties();
     if( properties_size > PROPERTIES_SIZE ) {
         fprintf( stderr, "NETRootInfo::NETRootInfo(): properties array too large\n");
@@ -636,6 +640,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
+    p->showing_desktop = false;
     setDefaultProperties();
     p->properties[ PROTOCOLS ] = properties;
     // force support for Supported and SupportingWMCheck for window managers
@@ -684,6 +689,7 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
+    p->showing_desktop = false;
     setDefaultProperties();
     if( properties_size > 2 ) {
         fprintf( stderr, "NETWinInfo::NETWinInfo(): properties array too large\n");
@@ -741,6 +747,7 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
+    p->showing_desktop = false;
     setDefaultProperties();
     p->client_properties[ PROTOCOLS ] = properties;
     for( int i = 0; i < PROPERTIES_SIZE; ++i )
@@ -762,11 +769,37 @@ NETRootInfo2::NETRootInfo2(Display *display, Window supportWindow, const char *w
 {
 }
 
+NETRootInfo2::NETRootInfo2(Display *display, const unsigned long properties[], int properties_size,
+                int screen, bool doActivate)
+    : NETRootInfo( display, properties, properties_size, screen, doActivate )
+{
+}
+
 NETRootInfo3::NETRootInfo3(Display *display, Window supportWindow, const char *wmName,
 			 unsigned long properties[], int properties_size,
                          int screen, bool doActivate)
     : NETRootInfo2( display, supportWindow, wmName, properties, properties_size,
 	screen, doActivate )
+{
+}
+
+NETRootInfo3::NETRootInfo3(Display *display, const unsigned long properties[], int properties_size,
+                int screen, bool doActivate)
+    : NETRootInfo2( display, properties, properties_size, screen, doActivate )
+{
+}
+
+NETRootInfo4::NETRootInfo4(Display *display, Window supportWindow, const char *wmName,
+			 unsigned long properties[], int properties_size,
+                         int screen, bool doActivate)
+    : NETRootInfo3( display, supportWindow, wmName, properties, properties_size,
+	screen, doActivate )
+{
+}
+
+NETRootInfo4::NETRootInfo4(Display *display, const unsigned long properties[], int properties_size,
+                int screen, bool doActivate)
+    : NETRootInfo3( display, properties, properties_size, screen, doActivate )
 {
 }
 
@@ -1118,6 +1151,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS2 ] & WM2RestackWindow)
 	atoms[pnum++] = net_restack_window;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2ShowingDesktop)
+	atoms[pnum++] = net_showing_desktop;
+
     // Application window properties/messages
     if (p->properties[ PROTOCOLS ] & WMMoveResize)
 	atoms[pnum++] = net_wm_moveresize;
@@ -1333,6 +1369,8 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
     else if( atom == net_restack_window )
         p->properties[ PROTOCOLS2 ] |= WM2RestackWindow;
 
+    else if( atom == net_showing_desktop )
+        p->properties[ PROTOCOLS2 ] |= WM2ShowingDesktop;
 
     // Application window properties/messages
     else if( atom == net_wm_moveresize )
@@ -1565,6 +1603,35 @@ void NETRootInfo::setVirtualRoots(Window *windows, unsigned int count) {
 }
 
 
+void NETRootInfo::setShowingDesktop( bool showing ) {
+    if (role == WindowManager) {
+	long d = p->showing_desktop = showing;
+	XChangeProperty(p->display, p->root, net_showing_desktop, XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *) &d, 1);
+    } else {
+	XEvent e;
+
+	e.xclient.type = ClientMessage;
+	e.xclient.message_type = net_showing_desktop;
+	e.xclient.display = p->display;
+	e.xclient.window = 0;
+	e.xclient.format = 32;
+	e.xclient.data.l[0] = showing ? 1 : 0;
+	e.xclient.data.l[1] = 0;
+	e.xclient.data.l[2] = 0;
+	e.xclient.data.l[3] = 0;
+	e.xclient.data.l[4] = 0;
+
+	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+    }
+}
+
+
+bool NETRootInfo::showingDesktop() const {
+    return p->showing_desktop;
+}
+
+
 void NETRootInfo::closeWindowRequest(Window window) {
 
 #ifdef    NETWMDEBUG
@@ -1751,8 +1818,6 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
     unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
 
-    Q_UNUSED( dirty2 ); // for now
-
     // the window manager will be interested in client messages... no other
     // client should get these messages
     if (role == WindowManager && event->type == ClientMessage &&
@@ -1917,6 +1982,16 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 	    if( NETRootInfo3* this3 = dynamic_cast< NETRootInfo3* >( this ))
 		this3->gotTakeActivity( event->xclient.data.l[2], event->xclient.data.l[1],
                     event->xclient.data.l[3]);
+	} else if (event->xclient.message_type == net_showing_desktop) {
+	    dirty2 = WM2ShowingDesktop;
+
+#ifdef   NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo::event: changeShowingDesktop(%ld)\n",
+		    event->xclient.data.l[0]);
+#endif
+
+	    if( NETRootInfo4* this4 = dynamic_cast< NETRootInfo4* >( this ))
+	        this4->changeShowingDesktop(event->xclient.data.l[0]);
 	}
     }
 
@@ -1956,6 +2031,8 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		dirty |= CurrentDesktop;
 	    else if (pe.xproperty.atom == net_active_window)
 		dirty |= ActiveWindow;
+	    else if (pe.xproperty.atom == net_showing_desktop)
+		dirty2 |= WM2ShowingDesktop;
 	    else {
 
 #ifdef    NETWMDEBUG
@@ -2008,8 +2085,6 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
         props[ i ] = dirty_props[ i ] & p->client_properties[ i ];
     const unsigned long& dirty = props[ PROTOCOLS ];
     const unsigned long& dirty2 = props[ PROTOCOLS2 ];
-
-    Q_UNUSED( dirty2 ); // for now
 
     if (dirty & Supported ) {
         // only in Client mode
@@ -2417,6 +2492,25 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 #ifdef    NETWMDEBUG
 	    fprintf(stderr, "NETRootInfo::updated: virtual roots updated (%ld windows)\n",
 		    p->virtual_roots_count);
+#endif
+	    if ( data_ret )
+		XFree(data_ret);
+	}
+    }
+
+    if (dirty2 & WM2ShowingDesktop) {
+        p->showing_desktop = false;
+	if (XGetWindowProperty(p->display, p->root, net_showing_desktop,
+			       0, MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
+		p->showing_desktop = *((long *) data_ret);
+	    }
+
+#ifdef    NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo::update: showing desktop = %d\n",
+		    p->showing_desktop);
 #endif
 	    if ( data_ret )
 		XFree(data_ret);

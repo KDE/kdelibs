@@ -102,6 +102,7 @@ struct NETRootInfoPrivate {
 
     unsigned long clients_count, stacking_count, virtual_roots_count,
 	kde_system_tray_windows_count;
+    bool showing_desktop;
 
     unsigned long properties[ 5 ];
     unsigned long client_properties[ 5 ]; // properties the client is interested in
