@@ -77,8 +77,6 @@ KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QSt
 
     repaintContents( false );
     
-    setToolTips();
-
     setFocusPolicy( Qt::StrongFocus );
     setBackgroundMode( Qt::NoBackground );
 }
@@ -88,8 +86,6 @@ void KCharSelectTable::setFont( const QString &_font )
 {
     vFont = _font;
     repaintContents( false );
-
-    setToolTips();
 }
 
 //==================================================================
@@ -106,8 +102,6 @@ void KCharSelectTable::setTableNum( int _tableNum )
 
     vTableNum = _tableNum;
     repaintContents( false );
-
-    setToolTips();
 }
 
 //==================================================================
@@ -132,8 +126,6 @@ void KCharSelectTable::resizeEvent( QResizeEvent * e )
         setCellWidth( new_w );
     if( new_h !=  cellHeight())
         setCellHeight( new_h );
-
-    setToolTips();
 }
 
 //==================================================================
@@ -174,8 +166,11 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     }
 
     if ( c == focusItem.unicode() && hasFocus() ) {
-	style().drawPrimitive( QStyle::PE_FocusRect, p, QRect( 2, 2, w - 4, h - 4 ), 
-			       colorGroup() );
+	QStyleOptionFocusRect frOpt;
+	frOpt.init(this);
+	frOpt.rect            = QRect( 2, 2, w - 4, h - 4 );
+	frOpt.backgroundColor = p->brush().color();
+	style()->drawPrimitive( QStyle::PE_FrameFocusRect, &frOpt, p, this );
 	focusPos = QPoint( col, row );
     }
 
@@ -340,23 +335,21 @@ void KCharSelectTable::gotoDown()
     }
 }
 
-//==================================================================
-void KCharSelectTable::setToolTips()
+bool KCharSelectTable::event ( QEvent *e )
 {
-    const int rowCount = numRows();
-    const int colCount = numCols();
-    for( int i=0 ; i< rowCount; ++i )
+    if ( e->type() ==  QEvent::ToolTip)
     {
-	for( int j=0; j< colCount; ++j )
-	{
-	    const QRect r( cellWidth()*j, cellHeight()*i, cellWidth(), cellHeight() );
-	    QToolTip::remove(this,r);
-	    const ushort uni = vTableNum * 256 + numCols()*i + j;
-	    QString s;
-	    s.sprintf( "%04X", uint( uni ) );
-	    QToolTip::add(this, r, i18n( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ).arg( vFont ).arg( QChar( uni ) ).arg( s ).arg( uni ).arg( QChar( uni ) ) );
-	}
+	QHelpEvent* he = static_cast<QHelpEvent*>( e );
+	int row = he->y() / cellHeight();
+	int col = he->x() / cellWidth();
+    
+	const ushort uni = vTableNum * 256 + numCols()*row + col;
+	QString s;
+	s.sprintf( "%04X", uint( uni ) );
+	QToolTip::showText (he->globalPos(), i18n( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ).arg( vFont ).arg( QChar( uni ) ).arg( s ).arg( uni ).arg( QChar( uni ) ), this);
     }
+    
+    return Q3GridView::event( e );
 }
 
 /******************************************************************/
@@ -451,11 +444,8 @@ QSize KCharSelect::sizeHint() const
 //==================================================================
 void KCharSelect::setFont( const QString &_font )
 {
-    const Q3ValueList<QString>::Iterator it = fontList.find( _font );
-    if ( it != fontList.end() ) {
-	Q3ValueList<QString>::Iterator it2 = fontList.begin();
-	int pos = 0;
-	for ( ; it != it2; ++it2, ++pos);
+    int pos = fontList.indexOf ( _font );
+    if ( pos != 1 ) {
 	fontCombo->setCurrentItem( pos );
 	charTable->setFont( _font );
     }

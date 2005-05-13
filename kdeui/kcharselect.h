@@ -75,6 +75,8 @@ protected:
 
     virtual void keyPressEvent( QKeyEvent *e );
 
+    virtual bool event ( QEvent *e );
+
     void gotoLeft();
     void gotoRight();
     void gotoUp();
@@ -101,7 +103,6 @@ signals:
 
 private:
     virtual void setFont(const QFont &f) { Q3GridView::setFont(f); }
-    void setToolTips();
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
