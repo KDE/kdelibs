@@ -154,23 +154,19 @@ void KLocale::initLanguageList(KConfig * config, bool useEnv)
       langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
       langs << QFile::decodeName( ::getenv("LANG") );
 
-      for ( QStringList::Iterator it = langs.begin();
-	    it != langs.end();
-	    ++it )
+      foreach (QString lang, langs)
 	{
-	  QString ln, ct, chrset;
-	  splitLocale(*it, ln, ct, chrset);
+	  QString ln, country, chrset;
+	  splitLocale(lang, ln, country, chrset);
 
-	  if (!ct.isEmpty()) {
-	    langs.insert(it, ln + '_' + ct);
+	  if (!country.isEmpty()) {
+	    languageList += ln + '_' + country;
 	    if (!chrset.isEmpty())
-	      langs.insert(it, ln + '_' + ct + '.' + chrset);
+	      languageList += ln + '_' + country + '.' + chrset;
 	  }
-
-          langs.insert(it, ln);
+	  languageList += ln;
+	  languageList += lang;
 	}
-
-      languageList += langs;
     }
 
   // now we have a language list -- let's use the first OK language
