@@ -405,8 +405,8 @@ bool KateSuperRange::owns(const KateTextCursor& cursor) const
 {
   if (!includes(cursor)) return false;
 
-  if (children())
-    for (QObjectListIt it(*children()); *it; ++it)
+  if (!children().isEmpty())
+    for (QObjectList::const_iterator it(children().constBegin()); it != children().constEnd(); ++it)
       if ((*it)->inherits("KateSuperRange"))
         if (static_cast<KateSuperRange*>(*it)->owns(cursor))
           return false;
