@@ -60,7 +60,7 @@ class KIO_EXPORT KMimeTypeChooser : public Q3VBox
      * @param name The internal name of this object
      */
     KMimeTypeChooser( const QString& text=QString::null,
-                      const QStringList &selectedMimeTypes=0,
+                      const QStringList &selectedMimeTypes=QStringList(),
                       const QString &defaultGroup=QString::null,
                       const QStringList &groupsToShow=QStringList(),
                       int visuals=Comments|Patterns|EditButton,

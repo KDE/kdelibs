@@ -142,7 +142,7 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
 
     QString min = mimetype.right(mimetype.length() - (index+1));
 
-    QMapIterator<QString,Q3ListViewItem*> mit = groups.find( maj );
+    QMap<QString,Q3ListViewItem*>::Iterator mit = groups.find( maj );
     if ( mit == groups.end() )
     {
       groupItem = new Q3ListViewItem( d->lvMimeTypes, maj );
