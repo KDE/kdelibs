@@ -63,7 +63,7 @@ k_dcop:
 	Return a list of actions available to the application's window.
 	@return A QCStringList containing valid names actions.
 	*/
-	QList<QByteArray> actions();
+	DCOPCStringList actions();
 
 	/**
 	Activates the requested action.

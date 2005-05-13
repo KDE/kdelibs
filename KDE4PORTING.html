@@ -62,6 +62,8 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KLocale</H4>
 
+<H4>KCharsets</H4>
+<p>Most of this class is (probably) obsolete, consider removing that class</p>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -76,6 +78,27 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KDateTable</H4>
 <li>signal void dateChanged(QDate); was replaced by void dateChanged(const QDate&amp;);
+
+
+<H4>KMainWindowInterface</H4>
+<li>functionsDynamic() now returns a DCOPCStringList
+<li>function processDynamic arguments uses DCOPCString instead of QCString :
+	   <pre>bool processDynamic(const DCOPCString &fun, const QByteArray &data, DCOPCString& replyType, QByteArray &replyData);</pre>
+<li>actions() now returns a DCOPCString
+
+<H4>KAboutDialog</H4>
+<li>void setIcon( const QString &fileName ) which was deprecated has been removed
+<li>addContainerPage int args are now Qt::Alignment args
+<li>addScrolledContainerPage int args are now Qt::Alignment args
+<li>addContainer int args are now Qt::Alignment args
+
+<H4>KAboutContainer</H4>
+<li>KAboutContainer constructor int args have been replaced by Qt::Alignment
+<li>addTitle int args replaced by Qt::Alignment
+<li>addImage int args replaced by Qt::Alignment
+
+<H4>KRecentFilesAction</H4>
+<li>the maxItem property is now an int (was a uint) (affects all accessors methods)
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -104,6 +127,8 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H3><A NAME="kfile">Changes in kfile</A></H3>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+
 <p>
 
 
