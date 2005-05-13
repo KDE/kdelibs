@@ -204,7 +204,7 @@ void KMDriverDB::loadDbFile()
 		QStringList	words;
 		KMDBEntry	*entry(0);
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty())

@@ -26,6 +26,7 @@
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <QFocusEvent>
 
 #include "ISearchPlugin.h"
 #include "ISearchPlugin.moc"

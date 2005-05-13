@@ -115,7 +115,7 @@ bool KSambaSharePrivate::readSmbConf() {
   bool continuedLine = false; // is true if the line before ended with a backslash
   QString completeLine;
 
-  while (!s.eof())
+  while (!s.atEnd())
   {
     QString currentLine = s.readLine().stripWhiteSpace();
 

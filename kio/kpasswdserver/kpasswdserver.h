@@ -20,13 +20,13 @@
 //----------------------------------------------------------------------------
 //
 // KDE Password Server
-// $Id$
 
 #ifndef KPASSWDSERVER_H
 #define KPASSWDSERVER_H
 
 #include <q3dict.h>
 #include <q3intdict.h>
+#include <q3ptrlist.h>
 
 #include <dcopclient.h>
 #include <kio/authinfo.h>

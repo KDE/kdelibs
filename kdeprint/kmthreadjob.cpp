@@ -71,7 +71,7 @@ bool KMThreadJob::loadJobs()
 		QString		line;
 
 		m_jobs.clear();
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty())

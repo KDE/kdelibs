@@ -626,7 +626,7 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 		bool 		isnumeric(false);
 		DrBase		*opt(0);
 
-		while (!tin.eof())
+		while (!tin.atEnd())
 		{
 			line = tin.readLine();
 			if (line.startsWith("*% COMDATA #"))
@@ -979,7 +979,7 @@ void extractMaticData(QString& buf, const QString& filename)
 	{
 		QTextStream	t(&f);
 		QString		line;
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine();
 			if (line.startsWith("*% COMDATA #"))

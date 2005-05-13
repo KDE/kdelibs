@@ -143,7 +143,7 @@ void InsertFilePluginView::insertFile()
   QString str, tmp;
   uint numlines = 0;
   uint len = 0;
-  while (!stream.eof()) {
+  while (!stream.atEnd()) {
     if ( numlines )
       str += "\n";
     tmp = stream.readLine();

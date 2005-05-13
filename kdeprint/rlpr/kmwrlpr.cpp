@@ -135,7 +135,7 @@ void KMWRlpr::initialize()
 		QTextStream	t(&f);
 		QString		line, host;
 		int 		p(-1);
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty())
@@ -164,10 +164,10 @@ void KMWRlpr::initialize()
 		QString		line, buffer;
 		Q3ListViewItem	*hitem(m_view->firstChild());
 		while (hitem) if (hitem->text(0) == "localhost") break; else hitem = hitem->nextSibling();
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			buffer = QString::null;
-			while (!t.eof())
+			while (!t.atEnd())
 			{
 				line = t.readLine().stripWhiteSpace();
 				if (line.isEmpty() || line[0] == '#')

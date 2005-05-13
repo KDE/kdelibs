@@ -308,7 +308,7 @@ KPasswdServer::processRequest()
         }
     }
 
-    Q3CString replyType;
+    DCOPCString replyType;
     QByteArray replyData;
 
     QDataStream stream2(&replyData, QIODevice::WriteOnly);
@@ -351,7 +351,7 @@ KPasswdServer::processRequest()
        {
            const AuthInfo *result = findAuthInfoItem(waitRequest->key, waitRequest->info);
 
-           Q3CString replyType;
+           DCOPCString replyType;
            QByteArray replyData;
 
            QDataStream stream2(&replyData, QIODevice::WriteOnly);

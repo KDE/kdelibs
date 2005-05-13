@@ -39,7 +39,7 @@ class KTextBuffer
 {
 public:
 	KTextBuffer(QIODevice *dev) : m_stream(dev) {}
-	bool eof() const { return (m_stream.eof() && m_linebuf.isEmpty()); }
+	bool atEnd() const { return (m_stream.atEnd() && m_linebuf.isEmpty()); }
 	QString readLine();
 	void unreadLine(const QString& l) { m_linebuf = l; }
 private:
@@ -76,7 +76,7 @@ QString readLine(KTextBuffer& t)
 	QString	line, buffer;
 	bool	lineContinue(false);
 
-	while (!t.eof())
+	while (!t.atEnd())
 	{
 		buffer = t.readLine().stripWhiteSpace();
 		if (buffer.isEmpty() || buffer[0] == '#')
@@ -157,7 +157,7 @@ QString getPrintcapFileName()
 		kdDebug() << "/etc/lpd.conf found: probably LPRng system" << endl;
 		QTextStream	t(&f);
 		QString		line;
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.startsWith("printcap_path="))
@@ -189,7 +189,7 @@ void KMLpdUnixManager::parseEtcPrintcap()
 		KTextBuffer	t(&f);
 		QMap<QString,QString>	entry;
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			entry = readEntry(t);
 			if (entry.isEmpty() || !entry.contains("printer-name") || entry.contains("server"))
@@ -251,7 +251,7 @@ void KMLpdUnixManager::parseEtcPrintersConf()
 		QMap<QString,QString>	entry;
 		QString		default_printer;
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			entry = readEntry(t);
 			if (entry.isEmpty() || !entry.contains("printer-name"))
@@ -299,7 +299,7 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 		{
 			KTextBuffer	t(&f);
 			QString		line, remote;
-			while (!t.eof())
+			while (!t.atEnd())
 			{
 				line = readLine(t);
 				if (line.isEmpty()) continue;
@@ -361,7 +361,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 			KTextBuffer	t(&f);
 			QString		line, remote;
 
-			while (!t.eof())
+			while (!t.atEnd())
 			{
 				line = t.readLine().stripWhiteSpace();
 				if (line.startsWith("HOSTNAME"))

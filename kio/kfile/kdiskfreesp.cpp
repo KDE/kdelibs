@@ -102,7 +102,7 @@ void KDiskFreeSp::dfDone()
   QString s=t.readLine();
   if ( (s.isEmpty()) || ( s.left(10) != QString::fromLatin1("Filesystem") ) )
     kdError() << "Error running df command... got [" << s << "]" << endl;
-  while ( !t.eof() ) {
+  while ( !t.atEnd() ) {
     QString u,v;
     s=t.readLine();
     s=s.simplifyWhiteSpace();
@@ -110,7 +110,7 @@ void KDiskFreeSp::dfDone()
       //kdDebug(kfile_area) << "GOT: [" << s << "]" << endl;
 
       if (s.find(BLANK)<0)      // devicename was too long, rest in next line
-	if ( !t.eof() ) {       // just appends the next line
+	if ( !t.atEnd() ) {       // just appends the next line
             v=t.readLine();
             s=s.append(v);
             s=s.simplifyWhiteSpace();

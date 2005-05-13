@@ -256,7 +256,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 		QStringList	pair;
 		KMPrinter	*printer, *realprinter;
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty()) continue;

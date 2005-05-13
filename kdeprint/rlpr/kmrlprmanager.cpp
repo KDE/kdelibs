@@ -95,7 +95,7 @@ void KMRlprManager::loadPrintersConf(const QString& filename)
 	{
 		QTextStream	t(&f);
 		QString		line;
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty() || line[0] == '#')
