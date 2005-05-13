@@ -112,7 +112,7 @@ public:
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { pLeft = 0, pRight, pTop, pBottom };
     enum Alignment { LeftTop = 0, Center, RightBottom };
-    enum Qt::Orientation { Up = 0, Down, Qt::DockLeft, Qt::DockRight };
+    enum Orientation { Up = 0, Down, Left, Right };
 
     /**
      * Constructs a KPanelApplet just like any other widget.

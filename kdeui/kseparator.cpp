@@ -21,6 +21,7 @@
 
 #include <kdebug.h>
 #include <kapplication.h>
+#include <QStyleOption>
 
 #include "kseparator.moc"
 
@@ -95,8 +96,7 @@ void KSeparator::drawFrame(QPainter *p)
    }
 
    QStyleOption opt( lineWidth(), midLineWidth() );
-   style().drawPrimitive( QStyle::PE_Separator, p, QRect( p1, p2 ), g,
-		          QStyle::State_Sunken, opt );
+   style()->drawPrimitive( QStyle::PE_Q3Separator, p, QRect( p1, p2 ), g, QStyle::State_Sunken, opt );
 }
 
 

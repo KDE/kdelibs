@@ -27,6 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kpanelapplet.moc"
 #include <kapplication.h>
 #include <kconfig.h>
+#include <QResizeEvent>
 
 class KPanelApplet::KPanelAppletPrivate
 {
@@ -101,18 +102,6 @@ Qt::Orientation KPanelApplet::orientation() const
   } else {
     return Qt::Vertical;
   }
-}
-
-// FIXME: Remove for KDE 4
-KPanelApplet::Direction KPanelApplet::popupDirection()
-{
-    switch( _position ) {
-    case pTop:     return Down;
-    case pRight:   return Qt::DockLeft;
-    case pLeft:    return Qt::DockRight;
-    default:
-    case pBottom:  return Up;
-    }
 }
 
 void KPanelApplet::action( Action a )
