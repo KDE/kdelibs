@@ -98,8 +98,11 @@ void KateTextLine::removeText (uint pos, uint delLen)
   m_attributes.resize (m_text.length ());
 }
 
-void KateTextLine::truncate(uint newLen)
+void KateTextLine::truncate(int newLen)
 {
+  if (newLen < 0)
+    newLen = 0;
+
   if (newLen < m_text.length())
   {
     m_text.truncate (newLen);
@@ -109,7 +112,7 @@ void KateTextLine::truncate(uint newLen)
 
 int KateTextLine::nextNonSpaceChar(uint pos) const
 {
-  for(int i = pos; i < (int)m_text.length(); i++)
+  for(int i = pos; i < m_text.length(); i++)
   {
     if(!m_text[i].isSpace())
       return i;
@@ -118,8 +121,11 @@ int KateTextLine::nextNonSpaceChar(uint pos) const
   return -1;
 }
 
-int KateTextLine::previousNonSpaceChar(uint pos) const
+int KateTextLine::previousNonSpaceChar(int pos) const
 {
+  if (pos < 0)
+    pos = 0;
+
   if (pos >= m_text.length())
     pos = m_text.length() - 1;
 
@@ -152,7 +158,7 @@ uint KateTextLine::indentDepth (uint tabwidth) const
 {
   uint d = 0;
 
-  for(uint i = 0; i < m_text.length(); i++)
+  for(int i = 0; i < m_text.length(); i++)
   {
     if(m_text[i].isSpace())
     {
@@ -168,12 +174,15 @@ uint KateTextLine::indentDepth (uint tabwidth) const
   return d;
 }
 
-bool KateTextLine::stringAtPos(uint pos, const QString& match) const
+bool KateTextLine::stringAtPos(int pos, const QString& match) const
 {
+  if (pos < 0)
+    return false;
+
   if ((pos+match.length()) > m_text.length())
     return false;
 
-  for (uint i=0; i < match.length(); i++)
+  for (int i=0; i < match.length(); i++)
     if (m_text[i+pos] != match[i])
       return false;
 
@@ -185,7 +194,7 @@ bool KateTextLine::startingWith(const QString& match) const
   if (match.length() > m_text.length())
     return false;
 
-  for (uint i=0; i < match.length(); i++)
+  for (int i=0; i < match.length(); i++)
     if (m_text[i] != match[i])
       return false;
 
@@ -198,18 +207,21 @@ bool KateTextLine::endingWith(const QString& match) const
     return false;
 
   uint start = m_text.length() - match.length();
-  for (uint i=0; i < match.length(); i++)
+  for (int i=0; i < match.length(); i++)
     if (m_text[start+i] != match[i])
       return false;
 
   return true;
 }
 
-int KateTextLine::cursorX(uint pos, uint tabChars) const
+int KateTextLine::cursorX(int pos, uint tabChars) const
 {
+  if (pos < 0)
+    pos = 0;
+
   uint x = 0;
 
-  for ( uint z = 0; z < kMin (pos, m_text.length()); z++)
+  for ( int z = 0; z < kMin (pos, m_text.length()); z++)
   {
     if (m_text[z] == QChar('\t'))
       x += tabChars - (x % tabChars);
@@ -225,7 +237,7 @@ uint KateTextLine::lengthWithTabs (uint tabChars) const
 {
   uint x = 0;
 
-  for ( uint z = 0; z < m_text.length(); z++)
+  for ( int z = 0; z < m_text.length(); z++)
   {
     if (m_text[z] == QChar('\t'))
       x += tabChars - (x % tabChars);

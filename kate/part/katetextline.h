@@ -132,7 +132,7 @@ class KateTextLine : public KShared
      * @return The position of the first none-whitespace character preceeding pos,
      *   or -1 if none is found.
      */
-    int previousNonSpaceChar(uint pos) const;
+    int previousNonSpaceChar(int pos) const;
 
     /**
      * Gets the char at the given position
@@ -199,7 +199,7 @@ class KateTextLine : public KShared
      * @param tabChars tabulator width in chars
      * @return position with tabulators calculated
      */
-    int cursorX(uint pos, uint tabChars) const;
+    int cursorX (int pos, uint tabChars) const;
 
     /**
      * Returns the text length with tabs calced in
@@ -214,7 +214,7 @@ class KateTextLine : public KShared
      * @param match string to match at given pos
      * @return did the string match?
      */
-    bool stringAtPos(uint pos, const QString& match) const;
+    bool stringAtPos(int pos, const QString& match) const;
 
     /**
      * Is the line starting with the given string
@@ -315,7 +315,7 @@ class KateTextLine : public KShared
      * Truncates the textline to the new length
      * @param newLen new length of line
      */
-    void truncate(uint newLen);
+    void truncate(int newLen);
 
     /**
      * set hl continue flag
