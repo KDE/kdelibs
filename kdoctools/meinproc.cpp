@@ -188,9 +188,9 @@ int main(int argc, char **argv) {
         params.append( qstrdup( QFile::decodeName( args->getOption( "output" ) ).latin1() ) );
     }
     {
-        const QCStringList paramList = args->getOptionList( "param" );
-        QCStringList::ConstIterator it = paramList.begin();
-        QCStringList::ConstIterator end = paramList.end();
+        const QByteArrayList paramList = args->getOptionList( "param" );
+        QByteArrayList::ConstIterator it = paramList.begin();
+        QByteArrayList::ConstIterator end = paramList.end();
         for ( ; it != end; ++it ) {
             const Q3CString tuple = *it;
             const int ch = tuple.find( '=' );
