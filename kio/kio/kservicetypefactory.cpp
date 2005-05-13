@@ -102,7 +102,7 @@ QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
 
    assert (!KSycoca::self()->isBuilding());
 
-   QMapConstIterator<QString,int> it = m_propertyTypeDict.find(_name);
+   QMap<QString,int>::const_iterator it = m_propertyTypeDict.find(_name);
    if (it != m_propertyTypeDict.end()) {
      return (QVariant::Type)it.data();
    }
