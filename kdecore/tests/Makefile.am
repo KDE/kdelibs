@@ -23,7 +23,7 @@ AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
-	kdebugtest ksocktest kstringhandlertest kcmdlineargstest kapptest \
+	kdebugtest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
 	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
@@ -49,7 +49,6 @@ kstddirstest_SOURCES = kstddirstest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 kuniqueapptest_SOURCES = kuniqueapptest.cpp
 kapptest_SOURCES = kapptest.cpp
-ksocktest_SOURCES = ksocktest.cpp
 ktempfiletest_SOURCES = ktempfiletest.cpp
 krandomsequencetest_SOURCES = krandomsequencetest.cpp
 kstringhandlertest_SOURCES = kstringhandlertest.cpp
