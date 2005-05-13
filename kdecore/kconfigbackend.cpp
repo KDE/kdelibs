@@ -341,14 +341,14 @@ bool KConfigINIBackEnd::parseConfigFiles()
     kdercs += KGlobal::dirs()->
       findAllResources("config", QString::fromLatin1("system.kdeglobals"));
 
-    QStringList::ConstIterator it;
-
-    for (it = kdercs.fromLast(); it != kdercs.end(); --it) {
-
-      QFile aConfigFile( *it );
+    QListIterator<QString> it( kdercs );
+    it.toBack();
+    while (it.hasPrevious()) {
+      QFile aConfigFile( it.previous() );
       if (!aConfigFile.open( QIODevice::ReadOnly ))
 	   continue;
-      parseSingleConfigFile( aConfigFile, 0L, true, (*it != mGlobalFileName) );
+      parseSingleConfigFile( aConfigFile, 0L, true, 
+                             (aConfigFile.fileName() != mGlobalFileName) );
       aConfigFile.close();
       if (bFileImmutable)
          break;
@@ -372,13 +372,12 @@ bool KConfigINIBackEnd::parseConfigFiles()
     else
        list = KGlobal::dirs()->findAllResources(resType, mfileName);
 
-    QStringList::ConstIterator it;
-
-    for (it = list.fromLast(); it != list.end(); --it) {
-
-      QFile aConfigFile( *it );
+    QListIterator<QString> it( list );
+    it.toBack();
+    while (it.hasPrevious()) {
+      QFile aConfigFile( it.previous() );
       // we can already be sure that this file exists
-      bool bIsLocal = (*it == mLocalFileName);
+      bool bIsLocal = (aConfigFile.fileName() == mLocalFileName);
       if (aConfigFile.open( QIODevice::ReadOnly )) {
          parseSingleConfigFile( aConfigFile, 0L, false, !bIsLocal );
          aConfigFile.close();
