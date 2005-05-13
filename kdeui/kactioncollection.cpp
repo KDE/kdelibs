@@ -35,9 +35,9 @@
 #include <kdebug.h>
 
 #include <q3popupmenu.h>
-#include <q3ptrdict.h>
 #include <qvariant.h>
-#include <Q3AsciiDict>
+#include <QHash>
+
 
 class KActionCollection::KActionCollectionPrivate
 {
@@ -50,7 +50,6 @@ public:
     m_bAutoConnectShortcuts = true;
     m_widget = 0;
     m_kaccel = m_builderKAccel = 0;
-    m_dctHighlightContainers.setAutoDelete( true );
     m_highlight = false;
     m_currentHighlightAction = 0;
     m_statusCleared = true;
@@ -69,8 +68,8 @@ public:
   KAccel *m_kaccel;
   KAccel *m_builderKAccel;
 
-  Q3AsciiDict<KAction> m_actionDict;
-  Q3PtrDict< Q3PtrList<KAction> > m_dctHighlightContainers;
+  QHash<QByteArray, KAction*> m_actionDict;
+  QHash<void*, Q3PtrList<KAction>*> m_dctHighlightContainers;
   bool m_highlight;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
@@ -139,14 +138,14 @@ KActionCollection::KActionCollection( const char *name, const KXMLGUIClient *par
 KActionCollection::~KActionCollection()
 {
   kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
-  for ( Q3AsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
-    KAction* pAction = it.current();
+  foreach ( KAction* pAction, d->m_actionDict ) {
     if ( pAction->m_parentCollection == this )
       pAction->m_parentCollection = 0L;
   }
 
   delete d->m_kaccel;
   delete d->m_builderKAccel;
+  qDeleteAll(d->m_dctHighlightContainers.values());
   delete d; d = 0;
 }
 
@@ -210,8 +209,7 @@ void KActionCollection::prepareXMLUnplug()
 
 void KActionCollection::unplugShortcuts( KAccel* kaccel )
 {
-  for ( Q3AsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
-    KAction* pAction = it.current();
+  foreach ( KAction* pAction, d->m_actionDict ) {
     pAction->removeKAccel( kaccel );
   }
 
@@ -358,9 +356,8 @@ KAction* KActionCollection::_take( KAction* action )
 
 void KActionCollection::_clear()
 {
-  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
-  while ( it.current() )
-    _remove( it.current() );
+  foreach( KAction* pAction, d->m_actionDict )
+    _remove( pAction );
 }
 
 void KActionCollection::insert( KAction* action )   { _insert( action ); }
@@ -379,12 +376,11 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
     pAction = d->m_actionDict[ name ];
 
   else {
-    Q3AsciiDictIterator<KAction> it( d->m_actionDict );
-    for( ; it.current(); ++it )
+    foreach( KAction* itAction, d->m_actionDict )
     {
-      if ( ( !name || !strcmp( it.current()->name(), name ) ) &&
-          ( !classname || !strcmp( it.current()->className(), classname ) ) ) {
-        pAction = it.current();
+      if ( ( !name || !strcmp( itAction->name(), name ) ) &&
+          ( !classname || !strcmp( itAction->className(), classname ) ) ) {
+        pAction = itAction;
         break;
       }
     }
@@ -400,9 +396,7 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
 
 KAction* KActionCollection::action( int index ) const
 {
-  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
-  it += index;
-  return it.current();
+  return *(d->m_actionDict.begin() + index);
 //  return d->m_actions.at( index );
 }
 
@@ -425,10 +419,9 @@ QStringList KActionCollection::groups() const
 {
   QStringList lst;
 
-  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
-  for( ; it.current(); ++it )
-    if ( !it.current()->group().isEmpty() && !lst.contains( it.current()->group() ) )
-      lst.append( it.current()->group() );
+  foreach( KAction* pAction, d->m_actionDict )
+    if ( !pAction->group().isEmpty() && !lst.contains( pAction->group() ) )
+      lst.append( pAction->group() );
 
   return lst;
 }
@@ -437,12 +430,11 @@ KActionPtrList KActionCollection::actions( const QString& group ) const
 {
   KActionPtrList lst;
 
-  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
-  for( ; it.current(); ++it )
-    if ( it.current()->group() == group )
-      lst.append( it.current() );
-    else if ( it.current()->group().isEmpty() && group.isEmpty() )
-      lst.append( it.current() );
+  foreach( KAction* pAction, d->m_actionDict )
+    if ( pAction->group() == group )
+      lst.append( pAction );
+    else if ( pAction->group().isEmpty() && group.isEmpty() )
+      lst.append( pAction );
 
   return lst;
 }
@@ -451,9 +443,8 @@ KActionPtrList KActionCollection::actions() const
 {
   KActionPtrList lst;
 
-  Q3AsciiDictIterator<KAction> it( d->m_actionDict );
-  for( ; it.current(); ++it )
-    lst.append( it.current() );
+  foreach( KAction* pAction, d->m_actionDict )
+    lst.append( pAction );
 
   return lst;
 }
@@ -537,7 +528,10 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
   actionList->removeRef( action );
 
   if ( actionList->isEmpty() )
+  {
     d->m_dctHighlightContainers.remove( container );
+    delete actionList;
+  }
 }
 
 void KActionCollection::slotMenuItemHighlighted( int id )
@@ -607,7 +601,7 @@ void KActionCollection::slotToolBarButtonHighlighted( int id, bool highlight )
 
 void KActionCollection::slotDestroyed()
 {
-    d->m_dctHighlightContainers.remove( reinterpret_cast<void *>( const_cast<QObject *>(sender()) ) );
+    delete d->m_dctHighlightContainers.take( reinterpret_cast<void *>( const_cast<QObject *>(sender()) ) );
 }
 
 KAction *KActionCollection::findAction( QWidget *container, int id )
@@ -663,9 +657,9 @@ KActionCollection &KActionCollection::operator=( const KActionCollection &copy )
 KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
   kdWarning(129) << "KActionCollection::operator+=(): function is severely deprecated." << endl;
-  Q3AsciiDictIterator<KAction> it(c.d->m_actionDict);
-  for ( ; it.current(); ++it )
-    insert( it.current() );
+
+  foreach( KAction* pAction, d->m_actionDict )
+    insert( pAction );
 
   return *this;
 }

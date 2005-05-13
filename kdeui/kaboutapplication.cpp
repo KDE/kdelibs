@@ -112,12 +112,12 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
        activeLabel->setText( i18n( "Please use <a href=\"mailto:%1\">%1</a> to report bugs, do not mail the authors directly.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress()) );
     authorPage->addWidget( activeLabel );
 
-    Q3ValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->authors().begin();
-	 it != aboutData->authors().end(); ++it)
+    QListIterator<KAboutPerson> it(aboutData->authors());
+    while (it.hasNext())
     {
-      authorPage->addPerson( (*it).name(), (*it).emailAddress(),
-			     (*it).webAddress(), (*it).task() );
+      const KAboutPerson& person = it.next();
+      authorPage->addPerson( person.name(), person.emailAddress(),
+			     person.webAddress(), person.task() );
     }
   }
 
@@ -126,12 +126,13 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   {
     KAboutContainer *creditsPage = 
       addScrolledContainerPage( i18n("&Thanks To") );
-    Q3ValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->credits().begin();
-	 it != aboutData->credits().end(); ++it)
+      
+    QListIterator<KAboutPerson> it(aboutData->credits());
+    while (it.hasNext())
     {
-      creditsPage->addPerson( (*it).name(), (*it).emailAddress(),
-			      (*it).webAddress(), (*it).task() );
+      const KAboutPerson& person = it.next();
+      creditsPage->addPerson( person.name(), person.emailAddress(),
+			     person.webAddress(), person.task() );
     }
   }
 
