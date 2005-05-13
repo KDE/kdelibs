@@ -388,8 +388,8 @@ void KateSearch::replaceOne()
   replaces++;
 
   // if we inserted newlines, we better adjust.
-  uint newlines = replaceWith.contains('\n');
-  if ( newlines )
+  int newlines = replaceWith.count(QChar::fromLatin1('\n'));
+  if ( newlines > 0 )
   {
     if ( ! s.flags.backward )
     {
