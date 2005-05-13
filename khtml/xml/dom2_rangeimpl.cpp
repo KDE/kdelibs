@@ -890,9 +890,9 @@ DOMString RangeImpl::toString( int &exceptioncode )
 
         if(n->parentNode() == m_endContainer) {
             if(!next) break;
-	    int current_offset = 0;
+	    unsigned long current_offset = 0;
 	    NodeImpl *it = n;
-	    while((it = it->previousSibling())) current_offset++;
+	    while((it = it->previousSibling())) ++current_offset;
 	    if(current_offset >= m_endOffset) {
 	        break;
 	    }
@@ -963,19 +963,19 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
                 //This is the start of our selection, so we have to move to where we have started selecting.
 		//For example, if 'n' is "hello <img src='hello.png'> how are you? <img src='goodbye.png'>"
 		//then this has four children.  If our selection started on the image, then we need to start from there.
-		int current_offset = 0;
+		unsigned long current_offset = 0;
 		while(current_offset < m_startOffset && next) {
 		    next = next->nextSibling();
-		    current_offset++;
+		    ++current_offset;
 		}
 	    }
 	} else {
             next = n->nextSibling();
 		
 	    if(n->parentNode() == m_endContainer) {
-	        int current_offset = 1;
+	        unsigned long current_offset = 1;
 	        NodeImpl *it = n;
-	        while((it = it->previousSibling())) current_offset++;
+	        while((it = it->previousSibling())) ++current_offset;
 
 	        if(current_offset >= m_endOffset) {
 	            break;
