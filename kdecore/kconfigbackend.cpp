@@ -956,8 +956,7 @@ bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
   return bEntriesLeft;
 }
 
-/* antlarr: KDE 4.0:  make the first parameter "const QString &" */
-bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
+bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
 					bool bMerge)
 {
   // is the config object read-only?

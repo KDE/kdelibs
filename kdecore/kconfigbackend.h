@@ -265,7 +265,7 @@ protected:
    * @return Whether some entries are left to be written to other
    *         files.
    */
-  bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
+  bool writeConfigFile(const QString &filename, bool bGlobal = false, bool bMerge = true);
 
   /** Get the entry map.
    *
