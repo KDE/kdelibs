@@ -32,6 +32,7 @@
 #include <qapplication.h>
 #include <qfile.h>
 #include <qmetaobject.h>
+#include <qtextstream.h>
 
 #include <kapplication.h>
 #include <klocale.h>
@@ -424,16 +425,16 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
-  QMetaObject *meta = job->metaObject();
+  const QMetaObject* meta = job->metaObject();
 
   static const char dataSignal[] = "data(KIO::Job*,const QByteArray&)";
-  if ( meta->findSignal( dataSignal ) != -1 ) {
+  if ( meta->indexOfSignal( dataSignal ) != -1 ) {
       connect( job, SIGNAL(data(KIO::Job*,const QByteArray&)),
                this, SLOT(slotData(KIO::Job*,const QByteArray&)) );
   }
 
   static const char redirSignal[] = "redirection(KIO::Job*,const KURL&)";
-  if ( meta->findSignal( redirSignal ) != -1 ) {
+  if ( meta->indexOfSignal( redirSignal ) != -1 ) {
       connect( job, SIGNAL(redirection(KIO::Job*,const KURL&)),
                this, SLOT(slotRedirection(KIO::Job*, const KURL&)) );
   }
