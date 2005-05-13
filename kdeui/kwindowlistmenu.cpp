@@ -28,7 +28,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "config.h"
 #include <qpainter.h>
-#include <q3valuelist.h>
+#include <q3ptrlist.h>
+#include <QDesktopWidget>
+#include <QX11Info>
 
 #include <kwin.h> 
 #include <kwinmodule.h> 
@@ -128,8 +130,8 @@ void KWindowListMenu::init()
     }
 
 
-    Q3ValueList<KWin::WindowInfo> windows;
-    for (Q3ValueList<WId>::ConstIterator it = kwin_module->windows().begin();
+    QList<KWin::WindowInfo> windows;
+    for (QList<WId>::ConstIterator it = kwin_module->windows().begin();
          it != kwin_module->windows().end(); ++it) {
          windows.append( KWin::windowInfo( *it, NET::WMDesktop ));
     }
@@ -144,7 +146,7 @@ void KWindowListMenu::init()
         NameSortedInfoList list;
         list.setAutoDelete(true);
 
-	for (Q3ValueList<KWin::WindowInfo>::ConstIterator it = windows.begin();
+	for (QList<KWin::WindowInfo>::ConstIterator it = windows.begin();
              it != windows.end(); ++it) {
 	    if (((*it).desktop() == d) || (on_all_desktops && (*it).onAllDesktops())
                 || (!show_all_desktops_group && (*it).onAllDesktops())) {
@@ -232,12 +234,12 @@ void KWindowListMenu::selectActiveWindow()
 
 void KWindowListMenu::slotUnclutterWindows()
 {
-    kapp->dcopClient()->send("kwin", "KWinInterface", "unclutterDesktop()", "");
+    DCOPRef("kwin", "KWinInterface").send("unclutterDesktop()");
 }
 
 void KWindowListMenu::slotCascadeWindows()
 {
-    kapp->dcopClient()->send("kwin", "KWinInterface", "cascadeDesktop()", "");
+    DCOPRef("kwin", "KWinInterface").send("cascadeDesktop()");
 }
 
 void KWindowListMenu::virtual_hook( int id, void* data )

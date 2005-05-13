@@ -18,8 +18,9 @@
 
 #include "karrowbutton.h"
 
-#include <qstyle.h>
-#include <qpainter.h>
+#include <QStyle>
+#include <QStyleOptionFrame>
+#include <QPainter>
 
 class KArrowButtonPrivate
 {
@@ -61,12 +62,14 @@ void KArrowButton::drawButton(QPainter *p)
 {
 	const unsigned int arrowSize = 8;
 	const unsigned int margin = 2;
+
+	QStyleOptionFrame opt;
+	opt.init(this);
+	opt.lineWidth    = 2;
+	opt.midLineWidth = 0;
 	
         p->fillRect( rect(), colorGroup().brush( QColorGroup::Background ) );
-	style().drawPrimitive( QStyle::PE_Panel, p, QRect( 0, 0, width(), height() ),
-			       colorGroup(), 
-			       isDown() ? QStyle::State_Sunken : QStyle::State_None,
-			       QStyleOption( 2, 0 ) );
+	style()->drawPrimitive( QStyle::PE_Frame, &opt, p, this);
 
 	if (static_cast<unsigned int>(width()) < arrowSize + margin ||
 	    static_cast<unsigned int>(height()) < arrowSize + margin)
@@ -92,19 +95,19 @@ void KArrowButton::drawButton(QPainter *p)
 		y++;
 	}
 
-	QStyle::PrimitiveElement e = QStyle::PE_ArrowLeft;
+	QStyle::PrimitiveElement e = QStyle::PE_IndicatorArrowLeft;
 	switch (d->arrow)
 	{
-		case Qt::LeftArrow: e = QStyle::PE_ArrowLeft; break;
-		case Qt::RightArrow: e = QStyle::PE_ArrowRight; break;
-		case Qt::UpArrow: e = QStyle::PE_ArrowUp; break;
-		case Qt::DownArrow: e = QStyle::PE_ArrowDown; break;
+		case Qt::LeftArrow: e = QStyle::PE_IndicatorArrowLeft; break;
+		case Qt::RightArrow: e = QStyle::PE_IndicatorArrowRight; break;
+		case Qt::UpArrow: e = QStyle::PE_IndicatorArrowUp; break;
+		case Qt::DownArrow: e = QStyle::PE_IndicatorArrowDown; break;
 	}
-	int flags = QStyle::State_Enabled;
-	if ( isDown() )
-		flags |= QStyle::State_Down;
-	style().drawPrimitive( e, p, QRect( QPoint( x, y ), QSize( arrowSize, arrowSize ) ),
-			       colorGroup(), flags );
+
+	opt.state |= QStyle::State_Enabled;
+	opt.rect   = QRect( x, y, arrowSize, arrowSize);
+
+	style()->drawPrimitive( e, &opt, p, this );
 }
 
 void KArrowButton::virtual_hook( int, void* )
