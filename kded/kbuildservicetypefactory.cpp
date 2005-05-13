@@ -131,8 +131,7 @@ KBuildServiceTypeFactory::saveHeader(QDataStream &str)
    str << (Q_INT32) m_otherPatternOffset;
    str << (Q_INT32) m_propertyTypeDict.count();
 
-   QMapIterator<QString, int> it;
-   for (it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
+   for (QMap<QString, int>::Iterator it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
    {
      str << it.key() << (Q_INT32)it.data();
    }
