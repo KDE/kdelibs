@@ -9,6 +9,7 @@
 #include <kcharsets.h>
 #include <qtextcodec.h>
 #include <qdatastream.h>
+#include <qmap.h>
 #include <assert.h>
 #include <kcmdlineargs.h>
 
@@ -587,13 +588,13 @@ int main(int argc, char *argv[])
   waba1 = "http://[::ffff:129.144.52.38]:81?query";
   QByteArray buffer;
   {
-      QDataStream stream( buffer, QIODevice::WriteOnly );
+      QDataStream stream( &buffer, QIODevice::WriteOnly );
       stream << origURL
              << KURL( "file:" ) // an invalid one
              << waba1; // the IPv6 one
   }
   {
-      QDataStream stream( buffer, QIODevice::ReadOnly );
+      QDataStream stream( buffer );
       KURL restoredURL;
       stream >> restoredURL;
       check( "Streaming valid URL", origURL.url(), restoredURL.url() );
