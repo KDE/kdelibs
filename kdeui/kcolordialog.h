@@ -327,7 +327,6 @@ protected:
 private:
   QColor color;
   uint pixel;
-  int colContext;
 
 protected:
   virtual void virtual_hook( int id, void* data );

@@ -84,13 +84,16 @@ public:
    : QSpinBox(minValue, maxValue, step, parent, "kcolorspinbox")
   { }
 
+  
   // Override Qt's braindead auto-selection.
+  //XXX KDE4 : check this is no more necessary , was disabled to port to Qt4 //mikmak
+  /*
   virtual void valueChange()
   {
       updateDisplay();
       emit valueChanged( value() );
       emit valueChanged( currentValueText() );
-  }
+  }*/
 
 };
 
@@ -232,7 +235,7 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 		}
 	}
 
-	if ( QColor::numBitPlanes() <= 8 )
+	if ( pixmap->depth() <= 8 )
 	{
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
@@ -244,10 +247,9 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 //-----------------------------------------------------------------------------
 
 KValueSelector::KValueSelector( QWidget *parent, const char *name )
-	: KSelector( KSelector::Vertical, parent, name ), _hue(0), _sat(0)
+	: KSelector( Qt::Vertical, parent, name ), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
-	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
 KValueSelector::KValueSelector(Qt::Orientation o, QWidget *parent, const char *name
@@ -255,7 +257,6 @@ KValueSelector::KValueSelector(Qt::Orientation o, QWidget *parent, const char *n
 	: KSelector( o, parent, name), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
-	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
 void KValueSelector::updateContents()
@@ -281,7 +282,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 	uint *p;
 	QRgb rgb;
 
-	if ( orientation() == KSelector::Horizontal )
+	if ( orientation() == Qt::Horizontal )
 	{
 		for ( int v = 0; v < ySize; v++ )
 		{
@@ -296,7 +297,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 		}
 	}
 
-	if( orientation() == KSelector::Vertical )
+	if( orientation() == Qt::Vertical )
 	{
 		for ( int v = 0; v < ySize; v++ )
 		{
@@ -308,7 +309,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 		}
 	}
 
-	if ( QColor::numBitPlanes() <= 8 )
+	if ( pixmap->depth() <= 8 )
 	{
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
@@ -374,8 +375,11 @@ void KColorCells::paintCell( QPainter *painter, int row, int col )
 	painter->setBrush( QBrush( color ) );
 	painter->drawRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
 
-	if ( row * numCols() + col == selected )
-		painter->drawWinFocusRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	if ( row * numCols() + col == selected ) {
+		painter->setCompositionMode( QPainter::CompositionMode_Xor );
+		painter->drawRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	//	painter->drawWinFocusRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	}
 }
 
 void KColorCells::resizeEvent( QResizeEvent * )
@@ -478,24 +482,16 @@ void KColorCells::mouseDoubleClickEvent( QMouseEvent * /*e*/ )
 KColorPatch::KColorPatch( QWidget *parent ) : Q3Frame( parent )
 {
 	setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
-	colContext = 0;
 	setAcceptDrops( true);
 }
 
 KColorPatch::~KColorPatch()
 {
-  if ( colContext )
-    QColor::destroyAllocContext( colContext );
 }
 
 void KColorPatch::setColor( const QColor &col )
 {
-	if ( colContext )
-		QColor::destroyAllocContext( colContext );
-	colContext = QColor::enterAllocContext();
 	color.setRgb( col.rgb() );
-	color.alloc();
-	QColor::leaveAllocContext();
 
 	QPainter painter;
 
@@ -642,14 +638,14 @@ KPaletteTable::readNamedColor( void )
       continue;
     }
 
-    QString line;
+    QByteArray line;
     QStringList list;
-    while( paletteFile.readLine( line, 100 ) != -1 )
+    while( paletteFile.readLine( line.data(), 100 ) != -1 )
     {
       int red, green, blue;
       int pos = 0;
 
-      if( sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos ) == 3 )
+      if( sscanf(line, "%d %d %d%n", &red, &green, &blue, &pos ) == 3 )
       {
 	//
 	// Remove duplicates. Every name with a space and every name
