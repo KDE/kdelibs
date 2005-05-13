@@ -528,7 +528,7 @@ protected:
   int maxtrystart;
   int lastpos;
   unsigned int totalpos;
-  unsigned int lastline;
+  int lastline;
   unsigned int posinline;
   unsigned int lastlastline;
   unsigned int offset;
