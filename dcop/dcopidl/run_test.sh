@@ -6,5 +6,5 @@
 srcdir="$1"
 builddir=`pwd`
 cd $srcdir
-"$builddir/dcopidl" ./dcopidl_test.h > $builddir/dcopidl_new_output.kidl || exit 1
+"$builddir/dcopidlold" ./dcopidl_test.h > $builddir/dcopidl_new_output.kidl || exit 1
 diff -u $srcdir/dcopidl_output.kidl $builddir/dcopidl_new_output.kidl

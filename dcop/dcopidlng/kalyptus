@@ -62,7 +62,8 @@ $cpp = 0;
 $defcppcmd = "g++ -Wp,-C -E";
 $cppcmd = "";
 
-$exe = basename $0;
+#$exe = basename $0;
+$exe = "dcopidl";
 
 @inputqueue = ();
 @codeqobject = split "\n", <<CODE;

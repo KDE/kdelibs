@@ -41,14 +41,14 @@ sub writeDoc
 
 	$debug = $main::debuggen;
 
-	print STDERR "Preparsing...\n";
+	print STDERR "Preparsing...\n" if ($debug);
 
 	# Preparse everything, to prepare some additional data in the classes and methods
 	Iter::LocalCompounds( $rootnode, sub { preParseClass( shift ); } );
 
 	kdocAstUtil::dumpAst($rootnode) if ($debug);
 
-	print STDERR "Writing dcopidl...\n";
+	print STDERR "Writing dcopidl...\n" if ($debug);
 
 	print STDOUT "<!DOCTYPE DCOP-IDL><DCOP-IDL>\n";
 
@@ -84,7 +84,7 @@ sub writeDoc
 
 	print STDOUT "</DCOP-IDL>\n";
 	
-	print STDERR "Done.\n";
+	print STDERR "Done.\n" if ($debug);
 }
 
 =head2 preParseClass
