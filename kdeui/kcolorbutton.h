@@ -24,6 +24,7 @@
 
 #include <kdelibs_export.h>
 
+class QStyleOptionButton;
 class KColorButtonPrivate;
 /**
 * @short A pushbutton to display or allow user selection of a color.
@@ -92,7 +93,7 @@ protected slots:
     void chooseColor();
 
 protected:
-    virtual void drawButtonLabel( QPainter *p );
+    virtual void paintEvent( QPaintEvent *pe );
     virtual void dragEnterEvent( QDragEnterEvent *);
     virtual void dropEvent( QDropEvent *);
     virtual void mousePressEvent( QMouseEvent *e );
@@ -102,6 +103,7 @@ private:
     QColor col;
     QPoint mPos;
     bool dragFlag;
+    void initStyleOption(QStyleOptionButton* opt) const;
 
 protected:
     virtual void virtual_hook( int id, void* data );

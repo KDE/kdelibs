@@ -1245,7 +1245,8 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
     switch (metric)
     {
         case PM_ButtonMargin:
-            return widgetLayoutProp(WT_PushButton, PushButton::ContentsMargin);
+            return 0; //Better not return anything here since we already
+            //incorporated this into SE_PushButtonContents
         case PM_ButtonShiftHorizontal:
             return widgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal);
         case PM_ButtonShiftVertical:
