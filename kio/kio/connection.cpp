@@ -37,6 +37,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <network/kstreamsocket.h>
+#include <network/ksocketdevice.h>
 
 #include "kio/connection.h"
 
@@ -128,8 +129,8 @@ void Connection::init(KNetwork::KStreamSocket *sock)
 #ifdef Q_OS_UNIX //TODO: not yet available on WIN32
     delete socket;
     socket = sock;
-    fd_in = socket->socket();
-    f_out = KDE_fdopen( socket->socket(), "wb" );
+    fd_in = socket->socketDevice()->socket();
+    f_out = KDE_fdopen( socket->socketDevice()->socket(), "wb" );
 #endif
     if (receiver && ( fd_in != -1 )) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
