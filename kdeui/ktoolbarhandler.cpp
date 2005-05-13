@@ -47,11 +47,10 @@ namespace
         BarActionBuilder( KActionCollection *actionCollection, KMainWindow *mainWindow, Q3PtrList<KToolBar> &oldToolBarList )
             : m_actionCollection( actionCollection ), m_mainWindow( mainWindow ), m_needsRebuild( false )
         {
-            Q3PtrList<Q3DockWindow> dockWindows = m_mainWindow->dockWindows();
-            Q3PtrListIterator<Q3DockWindow> dockWindowIt( dockWindows );
-            for ( ; dockWindowIt.current(); ++dockWindowIt ) {
+            QList<Q3DockWindow*> dockWindows = m_mainWindow->dockWindows();
+            foreach ( Q3DockWindow* dockWindowIt, dockWindows ) {
 
-                KToolBar *toolBar = dynamic_cast<KToolBar *>( dockWindowIt.current() );
+                KToolBar *toolBar = dynamic_cast<KToolBar *>( dockWindowIt );
                 if ( !toolBar )
                     continue;
 

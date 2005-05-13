@@ -68,7 +68,7 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
     QLabel::setText(fullText);
 
     QToolTip::remove( this );
-    QToolTip::hide();
+//dead in qt4?    QToolTip::hide();
 
   }
 }
