@@ -359,7 +359,7 @@ KeyValueMap::parseComplexString
 	{ // handle special characters
 	  ++first;
 	  kdDebug(GUARD, KAB_KDEBUG_AREA).form("KeyValueMap::parseComplexString: found "
-					       "a special character \"%c\".", mod[first]) << endl;
+					       "a special character \"%c\".", mod.data()[first]) << endl;
 	  if(first==mod.length())
 	    {
 		kdDebug(GUARD, KAB_KDEBUG_AREA) <<
@@ -1252,7 +1252,7 @@ KeyValueMap::insert(const Q3CString& key, const QStringList& values, bool force)
   // ----- create QCString list:
   for(count=0; count<values.count(); ++count)
     {
-      utf8strings.append((*values.at(count)).utf8());
+      utf8strings.append(values.at(count));
     }
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[QStringList]: done." << endl;
   return insert(key, utf8strings, force);

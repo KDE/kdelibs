@@ -760,12 +760,12 @@ signals:
    * outside the database object as they get invalid after reloading. 
    * The signal hands over its \a this pointer.
    */
-  virtual void changed(QConfigDB*);
+  void changed(QConfigDB*);
   /**
    * This signal will notify changes of the database <EM> file </EM>. The file
    * will be monitored on disk if #watch has been activated.
    */
-  virtual void fileChanged();
+  void fileChanged();
   // ############################################################################
 };
 
