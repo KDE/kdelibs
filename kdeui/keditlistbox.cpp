@@ -193,7 +193,7 @@ void KEditListBox::typedSomething(const QString& text)
         }
         else
         {
-            StringComparisonMode mode = (StringComparisonMode) (ExactMatch | Qt::CaseSensitive );
+            Q3ListBox::StringComparisonMode mode = (Q3ListBox::StringComparisonMode) (Q3ListBox::ExactMatch | Q3ListBox::CaseSensitive );
             bool enable = (!m_listBox->findItem( text, mode ));
             servNewButton->setEnabled( enable );
         }
@@ -264,7 +264,7 @@ void KEditListBox::addItem()
             alreadyInList = true;
         else
         {
-            StringComparisonMode mode = (StringComparisonMode) (ExactMatch | Qt::CaseSensitive );
+            Q3ListBox::StringComparisonMode mode = (Q3ListBox::StringComparisonMode) (Q3ListBox::ExactMatch | Q3ListBox::CaseSensitive );
             alreadyInList =(m_listBox->findItem(currentTextLE, mode) );
         }
     }
