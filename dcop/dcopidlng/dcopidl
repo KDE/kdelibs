@@ -2,10 +2,19 @@
 
 trap "rm -f dcopidlng.stderr.$$" 0 1 2 15
 
-if test -z "$KDECONFIG"; then
-    KDECONFIG=kde-config
+LIBDIR=
+if test "$1" = "--srcdir"; then
+   shift
+   LIBDIR=$1
+   shift
 fi
-LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidlng"
+ 
+if test -z "$LIBDIR"; then
+   if test -z "$KDECONFIG"; then
+      KDECONFIG=kde-config
+   fi
+   LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidlng"
+fi
 perl -I"$LIBDIR" "$LIBDIR/kalyptus" --allow_k_dcop_accessors -f dcopidl $1 2> dcopidlng.stderr.$$
 RET=$?
 if [ $RET -ne 0 ]

@@ -435,7 +435,8 @@ LOOP:
 						|| $p =~ /^\s*KDOM_/
 			);
 
-		push @includes_list, $1 if $p =~ /^#include\s+<?(.*?)>?\s*$/;
+		push @includes_list, $1 if $p =~ /^#include\s+<(.*?)>\s*$/;
+                push @includes_list, $1 if $p =~ /^#include\s+"(.*?)"\s*$/;
 
 		# remove all preprocessor macros
 		if( $p =~ /^\s*#\s*(\w+)/ ) {
