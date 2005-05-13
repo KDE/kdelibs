@@ -10,6 +10,7 @@
 
 #include <qdatetime.h>
 #include <qlabel.h>
+#include <qdesktopwidget.h>
 
 #include <kglobal.h>
 #include <kglobalsettings.h>

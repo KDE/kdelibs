@@ -670,7 +670,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
       }
 
       // insert the key/value line
-      QByteArray key(startLine, endOfKey - startLine + 2);
+      QByteArray key(startLine, endOfKey - startLine + 1);
       QByteArray val = printableToString(st, s - st);
       //qDebug("found key '%s' with value '%s'", key.data(), val.data());
 
