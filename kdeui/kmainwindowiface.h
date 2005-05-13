@@ -71,7 +71,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool activateAction( Q3CString action);
+	bool activateAction( const DCOPCString& action);
 
 	/**
 	Disables the requested action.
@@ -79,7 +79,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool disableAction( Q3CString action);
+	bool disableAction( const DCOPCString& action);
 
 	/**
 	Enables the requested action.
@@ -87,7 +87,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool enableAction( Q3CString action);
+	bool enableAction( const DCOPCString& action);
 
 	/**
 	Returns the status of the requested action.
@@ -95,7 +95,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@returns The state of the action, true - enabled, false - disabled.
 	*/
-	bool actionIsEnabled( Q3CString action);
+	bool actionIsEnabled( const DCOPCString& action);
 
 	/**
 	Returns the tool tip text of the requested action.
@@ -103,7 +103,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return A QCString containing the text of the action's tool tip.
 	*/
-	Q3CString actionToolTip( Q3CString action);
+	DCOPCString actionToolTip( const DCOPCString& action);
 
 	/**
 	Returns a dcop reference to the selected KAction
@@ -111,12 +111,12 @@ k_dcop:
 	actions can be found by calling actions().
 	@return A DCOPRef for the kaction.
 	**/
-	DCOPRef action( const Q3CString &name );
+	DCOPRef action( const DCOPCString& name );
 
 	/**
 	Returns and action map
 	**/
-    	QMap<Q3CString,DCOPRef> actionMap();
+  	QMap<DCOPCString,DCOPRef> actionMap();
 	/**
 	Returns the ID of the current main window.
 	This is useful for automated screen captures or other evil

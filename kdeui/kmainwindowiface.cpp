@@ -42,20 +42,20 @@ KMainWindowInterface::~KMainWindowInterface()
         delete m_dcopPropertyProxy;
 }
 
-QCStringList KMainWindowInterface::actions()
+DCOPCStringList KMainWindowInterface::actions()
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
-	QCStringList tmp_actions;
-	Q3ValueList<KAction *> lst = m_dcopActionProxy->actions();
-	Q3ValueList<KAction *>::ConstIterator it = lst.begin();
-	Q3ValueList<KAction *>::ConstIterator end = lst.end();
-	for (; it != end; ++it )
-		if ((*it)->isPlugged())
-			tmp_actions.append( (Q3CString)(*it)->name() );
+	DCOPCStringList tmp_actions;
+	QList<KAction *> lst = m_dcopActionProxy->actions();
+	foreach( KAction*it, lst ) {
+		if (it->isPlugged())
+			tmp_actions.append( it->name() );
+	}
 	return tmp_actions;
 }
-bool KMainWindowInterface::activateAction( Q3CString action)
+
+bool KMainWindowInterface::activateAction( const DCOPCString& action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -68,7 +68,8 @@ bool KMainWindowInterface::activateAction( Q3CString action)
 	else
 		return false;
 }
-bool KMainWindowInterface::disableAction( Q3CString action)
+
+bool KMainWindowInterface::disableAction( const DCOPCString& action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -81,7 +82,8 @@ bool KMainWindowInterface::disableAction( Q3CString action)
 	else
 		return false;
 }
-bool KMainWindowInterface::enableAction( Q3CString action)
+
+bool KMainWindowInterface::enableAction( const DCOPCString& action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -94,7 +96,8 @@ bool KMainWindowInterface::enableAction( Q3CString action)
 	else
 		return false;
 }
-bool KMainWindowInterface::actionIsEnabled( Q3CString action)
+
+bool KMainWindowInterface::actionIsEnabled( const DCOPCString& action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -106,7 +109,8 @@ bool KMainWindowInterface::actionIsEnabled( Q3CString action)
 	else
 		return false;
 }
-Q3CString KMainWindowInterface::actionToolTip( Q3CString action)
+
+DCOPCString KMainWindowInterface::actionToolTip( const DCOPCString& action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -119,12 +123,12 @@ Q3CString KMainWindowInterface::actionToolTip( Q3CString action)
 		return "Error no such object!";
 }
 
-DCOPRef KMainWindowInterface::action( const Q3CString &name )
+DCOPRef KMainWindowInterface::action( const DCOPCString& name )
 {
 	return DCOPRef( kapp->dcopClient()->appId(), m_dcopActionProxy->actionObjectId( name ) );
 }
 
-QMap<Q3CString,DCOPRef> KMainWindowInterface::actionMap()
+QMap<DCOPCString,DCOPRef> KMainWindowInterface::actionMap()
 {
 	return m_dcopActionProxy->actionMap();
 }
@@ -133,56 +137,69 @@ int KMainWindowInterface::getWinID()
 {
 	return (int) m_MainWindow->winId();
 }
+
 void KMainWindowInterface::grabWindowToClipBoard()
 {
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setPixmap(QPixmap::grabWidget(m_MainWindow));
 }
+
 void KMainWindowInterface::hide()
 {
 	m_MainWindow->hide();
 }
+
 void KMainWindowInterface::maximize()
 {
 	m_MainWindow->showMaximized();
 }
+
 void KMainWindowInterface::minimize()
 {
 	m_MainWindow->showMinimized();
 }
+
 void KMainWindowInterface::resize(int newX, int newY)
 {
 	m_MainWindow->resize(newX, newY);
 }
+
 void KMainWindowInterface::move(int newX, int newY)
 {
 	m_MainWindow->move(newX, newY);
 }
+
 void KMainWindowInterface::setGeometry(int newX, int newY, int newWidth, int newHeight)
 {
 	m_MainWindow->setGeometry(newX, newY, newWidth, newHeight);
 }
+
 void KMainWindowInterface::raise()
 {
 	m_MainWindow->raise();
 }
+
 void KMainWindowInterface::lower()
 {
 	m_MainWindow->lower();
 }
+
 void KMainWindowInterface::restore()
 {
 	m_MainWindow->showNormal();
 }
+
 void KMainWindowInterface::show()
 {
 	m_MainWindow->show();
 }
-QCStringList KMainWindowInterface::functionsDynamic()
+
+DCOPCStringList KMainWindowInterface::functionsDynamic()
 {
 	return m_dcopPropertyProxy->functions();
 }
-bool KMainWindowInterface::processDynamic(const Q3CString &fun, const QByteArray &data, Q3CString& replyType, QByteArray &replyData)
+
+bool KMainWindowInterface::processDynamic(const DCOPCString &fun, const QByteArray &data, DCOPCString& replyType, QByteArray &replyData)
 {
 	return m_dcopPropertyProxy->processPropertyRequest( fun, data, replyType, replyData);
 
