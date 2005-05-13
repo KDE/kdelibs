@@ -35,6 +35,12 @@
 #include "kaccelprivate.h"
 
 #ifdef Q_WS_X11
+// This is what Qt3 did, allegedly only to make the WIN key work (as meta?)
+// TODO KDE4: evaluate whether we still need this.
+//#define CATCH_X_EVENTS
+#endif
+
+#ifdef CATCH_X_EVENTS
 #	include <X11/Xlib.h>
 #	ifdef KeyPress // needed for --enable-final
 		// defined by X11 headers
@@ -95,7 +101,7 @@ class KAccelEventHandler : public QWidget
  private:
 	KAccelEventHandler();
 
-#	ifdef Q_WS_X11
+#	ifdef CATCH_X_EVENTS
 	bool x11Event( XEvent* pEvent );
 #	endif
 
@@ -109,13 +115,13 @@ bool KAccelEventHandler::g_bAccelActivated = false;
 KAccelEventHandler::KAccelEventHandler()
     : QWidget( 0, "KAccelEventHandler" )
 {
-#	ifdef Q_WS_X11
+#	ifdef CATCH_X_EVENTS
 	if ( kapp )
 		kapp->installX11EventFilter( this );
 #	endif
 }
 
-#ifdef Q_WS_X11
+#ifdef CATCH_X_EVENTS
 bool	qt_try_modal( QWidget *, XEvent * );
 
 bool KAccelEventHandler::x11Event( XEvent* pEvent )
@@ -154,7 +160,7 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 
 	return false;
 }
-#endif // Q_WS_X11
+#endif // CATCH_X_EVENTS
 
 //---------------------------------------------------------------------
 // KAccelPrivate
@@ -169,7 +175,7 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent, QWidget* pWatch )
 	m_bAutoUpdate = true;
 	connect( (Q3Accel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
 
-#ifdef Q_WS_X11 //only makes sense if KAccelEventHandler is working
+#ifdef CATCH_X_EVENTS //only makes sense if KAccelEventHandler is working
 	if( m_pWatch )
 		m_pWatch->installEventFilter( this );
 #endif
