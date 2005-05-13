@@ -1124,7 +1124,7 @@ void
 VFolderMenu::processMenu(QDomElement &docElem, int pass)
 {
    SubMenu *parentMenu = m_currentMenu;
-   unsigned int oldDirectoryDirsCount = m_directoryDirs.count();
+   int oldDirectoryDirsCount = m_directoryDirs.count();
 
    QString name;
    QString directoryFile;
