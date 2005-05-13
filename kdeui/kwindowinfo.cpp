@@ -124,7 +124,7 @@ void KWindowInfo::save()
     if ( win->inherits( "KSystemTray" ) ) {
 	KSystemTray *tray = static_cast<KSystemTray *>( win );
 	oldIcon = *(tray->pixmap());
-	oldText = QToolTip::textFor( tray );
+	oldText = tray->toolTip();
 	return;
     }
 

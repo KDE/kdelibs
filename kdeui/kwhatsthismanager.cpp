@@ -53,7 +53,7 @@ QString KWhatsThisUndefined::text (const QPoint &)
             "-whatsthis\">send us \"What's This\" help</a> for it.");
     QString parent;
     if (m_widget -> parentWidget ())
-        parent = Q3WhatsThis::textFor (m_widget -> parentWidget ());
+        parent = m_widget -> parentWidget () -> whatsThis ();
         if (parent != txt)
             if (! parent . isEmpty ())
                 return parent;
@@ -110,7 +110,7 @@ bool KWhatsThisManager::eventFilter (QObject * /*o*/, QEvent *e)
         if (ce -> child () -> isWidgetType ()) {
             QWidget *w = (QWidget *) (ce -> child ());
             // kdDebug () << "new qwidget:" << w << endl;
-            if (Q3WhatsThis::textFor (w) . isEmpty ())
+            if (w -> whatsThis () . isEmpty ())
                 new KWhatsThisUndefined (w);
         }
     }

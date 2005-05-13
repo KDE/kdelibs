@@ -253,11 +253,12 @@ void KSystemTray::activateOrHide()
     else
     {
         KWinModule module;
-        for( Q3ValueList< WId >::ConstIterator it = module.stackingOrder().fromLast();
-             it != module.stackingOrder().end() && (*it) != pw->winId();
-             --it )
+        QListIterator< WId > it (module.stackingOrder());
+        it.toBack();
+        while( it.hasPrevious() )
         {
-            KWin::WindowInfo info2 = KWin::windowInfo( *it,
+            WId id = it.previous();
+            KWin::WindowInfo info2 = KWin::windowInfo( id,
                 NET::WMGeometry | NET::XAWMState | NET::WMState | NET::WMWindowType );
             if( info2.mappingState() != NET::Visible )
                 continue; // not visible on current desktop -> ignore
