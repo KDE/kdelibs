@@ -1,3 +1,6 @@
+2005-05-14  Ivor Hewitt <ivor@ivor.org>
+        * khtml_settings.cc: Support full wildcard expressions in AdblocK
+        
 2005-05-12  Luciano Montanaro <mikelima@cirulla.net>
 	* html/html_formimpl.cpp: Make a return keypress activate form
 	buttons. Matches Mozilla.
