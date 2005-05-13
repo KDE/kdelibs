@@ -502,9 +502,7 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 
 	//is that any usefull these days ? //mikmak => KDE4
     (void)toolBarIterator(); // make sure toolbarList is most-up-to-date
-	foreach( KToolBar*b , toolbarList ) {
-		delete b;
-	}
+	qDeleteAll( toolbarList );
     toolbarList.clear();
 
     // don't build a help menu unless the user ask for it
