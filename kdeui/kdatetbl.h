@@ -389,8 +389,7 @@ signals:
     /**
      * The selected date changed.
      */
-    // ### KDE 4.0 make parameter a const reference
-    void dateChanged(QDate);
+    void dateChanged(const QDate&);
     /**
      * This function behaves essentially like the one above.
      * The selected date changed.

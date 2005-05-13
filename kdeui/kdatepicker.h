@@ -212,27 +212,25 @@ protected slots:
   void weekSelected(int);
 
 signals:
-  // ### KDE 4.0 Make all QDate parameters const references
-
   /** This signal is emitted each time the selected date is changed.
    *  Usually, this does not mean that the date has been entered,
    *  since the date also changes, for example, when another month is
    *  selected.
    *  @see dateSelected
    */
-  void dateChanged(QDate);
+  void dateChanged( const QDate&);
   /** This signal is emitted each time a day has been selected by
    *  clicking on the table (hitting a day in the current month). It
    *  has the same meaning as dateSelected() in older versions of
    *  KDatePicker.
    */
-  void dateSelected(QDate);
+  void dateSelected( const QDate&);
   /** This signal is emitted when enter is pressed and a VALID date
    *  has been entered before into the line edit. Connect to both
    *  dateEntered() and dateSelected() to receive all events where the
    *  user really enters a date.
    */
-  void dateEntered(QDate);
+  void dateEntered( const QDate &);
   /** This signal is emitted when the day has been selected by
    *  clicking on it in the table.
    */
