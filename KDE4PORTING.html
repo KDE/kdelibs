@@ -83,11 +83,11 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KMainWindowInterface</H4>
 <li>functionsDynamic() now returns a DCOPCStringList
 <li>function processDynamic arguments uses DCOPCString instead of QCString :
-	   <pre>bool processDynamic(const DCOPCString &fun, const QByteArray &data, DCOPCString& replyType, QByteArray &replyData);</pre>
+	   <pre>bool processDynamic(const DCOPCString &amp;fun, const QByteArray &amp;data, DCOPCString&amp; replyType, QByteArray &amp;replyData);</pre>
 <li>actions() now returns a DCOPCString
 
 <H4>KAboutDialog</H4>
-<li>void setIcon( const QString &fileName ) which was deprecated has been removed
+<li>void setIcon( const QString &amp;fileName ) which was deprecated has been removed
 <li>addContainerPage int args are now Qt::Alignment args
 <li>addScrolledContainerPage int args are now Qt::Alignment args
 <li>addContainer int args are now Qt::Alignment args
