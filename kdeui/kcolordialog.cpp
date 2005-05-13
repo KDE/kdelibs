@@ -33,6 +33,7 @@
 
 #include <qcheckbox.h>
 #include <qcombobox.h>
+#include <qdesktopwidget.h>
 #include <qdrawutil.h>
 #include <qevent.h>
 #include <qfile.h>
@@ -645,10 +646,10 @@ KPaletteTable::readNamedColor( void )
     QStringList list;
     while( paletteFile.readLine( line, 100 ) != -1 )
     {
-      int Qt::red, Qt::green, Qt::blue;
+      int red, green, blue;
       int pos = 0;
 
-      if( sscanf(line.ascii(), "%d %d %d%n", &Qt::red, &Qt::green, &Qt::blue, &pos ) == 3 )
+      if( sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos ) == 3 )
       {
 	//
 	// Remove duplicates. Every name with a space and every name
@@ -661,7 +662,7 @@ KPaletteTable::readNamedColor( void )
 	  continue;
 	}
 
-        const QColor color ( Qt::red, Qt::green, Qt::blue );
+        const QColor color ( red, green, blue );
         if ( color.isValid() )
         {
             const QString colorName( i18n("color", name.latin1() ) );
@@ -983,7 +984,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 0, 2);
   d->hedit = new KColorSpinBox( 0, 359, 1, page );
-  d->hedit->setValidator( new QIntValidator( d->hedit ) );
   l_lbot->addWidget(d->hedit, 0, 3);
   connect( d->hedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
@@ -992,7 +992,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 1, 2);
   d->sedit = new KColorSpinBox( 0, 255, 1, page );
-  d->sedit->setValidator( new QIntValidator( d->sedit ) );
   l_lbot->addWidget(d->sedit, 1, 3);
   connect( d->sedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
@@ -1001,7 +1000,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 2, 2);
   d->vedit = new KColorSpinBox( 0, 255, 1, page );
-  d->vedit->setValidator( new QIntValidator( d->vedit ) );
   l_lbot->addWidget(d->vedit, 2, 3);
   connect( d->vedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
@@ -1013,7 +1011,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 0, 4);
   d->redit = new KColorSpinBox( 0, 255, 1, page );
-  d->redit->setValidator( new QIntValidator( d->redit ) );
   l_lbot->addWidget(d->redit, 0, 5);
   connect( d->redit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
@@ -1022,7 +1019,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget( label, 1, 4);
   d->gedit = new KColorSpinBox( 0, 255,1, page );
-  d->gedit->setValidator( new QIntValidator( d->gedit ) );
   l_lbot->addWidget(d->gedit, 1, 5);
   connect( d->gedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
@@ -1031,7 +1027,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 2, 4);
   d->bedit = new KColorSpinBox( 0, 255, 1, page );
-  d->bedit->setValidator( new QIntValidator( d->bedit ) );
   l_lbot->addWidget(d->bedit, 2, 5);
   connect( d->bedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
@@ -1310,16 +1305,16 @@ int KColorDialog::getColor( QColor &theColor, const QColor& defaultCol, QWidget 
 void KColorDialog::slotRGBChanged( void )
 {
   if (d->bRecursion) return;
-  int Qt::red = d->redit->value();
+  int red = d->redit->value();
   int grn = d->gedit->value();
   int blu = d->bedit->value();
 
-  if ( Qt::red > 255 || Qt::red < 0 ) return;
+  if ( red > 255 || red < 0 ) return;
   if ( grn > 255 || grn < 0 ) return;
   if ( blu > 255 || blu < 0 ) return;
 
   KColor col;
-  col.setRgb( Qt::red, grn, blu );
+  col.setRgb( red, grn, blu );
   d->bEditRgb = true;
   _setColor( col );
   d->bEditRgb = false;
