@@ -46,7 +46,7 @@
  * loader block size, load 256 kb at once per default
  * if file size is smaller, fall back to file size
  */
-static const Q_ULONG KATE_FILE_LOADER_BS  = 256 * 1024;
+static const qint64 KATE_FILE_LOADER_BS  = 256 * 1024;
 
 /**
  * KATE_AVG_BLOCK_SIZE is in characters !
@@ -119,7 +119,7 @@ class KateFileLoader
         if (c > 0)
         {
           // fix utf16 LE, stolen from khtml ;)
-          if ((c >= 2) && (m_codec->mibEnum() == 1000) && (m_buffer[1] == 0x00))
+          if ((c >= 2) && (m_codec->mibEnum() == 1000) && (m_buffer[1] == '\0'))
           {
             // utf16LE, we need to put the decoder in LE mode
             char reverseUtf16[3] = {0xFF, 0xFE, 0x00};
@@ -132,7 +132,7 @@ class KateFileLoader
 
         m_eof = (c == -1) || (c == 0) || (m_text.length() == 0) || m_file.atEnd();
 
-        for (uint i=0; i < m_text.length(); i++)
+        for (int i=0; i < m_text.length(); i++)
         {
           if (m_text[i] == '\n')
           {
@@ -280,7 +280,7 @@ class KateFileLoader
       {
         for (uint i=1; i < length; i+=2)
         {
-          if ((m_buffer[i] == 0) && (m_buffer[i-1] == 0))
+          if ((m_buffer[i] == '\0') && (m_buffer[i-1] == '\0'))
           {
             m_binary = true;
             m_buffer[i] = ' ';
@@ -291,7 +291,7 @@ class KateFileLoader
       {
         for (uint i=0; i < length; i++)
         {
-          if (m_buffer[i] == 0)
+          if (m_buffer[i] == '\0')
           {
             m_binary = true;
             m_buffer[i] = ' ';
@@ -306,8 +306,8 @@ class KateFileLoader
     QTextCodec *m_codec;
     QTextDecoder *m_decoder;
     QString m_text;
-    uint m_position;
-    uint m_lastLineStart;
+    int m_position;
+    int m_lastLineStart;
     bool m_eof;
     bool lastWasEndOfLine;
     bool lastWasR;
@@ -352,7 +352,7 @@ KateBuffer::KateBuffer(KateDocument *doc)
 KateBuffer::~KateBuffer()
 {
   // DELETE ALL BLOCKS, will free mem
-  for (uint i=0; i < m_blocks.size(); i++)
+  for (int i=0; i < m_blocks.size(); i++)
     delete m_blocks[i];
 
   // release HL
