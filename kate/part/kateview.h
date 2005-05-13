@@ -33,6 +33,7 @@
 #include <ktexteditor/texthintinterface.h>
 
 #include <qpointer.h>
+#include <Q3PopupMenu>
 
 class KateDocument;
 class KateBookmarks;

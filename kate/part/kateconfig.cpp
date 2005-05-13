@@ -184,7 +184,7 @@ void KateDocumentConfig::readConfig (KConfig *config)
   setBackupSuffix (config->readEntry("Backup Suffix", QString ("~")));
 
   // plugins
-  for (uint i=0; i<KateFactory::self()->plugins().count(); i++)
+  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
     setPlugin (i, config->readBoolEntry("KTextEditor Plugin " + (KateFactory::self()->plugins())[i]->library(), false));
 
   configEnd ();
@@ -220,7 +220,7 @@ void KateDocumentConfig::writeConfig (KConfig *config)
   config->writeEntry("Backup Suffix", backupSuffix());
 
   // plugins
-  for (uint i=0; i<KateFactory::self()->plugins().count(); i++)
+  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
     config->writeEntry("KTextEditor Plugin " + (KateFactory::self()->plugins())[i]->library(), plugin(i));
 }
 
