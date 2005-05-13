@@ -180,6 +180,33 @@ typedef XStatus Status;
 
 // template --->
 // Affects: Should be without side effects.
+#ifdef CursorShape
+#ifndef FIXX11H_CursorShape
+#define FIXX11H_CursorShape
+const int XCursorShape = CursorShape;
+#undef CursorShape
+const int CursorShape = XCursorShape;
+#endif
+#undef CursorShape
+#endif
+// template <---
+
+// template --->
+// Affects: Should be without side effects.
+#ifdef FontChange
+#ifndef FIXX11H_FontChange
+#define FIXX11H_FontChange
+const int XFontChange = FontChange;
+#undef FontChange
+const int FontChange = XFontChange;
+#endif
+#undef FontChange
+#endif
+// template <---
+
+
+// template --->
+// Affects: Should be without side effects.
 #ifdef index
 #ifndef FIXX11H_index
 #define FIXX11H_index

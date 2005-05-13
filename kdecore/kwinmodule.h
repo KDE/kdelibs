@@ -25,6 +25,7 @@
 
 #include <qobject.h>
 #include <q3valuelist.h>
+#include <qwindowdefs.h> //For WId
 #include "kdelibs_export.h"
 
 #ifdef Q_OS_UNIX

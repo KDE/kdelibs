@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #ifdef Q_WS_X11 // FIXME(E)
 
 #include <X11/Xlib.h>
+#include <fixx11h.h>
 
 class KSelectionOwnerPrivate;
 
