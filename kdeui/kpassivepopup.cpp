@@ -12,12 +12,14 @@
 #include <qtimer.h>
 #include <q3vbox.h>
 #include <qx11info_x11.h>
+#include <QMouseEvent>
 
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
 #include <kglobalsettings.h>
+
 
 #include "config.h"
 #ifdef Q_WS_X11
@@ -28,7 +30,7 @@
 #include "kpassivepopup.moc"
 
 static const int DEFAULT_POPUP_TIME = 6*1000;
-static const int POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt::WX11BypassWM
+static const Qt::WFlags POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt::WX11BypassWM
                              | Qt::WStyle_StaysOnTop | Qt::WStyle_Tool | Qt::WStyle_NoBorder;
 
 

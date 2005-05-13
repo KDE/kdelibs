@@ -379,7 +379,6 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   topLayout->addWidget( d->fCArea, 1 );
 
   d->fCArea->setTitle( i18n("Shortcut for Selected Action") );
-  d->fCArea->setFrameStyle( QFrame::StyledPanel | Q3Frame::Plain );
 
   //
   // CHOOSE KEY GROUP LAYOUT MANAGER
@@ -1065,11 +1064,11 @@ QString KKeyChooserWhatsThis::text( const QPoint& p ) {
     const Q3ListViewItem* item = m_listView->itemAt( p );
     const KKeyChooserItem* pItem = dynamic_cast<const KKeyChooserItem*>(item);
     if ( !pItem )
-        return Q3WhatsThis::textFor( m_listView );
+        return m_listView->whatsThis();
 
     const QString itemWhatsThis = pItem->whatsThis();
     if ( itemWhatsThis.isEmpty() )
-        return Q3WhatsThis::textFor( m_listView );
+        return m_listView->whatsThis();
 
     return itemWhatsThis;
 }
