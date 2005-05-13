@@ -208,10 +208,10 @@ namespace KStdAction
 	KDEUI_EXPORT KAction *open(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
 	/**
-	 * Open a recently used document. The signature of the slot being called 
+	 * Open a recently used document. The signature of the slot being called
 	 * is of the form slotURLSelected( const KURL & ).
 	 * @param recvr object to receive slot
-	 * @param slot The SLOT to invoke when a URL is selected. The slot's 
+	 * @param slot The SLOT to invoke when a URL is selected. The slot's
 	 * signature is slotURLSelected( const KURL & ).
 	 * @param parent parent widget
 	 * @param name name of widget
@@ -529,7 +529,7 @@ namespace KStdAction
 
 	/**
 	* Display the configure key bindings dialog.
-	* 
+	*
 	*  Note that you might be able to use the pre-built KXMLGUIFactory's fuction:
 	*  KStdAction::keyBindings(guiFactory(), SLOT(configureShortcuts()), actionCollection());
         */
@@ -551,7 +551,7 @@ namespace KStdAction
 					const char *name = 0 );
 
 	/**
-	* The Configure Notifications dialo
+	* The Configure Notifications dialog.
 	* @since 3.1
 	*/
 	KDEUI_EXPORT KAction *configureNotifications(const QObject *recvr,
