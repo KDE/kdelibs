@@ -24,6 +24,7 @@
 #include <kmanagerselection.h>
 #include <kwinmodule.h>
 #include <qwidget.h>
+#include <QMap>
 
 class KDETrayProxy
     : public QWidget

@@ -36,10 +36,8 @@ KDETrayProxy::KDETrayProxy()
     connect( &selection, SIGNAL( newOwner( Window )), SLOT( newOwner( Window )));
     connect( &module, SIGNAL( windowAdded( WId )), SLOT( windowAdded( WId )));
     selection.owner();
-    for( Q3ValueList< WId >::ConstIterator it = module.windows().begin();
-         it != module.windows().end();
-         ++it )
-        windowAdded( *it );
+    foreach( WId id, module.windows() )
+        windowAdded( id );
     kapp->installX11EventFilter( this ); // XSelectInput( StructureNotifyMask ) on windows is done by KWinModule
 //    kdDebug() << "Init done" << endl;
     }
