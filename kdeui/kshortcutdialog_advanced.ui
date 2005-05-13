@@ -8,8 +8,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>359</width>
-    <height>157</height>
+    <width>363</width>
+    <height>121</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -65,7 +65,7 @@
       <item row="1" column="2" >
        <layout class="QHBoxLayout" >
         <property name="margin" >
-         <number>11</number>
+         <number>0</number>
         </property>
         <property name="spacing" >
          <number>6</number>
@@ -98,7 +98,7 @@
       <item row="0" column="2" >
        <layout class="QHBoxLayout" >
         <property name="margin" >
-         <number>11</number>
+         <number>0</number>
         </property>
         <property name="spacing" >
          <number>6</number>
@@ -184,16 +184,16 @@
  <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>Q3ButtonGroup</class>
-   <extends></extends>
-   <header>Qt3Support/Q3ButtonGroup</header>
-   <container>1</container>
+   <class>KPushButton</class>
+   <extends>QPushButton</extends>
+   <header>kpushbutton.h</header>
+   <container>0</container>
    <pixmap></pixmap>
   </customwidget>
   <customwidget>
-   <class>KPushButton</class>
-   <extends>QWidget</extends>
-   <header>kpushbutton.h</header>
+   <class>Q3ButtonGroup</class>
+   <extends></extends>
+   <header>Qt3Support/Q3ButtonGroup</header>
    <container>1</container>
    <pixmap></pixmap>
   </customwidget>
