@@ -505,6 +505,16 @@ KDatePicker::setFontSize(int s)
     }
 
   QStyleOptionToolButton opt;
+  
+  // stolen from KToolBarButton
+  opt.init(this);
+  opt.font      = KGlobalSettings::toolBarFont();
+  opt.icon      = selectMonth->icon();
+  opt.text      = selectMonth->textLabel();
+  opt.features  = selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
+  opt.subControls       = QStyle::SC_All;
+  opt.activeSubControls = 0; //### FIXME: !!
+  
   QSize metricBound = style()->sizeFromContents(QStyle::CT_ToolButton,
                                                &opt, 
                                                maxMonthRect, selectMonth);
