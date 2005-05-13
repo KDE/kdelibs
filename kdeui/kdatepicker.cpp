@@ -30,6 +30,8 @@
 #include <qfont.h>
 #include <qvalidator.h>
 #include <q3popupmenu.h>
+#include <QMenuItem>
+#include <QStyleOptionToolButton>
 
 #include "kdatepicker.h"
 #include <kglobal.h>
@@ -365,7 +367,9 @@ KDatePicker::selectMonthClicked()
   for (i = 1; i <= months; i++)
     popup.insertItem(calendar->monthName(i, calendar->year(date)), i);
 
-  popup.setActiveItem(calendar->month(date) - 1);
+  QMenuItem *item = popup.findItem (calendar->month(date) - 1);
+  if (item)
+    popup.setActiveAction(item);
 
   if ( (month = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), calendar->month(date) - 1)) == -1 ) return;  // canceled
 
@@ -384,7 +388,7 @@ KDatePicker::selectYearClicked()
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  if (selectYear->state() == QCheckBox::Off)
+  if (!selectYear->isChecked ())
   {
     return;
   }
@@ -500,9 +504,10 @@ KDatePicker::setFontSize(int s)
       maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
     }
 
-  QSize metricBound = style().sizeFromContents(QStyle::CT_ToolButton,
-                                               selectMonth,
-                                               maxMonthRect);
+  QStyleOptionToolButton opt;
+  QSize metricBound = style()->sizeFromContents(QStyle::CT_ToolButton,
+                                               &opt, 
+                                               maxMonthRect, selectMonth);
   selectMonth->setMinimumSize(metricBound);
 
   table->setFontSize(s);
