@@ -88,8 +88,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
 
       @param type a Hotstuff data type such as "korganizer/calendar"
     */
-    void setType(QString type);
-	// ### KDE 4.0: use const QString&
+    void setType(const QString &type);
 
     /**
       Fetches descriptions of all available data, optionally considering
@@ -177,7 +176,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
 
       @param type a data type such as "korganizer/calendar"
     */
-    static void open(QString type);
+    static void open( const QString &type);
     // ### KDE 4.0: remove and make caption/parent argument optional
 
   public slots:
