@@ -38,6 +38,8 @@
 #include "klistview.h"
 #include "klistviewlineedit.h"
 
+#if 0
+
 class KListView::Tooltip : public QToolTip
 {
 public:
@@ -64,6 +66,8 @@ void KListView::Tooltip::maybeTip (const QPoint&)
 {
   // FIXME
 }
+
+#endif
 
 class KListView::KListViewPrivate
 {
@@ -380,7 +384,7 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *ev)
 {
     QFocusEvent * focusEv = static_cast<QFocusEvent*>(ev);
     // Don't let a RMB close the editor
-    if (focusEv->reason() != QFocusEvent::Popup && focusEv->reason() != QFocusEvent::ActiveWindow)
+    if (focusEv->reason() != Qt::PopupFocusReason && focusEv->reason() != Qt::ActiveWindowFocusReason)
         terminate(true);
     else
         KLineEdit::focusOutEvent(ev);
@@ -697,8 +701,8 @@ void KListView::focusInEvent( QFocusEvent *fe )
   Q3ListView::focusInEvent( fe );
   if ((d->selectedBySimpleMove)
       && (d->selectionMode == FileManager)
-      && (fe->reason()!=QFocusEvent::Popup)
-      && (fe->reason()!=QFocusEvent::ActiveWindow)
+      && (fe->reason()!=Qt::PopupFocusReason)
+      && (fe->reason()!=Qt::ActiveWindowFocusReason)
       && (currentItem()))
   {
       currentItem()->setSelected(true);
@@ -716,8 +720,8 @@ void KListView::focusOutEvent( QFocusEvent *fe )
 
   if ((d->selectedBySimpleMove)
       && (d->selectionMode == FileManager)
-      && (fe->reason()!=QFocusEvent::Popup)
-      && (fe->reason()!=QFocusEvent::ActiveWindow)
+      && (fe->reason()!=Qt::PopupFocusReason)
+      && (fe->reason()!=Qt::ActiveWindowFocusReason)
       && (currentItem())
       && (!d->editor->isVisible()))
   {

@@ -982,8 +982,11 @@ protected:
    */
   int depthToPixels( int depth );
 
+#if 0
 private:
   class Tooltip;
+#endif
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
