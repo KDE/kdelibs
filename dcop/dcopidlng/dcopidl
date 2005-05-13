@@ -1,6 +1,6 @@
 #!/bin/sh
 
-trap "rm -f dcopidlng.stderr.$$" 0 1 2 15
+trap "rm -f dcopidl.stderr.$$" 0 1 2 15
 
 LIBDIR=
 if test "$1" = "--srcdir"; then
@@ -8,17 +8,17 @@ if test "$1" = "--srcdir"; then
    LIBDIR=$1
    shift
 fi
- 
+
 if test -z "$LIBDIR"; then
    if test -z "$KDECONFIG"; then
       KDECONFIG=kde-config
    fi
-   LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidlng"
+   LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidl"
 fi
-perl -I"$LIBDIR" "$LIBDIR/kalyptus" --allow_k_dcop_accessors -f dcopidl $1 2> dcopidlng.stderr.$$
+perl -I"$LIBDIR" "$LIBDIR/kalyptus" --allow_k_dcop_accessors -f dcopidl $1 2> dcopidl.stderr.$$
 RET=$?
 if [ $RET -ne 0 ]
 then
-   cat dcopidlng.stderr.$$ >&2
+   cat dcopidl.stderr.$$ >&2
 fi
 exit $RET
