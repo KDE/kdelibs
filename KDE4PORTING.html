@@ -75,6 +75,8 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <li>signal void dateEntered(QDate); was replaced by void dateEntered( const QDate&amp;);
 <li>signal void dateEntered(QDate) was replaced by void dateEntered( const QDate&amp;)
 
+<H4>KDateWidget</H4>
+<li>signal void changed(QDate); was changed by void changed(const QDate&amp;)
 
 <H4>KDateTable</H4>
 <li>signal void dateChanged(QDate); was replaced by void dateChanged(const QDate&amp;);
@@ -99,6 +101,9 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KRecentFilesAction</H4>
 <li>the maxItem property is now an int (was a uint) (affects all accessors methods)
+
+<H4>KPasswdEdit</H4>
+<li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 

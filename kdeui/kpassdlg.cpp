@@ -119,12 +119,6 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
 
 }
 
-KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name, int echoMode)
-    : QLineEdit(parent, name), m_EchoMode(echoMode)
-{
-    init();
-}
-
 KPasswordEdit::KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name)
     : QLineEdit(parent, name), m_EchoMode(echoMode)
 {

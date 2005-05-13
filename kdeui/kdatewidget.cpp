@@ -58,8 +58,7 @@ KDateWidget::KDateWidget( QWidget *parent, const char *name )
   setDate(QDate());
 }
 
-// ### HPB change QDate to const QDate & in KDE 4.0
-KDateWidget::KDateWidget( QDate date, QWidget *parent,
+KDateWidget::KDateWidget( const QDate &date, QWidget *parent,
 			    const char *name )
   : QWidget( parent, name )
 {
@@ -122,8 +121,7 @@ KDateWidget::~KDateWidget()
   delete d;
 }
 
-// ### HPB change QDate to const QDate & in KDE 4.0
-void KDateWidget::setDate( QDate date )
+void KDateWidget::setDate( const QDate &date )
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 

@@ -47,7 +47,7 @@ public:
   /**
    * Constructs a date selection widget with the initial date set to @p date.
    */
-  KDateWidget( QDate date, QWidget *parent=0, const char *name=0 );
+  KDateWidget( const QDate &date, QWidget *parent=0, const char *name=0 );
 
   /**
    * Destructs the date selection widget.
@@ -62,7 +62,7 @@ public:
   /**
    * Changes the selected date to @p date.
    */
-  void setDate(QDate date);
+  void setDate(const QDate &date);
 
 
 signals:
@@ -70,7 +70,7 @@ signals:
    * Emitted whenever the date of the widget
    * is changed, either with setDate() or via user selection.
    */
-   void changed(QDate);
+   void changed(const QDate&);
 
 protected:
    void init();

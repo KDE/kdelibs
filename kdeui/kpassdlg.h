@@ -65,12 +65,6 @@ public:
     KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name);
 
     /**
-     * @deprecated, will be removed in KDE 4.0
-     * Creates a password input widget using echoMode as "echo mode".
-     */
-    KPasswordEdit(QWidget *parent, const char *name, int echoMode) KDE_DEPRECATED;
-
-    /**
      * Destructs the widget.
      */
     ~KPasswordEdit();
