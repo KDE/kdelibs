@@ -509,8 +509,7 @@ class KDECORE_EXPORT KKeySequence
  protected:
 	uchar m_nKeys;
 	uchar m_bTriggerOnRelease;
-	// BCI: m_rgvar should be renamed to m_rgkey for KDE 4.0
-	KKey m_rgvar[MAX_KEYS];
+	KKey m_rgkey[MAX_KEYS];
 
  private:
 	class KKeySequencePrivate* d;

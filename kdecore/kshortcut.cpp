@@ -227,25 +227,15 @@ void KKeySequence::clear()
 bool KKeySequence::init( const QKeySequence& seq )
 {
 	clear();
-#if QT_VERSION >= 0x030100
 	if( !seq.isEmpty() ) {
 		for( uint i = 0; i < seq.count(); i++ ) {
-			m_rgvar[i].init( seq[i] );
-			if( m_rgvar[i].isNull() )
+			m_rgkey[i].init( seq[i] );
+			if( m_rgkey[i].isNull() )
 				return false;
 		}
 		m_nKeys = seq.count();
 		m_bTriggerOnRelease = false;
 	}
-#else // Qt 3.0.x
-	if( seq ) {
-		m_rgvar[ 0 ].init(  seq );
-		if( !m_rgvar[ 0 ].isNull() ) {
-			m_nKeys = 1;
-			m_bTriggerOnRelease = false;
-		}
-	}
-#endif
 	return true;
 }
 
@@ -253,7 +243,7 @@ bool KKeySequence::init( const KKey& key )
 {
 	if( !key.isNull() ) {
 		m_nKeys = 1;
-		m_rgvar[0].init( key );
+		m_rgkey[0].init( key );
 		m_bTriggerOnRelease = false;
 	} else
 		clear();
@@ -265,12 +255,12 @@ bool KKeySequence::init( const KKeySequence& seq )
 	m_bTriggerOnRelease = false;
 	m_nKeys = seq.m_nKeys;
 	for( uint i = 0; i < m_nKeys; i++ ) {
-		if( seq.m_rgvar[i].isNull() ) {
+		if( seq.m_rgkey[i].isNull() ) {
 			kdDebug(125) << "KKeySequence::init( seq ): key[" << i << "] is null." << endl;
 			m_nKeys = 0;
 			return false;
 		}
-		m_rgvar[i] = seq.m_rgvar[i];
+		m_rgkey[i] = seq.m_rgkey[i];
 	}
 	return true;
 }
@@ -286,8 +276,8 @@ bool KKeySequence::init( const QString& s )
 	} else if( rgs.size() <= MAX_KEYS ) {
 		m_nKeys = rgs.size();
 		for( uint i = 0; i < m_nKeys; i++ ) {
-			m_rgvar[i].init( KKey(rgs[i]) );
-			//kdDebug(125) << "\t'" << rgs[i] << "' => " << m_rgvar[i].toStringInternal() << endl;
+			m_rgkey[i].init( KKey(rgs[i]) );
+			//kdDebug(125) << "\t'" << rgs[i] << "' => " << m_rgkey[i].toStringInternal() << endl;
 		}
 		return true;
 	} else {
@@ -304,7 +294,7 @@ uint KKeySequence::count() const
 const KKey& KKeySequence::key( uint i ) const
 {
 	if( i < m_nKeys )
-		return m_rgvar[i];
+		return m_rgkey[i];
 	else
 		return KKey::null();
 }
@@ -315,7 +305,7 @@ bool KKeySequence::isTriggerOnRelease() const
 bool KKeySequence::setKey( uint iKey, const KKey& key )
 {
 	if( iKey <= m_nKeys && iKey < MAX_KEYS ) {
-		m_rgvar[iKey].init( key );
+		m_rgkey[iKey].init( key );
 		if( iKey == m_nKeys )
 			m_nKeys++;
 		return true;
@@ -334,7 +324,7 @@ bool KKeySequence::startsWith( const KKeySequence& seq ) const
 		return false;
 
 	for( uint i = 0; i < seq.m_nKeys; i++ ) {
-		if( m_rgvar[i] != seq.m_rgvar[i] )
+		if( m_rgkey[i] != seq.m_rgkey[i] )
 			return false;
 	}
 
@@ -344,7 +334,7 @@ bool KKeySequence::startsWith( const KKeySequence& seq ) const
 int KKeySequence::compare( const KKeySequence& seq ) const
 {
 	for( uint i = 0; i < m_nKeys && i < seq.m_nKeys; i++ ) {
-		int ret = m_rgvar[i].compare( seq.m_rgvar[i] );
+		int ret = m_rgkey[i].compare( seq.m_rgkey[i] );
 		if( ret != 0 )
 			return ret;
 	}
@@ -360,13 +350,7 @@ QKeySequence KKeySequence::qt() const
 	
 	for( uint i = 0; i < count(); i++ )
 		k[i] = KKeyNative(key(i)).keyCodeQt();
-#if QT_VERSION >= 0x030100
 	QKeySequence seq( k[0], k[1], k[2], k[3] );
-#else // Qt-3.0.x
-	QKeySequence seq;
-	if(  count() == 1 )
-		seq = KKeyNative( key( 0 ) ).keyCodeQt();
-#endif
 	return seq;
 }
 
@@ -380,10 +364,10 @@ QString KKeySequence::toString() const
 	if( m_nKeys < 1 ) return QString::null;
 
 	QString s;
-	s = m_rgvar[0].toString();
+	s = m_rgkey[0].toString();
 	for( uint i = 1; i < m_nKeys; i++ ) {
 		s += ",";
-		s += m_rgvar[i].toString();
+		s += m_rgkey[i].toString();
 	}
 
 	return s;
@@ -394,10 +378,10 @@ QString KKeySequence::toStringInternal() const
 	if( m_nKeys < 1 ) return QString::null;
 
 	QString s;
-	s = m_rgvar[0].toStringInternal();
+	s = m_rgkey[0].toStringInternal();
 	for( uint i = 1; i < m_nKeys; i++ ) {
 		s += ",";
-		s += m_rgvar[i].toStringInternal();
+		s += m_rgkey[i].toStringInternal();
 	}
 
 	return s;
