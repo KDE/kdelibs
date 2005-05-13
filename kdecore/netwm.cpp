@@ -28,6 +28,10 @@
 #include <qwidget.h>
 #ifdef Q_WS_X11 //FIXME
 
+// KDE4 TODO
+#include <QtGui/private/qt_x11_p.h>
+#define None 0
+
 #include "netwm.h"
 
 #include <string.h>
@@ -1483,9 +1487,8 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ PROTOCOLS2 ] |= WM2KDETemporaryRules;
 }
 
-extern Time qt_x_user_time;
 void NETRootInfo::setActiveWindow(Window window) {
-    setActiveWindow( window, FromUnknown, qt_x_user_time, None );
+    setActiveWindow( window, FromUnknown, X11->userTime, None );
 }
 
 void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
@@ -1642,7 +1645,7 @@ void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y
 
 void NETRootInfo::restackRequest(Window window, Window above, int detail)
 {
-    restackRequest( window, FromTool, above, detail, qt_x_user_time );
+    restackRequest( window, FromTool, above, detail, X11->userTime );
 }
 
 void NETRootInfo::restackRequest(Window window, RequestSource src, Window above, int detail, Time timestamp )

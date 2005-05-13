@@ -47,6 +47,9 @@ DEALINGS IN THE SOFTWARE.
 
 #include "kstartupinfo.h"
 
+// KDE4 TODO
+#include <QtGui/private/qt_x11_p.h>
+#define None 0
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdlib.h>
@@ -933,7 +936,7 @@ QByteArray KStartupInfo::createNewStartupId()
     if (!gethostname( hostname, 255 ))
 	hostname[sizeof(hostname)-1] = '\0';
 #ifdef Q_WS_X11
-    extern Time qt_x_user_time;
+    long qt_x_user_time = X11->userTime;
 #else
     long qt_x_user_time = 0;
 #endif

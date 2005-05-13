@@ -47,6 +47,10 @@
 #include <dcopclient.h>
 #include <dcopref.h>
 #ifdef Q_WS_X11
+// KDE4 TODO
+#include <QtGui/private/qt_x11_p.h>
+#define None 0
+
 #include <kstartupinfo.h>
 #include <kxerrorhandler.h>
 
@@ -59,14 +63,12 @@
 extern  GC kde_xget_temp_gc( int scrn, bool monochrome );		// get temporary GC
 
 static bool atoms_created = false;
-extern Atom qt_wm_protocols;
-extern Time qt_x_time;
-extern Time qt_x_user_time;
 
 static Atom net_wm_context_help;
 static Atom kde_wm_change_state;
 static Atom kde_wm_window_opacity;
 static Atom kde_wm_window_shadow;
+static Atom wm_protocols;
 static void kwin_net_create_atoms() {
     if (!atoms_created){
 	const int max = 20;
@@ -86,6 +88,9 @@ static void kwin_net_create_atoms() {
 
         atoms[n] = &kde_wm_window_shadow;
         names[n++] = (char*) "_KDE_WM_WINDOW_SHADOW";
+
+        atoms[n] = &wm_protocols;
+        names[n++] = (char*) "WM_PROTOCOLS";
 
 	// we need a const_cast for the shitty X API
 	XInternAtoms( QX11Info::display(), const_cast<char**>(names), n, false, atoms_return );
@@ -183,7 +188,7 @@ bool ContextWidget::x11Event( XEvent * ev)
 			       &root_x, &root_y, &lx, &ly, &state );
 	    } while  ( child != None && child != w );
 
-	    ::sendClientMessage(w, qt_wm_protocols, net_wm_context_help);
+	    ::sendClientMessage(w, wm_protocols, net_wm_context_help);
 	    XEvent e = *ev;
 	    e.xbutton.window = w;
 	    e.xbutton.subwindow = w;
@@ -226,7 +231,7 @@ void KWin::activateWindow( WId win, long time )
 #ifdef Q_WS_X11
     NETRootInfo info( QX11Info::display(), 0 );
     if( time == 0 )
-        time = qt_x_user_time;
+        time = X11->userTime;
     info.setActiveWindow( win, NET::FromApplication, time,
         kapp->activeWindow() ? kapp->activeWindow()->winId() : 0 );
 #endif // Q_WS_X11 ...
@@ -238,7 +243,7 @@ void KWin::forceActiveWindow( WId win, long time )
 #ifdef Q_WS_X11
     NETRootInfo info( QX11Info::display(), 0 );
     if( time == 0 )
-        time = qt_x_time;
+        time = X11->time;
     info.setActiveWindow( win, NET::FromTool, time, 0 );
 #endif // Q_WS_X11
     KUniqueApplication::setHandleAutoStarted();
