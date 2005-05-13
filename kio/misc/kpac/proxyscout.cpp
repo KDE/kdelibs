@@ -130,7 +130,7 @@ namespace KPAC
         for ( RequestQueue::ConstIterator it = m_requestQueue.begin();
               it != m_requestQueue.end(); ++it )
         {
-            Q3CString type = "QString";
+            DCOPCString type = "QString";
             QByteArray data;
             QDataStream ds( &data, QIODevice::WriteOnly );
             if ( success ) ds << handleRequest( ( *it ).url );

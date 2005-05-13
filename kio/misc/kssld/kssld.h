@@ -30,7 +30,7 @@
 #include <q3valuelist.h>
 #include <qmap.h>
 #include <q3ptrvector.h>
-
+#include <q3ptrlist.h>
 
 class KSimpleConfig;
 class KSSLCNode;

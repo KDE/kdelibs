@@ -27,6 +27,8 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include "kwalletbackend.h"
+#include <Q3ValueList>
+#include <q3ptrlist.h>
 
 #include <time.h>
 #include <stdlib.h>

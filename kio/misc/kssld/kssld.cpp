@@ -699,14 +699,15 @@ return true;
 static QStringList caReadCerticatesFromFile(QString filename) {
 
 	QStringList certificates;
-	QString certificate, temp;
+	QString certificate;
 	QFile file(filename);
+        QByteArray temp(1000);
 
 	if (!file.open(QIODevice::ReadOnly))
 		return certificates;
 
 	while (!file.atEnd()) {
-		file.readLine(temp, 999);
+		file.readLine(temp.data(), 999);
 		if (temp.startsWith("-----BEGIN CERTIFICATE-----")) {
 			certificate = QString::null;
 			continue;
