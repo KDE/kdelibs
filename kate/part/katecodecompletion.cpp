@@ -44,6 +44,8 @@
 #include <qfontmetrics.h>
 #include <qlayout.h>
 #include <qregexp.h>
+#include <QDesktopWidget>
+#include <QKeyEvent>
 
 /**
  * This class is used as the codecompletion listbox. It can be resized according to its contents,
@@ -359,7 +361,7 @@ void KateCodeCompletion::showComment()
 
   delete m_commentLabel;
   m_commentLabel = new KateCodeCompletionCommentLabel( 0, item->m_entry.comment );
-  m_commentLabel->setFont(QToolTip::font());
+ // m_commentLabel->setFont(QToolTip::font());
   m_commentLabel->setPalette(QToolTip::palette());
 
   QPoint rightPoint = m_completionPopup->mapToGlobal(QPoint(m_completionPopup->width(),0));

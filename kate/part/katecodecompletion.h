@@ -54,7 +54,7 @@ class KateCodeCompletionCommentLabel : public QLabel
     {
         setMargin(1);
         setIndent(0);
-        setAutoMask( false );
+       // setAutoMask( false );
         setFrameStyle( Q3Frame::Plain | Q3Frame::Box );
         setLineWidth( 1 );
         setAlignment( Qt::AlignLeft | Qt::AlignTop );
