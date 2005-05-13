@@ -344,7 +344,7 @@ static void exchangeAbbrevs(QString &str)
   {
     int index=0;
     char replace=magic[1];
-    while ((index=backslashString(str, QChar(*magic), index))!=-1)
+    while ((index=backslashString(str, QString (QChar::fromAscii(*magic)), index))!=-1)
     {
       str.replace(index, 2, QChar(replace));
       index++;
@@ -375,7 +375,7 @@ int KateCommands::SedReplace::sedMagic( KateDocument *doc, int &line,
   QStringList patterns = QStringList::split( QRegExp("(^\\\\n|(?![^\\\\])\\\\n)"), find, true );
   if ( patterns.count() > 1 )
   {
-    for ( uint i = 0; i < patterns.count(); i++ )
+    for ( int i = 0; i < patterns.count(); i++ )
     {
       if ( i < patterns.count() - 1 )
         patterns[i].append("$");
@@ -437,8 +437,8 @@ int KateCommands::SedReplace::sedMagic( KateDocument *doc, int &line,
     // TODO if replace contains \n,
     // change the line number and
     // check for text that needs be searched behind the last inserted newline.
-    int lns = rep.contains('\n');
-    if ( lns )
+    int lns = rep.count(QChar::fromLatin1('\n'));
+    if ( lns > 0 )
     {
       line += lns;
 
