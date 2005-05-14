@@ -322,7 +322,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_taskbar->show();
 
 	m_passivePopup->setEnabled( m_messageBox->isChecked() );
-        m_actionsBoxLayout->setSpacing( KDialog::spacingHint() );
+        m_actionsBox->layout()->setSpacing( KDialog::spacingHint() );
     }
     else
     {
@@ -338,7 +338,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_stderr->hide();
         m_taskbar->hide();
 
-        m_actionsBoxLayout->setSpacing( 0 );
+        m_actionsBox->layout()->setSpacing( 0 );
     }
 }
 
