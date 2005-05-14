@@ -15,104 +15,27 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
 #ifndef _KPOPUP_H
-#define _KPOPUP_H "$Id$"
+#define _KPOPUP_H
 
 #define INCLUDE_MENUITEM_DEF
 
-#include <q3popupmenu.h>
+#include <QMenu>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
 #include <kdelibs_export.h>
-/**
- * @short KPopupMenu title widget.
- *
- * Title widget for use in KPopupMenu.
- *
- * You usually don't have to create this manually since
- * KPopupMenu::insertTitle will do it for you, but it is allowed if
- * you wish to customize it's look.
- *
- * @author Daniel M. Duley <mosfet@kde.org>
- */
-class KDEUI_EXPORT KPopupTitle : public QWidget
-{
-    Q_OBJECT
-
-public:
-    /**
-     * Constructs a title widget with the user specified gradient, pixmap,
-     * and colors.
-     */
-    KPopupTitle(QWidget *parent=0, const char *name=0);
-    /**
-     * @deprecated
-     * Constructs a title widget with the specified gradient and colors.
-     */
-    KPopupTitle(KPixmapEffect::GradientType gradient, const QColor &color,
-                const QColor &textColor, QWidget *parent=0,
-                const char *name=0) KDE_DEPRECATED;
-    /**
-     * @deprecated
-     * Constructs a title widget with the specified pixmap and colors.
-     */
-    KPopupTitle(const KPixmap &background, const QColor &color,
-                const QColor &textColor, QWidget *parent=0,
-                const char *name=0) KDE_DEPRECATED;
-    /**
-     * Sets the title string and optional icon for the title widget.
-     *
-     * You will want to call this before inserting into a menu.
-     */
-    void setTitle(const QString &text, const QPixmap *icon=0);
-    /**
-     * Returns the current title.
-     */
-    QString title() const { return titleStr; }
-    /**
-     * Returns the current icon.
-     */
-    QPixmap icon() const { return miniicon; }
-
-    QSize sizeHint() const;
-
-public slots:
-    /// @since 3.1
-    void setText( const QString &text );
-    /// @since 3.1
-    void setIcon( const QPixmap &pix );
-
-protected:
-    void calcSize();
-    void paintEvent(QPaintEvent *ev);
-
-    // Remove in KDE4
-    KPixmapEffect::GradientType grType;
-    QString titleStr;
-    // Remove in KDE4
-    KPixmap fill;
-    QPixmap miniicon;
-    QColor fgColor, bgColor, grHigh, grLow;
-    bool useGradient;
-
-protected:
-    virtual void virtual_hook( int id, void* data );
-private:
-    class KPopupTitlePrivate;
-    KPopupTitlePrivate *d;
-};
 
 /**
- * @short A menu with title items.
+ * @short A menu with keyboard searching and convenience methods for title items.
  *
- * KPopupMenu is a class for menus with standard title items and keyboard
+ * KMenu is a class for menus with standard title items and keyboard
  * accessibility for popups with many options and/or varying options. It acts
- * identically to QPopupMenu, with the addition of insertTitle(),
+ * identically to QMenu, with the addition of insertTitle(),
  * changeTitle(), setKeyboardShortcutsEnabled() and
  * setKeyboardShortcutsExecute() methods.
  *
- * The titles support a text string, an icon, plus user defined gradients,
- * colors, and background pixmaps.
+ * The titles support a text string and an icon.
  *
  * The keyboard search algorithm is incremental with additional underlining
  * for user feedback.
@@ -120,47 +43,27 @@ private:
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KPopupMenu : public Q3PopupMenu {
+class KDEUI_EXPORT KMenu : public QMenu {
     Q_OBJECT
 public:
     /**
-     * Constructs a KPopupMenu.
+     * Constructs a KMenu.
      */
-    KPopupMenu(QWidget *parent=0, const char *name=0);
+    KMenu(QWidget *parent=0);
 
     /**
      * Destructs the object
      */
-    ~KPopupMenu();
+    ~KMenu();
 
     /**
      * Inserts a title item with no icon.
      */
-    int insertTitle(const QString &text, int id=-1, int index=-1);
+    QAction* insertTitle(const QString &text, QAction* before = 0L);
     /**
      * Inserts a title item with the given icon and title.
      */
-    int insertTitle(const QPixmap &icon, const QString &text, int id=-1,
-                    int index=-1);
-    /**
-     * Changes the title of the item at the specified id. If a icon was
-     * previously set it is cleared.
-     */
-    void changeTitle(int id, const QString &text);
-    /**
-     * Changes the title and icon of the title item at the specified id.
-     */
-    void changeTitle(int id, const QPixmap &icon, const QString &text);
-    /**
-     * Returns the title of the title item at the specified id. The default
-     * id of -1 is for backwards compatibility only, you should always specify
-     * the id.
-     */
-    QString title(int id=-1) const;
-    /**
-     * Returns the icon of the title item at the specified id.
-     */
-    QPixmap titlePixmap(int id) const;
+    QAction* insertTitle(const QIcon &icon, const QString &text, QAction* before = 0L);
 
     /**
      * Enables keyboard navigation by searching for the entered key sequence.
@@ -186,30 +89,14 @@ public:
     void setKeyboardShortcutsExecute(bool enable);
 
     /**
-     * @deprecated
-     * Obsolete method provided for backwards compatibility only. Use the
-     * normal constructor and insertTitle instead.
+     * Returns the context menu associated with this menu
      */
-    KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
-
-    /**
-     * @deprecated
-     * Obsolete method provided for backwards compatibility only. Use
-     * insertTitle and changeTitle instead.
-     */
-    void setTitle(const QString &title) KDE_DEPRECATED;
+    QMenu* contextMenu();
 
     /**
      * Returns the context menu associated with this menu
-     * @since 3.2
      */
-    Q3PopupMenu* contextMenu();
-
-    /**
-     * Returns the context menu associated with this menu
-     * @since 3.2
-     */
-    const Q3PopupMenu* contextMenu() const;
+    const QMenu* contextMenu() const;
 
     /**
      * Hides the context menu if shown
@@ -218,16 +105,16 @@ public:
     void hideContextMenu();
 
     /**
-     * Returns the KPopupMenu associated with the current context menu
+     * Returns the KMenu associated with the current context menu
      * @since 3.2
      */
-    static KPopupMenu* contextMenuFocus();
+    static KMenu* contextMenuFocus();
 
     /**
-     * returns the ID of the menuitem associated with the current context menu
+     * returns the QAction associated with the current context menu
      * @since 3.2
      */
-    static int contextMenuFocusItem();
+    static QAction* contextMenuFocusAction();
 
     /**
      * Reimplemented for internal purposes
@@ -245,11 +132,11 @@ signals:
     /**
      * connect to this signal to be notified when a context menu is about to be shown
      * @param menu The menu that the context menu is about to be shown for
-     * @param menuItem The menu item that the context menu is currently on
+     * @param menuAction The action that the context menu is currently on
      * @param ctxMenu The context menu itself
      * @since 3.2
      */
-    void aboutToShowContextMenu(KPopupMenu* menu, int menuItem, Q3PopupMenu* ctxMenu);
+    void aboutToShowContextMenu(KMenu* menu, QAction* menuAction, QMenu* ctxMenu);
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -274,8 +161,8 @@ protected slots:
     void ctxMenuHideShowingMenu();
 
 private:
-    class KPopupMenuPrivate;
-    KPopupMenuPrivate *d;
+    class KMenuPrivate;
+    KMenuPrivate *d;
 };
 
 #endif
