@@ -1449,8 +1449,9 @@ void KDialogBase::setMainWidget( QWidget *widget )
   }
   if( mMainWidget != NULL )
   {
-    QFocusData* fd = focusData();
-    QWidget* prev = fd->last();
+    /* There is no more QFocusData in Qt4, so i used QWidget::nextInFocusChain()
+       instead - mattr */
+    QWidget* prev = nextInFocusChain();
     for( Q3PtrListIterator<KDialogBaseButton> it( d->mButton.list );
 	 it != NULL;
 	 ++it )
