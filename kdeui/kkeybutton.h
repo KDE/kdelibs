@@ -80,7 +80,7 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 	/**
 	* Reimplemented for internal reasons.
 	*/
-	void drawButton( QPainter* _painter );
+	void paintEvent( QPaintEvent* pe );
 
  protected:
 	virtual void virtual_hook( int id, void* data );

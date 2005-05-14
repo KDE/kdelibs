@@ -24,7 +24,9 @@
 #include <qcursor.h>
 #include <qdrawutil.h>
 #include <qpainter.h>
-#include <q3pointarray.h>
+#include <QPolygon>
+#include <QStyle>
+
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kglobalaccel.h>
@@ -121,18 +123,20 @@ void KKeyButton::captureShortcut()
 	repaint();
 }
 
-void KKeyButton::drawButton( QPainter *painter )
+void KKeyButton::paintEvent( QPaintEvent* )
 {
-  Q3PointArray a( 4 );
+  QPainter painter(this);
+ 
+  QPolygon a( 4 );
   a.setPoint( 0, 0, 0) ;
   a.setPoint( 1, width(), 0 );
   a.setPoint( 2, 0, height() );
   a.setPoint( 3, 0, 0 );
 
   QRegion r1( a );
-  painter->setClipRegion( r1 );
-  painter->setBrush( backgroundColor().light() );
-  painter->drawRoundRect( 0, 0, width(), height(), 20, 20);
+  painter.setClipRegion( r1 );
+  painter.setBrush( backgroundColor().light() );
+  painter.drawRoundRect( 0, 0, width(), height(), 20, 20);
 
   a.setPoint( 0, width(), height() );
   a.setPoint( 1, width(), 0 );
@@ -140,35 +144,35 @@ void KKeyButton::drawButton( QPainter *painter )
   a.setPoint( 3, width(), height() );
 
   QRegion r2( a );
-  painter->setClipRegion( r2 );
-  painter->setBrush( backgroundColor().dark() );
-  painter->drawRoundRect( 0, 0, width(), height(), 20, 20 );
+  painter.setClipRegion( r2 );
+  painter.setBrush( backgroundColor().dark() );
+  painter.drawRoundRect( 0, 0, width(), height(), 20, 20 );
 
-  painter->setClipping( false );
+  painter.setClipping( false );
   if( width() > 12 && height() > 8 )
-    qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8,
+    qDrawShadePanel( &painter, 6, 4, width() - 12, height() - 8,
                      colorGroup(), true, 1, 0L );
   if ( m_bEditing )
   {
-    painter->setPen( colorGroup().base() );
-    painter->setBrush( colorGroup().base() );
+    painter.setPen( colorGroup().base() );
+    painter.setBrush( colorGroup().base() );
   }
   else
   {
-    painter->setPen( backgroundColor() );
-    painter->setBrush( backgroundColor() );
+    painter.setPen( backgroundColor() );
+    painter.setBrush( backgroundColor() );
   }
   if( width() > 14 && height() > 10 )
-    painter->drawRect( 7, 5, width() - 14, height() - 10 );
+    painter.drawRect( 7, 5, width() - 14, height() - 10 );
 
-  drawButtonLabel( painter );
+  style()->drawItemText( &painter, rect(), Qt::AlignCenter, palette(), isEnabled(), text() );
 
-  painter->setPen( colorGroup().text() );
-  painter->setBrush( Qt::NoBrush );
+  painter.setPen( colorGroup().text() );
+  painter.setBrush( Qt::NoBrush );
   if( hasFocus() || m_bEditing )
   {
     if( width() > 16 && height() > 12 )
-      painter->drawRect( 8, 6, width() - 16, height() - 12 );
+      painter.drawRect( 8, 6, width() - 16, height() - 12 );
   }
 
 }
