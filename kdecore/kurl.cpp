@@ -1130,6 +1130,7 @@ bool KURL::operator==( const KURL& _u ) const
          m_strPath_encoded == _u.m_strPath_encoded ) &&
        m_strQuery_encoded == _u.m_strQuery_encoded &&
        m_strRef_encoded == _u.m_strRef_encoded &&
+       m_strRef_encoded.isNull() == _u.m_strRef_encoded.isNull() &&
        m_iPort == _u.m_iPort )
   {
     return true;
@@ -1212,7 +1213,7 @@ void KURL::setFileName( const QString& _txt )
 {
   m_strRef_encoded = QString::null;
   int i = 0;
-  while( _txt[i] == '/' ) ++i;
+  while( i < _txt.length() && _txt[i] == '/' ) ++i;
   QString tmp;
   if ( i )
     tmp = _txt.mid( i );
@@ -1647,17 +1648,20 @@ KURL KURL::join( const KURL::List & lst )
   KURL tmp;
 
   
+  bool first = true;
   QListIterator<KURL> it(lst);
   it.toBack();
   while (it.hasPrevious())
   {
      KURL u(it.previous());
-     if (it.hasPrevious())
+     if (!first)
      {
         if (u.m_strRef_encoded.isNull()) u.m_strRef_encoded = tmp.url();
         else u.m_strRef_encoded += "#" + tmp.url(); // Support more than one suburl thingy
      }
      tmp = u;
+
+     first = false;
   }
 
   return tmp;
