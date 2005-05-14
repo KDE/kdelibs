@@ -68,10 +68,6 @@
 #include "config.h"
 #ifdef Q_WS_X11
 #include <X11/Xlib.h> 
-
-// defined in qapplication_x11.cpp
-typedef int (*QX11EventFilter) (XEvent*);
-extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
 #endif
 
 static const char * const recentColors = "Recent_Colors";
@@ -877,6 +873,8 @@ KPaletteTable::addToRecentColors( const QColor &color)
      setPalette(i18n_recentColors);
 }
 
+class KCDPickerFilter;
+
 class KColorDialog::KColorDialogPrivate {
 public:
     KPaletteTable *table;
@@ -904,9 +902,31 @@ public:
     KColor defaultColor;
     KColor selColor;
 #ifdef Q_WS_X11
-    QX11EventFilter oldfilter;
+    KCDPickerFilter* filter;
 #endif
 };
+
+#ifdef Q_WS_X11
+class KCDPickerFilter: public QWidget
+{
+public:
+  KCDPickerFilter(QWidget* parent): QWidget(parent)
+  {}
+
+  virtual bool x11Event (XEvent* event)
+  {
+    if (event->type == ButtonRelease)
+    {
+        QMouseEvent e( QEvent::MouseButtonRelease, QPoint(),
+                       QPoint(event->xmotion.x_root, event->xmotion.y_root) , 0, 0 );
+        QApplication::sendEvent( parentWidget(), &e );
+        return true;
+    }
+    else return false;
+  }
+};
+
+#endif
 
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
@@ -918,7 +938,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->bRecursion = true;
   d->bColorPicking = false;
 #ifdef Q_WS_X11
-  d->oldfilter = 0;
+  d->filter = 0;
 #endif
   d->cbDefaultColor = 0L;
   setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
@@ -1146,8 +1166,8 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 KColorDialog::~KColorDialog()
 {
 #ifdef Q_WS_X11
-    if (d->bColorPicking)
-        qt_set_x11_event_filter(d->oldfilter);
+    if (d->bColorPicking && kapp)
+        kapp->removeX11EventFilter(d->filter);
 #endif
     delete d;
 }
@@ -1456,29 +1476,15 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
 }
 
 
-static QWidget *kde_color_dlg_widget = 0;
 
-#ifdef Q_WS_X11
-static int kde_color_dlg_handler(XEvent *event)
-{
-    if (event->type == ButtonRelease)
-    {
-        QMouseEvent e( QEvent::MouseButtonRelease, QPoint(),
-                       QPoint(event->xmotion.x_root, event->xmotion.y_root) , 0, 0 );
-        QApplication::sendEvent( kde_color_dlg_widget, &e );
-        return true;
-    }
-    return false;
-}
-#endif
 void
 KColorDialog::slotColorPicker()
 {
     d->bColorPicking = true;
 #ifdef Q_WS_X11
-    d->oldfilter = qt_set_x11_event_filter(kde_color_dlg_handler);
+    d->filter = new KCDPickerFilter(this);
+    kapp->installX11EventFilter(d->filter);
 #endif
-    kde_color_dlg_widget = this;
     grabMouse( Qt::CrossCursor );
     grabKeyboard();
 }
@@ -1490,8 +1496,8 @@ KColorDialog::mouseReleaseEvent( QMouseEvent *e )
   {
      d->bColorPicking = false;
 #ifdef Q_WS_X11
-     qt_set_x11_event_filter(d->oldfilter);
-     d->oldfilter = 0;
+     kapp->removeX11EventFilter(d->filter);
+     delete d->filter; d->filter = 0;
 #endif
      releaseMouse();
      releaseKeyboard();
@@ -1519,8 +1525,8 @@ KColorDialog::keyPressEvent( QKeyEvent *e )
      {
         d->bColorPicking = false;
 #ifdef Q_WS_X11
-        qt_set_x11_event_filter(d->oldfilter);
-        d->oldfilter = 0;
+        kapp->removeX11EventFilter(d->filter);
+        delete d->filter; d->filter = 0;
 #endif
         releaseMouse();
         releaseKeyboard();
