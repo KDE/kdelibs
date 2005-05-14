@@ -1,3 +1,8 @@
+2005-05-15  Harri Porten  <porten@kde.org>
+
+	* html/html_elementimpl.cpp: always return a non-null string
+	from innerHTML() and innerText()
+
 2005-05-14  Ivor Hewitt <ivor@ivor.org>
         * khtml_settings.cc: Support full wildcard expressions in AdblocK
         
