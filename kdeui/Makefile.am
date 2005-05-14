@@ -94,7 +94,7 @@ libkdeui_la_SOURCES = \
 		kseparator.cpp krestrictedline.cpp  \
 		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp \
-		kshortcutdialog_simple.ui kshortcutdialog_advanced.ui \
+		kshortcutdialog_simple.ui3 kshortcutdialog_advanced.ui3 \
 		kshortcutdialog.cpp kkeybutton.cpp kkeydialog.cpp \
 		kruler.cpp kcursor.cpp klineeditdlg.cpp  \
 		kcharselect.cpp kcolordrag.cpp  \
