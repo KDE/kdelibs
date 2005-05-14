@@ -27,9 +27,6 @@
 #include "ksslpeerinfo.h"
 #include <kdebug.h>
 
-#include <ksockaddr.h>
-#include <kextsock.h>
-#include <netsupp.h>
 #ifndef Q_WS_WIN //TODO kresolver not ported
 #include "kresolver.h"
 #endif
