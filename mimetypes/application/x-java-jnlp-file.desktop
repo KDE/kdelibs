@@ -1,5 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-Comment=Java Web Start application 
+Comment=Java Web Start application
+Comment[af]=Java Web Begin program
+Comment[pt_BR]=Aplicativo Java Web Start
+Comment[sv]=Java webbstartprogram
+Comment[ta]=ஜாவா வலை துவக்க பயன்பாடு
 MimeType=application/x-java-jnlp-file

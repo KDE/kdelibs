@@ -47,4 +47,4 @@ Write=false
 Suffices=dds,DDS
 Mimetype=image/x-dds
 Library=kimg_dds.la
- 
+

@@ -1343,7 +1343,7 @@ Comment[xx]=xxKDE is starting upxx
 Comment[zh_CN]=KDE 正在启动
 default_presentation=1
 default_sound=KDE_Startup_1.ogg
- 
+
 [exitkde]
 Name=Logout
 Name[af]=Teken af
