@@ -472,12 +472,17 @@ public:
   void pasteRequest();
 
 // KDE invents support for public signals...
-//#undef signals
-//#define signals public
+// Would be nicer if we did a public_signals macro, in fact.
+#ifndef Q_MOC_RUN
+#undef signals
+#define signals public
+#endif
 signals:
 //public signals: // TODO
-//#undef signals
-//#define signals protected
+#ifndef Q_MOC_RUN
+#undef signals
+#define signals protected
+#endif
   /**
    * Enables or disable a standard action held by the browser.
    *
