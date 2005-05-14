@@ -62,7 +62,7 @@ template class Q3PtrList<KDialogBaseButton>;
  */
 namespace
 {
-struct SButton : public Qt
+struct SButton 
 {
   SButton()
   {
@@ -588,7 +588,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   }
   if( d->mButton.mask & Details )
   {
-    KPushButton *pb = d->mButton.append( Details, QString::null );
+    KPushButton *pb = d->mButton.append( Details, QString() );
     connect( pb, SIGNAL(clicked()), SLOT(slotDetails()) );
     setDetails(false);
   }
