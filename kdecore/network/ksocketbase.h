@@ -459,6 +459,12 @@ public:
   virtual ~KActiveSocketBase();
 
   /**
+   * Unshadow errorString from QIODevice
+   */
+  inline QString errorString() const
+  { return QIODevice::errorString(); }
+
+  /**
    * Binds this socket to the given address.
    *
    * The socket will be constructed with the address family,
