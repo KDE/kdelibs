@@ -128,7 +128,7 @@ QString KDataToolInfo::iconName() const
 QStringList KDataToolInfo::commands() const
 {
     if ( !m_service )
-        return QString::null;
+        return QStringList();
 
     return m_service->property( "Commands" ).toStringList();
 }
@@ -136,7 +136,7 @@ QStringList KDataToolInfo::commands() const
 QStringList KDataToolInfo::userCommands() const
 {
     if ( !m_service )
-        return QString::null;
+        return QStringList();
 
     return QStringList::split( ',', m_service->comment() );
 }
