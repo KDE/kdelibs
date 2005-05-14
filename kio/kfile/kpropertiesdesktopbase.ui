@@ -1,182 +1,178 @@
-<ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
- <class>KPropertiesDesktopBase</class>
- <widget class="QWidget" name="KPropertiesDesktopBase" >
-  <property name="geometry" >
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>449</width>
-    <height>304</height>
-   </rect>
-  </property>
-  <layout class="QGridLayout" >
-   <property name="margin" >
-    <number>0</number>
-   </property>
-   <property name="spacing" >
-    <number>6</number>
-   </property>
-   <item row="3" column="6" >
-    <widget class="QPushButton" name="browseButton" >
-     <property name="whatsThis" >
-      <string>Click here to browse your file system in order to find the desired executable.</string>
-     </property>
-     <property name="text" >
-      <string>&amp;Browse...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0" >
-    <widget class="QPushButton" name="addFiletypeButton" >
-     <property name="whatsThis" >
-      <string>Click on this button if you want to add a type of file (mimetype) that your application can handle.</string>
-     </property>
-     <property name="text" >
-      <string>Add...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="3" >
-    <widget class="QPushButton" name="delFiletypeButton" >
-     <property name="whatsThis" >
-      <string>If you want to remove a type of file (mimetype) that your application cannot handle, select the mimetype in the list above and click on this button.</string>
-     </property>
-     <property name="text" >
-      <string>Remove</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="4" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeType" >
-      <enum>QSizePolicy::MinimumExpanding</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>53</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="5" column="3" colspan="2" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType" >
-      <enum>QSizePolicy::Minimum</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>20</width>
-       <height>16</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="6" column="0" colspan="7" >
-    <widget class="QLabel" name="textLabel7" >
-     <property name="whatsThis" >
-      <string>&lt;qt>&lt;p>This list should show the types of file that your application can handle. This list is organized by &lt;u>mimetypes&lt;/u>.&lt;/p>
-&lt;p>MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u>mimetypes&lt;/u>. Example: the &quot;bmp&quot; part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u>image/x-bmp&lt;/u>. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p>
-&lt;p>If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b>Add&lt;/b> below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b>Remove&lt;/b> below.&lt;/p>&lt;/qt></string>
-     </property>
-     <property name="text" >
-      <string>&amp;Supported file types:</string>
-     </property>
-     <property name="buddy" >
-      <cstring>filetypeList</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0" colspan="7" >
-    <widget class="KListView" name="filetypeList" >
-     <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>7</hsizetype>
-       <vsizetype>7</vsizetype>
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="whatsThis" >
-      <string>&lt;qt>&lt;p>This list should show the types of file that your application can handle. This list is organized by &lt;u>mimetypes&lt;/u>.&lt;/p>
-&lt;p>MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u>mimetypes&lt;/u>. Example: the &quot;bmp&quot; part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u>image/x-bmp&lt;/u>. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p>
-&lt;p>If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b>Add&lt;/b> below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b>Remove&lt;/b> below.&lt;/p>&lt;/qt></string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="2" >
-    <widget class="QLabel" name="nameLabel" >
-     <property name="whatsThis" >
-      <string>Type the name you want to give to this application here. This application will appear under this name in the applications menu and in the panel.</string>
-     </property>
-     <property name="text" >
-      <string>&amp;Name:</string>
-     </property>
-     <property name="buddy" >
-      <cstring>nameEdit</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2" colspan="5" >
-    <widget class="KLineEdit" name="nameEdit" >
-     <property name="whatsThis" >
-      <string>Type the name you want to give to this application here. This application will appear under this name in the applications menu and in the panel.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="2" >
-    <widget class="QLabel" name="textLabel2" >
-     <property name="whatsThis" >
-      <string>Type the description of this application, based on its use, here. Examples: a dial up application (KPPP) would be &quot;Dial up tool&quot;.</string>
-     </property>
-     <property name="text" >
-      <string>&amp;Description:</string>
-     </property>
-     <property name="buddy" >
-      <cstring>genNameEdit</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2" colspan="5" >
-    <widget class="KLineEdit" name="genNameEdit" >
-     <property name="whatsThis" >
-      <string>Type the description of this application, based on its use, here. Examples: a dial up application (KPPP) would be &quot;Dial up tool&quot;.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2" >
-    <widget class="QLabel" name="textLabel3" >
-     <property name="whatsThis" >
-      <string>Type any comment you think is useful here.</string>
-     </property>
-     <property name="text" >
-      <string>Comm&amp;ent:</string>
-     </property>
-     <property name="buddy" >
-      <cstring>commentEdit</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2" colspan="5" >
-    <widget class="KLineEdit" name="commentEdit" >
-     <property name="whatsThis" >
-      <string>Type any comment you think is useful here.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2" >
-    <widget class="QLabel" name="textLabel4" >
-     <property name="whatsThis" >
-      <string>Type the command to start this application here.
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>KPropertiesDesktopBase</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>KPropertiesDesktopBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>449</width>
+            <height>304</height>
+        </rect>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>0</number>
+        </property>
+        <spacer row="5" column="3" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>spacer6</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Minimum</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLabel" row="6" column="0" rowspan="1" colspan="7">
+            <property name="name">
+                <cstring>textLabel7</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Supported file types:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>filetypeList</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;&lt;p&gt;This list should show the types of file that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt;
+&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
+&lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
+            </property>
+        </widget>
+        <widget class="KListView" row="7" column="0" rowspan="1" colspan="7">
+            <column>
+                <property name="text">
+                    <string>Mimetype</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Description</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>filetypeList</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>1</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="fullWidth">
+                <bool>true</bool>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;&lt;p&gt;This list should show the types of file that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt;
+&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
+&lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>nameLabel</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Name:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>nameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type the name you want to give to this application here. This application will appear under this name in the applications menu and in the panel.</string>
+            </property>
+        </widget>
+        <widget class="KLineEdit" row="0" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>nameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type the name you want to give to this application here. This application will appear under this name in the applications menu and in the panel.</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel2</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Description:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>genNameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type the description of this application, based on its use, here. Examples: a dial up application (KPPP) would be "Dial up tool".</string>
+            </property>
+        </widget>
+        <widget class="KLineEdit" row="1" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>genNameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type the description of this application, based on its use, here. Examples: a dial up application (KPPP) would be "Dial up tool".</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel3</cstring>
+            </property>
+            <property name="text">
+                <string>Comm&amp;ent:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>commentEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type any comment you think is useful here.</string>
+            </property>
+        </widget>
+        <widget class="KLineEdit" row="2" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>commentEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type any comment you think is useful here.</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="3" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel4</cstring>
+            </property>
+            <property name="text">
+                <string>Co&amp;mmand:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>commandEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type the command to start this application here.
 
 Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
 %f - a single file name
@@ -188,19 +184,14 @@ Following the command, you can have several place holders which will be replaced
 %i - the icon
 %m - the mini-icon
 %c - the caption</string>
-     </property>
-     <property name="text" >
-      <string>Co&amp;mmand:</string>
-     </property>
-     <property name="buddy" >
-      <cstring>commandEdit</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2" colspan="4" >
-    <widget class="KLineEdit" name="commandEdit" >
-     <property name="whatsThis" >
-      <string>Type the command to start this application here.
+            </property>
+        </widget>
+        <widget class="KLineEdit" row="3" column="2" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>commandEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type the command to start this application here.
 
 Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
 %f - a single file name
@@ -212,81 +203,114 @@ Following the command, you can have several place holders which will be replaced
 %i - the icon
 %m - the mini-icon
 %c - the caption</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="2" >
-    <widget class="QLabel" name="textLabel5" >
-     <property name="whatsThis" >
-      <string>Sets the working directory for your application.</string>
-     </property>
-     <property name="text" >
-      <string>&amp;Work path:</string>
-     </property>
-     <property name="buddy" >
-      <cstring>pathEdit</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2" colspan="5" >
-    <widget class="KURLRequester" name="pathEdit" >
-     <property name="whatsThis" >
-      <string>Sets the working directory for your application.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1" colspan="2" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeType" >
-      <enum>QSizePolicy::MinimumExpanding</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>53</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="8" column="5" colspan="2" >
-    <widget class="QPushButton" name="advancedButton" >
-     <property name="whatsThis" >
-      <string>Click here to modify the way this application will run, launch feedback, DCOP options or to run it as a different user.</string>
-     </property>
-     <property name="text" >
-      <string>Ad&amp;vanced Options</string>
-     </property>
-    </widget>
-   </item>
-  </layout>
- </widget>
- <pixmapfunction></pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>KListView</class>
-   <extends>Q3ListView</extends>
-   <header>klistview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>KLineEdit</class>
-   <extends>QWidget</extends>
-   <header>klineedit.h</header>
-   <container>1</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>KURLRequester</class>
-   <extends>QWidget</extends>
-   <header>kurlrequester.h</header>
-   <container>1</container>
-   <pixmap></pixmap>
-  </customwidget>
- </customwidgets>
- <resources/>
- <connections/>
-</ui>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="3" column="6">
+            <property name="name">
+                <cstring>browseButton</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Browse...</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Click here to browse your file system in order to find the desired executable.</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="4" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel5</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Work path:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>pathEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Sets the working directory for your application.</string>
+            </property>
+        </widget>
+        <widget class="KURLRequester" row="4" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>pathEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Sets the working directory for your application.</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="8" column="0">
+            <property name="name">
+                <cstring>addFiletypeButton</cstring>
+            </property>
+            <property name="text">
+                <string>Add...</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Click on this button if you want to add a type of file (mimetype) that your application can handle.</string>
+            </property>
+        </widget>
+        <spacer row="8" column="1" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>spacer31_2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>MinimumExpanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>53</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QPushButton" row="8" column="3">
+            <property name="name">
+                <cstring>delFiletypeButton</cstring>
+            </property>
+            <property name="text">
+                <string>Remove</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>If you want to remove a type of file (mimetype) that your application cannot handle, select the mimetype in the list above and click on this button.</string>
+            </property>
+        </widget>
+        <spacer row="8" column="4">
+            <property name="name">
+                <cstring>spacer31_3</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>MinimumExpanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>53</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QPushButton" row="8" column="5" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>advancedButton</cstring>
+            </property>
+            <property name="text">
+                <string>Ad&amp;vanced Options</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Click here to modify the way this application will run, launch feedback, DCOP options or to run it as a different user.</string>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<includes>
+    <include location="global" impldecl="in implementation">klineedit.h</include>
+    <include location="global" impldecl="in implementation">kurlrequester.h</include>
+    <include location="global" impldecl="in implementation">klistview.h</include>
+</includes>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

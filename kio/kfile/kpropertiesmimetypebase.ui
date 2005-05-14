@@ -1,54 +1,70 @@
-<ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
- <class>widget2</class>
- <widget class="QWidget" name="widget2" >
-  <property name="geometry" >
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>265</width>
-    <height>213</height>
-   </rect>
-  </property>
-  <layout class="QVBoxLayout" >
-   <property name="margin" >
-    <number>0</number>
-   </property>
-   <property name="spacing" >
-    <number>6</number>
-   </property>
-   <item>
-    <widget class="QLabel" name="textLabel1" >
-     <property name="text" >
-      <string>Select one or more file types to add:</string>
-     </property>
-     <property name="buddy" >
-      <cstring>listView</cstring>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="KListView" name="listView" >
-     <property name="whatsThis" >
-      <string>&lt;qt>&lt;p>Select one or more types of file that your application can handle here. This list is organized by &lt;u>mimetypes&lt;/u>.&lt;/p>
-&lt;p>MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u>mimetypes&lt;/u>. Example: the &quot;bmp&quot; part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u>image/x-bmp&lt;/u>. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p></string>
-     </property>
-    </widget>
-   </item>
-  </layout>
- </widget>
- <pixmapfunction></pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>KListView</class>
-   <extends>Q3ListView</extends>
-   <header>klistview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
- </customwidgets>
- <resources/>
- <connections/>
-</ui>
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>KPropertiesMimetypeBase</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>widget2</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>265</width>
+            <height>213</height>
+        </rect>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>0</number>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textLabel1</cstring>
+            </property>
+            <property name="text">
+                <string>Select one or more file types to add:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>listView</cstring>
+            </property>
+        </widget>
+        <widget class="KListView">
+            <column>
+                <property name="text">
+                    <string>Mimetype</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Description</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>listView</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;&lt;p&gt;Select one or more types of file that your application can handle here. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt;
+&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;</string>
+            </property>
+        </widget>
+    </vbox>
+</widget>
+<includes>
+    <include location="global" impldecl="in implementation">klistview.h</include>
+</includes>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
