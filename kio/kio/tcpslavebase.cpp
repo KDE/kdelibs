@@ -635,20 +635,12 @@ KSSLCertificateHome::KSSLAuthAction aa;
         }
     }
 
-     QByteArray data, retval;
-     Q3CString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << ourHost;
-     arg << certs;
-     arg << metaData("window-id").toInt();
-     bool rc = d->dcc->call("kio_uiserver", "UIServer",
-                               "showSSLCertDialog(QString, QStringList,int)",
-                               data, rettype, retval);
+     DCOPRef uis("kio_uiserver", "UIServer");
+     uis.setDCOPClient(d->dcc);
 
-     if (rc && rettype == "KSSLCertDlgRet") {
-        QDataStream retStream(retval);
-        KSSLCertDlgRet drc;
-        retStream >> drc;
+     DCOPReply retVal = uis.call("showSSLCertDialog", ourHost, certs, metaData("window-id").toInt());
+     KSSLCertDlgRet drc;
+     if (retVal.get(drc, "KSSLCertDlgRet")) {
         if (drc.ok) {
            send = drc.send;
            save = drc.save;
@@ -675,8 +667,9 @@ KSSLCertificateHome::KSSLAuthAction aa;
      do {
         QString pass;
         QByteArray authdata, authval;
-        Q3CString rettype;
+        DCOPCString rettype;
         QDataStream qds(&authdata, QIODevice::WriteOnly);
+        qds.setVersion(QDataStream::Qt_3_1);
         ai.prompt = i18n("Enter the certificate password:");
         ai.caption = i18n("SSL Certificate Password");
         ai.setModified(true);
@@ -705,9 +698,11 @@ KSSLCertificateHome::KSSLAuthAction aa;
            }
 
            QDataStream qdret(authval);
+           qdret.setVersion(QDataStream::Qt_3_1);
            QByteArray authdecode;
            qdret >> authdecode;
            QDataStream qdtoo(authdecode);
+           qdtoo.setVersion(QDataStream::Qt_3_1);
            qdtoo >> ai;
            if (!ai.isModified()) {
              break;
@@ -933,14 +928,11 @@ int TCPSlaveBase::verifyCertificate()
                       }
 
                    }
-                   QByteArray data, ignore;
-                   Q3CString ignoretype;
-                   QDataStream arg(&data, QIODevice::WriteOnly);
-                   arg << theurl << mOutgoingMetaData;
-                   arg << metaData("window-id").toInt();
-                        d->dcc->call("kio_uiserver", "UIServer",
-                                "showSSLInfoDialog(QString,KIO::MetaData,int)",
-                                data, ignoretype, ignore);
+
+                  DCOPRef uis("kio_uiserver", "UIServer");
+                  uis.setDCOPClient(d->dcc);
+                  uis.call("showSSLInfoDialog(QString,KIO::MetaData,int)",
+                    theurl, mOutgoingMetaData, metaData("window-id").toInt());
                 }
              } while (result == KMessageBox::Yes);
 
@@ -1060,14 +1052,12 @@ int TCPSlaveBase::verifyCertificate()
                          QStringList() );
                       }
                    }
-                   QByteArray data, ignore;
-                   Q3CString ignoretype;
-                   QDataStream arg(&data, QIODevice::WriteOnly);
-                   arg << theurl << mOutgoingMetaData;
-                   arg << metaData("window-id").toInt();
-                        d->dcc->call("kio_uiserver", "UIServer",
-                                "showSSLInfoDialog(QString,KIO::MetaData,int)",
-                                data, ignoretype, ignore);
+
+
+                  DCOPRef uis("kio_uiserver", "UIServer");
+                  uis.setDCOPClient(d->dcc);
+                  uis.call("showSSLInfoDialog(QString,KIO::MetaData,int)",
+                    theurl, mOutgoingMetaData, metaData("window-id").toInt());
                 }
           } while (result == KMessageBox::Yes);
 
@@ -1144,14 +1134,11 @@ int TCPSlaveBase::verifyCertificate()
                 QStringList() );
              }
           }
-          QByteArray data, ignore;
-          Q3CString ignoretype;
-          QDataStream arg(&data, QIODevice::WriteOnly);
-          arg << theurl << mOutgoingMetaData;
-          arg << metaData("window-id").toInt();
-          d->dcc->call("kio_uiserver", "UIServer",
-                       "showSSLInfoDialog(QString,KIO::MetaData,int)",
-                       data, ignoretype, ignore);
+
+          DCOPRef uis("kio_uiserver", "UIServer");
+          uis.setDCOPClient(d->dcc);
+          uis.call("showSSLInfoDialog(QString,KIO::MetaData,int)",
+                   theurl, mOutgoingMetaData, metaData("window-id").toInt());
       }
       } while (result != KMessageBox::No);
    }
