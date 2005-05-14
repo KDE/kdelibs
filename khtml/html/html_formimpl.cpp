@@ -117,8 +117,8 @@ static Q3CString encodeCString(const Q3CString& e)
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
     // safe characters like NS handles them for compatibility
     static const char *safe = "-._*";
-    Q3CString encoded(( e.length()+e.contains( '\n' ) )*3
-                     +e.contains('\r') * 3 + 1);
+    Q3CString encoded(( e.length()+e.count( '\n' ) )*3
+                     +e.count('\r') * 3 + 1);
     int enclen = 0;
     bool crmissing = false;
     unsigned char oldc;
@@ -212,7 +212,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     Q3CString enc_string = ""; // used for non-multipart data
 
     // find out the QTextcodec to use
-    const QString str = m_acceptcharset.string();
+    QString str = m_acceptcharset.string();
     const QChar space(' ');
     const unsigned int strLength = str.length();
     for(unsigned int i=0; i < strLength; ++i) if(str[i].latin1() == ',') str[i] = space;
@@ -579,8 +579,8 @@ void HTMLFormElementImpl::submit(  )
                     w->setFolder(KWallet::Wallet::FormDataFolder());
                     QMap<QString, QString> map;
                     if (!w->readMap(key, map)) {
-                        QMapConstIterator<QString, QString> it = map.begin();
-                        const QMapConstIterator<QString, QString> itEnd = map.end();
+                        QMap<QString, QString>::const_iterator it = map.begin();
+                        const QMap<QString, QString>::const_iterator itEnd = map.end();
                         for ( ; it != itEnd; ++it )
                             if ( map[it.key()] != m_walletMap[it.key()] ) {
                                 login_changed = true;

@@ -113,27 +113,23 @@ DOMString HTMLDocumentImpl::cookie() const
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    Q3CString replyType;
-    QByteArray params, reply;
-    QDataStream stream(&params, QIODevice::WriteOnly);
-    stream << URL().url() << windowId;
-    if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                  "findDOMCookies(QString,long int)", params,
-                                  replyType, reply))
+    DCOPRef   kcookiejar("kcookiejar", "kcookiejar");
+    DCOPReply reply = kcookiejar.call("findDOMCookies(QString,long int)",
+                  URL().url(), windowId);
+
+    if ( !reply.isValid() )
     {
        kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
        return DOMString();
     }
 
-    QDataStream stream2(reply);
-    if(replyType != "QString") {
+    QString result;
+    if ( !reply.get(result, "QString") ) {
          kdError(6010) << "DCOP function findDOMCookies(...) returns "
-                       << replyType << ", expected QString" << endl;
+                       << reply.type << ", expected QString" << endl;
          return DOMString();
     }
 
-    QString result;
-    stream2 >> result;
     return DOMString(result);
 }
 
@@ -237,7 +233,7 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
     //kdDebug(0) << "map pos of #:" << pos << endl;
     s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
 
-    QMapConstIterator<QString,HTMLMapElementImpl*> it = mapMap.find(s);
+    QMap<QString,HTMLMapElementImpl*>::const_iterator it = mapMap.find(s);
 
     if (it != mapMap.end())
         return *it;

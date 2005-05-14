@@ -763,7 +763,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             bool finish = false;
             unsigned int ll = kMin(src.length(), CBUFLEN-cBufferPos);
             while(ll--) {
-                ushort curchar = *src;
+                ushort curchar = src->unicode();
                 if(curchar <= ' ' || curchar == '>' ) {
                     finish = true;
                     break;
@@ -831,7 +831,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             bool atespace = false;
             ushort curchar;
             while(!src.isEmpty()) {
-                curchar = *src;
+                curchar = src->unicode();
                 if(curchar > ' ') {
                     if(curchar == '<' || curchar == '>')
                         tag = SearchEnd;
@@ -861,7 +861,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             int ll = kMin(src.length(), CBUFLEN-cBufferPos);
 
             while(ll--) {
-                curchar = *src;
+                curchar = src->unicode();
                 if(curchar <= '>') {
                     if(curchar <= ' ' || curchar == '=' || curchar == '>') {
                         unsigned int a;

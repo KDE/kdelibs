@@ -30,6 +30,7 @@
 #include "rendering/render_layer.h"
 #include "khtmlview.h"
 
+#include <qevent.h>
 #include <kdebug.h>
 
 using namespace DOM;
@@ -654,7 +655,7 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *vi
   // m_keyVal should contain the unicode value
   // of the pressed key if available.
   if (m_virtKeyVal == DOM_VK_UNDEFINED && !key->text().isEmpty())
-      m_keyVal = key->text().unicode()[0];
+      m_keyVal = key->text()[0].unicode();
 
   //  m_numPad = ???
 
