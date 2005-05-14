@@ -31,6 +31,7 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <qobject.h>
+#include <q3popupmenu.h>
 
 class KXMLGUIBuilderPrivate
 {
@@ -153,7 +154,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if (!kapp->authorizeKAction(name))
        return 0;
 
-    KPopupMenu *popup = new KPopupMenu( p, name);
+    KMenu *popup = new KMenu(p);
+    popup->setObjectName(name);
 
     QString i18nText;
     QDomElement textElem = element.namedItem( d->attrText1 ).toElement();
@@ -356,7 +358,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   }
   else if ( element.tagName().lower() == d->tagMenuTitle )
   {
-    if ( qobject_cast<KPopupMenu*>( parent ) )
+    if ( qobject_cast<KMenu*>( parent ) )
     {
       QString i18nText;
       Q3CString text = element.text().utf8();
@@ -378,10 +380,16 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         pix = SmallIcon( icon, instance );
       }
 
-      if ( !icon.isEmpty() )
-        return static_cast<KPopupMenu *>(parent)->insertTitle( pix, i18nText, -1, index );
-      else
-        return static_cast<KPopupMenu *>(parent)->insertTitle( i18nText, -1, index );
+      KMenu *m = static_cast<KMenu *>(parent);
+      QAction *before = m->actions().value(index + 1);
+
+      if ( !icon.isEmpty() ) {
+        m->insertTitle( QIcon(pix), i18nText, before );
+        return m->idAt(index);
+      } else {
+        m->insertTitle( i18nText, before );
+        return m->idAt(index);
+      }
     }
   }
   return 0;
