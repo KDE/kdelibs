@@ -148,8 +148,9 @@ protected:
     * Re-implemented for internal reasons.  API not affected.
     *
     * See QLineEdit::mousePressEvent().
+	* KDE4: use the contextMenuEvent instead
     */
-    virtual Q3PopupMenu *createPopupMenu();
+    virtual QMenu *createStandardContextMenu();
 
 protected slots:
     /**

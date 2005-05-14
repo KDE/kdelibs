@@ -231,9 +231,9 @@ bool KListViewSearchLine::itemMatches(const Q3ListViewItem *item, const QString 
     return false;
 }
 
-Q3PopupMenu *KListViewSearchLine::createPopupMenu()
+QMenu *KListViewSearchLine::createStandardContextMenu()
 {
-    Q3PopupMenu *popup = KLineEdit::createPopupMenu();
+    QMenu *popup = KLineEdit::createStandardContextMenu();
 
     if (d->listView->columns()>1) {
         Q3PopupMenu *subMenu = new Q3PopupMenu(popup);
