@@ -131,7 +131,7 @@ namespace KJS {
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
            ScreenTop, ScreenLeft, AToB, BToA, FrameElement,
-           ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Qt::DockTop, _Screen,
+           ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
            Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout, XMLHttpRequest, XMLSerializer,
            Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, ReleaseEvents,
            Print, AddEventListener, RemoveEventListener, SideBar,

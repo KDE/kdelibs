@@ -1580,7 +1580,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AnchorAccessKey:       return String(anchor.accessKey());
     case AnchorCharset:         return String(anchor.charset());
     case AnchorCoords:          return String(anchor.coords());
-    case Qt::AnchorHref:            return String(anchor.href());
+    case AnchorHref:            return String(anchor.href());
     case AnchorHrefLang:        return String(anchor.hreflang());
     case AnchorHash:            return String('#'+KURL(anchor.href().string()).ref());
     case AnchorHost:            return String(KURL(anchor.href().string()).host());
@@ -1596,7 +1596,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AnchorPort:            return String(QString::number(KURL(anchor.href().string()).port()));
     case AnchorProtocol:        return String(KURL(anchor.href().string()).protocol()+":");
     case AnchorSearch:          return String(KURL(anchor.href().string()).query());
-    case Qt::AnchorName:            return String(anchor.name());
+    case AnchorName:            return String(anchor.name());
     case AnchorRel:             return String(anchor.rel());
     case AnchorRev:             return String(anchor.rev());
     case AnchorShape:           return String(anchor.shape());
@@ -2784,9 +2784,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AnchorAccessKey:       { anchor.setAccessKey(str); return; }
       case AnchorCharset:         { anchor.setCharset(str); return; }
       case AnchorCoords:          { anchor.setCoords(str); return; }
-      case Qt::AnchorHref:            { anchor.setHref(str); return; }
+      case AnchorHref:            { anchor.setHref(str); return; }
       case AnchorHrefLang:        { anchor.setHreflang(str); return; }
-      case Qt::AnchorName:            { anchor.setName(str); return; }
+      case AnchorName:            { anchor.setName(str); return; }
       case AnchorRel:             { anchor.setRel(str); return; }
       case AnchorRev:             { anchor.setRev(str); return; }
       case AnchorShape:           { anchor.setShape(str); return; }

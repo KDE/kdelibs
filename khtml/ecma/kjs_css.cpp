@@ -1174,11 +1174,11 @@ Value DOMRGBColor::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Red:
-    return getDOMCSSValue(exec, rgbColor.Qt::red());
+    return getDOMCSSValue(exec, rgbColor.red());
   case Green:
-    return getDOMCSSValue(exec, rgbColor.Qt::green());
+    return getDOMCSSValue(exec, rgbColor.green());
   case Blue:
-    return getDOMCSSValue(exec, rgbColor.Qt::blue());
+    return getDOMCSSValue(exec, rgbColor.blue());
   default:
     return Value();
   }
@@ -1221,13 +1221,13 @@ Value DOMRect::tryGet(ExecState *exec, const Identifier &p) const
 Value DOMRect::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
-  case Qt::DockTop:
+  case Top:
     return getDOMCSSValue(exec, rect.top());
-  case Qt::DockRight:
+  case Right:
     return getDOMCSSValue(exec, rect.right());
-  case Qt::DockBottom:
+  case Bottom:
     return getDOMCSSValue(exec, rect.bottom());
-  case Qt::DockLeft:
+  case Left:
     return getDOMCSSValue(exec, rect.left());
   default:
     return Value();

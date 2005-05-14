@@ -524,7 +524,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
         return retrieve(part->opener());
     case Parent:
       return retrieve(part->parentPart() ? part->parentPart() : (KHTMLPart*)part);
-    case Qt::DockTop: {
+    case Top: {
       KHTMLPart *p = part;
       while (p->parentPart())
         p = p->parentPart();

@@ -274,7 +274,7 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Qt::DockTop, Qt::DockRight, Qt::DockBottom, Qt::DockLeft };
+    enum { Top, Right, Bottom, Left };
   protected:
     DOM::Rect rect;
   };
