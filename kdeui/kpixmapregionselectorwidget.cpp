@@ -139,7 +139,7 @@ void KPixmapRegionSelectorWidget::updatePixmap()
 KPopupMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 {
    KPopupMenu *popup=new KPopupMenu(this, "PixmapRegionSelectorPopup");
-   popup->insertTitle(i18n("Image Operations"));
+   popup->addTitle(i18n("Image Operations"));
    
    KAction *action = new KAction(i18n("&Rotate Clockwise"), "rotate_cw",
                                 0, this, SLOT(rotateClockwise()),
@@ -220,7 +220,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          popup->exec( mev->globalPos() );
          delete popup;
          return TRUE;
-      };
+      }
 
       QCursor cursor;
 
