@@ -47,8 +47,6 @@
 #include <dcopclient.h>
 #include <dcopref.h>
 #ifdef Q_WS_X11
-// KDE4 TODO
-#include <QtGui/private/qt_x11_p.h>
 #define None 0
 
 #include <kstartupinfo.h>
@@ -231,7 +229,7 @@ void KWin::activateWindow( WId win, long time )
 #ifdef Q_WS_X11
     NETRootInfo info( QX11Info::display(), 0 );
     if( time == 0 )
-        time = X11->userTime;
+        time = QX11Info::appUserTime();
     info.setActiveWindow( win, NET::FromApplication, time,
         kapp->activeWindow() ? kapp->activeWindow()->winId() : 0 );
 #endif // Q_WS_X11 ...
@@ -243,7 +241,7 @@ void KWin::forceActiveWindow( WId win, long time )
 #ifdef Q_WS_X11
     NETRootInfo info( QX11Info::display(), 0 );
     if( time == 0 )
-        time = X11->time;
+        time = QX11Info::appTime();
     info.setActiveWindow( win, NET::FromTool, time, 0 );
 #endif // Q_WS_X11
     KUniqueApplication::setHandleAutoStarted();
