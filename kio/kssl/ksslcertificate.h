@@ -316,7 +316,7 @@ public:
 	 *  @param cert the certificate to set to
 	 *  @return true on success
 	 */
-	bool setCert(QString& cert);
+	bool setCert(const QString& cert);
 
 	/**
 	 *  Access the X.509v3 parameters.
