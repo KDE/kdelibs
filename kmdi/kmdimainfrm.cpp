@@ -62,6 +62,9 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <q3valuelist.h>
+#include <QResizeEvent>
+#include <QFocusEvent>
+#include <qx11info_x11.h>
 
 #include "kmdimainfrm.h"
 #include "kmditaskbar.h"
@@ -572,6 +575,7 @@ KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::Do
 {
 	QWidget* tvta = pWnd;
 	KDockWidget* pDW = dockManager->getDockWidgetFromName( pWnd->name() );
+	QString newTabCaption = !tabCaption.isEmpty() ? pWnd->caption() : tabCaption;
 	if ( pDW )
 	{
 		// probably readDockConfig already created the widgetContainer, use that
@@ -580,7 +584,7 @@ KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::Do
 		if ( pWnd->icon() )
 			pDW->setPixmap( *pWnd->icon() );
 
-		pDW->setTabPageLabel( ( tabCaption == 0 ) ? pWnd->caption() : tabCaption );
+		pDW->setTabPageLabel( newTabCaption );
 		pDW->setToolTipString( tabToolTip );
 		dockManager->removeFromAutoCreateList( pDW );
 		pWnd = pDW;
@@ -588,7 +592,7 @@ KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::Do
 
 	QRect r = pWnd->geometry();
 
-	KMdiToolViewAccessor *mtva = new KMdiToolViewAccessor( this, pWnd, tabToolTip, ( tabCaption == 0 ) ? pWnd->caption() : tabCaption );
+	KMdiToolViewAccessor *mtva = new KMdiToolViewAccessor( this, pWnd, tabToolTip, newTabCaption );
 	m_pToolViews->insert( tvta, mtva );
 
 	if ( pos == KDockWidget::DockNone )
@@ -1177,7 +1181,7 @@ bool KMdiMainFrm::eventFilter( QObject * /*obj*/, QEvent *e )
 	if ( e->type() == QEvent::FocusIn )
 	{
 		QFocusEvent * pFE = ( QFocusEvent* ) e;
-		if ( pFE->reason() == QFocusEvent::ActiveWindow )
+		if ( pFE->reason() == Qt::ActiveWindowFocusReason )
 		{
 			if ( m_pCurrentWindow && !m_pCurrentWindow->isHidden() &&
 			     !m_pCurrentWindow->isAttached() && m_pMdi->topChild() )
@@ -1284,11 +1288,11 @@ void KMdiMainFrm::findRootDockWidgets( Q3PtrList<KDockWidget>* rootDockWidgetLis
 	const int frameBorderWidth = 7;  // @todo: Can we / do we need to ask the window manager?
 	const int windowTitleHeight = 10; // @todo:    -"-
 
-	QObjectList* pObjList = queryList( "KDockWidget" );
-	if ( pObjList->isEmpty() )
+	QObjectList pObjList = queryList( "KDockWidget" );
+	if ( pObjList.isEmpty() )
 		pObjList = queryList( "KDockWidget_Compat::KDockWidget" );
 
-	QObjectListIt it( *pObjList );
+	QObjectList::iterator it = pObjList.begin();
 	// for all dockwidgets (which are children of this mainwindow)
 	while ( ( *it ) )
 	{
@@ -1300,7 +1304,7 @@ void KMdiMainFrm::findRootDockWidgets( Q3PtrList<KDockWidget>* rootDockWidgetLis
 		// find the oldest ancestor of the current dockwidget that can be undocked
 		while ( !pW->isTopLevel() )
 		{
-			if ( qobject_cast<KDockWidget>( pW ) ||  pW->inherits( "KDockWidget_Compat::KDockWidget" ) )
+			if ( qobject_cast<KDockWidget*>( pW ) ||  pW->inherits( "KDockWidget_Compat::KDockWidget" ) )
 			{
 				undockCandidate = static_cast<KDockWidget*>( pW );
 				if ( undockCandidate->enableDocking() != KDockWidget::DockNone )
@@ -1338,7 +1342,6 @@ void KMdiMainFrm::findRootDockWidgets( Q3PtrList<KDockWidget>* rootDockWidgetLis
 		}
 		++it;
 	}
-	delete pObjList;
 }
 
 /**
@@ -1743,28 +1746,28 @@ void KMdiMainFrm::setIDEAlModeStyle( int flags )
 	d->m_styleIDEAlMode = flags; // see KMultiTabBar for the first 3 bits
 	if ( m_leftContainer )
 	{
-		KMdiDockContainer * tmpL = ( KMdiDockContainer* ) ( m_leftContainer->getWidget()->qt_cast( "KMdiDockContainer" ) );
+		KMdiDockContainer * tmpL = ( KMdiDockContainer* ) ( qobject_cast<KMdiDockContainer*>(m_leftContainer->getWidget()) );
 		if ( tmpL )
 			tmpL->setStyle( flags );
 	}
 
 	if ( m_rightContainer )
 	{
-		KMdiDockContainer * tmpR = ( KMdiDockContainer* ) ( m_rightContainer->getWidget()->qt_cast( "KMdiDockContainer" ) );
+		KMdiDockContainer * tmpR = ( KMdiDockContainer* ) ( qobject_cast<KMdiDockContainer*>(m_rightContainer->getWidget()) );
 		if ( tmpR )
 			tmpR->setStyle( flags );
 	}
 
 	if ( m_topContainer )
 	{
-		KMdiDockContainer * tmpT = ( KMdiDockContainer* ) ( m_topContainer->getWidget()->qt_cast( "KMdiDockContainer" ) );
+		KMdiDockContainer * tmpT = ( KMdiDockContainer* ) ( qobject_cast<KMdiDockContainer*>(m_topContainer->getWidget()) );
 		if ( tmpT )
 			tmpT->setStyle( flags );
 	}
 
 	if ( m_bottomContainer )
 	{
-		KMdiDockContainer * tmpB = ( KMdiDockContainer* ) ( m_bottomContainer->getWidget()->qt_cast( "KMdiDockContainer" ) );
+		KMdiDockContainer * tmpB = ( KMdiDockContainer* ) ( qobject_cast<KMdiDockContainer*>(m_bottomContainer->getWidget()) );
 		if ( tmpB )
 			tmpB->setStyle( flags );
 	}

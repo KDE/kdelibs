@@ -33,6 +33,7 @@
 #include <qcursor.h>
 #include <qtoolbutton.h>
 #include <q3popupmenu.h>
+#include <QMouseEvent>
 
 #include "kmdidefines.h"
 #include "kmdichildfrm.h"

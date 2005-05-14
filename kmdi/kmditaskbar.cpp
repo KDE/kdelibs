@@ -37,7 +37,8 @@
 #include <qlabel.h>
 #include <qwidget.h>
 #include <qstyle.h>
-
+#include <QMouseEvent>
+#include <QAbstractButton>
 #include <qnamespace.h>
 
 /*
@@ -95,12 +96,12 @@ void KMdiTaskBarButton::setNewText( const QString& s )
 void KMdiTaskBarButton::setText( const QString& s )
 {
 	m_actualText = s;
-	Q3Button::setText( s );
+	QAbstractButton::setText( s );
 }
 
 void KMdiTaskBarButton::fitText( const QString& origStr, int newWidth )
 {
-	Q3Button::setText( m_actualText );
+	QAbstractButton::setText( m_actualText );
 
 	int actualWidth = sizeHint().width();
 	int realLetterCount = origStr.length();
@@ -126,7 +127,7 @@ void KMdiTaskBarButton::fitText( const QString& origStr, int newWidth )
 		newLetterCount--;
 	}
 
-	Q3Button::setText( s );
+	QAbstractButton::setText( s );
 }
 
 QString KMdiTaskBarButton::actualText() const
@@ -337,8 +338,9 @@ void KMdiTaskBar::layoutTaskBar( int taskBarWidth )
 	// if there's enough space, use actual width
 	int buttonCount = m_pButtonList->count();
 	int tbHandlePixel;
-	tbHandlePixel = style().pixelMetric( QStyle::PM_DockWindowHandleExtent, this );
-	int buttonAreaWidth = taskBarWidth - tbHandlePixel - style().pixelMetric( QStyle::PM_DefaultFrameWidth, this ) - 5;
+	QStyleOption option;
+	tbHandlePixel = style()->pixelMetric( QStyle::PM_DockWidgetHandleExtent, &option, this );
+	int buttonAreaWidth = taskBarWidth - tbHandlePixel - style()->pixelMetric( QStyle::PM_DefaultFrameWidth, &option, this ) - 5;
 	if ( ( ( allButtonsWidthHint ) <= buttonAreaWidth ) || ( width() < parentWidget() ->width() ) )
 	{
 		for ( b = m_pButtonList->first();b;b = m_pButtonList->next() )

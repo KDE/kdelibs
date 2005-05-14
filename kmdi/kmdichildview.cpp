@@ -41,6 +41,9 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <qicon.h>
+#include <QMouseEvent>
+#include <QFocusEvent>
+#include <QKeyEvent>
 
 //============ KMdiChildView ============//
 
@@ -57,7 +60,7 @@ KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, con
 	, m_trackChanges( 0 )
 {
 	setGeometry( 0, 0, 0, 0 );  // reset
-	if ( caption != 0L )
+	if ( !caption.isEmpty() )
 		m_szCaption = caption;
 	else
 		m_szCaption = i18n( "Unnamed" );
@@ -404,7 +407,7 @@ void KMdiChildView::focusInEvent( QFocusEvent *e )
 	QWidget::focusInEvent( e );
 
 	// every widget get a focusInEvent when a popup menu is opened!?! -> maybe bug of QT
-	if ( e && ( ( e->reason() ) == QFocusEvent::Popup ) )
+	if ( e && ( ( e->reason() ) == Qt::PopupFocusReason ) )
 		return ;
 
 
@@ -493,14 +496,14 @@ void KMdiChildView::slot_childDestroyed()
 
 	// if we lost a child we uninstall ourself as event filter for the lost
 	// child and its children
-	const QObject * pLostChild = QObject::sender();
+	QObject* pLostChild = const_cast<QObject*>( QObject::sender() );
 	if ( pLostChild && ( pLostChild->isWidgetType() ) )
 	{
-		QObjectList* list = ( ( QObject* ) ( pLostChild ) ) ->queryList( "QWidget" );
-		list->insert( 0, pLostChild );        // add the lost child to the list too, just to save code
-		QObjectListIt it( *list );          // iterate over all lost child widgets
+		QObjectList list = pLostChild->queryList( "QWidget" );
+		list.insert( 0, pLostChild );        // add the lost child to the list too, just to save code
+		QObjectList::iterator it = list.begin();          // iterate over all lost child widgets
 		QObject* obj;
-		while ( ( obj = it.current() ) != 0 )
+		while ( ( obj = (*it) ) != 0 )
 		{ // for each found object...
 			QWidget * widg = ( QWidget* ) obj;
 			++it;
@@ -514,7 +517,6 @@ void KMdiChildView::slot_childDestroyed()
 			if ( m_focusedChildWidget == widg )
 				m_focusedChildWidget = 0L;          // reset focused widget
 		}
-		delete list;                        // delete the list, not the objects
 	}
 }
 
@@ -545,11 +547,9 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 	{
 		if ( obj->isWidgetType() )
 		{
-			QObjectList * list = queryList( "QWidget" );
-			if ( list->find( obj ) != -1 )
+			QObjectList list = queryList( "QWidget" );
+			if ( list.indexOf( obj ) != -1 )
 				m_focusedChildWidget = ( QWidget* ) obj;
-
-			delete list;   // delete the list, not the objects
 		}
 		if ( !isAttached() )
 		{   // is toplevel, for attached views activation is done by main frame event filter
@@ -569,11 +569,11 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 		QObject * pLostChild = ( ( QChildEvent* ) e ) ->child();
 		if ( ( pLostChild != 0L ) && ( pLostChild->isWidgetType() ) )
 		{
-			QObjectList * list = pLostChild->queryList( "QWidget" );
-			list->insert( 0, pLostChild );        // add the lost child to the list too, just to save code
-			QObjectListIt it( *list );          // iterate over all lost child widgets
+			QObjectList list = pLostChild->queryList( "QWidget" );
+			list.insert( 0, pLostChild );        // add the lost child to the list too, just to save code
+			QObjectList::iterator it = list.begin();          // iterate over all lost child widgets
 			QObject * o;
-			while ( ( o = it.current() ) != 0 )
+			while ( ( o = (*it) ) != 0 )
 			{ // for each found object...
 				QWidget * widg = ( QWidget* ) o;
 				++it;
@@ -588,7 +588,6 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 						m_lastFocusableChildWidget = 0L;    // reset last widget
 				}
 			}
-			delete list;                        // delete the list, not the objects
 		}
 	}
 	else if ( e->type() == QEvent::ChildInserted )
@@ -600,13 +599,14 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 		if ( ( pNewChild != 0L ) && ( pNewChild->isWidgetType() ) )
 		{
 			QWidget * pNewWidget = ( QWidget* ) pNewChild;
-			if ( pNewWidget->testWFlags( Qt::WType_Dialog | Qt::WShowModal ) )
+			if ( pNewWidget->windowFlags() & Qt::Dialog == Qt::Dialog &&
+			     pNewWidget->testAttribute( Qt::WA_ShowModal ) )
 				return false;
-			QObjectList *list = pNewWidget->queryList( "QWidget" );
-			list->insert( 0, pNewChild );         // add the new child to the list too, just to save code
-			QObjectListIt it( *list );          // iterate over all new child widgets
+			QObjectList list = pNewWidget->queryList( "QWidget" );
+			list.insert( 0, pNewChild );         // add the new child to the list too, just to save code
+			QObjectList::iterator it = list.begin();          // iterate over all new child widgets
 			QObject * o;
-			while ( ( o = it.current() ) != 0 )
+			while ( ( o = (*it) ) != 0 )
 			{ // for each found object...
 				QWidget * widg = ( QWidget* ) o;
 				++it;
@@ -621,7 +621,6 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 					m_lastFocusableChildWidget = widg; // last widget
 				}
 			}
-			delete list;                        // delete the list, not the objects
 		}
 	}
 	else
@@ -647,16 +646,15 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 /** Switches interposing in event loop of all current child widgets off. */
 void KMdiChildView::removeEventFilterForAllChildren()
 {
-	QObjectList* list = queryList( "QWidget" );
-	QObjectListIt it( *list );          // iterate over all child widgets
+	QObjectList list = queryList( "QWidget" );
+	QObjectList::iterator it = list.begin();          // iterate over all child widgets
 	QObject* obj;
-	while ( ( obj = it.current() ) != 0 )
+	while ( ( obj = (*it) ) != 0 )
 	{ // for each found object...
 		QWidget* widg = ( QWidget* ) obj;
 		++it;
 		widg->removeEventFilter( this );
 	}
-	delete list;                        // delete the list, not the objects
 }
 
 QWidget* KMdiChildView::focusedChildWidget()

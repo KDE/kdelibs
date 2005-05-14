@@ -44,6 +44,7 @@
 #include <qtoolbutton.h>
 #include <qnamespace.h>
 #include <qimage.h>
+#include <QMouseEvent>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -448,7 +449,7 @@ void KMdiChildFrm::maximizePressed()
 		setState( Normal );
 		break;
 	case Normal:
-	case Qt::DockMinimized:
+	case Minimized:
 		setState( Maximized );
 		emit m_pManager->nowMaximized( true );
 		break;
@@ -472,16 +473,16 @@ void KMdiChildFrm::minimizePressed()
 {
 	switch ( m_state )
 	{
-	case Qt::DockMinimized:
-		setState( Normal );
+	case Minimized:
+		setState( Minimized );
 		break;
 	case Normal:
-		setState( Qt::DockMinimized );
+		setState( Normal );
 		break;
 	case Maximized:
 		emit m_pManager->nowMaximized( false );
 		setState( Normal );
-		setState( Qt::DockMinimized );
+		setState( Maximized );
 		break;
 	}
 }
@@ -500,7 +501,7 @@ void KMdiChildFrm::undockPressed()
 {
 	if ( m_pClient )
 	{
-		if ( m_state == Qt::DockMinimized )
+		if ( m_state == Minimized )
 			setState( Normal );
 		m_pClient->detach();
 	}
@@ -528,7 +529,7 @@ void KMdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 			m_pMaximize->setPixmap( *m_pMaxButtonPixmap );
 			setGeometry( m_restoredRect );
 			break;
-		case Qt::DockMinimized:
+		case Minimized:
 			m_pClient->m_stateChanged = true;
 			m_state = state;
 			// restore client min / max size / layout behavior
@@ -551,7 +552,7 @@ void KMdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 	case Maximized:
 		switch ( m_state )
 		{
-		case Qt::DockMinimized:
+		case Minimized:
 			{
 				m_pClient->m_stateChanged = true;
 				m_state = state;
@@ -601,7 +602,7 @@ void KMdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 			break;
 		}
 		break;
-	case Qt::DockMinimized:
+	case Minimized:
 		switch ( m_state )
 		{
 		case Maximized:
@@ -643,7 +644,7 @@ void KMdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 			switchToMinimizeLayout();
 			m_pManager->childMinimized( this, false );
 			break;
-		case Qt::DockMinimized:
+		case Minimized:
 			break;
 		}
 		break;
@@ -752,11 +753,11 @@ void KMdiChildFrm::setClient( KMdiChildView *w, bool bAutomaticResize )
 	// memorize the focuses in a dictionary because they will get lost during reparenting
 	Q3Dict<Qt::FocusPolicy>* pFocPolDict = new Q3Dict<Qt::FocusPolicy>;
 	pFocPolDict->setAutoDelete( true );
-	QObjectList *list = m_pClient->queryList( "QWidget" );
-	QObjectListIt it( *list );          // iterate over the buttons
+	QObjectList list = m_pClient->queryList( "QWidget" );
+	QObjectList::iterator it = list.begin(); //iterate over the buttons
 	QObject * obj;
 	int i = 1;
-	while ( ( obj = it.current() ) != 0 )
+	while ( ( obj = (*it) ) != 0 )
 	{ // for each found object...
 		++it;
 		QWidget* widg = ( QWidget* ) obj;
@@ -772,7 +773,6 @@ void KMdiChildFrm::setClient( KMdiChildView *w, bool bAutomaticResize )
 		*pFocPol = widg->focusPolicy();
 		pFocPolDict->insert( widg->name(), pFocPol );
 	}
-	delete list;                        // delete the list, not the objects
 
 	//Reparent if needed
 	if ( w->parent() != this )
@@ -833,12 +833,12 @@ void KMdiChildFrm::unsetClient( QPoint positionOffset )
 	m_pClient->setMaximumSize( maxs.width(), maxs.height() );
 
 	// remember the focus policies using the dictionary and reset them
-	QObjectList *list = m_pClient->queryList( "QWidget" );
-	QObjectListIt it( *list );          // iterate over all child widgets of child frame
+	QObjectList list = m_pClient->queryList( "QWidget" );
+	QObjectList::iterator it = list.begin();          // iterate over all child widgets of child frame
 	QObject * obj;
 	QWidget* firstFocusableChildWidget = 0;
 	QWidget* lastFocusableChildWidget = 0;
-	while ( ( obj = it.current() ) != 0 )
+	while ( ( obj = (*it) ) != 0 )
 	{ // for each found object...
 		QWidget * widg = ( QWidget* ) obj;
 		++it;
@@ -869,7 +869,6 @@ void KMdiChildFrm::unsetClient( QPoint positionOffset )
 			}
 		}
 	}
-	delete list;                        // delete the list, not the objects
 	delete pFocPolDict;
 
 	// reset first and last focusable widget
@@ -887,10 +886,10 @@ void KMdiChildFrm::unsetClient( QPoint positionOffset )
 void KMdiChildFrm::linkChildren( Q3Dict<Qt::FocusPolicy>* pFocPolDict )
 {
 	// reset the focus policies for all widgets in the view (take them from the dictionary)
-	QObjectList* list = m_pClient->queryList( "QWidget" );
-	QObjectListIt it( *list );          // iterate over all child widgets of child frame
+	QObjectList list = m_pClient->queryList( "QWidget" );
+	QObjectList::iterator it = list.begin();          // iterate over all child widgets of child frame
 	QObject* obj;
-	while ( ( obj = it.current() ) != 0 )
+	while ( ( obj = (*it) ) != 0 )
 	{ // for each found object...
 		QWidget* widg = ( QWidget* ) obj;
 		++it;
@@ -903,7 +902,6 @@ void KMdiChildFrm::linkChildren( Q3Dict<Qt::FocusPolicy>* pFocPolDict )
 			widg->installEventFilter( this );
 
 	}
-	delete list;                        // delete the list, not the objects
 	delete pFocPolDict;
 
 	// reset the focus policies for the rest
@@ -936,11 +934,11 @@ Q3Dict<Qt::FocusPolicy>* KMdiChildFrm::unlinkChildren()
 	Q3Dict<Qt::FocusPolicy>* pFocPolDict = new Q3Dict<Qt::FocusPolicy>;
 	pFocPolDict->setAutoDelete( true );
 
-	QObjectList *list = m_pClient->queryList( "QWidget" );
-	QObjectListIt it( *list );          // iterate over all child widgets of child frame
+	QObjectList list = m_pClient->queryList( "QWidget" );
+	QObjectList::iterator it = list.begin();          // iterate over all child widgets of child frame
 	QObject * obj;
 	int i = 1;
-	while ( ( obj = it.current() ) != 0 )
+	while ( ( obj = (*it) ) != 0 )
 	{ // for each found object...
 		++it;
 		QWidget* w = ( QWidget* ) obj;
@@ -960,7 +958,6 @@ Q3Dict<Qt::FocusPolicy>* KMdiChildFrm::unlinkChildren()
 		// remove event filter
 		( ( QWidget* ) obj ) ->removeEventFilter( this );
 	}
-	delete list;                        // delete the list, not the objects
 
 	// remove the event filter (catch mouse clicks) for the rest
 	m_pWinIcon->removeEventFilter( this );
@@ -1157,17 +1154,16 @@ bool KMdiChildFrm::eventFilter( QObject *obj, QEvent *e )
 			QObject* pLostChild = ( ( QChildEvent* ) e )->child();
 			if ( ( pLostChild != 0L )   /*&& (pLostChild->inherits("QWidget"))*/ )
 			{
-				QObjectList* list = pLostChild->queryList();
-				list->insert( 0, pLostChild );        // add the lost child to the list too, just to save code
-				QObjectListIt it( *list );          // iterate over all lost child widgets
+				QObjectList list = pLostChild->queryList();
+				list.insert( 0, pLostChild );        // add the lost child to the list too, just to save code
+				QObjectList::iterator it = list.begin();          // iterate over all lost child widgets
 				QObject* obj;
-				while ( ( obj = it.current() ) != 0 )
+				while ( ( obj = (*it) ) != 0 )
 				{ // for each found object...
 					QWidget* widg = ( QWidget* ) obj;
 					++it;
 					widg->removeEventFilter( this );
 				}
-				delete list;                        // delete the list, not the objects
 			}
 		}
 		break;
@@ -1177,23 +1173,22 @@ bool KMdiChildFrm::eventFilter( QObject *obj, QEvent *e )
 			// child and its children (as we did when we got our client).
 			// XXX see linkChildren() and focus policy stuff
 			QObject* pNewChild = ( ( QChildEvent* ) e ) ->child();
-			if ( ( pNewChild != 0L ) && qobject_cast<QWidget>( pNewChild ) )
+			if ( pNewChild != 0L && qobject_cast<QWidget*>( pNewChild ) != 0L )
 			{
 				QWidget * pNewWidget = static_cast<QWidget*>( pNewChild );
-				QObjectList *list = pNewWidget->queryList( "QWidget" );
-				list->insert( 0, pNewChild );         // add the new child to the list too, just to save code
-				QObjectListIt it( *list );          // iterate over all new child widgets
+				QObjectList list = pNewWidget->queryList( "QWidget" );
+				list.insert( 0, pNewChild );         // add the new child to the list too, just to save code
+				QObjectList::iterator it = list.begin();          // iterate over all new child widgets
 				QObject * obj;
-				while ( ( obj = it.current() ) != 0 )
+				while ( ( obj = (*it) ) != 0 )
 				{ // for each found object...
 					QWidget * widg = ( QWidget* ) obj;
 					++it;
-					if ( !qobject_cast<Q3PopupMenu>( widg ) )
+					if ( qobject_cast<Q3PopupMenu*>( widg ) != 0L )
 					{
 						widg->installEventFilter( this );
 					}
 				}
-				delete list;                        // delete the list, not the objects
 			}
 		}
 		break;
@@ -1247,7 +1242,7 @@ Q3PopupMenu* KMdiChildFrm::systemMenu() const
 			m_pSystemMenu->setItemEnabled( m_pSystemMenu->idAt( 2 ), false );
 			m_pSystemMenu->setItemEnabled( m_pSystemMenu->idAt( 4 ), false );
 		}
-		else if ( state() == Qt::DockMinimized )
+		else if ( state() == Minimized )
 		{
 			m_pSystemMenu->setItemEnabled( m_pSystemMenu->idAt( 2 ), false );
 			m_pSystemMenu->setItemEnabled( m_pSystemMenu->idAt( 3 ), false );
@@ -1259,7 +1254,7 @@ Q3PopupMenu* KMdiChildFrm::systemMenu() const
 			m_pSystemMenu->insertItem( i18n( "&Restore" ), this, SLOT( restorePressed() ) );
 		if ( state() != Maximized )
 			m_pSystemMenu->insertItem( i18n( "&Maximize" ), this, SLOT( maximizePressed() ) );
-		if ( state() != Qt::DockMinimized )
+		if ( state() != Minimized )
 			m_pSystemMenu->insertItem( i18n( "&Minimize" ), this, SLOT( minimizePressed() ) );
 		if ( state() != Maximized )
 			m_pSystemMenu->insertItem( i18n( "M&ove" ), m_pCaption, SLOT( slot_moveViaSystemMenu() ) );

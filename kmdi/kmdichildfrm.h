@@ -35,6 +35,7 @@
 #include <qdatetime.h>
 #include <qlayout.h>
 #include <Q3Frame>
+#include <QCustomEvent>
 #include <q3dict.h>
 
 #include "kmdichildfrmcaption.h"
@@ -136,7 +137,7 @@ class KMDI_EXPORT KMdiChildFrm : public Q3Frame
 
 	// attributes
 public:
-	enum MdiWindowState { Normal, Maximized, Qt::DockMinimized };
+	enum MdiWindowState { Normal, Maximized, Minimized };
 	//positions same in h and cpp for fast order check
 	KMdiChildView* m_pClient;
 
@@ -174,7 +175,7 @@ protected:
 	
 	QSize m_oldClientMinSize;
 	QSize m_oldClientMaxSize;
-	QLayout::ResizeMode m_oldLayoutResizeMode;
+	QLayout::SizeConstraint m_oldLayoutResizeMode;
 	QTime m_timeMeasure;
 
 	// methods

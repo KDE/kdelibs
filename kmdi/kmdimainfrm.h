@@ -632,7 +632,8 @@ public slots:
 	 * Sets the appearance of the IDEAl mode. See KMultiTabBar styles for the first 3 bits.
 	 * @deprecated use setToolviewStyle(int flags) instead
 	 */
-	void setIDEAlModeStyle( int flags ) KDE_DEPRECATED;
+#warning remove setIDEAlModeStyle
+	void setIDEAlModeStyle( int flags );
 	//KDE4: Get rid of the above.
 	/**
 	 * Sets the appearance of the toolview tabs.
@@ -857,9 +858,13 @@ private slots:
 	void removeFromActiveDockList( KMdiDockContainer* );
 	void slotDocCurrentChanged( QWidget* );
 	void verifyToplevelHeight();
-#define protected public
+#ifdef Q_MOC_RUN
+#define public_signals signals
+#else
+#define public_signals public
+#endif
 signals:
-#undef protected
+
 
 	void toggleTop();
 	void toggleLeft();

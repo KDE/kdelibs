@@ -37,6 +37,9 @@
 
 #include <math.h>
 #include <q3popupmenu.h>
+#include <QMouseEvent>
+#include <QFocusEvent>
+#include <QDesktopWidget>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,7 +221,6 @@ void KMdiChildArea::setTopChild( KMdiChildFrm* child, bool /* bSetFocus */ )
 		else
 			child->raise();
 		
-		QFocusEvent::setReason( QFocusEvent::Other );
 		child->m_pClient->setFocus();
 	}
 }
