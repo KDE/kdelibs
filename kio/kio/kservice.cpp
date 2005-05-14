@@ -443,7 +443,7 @@ public:
    KServiceReadProperty(const QString &_key, const Q3CString &_value)
 	: key(_key), value(_value) { }
 
-   bool internalHasGroup(const Q3CString &) const { /*qDebug("hasGroup(const QCString &)");*/ return false; }
+   bool internalHasGroup(const QByteArray &) const { /*qDebug("hasGroup(const QByteArray &)");*/ return false; }
 
    QStringList groupList() const { return QStringList(); }
 
