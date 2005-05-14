@@ -169,7 +169,7 @@ void CSSSelector::extractPseudoType() const
     bool compat = false;
     if (!value.isEmpty()) {
         value = value.lower();
-        switch (value[0]) {
+        switch (value[0].unicode()) {
             case 'a':
                 if (value == "active")
                     _pseudoType = PseudoActive;

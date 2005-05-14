@@ -1915,7 +1915,7 @@ CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
         r = QMAX( 0, QMIN( 255, r ) );
         g = QMAX( 0, QMIN( 255, g ) );
         b = QMAX( 0, QMIN( 255, b ) );
-        int a = (int)(QMAX( 0, QMIN( 1.0f, v->fValue ) ) * 255);
+        int a = (int)(QMAX( 0.0, QMIN( 1.0, v->fValue ) ) * 255);
         c = qRgba( r, g, b, a );
     }
     else

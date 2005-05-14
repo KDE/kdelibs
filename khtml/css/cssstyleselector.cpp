@@ -2076,7 +2076,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     case CSS_PROP_DIRECTION:
     {
-        HANDLE_INHERIT_AND_INITIAL(direction, Qt::Orientation)
+        HANDLE_INHERIT_AND_INITIAL(direction, Direction)
         if(!primitiveValue) break;
         style->setDirection( (EDirection) (primitiveValue->getIdent() - CSS_VAL_LTR) );
         return;
@@ -2788,10 +2788,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         if (isInherit) {
             HANDLE_INHERIT_COND(CSS_PROP_MAX_WIDTH, maxWidth, MaxWidth)
-            HANDLE_INHERIT_COND(CSS_PROP_BOTTOM, bottom, Qt::DockBottom)
-            HANDLE_INHERIT_COND(CSS_PROP_TOP, top, Qt::DockTop)
-            HANDLE_INHERIT_COND(CSS_PROP_LEFT, left, Qt::DockLeft)
-            HANDLE_INHERIT_COND(CSS_PROP_RIGHT, right, Qt::DockRight)
+            HANDLE_INHERIT_COND(CSS_PROP_BOTTOM, bottom, Bottom)
+            HANDLE_INHERIT_COND(CSS_PROP_TOP, top, Top)
+            HANDLE_INHERIT_COND(CSS_PROP_LEFT, left, Left)
+            HANDLE_INHERIT_COND(CSS_PROP_RIGHT, right, Right)
             HANDLE_INHERIT_COND(CSS_PROP_WIDTH, width, Width)
             HANDLE_INHERIT_COND(CSS_PROP_MIN_WIDTH, minWidth, MinWidth)
             HANDLE_INHERIT_COND(CSS_PROP_PADDING_TOP, paddingTop, PaddingTop)
@@ -2806,10 +2806,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return;
         } else if (isInitial) {
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_MAX_WIDTH, MaxWidth, MaxSize)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_BOTTOM, Qt::DockBottom, Offset)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_TOP, Qt::DockTop, Offset)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_LEFT, Qt::DockLeft, Offset)
-            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_RIGHT, Qt::DockRight, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_BOTTOM, Bottom, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_TOP, Top, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_LEFT, Left, Offset)
+            HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_RIGHT, Right, Offset)
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_WIDTH, Width, Size)
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_MIN_WIDTH, MinWidth, MinSize)
             HANDLE_INITIAL_COND_WITH_VALUE(CSS_PROP_PADDING_TOP, PaddingTop, Padding)

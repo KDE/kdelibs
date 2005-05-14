@@ -31,6 +31,7 @@
 #include "misc/shared.h"
 
 #include <q3intdict.h>
+#include <Q3PaintDeviceMetrics>
 
 namespace khtml {
     class RenderStyle;
