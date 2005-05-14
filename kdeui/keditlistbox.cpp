@@ -365,16 +365,6 @@ void KEditListBox::insertStringList(const QStringList& list, int index)
     m_listBox->insertStringList(list,index);
 }
 
-void KEditListBox::insertStrList(const Q3StrList* list, int index)
-{
-    m_listBox->insertStrList(list,index);
-}
-
-void KEditListBox::insertStrList(const Q3StrList& list, int index)
-{
-    m_listBox->insertStrList(list,index);
-}
-
 void KEditListBox::insertStrList(const char ** list, int numStrings, int index)
 {
     m_listBox->insertStrList(list,numStrings,index);

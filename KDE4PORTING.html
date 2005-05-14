@@ -114,6 +114,9 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KPopupTitle</H4>
 <li>Removed - QMenu doesn't accept widgets, and QAction allows specification of font, icon etc... and gradients / background pixmaps weren't even working in KDE3</li>
 
+<H4>KEditListBox</H4>
+<li>void insertStrList(const QStrList* list, int index=-1) and void insertStrList(const QStrList&amp; list, int index=-1) have been deprecated, use QStringList or const char** instead</li>
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 

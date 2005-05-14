@@ -173,14 +173,6 @@ public:
        */
       void insertStringList(const QStringList& list, int index=-1);
       /**
-       * See QListBox::insertStringList()
-       */
-      void insertStrList(const Q3StrList* list, int index=-1);
-      /**
-       * See QListBox::insertStrList()
-       */
-      void insertStrList(const Q3StrList& list, int index=-1);
-      /**
        * See QListBox::insertStrList()
        */
       void insertStrList(const char ** list, int numStrings=-1, int index=-1);
