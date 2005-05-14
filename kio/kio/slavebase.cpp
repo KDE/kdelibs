@@ -45,11 +45,11 @@
 #include <dcopclient.h>
 
 #include <kapplication.h>
-#include <ksock.h>
 #include <kcrash.h>
 #include <kdesu/client.h>
 #include <klocale.h>
 #include <ksocks.h>
+#include <kstreamsocket.h>
 
 #include "kremoteencoding.h"
 
@@ -325,7 +325,8 @@ void SlaveBase::dispatchLoop()
 void SlaveBase::connectSlave(const QString& path)
 {
 #ifdef Q_OS_UNIX //TODO: KSocket not yet available on WIN32
-    appconn->init(new KSocket(QFile::encodeName(path)));
+    appconn->init(new KNetwork::KStreamSocket(QString(), 
+					      QFile::encodeName(path)));
     if (!appconn->inited())
     {
         kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl;
