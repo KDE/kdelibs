@@ -17,7 +17,7 @@ example_SOURCES = example.cpp exampleprefs_base.cpp
 
 autoexample_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 autoexample_LDADD = $(LIB_KDECORE) $(LIB_KDEUI)
-autoexample_SOURCES = exampleprefs_base.cpp general_base.ui myoptions_base.ui \
+autoexample_SOURCES = exampleprefs_base.cpp general_base.ui3 myoptions_base.ui3 \
   autoexample.cpp  
 
 example.o exampleprefs_base.o: exampleprefs_base.h
