@@ -47,29 +47,6 @@
 
 #include "kurlbar.h"
 
-/**
- * Handles tooltips in the KURLBar
- * @internal
- */
-class KURLBarToolTip : public QToolTip
-{
-public:
-    KURLBarToolTip( Q3ListBox *view ) : QToolTip( view ), m_view( view ) {}
-
-protected:
-    virtual void maybeTip( const QPoint& point ) {
-        Q3ListBoxItem *item = m_view->itemAt( point );
-        if ( item ) {
-            QString text = static_cast<KURLBarItem*>( item )->toolTip();
-            if ( !text.isEmpty() )
-                tip( m_view->itemRect( item ), text );
-        }
-    }
-
-private:
-    Q3ListBox *m_view;
-};
-
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -448,6 +425,7 @@ void KURLBar::resizeEvent( QResizeEvent *e )
     m_listBox->resize( width(), height() );
 }
 
+
 void KURLBar::paletteChange( const QPalette & )
 {
     QPalette pal = palette();
@@ -818,14 +796,12 @@ bool KURLBar::editItem( KURLBarItem *item )
 KURLBarListBox::KURLBarListBox( QWidget *parent, const char *name )
     : KListBox( parent, name )
 {
-    m_toolTip = new KURLBarToolTip( this );
     setAcceptDrops( true );
     viewport()->setAcceptDrops( true );
 }
 
 KURLBarListBox::~KURLBarListBox()
 {
-    delete m_toolTip;
 }
 
 void KURLBarListBox::paintEvent( QPaintEvent* )
@@ -867,7 +843,7 @@ void KURLBarListBox::contextMenuEvent( QContextMenuEvent *e )
     if (e)
     {
         emit contextMenuRequested( itemAt( e->globalPos() ), e->globalPos() );
-        e->consume(); // Consume the event to avoid multiple contextMenuEvent calls...
+        e->accept(); // Consume the event to avoid multiple contextMenuEvent calls...
     }
 }
 
@@ -884,6 +860,25 @@ void KURLBarListBox::setOrientation( Qt::Orientation orient )
 
     m_orientation = orient;
 }
+
+bool KURLBarListBox::event( QEvent* e )
+{
+    if ( e->type() == QEvent::ToolTip )
+    {
+        QHelpEvent* he = static_cast<QHelpEvent*>( e );
+        Q3ListBoxItem *item = itemAt( he->pos() );
+        if ( item ) {
+            QString text = static_cast<KURLBarItem*>( item )->toolTip();
+            if ( !text.isEmpty() )
+                QToolTip::showText( itemRect( item ).topLeft(), text, this );
+        }
+        
+        return true;
+    }
+
+    return Q3Frame::event(e);
+}
+
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////

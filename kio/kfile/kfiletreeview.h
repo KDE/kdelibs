@@ -37,19 +37,6 @@ class QTimer;
 
 
 
-class KIO_EXPORT KFileTreeViewToolTip : public QToolTip
-{
-public:
-    KFileTreeViewToolTip( Q3ListView *view ) : QToolTip( view ), m_view( view ) {}
-
-protected:
-    virtual void maybeTip( const QPoint & );
-
-private:
-    Q3ListView *m_view;
-};
-
-
 /**
  * The filetreeview offers a treeview on the file system which behaves like
  * a QTreeView showing files and/or directories in the file system.
@@ -259,9 +246,6 @@ private:
     Q3StrList m_lstDropFormats;
    QPixmap  m_openFolderPixmap;
     QTimer *m_autoOpenTimer;
-
-    KFileTreeViewToolTip m_toolTip;
-
 
 protected:
    virtual void virtual_hook( int id, void* data );

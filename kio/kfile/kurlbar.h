@@ -480,7 +480,6 @@ private:
 
 
 class Q3DragObject;
-class KURLBarToolTip;
 
 /**
  * This is the listbox used in KURLBar. It is a subclass of KListBox to support
@@ -535,10 +534,10 @@ protected:
     virtual void contentsDropEvent( QDropEvent * );
     virtual void contextMenuEvent( QContextMenuEvent * );
     virtual void paintEvent( QPaintEvent* );
+    virtual bool event( QEvent* );
 
 private:
     Qt::Orientation m_orientation;
-    KURLBarToolTip *m_toolTip;
 
 protected:
     virtual void virtual_hook( int id, void* data );

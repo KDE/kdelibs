@@ -19,6 +19,7 @@
 
 #include <qapplication.h>
 #include <q3header.h>
+#include <qevent.h>
 #include <qtimer.h>
 #include <kdebug.h>
 #include <kdirnotify_stub.h>
@@ -41,8 +42,7 @@
 
 KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     : KListView( parent, name ),
-      m_wantOpenFolderPixmaps( true ),
-      m_toolTip( this )
+      m_wantOpenFolderPixmaps( true )
 {
     setDragEnabled(true);
     setSelectionModeExt( KListView::Single );
@@ -659,17 +659,6 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 ///////////////////////////////////////////////////////////////////
 
 
-void KFileTreeViewToolTip::maybeTip( const QPoint & )
-{
-#if 0
-    Q3ListViewItem *item = m_view->itemAt( point );
-    if ( item ) {
-	QString text = static_cast<KFileViewItem*>( item )->toolTipText();
-	if ( !text.isEmpty() )
-	    tip ( m_view->itemRect( item ), text );
-    }
-#endif
-}
 
 void KFileTreeView::virtual_hook( int id, void* data )
 { KListView::virtual_hook( id, data ); }

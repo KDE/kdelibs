@@ -651,7 +651,7 @@ void KFileDialog::accept()
     locationEdit->changeItem( QString::null, 0 );
 
     KURL::List list = selectedURLs();
-    Q3ValueListConstIterator<KURL> it = list.begin();
+    QList<KURL>::const_iterator it = list.begin();
     for ( ; it != list.end(); ++it ) {
         const KURL& url = *it;
         // we strip the last slash (-1) because KURLComboBox does that as well
@@ -1547,7 +1547,7 @@ QStringList KFileDialog::selectedFiles() const
     if ( result() == QDialog::Accepted ) {
         if ( (ops->mode() & KFile::Files) == KFile::Files ) {
             KURL::List urls = parseSelectedURLs();
-            Q3ValueListConstIterator<KURL> it = urls.begin();
+            QList<KURL>::const_iterator it = urls.begin();
             while ( it != urls.end() ) {
                 if ( (*it).isLocalFile() )
                     list.append( (*it).path() );
