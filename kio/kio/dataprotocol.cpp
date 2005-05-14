@@ -158,7 +158,7 @@ static QString parseQuotedString(const QString &buf, int &pos) {
       res += ch;
       escaped = false;
     } else {
-      switch (ch) {
+      switch (ch.unicode()) {
         case '"': parsing = false; break;
         case '\\': escaped = true; break;
         default: res += ch; break;
