@@ -52,7 +52,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
-#include <kextsock.h>
 #include <kservice.h>
 #include <krfcdate.h>
 #include <kmdcodec.h>
@@ -810,7 +809,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
   uint lockCount = 0;
   uint supportedLockCount = 0;
 
-  for ( uint i = 0; i < propstats.count(); i++)
+  for ( int i = 0; i < propstats.count(); i++)
   {
     QDomElement propstat = propstats.item(i).toElement();
 
@@ -1000,7 +999,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
                                         uint& lockCount )
 {
-  for ( uint i = 0; i < activeLocks.count(); i++ )
+  for ( int i = 0; i < activeLocks.count(); i++ )
   {
     QDomElement activeLock = activeLocks.item(i).toElement();
 
@@ -1143,7 +1142,7 @@ bool HTTPProtocol::davHostOk()
 
   if (m_davCapabilities.count())
   {
-    for (uint i = 0; i < m_davCapabilities.count(); i++)
+    for (int i = 0; i < m_davCapabilities.count(); i++)
     {
       bool ok;
       uint verNo = m_davCapabilities[i].toUInt(&ok);
@@ -1395,7 +1394,7 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
   }
 
   // insert the document into the POST buffer
-  m_bufPOST = lockReq.toCString();
+  m_bufPOST = lockReq.toByteArray();
 
   retrieveContent( true );
 
@@ -1535,7 +1534,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
 
       QDomNodeList responses = multistatus.elementsByTagName( "response" );
 
-      for (uint i = 0; i < responses.count(); i++)
+      for (int i = 0; i < responses.count(); i++)
       {
         int errCode;
         QString errUrl;
@@ -1708,7 +1707,7 @@ bool HTTPProtocol::isOffline(const KURL &url)
 {
   const int NetWorkStatusUnknown = 1;
   const int NetWorkStatusOnline = 8;
-  Q3CString replyType;
+  DCOPCString replyType;
   QByteArray params;
   QByteArray reply;
 
@@ -1893,7 +1892,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
   do
   {
-    ret = TCPSlaveBase::read( b, nbytes);
+    ret = TCPSlaveBase::read( ( char* )b, nbytes);
     if (ret == 0)
       m_bEOF = true;
 
@@ -1905,7 +1904,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 void HTTPProtocol::httpCheckConnection()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCheckConnection: " <<
-                                   " Socket status: " << m_iSock <<
+//                                   " Socket status: " << m_iSock <<
                                       " Keep Alive: " << m_bKeepAlive <<
                                            " First: " << m_bFirstRequest << endl;
 
@@ -1972,7 +1971,7 @@ bool HTTPProtocol::httpOpenConnection()
 
     setConnectTimeout( m_proxyConnTimeout );
 
-    if ( !connectToHost(proxy_host, proxy_port, false) )
+    if ( !connectToHost(proxy_host, QString::number( proxy_port ), false) )
     {
       if (userAborted()) {
         error(ERR_NO_CONTENT, "");
@@ -2002,7 +2001,7 @@ bool HTTPProtocol::httpOpenConnection()
     // Apparently we don't want a proxy.  let's just connect directly
     setConnectTimeout(m_remoteConnTimeout);
 
-    if ( !connectToHost(m_state.hostname, m_state.port, false ) )
+    if ( !connectToHost(m_state.hostname, QString::number( m_state.port ), false ) )
     {
       if (userAborted()) {
         error(ERR_NO_CONTENT, "");
@@ -4455,7 +4454,7 @@ void HTTPProtocol::addCookies( const QString &url, const Q3CString &cookieHeader
 
 QString HTTPProtocol::findCookies( const QString &url)
 {
-  Q3CString replyType;
+  DCOPCString replyType;
   QByteArray params;
   QByteArray reply;
   QString result;

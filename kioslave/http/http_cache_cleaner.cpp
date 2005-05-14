@@ -166,21 +166,18 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
    QDir dir(strDir);
    if (!dir.exists()) return;
 
-   QFileInfoList *newEntries = (QFileInfoList *) dir.entryInfoList();
+   QFileInfoList newEntries = dir.entryInfoList();
 
-   if (!newEntries) return; // Directory not accessible ??
+   if (newEntries.count()==0) return; // Directory not accessible ??
 
-   for(QFileInfo *qFileInfo = newEntries->first();
-       qFileInfo;
-       qFileInfo = newEntries->next())
-   {
-       if (qFileInfo->isFile())
+   foreach ( QFileInfo qFileInfo, newEntries ) {
+       if (qFileInfo.isFile())
        {
-          FileInfo *fileInfo = readEntry( strDir + "/" + qFileInfo->fileName());
+          FileInfo *fileInfo = readEntry( strDir + "/" + qFileInfo.fileName());
           if (fileInfo)
           {
-             fileInfo->name = name + "/" + qFileInfo->fileName();
-             fileInfo->size = (qFileInfo->size() + 1023) / 1024;
+             fileInfo->name = name + "/" + qFileInfo.fileName();
+             fileInfo->size = (qFileInfo.size() + 1023) / 1024;
              fileEntries.append(fileInfo);
           }
        }

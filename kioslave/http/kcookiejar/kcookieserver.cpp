@@ -273,7 +273,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     {
         if (!cookiesPending( request->url ))
         {
-           Q3CString replyType;
+           DCOPCString replyType;
            QByteArray replyData;
            QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
@@ -315,12 +315,10 @@ void KCookieServer::saveCookieJar()
 }
 
 void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
-                               const Q3ValueList<int>& fields )
+                               const QList<int>& fields )
 {
-    Q3ValueList<int>::ConstIterator i = fields.begin();
-    for ( ; i != fields.end(); ++i )
-    {
-        switch(*i)
+	foreach ( int i, fields ) {
+       switch(i)
         {
          case CF_DOMAIN :
             out << cookie->domain();
@@ -420,7 +418,7 @@ KCookieServer::findDomains()
 
 // DCOP function
 QStringList
-KCookieServer::findCookies(Q3ValueList<int> fields,
+KCookieServer::findCookies(QList<int> fields,
                            QString domain,
                            QString fqdn,
                            QString path,
@@ -472,7 +470,7 @@ KCookieServer::findDOMCookies(QString url, long windowId)
 
 // DCOP function
 void
-KCookieServer::addCookies(QString arg1, Q3CString arg2, long arg3)
+KCookieServer::addCookies(QString arg1, DCOPCString arg2, long arg3)
 {
    addCookies(arg1, arg2, arg3, false);
 }
@@ -544,7 +542,7 @@ KCookieServer::deleteAllCookies()
 
 // DCOP function
 void
-KCookieServer::addDOMCookies(QString arg1, Q3CString arg2, long arg3)
+KCookieServer::addDOMCookies(QString arg1, DCOPCString arg2, long arg3)
 {
    addCookies(arg1, arg2, arg3, true);
 }

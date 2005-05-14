@@ -48,16 +48,16 @@ k_dcop:
   QString findCookies(QString);
   QString findCookies(QString, long);
   QStringList findDomains();
-  QStringList findCookies(Q3ValueList<int>,QString,QString,QString,QString);
+  QStringList findCookies(QList<int>,QString,QString,QString,QString);
   QString findDOMCookies(QString);
   QString findDOMCookies(QString, long);
-  void addCookies(QString, Q3CString, long);
+  void addCookies(QString, DCOPCString, long);
   void deleteCookie(QString, QString, QString, QString);
   void deleteCookiesFromDomain(QString);
   void deleteSessionCookies(long);
   void deleteSessionCookiesFor(QString, long);
   void deleteAllCookies();
-  void addDOMCookies(QString, Q3CString, long);
+  void addDOMCookies(QString, DCOPCString, long);
   /**
    * Sets the cookie policy for the domain associated with the specified URL.
    */
@@ -89,9 +89,9 @@ protected:
   KConfig *mConfig;
 
 private:
-  virtual int newInstance(Q3ValueList<Q3CString>) { return 0; }
+  virtual int newInstance(QList<QByteArray>) { return 0; }
   bool cookieMatches(KHttpCookie*, QString, QString, QString, QString);
-  void putCookie(QStringList&, KHttpCookie*, const Q3ValueList<int>&);
+  void putCookie(QStringList&, KHttpCookie*, const QList<int>&);
   void saveCookieJar();
 };
 
