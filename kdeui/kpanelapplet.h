@@ -112,7 +112,7 @@ public:
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { pLeft = 0, pRight, pTop, pBottom };
     enum Alignment { LeftTop = 0, Center, RightBottom };
-    enum Orientation { Up = 0, Down, Left, Right };
+    enum Direction { Up = 0, Down, Left, Right };
 
     /**
      * Constructs a KPanelApplet just like any other widget.
@@ -367,7 +367,7 @@ protected:
      * A convenience method that translates the position of the applet into which
      * direction to show a popup.
      **/
-    Qt::Orientation popupDirection();
+    Direction popupDirection();
 
     /**
      * The popup direction changed to @p direction. Reimplement this
@@ -376,7 +376,7 @@ protected:
      * @deprecated Reimplement positionChange instead.
      **/
     // FIXME: Remove for KDE 4
-    virtual KDE_DEPRECATED void popupDirectionChange( Qt::Orientation /*direction*/ ) {}
+    virtual KDE_DEPRECATED void popupDirectionChange( Direction /*direction*/ ) {}
 
     bool eventFilter(QObject *, QEvent *);
 

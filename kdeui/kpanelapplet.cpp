@@ -95,6 +95,18 @@ void KPanelApplet::positionChange( Position )
   popupDirectionChange( popupDirection() );
 }
 
+// FIXME: Remove for KDE 4
+KPanelApplet::Direction KPanelApplet::popupDirection()
+{
+    switch( _position ) {
+    case pTop:     return Down;
+    case pRight:   return Left;
+    case pLeft:    return Right;
+    default:
+    case pBottom:  return Up;
+    }
+}
+
 Qt::Orientation KPanelApplet::orientation() const
 {
   if( _position == pTop || _position == pBottom ) {
