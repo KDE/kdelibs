@@ -600,7 +600,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       }
 
       QString method = args[0].toString(exec).qstring();
-      KHTMLPart *part = qobject_cast<KHTMLPart >(Window::retrieveActive(exec)->part());
+      KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if (!part)
         return Undefined();
       KURL url = KURL(part->document().completeURL(args[1].toString(exec).qstring()).string());

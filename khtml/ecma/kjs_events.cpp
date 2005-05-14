@@ -62,7 +62,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (KJSDebugWin::debugWindow() && KJSDebugWin::debugWindow()->inSession())
     return;
 #endif
-  KHTMLPart *part = qobject_cast<KHTMLPart >(static_cast<Window*>(win.imp())->part());
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.imp())->part());
   KJSProxy *proxy = 0L;
   if (part)
     proxy = part->jScript();
@@ -168,7 +168,7 @@ Object JSLazyEventListener::listenerObj() const
 void JSLazyEventListener::parseCode() const
 {
   if (!parsed) {
-    KHTMLPart *part = qobject_cast<KHTMLPart >(static_cast<Window*>(win.imp())->part());
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.imp())->part());
     KJSProxy *proxy = 0L;
     if (part)
       proxy = part->jScript();
@@ -744,7 +744,7 @@ Value DOMTextEvent::getValueProperty(ExecState *, int token) const
   // ### KDE 4: use const reference
   DOM::TextEvent tevent = static_cast<DOM::TextEvent>(event);
   switch (token) {
-  case Qt::Key:
+  case Key:
     return Number(tevent.keyVal());
   case VirtKey:
     return Number(tevent.virtKeyVal());

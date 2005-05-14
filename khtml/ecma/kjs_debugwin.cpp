@@ -249,7 +249,7 @@ KJSDebugWin * KJSDebugWin::kjs_html_debugger = 0;
 QString SourceFile::getCode()
 {
   if (interpreter) {
-    KHTMLPart *part = qobject_cast<KHTMLPart>(static_cast<ScriptInterpreter*>(interpreter)->part());
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<ScriptInterpreter*>(interpreter)->part());
     if (part && url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
       Decoder *decoder = part->createDecoder();
       QByteArray data;
@@ -682,18 +682,22 @@ bool KJSDebugWin::eventFilter(QObject *o, QEvent *e)
 
 void KJSDebugWin::disableOtherWindows()
 {
-  QWidgetList *widgets = QApplication::allWidgets();
-  QWidgetListIt it(*widgets);
-  for (; it.current(); ++it)
-    it.current()->installEventFilter(this);
+  QWidgetList widgets = QApplication::allWidgets();
+  QListIterator<QWidget*> it(widgets);
+  while (it.hasNext()) {
+    QWidget* widget = it.next();
+    widget->installEventFilter(this);
+  }
 }
 
 void KJSDebugWin::enableOtherWindows()
 {
-  QWidgetList *widgets = QApplication::allWidgets();
-  QWidgetListIt it(*widgets);
-  for (; it.current(); ++it)
-    it.current()->removeEventFilter(this);
+  QWidgetList widgets = QApplication::allWidgets();
+  QListIterator<QWidget*> it(widgets);
+  while (it.hasNext()) {
+    QWidget* widget = it.next();
+    widget->removeEventFilter(this);
+  }
 }
 
 bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
@@ -793,7 +797,7 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
     return true;
 
   KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->interpreter())->part();
-  KHTMLPart *khtmlpart = qobject_cast<KHTMLPart>(part);
+  KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
   if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled())
     return true;
 
