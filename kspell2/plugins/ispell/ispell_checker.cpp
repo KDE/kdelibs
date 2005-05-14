@@ -42,6 +42,7 @@
 #include <qmap.h>
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <q3cstring.h>
 
 /***************************************************************************/
 
@@ -233,7 +234,7 @@ ISpellChecker::checkWord( const QString& utf8Word )
 	if (!m_bSuccessfulInit)
 		return false;
 
-	if (!utf8Word || utf8Word.length() >= (INPUTWORDLEN + MAXAFFIXLEN) || utf8Word.isEmpty())
+	if (utf8Word.isNull() || utf8Word.length() >= (INPUTWORDLEN + MAXAFFIXLEN) || utf8Word.isEmpty())
 		return false;
 
 	bool retVal = false;
@@ -348,7 +349,7 @@ s_allDics()
 	}
 }
 
-Q3ValueList<QString>
+QStringList
 ISpellChecker::allDics()
 {
 	if ( ispell_dict_map.empty() )
