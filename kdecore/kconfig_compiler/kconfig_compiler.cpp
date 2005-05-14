@@ -166,7 +166,7 @@ class CfgEntry
     QString mParam;
     QString mParamName;
     QString mParamType;
-    Q3ValueList<Choice> mChoices;
+    QList<Choice> mChoices;
     QStringList mParamValues;
     QStringList mParamDefaultValues;
     int mParamMax;
@@ -311,7 +311,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       if (!code.isEmpty())
          cpp << endl;
 
-      cpp << "  QValueList<int> default" << name << ";" << endl;
+      cpp << "  QList<int> default" << name << ";" << endl;
       QStringList defaults = QStringList::split( ",", defaultValue );
       QStringList::ConstIterator it;
       for( it = defaults.begin(); it != defaults.end(); ++it ) {
@@ -590,7 +590,7 @@ QString param( const QString &type )
     else if ( type == "DateTime" )    return "const QDateTime &";
     else if ( type == "Int64" )       return "Q_INT64";
     else if ( type == "UInt64" )      return "Q_UINT64";
-    else if ( type == "IntList" )     return "const QValueList<int> &";
+    else if ( type == "IntList" )     return "const QList<int> &";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "const QString &";
     else if ( type == "PathList" )    return "const QStringList &";
@@ -620,7 +620,7 @@ QString cppType( const QString &type )
     else if ( type == "DateTime" )    return "QDateTime";
     else if ( type == "Int64" )       return "Q_INT64";
     else if ( type == "UInt64" )      return "Q_UINT64";
-    else if ( type == "IntList" )     return "QValueList<int>";
+    else if ( type == "IntList" )     return "QList<int>";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "QString";
     else if ( type == "PathList" )    return "QStringList";
@@ -647,7 +647,7 @@ QString defaultValue( const QString &type )
     else if ( type == "DateTime" )    return "QDateTime()";
     else if ( type == "Int64" )       return "0";
     else if ( type == "UInt64" )      return "0";
-    else if ( type == "IntList" )     return "QValueList<int>()";
+    else if ( type == "IntList" )     return "QList<int>()";
     else if ( type == "Enum" )        return "0";
     else if ( type == "Path" )        return "\"\""; // Use empty string, not null string!
     else if ( type == "PathList" )    return "QStringList()";
@@ -1345,7 +1345,7 @@ int main( int argc, char **argv )
       cpp << e->code() << endl;
     }
     if ( e->type() == "Enum" ) {
-      cpp << "  QValueList<KConfigSkeleton::ItemEnum::Choice> values"
+      cpp << "  QList<KConfigSkeleton::ItemEnum::Choice> values"
           << e->name() << ";" << endl;
       Q3ValueList<CfgEntry::Choice> choices = e->choices();
       Q3ValueList<CfgEntry::Choice>::ConstIterator it;

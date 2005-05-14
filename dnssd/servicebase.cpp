@@ -20,6 +20,7 @@
 
 #include "servicebase.h"
 #include <qregexp.h>
+#include <QDataStream>
 
 namespace DNSSD
 {

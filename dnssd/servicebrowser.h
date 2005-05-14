@@ -117,7 +117,7 @@ public:
 	/**
 	Returns list of services 
 	 */
-	const Q3ValueList<RemoteService::Ptr>& services() const;
+	const QList<RemoteService::Ptr>& services() const;
 
 	/**
 	Starts browsing for services.
@@ -210,7 +210,7 @@ private:
 
 	bool allFinished();
 	void init(const QStringList&, DomainBrowser*, int);
-	Q3ValueList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
+	QList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
 private slots:
 	void serviceResolved(bool success);
 	void gotNewService(DNSSD::RemoteService::Ptr);

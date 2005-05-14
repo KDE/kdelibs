@@ -23,6 +23,7 @@
 
 #include <qobject.h>
 #include <dnssd/servicebase.h>
+#include <QCustomEvent>
 
 class QDataStream;
 class KURL;

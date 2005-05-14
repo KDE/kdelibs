@@ -83,7 +83,7 @@ bool domainIsLocal(const QString& domain)
 	return domain.section('.',-1,-1).lower()=="local";
 }
 
-Q3CString domainToDNS(const QString &domain)
+QByteArray domainToDNS(const QString &domain)
 {
 #ifdef IDN_BROKEN_IN_MDNSRESPONDER
 	if (domainIsLocal(domain)) return domain.utf8();

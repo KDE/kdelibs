@@ -68,7 +68,7 @@ protected:
 
 bool domainIsLocal(const QString& domain);
 // Encodes domain name using utf8() or IDN 
-Q3CString domainToDNS(const QString &domain);
+QByteArray domainToDNS(const QString &domain);
 QString DNSToDomain(const char* domain);
 
 }

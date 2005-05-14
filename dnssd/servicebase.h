@@ -22,9 +22,9 @@
 #define DNSSDSERVICEBASE_H
 
 #include <qmap.h>
+#include <QString>
 #include <ksharedptr.h>
 
-class QString;
 class QDataStream;
 namespace DNSSD
 {
