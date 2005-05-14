@@ -70,7 +70,7 @@ void KServiceTypeProfile::initStatic()
     KService::Ptr pService = KService::serviceByStorageId(appId);
 
     if ( pService ) {
-      QString application = pService->name();
+      QString application = pService->storageId();
       QString type = config.readEntry( "ServiceType" );
       QString type2 = config.readEntry( "GenericServiceType" );
       if (type2.isEmpty()) // compat code
@@ -207,7 +207,10 @@ void KServiceTypeProfile::addService( const QString& _service,
 
 int KServiceTypeProfile::preference( const QString& _service ) const
 {
-  QMap<QString,Service>::ConstIterator it = m_mapServices.find( _service );
+  KService::Ptr service = KService::serviceByName( _service );
+  if (!service)
+    return 0;
+  QMap<QString,Service>::ConstIterator it = m_mapServices.find( service->storageId() );
   if ( it == m_mapServices.end() )
     return 0;
 
@@ -216,13 +219,16 @@ int KServiceTypeProfile::preference( const QString& _service ) const
 
 bool KServiceTypeProfile::allowAsDefault( const QString& _service ) const
 {
+  KService::Ptr service = KService::serviceByName( _service );
+  if (!service)
+    return false;
+
   // Does the service itself not allow that ?
-  KService::Ptr s = KService::serviceByName( _service );
-  if ( s && !s->allowAsDefault() )
+  if ( !service->allowAsDefault() )
     return false;
 
   // Look what the user says ...
-  QMap<QString,Service>::ConstIterator it = m_mapServices.find( _service );
+  QMap<QString,Service>::ConstIterator it = m_mapServices.find( service->storageId() );
   if ( it == m_mapServices.end() )
     return 0;
 
@@ -259,7 +265,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
     if ( m_strGenericServiceType.isEmpty() || (*it)->hasServiceType( m_strGenericServiceType ) )
     {
       // Now look into the profile, to find this service's preference.
-      QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->name() );
+      QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->storageId() );
 
       if( it2 != m_mapServices.end() )
       {

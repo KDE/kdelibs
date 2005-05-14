@@ -122,6 +122,7 @@ public:
   ~KServiceTypeProfile();
 
   /**
+   * @deprecated Remove in KDE 4, unused.
    * Returns the users preference of the given service.
    * @param _service the name of the service to check
    * @return the user's preference number of the given
@@ -130,6 +131,7 @@ public:
   int preference( const QString& _service ) const;
 
   /**
+   * @deprecated Remove in KDE 4, unused.
    * Checks whether the given @p _service can be used as default.
    * @param _service the name of the service to check
    * @return true if allowed as default
