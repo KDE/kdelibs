@@ -25,7 +25,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
 	kdebugtest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
-	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest \
+	cplusplustest kiconloadertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
 	kxerrorhandlertest startserviceby kstdacceltest kglobaltest
@@ -61,7 +61,6 @@ $(srcdir)/KIDLTestClient.cpp: KIDLTest_stub.h
 kipctest_SOURCES = kipctest.cpp
 cplusplustest_SOURCES = cplusplustest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp
-kresolvertest_SOURCES = kresolvertest.cpp
 kmdcodectest_SOURCES = kmdcodectest.cpp 
 knotifytest_SOURCES = knotifytest.cpp
 ksortablevaluelisttest_SOURCES = ksortablevaluelisttest.cpp
