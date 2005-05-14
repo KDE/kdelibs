@@ -24,6 +24,8 @@
 #include <q3listbox.h>
 #include <q3popupmenu.h>
 #include <qapplication.h>
+#include <qevent.h>
+#include <QAbstractItemView>
 
 #include <kcompletionbox.h>
 #include <kcursor.h>
@@ -159,12 +161,10 @@ void KComboBox::makeCompletion( const QString& text )
 
     else // read-only combo completion
     {
-        if( text.isNull() || !listBox() )
+        if( text.isNull() || !view() )
             return;
 
-        const int index = listBox()->index( listBox()->findItem( text ) );
-        if( index >= 0 )
-            setCurrentItem( index );
+	view()->keyboardSearch(text);
     }
 }
 
@@ -610,10 +610,10 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 void KHistoryCombo::wheelEvent( QWheelEvent *ev )
 {
     // Pass to poppable listbox if it's up
-    Q3ListBox* const lb = listBox();
-    if ( lb && lb->isVisible() )
+    QAbstractItemView* const iv = view();
+    if ( iv && iv->isVisible() )
     {
-        QApplication::sendEvent( lb, ev );
+        QApplication::sendEvent( iv, ev );
         return;
     }
     // Otherwise make it change the text without emitting activated
