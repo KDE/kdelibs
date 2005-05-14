@@ -34,6 +34,7 @@
 #include <qtimer.h>
 #include <QDesktopWidget>
 #include <QMenuItem>
+#include <QStyleOptionMenuItem>
 
 #include <kconfig.h>
 #include <kglobalsettings.h>
@@ -489,7 +490,7 @@ void KMenuBar::closeEvent( QCloseEvent* e )
         QMenuBar::closeEvent( e );
 }
 
-void KMenuBar::drawContents( QPainter* p )
+void KMenuBar::paintEvent( QPaintEvent* pe )
 {
     // Closes the BR77113
     // We need to overload this method to paint only the menu items
@@ -502,12 +503,14 @@ void KMenuBar::drawContents( QPainter* p )
     // Of course this hack can safely be removed when real transparency
     // will be available
 
-    if( !d->topLevel )
+//    if( !d->topLevel )
     {
-        //QMenuBar::drawContents(p);
+        QMenuBar::paintEvent(pe);
     }
+#if 0
     else
     {
+        QPainter p(this);
         bool up_enabled = isUpdatesEnabled();
         Qt::BackgroundMode bg_mode = backgroundMode();
         BackgroundOrigin bg_origin = backgroundOrigin();
@@ -516,7 +519,7 @@ void KMenuBar::drawContents( QPainter* p )
         setBackgroundMode(Qt::X11ParentRelative);
         setBackgroundOrigin(WindowOrigin);
 
-	p->eraseRect( rect() );
+	p.eraseRect( rect() );
 	erase();
         
         QColorGroup g = colorGroup();
@@ -539,13 +542,19 @@ void KMenuBar::drawContents( QPainter* p )
                 else
                     g = palette().disabled();
 
-                //FIXME where does actItem come from?
-                bool item_active = ( actItem ==  i );
+                bool item_active = ( activeAction() ==  mi );
 
-                p->setClipRect(r);
+                p.setClipRect(r);
 
                 if( item_active )
                 {
+                    QStyleOptionMenuItem miOpt;
+                    miOpt.init(this);
+                    miOpt.rect = r;
+                    miOpt.text = mi->text();
+                    miOpt.icon = mi->icon();
+                    miOpt.palette = g;
+
                     QStyle::State flags = QStyle::State_None;
                     if (isEnabled() && e)
                         flags |= QStyle::State_Enabled;
@@ -554,13 +563,15 @@ void KMenuBar::drawContents( QPainter* p )
                     if ( item_active && actItemDown )
                         flags |= QStyle::State_Down;
                     flags |= QStyle::State_HasFocus;
-
-                    style()->drawControl(QStyle::CE_MenuBarItem, p, this,
-                                        r, g, flags, QStyleOption(mi));
+                    
+                    mi->state = flags;
+                    
+                    
+                    style()->drawControl(QStyle::CE_MenuBarItem, &miOpt, &p, this);
                 }
                 else
                 {
-                    style().drawItem(p, r, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic,
+                    style()->drawItem(p, r, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic,
                                      g, e, mi->pixmap(), mi->text());
                 }
             }
@@ -570,6 +581,7 @@ void KMenuBar::drawContents( QPainter* p )
         setBackgroundMode(bg_mode);
         setUpdatesEnabled(up_enabled);
     }
+#endif
 }
 
 void KMenuBar::virtual_hook( int, void* )

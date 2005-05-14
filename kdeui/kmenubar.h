@@ -95,7 +95,7 @@ protected:
     virtual bool x11Event( XEvent* );
 #endif
     virtual void closeEvent( QCloseEvent* );
-    virtual void drawContents( QPainter* );
+    virtual void paintEvent( QPaintEvent* );
 private slots:
     void updateFallbackSize();
     void selectionTimeout();
