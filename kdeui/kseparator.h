@@ -20,7 +20,7 @@
 #ifndef __KSEPARATOR_H__
 #define __KSEPARATOR_H__
 
-#include <q3frame.h>
+#include <qframe.h>
 
 #include <kdelibs_export.h>
 
@@ -30,7 +30,7 @@
  * @author Michael Roth <mroth@wirlweb.de>
  * @version $Id$
 */
-class KDEUI_EXPORT KSeparator : public Q3Frame
+class KDEUI_EXPORT KSeparator : public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( int orientation READ orientation WRITE setOrientation )
@@ -73,11 +73,8 @@ class KDEUI_EXPORT KSeparator : public Q3Frame
   virtual QSize sizeHint() const;
 
 protected:
-  /**
-   * @param p pointer to painter
-   */
-  virtual void drawFrame( QPainter *p );
-protected:
+  void paintEvent(QPaintEvent* pe);
+
   virtual void virtual_hook( int id, void* data );
 private:
   class KSeparatorPrivate* d;

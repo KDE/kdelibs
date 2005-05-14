@@ -22,12 +22,13 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <QStyleOption>
+#include <QPainter>
 
 #include "kseparator.moc"
 
 
 KSeparator::KSeparator(QWidget* parent, const char* name, Qt::WFlags f)
-   : Q3Frame(parent, name, f)
+   : QFrame(parent, name, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);
@@ -37,7 +38,7 @@ KSeparator::KSeparator(QWidget* parent, const char* name, Qt::WFlags f)
 
 
 KSeparator::KSeparator(int orientation, QWidget* parent, const char* name, Qt::WFlags f)
-   : Q3Frame(parent, name, f)
+   : QFrame(parent, name, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);
@@ -52,7 +53,8 @@ void KSeparator::setOrientation(int orientation)
    {
       case Qt::Vertical:
       case VLine:
-         setFrameStyle( Q3Frame::VLine | Q3Frame::Sunken );
+         setFrameShape ( QFrame::VLine );
+         setFrameShadow( QFrame::Sunken );
          setMinimumSize(2, 0);
          break;
       
@@ -61,7 +63,8 @@ void KSeparator::setOrientation(int orientation)
          
       case Qt::Horizontal:
       case HLine:
-         setFrameStyle( Q3Frame::HLine | Q3Frame::Sunken );
+         setFrameShape ( QFrame::HLine );
+         setFrameShadow( QFrame::Sunken );
          setMinimumSize(0, 2);
          break;
    }
@@ -80,12 +83,15 @@ int KSeparator::orientation() const
    return 0;
 }
 
-void KSeparator::drawFrame(QPainter *p)
+void KSeparator::paintEvent(QPaintEvent*)
 {
+   QPainter p(this);
+
+   QStyleOption opt;
+   opt.init(this);
+
    QPoint	p1, p2;
    QRect	r     = frameRect();
-   const QColorGroup & g = colorGroup();
-
    if ( frameStyle() & HLine ) {
       p1 = QPoint( r.x(), r.height()/2 );
       p2 = QPoint( r.x()+r.width(), p1.y() );
@@ -95,8 +101,9 @@ void KSeparator::drawFrame(QPainter *p)
       p2 = QPoint( p1.x(), r.height() );
    }
 
-   QStyleOption opt( lineWidth(), midLineWidth() );
-   style()->drawPrimitive( QStyle::PE_Q3Separator, p, QRect( p1, p2 ), g, QStyle::State_Sunken, opt );
+   opt.rect = QRect(p1, p2);
+
+   style()->drawPrimitive( QStyle::PE_Q3Separator, &opt, &p);
 }
 
 
