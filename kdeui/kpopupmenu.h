@@ -21,7 +21,7 @@
 
 #define INCLUDE_MENUITEM_DEF
 
-#include <QMenu>
+#include <Q3PopupMenu>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
 #include <kdelibs_export.h>
@@ -44,7 +44,7 @@
  * @author Hamish Rodda <rodda@kde.org>
  * FIXME KDE4 rename this file to kmenu.h
  */
-class KDEUI_EXPORT KMenu : public QMenu {
+class KDEUI_EXPORT KMenu : public Q3PopupMenu {
     Q_OBJECT
 public:
     /**
@@ -92,12 +92,12 @@ public:
     /**
      * Returns the context menu associated with this menu
      */
-    QMenu* contextMenu();
+    Q3PopupMenu* contextMenu();
 
     /**
      * Returns the context menu associated with this menu
      */
-    const QMenu* contextMenu() const;
+    const Q3PopupMenu* contextMenu() const;
 
     /**
      * Hides the context menu if shown
@@ -118,16 +118,73 @@ public:
     static QAction* contextMenuFocusAction();
 
     /**
-     * Reimplemented for internal purposes
-     * @since 3.4
-     */
-    virtual void activateItemAt(int index);
-    /**
      * Return the state of the mouse button and keyboard modifiers
      * when the last menuitem was activated.
      * @since 3.4
      */
     Qt::ButtonState state() const;
+
+    // BEGIN compat methods
+    /**
+     * Constructs a KMenu.
+     */
+    KMenu(QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+
+    /**
+     * Inserts a title item with no icon.
+     */
+    int insertTitle(const QString &text, int id=-1, int index=-1) KDE_DEPRECATED;
+    /**
+     * Inserts a title item with the given icon and title.
+     */
+    int insertTitle(const QPixmap &icon, const QString &text, int id=-1,
+                    int index=-1) KDE_DEPRECATED;
+    /**
+     * Changes the title of the item at the specified id. If a icon was
+     * previously set it is cleared.
+     */
+    void changeTitle(int id, const QString &text) KDE_DEPRECATED;
+    /**
+     * Changes the title and icon of the title item at the specified id.
+     */
+    void changeTitle(int id, const QPixmap &icon, const QString &text) KDE_DEPRECATED;
+    /**
+     * Returns the title of the title item at the specified id. The default
+     * id of -1 is for backwards compatibility only, you should always specify
+     * the id.
+     */
+    QString title(int id=-1) const KDE_DEPRECATED;
+    /**
+     * Returns the icon of the title item at the specified id.
+     */
+    QPixmap titlePixmap(int id) const KDE_DEPRECATED;
+
+    /**
+     * @deprecated
+     * Obsolete method provided for backwards compatibility only. Use the
+     * normal constructor and insertTitle instead.
+     */
+    KMenu(const QString &title, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+
+    /**
+     * @deprecated
+     * Obsolete method provided for backwards compatibility only. Use
+     * insertTitle and changeTitle instead.
+     */
+    void setTitle(const QString &title) KDE_DEPRECATED;
+
+    /**
+     * returns the ID of the menuitem associated with the current context menu
+     * @since 3.2
+     */
+    static int contextMenuFocusItem() KDE_DEPRECATED;
+
+    /**
+     * Reimplemented for internal purposes
+     * @since 3.4
+     */
+    virtual void activateItemAt(int index) KDE_DEPRECATED;
+    // END compat methods
 
 signals:
     /**
@@ -138,6 +195,8 @@ signals:
      * @since 3.2
      */
     void aboutToShowContextMenu(KMenu* menu, QAction* menuAction, QMenu* ctxMenu);
+    /// compat
+    void aboutToShowContextMenu(KMenu* menu, int menuItem, Q3PopupMenu* ctxMenu);
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -165,5 +224,8 @@ private:
     class KMenuPrivate;
     KMenuPrivate *d;
 };
+
+// compat
+typedef KMenu KPopupMenu;
 
 #endif
