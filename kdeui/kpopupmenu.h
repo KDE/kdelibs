@@ -128,7 +128,7 @@ public:
     /**
      * Constructs a KPopupMenu.
      */
-    KPopupMenu(QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+    KPopupMenu(QWidget *parent, const char *name) KDE_DEPRECATED;
 
     /**
      * Inserts a title item with no icon.

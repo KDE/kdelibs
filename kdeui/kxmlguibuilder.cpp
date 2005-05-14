@@ -154,7 +154,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if (!kapp->authorizeKAction(name))
        return 0;
 
-    KMenu *popup = new KMenu(p);
+    KPopupMenu *popup = new KPopupMenu(p);
     popup->setObjectName(name);
 
     QString i18nText;
@@ -358,7 +358,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   }
   else if ( element.tagName().lower() == d->tagMenuTitle )
   {
-    if ( qobject_cast<KMenu*>( parent ) )
+    if ( qobject_cast<KPopupMenu*>( parent ) )
     {
       QString i18nText;
       Q3CString text = element.text().utf8();
@@ -380,14 +380,14 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         pix = SmallIcon( icon, instance );
       }
 
-      KMenu *m = static_cast<KMenu *>(parent);
+      KPopupMenu *m = static_cast<KPopupMenu *>(parent);
       QAction *before = m->actions().value(index + 1);
 
       if ( !icon.isEmpty() ) {
-        m->insertTitle( QIcon(pix), i18nText, before );
+        m->addTitle( QIcon(pix), i18nText, before );
         return m->idAt(index);
       } else {
-        m->insertTitle( i18nText, before );
+        m->addTitle( i18nText, before );
         return m->idAt(index);
       }
     }
