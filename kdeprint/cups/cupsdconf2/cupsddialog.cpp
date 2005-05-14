@@ -338,7 +338,7 @@ int CupsdDialog::serverOwner()
 		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			QTextStream	t(&f);
-			while (!t.eof())
+			while (!t.atEnd())
 			{
 				str = t.readLine();
 				if (str.find("Uid:",0,false) == 0)

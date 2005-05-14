@@ -49,10 +49,11 @@ bool Comment::load(QFile *f)
         comment_ = "";
         example_ = "";
 	key_ = "";
-        QString line, *current = &comment_;
+        QByteArray line;
+		QString *current = &comment_;
         while (!f->atEnd())
         {
-                f->readLine(line, 1024);
+                f->readLine(line.data(), 1024);
                 if (line.left(2) == "$$")
                 {
                         current = &example_;
