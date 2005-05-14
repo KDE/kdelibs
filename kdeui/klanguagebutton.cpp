@@ -25,6 +25,7 @@
 #include <q3popupmenu.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <QMenuItem>
 
 #include "klanguagebutton.h"
 #include "klanguagebutton.moc"
@@ -66,7 +67,10 @@ static Q3PopupMenu * checkInsertIndex( Q3PopupMenu *popup,
   if ( pos != -1 )
   {
     QMenuItem *p = popup->findItem( pos );
-    pi = p ? p->popup() : 0;
+    pi = p ? ::qobject_cast<Q3PopupMenu*>(p->menu()) : 0;
+#ifdef __GNUC__
+  #warning "Check the cast here when cleaning up!"
+#endif
   }
   if ( !pi )
     pi = popup;
@@ -266,11 +270,8 @@ void KLanguageButton::setCurrentItem( int i )
   if ( !d->staticText )
   {
     d->button->setText( m_popup->text( m_current ) );
-    QIcon *icon = m_popup->iconSet( m_current );
-    if ( icon )
-      d->button->setIconSet( *icon );
-    else
-      d->button->setIconSet( QIcon() );
+    QIcon icon = m_popup->iconSet( m_current );
+    d->button->setIconSet( icon );
   }
 }
 
