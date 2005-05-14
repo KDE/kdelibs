@@ -25,6 +25,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kfontdialog.h>
+#include <QListWidgetItem>
 
 #include "kfontcombo.h"
 #include "kfontcombo.moc"
@@ -53,7 +54,7 @@ struct KFontComboPrivate
     QString defaultFamily;
 };
 
-class KFontListItem : public Q3ListBoxItem
+class KFontListItem : public QListWidgetItem
 {
 public:
     KFontListItem(const QString &fontName, KFontCombo *combo);
@@ -78,7 +79,7 @@ private:
 };
 
 KFontListItem::KFontListItem(const QString &fontName, KFontCombo *combo)
-    : Q3ListBoxItem(combo->listBox()),
+    : QListWidgetItem(( QListWidget * ) combo->view()),
       m_combo(combo),
       m_fontName(fontName),
       m_font(0),
@@ -151,7 +152,7 @@ void KFontListItem::createFont()
 
     m_font = new QFont(m_fontName);
     QFontMetrics fm(*m_font);
-    for (unsigned int i = 0; i < m_fontName.length(); ++i)
+    for (int i = 0; i < m_fontName.length(); ++i)
         if (!fm.inFont(m_fontName[i]))
         {
             m_canPaintName = false;
@@ -336,9 +337,9 @@ void KFontCombo::updateFonts()
     if (!d->displayFonts)
         return;
 
-    for (unsigned int i = 0; i < listBox()->count(); ++i)
+    for (int i = 0; i < count(); ++i)
     {
-        KFontListItem *item = static_cast<KFontListItem *>(listBox()->item(i));
+        KFontListItem *item = static_cast<KFontListItem *>(( ( QListWidget* )view() )->item(i));
         item->updateFont();
     }
 }
