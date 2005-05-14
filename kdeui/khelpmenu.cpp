@@ -121,7 +121,7 @@ KPopupMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (kapp->authorizeKAction("help_contents"))
     {
-      mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
+      mMenu->insertItem( BarIconSet( "contents", KIcon::SizeSmall),
                      i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
       mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
       mMenu->setAccel( KStdAccel::shortcut(KStdAccel::Help), menuHelpContents );
@@ -152,14 +152,14 @@ KPopupMenu* KHelpMenu::menu()
 
     if (kapp->authorizeKAction("help_about_app"))
     {
-      mMenu->insertItem( kapp->miniIcon(),
+      mMenu->insertItem( QIcon(kapp->miniIcon()),
         i18n( "&About %1" ).arg(appName), menuAboutApp );
       mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
     }
     
     if (kapp->authorizeKAction("help_about_kde"))
     {
-      mMenu->insertItem( SmallIcon("about_kde"), i18n( "About &KDE" ), menuAboutKDE );
+      mMenu->insertItem( SmallIconSet("about_kde"), i18n( "About &KDE" ), menuAboutKDE );
       mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
     }
   }
