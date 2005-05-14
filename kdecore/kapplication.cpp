@@ -76,8 +76,7 @@
 #include <kmdcodec.h>
 
 #if defined Q_WS_X11
-// KDE4 TODO
-#include <QtGui/private/qt_x11_p.h>
+#include <QtGui/qx11info_x11.h>
 #include <kstartupinfo.h>
 #endif
 
@@ -1707,18 +1706,18 @@ bool KApplication::x11EventFilter( XEvent *_event )
                     && _event->xclient.data.l[ 4 ] == 0
                     && _event->xclient.data.l[ 3 ] != 0 )
                     {
-                    if( X11->userTime == 0
-                        || ( _event->xclient.data.l[ 3 ] - X11->userTime ) < 100000U )
+                    if( QX11Info::appUserTime() == 0
+                        || ( _event->xclient.data.l[ 3 ] - QX11Info::appUserTime() ) < 100000U )
                         { // and the timestamp looks reasonable
-                        X11->userTime = _event->xclient.data.l[ 3 ]; // update our qt_x_user_time from it
+                        QX11Info::setAppUserTime(_event->xclient.data.l[ 3 ]); // update our qt_x_user_time from it
                         }
                     }
                 else // normal DND, only needed until Qt updates qt_x_user_time from XdndDrop
                     {
-                    if( X11->userTime == 0
-                        || ( _event->xclient.data.l[ 2 ] - X11->userTime ) < 100000U )
+                    if( QX11Info::appUserTime() == 0
+                        || ( _event->xclient.data.l[ 2 ] - QX11Info::appUserTime() ) < 100000U )
                         { // the timestamp looks reasonable
-                        X11->userTime = _event->xclient.data.l[ 2 ]; // update our qt_x_user_time from it
+                        QX11Info::setAppUserTime(_event->xclient.data.l[ 2 ]); // update our qt_x_user_time from it
                         }
                     }
                 }
@@ -1830,16 +1829,16 @@ void KApplication::updateUserTimestamp( quint32 time )
         time = ev.xproperty.time;
         XDestroyWindow( QX11Info::display(), w );
     }
-    if( X11->userTime == 0
-        || time - X11->userTime < 1000000000U ) // check time > qt_x_user_time, handle wrapping
-        X11->userTime = time;
+    if( QX11Info::appUserTime() == 0
+        || time - QX11Info::appUserTime() < 1000000000U ) // check time > qt_x_user_time, handle wrapping
+        QX11Info::setAppUserTime(time);
 #endif
 }
 
 unsigned long KApplication::userTimestamp() const
 {
 #if defined Q_WS_X11
-    return X11->userTime;
+    return QX11Info::appUserTime();
 #else
     return 0;
 #endif
@@ -1849,7 +1848,7 @@ void KApplication::updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 
 {
 #if defined Q_WS_X11
     if( time == 0 )
-        time = X11->userTime;
+        time = QX11Info::appUserTime();
     DCOPRef( dcopId, "MainApplication-Interface" ).call( "updateUserTimestamp", time );
 #endif
 }
