@@ -281,8 +281,8 @@ void KApplicationTree::slotSelectionChanged(Q3ListViewItem* i)
 
 void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
-    setColumnWidth(0, width()-QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent)
-                         -2*QApplication::style().pixelMetric(QStyle::PM_DefaultFrameWidth));
+    setColumnWidth(0, width()-QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent)
+                         -2*QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth));
     KListView::resizeEvent(e);
 }
 

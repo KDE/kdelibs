@@ -109,7 +109,7 @@ KDirOperator::KDirOperator(const KURL& _url,
 
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentDirPath();
-        strPath.append('/');
+        strPath.append(QChar('/'));
         currUrl = KURL();
         currUrl.setProtocol(QString::fromLatin1("file"));
         currUrl.setPath(strPath);

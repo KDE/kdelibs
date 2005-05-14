@@ -34,7 +34,8 @@
 #include <qfileinfo.h>
 #include <qdatetime.h>
 #include <q3stylesheet.h>
-#include <qvgroupbox.h>
+#include <q3groupbox.h>
+#include <QResizeEvent>
 
 #undef Bool
 
