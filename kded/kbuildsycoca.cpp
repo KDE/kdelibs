@@ -642,23 +642,19 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
          }
    }
    QDir dir( dirname );
-   const QFileInfoList *list = dir.entryInfoList( QDir::NoFilter, QDir::Unsorted );
-   if (!list)
+   QFileInfoList list = dir.entryInfoList( QDir::NoFilter, QDir::Unsorted );
+   if (list.count() == 0)
       return true;
 
-   for( QFileInfoListIterator it( *list );
-        it.current() != NULL;
-        ++it )
-   {
-      QFileInfo* fi = it.current();
-      if( fi->fileName() == "." || fi->fileName() == ".." )
+   foreach ( QFileInfo fi, list ) {
+      if( fi.fileName() == "." || fi.fileName() == ".." )
          continue;
-      if( fi->lastModified() > stamp )
+      if( fi.lastModified() > stamp )
       {
-         kdDebug( 7201 ) << "timestamp changed:" << fi->filePath() << endl;
+         kdDebug( 7201 ) << "timestamp changed:" << fi.filePath() << endl;
          return false;
       }
-      if( fi->isDir() && !checkDirTimestamps( fi->filePath(), stamp, false ))
+      if( fi.isDir() && !checkDirTimestamps( fi.filePath(), stamp, false ))
             return false;
    }
    return true;

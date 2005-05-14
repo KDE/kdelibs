@@ -49,25 +49,25 @@ public:
    /**
     * Catch calls to unknown objects.
     */
-   bool process(const Q3CString &obj, const Q3CString &fun, 
+   bool process(const DCOPCString &obj, const DCOPCString &fun, 
                 const QByteArray &data, 
-		Q3CString &replyType, QByteArray &replyData);
+		DCOPCString &replyType, QByteArray &replyData);
 
    /**
     * process DCOP message.  Only calls to "recreate" are supported at
     * this time.
     */
-   bool process(const Q3CString &fun, const QByteArray &data, 
-		Q3CString &replyType, QByteArray &replyData);
+   bool process(const DCOPCString &fun, const QByteArray &data, 
+		DCOPCString &replyType, QByteArray &replyData);
 
-   virtual QCStringList functions();
+   virtual DCOPCStringList functions();
 
    void noDemandLoad(const QString &obj); // Don't load obj on demand
 
-   KDEDModule *loadModule(const Q3CString &obj, bool onDemand);
+   KDEDModule *loadModule(const DCOPCString &obj, bool onDemand);
    KDEDModule *loadModule(const KService *service, bool onDemand);
-   QCStringList loadedModules();
-   bool unloadModule(const Q3CString &obj);
+   DCOPCStringList loadedModules();
+   bool unloadModule(const DCOPCString &obj);
    bool isWindowRegistered(long windowId);
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
@@ -102,7 +102,7 @@ public slots:
    /**
     * An application unregistered itself with DCOP
     */
-   void slotApplicationRemoved(const Q3CString &appId);
+   void slotApplicationRemoved(const DCOPCString &appId);
 
    /**
     * A KDEDModule is about to get destroyed.
@@ -153,14 +153,14 @@ protected:
     */
    QTimer* m_pTimer;
    
-   Q3ValueList<DCOPClientTransaction *> m_recreateRequests;
+   QList<DCOPClientTransaction *> m_recreateRequests;
    int m_recreateCount;
    bool m_recreateBusy;
    
    Q3AsciiDict<KDEDModule> m_modules;
    Q3AsciiDict<KLibrary> m_libs;
    Q3AsciiDict<QObject> m_dontLoad;
-   Q3AsciiDict<Q3ValueList<long> > m_windowIdList;
+   Q3AsciiDict<QList<long> > m_windowIdList;
    Q3IntDict<long> m_globalWindowIdList;
    QStringList m_allResourceDirs;
    bool m_needDelayedCheck;
@@ -210,7 +210,7 @@ private:
     * Timer for interval hostname checking.
     */
    QTimer m_Timer;
-   Q3CString m_hostname;
+   DCOPCString m_hostname;
 };
 
 #endif
