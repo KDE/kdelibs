@@ -25,8 +25,7 @@
 #include <ksslpeerinfo.h>
 #include <ksslconnectioninfo.h>
 
-namespace KNetwork { class KActiveSocketBase; }
-
+class QIODevice;
 class KSSLPrivate;
 class KSSLCertificate;
 class KSSLPKCS12;
@@ -199,7 +198,7 @@ public:
 	 *          -1 on other error.
 	 */
 	int connect(int sock);
-        int connect(KNetwork::KActiveSocketBase* sock);
+        int connect(QIODevice* sock);
 
 	/**
 	 *  Connect the SSL session to the remote host using the provided
@@ -211,7 +210,7 @@ public:
 	 *          -1 on other error.
 	 */
 	int accept(int sock);
-        int accept(KNetwork::KActiveSocketBase* sock);
+        int accept(QIODevice* sock);
 
 	/**
 	 *  Read data from the remote host via SSL.
