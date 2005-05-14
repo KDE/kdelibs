@@ -161,7 +161,7 @@ sub generateMethod($$)
 	$argType =~ s/^\s*(.*?)\s*$/$1/;
 	$argType =~ s/</&lt;/g;
 	$argType =~ s/>/&gt;/g;
-	$argType =~ s/\s//g;
+	$argType =~ s/\s/ /g;
 
 	$args .= "        <ARG><TYPE$typeAttrs>$argType</TYPE><NAME>$arg->{ArgName}</NAME></ARG>\n";
     }
