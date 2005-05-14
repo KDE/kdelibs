@@ -1222,10 +1222,9 @@ void KApplication::commitData( QSessionManager& sm )
     if ( sm.allowsInteraction() ) {
         QWidgetList done;
         QWidgetList list = QApplication::topLevelWidgets();
-#warning ho I was lame here, FIXME ( SM ) ...
-#if 0
         bool canceled = false;
         QWidget* w = list.first();
+		int count = 0;
         while ( !canceled && w ) {
             if ( !( w->testAttribute( Qt::WA_WState_Hidden )) && !w->inherits("KMainWindow") ) {
                 QCloseEvent e;
@@ -1233,17 +1232,20 @@ void KApplication::commitData( QSessionManager& sm )
                 canceled = !e.isAccepted();
                 if ( !canceled )
                     done.append( w );
-                delete list; // one never knows...
+				//grab the new list that was just modified by our closeevent
                 list = QApplication::topLevelWidgets();
                 w = list.first();
+				count = 0;
             } else {
-                w = list.next();
+				//loop over the widgets
+				count++;
+                w = list[ count ];
             }
-            while ( w && done.containsRef( w ) )
-                w = list->next();
+            while ( w && done.contains( w ) )
+				//loop over the widgets
+				count++;
+                w = list[ count ];
         }
-        delete list;
-#endif
     }
 
     if ( !bSessionManagement )
