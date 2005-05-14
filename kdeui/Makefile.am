@@ -120,7 +120,7 @@ libkdeui_la_SOURCES = \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp \
 		ksconfig.cpp kspelldlg.cpp \
 		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp \
-		ksplashscreen.cpp kspellui.ui kconfigdialog.cpp \
+		ksplashscreen.cpp kspellui.ui3 kconfigdialog.cpp \
 		kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp \
 		kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
 		kwhatsthismanager.cpp kiconviewsearchline.cpp \
