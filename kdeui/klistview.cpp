@@ -26,6 +26,7 @@
 #include <qcursor.h>
 #include <qtooltip.h>
 #include <qstyle.h>
+#include <QStyleOptionFocusRect>
 #include <qpainter.h>
 
 #include <kglobalsettings.h>
@@ -89,7 +90,6 @@ public:
       disableAutoSelection (false),
       dropVisualizer (true),
       dropHighlighter (false),
-      createChildren (true),
       pressedOnSelected (false),
       wasShiftEvent (false),
       fullWidth (false),
@@ -145,7 +145,6 @@ public:
   bool disableAutoSelection:1;
   bool dropVisualizer:1;
   bool dropHighlighter:1;
-  bool createChildren:1;
   bool pressedOnSelected:1;
   bool wasShiftEvent:1;
   bool fullWidth:1;
@@ -1346,8 +1345,14 @@ QRect KListView::drawItemHighlighter(QPainter *painter, Q3ListViewItem *item)
     r = itemRect(item);
     r.setLeft(r.left()+(item->depth()+(rootIsDecorated() ? 1 : 0))*treeStepSize());
     if (painter)
-      style().drawPrimitive(QStyle::PE_FocusRect, painter, r, colorGroup(),
-                            QStyle::State_FocusAtBorder, colorGroup().highlight());
+    {
+      QStyleOptionFocusRect frOpt;
+      frOpt.init(this);
+      frOpt.state = QStyle::State_FocusAtBorder;
+      frOpt.rect  = r;
+      frOpt.backgroundColor = palette().highlight();
+      style()->drawPrimitive(QStyle::PE_FrameFocusRect, &frOpt, painter);
+    }
   }
 
   return r;
@@ -1396,17 +1401,6 @@ bool KListView::acceptDrag(QDropEvent* e) const
 {
   return acceptDrops() && itemsMovable() && (e->source()==viewport());
 }
-
-void KListView::setCreateChildren(bool b)
-{
-        d->createChildren=b;
-}
-
-bool KListView::createChildren() const
-{
-        return d->createChildren;
-}
-
 
 int KListView::tooltipColumn() const
 {
@@ -1928,8 +1922,11 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
       QPainter painter(viewport());
 
       // This is where we actually draw the drop-highlighter
-      style().drawPrimitive(QStyle::PE_FocusRect, &painter, d->mOldDropHighlighter, colorGroup(),
-                            QStyle::State_FocusAtBorder);
+      QStyleOptionFocusRect frOpt;
+      frOpt.init(this);
+      frOpt.state = QStyle::State_FocusAtBorder;
+      frOpt.rect  = d->mOldDropHighlighter;
+      style()->drawPrimitive(QStyle::PE_FrameFocusRect, &frOpt, &painter);
     }
   d->painting = false;
 }

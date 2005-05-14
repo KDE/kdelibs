@@ -249,14 +249,6 @@ public:
   int tooltipColumn() const;
 
   /**
-   * For future expansions.
-   *
-   * Do not use.
-   * @deprecated
-   */
-  bool createChildren() const KDE_DEPRECATED;
-
-  /**
    * @return true if drawing of the drop-highlighter has been enabled.  False by default.
    *
    * @see setDropHighlighter()
