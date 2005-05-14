@@ -229,7 +229,7 @@ private:
 int
 KRunMX1::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
 {
-   uint option = str[pos + 1];
+   uint option = str[pos + 1].unicode();
    switch( option ) {
    case 'c':
       ret << service.name().replace( '%', "%%" );
@@ -304,7 +304,7 @@ KRunMX2::subst( int option, const KURL &url, QStringList &ret )
 int
 KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
 {
-   uint option = str[pos + 1];
+   uint option = str[pos + 1].unicode();
    switch( option ) {
    case 'f':
    case 'u':
@@ -328,7 +328,7 @@ KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
          subst( option, *it, ret );
       break;
    case '%':
-      ret = "%";
+      ret = QStringList(QString::fromLatin1("%"));
       break;
    default:
       return -2; // subst with same and skip
@@ -378,7 +378,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
     result << "kioexec" << "--tempfiles" << exec;
     result += _urls.toStringList();
     if (has_shell)
-      result = KShell::joinArgs( result );
+      result = QStringList( KShell::joinArgs( result ) );
     return result;
   }
 
@@ -393,7 +393,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
         result << exec;
         result += _urls.toStringList();
         if (has_shell)
-          result = KShell::joinArgs( result );
+          result = QStringList( KShell::joinArgs( result ) );
         return result;
       }
   }
