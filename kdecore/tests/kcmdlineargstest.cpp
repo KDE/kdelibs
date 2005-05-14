@@ -54,8 +54,8 @@ main(int argc, char *argv[])
    printf("Baudrate = %s\n", baudrate.data());
 
    printf("Full list of baudrates:\n");
-   QCStringList result = args->getOptionList("baud");
-   for(QCStringList::ConstIterator it=result.begin();
+   QByteArrayList result = args->getOptionList("baud");
+   for(QByteArrayList::ConstIterator it=result.begin();
        it != result.end();
        ++it)
    {

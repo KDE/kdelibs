@@ -3,7 +3,7 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 
-KIDLTest::KIDLTest( const Q3CString& id )
+KIDLTest::KIDLTest( const DCOPCString& id )
     : DCOPObject( id )
 {
 }
