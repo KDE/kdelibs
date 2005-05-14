@@ -40,7 +40,7 @@ KateSyntaxDocument::KateSyntaxDocument(bool force)
 
 KateSyntaxDocument::~KateSyntaxDocument()
 {
-  for (uint i=0; i < myModeList.size(); i++)
+  for (int i=0; i < myModeList.size(); i++)
     delete myModeList[i];
 }
 
@@ -211,7 +211,7 @@ bool KateSyntaxDocument::getElement (QDomElement &element, const QString &mainGr
   QDomNodeList nodes = documentElement().childNodes();
 
   // Loop over all these child nodes looking for mainGroupName
-  for (unsigned int i=0; i<nodes.count(); i++)
+  for (int i=0; i<nodes.count(); i++)
   {
     QDomElement elem = nodes.item(i).toElement();
     if (elem.tagName() == mainGroupName)
@@ -220,7 +220,7 @@ bool KateSyntaxDocument::getElement (QDomElement &element, const QString &mainGr
       QDomNodeList subNodes = elem.childNodes();
 
       // ... so now loop looking for config
-      for (unsigned int j=0; j<subNodes.count(); j++)
+      for (int j=0; j<subNodes.count(); j++)
       {
         QDomElement subElem = subNodes.item(j).toElement();
         if (subElem.tagName() == config)
@@ -289,14 +289,14 @@ QStringList& KateSyntaxDocument::finddata(const QString& mainGroup, const QStrin
       kdDebug(13010)<<"\""<<mainGroup<<"\" found."<<endl;
       QDomNodeList nodelist1 = elem.elementsByTagName("list");
 
-      for (uint l=0; l<nodelist1.count(); l++)
+      for (int l=0; l<nodelist1.count(); l++)
       {
         if (nodelist1.item(l).toElement().attribute("name") == type)
         {
           kdDebug(13010)<<"List with attribute name=\""<<type<<"\" found."<<endl;
           QDomNodeList childlist = nodelist1.item(l).toElement().childNodes();
 
-          for (uint i=0; i<childlist.count(); i++)
+          for (int i=0; i<childlist.count(); i++)
           {
             QString element = childlist.item(i).toElement().text().stripWhiteSpace();
             if (element.isEmpty())

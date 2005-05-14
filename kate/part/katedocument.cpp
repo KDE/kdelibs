@@ -3095,7 +3095,7 @@ void KateDocument::del( KateView *view, const KateTextCursor& c )
   }
 }
 
-void KateDocument::paste ( KateView* view )
+void KateDocument::paste ( KateView* view, QClipboard::Mode )
 {
   QString s = QApplication::clipboard()->text();
 

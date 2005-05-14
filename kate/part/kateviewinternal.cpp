@@ -50,6 +50,9 @@
 #include <qclipboard.h>
 #include <qpixmap.h>
 #include <q3vbox.h>
+#include <QWheelEvent>
+#include <QMouseEvent>
+#include <QClipboard>
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   : QWidget (view, "", Qt::WStaticContents | Qt::WNoAutoErase | Qt::WResizeNoErase )
@@ -110,7 +113,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   {
     // bottom corner box
     m_dummy = new QWidget(m_view);
-    m_dummy->setFixedHeight(style().scrollBarExtent().width());
+    m_dummy->setFixedHeight(m_lineScroll->width());
     m_dummy->show();
     m_lineLayout->addWidget(m_dummy);
   }
@@ -169,7 +172,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
 
   // set initial cursor
   setCursor( KCursor::ibeamCursor() );
-  m_mouseCursor = IbeamCursor;
+  m_mouseCursor = Qt::IBeamCursor;
 
   // call mouseMoveEvent also if no mouse button is pressed
   setMouseTracking(true);
@@ -236,8 +239,7 @@ void KateViewInternal::dynWrapChanged()
   {
     // bottom corner box
     m_dummy = new QWidget(m_view);
-    m_dummy->setFixedSize( style().scrollBarExtent().width(),
-                                  style().scrollBarExtent().width() );
+    m_dummy->setFixedSize( m_lineScroll->width(), m_lineScroll->width() );
     m_dummy->show();
     m_lineLayout->addWidget(m_dummy);
   }
@@ -356,7 +358,7 @@ void KateViewInternal::scrollViewLines(int offset)
 
 void KateViewInternal::scrollNextPage()
 {
-  scrollViewLines(QMAX( linesDisplayed() - 1, 0 ));
+  scrollViewLines(QMAX( (int)linesDisplayed() - 1, 0 ));
 }
 
 void KateViewInternal::scrollPrevPage()
@@ -453,7 +455,7 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force, bool calledExter
       updateView(false, viewLinesScrolled);
 
       int scrollHeight = -(viewLinesScrolled * (int)m_view->renderer()->fontHeight());
-      int scrollbarWidth = style().scrollBarExtent().width();
+      int scrollbarWidth = m_lineScroll->width();
 
       //
       // updates are for working around the scrollbar leaving blocks in the view
@@ -928,7 +930,11 @@ void KateViewInternal::updateMicroFocusHint()
     uint x = cXPos - m_startX - lineRanges[line].startX + lineRanges[line].xOffset() - preeditStrLen;
     uint y = line * renderer->fontHeight();
 
-    setMicroFocusHint(x, y, 0, renderer->fontHeight());
+
+#ifdef __GNUC__
+#warning port this to QT 4
+#endif
+  //  setMicroFocusHint(x, y, 0, renderer->fontHeight());
 }
 
 void KateViewInternal::doReturn()
@@ -1016,18 +1022,18 @@ public:
     Q_ASSERT( valid() );
   }
 
-  void toEdge( Bias bias ) {
-    if( bias == left ) m_col = 0;
-    else if( bias == right ) m_col = m_vi->m_doc->lineLength( line() );
+  void toEdge( KateViewInternal::Bias bias ) {
+    if( bias == KateViewInternal::left ) m_col = 0;
+    else if( bias == KateViewInternal::right ) m_col = m_vi->m_doc->lineLength( line() );
   }
 
-  bool atEdge() const { return atEdge( left ) || atEdge( right ); }
+  bool atEdge() const { return atEdge( KateViewInternal::left ) || atEdge( KateViewInternal::right ); }
 
-  bool atEdge( Bias bias ) const {
+  bool atEdge( KateViewInternal::Bias bias ) const {
     switch( bias ) {
-    case left:  return col() == 0;
-    case none:  return atEdge();
-    case right: return col() == m_vi->m_doc->lineLength( line() );
+    case KateViewInternal::left:  return col() == 0;
+    case KateViewInternal::none:  return atEdge();
+    case KateViewInternal::right: return col() == m_vi->m_doc->lineLength( line() );
     default: Q_ASSERT(false); return false;
     }
   }
@@ -1130,7 +1136,7 @@ public:
   }
 };
 
-void KateViewInternal::moveChar( Bias bias, bool sel )
+void KateViewInternal::moveChar( KateViewInternal::Bias bias, bool sel )
 {
   KateTextCursor c;
   if ( m_view->wrapCursor() ) {
@@ -1148,7 +1154,7 @@ void KateViewInternal::cursorLeft(  bool sel )
   if ( ! m_view->wrapCursor() && cursor.col() == 0 )
     return;
 
-  moveChar( left, sel );
+  moveChar( KateViewInternal::left, sel );
   if (m_view->m_codeCompletion->codeCompletionVisible()) {
     m_view->m_codeCompletion->updateBox();
   }
@@ -1156,13 +1162,13 @@ void KateViewInternal::cursorLeft(  bool sel )
 
 void KateViewInternal::cursorRight( bool sel )
 {
-  moveChar( right, sel );
+  moveChar( KateViewInternal::right, sel );
   if (m_view->m_codeCompletion->codeCompletionVisible()) {
     m_view->m_codeCompletion->updateBox();
   }
 }
 
-void KateViewInternal::moveWord( Bias bias, bool sel )
+void KateViewInternal::moveWord( KateViewInternal::Bias bias, bool sel )
 {
   // This matches the word-moving in QTextEdit, QLineEdit etc.
 
@@ -1199,7 +1205,7 @@ void KateViewInternal::moveWord( Bias bias, bool sel )
 void KateViewInternal::wordLeft ( bool sel ) { moveWord( left,  sel ); }
 void KateViewInternal::wordRight( bool sel ) { moveWord( right, sel ); }
 
-void KateViewInternal::moveEdge( Bias bias, bool sel )
+void KateViewInternal::moveEdge( KateViewInternal::Bias bias, bool sel )
 {
   BoundedCursor c( this, cursor );
   c.toEdge( bias );
@@ -1918,7 +1924,7 @@ void KateViewInternal::pageDown( bool sel )
   if (cursorStart > 0)
     lineadj -= cursorStart;
 
-  int linesToScroll = QMAX( (linesDisplayed() - 1) - lineadj, 0 );
+  int linesToScroll = QMAX( ((int)linesDisplayed() - 1) - lineadj, 0 );
   m_preserveMaxX = true;
 
   // don't scroll the full view in case the scrollbar appears
@@ -2606,10 +2612,9 @@ void KateViewInternal::keyReleaseEvent( QKeyEvent* e )
 
       if (m_selChangedByUser)
       {
-        QApplication::clipboard()->setSelectionMode( true );
-        m_view->copy();
-        QApplication::clipboard()->setSelectionMode( false );
-
+        if (m_view->hasSelection())
+          QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
+          
         m_selChangedByUser = false;
       }
     }
@@ -2668,9 +2673,8 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
             m_view->selectLine( cursor );
           }
 
-          QApplication::clipboard()->setSelectionMode( true );
-          m_view->copy();
-          QApplication::clipboard()->setSelectionMode( false );
+          if (m_view->hasSelection())
+            QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
 
           selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
@@ -2738,9 +2742,8 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       // Move cursor to end of selected word
       if (m_view->hasSelection())
       {
-        QApplication::clipboard()->setSelectionMode( true );
-        m_view->copy();
-        QApplication::clipboard()->setSelectionMode( false );
+        if (m_view->hasSelection())
+          QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
 
         cursor.setPos(m_view->selectEnd);
         updateCursor( cursor );
@@ -2776,9 +2779,8 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
 
       if (m_selChangedByUser)
       {
-        QApplication::clipboard()->setSelectionMode( true );
-        m_view->copy();
-        QApplication::clipboard()->setSelectionMode( false );
+        if (m_view->hasSelection())
+          QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
 
         m_selChangedByUser = false;
       }
@@ -2798,9 +2800,8 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
 
       if( m_doc->isReadWrite() )
       {
-        QApplication::clipboard()->setSelectionMode( true );
-        m_view->paste ();
-        QApplication::clipboard()->setSelectionMode( false );
+        m_doc->paste( m_view, QClipboard::Selection );
+        repaint();
       }
 
       e->accept ();
@@ -2868,9 +2869,9 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
       }
     } else {
       // normal text cursor
-      if (m_mouseCursor != IbeamCursor) {
+      if (m_mouseCursor != Qt::IBeamCursor) {
         setCursor( KCursor::ibeamCursor() );
-        m_mouseCursor = IbeamCursor;
+        m_mouseCursor = Qt::IBeamCursor;
       }
     }
 

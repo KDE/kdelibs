@@ -167,7 +167,7 @@ void KateViewIndentationAction::slotAboutToShow()
   QStringList modes = KateAutoIndent::listModes ();
 
   popupMenu()->clear ();
-  for (uint z=0; z<modes.size(); ++z)
+  for (int z=0; z<modes.size(); ++z)
     popupMenu()->insertItem ( '&' + KateAutoIndent::modeDescription(z), this, SLOT(setMode(int)), 0,  z);
 
   popupMenu()->setItemChecked (doc->config()->indentationMode(), true);
@@ -351,7 +351,7 @@ uint KateNormalIndent::measureIndent (KateDocCursor &cur) const
 QString KateNormalIndent::tabString(uint pos) const
 {
   QString s;
-  pos = QMIN (pos, 80); // sanity check for large values of pos
+  pos = QMIN (pos, (uint)80); // sanity check for large values of pos
 
   if (!useSpaces || mixedIndent)
   {
@@ -637,7 +637,7 @@ void KateCSmartIndent::processChar(QChar c)
       // is already the just typed '/', concatenate it to "*/".
       if ( first != -1
            && textLine->getChar( first ) == '*'
-           && textLine->nextNonSpaceChar( first+1 ) == view->cursorColumn()-1 )
+           && textLine->nextNonSpaceChar( first+1 ) == (int)view->cursorColumn()-1 )
         doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumn()-1);
     }
 
@@ -1418,7 +1418,7 @@ static QString initialWhitespace(const KateTextLine::Ptr &line, int chars, bool 
     QString filler; filler.fill(' ',chars - text.length());
     text += filler;
   }
-  for( uint n = 0; n < text.length(); ++n )
+  for( int n = 0; n < text.length(); ++n )
   {
     if( text[n] != '\t' && text[n] != ' ' )
     {
@@ -1607,7 +1607,7 @@ bool KateCSAndSIndent::inForStatement( int line )
       if ( textLine->attribute(curr) != symbolAttrib )
         continue;
 
-      switch( textLine->getChar(curr) )
+      switch( textLine->getChar(curr).toAscii() )
       {
       case ';':
         if( ++semicolons > 2 )
@@ -1672,7 +1672,7 @@ bool KateCSAndSIndent::inStatement( const KateDocCursor &begin )
     if ( attrib == commentAttrib || attrib == doxyCommentAttrib )
       return false;
 
-    char c = textLine->getChar(last);
+    char c = textLine->getChar(last).toAscii();
 
     // brace => not a continuation.
     if ( attrib == symbolAttrib && c == '{' || c == '}' )
@@ -1761,7 +1761,7 @@ QString KateCSAndSIndent::calcIndent (const KateDocCursor &begin)
     {
       if (textLine->attribute(pos) == symbolAttrib)
       {
-        char tc = textLine->getChar (pos);
+        char tc = textLine->getChar (pos).toAscii();
         switch( tc )
         {
           case '(': case '[':
@@ -1952,7 +1952,7 @@ void KateCSAndSIndent::processChar(QChar c)
       // is already the just typed '/', concatenate it to "*/".
       if ( first != -1
            && textLine->getChar( first ) == '*'
-           && textLine->nextNonSpaceChar( first+1 ) == view->cursorColumn()-1 )
+           && textLine->nextNonSpaceChar( first+1 ) == (int)view->cursorColumn()-1 )
         doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumn()-1);
     }
 
@@ -2238,9 +2238,9 @@ bool KateVarIndent::hasRelevantOpening( const KateDocCursor &end ) const
 
   QChar close = cur.currentChar();
   QChar opener;
-  if ( close == '}' ) opener = '{';
-  else if ( close = ')' ) opener = '(';
-  else if (close = ']' ) opener = '[';
+  if ( close == QChar::fromAscii('}') ) opener = QChar::fromAscii('{');
+  else if ( close == QChar::fromAscii(')') ) opener = QChar::fromAscii('(');
+  else if (close == QChar::fromAscii(']') ) opener = QChar::fromAscii('[');
   else return false;
 
   //Move backwards 1 by 1 and find the opening partner
@@ -2275,7 +2275,7 @@ KateScriptIndent::~KateScriptIndent()
 {
 }
 
-void KateScriptIndent::processNewline( KateDocCursor &begin, bool needContinue )
+void KateScriptIndent::processNewline( KateDocCursor &begin, bool  )
 {
   kdDebug(13030) << "processNewline" << endl;
   KateView *view = doc->activeView();
@@ -2298,7 +2298,7 @@ void KateScriptIndent::processNewline( KateDocCursor &begin, bool needContinue )
   }
 }
 
-void KateScriptIndent::processChar( QChar c )
+void KateScriptIndent::processChar( QChar )
 {
   kdDebug(13030) << "processNewline" << endl;
   KateView *view = doc->activeView();
@@ -2314,7 +2314,7 @@ void KateScriptIndent::processChar( QChar c )
   }
 }
 
-void KateScriptIndent::processLine (KateDocCursor &line)
+void KateScriptIndent::processLine (KateDocCursor &)
 {
   kdDebug(13030) << "processLine" << endl;
 }

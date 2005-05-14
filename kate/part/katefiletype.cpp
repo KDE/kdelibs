@@ -41,14 +41,12 @@
 #include <q3groupbox.h>
 #include <q3hbox.h>
 #include <q3header.h>
-#include <qhgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qtoolbutton.h>
 #include <q3vbox.h>
-#include <qvgroupbox.h>
 #include <q3whatsthis.h>
 #include <q3widgetstack.h>
 
@@ -78,7 +76,7 @@ void KateFileTypeManager::update ()
   g.sort ();
 
   m_types.clear ();
-  for (uint z=0; z < g.count(); z++)
+  for (int z=0; z < g.count(); z++)
   {
     config.setGroup (g[z]);
 
@@ -124,7 +122,7 @@ void KateFileTypeManager::save (Q3PtrList<KateFileType> *v)
 
   QStringList g (config.groupList());
 
-  for (uint z=0; z < g.count(); z++)
+  for (int z=0; z < g.count(); z++)
   {
     if (newg.findIndex (g[z]) == -1)
       config.deleteGroup (g[z]);
@@ -539,9 +537,9 @@ void KateViewFileTypeAction::slotAboutToShow()
     QString hlName = KateFactory::self()->fileTypeManager()->list()->at(z)->name;
     QString hlSection = KateFactory::self()->fileTypeManager()->list()->at(z)->section;
 
-    if ( !hlSection.isEmpty() && (names.contains(hlName) < 1) )
+    if ( !hlSection.isEmpty() && !names.contains(hlName) )
     {
-      if (subMenusName.contains(hlSection) < 1)
+      if (!subMenusName.contains(hlSection))
       {
         subMenusName << hlSection;
         Q3PopupMenu *menu = new Q3PopupMenu ();
@@ -553,7 +551,7 @@ void KateViewFileTypeAction::slotAboutToShow()
       names << hlName;
       subMenus.at(m)->insertItem ( hlName, this, SLOT(setType(int)), 0,  z+1);
     }
-    else if (names.contains(hlName) < 1)
+    else if (!names.contains(hlName))
     {
       names << hlName;
       popupMenu()->insertItem ( hlName, this, SLOT(setType(int)), 0,  z+1);

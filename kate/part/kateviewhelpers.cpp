@@ -48,6 +48,7 @@
 #include <q3whatsthis.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
+#include <QMouseEvent>
 
 #include <math.h>
 
@@ -117,16 +118,19 @@ void KateScrollBar::styleChange(QStyle &s)
   recomputeMarksPositions();
 }
 
-void KateScrollBar::valueChange()
+void KateScrollBar::sliderChange ( SliderChange change )
 {
-  QScrollBar::valueChange();
-  redrawMarks();
-}
+  // call parents implementation
+  QScrollBar::sliderChange (change);
 
-void KateScrollBar::rangeChange()
-{
-  QScrollBar::rangeChange();
-  recomputeMarksPositions();
+  if (change == QAbstractSlider::SliderValueChange)
+  {
+    redrawMarks();
+  }
+  else if (change == QAbstractSlider::SliderRangeChange) 
+  {
+    recomputeMarksPositions();
+  }
 }
 
 void KateScrollBar::marksChanged()
@@ -139,6 +143,10 @@ void KateScrollBar::redrawMarks()
   if (!m_showMarks)
     return;
 
+#ifdef __GNUC__
+#warning port this to QT 4
+#endif
+/*
   QPainter painter(this);
   QRect rect = sliderRect();
   for (Q3IntDictIterator<QColor> it(m_lines); it.current(); ++it)
@@ -148,7 +156,7 @@ void KateScrollBar::redrawMarks()
       painter.setPen(*it.current());
       painter.drawLine(0, it.currentKey(), width(), it.currentKey());
     }
-  }
+  }*/
 }
 
 void KateScrollBar::recomputeMarksPositions(bool forceFullUpdate)
@@ -195,6 +203,10 @@ void KateScrollBar::recomputeMarksPositions(bool forceFullUpdate)
 
 void KateScrollBar::watchScrollBarSize()
 {
+#ifdef __GNUC__
+#warning port this to QT 4
+#endif
+/*
   int savMax = maxValue();
   setMaxValue(0);
   QRect rect = sliderRect();
@@ -202,6 +214,7 @@ void KateScrollBar::watchScrollBarSize()
 
   m_topMargin = rect.top();
   m_bottomMargin = frameGeometry().height() - rect.bottom();
+*/
 }
 
 void KateScrollBar::sliderMaybeMoved(int value)
@@ -446,7 +459,7 @@ void KateCmdLine::keyPressEvent( QKeyEvent *ev )
         QString t = text();
         m_cmdend = 0;
         bool b = false;
-        for ( ; m_cmdend < t.length(); m_cmdend++ )
+        for ( ; (int)m_cmdend < t.length(); m_cmdend++ )
         {
           if ( t[m_cmdend].isLetter() )
             b = true;
@@ -798,10 +811,11 @@ int KateIconBorder::lineNumberWidth() const
   int width = m_lineNumbersOn ? ((int)log10((double)(m_view->doc()->numLines())) + 1) * m_maxCharWidth + 4 : 0;
 
   if (m_view->dynWordWrap() && m_dynWrapIndicatorsOn) {
-    width = QMAX(style().scrollBarExtent().width() + 4, width);
+    // HACK: 16 == style().scrollBarExtent().width()
+    width = QMAX(16 + 4, width);
 
     if (m_cachedLNWidth != width || m_oldBackgroundColor != m_view->renderer()->config()->iconBarColor()) {
-      int w = style().scrollBarExtent().width();
+      int w = 16;// HACK: 16 == style().scrollBarExtent().width() style().scrollBarExtent().width();
       int h = m_view->renderer()->config()->fontMetrics()->height();
 
       QSize newSize(w, h);
@@ -815,6 +829,11 @@ int KateIconBorder::lineNumberWidth() const
 
         p.setPen(m_view->renderer()->attribute(0)->textColor());
         p.drawLine(w/2, h/2, w/2, 0);
+        
+#ifdef __GNUC__
+#warning port this to QT 4
+#endif
+#if 0
 #if 1
         p.lineTo(w/4, h/4);
         p.lineTo(0, 0);
@@ -833,6 +852,7 @@ int KateIconBorder::lineNumberWidth() const
         p.lineTo(0, h*3/4);
         p.lineTo(w/4, h/2);
         p.lineTo(w-1, h/2);
+#endif
 #endif
       }
     }
@@ -1178,7 +1198,7 @@ void KateViewEncodingAction::slotAboutToShow()
   QStringList modes (KGlobal::charsets()->descriptiveEncodingNames());
 
   popupMenu()->clear ();
-  for (uint z=0; z<modes.size(); ++z)
+  for (int z=0; z<modes.size(); ++z)
   {
     popupMenu()->insertItem ( modes[z], this, SLOT(setMode(int)), 0,  z);
 

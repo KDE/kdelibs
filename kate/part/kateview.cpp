@@ -784,21 +784,31 @@ void KateView::slotNewUndo()
 
 void KateView::slotDropEventPass( QDropEvent * ev )
 {
+#ifdef __GNUC__
+#warning port this to QT 4
+#endif
+/*
   KURL::List lstDragURLs;
   bool ok = KURLDrag::decode( ev, lstDragURLs );
 
   KParts::BrowserExtension * ext = KParts::BrowserExtension::childObject( doc() );
   if ( ok && ext )
     emit ext->openURLRequest( lstDragURLs.first() );
+*/
 }
 
 void KateView::contextMenuEvent( QContextMenuEvent *ev )
 {
+#ifdef __GNUC__
+#warning port this to QT 4
+#endif
+/*
   if ( !m_doc || !m_doc->browserExtension()  )
     return;
-  emit m_doc->browserExtension()->popupMenu( /*this, */ev->globalPos(), m_doc->url(),
+  emit m_doc->browserExtension()->popupMenu( ev->globalPos(), m_doc->url(),
                                         QString::fromLatin1( "text/plain" ) );
   ev->accept();
+*/
 }
 
 bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bool calledExternally )
@@ -810,9 +820,8 @@ bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bo
 
   QString line_str = m_doc->textLine( line );
 
-  uint z;
-  uint x = 0;
-  for (z = 0; z < line_str.length() && z < col; z++) {
+  int x = 0;
+  for (int z = 0; z < line_str.length() && z < col; z++) {
     if (line_str[z] == QChar('\t')) x += tabwidth - (x % tabwidth); else x++;
   }
 
@@ -1254,7 +1263,7 @@ void KateView::updateFoldingConfig ()
     << "folding_collapselocal" << "folding_expandlocal";
 
   KAction *a = 0;
-  for (uint z = 0; z < l.size(); z++)
+  for (int z = 0; z < l.size(); z++)
     if ((a = actionCollection()->action( l[z].ascii() )))
       a->setEnabled (m_doc->highlight() && m_doc->highlight()->allowsFolding());
 }
@@ -1334,7 +1343,7 @@ uint KateView::cursorColumn()
 {
   uint r = m_doc->currentColumn(m_viewInternal->getCursor());
   if ( !( m_doc->config()->configFlags() & KateDocumentConfig::cfWrapCursor ) &&
-       (uint)m_viewInternal->getCursor().col() > m_doc->textLine( m_viewInternal->getCursor().line() ).length()  )
+       m_viewInternal->getCursor().col() > m_doc->textLine( m_viewInternal->getCursor().line() ).length()  )
     r += m_viewInternal->getCursor().col() - m_doc->textLine( m_viewInternal->getCursor().line() ).length();
 
   return r;
@@ -1360,7 +1369,8 @@ bool KateView::setSelection( const KateTextCursor& start, const KateTextCursor& 
   repaintText(true);
 
   emit selectionChanged ();
-  emit m_doc->selectionChanged ();
+  // attic for compat
+  //emit m_doc->selectionChanged ();
 
   return true;
 }
@@ -1400,7 +1410,8 @@ bool KateView::clearSelection(bool redraw, bool finishedChangingSelection)
   if (finishedChangingSelection)
   {
     emit selectionChanged();
-    emit m_doc->selectionChanged ();
+    // attic for compat
+    //emit m_doc->selectionChanged ();
   }
 
   return true;
@@ -1735,17 +1746,17 @@ void KateView::lineAsHTML (KateTextLine::Ptr line, uint startCol, uint length, Q
   if(previousCharacterColor != blackColor)
           (*outputStream) << "</span>";
         // let's read that color :
-        int Qt::red, Qt::green, Qt::blue;
+        int red, green, blue;
         // getting the red, green, blue values of the color :
-        charAttributes->textColor().rgb(&Qt::red, &Qt::green, &Qt::blue);
-  if(!(Qt::red == 0 && Qt::green == 0 && Qt::blue == 0)) {
+        charAttributes->textColor().rgb(&red, &green, &blue);
+  if(!(red == 0 && green == 0 && blue == 0)) {
           (*outputStream) << "<span style='color: #"
-              << ( (Qt::red < 0x10)?"0":"")  // need to put 0f, NOT f for instance. don't touch 1f.
-              << QString::number(Qt::red, 16) // html wants the hex value here (hence the 16)
-              << ( (Qt::green < 0x10)?"0":"")
-              << QString::number(Qt::green, 16)
-              << ( (Qt::blue < 0x10)?"0":"")
-              << QString::number(Qt::blue, 16)
+              << ( (red < 0x10)?"0":"")  // need to put 0f, NOT f for instance. don't touch 1f.
+              << QString::number(red, 16) // html wants the hex value here (hence the 16)
+              << ( (green < 0x10)?"0":"")
+              << QString::number(green, 16)
+              << ( (blue < 0x10)?"0":"")
+              << QString::number(blue, 16)
               << "'>";
   }
         // we need to reinitialize the bold/italic status, since we closed all the tags

@@ -43,6 +43,7 @@
 #include <q3intdict.h>
 #include <qmap.h>
 #include <qdatetime.h>
+#include <QClipboard>
 
 namespace KTextEditor { class Plugin; }
 
@@ -639,7 +640,7 @@ class KateDocument : public Kate::Document,
     void del(           KateView *view, const KateTextCursor& );
     void transpose(     const KateTextCursor& );
 
-    void paste ( KateView* view );
+    void paste ( KateView* view, QClipboard::Mode = QClipboard::Clipboard );
 
   public:
     void insertIndentChars ( KateView *view );
