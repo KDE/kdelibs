@@ -890,7 +890,7 @@ void TransferJob::slotRedirection( const KURL &url)
     // Some websites keep redirecting to themselves where each redirection
     // acts as the stage in a state-machine. We define "endless redirections"
     // as 5 redirections to the same URL.
-    if (m_redirectionList.contains(url) > 5)
+    if (m_redirectionList.count(url) > 5)
     {
        kdDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
        m_error = ERR_CYCLIC_LINK;
@@ -1357,7 +1357,7 @@ void StoredTransferJob::slotStoredData( KIO::Job *, const QByteArray &data )
   if ( data.size() == 0 )
     return;
   unsigned int oldSize = m_data.size();
-  m_data.resize( oldSize + data.size(), Q3GArray::SpeedOptim );
+  m_data.resize( oldSize + data.size() );
   memcpy( m_data.data() + oldSize, data.data(), data.size() );
 }
 
@@ -2477,7 +2477,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                      KProtocolInfo::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) {
                     //destFileName = url.fileName(); // Doesn't work for recursive listing
                     // Count the number of prefixes used by the recursive listjob
-                    int numberOfSlashes = displayName.contains( '/' ); // don't make this a find()!
+                    int numberOfSlashes = displayName.count( '/' ); // don't make this a find()!
                     QString path = url.path();
                     int pos = 0;
                     for ( int n = 0; n < numberOfSlashes + 1; ++n ) {
@@ -3253,14 +3253,19 @@ void CopyJob::copyNextFile()
                     bool devicesOk=false;
 
                     // if the source is a devices url, handle it a littlebit special
+#ifdef __GNUC__
+  #warning "This looks pretty dead to me!"
+#endif
+#if 0               
                     if ((*it).uSource.protocol()==QString::fromLatin1("devices"))
                     {
                        QByteArray data;
                        QByteArray param;
-                       Q3CString retType;
+                       DCOPCString retType;
                        QDataStream streamout(&param,QIODevice::WriteOnly);
                        streamout<<(*it).uSource;
                        streamout<<(*it).uDest;
+                       DCOPReply reply; 
                        if ( kapp->dcopClient()->call( "kded",
                             "mountwatcher", "createLink(KURL, KURL)", param,retType,data,false ) )
                        {
@@ -3276,6 +3281,7 @@ void CopyJob::copyNextFile()
                            return;
                        }
                     }
+#endif
 
                     if (!devicesOk)
                     {

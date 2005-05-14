@@ -95,14 +95,14 @@ static KIO::CopyJob* pasteDataAsyncTo( const KURL& new_url, const QByteArray& _d
 
 #ifndef QT_NO_MIMECLIPBOARD
 static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
-                                     const Q3ValueVector<Q3CString>& formats,
+                                     const QStringList formats,
                                      const QString& text,
                                      QWidget* widget,
                                      bool clipboard )
 {
     QStringList formatLabels;
     for ( uint i = 0; i < formats.size(); ++i ) {
-        const Q3CString& fmt = formats[i];
+        const QString& fmt = formats[i];
         KMimeType::Ptr mime = KMimeType::mimeType( fmt );
         if ( mime != KMimeType::defaultMimeTypePtr() )
             formatLabels.append( i18n( "%1 (%2)" ).arg( mime->comment() ).arg( fmt ) );
@@ -127,7 +127,7 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
     }
 
     const QString result = dlg.lineEditText();
-    const Q3CString chosenFormat = formats[ dlg.comboItem() ];
+    const QString chosenFormat = formats[ dlg.comboItem() ];
 
     kdDebug() << " result=" << result << " chosenFormat=" << chosenFormat << endl;
     KURL new_url( u );
@@ -176,14 +176,14 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
   }
   else
   {
-      Q3ValueVector<Q3CString> formats;
-      const char* fmt;
-      for ( int i = 0; ( fmt = data->format( i ) ); ++i ) {
-          if ( qstrcmp( fmt, "application/x-qiconlist" ) == 0 ) // see QIconDrag
+      QStringList allFormats;
+      QStringList formats;
+      foreach (QString fmt, allFormats) {
+          if ( fmt == "application/x-qiconlist" ) // see QIconDrag
               continue;
-          if ( qstrcmp( fmt, "application/x-kde-cutselection" ) == 0 ) // see KonqDrag
+          if ( fmt == "application/x-kde-cutselection" )  // see KonqDrag
               continue;
-          if ( strchr( fmt, '/' ) == 0 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
+          if ( fmt.indexOf( '/' ) == -1 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
               continue;
           formats.append( fmt );
       }
