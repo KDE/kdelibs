@@ -42,6 +42,7 @@
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
+ * FIXME KDE4 rename this file to kmenu.h
  */
 class KDEUI_EXPORT KMenu : public QMenu {
     Q_OBJECT
@@ -155,7 +156,7 @@ protected slots:
     QString underlineText(const QString& text, uint length);
     /// @since 3.1
     void resetKeyboardVars(bool noMatches = false);
-    void itemHighlighted(int whichItem);
+    void actionHovered(QAction* action);
     void showCtxMenu(QPoint pos);
     void ctxMenuHiding();
     void ctxMenuHideShowingMenu();

@@ -385,7 +385,7 @@ KMenu* KMenu::contextMenuFocus()
     return KMenuPrivate::s_contextedMenu;
 }
 
-void KMenu::itemHighlighted(int /* whichItem */)
+void KMenu::actionHovered(QAction* /*action*/)
 {
     if (!d->m_ctxMenu || !d->m_ctxMenu->isVisible())
     {
@@ -393,6 +393,7 @@ void KMenu::itemHighlighted(int /* whichItem */)
     }
 
     d->m_ctxMenu->hide();
+    // FIXME can't find a method to get the position of a QAction
     showCtxMenu(mapFromGlobal(QCursor::pos()));
 }
 
@@ -426,7 +427,7 @@ void KMenu::showCtxMenu(QPoint pos)
 
     KMenuPrivate::s_contextedMenu = this;
     d->m_ctxMenu->exec(this->mapToGlobal(pos));
-    connect(this, SIGNAL(highlighted(int)), this, SLOT(itemHighlighted(int)));
+    connect(this, SIGNAL(hovered(QAction*)), SLOT(actionHovered(QAction*)));
 }
 
 /*
@@ -446,7 +447,7 @@ void KMenu::ctxMenuHiding()
         if (QMenu* subMenu = KMenuPrivate::s_highlightedAction->menu())
             disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
 
-    disconnect(this, SIGNAL(highlighted(int)), this, SLOT(itemHighlighted(int)));
+    connect(this, SIGNAL(hovered(QAction*)), this, SLOT(actionHovered(QAction*)));
     KMenuPrivate::s_continueCtxMenuShow = true;
 }
 
@@ -461,7 +462,7 @@ void KMenu::contextMenuEvent(QContextMenuEvent* e)
         else if (activeAction())
         {
             // FIXME can't find a method to get the position of a QAction
-            showCtxMenu(QPoint(0,0));
+            showCtxMenu(mapFromGlobal(QCursor::pos()));
         }
 
         e->accept();
