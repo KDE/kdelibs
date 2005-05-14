@@ -52,12 +52,12 @@ public:
     virtual ~KTabWidget();
     /*!
       Set the tab of the given widget to \a color.
-    */
+    *
     void setTabColor( QWidget *, const QColor& color );
-    /*!
+    *!
       Returns the tab color for the given widget.
-    */
-    QColor tabColor( QWidget * ) const;
+    *
+    QColor tabColor( QWidget * ) const;*/
 
     /*!
       Returns true if tab ordering with the middle mouse button
@@ -106,18 +106,18 @@ public:
 
     /*!
       Reimplemented for internal reasons.
-     */
+     *
     virtual void insertTab( QWidget *, const QString &, int index = -1 );
 
-    /*!
+    *!
       Reimplemented for internal reasons.
-     */
+     *
     virtual void insertTab( QWidget *child, const QIcon& iconset,
                             const QString &label, int index = -1 );
-    /*!
+    *!
       Reimplemented for internal reasons.
-    */
-    virtual void insertTab( QWidget *, QTab *, int index = -1 );
+    *
+    virtual void insertTab( QWidget *, QTab *, int index = -1 );*/
 
     /*!
       Reimplemented for internal reasons.
