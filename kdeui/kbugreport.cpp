@@ -150,7 +150,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   Q3WhatsThis::add( tmpLabel, qwtstr );
   d->appcombo = new KComboBox( false, parent, "app");
   Q3WhatsThis::add( d->appcombo, qwtstr );
-  d->appcombo->insertStrList((const char**)packages);
+  QStringList packageList;
+  for (int c = 0; packages[c]; ++c)
+    packageList << QString::fromLatin1(packages[c]);
+  d->appcombo->addItems(packageList);
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
   d->appname = QString::fromLatin1( m_aboutData
                                     ? m_aboutData->productName()
