@@ -82,7 +82,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 # with --enable-final since they use X defines that get undefined
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = \
-		qxembed.cpp ksharedpixmap.cpp kpixmapio.cpp \
+		ksharedpixmap.cpp kpixmapio.cpp \
 		kpopupmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp \
 		kactioncollection.cpp kactionclasses.cpp \
 		kurllabel.cpp kmenubar.cpp kinputdialog.cpp \
