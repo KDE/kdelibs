@@ -106,7 +106,7 @@ protected:
 
 public:
 	void requestTermination() { m_terminationRequested = true; }
-	QDeepCopy<QStringList> matches() const { return m_matches; }
+	QStringList matches() const { return m_matches; }
 
 protected:
 	void addMatch( const QString &match ) { m_matches.append( match ); }
@@ -148,7 +148,7 @@ protected:
 
 		::endpwent();
 
-		addMatch( tilde );
+		addMatch( QString( tilde ) );
 
 		done();
 	}
@@ -165,8 +165,8 @@ public:
 	                     bool noHidden,
 	                     bool appendSlashToDir ) :
 		CompletionThread( receiver ),
-		m_dirList( QDeepCopy<QStringList>( dirList ) ),
-		m_filter( QDeepCopy<QString>( filter ) ),
+		m_dirList( dirList ),
+		m_filter(  filter  ),
 		m_onlyExe( onlyExe ),
 		m_onlyDir( onlyDir ),
 		m_noHidden( noHidden ),
@@ -268,7 +268,7 @@ void DirectoryListThread::run()
 						// Add '/' to directories
 
 						if ( m_appendSlashToDir && S_ISDIR( sbuff.st_mode ) )
-							file.append( '/' );
+							file.append( QLatin1Char( '/' ) );
 
 					}
 					else {
@@ -649,7 +649,7 @@ QString KURLCompletion::finished()
  */
 bool KURLCompletion::isRunning() const
 {
-	return d->list_job || (d->dirListThread && !d->dirListThread->finished());
+	return d->list_job || (d->dirListThread && !d->dirListThread->isFinished());
 }
 
 /*
@@ -834,7 +834,7 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *match)
 		QStringList::Iterator it = dirList.begin();
 
 		for ( ; it != dirList.end(); it++ )
-			(*it).append('/');
+			(*it).append(QLatin1Char('/'));
 	}
 
 	// No hidden files unless the user types "."
@@ -1200,7 +1200,7 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 
 		if ( filter_len == 0 || name.left(filter_len) == filter ) {
 			if ( is_dir )
-				name.append( '/' );
+				name.append( QLatin1Char( '/' ) );
 
 			if ( is_exe || !d->list_urls_only_exe )
 				matches.append( name );
@@ -1298,7 +1298,7 @@ void KURLCompletion::postProcessMatch( QString *match ) const
 
 			if ( KDE_stat( (const char*)file, &sbuff ) == 0 ) {
 				if ( S_ISDIR ( sbuff.st_mode ) )
-					match->append( '/' );
+					match->append( QLatin1Char( '/' ) );
 			}
 			else {
 				kdDebug() << "Could not stat file " << copy << endl;
@@ -1496,7 +1496,7 @@ static QString unescape(const QString &text)
 {
 	QString result;
 
-	for (uint pos = 0; pos < text.length(); pos++)
+	for (int pos = 0; pos < text.length(); pos++)
 		if ( text[pos] != '\\' )
 			result.insert( result.length(), text[pos] );
 

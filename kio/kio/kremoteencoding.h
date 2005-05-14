@@ -83,12 +83,12 @@ public:
    *
    * The dirname is returned with the final slash always stripped
    */
-  QString directory(const KURL& url, bool ignore_trailing_slash = true) const;
+  QByteArray directory(const KURL& url, bool ignore_trailing_slash = true) const;
 
   /**
    * Converts the given URL into 8-bit form and retrieve the filename.
    */
-  QString fileName(const KURL& url) const;
+  QByteArray fileName(const KURL& url) const;
 
   /**
    * Returns the encoding being used.

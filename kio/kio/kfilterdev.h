@@ -54,7 +54,7 @@ public:
      * Open for reading or writing.
      * If the KFilterBase's device is not opened, it will be opened.
      */
-    virtual bool open( int mode );
+    virtual bool open( QIODevice::OpenMode mode );
     /**
      * Close after reading or writing.
      * If the KFilterBase's device was opened by open(), it will be closed.
@@ -80,21 +80,21 @@ public:
     // Not implemented
     virtual qlonglong size() const;
 
-    virtual qlonglong at() const;
+    virtual qlonglong pos() const;
     /**
      * That one can be quite slow, when going back. Use with care.
      */
-    virtual bool at( qlonglong );
+    virtual bool seek( qlonglong );
 
     virtual bool atEnd() const;
 
-    virtual Q_LONG readBlock( char *data, Q_ULONG maxlen );
-    virtual Q_LONG writeBlock( const char *data, Q_ULONG len );
+    virtual qint64 readData( char *data, qint64 maxlen );
+    virtual qint64 writeData( const char *data, qint64 len );
     //int readLine( char *data, uint maxlen );
 
-    virtual int getch();
-    virtual int putch( int );
-    virtual int ungetch( int );
+    virtual int getChar();
+    virtual int putChar( int );
+    virtual int ungetChar( int );
 
 #ifdef KDE_NO_COMPAT
 private:
@@ -185,6 +185,7 @@ private:
     KFilterBase *filter;
     class KFilterDevPrivate;
     KFilterDevPrivate * d;
+    qint64 ioIndex;
 };
 
 

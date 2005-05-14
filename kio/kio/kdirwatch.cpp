@@ -1222,7 +1222,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           // check for creation of a directory we have to watch
           Entry *sub_entry = e->m_entries.first();
           for(;sub_entry; sub_entry = e->m_entries.next())
-            if (sub_entry->path == e->path + "/" + fe->filename) break;
+            if (sub_entry->path == e->path + "/" + (const char *)fe->filename) break;
           if (sub_entry && sub_entry->isDir) {
             QString path = e->path;
             removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!

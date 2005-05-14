@@ -50,26 +50,26 @@ QString KRemoteEncoding::decode(const QByteArray& name) const
 
 QByteArray KRemoteEncoding::encode(const QString& name) const
 {
-  Q3CString result = codec->fromUnicode(name);
+  QByteArray result = codec->fromUnicode(name);
   if (codec->toUnicode(result) != name)
     return name.latin1();
  
   return result;
 }
 
-Q3CString KRemoteEncoding::encode(const KURL& url) const
+QByteArray KRemoteEncoding::encode(const KURL& url) const
 {
   return encode(url.path());
 }
 
-Q3CString KRemoteEncoding::directory(const KURL& url, bool ignore_trailing_slash) const
+QByteArray KRemoteEncoding::directory(const KURL& url, bool ignore_trailing_slash) const
 {
   QString dir = url.directory(true, ignore_trailing_slash);
 
   return encode(dir);
 }
 
-Q3CString KRemoteEncoding::fileName(const KURL& url) const
+QByteArray KRemoteEncoding::fileName(const KURL& url) const
 {
   return encode(url.fileName());
 }

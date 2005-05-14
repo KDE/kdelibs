@@ -117,7 +117,7 @@ QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, b
    return 0;
 }
 
-bool KFilterDev::open( int mode )
+bool KFilterDev::open( QIODevice::OpenMode mode )
 {
     //kdDebug(7005) << "KFilterDev::open " << mode << endl;
     if ( mode == QIODevice::ReadOnly )
@@ -138,11 +138,6 @@ bool KFilterDev::open( int mode )
 
     if ( !ret )
         kdWarning(7005) << "KFilterDev::open: Couldn't open underlying device" << endl;
-    else
-    {
-        setState( IO_Open );
-        setMode( mode );
-    }
     ioIndex = 0;
     return ret;
 }
@@ -159,18 +154,16 @@ void KFilterDev::close()
     filter->terminate();
     if ( d->bOpenedUnderlyingDevice )
         filter->device()->close();
-
-    setState( 0 ); // not IO_Open
 }
 
-void KFilterDev::flush()
+bool KFilterDev::flush()
 {
     //kdDebug(7005) << "KFilterDev::flush" << endl;
-    filter->device()->flush();
+    return filter->device()->flush();
     // Hmm, might not be enough...
 }
 
-Q_LONGLONG KFilterDev::size() const
+qint64 KFilterDev::size() const
 {
     // Well, hmm, Houston, we have a problem.
     // We can't know the size of the uncompressed data
@@ -183,12 +176,12 @@ Q_LONGLONG KFilterDev::size() const
     return (uint)-1;
 }
 
-Q_LONGLONG KFilterDev::at() const
+qint64 KFilterDev::pos() const
 {
     return ioIndex;
 }
 
-bool KFilterDev::at( Q_LONGLONG pos )
+bool KFilterDev::seek( qint64 pos )
 {
     //kdDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
 
@@ -220,9 +213,9 @@ bool KFilterDev::at( Q_LONGLONG pos )
     }
 
     //kdDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
-    QByteArray dummy( QMIN( pos, 3*BUFFER_SIZE ) );
+    QByteArray dummy( QMIN( pos, (qint64)3*BUFFER_SIZE ) );
     d->bIgnoreData = true;
-    bool result = ( (Q_LONGLONG)readBlock( dummy.data(), pos ) == pos );
+    bool result = ( (qint64)readBlock( dummy.data(), pos ) == pos );
     d->bIgnoreData = false;
     return result;
 }
@@ -233,7 +226,7 @@ bool KFilterDev::atEnd() const
                                      && d->ungetchBuffer.isEmpty();
 }
 
-Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
+qint64 KFilterDev::readData( char *data, qint64 maxlen )
 {
     Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
     //kdDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
@@ -253,7 +246,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
         }
         else
         {
-            dataReceived = QMIN( len, maxlen );
+            dataReceived = QMIN( (qint64)len, maxlen );
         }
         d->ungetchBuffer.truncate( len - dataReceived );
         ioIndex += dataReceived;
@@ -272,7 +265,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
     Q_ULONG outBufferSize;
     if ( d->bIgnoreData )
     {
-        outBufferSize = QMIN( maxlen, 3*BUFFER_SIZE );
+        outBufferSize = QMIN( maxlen, (qint64)3*BUFFER_SIZE );
     }
     else
     {
@@ -352,7 +345,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
     return dataReceived;
 }
 
-Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
+qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
 {
     Q_ASSERT ( filter->mode() == QIODevice::WriteOnly );
     // If we had an error, return 0.
@@ -432,7 +425,7 @@ Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
     return dataWritten;
 }
 
-int KFilterDev::getch()
+int KFilterDev::getChar()
 {
     Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
     //kdDebug(7005) << "KFilterDev::getch" << endl;
@@ -450,7 +443,7 @@ int KFilterDev::getch()
     return ret;
 }
 
-int KFilterDev::putch( int c )
+int KFilterDev::putChar( int c )
 {
     //kdDebug(7005) << "KFilterDev::putch" << endl;
     char buf[1];
@@ -458,7 +451,7 @@ int KFilterDev::putch( int c )
     return writeBlock( buf, 1 ) == 1 ? c : -1;
 }
 
-int KFilterDev::ungetch( int ch )
+int KFilterDev::ungetChar( int ch )
 {
     //kdDebug(7005) << "KFilterDev::ungetch " << QString(QChar(ch)) << endl;
     if ( ch == EOF )                            // cannot unget EOF
