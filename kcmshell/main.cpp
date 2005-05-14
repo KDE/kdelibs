@@ -125,7 +125,7 @@ bool KCMShell::isRunning()
     QByteArray data;
     QDataStream str( &data, QIODevice::WriteOnly );
     str << kapp->startupId();
-    Q3CString replyType;
+    DCOPCString replyType;
     QByteArray replyData;
     if (!dcopClient()->call(m_dcopName, "dialog", "activate(QCString)", 
                 data, replyType, replyData))
@@ -171,7 +171,7 @@ void KCMShell::waitForExit()
     exec();
 }
 
-void KCMShell::appExit(const Q3CString &appId)
+void KCMShell::appExit(const DCOPCString &appId)
 {
     kdDebug(780) << k_funcinfo << endl;
 
@@ -221,7 +221,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     if (args->isSet("list"))
     {
-        cout << i18n("The following modules are available:").local8Bit() << endl;
+        cout << i18n("The following modules are available:").local8Bit().data() << endl;
 
         listModules( "Settings/" );
 
@@ -242,7 +242,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
                          .arg(!(*it)->comment().isEmpty() ? (*it)->comment() 
                                  : i18n("No description available"));
 
-            cout << entry.local8Bit() << endl;
+            cout << entry.local8Bit().data() << endl;
         }
         return 0;
     }

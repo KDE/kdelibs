@@ -59,7 +59,7 @@ private slots:
 
     /**
      */
-    void appExit( const Q3CString &appId );
+    void appExit( const DCOPCString &appId );
 
 private:
 
@@ -67,7 +67,7 @@ private:
      * The DCOP name which actually is registered. 
      * For example "kcmshell_mouse".
      */
-    Q3CString m_dcopName;
+    QByteArray m_dcopName;
 
 };
 
