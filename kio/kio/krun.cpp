@@ -350,23 +350,6 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   KRunMX1 mx1( _service );
   KRunMX2 mx2( _urls );
 
-  /// compatibility hack -- KDE 4: remove
-  QRegExp re("^\\s*(?:/bin/)?sh\\s+-c\\s+(.*)$");
-  if (!re.search( exec )) {
-    exec = re.cap( 1 ).stripWhiteSpace();
-    for (uint pos = 0; pos < exec.length(); ) {
-      QChar c = exec.unicode()[pos];
-      if (c != '\'' && c != '"')
-        goto synerr; // what else can we do? after normal parsing the substs would be insecure
-      int pos2 = exec.find( c, pos + 1 ) - 1;
-      if (pos2 < 0)
-        goto synerr; // quoting error
-      memcpy( (void *)(exec.unicode() + pos), exec.unicode() + pos + 1, (pos2 - pos) * sizeof(QChar));
-      pos = pos2;
-      exec.remove( pos, 2 );
-    }
-  }
-
   if( !mx1.expandMacrosShellQuote( exec ) )
     goto synerr; // error in shell syntax
 
