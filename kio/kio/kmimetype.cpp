@@ -998,20 +998,22 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
     
     QByteArray dataToSend;
     QDataStream dataStream(&dataToSend, QIODevice::WriteOnly);
+    dataStream.setVersion(QDataStream::Qt_3_1);
     dataStream << file_list;
-    Q3CString replyType;
+    DCOPCString replyType;
     QByteArray replyData;
-    Q3CString object =    dcopcall.section(' ', 1,-2).utf8();
-    QString function =  dcopcall.section(' ', -1);
+    DCOPCString object   =  dcopcall.section(' ', 1,-2).utf8();
+    DCOPCString function =  dcopcall.section(' ', -1).utf8();
     if(!function.endsWith("(KURL::List)")) {
       kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KURL::List) and must be specified." << endl;
     } else {
       if(kapp->dcopClient()->call( app, object,
-                   function.utf8(),
+                   function,
                    dataToSend, replyType, replyData, true, 100)
 	    && replyType == "QStringList" ) {
 	      
         QDataStream dataStreamIn(replyData);
+        dataStreamIn.setVersion(QDataStream::Qt_3_1);
         dataStreamIn >> keys;
       }
     }
