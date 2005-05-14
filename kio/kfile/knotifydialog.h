@@ -240,6 +240,8 @@ namespace KNotify
         virtual void showEvent( QShowEvent * );
         virtual void enableAll( int what, bool enable );
 
+        virtual bool eventFilter ( QObject * watched, QEvent * event ); 
+
         void reload( bool revertToDefaults = false );
 
     protected slots:

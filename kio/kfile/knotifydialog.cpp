@@ -50,6 +50,7 @@
 #include <qtimer.h>
 #include <q3vbox.h>
 #include <q3whatsthis.h>
+#include <QHelpEvent>
 
 using namespace KNotify;
 
@@ -111,42 +112,6 @@ namespace KNotify
         }
     };
 
-    // Needed for displaying tooltips in the listview's QHeader
-    class KNotifyToolTip : public QToolTip
-    {
-    public:
-        KNotifyToolTip( Q3Header *header )
-            : QToolTip( header )
-        {
-            m_tips[COL_EXECUTE] = i18n("Execute a program");
-            m_tips[COL_STDERR]  = i18n("Print to Standard error output");
-            m_tips[COL_MESSAGE] = i18n("Display a messagebox");
-            m_tips[COL_LOGFILE] = i18n("Log to a file");
-            m_tips[COL_SOUND]   = i18n("Play a sound");
-            m_tips[COL_TASKBAR] = i18n("Flash the taskbar entry");
-        }
-        virtual ~KNotifyToolTip() {}
-
-    protected:
-        virtual void maybeTip ( const QPoint& p )
-        {
-            Q3Header *header = static_cast<Q3Header*>( parentWidget() );
-            int section = 0;
-
-            if ( header->orientation() == Qt::Horizontal )
-                section= header->sectionAt( p.x() );
-            else
-                section= header->sectionAt( p.y() );
-
-            if ( ( section < 0 ) || ( static_cast<uint>( section ) >= (sizeof(m_tips) / sizeof(QString)) ) )
-                return;
-
-            tip( header->sectionRect( section ), m_tips[section] );
-        }
-
-    private:
-        QString m_tips[6];
-    };
 
 }
 
@@ -213,7 +178,8 @@ class KNotifyWidget::Private
 {
 public:
     QPixmap pixmaps[6];
-    KNotifyToolTip *toolTip;
+    QString tips   [6];
+    Q3Header* header;
 };
 
 // simple access to all knotify-handled applications
@@ -254,6 +220,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     int w = KIcon::SizeSmall + 6;
 
     Q3Header *header = m_listview->header();
+    d->header = header;
     header->setLabel( COL_EXECUTE, pexec,    QString::null, w );
     header->setLabel( COL_STDERR,  pstderr,  QString::null, w );
     header->setLabel( COL_MESSAGE, pmessage, QString::null, w );
@@ -261,7 +228,14 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     header->setLabel( COL_SOUND,   psound,   QString::null, w );
     header->setLabel( COL_TASKBAR, ptaskbar, QString::null, w );
 
-    d->toolTip = new KNotifyToolTip( header );
+    header->installEventFilter( this );
+    d->tips[COL_EXECUTE] = i18n("Execute a program");
+    d->tips[COL_STDERR]  = i18n("Print to Standard error output");
+    d->tips[COL_MESSAGE] = i18n("Display a messagebox");
+    d->tips[COL_LOGFILE] = i18n("Log to a file");
+    d->tips[COL_SOUND]   = i18n("Play a sound");
+    d->tips[COL_TASKBAR] = i18n("Flash the taskbar entry");
+
 
     m_playButton->setIconSet( SmallIconSet( "player_play" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
@@ -323,7 +297,6 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
 KNotifyWidget::~KNotifyWidget()
 {
-    delete d->toolTip;
     delete d;
 }
 
@@ -398,6 +371,30 @@ void KNotifyWidget::clearVisible()
     m_visibleApps.clear();
     m_listview->clear();
     slotEventChanged( 0L ); // disable widgets
+}
+
+bool KNotifyWidget::eventFilter( QObject * watched, QEvent * event )
+{
+  if ( watched == d->header && event->type() == QEvent::ToolTip)
+  {
+    QHelpEvent* he = static_cast<QHelpEvent*>(he);
+    int section = 0;
+
+    if ( d->header->orientation() == Qt::Horizontal )
+        section= d->header->sectionAt( he->pos().x() );
+    else
+        section= d->header->sectionAt( he->pos().y() );
+
+    if ( ( section < 0 ) || ( static_cast<uint>( section ) >= (sizeof(d->tips) / sizeof(QString)) ) )
+        return true;
+
+    QToolTip::showText( d->header->sectionRect( section ).bottomLeft(), d->tips[section],
+                       d->header );
+
+    return true;
+  }
+  
+  return KNotifyWidgetBase::eventFilter(watched, event);
 }
 
 void KNotifyWidget::showEvent( QShowEvent *e )
@@ -820,7 +817,7 @@ void KNotifyWidget::save()
     {
         if ( !kapp->dcopClient()->isAttached() )
             kapp->dcopClient()->attach();
-        kapp->dcopClient()->send("knotify", "", "reconfigure()", "");
+        DCOPRef("knotify", "").send("reconfigure()");
     }
 
     emit changed( false );
