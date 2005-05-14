@@ -27,7 +27,7 @@
 using namespace std;
 
 #include <qmetaobject.h>
-
+#include <q3strlist.h>
 #include "tester.h"
 
 namespace KUnitTest
