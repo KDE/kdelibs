@@ -17,7 +17,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qhbuttongroup.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -25,6 +24,7 @@
 #include <qradiobutton.h>
 #include <q3whatsthis.h>
 #include <qregexp.h>
+#include <Q3HButtonGroup>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -519,7 +519,7 @@ bool KBugReport::sendBugReport()
           QTextStream is(&of);
           is.setEncoding(QTextStream::UnicodeUTF8);
           QString line;
-          while (!is.eof())
+          while (!is.atEnd())
               line = is.readLine();
           d->lastError = line;
       } else {
