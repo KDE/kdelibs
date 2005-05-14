@@ -19,6 +19,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <qdesktopwidget.h>
+#include <qevent.h>
 #include <qfontmetrics.h>
 #include <qnamespace.h>
 #include <qlabel.h>
@@ -247,7 +249,7 @@ void KFileIconView::showToolTip( Q3IconViewItem *item )
     if ( !item )
 	return;
 
-    int w = maxItemWidth() - ( itemTextPos() == Qt::DockBottom ? 0 :
+    int w = maxItemWidth() - ( itemTextPos() == Bottom ? 0 :
 			       item->pixmapRect().width() ) - 4;
     if ( fontMetrics().width( item->text() ) >= w ) {
 	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0,
@@ -266,7 +268,8 @@ void KFileIconView::showToolTip( Q3IconViewItem *item )
 	if (toolTip->y()+toolTip->height() > screen.bottom()) {
 		toolTip->move(toolTip->x(), screen.bottom()-toolTip->y()-toolTip->height()+toolTip->y());
 	}
-	toolTip->setFont( QToolTip::font() );
+        // ### where is the font in Qt 4
+        // toolTip->setFont( QToolTip::font() );
 	toolTip->setPalette( QToolTip::palette(), true );
 	toolTip->show();
     }
@@ -531,7 +534,7 @@ void KFileIconView::slotSmallColumns()
     }
     setGridX( -1 );
     setMaxItemWidth( 300 );
-    setItemTextPos( Qt::DockRight );
+    setItemTextPos( Right );
     setArrangement( TopToBottom );
     setWordWrapIconText( false );
     setSpacing( 0 );
@@ -547,7 +550,7 @@ void KFileIconView::slotLargeRows()
     d->noArrangement = true; // stop arrangeItemsInGrid()!
 
     setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
-    setItemTextPos( Qt::DockBottom );
+    setItemTextPos( Bottom );
     setArrangement( LeftToRight );
     setWordWrapIconText( true );
     setSpacing( 5 ); // default in QIconView

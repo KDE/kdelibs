@@ -150,9 +150,8 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
     QStringList::Iterator it = urls.begin();
 
     // kill duplicates
-    QString text;
     while ( it != urls.end() ) {
-        while ( urls.contains( *it ) > 1 ) {
+        while ( urls.count( *it ) > 1 ) {
             it = urls.remove( it );
             continue;
         }
@@ -165,7 +164,7 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
     int Overload = urls.count() - myMaximum + defaultList.count();
     while ( Overload > 0 ) {
         if (remove == RemoveBottom) urls.removeLast();
-	else removeFirst();
+	else urls.removeFirst();
         Overload--;
     }
 

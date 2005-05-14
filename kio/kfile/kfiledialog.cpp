@@ -362,7 +362,7 @@ void KFileDialog::slotOk()
                 while ( it.current() ) {
                     name = (*it)->name();
                     if ( multi ) {
-                        name.prepend( '"' );
+                        name.prepend( QLatin1Char( '"' ) );
                         name.append( endQuote );
                     }
 
@@ -752,7 +752,7 @@ void KFileDialog::multiSelectionChanged()
     KFileItemListIterator it ( *list );
     QString text;
     while ( (item = it.current()) ) {
-        text.append( begin ).append( item->name() ).append( '\"' );
+        text.append( begin ).append( item->name() ).append( QLatin1Char( '"' ) );
         ++it;
     }
 
@@ -1485,7 +1485,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
     KURL u( ops->url() );
     QString name;
 
-    int count = line.contains( '"' );
+    const int count = line.count( QLatin1Char( '"' ) );
     if ( count == 0 ) { // no " " -> assume one single file
         u.setFileName( line );
         if ( u.isValid() )
