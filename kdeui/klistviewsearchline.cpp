@@ -231,7 +231,7 @@ bool KListViewSearchLine::itemMatches(const Q3ListViewItem *item, const QString 
     return false;
 }
 
-QMenu *KListViewSearchLine::createStandardContextMenu()
+void KListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
 {
     QMenu *popup = KLineEdit::createStandardContextMenu();
 
@@ -274,7 +274,8 @@ QMenu *KListViewSearchLine::createStandardContextMenu()
             d->searchColumns.clear();
     }
     
-    return popup;   
+    popup->exec( e->globalPos() );
+	delete popup;
 }    
 
 ////////////////////////////////////////////////////////////////////////////////

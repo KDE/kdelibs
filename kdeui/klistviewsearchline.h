@@ -21,6 +21,7 @@
 
 #include <klineedit.h>
 #include <q3hbox.h>
+#include <QContextMenuEvent>
 
 class KListView;
 class Q3ListViewItem;
@@ -146,11 +147,8 @@ protected:
 
     /**
     * Re-implemented for internal reasons.  API not affected.
-    *
-    * See QLineEdit::mousePressEvent().
-	* KDE4: use the contextMenuEvent instead
     */
-    virtual QMenu *createStandardContextMenu();
+    virtual void contextMenuEvent( QContextMenuEvent*e );
 
 protected slots:
     /**
