@@ -75,7 +75,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     setBackgroundOrigin(WindowOrigin);
     hasQuit = 0;
     menu = new KPopupMenu( this );
-    menu->insertTitle( kapp->miniIcon(), kapp->caption() );
+    menu->addTitle( kapp->miniIcon(), kapp->caption() );
     move( -1000, -1000 );
     KStdAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
 
@@ -107,7 +107,7 @@ KSystemTray::~KSystemTray()
 void KSystemTray::showEvent( QShowEvent * )
 {
     if ( !hasQuit ) {
-	menu->insertSeparator();
+        menu->addSeparator();
         KAction* action = d->actionCollection->action("minimizeRestore");
 
         if (action)
@@ -158,7 +158,7 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 		action->setText( i18n("&Restore") );
 	}
 	contextMenuAboutToShow( menu );
-	menu->popup( e->globalPos() );
+	menu->exec( e->globalPos() );
 	break;
     default:
 	// nothing
