@@ -75,7 +75,7 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         QString url = khtml::parseURL( attr->value() ).string();
         if (!url.isEmpty()) {
             url = getDocument()->completeURL( url );
-            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
+            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, DOMString("url('"+url+"')") );
             m_bgSet = true;
         }
         else {
@@ -403,7 +403,7 @@ DocumentImpl* HTMLFrameElementImpl::contentDocument() const
 
     RenderPart* render = static_cast<RenderPart*>( m_render );
 
-    if(render->widget() && qobject_cast<KHTMLView>( render->widget()) )
+    if(render->widget() && qobject_cast<KHTMLView*>( render->widget()) )
         return static_cast<KHTMLView*>( render->widget() )->part()->xmlDocImpl();
 
     return 0;
