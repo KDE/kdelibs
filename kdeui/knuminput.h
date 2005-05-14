@@ -836,7 +836,7 @@ class KDEUI_EXPORT KDoubleSpinBox : public QSpinBox {
   Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
   Q_OVERRIDE( double maxValue READ maxValue WRITE setMaxValue )
   Q_OVERRIDE( double minValue READ minValue WRITE setMinValue )
-  Q_OVERRIDE( double lineStep READ lineStep WRITE setLineStep )
+  Q_OVERRIDE( double singleStep READ singleStep WRITE setSingleStep )
   Q_OVERRIDE( double value READ value WRITE setValue )
   Q_PROPERTY( int precision READ precision WRITE setPrecision )
 
@@ -915,13 +915,13 @@ public:
   void setMaxValue( double value );
 
   /** @return the current step size */
-  double lineStep() const;
+  double singleStep() const;
 
   /** Sets the step size for clicking the up/down buttons to @p step,
       subject to the constraints that @p step is first rounded to the
       current precision and then clipped to the meaningful interval
       [ 1, @p maxValue() - @p minValue() ]. */
-  void setLineStep( double step );
+  void setSingleStep( double step );
 
   /** Overridden to ignore any setValidator() calls. */
   void setValidator( const QValidator * );

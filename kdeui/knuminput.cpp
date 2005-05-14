@@ -291,8 +291,9 @@ void KIntNumInput::init(int val, int _base)
     // the KIntValidator is broken beyond believe for
     // spinboxes which have suffix or prefix texts, so
     // better don't use it unless absolutely necessary
-    if (_base != 10)
-        m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
+#warning KDE4 we NEED to fix the validation of values here
+//	if (_base != 10)
+//        m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
 
     connect(m_spin, SIGNAL(valueChanged(int)), SLOT(spinValueChanged(int)));
     connect(this, SIGNAL(valueChanged(int)),
@@ -333,7 +334,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     m_spin->setMaxValue(upper);
     m_spin->setLineStep(step);
 
-    step = m_spin->lineStep(); // maybe QRangeControl didn't like out lineStep?
+    step = m_spin->singleStep(); // maybe QRangeControl didn't like out lineStep?
 
     if(slider) {
 	if (m_slider)
@@ -366,7 +367,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 
 void KIntNumInput::setMinValue(int min)
 {
-    setRange(min, m_spin->maxValue(), m_spin->lineStep(), m_slider);
+    setRange(min, m_spin->maxValue(), m_spin->singleStep(), m_slider);
 }
 
 int KIntNumInput::minValue() const
@@ -376,7 +377,7 @@ int KIntNumInput::minValue() const
 
 void KIntNumInput::setMaxValue(int max)
 {
-    setRange(m_spin->minValue(), max, m_spin->lineStep(), m_slider);
+    setRange(m_spin->minValue(), max, m_spin->singleStep(), m_slider);
 }
 
 int KIntNumInput::maxValue() const
@@ -627,7 +628,7 @@ void KDoubleNumInput::updateLegacyMembers() {
     // which an inlined getter exists:
     m_lower = minValue();
     m_upper = maxValue();
-    m_step = d->spin->lineStep();
+    m_step = d->spin->singleStep();
     m_specialvalue = specialValueText();
 }
 
@@ -761,7 +762,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
         int slmax = spin->maxValue();
 	int slmin = spin->minValue();
         int slvalue = spin->value();
-	int slstep = spin->lineStep();
+	int slstep = spin->singleStep();
         if (m_slider) {
             m_slider->setRange(slmin, slmax);
 	    m_slider->setLineStep(slstep);
@@ -793,7 +794,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
 
 void KDoubleNumInput::setMinValue(double min)
 {
-    setRange(min, maxValue(), d->spin->lineStep(), m_slider);
+    setRange(min, maxValue(), d->spin->singleStep(), m_slider);
 }
 
 double KDoubleNumInput::minValue() const
@@ -803,7 +804,7 @@ double KDoubleNumInput::minValue() const
 
 void KDoubleNumInput::setMaxValue(double max)
 {
-    setRange(minValue(), max, d->spin->lineStep(), m_slider);
+    setRange(minValue(), max, d->spin->singleStep(), m_slider);
 }
 
 double KDoubleNumInput::maxValue() const
@@ -1037,7 +1038,7 @@ void KDoubleSpinBox::setRange( double lower, double upper, double step,
   setPrecision( precision, true ); // disable bounds checking, since
   setMinValue( lower );            // it's done in set{Min,Max}Value
   setMaxValue( upper );            // anyway and we want lower, upper
-  setLineStep( step );             // and step to have the right precision
+  setSingleStep( step );             // and step to have the right precision
 }
 
 int KDoubleSpinBox::precision() const {
@@ -1112,16 +1113,16 @@ void KDoubleSpinBox::setMaxValue( double value ) {
   updateValidator();
 }
 
-double KDoubleSpinBox::lineStep() const {
-  return d->mapToDouble( base::lineStep() );
+double KDoubleSpinBox::singleStep() const {
+  return d->mapToDouble( base::singleStep() );
 }
 
-void KDoubleSpinBox::setLineStep( double step ) {
+void KDoubleSpinBox::setSingleStep( double step ) {
   bool ok = false;
   if ( step > maxValue() - minValue() )
-    base::setLineStep( 1 );
+    base::setSingleStep( 1 );
   else
-    base::setLineStep( kMax( d->mapToInt( step, &ok ), 1 ) );
+    base::setSingleStep( kMax( d->mapToInt( step, &ok ), 1 ) );
 }
 
 QString KDoubleSpinBox::mapValueToText( int value ) {
@@ -1158,7 +1159,8 @@ void KDoubleSpinBox::updateValidator() {
   if ( !d->mValidator ) {
     d->mValidator =  new KDoubleSpinBoxValidator( minValue(), maxValue(), precision(),
 					   this, "d->mValidator" );
-    base::setValidator( d->mValidator );
+#warning KDE4 we NEED to fix the validation of values here
+//    base::setValidator( d->mValidator );
   } else
     d->mValidator->setRange( minValue(), maxValue(), precision() );
 }
