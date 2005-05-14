@@ -53,7 +53,7 @@ static DOMString escapeHTML( const DOMString& in )
             s += "&gt;";
             break;
         default:
-            s += DOMString( in[i] );
+            s += DOMString( QString(in[i]) );
         }
     }
 
