@@ -459,7 +459,7 @@ return -1;
 }
 
 
-int KSSL::peek(void *buf, int len) {
+int KSSL::peek(char *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	if (!m_bInit)
 		return -1;
@@ -471,7 +471,7 @@ return -1;
 }
 
 
-int KSSL::read(void *buf, int len) {
+int KSSL::read(char *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	int rc = 0;
 	int maxIters = 10;
@@ -509,7 +509,7 @@ return -1;
 }
 
 
-int KSSL::write(const void *buf, int len) {
+int KSSL::write(const char *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	if (!m_bInit)
 		return -1;
